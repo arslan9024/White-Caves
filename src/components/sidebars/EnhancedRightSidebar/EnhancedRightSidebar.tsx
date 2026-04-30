@@ -13,15 +13,8 @@ import {
   selectSelectedAssistant,
   selectFilteredAssistants,
 } from '../../../redux/slices/relationalSidebarSlice';
-import {
-  getServicesByDepartment,
-  getDepartmentById,
-} from '../../../config/departmentContentMap';
-import {
-  getAvailableServices,
-  getAvailableSubitems,
-  generateBreadcrumbs,
-} from '../../../utils/sidebarUtils';
+import { getDepartmentById } from '../../../config/departmentContentMap';
+import { getAvailableServices, getAvailableSubitems } from '../../../utils/sidebarUtils';
 import { getAssistantsByDepartment } from '../../../utils/relationalSidebarUtils';
 
 /**
@@ -114,9 +107,9 @@ const AssistantCard = styled.button`
   flex-direction: column;
   gap: 0.375rem;
   padding: 0.875rem;
-  border: 1px solid ${(props) => (props.selected ? '#6366f1' : '#e5e7eb')};
+  border: 1px solid ${props => (props.selected ? '#6366f1' : '#e5e7eb')};
   border-radius: 6px;
-  background-color: ${(props) => (props.selected ? '#eef2ff' : '#ffffff')};
+  background-color: ${props => (props.selected ? '#eef2ff' : '#ffffff')};
   cursor: pointer;
   transition: all 0.2s;
   text-align: left;
@@ -134,28 +127,12 @@ const AssistantCard = styled.button`
 const AssistantName = styled.span`
   font-size: 0.875rem;
   font-weight: 600;
-  color: ${(props) => (props.selected ? '#6366f1' : '#1f2937')};
+  color: ${props => (props.selected ? '#6366f1' : '#1f2937')};
 `;
 
 const AssistantRole = styled.span`
   font-size: 0.75rem;
   color: #9ca3af;
-`;
-
-const NotificationBadge = styled.span`
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 20px;
-  height: 20px;
-  padding: 0 0.375rem;
-  background-color: #ef4444;
-  color: #ffffff;
-  border-radius: 10px;
-  font-size: 0.65rem;
-  font-weight: 700;
-  margin-left: auto;
-  flex-shrink: 0;
 `;
 
 const ServicesSection = styled.div`
@@ -188,13 +165,13 @@ const ServiceHeader = styled.button`
 const ServiceName = styled.span`
   font-size: 0.875rem;
   font-weight: 600;
-  color: ${(props) => (props.active ? '#6366f1' : '#1f2937')};
+  color: ${props => (props.active ? '#6366f1' : '#1f2937')};
 `;
 
 const ExpandIcon = styled.span`
   font-size: 0.75rem;
   transition: transform 0.2s;
-  transform: ${(props) => (props.expanded ? 'rotate(180deg)' : 'rotate(0deg)')};
+  transform: ${props => (props.expanded ? 'rotate(180deg)' : 'rotate(0deg)')};
 `;
 
 const SubitemsList = styled.div`
@@ -210,8 +187,8 @@ const SubitemButton = styled.button`
   padding: 0.5rem 0.75rem;
   border: none;
   border-radius: 4px;
-  background-color: ${(props) => (props.selected ? '#dbeafe' : 'transparent')};
-  color: ${(props) => (props.selected ? '#0284c7' : '#6b7280')};
+  background-color: ${props => (props.selected ? '#dbeafe' : 'transparent')};
+  color: ${props => (props.selected ? '#0284c7' : '#6b7280')};
   font-size: 0.8125rem;
   cursor: pointer;
   transition: all 0.2s;
@@ -284,13 +261,6 @@ const EnhancedRightSidebar = ({ userPermissions = [] }) => {
   const [expandedServices, setExpandedServices] = useState({});
   const [availableServices, setAvailableServices] = useState([]);
 
-  // Update when department changes
-  useEffect(() => {
-    if (selectedDept) {
-      updateAssistantsAndServices();
-    }
-  }, [selectedDept, userPermissions]);
-
   const updateAssistantsAndServices = async () => {
     setLoading(true);
 
@@ -314,6 +284,14 @@ const EnhancedRightSidebar = ({ userPermissions = [] }) => {
     }
   };
 
+  // Update when department changes
+  useEffect(() => {
+    if (selectedDept) {
+      void updateAssistantsAndServices();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedDept, userPermissions]);
+
   const handleSubitemSelect = (serviceId, subitemId) => {
     if (!selectedDept) return;
 
@@ -332,9 +310,10 @@ const EnhancedRightSidebar = ({ userPermissions = [] }) => {
     );
   };
 
-  const toggleServiceExpand = (serviceId) => {
-    setExpandedServices((prev) => ({
+  const toggleServiceExpand = serviceId => {
+    setExpandedServices(prev => ({
       ...prev,
+      // eslint-disable-next-line security/detect-object-injection
       [serviceId]: !prev[serviceId],
     }));
   };
@@ -363,7 +342,7 @@ const EnhancedRightSidebar = ({ userPermissions = [] }) => {
             {filteredAssistants.length > 0 && (
               <AssistantsSection>
                 <SectionTitle>Team</SectionTitle>
-                {filteredAssistants.map((assistant) => (
+                {filteredAssistants.map(assistant => (
                   <AssistantCard
                     key={assistant.id}
                     selected={selectedAssistant === assistant.id}
@@ -390,39 +369,30 @@ const EnhancedRightSidebar = ({ userPermissions = [] }) => {
             {availableServices.length > 0 && (
               <ServicesSection>
                 <SectionTitle>Services</SectionTitle>
-                {availableServices.map((service) => (
+                {availableServices.map(service => (
                   <div key={service.id}>
-                    <ServiceHeader
-                      onClick={() => toggleServiceExpand(service.id)}
-                    >
+                    <ServiceHeader onClick={() => toggleServiceExpand(service.id)}>
                       <ServiceName active={selectedService === service.id}>
                         {service.label}
                       </ServiceName>
-                      <ExpandIcon expanded={expandedServices[service.id]}>
-                        ▼
-                      </ExpandIcon>
+                      <ExpandIcon expanded={expandedServices[service.id]}>▼</ExpandIcon>
                     </ServiceHeader>
 
                     {expandedServices[service.id] && service.subitems && (
                       <SubitemsList>
                         {service.subitems
-                          .filter((subitem) =>
-                            getAvailableSubitems(
-                              selectedDept,
-                              service.id,
-                              userPermissions
-                            ).find((s) => s.id === subitem.id)
+                          .filter(subitem =>
+                            getAvailableSubitems(selectedDept, service.id, userPermissions).find(
+                              s => s.id === subitem.id
+                            )
                           )
-                          .map((subitem) => (
+                          .map(subitem => (
                             <SubitemButton
                               key={subitem.id}
                               selected={
-                                selectedService === service.id &&
-                                selectedSubitem === subitem.id
+                                selectedService === service.id && selectedSubitem === subitem.id
                               }
-                              onClick={() =>
-                                handleSubitemSelect(service.id, subitem.id)
-                              }
+                              onClick={() => handleSubitemSelect(service.id, subitem.id)}
                             >
                               {subitem.label}
                             </SubitemButton>
@@ -437,9 +407,7 @@ const EnhancedRightSidebar = ({ userPermissions = [] }) => {
             {filteredAssistants.length === 0 && availableServices.length === 0 && (
               <EmptyState>
                 <EmptyStateIcon>📭</EmptyStateIcon>
-                <EmptyStateText>
-                  No assistants or services available
-                </EmptyStateText>
+                <EmptyStateText>No assistants or services available</EmptyStateText>
               </EmptyState>
             )}
           </>

@@ -1820,3 +1820,202 @@
     overflow-x: auto;
   }
 }
+
+/* ---------------------------------------------------------------
+   CRUD MODAL SYSTEM � Phase 3 (PropertiesTab, LeadsTab, AgentsTab)
+   --------------------------------------------------------------- */
+
+/* Toast notification */
+.crud-toast {
+  position: fixed;
+  bottom: 1.5rem;
+  right: 1.5rem;
+  z-index: 9999;
+  background: rgba(10, 10, 10, 0.92);
+  color: #fafafa;
+  border: 1px solid rgba(196, 30, 58, 0.4);
+  border-radius: 8px;
+  padding: 0.75rem 1.25rem;
+  font-size: 0.875rem;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(12px);
+  animation: toast-in 0.25s ease;
+}
+@keyframes toast-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Overlay */
+.crud-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9000;
+  background: rgba(0, 0, 0, 0.65);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  backdrop-filter: blur(4px);
+  animation: overlay-in 0.2s ease;
+}
+@keyframes overlay-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Modal card */
+.crud-modal {
+  background: #141414;
+  border: 1px solid rgba(196, 30, 58, 0.3);
+  border-radius: 12px;
+  width: 100%;
+  max-width: 680px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.6);
+  animation: modal-in 0.22s ease;
+}
+.crud-modal--sm {
+  max-width: 420px;
+}
+@keyframes modal-in {
+  from {
+    opacity: 0;
+    transform: scale(0.96) translateY(-12px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+/* Modal header */
+.crud-modal__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+.crud-modal__header h3 {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #fafafa;
+}
+.crud-modal__close {
+  background: none;
+  border: none;
+  color: rgba(250, 250, 250, 0.5);
+  font-size: 1.1rem;
+  cursor: pointer;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  transition:
+    color 0.15s,
+    background 0.15s;
+}
+.crud-modal__close:hover {
+  color: #fafafa;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+/* Modal body */
+.crud-modal__body {
+  padding: 1.5rem;
+}
+.crud-modal__body p {
+  color: rgba(250, 250, 250, 0.8);
+  margin: 0 0 0.5rem;
+}
+.crud-warn {
+  color: #ef4444 !important;
+  font-size: 0.85rem;
+}
+
+/* Form grid */
+.crud-form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+@media (max-width: 540px) {
+  .crud-form-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Modal footer */
+.crud-modal__footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  padding: 1rem 1.5rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* Danger button */
+.danger-btn {
+  background: #c41e3a;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 0.5rem 1.25rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.danger-btn:hover {
+  background: #8b0000;
+}
+
+/* Status select inline in table */
+.status-select {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 6px;
+  padding: 0.2rem 0.5rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  outline: none;
+}
+.status-select:focus {
+  border-color: rgba(196, 30, 58, 0.5);
+}
+
+/* Lead priority badge (CRM variant) */
+.priority-badge-crm {
+  display: inline-block;
+  padding: 0.15rem 0.6rem;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+/* Link-style button */
+.link-btn {
+  background: none;
+  border: none;
+  color: #c41e3a;
+  cursor: pointer;
+  font-size: inherit;
+  text-decoration: underline;
+  padding: 0;
+}
+.link-btn:hover {
+  color: #ff4d6d;
+}

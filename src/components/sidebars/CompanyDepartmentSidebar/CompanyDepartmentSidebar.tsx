@@ -9,7 +9,7 @@ import React, { useMemo } from 'react';
 import styled from 'styled-components';
 import { BaseSidebar, SidebarSection, SidebarItem } from '../../shared/sidebars';
 import { useSidebarState } from '../../../hooks/useSidebarState';
-import { DEPARTMENTS, getDepartmentsByHierarchy } from '../../../config/departmentsRegistry';
+import { getDepartmentsByHierarchy } from '../../../config/departmentsRegistry';
 
 const SidebarContainer = styled.div`
   height: 100%;

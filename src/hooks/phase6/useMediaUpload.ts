@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react';
-import type { MediaFile } from '../../../types/phase6.types';
+import type { MediaFile } from '../../types/phase6.types';
 
 interface UploadResponse {
   id: string;
@@ -32,7 +32,7 @@ export const useMediaUpload = () => {
         const xhr = new XMLHttpRequest();
 
         // Track upload progress
-        xhr.upload.addEventListener('progress', (e) => {
+        xhr.upload.addEventListener('progress', e => {
           if (e.lengthComputable) {
             const percentComplete = (e.loaded / e.total) * 100;
             setUploadProgress(percentComplete);
@@ -50,19 +50,14 @@ export const useMediaUpload = () => {
               const mediaFile: MediaFile = {
                 id: response.id,
                 url: response.url,
-                type: response.type as
-                  | 'image'
-                  | 'document'
-                  | 'audio'
-                  | 'video'
-                  | 'other',
+                type: response.type as 'image' | 'document' | 'audio' | 'video' | 'other',
                 size: response.size,
                 name: response.name,
                 mimeType: response.mimeType,
                 uploadedAt: response.uploadedAt,
               };
               resolve(mediaFile);
-            } catch (e) {
+            } catch {
               const errorMsg = 'Failed to parse upload response';
               setError(errorMsg);
               reject(new Error(errorMsg));

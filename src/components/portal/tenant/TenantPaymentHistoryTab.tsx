@@ -21,13 +21,8 @@ interface PaymentRecord {
   propertyTitle?: string;
 }
 
-interface PaymentSummary {
-  totalPaid: number;
-  currency: string;
-  nextPaymentDue: string | null;
-  nextPaymentAmount: number;
-  depositPaid: number;
-}
+/** Late fee rate: 5% of monthly rent per overdue payment */
+const LATE_FEE_RATE = 0.05;
 
 const TenantPaymentHistoryTab: FC = () => {
   const currentUser = useSelector((state: RootState) => state.user.currentUser);
@@ -39,7 +34,6 @@ const TenantPaymentHistoryTab: FC = () => {
   >('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [payments, setPayments] = useState<PaymentRecord[]>([]);
-  const [summary, setSummary] = useState<PaymentSummary | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -76,7 +70,6 @@ const TenantPaymentHistoryTab: FC = () => {
             })
           )
         );
-        setSummary(d.summary ?? null);
       } catch (err) {
         setError((err as Error).message ?? 'Failed to load payments');
       } finally {
@@ -98,30 +91,23 @@ const TenantPaymentHistoryTab: FC = () => {
     });
   }, [payments, searchQuery, statusFilter]);
 
-  const displaySummary = useMemo(() => {
-    if (summary) {
-      return {
-        totalPaid: summary.totalPaid,
-        currency: summary.currency,
-        outstanding: 0,
-        depositPaid: summary.depositPaid,
-        nextPaymentDue: summary.nextPaymentDue,
-        nextPaymentAmount: summary.nextPaymentAmount,
-      };
-    }
+  const summary = useMemo(() => {
     const totalPaid = payments.filter(p => p.status === 'paid').reduce((s, p) => s + p.amount, 0);
     const outstanding = payments
       .filter(p => p.status === 'pending' || p.status === 'overdue')
       .reduce((s, p) => s + p.amount, 0);
-    return {
-      totalPaid,
-      outstanding,
-      currency: 'AED',
-      depositPaid: 0,
-      nextPaymentDue: null,
-      nextPaymentAmount: 0,
-    };
-  }, [summary, payments]);
+    // Overdue takes priority over pending as the most urgent item
+    const nextPayment =
+      payments.find(p => p.status === 'overdue') ??
+      payments.find(p => p.status === 'pending') ??
+      null;
+    const overduePayments = payments.filter(p => p.status === 'overdue');
+    const lateFees = overduePayments.reduce(
+      (sum, p) => sum + Math.round(p.amount * LATE_FEE_RATE),
+      0
+    );
+    return { totalPaid, outstanding, nextPayment, lateFees, overdueCount: overduePayments.length };
+  }, [payments]);
 
   if (!currentUser) {
     return (
@@ -157,43 +143,52 @@ const TenantPaymentHistoryTab: FC = () => {
       <div className="summary-grid" data-testid="tenant-payment-summary">
         <div className="summary-card" data-testid="tenant-total-paid-card">
           <h4>Total Paid</h4>
-          <p>
-            {displaySummary.currency} {displaySummary.totalPaid.toLocaleString()}
-          </p>
+          <p>AED {summary.totalPaid.toLocaleString()}</p>
         </div>
         <div className="summary-card" data-testid="tenant-outstanding-card">
           <h4>Outstanding</h4>
-          <p>
-            {displaySummary.currency} {displaySummary.outstanding.toLocaleString()}
-          </p>
+          <p>AED {summary.outstanding.toLocaleString()}</p>
         </div>
-        {displaySummary.depositPaid > 0 && (
-          <div className="summary-card" data-testid="tenant-deposit-card">
-            <h4>Deposit Paid</h4>
-            <p>
-              {displaySummary.currency} {displaySummary.depositPaid.toLocaleString()}
-            </p>
+        <div className="summary-card next-payment-card" data-testid="tenant-next-payment-card">
+          <h4>Next Payment Due</h4>
+          {summary.nextPayment ? (
+            <>
+              <p data-testid="tenant-next-payment-month">{summary.nextPayment.month}</p>
+              <p className="next-payment-amount">
+                AED {summary.nextPayment.amount.toLocaleString()}
+              </p>
+              {summary.nextPayment.status === 'overdue' && (
+                <span className="status-badge status-overdue" data-testid="tenant-overdue-badge">
+                  Overdue
+                </span>
+              )}
+              {summary.lateFees > 0 && (
+                <p
+                  className="late-fee-notice"
+                  data-testid="tenant-late-fee"
+                  aria-label={`Late fee of AED ${summary.lateFees.toLocaleString()} applied`}
+                >
+                  + AED {summary.lateFees.toLocaleString()} late fee
+                </p>
+              )}
+            </>
+          ) : (
+            <p data-testid="tenant-no-payment-due">No upcoming payments</p>
+          )}
+          <div className="pay-now-wrapper">
+            <button
+              type="button"
+              className="btn-primary btn-disabled"
+              disabled
+              aria-disabled="true"
+              title="Online payments coming in Phase 5"
+              data-testid="tenant-pay-now-btn"
+            >
+              Pay Now
+            </button>
+            <span className="pay-now-tooltip">Online payments coming in Phase 5</span>
           </div>
-        )}
-        {displaySummary.nextPaymentDue && (
-          <div className="summary-card" data-testid="tenant-next-payment-card">
-            <h4>Next Payment Due</h4>
-            <p>{new Date(displaySummary.nextPaymentDue).toLocaleDateString()}</p>
-            <p>
-              {displaySummary.currency} {displaySummary.nextPaymentAmount.toLocaleString()}
-            </p>
-          </div>
-        )}
-        {payments.filter(p => p.status === 'overdue').length > 0 && (
-          <div className="summary-card summary-card--alert" data-testid="tenant-overdue-notice">
-            <h4>Late Fee Notice</h4>
-            <p>
-              {payments.filter(p => p.status === 'overdue').length} overdue payment
-              {payments.filter(p => p.status === 'overdue').length > 1 ? 's' : ''}
-            </p>
-            <p className="summary-card-meta">Contact your agent for details</p>
-          </div>
-        )}
+        </div>
       </div>
 
       <div className="tab-controls">
@@ -246,17 +241,6 @@ const TenantPaymentHistoryTab: FC = () => {
               </div>
               <div>
                 <span className={`status-badge status-${payment.status}`}>{payment.status}</span>
-                {(payment.status === 'pending' || payment.status === 'overdue') && (
-                  <button
-                    type="button"
-                    className="btn-secondary btn-disabled"
-                    disabled
-                    title="Online payments coming soon — please pay by cheque or bank transfer"
-                    data-testid={`tenant-pay-now-btn-${payment.id}`}
-                  >
-                    Pay Now
-                  </button>
-                )}
               </div>
             </div>
           ))}

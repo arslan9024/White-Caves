@@ -9,14 +9,7 @@ import {
   restoreFromHistory,
   setSelectedService,
   setSelectedSubitem,
-  addToSelectionHistory,
 } from '../../../redux/slices/relationalSidebarSlice';
-import {
-  getDepartmentById,
-  getServicesByDepartment,
-  getSubitemsByService,
-} from '../../../config/departmentContentMap';
-import { generateBreadcrumbs } from '../../../utils/sidebarUtils';
 
 /**
  * DashboardBreadcrumb.tsx
@@ -59,16 +52,16 @@ const BreadcrumbList = styled.div`
 const BreadcrumbItem = styled.button`
   padding: 0.375rem 0.75rem;
   border: none;
-  background: ${(props) => (props.active ? '#eef2ff' : 'transparent')};
-  color: ${(props) => (props.active ? '#6366f1' : '#6b7280')};
-  font-weight: ${(props) => (props.active ? '600' : '500')};
-  cursor: ${(props) => (props.active ? 'default' : 'pointer')};
+  background: ${props => (props.active ? '#eef2ff' : 'transparent')};
+  color: ${props => (props.active ? '#6366f1' : '#6b7280')};
+  font-weight: ${props => (props.active ? '600' : '500')};
+  cursor: ${props => (props.active ? 'default' : 'pointer')};
   border-radius: 4px;
   transition: all 0.2s;
   white-space: nowrap;
 
   &:hover:not(:disabled) {
-    background-color: ${(props) => (props.active ? '#eef2ff' : '#f3f4f6')};
+    background-color: ${props => (props.active ? '#eef2ff' : '#f3f4f6')};
     color: #1f2937;
   }
 
@@ -162,11 +155,7 @@ const DashboardBreadcrumb = ({ onNavigate }) => {
 
   const handleBackClick = () => {
     if (previousEntry && canGoBack) {
-      handleBreadcrumbClick(
-        previousEntry.dept,
-        previousEntry.service,
-        previousEntry.subitem
-      );
+      handleBreadcrumbClick(previousEntry.dept, previousEntry.service, previousEntry.subitem);
     }
   };
 
@@ -187,9 +176,7 @@ const DashboardBreadcrumb = ({ onNavigate }) => {
         {breadcrumbs.length > 5 && (
           <>
             <BreadcrumbItem
-              onClick={() =>
-                handleBreadcrumbClick(breadcrumbs[0].id, null, null)
-              }
+              onClick={() => handleBreadcrumbClick(breadcrumbs[0].id, null, null)}
               title={breadcrumbs[0].label}
             >
               {breadcrumbs[0].label}
@@ -200,7 +187,7 @@ const DashboardBreadcrumb = ({ onNavigate }) => {
           </>
         )}
 
-        {breadcrumbs.slice(Math.max(0, breadcrumbs.length - 5)).map((crumb, idx, arr) => (
+        {breadcrumbs.slice(Math.max(0, breadcrumbs.length - 5)).map((crumb, idx, _arr) => (
           <React.Fragment key={crumb.id}>
             {idx > 0 && <Separator>/</Separator>}
             <BreadcrumbItem

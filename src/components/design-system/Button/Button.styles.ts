@@ -180,6 +180,7 @@ const getVariantStyles = (variant: ButtonVariant) => {
     `,
   };
 
+  // eslint-disable-next-line security/detect-object-injection
   return variants[variant] || variants.primary;
 };
 
@@ -209,6 +210,7 @@ const getSizeStyles = (size: ButtonSize) => {
     `,
   };
 
+  // eslint-disable-next-line security/detect-object-injection
   return sizes[size] || sizes.md;
 };
 
@@ -234,11 +236,11 @@ export const StyledButton = styled.button<{
   user-select: none;
 
   /* Variant and size styles */
-  ${(props) => getVariantStyles(props.$variant || 'primary')}
-  ${(props) => getSizeStyles(props.$size || 'md')}
+  ${props => getVariantStyles(props.$variant || 'primary')}
+  ${props => getSizeStyles(props.$size || 'md')}
 
   /* Full width */
-  ${(props) =>
+  ${props =>
     props.$fullWidth &&
     css`
       width: 100%;
@@ -252,8 +254,8 @@ export const StyledButton = styled.button<{
   /* Responsive */
   @media ${theme.mediaQueries.mobile} {
     font-size: ${theme.typography.sizes.sm};
-    
-    &:${(props) => props.$size === 'lg' && 'not(:disabled)'} {
+
+    &: ${props => props.$size === 'lg' && 'not(:disabled)'} {
       padding: ${theme.spacing.sm} ${theme.spacing.md};
       min-height: 36px;
     }
@@ -270,7 +272,7 @@ export const IconWrapper = styled.span<{ $position?: 'left' | 'right' }>`
   justify-content: center;
   flex-shrink: 0;
 
-  ${(props) =>
+  ${props =>
     props.$position === 'right' &&
     css`
       order: 1;

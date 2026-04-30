@@ -25,13 +25,14 @@ const getSizeStyles = (size: 'sm' | 'md' | 'lg') => {
     md: { width: '52px', height: '28px', toggleSize: '22px' },
     lg: { width: '64px', height: '32px', toggleSize: '26px' },
   };
+  // eslint-disable-next-line security/detect-object-injection
   return sizes[size] || sizes.md;
 };
 
 const SwitchTrack = styled.span<{ $size?: 'sm' | 'md' | 'lg' }>`
   display: inline-block;
-  width: ${(props) => getSizeStyles(props.$size || 'md').width};
-  height: ${(props) => getSizeStyles(props.$size || 'md').height};
+  width: ${props => getSizeStyles(props.$size || 'md').width};
+  height: ${props => getSizeStyles(props.$size || 'md').height};
   background-color: ${theme.colors.border};
   border-radius: 12px;
   position: relative;
@@ -41,8 +42,8 @@ const SwitchTrack = styled.span<{ $size?: 'sm' | 'md' | 'lg' }>`
   &::after {
     content: '';
     position: absolute;
-    width: ${(props) => getSizeStyles(props.$size || 'md').toggleSize};
-    height: ${(props) => getSizeStyles(props.$size || 'md').toggleSize};
+    width: ${props => getSizeStyles(props.$size || 'md').toggleSize};
+    height: ${props => getSizeStyles(props.$size || 'md').toggleSize};
     background-color: white;
     border-radius: 50%;
     top: 50%;
@@ -56,7 +57,7 @@ const SwitchTrack = styled.span<{ $size?: 'sm' | 'md' | 'lg' }>`
     background-color: ${theme.colors.primary};
 
     &::after {
-      left: calc(100% - ${(props) => getSizeStyles(props.$size || 'md').toggleSize} - 2px);
+      left: calc(100% - ${props => getSizeStyles(props.$size || 'md').toggleSize} - 2px);
     }
   }
 

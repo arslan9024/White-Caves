@@ -3,7 +3,7 @@
  * Tests for Phase 2.10
  */
 
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import { BrowserRouter } from 'react-router-dom';
@@ -47,12 +47,62 @@ const renderWithStore = (
 };
 
 describe('TenantMaintenanceTab', () => {
+  beforeEach(() => {
+    // Stub fetch so API call doesn't fail in test env
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue({ ok: true, json: async () => ({}) }));
+  });
+
   it('renders request form fields', () => {
     renderWithStore(<TenantMaintenanceTab />);
 
     expect(screen.getByTestId('tenant-maintenance-title-input')).toBeInTheDocument();
     expect(screen.getByTestId('tenant-maintenance-description-input')).toBeInTheDocument();
     expect(screen.getByTestId('tenant-maintenance-submit-btn')).toBeInTheDocument();
+  });
+
+  it('shows validation error when submitting without title', async () => {
+    renderWithStore(<TenantMaintenanceTab />);
+
+    fireEvent.click(screen.getByTestId('tenant-maintenance-submit-btn'));
+
+    await waitFor(() => {
+      expect(screen.getByTestId('tenant-maintenance-error')).toHaveTextContent(
+        'Please enter an issue title.'
+      );
+    });
+  });
+
+  it('adds new request to list on submit (optimistic update)', async () => {
+    renderWithStore(<TenantMaintenanceTab />);
+
+    fireEvent.change(screen.getByTestId('tenant-maintenance-title-input'), {
+      target: { value: 'Shower pressure issue' },
+    });
+    fireEvent.change(screen.getByTestId('tenant-maintenance-description-input'), {
+      target: { value: 'Water pressure is too low.' },
+    });
+    fireEvent.click(screen.getByTestId('tenant-maintenance-submit-btn'));
+
+    await waitFor(() => {
+      expect(screen.getByText('Shower pressure issue')).toBeInTheDocument();
+    });
+
+    // Input fields should be cleared
+    expect(screen.getByTestId('tenant-maintenance-title-input')).toHaveValue('');
+    expect(screen.getByTestId('tenant-maintenance-description-input')).toHaveValue('');
+  });
+
+  it('shows "Submitted" badge on newly added local request', async () => {
+    renderWithStore(<TenantMaintenanceTab />);
+
+    fireEvent.change(screen.getByTestId('tenant-maintenance-title-input'), {
+      target: { value: 'Broken window latch' },
+    });
+    fireEvent.click(screen.getByTestId('tenant-maintenance-submit-btn'));
+
+    await waitFor(() => {
+      expect(screen.getByTestId('maintenance-local-badge')).toBeInTheDocument();
+    });
   });
 
   it('allows typing in form inputs', () => {

@@ -2,7 +2,7 @@
 /**
  * Property Search Feature Component
  * Example of a second feature to demonstrate the pattern
- * 
+ *
  * This component shows how to:
  * - Use theme colors
  * - Handle user input
@@ -280,9 +280,10 @@ export const SearchProperties: React.FC = () => {
     setHasSearched(true);
 
     // Filter properties based on search term
-    const filtered = mockProperties.filter(prop =>
-      prop.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      prop.location.toLowerCase().includes(searchTerm.toLowerCase())
+    const filtered = mockProperties.filter(
+      prop =>
+        prop.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        prop.location.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
     setResults(filtered);

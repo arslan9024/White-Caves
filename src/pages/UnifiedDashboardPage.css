@@ -191,9 +191,10 @@
 }
 
 .tab-button.active {
-  color: var(--primary-color, #0066cc);
-  border-bottom-color: var(--primary-color, #0066cc);
-  background: var(--bg-active, #f0f7ff);
+  color: #c41e3a;
+  border-bottom-color: #c41e3a;
+  background: rgba(196, 30, 58, 0.06);
+  font-weight: 600;
 }
 
 .tab-icon {
@@ -391,24 +392,27 @@
    DARK MODE SUPPORT
    ======================================== */
 
-[data-theme="dark"] .unified-dashboard-tabs,
-[data-theme="dark"] .unified-dashboard-content,
-[data-theme="dark"] .crm-modules-menu {
-  background: #1E1E1E;
+[data-theme='dark'] .unified-dashboard-tabs,
+[data-theme='dark'] .unified-dashboard-content,
+[data-theme='dark'] .crm-modules-menu {
+  background: #1e1e1e;
   border-color: #333333;
   color: #ffffff;
 }
 
-[data-theme="dark"] .tab-button {
+[data-theme='dark'] .tab-button {
   color: #999;
 }
 
-[data-theme="dark"] .tab-button:hover {
+[data-theme='dark'] .tab-button:hover {
   background: #2a2a2a;
   color: #ffffff;
 }
 
-[data-theme="dark"] .tab-button.active {
+[data-theme='dark'] .tab-button:hover {
+  background: rgba(196, 30, 58, 0.08);
+  color: #fafafa;
+}
+[data-theme='dark'] .tab-button.active {
   color: #00a0ff;
 }
-

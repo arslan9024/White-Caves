@@ -1,6 +1,6 @@
 /**
  * AIAssistantDashboard Component
- * 
+ *
  * Displays AI assistant-specific information and controls
  * Shows capabilities, status, department assignments, and recent activity
  */
@@ -86,11 +86,12 @@ const StatusBadge = styled.span<{ status: 'active' | 'inactive' | 'training' | '
     height: 6px;
     border-radius: 50%;
     background: currentColor;
-    animation: ${props => props.status === 'active' ? 'pulse 2s infinite' : 'none'};
+    animation: ${props => (props.status === 'active' ? 'pulse 2s infinite' : 'none')};
   }
 
   @keyframes pulse {
-    0%, 100% {
+    0%,
+    100% {
       opacity: 1;
     }
     50% {
@@ -197,14 +198,14 @@ const CommingSoon = styled.div`
 
 interface AIAssistantDashboardProps {
   assistantId: string;
-  context?: Record<string, any>;
+  context?: Record<string, unknown>;
   featureId?: string;
 }
 
 /**
  * AI Assistant Dashboard Component
  * Displays all information for a specific AI assistant
- * 
+ *
  * @component
  * @param {string} assistantId - ID of the AI assistant to display
  * @returns {React.ReactElement}
@@ -219,7 +220,7 @@ const AIAssistantDashboard: React.FC<AIAssistantDashboardProps> = ({ assistantId
       <DashboardContainer>
         <CommingSoon>
           <h2>AI Assistant Not Found</h2>
-          <p>The AI assistant "{assistantId}" could not be found.</p>
+          <p>The AI assistant &quot;{assistantId}&quot; could not be found.</p>
         </CommingSoon>
       </DashboardContainer>
     );
@@ -238,10 +239,10 @@ const AIAssistantDashboard: React.FC<AIAssistantDashboardProps> = ({ assistantId
           {assistant.status === 'active'
             ? 'Active'
             : assistant.status === 'training'
-            ? 'Training'
-            : assistant.status === 'error'
-            ? 'Error'
-            : 'Inactive'}
+              ? 'Training'
+              : assistant.status === 'error'
+                ? 'Error'
+                : 'Inactive'}
         </StatusBadge>
       </Header>
 

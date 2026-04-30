@@ -1,7 +1,7 @@
-import styled, { css, keyframes } from 'styled-components';
+import styled, { keyframes } from 'styled-components';
 import { theme } from '../../../styles/theme';
 
-const { colors, shadows, radius, transitions, spacing, mediaQueries } = theme;
+const { colors, radius, transitions, mediaQueries } = theme;
 
 /* ═══════════════════════════════════════════════════════════════
    MOBILE BOTTOM NAVIGATION BAR
@@ -43,7 +43,7 @@ export const BottomNavContainer = styled.nav`
   }
 
   @media (prefers-color-scheme: dark) {
-    background: #1E293B;
+    background: #1e293b;
     border-top-color: #334155;
     box-shadow: 0 -2px 12px rgba(0, 0, 0, 0.2);
   }
@@ -62,7 +62,7 @@ export const BottomNavItem = styled.button<{ $active?: boolean }>`
   background: transparent;
   border: none;
   cursor: pointer;
-  color: ${p => p.$active ? colors.primary : colors.text.tertiary};
+  color: ${p => (p.$active ? colors.primary : colors.text.tertiary)};
   transition: color ${transitions.durations.shorter} ${transitions.easing.easeInOut};
   position: relative;
   -webkit-tap-highlight-color: transparent;
@@ -75,7 +75,7 @@ export const BottomNavItem = styled.button<{ $active?: boolean }>`
     bottom: 4px;
     left: 50%;
     transform: translateX(-50%);
-    width: ${p => p.$active ? '4px' : '0'};
+    width: ${p => (p.$active ? '4px' : '0')};
     height: 4px;
     border-radius: ${radius.full};
     background: ${colors.primary};
@@ -88,18 +88,22 @@ export const BottomNavItem = styled.button<{ $active?: boolean }>`
   }
 
   @media (prefers-reduced-motion: reduce) {
-    &:active { transform: none; }
-    &::before { transition: none; }
+    &:active {
+      transform: none;
+    }
+    &::before {
+      transition: none;
+    }
   }
 
   @media (prefers-color-scheme: dark) {
-    color: ${p => p.$active ? colors.primaryLight : '#64748B'};
+    color: ${p => (p.$active ? colors.primaryLight : '#64748B')};
   }
 `;
 
 export const BottomNavLabel = styled.span<{ $active?: boolean }>`
   font-size: 10px;
-  font-weight: ${p => p.$active ? 600 : 400};
+  font-weight: ${p => (p.$active ? 600 : 400)};
   line-height: 1;
   white-space: nowrap;
 `;
@@ -114,8 +118,8 @@ export const BottomNavBadge = styled.span`
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #EF4444;
-  color: #FFFFFF;
+  background: #ef4444;
+  color: #ffffff;
   font-size: 8px;
   font-weight: 700;
   border-radius: ${radius.full};

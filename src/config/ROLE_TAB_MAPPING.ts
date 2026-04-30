@@ -105,9 +105,11 @@ export const ROLE_TAB_MAPPING: RoleTabMapping = {
       { id: 'contracts', label: 'Contracts', icon: 'file' },
       { id: 'analytics', label: 'Analytics', icon: 'line-chart' },
       { id: 'users', label: 'Users', icon: 'user-group' },
+      { id: 'ai-hub', label: 'AI Hub', icon: 'sparkles' },
+      { id: 'ai-command', label: 'AI Command', icon: 'cpu' },
       { id: 'settings', label: 'Settings', icon: 'settings' },
     ],
-    description: 'Full executive access',
+    description: 'Full executive access with AI modules',
   },
   real_estate_company: {
     label: 'Company Admin',
@@ -396,7 +398,7 @@ export const getRoleInfo = (role: string): RoleInfo => {
 /** Check if role can access specific feature */
 export const canAccessFeature = (role: string, featureId: string): boolean => {
   const tabs = getTabsForRole(role);
-  return tabs.some((tab) => tab.id === featureId);
+  return tabs.some(tab => tab.id === featureId);
 };
 
 /** Type guard to check if a string is a valid role key */

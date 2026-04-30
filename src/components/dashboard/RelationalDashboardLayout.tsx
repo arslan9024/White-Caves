@@ -26,15 +26,15 @@ const DashboardContainer = styled.div`
   display: flex;
   height: 100vh;
   width: 100%;
-  background: ${(props) => props.theme.colors.background || '#0a0a0a'};
-  color: ${(props) => props.theme.colors.text || '#fff'};
+  background: ${props => props.theme.colors.background || '#0a0a0a'};
+  color: ${props => props.theme.colors.text || '#fff'};
 `;
 
 const LeftSidebarWrapper = styled.div`
   flex: 0 0 auto;
   width: 280px;
   height: 100%;
-  border-right: 1px solid ${(props) => props.theme.colors.border || '#333'};
+  border-right: 1px solid ${props => props.theme.colors.border || '#333'};
   overflow: hidden;
 `;
 
@@ -62,11 +62,13 @@ const DashboardContent = styled.div`
   }
 
   &::-webkit-scrollbar-thumb {
-    background: ${(props) => (props.theme?.colors as any)?.scrollbar || '#555'};
+    background: ${(props: { theme?: { colors?: { scrollbar?: string } } }) =>
+      props.theme?.colors?.scrollbar || '#555'};
     border-radius: 4px;
 
     &:hover {
-      background: ${(props) => (props.theme?.colors as any)?.scrollbarHover || '#777'};
+      background: ${(props: { theme?: { colors?: { scrollbarHover?: string } } }) =>
+        props.theme?.colors?.scrollbarHover || '#777'};
     }
   }
 `;
@@ -77,7 +79,7 @@ const BreadcrumbNav = styled.div`
   gap: 8px;
   margin-bottom: 20px;
   font-size: 13px;
-  color: ${(props) => props.theme.colors.textSecondary || '#999'};
+  color: ${props => props.theme.colors.textSecondary || '#999'};
 
   span {
     display: flex;
@@ -85,11 +87,11 @@ const BreadcrumbNav = styled.div`
 
     &.separator {
       margin: 0 4px;
-      color: ${(props) => props.theme.colors.textTertiary || '#666'};
+      color: ${props => props.theme.colors.textTertiary || '#666'};
     }
 
     &.active {
-      color: ${(props) => props.theme.colors.primary || '#007bff'};
+      color: ${props => props.theme.colors.primary || '#007bff'};
       font-weight: 500;
     }
   }
@@ -99,7 +101,7 @@ const RightSidebarWrapper = styled.div`
   flex: 0 0 auto;
   width: 280px;
   height: 100%;
-  border-left: 1px solid ${(props) => props.theme.colors.border || '#333'};
+  border-left: 1px solid ${props => props.theme.colors.border || '#333'};
   overflow: hidden;
 `;
 
@@ -108,7 +110,7 @@ const LoadingState = styled.div`
   align-items: center;
   justify-content: center;
   height: 100%;
-  color: ${(props) => props.theme.colors.textSecondary || '#999'};
+  color: ${props => props.theme.colors.textSecondary || '#999'};
   font-size: 14px;
 
   &::after {
@@ -116,8 +118,8 @@ const LoadingState = styled.div`
     animation: spin 1s linear infinite;
     width: 16px;
     height: 16px;
-    border: 2px solid ${(props) => props.theme.colors.border || '#333'};
-    border-top-color: ${(props) => props.theme.colors.primary || '#007bff'};
+    border: 2px solid ${props => props.theme.colors.border || '#333'};
+    border-top-color: ${props => props.theme.colors.primary || '#007bff'};
     border-radius: 50%;
     margin-left: 8px;
   }
@@ -134,7 +136,7 @@ const EmptyState = styled.div`
   align-items: center;
   justify-content: center;
   height: 100%;
-  color: ${(props) => props.theme.colors.textSecondary || '#999'};
+  color: ${props => props.theme.colors.textSecondary || '#999'};
   font-size: 14px;
   text-align: center;
   padding: 20px;
@@ -147,36 +149,53 @@ const EmptyState = styled.div`
  * - Right sidebar: AI Assistants with notifications
  * - Main content: Dynamic department views
  */
-const RelationalDashboardLayout = ({ userPermissions = {} }: { userPermissions?: Record<string, boolean> }) => {
+const RelationalDashboardLayout = ({
+  userPermissions = {},
+}: {
+  userPermissions?: Record<string, boolean>;
+}) => {
   const dispatch = useDispatch();
 
   // Redux selectors
   const selectedDepartment = useSelector(selectSelectedDepartment);
   const selectedService = useSelector(selectSelectedService);
-  const selectedAssistant = useSelector(selectSelectedAssistant);
-  const departmentData = useSelector((state: any) => state.relationalSidebar?.departmentData);
-  const departmentLoading = useSelector((state: any) => state.relationalSidebar?.departmentLoading);
-  const departmentError = useSelector((state: any) => state.relationalSidebar?.departmentError);
+  const _selectedAssistant = useSelector(selectSelectedAssistant);
+  const departmentData = useSelector(
+    (state: { relationalSidebar?: { departmentData?: Record<string, unknown> } }) =>
+      state.relationalSidebar?.departmentData
+  );
+  const departmentLoading = useSelector(
+    (state: { relationalSidebar?: { departmentLoading?: boolean } }) =>
+      state.relationalSidebar?.departmentLoading
+  );
+  const departmentError = useSelector(
+    (state: { relationalSidebar?: { departmentError?: string | null } }) =>
+      state.relationalSidebar?.departmentError
+  );
 
   // Department view component map
-  const departmentViewMap = useMemo(() => ({
-    EXECUTIVE: ExecutiveView,
-    SALES: SalesView,
-    OPERATIONS: OperationsView,
-    FINANCE: FinanceView,
-    COMPLIANCE: ComplianceView,
-    ANALYTICS: AnalyticsView,
-    TECHNOLOGY: TechnologyView,
-    MARKETING: MarketingView,
-    PROPERTY_MANAGEMENT: PropertyManagementView,
-    HR: HRView,
-  } as any), []);
+  const departmentViewMap = useMemo(
+    () =>
+      ({
+        EXECUTIVE: ExecutiveView,
+        SALES: SalesView,
+        OPERATIONS: OperationsView,
+        FINANCE: FinanceView,
+        COMPLIANCE: ComplianceView,
+        ANALYTICS: AnalyticsView,
+        TECHNOLOGY: TechnologyView,
+        MARKETING: MarketingView,
+        PROPERTY_MANAGEMENT: PropertyManagementView,
+        HR: HRView,
+      }) as Record<string, React.ComponentType<Record<string, unknown>>>,
+    []
+  );
 
   // Fetch department data when department selection changes
   useEffect(() => {
     if (selectedDepartment) {
-      console.debug('[RelationalDashboardLayout] Fetching data for department:', selectedDepartment);
-      dispatch(fetchDepartmentData(selectedDepartment) as any);
+      console.warn('[RelationalDashboardLayout] Fetching data for department:', selectedDepartment);
+      dispatch(fetchDepartmentData(selectedDepartment) as Parameters<typeof dispatch>[0]);
     }
   }, [selectedDepartment, dispatch]);
 
@@ -193,11 +212,7 @@ const RelationalDashboardLayout = ({ userPermissions = {} }: { userPermissions?:
 
     // Show loading state while fetching
     if (departmentLoading) {
-      return (
-        <LoadingState>
-          Loading {selectedDepartment} data...
-        </LoadingState>
-      );
+      return <LoadingState>Loading {selectedDepartment} data...</LoadingState>;
     }
 
     // Show error state if fetch failed
@@ -210,6 +225,7 @@ const RelationalDashboardLayout = ({ userPermissions = {} }: { userPermissions?:
     }
 
     // Get the component for the selected department
+    // eslint-disable-next-line security/detect-object-injection
     const ViewComponent = departmentViewMap[selectedDepartment];
 
     if (!ViewComponent) {
@@ -244,15 +260,11 @@ const RelationalDashboardLayout = ({ userPermissions = {} }: { userPermissions?:
           {/* Breadcrumb Navigation */}
           {selectedDepartment && (
             <BreadcrumbNav>
-              <span className="active">
-                {selectedDepartment}
-              </span>
+              <span className="active">{selectedDepartment}</span>
               {selectedService && (
                 <>
                   <span className="separator">/</span>
-                  <span className="active">
-                    {selectedService}
-                  </span>
+                  <span className="active">{selectedService}</span>
                 </>
               )}
             </BreadcrumbNav>

@@ -1,11 +1,11 @@
 /**
  * DynamicContentRouter Component
- * 
+ *
  * Routes feature IDs to appropriate components
  * Based on sidebar selection (departments or AI assistants)
  */
 
-import React, { useMemo } from 'react';
+import React from 'react';
 import styled from 'styled-components';
 
 // Import all feature components
@@ -176,41 +176,61 @@ const featureComponentMap = {
 /**
  * DynamicContentRouter Component
  * Routes to the appropriate feature based on featureId
- * 
+ *
  * @component
  * @param {string} featureId - ID of the feature to display
  * @param {Object} context - Additional context data for the feature
  * @returns {React.ReactElement}
  */
-const DynamicContentRouter = ({ featureId = 'dashboard', context = {} }) => {
-  // Get the component for this feature
-  const Component = useMemo(() => {
-    if (!featureId) {
-      return () => (
-        <PlaceholderContent>
-          <div>
-            <PlaceholderTitle>🏢 Welcome to White Caves</PlaceholderTitle>
-            <PlaceholderText>Select a department or AI assistant from the sidebars to get started</PlaceholderText>
-          </div>
-        </PlaceholderContent>
-      );
-    }
+const WelcomePlaceholder: React.FC = () => (
+  <PlaceholderContent>
+    <div>
+      <PlaceholderTitle>🏢 Welcome to White Caves</PlaceholderTitle>
+      <PlaceholderText>
+        Select a department or AI assistant from the sidebars to get started
+      </PlaceholderText>
+    </div>
+  </PlaceholderContent>
+);
+WelcomePlaceholder.displayName = 'WelcomePlaceholder';
 
-    const componentFactory = featureComponentMap[featureId];
-    
-    if (!componentFactory) {
-      return () => (
-        <PlaceholderContent>
-          <div>
-            <PlaceholderTitle>🔍 Feature Not Found</PlaceholderTitle>
-            <PlaceholderText>The feature "{featureId}" hasn't been implemented yet.</PlaceholderText>
-          </div>
-        </PlaceholderContent>
-      );
-    }
+const NotFoundPlaceholder: React.FC<{ featureId: string }> = ({ featureId }) => (
+  <PlaceholderContent>
+    <div>
+      <PlaceholderTitle>🔍 Feature Not Found</PlaceholderTitle>
+      <PlaceholderText>
+        The feature &quot;{featureId}&quot; hasn&apos;t been implemented yet.
+      </PlaceholderText>
+    </div>
+  </PlaceholderContent>
+);
+NotFoundPlaceholder.displayName = 'NotFoundPlaceholder';
 
-    return componentFactory;
-  }, [featureId]);
+const DynamicContentRouter = ({
+  featureId = 'dashboard',
+  context = {},
+}: {
+  featureId?: string;
+  context?: Record<string, unknown>;
+}) => {
+  if (!featureId) {
+    return (
+      <ContentContainer>
+        <WelcomePlaceholder />
+      </ContentContainer>
+    );
+  }
+
+  // eslint-disable-next-line security/detect-object-injection
+  const Component = featureComponentMap[featureId];
+
+  if (!Component) {
+    return (
+      <ContentContainer>
+        <NotFoundPlaceholder featureId={featureId} />
+      </ContentContainer>
+    );
+  }
 
   return (
     <ContentContainer>

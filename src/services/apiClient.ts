@@ -3,14 +3,8 @@
  * Handles HTTP requests with interceptors, authentication, retries, and error handling
  */
 
-import axios, { AxiosInstance, AxiosError, AxiosResponse, AxiosConfig } from 'axios';
-import {
-  API_CONFIG,
-  API_HEADERS,
-  HTTP_STATUS,
-  API_ERRORS,
-  ApiResponse,
-} from '../config/apiConfig';
+import axios, { AxiosInstance, AxiosError, AxiosResponse, InternalAxiosRequestConfig } from 'axios';
+import { API_CONFIG, API_HEADERS, HTTP_STATUS, API_ERRORS, ApiResponse } from '../config/apiConfig';
 
 /**
  * API Client Class
@@ -39,21 +33,21 @@ class APIClient {
   private setupInterceptors(): void {
     // Request interceptor
     this.client.interceptors.request.use(
-      (config) => this.onRequest(config),
-      (error) => this.onError(error)
+      config => this.onRequest(config),
+      error => this.onError(error)
     );
 
     // Response interceptor
     this.client.interceptors.response.use(
-      (response) => this.onResponse(response),
-      (error) => this.onError(error)
+      response => this.onResponse(response),
+      error => this.onError(error)
     );
   }
 
   /**
    * Request interceptor - Add auth token and tracking info
    */
-  private onRequest(config: any) {
+  private onRequest(config: InternalAxiosRequestConfig) {
     // Add authorization token if available
     const token = this.getAuthToken();
     if (token) {
@@ -67,9 +61,9 @@ class APIClient {
 
     // Log request if debug mode enabled
     if (API_CONFIG.FEATURES.logRequests) {
-      console.log(`[API ${requestId}] ${config.method?.toUpperCase()} ${config.url}`);
+      console.warn(`[API ${requestId}] ${config.method?.toUpperCase()} ${config.url}`);
       if (config.data) {
-        console.log(`[API ${requestId}] Body:`, config.data);
+        console.warn(`[API ${requestId}] Body:`, config.data);
       }
     }
 
@@ -83,9 +77,7 @@ class APIClient {
     const requestId = response.config.headers['X-Request-ID'];
 
     if (API_CONFIG.FEATURES.logRequests) {
-      console.log(
-        `[API ${requestId}] Response: ${response.status} ${response.statusText}`
-      );
+      console.warn(`[API ${requestId}] Response: ${response.status} ${response.statusText}`);
     }
 
     // Clear retry count on success
@@ -99,8 +91,8 @@ class APIClient {
   /**
    * Error interceptor - Handle all types of errors
    */
-  private async onError(error: AxiosError<any>): Promise<any> {
-    const config = error.config as any;
+  private async onError(error: AxiosError): Promise<AxiosResponse> {
+    const config = error.config as InternalAxiosRequestConfig;
     const requestId = config?.headers?.['X-Request-ID'] || 'UNKNOWN';
 
     console.error(`[API ${requestId}] Error:`, error.message);
@@ -125,9 +117,7 @@ class APIClient {
     // Handle 4xx client errors (except handled ones above)
     if (error.response && error.response.status >= 400 && error.response.status < 500) {
       const errorMsg =
-        error.response.data?.message ||
-        error.response.data?.error ||
-        API_ERRORS.UNKNOWN_ERROR;
+        error.response.data?.message || error.response.data?.error || API_ERRORS.UNKNOWN_ERROR;
       return Promise.reject(this.createErrorResponse(errorMsg));
     }
 
@@ -147,20 +137,18 @@ class APIClient {
   /**
    * Handle 401 Unauthorized - Try to refresh token
    */
-  private async handleUnauthorized(error: AxiosError): Promise<any> {
+  private async handleUnauthorized(error: AxiosError): Promise<AxiosResponse> {
     try {
       const refreshToken = this.getRefreshToken();
       if (refreshToken) {
         if (API_CONFIG.FEATURES.logRequests) {
-          console.log('[API] Attempting to refresh authentication token...');
+          console.warn('[API] Attempting to refresh authentication token...');
         }
 
         // Attempt token refresh
-        const response = await this.client.post(
-          '/auth/refresh',
-          { refreshToken },
-          { skipInterceptors: true } as any
-        );
+        const response = await this.client.post('/auth/refresh', { refreshToken }, {
+          skipInterceptors: true,
+        } as Record<string, unknown>);
 
         if (response.data.token) {
           this.setAuthToken(response.data.token);
@@ -169,11 +157,11 @@ class APIClient {
           }
 
           if (API_CONFIG.FEATURES.logRequests) {
-            console.log('[API] Token refreshed successfully, retrying original request');
+            console.warn('[API] Token refreshed successfully, retrying original request');
           }
 
           // Retry original request with new token
-          const originalConfig = error.config as any;
+          const originalConfig = error.config as InternalAxiosRequestConfig;
           originalConfig.headers.Authorization = `Bearer ${response.data.token}`;
           return this.client(originalConfig);
         }
@@ -192,8 +180,8 @@ class APIClient {
   /**
    * Handle server errors - Retry with exponential backoff
    */
-  private async handleServerError(error: AxiosError): Promise<any> {
-    const config = error.config as any;
+  private async handleServerError(error: AxiosError): Promise<AxiosResponse> {
+    const config = error.config as InternalAxiosRequestConfig;
     const key = `${config.method}-${config.url}`;
     const attempts = (this.retryCount.get(key) || 0) + 1;
 
@@ -202,36 +190,30 @@ class APIClient {
 
       // Calculate backoff delay using exponential backoff
       const delay =
-        API_CONFIG.RETRY.delayMs *
-        Math.pow(API_CONFIG.RETRY.backoffMultiplier, attempts - 1);
+        API_CONFIG.RETRY.delayMs * Math.pow(API_CONFIG.RETRY.backoffMultiplier, attempts - 1);
 
       if (API_CONFIG.FEATURES.logRequests) {
-        console.log(
+        console.warn(
           `[API] Server error (${error.response?.status}) - Retrying (attempt ${attempts}/${API_CONFIG.RETRY.maxAttempts}) after ${delay}ms`
         );
       }
 
       // Wait before retrying
-      await new Promise((resolve) => setTimeout(resolve, delay));
+      await new Promise(resolve => setTimeout(resolve, delay));
       return this.client(config);
     }
 
-    console.error(
-      `[API] Server error - Max retries exceeded (${attempts} attempts)`
-    );
+    console.error(`[API] Server error - Max retries exceeded (${attempts} attempts)`);
     return Promise.reject(
-      this.createErrorResponse(
-        API_ERRORS.SERVER_ERROR,
-        error.response?.status
-      )
+      this.createErrorResponse(API_ERRORS.SERVER_ERROR, error.response?.status)
     );
   }
 
   /**
    * Handle network errors - Retry with exponential backoff
    */
-  private async handleNetworkError(error: AxiosError): Promise<any> {
-    const config = error.config as any;
+  private async handleNetworkError(error: AxiosError): Promise<AxiosResponse> {
+    const config = error.config as InternalAxiosRequestConfig;
     const key = `${config.method}-${config.url}`;
     const attempts = (this.retryCount.get(key) || 0) + 1;
 
@@ -239,16 +221,15 @@ class APIClient {
       this.retryCount.set(key, attempts);
 
       const delay =
-        API_CONFIG.RETRY.delayMs *
-        Math.pow(API_CONFIG.RETRY.backoffMultiplier, attempts - 1);
+        API_CONFIG.RETRY.delayMs * Math.pow(API_CONFIG.RETRY.backoffMultiplier, attempts - 1);
 
       if (API_CONFIG.FEATURES.logRequests) {
-        console.log(
+        console.warn(
           `[API] Network error - Retrying (attempt ${attempts}/${API_CONFIG.RETRY.maxAttempts}) after ${delay}ms`
         );
       }
 
-      await new Promise((resolve) => setTimeout(resolve, delay));
+      await new Promise(resolve => setTimeout(resolve, delay));
       return this.client(config);
     }
 
@@ -259,10 +240,7 @@ class APIClient {
   /**
    * Public GET method
    */
-  public async get<T = any>(
-    url: string,
-    config?: any
-  ): Promise<T> {
+  public async get<T = unknown>(url: string, config?: Record<string, unknown>): Promise<T> {
     const response = await this.client.get<T>(url, config);
     return response.data;
   }
@@ -270,10 +248,10 @@ class APIClient {
   /**
    * Public POST method
    */
-  public async post<T = any>(
+  public async post<T = unknown>(
     url: string,
-    data?: any,
-    config?: any
+    data?: unknown,
+    config?: Record<string, unknown>
   ): Promise<T> {
     const response = await this.client.post<T>(url, data, config);
     return response.data;
@@ -282,10 +260,10 @@ class APIClient {
   /**
    * Public PUT method
    */
-  public async put<T = any>(
+  public async put<T = unknown>(
     url: string,
-    data?: any,
-    config?: any
+    data?: unknown,
+    config?: Record<string, unknown>
   ): Promise<T> {
     const response = await this.client.put<T>(url, data, config);
     return response.data;
@@ -294,10 +272,10 @@ class APIClient {
   /**
    * Public PATCH method
    */
-  public async patch<T = any>(
+  public async patch<T = unknown>(
     url: string,
-    data?: any,
-    config?: any
+    data?: unknown,
+    config?: Record<string, unknown>
   ): Promise<T> {
     const response = await this.client.patch<T>(url, data, config);
     return response.data;
@@ -306,10 +284,7 @@ class APIClient {
   /**
    * Public DELETE method
    */
-  public async delete<T = any>(
-    url: string,
-    config?: any
-  ): Promise<T> {
+  public async delete<T = unknown>(url: string, config?: Record<string, unknown>): Promise<T> {
     const response = await this.client.delete<T>(url, config);
     return response.data;
   }
@@ -317,7 +292,7 @@ class APIClient {
   /**
    * Get file download (returns Blob)
    */
-  public async download(url: string, config?: any): Promise<Blob> {
+  public async download(url: string, config?: Record<string, unknown>): Promise<Blob> {
     const response = await this.client.get(url, {
       ...config,
       responseType: 'blob',

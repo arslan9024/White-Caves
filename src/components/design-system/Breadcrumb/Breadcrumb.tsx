@@ -36,18 +36,19 @@ const BreadcrumbList = styled.ol`
   padding: 0;
 `;
 
-const BreadcrumbItem = styled.li`
+const BreadcrumbListItem = styled.li`
   display: flex;
   align-items: center;
   gap: ${theme.spacing.xs};
 `;
 
 const BreadcrumbLink = styled.a<{ $active?: boolean }>`
-  color: ${(props) => (props.$active ? theme.colors.text.primary : theme.colors.primary)};
+  color: ${props => (props.$active ? theme.colors.text.primary : theme.colors.primary)};
   text-decoration: none;
   cursor: pointer;
   transition: ${theme.transitions.all};
-  font-weight: ${(props) => (props.$active ? theme.typography.weights.semibold : theme.typography.weights.regular)};
+  font-weight: ${props =>
+    props.$active ? theme.typography.weights.semibold : theme.typography.weights.regular};
 
   &:hover:not([aria-current='page']) {
     color: ${theme.colors.primaryDark};
@@ -59,17 +60,21 @@ const Separator = styled.span`
   color: ${theme.colors.text.tertiary};
 `;
 
-export const Breadcrumb: React.FC<BreadcrumbProps> = ({ items, separator = '/', className = '' }) => {
+export const Breadcrumb: React.FC<BreadcrumbProps> = ({
+  items,
+  separator = '/',
+  className = '',
+}) => {
   return (
     <BreadcrumbContainer className={className} aria-label="Breadcrumb">
       <BreadcrumbList>
         {items.map((item, index) => (
           <React.Fragment key={item.label}>
-            <BreadcrumbItem>
+            <BreadcrumbListItem>
               <BreadcrumbLink
                 $active={item.active}
                 href={item.href}
-                onClick={(e) => {
+                onClick={e => {
                   if (!item.href) e.preventDefault();
                   item.onClick?.();
                 }}
@@ -77,7 +82,7 @@ export const Breadcrumb: React.FC<BreadcrumbProps> = ({ items, separator = '/', 
               >
                 {item.label}
               </BreadcrumbLink>
-            </BreadcrumbItem>
+            </BreadcrumbListItem>
             {index < items.length - 1 && <Separator>{separator}</Separator>}
           </React.Fragment>
         ))}

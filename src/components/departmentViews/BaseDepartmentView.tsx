@@ -1,5 +1,4 @@
 import React, { useEffect, useState, ReactNode } from 'react';
-import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { DashboardShell, DataCardGrid } from '../shared/dashboard';
 import { LoadingState } from '../shared/LoadingState';
@@ -24,11 +23,13 @@ interface BaseDepartmentViewProps {
   config: DepartmentViewConfig;
   serviceName?: string;
   subitemId?: string;
-  departmentData?: any; // Data from Redux
+  departmentData?: Record<string, unknown>; // Data from Redux
   children?: ReactNode;
-  kpiRenderer?: (data: any) => ReactNode;
-  contentRenderer?: (data: any) => ReactNode;
-  onDataLoaded?: (data: any) => void;
+  kpiRenderer?: (data: Record<string, unknown>) => ReactNode;
+  contentRenderer?: (data: Record<string, unknown>) => ReactNode;
+  onDataLoaded?: (data: Record<string, unknown>) => void;
+  isLoading?: boolean;
+  error?: string | null;
 }
 
 const ViewContainer = styled.div`
@@ -60,11 +61,13 @@ export const BaseDepartmentView: React.FC<BaseDepartmentViewProps> = ({
   kpiRenderer,
   contentRenderer,
   onDataLoaded,
+  isLoading,
+  error: externalError,
 }) => {
   // Use departmentData from Redux (passed as prop)
-  const [loading, setLoading] = useState(!departmentData);
-  const [data, setData] = useState<any>(departmentData);
-  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(isLoading ?? !departmentData);
+  const [data, setData] = useState<Record<string, unknown> | undefined>(departmentData);
+  const [error, setError] = useState<string | null>(externalError ?? null);
 
   // Update local state when departmentData changes
   useEffect(() => {
@@ -75,12 +78,24 @@ export const BaseDepartmentView: React.FC<BaseDepartmentViewProps> = ({
     }
   }, [departmentData, onDataLoaded]);
 
+  useEffect(() => {
+    if (typeof isLoading === 'boolean') {
+      setLoading(isLoading);
+    }
+  }, [isLoading]);
+
+  useEffect(() => {
+    if (externalError !== undefined) {
+      setError(externalError);
+    }
+  }, [externalError]);
+
   // Determine title and subtitle
   const title = subitemId
     ? `${config.departmentName} - Details`
     : serviceName
         .split('-')
-        .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+        .map(word => word.charAt(0).toUpperCase() + word.slice(1))
         .join(' ');
 
   return (

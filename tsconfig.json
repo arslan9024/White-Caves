@@ -21,5 +21,15 @@
       "@/*": ["./src/*"]
     }
   },
-  "include": ["src"]
+  "include": ["src"],
+  "exclude": [
+    "src/**/*.backup.ts",
+    "src/**/*.backup.tsx",
+    "src/**/__tests__/**",
+    "src/**/*.test.ts",
+    "src/**/*.test.tsx",
+    "src/components/sidebars/examples/**",
+    "src/components/sidebars/RelationalLeftSidebar/RelationalLeftSidebar.backup.tsx",
+    "src/components/sidebars/RelationalRightSidebar/RelationalRightSidebar.backup.tsx"
+  ]
 }

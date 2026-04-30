@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 import { theme } from '../../../styles/theme';
 
-const { colors, shadows, transitions, radius, typography } = theme;
+const { colors, transitions, radius, typography } = theme;
 
 /* ============================================================================
  * JobComponents Styled Components
@@ -32,7 +32,7 @@ export const NotificationToast = styled.div<{ $type?: 'success' | 'error' }>`
   z-index: var(--z-notification, 800);
   animation: slideIn 0.3s ease;
 
-  background: ${(props) => {
+  background: ${props => {
     if (props.$type === 'success') {
       return 'rgba(16, 185, 129, 0.9)';
     }
@@ -177,11 +177,14 @@ export const PlatformChip = styled.button<{ $selected?: boolean; $color?: string
   align-items: center;
   gap: 0.5rem;
   padding: 0.5rem 1rem;
-  background: ${(props) =>
-    props.$selected ? `color-mix(in srgb, ${props.$color || '#f59e0b'} 15%, transparent)` : 'rgba(255, 255, 255, 0.02)'};
-  border: 1px solid ${(props) => (props.$selected ? props.$color || '#f59e0b' : 'rgba(255, 255, 255, 0.1)')};
+  background: ${props =>
+    props.$selected
+      ? `color-mix(in srgb, ${props.$color || '#f59e0b'} 15%, transparent)`
+      : 'rgba(255, 255, 255, 0.02)'};
+  border: 1px solid
+    ${props => (props.$selected ? props.$color || '#f59e0b' : 'rgba(255, 255, 255, 0.1)')};
   border-radius: ${radius.full};
-  color: ${(props) => (props.$selected ? props.$color || '#f59e0b' : '#94a3b8')};
+  color: ${props => (props.$selected ? props.$color || '#f59e0b' : '#94a3b8')};
   font-size: 0.8125rem;
   cursor: pointer;
   transition: ${transitions.hover};
@@ -250,7 +253,7 @@ export const FormField = styled.div<{ $span2?: boolean; $hasError?: boolean }>`
   display: flex;
   flex-direction: column;
   gap: 0.375rem;
-  grid-column: ${(props) => (props.$span2 ? 'span 2' : 'span 1')};
+  grid-column: ${props => (props.$span2 ? 'span 2' : 'span 1')};
 
   @media (max-width: 768px) {
     grid-column: span 1;
@@ -272,7 +275,7 @@ export const FormField = styled.div<{ $span2?: boolean; $hasError?: boolean }>`
   textarea {
     padding: 0.625rem 0.75rem;
     background: rgba(255, 255, 255, 0.05);
-    border: 1px solid ${(props) => (props.$hasError ? '#ef4444' : 'rgba(255, 255, 255, 0.1)')};
+    border: 1px solid ${props => (props.$hasError ? '#ef4444' : 'rgba(255, 255, 255, 0.1)')};
     border-radius: ${radius.md};
     color: #fff;
     font-size: 0.875rem;
@@ -422,7 +425,7 @@ export const ActionBtn = styled.button<{ $variant?: 'primary' | 'secondary' }>`
   border: none;
   font-family: inherit;
 
-  ${(props) =>
+  ${props =>
     props.$variant === 'primary'
       ? `
     background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);

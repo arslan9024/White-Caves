@@ -1,4 +1,4 @@
-// src/components/shared/sidebars/BaseSidebar.tsx
+﻿// src/components/shared/sidebars/BaseSidebar.tsx
 import React, { useState, useCallback, useEffect } from 'react';
 import {
   SidebarContainer,
@@ -12,7 +12,7 @@ import {
 } from './styled/SidebarStyledComponents';
 import { useSidebarState } from '../../../hooks/useSidebarState';
 
-interface BaseSidebarProps {
+export interface BaseSidebarProps {
   name: string;
   title: string;
   icon?: React.ReactNode;
@@ -48,14 +48,8 @@ export const BaseSidebar: React.FC<BaseSidebarProps> = ({
   className,
   testId,
 }) => {
-  const {
-    isCollapsed,
-    searchQuery,
-    setSearch,
-    clearSearch,
-    isMobileOpen,
-    setMobileOpen,
-  } = useSidebarState(name);
+  const { isCollapsed, searchQuery, setSearch, clearSearch, isMobileOpen, setMobileOpen } =
+    useSidebarState(name);
 
   const [localSearchQuery, setLocalSearchQuery] = useState(searchQuery);
 
@@ -75,7 +69,7 @@ export const BaseSidebar: React.FC<BaseSidebarProps> = ({
     [setSearch, onSearch]
   );
 
-  const handleSearchClear = useCallback(() => {
+  const _handleSearchClear = useCallback(() => {
     setLocalSearchQuery('');
     clearSearch();
     onSearch?.('');

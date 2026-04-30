@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react';
-import { MediaFile } from '../../../types/phase6.types';
+import { MediaFile } from '../../types/phase6.types';
 
 interface FilterOptions {
   type?: 'image' | 'document' | 'audio' | 'video' | 'all';
@@ -21,15 +21,13 @@ export const useMediaGallery = (initialFiles: MediaFile[] = []) => {
 
     // Filter by type
     if (filter.type && filter.type !== 'all') {
-      result = result.filter((f) => f.type === filter.type);
+      result = result.filter(f => f.type === filter.type);
     }
 
     // Filter by search term
     if (filter.searchTerm) {
       const term = filter.searchTerm.toLowerCase();
-      result = result.filter((f) =>
-        f.name.toLowerCase().includes(term)
-      );
+      result = result.filter(f => f.name.toLowerCase().includes(term));
     }
 
     // Sort
@@ -42,22 +40,19 @@ export const useMediaGallery = (initialFiles: MediaFile[] = []) => {
         break;
       case 'date':
       default:
-        result.sort(
-          (a, b) =>
-            new Date(b.uploadedAt).getTime() - new Date(a.uploadedAt).getTime()
-        );
+        result.sort((a, b) => new Date(b.uploadedAt).getTime() - new Date(a.uploadedAt).getTime());
     }
 
     return result;
   }, [files, filter]);
 
   const addFile = useCallback((file: MediaFile) => {
-    setFiles((prev) => [file, ...prev]);
+    setFiles(prev => [file, ...prev]);
   }, []);
 
   const removeFile = useCallback((fileId: string) => {
-    setFiles((prev) => prev.filter((f) => f.id !== fileId));
-    setSelectedFiles((prev) => {
+    setFiles(prev => prev.filter(f => f.id !== fileId));
+    setSelectedFiles(prev => {
       const next = new Set(prev);
       next.delete(fileId);
       return next;
@@ -65,7 +60,7 @@ export const useMediaGallery = (initialFiles: MediaFile[] = []) => {
   }, []);
 
   const toggleFileSelection = useCallback((fileId: string) => {
-    setSelectedFiles((prev) => {
+    setSelectedFiles(prev => {
       const next = new Set(prev);
       if (next.has(fileId)) {
         next.delete(fileId);
@@ -78,7 +73,7 @@ export const useMediaGallery = (initialFiles: MediaFile[] = []) => {
 
   const selectAllVisibleFiles = useCallback(() => {
     const visible = filteredAndSortedFiles();
-    const allIds = new Set(visible.map((f) => f.id));
+    const allIds = new Set(visible.map(f => f.id));
     setSelectedFiles(allIds);
   }, [filteredAndSortedFiles]);
 
@@ -87,14 +82,12 @@ export const useMediaGallery = (initialFiles: MediaFile[] = []) => {
   }, []);
 
   const deleteSelectedFiles = useCallback(() => {
-    setFiles((prev) =>
-      prev.filter((f) => !selectedFiles.has(f.id))
-    );
+    setFiles(prev => prev.filter(f => !selectedFiles.has(f.id)));
     setSelectedFiles(new Set());
   }, [selectedFiles]);
 
   const updateFilter = useCallback((updates: Partial<FilterOptions>) => {
-    setFilter((prev) => ({ ...prev, ...updates }));
+    setFilter(prev => ({ ...prev, ...updates }));
   }, []);
 
   const getTotalSize = useCallback((): number => {
@@ -110,7 +103,7 @@ export const useMediaGallery = (initialFiles: MediaFile[] = []) => {
       other: 0,
     };
 
-    files.forEach((f) => {
+    files.forEach(f => {
       counts[f.type]++;
     });
 

@@ -1,6 +1,6 @@
-/**
+﻿/**
  * Analytics Component
- * 
+ *
  * Dashboard displaying WhatsApp messaging analytics
  * Shows message counts, response rates, and conversation metrics
  */
@@ -40,7 +40,7 @@ const DateInput = styled.input`
   border: 1px solid #ddd;
   border-radius: 8px;
   font-size: 14px;
-  
+
   &:focus {
     outline: none;
     border-color: #25d366;
@@ -117,8 +117,8 @@ const CardSubtext = styled.div`
   color: #999;
 `;
 
-const Trend = styled.span<{ positive?: boolean }>`
-  color: ${props => (props.positive ? '#25d366' : '#f44336')};
+const Trend = styled.span<{ $positive?: boolean }>`
+  color: ${props => (props.$positive ? '#25d366' : '#f44336')};
   font-weight: 600;
 `;
 
@@ -220,8 +220,12 @@ const LoadingSpinner = styled.div`
   animation: spin 1s linear infinite;
 
   @keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
+    0% {
+      transform: rotate(0deg);
+    }
+    100% {
+      transform: rotate(360deg);
+    }
   }
 `;
 
@@ -252,9 +256,7 @@ export const Analytics: React.FC<AnalyticsProps> = ({ accountId }) => {
   const [startDate, setStartDate] = useState<string>(
     dateRange.startDate.toISOString().split('T')[0]
   );
-  const [endDate, setEndDate] = useState<string>(
-    dateRange.endDate.toISOString().split('T')[0]
-  );
+  const [endDate, setEndDate] = useState<string>(dateRange.endDate.toISOString().split('T')[0]);
 
   useEffect(() => {
     if (accountId) {
@@ -306,20 +308,12 @@ export const Analytics: React.FC<AnalyticsProps> = ({ accountId }) => {
       <FilterBar>
         <DatePickerGroup>
           <Label>From:</Label>
-          <DateInput
-            type="date"
-            value={startDate}
-            onChange={(e) => setStartDate(e.target.value)}
-          />
+          <DateInput type="date" value={startDate} onChange={e => setStartDate(e.target.value)} />
         </DatePickerGroup>
 
         <DatePickerGroup>
           <Label>To:</Label>
-          <DateInput
-            type="date"
-            value={endDate}
-            onChange={(e) => setEndDate(e.target.value)}
-          />
+          <DateInput type="date" value={endDate} onChange={e => setEndDate(e.target.value)} />
         </DatePickerGroup>
 
         <Button variant="primary" onClick={handleDateRangeChange}>
@@ -335,63 +329,107 @@ export const Analytics: React.FC<AnalyticsProps> = ({ accountId }) => {
         </Button>
       </FilterBar>
 
-      {analytics && (
-        <>
-          <Grid>
-            <Card>
-              <CardTitle>Total Messages</CardTitle>
-              <CardValue>{analytics.totalMessages || 0}</CardValue>
-              <CardSubtext>
-                <Trend positive>{(Math.random() * 20).toFixed(1)}%</Trend> increase
-              </CardSubtext>
-            </Card>
+      {analytics &&
+        (() => {
+          const a = analytics as {
+            totalMessages?: number;
+            activeConversations?: number;
+            avgResponseTime?: string | number;
+            deliveryRate?: number;
+            messagesByDate?: Array<{ date: string; count: number }>;
+            topConversations?: Array<{
+              recipientName?: string;
+              recipientPhone?: string;
+              messageCount?: number;
+            }>;
+          };
+          return (
+            <>
+              <Grid>
+                <Card>
+                  <CardTitle>Total Messages</CardTitle>
+                  <CardValue>{a.totalMessages || 0}</CardValue>
+                  <CardSubtext>
+                    <Trend $positive={true}>12.5%</Trend> increase
+                  </CardSubtext>
+                </Card>
 
-            <Card>
-              <CardTitle>Active Conversations</CardTitle>
-              <CardValue>{analytics.activeConversations || 0}</CardValue>
-              <CardSubtext>
-                <Trend positive>{(Math.random() * 15).toFixed(1)}%</Trend> increase
-              </CardSubtext>
-            </Card>
+                <Card>
+                  <CardTitle>Active Conversations</CardTitle>
+                  <CardValue>{a.activeConversations || 0}</CardValue>
+                  <CardSubtext>
+                    <Trend $positive={true}>8.3%</Trend> increase
+                  </CardSubtext>
+                </Card>
 
-            <Card>
-              <CardTitle>Avg Response Time</CardTitle>
-              <CardValue>{analytics.avgResponseTime || '--'}</CardValue>
-              <CardSubtext>Minutes per message</CardSubtext>
-            </Card>
+                <Card>
+                  <CardTitle>Avg Response Time</CardTitle>
+                  <CardValue>{a.avgResponseTime || '--'}</CardValue>
+                  <CardSubtext>Minutes per message</CardSubtext>
+                </Card>
 
-            <Card>
-              <CardTitle>Message Delivery Rate</CardTitle>
-              <CardValue>{analytics.deliveryRate || 0}%</CardValue>
-              <CardSubtext>Successfully delivered</CardSubtext>
-            </Card>
-          </Grid>
+                <Card>
+                  <CardTitle>Message Delivery Rate</CardTitle>
+                  <CardValue>{a.deliveryRate || 0}%</CardValue>
+                  <CardSubtext>Successfully delivered</CardSubtext>
+                </Card>
+              </Grid>
 
-          <ChartContainer>
-            <ChartTitle>Messages Over Time</ChartTitle>
-            <SimpleChart>
-              {[45, 72, 38, 95, 62, 88, 75].map((value, index) => (
-                <BarGroup key={index}>
-                  <Bar height={value} color="#25d366" />
-                  <BarLabel>{index === 0 ? 'Mon' : index === 1 ? 'Tue' : index === 2 ? 'Wed' : index === 3 ? 'Thu' : index === 4 ? 'Fri' : index === 5 ? 'Sat' : 'Sun'}</BarLabel>
-                </BarGroup>
-              ))}
-            </SimpleChart>
-          </ChartContainer>
+              <ChartContainer>
+                <ChartTitle>Messages Over Time</ChartTitle>
+                <SimpleChart>
+                  {[45, 72, 38, 95, 62, 88, 75].map((value, index) => (
+                    <BarGroup key={index}>
+                      <Bar height={value} color="#25d366" />
+                      <BarLabel>
+                        {index === 0
+                          ? 'Mon'
+                          : index === 1
+                            ? 'Tue'
+                            : index === 2
+                              ? 'Wed'
+                              : index === 3
+                                ? 'Thu'
+                                : index === 4
+                                  ? 'Fri'
+                                  : index === 5
+                                    ? 'Sat'
+                                    : 'Sun'}
+                      </BarLabel>
+                    </BarGroup>
+                  ))}
+                </SimpleChart>
+              </ChartContainer>
 
-          {analytics.topConversations && analytics.topConversations.length > 0 && (
-            <TopConversations>
-              <ChartTitle>Top Conversations</ChartTitle>
-              {analytics.topConversations.map((conv, index) => (
-                <ConversationRow key={index}>
-                  <ConversationName>{conv.recipientName || conv.recipientNumber}</ConversationName>
-                  <ConversationCount>{conv.messageCount} messages</ConversationCount>
-                </ConversationRow>
-              ))}
-            </TopConversations>
-          )}
-        </>
-      )}
+              {Array.isArray(a.topConversations) &&
+                (
+                  a.topConversations as Array<{
+                    recipientName?: string;
+                    recipientPhone?: string;
+                    messageCount?: number;
+                  }>
+                ).length > 0 && (
+                  <TopConversations>
+                    <ChartTitle>Top Conversations</ChartTitle>
+                    {(
+                      a.topConversations as Array<{
+                        recipientName?: string;
+                        recipientPhone?: string;
+                        messageCount?: number;
+                      }>
+                    ).map((conv, index) => (
+                      <ConversationRow key={index}>
+                        <ConversationName>
+                          {conv.recipientName || conv.recipientPhone}
+                        </ConversationName>
+                        <ConversationCount>{conv.messageCount} messages</ConversationCount>
+                      </ConversationRow>
+                    ))}
+                  </TopConversations>
+                )}
+            </>
+          );
+        })()}
     </Container>
   );
 };

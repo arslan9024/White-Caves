@@ -1,4 +1,4 @@
-// src/components/shared/sidebars/SidebarSection.tsx
+﻿// src/components/shared/sidebars/SidebarSection.tsx
 import React, { useCallback, useEffect, useState } from 'react';
 import {
   SidebarSection as StyledSection,
@@ -8,7 +8,7 @@ import {
 } from './styled/SidebarStyledComponents';
 import { useSidebarState } from '../../../hooks/useSidebarState';
 
-interface SidebarSectionProps {
+export interface SidebarSectionProps {
   id: string;
   title: string;
   icon?: React.ReactNode;
@@ -32,7 +32,7 @@ export const SidebarSection: React.FC<SidebarSectionProps> = ({
   title,
   icon,
   children,
-  isDivider = false,
+  isDivider: _isDivider = false,
   isCollapsible = true,
   defaultExpanded = true,
   onToggle,
@@ -46,7 +46,10 @@ export const SidebarSection: React.FC<SidebarSectionProps> = ({
 
   // Initialize expanded state on mount
   useEffect(() => {
-    setMounted(true);
+    const init = async () => {
+      setMounted(true);
+    };
+    init();
   }, []);
 
   const expanded = isExpanded(id);

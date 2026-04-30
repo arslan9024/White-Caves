@@ -11,26 +11,24 @@ import { DataCard } from '../shared/dashboard';
 interface AnalyticsViewProps {
   serviceName?: string;
   subitemId?: string;
-  departmentData?: any;
+  departmentData?: Record<string, unknown>;
 }
 
-const AnalyticsView: React.FC<AnalyticsViewProps> = ({ serviceName = 'business-intelligence', subitemId, departmentData }) => {
+const AnalyticsView: React.FC<AnalyticsViewProps> = ({
+  serviceName = 'business-intelligence',
+  subitemId,
+  departmentData,
+}) => {
   const config = getDepartmentConfig('ANALYTICS')!;
 
-  const renderContent = (data: any) => {
+  const renderContent = (data: Record<string, unknown>) => {
     if (!subitemId && serviceName === 'business-intelligence') {
       return (
         <>
-          <DataCard 
-            title="Key Metrics"
-            subtitle="Business performance metrics"
-          >
+          <DataCard title="Key Metrics" subtitle="Business performance metrics">
             Metrics: {JSON.stringify(data?.metrics?.length || 0)} items
           </DataCard>
-          <DataCard 
-            title="Available Reports"
-            subtitle="Scheduled and ad-hoc reports"
-          >
+          <DataCard title="Available Reports" subtitle="Scheduled and ad-hoc reports">
             Reports: {JSON.stringify(data?.reports?.length || 0)} items
           </DataCard>
         </>

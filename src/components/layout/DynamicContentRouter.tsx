@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import styled from 'styled-components';
 import {
@@ -7,7 +7,6 @@ import {
   selectSelectedSubitem,
   selectMainContentLoading,
   selectMainContentError,
-  setMainContentLoading,
   setMainContentError,
 } from '../../../redux/slices/relationalSidebarSlice';
 import {
@@ -258,15 +257,11 @@ const DynamicContentRouter = ({ userPermissions = [] }) => {
 
   // Get metadata
   const deptInfo = selectedDept ? getDepartmentById(selectedDept) : null;
-  const serviceInfo = selectedDept && selectedService
-    ? getServiceById(selectedDept, selectedService)
-    : null;
-  const subitems = selectedDept && selectedService
-    ? getSubitemsByService(selectedDept, selectedService)
-    : [];
-  const selectedSubitemInfo = selectedSubitem
-    ? subitems.find((s) => s.id === selectedSubitem)
-    : null;
+  const serviceInfo =
+    selectedDept && selectedService ? getServiceById(selectedDept, selectedService) : null;
+  const subitems =
+    selectedDept && selectedService ? getSubitemsByService(selectedDept, selectedService) : [];
+  const selectedSubitemInfo = selectedSubitem ? subitems.find(s => s.id === selectedSubitem) : null;
 
   // Determine which component to render
   const getComponentToRender = () => {
@@ -292,11 +287,7 @@ const DynamicContentRouter = ({ userPermissions = [] }) => {
     }
 
     // Check permissions
-    if (
-      !serviceInfo?.permissions.some((perm) =>
-        userPermissions.includes(perm)
-      )
-    ) {
+    if (!serviceInfo?.permissions.some(perm => userPermissions.includes(perm))) {
       return {
         type: 'access-denied',
         message: 'You do not have permission to access this service',
@@ -305,9 +296,7 @@ const DynamicContentRouter = ({ userPermissions = [] }) => {
 
     if (
       selectedSubitemInfo &&
-      !selectedSubitemInfo.permissions.some((perm) =>
-        userPermissions.includes(perm)
-      )
+      !selectedSubitemInfo.permissions.some(perm => userPermissions.includes(perm))
     ) {
       return {
         type: 'access-denied',
@@ -316,6 +305,7 @@ const DynamicContentRouter = ({ userPermissions = [] }) => {
     }
 
     // Return component info
+    // eslint-disable-next-line security/detect-object-injection
     const componentClass = viewComponentRegistry[selectedDept]?.[selectedService];
 
     return {
@@ -370,12 +360,11 @@ const DynamicContentRouter = ({ userPermissions = [] }) => {
 
           {componentInfo.type === 'view' && (
             <>
-              {componentInfo.componentClass && (
+              {componentInfo.componentClass &&
                 React.createElement(componentInfo.componentClass, {
                   serviceName: selectedService,
                   subitemId: selectedSubitem,
-                })
-              )}
+                })}
             </>
           )}
         </ContentWrapper>
@@ -383,11 +372,5 @@ const DynamicContentRouter = ({ userPermissions = [] }) => {
     </RouterContainer>
   );
 };
-
-// Helper function to get service by ID
-function getServiceById(deptId: string, serviceId: string) {
-  const dept = getDepartmentById(deptId);
-  return dept?.services?.[serviceId] || null;
-}
 
 export default DynamicContentRouter;

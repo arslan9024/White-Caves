@@ -86,7 +86,7 @@ export const FeaturedPost = styled.article`
 export const FeaturedImage = styled.div<{ $bgImage?: string }>`
   width: 45%;
   min-height: 280px;
-  background-image: ${props => props.$bgImage ? `url(${props.$bgImage})` : 'none'};
+  background-image: ${props => (props.$bgImage ? `url(${props.$bgImage})` : 'none')};
   background-size: cover;
   background-position: center;
   position: relative;
@@ -182,31 +182,28 @@ export const BlogFilters = styled.div`
 
 export const FilterBtn = styled.button<{ $isActive?: boolean }>`
   padding: 10px 24px;
-  background: ${props => props.$isActive ? 'var(--primary, #c9a962)' : 'var(--surface-alt, #f5f5f7)'};
+  background: ${props =>
+    props.$isActive ? 'var(--primary, #c9a962)' : 'var(--surface-alt, #f5f5f7)'};
   border: none;
   border-radius: 25px;
-  color: ${props => props.$isActive ? 'white' : 'var(--text-secondary, #6b7280)'};
+  color: ${props => (props.$isActive ? 'white' : 'var(--text-secondary, #6b7280)')};
   font-size: 0.9rem;
   font-weight: ${typography.weights.medium};
   cursor: pointer;
   transition: ${transitions.hover};
 
   @media (prefers-color-scheme: dark) {
-    background: ${props => props.$isActive 
-      ? 'var(--primary, #c9a962)' 
-      : 'rgba(255, 255, 255, 0.05)'};
-    color: ${props => props.$isActive ? 'black' : 'rgba(255, 255, 255, 0.7)'};
+    background: ${props =>
+      props.$isActive ? 'var(--primary, #c9a962)' : 'rgba(255, 255, 255, 0.05)'};
+    color: ${props => (props.$isActive ? 'black' : 'rgba(255, 255, 255, 0.7)')};
   }
 
   &:hover {
-    background: ${props => props.$isActive 
-      ? colors.primaryDark 
-      : 'var(--surface-hover, #e5e5e7)'};
+    background: ${props =>
+      props.$isActive ? colors.primaryDark : 'var(--surface-hover, #e5e5e7)'};
 
     @media (prefers-color-scheme: dark) {
-      background: ${props => props.$isActive 
-        ? colors.primaryDark 
-        : 'rgba(255, 255, 255, 0.1)'};
+      background: ${props => (props.$isActive ? colors.primaryDark : 'rgba(255, 255, 255, 0.1)')};
     }
   }
 `;
@@ -250,7 +247,7 @@ export const BlogCard = styled.div`
 export const BlogCardImage = styled.div<{ $bgImage?: string }>`
   width: 100%;
   height: 200px;
-  background-image: ${props => props.$bgImage ? `url(${props.$bgImage})` : 'none'};
+  background-image: ${props => (props.$bgImage ? `url(${props.$bgImage})` : 'none')};
   background-size: cover;
   background-position: center;
   position: relative;

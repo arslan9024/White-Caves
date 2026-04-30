@@ -1,6 +1,6 @@
 /**
  * ConversationList Component
- * 
+ *
  * Displays list of active conversations
  * Shows recent messages, unread counts, and contact info
  */
@@ -54,7 +54,7 @@ const SearchInput = styled.input`
 const List = styled.div`
   flex: 1;
   overflow-y: auto;
-  
+
   &::-webkit-scrollbar {
     width: 6px;
   }
@@ -81,7 +81,7 @@ const ConversationItem = styled.div<{ unread?: boolean; selected?: boolean }>`
   gap: 12px;
   align-items: center;
   transition: all 0.2s ease;
-  background: ${props => props.selected ? '#f0f0f0' : 'transparent'};
+  background: ${props => (props.selected ? '#f0f0f0' : 'transparent')};
 
   &:hover {
     background: #f5f5f5;
@@ -108,7 +108,7 @@ const ConversationDetails = styled.div`
 `;
 
 const ContactName = styled.div<{ unread?: boolean }>`
-  font-weight: ${props => props.unread ? '600' : '500'};
+  font-weight: ${props => (props.unread ? '600' : '500')};
   color: #1a1a1a;
   font-size: 14px;
   margin-bottom: 4px;
@@ -119,8 +119,8 @@ const ContactName = styled.div<{ unread?: boolean }>`
 
 const MessagePreview = styled.div<{ unread?: boolean }>`
   font-size: 13px;
-  color: ${props => props.unread ? '#666' : '#999'};
-  font-weight: ${props => props.unread ? '500' : '400'};
+  color: ${props => (props.unread ? '#666' : '#999')};
+  font-weight: ${props => (props.unread ? '500' : '400')};
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -175,8 +175,12 @@ const LoadingSpinner = styled.div`
   animation: spin 1s linear infinite;
 
   @keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
+    0% {
+      transform: rotate(0deg);
+    }
+    100% {
+      transform: rotate(360deg);
+    }
   }
 `;
 
@@ -191,12 +195,8 @@ export const ConversationList: React.FC<ConversationListProps> = ({
   onSelectConversation,
   selectedConversationId,
 }) => {
-  const {
-    conversations,
-    isLoading,
-    loadConversations,
-    searchConversations,
-  } = useWhatsAppConversations();
+  const { conversations, isLoading, loadConversations, searchConversations } =
+    useWhatsAppConversations();
 
   const [searchQuery, setSearchQuery] = useState('');
 
@@ -224,7 +224,11 @@ export const ConversationList: React.FC<ConversationListProps> = ({
     const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
     const yesterday = new Date(today);
     yesterday.setDate(yesterday.getDate() - 1);
-    const messageDay = new Date(messageDate.getFullYear(), messageDate.getMonth(), messageDate.getDate());
+    const messageDay = new Date(
+      messageDate.getFullYear(),
+      messageDate.getMonth(),
+      messageDate.getDate()
+    );
 
     if (messageDay.getTime() === today.getTime()) {
       return messageDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
@@ -240,11 +244,7 @@ export const ConversationList: React.FC<ConversationListProps> = ({
       <Container>
         <Header>
           <Title>Messages</Title>
-          <SearchInput
-            type="text"
-            placeholder="Search conversations..."
-            disabled
-          />
+          <SearchInput type="text" placeholder="Search conversations..." disabled />
         </Header>
         <LoadingContainer>
           <LoadingSpinner />
@@ -275,7 +275,7 @@ export const ConversationList: React.FC<ConversationListProps> = ({
             </div>
           </EmptyState>
         ) : (
-          conversations.map((conversation) => (
+          conversations.map(conversation => (
             <ConversationItem
               key={conversation.conversationId}
               selected={conversation.conversationId === selectedConversationId}
@@ -283,31 +283,31 @@ export const ConversationList: React.FC<ConversationListProps> = ({
               onClick={() =>
                 onSelectConversation(
                   conversation.conversationId,
-                  conversation.recipientNumber || '',
-                  conversation.recipientName || conversation.recipientNumber || 'Unknown'
+                  conversation.recipientPhone || '',
+                  conversation.recipientName || conversation.recipientPhone || 'Unknown'
                 )
               }
             >
-              <Avatar bg={`hsl(${Math.random() * 360}, 70%, 60%)`}>
-                {(conversation.recipientName || conversation.recipientNumber || '?')[0]?.toUpperCase()}
+              <Avatar
+                bg={`hsl(${(conversation.conversationId || '').split('').reduce((h, c) => (h * 31 + c.charCodeAt(0)) & 0xffffff, 0) % 360}, 70%, 60%)`}
+              >
+                {(conversation.recipientName ||
+                  conversation.recipientPhone ||
+                  '?')[0]?.toUpperCase()}
               </Avatar>
 
               <ConversationDetails>
                 <ContactName unread={conversation.unreadCount > 0}>
-                  {conversation.recipientName || conversation.recipientNumber}
+                  {conversation.recipientName || conversation.recipientPhone}
                 </ContactName>
                 <MessagePreview unread={conversation.unreadCount > 0}>
                   {conversation.lastMessage || 'No messages yet'}
                 </MessagePreview>
               </ConversationDetails>
 
-              {conversation.unreadCount > 0 && (
-                <Badge>{conversation.unreadCount}</Badge>
-              )}
+              {conversation.unreadCount > 0 && <Badge>{conversation.unreadCount}</Badge>}
 
-              <Timestamp>
-                {formatTimestamp(conversation.lastMessageTime || new Date())}
-              </Timestamp>
+              <Timestamp>{formatTimestamp(conversation.lastMessageTime || new Date())}</Timestamp>
             </ConversationItem>
           ))
         )}

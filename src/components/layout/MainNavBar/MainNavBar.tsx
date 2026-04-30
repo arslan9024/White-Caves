@@ -5,8 +5,6 @@ import { useNavigate } from 'react-router-dom';
 import {
   Search,
   Bell,
-  Moon,
-  Sun,
   ChevronDown,
   User,
   Settings,
@@ -21,6 +19,7 @@ import {
   Menu,
   X,
 } from 'lucide-react';
+import ThemeToggle from '../../ThemeToggle';
 import {
   NavBarContainer,
   NavLeftSection,
@@ -118,8 +117,8 @@ type ProfileAction = 'admin' | 'profile' | 'settings' | 'billing' | 'help' | 'lo
 // ---------------------------------------------------------------------------
 
 const MainNavBar: React.FC<MainNavBarProps> = ({
-  theme = 'light',
-  onThemeToggle,
+  theme: _theme = 'light',
+  onThemeToggle: _onThemeToggle,
   user = null,
   notifications = [],
   onLogout,
@@ -298,12 +297,7 @@ const MainNavBar: React.FC<MainNavBarProps> = ({
       </NavCenterSection>
 
       <NavRightSection>
-        <NavIconButton
-          onClick={onThemeToggle}
-          title={theme === 'dark' ? 'Light Mode' : 'Dark Mode'}
-        >
-          {theme === 'dark' ? <Sun size={20} /> : <Moon size={20} />}
-        </NavIconButton>
+        <ThemeToggle />
 
         <DropdownContainer ref={notifRef}>
           <NavIconButton

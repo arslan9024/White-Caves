@@ -1,6 +1,6 @@
 /**
  * ChatInterface Component
- * 
+ *
  * Main WhatsApp chat interface with message list and composer
  * Displays conversations and handles real-time messaging
  */
@@ -112,7 +112,7 @@ const MessagesList = styled.div`
 
 const MessageGroup = styled.div<{ isOwn: boolean }>`
   display: flex;
-  justify-content: ${props => props.isOwn ? 'flex-end' : 'flex-start'};
+  justify-content: ${props => (props.isOwn ? 'flex-end' : 'flex-start')};
   margin-bottom: 8px;
 `;
 
@@ -121,8 +121,8 @@ const MessageBubble = styled.div<{ isOwn: boolean }>`
   padding: 8px 12px;
   border-radius: 8px;
   word-wrap: break-word;
-  background: ${props => props.isOwn ? '#25d366' : '#e5e5ea'};
-  color: ${props => props.isOwn ? 'white' : '#000'};
+  background: ${props => (props.isOwn ? '#25d366' : '#e5e5ea')};
+  color: ${props => (props.isOwn ? 'white' : '#000')};
   font-size: 14px;
   line-height: 1.4;
 `;
@@ -131,7 +131,7 @@ const MessageTime = styled.span<{ isOwn: boolean }>`
   font-size: 12px;
   color: #999;
   margin-top: 4px;
-  text-align: ${props => props.isOwn ? 'right' : 'left'};
+  text-align: ${props => (props.isOwn ? 'right' : 'left')};
 `;
 
 const EmptyState = styled.div`
@@ -169,7 +169,7 @@ const MessageInput = styled.input`
   border-radius: 20px;
   font-size: 14px;
   outline: none;
-  
+
   &:focus {
     border-color: #25d366;
   }
@@ -218,8 +218,12 @@ const LoadingSpinner = styled.div`
   margin-bottom: 16px;
 
   @keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
+    0% {
+      transform: rotate(0deg);
+    }
+    100% {
+      transform: rotate(360deg);
+    }
   }
 `;
 
@@ -238,14 +242,6 @@ interface ChatInterfaceProps {
   onBack?: () => void;
 }
 
-interface MessageWithTime {
-  id: string;
-  text: string;
-  isOwn: boolean;
-  timestamp: Date;
-  status?: 'sending' | 'sent' | 'delivered' | 'read';
-}
-
 export const ChatInterface: React.FC<ChatInterfaceProps> = ({
   accountId,
   conversationId,
@@ -253,14 +249,8 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({
   recipientName,
   onBack,
 }) => {
-  const {
-    messages,
-    isLoading,
-    error,
-    loadMessages,
-    sendMessage,
-    clearError,
-  } = useWhatsAppConversations();
+  const { messages, isLoading, error, loadMessages, sendMessage, clearError } =
+    useWhatsAppConversations();
 
   const [messageText, setMessageText] = useState('');
   const [isSending, setIsSending] = useState(false);
@@ -289,7 +279,7 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({
     try {
       await sendMessage(accountId, recipientNumber, messageText.trim());
       setMessageText('');
-    } catch (err) {
+    } catch {
       // Error handled by hook
     } finally {
       setIsSending(false);
@@ -312,9 +302,7 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({
       <Container>
         <Header>
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-            {onBack && (
-              <IconButton onClick={onBack}>←</IconButton>
-            )}
+            {onBack && <IconButton onClick={onBack}>←</IconButton>}
             <ContactInfo>
               <Avatar>{recipientName?.[0] || '?'}</Avatar>
               <ContactDetails>
@@ -341,9 +329,7 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({
     <Container>
       <Header>
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-          {onBack && (
-            <IconButton onClick={onBack}>←</IconButton>
-          )}
+          {onBack && <IconButton onClick={onBack}>←</IconButton>}
           <ContactInfo>
             <Avatar>{recipientName?.[0] || '?'}</Avatar>
             <ContactDetails>
@@ -386,13 +372,13 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({
           </EmptyState>
         ) : (
           messages.map((message, index) => (
-            <div key={message.id || index}>
-              <MessageGroup isOwn={message.isOwn}>
+            <div key={message.messageId || index}>
+              <MessageGroup isOwn={message.direction === 'outgoing'}>
                 <div>
-                  <MessageBubble isOwn={message.isOwn}>
-                    {message.text}
+                  <MessageBubble isOwn={message.direction === 'outgoing'}>
+                    {message.body}
                   </MessageBubble>
-                  <MessageTime isOwn={message.isOwn}>
+                  <MessageTime isOwn={message.direction === 'outgoing'}>
                     {new Date(message.timestamp).toLocaleTimeString([], {
                       hour: '2-digit',
                       minute: '2-digit',
@@ -411,14 +397,11 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({
           type="text"
           placeholder="Type a message..."
           value={messageText}
-          onChange={(e) => setMessageText(e.target.value)}
+          onChange={e => setMessageText(e.target.value)}
           disabled={isSending}
           autoFocus
         />
-        <SendButton
-          type="submit"
-          disabled={!messageText.trim() || isSending}
-        >
+        <SendButton type="submit" disabled={!messageText.trim() || isSending}>
           {isSending ? '...' : '➤'}
         </SendButton>
       </MessageComposer>

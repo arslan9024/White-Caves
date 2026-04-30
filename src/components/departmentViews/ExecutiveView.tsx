@@ -11,26 +11,24 @@ import { DataCard } from '../shared/dashboard';
 interface ExecutiveViewProps {
   serviceName?: string;
   subitemId?: string;
-  departmentData?: any;
+  departmentData?: Record<string, unknown>;
 }
 
-const ExecutiveView: React.FC<ExecutiveViewProps> = ({ serviceName = 'executive-dashboard', subitemId, departmentData }) => {
+const ExecutiveView: React.FC<ExecutiveViewProps> = ({
+  serviceName = 'executive-dashboard',
+  subitemId,
+  departmentData,
+}) => {
   const config = getDepartmentConfig('EXECUTIVE')!;
 
-  const renderContent = (data: any) => {
+  const renderContent = (data: Record<string, unknown>) => {
     if (!subitemId && serviceName === 'strategic-overview') {
       return (
         <>
-          <DataCard 
-            title="Strategic Overview"
-            subtitle="Key metrics and announcements"
-          >
+          <DataCard title="Strategic Overview" subtitle="Key metrics and announcements">
             Announcements: {JSON.stringify(data?.announcements?.length || 0)} items
           </DataCard>
-          <DataCard 
-            title="Board Reports"
-            subtitle="Recent board meeting summaries"
-          >
+          <DataCard title="Board Reports" subtitle="Recent board meeting summaries">
             Reports: {JSON.stringify(data?.boardReports?.length || 0)} items
           </DataCard>
         </>

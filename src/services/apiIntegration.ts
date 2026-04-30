@@ -61,11 +61,7 @@ export class APIIntegration {
   /**
    * Get with optimization
    */
-  async getOptimized<T>(
-    url: string,
-    cacheKey?: string,
-    cacheTTL?: number
-  ): Promise<T> {
+  async getOptimized<T>(url: string, cacheKey?: string, cacheTTL?: number): Promise<T> {
     const startTime = Date.now();
     const finalCacheKey = cacheKey || url;
 
@@ -108,23 +104,15 @@ export class APIIntegration {
   /**
    * Post with deduplication
    */
-  async postOptimized<T>(
-    url: string,
-    data?: any
-  ): Promise<T> {
+  async postOptimized<T>(url: string, data?: unknown): Promise<T> {
     const startTime = Date.now();
 
     try {
       this.log(`Posting to: ${url}`);
 
-      const result = await apiOptimizer.executeWithDedup(
-        'POST',
-        url,
-        data,
-        async () => {
-          return apiClient.post<T>(url, data);
-        }
-      );
+      const result = await apiOptimizer.executeWithDedup('POST', url, data, async () => {
+        return apiClient.post<T>(url, data);
+      });
 
       const duration = Date.now() - startTime;
       this.recordMetric({
@@ -222,17 +210,8 @@ export class APIIntegration {
   /**
    * Get department KPIs with pagination
    */
-  async getDepartmentKPIs(
-    code: string,
-    pagination?: PaginationParams,
-    forceRefresh = false
-  ) {
-    return optimizedDepartmentService.getDepartmentKPIs(
-      code,
-      pagination,
-      undefined,
-      forceRefresh
-    );
+  async getDepartmentKPIs(code: string, pagination?: PaginationParams, forceRefresh = false) {
+    return optimizedDepartmentService.getDepartmentKPIs(code, pagination, undefined, forceRefresh);
   }
 
   /**
@@ -325,9 +304,9 @@ export class APIIntegration {
   /**
    * Log helper
    */
-  private log(...args: any[]): void {
+  private log(...args: unknown[]): void {
     if (this.options.verbose) {
-      console.log('[APIIntegration]', ...args);
+      console.warn('[APIIntegration]', ...args);
     }
   }
 }
@@ -341,5 +320,3 @@ export const apiIntegration = new APIIntegration({
   cacheTTL: 5 * 60 * 1000,
   verbose: false, // Set to true for debugging
 });
-
-export { APIIntegration };

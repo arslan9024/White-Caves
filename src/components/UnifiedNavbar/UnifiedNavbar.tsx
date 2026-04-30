@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Unified Navbar Component
  * Single source of truth for top-level navigation
  */
@@ -9,6 +9,7 @@ import { theme } from '../../styles/theme';
 import NotificationCenter from './NotificationCenter';
 import UserProfileMenu from './UserProfileMenu';
 import AdminControls from './AdminControls';
+import ThemeToggle from '../ThemeToggle';
 
 export type UnifiedNavbarProps = {
   title?: string;
@@ -49,7 +50,7 @@ const NavbarContainer = styled.nav`
   align-items: center;
   padding: 0 ${theme.spacing.lg};
   gap: ${theme.spacing.lg};
-  z-index: ${theme.zIndex.navbar};
+  z-index: ${theme.zIndex.sticky};
   box-shadow: ${theme.shadows.sm};
 `;
 
@@ -73,7 +74,7 @@ const Logo = styled.img`
 `;
 
 const LogoText = styled.span`
-  font-size: ${theme.typography.sizes.md};
+  font-size: ${'1rem'};
   font-weight: ${theme.typography.weights.bold};
   color: ${theme.colors.primary};
 
@@ -83,7 +84,7 @@ const LogoText = styled.span`
 `;
 
 const DashboardTitle = styled.h1`
-  font-size: ${theme.typography.sizes.base};
+  font-size: ${'0.875rem'};
   font-weight: ${theme.typography.weights.medium};
   color: ${theme.colors.text.primary};
   margin: 0;
@@ -142,6 +143,9 @@ export const UnifiedNavbar: React.FC<UnifiedNavbarProps> = ({
       <CenterSection aria-hidden="true" />
 
       <RightSection>
+        <ThemeToggle />
+
+        <Divider aria-hidden="true" />
         <NotificationCenter
           notifications={notifications}
           onMarkAsRead={onMarkNotificationAsRead}

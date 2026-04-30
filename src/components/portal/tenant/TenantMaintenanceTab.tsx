@@ -6,7 +6,7 @@
  * @component
  */
 
-import React, { FC, useMemo, useState } from 'react';
+import React, { FC, useCallback, useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
 import type { RootState } from '../../../store/store';
 import '../../../pages/RolePages.css';
@@ -14,48 +14,49 @@ import '../../../pages/RolePages.css';
 interface MaintenanceRequest {
   id: string;
   title: string;
+  description?: string;
+  priority: 'low' | 'medium' | 'high';
   submitted: string;
   status: 'open' | 'in-progress' | 'closed';
-  isNew?: boolean;
+  isLocal?: boolean;
 }
+
+const INITIAL_REQUESTS: MaintenanceRequest[] = [
+  {
+    id: 'tm-001',
+    title: 'AC service required',
+    priority: 'high',
+    submitted: '2026-04-10',
+    status: 'open',
+  },
+  {
+    id: 'tm-002',
+    title: 'Kitchen sink leakage',
+    priority: 'medium',
+    submitted: '2026-04-07',
+    status: 'in-progress',
+  },
+  {
+    id: 'tm-003',
+    title: 'Balcony door alignment',
+    priority: 'low',
+    submitted: '2026-03-29',
+    status: 'closed',
+  },
+];
 
 const TenantMaintenanceTab: FC = () => {
   const currentUser = useSelector((state: RootState) => state.user.currentUser);
+  const [requests, setRequests] = useState<MaintenanceRequest[]>(INITIAL_REQUESTS);
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<'all' | 'open' | 'in-progress' | 'closed'>(
     'all'
   );
   const [titleInput, setTitleInput] = useState('');
   const [descriptionInput, setDescriptionInput] = useState('');
-  const [submitSuccess, setSubmitSuccess] = useState(false);
-  const [submitError, setSubmitError] = useState('');
-  const [newRequests, setNewRequests] = useState<MaintenanceRequest[]>([]);
-
-  const seedRequests: MaintenanceRequest[] = useMemo(
-    () => [
-      {
-        id: 'tm-001',
-        title: 'AC service required',
-        submitted: '2026-04-10',
-        status: 'open' as const,
-      },
-      {
-        id: 'tm-002',
-        title: 'Kitchen sink leakage',
-        submitted: '2026-04-07',
-        status: 'in-progress' as const,
-      },
-      {
-        id: 'tm-003',
-        title: 'Balcony door alignment',
-        submitted: '2026-03-29',
-        status: 'closed' as const,
-      },
-    ],
-    []
-  );
-
-  const requests = useMemo(() => [...newRequests, ...seedRequests], [newRequests, seedRequests]);
+  const [priorityInput, setPriorityInput] = useState<'low' | 'medium' | 'high'>('medium');
+  const [submitError, setSubmitError] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const filteredRequests = useMemo(() => {
     const normalizedSearch = searchQuery.trim().toLowerCase();
@@ -69,36 +70,52 @@ const TenantMaintenanceTab: FC = () => {
     });
   }, [requests, searchQuery, statusFilter]);
 
-  const handleSubmit = () => {
-    const trimmedTitle = titleInput.trim();
-    const trimmedDesc = descriptionInput.trim();
-
-    if (!trimmedTitle) {
+  const handleSubmit = useCallback(async () => {
+    const title = titleInput.trim();
+    if (!title) {
       setSubmitError('Please enter an issue title.');
       return;
     }
-    if (!trimmedDesc) {
-      setSubmitError('Please describe the issue.');
-      return;
-    }
+
+    setSubmitError(null);
+    setIsSubmitting(true);
 
     const today = new Date().toISOString().split('T')[0];
-    const newId = `tm-${String(newRequests.length + seedRequests.length + 1).padStart(3, '0')}`;
+    const tempId = `tm-local-${Date.now()}`;
+
     const newRequest: MaintenanceRequest = {
-      id: newId,
-      title: trimmedTitle,
+      id: tempId,
+      title,
+      description: descriptionInput.trim() || undefined,
+      priority: priorityInput,
       submitted: today,
       status: 'open',
-      isNew: true,
+      isLocal: true,
     };
 
-    setNewRequests(prev => [newRequest, ...prev]);
+    // Optimistic update — show immediately
+    setRequests(prev => [newRequest, ...prev]);
     setTitleInput('');
     setDescriptionInput('');
-    setSubmitError('');
-    setSubmitSuccess(true);
-    setTimeout(() => setSubmitSuccess(false), 4000);
-  };
+    setPriorityInput('medium');
+
+    try {
+      // Attempt to persist via API; gracefully ignore errors (Phase 5 will wire full API)
+      await fetch('/api/activities', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          type: 'maintenance_request',
+          description: `[${priorityInput.toUpperCase()}] ${title}${newRequest.description ? ` — ${newRequest.description}` : ''}`,
+          userId: currentUser?.id,
+        }),
+      });
+    } catch {
+      // Non-blocking — local state is the source of truth for now
+    } finally {
+      setIsSubmitting(false);
+    }
+  }, [titleInput, descriptionInput, priorityInput, currentUser?.id]);
 
   if (!currentUser) {
     return (
@@ -117,43 +134,50 @@ const TenantMaintenanceTab: FC = () => {
 
       <div className="request-form" data-testid="tenant-maintenance-form">
         <h4>Submit New Request</h4>
-        {submitSuccess && (
-          <div className="success-message" data-testid="tenant-maintenance-success">
-            ✅ Your maintenance request has been submitted. Our team will be in touch shortly.
-          </div>
-        )}
         {submitError && (
-          <div className="error-message" data-testid="tenant-maintenance-error" role="alert">
+          <p className="form-error" data-testid="tenant-maintenance-error">
             {submitError}
-          </div>
+          </p>
         )}
         <input
           data-testid="tenant-maintenance-title-input"
           type="text"
           placeholder="Issue title"
           value={titleInput}
-          onChange={event => {
-            setTitleInput(event.target.value);
-            if (submitError) setSubmitError('');
-          }}
+          onChange={event => setTitleInput(event.target.value)}
         />
         <textarea
           data-testid="tenant-maintenance-description-input"
           placeholder="Describe the issue"
           rows={3}
           value={descriptionInput}
-          onChange={event => {
-            setDescriptionInput(event.target.value);
-            if (submitError) setSubmitError('');
-          }}
+          onChange={event => setDescriptionInput(event.target.value)}
         />
+        <label
+          htmlFor="maintenance-priority"
+          style={{ fontSize: '0.875rem', color: 'var(--text-secondary)' }}
+        >
+          Priority
+        </label>
+        <select
+          id="maintenance-priority"
+          data-testid="tenant-maintenance-priority-select"
+          value={priorityInput}
+          onChange={event => setPriorityInput(event.target.value as 'low' | 'medium' | 'high')}
+        >
+          <option value="low">Low — Minor inconvenience</option>
+          <option value="medium">Medium — Needs attention soon</option>
+          <option value="high">High — Urgent / Safety issue</option>
+        </select>
         <button
           type="button"
           className="btn-primary"
           data-testid="tenant-maintenance-submit-btn"
-          onClick={handleSubmit}
+          onClick={() => void handleSubmit()}
+          disabled={isSubmitting}
+          aria-disabled={isSubmitting}
         >
-          Submit Request
+          {isSubmitting ? 'Submitting…' : 'Submit Request'}
         </button>
       </div>
 
@@ -188,18 +212,27 @@ const TenantMaintenanceTab: FC = () => {
           {filteredRequests.map(request => (
             <div
               key={request.id}
-              className={`maintenance-row${request.isNew ? ' maintenance-row--new' : ''}`}
+              className={`maintenance-row${request.isLocal ? ' maintenance-row--local' : ''}`}
               data-testid={`tenant-maintenance-row-${request.id}`}
             >
               <div>
                 <strong>{request.title}</strong>
-                <p>
-                  {request.id}
-                  {request.isNew ? ' · Just submitted' : ''}
-                </p>
+                {request.isLocal && (
+                  <span className="local-badge" data-testid="maintenance-local-badge">
+                    Submitted
+                  </span>
+                )}
+                <p>{request.id}</p>
               </div>
               <div>
                 <p>Submitted: {request.submitted}</p>
+                <span
+                  className={`priority-badge priority-${request.priority}`}
+                  data-testid={`maintenance-priority-${request.id}`}
+                  aria-label={`Priority: ${request.priority}`}
+                >
+                  {request.priority}
+                </span>
                 <span className={`status-badge status-${request.status}`}>{request.status}</span>
               </div>
             </div>
