@@ -1,6 +1,6 @@
 ﻿# /plans — Pending-First Planning Workspace
 
-> **Last Updated:** April 27, 2026
+> **Last Updated:** May 2, 2026
 > **Canonical Master Plan:** [`MASTER_PLAN.md`](./MASTER_PLAN.md)
 
 This folder now prioritizes **active pending work only**. Completed and historical phase-plan files have been moved to:
@@ -10,6 +10,8 @@ This folder now prioritizes **active pending work only**. Completed and historic
 ---
 
 ## Active Pending Plans
+
+- [`PHASE_23_24_25_IMPLEMENTATION_PLAN.md`](./PHASE_23_24_25_IMPLEMENTATION_PLAN.md) — **current canonical execution plan** (business-logic alignment first)
 
 - [`PENDING_TASKS_ONLY.md`](./PENDING_TASKS_ONLY.md) — fastest pending-only tracker
 - [`MASTER_PLAN.md`](./MASTER_PLAN.md) — single source of truth for status and roadmap
@@ -26,6 +28,10 @@ This folder now prioritizes **active pending work only**. Completed and historic
 - [`PHASE_9_RBAC.md`](./PHASE_9_RBAC.md) — Phase 9: Multi-user RBAC, agent onboarding, role approval, CSRF, JWT refresh
 - [`PHASE_10_PWA.md`](./PHASE_10_PWA.md) — Phase 10: PWA manifest, service worker, push notifications, Cipher AI, Maven ROI
 - [`PHASE_19_NEXT_PHASE_EXECUTION_CHECKLIST_APR27.md`](./PHASE_19_NEXT_PHASE_EXECUTION_CHECKLIST_APR27.md) — production hardening sprint checklist (Apr 28 – May 4, 2026)
+
+### Superseded Baselines (reference only)
+
+- [`PHASE_20_21_22_PARALLEL_EXECUTION_MASTER_PLAN.md`](./PHASE_20_21_22_PARALLEL_EXECUTION_MASTER_PLAN.md) — predecessor baseline superseded by Phase 23–25
 - [`IMPROVEMENTS_BACKLOG.md`](./IMPROVEMENTS_BACKLOG.md) — master list of 38 improvements (all categories + phase assignments)
 - [`IMPROVEMENTS_CRITICAL.md`](./IMPROVEMENTS_CRITICAL.md) — 5 critical/broken items (WhatsApp, Stripe, 2FA, Arabic, AI registry)
 - [`IMPROVEMENTS_INCOMPLETE_FEATURES.md`](./IMPROVEMENTS_INCOMPLETE_FEATURES.md) — 7 incomplete features (scheduler, PDF, email, portals, VR, images, notifications)

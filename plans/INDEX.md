@@ -6,6 +6,7 @@
 
 ## Active Pending Plans
 
+- [`PHASE_23_24_25_IMPLEMENTATION_PLAN.md`](./PHASE_23_24_25_IMPLEMENTATION_PLAN.md)
 - [`MASTER_PLAN.md`](./MASTER_PLAN.md)
 - [`MASTER_PLAN_CRM_EXCELLENCE.md`](./MASTER_PLAN_CRM_EXCELLENCE.md)
 - [`PHASE_1_HOMEPAGE.md`](./PHASE_1_HOMEPAGE.md)
@@ -13,6 +14,7 @@
 - [`PHASE_3_CRM_SUPERUSER.md`](./PHASE_3_CRM_SUPERUSER.md)
 - [`PHASE_3_AND_BEYOND.md`](./PHASE_3_AND_BEYOND.md)
 - [`PHASE_19_NEXT_PHASE_EXECUTION_CHECKLIST_APR27.md`](./PHASE_19_NEXT_PHASE_EXECUTION_CHECKLIST_APR27.md)
+- [`PHASE_20_21_22_PARALLEL_EXECUTION_MASTER_PLAN.md`](./PHASE_20_21_22_PARALLEL_EXECUTION_MASTER_PLAN.md) _(predecessor baseline)_
 - [`audit-round-66.md`](./audit-round-66.md)
 - [`audit-round-69.md`](./audit-round-69.md)
 - [`audit-round-70.md`](./audit-round-70.md)

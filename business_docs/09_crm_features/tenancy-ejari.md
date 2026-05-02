@@ -1,8 +1,8 @@
 # Tenancy & Ejari Management — CRM Feature Specification
 
-> **Status:** Planned  
+> **Status:** In Progress (Core workflows active, endpoint expansion ongoing)  
 > **Module Owner:** Daisy (Leasing Manager AI)  
-> **API Endpoints:** `/api/tenants`, `/api/leases` (planned)  
+> **API Endpoints:** `/api/tenants`, `/api/leases` (primary namespace)  
 > **Priority:** High
 
 ---
@@ -28,6 +28,7 @@ The Tenancy & Ejari module manages the full tenant lifecycle: application, KYC, 
 ## Data Models
 
 ### Tenant
+
 ```typescript
 Tenant {
   id: string
@@ -65,6 +66,7 @@ Tenant {
 ```
 
 ### Lease
+
 ```typescript
 Lease {
   id: string
@@ -96,6 +98,7 @@ Lease {
 ```
 
 ### Rent Payment
+
 ```typescript
 RentPayment {
   id: string
@@ -117,29 +120,31 @@ RentPayment {
 ## API Endpoints
 
 ### Tenants
-| Method | Path | Access | Description |
-|--------|------|--------|-------------|
-| GET | `/api/tenants` | Manager, Admin | List tenants with filters |
-| POST | `/api/tenants` | Agent, Manager | Create tenant application |
-| GET | `/api/tenants/:id` | Agent (assigned), Manager | Tenant detail |
-| PATCH | `/api/tenants/:id` | Agent (assigned), Manager | Update tenant info |
-| PATCH | `/api/tenants/:id/kyc` | Compliance (Laila) | Update KYC status |
-| POST | `/api/tenants/:id/documents` | Agent | Upload documents |
-| GET | `/api/tenants/:id/leases` | Agent, Manager | Tenant's lease history |
+
+| Method | Path                         | Access                    | Description               |
+| ------ | ---------------------------- | ------------------------- | ------------------------- |
+| GET    | `/api/tenants`               | Manager, Admin            | List tenants with filters |
+| POST   | `/api/tenants`               | Agent, Manager            | Create tenant application |
+| GET    | `/api/tenants/:id`           | Agent (assigned), Manager | Tenant detail             |
+| PATCH  | `/api/tenants/:id`           | Agent (assigned), Manager | Update tenant info        |
+| PATCH  | `/api/tenants/:id/kyc`       | Compliance (Laila)        | Update KYC status         |
+| POST   | `/api/tenants/:id/documents` | Agent                     | Upload documents          |
+| GET    | `/api/tenants/:id/leases`    | Agent, Manager            | Tenant's lease history    |
 
 ### Leases (Planned)
-| Method | Path | Access | Description |
-|--------|------|--------|-------------|
-| GET | `/api/leases` | Agent (own), Manager | List active leases |
-| POST | `/api/leases` | Agent, Manager | Create lease |
-| GET | `/api/leases/:id` | Agent, Manager, Landlord (own) | Lease detail |
-| PATCH | `/api/leases/:id` | Agent (draft), Manager | Update lease |
-| PATCH | `/api/leases/:id/activate` | Manager | Set active (requires Ejari) |
-| PATCH | `/api/leases/:id/ejari` | Agent | Set Ejari registration details |
-| POST | `/api/leases/:id/renew` | Agent, Manager | Initiate renewal |
-| PATCH | `/api/leases/:id/terminate` | Manager | Terminate with reason |
-| GET | `/api/leases/:id/payments` | Agent, Manager, Tenant (own) | Rent payment schedule |
-| PATCH | `/api/leases/:id/payments/:paymentId` | Finance | Update payment status |
+
+| Method | Path                                  | Access                         | Description                    |
+| ------ | ------------------------------------- | ------------------------------ | ------------------------------ |
+| GET    | `/api/leases`                         | Agent (own), Manager           | List active leases             |
+| POST   | `/api/leases`                         | Agent, Manager                 | Create lease                   |
+| GET    | `/api/leases/:id`                     | Agent, Manager, Landlord (own) | Lease detail                   |
+| PATCH  | `/api/leases/:id`                     | Agent (draft), Manager         | Update lease                   |
+| PATCH  | `/api/leases/:id/activate`            | Manager                        | Set active (requires Ejari)    |
+| PATCH  | `/api/leases/:id/ejari`               | Agent                          | Set Ejari registration details |
+| POST   | `/api/leases/:id/renew`               | Agent, Manager                 | Initiate renewal               |
+| PATCH  | `/api/leases/:id/terminate`           | Manager                        | Terminate with reason          |
+| GET    | `/api/leases/:id/payments`            | Agent, Manager, Tenant (own)   | Rent payment schedule          |
+| PATCH  | `/api/leases/:id/payments/:paymentId` | Finance                        | Update payment status          |
 
 ---
 

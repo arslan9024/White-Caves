@@ -2,7 +2,7 @@
 
 > **Agency:** White Caves Global Agency (30-Agent Team)  
 > **Orchestrator:** @Ada (Chief Architect)  
-> **Last Updated:** May 1, 2026  
+> **Last Updated:** May 2, 2026  
 > **Production Ready:** 95% → Target: 100% by June 30, 2026
 
 ---
@@ -37,6 +37,22 @@
 ---
 
 ## 🚀 Active Milestones
+
+### 🎯 PHASE-23/24/25: Business-Logic Alignment + Operational Readiness
+
+**Issued By:** @Ada | **Planned By:** @Margaret | **Status:** 🔄 IN PROGRESS  
+**Canonical Plan:** `plans/PHASE_23_24_25_IMPLEMENTATION_PLAN.md`
+
+#### Phase 23 Immediate Implementation Focus
+
+- [x] Canonical phase plan created and linked in planning workspace
+- [x] Branch governance updated to development-daily / main-monthly policy
+- [x] Business requirements conflict review started (commission model + endpoint namespace)
+- [ ] Module traceability pass (Leads, Inventory, Sales, Finance, Leasing, WhatsApp)
+- [ ] Homepage improvement backlog converted to owned tasks
+- [ ] Dev/Build operational runbook checks logged for this phase
+
+---
 
 ### 🎯 MILESTONE-HERO: Dubai Luxury Hero Redesign
 

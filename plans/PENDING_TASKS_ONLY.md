@@ -8,6 +8,7 @@
 
 ## Active Pending Plans
 
+- [ ] [`PHASE_23_24_25_IMPLEMENTATION_PLAN.md`](./PHASE_23_24_25_IMPLEMENTATION_PLAN.md) _(current active canonical plan)_
 - [ ] [`PHASE_1_HOMEPAGE.md`](./PHASE_1_HOMEPAGE.md)
 - [ ] [`PHASE_2_LANDLORD_TENANT.md`](./PHASE_2_LANDLORD_TENANT.md)
 - [ ] [`PHASE_3_CRM_SUPERUSER.md`](./PHASE_3_CRM_SUPERUSER.md)
@@ -22,6 +23,11 @@
 - [ ] [`audit-round-70.md`](./audit-round-70.md)
 
 ## Immediate Pending Focus
+
+- [ ] Phase 23: business docs + module business-logic alignment (Leads, Inventory, Sales, Finance, Leasing, WhatsApp)
+- [ ] Phase 24: module traceability and acceptance criteria harmonization
+- [ ] Phase 25: homepage improvement task ownership + operational dev/build verification log
+- [ ] Branch governance unification: development daily commits, main monthly release-only merges
 
 - [ ] Homepage polish: featured properties visibility, image integrity, mobile audit, contact success state, lighthouse target
 - [ ] Portals: wire maintenance/payment persistence, add portal subroutes + mobile verification

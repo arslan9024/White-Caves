@@ -1,8 +1,8 @@
 # Financial Reporting — CRM Feature Specification
 
-> **Status:** Planned  
+> **Status:** In Progress (Core reports active, advanced exports expanding)  
 > **Module Owner:** Theodora (Finance Director AI) + Zoe (Executive AI)  
-> **API Endpoints:** `/api/finance`, `/api/dashboard`  
+> **API Endpoints:** `/api/finance`, `/api/dashboard`, `/api/commissions`  
 > **Priority:** High
 
 ---
@@ -16,6 +16,7 @@ The Financial Reporting module delivers accurate, role-appropriate financial vie
 ## Report Types
 
 ### 1. Executive Summary Dashboard (Zoe)
+
 **Access:** Owner, Managing Director, Executive  
 **Frequency:** Real-time  
 **Purpose:** Single-screen business health overview
@@ -33,6 +34,7 @@ The Financial Reporting module delivers accurate, role-appropriate financial vie
 | Revenue vs Target | Actual revenue / Monthly target × 100 | Current month |
 
 **Charts:**
+
 - Revenue trend (12-month bar chart)
 - Commission by agent (horizontal bar, top 10)
 - Lead pipeline funnel (stage counts)
@@ -41,11 +43,13 @@ The Financial Reporting module delivers accurate, role-appropriate financial vie
 ---
 
 ### 2. Monthly P&L Report
+
 **Access:** Finance Director, Owner  
 **Frequency:** Generated on demand (usually Day 5 after month-end)  
 **Format:** PDF + Excel
 
 **Structure:**
+
 ```
 WHITE CAVES REAL ESTATE — MONTHLY P&L
 Period: [Month Year]
@@ -77,6 +81,7 @@ PROFIT MARGIN                                       X%
 ---
 
 ### 3. Commission Detail Report
+
 **Access:** Finance Director, Sales Manager, Owner  
 **Frequency:** Monthly or on demand  
 **Format:** Excel + PDF
@@ -88,6 +93,7 @@ PROFIT MARGIN                                       X%
 ---
 
 ### 4. Agent Commission Statement
+
 **Access:** Agent (own), Manager (all), Finance  
 **Frequency:** Monthly (auto-sent on payment day)  
 **Format:** PDF (letterhead)
@@ -97,11 +103,13 @@ PROFIT MARGIN                                       X%
 ---
 
 ### 5. Rental Income Report
+
 **Access:** Finance Director, Owner, Landlord (own properties)  
 **Frequency:** Monthly  
 **Format:** Excel + PDF
 
 **Per Landlord Section:**
+
 - Property address
 - Tenant name
 - Monthly rent (AED)
@@ -112,6 +120,7 @@ PROFIT MARGIN                                       X%
 ---
 
 ### 6. Transaction Summary Report
+
 **Access:** Finance, Manager, Owner  
 **Frequency:** On demand  
 **Format:** Excel
@@ -121,11 +130,13 @@ PROFIT MARGIN                                       X%
 ---
 
 ### 7. Agent Performance Report
+
 **Access:** Manager, Owner  
 **Frequency:** Weekly/Monthly  
 **Format:** Excel + PDF + On-screen
 
 **Per Agent:**
+
 - Leads handled
 - Viewings arranged
 - Offers made
@@ -139,6 +150,7 @@ PROFIT MARGIN                                       X%
 ## Financial Dashboard UI Components
 
 ### Summary Cards Row
+
 ```
 ┌─────────────────┐ ┌─────────────────┐ ┌─────────────────┐ ┌─────────────────┐
 │ Revenue MTD     │ │ Commissions     │ │ Pending         │ │ Pipeline Value  │
@@ -148,6 +160,7 @@ PROFIT MARGIN                                       X%
 ```
 
 ### Commission List Table
+
 - Columns: Transaction, Agent, Property, Amount, Split, Status, Actions
 - Filter bar: Status, Agent, Date Range, Type
 - Bulk actions: Approve selected, Export selected
@@ -158,6 +171,7 @@ PROFIT MARGIN                                       X%
 ## Export Requirements
 
 All reports:
+
 - [ ] Include company name, RERA license number, and report generation date/time
 - [ ] PDF: A4, company branding, page numbers
 - [ ] Excel: Formatted headers, auto-fit columns, frozen header row
