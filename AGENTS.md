@@ -1,5 +1,34 @@
 # White Caves Real Estate LLC - Global Expert Agency (All-Female Expert Team)
 
+## 📊 CURRENT SPRINT STATUS — Free Agent Planning Dashboard
+
+> **Updated by @Margaret after every session.** Senior coders MUST check this table before starting any premium coding sprint. If any gate is BLOCKED, route back to the relevant free agent before coding.
+
+| Agent | Model | Current Task | File | Sections | Gate Status | Last Updated |
+|-------|-------|-------------|------|----------|-------------|-------------|
+| **@Victoria** | Gemini 2.0 Flash | NEXT: `landlord-portal.md` → KYC onboarding + NOC workflow | `business_docs/09_crm_features/landlord-portal.md` | 13/13 | ✅ READY | May 4, 2026 |
+| **@Invoice** | Llama 3.1 70B Groq | NEXT: `financial-reporting.md` → verify 11-section target met; add cash flow forecast | `business_docs/09_crm_features/financial-reporting.md` | ❓ Verify | ⚠️ VERIFY | May 4, 2026 |
+| **@Sofia** | Gemini 2.0 Flash | NEXT: `compliance-requirements.md` → verify 12-section target met; add RERA penalty table | `business_docs/05_requirements/compliance-requirements.md` | ❓ Verify | ⚠️ VERIFY | May 4, 2026 |
+| **@Cassie** | DeepSeek V3 | NEXT: `analytics-dashboard.md` → mobile analytics view + data export API spec | `business_docs/09_crm_features/analytics-dashboard.md` | 22/22 | ✅ READY | May 4, 2026 |
+| **@Joelle** | Llama 3.1 70B Groq | NEXT: personas 25-35 + failure/fallback section | `business_docs/03_ai_assistants/README.md` | 40 personas | ✅ READY | May 4, 2026 |
+
+### How to Invoke Free Agents (Copy-Paste Into the Free Tool)
+
+```
+@Victoria — EXPAND: landlord-portal.md → add KYC onboarding flow, NOC letter generation workflow, 3-month grace period rules
+@Invoice  — AUDIT: financial-reporting.md → verify 11 sections present; add rolling 12-month cash flow forecast section
+@Sofia    — AUDIT: compliance-requirements.md → verify 12 sections present; add RERA/DLD penalty table with fine amounts
+@Cassie   — EXPAND: analytics-dashboard.md → add mobile analytics view spec + data export CSV/Excel API endpoint spec
+@Joelle   — DRAFT: 03_ai_assistants/README.md → personas 25-35 (Quill, Lumen, Crest, Prism, Echo + others); add failure/fallback behavior
+```
+
+**Free Tool Links:**
+- @Victoria, @Sofia: [Google AI Studio](https://aistudio.google.com/) → Model: Gemini 2.0 Flash
+- @Invoice, @Joelle: [Groq Console](https://console.groq.com/) → Model: Llama 3.1 70B
+- @Cassie: [DeepSeek Chat](https://chat.deepseek.com/) → Model: DeepSeek V3
+
+---
+
 ## Purpose
 
 This file defines the White Caves multi-expert operating model for all agent-assisted work in this repository.

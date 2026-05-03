@@ -1,5 +1,21 @@
 ﻿# Pending Tasks Only
 
+## 🆓 FREE AGENT QUEUE — Run These in Free Tools Before Next Coding Session
+
+> Copy-paste the prompt below into the linked free tool. Paste the output back into the file and commit. This feeds the Context Enrichment Gate so senior coders can proceed.
+
+| Agent | Free Tool | Prompt to Run | Target File | Gate |
+|-------|-----------|--------------|-------------|------|
+| **@Invoice** | [Groq Console → Llama 3.1 70B](https://console.groq.com/) | `@Invoice — AUDIT: financial-reporting.md → verify 11 sections present; if missing add: UAE VAT 5% section (FTA quarterly filing), rolling 12-month cash flow forecast, budget-vs-actual variance table, invoice format spec with TRN, payout schedule rules` | `business_docs/09_crm_features/financial-reporting.md` | ⚠️ VERIFY |
+| **@Sofia** | [Google AI Studio → Gemini 2.0 Flash](https://aistudio.google.com/) | `@Sofia — AUDIT: compliance-requirements.md → verify 12 sections present; if missing add: Oqood off-plan registration rules, escrow account compliance, RERA/DLD penalty table with fine amounts by violation type, pricing/discount approval rules` | `business_docs/05_requirements/compliance-requirements.md` | ⚠️ VERIFY |
+| **@Victoria** | [Google AI Studio → Gemini 2.0 Flash](https://aistudio.google.com/) | `@Victoria — EXPAND: landlord-portal.md → add KYC onboarding flow section, NOC letter generation workflow, 3-month grace period rules, rent increase notice procedure` | `business_docs/09_crm_features/landlord-portal.md` | 🔜 NEXT |
+| **@Cassie** | [DeepSeek Chat → DeepSeek V3](https://chat.deepseek.com/) | `@Cassie — EXPAND: analytics-dashboard.md → add mobile analytics view specification (responsive breakpoints, touch-friendly KPI cards), data export CSV/Excel API endpoint spec with column mapping` | `business_docs/09_crm_features/analytics-dashboard.md` | 🔜 NEXT |
+| **@Joelle** | [Groq Console → Llama 3.1 70B](https://console.groq.com/) | `@Joelle — DRAFT: 03_ai_assistants/README.md → add personas 25-35 (Quill the Copywriter, Lumen the Data Analyst, Crest the Property Valuer, Prism the Market Researcher, Echo the Follow-up Bot + 5 more). Add failure/fallback behavior section: API timeout handling, rate limit graceful degradation, human handoff triggers` | `business_docs/03_ai_assistants/README.md` | 🔜 NEXT |
+
+**⚡ Priority order: @Invoice → @Sofia first (gate VERIFY), then @Victoria → @Cassie → @Joelle**
+
+---
+
 ## Canonical Source
 
 - [`MASTER_PLAN.md`](./MASTER_PLAN.md) — official project source of truth

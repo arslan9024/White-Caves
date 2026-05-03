@@ -2,8 +2,27 @@
 
 > **Agency:** White Caves Global Agency (30-Agent Team)  
 > **Orchestrator:** @Ada (Chief Architect)  
-> **Last Updated:** May 3, 2026  
-> **Production Ready:** 95% ? Target: 100% by June 30, 2026
+> **Last Updated:** May 4, 2026  
+> **Production Ready:** 95% → Target: 100% by June 30, 2026
+
+---
+
+## 🔒 WEEKLY PREMIUM QUOTA — Copilot Senior Coders
+
+> **RULE:** Senior coding agents (@Ada, @Mira, @Barbara, @Una, @Daniela, @Ruchi, @Gwynne, @Katherine) MUST check this table before starting any premium coding sprint. If **Remaining = 0**, queue work and do NOT start.
+
+| Week | Reset Date | Max Requests | Used | Remaining | Status |
+|------|-----------|-------------|------|-----------|--------|
+| Week of May 4, 2026 | May 10, 2026 | 50 | 4 | 46 | 🟢 AVAILABLE |
+
+**Usage Log (this week):**
+
+| Date | Agent | Task | Requests Used |
+|------|-------|------|--------------|
+| May 3, 2026 | @Mira + @Gwynne | Phase 29: Wire landlord portal tabs to live APIs | 3 |
+| May 4, 2026 | @Gwynne | Merge development → main + push | 1 |
+
+> @Margaret updates this table at the end of every coding session. @Ada must confirm "Context Ready — Coding Phase Approved" before any new premium sprint begins.
 
 ---
 

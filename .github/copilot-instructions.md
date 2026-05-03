@@ -115,3 +115,56 @@
    | @Joelle   | Llama 3.1 70B Groq | FREE       | 03_ai_assistants/README.md  | 7 → 9+ personas 15-40  | ⭐⭐⭐⭐⭐       |
    ```
    Quality Score criteria: ⭐ = stub only | ⭐⭐ = incomplete | ⭐⭐⭐ = functional | ⭐⭐⭐⭐ = complete | ⭐⭐⭐⭐⭐ = production-ready with examples
+
+7. **🚪 SESSION START GATE (Mandatory — Every Session, No Exceptions):**
+   Before the first line of code is written or any file is edited in a session, the following checklist MUST be evaluated. If ANY gate is ❌, stop and hand back to free planning agents before coding.
+   ```
+   SESSION START CHECKLIST (run at the top of every Copilot coding session)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   [ ] 1. FEATURE IDENTIFIED: What exact feature/module is being worked on today?
+   [ ] 2. BUSINESS DOC EXISTS: Does business_docs/ have a complete spec for this feature?
+          → Check: does the file exist AND has it met its section-count quality gate?
+          → If NO: @Victoria / @Invoice / @Sofia / @Cassie / @Joelle must expand it first.
+   [ ] 3. PHASE PLAN EXISTS: Is there a plans/ file covering this feature with tasks listed?
+          → Check PENDING_TASKS_ONLY.md and DAILY_MILESTONE_TRACKER.md
+   [ ] 4. MARGARET SIGNED OFF: Has @Margaret reviewed the plan and confirmed scope?
+          → Signal: @Margaret entry in DAILY_MILESTONE_TRACKER.md for today.
+   [ ] 5. ADA AUTHORIZED: Has @Ada declared "Context Ready — Coding Phase Approved"?
+          → This declaration MUST appear in the session before any senior agent codes.
+   [ ] 6. QUOTA AVAILABLE: Check WEEKLY PREMIUM QUOTA in PROJECT_PROGRESS.md.
+          → If 0 requests remaining → queue work, do NOT start premium coding.
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   ✅ ALL 6 CHECKED? → @Ada declares: "Context Ready — Coding Phase Approved"
+   ❌ ANY UNCHECKED? → Route back to free planning agents. Do NOT code.
+   ```
+
+8. **📅 DAILY AGENT RHYTHM (Planning-First Workflow):**
+   This rhythm governs every working day. Coding NEVER starts before planning agents complete their morning run.
+   ```
+   🌅 MORNING — Free Planning Agents Run (ZERO Copilot premium tokens)
+   ─────────────────────────────────────────────────────────────────────
+   @Victoria  → Google AI Studio (Gemini 2.0 Flash, free)
+               Task: EXPAND next item in her owned files queue
+   @Invoice   → Groq Console (Llama 3.1 70B, free tier)
+               Task: EXPAND next item in his owned files queue
+   @Sofia     → Google AI Studio (Gemini 2.0 Flash, free)
+               Task: EXPAND next item in her owned files queue
+   @Cassie    → DeepSeek Chat (DeepSeek V3, ~free)
+               Task: EXPAND next item in her owned files queue
+   @Joelle    → Groq Console (Llama 3.1 70B, free tier)
+               Task: EXPAND next item in her owned files queue
+   → Output: paste expanded content into the relevant business_docs/ file and commit.
+
+   🕛 MIDDAY — @Margaret Gate Review (Standard GPT-4o, minimal tokens)
+   ─────────────────────────────────────────────────────────────────────
+   @Margaret checks AGENTS.md "CURRENT SPRINT STATUS" table.
+   Updates section counts, sets gate status to READY or BLOCKED.
+   Writes 1-sentence sign-off in DAILY_MILESTONE_TRACKER.md.
+
+   🕑 AFTERNOON — Senior Coders (Copilot premium — only if gate passed)
+   ─────────────────────────────────────────────────────────────────────
+   @Ada reads SESSION START CHECKLIST (Rule 7). If all ✅ → declares approval.
+   @Mira / @Una / @Barbara / @Katherine execute the sprint.
+   Each premium request is counted against WEEKLY PREMIUM QUOTA.
+   Session ends with @Gwynne committing + pushing to development branch.
+   ```
