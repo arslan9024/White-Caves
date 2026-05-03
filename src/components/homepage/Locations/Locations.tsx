@@ -185,6 +185,15 @@ const Locations = ({ locationTrends, isLoading = false }: LocationsProps) => {
               onMouseEnter={() => setHoveredId(location.id)}
               onMouseLeave={() => setHoveredId(null)}
               onClick={() => navigate(`/properties?area=${toAreaSlug(location.name)}`)}
+              role="button"
+              tabIndex={0}
+              aria-label={`Explore properties in ${location.name}`}
+              onKeyDown={e => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault();
+                  navigate(`/properties?area=${toAreaSlug(location.name)}`);
+                }
+              }}
             >
               <div className="location-image-wrapper">
                 <motion.img
@@ -206,20 +215,57 @@ const Locations = ({ locationTrends, isLoading = false }: LocationsProps) => {
                       exit={{ opacity: 0, y: 10 }}
                       transition={{ duration: 0.25 }}
                       style={{
-                        position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column',
-                        alignItems: 'center', justifyContent: 'center', gap: '0.5rem',
-                        background: 'rgba(0,0,0,0.55)', backdropFilter: 'blur(4px)', padding: '1rem',
+                        position: 'absolute',
+                        inset: 0,
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        gap: '0.5rem',
+                        background: 'rgba(0,0,0,0.55)',
+                        backdropFilter: 'blur(4px)',
+                        padding: '1rem',
                       }}
                     >
-                      <div style={{ color: '#fff', fontSize: '0.8rem', fontWeight: 500, textAlign: 'center', lineHeight: 1.8 }}>
-                        <div style={{ fontSize: '1.1rem', fontWeight: 700, color: '#E31E24', marginBottom: 4 }}>{location.avgPrice}</div>
+                      <div
+                        style={{
+                          color: '#fff',
+                          fontSize: '0.8rem',
+                          fontWeight: 500,
+                          textAlign: 'center',
+                          lineHeight: 1.8,
+                        }}
+                      >
+                        <div
+                          style={{
+                            fontSize: '1.1rem',
+                            fontWeight: 700,
+                            color: '#E31E24',
+                            marginBottom: 4,
+                          }}
+                        >
+                          {location.avgPrice}
+                        </div>
                         <div>Avg. Price</div>
-                        <div style={{ marginTop: 8, fontSize: '0.95rem', fontWeight: 600 }}>{location.properties} Properties</div>
-                        <div style={{
-                          marginTop: 6, display: 'inline-block', padding: '0.2rem 0.6rem', borderRadius: 20,
-                          background: location.trendDirection === 'down' ? 'rgba(239,68,68,0.8)' : 'rgba(16,185,129,0.8)',
-                          fontWeight: 700, fontSize: '0.85rem',
-                        }}>{location.trend} YoY</div>
+                        <div style={{ marginTop: 8, fontSize: '0.95rem', fontWeight: 600 }}>
+                          {location.properties} Properties
+                        </div>
+                        <div
+                          style={{
+                            marginTop: 6,
+                            display: 'inline-block',
+                            padding: '0.2rem 0.6rem',
+                            borderRadius: 20,
+                            background:
+                              location.trendDirection === 'down'
+                                ? 'rgba(239,68,68,0.8)'
+                                : 'rgba(16,185,129,0.8)',
+                            fontWeight: 700,
+                            fontSize: '0.85rem',
+                          }}
+                        >
+                          {location.trend} YoY
+                        </div>
                       </div>
                     </motion.div>
                   )}

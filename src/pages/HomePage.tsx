@@ -2,7 +2,15 @@ import React, { FC, lazy, Suspense, useEffect, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useSEO, getCanonicalUrl } from '../hooks/useSEO';
 import { setProperties, type Property } from '../store/propertySlice';
-import { fetchHomepageData, selectMarketStats, selectTopAgents, selectLocationTrends, selectFeaturedProperties, selectIsHomepageLoading, type HomepageProperty } from '../store/slices/homepageSlice';
+import {
+  fetchHomepageData,
+  selectMarketStats,
+  selectTopAgents,
+  selectLocationTrends,
+  selectFeaturedProperties,
+  selectIsHomepageLoading,
+  type HomepageProperty,
+} from '../store/slices/homepageSlice';
 import type { AppDispatch } from '../store/store';
 import { buildHomepageJsonLd } from './homepageSeo';
 import ClickToChat from '../components/ClickToChat';
@@ -12,17 +20,22 @@ import { useRecentlyViewed } from '../components/RecentlyViewed';
 import { HOME_PROPERTIES } from '../data/homeProperties';
 import './HomePage.css';
 
-// Above-the-fold: lazy-loaded to defer framer-motion (~120KB) from critical path
+// Above-the-fold: Hero is the LCP element — import directly (NOT lazy) so the
+// browser can start rendering immediately without a waterfall.
 // @Una: Using LuxuryHeroSection (Red/White/Black) as the primary hero
-const Hero = lazy(() =>
-  import('../components/homepage/Hero/LuxuryHeroSection').then(m => ({ default: m.LuxuryHeroSection }))
-);
+import { LuxuryHeroSection as Hero } from '../components/homepage/Hero/LuxuryHeroSection';
+
+// P1 above-fold companions: lazy-loaded so they don't block hero render
 const Features = lazy(() => import('../components/homepage/Features'));
-const MarketStatsBanner = lazy(() => import('../components/homepage/MarketStats/MarketStatsBanner'));
+const MarketStatsBanner = lazy(
+  () => import('../components/homepage/MarketStats/MarketStatsBanner')
+);
 
 // Below-the-fold: lazy-loaded for faster initial paint
 const Locations = lazy(() => import('../components/homepage/Locations'));
-const FeaturedPropertiesSection = lazy(() => import('../components/homepage/FeaturedProperties/FeaturedPropertiesSection'));
+const FeaturedPropertiesSection = lazy(
+  () => import('../components/homepage/FeaturedProperties/FeaturedPropertiesSection')
+);
 const Team = lazy(() => import('../components/homepage/Team'));
 const Testimonials = lazy(() => import('../components/homepage/Testimonials'));
 const ContactCTA = lazy(() => import('../components/homepage/Contact'));
@@ -40,8 +53,25 @@ const OnboardingGateway = lazy(() => import('../components/OnboardingGateway'));
 
 /** Minimal placeholder while lazy chunks load */
 const SectionLoader: FC = () => (
-  <div style={{ minHeight: 200, display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: 0.5 }}>
-    <div style={{ width: 32, height: 32, border: '3px solid #e5e7eb', borderTop: '3px solid #6366f1', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
+  <div
+    style={{
+      minHeight: 200,
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      opacity: 0.5,
+    }}
+  >
+    <div
+      style={{
+        width: 32,
+        height: 32,
+        border: '3px solid #e5e7eb',
+        borderTop: '3px solid #6366f1',
+        borderRadius: '50%',
+        animation: 'spin 0.8s linear infinite',
+      }}
+    />
   </div>
 );
 
@@ -82,11 +112,19 @@ const HomePage: FC = () => {
 
   useSEO({
     title: 'White Caves Real Estate — Dubai Luxury Properties',
-    description: 'Explore premium villas, penthouses, and investment-ready properties in Dubai with White Caves Real Estate. RERA-licensed agency serving luxury buyers and investors.',
-    keywords: ['Dubai real estate', 'luxury properties Dubai', 'White Caves Real Estate', 'Dubai villas', 'RERA licensed'],
+    description:
+      'Explore premium villas, penthouses, and investment-ready properties in Dubai with White Caves Real Estate. RERA-licensed agency serving luxury buyers and investors.',
+    keywords: [
+      'Dubai real estate',
+      'luxury properties Dubai',
+      'White Caves Real Estate',
+      'Dubai villas',
+      'RERA licensed',
+    ],
     canonicalUrl: getCanonicalUrl('/'),
     ogType: 'website',
-    ogImage: 'https://images.unsplash.com/photo-1582268611958-ebfd161ef9cf?w=1200&h=630&fit=crop&q=80',
+    ogImage:
+      'https://images.unsplash.com/photo-1582268611958-ebfd161ef9cf?w=1200&h=630&fit=crop&q=80',
     jsonLd: buildHomepageJsonLd({
       marketStats,
       featuredProperties,
@@ -114,13 +152,11 @@ const HomePage: FC = () => {
   return (
     <PublicLayout>
       <div className="home-page">
-        {/* Above the fold — lazy-loaded to defer framer-motion from critical path */}
-        <Suspense fallback={
-          <div style={{ minHeight: '100vh', background: '#0A0A0A', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <div style={{ width: 48, height: 48, borderRadius: '50%', border: '3px solid rgba(196,30,58,0.2)', borderTop: '3px solid #C41E3A', animation: 'spin 0.9s linear infinite' }} />
-          </div>
-        }>
-          <Hero marketStats={marketStats} isLoading={isHomepageLoading} />
+        {/* Phase 25: Hero is the LCP element — NOT wrapped in Suspense so it renders on first paint */}
+        <Hero marketStats={marketStats} isLoading={isHomepageLoading} />
+
+        {/* Above-fold companions lazy-loaded so they don't delay Hero render */}
+        <Suspense fallback={<SectionLoader />}>
           <Features />
           <MarketStatsBanner marketStats={marketStats} isLoading={isHomepageLoading} />
         </Suspense>
@@ -129,8 +165,11 @@ const HomePage: FC = () => {
         <Suspense fallback={<SectionLoader />}>
           {/* Locations first so the map has context */}
           <Locations locationTrends={locationTrends} isLoading={isHomepageLoading} />
-          <DubaiMap onPropertySelect={(property) => handlePropertyClick(property.id)} />
-          <FeaturedPropertiesSection featuredProperties={displayedFeatured} isLoading={isHomepageLoading} />
+          <DubaiMap onPropertySelect={property => handlePropertyClick(property.id)} />
+          <FeaturedPropertiesSection
+            featuredProperties={displayedFeatured}
+            isLoading={isHomepageLoading}
+          />
 
           {/* ── Tools & Insights ───────────────────────────────────────────────── */}
           <div
@@ -177,8 +216,8 @@ const HomePage: FC = () => {
                   lineHeight: 1.65,
                 }}
               >
-                Use our interactive calculators, market data, and research tools to make
-                confident property decisions in Dubai.
+                Use our interactive calculators, market data, and research tools to make confident
+                property decisions in Dubai.
               </p>
             </div>
 
