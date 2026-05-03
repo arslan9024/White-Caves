@@ -328,6 +328,25 @@ router.post(
       },
     });
 
+    // Notify assigned agent via email (fire-and-forget)
+    const assignedAgent = lead.assignedTo as { name?: string; email?: string } | null;
+    if (assignedAgent?.email) {
+      const { sendEmailTracked, EMAIL_TEMPLATES } = await import('../services/emailService.js');
+      const template = EMAIL_TEMPLATES.leadAssigned(
+        assignedAgent.name || 'Agent',
+        lead.name,
+        lead.email || '',
+        lead.source || 'direct'
+      );
+      sendEmailTracked({
+        to: assignedAgent.email,
+        subject: template.subject,
+        html: template.html,
+        text: template.text,
+        tags: [{ name: 'type', value: 'lead_assigned' }],
+      }).catch(err => console.error('[email] leadAssigned send failed:', err));
+    }
+
     // Calculate score automatically in the background
     calculateLeadScore(lead.id).catch(err => console.error('Background scoring failed:', err));
 

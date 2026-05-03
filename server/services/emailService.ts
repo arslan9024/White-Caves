@@ -131,7 +131,7 @@ export async function sendEmail(options: EmailOptions): Promise<EmailResult> {
  */
 export async function sendEmailWithRetry(
   options: EmailOptions,
-  maxRetries = 3,
+  maxRetries = 3
 ): Promise<EmailResult> {
   let lastResult: EmailResult = { success: false, error: 'No attempts made' };
 
@@ -156,7 +156,7 @@ export async function sendEmailWithRetry(
  */
 export function wrapInBrandedTemplate(
   bodyContent: string,
-  options?: { preheader?: string },
+  options?: { preheader?: string }
 ): string {
   return `<!DOCTYPE html>
 <html lang="en">
@@ -208,7 +208,8 @@ export const EMAIL_TEMPLATES = {
   welcome: (name: string): EmailTemplate => ({
     subject: `Welcome to White Caves, ${name}!`,
     text: `Hello ${name},\n\nWelcome to White Caves Real Estate. We're excited to help you find your perfect property in Dubai.\n\nYour dedicated team is ready to assist you.\n\nBest regards,\nWhite Caves Team`,
-    html: wrapInBrandedTemplate(`
+    html: wrapInBrandedTemplate(
+      `
       <h2>Welcome, ${name}!</h2>
       <p>We're thrilled to have you join White Caves Real Estate. Our team is ready to help you find your perfect property in Dubai's most sought-after locations.</p>
       <p>Here's what you can expect:</p>
@@ -219,13 +220,21 @@ export const EMAIL_TEMPLATES = {
         <li>📱 WhatsApp updates on new listings</li>
       </ul>
       <a href="https://whitecaves.com/dashboard" class="cta">Explore Properties →</a>
-    `, { preheader: `Welcome aboard, ${name}! Your property journey starts here.` }),
+    `,
+      { preheader: `Welcome aboard, ${name}! Your property journey starts here.` }
+    ),
   }),
 
-  propertyAlert: (name: string, propertyTitle: string, area: string, price: string): EmailTemplate => ({
+  propertyAlert: (
+    name: string,
+    propertyTitle: string,
+    area: string,
+    price: string
+  ): EmailTemplate => ({
     subject: `New listing in ${area}: ${propertyTitle}`,
     text: `Hi ${name},\n\nA new property matching your criteria is now available:\n\n${propertyTitle}\nArea: ${area}\nPrice: ${price}\n\nVisit whitecaves.com for details.\n\nBest,\nWhite Caves Team`,
-    html: wrapInBrandedTemplate(`
+    html: wrapInBrandedTemplate(
+      `
       <h2>New Property Match!</h2>
       <p>Hi ${name}, a property matching your criteria just became available:</p>
       <div style="background:#f7f8fa; padding:16px; border-radius:8px; margin:16px 0; border-left:4px solid #c9a84c;">
@@ -234,13 +243,21 @@ export const EMAIL_TEMPLATES = {
         <span style="color:#c9a84c; font-size:18px; font-weight:600;">${price}</span>
       </div>
       <a href="https://whitecaves.com/properties" class="cta">View Property →</a>
-    `, { preheader: `New listing: ${propertyTitle} in ${area} — ${price}` }),
+    `,
+      { preheader: `New listing: ${propertyTitle} in ${area} — ${price}` }
+    ),
   }),
 
-  viewingConfirmation: (name: string, propertyTitle: string, dateTime: string, agentName: string): EmailTemplate => ({
+  viewingConfirmation: (
+    name: string,
+    propertyTitle: string,
+    dateTime: string,
+    agentName: string
+  ): EmailTemplate => ({
     subject: `Viewing Confirmed: ${propertyTitle}`,
     text: `Hi ${name},\n\nYour viewing is confirmed.\n\nProperty: ${propertyTitle}\nDate/Time: ${dateTime}\nAgent: ${agentName}\n\nSee you there!\nWhite Caves Team`,
-    html: wrapInBrandedTemplate(`
+    html: wrapInBrandedTemplate(
+      `
       <h2>Viewing Confirmed ✅</h2>
       <p>Hi ${name}, your property viewing has been confirmed:</p>
       <table style="width:100%; border-collapse:collapse; margin:16px 0;">
@@ -250,7 +267,9 @@ export const EMAIL_TEMPLATES = {
       </table>
       <p>Your agent will meet you at the property. Please arrive 5 minutes early.</p>
       <a href="https://whitecaves.com/viewings" class="cta">Manage Viewings →</a>
-    `, { preheader: `Your viewing for ${propertyTitle} is confirmed for ${dateTime}` }),
+    `,
+      { preheader: `Your viewing for ${propertyTitle} is confirmed for ${dateTime}` }
+    ),
   }),
 
   documentReady: (name: string, documentType: string, documentTitle: string): EmailTemplate => ({
@@ -268,7 +287,12 @@ export const EMAIL_TEMPLATES = {
     `),
   }),
 
-  paymentReminder: (name: string, amount: string, description: string, dueDate: string): EmailTemplate => ({
+  paymentReminder: (
+    name: string,
+    amount: string,
+    description: string,
+    dueDate: string
+  ): EmailTemplate => ({
     subject: `Payment Reminder: ${amount} due ${dueDate}`,
     text: `Dear ${name},\n\nFriendly reminder: your payment of ${amount} for ${description} is due on ${dueDate}.\n\nPlease contact us if you need assistance.\n\nBest,\nWhite Caves Team`,
     html: wrapInBrandedTemplate(`
@@ -284,7 +308,12 @@ export const EMAIL_TEMPLATES = {
     `),
   }),
 
-  reraExpiry: (name: string, brnNumber: string, expiryDate: string, daysRemaining: string): EmailTemplate => ({
+  reraExpiry: (
+    name: string,
+    brnNumber: string,
+    expiryDate: string,
+    daysRemaining: string
+  ): EmailTemplate => ({
     subject: `⚠️ RERA License Expiry Alert: BRN ${brnNumber}`,
     text: `Dear ${name},\n\nYour RERA license (BRN ${brnNumber}) expires in ${daysRemaining} days on ${expiryDate}.\n\nPlease initiate renewal immediately.\n\nWhite Caves Compliance Team`,
     html: wrapInBrandedTemplate(`
@@ -298,6 +327,78 @@ export const EMAIL_TEMPLATES = {
       <p>Please initiate renewal to avoid service disruption. Our compliance team can assist.</p>
       <a href="https://whitecaves.com/compliance" class="cta">Start Renewal →</a>
     `),
+  }),
+
+  leadAssigned: (
+    agentName: string,
+    leadName: string,
+    leadEmail: string,
+    source: string
+  ): EmailTemplate => ({
+    subject: `New Lead Assigned: ${leadName}`,
+    text: `Hi ${agentName},\n\nA new lead has been assigned to you:\n\nName: ${leadName}\nEmail: ${leadEmail}\nSource: ${source}\n\nPlease follow up within 24 hours.\n\nWhite Caves CRM`,
+    html: wrapInBrandedTemplate(
+      `
+      <h2>New Lead Assigned 🏠</h2>
+      <p>Hi ${agentName}, a new lead has been assigned to you:</p>
+      <table style="width:100%; border-collapse:collapse; margin:16px 0;">
+        <tr><td style="padding:8px 0; color:#718096; width:120px;">Name</td><td style="padding:8px 0; font-weight:600;">${leadName}</td></tr>
+        <tr><td style="padding:8px 0; color:#718096;">Email</td><td style="padding:8px 0;">${leadEmail || 'Not provided'}</td></tr>
+        <tr><td style="padding:8px 0; color:#718096;">Source</td><td style="padding:8px 0;"><span style="background:#C9A84C; color:#fff; padding:2px 10px; border-radius:12px; font-size:13px;">${source}</span></td></tr>
+      </table>
+      <p style="color:#e53e3e; font-weight:600;">⚡ Please follow up within 24 hours for best conversion rates.</p>
+      <a href="https://whitecaves.com/crm/leads" class="cta">View Lead in CRM →</a>
+    `,
+      { preheader: `New lead ${leadName} has been assigned to you` }
+    ),
+  }),
+
+  contractSigned: (
+    clientName: string,
+    propertyTitle: string,
+    contractRef: string,
+    startDate: string
+  ): EmailTemplate => ({
+    subject: `Contract Signed: ${propertyTitle} ✅`,
+    text: `Dear ${clientName},\n\nYour tenancy contract has been successfully signed.\n\nProperty: ${propertyTitle}\nContract Ref: ${contractRef}\nStart Date: ${startDate}\n\nCongratulations! Welcome to your new home.\n\nWhite Caves Team`,
+    html: wrapInBrandedTemplate(
+      `
+      <h2>Contract Signed Successfully ✅</h2>
+      <p>Dear ${clientName}, congratulations! Your tenancy contract has been fully executed.</p>
+      <table style="width:100%; border-collapse:collapse; margin:16px 0;">
+        <tr><td style="padding:8px 0; color:#718096; width:130px;">Property</td><td style="padding:8px 0; font-weight:600;">${propertyTitle}</td></tr>
+        <tr><td style="padding:8px 0; color:#718096;">Contract Ref</td><td style="padding:8px 0; font-weight:600;">${contractRef}</td></tr>
+        <tr><td style="padding:8px 0; color:#718096;">Start Date</td><td style="padding:8px 0; font-weight:600;">${startDate}</td></tr>
+      </table>
+      <p>Your signed contract copy is available in your portal. Welcome to your new home!</p>
+      <a href="https://whitecaves.com/contracts" class="cta">View Contract →</a>
+    `,
+      { preheader: `Your contract for ${propertyTitle} is now fully signed` }
+    ),
+  }),
+
+  viewingCancelled: (
+    clientName: string,
+    propertyTitle: string,
+    dateTime: string,
+    agentName: string
+  ): EmailTemplate => ({
+    subject: `Viewing Cancelled: ${propertyTitle}`,
+    text: `Dear ${clientName},\n\nYour viewing of ${propertyTitle} scheduled for ${dateTime} has been cancelled.\n\nPlease contact ${agentName} to reschedule.\n\nWhite Caves Team`,
+    html: wrapInBrandedTemplate(
+      `
+      <h2>Viewing Cancelled</h2>
+      <p>Dear ${clientName}, your property viewing has been cancelled:</p>
+      <table style="width:100%; border-collapse:collapse; margin:16px 0;">
+        <tr><td style="padding:8px 0; color:#718096; width:120px;">Property</td><td style="padding:8px 0; font-weight:600;">${propertyTitle}</td></tr>
+        <tr><td style="padding:8px 0; color:#718096;">Was Scheduled</td><td style="padding:8px 0;">${dateTime}</td></tr>
+        <tr><td style="padding:8px 0; color:#718096;">Your Agent</td><td style="padding:8px 0;">${agentName}</td></tr>
+      </table>
+      <p>Please contact your agent to arrange a new viewing at a convenient time.</p>
+      <a href="https://whitecaves.com/viewings" class="cta">Reschedule Viewing →</a>
+    `,
+      { preheader: `Your viewing of ${propertyTitle} has been cancelled` }
+    ),
   }),
 };
 
