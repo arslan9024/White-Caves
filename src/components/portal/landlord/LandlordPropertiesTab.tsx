@@ -10,10 +10,36 @@
  * @component
  */
 
-import React, { FC, useState, useMemo } from 'react';
+import React, { FC, useState, useEffect, useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import type { RootState } from '../../../store/store';
+import { authFetch } from '../../../utils/authFetch';
 import './LandlordPropertiesTab.css';
+
+// ── API response shapes ───────────────────────────────────────────────────────
+
+interface ApiLease {
+  id: string;
+  propertyId: string;
+  tenantId: string;
+  monthlyRent: number;
+  depositAmount: number;
+  startDate: string;
+  endDate: string;
+  status: string;
+  tenant: { id: string; name: string; email: string; phone: string } | null;
+  property: { id: string; title: string; location: string; type: string } | null;
+}
+
+interface ApiProperty {
+  id: string;
+  title: string;
+  location: string;
+  type: string;
+  status: string;
+  rentalPrice: number | null;
+  price: number;
+}
 
 interface PropertyData {
   id: string;
@@ -107,46 +133,69 @@ const PropertyDetailModal: FC<DetailModalProps> = ({ property, onClose }) => {
 const LandlordPropertiesTab: FC = () => {
   const currentUser = useSelector((state: RootState) => state.user.currentUser);
   const [selectedProperty, setSelectedProperty] = useState<PropertyData | null>(null);
+  const [apiProperties, setApiProperties] = useState<ApiProperty[]>([]);
+  const [apiLeases, setApiLeases] = useState<ApiLease[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  // TODO: Replace with actual Redux selector or API call
-  // For now, using mock data. Will be connected to Redux store in full implementation.
-  const mockProperties: PropertyData[] = useMemo(
-    () => [
-      {
-        id: 'prop-1',
-        title: 'Marina View 2BR Apartment',
-        address: 'Dubai Marina, Plot 12',
-        type: 'Apartment',
-        status: 'occupied',
-        monthlyRent: 8000,
-        tenantName: 'Ahmed Al-Rashid',
-        leaseStart: 'Jan 1, 2024',
-        leaseEnd: 'Dec 31, 2024',
-        deposit: 16000,
-      },
-      {
-        id: 'prop-2',
-        title: 'Downtown Studio',
-        address: 'Downtown Dubai, Tower A',
-        type: 'Studio',
-        status: 'occupied',
-        monthlyRent: 5000,
-        tenantName: 'Sarah Johnson',
-        leaseStart: 'Jul 1, 2023',
-        leaseEnd: 'Jun 30, 2024',
-        deposit: 10000,
-      },
-      {
-        id: 'prop-3',
-        title: 'JBR 3BR Villa',
-        address: 'Jumeirah Beach Residence, Block C',
-        type: 'Villa',
-        status: 'vacant',
-        monthlyRent: 12000,
-      },
-    ],
-    []
-  );
+  useEffect(() => {
+    if (!currentUser) return;
+    let cancelled = false;
+
+    Promise.all([
+      authFetch('/api/properties?pageSize=100').then(r => r.json()),
+      authFetch('/api/leases?role=landlord&status=active&pageSize=100').then(r => r.json()),
+    ])
+      .then(([propsRes, leasesRes]) => {
+        if (cancelled) return;
+        setApiProperties(propsRes.data ?? []);
+        setApiLeases(leasesRes.data ?? []);
+        setLoading(false);
+      })
+      .catch(err => {
+        if (!cancelled) {
+          setError((err as Error).message || 'Failed to load properties');
+          setLoading(false);
+        }
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [currentUser]);
+
+  /** Merge properties + active leases into PropertyData cards */
+  const properties: PropertyData[] = useMemo(() => {
+    const leaseMap = new Map<string, ApiLease>(apiLeases.map(l => [l.propertyId, l]));
+
+    return apiProperties.map(p => {
+      const lease = leaseMap.get(p.id);
+      return {
+        id: p.id,
+        title: p.title,
+        address: p.location,
+        type: p.type,
+        status: lease ? 'occupied' : 'vacant',
+        monthlyRent: lease?.monthlyRent ?? p.rentalPrice ?? Math.round(p.price / 12),
+        tenantName: lease?.tenant?.name ?? undefined,
+        leaseStart: lease
+          ? new Date(lease.startDate).toLocaleDateString('en-AE', {
+              day: 'numeric',
+              month: 'short',
+              year: 'numeric',
+            })
+          : undefined,
+        leaseEnd: lease
+          ? new Date(lease.endDate).toLocaleDateString('en-AE', {
+              day: 'numeric',
+              month: 'short',
+              year: 'numeric',
+            })
+          : undefined,
+        deposit: lease?.depositAmount ?? undefined,
+      };
+    });
+  }, [apiProperties, apiLeases]);
 
   if (!currentUser) {
     return (
@@ -156,15 +205,34 @@ const LandlordPropertiesTab: FC = () => {
     );
   }
 
+  if (loading) {
+    return (
+      <div className="empty-state" data-testid="properties-loading">
+        <p>⏳ Loading your properties…</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="empty-state" data-testid="properties-error">
+        <p>⚠️ {error}</p>
+        <button className="btn-secondary" onClick={() => window.location.reload()}>
+          Retry
+        </button>
+      </div>
+    );
+  }
+
   return (
     <div className="landlord-properties-tab">
-      {mockProperties.length === 0 ? (
+      {properties.length === 0 ? (
         <div className="empty-state" data-testid="empty-state">
           <p>No properties registered yet. Contact your agent to add your properties.</p>
         </div>
       ) : (
         <div className="properties-grid">
-          {mockProperties.map(property => (
+          {properties.map(property => (
             <div
               key={property.id}
               className={`property-card ${property.status}`}

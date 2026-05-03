@@ -35,8 +35,15 @@ router.get(
 
     const where: Record<string, unknown> = {};
 
-    // Owners see all; others see only their own requests
-    if (userRole !== 'owner') {
+    // Role-based scoping:
+    //   owner / admin / manager → see all
+    //   landlord → see maintenance for properties they own (property.userId = landlord.id)
+    //   everyone else (tenant, agent) → see only requests they submitted
+    if (userRole === 'owner' || userRole === 'admin' || userRole === 'manager') {
+      // no extra filter – sees all
+    } else if (userRole === 'landlord') {
+      where.property = { userId };
+    } else {
       where.requesterId = userId;
     }
 
@@ -70,7 +77,7 @@ router.get(
       data: requests,
       pagination: { page, pageSize, total, totalPages: Math.ceil(total / pageSize) },
     });
-  }),
+  })
 );
 
 // ─── GET /api/maintenance/stats — Maintenance statistics ─────────────────────
@@ -96,7 +103,7 @@ router.get(
       success: true,
       data: { total, open, inProgress, completed, emergency },
     });
-  }),
+  })
 );
 
 // ─── GET /api/maintenance/:id — Get request detail ──────────────────────────
@@ -124,7 +131,7 @@ router.get(
     }
 
     res.json({ success: true, data: request });
-  }),
+  })
 );
 
 // ─── POST /api/maintenance — Submit a new maintenance request ────────────────
@@ -141,7 +148,14 @@ router.post(
     }
 
     // Validate category
-    const validCategories = ['plumbing', 'electrical', 'hvac', 'appliance', 'structural', 'general'];
+    const validCategories = [
+      'plumbing',
+      'electrical',
+      'hvac',
+      'appliance',
+      'structural',
+      'general',
+    ];
     if (category && !validCategories.includes(category)) {
       throw new AppError(`Invalid category. Must be one of: ${validCategories.join(', ')}`, 400);
     }
@@ -179,7 +193,7 @@ router.post(
       priority: request.priority,
     });
     res.status(201).json({ success: true, data: request });
-  }),
+  })
 );
 
 // ─── PATCH /api/maintenance/:id — Update a maintenance request ───────────────
@@ -199,14 +213,31 @@ router.patch(
       throw new AppError('Access denied', 403);
     }
 
-    const { title, description, category, priority, status, scheduledDate, completedAt, cost, notes, images } =
-      req.body;
+    const {
+      title,
+      description,
+      category,
+      priority,
+      status,
+      scheduledDate,
+      completedAt,
+      cost,
+      notes,
+      images,
+    } = req.body;
     const updateData: Record<string, unknown> = {};
 
     if (title !== undefined) updateData.title = title;
     if (description !== undefined) updateData.description = description;
     if (category !== undefined) {
-      const validCategories = ['plumbing', 'electrical', 'hvac', 'appliance', 'structural', 'general'];
+      const validCategories = [
+        'plumbing',
+        'electrical',
+        'hvac',
+        'appliance',
+        'structural',
+        'general',
+      ];
       if (!validCategories.includes(category)) {
         throw new AppError(`Invalid category`, 400);
       }
@@ -227,8 +258,10 @@ router.patch(
       updateData.status = status;
       if (status === 'completed') updateData.completedAt = new Date();
     }
-    if (scheduledDate !== undefined) updateData.scheduledDate = scheduledDate ? new Date(scheduledDate) : null;
-    if (completedAt !== undefined) updateData.completedAt = completedAt ? new Date(completedAt) : null;
+    if (scheduledDate !== undefined)
+      updateData.scheduledDate = scheduledDate ? new Date(scheduledDate) : null;
+    if (completedAt !== undefined)
+      updateData.completedAt = completedAt ? new Date(completedAt) : null;
     if (cost !== undefined) updateData.cost = cost;
     if (notes !== undefined) updateData.notes = notes;
     if (images !== undefined) updateData.images = images;
@@ -237,7 +270,7 @@ router.patch(
 
     logger.info('Maintenance request updated', { userId, requestId: id, status: updated.status });
     res.json({ success: true, data: updated });
-  }),
+  })
 );
 
 // ─── DELETE /api/maintenance/:id — Delete a maintenance request ──────────────
@@ -260,7 +293,7 @@ router.delete(
 
     logger.info('Maintenance request deleted', { userId, requestId: id });
     res.json({ success: true, message: 'Maintenance request deleted' });
-  }),
+  })
 );
 
 export default router;

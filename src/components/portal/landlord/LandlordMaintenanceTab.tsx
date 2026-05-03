@@ -1,18 +1,34 @@
-/**
- * LandlordMaintenanceTab — Phase 2.5: Maintenance Requests
+﻿/**
+ * LandlordMaintenanceTab — Phase 29: Live API integration
  *
- * List of maintenance requests submitted by tenants for landlord's properties.
- * Shows: property, title, submitted date, priority (urgent/high/normal), status (open/in progress/closed)
- * Landlord can add notes/comments on a request
- * Cannot close requests (only managing agent can)
+ * Maintenance requests for the landlord''s properties.
+ * Backend now scopes by property.userId = landlord.id (role=landlord handling).
  *
  * @component
  */
 
-import React, { FC, useMemo, useState } from 'react';
+import React, { FC, useMemo, useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import type { RootState } from '../../../store/store';
+import { authFetch } from '../../../utils/authFetch';
 import '../../../pages/RolePages.css';
+
+// ── API shapes ────────────────────────────────────────────────────────────────
+
+interface ApiMaintenanceRequest {
+  id: string;
+  title: string;
+  description?: string | null;
+  category: string;
+  priority: string;
+  status: string;
+  notes?: string | null;
+  createdAt: string;
+  property: { id: string; title: string; location: string } | null;
+  requester: { id: string; name: string; email: string } | null;
+}
+
+// ── Main component ────────────────────────────────────────────────────────────
 
 const LandlordMaintenanceTab: FC = () => {
   const currentUser = useSelector((state: RootState) => state.user.currentUser);
@@ -23,87 +39,92 @@ const LandlordMaintenanceTab: FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedRequestId, setSelectedRequestId] = useState<string | null>(null);
   const [requestNotes, setRequestNotes] = useState<Record<string, string>>({});
+  const [requests, setRequests] = useState<ApiMaintenanceRequest[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  const mockRequests = useMemo(
-    () => [
-      {
-        id: 'req-001',
-        property: 'Marina View 2BR Apartment',
-        tenant: 'Ahmed Al-Rashid',
-        title: 'AC unit not cooling properly',
-        description: 'Bedroom AC has weak airflow and does not cool at night.',
-        submittedDate: '2026-04-11',
-        priority: 'high' as const,
-        status: 'open' as const,
-      },
-      {
-        id: 'req-002',
-        property: 'Downtown Studio',
-        tenant: 'Sarah Johnson',
-        title: 'Kitchen sink leakage',
-        description: 'Slow leak under sink cabinet causing damp smell.',
-        submittedDate: '2026-04-08',
-        priority: 'medium' as const,
-        status: 'in-progress' as const,
-      },
-      {
-        id: 'req-003',
-        property: 'JBR 3BR Villa',
-        tenant: 'Mohammed Hassan',
-        title: 'Bathroom light fixture replacement',
-        description: 'Master bathroom light stopped working.',
-        submittedDate: '2026-03-28',
-        priority: 'low' as const,
-        status: 'closed' as const,
-      },
-      {
-        id: 'req-004',
-        property: 'Marina View 2BR Apartment',
-        tenant: 'Fatima Al-Mansoori',
-        title: 'Water heater inconsistent',
-        description: 'Hot water turns cold after 5 minutes in guest bathroom.',
-        submittedDate: '2026-04-15',
-        priority: 'high' as const,
-        status: 'open' as const,
-      },
-    ],
-    []
-  );
+  useEffect(() => {
+    if (!currentUser) return;
+    let cancelled = false;
+
+    // The maintenance route now scopes landlord role to property.userId = landlord.id
+    authFetch('/api/maintenance?pageSize=100')
+      .then(r => r.json())
+      .then(data => {
+        if (!cancelled) {
+          setRequests(data.data ?? []);
+          setLoading(false);
+        }
+      })
+      .catch(err => {
+        if (!cancelled) {
+          setError((err as Error).message || 'Failed to load maintenance requests');
+          setLoading(false);
+        }
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [currentUser]);
 
   const filteredRequests = useMemo(() => {
     const normalizedSearch = searchQuery.trim().toLowerCase();
-
-    return mockRequests.filter(request => {
-      const matchesStatus = statusFilter === 'all' || request.status === statusFilter;
+    return requests.filter(request => {
+      const matchesStatus =
+        statusFilter === 'all' ||
+        (statusFilter === 'in-progress'
+          ? request.status === 'in_progress'
+          : request.status === statusFilter);
       const matchesPriority = priorityFilter === 'all' || request.priority === priorityFilter;
       const matchesSearch =
         normalizedSearch.length === 0 ||
         request.title.toLowerCase().includes(normalizedSearch) ||
-        request.property.toLowerCase().includes(normalizedSearch) ||
-        request.tenant.toLowerCase().includes(normalizedSearch);
-
+        (request.property?.title ?? '').toLowerCase().includes(normalizedSearch) ||
+        (request.requester?.name ?? '').toLowerCase().includes(normalizedSearch);
       return matchesStatus && matchesPriority && matchesSearch;
     });
-  }, [mockRequests, priorityFilter, searchQuery, statusFilter]);
+  }, [requests, priorityFilter, searchQuery, statusFilter]);
 
-  const summary = useMemo(() => {
-    return {
-      total: mockRequests.length,
-      open: mockRequests.filter(request => request.status === 'open').length,
-      inProgress: mockRequests.filter(request => request.status === 'in-progress').length,
-      closed: mockRequests.filter(request => request.status === 'closed').length,
-    };
-  }, [mockRequests]);
+  const summary = useMemo(
+    () => ({
+      total: requests.length,
+      open: requests.filter(r => r.status === 'open').length,
+      inProgress: requests.filter(r => r.status === 'in_progress' || r.status === 'scheduled')
+        .length,
+      closed: requests.filter(r => r.status === 'completed' || r.status === 'cancelled').length,
+    }),
+    [requests]
+  );
 
   const selectedRequest = useMemo(
-    () => mockRequests.find(request => request.id === selectedRequestId) ?? null,
-    [mockRequests, selectedRequestId]
+    () => requests.find(r => r.id === selectedRequestId) ?? null,
+    [requests, selectedRequestId]
   );
 
   if (!currentUser) {
     return (
       <div className="empty-state">
         <p>You must be logged in to view maintenance requests.</p>
+      </div>
+    );
+  }
+
+  if (loading) {
+    return (
+      <div className="empty-state" data-testid="maintenance-loading">
+        <p>⏳ Loading maintenance requests…</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="empty-state" data-testid="maintenance-error">
+        <p>⚠️ {error}</p>
+        <button className="btn-secondary" onClick={() => window.location.reload()}>
+          Retry
+        </button>
       </div>
     );
   }
@@ -186,11 +207,11 @@ const LandlordMaintenanceTab: FC = () => {
             >
               <div>
                 <strong>{request.title}</strong>
-                <p>{request.property}</p>
-                <p>{request.tenant}</p>
+                <p>{request.property?.title ?? '—'}</p>
+                <p>{request.requester?.name ?? '—'}</p>
               </div>
               <div>
-                <p>Submitted: {request.submittedDate}</p>
+                <p>Submitted: {new Date(request.createdAt).toLocaleDateString('en-AE')}</p>
                 <span className={`status-badge status-${request.status}`}>{request.status}</span>
               </div>
               <div>
@@ -208,6 +229,8 @@ const LandlordMaintenanceTab: FC = () => {
           className="modal-overlay"
           data-testid="maintenance-detail-modal"
           onClick={() => setSelectedRequestId(null)}
+          role="dialog"
+          aria-modal="true"
         >
           <div className="modal-content" onClick={event => event.stopPropagation()}>
             <button
@@ -221,25 +244,31 @@ const LandlordMaintenanceTab: FC = () => {
 
             <h4>Maintenance Request Details</h4>
             <p>
-              <strong>ID:</strong> {selectedRequest.id}
+              <strong>Property:</strong> {selectedRequest.property?.title ?? '—'}
             </p>
             <p>
-              <strong>Property:</strong> {selectedRequest.property}
-            </p>
-            <p>
-              <strong>Tenant:</strong> {selectedRequest.tenant}
+              <strong>Submitted by:</strong> {selectedRequest.requester?.name ?? '—'}
             </p>
             <p>
               <strong>Issue:</strong> {selectedRequest.title}
             </p>
+            {selectedRequest.description && (
+              <p>
+                <strong>Description:</strong> {selectedRequest.description}
+              </p>
+            )}
             <p>
-              <strong>Description:</strong> {selectedRequest.description}
+              <strong>Category:</strong> {selectedRequest.category}
             </p>
             <p>
               <strong>Priority:</strong> {selectedRequest.priority}
             </p>
             <p>
               <strong>Status:</strong> {selectedRequest.status}
+            </p>
+            <p>
+              <strong>Submitted:</strong>{' '}
+              {new Date(selectedRequest.createdAt).toLocaleDateString('en-AE')}
             </p>
 
             <label htmlFor="landlord-note-input">
@@ -250,7 +279,7 @@ const LandlordMaintenanceTab: FC = () => {
               data-testid="maintenance-note-input"
               rows={4}
               placeholder="Add follow-up notes for your internal tracking"
-              value={requestNotes[selectedRequest.id] ?? ''}
+              value={requestNotes[selectedRequest.id] ?? selectedRequest.notes ?? ''}
               onChange={event =>
                 setRequestNotes(previous => ({
                   ...previous,
@@ -264,7 +293,7 @@ const LandlordMaintenanceTab: FC = () => {
               className="btn-primary"
               onClick={() => setSelectedRequestId(null)}
             >
-              Save Note
+              Close
             </button>
           </div>
         </div>

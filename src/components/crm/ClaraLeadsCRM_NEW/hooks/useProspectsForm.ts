@@ -39,6 +39,8 @@ export function useProspectsForm() {
     setFilterStatus,
     filterStage,
     setFilterStage,
+    filterSource,
+    setFilterSource,
     searchQuery,
     setSearchQuery,
     addLead,
@@ -60,7 +62,7 @@ export function useProspectsForm() {
         setShowAddForm(false);
       }
     },
-    [formData, addLead],
+    [formData, addLead]
   );
 
   /** Confirm-delete a lead by ID */
@@ -70,20 +72,20 @@ export function useProspectsForm() {
         deleteLead(id);
       }
     },
-    [deleteLead],
+    [deleteLead]
   );
 
   /** Toggle the add-lead form visibility */
   const toggleAddForm = useCallback(() => {
-    setShowAddForm((prev) => !prev);
+    setShowAddForm(prev => !prev);
   }, []);
 
   /** Set a single form field */
   const setField = useCallback(
     <K extends keyof ProspectFormData>(key: K, value: ProspectFormData[K]) => {
-      setFormData((prev) => ({ ...prev, [key]: value }));
+      setFormData(prev => ({ ...prev, [key]: value }));
     },
-    [],
+    []
   );
 
   return {
@@ -95,6 +97,8 @@ export function useProspectsForm() {
     setFilterStatus,
     filterStage,
     setFilterStage,
+    filterSource,
+    setFilterSource,
     searchQuery,
     setSearchQuery,
     // Lead actions

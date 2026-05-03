@@ -1,4 +1,5 @@
-﻿// @ts-nocheck
+﻿// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-nocheck
 /**
  * @component LuxuryHeroSection
  * @agent @Una (Luxury UI/UX Specialist)
@@ -10,13 +11,7 @@
  */
 
 import React, { useEffect, useRef, useState } from 'react';
-import {
-  motion,
-  useScroll,
-  useTransform,
-  useReducedMotion,
-  type Variants,
-} from 'framer-motion';
+import { motion, useScroll, useTransform, useReducedMotion, type Variants } from 'framer-motion';
 import { ArrowRight, Search, Phone, Star, Shield, Award } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import type { MarketStats } from '../../../store/slices/homepageSlice';
@@ -211,19 +206,15 @@ export const LuxuryHeroSection: React.FC<LuxuryHeroSectionProps> = ({
       {/* -- Background Layer ------------------------------- */}
       <div className="luxury-hero__background" aria-hidden="true">
         {/* Parallax Dubai Skyline */}
-        <motion.div
-          className="luxury-hero__skyline"
-          style={{ y: skylineY }}
-          aria-hidden="true"
-        />
+        <motion.div className="luxury-hero__skyline" style={{ y: skylineY }} aria-hidden="true" />
 
-        {/* LCP-optimized image (invisible, browser prioritises it) */}
+        {/* LCP-optimized image (invisible, browser prioritises it) — Phase 25: url must match preload href + CSS bg url */}
         <img
-          src="https://images.unsplash.com/photo-1582268611958-ebfd161ef9cf?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80"
+          src="https://images.unsplash.com/photo-1582268611958-ebfd161ef9cf?ixlib=rb-4.0.3&auto=format&fit=crop&w=1440&q=75"
           alt=""
           aria-hidden="true"
           // @ts-expect-error fetchpriority is a valid HTML attribute in modern browsers
-          fetchpriority="high"
+          fetchPriority="high"
           style={{ position: 'absolute', width: 1, height: 1, opacity: 0, pointerEvents: 'none' }}
         />
 
@@ -244,7 +235,11 @@ export const LuxuryHeroSection: React.FC<LuxuryHeroSectionProps> = ({
           animate={
             prefersReducedMotion
               ? {}
-              : { y: [0, 20, 0], x: [0, -14, 0], transition: { duration: 9, repeat: Infinity, ease: 'easeInOut' } }
+              : {
+                  y: [0, 20, 0],
+                  x: [0, -14, 0],
+                  transition: { duration: 9, repeat: Infinity, ease: 'easeInOut' },
+                }
           }
         />
         <motion.div
@@ -252,7 +247,11 @@ export const LuxuryHeroSection: React.FC<LuxuryHeroSectionProps> = ({
           animate={
             prefersReducedMotion
               ? {}
-              : { scale: [1, 1.15, 1], opacity: [0.2, 0.4, 0.2], transition: { duration: 6, repeat: Infinity, ease: 'easeInOut' } }
+              : {
+                  scale: [1, 1.15, 1],
+                  opacity: [0.2, 0.4, 0.2],
+                  transition: { duration: 6, repeat: Infinity, ease: 'easeInOut' },
+                }
           }
         />
 
@@ -273,14 +272,20 @@ export const LuxuryHeroSection: React.FC<LuxuryHeroSectionProps> = ({
         animate="visible"
       >
         {/* -- Top Pill Badge -- */}
-        <motion.div className="luxury-hero__pill" variants={itemVariants} aria-label="Property availability badge">
+        <motion.div
+          className="luxury-hero__pill"
+          variants={itemVariants}
+          aria-label="Property availability badge"
+        >
           <span className="luxury-hero__pill-dot" aria-hidden="true" />
           <span className="luxury-hero__pill-text">
             {marketStats?.totalProperties
               ? `${marketStats.totalProperties}+ Exclusive Properties Available`
               : 'Exclusive Dubai Properties · Verified & Trusted'}
           </span>
-          <span className="luxury-hero__pill-arrow" aria-hidden="true">›</span>
+          <span className="luxury-hero__pill-arrow" aria-hidden="true">
+            ›
+          </span>
         </motion.div>
 
         {/* -- Hero Headline -- */}
@@ -291,41 +296,53 @@ export const LuxuryHeroSection: React.FC<LuxuryHeroSectionProps> = ({
           <span className="luxury-hero__title-line luxury-hero__title-line--gold">
             Dream Property
           </span>
-          <span className="luxury-hero__title-line luxury-hero__title-line--light">
-            in Dubai
-          </span>
+          <span className="luxury-hero__title-line luxury-hero__title-line--light">in Dubai</span>
         </motion.h1>
 
         {/* -- Market Price Ribbon -- */}
-        <motion.div className="luxury-hero__market-ribbon" variants={itemVariants} aria-label="Dubai market statistics ribbon">
+        <motion.div
+          className="luxury-hero__market-ribbon"
+          variants={itemVariants}
+          aria-label="Dubai market statistics ribbon"
+        >
           <div className="luxury-hero__ribbon-item">
             <span className="luxury-hero__ribbon-label">Dubai Marina</span>
-            <span className="luxury-hero__ribbon-separator" aria-hidden="true">|</span>
+            <span className="luxury-hero__ribbon-separator" aria-hidden="true">
+              |
+            </span>
             <span className="luxury-hero__ribbon-value">
               {marketStats?.averagePrice
                 ? `AED ${(marketStats.averagePrice / 1_000_000).toFixed(1)}M avg`
                 : 'From AED 1.2M'}
             </span>
           </div>
-          <span className="luxury-hero__ribbon-divider" aria-hidden="true">·</span>
+          <span className="luxury-hero__ribbon-divider" aria-hidden="true">
+            ·
+          </span>
           <div className="luxury-hero__ribbon-item">
             <span className="luxury-hero__ribbon-label">Downtown Dubai</span>
-            <span className="luxury-hero__ribbon-separator" aria-hidden="true">|</span>
+            <span className="luxury-hero__ribbon-separator" aria-hidden="true">
+              |
+            </span>
             <span className="luxury-hero__ribbon-value">From AED 2.5M</span>
           </div>
-          <span className="luxury-hero__ribbon-divider" aria-hidden="true">·</span>
+          <span className="luxury-hero__ribbon-divider" aria-hidden="true">
+            ·
+          </span>
           <div className="luxury-hero__ribbon-item">
             <span className="luxury-hero__ribbon-label">Palm Jumeirah</span>
-            <span className="luxury-hero__ribbon-separator" aria-hidden="true">|</span>
+            <span className="luxury-hero__ribbon-separator" aria-hidden="true">
+              |
+            </span>
             <span className="luxury-hero__ribbon-value">From AED 8M</span>
           </div>
         </motion.div>
 
         {/* -- Tagline -- */}
         <motion.p className="luxury-hero__tagline" variants={itemVariants}>
-          White Caves Real Estate — where Dubai&apos;s most coveted residences meet
-          world-class expertise. Explore penthouses, villas, and off-plan investments
-          crafted for the discerning few.
+          White Caves Real Estate — where Dubai&apos;s most coveted residences meet world-class
+          expertise. Explore penthouses, villas, and off-plan investments crafted for the discerning
+          few.
         </motion.p>
 
         {/* -- Search Bar -- */}
@@ -358,9 +375,7 @@ export const LuxuryHeroSection: React.FC<LuxuryHeroSectionProps> = ({
             className="luxury-hero__btn luxury-hero__btn--ghost"
             onClick={handleBookConsultation}
             whileHover={
-              prefersReducedMotion
-                ? {}
-                : { scale: 1.04, borderColor: 'rgba(196,30,58,0.7)' }
+              prefersReducedMotion ? {} : { scale: 1.04, borderColor: 'rgba(196,30,58,0.7)' }
             }
             whileTap={{ scale: 0.97 }}
             aria-label="Book a consultation with our Dubai property experts"
@@ -379,7 +394,7 @@ export const LuxuryHeroSection: React.FC<LuxuryHeroSectionProps> = ({
           role="list"
           aria-label="Key performance statistics"
         >
-          {stats.map((stat) => (
+          {stats.map(stat => (
             <motion.div
               key={stat.label}
               className="luxury-hero__stat-card"
@@ -400,7 +415,10 @@ export const LuxuryHeroSection: React.FC<LuxuryHeroSectionProps> = ({
               <div className="luxury-hero__stat-icon" aria-hidden="true">
                 {stat.icon}
               </div>
-              <div className="luxury-hero__stat-number" aria-label={`${stat.number}${stat.suffix} ${stat.label}`}>
+              <div
+                className="luxury-hero__stat-number"
+                aria-label={`${stat.number}${stat.suffix} ${stat.label}`}
+              >
                 {isLoading ? (
                   <span className="luxury-hero__stat-skeleton" aria-hidden="true" />
                 ) : (
@@ -469,6 +487,3 @@ export const LuxuryHeroSection: React.FC<LuxuryHeroSectionProps> = ({
 };
 
 export default LuxuryHeroSection;
-
-
-

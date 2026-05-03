@@ -1,8 +1,8 @@
 # Property Management — CRM Feature Specification
 
-> **Status:** In Development  
+> **Status:** Active (Production + Optimization)  
 > **Module Owner:** Hassan (Property Specialist AI)  
-> **Last Updated:** April 2026  
+> **Last Updated:** May 2026  
 > **Priority:** Critical  
 > **API Endpoints:** `/api/properties`, `/api/listings`, `/api/syndication`
 
@@ -83,14 +83,14 @@ Provide agents, managers, and property owners with a centralized system to creat
 
 ### Lifecycle Stages
 
-| Stage | Description | Allowed Actions | Visible on Portals |
-|-------|-------------|-----------------|-------------------|
-| **Draft** | Initial creation; incomplete data allowed | Edit, Upload media, Submit for review | No |
-| **Pending** | Submitted for manager/compliance review | Approve, Reject, Request changes | No |
-| **Active** | Live listing; visible to clients and portals | Edit (minor), Syndicate, Archive, Mark sold/rented | Yes |
-| **Rejected** | Failed compliance or quality review | Edit, Resubmit | No |
-| **Completed** | Successfully sold or rented | View only, Generate reports | No |
-| **Archived** | Removed from active listings | Relist, Delete (admin only) | No |
+| Stage         | Description                                  | Allowed Actions                                    | Visible on Portals |
+| ------------- | -------------------------------------------- | -------------------------------------------------- | ------------------ |
+| **Draft**     | Initial creation; incomplete data allowed    | Edit, Upload media, Submit for review              | No                 |
+| **Pending**   | Submitted for manager/compliance review      | Approve, Reject, Request changes                   | No                 |
+| **Active**    | Live listing; visible to clients and portals | Edit (minor), Syndicate, Archive, Mark sold/rented | Yes                |
+| **Rejected**  | Failed compliance or quality review          | Edit, Resubmit                                     | No                 |
+| **Completed** | Successfully sold or rented                  | View only, Generate reports                        | No                 |
+| **Archived**  | Removed from active listings                 | Relist, Delete (admin only)                        | No                 |
 
 ### State Transition Rules
 
@@ -107,31 +107,31 @@ Provide agents, managers, and property owners with a centralized system to creat
 
 ### Residential
 
-| Type | Code | Typical Fields |
-|------|------|---------------|
+| Type      | Code        | Typical Fields                               |
+| --------- | ----------- | -------------------------------------------- |
 | Apartment | `apartment` | Floor, unit number, building name, community |
-| Villa | `villa` | Plot size, garden, pool, parking spaces |
-| Townhouse | `townhouse` | Plot size, floors, garden, parking |
+| Villa     | `villa`     | Plot size, garden, pool, parking spaces      |
+| Townhouse | `townhouse` | Plot size, floors, garden, parking           |
 | Penthouse | `penthouse` | Floor, terrace size, private pool, view type |
-| Studio | `studio` | Floor, unit number, building name |
-| Duplex | `duplex` | Floors, internal staircase, terrace |
+| Studio    | `studio`    | Floor, unit number, building name            |
+| Duplex    | `duplex`    | Floors, internal staircase, terrace          |
 
 ### Commercial
 
-| Type | Code | Typical Fields |
-|------|------|---------------|
-| Office | `office` | Floor, partitions, grade (A/B/C), parking |
-| Retail | `retail` | Frontage, footfall data, visibility |
-| Warehouse | `warehouse` | Height, loading dock, power supply |
-| Shop | `shop` | Frontage, mall/strip, footfall |
+| Type      | Code        | Typical Fields                            |
+| --------- | ----------- | ----------------------------------------- |
+| Office    | `office`    | Floor, partitions, grade (A/B/C), parking |
+| Retail    | `retail`    | Frontage, footfall data, visibility       |
+| Warehouse | `warehouse` | Height, loading dock, power supply        |
+| Shop      | `shop`      | Frontage, mall/strip, footfall            |
 
 ### Land
 
-| Type | Code | Typical Fields |
-|------|------|---------------|
+| Type             | Code               | Typical Fields                     |
+| ---------------- | ------------------ | ---------------------------------- |
 | Residential Plot | `land_residential` | Plot number, permitted floors, FAR |
-| Commercial Plot | `land_commercial` | Plot number, permitted use, FAR |
-| Mixed-Use Plot | `land_mixed` | Plot number, permitted mix, FAR |
+| Commercial Plot  | `land_commercial`  | Plot number, permitted use, FAR    |
+| Mixed-Use Plot   | `land_mixed`       | Plot number, permitted mix, FAR    |
 
 ---
 
@@ -142,13 +142,13 @@ Provide agents, managers, and property owners with a centralized system to creat
 ```typescript
 interface Property {
   id: string;
-  referenceNumber: string;          // Auto-generated: WC-PROP-2026-XXXXX
+  referenceNumber: string; // Auto-generated: WC-PROP-2026-XXXXX
 
   // Core Details
-  title: string;                    // Max 120 characters
-  description: string;              // Max 5000 characters, supports rich text
-  titleAr?: string;                 // Arabic title
-  descriptionAr?: string;           // Arabic description
+  title: string; // Max 120 characters
+  description: string; // Max 5000 characters, supports rich text
+  titleAr?: string; // Arabic title
+  descriptionAr?: string; // Arabic description
   type: PropertyType;
   subType?: string;
   purpose: 'sale' | 'rent' | 'short_term_rent';
@@ -156,9 +156,9 @@ interface Property {
   // Pricing
   price: number;
   currency: 'AED' | 'USD';
-  pricePerSqFt?: number;           // Auto-calculated
+  pricePerSqFt?: number; // Auto-calculated
   rentalFrequency?: 'yearly' | 'monthly' | 'weekly' | 'daily';
-  numberOfCheques?: number;         // Dubai-specific: 1, 2, 4, 6, 12
+  numberOfCheques?: number; // Dubai-specific: 1, 2, 4, 6, 12
 
   // Dimensions
   areaSqFt: number;
@@ -166,24 +166,24 @@ interface Property {
   builtUpAreaSqFt?: number;
 
   // Features
-  bedrooms?: number;               // 0 for studio
+  bedrooms?: number; // 0 for studio
   bathrooms?: number;
   parkingSpaces?: number;
   floor?: number;
   totalFloors?: number;
   furnishing: 'furnished' | 'semi_furnished' | 'unfurnished';
-  view?: string[];                  // e.g., ['sea', 'garden', 'city']
-  amenities: string[];             // Pool, gym, concierge, etc.
+  view?: string[]; // e.g., ['sea', 'garden', 'city']
+  amenities: string[]; // Pool, gym, concierge, etc.
 
   // Location
-  community: string;               // e.g., 'Dubai Marina'
-  subCommunity?: string;           // e.g., 'Marina Promenade'
+  community: string; // e.g., 'Dubai Marina'
+  subCommunity?: string; // e.g., 'Marina Promenade'
   building?: string;
   unitNumber?: string;
   address: string;
   latitude: number;
   longitude: number;
-  makaniNumber?: string;            // Dubai Makani geo-address
+  makaniNumber?: string; // Dubai Makani geo-address
 
   // Media
   photos: PropertyPhoto[];
@@ -196,14 +196,14 @@ interface Property {
   reraPermitNumber: string;
   reraPermitExpiry: Date;
   dldTransactionNumber?: string;
-  trakheesiPermit?: string;         // For holiday homes
+  trakheesiPermit?: string; // For holiday homes
   titleDeedNumber?: string;
 
   // Relationships
-  ownerId?: string;                 // Link to landlord/owner record
-  agentId: string;                  // Listing agent
+  ownerId?: string; // Link to landlord/owner record
+  agentId: string; // Listing agent
   teamId?: string;
-  developerId?: string;             // For off-plan
+  developerId?: string; // For off-plan
 
   // Status & Tracking
   status: 'draft' | 'pending' | 'active' | 'rejected' | 'completed' | 'archived';
@@ -241,7 +241,7 @@ interface PropertyPhoto {
 interface FloorPlan {
   id: string;
   url: string;
-  label: string;                   // e.g., 'Ground Floor', 'First Floor'
+  label: string; // e.g., 'Ground Floor', 'First Floor'
   order: number;
 }
 
@@ -267,24 +267,24 @@ interface SyndicationStatus {
 
 ### Filter Criteria
 
-| Filter | Type | Options |
-|--------|------|---------|
-| Purpose | Select | Sale, Rent, Short-term rent |
-| Property type | Multi-select | All property types |
-| Price range | Range slider | Min–Max (AED/USD toggle) |
-| Area (sq ft) | Range slider | Min–Max |
-| Bedrooms | Multi-select | Studio, 1, 2, 3, 4, 5, 6, 7+ |
-| Bathrooms | Multi-select | 1, 2, 3, 4, 5+ |
-| Community | Searchable dropdown | All Dubai communities |
-| Building | Searchable dropdown | Filtered by community |
-| Furnishing | Multi-select | Furnished, Semi, Unfurnished |
-| View | Multi-select | Sea, Garden, City, Pool, Golf, etc. |
-| Amenities | Multi-select | Pool, Gym, Concierge, etc. |
-| Listing date | Date range | From–To |
-| Status | Multi-select | All statuses |
-| Agent | Searchable dropdown | All agents |
-| RERA permit | Toggle | Has valid permit / All |
-| Days on market | Range | Min–Max |
+| Filter         | Type                | Options                             |
+| -------------- | ------------------- | ----------------------------------- |
+| Purpose        | Select              | Sale, Rent, Short-term rent         |
+| Property type  | Multi-select        | All property types                  |
+| Price range    | Range slider        | Min–Max (AED/USD toggle)            |
+| Area (sq ft)   | Range slider        | Min–Max                             |
+| Bedrooms       | Multi-select        | Studio, 1, 2, 3, 4, 5, 6, 7+        |
+| Bathrooms      | Multi-select        | 1, 2, 3, 4, 5+                      |
+| Community      | Searchable dropdown | All Dubai communities               |
+| Building       | Searchable dropdown | Filtered by community               |
+| Furnishing     | Multi-select        | Furnished, Semi, Unfurnished        |
+| View           | Multi-select        | Sea, Garden, City, Pool, Golf, etc. |
+| Amenities      | Multi-select        | Pool, Gym, Concierge, etc.          |
+| Listing date   | Date range          | From–To                             |
+| Status         | Multi-select        | All statuses                        |
+| Agent          | Searchable dropdown | All agents                          |
+| RERA permit    | Toggle              | Has valid permit / All              |
+| Days on market | Range               | Min–Max                             |
 
 ### Sort Options
 
@@ -355,11 +355,11 @@ interface SyndicationStatus {
 
 ### Supported Portals
 
-| Portal | Feed Format | Sync Frequency | Features |
-|--------|-------------|----------------|----------|
-| PropertyFinder | XML/API | Every 4 hours | Premium listings, featured spots |
-| Bayut | XML/API | Every 4 hours | TruCheck verification, floor plans |
-| Dubizzle | XML/API | Every 4 hours | Auto-refresh, boost options |
+| Portal         | Feed Format | Sync Frequency | Features                           |
+| -------------- | ----------- | -------------- | ---------------------------------- |
+| PropertyFinder | XML/API     | Every 4 hours  | Premium listings, featured spots   |
+| Bayut          | XML/API     | Every 4 hours  | TruCheck verification, floor plans |
+| Dubizzle       | XML/API     | Every 4 hours  | Auto-refresh, boost options        |
 
 ### Syndication Workflow
 
@@ -399,15 +399,15 @@ interface SyndicationStatus {
 
 ### Off-Plan Listing Fields
 
-| Field | Description |
-|-------|-------------|
-| Developer | Developer company name and profile |
-| Project name | Master development name |
-| Phase | Current construction phase |
-| Expected handover | Quarter/Year (e.g., Q3 2027) |
-| Payment plan | Down payment %, installments, post-handover % |
-| DLD waiver | Whether developer is offering DLD fee waiver |
-| Escrow account | Escrow account number (RERA requirement) |
+| Field             | Description                                   |
+| ----------------- | --------------------------------------------- |
+| Developer         | Developer company name and profile            |
+| Project name      | Master development name                       |
+| Phase             | Current construction phase                    |
+| Expected handover | Quarter/Year (e.g., Q3 2027)                  |
+| Payment plan      | Down payment %, installments, post-handover % |
+| DLD waiver        | Whether developer is offering DLD fee waiver  |
+| Escrow account    | Escrow account number (RERA requirement)      |
 
 ---
 
@@ -491,16 +491,16 @@ interface SyndicationStatus {
 
 ### Metrics Tracked
 
-| Metric | Description | Source |
-|--------|-------------|--------|
-| Total views | Page views on CRM and portals | Internal + portal APIs |
-| Unique views | Deduplicated by session/user | Internal tracking |
-| Inquiries | Number of contact requests | Forms, calls, WhatsApp |
-| Shortlists | Times added to client shortlists | Internal tracking |
-| Shares | Times shared by agents | Internal tracking |
-| Days on market | Days since listing went active | Calculated |
-| Price changes | History of price modifications | Audit log |
-| Conversion rate | Inquiries / Views × 100 | Calculated |
+| Metric          | Description                      | Source                 |
+| --------------- | -------------------------------- | ---------------------- |
+| Total views     | Page views on CRM and portals    | Internal + portal APIs |
+| Unique views    | Deduplicated by session/user     | Internal tracking      |
+| Inquiries       | Number of contact requests       | Forms, calls, WhatsApp |
+| Shortlists      | Times added to client shortlists | Internal tracking      |
+| Shares          | Times shared by agents           | Internal tracking      |
+| Days on market  | Days since listing went active   | Calculated             |
+| Price changes   | History of price modifications   | Audit log              |
+| Conversion rate | Inquiries / Views × 100          | Calculated             |
 
 ### Analytics Views
 
@@ -567,20 +567,20 @@ interface SyndicationStatus {
 
 ### API Endpoints
 
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | `/api/properties` | List/search properties with filters |
-| POST | `/api/properties` | Create new property |
-| GET | `/api/properties/:id` | Get property details |
-| PUT | `/api/properties/:id` | Update property |
-| PATCH | `/api/properties/:id/status` | Update property status |
-| POST | `/api/properties/:id/photos` | Upload photos |
-| DELETE | `/api/properties/:id/photos/:photoId` | Remove photo |
-| POST | `/api/properties/:id/syndicate` | Trigger syndication |
-| GET | `/api/properties/:id/analytics` | Get listing analytics |
-| POST | `/api/properties/import` | Bulk import from CSV/Excel |
-| POST | `/api/properties/bulk-update` | Bulk status update |
-| GET | `/api/properties/:id/valuation` | Get property valuation |
+| Method | Endpoint                              | Description                         |
+| ------ | ------------------------------------- | ----------------------------------- |
+| GET    | `/api/properties`                     | List/search properties with filters |
+| POST   | `/api/properties`                     | Create new property                 |
+| GET    | `/api/properties/:id`                 | Get property details                |
+| PUT    | `/api/properties/:id`                 | Update property                     |
+| PATCH  | `/api/properties/:id/status`          | Update property status              |
+| POST   | `/api/properties/:id/photos`          | Upload photos                       |
+| DELETE | `/api/properties/:id/photos/:photoId` | Remove photo                        |
+| POST   | `/api/properties/:id/syndicate`       | Trigger syndication                 |
+| GET    | `/api/properties/:id/analytics`       | Get listing analytics               |
+| POST   | `/api/properties/import`              | Bulk import from CSV/Excel          |
+| POST   | `/api/properties/bulk-update`         | Bulk status update                  |
+| GET    | `/api/properties/:id/valuation`       | Get property valuation              |
 
 ### Multi-Currency Support
 
@@ -591,13 +591,13 @@ interface SyndicationStatus {
 
 ### Role-Based Access
 
-| Role | Create | Edit Own | Edit All | Approve | Delete | Bulk Ops |
-|------|--------|----------|----------|---------|--------|----------|
-| Owner | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| Manager | ✅ | ✅ | ✅ | ✅ | ❌ | ✅ |
-| Agent | ✅ | ✅ | ❌ | ❌ | ❌ | ❌ |
-| Sales Agent | ✅ | ✅ | ❌ | ❌ | ❌ | ❌ |
-| Leasing Agent | ✅ | ✅ | ❌ | ❌ | ❌ | ❌ |
+| Role          | Create | Edit Own | Edit All | Approve | Delete | Bulk Ops |
+| ------------- | ------ | -------- | -------- | ------- | ------ | -------- |
+| Owner         | ✅     | ✅       | ✅       | ✅      | ✅     | ✅       |
+| Manager       | ✅     | ✅       | ✅       | ✅      | ❌     | ✅       |
+| Agent         | ✅     | ✅       | ❌       | ❌      | ❌     | ❌       |
+| Sales Agent   | ✅     | ✅       | ❌       | ❌      | ❌     | ❌       |
+| Leasing Agent | ✅     | ✅       | ❌       | ❌      | ❌     | ❌       |
 
 ### AI Integration
 

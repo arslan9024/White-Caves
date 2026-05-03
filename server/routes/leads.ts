@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Leads API Routes — Full CRUD Implementation
  * Endpoints: /api/leads
  * Supports: search, filter, pagination, bulk operations, analytics
@@ -31,6 +31,8 @@ const VALID_LEAD_SOURCES = [
   'cold_call',
   'event',
   'other',
+  // TASK-002 / Phase 27: anonymous homepage search leads (no auth required)
+  'homepage_search',
 ] as const;
 import { validate, rules, validateIdParam } from '../utils/validate';
 import { parsePagination } from '../config/pagination';
@@ -325,6 +327,25 @@ router.post(
         leadId: lead.id,
       },
     });
+
+    // Notify assigned agent via email (fire-and-forget)
+    const assignedAgent = lead.assignedTo as { name?: string; email?: string } | null;
+    if (assignedAgent?.email) {
+      const { sendEmailTracked, EMAIL_TEMPLATES } = await import('../services/emailService.js');
+      const template = EMAIL_TEMPLATES.leadAssigned(
+        assignedAgent.name || 'Agent',
+        lead.name,
+        lead.email || '',
+        lead.source || 'direct'
+      );
+      sendEmailTracked({
+        to: assignedAgent.email,
+        subject: template.subject,
+        html: template.html,
+        text: template.text,
+        tags: [{ name: 'type', value: 'lead_assigned' }],
+      }).catch(err => console.error('[email] leadAssigned send failed:', err));
+    }
 
     // Calculate score automatically in the background
     calculateLeadScore(lead.id).catch(err => console.error('Background scoring failed:', err));
@@ -939,4 +960,100 @@ router.get(
   })
 );
 
+// ─── POST /api/leads/from-search ──────────────────────────────────────────────
+// TASK-006 / Phase 27: Create a lead from an anonymous homepage property search.
+// PUBLIC endpoint (no auth required). Anonymous visitors trigger this on every
+// "Find Now" click so CRM can track intent and follow up.
+//
+// Security: No auth middleware — rate-limiting applied globally in server/index.ts
+// TASK-007: Rate-limit is applied globally via express-rate-limit in server/index.ts
+// TASK-008: All string inputs sanitized with sanitizeString()
+router.post(
+  '/from-search',
+  asyncHandler(async (req: Request, res: Response) => {
+    const { mode, location, propertyType, beds, minPrice, maxPrice, sessionId, searchedAt } =
+      req.body as {
+        mode?: string;
+        location?: string;
+        propertyType?: string;
+        beds?: number;
+        minPrice?: number;
+        maxPrice?: number;
+        sessionId?: string;
+        searchedAt?: string;
+      };
+
+    // Validation
+    if (!mode || !['buy', 'rent'].includes(mode)) {
+      throw new AppError('Field "mode" must be "buy" or "rent"', 400);
+    }
+
+    // Sanitise string inputs
+    const cleanLocation = location ? sanitizeString(location).slice(0, 200) : null;
+    const cleanPropertyType = propertyType ? sanitizeString(propertyType).slice(0, 100) : null;
+    const cleanSessionId = sessionId ? sanitizeString(sessionId).slice(0, 100) : null;
+
+    // Build descriptive lead name
+    const parts: string[] = [`${mode.toUpperCase()} search`];
+    if (cleanLocation) parts.push(cleanLocation);
+    if (cleanPropertyType) parts.push(cleanPropertyType);
+    const bedsNum = typeof beds === 'number' && beds > 0 ? Math.ceil(beds) : 0;
+    if (bedsNum > 0) parts.push(`${bedsNum}BR`);
+    const leadName = `[Homepage] ${parts.join(' - ')}`;
+
+    // Tags for quick CRM filtering
+    const tags: string[] = ['homepage_search', mode];
+    if (cleanLocation) tags.push(cleanLocation.toLowerCase().replace(/\s+/g, '_'));
+    if (cleanPropertyType) tags.push(cleanPropertyType.toLowerCase().replace(/\s+/g, '_'));
+
+    // Search params stored in notes for full traceability
+    const searchSummary = JSON.stringify({
+      mode,
+      location: cleanLocation,
+      propertyType: cleanPropertyType,
+      beds: bedsNum || null,
+      minPrice: typeof minPrice === 'number' ? minPrice : null,
+      maxPrice: typeof maxPrice === 'number' ? maxPrice : null,
+      sessionId: cleanSessionId,
+      searchedAt: searchedAt ?? new Date().toISOString(),
+    });
+
+    // Persist lead
+    const lead = await prisma.lead.create({
+      data: {
+        name: leadName,
+        email: null,
+        phone: null,
+        source: 'homepage_search',
+        status: 'new',
+        stage: 'awareness',
+        score: 10,
+        tags,
+        notes: `Auto-captured from homepage search:\n${searchSummary}`,
+        budget: typeof maxPrice === 'number' && maxPrice > 0 ? maxPrice : null,
+      },
+      select: {
+        id: true,
+        name: true,
+        source: true,
+        status: true,
+        score: true,
+        tags: true,
+        createdAt: true,
+      },
+    });
+
+    // Emit realtime update so CRM refreshes without polling
+    try {
+      const io = getSocketServer();
+      if (io) {
+        io.emit('lead:created', { source: 'homepage_search', leadId: lead.id });
+      }
+    } catch {
+      // Socket server unavailable - non-fatal
+    }
+
+    res.status(201).json({ success: true, data: lead });
+  })
+);
 export default router;

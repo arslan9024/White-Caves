@@ -1,5 +1,7 @@
 # White Caves — Phase 20–22 Parallel Execution Master Plan
 
+> **Status Update (May 2, 2026):** This document is now a **predecessor baseline**. Current canonical execution plan is `PHASE_23_24_25_IMPLEMENTATION_PLAN.md`.
+
 **Date:** May 1, 2026  
 **Prepared by:** Multi-Agent Planning Sprint (@Ada, @Margaret, @Mira, @Katherine, @Dena, @Radia, @Gwynne, @Barbara, @Rachel)  
 **Execution Mode:** Parallel workstreams with strict quality/security gates
