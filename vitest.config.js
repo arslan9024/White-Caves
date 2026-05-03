@@ -13,6 +13,7 @@ export default defineConfig({
         // Frontend / React component tests
         test: {
           name: 'frontend',
+          globals: true,
           environment: 'jsdom',
           setupFiles: ['./test/setup.js', './src/setupTests.js'],
           include: [
