@@ -15,6 +15,7 @@ This folder now prioritizes **active pending work only**. Completed and historic
 - [`PHASE_24_MODULE_TRACEABILITY_MATRIX.md`](./PHASE_24_MODULE_TRACEABILITY_MATRIX.md) — module-level business logic/API/role traceability with **detailed role access matrices** per module
 - [`PHASE_24_ACCEPTANCE_TEST_PLAN.md`](./PHASE_24_ACCEPTANCE_TEST_PLAN.md) — **144 audit-testable acceptance criteria** (RBAC + business rules + integration + data integrity)
 - [`PHASE_25_OPERATIONAL_VERIFICATION_LOG.md`](./PHASE_25_OPERATIONAL_VERIFICATION_LOG.md) — dev/build/homepage operational evidence log
+- [`PHASE_25_EXECUTION_GUIDE.md`](./PHASE_25_EXECUTION_GUIDE.md) — **detailed 55-hour implementation roadmap** with 4 P0 workstreams (LCP, SEO, error UX, A11y) + 3 P1 optimizations
 
 - [`PENDING_TASKS_ONLY.md`](./PENDING_TASKS_ONLY.md) — fastest pending-only tracker
 - [`MASTER_PLAN.md`](./MASTER_PLAN.md) — single source of truth for status and roadmap
