@@ -1,14 +1,16 @@
 /**
- * LandlordPortalHome — Phase 2.13: Landlord Portal Home Dashboard
+ * LandlordPortalHome — Phase 29: Live API integration
  *
- * Landing page summary for landlords with key metrics and quick links.
+ * Landing page summary for landlords with live KPI metrics from API.
+ * Single API call to /api/leases?role=landlord computes all 4 metrics.
  *
  * @component
  */
 
-import React, { FC } from 'react';
+import React, { FC, useEffect, useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
 import type { RootState } from '../../../store/store';
+import { authFetch } from '../../../utils/authFetch';
 import '../../../pages/RolePages.css';
 
 interface QuickLink {
@@ -25,6 +27,14 @@ const QUICK_LINKS: QuickLink[] = [
   { label: 'Documents', icon: '📄', tabKey: 'documents' },
 ];
 
+interface ApiLease {
+  id: string;
+  propertyId: string;
+  monthlyRent: number;
+  status: string;
+  nextPaymentDue?: string | null;
+}
+
 interface LandlordPortalHomeProps {
   /** Called when a quick-link tile is clicked */
   onNavigate?: (tabKey: string) => void;
@@ -32,6 +42,54 @@ interface LandlordPortalHomeProps {
 
 const LandlordPortalHome: FC<LandlordPortalHomeProps> = ({ onNavigate }) => {
   const currentUser = useSelector((state: RootState) => state.user.currentUser);
+  const [leases, setLeases] = useState<ApiLease[]>([]);
+  const [properties, setProperties] = useState<{ id: string }[]>([]);
+  const [openMaintenance, setOpenMaintenance] = useState<number | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (!currentUser) return;
+    let cancelled = false;
+
+    Promise.all([
+      authFetch('/api/leases?role=landlord&pageSize=100').then(r => r.json()),
+      authFetch('/api/properties?pageSize=100').then(r => r.json()),
+      authFetch('/api/maintenance?pageSize=1').then(r => r.json()),
+    ])
+      .then(([leasesRes, propsRes, maintRes]) => {
+        if (cancelled) return;
+        setLeases(leasesRes.data ?? []);
+        setProperties(propsRes.data ?? []);
+        setOpenMaintenance(maintRes.pagination?.total ?? maintRes.data?.length ?? 0);
+        setLoading(false);
+      })
+      .catch(() => {
+        if (!cancelled) setLoading(false);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [currentUser]);
+
+  const metrics = useMemo(() => {
+    const activeTenants = leases.filter(
+      l => l.status === 'active' || l.status === 'expiring'
+    ).length;
+
+    const overdueRent = leases
+      .filter(l => {
+        if (!l.nextPaymentDue) return false;
+        return new Date(l.nextPaymentDue) < new Date();
+      })
+      .reduce((sum, l) => sum + l.monthlyRent, 0);
+
+    return {
+      propertiesCount: properties.length,
+      activeTenants,
+      overdueRent,
+    };
+  }, [leases, properties]);
 
   if (!currentUser) {
     return (
@@ -55,7 +113,7 @@ const LandlordPortalHome: FC<LandlordPortalHomeProps> = ({ onNavigate }) => {
           <span className="metric-icon">🏢</span>
           <h4>Properties</h4>
           <p className="metric-value" data-testid="landlord-metric-properties-value">
-            3
+            {loading ? '…' : metrics.propertiesCount}
           </p>
           <span className="metric-label">Total listings</span>
         </div>
@@ -64,25 +122,25 @@ const LandlordPortalHome: FC<LandlordPortalHomeProps> = ({ onNavigate }) => {
           <span className="metric-icon">👥</span>
           <h4>Active Tenants</h4>
           <p className="metric-value" data-testid="landlord-metric-tenants-value">
-            2
+            {loading ? '…' : metrics.activeTenants}
           </p>
           <span className="metric-label">Occupied units</span>
         </div>
 
         <div className="summary-card" data-testid="landlord-metric-rent">
           <span className="metric-icon">💰</span>
-          <h4>Rent Due</h4>
+          <h4>Overdue Rent</h4>
           <p className="metric-value" data-testid="landlord-metric-rent-value">
-            AED 16,000
+            {loading ? '…' : `AED ${metrics.overdueRent.toLocaleString()}`}
           </p>
-          <span className="metric-label">This month</span>
+          <span className="metric-label">Needs collection</span>
         </div>
 
         <div className="summary-card" data-testid="landlord-metric-maintenance">
           <span className="metric-icon">🔧</span>
           <h4>Open Requests</h4>
           <p className="metric-value" data-testid="landlord-metric-maintenance-value">
-            2
+            {loading ? '…' : (openMaintenance ?? 0)}
           </p>
           <span className="metric-label">Pending issues</span>
         </div>
