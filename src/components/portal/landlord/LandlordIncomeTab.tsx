@@ -7,13 +7,40 @@
  * - Net amount received
  * - Overall MRR (Monthly Recurring Revenue)
  *
+ * Phase 31: Wired to live API — GET /api/leases?role=landlord
+ *
  * @component
  */
 
-import React, { FC, useMemo } from 'react';
+import React, { FC, useState, useEffect, useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import type { RootState } from '../../../store/store';
+import { authFetch } from '../../../utils/authFetch';
+import { createLogger } from '../../../utils/logger';
 import '../../../pages/RolePages.css';
+
+const log = createLogger('LandlordIncomeTab');
+
+/** Default agent commission percentage when not set on the lease */
+const DEFAULT_COMMISSION_PCT = 5;
+
+interface ApiLease {
+  id: string;
+  monthlyRent: number;
+  status: string;
+  ejariNumber: string | null;
+  endDate: string | null;
+  property: {
+    id: string;
+    title: string;
+    location: string;
+  };
+  tenant: {
+    id: string;
+    name: string;
+    email: string;
+  } | null;
+}
 
 interface PropertyIncome {
   id: string;
@@ -28,50 +55,69 @@ interface PropertyIncome {
   currency: string;
 }
 
+const leaseToPropertyIncome = (l: ApiLease): PropertyIncome => {
+  let leaseStatus: 'active' | 'expiring' | 'vacant' = 'vacant';
+  if (l.status === 'active') {
+    if (l.endDate) {
+      const daysRemaining = Math.ceil(
+        (new Date(l.endDate).getTime() - Date.now()) / 86_400_000,
+      );
+      leaseStatus = daysRemaining <= 60 ? 'expiring' : 'active';
+    } else {
+      leaseStatus = 'active';
+    }
+  }
+  return {
+    id: l.id,
+    propertyTitle: l.property?.title ?? 'Unknown Property',
+    address: l.property?.location ?? '—',
+    monthlyRent: l.status === 'active' ? (l.monthlyRent ?? 0) : 0,
+    agentCommissionPct: DEFAULT_COMMISSION_PCT,
+    leaseStatus,
+    tenantName: l.tenant?.name ?? '—',
+    leaseEndDate: l.endDate
+      ? new Date(l.endDate).toLocaleDateString('en-AE', {
+          year: 'numeric',
+          month: 'short',
+          day: 'numeric',
+        })
+      : '—',
+    ejariNumber: l.ejariNumber ?? null,
+    currency: 'AED',
+  };
+};
+
 const LandlordIncomeTab: FC = () => {
   const currentUser = useSelector((state: RootState) => state.user.currentUser);
+  const [properties, setProperties] = useState<PropertyIncome[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  const properties = useMemo<PropertyIncome[]>(
-    () => [
-      {
-        id: 'prop-001',
-        propertyTitle: 'Marina View 2BR Apartment',
-        address: 'Dubai Marina, Tower A, Unit 1205',
-        monthlyRent: 8000,
-        agentCommissionPct: 5,
-        leaseStatus: 'active',
-        tenantName: 'Ahmed Al Rashid',
-        leaseEndDate: '2026-12-31',
-        ejariNumber: 'EJARI-2026-001234',
-        currency: 'AED',
-      },
-      {
-        id: 'prop-002',
-        propertyTitle: 'Downtown Studio',
-        address: 'Downtown Dubai, Burj Views, Unit 604',
-        monthlyRent: 5500,
-        agentCommissionPct: 5,
-        leaseStatus: 'expiring',
-        tenantName: 'Sarah Johnson',
-        leaseEndDate: '2026-05-31',
-        ejariNumber: 'EJARI-2026-002345',
-        currency: 'AED',
-      },
-      {
-        id: 'prop-003',
-        propertyTitle: 'JBR 3BR Villa',
-        address: 'Jumeirah Beach Residence, Gate 3',
-        monthlyRent: 0,
-        agentCommissionPct: 5,
-        leaseStatus: 'vacant',
-        tenantName: '—',
-        leaseEndDate: '—',
-        ejariNumber: null,
-        currency: 'AED',
-      },
-    ],
-    []
-  );
+  useEffect(() => {
+    if (!currentUser) return;
+    let cancelled = false;
+
+    authFetch('/api/leases?role=landlord&pageSize=100')
+      .then(r => r.json())
+      .then(data => {
+        if (!cancelled) {
+          const leases: ApiLease[] = data.data ?? [];
+          setProperties(leases.map(leaseToPropertyIncome));
+          setLoading(false);
+        }
+      })
+      .catch(err => {
+        if (!cancelled) {
+          log.error('Failed to load income data:', err);
+          setError('Unable to load income data. Please refresh.');
+          setLoading(false);
+        }
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [currentUser]);
 
   const summary = useMemo(() => {
     const activeProperties = properties.filter(p => p.leaseStatus === 'active' || p.leaseStatus === 'expiring');
@@ -88,6 +134,34 @@ const LandlordIncomeTab: FC = () => {
     return (
       <div className="empty-state">
         <p>You must be logged in to view income details.</p>
+      </div>
+    );
+  }
+
+  if (loading) {
+    return (
+      <div className="tab-content-section">
+        <p className="empty-state-text">⏳ Loading income data…</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="tab-content-section">
+        <p className="empty-state-text" style={{ color: 'var(--error-red, #ef4444)' }}>
+          {error}
+        </p>
+      </div>
+    );
+  }
+
+  if (properties.length === 0) {
+    return (
+      <div className="tab-content-section">
+        <div className="empty-state" data-testid="no-income-state">
+          <p>No leases found. Income summary will appear once your properties are leased.</p>
+        </div>
       </div>
     );
   }
