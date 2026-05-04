@@ -168,3 +168,48 @@
    Each premium request is counted against WEEKLY PREMIUM QUOTA.
    Session ends with @Gwynne committing + pushing to development branch.
    ```
+
+9. **🔄 NO-IDLE POLICY — Expanded Free Agent Pool (17 Agents Total):**
+   The free agent team has been expanded from 5 to 17 agents. All run in external free tools. All follow the same zero-premium rule. Every agent has a 3-task backlog queue in AGENTS.md. No agent ever idles.
+
+   **Complete Free Agent Roster (17 agents — 60-minute loop):**
+   ```
+   Slot  Agent      Tool                 Model              Domain
+   ─────────────────────────────────────────────────────────────────────────────
+   :00   @Annie     Google AI Studio     Gemini 2.0 Flash   Tenant portal, doc gen, email automation
+   :05   @Rachel    Google AI Studio     Gemini 2.0 Flash   SEO strategy, marketing, careers
+   :10   @Marissa   Google AI Studio     Gemini 2.0 Flash   Luxury CRM, community mgmt, UX spec
+   :15   @Timnit    Google AI Studio     Gemini 2.0 Flash   DLD integration, legal CRM, data privacy
+   :20   @Hedy      Groq Console         Llama 3.1 70B      Audit trail, activity feed, follow-ups
+   :25   @Maya      Groq Console         Llama 3.1 70B      Off-plan projects, handover management
+   :30   @Booking   Groq Console         Llama 3.1 70B      Scheduling calendar, viewings
+   :35   @Jaime     Groq Console         Llama 3.1 70B      Offers workflow, WhatsApp integration
+   :40   @Fei-Fei   DeepSeek Chat        DeepSeek V3        Property valuation, market intelligence
+   :45   @Anima     DeepSeek Chat        DeepSeek V3        Currency mgmt, secondary sales, pipelines
+   :50   @Mary      DeepSeek Chat        DeepSeek V3        Sentinel property, investment, prospecting
+   :55   @Corinne   DeepSeek Chat        DeepSeek V3        AI chat spec, maintenance, map search
+   Any   @Victoria  Google AI Studio     Gemini 2.0 Flash   Tenancy/Ejari, landlord portal, leasing
+   Any   @Invoice   Groq Console         Llama 3.1 70B      Financial reporting, VAT, revenue model
+   Any   @Sofia     Google AI Studio     Gemini 2.0 Flash   Compliance, RERA/DLD regulations
+   Any   @Cassie    DeepSeek Chat        DeepSeek V3        Analytics dashboard, agent performance
+   Any   @Joelle    Groq Console         Llama 3.1 70B      AI personas, integration map, lead scoring
+   ```
+
+   **No-Idle Enforcement Rules:**
+   - Every free agent has a **3-task backlog queue** defined in AGENTS.md under their profile (tasks 1→2→3 in order).
+   - When task 1 output is committed → task 2 becomes "current". When all 3 done → @Margaret assigns a REVIEW.
+   - **@Margaret MUST assign a new REVIEW task within 24 hours** of any agent completing their queue.
+   - REVIEW format: `@[Agent] — REVIEW: [file] → check for gaps, add missing subsections, verify all acceptance criteria have testable definitions`
+   - **Zero premium tokens** — if a task seems to need a premium model, it must be split into smaller docs-only subtasks first.
+
+   **How to Run the Loop:**
+   ```
+   1. Run scripts/free-agents-loop.ps1 in any terminal
+      → It reads the current minute, maps to the active agent's slot
+      → Prints the agent name, free tool URL, and the copy-paste prompt for Task 1
+      → Opens the free tool URL in your default browser automatically
+   2. Paste the prompt into the free tool (Gemini / Groq / DeepSeek)
+   3. Paste the AI output back into the owned file in business_docs/
+   4. git add [file] && git commit -m "docs(@AgentName): [task title]"
+   5. Return to terminal — script will show the next agent in 5 minutes
+   ```

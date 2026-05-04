@@ -1,10 +1,17 @@
 # Tenant Portal — CRM Feature Specification
 
-> **Status:** Planned  
-> **Module Owner:** Daisy (Leasing Manager AI)  
-> **Last Updated:** April 2026  
-> **Priority:** High  
-> **API Endpoints:** `/api/tenant-portal`, `/api/tenant/lease`, `/api/tenant/payments`
+> **Status:** 🟡 STUB — expand with @Annie (Google AI Studio, Gemini 2.0 Flash)
+> **Owner:** @Annie | **Target:** 14 sections | **Module:** TenantPortal (src/components/portal/tenant/)
+> **Module Owner:** Daisy (Leasing Manager AI) | **Last Updated:** May 2026 | **Priority:** High
+> **API Endpoints:** `/api/leases?tenantId=:userId`, `/api/maintenance`, `/api/activities`
+
+## 🚀 Next Step — Invoke @Annie
+
+Copy this prompt into **Google AI Studio (Gemini 2.0 Flash)**:
+
+```
+@Annie — DRAFT: tenant-portal.md → spec all 6 tabs: TenantLeaseTab (lease details, start/end, monthly rent, status badge), TenantPaymentHistoryTab (payment records table, overdue detection, PDC status), TenantMaintenanceTab (submit request form, status tracking, contractor updates), TenantDocumentsTab (Ejari cert download, tenancy agreement PDF, NOC request button), TenantProfileTab (personal details, Emirates ID, passport expiry alert), TenantPortalHome (KPI tiles: active lease countdown, next payment due amount, open maintenance count). Include: API endpoint for each tab, authFetch pattern, error states, empty states.
+```
 
 ---
 
