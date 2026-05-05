@@ -270,6 +270,7 @@
 - [ ] [`PHASE_26_CONTEXT_ENRICHMENT_SPRINT.md`](./PHASE_26_CONTEXT_ENRICHMENT_SPRINT.md) 🆕 _(active: free-agent documentation completion gates)_
 - [ ] [`PHASE_23_24_25_IMPLEMENTATION_PLAN.md`](./PHASE_23_24_25_IMPLEMENTATION_PLAN.md) _(current active canonical plan)_
 - [ ] [`PHASE_33_PRIORITY_MODULE_HOMEPAGE_SUPERUSER_LEASING.md`](./PHASE_33_PRIORITY_MODULE_HOMEPAGE_SUPERUSER_LEASING.md) 🆕 _(P0: homepage + superuser + leasing E2E unification)_
+- [ ] [`PHASE_33_IMPLEMENTATION_EXECUTION_PACK.md`](./PHASE_33_IMPLEMENTATION_EXECUTION_PACK.md) 🆕 _(gate-to-code workstream execution for P0)_
 - [x] [`PHASE_24_MODULE_TRACEABILITY_MATRIX.md`](./PHASE_24_MODULE_TRACEABILITY_MATRIX.md) ✅ **COMPLETE** — detailed role matrices + cross-module dependency chain
 - [x] [`PHASE_24_ACCEPTANCE_TEST_PLAN.md`](./PHASE_24_ACCEPTANCE_TEST_PLAN.md) ✅ **NEW: 144 audit-testable scenarios**
 - [x] [`PHASE_25_OPERATIONAL_VERIFICATION_LOG.md`](./PHASE_25_OPERATIONAL_VERIFICATION_LOG.md) ✅ **COMPLETE** — runtime/build verification evidence logged
@@ -290,6 +291,7 @@
 ## Immediate Pending Focus
 
 - [ ] P0 priority module kickoff: best homepage conversion + single Gmail superuser identity + lion/owner/managing_director unification + leasing E2E lifecycle
+- [ ] Phase 33 implementation readiness: execute gate-to-code pack immediately after @Ada approval
 - [ ] Phase 26: free-agent context enrichment completion (landlord-portal, revenue-model, analytics-dashboard, AI personas 25-40)
 - [ ] Phase 23: business docs + module business-logic alignment (Leads, Inventory, Sales, Finance, Leasing, WhatsApp)
 - [ ] Branch governance unification: development daily commits, main monthly release-only merges

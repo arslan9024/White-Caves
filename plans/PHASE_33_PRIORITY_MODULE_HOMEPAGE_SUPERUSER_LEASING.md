@@ -174,3 +174,11 @@ Per governance policy, coding stays blocked until gates pass.
 **Planning owner:** @Margaret
 **Architecture sign-off:** @Ada
 **Implementation owners (post-gate):** @Mira, @Una, @Daniela, @Katherine
+
+---
+
+## 10) Execution Pack
+
+For direct gate-to-code task breakdown, use:
+
+- `plans/PHASE_33_IMPLEMENTATION_EXECUTION_PACK.md`
