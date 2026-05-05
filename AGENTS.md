@@ -475,13 +475,13 @@ This file defines the White Caves multi-expert operating model for all agent-ass
 
 ### Governance Handoff Chain
 
-`All 17 Free Agents → @Margaret (daily synthesis) → @Ada (99% gate) → Senior Coders/Designers`
+`All 17 Free Agents → @Margaret (daily synthesis) → @Ada (1000% depth + 92% readiness gate) → Senior Coders/Designers`
 
 ### Collaboration Cadence
 
 - Every 4 hours: mini-sync updates in FEEDS/CONSUMES format
 - Every day at noon: @Margaret merges all handoffs into sprint context
-- Before any coding: @Ada validates 500% + 99% gates are complete
+- Before any coding: @Ada validates 1000% depth and readiness >=92% gates are complete
 
 ### Per-Agent Handoff Contracts (Execution Required)
 

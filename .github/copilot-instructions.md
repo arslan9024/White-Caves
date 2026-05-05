@@ -137,9 +137,9 @@
    [ ] 6. QUOTA AVAILABLE: Check WEEKLY PREMIUM QUOTA in PROJECT_PROGRESS.md.
           → If 0 requests remaining → queue work, do NOT start premium coding.
    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-   [ ] 7. 500% MULTIPLIER MET: Have all prerequisite docs reached 5× target depth?
-   [ ] 8. 99% CONFIDENCE MATRIX MET: Have all 30 checks passed with evidence?
-   ✅ ALL 8 CHECKED? → @Ada declares: "Context Ready (99% Confidence) — Coding Phase Approved"
+   [ ] 7. 1000% DEPTH GATE MET: Have all prerequisite docs reached 10× target depth with 10 evidence layers?
+   [ ] 8. READINESS THRESHOLD MET: Is readiness score >=92% with evidence?
+   ✅ ALL 8 CHECKED? → @Ada declares: "Context Ready (1000% Depth, 92% Readiness) — Coding Phase Approved"
    ❌ ANY UNCHECKED? → Route back to free planning agents. Do NOT code.
    ```
 
@@ -222,29 +222,32 @@
    5. Return to terminal — script will show the next agent in 5 minutes
    ```
 
-10. **📚 500% RESEARCH MULTIPLIER (Mandatory Before Any Premium Coding):**
-    - Every prerequisite `business_docs/` and `plans/` file must reach **5× previous depth** before implementation begins.
-    - “500%” means both **quantity and quality**: each new section must include all 5 layers:
-      1. business rule, 2) API contract, 3) data schema/model, 4) test scenarios, 5) edge-case/failure handling.
+10. **📚 1000% DEPTH ENFORCEMENT (Mandatory Before Any Premium Coding):**
+    - Every prerequisite `business_docs/` and `plans/` file must reach **10× previous depth** before implementation begins.
+    - “1000%” means both **quantity and quality**: each major section must include all 10 evidence layers:
+      1. business rule, 2) API contract, 3) data schema/model, 4) validation rules, 5) failure/edge handling,
+      6) security/compliance controls, 7) UX states/mobile/RTL, 8) unit/integration/E2E tests,
+      7) observability metrics/logging, 10) rollback/migration plan.
     - Baseline multipliers (examples):
-      - tenancy-ejari 14→70, landlord-portal 13→65
-      - financial-reporting 11→55, revenue-model 13→65
-      - compliance-requirements 12→60
-      - analytics-dashboard 22→110, agent-performance 14→70
-      - AI personas README 40 persona entries → 200 persona-depth units (5 layers each)
-    - If any prerequisite is <500% target, coding is BLOCKED and must route back to free agents.
+      - tenancy-ejari 14→140, landlord-portal 13→130
+      - financial-reporting 11→110, revenue-model 13→130
+      - compliance-requirements 12→120
+      - analytics-dashboard 22→220, agent-performance 14→140
+      - AI personas README 40 persona entries → 400 persona-depth units
+    - If any prerequisite is <1000% target, coding is BLOCKED and must route back to free agents.
 
-11. **🎯 99% CONFIDENCE GATE (30-Check Matrix):**
-    - Premium coding/design is forbidden until **all 30 checks** are passed and logged.
-    - 6 groups × 5 checks each:
-      - **Business** (scope, acceptance criteria, process rules, ownership, rollback)
-      - **API** (request/response schema, auth, errors, pagination, rate limits)
-      - **Data** (schema, indexes, relationships, migrations, retention)
-      - **UX** (mobile 375/768, RTL, empty/error/loading states, accessibility notes)
-      - **QA** (unit/integration/E2E scenarios, non-functional checks, regression scope)
-      - **Compliance/Sign-off** (RERA/DLD/PDPL checks + @Margaret/@Sofia/@Katherine sign-off)
-    - Final approval phrase is exact and mandatory:
-      - `@Ada — Context Ready (99% Confidence) — Coding Phase Approved`
+11. **🎯 READINESS GATE (30-Check Matrix + Score Threshold):**
+
+- Premium coding/design is forbidden until readiness is **>=92%** with evidence and matrix checks logged.
+  - 6 groups × 5 checks each:
+    - **Business** (scope, acceptance criteria, process rules, ownership, rollback)
+    - **API** (request/response schema, auth, errors, pagination, rate limits)
+    - **Data** (schema, indexes, relationships, migrations, retention)
+    - **UX** (mobile 375/768, RTL, empty/error/loading states, accessibility notes)
+    - **QA** (unit/integration/E2E scenarios, non-functional checks, regression scope)
+    - **Compliance/Sign-off** (RERA/DLD/PDPL checks + @Margaret/@Sofia/@Katherine sign-off)
+  - Final approval phrase is exact and mandatory:
+    - `@Ada — Context Ready (1000% Depth, 92% Readiness) — Coding Phase Approved`
 
 12. **🧠 PREMIUM ACCESS (STRICT — SENIORS ONLY, POST-GATE ONLY):**
     - Premium Copilot requests are allowed only for:
@@ -279,8 +282,8 @@
 15. **🚪 SESSION START GATE ADDENDUM (8 checks total):**
     - Existing 6 checks remain mandatory.
     - Add two required checks before any coding:
-      - [ ] 7. **500% MULTIPLIER MET:** all prerequisite docs reached 5× target depth.
-      - [ ] 8. **99% CONFIDENCE MET:** full 30-check matrix is complete and logged.
+      - [ ] 7. **1000% DEPTH GATE MET:** all prerequisite docs reached 10× target depth.
+      - [ ] 8. **READINESS >=92% MET:** readiness packet and matrix evidence are complete.
 
 16. **🧭 GOVERNANCE UPGRADE V2 (Supersedes conflicting older thresholds):**
 
