@@ -1,9 +1,34 @@
 ﻿# Pending Tasks Only
 
+## 🚦 500% EXPANSION QUEUE (Dependency-Gated)
+
+> **Rule:** No premium implementation may start until all active wave outputs satisfy 5× depth and include all 5 mandatory layers:
+> business rule, API contract, data schema, tests, edge-case/failure handling.
+
+### Wave A — Regulatory/Foundation (must complete first)
+- @Sofia → @Timnit → @Victoria
+
+### Wave B — Finance/Valuation (requires Wave A handoffs)
+- @Fei-Fei → @Anima → @Mary → @Invoice
+
+### Wave C — Workflow/Operations (requires Wave A+B handoffs)
+- @Booking → @Maya → @Hedy → @Cassie
+- @Jaime ↔ @Corinne (bi-directional operational loop)
+
+### Wave D — Experience/Growth/AI (requires prior waves)
+- @Annie → @Marissa → @Rachel → @Joelle
+
+### Mandatory Handoff Format (all waves)
+- `CONSUMES←@Agent: file/path.md#section`
+- `FEEDS→@Agent: file/path.md#section`
+- Evidence line required per task:
+	- `Sections before→after | 5-layer completeness score | upstream refs consumed | downstream refs produced`
+
 ## 🆓 FREE AGENT QUEUE — Hourly Rotation (17 Agents, 60-min cycle)
 
 > Run `scripts/free-agents-loop.ps1` to see which agent is active RIGHT NOW with the exact copy-paste prompt.
 > Manual mode: find your agent below, copy the **Task 1** prompt, paste into the free tool, paste output into the target file, commit.
+> Each prompt execution must prepend dependency context using `CONSUMES←...` and end with `FEEDS→...` handoff lines.
 
 ### ⏰ Schedule At-a-Glance
 

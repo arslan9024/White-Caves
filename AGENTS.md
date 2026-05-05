@@ -6,11 +6,11 @@
 
 | Agent | Model | Current Task | File | Sections | Gate Status | Last Updated |
 |-------|-------|-------------|------|----------|-------------|-------------|
-| **@Victoria** | Gemini 2.0 Flash | NEXT: `landlord-portal.md` → KYC onboarding + NOC workflow | `business_docs/09_crm_features/landlord-portal.md` | 13/13 | ✅ READY | May 4, 2026 |
-| **@Invoice** | Llama 3.1 70B Groq | NEXT: `financial-reporting.md` → verify 11-section target met; add cash flow forecast | `business_docs/09_crm_features/financial-reporting.md` | ❓ Verify | ⚠️ VERIFY | May 4, 2026 |
-| **@Sofia** | Gemini 2.0 Flash | NEXT: `compliance-requirements.md` → verify 12-section target met; add RERA penalty table | `business_docs/05_requirements/compliance-requirements.md` | ❓ Verify | ⚠️ VERIFY | May 4, 2026 |
-| **@Cassie** | DeepSeek V3 | NEXT: `analytics-dashboard.md` → mobile analytics view + data export API spec | `business_docs/09_crm_features/analytics-dashboard.md` | 22/22 | ✅ READY | May 4, 2026 |
-| **@Joelle** | Llama 3.1 70B Groq | NEXT: personas 25-35 + failure/fallback section | `business_docs/03_ai_assistants/README.md` | 40 personas | ✅ READY | May 4, 2026 |
+| **@Victoria** | Gemini 2.0 Flash | NEXT (500%): `tenancy-ejari.md` + `landlord-portal.md` full 5× expansion with 5-layer sections | `business_docs/09_crm_features/tenancy-ejari.md` | 70 target | 🚧 IN PROGRESS | May 5, 2026 |
+| **@Invoice** | Llama 3.1 70B Groq | NEXT (500%): `financial-reporting.md` + `revenue-model.md` 5× depth | `business_docs/09_crm_features/financial-reporting.md` | 55 target | 🚧 IN PROGRESS | May 5, 2026 |
+| **@Sofia** | Gemini 2.0 Flash | NEXT (500%): `compliance-requirements.md` + `risk-register.md` regulatory depth expansion | `business_docs/05_requirements/compliance-requirements.md` | 60 target | 🚧 IN PROGRESS | May 5, 2026 |
+| **@Cassie** | DeepSeek V3 | NEXT (500%): analytics + KPI ownership 5× documentation | `business_docs/09_crm_features/analytics-dashboard.md` | 110 target | 🚧 IN PROGRESS | May 5, 2026 |
+| **@Joelle** | Llama 3.1 70B Groq | NEXT (500%): AI personas and fallback matrix 5× depth | `business_docs/03_ai_assistants/README.md` | 200 units | 🚧 IN PROGRESS | May 5, 2026 |
 
 ### How to Invoke Free Agents (Copy-Paste Into the Free Tool)
 
@@ -418,6 +418,44 @@ This file defines the White Caves multi-expert operating model for all agent-ass
 3. `@Corinne — EXPAND: system-architecture.md → add interactive map search section: frontend map component (Leaflet.js v1.9 + leaflet.markercluster plugin, property pin custom marker with price label, cluster bubble showing count, property card popup on pin click with photo/price/beds/link), geospatial backend query design (MongoDB 2dsphere index on property.location field: {type: "Point", coordinates: [lng, lat]}, $near query for radius search, $geoWithin for polygon neighborhood boundary search), Dubai area boundary GeoJSON (30 neighborhood polygons stored in public/geojson/dubai-areas.geojson — source: OpenStreetMap Overpass API export), map tile provider decision (OpenStreetMap free vs Mapbox $0.50/1000 tiles — use OSM for dev, Mapbox for production with usage cap), performance guard (max 500 visible pins via viewport bounding box filter, cluster above 50 pins in viewport, virtualized sidebar list synced with map viewport), saved map search (save current viewport bbox + active filters as named search, enable push alert for new listings in that area).`
 
 ---
+
+## 🔗 CROSS-AGENT COLLABORATION MESH (17 Free Agents — Mandatory)
+
+> Every free-agent output must include both tags:
+> - `CONSUMES←@Agent: file/path.md#section`
+> - `FEEDS→@Agent: file/path.md#section`
+
+### Full Collaboration Chains
+
+| Agent | Inputs From (CONSUMES) | Outputs To (FEEDS) | Primary Collaboration Purpose |
+|-------|-------------------------|--------------------|-------------------------------|
+| @Sofia | @Timnit, @Hedy | @Timnit, @Victoria | Compliance baseline for legal/tenancy execution |
+| @Timnit | @Sofia, @Joelle | @Victoria, @Annie | DLD/legal workflows feeding contract + tenant docs |
+| @Victoria | @Sofia, @Timnit | @Annie, @Booking | Tenancy legal rules feeding portal + scheduling |
+| @Annie | @Victoria, @Timnit | @Marissa, @Joelle | Tenant portal/docs feeding UX + AI fallback prompts |
+| @Fei-Fei | @Mary, @Anima | @Anima, @Invoice | Valuation + market data feeding finance and sales |
+| @Anima | @Fei-Fei, @Cassie | @Mary, @Invoice | Data pipelines + secondary sales to finance/inventory |
+| @Mary | @Anima, @Fei-Fei | @Invoice, @Cassie | Inventory/prospecting data to revenue + KPI analytics |
+| @Invoice | @Mary, @Anima | @Cassie, @Joelle | Financial model outputs to KPI and AI ranking rules |
+| @Booking | @Victoria, @Jaime | @Maya, @Hedy | Scheduling signals to handover + activity automation |
+| @Maya | @Booking, @Timnit | @Hedy, @Cassie | Off-plan/handover workflow to audit + analytics |
+| @Hedy | @Maya, @Booking | @Cassie, @Sofia | Audit/follow-up controls feeding KPI + compliance |
+| @Cassie | @Hedy, @Invoice | @Joelle, @Margaret | KPI synthesis feeding AI and planning decisions |
+| @Jaime | @Rachel, @Corinne | @Corinne, @Booking | WhatsApp/offers orchestration feeding AI + schedule |
+| @Corinne | @Jaime, @Annie | @Jaime, @Rachel | AI chat/maintenance insights to comms + SEO |
+| @Marissa | @Annie, @Booking | @Rachel, @Joelle | UX specs feeding SEO messaging + AI behaviors |
+| @Rachel | @Marissa, @Corinne | @Jaime, @Joelle | SEO/marketing context feeding comms + AI prompts |
+| @Joelle | @Cassie, @Rachel | @Timnit, @Margaret | AI persona/fallback synthesis to legal/policy plans |
+
+### Governance Handoff Chain
+
+`All 17 Free Agents → @Margaret (daily synthesis) → @Ada (99% gate) → Senior Coders/Designers`
+
+### Collaboration Cadence
+
+- Every 4 hours: mini-sync updates in FEEDS/CONSUMES format
+- Every day at noon: @Margaret merges all handoffs into sprint context
+- Before any coding: @Ada validates 500% + 99% gates are complete
 
 ## TEAM OPERATIONAL RULES
 

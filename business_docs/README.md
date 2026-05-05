@@ -6,6 +6,28 @@
 
 ---
 
+## 🧭 Documentation Governance (May 2026 Policy)
+
+These business docs now operate under the project-wide development system:
+
+- **500% Research Multiplier:** prerequisite docs must reach 5× depth before implementation.
+- **5-layer section standard:** every expanded section must include:
+    1) business rule, 2) API contract, 3) data model/schema, 4) test scenarios, 5) edge-case/failure handling.
+- **99% Confidence Gate:** implementation is blocked until all confidence checks are passed and approved.
+- **Premium restriction:** premium Copilot requests are reserved for senior coders/designers only after gate approval.
+- **Free-agent lock:** junior/free planning agents use only Gemini 2.0 Flash, Llama 3.1 70B (Groq), DeepSeek V3.
+
+### Collaboration Handoff Format (Mandatory)
+
+Every planning output must declare upstream and downstream links:
+
+- `CONSUMES←@Agent: file/path.md#section`
+- `FEEDS→@Agent: file/path.md#section`
+
+This ensures all subagents work as one pipeline rather than isolated documents.
+
+---
+
 ## 📋 Folder Structure
 
 ```

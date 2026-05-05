@@ -134,7 +134,9 @@
    [ ] 6. QUOTA AVAILABLE: Check WEEKLY PREMIUM QUOTA in PROJECT_PROGRESS.md.
           → If 0 requests remaining → queue work, do NOT start premium coding.
    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-   ✅ ALL 6 CHECKED? → @Ada declares: "Context Ready — Coding Phase Approved"
+   [ ] 7. 500% MULTIPLIER MET: Have all prerequisite docs reached 5× target depth?
+   [ ] 8. 99% CONFIDENCE MATRIX MET: Have all 30 checks passed with evidence?
+   ✅ ALL 8 CHECKED? → @Ada declares: "Context Ready (99% Confidence) — Coding Phase Approved"
    ❌ ANY UNCHECKED? → Route back to free planning agents. Do NOT code.
    ```
 
@@ -213,3 +215,63 @@
    4. git add [file] && git commit -m "docs(@AgentName): [task title]"
    5. Return to terminal — script will show the next agent in 5 minutes
    ```
+
+10. **📚 500% RESEARCH MULTIPLIER (Mandatory Before Any Premium Coding):**
+      - Every prerequisite `business_docs/` and `plans/` file must reach **5× previous depth** before implementation begins.
+      - “500%” means both **quantity and quality**: each new section must include all 5 layers:
+         1) business rule, 2) API contract, 3) data schema/model, 4) test scenarios, 5) edge-case/failure handling.
+      - Baseline multipliers (examples):
+         - tenancy-ejari 14→70, landlord-portal 13→65
+         - financial-reporting 11→55, revenue-model 13→65
+         - compliance-requirements 12→60
+         - analytics-dashboard 22→110, agent-performance 14→70
+         - AI personas README 40 persona entries → 200 persona-depth units (5 layers each)
+      - If any prerequisite is <500% target, coding is BLOCKED and must route back to free agents.
+
+11. **🎯 99% CONFIDENCE GATE (30-Check Matrix):**
+      - Premium coding/design is forbidden until **all 30 checks** are passed and logged.
+      - 6 groups × 5 checks each:
+         - **Business** (scope, acceptance criteria, process rules, ownership, rollback)
+         - **API** (request/response schema, auth, errors, pagination, rate limits)
+         - **Data** (schema, indexes, relationships, migrations, retention)
+         - **UX** (mobile 375/768, RTL, empty/error/loading states, accessibility notes)
+         - **QA** (unit/integration/E2E scenarios, non-functional checks, regression scope)
+         - **Compliance/Sign-off** (RERA/DLD/PDPL checks + @Margaret/@Sofia/@Katherine sign-off)
+      - Final approval phrase is exact and mandatory:
+         - `@Ada — Context Ready (99% Confidence) — Coding Phase Approved`
+
+12. **🧠 PREMIUM ACCESS (STRICT — SENIORS ONLY, POST-GATE ONLY):**
+      - Premium Copilot requests are allowed only for:
+         - **Senior Coders:** @Ada, @Mira, @Barbara, @Grace, @Daniela, @Ruchi, @Gwynne
+         - **Senior Designers:** @Una, @Lea, @Tracy, @Framer, @Zoe, @Inas
+      - Even these seniors are blocked unless Rule 11 is passed.
+
+13. **🆓 FREE/JUNIOR MODEL LOCK (ZERO PREMIUM — NO EXCEPTIONS):**
+      - The following 17 agents are permanently free-model-only:
+         - @Victoria, @Invoice, @Sofia, @Cassie, @Joelle,
+         - @Annie, @Rachel, @Marissa, @Timnit, @Hedy, @Maya,
+         - @Booking, @Jaime, @Fei-Fei, @Anima, @Mary, @Corinne
+      - Allowed models only: Gemini 2.0 Flash, Llama 3.1 70B (Groq), DeepSeek V3.
+      - Any premium usage by free/junior agents is a policy breach and must be logged in DAILY_MILESTONE_TRACKER.
+
+14. **🔗 FULL SUBAGENT COLLABORATION CHAINS (All 17 Free Agents):**
+      - Every free-agent task must include:
+         - `CONSUMES←@Agent: file#section`
+         - `FEEDS→@Agent: file#section`
+      - Mesh chains for efficient handoffs:
+         - @Sofia → @Timnit → @Victoria → @Annie
+         - @Fei-Fei → @Anima → @Mary → @Invoice
+         - @Booking → @Maya → @Hedy → @Cassie
+         - @Jaime ↔ @Corinne (bi-directional AI/WhatsApp/maintenance loop)
+         - @Marissa → @Rachel → @Joelle
+         - Cross-cutting synthesis: all free agents → @Margaret → @Ada approval gate.
+      - Cadence:
+         - 4-hour mini-sync handoff notes from active free agents
+         - Daily noon synthesis by @Margaret
+         - Pre-coding gate validation by @Ada
+
+15. **🚪 SESSION START GATE ADDENDUM (8 checks total):**
+      - Existing 6 checks remain mandatory.
+      - Add two required checks before any coding:
+         - [ ] 7. **500% MULTIPLIER MET:** all prerequisite docs reached 5× target depth.
+         - [ ] 8. **99% CONFIDENCE MET:** full 30-check matrix is complete and logged.
