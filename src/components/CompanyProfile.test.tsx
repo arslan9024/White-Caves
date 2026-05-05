@@ -2,14 +2,21 @@
  * CompanyProfile.tsx — Comprehensive Unit Tests
  * Batch 37 | Company profile section with PDF download
  */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import React from 'react';
 
 /* ── Mocks ──────────────────────────────────────────────── */
 vi.mock('./CompanyProfile.styles', () => ({
-  CompanyProfileSection: ({ children, ...p }: any) => <section data-testid="profile-section" {...p}>{children}</section>,
-  CompanyProfileContainer: ({ children }: any) => <div data-testid="profile-container">{children}</div>,
+  CompanyProfileSection: ({ children, ...p }: any) => (
+    <section data-testid="profile-section" {...p}>
+      {children}
+    </section>
+  ),
+  CompanyProfileContainer: ({ children }: any) => (
+    <div data-testid="profile-container">{children}</div>
+  ),
   CompanyProfileHeader: ({ children }: any) => <div data-testid="profile-header">{children}</div>,
   CompanyLogoLarge: (p: any) => <img data-testid="company-logo" {...p} />,
   CompanyProfileTitle: ({ children }: any) => <div data-testid="profile-title">{children}</div>,
@@ -17,7 +24,9 @@ vi.mock('./CompanyProfile.styles', () => ({
   CompanyProfileGrid: ({ children }: any) => <div data-testid="profile-grid">{children}</div>,
   ProfileCard: ({ children }: any) => <div data-testid="profile-card">{children}</div>,
   ProfileCardIcon: ({ children }: any) => <span data-testid="card-icon">{children}</span>,
-  CompanyServicesOverview: ({ children }: any) => <div data-testid="services-overview">{children}</div>,
+  CompanyServicesOverview: ({ children }: any) => (
+    <div data-testid="services-overview">{children}</div>
+  ),
   ServicesList: ({ children }: any) => <ul data-testid="services-list">{children}</ul>,
   ServiceItem: ({ children }: any) => <li data-testid="service-item">{children}</li>,
   ServiceIcon: ({ children }: any) => <span>{children}</span>,
@@ -31,7 +40,9 @@ vi.mock('./CompanyProfile.styles', () => ({
   ContactIcon: ({ children }: any) => <span>{children}</span>,
   CompanyProfileCTA: ({ children }: any) => <div data-testid="cta">{children}</div>,
   DownloadProfileBtn: ({ children, onClick, ...p }: any) => (
-    <button data-testid="download-btn" onClick={onClick} {...p}>{children}</button>
+    <button data-testid="download-btn" onClick={onClick} {...p}>
+      {children}
+    </button>
   ),
   DownloadHint: ({ children }: any) => <span data-testid="download-hint">{children}</span>,
 }));
@@ -197,41 +208,35 @@ describe('CompanyProfile', () => {
       await waitFor(() => {
         expect(mockFetch).toHaveBeenCalledWith(
           expect.stringContaining('White-Caves-Company-Profile.pdf'),
-          { method: 'HEAD' },
+          { method: 'HEAD' }
         );
       });
     });
 
-    it('shows alert when PDF not found (response.ok=false)', async () => {
+    it('shows error banner when PDF not found (response.ok=false)', async () => {
       const mockFetch = vi.fn().mockResolvedValue({ ok: false });
       vi.stubGlobal('fetch', mockFetch);
-      const mockAlert = vi.fn();
-      vi.stubGlobal('alert', mockAlert);
 
       render(<CompanyProfile />);
       fireEvent.click(screen.getByTestId('download-btn'));
 
       await waitFor(() => {
-        expect(mockAlert).toHaveBeenCalledWith(
-          expect.stringContaining('not available'),
-        );
+        expect(screen.getByRole('alert')).toBeInTheDocument();
       });
+      expect(screen.getByRole('alert')).toHaveTextContent('not available');
     });
 
-    it('shows alert on network error', async () => {
+    it('shows error banner on network error', async () => {
       const mockFetch = vi.fn().mockRejectedValue(new Error('Network error'));
       vi.stubGlobal('fetch', mockFetch);
-      const mockAlert = vi.fn();
-      vi.stubGlobal('alert', mockAlert);
 
       render(<CompanyProfile />);
       fireEvent.click(screen.getByTestId('download-btn'));
 
       await waitFor(() => {
-        expect(mockAlert).toHaveBeenCalledWith(
-          expect.stringContaining('Unable to download'),
-        );
+        expect(screen.getByRole('alert')).toBeInTheDocument();
       });
+      expect(screen.getByRole('alert')).toHaveTextContent('Unable to download');
     });
 
     it('creates anchor element and triggers download on success', async () => {
