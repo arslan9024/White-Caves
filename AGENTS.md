@@ -457,6 +457,30 @@ This file defines the White Caves multi-expert operating model for all agent-ass
 - Every day at noon: @Margaret merges all handoffs into sprint context
 - Before any coding: @Ada validates 500% + 99% gates are complete
 
+### Per-Agent Handoff Contracts (Execution Required)
+
+| Agent | Must start with CONSUMES | Must end with FEEDS |
+|-------|--------------------------|---------------------|
+| @Sofia | `CONSUMES←@Hedy: business_docs/09_crm_features/audit-trail.md#compliance-events` | `FEEDS→@Timnit: business_docs/05_requirements/compliance-requirements.md#regulatory-rules` |
+| @Timnit | `CONSUMES←@Sofia: business_docs/05_requirements/compliance-requirements.md#regulatory-rules` | `FEEDS→@Victoria: business_docs/09_crm_features/legal-management.md#contract-clauses` |
+| @Victoria | `CONSUMES←@Timnit: business_docs/09_crm_features/legal-management.md#contract-clauses` | `FEEDS→@Annie: business_docs/09_crm_features/tenancy-ejari.md#tenant-obligations` |
+| @Annie | `CONSUMES←@Victoria: business_docs/09_crm_features/tenancy-ejari.md#tenant-obligations` | `FEEDS→@Marissa: business_docs/09_crm_features/tenant-portal.md#ux-requirements` |
+| @Fei-Fei | `CONSUMES←@Mary: business_docs/09_crm_features/sentinel-property.md#inventory-signals` | `FEEDS→@Anima: business_docs/09_crm_features/property-valuation.md#valuation-metrics` |
+| @Anima | `CONSUMES←@Fei-Fei: business_docs/09_crm_features/property-valuation.md#valuation-metrics` | `FEEDS→@Mary: business_docs/09_crm_features/secondary-sales.md#pipeline-rules` |
+| @Mary | `CONSUMES←@Anima: business_docs/09_crm_features/secondary-sales.md#pipeline-rules` | `FEEDS→@Invoice: business_docs/09_crm_features/sentinel-property.md#inventory-finance-bridge` |
+| @Invoice | `CONSUMES←@Mary: business_docs/09_crm_features/sentinel-property.md#inventory-finance-bridge` | `FEEDS→@Cassie: business_docs/07_business_model/revenue-model.md#kpi-definitions` |
+| @Booking | `CONSUMES←@Victoria: business_docs/09_crm_features/tenancy-ejari.md#scheduling-constraints` | `FEEDS→@Maya: business_docs/09_crm_features/viewings.md#handover-triggers` |
+| @Maya | `CONSUMES←@Booking: business_docs/09_crm_features/viewings.md#handover-triggers` | `FEEDS→@Hedy: business_docs/09_crm_features/handover-management.md#audit-events` |
+| @Hedy | `CONSUMES←@Maya: business_docs/09_crm_features/handover-management.md#audit-events` | `FEEDS→@Cassie: business_docs/09_crm_features/audit-trail.md#kpi-events` |
+| @Cassie | `CONSUMES←@Hedy: business_docs/09_crm_features/audit-trail.md#kpi-events` | `FEEDS→@Joelle: business_docs/09_crm_features/analytics-dashboard.md#ai-signals` |
+| @Jaime | `CONSUMES←@Rachel: business_docs/09_crm_features/seo-strategy.md#campaign-intents` | `FEEDS→@Corinne: business_docs/09_crm_features/whatsapp-integration.md#ai-routing` |
+| @Corinne | `CONSUMES←@Jaime: business_docs/09_crm_features/whatsapp-integration.md#ai-routing` | `FEEDS→@Rachel: business_docs/09_crm_features/ai-chat.md#search-intent-signals` |
+| @Marissa | `CONSUMES←@Annie: business_docs/09_crm_features/tenant-portal.md#ux-requirements` | `FEEDS→@Rachel: business_docs/06_design_architecture/ui-ux-specification.md#seo-ux-copy` |
+| @Rachel | `CONSUMES←@Marissa: business_docs/06_design_architecture/ui-ux-specification.md#seo-ux-copy` | `FEEDS→@Joelle: business_docs/09_crm_features/seo-strategy.md#persona-intents` |
+| @Joelle | `CONSUMES←@Cassie: business_docs/09_crm_features/analytics-dashboard.md#ai-signals` | `FEEDS→@Margaret: business_docs/03_ai_assistants/README.md#phase-context-summary` |
+
+> Contract validation: tasks are considered incomplete unless both handoff lines are present and verifiable.
+
 ## TEAM OPERATIONAL RULES
 
 - **No Permissions Needed:** Agents make technical decisions based on their expertise.

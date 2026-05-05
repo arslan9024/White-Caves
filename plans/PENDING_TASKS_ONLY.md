@@ -56,6 +56,30 @@
 
 ### 📋 Full Copy-Paste Prompts — Task 1 for Each Agent
 
+### 🔗 Per-Agent Dependency Header Template (Paste BEFORE each Task 1 prompt)
+
+| Agent | Prepend this CONSUMES line | Append this FEEDS line |
+|------|-----------------------------|------------------------|
+| @Annie | `CONSUMES←@Victoria: business_docs/09_crm_features/tenancy-ejari.md#tenant-obligations` | `FEEDS→@Marissa: business_docs/09_crm_features/tenant-portal.md#ux-requirements` |
+| @Rachel | `CONSUMES←@Marissa: business_docs/06_design_architecture/ui-ux-specification.md#seo-ux-copy` | `FEEDS→@Joelle: business_docs/09_crm_features/seo-strategy.md#persona-intents` |
+| @Marissa | `CONSUMES←@Annie: business_docs/09_crm_features/tenant-portal.md#ux-requirements` | `FEEDS→@Rachel: business_docs/06_design_architecture/ui-ux-specification.md#seo-ux-copy` |
+| @Timnit | `CONSUMES←@Sofia: business_docs/05_requirements/compliance-requirements.md#regulatory-rules` | `FEEDS→@Victoria: business_docs/09_crm_features/legal-management.md#contract-clauses` |
+| @Hedy | `CONSUMES←@Maya: business_docs/09_crm_features/handover-management.md#audit-events` | `FEEDS→@Cassie: business_docs/09_crm_features/audit-trail.md#kpi-events` |
+| @Maya | `CONSUMES←@Booking: business_docs/09_crm_features/viewings.md#handover-triggers` | `FEEDS→@Hedy: business_docs/09_crm_features/handover-management.md#audit-events` |
+| @Booking | `CONSUMES←@Victoria: business_docs/09_crm_features/tenancy-ejari.md#scheduling-constraints` | `FEEDS→@Maya: business_docs/09_crm_features/viewings.md#handover-triggers` |
+| @Jaime | `CONSUMES←@Rachel: business_docs/09_crm_features/seo-strategy.md#campaign-intents` | `FEEDS→@Corinne: business_docs/09_crm_features/whatsapp-integration.md#ai-routing` |
+| @Fei-Fei | `CONSUMES←@Mary: business_docs/09_crm_features/sentinel-property.md#inventory-signals` | `FEEDS→@Anima: business_docs/09_crm_features/property-valuation.md#valuation-metrics` |
+| @Anima | `CONSUMES←@Fei-Fei: business_docs/09_crm_features/property-valuation.md#valuation-metrics` | `FEEDS→@Mary: business_docs/09_crm_features/secondary-sales.md#pipeline-rules` |
+| @Mary | `CONSUMES←@Anima: business_docs/09_crm_features/secondary-sales.md#pipeline-rules` | `FEEDS→@Invoice: business_docs/09_crm_features/sentinel-property.md#inventory-finance-bridge` |
+| @Corinne | `CONSUMES←@Jaime: business_docs/09_crm_features/whatsapp-integration.md#ai-routing` | `FEEDS→@Rachel: business_docs/09_crm_features/ai-chat.md#search-intent-signals` |
+| @Invoice | `CONSUMES←@Mary: business_docs/09_crm_features/sentinel-property.md#inventory-finance-bridge` | `FEEDS→@Cassie: business_docs/07_business_model/revenue-model.md#kpi-definitions` |
+| @Sofia | `CONSUMES←@Hedy: business_docs/09_crm_features/audit-trail.md#compliance-events` | `FEEDS→@Timnit: business_docs/05_requirements/compliance-requirements.md#regulatory-rules` |
+| @Victoria | `CONSUMES←@Timnit: business_docs/09_crm_features/legal-management.md#contract-clauses` | `FEEDS→@Annie: business_docs/09_crm_features/tenancy-ejari.md#tenant-obligations` |
+| @Cassie | `CONSUMES←@Hedy: business_docs/09_crm_features/audit-trail.md#kpi-events` | `FEEDS→@Joelle: business_docs/09_crm_features/analytics-dashboard.md#ai-signals` |
+| @Joelle | `CONSUMES←@Cassie: business_docs/09_crm_features/analytics-dashboard.md#ai-signals` | `FEEDS→@Margaret: business_docs/03_ai_assistants/README.md#phase-context-summary` |
+
+> Execution rule: Task outputs missing these dependency lines are invalid and must be revised before commit.
+
 **@Annie — :00 — Google AI Studio**
 ```
 @Annie — DRAFT: tenant-portal.md → spec all 6 tabs: TenantLeaseTab (lease details, start/end, monthly rent, status badge), TenantPaymentHistoryTab (payment records table, overdue detection, PDC status), TenantMaintenanceTab (submit request form, status tracking, contractor updates), TenantDocumentsTab (Ejari cert download, tenancy agreement PDF, NOC request button), TenantProfileTab (personal details, Emirates ID, passport expiry alert), TenantPortalHome (KPI tiles: active lease countdown, next payment due amount, open maintenance count). Include: API endpoint for each tab, authFetch pattern, error states, empty states.
