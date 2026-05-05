@@ -14,19 +14,21 @@
 
 | Week                | Reset Date   | Max Requests | Used | Remaining | Status       |
 | ------------------- | ------------ | ------------ | ---- | --------- | ------------ |
-| Week of May 4, 2026 | May 10, 2026 | 50           | 9    | 41        | 🟢 AVAILABLE |
+| Week of May 4, 2026 | May 10, 2026 | 50           | 11   | 39        | 🟢 AVAILABLE |
 
 **Usage Log (this week):**
 
-| Date        | Agent           | Task                                                                                              | Requests Used |
-| ----------- | --------------- | ------------------------------------------------------------------------------------------------- | ------------- |
-| May 3, 2026 | @Mira + @Gwynne | Phase 29: Landlord portal live API wiring                                                         | 3             |
-| May 4, 2026 | @Gwynne         | Merge development → main + push                                                                   | 1             |
-| May 5, 2026 | @Mira           | Phase 31: Income + Offer Review live wiring                                                       | 1             |
-| May 5, 2026 | @Mira + @Una    | Phase 32: Payments date-filter + mobile CSS completion                                            | 1             |
-| May 5, 2026 | @Mira + @Una    | Phase 33 Step 2: Homepage leasing conversion tracking                                             | 1             |
-| May 5, 2026 | @Katherine      | Phase 33 Step 3: Leasing continuity E2E spec (18/18 ✅ Chromium+Firefox+WebKit)                   | 1             |
-| May 5, 2026 | @Mira           | Phase 34: Wire ?mode=rent/buy URL param → Properties purpose filter (3-file change, 7/7 tests ✅) | 1             |
+| Date        | Agent              | Task                                                                                                     | Requests Used |
+| ----------- | ------------------ | -------------------------------------------------------------------------------------------------------- | ------------- |
+| May 3, 2026 | @Mira + @Gwynne    | Phase 29: Landlord portal live API wiring                                                                | 3             |
+| May 4, 2026 | @Gwynne            | Merge development → main + push                                                                          | 1             |
+| May 5, 2026 | @Mira              | Phase 31: Income + Offer Review live wiring                                                              | 1             |
+| May 5, 2026 | @Mira + @Una       | Phase 32: Payments date-filter + mobile CSS completion                                                   | 1             |
+| May 5, 2026 | @Mira + @Una       | Phase 33 Step 2: Homepage leasing conversion tracking                                                    | 1             |
+| May 5, 2026 | @Katherine         | Phase 33 Step 3: Leasing continuity E2E spec (18/18 ✅ Chromium+Firefox+WebKit)                          | 1             |
+| May 5, 2026 | @Mira              | Phase 34: Wire ?mode=rent/buy URL param → Properties purpose filter (3-file change, 7/7 tests ✅)        | 1             |
+| May 5, 2026 | @Mira              | Phase 35: Wire 'Request Viewing' to POST /api/viewings — auth path + WhatsApp fallback (51/51 tests ✅)  | 1             |
+| May 5, 2026 | @Mira + @Katherine | Phase 36: Replace alert() with inline StatusBanner in MessageScheduler — 5 alerts removed (9/9 tests ✅) | 1             |
 
 ---
 
