@@ -19,6 +19,16 @@ Copy this prompt into **Google AI Studio (Gemini 2.0 Flash)**:
 
 The Tenant Portal is a dedicated self-service interface for tenants to manage their tenancy lifecycle — from lease viewing and rent payments to maintenance requests and community engagement. The portal is designed for Dubai's diverse tenant population, supporting English and Arabic with a mobile-first approach.
 
+### Priority Module Alignment (May 2026)
+
+Tenant portal is now explicitly bound to the P0 end-to-end leasing flow:
+
+- Entry from homepage lead conversion and agent onboarding workflow
+- Continuity with tenancy/Ejari contract state
+- Shared lifecycle with landlord and leasing agent for payment, maintenance, and renewal outcomes
+
+Primary success signal: tenant can complete critical tasks without back-office intervention except for legal/approval checkpoints.
+
 ### Purpose
 
 Provide tenants with a convenient, transparent digital experience for all tenancy-related activities, reducing the burden on property managers while increasing tenant satisfaction and retention.
@@ -71,14 +81,14 @@ The dashboard provides an at-a-glance view of the tenant's tenancy status.
 
 #### Key Information Cards
 
-| Card | Content | Visual |
-|------|---------|--------|
-| Lease Status | Active / Expiring / Expired | Green / Amber / Red badge |
-| Next Payment | Amount, due date, days remaining | Countdown timer |
-| Payment History | Last 3 payments with status | Mini timeline |
-| Maintenance | Active requests count | Number with status dots |
-| Ejari Status | Registered / Pending / Expired | Status badge |
-| Messages | Unread message count | Notification badge |
+| Card            | Content                          | Visual                    |
+| --------------- | -------------------------------- | ------------------------- |
+| Lease Status    | Active / Expiring / Expired      | Green / Amber / Red badge |
+| Next Payment    | Amount, due date, days remaining | Countdown timer           |
+| Payment History | Last 3 payments with status      | Mini timeline             |
+| Maintenance     | Active requests count            | Number with status dots   |
+| Ejari Status    | Registered / Pending / Expired   | Status badge              |
+| Messages        | Unread message count             | Notification badge        |
 
 #### Quick Actions
 
@@ -93,20 +103,20 @@ The dashboard provides an at-a-glance view of the tenant's tenancy status.
 
 ### View Contract Details
 
-| Field | Displayed |
-|-------|-----------|
-| Contract reference | ✅ |
-| Property address & unit | ✅ |
-| Lease start date | ✅ |
-| Lease end date | ✅ |
-| Annual rent | ✅ (AED + USD equivalent) |
-| Payment frequency | ✅ (Cheques: 1/2/4/6/12) |
-| Security deposit | ✅ (Amount + status) |
-| Ejari number | ✅ |
-| Landlord name | ✅ |
-| Property manager | ✅ (Name + contact) |
-| Special conditions | ✅ |
-| Download lease PDF | ✅ |
+| Field                   | Displayed                 |
+| ----------------------- | ------------------------- |
+| Contract reference      | ✅                        |
+| Property address & unit | ✅                        |
+| Lease start date        | ✅                        |
+| Lease end date          | ✅                        |
+| Annual rent             | ✅ (AED + USD equivalent) |
+| Payment frequency       | ✅ (Cheques: 1/2/4/6/12)  |
+| Security deposit        | ✅ (Amount + status)      |
+| Ejari number            | ✅                        |
+| Landlord name           | ✅                        |
+| Property manager        | ✅ (Name + contact)       |
+| Special conditions      | ✅                        |
+| Download lease PDF      | ✅                        |
 
 ### Renewal Requests
 
@@ -161,13 +171,13 @@ New contract generated ──── Ejari renewed
 
 #### Supported Payment Methods
 
-| Method | Status | Processing Time |
-|--------|--------|----------------|
-| Credit/Debit Card | ✅ Supported | Instant |
-| Bank Transfer | ✅ Supported | 1–3 business days |
-| Apple Pay | ✅ Supported | Instant |
-| Google Pay | ✅ Supported | Instant |
-| Direct Debit (UAEPGS) | 🔜 Planned | Same day |
+| Method                | Status       | Processing Time   |
+| --------------------- | ------------ | ----------------- |
+| Credit/Debit Card     | ✅ Supported | Instant           |
+| Bank Transfer         | ✅ Supported | 1–3 business days |
+| Apple Pay             | ✅ Supported | Instant           |
+| Google Pay            | ✅ Supported | Instant           |
+| Direct Debit (UAEPGS) | 🔜 Planned   | Same day          |
 
 #### Payment Features
 
@@ -182,14 +192,14 @@ New contract generated ──── Ejari renewed
 
 ### Payment History
 
-| Column | Description |
-|--------|-------------|
-| Date | Payment date |
-| Amount | AED amount paid |
-| Method | Card, bank transfer, cheque |
-| Status | Completed, Pending, Failed, Refunded |
-| Receipt | Download PDF receipt |
-| Reference | Transaction reference number |
+| Column    | Description                          |
+| --------- | ------------------------------------ |
+| Date      | Payment date                         |
+| Amount    | AED amount paid                      |
+| Method    | Card, bank transfer, cheque          |
+| Status    | Completed, Pending, Failed, Refunded |
+| Receipt   | Download PDF receipt                 |
+| Reference | Transaction reference number         |
 
 ### Cheque Tracking
 
@@ -208,16 +218,16 @@ For tenants using post-dated cheques (PDC):
 
 #### Request Form Fields
 
-| Field | Type | Required |
-|-------|------|----------|
-| Category | Dropdown (Plumbing, Electrical, AC, Painting, Pest, Appliance, Other) | ✅ |
-| Priority | Select (Low, Medium, High, Emergency) | ✅ |
-| Title | Text (max 120 chars) | ✅ |
-| Description | Textarea (max 2000 chars) | ✅ |
-| Photos | Upload up to 5 images | Optional |
-| Video | Upload 1 video (max 30s) | Optional |
-| Preferred time slot | Date + morning/afternoon/evening | Optional |
-| Permission to enter | Checkbox (grant access if tenant absent) | ✅ |
+| Field               | Type                                                                  | Required |
+| ------------------- | --------------------------------------------------------------------- | -------- |
+| Category            | Dropdown (Plumbing, Electrical, AC, Painting, Pest, Appliance, Other) | ✅       |
+| Priority            | Select (Low, Medium, High, Emergency)                                 | ✅       |
+| Title               | Text (max 120 chars)                                                  | ✅       |
+| Description         | Textarea (max 2000 chars)                                             | ✅       |
+| Photos              | Upload up to 5 images                                                 | Optional |
+| Video               | Upload 1 video (max 30s)                                              | Optional |
+| Preferred time slot | Date + morning/afternoon/evening                                      | Optional |
+| Permission to enter | Checkbox (grant access if tenant absent)                              | ✅       |
 
 #### Emergency Categories
 
@@ -267,17 +277,17 @@ After completion, tenant can:
 
 ### Available Documents
 
-| Document | Auto-Generated | Download |
-|----------|---------------|----------|
-| Lease agreement (signed PDF) | No | ✅ |
-| Ejari certificate | No | ✅ |
-| Rent receipts | Yes (per payment) | ✅ |
-| Move-in checklist (signed) | No | ✅ |
-| Move-out checklist | No | ✅ |
-| Building rules & regulations | No | ✅ |
-| Parking permit | No | ✅ |
-| Access cards/key receipt | No | ✅ |
-| NOC (No Objection Certificate) | No | ✅ (if applicable) |
+| Document                       | Auto-Generated    | Download           |
+| ------------------------------ | ----------------- | ------------------ |
+| Lease agreement (signed PDF)   | No                | ✅                 |
+| Ejari certificate              | No                | ✅                 |
+| Rent receipts                  | Yes (per payment) | ✅                 |
+| Move-in checklist (signed)     | No                | ✅                 |
+| Move-out checklist             | No                | ✅                 |
+| Building rules & regulations   | No                | ✅                 |
+| Parking permit                 | No                | ✅                 |
+| Access cards/key receipt       | No                | ✅                 |
+| NOC (No Objection Certificate) | No                | ✅ (if applicable) |
 
 ### Document Notifications
 
@@ -300,27 +310,27 @@ After completion, tenant can:
 
 ### Emergency Contacts
 
-| Contact | Availability |
-|---------|-------------|
-| Property manager | Business hours (9 AM – 6 PM) |
-| Emergency maintenance | 24/7 hotline |
-| Building security | 24/7 |
-| Dubai Civil Defence | 997 (fire) |
-| Dubai Police | 999 |
-| DEWA Emergency | 991 |
+| Contact               | Availability                 |
+| --------------------- | ---------------------------- |
+| Property manager      | Business hours (9 AM – 6 PM) |
+| Emergency maintenance | 24/7 hotline                 |
+| Building security     | 24/7                         |
+| Dubai Civil Defence   | 997 (fire)                   |
+| Dubai Police          | 999                          |
+| DEWA Emergency        | 991                          |
 
 ### Notification Channels
 
-| Event | Email | SMS | Push | Portal |
-|-------|-------|-----|------|--------|
-| Payment due reminder | ✅ | ✅ | ✅ | ✅ |
-| Payment overdue | ✅ | ✅ | ✅ | ✅ |
-| Payment received | ✅ | ❌ | ✅ | ✅ |
-| Maintenance update | ✅ | ❌ | ✅ | ✅ |
-| Lease expiry reminder | ✅ | ✅ | ✅ | ✅ |
-| Community announcement | ❌ | ❌ | ✅ | ✅ |
-| New document available | ✅ | ❌ | ✅ | ✅ |
-| Message from manager | ❌ | ❌ | ✅ | ✅ |
+| Event                  | Email | SMS | Push | Portal |
+| ---------------------- | ----- | --- | ---- | ------ |
+| Payment due reminder   | ✅    | ✅  | ✅   | ✅     |
+| Payment overdue        | ✅    | ✅  | ✅   | ✅     |
+| Payment received       | ✅    | ❌  | ✅   | ✅     |
+| Maintenance update     | ✅    | ❌  | ✅   | ✅     |
+| Lease expiry reminder  | ✅    | ✅  | ✅   | ✅     |
+| Community announcement | ❌    | ❌  | ✅   | ✅     |
+| New document available | ✅    | ❌  | ✅   | ✅     |
+| Message from manager   | ❌    | ❌  | ✅   | ✅     |
 
 ---
 
@@ -336,14 +346,14 @@ After completion, tenant can:
 
 ### Amenity Booking
 
-| Amenity | Booking Type | Advance Booking | Duration |
-|---------|-------------|-----------------|----------|
-| Gym | No booking needed | N/A | N/A |
-| Swimming pool | Time slot | Up to 7 days | 2 hours |
-| BBQ area | Date reservation | Up to 14 days | 4 hours |
-| Party hall | Date reservation | Up to 30 days | 6 hours |
-| Tennis court | Time slot | Up to 3 days | 1 hour |
-| Meeting room | Time slot | Up to 7 days | 2 hours |
+| Amenity       | Booking Type      | Advance Booking | Duration |
+| ------------- | ----------------- | --------------- | -------- |
+| Gym           | No booking needed | N/A             | N/A      |
+| Swimming pool | Time slot         | Up to 7 days    | 2 hours  |
+| BBQ area      | Date reservation  | Up to 14 days   | 4 hours  |
+| Party hall    | Date reservation  | Up to 30 days   | 6 hours  |
+| Tennis court  | Time slot         | Up to 3 days    | 1 hour   |
+| Meeting room  | Time slot         | Up to 7 days    | 2 hours  |
 
 #### Booking Features
 
@@ -359,14 +369,14 @@ After completion, tenant can:
 
 ### Tracking Dashboard
 
-| Status | Description | Tenant Action |
-|--------|-------------|---------------|
-| **Not Registered** | Lease not yet registered with Ejari | Contact manager |
-| **Pending** | Registration submitted, awaiting processing | Wait |
-| **Registered** | Active Ejari registration | Download certificate |
-| **Renewal Pending** | Lease renewed, Ejari update in progress | Wait |
-| **Expired** | Ejari expired (lease ended) | N/A |
-| **Cancelled** | Ejari cancelled (early termination) | N/A |
+| Status              | Description                                 | Tenant Action        |
+| ------------------- | ------------------------------------------- | -------------------- |
+| **Not Registered**  | Lease not yet registered with Ejari         | Contact manager      |
+| **Pending**         | Registration submitted, awaiting processing | Wait                 |
+| **Registered**      | Active Ejari registration                   | Download certificate |
+| **Renewal Pending** | Lease renewed, Ejari update in progress     | Wait                 |
+| **Expired**         | Ejari expired (lease ended)                 | N/A                  |
+| **Cancelled**       | Ejari cancelled (early termination)         | N/A                  |
 
 ### Ejari Information Displayed
 
@@ -391,16 +401,16 @@ After completion, tenant can:
 
 ### Deposit Tracking
 
-| Field | Displayed |
-|-------|-----------|
-| Deposit amount | ✅ (AED) |
-| Date paid | ✅ |
-| Payment method | ✅ |
-| Receipt | ✅ (Download) |
-| Status | Held / Partial refund / Fully refunded |
-| Deductions (if any) | Itemized list |
-| Refund amount | ✅ (calculated) |
-| Refund date | ✅ (estimated or actual) |
+| Field               | Displayed                              |
+| ------------------- | -------------------------------------- |
+| Deposit amount      | ✅ (AED)                               |
+| Date paid           | ✅                                     |
+| Payment method      | ✅                                     |
+| Receipt             | ✅ (Download)                          |
+| Status              | Held / Partial refund / Fully refunded |
+| Deductions (if any) | Itemized list                          |
+| Refund amount       | ✅ (calculated)                        |
+| Refund date         | ✅ (estimated or actual)               |
 
 ### Deposit Refund Process
 
@@ -438,27 +448,27 @@ Refund receipt issued
 
 ### Move-In Checklist
 
-| Category | Items |
-|----------|-------|
-| **Keys & Access** | Unit keys, building access card, parking card, mailbox key |
-| **Utilities** | DEWA connection confirmed, internet setup, gas (if applicable) |
-| **Unit Condition** | Room-by-room inspection with photos |
-| **Fixtures** | AC units, water heaters, kitchen appliances, light fixtures |
-| **Documentation** | Lease signed, Ejari registered, security deposit paid |
-| **Building Info** | Rules received, emergency contacts, waste disposal info |
-| **Amenities** | Gym access, pool access, parking allocation |
+| Category           | Items                                                          |
+| ------------------ | -------------------------------------------------------------- |
+| **Keys & Access**  | Unit keys, building access card, parking card, mailbox key     |
+| **Utilities**      | DEWA connection confirmed, internet setup, gas (if applicable) |
+| **Unit Condition** | Room-by-room inspection with photos                            |
+| **Fixtures**       | AC units, water heaters, kitchen appliances, light fixtures    |
+| **Documentation**  | Lease signed, Ejari registered, security deposit paid          |
+| **Building Info**  | Rules received, emergency contacts, waste disposal info        |
+| **Amenities**      | Gym access, pool access, parking allocation                    |
 
 ### Move-Out Checklist
 
-| Category | Items |
-|----------|-------|
-| **Notice** | Termination notice submitted, notice period confirmed |
-| **Utilities** | DEWA final reading, internet cancellation, forwarding address |
-| **Unit Condition** | Final inspection scheduled, cleaning completed |
-| **Keys & Access** | All keys returned, access cards returned, parking card returned |
-| **Financial** | Outstanding payments cleared, deposit deduction reviewed |
-| **Documentation** | Ejari cancelled, move-out form signed |
-| **Forwarding** | Forwarding address provided, mail forwarding set up |
+| Category           | Items                                                           |
+| ------------------ | --------------------------------------------------------------- |
+| **Notice**         | Termination notice submitted, notice period confirmed           |
+| **Utilities**      | DEWA final reading, internet cancellation, forwarding address   |
+| **Unit Condition** | Final inspection scheduled, cleaning completed                  |
+| **Keys & Access**  | All keys returned, access cards returned, parking card returned |
+| **Financial**      | Outstanding payments cleared, deposit deduction reviewed        |
+| **Documentation**  | Ejari cancelled, move-out form signed                           |
+| **Forwarding**     | Forwarding address provided, mail forwarding set up             |
 
 ### Digital Checklist Features
 
@@ -531,42 +541,42 @@ Refund receipt issued
 
 ### API Endpoints
 
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | `/api/tenant-portal/dashboard` | Dashboard summary |
-| GET | `/api/tenant-portal/lease` | Current lease details |
-| POST | `/api/tenant-portal/lease/renewal` | Submit renewal request |
-| POST | `/api/tenant-portal/lease/termination` | Submit termination |
-| GET | `/api/tenant-portal/payments` | Payment history |
-| POST | `/api/tenant-portal/payments` | Make a payment |
-| GET | `/api/tenant-portal/payments/schedule` | Payment schedule |
-| POST | `/api/tenant-portal/payments/auto-pay` | Configure auto-pay |
-| GET | `/api/tenant-portal/maintenance` | List maintenance requests |
-| POST | `/api/tenant-portal/maintenance` | Submit new request |
-| PATCH | `/api/tenant-portal/maintenance/:id/rate` | Rate completed request |
-| GET | `/api/tenant-portal/documents` | List documents |
-| GET | `/api/tenant-portal/documents/:id/download` | Download document |
-| GET | `/api/tenant-portal/messages` | List conversations |
-| POST | `/api/tenant-portal/messages` | Send message |
-| GET | `/api/tenant-portal/community/announcements` | Building announcements |
-| GET | `/api/tenant-portal/community/amenities` | Available amenities |
-| POST | `/api/tenant-portal/community/bookings` | Book amenity |
-| GET | `/api/tenant-portal/ejari` | Ejari status |
-| GET | `/api/tenant-portal/deposit` | Security deposit status |
-| GET | `/api/tenant-portal/checklist/:type` | Move-in/out checklist |
-| POST | `/api/tenant-portal/checklist/:type/sign` | Sign checklist |
+| Method | Endpoint                                     | Description               |
+| ------ | -------------------------------------------- | ------------------------- |
+| GET    | `/api/tenant-portal/dashboard`               | Dashboard summary         |
+| GET    | `/api/tenant-portal/lease`                   | Current lease details     |
+| POST   | `/api/tenant-portal/lease/renewal`           | Submit renewal request    |
+| POST   | `/api/tenant-portal/lease/termination`       | Submit termination        |
+| GET    | `/api/tenant-portal/payments`                | Payment history           |
+| POST   | `/api/tenant-portal/payments`                | Make a payment            |
+| GET    | `/api/tenant-portal/payments/schedule`       | Payment schedule          |
+| POST   | `/api/tenant-portal/payments/auto-pay`       | Configure auto-pay        |
+| GET    | `/api/tenant-portal/maintenance`             | List maintenance requests |
+| POST   | `/api/tenant-portal/maintenance`             | Submit new request        |
+| PATCH  | `/api/tenant-portal/maintenance/:id/rate`    | Rate completed request    |
+| GET    | `/api/tenant-portal/documents`               | List documents            |
+| GET    | `/api/tenant-portal/documents/:id/download`  | Download document         |
+| GET    | `/api/tenant-portal/messages`                | List conversations        |
+| POST   | `/api/tenant-portal/messages`                | Send message              |
+| GET    | `/api/tenant-portal/community/announcements` | Building announcements    |
+| GET    | `/api/tenant-portal/community/amenities`     | Available amenities       |
+| POST   | `/api/tenant-portal/community/bookings`      | Book amenity              |
+| GET    | `/api/tenant-portal/ejari`                   | Ejari status              |
+| GET    | `/api/tenant-portal/deposit`                 | Security deposit status   |
+| GET    | `/api/tenant-portal/checklist/:type`         | Move-in/out checklist     |
+| POST   | `/api/tenant-portal/checklist/:type/sign`    | Sign checklist            |
 
 ### Role-Based Access
 
-| Feature | Owner | Manager | Agent | Landlord | Tenant |
-|---------|-------|---------|-------|----------|--------|
-| View dashboard | N/A | N/A | N/A | N/A | ✅ Own |
-| View lease | N/A | N/A | N/A | N/A | ✅ Own |
-| Make payment | N/A | N/A | N/A | N/A | ✅ Own |
-| Submit maintenance | N/A | N/A | N/A | N/A | ✅ Own |
-| View documents | N/A | N/A | N/A | N/A | ✅ Own |
-| Book amenities | N/A | N/A | N/A | N/A | ✅ |
-| Send messages | N/A | N/A | ✅ | N/A | ✅ |
+| Feature            | Owner | Manager | Agent | Landlord | Tenant |
+| ------------------ | ----- | ------- | ----- | -------- | ------ |
+| View dashboard     | N/A   | N/A     | N/A   | N/A      | ✅ Own |
+| View lease         | N/A   | N/A     | N/A   | N/A      | ✅ Own |
+| Make payment       | N/A   | N/A     | N/A   | N/A      | ✅ Own |
+| Submit maintenance | N/A   | N/A     | N/A   | N/A      | ✅ Own |
+| View documents     | N/A   | N/A     | N/A   | N/A      | ✅ Own |
+| Book amenities     | N/A   | N/A     | N/A   | N/A      | ✅     |
+| Send messages      | N/A   | N/A     | ✅    | N/A      | ✅     |
 
 > Internal roles manage tenant data through the main CRM interface. Landlords see tenant info through the landlord portal.
 
