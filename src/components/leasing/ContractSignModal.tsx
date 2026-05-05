@@ -2,16 +2,27 @@ import React, { useState } from 'react';
 import styled from 'styled-components';
 import { theme } from '../../styles/theme';
 
+interface ContractProperty {
+  id: string;
+  title?: string;
+  unitNumber?: string;
+  documents?: string[];
+  [key: string]: unknown;
+}
+
 interface ContractSignModalProps {
-  property: any;
+  property: ContractProperty;
   onClose: () => void;
   onSignSuccess: () => void;
 }
 
 const Overlay = styled.div`
   position: fixed;
-  top: 0; left: 0; right: 0; bottom: 0;
-  background: rgba(0,0,0,0.6);
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -73,17 +84,34 @@ const Button = styled.button<{ $primary?: boolean }>`
   border: none;
   cursor: pointer;
   font-weight: 500;
-  background: ${props => props.$primary ? theme.colors.primary : theme.colors.background.secondary};
-  color: ${props => props.$primary ? 'white' : theme.colors.text.primary};
-  
+  background: ${props =>
+    props.$primary ? theme.colors.primary : theme.colors.background.secondary};
+  color: ${props => (props.$primary ? 'white' : theme.colors.text.primary)};
+
   &:disabled {
     opacity: 0.7;
     cursor: not-allowed;
   }
 `;
 
-export const ContractSignModal: React.FC<ContractSignModalProps> = ({ property, onClose, onSignSuccess }) => {
+const ErrorBanner = styled.div`
+  padding: 10px 14px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  margin-bottom: ${theme.spacing.md};
+  background: #fdecea;
+  border-left: 4px solid #f44336;
+  color: #b71c1c;
+`;
+
+export const ContractSignModal: React.FC<ContractSignModalProps> = ({
+  property,
+  onClose,
+  onSignSuccess,
+}) => {
   const [signing, setSigning] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const contractUrl = property.documents?.find((doc: string) => doc.includes('contract_'));
 
@@ -94,20 +122,19 @@ export const ContractSignModal: React.FC<ContractSignModalProps> = ({ property, 
       const res = await fetch(`/api/leasing-inventory/${property.id}/sign`, {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
       });
 
       if (res.ok) {
         onSignSuccess();
       } else {
         const err = await res.json();
-        alert(err.error || 'Failed to sign contract');
+        setError(err.error || 'Failed to sign contract');
       }
-    } catch (err) {
-      console.error(err);
-      alert('Error signing contract');
+    } catch {
+      setError('Error signing contract');
     } finally {
       setSigning(false);
     }
@@ -115,11 +142,16 @@ export const ContractSignModal: React.FC<ContractSignModalProps> = ({ property, 
 
   return (
     <Overlay onClick={onClose}>
-      <Modal onClick={(e) => e.stopPropagation()}>
+      <Modal onClick={e => e.stopPropagation()}>
         <Header>
           <Title>E-Sign Contract: {property.unitNumber || property.title}</Title>
           <CloseButton onClick={onClose}>&times;</CloseButton>
         </Header>
+        {error && (
+          <ErrorBanner role="alert" data-testid="contract-sign-error">
+            ⚠️ {error}
+          </ErrorBanner>
+        )}
 
         {contractUrl ? (
           <PdfPreview src={contractUrl} title="Contract PDF" />
@@ -130,7 +162,9 @@ export const ContractSignModal: React.FC<ContractSignModalProps> = ({ property, 
         )}
 
         <Footer>
-          <Button onClick={onClose} disabled={signing}>Cancel</Button>
+          <Button onClick={onClose} disabled={signing}>
+            Cancel
+          </Button>
           <Button $primary onClick={handleSign} disabled={signing || !contractUrl}>
             {signing ? 'Signing securely via UAE Pass...' : 'E-Sign Document'}
           </Button>

@@ -2,16 +2,29 @@ import React, { useState } from 'react';
 import styled from 'styled-components';
 import { theme } from '../../styles/theme';
 
+interface ChecklistProperty {
+  id: string;
+  title?: string;
+  unitNumber?: string;
+  titleDeedMissing?: boolean;
+  landlordPassportMissing?: boolean;
+  ejariMissing?: boolean;
+  [key: string]: unknown;
+}
+
 interface DocumentChecklistProps {
-  property: any;
+  property: ChecklistProperty;
   onClose: () => void;
   onRefresh: () => void;
 }
 
 const Overlay = styled.div`
   position: fixed;
-  top: 0; left: 0; right: 0; bottom: 0;
-  background: rgba(0,0,0,0.5);
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -59,7 +72,7 @@ const DocRow = styled.div`
 `;
 
 const DocStatus = styled.div<{ $missing: boolean }>`
-  color: ${(props) => (props.$missing ? theme.colors.error : theme.colors.success)};
+  color: ${props => (props.$missing ? theme.colors.error : theme.colors.success)};
   font-weight: 500;
   display: flex;
   align-items: center;
@@ -73,12 +86,30 @@ const UploadLabel = styled.label`
   border-radius: 4px;
   cursor: pointer;
   font-size: 0.875rem;
-  &:hover { opacity: 0.9; }
+  &:hover {
+    opacity: 0.9;
+  }
 `;
 
-export const DocumentChecklist: React.FC<DocumentChecklistProps> = ({ property, onClose, onRefresh }) => {
+const ErrorBanner = styled.div`
+  padding: 10px 14px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  margin-bottom: ${theme.spacing.md};
+  background: #fdecea;
+  border-left: 4px solid #f44336;
+  color: #b71c1c;
+`;
+
+export const DocumentChecklist: React.FC<DocumentChecklistProps> = ({
+  property,
+  onClose,
+  onRefresh,
+}) => {
   const [uploading, setUploading] = useState(false);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [uploadError, setUploadError] = useState<string | null>(null);
 
   const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>, docType: string) => {
     if (!e.target.files || e.target.files.length === 0) return;
@@ -93,9 +124,9 @@ export const DocumentChecklist: React.FC<DocumentChecklistProps> = ({ property, 
       const res = await fetch(`/api/leasing-inventory/${property.id}/upload`, {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${token}`
+          Authorization: `Bearer ${token}`,
         },
-        body: formData
+        body: formData,
       });
 
       if (res.ok) {
@@ -103,13 +134,13 @@ export const DocumentChecklist: React.FC<DocumentChecklistProps> = ({ property, 
         if (json.data && json.data.fileUrl) {
           setPreviewUrl(json.data.fileUrl);
         }
+        setUploadError(null);
         onRefresh();
       } else {
-        alert('Upload failed');
+        setUploadError('Upload failed');
       }
-    } catch (err) {
-      console.error(err);
-      alert('Upload error');
+    } catch {
+      setUploadError('Upload error');
     } finally {
       setUploading(false);
     }
@@ -117,11 +148,16 @@ export const DocumentChecklist: React.FC<DocumentChecklistProps> = ({ property, 
 
   return (
     <Overlay onClick={onClose}>
-      <Modal onClick={(e) => e.stopPropagation()}>
+      <Modal onClick={e => e.stopPropagation()}>
         <Header>
           <Title>Document Checklist: {property.unitNumber || property.title}</Title>
           <CloseButton onClick={onClose}>&times;</CloseButton>
         </Header>
+        {uploadError && (
+          <ErrorBanner role="alert" data-testid="doc-checklist-error">
+            ⚠️ {uploadError}
+          </ErrorBanner>
+        )}
 
         <DocRow>
           <DocStatus $missing={property.titleDeedMissing}>
@@ -131,7 +167,12 @@ export const DocumentChecklist: React.FC<DocumentChecklistProps> = ({ property, 
             <>
               <UploadLabel>
                 {uploading ? 'Uploading...' : 'Upload'}
-                <input type="file" hidden onChange={(e) => handleUpload(e, 'titleDeed')} disabled={uploading} />
+                <input
+                  type="file"
+                  hidden
+                  onChange={e => handleUpload(e, 'titleDeed')}
+                  disabled={uploading}
+                />
               </UploadLabel>
             </>
           )}
@@ -144,7 +185,12 @@ export const DocumentChecklist: React.FC<DocumentChecklistProps> = ({ property, 
           {property.landlordPassportMissing && (
             <UploadLabel>
               {uploading ? 'Uploading...' : 'Upload'}
-              <input type="file" hidden onChange={(e) => handleUpload(e, 'passport')} disabled={uploading} />
+              <input
+                type="file"
+                hidden
+                onChange={e => handleUpload(e, 'passport')}
+                disabled={uploading}
+              />
             </UploadLabel>
           )}
         </DocRow>
@@ -156,7 +202,12 @@ export const DocumentChecklist: React.FC<DocumentChecklistProps> = ({ property, 
           {property.ejariMissing && (
             <UploadLabel>
               {uploading ? 'Uploading...' : 'Upload'}
-              <input type="file" hidden onChange={(e) => handleUpload(e, 'ejari')} disabled={uploading} />
+              <input
+                type="file"
+                hidden
+                onChange={e => handleUpload(e, 'ejari')}
+                disabled={uploading}
+              />
             </UploadLabel>
           )}
         </DocRow>
@@ -164,14 +215,18 @@ export const DocumentChecklist: React.FC<DocumentChecklistProps> = ({ property, 
         {previewUrl && (
           <div style={{ marginTop: theme.spacing.lg }}>
             <h4 style={{ marginBottom: theme.spacing.sm }}>Document Preview</h4>
-            <iframe 
-              src={previewUrl} 
-              style={{ width: '100%', height: '300px', border: `1px solid ${theme.colors.border}`, borderRadius: theme.spacing.sm }}
+            <iframe
+              src={previewUrl}
+              style={{
+                width: '100%',
+                height: '300px',
+                border: `1px solid ${theme.colors.border}`,
+                borderRadius: theme.spacing.sm,
+              }}
               title="Document Preview"
             />
           </div>
         )}
-
       </Modal>
     </Overlay>
   );
