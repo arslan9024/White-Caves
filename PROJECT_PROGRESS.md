@@ -14,7 +14,7 @@
 
 | Week                | Reset Date   | Max Requests | Used | Remaining | Status       |
 | ------------------- | ------------ | ------------ | ---- | --------- | ------------ |
-| Week of May 4, 2026 | May 10, 2026 | 50           | 15   | 35        | 🟢 AVAILABLE |
+| Week of May 4, 2026 | May 10, 2026 | 50           | 16   | 34        | 🟢 AVAILABLE |
 
 **Usage Log (this week):**
 
@@ -33,6 +33,7 @@
 | May 6, 2026 | @Mira + @Katherine | Phase 38: Replace 6 alert() calls across 3 leasing modals (ContractSignModal, EjariRegistrationModal, DocumentChecklist) — typed interfaces, ErrorBanner, 25/25 tests ✅                                          | 1             |
 | May 6, 2026 | @Mira + @Katherine | Phase 39: Replace 5 alert() calls in SalesPipelinePage (2), CompanyProfile (2), and SettingsTab (1) — 39/39 tests ✅; later audit found additional legacy alert() clusters outside the original Phase 36–39 scope | 1             |
 | May 6, 2026 | @Mira + @Katherine | Phase 40: Replace 3 alert() calls in TransactionsView with inline status banner; added 5 tests and fixed loading-state regression in fetchTransactions() ✅                                                       | 1             |
+| May 6, 2026 | @Mira + @Katherine | Phase 41: Replace 3 alert() calls in AIModelSelector with inline status banner; added 5 fetch-mocked tests and removed unused helper for ESLint clean ✅                                                          | 1             |
 
 ---
 
