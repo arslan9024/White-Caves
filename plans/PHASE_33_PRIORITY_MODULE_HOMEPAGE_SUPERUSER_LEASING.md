@@ -124,9 +124,9 @@ Per governance policy, coding stays blocked until gates pass.
 
 ### Track 2 — Gate Validation
 
-- 500% multiplier evidence complete on prerequisites
-- 30/30 confidence matrix signed
-- `@Ada — Context Ready (99% Confidence) — Coding Phase Approved`
+- 1000% depth evidence complete on prerequisites
+- Readiness packet score >=92% with matrix evidence and sign-offs
+- `@Ada — Context Ready (1000% Depth, 92% Readiness) — Coding Phase Approved`
 
 ### Track 3 — Implementation (post gate)
 

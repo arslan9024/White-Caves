@@ -1,9 +1,11 @@
 ﻿# Pending Tasks Only
 
-## 🚦 500% EXPANSION QUEUE (Dependency-Gated)
+## 🚦 1000% EXPANSION QUEUE (Dependency-Gated)
 
-> **Rule:** No premium implementation may start until all active wave outputs satisfy 5× depth and include all 5 mandatory layers:
-> business rule, API contract, data schema, tests, edge-case/failure handling.
+> **Rule:** No premium implementation may start until all active wave outputs satisfy 10× depth and include all 10 mandatory evidence layers:
+> business rule, API contract, data schema/model, validation rules, edge/failure handling,
+> security/compliance controls, UX states/mobile/RTL, unit/integration/E2E tests,
+> observability metrics/logging, rollback/migration plan.
 
 ### Wave A — Regulatory/Foundation (must complete first)
 
@@ -26,8 +28,9 @@
 
 - `CONSUMES←@Agent: file/path.md#section`
 - `FEEDS→@Agent: file/path.md#section`
+- `FEEDS_ACK←@DownstreamAgent: accepted|revise + file/path.md#section`
 - Evidence line required per task:
-  - `Sections before→after | 5-layer completeness score | upstream refs consumed | downstream refs produced`
+  - `Sections before→after | 10-layer completeness score | DU score | DRI contribution | upstream refs consumed | downstream refs produced | FEEDS_ACK`
 
 ## 🆓 FREE AGENT QUEUE — Hourly Rotation (17 Agents, 60-min cycle)
 

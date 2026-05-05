@@ -3,7 +3,7 @@
 > **Phase:** 33 (P0)
 > **Date:** May 5, 2026
 > **Purpose:** Convert the approved planning context into implementation-ready work packages.
-> **Condition:** Execute coding tasks only after governance gate pass (`500% + 30/30 + @Ada approval`).
+> **Condition:** Execute coding tasks only after governance gate pass (`1000% depth + readiness >=92% + @Ada approval`).
 
 ---
 
@@ -21,9 +21,9 @@ This file translates strategy into direct implementation units for:
 
 Coding entry condition remains mandatory:
 
-- [ ] 500% prerequisite documentation depth verified
-- [ ] 30/30 confidence matrix completed and logged
-- [ ] `@Ada — Context Ready (99% Confidence) — Coding Phase Approved`
+- [ ] 1000% prerequisite documentation depth verified
+- [ ] Readiness score >=92% completed and logged with matrix evidence
+- [ ] `@Ada — Context Ready (1000% Depth, 92% Readiness) — Coding Phase Approved`
 
 If any unchecked item exists, implementation is paused and routed back to free-agent documentation expansion.
 
