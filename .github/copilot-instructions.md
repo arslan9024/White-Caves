@@ -105,6 +105,7 @@
 
 6. **📊 PHASE PROGRESS REPORT (Mandatory After Every Phase):**
    Every phase completion document must include an **Agent Activity Report** block:
+
    ```
    | Agent     | Model Used          | Token Type | File Worked On            | Sections (Before→After) | Quality Score |
    |-----------|--------------------|-----------|-----------------------------|------------------------|---------------|
@@ -114,10 +115,12 @@
    | @Cassie   | DeepSeek V3        | FREE       | agent-performance.md        | 9 → 14                 | ⭐⭐⭐⭐        |
    | @Joelle   | Llama 3.1 70B Groq | FREE       | 03_ai_assistants/README.md  | 7 → 9+ personas 15-40  | ⭐⭐⭐⭐⭐       |
    ```
+
    Quality Score criteria: ⭐ = stub only | ⭐⭐ = incomplete | ⭐⭐⭐ = functional | ⭐⭐⭐⭐ = complete | ⭐⭐⭐⭐⭐ = production-ready with examples
 
 7. **🚪 SESSION START GATE (Mandatory — Every Session, No Exceptions):**
    Before the first line of code is written or any file is edited in a session, the following checklist MUST be evaluated. If ANY gate is ❌, stop and hand back to free planning agents before coding.
+
    ```
    SESSION START CHECKLIST (run at the top of every Copilot coding session)
    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -142,6 +145,7 @@
 
 8. **📅 DAILY AGENT RHYTHM (Planning-First Workflow):**
    This rhythm governs every working day. Coding NEVER starts before planning agents complete their morning run.
+
    ```
    🌅 MORNING — Free Planning Agents Run (ZERO Copilot premium tokens)
    ─────────────────────────────────────────────────────────────────────
@@ -175,6 +179,7 @@
    The free agent team has been expanded from 5 to 17 agents. All run in external free tools. All follow the same zero-premium rule. Every agent has a 3-task backlog queue in AGENTS.md. No agent ever idles.
 
    **Complete Free Agent Roster (17 agents — 60-minute loop):**
+
    ```
    Slot  Agent      Tool                 Model              Domain
    ─────────────────────────────────────────────────────────────────────────────
@@ -205,6 +210,7 @@
    - **Zero premium tokens** — if a task seems to need a premium model, it must be split into smaller docs-only subtasks first.
 
    **How to Run the Loop:**
+
    ```
    1. Run scripts/free-agents-loop.ps1 in any terminal
       → It reads the current minute, maps to the active agent's slot
@@ -217,61 +223,113 @@
    ```
 
 10. **📚 500% RESEARCH MULTIPLIER (Mandatory Before Any Premium Coding):**
-      - Every prerequisite `business_docs/` and `plans/` file must reach **5× previous depth** before implementation begins.
-      - “500%” means both **quantity and quality**: each new section must include all 5 layers:
-         1) business rule, 2) API contract, 3) data schema/model, 4) test scenarios, 5) edge-case/failure handling.
-      - Baseline multipliers (examples):
-         - tenancy-ejari 14→70, landlord-portal 13→65
-         - financial-reporting 11→55, revenue-model 13→65
-         - compliance-requirements 12→60
-         - analytics-dashboard 22→110, agent-performance 14→70
-         - AI personas README 40 persona entries → 200 persona-depth units (5 layers each)
-      - If any prerequisite is <500% target, coding is BLOCKED and must route back to free agents.
+    - Every prerequisite `business_docs/` and `plans/` file must reach **5× previous depth** before implementation begins.
+    - “500%” means both **quantity and quality**: each new section must include all 5 layers:
+      1. business rule, 2) API contract, 3) data schema/model, 4) test scenarios, 5) edge-case/failure handling.
+    - Baseline multipliers (examples):
+      - tenancy-ejari 14→70, landlord-portal 13→65
+      - financial-reporting 11→55, revenue-model 13→65
+      - compliance-requirements 12→60
+      - analytics-dashboard 22→110, agent-performance 14→70
+      - AI personas README 40 persona entries → 200 persona-depth units (5 layers each)
+    - If any prerequisite is <500% target, coding is BLOCKED and must route back to free agents.
 
 11. **🎯 99% CONFIDENCE GATE (30-Check Matrix):**
-      - Premium coding/design is forbidden until **all 30 checks** are passed and logged.
-      - 6 groups × 5 checks each:
-         - **Business** (scope, acceptance criteria, process rules, ownership, rollback)
-         - **API** (request/response schema, auth, errors, pagination, rate limits)
-         - **Data** (schema, indexes, relationships, migrations, retention)
-         - **UX** (mobile 375/768, RTL, empty/error/loading states, accessibility notes)
-         - **QA** (unit/integration/E2E scenarios, non-functional checks, regression scope)
-         - **Compliance/Sign-off** (RERA/DLD/PDPL checks + @Margaret/@Sofia/@Katherine sign-off)
-      - Final approval phrase is exact and mandatory:
-         - `@Ada — Context Ready (99% Confidence) — Coding Phase Approved`
+    - Premium coding/design is forbidden until **all 30 checks** are passed and logged.
+    - 6 groups × 5 checks each:
+      - **Business** (scope, acceptance criteria, process rules, ownership, rollback)
+      - **API** (request/response schema, auth, errors, pagination, rate limits)
+      - **Data** (schema, indexes, relationships, migrations, retention)
+      - **UX** (mobile 375/768, RTL, empty/error/loading states, accessibility notes)
+      - **QA** (unit/integration/E2E scenarios, non-functional checks, regression scope)
+      - **Compliance/Sign-off** (RERA/DLD/PDPL checks + @Margaret/@Sofia/@Katherine sign-off)
+    - Final approval phrase is exact and mandatory:
+      - `@Ada — Context Ready (99% Confidence) — Coding Phase Approved`
 
 12. **🧠 PREMIUM ACCESS (STRICT — SENIORS ONLY, POST-GATE ONLY):**
-      - Premium Copilot requests are allowed only for:
-         - **Senior Coders:** @Ada, @Mira, @Barbara, @Grace, @Daniela, @Ruchi, @Gwynne
-         - **Senior Designers:** @Una, @Lea, @Tracy, @Framer, @Zoe, @Inas
-      - Even these seniors are blocked unless Rule 11 is passed.
+    - Premium Copilot requests are allowed only for:
+      - **Senior Coders:** @Ada, @Mira, @Barbara, @Grace, @Daniela, @Ruchi, @Gwynne
+      - **Senior Designers:** @Una, @Lea, @Tracy, @Framer, @Zoe, @Inas
+    - Even these seniors are blocked unless Rule 11 is passed.
 
 13. **🆓 FREE/JUNIOR MODEL LOCK (ZERO PREMIUM — NO EXCEPTIONS):**
-      - The following 17 agents are permanently free-model-only:
-         - @Victoria, @Invoice, @Sofia, @Cassie, @Joelle,
-         - @Annie, @Rachel, @Marissa, @Timnit, @Hedy, @Maya,
-         - @Booking, @Jaime, @Fei-Fei, @Anima, @Mary, @Corinne
-      - Allowed models only: Gemini 2.0 Flash, Llama 3.1 70B (Groq), DeepSeek V3.
-      - Any premium usage by free/junior agents is a policy breach and must be logged in DAILY_MILESTONE_TRACKER.
+    - The following 17 agents are permanently free-model-only:
+      - @Victoria, @Invoice, @Sofia, @Cassie, @Joelle,
+      - @Annie, @Rachel, @Marissa, @Timnit, @Hedy, @Maya,
+      - @Booking, @Jaime, @Fei-Fei, @Anima, @Mary, @Corinne
+    - Allowed models only: Gemini 2.0 Flash, Llama 3.1 70B (Groq), DeepSeek V3.
+    - Any premium usage by free/junior agents is a policy breach and must be logged in DAILY_MILESTONE_TRACKER.
 
 14. **🔗 FULL SUBAGENT COLLABORATION CHAINS (All 17 Free Agents):**
-      - Every free-agent task must include:
-         - `CONSUMES←@Agent: file#section`
-         - `FEEDS→@Agent: file#section`
-      - Mesh chains for efficient handoffs:
-         - @Sofia → @Timnit → @Victoria → @Annie
-         - @Fei-Fei → @Anima → @Mary → @Invoice
-         - @Booking → @Maya → @Hedy → @Cassie
-         - @Jaime ↔ @Corinne (bi-directional AI/WhatsApp/maintenance loop)
-         - @Marissa → @Rachel → @Joelle
-         - Cross-cutting synthesis: all free agents → @Margaret → @Ada approval gate.
-      - Cadence:
-         - 4-hour mini-sync handoff notes from active free agents
-         - Daily noon synthesis by @Margaret
-         - Pre-coding gate validation by @Ada
+    - Every free-agent task must include:
+      - `CONSUMES←@Agent: file#section`
+      - `FEEDS→@Agent: file#section`
+    - Mesh chains for efficient handoffs:
+      - @Sofia → @Timnit → @Victoria → @Annie
+      - @Fei-Fei → @Anima → @Mary → @Invoice
+      - @Booking → @Maya → @Hedy → @Cassie
+      - @Jaime ↔ @Corinne (bi-directional AI/WhatsApp/maintenance loop)
+      - @Marissa → @Rachel → @Joelle
+      - Cross-cutting synthesis: all free agents → @Margaret → @Ada approval gate.
+    - Cadence:
+      - 4-hour mini-sync handoff notes from active free agents
+      - Daily noon synthesis by @Margaret
+      - Pre-coding gate validation by @Ada
 
 15. **🚪 SESSION START GATE ADDENDUM (8 checks total):**
-      - Existing 6 checks remain mandatory.
-      - Add two required checks before any coding:
-         - [ ] 7. **500% MULTIPLIER MET:** all prerequisite docs reached 5× target depth.
-         - [ ] 8. **99% CONFIDENCE MET:** full 30-check matrix is complete and logged.
+    - Existing 6 checks remain mandatory.
+    - Add two required checks before any coding:
+      - [ ] 7. **500% MULTIPLIER MET:** all prerequisite docs reached 5× target depth.
+      - [ ] 8. **99% CONFIDENCE MET:** full 30-check matrix is complete and logged.
+
+16. **🧭 GOVERNANCE UPGRADE V2 (Supersedes conflicting older thresholds):**
+
+- If any older rule conflicts with Rule 16–22, **Rule 16–22 wins**.
+- Research-first execution is mandatory; implementation is blocked until upgraded gates pass.
+
+17. **🔎 RESEARCHER PREFLIGHT (Mandatory every premium coding day):**
+
+- Before any premium request, the researcher (Explore/Planning chain) must produce:
+  1. context scan of current `business_docs/`, `plans/`, and tracker status,
+  2. implementation-ready plan packet,
+  3. dependency and risk summary,
+  4. premium request budget estimate for the day.
+- No preflight packet = no premium coding.
+
+18. **📚 1000% DEPTH GATE (Replaces 500% gate):**
+
+- Every prerequisite `business_docs/` and `plans/` file must reach **10× previous depth** before premium implementation.
+- Each major section must include 10 evidence layers:
+  1. business rule, 2) API contract, 3) data schema/model, 4) validation rules,
+  2. failure/edge handling, 6) security/compliance controls, 7) UX states/mobile/RTL,
+  3. unit/integration/E2E tests, 9) observability metrics/logging, 10) rollback/migration plan.
+- Any missing critical evidence layer blocks premium coding.
+
+19. **🧱 MANDATORY SDD + FLOWCHART ARTIFACTS (Before premium coding):**
+
+- Each premium wave must have an approved artifact bundle in `plans/waves/`:
+  - `WAVE_##_SDD.md`
+  - `WAVE_##_FLOWCHARTS.md` (Mermaid flowchart + sequence diagram)
+  - `WAVE_##_READINESS_PACKET.md`
+  - `WAVE_##_IMPLEMENTATION_BACKLOG.md`
+  - `WAVE_##_TEST_ROLLOUT.md`
+- Premium coding is blocked until all five artifacts are present and signed off.
+
+20. **📈 READINESS THRESHOLD UPDATE (from binary 99% phrase):**
+
+- Premium unlock requires **minimum 92% readiness score** with evidence.
+- Final approval phrase is now mandatory and exact:
+  - `@Ada — Context Ready (1000% Depth, 92% Readiness) — Coding Phase Approved`
+
+21. **💳 DAILY PREMIUM QUOTA MODEL (Derived from weekly):**
+
+- Daily premium cap formula:
+  - `daily_cap = floor(weekly_remaining / business_days_remaining)`
+- Daily cap must be logged in `PROJECT_PROGRESS.md` before coding.
+- If daily cap is exhausted, remaining work is queued to next day unless emergency exception approved by @Ada.
+
+22. **🚀 LARGE-WAVE PREMIUM EXECUTION (No micro-phase premium requests):**
+
+- Default premium coding batch size is **3–5 modules per day**.
+- Small isolated premium tasks are disallowed unless bundled into an approved wave packet.
+- Time is not a constraint; depth, correctness, and integration quality are the priority.

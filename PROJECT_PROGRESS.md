@@ -3,18 +3,31 @@
 > **Agency:** White Caves Global Agency
 > **Orchestrator:** @Ada (Chief Architect)
 > **Last Updated:** May 6, 2026
-> **Policy Mode:** 500% Research Multiplier + 99% Confidence Gate (active)
+> **Policy Mode:** 1000% Depth Gate + 92% Readiness Threshold (Governance V2 active)
 
 ---
 
 ## 🔒 WEEKLY PREMIUM QUOTA — Copilot Senior Coders/Designers
 
 > Premium usage is allowed **only** for senior coders/designers **after** @Ada declares:
-> `@Ada — Context Ready (99% Confidence) — Coding Phase Approved`
+> `@Ada — Context Ready (1000% Depth, 92% Readiness) — Coding Phase Approved`
 
 | Week                | Reset Date   | Max Requests | Used | Remaining | Status       |
 | ------------------- | ------------ | ------------ | ---- | --------- | ------------ |
 | Week of May 4, 2026 | May 10, 2026 | 50           | 22   | 28        | 🟢 AVAILABLE |
+
+### Daily Premium Quota Model (Mandatory)
+
+- Formula: `daily_cap = floor(weekly_remaining / business_days_remaining)`
+- Current weekly remaining: **28**
+- Business days remaining (example): **4**
+- Computed daily cap (example): **7**
+
+| Date  | Weekly Remaining | Business Days Remaining | Daily Cap | Planned Requests | Actual Requests | Variance |
+| ----- | ---------------- | ----------------------- | --------- | ---------------- | --------------- | -------- |
+| May 6 | 28               | 4                       | 7         | 0                | 0               | 0        |
+| May 7 | TBD              | TBD                     | TBD       | TBD              | TBD             | TBD      |
+| May 8 | TBD              | TBD                     | TBD       | TBD              | TBD             | TBD      |
 
 **Usage Log (this week):**
 
@@ -79,19 +92,21 @@
 - [x] Homepage conversion Step 2 implemented (leasing-first hero CTA + 4 conversion events instrumented)
 - [x] **Phase 33 Step 3 COMPLETE**: Leasing continuity E2E spec (18/18 ✅ Chromium+Firefox+WebKit — API mocked, hero/search/whatsapp/form/role-route lifecycle covered)
 - [x] **Phase 34 COMPLETE**: `?mode=rent/buy` URL param wired to Properties page purpose filter — `usePropertyBrowser` + `PropertyFilterPanel` + 3 new tests (7/7 ✅) — leasing conversion funnel end-to-end complete
-- [ ] Gate pass (500% + 30/30 + @Ada approval) before implementation
+- [ ] Gate pass (1000% depth + readiness >=92% + @Ada approval) before implementation
 
-### MILESTONE-GOV-500
+### MILESTONE-GOV-1000
 
-**Governance Hardening — 500% + 99% + Collaboration Mesh**
+**Governance Hardening V2 — 1000% + 92% + Collaboration Mesh + Daily Quota**
 
 **Status:** 🔨 IN PROGRESS (May 5 rollout)
 
 - [x] Free/junior model lock policy (17 agents, zero premium)
 - [x] Senior premium-only routing (coders + designers)
 - [x] Collaboration mesh and FEEDS/CONSUMES handoff protocol
-- [ ] 500% depth evidence lines for all active free-agent tasks
-- [ ] Full 30-check 99% confidence matrix log (first complete run)
+- [ ] 1000% depth evidence lines for all active free-agent tasks
+- [ ] Readiness score packet at >=92% with evidence
+- [ ] Daily quota plan logged before premium coding
+- [ ] Mandatory wave artifact bundle present in `plans/waves/` for each premium wave
 
 ### MILESTONE-PHASE-2
 
@@ -110,8 +125,8 @@
 
 **Status:** 📋 BLOCKED UNTIL GATE PASS
 
-- [ ] 500% prerequisite docs complete
-- [ ] 30/30 confidence checks passed
+- [ ] 1000% prerequisite docs complete
+- [ ] Readiness score >=92% passed
 - [ ] @Ada approval declaration issued
 
 ---
@@ -133,12 +148,12 @@
 | ------ | -------------------------------------------------------------- | ------------------------------- | -------- |
 | May 5  | Governance rollout in AGENTS + plans + tracking                | @Margaret + @Ada                | P0       |
 | May 5  | P0 module planning update (homepage + superuser + leasing E2E) | @Margaret + @Ada                | P0       |
-| May 6  | Wave A 500% docs (Sofia/Timnit/Victoria)                       | Free agents                     | P0       |
-| May 7  | Wave B 500% docs (Fei-Fei/Anima/Mary/Invoice)                  | Free agents                     | P0       |
-| May 8  | Wave C 500% docs (Booking/Maya/Hedy/Cassie/Jaime/Corinne)      | Free agents                     | P0       |
-| May 9  | Wave D 500% docs (Annie/Marissa/Rachel/Joelle)                 | Free agents                     | P0       |
-| May 10 | 30-check confidence validation + sign-offs                     | @Margaret + @Katherine + @Sofia | P0       |
-| May 11 | @Ada gate decision for Phase 3 start                           | @Ada                            | P0       |
+| May 6  | Wave A 1000% docs (Sofia/Timnit/Victoria)                      | Free agents                     | P0       |
+| May 7  | Wave B 1000% docs (Fei-Fei/Anima/Mary/Invoice)                 | Free agents                     | P0       |
+| May 8  | Wave C 1000% docs (Booking/Maya/Hedy/Cassie/Jaime/Corinne)     | Free agents                     | P0       |
+| May 9  | Wave D 1000% docs (Annie/Marissa/Rachel/Joelle)                | Free agents                     | P0       |
+| May 10 | Readiness (>=92%) validation + sign-offs                       | @Margaret + @Katherine + @Sofia | P0       |
+| May 11 | @Ada gate decision for Phase 3 start (V2 phrase mandatory)     | @Ada                            | P0       |
 
 ---
 
