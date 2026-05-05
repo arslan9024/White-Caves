@@ -14,7 +14,7 @@
 
 | Week                | Reset Date   | Max Requests | Used | Remaining | Status       |
 | ------------------- | ------------ | ------------ | ---- | --------- | ------------ |
-| Week of May 4, 2026 | May 10, 2026 | 50           | 18   | 32        | 🟢 AVAILABLE |
+| Week of May 4, 2026 | May 10, 2026 | 50           | 19   | 31        | 🟢 AVAILABLE |
 
 **Usage Log (this week):**
 
@@ -36,6 +36,7 @@
 | May 6, 2026 | @Mira + @Katherine | Phase 41: Replace 3 alert() calls in AIModelSelector with inline status banner; added 5 fetch-mocked tests and removed unused helper for ESLint clean ✅                                                          | 1             |
 | May 6, 2026 | @Mira + @Katherine | Phase 42: Replace 3 alert() calls in PropertyDetailPage, PropertyGalleryPage, and PriceRangeFilter with inline live-region banners; added 4 focused tests and lint hardening ✅                                   | 1             |
 | May 6, 2026 | @Mira + @Katherine | Phase 43: Replace 2 alert() calls in DocumentVerificationProcessor and PropertyOpportunityList with inline status banners; added focused test coverage for inventory-queue flow and lint hardening ✅             | 1             |
+| May 6, 2026 | @Mira + @Katherine | Phase 44: Replace 4 alert() calls in ProfilePage (2) and TenancyContractForm (2) with inline status banners; added 2 focused tests, fixed missing legacy imports/assets, lint clean and build verified ✅         | 1             |
 
 ---
 
