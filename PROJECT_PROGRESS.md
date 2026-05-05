@@ -14,7 +14,7 @@
 
 | Week                | Reset Date   | Max Requests | Used | Remaining | Status       |
 | ------------------- | ------------ | ------------ | ---- | --------- | ------------ |
-| Week of May 4, 2026 | May 10, 2026 | 50           | 6    | 44        | 🟢 AVAILABLE |
+| Week of May 4, 2026 | May 10, 2026 | 50           | 7    | 43        | 🟢 AVAILABLE |
 
 **Usage Log (this week):**
 
@@ -24,6 +24,7 @@
 | May 4, 2026 | @Gwynne         | Merge development → main + push                        | 1             |
 | May 5, 2026 | @Mira           | Phase 31: Income + Offer Review live wiring            | 1             |
 | May 5, 2026 | @Mira + @Una    | Phase 32: Payments date-filter + mobile CSS completion | 1             |
+| May 5, 2026 | @Mira + @Una    | Phase 33 Step 2: Homepage leasing conversion tracking  | 1             |
 
 ---
 
@@ -60,6 +61,7 @@
 - [x] Core leasing business docs aligned (tenant/landlord/tenancy/workflow)
 - [x] Gate-to-code execution pack created (`plans/PHASE_33_IMPLEMENTATION_EXECUTION_PACK.md`)
 - [x] Identity-core patch implemented (alias normalization + canonical executive routing baseline)
+- [x] Homepage conversion Step 2 implemented (leasing-first hero CTA + 4 conversion events instrumented)
 - [ ] Gate pass (500% + 30/30 + @Ada approval) before implementation
 
 ### MILESTONE-GOV-500
@@ -101,6 +103,7 @@
 
 | Date        | Milestone            | Result                                                        |
 | ----------- | -------------------- | ------------------------------------------------------------- |
+| May 5, 2026 | Phase 33 Step 2      | Homepage leasing conversion events + hero CTA leasing-first   |
 | May 5, 2026 | Phase 31             | LandlordIncomeTab + LandlordOfferReviewTab live API completed |
 | May 5, 2026 | Phase 32             | LandlordPayments date-range + mobile responsive CSS completed |
 | May 3, 2026 | Phase 26 docs sprint | revenue-model, analytics-dashboard, AI personas expansion     |
