@@ -1,258 +1,250 @@
-# =============================================================================
-# free-agents-loop.ps1 — White Caves Free Planning Agent Loop (Phase 4)
-# =============================================================================
-# Run at any time to see which free planning agent is active RIGHT NOW,
-# get the exact prompt to paste into the free tool, AND see this agent's
-# live queue status from the orchestrator.
+# free-agents-loop.ps1 -- White Caves Free Planning Agent Loop (Phase 11 rewrite)
+# Queue-aware: loads current task + prompt from orchestrator queue + prompts.json sidecar.
+# ASCII-clean: no em-dashes, no box-drawing chars.
 #
-# Usage: .\scripts\free-agents-loop.ps1
-# =============================================================================
+# Usage: .\scripts\free-agents-loop.ps1 [-NoBrowser] [-AgentName "@Sofia"]
+param(
+  [string]$AgentName  = "",
+  [switch]$NoBrowser
+)
 
-$minute = (Get-Date).Minute
+$root       = Split-Path $PSScriptRoot -Parent
+$queueFile  = Join-Path $root "logs\orchestrator\task-queue.json"
+$promptsFile = Join-Path $root "scripts\orchestrator\prompts.json"
 
-# Map of 5-minute slot → agent info
+# ---- Slot map (minute-of-hour -> agent) ----
+# NOTE: Must be a regular @{} hashtable, NOT [ordered]@{}
+# OrderedDictionary treats integer index as positional, not key-based.
 $slots = @{
-    0  = @{
-        Agent  = "@Annie"
-        Tool   = "Google AI Studio"
-        URL    = "https://aistudio.google.com/"
-        Model  = "Gemini 2.0 Flash"
-        Domain = "Tenant portal, document gen, email automation"
-        File   = "business_docs/09_crm_features/tenant-portal.md"
-        Prompt = "@Annie — DRAFT: tenant-portal.md → spec all 6 tabs: TenantLeaseTab (lease details, start/end, monthly rent, status badge), TenantPaymentHistoryTab (payment records table, overdue detection, PDC status), TenantMaintenanceTab (submit request form, status tracking, contractor updates), TenantDocumentsTab (Ejari cert download, tenancy agreement PDF, NOC request button), TenantProfileTab (personal details, Emirates ID, passport expiry alert), TenantPortalHome (KPI tiles: active lease countdown, next payment due amount, open maintenance count). Include: API endpoint for each tab, authFetch pattern, error states, empty states."
-    }
-    5  = @{
-        Agent  = "@Rachel"
-        Tool   = "Google AI Studio"
-        URL    = "https://aistudio.google.com/"
-        Model  = "Gemini 2.0 Flash"
-        Domain = "SEO strategy, marketing, careers"
-        File   = "business_docs/09_crm_features/seo-strategy.md"
-        Prompt = "@Rachel — EXPAND: seo-strategy.md → add: Dubai property keyword clusters (buy villa Dubai, rent apartment Downtown, off-plan projects Dubai Marina, 2BR apartment JVC), local SEO setup (Google Business Profile for White Caves LLC, RERA agent profile optimization), Core Web Vitals targets (LCP < 2.5s, FID < 100ms, CLS < 0.1 with measurement plan), structured data schemas (RealEstateListing, LocalBusiness, FAQPage JSON-LD examples), Arabic/English multilingual SEO (hreflang tags, Arabic keyword research, RTL meta tags)."
-    }
-    10 = @{
-        Agent  = "@Marissa"
-        Tool   = "Google AI Studio"
-        URL    = "https://aistudio.google.com/"
-        Model  = "Gemini 2.0 Flash"
-        Domain = "Luxury CRM, community mgmt, UX spec"
-        File   = "business_docs/09_crm_features/luxury-segment.md"
-        Prompt = "@Marissa — DRAFT: luxury-segment.md → spec KairosLuxuryCRM module: luxury threshold definition (AED 5M+ sale or AED 30K+/month rent, areas: Palm Jumeirah, DIFC, Emirates Hills, Jumeirah Bay), VIP client profile (concierge service tier, private viewing scheduling with NDA requirement, dedicated agent assignment), white-glove workflow (chauffeur option flag, exclusive access booking log, post-viewing gift coordination), luxury listing requirements (professional photography brief: min 30 photos, Matterport 3D tour mandatory, drone footage), HNWI compliance (source of funds declaration, PEP screening, enhanced due diligence checklist per CBUAE AML guidelines)."
-    }
-    15 = @{
-        Agent  = "@Timnit"
-        Tool   = "Google AI Studio"
-        URL    = "https://aistudio.google.com/"
-        Model  = "Gemini 2.0 Flash"
-        Domain = "DLD integration, legal CRM, data privacy"
-        File   = "business_docs/09_crm_features/dld-integration.md"
-        Prompt = "@Timnit — DRAFT: dld-integration.md → spec DLD API integration: Oqood off-plan registration (required fields: developer ID, project ID, buyer Emirates ID, unit number, sale price AED, SPA date, payment plan type), title deed transfer workflow (application submission, trustee appointment, fee calculation: 4% transfer fee + AED 580 admin + trustee fees), DLD REST API endpoints (POST /oqood/register, GET /titleDeed/{titleDeedNumber}, GET /transactions?propertyId=), error handling for DLD system downtime (queue failed requests, retry with exponential backoff, alert admin), DLD Smart Judge integration for disputes, White Caves as authorized trustee or broker authentication (API key management)."
-    }
-    20 = @{
-        Agent  = "@Hedy"
-        Tool   = "Groq Console"
-        URL    = "https://console.groq.com/"
-        Model  = "Llama 3.1 70B"
-        Domain = "Audit trail, activity feed, follow-up automation"
-        File   = "business_docs/09_crm_features/audit-trail.md"
-        Prompt = "@Hedy — DRAFT: audit-trail.md → spec HenryAuditCRM module: audit log schema (userId, action, entityType: lead/property/lease/user/commission, entityId, oldValue JSON, newValue JSON, ipAddress, userAgent, timestamp — all fields immutable), tracked actions (CREATE, UPDATE, DELETE, STATUS_CHANGE, LOGIN, LOGOUT, EXPORT, PERMISSION_CHANGE), write-once enforcement (append-only MongoDB collection with no updateOne/deleteOne allowed), audit search UI (filter by: user, entity type, action, date range — paginated 50 per page), compliance export (CSV + PDF report for RERA inspector — date-stamped, agent-signed), retention (7 years per UAE Commercial Transactions Law), real-time audit stream via WebSocket for admin live monitoring."
-    }
-    25 = @{
-        Agent  = "@Maya"
-        Tool   = "Groq Console"
-        URL    = "https://console.groq.com/"
-        Model  = "Llama 3.1 70B"
-        Domain = "Off-plan projects, handover management"
-        File   = "business_docs/09_crm_features/off-plan-projects.md"
-        Prompt = "@Maya — DRAFT: off-plan-projects.md → spec AtlasProjectsCRM: project schema (developer, project name, location GeoPoint, launch date, estimated completion, totalUnits, availableUnits, paymentPlanOptions array), unit inventory (unitNumber, floor, type: studio/1BR/2BR/3BR/penthouse, BUA sqft, view, listPrice, status: available/reserved/sold/transferred), buyer reservation workflow (EOI deposit receipt → SPA draft → signing appointment → Oqood DLD registration within 60 days → payment milestone schedule), project milestone tracker (construction % from developer API or manual update, estimated handover countdown, delay flag), ROI projection calculator (inputs: purchase price, expected rent per RERA index, service charge/sqft → outputs: gross yield %, net yield %, payback years)."
-    }
-    30 = @{
-        Agent  = "@Booking"
-        Tool   = "Groq Console"
-        URL    = "https://console.groq.com/"
-        Model  = "Llama 3.1 70B"
-        Domain = "Scheduling calendar, viewings"
-        File   = "business_docs/09_crm_features/viewings.md"
-        Prompt = "@Booking — DRAFT: viewings.md → spec /api/viewings route: viewing schema (propertyId, leadId, agentId, scheduledAt, durationMinutes: default 60, status: scheduled/confirmed/completed/cancelled/no_show, type: in-person/virtual, zoomLink if virtual, notes, feedbackRating 1-5, feedbackText), scheduling flow (lead selects slot from agent availability → confirmation WhatsApp message sent → 24h reminder → post-viewing WhatsApp feedback request), conflict detection (agent double-booking check, property already has confirmed viewing at same time), ICS file generation (.ics export with property address as location), bulk open-house slots (one property, multiple concurrent viewing slots), viewing conversion metric (viewings → offers rate per property, tracked in analytics)."
-    }
-    35 = @{
-        Agent  = "@Jaime"
-        Tool   = "Groq Console"
-        URL    = "https://console.groq.com/"
-        Model  = "Llama 3.1 70B"
-        Domain = "Offers workflow, WhatsApp integration"
-        File   = "business_docs/09_crm_features/offers.md"
-        Prompt = "@Jaime — DRAFT: offers.md → spec /api/offers route: offer schema (propertyId, buyerId or tenantId, agentId, offerPrice AED, offerType: purchase/lease, validUntil date, status: pending/countered/accepted/rejected/expired, conditions: mortgageSubject/cashPurchase/furnitureIncluded/subjectToNOC, counterOfferHistory array of {price, date, fromParty, notes}), offer workflow (buyer submits → agent presents to seller/landlord → counter offer round → acceptance → auto-generate MOU or LOI PDF), offer comparison table (multiple offers on same property: side-by-side price, conditions, buyer profile), automated expiry cron (set status=expired when validUntil passed), offer acceptance triggers (generate MOU PDF, WhatsApp notification to all parties, create RERA form task), offer analytics (average offers per property, average negotiation rounds, price achieved vs asking %)."
-    }
-    40 = @{
-        Agent  = "@Fei-Fei"
-        Tool   = "DeepSeek Chat"
-        URL    = "https://chat.deepseek.com/"
-        Model  = "DeepSeek V3"
-        Domain = "Property valuation, market intelligence"
-        File   = "business_docs/09_crm_features/property-valuation.md"
-        Prompt = "@Fei-Fei — DRAFT: property-valuation.md → spec valuation engine in CipherMarketCRM: AVM inputs (location GeoPoint, BUA sqft, bedrooms, bathrooms, floor number, view type, building age, last transaction price from DLD), AVM output (estimated market value AED, confidence score %, comparable transactions used: min 3, value range +/-10%), manual valuation override (RERA-certified valuer input, override reason required, manager approval workflow), rental yield calculator (gross: annual rent / purchase price x 100; net: (annual rent - service charges) / purchase price x 100), valuation history per property (date, estimated value, method: AVM/manual, valuer name), bank valuation request workflow (for mortgage pre-approval: RERA Form, bank-specific requirements by bank list), monthly bulk valuation refresh (cron job syncs latest DLD comparable data)."
-    }
-    45 = @{
-        Agent  = "@Anima"
-        Tool   = "DeepSeek Chat"
-        URL    = "https://chat.deepseek.com/"
-        Model  = "DeepSeek V3"
-        Domain = "Currency mgmt, secondary sales, data pipelines"
-        File   = "business_docs/09_crm_features/secondary-sales.md"
-        Prompt = "@Anima — DRAFT: secondary-sales.md → spec /api/secondary-sales route and SecondarySalesAgent module: transaction workflow (seller instruction letter → property appraisal booking → listing activation → offer management → MOU signing → bank/cash buyer path split → NOC from developer within 20 days → DLD transfer appointment → commission disbursement to agent and company), dual-agency disclosure (RERA prohibition on undisclosed dual representation: Form A signed by seller, Form B signed by buyer, Form I if dual agent), secondary vs primary distinction (property.transactionType: primary/secondary field — affects DLD fee calculation and required forms), DLD transfer fee breakdown (4% of sale price split buyer/seller, trustee fees AED 4000-10000, DLD admin AED 580), secondary market KPIs (avg days listing to sold, price achieved vs original asking %, commission per deal average AED)."
-    }
-    50 = @{
-        Agent  = "@Mary"
-        Tool   = "DeepSeek Chat"
-        URL    = "https://chat.deepseek.com/"
-        Model  = "DeepSeek V3"
-        Domain = "Sentinel property, investment, prospecting"
-        File   = "business_docs/09_crm_features/sentinel-property.md"
-        Prompt = "@Mary — DRAFT: sentinel-property.md → spec SentinelPropertyCRM module: property lifecycle state machine (Draft → Pending Review → Listed → Under Offer → Reserved → Sold/Leased → Withdrawn → Re-listed — with allowed transitions and required fields per state), RERA mandatory fields before listing (permit number, DED approval for off-plan, NOC from developer if applicable, title deed number for resale, floor plan uploaded), property quality score algorithm (photos count x10pts, description > 100 words x15pts, floor plan x20pts, virtual tour x25pts, 360 video x30pts — max 100pts, score drives portal ranking), duplicate detection (same community + building + unit number = duplicate warning, override with reason), bulk CSV import spec (column mapping: propertyType, area, community, building, unit, bedrooms, bathrooms, BUA, price, agentId — validation rules, error report with row numbers)."
-    }
-    55 = @{
-        Agent  = "@Corinne"
-        Tool   = "DeepSeek Chat"
-        URL    = "https://chat.deepseek.com/"
-        Model  = "DeepSeek V3"
-        Domain = "AI chat spec, maintenance, map search"
-        File   = "business_docs/09_crm_features/maintenance.md"
-        Prompt = "@Corinne — DRAFT: maintenance.md → spec /api/maintenance route: schema (propertyId, tenantId, landlordId, agentId, category: plumbing/electrical/HVAC/structural/appliance/pest/other, priority: emergency/high/medium/low, description, photos array max 5, status: open/assigned/scheduled/in_progress/completed/cancelled, assignedContractorId, scheduledAt, resolvedAt, resolutionNotes, tenantRating 1-5, invoiceAmount AED, invoiceApproved: boolean), tenant submission channels (portal form or WhatsApp bot → auto-priority: 'water leak' = emergency, 'broken AC' = high, 'light bulb' = low), contractor assignment (approved contractor list by category, availability calendar, work order PDF generation), SLA breach alerting (emergency: 4h, high: 24h, medium: 72h, low: 7 days — alert landlord + manager on breach), landlord cost approval (repairs > AED 500 require landlord WhatsApp approval before contractor proceeds), completion invoice attachment, tenant rating prompt after resolution."
-    }
+  0  = @{ Agent="@Annie";    Tool="Google AI Studio"; URL="https://aistudio.google.com/"; Model="Gemini 2.0 Flash";   Domain="Tenant portal, docs, email automation" }
+  5  = @{ Agent="@Rachel";   Tool="Google AI Studio"; URL="https://aistudio.google.com/"; Model="Gemini 2.0 Flash";   Domain="SEO strategy, marketing, careers" }
+  10 = @{ Agent="@Marissa";  Tool="Google AI Studio"; URL="https://aistudio.google.com/"; Model="Gemini 2.0 Flash";   Domain="Luxury CRM, community, UX spec" }
+  15 = @{ Agent="@Timnit";   Tool="Google AI Studio"; URL="https://aistudio.google.com/"; Model="Gemini 2.0 Flash";   Domain="DLD integration, legal CRM, data privacy" }
+  20 = @{ Agent="@Hedy";     Tool="Groq Console";     URL="https://console.groq.com/";    Model="Llama 3.1 70B";      Domain="Audit trail, activity feed, follow-ups" }
+  25 = @{ Agent="@Maya";     Tool="Groq Console";     URL="https://console.groq.com/";    Model="Llama 3.1 70B";      Domain="Off-plan projects, handover" }
+  30 = @{ Agent="@Booking";  Tool="Groq Console";     URL="https://console.groq.com/";    Model="Llama 3.1 70B";      Domain="Scheduling calendar, viewings" }
+  35 = @{ Agent="@Jaime";    Tool="Groq Console";     URL="https://console.groq.com/";    Model="Llama 3.1 70B";      Domain="Offers workflow, WhatsApp" }
+  40 = @{ Agent="@Fei-Fei";  Tool="DeepSeek Chat";    URL="https://chat.deepseek.com/";   Model="DeepSeek V3";        Domain="Property valuation, market intelligence" }
+  45 = @{ Agent="@Anima";    Tool="DeepSeek Chat";    URL="https://chat.deepseek.com/";   Model="DeepSeek V3";        Domain="Currency, secondary sales, pipelines" }
+  50 = @{ Agent="@Mary";     Tool="DeepSeek Chat";    URL="https://chat.deepseek.com/";   Model="DeepSeek V3";        Domain="Sentinel property, investment" }
+  55 = @{ Agent="@Corinne";  Tool="DeepSeek Chat";    URL="https://chat.deepseek.com/";   Model="DeepSeek V3";        Domain="AI chat, maintenance, map search" }
 }
 
-# Find the current 5-minute slot (floor to nearest 5)
-$slotKey = [math]::Floor($minute / 5) * 5
-
-# Make sure the key exists in our map (handle edge cases)
-if (-not $slots.ContainsKey($slotKey)) {
-    $sortedKeys = $slots.Keys | Sort-Object -Descending
-    $slotKey = ($sortedKeys | Where-Object { $_ -le $slotKey } | Select-Object -First 1)
-    if ($null -eq $slotKey) { $slotKey = 55 }
+# Always-on agents (not time-slotted)
+$alwaysOn = @{
+  "@Victoria" = @{ Tool="Google AI Studio"; URL="https://aistudio.google.com/"; Model="Gemini 2.0 Flash";   Domain="Tenancy/Ejari, landlord portal, leasing" }
+  "@Invoice"  = @{ Tool="Groq Console";     URL="https://console.groq.com/";    Model="Llama 3.1 70B";      Domain="Financial reporting, VAT, revenue model" }
+  "@Sofia"    = @{ Tool="Google AI Studio"; URL="https://aistudio.google.com/"; Model="Gemini 2.0 Flash";   Domain="Compliance, RERA/DLD regulations" }
+  "@Cassie"   = @{ Tool="DeepSeek Chat";    URL="https://chat.deepseek.com/";   Model="DeepSeek V3";        Domain="Analytics dashboard, agent performance" }
+  "@Joelle"   = @{ Tool="Groq Console";     URL="https://console.groq.com/";    Model="Llama 3.1 70B";      Domain="AI personas, integration map, lead scoring" }
 }
 
-$current = $slots[$slotKey]
-$nextSlotKey = ($slotKey + 5) % 60
-if (-not $slots.ContainsKey($nextSlotKey)) { $nextSlotKey = 0 }
-$next = $slots[$nextSlotKey]
-$minutesUntilNext = 5 - ($minute % 5)
-if ($minutesUntilNext -eq 5) { $minutesUntilNext = 0 }
+# ---- Determine active agent ----
+$minute = (Get-Date).Minute
+$slotMin = [int]([math]::Floor($minute / 5) * 5)
+if ($slotMin -gt 55) { $slotMin = 55 }
 
-# ─── Output ───────────────────────────────────────────────────────────────────
-
-Write-Host ""
-Write-Host "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━" -ForegroundColor Cyan
-Write-Host "  WHITE CAVES — Free Planning Agent Loop  🔄" -ForegroundColor Cyan
-Write-Host "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━" -ForegroundColor Cyan
-Write-Host ""
-Write-Host ("  Time  : " + (Get-Date -Format "HH:mm") + "  |  Current slot: :" + $slotKey + "  |  Next slot in: " + $minutesUntilNext + " min") -ForegroundColor White
-Write-Host ""
-Write-Host "  ┌─ ACTIVE AGENT ────────────────────────────────────────" -ForegroundColor Yellow
-Write-Host ("  │  Agent  : " + $current.Agent) -ForegroundColor Yellow
-Write-Host ("  │  Tool   : " + $current.Tool + " (" + $current.Model + ")") -ForegroundColor Green
-Write-Host ("  │  Domain : " + $current.Domain) -ForegroundColor White
-Write-Host ("  │  File   : " + $current.File) -ForegroundColor Gray
-Write-Host "  └───────────────────────────────────────────────────────" -ForegroundColor Yellow
-Write-Host ""
-Write-Host "  ┌─ TASK PROMPT (copy this into the free tool) ──────────" -ForegroundColor Magenta
-Write-Host ""
-
-# Word-wrap the prompt at ~80 chars for readability
-$words = $current.Prompt -split ' '
-$line = "  │  "
-foreach ($word in $words) {
-    if (($line + $word).Length -gt 85) {
-        Write-Host $line -ForegroundColor White
-        $line = "  │  "
-    }
-    $line += $word + " "
-}
-if ($line.Trim() -ne "│") { Write-Host $line -ForegroundColor White }
-
-Write-Host ""
-Write-Host "  └───────────────────────────────────────────────────────" -ForegroundColor Magenta
-Write-Host ""
-Write-Host "  ┌─ NEXT AGENT (slot :" + $nextSlotKey + ") ─────────────────────────" -ForegroundColor DarkCyan
-Write-Host ("  │  " + $next.Agent + " → " + $next.Tool + " → " + $next.Domain) -ForegroundColor DarkCyan
-Write-Host "  └───────────────────────────────────────────────────────" -ForegroundColor DarkCyan
-Write-Host ""
-Write-Host "  STEPS:" -ForegroundColor Cyan
-Write-Host "  1. Open the free tool (opening in browser now...)" -ForegroundColor White
-Write-Host "  2. Set model: $($current.Model)" -ForegroundColor White
-Write-Host "  3. Paste the prompt above" -ForegroundColor White
-Write-Host "  4. Paste AI output into: $($current.File)" -ForegroundColor White
-Write-Host ('  5. git add ' + $current.File + ' && git commit -m "docs(' + $current.Agent + '): Task 1 expansion"') -ForegroundColor White
-Write-Host "  6. Run this script again for the next agent" -ForegroundColor White
-Write-Host ""
-Write-Host "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━" -ForegroundColor Cyan
-Write-Host ""
-
-# Open the free tool URL in the default browser
-try {
-    Start-Process $current.URL
-    Write-Host "  ✅ Opened: $($current.URL)" -ForegroundColor Green
-} catch {
-    Write-Host "  Could not open browser automatically. Navigate to: $($current.URL)" -ForegroundColor Yellow
+if ($AgentName -ne "") {
+  # Override: find slot for named agent
+  $matchSlot = $slots.Keys | Where-Object { $slots[$_].Agent -eq $AgentName } | Select-Object -First 1
+  if ($null -ne $matchSlot) {
+    $current  = $slots[$matchSlot]
+    $activeSlot = $matchSlot
+  } elseif ($alwaysOn.ContainsKey($AgentName)) {
+    $current  = $alwaysOn[$AgentName]
+    $current.Agent = $AgentName
+    $activeSlot = -1
+  } else {
+    Write-Host "[ERROR] Unknown agent: $AgentName" -ForegroundColor Red; exit 1
+  }
+} else {
+  $current    = $slots[$slotMin]
+  $activeSlot = $slotMin
 }
 
-# ─── Queue status for this agent ─────────────────────────────────────────────
-$queueFile = Join-Path $PSScriptRoot "..\logs\orchestrator\task-queue.json"
+$now = Get-Date -Format "HH:mm"
+
+# ---- Load queue ----
+$qTasks   = @()
+$prompts  = $null
 if (Test-Path $queueFile) {
-  try {
-    $raw   = Get-Content $queueFile -Raw
-    $queue = $raw | ConvertFrom-Json
-    $tasks = @($queue.tasks) | Where-Object { $_.agent -eq $current.Agent }
+  try { $q = Get-Content $queueFile -Raw | ConvertFrom-Json; $qTasks = @($q.tasks) } catch {}
+}
+if (Test-Path $promptsFile) {
+  try { $prompts = Get-Content $promptsFile -Raw | ConvertFrom-Json } catch {}
+}
 
-    if ($tasks.Count -gt 0) {
-      Write-Host ""
-      Write-Host "  ┌─ ORCHESTRATOR QUEUE (tasks for $($current.Agent)) ──────────" -ForegroundColor DarkCyan
-      foreach ($t in $tasks) {
-        $statusColor = switch ($t.status) {
-          "done"        { "Green"   }
-          "running"     { "Cyan"    }
-          "waiting_ack" { "Yellow"  }
-          "queued"      { "White"   }
-          "retrying"    { "Magenta" }
-          "failed"      { "Red"     }
-          "escalated"   { "Red"     }
-          default       { "Gray"    }
-        }
-        $statusPad = $t.status.PadRight(13)
-        $titleShort = if ($t.title.Length -gt 42) { $t.title.Substring(0,39) + "..." } else { $t.title }
-        Write-Host ("  |  [$statusPad] $($t.taskId)  $titleShort") -ForegroundColor $statusColor
-      }
-      Write-Host "  └───────────────────────────────────────────────────────" -ForegroundColor DarkCyan
-
-      $running     = @($tasks | Where-Object { $_.status -eq "running"     })
-      $waitingAck  = @($tasks | Where-Object { $_.status -eq "waiting_ack" })
-      $escalated   = @($tasks | Where-Object { $_.status -eq "escalated"   })
-
-      if ($running.Count -gt 0) {
-        Write-Host ""
-        Write-Host ("  [RUNNING] Task $($running[0].taskId) is in progress by a background worker.") -ForegroundColor Cyan
-        Write-Host "  Paste AI output into the target file and run:" -ForegroundColor White
-        Write-Host ("  npm run orchestrator:queue:ack -- -TaskId $($running[0].taskId) -AgentName '$($running[0].feedsAckBy)'") -ForegroundColor Gray
-      }
-      if ($waitingAck.Count -gt 0) {
-        Write-Host ""
-        Write-Host ("  [ACTION] Task $($waitingAck[0].taskId) is waiting for FEEDS_ACK from: $($waitingAck[0].feedsAckBy)") -ForegroundColor Yellow
-        Write-Host ("  npm run orchestrator:queue:ack -- -TaskId $($waitingAck[0].taskId) -AgentName $($waitingAck[0].feedsAckBy)") -ForegroundColor Gray
-      }
-      if ($escalated.Count -gt 0) {
-        Write-Host ""
-        Write-Host ("  [ESCALATED] $($escalated.Count) task(s) stuck. See DAILY_MILESTONE_TRACKER.md for @Margaret alert.") -ForegroundColor Red
+# Get next queued/retrying task for agent
+function Get-NextTask([string]$agent, [object[]]$allTasks) {
+  $active = @($allTasks | Where-Object { $_.agent -eq $agent -and ($_.status -eq "running" -or $_.status -eq "waiting_ack") })
+  if ($active.Count -gt 0) { return $active[0] }
+  $queued = @($allTasks | Where-Object { $_.agent -eq $agent -and ($_.status -eq "queued" -or $_.status -eq "retrying") })
+  if ($queued.Count -eq 0) { return $null }
+  # Find first with deps satisfied
+  foreach ($t in $queued) {
+    $depsOk = $true
+    if ($null -ne $t.deps -and $t.deps.Count -gt 0) {
+      foreach ($d in $t.deps) {
+        $dep = $allTasks | Where-Object { $_.taskId -eq $d } | Select-Object -First 1
+        if ($null -ne $dep -and $dep.status -ne "done") { $depsOk = $false; break }
       }
     }
-    else {
-      Write-Host ""
-      Write-Host "  [QUEUE] No tasks assigned to $($current.Agent) yet." -ForegroundColor DarkGray
+    if ($depsOk) { return $t }
+  }
+  return $queued[0]  # Return first even if blocked (show why)
+}
+
+function Get-Prompt([string]$taskId, [object]$pmap) {
+  if ($null -eq $pmap) { return "[prompts.json not found]" }
+  $p = $pmap.$taskId
+  if ($null -eq $p) { return "[No prompt for $taskId in prompts.json]" }
+  return $p
+}
+
+function Get-AgentQueueSummary([string]$agent, [object[]]$allTasks) {
+  $agTasks = @($allTasks | Where-Object { $_.agent -eq $agent })
+  $done    = @($agTasks | Where-Object { $_.status -eq "done" }).Count
+  return "$done/$($agTasks.Count)"
+}
+
+# ---- Banner ----
+Write-Host ""
+Write-Host "  WHITE CAVES -- Free Agent Loop" -ForegroundColor Yellow
+Write-Host "  Time: $now  |  Slot: :$('{0:D2}' -f $activeSlot)  |  Date: $(Get-Date -Format 'yyyy-MM-dd')" -ForegroundColor DarkGray
+Write-Host ""
+
+# ---- Active Agent Card ----
+$task = Get-NextTask $current.Agent $qTasks
+$qSummary = Get-AgentQueueSummary $current.Agent $qTasks
+
+Write-Host "  +---[ ACTIVE AGENT ]-----------------------------------------------+" -ForegroundColor Cyan
+Write-Host ("  |  {0,-12}  {1,-22}  {2}" -f $current.Agent, $current.Tool, $current.Model) -ForegroundColor White
+Write-Host ("  |  Domain: {0}" -f $current.Domain) -ForegroundColor Gray
+Write-Host ("  |  Tool URL: {0}" -f $current.URL) -ForegroundColor DarkGray
+Write-Host ("  |  Queue progress: {0}" -f $qSummary) -ForegroundColor DarkGray
+Write-Host "  +------------------------------------------------------------------+" -ForegroundColor Cyan
+Write-Host ""
+
+# ---- Current Task ----
+if ($null -ne $task) {
+  $statusColor = switch ($task.status) {
+    "done"        { "Green"   }
+    "running"     { "Cyan"    }
+    "waiting_ack" { "Yellow"  }
+    "queued"      { "White"   }
+    "retrying"    { "Magenta" }
+    "failed"      { "Red"     }
+    "escalated"   { "Red"     }
+    default       { "Gray"    }
+  }
+
+  # Check if deps are blocking
+  $blocked = $false
+  $blockerIds = @()
+  if ($null -ne $task.deps -and $task.deps.Count -gt 0) {
+    foreach ($d in $task.deps) {
+      $dep = $qTasks | Where-Object { $_.taskId -eq $d } | Select-Object -First 1
+      if ($null -ne $dep -and $dep.status -ne "done") { $blocked = $true; $blockerIds += $d }
     }
   }
-  catch {
+
+  Write-Host "  CURRENT TASK" -ForegroundColor Cyan
+  Write-Host ("  Task ID : {0}  [{1}]" -f $task.taskId, $task.status) -ForegroundColor $statusColor
+  Write-Host ("  Title   : {0}" -f $task.title) -ForegroundColor White
+  Write-Host ("  Lane    : {0}" -f $task.lane) -ForegroundColor DarkGray
+
+  if ($blocked) {
     Write-Host ""
-    Write-Host "  [QUEUE] Could not read queue: $($_.Exception.Message)" -ForegroundColor DarkGray
+    Write-Host ("  [BLOCKED] Waiting on: {0}" -f ($blockerIds -join ", ")) -ForegroundColor Red
+    Write-Host "  Complete upstream tasks first, then return to this agent." -ForegroundColor DarkGray
+  } else {
+    Write-Host ""
+    Write-Host "  STEP 1 -- Open the free tool:" -ForegroundColor Yellow
+    Write-Host ("  {0}" -f $current.URL) -ForegroundColor White
+    Write-Host ""
+    Write-Host "  STEP 2 -- Paste this prompt:" -ForegroundColor Yellow
+    Write-Host "  +-----------------------------------------------------------------+" -ForegroundColor DarkGray
+    $promptText = Get-Prompt $task.taskId $prompts
+    # Word-wrap at ~72 chars
+    $words = $promptText -split " "
+    $line  = "  | "
+    foreach ($w in $words) {
+      if (($line + $w + " ").Length -gt 75) {
+        Write-Host ("{0,-76}|" -f $line) -ForegroundColor White
+        $line = "  |   $w "
+      } else { $line += "$w " }
+    }
+    if ($line.Trim() -ne "|") { Write-Host ("{0,-76}|" -f $line) -ForegroundColor White }
+    Write-Host "  +-----------------------------------------------------------------+" -ForegroundColor DarkGray
+    Write-Host ""
+    Write-Host "  STEP 3 -- Paste AI output into target file, then run:" -ForegroundColor Yellow
+
+    $targetFile = if ($null -ne $task.targetFile) { $task.targetFile } else { "[see prompts.json for target file]" }
+    Write-Host ("  Target  : {0}" -f $targetFile) -ForegroundColor Gray
+    Write-Host ""
+    Write-Host "  STEP 4 -- Mark complete:" -ForegroundColor Yellow
+    Write-Host ("  npm run orchestrator:complete-advance -- -TaskId {0} -AgentName '{1}'" -f $task.taskId, $task.agent) -ForegroundColor DarkGray
+    Write-Host ""
+    Write-Host "  STEP 5 -- (Optional) log output to outputs/:" -ForegroundColor Yellow
+    Write-Host ("  npm run orchestrator:output-log -- -TaskId {0} -AgentName '{1}' -OutputText 'paste here'" -f $task.taskId, $task.agent) -ForegroundColor DarkGray
   }
+} else {
+  Write-Host "  [QUEUE] No tasks assigned to $($current.Agent)." -ForegroundColor DarkGray
+  Write-Host "  All tasks may be done or the queue has not been seeded." -ForegroundColor DarkGray
+  Write-Host "  Run: npm run orchestrator:queue:init" -ForegroundColor Gray
+}
+
+Write-Host ""
+
+# ---- All-agent queue summary ----
+if ($qTasks.Count -gt 0) {
+  $allAgents = @($qTasks | Select-Object -ExpandProperty agent | Sort-Object -Unique)
+  Write-Host "  ALL AGENTS QUEUE SUMMARY" -ForegroundColor DarkCyan
+  Write-Host ("  {0,-14} {1,-8} {2,-9} {3,-9} {4,-9} {5}" -f "Agent","Done","Running","Waiting","Queued","Blocked") -ForegroundColor DarkGray
+  Write-Host ("  {0}" -f ("-" * 65)) -ForegroundColor DarkGray
+  foreach ($ag in $allAgents) {
+    $agT = @($qTasks | Where-Object { $_.agent -eq $ag })
+    $d   = @($agT | Where-Object { $_.status -eq "done" }).Count
+    $r   = @($agT | Where-Object { $_.status -eq "running" -or $_.status -eq "waiting_ack" }).Count
+    $qu  = @($agT | Where-Object { $_.status -eq "queued" }).Count
+    # Determine blocked count
+    $bl  = 0
+    foreach ($t in ($agT | Where-Object { $_.status -eq "queued" })) {
+      if ($null -ne $t.deps -and $t.deps.Count -gt 0) {
+        foreach ($dd in $t.deps) {
+          $depT = $qTasks | Where-Object { $_.taskId -eq $dd } | Select-Object -First 1
+          if ($null -ne $depT -and $depT.status -ne "done") { $bl++; break }
+        }
+      }
+    }
+    $isActive = ($ag -eq $current.Agent)
+    $col = if ($d -eq $agT.Count) { "Green" } elseif ($r -gt 0) { "Cyan" } elseif ($isActive) { "Yellow" } else { "Gray" }
+    Write-Host ("  {0,-14} {1,-8} {2,-9} {3,-9} {4,-9} {5}" -f $ag, $d, $r, 0, $qu, $bl) -ForegroundColor $col
+  }
+  $totalDone = @($qTasks | Where-Object { $_.status -eq "done" }).Count
+  $pct = if ($qTasks.Count -gt 0) { [int](($totalDone / $qTasks.Count) * 100) } else { 0 }
+  Write-Host ""
+  $bar = ("[" + ("=" * [int](($pct/100)*30)) + ("-" * (30 - [int](($pct/100)*30))) + "]")
+  Write-Host ("  Overall: {0}  {1}%  ({2}/{3} tasks done)" -f $bar, $pct, $totalDone, $qTasks.Count) -ForegroundColor Cyan
+}
+
+Write-Host ""
+
+# ---- Next slots preview ----
+if ($activeSlot -ge 0 -and $AgentName -eq "") {
+  $slotKeys   = @($slots.Keys | Sort-Object)
+  $currentIdx = [array]::IndexOf($slotKeys, $activeSlot)
+  $nextSlots  = for ($i = 1; $i -le 3; $i++) {
+    $idx  = ($currentIdx + $i) % $slotKeys.Count
+    $sKey = $slotKeys[$idx]
+    ":$('{0:D2}' -f $sKey) $($slots[$sKey].Agent)"
+  }
+  Write-Host ("  Next slots: {0}" -f ($nextSlots -join "  >>  ")) -ForegroundColor DarkGray
+}
+
+# ---- Auto-open browser ----
+if (-not $NoBrowser -and $null -ne $task -and -not $blocked) {
+  try { Start-Process $current.URL } catch {}
 }
 
 Write-Host ""
