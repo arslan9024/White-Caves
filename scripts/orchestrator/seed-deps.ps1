@@ -1,5 +1,8 @@
-# seed-deps.ps1 -- Patches task-queue.json with correct dependency chains
-# Run once after init-queue.ps1 to wire lane ordering and within-agent subtask deps.
+# seed-deps.ps1 -- Verifies / repairs dependsOn chains in task-queue.json.
+# Run after init-queue.ps1 if deps appear missing or corrupted.
+# NOTE: init-queue.ps1 already hardcodes all dependsOn values, so this script
+#       normally reports "[OK]" for every entry. Its main value is as a repair
+#       tool and as a cleanup step that removes the legacy "deps" field.
 #
 # Dependency rules applied:
 #   Within-agent : Txb depends on Tx  ;  Txc depends on Txb
@@ -7,6 +10,8 @@
 #   Lane B (cross-agent): T009->T008  T010->T009  T011->T010
 #   Lane C (cross-agent): T013->T012  T014->T013  T015->T014
 #   Lane D (cross-agent): T017->T016
+#
+# Canonical field: dependsOn  (legacy "deps" field is removed if present)
 param(
   [string]$WorkspaceRoot = ".",
   [switch]$DryRun
@@ -40,7 +45,6 @@ $crossDeps = @(
 )
 
 # Within-agent subtask deps (b depends on root, c depends on b)
-# Roots: T001-T017 (no trailing b/c)
 $withinDeps = @()
 1..17 | ForEach-Object {
   $n = '{0:D3}' -f $_
@@ -49,32 +53,28 @@ $withinDeps = @()
 }
 
 $allDeps = $crossDeps + $withinDeps
-
 $changes = 0
+
 foreach ($pair in $allDeps) {
   $child  = $pair[0]
   $parent = $pair[1]
 
-  if (-not $idx.ContainsKey($child)) {
-    Write-Host "  [SKIP] $child not in queue" -ForegroundColor DarkGray; continue
-  }
-  if (-not $idx.ContainsKey($parent)) {
-    Write-Host "  [SKIP] parent $parent not in queue" -ForegroundColor DarkGray; continue
-  }
+  if (-not $idx.ContainsKey($child))  { Write-Host "  [SKIP] $child not in queue"        -ForegroundColor DarkGray; continue }
+  if (-not $idx.ContainsKey($parent)) { Write-Host "  [SKIP] parent $parent not in queue" -ForegroundColor DarkGray; continue }
 
   $t = $tasks[$idx[$child]]
 
-  # Ensure deps is an array
-  if ($null -eq $t.deps) {
-    $t | Add-Member -NotePropertyName deps -NotePropertyValue @($parent) -Force
-    if (-not $DryRun) { Write-Host ("  [SET] {0} -> deps=[{1}]" -f $child, $parent) -ForegroundColor Green }
-    else              { Write-Host ("  [DRY] {0} -> deps=[{1}]" -f $child, $parent) -ForegroundColor Cyan }
+  # Canonical field: dependsOn
+  if ($null -eq $t.dependsOn) {
+    $t | Add-Member -NotePropertyName dependsOn -NotePropertyValue @($parent) -Force
+    if (-not $DryRun) { Write-Host ("  [SET] {0} -> dependsOn=[{1}]" -f $child, $parent) -ForegroundColor Green }
+    else              { Write-Host ("  [DRY] {0} -> dependsOn=[{1}]" -f $child, $parent) -ForegroundColor Cyan }
     $changes++
   } else {
-    $existing = @($t.deps)
+    $existing = @($t.dependsOn)
     if ($existing -notcontains $parent) {
       $existing += $parent
-      $t.deps = $existing
+      $t.dependsOn = $existing
       if (-not $DryRun) { Write-Host ("  [ADD] {0} -> added dep {1}" -f $child, $parent) -ForegroundColor Green }
       else              { Write-Host ("  [DRY] {0} -> would add dep {1}" -f $child, $parent) -ForegroundColor Cyan }
       $changes++
@@ -84,8 +84,22 @@ foreach ($pair in $allDeps) {
   }
 }
 
+# Clean up legacy "deps" field that was added by earlier versions of this script
+$cleaned = 0
+foreach ($t in $tasks) {
+  $members = $t | Get-Member -MemberType NoteProperty | Select-Object -ExpandProperty Name
+  if ($members -contains "deps") {
+    if (-not $DryRun) {
+      $t.PSObject.Properties.Remove("deps")
+      $cleaned++
+    } else {
+      Write-Host ("  [DRY] would remove legacy deps field from {0}" -f $t.taskId) -ForegroundColor Cyan
+    }
+  }
+}
+
 Write-Host ""
-Write-Host "$changes dep entries processed." -ForegroundColor Yellow
+Write-Host "$changes dep entries updated, $cleaned legacy 'deps' fields removed." -ForegroundColor Yellow
 
 if ($DryRun) {
   Write-Host "[DRY RUN] No changes written. Remove -DryRun to apply." -ForegroundColor Cyan
@@ -95,5 +109,5 @@ if ($DryRun) {
   [System.IO.File]::WriteAllText($queueFile, $json, (New-Object System.Text.UTF8Encoding($false)))
   Write-Host "[SAVED] $queueFile" -ForegroundColor Green
   Write-Host ""
-  Write-Host "Lane chains wired. Run 'npm run orchestrator:morning' to see updated READY/BLOCKED status." -ForegroundColor White
+  Write-Host "Canonical dependsOn chains verified. Run 'npm run orchestrator:morning' to see READY/BLOCKED status." -ForegroundColor White
 }

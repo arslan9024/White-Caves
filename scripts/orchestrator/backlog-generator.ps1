@@ -27,8 +27,8 @@ function Get-StoryPoints([string]$taskId) {
 
 # Check if all upstream deps are done
 function Is-Ready([object]$task, [object[]]$allTasks) {
-  if ($null -eq $task.deps -or $task.deps.Count -eq 0) { return $true }
-  foreach ($dep in $task.deps) {
+  if ($null -eq $task.dependsOn -or $task.dependsOn.Count -eq 0) { return $true }
+  foreach ($dep in $task.dependsOn) {
     $depTask = $allTasks | Where-Object { $_.taskId -eq $dep } | Select-Object -First 1
     if ($null -eq $depTask) { return $true }
     if ($depTask.status -ne "done") { return $false }
@@ -135,8 +135,8 @@ foreach ($lane in @("A","B","C","D")) {
     $isReady = Is-Ready $t $tasks
     $blocker = if ($t.status -eq "done") { "none" }
                elseif ($isReady) { "--" }
-               else { "upstream deps: " + ($t.deps -join ", ") }
-    $deps    = if ($null -eq $t.deps -or $t.deps.Count -eq 0) { "none" } else { $t.deps -join ", " }
+               else { "upstream deps: " + ($t.dependsOn -join ", ") }
+    $deps    = if ($null -eq $t.dependsOn -or $t.dependsOn.Count -eq 0) { "none" } else { $t.dependsOn -join ", " }
     Add "| $($t.taskId) | $($t.agent) | $($t.title) | $sp | $($t.status) | $blocker | $deps |"
   }
   Add ""

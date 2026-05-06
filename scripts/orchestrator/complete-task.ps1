@@ -3,7 +3,10 @@ param(
   [string]$TaskId,
   [string]$WorkspaceRoot = ".",
   [string]$EvidenceNote = "",
-  [string]$ProducedRef = ""
+  [string]$ProducedRef = "",
+  # Manual mode: auto-start queued tasks so free-agent completions work without
+  # a background worker first calling start-task.
+  [switch]$AllowQueued
 )
 
 $stateDir = Join-Path $WorkspaceRoot "logs\orchestrator"
@@ -38,9 +41,15 @@ try {
     exit 1
   }
 
-  if ($task.status -ne "running") {
-    Write-Output (@{ ok = $false; reason = "task_not_running"; taskId = $TaskId; status = $task.status } | ConvertTo-Json -Depth 6)
+  # Accept "running" (worker mode) or "queued" with -AllowQueued flag (manual free-agent mode)
+  $validStart = ($task.status -eq "running") -or ($AllowQueued -and $task.status -eq "queued")
+  if (-not $validStart) {
+    Write-Output (@{ ok = $false; reason = "invalid_status_for_complete"; taskId = $TaskId; status = $task.status; hint = "Task must be 'running', or use -AllowQueued if task is still 'queued'." } | ConvertTo-Json -Depth 6)
     exit 1
+  }
+  # If queued (manual mode), stamp start time now
+  if ($task.status -eq "queued") {
+    $task.startedAt = (Get-Date).ToString("o")
   }
 
   $existingFeedsAck = $null
@@ -69,7 +78,8 @@ try {
 
   Save-Queue -Queue $queue -Path $queueFile
 
-  Write-Output (@{ ok = $true; taskId = $task.taskId; status = $task.status } | ConvertTo-Json -Depth 4)
+  $ackBy = if ($task.requiresFeedsAck) { "$($task.feedsAckBy)" } else { $null }
+  Write-Output (@{ ok = $true; taskId = $task.taskId; newStatus = $task.status; feedsAckBy = $ackBy } | ConvertTo-Json -Depth 4)
 }
 finally {
   $mutex.ReleaseMutex() | Out-Null

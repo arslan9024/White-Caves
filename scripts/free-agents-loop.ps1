@@ -83,8 +83,8 @@ function Get-NextTask([string]$agent, [object[]]$allTasks) {
   # Find first with deps satisfied
   foreach ($t in $queued) {
     $depsOk = $true
-    if ($null -ne $t.deps -and $t.deps.Count -gt 0) {
-      foreach ($d in $t.deps) {
+    if ($null -ne $t.dependsOn -and $t.dependsOn.Count -gt 0) {
+      foreach ($d in $t.dependsOn) {
         $dep = $allTasks | Where-Object { $_.taskId -eq $d } | Select-Object -First 1
         if ($null -ne $dep -and $dep.status -ne "done") { $depsOk = $false; break }
       }
@@ -141,8 +141,8 @@ if ($null -ne $task) {
   # Check if deps are blocking
   $blocked = $false
   $blockerIds = @()
-  if ($null -ne $task.deps -and $task.deps.Count -gt 0) {
-    foreach ($d in $task.deps) {
+  if ($null -ne $task.dependsOn -and $task.dependsOn.Count -gt 0) {
+    foreach ($d in $task.dependsOn) {
       $dep = $qTasks | Where-Object { $_.taskId -eq $d } | Select-Object -First 1
       if ($null -ne $dep -and $dep.status -ne "done") { $blocked = $true; $blockerIds += $d }
     }
@@ -210,8 +210,8 @@ if ($qTasks.Count -gt 0) {
     # Determine blocked count
     $bl  = 0
     foreach ($t in ($agT | Where-Object { $_.status -eq "queued" })) {
-      if ($null -ne $t.deps -and $t.deps.Count -gt 0) {
-        foreach ($dd in $t.deps) {
+      if ($null -ne $t.dependsOn -and $t.dependsOn.Count -gt 0) {
+        foreach ($dd in $t.dependsOn) {
           $depT = $qTasks | Where-Object { $_.taskId -eq $dd } | Select-Object -First 1
           if ($null -ne $depT -and $depT.status -ne "done") { $bl++; break }
         }
