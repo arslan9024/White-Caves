@@ -1,8 +1,9 @@
 # =============================================================================
-# free-agents-loop.ps1 — White Caves Free Planning Agent Loop
+# free-agents-loop.ps1 — White Caves Free Planning Agent Loop (Phase 4)
 # =============================================================================
-# Run at any time to see which free planning agent is active RIGHT NOW
-# and get the exact prompt to paste into the free tool.
+# Run at any time to see which free planning agent is active RIGHT NOW,
+# get the exact prompt to paste into the free tool, AND see this agent's
+# live queue status from the orchestrator.
 #
 # Usage: .\scripts\free-agents-loop.ps1
 # =============================================================================
@@ -192,7 +193,66 @@ try {
     Start-Process $current.URL
     Write-Host "  ✅ Opened: $($current.URL)" -ForegroundColor Green
 } catch {
-    Write-Host "  ⚠️  Could not open browser automatically. Navigate to: $($current.URL)" -ForegroundColor Yellow
+    Write-Host "  Could not open browser automatically. Navigate to: $($current.URL)" -ForegroundColor Yellow
+}
+
+# ─── Queue status for this agent ─────────────────────────────────────────────
+$queueFile = Join-Path $PSScriptRoot "..\logs\orchestrator\task-queue.json"
+if (Test-Path $queueFile) {
+  try {
+    $raw   = Get-Content $queueFile -Raw
+    $queue = $raw | ConvertFrom-Json
+    $tasks = @($queue.tasks) | Where-Object { $_.agent -eq $current.Agent }
+
+    if ($tasks.Count -gt 0) {
+      Write-Host ""
+      Write-Host "  ┌─ ORCHESTRATOR QUEUE (tasks for $($current.Agent)) ──────────" -ForegroundColor DarkCyan
+      foreach ($t in $tasks) {
+        $statusColor = switch ($t.status) {
+          "done"        { "Green"   }
+          "running"     { "Cyan"    }
+          "waiting_ack" { "Yellow"  }
+          "queued"      { "White"   }
+          "retrying"    { "Magenta" }
+          "failed"      { "Red"     }
+          "escalated"   { "Red"     }
+          default       { "Gray"    }
+        }
+        $statusPad = $t.status.PadRight(13)
+        $titleShort = if ($t.title.Length -gt 42) { $t.title.Substring(0,39) + "..." } else { $t.title }
+        Write-Host ("  |  [$statusPad] $($t.taskId)  $titleShort") -ForegroundColor $statusColor
+      }
+      Write-Host "  └───────────────────────────────────────────────────────" -ForegroundColor DarkCyan
+
+      $running     = @($tasks | Where-Object { $_.status -eq "running"     })
+      $waitingAck  = @($tasks | Where-Object { $_.status -eq "waiting_ack" })
+      $escalated   = @($tasks | Where-Object { $_.status -eq "escalated"   })
+
+      if ($running.Count -gt 0) {
+        Write-Host ""
+        Write-Host ("  [RUNNING] Task $($running[0].taskId) is in progress by a background worker.") -ForegroundColor Cyan
+        Write-Host "  Paste AI output into the target file and run:" -ForegroundColor White
+        Write-Host ("  npm run orchestrator:queue:ack -- -TaskId $($running[0].taskId) -AgentName '$($running[0].feedsAckBy)'") -ForegroundColor Gray
+      }
+      if ($waitingAck.Count -gt 0) {
+        Write-Host ""
+        Write-Host ("  [ACTION] Task $($waitingAck[0].taskId) is waiting for FEEDS_ACK from: $($waitingAck[0].feedsAckBy)") -ForegroundColor Yellow
+        Write-Host ("  npm run orchestrator:queue:ack -- -TaskId $($waitingAck[0].taskId) -AgentName $($waitingAck[0].feedsAckBy)") -ForegroundColor Gray
+      }
+      if ($escalated.Count -gt 0) {
+        Write-Host ""
+        Write-Host ("  [ESCALATED] $($escalated.Count) task(s) stuck. See DAILY_MILESTONE_TRACKER.md for @Margaret alert.") -ForegroundColor Red
+      }
+    }
+    else {
+      Write-Host ""
+      Write-Host "  [QUEUE] No tasks assigned to $($current.Agent) yet." -ForegroundColor DarkGray
+    }
+  }
+  catch {
+    Write-Host ""
+    Write-Host "  [QUEUE] Could not read queue: $($_.Exception.Message)" -ForegroundColor DarkGray
+  }
 }
 
 Write-Host ""
