@@ -336,3 +336,17 @@
 - Default premium coding batch size is **3–5 modules per day**.
 - Small isolated premium tasks are disallowed unless bundled into an approved wave packet.
 - Time is not a constraint; depth, correctness, and integration quality are the priority.
+
+23. **🛡️ POST-PREMIUM COMMIT RUNTIME GUARD (Mandatory):**
+
+- After each big premium implementation commit, runtime guard checks must run automatically.
+- Trigger condition (both required):
+  - Commit message includes `[premium-wave]`
+  - Commit qualifies as big diff (threshold or critical path touch).
+- Guard owner: **@Katherine (QA Lead)**.
+- Guard command chain:
+  - `node scripts/orchestrator/post-commit-premium-guard.js`
+  - Runs build + quick quality + dev startup probe + runtime endpoint verification.
+- Free planning teams should run in background (MVP) using:
+  - `npm run orchestrator:bg:start`
+  - `npm run orchestrator:bg:stop`

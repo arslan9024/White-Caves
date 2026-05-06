@@ -516,6 +516,9 @@ This file defines the White Caves multi-expert operating model for all agent-ass
 - **No-Idle Rule:** Every free agent always has a task. If backlog is empty → @Margaret assigns a REVIEW task within 24 hours.
 - **Coding Gate:** No senior coding agent begins a feature without passing the Context Enrichment Gate (copilot-instructions.md Rule 5). Free agents must complete their docs first.
 - **Loop Script:** Run `scripts/free-agents-loop.ps1` at any time to see which agent is active right now and get the exact copy-paste prompt.
+- **Background Mode (MVP):** Start free-agent planning workers in background with `npm run orchestrator:bg:start` and stop with `npm run orchestrator:bg:stop`.
+- **Post-Premium QA Watchdog (Mandatory):** **@Katherine** owns runtime verification after each big premium wave commit via `node scripts/orchestrator/post-commit-premium-guard.js`.
+- **Big Premium Commit Trigger:** Runtime watchdog checks execute only when commit contains `[premium-wave]` and qualifies as a big diff (threshold/critical paths).
 
 ## 🚀 GOVERNANCE UPGRADE V2 — LARGE WAVE EXECUTION MODE
 
