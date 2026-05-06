@@ -8,8 +8,18 @@ $root = Resolve-Path (Join-Path $PSScriptRoot "..\..")
 $stateDir = Join-Path $root "logs\orchestrator"
 New-Item -ItemType Directory -Force -Path $stateDir | Out-Null
 $pidFile = Join-Path $stateDir "worker-processes.json"
+$queueFile = Join-Path $stateDir "task-queue.json"
 
-$agents = @("@Victoria", "@Invoice", "@Sofia", "@Cassie", "@Joelle", "@Annie", "@Rachel", "@Marissa", "@Timnit", "@Hedy", "@Maya", "@Booking", "@Jaime", "@Fei-Fei", "@Anima", "@Mary", "@Corinne")
+if (-not (Test-Path $queueFile)) {
+  $initScript = Join-Path $PSScriptRoot "init-queue.ps1"
+  & $initScript -WorkspaceRoot $root | Out-Null
+}
+
+$agents = @(
+  "@Sofia", "@Timnit", "@Fei-Fei", "@Booking", "@Jaime",
+  "@Victoria", "@Annie", "@Marissa", "@Rachel", "@Joelle",
+  "@Anima", "@Mary", "@Invoice", "@Maya", "@Hedy", "@Cassie", "@Corinne"
+)
 
 $processes = @()
 for ($i = 0; $i -lt $WorkerCount; $i++) {
