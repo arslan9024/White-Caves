@@ -124,7 +124,8 @@ foreach ($agent in $agents) {
   } elseif ($blockedQ.Count -gt 0) {
     $state   = "blocked"
     $depStr  = ($blockedQ[0].dependsOn | Where-Object {
-      $d = $tasks | Where-Object { $_.taskId -eq $_ } | Select-Object -First 1
+      $depId = $_
+      $d = $tasks | Where-Object { $_.taskId -eq $depId } | Select-Object -First 1
       $null -ne $d -and $d.status -ne "done"
     }) -join ", "
     $display = $blockedQ[0].taskId + "  blocked on: " + $depStr
