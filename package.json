@@ -53,6 +53,8 @@
     "orchestrator:watchdog": "powershell -ExecutionPolicy Bypass -File scripts/orchestrator/watchdog.ps1",
     "orchestrator:validate-gates": "powershell -ExecutionPolicy Bypass -File scripts/orchestrator/validate-gates.ps1",
     "orchestrator:sync-tracker": "powershell -ExecutionPolicy Bypass -File scripts/orchestrator/sync-daily-tracker.ps1",
+    "orchestrator:escalate": "powershell -ExecutionPolicy Bypass -File scripts/orchestrator/escalate.ps1",
+    "orchestrator:dispatch:lane": "powershell -ExecutionPolicy Bypass -File scripts/orchestrator/dispatch-lane.ps1",
     "seo:generate": "node scripts/generate-seo-assets.js",
     "seo:generate:staging": "node scripts/generate-seo-assets.js --domain=https://staging.whitecaves.com",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
