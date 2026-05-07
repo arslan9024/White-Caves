@@ -103,7 +103,9 @@
     "orchestrator:today-sprint:laneD":   "powershell -ExecutionPolicy Bypass -File scripts/orchestrator/today-sprint.ps1 -Lane D",
     "orchestrator:fast-complete":        "powershell -ExecutionPolicy Bypass -File scripts/orchestrator/fast-complete.ps1",
     "orchestrator:fast-complete:dry":    "powershell -ExecutionPolicy Bypass -File scripts/orchestrator/fast-complete.ps1 -DryRun",
-    "orchestrator:fast-complete:verbose":"powershell -ExecutionPolicy Bypass -File scripts/orchestrator/fast-complete.ps1 -Verbose"
+    "orchestrator:fast-complete:verbose":"powershell -ExecutionPolicy Bypass -File scripts/orchestrator/fast-complete.ps1 -Verbose",
+    "orchestrator:report":              "powershell -ExecutionPolicy Bypass -File scripts/orchestrator/progress-report.ps1",
+    "orchestrator:report:print":        "powershell -ExecutionPolicy Bypass -File scripts/orchestrator/progress-report.ps1 -PrintOnly"
                 },
     "prisma":  {
                    "seed":  "tsx prisma/seed.ts"
