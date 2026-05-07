@@ -11,6 +11,7 @@ param(
 # Target section counts per file (from AGENTS.md quality gates)
 $targets = @{
   "business_docs/05_requirements/compliance-requirements.md" = 12
+  "business_docs/05_requirements/risk-register.md"           = 5
   "business_docs/09_crm_features/tenancy-ejari.md"           = 14
   "business_docs/09_crm_features/landlord-portal.md"         = 13
   "business_docs/09_crm_features/financial-reporting.md"     = 11

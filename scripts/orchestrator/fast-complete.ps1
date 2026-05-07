@@ -14,6 +14,7 @@ if (-not (Test-Path $promptsFile)) { Write-Host "[ERROR] Prompts not found." -Fo
 
 $gateTargets = @{
   "business_docs/05_requirements/compliance-requirements.md"    = 12
+  "business_docs/05_requirements/risk-register.md"              = 5
   "business_docs/05_requirements/non-functional-requirements.md"= 8
   "business_docs/09_crm_features/tenancy-ejari.md"              = 14
   "business_docs/09_crm_features/landlord-portal.md"            = 13

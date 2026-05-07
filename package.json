@@ -105,7 +105,13 @@
     "orchestrator:fast-complete:dry":    "powershell -ExecutionPolicy Bypass -File scripts/orchestrator/fast-complete.ps1 -DryRun",
     "orchestrator:fast-complete:verbose":"powershell -ExecutionPolicy Bypass -File scripts/orchestrator/fast-complete.ps1 -Verbose",
     "orchestrator:report":              "powershell -ExecutionPolicy Bypass -File scripts/orchestrator/progress-report.ps1",
-    "orchestrator:report:print":        "powershell -ExecutionPolicy Bypass -File scripts/orchestrator/progress-report.ps1 -PrintOnly"
+    "orchestrator:report:print":        "powershell -ExecutionPolicy Bypass -File scripts/orchestrator/progress-report.ps1 -PrintOnly",
+    "orchestrator:session":             "powershell -ExecutionPolicy Bypass -File scripts/orchestrator/session-start.ps1",
+    "orchestrator:session:compact":     "powershell -ExecutionPolicy Bypass -File scripts/orchestrator/session-start.ps1 -NoPrompt",
+    "orchestrator:session:laneA":       "powershell -ExecutionPolicy Bypass -File scripts/orchestrator/session-start.ps1 -NoPrompt -Lane A",
+    "orchestrator:session:laneB":       "powershell -ExecutionPolicy Bypass -File scripts/orchestrator/session-start.ps1 -NoPrompt -Lane B",
+    "orchestrator:session:laneC":       "powershell -ExecutionPolicy Bypass -File scripts/orchestrator/session-start.ps1 -NoPrompt -Lane C",
+    "orchestrator:session:laneD":       "powershell -ExecutionPolicy Bypass -File scripts/orchestrator/session-start.ps1 -NoPrompt -Lane D"
                 },
     "prisma":  {
                    "seed":  "tsx prisma/seed.ts"
