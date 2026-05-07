@@ -73,8 +73,8 @@ Write-Host "================================================================" -F
 Write-Host "  WHITE CAVES ORCHESTRATOR -- MORNING KICKOFF  $today" -ForegroundColor Cyan
 Write-Host "================================================================" -ForegroundColor Cyan
 
-$overallDone    = ($tasks | Where-Object { $_.status -eq "done"    }).Count
-$overallRunning = ($tasks | Where-Object { $_.status -eq "running" }).Count
+$overallDone    = @($tasks | Where-Object { $_.status -eq "done"    }).Count
+$overallRunning = @($tasks | Where-Object { $_.status -eq "running" }).Count
 $overallTotal   = $tasks.Count
 $pct = [math]::Round(($overallDone / $overallTotal) * 100)
 $bar = "[" + ("=" * [math]::Round($pct/5)) + (" " * (20 - [math]::Round($pct/5))) + "]"
