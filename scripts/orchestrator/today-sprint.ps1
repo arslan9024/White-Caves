@@ -63,7 +63,16 @@ $targets = @{
   "business_docs/09_crm_features/marketing-campaigns.md"     = 12
   "business_docs/09_crm_features/luxury-segment.md"          = 10
   "business_docs/09_crm_features/community-management.md"    = 8
+  "business_docs/09_crm_features/careers.md"                  = 8
+  "business_docs/09_crm_features/lead-tracking.md"            = 12
+  "business_docs/09_crm_features/ui-ux-specification.md"      = 20
+  "business_docs/05_requirements/risk-register.md"            = 5
+  "business_docs/05_requirements/non-functional-requirements.md" = 8
+  "business_docs/06_design_architecture/system-architecture.md" = 12
 }
+
+# Estimate: sections a free-agent paste adds per session (conservative)
+$SECS_PER_SESSION = 3
 
 # agent -> free tool URL
 $tools = @{
@@ -105,6 +114,40 @@ $models = @{
   "@Mary"     = "DeepSeek V3"
   "@Cassie"   = "DeepSeek V3"
   "@Corinne"  = "DeepSeek V3"
+}
+
+# Returns tasks that become READY immediately after $taskId completes
+function Get-ImmediateUnlocks {
+  param([string]$taskId, $allTasks)
+  $donePlusThis = @(@($allTasks | Where-Object { $_.status -eq "done" } | ForEach-Object { $_.taskId }) + @($taskId))
+  return @($allTasks | Where-Object {
+    $t = $_
+    if ($t.status -ne "queued") { return $false }
+    if ($null -eq $t.dependsOn -or $t.dependsOn.Count -eq 0) { return $false }
+    $hasThis = $false; $allOk = $true
+    foreach ($d in $t.dependsOn) {
+      if ($d -eq $taskId) { $hasThis = $true }
+      if ($donePlusThis -notcontains $d) { $allOk = $false }
+    }
+    return $hasThis -and $allOk
+  })
+}
+
+# How many sections still needed for a file to PASS
+function Get-Gap {
+  param([string]$rel, [string]$root)
+  if (-not $targets.ContainsKey($rel)) { return 0 }
+  return [math]::Max(0, $targets[$rel] - (Get-SectionCount -relPath $rel -root $root))
+}
+
+# ETA in sessions for a single task's target file to reach PASS
+function Get-FileEta {
+  param([object]$task, [string]$root)
+  $pKey = $task.taskId
+  $pText = if (($prompts | Get-Member -MemberType NoteProperty | Select-Object -ExpandProperty Name) -contains $pKey) { $prompts.$pKey } else { $task.title }
+  $tf = Get-TargetFile -prompt $pText
+  if ($tf -eq "") { return 0 }
+  return [math]::Ceiling((Get-Gap -rel $tf -root $root) / $SECS_PER_SESSION)
 }
 
 function Test-DepsDone {
@@ -236,6 +279,19 @@ foreach ($t in $ready) {
     Write-Host ("  Target  : {0}" -f $targetFile) -ForegroundColor DarkGray
     Write-Host ("  Sections: {0}/{1}  {2}  {3}" -f $actualSecs, $targetSecs, $bar, $fileStatus) -ForegroundColor $color
   }
+  # ETA for THIS task's file
+  $fileEta = Get-FileEta -task $t -root $WorkspaceRoot
+  $etaStr  = if ($fileEta -le 0) { "PASS already" } elseif ($fileEta -eq 1) { "~1 session" } else { "~$fileEta sessions" }
+
+  # Immediate cascade unlocks
+  $unlocks    = Get-ImmediateUnlocks -taskId $taskId -allTasks $tasks
+  $unlockStr  = if ($unlocks.Count -gt 0) { ($unlocks | ForEach-Object { "$($_.taskId)($($_.agent))" }) -join ", " } else { "none" }
+  $cascadeVal = $unlocks.Count
+
+  Write-Host ("  ETA     : {0}  |  Cascade value: +{1} task(s) unlocked" -f $etaStr, $cascadeVal) -ForegroundColor $(if ($fileEta -le 1) { "Green" } else { "Yellow" })
+  if ($unlocks.Count -gt 0) {
+    Write-Host ("  Unlocks : → {0}" -f $unlockStr) -ForegroundColor Cyan
+  }
   Write-Host ""
 
   if (-not $NoPrompt) {
@@ -267,4 +323,43 @@ Write-Host ("  Sprint cards: {0} ready tasks shown above" -f $ready.Count) -Fore
 Write-Host "  Gate-check  : npm run orchestrator:gate-check" -ForegroundColor DarkGray
 Write-Host "  Morning brief: npm run orchestrator:morning" -ForegroundColor DarkGray
 Write-Host "================================================================" -ForegroundColor Cyan
+
+# -- PIPELINE FORECAST -------------------------------------------------------
+# Show per-lane blocked queue with ETA estimates
+$blocked = @($tasks | Where-Object { $_.status -eq "queued" -and -not (Test-DepsDone -deps @($_.dependsOn) -allTasks $tasks) })
+if ($blocked.Count -gt 0) {
+  Write-Host ""
+  Write-Host "================================================================" -ForegroundColor DarkGray
+  Write-Host ("  PIPELINE FORECAST  (est. {0} sections/session)" -f $SECS_PER_SESSION) -ForegroundColor DarkGray
+  Write-Host "================================================================" -ForegroundColor DarkGray
+
+  $laneOrder = @("A","B","C","D")
+  foreach ($ln in $laneOrder) {
+    $lnTasks = @($blocked | Where-Object { $_.lane -eq $ln })
+    if ($lnTasks.Count -eq 0) { continue }
+    Write-Host ("  Lane {0} -- {1} blocked task(s)" -f $ln, $lnTasks.Count) -ForegroundColor White
+    foreach ($bt in $lnTasks) {
+      $btEta   = Get-FileEta -task $bt -root $WorkspaceRoot
+      $btDeps  = if ($bt.dependsOn -and $bt.dependsOn.Count -gt 0) { $bt.dependsOn -join "," } else { "none" }
+      $btColor = if ($btEta -le 2) { "Yellow" } else { "DarkGray" }
+      $btEtaStr = if ($btEta -le 0) { "PASS file ready -- needs deps" } elseif ($btEta -eq 1) { "~1 session" } else { "~$btEta sessions" }
+      Write-Host ("    {0,-7} {1,-12} blocked-on: {2,-20} file-eta: {3}" -f $bt.taskId, $bt.agent, $btDeps, $btEtaStr) -ForegroundColor $btColor
+    }
+    Write-Host ""
+  }
+
+  # Lane summary bar
+  Write-Host "  LANE SUMMARY" -ForegroundColor DarkGray
+  foreach ($ln in $laneOrder) {
+    $lnAll   = @($tasks | Where-Object { $_.lane -eq $ln })
+    $lnDone  = @($lnAll | Where-Object { $_.status -eq "done" }).Count
+    $lnTotal = $lnAll.Count
+    if ($lnTotal -eq 0) { continue }
+    $lnPct   = [math]::Round(($lnDone / $lnTotal) * 20)
+    $bar     = "[" + ("#" * $lnPct) + ("." * (20 - $lnPct)) + "]"
+    $color   = if ($lnDone -eq $lnTotal) { "Green" } elseif ($lnDone -gt 0) { "Yellow" } else { "DarkGray" }
+    Write-Host ("  Lane {0}  {1}  {2}/{3} done" -f $ln, $bar, $lnDone, $lnTotal) -ForegroundColor $color
+  }
+  Write-Host "================================================================" -ForegroundColor DarkGray
+}
 Write-Host ""
