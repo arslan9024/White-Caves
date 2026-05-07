@@ -114,14 +114,14 @@ Invoke-Script (Join-Path $scripts "progress-report.ps1") @("-WorkspaceRoot", $ro
 # ------------------------------------------------------------------
 Write-Step "GIT DIFF -- changes this session"
 Push-Location $root
-$diffStat = git diff --stat HEAD 2>&1
-if ($diffStat -and $diffStat.Trim() -ne "") {
-  Write-Host $diffStat -ForegroundColor Gray
+$diffStat = (git diff --stat HEAD 2>&1) | Where-Object { $_ -is [string] }
+if ($diffStat -and ($diffStat | Where-Object { $_.Trim() -ne "" }).Count -gt 0) {
+  Write-Host ($diffStat -join "`n") -ForegroundColor Gray
 } else {
   Write-Host "  (no unstaged changes -- checking staged)" -ForegroundColor DarkGray
-  $stagedStat = git diff --stat --cached 2>&1
-  if ($stagedStat -and $stagedStat.Trim() -ne "") {
-    Write-Host $stagedStat -ForegroundColor Gray
+  $stagedStat = (git diff --stat --cached 2>&1) | Where-Object { $_ -is [string] }
+  if ($stagedStat -and ($stagedStat | Where-Object { $_.Trim() -ne "" }).Count -gt 0) {
+    Write-Host ($stagedStat -join "`n") -ForegroundColor Gray
   } else {
     Write-Host "  No changes to commit." -ForegroundColor DarkGray
   }
