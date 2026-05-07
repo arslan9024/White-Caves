@@ -116,7 +116,11 @@
     "orchestrator:verify-prompts:strict":"powershell -ExecutionPolicy Bypass -File scripts/orchestrator/verify-prompts.ps1 -Strict",
     "orchestrator:session:end":          "powershell -ExecutionPolicy Bypass -File scripts/orchestrator/session-end.ps1",
     "orchestrator:session:end:dry":      "powershell -ExecutionPolicy Bypass -File scripts/orchestrator/session-end.ps1 -DryRun",
-    "orchestrator:session:end:nopush":   "powershell -ExecutionPolicy Bypass -File scripts/orchestrator/session-end.ps1 -SkipPush"
+    "orchestrator:session:end:nopush":   "powershell -ExecutionPolicy Bypass -File scripts/orchestrator/session-end.ps1 -SkipPush",
+    "orchestrator:next-agent":           "powershell -ExecutionPolicy Bypass -File scripts/orchestrator/next-agent.ps1",
+    "orchestrator:next-agent:browser":   "powershell -ExecutionPolicy Bypass -File scripts/orchestrator/next-agent.ps1 -OpenBrowser",
+    "orchestrator:next-agent:all":       "powershell -ExecutionPolicy Bypass -File scripts/orchestrator/next-agent.ps1 -ShowAll",
+    "orchestrator:next-agent:all:browser":"powershell -ExecutionPolicy Bypass -File scripts/orchestrator/next-agent.ps1 -ShowAll -OpenBrowser"
                 },
     "prisma":  {
                    "seed":  "tsx prisma/seed.ts"
