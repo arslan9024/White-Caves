@@ -132,7 +132,11 @@
     "orchestrator:blockers:top5":        "powershell -ExecutionPolicy Bypass -File scripts/orchestrator/blocker-report.ps1 -Top 5",
     "orchestrator:cascade":              "powershell -ExecutionPolicy Bypass -File scripts/orchestrator/cascade-preview.ps1",
     "orchestrator:cascade:all":          "powershell -ExecutionPolicy Bypass -File scripts/orchestrator/cascade-preview.ps1 -ShowAll",
-    "orchestrator:cascade:brief":        "powershell -ExecutionPolicy Bypass -File scripts/orchestrator/cascade-preview.ps1 -Brief"
+    "orchestrator:cascade:brief":        "powershell -ExecutionPolicy Bypass -File scripts/orchestrator/cascade-preview.ps1 -Brief",
+    "orchestrator:agent-loop":           "powershell -ExecutionPolicy Bypass -File scripts/orchestrator/agent-loop.ps1",
+    "orchestrator:agent-loop:schedule":  "powershell -ExecutionPolicy Bypass -File scripts/orchestrator/agent-loop.ps1 -ShowSchedule",
+    "orchestrator:agent-loop:once":      "powershell -ExecutionPolicy Bypass -File scripts/orchestrator/agent-loop.ps1 -Once",
+    "orchestrator:agent-loop:nobrowser": "powershell -ExecutionPolicy Bypass -File scripts/orchestrator/agent-loop.ps1 -NoBrowser"
                 },
     "prisma":  {
                    "seed":  "tsx prisma/seed.ts"
