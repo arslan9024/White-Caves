@@ -125,7 +125,11 @@
     "orchestrator:health":               "powershell -ExecutionPolicy Bypass -File scripts/orchestrator/queue-health.ps1",
     "orchestrator:health:ci":            "powershell -ExecutionPolicy Bypass -File scripts/orchestrator/queue-health.ps1 -CI",
     "orchestrator:health:strict":        "powershell -ExecutionPolicy Bypass -File scripts/orchestrator/queue-health.ps1 -Strict",
-    "orchestrator:health:brief":         "powershell -ExecutionPolicy Bypass -File scripts/orchestrator/queue-health.ps1 -Brief"
+    "orchestrator:health:brief":         "powershell -ExecutionPolicy Bypass -File scripts/orchestrator/queue-health.ps1 -Brief",
+    "orchestrator:blockers":             "powershell -ExecutionPolicy Bypass -File scripts/orchestrator/blocker-report.ps1",
+    "orchestrator:blockers:brief":       "powershell -ExecutionPolicy Bypass -File scripts/orchestrator/blocker-report.ps1 -Brief",
+    "orchestrator:blockers:next":        "powershell -ExecutionPolicy Bypass -File scripts/orchestrator/blocker-report.ps1 -Next",
+    "orchestrator:blockers:top5":        "powershell -ExecutionPolicy Bypass -File scripts/orchestrator/blocker-report.ps1 -Top 5"
                 },
     "prisma":  {
                    "seed":  "tsx prisma/seed.ts"
