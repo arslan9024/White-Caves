@@ -1,4 +1,4 @@
-# output-log.ps1 — Persist AI output text against a task ID.
+# output-log.ps1 -- Persist AI output text against a task ID.
 # Saves to logs/orchestrator/outputs/TASKID.md  and attaches a reference
 # to the task's evidence block in the queue.
 param(

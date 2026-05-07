@@ -1,4 +1,4 @@
-# reset-failed.ps1 — bulk reset failed/retrying tasks back to queued
+# reset-failed.ps1 -- bulk reset failed/retrying tasks back to queued
 # Optionally filter by agent or lane.
 param(
   [string]$WorkspaceRoot = ".",

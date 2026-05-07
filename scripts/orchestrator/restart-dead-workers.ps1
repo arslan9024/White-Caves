@@ -1,4 +1,4 @@
-# restart-dead-workers.ps1 — reads PID file, checks each process, respawns dead ones
+# restart-dead-workers.ps1 -- reads PID file, checks each process, respawns dead ones
 param(
   [string]$WorkspaceRoot    = ".",
   [int]$PollSeconds         = 30,
@@ -44,7 +44,7 @@ foreach ($w in $registeredWorkers) {
   }
   catch { }
 
-  # Process is dead — respawn based on type
+  # Process is dead -- respawn based on type
   $type = if ($w.Type) { $w.Type } else { "legacy-worker" }
   $newProc = $null
 

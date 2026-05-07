@@ -1,4 +1,4 @@
-# Watchdog Scheduler — runs continuously, firing watchdog + ACK escalation every N minutes
+# Watchdog Scheduler -- runs continuously, firing watchdog + ACK escalation every N minutes
 # Spawned by start-background.ps1 alongside worker pool.
 # Writes heartbeat + results to logs/orchestrator/watchdog-scheduler.log
 param(

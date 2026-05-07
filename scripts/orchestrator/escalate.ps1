@@ -1,4 +1,4 @@
-# Escalate — auto-escalates tasks stuck in waiting_ack beyond AckStaleMinutes.
+# Escalate -- auto-escalates tasks stuck in waiting_ack beyond AckStaleMinutes.
 # Writes escalation notice to DAILY_MILESTONE_TRACKER.md and marks task as "escalated".
 param(
   [string]$WorkspaceRoot = ".",

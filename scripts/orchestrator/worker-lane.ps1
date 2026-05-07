@@ -1,4 +1,4 @@
-# worker-lane.ps1 — Lane-aware background worker.
+# worker-lane.ps1 -- Lane-aware background worker.
 # Claims the next ready task in its assigned lane (A/B/C/D) every PollSeconds.
 # Uses dispatch-lane.ps1 for smarter routing instead of agent-locked dispatch.
 param(

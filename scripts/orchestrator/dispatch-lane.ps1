@@ -1,4 +1,4 @@
-# dispatch-lane.ps1 — Lane-aware dispatcher for background workers.
+# dispatch-lane.ps1 -- Lane-aware dispatcher for background workers.
 # Instead of claiming only tasks for a specific agent, a worker calls this
 # with its assigned lane (A/B/C/D) and receives the next ready task in that lane,
 # regardless of which agent "owns" it.  This maximises throughput when agents

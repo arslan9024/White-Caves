@@ -94,7 +94,13 @@
                     "db:generate":  "npx prisma generate",
                     "db:push":  "npx prisma db push",
                     "prepare":  "husky",
-                    "orchestrator:scaffold-docs":  "powershell -ExecutionPolicy Bypass -File scripts/orchestrator/scaffold-docs.ps1"
+                    "orchestrator:scaffold-docs":  "powershell -ExecutionPolicy Bypass -File scripts/orchestrator/scaffold-docs.ps1",
+    "orchestrator:today-sprint":   "powershell -ExecutionPolicy Bypass -File scripts/orchestrator/today-sprint.ps1",
+    "orchestrator:today-sprint:compact": "powershell -ExecutionPolicy Bypass -File scripts/orchestrator/today-sprint.ps1 -NoPrompt",
+    "orchestrator:today-sprint:laneA":   "powershell -ExecutionPolicy Bypass -File scripts/orchestrator/today-sprint.ps1 -Lane A",
+    "orchestrator:today-sprint:laneB":   "powershell -ExecutionPolicy Bypass -File scripts/orchestrator/today-sprint.ps1 -Lane B",
+    "orchestrator:today-sprint:laneC":   "powershell -ExecutionPolicy Bypass -File scripts/orchestrator/today-sprint.ps1 -Lane C",
+    "orchestrator:today-sprint:laneD":   "powershell -ExecutionPolicy Bypass -File scripts/orchestrator/today-sprint.ps1 -Lane D"
                 },
     "prisma":  {
                    "seed":  "tsx prisma/seed.ts"

@@ -1,4 +1,4 @@
-# dashboard.ps1 — Rich visual orchestration dashboard
+# dashboard.ps1 -- Rich visual orchestration dashboard
 # Shows: worker health, queue summary, per-agent status, escalations, gate status
 param(
   [string]$WorkspaceRoot = ".",
