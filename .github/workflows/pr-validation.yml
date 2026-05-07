@@ -311,3 +311,22 @@ jobs:
             premium-detect.json
             logs/premium-commit-checks/
           retention-days: 14
+
+  orchestrator-health:
+    name: Orchestrator Queue Health Gate
+    runs-on: windows-latest
+    timeout-minutes: 5
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check queue integrity (9-group health check)
+        run: powershell -ExecutionPolicy Bypass -File scripts/orchestrator/queue-health.ps1 -CI
+
+      - name: Upload queue file on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: queue-health-failure-pr-${{ github.event.number }}
+          path: logs/orchestrator/task-queue.json
+          retention-days: 7
