@@ -51,6 +51,9 @@ $gateTargets = @{
   "business_docs/09_crm_features/marketing-campaigns.md"        = 12
   "business_docs/09_crm_features/luxury-segment.md"             = 10
   "business_docs/09_crm_features/community-management.md"       = 8
+  "business_docs/09_crm_features/careers.md"                    = 8
+  "business_docs/09_crm_features/lead-tracking.md"              = 12
+  "business_docs/09_crm_features/ui-ux-specification.md"        = 20
 }
 
 $FALLBACK_MIN = 5
