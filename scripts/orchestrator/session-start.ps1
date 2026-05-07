@@ -177,6 +177,20 @@ if (Test-Path $healthScript) {
 }
 
 # ------------------------------------------------------------------
+# STEP 0.5: Daily digest -- situational awareness before any work
+# ------------------------------------------------------------------
+Write-Host ""
+Write-Host ("=" * $w) -ForegroundColor Cyan
+Write-Host "  STEP 0.5 -- DAILY DIGEST (one-line briefing)" -ForegroundColor Yellow
+Write-Host ("=" * $w) -ForegroundColor Cyan
+$digestScript = Join-Path $scripts "daily-digest.ps1"
+if (Test-Path $digestScript) {
+  & powershell -ExecutionPolicy Bypass -File "$digestScript" -Brief
+} else {
+  Write-Host "  [SKIP] daily-digest.ps1 not found." -ForegroundColor DarkYellow
+}
+
+# ------------------------------------------------------------------
 # STEP 1: Gate-check -- recount all business_docs sections
 # ------------------------------------------------------------------
 Write-Step "GATE-CHECK -- recount all doc sections"
@@ -269,12 +283,15 @@ if ($null -ne $prevSnap) {
 }
 Write-Host ""
 Write-Host "  Quick actions:" -ForegroundColor White
-Write-Host "    npm run orchestrator:session:compact   -- re-run this (compact)" -ForegroundColor DarkGray
-Write-Host "    npm run orchestrator:fast-complete     -- re-run auto-complete" -ForegroundColor DarkGray
-Write-Host "    npm run orchestrator:report:print      -- re-print @Margaret brief" -ForegroundColor DarkGray
-Write-Host "    npm run orchestrator:health            -- full 9-group queue health" -ForegroundColor DarkGray
-Write-Host "    npm run orchestrator:blockers:brief    -- see what is blocking each task" -ForegroundColor DarkGray
-Write-Host "    npm run orchestrator:cascade:all       -- rank READY tasks by impact" -ForegroundColor DarkGray
+  Write-Host "    npm run orchestrator:session:compact       -- re-run this (compact)" -ForegroundColor DarkGray
+  Write-Host "    npm run orchestrator:digest                -- full morning briefing" -ForegroundColor DarkGray
+  Write-Host "    npm run orchestrator:digest:agents         -- per-agent status table" -ForegroundColor DarkGray
+  Write-Host "    npm run orchestrator:fast-forward:dry      -- cascade preview (top task)" -ForegroundColor DarkGray
+  Write-Host "    npm run orchestrator:fast-complete         -- re-run auto-complete" -ForegroundColor DarkGray
+  Write-Host "    npm run orchestrator:report:print          -- re-print @Margaret brief" -ForegroundColor DarkGray
+  Write-Host "    npm run orchestrator:health                -- full 9-group queue health" -ForegroundColor DarkGray
+  Write-Host "    npm run orchestrator:blockers:brief        -- see what is blocking each task" -ForegroundColor DarkGray
+  Write-Host "    npm run orchestrator:cascade:all           -- rank READY tasks by impact" -ForegroundColor DarkGray
 Write-Host ""
 Write-Host "  Free-agent workflow:" -ForegroundColor White
 Write-Host "    1. Copy the prompt from TODAY SPRINT above" -ForegroundColor DarkGray
