@@ -142,7 +142,10 @@
     "orchestrator:digest":               "powershell -ExecutionPolicy Bypass -File scripts/orchestrator/daily-digest.ps1",
     "orchestrator:digest:brief":         "powershell -ExecutionPolicy Bypass -File scripts/orchestrator/daily-digest.ps1 -Brief",
     "orchestrator:digest:agents":        "powershell -ExecutionPolicy Bypass -File scripts/orchestrator/daily-digest.ps1 -Agents",
-    "orchestrator:digest:sections":      "powershell -ExecutionPolicy Bypass -File scripts/orchestrator/daily-digest.ps1 -Sections"
+    "orchestrator:digest:sections":      "powershell -ExecutionPolicy Bypass -File scripts/orchestrator/daily-digest.ps1 -Sections",
+    "orchestrator:milestone":            "powershell -ExecutionPolicy Bypass -File scripts/orchestrator/milestone-check.ps1",
+    "orchestrator:milestone:all":        "powershell -ExecutionPolicy Bypass -File scripts/orchestrator/milestone-check.ps1 -All",
+    "orchestrator:milestone:summary":    "powershell -ExecutionPolicy Bypass -File scripts/orchestrator/milestone-check.ps1 -Summary"
                 },
     "prisma":  {
                    "seed":  "tsx prisma/seed.ts"
