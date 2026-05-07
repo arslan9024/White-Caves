@@ -112,6 +112,7 @@
     "orchestrator:session:laneB":       "powershell -ExecutionPolicy Bypass -File scripts/orchestrator/session-start.ps1 -NoPrompt -Lane B",
     "orchestrator:session:laneC":       "powershell -ExecutionPolicy Bypass -File scripts/orchestrator/session-start.ps1 -NoPrompt -Lane C",
     "orchestrator:session:laneD":       "powershell -ExecutionPolicy Bypass -File scripts/orchestrator/session-start.ps1 -NoPrompt -Lane D",
+    "orchestrator:session:autoadvance": "powershell -ExecutionPolicy Bypass -File scripts/orchestrator/session-start.ps1 -AutoAdvance",
     "orchestrator:verify-prompts":      "powershell -ExecutionPolicy Bypass -File scripts/orchestrator/verify-prompts.ps1",
     "orchestrator:verify-prompts:strict":"powershell -ExecutionPolicy Bypass -File scripts/orchestrator/verify-prompts.ps1 -Strict",
     "orchestrator:session:end":          "powershell -ExecutionPolicy Bypass -File scripts/orchestrator/session-end.ps1",

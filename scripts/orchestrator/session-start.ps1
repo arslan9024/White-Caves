@@ -11,6 +11,8 @@ param(
   [string]$WorkspaceRoot    = ".",
   [switch]$NoPrompt,          # pass -NoPrompt to today-sprint (compact output)
   [switch]$SkipAutoComplete,  # skip fast-complete step
+  [switch]$AutoAdvance,       # Step 6: auto-fast-forward top READY task if gate PASS
+  [switch]$SkipAutoAdvance,   # skip Step 6 entirely
   [string]$Lane = ""          # filter today-sprint by lane: A/B/C/D
 )
 
@@ -248,6 +250,183 @@ if ($Lane -ne "")     { $sprintArgs += @("-Lane", $Lane) }
 Invoke-Script (Join-Path $scripts "today-sprint.ps1") $sprintArgs
 
 # ------------------------------------------------------------------
+# STEP 6: Auto-Cascade -- surface highest-cascade READY task
+# ------------------------------------------------------------------
+if (-not $SkipAutoAdvance) {
+  Write-Step "AUTO-CASCADE -- top READY task recommendation"
+
+  # Cascade score: count tasks transitively unlocked if $taskId completes.
+  # Uses BFS via HashSet (PS5.1-safe). Mirrors Get-CascadeScore in daily-digest.ps1.
+  function Get-CascadeScoreLocal([string]$tid, $tList) {
+    $seen = [System.Collections.Generic.HashSet[string]]::new()
+    $seen.Add($tid) | Out-Null
+    foreach ($t in ($tList | Where-Object { $_.status -eq "done" })) {
+      $seen.Add($t.taskId) | Out-Null
+    }
+    $sc = 0; $chg = $true
+    while ($chg) {
+      $chg = $false
+      foreach ($t in $tList) {
+        if ($t.status -ne "queued")         { continue }
+        if ($seen.Contains($t.taskId))      { continue }
+        $deps = @(); if ($null -ne $t.dependsOn) { $deps = @($t.dependsOn) }
+        $blk  = $false
+        foreach ($dep in $deps) { if (-not $seen.Contains($dep)) { $blk = $true; break } }
+        if (-not $blk) { $sc++; $seen.Add($t.taskId) | Out-Null; $chg = $true }
+      }
+    }
+    return $sc
+  }
+
+  $acQF = Join-Path $root "logs\orchestrator\task-queue.json"
+  if (-not (Test-Path $acQF)) {
+    Write-Host "  [SKIP] Queue file not found." -ForegroundColor DarkYellow
+  } else {
+    $acQ     = Get-Content $acQF -Raw | ConvertFrom-Json
+    $acTasks = @($acQ.tasks)
+
+    $acDone = [System.Collections.Generic.HashSet[string]]::new()
+    foreach ($t in ($acTasks | Where-Object { $_.status -eq "done" })) {
+      $acDone.Add($t.taskId) | Out-Null
+    }
+
+    # Collect READY tasks: queued + all deps done
+    $acReady = @()
+    foreach ($t in $acTasks) {
+      if ($t.status -ne "queued") { continue }
+      $deps = @(); if ($null -ne $t.dependsOn) { $deps = @($t.dependsOn) }
+      $blk  = $false
+      foreach ($dep in $deps) { if (-not $acDone.Contains($dep)) { $blk = $true; break } }
+      if (-not $blk) { $acReady += $t }
+    }
+
+    if ($acReady.Count -eq 0) {
+      $acTotalDone = @($acTasks | Where-Object { $_.status -eq "done" }).Count
+      if ($acTotalDone -ge $acTasks.Count) {
+        Write-Host "  ALL TASKS COMPLETE -- queue fully done!" -ForegroundColor Green
+      } else {
+        Write-Host "  No READY tasks -- all queued tasks are blocked." -ForegroundColor DarkYellow
+        Write-Host "  Run: npm run orchestrator:blockers:brief" -ForegroundColor DarkGray
+      }
+    } else {
+
+      # Score and pick top READY task
+      $acTop = $null; $acTopScore = -1
+      foreach ($t in $acReady) {
+        $s = Get-CascadeScoreLocal $t.taskId $acTasks
+        if ($s -gt $acTopScore) { $acTopScore = $s; $acTop = $t }
+      }
+
+      # Agent -> primary gate file
+      $acAgGate = @{
+        "@Sofia"    = "business_docs/05_requirements/compliance-requirements.md"
+        "@Timnit"   = "business_docs/09_crm_features/dld-integration.md"
+        "@Victoria" = "business_docs/09_crm_features/tenancy-ejari.md"
+        "@Annie"    = "business_docs/09_crm_features/tenant-portal.md"
+        "@Marissa"  = "business_docs/09_crm_features/luxury-segment.md"
+        "@Rachel"   = "business_docs/09_crm_features/seo-strategy.md"
+        "@Joelle"   = "business_docs/03_ai_assistants/README.md"
+        "@Fei-Fei"  = "business_docs/09_crm_features/property-valuation.md"
+        "@Anima"    = "business_docs/09_crm_features/secondary-sales.md"
+        "@Mary"     = "business_docs/09_crm_features/sentinel-property.md"
+        "@Invoice"  = "business_docs/09_crm_features/financial-reporting.md"
+        "@Hedy"     = "business_docs/09_crm_features/audit-trail.md"
+        "@Maya"     = "business_docs/09_crm_features/off-plan-projects.md"
+        "@Booking"  = "business_docs/09_crm_features/viewings.md"
+        "@Jaime"    = "business_docs/09_crm_features/offers.md"
+        "@Cassie"   = "business_docs/09_crm_features/analytics-dashboard.md"
+        "@Corinne"  = "business_docs/09_crm_features/ai-chat.md"
+      }
+      $acAgTool = @{
+        "@Sofia"    = "https://aistudio.google.com/"
+        "@Timnit"   = "https://aistudio.google.com/"
+        "@Victoria" = "https://aistudio.google.com/"
+        "@Annie"    = "https://aistudio.google.com/"
+        "@Marissa"  = "https://aistudio.google.com/"
+        "@Rachel"   = "https://aistudio.google.com/"
+        "@Joelle"   = "https://console.groq.com/"
+        "@Invoice"  = "https://console.groq.com/"
+        "@Hedy"     = "https://console.groq.com/"
+        "@Maya"     = "https://console.groq.com/"
+        "@Booking"  = "https://console.groq.com/"
+        "@Jaime"    = "https://console.groq.com/"
+        "@Fei-Fei"  = "https://chat.deepseek.com/"
+        "@Anima"    = "https://chat.deepseek.com/"
+        "@Mary"     = "https://chat.deepseek.com/"
+        "@Cassie"   = "https://chat.deepseek.com/"
+        "@Corinne"  = "https://chat.deepseek.com/"
+      }
+
+      $acAgent   = $acTop.agent
+      $acGateRel = if ($acAgGate.ContainsKey($acAgent)) { $acAgGate[$acAgent] } else { "" }
+      $acFreeURL = if ($acAgTool.ContainsKey($acAgent)) { $acAgTool[$acAgent] } else { "https://aistudio.google.com/" }
+      $acGateMax = if ($gateTargets.ContainsKey($acGateRel)) { $gateTargets[$acGateRel] } else { 0 }
+      $acGateNow = 0
+      if ($acGateRel -ne "") {
+        $acGAbs = Join-Path $root ($acGateRel -replace "/", "\")
+        if (Test-Path $acGAbs) {
+          $acGateNow = @(Get-Content $acGAbs | Where-Object { $_ -match "^#{1,3} " }).Count
+        }
+      }
+      $acGatePass = ($acGateMax -gt 0 -and $acGateNow -ge $acGateMax)
+      $acGateFile = if ($acGateRel -ne "") { ($acGateRel -split "/")[-1] } else { "unknown" }
+      $acModName  = $acGateFile -replace "\.md$", ""
+      $acGateCol  = if ($acGatePass) { "Green" } else { "Yellow" }
+
+      # -- Recommendation block --
+      Write-Host ""
+      Write-Host ("  TOP READY: {0,-8}  {1,-12}  Score {2}  Lane {3}" -f $acTop.taskId, $acAgent, $acTopScore, $acTop.lane) -ForegroundColor Cyan
+      Write-Host ("  Task      : {0}" -f $acTop.title) -ForegroundColor White
+      Write-Host ("  Gate file : {0}  ({1}/{2}  -- {3})" -f $acGateFile, $acGateNow, $acGateMax, $(if ($acGatePass) { "GATE PASS" } else { "needs more sections" })) -ForegroundColor $acGateCol
+      Write-Host ("  Free tool : {0}" -f $acFreeURL) -ForegroundColor DarkGray
+      Write-Host ""
+
+      # List all READY tasks if more than one
+      if ($acReady.Count -gt 1) {
+        Write-Host ("  All {0} READY tasks:" -f $acReady.Count) -ForegroundColor DarkGray
+        foreach ($rt in $acReady) {
+          $rts   = Get-CascadeScoreLocal $rt.taskId $acTasks
+          $star  = if ($rt.taskId -eq $acTop.taskId) { " <-- TOP" } else { "" }
+          $rCol  = if ($rt.taskId -eq $acTop.taskId) { "Cyan" } else { "DarkGray" }
+          Write-Host ("    {0,-8}  {1,-12}  Score {2,-4}  {3}{4}" -f $rt.taskId, $rt.agent, $rts, $rt.title, $star) -ForegroundColor $rCol
+        }
+        Write-Host ""
+      }
+
+      # Action steps
+      Write-Host "  NEXT ACTIONS:" -ForegroundColor White
+      Write-Host ("    1. Open   : {0}" -f $acFreeURL) -ForegroundColor Yellow
+      Write-Host ("    2. Paste  : {0}'s prompt from TODAY SPRINT above" -f $acAgent) -ForegroundColor Yellow
+      Write-Host ("    3. Save   : paste AI output into {0}" -f $acGateFile) -ForegroundColor Yellow
+      Write-Host ("    4. Advance: npm run orchestrator:fast-forward -- -TaskId {0} -Force" -f $acTop.taskId) -ForegroundColor Yellow
+      Write-Host ("    5. Check  : npm run orchestrator:milestone -- -Module {0}" -f $acModName) -ForegroundColor Yellow
+      Write-Host ""
+
+      # Auto-advance if flag is set
+      if ($AutoAdvance) {
+        if ($acGatePass) {
+          Write-Host ("  [AUTO-ADVANCE] Gate PASS ({0}/{1}) -- running fast-forward for {2}..." -f $acGateNow, $acGateMax, $acTop.taskId) -ForegroundColor Green
+          $acFF = Join-Path $scripts "fast-forward.ps1"
+          if (Test-Path $acFF) {
+            & powershell -ExecutionPolicy Bypass -File "$acFF" `
+              -TaskId $acTop.taskId -Force -WorkspaceRoot $root `
+              -EvidenceNote ("Auto-advanced by session-start Step 6: {0}/{1} sections" -f $acGateNow, $acGateMax)
+          } else {
+            Write-Host "  [SKIP] fast-forward.ps1 not found." -ForegroundColor DarkYellow
+          }
+        } else {
+          Write-Host ("  [AUTO-ADVANCE] Gate NOT met ({0}/{1} sections) -- skipping {2}." -f $acGateNow, $acGateMax, $acTop.taskId) -ForegroundColor Yellow
+          Write-Host ("  Paste {0}'s output into {1} first, then re-run with -AutoAdvance." -f $acAgent, $acGateFile) -ForegroundColor DarkGray
+        }
+      }
+    }
+  }
+} else {
+  Write-Host ""
+  Write-Host "  [SKIP] Auto-cascade step (-SkipAutoAdvance set)." -ForegroundColor DarkGray
+}
+
+# ------------------------------------------------------------------
 # SUMMARY
 # ------------------------------------------------------------------
 $elapsed = [math]::Round(((Get-Date) - $t0).TotalSeconds, 1)
@@ -292,6 +471,8 @@ Write-Host "  Quick actions:" -ForegroundColor White
   Write-Host "    npm run orchestrator:health                -- full 9-group queue health" -ForegroundColor DarkGray
   Write-Host "    npm run orchestrator:blockers:brief        -- see what is blocking each task" -ForegroundColor DarkGray
   Write-Host "    npm run orchestrator:cascade:all           -- rank READY tasks by impact" -ForegroundColor DarkGray
+  Write-Host "    npm run orchestrator:milestone:summary     -- 92% readiness check (all modules)" -ForegroundColor DarkGray
+  Write-Host "    npm run orchestrator:session:autoadvance   -- session + auto-advance top task" -ForegroundColor DarkGray
 Write-Host ""
 Write-Host "  Free-agent workflow:" -ForegroundColor White
 Write-Host "    1. Copy the prompt from TODAY SPRINT above" -ForegroundColor DarkGray
