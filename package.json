@@ -117,6 +117,7 @@
     "orchestrator:session:end":          "powershell -ExecutionPolicy Bypass -File scripts/orchestrator/session-end.ps1",
     "orchestrator:session:end:dry":      "powershell -ExecutionPolicy Bypass -File scripts/orchestrator/session-end.ps1 -DryRun",
     "orchestrator:session:end:nopush":   "powershell -ExecutionPolicy Bypass -File scripts/orchestrator/session-end.ps1 -SkipPush",
+    "orchestrator:session:delta":        "powershell -ExecutionPolicy Bypass -Command \"$s=Get-Content 'logs/orchestrator/session-snapshot.json' -Raw|ConvertFrom-Json; Write-Host \\\"Last session: $($s.date) | PASS: $($s.passCount)/$((Get-Content 'logs/orchestrator/task-queue.json' -Raw|ConvertFrom-Json).tasks.Count) | Done: $($s.doneCount) tasks\\\"\"",
     "orchestrator:next-agent":           "powershell -ExecutionPolicy Bypass -File scripts/orchestrator/next-agent.ps1",
     "orchestrator:next-agent:browser":   "powershell -ExecutionPolicy Bypass -File scripts/orchestrator/next-agent.ps1 -OpenBrowser",
     "orchestrator:next-agent:all":       "powershell -ExecutionPolicy Bypass -File scripts/orchestrator/next-agent.ps1 -ShowAll",
