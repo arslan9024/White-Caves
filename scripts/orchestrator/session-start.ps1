@@ -1,4 +1,4 @@
-# session-start.ps1 -- One-command session initializer for White Caves Orchestrator
+﻿# session-start.ps1 -- One-command session initializer for White Caves Orchestrator
 # Chains: gate-check -> fast-complete -> morning-kickoff -> progress-report -> today-sprint
 # Each step is printed with a phase header. Steps that fail print a warning but do NOT abort.
 #
@@ -153,6 +153,30 @@ if ($null -ne $prevSnap) {
 }
 
 # ------------------------------------------------------------------
+# STEP 0: Queue health pre-check -- catch corruption BEFORE work begins
+# ------------------------------------------------------------------
+Write-Host ""
+Write-Host ("=" * $w) -ForegroundColor Cyan
+Write-Host "  STEP 0 -- QUEUE HEALTH PRE-CHECK" -ForegroundColor Yellow
+Write-Host ("=" * $w) -ForegroundColor Cyan
+$healthScript = Join-Path $scripts "queue-health.ps1"
+if (Test-Path $healthScript) {
+  & powershell -ExecutionPolicy Bypass -File "$healthScript"
+  $healthExit = $LASTEXITCODE
+  if ($healthExit -ne 0) {
+    Write-Host ""
+    Write-Host ("  [!!] QUEUE CORRUPTION DETECTED (exit {0}) -- session ABORTED" -f $healthExit) -ForegroundColor Red
+    Write-Host "  Fix task-queue.json before starting a new session." -ForegroundColor Red
+    Write-Host "  Full report: npm run orchestrator:health" -ForegroundColor Yellow
+    Write-Host ("=" * $w) -ForegroundColor Red
+    exit 1
+  }
+  Write-Host "  Queue healthy -- proceeding to session steps." -ForegroundColor Green
+} else {
+  Write-Host "  [SKIP] queue-health.ps1 not found -- skipping pre-check." -ForegroundColor DarkYellow
+}
+
+# ------------------------------------------------------------------
 # STEP 1: Gate-check -- recount all business_docs sections
 # ------------------------------------------------------------------
 Write-Step "GATE-CHECK -- recount all doc sections"
@@ -248,6 +272,9 @@ Write-Host "  Quick actions:" -ForegroundColor White
 Write-Host "    npm run orchestrator:session:compact   -- re-run this (compact)" -ForegroundColor DarkGray
 Write-Host "    npm run orchestrator:fast-complete     -- re-run auto-complete" -ForegroundColor DarkGray
 Write-Host "    npm run orchestrator:report:print      -- re-print @Margaret brief" -ForegroundColor DarkGray
+Write-Host "    npm run orchestrator:health            -- full 9-group queue health" -ForegroundColor DarkGray
+Write-Host "    npm run orchestrator:blockers:brief    -- see what is blocking each task" -ForegroundColor DarkGray
+Write-Host "    npm run orchestrator:cascade:all       -- rank READY tasks by impact" -ForegroundColor DarkGray
 Write-Host ""
 Write-Host "  Free-agent workflow:" -ForegroundColor White
 Write-Host "    1. Copy the prompt from TODAY SPRINT above" -ForegroundColor DarkGray
