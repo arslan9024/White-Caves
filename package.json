@@ -138,7 +138,11 @@
     "orchestrator:agent-loop:once":      "powershell -ExecutionPolicy Bypass -File scripts/orchestrator/agent-loop.ps1 -Once",
     "orchestrator:agent-loop:nobrowser": "powershell -ExecutionPolicy Bypass -File scripts/orchestrator/agent-loop.ps1 -NoBrowser",
     "orchestrator:fast-forward":         "powershell -ExecutionPolicy Bypass -File scripts/orchestrator/fast-forward.ps1",
-    "orchestrator:fast-forward:dry":     "powershell -ExecutionPolicy Bypass -File scripts/orchestrator/fast-forward.ps1 -DryRun"
+    "orchestrator:fast-forward:dry":     "powershell -ExecutionPolicy Bypass -File scripts/orchestrator/fast-forward.ps1 -DryRun",
+    "orchestrator:digest":               "powershell -ExecutionPolicy Bypass -File scripts/orchestrator/daily-digest.ps1",
+    "orchestrator:digest:brief":         "powershell -ExecutionPolicy Bypass -File scripts/orchestrator/daily-digest.ps1 -Brief",
+    "orchestrator:digest:agents":        "powershell -ExecutionPolicy Bypass -File scripts/orchestrator/daily-digest.ps1 -Agents",
+    "orchestrator:digest:sections":      "powershell -ExecutionPolicy Bypass -File scripts/orchestrator/daily-digest.ps1 -Sections"
                 },
     "prisma":  {
                    "seed":  "tsx prisma/seed.ts"
