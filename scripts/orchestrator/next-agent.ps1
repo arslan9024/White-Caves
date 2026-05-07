@@ -1,4 +1,4 @@
-# next-agent.ps1 -- Post-completion advisor: "who fires next?"
+﻿# next-agent.ps1 -- Post-completion advisor: "who fires next?"
 # After a free agent pastes AI output and runs complete-and-advance,
 # run this to instantly see:
 #   - Which downstream task(s) just became READY
@@ -74,7 +74,7 @@ $models = @{
   "@Corinne"  = "DeepSeek V3"
 }
 # Lane names for display
-$laneNames = @{ "A"="Lane A (Sofia→Timnit→Victoria→Annie→Marissa→Rachel→Joelle)"; "B"="Lane B (Fei-Fei→Anima→Mary→Invoice)"; "C"="Lane C (Booking→Maya→Hedy→Cassie)"; "D"="Lane D (Jaime→Corinne)" }
+$laneNames = @{ "A"="Lane A (Sofia->Timnit->Victoria->Annie->Marissa->Rachel->Joelle)"; "B"="Lane B (Fei-Fei->Anima->Mary->Invoice)"; "C"="Lane C (Booking->Maya->Hedy->Cassie)"; "D"="Lane D (Jaime->Corinne)" }
 
 # -- helpers ------------------------------------------------------------------
 function Get-Prompt([string]$id) {
