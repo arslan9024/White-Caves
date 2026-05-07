@@ -1,16 +1,37 @@
 # White Caves AI Assistants - Complete Registry
 
 ## Overview
+
 - **Total AI Personalities**: 24 documented personas
-- **Core Assistants**: 14 active (Aurora, Clara, Daisy, Hazel, Laila, Nadia, Mary, Nancy, Nina, Olivia, Sophia, Theodora, Willow, Zoe)
+- **Complete (Production-Ready NEW stack)**: 14 assistants
+- **Incomplete (Legacy CRM pending NEW upgrade)**: 10 assistants
 - **Architecture**: Integrated AI-powered CRM ecosystem with WhatsApp as primary communication layer
 - **Design Philosophy**: Each assistant has a specific business function, department alignment, and data ecosystem
+
+### Current Progress Snapshot
+
+- ✅ **Complete (14)**: Mary, Theodora, Olivia, Zoe, Laila, Nadia, Sophia, Daisy, Clara, Nina, Nancy, Aurora, Hazel, Willow
+- 🔄 **Incomplete (10)**: Hunter, Vesta, Maven, Kairos, Juno, Henry, Cipher, Sentinel, Atlas, Evangeline
+
+### Sequential Upgrade Plan
+
+1. Hunter
+2. Vesta
+3. Maven
+4. Kairos
+5. Juno
+6. Henry
+7. Cipher
+8. Sentinel
+9. Atlas
+10. Evangeline
 
 ---
 
 ## 🔴 CRITICAL BUSINESS ASSISTANTS (Owner-Exclusive)
 
 ### 1. **Zoe** - Executive Assistant & Strategic Intelligence
+
 - **Department**: Executive
 - **Color**: #10B981 (Emerald)
 - **Access**: Owner-exclusive (Full data access)
@@ -32,6 +53,7 @@
   - Risk alerts & compliance monitoring
 
 ### 2. **Clara** - Leads CRM Manager
+
 - **Department**: Sales
 - **Color**: #EF4444 (Red)
 - **Access**: Sales team + Executive
@@ -55,6 +77,7 @@
   - Lead response SLA monitoring
 
 ### 3. **Linda** - WhatsApp CRM Manager
+
 - **Department**: Communications
 - **Color**: #25D366 (WhatsApp Green)
 - **Access**: Sales team, Communications, Executive
@@ -80,6 +103,7 @@
   - Lead pre-scoring before Clara assignment
 
 ### 4. **Mary** - Inventory CRM Manager
+
 - **Department**: Operations
 - **Color**: #3B82F6 (Blue)
 - **Access**: Sales, Operations, Marketing, Executive
@@ -104,6 +128,7 @@
   - Neighborhood analysis
 
 ### 5. **Theodora** - Finance Director
+
 - **Department**: Finance
 - **Color**: #F59E0B (Amber)
 - **Access**: Finance, Sales agents (own commissions), Executive
@@ -132,6 +157,7 @@
 ## 🔵 CORE BUSINESS ASSISTANTS (Department-Specific)
 
 ### 6. **Sophia** - Sales Pipeline Manager
+
 - **Department**: Sales
 - **Color**: #8B5CF6 (Purple)
 - **Primary Role**: Sales forecasting and deal tracking
@@ -146,6 +172,7 @@
 - **Data Outputs**: Theodora (Commission), Zoe (Forecasting)
 
 ### 7. **Daisy** - Leasing & Tenant Manager
+
 - **Department**: Operations
 - **Color**: #14B8A6 (Teal)
 - **Primary Role**: Rental property & tenant lifecycle
@@ -161,6 +188,7 @@
 - **Data Outputs**: Theodora (Rent finance), Zoe (Occupancy reports)
 
 ### 8. **Olivia** - Marketing & Automation Manager
+
 - **Department**: Marketing
 - **Color**: #EC4899 (Pink)
 - **Primary Role**: Marketing campaigns & market intelligence
@@ -175,6 +203,7 @@
 - **Data Outputs**: Zoe (Marketing ROI)
 
 ### 9. **Laila** - Compliance Officer
+
 - **Department**: Compliance
 - **Color**: #6366F1 (Indigo)
 - **Primary Role**: Regulatory compliance & risk management
@@ -190,6 +219,7 @@
 - **Data Outputs**: Zoe (Risk reports), Legal (Escalations)
 
 ### 10. **Nancy** - HR Manager
+
 - **Department**: Operations
 - **Color**: #F97316 (Orange)
 - **Primary Role**: Employee management & recruitment
@@ -202,6 +232,7 @@
 - **Data Outputs**: Zoe (Team performance)
 
 ### 11. **Nina** - WhatsApp Bot Developer
+
 - **Department**: Communications
 - **Color**: #06B6D4 (Cyan)
 - **Primary Role**: 24/7 automated customer engagement
@@ -220,18 +251,21 @@
 ## 🟣 TECHNOLOGY ASSISTANTS
 
 ### 12. **Aurora** - CTO & System Architecture
+
 - **Department**: Technology
 - **Color**: #0EA5E9 (Cyan)
 - **Primary Role**: Technical strategy & system architecture
 - **Responsibilities**: Architecture decisions, performance optimization, deployment pipelines
 
 ### 13. **Hazel** - Frontend CRM Developer
+
 - **Department**: Technology
 - **Color**: #EC4899
 - **Primary Role**: Frontend UI/UX development
 - **Focus**: React components, responsive design, user experience
 
 ### 14. **Willow** - Backend CRM Developer
+
 - **Department**: Technology
 - **Color**: #06B6D4
 - **Primary Role**: Backend development & APIs
@@ -265,20 +299,21 @@ Zoe (Executive reporting & analytics)
 
 ## 🎯 KEY METRICS BY ASSISTANT
 
-| Assistant | Primary KPI | Target | Status |
-|----------|------------|--------|--------|
-| Nadia | Response time | <5 min | ✅ |
-| Nina | Bot uptime | 99.9% | ✅ |
-| Clara | Conversion rate | 8% | ✅ |
-| Mary | Data accuracy | >99% | ✅ |
-| Sophia | Forecast accuracy | 90%+ | ✅ |
-| Theodora | Payment accuracy | 100% | ✅ |
-| Daisy | Occupancy rate | >95% | ✅ |
-| Zoe | Insight relevance | 95%+ | ✅ |
+| Assistant | Primary KPI       | Target | Status |
+| --------- | ----------------- | ------ | ------ |
+| Nadia     | Response time     | <5 min | ✅     |
+| Nina      | Bot uptime        | 99.9%  | ✅     |
+| Clara     | Conversion rate   | 8%     | ✅     |
+| Mary      | Data accuracy     | >99%   | ✅     |
+| Sophia    | Forecast accuracy | 90%+   | ✅     |
+| Theodora  | Payment accuracy  | 100%   | ✅     |
+| Daisy     | Occupancy rate    | >95%   | ✅     |
+| Zoe       | Insight relevance | 95%+   | ✅     |
 
 ---
 
 ## 🔐 Current Assistant Implementation Status
-- **Implemented & Production Ready**: Clara, Nadia, Mary, Nina, Nancy, Daisy, Theodora, Zoe
-- **Actively Used**: 8 core assistants managing day-to-day operations
-- **Planned Enhancement**: Full AI/ML capabilities for predictive features (Sentinel, market intelligence)
+
+- **Implemented & Production Ready**: 14 assistants (NEW stack)
+- **Pending Upgrade**: 10 assistants (legacy JSX dashboards to be migrated)
+- **Execution Order**: Hunter → Vesta → Maven → Kairos → Juno → Henry → Cipher → Sentinel → Atlas → Evangeline
