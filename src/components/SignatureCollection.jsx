@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import SignaturePad from './SignaturePad';
+import { authFetch } from '../utils/authFetch';
 import './SignatureCollection.css';
 
 /**
@@ -11,7 +12,7 @@ import './SignatureCollection.css';
  * - Track signature status
  */
 const SignatureCollection = ({
-  contractId,
+  contractId: _contractId,
   signatureId,
   signerName,
   signerRole,
@@ -19,7 +20,7 @@ const SignatureCollection = ({
   contractDetails = {},
   onSignatureComplete,
   onCancel,
-  isOpen = true
+  isOpen = true,
 }) => {
   const [step, setStep] = useState('review'); // review, sign, confirm
   const [signatureData, setSignatureData] = useState(null);
@@ -29,7 +30,7 @@ const SignatureCollection = ({
   /**
    * Handle signature capture
    */
-  const handleSignatureCapture = (capturedSignature) => {
+  const handleSignatureCapture = capturedSignature => {
     setSignatureData(capturedSignature);
     setStep('confirm');
   };
@@ -46,22 +47,22 @@ const SignatureCollection = ({
       const deviceInfo = {
         userAgent: navigator.userAgent,
         platform: navigator.platform,
-        language: navigator.language
+        language: navigator.language,
       };
 
       // Submit signature
-      const response = await fetch(`/api/signatures/${signatureId}/sign`, {
+      const response = await authFetch(`/api/signatures/${signatureId}/sign`, {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify({
           imageData: signatureData.imageData,
           mimeType: signatureData.mimeType,
           method: 'canvas',
           deviceInfo,
-          coordinates: signatureData.coordinates
-        })
+          coordinates: signatureData.coordinates,
+        }),
       });
 
       if (!response.ok) {
@@ -79,7 +80,7 @@ const SignatureCollection = ({
         onSignatureComplete({
           signatureId: data.data.signatureId,
           status: data.data.status,
-          signedAt: data.data.signedAt
+          signedAt: data.data.signedAt,
         });
       }
     } catch (err) {
@@ -119,28 +120,30 @@ const SignatureCollection = ({
         {/* Header */}
         <div className="signature-collection-header">
           <h2>Sign Contract</h2>
-          <button
-            className="signature-collection-close"
-            onClick={handleCancel}
-            aria-label="Close"
-          >
+          <button className="signature-collection-close" onClick={handleCancel} aria-label="Close">
             ×
           </button>
         </div>
 
         {/* Progress indicator */}
         <div className="signature-progress">
-          <div className={`progress-step ${step === 'review' ? 'active' : step === 'sign' || step === 'confirm' ? 'completed' : ''}`}>
+          <div
+            className={`progress-step ${step === 'review' ? 'active' : step === 'sign' || step === 'confirm' ? 'completed' : ''}`}
+          >
             <span className="progress-number">1</span>
             <span className="progress-label">Review</span>
           </div>
           <div className="progress-line"></div>
-          <div className={`progress-step ${step === 'sign' || step === 'confirm' ? 'active' : ''} ${step === 'complete' ? 'completed' : ''}`}>
+          <div
+            className={`progress-step ${step === 'sign' || step === 'confirm' ? 'active' : ''} ${step === 'complete' ? 'completed' : ''}`}
+          >
             <span className="progress-number">2</span>
             <span className="progress-label">Sign</span>
           </div>
           <div className="progress-line"></div>
-          <div className={`progress-step ${step === 'confirm' ? 'active' : ''} ${step === 'complete' ? 'completed' : ''}`}>
+          <div
+            className={`progress-step ${step === 'confirm' ? 'active' : ''} ${step === 'complete' ? 'completed' : ''}`}
+          >
             <span className="progress-number">3</span>
             <span className="progress-label">Confirm</span>
           </div>
@@ -189,18 +192,14 @@ const SignatureCollection = ({
                 <h4>Contract Preview:</h4>
                 <div className="preview-content">
                   <p>
-                    By clicking "Continue", you will be asked to sign this contract digitally.
-                    Your signature will be recorded along with timestamp and device information
-                    for audit and verification purposes.
+                    By clicking &quot;Continue&quot;, you will be asked to sign this contract
+                    digitally. Your signature will be recorded along with timestamp and device
+                    information for audit and verification purposes.
                   </p>
                 </div>
               </div>
 
-              {error && (
-                <div className="error-alert">
-                  {error}
-                </div>
-              )}
+              {error && <div className="error-alert">{error}</div>}
             </div>
           )}
 
@@ -244,11 +243,7 @@ const SignatureCollection = ({
                 </label>
               </div>
 
-              {error && (
-                <div className="error-alert">
-                  {error}
-                </div>
-              )}
+              {error && <div className="error-alert">{error}</div>}
             </div>
           )}
 
@@ -273,16 +268,10 @@ const SignatureCollection = ({
         <div className="signature-collection-footer">
           {step === 'review' && (
             <>
-              <button
-                className="btn btn-outline"
-                onClick={handleCancel}
-              >
+              <button className="btn btn-outline" onClick={handleCancel}>
                 Cancel
               </button>
-              <button
-                className="btn btn-primary"
-                onClick={() => setStep('sign')}
-              >
+              <button className="btn btn-primary" onClick={() => setStep('sign')}>
                 Continue to Sign
               </button>
             </>
@@ -290,16 +279,10 @@ const SignatureCollection = ({
 
           {step === 'sign' && (
             <>
-              <button
-                className="btn btn-outline"
-                onClick={handleCancel}
-              >
+              <button className="btn btn-outline" onClick={handleCancel}>
                 Cancel
               </button>
-              <button
-                className="btn btn-secondary"
-                onClick={() => setStep('review')}
-              >
+              <button className="btn btn-secondary" onClick={() => setStep('review')}>
                 Back
               </button>
             </>
@@ -307,11 +290,7 @@ const SignatureCollection = ({
 
           {step === 'confirm' && (
             <>
-              <button
-                className="btn btn-outline"
-                onClick={handleBack}
-                disabled={isLoading}
-              >
+              <button className="btn btn-outline" onClick={handleBack} disabled={isLoading}>
                 Back
               </button>
               <button
@@ -325,10 +304,7 @@ const SignatureCollection = ({
           )}
 
           {step === 'complete' && (
-            <button
-              className="btn btn-primary"
-              onClick={handleCancel}
-            >
+            <button className="btn btn-primary" onClick={handleCancel}>
               Close
             </button>
           )}

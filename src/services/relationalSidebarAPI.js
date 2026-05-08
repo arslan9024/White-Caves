@@ -275,7 +275,7 @@ export const loadContextFull = async (assistantId, context) => {
  */
 export const healthCheck = async () => {
   try {
-    const response = await fetch(`${SIDEBAR_API}/health`, {
+    const response = await authFetch(`${SIDEBAR_API}/health`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
