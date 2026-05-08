@@ -1,82 +1,57 @@
 /**
- * TenantPaymentHistoryTab — Phase 2.9 / Phase 30: Payment History (Live API)
+ * TenantPaymentHistoryTab — Phase 2.9: Payment History
  *
- * Fetches the tenant's active lease then loads the PDC schedule from
- * GET /api/leases/:id/pdc.  PDC records are mapped to payment rows.
+ * List of payments with status indicators.
  *
  * @component
  */
 
-import React, { FC, useEffect, useMemo, useState } from 'react';
+import React, { FC, useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
 import type { RootState } from '../../../store/store';
-import { authFetch } from '../../../utils/authFetch';
 import '../../../pages/RolePages.css';
 
-/** Late fee rate: 5% of monthly rent per bounced PDC */
+/** Late fee rate: 5% of monthly rent per overdue payment */
 const LATE_FEE_RATE = 0.05;
-
-interface ApiLease {
-  id: string;
-  monthlyRent: number;
-}
-
-interface ApiPdc {
-  id: string;
-  chequeNumber: string;
-  bankName: string;
-  amount: number;
-  dueDate: string;
-  status: string; // pending | presented | cleared | bounced
-  notes?: string | null;
-}
-
-type PaymentStatus = 'paid' | 'pending' | 'overdue';
-
-interface PaymentRow {
-  id: string;
-  month: string;
-  amount: number;
-  paidDate: string | null;
-  status: PaymentStatus;
-  bankName: string;
-  chequeNumber: string;
-}
-
-function pdcToPaymentRow(pdc: ApiPdc): PaymentRow {
-  const due = new Date(pdc.dueDate);
-  const month = due.toLocaleDateString('en-AE', { month: 'long', year: 'numeric' });
-  const status: PaymentStatus =
-    pdc.status === 'cleared' ? 'paid' :
-    pdc.status === 'bounced' ? 'overdue' :
-    'pending';
-  const paidDate = pdc.status === 'cleared' ? pdc.dueDate.split('T')[0] : null;
-  return { id: pdc.id, month, amount: pdc.amount, paidDate, status, bankName: pdc.bankName, chequeNumber: pdc.chequeNumber };
-}
 
 const TenantPaymentHistoryTab: FC = () => {
   const currentUser = useSelector((state: RootState) => state.user.currentUser);
-  const [payments, setPayments] = useState<PaymentRow[]>([]);
-  const [monthlyRent, setMonthlyRent] = useState(0);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [statusFilter, setStatusFilter] = useState<'all' | PaymentStatus>('all');
+  const [statusFilter, setStatusFilter] = useState<'all' | 'paid' | 'pending' | 'overdue'>('all');
   const [searchQuery, setSearchQuery] = useState('');
 
-  useEffect(() => {
-    authFetch('/api/leases?role=tenant&pageSize=1')
-      .then(r => r.json())
-      .then(async (leasesData) => {
-        const lease = (leasesData.data as ApiLease[])?.[0] ?? null;
-        if (!lease) return;
-        setMonthlyRent(lease.monthlyRent);
-        const pdcData = await authFetch(`/api/leases/${lease.id}/pdc`).then(r => r.json());
-        const rows = ((pdcData.data ?? []) as ApiPdc[]).map(pdcToPaymentRow);
-        setPayments(rows);
-      })
-      .catch(() => setError('Unable to load payment history. Please refresh.'))
-      .finally(() => setLoading(false));
-  }, []);
+  const payments = useMemo(
+    () => [
+      {
+        id: 'tp-001',
+        month: 'January 2026',
+        amount: 8000,
+        paidDate: '2026-01-01',
+        status: 'paid' as const,
+      },
+      {
+        id: 'tp-002',
+        month: 'February 2026',
+        amount: 8000,
+        paidDate: '2026-02-02',
+        status: 'paid' as const,
+      },
+      {
+        id: 'tp-003',
+        month: 'March 2026',
+        amount: 8000,
+        paidDate: null,
+        status: 'pending' as const,
+      },
+      {
+        id: 'tp-004',
+        month: 'April 2026',
+        amount: 8000,
+        paidDate: null,
+        status: 'overdue' as const,
+      },
+    ],
+    []
+  );
 
   const filteredPayments = useMemo(() => {
     const normalizedSearch = searchQuery.trim().toLowerCase();
@@ -91,19 +66,19 @@ const TenantPaymentHistoryTab: FC = () => {
   }, [payments, searchQuery, statusFilter]);
 
   const summary = useMemo(() => {
-    const totalPaid = payments.filter(p => p.status === 'paid').reduce((s, p) => s + p.amount, 0);
-    const outstanding = payments
-      .filter(p => p.status === 'pending' || p.status === 'overdue')
+    const totalPaid = payments
+      .filter(payment => payment.status === 'paid')
       .reduce((s, p) => s + p.amount, 0);
+    const outstanding = payments
+      .filter(payment => payment.status === 'pending' || payment.status === 'overdue')
+      .reduce((s, p) => s + p.amount, 0);
+    // Overdue takes priority over pending as the most urgent item
     const nextPayment =
       payments.find(p => p.status === 'overdue') ??
       payments.find(p => p.status === 'pending') ??
       null;
     const overduePayments = payments.filter(p => p.status === 'overdue');
-    const lateFees = overduePayments.reduce(
-      (sum, p) => sum + Math.round(p.amount * LATE_FEE_RATE),
-      0
-    );
+    const lateFees = overduePayments.reduce((sum, p) => sum + Math.round(p.amount * LATE_FEE_RATE), 0);
     return { totalPaid, outstanding, nextPayment, lateFees, overdueCount: overduePayments.length };
   }, [payments]);
 
@@ -111,22 +86,6 @@ const TenantPaymentHistoryTab: FC = () => {
     return (
       <div className="empty-state">
         <p>You must be logged in to view your payment history.</p>
-      </div>
-    );
-  }
-
-  if (loading) {
-    return (
-      <div className="loading-state" data-testid="payment-loading">
-        <p>Loading payment history…</p>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="error-message" data-testid="payment-error">
-        <p>{error}</p>
       </div>
     );
   }
@@ -200,7 +159,9 @@ const TenantPaymentHistoryTab: FC = () => {
         <select
           data-testid="tenant-payment-status-filter"
           value={statusFilter}
-          onChange={event => setStatusFilter(event.target.value as 'all' | PaymentStatus)}
+          onChange={event =>
+            setStatusFilter(event.target.value as 'all' | 'paid' | 'pending' | 'overdue')
+          }
         >
           <option value="all">All Statuses</option>
           <option value="paid">Paid</option>
@@ -209,16 +170,8 @@ const TenantPaymentHistoryTab: FC = () => {
         </select>
       </div>
 
-      {payments.length === 0 ? (
+      {filteredPayments.length === 0 ? (
         <div className="empty-state" data-testid="tenant-payment-empty-state">
-          <p>
-            {monthlyRent > 0
-              ? 'No PDC cheques recorded yet for your lease.'
-              : 'No active lease or payment records found.'}
-          </p>
-        </div>
-      ) : filteredPayments.length === 0 ? (
-        <div className="empty-state" data-testid="tenant-payment-filter-empty">
           <p>No payment records match your filters.</p>
         </div>
       ) : (
@@ -231,7 +184,7 @@ const TenantPaymentHistoryTab: FC = () => {
             >
               <div>
                 <strong>{payment.month}</strong>
-                <p>{payment.chequeNumber} · {payment.bankName}</p>
+                <p>{payment.id}</p>
               </div>
               <div>
                 <p>AED {payment.amount.toLocaleString()}</p>

@@ -15,48 +15,13 @@ interface RoleOption {
 
 const ROLES: RoleOption[] = [
   { id: 'buyer', label: 'Buyer', icon: '🏠', description: 'Looking to purchase property in Dubai' },
-  {
-    id: 'seller',
-    label: 'Seller',
-    icon: '💰',
-    description: 'Selling residential or commercial property',
-  },
-  {
-    id: 'landlord',
-    label: 'Landlord',
-    icon: '🔑',
-    description: 'Renting out properties to tenants',
-  },
-  {
-    id: 'leasing-agent',
-    label: 'Leasing Agent',
-    icon: '📋',
-    description: 'Professional agent handling rental properties',
-  },
-  {
-    id: 'secondary-sales-agent',
-    label: 'Secondary Sales Agent',
-    icon: '🏗',
-    description: 'Professional agent handling property sales',
-  },
-  {
-    id: 'leasing-team-leader',
-    label: 'Leasing Team Leader',
-    icon: '👔',
-    description: 'Managing leasing agents team',
-  },
-  {
-    id: 'sales-team-leader',
-    label: 'Sales Team Leader',
-    icon: '📈',
-    description: 'Managing secondary sales agents team',
-  },
-  {
-    id: 'admin',
-    label: 'Administrator',
-    icon: '⚙️',
-    description: 'Platform administration and management',
-  },
+  { id: 'seller', label: 'Seller', icon: '💰', description: 'Selling residential or commercial property' },
+  { id: 'landlord', label: 'Landlord', icon: '🔑', description: 'Renting out properties to tenants' },
+  { id: 'leasing-agent', label: 'Leasing Agent', icon: '📋', description: 'Professional agent handling rental properties' },
+  { id: 'secondary-sales-agent', label: 'Secondary Sales Agent', icon: '🏗', description: 'Professional agent handling property sales' },
+  { id: 'leasing-team-leader', label: 'Leasing Team Leader', icon: '👔', description: 'Managing leasing agents team' },
+  { id: 'sales-team-leader', label: 'Sales Team Leader', icon: '📈', description: 'Managing secondary sales agents team' },
+  { id: 'admin', label: 'Administrator', icon: '⚙️', description: 'Platform administration and management' },
 ];
 
 interface RoleGatewayProps {
@@ -66,21 +31,22 @@ interface RoleGatewayProps {
 
 export default function RoleGateway({ user, onRoleSelect }: RoleGatewayProps) {
   const [selectedRole, setSelectedRole] = useState<string | null>(null);
+  const [isConfirming, setIsConfirming] = useState<boolean>(false);
   const navigate = useNavigate();
   const dispatch = useDispatch<AppDispatch>();
 
   useEffect(() => {
-    if (user?.role === 'owner' || user?.role === 'admin' || user?.role === 'managing_director') {
-      const ownerRole = {
-        role: 'owner',
+    if (user?.role === 'owner' || user?.role === 'admin') {
+      const lionRole = {
+        role: 'lion',
         selectedAt: new Date().toISOString(),
         locked: true,
         isOwner: true,
         isSuperUser: true,
       };
-      safeStorage.setJSON('userRole', ownerRole);
-      dispatch(setActiveRole('owner'));
-      navigate('/dashboard');
+      safeStorage.setJSON('userRole', lionRole);
+      dispatch(setActiveRole('lion'));
+      navigate('/lion/dashboard');
     }
   }, [user, navigate, dispatch]);
 
@@ -112,17 +78,12 @@ export default function RoleGateway({ user, onRoleSelect }: RoleGatewayProps) {
       <S.ContainerContent>
         <S.Header>
           <h1>Select Your Role</h1>
-          <p>
-            Please select your primary role to continue. This selection determines the content and
-            features available to you.
-          </p>
-          <S.Warning>
-            Note: Your role cannot be changed after selection without admin approval.
-          </S.Warning>
+          <p>Please select your primary role to continue. This selection determines the content and features available to you.</p>
+          <S.Warning>Note: Your role cannot be changed after selection without admin approval.</S.Warning>
         </S.Header>
 
         <S.RolesGrid>
-          {ROLES.map(role => (
+          {ROLES.map((role) => (
             <S.RoleCard
               key={role.id}
               $selected={selectedRole === role.id}
@@ -161,9 +122,14 @@ interface UserRoleData {
 }
 
 function useUserRole(): UserRoleData | null {
-  const [userRole] = useState<UserRoleData | null>(() =>
-    safeStorage.getJSON<UserRoleData>('userRole')
-  );
+  const [userRole, setUserRole] = useState<UserRoleData | null>(null);
+
+  useEffect(() => {
+    const stored = safeStorage.getJSON<UserRoleData>('userRole');
+    if (stored) {
+      setUserRole(stored);
+    }
+  }, []);
 
   return userRole;
 }

@@ -6,31 +6,6 @@
 
 ---
 
-## 🧭 Documentation Governance (May 2026 Policy)
-
-These business docs now operate under the project-wide development system:
-
-- **1000% Depth Gate:** prerequisite docs must reach 10× depth before implementation.
-- **10-layer evidence standard:** every expanded section must include:
-  1. business rule, 2) API contract, 3) data model/schema, 4) validation rules, 5) edge-case/failure handling,
-  2. security/compliance controls, 7) UX states/mobile/RTL, 8) unit/integration/E2E tests,
-  3. observability metrics/logging, 10) rollback/migration plan.
-- **92% Readiness Gate:** implementation is blocked until readiness score is >=92% with matrix evidence and approvals.
-- **Premium restriction:** premium Copilot requests are reserved for senior coders/designers only after gate approval.
-- **Free-agent lock:** junior/free planning agents use only Gemini 2.0 Flash, Llama 3.1 70B (Groq), DeepSeek V3.
-
-### Collaboration Handoff Format (Mandatory)
-
-Every planning output must declare upstream and downstream links:
-
-- `CONSUMES←@Agent: file/path.md#section`
-- `FEEDS→@Agent: file/path.md#section`
-- `FEEDS_ACK←@DownstreamAgent: accepted|revise + file/path.md#section`
-
-This ensures all subagents work as one pipeline rather than isolated documents.
-
----
-
 ## 📋 Folder Structure
 
 ```
@@ -57,17 +32,17 @@ business_docs/
 
 ## 🎯 Quick Navigation
 
-| Audience               | Start Here                                     | Then Read                                                   |
-| ---------------------- | ---------------------------------------------- | ----------------------------------------------------------- |
-| **Business Analyst**   | `05_requirements/`                             | `02_services/`, `04_workflows/`                             |
-| **Developer**          | `12_srs/` then `06_design_architecture/`       | `13_testing/`, `14_devops/`                                 |
-| **New Developer**      | `14_devops/environment-setup.md`               | `06_design_architecture/`, `12_srs/`                        |
-| **Project Manager**    | `01_company_structure/`                        | `04_workflows/`, `15_release_management/`                   |
-| **Executive / Owner**  | `07_business_model/`                           | `08_market_research/`, `01_company_structure/`              |
-| **QA Engineer**        | `13_testing/test-plan.md`                      | `13_testing/uat-scenarios.md`                               |
-| **DevOps Engineer**    | `14_devops/deployment-runbook.md`              | `14_devops/monitoring-observability.md`                     |
-| **Compliance Officer** | `10_security/`                                 | `05_requirements/compliance-requirements.md`                |
-| **New Team Member**    | `01_company_structure/stakeholder-register.md` | `02_services/`, `04_workflows/agent-onboarding-workflow.md` |
+| Audience | Start Here | Then Read |
+|----------|-----------|-----------|
+| **Business Analyst** | `05_requirements/` | `02_services/`, `04_workflows/` |
+| **Developer** | `12_srs/` then `06_design_architecture/` | `13_testing/`, `14_devops/` |
+| **New Developer** | `14_devops/environment-setup.md` | `06_design_architecture/`, `12_srs/` |
+| **Project Manager** | `01_company_structure/` | `04_workflows/`, `15_release_management/` |
+| **Executive / Owner** | `07_business_model/` | `08_market_research/`, `01_company_structure/` |
+| **QA Engineer** | `13_testing/test-plan.md` | `13_testing/uat-scenarios.md` |
+| **DevOps Engineer** | `14_devops/deployment-runbook.md` | `14_devops/monitoring-observability.md` |
+| **Compliance Officer** | `10_security/` | `05_requirements/compliance-requirements.md` |
+| **New Team Member** | `01_company_structure/stakeholder-register.md` | `02_services/`, `04_workflows/agent-onboarding-workflow.md` |
 
 ---
 
@@ -90,13 +65,11 @@ business_docs/
 ### ✅ Fully Written Documents
 
 #### 01 — Company Structure
-
 - `departments.md` — All 10 departments with KPIs, team sizes, AI assistants
 - `roles.md` — All 22 user roles with permissions and access levels
 - `stakeholder-register.md` ✨ NEW — All internal + external stakeholders, communication plan
 
 #### 02 — Infrastructure ✨ EXPANDED
-
 - `README.md` — Infrastructure overview and document index
 - `WHATSAPP_THREE_ASSISTANT_ARCHITECTURE.md` — WhatsApp 3-assistant architecture
 - `disaster-recovery-plan.md` ✨ NEW — RPO 1hr/RTO 4hr, backup strategy, failover, RERA compliance during outages
@@ -106,18 +79,15 @@ business_docs/
 - `monitoring-observability.md` ✨ NEW — Health checks, alerting rules, P1-P4 incidents, 99.9% SLA
 
 #### 02 — Services
-
 - `README.md` ✨ NEW — Service offerings index (5 verticals, revenue models, target markets)
 - `core-services.md` — 9 core CRM services with implementation status
 - `service-level-agreements.md` ✨ NEW — SLAs: 99.9% uptime, response times, support tiers, escalation
 
 #### 03 — AI Assistants
-
 - 24 individual assistant profiles (atlas, aurora, cipher, clara, daisy, etc.)
 - `integration-map.md` — Maps each assistant to its API, dependencies, and implementation status
 
 #### 04 — Workflows
-
 - `lead-to-sale-flowchart.md` — Full lead-to-close and lead-to-lease workflows
 - `whatsapp-bot-flowchart.md` — Inbound message routing, Nina bot flows, escalation, broadcasts
 - `rental-management-flowchart.md` — Rent collection, maintenance, lease renewal, month-end close
@@ -126,7 +96,6 @@ business_docs/
 - `finance-reconciliation-flowchart.md` ✨ NEW — Monthly commission reconciliation, rent income close, payout processing
 
 #### 05 — Requirements
-
 - `functional-requirements.md` — 50+ requirements across 10 modules with acceptance criteria
 - `user-stories.md` — 70+ user stories for all 22 roles
 - `business-rules.md` — 10 business rule categories (scoring, assignment, lifecycle, finance, etc.)
@@ -136,7 +105,6 @@ business_docs/
 - `risk-register.md` ✨ NEW — Full risk register with probability/impact matrix, mitigation plans
 
 #### 06 — Design Architecture
-
 - `system-architecture.md` — Full tech stack, component structure, auth flow, CI/CD
 - `data-flow.md` — DFD diagrams for leads, properties, transactions, WhatsApp, reporting
 - `api-reference.md` — All REST API endpoints with parameters, request/response formats
@@ -145,12 +113,10 @@ business_docs/
 - `data-dictionary.md` ✨ NEW — Every data field: type, validation, business meaning + glossary
 
 #### 07 — Business Model
-
 - `business-model-canvas.md` ✨ NEW — Full BMC: partners, activities, value propositions, segments
 - `revenue-model.md` ✨ NEW — 3-tier revenue streams, 3-year financial projections, unit economics, KPIs
 
 #### 08 — Market Research
-
 - `dubai-market-analysis-2026.md` — Market size, buyer profiles, trends
 - `dubai-regulatory-framework.md` — RERA, DLD, Ejari regulatory overview
 - `portal-api-research.md` — PropertyFinder + Bayut API, partnership requirements
@@ -158,7 +124,6 @@ business_docs/
 - `customer-personas.md` ✨ NEW — 6 detailed personas (brokerage owner, agent, PM company, developer, investor, buyer)
 
 #### 09 — CRM Features
-
 - `lead-tracking.md` — Lead pipeline management specification
 - `client-management.md` — Client management features
 - `package3-ai-assistant-crud.md` — AI assistant CRUD
@@ -176,40 +141,33 @@ business_docs/
 - `marketing-automation.md` ✨ NEW — Email/WhatsApp campaigns, nurturing workflows, SEO, ROI attribution
 
 #### 09 — User Roles & Permissions
-
 - `roles-matrix.md` — 22 roles with permissions
 - `access-control-policy.md` — RBAC policy
 
 #### 10 — Design System
-
 - Color palette, typography, component specs, spacing/layout
 - `accessibility-guidelines.md` ✨ NEW — WCAG 2.1 AA, keyboard nav, ARIA, focus management, touch targets
 - `rtl-internationalization.md` ✨ NEW — Arabic RTL, BiDi text, currency formatting, react-i18next
 
 #### 10 — Security
-
 - `security-policy.md` — Security controls and policies
 - `uae-pdpl-compliance.md` — PDPL compliance framework, data subject rights, breach response
 - `kyc-aml-framework.md` — KYC requirements, AML screening services, goAML SAR process
 
 #### 11 — SEO
-
 - `README.md` ✨ NEW — SEO strategy index: technical SEO, content, local SEO, schema markup, analytics
 - `seo-strategy.md` — SEO strategy
 
 #### 12 — SRS (Software Requirements Specification) ✨ NEW SECTION
-
 - `srs-master.md` — Formal IEEE 830-style SRS: scope, interface requirements, features, constraints
 - `software-design-document.md` — Software Design Document (SDD): component hierarchy, patterns, auth design
 
 #### 13 — Testing ✨ NEW SECTION
-
 - `test-plan.md` — Full test strategy: unit, integration, E2E, performance, security, accessibility
 - `uat-scenarios.md` — 20+ UAT scenarios by role (sales agent, manager, finance, compliance, owner)
 - `qa-checklist.md` — Pre-release QA checklist covering code, tests, security, compliance
 
 #### 14 — DevOps ✨ NEW SECTION
-
 - `README.md` ✨ NEW — DevOps documentation index: CI/CD, deployment, monitoring, incident response
 - `deployment-runbook.md` — Step-by-step deployment for frontend (Vercel) + backend (Railway/Docker) + database migrations
 - `incident-response.md` — P1–P4 severity levels, response workflow, runbooks for common incidents, post-mortem template
@@ -217,13 +175,11 @@ business_docs/
 - `environment-setup.md` — New developer setup guide: Node.js, env vars, Prisma, seed data, project structure
 
 #### 15 — Release Management ✨ NEW SECTION
-
 - `README.md` ✨ NEW — Release management index: process, versioning, calendar, rollback procedures
 - `release-process.md` — SemVer versioning, release calendar, step-by-step release process, hotfix process
 - `change-management.md` — Change categories, change request template, approval process, freeze periods
 
 #### Root Level
-
 - `implementation-plan.md` — Master implementation roadmap (Phase A–F), current state, technical debt register, milestones
 
 ---
@@ -231,19 +187,16 @@ business_docs/
 ## 🔗 Related Documentation
 
 **In /plans/:**
-
 - `MASTER_PLAN_UPDATED_FEB_2026.md` - Master execution plan
 - `ARCHITECTURE.md` - Technical architecture
 - `API_DOCUMENTATION.md` - API specifications
 
 **In parent directory:**
-
 - `README.md` - Main documentation guide
 - `QUICK_ACCESS_GUIDE.md` - Common tasks
 - `TEAM_COMMUNICATION_TEMPLATES.md` (in /plans/) - Communication formats
 
 **In /archives/:**
-
 - Historical business decisions
 - Previous requirement iterations
 - Archived feature specifications
@@ -255,56 +208,44 @@ business_docs/
 All subdirectories follow consistent templates:
 
 ### For Requirements Documents
-
 ```markdown
 # [Requirement Title]
 
 ## Overview
-
 [Brief description]
 
 ## Business Value
-
 [Why this is important]
 
 ## Acceptance Criteria
-
 - Criterion 1
 - Criterion 2
 
 ## Implementation Notes
-
 [Relevant notes]
 
 ## Related Documents
-
 - Link 1
 - Link 2
 ```
 
 ### For Feature Specifications
-
 ```markdown
 # [Feature Name]
 
 ## Overview
-
 [Feature description]
 
 ## User Stories
-
 - As a [user], I want to [action], so that [benefit]
 
 ## Technical Specifications
-
 [Technical details]
 
 ## Success Metrics
-
 [How success is measured]
 
 ## Related Features
-
 [Dependencies and relationships]
 ```
 
@@ -313,11 +254,9 @@ All subdirectories follow consistent templates:
 ## 🎯 Subdirectory Purposes
 
 ### /crm_features/
-
 **Purpose**: Document all CRM platform features and their specifications
 
 **Should Contain**:
-
 - Feature descriptions
 - User journey mappings
 - Feature dependencies
@@ -325,7 +264,6 @@ All subdirectories follow consistent templates:
 - User acceptance criteria
 
 **Examples**:
-
 - Client Management
 - Lead Tracking & Pipeline
 - Property Management
@@ -334,11 +272,9 @@ All subdirectories follow consistent templates:
 - Department & Service Management
 
 ### /requirements/
-
 **Purpose**: Consolidate all business and technical requirements
 
 **Should Contain**:
-
 - Functional requirements
 - Non-functional requirements
 - Business rules
@@ -346,7 +282,6 @@ All subdirectories follow consistent templates:
 - Integration requirements
 
 **Examples**:
-
 - WhatsApp Integration Requirements
 - Database Requirements
 - Performance Requirements
@@ -354,11 +289,9 @@ All subdirectories follow consistent templates:
 - API Requirements
 
 ### /seo/
-
 **Purpose**: Document SEO strategy and implementation guidelines
 
 **Should Contain**:
-
 - SEO strategy document
 - Keyword research
 - Content optimization guidelines
@@ -366,7 +299,6 @@ All subdirectories follow consistent templates:
 - Monitoring & analytics setup
 
 **Examples**:
-
 - On-page SEO guidelines
 - Site structure optimization
 - Mobile optimization
@@ -374,11 +306,9 @@ All subdirectories follow consistent templates:
 - Metadata standards
 
 ### /security/
-
 **Purpose**: Maintain all security-related policies and procedures
 
 **Should Contain**:
-
 - Security policies
 - Data protection procedures
 - Access control guidelines
@@ -386,7 +316,6 @@ All subdirectories follow consistent templates:
 - Compliance checklists
 
 **Examples**:
-
 - Data Classification Policy
 - Access Control Policy
 - Incident Response Plan
@@ -420,20 +349,17 @@ When adding new business documentation:
 ## 🎓 Learning Paths
 
 ### New Team Member Onboarding
-
 1. Read: `requirements/` - Understand the scope
 2. Study: `crm_features/` - Learn what we build
 3. Review: `security/` - Understand our constraints
 4. Reference: `seo/` - Know what we optimize for
 
 ### Business Stakeholder Understanding
-
 1. Review: `requirements/` - See what we built
 2. Understand: `crm_features/` - Features available
 3. Monitor: Link to `/plans/STATUS_DASHBOARD_VISUAL.md` - Track progress
 
 ### Developer Implementation Reference
-
 1. Study: `crm_features/` - Feature specifications
 2. Check: `requirements/` - Technical requirements
 3. Implement: Following `security/` and `seo/` guidelines
@@ -448,7 +374,7 @@ business_docs/          ← Business requirements & domain knowledge
                 ├─ MASTER_PLAN_UPDATED_FEB_2026.md
                 ├─ ARCHITECTURE.md
                 └─ API_DOCUMENTATION.md
-
+                
 └─ Tracked in ─→ /plans/PRODUCTION_READINESS_VISUAL_OVERVIEW.md
 ```
 
@@ -457,7 +383,6 @@ business_docs/          ← Business requirements & domain knowledge
 ## ✅ Quality Standards
 
 All business documentation must:
-
 - [ ] Be clear and concise
 - [ ] Follow provided templates
 - [ ] Include relevant cross-references

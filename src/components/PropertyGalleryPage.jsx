@@ -1,16 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import {
-  ChevronLeft,
-  ChevronRight,
-  Share2,
-  Heart,
-  MapPin,
-  Bed,
-  Bath,
-  Maximize2,
-  DollarSign,
-} from 'lucide-react';
+import { ChevronLeft, ChevronRight, X, Share2, Heart, MapPin, Bed, Bath, Maximize2, DollarSign } from 'lucide-react';
 import './PropertyGalleryPage.css';
 
 const PropertyGalleryPage = () => {
@@ -24,7 +14,6 @@ const PropertyGalleryPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedTab, setSelectedTab] = useState('gallery'); // gallery, details, documents
-  const [statusMessage, setStatusMessage] = useState(null);
 
   useEffect(() => {
     const fetchProperty = async () => {
@@ -56,15 +45,14 @@ const PropertyGalleryPage = () => {
   if (!property) return <div className="property-gallery-error">Property not found</div>;
 
   const images = property.gallery || property.images || [property.image];
-  // eslint-disable-next-line security/detect-object-injection
   const currentImage = images[currentImageIndex];
 
   const handlePrevImage = () => {
-    setCurrentImageIndex(prev => (prev === 0 ? images.length - 1 : prev - 1));
+    setCurrentImageIndex((prev) => (prev === 0 ? images.length - 1 : prev - 1));
   };
 
   const handleNextImage = () => {
-    setCurrentImageIndex(prev => (prev === images.length - 1 ? 0 : prev + 1));
+    setCurrentImageIndex((prev) => (prev === images.length - 1 ? 0 : prev + 1));
   };
 
   const handleShare = async () => {
@@ -73,15 +61,15 @@ const PropertyGalleryPage = () => {
         await navigator.share({
           title: property.title,
           text: `Check out this property: ${property.title}`,
-          url: window.location.href,
+          url: window.location.href
         });
-      } catch {
-        // user dismissed share dialog
+      } catch (err) {
+        console.log('Share cancelled');
       }
     } else {
       // Fallback: copy to clipboard
       navigator.clipboard.writeText(window.location.href);
-      setStatusMessage({ type: 'success', text: 'Link copied to clipboard!' });
+      alert('Link copied to clipboard!');
     }
   };
 
@@ -90,7 +78,7 @@ const PropertyGalleryPage = () => {
       const response = await fetch(`/api/favorites`, {
         method: isFavorite ? 'DELETE' : 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ propertyId }),
+        body: JSON.stringify({ propertyId })
       });
       if (response.ok) {
         setIsFavorite(!isFavorite);
@@ -102,25 +90,6 @@ const PropertyGalleryPage = () => {
 
   return (
     <div className="property-gallery-page">
-      {statusMessage && (
-        <div
-          role={statusMessage.type === 'error' ? 'alert' : 'status'}
-          data-testid="property-gallery-status-banner"
-          style={{
-            margin: '12px',
-            padding: '10px 14px',
-            borderRadius: '8px',
-            fontSize: '14px',
-            fontWeight: 600,
-            borderLeft: `4px solid ${statusMessage.type === 'error' ? '#F04438' : '#12B76A'}`,
-            background: statusMessage.type === 'error' ? '#FEF3F2' : '#ECFDF3',
-            color: statusMessage.type === 'error' ? '#B42318' : '#027A48',
-          }}
-        >
-          {statusMessage.type === 'error' ? '⚠️' : '✅'} {statusMessage.text}
-        </div>
-      )}
-
       {/* Header */}
       <div className="gallery-header">
         <button className="btn-back" onClick={() => navigate(-1)}>
@@ -130,7 +99,7 @@ const PropertyGalleryPage = () => {
           <button className="btn-action" onClick={handleShare} title="Share">
             <Share2 size={20} />
           </button>
-          <button
+          <button 
             className={`btn-action ${isFavorite ? 'favorite-active' : ''}`}
             onClick={handleFavorite}
             title={isFavorite ? 'Remove from favorites' : 'Add to favorites'}
@@ -170,7 +139,10 @@ const PropertyGalleryPage = () => {
         </div>
 
         {/* Fullscreen Toggle */}
-        <button className="btn-fullscreen" onClick={() => setIsFullscreen(!isFullscreen)}>
+        <button
+          className="btn-fullscreen"
+          onClick={() => setIsFullscreen(!isFullscreen)}
+        >
           <Maximize2 size={20} />
         </button>
       </div>
@@ -223,11 +195,7 @@ const PropertyGalleryPage = () => {
               <div className="property-meta">
                 <div className="meta-item">
                   <DollarSign size={18} />
-                  <span>
-                    {property.price
-                      ? `AED ${parseInt(property.price).toLocaleString()}`
-                      : 'Price on request'}
-                  </span>
+                  <span>{property.price ? `AED ${parseInt(property.price).toLocaleString()}` : 'Price on request'}</span>
                 </div>
                 <div className="meta-item">
                   <MapPin size={18} />
@@ -277,9 +245,7 @@ const PropertyGalleryPage = () => {
                 <div className="amenities-list">
                   {property.amenities && property.amenities.length > 0 ? (
                     property.amenities.map((amenity, idx) => (
-                      <span key={idx} className="amenity-tag">
-                        {amenity}
-                      </span>
+                      <span key={idx} className="amenity-tag">{amenity}</span>
                     ))
                   ) : (
                     <p>No amenities listed</p>
@@ -326,7 +292,7 @@ const PropertyGalleryPage = () => {
             <div className="similar-properties-section">
               <h3>Similar Properties</h3>
               <div className="similar-properties-grid">
-                {similarProperties.slice(0, 4).map(prop => (
+                {similarProperties.slice(0, 4).map((prop) => (
                   <div
                     key={prop._id}
                     className="similar-property-card"

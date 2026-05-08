@@ -1,6 +1,5 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import logger from '../utils/logger.js';
-import type WebSocketService from '../websocket/websocket.service.js';
+import type WebSocketService from './websocket.service.js';
 
 export interface UserPresence {
   userId: string;
@@ -103,7 +102,7 @@ export class PresenceAndSyncService {
    * Get all online users
    */
   public getOnlineUsers(): UserPresence[] {
-    return Array.from(this.userPresence.values()).filter(p => p.status === 'online');
+    return Array.from(this.userPresence.values()).filter((p) => p.status === 'online');
   }
 
   /**
@@ -111,7 +110,7 @@ export class PresenceAndSyncService {
    */
   public getUsersInConversation(conversationId: string): UserPresence[] {
     return Array.from(this.userPresence.values()).filter(
-      p =>
+      (p) =>
         p.activeConversations.includes(conversationId) &&
         (p.status === 'online' || p.status === 'away')
     );
@@ -163,7 +162,11 @@ export class PresenceAndSyncService {
   /**
    * Set user location
    */
-  public setUserLocation(userId: string, latitude: number, longitude: number): void {
+  public setUserLocation(
+    userId: string,
+    latitude: number,
+    longitude: number
+  ): void {
     let presence = this.userPresence.get(userId);
     if (!presence) {
       presence = {
@@ -224,10 +227,7 @@ export class PresenceAndSyncService {
   /**
    * Get changes since last sync
    */
-  public getChangesSinceSync(
-    userId: string,
-    _lastSyncTime: Date
-  ): {
+  public getChangesSinceSync(userId: string, lastSyncTime: Date): {
     changedConversations: string[];
     changedMessages: string[];
   } {
@@ -246,7 +246,7 @@ export class PresenceAndSyncService {
   public getPresenceHistory(userId: string, hoursBack: number = 24): PresenceUpdate[] {
     const cutoff = new Date(Date.now() - hoursBack * 60 * 60 * 1000);
 
-    return this.presenceHistory.filter(p => p.userId === userId && p.timestamp >= cutoff);
+    return this.presenceHistory.filter((p) => p.userId === userId && p.timestamp >= cutoff);
   }
 
   /**
@@ -259,10 +259,10 @@ export class PresenceAndSyncService {
     peakOnlineTime: number;
   } {
     const cutoff = new Date(Date.now() - hoursBack * 60 * 60 * 1000);
-    const recentHistory = this.presenceHistory.filter(p => p.timestamp >= cutoff);
+    const recentHistory = this.presenceHistory.filter((p) => p.timestamp >= cutoff);
 
     // Unique users
-    const uniqueUsers = new Set(recentHistory.map(p => p.userId)).size;
+    const uniqueUsers = new Set(recentHistory.map((p) => p.userId)).size;
 
     // Currently online
     const onlineUsers = this.getOnlineUsers().length;
@@ -326,7 +326,7 @@ export class PresenceAndSyncService {
   private broadcastPresenceUpdate(userId: string, presence: UserPresence): void {
     if (this.wsService) {
       // Broadcast to all connected clients
-      (this.wsService as any).broadcast('presence_update', {
+      this.wsService.broadcast('presence_update', {
         userId,
         status: presence.status,
         lastSeen: presence.lastSeen,
@@ -365,22 +365,19 @@ export class PresenceAndSyncService {
    * Setup periodic cleanup
    */
   private setupCleanup(): void {
-    setInterval(
-      () => {
-        const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000);
+    setInterval(() => {
+      const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000);
 
-        // Mark offline users who haven't been active
-        for (const [userId, presence] of this.userPresence.entries()) {
-          if (presence.status !== 'offline' && presence.lastSeen < oneHourAgo) {
-            presence.status = 'offline';
-            this.broadcastPresenceUpdate(userId, presence);
-          }
+      // Mark offline users who haven't been active
+      for (const [userId, presence] of this.userPresence.entries()) {
+        if (presence.status !== 'offline' && presence.lastSeen < oneHourAgo) {
+          presence.status = 'offline';
+          this.broadcastPresenceUpdate(userId, presence);
         }
+      }
 
-        logger.debug('Presence cleanup completed');
-      },
-      5 * 60 * 1000
-    ); // Every 5 minutes
+      logger.debug('Presence cleanup completed');
+    }, 5 * 60 * 1000); // Every 5 minutes
   }
 
   /**
@@ -394,7 +391,7 @@ export class PresenceAndSyncService {
   } {
     const onlineCount = this.getOnlineUsers().length;
     const offlineCount = Array.from(this.userPresence.values()).filter(
-      p => p.status === 'offline'
+      (p) => p.status === 'offline'
     ).length;
 
     return {

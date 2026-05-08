@@ -15,7 +15,6 @@ import type { RootState } from '../store/store';
 
 // ─── Inline role alias map (mirrors server/middleware/rbac.ts) ────────────────
 const ROLE_ALIAS: Record<string, string> = {
-  lion: 'owner',
   managing_director: 'owner',
   real_estate_company: 'owner',
   property_mgmt_company: 'manager',

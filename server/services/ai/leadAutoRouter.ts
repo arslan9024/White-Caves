@@ -31,9 +31,9 @@ export interface AgentPerformance {
   hotLeads: number;
   warmLeads: number;
   wonLeads: number;
-  conversionRate: number; // won / (won + lost)
+  conversionRate: number;  // won / (won + lost)
   averageScore: number;
-  currentLoad: number; // active leads count
+  currentLoad: number;     // active leads count
   specializations: string[];
 }
 
@@ -55,7 +55,7 @@ export interface RoutingDecision {
   assignedAgentId: string;
   assignedAgentName: string;
   reason: string;
-  confidence: number; // 0-1
+  confidence: number;  // 0-1
 }
 
 // ─── Agent Performance Calculator ───────────────────────────────────────
@@ -113,8 +113,8 @@ export async function getAgentPerformance(): Promise<AgentPerformance[]> {
 
     performances.push({
       agentId: agent.id,
-      agentName: agent.name ?? '',
-      agentEmail: agent.email ?? '',
+      agentName: agent.name,
+      agentEmail: agent.email,
       role: agent.role,
       totalLeads,
       hotLeads,
@@ -171,8 +171,7 @@ export async function getRoutingRules(): Promise<RoutingRule[]> {
         budgetMax: tier.max === Infinity ? 999_999_999 : tier.max,
         agent: bestAgent.agentName,
         agentId: bestAgent.agentId,
-        priority:
-          tier.min >= 5_000_000 ? 1 : tier.min >= 2_000_000 ? 2 : tier.min >= 1_000_000 ? 3 : 4,
+        priority: tier.min >= 5_000_000 ? 1 : tier.min >= 2_000_000 ? 2 : tier.min >= 1_000_000 ? 3 : 4,
         conversionRate: bestAgent.conversionRate,
         activeLeads: bestAgent.currentLoad,
       });
@@ -215,9 +214,7 @@ export async function autoRouteHotLead(leadId: string): Promise<RoutingDecision 
 
   // Don't re-route if already assigned
   if (lead.assignedToId) {
-    logger.info(
-      `[LeadAutoRouter] Lead ${leadId} already assigned to ${lead.assignedToId} — skipping auto-route`
-    );
+    logger.info(`[LeadAutoRouter] Lead ${leadId} already assigned to ${lead.assignedToId} — skipping auto-route`);
     return null;
   }
 
@@ -268,32 +265,30 @@ export async function autoRouteHotLead(leadId: string): Promise<RoutingDecision 
   });
 
   // Log the assignment as an activity
-  await prisma.activity
-    .create({
-      data: {
-        type: 'lead',
-        action: 'updated',
-        description: `Hot lead auto-routed to ${bestAgent.agentName} (conversion rate: ${Math.round(bestAgent.conversionRate * 100)}%, load: ${bestAgent.currentLoad})`,
-        leadId,
-        metadata: {
-          autoRouted: true,
-          agentId: bestAgent.agentId,
-          agentName: bestAgent.agentName,
-          conversionRate: bestAgent.conversionRate,
-          currentLoad: bestAgent.currentLoad,
-          routeScore: Math.round(bestScore),
-        },
+  await prisma.activity.create({
+    data: {
+      type: 'lead',
+      action: 'updated',
+      description: `Hot lead auto-routed to ${bestAgent.agentName} (conversion rate: ${Math.round(bestAgent.conversionRate * 100)}%, load: ${bestAgent.currentLoad})`,
+      leadId,
+      metadata: {
+        autoRouted: true,
+        agentId: bestAgent.agentId,
+        agentName: bestAgent.agentName,
+        conversionRate: bestAgent.conversionRate,
+        currentLoad: bestAgent.currentLoad,
+        routeScore: Math.round(bestScore),
       },
-    })
-    .catch((err: unknown) => {
-      logger.warn('[LeadAutoRouter] Failed to log auto-route activity', { leadId, error: err });
-    });
+    },
+  }).catch((err: unknown) => {
+    logger.warn('[LeadAutoRouter] Failed to log auto-route activity', { leadId, error: err });
+  });
 
   const confidence = Math.min(bestScore / 100, 1);
 
   logger.info(
     `[LeadAutoRouter] Lead ${leadId} auto-routed to ${bestAgent.agentName} ` +
-      `(score: ${Math.round(bestScore)}, confidence: ${Math.round(confidence * 100)}%)`
+    `(score: ${Math.round(bestScore)}, confidence: ${Math.round(confidence * 100)}%)`
   );
 
   return {
@@ -324,15 +319,11 @@ export function startAutoRouting(): () => void {
   const unsubscribe = onTierChange(async (event: TierChangeEvent) => {
     // Only auto-route on upgrade to hot tier
     if (event.newTier === 'hot' && event.direction === 'upgraded') {
-      logger.info(
-        `[LeadAutoRouter] Hot lead detected: ${event.leadId} (${event.previousTier} → hot)`
-      );
+      logger.info(`[LeadAutoRouter] Hot lead detected: ${event.leadId} (${event.previousTier} → hot)`);
       try {
         await autoRouteHotLead(event.leadId);
       } catch (err) {
-        logger.error(
-          `[LeadAutoRouter] Failed to auto-route: ${err instanceof Error ? err.message : String(err)}`
-        );
+        logger.error(`[LeadAutoRouter] Failed to auto-route: ${err instanceof Error ? err.message : String(err)}`);
       }
     }
   });

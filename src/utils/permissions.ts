@@ -27,7 +27,7 @@ export const ROLE_HIERARCHY = {
   [ROLES.SELLER]: 20,
   [ROLES.VIEWER]: 10,
   [ROLES.TENANT]: 10,
-  [ROLES.BUYER]: 10,
+  [ROLES.BUYER]: 10
 };
 
 export const PERMISSIONS = {
@@ -51,7 +51,7 @@ export const PERMISSIONS = {
   ACCESS_WHATSAPP_BUSINESS: 'access_whatsapp_business',
   CONFIGURE_CHATBOT: 'configure_chatbot',
   VIEW_ALL_REPORTS: 'view_all_reports',
-  MODIFY_SETTINGS: 'modify_settings',
+  MODIFY_SETTINGS: 'modify_settings'
 };
 
 export const ROLE_PERMISSIONS = {
@@ -61,7 +61,7 @@ export const ROLE_PERMISSIONS = {
     PERMISSIONS.VIEW_PROPERTIES,
     PERMISSIONS.VIEW_CONTRACTS,
     PERMISSIONS.SIGN_CONTRACTS,
-    PERMISSIONS.VIEW_PAYMENTS,
+    PERMISSIONS.VIEW_PAYMENTS
   ],
   [ROLES.SELLER]: [
     PERMISSIONS.VIEW_DASHBOARD,
@@ -71,7 +71,7 @@ export const ROLE_PERMISSIONS = {
     PERMISSIONS.EDIT_PROPERTY,
     PERMISSIONS.VIEW_LEADS,
     PERMISSIONS.VIEW_CONTRACTS,
-    PERMISSIONS.VIEW_ANALYTICS,
+    PERMISSIONS.VIEW_ANALYTICS
   ],
   [ROLES.LANDLORD]: [
     PERMISSIONS.VIEW_DASHBOARD,
@@ -83,7 +83,7 @@ export const ROLE_PERMISSIONS = {
     PERMISSIONS.VIEW_CONTRACTS,
     PERMISSIONS.CREATE_CONTRACTS,
     PERMISSIONS.VIEW_PAYMENTS,
-    PERMISSIONS.VIEW_ANALYTICS,
+    PERMISSIONS.VIEW_ANALYTICS
   ],
   [ROLES.TENANT]: [
     PERMISSIONS.VIEW_DASHBOARD,
@@ -91,7 +91,7 @@ export const ROLE_PERMISSIONS = {
     PERMISSIONS.VIEW_PROPERTIES,
     PERMISSIONS.VIEW_CONTRACTS,
     PERMISSIONS.SIGN_CONTRACTS,
-    PERMISSIONS.VIEW_PAYMENTS,
+    PERMISSIONS.VIEW_PAYMENTS
   ],
   [ROLES.LEASING_AGENT]: [
     PERMISSIONS.VIEW_DASHBOARD,
@@ -104,7 +104,7 @@ export const ROLE_PERMISSIONS = {
     PERMISSIONS.VIEW_CONTRACTS,
     PERMISSIONS.CREATE_CONTRACTS,
     PERMISSIONS.VIEW_PAYMENTS,
-    PERMISSIONS.VIEW_ANALYTICS,
+    PERMISSIONS.VIEW_ANALYTICS
   ],
   [ROLES.SALES_AGENT]: [
     PERMISSIONS.VIEW_DASHBOARD,
@@ -118,7 +118,7 @@ export const ROLE_PERMISSIONS = {
     PERMISSIONS.CREATE_CONTRACTS,
     PERMISSIONS.VIEW_PAYMENTS,
     PERMISSIONS.PROCESS_PAYMENTS,
-    PERMISSIONS.VIEW_ANALYTICS,
+    PERMISSIONS.VIEW_ANALYTICS
   ],
   [ROLES.OWNER]: [
     PERMISSIONS.VIEW_DASHBOARD,
@@ -141,7 +141,7 @@ export const ROLE_PERMISSIONS = {
     PERMISSIONS.ACCESS_WHATSAPP_BUSINESS,
     PERMISSIONS.CONFIGURE_CHATBOT,
     PERMISSIONS.VIEW_ALL_REPORTS,
-    PERMISSIONS.MODIFY_SETTINGS,
+    PERMISSIONS.MODIFY_SETTINGS
   ],
   // ── Backend CRM roles ──────────────────────────────────────
   [ROLES.MANAGER]: [
@@ -161,7 +161,7 @@ export const ROLE_PERMISSIONS = {
     PERMISSIONS.VIEW_SYSTEM_HEALTH,
     PERMISSIONS.MANAGE_AGENTS,
     PERMISSIONS.VIEW_ALL_REPORTS,
-    PERMISSIONS.MODIFY_SETTINGS,
+    PERMISSIONS.MODIFY_SETTINGS
   ],
   [ROLES.ADMIN]: [
     PERMISSIONS.VIEW_DASHBOARD,
@@ -179,7 +179,7 @@ export const ROLE_PERMISSIONS = {
     PERMISSIONS.VIEW_SYSTEM_HEALTH,
     PERMISSIONS.MANAGE_USERS,
     PERMISSIONS.MANAGE_AGENTS,
-    PERMISSIONS.VIEW_ALL_REPORTS,
+    PERMISSIONS.VIEW_ALL_REPORTS
   ],
   [ROLES.AGENT]: [
     PERMISSIONS.VIEW_DASHBOARD,
@@ -192,7 +192,7 @@ export const ROLE_PERMISSIONS = {
     PERMISSIONS.VIEW_CONTRACTS,
     PERMISSIONS.CREATE_CONTRACTS,
     PERMISSIONS.VIEW_PAYMENTS,
-    PERMISSIONS.VIEW_ANALYTICS,
+    PERMISSIONS.VIEW_ANALYTICS
   ],
   [ROLES.FINANCE]: [
     PERMISSIONS.VIEW_DASHBOARD,
@@ -200,7 +200,7 @@ export const ROLE_PERMISSIONS = {
     PERMISSIONS.VIEW_PAYMENTS,
     PERMISSIONS.PROCESS_PAYMENTS,
     PERMISSIONS.VIEW_ANALYTICS,
-    PERMISSIONS.VIEW_ALL_REPORTS,
+    PERMISSIONS.VIEW_ALL_REPORTS
   ],
   [ROLES.VIEWER]: [
     PERMISSIONS.VIEW_DASHBOARD,
@@ -209,8 +209,8 @@ export const ROLE_PERMISSIONS = {
     PERMISSIONS.VIEW_LEADS,
     PERMISSIONS.VIEW_CONTRACTS,
     PERMISSIONS.VIEW_PAYMENTS,
-    PERMISSIONS.VIEW_ANALYTICS,
-  ],
+    PERMISSIONS.VIEW_ANALYTICS
+  ]
 };
 
 export const OWNER_EXCLUSIVE_FEATURES = [
@@ -220,7 +220,7 @@ export const OWNER_EXCLUSIVE_FEATURES = [
   'user_management',
   'agent_management',
   'global_settings',
-  'all_reports',
+  'all_reports'
 ];
 
 export const PUBLIC_ROLES = [
@@ -229,14 +229,13 @@ export const PUBLIC_ROLES = [
   ROLES.LANDLORD,
   ROLES.TENANT,
   ROLES.LEASING_AGENT,
-  ROLES.SALES_AGENT,
+  ROLES.SALES_AGENT
 ];
 
 // ─── Role alias map ─────────────────────────────────────────────────────────
 // Maps frontend / UI role IDs to the 12 canonical backend roles.
 // Kept in sync with server/middleware/rbac.ts ROLE_ALIAS_MAP.
 export const ROLE_ALIAS_MAP: Record<string, string> = {
-  lion: 'owner',
   managing_director: 'owner',
   real_estate_company: 'owner',
   property_mgmt_company: 'manager',
@@ -262,14 +261,12 @@ export const ROLE_ALIAS_MAP: Record<string, string> = {
 
 /** Resolve any role string (frontend UI or canonical) to the 12-role backend key. */
 export function resolveBackendRole(role: string): string {
-  // eslint-disable-next-line security/detect-object-injection
   return ROLE_ALIAS_MAP[role] ?? role;
 }
 
 export function hasPermission(userRole: string | null, permission: string): boolean {
   if (!userRole || !permission) return false;
   const resolved = resolveBackendRole(userRole);
-  // eslint-disable-next-line security/detect-object-injection
   const rolePermissions = ROLE_PERMISSIONS[resolved] || [];
   return rolePermissions.includes(permission);
 }
@@ -292,9 +289,7 @@ export function isOwner(userRole: string | null): boolean {
 export function isAgent(userRole: string | null): boolean {
   if (!userRole) return false;
   const resolved = resolveBackendRole(userRole);
-  return (
-    resolved === ROLES.AGENT || resolved === ROLES.LEASING_AGENT || resolved === ROLES.SALES_AGENT
-  );
+  return resolved === ROLES.AGENT || resolved === ROLES.LEASING_AGENT || resolved === ROLES.SALES_AGENT;
 }
 
 export function isManager(userRole: string | null): boolean {
@@ -318,13 +313,11 @@ export function canAccessFeature(userRole: string | null, featureId: string): bo
 
 export function getRoleLevel(userRole: string): number {
   const resolved = resolveBackendRole(userRole);
-  // eslint-disable-next-line security/detect-object-injection
   return ROLE_HIERARCHY[resolved] || 0;
 }
 
 const EMPTY_PERMISSIONS: string[] = [];
 
 export function getPermissionsForRole(role: string): string[] {
-  // eslint-disable-next-line security/detect-object-injection
   return ROLE_PERMISSIONS[role] || EMPTY_PERMISSIONS;
 }
