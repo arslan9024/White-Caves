@@ -1,5 +1,7 @@
 import { useState, useCallback, useMemo, useEffect } from 'react';
 import {
+  ACTIVE_LEASES,
+  MAINTENANCE_REQUESTS,
   RENTAL_INQUIRIES,
   ActiveLease,
   MaintenanceRequest,
@@ -172,8 +174,8 @@ function mapMaintenanceItem(item: MaintenanceApiItem, index: number): Maintenanc
 export const useLeasingData = () => {
   const [activeTab, setActiveTab] = useState<string>('leases');
   const [selectedProperty, setSelectedProperty] = useState<number | null>(null);
-  const [leases, setLeases] = useState<ActiveLease[]>([]);
-  const [maintenance, setMaintenance] = useState<MaintenanceRequest[]>([]);
+  const [leases, setLeases] = useState<ActiveLease[]>(ACTIVE_LEASES);
+  const [maintenance, setMaintenance] = useState<MaintenanceRequest[]>(MAINTENANCE_REQUESTS);
   const [pdcCheques, setPdcCheques] = useState<PDCCheque[]>([]);
   const [loading, setLoading] = useState<boolean>(true); // true = loading on mount
   const [searchQuery, setSearchQuery] = useState<string>('');
@@ -195,8 +197,12 @@ export const useLeasingData = () => {
       if (cancelled) return;
       const rawLeases: LeaseApiItem[] = Array.isArray(leasesRes.data) ? leasesRes.data : [];
       const rawMaint: MaintenanceApiItem[] = Array.isArray(maintRes.data) ? maintRes.data : [];
-      setLeases(rawLeases.map(mapLeaseToActive));
-      setMaintenance(rawMaint.map(mapMaintenanceItem));
+      if (rawLeases.length > 0) {
+        setLeases(rawLeases.map(mapLeaseToActive));
+      }
+      if (rawMaint.length > 0) {
+        setMaintenance(rawMaint.map(mapMaintenanceItem));
+      }
       setLoading(false);
     });
 
