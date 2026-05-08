@@ -101,9 +101,7 @@ export class SocketServer {
   constructor(httpServer: HttpServer) {
     this.io = new SocketIOServer(httpServer, {
       cors: {
-        origin: process.env.CORS_ORIGINS
-          ? process.env.CORS_ORIGINS.split(',')
-          : ['http://localhost:5000'],
+        origin: process.env.CORS_ORIGINS ? process.env.CORS_ORIGINS.split(',') : ['http://localhost:5000'],
         credentials: true,
       },
       // Use both polling + WebSocket so the client can upgrade after first handshake
@@ -157,14 +155,12 @@ export class SocketServer {
         // All authenticated CRM users
         socket.join('crm');
 
-        log.info(
-          `Socket connected: ${user.email} (${user.id}) — rooms: user:${user.id}, role:${user.role}, crm`
-        );
+        log.info(`Socket connected: ${user.email} (${user.id}) — rooms: user:${user.id}, role:${user.role}, crm`);
 
         // Emit agent presence to colleagues
         this.io.to('crm').emit('agent:presence', {
           agentId: user.id,
-          email: user.email ?? '',
+          email: user.email,
           online: true,
           timestamp: new Date(),
         } satisfies AgentPresencePayload);
@@ -176,7 +172,7 @@ export class SocketServer {
         if (user?.id) {
           this.io.to('crm').emit('agent:presence', {
             agentId: user.id,
-            email: user.email ?? '',
+            email: user.email,
             online: false,
             timestamp: new Date(),
           } satisfies AgentPresencePayload);

@@ -12,16 +12,6 @@
 
 The Landlord Portal provides property owners with a dedicated, self-service interface to manage their real estate portfolio, track rental income, monitor tenant status, and communicate with their property management team. The portal is designed as a secure, role-restricted view into the White Caves CRM with mobile-responsive access.
 
-### Priority Module Alignment (May 2026)
-
-The landlord portal is a mandatory pillar of the P0 leasing journey:
-
-- Input from homepage-originated leasing leads after conversion to active leases
-- Real-time visibility into contract, Ejari, payment, and maintenance states
-- Approval checkpoints (offers, high-cost maintenance, renewal terms)
-
-The landlord experience must remain continuity-safe with tenant and leasing-agent workflows (no orphan state transitions).
-
 ### Purpose
 
 Empower landlords with real-time visibility into their property portfolio, financial performance, and tenant management — reducing the need for manual reporting and phone calls to property managers.
@@ -72,16 +62,16 @@ The landing page displays a summary of the landlord's entire property portfolio.
 
 #### Key Metrics Cards
 
-| Metric               | Description                    | Format                      |
-| -------------------- | ------------------------------ | --------------------------- |
-| Total Properties     | Count of owned properties      | Number                      |
-| Occupied Units       | Units with active tenants      | Number + percentage         |
-| Vacant Units         | Units without tenants          | Number (highlighted if > 0) |
-| Total Monthly Income | Sum of active rents            | AED / USD toggle            |
-| Pending Payments     | Overdue rent amounts           | AED (red highlight)         |
-| Active Maintenance   | Open maintenance requests      | Number                      |
-| Upcoming Renewals    | Leases expiring in 90 days     | Number                      |
-| Portfolio Value      | Estimated total property value | AED / USD toggle            |
+| Metric | Description | Format |
+|--------|-------------|--------|
+| Total Properties | Count of owned properties | Number |
+| Occupied Units | Units with active tenants | Number + percentage |
+| Vacant Units | Units without tenants | Number (highlighted if > 0) |
+| Total Monthly Income | Sum of active rents | AED / USD toggle |
+| Pending Payments | Overdue rent amounts | AED (red highlight) |
+| Active Maintenance | Open maintenance requests | Number |
+| Upcoming Renewals | Leases expiring in 90 days | Number |
+| Portfolio Value | Estimated total property value | AED / USD toggle |
 
 #### Visual Components
 
@@ -128,18 +118,18 @@ Each property shows:
 
 Landlords can view (but not directly modify) tenant information.
 
-| Field              | Visibility                |
-| ------------------ | ------------------------- |
-| Tenant name        | ✅ Visible                |
-| Contact details    | ✅ Visible (phone, email) |
-| Nationality        | ✅ Visible                |
-| Lease start/end    | ✅ Visible                |
-| Rent amount        | ✅ Visible                |
-| Payment method     | ✅ Visible                |
-| Number of cheques  | ✅ Visible                |
-| KYC documents      | ❌ Not visible (privacy)  |
-| Emirates ID number | ❌ Not visible (privacy)  |
-| Employment details | ❌ Not visible (privacy)  |
+| Field | Visibility |
+|-------|-----------|
+| Tenant name | ✅ Visible |
+| Contact details | ✅ Visible (phone, email) |
+| Nationality | ✅ Visible |
+| Lease start/end | ✅ Visible |
+| Rent amount | ✅ Visible |
+| Payment method | ✅ Visible |
+| Number of cheques | ✅ Visible |
+| KYC documents | ❌ Not visible (privacy) |
+| Emirates ID number | ❌ Not visible (privacy) |
+| Employment details | ❌ Not visible (privacy) |
 
 ### Lease Status Tracking
 
@@ -171,15 +161,15 @@ Landlords can view (but not directly modify) tenant information.
 
 ### Expense Tracking
 
-| Expense Category      | Examples                             |
-| --------------------- | ------------------------------------ |
+| Expense Category | Examples |
+|-----------------|----------|
 | Maintenance & Repairs | Plumbing, AC, painting, pest control |
-| Service Charges       | Annual building service charges      |
-| Management Fees       | Property management commission       |
-| Insurance             | Building/unit insurance              |
-| DEWA Deposits         | Utility deposits for vacant units    |
-| Registration Fees     | Ejari, DLD, tawtheeq                 |
-| Marketing Costs       | Portal listing fees, photography     |
+| Service Charges | Annual building service charges |
+| Management Fees | Property management commission |
+| Insurance | Building/unit insurance |
+| DEWA Deposits | Utility deposits for vacant units |
+| Registration Fees | Ejari, DLD, tawtheeq |
+| Marketing Costs | Portal listing fees, photography |
 
 ### ROI Analysis
 
@@ -204,17 +194,17 @@ Landlords can view (but not directly modify) tenant information.
 
 Landlords can view all maintenance requests for their properties.
 
-| Field               | Landlord Action   |
-| ------------------- | ----------------- |
-| Request description | View              |
-| Photos/videos       | View              |
-| Priority            | View              |
-| Status              | View              |
-| Assigned contractor | View              |
-| Estimated cost      | Approve / Decline |
-| Actual cost         | View              |
-| Completion date     | View              |
-| Tenant rating       | View              |
+| Field | Landlord Action |
+|-------|----------------|
+| Request description | View |
+| Photos/videos | View |
+| Priority | View |
+| Status | View |
+| Assigned contractor | View |
+| Estimated cost | Approve / Decline |
+| Actual cost | View |
+| Completion date | View |
+| Tenant rating | View |
 
 ### Approval Workflow
 
@@ -252,14 +242,14 @@ Completed & invoiced
 
 ### Document Categories
 
-| Category    | Documents                                        | Auto-Generated |
-| ----------- | ------------------------------------------------ | -------------- |
-| Contracts   | Lease agreements, addendums, termination notices | Some           |
-| Regulatory  | Ejari certificates, DLD receipts, NOCs           | No             |
-| Financial   | Invoices, receipts, statements                   | Yes            |
-| Property    | Title deed, floor plans, photos, valuations      | No             |
-| Insurance   | Insurance policies, claims                       | No             |
-| Maintenance | Work orders, invoices, completion certificates   | Some           |
+| Category | Documents | Auto-Generated |
+|----------|-----------|----------------|
+| Contracts | Lease agreements, addendums, termination notices | Some |
+| Regulatory | Ejari certificates, DLD receipts, NOCs | No |
+| Financial | Invoices, receipts, statements | Yes |
+| Property | Title deed, floor plans, photos, valuations | No |
+| Insurance | Insurance policies, claims | No |
+| Maintenance | Work orders, invoices, completion certificates | Some |
 
 ### Document Features
 
@@ -293,16 +283,16 @@ Completed & invoiced
 
 ### Notification System
 
-| Event                          | Channel Options          |
-| ------------------------------ | ------------------------ |
-| Rent payment received          | Email, SMS, Push, Portal |
-| Payment overdue                | Email, SMS, Push, Portal |
-| Maintenance request submitted  | Email, Push, Portal      |
-| Maintenance approval needed    | Email, SMS, Push, Portal |
-| Lease expiring (90/60/30 days) | Email, Push, Portal      |
-| New tenant application         | Email, Push, Portal      |
-| Document uploaded              | Email, Portal            |
-| Monthly financial report       | Email, Portal            |
+| Event | Channel Options |
+|-------|----------------|
+| Rent payment received | Email, SMS, Push, Portal |
+| Payment overdue | Email, SMS, Push, Portal |
+| Maintenance request submitted | Email, Push, Portal |
+| Maintenance approval needed | Email, SMS, Push, Portal |
+| Lease expiring (90/60/30 days) | Email, Push, Portal |
+| New tenant application | Email, Push, Portal |
+| Document uploaded | Email, Portal |
+| Monthly financial report | Email, Portal |
 
 ### Notification Preferences
 
@@ -350,13 +340,13 @@ Completed & invoiced
 
 ### Mobile-Optimized Views
 
-| Feature          | Desktop          | Mobile             |
-| ---------------- | ---------------- | ------------------ |
-| Dashboard        | Full grid layout | Stacked cards      |
-| Property list    | Table view       | Card list          |
-| Financial charts | Full charts      | Simplified charts  |
-| Documents        | Table + preview  | List with download |
-| Messages         | Split panel      | Full-screen thread |
+| Feature | Desktop | Mobile |
+|---------|---------|--------|
+| Dashboard | Full grid layout | Stacked cards |
+| Property list | Table view | Card list |
+| Financial charts | Full charts | Simplified charts |
+| Documents | Table + preview | List with download |
+| Messages | Split panel | Full-screen thread |
 
 ### Progressive Web App (PWA)
 
@@ -418,33 +408,33 @@ Completed & invoiced
 
 ### API Endpoints
 
-| Method | Endpoint                                          | Description                   |
-| ------ | ------------------------------------------------- | ----------------------------- |
-| GET    | `/api/landlord-portal/dashboard`                  | Dashboard metrics and summary |
-| GET    | `/api/landlord-portal/properties`                 | List landlord's properties    |
-| GET    | `/api/landlord-portal/properties/:id`             | Property detail               |
-| GET    | `/api/landlord-portal/properties/:id/tenants`     | Tenant info for property      |
-| GET    | `/api/landlord-portal/properties/:id/financials`  | Financial summary             |
-| GET    | `/api/landlord-portal/properties/:id/maintenance` | Maintenance requests          |
-| PATCH  | `/api/landlord-portal/maintenance/:id/approve`    | Approve maintenance           |
-| GET    | `/api/landlord-portal/documents`                  | List all documents            |
-| GET    | `/api/landlord-portal/documents/:id/download`     | Download document             |
-| GET    | `/api/landlord-portal/financials/report`          | Financial report (date range) |
-| GET    | `/api/landlord-portal/messages`                   | List conversations            |
-| POST   | `/api/landlord-portal/messages`                   | Send message                  |
-| GET    | `/api/landlord-portal/notifications`              | List notifications            |
-| PUT    | `/api/landlord-portal/notifications/preferences`  | Update preferences            |
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/api/landlord-portal/dashboard` | Dashboard metrics and summary |
+| GET | `/api/landlord-portal/properties` | List landlord's properties |
+| GET | `/api/landlord-portal/properties/:id` | Property detail |
+| GET | `/api/landlord-portal/properties/:id/tenants` | Tenant info for property |
+| GET | `/api/landlord-portal/properties/:id/financials` | Financial summary |
+| GET | `/api/landlord-portal/properties/:id/maintenance` | Maintenance requests |
+| PATCH | `/api/landlord-portal/maintenance/:id/approve` | Approve maintenance |
+| GET | `/api/landlord-portal/documents` | List all documents |
+| GET | `/api/landlord-portal/documents/:id/download` | Download document |
+| GET | `/api/landlord-portal/financials/report` | Financial report (date range) |
+| GET | `/api/landlord-portal/messages` | List conversations |
+| POST | `/api/landlord-portal/messages` | Send message |
+| GET | `/api/landlord-portal/notifications` | List notifications |
+| PUT | `/api/landlord-portal/notifications/preferences` | Update preferences |
 
 ### Role-Based Access
 
-| Feature             | Owner | Manager | Agent | Landlord | Tenant |
-| ------------------- | ----- | ------- | ----- | -------- | ------ |
-| View dashboard      | N/A   | N/A     | N/A   | ✅ Own   | ❌     |
-| View properties     | N/A   | N/A     | N/A   | ✅ Own   | ❌     |
-| View financials     | N/A   | N/A     | N/A   | ✅ Own   | ❌     |
-| Approve maintenance | N/A   | N/A     | N/A   | ✅ Own   | ❌     |
-| Download documents  | N/A   | N/A     | N/A   | ✅ Own   | ❌     |
-| Send messages       | N/A   | N/A     | ✅    | ✅       | ❌     |
+| Feature | Owner | Manager | Agent | Landlord | Tenant |
+|---------|-------|---------|-------|----------|--------|
+| View dashboard | N/A | N/A | N/A | ✅ Own | ❌ |
+| View properties | N/A | N/A | N/A | ✅ Own | ❌ |
+| View financials | N/A | N/A | N/A | ✅ Own | ❌ |
+| Approve maintenance | N/A | N/A | N/A | ✅ Own | ❌ |
+| Download documents | N/A | N/A | N/A | ✅ Own | ❌ |
+| Send messages | N/A | N/A | ✅ | ✅ | ❌ |
 
 > Internal roles (owner, manager, agent) manage landlord data through the main CRM interface, not the landlord portal.
 

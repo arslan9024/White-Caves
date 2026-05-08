@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import PropertyInfoForm from './TenancyForms/PropertyInfoForm';
 import LandlordForm from './TenancyForms/LandlordForm';
@@ -11,7 +11,6 @@ const TenancyContractForm = ({ onSuccess, initialContractId }) => {
   const [currentStep, setCurrentStep] = useState(1);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [statusMessage, setStatusMessage] = useState(null);
   const [contractId, setContractId] = useState(initialContractId || null);
 
   const [formData, setFormData] = useState({
@@ -26,7 +25,7 @@ const TenancyContractForm = ({ onSuccess, initialContractId }) => {
       unitNumber: '',
       unitArea: '',
       propertyType: 'Apartment',
-      furnished: 'Unfurnished',
+      furnished: 'Unfurnished'
     },
     landlordInfo: {
       name: '',
@@ -40,7 +39,7 @@ const TenancyContractForm = ({ onSuccess, initialContractId }) => {
       address: '',
       bankName: '',
       bankAccountNumber: '',
-      iban: '',
+      iban: ''
     },
     tenantInfo: {
       name: '',
@@ -55,7 +54,7 @@ const TenancyContractForm = ({ onSuccess, initialContractId }) => {
       occupation: '',
       employer: '',
       visaNumber: '',
-      visaExpiryDate: '',
+      visaExpiryDate: ''
     },
     contactDetails: {
       landlordContactPerson: '',
@@ -65,7 +64,7 @@ const TenancyContractForm = ({ onSuccess, initialContractId }) => {
       tenantContactPhone: '',
       tenantContactEmail: '',
       emergencyContactName: '',
-      emergencyContactPhone: '',
+      emergencyContactPhone: ''
     },
     tenancyTerms: {
       leaseStartDate: '',
@@ -83,7 +82,7 @@ const TenancyContractForm = ({ onSuccess, initialContractId }) => {
         electricity: false,
         gas: false,
         internet: false,
-        chiller: false,
+        chiller: false
       },
       paymentMethod: 'Bank Transfer',
       paymentDay: 1,
@@ -91,8 +90,8 @@ const TenancyContractForm = ({ onSuccess, initialContractId }) => {
       breakTerms: '',
       allowedActivities: 'Residential',
       restrictions: '',
-      damageResponsibility: '',
-    },
+      damageResponsibility: ''
+    }
   });
 
   // Update form data section
@@ -100,10 +99,9 @@ const TenancyContractForm = ({ onSuccess, initialContractId }) => {
     setFormData(prev => ({
       ...prev,
       [section]: {
-        // eslint-disable-next-line security/detect-object-injection
         ...prev[section],
-        ...data,
-      },
+        ...data
+      }
     }));
   };
 
@@ -130,12 +128,12 @@ const TenancyContractForm = ({ onSuccess, initialContractId }) => {
       if (contractId) {
         // Update existing draft
         response = await axios.put(`/api/tenancy-contracts/${contractId}`, {
-          formData,
+          formData
         });
       } else {
         // Create new draft
         response = await axios.post('/api/tenancy-contracts/create', {
-          formData,
+          formData
         });
         setContractId(response.data.data.contractId);
       }
@@ -143,7 +141,7 @@ const TenancyContractForm = ({ onSuccess, initialContractId }) => {
       setError(null);
       // Show success message
       const message = contractId ? 'Draft updated successfully' : 'Draft created successfully';
-      setStatusMessage({ type: 'success', text: message });
+      alert(message);
     } catch (err) {
       setError(err.response?.data?.error || 'Error saving draft');
       console.error('Error saving draft:', err);
@@ -166,14 +164,14 @@ const TenancyContractForm = ({ onSuccess, initialContractId }) => {
       const response = await axios.post(`/api/tenancy-contracts/${contractId}/generate-pdf`);
 
       if (response.data.success) {
-        setStatusMessage({ type: 'success', text: 'PDF generated successfully!' });
+        alert('PDF generated successfully!');
         // Open PDF in new tab
         window.open(response.data.data.pdfUrl, '_blank');
         if (onSuccess) {
           onSuccess({
             contractId,
             pdfUrl: response.data.data.pdfUrl,
-            referenceNumber: response.data.data.referenceNumber,
+            referenceNumber: response.data.data.referenceNumber
           });
         }
       }
@@ -191,14 +189,18 @@ const TenancyContractForm = ({ onSuccess, initialContractId }) => {
     { number: 3, title: 'Tenant Information' },
     { number: 4, title: 'Contact Details' },
     { number: 5, title: 'Tenancy Terms' },
-    { number: 6, title: 'Review & Generate' },
+    { number: 6, title: 'Review & Generate' }
   ];
 
   return (
     <div className="tenancy-form-container">
       <div className="form-header">
         <h1>Tenancy Contract Form</h1>
-        {contractId && <div className="contract-id-badge">Contract ID: {contractId}</div>}
+        {contractId && (
+          <div className="contract-id-badge">
+            Contract ID: {contractId}
+          </div>
+        )}
       </div>
 
       {error && (
@@ -207,19 +209,9 @@ const TenancyContractForm = ({ onSuccess, initialContractId }) => {
         </div>
       )}
 
-      {statusMessage && (
-        <div
-          className={`status-message ${statusMessage.type === 'error' ? 'error-message' : 'success-message'}`}
-          role={statusMessage.type === 'error' ? 'alert' : 'status'}
-          data-testid="tenancy-contract-status-banner"
-        >
-          <span>{statusMessage.text}</span>
-        </div>
-      )}
-
       {/* Progress Stepper */}
       <div className="form-stepper">
-        {steps.map(step => (
+        {steps.map((step) => (
           <div
             key={step.number}
             className={`stepper-step ${currentStep >= step.number ? 'active' : ''} ${currentStep === step.number ? 'current' : ''}`}
@@ -236,53 +228,67 @@ const TenancyContractForm = ({ onSuccess, initialContractId }) => {
         {currentStep === 1 && (
           <PropertyInfoForm
             data={formData.propertyInfo}
-            onChange={data => updateFormSection('propertyInfo', data)}
+            onChange={(data) => updateFormSection('propertyInfo', data)}
           />
         )}
 
         {currentStep === 2 && (
           <LandlordForm
             data={formData.landlordInfo}
-            onChange={data => updateFormSection('landlordInfo', data)}
+            onChange={(data) => updateFormSection('landlordInfo', data)}
           />
         )}
 
         {currentStep === 3 && (
           <TenantForm
             data={formData.tenantInfo}
-            onChange={data => updateFormSection('tenantInfo', data)}
+            onChange={(data) => updateFormSection('tenantInfo', data)}
           />
         )}
 
         {currentStep === 4 && (
           <ContactDetailsForm
             data={formData.contactDetails}
-            onChange={data => updateFormSection('contactDetails', data)}
+            onChange={(data) => updateFormSection('contactDetails', data)}
           />
         )}
 
         {currentStep === 5 && (
           <TenancyTermsForm
             data={formData.tenancyTerms}
-            onChange={data => updateFormSection('tenancyTerms', data)}
+            onChange={(data) => updateFormSection('tenancyTerms', data)}
           />
         )}
 
-        {currentStep === 6 && <ReviewStep formData={formData} />}
+        {currentStep === 6 && (
+          <ReviewStep formData={formData} />
+        )}
       </div>
 
       {/* Form Actions */}
       <div className="form-actions">
-        <button className="btn btn-secondary" onClick={handlePrevious} disabled={currentStep === 1}>
+        <button
+          className="btn btn-secondary"
+          onClick={handlePrevious}
+          disabled={currentStep === 1}
+        >
           ← Previous
         </button>
 
-        <button className="btn btn-primary" onClick={handleSaveDraft} disabled={loading}>
+        <button
+          className="btn btn-primary"
+          onClick={handleSaveDraft}
+          disabled={loading}
+        >
           {loading ? 'Saving...' : 'Save Draft'}
         </button>
 
         {currentStep < 6 ? (
-          <button className="btn btn-primary" onClick={handleNext} disabled={loading}>
+          <button
+            className="btn btn-primary"
+            onClick={handleNext}
+            disabled={loading}
+          >
             Next →
           </button>
         ) : (
@@ -304,60 +310,34 @@ const ReviewStep = ({ formData }) => {
   return (
     <div className="review-step">
       <h2>Review Contract Details</h2>
-
+      
       <div className="review-section">
         <h3>📍 Property Information</h3>
         <div className="review-grid">
-          <div>
-            <strong>Description:</strong> {formData.propertyInfo.description}
-          </div>
-          <div>
-            <strong>Address:</strong> {formData.propertyInfo.address}
-          </div>
-          <div>
-            <strong>Area:</strong> {formData.propertyInfo.unitArea} sq.ft.
-          </div>
-          <div>
-            <strong>Type:</strong> {formData.propertyInfo.propertyType}
-          </div>
+          <div><strong>Description:</strong> {formData.propertyInfo.description}</div>
+          <div><strong>Address:</strong> {formData.propertyInfo.address}</div>
+          <div><strong>Area:</strong> {formData.propertyInfo.unitArea} sq.ft.</div>
+          <div><strong>Type:</strong> {formData.propertyInfo.propertyType}</div>
         </div>
       </div>
 
       <div className="review-section">
         <h3>🏠 Landlord Information</h3>
         <div className="review-grid">
-          <div>
-            <strong>Name:</strong> {formData.landlordInfo.name}
-          </div>
-          <div>
-            <strong>Email:</strong> {formData.landlordInfo.email}
-          </div>
-          <div>
-            <strong>Phone:</strong> {formData.landlordInfo.phone}
-          </div>
-          <div>
-            <strong>ID:</strong>{' '}
-            {formData.landlordInfo.emiratesId || formData.landlordInfo.passportNumber}
-          </div>
+          <div><strong>Name:</strong> {formData.landlordInfo.name}</div>
+          <div><strong>Email:</strong> {formData.landlordInfo.email}</div>
+          <div><strong>Phone:</strong> {formData.landlordInfo.phone}</div>
+          <div><strong>ID:</strong> {formData.landlordInfo.emiratesId || formData.landlordInfo.passportNumber}</div>
         </div>
       </div>
 
       <div className="review-section">
         <h3>👤 Tenant Information</h3>
         <div className="review-grid">
-          <div>
-            <strong>Name:</strong> {formData.tenantInfo.name}
-          </div>
-          <div>
-            <strong>Email:</strong> {formData.tenantInfo.email}
-          </div>
-          <div>
-            <strong>Phone:</strong> {formData.tenantInfo.phone}
-          </div>
-          <div>
-            <strong>ID:</strong>{' '}
-            {formData.tenantInfo.emiratesId || formData.tenantInfo.passportNumber}
-          </div>
+          <div><strong>Name:</strong> {formData.tenantInfo.name}</div>
+          <div><strong>Email:</strong> {formData.tenantInfo.email}</div>
+          <div><strong>Phone:</strong> {formData.tenantInfo.phone}</div>
+          <div><strong>ID:</strong> {formData.tenantInfo.emiratesId || formData.tenantInfo.passportNumber}</div>
         </div>
       </div>
 
@@ -365,27 +345,16 @@ const ReviewStep = ({ formData }) => {
         <h3>📅 Tenancy Terms</h3>
         <div className="review-grid">
           <div>
-            <strong>Lease Period:</strong>{' '}
-            {new Date(formData.tenancyTerms.leaseStartDate).toLocaleDateString()} to{' '}
-            {new Date(formData.tenancyTerms.leaseEndDate).toLocaleDateString()}
+            <strong>Lease Period:</strong> {new Date(formData.tenancyTerms.leaseStartDate).toLocaleDateString()} to {new Date(formData.tenancyTerms.leaseEndDate).toLocaleDateString()}
           </div>
-          <div>
-            <strong>Monthly Rent:</strong> AED {formData.tenancyTerms.rentAmount}
-          </div>
-          <div>
-            <strong>Security Deposit:</strong> AED {formData.tenancyTerms.securityDeposit}
-          </div>
-          <div>
-            <strong>Payment Method:</strong> {formData.tenancyTerms.paymentMethod}
-          </div>
+          <div><strong>Monthly Rent:</strong> AED {formData.tenancyTerms.rentAmount}</div>
+          <div><strong>Security Deposit:</strong> AED {formData.tenancyTerms.securityDeposit}</div>
+          <div><strong>Payment Method:</strong> {formData.tenancyTerms.paymentMethod}</div>
         </div>
       </div>
 
       <div className="review-info">
-        <p>
-          ✓ All information has been filled. Click &quot;Generate PDF&quot; to create the contract
-          document.
-        </p>
+        <p>✓ All information has been filled. Click "Generate PDF" to create the contract document.</p>
       </div>
     </div>
   );

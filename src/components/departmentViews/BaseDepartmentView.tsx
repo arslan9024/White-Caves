@@ -1,4 +1,4 @@
-﻿/* eslint-disable @typescript-eslint/no-unused-vars, @typescript-eslint/no-explicit-any */
+﻿// @ts-nocheck
 import React, { useEffect, useState, ReactNode } from 'react';
 import { useSelector } from 'react-redux';
 import styled from 'styled-components';
@@ -97,17 +97,17 @@ export const BaseDepartmentView: React.FC<BaseDepartmentViewProps> = ({
     ? `${config.departmentName} - Details`
     : serviceName
         .split('-')
-        .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+        .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
         .join(' ');
 
   return (
     <ViewContainer>
       <DashboardShell
         title={title}
-        icon={config.icon}
+        subtitle={`Department: ${config.departmentName}`}
         loading={loading}
-        onFilterChange={() => {}}
-        onBreadcrumbClick={() => {}}
+        error={error}
+        showBreadcrumb
       >
         <ViewContent>
           {error && <ErrorState error={error} onRetry={() => window.location.reload()} />}
@@ -145,3 +145,4 @@ export const BaseDepartmentView: React.FC<BaseDepartmentViewProps> = ({
 };
 
 export default BaseDepartmentView;
+

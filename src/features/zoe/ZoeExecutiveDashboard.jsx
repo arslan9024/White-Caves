@@ -1,11 +1,13 @@
-import React, { useState } from 'react';
-import { useSelector } from 'react-redux';
+import React, { useState, useEffect } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 import './ZoeExecutiveDashboard.css';
 
 const ZoeExecutiveDashboard = () => {
+  const dispatch = useDispatch();
   const wednesdayPlan = useSelector(state => state.wednesday);
   const [activeTab, setActiveTab] = useState('overview');
-  const [actionMessage, setActionMessage] = useState(null);
+  const [selectedMetric, setSelectedMetric] = useState(null);
 
   // Business Metrics from Redux
   const businessMetrics = wednesdayPlan?.business?.metrics || {
@@ -15,60 +17,18 @@ const ZoeExecutiveDashboard = () => {
     apiResponseTime: 0,
     concurrentUsers: 0,
     contractExecution: 0,
-    complianceScore: 0,
+    complianceScore: 0
   };
 
   // Zoe's Approved Requirements
   const requirements = wednesdayPlan?.business?.requirementsMatrix || [
-    {
-      requirement: 'All 6 roles login',
-      metric: 'Auth Success',
-      target: '100%',
-      actual: '0%',
-      status: 'pending',
-    },
-    {
-      requirement: 'Lead pipeline',
-      metric: 'Lead Conversion',
-      target: '>10%',
-      actual: '0%',
-      status: 'pending',
-    },
-    {
-      requirement: 'Viewing system',
-      metric: 'Booking Completion',
-      target: '95%+',
-      actual: '0%',
-      status: 'pending',
-    },
-    {
-      requirement: 'Negotiations',
-      metric: 'Offer Success',
-      target: '75%+',
-      actual: '0%',
-      status: 'pending',
-    },
-    {
-      requirement: 'Document system',
-      metric: 'Doc Availability',
-      target: '100%',
-      actual: '0%',
-      status: 'pending',
-    },
-    {
-      requirement: 'Communication',
-      metric: 'Message Delivery',
-      target: '99%+',
-      actual: '0%',
-      status: 'pending',
-    },
-    {
-      requirement: 'Analytics',
-      metric: 'Report Accuracy',
-      target: '100%',
-      actual: '0%',
-      status: 'pending',
-    },
+    { requirement: 'All 6 roles login', metric: 'Auth Success', target: '100%', actual: '0%', status: 'pending' },
+    { requirement: 'Lead pipeline', metric: 'Lead Conversion', target: '>10%', actual: '0%', status: 'pending' },
+    { requirement: 'Viewing system', metric: 'Booking Completion', target: '95%+', actual: '0%', status: 'pending' },
+    { requirement: 'Negotiations', metric: 'Offer Success', target: '75%+', actual: '0%', status: 'pending' },
+    { requirement: 'Document system', metric: 'Doc Availability', target: '100%', actual: '0%', status: 'pending' },
+    { requirement: 'Communication', metric: 'Message Delivery', target: '99%+', actual: '0%', status: 'pending' },
+    { requirement: 'Analytics', metric: 'Report Accuracy', target: '100%', actual: '0%', status: 'pending' }
   ];
 
   // Escalations for Zoe to approve/reject
@@ -78,18 +38,11 @@ const ZoeExecutiveDashboard = () => {
   const timeline = wednesdayPlan?.timeline || {
     morning: { complete: false, tasks: [] },
     afternoon: { complete: false, tasks: [] },
-    evening: { complete: false, tasks: [] },
+    evening: { complete: false, tasks: [] }
   };
 
   // Zoe's approved changes
   const approvedChanges = wednesdayPlan?.business?.approvedChanges || [];
-
-  const handleEscalationAction = (action, escalationId) => {
-    setActionMessage({
-      type: action === 'halted' ? 'error' : 'success',
-      text: `${action === 'halted' ? 'Halted' : 'Approved'}: ${escalationId}`,
-    });
-  };
 
   const renderOverview = () => (
     <div className="zoe-overview-grid">
@@ -101,9 +54,7 @@ const ZoeExecutiveDashboard = () => {
             <div className="metric-label">Lead Conversion</div>
             <div className="metric-value">{businessMetrics.leadConversion}%</div>
             <div className="metric-target">Target: &gt;10%</div>
-            <div
-              className={`metric-status ${businessMetrics.leadConversion > 10 ? 'success' : 'pending'}`}
-            >
+            <div className={`metric-status ${businessMetrics.leadConversion > 10 ? 'success' : 'pending'}`}>
               {businessMetrics.leadConversion > 10 ? '✓ On Track' : '⏳ In Progress'}
             </div>
           </div>
@@ -112,9 +63,7 @@ const ZoeExecutiveDashboard = () => {
             <div className="metric-label">Workflow Completion</div>
             <div className="metric-value">{businessMetrics.workflowCompletion}%</div>
             <div className="metric-target">Target: 95%+</div>
-            <div
-              className={`metric-status ${businessMetrics.workflowCompletion > 95 ? 'success' : 'pending'}`}
-            >
+            <div className={`metric-status ${businessMetrics.workflowCompletion > 95 ? 'success' : 'pending'}`}>
               {businessMetrics.workflowCompletion > 95 ? '✓ Success' : '⏳ Testing'}
             </div>
           </div>
@@ -123,9 +72,7 @@ const ZoeExecutiveDashboard = () => {
             <div className="metric-label">Error Rate</div>
             <div className="metric-value">{businessMetrics.errorRate}%</div>
             <div className="metric-target">Target: &lt;0.5%</div>
-            <div
-              className={`metric-status ${businessMetrics.errorRate < 0.5 ? 'success' : 'warning'}`}
-            >
+            <div className={`metric-status ${businessMetrics.errorRate < 0.5 ? 'success' : 'warning'}`}>
               {businessMetrics.errorRate < 0.5 ? '✓ Acceptable' : '⚠ Monitor'}
             </div>
           </div>
@@ -134,9 +81,7 @@ const ZoeExecutiveDashboard = () => {
             <div className="metric-label">API Response Time</div>
             <div className="metric-value">{businessMetrics.apiResponseTime}ms</div>
             <div className="metric-target">Target: &lt;500ms</div>
-            <div
-              className={`metric-status ${businessMetrics.apiResponseTime < 500 ? 'success' : 'warning'}`}
-            >
+            <div className={`metric-status ${businessMetrics.apiResponseTime < 500 ? 'success' : 'warning'}`}>
               {businessMetrics.apiResponseTime < 500 ? '✓ Fast' : '⚠ Slow'}
             </div>
           </div>
@@ -145,9 +90,7 @@ const ZoeExecutiveDashboard = () => {
             <div className="metric-label">Concurrent Users</div>
             <div className="metric-value">{businessMetrics.concurrentUsers}</div>
             <div className="metric-target">Target: 80+</div>
-            <div
-              className={`metric-status ${businessMetrics.concurrentUsers >= 80 ? 'success' : 'pending'}`}
-            >
+            <div className={`metric-status ${businessMetrics.concurrentUsers >= 80 ? 'success' : 'pending'}`}>
               {businessMetrics.concurrentUsers >= 80 ? '✓ Capacity' : '⏳ Loading'}
             </div>
           </div>
@@ -156,9 +99,7 @@ const ZoeExecutiveDashboard = () => {
             <div className="metric-label">Contract Execution</div>
             <div className="metric-value">{businessMetrics.contractExecution}%</div>
             <div className="metric-target">Target: 95%+</div>
-            <div
-              className={`metric-status ${businessMetrics.contractExecution > 95 ? 'success' : 'pending'}`}
-            >
+            <div className={`metric-status ${businessMetrics.contractExecution > 95 ? 'success' : 'pending'}`}>
               {businessMetrics.contractExecution > 95 ? '✓ Complete' : '⏳ Processing'}
             </div>
           </div>
@@ -167,9 +108,7 @@ const ZoeExecutiveDashboard = () => {
             <div className="metric-label">Compliance Score</div>
             <div className="metric-value">{businessMetrics.complianceScore}</div>
             <div className="metric-target">Target: 100</div>
-            <div
-              className={`metric-status ${businessMetrics.complianceScore === 100 ? 'success' : 'pending'}`}
-            >
+            <div className={`metric-status ${businessMetrics.complianceScore === 100 ? 'success' : 'pending'}`}>
               {businessMetrics.complianceScore === 100 ? '✓ Compliant' : '⏳ Validating'}
             </div>
           </div>
@@ -178,7 +117,7 @@ const ZoeExecutiveDashboard = () => {
 
       {/* Requirements Matrix */}
       <section className="zoe-section">
-        <h3>✅ Zoe&apos;s Approved Requirements</h3>
+        <h3>✅ Zoe's Approved Requirements</h3>
         <table className="requirements-table">
           <thead>
             <tr>
@@ -198,8 +137,8 @@ const ZoeExecutiveDashboard = () => {
                 <td className="actual">{req.actual}</td>
                 <td>
                   <span className={`status-badge ${req.status}`}>
-                    {req.status === 'pending' ? '⏳' : req.status === 'success' ? '✓' : '⚠'}{' '}
-                    {req.status}
+                    {req.status === 'pending' ? '⏳' : req.status === 'success' ? '✓' : '⚠'}
+                    {' '}{req.status}
                   </span>
                 </td>
               </tr>
@@ -212,9 +151,7 @@ const ZoeExecutiveDashboard = () => {
       <section className="zoe-section">
         <h3>⏰ Wednesday Timeline Progress</h3>
         <div className="timeline-container">
-          <div
-            className={`timeline-phase ${timeline.morning.complete ? 'complete' : 'in-progress'}`}
-          >
+          <div className={`timeline-phase ${timeline.morning.complete ? 'complete' : 'in-progress'}`}>
             <div className="phase-header">Morning Session</div>
             <div className="phase-time">8 AM - 12:30 PM</div>
             <div className="phase-status">
@@ -256,22 +193,14 @@ const ZoeExecutiveDashboard = () => {
               <div className="escalation-header">
                 <span className="severity-badge">{esc.severity.toUpperCase()}</span>
                 <span className="escalation-service">{esc.service}</span>
-                <span className="escalation-time">
-                  {new Date(esc.timestamp).toLocaleTimeString()}
-                </span>
+                <span className="escalation-time">{new Date(esc.timestamp).toLocaleTimeString()}</span>
               </div>
               <div className="escalation-message">{esc.message}</div>
               <div className="escalation-actions">
-                <button
-                  className="btn-approve"
-                  onClick={() => handleEscalationAction('approved', esc.id)}
-                >
+                <button className="btn-approve" onClick={() => alert(`Approved: ${esc.id}`)}>
                   ✓ Approve & Continue
                 </button>
-                <button
-                  className="btn-halt"
-                  onClick={() => handleEscalationAction('halted', esc.id)}
-                >
+                <button className="btn-halt" onClick={() => alert(`Halted: ${esc.id}`)}>
                   ✗ Halt Testing
                 </button>
               </div>
@@ -284,7 +213,7 @@ const ZoeExecutiveDashboard = () => {
 
   const renderApprovedChanges = () => (
     <section className="zoe-section approved-changes">
-      <h3>📝 Zoe&apos;s Approved Requirement Changes</h3>
+      <h3>📝 Zoe's Approved Requirement Changes</h3>
       {approvedChanges.length === 0 ? (
         <div className="no-changes">
           <p>No requirement changes yet. All requirements are per original plan.</p>
@@ -294,9 +223,7 @@ const ZoeExecutiveDashboard = () => {
           {approvedChanges.map((change, idx) => (
             <div key={idx} className="change-card">
               <div className="change-header">
-                <span className="change-timestamp">
-                  {new Date(change.timestamp).toLocaleString()}
-                </span>
+                <span className="change-timestamp">{new Date(change.timestamp).toLocaleString()}</span>
                 <span className="change-type">{change.type}</span>
               </div>
               <div className="change-detail">{change.description}</div>
@@ -314,7 +241,7 @@ const ZoeExecutiveDashboard = () => {
     <div className="zoe-executive-dashboard">
       <header className="zoe-header">
         <div className="zoe-title">
-          <h1>👔 Zoe&apos;s Executive Dashboard</h1>
+          <h1>👔 Zoe's Executive Dashboard</h1>
           <p>Wednesday, January 22, 2026 - Business Authority & Real-Time Control</p>
         </div>
         <div className="zoe-status">
@@ -324,35 +251,25 @@ const ZoeExecutiveDashboard = () => {
       </header>
 
       <nav className="zoe-nav">
-        <button
+        <button 
           className={`nav-btn ${activeTab === 'overview' ? 'active' : ''}`}
           onClick={() => setActiveTab('overview')}
         >
           📊 Overview
         </button>
-        <button
+        <button 
           className={`nav-btn ${activeTab === 'escalations' ? 'active' : ''}`}
           onClick={() => setActiveTab('escalations')}
         >
           🚨 Escalations ({escalations.length})
         </button>
-        <button
+        <button 
           className={`nav-btn ${activeTab === 'changes' ? 'active' : ''}`}
           onClick={() => setActiveTab('changes')}
         >
           📝 Approved Changes
         </button>
       </nav>
-
-      {actionMessage && (
-        <div
-          className={`status-message ${actionMessage.type === 'error' ? 'error-message' : 'success-message'}`}
-          role={actionMessage.type === 'error' ? 'alert' : 'status'}
-          data-testid="zoe-escalation-status-banner"
-        >
-          {actionMessage.text}
-        </div>
-      )}
 
       <main className="zoe-content">
         {activeTab === 'overview' && renderOverview()}
@@ -361,10 +278,7 @@ const ZoeExecutiveDashboard = () => {
       </main>
 
       <footer className="zoe-footer">
-        <p>
-          Zoe&apos;s Executive Authority: Approved requirements, escalation decisions, and business
-          impact assessment
-        </p>
+        <p>Zoe's Executive Authority: Approved requirements, escalation decisions, and business impact assessment</p>
       </footer>
     </div>
   );

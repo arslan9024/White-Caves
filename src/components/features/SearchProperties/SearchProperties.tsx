@@ -1,8 +1,9 @@
-﻿// src/components/features/SearchProperties/SearchProperties.tsx
+﻿// @ts-nocheck
+// src/components/features/SearchProperties/SearchProperties.tsx
 /**
  * Property Search Feature Component
  * Example of a second feature to demonstrate the pattern
- *
+ * 
  * This component shows how to:
  * - Use theme colors
  * - Handle user input
@@ -12,7 +13,6 @@
 
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import { authFetch } from '../../../utils/authFetch';
 
 const Container = styled.div`
   padding: 24px;
@@ -52,7 +52,7 @@ const SearchInput = styled.input`
   border-radius: 6px;
   background: ${props => props.theme.colors.cardBg};
   color: ${props => props.theme.colors.text};
-  font-family: ${props => props.theme.fonts?.family ?? 'inherit'};
+  font-family: ${props => props.theme.fonts.family};
   font-size: 14px;
 
   &:focus {
@@ -241,48 +241,52 @@ export const SearchProperties: React.FC = () => {
   });
   const [results, setResults] = useState<PropertyResult[]>([]);
   const [hasSearched, setHasSearched] = useState(false);
-  const [loading, setLoading] = useState(false);
 
-  const handleSearch = async (e: React.FormEvent) => {
+  // Mock data
+  const mockProperties: PropertyResult[] = [
+    {
+      id: '1',
+      name: 'Palm Jumeirah Villa',
+      location: 'Palm Jumeirah, Dubai',
+      price: 'AED 2.5M',
+      bedrooms: 4,
+      bathrooms: 5,
+      area: '450 sqm',
+      status: 'Available',
+    },
+    {
+      id: '2',
+      name: 'Downtown Apartment',
+      location: 'Downtown Dubai',
+      price: 'AED 850K',
+      bedrooms: 2,
+      bathrooms: 2,
+      area: '120 sqm',
+      status: 'Available',
+    },
+    {
+      id: '3',
+      name: 'Marina Penthouse',
+      location: 'Dubai Marina',
+      price: 'AED 3.2M',
+      bedrooms: 3,
+      bathrooms: 3,
+      area: '280 sqm',
+      status: 'Pending',
+    },
+  ];
+
+  const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     setHasSearched(true);
-    setLoading(true);
-    try {
-      const params = new URLSearchParams();
-      if (searchTerm.trim()) params.set('search', searchTerm.trim());
-      if (filters.status.length === 1) params.set('status', filters.status[0]);
-      if (filters.bedrooms !== 'all' && filters.bedrooms !== '4+') {
-        params.set('minBeds', filters.bedrooms);
-      } else if (filters.bedrooms === '4+') {
-        params.set('minBeds', '4');
-      }
-      params.set('pageSize', '20');
 
-      const resp = await authFetch(`/api/properties?${params.toString()}`);
-      const data = (await resp.json()) as { data: Record<string, unknown>[] };
-      const mapped: PropertyResult[] = (data.data || []).map(prop => ({
-        id: String(prop.id ?? ''),
-        name: String(prop.title || 'Unnamed Property'),
-        location: String(prop.location || prop.area || 'Dubai, UAE'),
-        price: prop.price ? `AED ${Number(prop.price).toLocaleString()}` : 'Price on Request',
-        bedrooms: Number(prop.bedrooms ?? 0),
-        bathrooms: Number(prop.bathrooms ?? 0),
-        area: prop.sqft ? `${String(prop.sqft)} sqft` : String(prop.area || 'N/A'),
-        status:
-          prop.status === 'available'
-            ? 'Available'
-            : prop.status === 'sold'
-              ? 'Sold'
-              : prop.status === 'rented'
-                ? 'Rented'
-                : 'Pending',
-      }));
-      setResults(mapped);
-    } catch {
-      setResults([]);
-    } finally {
-      setLoading(false);
-    }
+    // Filter properties based on search term
+    const filtered = mockProperties.filter(prop =>
+      prop.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      prop.location.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+
+    setResults(filtered);
   };
 
   const handleFilterChange = (filterType: keyof SearchFilters, value: string | string[]) => {
@@ -349,13 +353,7 @@ export const SearchProperties: React.FC = () => {
 
       {/* Results */}
       <ResultsSection>
-        {loading ? (
-          <EmptyState>
-            <div className="icon">⏳</div>
-            <h3>Searching…</h3>
-            <p>Loading properties from the database</p>
-          </EmptyState>
-        ) : hasSearched && results.length === 0 ? (
+        {hasSearched && results.length === 0 ? (
           <EmptyState>
             <div className="icon">🏘️</div>
             <h3>No Properties Found</h3>
@@ -402,3 +400,4 @@ export const SearchProperties: React.FC = () => {
 };
 
 export default SearchProperties;
+

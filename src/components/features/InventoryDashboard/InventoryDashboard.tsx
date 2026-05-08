@@ -1,15 +1,7 @@
 // src/components/features/InventoryDashboard/InventoryDashboard.tsx
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
-import {
-  AlertTriangle,
-  Lock,
-  CheckCircle2,
-  ClipboardList,
-  HandshakeIcon,
-  KeyRound,
-} from 'lucide-react';
-import { authFetch } from '../../../utils/authFetch';
+import { AlertTriangle, Lock, CheckCircle2, ClipboardList, HandshakeIcon, KeyRound } from 'lucide-react';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -212,7 +204,9 @@ const STAGES: Omit<StageSummary, 'count'>[] = [
 // ─── Component ───────────────────────────────────────────────────────────────
 
 export const InventoryDashboard: React.FC = () => {
-  const [stages, setStages] = useState<StageSummary[]>(STAGES.map(s => ({ ...s, count: 0 })));
+  const [stages, setStages] = useState<StageSummary[]>(
+    STAGES.map(s => ({ ...s, count: 0 }))
+  );
   const [docAlerts, setDocAlerts] = useState<DocAlertSummary>({
     titleDeedMissing: 0,
     landlordPassportMissing: 0,
@@ -226,7 +220,9 @@ export const InventoryDashboard: React.FC = () => {
 
     async function fetchStats() {
       try {
-        const res = await authFetch('/api/properties/inventory-stats');
+        const res = await fetch('/api/properties/inventory-stats', {
+          credentials: 'include',
+        });
         if (!res.ok) return;
         const data = await res.json();
         if (cancelled) return;
@@ -249,13 +245,13 @@ export const InventoryDashboard: React.FC = () => {
     }
 
     fetchStats();
-    return () => {
-      cancelled = true;
-    };
+    return () => { cancelled = true; };
   }, []);
 
   const totalDocAlerts =
-    docAlerts.titleDeedMissing + docAlerts.landlordPassportMissing + docAlerts.ejariMissing;
+    docAlerts.titleDeedMissing +
+    docAlerts.landlordPassportMissing +
+    docAlerts.ejariMissing;
 
   const lockedCount = stages.find(s => s.stage === 'under_offer')?.count ?? 0;
   const activeCount = stages.find(s => s.stage === 'verified_active')?.count ?? 0;
@@ -273,7 +269,9 @@ export const InventoryDashboard: React.FC = () => {
 
         <StatCard>
           <div className="stat-label">Active Listings</div>
-          <div className="stat-value">{loading ? '—' : activeCount.toLocaleString()}</div>
+          <div className="stat-value">
+            {loading ? '—' : activeCount.toLocaleString()}
+          </div>
         </StatCard>
 
         <StatCard>
@@ -295,7 +293,9 @@ export const InventoryDashboard: React.FC = () => {
             <strong>Missing Document Alerts</strong>
             <div className="alert-items">
               {docAlerts.titleDeedMissing > 0 && (
-                <span className="alert-tag">Title Deed: {docAlerts.titleDeedMissing}</span>
+                <span className="alert-tag">
+                  Title Deed: {docAlerts.titleDeedMissing}
+                </span>
               )}
               {docAlerts.landlordPassportMissing > 0 && (
                 <span className="alert-tag">
@@ -303,7 +303,9 @@ export const InventoryDashboard: React.FC = () => {
                 </span>
               )}
               {docAlerts.ejariMissing > 0 && (
-                <span className="alert-tag">Ejari: {docAlerts.ejariMissing}</span>
+                <span className="alert-tag">
+                  Ejari: {docAlerts.ejariMissing}
+                </span>
               )}
             </div>
           </div>
@@ -316,7 +318,9 @@ export const InventoryDashboard: React.FC = () => {
         {stages.map(stage => (
           <StageCard key={stage.stage} $color={stage.color}>
             <div className="stage-icon">{stage.icon}</div>
-            <div className="stage-count">{loading ? '—' : stage.count.toLocaleString()}</div>
+            <div className="stage-count">
+              {loading ? '—' : stage.count.toLocaleString()}
+            </div>
             <div className="stage-label">{stage.label}</div>
             <div className="stage-desc">{stage.description}</div>
           </StageCard>
@@ -325,8 +329,9 @@ export const InventoryDashboard: React.FC = () => {
 
       <h2>Quick Actions</h2>
       <p>
-        Use the sidebar to navigate to Acquisition, Inventory browsing, Data Tools, and Analytics.
-        The pipeline above updates in real time from the database.
+        Use the sidebar to navigate to Acquisition, Inventory browsing, Data
+        Tools, and Analytics. The pipeline above updates in real time from the
+        database.
       </p>
     </DashboardContainer>
   );

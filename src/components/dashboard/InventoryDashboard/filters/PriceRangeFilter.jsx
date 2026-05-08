@@ -4,25 +4,21 @@ import '../FilterPanel.css';
 const PriceRangeFilter = ({ minPrice = null, maxPrice = null, onChange }) => {
   const [localMin, setLocalMin] = useState(minPrice || '');
   const [localMax, setLocalMax] = useState(maxPrice || '');
-  const [validationMessage, setValidationMessage] = useState(null);
 
   // Sync local state with props
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     setLocalMin(minPrice || '');
     setLocalMax(maxPrice || '');
   }, [minPrice, maxPrice]);
 
-  const handleMinChange = e => {
+  const handleMinChange = (e) => {
     const value = e.target.value;
     setLocalMin(value);
-    if (validationMessage) setValidationMessage(null);
   };
 
-  const handleMaxChange = e => {
+  const handleMaxChange = (e) => {
     const value = e.target.value;
     setLocalMax(value);
-    if (validationMessage) setValidationMessage(null);
   };
 
   const handleApply = () => {
@@ -31,18 +27,16 @@ const PriceRangeFilter = ({ minPrice = null, maxPrice = null, onChange }) => {
 
     // Validate: min should be less than max
     if (min !== null && max !== null && min > max) {
-      setValidationMessage('Min price should be less than max price');
+      alert('Min price should be less than max price');
       return;
     }
 
-    setValidationMessage(null);
     onChange(min, max);
   };
 
   const handleReset = () => {
     setLocalMin('');
     setLocalMax('');
-    setValidationMessage(null);
     onChange(null, null);
   };
 
@@ -58,32 +52,15 @@ const PriceRangeFilter = ({ minPrice = null, maxPrice = null, onChange }) => {
     <div className="filter-group">
       <label className="filter-label">Price Range</label>
 
-      {validationMessage && (
-        <div
-          role="alert"
-          data-testid="price-range-validation"
-          style={{
-            marginBottom: '10px',
-            padding: '8px 12px',
-            borderRadius: '6px',
-            fontSize: '13px',
-            fontWeight: 600,
-            borderLeft: '4px solid #F04438',
-            background: '#FEF3F2',
-            color: '#B42318',
-          }}
-        >
-          ⚠️ {validationMessage}
-        </div>
-      )}
-
       {/* Preset Ranges */}
       <div className="preset-ranges">
-        {presetRanges.map(range => (
+        {presetRanges.map((range) => (
           <button
             key={range.label}
             className={`preset-btn ${
-              localMin === (range.min || '') && localMax === (range.max || '') ? 'active' : ''
+              localMin === (range.min || '') && localMax === (range.max || '')
+                ? 'active'
+                : ''
             }`}
             onClick={() => {
               setLocalMin(range.min || '');

@@ -1,5 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import EventEmitter from 'events';
+import * as EventEmitter from 'events';
 import logger from '../utils/logger.js';
 
 interface QueueTask {
@@ -111,9 +110,9 @@ export class MessageQueueService extends EventEmitter {
     }
 
     // Check if worker has available concurrency
-    const processingCount = Array.from(this.processingTasks.values()).filter(id => {
+    const processingCount = Array.from(this.processingTasks.values()).filter((id) => {
       const task = this.tasks.get(id);
-      return task?.type === nextTask!.type;
+      return task?.type === nextTask.type;
     }).length;
 
     if (processingCount >= worker.concurrency) {
@@ -211,7 +210,9 @@ export class MessageQueueService extends EventEmitter {
 
     for (const task of this.tasks.values()) {
       if (task.status === 'completed') {
-        const processingTime = task.createdAt ? new Date().getTime() - task.createdAt.getTime() : 0;
+        const processingTime = task.createdAt
+          ? new Date().getTime() - task.createdAt.getTime()
+          : 0;
         totalTime += processingTime;
         totalRetries += task.attempts - 1;
         completedTasks++;
@@ -240,7 +241,7 @@ export class MessageQueueService extends EventEmitter {
    * Retry task from DLQ
    */
   public async retryFromDLQ(taskId: string): Promise<boolean> {
-    const index = this.deadLetterQueue.findIndex(t => t.id === taskId);
+    const index = this.deadLetterQueue.findIndex((t) => t.id === taskId);
     if (index === -1) {
       return false;
     }
@@ -278,16 +279,13 @@ export class MessageQueueService extends EventEmitter {
    * Setup cleanup interval
    */
   private setupCleanup(): void {
-    setInterval(
-      () => {
-        this.clearCompleted(24);
-        const stats = this.getStats();
-        logger.debug(
-          `Queue stats - Pending: ${stats.pending}, Processing: ${stats.processing}, Completed: ${stats.completed}, Failed: ${stats.failed}, DLQ: ${stats.dlqSize}`
-        );
-      },
-      60 * 60 * 1000
-    ); // Every hour
+    setInterval(() => {
+      this.clearCompleted(24);
+      const stats = this.getStats();
+      logger.debug(
+        `Queue stats - Pending: ${stats.pending}, Processing: ${stats.processing}, Completed: ${stats.completed}, Failed: ${stats.failed}, DLQ: ${stats.dlqSize}`
+      );
+    }, 60 * 60 * 1000); // Every hour
   }
 
   /**
@@ -314,7 +312,7 @@ export class MessageQueueService extends EventEmitter {
 
     const startTime = Date.now();
     while (this.processingTasks.size > 0 && Date.now() - startTime < timeoutMs) {
-      await new Promise(resolve => setTimeout(resolve, 100));
+      await new Promise((resolve) => setTimeout(resolve, 100));
     }
 
     if (this.processingTasks.size > 0) {

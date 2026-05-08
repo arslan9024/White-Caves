@@ -11,18 +11,6 @@
 
 The Tenancy & Ejari module manages the full tenant lifecycle: application, KYC, lease creation, Ejari registration, active tenancy management, and move-out. It ensures regulatory compliance (Ejari mandatory per Dubai Decree No. 26 of 2013) and provides landlords and agents full visibility of their rental portfolio.
 
-### Priority Module Alignment (May 2026)
-
-This module is now part of the P0 unified journey:
-
-1. Homepage leasing conversion
-2. Lead qualification + viewing
-3. Offer + contract
-4. Ejari registration + activation
-5. Payment + maintenance + renewal/exit
-
-The tenancy module is the contractual/compliance core of that full lifecycle and must remain synchronized with landlord and tenant portals.
-
 ---
 
 ## User Stories

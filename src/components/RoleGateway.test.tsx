@@ -5,7 +5,7 @@
  * localStorage persistence, admin/owner auto-redirect, RoleGuard, useUserRole
  */
 
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import React from 'react';
 
@@ -31,55 +31,27 @@ const mockSafeStorage = {
 };
 vi.mock('../utils/safeStorage', () => ({
   safeStorage: {
-    setJSON: (...args: unknown[]) => mockSafeStorage.setJSON(...args),
-    getJSON: (...args: unknown[]) => mockSafeStorage.getJSON(...args),
+    setJSON: (...args: any[]) => (mockSafeStorage.setJSON as Function)(...args),
+    getJSON: (...args: any[]) => (mockSafeStorage.getJSON as Function)(...args),
   },
 }));
 
 // Mock styled components
 vi.mock('./RoleGateway.styles', () => ({
-  Container: ({ children, ...p }: React.PropsWithChildren) => (
-    <div data-testid="rg-container" {...p}>
-      {children}
-    </div>
-  ),
+  Container: ({ children, ...p }: React.PropsWithChildren) => <div data-testid="rg-container" {...p}>{children}</div>,
   ContainerContent: ({ children, ...p }: React.PropsWithChildren) => <div {...p}>{children}</div>,
   Header: ({ children, ...p }: React.PropsWithChildren) => <header {...p}>{children}</header>,
-  Warning: ({ children, ...p }: React.PropsWithChildren) => (
-    <p data-testid="warning" {...p}>
-      {children}
-    </p>
-  ),
-  RolesGrid: ({ children, ...p }: React.PropsWithChildren) => (
-    <div data-testid="roles-grid" {...p}>
-      {children}
-    </div>
-  ),
-  RoleCard: ({
-    children,
-    $selected,
-    ...p
-  }: React.PropsWithChildren<{ $selected?: boolean; onClick?: () => void }>) => (
-    <div role="button" data-selected={$selected} {...p}>
-      {children}
-    </div>
+  Warning: ({ children, ...p }: React.PropsWithChildren) => <p data-testid="warning" {...p}>{children}</p>,
+  RolesGrid: ({ children, ...p }: React.PropsWithChildren) => <div data-testid="roles-grid" {...p}>{children}</div>,
+  RoleCard: ({ children, $selected, ...p }: React.PropsWithChildren<{ $selected?: boolean; onClick?: () => void }>) => (
+    <div role="button" data-selected={$selected} {...p}>{children}</div>
   ),
   RoleIcon: ({ children, ...p }: React.PropsWithChildren) => <span {...p}>{children}</span>,
   RoleTitle: ({ children, ...p }: React.PropsWithChildren) => <strong {...p}>{children}</strong>,
   RoleDescription: ({ children, ...p }: React.PropsWithChildren) => <span {...p}>{children}</span>,
-  ActionButtons: ({ children, ...p }: React.PropsWithChildren) => (
-    <div data-testid="action-buttons" {...p}>
-      {children}
-    </div>
-  ),
-  Button: ({
-    children,
-    $variant,
-    ...p
-  }: React.PropsWithChildren<{ $variant?: string; onClick?: () => void }>) => (
-    <button data-variant={$variant} {...p}>
-      {children}
-    </button>
+  ActionButtons: ({ children, ...p }: React.PropsWithChildren) => <div data-testid="action-buttons" {...p}>{children}</div>,
+  Button: ({ children, $variant, ...p }: React.PropsWithChildren<{ $variant?: string; onClick?: () => void }>) => (
+    <button data-variant={$variant} {...p}>{children}</button>
   ),
 }));
 
@@ -177,7 +149,7 @@ describe('RoleGateway', () => {
           role: 'buyer',
           locked: true,
           selectedAt: expect.any(String),
-        })
+        }),
       );
     });
 
@@ -218,42 +190,32 @@ describe('RoleGateway', () => {
   });
 
   describe('admin/owner auto-redirect', () => {
-    it('redirects owner to canonical dashboard', () => {
+    it('redirects owner to lion dashboard', () => {
       render(<RoleGateway user={{ email: 'owner@test.com', role: 'owner' }} />);
 
       expect(mockSafeStorage.setJSON).toHaveBeenCalledWith(
         'userRole',
         expect.objectContaining({
-          role: 'owner',
+          role: 'lion',
           locked: true,
           isOwner: true,
           isSuperUser: true,
-        })
+        }),
       );
       expect(mockDispatch).toHaveBeenCalledWith({
         type: 'navigation/setActiveRole',
-        payload: 'owner',
+        payload: 'lion',
       });
-      expect(mockNavigate).toHaveBeenCalledWith('/dashboard');
+      expect(mockNavigate).toHaveBeenCalledWith('/lion/dashboard');
     });
 
-    it('redirects admin to canonical dashboard', () => {
+    it('redirects admin to lion dashboard', () => {
       render(<RoleGateway user={{ email: 'admin@test.com', role: 'admin' }} />);
 
-      expect(mockNavigate).toHaveBeenCalledWith('/dashboard');
+      expect(mockNavigate).toHaveBeenCalledWith('/lion/dashboard');
       expect(mockDispatch).toHaveBeenCalledWith({
         type: 'navigation/setActiveRole',
-        payload: 'owner',
-      });
-    });
-
-    it('redirects managing_director to canonical dashboard', () => {
-      render(<RoleGateway user={{ email: 'md@test.com', role: 'managing_director' }} />);
-
-      expect(mockNavigate).toHaveBeenCalledWith('/dashboard');
-      expect(mockDispatch).toHaveBeenCalledWith({
-        type: 'navigation/setActiveRole',
-        payload: 'owner',
+        payload: 'lion',
       });
     });
   });
@@ -261,15 +223,11 @@ describe('RoleGateway', () => {
 
 describe('RoleGuard', () => {
   it('shows children when user has allowed role', () => {
-    mockSafeStorage.getJSON.mockReturnValue({
-      role: 'buyer',
-      selectedAt: '2024-01-01',
-      locked: true,
-    } as unknown);
+    mockSafeStorage.getJSON.mockReturnValue({ role: 'buyer', selectedAt: '2024-01-01', locked: true } as any);
     render(
       <RoleGuard allowedRoles={['buyer', 'seller']}>
         <div>Protected content</div>
-      </RoleGuard>
+      </RoleGuard>,
     );
     expect(screen.getByText('Protected content')).toBeInTheDocument();
   });
@@ -279,22 +237,18 @@ describe('RoleGuard', () => {
     render(
       <RoleGuard allowedRoles={['buyer']}>
         <div>Secret</div>
-      </RoleGuard>
+      </RoleGuard>,
     );
     expect(screen.queryByText('Secret')).not.toBeInTheDocument();
     expect(mockNavigate).toHaveBeenCalledWith('/select-role');
   });
 
   it('redirects to role dashboard when role not allowed', () => {
-    mockSafeStorage.getJSON.mockReturnValue({
-      role: 'admin',
-      selectedAt: '2024-01-01',
-      locked: true,
-    } as unknown);
+    mockSafeStorage.getJSON.mockReturnValue({ role: 'admin', selectedAt: '2024-01-01', locked: true } as any);
     render(
       <RoleGuard allowedRoles={['buyer']}>
         <div>Secret</div>
-      </RoleGuard>
+      </RoleGuard>,
     );
     expect(screen.queryByText('Secret')).not.toBeInTheDocument();
     expect(mockNavigate).toHaveBeenCalledWith('/admin/dashboard');
