@@ -68,7 +68,11 @@ import leasingInventoryRoutes from './routes/leasing-inventory.js';
 import secondarySalesRoutes from './routes/secondary-sales.js';
 import commissionsRoutes from './routes/commissions.js';
 import henryRoutes from './routes/henry.js';
-import { requireRole, requirePermission } from './middleware/rbac.js';
+import contractsRoutes from './routes/contracts.js';
+import appointmentsRoutes from './routes/appointments.js';
+import roleRequestsRoutes from './routes/roleRequests.js';
+import { phase6Router as phase6Routes } from './routes/phase6.routes.js';
+import { requireRole, requirePermission, ROLE_ALIAS_MAP } from './middleware/rbac.js';
 import { startLeadScoringScheduler } from './services/ai/leadScoringScheduler.js';
 import { startFollowUpScheduler } from './services/automation/followUpScheduler.js';
 import { startRateRefresh } from './services/currencyService.js';
@@ -385,6 +389,26 @@ app.use('/api/commissions', commissionsRoutes);
 // Henry Document Hub API (AI Assistant WC-AI-003 — The Record Keeper)
 app.use('/api/henry', henryRoutes);
 
+// Contracts API (full CRUD — replaces 501 inline stub)
+app.use('/api/contracts', contractsRoutes);
+
+// Appointments API (full CRUD — replaces 501 inline stub)
+app.use('/api/appointments', appointmentsRoutes);
+
+// Role Requests API (full CRUD — replaces inline stubs)
+app.use('/api/role-requests', roleRequestsRoutes);
+
+// Phase 6 Platform Routes (queue / analytics / notifications / encryption / presence)
+// JWT → x-user-id bridge keeps phase6's own requireAuth middleware working
+app.use(
+  '/api/platform',
+  (req: Request, _res: Response, next: NextFunction) => {
+    if (req.user?.id) req.headers['x-user-id'] = req.user.id;
+    next();
+  },
+  phase6Routes,
+);
+
 // WhatsApp Webhook (public endpoint — requires webhook secret for verification)
 app.post(
   '/api/whatsapp/webhook',
@@ -523,110 +547,15 @@ app.delete(
   })
 );
 
-// Contracts API stubs (ContractManagementPage)
-app.get(
-  '/api/contracts',
-  authMiddleware,
-  requirePermission('view_contracts'),
-  asyncHandler(async (_req: Request, res: Response) => {
-    res.status(200).json({
-      success: true,
-      data: [],
-      pagination: { page: 1, pageSize: 20, total: 0, totalPages: 0 },
-    });
-  })
-);
-app.post(
-  '/api/contracts',
-  authMiddleware,
-  requirePermission('create_contracts'),
-  asyncHandler(async (_req: Request, res: Response) => {
-    res
-      .status(501)
-      .json({ success: false, error: 'Feature not yet implemented', code: 'NOT_IMPLEMENTED' });
-  })
-);
+// Contracts API stubs removed — replaced by app.use('/api/contracts', contractsRoutes) above
 
 // Job Applications API
 app.use('/api/job-applications', jobApplicationsRoutes);
 
-// Appointments API stubs (AppointmentScheduler)
-// TODO: Add Prisma model and full CRUD when scheduling module is prioritised
-app.post(
-  '/api/appointments',
-  authMiddleware,
-  asyncHandler(async (req: Request, res: Response) => {
-    logger.info('Appointment created (stub)', {
-      propertyId: req.body?.propertyId,
-      agentId: req.body?.agentId,
-    });
-    res
-      .status(501)
-      .json({ success: false, error: 'Feature not yet implemented', code: 'NOT_IMPLEMENTED' });
-  })
-);
-app.get(
-  '/api/appointments',
-  authMiddleware,
-  asyncHandler(async (_req: Request, res: Response) => {
-    res.status(200).json({
-      success: true,
-      data: [],
-      pagination: { page: 1, pageSize: 20, total: 0, totalPages: 0 },
-    });
-  })
-);
-app.patch(
-  '/api/appointments/:id',
-  authMiddleware,
-  asyncHandler(async (_req: Request, res: Response) => {
-    res
-      .status(501)
-      .json({ success: false, error: 'Feature not yet implemented', code: 'NOT_IMPLEMENTED' });
-  })
-);
-app.delete(
-  '/api/appointments/:id',
-  authMiddleware,
-  asyncHandler(async (_req: Request, res: Response) => {
-    res
-      .status(501)
-      .json({ success: false, error: 'Feature not yet implemented', code: 'NOT_IMPLEMENTED' });
-  })
-);
+// Appointments API stubs removed — replaced by app.use('/api/appointments', appointmentsRoutes) above
 
-// Tenancy Agreements API stubs (CreateTenancyAgreement)
-// TODO: Add Prisma model and full CRUD when lease management module is prioritised
-app.get(
-  '/api/tenancy-agreements',
-  authMiddleware,
-  asyncHandler(async (_req: Request, res: Response) => {
-    res.status(200).json({
-      success: true,
-      data: [],
-      pagination: { page: 1, pageSize: 20, total: 0, totalPages: 0 },
-    });
-  })
-);
-app.post(
-  '/api/tenancy-agreements',
-  authMiddleware,
-  asyncHandler(async (req: Request, res: Response) => {
-    logger.info('Tenancy agreement created (stub)', { propertyId: req.body?.propertyId });
-    res
-      .status(501)
-      .json({ success: false, error: 'Feature not yet implemented', code: 'NOT_IMPLEMENTED' });
-  })
-);
-app.patch(
-  '/api/tenancy-agreements/:id',
-  authMiddleware,
-  asyncHandler(async (_req: Request, res: Response) => {
-    res
-      .status(501)
-      .json({ success: false, error: 'Feature not yet implemented', code: 'NOT_IMPLEMENTED' });
-  })
-);
+// Tenancy Agreements — alias to /api/leases (same Lease model, same CRUD)
+app.use('/api/tenancy-agreements', leasesRoutes);
 
 // Payments API stub (Checkout — Stripe integration pending)
 // TODO: Integrate Stripe SDK when payment processing is prioritised
@@ -692,8 +621,9 @@ app.get(
   })
 );
 
-// Admin Role Management stubs (RoleSelectionForm, RoleApprovalQueue)
-// TODO: Add Prisma model for RoleRequest when role management module is prioritised
+// Admin Role Management — direct role override (admin+) + role-request CRUD via roleRequestsRoutes above
+// /api/users/role-request  → POST /api/role-requests (roleRequestsRoutes)
+// /api/admin/role-requests → GET/POST /api/role-requests (roleRequestsRoutes)
 app.post(
   '/api/users/role',
   authMiddleware,
@@ -703,7 +633,6 @@ app.post(
     if (!userId || !role) throw new AppError('userId and role are required', 400);
 
     // Validate role against the full alias map to prevent arbitrary strings being stored
-    const { ROLE_ALIAS_MAP } = await import('./middleware/rbac.js');
     if (!Object.hasOwn(ROLE_ALIAS_MAP, role)) {
       throw new AppError(
         `Invalid role: "${role}". Must be one of: ${Object.keys(ROLE_ALIAS_MAP).join(', ')}`,
@@ -725,53 +654,6 @@ app.post(
       },
     });
     res.status(200).json({ success: true, data: updated });
-  })
-);
-app.post(
-  '/api/users/role-request',
-  authMiddleware,
-  asyncHandler(async (req: Request, res: Response) => {
-    const { requestedRole } = req.body;
-    if (!requestedRole) throw new AppError('requestedRole is required', 400);
-    logger.info('Role request submitted (stub)', { userId: req.user?.id, requestedRole });
-    res
-      .status(501)
-      .json({ success: false, error: 'Feature not yet implemented', code: 'NOT_IMPLEMENTED' });
-  })
-);
-app.get(
-  '/api/admin/role-requests',
-  authMiddleware,
-  requirePermission('manage_users'),
-  asyncHandler(async (_req: Request, res: Response) => {
-    res.status(200).json({ success: true, data: { requests: [] } });
-  })
-);
-app.post(
-  '/api/admin/role-requests/:id/approve',
-  authMiddleware,
-  requirePermission('manage_users'),
-  asyncHandler(async (req: Request, res: Response) => {
-    res.status(200).json({
-      success: true,
-      data: { id: req.params.id, status: 'approved', reviewedBy: req.user?.id },
-    });
-  })
-);
-app.post(
-  '/api/admin/role-requests/:id/reject',
-  authMiddleware,
-  requirePermission('manage_users'),
-  asyncHandler(async (req: Request, res: Response) => {
-    res.status(200).json({
-      success: true,
-      data: {
-        id: req.params.id,
-        status: 'rejected',
-        reviewedBy: req.user?.id,
-        reason: req.body?.reason,
-      },
-    });
   })
 );
 

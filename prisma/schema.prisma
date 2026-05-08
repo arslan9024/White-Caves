@@ -1058,6 +1058,129 @@ model NotificationSchedule {
   @@index([createdAt])
 }
 
+// ─── CONTRACT ────────────────────────────────────────────────────────────
+
+model Contract {
+  id              String   @id @default(auto()) @map("_id") @db.ObjectId
+  contractNumber  String   @unique                          // e.g. WC-2026-0001
+  type            String                                    // tenancy, sale, mou, spa, nda
+  status          String   @default("draft")               // draft, pending_signature, active, expired, terminated, cancelled
+  title           String
+  description     String?
+  propertyId      String?  @db.ObjectId
+  buyerId         String?  @db.ObjectId                    // buyer or tenant
+  sellerId        String?  @db.ObjectId                    // seller or landlord
+  agentId         String?  @db.ObjectId
+  // Financial
+  totalValue      Float?                                    // AED
+  currency        String   @default("AED")
+  // Key dates
+  startDate       DateTime?
+  endDate         DateTime?
+  signedAt        DateTime?
+  // Document
+  documentUrl     String?                                   // signed PDF URL
+  templateKey     String?                                   // henry template reference
+  // Signature flow
+  signatureToken  String?  @unique                         // one-time token for e-sign link
+  signedByBuyer   Boolean  @default(false)
+  signedBySeller  Boolean  @default(false)
+  signedByAgent   Boolean  @default(false)
+  // Metadata
+  notes           String?
+  tags            String[]
+  metadata        Json?
+  createdBy       String   @db.ObjectId
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([status])
+  @@index([type])
+  @@index([propertyId])
+  @@index([buyerId])
+  @@index([sellerId])
+  @@index([agentId])
+  @@index([createdBy])
+  @@index([createdAt])
+}
+
+// ─── APPOINTMENT ─────────────────────────────────────────────────────────
+
+model Appointment {
+  id              String   @id @default(auto()) @map("_id") @db.ObjectId
+  type            String   @default("viewing")             // viewing, client_meeting, landlord_meeting, rera_inspection, handover, team_meeting
+  status          String   @default("scheduled")           // scheduled, confirmed, completed, cancelled, no_show, rescheduled
+  title           String?
+  // Who
+  agentId         String?  @db.ObjectId
+  clientId        String?  @db.ObjectId                    // lead or user
+  propertyId      String?  @db.ObjectId
+  // When
+  scheduledAt     DateTime
+  durationMinutes Int      @default(60)
+  // Where/How
+  location        String?
+  isVirtual       Boolean  @default(false)
+  meetingLink     String?                                   // Zoom/Teams URL
+  // Outcome
+  feedbackRating  Int?                                      // 1-5 post-meeting rating
+  feedbackText    String?
+  outcome         String?                                   // booked, interested, not_interested, follow_up
+  notes           String?
+  // ICS / calendar
+  icsToken        String?  @unique                         // for .ics download
+  googleEventId   String?                                   // for Google Calendar sync
+  // Reminders
+  reminderSentAt  DateTime?
+  createdBy       String   @db.ObjectId
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([agentId])
+  @@index([clientId])
+  @@index([propertyId])
+  @@index([status])
+  @@index([type])
+  @@index([scheduledAt])
+  @@index([createdBy])
+  @@index([createdAt])
+}
+
+// ─── ROLE REQUEST ────────────────────────────────────────────────────────
+
+model RoleRequest {
+  id              String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId          String   @db.ObjectId
+  requestedRole   String                                    // canonical role name
+  currentRole     String                                    // role at time of request
+  reason          String?
+  status          String   @default("pending")             // pending, approved, rejected
+  reviewedBy      String?  @db.ObjectId                    // admin/owner who actioned
+  reviewNote      String?
+  reviewedAt      DateTime?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([userId])
+  @@index([status])
+  @@index([createdAt])
+}
+
+// ─── SYSTEM SETTING ──────────────────────────────────────────────────────
+
+model SystemSetting {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  key         String   @unique                             // e.g. site_name, maintenance_mode, default_currency
+  value       String                                       // serialised string; JSON for complex values
+  description String?
+  category    String   @default("general")                 // general, notifications, integrations, security, finance
+  updatedBy   String?  @db.ObjectId
+  updatedAt   DateTime @updatedAt
+  createdAt   DateTime @default(now())
+
+  @@index([category])
+}
+
 // ─── HENRY: DOCUMENT RECORD ─────────────────────────────────────────────
 
 model HenryRecord {
