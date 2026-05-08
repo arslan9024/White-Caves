@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any, security/detect-object-injection */
 /**
  * Lead Scoring Engine — Phase 2A
  *
@@ -20,11 +19,11 @@ import logger from '../../utils/logger.js';
 // ─── Types ──────────────────────────────────────────────────────────────
 
 export interface ScoreBreakdown {
-  engagement: number; // 0-40 (40% weight)
-  demographic: number; // 0-30 (30% weight)
-  behavioral: number; // 0-20 (20% weight)
-  source: number; // 0-10 (10% weight)
-  total: number; // 0-100
+  engagement: number;     // 0-40 (40% weight)
+  demographic: number;    // 0-30 (30% weight)
+  behavioral: number;     // 0-20 (20% weight)
+  source: number;         // 0-10 (10% weight)
+  total: number;          // 0-100
   tier: 'hot' | 'warm' | 'cold' | 'inactive';
   factors: ScoreFactor[];
   lastScoredAt: string;
@@ -52,10 +51,10 @@ export interface BatchScoreResult {
   total: number;
   scored: number;
   errors: number;
-  upgraded: number; // Tier went up (cold → warm, warm → hot)
-  downgraded: number; // Tier went down
+  upgraded: number;    // Tier went up (cold → warm, warm → hot)
+  downgraded: number;  // Tier went down
   unchanged: number;
-  duration: number; // ms
+  duration: number;    // ms
 }
 
 // ─── Tier logic ─────────────────────────────────────────────────────────
@@ -89,10 +88,7 @@ async function scoreEngagement(leadId: string): Promise<{ score: number; factors
   else if (activityCount >= 1) activityPoints = 1;
   score += activityPoints;
   factors.push({
-    category: 'engagement',
-    factor: 'activity_count',
-    points: activityPoints,
-    maxPoints: 12,
+    category: 'engagement', factor: 'activity_count', points: activityPoints, maxPoints: 12,
     description: `${activityCount} activities logged`,
   });
 
@@ -105,10 +101,7 @@ async function scoreEngagement(leadId: string): Promise<{ score: number; factors
   else if (viewingCount >= 1) viewingPoints = 3;
   score += viewingPoints;
   factors.push({
-    category: 'engagement',
-    factor: 'viewing_count',
-    points: viewingPoints,
-    maxPoints: 10,
+    category: 'engagement', factor: 'viewing_count', points: viewingPoints, maxPoints: 10,
     description: `${viewingCount} property viewings`,
   });
 
@@ -120,18 +113,12 @@ async function scoreEngagement(leadId: string): Promise<{ score: number; factors
   else if (offerCount >= 1) offerPoints = 5;
   score += offerPoints;
   factors.push({
-    category: 'engagement',
-    factor: 'offer_count',
-    points: offerPoints,
-    maxPoints: 10,
+    category: 'engagement', factor: 'offer_count', points: offerPoints, maxPoints: 10,
     description: `${offerCount} offers submitted`,
   });
 
   // 4. Last contact recency (max 8 points)
-  const lead = await prisma.lead.findUnique({
-    where: { id: leadId },
-    select: { lastContact: true, createdAt: true },
-  });
+  const lead = await prisma.lead.findUnique({ where: { id: leadId }, select: { lastContact: true, createdAt: true } });
   const lastContactDate = lead?.lastContact || lead?.createdAt;
   let recencyPoints = 0;
   if (lastContactDate) {
@@ -144,10 +131,7 @@ async function scoreEngagement(leadId: string): Promise<{ score: number; factors
   }
   score += recencyPoints;
   factors.push({
-    category: 'engagement',
-    factor: 'contact_recency',
-    points: recencyPoints,
-    maxPoints: 8,
+    category: 'engagement', factor: 'contact_recency', points: recencyPoints, maxPoints: 8,
     description: lastContactDate
       ? `Last contact ${Math.round((Date.now() - lastContactDate.getTime()) / (1000 * 60 * 60 * 24))} days ago`
       : 'No contact recorded',
@@ -160,9 +144,7 @@ async function scoreEngagement(leadId: string): Promise<{ score: number; factors
  * DEMOGRAPHIC (30% weight) — How qualified is this lead?
  * Factors: budget, email, phone, company, property interest
  */
-async function scoreDemographic(
-  leadId: string
-): Promise<{ score: number; factors: ScoreFactor[] }> {
+async function scoreDemographic(leadId: string): Promise<{ score: number; factors: ScoreFactor[] }> {
   const factors: ScoreFactor[] = [];
   let score = 0;
 
@@ -175,25 +157,16 @@ async function scoreDemographic(
   // 1. Budget specified (max 10 points — higher budget = more qualified)
   let budgetPoints = 0;
   if (lead.budget) {
-    if (lead.budget >= 5_000_000)
-      budgetPoints = 10; // AED 5M+ luxury
-    else if (lead.budget >= 2_000_000)
-      budgetPoints = 8; // AED 2M+ premium
-    else if (lead.budget >= 1_000_000)
-      budgetPoints = 6; // AED 1M+ standard
-    else if (lead.budget >= 500_000)
-      budgetPoints = 4; // AED 500K+
-    else if (lead.budget > 0) budgetPoints = 2; // Has budget
+    if (lead.budget >= 5_000_000) budgetPoints = 10;        // AED 5M+ luxury
+    else if (lead.budget >= 2_000_000) budgetPoints = 8;     // AED 2M+ premium
+    else if (lead.budget >= 1_000_000) budgetPoints = 6;     // AED 1M+ standard
+    else if (lead.budget >= 500_000) budgetPoints = 4;       // AED 500K+
+    else if (lead.budget > 0) budgetPoints = 2;              // Has budget
   }
   score += budgetPoints;
   factors.push({
-    category: 'demographic',
-    factor: 'budget',
-    points: budgetPoints,
-    maxPoints: 10,
-    description: lead.budget
-      ? `Budget: AED ${lead.budget.toLocaleString()}`
-      : 'No budget specified',
+    category: 'demographic', factor: 'budget', points: budgetPoints, maxPoints: 10,
+    description: lead.budget ? `Budget: AED ${lead.budget.toLocaleString()}` : 'No budget specified',
   });
 
   // 2. Contact completeness (max 8 points)
@@ -203,10 +176,7 @@ async function scoreDemographic(
   else if (lead.email) contactPoints = 3;
   score += contactPoints;
   factors.push({
-    category: 'demographic',
-    factor: 'contact_info',
-    points: contactPoints,
-    maxPoints: 8,
+    category: 'demographic', factor: 'contact_info', points: contactPoints, maxPoints: 8,
     description: `${lead.email ? '✓ Email' : '✗ Email'} ${lead.phone ? '✓ Phone' : '✗ Phone'}`,
   });
 
@@ -214,10 +184,7 @@ async function scoreDemographic(
   const companyPoints = lead.company ? 4 : 0;
   score += companyPoints;
   factors.push({
-    category: 'demographic',
-    factor: 'company',
-    points: companyPoints,
-    maxPoints: 4,
+    category: 'demographic', factor: 'company', points: companyPoints, maxPoints: 4,
     description: lead.company ? `Company: ${lead.company}` : 'No company',
   });
 
@@ -225,10 +192,7 @@ async function scoreDemographic(
   const propertyPoints = lead.propertyId ? 5 : 0;
   score += propertyPoints;
   factors.push({
-    category: 'demographic',
-    factor: 'property_interest',
-    points: propertyPoints,
-    maxPoints: 5,
+    category: 'demographic', factor: 'property_interest', points: propertyPoints, maxPoints: 5,
     description: lead.propertyId ? 'Linked to specific property' : 'No property linked',
   });
 
@@ -239,10 +203,7 @@ async function scoreDemographic(
   else if (tagCount >= 1) tagPoints = 1;
   score += tagPoints;
   factors.push({
-    category: 'demographic',
-    factor: 'tags',
-    points: tagPoints,
-    maxPoints: 3,
+    category: 'demographic', factor: 'tags', points: tagPoints, maxPoints: 3,
     description: `${tagCount} tags assigned`,
   });
 
@@ -280,10 +241,7 @@ async function scoreBehavioral(leadId: string): Promise<{ score: number; factors
   const statusPoints = statusScores[lead.status] ?? 1;
   score += statusPoints;
   factors.push({
-    category: 'behavioral',
-    factor: 'status',
-    points: statusPoints,
-    maxPoints: 10,
+    category: 'behavioral', factor: 'status', points: statusPoints, maxPoints: 10,
     description: `Lead status: ${lead.status}`,
   });
 
@@ -296,10 +254,7 @@ async function scoreBehavioral(leadId: string): Promise<{ score: number; factors
   else if (transactionCount >= 1) txPoints = 4;
   score += txPoints;
   factors.push({
-    category: 'behavioral',
-    factor: 'active_transactions',
-    points: txPoints,
-    maxPoints: 6,
+    category: 'behavioral', factor: 'active_transactions', points: txPoints, maxPoints: 6,
     description: `${transactionCount} active transactions`,
   });
 
@@ -308,10 +263,7 @@ async function scoreBehavioral(leadId: string): Promise<{ score: number; factors
   const commPoints = commissionCount > 0 ? 4 : 0;
   score += commPoints;
   factors.push({
-    category: 'behavioral',
-    factor: 'commissions',
-    points: commPoints,
-    maxPoints: 4,
+    category: 'behavioral', factor: 'commissions', points: commPoints, maxPoints: 4,
     description: commissionCount > 0 ? `${commissionCount} commissions linked` : 'No commissions',
   });
 
@@ -328,22 +280,19 @@ function scoreSource(source: string, createdAt: Date): { score: number; factors:
 
   // 1. Source quality (max 7 points)
   const sourceScores: Record<string, number> = {
-    referral: 7, // Highest quality — personal recommendation
-    whatsapp: 6, // Direct engagement channel
-    phone: 5, // Proactive caller
-    website: 4, // Browsed and submitted form
-    marketing: 3, // Campaign-driven
-    direct: 2, // Walk-in or unknown
-    social: 2, // Social media
-    portal: 4, // Property portal (Bayut, PF, Dubizzle)
+    referral: 7,      // Highest quality — personal recommendation
+    whatsapp: 6,      // Direct engagement channel
+    phone: 5,         // Proactive caller
+    website: 4,       // Browsed and submitted form
+    marketing: 3,     // Campaign-driven
+    direct: 2,        // Walk-in or unknown
+    social: 2,        // Social media
+    portal: 4,        // Property portal (Bayut, PF, Dubizzle)
   };
   const sourcePoints = sourceScores[source] ?? 2;
   score += sourcePoints;
   factors.push({
-    category: 'source',
-    factor: 'channel',
-    points: sourcePoints,
-    maxPoints: 7,
+    category: 'source', factor: 'channel', points: sourcePoints, maxPoints: 7,
     description: `Source: ${source}`,
   });
 
@@ -355,10 +304,7 @@ function scoreSource(source: string, createdAt: Date): { score: number; factors:
   else if (daysSinceCreation <= 30) freshnessPoints = 1;
   score += freshnessPoints;
   factors.push({
-    category: 'source',
-    factor: 'freshness',
-    points: freshnessPoints,
-    maxPoints: 3,
+    category: 'source', factor: 'freshness', points: freshnessPoints, maxPoints: 3,
     description: `Lead age: ${Math.round(daysSinceCreation)} days`,
   });
 
@@ -400,12 +346,7 @@ export async function scoreLead(leadId: string): Promise<ScoreResult> {
     source: source.score,
     total: totalScore,
     tier,
-    factors: [
-      ...engagement.factors,
-      ...demographic.factors,
-      ...behavioral.factors,
-      ...source.factors,
-    ],
+    factors: [...engagement.factors, ...demographic.factors, ...behavioral.factors, ...source.factors],
     lastScoredAt: now.toISOString(),
   };
 
@@ -415,7 +356,7 @@ export async function scoreLead(leadId: string): Promise<ScoreResult> {
     data: {
       score: totalScore,
       scoreTier: tier,
-      scoreBreakdown: breakdown as any,
+      scoreBreakdown: breakdown as unknown as Record<string, unknown>,
       lastScoredAt: now,
     },
   });
@@ -424,47 +365,38 @@ export async function scoreLead(leadId: string): Promise<ScoreResult> {
   const changed = lead.score !== totalScore;
 
   // Record score history for trending (Phase 4A)
-  await prisma.leadScoreHistory
-    .create({
-      data: {
-        leadId,
-        score: totalScore,
-        tier,
-        previousScore: lead.score,
-        previousTier,
-        breakdown: {
-          engagement: engagement.score,
-          demographic: demographic.score,
-          behavioral: behavioral.score,
-          source: source.score,
-        },
-        trigger: 'middleware',
+  await prisma.leadScoreHistory.create({
+    data: {
+      leadId,
+      score: totalScore,
+      tier,
+      previousScore: lead.score,
+      previousTier,
+      breakdown: {
+        engagement: engagement.score,
+        demographic: demographic.score,
+        behavioral: behavioral.score,
+        source: source.score,
       },
-    })
-    .catch((err: unknown) => {
-      logger.warn('Failed to record score history', { leadId, error: err });
-    });
+      trigger: 'middleware',
+    },
+  }).catch((err: unknown) => {
+    logger.warn('Failed to record score history', { leadId, error: err });
+  });
 
   // Log significant score changes as activities
   if (changed && Math.abs(totalScore - lead.score) >= 10) {
-    await prisma.activity
-      .create({
-        data: {
-          type: 'lead',
-          action: 'score_changed',
-          description: `Lead score ${lead.score} → ${totalScore} (${previousTier} → ${tier})`,
-          leadId,
-          metadata: {
-            previousScore: lead.score,
-            newScore: totalScore,
-            previousTier,
-            newTier: tier,
-          },
-        },
-      })
-      .catch((err: unknown) => {
-        logger.warn('Failed to log score change activity', { leadId, error: err });
-      });
+    await prisma.activity.create({
+      data: {
+        type: 'lead',
+        action: 'score_changed',
+        description: `Lead score ${lead.score} → ${totalScore} (${previousTier} → ${tier})`,
+        leadId,
+        metadata: { previousScore: lead.score, newScore: totalScore, previousTier, newTier: tier },
+      },
+    }).catch((err: unknown) => {
+      logger.warn('Failed to log score change activity', { leadId, error: err });
+    });
   }
 
   return {
@@ -486,7 +418,7 @@ export async function overrideScore(
   leadId: string,
   newScore: number,
   reason: string,
-  userId?: string
+  userId?: string,
 ): Promise<ScoreResult> {
   const clamped = Math.max(0, Math.min(100, Math.round(newScore)));
   const tier = getTier(clamped);
@@ -516,29 +448,24 @@ export async function overrideScore(
     data: {
       score: clamped,
       scoreTier: tier,
-      scoreBreakdown: {
-        ...breakdown,
-        override: { score: clamped, reason, userId, at: now.toISOString() },
-      } as any,
+      scoreBreakdown: { ...breakdown, override: { score: clamped, reason, userId, at: now.toISOString() } } as unknown as Record<string, unknown>,
       lastScoredAt: now,
     },
   });
 
   // Log override as activity
-  await prisma.activity
-    .create({
-      data: {
-        type: 'lead',
-        action: 'score_override',
-        description: `Score manually set to ${clamped} (${tier}): ${reason}`,
-        leadId,
-        userId: userId || null,
-        metadata: { previousScore: lead.score, newScore: clamped, reason },
-      },
-    })
-    .catch((err: unknown) => {
-      logger.warn('Failed to log score override activity', { leadId, error: err });
-    });
+  await prisma.activity.create({
+    data: {
+      type: 'lead',
+      action: 'score_override',
+      description: `Score manually set to ${clamped} (${tier}): ${reason}`,
+      leadId,
+      userId: userId || null,
+      metadata: { previousScore: lead.score, newScore: clamped, reason },
+    },
+  }).catch((err: unknown) => {
+    logger.warn('Failed to log score override activity', { leadId, error: err });
+  });
 
   return {
     leadId,
@@ -578,7 +505,9 @@ export async function batchRescoreLeads(): Promise<BatchScoreResult> {
   for (let i = 0; i < leads.length; i += BATCH_SIZE) {
     const batch = leads.slice(i, i + BATCH_SIZE);
 
-    const results = await Promise.allSettled(batch.map(lead => scoreLead(lead.id)));
+    const results = await Promise.allSettled(
+      batch.map((lead) => scoreLead(lead.id)),
+    );
 
     for (let j = 0; j < results.length; j++) {
       const result = results[j];
@@ -600,9 +529,7 @@ export async function batchRescoreLeads(): Promise<BatchScoreResult> {
   }
 
   const duration = Date.now() - startTime;
-  logger.info(
-    `[LeadScoring] Batch complete — ${scored}/${total} scored, ${upgraded} upgraded, ${downgraded} downgraded, ${errors} errors (${duration}ms)`
-  );
+  logger.info(`[LeadScoring] Batch complete — ${scored}/${total} scored, ${upgraded} upgraded, ${downgraded} downgraded, ${errors} errors (${duration}ms)`);
 
   return { total, scored, errors, upgraded, downgraded, unchanged, duration };
 }
@@ -625,17 +552,15 @@ export default {
 export async function getScoreHistory(
   leadId: string,
   options: { limit?: number; days?: number } = {}
-): Promise<
-  Array<{
-    score: number;
-    tier: string;
-    previousScore: number;
-    previousTier: string;
-    trigger: string;
-    breakdown: unknown;
-    createdAt: Date;
-  }>
-> {
+): Promise<Array<{
+  score: number;
+  tier: string;
+  previousScore: number;
+  previousTier: string;
+  trigger: string;
+  breakdown: Record<string, unknown> | null;
+  createdAt: Date;
+}>> {
   const { limit = 50, days = 90 } = options;
 
   const since = new Date();
@@ -666,16 +591,14 @@ export async function getScoreHistory(
  */
 export async function getScoreTrending(
   options: { days?: number; minChange?: number } = {}
-): Promise<
-  Array<{
-    leadId: string;
-    currentScore: number;
-    oldestScore: number;
-    delta: number;
-    direction: 'warming' | 'cooling' | 'stable';
-    dataPoints: number;
-  }>
-> {
+): Promise<Array<{
+  leadId: string;
+  currentScore: number;
+  oldestScore: number;
+  delta: number;
+  direction: 'warming' | 'cooling' | 'stable';
+  dataPoints: number;
+}>> {
   const { days = 7, minChange = 10 } = options;
 
   const since = new Date();
@@ -709,8 +632,7 @@ export async function getScoreTrending(
       currentScore,
       oldestScore,
       delta,
-      direction:
-        delta > 0 ? ('warming' as const) : delta < 0 ? ('cooling' as const) : ('stable' as const),
+      direction: delta > 0 ? 'warming' as const : delta < 0 ? 'cooling' as const : 'stable' as const,
       dataPoints: history.length,
     });
   }
@@ -733,23 +655,16 @@ export async function getScoreTrending(
 export async function applyWhatsAppSignal(
   leadId: string,
   whatsappSignals: {
-    intentScore?: number; // 0-25 from messageProcessor
-    sentimentScore?: number; // -10 to +15
-    engagementScore?: number; // 0-20 based on message count
+    intentScore?: number;      // 0-25 from messageProcessor
+    sentimentScore?: number;   // -10 to +15
+    engagementScore?: number;  // 0-20 based on message count
     responseTimeScore?: number; // 0-10
     conversationScore?: number; // 0-100 overall from messageProcessor
   }
 ): Promise<ScoreResult> {
   const lead = await prisma.lead.findUnique({
     where: { id: leadId },
-    select: {
-      id: true,
-      score: true,
-      scoreTier: true,
-      source: true,
-      createdAt: true,
-      scoreBreakdown: true,
-    },
+    select: { id: true, score: true, scoreTier: true, source: true, createdAt: true, scoreBreakdown: true },
   });
 
   if (!lead) throw new Error(`Lead not found: ${leadId}`);
@@ -759,19 +674,19 @@ export async function applyWhatsAppSignal(
 
   if (whatsappSignals.intentScore) {
     // High-intent signals: make_offer (+25), schedule_tour (+20)
-    whatsappBonus += Math.min((whatsappSignals.intentScore / 25) * 5, 5); // max 5 pts
+    whatsappBonus += Math.min(whatsappSignals.intentScore / 25 * 5, 5); // max 5 pts
   }
 
   if (whatsappSignals.sentimentScore && whatsappSignals.sentimentScore > 0) {
-    whatsappBonus += Math.min((whatsappSignals.sentimentScore / 15) * 3, 3); // max 3 pts
+    whatsappBonus += Math.min(whatsappSignals.sentimentScore / 15 * 3, 3); // max 3 pts
   }
 
   if (whatsappSignals.engagementScore) {
-    whatsappBonus += Math.min((whatsappSignals.engagementScore / 20) * 4, 4); // max 4 pts
+    whatsappBonus += Math.min(whatsappSignals.engagementScore / 20 * 4, 4); // max 4 pts
   }
 
   if (whatsappSignals.responseTimeScore) {
-    whatsappBonus += Math.min((whatsappSignals.responseTimeScore / 10) * 3, 3); // max 3 pts
+    whatsappBonus += Math.min(whatsappSignals.responseTimeScore / 10 * 3, 3); // max 3 pts
   }
 
   whatsappBonus = Math.round(Math.min(whatsappBonus, 15));
@@ -793,30 +708,28 @@ export async function applyWhatsAppSignal(
           ...result.breakdown,
           whatsappBonus,
           whatsappSignals,
-        } as any,
+        } as unknown as Record<string, unknown>,
       },
     });
 
     // Record the WhatsApp-boosted score in history
-    await prisma.leadScoreHistory
-      .create({
-        data: {
-          leadId,
-          score: boostedScore,
-          tier: boostedTier,
-          previousScore: result.newScore,
-          previousTier: result.newTier,
-          breakdown: { ...result.breakdown, whatsappBonus } as any,
-          trigger: 'whatsapp',
-        },
-      })
-      .catch((err: unknown) => {
-        logger.warn('Failed to record WhatsApp score history', { leadId, error: err });
-      });
+    await prisma.leadScoreHistory.create({
+      data: {
+        leadId,
+        score: boostedScore,
+        tier: boostedTier,
+        previousScore: result.newScore,
+        previousTier: result.newTier,
+        breakdown: { ...result.breakdown, whatsappBonus },
+        trigger: 'whatsapp',
+      },
+    }).catch((err: unknown) => {
+      logger.warn('Failed to record WhatsApp score history', { leadId, error: err });
+    });
 
     logger.info(
       `[LeadScoring] WhatsApp signal applied: ${result.newScore} + ${whatsappBonus} = ${boostedScore} ` +
-        `(${result.newTier} → ${boostedTier}) for ${leadId}`
+      `(${result.newTier} → ${boostedTier}) for ${leadId}`
     );
 
     return {

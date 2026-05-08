@@ -2,26 +2,16 @@ import React, { useState } from 'react';
 import styled from 'styled-components';
 import { theme } from '../../styles/theme';
 
-interface EjariProperty {
-  id: string;
-  title?: string;
-  unitNumber?: string;
-  [key: string]: unknown;
-}
-
 interface EjariRegistrationModalProps {
-  property: EjariProperty;
+  property: any;
   onClose: () => void;
   onSuccess: () => void;
 }
 
 const Overlay = styled.div`
   position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.6);
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.6);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -72,35 +62,18 @@ const Button = styled.button<{ $primary?: boolean }>`
   border: none;
   cursor: pointer;
   font-weight: 500;
-  background: ${props =>
-    props.$primary ? theme.colors.primary : theme.colors.background.secondary};
-  color: ${props => (props.$primary ? 'white' : theme.colors.text.primary)};
-
+  background: ${props => props.$primary ? theme.colors.primary : theme.colors.background.secondary};
+  color: ${props => props.$primary ? 'white' : theme.colors.text.primary};
+  
   &:disabled {
     opacity: 0.7;
     cursor: not-allowed;
   }
 `;
 
-const ErrorBanner = styled.div`
-  padding: 10px 14px;
-  border-radius: 6px;
-  font-size: 14px;
-  font-weight: 500;
-  margin-bottom: ${theme.spacing.md};
-  background: #fdecea;
-  border-left: 4px solid #f44336;
-  color: #b71c1c;
-`;
-
-export const EjariRegistrationModal: React.FC<EjariRegistrationModalProps> = ({
-  property,
-  onClose,
-  onSuccess,
-}) => {
+export const EjariRegistrationModal: React.FC<EjariRegistrationModalProps> = ({ property, onClose, onSuccess }) => {
   const [ejariNumber, setEjariNumber] = useState('');
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
 
   const handleSubmit = async () => {
     if (!ejariNumber) return;
@@ -110,20 +83,21 @@ export const EjariRegistrationModal: React.FC<EjariRegistrationModalProps> = ({
       const res = await fetch(`/api/leasing-inventory/${property.id}/ejari`, {
         method: 'POST',
         headers: {
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ ejariNumber }),
+        body: JSON.stringify({ ejariNumber })
       });
 
       if (res.ok) {
         onSuccess();
       } else {
         const err = await res.json();
-        setError(err.error || 'Failed to register Ejari');
+        alert(err.error || 'Failed to register Ejari');
       }
-    } catch {
-      setError('Error registering Ejari');
+    } catch (err) {
+      console.error(err);
+      alert('Error registering Ejari');
     } finally {
       setLoading(false);
     }
@@ -131,37 +105,22 @@ export const EjariRegistrationModal: React.FC<EjariRegistrationModalProps> = ({
 
   return (
     <Overlay onClick={onClose}>
-      <Modal onClick={e => e.stopPropagation()}>
+      <Modal onClick={(e) => e.stopPropagation()}>
         <Header>
           <Title>Dubai DLD: Ejari Registration</Title>
-          <button
-            onClick={onClose}
-            style={{ background: 'none', border: 'none', fontSize: '1.5rem', cursor: 'pointer' }}
-          >
-            &times;
-          </button>
+          <button onClick={onClose} style={{ background: 'none', border: 'none', fontSize: '1.5rem', cursor: 'pointer' }}>&times;</button>
         </Header>
-        {error && (
-          <ErrorBanner role="alert" data-testid="ejari-error">
-            ⚠️ {error}
-          </ErrorBanner>
-        )}
 
-        <p style={{ marginBottom: theme.spacing.sm }}>
-          Enter the official Ejari Registration Number for{' '}
-          <strong>{property.unitNumber || property.title}</strong>:
-        </p>
-        <Input
-          type="text"
-          placeholder="e.g. 1234567890"
+        <p style={{ marginBottom: theme.spacing.sm }}>Enter the official Ejari Registration Number for <strong>{property.unitNumber || property.title}</strong>:</p>
+        <Input 
+          type="text" 
+          placeholder="e.g. 1234567890" 
           value={ejariNumber}
-          onChange={e => setEjariNumber(e.target.value)}
+          onChange={(e) => setEjariNumber(e.target.value)}
         />
 
         <Footer>
-          <Button onClick={onClose} disabled={loading}>
-            Cancel
-          </Button>
+          <Button onClick={onClose} disabled={loading}>Cancel</Button>
           <Button $primary onClick={handleSubmit} disabled={loading || !ejariNumber}>
             {loading ? 'Registering...' : 'Save Ejari'}
           </Button>

@@ -1,7 +1,7 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Request, Response } from 'express';
 import { prisma } from '../database.js';
 import { asyncHandler, AppError } from '../middleware/errorHandler.js';
+import logger from '../utils/logger.js';
 
 // 1. Get all secondary sales inventory properties
 export const getSecondarySalesInventory = asyncHandler(async (req: Request, res: Response) => {
@@ -34,7 +34,7 @@ export const transitionSalesStage = asyncHandler(async (req: Request, res: Respo
   // Strict validation logic for Dubai compliance
   if (newStage === 'dld_transfer') {
     // We expect nocIssued flag or something similar. Let's assume we store it in a metadata or we'll add nocMissing
-    // For now, if we had a nocMissing field we would check it.
+    // For now, if we had a nocMissing field we would check it. 
     // Let's assume any property moving to dld_transfer requires NOC.
     // If not implemented as a DB column, we'll just allow it for this mockup, but ideally we check it.
   }
@@ -72,11 +72,11 @@ export const uploadNocDocument = asyncHandler(async (req: Request, res: Response
 
   const property = await prisma.property.update({
     where: { id },
-    data: {
+    data: { 
       documents: { push: fileUrl },
       // if we had an nocMissing field we'd set it false
     },
-  } as any);
+  });
 
   // Create Activity
   await prisma.activity.create({
