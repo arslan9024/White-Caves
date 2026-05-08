@@ -13,6 +13,7 @@ import sidebarReducer from './slices/sidebarSlice';
 import notificationReducer from './slices/notificationSlice';
 import whatsappReducer from './slices/whatsappSlice';
 import nadiaReducer from './slices/nadiaSlice';
+import lindaReducer from './slices/lindaSlice';
 import crmDataReducer from './crmDataSlice';
 import roleReducer from './roleSlice';
 import featuresReducer from './featuresSlice';
@@ -52,6 +53,7 @@ export const store = configureStore({
     notifications: notificationReducer,
     whatsapp: whatsappReducer,
     nadia: nadiaReducer,
+    linda: lindaReducer,
     crmData: crmDataReducer,
     role: roleReducer,
     features: featuresReducer,

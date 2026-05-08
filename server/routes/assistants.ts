@@ -63,7 +63,7 @@ const ASSISTANT_REGISTRY: Record<string, {
   cipher:     { id: 'cipher',     name: 'Cipher',     title: 'Security Analyst',                department: 'security',       icon: 'Lock',          colorScheme: '#EF4444', avatar: '🔐' },
   maven:      { id: 'maven',      name: 'Maven',      title: 'Data Scientist',                  department: 'analytics',      icon: 'BarChart3',     colorScheme: '#7C3AED', avatar: '📊' },
   vesta:      { id: 'vesta',      name: 'Vesta',      title: 'Property Valuation Specialist',   department: 'operations',     icon: 'Building2',     colorScheme: '#D97706', avatar: '🏢' },
-  henry:      { id: 'henry',      name: 'Henry',      title: 'Property Photographer & Tours',   department: 'marketing',      icon: 'Camera',        colorScheme: '#0891B2', avatar: '📸' },
+  henry:      { id: 'henry',      name: 'Henry',      title: 'Document Hub Manager (The Record Keeper)',   department: 'legal',          icon: 'FileText',      colorScheme: '#7C3AED', avatar: '📄' },
   hunter:     { id: 'hunter',     name: 'Hunter',     title: 'Lead Generation Specialist',      department: 'sales',          icon: 'Target',        colorScheme: '#DC2626', avatar: '🎯' },
   juno:       { id: 'juno',       name: 'Juno',       title: 'Client Relations Manager',        department: 'sales',          icon: 'Heart',         colorScheme: '#BE185D', avatar: '💼' },
   kairos:     { id: 'kairos',     name: 'Kairos',     title: 'Market Intelligence Analyst',     department: 'analytics',      icon: 'TrendingUp',    colorScheme: '#065F46', avatar: '📡' },

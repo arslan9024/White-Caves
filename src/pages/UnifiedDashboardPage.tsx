@@ -42,6 +42,8 @@ const NinaWhatsAppBotCRM = lazy(() => import('../components/crm/NinaWhatsAppBotC
 const NancyHRCRM = lazy(() => import('../components/crm/NancyHRCRM_NEW'));
 const SophiaSalesCRM = lazy(() => import('../components/crm/SophiaSalesCRM_NEW'));
 const DaisyLeasingCRM = lazy(() => import('../components/crm/DaisyLeasingCRM_NEW'));
+const LindaAdminCRM = lazy(() => import('../components/crm/LindaAdminCRM_NEW'));
+const HenryDocumentHub = lazy(() => import('../features/henry/HenryDocumentHub'));
 const TheodoraFinanceCRM = lazy(() => import('../components/crm/TheodoraFinanceCRM_NEW'));
 const OliviaMarketingCRM = lazy(() => import('../components/crm/OliviaMarketingCRM_NEW'));
 const ZoeExecutiveCRM = lazy(() => import('../components/crm/ZoeExecutiveCRM_NEW'));
@@ -108,6 +110,10 @@ const CRM_MODULES: Record<string, CRMModule> = {
   leads: { Component: LeadScoringModule, label: 'Lead Scoring' },
   valuation: { Component: PropertyValuationModule, label: 'Property Valuation' },
   analytics: { Component: MarketAnalyticsModule, label: 'Market Analytics' },
+
+  // White Caves Channel & Document Modules
+  linda: { Component: (LindaAdminCRM as ComponentType<CRMModuleProps>), label: 'Linda WhatsApp Bot' },
+  henry: { Component: (HenryDocumentHub as ComponentType<CRMModuleProps>), label: '📄 Document Hub (Henry)' },
 };
 
 // ─── Page Component ───────────────────────────────────────────
