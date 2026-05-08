@@ -1,5 +1,15 @@
 import React, { useState, useMemo } from 'react';
-import { Filter, Search, CheckCircle, AlertCircle, Clock, ArrowUpRight, MapPin, Home, DollarSign } from 'lucide-react';
+import {
+  Filter,
+  Search,
+  CheckCircle,
+  AlertCircle,
+  Clock,
+  ArrowUpRight,
+  MapPin,
+  Home,
+  DollarSign,
+} from 'lucide-react';
 import './PropertyOpportunityList.css';
 
 /**
@@ -22,7 +32,7 @@ export default function PropertyOpportunityList() {
       confidence: 92,
       status: 'initial_detection',
       extractedAt: '2 hours ago',
-      completeness: 85
+      completeness: 85,
     },
     {
       id: 'opp_2',
@@ -37,7 +47,7 @@ export default function PropertyOpportunityList() {
       confidence: 78,
       status: 'waiting_for_photos',
       extractedAt: '5 hours ago',
-      completeness: 65
+      completeness: 65,
     },
     {
       id: 'opp_3',
@@ -52,7 +62,7 @@ export default function PropertyOpportunityList() {
       confidence: 85,
       status: 'partially_verified',
       extractedAt: '1 day ago',
-      completeness: 72
+      completeness: 72,
     },
     {
       id: 'opp_4',
@@ -67,7 +77,7 @@ export default function PropertyOpportunityList() {
       confidence: 88,
       status: 'fully_verified',
       extractedAt: '3 days ago',
-      completeness: 100
+      completeness: 100,
     },
     {
       id: 'opp_5',
@@ -82,8 +92,8 @@ export default function PropertyOpportunityList() {
       confidence: 65,
       status: 'initial_detection',
       extractedAt: '4 hours ago',
-      completeness: 50
-    }
+      completeness: 50,
+    },
   ]);
 
   const [searchTerm, setSearchTerm] = useState('');
@@ -92,17 +102,19 @@ export default function PropertyOpportunityList() {
   const [sortBy, setSortBy] = useState('confidence');
   const [showFilters, setShowFilters] = useState(false);
   const [selectedOpportunity, setSelectedOpportunity] = useState(null);
+  const [statusMessage, setStatusMessage] = useState(null);
 
   // Filter and sort opportunities
   const filteredAndSorted = useMemo(() => {
     let filtered = opportunities.filter(opp => {
-      const matchesSearch = opp.location.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                           opp.ownerName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                           opp.propertyType.toLowerCase().includes(searchTerm.toLowerCase());
-      
+      const matchesSearch =
+        opp.location.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        opp.ownerName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        opp.propertyType.toLowerCase().includes(searchTerm.toLowerCase());
+
       const matchesStatus = filterStatus === 'all' || opp.status === filterStatus;
       const matchesConfidence = opp.confidence >= filterConfidence;
-      
+
       return matchesSearch && matchesStatus && matchesConfidence;
     });
 
@@ -125,7 +137,7 @@ export default function PropertyOpportunityList() {
     return filtered;
   }, [opportunities, searchTerm, filterStatus, filterConfidence, sortBy]);
 
-  const getStatusColor = (status) => {
+  const getStatusColor = status => {
     switch (status) {
       case 'initial_detection':
         return { bg: '#fef3c7', text: '#92400e', label: 'Detected' };
@@ -140,29 +152,54 @@ export default function PropertyOpportunityList() {
     }
   };
 
-  const getConfidenceColor = (confidence) => {
+  const getConfidenceColor = confidence => {
     if (confidence >= 85) return '#10B981';
     if (confidence >= 70) return '#F59E0B';
     return '#EF4444';
   };
 
-  const handleAddToInventory = (opportunity) => {
+  const handleAddToInventory = opportunity => {
     if (opportunity.status !== 'fully_verified') {
-      alert('Property must be fully verified before adding to inventory');
+      setStatusMessage({
+        type: 'error',
+        text: 'Property must be fully verified before adding to inventory',
+      });
       return;
     }
     // In production: call PropertySourcingService.convertOpportunityToProperty
-    console.log('Adding to inventory:', opportunity);
+    setStatusMessage({
+      type: 'success',
+      text: 'Property queued for Mary Inventory successfully.',
+    });
   };
 
   const handleUpdateStatus = (opportunityId, newStatus) => {
-    setOpportunities(opps => opps.map(opp =>
-      opp.id === opportunityId ? { ...opp, status: newStatus } : opp
-    ));
+    setOpportunities(opps =>
+      opps.map(opp => (opp.id === opportunityId ? { ...opp, status: newStatus } : opp))
+    );
   };
 
   return (
     <div className="opportunity-list">
+      {statusMessage && (
+        <div
+          role={statusMessage.type === 'error' ? 'alert' : 'status'}
+          data-testid="opportunity-status-banner"
+          style={{
+            marginBottom: '12px',
+            padding: '10px 14px',
+            borderRadius: '8px',
+            fontSize: '14px',
+            fontWeight: 600,
+            borderLeft: `4px solid ${statusMessage.type === 'error' ? '#F04438' : '#12B76A'}`,
+            background: statusMessage.type === 'error' ? '#FEF3F2' : '#ECFDF3',
+            color: statusMessage.type === 'error' ? '#B42318' : '#027A48',
+          }}
+        >
+          {statusMessage.type === 'error' ? '⚠️' : '✅'} {statusMessage.text}
+        </div>
+      )}
+
       {/* Header */}
       <div className="opportunity-header">
         <div className="header-title">
@@ -178,11 +215,15 @@ export default function PropertyOpportunityList() {
             <span className="stat-label">Total</span>
           </div>
           <div className="stat">
-            <span className="stat-value">{opportunities.filter(o => o.confidence >= 80).length}</span>
+            <span className="stat-value">
+              {opportunities.filter(o => o.confidence >= 80).length}
+            </span>
             <span className="stat-label">High Confidence</span>
           </div>
           <div className="stat">
-            <span className="stat-value">{opportunities.filter(o => o.status === 'fully_verified').length}</span>
+            <span className="stat-value">
+              {opportunities.filter(o => o.status === 'fully_verified').length}
+            </span>
             <span className="stat-label">Verified</span>
           </div>
         </div>
@@ -196,7 +237,7 @@ export default function PropertyOpportunityList() {
             type="text"
             placeholder="Search by location, owner, property type..."
             value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
+            onChange={e => setSearchTerm(e.target.value)}
             className="search-input"
           />
         </div>
@@ -217,7 +258,7 @@ export default function PropertyOpportunityList() {
             <label>Status</label>
             <select
               value={filterStatus}
-              onChange={(e) => setFilterStatus(e.target.value)}
+              onChange={e => setFilterStatus(e.target.value)}
               className="filter-select"
             >
               <option value="all">All Statuses</option>
@@ -236,7 +277,7 @@ export default function PropertyOpportunityList() {
                 min="0"
                 max="100"
                 value={filterConfidence}
-                onChange={(e) => setFilterConfidence(parseInt(e.target.value))}
+                onChange={e => setFilterConfidence(parseInt(e.target.value))}
                 className="slider"
               />
               <div className="slider-value">≥ {filterConfidence}%</div>
@@ -247,7 +288,7 @@ export default function PropertyOpportunityList() {
             <label>Sort By</label>
             <select
               value={sortBy}
-              onChange={(e) => setSortBy(e.target.value)}
+              onChange={e => setSortBy(e.target.value)}
               className="filter-select"
             >
               <option value="confidence">Confidence (High to Low)</option>
@@ -274,7 +315,9 @@ export default function PropertyOpportunityList() {
               <div
                 key={opp.id}
                 className="opportunity-card"
-                onClick={() => setSelectedOpportunity(selectedOpportunity?.id === opp.id ? null : opp)}
+                onClick={() =>
+                  setSelectedOpportunity(selectedOpportunity?.id === opp.id ? null : opp)
+                }
               >
                 {/* Card Header */}
                 <div className="card-header">
@@ -302,7 +345,7 @@ export default function PropertyOpportunityList() {
                       className="status-badge"
                       style={{
                         backgroundColor: statusColor.bg,
-                        color: statusColor.text
+                        color: statusColor.text,
                       }}
                     >
                       {statusColor.label}
@@ -323,7 +366,7 @@ export default function PropertyOpportunityList() {
                         className="progress-fill"
                         style={{
                           width: `${opp.completeness}%`,
-                          backgroundColor: opp.completeness >= 80 ? '#10B981' : '#F59E0B'
+                          backgroundColor: opp.completeness >= 80 ? '#10B981' : '#F59E0B',
                         }}
                       />
                     </div>
@@ -336,7 +379,9 @@ export default function PropertyOpportunityList() {
                       <span className="detail-value">
                         <DollarSign size={14} />
                         {opp.price.toLocaleString()} {opp.currency}
-                        <span className="frequency">{opp.availability === 'for_rent' ? '/month' : ''}</span>
+                        <span className="frequency">
+                          {opp.availability === 'for_rent' ? '/month' : ''}
+                        </span>
                       </span>
                     </div>
 
@@ -398,9 +443,7 @@ export default function PropertyOpportunityList() {
                       </button>
                     )}
 
-                    <button className="action-btn action-contact">
-                      Contact Owner
-                    </button>
+                    <button className="action-btn action-contact">Contact Owner</button>
                   </div>
                 )}
               </div>

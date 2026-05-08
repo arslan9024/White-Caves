@@ -10,9 +10,14 @@ export default function AIModelSelector({ onModelChange = null }) {
   const [currentModel, setCurrentModel] = useState('deepseek');
   const [modelStatus, setModelStatus] = useState({
     deepseek: false,
-    ollama: false
+    ollama: false,
   });
   const [loading, setLoading] = useState(true);
+  const [statusMessage, setStatusMessage] = useState(null);
+
+  const showStatus = (type, text) => {
+    setStatusMessage({ type, text });
+  };
 
   // Check AI model availability on mount
   useEffect(() => {
@@ -32,7 +37,7 @@ export default function AIModelSelector({ onModelChange = null }) {
         const data = await response.json();
         setModelStatus({
           deepseek: data.deepseekAvailable || false,
-          ollama: data.ollamaAvailable || false
+          ollama: data.ollamaAvailable || false,
         });
         setCurrentModel(data.currentModel || 'deepseek');
       }
@@ -46,36 +51,37 @@ export default function AIModelSelector({ onModelChange = null }) {
   /**
    * Switch AI model
    */
-  const handleSwitchModel = async (modelName) => {
+  const handleSwitchModel = async modelName => {
     try {
       const response = await fetch('/api/plans/set-ai-model', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ model: modelName })
+        body: JSON.stringify({ model: modelName }),
       });
 
       if (response.ok) {
         setCurrentModel(modelName);
         if (onModelChange) onModelChange(modelName);
-        alert(`Switched to ${modelName} AI model`);
+        showStatus('success', `Switched to ${modelName} AI model`);
       } else {
         const error = await response.json();
-        alert(`Failed to switch to ${modelName}. ${error.error || 'Model may not be available.'}`);
+        showStatus(
+          'error',
+          `Failed to switch to ${modelName}. ${error.error || 'Model may not be available.'}`
+        );
       }
     } catch (error) {
       console.error('Error switching AI model:', error);
-      alert('Error switching AI model');
+      showStatus('error', 'Error switching AI model');
     }
   };
 
-  const getModelIcon = (model) => {
-    return model === 'deepseek' ? <Cloud size={20} /> : <Server size={20} />;
-  };
-
-  const getStatusIcon = (isAvailable) => {
-    return isAvailable 
-      ? <CheckCircle size={16} className="text-green-500" />
-      : <AlertCircle size={16} className="text-red-500" />;
+  const getStatusIcon = isAvailable => {
+    return isAvailable ? (
+      <CheckCircle size={16} className="text-green-500" />
+    ) : (
+      <AlertCircle size={16} className="text-red-500" />
+    );
   };
 
   const getStatusText = (model, isAvailable) => {
@@ -90,6 +96,25 @@ export default function AIModelSelector({ onModelChange = null }) {
         <span className="selector-title">AI Model</span>
         <Settings size={16} className="settings-icon" />
       </div>
+
+      {statusMessage && (
+        <div
+          role={statusMessage.type === 'error' ? 'alert' : 'status'}
+          data-testid="ai-model-status-banner"
+          style={{
+            marginBottom: '12px',
+            padding: '10px 14px',
+            borderRadius: '8px',
+            fontSize: '14px',
+            fontWeight: 600,
+            borderLeft: `4px solid ${statusMessage.type === 'error' ? '#F04438' : '#12B76A'}`,
+            background: statusMessage.type === 'error' ? '#FEF3F2' : '#ECFDF3',
+            color: statusMessage.type === 'error' ? '#B42318' : '#027A48',
+          }}
+        >
+          {statusMessage.type === 'error' ? '⚠️' : '✅'} {statusMessage.text}
+        </div>
+      )}
 
       <div className="models-grid">
         {/* DeepSeek Option */}
@@ -141,7 +166,7 @@ export default function AIModelSelector({ onModelChange = null }) {
 
       <div className="selector-footer">
         {loading && <span className="loading">Checking models...</span>}
-        <button 
+        <button
           className="refresh-btn"
           onClick={checkModelsAvailability}
           disabled={loading}

@@ -8,13 +8,19 @@
  * - Rejection reason input
  * - Counter-amount input
  *
+ * Phase 31: Wired to live API — GET /api/offers/received, PATCH /api/offers/:id
+ *
  * @component
  */
 
-import React, { FC, useMemo, useState } from 'react';
+import React, { FC, useMemo, useState, useEffect, useCallback } from 'react';
 import { useSelector } from 'react-redux';
 import type { RootState } from '../../../store/store';
+import { authFetch } from '../../../utils/authFetch';
+import { createLogger } from '../../../utils/logger';
 import '../../../pages/RolePages.css';
+
+const log = createLogger('LandlordOfferReviewTab');
 
 type OfferStatus = 'pending' | 'accepted' | 'rejected' | 'countered';
 
@@ -31,62 +37,142 @@ interface OfferEntry {
   rejectionReason?: string;
 }
 
+interface ApiOffer {
+  id: string;
+  amount: number;
+  terms: string | null;
+  expiresAt: string | null;
+  status: string;
+  counterAmount: number | null;
+  rejectionReason: string | null;
+  property: {
+    id: string;
+    title: string;
+    location: string;
+  } | null;
+  buyer: {
+    id: string;
+    name: string;
+    email: string;
+  } | null;
+}
+
+const apiOfferToEntry = (o: ApiOffer): OfferEntry => ({
+  id: o.id,
+  propertyTitle: o.property?.title ?? 'Unknown Property',
+  tenantName: o.buyer?.name ?? 'Unknown Applicant',
+  amount: o.amount ?? 0,
+  currency: 'AED',
+  terms: o.terms ?? '—',
+  expiresAt: o.expiresAt
+    ? new Date(o.expiresAt).toLocaleDateString('en-AE', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
+      })
+    : '—',
+  status: (['pending', 'accepted', 'rejected', 'countered'].includes(o.status)
+    ? o.status
+    : 'pending') as OfferStatus,
+  counterAmount: o.counterAmount ?? undefined,
+  rejectionReason: o.rejectionReason ?? undefined,
+});
+
 const LandlordOfferReviewTab: FC = () => {
   const currentUser = useSelector((state: RootState) => state.user.currentUser);
 
-  const [offers, setOffers] = useState<OfferEntry[]>([
-    {
-      id: 'offer-001',
-      propertyTitle: 'Marina View 2BR Apartment',
-      tenantName: 'Ahmed Al Rashid',
-      amount: 7500,
-      currency: 'AED',
-      terms: '1-year lease, monthly PDC cheques, no pets.',
-      expiresAt: '2026-05-15',
-      status: 'pending',
-    },
-    {
-      id: 'offer-002',
-      propertyTitle: 'Downtown Studio',
-      tenantName: 'Sarah Johnson',
-      amount: 5200,
-      currency: 'AED',
-      terms: '6-month lease, direct bank transfer.',
-      expiresAt: '2026-05-10',
-      status: 'pending',
-    },
-    {
-      id: 'offer-003',
-      propertyTitle: 'JBR 3BR Villa',
-      tenantName: 'Mohammed Al Farsi',
-      amount: 18000,
-      currency: 'AED',
-      terms: '2-year lease, PDC cheques, pet allowed.',
-      expiresAt: '2026-05-20',
-      status: 'accepted',
-    },
-  ]);
-
+  const [offers, setOffers] = useState<OfferEntry[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [activeOfferId, setActiveOfferId] = useState<string | null>(null);
   const [actionType, setActionType] = useState<'reject' | 'counter' | null>(null);
   const [rejectionReason, setRejectionReason] = useState('');
   const [counterAmount, setCounterAmount] = useState('');
+  const [submitting, setSubmitting] = useState(false);
+
+  // ── Fetch received offers ──────────────────────────────────────────────────
+  useEffect(() => {
+    if (!currentUser) return;
+    let cancelled = false;
+
+    authFetch('/api/offers/received')
+      .then(r => r.json())
+      .then(data => {
+        if (!cancelled) {
+          const raw: ApiOffer[] = data.data ?? [];
+          setOffers(raw.map(apiOfferToEntry));
+          setLoading(false);
+        }
+      })
+      .catch(err => {
+        if (!cancelled) {
+          log.error('Failed to load offers:', err);
+          setError('Unable to load offers. Please refresh.');
+          setLoading(false);
+        }
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [currentUser]);
+
+  // ── Decision helpers ───────────────────────────────────────────────────────
+  const patchOffer = useCallback(
+    async (
+      offerId: string,
+      body: Record<string, unknown>,
+      optimisticUpdate: (prev: OfferEntry[]) => OfferEntry[],
+    ) => {
+      setSubmitting(true);
+      // Optimistic update
+      setOffers(optimisticUpdate);
+      try {
+        const res = await authFetch(`/api/offers/${offerId}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(body),
+        });
+        if (!res.ok) {
+          const data = await res.json().catch(() => ({}));
+          throw new Error(data.message ?? 'Request failed');
+        }
+      } catch (err) {
+        log.error('Offer action failed, reverting:', err);
+        // Revert optimistic update on failure
+        setOffers(prev =>
+          prev.map(o =>
+            o.id === offerId ? { ...o, status: 'pending' as OfferStatus } : o,
+          ),
+        );
+        setError('Action failed. Please try again.');
+      } finally {
+        setSubmitting(false);
+      }
+    },
+    [],
+  );
 
   const pendingOffers = useMemo(() => offers.filter(o => o.status === 'pending'), [offers]);
   const decidedOffers = useMemo(() => offers.filter(o => o.status !== 'pending'), [offers]);
 
   const handleAccept = (offerId: string) => {
-    setOffers(prev =>
-      prev.map(o => (o.id === offerId ? { ...o, status: 'accepted' } : o))
+    void patchOffer(
+      offerId,
+      { status: 'accepted' },
+      prev => prev.map(o => (o.id === offerId ? { ...o, status: 'accepted' as OfferStatus } : o)),
     );
   };
 
   const handleReject = (offerId: string) => {
     if (!rejectionReason.trim()) return;
-    setOffers(prev =>
-      prev.map(o =>
-        o.id === offerId ? { ...o, status: 'rejected', rejectionReason } : o
-      )
+    void patchOffer(
+      offerId,
+      { status: 'rejected', rejectionReason },
+      prev =>
+        prev.map(o =>
+          o.id === offerId ? { ...o, status: 'rejected' as OfferStatus, rejectionReason } : o,
+        ),
     );
     setActiveOfferId(null);
     setActionType(null);
@@ -96,10 +182,15 @@ const LandlordOfferReviewTab: FC = () => {
   const handleCounter = (offerId: string) => {
     const amount = parseFloat(counterAmount);
     if (!amount || amount <= 0) return;
-    setOffers(prev =>
-      prev.map(o =>
-        o.id === offerId ? { ...o, status: 'countered', counterAmount: amount } : o
-      )
+    void patchOffer(
+      offerId,
+      { status: 'countered', counterAmount: amount },
+      prev =>
+        prev.map(o =>
+          o.id === offerId
+            ? { ...o, status: 'countered' as OfferStatus, counterAmount: amount }
+            : o,
+        ),
     );
     setActiveOfferId(null);
     setActionType(null);
@@ -122,6 +213,24 @@ const LandlordOfferReviewTab: FC = () => {
     return (
       <div className="empty-state">
         <p>You must be logged in to review offers.</p>
+      </div>
+    );
+  }
+
+  if (loading) {
+    return (
+      <div className="tab-content-section">
+        <p className="empty-state-text">⏳ Loading offers…</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="tab-content-section">
+        <p className="empty-state-text" style={{ color: 'var(--error-red, #ef4444)' }}>
+          {error}
+        </p>
       </div>
     );
   }
@@ -169,6 +278,7 @@ const LandlordOfferReviewTab: FC = () => {
                   type="button"
                   className="btn-primary"
                   onClick={() => handleAccept(offer.id)}
+                  disabled={submitting}
                   data-testid={`accept-offer-${offer.id}`}
                 >
                   ✅ Accept
@@ -177,6 +287,7 @@ const LandlordOfferReviewTab: FC = () => {
                   type="button"
                   className="btn-secondary"
                   onClick={() => openAction(offer.id, 'counter')}
+                  disabled={submitting}
                   data-testid={`counter-offer-${offer.id}`}
                 >
                   🔄 Counter
@@ -185,6 +296,7 @@ const LandlordOfferReviewTab: FC = () => {
                   type="button"
                   className="btn-danger"
                   onClick={() => openAction(offer.id, 'reject')}
+                  disabled={submitting}
                   data-testid={`reject-offer-${offer.id}`}
                 >
                   ❌ Reject

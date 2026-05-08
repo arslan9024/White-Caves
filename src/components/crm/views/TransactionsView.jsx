@@ -67,6 +67,11 @@ export default function TransactionsView() {
   const [modalMode, setModalMode] = useState('view');
   const [editForm, setEditForm] = useState({});
   const [importing, setImporting] = useState(false);
+  const [statusMessage, setStatusMessage] = useState(null);
+
+  const showStatus = (type, text) => {
+    setStatusMessage({ type, text });
+  };
 
   const fetchTransactions = useCallback(async () => {
     setLoading(true);
@@ -86,6 +91,7 @@ export default function TransactionsView() {
       }
     } catch {
       // handled silently
+    } finally {
       setLoading(false);
     }
   }, [pagination.page, pagination.limit, sortConfig, filters]);
@@ -180,7 +186,7 @@ export default function TransactionsView() {
       fetchTransactions();
       fetchStats();
     } catch {
-      alert('Failed to save transaction');
+      showStatus('error', 'Failed to save transaction');
     }
   };
 
@@ -208,12 +214,12 @@ export default function TransactionsView() {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
       if (response.data.success) {
-        alert(`Successfully imported ${response.data.imported} transactions`);
+        showStatus('success', `Successfully imported ${response.data.imported} transactions`);
         fetchTransactions();
         fetchStats();
       }
     } catch {
-      alert('Failed to import file');
+      showStatus('error', 'Failed to import file');
     } finally {
       setImporting(false);
       e.target.value = '';
@@ -242,6 +248,25 @@ export default function TransactionsView() {
           </button>
         </div>
       </div>
+
+      {statusMessage && (
+        <div
+          role={statusMessage.type === 'error' ? 'alert' : 'status'}
+          data-testid="transactions-status-banner"
+          style={{
+            marginBottom: '16px',
+            padding: '12px 16px',
+            borderRadius: '8px',
+            fontSize: '14px',
+            fontWeight: 600,
+            borderLeft: `4px solid ${statusMessage.type === 'error' ? '#F04438' : '#12B76A'}`,
+            background: statusMessage.type === 'error' ? '#FEF3F2' : '#ECFDF3',
+            color: statusMessage.type === 'error' ? '#B42318' : '#027A48',
+          }}
+        >
+          {statusMessage.type === 'error' ? '⚠️' : '✅'} {statusMessage.text}
+        </div>
+      )}
 
       {stats && (
         <div className="stats-grid">

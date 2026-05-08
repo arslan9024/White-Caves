@@ -13,16 +13,13 @@ export interface CustomError extends Error {
   isOperational?: boolean;
 }
 
-type AsyncRouteHandler = (req: Request, res: Response, next: NextFunction) => Promise<void> | void;
+type AsyncRouteHandler = (req: Request, res: Response, next?: NextFunction) => Promise<unknown>;
 
 // Async handler wrapper to catch errors
-export const asyncHandler = (fn: AsyncRouteHandler) => (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
-  Promise.resolve(fn(req, res, next)).catch(next);
-};
+export const asyncHandler =
+  (fn: AsyncRouteHandler) => (req: Request, res: Response, next: NextFunction) => {
+    Promise.resolve(fn(req, res, next)).catch(next);
+  };
 
 // Common error class
 export class AppError extends Error implements CustomError {
@@ -42,7 +39,7 @@ export const errorHandler = (
   err: CustomError | Error,
   req: Request,
   res: Response,
-  next: NextFunction
+  _next: NextFunction
 ) => {
   const statusCode = (err as CustomError).statusCode || 500;
   const message = err.message || 'Internal Server Error';
@@ -68,7 +65,6 @@ export const errors = {
   NOT_FOUND: (resource: string) => new AppError(`${resource} not found`, 404),
   BAD_REQUEST: (message: string) => new AppError(message, 400),
   INTERNAL_SERVER_ERROR: () => new AppError('Internal server error', 500),
-  VALIDATION_ERROR: (message: string) =>
-    new AppError(`Validation error: ${message}`, 422),
+  VALIDATION_ERROR: (message: string) => new AppError(`Validation error: ${message}`, 422),
   CONFLICT: (message: string) => new AppError(message, 409),
 };

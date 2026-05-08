@@ -45,7 +45,7 @@ export async function checkBRNExpirations(): Promise<ExpiryCheckResult> {
   const expiringAgents = await prisma.user.findMany({
     where: {
       brnExpiry: {
-        gte: now,        // Not yet expired
+        gte: now, // Not yet expired
         lte: maxAlertDate, // Within 30 days
       },
       brnNumber: { not: null },
@@ -68,7 +68,7 @@ export async function checkBRNExpirations(): Promise<ExpiryCheckResult> {
     if (!agent.brnExpiry || !agent.brnNumber) continue;
 
     const daysUntilExpiry = Math.ceil(
-      (agent.brnExpiry.getTime() - now.getTime()) / (24 * 60 * 60 * 1000),
+      (agent.brnExpiry.getTime() - now.getTime()) / (24 * 60 * 60 * 1000)
     );
 
     // Only notify on threshold days (30, 15, 7, 3, 1)
@@ -85,7 +85,7 @@ export async function checkBRNExpirations(): Promise<ExpiryCheckResult> {
             agent.name || 'Agent',
             agent.brnNumber,
             agent.brnExpiry.toLocaleDateString('en-AE', { timeZone: 'Asia/Dubai' }),
-            String(daysUntilExpiry),
+            String(daysUntilExpiry)
           );
 
           await sendEmailTracked({
@@ -105,9 +105,8 @@ export async function checkBRNExpirations(): Promise<ExpiryCheckResult> {
       if (agent.phone) {
         try {
           const { createMetaAPIClient } = await import('../whatsapp/metaAPI.js');
-          const { normalizePhone, WHATSAPP_TEMPLATES, getTemplateParams } = await import(
-            '../whatsapp/whatsappUtils.js'
-          );
+          const { normalizePhone, WHATSAPP_TEMPLATES, getTemplateParams } =
+            await import('../whatsapp/whatsappUtils.js');
 
           const phone = normalizePhone(agent.phone);
           const metaConfig = {
@@ -125,10 +124,12 @@ export async function checkBRNExpirations(): Promise<ExpiryCheckResult> {
               expiryDate: agent.brnExpiry.toLocaleDateString('en-AE', { timeZone: 'Asia/Dubai' }),
             });
 
-            await client.sendTemplate(phone, template.name, 'en', params);
+            await client.sendTemplate(phone ?? '', template.name, params ?? []);
             channels.push('whatsapp');
           } else {
-            logger.debug('WhatsApp not configured for BRN expiry (dev mode)', { agentId: agent.id });
+            logger.debug('WhatsApp not configured for BRN expiry (dev mode)', {
+              agentId: agent.id,
+            });
           }
         } catch (waErr) {
           logger.warn('Failed to send BRN expiry WhatsApp', { agentId: agent.id, error: waErr });
@@ -219,13 +220,13 @@ export async function getBRNExpiryReport(): Promise<
 
   const now = new Date();
 
-  return agents.map((agent) => {
+  return agents.map(agent => {
     if (!agent.brnNumber || !agent.brnExpiry) {
       return { ...agent, daysUntilExpiry: null, status: 'not_set' as const };
     }
 
     const daysUntilExpiry = Math.ceil(
-      (agent.brnExpiry.getTime() - now.getTime()) / (24 * 60 * 60 * 1000),
+      (agent.brnExpiry.getTime() - now.getTime()) / (24 * 60 * 60 * 1000)
     );
 
     let status: 'valid' | 'expiring_soon' | 'expired' = 'valid';
@@ -245,18 +246,21 @@ export async function getBRNExpiryReport(): Promise<
 export function startRERAExpiryScheduler(): NodeJS.Timeout {
   logger.info('Starting RERA BRN expiry scheduler (daily)');
 
-  const interval = setInterval(async () => {
-    try {
-      await checkBRNExpirations();
-    } catch (error) {
-      logger.error('RERA BRN expiry scheduler error', { error });
-    }
-  }, 24 * 60 * 60 * 1000); // Daily
+  const interval = setInterval(
+    async () => {
+      try {
+        await checkBRNExpirations();
+      } catch (error) {
+        logger.error('RERA BRN expiry scheduler error', { error });
+      }
+    },
+    24 * 60 * 60 * 1000
+  ); // Daily
 
   // Run once on startup (after 60s delay to allow DB connection)
   setTimeout(() => {
-    checkBRNExpirations().catch((err) =>
-      logger.error('Initial BRN expiry check failed', { error: err }),
+    checkBRNExpirations().catch(err =>
+      logger.error('Initial BRN expiry check failed', { error: err })
     );
   }, 60_000);
 

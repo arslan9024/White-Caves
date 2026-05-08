@@ -1,5 +1,5 @@
-import React from 'react';
-import { Settings, Save as SaveIcon, Bell, Lock, Zap, AlertCircle } from 'lucide-react';
+import React, { useState } from 'react';
+import { Save as SaveIcon, Bell, Lock, Zap, AlertCircle } from 'lucide-react';
 
 interface NinaSettingsData {
   showSettings: boolean;
@@ -10,8 +10,14 @@ interface NinaSettingsTabProps {
   data: NinaSettingsData;
 }
 
-export const NinaSettingsTab: React.FC<NinaSettingsTabProps> = ({ data }) => {
-  const { showSettings, setShowSettings } = data;
+export const NinaSettingsTab: React.FC<NinaSettingsTabProps> = ({ data: _data }) => {
+  const [saved, setSaved] = useState(false);
+
+  const handleSave = () => {
+    // TODO: POST settings to /api/whatsapp/nina/settings
+    setSaved(true);
+    setTimeout(() => setSaved(false), 4000);
+  };
 
   return (
     <div className="settings-tab">
@@ -34,7 +40,15 @@ export const NinaSettingsTab: React.FC<NinaSettingsTabProps> = ({ data }) => {
           </div>
           <div className="setting-item">
             <label htmlFor="nina-response-delay">Message response delay (ms)</label>
-            <input id="nina-response-delay" type="number" defaultValue="2000" min="1000" max="10000" step="500" aria-label="Message response delay in milliseconds" />
+            <input
+              id="nina-response-delay"
+              type="number"
+              defaultValue="2000"
+              min="1000"
+              max="10000"
+              step="500"
+              aria-label="Message response delay in milliseconds"
+            />
           </div>
         </div>
 
@@ -76,7 +90,14 @@ export const NinaSettingsTab: React.FC<NinaSettingsTabProps> = ({ data }) => {
           </div>
           <div className="setting-item">
             <label htmlFor="nina-session-timeout">Session timeout (minutes)</label>
-            <input id="nina-session-timeout" type="number" defaultValue="30" min="5" max="120" aria-label="Session timeout in minutes" />
+            <input
+              id="nina-session-timeout"
+              type="number"
+              defaultValue="30"
+              min="5"
+              max="120"
+              aria-label="Session timeout in minutes"
+            />
           </div>
         </div>
 
@@ -91,13 +112,25 @@ export const NinaSettingsTab: React.FC<NinaSettingsTabProps> = ({ data }) => {
       </div>
 
       <div className="settings-actions">
-        <button
-          className="save-btn"
-          onClick={() => {
-            // TODO: POST settings to /api/whatsapp/nina/settings
-            alert('Nina settings saved (API integration pending)');
-          }}
-        >
+        {saved && (
+          <div
+            role="status"
+            data-testid="nina-settings-saved"
+            style={{
+              padding: '10px 14px',
+              borderRadius: '6px',
+              fontSize: '14px',
+              fontWeight: 500,
+              marginBottom: '8px',
+              background: '#e8f5e9',
+              borderLeft: '4px solid #4caf50',
+              color: '#2e7d32',
+            }}
+          >
+            ✅ Nina settings saved (API integration pending)
+          </div>
+        )}
+        <button className="save-btn" onClick={handleSave}>
           <SaveIcon size={18} /> Save Settings
         </button>
       </div>

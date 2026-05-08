@@ -3,6 +3,7 @@
  * Endpoints: /api/leads
  * Supports: search, filter, pagination, bulk operations, analytics
  */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 
 import { Router, Request, Response } from 'express';
 import { Prisma } from '@prisma/client';
@@ -443,7 +444,7 @@ router.patch(
     });
 
     // Emit real-time lead:updated event to all CRM users
-    getSocketServer()?.emitLeadUpdated({
+    (getSocketServer() as any)?.emitLeadUpdated({
       leadId: lead.id,
       status: lead.status,
       assignedTo: lead.assignedTo?.id,
@@ -1031,7 +1032,7 @@ router.post(
         tags,
         notes: `Auto-captured from homepage search:\n${searchSummary}`,
         budget: typeof maxPrice === 'number' && maxPrice > 0 ? maxPrice : null,
-      },
+      } as any,
       select: {
         id: true,
         name: true,
@@ -1047,7 +1048,7 @@ router.post(
     try {
       const io = getSocketServer();
       if (io) {
-        io.emit('lead:created', { source: 'homepage_search', leadId: lead.id });
+        (io as any).to('crm').emit('lead:created', { source: 'homepage_search', leadId: lead.id });
       }
     } catch {
       // Socket server unavailable - non-fatal

@@ -21,6 +21,7 @@ import { AppError } from './errorHandler';
 // If a role is already canonical it maps to itself (or is absent and passes through).
 export const ROLE_ALIAS_MAP: Record<string, string> = {
   // Executive → owner
+  lion: 'owner',
   managing_director: 'owner',
   real_estate_company: 'owner',
   // Executive → manager
