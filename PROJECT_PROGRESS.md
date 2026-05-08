@@ -1,254 +1,160 @@
-# ??? White Caves Platform � Project Progress Tracker
+# 🌟 White Caves Platform — Project Progress Tracker
 
-> **Agency:** White Caves Global Agency (30-Agent Team)  
-> **Orchestrator:** @Ada (Chief Architect)  
-> **Last Updated:** May 3, 2026  
-> **Production Ready:** 95% ? Target: 100% by June 30, 2026
-
----
-
-## ?? Overall Platform Health
-
-| TASK-018: Lead count widget on Executive dashboard | @Mira | ? Complete | Day 4 || TASK-018: Lead count widget on Executive dashboard | @Mira | ? Complete | Day 4 || TASK-018: Lead count widget on Executive dashboard | @Mira | ? Complete | Day 4 |
-��������������������������� 82% Production Ready
-| TASK-018: Lead count widget on Executive dashboard | @Mira | ? Complete | Day 4 || TASK-018: Lead count widget on Executive dashboard | @Mira | ? Complete | Day 4 || TASK-018: Lead count widget on Executive dashboard | @Mira | ? Complete | Day 4 |
-
-| Domain                                 | Status         | % Complete  | Owner                |
-| -------------------------------------- | -------------- | ----------- | -------------------- |
-| Frontend Architecture                  | ? Complete     | 95%         | @Mira                |
-| TypeScript / Type Safety               | ? Complete     | 100%        | @Grace               |
-| Redux State Management                 | ? Complete     | 95%         | @Mira                |
-| CRM Modules (7 tabs)                   | ? Complete     | 90%         | @Mira + @Una         |
-| UI Component Library                   | ? Complete     | 95%         | @Una + @Mira         |
-| Error Handling & Boundaries            | ? Complete     | 90%         | @Mira                |
-| Authentication (Firebase)              | ? Complete     | 95%         | @Daniela             |
-| Commission Tracking                    | ? Complete     | 100%        | @Mira                |
-| Homepage Hero                          | ?? In Progress | 40% ? 85%\* | @Una                 |
-| Property Search ? CRM Lead Integration | ?? Starting    | 0%          | @Margaret + @Mira    |
-| E2E Testing (Playwright)               | ?? In Progress | 65%         | @Katherine           |
-| SEO Optimization                       | ?? Planned     | 30%         | @Rachel              |
-| Performance (Core Web Vitals)          | ?? Planned     | 60%         | @Katherine + @Gwynne |
-| Accessibility (WCAG 2.1 AA)            | ?? Planned     | 50%         | @Africa              |
-| CI/CD Pipeline                         | ?? In Progress | 70%         | @Gwynne              |
-| Security Hardening                     | ?? Planned     | 50%         | @Radia               |
-
-\*After current Hero upgrade session
+> **Agency:** White Caves Global Agency
+> **Orchestrator:** @Ada (Chief Architect)
+> **Last Updated:** May 6, 2026
+> **Policy Mode:** 1000% Depth Gate + 92% Readiness Threshold (Governance V2 active)
 
 ---
 
-## ?? Active Milestones
+## 🔒 WEEKLY PREMIUM QUOTA — Copilot Senior Coders/Designers
 
-### ?? PHASE-23/24/25: Business-Logic Alignment + Operational Readiness
+> Premium usage is allowed **only** for senior coders/designers **after** @Ada declares:
+> `@Ada — Context Ready (1000% Depth, 92% Readiness) — Coding Phase Approved`
 
-**Issued By:** @Ada | **Planned By:** @Margaret | **Status:** ?? IN PROGRESS  
-**Canonical Plan:** | TASK-018: Lead count widget on Executive dashboard | @Mira | ? Complete | Day 4 |plans/PHASE_23_24_25_IMPLEMENTATION_PLAN.md| TASK-018: Lead count widget on Executive dashboard | @Mira | ? Complete | Day 4 |
+| Week                | Reset Date   | Max Requests | Used | Remaining | Status       |
+| ------------------- | ------------ | ------------ | ---- | --------- | ------------ |
+| Week of May 4, 2026 | May 10, 2026 | 50           | 22   | 28        | 🟢 AVAILABLE |
 
-#### Phase 23 Immediate Implementation Focus
+### Daily Premium Quota Model (Mandatory)
 
-- [x] Canonical phase plan created and linked in planning workspace
-- [x] Branch governance updated to development-daily / main-monthly policy
-- [x] Business requirements conflict review started (commission model + endpoint namespace)
-- [ ] Module traceability pass (Leads, Inventory, Sales, Finance, Leasing, WhatsApp)
-- [ ] Homepage improvement backlog converted to owned tasks
-- [ ] Dev/Build operational runbook checks logged for this phase
+- Formula: `daily_cap = floor(weekly_remaining / business_days_remaining)`
+- Current weekly remaining: **28**
+- Business days remaining (example): **4**
+- Computed daily cap (example): **7**
 
----
+| Date  | Weekly Remaining | Business Days Remaining | Daily Cap | Planned Requests | Actual Requests | Variance |
+| ----- | ---------------- | ----------------------- | --------- | ---------------- | --------------- | -------- |
+| May 6 | 28               | 4                       | 7         | 0                | 0               | 0        |
+| May 7 | TBD              | TBD                     | TBD       | TBD              | TBD             | TBD      |
+| May 8 | TBD              | TBD                     | TBD       | TBD              | TBD             | TBD      |
 
-### ?? MILESTONE-HERO: Dubai Luxury Hero Redesign
+**Usage Log (this week):**
 
-**Issued By:** @Ada | **Executing:** @Una | **Status:** ?? IN PROGRESS  
-**Target:** Glassmorphism hero with gold stats, animated Dubai skyline, premium search bar
-
-#### Deliverables
-
-- [x] | TASK-018: Lead count widget on Executive dashboard | @Mira | ? Complete | Day 4 |LuxuryHeroSection.tsx| TASK-018: Lead count widget on Executive dashboard | @Mira | ? Complete | Day 4 | � New Dubai Gold/Black/White hero component
-- [x] | TASK-018: Lead count widget on Executive dashboard | @Mira | ? Complete | Day 4 |LuxuryHeroSection.css| TASK-018: Lead count widget on Executive dashboard | @Mira | ? Complete | Day 4 | � Gold glassmorphism design system integration
-- [ ] Update | TASK-018: Lead count widget on Executive dashboard | @Mira | ? Complete | Day 4 |HomePage.tsx| TASK-018: Lead count widget on Executive dashboard | @Mira | ? Complete | Day 4 | to use new | TASK-018: Lead count widget on Executive dashboard | @Mira | ? Complete | Day 4 |LuxuryHeroSection| TASK-018: Lead count widget on Executive dashboard | @Mira | ? Complete | Day 4 |
-- [ ] Lighthouse performance validation (LCP < 2.5s)
-- [ ] Mobile responsive verification (375px, 768px, 1440px)
-- [ ] Accessibility audit (WCAG 2.1 AA)
-
----
-
-### ?? MILESTONE-01: Property Search ? CRM Integration Foundation
-
-**Issued By:** @Ada | **Planned By:** @Margaret | **Status:** ?? PLANNED  
-**Target:** 5-day sprint starting May 1, 2026
-
-| Task                                               | Owner                                              | Status        | ETA        |
-| -------------------------------------------------- | -------------------------------------------------- | ------------- | ---------- | ----- | --------------------------- | -------------------------------------------------- | ----- | ---------- | ----- | -------------------- | ------------ | ---------- | ----- |
-| TASK-001: Define                                   | TASK-018: Lead count widget on Executive dashboard | @Mira         | ? Complete | Day 4 | SearchLead                  | TASK-018: Lead count widget on Executive dashboard | @Mira | ? Complete | Day 4 | TypeScript interface | @Mira        | ? Complete | Day 1 |
-| TASK-002: Design MongoDB schema for search-leads   | @Barbara                                           | ? Complete    | Day 1      |
-| TASK-003: Map CRM fields to homepage search params | @Margaret                                          | ? Complete    | Day 1      |
-| TASK-004: Create                                   | TASK-018: Lead count widget on Executive dashboard | @Mira         | ? Complete | Day 4 | searchLeadsSlice.ts         | TASK-018: Lead count widget on Executive dashboard | @Mira | ? Complete | Day 4 | Redux slice          | @Mira        | ? Complete | Day 1 |
-| TASK-005: Document API contract                    | @Margaret                                          | ? Complete    | Day 1      |
-| TASK-006: Create                                   | TASK-018: Lead count widget on Executive dashboard | @Mira         | ? Complete | Day 4 | POST /api/leads/from-search | TASK-018: Lead count widget on Executive dashboard | @Mira | ? Complete | Day 4 |                      | @Mira        | ? Complete | Day 2 |
-| TASK-007: JWT auth middleware for endpoint         | @Radia                                             | ? Complete    | Day 2      |
-| TASK-008: Input sanitization                       | @Radia                                             | ? Complete    | Day 2      |
-| TASK-009: Vitest unit tests for endpoint           | @Katherine                                         | ? Not Started | Day 2      |
-| TASK-010: E2E test: search ? lead created          | @Katherine                                         | ? Not Started | Day 2      |
-| TASK-011: Update                                   | TASK-018: Lead count widget on Executive dashboard | @Mira         | ? Complete | Day 4 | HeroSearchBar.tsx           | TASK-018: Lead count widget on Executive dashboard | @Mira | ? Complete | Day 4 | with lead capture    | @Una + @Mira | ? Complete | Day 3 |
-| TASK-012: Redux dispatch on search submit          | @Mira                                              | ? Complete    | Day 3      |
-| TASK-013: Gold toast notification on lead creation | @Una                                               | ? Complete    | Day 3      |
-| TASK-014: Mobile responsive check                  | @Tracy                                             | ? Not Started | Day 3      |
-| TASK-015: Accessibility audit                      | @Africa                                            | ? Not Started | Day 3      |
-| TASK-016: Source filter in ClaraLeadsCRM           | @Mira                                              | ? Complete    | Day 4      |
-| TASK-017: Gold badge for `homepage_search` source  | @Una                                               | ✅ Complete   | Day 4      |
-| TASK-018: Lead count widget on Executive dashboard | @Mira                                              | ✅ Complete   | Day 4      |
-| TASK-019: Analytics update                         | @Cassie                                            | ✅ Complete   | Day 4      |
-| TASK-020: SEO meta tags for search pages           | @Rachel                                            | ✅ Complete   | Day 4      |
-| TASK-021: Full E2E regression suite                | @Katherine                                         | ✅ Complete   | Day 5      |
-| TASK-022: Lighthouse audit                         | @Katherine                                         | ✅ Complete   | Day 5      |
-| TASK-023: Production build verification            | @Gwynne                                            | ✅ Complete   | Day 5      |
-| TASK-024: Deploy to Vercel staging                 | @Gwynne                                            | ✅ Complete   | Day 5      |
-| TASK-025: Final SEO validation                     | @Rachel                                            | ✅ Complete   | Day 5      |
+| Date        | Agent              | Task                                                                                                                                                                                                                 | Requests Used |
+| ----------- | ------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------- |
+| May 3, 2026 | @Mira + @Gwynne    | Phase 29: Landlord portal live API wiring                                                                                                                                                                            | 3             |
+| May 4, 2026 | @Gwynne            | Merge development → main + push                                                                                                                                                                                      | 1             |
+| May 5, 2026 | @Mira              | Phase 31: Income + Offer Review live wiring                                                                                                                                                                          | 1             |
+| May 5, 2026 | @Mira + @Una       | Phase 32: Payments date-filter + mobile CSS completion                                                                                                                                                               | 1             |
+| May 5, 2026 | @Mira + @Una       | Phase 33 Step 2: Homepage leasing conversion tracking                                                                                                                                                                | 1             |
+| May 5, 2026 | @Katherine         | Phase 33 Step 3: Leasing continuity E2E spec (18/18 ✅ Chromium+Firefox+WebKit)                                                                                                                                      | 1             |
+| May 5, 2026 | @Mira              | Phase 34: Wire ?mode=rent/buy URL param → Properties purpose filter (3-file change, 7/7 tests ✅)                                                                                                                    | 1             |
+| May 5, 2026 | @Mira              | Phase 35: Wire 'Request Viewing' to POST /api/viewings — auth path + WhatsApp fallback (51/51 tests ✅)                                                                                                              | 1             |
+| May 5, 2026 | @Mira + @Katherine | Phase 36: Replace alert() with inline StatusBanner in MessageScheduler — 5 alerts removed (9/9 tests ✅)                                                                                                             | 1             |
+| May 6, 2026 | @Mira + @Katherine | Phase 37: Replace 8 alert() calls in LeasingAcquisition with ToastBanner — added LeasingProperty interface, typed state, eslint clean (10/10 tests ✅)                                                               | 1             |
+| May 6, 2026 | @Mira + @Katherine | Phase 38: Replace 6 alert() calls across 3 leasing modals (ContractSignModal, EjariRegistrationModal, DocumentChecklist) — typed interfaces, ErrorBanner, 25/25 tests ✅                                             | 1             |
+| May 6, 2026 | @Mira + @Katherine | Phase 39: Replace 5 alert() calls in SalesPipelinePage (2), CompanyProfile (2), and SettingsTab (1) — 39/39 tests ✅; later audit found additional legacy alert() clusters outside the original Phase 36–39 scope    | 1             |
+| May 6, 2026 | @Mira + @Katherine | Phase 40: Replace 3 alert() calls in TransactionsView with inline status banner; added 5 tests and fixed loading-state regression in fetchTransactions() ✅                                                          | 1             |
+| May 6, 2026 | @Mira + @Katherine | Phase 41: Replace 3 alert() calls in AIModelSelector with inline status banner; added 5 fetch-mocked tests and removed unused helper for ESLint clean ✅                                                             | 1             |
+| May 6, 2026 | @Mira + @Katherine | Phase 42: Replace 3 alert() calls in PropertyDetailPage, PropertyGalleryPage, and PriceRangeFilter with inline live-region banners; added 4 focused tests and lint hardening ✅                                      | 1             |
+| May 6, 2026 | @Mira + @Katherine | Phase 43: Replace 2 alert() calls in DocumentVerificationProcessor and PropertyOpportunityList with inline status banners; added focused test coverage for inventory-queue flow and lint hardening ✅                | 1             |
+| May 6, 2026 | @Mira + @Katherine | Phase 44: Replace 4 alert() calls in ProfilePage (2) and TenancyContractForm (2) with inline status banners; added 2 focused tests, fixed missing legacy imports/assets, lint clean and build verified ✅            | 1             |
+| May 6, 2026 | @Mira + @Katherine | Phase 45: Replace 2 alert() calls in ZoeExecutiveDashboard escalation actions with inline status banner; added focused alert-elimination test and local lint hardening ✅                                            | 1             |
+| May 6, 2026 | @Mira + @Katherine | Phase 46: Replace 19 alert() calls in PlanManager (main + CreatePlanModal + MergePlansModal + PlanEditor) with inline live-region banners; added focused validation test, removed local lint debt, build verified ✅ | 1             |
+| May 6, 2026 | @Mira + @Katherine | Phase 47: Added runtime alert regression guard test for non-test source files to enforce zero production `alert()` calls going forward ✅                                                                            | 1             |
 
 ---
 
-## ? Completed Milestones (Historical)
+## 🏥 Overall Platform Health
 
-### SESSION 8 � Phase 1 Dashboard Integration ?
-
-**Date:** January 2026 | **Result:** 12 UI components created, 7 dashboard pages enhanced
-
-| Delivered                                                       | Status |
-| --------------------------------------------------------------- | ------ |
-| Badge, Alert, Pagination, Tabs, Toast, Dropdown, Modal, Tooltip | ?      |
-| Spinner, ProgressBar, Popover, ToastContext + useToast          | ?      |
-| UnifiedDashboardPage, PropertiesTab, LeadsTab, ContractsTab     | ?      |
-| UsersTab, AdminDashboard, ClaraLeadsCRM enhanced                | ?      |
-
-### SESSION 7 � Commission Feature ?
-
-**Date:** January 2026 | **Result:** Backend 100% complete, 9 API endpoints, E2E tests
-
-| Delivered                                     | Status |
-| --------------------------------------------- | ------ |
-| Commission MongoDB schema + Prisma model      | ?      |
-| 9 Commission API endpoints (CRUD + analytics) | ?      |
-| 25+ Playwright E2E tests                      | ?      |
-| API documentation (450 lines)                 | ?      |
-
-### SESSION 5 � Sidebar Consolidation ?
-
-**Date:** January 2026 | **Result:** 7 sidebars ? 2 unified components
-
-| Delivered                            | Status |
-| ------------------------------------ | ------ |
-| EnhancedLeftSidebar (departments)    | ?      |
-| EnhancedRightSidebar (AI assistants) | ?      |
-| DualSidebarLayout                    | ?      |
-| Redux selectors fixed                | ?      |
+| Domain                                | Status         | % Complete | Owner                |
+| ------------------------------------- | -------------- | ---------- | -------------------- |
+| Frontend Architecture                 | ✅ Complete    | 95%        | @Mira                |
+| TypeScript / Type Safety              | ✅ Complete    | 100%       | @Grace               |
+| Redux State Management                | ✅ Complete    | 95%        | @Mira                |
+| CRM Modules Core                      | ✅ Complete    | 92%        | @Mira + @Una         |
+| Landlord/Tenant Portals (Phase 2 DoD) | ✅ Complete    | 100%       | @Mira + @Una         |
+| Authentication (Firebase/JWT flow)    | ✅ Complete    | 95%        | @Daniela             |
+| Commission Tracking                   | ✅ Complete    | 100%       | @Mira                |
+| E2E Testing                           | 🔨 In Progress | 70%        | @Katherine           |
+| SEO Optimization                      | 📋 Planned     | 35%        | @Rachel              |
+| Performance / Core Web Vitals         | 📋 Planned     | 60%        | @Katherine + @Gwynne |
+| Accessibility (WCAG 2.1 AA)           | 📋 Planned     | 50%        | @Africa              |
+| CI/CD Pipeline                        | 🔨 In Progress | 72%        | @Gwynne              |
+| Security Hardening                    | 📋 Planned     | 52%        | @Radia               |
 
 ---
 
-## ??? Platform Architecture Map
+## 📌 Active Milestones
 
-| TASK-018: Lead count widget on Executive dashboard | @Mira | ? Complete | Day 4 || TASK-018: Lead count widget on Executive dashboard | @Mira | ? Complete | Day 4 || TASK-018: Lead count widget on Executive dashboard | @Mira | ? Complete | Day 4 |
-White Caves Platform
-�
-+-- ?? PUBLIC (Homepage)
-� +-- ? Hero Section � UPGRADING to Dubai Luxury
-� +-- ? Property Search � INTEGRATING with CRM
-� +-- ? Featured Properties
-� +-- ? Market Statistics
-� +-- ? Testimonials
-� +-- ? Team Section
-� +-- ? Newsletter / Contact
-�
-+-- ?? CRM (Protected)
-� +-- ? ClaraLeadsCRM (Lead Management)
-� +-- ? MaryInventoryCRM (Inventory)
-� +-- ? SophiaSalesCRM (Sales)
-� +-- ? ZoeExecutiveCRM (Executive Dashboard)
-� +-- ? TheodoraFinanceCRM (Commission + Finance)
-� +-- ? DaisyLeasingCRM (Leasing)
-� +-- ? NadiaWhatsAppCRM (WhatsApp)
-�
-+-- ?? API (Express 5)
-� +-- ? /api/properties
-� +-- ? /api/leads
-� +-- ? /api/commissions
-� +-- ? /api/crm/\*
-� +-- ?? /api/leads/from-search � IN PROGRESS
-�
-+-- ?? Database (MongoDB + Prisma)
-+-- ? Users model
-+-- ? Properties model
-+-- ? Leads model
-+-- ? Commissions model
-+-- ?? SearchLead enhancements � IN PROGRESS
-| TASK-018: Lead count widget on Executive dashboard | @Mira | ? Complete | Day 4 || TASK-018: Lead count widget on Executive dashboard | @Mira | ? Complete | Day 4 || TASK-018: Lead count widget on Executive dashboard | @Mira | ? Complete | Day 4 |
+### MILESTONE-P0-PHASE-33
 
----
+**Priority Module — Homepage + Single Superuser + Leasing E2E**
 
-## ?? Daily Log
+**Status:** 🔨 PLANNING UPDATED (Docs-first)
 
-### May 3, 2026 � Phase 26 Workstreams B/C/D Complete � Context Enrichment Gate Unlocked
+- [x] Priority plan created (`plans/PHASE_33_PRIORITY_MODULE_HOMEPAGE_SUPERUSER_LEASING.md`)
+- [x] Phase 1 + Phase 3 plans aligned to P0 direction
+- [x] Core leasing business docs aligned (tenant/landlord/tenancy/workflow)
+- [x] Gate-to-code execution pack created (`plans/PHASE_33_IMPLEMENTATION_EXECUTION_PACK.md`)
+- [x] Identity-core patch implemented (alias normalization + canonical executive routing baseline)
+- [x] Homepage conversion Step 2 implemented (leasing-first hero CTA + 4 conversion events instrumented)
+- [x] **Phase 33 Step 3 COMPLETE**: Leasing continuity E2E spec (18/18 ✅ Chromium+Firefox+WebKit — API mocked, hero/search/whatsapp/form/role-route lifecycle covered)
+- [x] **Phase 34 COMPLETE**: `?mode=rent/buy` URL param wired to Properties page purpose filter — `usePropertyBrowser` + `PropertyFilterPanel` + 3 new tests (7/7 ✅) — leasing conversion funnel end-to-end complete
+- [ ] Gate pass (1000% depth + readiness >=92% + @Ada approval) before implementation
 
-- ? | TASK-018: Lead count widget on Executive dashboard | @Mira | ? Complete | Day 4 |revenue-model.md| TASK-018: Lead count widget on Executive dashboard | @Mira | ? Complete | Day 4 | expanded: **5 ? 13 sections** (@Invoice / Llama 3.1 70B Groq � FREE)
-  - Added: 3-year pro-forma (conservative/base/optimistic), CAC/LTV model, break-even analysis, sensitivity analysis, SaaS licensing stream, cash flow forecast, financial risk register, KPI dashboard spec
-- ? | TASK-018: Lead count widget on Executive dashboard | @Mira | ? Complete | Day 4 |analytics-dashboard.md| TASK-018: Lead count widget on Executive dashboard | @Mira | ? Complete | Day 4 | expanded: **18 ? 22 sections** (@Cassie / DeepSeek V3 � FREE)
-  - Added: Mobile Analytics View Specification, Scheduled Report Delivery Matrix, Data Export API Specification, KPI Ownership & Accountability Map
-- ? | TASK-018: Lead count widget on Executive dashboard | @Mira | ? Complete | Day 4 |03_ai_assistants/README.md| TASK-018: Lead count widget on Executive dashboard | @Mira | ? Complete | Day 4 | expanded: **24 ? 40 personas** (@Joelle / Llama 3.1 70B Groq � FREE)
-  - Added Operations Cluster (personas 25�32: Vega, Halo, Prism, Echo, Sage, Aria, Kira, Moss)
-  - Added Growth Cluster (personas 33�40: Ember, Apex, Lore, Vox, Flux Pro, Grant, Tide, Nova Pro)
-  - Complete 40-persona metrics table added
-- ? | TASK-018: Lead count widget on Executive dashboard | @Mira | ? Complete | Day 4 |landlord-portal.md| TASK-018: Lead count widget on Executive dashboard | @Mira | ? Complete | Day 4 | already at **15 sections** (exceeded 13 target � from prior sprint) (@Victoria)
-- ? **Context Enrichment Gate: 5/6 checks passed** � CODING SPRINT UNLOCKED
-- ?? Workstream E pending: @Sofia compliance audit (advisory � non-blocking)
+### MILESTONE-GOV-1000
 
-### May 3, 2026 � Phase 26 Context Enrichment Sprint Kickoff
+**Governance Hardening V2 — 1000% + 92% + Collaboration Mesh + Daily Quota**
 
-- ? New execution plan created: | TASK-018: Lead count widget on Executive dashboard | @Mira | ? Complete | Day 4 |plans/PHASE_26_CONTEXT_ENRICHMENT_SPRINT.md| TASK-018: Lead count widget on Executive dashboard | @Mira | ? Complete | Day 4 |
-- ? Plan index and pending list updated to reflect current active phase
-- ? Phase 25 planning/verification artifacts marked complete in | TASK-018: Lead count widget on Executive dashboard | @Mira | ? Complete | Day 4 |plans/PENDING_TASKS_ONLY.md| TASK-018: Lead count widget on Executive dashboard | @Mira | ? Complete | Day 4 |
-- ? Build baseline reconfirmed (| TASK-018: Lead count widget on Executive dashboard | @Mira | ? Complete | Day 4 |npx vite build| TASK-018: Lead count widget on Executive dashboard | @Mira | ? Complete | Day 4 | pass)
-- ?? Active objective: complete free-agent quality gates (landlord-portal, revenue-model, analytics-dashboard, AI personas 25�40)
+**Status:** 🔨 IN PROGRESS (May 5 rollout)
 
-### May 1, 2026 � Phase 20�22 Multi-Agent Planning Sprint
+- [x] Free/junior model lock policy (17 agents, zero premium)
+- [x] Senior premium-only routing (coders + designers)
+- [x] Collaboration mesh and FEEDS/CONSUMES handoff protocol
+- [ ] 1000% depth evidence lines for all active free-agent tasks
+- [ ] Readiness score packet at >=92% with evidence
+- [ ] Daily quota plan logged before premium coding
+- [ ] Mandatory wave artifact bundle present in `plans/waves/` for each premium wave
 
-- ? Multi-agent parallel research completed across architecture, roadmap, implementation, QA, security, DevOps, data, SEO, and business strategy
-- ? New execution blueprint created: | TASK-018: Lead count widget on Executive dashboard | @Mira | ? Complete | Day 4 |plans/PHASE_20_21_22_PARALLEL_EXECUTION_MASTER_PLAN.md| TASK-018: Lead count widget on Executive dashboard | @Mira | ? Complete | Day 4 |
-- ? Planning outcome: 3-phase parallel execution model with hard merge gates and security acceptance criteria
-- ? Copilot usage policy defined (�Copilot Within Limits�) to optimize speed/cost while preserving quality
-- ?? Next action: Execute Phase 20 Day 1 tasks using branch-based workflow (| TASK-018: Lead count widget on Executive dashboard | @Mira | ? Complete | Day 4 |develop/feature -> staging -> prod| TASK-018: Lead count widget on Executive dashboard | @Mira | ? Complete | Day 4 | gates)
+### MILESTONE-PHASE-2
+
+**Phase 2 Landlord/Tenant Portal Definition of Done**
+
+**Status:** ✅ COMPLETE
+
+- [x] Phase 29: landlord portal live API wiring
+- [x] Phase 30: tenant portal live API wiring
+- [x] Phase 31: income + offer review tabs live
+- [x] Phase 32: payments date-range filter + 375/768 mobile responsiveness
+
+### MILESTONE-PHASE-3
+
+**Phase 3 — CRM Superuser Full Wiring**
+
+**Status:** 📋 BLOCKED UNTIL GATE PASS
+
+- [ ] 1000% prerequisite docs complete
+- [ ] Readiness score >=92% passed
+- [ ] @Ada approval declaration issued
 
 ---
 
-### April 30, 2026 � Agency Initialization
+## ✅ Completed Milestones (Recent)
 
-- ? White Caves Global Agency initialized (30-agent team)
-- ? | TASK-018: Lead count widget on Executive dashboard | @Mira | ? Complete | Day 4 |.github/copilot-instructions.md| TASK-018: Lead count widget on Executive dashboard | @Mira | ? Complete | Day 4 | � Full Dubai Luxury brand guide written
-- ? | TASK-018: Lead count widget on Executive dashboard | @Mira | ? Complete | Day 4 |.github/agents/Architect.agent.md| TASK-018: Lead count widget on Executive dashboard | @Mira | ? Complete | Day 4 | � @Ada (Chief Architect)
-- ? | TASK-018: Lead count widget on Executive dashboard | @Mira | ? Complete | Day 4 |.github/agents/Planner.agent.md| TASK-018: Lead count widget on Executive dashboard | @Mira | ? Complete | Day 4 | � @Margaret (Strategy & Milestones)
-- ? | TASK-018: Lead count widget on Executive dashboard | @Mira | ? Complete | Day 4 |.github/agents/Designer.agent.md| TASK-018: Lead count widget on Executive dashboard | @Mira | ? Complete | Day 4 | � @Una (Luxury UI/UX)
-- ? | TASK-018: Lead count widget on Executive dashboard | @Mira | ? Complete | Day 4 |.github/agents/Coder.agent.md| TASK-018: Lead count widget on Executive dashboard | @Mira | ? Complete | Day 4 | � @Mira (Full-Stack Dev)
-- ? | TASK-018: Lead count widget on Executive dashboard | @Mira | ? Complete | Day 4 |.github/agents/QA.agent.md| TASK-018: Lead count widget on Executive dashboard | @Mira | ? Complete | Day 4 | � @Katherine (QA & Auto-Fix)
-- ? | TASK-018: Lead count widget on Executive dashboard | @Mira | ? Complete | Day 4 |.github/agents/DevOps.agent.md| TASK-018: Lead count widget on Executive dashboard | @Mira | ? Complete | Day 4 | � @Gwynne (CI/CD)
-- ? | TASK-018: Lead count widget on Executive dashboard | @Mira | ? Complete | Day 4 |.github/agents/Database.agent.md| TASK-018: Lead count widget on Executive dashboard | @Mira | ? Complete | Day 4 | � @Barbara (Database Architect)
-- ? | TASK-018: Lead count widget on Executive dashboard | @Mira | ? Complete | Day 4 |.github/agents/Security.agent.md| TASK-018: Lead count widget on Executive dashboard | @Mira | ? Complete | Day 4 | � @Radia (Security)
-- ? | TASK-018: Lead count widget on Executive dashboard | @Mira | ? Complete | Day 4 |.github/agents/SEO.agent.md| TASK-018: Lead count widget on Executive dashboard | @Mira | ? Complete | Day 4 | � @Rachel (Dubai SEO)
-- ? | TASK-018: Lead count widget on Executive dashboard | @Mira | ? Complete | Day 4 |LuxuryHeroSection.tsx| TASK-018: Lead count widget on Executive dashboard | @Mira | ? Complete | Day 4 | � Dubai Gold/Black/White Hero implemented by @Una
-- ? | TASK-018: Lead count widget on Executive dashboard | @Mira | ? Complete | Day 4 |LuxuryHeroSection.css| TASK-018: Lead count widget on Executive dashboard | @Mira | ? Complete | Day 4 | � Glassmorphism + Gold design system
-- ?? @Margaret: Property Search ? CRM Integration 25-task roadmap created
-- ?? @Ada: DIRECTIVE-001, DIRECTIVE-002, DIRECTIVE-003 issued
+| Date        | Milestone            | Result                                                        |
+| ----------- | -------------------- | ------------------------------------------------------------- |
+| May 5, 2026 | Phase 33 Step 2      | Homepage leasing conversion events + hero CTA leasing-first   |
+| May 5, 2026 | Phase 31             | LandlordIncomeTab + LandlordOfferReviewTab live API completed |
+| May 5, 2026 | Phase 32             | LandlordPayments date-range + mobile responsive CSS completed |
+| May 3, 2026 | Phase 26 docs sprint | revenue-model, analytics-dashboard, AI personas expansion     |
 
 ---
 
-## ?? Next 7 Days (May 1�7, 2026)
+## 📅 Next 7 Days (May 5–11, 2026)
 
-| Day   | Focus                                                | Owner                | Priority |
-| ----- | ---------------------------------------------------- | -------------------- | -------- |
-| May 1 | Property Search Integration � Foundation (Tasks 1�5) | @Mira + @Barbara     | P0       |
-| May 2 | Backend API endpoint + Security (Tasks 6�10)         | @Mira + @Radia       | P0       |
-| May 3 | Homepage Search Bar Integration (Tasks 11�15)        | @Una + @Mira         | P0       |
-| May 4 | CRM Lead Dashboard Update (Tasks 16�20)              | @Mira + @Una         | P1       |
-| May 5 | QA + Deployment (Tasks 21�25)                        | @Katherine + @Gwynne | P0       |
-| May 6 | Performance optimization + Lighthouse audit          | @Katherine           | P1       |
-| May 7 | SEO final validation + Staging sign-off              | @Rachel + @Ada       | P1       |
+| Day    | Focus                                                          | Owner                           | Priority |
+| ------ | -------------------------------------------------------------- | ------------------------------- | -------- |
+| May 5  | Governance rollout in AGENTS + plans + tracking                | @Margaret + @Ada                | P0       |
+| May 5  | P0 module planning update (homepage + superuser + leasing E2E) | @Margaret + @Ada                | P0       |
+| May 6  | Wave A 1000% docs (Sofia/Timnit/Victoria)                      | Free agents                     | P0       |
+| May 7  | Wave B 1000% docs (Fei-Fei/Anima/Mary/Invoice)                 | Free agents                     | P0       |
+| May 8  | Wave C 1000% docs (Booking/Maya/Hedy/Cassie/Jaime/Corinne)     | Free agents                     | P0       |
+| May 9  | Wave D 1000% docs (Annie/Marissa/Rachel/Joelle)                | Free agents                     | P0       |
+| May 10 | Readiness (>=92%) validation + sign-offs                       | @Margaret + @Katherine + @Sofia | P0       |
+| May 11 | @Ada gate decision for Phase 3 start (V2 phrase mandatory)     | @Ada                            | P0       |
 
 ---
 
-_This document is maintained by @Margaret (Planner) and updated after every completed milestone._  
-_Architectural decisions are owned by @Ada and logged in the Daily Log section._
+_This tracker is updated after each phase and policy change. Free/junior agents must never consume premium quota._

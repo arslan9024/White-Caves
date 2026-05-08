@@ -8,6 +8,47 @@
 
 ## Workflow 1: Rent Collection Cycle (Monthly)
 
+## Workflow 0: Homepage → Leasing Journey Entry (P0 Priority)
+
+```
+[VISITOR LANDS ON HOMEPAGE]
+        │
+        ▼
+[LEASING-FOCUSED CTA]
+│ CTA examples:
+│ - Find Rental Units
+│ - Book Viewing
+│ - WhatsApp Leasing Team
+        │
+        ▼
+[LEAD CAPTURE + SOURCE TAGGING]
+│ Lead source:
+│ - homepage_cta
+│ - homepage_search
+│ - homepage_whatsapp
+        │
+        ▼
+[LEASING AGENT QUALIFICATION]
+│ Budget, location, unit type, move-in timeline
+        │
+        ▼
+[VIEWING SCHEDULING]
+│ Confirmation + reminder + feedback loop
+        │
+        ▼
+[OFFER / CONTRACT / EJARI]
+│ Transition to tenancy-ejari core workflow
+        │
+        ▼
+[ACTIVE LEASE OPERATIONS]
+│ Payment + maintenance + renewal handled across
+│ tenant portal + landlord portal + leasing CRM
+```
+
+---
+
+## Workflow 1: Rent Collection Cycle (Monthly)
+
 ```
 ┌────────────────────────────────────────────────────────────────┐
 │         MONTHLY RENT COLLECTION CYCLE                          │
@@ -261,16 +302,16 @@
 
 ## Key Performance Indicators — Finance & Leasing
 
-| KPI | Target | Frequency | Owner |
-|-----|--------|-----------|-------|
-| On-time rent collection rate | ≥ 95% | Monthly | Theodora |
-| Average days to resolve overdue payment | ≤ 15 days | Monthly | Daisy |
-| Month-end close time | ≤ 5 days | Monthly | Theodora |
-| Commission payment accuracy | 100% | Monthly | Theodora |
-| Maintenance request resolution (urgent) | ≤ 24 hours | Weekly | Daisy |
-| Maintenance request resolution (normal) | ≤ 48 hours | Weekly | Daisy |
-| Lease renewal rate | ≥ 70% | Quarterly | Daisy |
-| Occupancy rate | ≥ 95% | Monthly | Daisy |
+| KPI                                     | Target     | Frequency | Owner    |
+| --------------------------------------- | ---------- | --------- | -------- |
+| On-time rent collection rate            | ≥ 95%      | Monthly   | Theodora |
+| Average days to resolve overdue payment | ≤ 15 days  | Monthly   | Daisy    |
+| Month-end close time                    | ≤ 5 days   | Monthly   | Theodora |
+| Commission payment accuracy             | 100%       | Monthly   | Theodora |
+| Maintenance request resolution (urgent) | ≤ 24 hours | Weekly    | Daisy    |
+| Maintenance request resolution (normal) | ≤ 48 hours | Weekly    | Daisy    |
+| Lease renewal rate                      | ≥ 70%      | Quarterly | Daisy    |
+| Occupancy rate                          | ≥ 95%      | Monthly   | Daisy    |
 
 ---
 

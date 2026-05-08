@@ -7,6 +7,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import styled, { keyframes } from 'styled-components';
 import { PermissionGuard } from '../../guards/PermissionGuard';
+import { authFetch } from '../../../utils/authFetch';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -387,23 +388,18 @@ export const CommissionsTab: React.FC<CommissionsTabProps> = ({ onAction }) => {
   const [agentFilter, setAgentFilter] = useState<string>('all');
 
   const fetchData = useCallback(async (): Promise<void> => {
-    setLoading(true);
     setError(null);
     try {
-      // TODO: Replace with real JWT-authenticated API calls
-      // const [commissionsRes, summaryRes] = await Promise.all([
-      //   fetch('/api/commissions', { headers: { Authorization: `Bearer ${token}` } }),
-      //   fetch('/api/commissions/summary', { headers: { Authorization: `Bearer ${token}` } }),
-      // ]);
-      // const commissionsData = await commissionsRes.json();
-      // const summaryData = await summaryRes.json();
-      // setCommissions(commissionsData.commissions ?? []);
-      // setSummary(summaryData);
-
-      // Fallback to mock data while API is being wired up
-      await new Promise<void>(resolve => setTimeout(resolve, 600)); // simulate network
-      setCommissions(MOCK_COMMISSIONS);
-      setSummary(MOCK_SUMMARY);
+      const [commissionsRes, summaryRes] = await Promise.all([
+        authFetch('/api/commissions?pageSize=50').then(
+          (r: Response) => r.json() as Promise<{ success: boolean; data: Commission[] }>
+        ),
+        authFetch('/api/commissions/summary').then(
+          (r: Response) => r.json() as Promise<{ success: boolean; data: CommissionSummary }>
+        ),
+      ]);
+      setCommissions(commissionsRes.data ?? []);
+      setSummary(summaryRes.data ?? null);
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Failed to load commissions';
       setError(message);

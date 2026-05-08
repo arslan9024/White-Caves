@@ -42,14 +42,24 @@ function resolveEffectiveRole(
   user: { role?: string } | null,
   storedRoleData: UserRoleData | null
 ): string | null {
-  const serverRole = user?.role;
+  const normalizeRole = (role?: string): string | null => {
+    if (!role) return null;
+    if (role === 'lion' || role === 'managing_director') return 'owner';
+    return role;
+  };
+
+  const serverRole = normalizeRole(user?.role);
+  const storedRole = normalizeRole(storedRoleData?.role);
 
   if (storedRoleData && typeof storedRoleData.role === 'string') {
     const isPrivileged =
-      serverRole === 'owner' || serverRole === 'admin' || serverRole === 'super_user' ||
-      serverRole === 'super_admin' || serverRole === 'managing_director';
+      serverRole === 'owner' ||
+      serverRole === 'admin' ||
+      serverRole === 'super_user' ||
+      serverRole === 'super_admin';
 
-    return isPrivileged ? storedRoleData.role : (serverRole ?? storedRoleData.role);
+    // Deterministic executive path: privileged server roles should not be overridden by local sub-role state.
+    return isPrivileged ? serverRole : (serverRole ?? storedRole);
   }
 
   return serverRole ?? null;

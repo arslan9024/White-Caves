@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any, no-console, security/detect-object-injection */
 /**
  * Custom Hooks for Real API Integration
  * Provides easy access to API data and loading states throughout the app
@@ -91,10 +92,7 @@ export const useDepartmentData = (code: string | null) => {
  * Hook to fetch and manage department KPIs
  * Can optionally filter by date range
  */
-export const useDepartmentKPIs = (
-  code: string | null,
-  dateRange?: DateRange
-) => {
+export const useDepartmentKPIs = (code: string | null, dateRange?: DateRange) => {
   const dispatch = useDispatch();
   const kpisMap = useSelector(selectDepartmentKPIs);
   const kpis = code ? kpisMap[code] || [] : [];
@@ -143,9 +141,7 @@ export const useDepartmentTrends = (
   useEffect(() => {
     // Fetch trends when code or timeframe changes
     if (code) {
-      console.log(
-        `[Hook] Fetching trends for department: ${code}, timeframe: ${timeframe}`
-      );
+      console.log(`[Hook] Fetching trends for department: ${code}, timeframe: ${timeframe}`);
       dispatch(fetchDepartmentTrends({ code, timeframe }) as any);
     }
   }, [code, timeframe, dispatch]);
@@ -201,9 +197,7 @@ export const useDepartmentSummary = (code: string | null) => {
  */
 export const useSelectDepartment = (initialCode?: string) => {
   const dispatch = useDispatch();
-  const selectedDepartment = useSelector(
-    (state: any) => state.departments.selectedDepartment
-  );
+  const selectedDepartment = useSelector((state: any) => state.departments.selectedDepartment);
 
   const selectDepartment = useCallback(
     (code: string | null) => {
@@ -252,7 +246,7 @@ export const useDepartment = (code: string | null) => {
   return {
     // Lists
     departments: departments.departments,
-    
+
     // Data
     data: departmentData.data,
     kpis: kpis.kpis,
@@ -293,37 +287,40 @@ export const useRefreshDepartmentData = () => {
     dispatch(fetchAllDepartments(false) as any);
   }, [dispatch]);
 
-  const refreshDepartmentData = useCallback((code: string) => {
-    console.log(`[Hook] Manually refreshing data for department: ${code}`);
-    dispatch(fetchDepartmentData({ code }) as any);
-  }, [dispatch]);
+  const refreshDepartmentData = useCallback(
+    (code: string) => {
+      console.log(`[Hook] Manually refreshing data for department: ${code}`);
+      dispatch(fetchDepartmentData({ code }) as any);
+    },
+    [dispatch]
+  );
 
-  const refreshKPIs = useCallback((code: string, dateRange?: DateRange) => {
-    console.log(
-      `[Hook] Manually refreshing KPIs for department: ${code}`,
-      dateRange
-    );
-    dispatch(fetchDepartmentKPIs({ code, dateRange }) as any);
-  }, [dispatch]);
+  const refreshKPIs = useCallback(
+    (code: string, dateRange?: DateRange) => {
+      console.log(`[Hook] Manually refreshing KPIs for department: ${code}`, dateRange);
+      dispatch(fetchDepartmentKPIs({ code, dateRange }) as any);
+    },
+    [dispatch]
+  );
 
   const refreshTrends = useCallback(
     (code: string, timeframe?: 'daily' | 'weekly' | 'monthly' | 'yearly') => {
-      console.log(
-        `[Hook] Manually refreshing trends for department: ${code}`,
-        timeframe
-      );
+      console.log(`[Hook] Manually refreshing trends for department: ${code}`, timeframe);
       dispatch(fetchDepartmentTrends({ code, timeframe }) as any);
     },
     [dispatch]
   );
 
-  const refreshAll = useCallback((code: string) => {
-    console.log(`[Hook] Manually refreshing all data for department: ${code}`);
-    dispatch(fetchDepartmentData({ code }) as any);
-    dispatch(fetchDepartmentKPIs({ code }) as any);
-    dispatch(fetchDepartmentTrends({ code }) as any);
-    dispatch(fetchDepartmentSummary(code) as any);
-  }, [dispatch]);
+  const refreshAll = useCallback(
+    (code: string) => {
+      console.log(`[Hook] Manually refreshing all data for department: ${code}`);
+      dispatch(fetchDepartmentData({ code }) as any);
+      dispatch(fetchDepartmentKPIs({ code }) as any);
+      dispatch(fetchDepartmentTrends({ code }) as any);
+      dispatch(fetchDepartmentSummary(code) as any);
+    },
+    [dispatch]
+  );
 
   return {
     refreshDepartments,
