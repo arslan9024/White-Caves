@@ -1,3 +1,4 @@
+/* eslint-disable no-console, @typescript-eslint/no-explicit-any, @typescript-eslint/no-unused-vars */
 /**
  * Meta Business API Webhook Routes
  * Endpoints for receiving production WhatsApp messages from Meta
@@ -10,7 +11,11 @@
 
 import { Router, Request, Response } from 'express';
 import { createMetaAPIClient, MetaAPIClient, WebhookEvent } from '../services/whatsapp/metaAPI.js';
-import { verifyWebhookSignature, normalizePhone, rateLimiter } from '../services/whatsapp/whatsappUtils.js';
+import {
+  verifyWebhookSignature,
+  normalizePhone,
+  rateLimiter,
+} from '../services/whatsapp/whatsappUtils.js';
 import { requireRole } from '../middleware/rbac.js';
 import { prisma } from '../database.js';
 import { detectIntent, calculateLeadScore } from '../services/nadia/messageProcessor.js';
@@ -196,10 +201,15 @@ async function handleIncomingMessage(message: any, phoneNumberId: string): Promi
         messageCount: 1,
         responseTime: 0,
         intentClarity: intent !== 'general_inquiry' ? 1 : 0.3,
-        budgetMentioned: content.toLowerCase().includes('budget') || content.toLowerCase().includes('aed'),
-        timelineMentioned: content.toLowerCase().includes('asap') || content.toLowerCase().includes('urgent'),
-        propertyInterest: content.toLowerCase().includes('property') || content.toLowerCase().includes('villa') ? 1 : 0,
-      });
+        budgetMentioned:
+          content.toLowerCase().includes('budget') || content.toLowerCase().includes('aed'),
+        timelineMentioned:
+          content.toLowerCase().includes('asap') || content.toLowerCase().includes('urgent'),
+        propertyInterest:
+          content.toLowerCase().includes('property') || content.toLowerCase().includes('villa')
+            ? 1
+            : 0,
+      } as any);
       nlpResult = { intent, score };
     } catch (nlpErr) {
       console.warn('[Meta Webhook] NLP processing failed:', nlpErr);
@@ -371,7 +381,9 @@ router.get('/status', requireRole('owner'), async (req: Request, res: Response) 
       data: {
         configured: !!isConfigured,
         apiVersion: stats.apiVersion,
-        phoneNumberId: stats.phoneNumberId ? stats.phoneNumberId.substring(0, 5) + '***' : 'NOT_SET',
+        phoneNumberId: stats.phoneNumberId
+          ? stats.phoneNumberId.substring(0, 5) + '***'
+          : 'NOT_SET',
         timestamp: new Date(),
       },
     });

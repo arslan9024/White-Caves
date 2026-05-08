@@ -821,7 +821,6 @@ model WebAuthnCredential {
   lastUsedAt      DateTime?
 
   @@index([userId])
-  @@index([credentialId])
 }
 
 // ─── DOCUMENT ───────────────────────────────────────────────────────────

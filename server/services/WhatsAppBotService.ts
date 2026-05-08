@@ -70,7 +70,11 @@ class WhatsAppBotService {
   /**
    * Handle an incoming webhook message payload.
    */
-  async handleIncomingMessage(data: { from?: string; body?: string; timestamp?: number }): Promise<void> {
+  async handleIncomingMessage(data: {
+    from?: string;
+    body?: string;
+    timestamp?: number;
+  }): Promise<void> {
     const { from, body } = data;
     log.info('Incoming message received', { from });
     if (from && body) {
@@ -87,14 +91,20 @@ class WhatsAppBotService {
     const lowerBody = (messageBody || '').toLowerCase().trim();
     let reply: string;
 
-    if (lowerBody.includes('property') || lowerBody.includes('villa') || lowerBody.includes('apartment')) {
-      reply =
-        'Thank you for your interest! Our property advisors are available 9 AM–10 PM Gulf time. Please share your requirements and we'll get back to you shortly.';
-    } else if (lowerBody.includes('price') || lowerBody.includes('cost') || lowerBody.includes('budget')) {
-      reply = 'We have properties across all price ranges in Dubai. Please call +971 56 361 6136 or visit whitecaves.ae for current listings and pricing.';
+    if (
+      lowerBody.includes('property') ||
+      lowerBody.includes('villa') ||
+      lowerBody.includes('apartment')
+    ) {
+      reply = `Thank you for your interest! Our property advisors are available 9 AM–10 PM Gulf time. Please share your requirements and we'll get back to you shortly.`;
+    } else if (
+      lowerBody.includes('price') ||
+      lowerBody.includes('cost') ||
+      lowerBody.includes('budget')
+    ) {
+      reply = `We have properties across all price ranges in Dubai. Please call +971 56 361 6136 or visit whitecaves.ae for current listings and pricing.`;
     } else {
-      reply =
-        'Hello! 👋 Welcome to White Caves Real Estate. How can we help you today? Type "property" to explore listings or call +971 56 361 6136.';
+      reply = `Hello! 👋 Welcome to White Caves Real Estate. How can we help you today? Type "property" to explore listings or call +971 56 361 6136.`;
     }
 
     await this.sendMessage(senderPhone, reply);
@@ -113,7 +123,7 @@ class WhatsAppBotService {
       return null;
     }
     try {
-      const paramTexts = parameters?.map((p) => p.text);
+      const paramTexts = parameters?.map(p => p.text);
       const messageId = await this.client.sendTemplate(phoneNumber, templateName, paramTexts);
       log.info(`Template "${templateName}" sent to ${phoneNumber}, id=${messageId}`);
       return messageId;
