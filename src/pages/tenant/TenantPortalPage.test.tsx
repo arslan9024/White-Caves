@@ -34,9 +34,6 @@ vi.mock('../../components/portal/tenant/TenantMaintenanceTab', () => ({
 vi.mock('../../components/portal/tenant/TenantDocumentsTab', () => ({
   default: () => <div data-testid="documents-tab">Documents Tab</div>,
 }));
-vi.mock('../../components/portal/tenant/TenantKeyHandoverTab', () => ({
-  default: () => <div data-testid="key-handover-tab">Key Handover Tab</div>,
-}));
 
 const mockTenantUser = {
   id: 'tenant-1',
@@ -62,13 +59,11 @@ const createMockStore = (preloadedState?: Partial<TestState>) => {
       },
       ...preloadedState,
     },
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } as any);
 };
 
-const renderWithStore = (
-  component: React.ReactElement,
-  preloadedState?: Partial<TestState>
-) => {
+const renderWithStore = (component: React.ReactElement, preloadedState?: Partial<TestState>) => {
   const store = createMockStore(preloadedState);
   return render(
     <Provider store={store}>
