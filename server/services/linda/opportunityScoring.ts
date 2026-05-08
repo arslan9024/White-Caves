@@ -175,7 +175,9 @@ function scoreBudget(
     else score += 1;
   }
 
-  // Extract AED amounts from the message text
+  // Detect AED amount mentions in the message (suffixes k/m/mn are detected but
+  // not converted to numeric values here; this is intent detection only — full
+  // budget parsing is handled downstream by the CRM field extractor).
   const aedMatches = lowerMsg.match(/aed\s*([\d,]+(?:\.\d+)?(?:k|m|mn)?)/gi) ?? [];
   if (aedMatches.length > 0) score = Math.min(score + 3, 25);
 

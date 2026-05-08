@@ -575,7 +575,7 @@ const DocumentEditor: React.FC<DocumentEditorProps> = ({
               <input
                 type={field.type === 'number' ? 'number' : field.type === 'date' ? 'date' : 'text'}
                 value={String(formData[field.name] ?? '')}
-                onChange={e => onFieldChange(field.name, field.type === 'number' ? parseFloat(e.target.value) || '' : e.target.value)}
+                onChange={e => onFieldChange(field.name, field.type === 'number' ? (e.target.value === '' ? '' : (isNaN(parseFloat(e.target.value)) ? '' : parseFloat(e.target.value))) : e.target.value)}
                 placeholder={field.placeholder}
                 style={{ width: '100%', background: '#1a1a1a', border: '1px solid #333', borderRadius: 4, color: '#fff', padding: '8px 10px', fontSize: 13, boxSizing: 'border-box' }}
               />

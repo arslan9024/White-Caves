@@ -1072,6 +1072,7 @@ model HenryRecord {
   isDraft          Boolean  @default(false)
   copyNumber       Int      @default(1)
   documentSnapshot Json                           // Flat key-value snapshot of document fields at time of archive
+                                                   // e.g. {landlordName, tenantName, annualRent, leaseStartDate, ...}
   createdBy        String   @db.ObjectId          // User who generated/archived
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt

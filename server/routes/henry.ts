@@ -302,7 +302,7 @@ Confidence: include a "confidence" field from 0.0 to 1.0 indicating overall extr
       model: 'llava', // Vision-capable model
       prompt,
       images: imageBase64 ? [imageBase64] : undefined,
-      stream: false,
+      stream: false, // Request complete response instead of token-by-token streaming
     };
 
     const controller = new AbortController();
@@ -382,7 +382,7 @@ router.post('/ai/extract', requireMinRole('agent'), async (req: Request, res: Re
       const ollamaRes = await fetch(`${OLLAMA_HOST}/api/generate`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ model: 'mistral', prompt: ollamaPrompt, stream: false }),
+        body: JSON.stringify({ model: 'mistral', prompt: ollamaPrompt, stream: false }), // stream:false = complete response
       });
       if (!ollamaRes.ok) {
         return res.status(503).json({ success: false, error: 'AI extraction unavailable — configure GROQ_API_KEY or ensure Ollama is running' });
