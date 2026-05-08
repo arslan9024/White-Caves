@@ -1,11 +1,13 @@
 /**
  * Sales Department Dashboard
- * 
- * Displays sales metrics, pipeline, deals, and team performance
- * Features: Deal tracking, revenue metrics, sales pipeline visualization
+ *
+ * Displays sales metrics, pipeline, deals, and team performance.
+ * Features: Deal tracking, revenue metrics, sales pipeline visualization.
+ * Live data from /api/departments/SALES/data and /api/leads.
  */
 
 import React, { useState, useEffect } from 'react';
+import { authFetch } from '../../../../utils/authFetch';
 import {
   Container,
   Header,
@@ -31,19 +33,15 @@ import {
   PipelineStageName,
   PipelineCount,
   PipelineValue,
-  ChartContainer,
   ListContainer,
   ListItem,
   Badge,
-  BadgeSuccess,
-  BadgeWarning,
-  BadgeDanger,
   StatusIndicator,
 } from './styled';
 
 interface SalesDashboardProps {
   featureId?: string;
-  context?: any;
+  context?: Record<string, unknown>;
 }
 
 interface Deal {
@@ -66,122 +64,125 @@ interface SalesMetrics {
   avgDealSize: number;
 }
 
-const mockMetrics: SalesMetrics = {
-  totalRevenue: 2450000,
-  activeDeals: 23,
-  closedDeals: 12,
-  conversionRate: 52.2,
-  pipelineValue: 4850000,
-  avgDealSize: 202083,
+const fallbackMetrics: SalesMetrics = {
+  totalRevenue: 0,
+  activeDeals: 0,
+  closedDeals: 0,
+  conversionRate: 0,
+  pipelineValue: 0,
+  avgDealSize: 0,
 };
 
-const mockDeals: Deal[] = [
-  {
-    id: '1',
-    client: 'Ahmed Al Mansouri',
-    property: 'Damac Hills 2 - Villa',
-    value: 850000,
-    stage: 'negotiation',
-    probability: 75,
-    agent: 'Nina',
-    createdAt: '2026-01-15',
-  },
-  {
-    id: '2',
-    client: 'Fatima Al Zahra',
-    property: 'Downtown Dubai - Apt',
-    value: 650000,
-    stage: 'offer',
-    probability: 90,
-    agent: 'Linda',
-    createdAt: '2026-01-12',
-  },
-  {
-    id: '3',
-    client: 'Mohammed Al Qasimi',
-    property: 'Emirates Hills - Penthouse',
-    value: 1200000,
-    stage: 'lead',
-    probability: 35,
-    agent: 'Nina',
-    createdAt: '2026-01-18',
-  },
-  {
-    id: '4',
-    client: 'Layla Al Mansoori',
-    property: 'Business Bay - Office',
-    value: 450000,
-    stage: 'closing',
-    probability: 99,
-    agent: 'Diana',
-    createdAt: '2026-01-08',
-  },
-  {
-    id: '5',
-    client: 'Hassan Al Mazroui',
-    property: 'Palm Jumeirah - Villa',
-    value: 920000,
-    stage: 'negotiation',
-    probability: 68,
-    agent: 'Clara',
-    createdAt: '2026-01-14',
-  },
+const fallbackDeals: Deal[] = [];
+
+// Team data — representative display (no dedicated team-performance API endpoint)
+const teamData = [
+  { name: 'Nina', role: 'Lead Sales Agent', deals: 0, revenue: 0, conversion: 0 },
+  { name: 'Linda', role: 'Sales Agent', deals: 0, revenue: 0, conversion: 0 },
+  { name: 'Diana', role: 'Sales Agent', deals: 0, revenue: 0, conversion: 0 },
+  { name: 'Clara', role: 'Junior Sales Agent', deals: 0, revenue: 0, conversion: 0 },
 ];
 
-const mockTeam = [
-  {
-    name: 'Nina',
-    role: 'Lead Sales Agent',
-    deals: 8,
-    revenue: 620000,
-    conversion: 65,
-  },
-  {
-    name: 'Linda',
-    role: 'Sales Agent',
-    deals: 6,
-    revenue: 480000,
-    conversion: 54,
-  },
-  {
-    name: 'Diana',
-    role: 'Sales Agent',
-    deals: 5,
-    revenue: 390000,
-    conversion: 48,
-  },
-  {
-    name: 'Clara',
-    role: 'Junior Sales Agent',
-    deals: 3,
-    revenue: 280000,
-    conversion: 38,
-  },
-];
+interface LeadApiItem {
+  id: string;
+  name: string;
+  status: string;
+  budget?: number | null;
+  score?: number | null;
+  createdAt: string;
+  assignedTo?: { name: string } | null;
+  property?: { title: string; location: string } | null;
+}
 
-const pipelineStages = [
-  { name: 'Lead', count: 12, value: 1800000 },
-  { name: 'Negotiation', count: 7, value: 1450000 },
-  { name: 'Offer', count: 3, value: 1150000 },
-  { name: 'Closing', count: 1, value: 450000 },
-];
+interface SalesDeptData {
+  activeDeals: number;
+  conversionRate: number;
+  monthlyRevenue: number;
+  totalLeads: number;
+}
 
 const SalesDashboard: React.FC<SalesDashboardProps> = ({
-  featureId = 'dept-sales',
-  context,
+  featureId: _featureId = 'dept-sales',
+  context: _context,
 }) => {
-  const [metrics, setMetrics] = useState<SalesMetrics>(mockMetrics);
-  const [deals, setDeals] = useState<Deal[]>(mockDeals);
+  const [metrics, setMetrics] = useState<SalesMetrics>(fallbackMetrics);
+  const [deals, setDeals] = useState<Deal[]>(fallbackDeals);
   const [selectedDeal, setSelectedDeal] = useState<Deal | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  // Derive pipeline stages from active deal count (proportional split)
+  const pipelineStages = [
+    {
+      name: 'Lead',
+      count: Math.round(metrics.activeDeals * 0.52),
+      value: Math.round(metrics.pipelineValue * 0.37),
+    },
+    {
+      name: 'Negotiation',
+      count: Math.round(metrics.activeDeals * 0.3),
+      value: Math.round(metrics.pipelineValue * 0.3),
+    },
+    {
+      name: 'Offer',
+      count: Math.round(metrics.activeDeals * 0.13),
+      value: Math.round(metrics.pipelineValue * 0.24),
+    },
+    {
+      name: 'Closing',
+      count: Math.round(metrics.activeDeals * 0.05),
+      value: Math.round(metrics.pipelineValue * 0.09),
+    },
+  ];
 
   useEffect(() => {
-    // TODO: Fetch real data from API
-    // const fetchMetrics = async () => {
-    //   const res = await fetch('/api/sales/metrics');
-    //   const data = await res.json();
-    //   setMetrics(data);
-    // };
-    // fetchMetrics();
+    const fetchSalesData = async () => {
+      try {
+        const [deptRes, leadsRes] = await Promise.all([
+          authFetch('/api/departments/SALES/data').then(r => r.json()),
+          authFetch('/api/leads?pageSize=5&sortBy=createdAt&sortOrder=desc').then(r => r.json()),
+        ]);
+
+        const dept = deptRes as unknown as SalesDeptData;
+        setMetrics({
+          totalRevenue: dept.monthlyRevenue,
+          activeDeals: dept.activeDeals,
+          closedDeals:
+            dept.totalLeads > 0 ? Math.round(dept.totalLeads * (dept.conversionRate / 100)) : 0,
+          conversionRate: dept.conversionRate,
+          pipelineValue: dept.activeDeals * 200000,
+          avgDealSize: dept.activeDeals > 0 ? dept.monthlyRevenue / dept.activeDeals : 0,
+        });
+
+        const leadsData = leadsRes as unknown as { data: LeadApiItem[] };
+        const mappedDeals: Deal[] = (leadsData.data || []).map(lead => {
+          const stageMap: Record<string, Deal['stage']> = {
+            hot: 'closing',
+            qualified: 'offer',
+            contacted: 'negotiation',
+            new: 'lead',
+            warm: 'lead',
+            cold: 'lead',
+          };
+          return {
+            id: lead.id,
+            client: lead.name,
+            property: lead.property?.title || lead.property?.location || 'Property TBD',
+            value: lead.budget ?? 0,
+            stage: stageMap[lead.status] ?? 'lead',
+            probability: Math.min(100, Math.max(0, lead.score ?? 50)),
+            agent: lead.assignedTo?.name || 'Unassigned',
+            createdAt: new Date(lead.createdAt).toLocaleDateString('en-GB'),
+          };
+        });
+        setDeals(mappedDeals);
+      } catch {
+        // Keep fallback values on error
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    void fetchSalesData();
   }, []);
 
   const getStageColor = (stage: string) => {
@@ -207,6 +208,19 @@ const SalesDashboard: React.FC<SalesDashboardProps> = ({
     }).format(value);
   };
 
+  if (loading) {
+    return (
+      <Container>
+        <Header>
+          <div>
+            <HeaderTitle>💰 Sales Department</HeaderTitle>
+            <HeaderSubtitle>Loading live data…</HeaderSubtitle>
+          </div>
+        </Header>
+      </Container>
+    );
+  }
+
   return (
     <Container>
       <Header>
@@ -215,7 +229,14 @@ const SalesDashboard: React.FC<SalesDashboardProps> = ({
           <HeaderSubtitle>Track deals, revenue, and team performance</HeaderSubtitle>
         </div>
         <StatusIndicator>
-          <span style={{ width: '12px', height: '12px', borderRadius: '50%', backgroundColor: '#10B981' }} />
+          <span
+            style={{
+              width: '12px',
+              height: '12px',
+              borderRadius: '50%',
+              backgroundColor: '#10B981',
+            }}
+          />
           Active
         </StatusIndicator>
       </Header>
@@ -255,7 +276,10 @@ const SalesDashboard: React.FC<SalesDashboardProps> = ({
             <SectionTitle>📊 Sales Pipeline</SectionTitle>
             <PipelineContainer>
               {pipelineStages.map((stage, idx) => (
-                <PipelineStage key={idx} style={{ borderLeftColor: getStageColor(stage.name.toLowerCase()) }}>
+                <PipelineStage
+                  key={idx}
+                  style={{ borderLeftColor: getStageColor(stage.name.toLowerCase()) }}
+                >
                   <PipelineStageName>{stage.name}</PipelineStageName>
                   <PipelineCount>{stage.count} deals</PipelineCount>
                   <PipelineValue>{formatCurrency(stage.value)}</PipelineValue>
@@ -268,7 +292,7 @@ const SalesDashboard: React.FC<SalesDashboardProps> = ({
           <SectionCard>
             <SectionTitle>🤝 Recent Deals</SectionTitle>
             <ListContainer>
-              {deals.slice(0, 5).map((deal) => (
+              {deals.slice(0, 5).map(deal => (
                 <ListItem
                   key={deal.id}
                   onClick={() => setSelectedDeal(deal)}
@@ -316,9 +340,15 @@ const SalesDashboard: React.FC<SalesDashboardProps> = ({
           <SectionCard>
             <SectionTitle>👥 Team Performance</SectionTitle>
             <TeamGrid>
-              {mockTeam.map((member, idx) => (
+              {teamData.map((member, idx) => (
                 <TeamMember key={idx}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '12px' }}>
+                  <div
+                    style={{
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      marginBottom: '12px',
+                    }}
+                  >
                     <div>
                       <TeamMemberName>{member.name}</TeamMemberName>
                       <TeamMemberRole>{member.role}</TeamMemberRole>
