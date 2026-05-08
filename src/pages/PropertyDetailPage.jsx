@@ -5,6 +5,7 @@ import { addToFavorites, removeFromFavorites, selectFavorites } from '../store/d
 import AppLayout from '../components/layout/AppLayout';
 import Footer from '../components/Footer';
 import WhatsAppButton from '../components/WhatsAppButton';
+import { authFetch } from '../utils/authFetch';
 import {
   MapPin,
   Bed,
@@ -57,7 +58,7 @@ const PropertyDetailPage = () => {
     const fetchProperty = async () => {
       try {
         setLoading(true);
-        const response = await fetch(`/api/crud/properties/${id}`);
+        const response = await authFetch(`/api/crud/properties/${id}`);
         if (!response.ok) {
           throw new Error('Property not found');
         }
@@ -105,7 +106,7 @@ const PropertyDetailPage = () => {
     setSubmitting(true);
 
     try {
-      const response = await fetch('/api/crud/leads', {
+      const response = await authFetch('/api/crud/leads', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
