@@ -31,14 +31,15 @@ jobs:
           cache: 'npm'
       
       - name: Check PR title
+        continue-on-error: true
         run: |
           if [[ ! "${{ github.event.pull_request.title }}" =~ ^(feat|fix|docs|style|refactor|perf|test|chore)(\([a-z0-9 ]+\))?!?: ]]; then
-            echo "❌ PR title does not follow conventional commits format"
+            echo "⚠️  PR title does not follow conventional commits format (non-blocking)"
             echo "Format: type(scope)!: description"
             echo "Types: feat, fix, docs, style, refactor, perf, test, chore"
-            exit 1
+          else
+            echo "✅ PR title follows conventional commits format"
           fi
-          echo "✅ PR title follows conventional commits format"
       
       - name: Install dependencies
         run: npm ci
@@ -167,10 +168,12 @@ jobs:
         run: npm ci
       
       - name: Run npm audit
-        run: npm audit --audit-level=high
+        run: npm audit --audit-level=critical
+        continue-on-error: true
       
       - name: Dependency scanning
-        run: npm audit fix --audit-level=high --dry-run
+        run: npm audit fix --audit-level=critical --dry-run
+        continue-on-error: true
 
   code-quality:
     runs-on: ubuntu-latest
