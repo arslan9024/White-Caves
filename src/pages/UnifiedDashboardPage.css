@@ -191,8 +191,8 @@
 }
 
 .tab-button.active {
-  color: #C41E3A;
-  border-bottom-color: #C41E3A;
+  color: #c41e3a;
+  border-bottom-color: #c41e3a;
   background: rgba(196, 30, 58, 0.06);
   font-weight: 600;
 }
@@ -213,8 +213,8 @@
   position: absolute;
   top: -6px;
   right: -8px;
-  background: #C41E3A;
-  color: #FAFAFA;
+  background: #c41e3a;
+  color: #fafafa;
   font-size: 10px;
   font-weight: 700;
   min-width: 18px;
@@ -420,28 +420,27 @@
    DARK MODE SUPPORT
    ======================================== */
 
-[data-theme="dark"] .unified-dashboard-tabs,
-[data-theme="dark"] .unified-dashboard-content,
-[data-theme="dark"] .crm-modules-menu {
-  background: #1E1E1E;
+[data-theme='dark'] .unified-dashboard-tabs,
+[data-theme='dark'] .unified-dashboard-content,
+[data-theme='dark'] .crm-modules-menu {
+  background: #1e1e1e;
   border-color: #333333;
   color: #ffffff;
 }
 
-[data-theme="dark"] .tab-button {
+[data-theme='dark'] .tab-button {
   color: #999;
 }
 
-[data-theme="dark"] .tab-button:hover {
+[data-theme='dark'] .tab-button:hover {
   background: #2a2a2a;
   color: #ffffff;
 }
 
-[data-theme="dark"] .tab-button:hover {
+[data-theme='dark'] .tab-button:hover {
   background: rgba(196, 30, 58, 0.08);
-  color: #FAFAFA;
+  color: #fafafa;
 }
-[data-theme="dark"] .tab-button.active {
+[data-theme='dark'] .tab-button.active {
   color: #00a0ff;
 }
-

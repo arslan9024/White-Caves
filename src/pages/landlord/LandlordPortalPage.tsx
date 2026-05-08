@@ -24,7 +24,14 @@ import LandlordMaintenanceTab from '../../components/portal/landlord/LandlordMai
 import LandlordDocumentsTab from '../../components/portal/landlord/LandlordDocumentsTab';
 import PortalProfileTab from '../../components/portal/PortalProfileTab';
 
-type TabKey = 'home' | 'properties' | 'tenants' | 'payments' | 'maintenance' | 'documents' | 'profile';
+type TabKey =
+  | 'home'
+  | 'properties'
+  | 'tenants'
+  | 'payments'
+  | 'maintenance'
+  | 'documents'
+  | 'profile';
 
 interface Tab {
   key: TabKey;

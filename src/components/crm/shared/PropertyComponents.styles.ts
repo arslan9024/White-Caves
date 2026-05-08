@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 import styled from 'styled-components';
 import { theme } from '../../../styles/theme';
 
@@ -18,7 +17,7 @@ export const PropertyGallery = styled.div<{ $isEmpty?: boolean }>`
   overflow: hidden;
   background: rgba(15, 23, 42, 0.6);
 
-  ${(props) =>
+  ${props =>
     props.$isEmpty &&
     `
     display: flex;
@@ -71,7 +70,7 @@ export const GalleryNav = styled.button<{ $position?: 'prev' | 'next' }>`
   transition: ${transitions.hover};
   z-index: 10;
 
-  ${(props) => (props.$position === 'prev' ? `left: 1rem;` : `right: 1rem;`)}
+  ${props => (props.$position === 'prev' ? `left: 1rem;` : `right: 1rem;`)}
 
   &:hover {
     background: rgba(0, 0, 0, 0.7);
@@ -170,13 +169,13 @@ export const Thumbnail = styled.button<{ $active?: boolean; $isMore?: boolean }>
   height: 48px;
   border-radius: ${radius.md};
   overflow: hidden;
-  border: 2px solid ${(props) => (props.$active ? colors.primary : 'transparent')};
+  border: 2px solid ${props => (props.$active ? colors.primary : 'transparent')};
   cursor: pointer;
   background: #1e293b;
   padding: 0;
   transition: ${transitions.hover};
 
-  ${(props) =>
+  ${props =>
     props.$isMore &&
     `
     display: flex;
@@ -273,7 +272,7 @@ export const FullscreenNav = styled.button<{ $position?: 'prev' | 'next' }>`
   transition: ${transitions.hover};
   z-index: var(--z-overlay, 600);
 
-  ${(props) => (props.$position === 'prev' ? `left: 2rem;` : `right: 2rem;`)}
+  ${props => (props.$position === 'prev' ? `left: 2rem;` : `right: 2rem;`)}
 
   &:hover {
     background: rgba(255, 255, 255, 0.2);
@@ -293,7 +292,7 @@ export const FullscreenNav = styled.button<{ $position?: 'prev' | 'next' }>`
       height: 22px;
     }
 
-    ${(props) => (props.$position === 'prev' ? `left: 1rem;` : `right: 1rem;`)}
+    ${props => (props.$position === 'prev' ? `left: 1rem;` : `right: 1rem;`)}
   }
 `;
 
@@ -647,4 +646,3 @@ export const DescriptionSection = styled.div`
     }
   }
 `;
-

@@ -46,7 +46,9 @@ export const ImportHistory: React.FC<ImportHistoryProps> = ({
       }}
     >
       <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-        <span style={{ fontSize: '1.5rem' }} aria-hidden="true">📜</span>
+        <span style={{ fontSize: '1.5rem' }} aria-hidden="true">
+          📜
+        </span>
         <h2
           style={{
             fontSize: '1.25rem',
@@ -71,11 +73,20 @@ export const ImportHistory: React.FC<ImportHistoryProps> = ({
             color: 'rgba(250,250,250,0.4)',
           }}
         >
-          <span style={{ fontSize: '2.5rem' }} aria-hidden="true">🗃️</span>
+          <span style={{ fontSize: '2.5rem' }} aria-hidden="true">
+            🗃️
+          </span>
           <p style={{ fontFamily: "'Inter', sans-serif", fontSize: '0.875rem', margin: 0 }}>
             No import sessions yet.
           </p>
-          <p style={{ fontFamily: "'Inter', sans-serif", fontSize: '0.8rem', margin: 0, opacity: 0.7 }}>
+          <p
+            style={{
+              fontFamily: "'Inter', sans-serif",
+              fontSize: '0.8rem',
+              margin: 0,
+              opacity: 0.7,
+            }}
+          >
             Use the Smart Import wizard to get started.
           </p>
         </div>
@@ -83,9 +94,16 @@ export const ImportHistory: React.FC<ImportHistoryProps> = ({
         <ul
           role="list"
           aria-label="Past import sessions"
-          style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '0.5rem' }}
+          style={{
+            listStyle: 'none',
+            padding: 0,
+            margin: 0,
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '0.5rem',
+          }}
         >
-          {sessions.map((session) => (
+          {sessions.map(session => (
             <li
               key={session.id}
               role="listitem"
@@ -100,14 +118,31 @@ export const ImportHistory: React.FC<ImportHistoryProps> = ({
               }}
             >
               <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
-                <span style={{ fontFamily: "'Inter', sans-serif", fontSize: '0.875rem', color: '#FAFAFA' }}>
+                <span
+                  style={{
+                    fontFamily: "'Inter', sans-serif",
+                    fontSize: '0.875rem',
+                    color: '#FAFAFA',
+                  }}
+                >
                   {session.fileName}
                 </span>
-                <span style={{ fontFamily: "'Inter', sans-serif", fontSize: '0.75rem', color: 'rgba(250,250,250,0.5)' }}>
+                <span
+                  style={{
+                    fontFamily: "'Inter', sans-serif",
+                    fontSize: '0.75rem',
+                    color: 'rgba(250,250,250,0.5)',
+                  }}
+                >
                   {session.importedAt} · {session.recordCount} records ·{' '}
                   <span
                     style={{
-                      color: session.status === 'success' ? '#4caf50' : session.status === 'failed' ? '#C41E3A' : '#ff9800',
+                      color:
+                        session.status === 'success'
+                          ? '#4caf50'
+                          : session.status === 'failed'
+                            ? '#C41E3A'
+                            : '#ff9800',
                     }}
                     aria-label={`Status: ${session.status}`}
                   >
@@ -119,7 +154,15 @@ export const ImportHistory: React.FC<ImportHistoryProps> = ({
                 {session.status !== 'success' && onRetry && (
                   <button
                     onClick={() => onRetry(session.id)}
-                    style={{ padding: '0.375rem 0.75rem', background: '#C41E3A', color: '#FAFAFA', border: 'none', borderRadius: '6px', cursor: 'pointer', fontSize: '0.75rem' }}
+                    style={{
+                      padding: '0.375rem 0.75rem',
+                      background: '#C41E3A',
+                      color: '#FAFAFA',
+                      border: 'none',
+                      borderRadius: '6px',
+                      cursor: 'pointer',
+                      fontSize: '0.75rem',
+                    }}
                     aria-label={`Retry import for ${session.fileName}`}
                   >
                     Retry
@@ -128,7 +171,15 @@ export const ImportHistory: React.FC<ImportHistoryProps> = ({
                 {onDelete && (
                   <button
                     onClick={() => onDelete(session.id)}
-                    style={{ padding: '0.375rem 0.75rem', background: 'transparent', color: 'rgba(250,250,250,0.5)', border: '1px solid rgba(250,250,250,0.15)', borderRadius: '6px', cursor: 'pointer', fontSize: '0.75rem' }}
+                    style={{
+                      padding: '0.375rem 0.75rem',
+                      background: 'transparent',
+                      color: 'rgba(250,250,250,0.5)',
+                      border: '1px solid rgba(250,250,250,0.15)',
+                      borderRadius: '6px',
+                      cursor: 'pointer',
+                      fontSize: '0.75rem',
+                    }}
                     aria-label={`Delete import session for ${session.fileName}`}
                   >
                     Delete

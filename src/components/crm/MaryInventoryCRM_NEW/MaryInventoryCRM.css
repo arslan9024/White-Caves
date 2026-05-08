@@ -112,7 +112,7 @@
 
 .sort-order-btn:hover {
   background: var(--bg-hover, #f3f4f6);
-  color: var(--primary-color, #E31E24);
+  color: var(--primary-color, #e31e24);
 }
 
 /* Table Styles - CONSOLIDATED & OPTIMIZED */
@@ -224,7 +224,7 @@
 }
 
 .location-cell svg {
-  color: var(--primary-color, #E31E24);
+  color: var(--primary-color, #e31e24);
 }
 
 .specs-cell {
@@ -512,21 +512,21 @@
 }
 
 /* Dark Theme */
-[data-theme="dark"] .mary-crm-container {
+[data-theme='dark'] .mary-crm-container {
   background: var(--bg-primary, #0f172a);
 }
 
-[data-theme="dark"] .stat-card,
-[data-theme="dark"] .form-modal,
-[data-theme="dark"] .form-group input,
-[data-theme="dark"] .form-group select,
-[data-theme="dark"] .filter-group select {
+[data-theme='dark'] .stat-card,
+[data-theme='dark'] .form-modal,
+[data-theme='dark'] .form-group input,
+[data-theme='dark'] .form-group select,
+[data-theme='dark'] .filter-group select {
   background: var(--bg-card, #1e293b);
 }
 
-[data-theme="dark"] .inventory-stats,
-[data-theme="dark"] .inventory-table th,
-[data-theme="dark"] .form-modal-header {
+[data-theme='dark'] .inventory-stats,
+[data-theme='dark'] .inventory-table th,
+[data-theme='dark'] .form-modal-header {
   background: var(--bg-secondary, #1e293b);
 }
 
@@ -535,20 +535,20 @@
   .inventory-stats {
     flex-wrap: wrap;
   }
-  
+
   .stat-card {
     min-width: calc(50% - 8px);
   }
-  
+
   .inventory-filters {
     flex-direction: column;
     align-items: stretch;
   }
-  
+
   .inventory-filters .search-box {
     width: 100%;
   }
-  
+
   .filter-group {
     flex-wrap: wrap;
   }
@@ -559,16 +559,16 @@
     flex-direction: column;
     gap: 16px;
   }
-  
+
   .mary-actions {
     width: 100%;
     justify-content: center;
   }
-  
+
   .inventory-table-wrapper {
     overflow-x: scroll;
   }
-  
+
   .form-row {
     flex-direction: column;
   }
@@ -590,7 +590,6 @@
 .mary-action-btn.features.active {
   background: rgba(255, 255, 255, 0.25);
 }
-
 
 /* Import Modal Styles - CONSOLIDATED: Share pattern with form-modal */
 .import-modal-overlay {
@@ -837,14 +836,17 @@
 
 /* Spin animation */
 @keyframes spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .spin {
   animation: spin 1s linear infinite;
 }
-
 
 /* Additional styles for Redux-powered inventory */
 .active-filters {
@@ -954,7 +956,6 @@
   border-bottom: 1px solid var(--border-color);
 }
 
-
 .filter-toggle-row {
   margin-bottom: 16px;
 }
@@ -1010,7 +1011,6 @@
   font-weight: 700;
   font-size: 16px;
 }
-
 
 /* Data Tools Section */
 .data-tools-section {
@@ -1084,16 +1084,16 @@
   .data-tools-section {
     margin: 8px;
   }
-  
+
   .tool-tabs {
     padding: 8px;
   }
-  
+
   .tool-tab {
     padding: 8px 12px;
     font-size: 0.8rem;
   }
-  
+
   .tool-content {
     padding: 8px;
   }

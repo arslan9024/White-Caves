@@ -6,7 +6,7 @@ export const lightTheme = {
     // Primary & Secondary
     primary: '#C41E3A', // Red/Crimson
     secondary: '#0EA5E9', // Sky Blue
-    
+
     // Backgrounds (nested structure for styled-components)
     background: {
       primary: '#FFFFFF',
@@ -15,7 +15,7 @@ export const lightTheme = {
     },
     backgroundAlt: '#F9FAFB',
     cardBg: '#FFFFFF',
-    
+
     // Text (nested structure)
     text: {
       primary: '#1F2937',
@@ -27,7 +27,7 @@ export const lightTheme = {
     textSecondary: '#6B7280',
     textTertiary: '#9CA3AF',
     textInverse: '#FFFFFF',
-    
+
     // Borders & Dividers (nested structure)
     border: {
       light: '#F3F4F6',
@@ -36,33 +36,33 @@ export const lightTheme = {
     },
     borderLight: '#F3F4F6',
     divider: '#E5E7EB',
-    
+
     // States
     success: '#10B981',
     warning: '#F59E0B',
     danger: '#EF4444',
     error: '#EF4444',
     info: '#3B82F6',
-    
+
     // Status Indicators
     statusOnline: '#10B981',
     statusBusy: '#F59E0B',
     statusOffline: '#9CA3AF',
-    
+
     // Interactive
     hover: '#F3F4F6',
     active: '#EEF2FF',
     disabled: '#D1D5DB',
     focus: '#3B82F6',
-    
+
     // Semantic
     activeBg: '#FCE4E6',
     hoverBg: '#F9FAFB',
-    
+
     // Sidebar specific
     sidebarBg: '#FFFFFF',
   },
-  
+
   spacing: {
     0: '0px',
     1: '4px',
@@ -78,7 +78,7 @@ export const lightTheme = {
     12: '48px',
     16: '64px',
   },
-  
+
   typography: {
     h1: {
       size: '32px',
@@ -135,7 +135,7 @@ export const lightTheme = {
       letterSpacing: '0.5px',
     },
   },
-  
+
   borderRadius: {
     xs: '2px',
     sm: '4px',
@@ -144,7 +144,7 @@ export const lightTheme = {
     xl: '16px',
     full: '9999px',
   },
-  
+
   shadows: {
     none: 'none',
     sm: '0 1px 2px 0 rgba(0, 0, 0, 0.05)',
@@ -153,20 +153,20 @@ export const lightTheme = {
     xl: '0 20px 25px -5px rgba(0, 0, 0, 0.1)',
     elevated: '0 12px 24px rgba(0, 0, 0, 0.15)',
   },
-  
+
   transitions: {
     fast: '150ms cubic-bezier(0.4, 0, 0.2, 1)',
     standard: '200ms cubic-bezier(0.4, 0, 0.2, 1)',
     slow: '300ms cubic-bezier(0.4, 0, 0.2, 1)',
   },
-  
+
   easing: {
     in: 'cubic-bezier(0.4, 0, 1, 1)',
     out: 'cubic-bezier(0, 0, 0.2, 1)',
     inOut: 'cubic-bezier(0.4, 0, 0.2, 1)',
     standard: 'cubic-bezier(0.4, 0, 0.2, 1)',
   },
-  
+
   breakpoints: {
     mobile: '480px',
     tablet: '768px',
@@ -174,7 +174,7 @@ export const lightTheme = {
     desktop: '1440px',
     widescreen: '1920px',
   },
-  
+
   zIndex: {
     hide: -1,
     base: 0,

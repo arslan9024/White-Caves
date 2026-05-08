@@ -1,4 +1,5 @@
 # User Authentication Flow
+
 # White Caves Real Estate Platform
 
 > **Document ID:** WC-FLOW-AUTH-001
@@ -293,36 +294,35 @@ Login succeeds (email/password validated)
 
 ## 7. Role-Based Redirect After Login
 
-| Role | Redirect Target | Available Tabs |
-|------|----------------|----------------|
-| `managing_director`, `lion` | `/dashboard` | All 8+ CRM tabs |
-| `owner` | `/dashboard` | All 8+ CRM tabs |
-| `admin` | `/dashboard` | Admin + core CRM tabs |
-| `agent`, `senior_agent` | `/dashboard` | Leads, Properties, Clients |
-| `landlord` | `/landlord-portal` | Landlord portal only |
-| `tenant` | `/tenant-portal` | Tenant portal only |
-| `viewer` | `/dashboard` | Read-only view |
+| Role                        | Redirect Target    | Available Tabs             |
+| --------------------------- | ------------------ | -------------------------- |
+| `managing_director`, `lion` | `/dashboard`       | All 8+ CRM tabs            |
+| `owner`                     | `/dashboard`       | All 8+ CRM tabs            |
+| `admin`                     | `/dashboard`       | Admin + core CRM tabs      |
+| `agent`, `senior_agent`     | `/dashboard`       | Leads, Properties, Clients |
+| `landlord`                  | `/landlord-portal` | Landlord portal only       |
+| `tenant`                    | `/tenant-portal`   | Tenant portal only         |
+| `viewer`                    | `/dashboard`       | Read-only view             |
 
 ---
 
 ## 8. Security Controls Summary
 
-| Control | Implementation |
-|---------|---------------|
-| Password hashing | bcrypt, rounds=10 |
-| Token expiry | JWT 7d, 2FA pending 5min |
-| Rate limiting | Auth: 5/15min; Register: 3/hr; Password: 3/hr |
+| Control             | Implementation                                 |
+| ------------------- | ---------------------------------------------- |
+| Password hashing    | bcrypt, rounds=10                              |
+| Token expiry        | JWT 7d, 2FA pending 5min                       |
+| Rate limiting       | Auth: 5/15min; Register: 3/hr; Password: 3/hr  |
 | No user enumeration | Same response for wrong email / wrong password |
-| Timing-safe auth | bcrypt always runs full comparison |
-| Cookie security | HttpOnly, Secure, SameSite=Strict |
-| 2FA | TOTP + SMS (Phase 9) |
-| Token revocation | Redis blacklist (Phase 7) |
+| Timing-safe auth    | bcrypt always runs full comparison             |
+| Cookie security     | HttpOnly, Secure, SameSite=Strict              |
+| 2FA                 | TOTP + SMS (Phase 9)                           |
+| Token revocation    | Redis blacklist (Phase 7)                      |
 
 ---
 
 **Document Owner:** Technology / Daniela (Auth Specialist)
 **Related:** `business_docs/10_security/security-policy.md`, `server/middleware/auth.ts`
-
 
 ---
 
@@ -335,12 +335,12 @@ Login succeeds (email/password validated)
 interface AccessTokenPayload {
   userId: string;
   email: string;
-  role: UserRole;           // one of 29 roles
-  department: string;       // for RBAC scoping
-  permissions: string[];    // cached permission list (avoid DB lookup per request)
-  portalType?: 'landlord' | 'tenant';  // for portal-specific routes
-  iat: number;              // issued at
-  exp: number;              // expires in 1 hour
+  role: UserRole; // one of 29 roles
+  department: string; // for RBAC scoping
+  permissions: string[]; // cached permission list (avoid DB lookup per request)
+  portalType?: 'landlord' | 'tenant'; // for portal-specific routes
+  iat: number; // issued at
+  exp: number; // expires in 1 hour
   iss: 'whitecaves.ae';
   aud: 'whitecaves-api';
 }
@@ -348,9 +348,9 @@ interface AccessTokenPayload {
 // JWT token structure — refresh token (stored httpOnly cookie)
 interface RefreshTokenPayload {
   userId: string;
-  tokenFamily: string;      // for refresh token rotation security
+  tokenFamily: string; // for refresh token rotation security
   iat: number;
-  exp: number;              // expires in 7 days
+  exp: number; // expires in 7 days
 }
 ```
 
@@ -377,13 +377,13 @@ Access token valid (< 1 hour old)?
 
 ### 9.3 Concurrent Session Policy
 
-| Role | Max Concurrent Sessions | Policy |
-|------|------------------------|--------|
-| Managing Director | 3 (laptop, mobile, tablet) | All active simultaneously |
-| Sales Agent | 2 (laptop, mobile) | Second login prompts: "New login detected. Continue?" |
-| Compliance Officer | 2 | As above |
-| Tenant Portal | 1 per user | New login terminates previous session (except explicit multi-device) |
-| Landlord Portal | 1 per user | As above |
+| Role               | Max Concurrent Sessions    | Policy                                                               |
+| ------------------ | -------------------------- | -------------------------------------------------------------------- |
+| Managing Director  | 3 (laptop, mobile, tablet) | All active simultaneously                                            |
+| Sales Agent        | 2 (laptop, mobile)         | Second login prompts: "New login detected. Continue?"                |
+| Compliance Officer | 2                          | As above                                                             |
+| Tenant Portal      | 1 per user                 | New login terminates previous session (except explicit multi-device) |
+| Landlord Portal    | 1 per user                 | As above                                                             |
 
 ### 9.4 Suspicious Login Detection (Phase 5)
 
@@ -404,14 +404,15 @@ For Critical roles (MD, Compliance):
 
 ### 10.1 MFA Methods Supported
 
-| Method | Security Level | UX Friction | Implementation |
-|--------|-------------|-----------|--------------|
-| **TOTP Authenticator (Google/Authy)** | High | Low (once set up) | Firebase Auth TOTP (Phase 9) |
-| **SMS OTP** | Medium | Medium | Firebase SMS verification |
-| **Email OTP** | Medium | Medium | SendGrid + custom OTP endpoint |
-| **Hardware Key (WebAuthn)** | Very High | Low (tap key) | Phase 10 — for MD/Compliance only |
+| Method                                | Security Level | UX Friction       | Implementation                    |
+| ------------------------------------- | -------------- | ----------------- | --------------------------------- |
+| **TOTP Authenticator (Google/Authy)** | High           | Low (once set up) | Firebase Auth TOTP (Phase 9)      |
+| **SMS OTP**                           | Medium         | Medium            | Firebase SMS verification         |
+| **Email OTP**                         | Medium         | Medium            | SendGrid + custom OTP endpoint    |
+| **Hardware Key (WebAuthn)**           | Very High      | Low (tap key)     | Phase 10 — for MD/Compliance only |
 
 **Phase 9 rollout order:**
+
 1. MD (Arslan) — mandatory from day 1 of Phase 9
 2. Compliance Officer — mandatory same day
 3. Finance Officer — mandatory same week
@@ -424,7 +425,7 @@ For Critical roles (MD, Compliance):
 // authMiddleware.ts (Phase 9 addition)
 const requireMFA = (req: AuthRequest, res: Response, next: NextFunction) => {
   const { mfaVerified, role, mfaEnforcedRoles } = req.user;
-  
+
   if (mfaEnforcedRoles.includes(role) && !mfaVerified) {
     return res.status(403).json({
       error: 'mfa_required',
@@ -432,7 +433,7 @@ const requireMFA = (req: AuthRequest, res: Response, next: NextFunction) => {
       setupUrl: '/settings/security/mfa-setup',
     });
   }
-  
+
   next();
 };
 
@@ -443,6 +444,7 @@ app.use('/api/v1', authMiddleware, requireMFA, routes);
 ### 10.3 Backup Codes
 
 Every user enrolled in MFA receives 8 one-time backup codes:
+
 - Stored hashed in database (bcrypt)
 - Displayed once to user at MFA setup — user must download/print
 - Each code single-use (marked used on first authentication)

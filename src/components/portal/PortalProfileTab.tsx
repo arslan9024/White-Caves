@@ -17,11 +17,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import type { RootState } from '../../store/store';
 import { setUser } from '../../store/userSlice';
 import { auth } from '../../config/firebase';
-import {
-  updatePassword,
-  reauthenticateWithCredential,
-  EmailAuthProvider,
-} from 'firebase/auth';
+import { updatePassword, reauthenticateWithCredential, EmailAuthProvider } from 'firebase/auth';
 import { authFetch } from '../../utils/authFetch';
 import { createLogger } from '../../utils/logger';
 import '../../pages/RolePages.css';

@@ -82,7 +82,7 @@
 }
 
 .property-popup-card.active {
-  border-left: 3px solid #E31E24;
+  border-left: 3px solid #e31e24;
 }
 
 .popup-card-image {
@@ -141,7 +141,7 @@
   display: block;
   font-size: 0.95rem;
   font-weight: 800;
-  color: #E31E24;
+  color: #e31e24;
 }
 
 .popup-featured-badge {
@@ -244,7 +244,7 @@
 }
 
 .legend-dot.featured {
-  background: #E31E24;
+  background: #e31e24;
   box-shadow: 0 0 4px rgba(227, 30, 36, 0.5);
 }
 
@@ -255,7 +255,7 @@
 .legend-circle {
   width: 12px;
   height: 12px;
-  border: 2px solid #E31E24;
+  border: 2px solid #e31e24;
   border-radius: 50%;
   background: rgba(227, 30, 36, 0.15);
 }

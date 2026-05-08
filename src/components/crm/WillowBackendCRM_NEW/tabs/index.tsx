@@ -7,6 +7,7 @@ import DatabaseTab from './DatabaseTab';
 import CachingTab from './CachingTab';
 import SecurityTab from './SecurityTab';
 import RealtimeTab from './RealtimeTab';
+import AssistantLifecycleTab from '../../shared/AssistantLifecycleTab';
 import '../WillowBackendCRM.css';
 
 const WillowBackendCRM = () => {
@@ -31,7 +32,8 @@ const WillowBackendCRM = () => {
     { id: 'database', label: 'Database', icon: '🗄️' },
     { id: 'caching', label: 'Caching', icon: '⚡' },
     { id: 'security', label: 'Security', icon: '🔒' },
-    { id: 'realtime', label: 'Real-time', icon: '📡' }
+    { id: 'realtime', label: 'Real-time', icon: '📡' },
+    { id: 'lifecycle', label: 'Lifecycle', icon: '🔄' }
   ];
 
   const renderContent = () => {
@@ -61,6 +63,8 @@ const WillowBackendCRM = () => {
         return <SecurityTab checks={securityChecks} securityStatus={securityStatus} />;
       case 'realtime':
         return <RealtimeTab connections={realtimeConnections} realtimeStats={realtimeStats} />;
+      case 'lifecycle':
+        return <AssistantLifecycleTab assistantId="willow" color="#0EA5E9" assistantName="Willow" />;
       default:
         return <OverviewTab apiStats={apiStats} dbHealth={dbHealth} cacheHealth={cacheHealth} securityStatus={securityStatus} realtimeStats={realtimeStats} />;
     }

@@ -3,7 +3,7 @@ import { Config } from '../../../config/constants';
 import type { SettingsTabProps } from './types';
 import './TabStyles.css';
 
-const SettingsTab: React.FC<SettingsTabProps> = ({ data, onAction, onSave }) => {
+const SettingsTab: React.FC<SettingsTabProps> = ({ data: _data, onAction, onSave }) => {
   const [settings, setSettings] = useState({
     companyName: Config.COMPANY.NAME,
     companyEmail: Config.COMPANY.EMAIL,
@@ -18,7 +18,7 @@ const SettingsTab: React.FC<SettingsTabProps> = ({ data, onAction, onSave }) => 
     emailNotifications: true,
     smsNotifications: false,
     leadAutoAssign: true,
-    darkMode: false
+    darkMode: false,
   });
   const [saved, setSaved] = useState(false);
 
@@ -51,7 +51,11 @@ const SettingsTab: React.FC<SettingsTabProps> = ({ data, onAction, onSave }) => 
 
   return (
     <div className="settings-tab">
-      {saved && <div className="crud-toast" role="status">✅ Settings saved successfully</div>}
+      {saved && (
+        <div className="crud-toast" role="status">
+          ✅ Settings saved successfully
+        </div>
+      )}
       <div className="tab-header">
         <h3>System Settings</h3>
         <button className="primary-btn" onClick={handleSave}>
@@ -65,51 +69,51 @@ const SettingsTab: React.FC<SettingsTabProps> = ({ data, onAction, onSave }) => 
           <div className="settings-form">
             <div className="form-group">
               <label>Company Name</label>
-              <input 
-                type="text" 
+              <input
+                type="text"
                 value={settings.companyName}
-                onChange={(e) => handleChange('companyName', e.target.value)}
+                onChange={e => handleChange('companyName', e.target.value)}
               />
             </div>
             <div className="form-group">
               <label>Email</label>
-              <input 
-                type="email" 
+              <input
+                type="email"
                 value={settings.companyEmail}
-                onChange={(e) => handleChange('companyEmail', e.target.value)}
+                onChange={e => handleChange('companyEmail', e.target.value)}
               />
             </div>
             <div className="form-group">
               <label>Phone</label>
-              <input 
-                type="tel" 
+              <input
+                type="tel"
                 value={settings.companyPhone}
-                onChange={(e) => handleChange('companyPhone', e.target.value)}
+                onChange={e => handleChange('companyPhone', e.target.value)}
               />
             </div>
             <div className="form-group">
               <label>Address</label>
-              <textarea 
+              <textarea
                 value={settings.address}
-                onChange={(e) => handleChange('address', e.target.value)}
+                onChange={e => handleChange('address', e.target.value)}
                 rows={2}
               />
             </div>
             <div className="form-row">
               <div className="form-group">
                 <label>RERA Number</label>
-                <input 
-                  type="text" 
+                <input
+                  type="text"
                   value={settings.reraNumber}
-                  onChange={(e) => handleChange('reraNumber', e.target.value)}
+                  onChange={e => handleChange('reraNumber', e.target.value)}
                 />
               </div>
               <div className="form-group">
                 <label>Established</label>
-                <input 
-                  type="text" 
+                <input
+                  type="text"
                   value={settings.established}
-                  onChange={(e) => handleChange('established', e.target.value)}
+                  onChange={e => handleChange('established', e.target.value)}
                 />
               </div>
             </div>
@@ -128,10 +132,10 @@ const SettingsTab: React.FC<SettingsTabProps> = ({ data, onAction, onSave }) => 
                 </div>
               </div>
               <label className="toggle-switch">
-                <input 
-                  type="checkbox" 
+                <input
+                  type="checkbox"
                   checked={settings.whatsappEnabled}
-                  onChange={(e) => handleChange('whatsappEnabled', e.target.checked)}
+                  onChange={e => handleChange('whatsappEnabled', e.target.checked)}
                 />
                 <span className="toggle-slider"></span>
               </label>
@@ -145,10 +149,10 @@ const SettingsTab: React.FC<SettingsTabProps> = ({ data, onAction, onSave }) => 
                 </div>
               </div>
               <label className="toggle-switch">
-                <input 
-                  type="checkbox" 
+                <input
+                  type="checkbox"
                   checked={settings.chatbotEnabled}
-                  onChange={(e) => handleChange('chatbotEnabled', e.target.checked)}
+                  onChange={e => handleChange('chatbotEnabled', e.target.checked)}
                 />
                 <span className="toggle-slider"></span>
               </label>
@@ -162,10 +166,10 @@ const SettingsTab: React.FC<SettingsTabProps> = ({ data, onAction, onSave }) => 
                 </div>
               </div>
               <label className="toggle-switch">
-                <input 
-                  type="checkbox" 
+                <input
+                  type="checkbox"
                   checked={settings.uaepassEnabled}
-                  onChange={(e) => handleChange('uaepassEnabled', e.target.checked)}
+                  onChange={e => handleChange('uaepassEnabled', e.target.checked)}
                 />
                 <span className="toggle-slider"></span>
               </label>
@@ -179,10 +183,10 @@ const SettingsTab: React.FC<SettingsTabProps> = ({ data, onAction, onSave }) => 
                 </div>
               </div>
               <label className="toggle-switch">
-                <input 
-                  type="checkbox" 
+                <input
+                  type="checkbox"
                   checked={settings.leadAutoAssign}
-                  onChange={(e) => handleChange('leadAutoAssign', e.target.checked)}
+                  onChange={e => handleChange('leadAutoAssign', e.target.checked)}
                 />
                 <span className="toggle-slider"></span>
               </label>
@@ -193,7 +197,7 @@ const SettingsTab: React.FC<SettingsTabProps> = ({ data, onAction, onSave }) => 
         <div className="settings-card">
           <h4>Integrations Status</h4>
           <div className="integrations-list">
-            {integrations.map((int) => (
+            {integrations.map(int => (
               <div key={int.id} className={`integration-item ${int.status}`}>
                 <div className="integration-info">
                   <span className="integration-icon">{int.icon}</span>
@@ -202,7 +206,12 @@ const SettingsTab: React.FC<SettingsTabProps> = ({ data, onAction, onSave }) => 
                 <span className={`integration-status ${int.status}`}>
                   {int.status === 'connected' ? '● Connected' : '○ Pending'}
                 </span>
-                <button className="icon-btn" onClick={() => onAction?.('configureIntegration', int.id)}>⚙️</button>
+                <button
+                  className="icon-btn"
+                  onClick={() => onAction?.('configureIntegration', int.id)}
+                >
+                  ⚙️
+                </button>
               </div>
             ))}
           </div>
@@ -211,7 +220,7 @@ const SettingsTab: React.FC<SettingsTabProps> = ({ data, onAction, onSave }) => 
         <div className="settings-card">
           <h4>System Health</h4>
           <div className="health-list">
-            {systemHealth.map((service) => (
+            {systemHealth.map(service => (
               <div key={service.name} className="health-item">
                 <div className="health-info">
                   <span className={`health-indicator ${service.status}`}></span>
@@ -224,7 +233,10 @@ const SettingsTab: React.FC<SettingsTabProps> = ({ data, onAction, onSave }) => 
               </div>
             ))}
           </div>
-          <button className="secondary-btn full-width" onClick={() => onAction?.('viewSystemHealth')}>
+          <button
+            className="secondary-btn full-width"
+            onClick={() => onAction?.('viewSystemHealth')}
+          >
             <span>🩺</span> View Detailed Health
           </button>
         </div>

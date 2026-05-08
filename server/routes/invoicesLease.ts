@@ -72,7 +72,7 @@ router.get(
       data: invoices,
       pagination: { page, pageSize, total, totalPages: Math.ceil(total / pageSize) },
     });
-  }),
+  })
 );
 
 // ─── POST /api/invoices/lease — Create a lease invoice ───────────────────────
@@ -149,7 +149,7 @@ router.post(
       amount,
     });
     res.status(201).json({ success: true, data: invoice });
-  }),
+  })
 );
 
 // ─── GET /api/invoices/lease/:id — Get invoice detail ────────────────────────
@@ -181,7 +181,7 @@ router.get(
     }
 
     res.json({ success: true, data: invoice });
-  }),
+  })
 );
 
 // ─── PATCH /api/invoices/lease/:id — Update invoice status ───────────────────
@@ -235,7 +235,7 @@ router.patch(
 
     logger.info('Lease invoice updated', { userId, invoiceId: id, status: updated.status });
     res.json({ success: true, data: updated });
-  }),
+  })
 );
 
 export default router;

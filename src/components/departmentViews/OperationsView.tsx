@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 import React from 'react';
 import BaseDepartmentView from './BaseDepartmentView';
 import { getDepartmentConfig } from '../../config/departmentViewConfigs';
@@ -12,26 +11,24 @@ import { DataCard } from '../shared/dashboard';
 interface OperationsViewProps {
   serviceName?: string;
   subitemId?: string;
-  departmentData?: any;
+  departmentData?: Record<string, unknown>;
 }
 
-const OperationsView: React.FC<OperationsViewProps> = ({ serviceName = 'operations-center', subitemId, departmentData }) => {
+const OperationsView: React.FC<OperationsViewProps> = ({
+  serviceName = 'operations-center',
+  subitemId,
+  departmentData,
+}) => {
   const config = getDepartmentConfig('OPERATIONS')!;
 
-  const renderContent = (data: any) => {
+  const renderContent = (data: Record<string, unknown>) => {
     if (!subitemId && serviceName === 'daily-operations') {
       return (
         <>
-          <DataCard 
-            title="Daily Operations"
-            subtitle="Operational metrics and task management"
-          >
+          <DataCard title="Daily Operations" subtitle="Operational metrics and task management">
             Tasks: {JSON.stringify(data?.tasks?.length || 0)} items
           </DataCard>
-          <DataCard 
-            title="Team Performance"
-            subtitle="Individual and team metrics"
-          >
+          <DataCard title="Team Performance" subtitle="Individual and team metrics">
             Performance: {JSON.stringify(data?.teamPerformance?.length || 0)} items
           </DataCard>
         </>
@@ -77,4 +74,3 @@ const OperationsView: React.FC<OperationsViewProps> = ({ serviceName = 'operatio
 };
 
 export default OperationsView;
-

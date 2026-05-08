@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Checkbox Component
  * Form input for boolean selection
@@ -12,12 +11,6 @@ export type CheckboxProps = React.InputHTMLAttributes<HTMLInputElement> & {
   label?: string;
   error?: string;
 };
-
-const CheckboxWrapper = styled.div`
-  display: flex;
-  align-items: center;
-  gap: ${theme.spacing.sm};
-`;
 
 const HiddenCheckbox = styled.input`
   position: absolute;
@@ -74,8 +67,11 @@ const Label = styled.label`
   color: ${theme.colors.text.primary};
 `;
 
-export const Checkbox = memo(forwardRef<HTMLInputElement, CheckboxProps>(
-  function Checkbox({ label, error, className = '', ...rest }, ref) {
+export const Checkbox = memo(
+  forwardRef<HTMLInputElement, CheckboxProps>(function Checkbox(
+    { label, error, className = '', ...rest },
+    ref
+  ) {
     return (
       <div className={className}>
         <Label>
@@ -83,13 +79,16 @@ export const Checkbox = memo(forwardRef<HTMLInputElement, CheckboxProps>(
           <StyledCheckbox />
           {label && <span>{label}</span>}
         </Label>
-        {error && <div style={{ color: theme.colors.error, fontSize: '12px', marginTop: '4px' }}>{error}</div>}
+        {error && (
+          <div style={{ color: theme.colors.error, fontSize: '12px', marginTop: '4px' }}>
+            {error}
+          </div>
+        )}
       </div>
     );
-  }
-));
+  })
+);
 
 Checkbox.displayName = 'Checkbox';
 
 export default Checkbox;
-

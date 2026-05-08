@@ -1,4 +1,5 @@
 # Tenancy Lifecycle Flow
+
 # White Caves Real Estate Platform
 
 > **Document ID:** WC-FLOW-TENANCY-001
@@ -346,20 +347,19 @@ Tenant submits maintenance request (via portal or WhatsApp)
 
 ## 10. Key Regulatory Requirements
 
-| Requirement | Rule | Timing |
-|------------|------|--------|
-| Ejari registration | Mandatory for all leases (DLD) | Within 30 days of tenancy start |
-| Rent increase notice | Must follow RERA Rent Calculator | 90 days notice minimum |
-| Termination notice (landlord) | Property sale / own use / major renovation | 12 months notice |
-| Security deposit | Max 5% annual rent (residential), 10% commercial | At lease signing |
-| Maintenance responsibility | Structural: landlord. Internal: tenant | As per lease |
-| Dispute resolution | Dubai Rental Dispute Settlement Centre (RDSC) | If negotiation fails |
+| Requirement                   | Rule                                             | Timing                          |
+| ----------------------------- | ------------------------------------------------ | ------------------------------- |
+| Ejari registration            | Mandatory for all leases (DLD)                   | Within 30 days of tenancy start |
+| Rent increase notice          | Must follow RERA Rent Calculator                 | 90 days notice minimum          |
+| Termination notice (landlord) | Property sale / own use / major renovation       | 12 months notice                |
+| Security deposit              | Max 5% annual rent (residential), 10% commercial | At lease signing                |
+| Maintenance responsibility    | Structural: landlord. Internal: tenant           | As per lease                    |
+| Dispute resolution            | Dubai Rental Dispute Settlement Centre (RDSC)    | If negotiation fails            |
 
 ---
 
 **Document Owner:** Operations Department (Daisy — Leasing & Tenant Manager)
 **Related:** `business_docs/09_crm_features/tenancy-ejari.md`, `business_docs/09_crm_features/tenant-portal.md`
-
 
 ---
 
@@ -368,18 +368,19 @@ Tenant submits maintenance request (via portal or WhatsApp)
 ### 10.1 How RERA Rent Increases Work
 
 Dubai's rent increase framework is governed by RERA Decree No. 43 of 2013 (the "Rent Cap"). A landlord can only increase rent if:
+
 1. The current rent is below the RERA Rental Price Index (RPI) for that area/unit type
 2. The permitted increase percentage is tied to how much below RPI the current rent is
 
 ### 10.2 RERA Rent Increase Calculator
 
-| Current Rent vs. RERA RPI | Maximum Permitted Increase |
-|--------------------------|--------------------------|
-| Current rent < 10% below RPI | 0% (no increase permitted) |
-| Current rent 11–20% below RPI | Maximum 5% increase |
-| Current rent 21–30% below RPI | Maximum 10% increase |
-| Current rent 31–40% below RPI | Maximum 15% increase |
-| Current rent > 40% below RPI | Maximum 20% increase |
+| Current Rent vs. RERA RPI     | Maximum Permitted Increase |
+| ----------------------------- | -------------------------- |
+| Current rent < 10% below RPI  | 0% (no increase permitted) |
+| Current rent 11–20% below RPI | Maximum 5% increase        |
+| Current rent 21–30% below RPI | Maximum 10% increase       |
+| Current rent 31–40% below RPI | Maximum 15% increase       |
+| Current rent > 40% below RPI  | Maximum 20% increase       |
 
 **Source:** Dubai Decree No. 43 of 2013; verified via RERA's Rental Price Calculator at smartservices.rera.gov.ae
 
@@ -414,6 +415,7 @@ Step 5: Lease renewal / termination decision
 ### 10.4 Landlord Rights on Non-Renewal
 
 Under Law No. 26 of 2007 (amended by Law No. 33 of 2008), a landlord can refuse renewal only for specific reasons:
+
 1. The landlord or a first-degree family member needs to occupy the unit
 2. The property requires maintenance/demolition (must get DLD approval)
 3. Tenant has materially breached the lease
@@ -466,17 +468,17 @@ Timeline targets:
 
 ### 11.2 Responsibility Matrix
 
-| Issue | Landlord Responsible? | Tenant Responsible? |
-|-------|--------------------|------------------|
-| AC unit failure | ✅ (if unit is not working) | If damaged by tenant misuse |
-| AC filter cleaning | ❌ | ✅ (routine maintenance) |
-| Water heater failure | ✅ | If damaged by improper use |
-| Plumbing (internal pipes) | ✅ | If caused by blockage due to misuse |
-| Window/door locks | ✅ | If damaged by tenant |
-| Light bulb replacement | ❌ | ✅ |
-| Painting (general wear) | ✅ (after lease end) | ✅ if excessive |
-| Structural cracks | ✅ | ❌ |
-| Key replacement | ❌ | ✅ |
+| Issue                     | Landlord Responsible?       | Tenant Responsible?                 |
+| ------------------------- | --------------------------- | ----------------------------------- |
+| AC unit failure           | ✅ (if unit is not working) | If damaged by tenant misuse         |
+| AC filter cleaning        | ❌                          | ✅ (routine maintenance)            |
+| Water heater failure      | ✅                          | If damaged by improper use          |
+| Plumbing (internal pipes) | ✅                          | If caused by blockage due to misuse |
+| Window/door locks         | ✅                          | If damaged by tenant                |
+| Light bulb replacement    | ❌                          | ✅                                  |
+| Painting (general wear)   | ✅ (after lease end)        | ✅ if excessive                     |
+| Structural cracks         | ✅                          | ❌                                  |
+| Key replacement           | ❌                          | ✅                                  |
 
 ---
 

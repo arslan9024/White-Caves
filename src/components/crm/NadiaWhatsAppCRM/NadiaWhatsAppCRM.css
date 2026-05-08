@@ -1,4 +1,3 @@
-
 /* CONSOLIDATED: Nadia WhatsApp header/avatar patterns now use crm-base.css */
 /* This removes ~0.8KB of duplicate header/avatar/status styles */
 
@@ -9,7 +8,7 @@
 /* Header - Nadia green theme override */
 .nadia-header {
   /* Base header layout from crm-base.css */
-  background: linear-gradient(135deg, #25D366 0%, #128C7E 100%);
+  background: linear-gradient(135deg, #25d366 0%, #128c7e 100%);
   color: white;
 }
 
@@ -74,7 +73,7 @@
 
 .nadia-toggle.active {
   background: white;
-  color: #128C7E;
+  color: #128c7e;
 }
 
 .nadia-action-btn {
@@ -147,7 +146,7 @@
 
 .conversation-item.selected {
   background: var(--bg-hover, #f3f4f6);
-  border-left: 3px solid #25D366;
+  border-left: 3px solid #25d366;
 }
 
 .conv-avatar-wrapper {
@@ -231,7 +230,7 @@
 .unread-badge {
   min-width: 20px;
   height: 20px;
-  background: #25D366;
+  background: #25d366;
   color: white;
   border-radius: 10px;
   font-size: 11px;
@@ -382,7 +381,7 @@
 
 .chat-action-btn:hover {
   background: var(--bg-hover, #f3f4f6);
-  color: var(--primary-color, #E31E24);
+  color: var(--primary-color, #e31e24);
 }
 
 /* Messages */
@@ -528,9 +527,9 @@
 }
 
 .quick-reply-btn:hover {
-  background: #25D366;
+  background: #25d366;
   color: white;
-  border-color: #25D366;
+  border-color: #25d366;
 }
 
 /* Chat Input */
@@ -574,13 +573,13 @@
 }
 
 .chat-input-area input:focus {
-  border-color: #25D366;
+  border-color: #25d366;
 }
 
 .send-btn {
   width: 44px;
   height: 44px;
-  background: #25D366;
+  background: #25d366;
   border: none;
   border-radius: 50%;
   color: white;
@@ -592,7 +591,7 @@
 }
 
 .send-btn:hover:not(:disabled) {
-  background: #128C7E;
+  background: #128c7e;
 }
 
 .send-btn:disabled {
@@ -760,20 +759,20 @@
 }
 
 /* Dark Theme */
-[data-theme="dark"] .chat-messages {
+[data-theme='dark'] .chat-messages {
   background: #0f172a;
   background-image: none;
 }
 
-[data-theme="dark"] .message.sent .message-content {
+[data-theme='dark'] .message.sent .message-content {
   background: #134e4a;
 }
 
-[data-theme="dark"] .message.received .message-content {
+[data-theme='dark'] .message.received .message-content {
   background: #1e293b;
 }
 
-[data-theme="dark"] .message-content p {
+[data-theme='dark'] .message-content p {
   color: var(--text-primary, #f8fafc);
 }
 
@@ -782,7 +781,7 @@
   .nadia-main {
     grid-template-columns: 280px 1fr;
   }
-  
+
   .insights-panel {
     display: none;
   }
@@ -792,7 +791,7 @@
   .nadia-main {
     grid-template-columns: 1fr;
   }
-  
+
   .conversations-panel {
     display: none;
   }
@@ -827,4 +826,3 @@
   font-size: 12px;
   font-weight: 500;
 }
-

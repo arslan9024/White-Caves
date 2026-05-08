@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 // src/components/shared/sidebars/styled/SidebarStyledComponents.tsx
 import styled, { css } from 'styled-components';
 import { MEDIA_QUERIES, SPACING, COLORS, TYPOGRAPHY } from '../../../../styles/theme';
@@ -233,8 +232,7 @@ export const SidebarItemWrapper = styled.div<{
     return props.$isRelated ? COLORS.sidebar.background : 'transparent';
   }};
 
-  color: ${props =>
-    props.$isActive ? COLORS.primary : COLORS.text.primary};
+  color: ${props => (props.$isActive ? COLORS.primary : COLORS.text.primary)};
 
   &:hover {
     background: ${props =>
@@ -329,7 +327,7 @@ export const SidebarFavoriteButton = styled.button<{
   border: none;
   padding: ${SPACING.sm};
   cursor: pointer;
-  color: ${props => props.$isFavorited ? COLORS.primary : COLORS.text.secondary};
+  color: ${props => (props.$isFavorited ? COLORS.primary : COLORS.text.secondary)};
   display: flex;
   align-items: center;
   justify-content: center;
@@ -493,4 +491,3 @@ export const LoadingSkeleton = styled.div`
     }
   }
 `;
-

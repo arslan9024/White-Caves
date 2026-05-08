@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Finance Department View - Fully Optimized with Caching and Performance Monitoring
  * Uses optimized API hooks with automatic caching, deduplication, and monitoring
@@ -9,7 +8,11 @@ import styled from 'styled-components';
 import BaseDepartmentView from '../../../components/departmentViews/BaseDepartmentView';
 import { FinanceKPIRenderer } from '../../../utils/departmentKPIRenderer';
 import { BarChart, LineChart, ProgressRing } from '../../../components/charts/DataVisualization';
-import { useDepartmentDataOptimized, useDepartmentKPIsOptimized, useDepartmentTrendsOptimized } from '../../../hooks/useOptimizedAPI';
+import {
+  useDepartmentDataOptimized,
+  useDepartmentKPIsOptimized,
+  useDepartmentTrendsOptimized,
+} from '../../../hooks/useOptimizedAPI';
 import { ErrorState, LoadingState } from '../../../components/shared';
 
 const FinanceContentWrapper = styled.div`
@@ -55,31 +58,45 @@ export const FinanceDepartmentView: React.FC<FinanceDepartmentViewProps> = ({
   subitemId,
 }) => {
   // Fetch department data from optimized API with caching
-  const { data: financeData, loading: dataLoading, error: dataError } = useDepartmentDataOptimized('FINANCE');
-  const { kpis: financeKPIs, loading: kpiLoading, error: kpiError } = useDepartmentKPIsOptimized('FINANCE');
-  const { trends: financeTrends, loading: trendLoading } = useDepartmentTrendsOptimized('FINANCE', 'monthly');
+  const {
+    data: financeData,
+    loading: dataLoading,
+    error: dataError,
+  } = useDepartmentDataOptimized('FINANCE');
+  const {
+    kpis: _financeKPIs,
+    loading: kpiLoading,
+    error: kpiError,
+  } = useDepartmentKPIsOptimized('FINANCE');
+  const { trends: _financeTrends, loading: trendLoading } = useDepartmentTrendsOptimized(
+    'FINANCE',
+    'monthly'
+  );
 
   // Mock finance data for demo
-  const mockFinanceData = useMemo(() => ({
-    totalBudget: 50000000,
-    spent: 22500000,
-    remaining: 27500000,
-    utilizationRate: 45,
-    departmentBudgets: [
-      { label: 'Sales', value: 15000000, color: '#3498db' },
-      { label: 'Marketing', value: 8000000, color: '#2ecc71' },
-      { label: 'Operations', value: 12000000, color: '#e74c3c' },
-      { label: 'IT', value: 5000000, color: '#f39c12' },
-    ],
-    monthlySpending: [
-      { label: 'Jan', value: 3200000 },
-      { label: 'Feb', value: 3100000 },
-      { label: 'Mar', value: 4000000 },
-      { label: 'Apr', value: 3500000 },
-      { label: 'May', value: 4200000 },
-      { label: 'Jun', value: 4500000 },
-    ],
-  }), []);
+  const mockFinanceData = useMemo(
+    () => ({
+      totalBudget: 50000000,
+      spent: 22500000,
+      remaining: 27500000,
+      utilizationRate: 45,
+      departmentBudgets: [
+        { label: 'Sales', value: 15000000, color: '#3498db' },
+        { label: 'Marketing', value: 8000000, color: '#2ecc71' },
+        { label: 'Operations', value: 12000000, color: '#e74c3c' },
+        { label: 'IT', value: 5000000, color: '#f39c12' },
+      ],
+      monthlySpending: [
+        { label: 'Jan', value: 3200000 },
+        { label: 'Feb', value: 3100000 },
+        { label: 'Mar', value: 4000000 },
+        { label: 'Apr', value: 3500000 },
+        { label: 'May', value: 4200000 },
+        { label: 'Jun', value: 4500000 },
+      ],
+    }),
+    []
+  );
 
   // Use API data if available, fallback to mock data
   const displayData = financeData || mockFinanceData;
@@ -92,15 +109,19 @@ export const FinanceDepartmentView: React.FC<FinanceDepartmentViewProps> = ({
   // Handle error state
   if (dataError || kpiError) {
     return (
-      <ErrorState 
+      <ErrorState
         title="Failed to Load Finance Data"
-        message={dataError?.message || kpiError?.message || 'Unable to fetch finance data. Using fallback data.'}
+        message={
+          dataError?.message ||
+          kpiError?.message ||
+          'Unable to fetch finance data. Using fallback data.'
+        }
         onRetry={() => window.location.reload()}
       />
     );
   }
 
-  const contentRenderer = (data: any) => (
+  const contentRenderer = (_data: unknown) => (
     <FinanceContentWrapper>
       <ChartCard>
         <h3>Budget Allocation by Department</h3>
@@ -168,4 +189,3 @@ export const FinanceDepartmentView: React.FC<FinanceDepartmentViewProps> = ({
 };
 
 export default FinanceDepartmentView;
-

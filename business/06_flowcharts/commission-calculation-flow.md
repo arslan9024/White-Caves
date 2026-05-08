@@ -1,4 +1,5 @@
 # Commission Calculation Flow
+
 # White Caves Real Estate Platform
 
 > **Document ID:** WC-FLOW-COMM-001
@@ -47,30 +48,30 @@ Deal Closed (WON)
 
 ### 2.1 Sales Commissions
 
-| Transaction Type | Rate | Paid By | Notes |
-|----------------|------|---------|-------|
-| Off-plan new sale (developer) | 5–7% | Developer pays 100% | DAMAC, Emaar, Sobha |
-| Off-plan secondary market | 2% | Both sides | |
-| Ready property — primary | 2% | Buyer | |
-| Ready property — secondary | 1–2% | Both sides if dual agent | |
-| Commercial sale | 2–3% | Negotiated | |
-| Land sale | 1.5–2% | Per agreement | |
+| Transaction Type              | Rate   | Paid By                  | Notes               |
+| ----------------------------- | ------ | ------------------------ | ------------------- |
+| Off-plan new sale (developer) | 5–7%   | Developer pays 100%      | DAMAC, Emaar, Sobha |
+| Off-plan secondary market     | 2%     | Both sides               |                     |
+| Ready property — primary      | 2%     | Buyer                    |                     |
+| Ready property — secondary    | 1–2%   | Both sides if dual agent |                     |
+| Commercial sale               | 2–3%   | Negotiated               |                     |
+| Land sale                     | 1.5–2% | Per agreement            |                     |
 
 ### 2.2 Rental Commissions
 
-| Transaction Type | Rate | Paid By |
-|----------------|------|---------|
-| New residential lease | 5% annual rent | Landlord |
-| New commercial lease | 8–10% annual rent | Landlord |
-| Lease renewal (managed) | 2% annual rent | Landlord |
-| Short-term rental setup | 10% first month | Landlord |
+| Transaction Type        | Rate              | Paid By  |
+| ----------------------- | ----------------- | -------- |
+| New residential lease   | 5% annual rent    | Landlord |
+| New commercial lease    | 8–10% annual rent | Landlord |
+| Lease renewal (managed) | 2% annual rent    | Landlord |
+| Short-term rental setup | 10% first month   | Landlord |
 
 ### 2.3 Property Management Recurring
 
-| Service Level | Monthly Fee |
-|--------------|-------------|
-| Basic (rent collection) | 5% monthly rent |
-| Full (+ maintenance, renewals) | 8% monthly rent |
+| Service Level                            | Monthly Fee      |
+| ---------------------------------------- | ---------------- |
+| Basic (rent collection)                  | 5% monthly rent  |
+| Full (+ maintenance, renewals)           | 8% monthly rent  |
 | Premium (+ legal, compliance, reporting) | 10% monthly rent |
 
 ---
@@ -82,7 +83,7 @@ Deal record: { salePrice: 2,000,000 AED, type: 'ready_secondary', agentId }
           │
           ▼
   CommissionService.calculate(deal):
-  
+
   Step 1: Determine base commission rate
   ├── Transaction type lookup: ready_secondary → 2%
   ├── Base commission = salePrice × rate
@@ -250,7 +251,7 @@ End of month reconciliation
           │
           ▼
   Theodora (AI) runs reconciliation report:
-  
+
   Checks:
   ├── All approved commissions → paid status?
   ├── Payments match bank statement amounts?
@@ -315,7 +316,7 @@ Agent disputes commission amount
           ▼
   Theodora (AI) reviews:
   ├── Check original deal terms
-  ├── Check agent contract commission % 
+  ├── Check agent contract commission %
   └── Check any applicable adjustments
           │
           ├── Dispute valid → Adjustment approved by MD
@@ -329,7 +330,6 @@ Agent disputes commission amount
 
 **Document Owner:** Finance Department (Theodora)
 **Related:** `business_docs/09_crm_features/commission-tracking.md`, `business_docs/07_business_model/revenue-model.md`
-
 
 ---
 
@@ -351,18 +351,19 @@ Agent receives remaining 50% upon successful handover
 (Some developers pay 100% at SPA — check per project NOC terms)
 ```
 
-| Developer | Commission Rate | Payment Timing |
-|---------|---------------|--------------|
-| DAMAC Properties | 5–7% | 50% at SPA; 50% at handover |
-| Emaar Properties | 4–5% | 100% at SPA registration |
-| Nakheel | 5% | 50% at SPA; 50% at completion |
-| Meraas | 5% | 100% at DLD registration |
+| Developer        | Commission Rate | Payment Timing                |
+| ---------------- | --------------- | ----------------------------- |
+| DAMAC Properties | 5–7%            | 50% at SPA; 50% at handover   |
+| Emaar Properties | 4–5%            | 100% at SPA registration      |
+| Nakheel          | 5%              | 50% at SPA; 50% at completion |
+| Meraas           | 5%              | 100% at DLD registration      |
 
 **Note:** Rates verified per NOC — subject to developer policy changes. Always check NOC terms before listing.
 
 ### 8.2 Off-Plan Commission at Risk
 
 Off-plan deals have a higher commission clawback risk:
+
 - Buyer cancels during cooling-off period (14 days): 100% clawback
 - Buyer defaults on payment plan: 50% clawback if within first year
 - Developer project cancelled by DLD: No clawback — White Caves keeps earned commission

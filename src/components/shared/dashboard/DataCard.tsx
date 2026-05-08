@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 import React from 'react';
 import styled from 'styled-components';
 
@@ -22,7 +21,7 @@ const CardContainer = styled.div`
     transform: translateY(-2px);
   }
 
-  ${(props) => props.hoverable === false && 'cursor: default;'}
+  ${props => props.hoverable === false && 'cursor: default;'}
 `;
 
 const CardHeader = styled.div`
@@ -79,12 +78,7 @@ const CardFooter = styled.div`
 `;
 
 const SkeletonBase = styled.div`
-  background: linear-gradient(
-    90deg,
-    #f3f4f6 0%,
-    #e5e7eb 50%,
-    #f3f4f6 100%
-  );
+  background: linear-gradient(90deg, #f3f4f6 0%, #e5e7eb 50%, #f3f4f6 100%);
   background-size: 200% 100%;
   animation: shimmer 2s infinite;
 
@@ -227,4 +221,3 @@ export default DataCard;
 
 // Export skeleton components for use outside of DataCard
 export { TitleSkeleton, ContentSkeleton, GridSkeleton, TableSkeleton };
-

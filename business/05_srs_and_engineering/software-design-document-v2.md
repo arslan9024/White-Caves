@@ -1,4 +1,5 @@
 # Software Design Document (SDD) — Version 2.0
+
 # White Caves Real Estate CRM Platform
 
 > **Document ID:** WC-SDD-002
@@ -42,14 +43,14 @@ This SDD v2.0 describes the architecture and detailed design of the White Caves 
 
 ### 1.2 Delta from v1.0
 
-| Area | v1.0 | v2.0 |
-|------|------|------|
-| Sidebar | Dual sidebar (SidebarContainer + legacy) | UnifiedSidebar (canonical) |
-| AI Assistants | 17 registered | 40 registered (18 active, 22 planned) |
-| Departments | 10 | 12 (+ Customer Experience + Data & AI) |
-| Portals | Not implemented | Landlord + Tenant portal UI MVP complete |
-| Redux slices | ~8 | 13 |
-| Tests | ~150 files | 309 files, 7,744 tests |
+| Area          | v1.0                                     | v2.0                                     |
+| ------------- | ---------------------------------------- | ---------------------------------------- |
+| Sidebar       | Dual sidebar (SidebarContainer + legacy) | UnifiedSidebar (canonical)               |
+| AI Assistants | 17 registered                            | 40 registered (18 active, 22 planned)    |
+| Departments   | 10                                       | 12 (+ Customer Experience + Data & AI)   |
+| Portals       | Not implemented                          | Landlord + Tenant portal UI MVP complete |
+| Redux slices  | ~8                                       | 13                                       |
+| Tests         | ~150 files                               | 309 files, 7,744 tests                   |
 
 ---
 
@@ -87,26 +88,26 @@ This SDD v2.0 describes the architecture and detailed design of the White Caves 
 
 ### 2.2 Technology Stack
 
-| Layer | Technology | Version | Notes |
-|-------|-----------|---------|-------|
-| Frontend | React | 18 | Concurrent mode, lazy loading |
-| Language | TypeScript | 5 (strict) | 0 compile errors |
-| Build tool | Vite | 7 | < 18s build |
-| State | Redux Toolkit | Latest | 13 slices |
-| Styling | styled-components | Latest | Design tokens |
-| Animations | Framer Motion | Latest | |
-| HTTP client | Axios | Latest | JWT interceptors |
-| Backend | Express | 5 | asyncHandler |
-| ORM | Prisma | 6.6 | MongoDB provider |
-| Database | MongoDB | Atlas | UAE region |
-| Auth | JWT + bcrypt | | rate-limited |
-| OAuth | Firebase Auth | v9 | Google SSO |
-| Testing | Vitest | Latest | 309 files, 7,744 tests |
-| E2E | Playwright | Latest | 11 spec files |
-| Linting | ESLint + Prettier | Latest | Husky pre-commit |
-| CI/CD | GitHub Actions | | lint + test + build |
-| Frontend host | Vercel | | Edge CDN |
-| API host | Railway / Render | | Node 20.x LTS |
+| Layer         | Technology        | Version    | Notes                         |
+| ------------- | ----------------- | ---------- | ----------------------------- |
+| Frontend      | React             | 18         | Concurrent mode, lazy loading |
+| Language      | TypeScript        | 5 (strict) | 0 compile errors              |
+| Build tool    | Vite              | 7          | < 18s build                   |
+| State         | Redux Toolkit     | Latest     | 13 slices                     |
+| Styling       | styled-components | Latest     | Design tokens                 |
+| Animations    | Framer Motion     | Latest     |                               |
+| HTTP client   | Axios             | Latest     | JWT interceptors              |
+| Backend       | Express           | 5          | asyncHandler                  |
+| ORM           | Prisma            | 6.6        | MongoDB provider              |
+| Database      | MongoDB           | Atlas      | UAE region                    |
+| Auth          | JWT + bcrypt      |            | rate-limited                  |
+| OAuth         | Firebase Auth     | v9         | Google SSO                    |
+| Testing       | Vitest            | Latest     | 309 files, 7,744 tests        |
+| E2E           | Playwright        | Latest     | 11 spec files                 |
+| Linting       | ESLint + Prettier | Latest     | Husky pre-commit              |
+| CI/CD         | GitHub Actions    |            | lint + test + build           |
+| Frontend host | Vercel            |            | Edge CDN                      |
+| API host      | Railway / Render  |            | Node 20.x LTS                 |
 
 ---
 
@@ -160,21 +161,21 @@ EnhancedLeftSidebar and SidebarContainer are **legacy** — do not use in new co
 
 ### 3.3 Redux Store — 13 Slices
 
-| Slice | Purpose | Key State |
-|-------|---------|-----------|
-| `authSlice` | User session | user, token, isAuthenticated |
-| `sidebarSlice` | Navigation state | selectedDept, selectedService, globalSearch, sidebarCollapsed |
-| `leadsSlice` | Lead pipeline | leads[], loading, filters |
-| `propertiesSlice` | Property listings | properties[], loading, filters |
-| `clientsSlice` | Client records | clients[], loading |
-| `transactionsSlice` | Financials | transactions[], loading |
-| `notificationsSlice` | Alerts | notifications[], unreadCount |
-| `favoritesSlice` | Saved items | favorites[] |
-| `aiAssistantSlice` | AI hub | assistants[], selectedAssistant, chatHistory |
-| `themeSlice` | Visual theme | isDark, colorScheme |
-| `filtersSlice` | Search/filter state | activeFilters{} |
-| `reportingSlice` | KPIs + reports | kpis{}, dateRange |
-| `uiSlice` | Modal/toast state | modals{}, toasts[], loading{} |
+| Slice                | Purpose             | Key State                                                     |
+| -------------------- | ------------------- | ------------------------------------------------------------- |
+| `authSlice`          | User session        | user, token, isAuthenticated                                  |
+| `sidebarSlice`       | Navigation state    | selectedDept, selectedService, globalSearch, sidebarCollapsed |
+| `leadsSlice`         | Lead pipeline       | leads[], loading, filters                                     |
+| `propertiesSlice`    | Property listings   | properties[], loading, filters                                |
+| `clientsSlice`       | Client records      | clients[], loading                                            |
+| `transactionsSlice`  | Financials          | transactions[], loading                                       |
+| `notificationsSlice` | Alerts              | notifications[], unreadCount                                  |
+| `favoritesSlice`     | Saved items         | favorites[]                                                   |
+| `aiAssistantSlice`   | AI hub              | assistants[], selectedAssistant, chatHistory                  |
+| `themeSlice`         | Visual theme        | isDark, colorScheme                                           |
+| `filtersSlice`       | Search/filter state | activeFilters{}                                               |
+| `reportingSlice`     | KPIs + reports      | kpis{}, dateRange                                             |
+| `uiSlice`            | Modal/toast state   | modals{}, toasts[], loading{}                                 |
 
 ### 3.4 Source Tree Structure
 
@@ -215,17 +216,17 @@ src/
 
 ### 3.5 Design Token System (Gold Theme)
 
-| Token | Value | Usage |
-|-------|-------|-------|
-| `--color-primary` | `#D4AF37` | CTAs, active states, brand |
-| `--color-primary-dark` | `#B8930A` | Hover states |
-| `--color-background` | `#0A0A0A` | Dark canvas |
-| `--color-surface` | `#141414` | Cards, panels |
-| `--color-surface-elevated` | `#1E1E1E` | Modals, dropdowns |
-| `--color-error` | `#EF4444` | Errors only |
-| `--font-heading` | Poppins | All headings |
-| `--font-body` | Inter | All body text |
-| `--border-radius-base` | `8px` | Cards, inputs |
+| Token                      | Value     | Usage                      |
+| -------------------------- | --------- | -------------------------- |
+| `--color-primary`          | `#D4AF37` | CTAs, active states, brand |
+| `--color-primary-dark`     | `#B8930A` | Hover states               |
+| `--color-background`       | `#0A0A0A` | Dark canvas                |
+| `--color-surface`          | `#141414` | Cards, panels              |
+| `--color-surface-elevated` | `#1E1E1E` | Modals, dropdowns          |
+| `--color-error`            | `#EF4444` | Errors only                |
+| `--font-heading`           | Poppins   | All headings               |
+| `--font-body`              | Inter     | All body text              |
+| `--border-radius-base`     | `8px`     | Cards, inputs              |
 
 **Phase 6 note:** All tokens use CSS custom properties to enable automatic RTL/Arabic layout switching without component changes.
 
@@ -355,14 +356,14 @@ MaintenanceReq  propertyId, tenantId, category, description,
 
 ### 5.3 Index Strategy
 
-| Model | Key Indexes |
-|-------|------------|
-| Property | `status`, `agentId`, `type`, `price`, `location.area` |
-| Lead | `status`, `assignedTo`, `score`, `source`, `createdAt` |
-| Transaction | `type`, `status`, `agentId`, `createdAt` |
-| User | `email` (unique), `role`, `isActive` |
-| Activity | `entityId+entityType` (compound), `userId`, `createdAt` |
-| Lease | `tenantId`, `propertyId`, `status`, `endDate` |
+| Model       | Key Indexes                                             |
+| ----------- | ------------------------------------------------------- |
+| Property    | `status`, `agentId`, `type`, `price`, `location.area`   |
+| Lead        | `status`, `assignedTo`, `score`, `source`, `createdAt`  |
+| Transaction | `type`, `status`, `agentId`, `createdAt`                |
+| User        | `email` (unique), `role`, `isActive`                    |
+| Activity    | `entityId+entityType` (compound), `userId`, `createdAt` |
+| Lease       | `tenantId`, `propertyId`, `status`, `endDate`           |
 
 ---
 
@@ -372,27 +373,27 @@ MaintenanceReq  propertyId, tenantId, category, description,
 
 Both files must remain in sync at all times:
 
-| File | Purpose |
-|------|---------|
-| `src/config/assistantRegistry.ts` | UI display, search, icons |
+| File                                       | Purpose                    |
+| ------------------------------------------ | -------------------------- |
+| `src/config/assistantRegistry.ts`          | UI display, search, icons  |
 | `src/store/slices/aiAssistant/registry.ts` | Redux state, routing logic |
 
 ### 6.2 Department → Assistant Mapping
 
-| # | Department | Color | Active Assistants |
-|---|-----------|-------|------------------|
-| 1 | Executive | #D4AF37 | Zoe |
-| 2 | Sales | #10B981 | Sophia, Clara, Hunter, Juno |
-| 3 | Operations | #3B82F6 | Daisy, Mary, Nancy, Vesta |
-| 4 | Finance | #F59E0B | Theodora |
-| 5 | Marketing | #EC4899 | Olivia, Henry |
-| 6 | Compliance | #6366F1 | Laila, Evangeline |
-| 7 | Technology | #14B8A6 | Aurora, Hazel, Willow, Atlas |
-| 8 | Communications | #EF4444 | Nadia, Nina |
-| 9 | Security | #6B7280 | Cipher, Sentinel |
-| 10 | Analytics | #8B5CF6 | Maven, Kairos, Oracle |
-| 11 | Customer Experience | #8B5CF6 | (Phase 9) |
-| 12 | Data & AI | #F97316 | (Phase 7) |
+| #   | Department          | Color   | Active Assistants            |
+| --- | ------------------- | ------- | ---------------------------- |
+| 1   | Executive           | #D4AF37 | Zoe                          |
+| 2   | Sales               | #10B981 | Sophia, Clara, Hunter, Juno  |
+| 3   | Operations          | #3B82F6 | Daisy, Mary, Nancy, Vesta    |
+| 4   | Finance             | #F59E0B | Theodora                     |
+| 5   | Marketing           | #EC4899 | Olivia, Henry                |
+| 6   | Compliance          | #6366F1 | Laila, Evangeline            |
+| 7   | Technology          | #14B8A6 | Aurora, Hazel, Willow, Atlas |
+| 8   | Communications      | #EF4444 | Nadia, Nina                  |
+| 9   | Security            | #6B7280 | Cipher, Sentinel             |
+| 10  | Analytics           | #8B5CF6 | Maven, Kairos, Oracle        |
+| 11  | Customer Experience | #8B5CF6 | (Phase 9)                    |
+| 12  | Data & AI           | #F97316 | (Phase 7)                    |
 
 Total: 40 registered (18 in code; 22 planned via `plans/ai_assistants/`)
 
@@ -447,7 +448,7 @@ Login request
   → bcrypt.compare (rounds=10)
   → JWT signed: { userId, role, email }, expires 7d
   → Response: JWT in Authorization header + secure cookie
-  
+
 Subsequent requests
   → JWT extracted from Authorization header
   → jsonwebtoken.verify (secret from env)
@@ -457,18 +458,18 @@ Subsequent requests
 
 ### 8.2 Security Controls Summary
 
-| Control | Implementation | Status |
-|---------|---------------|--------|
-| Auth | JWT + bcrypt | ✅ |
-| RBAC | requireRole middleware | ✅ |
-| XSS | Input sanitization on all POST/PATCH | ✅ |
-| CSRF | SameSite cookies + CORS whitelist | ✅ |
-| Rate limiting | 5 tiers (api/auth/register/password/strict) | ✅ |
-| Body size | 1MB limit | ✅ |
-| Headers | Helmet (CSP, HSTS, X-Frame) | ✅ |
-| Webhook | crypto.timingSafeEqual | ✅ |
-| npm vulns | 7 pending (1 critical) | ⚠️ |
-| 2FA | Deferred Phase 9 | ⏳ |
+| Control       | Implementation                              | Status |
+| ------------- | ------------------------------------------- | ------ |
+| Auth          | JWT + bcrypt                                | ✅     |
+| RBAC          | requireRole middleware                      | ✅     |
+| XSS           | Input sanitization on all POST/PATCH        | ✅     |
+| CSRF          | SameSite cookies + CORS whitelist           | ✅     |
+| Rate limiting | 5 tiers (api/auth/register/password/strict) | ✅     |
+| Body size     | 1MB limit                                   | ✅     |
+| Headers       | Helmet (CSP, HSTS, X-Frame)                 | ✅     |
+| Webhook       | crypto.timingSafeEqual                      | ✅     |
+| npm vulns     | 7 pending (1 critical)                      | ⚠️     |
+| 2FA           | Deferred Phase 9                            | ⏳     |
 
 ---
 
@@ -514,11 +515,11 @@ Frontend: Stripe.js (card collection — never touches our server)
 
 ### 10.1 Environments
 
-| Env | Frontend URL | API URL | Database |
-|-----|-------------|---------|----------|
-| Dev | localhost:5173 | localhost:5000 | Atlas Dev / Local |
-| Staging | staging.whitecaves.ae | staging-api.whitecaves.ae | Atlas Staging |
-| Production | whitecaves.ae | api.whitecaves.ae | Atlas UAE Production |
+| Env        | Frontend URL          | API URL                   | Database             |
+| ---------- | --------------------- | ------------------------- | -------------------- |
+| Dev        | localhost:5173        | localhost:5000            | Atlas Dev / Local    |
+| Staging    | staging.whitecaves.ae | staging-api.whitecaves.ae | Atlas Staging        |
+| Production | whitecaves.ae         | api.whitecaves.ae         | Atlas UAE Production |
 
 ### 10.2 CI/CD Pipeline
 
@@ -548,16 +549,16 @@ K8s manifests in k8s/:
 
 ## 11. Design Decisions Summary
 
-| ADR | Decision | Rationale |
-|-----|---------|-----------|
-| ADR-001 | Gold #D4AF37 brand color | Luxury positioning; red = semantic errors only |
-| ADR-002 | AI assistant plan CRUD API | Future-proof assistant customisation per managing_director |
-| ADR-002b | RBAC role alias architecture | Maps 29 roles to permission sets cleanly |
-| ADR-003 | Prisma + MongoDB | Flexible schema for varied real estate data |
-| ADR-004 | UnifiedSidebar (replaces dual) | Single source of truth, simpler Redux state |
-| ADR-005 | Redux Toolkit 13 slices | Predictable state, scales to large team |
-| ADR-006 | asyncHandler + AppError | Consistent error shape across all 30+ routes |
-| ADR-007 | CSS custom property tokens | RTL/Arabic automatic in Phase 6 without component rework |
+| ADR      | Decision                       | Rationale                                                  |
+| -------- | ------------------------------ | ---------------------------------------------------------- |
+| ADR-001  | Gold #D4AF37 brand color       | Luxury positioning; red = semantic errors only             |
+| ADR-002  | AI assistant plan CRUD API     | Future-proof assistant customisation per managing_director |
+| ADR-002b | RBAC role alias architecture   | Maps 29 roles to permission sets cleanly                   |
+| ADR-003  | Prisma + MongoDB               | Flexible schema for varied real estate data                |
+| ADR-004  | UnifiedSidebar (replaces dual) | Single source of truth, simpler Redux state                |
+| ADR-005  | Redux Toolkit 13 slices        | Predictable state, scales to large team                    |
+| ADR-006  | asyncHandler + AppError        | Consistent error shape across all 30+ routes               |
+| ADR-007  | CSS custom property tokens     | RTL/Arabic automatic in Phase 6 without component rework   |
 
 Full ADR details: `business/05_srs_and_engineering/architecture-decision-records-index.md`
 

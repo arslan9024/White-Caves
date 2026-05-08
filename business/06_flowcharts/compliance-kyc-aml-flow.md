@@ -1,4 +1,5 @@
 # Compliance, KYC & AML Flow
+
 # White Caves Real Estate Platform
 
 > **Document ID:** WC-FLOW-COMP-001
@@ -12,15 +13,15 @@
 
 ## 1. UAE AML/KYC Legal Framework
 
-| Law | Requirement |
-|-----|------------|
-| UAE AML Law No. 20 of 2018 | Real estate agents must perform CDD on clients |
-| RERA regulations | All agents must be RERA-licensed (BRN required) |
-| DLD requirements | All property transfers registered with DLD |
-| UAE PDPL 2021 | Client data protected; consent required |
-| FATF Guidance (2022) | Real estate sector high-risk for money laundering |
-| UAE FIU requirements | SAR filing for suspicious transactions |
-| AED 55,000 threshold | CDD required for transactions above this value |
+| Law                        | Requirement                                       |
+| -------------------------- | ------------------------------------------------- |
+| UAE AML Law No. 20 of 2018 | Real estate agents must perform CDD on clients    |
+| RERA regulations           | All agents must be RERA-licensed (BRN required)   |
+| DLD requirements           | All property transfers registered with DLD        |
+| UAE PDPL 2021              | Client data protected; consent required           |
+| FATF Guidance (2022)       | Real estate sector high-risk for money laundering |
+| UAE FIU requirements       | SAR filing for suspicious transactions            |
+| AED 55,000 threshold       | CDD required for transactions above this value    |
 
 ---
 
@@ -84,7 +85,7 @@ KYC documents collected
           │
           ▼
   Sanctions screening (all clients regardless of value):
-  
+
   Screen against:
   ├── UN Security Council Consolidated Sanctions List
   ├── UAE Local Terrorist List (Cabinet Decision 74)
@@ -306,19 +307,18 @@ Before marketing any property:
 **Document Owner:** Compliance Department (Laila)
 **Related:** `business_docs/10_security/kyc-aml-framework.md`, `business/08_compliance/aml-risk-assessment.md`, `business/08_compliance/rera-compliance-checklist.md`
 
-
 ---
 
 ## 8. AML Screening Tools and Integration
 
 ### 8.1 Recommended Screening Services
 
-| Provider | Coverage | Integration | Cost |
-|---------|---------|------------|------|
-| **ComplyAdvantage** | Sanctions, PEP, adverse media — 200+ lists | REST API; webhooks | $300–800/month (volume-based) |
-| **World-Check (Refinitiv)** | FATF lists, DBI sanctions, PEP — industry standard | REST API | $500–2,000/month |
-| **Dow Jones Risk & Compliance** | Comprehensive; banking-grade | API | $1,000–3,000/month |
-| **UAE-specific: goAML portal** | UAE FIU — SAR submission | Web portal (no API) | Free (FIU-mandated) |
+| Provider                        | Coverage                                           | Integration         | Cost                          |
+| ------------------------------- | -------------------------------------------------- | ------------------- | ----------------------------- |
+| **ComplyAdvantage**             | Sanctions, PEP, adverse media — 200+ lists         | REST API; webhooks  | $300–800/month (volume-based) |
+| **World-Check (Refinitiv)**     | FATF lists, DBI sanctions, PEP — industry standard | REST API            | $500–2,000/month              |
+| **Dow Jones Risk & Compliance** | Comprehensive; banking-grade                       | API                 | $1,000–3,000/month            |
+| **UAE-specific: goAML portal**  | UAE FIU — SAR submission                           | Web portal (no API) | Free (FIU-mandated)           |
 
 **Recommendation for White Caves:** ComplyAdvantage (AED 1,100–2,900/month) — best cost/coverage for a brokerage of White Caves' size. API integration with CRM (Phase 2).
 
@@ -328,20 +328,20 @@ Before marketing any property:
 // Compliance service — AML screening
 interface AMLScreeningRequest {
   clientId: string;
-  name: string;            // full legal name from ID
-  nationality: string;     // ISO 3166 country code
-  dateOfBirth: string;     // YYYY-MM-DD
-  idNumber: string;        // passport or Emirates ID
+  name: string; // full legal name from ID
+  nationality: string; // ISO 3166 country code
+  dateOfBirth: string; // YYYY-MM-DD
+  idNumber: string; // passport or Emirates ID
   screeningTypes: ('sanctions' | 'pep' | 'adverse_media')[];
 }
 
 interface AMLScreeningResult {
-  screeningId: string;     // provider reference
+  screeningId: string; // provider reference
   status: 'CLEAR' | 'POTENTIAL_MATCH' | 'CONFIRMED_MATCH';
-  riskScore: number;       // 0–100
+  riskScore: number; // 0–100
   matches?: AMLMatch[];
   screenedAt: Date;
-  validUntil: Date;        // re-screen after 12 months for existing clients
+  validUntil: Date; // re-screen after 12 months for existing clients
 }
 ```
 
@@ -375,15 +375,15 @@ Step 7: Annual SAR register audit by MD + compliance officer
 
 Standard KYC is sufficient for most clients. EDD (Enhanced Due Diligence) is required when:
 
-| Trigger | Action |
-|---------|--------|
-| Transaction value > AED 2,000,000 | Full source of funds declaration + supporting documents |
-| Client is a PEP (Politically Exposed Person) | Senior management approval required; enhanced ongoing monitoring |
-| Client from FATF high-risk jurisdiction | EDD mandatory; consider whether to proceed at all |
-| Complex or unusual transaction structure | Document business rationale; escalate to MD |
-| Multiple related transactions just below AED 55,000 threshold (structuring) | Aggregate and treat as one — file SAR |
-| Client reluctant to provide documents | Consider refusal; document reasons |
-| Business purpose unclear | Request full explanation in writing |
+| Trigger                                                                     | Action                                                           |
+| --------------------------------------------------------------------------- | ---------------------------------------------------------------- |
+| Transaction value > AED 2,000,000                                           | Full source of funds declaration + supporting documents          |
+| Client is a PEP (Politically Exposed Person)                                | Senior management approval required; enhanced ongoing monitoring |
+| Client from FATF high-risk jurisdiction                                     | EDD mandatory; consider whether to proceed at all                |
+| Complex or unusual transaction structure                                    | Document business rationale; escalate to MD                      |
+| Multiple related transactions just below AED 55,000 threshold (structuring) | Aggregate and treat as one — file SAR                            |
+| Client reluctant to provide documents                                       | Consider refusal; document reasons                               |
+| Business purpose unclear                                                    | Request full explanation in writing                              |
 
 ### 9.1 EDD Process
 

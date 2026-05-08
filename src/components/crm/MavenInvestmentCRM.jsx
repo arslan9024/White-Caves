@@ -5,6 +5,7 @@ import {
   Filter, Search, Plus, Eye, Building, MapPin
 } from 'lucide-react';
 import AssistantDocsTab from './shared/AssistantDocsTab';
+import AssistantLifecycleTab from './shared/AssistantLifecycleTab';
 import './AssistantDashboard.css';
 
 const PORTFOLIO_DATA = [
@@ -115,7 +116,7 @@ const MavenInvestmentCRM = () => {
       </div>
 
       <div className="assistant-tabs">
-        {['portfolio', 'yields', 'opportunities', 'tax', 'docs'].map(tab => (
+        {['portfolio', 'yields', 'opportunities', 'tax', 'lifecycle', 'docs'].map(tab => (
           <button
             key={tab}
             className={`tab-btn ${activeTab === tab ? 'active' : ''}`}
@@ -254,6 +255,10 @@ const MavenInvestmentCRM = () => {
               ))}
             </div>
           </div>
+        )}
+
+        {activeTab === 'lifecycle' && (
+          <AssistantLifecycleTab assistantId="maven" color="#3B82F6" assistantName="Maven" />
         )}
 
         {activeTab === 'docs' && (

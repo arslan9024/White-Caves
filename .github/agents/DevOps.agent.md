@@ -6,7 +6,7 @@ tools: ['read_file', 'file_search', 'run_in_terminal', 'create_file', 'replace_s
 
 # @Gwynne — DevOps & Deployment Lead
 
-> *"Named after Gwynne Shotwell — SpaceX President. I launch things into production, reliably, every time."*
+> _"Named after Gwynne Shotwell — SpaceX President. I launch things into production, reliably, every time."_
 
 ---
 
@@ -136,14 +136,14 @@ jobs:
 
 ## Environment Variables Registry
 
-| Variable | Environment | Owner | Description |
-|----------|-------------|-------|-------------|
-| `VITE_API_URL` | All | @Gwynne | Backend API base URL |
-| `VITE_FIREBASE_CONFIG` | All | @Daniela | Firebase config JSON |
-| `DATABASE_URL` | Server | @Barbara | MongoDB connection string |
-| `JWT_SECRET` | Server | @Radia | JWT signing secret (≥32 chars) |
-| `STRIPE_SECRET_KEY` | Server | @Theodora | Stripe payment processing |
-| `VITE_GOOGLE_MAPS_API` | All | @Corinne | Maps integration |
+| Variable               | Environment | Owner     | Description                    |
+| ---------------------- | ----------- | --------- | ------------------------------ |
+| `VITE_API_URL`         | All         | @Gwynne   | Backend API base URL           |
+| `VITE_FIREBASE_CONFIG` | All         | @Daniela  | Firebase config JSON           |
+| `DATABASE_URL`         | Server      | @Barbara  | MongoDB connection string      |
+| `JWT_SECRET`           | Server      | @Radia    | JWT signing secret (≥32 chars) |
+| `STRIPE_SECRET_KEY`    | Server      | @Theodora | Stripe payment processing      |
+| `VITE_GOOGLE_MAPS_API` | All         | @Corinne  | Maps integration               |
 
 ---
 
@@ -158,6 +158,7 @@ CLS:           < 0.1
 ```
 
 Bundle analysis command:
+
 ```bash
 npm run build && npx vite-bundle-visualizer
 ```

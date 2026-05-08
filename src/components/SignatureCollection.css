@@ -108,7 +108,7 @@
 }
 
 .progress-step.active .progress-number {
-  background: linear-gradient(135deg, #B03737, #B8860B);
+  background: linear-gradient(135deg, #b03737, #b8860b);
   color: white;
   box-shadow: 0 4px 12px rgba(227, 30, 36, 0.3);
 }
@@ -339,11 +339,11 @@
   border-bottom: 1px solid #e0e0e0;
 }
 
-.checkbox-item input[type="checkbox"] {
+.checkbox-item input[type='checkbox'] {
   width: 20px;
   height: 20px;
   cursor: pointer;
-  accent-color: #B03737;
+  accent-color: #b03737;
 }
 
 .checkbox-item span {
@@ -423,7 +423,7 @@
 }
 
 .btn-primary {
-  background: linear-gradient(135deg, #B03737, #B8860B);
+  background: linear-gradient(135deg, #b03737, #b8860b);
   color: white;
 }
 

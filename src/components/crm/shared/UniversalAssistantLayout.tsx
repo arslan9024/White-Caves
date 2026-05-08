@@ -1,9 +1,15 @@
-import React, { memo, Suspense, lazy, useCallback, type ReactNode } from 'react';
+import React, { memo, Suspense, useCallback, type ReactNode } from 'react';
 import { createLogger } from '../../../utils/logger';
-import { useSelector, useDispatch } from 'react-redux';
-import { Menu, X, RefreshCw } from 'lucide-react';
+import { useSelector } from 'react-redux';
+import { Menu, X, RefreshCw, Bell } from 'lucide-react';
 import AssistantSidebar from './AssistantSidebar';
-import { selectCurrentAssistant } from '../../../store/slices/aiAssistantDashboardSlice';
+import NotificationBadge from './NotificationBadge';
+import {
+  selectCurrentAssistant,
+  selectPendingActionsCount,
+  selectNotificationsByAssistant,
+} from '../../../store/slices/aiAssistantDashboardSlice';
+import type { RootState } from '../../../store/store';
 import './UniversalAssistantLayout.css';
 
 const LoadingSpinner = () => (
@@ -92,6 +98,13 @@ const UniversalAssistantLayout = memo(({
 }: UniversalAssistantLayoutProps) => {
   const [sidebarCollapsed, setSidebarCollapsed] = React.useState(collapsedSidebar);
   const currentAssistant = useSelector(selectCurrentAssistant);
+  const pendingCount = useSelector((state: RootState) =>
+    currentAssistant ? selectPendingActionsCount(currentAssistant.id)(state) : 0,
+  );
+  const notifications = useSelector((state: RootState) =>
+    currentAssistant ? selectNotificationsByAssistant(currentAssistant.id)(state) : [],
+  );
+  const unreadCount = notifications.filter((n) => !n.isRead).length;
   
   const handleToggleSidebar = useCallback(() => {
     setSidebarCollapsed(prev => !prev);
@@ -139,11 +152,33 @@ const UniversalAssistantLayout = memo(({
             </div>
           </div>
           
-          {headerActions && (
-            <div className="header-actions">
-              {headerActions}
-            </div>
-          )}
+          <div className="header-actions">
+            {/* Pending-actions badge */}
+            {pendingCount > 0 && (
+              <div className="layout-header-badge" title={`${pendingCount} pending task${pendingCount !== 1 ? 's' : ''}`}>
+                <NotificationBadge
+                  count={pendingCount}
+                  severity="warning"
+                  size="medium"
+                  pulse
+                />
+                <span className="layout-badge-label">Pending</span>
+              </div>
+            )}
+            {/* Unread lifecycle notifications bell */}
+            {unreadCount > 0 && (
+              <div className="layout-header-badge" title={`${unreadCount} unread notification${unreadCount !== 1 ? 's' : ''}`}>
+                <Bell size={15} className="layout-bell" style={{ color: assistantColor }} />
+                <NotificationBadge
+                  count={unreadCount}
+                  severity="critical"
+                  size="small"
+                  pulse
+                />
+              </div>
+            )}
+            {headerActions}
+          </div>
         </header>
         
         <main className="layout-content">

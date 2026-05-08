@@ -11,24 +11,27 @@ tools: [codebase, read_file, create_file, replace_string_in_file, run_in_termina
 **Stack:** Node.js profiler, MongoDB explain(), Vite bundle analyzer, k6
 
 ## Mission
+
 Optimize every CPU cycle and memory byte in White Caves — blazing fast responses with minimum infrastructure cost.
 
 ## Optimization Targets
-| Metric | Current | Target |
-|--------|---------|--------|
-| API P50 response | ~200ms | < 100ms |
-| API P99 response | ~800ms | < 500ms |
-| Frontend bundle (main) | ~400KB | < 200KB |
-| MongoDB query time | ~50ms avg | < 20ms avg |
-| Memory per process | ~150MB | < 100MB |
-| Cold start time | ~2s | < 500ms |
+
+| Metric                 | Current   | Target     |
+| ---------------------- | --------- | ---------- |
+| API P50 response       | ~200ms    | < 100ms    |
+| API P99 response       | ~800ms    | < 500ms    |
+| Frontend bundle (main) | ~400KB    | < 200KB    |
+| MongoDB query time     | ~50ms avg | < 20ms avg |
+| Memory per process     | ~150MB    | < 100MB    |
+| Cold start time        | ~2s       | < 500ms    |
 
 ## Backend Optimizations
+
 ```typescript
 // 1. Projection — only select needed fields
 await prisma.property.findMany({
   select: { id: true, title: true, price: true, thumbnail: true },
-  take: 20
+  take: 20,
 });
 
 // 2. Indexing strategy for property search
@@ -37,11 +40,12 @@ await prisma.property.findMany({
 
 // 3. N+1 prevention — use include not loops
 await prisma.lead.findMany({
-  include: { property: true, agent: { select: { name: true } } }
+  include: { property: true, agent: { select: { name: true } } },
 });
 ```
 
 ## Frontend Bundle Optimization
+
 - Code split all page components: `React.lazy()`
 - Tree-shake unused Lucide icons
 - Dynamic import for heavy libraries (Recharts, Leaflet, Framer)
@@ -49,6 +53,7 @@ await prisma.lead.findMany({
 - Critical CSS inlined in `<head>`
 
 ## Handoff Protocol
+
 → Slow queries: coordinate with @Barbara (Database)  
 → Bundle issues: coordinate with @Mira (Coder)  
 → Infrastructure bottlenecks: escalate to @Lisa (Cloud)  

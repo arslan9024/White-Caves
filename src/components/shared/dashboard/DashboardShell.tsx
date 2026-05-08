@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 import React from 'react';
 import styled from 'styled-components';
 
@@ -72,8 +71,8 @@ const BreadcrumbItem = styled.button`
   border: none;
   padding: 0.25rem 0.5rem;
   cursor: pointer;
-  color: ${(props) => (props.active ? '#1f2937' : '#6b7280')};
-  font-weight: ${(props) => (props.active ? '600' : '400')};
+  color: ${props => (props.active ? '#1f2937' : '#6b7280')};
+  font-weight: ${props => (props.active ? '600' : '400')};
   transition: color 0.2s;
   border-radius: 4px;
 
@@ -257,13 +256,13 @@ const DashboardShell = ({
                   <FilterInput
                     type="text"
                     placeholder={filter.placeholder}
-                    onChange={(e) => onFilterChange?.(filter.key, e.target.value)}
+                    onChange={e => onFilterChange?.(filter.key, e.target.value)}
                   />
                 )}
                 {filter.type === 'select' && (
-                  <FilterSelect onChange={(e) => onFilterChange?.(filter.key, e.target.value)}>
+                  <FilterSelect onChange={e => onFilterChange?.(filter.key, e.target.value)}>
                     <option value="">All {filter.label}</option>
-                    {filter.options?.map((opt) => (
+                    {filter.options?.map(opt => (
                       <option key={opt.value} value={opt.value}>
                         {opt.label}
                       </option>
@@ -289,4 +288,3 @@ const DashboardShell = ({
 };
 
 export default DashboardShell;
-
