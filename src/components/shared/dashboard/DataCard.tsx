@@ -7,6 +7,20 @@ import styled from 'styled-components';
  * Supports loading skeleton, animations, and flexible content
  */
 
+interface DataCardProps {
+  title?: React.ReactNode;
+  subtitle?: React.ReactNode;
+  icon?: React.ReactNode;
+  children?: React.ReactNode;
+  footer?: React.ReactNode;
+  actions?: React.ReactNode;
+  loading?: boolean;
+  skeleton?: 'content' | 'grid' | 'grid-4' | 'table' | 'table-3' | 'custom';
+  hoverable?: boolean;
+  onClick?: () => void;
+  className?: string;
+}
+
 const CardContainer = styled.div`
   background-color: #ffffff;
   border: 1px solid #e5e7eb;
@@ -155,7 +169,7 @@ const TableSkeleton = ({ rows = 5, columns = 4 }) => (
 /**
  * Main DataCard Component
  */
-const DataCard = ({
+const DataCard: React.FC<DataCardProps> = ({
   title,
   subtitle,
   icon,

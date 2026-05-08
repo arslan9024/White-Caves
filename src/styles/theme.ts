@@ -1,6 +1,8 @@
 // src/styles/theme.ts
 // Complete Theme System with Light/Dark Modes & Design Tokens
 
+import { mediaQueries } from './theme/breakpoints';
+
 export const lightTheme = {
   colors: {
     // Primary & Secondary
@@ -252,9 +254,42 @@ const legacyColors = {
   secondaryDark: '#0284C7',
   border: lightTheme.colors.border.medium,
   borderDark: lightTheme.colors.border.dark,
+  errorLight: '#EF5350',
+  successLight: '#81C784',
   background: {
     ...lightTheme.colors.background,
     dark: '#1E293B',
+    darkSecondary: '#2A2A2A',
+    overlay: 'rgba(0, 0, 0, 0.5)',
+  },
+  text: {
+    ...lightTheme.colors.text,
+    disabled: '#BDBDBD',
+  },
+  luxury: {
+    goldShimmer: 'linear-gradient(135deg, #E31E24 0%, #EF5350 50%, #E31E24 100%)',
+    goldToGreen: 'linear-gradient(135deg, #E31E24 0%, #2E5A4F 100%)',
+    darkGreen: 'linear-gradient(135deg, #2E5A4F 0%, #1E3A32 100%)',
+    goldDark: 'linear-gradient(180deg, #E31E24, #B71C1C)',
+    warmSand: 'linear-gradient(135deg, #F5E6D3 0%, #FDF8E8 100%)',
+    premiumDark: 'linear-gradient(135deg, #1A1A1A 0%, #2E5A4F 100%)',
+  },
+  status: {
+    active: '#10B981',
+    inactive: '#9CA3AF',
+    pending: '#F59E0B',
+    completed: '#10B981',
+    failed: '#EF4444',
+    draft: '#6B7280',
+  },
+  dark: {
+    bg: '#1A1A1A',
+    bgSecondary: '#2A2A2A',
+    bgTertiary: '#3A3A3A',
+    text: '#FFFFFF',
+    textSecondary: '#D1D5DB',
+    border: '#404040',
+    shadow: 'rgba(0, 0, 0, 0.3)',
   },
   a11y: {
     goldText: '#8A6A1D',
@@ -272,11 +307,31 @@ const legacyTypography = {
     primary: 'Inter, system-ui, -apple-system, sans-serif',
     heading: 'Inter, system-ui, -apple-system, sans-serif',
   },
+  sizes: {
+    xs: '12px',
+    sm: '13px',
+    base: '14px',
+    md: '16px',
+    lg: '18px',
+    xl: '20px',
+    xxl: '24px',
+    xxxl: '28px',
+    display: '32px',
+    hero: '48px',
+  },
+  lineHeights: {
+    tight: 1.2,
+    snug: 1.375,
+    normal: 1.5,
+    relaxed: 1.625,
+    loose: 2,
+  },
   weights: {
     regular: 400,
     medium: 500,
     semibold: 600,
     bold: 700,
+    extrabold: 800,
   },
   styles: {
     h1: lightTheme.typography.h1,
@@ -304,7 +359,9 @@ const legacyTransitions = {
   easing: {
     ...lightTheme.easing,
     easeInOut: lightTheme.easing.inOut,
+    easeOut: 'cubic-bezier(0.0, 0, 0.2, 1)',
   },
+  active: '150ms cubic-bezier(0.4, 0, 0.2, 1)',
 };
 
 const legacyRadius = {
@@ -324,6 +381,14 @@ const legacySpacing = {
 const legacyShadows = {
   ...lightTheme.shadows,
   focus: `0 0 0 3px ${legacyColors.a11y.focusRing}33`,
+  xs: '0 1px 2px rgba(0, 0, 0, 0.05)',
+  active: '0 2px 4px rgba(0, 0, 0, 0.1)',
+  card: '0 2px 8px rgba(0, 0, 0, 0.08)',
+  luxuryCard: '0 4px 16px rgba(227, 30, 36, 0.12), 0 2px 4px rgba(0, 0, 0, 0.06)',
+  luxuryHover: '0 8px 24px rgba(227, 30, 36, 0.18), 0 4px 8px rgba(0, 0, 0, 0.08)',
+  luxuryGlow: '0 0 20px rgba(227, 30, 36, 0.25)',
+  luxuryElevated: '0 12px 32px rgba(227, 30, 36, 0.15), 0 4px 12px rgba(46, 90, 79, 0.08)',
+  luxuryFocus: '0 0 0 3px rgba(227, 30, 36, 0.3)',
 };
 
 // Extract individual color/spacing objects for backward compatibility
@@ -339,6 +404,17 @@ export const theme = {
   radius: legacyRadius,
   spacing: legacySpacing,
   shadows: legacyShadows,
+  mediaQueries,
+  zIndex: {
+    ...lightTheme.zIndex,
+    // Extended zIndex values not present in lightTheme
+    navbar: 300,
+    sidebar: 310,
+    overlay: 600,
+    notification: 800,
+    toast: 810,
+    absolute: 9999,
+  },
 };
 
 // Backwards-compatible named exports for individual tokens
