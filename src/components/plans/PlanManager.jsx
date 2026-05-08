@@ -14,6 +14,7 @@ import {
   Clock,
 } from 'lucide-react';
 import AIModelSelector from './AIModelSelector';
+import { authFetch } from '../../utils/authFetch';
 import './PlanManager.css';
 
 /**
@@ -53,7 +54,7 @@ export default function PlanManager() {
       if (searchQuery) params.append('search', searchQuery);
       if (filterStatus !== 'all') params.append('status', filterStatus);
 
-      const response = await fetch(`/api/plans/list?${params.toString()}`);
+      const response = await authFetch(`/api/plans/list?${params.toString()}`);
       if (!response.ok) throw new Error('Failed to load plans');
 
       const data = await response.json();
@@ -71,7 +72,7 @@ export default function PlanManager() {
    */
   const loadStats = async () => {
     try {
-      const response = await fetch('/api/plans/stats');
+      const response = await authFetch('/api/plans/stats');
       if (!response.ok) throw new Error('Failed to load stats');
 
       const data = await response.json();
@@ -86,7 +87,7 @@ export default function PlanManager() {
    */
   const handleCreatePlan = async planData => {
     try {
-      const response = await fetch('/api/plans/create', {
+      const response = await authFetch('/api/plans/create', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(planData),
@@ -111,7 +112,7 @@ export default function PlanManager() {
     if (!window.confirm('Are you sure you want to delete this plan?')) return;
 
     try {
-      const response = await fetch(`/api/plans/${planId}`, {
+      const response = await authFetch(`/api/plans/${planId}`, {
         method: 'DELETE',
       });
 
@@ -134,7 +135,7 @@ export default function PlanManager() {
 
     try {
       setLoading(true);
-      const response = await fetch(`/api/plans/${planId}/improve`, {
+      const response = await authFetch(`/api/plans/${planId}/improve`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ focusAreas: ['Clarity', 'Actionable Items', 'Success Metrics'] }),
@@ -163,7 +164,7 @@ export default function PlanManager() {
 
     try {
       setLoading(true);
-      const response = await fetch('/api/plans/merge', {
+      const response = await authFetch('/api/plans/merge', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -461,7 +462,7 @@ function CreatePlanModal({ onCreate, onClose, onNotify }) {
 
     setAILoading(true);
     try {
-      const response = await fetch('/api/plans/generate', {
+      const response = await authFetch('/api/plans/generate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -676,7 +677,7 @@ function PlanEditor({ planId, onClose, onNotify }) {
 
   const loadPlan = async () => {
     try {
-      const response = await fetch(`/api/plans/${planId}`);
+      const response = await authFetch(`/api/plans/${planId}`);
       if (!response.ok) throw new Error('Failed to load plan');
 
       const data = await response.json();
@@ -700,7 +701,7 @@ function PlanEditor({ planId, onClose, onNotify }) {
 
     setSaving(true);
     try {
-      const response = await fetch(`/api/plans/${planId}`, {
+      const response = await authFetch(`/api/plans/${planId}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ content }),
