@@ -263,7 +263,6 @@ const LeadManagementPage: FC = () => {
             $color={cfg.color}
             onClick={() => handleStatusFilterChange(key)}
           >
-            {}
             {cfg.label} ({statusCounts[key] || 0})
           </PipelineStage>
         ))}
