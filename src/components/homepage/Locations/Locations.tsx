@@ -185,6 +185,15 @@ const Locations = ({ locationTrends, isLoading = false }: LocationsProps) => {
               onMouseEnter={() => setHoveredId(location.id)}
               onMouseLeave={() => setHoveredId(null)}
               onClick={() => navigate(`/properties?area=${toAreaSlug(location.name)}`)}
+              role="button"
+              tabIndex={0}
+              aria-label={`Explore properties in ${location.name}`}
+              onKeyDown={e => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault();
+                  navigate(`/properties?area=${toAreaSlug(location.name)}`);
+                }
+              }}
             >
               <div className="location-image-wrapper">
                 <motion.img

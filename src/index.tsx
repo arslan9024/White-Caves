@@ -14,11 +14,15 @@ import './styles/dubaiLuxuryTheme.css';
 import './styles/rtl.css';
 import { createLogger } from './utils/logger';
 import { restoreAuthToken } from './services/authService';
+import { registerServiceWorker } from './utils/registerServiceWorker';
 
 const log = createLogger('App');
 
 // Restore JWT token from storage on app init (sets apiClient header)
 restoreAuthToken();
+
+// Phase 10: Register PWA service worker in production
+void registerServiceWorker();
 
 // Validate environment at startup — halt render if critical vars missing
 const envResult = validateEnvironment();

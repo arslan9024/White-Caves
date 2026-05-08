@@ -166,7 +166,7 @@ router.patch(
         select: { counterHistory: true },
       });
       const history = Array.isArray(existing2?.counterHistory)
-        ? (existing2.counterHistory as unknown[])
+        ? (existing2!.counterHistory as unknown[])
         : [];
       history.push({ amount: counterAmount, terms, by: userId, at: new Date().toISOString() });
       updateData.counterHistory = history;
@@ -290,7 +290,8 @@ router.patch(
         ...(decision === 'countered' ? { counterAmount, counterHistory: history } : {}),
         ...(decision === 'rejected' ? { rejectionReason } : {}),
         ...(terms ? { terms } : {}),
-      },
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      } as any,
       include: {
         property: { select: { id: true, title: true, location: true } },
         buyer: { select: { id: true, name: true, email: true } },

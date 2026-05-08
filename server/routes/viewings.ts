@@ -47,7 +47,14 @@ router.get(
         where,
         include: {
           property: {
-            select: { id: true, title: true, location: true, price: true, images: true, type: true },
+            select: {
+              id: true,
+              title: true,
+              location: true,
+              price: true,
+              images: true,
+              type: true,
+            },
           },
         },
         orderBy: { scheduledAt: 'desc' },
@@ -62,7 +69,7 @@ router.get(
       data: viewings,
       pagination: { page, pageSize, total, totalPages: Math.ceil(total / pageSize) },
     });
-  }),
+  })
 );
 
 // ─── GET /api/viewings/upcoming — Only future viewings ───────────────────────
@@ -88,7 +95,7 @@ router.get(
     });
 
     res.json({ success: true, data: viewings });
-  }),
+  })
 );
 
 // ─── GET /api/viewings/slots — Available time slots for an agent ─────────
@@ -121,7 +128,7 @@ router.get(
     if (!agent) throw new AppError('Agent not found', 404);
 
     const slots = await getAvailableSlots(agentId, date, duration);
-    const available = slots.filter((s) => s.available);
+    const available = slots.filter(s => s.available);
 
     res.json({
       success: true,
@@ -134,7 +141,7 @@ router.get(
         slots,
       },
     });
-  }),
+  })
 );
 
 // ─── GET /api/viewings/:id/ics — Download .ics calendar file ─────────────
@@ -165,7 +172,7 @@ router.get(
     res.setHeader('Content-Type', 'text/calendar; charset=utf-8');
     res.setHeader('Content-Disposition', `attachment; filename="viewing-${id}.ics"`);
     res.send(icsContent);
-  }),
+  })
 );
 
 // ─── POST /api/viewings — Schedule a new viewing ────────────────────────────
@@ -199,18 +206,10 @@ router.post(
     }
 
     // Check for scheduling conflicts
-    const conflict = await detectConflicts(
-      agentId || null,
-      userId,
-      scheduledDate,
-      viewingDuration,
-    );
+    const conflict = await detectConflicts(agentId || null, userId, scheduledDate, viewingDuration);
 
     if (conflict.hasConflict) {
-      throw new AppError(
-        conflict.message || 'Scheduling conflict detected',
-        409,
-      );
+      throw new AppError(conflict.message || 'Scheduling conflict detected', 409);
     }
 
     // Generate ICS token for calendar download
@@ -240,8 +239,9 @@ router.post(
     });
 
     // Fire-and-forget notification (don't block response)
-    sendViewingNotification(viewing, 'created').catch((err) =>
-      logger.warn('Failed to send viewing creation notification', { err }),
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    sendViewingNotification(viewing as any, 'created').catch(err =>
+      logger.warn('Failed to send viewing creation notification', { err })
     );
 
     logger.info('Viewing scheduled', {
@@ -258,7 +258,7 @@ router.post(
       data: viewing,
       ...(conflict.message ? { warning: conflict.message } : {}),
     });
-  }),
+  })
 );
 
 // ─── PATCH /api/viewings/:id — Update a viewing ─────────────────────────────
@@ -294,7 +294,7 @@ router.patch(
         existing.userId,
         d,
         existing.duration,
-        id, // Exclude current viewing from conflict check
+        id // Exclude current viewing from conflict check
       );
       if (conflict.hasConflict) {
         throw new AppError(conflict.message || 'Rescheduling conflict detected', 409);
@@ -349,14 +349,15 @@ router.patch(
 
     // Send notification on status change
     if (status === 'confirmed' || status === 'cancelled') {
-      sendViewingNotification(updated, status).catch((err) =>
-        logger.warn('Failed to send viewing status notification', { err }),
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      sendViewingNotification(updated as any, status).catch(err =>
+        logger.warn('Failed to send viewing status notification', { err })
       );
     }
 
     logger.info('Viewing updated', { userId, viewingId: id, status: updated.status });
     res.json({ success: true, data: updated });
-  }),
+  })
 );
 
 // ─── DELETE /api/viewings/:id — Delete a viewing ────────────────────────────
@@ -375,7 +376,7 @@ router.delete(
 
     logger.info('Viewing deleted', { userId, viewingId: id });
     res.json({ success: true, message: 'Viewing deleted' });
-  }),
+  })
 );
 
 // ─── Notification Helper ─────────────────────────────────────────────────
@@ -395,7 +396,7 @@ async function sendViewingNotification(
     property?: { title?: string; location?: string } | null;
     agent?: { name?: string; email?: string } | null;
   },
-  event: 'created' | 'confirmed' | 'cancelled',
+  event: 'created' | 'confirmed' | 'cancelled'
 ): Promise<void> {
   try {
     const { sendEmailTracked, EMAIL_TEMPLATES } = await import('../services/emailService.js');
@@ -412,7 +413,7 @@ async function sendViewingNotification(
           fullViewing.user.name || 'Valued Client',
           viewing.property?.title || 'Property',
           viewing.scheduledAt.toLocaleString('en-AE', { timeZone: 'Asia/Dubai' }),
-          viewing.agent?.name || 'Your Agent',
+          viewing.agent?.name || 'Your Agent'
         );
 
         await sendEmailTracked({
@@ -425,9 +426,38 @@ async function sendViewingNotification(
       }
     }
 
+    if (event === 'cancelled') {
+      // Notify client that their viewing was cancelled
+      const fullViewing = await prisma.viewing.findUnique({
+        where: { id: viewing.id },
+        include: { user: { select: { name: true, email: true } } },
+      });
+
+      if (fullViewing?.user?.email) {
+        const template = EMAIL_TEMPLATES.viewingCancelled(
+          fullViewing.user.name || 'Valued Client',
+          viewing.property?.title || 'Property',
+          viewing.scheduledAt.toLocaleString('en-AE', { timeZone: 'Asia/Dubai' }),
+          viewing.agent?.name || 'Your Agent'
+        );
+
+        await sendEmailTracked({
+          to: fullViewing.user.email,
+          subject: template.subject,
+          html: template.html,
+          text: template.text,
+          tags: [{ name: 'type', value: 'viewing_cancelled' }],
+        });
+      }
+    }
+
     logger.info('Viewing notification sent', { viewingId: viewing.id, event });
   } catch (error) {
-    logger.warn('Viewing notification failed (non-blocking)', { viewingId: viewing.id, event, error });
+    logger.warn('Viewing notification failed (non-blocking)', {
+      viewingId: viewing.id,
+      event,
+      error,
+    });
   }
 }
 

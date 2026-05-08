@@ -20,13 +20,12 @@ import { useRecentlyViewed } from '../components/RecentlyViewed';
 import { HOME_PROPERTIES } from '../data/homeProperties';
 import './HomePage.css';
 
-// Above-the-fold: lazy-loaded to defer framer-motion (~120KB) from critical path
+// Above-the-fold: Hero is the LCP element — import directly (NOT lazy) so the
+// browser can start rendering immediately without a waterfall.
 // @Una: Using LuxuryHeroSection (Red/White/Black) as the primary hero
-const Hero = lazy(() =>
-  import('../components/homepage/Hero/LuxuryHeroSection').then(m => ({
-    default: m.LuxuryHeroSection,
-  }))
-);
+import { LuxuryHeroSection as Hero } from '../components/homepage/Hero/LuxuryHeroSection';
+
+// P1 above-fold companions: lazy-loaded so they don't block hero render
 const Features = lazy(() => import('../components/homepage/Features'));
 const MarketStatsBanner = lazy(
   () => import('../components/homepage/MarketStats/MarketStatsBanner')
@@ -153,32 +152,11 @@ const HomePage: FC = () => {
   return (
     <PublicLayout>
       <div className="home-page">
-        {/* Above the fold — lazy-loaded to defer framer-motion from critical path */}
-        <Suspense
-          fallback={
-            <div
-              style={{
-                minHeight: '100vh',
-                background: '#0A0A0A',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-              }}
-            >
-              <div
-                style={{
-                  width: 48,
-                  height: 48,
-                  borderRadius: '50%',
-                  border: '3px solid rgba(196,30,58,0.2)',
-                  borderTop: '3px solid #C41E3A',
-                  animation: 'spin 0.9s linear infinite',
-                }}
-              />
-            </div>
-          }
-        >
-          <Hero marketStats={marketStats} isLoading={isHomepageLoading} />
+        {/* Phase 25: Hero is the LCP element — NOT wrapped in Suspense so it renders on first paint */}
+        <Hero marketStats={marketStats} isLoading={isHomepageLoading} />
+
+        {/* Above-fold companions lazy-loaded so they don't delay Hero render */}
+        <Suspense fallback={<SectionLoader />}>
           <Features />
           <MarketStatsBanner marketStats={marketStats} isLoading={isHomepageLoading} />
         </Suspense>

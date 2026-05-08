@@ -143,3 +143,87 @@
 [dir='rtl'] .overflow-auto {
   direction: rtl;
 }
+
+/* ── Dashboard / Sidebar RTL ─────────────────────────────────── */
+[dir='rtl'] [class*='TabList'],
+[dir='rtl'] [role='tablist'] {
+  flex-direction: row-reverse;
+}
+
+[dir='rtl'] [class*='Pagination'] {
+  flex-direction: row-reverse;
+}
+
+[dir='rtl'] [class*='Modal'],
+[dir='rtl'] [role='dialog'] {
+  direction: rtl;
+  text-align: right;
+}
+
+[dir='rtl'] [class*='Toast'],
+[dir='rtl'] [class*='Alert'] {
+  direction: rtl;
+  text-align: right;
+}
+
+[dir='rtl'] table,
+[dir='rtl'] th,
+[dir='rtl'] td {
+  text-align: right;
+}
+
+/* ── Numbers/prices stay LTR even in RTL context ─────────────── */
+[dir='rtl'] [data-numeric='true'],
+[dir='rtl'] [class*='price'],
+[dir='rtl'] [class*='Price'],
+[dir='rtl'] [class*='StatValue'],
+[dir='rtl'] [class*='stat-value'],
+[dir='rtl'] [class*='currency'],
+[dir='rtl'] [class*='Amount'],
+[dir='rtl'] [class*='amount'] {
+  direction: ltr;
+  display: inline-block;
+}
+
+/* ── Dropdown menus ──────────────────────────────────────────── */
+[dir='rtl'] [class*='DropdownMenu'],
+[dir='rtl'] [class*='dropdown-menu'] {
+  right: 0;
+  left: auto;
+  text-align: right;
+}
+
+/* ── Button groups ───────────────────────────────────────────── */
+[dir='rtl'] [class*='ButtonGroup'],
+[dir='rtl'] [class*='button-group'] {
+  flex-direction: row-reverse;
+}
+
+/* ── Search bar ──────────────────────────────────────────────── */
+[dir='rtl'] [class*='SearchBar'] input,
+[dir='rtl'] [class*='search-bar'] input {
+  padding-right: 2.5rem;
+  padding-left: 0.75rem;
+  text-align: right;
+}
+
+/* ── Stat cards (AI / Analytics) ─────────────────────────────── */
+[dir='rtl'] [class*='StatCard'],
+[dir='rtl'] [class*='stat-card'],
+[dir='rtl'] [class*='KpiCard'] {
+  text-align: right;
+  direction: rtl;
+}
+
+/* ── Off-Plan portal ─────────────────────────────────────────── */
+[dir='rtl'] [class*='DeveloperCard'],
+[dir='rtl'] [class*='ProjectCard'] {
+  text-align: right;
+}
+
+/* ── AI Intelligence Hub ─────────────────────────────────────── */
+[dir='rtl'] [class*='AICard'],
+[dir='rtl'] [class*='InsightTile'] {
+  text-align: right;
+  direction: rtl;
+}

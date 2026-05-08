@@ -64,18 +64,18 @@ Deliver actionable intelligence through interactive dashboards, automated report
 
 ### Company-Wide KPIs
 
-| KPI | Metric | Visualization | Update Frequency |
-|-----|--------|--------------|------------------|
-| Total Revenue | AED/USD amount | Number card + sparkline | Real-time |
-| Deals Closed | Count (MTD/QTD/YTD) | Number card + trend | Real-time |
-| Pipeline Value | Total weighted pipeline | Number card | Real-time |
-| Active Leads | Count by stage | Funnel chart | Real-time |
-| Conversion Rate | Leads → Deals % | Percentage + trend | Daily |
-| Avg. Deal Size | AED/USD amount | Number card + trend | Daily |
-| Commission Earned | Total commissions | Number card | Daily |
-| Active Listings | Count by status | Donut chart | Real-time |
-| Occupancy Rate | Occupied / Total % | Gauge chart | Daily |
-| Agent Utilization | Active agents / Total | Percentage | Daily |
+| KPI               | Metric                  | Visualization           | Update Frequency |
+| ----------------- | ----------------------- | ----------------------- | ---------------- |
+| Total Revenue     | AED/USD amount          | Number card + sparkline | Real-time        |
+| Deals Closed      | Count (MTD/QTD/YTD)     | Number card + trend     | Real-time        |
+| Pipeline Value    | Total weighted pipeline | Number card             | Real-time        |
+| Active Leads      | Count by stage          | Funnel chart            | Real-time        |
+| Conversion Rate   | Leads → Deals %         | Percentage + trend      | Daily            |
+| Avg. Deal Size    | AED/USD amount          | Number card + trend     | Daily            |
+| Commission Earned | Total commissions       | Number card             | Daily            |
+| Active Listings   | Count by status         | Donut chart             | Real-time        |
+| Occupancy Rate    | Occupied / Total %      | Gauge chart             | Daily            |
+| Agent Utilization | Active agents / Total   | Percentage              | Daily            |
 
 ### Executive Summary Widgets
 
@@ -107,12 +107,12 @@ Tracks leads through every stage of the sales pipeline.
 
 #### Funnel Metrics
 
-| Metric | Calculation | Purpose |
-|--------|-------------|---------|
-| Stage conversion rate | Entries to stage / Entries to previous stage | Identify drop-off points |
-| Overall conversion rate | Closed Won / Lead Captured | Measure end-to-end efficiency |
-| Stage duration (avg.) | Average days spent in each stage | Identify bottlenecks |
-| Drop-off analysis | % lost at each stage with reasons | Improve process |
+| Metric                  | Calculation                                  | Purpose                       |
+| ----------------------- | -------------------------------------------- | ----------------------------- |
+| Stage conversion rate   | Entries to stage / Entries to previous stage | Identify drop-off points      |
+| Overall conversion rate | Closed Won / Lead Captured                   | Measure end-to-end efficiency |
+| Stage duration (avg.)   | Average days spent in each stage             | Identify bottlenecks          |
+| Drop-off analysis       | % lost at each stage with reasons            | Improve process               |
 
 ### Deal Velocity
 
@@ -125,15 +125,15 @@ Tracks leads through every stage of the sales pipeline.
 
 ### Win/Loss Analysis
 
-| Dimension | Analysis |
-|-----------|----------|
-| By reason | Top 10 loss reasons (price, location, competition, financing) |
-| By competitor | Which competitors won the deal |
-| By source | Win rate per lead source |
-| By agent | Win rate per agent |
-| By property type | Win rate per type |
-| By community | Win rate per area |
-| By time | Win rate trend over time |
+| Dimension        | Analysis                                                      |
+| ---------------- | ------------------------------------------------------------- |
+| By reason        | Top 10 loss reasons (price, location, competition, financing) |
+| By competitor    | Which competitors won the deal                                |
+| By source        | Win rate per lead source                                      |
+| By agent         | Win rate per agent                                            |
+| By property type | Win rate per type                                             |
+| By community     | Win rate per area                                             |
+| By time          | Win rate trend over time                                      |
 
 ---
 
@@ -141,16 +141,16 @@ Tracks leads through every stage of the sales pipeline.
 
 ### Lead Source Performance
 
-| Source | Leads | Qualified | Converted | Cost | CPL | CPA |
-|--------|-------|-----------|-----------|------|-----|-----|
-| PropertyFinder | 320 | 180 | 28 | AED 15,000 | AED 47 | AED 536 |
-| Bayut | 280 | 150 | 22 | AED 12,000 | AED 43 | AED 545 |
-| Google Ads | 200 | 90 | 12 | AED 18,000 | AED 90 | AED 1,500 |
-| Facebook/IG | 180 | 60 | 8 | AED 8,000 | AED 44 | AED 1,000 |
-| Website Organic | 150 | 80 | 15 | AED 0 | AED 0 | AED 0 |
-| Referrals | 120 | 90 | 30 | AED 0 | AED 0 | AED 0 |
-| Walk-in | 50 | 35 | 12 | N/A | N/A | N/A |
-| WhatsApp | 100 | 55 | 10 | AED 2,000 | AED 20 | AED 200 |
+| Source          | Leads | Qualified | Converted | Cost       | CPL    | CPA       |
+| --------------- | ----- | --------- | --------- | ---------- | ------ | --------- |
+| PropertyFinder  | 320   | 180       | 28        | AED 15,000 | AED 47 | AED 536   |
+| Bayut           | 280   | 150       | 22        | AED 12,000 | AED 43 | AED 545   |
+| Google Ads      | 200   | 90        | 12        | AED 18,000 | AED 90 | AED 1,500 |
+| Facebook/IG     | 180   | 60        | 8         | AED 8,000  | AED 44 | AED 1,000 |
+| Website Organic | 150   | 80        | 15        | AED 0      | AED 0  | AED 0     |
+| Referrals       | 120   | 90        | 30        | AED 0      | AED 0  | AED 0     |
+| Walk-in         | 50    | 35        | 12        | N/A        | N/A    | N/A       |
+| WhatsApp        | 100   | 55        | 10        | AED 2,000  | AED 20 | AED 200   |
 
 > CPL = Cost Per Lead; CPA = Cost Per Acquisition
 
@@ -185,14 +185,14 @@ Tracks leads through every stage of the sales pipeline.
 
 ### Commission Tracking
 
-| Metric | Description |
-|--------|-------------|
-| Total commissions earned | Sum of all closed deal commissions |
-| Commission pipeline | Expected commissions from pipeline |
-| Commission by agent | Individual agent commission breakdown |
-| Commission splits | Agent/company split tracking |
-| Pending commissions | Earned but not yet paid |
-| Commission trend | Monthly commission trend (12 months) |
+| Metric                   | Description                           |
+| ------------------------ | ------------------------------------- |
+| Total commissions earned | Sum of all closed deal commissions    |
+| Commission pipeline      | Expected commissions from pipeline    |
+| Commission by agent      | Individual agent commission breakdown |
+| Commission splits        | Agent/company split tracking          |
+| Pending commissions      | Earned but not yet paid               |
+| Commission trend         | Monthly commission trend (12 months)  |
 
 ### Expense Analysis
 
@@ -208,14 +208,14 @@ Tracks leads through every stage of the sales pipeline.
 
 ### Inventory Health
 
-| Metric | Description | Alert Threshold |
-|--------|-------------|-----------------|
-| Total active listings | Count of active properties | N/A |
-| New listings (MTD) | Properties listed this month | < 10 = warning |
-| Average days on market | Mean DOM for active listings | > 90 = warning |
-| Inventory aging | Distribution by DOM buckets | > 50% over 60 days |
-| Listings without inquiry | Properties with 0 inquiries in 30 days | Any = flag |
-| Price reduction rate | % of listings with price drops | > 30% = warning |
+| Metric                   | Description                            | Alert Threshold    |
+| ------------------------ | -------------------------------------- | ------------------ |
+| Total active listings    | Count of active properties             | N/A                |
+| New listings (MTD)       | Properties listed this month           | < 10 = warning     |
+| Average days on market   | Mean DOM for active listings           | > 90 = warning     |
+| Inventory aging          | Distribution by DOM buckets            | > 50% over 60 days |
+| Listings without inquiry | Properties with 0 inquiries in 30 days | Any = flag         |
+| Price reduction rate     | % of listings with price drops         | > 30% = warning    |
 
 ### Price Trends
 
@@ -227,13 +227,13 @@ Tracks leads through every stage of the sales pipeline.
 
 ### Area Performance
 
-| Area | Active Listings | Avg. Price/sqft | Avg. DOM | Inquiries | Conversion |
-|------|----------------|-----------------|----------|-----------|------------|
-| Dubai Marina | 45 | AED 1,850 | 32 | 340 | 12% |
-| Downtown Dubai | 38 | AED 2,400 | 28 | 420 | 15% |
-| Palm Jumeirah | 22 | AED 3,100 | 45 | 180 | 8% |
-| JVC | 65 | AED 950 | 22 | 510 | 18% |
-| Business Bay | 42 | AED 1,650 | 35 | 290 | 11% |
+| Area           | Active Listings | Avg. Price/sqft | Avg. DOM | Inquiries | Conversion |
+| -------------- | --------------- | --------------- | -------- | --------- | ---------- |
+| Dubai Marina   | 45              | AED 1,850       | 32       | 340       | 12%        |
+| Downtown Dubai | 38              | AED 2,400       | 28       | 420       | 15%        |
+| Palm Jumeirah  | 22              | AED 3,100       | 45       | 180       | 8%         |
+| JVC            | 65              | AED 950         | 22       | 510       | 18%        |
+| Business Bay   | 42              | AED 1,650       | 35       | 290       | 11%        |
 
 ---
 
@@ -241,16 +241,16 @@ Tracks leads through every stage of the sales pipeline.
 
 ### Individual Scorecard
 
-| Metric | Target | Actual | % Achieved | Trend |
-|--------|--------|--------|------------|-------|
-| Leads contacted | 50/month | 42 | 84% | ↑ |
-| Viewings conducted | 20/month | 18 | 90% | ↑ |
-| Deals closed | 5/month | 3 | 60% | ↓ |
-| Revenue generated | AED 500K/month | AED 380K | 76% | → |
-| Avg. response time | < 5 min | 8 min | 63% | ↓ |
-| Client satisfaction | 4.5/5 | 4.2/5 | 93% | → |
-| Listings active | 15 | 12 | 80% | ↑ |
-| Commission earned | AED 75K/month | AED 57K | 76% | → |
+| Metric              | Target         | Actual   | % Achieved | Trend |
+| ------------------- | -------------- | -------- | ---------- | ----- |
+| Leads contacted     | 50/month       | 42       | 84%        | ↑     |
+| Viewings conducted  | 20/month       | 18       | 90%        | ↑     |
+| Deals closed        | 5/month        | 3        | 60%        | ↓     |
+| Revenue generated   | AED 500K/month | AED 380K | 76%        | →     |
+| Avg. response time  | < 5 min        | 8 min    | 63%        | ↓     |
+| Client satisfaction | 4.5/5          | 4.2/5    | 93%        | →     |
+| Listings active     | 15             | 12       | 80%        | ↑     |
+| Commission earned   | AED 75K/month  | AED 57K  | 76%        | →     |
 
 ### Team Leaderboard
 
@@ -262,16 +262,16 @@ Tracks leads through every stage of the sales pipeline.
 
 ### Activity Metrics
 
-| Activity | Tracked | Benchmark |
-|----------|---------|-----------|
-| Calls made | ✅ | 20/day |
-| Emails sent | ✅ | 15/day |
-| WhatsApp messages | ✅ | 25/day |
-| Viewings conducted | ✅ | 1/day |
-| Listings created | ✅ | 2/week |
-| Follow-ups completed | ✅ | 10/day |
-| Proposals sent | ✅ | 3/week |
-| Client meetings | ✅ | 5/week |
+| Activity             | Tracked | Benchmark |
+| -------------------- | ------- | --------- |
+| Calls made           | ✅      | 20/day    |
+| Emails sent          | ✅      | 15/day    |
+| WhatsApp messages    | ✅      | 25/day    |
+| Viewings conducted   | ✅      | 1/day     |
+| Listings created     | ✅      | 2/week    |
+| Follow-ups completed | ✅      | 10/day    |
+| Proposals sent       | ✅      | 3/week    |
+| Client meetings      | ✅      | 5/week    |
 
 ### Performance Alerts
 
@@ -321,27 +321,27 @@ Tracks leads through every stage of the sales pipeline.
 
 ### Visualization Options
 
-| Chart Type | Best For | Interactive |
-|------------|----------|-------------|
-| Bar chart | Comparisons across categories | ✅ Click to drill down |
-| Line chart | Trends over time | ✅ Hover for values |
-| Pie / Donut | Composition / distribution | ✅ Click to filter |
-| Funnel | Conversion processes | ✅ Click per stage |
-| Heatmap | Geographic or matrix data | ✅ Hover for values |
-| Table | Detailed tabular data | ✅ Sort, filter, export |
-| KPI card | Single metric highlight | ✅ Click for detail |
-| Gauge | Progress toward target | ❌ Static |
-| Scatter plot | Correlation analysis | ✅ Hover for values |
-| Waterfall | Sequential value changes | ✅ Hover for values |
+| Chart Type   | Best For                      | Interactive             |
+| ------------ | ----------------------------- | ----------------------- |
+| Bar chart    | Comparisons across categories | ✅ Click to drill down  |
+| Line chart   | Trends over time              | ✅ Hover for values     |
+| Pie / Donut  | Composition / distribution    | ✅ Click to filter      |
+| Funnel       | Conversion processes          | ✅ Click per stage      |
+| Heatmap      | Geographic or matrix data     | ✅ Hover for values     |
+| Table        | Detailed tabular data         | ✅ Sort, filter, export |
+| KPI card     | Single metric highlight       | ✅ Click for detail     |
+| Gauge        | Progress toward target        | ❌ Static               |
+| Scatter plot | Correlation analysis          | ✅ Hover for values     |
+| Waterfall    | Sequential value changes      | ✅ Hover for values     |
 
 ### Report Scheduling
 
-| Feature | Options |
-|---------|---------|
-| Frequency | Daily, Weekly, Monthly, Quarterly |
-| Delivery | Email (PDF/Excel), Portal notification |
-| Recipients | Individual users, Teams, Custom lists |
-| Time | Configurable delivery time |
+| Feature    | Options                                              |
+| ---------- | ---------------------------------------------------- |
+| Frequency  | Daily, Weekly, Monthly, Quarterly                    |
+| Delivery   | Email (PDF/Excel), Portal notification               |
+| Recipients | Individual users, Teams, Custom lists                |
+| Time       | Configurable delivery time                           |
 | Conditions | Send only if data meets criteria (e.g., revenue > 0) |
 
 ### Export Options
@@ -381,14 +381,14 @@ Tracks leads through every stage of the sales pipeline.
 
 ### Live-Updating Metrics
 
-| Metric | Update Trigger | Latency |
-|--------|---------------|---------|
-| Pipeline value | Deal stage change | < 2 seconds |
-| Lead count | New lead created | < 2 seconds |
-| Revenue | Deal closed | < 2 seconds |
-| Active listings | Status change | < 5 seconds |
-| Agent activity | Action logged | < 5 seconds |
-| Inquiry count | New inquiry | < 2 seconds |
+| Metric          | Update Trigger    | Latency     |
+| --------------- | ----------------- | ----------- |
+| Pipeline value  | Deal stage change | < 2 seconds |
+| Lead count      | New lead created  | < 2 seconds |
+| Revenue         | Deal closed       | < 2 seconds |
+| Active listings | Status change     | < 5 seconds |
+| Agent activity  | Action logged     | < 5 seconds |
+| Inquiry count   | New inquiry       | < 2 seconds |
 
 ### Real-Time Notifications
 
@@ -407,16 +407,16 @@ Built on a modern charting library (Recharts / Chart.js) with White Caves design
 
 ### Color Palette
 
-| Purpose | Color | Usage |
-|---------|-------|-------|
-| Primary | `#2563EB` | Primary metrics, active series |
-| Success | `#16A34A` | Positive trends, targets met |
-| Warning | `#F59E0B` | Approaching threshold |
-| Danger | `#DC2626` | Negative trends, overdue |
-| Secondary | `#6B7280` | Secondary data series |
-| Accent 1 | `#8B5CF6` | Third data series |
-| Accent 2 | `#EC4899` | Fourth data series |
-| Neutral | `#E5E7EB` | Backgrounds, grid lines |
+| Purpose   | Color     | Usage                          |
+| --------- | --------- | ------------------------------ |
+| Primary   | `#2563EB` | Primary metrics, active series |
+| Success   | `#16A34A` | Positive trends, targets met   |
+| Warning   | `#F59E0B` | Approaching threshold          |
+| Danger    | `#DC2626` | Negative trends, overdue       |
+| Secondary | `#6B7280` | Secondary data series          |
+| Accent 1  | `#8B5CF6` | Third data series              |
+| Accent 2  | `#EC4899` | Fourth data series             |
+| Neutral   | `#E5E7EB` | Backgrounds, grid lines        |
 
 ### Responsive Charts
 
@@ -431,18 +431,18 @@ Built on a modern charting library (Recharts / Chart.js) with White Caves design
 
 ### Access Matrix
 
-| Dashboard Section | Owner | Manager | Agent | Sales Agent | Leasing Agent |
-|-------------------|-------|---------|-------|-------------|---------------|
-| Executive summary | ✅ All | ✅ Team | ❌ | ❌ | ❌ |
-| Sales analytics | ✅ All | ✅ Team | ✅ Own | ✅ Own | ❌ |
-| Rental analytics | ✅ All | ✅ Team | ✅ Own | ❌ | ✅ Own |
-| Financial analytics | ✅ All | ✅ Team | ✅ Own | ✅ Own | ✅ Own |
-| Property analytics | ✅ All | ✅ Team | ✅ Own | ✅ Own | ✅ Own |
-| Agent scorecards | ✅ All | ✅ Team | ✅ Own | ✅ Own | ✅ Own |
-| Marketing analytics | ✅ All | ✅ Team | ❌ | ❌ | ❌ |
-| Market intelligence | ✅ All | ✅ All | ✅ All | ✅ All | ✅ All |
-| Custom reports | ✅ All | ✅ Team | ✅ Own | ✅ Own | ✅ Own |
-| Report builder | ✅ | ✅ | ❌ | ❌ | ❌ |
+| Dashboard Section   | Owner  | Manager | Agent  | Sales Agent | Leasing Agent |
+| ------------------- | ------ | ------- | ------ | ----------- | ------------- |
+| Executive summary   | ✅ All | ✅ Team | ❌     | ❌          | ❌            |
+| Sales analytics     | ✅ All | ✅ Team | ✅ Own | ✅ Own      | ❌            |
+| Rental analytics    | ✅ All | ✅ Team | ✅ Own | ❌          | ✅ Own        |
+| Financial analytics | ✅ All | ✅ Team | ✅ Own | ✅ Own      | ✅ Own        |
+| Property analytics  | ✅ All | ✅ Team | ✅ Own | ✅ Own      | ✅ Own        |
+| Agent scorecards    | ✅ All | ✅ Team | ✅ Own | ✅ Own      | ✅ Own        |
+| Marketing analytics | ✅ All | ✅ Team | ❌     | ❌          | ❌            |
+| Market intelligence | ✅ All | ✅ All  | ✅ All | ✅ All      | ✅ All        |
+| Custom reports      | ✅ All | ✅ Team | ✅ Own | ✅ Own      | ✅ Own        |
+| Report builder      | ✅     | ✅      | ❌     | ❌          | ❌            |
 
 ### Data Scoping Rules
 
@@ -458,13 +458,13 @@ Built on a modern charting library (Recharts / Chart.js) with White Caves design
 
 ### Time Period Comparisons
 
-| Comparison | Format | Available For |
-|------------|--------|---------------|
-| Month-over-Month (MoM) | Current month vs. previous month | All metrics |
-| Quarter-over-Quarter (QoQ) | Current quarter vs. previous quarter | All metrics |
-| Year-over-Year (YoY) | Current year vs. same period last year | All metrics |
-| Custom range | Any two date ranges | All metrics |
-| Rolling average | 3/6/12 month rolling avg. | Trend metrics |
+| Comparison                 | Format                                 | Available For |
+| -------------------------- | -------------------------------------- | ------------- |
+| Month-over-Month (MoM)     | Current month vs. previous month       | All metrics   |
+| Quarter-over-Quarter (QoQ) | Current quarter vs. previous quarter   | All metrics   |
+| Year-over-Year (YoY)       | Current year vs. same period last year | All metrics   |
+| Custom range               | Any two date ranges                    | All metrics   |
+| Rolling average            | 3/6/12 month rolling avg.              | Trend metrics |
 
 ### Comparison Visualizations
 
@@ -535,29 +535,29 @@ Built on a modern charting library (Recharts / Chart.js) with White Caves design
 
 ### API Endpoints
 
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | `/api/analytics/executive` | Executive dashboard data |
-| GET | `/api/analytics/sales` | Sales analytics |
-| GET | `/api/analytics/sales/funnel` | Conversion funnel data |
-| GET | `/api/analytics/sales/velocity` | Deal velocity metrics |
-| GET | `/api/analytics/marketing` | Marketing performance |
-| GET | `/api/analytics/marketing/campaigns` | Campaign analytics |
-| GET | `/api/analytics/financial` | Financial summary |
-| GET | `/api/analytics/financial/commissions` | Commission details |
-| GET | `/api/analytics/properties` | Property analytics |
-| GET | `/api/analytics/properties/pricing` | Price trend data |
-| GET | `/api/analytics/agents/:id/scorecard` | Agent scorecard |
-| GET | `/api/analytics/agents/leaderboard` | Agent rankings |
-| GET | `/api/analytics/market` | Market intelligence |
-| GET | `/api/analytics/market/forecast` | AI demand forecast |
-| POST | `/api/reports` | Create custom report |
-| GET | `/api/reports` | List saved reports |
-| GET | `/api/reports/:id` | Get report data |
-| PUT | `/api/reports/:id` | Update report config |
-| DELETE | `/api/reports/:id` | Delete report |
-| POST | `/api/reports/:id/schedule` | Schedule report |
-| GET | `/api/reports/:id/export` | Export report data |
+| Method | Endpoint                               | Description              |
+| ------ | -------------------------------------- | ------------------------ |
+| GET    | `/api/analytics/executive`             | Executive dashboard data |
+| GET    | `/api/analytics/sales`                 | Sales analytics          |
+| GET    | `/api/analytics/sales/funnel`          | Conversion funnel data   |
+| GET    | `/api/analytics/sales/velocity`        | Deal velocity metrics    |
+| GET    | `/api/analytics/marketing`             | Marketing performance    |
+| GET    | `/api/analytics/marketing/campaigns`   | Campaign analytics       |
+| GET    | `/api/analytics/financial`             | Financial summary        |
+| GET    | `/api/analytics/financial/commissions` | Commission details       |
+| GET    | `/api/analytics/properties`            | Property analytics       |
+| GET    | `/api/analytics/properties/pricing`    | Price trend data         |
+| GET    | `/api/analytics/agents/:id/scorecard`  | Agent scorecard          |
+| GET    | `/api/analytics/agents/leaderboard`    | Agent rankings           |
+| GET    | `/api/analytics/market`                | Market intelligence      |
+| GET    | `/api/analytics/market/forecast`       | AI demand forecast       |
+| POST   | `/api/reports`                         | Create custom report     |
+| GET    | `/api/reports`                         | List saved reports       |
+| GET    | `/api/reports/:id`                     | Get report data          |
+| PUT    | `/api/reports/:id`                     | Update report config     |
+| DELETE | `/api/reports/:id`                     | Delete report            |
+| POST   | `/api/reports/:id/schedule`            | Schedule report          |
+| GET    | `/api/reports/:id/export`              | Export report data       |
 
 ### Performance Requirements
 
@@ -608,3 +608,216 @@ Built on a modern charting library (Recharts / Chart.js) with White Caves design
 - Integration with external BI tools (Power BI, Tableau, Looker)
 - Voice-activated dashboard queries via AI assistants
 - Benchmark data sharing consortium with partner agencies
+
+---
+
+## Mobile Analytics View Specification
+
+> @Cassie — DeepSeek V3 (FREE) | Workstream C expansion
+
+### Overview
+
+The mobile analytics view provides a streamlined, thumb-friendly version of all dashboards, optimized for on-the-go access by agents, managers, and executives. All core KPIs are visible without horizontal scrolling.
+
+### Screen Hierarchy
+
+| Screen              | Primary KPIs                                       | Actions                    |
+| ------------------- | -------------------------------------------------- | -------------------------- |
+| Home (mobile)       | Today's leads, Today's revenue, Open tasks         | Quick-add lead, Call agent |
+| My Performance      | Personal pipeline, Conversion %, Commission earned | Filter by period           |
+| Team View (Manager) | Team leaderboard, Pipeline total, Alerts           | Drill into agent           |
+| Portfolio (Owner)   | Occupancy %, MRR, Vacant units                     | View map, Export           |
+| Campaigns           | Active campaigns, Cost today, Leads generated      | Pause/resume               |
+
+### UX Constraints
+
+- Max 3 KPI cards per mobile screen (no horizontal scroll)
+- Charts: bar + donut only on mobile (no complex scatter or heat-maps)
+- All filters collapse into a bottom sheet (iOS/Android pattern)
+- Touch targets ≥ 44px (WCAG 2.5.5)
+- Offline mode: last-cached data shown with "Refreshed X min ago" badge
+
+### Data Refresh Policy
+
+| Tier                                 | Refresh Interval                   | Push Notification         |
+| ------------------------------------ | ---------------------------------- | ------------------------- |
+| Real-time KPIs (leads, pipeline)     | Every 30 seconds (WebSocket)       | On alert threshold breach |
+| Financial KPIs (revenue, commission) | Every 5 minutes                    | On daily target reached   |
+| Campaign analytics                   | Every 15 minutes                   | On budget 80% consumed    |
+| Historical charts                    | On-demand (manual pull-to-refresh) | Never (background)        |
+
+### Acceptance Criteria
+
+- [ ] Mobile dashboard loads within 2 seconds on 4G
+- [ ] All KPI cards render without horizontal scroll on 375px width (iPhone SE)
+- [ ] Offline mode shows stale-data banner when no network
+- [ ] Pinch-to-zoom disabled on charts (prevents accidental navigation)
+- [ ] Native share button available on every chart (PNG export)
+
+---
+
+## Scheduled Report Delivery Matrix
+
+> @Cassie — DeepSeek V3 (FREE)
+
+### Report Catalogue
+
+| Report Name                | Audience          | Frequency                      | Delivery         | Format      |
+| -------------------------- | ----------------- | ------------------------------ | ---------------- | ----------- |
+| Executive Weekly Briefing  | Owner / MD        | Every Sunday 7:00 AM           | Email + WhatsApp | PDF         |
+| Team Pipeline Snapshot     | Sales Manager     | Every Monday 8:00 AM           | Email            | PDF         |
+| Agent Commission Statement | Individual Agent  | 1st of each month              | Email + Portal   | PDF         |
+| Property Vacancy Alert     | Manager + Owner   | Daily (if vacancy > threshold) | WhatsApp         | Message     |
+| Marketing ROI Summary      | Marketing Manager | Every Friday 6:00 PM           | Email            | Excel + PDF |
+| Landlord Portfolio Report  | Landlord          | Monthly (configurable day)     | Email + Portal   | PDF         |
+| Cash Flow Forecast         | Finance / Owner   | Weekly (Wednesday)             | Email            | Excel       |
+| Lease Expiry Digest        | Property Manager  | Every Monday 7:00 AM           | Email            | PDF         |
+| Custom Ad-Hoc Report       | Any role          | On-demand                      | Portal download  | Excel / PDF |
+
+### Report Builder Configuration
+
+| Parameter     | Options                                                 |
+| ------------- | ------------------------------------------------------- |
+| Date range    | Today, This week, This month, This quarter, YTD, Custom |
+| Filters       | Agent, Team, Property type, Area, Lead source, Status   |
+| Grouping      | By agent, by property, by area, by channel, by period   |
+| Chart types   | Bar, Line, Donut, Table, Heat-map                       |
+| Delivery time | Any time (HH:MM), timezone-aware (GST)                  |
+| Recipients    | Individual, Team, Role-group, External email            |
+
+### Scheduling API Specification
+
+```
+POST /api/reports/schedule
+{
+  "reportType": "executive_weekly | pipeline_snapshot | commission | custom",
+  "schedule": {
+    "frequency": "daily | weekly | monthly | once",
+    "dayOfWeek": 0-6,          // 0 = Sunday
+    "hour": 7,
+    "timezone": "Asia/Dubai"
+  },
+  "filters": { ... },
+  "recipients": ["email@domain.com"],
+  "format": "pdf | excel | both",
+  "active": true
+}
+```
+
+### Acceptance Criteria
+
+- [ ] Reports delivered within 5 minutes of scheduled time
+- [ ] Failed delivery retried 3× with 10-minute intervals
+- [ ] All reports use AED as primary currency (USD as secondary)
+- [ ] Unsubscribe link in every automated email (GDPR/UAE PDPL)
+- [ ] Report history stored 24 months; downloadable from portal
+
+---
+
+## Data Export API Specification
+
+> @Cassie — DeepSeek V3 (FREE)
+
+### Export Endpoints
+
+| Endpoint                      | Description               | Auth Required | Rate Limit  |
+| ----------------------------- | ------------------------- | ------------- | ----------- |
+| `GET /api/export/leads`       | Export leads with filters | ✅ Manager+   | 100 req/day |
+| `GET /api/export/properties`  | Export property inventory | ✅ Manager+   | 100 req/day |
+| `GET /api/export/commissions` | Export commission records | ✅ Finance    | 50 req/day  |
+| `GET /api/export/agents`      | Export agent performance  | ✅ Manager+   | 50 req/day  |
+| `GET /api/export/financials`  | Full P&L export           | ✅ Owner only | 10 req/day  |
+| `POST /api/export/custom`     | Custom SQL-safe query     | ✅ Owner only | 5 req/day   |
+
+### Query Parameters
+
+```
+GET /api/export/leads?
+  startDate=2026-01-01
+  &endDate=2026-05-31
+  &agentId=agent_abc123
+  &status=hot,warm
+  &source=property_finder,whatsapp
+  &format=csv           // csv | excel | json
+  &columns=name,phone,status,assignedAgent,createdAt
+  &limit=10000          // max 50,000 rows
+  &timezone=Asia/Dubai
+```
+
+### Export Format Specifications
+
+| Format | Content-Type                                                        | Notes                                             |
+| ------ | ------------------------------------------------------------------- | ------------------------------------------------- |
+| CSV    | `text/csv`                                                          | UTF-8 with BOM (for Arabic names in Excel)        |
+| Excel  | `application/vnd.openxmlformats-officedocument.spreadsheetml.sheet` | Headers in row 1; data from row 2                 |
+| JSON   | `application/json`                                                  | Paginated (cursor-based); max 1,000 rows/response |
+
+### Security Requirements
+
+- All exports logged to audit trail with `exportedBy`, `exportedAt`, `rowCount`, `filters`
+- PII fields (phone, email) masked for non-Finance roles (show last 4 digits only)
+- Export tokens expire after 15 minutes (pre-signed URL pattern)
+- Bulk export (>5,000 rows) runs as background job; download link emailed when ready
+
+### Acceptance Criteria
+
+- [ ] CSV exports open correctly in Excel with Arabic names (UTF-8 BOM)
+- [ ] Large exports (>5K rows) processed as background jobs without HTTP timeout
+- [ ] Audit log entry created for every export event
+- [ ] PII masking applied for non-Finance/non-Owner roles
+- [ ] Rate limiting enforced per endpoint per user
+
+---
+
+## KPI Ownership & Accountability Map
+
+> @Cassie — DeepSeek V3 (FREE)
+
+### KPI Registry
+
+| KPI                        | Definition                                   | Formula                                            | Owner (AI) | Owner (Human)     | Refresh   | Target           |
+| -------------------------- | -------------------------------------------- | -------------------------------------------------- | ---------- | ----------------- | --------- | ---------------- |
+| Lead Conversion Rate       | % of leads that close to deal                | Closed deals / Total leads × 100                   | Clara      | Sales Manager     | Daily     | ≥ 8%             |
+| Average Days to Close      | Mean days from lead creation to deal close   | Σ(close date − create date) / closed deals         | Clara      | Sales Manager     | Weekly    | ≤ 45 days        |
+| Agent Activity Score       | Weighted calls + messages + viewings         | (Calls × 1) + (Messages × 0.5) + (Viewings × 3)    | Zoe        | Branch Manager    | Daily     | ≥ 50/week        |
+| Occupancy Rate             | % of managed units with active tenant        | Active leases / Total managed units × 100          | Mary       | Property Manager  | Daily     | ≥ 90%            |
+| Vacancy Duration (Avg)     | Mean days unit is vacant between tenants     | Σ(new lease start − prev lease end) / count        | Flux       | Property Manager  | Weekly    | ≤ 21 days        |
+| Commission per Agent       | Total gross commission / Agent headcount     | Gross commission / Active agents                   | Theodora   | MD / Owner        | Monthly   | ≥ AED 50K/month  |
+| Marketing CAC              | Cost per acquired client (closed)            | Total marketing spend / Closed leads               | Nova       | Marketing Manager | Monthly   | ≤ AED 4,200      |
+| Pipeline Coverage          | Pipeline value vs. monthly target            | Total pipeline / Monthly revenue target            | Clara      | Sales Manager     | Weekly    | ≥ 3×             |
+| NPS (Client)               | Net Promoter Score from post-close surveys   | % Promoters − % Detractors                         | Beacon     | MD                | Quarterly | ≥ 8.0            |
+| RERA License Expiry (Days) | Days until each agent's RERA license expires | Expiry date − Today                                | Atlas      | HR Manager        | Daily     | Alert at 60 days |
+| MRR Growth                 | Month-over-month recurring revenue growth    | (This month MRR − Last month MRR) / Last month MRR | Theodora   | Owner             | Monthly   | ≥ 5%/month       |
+| Portal ROI                 | Revenue generated per AED spent on portals   | Revenue attributed / Portal spend                  | Nova       | Marketing Manager | Monthly   | ≥ 4×             |
+
+### Dashboard Ownership Assignments
+
+| Dashboard                 | Primary Owner (AI) | Human Reviewer     | Review Cadence |
+| ------------------------- | ------------------ | ------------------ | -------------- |
+| Executive Summary         | Zoe                | Owner / MD         | Daily          |
+| Sales Pipeline            | Clara              | Sales Manager      | Daily          |
+| Agent Performance         | Zoe + Atlas        | Branch Manager     | Weekly         |
+| Marketing Analytics       | Nova               | Marketing Manager  | Weekly         |
+| Financial Summary         | Theodora           | Finance / Owner    | Monthly        |
+| Property Portfolio        | Mary + Flux        | Property Manager   | Daily          |
+| Landlord Portal Analytics | Omar               | Property Manager   | Monthly        |
+| Compliance & RERA         | Atlas              | Compliance Officer | Weekly         |
+
+### Alert Thresholds
+
+| Metric               | Warning (🟡) | Critical (🔴) | Action Required              |
+| -------------------- | ------------ | ------------- | ---------------------------- |
+| Lead response time   | > 2 hours    | > 8 hours     | Re-assign to available agent |
+| Vacancy rate         | > 12%        | > 20%         | Marketing + price review     |
+| Pipeline coverage    | < 4×         | < 2×          | Emergency lead generation    |
+| RERA expiry          | 60 days      | 30 days       | HR initiates renewal         |
+| Budget consumed      | 70%          | 90%           | Manager approval for overage |
+| Agent activity score | < 40/week    | < 20/week     | Coaching plan initiated      |
+
+### Acceptance Criteria
+
+- [ ] All KPIs have formula, target, and owner assigned before dashboard goes live
+- [ ] Alert emails sent within 2 minutes of threshold breach
+- [ ] KPI definitions reviewed quarterly and approved by Owner
+- [ ] Every dashboard has a "Last Updated" timestamp visible to user
+- [ ] KPI ownership map exportable as PDF for management review

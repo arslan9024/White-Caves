@@ -54,39 +54,43 @@ export function useLeadsData() {
   const error = useSelector(selectLeadsError);
 
   // Map Redux CRMItem[] to Lead[] for backward compatibility with tabs
-  const leads = useMemo<Lead[]>(() =>
-    reduxLeads.map((item) => ({
-      id: String(item.id),
-      name: (item.name as string) || '',
-      type: (item.type as string) || 'direct',
-      size: (item.size as string) || 'medium',
-      status: (item.status as string) || 'new',
-      value: (item.budget as number) || (item.value as number) || 0,
-      stage: (item.stage as string) || 'initial_contact',
-      owner: (item.assignedTo as { name: string })?.name || (item.owner as string) || 'Unassigned',
-      email: (item.email as string) || '',
-      phone: (item.phone as string) || '',
-      lastContact: item.lastContact ? new Date(item.lastContact as string) : new Date(),
-      notes: (item.notes as string) || '',
-      probability: (item.score as number) || (item.probability as number) || 0,
-      deals: (item.deals as number) || 0,
-      tasks: (item.tasks as number) || 0,
-      nextAction: (item.nextAction as string) || '',
-      source: (item.source as string) || 'direct',
-      budget: (item.budget as number) || 0,
-      score: (item.score as number) || 0,
-      tags: (item.tags as string[]) || [],
-      assignedToId: item.assignedToId as string | undefined,
-      assignedTo: item.assignedTo as { id: string; name: string; email: string } | undefined,
-      createdAt: item.createdAt as string | undefined,
-      updatedAt: item.updatedAt as string | undefined,
-    })),
-    [reduxLeads],
+  const leads = useMemo<Lead[]>(
+    () =>
+      reduxLeads.map(item => ({
+        id: String(item.id),
+        name: (item.name as string) || '',
+        type: (item.type as string) || 'direct',
+        size: (item.size as string) || 'medium',
+        status: (item.status as string) || 'new',
+        value: (item.budget as number) || (item.value as number) || 0,
+        stage: (item.stage as string) || 'initial_contact',
+        owner:
+          (item.assignedTo as { name: string })?.name || (item.owner as string) || 'Unassigned',
+        email: (item.email as string) || '',
+        phone: (item.phone as string) || '',
+        lastContact: item.lastContact ? new Date(item.lastContact as string) : new Date(),
+        notes: (item.notes as string) || '',
+        probability: (item.score as number) || (item.probability as number) || 0,
+        deals: (item.deals as number) || 0,
+        tasks: (item.tasks as number) || 0,
+        nextAction: (item.nextAction as string) || '',
+        source: (item.source as string) || 'direct',
+        budget: (item.budget as number) || 0,
+        score: (item.score as number) || 0,
+        tags: (item.tags as string[]) || [],
+        assignedToId: item.assignedToId as string | undefined,
+        assignedTo: item.assignedTo as { id: string; name: string; email: string } | undefined,
+        createdAt: item.createdAt as string | undefined,
+        updatedAt: item.updatedAt as string | undefined,
+      })),
+    [reduxLeads]
   );
 
   // ── Filters ──────────────────────────────────────────────────────────
   const [filterStatus, setFilterStatus] = useState<string>('all');
   const [filterStage, setFilterStage] = useState<string>('all');
+  // TASK-016 / Phase 27: filter by lead source (e.g. 'homepage_search')
+  const [filterSource, setFilterSource] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [sortBy, setSortBy] = useState<string>('lastContact');
   const [sortOrder, setSortOrder] = useState<string>('desc');
@@ -99,38 +103,49 @@ export function useLeadsData() {
 
   // ── CRUD Actions (dispatch to API thunks) ────────────────────────────
 
-  const addLead = useCallback((leadData: Partial<Lead>) => {
-    log.info('Creating lead via API', { name: leadData.name });
-    dispatch(createLeadAPI({
-      name: leadData.name || '',
-      email: leadData.email,
-      phone: leadData.phone,
-      status: leadData.status || 'new',
-      source: leadData.source || leadData.type || 'direct',
-      budget: leadData.value || leadData.budget,
-      notes: leadData.notes,
-      stage: leadData.stage,
-    }));
-    // Return a placeholder for immediate UI feedback
-    return {
-      id: `pending_${Date.now()}`,
-      ...leadData,
-      lastContact: new Date(),
-      deals: 0,
-      tasks: 0,
-      probability: 25,
-    } as Lead;
-  }, [dispatch]);
+  const addLead = useCallback(
+    (leadData: Partial<Lead>) => {
+      log.info('Creating lead via API', { name: leadData.name });
+      dispatch(
+        createLeadAPI({
+          name: leadData.name || '',
+          email: leadData.email,
+          phone: leadData.phone,
+          status: leadData.status || 'new',
+          source: leadData.source || leadData.type || 'direct',
+          budget: leadData.value || leadData.budget,
+          notes: leadData.notes,
+          stage: leadData.stage,
+        })
+      );
+      // Return a placeholder for immediate UI feedback
+      return {
+        id: `pending_${Date.now()}`,
+        ...leadData,
+        lastContact: new Date(),
+        deals: 0,
+        tasks: 0,
+        probability: 25,
+      } as Lead;
+    },
+    [dispatch]
+  );
 
-  const updateLead = useCallback((id: string, updates: Partial<Lead>) => {
-    log.info('Updating lead via API', { id });
-    dispatch(updateLeadAPI({ id, ...updates }));
-  }, [dispatch]);
+  const updateLead = useCallback(
+    (id: string, updates: Partial<Lead>) => {
+      log.info('Updating lead via API', { id });
+      dispatch(updateLeadAPI({ id, ...updates }));
+    },
+    [dispatch]
+  );
 
-  const deleteLead = useCallback((id: string) => {
-    log.info('Deleting lead via API', { id });
-    dispatch(deleteLeadAPI(id));
-  }, [dispatch]);
+  const deleteLead = useCallback(
+    (id: string) => {
+      log.info('Deleting lead via API', { id });
+      dispatch(deleteLeadAPI(id));
+    },
+    [dispatch]
+  );
 
   // Debounce the search query to avoid excessive filtering on every keystroke
   const debouncedSearch = useDebouncedValue(searchQuery, 300);
@@ -163,14 +178,20 @@ export function useLeadsData() {
       result = result.filter(lead => lead.stage === filterStage);
     }
 
+    // TASK-016: Apply source filter (homepage_search, direct, referral, etc.)
+    if (filterSource !== 'all') {
+      result = result.filter(lead => lead.source === filterSource);
+    }
+
     // Apply search (debounced)
     if (debouncedSearch) {
       const query = debouncedSearch.toLowerCase();
-      result = result.filter(lead =>
-        (lead.name?.toLowerCase() || '').includes(query) ||
-        (lead.email?.toLowerCase() || '').includes(query) ||
-        (lead.phone || '').includes(query) ||
-        (lead.notes?.toLowerCase() || '').includes(query)
+      result = result.filter(
+        lead =>
+          (lead.name?.toLowerCase() || '').includes(query) ||
+          (lead.email?.toLowerCase() || '').includes(query) ||
+          (lead.phone || '').includes(query) ||
+          (lead.notes?.toLowerCase() || '').includes(query)
       );
     }
 
@@ -185,26 +206,39 @@ export function useLeadsData() {
         return aVal < bVal ? 1 : -1;
       }
     });
-  }, [leads, filterStatus, filterStage, debouncedSearch, sortBy, sortOrder, normalizeSortValue]);
+  }, [
+    leads,
+    filterStatus,
+    filterStage,
+    filterSource,
+    debouncedSearch,
+    sortBy,
+    sortOrder,
+    normalizeSortValue,
+  ]);
 
   // Statistics
-  const stats = useMemo(() => ({
-    totalLeads: leads.length,
-    qualifiedLeads: leads.filter(l => l.status === 'qualified').length,
-    totalValue: leads.reduce((sum, l) => sum + l.value, 0),
-    avgProbability: leads.length > 0
-      ? Math.round(leads.reduce((sum, l) => sum + l.probability, 0) / leads.length)
-      : 0,
-    stageCounts: {
-      initial_contact: leads.filter(l => l.stage === 'initial_contact').length,
-      discovery: leads.filter(l => l.stage === 'discovery').length,
-      proposal: leads.filter(l => l.stage === 'proposal').length,
-      negotiation: leads.filter(l => l.stage === 'negotiation').length,
-      contract_review: leads.filter(l => l.stage === 'contract_review').length,
-      closed_won: leads.filter(l => l.stage === 'closed_won').length,
-      closed_lost: leads.filter(l => l.stage === 'closed_lost').length
-    }
-  }), [leads]);
+  const stats = useMemo(
+    () => ({
+      totalLeads: leads.length,
+      qualifiedLeads: leads.filter(l => l.status === 'qualified').length,
+      totalValue: leads.reduce((sum, l) => sum + l.value, 0),
+      avgProbability:
+        leads.length > 0
+          ? Math.round(leads.reduce((sum, l) => sum + l.probability, 0) / leads.length)
+          : 0,
+      stageCounts: {
+        initial_contact: leads.filter(l => l.stage === 'initial_contact').length,
+        discovery: leads.filter(l => l.stage === 'discovery').length,
+        proposal: leads.filter(l => l.stage === 'proposal').length,
+        negotiation: leads.filter(l => l.stage === 'negotiation').length,
+        contract_review: leads.filter(l => l.stage === 'contract_review').length,
+        closed_won: leads.filter(l => l.stage === 'closed_won').length,
+        closed_lost: leads.filter(l => l.stage === 'closed_lost').length,
+      },
+    }),
+    [leads]
+  );
 
   return {
     // Data
@@ -218,6 +252,8 @@ export function useLeadsData() {
     setFilterStatus,
     filterStage,
     setFilterStage,
+    filterSource,
+    setFilterSource,
     searchQuery,
     setSearchQuery,
     sortBy,

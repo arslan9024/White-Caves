@@ -9,6 +9,7 @@ import {
   HandshakeIcon,
   KeyRound,
 } from 'lucide-react';
+import { authFetch } from '../../../utils/authFetch';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -225,9 +226,7 @@ export const InventoryDashboard: React.FC = () => {
 
     async function fetchStats() {
       try {
-        const res = await fetch('/api/properties/inventory-stats', {
-          credentials: 'include',
-        });
+        const res = await authFetch('/api/properties/inventory-stats');
         if (!res.ok) return;
         const data = await res.json();
         if (cancelled) return;

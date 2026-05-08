@@ -1,86 +1,56 @@
 /**
- * TenantLeaseTab — Phase 2.8: My Lease
+ * TenantLeaseTab — Phase 2.8 / Phase 30: My Lease (Live API)
  *
- * Lease summary: property address, start date, end date, monthly rent, deposit paid
- * Days remaining in lease (countdown)
- * Lease status badge: Active / Expiring Soon (< 60 days) / Expired
- * Download buttons for Tenancy Agreement and Ejari Certificate
+ * Lease summary with live data from /api/leases?role=tenant
  *
  * @component
  */
 
-import React, { FC, useEffect, useState } from 'react';
+import React, { FC, useEffect, useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
 import type { RootState } from '../../../store/store';
+import { authFetch } from '../../../utils/authFetch';
 import '../../../pages/RolePages.css';
 
-interface LeaseData {
+interface ApiLease {
   id: string;
-  property: string;
-  address: string;
+  leaseNumber?: string | null;
   startDate: string;
   endDate: string;
   monthlyRent: number;
-  depositPaid: number;
-  currency: string;
-  leaseStatus: string;
-  daysRemaining: number;
-  ejariNumber?: string;
-  ejariStatus?: string;
-  agreementUrl?: string;
-  ejariUrl?: string;
+  depositAmount: number;
+  status: string;
+  ejariNumber?: string | null;
+  ejariStatus?: string | null;
+  documents: string[];
+  property: { id: string; title: string; location: string; type: string };
+  tenant: { id: string; name: string; email: string };
+  landlord: { id: string; name: string; email: string };
 }
 
 const TenantLeaseTab: FC = () => {
   const currentUser = useSelector((state: RootState) => state.user.currentUser);
-  const token = useSelector(
-    (state: RootState) => (state.auth as { token?: string } | undefined)?.token
-  );
-  const [showDetails, setShowDetails] = useState(false);
-  const [lease, setLease] = useState<LeaseData | null>(null);
-  const [loading, setLoading] = useState(false);
+  const [lease, setLease] = useState<ApiLease | null>(null);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [showDetails, setShowDetails] = useState(false);
 
   useEffect(() => {
-    if (!currentUser) return;
-    const load = async (): Promise<void> => {
-      setLoading(true);
-      setError(null);
-      const headers: Record<string, string> = { 'Content-Type': 'application/json' };
-      if (token) headers['Authorization'] = `Bearer ${token}`;
-      try {
-        const res = await fetch('/api/portal/tenant/lease', { headers });
-        if (!res.ok) throw new Error(`Server error ${res.status}`);
-        const data = await res.json();
-        const d = data.data;
-        if (!d) {
-          setLease(null);
-          return;
-        }
-        setLease({
-          id: d.id,
-          property: d.property ?? '',
-          address: d.address ?? '',
-          startDate: d.startDate ? new Date(d.startDate).toLocaleDateString() : '',
-          endDate: d.endDate ? new Date(d.endDate).toLocaleDateString() : '',
-          monthlyRent: d.monthlyRent ?? 0,
-          depositPaid: d.depositPaid ?? 0,
-          currency: d.currency ?? 'AED',
-          leaseStatus: d.leaseStatus ?? 'Active',
-          daysRemaining: d.daysRemaining ?? 0,
-          ejariNumber: d.ejariNumber ?? undefined,
-          ejariStatus: d.ejariStatus ?? undefined,
-          agreementUrl: undefined,
-          ejariUrl: undefined,
-        });
-      } catch (err) {
-        setError((err as Error).message ?? 'Failed to load lease');
-      } finally {
-        setLoading(false);
-      }
-    };
-    load();
-  }, [currentUser, token]);
+    authFetch('/api/leases?role=tenant&pageSize=1')
+      .then(r => r.json())
+      .then(data => setLease((data.data as ApiLease[])?.[0] ?? null))
+      .catch(() => setError('Unable to load lease details. Please refresh.'))
+      .finally(() => setLoading(false));
+  }, []);
+
+  const leaseMetrics = useMemo(() => {
+    if (!lease) return null;
+    const today = new Date();
+    const end = new Date(lease.endDate);
+    const daysRemaining = Math.ceil((end.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+    const status = daysRemaining < 0 ? 'Expired' : daysRemaining < 60 ? 'Expiring Soon' : 'Active';
+    return { daysRemaining, status };
+  }, [lease]);
 
   if (!currentUser) {
     return (
@@ -92,27 +62,33 @@ const TenantLeaseTab: FC = () => {
 
   if (loading) {
     return (
-      <div className="empty-state" data-testid="loading-state">
-        <p>Loading your lease…</p>
+      <div className="loading-state" data-testid="lease-loading">
+        <p>Loading lease details…</p>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="empty-state error-state" data-testid="error-state">
-        <p>Unable to load lease: {error}</p>
+      <div className="error-message" data-testid="lease-error">
+        <p>{error}</p>
       </div>
     );
   }
 
   if (!lease) {
     return (
-      <div className="empty-state" data-testid="no-lease-state">
-        <p>No active lease found. Please contact your property manager.</p>
+      <div className="empty-state" data-testid="lease-empty">
+        <p>No active lease found for your account.</p>
       </div>
     );
   }
+
+  const startDate = lease.startDate.split('T')[0];
+  const endDate = lease.endDate.split('T')[0];
+  // Use first uploaded document as tenancy agreement; fall back to '#'
+  const agreementUrl = lease.documents[0] ?? '#';
+  const ejariUrl = lease.documents[1] ?? '#';
 
   return (
     <div className="tab-content-section tenant-lease-tab">
@@ -124,55 +100,57 @@ const TenantLeaseTab: FC = () => {
       <div className="summary-grid" data-testid="lease-summary">
         <div className="summary-card" data-testid="lease-status-card">
           <h4>Lease Status</h4>
-          <span className="status-badge">{lease.leaseStatus}</span>
+          <span className={`status-badge status-${lease.status}`}>{leaseMetrics?.status ?? lease.status}</span>
         </div>
         <div className="summary-card" data-testid="lease-days-remaining-card">
           <h4>Days Remaining</h4>
-          <p>{lease.daysRemaining}</p>
+          <p>{leaseMetrics ? (leaseMetrics.daysRemaining > 0 ? leaseMetrics.daysRemaining : 'Expired') : '—'}</p>
         </div>
         <div className="summary-card" data-testid="lease-monthly-rent-card">
           <h4>Monthly Rent</h4>
-          <p>
-            {lease.currency} {lease.monthlyRent.toLocaleString()}
-          </p>
+          <p>AED {lease.monthlyRent.toLocaleString()}</p>
         </div>
         <div className="summary-card" data-testid="lease-deposit-card">
           <h4>Deposit Paid</h4>
-          <p>
-            {lease.currency} {lease.depositPaid.toLocaleString()}
-          </p>
+          <p>AED {lease.depositAmount.toLocaleString()}</p>
         </div>
       </div>
 
       <div className="lease-detail-panel" data-testid="lease-detail-panel">
-        <h4>{lease.property}</h4>
-        <p>{lease.address}</p>
+        <h4>{lease.property.title}</h4>
+        <p>{lease.property.location}</p>
         <p>
-          <strong>Start Date:</strong> {lease.startDate}
+          <strong>Start Date:</strong> {startDate}
         </p>
         <p>
-          <strong>End Date:</strong> {lease.endDate}
+          <strong>End Date:</strong> {endDate}
         </p>
+        {lease.leaseNumber && (
+          <p>
+            <strong>Lease #:</strong> {lease.leaseNumber}
+          </p>
+        )}
         {lease.ejariNumber && (
           <p>
-            <strong>Ejari Number:</strong> {lease.ejariNumber}
+            <strong>Ejari #:</strong> {lease.ejariNumber}{' '}
+            <span className={`status-badge status-${lease.ejariStatus ?? 'pending'}`}>
+              {lease.ejariStatus ?? 'pending'}
+            </span>
           </p>
         )}
 
         <div className="document-actions">
-          {lease.agreementUrl && (
+          <a
+            href={agreementUrl}
+            target="_blank"
+            rel="noreferrer"
+            data-testid="lease-agreement-download"
+          >
+            Download Tenancy Agreement
+          </a>
+          {lease.ejariNumber && (
             <a
-              href={lease.agreementUrl}
-              target="_blank"
-              rel="noreferrer"
-              data-testid="lease-agreement-download"
-            >
-              Download Tenancy Agreement
-            </a>
-          )}
-          {lease.ejariUrl && (
-            <a
-              href={lease.ejariUrl}
+              href={ejariUrl}
               target="_blank"
               rel="noreferrer"
               data-testid="lease-ejari-download"
@@ -208,16 +186,19 @@ const TenantLeaseTab: FC = () => {
             </button>
             <h4>Lease Breakdown</h4>
             <p>
-              <strong>Property:</strong> {lease.property}
+              <strong>Property:</strong> {lease.property.title}
             </p>
             <p>
-              <strong>Address:</strong> {lease.address}
+              <strong>Address:</strong> {lease.property.location}
             </p>
             <p>
-              <strong>Status:</strong> {lease.leaseStatus}
+              <strong>Status:</strong> {leaseMetrics?.status ?? lease.status}
             </p>
             <p>
-              <strong>Days Remaining:</strong> {lease.daysRemaining}
+              <strong>Days Remaining:</strong> {leaseMetrics?.daysRemaining ?? '—'}
+            </p>
+            <p>
+              <strong>Landlord:</strong> {lease.landlord.name}
             </p>
           </div>
         </div>

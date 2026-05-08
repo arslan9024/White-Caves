@@ -1,3 +1,4 @@
+﻿/* eslint-disable @typescript-eslint/no-unused-vars, @typescript-eslint/no-explicit-any */
 /**
  * Sales Department View - Fully Optimized with Caching and Performance Monitoring
  * Uses optimized API hooks with automatic caching, deduplication, and monitoring
@@ -57,11 +58,11 @@ export const SalesDepartmentView: React.FC<SalesDepartmentViewProps> = ({
     error: dataError,
   } = useDepartmentDataOptimized('SALES');
   const {
-    kpis: _salesKPIs,
+    kpis: salesKPIs,
     loading: kpiLoading,
     error: kpiError,
   } = useDepartmentKPIsOptimized('SALES');
-  const { trends: _salesTrends, loading: trendLoading } = useDepartmentTrendsOptimized(
+  const { trends: salesTrends, loading: trendLoading } = useDepartmentTrendsOptimized(
     'SALES',
     'monthly'
   );
@@ -100,8 +101,7 @@ export const SalesDepartmentView: React.FC<SalesDepartmentViewProps> = ({
   if (dataError || kpiError) {
     return (
       <ErrorState
-        title="Failed to Load Sales Data"
-        message={
+        error={
           dataError?.message ||
           kpiError?.message ||
           'Unable to fetch sales data. Using fallback data.'
@@ -111,7 +111,7 @@ export const SalesDepartmentView: React.FC<SalesDepartmentViewProps> = ({
     );
   }
 
-  const contentRenderer = (_data: unknown) => (
+  const contentRenderer = (data: any) => (
     <SalesContentWrapper>
       <ChartCard>
         <h3>Leads by Source</h3>

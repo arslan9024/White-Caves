@@ -89,7 +89,7 @@ router.post('/template', requirePermission('manage_leads'), async (req: Request,
           params.name || 'Valued Client',
           params.propertyTitle || 'New Property',
           params.area || 'Dubai',
-          params.price || 'Price on request',
+          params.price || 'Price on request'
         );
         break;
       case 'viewingConfirmation':
@@ -97,14 +97,14 @@ router.post('/template', requirePermission('manage_leads'), async (req: Request,
           params.name || 'Valued Client',
           params.propertyTitle || 'Property',
           params.dateTime || 'TBD',
-          params.agentName || 'White Caves Agent',
+          params.agentName || 'White Caves Agent'
         );
         break;
       case 'documentReady':
         emailData = EMAIL_TEMPLATES.documentReady(
           params.name || 'Valued Client',
           params.documentType || 'Document',
-          params.documentTitle || 'Untitled Document',
+          params.documentTitle || 'Untitled Document'
         );
         break;
       case 'paymentReminder':
@@ -112,7 +112,7 @@ router.post('/template', requirePermission('manage_leads'), async (req: Request,
           params.name || 'Valued Client',
           params.amount || 'Amount TBD',
           params.description || 'Payment',
-          params.dueDate || 'TBD',
+          params.dueDate || 'TBD'
         );
         break;
       case 'reraExpiry':
@@ -120,7 +120,31 @@ router.post('/template', requirePermission('manage_leads'), async (req: Request,
           params.name || 'Agent',
           params.brnNumber || 'BRN-XXX',
           params.expiryDate || 'TBD',
-          params.daysRemaining || '30',
+          params.daysRemaining || '30'
+        );
+        break;
+      case 'leadAssigned':
+        emailData = EMAIL_TEMPLATES.leadAssigned(
+          params.agentName || 'Agent',
+          params.leadName || 'New Lead',
+          params.leadEmail || '',
+          params.source || 'direct'
+        );
+        break;
+      case 'contractSigned':
+        emailData = EMAIL_TEMPLATES.contractSigned(
+          params.clientName || 'Valued Client',
+          params.propertyTitle || 'Property',
+          params.contractRef || 'REF-XXX',
+          params.startDate || 'TBD'
+        );
+        break;
+      case 'viewingCancelled':
+        emailData = EMAIL_TEMPLATES.viewingCancelled(
+          params.clientName || params.name || 'Valued Client',
+          params.propertyTitle || 'Property',
+          params.dateTime || 'TBD',
+          params.agentName || 'Your Agent'
         );
         break;
       default:
@@ -171,10 +195,14 @@ function getTemplateDescription(key: string): string {
     welcome: 'Welcome email for new clients/leads',
     propertyAlert: 'New property matching notification',
     viewingConfirmation: 'Viewing appointment confirmation',
+    viewingCancelled: 'Viewing cancellation notification',
     documentReady: 'Document ready for review notification',
     paymentReminder: 'Payment due reminder',
     reraExpiry: 'RERA BRN license expiry warning',
+    leadAssigned: 'New lead assignment notification for agents',
+    contractSigned: 'Tenancy contract fully signed confirmation',
   };
+  // eslint-disable-next-line security/detect-object-injection
   return descriptions[key] || key;
 }
 

@@ -78,19 +78,22 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children, showNav = true, isSuper
   const fetchNotifications = useCallback(async () => {
     if (!user) return;
     try {
-      const res = await authFetch('/api/notifications?pageSize=20');
+      const res = await authFetch('/api/activities?limit=10&sortBy=createdAt&sortOrder=desc');
       if (res.ok) {
         const json = await res.json();
-        const items = json.data || json.notifications || [];
+        const items = json.data || [];
         setNotifications(
-          items.map((n: Record<string, unknown>) => ({
-            id: String(n.id ?? n._id ?? ''),
-            read: Boolean(n.read ?? n.isRead ?? false),
+          items.map((a: any) => ({
+            id: a.id,
+            title: `New Activity: ${a.type}`,
+            message: a.description,
+            timestamp: new Date(a.createdAt).toLocaleTimeString(),
+            read: false, // We'd need an ActivityRead model to track this properly, assume false for now
           }))
         );
       }
     } catch (err) {
-      log.warn('Failed to fetch notifications:', err);
+      log.warn('Failed to fetch activities:', err);
     }
   }, [user]);
 

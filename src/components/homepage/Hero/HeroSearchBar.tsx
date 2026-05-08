@@ -3,13 +3,16 @@
  * Location dropdown, property type, bedrooms, price range, and "Find Now" CTA.
  * Navigates to /properties with query params on submit.
  */
-import React, { useState, useCallback, memo, useMemo } from 'react';
+import React, { useState, useCallback, memo, useMemo, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { motion } from 'framer-motion';
 import { Search, MapPin, Home, BedDouble, DollarSign, ChevronDown } from 'lucide-react';
 import { setFilters, clearFilters } from '../../../store/propertySlice';
 import { selectLocationTrends } from '../../../store/slices/homepageSlice';
+import { createSearchLead } from '../../../store/slices/searchLeadsSlice';
+import { trackHomepageEvent } from '../../../utils/homepageTracking';
+import { useToast } from '../../Toast';
 import type { AppDispatch } from '../../../store/store';
 import '../../../styles/dubaiLuxuryTheme.css';
 import './HeroSearchBar.css';
@@ -107,16 +110,27 @@ const SelectField: React.FC<SelectFieldProps> = memo(function SelectField({
 const HeroSearchBar = memo(function HeroSearchBar() {
   const navigate = useNavigate();
   const dispatch = useDispatch<AppDispatch>();
+  const toast = useToast();
 
   // Live trending locations from Redux (populated by fetchHomepageData)
   const locationTrends = useSelector(selectLocationTrends);
 
-  const [mode, setMode] = useState<'buy' | 'rent'>('buy');
+  const [mode, setMode] = useState<'buy' | 'rent'>('rent');
   const [location, setLocation] = useState('All Locations');
   const [propertyType, setPropertyType] = useState('All Types');
   const [beds, setBeds] = useState('0');
   const [priceRange, setPriceRange] = useState('0');
   const [showMoreFilters, setShowMoreFilters] = useState(false);
+
+  // Generate a stable session ID so the CRM can deduplicate rapid repeated searches
+  useEffect(() => {
+    if (!sessionStorage.getItem('wc_session_id')) {
+      sessionStorage.setItem(
+        'wc_session_id',
+        `wc_${Date.now()}_${Math.random().toString(36).slice(2, 10)}`
+      );
+    }
+  }, []);
 
   const handleSearch = useCallback(() => {
     // Clear existing filters first
@@ -174,8 +188,37 @@ const HeroSearchBar = memo(function HeroSearchBar() {
     }
 
     const queryString = params.toString();
+
+    trackHomepageEvent('homepage_leasing_search_submit', {
+      mode,
+      location: location !== 'All Locations' ? location : null,
+      propertyType: propertyType !== 'All Types' ? propertyType : null,
+      beds: typeof bedCount === 'number' ? bedCount : null,
+      minPrice: minPrice ?? null,
+      maxPrice: maxPrice ?? null,
+      source: 'homepage_hero_search_bar',
+    });
+
+    // TASK-012 / Phase 27: Capture anonymous search lead for CRM
+    // Fire-and-forget — navigation proceeds immediately; toast shows on success
+    void dispatch(
+      createSearchLead({
+        mode,
+        location: location !== 'All Locations' ? location : null,
+        propertyType: propertyType !== 'All Types' ? propertyType : null,
+        beds: typeof bedCount === 'number' ? bedCount : 0,
+        minPrice: minPrice ?? 0,
+        maxPrice: maxPrice ?? 0,
+        sessionId: sessionStorage.getItem('wc_session_id') ?? undefined,
+        searchedAt: new Date().toISOString(),
+      })
+    ).then(() => {
+      // TASK-013: Gold toast — only appears after confirmed lead creation
+      toast.success('Your search has been saved — our team will be in touch! 🏡', 4000);
+    });
+
     navigate(queryString ? `/properties?${queryString}` : '/properties');
-  }, [dispatch, navigate, mode, location, propertyType, beds, priceRange]);
+  }, [dispatch, navigate, toast, mode, location, propertyType, beds, priceRange]);
 
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent) => {

@@ -1,3 +1,4 @@
+/* eslint-disable security/detect-object-injection */
 /**
  * CRM Lead Management Page (Refactored)
  * Full CRUD lead management with filtering, search, and status pipeline.
@@ -5,19 +6,37 @@
  * Shared styles imported from CrmPageStyles.
  * Route: /owner/crm/leads
  */
-
 import React, { FC } from 'react';
 import styled from 'styled-components';
 import { Badge, Pagination } from '../../components/ui';
 import { Modal } from '../../shared/components/ui/Modal';
 import { useDocumentTitle } from '../../hooks/useDocumentTitle';
 import {
-  PageContainer, PageHeader, PageTitle, BackLink,
-  ActionBar, SearchInput, FilterSelect,
-  PrimaryButton, SecondaryButton, DangerButton,
-  Table, Th, Td, Tr, EmptyState,
-  FormGroup, FormLabel, FormInput, FormTextarea, FormSelect, FormRow,
-  PaginationWrapper, LoadingBanner, ErrorBanner, ModalFooter,
+  PageContainer,
+  PageHeader,
+  PageTitle,
+  BackLink,
+  ActionBar,
+  SearchInput,
+  FilterSelect,
+  PrimaryButton,
+  SecondaryButton,
+  DangerButton,
+  Table,
+  Th,
+  Td,
+  Tr,
+  EmptyState,
+  FormGroup,
+  FormLabel,
+  FormInput,
+  FormTextarea,
+  FormSelect,
+  FormRow,
+  PaginationWrapper,
+  LoadingBanner,
+  ErrorBanner,
+  ModalFooter,
 } from './styles/CrmPageStyles';
 import { useLeadManagement, STATUS_CONFIG, SOURCE_LABELS } from './hooks/useLeadManagement';
 import type { Lead } from './hooks/useLeadManagement';
@@ -32,9 +51,9 @@ const PipelineBar = styled.div`
 `;
 
 const PipelineStage = styled.button<{ $active: boolean; $color: string }>`
-  background: ${props => props.$active ? props.$color : 'white'};
-  color: ${props => props.$active ? 'white' : '#555'};
-  border: 1px solid ${props => props.$active ? props.$color : '#ddd'};
+  background: ${props => (props.$active ? props.$color : 'white')};
+  color: ${props => (props.$active ? 'white' : '#555')};
+  border: 1px solid ${props => (props.$active ? props.$color : '#ddd')};
   border-radius: 20px;
   padding: 0.4rem 1rem;
   font-size: 0.8rem;
@@ -47,7 +66,7 @@ const PipelineStage = styled.button<{ $active: boolean; $color: string }>`
 
   &:hover {
     border-color: ${props => props.$color};
-    background: ${props => props.$active ? props.$color : `${props.$color}10`};
+    background: ${props => (props.$active ? props.$color : `${props.$color}10`)};
   }
 `;
 
@@ -56,16 +75,42 @@ const PipelineStage = styled.button<{ $active: boolean; $color: string }>`
 const LeadManagementPage: FC = () => {
   useDocumentTitle('Lead Management');
   const {
-    filteredLeads, paginatedLeads, statusCounts,
-    loading, error,
-    search, statusFilter, sourceFilter, currentPage,
-    showCreateModal, showEditModal, showDeleteConfirm, selectedLead,
-    formData, setFormData, errorMessage, setErrorMessage, ITEMS_PER_PAGE,
-    openCreateModal, closeCreateModal, closeEditModal, closeDeleteModal,
-    handleCreate, handleEdit, handleSaveEdit, handleDelete, confirmDelete,
-    handleSearchChange, handleStatusFilterChange, handleSourceFilterChange,
-    setCurrentPage, retryFetch, goBack,
-    getStatusBadgeVariant, formatCurrency, formatDate,
+    filteredLeads,
+    paginatedLeads,
+    statusCounts,
+    loading,
+    error,
+    search,
+    statusFilter,
+    sourceFilter,
+    currentPage,
+    showCreateModal,
+    showEditModal,
+    showDeleteConfirm,
+    selectedLead,
+    formData,
+    setFormData,
+    errorMessage,
+    setErrorMessage,
+    ITEMS_PER_PAGE,
+    openCreateModal,
+    closeCreateModal,
+    closeEditModal,
+    closeDeleteModal,
+    handleCreate,
+    handleEdit,
+    handleSaveEdit,
+    handleDelete,
+    confirmDelete,
+    handleSearchChange,
+    handleStatusFilterChange,
+    handleSourceFilterChange,
+    setCurrentPage,
+    retryFetch,
+    goBack,
+    getStatusBadgeVariant,
+    formatCurrency,
+    formatDate,
   } = useLeadManagement();
 
   // Lead form modal content
@@ -130,7 +175,9 @@ const LeadManagementPage: FC = () => {
             onChange={e => setFormData({ ...formData, status: e.target.value })}
           >
             {Object.entries(STATUS_CONFIG).map(([key, cfg]) => (
-              <option key={key} value={key}>{cfg.label}</option>
+              <option key={key} value={key}>
+                {cfg.label}
+              </option>
             ))}
           </FormSelect>
         </FormGroup>
@@ -142,7 +189,9 @@ const LeadManagementPage: FC = () => {
             onChange={e => setFormData({ ...formData, source: e.target.value })}
           >
             {Object.entries(SOURCE_LABELS).map(([key, label]) => (
-              <option key={key} value={key}>{label}</option>
+              <option key={key} value={key}>
+                {label}
+              </option>
             ))}
           </FormSelect>
         </FormGroup>
@@ -227,13 +276,12 @@ const LeadManagementPage: FC = () => {
           value={search}
           onChange={e => handleSearchChange(e.target.value)}
         />
-        <FilterSelect
-          value={sourceFilter}
-          onChange={e => handleSourceFilterChange(e.target.value)}
-        >
+        <FilterSelect value={sourceFilter} onChange={e => handleSourceFilterChange(e.target.value)}>
           <option value="all">All Sources</option>
           {Object.entries(SOURCE_LABELS).map(([key, label]) => (
-            <option key={key} value={key}>{label}</option>
+            <option key={key} value={key}>
+              {label}
+            </option>
           ))}
         </FilterSelect>
         <span style={{ fontSize: '0.8rem', color: '#888' }}>
@@ -247,6 +295,7 @@ const LeadManagementPage: FC = () => {
           <thead>
             <tr>
               <Th>Name</Th>
+              <Th>Score</Th>
               <Th>Company</Th>
               <Th>Status</Th>
               <Th>Source</Th>
@@ -258,32 +307,54 @@ const LeadManagementPage: FC = () => {
           </thead>
           <tbody>
             {paginatedLeads.length > 0 ? (
-              paginatedLeads.map((lead: Lead) => (
-                <Tr key={lead.id} onClick={() => handleEdit(lead)}>
-                  <Td style={{ fontWeight: 500 }}>{lead.name || '—'}</Td>
-                  <Td>{lead.company || '—'}</Td>
-                  <Td>
-                    <Badge variant={getStatusBadgeVariant(lead.status || '')} size="small">
-                      {STATUS_CONFIG[lead.status || '']?.label || lead.status || '—'}
-                    </Badge>
-                  </Td>
-                  <Td>{SOURCE_LABELS[lead.source || ''] || lead.source || '—'}</Td>
-                  <Td>{formatCurrency(lead.budget || lead.value)}</Td>
-                  <Td>
-                    <div style={{ fontSize: '0.8rem' }}>
-                      {lead.email && <div>{lead.email}</div>}
-                      {lead.phone && <div style={{ color: '#888' }}>{lead.phone}</div>}
-                    </div>
-                  </Td>
-                  <Td>{formatDate(lead.created_at)}</Td>
-                  <Td onClick={e => e.stopPropagation()}>
-                    <div style={{ display: 'flex', gap: '0.4rem' }}>
-                      <SecondaryButton onClick={() => handleEdit(lead)}>Edit</SecondaryButton>
-                      <DangerButton onClick={() => confirmDelete(lead)}>Delete</DangerButton>
-                    </div>
-                  </Td>
-                </Tr>
-              ))
+              paginatedLeads.map((lead: Lead) => {
+                const score = lead.score ?? undefined;
+                const scoreVariant =
+                  score === undefined
+                    ? undefined
+                    : score >= 80
+                      ? 'error'
+                      : score >= 50
+                        ? 'warning'
+                        : 'secondary';
+                const scoreEmoji =
+                  score === undefined ? '' : score >= 80 ? '🔥' : score >= 50 ? '⚡' : '❄️';
+                return (
+                  <Tr key={lead.id} onClick={() => handleEdit(lead)}>
+                    <Td style={{ fontWeight: 500 }}>{lead.name || '—'}</Td>
+                    <Td>
+                      {score !== undefined ? (
+                        <Badge variant={scoreVariant} size="small">
+                          {scoreEmoji} {score}
+                        </Badge>
+                      ) : (
+                        '—'
+                      )}
+                    </Td>
+                    <Td>{lead.company || '—'}</Td>
+                    <Td>
+                      <Badge variant={getStatusBadgeVariant(lead.status || '')} size="small">
+                        {STATUS_CONFIG[lead.status || '']?.label || lead.status || '—'}
+                      </Badge>
+                    </Td>
+                    <Td>{SOURCE_LABELS[lead.source || ''] || lead.source || '—'}</Td>
+                    <Td>{formatCurrency(lead.budget || lead.value)}</Td>
+                    <Td>
+                      <div style={{ fontSize: '0.8rem' }}>
+                        {lead.email && <div>{lead.email}</div>}
+                        {lead.phone && <div style={{ color: '#888' }}>{lead.phone}</div>}
+                      </div>
+                    </Td>
+                    <Td>{formatDate(lead.created_at)}</Td>
+                    <Td onClick={e => e.stopPropagation()}>
+                      <div style={{ display: 'flex', gap: '0.4rem' }}>
+                        <SecondaryButton onClick={() => handleEdit(lead)}>Edit</SecondaryButton>
+                        <DangerButton onClick={() => confirmDelete(lead)}>Delete</DangerButton>
+                      </div>
+                    </Td>
+                  </Tr>
+                );
+              })
             ) : (
               <tr>
                 <Td colSpan={8}>
@@ -356,8 +427,8 @@ const LeadManagementPage: FC = () => {
           size="small"
         >
           <p style={{ color: '#555', fontSize: '0.9rem' }}>
-            Are you sure you want to delete <strong>{selectedLead.name}</strong>?
-            This action cannot be undone.
+            Are you sure you want to delete <strong>{selectedLead.name}</strong>? This action cannot
+            be undone.
           </p>
           <ModalFooter>
             <SecondaryButton onClick={closeDeleteModal}>Cancel</SecondaryButton>

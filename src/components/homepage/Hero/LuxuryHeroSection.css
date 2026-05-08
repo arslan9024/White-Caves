@@ -92,7 +92,8 @@
 .luxury-hero__skyline {
   position: absolute;
   inset: -10%;
-  background-image: url('https://images.unsplash.com/photo-1582268611958-ebfd161ef9cf?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80');
+  /* Phase 25 – optimised: w=1440 (saves ~40%), q=75 (saves ~15%), must match preload href in index.html */
+  background-image: url('https://images.unsplash.com/photo-1582268611958-ebfd161ef9cf?ixlib=rb-4.0.3&auto=format&fit=crop&w=1440&q=75');
   background-size: cover;
   background-position: center 30%;
   will-change: transform;

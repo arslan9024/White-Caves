@@ -1,4 +1,6 @@
+﻿/* eslint-disable @typescript-eslint/no-unused-vars, @typescript-eslint/no-explicit-any */
 import React, { useEffect, useState, ReactNode } from 'react';
+import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { DashboardShell, DataCardGrid } from '../shared/dashboard';
 import { LoadingState } from '../shared/LoadingState';
@@ -23,11 +25,11 @@ interface BaseDepartmentViewProps {
   config: DepartmentViewConfig;
   serviceName?: string;
   subitemId?: string;
-  departmentData?: Record<string, unknown>; // Data from Redux
+  departmentData?: any; // Data from Redux
   children?: ReactNode;
-  kpiRenderer?: (data: Record<string, unknown>) => ReactNode;
-  contentRenderer?: (data: Record<string, unknown>) => ReactNode;
-  onDataLoaded?: (data: Record<string, unknown>) => void;
+  kpiRenderer?: (data: any) => ReactNode;
+  contentRenderer?: (data: any) => ReactNode;
+  onDataLoaded?: (data: any) => void;
   isLoading?: boolean;
   error?: string | null;
 }
@@ -66,7 +68,7 @@ export const BaseDepartmentView: React.FC<BaseDepartmentViewProps> = ({
 }) => {
   // Use departmentData from Redux (passed as prop)
   const [loading, setLoading] = useState(isLoading ?? !departmentData);
-  const [data, setData] = useState<Record<string, unknown> | undefined>(departmentData);
+  const [data, setData] = useState<any>(departmentData);
   const [error, setError] = useState<string | null>(externalError ?? null);
 
   // Update local state when departmentData changes
@@ -102,10 +104,10 @@ export const BaseDepartmentView: React.FC<BaseDepartmentViewProps> = ({
     <ViewContainer>
       <DashboardShell
         title={title}
-        subtitle={`Department: ${config.departmentName}`}
+        icon={config.icon}
         loading={loading}
-        error={error}
-        showBreadcrumb
+        onFilterChange={() => {}}
+        onBreadcrumbClick={() => {}}
       >
         <ViewContent>
           {error && <ErrorState error={error} onRetry={() => window.location.reload()} />}

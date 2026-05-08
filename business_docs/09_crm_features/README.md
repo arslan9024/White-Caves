@@ -5,6 +5,7 @@ This folder contains comprehensive documentation of all CRM features, capabiliti
 ## 📋 Feature Categories
 
 ### Core CRM Features
+
 - **Client Management** - Complete client lifecycle management
 - **Lead Tracking** - Lead qualification and pipeline management
 - **Property Management** - Listing, inventory, and availability management
@@ -12,11 +13,13 @@ This folder contains comprehensive documentation of all CRM features, capabiliti
 - **Transaction Management** - Deal tracking and documentation
 
 ### AI Assistant Integration
+
 - **Lead Assistant** - Lead scoring and qualification
 - **Property Assistant** - Property recommendations and matching
 - **Analytics Assistant** - Performance and market analysis
 
 ### Automation Features
+
 - **WhatsApp Integration** - Automated client communication
 - **Email Automation** - Bulk messaging and templates
 - **Workflow Automation** - Task automation and routing
@@ -26,32 +29,37 @@ This folder contains comprehensive documentation of all CRM features, capabiliti
 
 ## 📈 Feature Status Overview
 
-| Feature | Status | Completion | Priority |
-|---------|--------|-----------|----------|
-| Client Management | ✅ Complete | 100% | High |
-| Lead Tracking | ✅ Complete | 100% | High |
-| Property Management | ✅ Complete | 95% | High |
-| WhatsApp Integration | ✅ Complete | 95% | High |
-| AI Assistants | ✅ Complete | 90% | Medium |
-| Automation | ⏳ In Progress | 80% | Medium |
-| Analytics | ⏳ In Progress | 75% | Medium |
+| Feature              | Status         | Completion | Priority |
+| -------------------- | -------------- | ---------- | -------- |
+| Client Management    | ✅ Complete    | 100%       | High     |
+| Lead Tracking        | ✅ Complete    | 100%       | High     |
+| Property Management  | ✅ Complete    | 95%        | High     |
+| WhatsApp Integration | 🔄 In Progress | 75%        | High     |
+| Sales Pipeline       | ✅ Complete    | 90%        | High     |
+| AI Assistants        | ✅ Complete    | 90%        | Medium   |
+| Automation           | ⏳ In Progress | 80%        | Medium   |
+| Analytics            | ⏳ In Progress | 75%        | Medium   |
 
 ---
 
 ## 📚 Feature Documentation Files
 
 ### Essential Features
+
 1. **client-management.md** - Client CRUD, history, preferences
 2. **lead-tracking.md** - Lead pipeline, scoring, qualification
 3. **property-management.md** - Properties, listings, inventory
+4. **sales-pipeline.md** - Deal stages, forecasting, conversion controls
 
 ### Advanced Features
+
 5. **whatsapp-integration.md** - WhatsApp bot, automation, templates
 6. **ai-assistants.md** - Overview of integrated AI assistants
 7. **analytics-dashboard.md** - Performance metrics and reporting
 8. **workflow-automation.md** - Automated task routing and management
 
 ### User Workflows
+
 9. **agent-workflow.md** - Daily agent operations
 10. **manager-workflow.md** - Management and oversight
 11. **admin-workflow.md** - System administration
@@ -105,18 +113,22 @@ WhatsApp Integration
 ### By User Role
 
 **Agents**
+
 - Access to: Client Management, Lead Tracking, Transaction History
 - Cannot: Manage other agents' data, system configuration
 
-**Managers**  
+**Managers**
+
 - Access to: All CRM features, team management, reports
 - Cannot: System configuration, user management
 
 **Admin**
+
 - Access to: All features, system configuration, user management
 - Full unrestricted access
 
 **Executives**
+
 - Access to: Dashboards, analytics, strategic reports
 - Cannot: Modify operational data
 
@@ -125,22 +137,26 @@ WhatsApp Integration
 ## 🚀 Implementation Status
 
 ### Phase 1: Core CRM
+
 - ✅ Client Management System
 - ✅ Lead Tracking & Pipeline
 - ✅ Transaction Management System
 - ✅ Property Inventory System
 
 ### Phase 2: Integration
+
 - ✅ WhatsApp Bot Integration
 - ✅ Email Automation
 - ✅ Dashboard & Reporting
 
 ### Phase 3: AI & Analytics (Current)
+
 - ⏳ AI Assistant Integration
 - ⏳ Advanced Analytics
 - ⏳ Workflow Automation
 
 ### Phase 4: Optimization (Planned)
+
 - ⏳ Performance Optimization
 - ⏳ Advanced Reporting
 - ⏳ Custom Workflows
@@ -162,6 +178,7 @@ To request new features or modifications:
 ## 📞 Support & Questions
 
 For feature-specific questions:
+
 - Consult individual feature documentation
 - Check FAQ section
 - Review business rules

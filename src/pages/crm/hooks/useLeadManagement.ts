@@ -33,6 +33,7 @@ export interface Lead {
   phone?: string;
   status?: string;
   source?: string;
+  score?: number | null;
   budget?: number;
   value?: number;
   assigned_to?: string;
@@ -58,7 +59,10 @@ type LeadBadgeVariant = 'primary' | 'secondary' | 'success' | 'warning' | 'error
 
 // ─── Constants ──────────────────────────────────────────────────────────
 
-export const STATUS_CONFIG: Record<string, { label: string; color: string; badgeVariant: LeadBadgeVariant }> = {
+export const STATUS_CONFIG: Record<
+  string,
+  { label: string; color: string; badgeVariant: LeadBadgeVariant }
+> = {
   new: { label: 'New', color: '#10B981', badgeVariant: 'success' },
   contacted: { label: 'Contacted', color: '#8B5CF6', badgeVariant: 'primary' },
   qualified: { label: 'Qualified', color: '#EC4899', badgeVariant: 'primary' },
@@ -105,7 +109,9 @@ export function useLeadManagement() {
   // Fetch on mount
   useEffect(() => {
     const promise = dispatch(fetchLeadsFromAPI({}));
-    return () => { promise.abort?.(); };
+    return () => {
+      promise.abort?.();
+    };
   }, [dispatch]);
 
   // ─── Local state ────────────────────────────────────────────────
@@ -115,8 +121,11 @@ export function useLeadManagement() {
   const [sourceFilter, setSourceFilter] = useState('all');
   const [currentPage, setCurrentPage] = useState(1);
 
-  // Reset pagination when filters change
+  // Reset pagination when filters change.
+  // Intentionally calling setState synchronously inside the effect here because
+  // resetting the page is a direct response to a filter change, not a cascading render issue.
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setCurrentPage(1);
   }, [search, statusFilter, sourceFilter]);
 
@@ -131,9 +140,11 @@ export function useLeadManagement() {
 
   const filteredLeads = useMemo(() => {
     return allLeads.filter((lead: Lead) => {
-      const matchesSearch = !search || [
-        lead.name, lead.company, lead.email, lead.phone,
-      ].some(field => field?.toLowerCase().includes(search.toLowerCase()));
+      const matchesSearch =
+        !search ||
+        [lead.name, lead.company, lead.email, lead.phone].some(field =>
+          field?.toLowerCase().includes(search.toLowerCase())
+        );
       const matchesStatus = statusFilter === 'all' || lead.status === statusFilter;
       const matchesSource = sourceFilter === 'all' || lead.source === sourceFilter;
       return matchesSearch && matchesStatus && matchesSource;
@@ -144,13 +155,14 @@ export function useLeadManagement() {
 
   const paginatedLeads = filteredLeads.slice(
     (currentPage - 1) * ITEMS_PER_PAGE,
-    currentPage * ITEMS_PER_PAGE,
+    currentPage * ITEMS_PER_PAGE
   );
 
   const statusCounts = useMemo(() => {
     const counts: Record<string, number> = { all: allLeads.length };
     allLeads.forEach((lead: Lead) => {
       const status = lead.status || 'unknown';
+      // eslint-disable-next-line security/detect-object-injection
       counts[status] = (counts[status] || 0) + 1;
     });
     return counts;
@@ -211,24 +223,28 @@ export function useLeadManagement() {
       last_activity: new Date().toISOString(),
     };
 
-    dispatch(createLeadAPI(leadData)).then((result) => {
-      if (createLeadAPI.fulfilled.match(result)) {
-        dispatch(addActivity({
-          id: Date.now(),
-          type: 'lead',
-          description: `New lead created: ${formData.name} (${formData.company || 'No company'})`,
-          timestamp: new Date().toISOString(),
-        }));
-        setShowCreateModal(false);
-        resetForm();
-      } else if (createLeadAPI.rejected.match(result)) {
-        const msg = (result.payload as string) || 'Failed to create lead. Please try again.';
-        setErrorMessage(msg);
-      }
-    }).catch((error: unknown) => {
-      log.error('Failed to create lead:', error instanceof Error ? error.message : String(error));
-      setErrorMessage('An unexpected error occurred. Please try again.');
-    });
+    dispatch(createLeadAPI(leadData))
+      .then(result => {
+        if (createLeadAPI.fulfilled.match(result)) {
+          dispatch(
+            addActivity({
+              id: Date.now(),
+              type: 'lead',
+              description: `New lead created: ${formData.name} (${formData.company || 'No company'})`,
+              timestamp: new Date().toISOString(),
+            })
+          );
+          setShowCreateModal(false);
+          resetForm();
+        } else if (createLeadAPI.rejected.match(result)) {
+          const msg = (result.payload as string) || 'Failed to create lead. Please try again.';
+          setErrorMessage(msg);
+        }
+      })
+      .catch((error: unknown) => {
+        log.error('Failed to create lead:', error instanceof Error ? error.message : String(error));
+        setErrorMessage('An unexpected error occurred. Please try again.');
+      });
   }, [dispatch, formData, resetForm]);
 
   const handleEdit = useCallback((lead: Lead) => {
@@ -267,53 +283,69 @@ export function useLeadManagement() {
     setErrorMessage(null);
     if (selectedLead) {
       const nameSnapshot = formData.name;
-      dispatch(updateLeadAPI({
-        id: selectedLead.id,
-        ...formData,
-        budget: formData.budget ? Number(formData.budget) : undefined,
-        last_activity: new Date().toISOString(),
-      })).then((result) => {
-        if (updateLeadAPI.fulfilled.match(result)) {
-          dispatch(addActivity({
-            id: Date.now(),
-            type: 'lead',
-            description: `Lead updated: ${nameSnapshot}`,
-            timestamp: new Date().toISOString(),
-          }));
-          setShowEditModal(false);
-          setSelectedLead(null);
-          resetForm();
-        } else if (updateLeadAPI.rejected.match(result)) {
-          const msg = (result.payload as string) || 'Failed to update lead. Please try again.';
-          setErrorMessage(msg);
-        }
-      }).catch((error: unknown) => {
-        log.error('Failed to update lead:', error instanceof Error ? error.message : String(error));
-        setErrorMessage('An unexpected error occurred. Please try again.');
-      });
+      dispatch(
+        updateLeadAPI({
+          id: selectedLead.id,
+          ...formData,
+          budget: formData.budget ? Number(formData.budget) : undefined,
+          last_activity: new Date().toISOString(),
+        })
+      )
+        .then(result => {
+          if (updateLeadAPI.fulfilled.match(result)) {
+            dispatch(
+              addActivity({
+                id: Date.now(),
+                type: 'lead',
+                description: `Lead updated: ${nameSnapshot}`,
+                timestamp: new Date().toISOString(),
+              })
+            );
+            setShowEditModal(false);
+            setSelectedLead(null);
+            resetForm();
+          } else if (updateLeadAPI.rejected.match(result)) {
+            const msg = (result.payload as string) || 'Failed to update lead. Please try again.';
+            setErrorMessage(msg);
+          }
+        })
+        .catch((error: unknown) => {
+          log.error(
+            'Failed to update lead:',
+            error instanceof Error ? error.message : String(error)
+          );
+          setErrorMessage('An unexpected error occurred. Please try again.');
+        });
     }
   }, [dispatch, selectedLead, formData, resetForm]);
 
   const handleDelete = useCallback(() => {
     if (selectedLead) {
-      dispatch(deleteLeadAPI(selectedLead.id)).then((result) => {
-        if (deleteLeadAPI.fulfilled.match(result)) {
-          dispatch(addActivity({
-            id: Date.now(),
-            type: 'lead',
-            description: `Lead deleted: ${selectedLead.name}`,
-            timestamp: new Date().toISOString(),
-          }));
-          setShowDeleteConfirm(false);
-          setSelectedLead(null);
-        } else if (deleteLeadAPI.rejected.match(result)) {
-          const msg = (result.payload as string) || 'Failed to delete lead. Please try again.';
-          setErrorMessage(msg);
-        }
-      }).catch((error: unknown) => {
-        log.error('Failed to delete lead:', error instanceof Error ? error.message : String(error));
-        setErrorMessage('An unexpected error occurred. Please try again.');
-      });
+      dispatch(deleteLeadAPI(selectedLead.id))
+        .then(result => {
+          if (deleteLeadAPI.fulfilled.match(result)) {
+            dispatch(
+              addActivity({
+                id: Date.now(),
+                type: 'lead',
+                description: `Lead deleted: ${selectedLead.name}`,
+                timestamp: new Date().toISOString(),
+              })
+            );
+            setShowDeleteConfirm(false);
+            setSelectedLead(null);
+          } else if (deleteLeadAPI.rejected.match(result)) {
+            const msg = (result.payload as string) || 'Failed to delete lead. Please try again.';
+            setErrorMessage(msg);
+          }
+        })
+        .catch((error: unknown) => {
+          log.error(
+            'Failed to delete lead:',
+            error instanceof Error ? error.message : String(error)
+          );
+          setErrorMessage('An unexpected error occurred. Please try again.');
+        });
     }
   }, [dispatch, selectedLead]);
 
@@ -324,10 +356,14 @@ export function useLeadManagement() {
   }, []);
 
   const getStatusBadgeVariant = useCallback((status: string) => {
+    // eslint-disable-next-line security/detect-object-injection
     return STATUS_CONFIG[status]?.badgeVariant || 'secondary';
   }, []);
 
-  const formatCurrency = useCallback((amount: number | undefined) => formatCurrencyUtil(amount), []);
+  const formatCurrency = useCallback(
+    (amount: number | undefined) => formatCurrencyUtil(amount),
+    []
+  );
   const formatDate = useCallback((dateStr: string | undefined) => formatDateUtil(dateStr), []);
 
   const handleSearchChange = useCallback((value: string) => {
@@ -355,21 +391,47 @@ export function useLeadManagement() {
 
   return {
     // Data
-    allLeads, filteredLeads, paginatedLeads, statusCounts, totalPages,
-    loading, error,
+    allLeads,
+    filteredLeads,
+    paginatedLeads,
+    statusCounts,
+    totalPages,
+    loading,
+    error,
     // State
-    search, statusFilter, sourceFilter, currentPage,
-    showCreateModal, showEditModal, showDeleteConfirm, selectedLead,
-    formData, setFormData,
-    errorMessage, setErrorMessage,
+    search,
+    statusFilter,
+    sourceFilter,
+    currentPage,
+    showCreateModal,
+    showEditModal,
+    showDeleteConfirm,
+    selectedLead,
+    formData,
+    setFormData,
+    errorMessage,
+    setErrorMessage,
     // Page constants
     ITEMS_PER_PAGE,
     // Actions
-    openCreateModal, closeCreateModal, closeEditModal, closeDeleteModal,
-    handleCreate, handleEdit, handleSaveEdit, handleDelete, confirmDelete,
-    handleSearchChange, handleStatusFilterChange, handleSourceFilterChange,
-    setCurrentPage, retryFetch, goBack,
+    openCreateModal,
+    closeCreateModal,
+    closeEditModal,
+    closeDeleteModal,
+    handleCreate,
+    handleEdit,
+    handleSaveEdit,
+    handleDelete,
+    confirmDelete,
+    handleSearchChange,
+    handleStatusFilterChange,
+    handleSourceFilterChange,
+    setCurrentPage,
+    retryFetch,
+    goBack,
     // Formatters
-    getStatusBadgeVariant, formatCurrency, formatDate,
+    getStatusBadgeVariant,
+    formatCurrency,
+    formatDate,
   };
 }

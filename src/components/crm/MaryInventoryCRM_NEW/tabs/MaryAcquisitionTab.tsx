@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { authFetch } from '../../../../utils/authFetch';
 import {
   Home,
   FileText,
@@ -162,10 +163,8 @@ const MaryAcquisitionTab: React.FC = () => {
         description: form.notes || undefined,
       };
 
-      const res = await fetch('/api/properties', {
+      const res = await authFetch('/api/properties', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
         body: JSON.stringify(payload),
       });
 

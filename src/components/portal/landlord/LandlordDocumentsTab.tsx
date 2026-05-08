@@ -1,17 +1,85 @@
-/**
- * LandlordDocumentsTab — Phase 2.6: Documents
+﻿/**
+ * LandlordDocumentsTab — Phase 29: Live API integration
  *
- * List of documents: tenancy agreements, Ejari certificates, NOC letters
- * Shows: name, type, date, "Download" link (placeholder PDF URL for Phase 2)
- * No upload ability for Phase 2
+ * Documents derived from leases API.
+ * Each lease shows as a Tenancy Agreement document.
+ * Ejari entries are added for leases that have ejariNumber set.
+ * No file download in Phase 29 (placeholder URL only).
  *
  * @component
  */
 
-import React, { FC, useMemo, useState } from 'react';
+import React, { FC, useMemo, useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import type { RootState } from '../../../store/store';
+import { authFetch } from '../../../utils/authFetch';
 import '../../../pages/RolePages.css';
+
+// ── API shapes ────────────────────────────────────────────────────────────────
+
+interface ApiLease {
+  id: string;
+  leaseNumber?: string | null;
+  startDate: string;
+  endDate: string;
+  status: string;
+  ejariNumber?: string | null;
+  ejariStatus?: string | null;
+  tenant: { id: string; name: string } | null;
+  property: { id: string; title: string } | null;
+  documents: string[];
+}
+
+// ── Internal view model ───────────────────────────────────────────────────────
+
+interface DocumentEntry {
+  id: string;
+  name: string;
+  type: 'tenancy' | 'ejari' | 'noc' | 'receipt';
+  property: string;
+  issuedDate: string;
+  url: string;
+}
+
+function leasesToDocuments(leases: ApiLease[]): DocumentEntry[] {
+  const docs: DocumentEntry[] = [];
+
+  for (const lease of leases) {
+    const propTitle = lease.property?.title ?? 'Unknown Property';
+    const tenantName = lease.tenant?.name ?? 'Unknown Tenant';
+    const issued = new Date(lease.startDate).toLocaleDateString('en-AE', {
+      day: 'numeric',
+      month: 'short',
+      year: 'numeric',
+    });
+
+    // Tenancy agreement
+    docs.push({
+      id: `${lease.id}-tenancy`,
+      name: `${propTitle} — Tenancy Agreement (${tenantName})`,
+      type: 'tenancy',
+      property: propTitle,
+      issuedDate: issued,
+      url: lease.documents?.[0] ?? '#',
+    });
+
+    // Ejari certificate if registered
+    if (lease.ejariNumber) {
+      docs.push({
+        id: `${lease.id}-ejari`,
+        name: `${propTitle} — Ejari Certificate (${lease.ejariNumber})`,
+        type: 'ejari',
+        property: propTitle,
+        issuedDate: issued,
+        url: '#',
+      });
+    }
+  }
+
+  return docs;
+}
+
+// ── Main component ────────────────────────────────────────────────────────────
 
 const LandlordDocumentsTab: FC = () => {
   const currentUser = useSelector((state: RootState) => state.user.currentUser);
@@ -20,69 +88,76 @@ const LandlordDocumentsTab: FC = () => {
     'all'
   );
   const [selectedDocumentId, setSelectedDocumentId] = useState<string | null>(null);
+  const [leases, setLeases] = useState<ApiLease[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  const mockDocuments = useMemo(
-    () => [
-      {
-        id: 'doc-001',
-        name: 'Marina View Tenancy Agreement 2026',
-        type: 'tenancy' as const,
-        property: 'Marina View 2BR Apartment',
-        issuedDate: '2026-01-01',
-        url: 'https://example.com/docs/doc-001.pdf',
-      },
-      {
-        id: 'doc-002',
-        name: 'Downtown Studio Ejari Certificate',
-        type: 'ejari' as const,
-        property: 'Downtown Studio',
-        issuedDate: '2026-02-15',
-        url: 'https://example.com/docs/doc-002.pdf',
-      },
-      {
-        id: 'doc-003',
-        name: 'JBR Villa NOC Letter',
-        type: 'noc' as const,
-        property: 'JBR 3BR Villa',
-        issuedDate: '2026-03-09',
-        url: 'https://example.com/docs/doc-003.pdf',
-      },
-      {
-        id: 'doc-004',
-        name: 'Marina View Deposit Receipt',
-        type: 'receipt' as const,
-        property: 'Marina View 2BR Apartment',
-        issuedDate: '2026-01-10',
-        url: 'https://example.com/docs/doc-004.pdf',
-      },
-    ],
-    []
-  );
+  useEffect(() => {
+    if (!currentUser) return;
+    let cancelled = false;
+
+    authFetch('/api/leases?role=landlord&pageSize=100')
+      .then(r => r.json())
+      .then(data => {
+        if (!cancelled) {
+          setLeases(data.data ?? []);
+          setLoading(false);
+        }
+      })
+      .catch(err => {
+        if (!cancelled) {
+          setError((err as Error).message || 'Failed to load documents');
+          setLoading(false);
+        }
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [currentUser]);
+
+  const documents: DocumentEntry[] = useMemo(() => leasesToDocuments(leases), [leases]);
 
   const filteredDocuments = useMemo(() => {
     const normalizedSearch = searchQuery.trim().toLowerCase();
-
-    return mockDocuments.filter(document => {
+    return documents.filter(document => {
       const typeMatches = typeFilter === 'all' || document.type === typeFilter;
       const searchMatches =
         normalizedSearch.length === 0 ||
         document.name.toLowerCase().includes(normalizedSearch) ||
-        document.property.toLowerCase().includes(normalizedSearch) ||
-        document.id.toLowerCase().includes(normalizedSearch);
-
+        document.property.toLowerCase().includes(normalizedSearch);
       return typeMatches && searchMatches;
     });
-  }, [mockDocuments, searchQuery, typeFilter]);
+  }, [documents, searchQuery, typeFilter]);
 
   const selectedDocument = useMemo(
-    () => mockDocuments.find(document => document.id === selectedDocumentId) ?? null,
-    [mockDocuments, selectedDocumentId]
+    () => documents.find(d => d.id === selectedDocumentId) ?? null,
+    [documents, selectedDocumentId]
   );
 
   if (!currentUser) {
     return (
       <div className="empty-state">
         <p>You must be logged in to view your documents.</p>
+      </div>
+    );
+  }
+
+  if (loading) {
+    return (
+      <div className="empty-state" data-testid="documents-loading">
+        <p>⏳ Loading your documents…</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="empty-state" data-testid="documents-error">
+        <p>⚠️ {error}</p>
+        <button className="btn-secondary" onClick={() => window.location.reload()}>
+          Retry
+        </button>
       </div>
     );
   }
@@ -98,7 +173,7 @@ const LandlordDocumentsTab: FC = () => {
         <input
           data-testid="document-search"
           type="text"
-          placeholder="Search by document name, property, or ID"
+          placeholder="Search by document name or property"
           value={searchQuery}
           onChange={event => setSearchQuery(event.target.value)}
         />
@@ -141,14 +216,20 @@ const LandlordDocumentsTab: FC = () => {
               </div>
 
               <div>
-                <a
-                  href={document.url}
-                  target="_blank"
-                  rel="noreferrer"
-                  data-testid={`download-link-${document.id}`}
-                >
-                  Download
-                </a>
+                {document.url !== '#' ? (
+                  <a
+                    href={document.url}
+                    target="_blank"
+                    rel="noreferrer"
+                    data-testid={`download-link-${document.id}`}
+                  >
+                    Download
+                  </a>
+                ) : (
+                  <span style={{ color: 'var(--text-secondary)', fontSize: '0.85rem' }}>
+                    File pending upload
+                  </span>
+                )}
                 <button
                   type="button"
                   className="btn-secondary"
@@ -168,6 +249,8 @@ const LandlordDocumentsTab: FC = () => {
           className="modal-overlay"
           data-testid="document-detail-modal"
           onClick={() => setSelectedDocumentId(null)}
+          role="dialog"
+          aria-modal="true"
         >
           <div className="modal-content" onClick={event => event.stopPropagation()}>
             <button
@@ -181,9 +264,6 @@ const LandlordDocumentsTab: FC = () => {
 
             <h4>Document Details</h4>
             <p>
-              <strong>ID:</strong> {selectedDocument.id}
-            </p>
-            <p>
               <strong>Name:</strong> {selectedDocument.name}
             </p>
             <p>
@@ -195,12 +275,14 @@ const LandlordDocumentsTab: FC = () => {
             <p>
               <strong>Issued Date:</strong> {selectedDocument.issuedDate}
             </p>
-            <p>
-              <strong>Download:</strong>{' '}
-              <a href={selectedDocument.url} target="_blank" rel="noreferrer">
-                Open PDF
-              </a>
-            </p>
+            {selectedDocument.url !== '#' && (
+              <p>
+                <strong>Download:</strong>{' '}
+                <a href={selectedDocument.url} target="_blank" rel="noreferrer">
+                  Open document
+                </a>
+              </p>
+            )}
           </div>
         </div>
       )}

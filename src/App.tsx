@@ -42,13 +42,24 @@ function resolveEffectiveRole(
   user: { role?: string } | null,
   storedRoleData: UserRoleData | null
 ): string | null {
-  const serverRole = user?.role;
+  const normalizeRole = (role?: string): string | null => {
+    if (!role) return null;
+    if (role === 'lion' || role === 'managing_director') return 'owner';
+    return role;
+  };
+
+  const serverRole = normalizeRole(user?.role);
+  const storedRole = normalizeRole(storedRoleData?.role);
 
   if (storedRoleData && typeof storedRoleData.role === 'string') {
     const isPrivileged =
-      serverRole === 'owner' || serverRole === 'admin' || serverRole === 'super_user';
+      serverRole === 'owner' ||
+      serverRole === 'admin' ||
+      serverRole === 'super_user' ||
+      serverRole === 'super_admin';
 
-    return isPrivileged ? storedRoleData.role : (serverRole ?? storedRoleData.role);
+    // Deterministic executive path: privileged server roles should not be overridden by local sub-role state.
+    return isPrivileged ? serverRole : (serverRole ?? storedRole);
   }
 
   return serverRole ?? null;
@@ -159,6 +170,9 @@ const ContractManagementPage = lazy(() => import('./pages/leasing-agent/Contract
 // Sales Agent Sub-Pages
 const SalesPipelinePage = lazy(() => import('./pages/secondary-sales-agent/SalesPipelinePage'));
 
+// Leasing Acquisition (Sprint 1)
+const LeasingAcquisition = lazy(() => import('./pages/LeasingAcquisition'));
+
 // Unified Dashboard (replaces role-specific dashboards)
 const UnifiedDashboardPage = lazy(() => import('./pages/UnifiedDashboardPage'));
 const NadiaPage = lazy(() => import('./pages/NadiaPage'));
@@ -188,6 +202,15 @@ const NotFoundPage = lazy(() => import('./pages/NotFoundPage'));
 const PrivacyPolicyPage = lazy(() => import('./pages/PrivacyPolicyPage'));
 const TermsPage = lazy(() => import('./pages/TermsPage'));
 const ToolsPage = lazy(() => import('./pages/ToolsPage'));
+
+// Phase 7 / 8 stubs
+const AIIntelligencePage = lazy(() => import('./pages/AIIntelligencePage'));
+const OffPlanPortalPage = lazy(() => import('./pages/OffPlanPortalPage'));
+
+// Phase 10 — PWA install prompt (loaded only after first paint)
+const PWAInstallPrompt = lazy(() =>
+  import('./components/pwa/PWAInstallPrompt').then(m => ({ default: m.PWAInstallPrompt }))
+);
 
 // Auth Pages
 const UAEPassSuccessPage = lazy(() => import('./pages/auth/UAEPassSuccessPage'));
@@ -285,6 +308,10 @@ function App(): React.JSX.Element {
             </Suspense>
             <Suspense fallback={null}>
               <UniversalComponents />
+            </Suspense>
+            {/* Phase 10 — PWA install banner (loads after idle) */}
+            <Suspense fallback={null}>
+              <PWAInstallPrompt />
             </Suspense>
             {user && (
               <Suspense fallback={null}>
@@ -417,6 +444,26 @@ function App(): React.JSX.Element {
                     <RouteErrorBoundary section="Tools">
                       <Suspense fallback={<SuspenseLoader />}>
                         <ToolsPage />
+                      </Suspense>
+                    </RouteErrorBoundary>
+                  }
+                />
+                <Route
+                  path="/ai-intelligence"
+                  element={
+                    <RouteErrorBoundary section="AI Intelligence">
+                      <Suspense fallback={<SuspenseLoader />}>
+                        <AIIntelligencePage />
+                      </Suspense>
+                    </RouteErrorBoundary>
+                  }
+                />
+                <Route
+                  path="/off-plan"
+                  element={
+                    <RouteErrorBoundary section="Off-Plan Portal">
+                      <Suspense fallback={<SuspenseLoader />}>
+                        <OffPlanPortalPage />
                       </Suspense>
                     </RouteErrorBoundary>
                   }
@@ -639,6 +686,20 @@ function App(): React.JSX.Element {
                         <RouteErrorBoundary section="Contracts">
                           <Suspense fallback={<SuspenseLoader />}>
                             <ContractManagementPage />
+                          </Suspense>
+                        </RouteErrorBoundary>
+                      </AppLayout>
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/leasing-acquisition"
+                  element={
+                    <ProtectedRoute allowedRoles={['leasing-agent', 'owner', 'admin']}>
+                      <AppLayout>
+                        <RouteErrorBoundary section="Leasing Acquisition">
+                          <Suspense fallback={<SuspenseLoader />}>
+                            <LeasingAcquisition />
                           </Suspense>
                         </RouteErrorBoundary>
                       </AppLayout>

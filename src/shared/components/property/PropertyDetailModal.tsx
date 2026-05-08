@@ -1,8 +1,25 @@
 import React, { useState } from 'react';
-import { 
-  X, MapPin, Bed, Bath, Maximize, Calendar, Phone, Mail, 
-  MessageCircle, Heart, Share2, Building, Car, Waves, 
-  Dumbbell, Shield, Trees, Wifi, Snowflake, ChevronRight
+import {
+  X,
+  MapPin,
+  Bed,
+  Bath,
+  Maximize,
+  Calendar,
+  Phone,
+  Mail,
+  MessageCircle,
+  Heart,
+  Share2,
+  Building,
+  Car,
+  Waves,
+  Dumbbell,
+  Shield,
+  Trees,
+  Wifi,
+  Snowflake,
+  ChevronRight,
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import PropertyImageSlider from './PropertyImageSlider';
@@ -11,19 +28,20 @@ import { Config } from '../../../config/constants';
 import './PropertyDetailModal.css';
 
 const AMENITY_ICONS: Record<string, LucideIcon> = {
-  'Pool': Waves,
-  'Gym': Dumbbell,
-  'Parking': Car,
-  'Security': Shield,
-  'Garden': Trees,
-  'WiFi': Wifi,
-  'AC': Snowflake,
-  'Concierge': Building,
+  Pool: Waves,
+  Gym: Dumbbell,
+  Parking: Car,
+  Security: Shield,
+  Garden: Trees,
+  WiFi: Wifi,
+  AC: Snowflake,
+  Concierge: Building,
   'Beach Access': Waves,
-  'Cinema': Building
+  Cinema: Building,
 };
 
 export interface PropertyData {
+  id?: string;
   title: string;
   location: string;
   price: number;
@@ -50,8 +68,31 @@ export interface PropertyDetailModalProps {
   isFavorite?: boolean;
 }
 
-export default function PropertyDetailModal({ property, onClose, onContact, onFavorite, isFavorite }: PropertyDetailModalProps): React.ReactElement | null {
+// Time slots: value is 24-hour HH:MM for ISO construction, label is display text
+const TIME_SLOTS = [
+  { value: '10:00', label: '10:00 AM' },
+  { value: '11:00', label: '11:00 AM' },
+  { value: '12:00', label: '12:00 PM' },
+  { value: '14:00', label: '2:00 PM' },
+  { value: '15:00', label: '3:00 PM' },
+  { value: '16:00', label: '4:00 PM' },
+] as const;
+
+export default function PropertyDetailModal({
+  property,
+  onClose,
+  onContact: _onContact,
+  onFavorite,
+  isFavorite,
+}: PropertyDetailModalProps): React.ReactElement | null {
   const [activeTab, setActiveTab] = useState<string>('overview');
+  // Phase 35: Viewing booking form state
+  const [viewingDate, setViewingDate] = useState<string>('');
+  const [viewingTime, setViewingTime] = useState<string>('');
+  const [viewingStatus, setViewingStatus] = useState<'idle' | 'submitting' | 'success' | 'error'>(
+    'idle'
+  );
+  const [viewingError, setViewingError] = useState<string>('');
 
   if (!property) return null;
 
@@ -59,7 +100,11 @@ export default function PropertyDetailModal({ property, onClose, onContact, onFa
 
   const handleWhatsApp = (): void => {
     const message = `Hi, I'm interested in the property: ${property.title} in ${property.location}`;
-    window.open(`https://wa.me/${Config.COMPANY.WHATSAPP}?text=${encodeURIComponent(message)}`, '_blank', 'noopener,noreferrer');
+    window.open(
+      `https://wa.me/${Config.COMPANY.WHATSAPP}?text=${encodeURIComponent(message)}`,
+      '_blank',
+      'noopener,noreferrer'
+    );
   };
 
   const handleCall = (): void => {
@@ -69,25 +114,89 @@ export default function PropertyDetailModal({ property, onClose, onContact, onFa
   const handleEmail = (): void => {
     const subject = `Inquiry: ${property.title}`;
     const body = `Hi,\n\nI'm interested in the property: ${property.title} located in ${property.location}.\n\nPlease contact me with more details.\n\nThank you.`;
-    window.open(`mailto:${Config.COMPANY.EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`, '_self');
+    window.open(
+      `mailto:${Config.COMPANY.EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`,
+      '_self'
+    );
+  };
+
+  // Phase 35: Wire "Request Viewing" to POST /api/viewings (auth) or WhatsApp fallback (public)
+  const handleRequestViewing = async (): Promise<void> => {
+    if (!viewingDate) {
+      setViewingError('Please select a date.');
+      return;
+    }
+    if (!viewingTime) {
+      setViewingError('Please select a preferred time.');
+      return;
+    }
+
+    setViewingStatus('submitting');
+    setViewingError('');
+
+    try {
+      const token = localStorage.getItem('authToken');
+
+      if (token && property.id) {
+        // Authenticated path → create a formal viewing record
+        const scheduledAt = `${viewingDate}T${viewingTime}:00.000Z`;
+        const res = await fetch('/api/viewings', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+          body: JSON.stringify({ propertyId: property.id, scheduledAt, type: 'in_person' }),
+        });
+        if (!res.ok) {
+          const data = (await res.json().catch(() => ({}))) as { message?: string };
+          throw new Error(data.message ?? `Request failed (${res.status})`);
+        }
+      } else {
+        // Public / unauthenticated path → WhatsApp pre-filled message
+        const dateLabel = new Date(viewingDate + 'T12:00:00').toLocaleDateString('en-AE', {
+          weekday: 'long',
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric',
+        });
+        const timeLabel = TIME_SLOTS.find(s => s.value === viewingTime)?.label ?? viewingTime;
+        const msg = `Hi, I'd like to view ${property.title} in ${property.location} on ${dateLabel} at ${timeLabel}. Please confirm availability.`;
+        window.open(
+          `https://wa.me/${Config.COMPANY.WHATSAPP}?text=${encodeURIComponent(msg)}`,
+          '_blank',
+          'noopener,noreferrer'
+        );
+      }
+
+      setViewingStatus('success');
+    } catch (err) {
+      setViewingStatus('error');
+      setViewingError(
+        err instanceof Error ? err.message : 'Could not submit request. Please try again.'
+      );
+    }
   };
 
   const tabs: Array<{ id: string; label: string }> = [
     { id: 'overview', label: 'Overview' },
     { id: 'amenities', label: 'Amenities' },
     { id: 'location', label: 'Location' },
-    { id: 'floorplan', label: 'Floor Plan' }
+    { id: 'floorplan', label: 'Floor Plan' },
   ];
 
   return (
-    <div className="property-detail-modal-overlay" onClick={onClose} role="dialog" aria-modal="true" aria-label="Property details">
+    <div
+      className="property-detail-modal-overlay"
+      onClick={onClose}
+      role="dialog"
+      aria-modal="true"
+      aria-label="Property details"
+    >
       <div className="property-detail-modal" onClick={(e: React.MouseEvent) => e.stopPropagation()}>
         <button className="modal-close-btn" onClick={onClose}>
           <X size={24} />
         </button>
 
         <div className="modal-gallery">
-          <PropertyImageSlider 
+          <PropertyImageSlider
             images={property.images || [property.image || '']}
             title={property.title}
             onFavorite={onFavorite}
@@ -95,7 +204,7 @@ export default function PropertyDetailModal({ property, onClose, onContact, onFa
             showThumbnails={true}
             aspectRatio="16/9"
           />
-          
+
           <div className="property-badges">
             {property.featured && <span className="badge featured">Featured</span>}
             <span className={`badge purpose ${property.purpose}`}>
@@ -116,7 +225,9 @@ export default function PropertyDetailModal({ property, onClose, onContact, onFa
                 </p>
               </div>
               <div className="header-price">
-                <span className="price">{formatPrice(property.price, { priceType: property.priceType })}</span>
+                <span className="price">
+                  {formatPrice(property.price, { priceType: property.priceType })}
+                </span>
                 {property.pricePerSqft && (
                   <span className="price-sqft">AED {property.pricePerSqft}/sqft</span>
                 )}
@@ -171,7 +282,8 @@ export default function PropertyDetailModal({ property, onClose, onContact, onFa
                 <div className="overview-tab">
                   <h3>Property Description</h3>
                   <p className="description">
-                    {property.description || `Experience luxury living at its finest in this stunning ${property.type.toLowerCase()} located in the prestigious ${property.location} area. This exceptional property offers ${property.beds} spacious bedrooms, ${property.baths} modern bathrooms, and ${property.sqft?.toLocaleString()} sq.ft of premium living space.
+                    {property.description ||
+                      `Experience luxury living at its finest in this stunning ${property.type.toLowerCase()} located in the prestigious ${property.location} area. This exceptional property offers ${property.beds} spacious bedrooms, ${property.baths} modern bathrooms, and ${property.sqft?.toLocaleString()} sq.ft of premium living space.
 
 The property features high-end finishes throughout, floor-to-ceiling windows with breathtaking views, a gourmet kitchen with top-of-the-line appliances, and elegant living spaces perfect for both relaxation and entertaining.
 
@@ -180,12 +292,25 @@ Residents will enjoy world-class amenities and the convenience of being close to
 
                   <h3>Key Features</h3>
                   <ul className="features-list">
-                    <li><ChevronRight size={14} /> Premium location in {property.location}</li>
-                    <li><ChevronRight size={14} /> High-quality finishes and materials</li>
-                    <li><ChevronRight size={14} /> Spacious {property.sqft?.toLocaleString()} sq.ft layout</li>
-                    <li><ChevronRight size={14} /> Modern kitchen with premium appliances</li>
-                    <li><ChevronRight size={14} /> Floor-to-ceiling windows</li>
-                    <li><ChevronRight size={14} /> 24/7 security and concierge services</li>
+                    <li>
+                      <ChevronRight size={14} /> Premium location in {property.location}
+                    </li>
+                    <li>
+                      <ChevronRight size={14} /> High-quality finishes and materials
+                    </li>
+                    <li>
+                      <ChevronRight size={14} /> Spacious {property.sqft?.toLocaleString()} sq.ft
+                      layout
+                    </li>
+                    <li>
+                      <ChevronRight size={14} /> Modern kitchen with premium appliances
+                    </li>
+                    <li>
+                      <ChevronRight size={14} /> Floor-to-ceiling windows
+                    </li>
+                    <li>
+                      <ChevronRight size={14} /> 24/7 security and concierge services
+                    </li>
                   </ul>
                 </div>
               )}
@@ -194,7 +319,8 @@ Residents will enjoy world-class amenities and the convenience of being close to
                 <div className="amenities-tab">
                   <h3>Property Amenities</h3>
                   <div className="amenities-grid">
-                    {property.amenities?.map((amenity, index) => {
+                    {property.amenities?.map(amenity => {
+                      // eslint-disable-next-line security/detect-object-injection
                       const IconComponent = AMENITY_ICONS[amenity] || Building;
                       return (
                         <div key={amenity} className="amenity-item">
@@ -231,9 +357,9 @@ Residents will enjoy world-class amenities and the convenience of being close to
                 <div className="location-tab">
                   <h3>Location</h3>
                   <p className="location-desc">
-                    Located in {property.location}, one of Dubai&apos;s most sought-after neighborhoods. 
-                    The property offers easy access to major highways, world-class shopping destinations, 
-                    fine dining restaurants, and top international schools.
+                    Located in {property.location}, one of Dubai&apos;s most sought-after
+                    neighborhoods. The property offers easy access to major highways, world-class
+                    shopping destinations, fine dining restaurants, and top international schools.
                   </p>
                   <div className="location-map">
                     <div className="map-placeholder">
@@ -243,10 +369,18 @@ Residents will enjoy world-class amenities and the convenience of being close to
                   </div>
                   <h3>Nearby Attractions</h3>
                   <ul className="nearby-list">
-                    <li><span>Dubai Mall</span> <span>5 min drive</span></li>
-                    <li><span>Dubai Metro Station</span> <span>3 min walk</span></li>
-                    <li><span>International Airport</span> <span>15 min drive</span></li>
-                    <li><span>Beach</span> <span>10 min drive</span></li>
+                    <li>
+                      <span>Dubai Mall</span> <span>5 min drive</span>
+                    </li>
+                    <li>
+                      <span>Dubai Metro Station</span> <span>3 min walk</span>
+                    </li>
+                    <li>
+                      <span>International Airport</span> <span>15 min drive</span>
+                    </li>
+                    <li>
+                      <span>Beach</span> <span>10 min drive</span>
+                    </li>
                   </ul>
                 </div>
               )}
@@ -257,7 +391,9 @@ Residents will enjoy world-class amenities and the convenience of being close to
                   <div className="floorplan-placeholder">
                     <Building size={64} />
                     <p>Floor plan available upon request</p>
-                    <button className="request-btn" onClick={handleEmail}>Request Floor Plan</button>
+                    <button className="request-btn" onClick={handleEmail}>
+                      Request Floor Plan
+                    </button>
                   </div>
                 </div>
               )}
@@ -268,7 +404,7 @@ Residents will enjoy world-class amenities and the convenience of being close to
             <div className="contact-card">
               <h3>Interested in this property?</h3>
               <p>Contact our team for more information or to schedule a viewing.</p>
-              
+
               <div className="contact-buttons">
                 <button className="contact-btn whatsapp" onClick={handleWhatsApp}>
                   <MessageCircle size={18} />
@@ -285,10 +421,7 @@ Residents will enjoy world-class amenities and the convenience of being close to
               </div>
 
               <div className="action-buttons">
-                <button 
-                  className={`action-btn ${isFavorite ? 'active' : ''}`} 
-                  onClick={onFavorite}
-                >
+                <button className={`action-btn ${isFavorite ? 'active' : ''}`} onClick={onFavorite}>
                   <Heart size={18} fill={isFavorite ? '#ef4444' : 'none'} />
                   {isFavorite ? 'Saved' : 'Save'}
                 </button>
@@ -300,9 +433,9 @@ Residents will enjoy world-class amenities and the convenience of being close to
             </div>
 
             <div className="agent-card">
-              <img 
-                src="https://randomuser.me/api/portraits/men/32.jpg" 
-                alt="Agent" 
+              <img
+                src="https://randomuser.me/api/portraits/men/32.jpg"
+                alt="Agent"
                 className="agent-avatar"
                 loading="lazy"
                 width={48}
@@ -320,19 +453,74 @@ Residents will enjoy world-class amenities and the convenience of being close to
 
             <div className="schedule-card">
               <h4>Schedule a Viewing</h4>
-              <label htmlFor="viewing-date" className="sr-only">Preferred date</label>
-              <input id="viewing-date" type="date" className="date-input" aria-required="true" />
-              <label htmlFor="viewing-time" className="sr-only">Preferred time</label>
-              <select id="viewing-time" className="time-select" aria-required="true">
-                <option>Select preferred time</option>
-                <option>10:00 AM</option>
-                <option>11:00 AM</option>
-                <option>12:00 PM</option>
-                <option>2:00 PM</option>
-                <option>3:00 PM</option>
-                <option>4:00 PM</option>
-              </select>
-              <button className="schedule-btn">Request Viewing</button>
+
+              {viewingStatus === 'success' ? (
+                <div className="viewing-success" role="status">
+                  <p className="viewing-success-msg">
+                    ✅ Viewing request submitted! Our team will confirm within 24&nbsp;hours.
+                  </p>
+                  <button
+                    className="schedule-btn"
+                    style={{ marginTop: '0.75rem' }}
+                    onClick={() => {
+                      setViewingStatus('idle');
+                      setViewingDate('');
+                      setViewingTime('');
+                    }}
+                  >
+                    Book Another Viewing
+                  </button>
+                </div>
+              ) : (
+                <>
+                  <label htmlFor="viewing-date" className="sr-only">
+                    Preferred date
+                  </label>
+                  <input
+                    id="viewing-date"
+                    type="date"
+                    className="date-input"
+                    aria-required="true"
+                    min={new Date().toISOString().split('T')[0]}
+                    value={viewingDate}
+                    onChange={e => setViewingDate(e.target.value)}
+                  />
+                  <label htmlFor="viewing-time" className="sr-only">
+                    Preferred time
+                  </label>
+                  <select
+                    id="viewing-time"
+                    className="time-select"
+                    aria-required="true"
+                    value={viewingTime}
+                    onChange={e => setViewingTime(e.target.value)}
+                  >
+                    <option value="">Select preferred time</option>
+                    {TIME_SLOTS.map(s => (
+                      <option key={s.value} value={s.value}>
+                        {s.label}
+                      </option>
+                    ))}
+                  </select>
+
+                  {viewingError && (
+                    <p className="viewing-error" role="alert">
+                      {viewingError}
+                    </p>
+                  )}
+
+                  <button
+                    className="schedule-btn"
+                    onClick={() => {
+                      void handleRequestViewing();
+                    }}
+                    disabled={viewingStatus === 'submitting'}
+                    aria-busy={viewingStatus === 'submitting'}
+                  >
+                    {viewingStatus === 'submitting' ? 'Submitting…' : 'Request Viewing'}
+                  </button>
+                </>
+              )}
             </div>
           </div>
         </div>

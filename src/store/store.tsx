@@ -18,15 +18,16 @@ import roleReducer from './roleSlice';
 import featuresReducer from './featuresSlice';
 import savedSearchesReducer from './slices/savedSearchesSlice';
 import homepageReducer from './slices/homepageSlice';
+import searchLeadsReducer from './slices/searchLeadsSlice';
 import eventBusMiddleware from './middleware/eventBusMiddleware';
 import { createLogger } from '../utils/logger';
 
 const storeLog = createLogger('Store');
 
 // Wrap middleware in error handling
-const safeEventBusMiddleware: import('@reduxjs/toolkit').Middleware = (store) => {
-  return (next) => {
-    return (action) => {
+const safeEventBusMiddleware: import('@reduxjs/toolkit').Middleware = store => {
+  return next => {
+    return action => {
       try {
         return eventBusMiddleware(store)(next)(action);
       } catch (error) {
@@ -56,17 +57,18 @@ export const store = configureStore({
     features: featuresReducer,
     savedSearches: savedSearchesReducer,
     homepage: homepageReducer,
+    searchLeads: searchLeadsReducer,
   },
-  middleware: (getDefaultMiddleware) =>
+  middleware: getDefaultMiddleware =>
     getDefaultMiddleware({
       serializableCheck: {
-        ignoredPaths: ['aiAssistantDashboard', 'analytics']
+        ignoredPaths: ['aiAssistantDashboard', 'analytics'],
       },
       immutableStateInvariant: {
-        ignoredPaths: ['aiAssistantDashboard.notifications']
-      }
+        ignoredPaths: ['aiAssistantDashboard.notifications'],
+      },
     }).concat(safeEventBusMiddleware),
-  devTools: import.meta.env.DEV
+  devTools: import.meta.env.DEV,
 });
 
 // Export types

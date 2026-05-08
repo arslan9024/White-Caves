@@ -99,16 +99,17 @@ export const ROLE_TAB_MAPPING: RoleTabMapping = {
   managing_director: {
     label: 'Managing Director',
     tabs: [
-      { id: 'overview', label: 'Overview', icon: '📊' },
-      { id: 'properties', label: 'Properties', icon: '🏙️', badge: 6 },
-      { id: 'agents', label: 'Agents', icon: '👥', badge: 5 },
-      { id: 'leads', label: 'Leads', icon: '📱', badge: 6 },
-      { id: 'contracts', label: 'Contracts', icon: '📋', badge: 8 },
-      { id: 'analytics', label: 'Analytics', icon: '📈' },
-      { id: 'users', label: 'Users', icon: '🫂' },
-      { id: 'ai-hub', label: 'AI Hub', icon: '✨' },
-      { id: 'ai-command', label: 'AI Command', icon: '🤖' },
-      { id: 'settings', label: 'Settings', icon: '⚙️' },
+      { id: 'overview',    label: 'Overview',    icon: '📊'  },
+      { id: 'properties',  label: 'Properties',  icon: '🏙️', badge: 6 },
+      { id: 'agents',      label: 'Agents',      icon: '👥', badge: 5 },
+      { id: 'leads',       label: 'Leads',       icon: '📱', badge: 6 },
+      { id: 'contracts',   label: 'Contracts',   icon: '📋', badge: 8 },
+       { id: 'analytics',   label: 'Analytics',   icon: '📈' }, 
+       { id: 'commissions', label: 'Commissions', icon: '💎', badge: 3 },
+      { id: 'users',       label: 'Users',       icon: '🫂' },
+      { id: 'ai-hub',      label: 'AI Hub',      icon: '✨'   },
+      { id: 'ai-command',  label: 'AI Command',  icon: '🤖'        },
+      { id: 'settings',    label: 'Settings',    icon: '⚙️'   },
     ],
     description: 'Full executive access with AI modules',
   },
@@ -399,7 +400,7 @@ export const getRoleInfo = (role: string): RoleInfo => {
 /** Check if role can access specific feature */
 export const canAccessFeature = (role: string, featureId: string): boolean => {
   const tabs = getTabsForRole(role);
-  return tabs.some(tab => tab.id === featureId);
+  return tabs.some((tab) => tab.id === featureId);
 };
 
 /** Type guard to check if a string is a valid role key */

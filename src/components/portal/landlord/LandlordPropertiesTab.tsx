@@ -10,10 +10,36 @@
  * @component
  */
 
-import React, { FC, useState, useEffect } from 'react';
+import React, { FC, useState, useEffect, useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import type { RootState } from '../../../store/store';
+import { authFetch } from '../../../utils/authFetch';
 import './LandlordPropertiesTab.css';
+
+// ── API response shapes ───────────────────────────────────────────────────────
+
+interface ApiLease {
+  id: string;
+  propertyId: string;
+  tenantId: string;
+  monthlyRent: number;
+  depositAmount: number;
+  startDate: string;
+  endDate: string;
+  status: string;
+  tenant: { id: string; name: string; email: string; phone: string } | null;
+  property: { id: string; title: string; location: string; type: string } | null;
+}
+
+interface ApiProperty {
+  id: string;
+  title: string;
+  location: string;
+  type: string;
+  status: string;
+  rentalPrice: number | null;
+  price: number;
+}
 
 interface PropertyData {
   id: string;
@@ -106,60 +132,70 @@ const PropertyDetailModal: FC<DetailModalProps> = ({ property, onClose }) => {
 
 const LandlordPropertiesTab: FC = () => {
   const currentUser = useSelector((state: RootState) => state.user.currentUser);
-  const token = useSelector(
-    (state: RootState) => (state.auth as { token?: string } | undefined)?.token
-  );
   const [selectedProperty, setSelectedProperty] = useState<PropertyData | null>(null);
-  const [properties, setProperties] = useState<PropertyData[]>([]);
-  const [loading, setLoading] = useState(false);
+  const [apiProperties, setApiProperties] = useState<ApiProperty[]>([]);
+  const [apiLeases, setApiLeases] = useState<ApiLease[]>([]);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     if (!currentUser) return;
-    const load = async (): Promise<void> => {
-      setLoading(true);
-      setError(null);
-      const headers: Record<string, string> = { 'Content-Type': 'application/json' };
-      if (token) headers['Authorization'] = `Bearer ${token}`;
-      try {
-        const res = await fetch('/api/landlord/properties', { headers });
-        if (!res.ok) throw new Error(`Server error ${res.status}`);
-        const data = await res.json();
-        setProperties(
-          (data.properties ?? []).map(
-            (p: {
-              id: string;
-              title: string;
-              address: string;
-              type: string;
-              status: 'occupied' | 'vacant';
-              monthlyRent: number;
-              tenantName?: string;
-              leaseStart?: string;
-              leaseEnd?: string;
-              deposit?: number;
-            }) => ({
-              id: p.id,
-              title: p.title,
-              address: p.address ?? '',
-              type: p.type ?? 'Apartment',
-              status: p.status ?? 'vacant',
-              monthlyRent: p.monthlyRent ?? 0,
-              tenantName: p.tenantName ?? undefined,
-              leaseStart: p.leaseStart ? new Date(p.leaseStart).toLocaleDateString() : undefined,
-              leaseEnd: p.leaseEnd ? new Date(p.leaseEnd).toLocaleDateString() : undefined,
-              deposit: p.deposit,
-            })
-          )
-        );
-      } catch (err) {
-        setError((err as Error).message ?? 'Failed to load properties');
-      } finally {
+    let cancelled = false;
+
+    Promise.all([
+      authFetch('/api/properties?pageSize=100').then(r => r.json()),
+      authFetch('/api/leases?role=landlord&status=active&pageSize=100').then(r => r.json()),
+    ])
+      .then(([propsRes, leasesRes]) => {
+        if (cancelled) return;
+        setApiProperties(propsRes.data ?? []);
+        setApiLeases(leasesRes.data ?? []);
         setLoading(false);
-      }
+      })
+      .catch(err => {
+        if (!cancelled) {
+          setError((err as Error).message || 'Failed to load properties');
+          setLoading(false);
+        }
+      });
+
+    return () => {
+      cancelled = true;
     };
-    load();
-  }, [currentUser, token]);
+  }, [currentUser]);
+
+  /** Merge properties + active leases into PropertyData cards */
+  const properties: PropertyData[] = useMemo(() => {
+    const leaseMap = new Map<string, ApiLease>(apiLeases.map(l => [l.propertyId, l]));
+
+    return apiProperties.map(p => {
+      const lease = leaseMap.get(p.id);
+      return {
+        id: p.id,
+        title: p.title,
+        address: p.location,
+        type: p.type,
+        status: lease ? 'occupied' : 'vacant',
+        monthlyRent: lease?.monthlyRent ?? p.rentalPrice ?? Math.round(p.price / 12),
+        tenantName: lease?.tenant?.name ?? undefined,
+        leaseStart: lease
+          ? new Date(lease.startDate).toLocaleDateString('en-AE', {
+              day: 'numeric',
+              month: 'short',
+              year: 'numeric',
+            })
+          : undefined,
+        leaseEnd: lease
+          ? new Date(lease.endDate).toLocaleDateString('en-AE', {
+              day: 'numeric',
+              month: 'short',
+              year: 'numeric',
+            })
+          : undefined,
+        deposit: lease?.depositAmount ?? undefined,
+      };
+    });
+  }, [apiProperties, apiLeases]);
 
   if (!currentUser) {
     return (
@@ -171,16 +207,19 @@ const LandlordPropertiesTab: FC = () => {
 
   if (loading) {
     return (
-      <div className="empty-state" data-testid="loading-state">
-        <p>Loading your properties…</p>
+      <div className="empty-state" data-testid="properties-loading">
+        <p>⏳ Loading your properties…</p>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="empty-state error-state" data-testid="error-state">
-        <p>Unable to load properties: {error}</p>
+      <div className="empty-state" data-testid="properties-error">
+        <p>⚠️ {error}</p>
+        <button className="btn-secondary" onClick={() => window.location.reload()}>
+          Retry
+        </button>
       </div>
     );
   }

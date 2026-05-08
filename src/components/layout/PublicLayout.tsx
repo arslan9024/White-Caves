@@ -2,6 +2,7 @@ import React, { type FC, type ReactNode } from 'react';
 import { useInRouterContext } from 'react-router-dom';
 import Footer from '../Footer';
 import PublicNavbar from './PublicNavbar/PublicNavbar';
+import OfflineBanner from '../OfflineBanner';
 import './PublicLayout.css';
 
 interface PublicLayoutProps {
@@ -14,20 +15,31 @@ const PublicLayout: FC<PublicLayoutProps> = ({ children, mainClassName }) => {
 
   return (
     <div className="public-layout" data-testid="public-layout">
+      {/* Phase 25 Error UX: offline detection banner (fixed, top of viewport) */}
+      <OfflineBanner />
+
       {inRouter ? (
         <PublicNavbar />
       ) : (
-        <header data-testid="public-layout-fallback-header" className="public-layout__fallback-header">
+        <header
+          data-testid="public-layout-fallback-header"
+          className="public-layout__fallback-header"
+        >
           White Caves
         </header>
       )}
 
-      <main id="main-content" className={mainClassName}>{children}</main>
+      <main id="main-content" className={mainClassName}>
+        {children}
+      </main>
 
       {inRouter ? (
         <Footer />
       ) : (
-        <footer data-testid="public-layout-fallback-footer" className="public-layout__fallback-footer">
+        <footer
+          data-testid="public-layout-fallback-footer"
+          className="public-layout__fallback-footer"
+        >
           © White Caves Real Estate
         </footer>
       )}

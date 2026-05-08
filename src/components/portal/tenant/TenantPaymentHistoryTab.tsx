@@ -1,7 +1,8 @@
 /**
- * TenantPaymentHistoryTab — Phase 2.9: Payment History
+ * TenantPaymentHistoryTab — Phase 2.9 / Phase 30: Payment History (Live API)
  *
- * List of payments with status indicators.
+ * Fetches the tenant's active lease then loads the PDC schedule from
+ * GET /api/leases/:id/pdc.  PDC records are mapped to payment rows.
  *
  * @component
  */
@@ -9,75 +10,73 @@
 import React, { FC, useEffect, useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
 import type { RootState } from '../../../store/store';
+import { authFetch } from '../../../utils/authFetch';
 import '../../../pages/RolePages.css';
 
-interface PaymentRecord {
+/** Late fee rate: 5% of monthly rent per bounced PDC */
+const LATE_FEE_RATE = 0.05;
+
+interface ApiLease {
+  id: string;
+  monthlyRent: number;
+}
+
+interface ApiPdc {
+  id: string;
+  chequeNumber: string;
+  bankName: string;
+  amount: number;
+  dueDate: string;
+  status: string; // pending | presented | cleared | bounced
+  notes?: string | null;
+}
+
+type PaymentStatus = 'paid' | 'pending' | 'overdue';
+
+interface PaymentRow {
   id: string;
   month: string;
   amount: number;
-  currency: string;
-  dueDate: string;
-  status: 'paid' | 'upcoming' | 'pending' | 'overdue';
-  propertyTitle?: string;
+  paidDate: string | null;
+  status: PaymentStatus;
+  bankName: string;
+  chequeNumber: string;
 }
 
-/** Late fee rate: 5% of monthly rent per overdue payment */
-const LATE_FEE_RATE = 0.05;
+function pdcToPaymentRow(pdc: ApiPdc): PaymentRow {
+  const due = new Date(pdc.dueDate);
+  const month = due.toLocaleDateString('en-AE', { month: 'long', year: 'numeric' });
+  const status: PaymentStatus =
+    pdc.status === 'cleared' ? 'paid' :
+    pdc.status === 'bounced' ? 'overdue' :
+    'pending';
+  const paidDate = pdc.status === 'cleared' ? pdc.dueDate.split('T')[0] : null;
+  return { id: pdc.id, month, amount: pdc.amount, paidDate, status, bankName: pdc.bankName, chequeNumber: pdc.chequeNumber };
+}
 
 const TenantPaymentHistoryTab: FC = () => {
   const currentUser = useSelector((state: RootState) => state.user.currentUser);
-  const token = useSelector(
-    (state: RootState) => (state.auth as { token?: string } | undefined)?.token
-  );
-  const [statusFilter, setStatusFilter] = useState<
-    'all' | 'paid' | 'pending' | 'overdue' | 'upcoming'
-  >('all');
-  const [searchQuery, setSearchQuery] = useState('');
-  const [payments, setPayments] = useState<PaymentRecord[]>([]);
-  const [loading, setLoading] = useState(false);
+  const [payments, setPayments] = useState<PaymentRow[]>([]);
+  const [monthlyRent, setMonthlyRent] = useState(0);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [statusFilter, setStatusFilter] = useState<'all' | PaymentStatus>('all');
+  const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
-    if (!currentUser) return;
-    const load = async (): Promise<void> => {
-      setLoading(true);
-      setError(null);
-      const headers: Record<string, string> = { 'Content-Type': 'application/json' };
-      if (token) headers['Authorization'] = `Bearer ${token}`;
-      try {
-        const res = await fetch('/api/portal/tenant/payments', { headers });
-        if (!res.ok) throw new Error(`Server error ${res.status}`);
-        const data = await res.json();
-        const d = data.data ?? {};
-        setPayments(
-          (d.payments ?? []).map(
-            (p: {
-              id: string;
-              month: string;
-              amount: number;
-              currency: string;
-              dueDate: string;
-              status: string;
-              propertyTitle?: string;
-            }) => ({
-              id: p.id,
-              month: p.month,
-              amount: p.amount,
-              currency: p.currency ?? 'AED',
-              dueDate: p.dueDate ? new Date(p.dueDate).toLocaleDateString() : '',
-              status: (p.status as PaymentRecord['status']) ?? 'pending',
-              propertyTitle: p.propertyTitle,
-            })
-          )
-        );
-      } catch (err) {
-        setError((err as Error).message ?? 'Failed to load payments');
-      } finally {
-        setLoading(false);
-      }
-    };
-    load();
-  }, [currentUser, token]);
+    authFetch('/api/leases?role=tenant&pageSize=1')
+      .then(r => r.json())
+      .then(async (leasesData) => {
+        const lease = (leasesData.data as ApiLease[])?.[0] ?? null;
+        if (!lease) return;
+        setMonthlyRent(lease.monthlyRent);
+        const pdcData = await authFetch(`/api/leases/${lease.id}/pdc`).then(r => r.json());
+        const rows = ((pdcData.data ?? []) as ApiPdc[]).map(pdcToPaymentRow);
+        setPayments(rows);
+      })
+      .catch(() => setError('Unable to load payment history. Please refresh.'))
+      .finally(() => setLoading(false));
+  }, []);
 
   const filteredPayments = useMemo(() => {
     const normalizedSearch = searchQuery.trim().toLowerCase();
@@ -96,7 +95,6 @@ const TenantPaymentHistoryTab: FC = () => {
     const outstanding = payments
       .filter(p => p.status === 'pending' || p.status === 'overdue')
       .reduce((s, p) => s + p.amount, 0);
-    // Overdue takes priority over pending as the most urgent item
     const nextPayment =
       payments.find(p => p.status === 'overdue') ??
       payments.find(p => p.status === 'pending') ??
@@ -119,7 +117,7 @@ const TenantPaymentHistoryTab: FC = () => {
 
   if (loading) {
     return (
-      <div className="empty-state" data-testid="loading-state">
+      <div className="loading-state" data-testid="payment-loading">
         <p>Loading payment history…</p>
       </div>
     );
@@ -127,8 +125,8 @@ const TenantPaymentHistoryTab: FC = () => {
 
   if (error) {
     return (
-      <div className="empty-state error-state" data-testid="error-state">
-        <p>Unable to load payments: {error}</p>
+      <div className="error-message" data-testid="payment-error">
+        <p>{error}</p>
       </div>
     );
   }
@@ -202,22 +200,25 @@ const TenantPaymentHistoryTab: FC = () => {
         <select
           data-testid="tenant-payment-status-filter"
           value={statusFilter}
-          onChange={event =>
-            setStatusFilter(
-              event.target.value as 'all' | 'paid' | 'pending' | 'overdue' | 'upcoming'
-            )
-          }
+          onChange={event => setStatusFilter(event.target.value as 'all' | PaymentStatus)}
         >
           <option value="all">All Statuses</option>
           <option value="paid">Paid</option>
-          <option value="upcoming">Upcoming</option>
           <option value="pending">Pending</option>
           <option value="overdue">Overdue</option>
         </select>
       </div>
 
-      {filteredPayments.length === 0 ? (
+      {payments.length === 0 ? (
         <div className="empty-state" data-testid="tenant-payment-empty-state">
+          <p>
+            {monthlyRent > 0
+              ? 'No PDC cheques recorded yet for your lease.'
+              : 'No active lease or payment records found.'}
+          </p>
+        </div>
+      ) : filteredPayments.length === 0 ? (
+        <div className="empty-state" data-testid="tenant-payment-filter-empty">
           <p>No payment records match your filters.</p>
         </div>
       ) : (
@@ -230,14 +231,11 @@ const TenantPaymentHistoryTab: FC = () => {
             >
               <div>
                 <strong>{payment.month}</strong>
-                <p>{payment.id}</p>
-                {payment.propertyTitle && <p className="property-label">{payment.propertyTitle}</p>}
+                <p>{payment.chequeNumber} · {payment.bankName}</p>
               </div>
               <div>
-                <p>
-                  {payment.currency} {payment.amount.toLocaleString()}
-                </p>
-                <p>Due: {payment.dueDate}</p>
+                <p>AED {payment.amount.toLocaleString()}</p>
+                <p>Paid: {payment.paidDate ?? 'Not paid yet'}</p>
               </div>
               <div>
                 <span className={`status-badge status-${payment.status}`}>{payment.status}</span>

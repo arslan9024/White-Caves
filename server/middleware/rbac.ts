@@ -21,6 +21,7 @@ import { AppError } from './errorHandler';
 // If a role is already canonical it maps to itself (or is absent and passes through).
 export const ROLE_ALIAS_MAP: Record<string, string> = {
   // Executive → owner
+  lion: 'owner',
   managing_director: 'owner',
   real_estate_company: 'owner',
   // Executive → manager
@@ -98,7 +99,6 @@ export const ROLE_PERMISSIONS: Record<string, string[]> = {
     'view_contracts',
     'sign_contracts',
     'view_payments',
-    'view_appointments',
   ],
   seller: [
     'view_dashboard',
@@ -109,7 +109,6 @@ export const ROLE_PERMISSIONS: Record<string, string[]> = {
     'view_leads',
     'view_contracts',
     'view_analytics',
-    'view_appointments',
   ],
   landlord: [
     'view_dashboard',
@@ -122,7 +121,6 @@ export const ROLE_PERMISSIONS: Record<string, string[]> = {
     'create_contracts',
     'view_payments',
     'view_analytics',
-    'view_appointments',
   ],
   tenant: [
     'view_dashboard',
@@ -131,7 +129,6 @@ export const ROLE_PERMISSIONS: Record<string, string[]> = {
     'view_contracts',
     'sign_contracts',
     'view_payments',
-    'view_appointments',
   ],
   'leasing-agent': [
     'view_dashboard',
@@ -145,8 +142,6 @@ export const ROLE_PERMISSIONS: Record<string, string[]> = {
     'create_contracts',
     'view_payments',
     'view_analytics',
-    'view_appointments',
-    'manage_appointments',
   ],
   'secondary-sales-agent': [
     'view_dashboard',
@@ -161,8 +156,6 @@ export const ROLE_PERMISSIONS: Record<string, string[]> = {
     'view_payments',
     'process_payments',
     'view_analytics',
-    'view_appointments',
-    'manage_appointments',
   ],
   agent: [
     'view_dashboard',
@@ -176,8 +169,7 @@ export const ROLE_PERMISSIONS: Record<string, string[]> = {
     'create_contracts',
     'view_payments',
     'view_analytics',
-    'view_appointments',
-    'manage_appointments',
+    'view_commissions',
   ],
   finance: [
     'view_dashboard',
@@ -186,7 +178,9 @@ export const ROLE_PERMISSIONS: Record<string, string[]> = {
     'process_payments',
     'view_analytics',
     'view_all_reports',
-    'view_appointments',
+    'view_commissions',
+    'approve_commissions',
+    'export_financial_reports',
   ],
   viewer: [
     'view_dashboard',
@@ -196,7 +190,6 @@ export const ROLE_PERMISSIONS: Record<string, string[]> = {
     'view_contracts',
     'view_payments',
     'view_analytics',
-    'view_appointments',
   ],
   admin: [
     'view_dashboard',
@@ -215,8 +208,9 @@ export const ROLE_PERMISSIONS: Record<string, string[]> = {
     'manage_users',
     'manage_agents',
     'view_all_reports',
-    'view_appointments',
-    'manage_appointments',
+    'view_commissions',
+    'approve_commissions',
+    'export_leads',
   ],
   manager: [
     'view_dashboard',
@@ -236,8 +230,9 @@ export const ROLE_PERMISSIONS: Record<string, string[]> = {
     'manage_agents',
     'view_all_reports',
     'modify_settings',
-    'view_appointments',
-    'manage_appointments',
+    'view_commissions',
+    'approve_commissions',
+    'export_leads',
   ],
   owner: [
     'view_dashboard',
@@ -261,8 +256,10 @@ export const ROLE_PERMISSIONS: Record<string, string[]> = {
     'configure_chatbot',
     'view_all_reports',
     'modify_settings',
-    'view_appointments',
-    'manage_appointments',
+    'view_commissions',
+    'approve_commissions',
+    'export_leads',
+    'export_financial_reports',
   ],
 };
 

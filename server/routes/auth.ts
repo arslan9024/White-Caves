@@ -509,6 +509,19 @@ router.post(
       },
     });
 
+    // Send welcome email (fire-and-forget — never block registration)
+    if (user.email) {
+      const { sendEmailTracked, EMAIL_TEMPLATES } = await import('../services/emailService.js');
+      const template = EMAIL_TEMPLATES.welcome(user.name || 'Valued Client');
+      sendEmailTracked({
+        to: user.email,
+        subject: template.subject,
+        html: template.html,
+        text: template.text,
+        tags: [{ name: 'type', value: 'welcome' }],
+      }).catch(err => console.error('[email] welcome send failed:', err));
+    }
+
     res.status(201).json({
       success: true,
       data: {
