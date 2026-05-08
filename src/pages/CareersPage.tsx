@@ -11,6 +11,7 @@ import {
 import { useDocumentTitle } from '../hooks/useDocumentTitle';
 import PublicLayout from '../components/layout/PublicLayout';
 import PageHeroBanner from '../components/layout/PageHeroBanner';
+import { authFetch } from '../utils/authFetch';
 import './CareersPage.css';
 
 const fadeUp: Variants = {
@@ -53,7 +54,7 @@ const CareersPage: FC = () => {
     setApplyStatus('submitting');
     setApplyError(null);
     try {
-      const res = await fetch('/api/job-applications', {
+      const res = await authFetch('/api/job-applications', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
