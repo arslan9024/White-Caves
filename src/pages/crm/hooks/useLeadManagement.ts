@@ -121,7 +121,9 @@ export function useLeadManagement() {
   const [sourceFilter, setSourceFilter] = useState('all');
   const [currentPage, setCurrentPage] = useState(1);
 
-  // Reset pagination when filters change
+  // Reset pagination when filters change.
+  // Intentionally calling setState synchronously inside the effect here because
+  // resetting the page is a direct response to a filter change, not a cascading render issue.
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setCurrentPage(1);
