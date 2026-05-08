@@ -213,7 +213,6 @@ export const LuxuryHeroSection: React.FC<LuxuryHeroSectionProps> = ({
           src="https://images.unsplash.com/photo-1582268611958-ebfd161ef9cf?ixlib=rb-4.0.3&auto=format&fit=crop&w=1440&q=75"
           alt=""
           aria-hidden="true"
-          // @ts-expect-error fetchpriority is a valid HTML attribute in modern browsers
           fetchPriority="high"
           style={{ position: 'absolute', width: 1, height: 1, opacity: 0, pointerEvents: 'none' }}
         />
