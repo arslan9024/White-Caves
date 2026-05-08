@@ -136,7 +136,7 @@ export default function PropertyDetailModal({
     setViewingError('');
 
     try {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem('token') || localStorage.getItem('authToken');
 
       if (token && property.id) {
         // Authenticated path → create a formal viewing record
