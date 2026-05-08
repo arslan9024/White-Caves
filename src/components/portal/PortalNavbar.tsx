@@ -59,7 +59,9 @@ const PortalNavbar: FC<PortalNavbarProps> = ({ portalType }) => {
   }, [dispatch, navigate]);
 
   const avatarInitial = currentUser?.name?.charAt(0)?.toUpperCase() ?? '?';
+  // eslint-disable-next-line security/detect-object-injection
   const portalLabel = PORTAL_LABELS[portalType];
+  // eslint-disable-next-line security/detect-object-injection
   const badgeColor = PORTAL_COLORS[portalType];
 
   return (
@@ -70,11 +72,7 @@ const PortalNavbar: FC<PortalNavbarProps> = ({ portalType }) => {
     >
       {/* Left: Logo + portal badge */}
       <div className="portal-navbar__brand">
-        <Link
-          to="/"
-          className="portal-navbar__logo"
-          aria-label="White Caves – go to homepage"
-        >
+        <Link to="/" className="portal-navbar__logo" aria-label="White Caves – go to homepage">
           <img
             src="/company-logo.jpg"
             alt="White Caves Real Estate"
@@ -107,10 +105,7 @@ const PortalNavbar: FC<PortalNavbarProps> = ({ portalType }) => {
               aria-label={`View profile for ${currentUser.name}`}
               data-testid="portal-navbar-user"
             >
-              <span
-                className="portal-navbar__avatar"
-                aria-hidden="true"
-              >
+              <span className="portal-navbar__avatar" aria-hidden="true">
                 {avatarInitial}
               </span>
               <span className="portal-navbar__username">{currentUser.name}</span>

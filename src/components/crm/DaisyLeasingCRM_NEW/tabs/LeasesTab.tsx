@@ -27,17 +27,30 @@ interface LeasesTabProps {
 
 const FILTER_OPTIONS = ['all', 'active', 'expiring_soon', 'renewal_pending', 'expired'] as const;
 
-const EjariBadge: React.FC<{ status?: 'registered' | 'pending' | 'expired' | null }> = ({ status }) => {
+const EjariBadge: React.FC<{ status?: 'registered' | 'pending' | 'expired' | null }> = ({
+  status,
+}) => {
   if (!status) return <span style={{ color: '#64748B', fontSize: '12px' }}>—</span>;
   const config = {
     registered: { dot: '#10B981', label: 'Registered' },
     pending: { dot: '#F59E0B', label: 'Pending' },
     expired: { dot: '#EF4444', label: 'Expired' },
   };
+  // eslint-disable-next-line security/detect-object-injection
   const c = config[status];
   return (
-    <span style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '12px', color: c.dot }}>
-      <span style={{ width: '7px', height: '7px', borderRadius: '50%', background: c.dot, display: 'inline-block' }} />
+    <span
+      style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '12px', color: c.dot }}
+    >
+      <span
+        style={{
+          width: '7px',
+          height: '7px',
+          borderRadius: '50%',
+          background: c.dot,
+          display: 'inline-block',
+        }}
+      />
       {c.label}
     </span>
   );
@@ -46,9 +59,7 @@ const EjariBadge: React.FC<{ status?: 'registered' | 'pending' | 'expired' | nul
 const LeasesTab: React.FC<LeasesTabProps> = ({ leases, searchQuery, onSearchChange }) => {
   const [localFilter, setLocalFilter] = useState<string>('all');
 
-  const displayed = localFilter === 'all'
-    ? leases
-    : leases.filter(l => l.status === localFilter);
+  const displayed = localFilter === 'all' ? leases : leases.filter(l => l.status === localFilter);
 
   return (
     <div className="leases-view">
@@ -69,7 +80,9 @@ const LeasesTab: React.FC<LeasesTabProps> = ({ leases, searchQuery, onSearchChan
               onChange={(e: React.ChangeEvent<HTMLInputElement>) => onSearchChange(e.target.value)}
             />
           </div>
-          <button className="add-btn"><Plus size={16} /> New Lease</button>
+          <button className="add-btn">
+            <Plus size={16} /> New Lease
+          </button>
         </div>
       </div>
 
@@ -109,16 +122,23 @@ const LeasesTab: React.FC<LeasesTabProps> = ({ leases, searchQuery, onSearchChan
         </div>
         {displayed.map((lease: Lease) => (
           <div key={lease.id} className="table-row">
-            <span className="unit-name" style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+            <span
+              className="unit-name"
+              style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}
+            >
               <strong>{lease.unit}</strong>
               {lease.building && (
-                <span style={{ fontSize: '11px', color: 'var(--color-text-secondary)' }}>{lease.building}</span>
+                <span style={{ fontSize: '11px', color: 'var(--color-text-secondary)' }}>
+                  {lease.building}
+                </span>
               )}
             </span>
             <span style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
               <span>{lease.tenant}</span>
               {lease.tenantPhone && (
-                <span style={{ fontSize: '11px', color: 'var(--color-text-secondary)' }}>{lease.tenantPhone}</span>
+                <span style={{ fontSize: '11px', color: 'var(--color-text-secondary)' }}>
+                  {lease.tenantPhone}
+                </span>
               )}
             </span>
             <span>AED {(lease.rent * 12).toLocaleString()}</span>
@@ -135,9 +155,13 @@ const LeasesTab: React.FC<LeasesTabProps> = ({ leases, searchQuery, onSearchChan
             <span>
               {lease.pdcCount !== undefined ? (
                 <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                  <span style={{ fontSize: '12px', color: '#10B981' }}>{lease.pdcCleared}/{lease.pdcCount}</span>
+                  <span style={{ fontSize: '12px', color: '#10B981' }}>
+                    {lease.pdcCleared}/{lease.pdcCount}
+                  </span>
                   {(lease.pdcBounced ?? 0) > 0 && (
-                    <span style={{ color: '#EF4444', fontSize: '11px' }} title="Bounced PDC">🔴</span>
+                    <span style={{ color: '#EF4444', fontSize: '11px' }} title="Bounced PDC">
+                      🔴
+                    </span>
                   )}
                 </span>
               ) : (
@@ -168,7 +192,14 @@ const LeasesTab: React.FC<LeasesTabProps> = ({ leases, searchQuery, onSearchChan
           </div>
         ))}
         {displayed.length === 0 && (
-          <div style={{ padding: '40px', textAlign: 'center', color: 'var(--color-text-secondary)', fontSize: '14px' }}>
+          <div
+            style={{
+              padding: '40px',
+              textAlign: 'center',
+              color: 'var(--color-text-secondary)',
+              fontSize: '14px',
+            }}
+          >
             No leases match the current filter.
           </div>
         )}

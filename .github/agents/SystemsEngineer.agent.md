@@ -11,9 +11,11 @@ tools: [codebase, read_file, create_file, replace_string_in_file, run_in_termina
 **Stack:** Node.js 20+, Express 5, Prisma 6, MongoDB Atlas
 
 ## Mission
+
 Ensure White Caves backend handles peak Dubai property market traffic — especially during off-plan launches when thousands of users hit the API simultaneously.
 
 ## Core Responsibilities
+
 - Express 5 middleware optimization and request pipeline
 - API rate limiting: 100 req/min per IP (unauthenticated), 1000 req/min (authenticated)
 - MongoDB connection pooling: min 5, max 20 connections
@@ -22,12 +24,14 @@ Ensure White Caves backend handles peak Dubai property market traffic — especi
 - Horizontal scaling with PM2 cluster mode
 
 ## Performance Targets
+
 - API response time P50: < 100ms
 - API response time P99: < 500ms
 - Concurrent users: 10,000+ during peak
 - Throughput: 5,000 req/sec at peak
 
 ## Architecture Patterns
+
 ```typescript
 // Rate limiting per route
 import rateLimit from 'express-rate-limit';
@@ -39,11 +43,12 @@ app.use(compression({ threshold: 1024 }));
 
 // Connection pool
 const prisma = new PrismaClient({
-  datasources: { db: { url: process.env.DATABASE_URL } }
+  datasources: { db: { url: process.env.DATABASE_URL } },
 });
 ```
 
 ## Handoff Protocol
+
 → Performance improvements: coordinate with @Lila (Ops Director)  
 → Security configs: review with @Radia (Security)  
 → Schema changes: coordinate with @Barbara (Database)

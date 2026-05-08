@@ -25,7 +25,11 @@ vi.mock('react-redux', () => ({
 
 vi.mock('../../../store/slices/aiAssistantDashboardSlice', () => ({
   selectCurrentAssistant: () => mockCurrentAssistant,
+  selectPendingActionsCount: () => () => 0,
+  selectNotificationsByAssistant: () => () => [],
 }));
+
+vi.mock('../../../store/store', () => ({}));
 
 vi.mock('../../../utils/logger', () => ({
   createLogger: () => ({
@@ -39,6 +43,12 @@ vi.mock('lucide-react', () => ({
   Menu: (props: Record<string, unknown>) => <span data-testid="menu-icon" {...props}>Menu</span>,
   X: (props: Record<string, unknown>) => <span data-testid="x-icon" {...props}>X</span>,
   RefreshCw: (props: Record<string, unknown>) => <span data-testid="refresh-icon" {...props}>↻</span>,
+  Bell: (props: Record<string, unknown>) => <span data-testid="bell-icon" {...props} />,
+}));
+
+vi.mock('./NotificationBadge', () => ({
+  __esModule: true,
+  default: ({ count }: { count: number }) => <span data-testid="notification-badge">{count}</span>,
 }));
 
 const mockOnItemClick = vi.fn();
@@ -256,13 +266,14 @@ describe('UniversalAssistantLayout', () => {
       expect(screen.getByText('Export CSV')).toBeInTheDocument();
     });
 
-    it('does not render header-actions wrapper when prop omitted', () => {
+    it('renders header-actions wrapper (always present for badges)', () => {
       const { container } = render(
         <UniversalAssistantLayout>
           <div>Content</div>
         </UniversalAssistantLayout>
       );
-      expect(container.querySelector('.header-actions')).not.toBeInTheDocument();
+      // .header-actions is always rendered (holds lifecycle badges + optional headerActions)
+      expect(container.querySelector('.header-actions')).toBeInTheDocument();
     });
   });
 

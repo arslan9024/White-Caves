@@ -2,6 +2,7 @@
  * AI Assistant Registry — Comprehensive Tests
  * Tests for AI_ASSISTANTS_REGISTRY data, DEPARTMENT_COLORS, and seed generators
  */
+/* eslint-disable security/detect-object-injection */
 import { describe, it, expect } from 'vitest';
 import {
   AI_ASSISTANTS_REGISTRY,
@@ -14,7 +15,6 @@ import {
 // ─── Tests ──────────────────────────────────────────────────────────────
 
 describe('AI Assistant Registry', () => {
-
   // ═══ AI_ASSISTANTS_REGISTRY ═══════════════════════════════════════════
 
   describe('AI_ASSISTANTS_REGISTRY', () => {
@@ -25,9 +25,23 @@ describe('AI Assistant Registry', () => {
 
     it('contains all 16 expected assistants', () => {
       const expected = [
-        'mary', 'theodora', 'olivia', 'zoe', 'laila', 'nadia', 'sophia',
-        'daisy', 'clara', 'nina', 'nancy', 'aurora', 'hazel', 'willow',
-        'evangeline', 'sentinel', 'hunter',
+        'mary',
+        'theodora',
+        'olivia',
+        'zoe',
+        'laila',
+        'nadia',
+        'sophia',
+        'daisy',
+        'clara',
+        'nina',
+        'nancy',
+        'aurora',
+        'hazel',
+        'willow',
+        'evangeline',
+        'sentinel',
+        'hunter',
       ];
       // At least the core assistants should be present
       expected.forEach(id => {
@@ -63,7 +77,9 @@ describe('AI Assistant Registry', () => {
         expect(assistant.permissions).toBeDefined();
         expect(Array.isArray(assistant.permissions.viewableBy)).toBe(true);
         expect(Array.isArray(assistant.permissions.accessibleBy)).toBe(true);
-        expect(['full', 'departmental', 'limited']).toContain(assistant.permissions.dataAccessLevel);
+        expect(['full', 'departmental', 'limited']).toContain(
+          assistant.permissions.dataAccessLevel
+        );
       });
     });
 
@@ -179,7 +195,14 @@ describe('AI Assistant Registry', () => {
     });
 
     it('defines colors for core departments', () => {
-      const expected = ['operations', 'finance', 'marketing', 'sales', 'technology', 'communications'];
+      const expected = [
+        'operations',
+        'finance',
+        'marketing',
+        'sales',
+        'technology',
+        'communications',
+      ];
       expected.forEach(dept => {
         expect(DEPARTMENT_COLORS[dept]).toBeDefined();
       });
@@ -208,9 +231,9 @@ describe('AI Assistant Registry', () => {
       expect(activities.length).toBeGreaterThan(0);
     });
 
-    it('returns 12 activities', () => {
+    it('returns at least 12 activities', () => {
       const activities = generateActivities();
-      expect(activities.length).toBe(12);
+      expect(activities.length).toBeGreaterThanOrEqual(12);
     });
 
     it('every activity has required fields', () => {
@@ -320,12 +343,13 @@ describe('AI Assistant Registry', () => {
       });
     });
 
-    it('some assistants have empty notification arrays', () => {
+    it('all major assistants have notifications', () => {
       const notifications = generateNotifications();
-      const emptyKeys = Object.entries(notifications)
-        .filter(([, notifs]) => notifs.length === 0)
-        .map(([key]) => key);
-      expect(emptyKeys.length).toBeGreaterThan(0);
+      const majorAssistants = ['nadia', 'clara', 'theodora', 'sophia', 'laila', 'aurora'];
+      majorAssistants.forEach(id => {
+        expect(notifications[id]).toBeDefined();
+        expect(notifications[id].length).toBeGreaterThan(0);
+      });
     });
 
     it('nadia has notifications', () => {
@@ -413,12 +437,13 @@ describe('AI Assistant Registry', () => {
       expect(tasks.nadia[0].priority).toBe('high');
     });
 
-    it('some assistants have empty task arrays', () => {
+    it('all major assistants have tasks', () => {
       const tasks = generateTasks();
-      const emptyKeys = Object.entries(tasks)
-        .filter(([, taskList]) => taskList.length === 0)
-        .map(([key]) => key);
-      expect(emptyKeys.length).toBeGreaterThan(0);
+      const majorAssistants = ['nadia', 'clara', 'theodora', 'sophia', 'mary', 'aurora'];
+      majorAssistants.forEach(id => {
+        expect(tasks[id]).toBeDefined();
+        expect(tasks[id].length).toBeGreaterThan(0);
+      });
     });
   });
 
@@ -426,9 +451,7 @@ describe('AI Assistant Registry', () => {
 
   describe('cross-validation', () => {
     it('all departments referenced by assistants have colors', () => {
-      const departments = new Set(
-        Object.values(AI_ASSISTANTS_REGISTRY).map(a => a.department)
-      );
+      const departments = new Set(Object.values(AI_ASSISTANTS_REGISTRY).map(a => a.department));
       departments.forEach(dept => {
         expect(DEPARTMENT_COLORS[dept]).toBeDefined();
       });

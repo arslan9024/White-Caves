@@ -1,4 +1,5 @@
 # Property Listing Flow
+
 # White Caves Real Estate Platform
 
 > **Document ID:** WC-FLOW-PROP-001
@@ -188,24 +189,24 @@ Status: RERA_VERIFIED → PUBLISHED
           ─────────────────────────────────────────────────────
           → UNDER_REVIEW (agent submits for review)
           → REJECTED (manager rejects with reason)
-          
+
           RERA_VERIFIED
           ─────────────────────────────────────────────────────
           → PUBLISHED (manager approves)
-          
+
           PUBLISHED
           ─────────────────────────────────────────────────────
           → UNDER_OFFER (offer received, agent marks)
           → SUSPENDED (RERA permit expired — auto or manual)
           → DELISTED (agent/manager removes from market)
           → EXPIRED (listing age > 90 days, no refresh)
-          
+
           UNDER_OFFER
           ─────────────────────────────────────────────────────
           → SOLD (sale completed)
           → LEASED (lease signed)
           → PUBLISHED (offer fell through)
-          
+
           SOLD / LEASED
           ─────────────────────────────────────────────────────
           → ARCHIVED (read-only, historical record)
@@ -304,21 +305,20 @@ Off-plan project data received from developer (DAMAC, Emaar, etc.)
 
 ## 10. DAMAC Hills 2 Inventory Context
 
-| Metric | Value |
-|--------|-------|
-| Total units managed | 9,378+ |
-| Property types | Villas, townhouses, apartments |
-| Price range | AED 1.2M – 4M+ |
-| Rental yield | 7–8% gross |
-| Primary developer | DAMAC Properties |
-| Location | Dubailand, Dubai |
-| Access | Al Ain Road (E66) |
+| Metric              | Value                          |
+| ------------------- | ------------------------------ |
+| Total units managed | 9,378+                         |
+| Property types      | Villas, townhouses, apartments |
+| Price range         | AED 1.2M – 4M+                 |
+| Rental yield        | 7–8% gross                     |
+| Primary developer   | DAMAC Properties               |
+| Location            | Dubailand, Dubai               |
+| Access              | Al Ain Road (E66)              |
 
 ---
 
 **Document Owner:** Operations Department (Mary)
 **Related:** `business_docs/09_crm_features/property-management.md`, `business/08_compliance/rera-compliance-checklist.md`
-
 
 ---
 
@@ -328,22 +328,23 @@ High-quality photos are the #1 factor in listing performance. RERA also prohibit
 
 ### 8.1 Photography Brief
 
-| Specification | Standard |
-|-------------|---------|
-| Camera | DSLR or mirrorless, full-frame preferred (Sony A7, Canon R5, iPhone 14 Pro minimum) |
-| Lens | 16–24mm wide angle for rooms; 50mm for details |
-| Resolution | Minimum 3,000px on longest edge (JPEG, high quality) |
-| Format | JPEG (primary) + RAW backup |
-| Lighting | All lights on; curtains/blinds open; natural light preferred |
-| Time of day | Morning for east-facing units; afternoon for west-facing; golden hour for exterior |
-| Minimum photos | 15 photos for apartments; 25 for villas |
-| Maximum photos | 50 (portal limit; CRM stores unlimited) |
-| Staging | Property clean, tidy, depersonalised (no family photos visible in KYC-exposed photos) |
-| Prohibited | AI-generated photos presented as real; extreme HDR that misrepresents space; virtual views |
+| Specification  | Standard                                                                                   |
+| -------------- | ------------------------------------------------------------------------------------------ |
+| Camera         | DSLR or mirrorless, full-frame preferred (Sony A7, Canon R5, iPhone 14 Pro minimum)        |
+| Lens           | 16–24mm wide angle for rooms; 50mm for details                                             |
+| Resolution     | Minimum 3,000px on longest edge (JPEG, high quality)                                       |
+| Format         | JPEG (primary) + RAW backup                                                                |
+| Lighting       | All lights on; curtains/blinds open; natural light preferred                               |
+| Time of day    | Morning for east-facing units; afternoon for west-facing; golden hour for exterior         |
+| Minimum photos | 15 photos for apartments; 25 for villas                                                    |
+| Maximum photos | 50 (portal limit; CRM stores unlimited)                                                    |
+| Staging        | Property clean, tidy, depersonalised (no family photos visible in KYC-exposed photos)      |
+| Prohibited     | AI-generated photos presented as real; extreme HDR that misrepresents space; virtual views |
 
 ### 8.2 Required Shots per Property Type
 
 **Apartment (minimum 15 shots):**
+
 ```
 REQUIRED:                                     RECOMMENDED:
 ☐ Living room (corner wide angle)             ☐ Living room (feature wall)
@@ -358,6 +359,7 @@ REQUIRED:                                     RECOMMENDED:
 ```
 
 **Villa (minimum 25 shots):**
+
 ```
 REQUIRED:                                     RECOMMENDED:
 All apartment shots plus:                     ☐ Garden (all angles)
@@ -391,10 +393,10 @@ Quill (Document Generator AI) can generate listing copy from structured data. Hu
 
 [OPENING PARAGRAPH] — 3–4 sentences
   Cover: size, type, location, brief atmosphere
-  Example: "This exceptional 4-bedroom villa in the prestigious Pelham community 
-  of DAMAC Hills 2 spans 4,200 sqft of beautifully designed living space. 
-  Located on a quiet street backing onto the golf course, this home offers 
-  both luxury and privacy in one of Dubai's most sought-after family 
+  Example: "This exceptional 4-bedroom villa in the prestigious Pelham community
+  of DAMAC Hills 2 spans 4,200 sqft of beautifully designed living space.
+  Located on a quiet street backing onto the golf course, this home offers
+  both luxury and privacy in one of Dubai's most sought-after family
   communities."
 
 [PROPERTY FEATURES] — bullet list
@@ -420,6 +422,7 @@ Quill (Document Generator AI) can generate listing copy from structured data. Hu
 ### 9.2 Forbidden Phrases
 
 RERA and White Caves prohibit:
+
 - "Sea view" unless the property has a genuine sea view (satellite verified)
 - "Motivated seller" without seller's written consent
 - Fabricated urgency: "Only 1 unit remaining" (if not true)

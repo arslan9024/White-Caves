@@ -5,6 +5,7 @@ import ComponentsTab from './ComponentsTab';
 import DesignSystemTab from './DesignSystemTab';
 import PerformanceTab from './PerformanceTab';
 import AccessibilityTab from './AccessibilityTab';
+import AssistantLifecycleTab from '../../shared/AssistantLifecycleTab';
 import '../HazelFrontendCRM.css';
 
 const HazelFrontendCRM = () => {
@@ -26,7 +27,8 @@ const HazelFrontendCRM = () => {
     { id: 'components', label: 'Components', icon: '📦' },
     { id: 'design-system', label: 'Design System', icon: '🎨' },
     { id: 'performance', label: 'Performance', icon: '⚡' },
-    { id: 'accessibility', label: 'Accessibility', icon: '♿' }
+    { id: 'accessibility', label: 'Accessibility', icon: '♿' },
+    { id: 'lifecycle', label: 'Lifecycle', icon: '🔄' }
   ];
 
   const renderContent = () => {
@@ -41,6 +43,8 @@ const HazelFrontendCRM = () => {
         return <PerformanceTab metrics={performanceMetrics} />;
       case 'accessibility':
         return <AccessibilityTab audit={accessibilityAudit} />;
+      case 'lifecycle':
+        return <AssistantLifecycleTab assistantId="hazel" color="#EC4899" assistantName="Hazel" />;
       default:
         return <OverviewTab componentStats={componentStats} accessibilityStats={accessibilityStats} performanceMetrics={performanceMetrics} />;
     }

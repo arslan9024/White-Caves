@@ -4,6 +4,7 @@ import KYCTab from './KYCTab';
 import ContractsTab from './ContractsTab';
 import AMLTab from './AMLTab';
 import RegulationsTab from './RegulationsTab';
+import AssistantLifecycleTab from '../../shared/AssistantLifecycleTab';
 import '../LailaComplianceCRM.css';
 
 const LailaComplianceCRM = () => {
@@ -24,7 +25,8 @@ const LailaComplianceCRM = () => {
     { id: 'kyc', label: 'KYC', icon: '✓' },
     { id: 'contracts', label: 'Contracts', icon: '📄' },
     { id: 'aml', label: 'AML', icon: '⚠️' },
-    { id: 'regulations', label: 'Regulations', icon: '📋' }
+    { id: 'regulations', label: 'Regulations', icon: '📋' },
+    { id: 'lifecycle', label: 'Lifecycle', icon: '🔄' }
   ];
 
   const renderContent = () => {
@@ -37,6 +39,8 @@ const LailaComplianceCRM = () => {
         return <AMLTab alerts={amlAlerts} onResolve={handleAlertResolution} />;
       case 'regulations':
         return <RegulationsTab />;
+      case 'lifecycle':
+        return <AssistantLifecycleTab assistantId="laila" color="#6366F1" assistantName="Laila" />;
       default:
         return <KYCTab verifications={kycVerifications} onApprove={handleApproveVerification} onReject={handleRejectVerification} />;
     }

@@ -115,4 +115,3 @@ const TenantPortalPage: FC = () => {
 };
 
 export default TenantPortalPage;
-

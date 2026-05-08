@@ -2,6 +2,7 @@
 // AI ASSISTANT DASHBOARD — SELECTORS
 // Extracted from aiAssistantDashboardSlice.tsx for maintainability
 // ============================================================================
+/* eslint-disable security/detect-object-injection */
 
 import { createSelector } from '@reduxjs/toolkit';
 import { RootState } from '../../store';
@@ -10,9 +11,23 @@ import { RootState } from '../../store';
 const EMPTY_ARRAY: readonly never[] = Object.freeze([]);
 const EMPTY_OBJECT: Readonly<Record<string, never>> = Object.freeze({});
 const EMPTY_SUGGESTIONS = Object.freeze({ inbox: [] as const, filters: {} as const });
-const EMPTY_VAULT = Object.freeze({ documents: [] as const, accessRequests: [] as const, permissions: {} as const, vaultStats: {} as const });
-const EMPTY_LEAD_HUB = Object.freeze({ incomingLeads: [] as const, processedLeads: {} as const, funnelMetrics: {} as const });
-const EMPTY_COMPLIANCE = Object.freeze({ kycProfiles: {} as const, amlMonitor: {} as const, auditLog: [] as const, complianceMetrics: {} as const });
+const EMPTY_VAULT = Object.freeze({
+  documents: [] as const,
+  accessRequests: [] as const,
+  permissions: {} as const,
+  vaultStats: {} as const,
+});
+const EMPTY_LEAD_HUB = Object.freeze({
+  incomingLeads: [] as const,
+  processedLeads: {} as const,
+  funnelMetrics: {} as const,
+});
+const EMPTY_COMPLIANCE = Object.freeze({
+  kycProfiles: {} as const,
+  amlMonitor: {} as const,
+  auditLog: [] as const,
+  complianceMetrics: {} as const,
+});
 
 // ── Base selectors ──────────────────────────────────────────────────────
 const selectAssistantsState = (state: RootState) =>
@@ -24,12 +39,11 @@ const selectAllIds = (state: RootState) =>
 
 export const selectAllAssistantsArray = createSelector(
   [selectAssistantsState, selectAllIds],
-  (byId, allIds) => allIds.map((id) => byId[id]).filter(Boolean),
+  (byId, allIds) => allIds.map(id => byId[id]).filter(Boolean)
 );
 
-export const selectAssistantById =
-  (assistantId: string) => (state: RootState) =>
-    state.aiAssistantDashboard?.allAssistants?.byId?.[assistantId];
+export const selectAssistantById = (assistantId: string) => (state: RootState) =>
+  state.aiAssistantDashboard?.allAssistants?.byId?.[assistantId];
 
 export const selectCurrentAssistant = (state: RootState) => {
   const selectedId = state.aiAssistantDashboard?.ui?.selectedAssistant;
@@ -41,8 +55,7 @@ export const selectCurrentAssistant = (state: RootState) => {
 export const selectUI = (state: RootState) => state.aiAssistantDashboard?.ui;
 export const selectFavorites = (state: RootState) =>
   state.aiAssistantDashboard?.favorites ?? EMPTY_ARRAY;
-export const selectRecent = (state: RootState) =>
-  state.aiAssistantDashboard?.recent ?? EMPTY_ARRAY;
+export const selectRecent = (state: RootState) => state.aiAssistantDashboard?.recent ?? EMPTY_ARRAY;
 export const selectPerformance = (state: RootState) =>
   state.aiAssistantDashboard?.assistantPerformance;
 export const selectOwnerPreferences = (state: RootState) =>
@@ -57,40 +70,38 @@ export const selectFilteredAssistants = createSelector(
   (assistants, ui) => {
     let filtered = assistants;
     if (ui?.filters?.department && ui.filters.department !== 'all') {
-      filtered = filtered.filter((a) => a.department === ui.filters.department);
+      filtered = filtered.filter(a => a.department === ui.filters.department);
     }
     if (ui?.filters?.status && ui.filters.status !== 'all') {
-      filtered = filtered.filter((a) => a.metrics.systemHealth === ui.filters.status);
+      filtered = filtered.filter(a => a.metrics.systemHealth === ui.filters.status);
     }
     if (ui?.filters?.searchQuery) {
       const query = ui.filters.searchQuery.toLowerCase();
       filtered = filtered.filter(
-        (a) =>
+        a =>
           a.name.toLowerCase().includes(query) ||
           a.title.toLowerCase().includes(query) ||
-          a.department.toLowerCase().includes(query),
+          a.department.toLowerCase().includes(query)
       );
     }
     return filtered;
-  },
+  }
 );
 
-export const selectAssistantsByDepartment = createSelector(
-  [selectAllAssistantsArray],
-  (assistants) =>
-    assistants.reduce(
-      (acc, assistant) => {
-        if (!acc[assistant.department]) acc[assistant.department] = [];
-        acc[assistant.department].push(assistant);
-        return acc;
-      },
-      {} as Record<string, typeof assistants>,
-    ),
+export const selectAssistantsByDepartment = createSelector([selectAllAssistantsArray], assistants =>
+  assistants.reduce(
+    (acc, assistant) => {
+      if (!acc[assistant.department]) acc[assistant.department] = [];
+      acc[assistant.department].push(assistant);
+      return acc;
+    },
+    {} as Record<string, typeof assistants>
+  )
 );
 
 export const selectActiveAssistantsCount = createSelector(
   [selectAllAssistantsArray],
-  (assistants) => assistants.filter((a) => a.metrics.systemHealth === 'optimal').length,
+  assistants => assistants.filter(a => a.metrics.systemHealth === 'optimal').length
 );
 
 // ── Sidebar ─────────────────────────────────────────────────────────────
@@ -99,19 +110,16 @@ export const selectSidebar = (state: RootState) => state.aiAssistantDashboard?.s
 
 // ── Notifications ───────────────────────────────────────────────────────
 
-export const selectNotifications = (state: RootState) =>
-  state.aiAssistantDashboard?.notifications;
+export const selectNotifications = (state: RootState) => state.aiAssistantDashboard?.notifications;
 
-export const selectNotificationsByAssistant =
-  (assistantId: string) => (state: RootState) =>
+export const selectNotificationsByAssistant = (assistantId: string) => (state: RootState) =>
+  state.aiAssistantDashboard?.notifications?.byAssistantId?.[assistantId] ?? EMPTY_ARRAY;
+
+export const selectUnreadCountByAssistant = (assistantId: string) => (state: RootState) => {
+  const notifications =
     state.aiAssistantDashboard?.notifications?.byAssistantId?.[assistantId] ?? EMPTY_ARRAY;
-
-export const selectUnreadCountByAssistant =
-  (assistantId: string) => (state: RootState) => {
-    const notifications =
-      state.aiAssistantDashboard?.notifications?.byAssistantId?.[assistantId] ?? EMPTY_ARRAY;
-    return notifications.filter((n: { isRead: boolean }) => !n.isRead).length;
-  };
+  return notifications.filter((n: { isRead: boolean }) => !n.isRead).length;
+};
 
 export const selectGlobalUnreadCount = (state: RootState) =>
   state.aiAssistantDashboard?.notifications?.globalUnreadCount ?? 0;
@@ -120,21 +128,20 @@ export const selectAllUnreadCounts = createSelector(
   [selectNotifications, selectAllIds],
   (notifications, allIds) => {
     const counts: Record<string, number> = {};
-    allIds.forEach((id) => {
+    allIds.forEach(id => {
       const assistantNotifications = notifications?.byAssistantId?.[id] || [];
-      counts[id] = assistantNotifications.filter((n) => !n.isRead).length;
+      counts[id] = assistantNotifications.filter(n => !n.isRead).length;
     });
     return counts;
-  },
+  }
 );
 
 // ── Tasks ───────────────────────────────────────────────────────────────
 
 export const selectTasks = (state: RootState) => state.aiAssistantDashboard?.tasks;
 
-export const selectTasksByAssistant =
-  (assistantId: string) => (state: RootState) =>
-    state.aiAssistantDashboard?.tasks?.byAssistantId?.[assistantId] ?? EMPTY_ARRAY;
+export const selectTasksByAssistant = (assistantId: string) => (state: RootState) =>
+  state.aiAssistantDashboard?.tasks?.byAssistantId?.[assistantId] ?? EMPTY_ARRAY;
 
 // ── Olivia Automation ───────────────────────────────────────────────────
 
@@ -148,54 +155,47 @@ export const selectExecutiveSuggestions = (state: RootState) =>
 
 export const selectFilteredSuggestions = createSelector(
   [selectExecutiveSuggestions],
-  (suggestions) => {
+  suggestions => {
     let filtered = suggestions.inbox || [];
     const filters = suggestions.filters || {};
     if (filters.priority && filters.priority !== 'all')
-      filtered = filtered.filter((s) => s.priority === filters.priority);
+      filtered = filtered.filter(s => s.priority === filters.priority);
     if (filters.department && filters.department !== 'all')
-      filtered = filtered.filter((s) => s.assistantDepartment === filters.department);
+      filtered = filtered.filter(s => s.assistantDepartment === filters.department);
     if (filters.status && filters.status !== 'all')
-      filtered = filtered.filter((s) => s.status === filters.status);
+      filtered = filtered.filter(s => s.status === filters.status);
     return filtered;
-  },
+  }
 );
 
 export const selectUnreviewedSuggestionsCount = createSelector(
   [selectExecutiveSuggestions],
-  (suggestions) =>
-    (suggestions.inbox || []).filter((s) => s.status === 'unreviewed').length,
+  suggestions => (suggestions.inbox || []).filter(s => s.status === 'unreviewed').length
 );
 
-export const selectCriticalSuggestions = createSelector(
-  [selectExecutiveSuggestions],
-  (suggestions) =>
-    (suggestions.inbox || []).filter(
-      (s) => s.priority === 'critical' && s.status === 'unreviewed',
-    ),
+export const selectCriticalSuggestions = createSelector([selectExecutiveSuggestions], suggestions =>
+  (suggestions.inbox || []).filter(s => s.priority === 'critical' && s.status === 'unreviewed')
 );
 
 // ── Assistant Status (composite) ────────────────────────────────────────
 
-export const selectAssistantStatus =
-  (assistantId: string) => (state: RootState) => {
-    const assistant = state.aiAssistantDashboard?.allAssistants?.byId?.[assistantId];
-    const tasks = state.aiAssistantDashboard?.tasks?.byAssistantId?.[assistantId] ?? EMPTY_ARRAY;
-    const activeTasks = tasks.filter((t: { status: string }) => t.status !== 'completed').length;
-    if (!assistant) return 'offline';
-    if (activeTasks > 0) return 'busy';
-    if (assistant.metrics?.systemHealth === 'optimal') return 'active';
-    return 'idle';
-  };
+export const selectAssistantStatus = (assistantId: string) => (state: RootState) => {
+  const assistant = state.aiAssistantDashboard?.allAssistants?.byId?.[assistantId];
+  const tasks = state.aiAssistantDashboard?.tasks?.byAssistantId?.[assistantId] ?? EMPTY_ARRAY;
+  const activeTasks = tasks.filter((t: { status: string }) => t.status !== 'completed').length;
+  if (!assistant) return 'offline';
+  if (activeTasks > 0) return 'busy';
+  if (assistant.metrics?.systemHealth === 'optimal') return 'active';
+  return 'idle';
+};
 
 // ── Confidential Vault ──────────────────────────────────────────────────
 
 export const selectConfidentialVault = (state: RootState) =>
   state.aiAssistantDashboard?.confidentialVault ?? EMPTY_VAULT;
 
-export const selectVaultPendingRequests = createSelector(
-  [selectConfidentialVault],
-  (vault) => vault.accessRequests.filter((r) => r.status === 'pending'),
+export const selectVaultPendingRequests = createSelector([selectConfidentialVault], vault =>
+  vault.accessRequests.filter(r => r.status === 'pending')
 );
 
 // ── Lead Management ─────────────────────────────────────────────────────
@@ -216,11 +216,70 @@ export const selectComplianceMetrics = (state: RootState) =>
 
 // ── Phase 0.8 — Assistant Plans ─────────────────────────────────────────────
 
-export const selectAssistantPlan = (id: string) => (state: RootState): string | null =>
-  state.aiAssistantDashboard?.plans?.[id] ?? null;
+export const selectAssistantPlan =
+  (id: string) =>
+  (state: RootState): string | null =>
+    state.aiAssistantDashboard?.plans?.[id] ?? null;
 
-export const selectAssistantPlanLoading = (id: string) => (state: RootState): boolean =>
-  state.aiAssistantDashboard?.plansLoading?.[id] ?? false;
+export const selectAssistantPlanLoading =
+  (id: string) =>
+  (state: RootState): boolean =>
+    state.aiAssistantDashboard?.plansLoading?.[id] ?? false;
 
-export const selectAssistantPlanError = (id: string) => (state: RootState): string | null =>
-  state.aiAssistantDashboard?.plansError?.[id] ?? null;
+export const selectAssistantPlanError =
+  (id: string) =>
+  (state: RootState): string | null =>
+    state.aiAssistantDashboard?.plansError?.[id] ?? null;
+
+// ── Task lifecycle selectors ─────────────────────────────────────────────────
+
+/**
+ * Returns all tasks for an assistant that are in the given lifecycle stage.
+ */
+export const selectTasksByLifecycleStage =
+  (assistantId: string, stage: string) => (state: RootState) =>
+    (state.aiAssistantDashboard?.tasks?.byAssistantId?.[assistantId] ?? EMPTY_ARRAY).filter(
+      (t: { lifecycleStage?: string }) => t.lifecycleStage === stage
+    );
+
+/**
+ * Returns the number of tasks for an assistant that are waiting for action
+ * (lifecycleStage = "queued" | "pending_review", or status = "pending").
+ */
+export const selectPendingActionsCount =
+  (assistantId: string) =>
+  (state: RootState): number => {
+    const tasks = state.aiAssistantDashboard?.tasks?.byAssistantId?.[assistantId] ?? EMPTY_ARRAY;
+    return tasks.filter(
+      (t: { lifecycleStage?: string; status?: string }) =>
+        t.lifecycleStage === 'queued' ||
+        t.lifecycleStage === 'pending_review' ||
+        t.status === 'pending'
+    ).length;
+  };
+
+/**
+ * Returns the number of completed tasks for an assistant.
+ */
+export const selectCompletedTasksCount =
+  (assistantId: string) =>
+  (state: RootState): number => {
+    const tasks = state.aiAssistantDashboard?.tasks?.byAssistantId?.[assistantId] ?? EMPTY_ARRAY;
+    return tasks.filter(
+      (t: { lifecycleStage?: string; status?: string }) =>
+        t.status === 'completed' || t.lifecycleStage === 'completed'
+    ).length;
+  };
+
+/**
+ * Returns the number of in-progress tasks for an assistant.
+ */
+export const selectInProgressTasksCount =
+  (assistantId: string) =>
+  (state: RootState): number => {
+    const tasks = state.aiAssistantDashboard?.tasks?.byAssistantId?.[assistantId] ?? EMPTY_ARRAY;
+    return tasks.filter(
+      (t: { lifecycleStage?: string; status?: string }) =>
+        t.status === 'in_progress' || t.lifecycleStage === 'in_progress'
+    ).length;
+  };

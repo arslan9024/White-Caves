@@ -1,4 +1,5 @@
 # Architecture Decision Records — Master Index
+
 # White Caves Real Estate Platform
 
 > **Document ID:** WC-ADR-INDEX-001
@@ -13,9 +14,10 @@
 
 ## What Is an ADR?
 
-An Architecture Decision Record (ADR) documents a significant architectural decision: the context that drove it, the alternatives considered, the decision made, and its consequences. ADRs create a permanent, searchable record of *why* the system is designed the way it is — essential for onboarding new engineers and avoiding re-litigating resolved debates.
+An Architecture Decision Record (ADR) documents a significant architectural decision: the context that drove it, the alternatives considered, the decision made, and its consequences. ADRs create a permanent, searchable record of _why_ the system is designed the way it is — essential for onboarding new engineers and avoiding re-litigating resolved debates.
 
 **ADR Statuses:**
+
 - `Proposed` — Under discussion
 - `Accepted` — Decision made and implemented
 - `Deprecated` — Superseded by a newer ADR
@@ -27,18 +29,19 @@ An Architecture Decision Record (ADR) documents a significant architectural deci
 
 ### ADR-001 — Design System Gold Rebrand
 
-| Field | Value |
-|-------|-------|
-| **File** | `docs/adr/001-design-system-gold-rebrand.md` |
-| **Status** | Accepted |
-| **Date** | March 29, 2026 |
-| **Decision Makers** | White Caves Development Team |
+| Field               | Value                                        |
+| ------------------- | -------------------------------------------- |
+| **File**            | `docs/adr/001-design-system-gold-rebrand.md` |
+| **Status**          | Accepted                                     |
+| **Date**            | March 29, 2026                               |
+| **Decision Makers** | White Caves Development Team                 |
 
 **Decision:** Rebrand primary color from Red (#D32F2F) to Gold (#D4AF37).
 
 **Context:** Red conflicts with semantic error colors; gold conveys luxury, prestige, and aligns with Dubai's luxury real estate market expectations. International buyers (Indian, British, Russian, Chinese demographics) associate gold with luxury.
 
 **Consequences:**
+
 - All styled-components updated to use `--color-primary: #D4AF37`
 - Design tokens system established (ADR-007 follows)
 - Error/danger states use `#EF4444` (red) exclusively
@@ -48,18 +51,19 @@ An Architecture Decision Record (ADR) documents a significant architectural deci
 
 ### ADR-002 — AI Assistant Plan API
 
-| Field | Value |
-|-------|-------|
-| **File** | `docs/adr/002-ai-assistant-plan-api.md` |
-| **Status** | Accepted |
-| **Date** | April 2026 |
-| **Decision Makers** | White Caves Development Team |
+| Field               | Value                                   |
+| ------------------- | --------------------------------------- |
+| **File**            | `docs/adr/002-ai-assistant-plan-api.md` |
+| **Status**          | Accepted                                |
+| **Date**            | April 2026                              |
+| **Decision Makers** | White Caves Development Team            |
 
 **Decision:** Implement a CRUD API (`/api/assistants`) for managing AI assistant plans, accessible by managing_director only.
 
 **Context:** 40 AI assistant personas need persistent, editable "plans" (capabilities, prompts, department assignments). Rather than hardcoding these in source files, a dynamic API allows the managing director to evolve assistant behaviour without code changes.
 
 **Consequences:**
+
 - All plan content XSS-sanitized before storage and retrieval
 - Public `GET /api/assistants` (no auth) for discovery
 - Write operations restricted to `managing_director` role only
@@ -69,17 +73,18 @@ An Architecture Decision Record (ADR) documents a significant architectural deci
 
 ### ADR-002b — RBAC Role Alias Architecture
 
-| Field | Value |
-|-------|-------|
-| **File** | `docs/adr/002-rbac-role-alias-architecture.md` |
-| **Status** | Accepted |
-| **Date** | April 2026 |
+| Field      | Value                                          |
+| ---------- | ---------------------------------------------- |
+| **File**   | `docs/adr/002-rbac-role-alias-architecture.md` |
+| **Status** | Accepted                                       |
+| **Date**   | April 2026                                     |
 
 **Decision:** Use role alias strings (e.g., `lion`, `managing_director`) stored on User model, checked by `requireRole([...])` middleware.
 
 **Context:** 29 distinct roles needed. A flat string stored on User is simpler than a separate permissions table for the current team size. Roles map to permission sets in middleware config.
 
 **Consequences:**
+
 - Adding a new role requires updating the role enum in Prisma schema
 - Permission matrix is documented in `business_docs/09_user_roles_permissions/roles-matrix.md`
 - No dynamic permission assignment (Phase 9 consideration)
@@ -88,17 +93,18 @@ An Architecture Decision Record (ADR) documents a significant architectural deci
 
 ### ADR-003 — Prisma + MongoDB Schema Design
 
-| Field | Value |
-|-------|-------|
-| **File** | `docs/adr/003-prisma-schema-design.md` |
-| **Status** | Accepted |
-| **Date** | April 2026 |
+| Field      | Value                                  |
+| ---------- | -------------------------------------- |
+| **File**   | `docs/adr/003-prisma-schema-design.md` |
+| **Status** | Accepted                               |
+| **Date**   | April 2026                             |
 
 **Decision:** Use Prisma ORM 6.6 with MongoDB Atlas as the database provider.
 
 **Context:** Real estate data is semi-structured — properties have varying fields by type (villa vs apartment vs commercial). MongoDB's flexible document model handles this better than a rigid SQL schema. Prisma provides type-safe queries and migration tooling.
 
 **Consequences:**
+
 - Schema lives in `prisma/schema.prisma`
 - No SQL migrations — Prisma push / migrate
 - MongoDB Atlas UAE region for data residency compliance (PDPL)
@@ -108,17 +114,18 @@ An Architecture Decision Record (ADR) documents a significant architectural deci
 
 ### ADR-004 — UnifiedSidebar Dashboard Layout
 
-| Field | Value |
-|-------|-------|
-| **File** | `docs/adr/004-sidebar-dashboard-layout.md` |
-| **Status** | Accepted |
-| **Date** | April 2026 |
+| Field      | Value                                      |
+| ---------- | ------------------------------------------ |
+| **File**   | `docs/adr/004-sidebar-dashboard-layout.md` |
+| **Status** | Accepted                                   |
+| **Date**   | April 2026                                 |
 
 **Decision:** Replace dual sidebar (SidebarContainer + EnhancedLeftSidebar) with a single `UnifiedSidebar` component at `src/components/layout/UnifiedSidebar/`.
 
 **Context:** Two sidebar components caused state synchronisation bugs and duplicate code. The UnifiedDashboardPage was managing conflicting navigation state across two components. A single canonical component simplifies maintenance.
 
 **Consequences:**
+
 - `EnhancedLeftSidebar` and `SidebarContainer` are legacy — do not use in new code
 - `UnifiedSidebar` owns navigation state via `sidebarSlice`
 - `AppLayout` wraps `UnifiedSidebar` + content + AI sidebar
@@ -128,17 +135,18 @@ An Architecture Decision Record (ADR) documents a significant architectural deci
 
 ### ADR-005 — Redux Slice Architecture
 
-| Field | Value |
-|-------|-------|
-| **File** | `docs/adr/005-redux-slice-architecture.md` |
-| **Status** | Accepted |
-| **Date** | April 2026 |
+| Field      | Value                                      |
+| ---------- | ------------------------------------------ |
+| **File**   | `docs/adr/005-redux-slice-architecture.md` |
+| **Status** | Accepted                                   |
+| **Date**   | April 2026                                 |
 
 **Decision:** Use Redux Toolkit with 13 domain-separated slices.
 
 **Context:** Complex CRM state (leads, properties, auth, sidebar, AI assistants, notifications, etc.) needs predictable management with DevTools support. Context API was considered but does not scale to 13 domains with cross-slice selectors.
 
 **Consequences:**
+
 - Each slice owns one domain (no cross-slice mutations)
 - Selectors exported from slice files (no derivation in components)
 - Immer used by default (RTK) — mutations OK inside `createSlice`
@@ -148,17 +156,18 @@ An Architecture Decision Record (ADR) documents a significant architectural deci
 
 ### ADR-006 — Express Error Handling Strategy
 
-| Field | Value |
-|-------|-------|
-| **File** | `docs/adr/006-express-error-handling.md` |
-| **Status** | Accepted |
-| **Date** | April 2026 |
+| Field      | Value                                    |
+| ---------- | ---------------------------------------- |
+| **File**   | `docs/adr/006-express-error-handling.md` |
+| **Status** | Accepted                                 |
+| **Date**   | April 2026                               |
 
 **Decision:** All Express routes use `asyncHandler` wrapper + `AppError` class for a consistent error contract.
 
 **Context:** Async errors in Express don't propagate to global error handler by default. 30+ route handlers need consistent 4xx/5xx responses. Different error shapes (validation vs auth vs not-found) must be unified.
 
 **Consequences:**
+
 - `asyncHandler(fn)` wraps every route handler
 - `AppError(message, statusCode, errors[])` is the only error class used
 - Global error middleware in `server/middleware/errorHandler.ts`
@@ -168,17 +177,18 @@ An Architecture Decision Record (ADR) documents a significant architectural deci
 
 ### ADR-007 — Design Token System
 
-| Field | Value |
-|-------|-------|
-| **File** | `docs/adr/007-design-token-system.md` |
-| **Status** | Accepted |
-| **Date** | April 2026 |
+| Field      | Value                                 |
+| ---------- | ------------------------------------- |
+| **File**   | `docs/adr/007-design-token-system.md` |
+| **Status** | Accepted                              |
+| **Date**   | April 2026                            |
 
 **Decision:** Implement a CSS custom property design token system for all colours, typography, spacing, and border radii.
 
 **Context:** Phase 6 requires Arabic RTL layout. RTL switching needs to be possible without component rewrites. CSS custom properties enable automatic `dir="rtl"` layout flipping when combined with logical properties (margin-inline vs margin-left).
 
 **Consequences:**
+
 - All styled-components reference CSS variables (e.g., `var(--color-primary)`)
 - Light/dark mode: theme values swap via CSS variable override on `[data-theme="light"]`
 - RTL: layout reverses with `[dir="rtl"]` CSS selector
@@ -188,15 +198,15 @@ An Architecture Decision Record (ADR) documents a significant architectural deci
 
 ## Proposed ADRs (Not Yet Decided)
 
-| ADR # | Topic | Status | Target |
-|-------|-------|--------|--------|
-| ADR-008 | GraphQL vs REST for Phase 7 Data & AI | Proposed | Phase 7 planning |
-| ADR-009 | Redis vs Memcached for property caching | Proposed | Phase 7 planning |
-| ADR-010 | Elasticsearch vs Typesense for search | Proposed | Phase 7 planning |
-| ADR-011 | Bull vs node-cron for job scheduling | Proposed | Phase 2 sprint 2 |
-| ADR-012 | React Native vs PWA for mobile | Proposed | Phase 10 planning |
-| ADR-013 | Stripe vs Telr for UAE payment processing | Proposed | Phase 2 sprint 2 |
-| ADR-014 | Sentry vs Datadog for error monitoring | Proposed | Phase 2 sprint 3 |
+| ADR #   | Topic                                     | Status   | Target            |
+| ------- | ----------------------------------------- | -------- | ----------------- |
+| ADR-008 | GraphQL vs REST for Phase 7 Data & AI     | Proposed | Phase 7 planning  |
+| ADR-009 | Redis vs Memcached for property caching   | Proposed | Phase 7 planning  |
+| ADR-010 | Elasticsearch vs Typesense for search     | Proposed | Phase 7 planning  |
+| ADR-011 | Bull vs node-cron for job scheduling      | Proposed | Phase 2 sprint 2  |
+| ADR-012 | React Native vs PWA for mobile            | Proposed | Phase 10 planning |
+| ADR-013 | Stripe vs Telr for UAE payment processing | Proposed | Phase 2 sprint 2  |
+| ADR-014 | Sentry vs Datadog for error monitoring    | Proposed | Phase 2 sprint 3  |
 
 ---
 
@@ -219,21 +229,24 @@ An Architecture Decision Record (ADR) documents a significant architectural deci
 
 ## Alternatives Considered
 
-| Option | Pros | Cons |
-|--------|------|------|
-| Option A (chosen) | ... | ... |
-| Option B | ... | ... |
-| Option C | ... | ... |
+| Option            | Pros | Cons |
+| ----------------- | ---- | ---- |
+| Option A (chosen) | ...  | ...  |
+| Option B          | ...  | ...  |
+| Option C          | ...  | ...  |
 
 ## Consequences
 
 **Positive:**
+
 - {expected benefits}
 
 **Negative:**
+
 - {trade-offs accepted}
 
 **Risks:**
+
 - {potential issues to monitor}
 
 ## Links
@@ -247,32 +260,31 @@ An Architecture Decision Record (ADR) documents a significant architectural deci
 **Update Rule:** Add new ADR entry within 48 hours of any accepted architectural decision
 **ADR files location:** `docs/adr/`
 
-
 ---
 
 ## ADR Quick Reference Guide
 
 ### Choosing the Right ADR Status
 
-| Status | Meaning | Use When |
-|--------|---------|----------|
-| **Proposed** | Under discussion, not yet decided | Before the team alignment meeting |
-| **Accepted** | Decision finalised, being implemented | After consensus reached; implementation in progress |
-| **Implemented** | Decision fully deployed in production | After feature goes live |
-| **Deprecated** | Decision still in effect but no longer the preferred approach | When a better approach exists but migration is gradual |
-| **Superseded** | Replaced by a newer ADR | When a fundamentally different decision is made |
+| Status          | Meaning                                                       | Use When                                               |
+| --------------- | ------------------------------------------------------------- | ------------------------------------------------------ |
+| **Proposed**    | Under discussion, not yet decided                             | Before the team alignment meeting                      |
+| **Accepted**    | Decision finalised, being implemented                         | After consensus reached; implementation in progress    |
+| **Implemented** | Decision fully deployed in production                         | After feature goes live                                |
+| **Deprecated**  | Decision still in effect but no longer the preferred approach | When a better approach exists but migration is gradual |
+| **Superseded**  | Replaced by a newer ADR                                       | When a fundamentally different decision is made        |
 
 ### Key Decision Criteria at White Caves
 
 When evaluating architecture options, score each against these criteria:
 
-| Criterion | Weight | Description |
-|---------|--------|------------|
-| UAE/RERA compliance | 30% | Does this option support data residency, PDPL, RERA requirements? |
-| Developer experience | 20% | How quickly can a new developer understand and work with this? |
-| Operational cost | 20% | What does this cost to run at scale? (Phase 5: 500 agents, 50K leads) |
-| Security posture | 15% | Does this introduce new attack surfaces? |
-| Vendor dependency risk | 15% | What happens if this vendor raises prices or shuts down? |
+| Criterion              | Weight | Description                                                           |
+| ---------------------- | ------ | --------------------------------------------------------------------- |
+| UAE/RERA compliance    | 30%    | Does this option support data residency, PDPL, RERA requirements?     |
+| Developer experience   | 20%    | How quickly can a new developer understand and work with this?        |
+| Operational cost       | 20%    | What does this cost to run at scale? (Phase 5: 500 agents, 50K leads) |
+| Security posture       | 15%    | Does this introduce new attack surfaces?                              |
+| Vendor dependency risk | 15%    | What happens if this vendor raises prices or shuts down?              |
 
 ---
 
@@ -292,25 +304,28 @@ Replace all gold/amber CSS custom properties and Tailwind utilities with Red (#E
 
 ### Alternatives Considered
 
-| Option | Pros | Cons |
-|--------|------|------|
-| **Red #E31E24 (chosen)** | Matches brand identity; high contrast on white; distinctive | Adjustment period for team |
-| Retain gold | No migration cost | Not authentic to brand |
-| Blue accent | Professional look | Not White Caves brand |
-| Black accent | Premium look | Lacks warmth; too corporate |
+| Option                   | Pros                                                        | Cons                        |
+| ------------------------ | ----------------------------------------------------------- | --------------------------- |
+| **Red #E31E24 (chosen)** | Matches brand identity; high contrast on white; distinctive | Adjustment period for team  |
+| Retain gold              | No migration cost                                           | Not authentic to brand      |
+| Blue accent              | Professional look                                           | Not White Caves brand       |
+| Black accent             | Premium look                                                | Lacks warmth; too corporate |
 
 ### Consequences
 
 **Positive:**
+
 - Authentic brand alignment
 - Higher contrast ratios on white backgrounds (WCAG compliant)
 - Distinctive differentiation from gold-heavy competitors (PropertyFinder uses gold/orange)
 
 **Negative:**
+
 - All existing screenshots and design mockups outdated after change
 - Marketing materials need update
 
 **Rules established:**
+
 - Never introduce gold (#D4AF37, #C9A84C, #FFB300, #FFC107, #FFD700) or amber/yellow in any UI component
 - `--accent-gold` CSS variable = `#E31E24` (the value is red, the name is legacy)
 - All Tailwind: `text-yellow-*`, `bg-yellow-*`, `border-yellow-*` classes prohibited in new components
@@ -333,25 +348,28 @@ REST endpoint: `POST /api/v1/ai-assistants/:id/generate-plan` with typed respons
 
 ### Alternatives Considered
 
-| Option | Pros | Cons |
-|--------|------|------|
-| **REST endpoint (chosen)** | Simple; stateless; easy to version; team expertise | No streaming |
-| GraphQL mutation | Better for complex nested data | Overhead for this use case |
-| WebSocket streaming | Real-time generation stream | Complex; overkill for plan generation |
-| Webhook callback | Non-blocking | Complex async flow; more failure modes |
+| Option                     | Pros                                               | Cons                                   |
+| -------------------------- | -------------------------------------------------- | -------------------------------------- |
+| **REST endpoint (chosen)** | Simple; stateless; easy to version; team expertise | No streaming                           |
+| GraphQL mutation           | Better for complex nested data                     | Overhead for this use case             |
+| WebSocket streaming        | Real-time generation stream                        | Complex; overkill for plan generation  |
+| Webhook callback           | Non-blocking                                       | Complex async flow; more failure modes |
 
 ### Consequences
 
 **Positive:**
+
 - Simple, well-understood pattern; fast to implement
 - Easily versioned (v2 can add streaming via SSE without breaking v1)
 - AI plan generation can be queued and rate-limited
 
 **Negative:**
+
 - No streaming — user waits for full plan (mitigated by loading indicator + typical < 3s generation)
 - Polled updates (client must refresh) — Phase 3: WebSocket push when plan completes
 
 **Implementation notes:**
+
 - XSS prevention: plan markdown sanitised via `DOMPurify` on frontend; `xss` library on backend
 - Plan status: `GENERATING → READY | FAILED` (Zod discriminated union)
 - Max plan size: 50KB (MongoDB document limit is 16MB; 50KB is practical limit for readable content)
@@ -374,22 +392,24 @@ MongoDB Atlas (primary operational database) + PostgreSQL (analytics/reporting d
 
 ### Alternatives Considered
 
-| Option | Pros | Cons |
-|--------|------|------|
-| **MongoDB Atlas (chosen)** | Flexible schema; UAE Atlas region; strong Node/Prisma support; JSON-native | Less mature SQL analytics; no ACID cross-collection transactions |
-| PostgreSQL (primary) | Full ACID; excellent analytics; mature ecosystem | Rigid schema; more migrations; less JSON-friendly |
-| Supabase (PostgreSQL + realtime) | Realtime + auth built-in | US-only hosting; vendor lock-in risk |
-| PlanetScale (MySQL) | Serverless; excellent DX | No UAE region; not well-suited for document-like data |
+| Option                           | Pros                                                                       | Cons                                                             |
+| -------------------------------- | -------------------------------------------------------------------------- | ---------------------------------------------------------------- |
+| **MongoDB Atlas (chosen)**       | Flexible schema; UAE Atlas region; strong Node/Prisma support; JSON-native | Less mature SQL analytics; no ACID cross-collection transactions |
+| PostgreSQL (primary)             | Full ACID; excellent analytics; mature ecosystem                           | Rigid schema; more migrations; less JSON-friendly                |
+| Supabase (PostgreSQL + realtime) | Realtime + auth built-in                                                   | US-only hosting; vendor lock-in risk                             |
+| PlanetScale (MySQL)              | Serverless; excellent DX                                                   | No UAE region; not well-suited for document-like data            |
 
 ### Consequences
 
 **Positive:**
+
 - UAE data residency without VPN complexity
 - Dynamic property attributes without schema migrations
 - Excellent Node.js support (Mongoose/Prisma)
 - MongoDB Atlas offers built-in search (basic) and can add Elasticsearch later
 
 **Negative:**
+
 - Joins require Prisma `include` (not SQL JOIN — slightly less flexible for complex analytics)
 - Mitigation: Phase 7 introduces PostgreSQL analytics DB (dbt + Metabase) for complex reporting
 
@@ -411,23 +431,25 @@ Firebase Authentication (Google OAuth + email/password) as identity provider; Wh
 
 ### Alternatives Considered
 
-| Option | Pros | Cons |
-|--------|------|------|
+| Option                          | Pros                                                  | Cons                                                                   |
+| ------------------------------- | ----------------------------------------------------- | ---------------------------------------------------------------------- |
 | **Firebase + own JWT (chosen)** | Google SSO free; reliable OTP; own role claims in JWT | Firebase is US-hosted (SCCs needed for EU clients); extra hop for auth |
-| Auth0 | Extensive role management; enterprise features | Cost ($240/month for 1,000 MAU); US-hosted |
-| Clerk | Modern DX; embedded UI | $25/month; US-hosted; newer product |
-| Custom JWT only | Full control; UAE-hosted | Development time; security risk if done incorrectly |
-| Supabase Auth | Full stack integration | US-only hosting; no UAE region |
+| Auth0                           | Extensive role management; enterprise features        | Cost ($240/month for 1,000 MAU); US-hosted                             |
+| Clerk                           | Modern DX; embedded UI                                | $25/month; US-hosted; newer product                                    |
+| Custom JWT only                 | Full control; UAE-hosted                              | Development time; security risk if done incorrectly                    |
+| Supabase Auth                   | Full stack integration                                | US-only hosting; no UAE region                                         |
 
 ### Consequences
 
 **Positive:**
+
 - Firebase is free for < 10,000 MAU (adequate for years)
 - Google OAuth significantly reduces staff password management burden
 - Own JWT gives full control over role claims and expiry
 - Firebase handles 2FA (Phase 9 — enable Firebase MFA)
 
 **Negative:**
+
 - Firebase is US-hosted — EU client data touches US (mitigated by SCCs)
 - Double hop: Firebase verify → White Caves JWT issue (< 50ms overhead)
 - 2FA not enforced until Phase 9 (risk window)
@@ -450,15 +472,16 @@ Vercel for frontend; Railway/Render for backend API. Migrate to AWS when monthly
 
 ### Alternatives Considered
 
-| Option | Pros | Cons |
-|--------|------|------|
-| **Vercel + Railway (chosen)** | Zero-config deployment; CI/CD built-in; free tier; rapid iteration | US-based; less control; more expensive at scale |
-| AWS (EC2 + CloudFront) | Full control; UAE region available; cost-effective at scale | Complex setup; requires DevOps expertise |
-| AWS Amplify + Lambda | Serverless; auto-scale | Cold starts hurt real estate UX (response time unpredictable) |
-| Google Cloud Run | Excellent autoscaling | Less familiar to team |
-| DigitalOcean App Platform | Simple; EU/regional | Less ecosystem integrations |
+| Option                        | Pros                                                               | Cons                                                          |
+| ----------------------------- | ------------------------------------------------------------------ | ------------------------------------------------------------- |
+| **Vercel + Railway (chosen)** | Zero-config deployment; CI/CD built-in; free tier; rapid iteration | US-based; less control; more expensive at scale               |
+| AWS (EC2 + CloudFront)        | Full control; UAE region available; cost-effective at scale        | Complex setup; requires DevOps expertise                      |
+| AWS Amplify + Lambda          | Serverless; auto-scale                                             | Cold starts hurt real estate UX (response time unpredictable) |
+| Google Cloud Run              | Excellent autoscaling                                              | Less familiar to team                                         |
+| DigitalOcean App Platform     | Simple; EU/regional                                                | Less ecosystem integrations                                   |
 
 ### Migration Trigger to AWS (criteria for ADR-005-MIGRATE):
+
 - Monthly bill > AED 3,000 on PaaS
 - Need for UAE region database (already on Atlas UAE)
 - Need for ElastiCache in UAE region (Phase 7)
@@ -467,11 +490,13 @@ Vercel for frontend; Railway/Render for backend API. Migrate to AWS when monthly
 ### Consequences
 
 **Positive:**
+
 - Zero-to-deployed in minutes; excellent developer experience
 - Vercel Edge Network gives < 50ms TTFB globally
 - No DevOps hire needed until scale warrants it
 
 **Negative:**
+
 - US hosting for API (SCCs required for EU clients)
 - Limited control over runtime environment
 - Cost increases sharply with bandwidth at scale

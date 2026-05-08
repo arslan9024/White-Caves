@@ -120,14 +120,21 @@ const LandlordIncomeTab: FC = () => {
   }, [currentUser]);
 
   const summary = useMemo(() => {
-    const activeProperties = properties.filter(p => p.leaseStatus === 'active' || p.leaseStatus === 'expiring');
+    const activeProperties = properties.filter(
+      p => p.leaseStatus === 'active' || p.leaseStatus === 'expiring'
+    );
     const totalMonthlyRent = activeProperties.reduce((s, p) => s + p.monthlyRent, 0);
     const totalCommission = activeProperties.reduce(
       (s, p) => s + (p.monthlyRent * p.agentCommissionPct) / 100,
       0
     );
     const netMonthlyIncome = totalMonthlyRent - totalCommission;
-    return { totalMonthlyRent, totalCommission, netMonthlyIncome, activeCount: activeProperties.length };
+    return {
+      totalMonthlyRent,
+      totalCommission,
+      netMonthlyIncome,
+      activeCount: activeProperties.length,
+    };
   }, [properties]);
 
   if (!currentUser) {
@@ -211,9 +218,7 @@ const LandlordIncomeTab: FC = () => {
                   Tenant: {prop.tenantName}
                   {prop.leaseEndDate !== '—' && ` · Lease ends: ${prop.leaseEndDate}`}
                 </p>
-                {prop.ejariNumber && (
-                  <p>Ejari: {prop.ejariNumber}</p>
-                )}
+                {prop.ejariNumber && <p>Ejari: {prop.ejariNumber}</p>}
               </div>
               <div className="income-breakdown">
                 {prop.leaseStatus === 'vacant' ? (
@@ -221,7 +226,9 @@ const LandlordIncomeTab: FC = () => {
                 ) : (
                   <>
                     <p>Rent: AED {prop.monthlyRent.toLocaleString()}</p>
-                    <p>Commission ({prop.agentCommissionPct}%): − AED {commission.toLocaleString()}</p>
+                    <p>
+                      Commission ({prop.agentCommissionPct}%): − AED {commission.toLocaleString()}
+                    </p>
                     <p>
                       <strong>Net: AED {netIncome.toLocaleString()}</strong>
                     </p>
@@ -230,8 +237,11 @@ const LandlordIncomeTab: FC = () => {
               </div>
               <div>
                 <span className={`status-badge status-${prop.leaseStatus}`}>
-                  {prop.leaseStatus === 'active' ? 'Active' :
-                    prop.leaseStatus === 'expiring' ? 'Expiring Soon' : 'Vacant'}
+                  {prop.leaseStatus === 'active'
+                    ? 'Active'
+                    : prop.leaseStatus === 'expiring'
+                      ? 'Expiring Soon'
+                      : 'Vacant'}
                 </span>
               </div>
             </div>

@@ -22,7 +22,7 @@
 }
 
 .detail-breadcrumb a {
-  color: var(--primary-color, #E31E24);
+  color: var(--primary-color, #e31e24);
   text-decoration: none;
   font-weight: 500;
 }
@@ -82,23 +82,23 @@
 }
 
 .detail-badges .badge.featured {
-  background: var(--luxury-cta-bg, #E31E24);
+  background: var(--luxury-cta-bg, #e31e24);
   color: white;
 }
 
 .detail-badges .badge.purpose.buy {
-  background: #DC2626;
+  background: #dc2626;
   color: white;
 }
 
 .detail-badges .badge.purpose.rent {
-  background: #10B981;
+  background: #10b981;
   color: white;
 }
 
 .detail-badges .badge.type {
   background: rgba(46, 90, 79, 0.1);
-  color: var(--secondary-color, #2E5A4F);
+  color: var(--secondary-color, #2e5a4f);
 }
 
 .detail-title {
@@ -119,7 +119,7 @@
 }
 
 .detail-location svg {
-  color: var(--luxury-cta-bg, #E31E24);
+  color: var(--luxury-cta-bg, #e31e24);
 }
 
 .detail-price-row {
@@ -131,7 +131,7 @@
 .detail-price {
   font-size: 1.8rem;
   font-weight: 800;
-  color: var(--luxury-cta-bg, #E31E24);
+  color: var(--luxury-cta-bg, #e31e24);
 }
 
 .detail-price-sqft {
@@ -159,7 +159,7 @@
 }
 
 .spec-item svg {
-  color: var(--luxury-cta-bg, #E31E24);
+  color: var(--luxury-cta-bg, #e31e24);
   flex-shrink: 0;
 }
 
@@ -205,7 +205,7 @@
   gap: 6px;
   padding: 8px 16px;
   background: rgba(46, 90, 79, 0.06);
-  color: var(--secondary-color, #2E5A4F);
+  color: var(--secondary-color, #2e5a4f);
   border: 1px solid rgba(46, 90, 79, 0.12);
   border-radius: 8px;
   font-size: 0.8rem;
@@ -285,25 +285,25 @@
 }
 
 .contact-btn.whatsapp {
-  background: #25D366;
+  background: #25d366;
   color: white;
 }
 
 .contact-btn.whatsapp:hover {
-  background: #1EBF5A;
+  background: #1ebf5a;
 }
 
 .contact-btn.phone {
-  background: var(--luxury-cta-bg, #E31E24);
+  background: var(--luxury-cta-bg, #e31e24);
   color: white;
 }
 
 .contact-btn.phone:hover {
-  background: var(--luxury-cta-bg-hover, #B71C1C);
+  background: var(--luxury-cta-bg-hover, #b71c1c);
 }
 
 .contact-btn.email {
-  background: var(--secondary-color, #2E5A4F);
+  background: var(--secondary-color, #2e5a4f);
   color: white;
 }
 
@@ -336,14 +336,14 @@
 }
 
 .action-btn:hover {
-  border-color: var(--luxury-cta-bg, #E31E24);
-  color: var(--luxury-cta-bg, #E31E24);
+  border-color: var(--luxury-cta-bg, #e31e24);
+  color: var(--luxury-cta-bg, #e31e24);
 }
 
 .action-btn.favorite.active {
-  background: #FEF2F2;
-  border-color: #DC2626;
-  color: #DC2626;
+  background: #fef2f2;
+  border-color: #dc2626;
+  color: #dc2626;
 }
 
 /* Back Button */
@@ -365,8 +365,8 @@
 }
 
 .back-btn:hover {
-  border-color: var(--luxury-cta-bg, #E31E24);
-  color: var(--luxury-cta-bg, #E31E24);
+  border-color: var(--luxury-cta-bg, #e31e24);
+  color: var(--luxury-cta-bg, #e31e24);
 }
 
 /* ─── Similar Properties ────────────────────────────────────────── */
@@ -397,7 +397,9 @@
   border-radius: 12px;
   overflow: hidden;
   border: 1px solid rgba(0, 0, 0, 0.06);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
 .similar-card:hover {
@@ -419,7 +421,7 @@
   font-size: 0.65rem;
   font-weight: 600;
   text-transform: uppercase;
-  color: var(--secondary-color, #2E5A4F);
+  color: var(--secondary-color, #2e5a4f);
   letter-spacing: 0.05em;
 }
 
@@ -442,7 +444,7 @@
 .similar-price {
   font-size: 1.05rem;
   font-weight: 700;
-  color: var(--luxury-cta-bg, #E31E24);
+  color: var(--luxury-cta-bg, #e31e24);
 }
 
 /* ─── Loading / Not Found ───────────────────────────────────────── */
@@ -471,7 +473,7 @@
   gap: 6px;
   margin-top: 12px;
   padding: 10px 20px;
-  background: var(--luxury-cta-bg, #E31E24);
+  background: var(--luxury-cta-bg, #e31e24);
   color: white;
   border-radius: 8px;
   text-decoration: none;
@@ -481,7 +483,7 @@
 }
 
 .back-to-listings:hover {
-  background: var(--luxury-cta-bg-hover, #B71C1C);
+  background: var(--luxury-cta-bg-hover, #b71c1c);
 }
 
 /* ─── Print Styles ──────────────────────────────────────────────── */

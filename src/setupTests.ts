@@ -1,6 +1,6 @@
 /**
  * Test Setup File
- * 
+ *
  * Global test configuration and setup for all Jest tests
  */
 
@@ -30,7 +30,7 @@ const localStorageMock = {
   clear: vi.fn(),
 };
 
-global.localStorage = localStorageMock as any;
+global.localStorage = localStorageMock as unknown as Storage;
 
 // Suppress console errors in tests (optional)
 global.console = {

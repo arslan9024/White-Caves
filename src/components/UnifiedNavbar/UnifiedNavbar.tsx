@@ -183,4 +183,3 @@ export const UnifiedNavbar: React.FC<UnifiedNavbarProps> = ({
 UnifiedNavbar.displayName = 'UnifiedNavbar';
 
 export default UnifiedNavbar;
-

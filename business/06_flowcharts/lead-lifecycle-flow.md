@@ -1,4 +1,5 @@
 # Lead Lifecycle Flow
+
 # White Caves Real Estate Platform
 
 > **Document ID:** WC-FLOW-LEAD-001
@@ -296,28 +297,28 @@ Agent inactivity on lead > 8 days (no activity logged)
 
 ## 7. Lead Scoring Model
 
-| Signal | Score | Notes |
-|--------|-------|-------|
-| **Source** | | |
-| Walk-in | 35 | Highest intent |
-| Referral | 40 | Highest trust |
-| Portal webhook | 30 | Property-specific interest |
-| WhatsApp inquiry | 25 | Active engagement |
-| Website form | 20 | Passive browsing |
-| **Budget** | | |
-| AED 3M+ | 35 | Premium buyer |
-| AED 1M–3M | 25 | Mid-market |
-| AED 500k–1M | 15 | Entry level |
-| Under AED 500k | 5 | Affordable focus |
-| **Engagement** | | |
-| Phone provided | 5 | |
-| Specific property asked | 10 | |
-| Multiple messages | 10 | |
-| Responded within 1h | 10 | |
-| **Stage Bonus** | | |
-| QUALIFIED (BANT) | +10 | |
-| Viewing completed | +15 | |
-| **Maximum score** | **100** | |
+| Signal                  | Score   | Notes                      |
+| ----------------------- | ------- | -------------------------- |
+| **Source**              |         |                            |
+| Walk-in                 | 35      | Highest intent             |
+| Referral                | 40      | Highest trust              |
+| Portal webhook          | 30      | Property-specific interest |
+| WhatsApp inquiry        | 25      | Active engagement          |
+| Website form            | 20      | Passive browsing           |
+| **Budget**              |         |                            |
+| AED 3M+                 | 35      | Premium buyer              |
+| AED 1M–3M               | 25      | Mid-market                 |
+| AED 500k–1M             | 15      | Entry level                |
+| Under AED 500k          | 5       | Affordable focus           |
+| **Engagement**          |         |                            |
+| Phone provided          | 5       |                            |
+| Specific property asked | 10      |                            |
+| Multiple messages       | 10      |                            |
+| Responded within 1h     | 10      |                            |
+| **Stage Bonus**         |         |                            |
+| QUALIFIED (BANT)        | +10     |                            |
+| Viewing completed       | +15     |                            |
+| **Maximum score**       | **100** |                            |
 
 **Qualification threshold:** Score ≥ 60 to progress to VIEWING
 
@@ -325,25 +326,24 @@ Agent inactivity on lead > 8 days (no activity logged)
 
 ## 8. Lead Activity Log Events
 
-| Event Type | Who | When |
-|-----------|-----|------|
-| `lead_created` | System | On capture |
-| `status_changed` | Agent / System | Each status transition |
-| `call_logged` | Agent | After phone call |
-| `whatsapp_sent` | Agent / Bot | After WhatsApp message |
-| `email_sent` | Agent | After email |
-| `viewing_scheduled` | Agent | Appointment created |
-| `viewing_completed` | Agent | After viewing |
-| `offer_made` | Agent | Offer submitted |
-| `score_updated` | System | After engagement event |
-| `assigned_to` | Manager / System | On reassignment |
-| `dormancy_alert` | System | After 8 days inactivity |
+| Event Type          | Who              | When                    |
+| ------------------- | ---------------- | ----------------------- |
+| `lead_created`      | System           | On capture              |
+| `status_changed`    | Agent / System   | Each status transition  |
+| `call_logged`       | Agent            | After phone call        |
+| `whatsapp_sent`     | Agent / Bot      | After WhatsApp message  |
+| `email_sent`        | Agent            | After email             |
+| `viewing_scheduled` | Agent            | Appointment created     |
+| `viewing_completed` | Agent            | After viewing           |
+| `offer_made`        | Agent            | Offer submitted         |
+| `score_updated`     | System           | After engagement event  |
+| `assigned_to`       | Manager / System | On reassignment         |
+| `dormancy_alert`    | System           | After 8 days inactivity |
 
 ---
 
 **Document Owner:** Sales Department (Clara + Sophia)
 **Related:** `business_docs/09_crm_features/lead-tracking.md`, `business_docs/04_workflows/lead-to-sale-flowchart.md`
-
 
 ---
 
@@ -379,6 +379,7 @@ Archer AI reassesses score
 ### 9.2 Manual Lead Revival
 
 Manager can manually revive a LOST lead:
+
 - Unlock lead from LOST status: Manager permission required
 - Mandatory note: "Why is this lead being revived? What changed?"
 - Reassign to agent (original or new)
@@ -387,13 +388,13 @@ Manager can manually revive a LOST lead:
 
 ### 9.3 Lost Reason Analysis (Quarterly)
 
-| Lost Reason | Count (Q3 2026 est.) | Action |
-|------------|---------------------|--------|
-| Chose competitor | 45% | Battle card training; response time audit |
-| No longer looking | 20% | Nurturing campaign (re-enter market in 6–12 months) |
-| Mortgage rejected | 10% | Refer to Mortgage Finder; lower-value properties |
-| Personal circumstances | 15% | Sympathy; maintain relationship; re-engage in 3 months |
-| Price too high | 10% | Review pricing; offer alternative properties |
+| Lost Reason            | Count (Q3 2026 est.) | Action                                                 |
+| ---------------------- | -------------------- | ------------------------------------------------------ |
+| Chose competitor       | 45%                  | Battle card training; response time audit              |
+| No longer looking      | 20%                  | Nurturing campaign (re-enter market in 6–12 months)    |
+| Mortgage rejected      | 10%                  | Refer to Mortgage Finder; lower-value properties       |
+| Personal circumstances | 15%                  | Sympathy; maintain relationship; re-engage in 3 months |
+| Price too high         | 10%                  | Review pricing; offer alternative properties           |
 
 ---
 

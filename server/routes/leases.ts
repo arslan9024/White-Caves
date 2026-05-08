@@ -77,7 +77,7 @@ router.get(
       data: leases,
       pagination: { page, pageSize, total, totalPages: Math.ceil(total / pageSize) },
     });
-  }),
+  })
 );
 
 // ─── GET /api/leases/expiring — Leases expiring within N days ────────────────
@@ -112,7 +112,7 @@ router.get(
     });
 
     res.json({ success: true, data: leases, meta: { expiringWithinDays: days } });
-  }),
+  })
 );
 
 // ─── GET /api/leases/:id — Get lease detail ──────────────────────────────────
@@ -144,7 +144,7 @@ router.get(
     }
 
     res.json({ success: true, data: lease });
-  }),
+  })
 );
 
 // ─── POST /api/leases — Create a new lease ───────────────────────────────────
@@ -209,7 +209,7 @@ router.post(
 
     logger.info('Lease created', { userId, leaseId: lease.id, propertyId, tenantId });
     res.status(201).json({ success: true, data: lease });
-  }),
+  })
 );
 
 // ─── PATCH /api/leases/:id — Update a lease ─────────────────────────────────
@@ -230,11 +230,23 @@ router.patch(
     }
 
     const {
-      status, monthlyRent, endDate, terms, nextPaymentDue, leaseNumber, documents,
+      status,
+      monthlyRent,
+      endDate,
+      terms,
+      nextPaymentDue,
+      leaseNumber,
+      documents,
       // Ejari fields
-      ejariNumber, ejariStatus, ejariRegistrationDate, ejariExpiryDate,
+      ejariNumber,
+      ejariStatus,
+      ejariRegistrationDate,
+      ejariExpiryDate,
       // Key handover fields (handled via dedicated endpoint but allow PATCH too)
-      keyHandoverDate, keyHandoverNotes, meterReadings, addendumDocuments,
+      keyHandoverDate,
+      keyHandoverNotes,
+      meterReadings,
+      addendumDocuments,
       // Linked offer
       offerId,
     } = req.body;
@@ -264,12 +276,17 @@ router.patch(
     if (ejariStatus !== undefined) {
       const validEjariStatuses = ['pending', 'registered', 'expired', 'cancelled'];
       if (!validEjariStatuses.includes(ejariStatus)) {
-        throw new AppError(`Invalid ejariStatus. Must be one of: ${validEjariStatuses.join(', ')}`, 400);
+        throw new AppError(
+          `Invalid ejariStatus. Must be one of: ${validEjariStatuses.join(', ')}`,
+          400
+        );
       }
       updateData.ejariStatus = ejariStatus;
     }
     if (ejariRegistrationDate !== undefined) {
-      updateData.ejariRegistrationDate = ejariRegistrationDate ? new Date(ejariRegistrationDate) : null;
+      updateData.ejariRegistrationDate = ejariRegistrationDate
+        ? new Date(ejariRegistrationDate)
+        : null;
     }
     if (ejariExpiryDate !== undefined) {
       updateData.ejariExpiryDate = ejariExpiryDate ? new Date(ejariExpiryDate) : null;
@@ -287,7 +304,7 @@ router.patch(
 
     logger.info('Lease updated', { userId, leaseId: id, status: updated.status });
     res.json({ success: true, data: updated });
-  }),
+  })
 );
 
 // ─── DELETE /api/leases/:id — Delete a lease (draft only) ───────────────────
@@ -316,7 +333,7 @@ router.delete(
 
     logger.info('Lease deleted', { userId, leaseId: id });
     res.json({ success: true, message: 'Lease deleted' });
-  }),
+  })
 );
 
 // ─── POST /api/leases/:id/addendum — Add an addendum clause ─────────────────
@@ -350,7 +367,7 @@ router.post(
 
     logger.info('Lease addendum created', { userId, leaseId: id, addendumId: addendum.id });
     res.status(201).json({ success: true, data: addendum });
-  }),
+  })
 );
 
 // ─── GET /api/leases/:id/addenda — List addenda for a lease ─────────────────
@@ -361,7 +378,10 @@ router.get(
     if (!userId) throw new AppError('Authentication required', 401);
 
     const { id } = req.params;
-    const lease = await prisma.lease.findUnique({ where: { id }, select: { tenantId: true, landlordId: true } });
+    const lease = await prisma.lease.findUnique({
+      where: { id },
+      select: { tenantId: true, landlordId: true },
+    });
     if (!lease) throw new AppError('Lease not found', 404);
 
     const userRole = req.user?.role;
@@ -375,7 +395,7 @@ router.get(
     });
 
     res.json({ success: true, data: addenda });
-  }),
+  })
 );
 
 // ─── POST /api/leases/:id/key-handover — Record key handover ─────────────────
@@ -423,7 +443,7 @@ router.post(
 
     logger.info('Key handover recorded', { userId, leaseId: id, handoverDate: handover });
     res.json({ success: true, data: updated, message: 'Key handover recorded' });
-  }),
+  })
 );
 
 // ─── GET /api/leases/:id/pnl — Per-lease P&L report ─────────────────────────
@@ -456,7 +476,7 @@ router.get(
     const durationMonths = Math.max(1, Math.round((endMs - startMs) / (1000 * 60 * 60 * 24 * 30)));
 
     // Revenue: rent collected via cleared PDC cheques
-    const clearedPDC = lease.pdcSchedule.filter((p) => p.status === 'cleared');
+    const clearedPDC = lease.pdcSchedule.filter(p => p.status === 'cleared');
     const rentCollected = clearedPDC.reduce((s, p) => s + p.amount, 0);
 
     // Commissions for this property
@@ -465,7 +485,9 @@ router.get(
       select: { amount: true, status: true, type: true },
     });
     const totalCommission = commissions.reduce((s, c) => s + c.amount, 0);
-    const paidCommission = commissions.filter((c) => c.status === 'paid').reduce((s, c) => s + c.amount, 0);
+    const paidCommission = commissions
+      .filter(c => c.status === 'paid')
+      .reduce((s, c) => s + c.amount, 0);
 
     // Maintenance costs for this property
     const maintenance = await prisma.maintenance.findMany({
@@ -473,7 +495,7 @@ router.get(
       select: { cost: true, status: true },
     });
     const maintenanceCost = maintenance
-      .filter((m) => m.status === 'completed')
+      .filter(m => m.status === 'completed')
       .reduce((s, m) => s + (m.cost || 0), 0);
 
     // Annual rent projections
@@ -484,9 +506,9 @@ router.get(
     const pdcSummary = {
       total: lease.pdcSchedule.length,
       cleared: clearedPDC.length,
-      pending: lease.pdcSchedule.filter((p) => p.status === 'pending').length,
-      presented: lease.pdcSchedule.filter((p) => p.status === 'presented').length,
-      bounced: lease.pdcSchedule.filter((p) => p.status === 'bounced').length,
+      pending: lease.pdcSchedule.filter(p => p.status === 'pending').length,
+      presented: lease.pdcSchedule.filter(p => p.status === 'presented').length,
+      bounced: lease.pdcSchedule.filter(p => p.status === 'bounced').length,
     };
 
     res.json({
@@ -516,14 +538,13 @@ router.get(
           paidCommission,
           maintenanceCost,
           netProfit,
-          collectionRate: grossIncomeProjected > 0
-            ? Math.round((rentCollected / grossIncomeProjected) * 100)
-            : 0,
+          collectionRate:
+            grossIncomeProjected > 0 ? Math.round((rentCollected / grossIncomeProjected) * 100) : 0,
         },
         pdcSummary,
       },
     });
-  }),
+  })
 );
 
 // ─── GET /api/leases/:id/pdc — List PDC schedule ─────────────────────────────
@@ -534,7 +555,10 @@ router.get(
     if (!userId) throw new AppError('Authentication required', 401);
 
     const { id } = req.params;
-    const lease = await prisma.lease.findUnique({ where: { id }, select: { tenantId: true, landlordId: true } });
+    const lease = await prisma.lease.findUnique({
+      where: { id },
+      select: { tenantId: true, landlordId: true },
+    });
     if (!lease) throw new AppError('Lease not found', 404);
 
     const userRole = req.user?.role;
@@ -548,7 +572,7 @@ router.get(
     });
 
     res.json({ success: true, data: pdc });
-  }),
+  })
 );
 
 // ─── POST /api/leases/:id/pdc — Add PDC cheque ───────────────────────────────
@@ -595,7 +619,7 @@ router.post(
 
     logger.info('PDC cheque added', { userId, leaseId: id, pdcId: pdc.id, dueDate: due });
     res.status(201).json({ success: true, data: pdc });
-  }),
+  })
 );
 
 // ─── PATCH /api/leases/:id/pdc/:pdcId — Update PDC status ───────────────────
@@ -606,7 +630,10 @@ router.patch(
     if (!userId) throw new AppError('Authentication required', 401);
 
     const { id, pdcId } = req.params;
-    const lease = await prisma.lease.findUnique({ where: { id }, select: { landlordId: true, tenantId: true } });
+    const lease = await prisma.lease.findUnique({
+      where: { id },
+      select: { landlordId: true, tenantId: true },
+    });
     if (!lease) throw new AppError('Lease not found', 404);
 
     const userRole = req.user?.role;
@@ -630,7 +657,7 @@ router.patch(
 
     logger.info('PDC status updated', { userId, leaseId: id, pdcId, status });
     res.json({ success: true, data: updated });
-  }),
+  })
 );
 
 export default router;

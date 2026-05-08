@@ -1,4 +1,5 @@
 # WhatsApp Bot Conversation Flow
+
 # White Caves Real Estate Platform
 
 > **Document ID:** WC-FLOW-WA-001
@@ -75,7 +76,7 @@ Message received: "Hi, I'm looking for a villa in DAMAC Hills 2"
           │
           ▼
   Nina Bot — Intent Classification:
-  
+
   ┌──────────────────────────────────────────────────────────────┐
   │ INTENT CATEGORIES                                            │
   │                                                              │
@@ -105,7 +106,7 @@ Message received: "Hi, I'm looking for a villa in DAMAC Hills 2"
 Intent: BUY_PROPERTY
           │
           ▼
-  Nina: "Great! I can help you find your perfect property. 
+  Nina: "Great! I can help you find your perfect property.
          Let me ask a few quick questions 👇"
           │
           ▼
@@ -129,7 +130,7 @@ Intent: BUY_PROPERTY
    ✅ 3–4BR Villa
    ✅ Budget: AED 2M–4M
    ✅ Timeline: 1–3 months
-   
+
    Connecting you with our specialist now... 🏠"
           │
           ▼
@@ -155,7 +156,7 @@ Bot completes qualification OR user requests human
           │
           ▼
   Nadia (Router) — Agent assignment:
-  
+
   Assignment rules:
   ├── Language preference: Arabic → Arabic-speaking agent first
   ├── Area specialty: DAMAC Hills 2 → specialist agent
@@ -171,7 +172,7 @@ Bot completes qualification OR user requests human
           ▼
   User notified:
   "I'm connecting you with [Agent Name], our villa specialist.
-   They'll be with you shortly! 
+   They'll be with you shortly!
    In the meantime, here are our latest listings:
    👉 whitecaves.ae/properties"
           │
@@ -194,16 +195,16 @@ Message received outside 9am–7pm Sun–Thu
           │
           ▼
   Nina: "Thank you for contacting White Caves! 🌙
-         Our team is currently offline but will contact you 
+         Our team is currently offline but will contact you
          first thing tomorrow morning.
-         
+
          Our office hours are:
          Sunday–Thursday: 9:00 AM – 7:00 PM
          Friday–Saturday: 10:00 AM – 5:00 PM
-         
+
          Meanwhile, browse our latest listings:
          👉 whitecaves.ae/properties
-         
+
          For urgent matters, email us:
          hello@whitecaves.ae"
           │
@@ -265,7 +266,7 @@ Marketing campaign triggered (Olivia — Marketing Manager)
   "Hi [Name]! 👋 New listings matching your criteria just added!
    📍 3BR Villa, DAMAC Hills 2 — AED 2.1M
    📍 4BR Townhouse, DAMAC Hills 2 — AED 2.8M
-   
+
    Reply VIEW to see details or STOP to unsubscribe."
           │
           ▼
@@ -279,34 +280,33 @@ Marketing campaign triggered (Olivia — Marketing Manager)
 
 ## 9. WhatsApp Bot Performance SLAs
 
-| Metric | Target |
-|--------|--------|
-| First response time (inbound) | < 10 seconds |
-| Bot qualification completion rate | > 70% |
-| Human handoff time (working hours) | < 5 minutes |
-| Human handoff time (after hours) | < 2 hours next day |
-| Campaign open rate target | > 60% (WhatsApp average ~80%) |
-| Opt-out rate target | < 2% per campaign |
+| Metric                             | Target                        |
+| ---------------------------------- | ----------------------------- |
+| First response time (inbound)      | < 10 seconds                  |
+| Bot qualification completion rate  | > 70%                         |
+| Human handoff time (working hours) | < 5 minutes                   |
+| Human handoff time (after hours)   | < 2 hours next day            |
+| Campaign open rate target          | > 60% (WhatsApp average ~80%) |
+| Opt-out rate target                | < 2% per campaign             |
 
 ---
 
 ## 10. Phase 4 Implementation Requirements
 
-| Component | Status | Notes |
-|-----------|--------|-------|
-| WhatsAppBotService | Stub (logs only) | All methods need Meta API integration |
-| MetaAPIClient | Interface defined | Needs actual HTTP calls to Meta |
-| Webhook endpoint | Stub | Signature validation done; routing needed |
-| CRM inbox UI | Not built | Multi-agent inbox component needed |
-| Intent classification | Not built | NLP service or keyword matching |
-| Template management | Not built | Meta pre-approval workflow needed |
-| Env vars | Not configured | WHATSAPP_ACCESS_TOKEN etc. needed |
+| Component             | Status            | Notes                                     |
+| --------------------- | ----------------- | ----------------------------------------- |
+| WhatsAppBotService    | Stub (logs only)  | All methods need Meta API integration     |
+| MetaAPIClient         | Interface defined | Needs actual HTTP calls to Meta           |
+| Webhook endpoint      | Stub              | Signature validation done; routing needed |
+| CRM inbox UI          | Not built         | Multi-agent inbox component needed        |
+| Intent classification | Not built         | NLP service or keyword matching           |
+| Template management   | Not built         | Meta pre-approval workflow needed         |
+| Env vars              | Not configured    | WHATSAPP_ACCESS_TOKEN etc. needed         |
 
 ---
 
 **Document Owner:** Communications (Nina + Nadia)
 **Related:** `business_docs/04_workflows/whatsapp-bot-flowchart.md`, `server/services/WhatsAppBotService.ts`
-
 
 ---
 
@@ -338,13 +338,14 @@ Compliance rules:
 
 ### 9.2 Message Template Categories
 
-| Category | Content Type | Approval Required | Examples |
-|---------|-------------|------------------|---------|
-| **Utility** | Transaction updates, appointment confirmations | Meta pre-approval | "Your viewing at DAMAC Hills 2 is confirmed for [DATE]" |
-| **Authentication** | OTP, login codes | Meta pre-approval | "Your OTP is [CODE]. Do not share this." |
-| **Marketing** | Property promotions, market updates | Meta pre-approval | "New listing: 4-bed villa in DAMAC Hills 2 from AED 2.1M" |
+| Category           | Content Type                                   | Approval Required | Examples                                                  |
+| ------------------ | ---------------------------------------------- | ----------------- | --------------------------------------------------------- |
+| **Utility**        | Transaction updates, appointment confirmations | Meta pre-approval | "Your viewing at DAMAC Hills 2 is confirmed for [DATE]"   |
+| **Authentication** | OTP, login codes                               | Meta pre-approval | "Your OTP is [CODE]. Do not share this."                  |
+| **Marketing**      | Property promotions, market updates            | Meta pre-approval | "New listing: 4-bed villa in DAMAC Hills 2 from AED 2.1M" |
 
 **Meta Template Approval Process:**
+
 1. Submit template in WhatsApp Business Manager
 2. Meta reviews within 24–72 hours
 3. If rejected: review rejection reason → edit → resubmit
@@ -354,14 +355,15 @@ Compliance rules:
 
 Meta charges per 24-hour "conversation window" (not per message):
 
-| Conversation Type | Rate (approx.) | Trigger |
-|----------------|--------------|---------|
-| User-initiated | $0.005 (lowest) | Customer messages first |
-| Utility (business-initiated) | $0.02 | Appointment, transaction update |
-| Authentication | $0.02 | OTP |
-| Marketing | $0.05–0.08 | Promotional message |
+| Conversation Type            | Rate (approx.)  | Trigger                         |
+| ---------------------------- | --------------- | ------------------------------- |
+| User-initiated               | $0.005 (lowest) | Customer messages first         |
+| Utility (business-initiated) | $0.02           | Appointment, transaction update |
+| Authentication               | $0.02           | OTP                             |
+| Marketing                    | $0.05–0.08      | Promotional message             |
 
 **Cost estimate at scale:**
+
 - 1,000 new WhatsApp leads/month × $0.005 = $5/month (user-initiated)
 - 500 marketing broadcasts/month × $0.06 = $30/month
 - Total: ~$50–100/month at Phase 4 launch scale
@@ -372,14 +374,14 @@ Meta charges per 24-hour "conversation window" (not per message):
 
 ### 10.1 Key Metrics to Track
 
-| Metric | Measurement | Target | Action if Below |
-|--------|------------|--------|----------------|
-| Message delivery rate | Delivered / sent | > 98% | Check phone number validity; remove bad numbers |
-| Response rate | Leads who replied / leads messaged | > 60% | Review message quality, timing, personalisation |
-| Opt-out rate | STOP replies / messages sent | < 2% | Review frequency; improve content quality |
-| Bot-to-human escalation rate | Escalations / conversations | < 30% | Improve bot BANT questions; expand bot knowledge |
-| WhatsApp lead-to-viewing rate | Viewings / WA-sourced leads | > 25% | Review qualification questions in bot flow |
-| Response time after handoff | AVG(first agent reply after handoff) | < 1 hour | Monitor agent WhatsApp inbox responsiveness |
+| Metric                        | Measurement                          | Target   | Action if Below                                  |
+| ----------------------------- | ------------------------------------ | -------- | ------------------------------------------------ |
+| Message delivery rate         | Delivered / sent                     | > 98%    | Check phone number validity; remove bad numbers  |
+| Response rate                 | Leads who replied / leads messaged   | > 60%    | Review message quality, timing, personalisation  |
+| Opt-out rate                  | STOP replies / messages sent         | < 2%     | Review frequency; improve content quality        |
+| Bot-to-human escalation rate  | Escalations / conversations          | < 30%    | Improve bot BANT questions; expand bot knowledge |
+| WhatsApp lead-to-viewing rate | Viewings / WA-sourced leads          | > 25%    | Review qualification questions in bot flow       |
+| Response time after handoff   | AVG(first agent reply after handoff) | < 1 hour | Monitor agent WhatsApp inbox responsiveness      |
 
 ### 10.2 Reporting in CRM
 

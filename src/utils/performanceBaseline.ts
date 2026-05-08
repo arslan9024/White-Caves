@@ -267,9 +267,7 @@ export class PerformanceMonitor {
    */
   getCacheHitRate(): number {
     if (this.cacheStats.totalRequests === 0) return 0;
-    return (
-      (this.cacheStats.hits / this.cacheStats.totalRequests) * 100
-    );
+    return (this.cacheStats.hits / this.cacheStats.totalRequests) * 100;
   }
 
   /**
@@ -277,11 +275,7 @@ export class PerformanceMonitor {
    */
   getDeduplicationRate(): number {
     if (this.deduplicationStats.total === 0) return 0;
-    return (
-      (this.deduplicationStats.deduplicated /
-        this.deduplicationStats.total) *
-      100
-    );
+    return (this.deduplicationStats.deduplicated / this.deduplicationStats.total) * 100;
   }
 
   /**
@@ -317,7 +311,7 @@ export class PerformanceMonitor {
   }> {
     const metrics = this.getAllMetrics();
 
-    return PERFORMANCE_BASELINES.map((baseline) => {
+    return PERFORMANCE_BASELINES.map(baseline => {
       const actual = metrics[baseline.metric as keyof PerformanceMetrics] || 0;
       const difference = actual - baseline.target;
       const percentDifference = (difference / baseline.target) * 100;
@@ -364,17 +358,13 @@ export class PerformanceMonitor {
 
     report += '\n## Baseline Comparison\n\n';
 
-    const hardFailures = comparisons.filter(
-      (c) => c.baseline.threshold === 'hard' && !c.passed
-    );
-    const softFailures = comparisons.filter(
-      (c) => c.baseline.threshold === 'soft' && !c.passed
-    );
-    const passes = comparisons.filter((c) => c.passed);
+    const hardFailures = comparisons.filter(c => c.baseline.threshold === 'hard' && !c.passed);
+    const softFailures = comparisons.filter(c => c.baseline.threshold === 'soft' && !c.passed);
+    const passes = comparisons.filter(c => c.passed);
 
     if (hardFailures.length > 0) {
       report += '### ❌ Hard Failures (Must Fix)\n\n';
-      hardFailures.forEach((c) => {
+      hardFailures.forEach(c => {
         report += `- **${c.baseline.name}**: ${c.actual.toFixed(2)}${c.baseline.unit} (target: ${c.baseline.target}${c.baseline.unit}, ${c.percentDifference.toFixed(1)}% over)\n`;
       });
       report += '\n';
@@ -382,7 +372,7 @@ export class PerformanceMonitor {
 
     if (softFailures.length > 0) {
       report += '### ⚠️  Soft Failures (Warnings)\n\n';
-      softFailures.forEach((c) => {
+      softFailures.forEach(c => {
         report += `- **${c.baseline.name}**: ${c.actual.toFixed(2)}${c.baseline.unit} (target: ${c.baseline.target}${c.baseline.unit}, ${c.percentDifference.toFixed(1)}% ${c.difference > 0 ? 'over' : 'under'})\n`;
       });
       report += '\n';
@@ -413,10 +403,7 @@ export const globalPerformanceMonitor = new PerformanceMonitor();
 /**
  * Helper function to measure async operation
  */
-export async function measureAsync<T>(
-  label: string,
-  fn: () => Promise<T>
-): Promise<T> {
+export async function measureAsync<T>(label: string, fn: () => Promise<T>): Promise<T> {
   globalPerformanceMonitor.startTimer(label);
   try {
     const result = await fn();

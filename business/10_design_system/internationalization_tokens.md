@@ -16,15 +16,15 @@ White Caves serves a diverse international clientele in Dubai. The platform must
 
 ## 2. Supported Locales
 
-| Locale | Language | Direction | Currency | Date Format | Number Format | Priority |
-|--------|----------|-----------|----------|-------------|---------------|----------|
-| `en-AE` | English (UAE) | LTR | AED | DD/MM/YYYY | 1,234,567.89 | P0 (primary) |
-| `ar-AE` | Arabic (UAE) | RTL | د.إ | DD/MM/YYYY | ١٬٢٣٤٬٥٦٧٫٨٩ | P0 (primary) |
-| `en-US` | English (US) | LTR | USD | MM/DD/YYYY | 1,234,567.89 | P1 |
-| `en-GB` | English (UK) | LTR | GBP | DD/MM/YYYY | 1,234,567.89 | P1 |
-| `fr-FR` | French | LTR | EUR | DD/MM/YYYY | 1 234 567,89 | P2 |
-| `ru-RU` | Russian | LTR | USD | DD.MM.YYYY | 1 234 567,89 | P2 |
-| `zh-CN` | Chinese (Simplified) | LTR | CNY | YYYY/MM/DD | 1,234,567.89 | P2 |
+| Locale  | Language             | Direction | Currency | Date Format | Number Format | Priority     |
+| ------- | -------------------- | --------- | -------- | ----------- | ------------- | ------------ |
+| `en-AE` | English (UAE)        | LTR       | AED      | DD/MM/YYYY  | 1,234,567.89  | P0 (primary) |
+| `ar-AE` | Arabic (UAE)         | RTL       | د.إ      | DD/MM/YYYY  | ١٬٢٣٤٬٥٦٧٫٨٩  | P0 (primary) |
+| `en-US` | English (US)         | LTR       | USD      | MM/DD/YYYY  | 1,234,567.89  | P1           |
+| `en-GB` | English (UK)         | LTR       | GBP      | DD/MM/YYYY  | 1,234,567.89  | P1           |
+| `fr-FR` | French               | LTR       | EUR      | DD/MM/YYYY  | 1 234 567,89  | P2           |
+| `ru-RU` | Russian              | LTR       | USD      | DD.MM.YYYY  | 1 234 567,89  | P2           |
+| `zh-CN` | Chinese (Simplified) | LTR       | CNY      | YYYY/MM/DD  | 1,234,567.89  | P2           |
 
 ---
 
@@ -89,40 +89,68 @@ Examples:
 
 ### 4.1 Currency Display
 
-| Token | en-AE | ar-AE | en-US | en-GB |
-|-------|-------|-------|-------|-------|
-| `currency.symbol` | AED | د.إ | $ | £ |
-| `currency.code` | AED | AED | USD | GBP |
-| `currency.position` | before | after | before | before |
-| `currency.separator` | , | ٬ | , | , |
-| `currency.decimal` | . | ٫ | . | . |
+| Token                | en-AE  | ar-AE | en-US  | en-GB  |
+| -------------------- | ------ | ----- | ------ | ------ |
+| `currency.symbol`    | AED    | د.إ   | $      | £      |
+| `currency.code`      | AED    | AED   | USD    | GBP    |
+| `currency.position`  | before | after | before | before |
+| `currency.separator` | ,      | ٬     | ,      | ,      |
+| `currency.decimal`   | .      | ٫     | .      | .      |
 
 ### 4.2 Price Formatting Examples
 
-| Locale | Format | Example |
-|--------|--------|---------|
-| `en-AE` | `AED 1,500,000` | `formatCurrency(1500000, 'en-AE')` |
-| `ar-AE` | `١٬٥٠٠٬٠٠٠ د.إ` | `formatCurrency(1500000, 'ar-AE')` |
-| `en-US` | `$408,163` | `formatCurrency(408163, 'en-US')` (auto-convert) |
-| `en-GB` | `£326,086` | `formatCurrency(326086, 'en-GB')` (auto-convert) |
+| Locale  | Format          | Example                                          |
+| ------- | --------------- | ------------------------------------------------ |
+| `en-AE` | `AED 1,500,000` | `formatCurrency(1500000, 'en-AE')`               |
+| `ar-AE` | `١٬٥٠٠٬٠٠٠ د.إ` | `formatCurrency(1500000, 'ar-AE')`               |
+| `en-US` | `$408,163`      | `formatCurrency(408163, 'en-US')` (auto-convert) |
+| `en-GB` | `£326,086`      | `formatCurrency(326086, 'en-GB')` (auto-convert) |
 
 ### 4.3 Multi-Currency Support
 
 ```typescript
 interface CurrencyConfig {
-  code: string;           // ISO 4217 code
-  symbol: string;         // Display symbol
+  code: string; // ISO 4217 code
+  symbol: string; // Display symbol
   position: 'before' | 'after';
-  decimals: number;       // Decimal places
-  exchangeRate: number;   // Rate vs AED (base)
-  lastUpdated: string;    // ISO timestamp
+  decimals: number; // Decimal places
+  exchangeRate: number; // Rate vs AED (base)
+  lastUpdated: string; // ISO timestamp
 }
 
 const currencies: Record<string, CurrencyConfig> = {
-  AED: { code: 'AED', symbol: 'AED', position: 'before', decimals: 0, exchangeRate: 1, lastUpdated: '' },
-  USD: { code: 'USD', symbol: '$', position: 'before', decimals: 0, exchangeRate: 0.2722, lastUpdated: '' },
-  GBP: { code: 'GBP', symbol: '£', position: 'before', decimals: 0, exchangeRate: 0.2174, lastUpdated: '' },
-  EUR: { code: 'EUR', symbol: '€', position: 'before', decimals: 0, exchangeRate: 0.2513, lastUpdated: '' },
+  AED: {
+    code: 'AED',
+    symbol: 'AED',
+    position: 'before',
+    decimals: 0,
+    exchangeRate: 1,
+    lastUpdated: '',
+  },
+  USD: {
+    code: 'USD',
+    symbol: '$',
+    position: 'before',
+    decimals: 0,
+    exchangeRate: 0.2722,
+    lastUpdated: '',
+  },
+  GBP: {
+    code: 'GBP',
+    symbol: '£',
+    position: 'before',
+    decimals: 0,
+    exchangeRate: 0.2174,
+    lastUpdated: '',
+  },
+  EUR: {
+    code: 'EUR',
+    symbol: '€',
+    position: 'before',
+    decimals: 0,
+    exchangeRate: 0.2513,
+    lastUpdated: '',
+  },
 };
 ```
 
@@ -130,13 +158,13 @@ const currencies: Record<string, CurrencyConfig> = {
 
 ## 5. Date & Time Formatting
 
-| Token | en-AE | ar-AE | en-US |
-|-------|-------|-------|-------|
-| `date.short` | 11/04/2026 | ١١/٠٤/٢٠٢٦ | 04/11/2026 |
-| `date.long` | 11 April 2026 | ١١ أبريل ٢٠٢٦ | April 11, 2026 |
-| `date.relative` | 2 hours ago | منذ ساعتين | 2 hours ago |
-| `time.short` | 2:30 PM | ٢:٣٠ م | 2:30 PM |
-| `time.long` | 2:30:00 PM GST | ٢:٣٠:٠٠ م ت.خ | 2:30:00 PM GST |
+| Token           | en-AE          | ar-AE         | en-US          |
+| --------------- | -------------- | ------------- | -------------- |
+| `date.short`    | 11/04/2026     | ١١/٠٤/٢٠٢٦    | 04/11/2026     |
+| `date.long`     | 11 April 2026  | ١١ أبريل ٢٠٢٦ | April 11, 2026 |
+| `date.relative` | 2 hours ago    | منذ ساعتين    | 2 hours ago    |
+| `time.short`    | 2:30 PM        | ٢:٣٠ م        | 2:30 PM        |
+| `time.long`     | 2:30:00 PM GST | ٢:٣٠:٠٠ م ت.خ | 2:30:00 PM GST |
 
 ---
 
@@ -144,18 +172,18 @@ const currencies: Record<string, CurrencyConfig> = {
 
 ```css
 /* RTL Layout Tokens */
---layout-direction: rtl;                    /* ltr for English */
---layout-start: right;                      /* left for English */
---layout-end: left;                         /* right for English */
---sidebar-position: right;                  /* left for English */
---text-align: right;                        /* left for English */
---icon-flip: scaleX(-1);                    /* scaleX(1) for English */
---border-start: border-right;              /* border-left for English */
---border-end: border-left;                 /* border-right for English */
---margin-start: margin-right;             /* margin-left for English */
---margin-end: margin-left;                /* margin-right for English */
---padding-start: padding-right;           /* padding-left for English */
---padding-end: padding-left;              /* padding-right for English */
+--layout-direction: rtl; /* ltr for English */
+--layout-start: right; /* left for English */
+--layout-end: left; /* right for English */
+--sidebar-position: right; /* left for English */
+--text-align: right; /* left for English */
+--icon-flip: scaleX(-1); /* scaleX(1) for English */
+--border-start: border-right; /* border-left for English */
+--border-end: border-left; /* border-right for English */
+--margin-start: margin-right; /* margin-left for English */
+--margin-end: margin-left; /* margin-right for English */
+--padding-start: padding-right; /* padding-left for English */
+--padding-end: padding-left; /* padding-right for English */
 ```
 
 ---
@@ -164,60 +192,60 @@ const currencies: Record<string, CurrencyConfig> = {
 
 ### 7.1 Property Types
 
-| Token | en | ar |
-|-------|----|----|
-| `property.type.apartment` | Apartment | شقة |
-| `property.type.villa` | Villa | فيلا |
+| Token                     | en        | ar        |
+| ------------------------- | --------- | --------- |
+| `property.type.apartment` | Apartment | شقة       |
+| `property.type.villa`     | Villa     | فيلا      |
 | `property.type.townhouse` | Townhouse | تاون هاوس |
-| `property.type.penthouse` | Penthouse | بنتهاوس |
-| `property.type.studio` | Studio | استوديو |
-| `property.type.duplex` | Duplex | دوبلكس |
-| `property.type.land` | Land | أرض |
-| `property.type.office` | Office | مكتب |
-| `property.type.warehouse` | Warehouse | مستودع |
-| `property.type.retail` | Retail | محل تجاري |
+| `property.type.penthouse` | Penthouse | بنتهاوس   |
+| `property.type.studio`    | Studio    | استوديو   |
+| `property.type.duplex`    | Duplex    | دوبلكس    |
+| `property.type.land`      | Land      | أرض       |
+| `property.type.office`    | Office    | مكتب      |
+| `property.type.warehouse` | Warehouse | مستودع    |
+| `property.type.retail`    | Retail    | محل تجاري |
 
 ### 7.2 Property Status
 
-| Token | en | ar |
-|-------|----|----|
-| `property.status.available` | Available | متاح |
-| `property.status.sold` | Sold | مباع |
-| `property.status.rented` | Rented | مؤجر |
-| `property.status.off_plan` | Off-Plan | على الخارطة |
-| `property.status.under_offer` | Under Offer | تحت العرض |
+| Token                         | en          | ar          |
+| ----------------------------- | ----------- | ----------- |
+| `property.status.available`   | Available   | متاح        |
+| `property.status.sold`        | Sold        | مباع        |
+| `property.status.rented`      | Rented      | مؤجر        |
+| `property.status.off_plan`    | Off-Plan    | على الخارطة |
+| `property.status.under_offer` | Under Offer | تحت العرض   |
 
 ### 7.3 Amenities
 
-| Token | en | ar |
-|-------|----|----|
-| `amenity.pool` | Swimming Pool | مسبح |
-| `amenity.gym` | Gym | صالة رياضية |
-| `amenity.parking` | Parking | موقف سيارات |
-| `amenity.balcony` | Balcony | شرفة |
-| `amenity.garden` | Garden | حديقة |
-| `amenity.security` | 24/7 Security | أمن على مدار الساعة |
-| `amenity.concierge` | Concierge | خدمة الكونسيرج |
-| `amenity.beach_access` | Beach Access | وصول للشاطئ |
-| `amenity.sea_view` | Sea View | إطلالة بحرية |
-| `amenity.city_view` | City View | إطلالة على المدينة |
+| Token                  | en            | ar                  |
+| ---------------------- | ------------- | ------------------- |
+| `amenity.pool`         | Swimming Pool | مسبح                |
+| `amenity.gym`          | Gym           | صالة رياضية         |
+| `amenity.parking`      | Parking       | موقف سيارات         |
+| `amenity.balcony`      | Balcony       | شرفة                |
+| `amenity.garden`       | Garden        | حديقة               |
+| `amenity.security`     | 24/7 Security | أمن على مدار الساعة |
+| `amenity.concierge`    | Concierge     | خدمة الكونسيرج      |
+| `amenity.beach_access` | Beach Access  | وصول للشاطئ         |
+| `amenity.sea_view`     | Sea View      | إطلالة بحرية        |
+| `amenity.city_view`    | City View     | إطلالة على المدينة  |
 
 ---
 
 ## 8. Area Names (Dubai Communities)
 
-| Token | en | ar |
-|-------|----|----|
-| `area.dubai_marina` | Dubai Marina | دبي مارينا |
-| `area.downtown` | Downtown Dubai | وسط مدينة دبي |
-| `area.palm_jumeirah` | Palm Jumeirah | نخلة جميرا |
-| `area.jbr` | JBR (Jumeirah Beach Residence) | جي بي آر |
-| `area.business_bay` | Business Bay | الخليج التجاري |
-| `area.jlt` | JLT (Jumeirah Lake Towers) | أبراج بحيرات جميرا |
-| `area.creek_harbour` | Dubai Creek Harbour | خور دبي |
-| `area.dubai_hills` | Dubai Hills Estate | دبي هيلز |
-| `area.arabian_ranches` | Arabian Ranches | المرابع العربية |
-| `area.motor_city` | Motor City | موتور سيتي |
+| Token                  | en                             | ar                 |
+| ---------------------- | ------------------------------ | ------------------ |
+| `area.dubai_marina`    | Dubai Marina                   | دبي مارينا         |
+| `area.downtown`        | Downtown Dubai                 | وسط مدينة دبي      |
+| `area.palm_jumeirah`   | Palm Jumeirah                  | نخلة جميرا         |
+| `area.jbr`             | JBR (Jumeirah Beach Residence) | جي بي آر           |
+| `area.business_bay`    | Business Bay                   | الخليج التجاري     |
+| `area.jlt`             | JLT (Jumeirah Lake Towers)     | أبراج بحيرات جميرا |
+| `area.creek_harbour`   | Dubai Creek Harbour            | خور دبي            |
+| `area.dubai_hills`     | Dubai Hills Estate             | دبي هيلز           |
+| `area.arabian_ranches` | Arabian Ranches                | المرابع العربية    |
+| `area.motor_city`      | Motor City                     | موتور سيتي         |
 
 ---
 
@@ -238,10 +266,18 @@ i18n
     supportedLngs: ['en', 'ar', 'fr', 'ru', 'zh'],
     defaultNS: 'common',
     ns: [
-      'common', 'auth', 'properties', 'leads',
-      'transactions', 'compliance', 'dashboard',
-      'navigation', 'forms', 'notifications',
-      'errors', 'marketing'
+      'common',
+      'auth',
+      'properties',
+      'leads',
+      'transactions',
+      'compliance',
+      'dashboard',
+      'navigation',
+      'forms',
+      'notifications',
+      'errors',
+      'marketing',
     ],
     interpolation: {
       escapeValue: false,
@@ -278,7 +314,6 @@ export default i18n;
 - [CLDR Currency Data](https://cldr.unicode.org/)
 - [MDN Intl API](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl)
 - White Caves existing i18n (`src/i18n/` — 523 lines English, 3 sections Arabic)
-
 
 ---
 
@@ -452,103 +487,113 @@ export default i18n;
 
 ### 12.1 Real Estate Terminology (Arabic ↔ English)
 
-| English | Arabic | Transliteration | Notes |
-|---------|--------|----------------|-------|
-| Villa | فيلا | Villa | Borrowed word; plural: فيلات |
-| Apartment | شقة | Shaqqa | Plural: شقق (Shuqaq) |
-| Bedroom | غرفة نوم | Ghurfat nawm | Plural: غرف نوم |
-| Bathroom | حمام | Hammam | |
-| Kitchen | مطبخ | Matbakh | |
-| Floor / Storey | طابق | Tabiq | Plural: طوابق |
-| Total Area | المساحة الإجمالية | Al-masa'ha al-ijmaliyya | |
-| Built-Up Area | مساحة البناء | Masa'hat al-bina | |
-| Price | السعر | Al-si'r | |
-| Rent | الإيجار | Al-ijaar | |
-| For Sale | للبيع | Lil-bay' | |
-| For Rent | للإيجار | Lil-ijaar | |
-| Off-Plan | على الخريطة | 'Ala al-khariyta | Literal: "on the map" |
-| Community | مجمع سكني | Majma' sukani | |
-| Title Deed | سند الملكية | Sanad al-milkiyya | |
-| Down Payment | دفعة مقدمة | Daf'a muqaddama | |
-| Mortgage | رهن عقاري | Rahn 'iqari | |
-| Commission | عمولة | 'Umula | |
-| Viewing | معاينة | Mu'ayana | |
-| Contract | عقد | 'Aqd | Plural: عقود |
-| Landlord | مالك / موجر | Malik / Mawjir | |
-| Tenant | مستأجر | Musta'jir | |
-| Property Manager | مدير العقار | Mudir al-'iqaar | |
+| English          | Arabic            | Transliteration         | Notes                        |
+| ---------------- | ----------------- | ----------------------- | ---------------------------- |
+| Villa            | فيلا              | Villa                   | Borrowed word; plural: فيلات |
+| Apartment        | شقة               | Shaqqa                  | Plural: شقق (Shuqaq)         |
+| Bedroom          | غرفة نوم          | Ghurfat nawm            | Plural: غرف نوم              |
+| Bathroom         | حمام              | Hammam                  |                              |
+| Kitchen          | مطبخ              | Matbakh                 |                              |
+| Floor / Storey   | طابق              | Tabiq                   | Plural: طوابق                |
+| Total Area       | المساحة الإجمالية | Al-masa'ha al-ijmaliyya |                              |
+| Built-Up Area    | مساحة البناء      | Masa'hat al-bina        |                              |
+| Price            | السعر             | Al-si'r                 |                              |
+| Rent             | الإيجار           | Al-ijaar                |                              |
+| For Sale         | للبيع             | Lil-bay'                |                              |
+| For Rent         | للإيجار           | Lil-ijaar               |                              |
+| Off-Plan         | على الخريطة       | 'Ala al-khariyta        | Literal: "on the map"        |
+| Community        | مجمع سكني         | Majma' sukani           |                              |
+| Title Deed       | سند الملكية       | Sanad al-milkiyya       |                              |
+| Down Payment     | دفعة مقدمة        | Daf'a muqaddama         |                              |
+| Mortgage         | رهن عقاري         | Rahn 'iqari             |                              |
+| Commission       | عمولة             | 'Umula                  |                              |
+| Viewing          | معاينة            | Mu'ayana                |                              |
+| Contract         | عقد               | 'Aqd                    | Plural: عقود                 |
+| Landlord         | مالك / موجر       | Malik / Mawjir          |                              |
+| Tenant           | مستأجر            | Musta'jir               |                              |
+| Property Manager | مدير العقار       | Mudir al-'iqaar         |                              |
 
 ### 12.2 RTL Text Alignment Rules
 
 ```css
 /* Global RTL direction — applied to <html> when locale = 'ar' */
-[dir="rtl"] {
+[dir='rtl'] {
   text-align: right;
 }
 
 /* Navigation: items flow right-to-left */
-[dir="rtl"] .nav-items {
+[dir='rtl'] .nav-items {
   flex-direction: row-reverse;
 }
 
 /* Property cards: text starts from right */
-[dir="rtl"] .property-card__content {
+[dir='rtl'] .property-card__content {
   direction: rtl;
 }
 
 /* Icons: flip directional icons (arrows, chevrons) */
-[dir="rtl"] .icon--directional {
+[dir='rtl'] .icon--directional {
   transform: scaleX(-1);
 }
 
 /* Form inputs: Arabic placeholder right-aligned */
-[dir="rtl"] input,
-[dir="rtl"] textarea {
+[dir='rtl'] input,
+[dir='rtl'] textarea {
   direction: rtl;
   text-align: right;
 }
 
 /* Price display: currency symbol placement */
 /* Arabic: "2,000,000 درهم" vs English: "AED 2,000,000" */
-[dir="rtl"] .price-display::before { content: ''; }
-[dir="rtl"] .price-display::after { content: ' درهم'; }
+[dir='rtl'] .price-display::before {
+  content: '';
+}
+[dir='rtl'] .price-display::after {
+  content: ' درهم';
+}
 
 /* Sidebar: opens from right side in RTL */
-[dir="rtl"] .sidebar { right: 0; left: auto; }
-[dir="rtl"] .sidebar--collapsed { transform: translateX(100%); }
+[dir='rtl'] .sidebar {
+  right: 0;
+  left: auto;
+}
+[dir='rtl'] .sidebar--collapsed {
+  transform: translateX(100%);
+}
 ```
 
 ### 12.3 Number Formatting
 
-| Context | Arabic Numerals | Latin Numerals | Decision |
-|---------|----------------|----------------|---------|
-| Property prices | ٢٬٠٠٠٬٠٠٠ | 2,000,000 | Use Latin — industry standard in UAE |
-| Percentages | ٥٪ | 5% | Use Latin — consistent with financial context |
-| Phone numbers | +٩٧١٥٠... | +971 50... | Use Latin — international dialling standard |
-| Dates | ٢٩ أبريل ٢٠٢٦ | 29 April 2026 | Either — match user locale preference |
-| Floor numbers | الطابق الثالث | Floor 3 | Arabic text + Latin digit hybrid acceptable |
+| Context         | Arabic Numerals | Latin Numerals | Decision                                      |
+| --------------- | --------------- | -------------- | --------------------------------------------- |
+| Property prices | ٢٬٠٠٠٬٠٠٠       | 2,000,000      | Use Latin — industry standard in UAE          |
+| Percentages     | ٥٪              | 5%             | Use Latin — consistent with financial context |
+| Phone numbers   | +٩٧١٥٠...       | +971 50...     | Use Latin — international dialling standard   |
+| Dates           | ٢٩ أبريل ٢٠٢٦   | 29 April 2026  | Either — match user locale preference         |
+| Floor numbers   | الطابق الثالث   | Floor 3        | Arabic text + Latin digit hybrid acceptable   |
 
 **Decision:** White Caves uses Latin numerals throughout the Arabic locale for professional real estate context (consistent with UAE industry practice).
 
 ### 12.4 Currency Format
 
-| Locale | Format | Example |
-|--------|--------|---------|
-| English (en) | AED [amount] | AED 2,000,000 |
-| Arabic (ar) | [amount] درهم إماراتي | ٢٬٠٠٠٬٠٠٠ درهم إماراتي |
-| Arabic (compact) | [amount] د.إ | 2,000,000 د.إ |
+| Locale           | Format                | Example                |
+| ---------------- | --------------------- | ---------------------- |
+| English (en)     | AED [amount]          | AED 2,000,000          |
+| Arabic (ar)      | [amount] درهم إماراتي | ٢٬٠٠٠٬٠٠٠ درهم إماراتي |
+| Arabic (compact) | [amount] د.إ          | 2,000,000 د.إ          |
 
 **Recommendation:** Use compact Arabic format (د.إ) to save space in cards; full form (درهم إماراتي) in formal documents.
 
 ### 12.5 Date Format Differences
 
-| Locale | Format | Example |
-|--------|--------|---------|
-| English | DD/MM/YYYY | 29/04/2026 |
-| Arabic (Gregorian) | YYYY/MM/DD | 2026/04/29 |
+| Locale                         | Format        | Example             |
+| ------------------------------ | ------------- | ------------------- |
+| English                        | DD/MM/YYYY    | 29/04/2026          |
+| Arabic (Gregorian)             | YYYY/MM/DD    | 2026/04/29          |
 | Arabic (Hijri calendar option) | هـ / م toggle | 1 ذو القعدة 1447 هـ |
 
 **Implementation:** Use `Intl.DateTimeFormat` with locale:
+
 ```javascript
 const formatDate = (date: Date, locale: string) =>
   new Intl.DateTimeFormat(locale, {
@@ -568,6 +613,7 @@ const formatDate = (date: Date, locale: string) =>
 **VS Code Extension:** `lokalise.i18n-ally` — shows inline translated strings and flags missing keys in yellow.
 
 **CI Pipeline Check (Phase 2):**
+
 ```yaml
 # .github/workflows/ci.yml
 - name: Check i18n coverage
@@ -578,6 +624,7 @@ const formatDate = (date: Date, locale: string) =>
 ```
 
 **Script logic:**
+
 ```javascript
 // scripts/check-i18n-coverage.js
 const en = loadAllKeys('locales/en');
@@ -592,6 +639,7 @@ if (missing.length > 0) {
 ### 13.2 Screenshot Testing for RTL Layout Regressions
 
 **Tool:** Playwright visual regression testing:
+
 ```typescript
 // tests/i18n.visual.test.ts
 test('Property listing page renders correctly in Arabic RTL', async ({ page }) => {
@@ -634,6 +682,7 @@ describe('formatDate', () => {
 ### 13.4 Manual QA Checklist for Arabic Locale
 
 Before every release that touches the UI:
+
 ```
 RTL Layout:
 ☐ Navigation menu renders right-to-left
@@ -668,6 +717,7 @@ Content:
 **Version History:** v1.0 April 2026 (initial); v2.0 April 2026 (complete token dictionary, Arabic guidelines, testing)
 **Review Cycle:** Updated with each locale addition (Arabic Phase 6, French/Russian Phase 8+)
 **Related Documents:**
+
 - `src/i18n/` (implementation)
 - `business/10_design_system/ar_vr_3d_tours.md`
 - `plans/PHASE_8_ARABIC.md`

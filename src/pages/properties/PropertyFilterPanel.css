@@ -36,7 +36,7 @@
 }
 
 .filter-search-wrapper:focus-within {
-  border-color: var(--primary-color, #E31E24);
+  border-color: var(--primary-color, #e31e24);
   box-shadow: 0 0 0 3px rgba(227, 30, 36, 0.1);
 }
 
@@ -73,7 +73,7 @@
 }
 
 .filter-clear-search:hover {
-  background: var(--primary-color, #E31E24);
+  background: var(--primary-color, #e31e24);
   color: white;
 }
 
@@ -100,7 +100,7 @@
 }
 
 .filter-purpose-tab.active {
-  background: var(--primary-color, #E31E24);
+  background: var(--primary-color, #e31e24);
   color: white;
   box-shadow: 0 1px 4px rgba(227, 30, 36, 0.3);
 }
@@ -122,7 +122,7 @@
 .filter-select-icon {
   position: absolute;
   left: 0.625rem;
-  color: var(--primary-color, #E31E24);
+  color: var(--primary-color, #e31e24);
   pointer-events: none;
   z-index: 1;
 }
@@ -146,7 +146,7 @@
 }
 
 .filter-select-group select:focus {
-  border-color: var(--primary-color, #E31E24);
+  border-color: var(--primary-color, #e31e24);
   outline: none;
   box-shadow: 0 0 0 2px rgba(227, 30, 36, 0.1);
 }
@@ -169,12 +169,12 @@
 }
 
 .filter-advanced-toggle:hover {
-  border-color: var(--primary-color, #E31E24);
+  border-color: var(--primary-color, #e31e24);
 }
 
 .filter-advanced-toggle.active {
-  background: var(--primary-color, #E31E24);
-  border-color: var(--primary-color, #E31E24);
+  background: var(--primary-color, #e31e24);
+  border-color: var(--primary-color, #e31e24);
   color: white;
 }
 
@@ -189,7 +189,7 @@
   font-size: 0.7rem;
   font-weight: 700;
   background: white;
-  color: var(--primary-color, #E31E24);
+  color: var(--primary-color, #e31e24);
 }
 
 .filter-advanced-toggle.active .filter-badge-count {
@@ -204,8 +204,14 @@
 }
 
 @keyframes filterSlideDown {
-  from { opacity: 0; transform: translateY(-8px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .filter-advanced-grid {
@@ -238,7 +244,7 @@
 
 .filter-advanced-group input:focus,
 .filter-advanced-group select:focus {
-  border-color: var(--primary-color, #E31E24);
+  border-color: var(--primary-color, #e31e24);
   outline: none;
   box-shadow: 0 0 0 2px rgba(227, 30, 36, 0.1);
 }
@@ -280,7 +286,7 @@
 .filter-reset-btn:hover {
   background: rgba(220, 38, 38, 0.06);
   border-color: rgba(220, 38, 38, 0.3);
-  color: #DC2626;
+  color: #dc2626;
 }
 
 /* ─── Results Bar ───────────────────────────────────────────────────── */
@@ -323,7 +329,7 @@
   background: rgba(227, 30, 36, 0.1);
   border: 1px solid rgba(227, 30, 36, 0.25);
   border-radius: 2rem;
-  color: var(--primary-dark, #B71C1C);
+  color: var(--primary-dark, #b71c1c);
   font-size: 0.75rem;
   font-weight: 500;
 }
@@ -337,7 +343,7 @@
   border-radius: 50%;
   background: transparent;
   border: none;
-  color: var(--primary-dark, #B71C1C);
+  color: var(--primary-dark, #b71c1c);
   cursor: pointer;
   transition: background 0.2s;
   padding: 0;
@@ -360,7 +366,7 @@
 }
 
 .filter-clear-all-btn:hover {
-  color: #DC2626;
+  color: #dc2626;
 }
 
 /* ════════════════════════════════════════════════════════════════════════

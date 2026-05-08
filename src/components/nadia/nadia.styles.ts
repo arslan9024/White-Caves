@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * NADIA Components - Styled Components
  * Design system integration with styled-components
@@ -50,9 +49,9 @@ const tokens = {
   },
   borderRadius: {
     sm: radius.sm,
-    md: radius.lg,    // nadia md (8px) = theme lg (8px)
-    lg: radius.xl,    // nadia lg (12px) = theme xl (12px)
-    xl: radius.xxl,   // nadia xl (16px) = theme xxl (16px)
+    md: radius.lg, // nadia md (8px) = theme lg (8px)
+    lg: radius.xl, // nadia lg (12px) = theme xl (12px)
+    xl: radius.xxl, // nadia xl (16px) = theme xxl (16px)
   },
   shadows: {
     sm: shadows.xs,
@@ -154,7 +153,7 @@ export const ConversationListItem = styled.div<{ isSelected?: boolean }>`
   border-bottom: 1px solid ${tokens.colors.border.subtle};
   transition: background-color ${tokens.transitions.fast};
 
-  ${(props) =>
+  ${props =>
     props.isSelected &&
     css`
       background-color: ${tokens.colors.primary}15;
@@ -199,7 +198,7 @@ export const StatusBadge = styled.span<{ status: string }>`
   font-weight: ${typography.weights.semibold};
   text-transform: uppercase;
 
-  ${(props) => {
+  ${props => {
     switch (props.status) {
       case 'ACTIVE':
         return css`
@@ -249,8 +248,8 @@ export const ScoreBarFill = styled.div<{ score: number }>`
     content: '';
     display: block;
     height: 100%;
-    width: ${(props) => props.score}%;
-    background: ${(props) =>
+    width: ${props => props.score}%;
+    background: ${props =>
       props.score >= 75
         ? tokens.colors.success
         : props.score >= 50
@@ -346,18 +345,16 @@ export const MessageViewerContent = styled.div`
 
 export const MessageBubble = styled.div<{ sender: 'CUSTOMER' | 'AGENT' }>`
   display: flex;
-  flex-direction: ${(props) => (props.sender === 'CUSTOMER' ? 'row' : 'row-reverse')};
+  flex-direction: ${props => (props.sender === 'CUSTOMER' ? 'row' : 'row-reverse')};
   align-items: flex-end;
   gap: ${tokens.spacing.sm};
 `;
 
 export const MessageContent = styled.div<{ sender: 'CUSTOMER' | 'AGENT' }>`
   max-width: 70%;
-  background: ${(props) =>
-    props.sender === 'CUSTOMER'
-      ? tokens.colors.primary
-      : tokens.colors.surface.secondary};
-  color: ${(props) => (props.sender === 'CUSTOMER' ? 'white' : tokens.colors.text.primary)};
+  background: ${props =>
+    props.sender === 'CUSTOMER' ? tokens.colors.primary : tokens.colors.surface.secondary};
+  color: ${props => (props.sender === 'CUSTOMER' ? 'white' : tokens.colors.text.primary)};
   padding: ${tokens.spacing.md};
   border-radius: ${tokens.borderRadius.lg};
   word-break: break-word;
@@ -382,7 +379,7 @@ export const SentimentBadge = styled.span<{ sentiment?: string }>`
   align-items: center;
   gap: ${tokens.spacing.xs};
   padding: 2px 8px;
-  background: ${(props) => {
+  background: ${props => {
     switch (props.sentiment) {
       case 'POSITIVE':
         return '#dcfce7';
@@ -392,7 +389,7 @@ export const SentimentBadge = styled.span<{ sentiment?: string }>`
         return '#f3f4f6';
     }
   }};
-  color: ${(props) => {
+  color: ${props => {
     switch (props.sentiment) {
       case 'POSITIVE':
         return '#166534';
@@ -497,8 +494,7 @@ export const MessageInputFooter = styled.div`
 
 export const CharCount = styled.span<{ isWarning?: boolean }>`
   font-size: ${typography.sizes.xs};
-  color: ${(props) =>
-    props.isWarning ? tokens.colors.warning : tokens.colors.text.tertiary};
+  color: ${props => (props.isWarning ? tokens.colors.warning : tokens.colors.text.tertiary)};
 `;
 
 export const SendButton = styled.button`
@@ -647,7 +643,7 @@ export const PriorityBadge = styled.span<{ priority: string }>`
   font-weight: ${typography.weights.semibold};
   text-transform: uppercase;
 
-  ${(props) => {
+  ${props => {
     switch (props.priority) {
       case 'URGENT':
         return css`
@@ -769,4 +765,3 @@ export const ErrorAlert = styled.div`
 `;
 
 export { tokens };
-

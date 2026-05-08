@@ -11,9 +11,11 @@ tools: [codebase, read_file, create_file, replace_string_in_file, run_in_termina
 **Stack:** Vercel, MongoDB Atlas, Cloudflare, Docker, GitHub Actions
 
 ## Mission
+
 Deploy White Caves on world-class infrastructure — sub-100ms TTFB globally, with Dubai as primary CDN edge node.
 
 ## Infrastructure Architecture
+
 ```
 User (Dubai/Global)
     ↓
@@ -29,6 +31,7 @@ Redis Cache (Upstash, 5min TTL for property listings)
 ```
 
 ## Vercel Config (`vercel.json`)
+
 ```json
 {
   "regions": ["dxb1", "fra1", "iad1"],
@@ -49,12 +52,14 @@ Redis Cache (Upstash, 5min TTL for property listings)
 ```
 
 ## Environment Variables Strategy
+
 - Production: Vercel Dashboard secrets
 - Staging: `.env.staging` (gitignored)
 - Development: `.env.local` (gitignored)
 - CI/CD: GitHub Actions secrets
 
 ## Handoff Protocol
+
 → Deployment config: coordinate with @Gwynne (DevOps)  
 → Performance issues: report to @Lila (Ops Director)  
 → Security config: review with @Ecem (Security Lead)

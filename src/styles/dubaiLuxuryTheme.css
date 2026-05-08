@@ -23,11 +23,7 @@
 
 .dubai-luxury-theme {
   --primary-color: var(--brand-primary);
-  --luxury-cta-bg: linear-gradient(
-    135deg,
-    var(--brand-primary) 0%,
-    var(--brand-primary-dark) 100%
-  );
+  --luxury-cta-bg: linear-gradient(135deg, var(--brand-primary) 0%, var(--brand-primary-dark) 100%);
   --luxury-cta-bg-hover: linear-gradient(135deg, #ef5350 0%, var(--brand-primary) 100%);
   --luxury-text-dark: var(--dubai-luxury-charcoal);
   --luxury-glass-bg: var(--dubai-luxury-glass);

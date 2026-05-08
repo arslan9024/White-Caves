@@ -1,4 +1,5 @@
 # Customer Journey Maps
+
 # White Caves Real Estate Platform
 
 > **Document ID:** WC-CJM-001
@@ -13,6 +14,7 @@
 ## Journey Map Structure
 
 Each map covers:
+
 - **Phases** — stages of the customer journey
 - **Actions** — what the customer does
 - **Touchpoints** — where they interact with White Caves
@@ -93,7 +95,6 @@ WHITE CAVES DIFFERENTIATORS
 └── Trusted single point      └── Commission transparency       (if investment property)
     of contact                    upfront
 ```
-
 
 ---
 
@@ -429,16 +430,16 @@ WHITE CAVES DIFFERENTIATORS
 
 > The 8 most critical moments of truth across all 4 journey personas — where White Caves wins or loses the relationship.
 
-| # | Journey | Phase | Moment of Truth | Current Score (1–5) | Target Score | Improvement Action | Owner |
-|---|---------|-------|----------------|:------------------:|:------------:|-------------------|-------|
-| **MOT-1** | All | Awareness → Consideration | **First contact response time** — does White Caves reply before the buyer WhatsApps Allsopp? | 3/5 (< 2h business hours; 0/5 evenings) | 5/5 | Nina bot handles 24/7 instant response; human handoff < 5 min during office hours (Phase 4) | Hazel (AI) + Nina bot |
-| **MOT-2** | Buyer / Seller | Consideration | **Valuation credibility** — does the AVM match what DLD says happened? First number sets the relationship trust. | 2/5 (manual, agent estimate only) | 5/5 | AVM tool with DLD transaction comps (Phase 7); display comparable sales from last 90 days | Joelle (ML) |
-| **MOT-3** | All | Engagement | **Document submission clarity** — does the client know exactly what to send, once, without back-and-forth? | 2/5 (email-based, ad hoc) | 5/5 | Portal document checklist with exactly what's needed; single secure upload link (Phase 2) | Aurora (Tech) + Marissa (UX) |
-| **MOT-4** | Tenant / Landlord | Engagement → Transaction | **Security deposit payment** — is the money going to a trust account or to someone's personal phone? | 3/5 (bank transfer, no formal receipt) | 5/5 | Stripe escrow-style payment link; instant receipt; money never touches agent's personal account (Phase 2) | Theodora (Finance) |
-| **MOT-5** | Seller / Buyer | Transaction | **Offer decision moment** — when the client has 2 offers, do they feel White Caves has their best interest? | 3/5 (agent opinion only) | 5/5 | Agent provides structured "offer comparison card" with financial analysis (net proceed difference, risk score, timeline probability) | Sophia (Sales) + Marissa |
-| **MOT-6** | Buyer / Seller | Transaction | **DLD appointment preparation** — does the client arrive knowing exactly what to bring and what will happen? | 2/5 (often clients arrive unprepared) | 5/5 | White Caves DLD Pre-Appointment Pack: checklist + 15-min video walkthrough of what happens on the day | Ops (Daisy) + Content |
-| **MOT-7** | Landlord | Renewals | **Rent increase recommendation** — does the landlord trust White Caves to maximise income within RERA limits fairly? | 3/5 (varies by agent) | 5/5 | RERA Decree 43 calculator embedded in portal; market data comparison (community average vs current rent) shown transparently | Barbara (DB) + Aurora |
-| **MOT-8** | Tenant | Post-Move-Out | **Deposit refund** — is the deposit returned promptly and without unfair deductions? | 2/5 (manual, slow, disputes common) | 5/5 | Move-out inspection workflow in portal; itemised deduction justification required from landlord; refund SLA: 14 business days after Ejari cancellation | Ops (Daisy) + Laila (Compliance) |
+| #         | Journey           | Phase                     | Moment of Truth                                                                                                      |           Current Score (1–5)           | Target Score | Improvement Action                                                                                                                                     | Owner                            |
+| --------- | ----------------- | ------------------------- | -------------------------------------------------------------------------------------------------------------------- | :-------------------------------------: | :----------: | ------------------------------------------------------------------------------------------------------------------------------------------------------ | -------------------------------- |
+| **MOT-1** | All               | Awareness → Consideration | **First contact response time** — does White Caves reply before the buyer WhatsApps Allsopp?                         | 3/5 (< 2h business hours; 0/5 evenings) |     5/5      | Nina bot handles 24/7 instant response; human handoff < 5 min during office hours (Phase 4)                                                            | Hazel (AI) + Nina bot            |
+| **MOT-2** | Buyer / Seller    | Consideration             | **Valuation credibility** — does the AVM match what DLD says happened? First number sets the relationship trust.     |    2/5 (manual, agent estimate only)    |     5/5      | AVM tool with DLD transaction comps (Phase 7); display comparable sales from last 90 days                                                              | Joelle (ML)                      |
+| **MOT-3** | All               | Engagement                | **Document submission clarity** — does the client know exactly what to send, once, without back-and-forth?           |        2/5 (email-based, ad hoc)        |     5/5      | Portal document checklist with exactly what's needed; single secure upload link (Phase 2)                                                              | Aurora (Tech) + Marissa (UX)     |
+| **MOT-4** | Tenant / Landlord | Engagement → Transaction  | **Security deposit payment** — is the money going to a trust account or to someone's personal phone?                 | 3/5 (bank transfer, no formal receipt)  |     5/5      | Stripe escrow-style payment link; instant receipt; money never touches agent's personal account (Phase 2)                                              | Theodora (Finance)               |
+| **MOT-5** | Seller / Buyer    | Transaction               | **Offer decision moment** — when the client has 2 offers, do they feel White Caves has their best interest?          |        3/5 (agent opinion only)         |     5/5      | Agent provides structured "offer comparison card" with financial analysis (net proceed difference, risk score, timeline probability)                   | Sophia (Sales) + Marissa         |
+| **MOT-6** | Buyer / Seller    | Transaction               | **DLD appointment preparation** — does the client arrive knowing exactly what to bring and what will happen?         |  2/5 (often clients arrive unprepared)  |     5/5      | White Caves DLD Pre-Appointment Pack: checklist + 15-min video walkthrough of what happens on the day                                                  | Ops (Daisy) + Content            |
+| **MOT-7** | Landlord          | Renewals                  | **Rent increase recommendation** — does the landlord trust White Caves to maximise income within RERA limits fairly? |          3/5 (varies by agent)          |     5/5      | RERA Decree 43 calculator embedded in portal; market data comparison (community average vs current rent) shown transparently                           | Barbara (DB) + Aurora            |
+| **MOT-8** | Tenant            | Post-Move-Out             | **Deposit refund** — is the deposit returned promptly and without unfair deductions?                                 |   2/5 (manual, slow, disputes common)   |     5/5      | Move-out inspection workflow in portal; itemised deduction justification required from landlord; refund SLA: 14 business days after Ejari cancellation | Ops (Daisy) + Laila (Compliance) |
 
 ### Moment of Truth Priority Matrix
 

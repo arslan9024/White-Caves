@@ -49,14 +49,14 @@ export default [
     rules: {
       // ESLint core rules
       ...js.configs.recommended.rules,
-      
+
       // React rules
       ...react.configs.recommended.rules,
       'react/react-in-jsx-scope': 'off',
       'react/prop-types': 'off',
       'react/display-name': 'warn',
       'react/no-unescaped-entities': 'warn',
-      
+
       // React Hooks rules
       ...reactHooks.configs.recommended.rules,
       'react-hooks/set-state-in-effect': 'warn',
@@ -66,7 +66,7 @@ export default [
       'react-hooks/preserve-manual-memoization': 'warn',
       'react-hooks/globals': 'warn',
       'react-hooks/immutability': 'warn',
-      
+
       // TypeScript rules
       ...tsPlugin.configs.recommended.rules,
       '@typescript-eslint/explicit-module-boundary-types': 'off',
@@ -78,9 +78,11 @@ export default [
         'warn',
         {
           argsIgnorePattern: '^_',
+          varsIgnorePattern: '^_',
+          destructuredArrayIgnorePattern: '^_',
         },
       ],
-      
+
       // Console rules
       'no-console': [
         'warn',
@@ -88,7 +90,7 @@ export default [
           allow: ['warn', 'error'],
         },
       ],
-      
+
       // Security rules
       'security/detect-object-injection': 'warn',
       'security/detect-unsafe-regex': 'warn',

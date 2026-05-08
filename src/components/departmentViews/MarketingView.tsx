@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 import React from 'react';
 import BaseDepartmentView from './BaseDepartmentView';
 import { getDepartmentConfig } from '../../config/departmentViewConfigs';
@@ -12,26 +11,24 @@ import { DataCard } from '../shared/dashboard';
 interface MarketingViewProps {
   serviceName?: string;
   subitemId?: string;
-  departmentData?: any;
+  departmentData?: Record<string, unknown>;
 }
 
-const MarketingView: React.FC<MarketingViewProps> = ({ serviceName = 'campaigns', subitemId, departmentData }) => {
+const MarketingView: React.FC<MarketingViewProps> = ({
+  serviceName = 'campaigns',
+  subitemId,
+  departmentData,
+}) => {
   const config = getDepartmentConfig('MARKETING')!;
 
-  const renderContent = (data: any) => {
+  const renderContent = (data: Record<string, unknown>) => {
     if (!subitemId && serviceName === 'campaign-management') {
       return (
         <>
-          <DataCard 
-            title="Active Campaigns"
-            subtitle="Current marketing campaigns and performance"
-          >
+          <DataCard title="Active Campaigns" subtitle="Current marketing campaigns and performance">
             Campaigns: {JSON.stringify(data?.campaigns?.length || 0)} items
           </DataCard>
-          <DataCard 
-            title="Lead Generation"
-            subtitle="Leads by source and channel"
-          >
+          <DataCard title="Lead Generation" subtitle="Leads by source and channel">
             Leads: {JSON.stringify(data?.leadGeneration?.length || 0)} items
           </DataCard>
         </>
@@ -85,4 +82,3 @@ const MarketingView: React.FC<MarketingViewProps> = ({ serviceName = 'campaigns'
 };
 
 export default MarketingView;
-

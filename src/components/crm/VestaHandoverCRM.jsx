@@ -5,6 +5,7 @@ import {
   ArrowUp, ArrowDown, Filter, Search, Plus, Eye, MessageSquare
 } from 'lucide-react';
 import AssistantDocsTab from './shared/AssistantDocsTab';
+import AssistantLifecycleTab from './shared/AssistantLifecycleTab';
 import './AssistantDashboard.css';
 
 const MILESTONES = [
@@ -112,7 +113,7 @@ const VestaHandoverCRM = () => {
       </div>
 
       <div className="assistant-tabs">
-        {['milestones', 'snagging', 'handovers', 'developer', 'docs'].map(tab => (
+        {['milestones', 'snagging', 'handovers', 'developer', 'lifecycle', 'docs'].map(tab => (
           <button
             key={tab}
             className={`tab-btn ${activeTab === tab ? 'active' : ''}`}
@@ -234,6 +235,10 @@ const VestaHandoverCRM = () => {
               <button className="add-btn"><Plus size={16} /> New Message</button>
             </div>
           </div>
+        )}
+
+        {activeTab === 'lifecycle' && (
+          <AssistantLifecycleTab assistantId="vesta" color="#F59E0B" assistantName="Vesta" />
         )}
 
         {activeTab === 'docs' && (
