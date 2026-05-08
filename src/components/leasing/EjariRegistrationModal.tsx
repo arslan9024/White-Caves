@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import { theme } from '../../styles/theme';
+import { authFetch } from '../../utils/authFetch';
 
 interface EjariProperty {
   id: string;
@@ -106,13 +107,8 @@ export const EjariRegistrationModal: React.FC<EjariRegistrationModalProps> = ({
     if (!ejariNumber) return;
     setLoading(true);
     try {
-      const token = localStorage.getItem('token');
-      const res = await fetch(`/api/leasing-inventory/${property.id}/ejari`, {
+      const res = await authFetch(`/api/leasing-inventory/${property.id}/ejari`, {
         method: 'POST',
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
         body: JSON.stringify({ ejariNumber }),
       });
 
