@@ -4,20 +4,42 @@
  * Business logic extracted to useLeadManagement hook.
  * Shared styles imported from CrmPageStyles.
  * Route: /owner/crm/leads
- */
+/* eslint-disable security/detect-object-injection, react/jsx-no-undef */
+/* eslint-disable security/detect-object-injection, react/jsx-no-undef */
 
-import React, { FC } from 'react';
-import styled from 'styled-components';
-import { Badge, Pagination } from '../../components/ui';
-import { Modal } from '../../shared/components/ui/Modal';
-import { useDocumentTitle } from '../../hooks/useDocumentTitle';
+/**
+ * CRM Lead Management Page (Refactored)
+ * Full CRUD lead management with filtering, search, and status pipeline.
+ * Business logic extracted to useLeadManagement hook.
+ * Shared styles imported from CrmPageStyles.
+ * Route: /owner/crm/leads
+ */
 import {
-  PageContainer, PageHeader, PageTitle, BackLink,
-  ActionBar, SearchInput, FilterSelect,
-  PrimaryButton, SecondaryButton, DangerButton,
-  Table, Th, Td, Tr, EmptyState,
-  FormGroup, FormLabel, FormInput, FormTextarea, FormSelect, FormRow,
-  PaginationWrapper, LoadingBanner, ErrorBanner, ModalFooter,
+  PageContainer,
+  PageHeader,
+  PageTitle,
+  BackLink,
+  ActionBar,
+  SearchInput,
+  FilterSelect,
+  PrimaryButton,
+  SecondaryButton,
+  DangerButton,
+  Table,
+  Th,
+  Td,
+  Tr,
+  EmptyState,
+  FormGroup,
+  FormLabel,
+  FormInput,
+  FormTextarea,
+  FormSelect,
+  FormRow,
+  PaginationWrapper,
+  LoadingBanner,
+  ErrorBanner,
+  ModalFooter,
 } from './styles/CrmPageStyles';
 import { useLeadManagement, STATUS_CONFIG, SOURCE_LABELS } from './hooks/useLeadManagement';
 import type { Lead } from './hooks/useLeadManagement';
@@ -32,9 +54,9 @@ const PipelineBar = styled.div`
 `;
 
 const PipelineStage = styled.button<{ $active: boolean; $color: string }>`
-  background: ${props => props.$active ? props.$color : 'white'};
-  color: ${props => props.$active ? 'white' : '#555'};
-  border: 1px solid ${props => props.$active ? props.$color : '#ddd'};
+  background: ${props => (props.$active ? props.$color : 'white')};
+  color: ${props => (props.$active ? 'white' : '#555')};
+  border: 1px solid ${props => (props.$active ? props.$color : '#ddd')};
   border-radius: 20px;
   padding: 0.4rem 1rem;
   font-size: 0.8rem;
@@ -47,7 +69,7 @@ const PipelineStage = styled.button<{ $active: boolean; $color: string }>`
 
   &:hover {
     border-color: ${props => props.$color};
-    background: ${props => props.$active ? props.$color : `${props.$color}10`};
+    background: ${props => (props.$active ? props.$color : `${props.$color}10`)};
   }
 `;
 
@@ -56,16 +78,42 @@ const PipelineStage = styled.button<{ $active: boolean; $color: string }>`
 const LeadManagementPage: FC = () => {
   useDocumentTitle('Lead Management');
   const {
-    filteredLeads, paginatedLeads, statusCounts,
-    loading, error,
-    search, statusFilter, sourceFilter, currentPage,
-    showCreateModal, showEditModal, showDeleteConfirm, selectedLead,
-    formData, setFormData, errorMessage, setErrorMessage, ITEMS_PER_PAGE,
-    openCreateModal, closeCreateModal, closeEditModal, closeDeleteModal,
-    handleCreate, handleEdit, handleSaveEdit, handleDelete, confirmDelete,
-    handleSearchChange, handleStatusFilterChange, handleSourceFilterChange,
-    setCurrentPage, retryFetch, goBack,
-    getStatusBadgeVariant, formatCurrency, formatDate,
+    filteredLeads,
+    paginatedLeads,
+    statusCounts,
+    loading,
+    error,
+    search,
+    statusFilter,
+    sourceFilter,
+    currentPage,
+    showCreateModal,
+    showEditModal,
+    showDeleteConfirm,
+    selectedLead,
+    formData,
+    setFormData,
+    errorMessage,
+    setErrorMessage,
+    ITEMS_PER_PAGE,
+    openCreateModal,
+    closeCreateModal,
+    closeEditModal,
+    closeDeleteModal,
+    handleCreate,
+    handleEdit,
+    handleSaveEdit,
+    handleDelete,
+    confirmDelete,
+    handleSearchChange,
+    handleStatusFilterChange,
+    handleSourceFilterChange,
+    setCurrentPage,
+    retryFetch,
+    goBack,
+    getStatusBadgeVariant,
+    formatCurrency,
+    formatDate,
   } = useLeadManagement();
 
   // Lead form modal content
@@ -130,7 +178,9 @@ const LeadManagementPage: FC = () => {
             onChange={e => setFormData({ ...formData, status: e.target.value })}
           >
             {Object.entries(STATUS_CONFIG).map(([key, cfg]) => (
-              <option key={key} value={key}>{cfg.label}</option>
+              <option key={key} value={key}>
+                {cfg.label}
+              </option>
             ))}
           </FormSelect>
         </FormGroup>
@@ -142,7 +192,9 @@ const LeadManagementPage: FC = () => {
             onChange={e => setFormData({ ...formData, source: e.target.value })}
           >
             {Object.entries(SOURCE_LABELS).map(([key, label]) => (
-              <option key={key} value={key}>{label}</option>
+              <option key={key} value={key}>
+                {label}
+              </option>
             ))}
           </FormSelect>
         </FormGroup>
@@ -227,13 +279,12 @@ const LeadManagementPage: FC = () => {
           value={search}
           onChange={e => handleSearchChange(e.target.value)}
         />
-        <FilterSelect
-          value={sourceFilter}
-          onChange={e => handleSourceFilterChange(e.target.value)}
-        >
+        <FilterSelect value={sourceFilter} onChange={e => handleSourceFilterChange(e.target.value)}>
           <option value="all">All Sources</option>
           {Object.entries(SOURCE_LABELS).map(([key, label]) => (
-            <option key={key} value={key}>{label}</option>
+            <option key={key} value={key}>
+              {label}
+            </option>
           ))}
         </FilterSelect>
         <span style={{ fontSize: '0.8rem', color: '#888' }}>
@@ -264,10 +315,26 @@ const LeadManagementPage: FC = () => {
                   <Td style={{ fontWeight: 500 }}>{lead.name || '—'}</Td>
                   <Td>
                     {lead.score !== undefined ? (
-                      <Badge variant={lead.score >= 80 ? 'error' : lead.score >= 50 ? 'warning' : 'default'} size="small">
-                        {lead.score >= 80 ? '🔥' : lead.score >= 50 ? '⚡' : '❄️'} {lead.score}
+                      <Badge
+                        variant={
+                          ((lead.score as number) >= 80
+                            ? 'error'
+                            : (lead.score as number) >= 50
+                              ? 'warning'
+                              : 'secondary') as 'error' | 'warning' | 'secondary'
+                        }
+                        size="small"
+                      >
+                        {(lead.score as number) >= 80
+                          ? '🔥'
+                          : (lead.score as number) >= 50
+                            ? '⚡'
+                            : '❄️'}{' '}
+                        {lead.score as number}
                       </Badge>
-                    ) : '—'}
+                    ) : (
+                      '—'
+                    )}
                   </Td>
                   <Td>{lead.company || '—'}</Td>
                   <Td>
@@ -364,8 +431,8 @@ const LeadManagementPage: FC = () => {
           size="small"
         >
           <p style={{ color: '#555', fontSize: '0.9rem' }}>
-            Are you sure you want to delete <strong>{selectedLead.name}</strong>?
-            This action cannot be undone.
+            Are you sure you want to delete <strong>{selectedLead.name}</strong>? This action cannot
+            be undone.
           </p>
           <ModalFooter>
             <SecondaryButton onClick={closeDeleteModal}>Cancel</SecondaryButton>

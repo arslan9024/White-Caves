@@ -160,7 +160,7 @@ export const DocumentChecklist: React.FC<DocumentChecklistProps> = ({
         )}
 
         <DocRow>
-          <DocStatus $missing={property.titleDeedMissing}>
+          <DocStatus $missing={!!property.titleDeedMissing}>
             {property.titleDeedMissing ? '❌ Missing Title Deed' : '✅ Title Deed Verified'}
           </DocStatus>
           {property.titleDeedMissing && (
@@ -179,7 +179,7 @@ export const DocumentChecklist: React.FC<DocumentChecklistProps> = ({
         </DocRow>
 
         <DocRow>
-          <DocStatus $missing={property.landlordPassportMissing}>
+          <DocStatus $missing={!!property.landlordPassportMissing}>
             {property.landlordPassportMissing ? '❌ Missing Passport' : '✅ Passport Verified'}
           </DocStatus>
           {property.landlordPassportMissing && (
@@ -196,7 +196,7 @@ export const DocumentChecklist: React.FC<DocumentChecklistProps> = ({
         </DocRow>
 
         <DocRow>
-          <DocStatus $missing={property.ejariMissing}>
+          <DocStatus $missing={!!property.ejariMissing}>
             {property.ejariMissing ? '❌ Missing Ejari' : '✅ Ejari Verified'}
           </DocStatus>
           {property.ejariMissing && (

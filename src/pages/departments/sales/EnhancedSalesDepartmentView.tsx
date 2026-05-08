@@ -1,4 +1,4 @@
-﻿// @ts-nocheck
+﻿/* eslint-disable @typescript-eslint/no-unused-vars, @typescript-eslint/no-explicit-any */
 /**
  * Sales Department View - Fully Optimized with Caching and Performance Monitoring
  * Uses optimized API hooks with automatic caching, deduplication, and monitoring
@@ -9,7 +9,11 @@ import styled from 'styled-components';
 import BaseDepartmentView from '../../../components/departmentViews/BaseDepartmentView';
 import { SalesKPIRenderer } from '../../../utils/departmentKPIRenderer';
 import { BarChart, LineChart } from '../../../components/charts/DataVisualization';
-import { useDepartmentDataOptimized, useDepartmentKPIsOptimized, useDepartmentTrendsOptimized } from '../../../hooks/useOptimizedAPI';
+import {
+  useDepartmentDataOptimized,
+  useDepartmentKPIsOptimized,
+  useDepartmentTrendsOptimized,
+} from '../../../hooks/useOptimizedAPI';
 import { ErrorState, LoadingState } from '../../../components/shared';
 
 const SalesContentWrapper = styled.div`
@@ -48,28 +52,42 @@ export const SalesDepartmentView: React.FC<SalesDepartmentViewProps> = ({
   subitemId,
 }) => {
   // Fetch department data from optimized API with caching
-  const { data: salesData, loading: dataLoading, error: dataError } = useDepartmentDataOptimized('SALES');
-  const { kpis: salesKPIs, loading: kpiLoading, error: kpiError } = useDepartmentKPIsOptimized('SALES');
-  const { trends: salesTrends, loading: trendLoading } = useDepartmentTrendsOptimized('SALES', 'monthly');
+  const {
+    data: salesData,
+    loading: dataLoading,
+    error: dataError,
+  } = useDepartmentDataOptimized('SALES');
+  const {
+    kpis: salesKPIs,
+    loading: kpiLoading,
+    error: kpiError,
+  } = useDepartmentKPIsOptimized('SALES');
+  const { trends: salesTrends, loading: trendLoading } = useDepartmentTrendsOptimized(
+    'SALES',
+    'monthly'
+  );
 
   // Fallback mock data if API data is not available
-  const mockSalesData = useMemo(() => ({
-    totalLeads: 245,
-    activeDeals: 18,
-    conversionRate: 7.35,
-    monthlyRevenue: 2450000,
-    leadSources: [
-      { label: 'Direct', value: 45, color: '#3498db' },
-      { label: 'Referral', value: 120, color: '#2ecc71' },
-      { label: 'Online', value: 80, color: '#e74c3c' },
-    ],
-    monthlySales: [
-      { label: 'Jan', value: 1800000 },
-      { label: 'Feb', value: 2100000 },
-      { label: 'Mar', value: 1950000 },
-      { label: 'Apr', value: 2450000 },
-    ],
-  }), []);
+  const mockSalesData = useMemo(
+    () => ({
+      totalLeads: 245,
+      activeDeals: 18,
+      conversionRate: 7.35,
+      monthlyRevenue: 2450000,
+      leadSources: [
+        { label: 'Direct', value: 45, color: '#3498db' },
+        { label: 'Referral', value: 120, color: '#2ecc71' },
+        { label: 'Online', value: 80, color: '#e74c3c' },
+      ],
+      monthlySales: [
+        { label: 'Jan', value: 1800000 },
+        { label: 'Feb', value: 2100000 },
+        { label: 'Mar', value: 1950000 },
+        { label: 'Apr', value: 2450000 },
+      ],
+    }),
+    []
+  );
 
   // Use API data if available, fallback to mock data
   const displayData = salesData || mockSalesData;
@@ -82,9 +100,12 @@ export const SalesDepartmentView: React.FC<SalesDepartmentViewProps> = ({
   // Handle error state
   if (dataError || kpiError) {
     return (
-      <ErrorState 
-        title="Failed to Load Sales Data"
-        message={dataError?.message || kpiError?.message || 'Unable to fetch sales data. Using fallback data.'}
+      <ErrorState
+        error={
+          dataError?.message ||
+          kpiError?.message ||
+          'Unable to fetch sales data. Using fallback data.'
+        }
         onRetry={() => window.location.reload()}
       />
     );
@@ -94,10 +115,7 @@ export const SalesDepartmentView: React.FC<SalesDepartmentViewProps> = ({
     <SalesContentWrapper>
       <ChartCard>
         <h3>Leads by Source</h3>
-        <BarChart
-          data={displayData.leadSources || mockSalesData.leadSources}
-          maxValue={150}
-        />
+        <BarChart data={displayData.leadSources || mockSalesData.leadSources} maxValue={150} />
       </ChartCard>
 
       <ChartCard>
@@ -132,4 +150,3 @@ export const SalesDepartmentView: React.FC<SalesDepartmentViewProps> = ({
 };
 
 export default SalesDepartmentView;
-

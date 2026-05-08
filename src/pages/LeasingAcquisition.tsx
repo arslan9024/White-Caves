@@ -78,6 +78,10 @@ export const LeasingAcquisition: React.FC = () => {
     location: string;
     price: string | number;
     status?: string;
+    unitNumber?: string;
+    titleDeedMissing?: boolean;
+    landlordPassportMissing?: boolean;
+    ejariMissing?: boolean;
     [key: string]: unknown;
   }
 
@@ -190,7 +194,17 @@ export const LeasingAcquisition: React.FC = () => {
 
               {colProps.map(p => (
                 <div key={p.id}>
-                  <PropertyCard property={p} onClick={() => setSelectedProperty(p)} />
+                  <PropertyCard
+                    property={{
+                      id: p.id,
+                      title: p.title,
+                      unitNumber: p.unitNumber,
+                      titleDeedMissing: p.titleDeedMissing ?? false,
+                      landlordPassportMissing: p.landlordPassportMissing ?? false,
+                      ejariMissing: p.ejariMissing ?? false,
+                    }}
+                    onClick={() => setSelectedProperty(p)}
+                  />
                   {col.id === 'draft_collected' && (
                     <button
                       onClick={() => handleStageChange(p.id, 'verified_active')}
