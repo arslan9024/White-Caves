@@ -1,12 +1,4 @@
-/**
- * CRM Lead Management Page (Refactored)
- * Full CRUD lead management with filtering, search, and status pipeline.
- * Business logic extracted to useLeadManagement hook.
- * Shared styles imported from CrmPageStyles.
- * Route: /owner/crm/leads
-/* eslint-disable security/detect-object-injection, react/jsx-no-undef */
-/* eslint-disable security/detect-object-injection, react/jsx-no-undef */
-
+/* eslint-disable security/detect-object-injection */
 /**
  * CRM Lead Management Page (Refactored)
  * Full CRUD lead management with filtering, search, and status pipeline.
@@ -14,6 +6,11 @@
  * Shared styles imported from CrmPageStyles.
  * Route: /owner/crm/leads
  */
+import React, { FC } from 'react';
+import styled from 'styled-components';
+import { Badge, Pagination } from '../../components/ui';
+import { Modal } from '../../shared/components/ui/Modal';
+import { useDocumentTitle } from '../../hooks/useDocumentTitle';
 import {
   PageContainer,
   PageHeader,
