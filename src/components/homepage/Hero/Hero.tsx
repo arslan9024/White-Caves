@@ -155,7 +155,8 @@ const Hero = ({ marketStats, isLoading = false }: HeroProps) => {
           aria-hidden="true"
           // eslint-disable-next-line @typescript-eslint/ban-ts-comment
           // @ts-ignore fetchpriority is a valid HTML attribute in modern browsers
-          fetchPriority="high"
+          // eslint-disable-next-line react/no-unknown-property
+          fetchpriority="high"
           style={{
             position: 'absolute',
             width: 1,

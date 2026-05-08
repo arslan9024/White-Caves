@@ -68,8 +68,8 @@ vi.mock('../store/slices/homepageSlice', () => ({
 }));
 
 // Mock all lazy-loaded sections
-vi.mock('../components/homepage/Hero', () => ({
-  default: () => <div data-testid="hero-section">Hero</div>,
+vi.mock('../components/homepage/Hero/LuxuryHeroSection', () => ({
+  LuxuryHeroSection: () => <div data-testid="hero-section">Hero</div>,
 }));
 vi.mock('../components/homepage/Features', () => ({
   default: () => <div data-testid="features-section">Features</div>,
@@ -98,11 +98,26 @@ vi.mock('../components/homepage/PopularSearches/PopularSearches', () => ({
 vi.mock('../components/homepage/MobileAppBanner/MobileAppBanner', () => ({
   default: () => <div data-testid="mobile-app-banner">MobileAppBanner</div>,
 }));
+vi.mock('../components/InteractiveMap', () => ({
+  default: () => <div data-testid="interactive-map">InteractiveMap</div>,
+}));
 vi.mock('../components/PropertyComparison', () => ({
   default: () => <div data-testid="property-comparison">PropertyComparison</div>,
 }));
+vi.mock('../components/NeighborhoodAnalyzer', () => ({
+  default: () => <div data-testid="neighborhood-analyzer">NeighborhoodAnalyzer</div>,
+}));
 vi.mock('../components/RentVsBuyCalculator', () => ({
   default: () => <div data-testid="rent-vs-buy">RentVsBuyCalculator</div>,
+}));
+vi.mock('../components/OffPlanTracker', () => ({
+  default: () => <div data-testid="off-plan-tracker">OffPlanTracker</div>,
+}));
+vi.mock('../components/VirtualTourGallery', () => ({
+  default: () => <div data-testid="virtual-tour-gallery">VirtualTourGallery</div>,
+}));
+vi.mock('../components/DubaiMap', () => ({
+  default: () => <div data-testid="dubai-map">DubaiMap</div>,
 }));
 vi.mock('../components/CompanyProfile', () => ({
   default: () => <div data-testid="company-profile">CompanyProfile</div>,
@@ -223,10 +238,10 @@ describe('HomePage', () => {
       });
     });
 
-    it('should render PopularSearches section', async () => {
+    it('should render DubaiMap section', async () => {
       renderPage();
       await waitFor(() => {
-        expect(screen.getByTestId('popular-searches')).toBeInTheDocument();
+        expect(screen.getByTestId('dubai-map')).toBeInTheDocument();
       });
     });
 
@@ -286,10 +301,38 @@ describe('HomePage', () => {
       });
     });
 
-    it('should render MobileAppBanner', async () => {
+    it('should render InteractiveMap', async () => {
       renderPage();
       await waitFor(() => {
-        expect(screen.getByTestId('mobile-app-banner')).toBeInTheDocument();
+        expect(screen.getByTestId('interactive-map')).toBeInTheDocument();
+      });
+    });
+
+    it('should render OffPlanTracker', async () => {
+      renderPage();
+      await waitFor(() => {
+        expect(screen.getByTestId('off-plan-tracker')).toBeInTheDocument();
+      });
+    });
+
+    it('should render NeighborhoodAnalyzer', async () => {
+      renderPage();
+      await waitFor(() => {
+        expect(screen.getByTestId('neighborhood-analyzer')).toBeInTheDocument();
+      });
+    });
+
+    it('should render VirtualTourGallery', async () => {
+      renderPage();
+      await waitFor(() => {
+        expect(screen.getByTestId('virtual-tour-gallery')).toBeInTheDocument();
+      });
+    });
+
+    it('should render NewsletterSubscription', async () => {
+      renderPage();
+      await waitFor(() => {
+        expect(screen.getByTestId('newsletter-subscription')).toBeInTheDocument();
       });
     });
   });
