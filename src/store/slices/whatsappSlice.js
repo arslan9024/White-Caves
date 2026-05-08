@@ -1,11 +1,12 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import { authFetch } from '../../utils/authFetch';
 
 // Async thunks for API calls
 export const fetchWhatsAppSession = createAsyncThunk(
   'whatsapp/fetchSession',
   async (_, { rejectWithValue }) => {
     try {
-      const response = await fetch('/api/whatsapp/session');
+      const response = await authFetch('/api/whatsapp/session');
       if (!response.ok) throw new Error('Failed to fetch session');
       return await response.json();
     } catch (error) {
@@ -18,7 +19,7 @@ export const fetchWhatsAppStats = createAsyncThunk(
   'whatsapp/fetchStats',
   async (_, { rejectWithValue }) => {
     try {
-      const response = await fetch('/api/whatsapp/stats');
+      const response = await authFetch('/api/whatsapp/stats');
       if (!response.ok) throw new Error('Failed to fetch stats');
       return await response.json();
     } catch (error) {
@@ -31,7 +32,7 @@ export const fetchWhatsAppContacts = createAsyncThunk(
   'whatsapp/fetchContacts',
   async (_, { rejectWithValue }) => {
     try {
-      const response = await fetch('/api/whatsapp/contacts');
+      const response = await authFetch('/api/whatsapp/contacts');
       if (!response.ok) throw new Error('Failed to fetch contacts');
       return await response.json();
     } catch (error) {
@@ -44,7 +45,7 @@ export const fetchWhatsAppMessages = createAsyncThunk(
   'whatsapp/fetchMessages',
   async (contactId, { rejectWithValue }) => {
     try {
-      const response = await fetch(`/api/whatsapp/messages/${contactId}`);
+      const response = await authFetch(`/api/whatsapp/messages/${contactId}`);
       if (!response.ok) throw new Error('Failed to fetch messages');
       return await response.json();
     } catch (error) {
@@ -57,10 +58,10 @@ export const sendWhatsAppMessage = createAsyncThunk(
   'whatsapp/sendMessage',
   async ({ contactId, message }, { rejectWithValue }) => {
     try {
-      const response = await fetch('/api/whatsapp/send-message', {
+      const response = await authFetch('/api/whatsapp/send-message', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ contactId, message })
+        body: JSON.stringify({ contactId, message }),
       });
       if (!response.ok) throw new Error('Failed to send message');
       return await response.json();
@@ -74,7 +75,7 @@ export const connectWhatsApp = createAsyncThunk(
   'whatsapp/connect',
   async (_, { rejectWithValue }) => {
     try {
-      const response = await fetch('/api/whatsapp/connect', { method: 'POST' });
+      const response = await authFetch('/api/whatsapp/connect', { method: 'POST' });
       if (!response.ok) throw new Error('Failed to connect');
       return await response.json();
     } catch (error) {
@@ -87,7 +88,7 @@ export const disconnectWhatsApp = createAsyncThunk(
   'whatsapp/disconnect',
   async (_, { rejectWithValue }) => {
     try {
-      const response = await fetch('/api/whatsapp/disconnect', { method: 'POST' });
+      const response = await authFetch('/api/whatsapp/disconnect', { method: 'POST' });
       if (!response.ok) throw new Error('Failed to disconnect');
       return await response.json();
     } catch (error) {
@@ -121,7 +122,7 @@ const whatsappSlice = createSlice({
     setMessageInput: (state, action) => {
       state.messageInput = action.payload;
     },
-    clearError: (state) => {
+    clearError: state => {
       state.error = null;
     },
     // Optimistic message add
@@ -132,9 +133,9 @@ const whatsappSlice = createSlice({
     // Start/stop polling
     setPollingInterval: (state, action) => {
       state.pollingInterval = action.payload;
-    }
+    },
   },
-  extraReducers: (builder) => {
+  extraReducers: builder => {
     // Fetch Session
     builder
       .addCase(fetchWhatsAppSession.fulfilled, (state, action) => {
@@ -148,7 +149,7 @@ const whatsappSlice = createSlice({
 
     // Fetch Stats
     builder
-      .addCase(fetchWhatsAppStats.pending, (state) => {
+      .addCase(fetchWhatsAppStats.pending, state => {
         state.loading = true;
         state.error = null;
       })
@@ -164,7 +165,7 @@ const whatsappSlice = createSlice({
 
     // Fetch Contacts
     builder
-      .addCase(fetchWhatsAppContacts.pending, (state) => {
+      .addCase(fetchWhatsAppContacts.pending, state => {
         state.loading = true;
         state.error = null;
       })
@@ -180,7 +181,7 @@ const whatsappSlice = createSlice({
 
     // Fetch Messages
     builder
-      .addCase(fetchWhatsAppMessages.pending, (state) => {
+      .addCase(fetchWhatsAppMessages.pending, state => {
         state.loading = true;
         state.error = null;
       })
@@ -196,11 +197,11 @@ const whatsappSlice = createSlice({
 
     // Send Message
     builder
-      .addCase(sendWhatsAppMessage.pending, (state) => {
+      .addCase(sendWhatsAppMessage.pending, state => {
         state.sendingMessage = true;
         state.error = null;
       })
-      .addCase(sendWhatsAppMessage.fulfilled, (state, action) => {
+      .addCase(sendWhatsAppMessage.fulfilled, (state, _action) => {
         state.sendingMessage = false;
         // Message already added optimistically, just reset input
         state.messageInput = '';
@@ -213,11 +214,11 @@ const whatsappSlice = createSlice({
 
     // Connect
     builder
-      .addCase(connectWhatsApp.pending, (state) => {
+      .addCase(connectWhatsApp.pending, state => {
         state.loading = true;
         state.error = null;
       })
-      .addCase(connectWhatsApp.fulfilled, (state) => {
+      .addCase(connectWhatsApp.fulfilled, state => {
         state.loading = false;
         state.connected = true;
         state.error = null;
@@ -229,11 +230,11 @@ const whatsappSlice = createSlice({
 
     // Disconnect
     builder
-      .addCase(disconnectWhatsApp.pending, (state) => {
+      .addCase(disconnectWhatsApp.pending, state => {
         state.loading = true;
         state.error = null;
       })
-      .addCase(disconnectWhatsApp.fulfilled, (state) => {
+      .addCase(disconnectWhatsApp.fulfilled, state => {
         state.loading = false;
         state.connected = false;
         state.error = null;
@@ -242,7 +243,7 @@ const whatsappSlice = createSlice({
         state.loading = false;
         state.error = action.payload;
       });
-  }
+  },
 });
 
 export const {
@@ -250,7 +251,7 @@ export const {
   setMessageInput,
   clearError,
   optimisticAddMessage,
-  setPollingInterval
+  setPollingInterval,
 } = whatsappSlice.actions;
 
 export default whatsappSlice.reducer;

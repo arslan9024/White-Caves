@@ -1,9 +1,11 @@
 /**
  * WhatsApp Integration Service
- * 
+ *
  * Client-side API wrapper for WhatsApp Web integration
  * Handles all HTTP requests to backend WhatsApp endpoints
  */
+
+import { authFetch } from '../../utils/authFetch';
 
 const API_BASE = process.env.REACT_APP_API_URL || 'http://localhost:3000/api/whatsapp';
 
@@ -105,12 +107,14 @@ export interface Metrics {
   responseRate: number;
 }
 
+type GenericApiData = Record<string, unknown>;
+
 class WhatsAppService {
   /**
    * Device Linking
    */
   async initiateDeviceLink(accountId: string, phoneNumber: string): Promise<LinkDeviceResponse> {
-    const response = await fetch(`${API_BASE}/link`, {
+    const response = await authFetch(`${API_BASE}/link`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ accountId, phoneNumber }),
@@ -124,8 +128,12 @@ class WhatsAppService {
     return response.json();
   }
 
-  async confirmDeviceLink(sessionId: string, authToken: string, phoneNumber: string): Promise<ConfirmLinkResponse> {
-    const response = await fetch(`${API_BASE}/confirm-link`, {
+  async confirmDeviceLink(
+    sessionId: string,
+    authToken: string,
+    phoneNumber: string
+  ): Promise<ConfirmLinkResponse> {
+    const response = await authFetch(`${API_BASE}/confirm-link`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ sessionId, authToken, phoneNumber }),
@@ -142,8 +150,11 @@ class WhatsAppService {
   /**
    * Account Management
    */
-  async listAccounts(): Promise<{ success: boolean; data: { accounts: Account[]; count: number } }> {
-    const response = await fetch(`${API_BASE}/accounts`);
+  async listAccounts(): Promise<{
+    success: boolean;
+    data: { accounts: Account[]; count: number };
+  }> {
+    const response = await authFetch(`${API_BASE}/accounts`);
 
     if (!response.ok) {
       throw new Error('Failed to fetch accounts');
@@ -153,7 +164,7 @@ class WhatsAppService {
   }
 
   async getAccount(accountId: string): Promise<{ success: boolean; data: Account }> {
-    const response = await fetch(`${API_BASE}/account/${accountId}`);
+    const response = await authFetch(`${API_BASE}/account/${accountId}`);
 
     if (!response.ok) {
       throw new Error('Account not found');
@@ -163,7 +174,7 @@ class WhatsAppService {
   }
 
   async connectAccount(accountId: string): Promise<{ success: boolean; data: Account }> {
-    const response = await fetch(`${API_BASE}/connect`, {
+    const response = await authFetch(`${API_BASE}/connect`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ accountId }),
@@ -178,7 +189,7 @@ class WhatsAppService {
   }
 
   async disconnectAccount(accountId: string): Promise<{ success: boolean; data: Account }> {
-    const response = await fetch(`${API_BASE}/disconnect`, {
+    const response = await authFetch(`${API_BASE}/disconnect`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ accountId }),
@@ -192,8 +203,10 @@ class WhatsAppService {
     return response.json();
   }
 
-  async unlinkAccount(accountId: string): Promise<{ success: boolean; data: { accountId: string; status: string } }> {
-    const response = await fetch(`${API_BASE}/unlink`, {
+  async unlinkAccount(
+    accountId: string
+  ): Promise<{ success: boolean; data: { accountId: string; status: string } }> {
+    const response = await authFetch(`${API_BASE}/unlink`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ accountId }),
@@ -210,8 +223,12 @@ class WhatsAppService {
   /**
    * Messaging
    */
-  async sendMessage(accountId: string, recipientPhone: string, message: string): Promise<{ success: boolean; data: Message }> {
-    const response = await fetch(`${API_BASE}/send`, {
+  async sendMessage(
+    accountId: string,
+    recipientPhone: string,
+    message: string
+  ): Promise<{ success: boolean; data: Message }> {
+    const response = await authFetch(`${API_BASE}/send`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ accountId, recipientPhone, message }),
@@ -228,9 +245,13 @@ class WhatsAppService {
   /**
    * Conversations
    */
-  async getConversations(accountId: string, limit: number = 50, skip: number = 0): Promise<{ success: boolean; data: Conversation[] }> {
+  async getConversations(
+    accountId: string,
+    limit: number = 50,
+    skip: number = 0
+  ): Promise<{ success: boolean; data: Conversation[] }> {
     const params = new URLSearchParams({ limit: limit.toString(), skip: skip.toString() });
-    const response = await fetch(`${API_BASE}/conversations/${accountId}?${params}`);
+    const response = await authFetch(`${API_BASE}/conversations/${accountId}?${params}`);
 
     if (!response.ok) {
       throw new Error('Failed to fetch conversations');
@@ -239,9 +260,15 @@ class WhatsAppService {
     return response.json();
   }
 
-  async getConversationMessages(conversationId: string, limit: number = 50, skip: number = 0): Promise<{ success: boolean; data: Message[] }> {
+  async getConversationMessages(
+    conversationId: string,
+    limit: number = 50,
+    skip: number = 0
+  ): Promise<{ success: boolean; data: Message[] }> {
     const params = new URLSearchParams({ limit: limit.toString(), skip: skip.toString() });
-    const response = await fetch(`${API_BASE}/conversation/${conversationId}/messages?${params}`);
+    const response = await authFetch(
+      `${API_BASE}/conversation/${conversationId}/messages?${params}`
+    );
 
     if (!response.ok) {
       throw new Error('Failed to fetch messages');
@@ -250,8 +277,13 @@ class WhatsAppService {
     return response.json();
   }
 
-  async getConversationStats(conversationId: string, accountId: string): Promise<{ success: boolean; data: any }> {
-    const response = await fetch(`${API_BASE}/conversation/${conversationId}/stats?accountId=${accountId}`);
+  async getConversationStats(
+    conversationId: string,
+    accountId: string
+  ): Promise<{ success: boolean; data: GenericApiData }> {
+    const response = await authFetch(
+      `${API_BASE}/conversation/${conversationId}/stats?accountId=${accountId}`
+    );
 
     if (!response.ok) {
       throw new Error('Failed to fetch conversation stats');
@@ -260,8 +292,11 @@ class WhatsAppService {
     return response.json();
   }
 
-  async markConversationAsRead(conversationId: string, accountId: string): Promise<{ success: boolean; data: { messagesMarked: number } }> {
-    const response = await fetch(`${API_BASE}/conversation/${conversationId}/mark-read`, {
+  async markConversationAsRead(
+    conversationId: string,
+    accountId: string
+  ): Promise<{ success: boolean; data: { messagesMarked: number } }> {
+    const response = await authFetch(`${API_BASE}/conversation/${conversationId}/mark-read`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ accountId }),
@@ -275,9 +310,13 @@ class WhatsAppService {
     return response.json();
   }
 
-  async searchConversations(accountId: string, query: string, limit: number = 20): Promise<{ success: boolean; data: Conversation[] }> {
+  async searchConversations(
+    accountId: string,
+    query: string,
+    limit: number = 20
+  ): Promise<{ success: boolean; data: Conversation[] }> {
     const params = new URLSearchParams({ accountId, q: query, limit: limit.toString() });
-    const response = await fetch(`${API_BASE}/search/conversations?${params}`);
+    const response = await authFetch(`${API_BASE}/search/conversations?${params}`);
 
     if (!response.ok) {
       throw new Error('Failed to search conversations');
@@ -286,12 +325,17 @@ class WhatsAppService {
     return response.json();
   }
 
-  async searchMessages(accountId: string, query: string, conversationId?: string, limit: number = 50): Promise<{ success: boolean; data: Message[] }> {
+  async searchMessages(
+    accountId: string,
+    query: string,
+    conversationId?: string,
+    limit: number = 50
+  ): Promise<{ success: boolean; data: Message[] }> {
     const params = new URLSearchParams({ accountId, q: query, limit: limit.toString() });
     if (conversationId) {
       params.append('conversationId', conversationId);
     }
-    const response = await fetch(`${API_BASE}/search/messages?${params}`);
+    const response = await authFetch(`${API_BASE}/search/messages?${params}`);
 
     if (!response.ok) {
       throw new Error('Failed to search messages');
@@ -303,8 +347,11 @@ class WhatsAppService {
   /**
    * Analytics
    */
-  async getCounters(accountId: string, period: 'day' | 'week' | 'month' | 'all' = 'all'): Promise<{ success: boolean; data: any }> {
-    const response = await fetch(`${API_BASE}/counters/${accountId}?period=${period}`);
+  async getCounters(
+    accountId: string,
+    period: 'day' | 'week' | 'month' | 'all' = 'all'
+  ): Promise<{ success: boolean; data: GenericApiData }> {
+    const response = await authFetch(`${API_BASE}/counters/${accountId}?period=${period}`);
 
     if (!response.ok) {
       throw new Error('Failed to fetch counters');
@@ -313,8 +360,8 @@ class WhatsAppService {
     return response.json();
   }
 
-  async getTodayCounters(accountId: string): Promise<{ success: boolean; data: any }> {
-    const response = await fetch(`${API_BASE}/counters/${accountId}/today`);
+  async getTodayCounters(accountId: string): Promise<{ success: boolean; data: GenericApiData }> {
+    const response = await authFetch(`${API_BASE}/counters/${accountId}/today`);
 
     if (!response.ok) {
       throw new Error('Failed to fetch today counters');
@@ -323,8 +370,8 @@ class WhatsAppService {
     return response.json();
   }
 
-  async getWeekCounters(accountId: string): Promise<{ success: boolean; data: any }> {
-    const response = await fetch(`${API_BASE}/counters/${accountId}/week`);
+  async getWeekCounters(accountId: string): Promise<{ success: boolean; data: GenericApiData }> {
+    const response = await authFetch(`${API_BASE}/counters/${accountId}/week`);
 
     if (!response.ok) {
       throw new Error('Failed to fetch week counters');
@@ -333,8 +380,8 @@ class WhatsAppService {
     return response.json();
   }
 
-  async getMonthCounters(accountId: string): Promise<{ success: boolean; data: any }> {
-    const response = await fetch(`${API_BASE}/counters/${accountId}/month`);
+  async getMonthCounters(accountId: string): Promise<{ success: boolean; data: GenericApiData }> {
+    const response = await authFetch(`${API_BASE}/counters/${accountId}/month`);
 
     if (!response.ok) {
       throw new Error('Failed to fetch month counters');
@@ -344,7 +391,7 @@ class WhatsAppService {
   }
 
   async getMetrics(accountId: string): Promise<{ success: boolean; data: Metrics }> {
-    const response = await fetch(`${API_BASE}/metrics/${accountId}`);
+    const response = await authFetch(`${API_BASE}/metrics/${accountId}`);
 
     if (!response.ok) {
       throw new Error('Failed to fetch metrics');
@@ -353,8 +400,11 @@ class WhatsAppService {
     return response.json();
   }
 
-  async getTrends(accountId: string, days: number = 7): Promise<{ success: boolean; data: any[] }> {
-    const response = await fetch(`${API_BASE}/trends/${accountId}?days=${days}`);
+  async getTrends(
+    accountId: string,
+    days: number = 7
+  ): Promise<{ success: boolean; data: GenericApiData[] }> {
+    const response = await authFetch(`${API_BASE}/trends/${accountId}?days=${days}`);
 
     if (!response.ok) {
       throw new Error('Failed to fetch trends');
@@ -363,8 +413,11 @@ class WhatsAppService {
     return response.json();
   }
 
-  async getSegmentBreakdown(accountId: string, period: 'today' | 'week' | 'month' | 'all' = 'today'): Promise<{ success: boolean; data: any }> {
-    const response = await fetch(`${API_BASE}/segments/${accountId}?period=${period}`);
+  async getSegmentBreakdown(
+    accountId: string,
+    period: 'today' | 'week' | 'month' | 'all' = 'today'
+  ): Promise<{ success: boolean; data: GenericApiData }> {
+    const response = await authFetch(`${API_BASE}/segments/${accountId}?period=${period}`);
 
     if (!response.ok) {
       throw new Error('Failed to fetch segment breakdown');

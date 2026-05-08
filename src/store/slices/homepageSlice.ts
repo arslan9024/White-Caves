@@ -12,6 +12,7 @@
 
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import type { RootState } from '../store';
+import { authFetch } from '../../utils/authFetch';
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -85,10 +86,34 @@ const STATIC_FALLBACK_STATS: MarketStats = {
 };
 
 const STATIC_FALLBACK_LOCATIONS: LocationTrend[] = [
-  { name: 'Palm Jumeirah',  propertyCount: 120, avgPrice: 15_000_000, trendPercent: 12, trendDirection: 'up' },
-  { name: 'Downtown Dubai', propertyCount: 200, avgPrice:  8_000_000, trendPercent:  8, trendDirection: 'up' },
-  { name: 'Emirates Hills', propertyCount:  45, avgPrice: 35_000_000, trendPercent: 15, trendDirection: 'up' },
-  { name: 'Dubai Marina',   propertyCount: 180, avgPrice:  5_000_000, trendPercent: 10, trendDirection: 'up' },
+  {
+    name: 'Palm Jumeirah',
+    propertyCount: 120,
+    avgPrice: 15_000_000,
+    trendPercent: 12,
+    trendDirection: 'up',
+  },
+  {
+    name: 'Downtown Dubai',
+    propertyCount: 200,
+    avgPrice: 8_000_000,
+    trendPercent: 8,
+    trendDirection: 'up',
+  },
+  {
+    name: 'Emirates Hills',
+    propertyCount: 45,
+    avgPrice: 35_000_000,
+    trendPercent: 15,
+    trendDirection: 'up',
+  },
+  {
+    name: 'Dubai Marina',
+    propertyCount: 180,
+    avgPrice: 5_000_000,
+    trendPercent: 10,
+    trendDirection: 'up',
+  },
 ];
 
 const initialState: HomepageState = {
@@ -108,15 +133,11 @@ const initialState: HomepageState = {
  * Returns: featuredProperties, marketStats, topAgents, locationTrends
  * @Mira's aggregate endpoint — no auth required (public route)
  */
-export const fetchHomepageData = createAsyncThunk<
-  HomepageData,
-  void,
-  { rejectValue: string }
->(
+export const fetchHomepageData = createAsyncThunk<HomepageData, void, { rejectValue: string }>(
   'homepage/fetchData',
   async (_, { rejectWithValue }) => {
     try {
-      const response = await fetch('/api/homepage/data', {
+      const response = await authFetch('/api/homepage/data', {
         headers: { 'Content-Type': 'application/json' },
       });
 
@@ -127,7 +148,7 @@ export const fetchHomepageData = createAsyncThunk<
         );
       }
 
-      const json = await response.json() as { success: boolean; data: HomepageData };
+      const json = (await response.json()) as { success: boolean; data: HomepageData };
       return json.data;
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : 'Network error';
@@ -151,9 +172,9 @@ const homepageSlice = createSlice({
       state.error = null;
     },
   },
-  extraReducers: (builder) => {
+  extraReducers: builder => {
     builder
-      .addCase(fetchHomepageData.pending, (state) => {
+      .addCase(fetchHomepageData.pending, state => {
         state.isLoading = true;
         state.error = null;
       })
@@ -184,12 +205,12 @@ export const { setMarketStats, clearError } = homepageSlice.actions;
 
 // ─── Selectors ────────────────────────────────────────────────────────────────
 
-export const selectFeaturedProperties    = (state: RootState) => state.homepage.featuredProperties;
-export const selectMarketStats           = (state: RootState) => state.homepage.marketStats;
-export const selectTopAgents             = (state: RootState) => state.homepage.topAgents;
-export const selectLocationTrends        = (state: RootState) => state.homepage.locationTrends;
-export const selectIsHomepageLoading     = (state: RootState) => state.homepage.isLoading;
-export const selectHomepageError         = (state: RootState) => state.homepage.error;
-export const selectHomepageLastFetched   = (state: RootState) => state.homepage.lastFetchedAt;
+export const selectFeaturedProperties = (state: RootState) => state.homepage.featuredProperties;
+export const selectMarketStats = (state: RootState) => state.homepage.marketStats;
+export const selectTopAgents = (state: RootState) => state.homepage.topAgents;
+export const selectLocationTrends = (state: RootState) => state.homepage.locationTrends;
+export const selectIsHomepageLoading = (state: RootState) => state.homepage.isLoading;
+export const selectHomepageError = (state: RootState) => state.homepage.error;
+export const selectHomepageLastFetched = (state: RootState) => state.homepage.lastFetchedAt;
 
 export default homepageSlice.reducer;

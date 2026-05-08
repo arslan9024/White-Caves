@@ -12,6 +12,7 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import type { RootState } from '../store';
 import type { SearchLeadPayload, SearchLeadRecord, SearchLeadsState } from '../../types/searchLead';
+import { authFetch } from '../../utils/authFetch';
 
 // ─── Async Thunk ────────────────────────────────────────────────────────────
 
@@ -25,7 +26,7 @@ export const createSearchLead = createAsyncThunk<
   { rejectValue: string }
 >('searchLeads/create', async (payload, { rejectWithValue }) => {
   try {
-    const response = await fetch('/api/leads/from-search', {
+    const response = await authFetch('/api/leads/from-search', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload),

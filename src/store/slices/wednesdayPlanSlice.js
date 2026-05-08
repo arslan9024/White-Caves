@@ -5,13 +5,14 @@
  */
 
 import { createSlice, createAsyncThunk, createSelector } from '@reduxjs/toolkit';
+import { authFetch } from '../../utils/authFetch';
 
 // Async thunks for API calls
 export const fetchMonitoringMetrics = createAsyncThunk(
   'wednesday/fetchMonitoringMetrics',
   async (_, { rejectWithValue }) => {
     try {
-      const response = await fetch('/api/aurora/monitoring/health');
+      const response = await authFetch('/api/aurora/monitoring/health');
       const data = await response.json();
       if (!data.success) throw new Error(data.error);
       return data;
@@ -25,7 +26,7 @@ export const loadWednesdayPlan = createAsyncThunk(
   'wednesday/loadPlan',
   async (_, { rejectWithValue }) => {
     try {
-      const response = await fetch('/api/wednesday/plan');
+      const response = await authFetch('/api/wednesday/plan');
       const data = await response.json();
       if (!data.success) throw new Error(data.error);
       return data.plan;
@@ -44,7 +45,7 @@ const INITIAL_STATE = {
     status: 'scheduled', // scheduled, in_progress, completed
     createdAt: '2026-01-17T14:30:00Z',
     lastUpdated: '2026-01-17T14:30:00Z',
-    totalTasks: 26
+    totalTasks: 26,
   },
 
   // Zoe's business requirements & decisions
@@ -57,7 +58,7 @@ const INITIAL_STATE = {
         changeLog: [],
         isApproved: true,
         approvalDate: null,
-        notes: ''
+        notes: '',
       },
       sellerJourney: {
         name: 'Seller Journey: List → Lead → Negotiate → Close',
@@ -66,7 +67,7 @@ const INITIAL_STATE = {
         changeLog: [],
         isApproved: true,
         approvalDate: null,
-        notes: ''
+        notes: '',
       },
       tenantJourney: {
         name: 'Tenant Journey: Apply → Screen → Contract → Sign',
@@ -75,7 +76,7 @@ const INITIAL_STATE = {
         changeLog: [],
         isApproved: true,
         approvalDate: null,
-        notes: ''
+        notes: '',
       },
       leasingAgentWorkflow: {
         name: 'Leasing Agent: Screen → Verify → Approve',
@@ -84,7 +85,7 @@ const INITIAL_STATE = {
         changeLog: [],
         isApproved: true,
         approvalDate: null,
-        notes: ''
+        notes: '',
       },
       salesAgentWorkflow: {
         name: 'Sales Agent: Lead → Deal → Close',
@@ -93,7 +94,7 @@ const INITIAL_STATE = {
         changeLog: [],
         isApproved: true,
         approvalDate: null,
-        notes: ''
+        notes: '',
       },
       adminOversight: {
         name: 'Admin Dashboard: Monitor All Workflows',
@@ -102,8 +103,8 @@ const INITIAL_STATE = {
         changeLog: [],
         isApproved: true,
         approvalDate: null,
-        notes: ''
-      }
+        notes: '',
+      },
     },
     metrics: {
       leadConversion: { target: 0.15, actual: null, status: 'not_tested', unit: 'ratio' },
@@ -112,11 +113,11 @@ const INITIAL_STATE = {
       apiResponseTime: { target: 500, actual: null, status: 'not_tested', unit: 'ms' },
       concurrentUsers: { target: 100, actual: null, status: 'not_tested', unit: 'users' },
       contractExecutionRate: { target: 0.98, actual: null, status: 'not_tested', unit: 'percent' },
-      compliancePassRate: { target: 1.0, actual: null, status: 'not_tested', unit: 'percent' }
+      compliancePassRate: { target: 1.0, actual: null, status: 'not_tested', unit: 'percent' },
     },
     approvedChanges: [],
     decisionLog: [],
-    readOnly: false
+    readOnly: false,
   },
 
   // Aurora's technical metrics & findings
@@ -129,7 +130,7 @@ const INITIAL_STATE = {
         errorRate: null,
         uptime: null,
         lastCheck: null,
-        history: []
+        history: [],
       },
       mongodb: {
         status: 'checking',
@@ -138,52 +139,102 @@ const INITIAL_STATE = {
         storage: null,
         indexHealth: null,
         lastCheck: null,
-        history: []
+        history: [],
       },
       apiEndpoints: [
-        { endpoint: '/api/sourcing/opportunities', status: 'pending', responseTime: null, errorRate: null },
-        { endpoint: '/api/sourcing/analyze-conversation', status: 'pending', responseTime: null, errorRate: null },
-        { endpoint: '/api/sourcing/opportunities/:id/verify', status: 'pending', responseTime: null, errorRate: null },
-        { endpoint: '/api/sourcing/opportunities/:id/add-to-inventory', status: 'pending', responseTime: null, errorRate: null },
-        { endpoint: '/api/sourcing/statistics', status: 'pending', responseTime: null, errorRate: null },
+        {
+          endpoint: '/api/sourcing/opportunities',
+          status: 'pending',
+          responseTime: null,
+          errorRate: null,
+        },
+        {
+          endpoint: '/api/sourcing/analyze-conversation',
+          status: 'pending',
+          responseTime: null,
+          errorRate: null,
+        },
+        {
+          endpoint: '/api/sourcing/opportunities/:id/verify',
+          status: 'pending',
+          responseTime: null,
+          errorRate: null,
+        },
+        {
+          endpoint: '/api/sourcing/opportunities/:id/add-to-inventory',
+          status: 'pending',
+          responseTime: null,
+          errorRate: null,
+        },
+        {
+          endpoint: '/api/sourcing/statistics',
+          status: 'pending',
+          responseTime: null,
+          errorRate: null,
+        },
         { endpoint: '/api/owners', status: 'pending', responseTime: null, errorRate: null },
         { endpoint: '/api/owners/:id', status: 'pending', responseTime: null, errorRate: null },
-        { endpoint: '/api/properties/search', status: 'pending', responseTime: null, errorRate: null },
+        {
+          endpoint: '/api/properties/search',
+          status: 'pending',
+          responseTime: null,
+          errorRate: null,
+        },
         { endpoint: '/api/leads', status: 'pending', responseTime: null, errorRate: null },
-        { endpoint: '/api/leads/:id', status: 'pending', responseTime: null, errorRate: null }
+        { endpoint: '/api/leads/:id', status: 'pending', responseTime: null, errorRate: null },
       ],
       services: [
-        { service: 'PropertySourcingServices', status: 'pending', health: null, responseTime: null },
+        {
+          service: 'PropertySourcingServices',
+          status: 'pending',
+          health: null,
+          responseTime: null,
+        },
         { service: 'LeadScoringEngine', status: 'pending', health: null, responseTime: null },
         { service: 'AgentAssignmentService', status: 'pending', health: null, responseTime: null },
-        { service: 'ComplianceValidationService', status: 'pending', health: null, responseTime: null },
+        {
+          service: 'ComplianceValidationService',
+          status: 'pending',
+          health: null,
+          responseTime: null,
+        },
         { service: 'ChatbotService', status: 'pending', health: null, responseTime: null },
         { service: 'DynamicPricingEngine', status: 'pending', health: null, responseTime: null },
         { service: 'ConversationAnalyzer', status: 'pending', health: null, responseTime: null },
         { service: 'WhatsAppWebIntegration', status: 'pending', health: null, responseTime: null },
         { service: 'PropertyQueryService', status: 'pending', health: null, responseTime: null },
-        { service: 'ServiceRecommendationEngine', status: 'pending', health: null, responseTime: null },
-        { service: 'PropertyStatusEventService', status: 'pending', health: null, responseTime: null }
-      ]
+        {
+          service: 'ServiceRecommendationEngine',
+          status: 'pending',
+          health: null,
+          responseTime: null,
+        },
+        {
+          service: 'PropertyStatusEventService',
+          status: 'pending',
+          health: null,
+          responseTime: null,
+        },
+      ],
     },
     findings: {
       criticalIssues: [],
       blockers: [],
       performanceAlerts: [],
       dataIntegrityIssues: [],
-      securityConcerns: []
+      securityConcerns: [],
     },
     systemHealth: {
       overall: 'initializing',
-      components: {}
-    }
+      components: {},
+    },
   },
 
   // Shared escalations & alerts
   escalations: {
     active: [],
     history: [],
-    resolutionLog: []
+    resolutionLog: [],
   },
 
   // Session timeline tracking
@@ -193,22 +244,22 @@ const INITIAL_STATE = {
       endTime: null,
       completedTasks: [],
       progress: 0,
-      status: 'pending'
+      status: 'pending',
     },
     afternoonSession: {
       startTime: null,
       endTime: null,
       completedTasks: [],
       progress: 0,
-      status: 'pending'
+      status: 'pending',
     },
     eveningDebrief: {
       startTime: null,
       endTime: null,
       completedTasks: [],
       summary: null,
-      status: 'pending'
-    }
+      status: 'pending',
+    },
   },
 
   // Knowledge bases
@@ -222,14 +273,18 @@ const INITIAL_STATE = {
         { id: 'user-workflows', title: 'User Personas & Business Workflows', accessible: true },
         { id: 'technology-architecture', title: 'Technology Architecture', accessible: true },
         { id: 'features', title: 'Complete Feature List', accessible: true },
-        { id: 'integration-objectives', title: 'Wednesday Integration Objectives', accessible: true },
+        {
+          id: 'integration-objectives',
+          title: 'Wednesday Integration Objectives',
+          accessible: true,
+        },
         { id: 'success-metrics', title: 'Success Metrics & KPIs', accessible: true },
         { id: 'timeline', title: 'Wednesday Execution Timeline', accessible: true },
-        { id: 'deliverables', title: 'Deliverables for Wednesday', accessible: true }
+        { id: 'deliverables', title: 'Deliverables for Wednesday', accessible: true },
       ],
       searchIndex: {},
-      lastLoaded: null
-    }
+      lastLoaded: null,
+    },
   },
 
   // UI state
@@ -239,20 +294,20 @@ const INITIAL_STATE = {
     showMetricsPanel: true,
     showEscalations: true,
     notificationCount: 0,
-    criticalAlertCount: 0
+    criticalAlertCount: 0,
   },
 
   // Loading and error states
   loading: {
     plan: false,
     metrics: false,
-    findings: false
+    findings: false,
   },
   error: {
     plan: null,
     metrics: null,
-    findings: null
-  }
+    findings: null,
+  },
 };
 
 const wednesdayPlanSlice = createSlice({
@@ -260,11 +315,11 @@ const wednesdayPlanSlice = createSlice({
   initialState: INITIAL_STATE,
   reducers: {
     // Plan management
-    startWednesdayExecution: (state) => {
+    startWednesdayExecution: state => {
       state.plan.status = 'in_progress';
       state.plan.lastUpdated = new Date().toISOString();
     },
-    completeWednesdayExecution: (state) => {
+    completeWednesdayExecution: state => {
       state.plan.status = 'completed';
       state.plan.lastUpdated = new Date().toISOString();
     },
@@ -272,9 +327,13 @@ const wednesdayPlanSlice = createSlice({
     // Zoe's requirement updates
     updateRequirementStatus: (state, action) => {
       const { workflowId, status, completionPercent, notes } = action.payload;
+      // eslint-disable-next-line security/detect-object-injection
       if (state.zoe.requirements[workflowId]) {
+        // eslint-disable-next-line security/detect-object-injection
         state.zoe.requirements[workflowId].status = status;
+        // eslint-disable-next-line security/detect-object-injection
         state.zoe.requirements[workflowId].completionPercent = completionPercent || 0;
+        // eslint-disable-next-line security/detect-object-injection
         if (notes) state.zoe.requirements[workflowId].notes = notes;
       }
     },
@@ -285,13 +344,16 @@ const wednesdayPlanSlice = createSlice({
         description: changeDescription,
         reason,
         approvedAt: timestamp || new Date().toISOString(),
-        approvedBy: 'Zoe'
+        approvedBy: 'Zoe',
       });
     },
     updateMetricActual: (state, action) => {
       const { metricKey, actual, status } = action.payload;
+      // eslint-disable-next-line security/detect-object-injection
       if (state.zoe.metrics[metricKey]) {
+        // eslint-disable-next-line security/detect-object-injection
         state.zoe.metrics[metricKey].actual = actual;
+        // eslint-disable-next-line security/detect-object-injection
         state.zoe.metrics[metricKey].status = status || 'tested';
       }
     },
@@ -310,7 +372,7 @@ const wednesdayPlanSlice = createSlice({
         timestamp: new Date().toISOString(),
         buildTime,
         errorRate,
-        uptime
+        uptime,
       });
     },
     updateMongoDBMetrics: (state, action) => {
@@ -326,7 +388,7 @@ const wednesdayPlanSlice = createSlice({
         timestamp: new Date().toISOString(),
         queryPerformance,
         connections,
-        storage
+        storage,
       });
     },
     updateAPIEndpointStatus: (state, action) => {
@@ -359,7 +421,7 @@ const wednesdayPlanSlice = createSlice({
         reportedAt: timestamp || new Date().toISOString(),
         reportedBy: 'Aurora',
         status: 'open',
-        resolution: null
+        resolution: null,
       });
       state.ui.criticalAlertCount += 1;
     },
@@ -373,7 +435,7 @@ const wednesdayPlanSlice = createSlice({
         reportedAt: timestamp || new Date().toISOString(),
         reportedBy: 'Aurora',
         status: 'open',
-        resolution: null
+        resolution: null,
       });
     },
     addPerformanceAlert: (state, action) => {
@@ -386,7 +448,7 @@ const wednesdayPlanSlice = createSlice({
         actual,
         reportedAt: timestamp || new Date().toISOString(),
         reportedBy: 'Aurora',
-        severity: actual > threshold * 1.5 ? 'critical' : 'warning'
+        severity: actual > threshold * 1.5 ? 'critical' : 'warning',
       });
     },
 
@@ -405,7 +467,7 @@ const wednesdayPlanSlice = createSlice({
         status: 'open',
         zoeNotified: false,
         zoeResponse: null,
-        resolvedAt: null
+        resolvedAt: null,
       };
       state.escalations.active.push(escalation);
       state.ui.notificationCount += 1;
@@ -433,7 +495,7 @@ const wednesdayPlanSlice = createSlice({
     },
 
     // Timeline tracking
-    startMorningSession: (state) => {
+    startMorningSession: state => {
       state.timeline.morningSession.startTime = new Date().toISOString();
       state.timeline.morningSession.status = 'in_progress';
     },
@@ -442,7 +504,7 @@ const wednesdayPlanSlice = createSlice({
       state.timeline.morningSession.status = 'completed';
       state.timeline.morningSession.progress = action.payload.progress || 0;
     },
-    startAfternoonSession: (state) => {
+    startAfternoonSession: state => {
       state.timeline.afternoonSession.startTime = new Date().toISOString();
       state.timeline.afternoonSession.status = 'in_progress';
     },
@@ -453,11 +515,13 @@ const wednesdayPlanSlice = createSlice({
     },
     recordTaskCompletion: (state, action) => {
       const { sessionKey, taskId, taskName } = action.payload;
+      // eslint-disable-next-line security/detect-object-injection
       if (state.timeline[sessionKey]) {
+        // eslint-disable-next-line security/detect-object-injection
         state.timeline[sessionKey].completedTasks.push({
           id: taskId,
           name: taskName,
-          completedAt: new Date().toISOString()
+          completedAt: new Date().toISOString(),
         });
       }
     },
@@ -472,17 +536,17 @@ const wednesdayPlanSlice = createSlice({
     setActiveTab: (state, action) => {
       state.ui.activeTab = action.payload;
     },
-    toggleMetricsPanel: (state) => {
+    toggleMetricsPanel: state => {
       state.ui.showMetricsPanel = !state.ui.showMetricsPanel;
-    }
+    },
   },
-  extraReducers: (builder) => {
+  extraReducers: builder => {
     // Fetch monitoring metrics
     builder
-      .addCase(fetchMonitoringMetrics.pending, (state) => {
+      .addCase(fetchMonitoringMetrics.pending, state => {
         state.loading.metrics = true;
       })
-      .addCase(fetchMonitoringMetrics.fulfilled, (state, action) => {
+      .addCase(fetchMonitoringMetrics.fulfilled, (state, _action) => {
         state.loading.metrics = false;
         // Metrics will be processed through specific update actions
       })
@@ -493,7 +557,7 @@ const wednesdayPlanSlice = createSlice({
 
     // Load Wednesday plan
     builder
-      .addCase(loadWednesdayPlan.pending, (state) => {
+      .addCase(loadWednesdayPlan.pending, state => {
         state.loading.plan = true;
       })
       .addCase(loadWednesdayPlan.fulfilled, (state, action) => {
@@ -504,28 +568,26 @@ const wednesdayPlanSlice = createSlice({
         state.loading.plan = false;
         state.error.plan = action.payload;
       });
-  }
+  },
 });
 
 // Selectors
-export const selectWednesdayPlan = (state) => state.wednesday.plan;
-export const selectZoeRequirements = (state) => state.wednesday.zoe.requirements;
-export const selectZoeMetrics = (state) => state.wednesday.zoe.metrics;
-export const selectZoeApprovedChanges = (state) => state.wednesday.zoe.approvedChanges;
-export const selectAuroraMonitoring = (state) => state.wednesday.aurora.monitoring;
-export const selectAuroraFindings = (state) => state.wednesday.aurora.findings;
-export const selectActiveEscalations = (state) => state.wednesday.escalations.active;
-export const selectEscalationHistory = (state) => state.wednesday.escalations.history;
-export const selectTimelineProgress = (state) => state.wednesday.timeline;
-export const selectKnowledgeBase = (state) => state.wednesday.knowledgeBase.plan;
-export const selectUIState = (state) => state.wednesday.ui;
-export const selectCriticalAlerts = createSelector(
-  [selectAuroraFindings],
-  (findings) => findings.criticalIssues.filter(i => i.status === 'open')
+export const selectWednesdayPlan = state => state.wednesday.plan;
+export const selectZoeRequirements = state => state.wednesday.zoe.requirements;
+export const selectZoeMetrics = state => state.wednesday.zoe.metrics;
+export const selectZoeApprovedChanges = state => state.wednesday.zoe.approvedChanges;
+export const selectAuroraMonitoring = state => state.wednesday.aurora.monitoring;
+export const selectAuroraFindings = state => state.wednesday.aurora.findings;
+export const selectActiveEscalations = state => state.wednesday.escalations.active;
+export const selectEscalationHistory = state => state.wednesday.escalations.history;
+export const selectTimelineProgress = state => state.wednesday.timeline;
+export const selectKnowledgeBase = state => state.wednesday.knowledgeBase.plan;
+export const selectUIState = state => state.wednesday.ui;
+export const selectCriticalAlerts = createSelector([selectAuroraFindings], findings =>
+  findings.criticalIssues.filter(i => i.status === 'open')
 );
-export const selectOpenBlockers = createSelector(
-  [selectAuroraFindings],
-  (findings) => findings.blockers.filter(b => b.status === 'open')
+export const selectOpenBlockers = createSelector([selectAuroraFindings], findings =>
+  findings.blockers.filter(b => b.status === 'open')
 );
 
 export const {
@@ -551,7 +613,7 @@ export const {
   recordTaskCompletion,
   loadPlanContent,
   setActiveTab,
-  toggleMetricsPanel
+  toggleMetricsPanel,
 } = wednesdayPlanSlice.actions;
 
 export default wednesdayPlanSlice.reducer;
