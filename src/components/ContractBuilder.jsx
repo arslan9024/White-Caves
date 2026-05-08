@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { authFetch } from '../utils/authFetch';
 import './ContractBuilder.css';
 
 /**
@@ -7,8 +8,8 @@ import './ContractBuilder.css';
  */
 export default function ContractBuilder({
   onContractCreated,
-  propertyData,
-  partyData
+  propertyData: _propertyData,
+  partyData,
 }) {
   const [templates, setTemplates] = useState([]);
   const [selectedTemplate, setSelectedTemplate] = useState(null);
@@ -25,7 +26,7 @@ export default function ContractBuilder({
 
   const fetchTemplates = async () => {
     try {
-      const response = await fetch('/api/contracts');
+      const response = await authFetch('/api/contracts');
       const data = await response.json();
       if (data.success) {
         setTemplates(data.data);
@@ -37,7 +38,7 @@ export default function ContractBuilder({
   };
 
   // Handle template selection
-  const handleSelectTemplate = (template) => {
+  const handleSelectTemplate = template => {
     setSelectedTemplate(template);
     setFormData({});
     setPreview('');
@@ -46,11 +47,11 @@ export default function ContractBuilder({
   };
 
   // Handle form input change
-  const handleInputChange = (e) => {
+  const handleInputChange = e => {
     const { name, value } = e.target;
-    setFormData((prev) => ({
+    setFormData(prev => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
   };
 
@@ -60,17 +61,14 @@ export default function ContractBuilder({
       setLoading(true);
       setError('');
 
-      const response = await fetch(
-        '/api/contracts/from-template/validate',
-        {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            templateId: selectedTemplate._id,
-            data: formData
-          })
-        }
-      );
+      const response = await authFetch('/api/contracts/from-template/validate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          templateId: selectedTemplate._id,
+          data: formData,
+        }),
+      });
 
       const data = await response.json();
 
@@ -94,25 +92,22 @@ export default function ContractBuilder({
       setLoading(true);
       setError('');
 
-      const response = await fetch(
-        '/api/contracts/from-template',
-        {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            templateId: selectedTemplate._id,
-            templateData: formData,
-            partyData: {
-              ...partyData,
-              createdBy: {
-                userId: 'current-user-id', // TODO: Get from auth
-                email: 'user@example.com',
-                name: 'Current User'
-              }
-            }
-          })
-        }
-      );
+      const response = await authFetch('/api/contracts/from-template', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          templateId: selectedTemplate._id,
+          templateData: formData,
+          partyData: {
+            ...partyData,
+            createdBy: {
+              userId: 'current-user-id', // TODO: Get from auth
+              email: 'user@example.com',
+              name: 'Current User',
+            },
+          },
+        }),
+      });
 
       const data = await response.json();
 
@@ -149,7 +144,7 @@ export default function ContractBuilder({
             <h3>Select a Template</h3>
             <div className="template-grid">
               {templates.length > 0 ? (
-                templates.map((template) => (
+                templates.map(template => (
                   <div
                     key={template._id}
                     className="template-card"
@@ -158,9 +153,7 @@ export default function ContractBuilder({
                     <div className="template-icon">📄</div>
                     <h4>{template.name}</h4>
                     <p>{template.description}</p>
-                    <span className="template-category">
-                      {template.category}
-                    </span>
+                    <span className="template-category">{template.category}</span>
                   </div>
                 ))
               ) : (
@@ -340,11 +333,7 @@ export default function ContractBuilder({
               </fieldset>
 
               <div className="form-actions">
-                <button
-                  type="button"
-                  className="btn-secondary"
-                  onClick={() => setStep('select')}
-                >
+                <button type="button" className="btn-secondary" onClick={() => setStep('select')}>
                   Back
                 </button>
                 <button
@@ -366,18 +355,11 @@ export default function ContractBuilder({
             <h3>Review Contract</h3>
 
             <div className="contract-preview">
-              <div
-                className="preview-content"
-                dangerouslySetInnerHTML={{ __html: preview }}
-              />
+              <div className="preview-content" dangerouslySetInnerHTML={{ __html: preview }} />
             </div>
 
             <div className="form-actions">
-              <button
-                type="button"
-                className="btn-secondary"
-                onClick={() => setStep('fill')}
-              >
+              <button type="button" className="btn-secondary" onClick={() => setStep('fill')}>
                 Back to Edit
               </button>
               <button
