@@ -263,6 +263,7 @@ const LeadManagementPage: FC = () => {
             $color={cfg.color}
             onClick={() => handleStatusFilterChange(key)}
           >
+            {}
             {cfg.label} ({statusCounts[key] || 0})
           </PipelineStage>
         ))}
@@ -307,55 +308,54 @@ const LeadManagementPage: FC = () => {
           </thead>
           <tbody>
             {paginatedLeads.length > 0 ? (
-              paginatedLeads.map((lead: Lead) => (
-                <Tr key={lead.id} onClick={() => handleEdit(lead)}>
-                  <Td style={{ fontWeight: 500 }}>{lead.name || '—'}</Td>
-                  <Td>
-                    {lead.score !== undefined ? (
-                      <Badge
-                        variant={
-                          ((lead.score as number) >= 80
-                            ? 'error'
-                            : (lead.score as number) >= 50
-                              ? 'warning'
-                              : 'secondary') as 'error' | 'warning' | 'secondary'
-                        }
-                        size="small"
-                      >
-                        {(lead.score as number) >= 80
-                          ? '🔥'
-                          : (lead.score as number) >= 50
-                            ? '⚡'
-                            : '❄️'}{' '}
-                        {lead.score as number}
+              paginatedLeads.map((lead: Lead) => {
+                const score = lead.score ?? undefined;
+                const scoreVariant =
+                  score === undefined
+                    ? undefined
+                    : score >= 80
+                      ? 'error'
+                      : score >= 50
+                        ? 'warning'
+                        : 'secondary';
+                const scoreEmoji =
+                  score === undefined ? '' : score >= 80 ? '🔥' : score >= 50 ? '⚡' : '❄️';
+                return (
+                  <Tr key={lead.id} onClick={() => handleEdit(lead)}>
+                    <Td style={{ fontWeight: 500 }}>{lead.name || '—'}</Td>
+                    <Td>
+                      {score !== undefined ? (
+                        <Badge variant={scoreVariant} size="small">
+                          {scoreEmoji} {score}
+                        </Badge>
+                      ) : (
+                        '—'
+                      )}
+                    </Td>
+                    <Td>{lead.company || '—'}</Td>
+                    <Td>
+                      <Badge variant={getStatusBadgeVariant(lead.status || '')} size="small">
+                        {STATUS_CONFIG[lead.status || '']?.label || lead.status || '—'}
                       </Badge>
-                    ) : (
-                      '—'
-                    )}
-                  </Td>
-                  <Td>{lead.company || '—'}</Td>
-                  <Td>
-                    <Badge variant={getStatusBadgeVariant(lead.status || '')} size="small">
-                      {STATUS_CONFIG[lead.status || '']?.label || lead.status || '—'}
-                    </Badge>
-                  </Td>
-                  <Td>{SOURCE_LABELS[lead.source || ''] || lead.source || '—'}</Td>
-                  <Td>{formatCurrency(lead.budget || lead.value)}</Td>
-                  <Td>
-                    <div style={{ fontSize: '0.8rem' }}>
-                      {lead.email && <div>{lead.email}</div>}
-                      {lead.phone && <div style={{ color: '#888' }}>{lead.phone}</div>}
-                    </div>
-                  </Td>
-                  <Td>{formatDate(lead.created_at)}</Td>
-                  <Td onClick={e => e.stopPropagation()}>
-                    <div style={{ display: 'flex', gap: '0.4rem' }}>
-                      <SecondaryButton onClick={() => handleEdit(lead)}>Edit</SecondaryButton>
-                      <DangerButton onClick={() => confirmDelete(lead)}>Delete</DangerButton>
-                    </div>
-                  </Td>
-                </Tr>
-              ))
+                    </Td>
+                    <Td>{SOURCE_LABELS[lead.source || ''] || lead.source || '—'}</Td>
+                    <Td>{formatCurrency(lead.budget || lead.value)}</Td>
+                    <Td>
+                      <div style={{ fontSize: '0.8rem' }}>
+                        {lead.email && <div>{lead.email}</div>}
+                        {lead.phone && <div style={{ color: '#888' }}>{lead.phone}</div>}
+                      </div>
+                    </Td>
+                    <Td>{formatDate(lead.created_at)}</Td>
+                    <Td onClick={e => e.stopPropagation()}>
+                      <div style={{ display: 'flex', gap: '0.4rem' }}>
+                        <SecondaryButton onClick={() => handleEdit(lead)}>Edit</SecondaryButton>
+                        <DangerButton onClick={() => confirmDelete(lead)}>Delete</DangerButton>
+                      </div>
+                    </Td>
+                  </Tr>
+                );
+              })
             ) : (
               <tr>
                 <Td colSpan={8}>

@@ -153,8 +153,6 @@ const Hero = ({ marketStats, isLoading = false }: HeroProps) => {
           src="https://images.unsplash.com/photo-1582268611958-ebfd161ef9cf?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80"
           alt=""
           aria-hidden="true"
-          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-          // @ts-ignore fetchpriority is a valid HTML attribute in modern browsers
           fetchPriority="high"
           style={{
             position: 'absolute',

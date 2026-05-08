@@ -102,7 +102,8 @@ class WhatsAppBotService {
       lowerBody.includes('cost') ||
       lowerBody.includes('budget')
     ) {
-      reply = `We have properties across all price ranges in Dubai. Please call +971 56 361 6136 or visit whitecaves.ae for current listings and pricing.`;
+      reply =
+        'We have properties across all price ranges in Dubai. Please call +971 56 361 6136 or visit whitecaves.ae for current listings and pricing.';
     } else {
       reply = `Hello! 👋 Welcome to White Caves Real Estate. How can we help you today? Type "property" to explore listings or call +971 56 361 6136.`;
     }
