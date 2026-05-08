@@ -48,7 +48,14 @@ function mapUserToEmployee(u: UserApiItem): Employee {
     avatar: u.photoUrl ?? '',
     position: u.role,
     department: u.department ?? 'General',
-    status: u.status === 'active' ? 'active' : u.status === 'suspended' ? 'terminated' : 'active',
+    status:
+      u.status === 'active'
+        ? 'active'
+        : u.status === 'on_leave'
+          ? 'on_leave'
+          : u.status === 'suspended'
+            ? 'terminated'
+            : 'active',
     joinDate: u.createdAt,
     salary: 0,
     manager: '',
