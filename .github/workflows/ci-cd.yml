@@ -198,6 +198,7 @@ jobs:
     steps:
       - name: Send Slack notification
         uses: 8398a7/action-slack@v3
+        continue-on-error: true
         with:
           status: ${{ job.status }}
           text: 'CI/CD Pipeline ${{ job.status }}'

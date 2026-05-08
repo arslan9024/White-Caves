@@ -73,8 +73,8 @@ const PropertyDetailPage = () => {
           text: `Check out this property: ${property.title} in ${property.location}`,
           url: window.location.href
         });
-      } catch (err) {
-        
+      } catch (_err) {
+        // share not supported or cancelled — silently ignore
       }
     } else {
       navigator.clipboard.writeText(window.location.href);
@@ -110,8 +110,8 @@ const PropertyDetailPage = () => {
           setContactForm({ name: '', email: '', phone: '', message: '' });
         }, 2000);
       }
-    } catch (err) {
-      
+    } catch (_err) {
+      // submission error — submitting state cleared in finally
     } finally {
       setSubmitting(false);
     }
