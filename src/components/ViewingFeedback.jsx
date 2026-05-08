@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { Star, MessageSquare, ThumbsUp, ThumbsDown, HelpCircle } from 'lucide-react';
+import { Star, ThumbsUp, ThumbsDown, HelpCircle } from 'lucide-react';
+import { authFetch } from '../utils/authFetch';
 import './ViewingFeedback.css';
 
 const ViewingFeedback = ({ viewing, onSubmit, onClose }) => {
@@ -9,12 +10,12 @@ const ViewingFeedback = ({ viewing, onSubmit, onClose }) => {
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async e => {
     e.preventDefault();
     setSubmitting(true);
 
     try {
-      const response = await fetch(`/api/viewings/${viewing._id}/complete`, {
+      const response = await authFetch(`/api/viewings/${viewing._id}/complete`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -102,7 +103,7 @@ const ViewingFeedback = ({ viewing, onSubmit, onClose }) => {
               <span className="section-label">How would you rate this property?</span>
             </label>
             <div className="rating-stars">
-              {[1, 2, 3, 4, 5].map((star) => (
+              {[1, 2, 3, 4, 5].map(star => (
                 <button
                   key={star}
                   type="button"
@@ -136,7 +137,7 @@ const ViewingFeedback = ({ viewing, onSubmit, onClose }) => {
             <textarea
               id="feedback"
               value={feedback}
-              onChange={(e) => setFeedback(e.target.value)}
+              onChange={e => setFeedback(e.target.value)}
               placeholder="Tell us more about your experience... What did you like? What could be improved?"
               rows={4}
               className="feedback-textarea"
@@ -149,30 +150,21 @@ const ViewingFeedback = ({ viewing, onSubmit, onClose }) => {
 
             <div className="question">
               <label>
-                <input
-                  type="checkbox"
-                  defaultChecked
-                />
+                <input type="checkbox" defaultChecked />
                 Was the property in good condition?
               </label>
             </div>
 
             <div className="question">
               <label>
-                <input
-                  type="checkbox"
-                  defaultChecked
-                />
+                <input type="checkbox" defaultChecked />
                 Was the agent professional and helpful?
               </label>
             </div>
 
             <div className="question">
               <label>
-                <input
-                  type="checkbox"
-                  defaultChecked
-                />
+                <input type="checkbox" defaultChecked />
                 Would you like a follow-up viewing?
               </label>
             </div>
@@ -183,11 +175,7 @@ const ViewingFeedback = ({ viewing, onSubmit, onClose }) => {
             <button type="button" className="btn-cancel" onClick={onClose}>
               Skip
             </button>
-            <button
-              type="submit"
-              className="btn-submit"
-              disabled={!outcome || submitting}
-            >
+            <button type="submit" className="btn-submit" disabled={!outcome || submitting}>
               {submitting ? 'Submitting...' : 'Submit Feedback'}
             </button>
           </div>
