@@ -125,4 +125,21 @@ describe('SubagentCollaborationPanel', () => {
 
     expect(await screen.findByText(/status api unavailable/i)).toBeInTheDocument();
   });
+
+  it('shows assign-task error and re-enables submit when task creation fails', async () => {
+    mGetStatus.mockResolvedValueOnce(makeStatusResponse({ tasks: [] }));
+    mCreateTask.mockRejectedValueOnce(new Error('Task creation failed'));
+
+    render(<SubagentCollaborationPanel assistantId="henry" />);
+
+    const input = await screen.findByPlaceholderText(/draft ai handoff rules/i);
+    fireEvent.change(input, { target: { value: 'Escalate compliance evidence gap' } });
+
+    const button = screen.getByRole('button', { name: /assign task/i });
+    fireEvent.click(button);
+
+    expect(await screen.findByText(/task creation failed/i)).toBeInTheDocument();
+    expect(button).toBeEnabled();
+    expect(input).toHaveValue('Escalate compliance evidence gap');
+  });
 });
