@@ -1,0 +1,131 @@
+/**
+ * Orchestration Routes — Unit Tests
+ * Covers /api/orchestration status, task creation, state updates, and quota controls.
+ */
+
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+import express from 'express';
+import request from 'supertest';
+
+vi.mock('../middleware/errorHandler', () => ({
+  AppError: class extends Error {
+    statusCode: number;
+    constructor(message: string, statusCode: number) {
+      super(message);
+      this.statusCode = statusCode;
+    }
+  },
+  asyncHandler: (fn: any) => (req: any, res: any, next: any) =>
+    Promise.resolve(fn(req, res, next)).catch(next),
+}));
+
+vi.mock('../middleware/rbac', () => ({
+  requireRole: () => (_req: any, _res: any, next: any) => next(),
+}));
+
+import orchestrationRoutes from './orchestration';
+
+function createApp() {
+  const app = express();
+  app.use(express.json());
+  app.use('/api/orchestration', orchestrationRoutes);
+  app.use((err: any, _req: any, res: any, _next: any) => {
+    res.status(err.statusCode || 500).json({ success: false, error: err.message });
+  });
+  return app;
+}
+
+describe('Orchestration Routes — /api/orchestration', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it('GET /status returns profiles, graph, quota, and tasks', async () => {
+    const res = await request(createApp()).get('/api/orchestration/status');
+
+    expect(res.status).toBe(200);
+    expect(res.body.success).toBe(true);
+    expect(res.body.data).toHaveProperty('profiles');
+    expect(res.body.data).toHaveProperty('collaborationGraph');
+    expect(res.body.data).toHaveProperty('quota');
+    expect(res.body.data).toHaveProperty('tasks');
+    expect(res.body.data.profiles).toHaveProperty('linda');
+    expect(res.body.data.profiles).toHaveProperty('henry');
+  });
+
+  it('POST /tasks creates queued task for allowed assistant/task type', async () => {
+    const res = await request(createApp()).post('/api/orchestration/tasks').send({
+      assistantId: 'linda',
+      taskType: 'planning',
+      title: 'Prepare handoff workflow for leasing leads',
+    });
+
+    expect(res.status).toBe(201);
+    expect(res.body.success).toBe(true);
+    expect(res.body.data.assistantId).toBe('linda');
+    expect(res.body.data.taskType).toBe('planning');
+    expect(['queued', 'blocked']).toContain(res.body.data.state);
+  });
+
+  it('POST /tasks blocks premium tier for assistant without premium permission', async () => {
+    const res = await request(createApp()).post('/api/orchestration/tasks').send({
+      assistantId: 'linda',
+      taskType: 'planning',
+      title: 'Attempt premium execution',
+      requestedTier: 'premium',
+    });
+
+    expect(res.status).toBe(201);
+    expect(res.body.success).toBe(true);
+    expect(res.body.data.state).toBe('blocked');
+    expect(String(res.body.data.blockedReason || '')).toMatch(/premium/i);
+  });
+
+  it('POST /tasks rejects invalid task type for assistant', async () => {
+    const res = await request(createApp()).post('/api/orchestration/tasks').send({
+      assistantId: 'linda',
+      taskType: 'implementation',
+      title: 'Should fail because linda is planning/review/docs focused',
+    });
+
+    expect(res.status).toBe(400);
+    expect(res.body.success).toBe(false);
+    expect(String(res.body.error || '')).toMatch(/not allowed/i);
+  });
+
+  it('PATCH /tasks/:id/state updates existing task state', async () => {
+    const createRes = await request(createApp()).post('/api/orchestration/tasks').send({
+      assistantId: 'henry',
+      taskType: 'review',
+      title: 'Review compliance event stream',
+    });
+
+    const taskId = createRes.body?.data?.id;
+    expect(taskId).toBeTruthy();
+
+    const patchRes = await request(createApp())
+      .patch(`/api/orchestration/tasks/${taskId}/state`)
+      .send({ state: 'running' });
+
+    expect(patchRes.status).toBe(200);
+    expect(patchRes.body.success).toBe(true);
+    expect(patchRes.body.data.state).toBe('running');
+  });
+
+  it('PUT /quota updates quota values', async () => {
+    const res = await request(createApp()).put('/api/orchestration/quota').send({
+      weeklyPremiumRemaining: 25,
+      businessDaysRemaining: 5,
+      premiumConsumedToday: 2,
+    });
+
+    expect(res.status).toBe(200);
+    expect(res.body.success).toBe(true);
+    expect(res.body.data.weeklyPremiumRemaining).toBe(25);
+    expect(res.body.data.businessDaysRemaining).toBe(5);
+    expect(res.body.data.premiumConsumedToday).toBe(2);
+    expect(res.body.data.dailyCap).toBe(5);
+  });
+});
