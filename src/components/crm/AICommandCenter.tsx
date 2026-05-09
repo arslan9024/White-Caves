@@ -8,6 +8,7 @@ import {
   StatCard,
   ActivityTimeline
 } from './shared';
+import SubagentCollaborationPanel from './shared/SubagentCollaborationPanel';
 import {
   selectCurrentAssistant,
   selectAllAssistantsArray,
@@ -45,6 +46,8 @@ const OliviaMarketingCRM = lazy(() => import('./OliviaMarketingCRM_NEW'));
 const ZoeExecutiveCRM = lazy(() => import('./ZoeExecutiveCRM_NEW'));
 const LailaComplianceCRM = lazy(() => import('./LailaComplianceCRM_NEW'));
 const AuroraCTODashboard = lazy(() => import('./AuroraCTODashboard_NEW'));
+const LindaWhatsAppCRM = lazy(() => import('./LindaWhatsAppCRM'));
+const HenryRecordsCRM = lazy(() => import('./HenryRecordsCRM'));
 
 const ASSISTANT_COMPONENTS = {
   nadia: NadiaWhatsAppCRM,
@@ -58,7 +61,9 @@ const ASSISTANT_COMPONENTS = {
   olivia: OliviaMarketingCRM,
   zoe: ZoeExecutiveCRM,
   laila: LailaComplianceCRM,
-  aurora: AuroraCTODashboard
+  aurora: AuroraCTODashboard,
+  linda: LindaWhatsAppCRM,
+  henry: HenryRecordsCRM,
 };
 
 const LoadingSpinner = memo(() => (
@@ -191,6 +196,7 @@ const AICommandCenter = memo(() => {
         </div>
         
         <aside className="activity-sidebar">
+          <SubagentCollaborationPanel assistantId={currentAssistant?.id} />
           <div className="sidebar-section">
             <h3 className="sidebar-title">Recent Activity</h3>
             <ActivityTimeline 

@@ -639,13 +639,13 @@ export const AI_ASSISTANTS_REGISTRY: Record<string, AIAssistant> = {
   henry: {
     id: 'henry',
     name: 'Henry',
-    title: 'Record Keeper & Timeline Master',
+    title: 'Record Keeper & Compliance Auditor',
     department: 'technology',
     icon: 'BookOpen',
     colorScheme: '#7C3AED',
     avatar: '📚',
     description:
-      'Centralized memory and audit system. Creates immutable audit trails, enables cross-system analytics, provides operational clarity, and automates compliance reporting',
+      'Centralized memory and audit system. Creates immutable audit trails, enables cross-system analytics, provides operational clarity, and automates compliance reporting.',
     capabilities: [
       'universal_event_ingestion',
       'intelligent_categorization',
@@ -655,6 +655,7 @@ export const AI_ASSISTANTS_REGISTRY: Record<string, AIAssistant> = {
       'sla_monitoring',
       'compliance_logging',
       'anomaly_detection',
+      'report_packaging',
     ],
     permissions: {
       viewableBy: ['owner', 'admin'],
@@ -669,7 +670,14 @@ export const AI_ASSISTANTS_REGISTRY: Record<string, AIAssistant> = {
     },
     quickStats: { value: 8921, label: 'Events Logged', change: 1.2 },
     dashboardUrl: '/owner/dashboard?tab=henry',
-    apiEndpoints: ['/api/events', '/api/timeline', '/api/audit', '/api/reports'],
+    apiEndpoints: [
+      '/api/henry/health',
+      '/api/henry/archive',
+      '/api/events',
+      '/api/timeline',
+      '/api/audit',
+      '/api/reports',
+    ],
   },
   cipher: {
     id: 'cipher',

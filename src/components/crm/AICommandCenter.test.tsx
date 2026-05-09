@@ -137,6 +137,9 @@ vi.mock('lucide-react', () => {
     Layout: stub('Layout'),
     Sidebar: stub('Sidebar'),
     Menu: stub('Menu'),
+    Sparkles: stub('Sparkles'),
+    Link2: stub('Link2'),
+    ShieldCheck: stub('ShieldCheck'),
     type: stub('type') as unknown,   // LucideIcon type
     LucideIcon: stub('LucideIcon'),
   };
@@ -179,6 +182,11 @@ vi.mock('./AICommandCenter.styles', () => {
     LoadingContainer: c('div', 'loading-container'),
   };
 });
+
+vi.mock('./shared/SubagentCollaborationPanel', () => ({
+  __esModule: true,
+  default: () => <div data-testid="subagent-collaboration-panel">Subagent Collaboration Panel</div>,
+}));
 
 // Mock all lazy-loaded CRM components as simple stubs (must be individual calls for hoisting)
 vi.mock('./NadiaWhatsAppCRM', () => ({ __esModule: true, default: () => <div data-testid="crm-nadia">Nadia Dashboard</div> }));

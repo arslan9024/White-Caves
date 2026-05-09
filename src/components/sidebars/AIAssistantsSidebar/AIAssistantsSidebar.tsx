@@ -86,6 +86,19 @@ export const AIAssistantsSidebar: React.FC<AIAssistantsSidebarProps> = ({
   const crmAgents = useMemo(() => getAssistantsByRole('CRM Agent'), []);
   const dataAgents = useMemo(() => getAssistantsByRole('Data Management'), []);
   const analyticAgents = useMemo(() => getAssistantsByRole('Analytics & Reporting'), []);
+  const allAssistants = useMemo(() => Object.values(AI_ASSISTANTS), []);
+  const groupedAssistantIds = useMemo(() => {
+    return new Set([
+      ...whatsappAgents.map((a) => a.id),
+      ...crmAgents.map((a) => a.id),
+      ...dataAgents.map((a) => a.id),
+      ...analyticAgents.map((a) => a.id),
+    ]);
+  }, [analyticAgents, crmAgents, dataAgents, whatsappAgents]);
+  const ungroupedAssistants = useMemo(
+    () => allAssistants.filter((assistant) => !groupedAssistantIds.has(assistant.id)),
+    [allAssistants, groupedAssistantIds],
+  );
 
   const handleAssistantClick = (assistantId: string, assistant: any) => {
     setActiveFeature(`ai-${assistantId}`);
@@ -218,6 +231,14 @@ export const AIAssistantsSidebar: React.FC<AIAssistantsSidebarProps> = ({
           <AISection>
             <AILabel>📈 Analytics</AILabel>
             {analyticAgents.map(assistant => renderAssistantItem(assistant))}
+          </AISection>
+        )}
+
+        {/* OTHER ASSISTANTS */}
+        {ungroupedAssistants.length > 0 && (
+          <AISection>
+            <AILabel>🧠 Other Assistants</AILabel>
+            {ungroupedAssistants.map((assistant) => renderAssistantItem(assistant))}
           </AISection>
         )}
 

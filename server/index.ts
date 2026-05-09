@@ -41,6 +41,7 @@ import complianceRoutes from './routes/compliance.js';
 import crmRoutes from './routes/crm.js';
 import assistantsRoutes from './routes/assistants.js';
 import integrationsRoutes from './routes/integrations.js';
+import orchestrationRoutes from './routes/orchestration.js';
 import nadiaRoutes from './routes/nadia.js';
 import lindaRoutes from './routes/linda.js';
 import metaWebhookRoutes from './routes/meta-webhook.js';
@@ -423,6 +424,7 @@ app.use('/api/assistants', assistantsRoutes);
 
 // External module gateway (Linda + Henry separate repos)
 app.use('/api/integrations', integrationsRoutes);
+app.use('/api/orchestration', orchestrationRoutes);
 
 // ============================================================================
 // STUB ROUTES — Placeholder APIs for frontend pages not yet backed by full CRUD
