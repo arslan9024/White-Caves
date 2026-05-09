@@ -95,6 +95,49 @@ describe('Orchestration Routes — /api/orchestration', () => {
     expect(String(res.body.error || '')).toMatch(/not allowed/i);
   });
 
+  it('POST /tasks rejects missing required fields', async () => {
+    const res = await request(createApp()).post('/api/orchestration/tasks').send({
+      assistantId: 'linda',
+      taskType: 'planning',
+    });
+
+    expect(res.status).toBe(400);
+    expect(res.body.success).toBe(false);
+    expect(String(res.body.error || '')).toMatch(/required/i);
+  });
+
+  it('POST /tasks returns 404 for unknown assistant', async () => {
+    const res = await request(createApp()).post('/api/orchestration/tasks').send({
+      assistantId: 'unknown-agent',
+      taskType: 'planning',
+      title: 'Unknown assistant request',
+    });
+
+    expect(res.status).toBe(404);
+    expect(res.body.success).toBe(false);
+    expect(String(res.body.error || '')).toMatch(/unknown assistant/i);
+  });
+
+  it('POST /tasks blocks premium tasks when daily cap is exhausted', async () => {
+    await request(createApp()).put('/api/orchestration/quota').send({
+      weeklyPremiumRemaining: 2,
+      businessDaysRemaining: 1,
+      premiumConsumedToday: 2,
+    });
+
+    const res = await request(createApp()).post('/api/orchestration/tasks').send({
+      assistantId: 'mira',
+      taskType: 'implementation',
+      title: 'Premium implementation after cap reached',
+      requestedTier: 'premium',
+    });
+
+    expect(res.status).toBe(201);
+    expect(res.body.success).toBe(true);
+    expect(res.body.data.state).toBe('blocked');
+    expect(String(res.body.data.blockedReason || '')).toMatch(/daily premium cap exhausted/i);
+  });
+
   it('PATCH /tasks/:id/state updates existing task state', async () => {
     const createRes = await request(createApp()).post('/api/orchestration/tasks').send({
       assistantId: 'henry',
@@ -112,6 +155,34 @@ describe('Orchestration Routes — /api/orchestration', () => {
     expect(patchRes.status).toBe(200);
     expect(patchRes.body.success).toBe(true);
     expect(patchRes.body.data.state).toBe('running');
+  });
+
+  it('PATCH /tasks/:id/state rejects missing state', async () => {
+    const createRes = await request(createApp()).post('/api/orchestration/tasks').send({
+      assistantId: 'henry',
+      taskType: 'review',
+      title: 'Create task for empty-state patch test',
+    });
+
+    const taskId = createRes.body?.data?.id;
+
+    const patchRes = await request(createApp())
+      .patch(`/api/orchestration/tasks/${taskId}/state`)
+      .send({});
+
+    expect(patchRes.status).toBe(400);
+    expect(patchRes.body.success).toBe(false);
+    expect(String(patchRes.body.error || '')).toMatch(/state is required/i);
+  });
+
+  it('PATCH /tasks/:id/state returns 404 for unknown task id', async () => {
+    const patchRes = await request(createApp())
+      .patch('/api/orchestration/tasks/not-found-id/state')
+      .send({ state: 'running' });
+
+    expect(patchRes.status).toBe(404);
+    expect(patchRes.body.success).toBe(false);
+    expect(String(patchRes.body.error || '')).toMatch(/task not found/i);
   });
 
   it('PUT /quota updates quota values', async () => {
