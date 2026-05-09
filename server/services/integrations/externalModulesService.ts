@@ -89,7 +89,7 @@ function getLindaBaseUrl(): string {
 
 function getHenryBaseUrl(): string {
   return ensureUrl(
-    process.env.HENRY_MODULE_BASE_URL || 'http://127.0.0.1:5000',
+    process.env.HENRY_MODULE_BASE_URL || 'http://127.0.0.1:5100',
     'HENRY_MODULE_BASE_URL'
   );
 }

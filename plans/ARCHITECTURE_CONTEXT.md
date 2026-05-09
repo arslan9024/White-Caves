@@ -4,9 +4,9 @@
 >
 > **Last updated:** April 2026
 
-## 0. External AI Modules (Separate Repositories) — Linda + Henry
+## 0. Linda + Henry Monorepo Import Strategy (New Canonical Direction)
 
-These modules are maintained in **separate repos** and integrated into White Caves AI Command Center via service contracts and assistant registry alignment.
+Linda and Henry codebases are now **copied into this repository** and will be enhanced directly inside White Caves moving forward.
 
 ### Repositories
 
@@ -15,14 +15,31 @@ These modules are maintained in **separate repos** and integrated into White Cav
 - **Henry (Record Keeper & Compliance Document Engine):**
   - https://github.com/arslan9024/Henry
 
-### Integration Strategy (Current)
+### Source-of-Truth Rule
 
-1. Keep Linda and Henry deployable independently.
-2. Integrate into White Caves through backend gateway endpoints and assistant registry consistency.
-3. Surface module health/status in AI Command Center.
-4. Maintain contract compatibility with explicit base URLs via env:
-   - `LINDA_MODULE_BASE_URL`
-   - `HENRY_MODULE_BASE_URL`
+1. `modules/linda` and `modules/henry` are the in-project module sources for future work.
+2. External repos are now reference inputs only (for ideas, historical context, and selective backports).
+3. New features, fixes, and UX upgrades must be implemented in White Caves monorepo first.
+4. AI Command Center remains the orchestration surface for Linda/Henry alongside other assistants.
+
+### Imported Module Paths
+
+- `modules/linda` — snapshot from `https://github.com/arslan9024/whatsapp-bot-linda`
+- `modules/henry` — snapshot from `https://github.com/arslan9024/Henry`
+
+### Monorepo Development Scripts (Root package.json)
+
+- `npm run install:ai-modules`
+- `npm run dev:linda`
+- `npm run dev:henry`
+- `npm run dev:ai-modules`
+
+### Runtime Integration Strategy (Current Phase)
+
+1. Keep internal gateway endpoints (`/api/integrations/*`) for contract compatibility while migration continues.
+2. Gradually replace cross-repo assumptions with in-repo adapters/components.
+3. Unify Linda/Henry identity and capabilities across registries + command center UI.
+4. Refactor inconsistencies/errors from imported snapshots to White Caves standards (authFetch, linting, strict typing, UX system).
 
 ### White Caves Integration Endpoints (Gateway)
 
@@ -44,9 +61,9 @@ Mounted in backend at `/api/integrations`:
 
 ### Notes for Future Sessions
 
-- Linda already has local White Caves routes at `/api/linda/*`; external Linda repo integration is additive and contract-driven.
-- Henry external repo exposes records/compliance flows; White Caves currently starts by integrating archive/health contract.
-- Next expansion: command-center UI health cards, adapter-level auth propagation, and shared audit event mapping.
+- Linda already has local White Caves routes at `/api/linda/*`; prioritize convergence with `modules/linda` implementation.
+- Henry capabilities (records/compliance/document engine) should be ported from `modules/henry` into command-center-native UX flows.
+- Priority is not a literal 1:1 copy forever; objective is a cleaner, unified White Caves implementation that surpasses both source repos.
 
 ---
 

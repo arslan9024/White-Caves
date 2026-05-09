@@ -10,6 +10,12 @@
   },
   "scripts": {
     "dev": "vite",
+    "dev:linda": "cd modules/linda && npm run dev",
+    "dev:henry": "cd modules/henry && cross-env HENRY_PORT=5100 npm run dev",
+    "dev:ai-modules": "concurrently \"npm run dev:linda\" \"npm run dev:henry\"",
+    "install:linda": "cd modules/linda && npm install",
+    "install:henry": "cd modules/henry && npm install",
+    "install:ai-modules": "npm run install:linda && npm run install:henry",
     "server": "tsx server/index.ts",
     "client": "vite",
     "dev:all": "concurrently \"npm run server\" \"npm run client\"",
