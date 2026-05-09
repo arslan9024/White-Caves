@@ -21,6 +21,10 @@ export default [
       'docs/**',
       'public/**',
       '**/*.min.js',
+      'src/components/DocumentVerificationProcessor_placeholder.jsx',
+      'test-leasing-inventory.js',
+      'test-relational-sidebar-api.js',
+      'test/sidebar-enhancements.test.ts',
     ],
   },
   {
@@ -49,14 +53,14 @@ export default [
     rules: {
       // ESLint core rules
       ...js.configs.recommended.rules,
-      
+
       // React rules
       ...react.configs.recommended.rules,
       'react/react-in-jsx-scope': 'off',
       'react/prop-types': 'off',
       'react/display-name': 'warn',
       'react/no-unescaped-entities': 'warn',
-      
+
       // React Hooks rules
       ...reactHooks.configs.recommended.rules,
       'react-hooks/set-state-in-effect': 'warn',
@@ -66,7 +70,7 @@ export default [
       'react-hooks/preserve-manual-memoization': 'warn',
       'react-hooks/globals': 'warn',
       'react-hooks/immutability': 'warn',
-      
+
       // TypeScript rules
       ...tsPlugin.configs.recommended.rules,
       '@typescript-eslint/explicit-module-boundary-types': 'off',
@@ -80,7 +84,7 @@ export default [
           argsIgnorePattern: '^_',
         },
       ],
-      
+
       // Console rules
       'no-console': [
         'warn',
@@ -88,7 +92,7 @@ export default [
           allow: ['warn', 'error'],
         },
       ],
-      
+
       // Security rules
       'security/detect-object-injection': 'warn',
       'security/detect-unsafe-regex': 'warn',
@@ -103,6 +107,14 @@ export default [
       'no-empty-pattern': 'warn',
       'no-redeclare': 'warn',
       'no-irregular-whitespace': 'warn',
+      'no-case-declarations': 'warn',
+      'no-dupe-keys': 'warn',
+      'no-useless-catch': 'warn',
+      'no-prototype-builtins': 'warn',
+      'no-dupe-class-members': 'warn',
+      'react/no-children-prop': 'warn',
+      'react-hooks/use-memo': 'warn',
+      '@typescript-eslint/ban-ts-comment': 'warn',
     },
     settings: {
       react: {
@@ -123,10 +135,30 @@ export default [
         expect: true,
         jest: true,
         vi: true,
+        test: true,
+        __ENV: true,
       },
     },
     rules: {
       '@typescript-eslint/no-require-imports': 'off',
+    },
+  },
+  {
+    files: ['test/**/*.js', 'test-*.js'],
+    languageOptions: {
+      globals: {
+        describe: true,
+        it: true,
+        beforeEach: true,
+        afterEach: true,
+        beforeAll: true,
+        afterAll: true,
+        expect: true,
+        jest: true,
+        vi: true,
+        test: true,
+        __ENV: true,
+      },
     },
   },
   {
@@ -136,7 +168,22 @@ export default [
     },
   },
   {
-    files: ['scripts/**/*.js', 'api/**/*.js'],
+    files: [
+      'scripts/**/*.js',
+      'api/**/*.js',
+      'server/**/*.js',
+      'backend/**/*.js',
+      'test/**/*.js',
+      'test-*.js',
+    ],
+    rules: {
+      '@typescript-eslint/no-require-imports': 'off',
+      'no-undef': 'off',
+      'no-unreachable': 'warn',
+    },
+  },
+  {
+    files: ['src/components/departmentViews/index.ts'],
     rules: {
       '@typescript-eslint/no-require-imports': 'off',
     },

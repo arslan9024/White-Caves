@@ -4,18 +4,62 @@
 >
 > **Last updated:** April 2026
 
+## 0. External AI Modules (Separate Repositories) — Linda + Henry
+
+These modules are maintained in **separate repos** and integrated into White Caves AI Command Center via service contracts and assistant registry alignment.
+
+### Repositories
+
+- **Linda (WhatsApp LocalAuth Bot Manager):**
+  - https://github.com/arslan9024/whatsapp-bot-linda
+- **Henry (Record Keeper & Compliance Document Engine):**
+  - https://github.com/arslan9024/Henry
+
+### Integration Strategy (Current)
+
+1. Keep Linda and Henry deployable independently.
+2. Integrate into White Caves through backend gateway endpoints and assistant registry consistency.
+3. Surface module health/status in AI Command Center.
+4. Maintain contract compatibility with explicit base URLs via env:
+   - `LINDA_MODULE_BASE_URL`
+   - `HENRY_MODULE_BASE_URL`
+
+### White Caves Integration Endpoints (Gateway)
+
+Mounted in backend at `/api/integrations`:
+
+- `GET /api/integrations/status`
+- `GET /api/integrations/linda/health`
+- `GET /api/integrations/linda/status`
+- `GET /api/integrations/henry/health`
+- `GET /api/integrations/henry/archive`
+- `POST /api/integrations/henry/archive`
+
+### Key Files
+
+- `server/services/integrations/externalModulesService.ts`
+- `server/routes/integrations.ts`
+- `server/routes/assistants.ts` (Linda/Henry metadata normalized)
+- `server/index.ts` (route mounting)
+
+### Notes for Future Sessions
+
+- Linda already has local White Caves routes at `/api/linda/*`; external Linda repo integration is additive and contract-driven.
+- Henry external repo exposes records/compliance flows; White Caves currently starts by integrating archive/health contract.
+- Next expansion: command-center UI health cards, adapter-level auth propagation, and shared audit event mapping.
+
 ---
 
 ## 1. What the Platform Is
 
 **White Caves Real Estate LLC** is a full-stack, enterprise-grade Dubai luxury real estate platform that combines four systems in one:
 
-| System | Description |
-|---|---|
-| **Public Website** | Property search, listings, off-plan tracker, mortgage/DLD fee calculators |
-| **Multi-Role CRM** | 23 user roles, 12 departments, 40 named AI assistants |
-| **Self-Service Portals** | Tenant portal (5 tabs) + Landlord portal (7 tabs) |
-| **WhatsApp Lead Engine** | Meta WABA API → NLP routing → agent CRM |
+| System                   | Description                                                               |
+| ------------------------ | ------------------------------------------------------------------------- |
+| **Public Website**       | Property search, listings, off-plan tracker, mortgage/DLD fee calculators |
+| **Multi-Role CRM**       | 23 user roles, 12 departments, 40 named AI assistants                     |
+| **Self-Service Portals** | Tenant portal (5 tabs) + Landlord portal (7 tabs)                         |
+| **WhatsApp Lead Engine** | Meta WABA API → NLP routing → agent CRM                                   |
 
 **Brand:** Red `#E31E24` + White **ONLY**. No gold, amber, yellow, or navy. The CSS variable `--accent-gold` is also set to `#E31E24`.
 
@@ -23,27 +67,27 @@
 
 ## 2. Technology Stack
 
-| Layer | Technology |
-|---|---|
-| **Frontend** | React 18, TypeScript, Vite 7, React Router v7 |
-| **State Management** | Redux Toolkit (RTK) + React-Redux 9 |
-| **Styling** | Tailwind CSS + Styled Components v6 + custom CSS design tokens |
-| **UI Icons** | Lucide React |
-| **Animation** | Framer Motion |
-| **Charts** | Recharts |
-| **Maps** | Leaflet + React-Leaflet |
-| **Backend** | Node.js 20 + Express 5 (ESM modules, TypeScript) |
-| **Database** | MongoDB via Prisma 6 ORM |
-| **Auth** | JWT + bcryptjs + Firebase Auth (social/phone) + WebAuthn biometric passkeys |
-| **Payments** | Stripe SDK |
-| **Email** | Resend |
-| **Real-time** | Socket.IO v4 (server + client) |
-| **WhatsApp** | Meta WABA API + `whatsapp-web.js` |
-| **Scheduling** | Internal Node.js schedulers (lead scoring, follow-up cadences, RERA expiry, viewing reminders) |
-| **Testing** | Vitest + Testing Library + Playwright E2E + MSW (API mocking) + Supertest |
-| **Infra** | Vercel (primary), Docker (Compose dev/prod), Kubernetes (k8s/ + Helm chart) |
-| **CI Quality** | ESLint + Prettier + Husky + lint-staged |
-| **Monitoring** | `@vercel/speed-insights`, `web-vitals`, SEO asset generation scripts |
+| Layer                | Technology                                                                                     |
+| -------------------- | ---------------------------------------------------------------------------------------------- |
+| **Frontend**         | React 18, TypeScript, Vite 7, React Router v7                                                  |
+| **State Management** | Redux Toolkit (RTK) + React-Redux 9                                                            |
+| **Styling**          | Tailwind CSS + Styled Components v6 + custom CSS design tokens                                 |
+| **UI Icons**         | Lucide React                                                                                   |
+| **Animation**        | Framer Motion                                                                                  |
+| **Charts**           | Recharts                                                                                       |
+| **Maps**             | Leaflet + React-Leaflet                                                                        |
+| **Backend**          | Node.js 20 + Express 5 (ESM modules, TypeScript)                                               |
+| **Database**         | MongoDB via Prisma 6 ORM                                                                       |
+| **Auth**             | JWT + bcryptjs + Firebase Auth (social/phone) + WebAuthn biometric passkeys                    |
+| **Payments**         | Stripe SDK                                                                                     |
+| **Email**            | Resend                                                                                         |
+| **Real-time**        | Socket.IO v4 (server + client)                                                                 |
+| **WhatsApp**         | Meta WABA API + `whatsapp-web.js`                                                              |
+| **Scheduling**       | Internal Node.js schedulers (lead scoring, follow-up cadences, RERA expiry, viewing reminders) |
+| **Testing**          | Vitest + Testing Library + Playwright E2E + MSW (API mocking) + Supertest                      |
+| **Infra**            | Vercel (primary), Docker (Compose dev/prod), Kubernetes (k8s/ + Helm chart)                    |
+| **CI Quality**       | ESLint + Prettier + Husky + lint-staged                                                        |
+| **Monitoring**       | `@vercel/speed-insights`, `web-vitals`, SEO asset generation scripts                           |
 
 ---
 
@@ -199,65 +243,73 @@
 ## 4. Database Schema — 28 Prisma Models (MongoDB)
 
 ### Auth & Users
-| Model | Purpose |
-|---|---|
-| `User` | All platform users: agents, admins, tenants, landlords. Has `role`, `brnNumber` (RERA), `firebaseUid`, `passwordHash`. |
-| `WebAuthnCredential` | Passkey/biometric credentials per user (counter, publicKey, transports). |
+
+| Model                | Purpose                                                                                                                |
+| -------------------- | ---------------------------------------------------------------------------------------------------------------------- |
+| `User`               | All platform users: agents, admins, tenants, landlords. Has `role`, `brnNumber` (RERA), `firebaseUid`, `passwordHash`. |
+| `WebAuthnCredential` | Passkey/biometric credentials per user (counter, publicKey, transports).                                               |
 
 ### Property & Inventory
-| Model | Purpose |
-|---|---|
+
+| Model      | Purpose                                                                                                                                                                                                                                                                 |
+| ---------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `Property` | Listings. Key fields: `inventoryStage` (5-stage pipeline), `isLocked` (when offer accepted), `titleDeedMissing`, `landlordPassportMissing`, `ejariMissing`, `rentalPrice`, `commissionPercent`, `availabilityDate`, `municipalityNumber`, `plotNumber`, `rentIndexRef`. |
 
 ### CRM / Lead Pipeline
-| Model | Purpose |
-|---|---|
-| `Lead` | Core CRM entity. Has `score` (0–100), `scoreTier` (hot/warm/cold/inactive), `dealType` (lease/sale/buy), `leasingStage` (1–10), `tenantRequirements` (JSON). |
-| `LeadScoreHistory` | Full audit log of every score change with `trigger` and `breakdown`. |
-| `Activity` | Event log for all entity changes across the platform. |
-| `Client` | Converted-from-lead client profiles. Has `category` (buyer/seller/landlord/tenant/investor), `type` (individual/corporate). |
-| `ClientProperty` | Many-to-many junction: Client ↔ Property with `relationship` type. |
-| `Communication` | Call/email/WhatsApp/meeting/note log per client. |
-| `FollowUpSequence` | Multi-step lead nurture sequences (hot/warm/cold cadences). |
-| `FollowUpStep` | Individual steps: channel (whatsapp/email/call/sms), template, message, result. |
+
+| Model              | Purpose                                                                                                                                                      |
+| ------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `Lead`             | Core CRM entity. Has `score` (0–100), `scoreTier` (hot/warm/cold/inactive), `dealType` (lease/sale/buy), `leasingStage` (1–10), `tenantRequirements` (JSON). |
+| `LeadScoreHistory` | Full audit log of every score change with `trigger` and `breakdown`.                                                                                         |
+| `Activity`         | Event log for all entity changes across the platform.                                                                                                        |
+| `Client`           | Converted-from-lead client profiles. Has `category` (buyer/seller/landlord/tenant/investor), `type` (individual/corporate).                                  |
+| `ClientProperty`   | Many-to-many junction: Client ↔ Property with `relationship` type.                                                                                           |
+| `Communication`    | Call/email/WhatsApp/meeting/note log per client.                                                                                                             |
+| `FollowUpSequence` | Multi-step lead nurture sequences (hot/warm/cold cadences).                                                                                                  |
+| `FollowUpStep`     | Individual steps: channel (whatsapp/email/call/sms), template, message, result.                                                                              |
 
 ### Transactions & Finance
-| Model | Purpose |
-|---|---|
-| `Transaction` | Financial transactions (sale/rental/lease) with status workflow. |
-| `Commission` | Agent commissions with `vatRate`/`vatAmount` (UAE 5%), `type` (sale/rental/referral). Note: lease commissions use type `'rental'`. |
-| `Invoice` | Invoices with `lineItems` JSON, VAT, `dueDate`. |
-| `Expense` | Company expenses with approval workflow. |
+
+| Model         | Purpose                                                                                                                            |
+| ------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
+| `Transaction` | Financial transactions (sale/rental/lease) with status workflow.                                                                   |
+| `Commission`  | Agent commissions with `vatRate`/`vatAmount` (UAE 5%), `type` (sale/rental/referral). Note: lease commissions use type `'rental'`. |
+| `Invoice`     | Invoices with `lineItems` JSON, VAT, `dueDate`.                                                                                    |
+| `Expense`     | Company expenses with approval workflow.                                                                                           |
 
 ### Leasing
-| Model | Purpose |
-|---|---|
-| `Tenant` | Tenant profile (separate from User): `emiratesId`, `nationality`, `moveInDate`/`moveOutDate`. |
-| `Offer` | Offers with `offerType` (lease/sale), `counterHistory` JSON, `rejectionReason`. Acceptance locks the property. |
-| `Lease` | Full lease: `ejariNumber`/`ejariStatus`, `keyHandoverDate`, `meterReadings` JSON, `nextPaymentDue`, `addendumDocuments`. |
-| `LeaseAddendum` | Lease amendments with signature tracking and document URL. |
-| `PDCSchedule` | Post-dated cheques: `chequeNumber`, `bankName`, `amount`, `dueDate`, `status` (pending/presented/cleared/bounced). |
-| `Maintenance` | Maintenance requests: category (plumbing/electrical/hvac/etc.), priority, cost, scheduling. |
+
+| Model           | Purpose                                                                                                                  |
+| --------------- | ------------------------------------------------------------------------------------------------------------------------ |
+| `Tenant`        | Tenant profile (separate from User): `emiratesId`, `nationality`, `moveInDate`/`moveOutDate`.                            |
+| `Offer`         | Offers with `offerType` (lease/sale), `counterHistory` JSON, `rejectionReason`. Acceptance locks the property.           |
+| `Lease`         | Full lease: `ejariNumber`/`ejariStatus`, `keyHandoverDate`, `meterReadings` JSON, `nextPaymentDue`, `addendumDocuments`. |
+| `LeaseAddendum` | Lease amendments with signature tracking and document URL.                                                               |
+| `PDCSchedule`   | Post-dated cheques: `chequeNumber`, `bankName`, `amount`, `dueDate`, `status` (pending/presented/cleared/bounced).       |
+| `Maintenance`   | Maintenance requests: category (plumbing/electrical/hvac/etc.), priority, cost, scheduling.                              |
 
 ### Scheduling & Documents
-| Model | Purpose |
-|---|---|
-| `Viewing` | Property viewings with `icsToken` (calendar download), `feedback`, `rating`, `reminderSent`. |
-| `AgentAvailability` | Weekly time slots per agent with break times (HH:mm format). |
-| `Document` | Contract/MOU/Form-F/NOC document store with HTML content and version tracking. |
-| `SavedSearch` | User-saved property filter sets with `alertEnabled` match notifications. |
-| `Favorite` | User-saved property listings (unique per user+property). |
+
+| Model               | Purpose                                                                                      |
+| ------------------- | -------------------------------------------------------------------------------------------- |
+| `Viewing`           | Property viewings with `icsToken` (calendar download), `feedback`, `rating`, `reminderSent`. |
+| `AgentAvailability` | Weekly time slots per agent with break times (HH:mm format).                                 |
+| `Document`          | Contract/MOU/Form-F/NOC document store with HTML content and version tracking.               |
+| `SavedSearch`       | User-saved property filter sets with `alertEnabled` match notifications.                     |
+| `Favorite`          | User-saved property listings (unique per user+property).                                     |
 
 ### WhatsApp / Nadia
-| Model | Purpose |
-|---|---|
-| `NadiaConversation` | WABA conversation threads: `intent`, `leadScore`, `timeline`, `status`, `routedAt`. |
-| `NadiaMessage` | Individual messages: `direction` (inbound/outbound), `messageType`, `status` (sent/delivered/read/failed). |
-| `NadiaConversationQueue` | Priority queue for agent assignment with SLA `responseTime` tracking. |
+
+| Model                    | Purpose                                                                                                    |
+| ------------------------ | ---------------------------------------------------------------------------------------------------------- |
+| `NadiaConversation`      | WABA conversation threads: `intent`, `leadScore`, `timeline`, `status`, `routedAt`.                        |
+| `NadiaMessage`           | Individual messages: `direction` (inbound/outbound), `messageType`, `status` (sent/delivered/read/failed). |
+| `NadiaConversationQueue` | Priority queue for agent assignment with SLA `responseTime` tracking.                                      |
 
 ### HR
-| Model | Purpose |
-|---|---|
+
+| Model            | Purpose                                                                    |
+| ---------------- | -------------------------------------------------------------------------- |
 | `JobApplication` | Careers page submissions with workflow status (received → hired/rejected). |
 
 ---
@@ -266,23 +318,25 @@
 
 Defined in `src/config/roles.ts`. Enforced server-side via RBAC middleware (`server/middleware/rbac.ts`).
 
-| Category | Role IDs |
-|---|---|
-| **Executive** | `managing_director`, `real_estate_company`, `property_mgmt_company` |
-| **Admin** | `super_admin` |
-| **Management** | `branch_manager`, `sales_manager`, `leasing_manager` |
-| **Agent** | `sales_agent`, `leasing_agent`, `property_manager`, `affiliated_agent` |
+| Category       | Role IDs                                                                            |
+| -------------- | ----------------------------------------------------------------------------------- |
+| **Executive**  | `managing_director`, `real_estate_company`, `property_mgmt_company`                 |
+| **Admin**      | `super_admin`                                                                       |
+| **Management** | `branch_manager`, `sales_manager`, `leasing_manager`                                |
+| **Agent**      | `sales_agent`, `leasing_agent`, `property_manager`, `affiliated_agent`              |
 | **Specialist** | `property_consultant`, `mortgage_consultant`, `valuation_expert`, `trustee_officer` |
-| **Support** | `legal_officer`, `finance_officer`, `marketing_manager`, `document_controller` |
-| **Client** | `developer`, `investor`, `landlord`, `buyer`, `tenant` |
+| **Support**    | `legal_officer`, `finance_officer`, `marketing_manager`, `document_controller`      |
+| **Client**     | `developer`, `investor`, `landlord`, `buyer`, `tenant`                              |
 
 **Key legacy aliases** (normalized via `ROLE_KEY_MAP`):
+
 - `owner` → `managing_director`
 - `admin` → `super_admin`
 - `seller` → `landlord`
 - `leasing-agent` → `leasing_agent`
 
 **Routing logic in `App.tsx`:**
+
 - `landlord` role → `/landlord-portal`
 - `tenant` role → `/tenant-portal`
 - All internal roles → `UnifiedDashboardPage`
@@ -293,24 +347,25 @@ Defined in `src/config/roles.ts`. Enforced server-side via RBAC middleware (`ser
 
 Both registries must stay in sync: `src/config/assistantRegistry.ts` and `src/store/slices/aiAssistant/registry.ts`.
 
-| Dept ID | Label | Color | Key Assistants |
-|---|---|---|---|
-| `communications` | Communications | — | Nadia (WhatsApp CRM), Nina (WhatsApp Bot/NLP) |
-| `operations` | Operations | — | Mary (Inventory), Vesta (Handover) |
-| `sales` | Sales | — | Clara (Leads), Sophia (Sales), Hunter (Prospecting) |
-| `finance` | Finance | — | Theodora (Finance), Maven (Investment) |
-| `marketing` | Marketing | — | Olivia (Marketing), Cipher (Market) |
-| `executive` | Executive | — | Zoe (Executive), Atlas (Projects), Juno (Community), Kairos (Luxury) |
-| `compliance` | Compliance | — | Laila (Compliance), Henry (Audit) |
-| `technology` | Technology | — | Hazel (Frontend), Willow (Backend) |
-| `legal` | Legal | — | Evangeline (Legal) |
-| `intelligence` | Intelligence | — | Aurora (CTO/Analysis), Sentinel (Property) |
-| `customer_experience` | Customer Experience | `#8B5CF6` | Linda, Mira |
-| `data_and_ai` | Data & AI | `#F97316` | (AI/data assistants) |
+| Dept ID               | Label               | Color     | Key Assistants                                                       |
+| --------------------- | ------------------- | --------- | -------------------------------------------------------------------- |
+| `communications`      | Communications      | —         | Nadia (WhatsApp CRM), Nina (WhatsApp Bot/NLP)                        |
+| `operations`          | Operations          | —         | Mary (Inventory), Vesta (Handover)                                   |
+| `sales`               | Sales               | —         | Clara (Leads), Sophia (Sales), Hunter (Prospecting)                  |
+| `finance`             | Finance             | —         | Theodora (Finance), Maven (Investment)                               |
+| `marketing`           | Marketing           | —         | Olivia (Marketing), Cipher (Market)                                  |
+| `executive`           | Executive           | —         | Zoe (Executive), Atlas (Projects), Juno (Community), Kairos (Luxury) |
+| `compliance`          | Compliance          | —         | Laila (Compliance), Henry (Audit)                                    |
+| `technology`          | Technology          | —         | Hazel (Frontend), Willow (Backend)                                   |
+| `legal`               | Legal               | —         | Evangeline (Legal)                                                   |
+| `intelligence`        | Intelligence        | —         | Aurora (CTO/Analysis), Sentinel (Property)                           |
+| `customer_experience` | Customer Experience | `#8B5CF6` | Linda, Mira                                                          |
+| `data_and_ai`         | Data & AI           | `#F97316` | (AI/data assistants)                                                 |
 
 **Total: 40 named assistants** (Nadia, Nina, Mary, Nancy, Daisy, Clara, Sophia, Theodora, Olivia, Zoe, Laila, Aurora, Hazel, Willow, Evangeline, Sentinel, Hunter, Henry, Cipher, Atlas, Vesta, Juno, Kairos, Maven, Linda, Archer, Prism, Sage, Echo, Mira, Rex, Iris, Apex, Halo, Oracle, Flux, Nova, Quill, Lumen, Crest)
 
 **Task lifecycle system** (in `aiAssistantDashboardSlice.tsx`):
+
 - 7 lifecycle stages: `TaskLifecycleStage` enum
 - Reducers: `advanceTaskLifecycle`, `addTaskAction`, `setTaskResult` — each auto-fires a notification
 - Selectors: `selectTasksByLifecycleStage`, `selectPendingActionsCount`, `selectCompletedTasksCount`
@@ -323,6 +378,7 @@ Both registries must stay in sync: `src/config/assistantRegistry.ts` and `src/st
 ### Server Entry Point (`server/index.ts`)
 
 Middleware stack (in order):
+
 1. `requestIdMiddleware` — correlation ID
 2. `helmet` — security headers + CSP
 3. CORS — configured from `CORS_ORIGINS` env
@@ -335,66 +391,67 @@ Middleware stack (in order):
 
 ### Route Groups
 
-| Group | Base Path | Key Routes |
-|---|---|---|
-| Auth | `/api/auth` | login, register, profile, logout, password change |
-| Properties | `/api/properties` | CRUD, search/filter, `/inventory-stats` (GET) |
-| Leads | `/api/leads` | CRUD, score, bulk ops |
-| Agents | `/api/agents` | CRUD, availability |
-| Clients | `/api/clients` | CRUD + communication log |
-| Transactions | `/api/transactions` | CRUD |
-| Finance | `/api/finance` | Revenue, commissions, expenses |
-| Invoices | `/api/invoices` | Standard invoices |
-| Leasing Invoices | `/api/invoices/lease` | Lease-specific invoices |
-| Tenants | `/api/tenants` | CRUD |
-| Leases | `/api/leases` | CRUD, `/:id/addendum`, `/:id/key-handover`, `/:id/pnl`, `/:id/pdc` |
-| Offers | `/api/offers` | CRUD, `PATCH /:id` (availability guard), `PATCH /:id/decision` |
-| Viewings | `/api/viewings` | CRUD + agent availability |
-| Maintenance | `/api/maintenance` | CRUD |
-| Documents | `/api/documents` | Generate, sign, retrieve |
-| Compliance | `/api/compliance` | RERA, KYC/AML checks |
-| Analytics | `/api/analytics` | Dashboards, metrics |
-| Reporting | `/api/reporting` | `/dashboard/leasing` |
-| Communications | `/api/communications` | Client communication log |
-| Currency | `/api/currency` | Live FX rates |
-| Email | `/api/email` | Send email via Resend |
-| AI Chat | `/api/ai-chat` | Assistant chat completions |
-| Assistants | `/api/assistants` | AI assistant management |
-| Nadia / WhatsApp | `/api/nadia`, `/api/meta-webhook` | WhatsApp WABA webhook + routing |
-| Favorites | `/api/favorites` | User saved properties |
-| Saved Searches | `/api/saved-searches` | Search presets + alerts |
-| Follow-ups | `/api/follow-ups` | Sequence management |
-| Activities | `/api/activities` | Activity feed |
-| Homepage | `/api/homepage` | SEO/public content |
-| Contact | `/api/contact` | Contact form submission |
-| Job Applications | `/api/job-applications` | POST (public) / GET+PATCH (auth+role) |
+| Group            | Base Path                         | Key Routes                                                         |
+| ---------------- | --------------------------------- | ------------------------------------------------------------------ |
+| Auth             | `/api/auth`                       | login, register, profile, logout, password change                  |
+| Properties       | `/api/properties`                 | CRUD, search/filter, `/inventory-stats` (GET)                      |
+| Leads            | `/api/leads`                      | CRUD, score, bulk ops                                              |
+| Agents           | `/api/agents`                     | CRUD, availability                                                 |
+| Clients          | `/api/clients`                    | CRUD + communication log                                           |
+| Transactions     | `/api/transactions`               | CRUD                                                               |
+| Finance          | `/api/finance`                    | Revenue, commissions, expenses                                     |
+| Invoices         | `/api/invoices`                   | Standard invoices                                                  |
+| Leasing Invoices | `/api/invoices/lease`             | Lease-specific invoices                                            |
+| Tenants          | `/api/tenants`                    | CRUD                                                               |
+| Leases           | `/api/leases`                     | CRUD, `/:id/addendum`, `/:id/key-handover`, `/:id/pnl`, `/:id/pdc` |
+| Offers           | `/api/offers`                     | CRUD, `PATCH /:id` (availability guard), `PATCH /:id/decision`     |
+| Viewings         | `/api/viewings`                   | CRUD + agent availability                                          |
+| Maintenance      | `/api/maintenance`                | CRUD                                                               |
+| Documents        | `/api/documents`                  | Generate, sign, retrieve                                           |
+| Compliance       | `/api/compliance`                 | RERA, KYC/AML checks                                               |
+| Analytics        | `/api/analytics`                  | Dashboards, metrics                                                |
+| Reporting        | `/api/reporting`                  | `/dashboard/leasing`                                               |
+| Communications   | `/api/communications`             | Client communication log                                           |
+| Currency         | `/api/currency`                   | Live FX rates                                                      |
+| Email            | `/api/email`                      | Send email via Resend                                              |
+| AI Chat          | `/api/ai-chat`                    | Assistant chat completions                                         |
+| Assistants       | `/api/assistants`                 | AI assistant management                                            |
+| Nadia / WhatsApp | `/api/nadia`, `/api/meta-webhook` | WhatsApp WABA webhook + routing                                    |
+| Favorites        | `/api/favorites`                  | User saved properties                                              |
+| Saved Searches   | `/api/saved-searches`             | Search presets + alerts                                            |
+| Follow-ups       | `/api/follow-ups`                 | Sequence management                                                |
+| Activities       | `/api/activities`                 | Activity feed                                                      |
+| Homepage         | `/api/homepage`                   | SEO/public content                                                 |
+| Contact          | `/api/contact`                    | Contact form submission                                            |
+| Job Applications | `/api/job-applications`           | POST (public) / GET+PATCH (auth+role)                              |
 
 ---
 
 ## 8. Frontend State — Redux Store (30+ Slices)
 
-| Slice | Key State |
-|---|---|
-| `userSlice` | `currentUser`, `isLoading` |
-| `authSlice` | Auth thunks (login/logout) |
-| `propertySlice` | Property listings, filters, selected property |
-| `crmDataSlice` | CRM core entities |
-| `dashboardSlice` | Dashboard panel configs |
-| `sidebarSlice` | `selectedDepartment`, `selectedService`, `globalSearch` (string), `sidebarCollapsed` (boolean) |
-| `aiAssistantDashboardSlice` | 40 assistants, task lifecycle (7 stages), notifications |
-| `nadiaSlice` | WhatsApp conversation state |
-| `notificationSlice` | Real-time notification queue |
-| `inventorySlice` | Property inventory pipeline state |
-| `analyticsSlice` | Report data |
-| `navigationSlice` | Theme + current route |
-| `whatsappSlice` | WhatsApp integration state |
-| `sidebarUISlice` | Visual sidebar state |
-| `leadsSslice` | Lead list state |
-| `savedSearchesSlice` | Saved search management |
-| `homepageSlice` | Public page data |
-| `featuresSlice` | Feature flags |
+| Slice                       | Key State                                                                                      |
+| --------------------------- | ---------------------------------------------------------------------------------------------- |
+| `userSlice`                 | `currentUser`, `isLoading`                                                                     |
+| `authSlice`                 | Auth thunks (login/logout)                                                                     |
+| `propertySlice`             | Property listings, filters, selected property                                                  |
+| `crmDataSlice`              | CRM core entities                                                                              |
+| `dashboardSlice`            | Dashboard panel configs                                                                        |
+| `sidebarSlice`              | `selectedDepartment`, `selectedService`, `globalSearch` (string), `sidebarCollapsed` (boolean) |
+| `aiAssistantDashboardSlice` | 40 assistants, task lifecycle (7 stages), notifications                                        |
+| `nadiaSlice`                | WhatsApp conversation state                                                                    |
+| `notificationSlice`         | Real-time notification queue                                                                   |
+| `inventorySlice`            | Property inventory pipeline state                                                              |
+| `analyticsSlice`            | Report data                                                                                    |
+| `navigationSlice`           | Theme + current route                                                                          |
+| `whatsappSlice`             | WhatsApp integration state                                                                     |
+| `sidebarUISlice`            | Visual sidebar state                                                                           |
+| `leadsSslice`               | Lead list state                                                                                |
+| `savedSearchesSlice`        | Saved search management                                                                        |
+| `homepageSlice`             | Public page data                                                                               |
+| `featuresSlice`             | Feature flags                                                                                  |
 
 **`sidebarSlice` specifics:**
+
 - `selectedService` stores the service label (e.g., `"Lead Management"`)
 - `DepartmentContentPanel` uses it as a key into `deptContent.services`
 - Actions: `setGlobalSearch`, `clearGlobalSearch`, `setSidebarCollapsed`, `toggleSidebarCollapsed`
@@ -405,6 +462,7 @@ Middleware stack (in order):
 ## 9. Active Implemented Systems
 
 ### 9.1 Leasing Pipeline (10 Stages)
+
 `Lead.leasingStage` tracks: Lead Acquisition → Matching → Viewing → Offer → Decision → Deposit → Contract → Handover → Payment → P&L
 
 - CRM: `DaisyLeasingCRM_NEW` — 7 full tabs (Leases, Pipeline Kanban, Inquiries, PDC Payments, Maintenance, Renewals, Analytics)
@@ -413,6 +471,7 @@ Middleware stack (in order):
 - Commission type for leases: `'rental'` (not `'lease'`)
 
 ### 9.2 Intelligent Inventory (Mary)
+
 `Property.inventoryStage` 5-stage pipeline: `draft_collected` → `verified_active` → `under_offer` → `leased_sold` → `handed_over`
 
 - Property locked when offer accepted (`isLocked = true`, `lockedAt` timestamp)
@@ -421,6 +480,7 @@ Middleware stack (in order):
 - UI: `InventoryDashboard` component + `MaryInventoryCRM_NEW` with `MaryAcquisitionTab` + `MaryPipelineTab`
 
 ### 9.3 Nadia WhatsApp Hub
+
 Flow: Meta WABA webhook → Nina NLP engine (intent detection) → Priority queue → Agent assignment → CRM lead creation
 
 - Engine files: `server/services/nadia/` (ninaEngine, messageProcessor, conversationMemory, queueManager, whatsappAssistant)
@@ -428,18 +488,22 @@ Flow: Meta WABA webhook → Nina NLP engine (intent detection) → Priority queu
 - Models: `NadiaConversation`, `NadiaMessage`, `NadiaConversationQueue`
 
 ### 9.4 Lead Scoring Engine
+
 - Score 0–100 with tiers: hot (80+), warm (60–79), cold (<60), inactive
 - Breakdown: `{ engagement, demographic, behavioral, source }`
 - Triggers: middleware (real-time on lead update), batch (scheduled), manual, override, whatsapp
 - Full history in `LeadScoreHistory` model
 
 ### 9.5 Follow-up Automation
+
 Multi-cadence sequences (hot/warm/cold) firing on schedule via `followUpScheduler`:
+
 - Channels: whatsapp, email, call, sms
 - Template-based or custom messages
 - Full step result tracking (`replied`, `no_response`, `bounced`, `call_answered`, etc.)
 
 ### 9.6 RERA / DLD Compliance
+
 - Agent `brnNumber` + `brnExpiry` + `reraLicenseNumber` on `User` model
 - Property `municipalityNumber`, `plotNumber`, `buildingPermitNumber`, `rentIndexRef`
 - Lease `ejariNumber`, `ejariStatus`, `ejariRegistrationDate`, `ejariExpiryDate`
@@ -448,6 +512,7 @@ Multi-cadence sequences (hot/warm/cold) firing on schedule via `followUpSchedule
 ### 9.7 Self-Service Portals
 
 **Tenant Portal** (5 tabs):
+
 1. `TenantLeaseTab` — Lease details
 2. `TenantPaymentHistoryTab` — PDC schedule toggle, Next Payment Due + Late Fee cards, disabled Pay Now
 3. `TenantMaintenanceTab` — Submit form (adds to local list + success message)
@@ -455,6 +520,7 @@ Multi-cadence sequences (hot/warm/cold) firing on schedule via `followUpSchedule
 5. `TenantKeyHandoverTab`
 
 **Landlord Portal** (7 tabs):
+
 1. `LandlordPropertiesTab`
 2. `LandlordTenantsTab`
 3. `LandlordOfferReviewTab`
@@ -466,9 +532,11 @@ Multi-cadence sequences (hot/warm/cold) firing on schedule via `followUpSchedule
 Both portals have dedicated navbars: White Caves logo + portal type label + user first name + Sign Out.
 
 ### 9.8 Real-time (Socket.IO)
+
 `server/services/socketServer.ts` broadcasts CRUD events to all connected clients → Redux receives and updates slices. `useSocket` hook in `src/hooks/` manages connection lifecycle.
 
 ### 9.9 WebAuthn Biometric Login
+
 `WebAuthnCredential` model stores passkey public keys. `BiometricLogin` component in `src/features/auth/`. Gracefully degrades if module fails to load.
 
 ---
@@ -476,32 +544,35 @@ Both portals have dedicated navbars: White Caves logo + portal type label + user
 ## 10. Layout & Navigation Architecture
 
 ### Canonical Layout Components
-| Component | Location | Role |
-|---|---|---|
-| `AppLayout` | `src/components/layout/AppLayout.tsx` | Shell for all authenticated internal pages |
-| `UnifiedSidebar` | `src/components/layout/UnifiedSidebar/` | **Canonical** sidebar — use this, not legacy components |
-| `DashboardWorkspace` | `src/components/layout/DashboardWorkspace/` | Content area for the unified dashboard |
-| `DepartmentContentPanel` | `src/components/layout/DepartmentContentPanel/` | Renders services for selected sidebar department |
-| `PublicLayout` | `src/components/layout/PublicLayout.tsx` | Shell for public-facing pages |
-| `UniversalAssistantLayout` | `src/components/crm/shared/` | Shell/frame for every named CRM module |
+
+| Component                  | Location                                        | Role                                                    |
+| -------------------------- | ----------------------------------------------- | ------------------------------------------------------- |
+| `AppLayout`                | `src/components/layout/AppLayout.tsx`           | Shell for all authenticated internal pages              |
+| `UnifiedSidebar`           | `src/components/layout/UnifiedSidebar/`         | **Canonical** sidebar — use this, not legacy components |
+| `DashboardWorkspace`       | `src/components/layout/DashboardWorkspace/`     | Content area for the unified dashboard                  |
+| `DepartmentContentPanel`   | `src/components/layout/DepartmentContentPanel/` | Renders services for selected sidebar department        |
+| `PublicLayout`             | `src/components/layout/PublicLayout.tsx`        | Shell for public-facing pages                           |
+| `UniversalAssistantLayout` | `src/components/crm/shared/`                    | Shell/frame for every named CRM module                  |
 
 **Legacy (do not use in new code):** `EnhancedLeftSidebar`, `SidebarContainer`
 
 ### Sidebar Department Config
+
 `SIDEBAR_DEPARTMENTS` in `src/config/departmentConfig.ts` is the **single source of truth** for CRM sidebar departments. Keys: `operations`, `finance`, `sales`, `marketing`, `communications`, `compliance`, `technology`, `legal`.
 
 ---
 
 ## 11. Testing Infrastructure
 
-| Type | Tool | Coverage |
-|---|---|---|
-| Unit + Integration | Vitest + Testing Library + MSW | Every route, service, slice, component has paired `.test.ts(x)` |
-| E2E | Playwright | Dashboard smoke, accessibility audit (`@axe-core/playwright`), performance layer 5 |
-| API | Supertest | `server/__tests__/` |
-| Security lint | `eslint-plugin-security`, `eslint-plugin-no-unsanitized` | All TypeScript/JSX files |
+| Type               | Tool                                                     | Coverage                                                                           |
+| ------------------ | -------------------------------------------------------- | ---------------------------------------------------------------------------------- |
+| Unit + Integration | Vitest + Testing Library + MSW                           | Every route, service, slice, component has paired `.test.ts(x)`                    |
+| E2E                | Playwright                                               | Dashboard smoke, accessibility audit (`@axe-core/playwright`), performance layer 5 |
+| API                | Supertest                                                | `server/__tests__/`                                                                |
+| Security lint      | `eslint-plugin-security`, `eslint-plugin-no-unsanitized` | All TypeScript/JSX files                                                           |
 
 **Key commands:**
+
 ```bash
 npm run test:run          # Vitest (all unit tests)
 npm run test:coverage     # Coverage report
@@ -520,17 +591,18 @@ npm run db:push           # Push schema to MongoDB
 
 ## 12. Planned Upgrade Phases (Not Yet Complete)
 
-| Phase | Focus | File |
-|---|---|---|
-| **Phase 4** | WhatsApp Bot enhancements (templates, broadcast, analytics) | `plans/PHASE_4_WHATSAPP.md` |
-| **Phase 5** | Full lease workflow completion | `plans/PHASE_5_LEASE.md` |
-| **Phase 6** | RERA/DLD compliance layer full enforcement | `plans/PHASE_6_COMPLIANCE.md` |
-| **Phase 7** | Analytics & reporting engine | `plans/PHASE_7_ANALYTICS.md` |
-| **Phase 8** | Arabic language support (RTL i18n) | `plans/PHASE_8_ARABIC.md` |
-| **Phase 9** | Full RBAC enforcement across all routes + UI | `plans/PHASE_9_RBAC.md` |
-| **Phase 10** | PWA (Progressive Web App — offline, push notifications) | `plans/PHASE_10_PWA.md` |
+| Phase        | Focus                                                       | File                          |
+| ------------ | ----------------------------------------------------------- | ----------------------------- |
+| **Phase 4**  | WhatsApp Bot enhancements (templates, broadcast, analytics) | `plans/PHASE_4_WHATSAPP.md`   |
+| **Phase 5**  | Full lease workflow completion                              | `plans/PHASE_5_LEASE.md`      |
+| **Phase 6**  | RERA/DLD compliance layer full enforcement                  | `plans/PHASE_6_COMPLIANCE.md` |
+| **Phase 7**  | Analytics & reporting engine                                | `plans/PHASE_7_ANALYTICS.md`  |
+| **Phase 8**  | Arabic language support (RTL i18n)                          | `plans/PHASE_8_ARABIC.md`     |
+| **Phase 9**  | Full RBAC enforcement across all routes + UI                | `plans/PHASE_9_RBAC.md`       |
+| **Phase 10** | PWA (Progressive Web App — offline, push notifications)     | `plans/PHASE_10_PWA.md`       |
 
 **Largest gaps identified for next architect sprint:**
+
 1. **RBAC (Phase 9)** — permissions are defined but not consistently enforced on all API routes and UI gating
 2. **Arabic/RTL (Phase 8)** — i18n infrastructure exists but translations and RTL layout not implemented
 3. **PWA shell (Phase 10)** — no service worker, no offline support, no push notification registration
@@ -589,4 +661,4 @@ CORS_ORIGINS=                    # Comma-separated allowed origins
 
 ---
 
-*This document is auto-generated from codebase analysis. For the authoritative project status and task tracking, refer to [`plans/MASTER_PLAN.md`](./plans/MASTER_PLAN.md).*
+_This document is auto-generated from codebase analysis. For the authoritative project status and task tracking, refer to [`plans/MASTER_PLAN.md`](./plans/MASTER_PLAN.md)._

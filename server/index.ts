@@ -40,6 +40,7 @@ import reportingRoutes from './routes/reporting.js';
 import complianceRoutes from './routes/compliance.js';
 import crmRoutes from './routes/crm.js';
 import assistantsRoutes from './routes/assistants.js';
+import integrationsRoutes from './routes/integrations.js';
 import nadiaRoutes from './routes/nadia.js';
 import lindaRoutes from './routes/linda.js';
 import metaWebhookRoutes from './routes/meta-webhook.js';
@@ -419,6 +420,9 @@ app.use('/api/crm', crmRoutes);
 
 // AI Assistants API (Phase 0.8 — plan management)
 app.use('/api/assistants', assistantsRoutes);
+
+// External module gateway (Linda + Henry separate repos)
+app.use('/api/integrations', integrationsRoutes);
 
 // ============================================================================
 // STUB ROUTES — Placeholder APIs for frontend pages not yet backed by full CRUD
