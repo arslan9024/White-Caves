@@ -138,6 +138,30 @@ describe('Orchestration Routes — /api/orchestration', () => {
     expect(String(res.body.data.blockedReason || '')).toMatch(/daily premium cap exhausted/i);
   });
 
+  it('GET /tasks filters by assistantId', async () => {
+    await request(createApp()).post('/api/orchestration/tasks').send({
+      assistantId: 'henry',
+      taskType: 'review',
+      title: 'Henry review task',
+    });
+
+    await request(createApp()).post('/api/orchestration/tasks').send({
+      assistantId: 'linda',
+      taskType: 'planning',
+      title: 'Linda planning task',
+    });
+
+    const res = await request(createApp()).get('/api/orchestration/tasks?assistantId=henry');
+
+    expect(res.status).toBe(200);
+    expect(res.body.success).toBe(true);
+    expect(Array.isArray(res.body.data)).toBe(true);
+    expect(res.body.data.length).toBeGreaterThan(0);
+    expect(
+      res.body.data.every((task: { assistantId: string }) => task.assistantId === 'henry')
+    ).toBe(true);
+  });
+
   it('PATCH /tasks/:id/state updates existing task state', async () => {
     const createRes = await request(createApp()).post('/api/orchestration/tasks').send({
       assistantId: 'henry',
