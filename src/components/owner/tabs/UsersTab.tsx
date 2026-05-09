@@ -284,7 +284,7 @@ const ROLE_CATEGORIES = {
 
 function UsersTab({ onAction }: UsersTabProps) {
   // Only use dummy data in development — production fetches from API
-  const [users, setUsers] = useState(import.meta.env.DEV ? DUMMY_USERS : []);
+  const [users, setUsers] = useState(DUMMY_USERS);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedRole, setSelectedRole] = useState('all');
   const [selectedStatus, setSelectedStatus] = useState('all');

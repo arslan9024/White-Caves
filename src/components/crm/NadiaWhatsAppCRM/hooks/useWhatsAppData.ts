@@ -1,5 +1,5 @@
 import { useState, useCallback, useRef, useEffect, useMemo } from 'react';
-import { QUICK_REPLIES, Conversation, Message } from '../data/conversations';
+import { QUICK_REPLIES, DUMMY_CONVERSATIONS, Conversation, Message } from '../data/conversations';
 import { NADIA_WHATSAPP_FEATURES } from '../data/features';
 import { authFetch } from '../../../../utils/authFetch';
 
@@ -64,7 +64,7 @@ function mapNadiaConversation(c: NadiaConversationApiItem): Conversation {
 }
 
 export const useWhatsAppData = () => {
-  const [conversations, setConversations] = useState<Conversation[]>([]);
+  const [conversations, setConversations] = useState<Conversation[]>(DUMMY_CONVERSATIONS);
   const [loading, setLoading] = useState<boolean>(true);
   const [selectedConversation, setSelectedConversation] = useState<Conversation | null>(null);
   const [messageInput, setMessageInput] = useState<string>('');

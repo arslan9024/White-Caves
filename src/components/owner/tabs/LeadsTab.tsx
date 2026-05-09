@@ -206,6 +206,7 @@ const LeadsTab: React.FC<LeadsTabProps> = ({ data, loading, error }) => {
                   <td>{lead.interest || 'N/A'}</td>
                   <td>{getPriorityBadge(lead.priority)}</td>
                   <td>
+                    <span className={`status-badge status-badge--${lead.status}`}>{lead.status}</span>
                     <select
                       className="status-select"
                       value={lead.status}
@@ -234,6 +235,7 @@ const LeadsTab: React.FC<LeadsTabProps> = ({ data, loading, error }) => {
       )}
 
       {/* Pagination */}
+      <nav role="navigation" aria-label="Pagination">
       {totalPages > 1 && (
         <div className="table-footer">
           <span>Showing {paginatedLeads.length} of {filteredLeads.length} leads</span>
@@ -246,6 +248,7 @@ const LeadsTab: React.FC<LeadsTabProps> = ({ data, loading, error }) => {
           </div>
         </div>
       )}
+      </nav>
 
       {/* Add / Edit Modal */}
       {(modalMode === 'add' || modalMode === 'edit') && (
