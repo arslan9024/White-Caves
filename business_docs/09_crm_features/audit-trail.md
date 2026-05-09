@@ -1,24 +1,179 @@
-# Audit Trail
+# Audit Trail — Business Specification
 
-> **Owner:** @Hedy | **Tool:** Groq Console (Llama 3.1 70B)
-> **Purpose:** Immutable, append-only audit log for all CRM actions. Required for RERA compliance.
-> **Status:** Stub -- awaiting expansion by @Hedy.
+**Owner:** @Hedy | **Tool:** Groq Console (Llama 3.1 70B)
+**Purpose:** Immutable, append-only audit log for all CRM actions. Required for RERA compliance.
+**Status:** ✅ Expanded by @Hedy.
+
+CONSUMES←@Maya: business_docs/09_crm_features/handover-management.md#audit-events
+FEEDS→@Cassie: business_docs/09_crm_features/audit-trail.md#kpi-events
 
 ---
 
 ## 1. Overview
 
-> _TODO: expand this section with full spec._
+HenryAuditCRM provides a tamper-proof, append-only audit trail for every action in the White Caves CRM platform. It satisfies RERA inspector requirements, UAE Commercial Transactions Law (7-year retention), and internal compliance needs. All writes go to a MongoDB `audit_logs` collection with no update or delete operations permitted.
 
-## 2. Audit Log Schema
-
-> _TODO: expand this section with full spec._
-
-## 3. Tracked Action Types
-
-> _TODO: expand this section with full spec._
+**Key Capabilities:**
+- Write-once append-only audit log
+- Real-time audit stream for admin live monitoring
+- Compliance export (CSV + PDF, date-stamped + agent-signed)
+- Admin UI: filter by user, entity type, action, date range
+- 7-year retention with automated cold storage after year 3
 
 ---
 
-_This file was scaffolded by scripts/orchestrator/scaffold-docs.ps1.
-Expand each section to reach the gate-check target using the owning agent's free AI tool._
+## 2. Audit Log Schema
+
+```prisma
+model AuditLog {
+  id         String   @id @default(cuid())
+  userId     String                           // actor (nullable for system actions)
+  userRole   String                           // role at time of action
+  action     String                           // see section 3
+  entityType String                           // lead/property/lease/user/commission/payment
+  entityId   String
+  oldValue   Json?                            // snapshot before change
+  newValue   Json?                            // snapshot after change
+  ipAddress  String
+  userAgent  String
+  timestamp  DateTime @default(now())
+  sessionId  String?
+  metadata   Json?                            // extra context (e.g. reason for override)
+  @@index([entityType, entityId])
+  @@index([userId, timestamp])
+  @@index([action, timestamp])
+}
+```
+
+**Immutability enforcement:** MongoDB collection uses `collMod` with `validator` to reject any `update` or `delete` commands. Application layer also uses `prisma.$executeRaw` with insert-only access for this collection.
+
+---
+
+## 3. Tracked Action Types
+
+| Action | Entity Types | Description |
+|---|---|---|
+| `CREATE` | lead, property, lease, user, commission | Record created |
+| `UPDATE` | lead, property, lease, user | Field(s) changed (oldValue/newValue populated) |
+| `DELETE` | lead (soft only), property (archive) | Soft delete with reason |
+| `STATUS_CHANGE` | lead, lease, maintenance, offer | Status field transition |
+| `LOGIN` | user | Successful authentication |
+| `LOGOUT` | user | Session terminated |
+| `EXPORT` | lead, property, report | Data export initiated |
+| `PERMISSION_CHANGE` | user | Role or permission updated |
+| `DOCUMENT_GENERATED` | lease, lead | PDF document created |
+| `SIGNATURE_COMPLETED` | lease | E-signature received |
+| `PAYMENT_RECEIVED` | lease | Rent/deposit payment logged |
+| `COMMISSION_DISBURSED` | commission | Commission payout recorded |
+| `DLD_SUBMISSION` | property | DLD Oqood or transfer submitted |
+| `LEGAL_HOLD_PLACED` | property, lease | Legal hold flag set |
+| `OVERRIDE` | any | Manager/admin override with reason |
+
+---
+
+## 4. Write-Once Enforcement
+
+```ts
+// server/services/audit/auditLogger.ts
+async function logAudit(entry: Omit<AuditLog, 'id' | 'timestamp'>): Promise<void> {
+  // Direct MongoDB insert — bypasses Prisma updateMany/deleteMany
+  await db.collection('audit_logs').insertOne({
+    ...entry,
+    timestamp: new Date(),
+    _immutable: true,
+  });
+}
+// Called as fire-and-forget from route handlers:
+// logAudit({ userId, action: 'UPDATE', entityType: 'lead', entityId, oldValue, newValue, ipAddress, userAgent })
+```
+
+IP address extracted from `req.ip` (behind proxy: `X-Forwarded-For` first hop).
+
+---
+
+## 5. Admin Audit Search UI
+
+**Route:** `GET /api/audit?userId=&entityType=&action=&startDate=&endDate=&page=&limit=50`
+
+**Filters:**
+- User (searchable dropdown)
+- Entity type (multi-select: lead/property/lease/user)
+- Action (multi-select)
+- Date range (date picker, max range 90 days per query)
+
+**Display:**
+- Paginated table: 50 rows per page
+- Columns: Timestamp | User | Action | Entity | Changes Summary | IP
+- Expandable row: full oldValue/newValue JSON diff viewer
+- Export button → triggers compliance export
+
+---
+
+## 6. Compliance Export
+
+**Format:** CSV (raw data) + PDF report (formatted, RERA-ready)
+
+**PDF includes:**
+- White Caves letterhead + date
+- Filter criteria applied
+- Table of audit events
+- MD5 hash of CSV file (tamper-evidence)
+- Agent/manager digital signature line
+- Export generated by (user name + timestamp)
+
+**API:**
+```
+POST /api/audit/export
+Body: { filters, format: 'csv'|'pdf'|'both' }
+Success 202: { jobId }
+GET /api/audit/export/:jobId → { status: 'pending'|'ready', downloadUrl }
+```
+Email sent on completion: `audit-export-{date}.pdf` attached.
+
+---
+
+## 7. Real-Time Audit Stream (Admin Live Monitor)
+
+```
+WebSocket: wss://<host>/api/audit/stream
+Auth: JWT in query param ?token=
+Payload: { action, entityType, entityId, userDisplayName, timestamp }
+```
+
+Admin can watch live CRM activity. Events broadcast to all connected admin/superuser sessions. Rate-limited to 10 events/second per connection.
+
+---
+
+## 8. Retention & Cold Storage
+
+| Period | Storage | Access |
+|---|---|---|
+| 0–3 years | MongoDB primary (hot) | Full API access |
+| 3–7 years | MongoDB cold tier / S3 archive | API with 30s cold-start |
+| > 7 years | Deleted (automated purge cron) | N/A |
+
+Automated archival cron runs on the 1st of each month, moving records older than 3 years to S3 with Glacier Instant Retrieval.
+
+---
+
+## 9. Unit / Integration Tests
+
+| Test | Coverage |
+|---|---|
+| `logAudit` creates record with correct fields | Unit |
+| DELETE / UPDATE on audit_logs collection is rejected | Integration (MongoDB validation) |
+| Export job → CSV + PDF generated | Integration |
+| WebSocket stream receives event within 500ms | Integration |
+| Compliance export includes MD5 hash | Unit |
+| Pagination: page 2 returns correct offset | Unit |
+
+---
+
+## 10. Observability / Metrics
+
+| Metric | Alert Threshold |
+|---|---|
+| Audit log write failure rate | > 1% → PagerDuty |
+| Export job queue depth | > 5 → Slack |
+| Cold storage archival failures | Any → email compliance@ |
+| WebSocket active connections | Dashboard gauge |
