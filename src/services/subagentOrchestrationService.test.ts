@@ -1,0 +1,112 @@
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+
+vi.mock('../utils/apiClient', () => ({
+  apiClient: {
+    get: vi.fn(),
+    post: vi.fn(),
+    patch: vi.fn(),
+  },
+}));
+
+import { apiClient } from '../utils/apiClient';
+import { subagentOrchestrationService } from './subagentOrchestrationService';
+
+const mApiGet = apiClient.get as ReturnType<typeof vi.fn>;
+const mApiPost = apiClient.post as ReturnType<typeof vi.fn>;
+const mApiPatch = apiClient.patch as ReturnType<typeof vi.fn>;
+
+describe('subagentOrchestrationService', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it('getStatus calls GET /orchestration/status', async () => {
+    const response = {
+      success: true,
+      data: {
+        profiles: {},
+        collaborationGraph: [],
+        quota: {
+          weeklyPremiumRemaining: 10,
+          businessDaysRemaining: 5,
+          dailyCap: 2,
+          premiumConsumedToday: 0,
+          premiumRemainingToday: 2,
+        },
+        tasks: [],
+      },
+    };
+    mApiGet.mockResolvedValue(response);
+
+    const result = await subagentOrchestrationService.getStatus();
+
+    expect(mApiGet).toHaveBeenCalledWith('/orchestration/status');
+    expect(result).toEqual(response);
+  });
+
+  it('getTasks calls GET /orchestration/tasks without query when assistantId not provided', async () => {
+    mApiGet.mockResolvedValue({ success: true, data: [] });
+
+    await subagentOrchestrationService.getTasks();
+
+    expect(mApiGet).toHaveBeenCalledWith('/orchestration/tasks');
+  });
+
+  it('getTasks URL-encodes assistantId query param', async () => {
+    mApiGet.mockResolvedValue({ success: true, data: [] });
+
+    await subagentOrchestrationService.getTasks('henry + qa');
+
+    expect(mApiGet).toHaveBeenCalledWith('/orchestration/tasks?assistantId=henry%20%2B%20qa');
+  });
+
+  it('createTask calls POST /orchestration/tasks with payload', async () => {
+    const payload = {
+      assistantId: 'henry',
+      taskType: 'review' as const,
+      title: 'Review handoff contracts',
+      requestedTier: 'standard' as const,
+    };
+    const response = {
+      success: true,
+      data: {
+        id: 't-1',
+        assistantId: 'henry',
+        taskType: 'review',
+        title: 'Review handoff contracts',
+        state: 'queued',
+        requestedTier: 'standard',
+        blockedReason: null,
+        createdAt: new Date().toISOString(),
+      },
+    };
+    mApiPost.mockResolvedValue(response);
+
+    const result = await subagentOrchestrationService.createTask(payload);
+
+    expect(mApiPost).toHaveBeenCalledWith('/orchestration/tasks', payload);
+    expect(result).toEqual(response);
+  });
+
+  it('updateTaskState calls PATCH /orchestration/tasks/:id/state', async () => {
+    const response = {
+      success: true,
+      data: {
+        id: 't-1',
+        assistantId: 'henry',
+        taskType: 'review',
+        title: 'Review handoff contracts',
+        state: 'running',
+        requestedTier: 'standard',
+        blockedReason: null,
+        createdAt: new Date().toISOString(),
+      },
+    };
+    mApiPatch.mockResolvedValue(response);
+
+    const result = await subagentOrchestrationService.updateTaskState('t-1', 'running');
+
+    expect(mApiPatch).toHaveBeenCalledWith('/orchestration/tasks/t-1/state', { state: 'running' });
+    expect(result).toEqual(response);
+  });
+});
