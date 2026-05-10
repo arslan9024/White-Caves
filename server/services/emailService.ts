@@ -101,7 +101,7 @@ export async function sendEmail(options: EmailOptions): Promise<EmailResult> {
       subject,
       text: text || '',
       html: html || text || '',
-      replyTo,
+      reply_to: replyTo,
       tags,
     });
 

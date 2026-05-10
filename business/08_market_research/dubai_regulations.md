@@ -14,30 +14,30 @@ RERA is the regulatory arm of the Dubai Land Department (DLD), established under
 
 ### 1.2 Licensing Requirements
 
-| Requirement | Details | Platform Impact |
-|-------------|---------|-----------------|
-| **Broker License** | All brokers must hold valid RERA broker license (annual renewal) | `brokerLicenseNumber` field on Agent model; auto-expiry alerts |
-| **BRN (Broker Registration Number)** | Unique per-agent identifier from RERA | `reraRegistrationNumber` field on Agent profiles |
-| **Trade License** | Company must hold valid DED trade license | Display on company profile, footer |
-| **RERA Training** | Agents must complete certified training annually | Training status tracking in HR module |
+| Requirement                          | Details                                                          | Platform Impact                                                |
+| ------------------------------------ | ---------------------------------------------------------------- | -------------------------------------------------------------- |
+| **Broker License**                   | All brokers must hold valid RERA broker license (annual renewal) | `brokerLicenseNumber` field on Agent model; auto-expiry alerts |
+| **BRN (Broker Registration Number)** | Unique per-agent identifier from RERA                            | `reraRegistrationNumber` field on Agent profiles               |
+| **Trade License**                    | Company must hold valid DED trade license                        | Display on company profile, footer                             |
+| **RERA Training**                    | Agents must complete certified training annually                 | Training status tracking in HR module                          |
 
 ### 1.3 Trakheesi (Property Advertising Permits)
 
-| Rule | Details | Implementation |
-|------|---------|----------------|
+| Rule                | Details                                                     | Implementation                                  |
+| ------------------- | ----------------------------------------------------------- | ----------------------------------------------- |
 | **Permit Required** | Every property ad must have a valid Trakheesi permit number | `permitNumber` required field on Property model |
-| **Validity Check** | Permits are property-specific and time-limited | Cron job: check expiry daily, auto-flag expired |
-| **Penalty** | AED 50,000 fine for advertising without permit | Block publishing if no valid permit |
-| **Display** | Permit number must be visible on all advertising | Show on listing cards, detail pages, exports |
+| **Validity Check**  | Permits are property-specific and time-limited              | Cron job: check expiry daily, auto-flag expired |
+| **Penalty**         | AED 50,000 fine for advertising without permit              | Block publishing if no valid permit             |
+| **Display**         | Permit number must be visible on all advertising            | Show on listing cards, detail pages, exports    |
 
 ### 1.4 Commission Regulations
 
-| Rule | Details | Implementation |
-|------|---------|----------------|
-| **Standard Rate** | ~2% for sales, 5% of annual rent for leasing | Default commission calculator in Transaction model |
-| **Written Agreement** | Commission terms must be in written brokerage agreement | Contract template generation |
-| **Transparency** | Commissions must be declared upfront | Commission disclosure in offer workflows |
-| **Digital Registration** | Smart contracts for deal registration | DLD REST Dubai integration (future) |
+| Rule                     | Details                                                 | Implementation                                     |
+| ------------------------ | ------------------------------------------------------- | -------------------------------------------------- |
+| **Standard Rate**        | ~2% for sales, 5% of annual rent for leasing            | Default commission calculator in Transaction model |
+| **Written Agreement**    | Commission terms must be in written brokerage agreement | Contract template generation                       |
+| **Transparency**         | Commissions must be declared upfront                    | Commission disclosure in offer workflows           |
+| **Digital Registration** | Smart contracts for deal registration                   | DLD REST Dubai integration (future)                |
 
 ### 1.5 Implementation Checklist
 
@@ -62,13 +62,13 @@ Ejari ("My Rent") is Dubai's mandatory tenancy contract registration system per 
 
 ### 2.2 Requirements
 
-| Requirement | Details | Implementation |
-|-------------|---------|----------------|
-| **Mandatory Registration** | All tenancy contracts must be registered with Ejari | Ejari reference field on Lease model |
-| **Required Documents** | Title deed, tenant passport/visa, Emirates ID, tenancy contract | Document checklist in lease workflow |
-| **Registration Fee** | AED 220 (online) | Include in fee calculations |
-| **Annual Renewal** | Must re-register on contract renewal | Auto-reminder 30 days before expiry |
-| **RERA Rent Index** | Rent increases governed by RERA Rent Calculator | Integrate RERA rent calculator API |
+| Requirement                | Details                                                         | Implementation                       |
+| -------------------------- | --------------------------------------------------------------- | ------------------------------------ |
+| **Mandatory Registration** | All tenancy contracts must be registered with Ejari             | Ejari reference field on Lease model |
+| **Required Documents**     | Title deed, tenant passport/visa, Emirates ID, tenancy contract | Document checklist in lease workflow |
+| **Registration Fee**       | AED 220 (online)                                                | Include in fee calculations          |
+| **Annual Renewal**         | Must re-register on contract renewal                            | Auto-reminder 30 days before expiry  |
+| **RERA Rent Index**        | Rent increases governed by RERA Rent Calculator                 | Integrate RERA rent calculator API   |
 
 ### 2.3 Implementation Checklist
 
@@ -85,12 +85,12 @@ Ejari ("My Rent") is Dubai's mandatory tenancy contract registration system per 
 
 ### 3.1 VAT Requirements
 
-| Rule | Details | Implementation |
-|------|---------|----------------|
-| **VAT Rate** | 5% on commercial property transactions | Auto-calculate in transaction totals |
-| **TRN Display** | Must show TRN on all invoices and receipts | Add `taxRegistrationNumber` to Company model |
-| **Commercial Only** | Residential first sales exempt; commercial always taxable | Property type-based tax rules |
-| **Filing** | Quarterly VAT returns required | Report generation for finance team |
+| Rule                | Details                                                   | Implementation                               |
+| ------------------- | --------------------------------------------------------- | -------------------------------------------- |
+| **VAT Rate**        | 5% on commercial property transactions                    | Auto-calculate in transaction totals         |
+| **TRN Display**     | Must show TRN on all invoices and receipts                | Add `taxRegistrationNumber` to Company model |
+| **Commercial Only** | Residential first sales exempt; commercial always taxable | Property type-based tax rules                |
+| **Filing**          | Quarterly VAT returns required                            | Report generation for finance team           |
 
 ### 3.2 Implementation Checklist
 
@@ -106,12 +106,12 @@ Ejari ("My Rent") is Dubai's mandatory tenancy contract registration system per 
 
 ### 4.1 DLD Escrow Requirements
 
-| Rule | Details | Implementation |
-|------|---------|----------------|
-| **100% Deposit** | All buyer payments into DLD-approved escrow | Escrow tracking in Payment model |
-| **Milestone Release** | Funds released on construction certification | Milestone tracker UI |
-| **Annual Audit** | External audit by RERA-approved auditors | Audit report upload and storage |
-| **Project Registration** | Every off-plan project registered with DLD | Project model with DLD registration |
+| Rule                     | Details                                      | Implementation                      |
+| ------------------------ | -------------------------------------------- | ----------------------------------- |
+| **100% Deposit**         | All buyer payments into DLD-approved escrow  | Escrow tracking in Payment model    |
+| **Milestone Release**    | Funds released on construction certification | Milestone tracker UI                |
+| **Annual Audit**         | External audit by RERA-approved auditors     | Audit report upload and storage     |
+| **Project Registration** | Every off-plan project registered with DLD   | Project model with DLD registration |
 
 ### 4.2 Implementation Checklist
 
@@ -126,13 +126,13 @@ Ejari ("My Rent") is Dubai's mandatory tenancy contract registration system per 
 
 ### 5.1 UAE PDPL & AML Requirements
 
-| Rule | Details | Implementation |
-|------|---------|----------------|
-| **KYC Verification** | Emirates ID, passport, proof of funds for transactions > AED 55,000 | KYC workflow in onboarding |
-| **Source of Funds** | Must verify source for high-value transactions | SOF declaration form |
-| **PEP Screening** | Check Politically Exposed Persons lists | Third-party PEP screening API |
-| **SAR Filing** | Suspicious Activity Reports to FIU | SAR template and filing workflow |
-| **Record Retention** | 5-year retention for all KYC documents | Data retention policy enforcement |
+| Rule                 | Details                                                             | Implementation                    |
+| -------------------- | ------------------------------------------------------------------- | --------------------------------- |
+| **KYC Verification** | Emirates ID, passport, proof of funds for transactions > AED 55,000 | KYC workflow in onboarding        |
+| **Source of Funds**  | Must verify source for high-value transactions                      | SOF declaration form              |
+| **PEP Screening**    | Check Politically Exposed Persons lists                             | Third-party PEP screening API     |
+| **SAR Filing**       | Suspicious Activity Reports to FIU                                  | SAR template and filing workflow  |
+| **Record Retention** | 5-year retention for all KYC documents                              | Data retention policy enforcement |
 
 ### 5.2 Implementation Checklist
 
@@ -149,14 +149,14 @@ Ejari ("My Rent") is Dubai's mandatory tenancy contract registration system per 
 
 ### 6.1 Requirements
 
-| Rule | Details | Implementation |
-|------|---------|----------------|
-| **Consent** | Explicit consent for data collection and processing | Consent management system |
-| **Data Minimization** | Collect only necessary data | Audit all data collection points |
-| **Right to Access** | Users can request their data | Data export endpoint |
-| **Right to Erasure** | Users can request deletion | Soft-delete with 30-day grace period |
-| **Data Breach Notification** | 72-hour notification requirement | Incident response automation |
-| **Cross-Border Transfer** | Restrictions on data transfer outside UAE | Data residency in UAE region |
+| Rule                         | Details                                             | Implementation                       |
+| ---------------------------- | --------------------------------------------------- | ------------------------------------ |
+| **Consent**                  | Explicit consent for data collection and processing | Consent management system            |
+| **Data Minimization**        | Collect only necessary data                         | Audit all data collection points     |
+| **Right to Access**          | Users can request their data                        | Data export endpoint                 |
+| **Right to Erasure**         | Users can request deletion                          | Soft-delete with 30-day grace period |
+| **Data Breach Notification** | 72-hour notification requirement                    | Incident response automation         |
+| **Cross-Border Transfer**    | Restrictions on data transfer outside UAE           | Data residency in UAE region         |
 
 ### 6.2 Implementation Checklist
 
@@ -175,16 +175,16 @@ Ejari ("My Rent") is Dubai's mandatory tenancy contract registration system per 
 
 ### Current Compliance Status
 
-| Area | Status | Score | Next Action |
-|------|--------|-------|-------------|
-| **RERA Licensing** | ✅ Implemented | 90% | Add training expiry tracking |
-| **Trakheesi** | ⚠️ Partial | 60% | Add auto-expiry, block invalid |
-| **Ejari** | ⚠️ Partial | 50% | Add document checklist, rent calculator |
-| **TRN/VAT** | ⚠️ Partial | 40% | Add auto-calculation, reports |
-| **Escrow** | ❌ Not Started | 0% | Build escrow tracking module |
-| **AML/KYC** | ⚠️ Documented | 30% | Build verification workflow |
-| **Data Protection** | ⚠️ Partial | 50% | Add consent, export, erasure |
-| **Overall** | | **46%** | Target: 90% by Q4 2026 |
+| Area                | Status         | Score   | Next Action                             |
+| ------------------- | -------------- | ------- | --------------------------------------- |
+| **RERA Licensing**  | ✅ Implemented | 90%     | Add training expiry tracking            |
+| **Trakheesi**       | ⚠️ Partial     | 60%     | Add auto-expiry, block invalid          |
+| **Ejari**           | ⚠️ Partial     | 50%     | Add document checklist, rent calculator |
+| **TRN/VAT**         | ⚠️ Partial     | 40%     | Add auto-calculation, reports           |
+| **Escrow**          | ❌ Not Started | 0%      | Build escrow tracking module            |
+| **AML/KYC**         | ⚠️ Documented  | 30%     | Build verification workflow             |
+| **Data Protection** | ⚠️ Partial     | 50%     | Add consent, export, erasure            |
+| **Overall**         |                | **46%** | Target: 90% by Q4 2026                  |
 
 ---
 
@@ -198,7 +198,6 @@ Ejari ("My Rent") is Dubai's mandatory tenancy contract registration system per 
 - [RERA Audits UAE 2025](https://taxadepts.com/rera-audits-uae-escrow-compliance-guide-2025-2026) — Compliance guide
 - [Dubai Real Estate Laws 2025-2026](https://houseandhedges.ae/blog/dubai-real-estate-laws-regulations-2025-2026) — Regulatory updates
 - [Metropolitan RERA Guide](https://metropolitan.realestate/blog/guides/rera-dubai-2025-handbook/) — Complete handbook
-
 
 ---
 
@@ -277,16 +276,16 @@ AGENT documents:
 
 ### 8.3 DLD Fees Summary
 
-| Fee | Amount | Paid By |
-|-----|--------|---------|
-| Transfer fee | 4% of sale price | Buyer |
-| DLD admin fee | AED 4,000 (sales < AED 500k: AED 2,000) | Buyer |
-| Title deed issuance | AED 580 | Buyer |
-| Trustee office fee | AED 500–1,000 (varies by trustee) | Buyer |
-| NOC (developer) | AED 500–5,000 | Seller (usually) |
-| Mortgage clearance | AED 1,000–3,000 (bank fee) | Seller |
-| Mortgage registration fee | 0.25% of mortgage value + AED 290 (DLD) | Buyer |
-| Agent commission (sale) | 2% of sale price | Seller (standard) |
+| Fee                       | Amount                                  | Paid By           |
+| ------------------------- | --------------------------------------- | ----------------- |
+| Transfer fee              | 4% of sale price                        | Buyer             |
+| DLD admin fee             | AED 4,000 (sales < AED 500k: AED 2,000) | Buyer             |
+| Title deed issuance       | AED 580                                 | Buyer             |
+| Trustee office fee        | AED 500–1,000 (varies by trustee)       | Buyer             |
+| NOC (developer)           | AED 500–5,000                           | Seller (usually)  |
+| Mortgage clearance        | AED 1,000–3,000 (bank fee)              | Seller            |
+| Mortgage registration fee | 0.25% of mortgage value + AED 290 (DLD) | Buyer             |
+| Agent commission (sale)   | 2% of sale price                        | Seller (standard) |
 
 **Important:** No VAT on residential property sales in the UAE. 5% VAT applies to commercial property sales and on agent commission (agent invoices + 5% VAT to seller).
 
@@ -294,18 +293,18 @@ AGENT documents:
 
 ## 9. RERA Fee Structure — Complete Schedule
 
-| License / Certificate | Cost (approx.) | Frequency | Paying Entity |
-|---------------------|--------------|-----------|--------------|
-| DED Real Estate Brokerage License | AED 10,000–20,000 | Annual | Company |
-| RERA Brokerage Registration Certificate | AED 5,000–10,000 | Annual | Company |
-| RERA BRN (per agent) — new registration | AED 5,020 | Once (then annual renewal) | Company / Agent |
-| RERA BRN Annual Renewal | AED 5,020 | Annual (usually January) | Company / Agent |
-| DREI Training Course | AED 3,000–5,000 | Once (before BRN) | Company / Agent |
-| CPD hours (external provider) | AED 500–2,000/year | Annual (8 hours required) | Company / Agent |
-| Trakheesi permit per listing | AED 10–20 per permit | Per listing (3-month validity) | Company |
-| Ejari registration | AED 220 + 5% VAT | Per tenancy | Landlord (agent facilitates) |
-| DLD NOC (community) | AED 500–5,000 | Per transaction | Seller |
-| Off-plan Oqood registration | 4% of property value (DLD fee) | Per off-plan transaction | Buyer |
+| License / Certificate                   | Cost (approx.)                 | Frequency                      | Paying Entity                |
+| --------------------------------------- | ------------------------------ | ------------------------------ | ---------------------------- |
+| DED Real Estate Brokerage License       | AED 10,000–20,000              | Annual                         | Company                      |
+| RERA Brokerage Registration Certificate | AED 5,000–10,000               | Annual                         | Company                      |
+| RERA BRN (per agent) — new registration | AED 5,020                      | Once (then annual renewal)     | Company / Agent              |
+| RERA BRN Annual Renewal                 | AED 5,020                      | Annual (usually January)       | Company / Agent              |
+| DREI Training Course                    | AED 3,000–5,000                | Once (before BRN)              | Company / Agent              |
+| CPD hours (external provider)           | AED 500–2,000/year             | Annual (8 hours required)      | Company / Agent              |
+| Trakheesi permit per listing            | AED 10–20 per permit           | Per listing (3-month validity) | Company                      |
+| Ejari registration                      | AED 220 + 5% VAT               | Per tenancy                    | Landlord (agent facilitates) |
+| DLD NOC (community)                     | AED 500–5,000                  | Per transaction                | Seller                       |
+| Off-plan Oqood registration             | 4% of property value (DLD fee) | Per off-plan transaction       | Buyer                        |
 
 ---
 
@@ -313,18 +312,18 @@ AGENT documents:
 
 ### 10.1 VAT Rate by Transaction Type
 
-| Transaction | VAT Rate | Notes |
-|------------|---------|-------|
-| Residential property sale (ready) | 0% | Exempt — first supply is zero-rated |
-| Residential property resale (secondary) | 0% | Exempt |
-| Commercial property sale | 5% | Standard rate |
-| Residential property rental (long-term) | 0% | Exempt |
-| Commercial property rental | 5% | Standard rate |
-| Holiday homes / short-term rentals | 5% | Treated as commercial service |
-| Agent commission (residential sale) | 5% | Agent's service = taxable supply |
-| Agent commission (commercial) | 5% | Standard rate |
-| Property management fee | 5% | Service = taxable |
-| Off-plan property first sale by developer | 0% | Zero-rated per FTA |
+| Transaction                               | VAT Rate | Notes                               |
+| ----------------------------------------- | -------- | ----------------------------------- |
+| Residential property sale (ready)         | 0%       | Exempt — first supply is zero-rated |
+| Residential property resale (secondary)   | 0%       | Exempt                              |
+| Commercial property sale                  | 5%       | Standard rate                       |
+| Residential property rental (long-term)   | 0%       | Exempt                              |
+| Commercial property rental                | 5%       | Standard rate                       |
+| Holiday homes / short-term rentals        | 5%       | Treated as commercial service       |
+| Agent commission (residential sale)       | 5%       | Agent's service = taxable supply    |
+| Agent commission (commercial)             | 5%       | Standard rate                       |
+| Property management fee                   | 5%       | Service = taxable                   |
+| Off-plan property first sale by developer | 0%       | Zero-rated per FTA                  |
 
 ### 10.2 White Caves VAT Obligations
 
@@ -342,15 +341,15 @@ AGENT documents:
 
 ### 11.1 Eligibility Criteria
 
-| Requirement | Details |
-|------------|---------|
-| Minimum property value | AED 2 million (off-plan or ready) |
-| Property must be | Located in Dubai; freehold |
-| Mortgage allowed | Yes — if equity (paid amount) ≥ AED 2 million |
-| Multiple properties | Combined value can qualify if each ≥ AED 2M or combined portfolio ≥ AED 4M (under Platinum Visa) |
-| Visa duration | 10 years (renewable) |
-| Family sponsorship | Spouse + children included |
-| Business requirement | None (pure property investment) |
+| Requirement            | Details                                                                                          |
+| ---------------------- | ------------------------------------------------------------------------------------------------ |
+| Minimum property value | AED 2 million (off-plan or ready)                                                                |
+| Property must be       | Located in Dubai; freehold                                                                       |
+| Mortgage allowed       | Yes — if equity (paid amount) ≥ AED 2 million                                                    |
+| Multiple properties    | Combined value can qualify if each ≥ AED 2M or combined portfolio ≥ AED 4M (under Platinum Visa) |
+| Visa duration          | 10 years (renewable)                                                                             |
+| Family sponsorship     | Spouse + children included                                                                       |
+| Business requirement   | None (pure property investment)                                                                  |
 
 ### 11.2 Process for Golden Visa via Property
 
@@ -375,12 +374,12 @@ Step 6: 10-year visa issued
 
 ### 11.4 Common Golden Visa Client Questions
 
-| Question | Answer |
-|---------|--------|
-| "Can I buy off-plan and get the visa?" | Yes, if paid amount from developer invoices totals ≥ AED 2M |
-| "Does the AED 2M include DLD fees?" | No — property value alone must be ≥ AED 2M |
-| "Can I rent out the property and still keep the visa?" | Yes — owning the property is sufficient; occupancy not required |
-| "What if the property value drops below AED 2M?" | Visa is not automatically cancelled; renewal may require re-qualification |
+| Question                                               | Answer                                                                    |
+| ------------------------------------------------------ | ------------------------------------------------------------------------- |
+| "Can I buy off-plan and get the visa?"                 | Yes, if paid amount from developer invoices totals ≥ AED 2M               |
+| "Does the AED 2M include DLD fees?"                    | No — property value alone must be ≥ AED 2M                                |
+| "Can I rent out the property and still keep the visa?" | Yes — owning the property is sufficient; occupancy not required           |
+| "What if the property value drops below AED 2M?"       | Visa is not automatically cancelled; renewal may require re-qualification |
 
 ---
 
@@ -391,6 +390,7 @@ Step 6: 10-year visa issued
 Ejari (Arabic: "My Rent") is the mandatory tenancy contract registration system operated by RERA/DLD. All residential and commercial tenancies in Dubai must be Ejari-registered within 30 days of lease commencement.
 
 **Why it matters:**
+
 - Legal requirement — unregistered leases not enforceable at RDSC (Rental Dispute Settlement Centre)
 - Required for DEWA (water/electricity) connection
 - Required for residency visa renewal (for tenants on UAE residency visa)
@@ -431,6 +431,7 @@ Registration Fee: AED 220 + AED 10 knowledge fee + 5% VAT = ~AED 240 total
 ### 12.3 Ejari Renewal
 
 When a lease renews, a new Ejari must be registered:
+
 - New registration required even if same parties, same property
 - Old Ejari remains in records but new registration must reflect renewal dates
 - Failure to re-register: tenant cannot renew residency visa; landlord cannot file RDSC case for overdue rent
@@ -450,18 +451,19 @@ Tenant portal: ejariCertificate available to download (PDF stored in S3)
 
 ### 13.1 RERA Digital Transformation Roadmap
 
-| Change | Expected Timeline | Impact on White Caves |
-|--------|-----------------|---------------------|
-| Mandatory digital Form A submissions via RERA REST portal | Q3 2026 | Phase 5: CRM → RERA API integration for Form A |
-| Agent license: annual proficiency test (expanded from every 2 years) | Q4 2026 | HR must track test dates; schedule training support |
-| New off-plan buyer protection regulations (enhanced escrow rules) | Q1 2027 | Update off-plan compliance checklist; Quill template updates |
-| RERA API for permit validation (Trakheesi real-time check) | Q4 2026 | Phase 5: integrate `/api/properties/permit-validate` call |
-| New tenancy dispute fast-track process at RDSC (< 14 days for low-value claims) | Q2 2027 | Update dispute resolution guidance for tenants |
-| DLD blockchain title deed registry (pilot expansion) | Q2 2027 | Phase 8: consider blockchain title verification integration |
+| Change                                                                          | Expected Timeline | Impact on White Caves                                        |
+| ------------------------------------------------------------------------------- | ----------------- | ------------------------------------------------------------ |
+| Mandatory digital Form A submissions via RERA REST portal                       | Q3 2026           | Phase 5: CRM → RERA API integration for Form A               |
+| Agent license: annual proficiency test (expanded from every 2 years)            | Q4 2026           | HR must track test dates; schedule training support          |
+| New off-plan buyer protection regulations (enhanced escrow rules)               | Q1 2027           | Update off-plan compliance checklist; Quill template updates |
+| RERA API for permit validation (Trakheesi real-time check)                      | Q4 2026           | Phase 5: integrate `/api/properties/permit-validate` call    |
+| New tenancy dispute fast-track process at RDSC (< 14 days for low-value claims) | Q2 2027           | Update dispute resolution guidance for tenants               |
+| DLD blockchain title deed registry (pilot expansion)                            | Q2 2027           | Phase 8: consider blockchain title verification integration  |
 
 ### 13.2 UAE Federal Real Estate Law (Anticipated)
 
 A federal-level real estate law (complementing Dubai-specific laws) is anticipated to:
+
 - Unify real estate broker licensing across all seven emirates
 - Create a federal RERA-equivalent body
 - Impact agents with licenses outside Dubai
@@ -475,6 +477,7 @@ A federal-level real estate law (complementing Dubai-specific laws) is anticipat
 **Version History:** v1.0 April 2026 (initial)
 **Review Cycle:** Quarterly — regulations change frequently in Dubai
 **Related Documents:**
+
 - `business/08_compliance/rera-compliance-checklist.md`
 - `business/08_compliance/aml-risk-assessment.md`
 - RERA: www.rera.gov.ae | DLD: www.dubailand.gov.ae | FTA: www.tax.gov.ae

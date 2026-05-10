@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 import React from 'react';
 import BaseDepartmentView from './BaseDepartmentView';
 import { getDepartmentConfig } from '../../config/departmentViewConfigs';
@@ -13,31 +12,29 @@ import { DataCard } from '../shared/dashboard';
 interface FinanceViewProps {
   serviceName?: string;
   subitemId?: string;
-  departmentData?: any;
+  departmentData?: Record<string, unknown>;
 }
 
-const FinanceView: React.FC<FinanceViewProps> = ({ serviceName = 'financial-reports', subitemId, departmentData }) => {
+const FinanceView: React.FC<FinanceViewProps> = ({
+  serviceName = 'financial-reports',
+  subitemId,
+  departmentData,
+}) => {
   const config = getDepartmentConfig('FINANCE')!;
 
   // Render main content based on serviceName and subitemId
-  const renderContent = (data: any) => {
+  const renderContent = (_data: Record<string, unknown>) => {
     if (!subitemId && serviceName === 'financial-reports') {
       return (
         <>
           {/* Financial Summary */}
-          <DataCard 
-            title="Financial Summary"
-            subtitle="Key financial metrics"
-          >
+          <DataCard title="Financial Summary" subtitle="Key financial metrics">
             {/* TODO: Implement financial summary */}
             Summary data...
           </DataCard>
 
           {/* Budget Overview */}
-          <DataCard 
-            title="Budget Overview"
-            subtitle="Current budget allocation"
-          >
+          <DataCard title="Budget Overview" subtitle="Current budget allocation">
             {/* TODO: Implement budget overview */}
             Budget data...
           </DataCard>
@@ -84,4 +81,3 @@ const FinanceView: React.FC<FinanceViewProps> = ({ serviceName = 'financial-repo
 };
 
 export default FinanceView;
-

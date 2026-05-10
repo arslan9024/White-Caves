@@ -15,10 +15,7 @@ type DataImportWizardProps = FeatureComponentProps & {
   onCancel?: () => void;
 };
 
-export const DataImportWizard: React.FC<DataImportWizardProps> = ({
-  onComplete,
-  onCancel,
-}) => {
+export const DataImportWizard: React.FC<DataImportWizardProps> = ({ onComplete, onCancel }) => {
   return (
     <div
       role="region"
@@ -38,13 +35,16 @@ export const DataImportWizard: React.FC<DataImportWizardProps> = ({
         textAlign: 'center',
       }}
     >
-      <span style={{ fontSize: '3rem' }} aria-hidden="true">📥</span>
-      <h2 style={{ fontSize: '1.5rem', fontFamily: "'Cormorant Garamond', serif", color: '#FAFAFA' }}>
+      <span style={{ fontSize: '3rem' }} aria-hidden="true">
+        📥
+      </span>
+      <h2
+        style={{ fontSize: '1.5rem', fontFamily: "'Cormorant Garamond', serif", color: '#FAFAFA' }}
+      >
         Data Import Wizard
       </h2>
       <p style={{ color: 'rgba(250,250,250,0.6)', maxWidth: '400px', lineHeight: 1.6 }}>
-        Import property data from Excel or CSV files.
-        This feature is under active development.
+        Import property data from Excel or CSV files. This feature is under active development.
       </p>
       <div style={{ display: 'flex', gap: '1rem', marginTop: '1rem' }}>
         <button

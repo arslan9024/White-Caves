@@ -79,7 +79,7 @@ const DropdownMenu = styled.div<{ $isOpen: boolean }>`
   max-height: 400px;
   overflow-y: auto;
   z-index: ${theme.zIndex.dropdown};
-  display: ${(props) => (props.$isOpen ? 'block' : 'none')};
+  display: ${props => (props.$isOpen ? 'block' : 'none')};
 `;
 
 const DropdownHeader = styled.div`
@@ -97,7 +97,7 @@ const NotificationList = styled.div`
 const NotificationItem = styled.div<{ $read: boolean }>`
   padding: ${theme.spacing.md};
   border-bottom: 1px solid ${theme.colors.border};
-  background: ${(props) =>
+  background: ${props =>
     props.$read ? theme.colors.background.primary : theme.colors.background.secondary};
   cursor: pointer;
   transition: ${theme.transitions.all};
@@ -156,12 +156,12 @@ const ViewAllButton = styled.button`
 export const NotificationCenter: React.FC<NotificationCenterProps> = ({
   notifications = [],
   onMarkAsRead,
-  onDismiss,
+  onDismiss: _onDismiss,
   onViewAll,
   className = '',
 }) => {
   const [isOpen, setIsOpen] = useState(false);
-  const unreadCount = notifications.filter((n) => !n.read).length;
+  const unreadCount = notifications.filter(n => !n.read).length;
 
   const handleBellClick = () => {
     setIsOpen(!isOpen);
@@ -190,7 +190,7 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({
         ) : (
           <>
             <NotificationList>
-              {notifications.slice(0, 5).map((notif) => (
+              {notifications.slice(0, 5).map(notif => (
                 <NotificationItem
                   key={notif.id}
                   $read={notif.read}
@@ -211,12 +211,7 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({
         )}
       </DropdownMenu>
 
-      {isOpen && (
-        <Backdrop
-          onClick={() => setIsOpen(false)}
-          role="presentation"
-        />
-      )}
+      {isOpen && <Backdrop onClick={() => setIsOpen(false)} role="presentation" />}
     </NotificationContainer>
   );
 };
@@ -230,4 +225,3 @@ const Backdrop = styled.div`
 NotificationCenter.displayName = 'NotificationCenter';
 
 export default NotificationCenter;
-

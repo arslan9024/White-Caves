@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Badge Component
  * Small labeled indicator for status, category, or count
@@ -37,6 +36,7 @@ const getVariantStyles = (variant: BadgeVariant) => {
     `,
   };
 
+  // eslint-disable-next-line security/detect-object-injection
   return variants[variant] || variants.primary;
 };
 
@@ -56,6 +56,7 @@ const getSizeStyles = (size: BadgeSize) => {
     `,
   };
 
+  // eslint-disable-next-line security/detect-object-injection
   return sizes[size] || sizes.md;
 };
 
@@ -68,8 +69,8 @@ const StyledBadge = styled.span<{ $variant?: BadgeVariant; $size?: BadgeSize }>`
   white-space: nowrap;
   transition: ${theme.transitions.all};
 
-  ${(props) => getVariantStyles(props.$variant || 'primary')}
-  ${(props) => getSizeStyles(props.$size || 'md')}
+  ${props => getVariantStyles(props.$variant || 'primary')}
+  ${props => getSizeStyles(props.$size || 'md')}
 `;
 
 export const Badge = React.forwardRef<HTMLSpanElement, BadgeProps>(
@@ -85,4 +86,3 @@ export const Badge = React.forwardRef<HTMLSpanElement, BadgeProps>(
 Badge.displayName = 'Badge';
 
 export default Badge;
-

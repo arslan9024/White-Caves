@@ -1,295 +1,286 @@
 /**
  * Appointments API Routes
- * ────────────────────────
- * Full CRUD for scheduling appointments (client meetings, viewings,
- * landlord meetings, RERA inspections, handovers, team meetings).
+ * ─────────────────────────────────────────────────────────────────────────
+ * Full CRUD for appointment scheduling (viewings, meetings, calls, signings).
  *
- * GET    /api/appointments              — List appointments (paginated, filtered)
- * GET    /api/appointments/upcoming     — Upcoming appointments only
- * GET    /api/appointments/:id          — Get single appointment
- * POST   /api/appointments              — Create an appointment
- * PATCH  /api/appointments/:id          — Update / reschedule / complete
- * DELETE /api/appointments/:id          — Delete a non-completed appointment
+ * GET    /api/appointments           — List appointments (filtered, paginated)
+ * GET    /api/appointments/upcoming  — Next 30 days only
+ * GET    /api/appointments/:id       — Single appointment
+ * POST   /api/appointments           — Create appointment
+ * PATCH  /api/appointments/:id       — Update / reschedule / cancel
+ * DELETE /api/appointments/:id       — Delete (admin only)
  */
 
 import { Router, Response } from 'express';
-import crypto from 'crypto';
+import type { Request } from 'express';
 import { asyncHandler, AppError } from '../middleware/errorHandler.js';
-import { AuthRequest } from '../middleware/auth.js';
 import { prisma } from '../database.js';
-import logger from '../utils/logger.js';
+import { sanitizeString } from '../utils/sanitize.js';
+import { validate, rules, validateIdParam } from '../utils/validate.js';
+import { parsePagination } from '../config/pagination.js';
+import { requirePermission, requireRole } from '../middleware/rbac.js';
 
 const router = Router();
 
-const VALID_TYPES = ['viewing', 'client_meeting', 'landlord_meeting', 'rera_inspection', 'handover', 'team_meeting'];
-const VALID_STATUSES = ['scheduled', 'confirmed', 'completed', 'cancelled', 'no_show', 'rescheduled'];
+const VALID_TYPES = ['viewing', 'meeting', 'call', 'inspection', 'signing'] as const;
+const VALID_STATUSES = ['scheduled', 'confirmed', 'completed', 'cancelled', 'no_show'] as const;
 
-// ─── GET /api/appointments ────────────────────────────────────────────────────
+// ─── GET /api/appointments ───────────────────────────────────────────────
 router.get(
   '/',
-  asyncHandler(async (req: AuthRequest, res: Response) => {
-    const userId = req.user?.id;
-    if (!userId) throw new AppError('Authentication required', 401);
-
-    const page = Math.max(1, parseInt(req.query.page as string) || 1);
-    const pageSize = Math.min(50, Math.max(1, parseInt(req.query.pageSize as string) || 20));
-    const status = req.query.status as string | undefined;
-    const type = req.query.type as string | undefined;
-    const from = req.query.from as string | undefined;
-    const to = req.query.to as string | undefined;
+  requirePermission('view_appointments'),
+  asyncHandler(async (req: Request, res: Response) => {
+    const { page, limit, skip } = parsePagination(req.query);
+    const { status, type, agentId, propertyId, leadId, from, to } = req.query as Record<
+      string,
+      string
+    >;
 
     const where: Record<string, unknown> = {};
-
-    // Admins/owners see all; agents see their own
-    const adminRoles = ['owner', 'admin', 'md'];
-    if (!adminRoles.includes(req.user?.role ?? '')) {
-      where.OR = [{ agentId: userId }, { clientId: userId }, { createdBy: userId }];
+    if (status && VALID_STATUSES.includes(status as (typeof VALID_STATUSES)[number])) {
+      where.status = status;
     }
-
-    if (status) where.status = status;
-    if (type) where.type = type;
-    if (from || to) {
-      const scheduledAt: Record<string, Date> = {};
-      if (from) scheduledAt.gte = new Date(from);
-      if (to) scheduledAt.lte = new Date(to);
-      where.scheduledAt = scheduledAt;
+    if (type && VALID_TYPES.includes(type as (typeof VALID_TYPES)[number])) {
+      where.type = type;
     }
+    if (agentId) where.agentId = agentId;
+    if (propertyId) where.propertyId = propertyId;
+    if (leadId) where.leadId = leadId;
+
+    const dateFilter: Record<string, Date> = {};
+    if (from) dateFilter.gte = new Date(from);
+    if (to) dateFilter.lte = new Date(to);
+    if (Object.keys(dateFilter).length > 0) where.scheduledAt = dateFilter;
 
     const [appointments, total] = await Promise.all([
       prisma.appointment.findMany({
         where,
         orderBy: { scheduledAt: 'asc' },
-        skip: (page - 1) * pageSize,
-        take: pageSize,
+        skip,
+        take: limit,
       }),
       prisma.appointment.count({ where }),
     ]);
 
-    res.json({
+    res.status(200).json({
       success: true,
       data: appointments,
-      pagination: { page, pageSize, total, totalPages: Math.ceil(total / pageSize) },
+      pagination: { page, pageSize: limit, total, totalPages: Math.ceil(total / limit) },
     });
-  }),
+  })
 );
 
-// ─── GET /api/appointments/upcoming ──────────────────────────────────────────
+// ─── GET /api/appointments/upcoming ─────────────────────────────────────
 router.get(
   '/upcoming',
-  asyncHandler(async (req: AuthRequest, res: Response) => {
-    const userId = req.user?.id;
-    if (!userId) throw new AppError('Authentication required', 401);
-
-    const limit = Math.min(20, Math.max(1, parseInt(req.query.limit as string) || 10));
-
-    const where: Record<string, unknown> = {
-      scheduledAt: { gte: new Date() },
-      status: { in: ['scheduled', 'confirmed'] },
-    };
-
-    const adminRoles = ['owner', 'admin', 'md'];
-    if (!adminRoles.includes(req.user?.role ?? '')) {
-      (where as Record<string, unknown>).OR = [
-        { agentId: userId },
-        { clientId: userId },
-        { createdBy: userId },
-      ];
-    }
+  requirePermission('view_appointments'),
+  asyncHandler(async (req: Request, res: Response) => {
+    const { limit: limitParam } = req.query as Record<string, string>;
+    const limit = Math.min(parseInt(limitParam || '20', 10), 100);
+    const now = new Date();
+    const in30Days = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000);
 
     const appointments = await prisma.appointment.findMany({
-      where,
+      where: {
+        scheduledAt: { gte: now, lte: in30Days },
+        status: { in: ['scheduled', 'confirmed'] },
+      },
       orderBy: { scheduledAt: 'asc' },
       take: limit,
     });
 
-    res.json({ success: true, data: appointments });
-  }),
+    res.status(200).json({ success: true, data: appointments });
+  })
 );
 
-// ─── GET /api/appointments/:id ────────────────────────────────────────────────
+// ─── GET /api/appointments/:id ───────────────────────────────────────────
 router.get(
   '/:id',
-  asyncHandler(async (req: AuthRequest, res: Response) => {
-    const userId = req.user?.id;
-    if (!userId) throw new AppError('Authentication required', 401);
-
-    const appointment = await prisma.appointment.findUnique({
-      where: { id: req.params.id },
-    });
-
-    if (!appointment) throw new AppError('Appointment not found', 404);
-
-    const adminRoles = ['owner', 'admin', 'md'];
-    if (!adminRoles.includes(req.user?.role ?? '')) {
-      const parties = [appointment.agentId, appointment.clientId, appointment.createdBy];
-      if (!parties.includes(userId)) {
-        throw new AppError('Access denied', 403);
-      }
-    }
-
-    res.json({ success: true, data: appointment });
-  }),
+  requirePermission('view_appointments'),
+  asyncHandler(async (req: Request, res: Response) => {
+    validateIdParam(req.params.id, 'Appointment ID');
+    const appt = await prisma.appointment.findUnique({ where: { id: req.params.id } });
+    if (!appt) throw new AppError('Appointment not found', 404);
+    res.status(200).json({ success: true, data: appt });
+  })
 );
 
-// ─── POST /api/appointments ───────────────────────────────────────────────────
+// ─── POST /api/appointments ──────────────────────────────────────────────
 router.post(
   '/',
-  asyncHandler(async (req: AuthRequest, res: Response) => {
-    const userId = req.user?.id;
-    if (!userId) throw new AppError('Authentication required', 401);
-
+  requirePermission('manage_appointments'),
+  asyncHandler(async (req: Request, res: Response) => {
     const {
-      type,
       title,
-      agentId,
-      clientId,
-      propertyId,
+      type,
       scheduledAt,
-      durationMinutes,
+      durationMins,
       location,
-      isVirtual,
-      meetingLink,
       notes,
+      clientName,
+      clientEmail,
+      clientPhone,
+      agentId,
+      propertyId,
+      leadId,
     } = req.body;
+
+    validate(req.body, {
+      title: rules.requiredStringWithMax('Title', 255),
+      type: rules.oneOf('Appointment type', [...VALID_TYPES]),
+      location: rules.optionalStringWithMax('Location', 500),
+      notes: rules.optionalStringWithMax('Notes', 2000),
+      clientEmail: rules.optionalEmail('Client email'),
+      agentId: rules.optionalMongoId('Agent ID'),
+      propertyId: rules.optionalMongoId('Property ID'),
+      leadId: rules.optionalMongoId('Lead ID'),
+    });
 
     if (!scheduledAt) throw new AppError('scheduledAt is required', 400);
 
-    const parsedDate = new Date(scheduledAt);
-    if (isNaN(parsedDate.getTime())) throw new AppError('scheduledAt must be a valid date', 400);
+    const scheduled = new Date(scheduledAt);
+    if (isNaN(scheduled.getTime())) throw new AppError('scheduledAt must be a valid date', 400);
+    if (scheduled < new Date())
+      throw new AppError('Appointment cannot be scheduled in the past', 400);
 
-    if (type && !VALID_TYPES.includes(type)) {
-      throw new AppError(`type must be one of: ${VALID_TYPES.join(', ')}`, 400);
-    }
-
-    const icsToken = crypto.randomBytes(16).toString('hex');
-
-    const appointment = await prisma.appointment.create({
+    const appt = await prisma.appointment.create({
       data: {
-        type: type ?? 'viewing',
-        title: title ?? null,
-        agentId: agentId ?? userId,
-        clientId: clientId ?? null,
-        propertyId: propertyId ?? null,
-        scheduledAt: parsedDate,
-        durationMinutes: durationMinutes ? parseInt(durationMinutes) : 60,
-        location: location ?? null,
-        isVirtual: isVirtual ?? false,
-        meetingLink: meetingLink ?? null,
-        notes: notes ?? null,
-        icsToken,
-        createdBy: userId,
+        title: sanitizeString(title.trim()),
+        type: type || 'viewing',
+        status: 'scheduled',
+        scheduledAt: scheduled,
+        durationMins: durationMins
+          ? Math.min(480, Math.max(15, parseInt(String(durationMins), 10)))
+          : 60,
+        location: location ? sanitizeString(location) : null,
+        notes: notes ? sanitizeString(notes) : null,
+        clientName: clientName ? sanitizeString(clientName) : null,
+        clientEmail: clientEmail?.trim()?.toLowerCase() || null,
+        clientPhone: clientPhone?.trim() || null,
+        agentId: agentId || null,
+        propertyId: propertyId || null,
+        leadId: leadId || null,
+        createdById: req.user?.id || null,
       },
     });
 
-    logger.info('Appointment created', {
-      id: appointment.id,
-      type: appointment.type,
-      scheduledAt: appointment.scheduledAt,
-      createdBy: userId,
+    await prisma.activity.create({
+      data: {
+        type: 'appointment',
+        action: 'created',
+        description: `Appointment scheduled: ${appt.title} on ${scheduled.toLocaleDateString('en-AE')}`,
+        userId: req.user?.id || null,
+        leadId: leadId || null,
+      },
     });
 
-    res.status(201).json({ success: true, data: appointment });
-  }),
+    res.status(201).json({ success: true, data: appt });
+  })
 );
 
-// ─── PATCH /api/appointments/:id ──────────────────────────────────────────────
+// ─── PATCH /api/appointments/:id ─────────────────────────────────────────
 router.patch(
   '/:id',
-  asyncHandler(async (req: AuthRequest, res: Response) => {
-    const userId = req.user?.id;
-    if (!userId) throw new AppError('Authentication required', 401);
+  requirePermission('manage_appointments'),
+  asyncHandler(async (req: Request, res: Response) => {
+    const { id } = req.params;
+    validateIdParam(id, 'Appointment ID');
 
-    const existing = await prisma.appointment.findUnique({ where: { id: req.params.id } });
+    const existing = await prisma.appointment.findUnique({ where: { id } });
     if (!existing) throw new AppError('Appointment not found', 404);
-
-    const adminRoles = ['owner', 'admin', 'md'];
-    if (!adminRoles.includes(req.user?.role ?? '')) {
-      const parties = [existing.agentId, existing.clientId, existing.createdBy];
-      if (!parties.includes(userId)) {
-        throw new AppError('Access denied', 403);
-      }
-    }
 
     const {
-      type,
       title,
-      agentId,
-      clientId,
-      propertyId,
-      scheduledAt,
-      durationMinutes,
-      location,
-      isVirtual,
-      meetingLink,
+      type,
       status,
-      feedbackRating,
-      feedbackText,
-      outcome,
+      scheduledAt,
+      durationMins,
+      location,
       notes,
-      googleEventId,
+      cancelReason,
+      clientName,
+      clientEmail,
+      clientPhone,
+      agentId,
+      propertyId,
+      leadId,
     } = req.body;
 
-    if (status && !VALID_STATUSES.includes(status)) {
-      throw new AppError(`status must be one of: ${VALID_STATUSES.join(', ')}`, 400);
-    }
-
-    const updateData: Record<string, unknown> = {};
-    if (type !== undefined) updateData.type = type;
-    if (title !== undefined) updateData.title = title;
-    if (agentId !== undefined) updateData.agentId = agentId;
-    if (clientId !== undefined) updateData.clientId = clientId;
-    if (propertyId !== undefined) updateData.propertyId = propertyId;
-    if (scheduledAt !== undefined) updateData.scheduledAt = new Date(scheduledAt);
-    if (durationMinutes !== undefined) updateData.durationMinutes = parseInt(durationMinutes);
-    if (location !== undefined) updateData.location = location;
-    if (isVirtual !== undefined) updateData.isVirtual = isVirtual;
-    if (meetingLink !== undefined) updateData.meetingLink = meetingLink;
-    if (status !== undefined) updateData.status = status;
-    if (feedbackRating !== undefined) updateData.feedbackRating = parseInt(feedbackRating);
-    if (feedbackText !== undefined) updateData.feedbackText = feedbackText;
-    if (outcome !== undefined) updateData.outcome = outcome;
-    if (notes !== undefined) updateData.notes = notes;
-    if (googleEventId !== undefined) updateData.googleEventId = googleEventId;
-
-    const updated = await prisma.appointment.update({
-      where: { id: req.params.id },
-      data: updateData,
+    validate(req.body, {
+      title: rules.optionalStringWithMax('Title', 255),
+      type: rules.oneOf('Appointment type', [...VALID_TYPES]),
+      status: rules.oneOf('Status', [...VALID_STATUSES]),
+      location: rules.optionalStringWithMax('Location', 500),
+      notes: rules.optionalStringWithMax('Notes', 2000),
+      clientEmail: rules.optionalEmail('Client email'),
+      agentId: rules.optionalMongoId('Agent ID'),
+      propertyId: rules.optionalMongoId('Property ID'),
+      leadId: rules.optionalMongoId('Lead ID'),
     });
 
-    logger.info('Appointment updated', { id: req.params.id, status, updatedBy: userId });
+    const data: Record<string, unknown> = {};
+    if (title !== undefined) data.title = sanitizeString(String(title).trim());
+    if (type !== undefined) data.type = type;
+    if (status !== undefined) {
+      data.status = status;
+      if (status === 'completed' && !existing.completedAt) data.completedAt = new Date();
+    }
+    if (scheduledAt !== undefined) {
+      const d = new Date(scheduledAt);
+      if (isNaN(d.getTime())) throw new AppError('scheduledAt must be a valid date', 400);
+      data.scheduledAt = d;
+    }
+    if (durationMins !== undefined) {
+      data.durationMins = Math.min(480, Math.max(15, parseInt(String(durationMins), 10)));
+    }
+    if (location !== undefined) data.location = location ? sanitizeString(location) : null;
+    if (notes !== undefined) data.notes = notes ? sanitizeString(notes) : null;
+    if (cancelReason !== undefined)
+      data.cancelReason = cancelReason ? sanitizeString(cancelReason) : null;
+    if (clientName !== undefined) data.clientName = clientName ? sanitizeString(clientName) : null;
+    if (clientEmail !== undefined) data.clientEmail = clientEmail?.trim()?.toLowerCase() || null;
+    if (clientPhone !== undefined) data.clientPhone = clientPhone?.trim() || null;
+    if (agentId !== undefined) data.agentId = agentId || null;
+    if (propertyId !== undefined) data.propertyId = propertyId || null;
+    if (leadId !== undefined) data.leadId = leadId || null;
 
-    res.json({ success: true, data: updated });
-  }),
+    const updated = await prisma.appointment.update({ where: { id }, data });
+
+    const statusChanged = status !== undefined && status !== existing.status;
+    if (statusChanged || scheduledAt !== undefined) {
+      await prisma.activity.create({
+        data: {
+          type: 'appointment',
+          action: scheduledAt !== undefined ? 'rescheduled' : 'status_changed',
+          description:
+            scheduledAt !== undefined
+              ? `Appointment "${updated.title}" rescheduled to ${new Date(scheduledAt).toLocaleDateString('en-AE')}`
+              : `Appointment "${updated.title}" status: ${existing.status} → ${status}`,
+          userId: req.user?.id || null,
+          leadId: updated.leadId || null,
+        },
+      });
+    }
+
+    res.status(200).json({ success: true, data: updated });
+  })
 );
 
-// ─── DELETE /api/appointments/:id ─────────────────────────────────────────────
+// ─── DELETE /api/appointments/:id ────────────────────────────────────────
 router.delete(
   '/:id',
-  asyncHandler(async (req: AuthRequest, res: Response) => {
-    const userId = req.user?.id;
-    if (!userId) throw new AppError('Authentication required', 401);
+  requireRole('owner', 'manager', 'admin'),
+  asyncHandler(async (req: Request, res: Response) => {
+    const { id } = req.params;
+    validateIdParam(id, 'Appointment ID');
 
-    const existing = await prisma.appointment.findUnique({ where: { id: req.params.id } });
+    const existing = await prisma.appointment.findUnique({ where: { id } });
     if (!existing) throw new AppError('Appointment not found', 404);
 
-    if (existing.status === 'completed') {
-      throw new AppError('Cannot delete a completed appointment', 400);
-    }
+    await prisma.appointment.delete({ where: { id } });
 
-    const adminRoles = ['owner', 'admin', 'md'];
-    if (!adminRoles.includes(req.user?.role ?? '')) {
-      const parties = [existing.agentId, existing.createdBy];
-      if (!parties.includes(userId)) {
-        throw new AppError('Access denied', 403);
-      }
-    }
-
-    await prisma.appointment.delete({ where: { id: req.params.id } });
-
-    logger.info('Appointment deleted', { id: req.params.id, deletedBy: userId });
-
-    res.json({ success: true, message: 'Appointment deleted' });
-  }),
+    res.status(200).json({ success: true, message: `Appointment "${existing.title}" deleted` });
+  })
 );
 
 export default router;

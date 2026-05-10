@@ -1858,7 +1858,7 @@
   padding: 0 1.5rem;
   background: var(--card-bg, #ffffff);
   border-bottom: 2px solid var(--card-border, #e5e7eb);
-  box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
   position: sticky;
   top: 0;
   z-index: 100;
@@ -1916,7 +1916,7 @@
 }
 
 .portal-navbar__user:hover {
-  background: var(--card-bg-hover, rgba(0,0,0,0.05));
+  background: var(--card-bg-hover, rgba(0, 0, 0, 0.05));
 }
 
 .portal-navbar__avatar {
@@ -1950,9 +1950,9 @@
 }
 
 .portal-navbar__logout:hover {
-  border-color: #C41E3A;
-  color: #C41E3A;
-  background: rgba(196,30,58,0.05);
+  border-color: #c41e3a;
+  color: #c41e3a;
+  background: rgba(196, 30, 58, 0.05);
 }
 
 /* Responsive portal layout */
@@ -2016,20 +2016,20 @@
 
 .priority-badge.priority-high {
   background: rgba(196, 30, 58, 0.1);
-  color: #C41E3A;
+  color: #c41e3a;
   border: 1px solid rgba(196, 30, 58, 0.3);
 }
 
 /* Late fee notice in next-payment card */
 .late-fee-notice {
   font-size: 0.8rem;
-  color: #C41E3A;
+  color: #c41e3a;
   font-weight: 600;
   margin: 0.25rem 0 0;
   padding: 0.25rem 0.5rem;
   background: rgba(196, 30, 58, 0.08);
   border-radius: 4px;
-  border-left: 3px solid #C41E3A;
+  border-left: 3px solid #c41e3a;
 }
 
 /* Next payment amount emphasis */
@@ -2167,7 +2167,7 @@
 .profile-field input[aria-readonly='true'] {
   opacity: 0.55;
   cursor: not-allowed;
-  background: rgba(0,0,0,0.04);
+  background: rgba(0, 0, 0, 0.04);
 }
 
 .profile-field .field-hint {
@@ -2206,256 +2206,7 @@
 
 .profile-error-msg {
   font-size: 0.875rem;
-  color: #C41E3A;
+  color: #c41e3a;
   font-weight: 600;
   margin-top: 0.75rem;
-}
-
-/* ================================================ */
-/* Portal Mobile Responsiveness (Phase 32 — 375px) */
-/* ================================================ */
-
-/* Date-range filter row */
-.date-range-filter {
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 0.35rem;
-}
-
-/* ── 768px: tablet adjustments ── */
-@media (max-width: 768px) {
-  /* Summary KPI grid: 2-col on tablet */
-  .summary-grid {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 0.75rem;
-  }
-
-  /* Tab controls stack vertically */
-  .tab-controls {
-    flex-direction: column;
-    align-items: stretch;
-    gap: 0.5rem;
-  }
-  .tab-controls input,
-  .tab-controls select {
-    width: 100%;
-    min-width: unset;
-  }
-
-  /* Date range filter: wrap on tablet */
-  .date-range-filter {
-    width: 100%;
-  }
-  .date-range-filter input[type='date'] {
-    flex: 1;
-    min-width: 120px;
-  }
-
-  /* Quick links: 2 cols */
-  .quick-links-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  /* Payment rows: stack */
-  .payment-row {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 0.4rem;
-    padding: 0.75rem;
-  }
-  .payment-row > p,
-  .payment-row > span {
-    align-self: flex-end;
-  }
-
-  /* Offer action buttons */
-  .offer-actions {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-    margin-top: 0.5rem;
-  }
-
-  /* Modal: near full-width */
-  .modal-content--wide {
-    width: 95%;
-    max-width: unset;
-  }
-
-  /* Tab nav: horizontal scroll */
-  .portal-tab-navigation {
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-    scrollbar-width: none;
-  }
-  .portal-tab-navigation::-webkit-scrollbar {
-    display: none;
-  }
-  .portal-tab {
-    white-space: nowrap;
-    flex-shrink: 0;
-  }
-
-  /* Income rows: stack */
-  .income-row {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 0.5rem;
-  }
-  .income-property-info,
-  .income-breakdown {
-    width: 100%;
-  }
-
-  /* Detail grid: single col */
-  .detail-grid {
-    grid-template-columns: 1fr;
-    gap: 0.75rem;
-  }
-
-  /* Profile: full width */
-  .portal-profile-tab {
-    max-width: 100%;
-  }
-}
-
-/* ── 430px / 375px: phone adjustments ── */
-@media (max-width: 430px) {
-  /* Tighter main padding */
-  .portal-layout__main {
-    padding: 0.75rem;
-  }
-
-  /* Summary KPI: single col on phone */
-  .summary-grid {
-    grid-template-columns: 1fr;
-    gap: 0.5rem;
-  }
-  .summary-card {
-    padding: 0.75rem 1rem;
-  }
-  .summary-card h4 {
-    font-size: 0.75rem;
-  }
-  .summary-card p {
-    font-size: 1.1rem;
-  }
-
-  /* Quick links: 2 cols, touch-friendly */
-  .quick-links-grid {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 0.5rem;
-  }
-  .quick-link-tile {
-    min-height: 44px;
-    padding: 0.75rem 0.5rem;
-    font-size: 0.8rem;
-  }
-  .quick-link-icon {
-    font-size: 1.1rem;
-  }
-
-  /* Tab nav: compact */
-  .portal-tab-navigation {
-    gap: 0.15rem;
-    padding-bottom: 0.25rem;
-  }
-  .portal-tab {
-    padding: 0.5rem 0.6rem;
-    font-size: 0.75rem;
-    min-height: 44px;
-    min-width: 44px;
-  }
-
-  /* Payment rows: touch-friendly */
-  .payment-row {
-    padding: 0.875rem 0.5rem;
-    min-height: 44px;
-  }
-
-  /* Tab controls: full-width stacked */
-  .tab-controls {
-    gap: 0.4rem;
-  }
-  .tab-controls input,
-  .tab-controls select {
-    font-size: 0.875rem;
-    padding: 0.5rem 0.625rem;
-    min-height: 44px;
-  }
-
-  /* Date range: vertical stack on phone */
-  .date-range-filter {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 0.3rem;
-  }
-  .date-range-filter label {
-    font-size: 0.75rem;
-  }
-  .date-range-filter input[type='date'] {
-    width: 100%;
-    min-height: 44px;
-    font-size: 0.875rem;
-  }
-
-  /* Touch-friendly buttons */
-  .btn-primary,
-  .btn-secondary,
-  .btn-danger {
-    min-height: 44px;
-    font-size: 0.875rem;
-  }
-
-  /* Maintenance form inputs */
-  .maintenance-form input,
-  .maintenance-form select,
-  .maintenance-form textarea {
-    font-size: 0.875rem;
-    min-height: 44px;
-  }
-
-  /* Modal: bottom-sheet on phone */
-  .modal-content,
-  .modal-content--wide {
-    width: 100%;
-    max-width: 100%;
-    margin: 0;
-    border-radius: 16px 16px 0 0;
-    max-height: 90vh;
-    overflow-y: auto;
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-  }
-
-  /* Offer action buttons: full-width row */
-  .offer-actions {
-    width: 100%;
-  }
-  .offer-actions button {
-    flex: 1;
-    min-height: 44px;
-  }
-
-  /* Income breakdown: smaller text */
-  .income-breakdown p {
-    font-size: 0.85rem;
-  }
-
-  /* Tenant detail modal tabs */
-  .modal-tabs .portal-tab {
-    font-size: 0.75rem;
-    padding: 0.4rem 0.5rem;
-  }
-
-  /* Section headings */
-  .tab-header h3 {
-    font-size: 1.1rem;
-  }
-  .tab-header p {
-    font-size: 0.8rem;
-  }
 }

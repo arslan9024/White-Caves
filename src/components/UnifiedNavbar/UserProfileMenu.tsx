@@ -56,7 +56,7 @@ const DropdownMenu = styled.div<{ $isOpen: boolean }>`
   box-shadow: ${theme.shadows.lg};
   min-width: 240px;
   z-index: ${theme.zIndex.dropdown};
-  display: ${(props) => (props.$isOpen ? 'block' : 'none')};
+  display: ${props => (props.$isOpen ? 'block' : 'none')};
   overflow: hidden;
 `;
 
@@ -181,12 +181,7 @@ export const UserProfileMenu: React.FC<UserProfileMenuProps> = ({
         )}
       </DropdownMenu>
 
-      {isOpen && (
-        <Backdrop
-          onClick={() => setIsOpen(false)}
-          role="presentation"
-        />
-      )}
+      {isOpen && <Backdrop onClick={() => setIsOpen(false)} role="presentation" />}
     </ProfileContainer>
   );
 };

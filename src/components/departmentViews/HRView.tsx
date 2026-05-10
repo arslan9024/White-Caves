@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 import React from 'react';
 import BaseDepartmentView from './BaseDepartmentView';
 import { getDepartmentConfig } from '../../config/departmentViewConfigs';
@@ -12,26 +11,24 @@ import { DataCard } from '../shared/dashboard';
 interface HRViewProps {
   serviceName?: string;
   subitemId?: string;
-  departmentData?: any;
+  departmentData?: Record<string, unknown>;
 }
 
-const HRView: React.FC<HRViewProps> = ({ serviceName = 'employee-management', subitemId, departmentData }) => {
+const HRView: React.FC<HRViewProps> = ({
+  serviceName = 'employee-management',
+  subitemId,
+  departmentData,
+}) => {
   const config = getDepartmentConfig('HR')!;
 
-  const renderContent = (data: any) => {
+  const renderContent = (_data: Record<string, unknown>) => {
     if (!subitemId && serviceName === 'employee-management') {
       return (
         <>
-          <DataCard 
-            title="Employee Directory"
-            subtitle="All employees and their information"
-          >
+          <DataCard title="Employee Directory" subtitle="All employees and their information">
             Employees: {JSON.stringify(data?.employees?.length || 0)} items
           </DataCard>
-          <DataCard 
-            title="Open Positions"
-            subtitle="Active job openings and applications"
-          >
+          <DataCard title="Open Positions" subtitle="Active job openings and applications">
             Positions: {JSON.stringify(data?.openPositions?.length || 0)} items
           </DataCard>
         </>
@@ -85,4 +82,3 @@ const HRView: React.FC<HRViewProps> = ({ serviceName = 'employee-management', su
 };
 
 export default HRView;
-

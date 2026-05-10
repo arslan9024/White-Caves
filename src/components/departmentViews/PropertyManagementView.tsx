@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 import React from 'react';
 import BaseDepartmentView from './BaseDepartmentView';
 import { getDepartmentConfig } from '../../config/departmentViewConfigs';
@@ -12,30 +11,24 @@ import { DataCard } from '../shared/dashboard';
 interface PropertyManagementViewProps {
   serviceName?: string;
   subitemId?: string;
-  departmentData?: any;
+  departmentData?: Record<string, unknown>;
 }
 
-const PropertyManagementView: React.FC<PropertyManagementViewProps> = ({ 
-  serviceName = 'property-portfolio', 
+const PropertyManagementView: React.FC<PropertyManagementViewProps> = ({
+  serviceName = 'property-portfolio',
   subitemId,
-  departmentData 
+  departmentData,
 }) => {
   const config = getDepartmentConfig('PROPERTY_MANAGEMENT')!;
 
-  const renderContent = (data: any) => {
+  const renderContent = (data: Record<string, unknown>) => {
     if (!subitemId && serviceName === 'property-portfolio') {
       return (
         <>
-          <DataCard 
-            title="Property Portfolio"
-            subtitle="All managed properties"
-          >
+          <DataCard title="Property Portfolio" subtitle="All managed properties">
             Properties: {JSON.stringify(data?.properties?.length || 0)} items
           </DataCard>
-          <DataCard 
-            title="Maintenance Schedule"
-            subtitle="Upcoming and in-progress maintenance"
-          >
+          <DataCard title="Maintenance Schedule" subtitle="Upcoming and in-progress maintenance">
             Maintenance: {JSON.stringify(data?.maintenance?.length || 0)} items
           </DataCard>
         </>
@@ -89,4 +82,3 @@ const PropertyManagementView: React.FC<PropertyManagementViewProps> = ({
 };
 
 export default PropertyManagementView;
-

@@ -1,60 +1,70 @@
 /**
  * Contracts API Routes
- * ─────────────────────
- * Full CRUD for property contracts (tenancy, sale, MOU, SPA, NDA).
+ * ─────────────────────────────────────────────────────────────────────────
+ * Full CRUD for White Caves contract records (sale, rental, MOU, Form F, etc.)
  *
- * GET    /api/contracts              — List contracts (paginated, filtered)
- * GET    /api/contracts/:id          — Get single contract
- * POST   /api/contracts              — Create a contract
- * PATCH  /api/contracts/:id          — Update contract (status, dates, signers…)
- * DELETE /api/contracts/:id          — Delete a draft contract
- * POST   /api/contracts/:id/sign     — Record a party's signature
+ * GET    /api/contracts           — List contracts (filtered, paginated)
+ * GET    /api/contracts/:id       — Get single contract
+ * POST   /api/contracts           — Create contract
+ * PATCH  /api/contracts/:id       — Update contract
+ * DELETE /api/contracts/:id       — Delete contract (admin only)
  */
 
 import { Router, Response } from 'express';
-import crypto from 'crypto';
+import type { Request } from 'express';
 import { asyncHandler, AppError } from '../middleware/errorHandler.js';
-import { AuthRequest } from '../middleware/auth.js';
-import { requirePermission } from '../middleware/rbac.js';
 import { prisma } from '../database.js';
-import logger from '../utils/logger.js';
+import { sanitizeString } from '../utils/sanitize.js';
+import { validate, rules, validateIdParam } from '../utils/validate.js';
+import { parsePagination } from '../config/pagination.js';
+import { requirePermission, requireRole } from '../middleware/rbac.js';
 
 const router = Router();
 
+const VALID_CONTRACT_TYPES = ['sale', 'rental', 'mou', 'form_f', 'listing', 'management'] as const;
+const VALID_CONTRACT_STATUSES = [
+  'draft',
+  'pending_signature',
+  'active',
+  'expired',
+  'terminated',
+  'cancelled',
+] as const;
+
 function generateContractNumber(): string {
   const year = new Date().getFullYear();
-  const random = Math.floor(Math.random() * 10000).toString().padStart(4, '0');
-  return `WC-${year}-${random}`;
+  const random = Math.floor(Math.random() * 100000)
+    .toString()
+    .padStart(5, '0');
+  return `WC-C-${year}-${random}`;
 }
 
-// ─── GET /api/contracts ───────────────────────────────────────────────────────
+// ─── GET /api/contracts ──────────────────────────────────────────────────
 router.get(
   '/',
   requirePermission('view_contracts'),
-  asyncHandler(async (req: AuthRequest, res: Response) => {
-    const userId = req.user?.id;
-    if (!userId) throw new AppError('Authentication required', 401);
-
-    const page = Math.max(1, parseInt(req.query.page as string) || 1);
-    const pageSize = Math.min(50, Math.max(1, parseInt(req.query.pageSize as string) || 20));
-    const status = req.query.status as string | undefined;
-    const type = req.query.type as string | undefined;
-    const propertyId = req.query.propertyId as string | undefined;
+  asyncHandler(async (req: Request, res: Response) => {
+    const { page, limit, skip } = parsePagination(req.query);
+    const { status, type, propertyId, leadId, search } = req.query as Record<string, string>;
 
     const where: Record<string, unknown> = {};
-    if (status) where.status = status;
-    if (type) where.type = type;
+    if (
+      status &&
+      VALID_CONTRACT_STATUSES.includes(status as (typeof VALID_CONTRACT_STATUSES)[number])
+    ) {
+      where.status = status;
+    }
+    if (type && VALID_CONTRACT_TYPES.includes(type as (typeof VALID_CONTRACT_TYPES)[number])) {
+      where.type = type;
+    }
     if (propertyId) where.propertyId = propertyId;
-
-    // Non-admins only see contracts they are party to or created
-    const role = req.user?.role;
-    const adminRoles = ['owner', 'admin', 'md'];
-    if (!adminRoles.includes(role ?? '')) {
+    if (leadId) where.leadId = leadId;
+    if (search) {
+      const s = sanitizeString(String(search)).trim().slice(0, 120);
       where.OR = [
-        { createdBy: userId },
-        { agentId: userId },
-        { buyerId: userId },
-        { sellerId: userId },
+        { title: { contains: s, mode: 'insensitive' } },
+        { contractNumber: { contains: s, mode: 'insensitive' } },
+        { description: { contains: s, mode: 'insensitive' } },
       ];
     }
 
@@ -62,257 +72,215 @@ router.get(
       prisma.contract.findMany({
         where,
         orderBy: { createdAt: 'desc' },
-        skip: (page - 1) * pageSize,
-        take: pageSize,
+        skip,
+        take: limit,
       }),
       prisma.contract.count({ where }),
     ]);
 
-    res.json({
+    res.status(200).json({
       success: true,
       data: contracts,
-      pagination: { page, pageSize, total, totalPages: Math.ceil(total / pageSize) },
+      pagination: { page, pageSize: limit, total, totalPages: Math.ceil(total / limit) },
     });
-  }),
+  })
 );
 
-// ─── GET /api/contracts/:id ───────────────────────────────────────────────────
+// ─── GET /api/contracts/:id ──────────────────────────────────────────────
 router.get(
   '/:id',
   requirePermission('view_contracts'),
-  asyncHandler(async (req: AuthRequest, res: Response) => {
-    const userId = req.user?.id;
-    if (!userId) throw new AppError('Authentication required', 401);
-
-    const contract = await prisma.contract.findUnique({
-      where: { id: req.params.id },
-    });
-
+  asyncHandler(async (req: Request, res: Response) => {
+    validateIdParam(req.params.id, 'Contract ID');
+    const contract = await prisma.contract.findUnique({ where: { id: req.params.id } });
     if (!contract) throw new AppError('Contract not found', 404);
-
-    // Verify access
-    const adminRoles = ['owner', 'admin', 'md'];
-    if (!adminRoles.includes(req.user?.role ?? '')) {
-      const parties = [contract.createdBy, contract.agentId, contract.buyerId, contract.sellerId];
-      if (!parties.includes(userId)) {
-        throw new AppError('Access denied', 403);
-      }
-    }
-
-    res.json({ success: true, data: contract });
-  }),
+    res.status(200).json({ success: true, data: contract });
+  })
 );
 
-// ─── POST /api/contracts ──────────────────────────────────────────────────────
+// ─── POST /api/contracts ─────────────────────────────────────────────────
 router.post(
   '/',
   requirePermission('create_contracts'),
-  asyncHandler(async (req: AuthRequest, res: Response) => {
-    const userId = req.user?.id;
-    if (!userId) throw new AppError('Authentication required', 401);
-
+  asyncHandler(async (req: Request, res: Response) => {
     const {
-      type,
       title,
+      type,
+      status,
       description,
-      propertyId,
-      buyerId,
-      sellerId,
-      agentId,
-      totalValue,
+      value,
       currency,
       startDate,
       endDate,
-      templateKey,
-      notes,
-      tags,
+      parties,
+      terms,
+      attachmentUrls,
+      propertyId,
+      leadId,
+      transactionId,
+      assignedToId,
       metadata,
     } = req.body;
 
-    if (!type) throw new AppError('Contract type is required', 400);
-    if (!title) throw new AppError('Contract title is required', 400);
-
-    const contractNumber = generateContractNumber();
-    const signatureToken = crypto.randomBytes(32).toString('hex');
+    validate(req.body, {
+      title: rules.requiredStringWithMax('Title', 255),
+      type: rules.oneOf('Contract type', [...VALID_CONTRACT_TYPES]),
+      status: rules.oneOf('Status', [...VALID_CONTRACT_STATUSES]),
+      description: rules.optionalStringWithMax('Description', 2000),
+      value: rules.optionalPositiveNumber('Value'),
+      propertyId: rules.optionalMongoId('Property ID'),
+      leadId: rules.optionalMongoId('Lead ID'),
+      assignedToId: rules.optionalMongoId('Assigned agent ID'),
+    });
 
     const contract = await prisma.contract.create({
       data: {
-        contractNumber,
-        type,
-        title,
-        description: description ?? null,
-        propertyId: propertyId ?? null,
-        buyerId: buyerId ?? null,
-        sellerId: sellerId ?? null,
-        agentId: agentId ?? userId,
-        totalValue: totalValue !== undefined ? parseFloat(totalValue) : null,
-        currency: currency ?? 'AED',
+        contractNumber: generateContractNumber(),
+        title: sanitizeString(title.trim()),
+        type: type || 'sale',
+        status: status || 'draft',
+        description: description ? sanitizeString(description) : null,
+        value: value ? parseFloat(value) : null,
+        currency: currency || 'AED',
         startDate: startDate ? new Date(startDate) : null,
         endDate: endDate ? new Date(endDate) : null,
-        templateKey: templateKey ?? null,
-        notes: notes ?? null,
-        tags: tags ?? [],
-        metadata: metadata ?? null,
-        signatureToken,
-        createdBy: userId,
+        parties: parties || null,
+        terms: terms ? sanitizeString(terms) : null,
+        attachmentUrls: Array.isArray(attachmentUrls) ? attachmentUrls : [],
+        propertyId: propertyId || null,
+        leadId: leadId || null,
+        transactionId: transactionId || null,
+        assignedToId: assignedToId || null,
+        metadata: metadata || null,
+        createdById: req.user?.id || null,
       },
     });
 
-    logger.info('Contract created', { contractNumber, type, createdBy: userId });
+    await prisma.activity.create({
+      data: {
+        type: 'contract',
+        action: 'created',
+        description: `Contract created: ${contract.title} (${contract.contractNumber})`,
+        userId: req.user?.id || null,
+      },
+    });
 
     res.status(201).json({ success: true, data: contract });
-  }),
+  })
 );
 
-// ─── PATCH /api/contracts/:id ─────────────────────────────────────────────────
+// ─── PATCH /api/contracts/:id ────────────────────────────────────────────
 router.patch(
   '/:id',
   requirePermission('create_contracts'),
-  asyncHandler(async (req: AuthRequest, res: Response) => {
-    const userId = req.user?.id;
-    if (!userId) throw new AppError('Authentication required', 401);
+  asyncHandler(async (req: Request, res: Response) => {
+    const { id } = req.params;
+    validateIdParam(id, 'Contract ID');
 
-    const existing = await prisma.contract.findUnique({ where: { id: req.params.id } });
+    const existing = await prisma.contract.findUnique({ where: { id } });
     if (!existing) throw new AppError('Contract not found', 404);
 
-    // Only admins or creator/agent can edit
-    const adminRoles = ['owner', 'admin', 'md'];
-    if (!adminRoles.includes(req.user?.role ?? '')) {
-      if (existing.createdBy !== userId && existing.agentId !== userId) {
-        throw new AppError('Access denied', 403);
-      }
-    }
-
     const {
-      type,
       title,
-      description,
+      type,
       status,
-      propertyId,
-      buyerId,
-      sellerId,
-      agentId,
-      totalValue,
+      description,
+      value,
       currency,
       startDate,
       endDate,
       signedAt,
-      documentUrl,
-      templateKey,
-      notes,
-      tags,
+      terminatedAt,
+      terminationReason,
+      parties,
+      terms,
+      attachmentUrls,
+      propertyId,
+      leadId,
+      transactionId,
+      assignedToId,
       metadata,
     } = req.body;
 
-    const updateData: Record<string, unknown> = {};
-    if (type !== undefined) updateData.type = type;
-    if (title !== undefined) updateData.title = title;
-    if (description !== undefined) updateData.description = description;
-    if (status !== undefined) updateData.status = status;
-    if (propertyId !== undefined) updateData.propertyId = propertyId;
-    if (buyerId !== undefined) updateData.buyerId = buyerId;
-    if (sellerId !== undefined) updateData.sellerId = sellerId;
-    if (agentId !== undefined) updateData.agentId = agentId;
-    if (totalValue !== undefined) updateData.totalValue = parseFloat(totalValue);
-    if (currency !== undefined) updateData.currency = currency;
-    if (startDate !== undefined) updateData.startDate = new Date(startDate);
-    if (endDate !== undefined) updateData.endDate = new Date(endDate);
-    if (signedAt !== undefined) updateData.signedAt = new Date(signedAt);
-    if (documentUrl !== undefined) updateData.documentUrl = documentUrl;
-    if (templateKey !== undefined) updateData.templateKey = templateKey;
-    if (notes !== undefined) updateData.notes = notes;
-    if (tags !== undefined) updateData.tags = tags;
-    if (metadata !== undefined) updateData.metadata = metadata;
-
-    const updated = await prisma.contract.update({
-      where: { id: req.params.id },
-      data: updateData,
+    validate(req.body, {
+      title: rules.optionalStringWithMax('Title', 255),
+      type: rules.oneOf('Contract type', [...VALID_CONTRACT_TYPES]),
+      status: rules.oneOf('Status', [...VALID_CONTRACT_STATUSES]),
+      description: rules.optionalStringWithMax('Description', 2000),
+      value: rules.optionalPositiveNumber('Value'),
+      propertyId: rules.optionalMongoId('Property ID'),
+      leadId: rules.optionalMongoId('Lead ID'),
+      assignedToId: rules.optionalMongoId('Assigned agent ID'),
     });
 
-    logger.info('Contract updated', { id: req.params.id, status, updatedBy: userId });
+    const data: Record<string, unknown> = {};
+    if (title !== undefined) data.title = sanitizeString(String(title).trim());
+    if (type !== undefined) data.type = type;
+    if (status !== undefined) data.status = status;
+    if (description !== undefined)
+      data.description = description ? sanitizeString(description) : null;
+    if (value !== undefined) data.value = value ? parseFloat(value) : null;
+    if (currency !== undefined) data.currency = currency;
+    if (startDate !== undefined) data.startDate = startDate ? new Date(startDate) : null;
+    if (endDate !== undefined) data.endDate = endDate ? new Date(endDate) : null;
+    if (signedAt !== undefined) data.signedAt = signedAt ? new Date(signedAt) : null;
+    if (terminatedAt !== undefined)
+      data.terminatedAt = terminatedAt ? new Date(terminatedAt) : null;
+    if (terminationReason !== undefined)
+      data.terminationReason = terminationReason ? sanitizeString(terminationReason) : null;
+    if (parties !== undefined) data.parties = parties;
+    if (terms !== undefined) data.terms = terms ? sanitizeString(terms) : null;
+    if (attachmentUrls !== undefined)
+      data.attachmentUrls = Array.isArray(attachmentUrls) ? attachmentUrls : [];
+    if (propertyId !== undefined) data.propertyId = propertyId || null;
+    if (leadId !== undefined) data.leadId = leadId || null;
+    if (transactionId !== undefined) data.transactionId = transactionId || null;
+    if (assignedToId !== undefined) data.assignedToId = assignedToId || null;
+    if (metadata !== undefined) data.metadata = metadata;
 
-    res.json({ success: true, data: updated });
-  }),
-);
+    const updated = await prisma.contract.update({ where: { id }, data });
 
-// ─── DELETE /api/contracts/:id ────────────────────────────────────────────────
-router.delete(
-  '/:id',
-  requirePermission('create_contracts'),
-  asyncHandler(async (req: AuthRequest, res: Response) => {
-    const userId = req.user?.id;
-    if (!userId) throw new AppError('Authentication required', 401);
-
-    const existing = await prisma.contract.findUnique({ where: { id: req.params.id } });
-    if (!existing) throw new AppError('Contract not found', 404);
-
-    if (existing.status !== 'draft') {
-      throw new AppError('Only draft contracts can be deleted', 400);
-    }
-
-    const adminRoles = ['owner', 'admin', 'md'];
-    if (!adminRoles.includes(req.user?.role ?? '')) {
-      if (existing.createdBy !== userId) {
-        throw new AppError('Access denied', 403);
-      }
-    }
-
-    await prisma.contract.delete({ where: { id: req.params.id } });
-
-    logger.info('Contract deleted', { id: req.params.id, deletedBy: userId });
-
-    res.json({ success: true, message: 'Contract deleted' });
-  }),
-);
-
-// ─── POST /api/contracts/:id/sign ────────────────────────────────────────────
-router.post(
-  '/:id/sign',
-  asyncHandler(async (req: AuthRequest, res: Response) => {
-    const userId = req.user?.id;
-    if (!userId) throw new AppError('Authentication required', 401);
-
-    const { party, token } = req.body; // party: 'buyer' | 'seller' | 'agent'
-
-    const contract = await prisma.contract.findUnique({ where: { id: req.params.id } });
-    if (!contract) throw new AppError('Contract not found', 404);
-
-    // Validate signature token if provided
-    if (token && token !== contract.signatureToken) {
-      throw new AppError('Invalid signature token', 400);
-    }
-
-    const signerMap: Record<string, string> = {
-      buyer: 'signedByBuyer',
-      seller: 'signedBySeller',
-      agent: 'signedByAgent',
-    };
-
-    if (!party || !signerMap[party]) {
-      throw new AppError('party must be buyer, seller, or agent', 400);
-    }
-
-    const updated = await prisma.contract.update({
-      where: { id: req.params.id },
+    const statusChanged = status !== undefined && status !== existing.status;
+    await prisma.activity.create({
       data: {
-        [signerMap[party]]: true,
-        signedAt: new Date(),
-        status: 'pending_signature',
+        type: 'contract',
+        action: statusChanged ? 'status_changed' : 'updated',
+        description: statusChanged
+          ? `Contract "${updated.title}" status: ${existing.status} → ${status}`
+          : `Contract "${updated.title}" updated`,
+        userId: req.user?.id || null,
+        metadata: statusChanged ? { oldStatus: existing.status, newStatus: status } : undefined,
       },
     });
 
-    // If all parties signed → activate
-    if (updated.signedByBuyer && updated.signedBySeller && updated.signedByAgent) {
-      await prisma.contract.update({
-        where: { id: req.params.id },
-        data: { status: 'active' },
-      });
-    }
+    res.status(200).json({ success: true, data: updated });
+  })
+);
 
-    logger.info('Contract signed', { id: req.params.id, party, userId });
+// ─── DELETE /api/contracts/:id ───────────────────────────────────────────
+router.delete(
+  '/:id',
+  requireRole('owner', 'manager', 'admin'),
+  asyncHandler(async (req: Request, res: Response) => {
+    const { id } = req.params;
+    validateIdParam(id, 'Contract ID');
 
-    res.json({ success: true, data: updated });
-  }),
+    const existing = await prisma.contract.findUnique({ where: { id } });
+    if (!existing) throw new AppError('Contract not found', 404);
+
+    await prisma.contract.delete({ where: { id } });
+
+    await prisma.activity.create({
+      data: {
+        type: 'contract',
+        action: 'deleted',
+        description: `Contract deleted: ${existing.title} (${existing.contractNumber}) by ${req.user?.email}`,
+        userId: req.user?.id || null,
+      },
+    });
+
+    res.status(200).json({ success: true, message: `Contract "${existing.title}" deleted` });
+  })
 );
 
 export default router;

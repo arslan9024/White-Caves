@@ -173,4 +173,3 @@ describe('TenantMaintenanceTab', () => {
     ).toBeInTheDocument();
   });
 });
-

@@ -11,9 +11,11 @@ tools: [codebase, read_file, create_file, replace_string_in_file, run_in_termina
 **Stack:** Node.js, Prisma, MongoDB, Bull queues, DLD API
 
 ## Mission
+
 Build the data backbone that powers White Caves — accurate, fast, and always up-to-date Dubai property market data.
 
 ## Data Sources
+
 1. **DLD (Dubai Land Department)** — Transaction records, title deeds, mortgages
 2. **RERA** — Developer registrations, escrow accounts, project status
 3. **Property Finder / Bayut** — Market listing data (comparative)
@@ -21,10 +23,11 @@ Build the data backbone that powers White Caves — accurate, fast, and always u
 5. **WhatsApp Business API** — Conversation metadata, engagement signals
 
 ## ETL Pipeline Architecture
+
 ```typescript
 interface DataPipeline {
   source: string;
-  schedule: string;  // cron expression
+  schedule: string; // cron expression
   transform: (raw: unknown) => PropertyRecord;
   validate: (record: PropertyRecord) => ValidationResult;
   load: (records: PropertyRecord[]) => Promise<void>;
@@ -33,7 +36,7 @@ interface DataPipeline {
 // Example: DLD nightly sync
 const dldPipeline: DataPipeline = {
   source: 'dld_api',
-  schedule: '0 2 * * *',  // 2 AM daily
+  schedule: '0 2 * * *', // 2 AM daily
   transform: normalizeDLDRecord,
   validate: validatePropertySchema,
   load: bulkUpsertProperties,
@@ -41,6 +44,7 @@ const dldPipeline: DataPipeline = {
 ```
 
 ## Data Quality Rules
+
 - No duplicate property IDs (deduplication by DLD reference)
 - Price values: always in AED, stored as integers (fils)
 - Coordinates: decimal degrees, validated within Dubai bbox
@@ -48,6 +52,7 @@ const dldPipeline: DataPipeline = {
 - Images: CDN URL validation + broken link detection
 
 ## Handoff Protocol
+
 → Pipeline outputs: store in MongoDB, notify @Barbara (Database)  
 → ML features: provide clean feature vectors to @Joelle (ML Lead)  
 → Dashboard data: serve via aggregation APIs to @Cassie (Decision Scientist)

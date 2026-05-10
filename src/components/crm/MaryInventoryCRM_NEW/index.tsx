@@ -1,5 +1,6 @@
 import React, { Suspense, lazy, useState } from 'react';
 import SuspenseLoader from '../../common/SuspenseLoader';
+import AssistantLifecycleTab from '../shared/AssistantLifecycleTab';
 import './MaryInventoryCRM.css';
 
 // Lazy-load all tabs
@@ -19,35 +20,35 @@ export default function MaryInventoryCRM() {
       label: '+ Acquire',
       description: 'Add new property to inventory',
       component: MaryAcquisitionTab,
-      order: 0
+      order: 0,
     },
     {
       id: 'pipeline',
       label: 'Pipeline',
       description: '5-stage inventory lifecycle & document compliance',
       component: MaryPipelineTab,
-      order: 1
+      order: 1,
     },
     {
       id: 'inventory',
       label: 'Inventory',
       description: 'Manage properties and owners',
       component: MaryInventoryTab,
-      order: 2
+      order: 2,
     },
     {
       id: 'datatools',
       label: 'Data Tools',
       description: 'Data collection & extraction',
       component: MaryDataToolsTab,
-      order: 3
+      order: 3,
     },
     {
       id: 'features',
       label: 'Features',
       description: 'Available capabilities',
       component: MaryFeaturesTab,
-      order: 4
+      order: 4,
     },
     {
       id: 'details',
@@ -55,8 +56,15 @@ export default function MaryInventoryCRM() {
       description: 'Detailed property information',
       component: MaryDetailsTab,
       order: 4,
-      hidden: true  // This tab is shown via modal, not main nav
-    }
+      hidden: true, // This tab is shown via modal, not main nav
+    },
+    {
+      id: 'lifecycle',
+      label: 'Lifecycle',
+      description: 'Task lifecycle board',
+      component: null,
+      order: 5,
+    },
   ];
 
   const visibleTabs = tabs.filter(t => !t.hidden);
@@ -81,7 +89,11 @@ export default function MaryInventoryCRM() {
       {/* Tab Content with Suspense */}
       <div className="mary-tabs-content">
         <Suspense fallback={<SuspenseLoader />}>
-          {ActiveTabComponent && <ActiveTabComponent />}
+          {activeTab === 'lifecycle' ? (
+            <AssistantLifecycleTab assistantId="mary" color="#3B82F6" assistantName="Mary" />
+          ) : (
+            ActiveTabComponent && <ActiveTabComponent />
+          )}
         </Suspense>
       </div>
     </div>

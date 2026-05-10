@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any, security/detect-non-literal-fs-filename */
 import { prisma } from '../database.js';
 import logger from '../utils/logger.js';
 import PDFDocument from 'pdfkit';
@@ -13,7 +12,7 @@ const uploadsDir = path.join(__dirname, '../public/uploads');
 export const generateInvoice = async (propertyId: string, userId?: string) => {
   try {
     const property = await prisma.property.findUnique({
-      where: { id: propertyId },
+      where: { id: propertyId }
     });
 
     if (!property) throw new Error('Property not found');
@@ -29,7 +28,7 @@ export const generateInvoice = async (propertyId: string, userId?: string) => {
     return new Promise((resolve, reject) => {
       const doc = new PDFDocument({ margin: 50 });
       const stream = fs.createWriteStream(filePath);
-
+      
       doc.pipe(stream);
 
       // PDF Content
@@ -68,15 +67,15 @@ export const generateInvoice = async (propertyId: string, userId?: string) => {
             action: 'created',
             description: `Tax Invoice ${invoiceNumber} generated for commission on ${property.unitNumber || property.title}`,
             userId: userId || null,
-            metadata: { fileUrl: `/uploads/${fileName}` },
-          },
+            metadata: { fileUrl: `/uploads/${fileName}` }
+          }
         });
-
+        
         // Save to property documents
         await prisma.property.update({
           where: { id: property.id },
-          data: { documents: { push: `/uploads/${fileName}` } },
-        } as any);
+          data: { documents: { push: `/uploads/${fileName}` } }
+        });
 
         resolve(true);
       });

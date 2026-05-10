@@ -58,48 +58,17 @@ const Badge = styled.span`
   font-size: 0.875rem;
 `;
 
-const ToastBanner = styled.div<{ $type: 'success' | 'error' }>`
-  padding: 12px 16px;
-  border-radius: 6px;
-  font-size: 14px;
-  font-weight: 500;
-  margin-bottom: ${theme.spacing.md};
-  ${({ $type }) =>
-    $type === 'success'
-      ? 'background:#e8f5e9; border-left:4px solid #4caf50; color:#2e7d32;'
-      : 'background:#fdecea; border-left:4px solid #f44336; color:#b71c1c;'}
-`;
-
 export const LeasingAcquisition: React.FC = () => {
-  interface LeasingProperty {
-    id: string;
-    inventoryStage: string;
-    title: string;
-    location: string;
-    price: string | number;
-    status?: string;
-    unitNumber?: string;
-    titleDeedMissing?: boolean;
-    landlordPassportMissing?: boolean;
-    ejariMissing?: boolean;
-    [key: string]: unknown;
-  }
-
-  const [properties, setProperties] = useState<LeasingProperty[]>([]);
-  const [selectedProperty, setSelectedProperty] = useState<LeasingProperty | null>(null);
-  const [signingProperty, setSigningProperty] = useState<LeasingProperty | null>(null);
-  const [ejariProperty, setEjariProperty] = useState<LeasingProperty | null>(null);
-  const [toast, setToast] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
-
-  const showToast = (type: 'success' | 'error', text: string) => {
-    setToast({ type, text });
-  };
+  const [properties, setProperties] = useState<any[]>([]);
+  const [selectedProperty, setSelectedProperty] = useState<any | null>(null);
+  const [signingProperty, setSigningProperty] = useState<any | null>(null);
+  const [ejariProperty, setEjariProperty] = useState<any | null>(null);
 
   const fetchProperties = async () => {
     try {
       const token = localStorage.getItem('token');
       const res = await fetch('/api/leasing-inventory', {
-        headers: { Authorization: `Bearer ${token}` },
+        headers: { 'Authorization': `Bearer ${token}` }
       });
       if (res.ok) {
         const data = await res.json();
@@ -111,7 +80,6 @@ export const LeasingAcquisition: React.FC = () => {
   };
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchProperties();
   }, []);
 
@@ -121,22 +89,22 @@ export const LeasingAcquisition: React.FC = () => {
       const res = await fetch(`/api/leasing-inventory/${id}/stage`, {
         method: 'PATCH',
         headers: {
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ newStage }),
+        body: JSON.stringify({ newStage })
       });
-
+      
       const data = await res.json();
       if (res.ok) {
         fetchProperties();
-        showToast('success', 'Stage updated successfully!');
+        alert('Stage updated successfully!');
       } else {
-        showToast('error', data.error || 'Failed to update stage');
+        alert(data.error || 'Failed to update stage');
       }
     } catch (err) {
       console.error(err);
-      showToast('error', 'Error updating stage');
+      alert('Error updating stage');
     }
   };
 
@@ -145,17 +113,17 @@ export const LeasingAcquisition: React.FC = () => {
       const token = localStorage.getItem('token');
       const res = await fetch(`/api/leasing-inventory/${id}/handover`, {
         method: 'POST',
-        headers: { Authorization: `Bearer ${token}` },
+        headers: { 'Authorization': `Bearer ${token}` }
       });
       if (res.ok) {
         fetchProperties();
-        showToast('success', 'Key Handover completed! Property is now locked.');
+        alert('Key Handover completed! Property is now locked.');
       } else {
-        showToast('error', 'Failed to complete handover');
+        alert('Failed to complete handover');
       }
     } catch (err) {
       console.error(err);
-      showToast('error', 'Error completing handover');
+      alert('Error completing handover');
     }
   };
 
@@ -172,119 +140,56 @@ export const LeasingAcquisition: React.FC = () => {
         <Title>Leasing Acquisition Pipeline</Title>
       </Header>
 
-      {toast && (
-        <ToastBanner
-          $type={toast.type}
-          role={toast.type === 'error' ? 'alert' : 'status'}
-          data-testid="leasing-toast"
-        >
-          {toast.type === 'success' ? '✅ ' : '⚠️ '}
-          {toast.text}
-        </ToastBanner>
-      )}
-
       <KanbanBoard>
-        {columns.map(col => {
-          const colProps = properties.filter(p => p.inventoryStage === col.id);
+        {columns.map((col) => {
+          const colProps = properties.filter((p) => p.inventoryStage === col.id);
           return (
             <Column key={col.id}>
               <ColumnHeader>
                 {col.title} <Badge>{colProps.length}</Badge>
               </ColumnHeader>
-
-              {colProps.map(p => (
+              
+              {colProps.map((p) => (
                 <div key={p.id}>
-                  <PropertyCard
-                    property={{
-                      id: p.id,
-                      title: p.title,
-                      unitNumber: p.unitNumber,
-                      titleDeedMissing: p.titleDeedMissing ?? false,
-                      landlordPassportMissing: p.landlordPassportMissing ?? false,
-                      ejariMissing: p.ejariMissing ?? false,
-                    }}
-                    onClick={() => setSelectedProperty(p)}
+                  <PropertyCard 
+                    property={p} 
+                    onClick={() => setSelectedProperty(p)} 
                   />
                   {col.id === 'draft_collected' && (
-                    <button
+                    <button 
                       onClick={() => handleStageChange(p.id, 'verified_active')}
-                      style={{
-                        width: '100%',
-                        padding: '8px',
-                        cursor: 'pointer',
-                        background: theme.colors.primary,
-                        color: 'white',
-                        border: 'none',
-                        borderRadius: '4px',
-                        marginBottom: '16px',
-                      }}
+                      style={{ width: '100%', padding: '8px', cursor: 'pointer', background: theme.colors.primary, color: 'white', border: 'none', borderRadius: '4px', marginBottom: '16px' }}
                     >
                       Move to Verified Active
                     </button>
                   )}
                   {col.id === 'verified_active' && (
-                    <button
+                    <button 
                       onClick={() => handleStageChange(p.id, 'under_offer')}
-                      style={{
-                        width: '100%',
-                        padding: '8px',
-                        cursor: 'pointer',
-                        background: theme.colors.secondary || '#333',
-                        color: 'white',
-                        border: 'none',
-                        borderRadius: '4px',
-                        marginBottom: '16px',
-                      }}
+                      style={{ width: '100%', padding: '8px', cursor: 'pointer', background: theme.colors.secondary || '#333', color: 'white', border: 'none', borderRadius: '4px', marginBottom: '16px' }}
                     >
                       Move to Under Offer
                     </button>
                   )}
                   {col.id === 'under_offer' && (
-                    <button
+                    <button 
                       onClick={() => setSigningProperty(p)}
-                      style={{
-                        width: '100%',
-                        padding: '8px',
-                        cursor: 'pointer',
-                        background: theme.colors.success || 'green',
-                        color: 'white',
-                        border: 'none',
-                        borderRadius: '4px',
-                        marginBottom: '16px',
-                      }}
+                      style={{ width: '100%', padding: '8px', cursor: 'pointer', background: theme.colors.success || 'green', color: 'white', border: 'none', borderRadius: '4px', marginBottom: '16px' }}
                     >
                       Review & Sign Contract
                     </button>
                   )}
                   {col.id === 'leased_sold' && (
                     <>
-                      <button
+                      <button 
                         onClick={() => setEjariProperty(p)}
-                        style={{
-                          width: '100%',
-                          padding: '8px',
-                          cursor: 'pointer',
-                          background: '#e67e22',
-                          color: 'white',
-                          border: 'none',
-                          borderRadius: '4px',
-                          marginBottom: '8px',
-                        }}
+                        style={{ width: '100%', padding: '8px', cursor: 'pointer', background: '#e67e22', color: 'white', border: 'none', borderRadius: '4px', marginBottom: '8px' }}
                       >
                         Register Ejari
                       </button>
-                      <button
+                      <button 
                         onClick={() => handleHandover(p.id)}
-                        style={{
-                          width: '100%',
-                          padding: '8px',
-                          cursor: 'pointer',
-                          background: theme.colors.primary,
-                          color: 'white',
-                          border: 'none',
-                          borderRadius: '4px',
-                          marginBottom: '16px',
-                        }}
+                        style={{ width: '100%', padding: '8px', cursor: 'pointer', background: theme.colors.primary, color: 'white', border: 'none', borderRadius: '4px', marginBottom: '16px' }}
                       >
                         Complete Handover
                       </button>
@@ -298,8 +203,8 @@ export const LeasingAcquisition: React.FC = () => {
       </KanbanBoard>
 
       {selectedProperty && (
-        <DocumentChecklist
-          property={selectedProperty}
+        <DocumentChecklist 
+          property={selectedProperty} 
           onClose={() => setSelectedProperty(null)}
           onRefresh={() => {
             fetchProperties();
@@ -317,7 +222,7 @@ export const LeasingAcquisition: React.FC = () => {
           onSignSuccess={() => {
             setSigningProperty(null);
             fetchProperties();
-            showToast('success', 'Contract signed securely! Property moved to Leased / Sold.');
+            alert('Contract signed securely! Property moved to Leased / Sold.');
           }}
         />
       )}
@@ -329,7 +234,7 @@ export const LeasingAcquisition: React.FC = () => {
           onSuccess={() => {
             setEjariProperty(null);
             fetchProperties();
-            showToast('success', 'Ejari registered successfully!');
+            alert('Ejari registered successfully!');
           }}
         />
       )}

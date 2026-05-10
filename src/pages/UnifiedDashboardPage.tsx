@@ -53,6 +53,36 @@ const HazelFrontendCRM = lazy(() => import('../components/crm/HazelFrontendCRM_N
 const WillowBackendCRM = lazy(() => import('../components/crm/WillowBackendCRM_NEW'));
 const UnifiedCRM = lazy(() => import('../components/crm/UnifiedCRM'));
 
+// Legacy JSX CRM modules (pre-NEW era)
+const KairosCRM = lazy(() => import('../components/crm/KairosLuxuryCRM'));
+const JunoCRM = lazy(() => import('../components/crm/JunoCommunity'));
+const VestaCRM = lazy(() => import('../components/crm/VestaHandoverCRM'));
+const CipherCRM = lazy(() => import('../components/crm/CipherMarketCRM'));
+const AtlasCRM = lazy(() => import('../components/crm/AtlasProjectsCRM'));
+const MavenCRM = lazy(() => import('../components/crm/MavenInvestmentCRM'));
+const SentinelCRM = lazy(() => import('../components/crm/SentinelPropertyCRM'));
+const HenryCRM = lazy(() => import('../components/crm/HenryAuditCRM'));
+const EvangelineCRM = lazy(() => import('../components/crm/EvangelineLegalCRM'));
+const HunterCRM = lazy(() => import('../components/crm/HunterProspectingCRM'));
+
+// New planned AI assistant CRM dashboards
+const ArcherCRM = lazy(() => import('../components/crm/ArcherCRM'));
+const PrismCRM = lazy(() => import('../components/crm/PrismCRM'));
+const SageCRM = lazy(() => import('../components/crm/SageCRM'));
+const EchoCRM = lazy(() => import('../components/crm/EchoCRM'));
+const MiraCRM = lazy(() => import('../components/crm/MiraCRM'));
+const RexCRM = lazy(() => import('../components/crm/RexCRM'));
+const IrisCRM = lazy(() => import('../components/crm/IrisCRM'));
+const ApexCRM = lazy(() => import('../components/crm/ApexCRM'));
+const HaloCRM = lazy(() => import('../components/crm/HaloCRM'));
+const OracleCRM = lazy(() => import('../components/crm/OracleCRM'));
+const FluxCRM = lazy(() => import('../components/crm/FluxCRM'));
+const NovaCRM = lazy(() => import('../components/crm/NovaCRM'));
+const QuillCRM = lazy(() => import('../components/crm/QuillCRM'));
+const LumenCRM = lazy(() => import('../components/crm/LumenCRM'));
+const CrestCRM = lazy(() => import('../components/crm/CrestCRM'));
+const LindaCRM = lazy(() => import('../components/crm/LindaCRM'));
+
 // Dubai CRM Modules
 const RERAComplianceModule = lazy(() => import('../components/crm/RERAComplianceModule'));
 const DLDIntegrationModule = lazy(() => import('../components/crm/DLDIntegrationModule'));
@@ -114,6 +144,34 @@ const CRM_MODULES: Record<string, CRMModule> = {
   // White Caves Channel & Document Modules
   linda: { Component: (LindaAdminCRM as ComponentType<CRMModuleProps>), label: 'Linda WhatsApp Bot' },
   henry: { Component: (HenryDocumentHub as ComponentType<CRMModuleProps>), label: '📄 Document Hub (Henry)' },
+
+  // Legacy JSX CRM modules (pre-NEW era) — now routable
+  kairos: { Component: KairosCRM, label: 'Luxury Concierge CRM' },
+  juno: { Component: JunoCRM, label: 'Community & Facilities CRM' },
+  vesta: { Component: VestaCRM, label: 'Handover & Snagging CRM' },
+  cipher: { Component: CipherCRM, label: 'Market Intelligence CRM' },
+  atlas: { Component: AtlasCRM, label: 'Projects Intelligence CRM' },
+  maven: { Component: MavenCRM, label: 'Investment Strategy CRM' },
+  sentinel: { Component: SentinelCRM, label: 'Property Monitoring CRM' },
+  evangeline: { Component: EvangelineCRM, label: 'Legal Risk CRM' },
+  hunter: { Component: HunterCRM, label: 'Lead Prospecting CRM' },
+
+  // New planned AI assistant CRM dashboards
+  archer: { Component: ArcherCRM, label: 'Lead Scoring Engine' },
+  prism: { Component: PrismCRM, label: 'Property Matching CRM' },
+  sage: { Component: SageCRM, label: 'Mortgage Advisor CRM' },
+  echo: { Component: EchoCRM, label: 'Communication History CRM' },
+  mira: { Component: MiraCRM, label: 'Translation Engine CRM' },
+  rex: { Component: RexCRM, label: 'Document Verification CRM' },
+  iris: { Component: IrisCRM, label: 'Virtual Staging CRM' },
+  apex: { Component: ApexCRM, label: 'Agent Performance CRM' },
+  halo: { Component: HaloCRM, label: 'Client Satisfaction CRM' },
+  oracle: { Component: OracleCRM, label: 'Market Analyst CRM' },
+  flux: { Component: FluxCRM, label: 'Market Data Feed CRM' },
+  nova: { Component: NovaCRM, label: 'Off-Plan Tracker CRM' },
+  quill: { Component: QuillCRM, label: 'Document Generator CRM' },
+  lumen: { Component: LumenCRM, label: 'Visual Analytics CRM' },
+  crest: { Component: CrestCRM, label: 'Property Valuation CRM' },
 };
 
 // ─── Page Component ───────────────────────────────────────────
@@ -147,8 +205,11 @@ const UnifiedDashboardPage: FC = () => {
     const dataToRender = filteredData || dashboardData;
 
     // Check if user selected a CRM module
+    // eslint-disable-next-line security/detect-object-injection
     if (selectedCRMModule && CRM_MODULES[selectedCRMModule]) {
+      // eslint-disable-next-line security/detect-object-injection
       const Module = CRM_MODULES[selectedCRMModule].Component;
+      // eslint-disable-next-line security/detect-object-injection
       const label = CRM_MODULES[selectedCRMModule].label;
       return (
         <RouteErrorBoundary section={label}>
@@ -163,7 +224,7 @@ const UnifiedDashboardPage: FC = () => {
     // When a sub-module is active (via SubNavBar click), resolve the
     // component name from featureRegistry and render via DashboardSubTabRenderer.
     if (currentSubModule && roleSubNavItems.length > 0) {
-      const subItem = roleSubNavItems.find((s) => s.id === currentSubModule);
+      const subItem = roleSubNavItems.find(s => s.id === currentSubModule);
       if (subItem) {
         return (
           <RouteErrorBoundary section={subItem.label}>
@@ -274,30 +335,42 @@ const UnifiedDashboardPage: FC = () => {
       <div className="dashboard-stats-container">
         <div className="stat-item">
           <span className="stat-label">Properties:</span>
-          <Badge variant="success" size="medium">{propertiesCount}</Badge>
+          <Badge variant="success" size="medium">
+            {propertiesCount}
+          </Badge>
         </div>
         <div className="stat-item">
           <span className="stat-label">Agents:</span>
-          <Badge variant="info" size="medium">{agentsCount}</Badge>
+          <Badge variant="info" size="medium">
+            {agentsCount}
+          </Badge>
         </div>
         <div className="stat-item">
           <span className="stat-label">Leads:</span>
-          <Badge variant="warning" size="medium">{leadsCount}</Badge>
+          <Badge variant="warning" size="medium">
+            {leadsCount}
+          </Badge>
         </div>
         <div className="stat-item">
           <span className="stat-label">Contracts:</span>
-          <Badge variant="primary" size="medium">{contractsCount}</Badge>
+          <Badge variant="primary" size="medium">
+            {contractsCount}
+          </Badge>
         </div>
       </div>
     );
   };
 
   // Helper: Render performance metrics with progress bars
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const renderPerformanceMetrics = (): ReactNode => {
     const propertiesCount = dashboardData?.properties?.length || 0;
     const agentsCount = dashboardData?.agents?.length || 0;
     const leadsCount = dashboardData?.leads?.length || 0;
-    const overallProgress = Math.min(100, (propertiesCount * 2 + agentsCount * 3 + leadsCount) / 10);
+    const overallProgress = Math.min(
+      100,
+      (propertiesCount * 2 + agentsCount * 3 + leadsCount) / 10
+    );
 
     return (
       <div className="performance-metrics">
@@ -310,9 +383,7 @@ const UnifiedDashboardPage: FC = () => {
             <ProgressBar variant="success" value={overallProgress} striped animated />
           </div>
           <div className="metric-item">
-            <label className="metric-label">
-              Data Synchronization: 95%
-            </label>
+            <label className="metric-label">Data Synchronization: 95%</label>
             <ProgressBar variant="info" value={95} />
           </div>
         </div>
@@ -345,23 +416,19 @@ const UnifiedDashboardPage: FC = () => {
 
       {/* Error Message */}
       {error && (
-        <div
-          className="unified-dashboard-error-banner"
-          role="alert"
-          aria-live="assertive"
-        >
-          <span className="error-icon" aria-hidden="true">⚠️</span>
+        <div className="unified-dashboard-error-banner" role="alert" aria-live="assertive">
+          <span className="error-icon" aria-hidden="true">
+            ⚠️
+          </span>
           <p>{error}</p>
-          <button
-            onClick={handleRetryAll}
-            aria-label="Retry loading dashboard data"
-          >
+          <button onClick={handleRetryAll} aria-label="Retry loading dashboard data">
             Retry
           </button>
         </div>
       )}
 
       {/* CRM Module View */}
+      {/* eslint-disable-next-line security/detect-object-injection */}
       {selectedCRMModule && CRM_MODULES[selectedCRMModule] && isSuperUser && (
         <div className="crm-module-view">
           <button className="crm-back-button" onClick={handleBackFromCRM}>
@@ -369,10 +436,11 @@ const UnifiedDashboardPage: FC = () => {
           </button>
           <div className="crm-module-container">
             <Suspense fallback={<TabLoadingFallback />}>
+              {/* eslint-disable-next-line security/detect-object-injection */}
               {React.createElement(CRM_MODULES[selectedCRMModule].Component, {
                 role: currentRole,
                 user,
-                data: dashboardData
+                data: dashboardData,
               })}
             </Suspense>
           </div>
@@ -390,14 +458,12 @@ const UnifiedDashboardPage: FC = () => {
           ) : (
             <>
               {/* Role-specific Sub-Navigation (from featureRegistry) */}
-              {roleSubNavItems.length > 0 && (
-                <SubNavBar moduleId={currentModule ?? currentRole} />
-              )}
+              {roleSubNavItems.length > 0 && <SubNavBar moduleId={currentModule ?? currentRole} />}
 
               {/* Tab Navigation */}
               <div className="unified-dashboard-tabs">
                 <div className="tabs-scroll">
-                  {availableTabs.map((tab) => (
+                  {availableTabs.map(tab => (
                     <button
                       key={tab.id}
                       className={`tab-button ${activeTab === tab.id ? 'active' : ''}`}
@@ -445,9 +511,7 @@ const UnifiedDashboardPage: FC = () => {
                 {isLoading ? (
                   <TabLoadingFallback />
                 ) : (
-                  <Suspense fallback={<TabLoadingFallback />}>
-                    {renderTabContent()}
-                  </Suspense>
+                  <Suspense fallback={<TabLoadingFallback />}>{renderTabContent()}</Suspense>
                 )}
               </div>
             </>
@@ -456,6 +520,6 @@ const UnifiedDashboardPage: FC = () => {
       )}
     </div>
   );
-}
+};
 
 export default UnifiedDashboardPage;

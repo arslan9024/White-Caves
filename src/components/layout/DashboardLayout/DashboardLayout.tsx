@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 // src/components/layout/DashboardLayout/DashboardLayout.tsx
 /**
  * Main Dashboard Layout Component
@@ -83,9 +82,7 @@ export interface DashboardLayoutProps {
   showMobileMenu?: boolean;
 }
 
-export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
-  sidebarWidth = 280,
-}) => {
+export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ sidebarWidth = 280 }) => {
   const dispatch = useDispatch();
   const activeFeature = useSelector((state: RootState) => state.sidebarUI.activeFeature);
 
@@ -101,6 +98,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
         payload: 'inventory-dashboard',
       });
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleFeatureSelect = (featureId: string) => {
@@ -113,10 +111,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
   return (
     <LayoutContainer>
       <SidebarWrapper style={{ width: `${sidebarWidth}px` }}>
-        <MaryInventorySidebar
-          activeFeature={activeFeature}
-          onFeatureSelect={handleFeatureSelect}
-        />
+        <MaryInventorySidebar activeFeature={activeFeature} onFeatureSelect={handleFeatureSelect} />
       </SidebarWrapper>
 
       <ContentWrapper>
@@ -129,4 +124,3 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
 };
 
 export default DashboardLayout;
-

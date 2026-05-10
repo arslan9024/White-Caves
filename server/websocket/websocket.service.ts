@@ -1,7 +1,6 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Server as HTTPServer } from 'http';
 import { Server as SocketIOServer, Socket } from 'socket.io';
-import { verifyJwt } from '../middleware/auth.js';
+import { verifyToken } from '../middleware/auth.js';
 import logger from '../utils/logger.js';
 
 interface ConnectedUser {
@@ -32,6 +31,10 @@ export class WebSocketService {
         credentials: true,
       },
       transports: ['websocket', 'polling'],
+      reconnection: true,
+      reconnectionDelay: 1000,
+      reconnectionDelayMax: 5000,
+      reconnectionAttempts: 5,
     });
 
     this.setupMiddleware();
@@ -43,18 +46,16 @@ export class WebSocketService {
    * Setup authentication middleware
    */
   private setupMiddleware(): void {
-    this.io.use((socket: any, next: any) => {
+    this.io.use(async (socket, next) => {
       try {
         const token = socket.handshake.auth.token;
         if (!token) {
           return next(new Error('Authentication token required'));
         }
 
-        const payload = verifyJwt(token);
-        if (!payload) {
-          return next(new Error('Invalid token'));
-        }
-        socket.data.userId = payload.id;
+        const payload = verifyToken(token);
+        socket.data.userId = payload.userId;
+        socket.data.accountId = payload.accountId;
         next();
       } catch (error) {
         logger.error('WebSocket auth error:', error);
@@ -363,30 +364,31 @@ export class WebSocketService {
    * Setup cleanup interval for stale data
    */
   private setupCleanupInterval(): void {
-    setInterval(
-      () => {
-        const now = new Date();
-        const TIMEOUT = 30 * 60 * 1000; // 30 minutes
+    setInterval(() => {
+      const now = new Date();
+      const TIMEOUT = 30 * 60 * 1000; // 30 minutes
 
-        // Clean up stale typing indicators
-        for (const [key, value] of this.typingUsers.entries()) {
-          if (now.getTime() - value.startedAt.getTime() > TIMEOUT) {
-            this.typingUsers.delete(key);
-          }
+      // Clean up stale typing indicators
+      for (const [key, value] of this.typingUsers.entries()) {
+        if (now.getTime() - value.startedAt.getTime() > TIMEOUT) {
+          this.typingUsers.delete(key);
         }
+      }
 
-        logger.debug(
-          `WebSocket cleanup: ${this.connectedUsers.size} users, ${this.typingUsers.size} typing`
-        );
-      },
-      5 * 60 * 1000
-    ); // Every 5 minutes
+      logger.debug(
+        `WebSocket cleanup: ${this.connectedUsers.size} users, ${this.typingUsers.size} typing`
+      );
+    }, 5 * 60 * 1000); // Every 5 minutes
   }
 
   /**
    * Broadcast message to conversation
    */
-  public emitToConversation(conversationId: string, event: string, data: any): void {
+  public emitToConversation(
+    conversationId: string,
+    event: string,
+    data: any
+  ): void {
     this.io.to(`conversation:${conversationId}`).emit(event, {
       ...data,
       timestamp: new Date(),
@@ -399,7 +401,7 @@ export class WebSocketService {
   public emitToUser(userId: string, event: string, data: any): void {
     const sockets = this.userSockets.get(userId);
     if (sockets) {
-      sockets.forEach(socketId => {
+      sockets.forEach((socketId) => {
         this.io.to(socketId).emit(event, {
           ...data,
           timestamp: new Date(),
@@ -434,7 +436,7 @@ export class WebSocketService {
     if (!room) return [];
 
     const members: string[] = [];
-    room.forEach(socketId => {
+    room.forEach((socketId) => {
       const user = this.connectedUsers.get(socketId);
       if (user && !members.includes(user.userId)) {
         members.push(user.userId);
@@ -464,7 +466,7 @@ export class WebSocketService {
   public disconnectUser(userId: string): void {
     const sockets = this.userSockets.get(userId);
     if (sockets) {
-      sockets.forEach(socketId => {
+      sockets.forEach((socketId) => {
         const socket = this.io.sockets.sockets.get(socketId);
         if (socket) {
           socket.disconnect();

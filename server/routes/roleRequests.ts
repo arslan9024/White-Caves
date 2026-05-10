@@ -1,223 +1,223 @@
 /**
  * Role Requests API Routes
- * ─────────────────────────
- * Allows users to request role changes; admins/owners review and approve or reject.
+ * ─────────────────────────────────────────────────────────────────────────
+ * Self-service role elevation — any authenticated user can request a
+ * different role; admins approve or reject.
  *
- * POST   /api/role-requests                    — Submit a role change request
- * GET    /api/role-requests/mine               — List current user's own requests
- * GET    /api/role-requests                    — List all pending requests (admin+)
- * GET    /api/role-requests/:id                — Get single request
- * POST   /api/role-requests/:id/approve        — Approve request (admin+)
- * POST   /api/role-requests/:id/reject         — Reject request (admin+)
+ * POST   /api/users/role-request              — Submit request (any user)
+ * GET    /api/admin/role-requests             — List all requests (admin)
+ * GET    /api/admin/role-requests/mine        — My own requests
+ * POST   /api/admin/role-requests/:id/approve — Approve + set role (admin)
+ * POST   /api/admin/role-requests/:id/reject  — Reject with reason (admin)
  */
 
 import { Router, Response } from 'express';
+import type { Request } from 'express';
 import { asyncHandler, AppError } from '../middleware/errorHandler.js';
-import { AuthRequest } from '../middleware/auth.js';
-import { requirePermission, ROLE_ALIAS_MAP, resolveBackendRole } from '../middleware/rbac.js';
 import { prisma } from '../database.js';
-import logger from '../utils/logger.js';
+import { sanitizeString } from '../utils/sanitize.js';
+import { validate, rules, validateIdParam } from '../utils/validate.js';
+import { requirePermission } from '../middleware/rbac.js';
 
-const router = Router();
+export const roleRequestRouter = Router();
+export const adminRoleRequestRouter = Router();
 
-// ─── POST /api/role-requests — submit a request ───────────────────────────────
-router.post(
+// Allowed roles a user can request elevation to
+const REQUESTABLE_ROLES = [
+  'agent',
+  'senior_agent',
+  'manager',
+  'property_manager',
+  'finance_manager',
+  'compliance_officer',
+  'marketing_specialist',
+  'legal_counsel',
+  'data_analyst',
+  'it_admin',
+] as const;
+
+// ─── POST /api/users/role-request ────────────────────────────────────────
+roleRequestRouter.post(
   '/',
-  asyncHandler(async (req: AuthRequest, res: Response) => {
-    const userId = req.user?.id;
-    if (!userId) throw new AppError('Authentication required', 401);
-
+  asyncHandler(async (req: Request, res: Response) => {
     const { requestedRole, reason } = req.body;
-    if (!requestedRole) throw new AppError('requestedRole is required', 400);
 
-    if (!Object.hasOwn(ROLE_ALIAS_MAP, requestedRole)) {
-      throw new AppError(
-        `Invalid role: "${requestedRole}". Must be one of: ${Object.keys(ROLE_ALIAS_MAP).join(', ')}`,
-        422,
-      );
+    if (!requestedRole) throw new AppError('requestedRole is required', 400);
+    if (!REQUESTABLE_ROLES.includes(requestedRole as (typeof REQUESTABLE_ROLES)[number])) {
+      throw new AppError(`Invalid role. Allowed: ${REQUESTABLE_ROLES.join(', ')}`, 400);
     }
 
-    const user = await prisma.user.findUnique({
-      where: { id: userId },
-      select: { role: true },
+    validate(req.body, {
+      reason: rules.optionalStringWithMax('Reason', 1000),
     });
-    if (!user) throw new AppError('User not found', 404);
 
-    if (user.role === resolveBackendRole(requestedRole)) {
+    const currentRole = req.user?.role || 'guest';
+    if (currentRole === requestedRole) {
       throw new AppError('You already have this role', 400);
     }
 
-    // Only allow one pending request at a time
+    // Check for an already-pending request for the same role
     const existing = await prisma.roleRequest.findFirst({
-      where: { userId, status: 'pending' },
+      where: {
+        userId: req.user?.id as string,
+        requestedRole,
+        status: 'pending',
+      },
     });
     if (existing) {
-      throw new AppError('You already have a pending role request', 409);
+      throw new AppError('You already have a pending request for this role', 409);
     }
 
     const roleRequest = await prisma.roleRequest.create({
       data: {
-        userId,
-        requestedRole: resolveBackendRole(requestedRole),
-        currentRole: user.role,
-        reason: reason ?? null,
+        userId: req.user?.id as string,
+        currentRole,
+        requestedRole,
+        reason: reason ? sanitizeString(reason) : null,
+        status: 'pending',
       },
     });
 
-    logger.info('Role request submitted', { userId, requestedRole: roleRequest.requestedRole });
-
-    res.status(201).json({ success: true, data: roleRequest });
-  }),
+    res.status(201).json({
+      success: true,
+      data: roleRequest,
+      message: 'Role request submitted — an administrator will review it shortly.',
+    });
+  })
 );
 
-// ─── GET /api/role-requests/mine ──────────────────────────────────────────────
-router.get(
+// ─── GET /api/admin/role-requests/mine ──────────────────────────────────
+adminRoleRequestRouter.get(
   '/mine',
-  asyncHandler(async (req: AuthRequest, res: Response) => {
-    const userId = req.user?.id;
-    if (!userId) throw new AppError('Authentication required', 401);
+  asyncHandler(async (req: Request, res: Response) => {
+    const requests = await prisma.roleRequest.findMany({
+      where: { userId: req.user?.id as string },
+      orderBy: { createdAt: 'desc' },
+    });
+    res.status(200).json({ success: true, data: { requests } });
+  })
+);
+
+// ─── GET /api/admin/role-requests ────────────────────────────────────────
+adminRoleRequestRouter.get(
+  '/',
+  requirePermission('manage_users'),
+  asyncHandler(async (req: Request, res: Response) => {
+    const { status } = req.query as Record<string, string>;
+    const where: Record<string, unknown> = {};
+    if (status && ['pending', 'approved', 'rejected'].includes(status)) {
+      where.status = status;
+    }
 
     const requests = await prisma.roleRequest.findMany({
-      where: { userId },
+      where,
       orderBy: { createdAt: 'desc' },
     });
 
-    res.json({ success: true, data: requests });
-  }),
-);
-
-// ─── GET /api/role-requests — list all (admin+) ───────────────────────────────
-router.get(
-  '/',
-  requirePermission('manage_users'),
-  asyncHandler(async (req: AuthRequest, res: Response) => {
-    const status = req.query.status as string | undefined;
-    const page = Math.max(1, parseInt(req.query.page as string) || 1);
-    const pageSize = Math.min(50, Math.max(1, parseInt(req.query.pageSize as string) || 20));
-
-    const where: Record<string, unknown> = {};
-    if (status) where.status = status;
-
-    const [requests, total] = await Promise.all([
-      prisma.roleRequest.findMany({
-        where,
-        orderBy: { createdAt: 'desc' },
-        skip: (page - 1) * pageSize,
-        take: pageSize,
-      }),
-      prisma.roleRequest.count({ where }),
-    ]);
-
-    res.json({
-      success: true,
-      data: requests,
-      pagination: { page, pageSize, total, totalPages: Math.ceil(total / pageSize) },
+    // Enrich with requester info
+    const userIds = [...new Set(requests.map(r => r.userId))];
+    const users = await prisma.user.findMany({
+      where: { id: { in: userIds } },
+      select: { id: true, name: true, email: true, role: true },
     });
-  }),
+    const userMap = new Map(users.map(u => [u.id, u]));
+
+    const enriched = requests.map(r => ({
+      ...r,
+      user: userMap.get(r.userId) || null,
+    }));
+
+    res.status(200).json({ success: true, data: { requests: enriched } });
+  })
 );
 
-// ─── GET /api/role-requests/:id ───────────────────────────────────────────────
-router.get(
-  '/:id',
-  asyncHandler(async (req: AuthRequest, res: Response) => {
-    const userId = req.user?.id;
-    if (!userId) throw new AppError('Authentication required', 401);
-
-    const request = await prisma.roleRequest.findUnique({ where: { id: req.params.id } });
-    if (!request) throw new AppError('Role request not found', 404);
-
-    const adminRoles = ['owner', 'admin', 'md'];
-    if (!adminRoles.includes(req.user?.role ?? '') && request.userId !== userId) {
-      throw new AppError('Access denied', 403);
-    }
-
-    res.json({ success: true, data: request });
-  }),
-);
-
-// ─── POST /api/role-requests/:id/approve ─────────────────────────────────────
-router.post(
+// ─── POST /api/admin/role-requests/:id/approve ──────────────────────────
+adminRoleRequestRouter.post(
   '/:id/approve',
   requirePermission('manage_users'),
-  asyncHandler(async (req: AuthRequest, res: Response) => {
-    const reviewerId = req.user?.id;
-    if (!reviewerId) throw new AppError('Authentication required', 401);
+  asyncHandler(async (req: Request, res: Response) => {
+    const { id } = req.params;
+    validateIdParam(id, 'Role request ID');
 
-    const roleRequest = await prisma.roleRequest.findUnique({ where: { id: req.params.id } });
-    if (!roleRequest) throw new AppError('Role request not found', 404);
-
-    if (roleRequest.status !== 'pending') {
-      throw new AppError(`Request is already ${roleRequest.status}`, 400);
+    const roleReq = await prisma.roleRequest.findUnique({ where: { id } });
+    if (!roleReq) throw new AppError('Role request not found', 404);
+    if (roleReq.status !== 'pending') {
+      throw new AppError(`Cannot approve a request with status "${roleReq.status}"`, 400);
     }
 
-    const [updated] = await prisma.$transaction([
-      prisma.roleRequest.update({
-        where: { id: req.params.id },
-        data: {
-          status: 'approved',
-          reviewedBy: reviewerId,
-          reviewNote: req.body.reviewNote ?? null,
-          reviewedAt: new Date(),
-        },
-      }),
-      prisma.user.update({
-        where: { id: roleRequest.userId },
-        data: { role: roleRequest.requestedRole },
-      }),
-      prisma.activity.create({
-        data: {
-          type: 'system',
-          action: 'updated',
-          description: `Role changed to ${roleRequest.requestedRole} (approved request)`,
-          userId: roleRequest.userId,
-        },
-      }),
-    ]);
+    const { reviewNote } = req.body;
 
-    logger.info('Role request approved', {
-      requestId: req.params.id,
-      userId: roleRequest.userId,
-      newRole: roleRequest.requestedRole,
-      approvedBy: reviewerId,
+    // Apply the role to the user
+    await prisma.user.update({
+      where: { id: roleReq.userId },
+      data: { role: roleReq.requestedRole },
     });
 
-    res.json({ success: true, data: updated });
-  }),
-);
-
-// ─── POST /api/role-requests/:id/reject ──────────────────────────────────────
-router.post(
-  '/:id/reject',
-  requirePermission('manage_users'),
-  asyncHandler(async (req: AuthRequest, res: Response) => {
-    const reviewerId = req.user?.id;
-    if (!reviewerId) throw new AppError('Authentication required', 401);
-
-    const roleRequest = await prisma.roleRequest.findUnique({ where: { id: req.params.id } });
-    if (!roleRequest) throw new AppError('Role request not found', 404);
-
-    if (roleRequest.status !== 'pending') {
-      throw new AppError(`Request is already ${roleRequest.status}`, 400);
-    }
-
     const updated = await prisma.roleRequest.update({
-      where: { id: req.params.id },
+      where: { id },
       data: {
-        status: 'rejected',
-        reviewedBy: reviewerId,
-        reviewNote: req.body.reason ?? req.body.reviewNote ?? null,
+        status: 'approved',
+        reviewNote: reviewNote ? sanitizeString(reviewNote) : null,
+        reviewedById: req.user?.id || null,
         reviewedAt: new Date(),
       },
     });
 
-    logger.info('Role request rejected', {
-      requestId: req.params.id,
-      userId: roleRequest.userId,
-      rejectedBy: reviewerId,
+    await prisma.activity.create({
+      data: {
+        type: 'user',
+        action: 'role_approved',
+        description: `Role request approved: user ${roleReq.userId} granted role "${roleReq.requestedRole}" by ${req.user?.email}`,
+        userId: req.user?.id || null,
+      },
     });
 
-    res.json({ success: true, data: updated });
-  }),
+    res.status(200).json({
+      success: true,
+      data: updated,
+      message: `Role "${roleReq.requestedRole}" granted successfully.`,
+    });
+  })
 );
 
-export default router;
+// ─── POST /api/admin/role-requests/:id/reject ───────────────────────────
+adminRoleRequestRouter.post(
+  '/:id/reject',
+  requirePermission('manage_users'),
+  asyncHandler(async (req: Request, res: Response) => {
+    const { id } = req.params;
+    validateIdParam(id, 'Role request ID');
+
+    const roleReq = await prisma.roleRequest.findUnique({ where: { id } });
+    if (!roleReq) throw new AppError('Role request not found', 404);
+    if (roleReq.status !== 'pending') {
+      throw new AppError(`Cannot reject a request with status "${roleReq.status}"`, 400);
+    }
+
+    const { reason, reviewNote } = req.body;
+    validate(req.body, {
+      reason: rules.optionalStringWithMax('Reason', 500),
+      reviewNote: rules.optionalStringWithMax('Review note', 1000),
+    });
+
+    const updated = await prisma.roleRequest.update({
+      where: { id },
+      data: {
+        status: 'rejected',
+        reviewNote: reviewNote
+          ? sanitizeString(reviewNote)
+          : reason
+            ? sanitizeString(reason)
+            : null,
+        reviewedById: req.user?.id || null,
+        reviewedAt: new Date(),
+      },
+    });
+
+    res.status(200).json({
+      success: true,
+      data: updated,
+      message: 'Role request rejected.',
+    });
+  })
+);

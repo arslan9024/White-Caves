@@ -47,7 +47,7 @@ export const IndicatorCard = styled.button<{ $accentColor?: string }>`
   cursor: pointer;
   transition: ${transitions.hover};
   text-align: left;
-  --accent-color: ${(props) => props.$accentColor || '#E31E24'};
+  --accent-color: ${props => props.$accentColor || '#E31E24'};
 
   &:hover {
     border-color: var(--accent-color);

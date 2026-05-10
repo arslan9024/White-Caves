@@ -11,6 +11,7 @@ tools: [codebase, read_file, grep_search, file_search, semantic_search, list_dir
 **Speed:** Optimized for quick answers over comprehensive analysis
 
 ## When to Use
+
 - Finding where a component/function is defined
 - Understanding data flow between modules
 - Checking existing implementations before creating new ones
@@ -18,11 +19,13 @@ tools: [codebase, read_file, grep_search, file_search, semantic_search, list_dir
 - Finding all usages of a pattern
 
 ## Exploration Strategy
+
 - **Quick (< 1min):** grep_search + file_search for specific symbols
 - **Medium (1-3min):** semantic_search + targeted file reads
 - **Thorough (3-10min):** Full module analysis with cross-references
 
 ## Project Structure Reference
+
 ```
 src/
   components/   # UI components (homepage/, crm/, shared/, ui/)
@@ -44,7 +47,9 @@ prisma/
 ```
 
 ## Return Format
+
 Always return:
+
 1. **Answer** — direct response to the query
 2. **File paths** — exact paths to relevant files
 3. **Code snippets** — relevant code sections

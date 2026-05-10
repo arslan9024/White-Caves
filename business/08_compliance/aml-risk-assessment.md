@@ -1,4 +1,5 @@
 # AML Risk Assessment Framework
+
 # White Caves Real Estate LLC
 
 > **Document ID:** WC-AML-001
@@ -13,13 +14,13 @@
 
 ## 1. Legal Framework
 
-| Law / Regulation | Key Requirement for Real Estate |
-|-----------------|-------------------------------|
-| Federal Decree-Law No. 20 of 2018 | AML/CFT — applies to real estate brokers as Designated Non-Financial Businesses (DNFBs) |
-| Cabinet Decision No. 10 of 2019 | AML executive regulations; defines DNFBs |
-| RERA Circular (2022) | RERA-registered agents must conduct CDD on all clients |
-| FATF Guidance on Real Estate (2022) | Real estate sector identified as high-risk for money laundering |
-| AED 55,000 threshold | CDD required for any single transaction or linked transactions above this value |
+| Law / Regulation                    | Key Requirement for Real Estate                                                         |
+| ----------------------------------- | --------------------------------------------------------------------------------------- |
+| Federal Decree-Law No. 20 of 2018   | AML/CFT — applies to real estate brokers as Designated Non-Financial Businesses (DNFBs) |
+| Cabinet Decision No. 10 of 2019     | AML executive regulations; defines DNFBs                                                |
+| RERA Circular (2022)                | RERA-registered agents must conduct CDD on all clients                                  |
+| FATF Guidance on Real Estate (2022) | Real estate sector identified as high-risk for money laundering                         |
+| AED 55,000 threshold                | CDD required for any single transaction or linked transactions above this value         |
 
 ---
 
@@ -38,31 +39,32 @@ White Caves adopts a **risk-based approach** to AML compliance:
 
 ### 3.1 Product/Service Risk
 
-| Product | Risk Level | Rationale |
-|---------|-----------|-----------|
-| Residential property sales (ready) | Medium | High transaction values; may involve mortgages |
-| Off-plan property sales | High | Large cash-stage payments; escrow laundering risk |
-| Residential lettings (long-term) | Low | Relatively small values; ongoing relationship |
-| Commercial leases | Medium | Business clients; varied source of funds |
-| Property management | Low | Recurring small amounts; known clients |
-| Mortgage referral | Low | Bank conducts own AML checks |
+| Product                            | Risk Level | Rationale                                         |
+| ---------------------------------- | ---------- | ------------------------------------------------- |
+| Residential property sales (ready) | Medium     | High transaction values; may involve mortgages    |
+| Off-plan property sales            | High       | Large cash-stage payments; escrow laundering risk |
+| Residential lettings (long-term)   | Low        | Relatively small values; ongoing relationship     |
+| Commercial leases                  | Medium     | Business clients; varied source of funds          |
+| Property management                | Low        | Recurring small amounts; known clients            |
+| Mortgage referral                  | Low        | Bank conducts own AML checks                      |
 
 ### 3.2 Customer Risk Factors
 
-| Factor | Risk Indicator | Weight |
-|--------|--------------|--------|
-| Residency | Non-UAE resident | +2 |
-| Nationality | FATF grey/blacklisted country | +3 |
-| Occupation | Politically Exposed Person (PEP) | +3 |
-| Transaction size | > AED 5M | +2 |
-| Source of funds | Business income (not salary) | +1 |
-| Legal entity | Complex corporate structure | +2 |
-| Payment method | Unusual (cash, crypto requested) | +4 |
-| Third-party payment | Payment from unrelated party | +4 |
-| Urgency | Abnormal haste | +2 |
-| Transaction structure | Multiple linked transactions < threshold | +3 |
+| Factor                | Risk Indicator                           | Weight |
+| --------------------- | ---------------------------------------- | ------ |
+| Residency             | Non-UAE resident                         | +2     |
+| Nationality           | FATF grey/blacklisted country            | +3     |
+| Occupation            | Politically Exposed Person (PEP)         | +3     |
+| Transaction size      | > AED 5M                                 | +2     |
+| Source of funds       | Business income (not salary)             | +1     |
+| Legal entity          | Complex corporate structure              | +2     |
+| Payment method        | Unusual (cash, crypto requested)         | +4     |
+| Third-party payment   | Payment from unrelated party             | +4     |
+| Urgency               | Abnormal haste                           | +2     |
+| Transaction structure | Multiple linked transactions < threshold | +3     |
 
 **Scoring:**
+
 - 0–3 points: Low Risk → Simplified CDD
 - 4–7 points: Medium Risk → Standard CDD
 - 8+ points: High Risk → Enhanced Due Diligence
@@ -76,6 +78,7 @@ White Caves adopts a **risk-based approach** to AML compliance:
 **When:** Individual client, UAE resident, salary income, transaction < AED 1M
 
 **Minimum requirements:**
+
 - Passport copy (valid)
 - UAE Residence Visa (if resident)
 - Emirates ID (front + back)
@@ -89,6 +92,7 @@ White Caves adopts a **risk-based approach** to AML compliance:
 **When:** Non-resident buyer, business income, transaction AED 1M–5M
 
 **Requirements (in addition to Simplified CDD):**
+
 - 3 months bank statements
 - Employment letter or salary certificate
 - For business income: trade license + audited accounts
@@ -102,6 +106,7 @@ White Caves adopts a **risk-based approach** to AML compliance:
 **When:** PEP identified, high-risk jurisdiction, transaction > AED 5M, complex structure, suspicious indicators
 
 **Requirements (in addition to Standard CDD):**
+
 - 6 months bank statements
 - Source of wealth explanation (not just source of funds)
 - Company structure diagram (for corporate buyers)
@@ -116,26 +121,26 @@ White Caves adopts a **risk-based approach** to AML compliance:
 
 ### 5.1 Red Flags — Transaction Structure
 
-| Indicator | Action |
-|-----------|--------|
-| Cash payment or cryptocurrency requested | Decline cash; investigate crypto |
-| Payment from unrelated third party | Request explanation; EDD |
+| Indicator                                              | Action                                         |
+| ------------------------------------------------------ | ---------------------------------------------- |
+| Cash payment or cryptocurrency requested               | Decline cash; investigate crypto               |
+| Payment from unrelated third party                     | Request explanation; EDD                       |
 | Multiple transactions structured just below AED 55,000 | Treat as single transaction; SAR consideration |
-| Purchase with no mortgage despite large sum | Verify source of funds |
-| Client offers a higher price than asked | Investigate motivation |
-| Rapid buy-sell with no apparent investment reason | Monitor for round-tripping |
-| Transaction abandonment after CDD request | Log; possible SAR |
+| Purchase with no mortgage despite large sum            | Verify source of funds                         |
+| Client offers a higher price than asked                | Investigate motivation                         |
+| Rapid buy-sell with no apparent investment reason      | Monitor for round-tripping                     |
+| Transaction abandonment after CDD request              | Log; possible SAR                              |
 
 ### 5.2 Red Flags — Client Behaviour
 
-| Indicator | Action |
-|-----------|--------|
-| Reluctance to provide identification | Refuse to proceed without KYC |
-| Unusual urgency to complete transaction | Slow down; full CDD required |
-| Unable to explain source of funds clearly | EDD; possible SAR |
-| Uses multiple intermediaries with no clear reason | EDD; PEP/sanctions check |
-| Requests excessive confidentiality | Note; EDD |
-| Multiple changes to ownership structure | Investigate; SAR consideration |
+| Indicator                                         | Action                         |
+| ------------------------------------------------- | ------------------------------ |
+| Reluctance to provide identification              | Refuse to proceed without KYC  |
+| Unusual urgency to complete transaction           | Slow down; full CDD required   |
+| Unable to explain source of funds clearly         | EDD; possible SAR              |
+| Uses multiple intermediaries with no clear reason | EDD; PEP/sanctions check       |
+| Requests excessive confidentiality                | Note; EDD                      |
+| Multiple changes to ownership structure           | Investigate; SAR consideration |
 
 ---
 
@@ -143,13 +148,13 @@ White Caves adopts a **risk-based approach** to AML compliance:
 
 ### 6.1 Databases Screened
 
-| List | Authority | Frequency |
-|------|-----------|---------|
-| UAE Terrorist List (Cabinet Decision 74) | UAE Government | Per transaction + monthly |
-| UN Security Council Consolidated List | United Nations | Per transaction + monthly |
-| OFAC SDN List | US Treasury | Per transaction |
-| EU Consolidated Sanctions | European Union | Per transaction |
-| Interpol Red Notices | Interpol | Per transaction (high risk) |
+| List                                     | Authority      | Frequency                   |
+| ---------------------------------------- | -------------- | --------------------------- |
+| UAE Terrorist List (Cabinet Decision 74) | UAE Government | Per transaction + monthly   |
+| UN Security Council Consolidated List    | United Nations | Per transaction + monthly   |
+| OFAC SDN List                            | US Treasury    | Per transaction             |
+| EU Consolidated Sanctions                | European Union | Per transaction             |
+| Interpol Red Notices                     | Interpol       | Per transaction (high risk) |
 
 ### 6.2 Screening Process
 
@@ -182,6 +187,7 @@ Client data entered in CRM
 ### 7.1 SAR Filing Obligation
 
 A SAR must be filed with the UAE Financial Intelligence Unit (FIU) when:
+
 - There are reasonable grounds to suspect a transaction involves money laundering or terrorism financing
 - A client is found on a sanctions list
 - EDD identifies unresolvable concerns
@@ -221,27 +227,27 @@ A SAR must be filed with the UAE Financial Intelligence Unit (FIU) when:
 
 All clients with medium or high risk rating must be recorded:
 
-| Field | Description |
-|-------|------------|
-| Client ID | CRM reference |
-| Risk rating | Low / Medium / High |
-| Risk factors identified | List of applicable factors |
-| CDD level completed | Simplified / Standard / Enhanced |
-| Date of last screening | Sanctions + PEP |
-| Next review date | Within 12 months |
-| EDD sign-off | Compliance Officer name + date |
-| SAR filed? | Yes / No / Under review |
+| Field                   | Description                      |
+| ----------------------- | -------------------------------- |
+| Client ID               | CRM reference                    |
+| Risk rating             | Low / Medium / High              |
+| Risk factors identified | List of applicable factors       |
+| CDD level completed     | Simplified / Standard / Enhanced |
+| Date of last screening  | Sanctions + PEP                  |
+| Next review date        | Within 12 months                 |
+| EDD sign-off            | Compliance Officer name + date   |
+| SAR filed?              | Yes / No / Under review          |
 
 ---
 
 ## 9. AML Training Requirements
 
-| Role | Training | Frequency |
-|------|---------|-----------|
-| All agents | AML awareness (2 hours) | Annual |
-| Compliance Officer | AML advanced + FATF updates | Annual + updates |
-| Managing Director | AML executive briefing | Annual |
-| New starters | AML induction before first client | At onboarding |
+| Role               | Training                          | Frequency        |
+| ------------------ | --------------------------------- | ---------------- |
+| All agents         | AML awareness (2 hours)           | Annual           |
+| Compliance Officer | AML advanced + FATF updates       | Annual + updates |
+| Managing Director  | AML executive briefing            | Annual           |
+| New starters       | AML induction before first client | At onboarding    |
 
 **Training records:** Stored in HR system + CRM staff profile
 
@@ -250,6 +256,7 @@ All clients with medium or high risk rating must be recorded:
 ## 10. Annual AML Risk Assessment Review
 
 Each year, White Caves must review:
+
 ```
 ☐ Update client risk profiles (new transactions, new information)
 ☐ Re-screen all active clients against current sanctions lists
@@ -276,22 +283,23 @@ Each year, White Caves must review:
 
 EDD is **mandatory** when any of the following apply:
 
-| Trigger | Threshold |
-|---------|-----------|
-| PEP identified (domestic or foreign) | Automatic EDD |
-| Client nationality — FATF grey/blacklisted country | Automatic EDD |
-| Transaction value | > AED 5,000,000 |
-| Complex/opaque corporate ownership structure | ≥ 3 layers of entities OR any bearer shares |
-| Third-party payment (payment from person not party to contract) | Any amount |
-| Risk score from Section 3.2 | ≥ 8 points |
-| Previous SAR filed or suspicious history | Automatic EDD |
-| Client requests unusual confidentiality | Compliance Officer discretion |
+| Trigger                                                         | Threshold                                   |
+| --------------------------------------------------------------- | ------------------------------------------- |
+| PEP identified (domestic or foreign)                            | Automatic EDD                               |
+| Client nationality — FATF grey/blacklisted country              | Automatic EDD                               |
+| Transaction value                                               | > AED 5,000,000                             |
+| Complex/opaque corporate ownership structure                    | ≥ 3 layers of entities OR any bearer shares |
+| Third-party payment (payment from person not party to contract) | Any amount                                  |
+| Risk score from Section 3.2                                     | ≥ 8 points                                  |
+| Previous SAR filed or suspicious history                        | Automatic EDD                               |
+| Client requests unusual confidentiality                         | Compliance Officer discretion               |
 
 ### 4.3.2 Source of Wealth Documentation Requirements
 
 All EDD clients must provide documentation evidencing the **origin** of their entire wealth (not merely the funds for this transaction):
 
 **Category A — Business Ownership:**
+
 - Certificate of Incorporation for each business entity owned
 - Share register or shareholder certificate confirming ownership stake
 - Audited financial statements (most recent 2 years) for each material business
@@ -301,6 +309,7 @@ All EDD clients must provide documentation evidencing the **origin** of their en
 - For offshore companies: Registered agent certificate + Certificate of Good Standing
 
 **Category B — Professional / Employment Income:**
+
 - Salary certificate from current employer (on company letterhead, signed and stamped)
 - Last 3 payslips (matching declared salary)
 - Employment contract (for very high income claims)
@@ -308,6 +317,7 @@ All EDD clients must provide documentation evidencing the **origin** of their en
 - For self-employed professionals: signed declaration + accountant-certified P&L
 
 **Category C — Investment Portfolio / Capital Gains:**
+
 - Bank or investment institution statements (12 months, all relevant accounts)
 - Portfolio valuation from licensed broker/bank as of date of transaction
 - Trade history showing accumulation of funds (purchase + sale proceeds)
@@ -315,17 +325,20 @@ All EDD clients must provide documentation evidencing the **origin** of their en
 - Property disposal: sale deed + DLD transfer certificate + bank credit entry confirming receipt
 
 **Category D — Inheritance / Gift:**
+
 - Grant of Probate or equivalent legal inheritance document (notarised + apostilled)
 - If gift: gift deed (signed, notarised) + donor's source of wealth evidence at Category A/B/C level
 - Estate valuation document
 - Bank statements showing receipt of inherited/gifted funds
 
 **Category E — Real Estate Proceeds:**
+
 - Title deeds for sold properties
 - Sale agreement + DLD/registry transfer records
 - Bank statements confirming receipt of sale proceeds
 
 **Verification Standard:** All documents must be:
+
 - Original or certified copy (notarised where international)
 - Translated to English or Arabic if in another language (certified translator)
 - Consistent with each other (amounts, dates, parties cross-check)
@@ -337,14 +350,14 @@ All EDD clients must provide documentation evidencing the **origin** of their en
 
 EDD documentation must be independently verified — agent self-review is **not** sufficient for EDD:
 
-| Verification Step | Method | Responsible |
-|------------------|--------|-------------|
-| Identity verification | Cross-check passport vs. Emirates ID vs. visa | Agent |
-| Sanctions / PEP screening | Automated screening tool (Phase 5) / manual check (Current) | Compliance Officer |
-| Corporate structure verification | Check UAE MoE UBO register; offshore — company registry of jurisdiction | Compliance Officer |
-| Bank statement authenticity | Contact bank for written confirmation if statement suspected as altered | Compliance Officer |
-| Title deed verification | DLD online verification portal | Agent + Compliance Officer |
-| Third-party KYC service | Phase 5: integration with Refinitiv World-Check or Dow Jones Risk & Compliance | Tech (Phase 5) |
+| Verification Step                | Method                                                                         | Responsible                |
+| -------------------------------- | ------------------------------------------------------------------------------ | -------------------------- |
+| Identity verification            | Cross-check passport vs. Emirates ID vs. visa                                  | Agent                      |
+| Sanctions / PEP screening        | Automated screening tool (Phase 5) / manual check (Current)                    | Compliance Officer         |
+| Corporate structure verification | Check UAE MoE UBO register; offshore — company registry of jurisdiction        | Compliance Officer         |
+| Bank statement authenticity      | Contact bank for written confirmation if statement suspected as altered        | Compliance Officer         |
+| Title deed verification          | DLD online verification portal                                                 | Agent + Compliance Officer |
+| Third-party KYC service          | Phase 5: integration with Refinitiv World-Check or Dow Jones Risk & Compliance | Tech (Phase 5)             |
 
 **Document:** All verification steps logged in CRM `AMLRecord.eddVerificationLog` with step, outcome, date, and officer name.
 
@@ -386,6 +399,7 @@ EDD Summary Report submitted to Managing Director (MD)
 ```
 
 **Record Keeping:** EDD Summary Report + MD approval email/signature stored in `AMLRecord.eddApproval`:
+
 ```
 {
   eddReportId: string,
@@ -407,6 +421,7 @@ EDD clients remain subject to enhanced monitoring throughout the relationship:
 **Review Frequency:** Every 6 months (or immediately on triggering event — see below)
 
 **Triggering Events for Immediate EDD Review:**
+
 - New transaction proposed (regardless of value)
 - Change of ownership or structure of client's company
 - Adverse media report (agent, Compliance Officer, or automated news monitoring)
@@ -415,6 +430,7 @@ EDD clients remain subject to enhanced monitoring throughout the relationship:
 - Transaction abandonment
 
 **6-Monthly Review Contents:**
+
 ```
 EDD Review Checklist — Every 6 Months:
 ☐ Re-run sanctions + PEP screening (manual current; automated Phase 5)
@@ -435,29 +451,17 @@ EDD Review Checklist — Every 6 Months:
 Where in-person or video verification is conducted (recommended for transactions > AED 10M):
 
 **Client Background:**
+
 1. Can you describe the main source(s) of your income and wealth?
 2. Approximately what is your total net worth, and how did you accumulate it?
 3. Are you currently or have you ever been in a politically exposed position (government, senior public official, military, judiciary)?
 4. Are any of your immediate family members in such positions?
 
-**Transaction-Specific:**
-5. Why are you purchasing property in Dubai specifically?
-6. How do you intend to fund this specific purchase?
-7. Are the funds coming directly from your own account or from a third party?
-8. Does anyone else have a beneficial interest in this property?
-9. Will the property be used for personal use, rental income, or as a business asset?
-10. What is the source of the deposit funds specifically?
+**Transaction-Specific:** 5. Why are you purchasing property in Dubai specifically? 6. How do you intend to fund this specific purchase? 7. Are the funds coming directly from your own account or from a third party? 8. Does anyone else have a beneficial interest in this property? 9. Will the property be used for personal use, rental income, or as a business asset? 10. What is the source of the deposit funds specifically?
 
-**Corporate Clients (if applicable):**
-11. Who are the ultimate beneficial owners of the purchasing entity?
-12. Is the company actively trading? What is its main business?
-13. From which countries does the company derive its revenues?
-14. Are there any dormant subsidiaries or holding structures?
+**Corporate Clients (if applicable):** 11. Who are the ultimate beneficial owners of the purchasing entity? 12. Is the company actively trading? What is its main business? 13. From which countries does the company derive its revenues? 14. Are there any dormant subsidiaries or holding structures?
 
-**Red Flag Follow-Up (if applicable):**
-15. Why do you prefer [payment method]?
-16. Can you explain the transfer from [third-party name or entity]?
-17. Why is there urgency to complete within [specified timeframe]?
+**Red Flag Follow-Up (if applicable):** 15. Why do you prefer [payment method]? 16. Can you explain the transfer from [third-party name or entity]? 17. Why is there urgency to complete within [specified timeframe]?
 
 **Outcome:** Document responses in EDD Interview Form (store in CRM AMLRecord).
 
@@ -471,16 +475,16 @@ Per UAE AML Law No. 20 of 2018, Article 1, and Cabinet Decision No. 10 of 2019:
 
 **A Politically Exposed Person (PEP)** is a natural person who is, or has been, entrusted with prominent public functions, including:
 
-| Category | Examples |
-|----------|---------|
-| Senior government officials | Ministers, Deputy Ministers, Secretaries of State |
-| Senior legislators | Members of Parliament, National Assembly, Federal National Council |
-| Senior judiciary officials | Supreme Court judges, Constitutional Court members |
-| Senior military officials | Generals, Admirals, ranks above Brigadier |
-| Senior executives of state-owned enterprises | CEO/Board members of companies with >50% state ownership |
-| Senior officials of international organisations | UN Secretary-General level, World Bank President, etc. |
-| Senior party officials | Party leaders, deputy leaders of major political parties |
-| Members of royal families | Any member of a recognised royal family (UAE or foreign) |
+| Category                                        | Examples                                                           |
+| ----------------------------------------------- | ------------------------------------------------------------------ |
+| Senior government officials                     | Ministers, Deputy Ministers, Secretaries of State                  |
+| Senior legislators                              | Members of Parliament, National Assembly, Federal National Council |
+| Senior judiciary officials                      | Supreme Court judges, Constitutional Court members                 |
+| Senior military officials                       | Generals, Admirals, ranks above Brigadier                          |
+| Senior executives of state-owned enterprises    | CEO/Board members of companies with >50% state ownership           |
+| Senior officials of international organisations | UN Secretary-General level, World Bank President, etc.             |
+| Senior party officials                          | Party leaders, deputy leaders of major political parties           |
+| Members of royal families                       | Any member of a recognised royal family (UAE or foreign)           |
 
 **Important UAE Specificity:** Under UAE law, local (domestic) PEPs are treated with the same level of scrutiny as foreign PEPs — unlike some interpretations of FATF guidance that treat domestic PEPs with lighter touch.
 
@@ -519,6 +523,7 @@ Approved PEP Screening Databases:
 | UNODC Databases | UNODC | UN sanctions + wanted lists | Regular updates |
 
 **Current (Pre-Phase 5) Manual Process:**
+
 1. Agent enters client name + nationality + DOB into each approved database
 2. Agent documents search date and outcome in CRM
 3. Any potential match → escalate to Compliance Officer immediately
@@ -549,6 +554,7 @@ ONGOING: Adverse media monitoring (news search monthly minimum)
 ```
 
 **Additional PEP-Specific Requirements:**
+
 - Source of wealth must specifically address how public position relates to (or does not contribute to) assets being used
 - Any conflict of interest with White Caves' business must be evaluated
 - PEP relationship flag must remain on CRM record permanently (even after 24-month post-departure removal from EDD level, the flag remains for audit trail)
@@ -559,16 +565,19 @@ ONGOING: Adverse media monitoring (news search monthly minimum)
 ### 5.4 Indirect PEPs — Family Members and Close Associates
 
 **Close Family Members of PEPs** (apply PEP-level scrutiny):
+
 - Spouse or civil/domestic partner
 - Children and their spouses
 - Parents
 
 **Close Associates of PEPs** (apply PEP-level scrutiny where known):
+
 - Natural persons known to have joint beneficial ownership of legal entities or legal arrangements
 - Natural persons known to have close business relations with the PEP
 - Natural persons who are sole beneficial owners of entities set up for the de facto benefit of the PEP
 
 **Process for Indirect PEPs:**
+
 1. If direct PEP relationship is identified → automatically screen all co-buyers and beneficial owners for PEP connections
 2. If indirect PEP status becomes apparent during EDD → upgrade to full PEP procedure
 3. Document the nature of the connection in CRM `AMLRecord.pepDetails`
@@ -577,13 +586,13 @@ ONGOING: Adverse media monitoring (news search monthly minimum)
 
 ### 5.5 PEP Record Keeping Requirements
 
-| Record | Content | Storage | Retention |
-|--------|---------|---------|-----------|
-| PEP declaration form | Signed original | CRM AMLRecord + physical file | 7 years post-transaction |
-| PEP screening results | Database, date, outcome, reference number | CRM AMLRecord.pepScreening | 7 years post-transaction |
-| EDD Summary Report | Full report per 4.3.4 | CRM AMLRecord + secure drive | 7 years post-transaction |
-| MD approval record | Signed email/form | CRM AMLRecord.eddApproval | 7 years post-transaction |
-| Ongoing monitoring logs | Each review date + outcome | CRM AMLRecord.pepReviews[] | 7 years post-last review |
+| Record                  | Content                                   | Storage                       | Retention                |
+| ----------------------- | ----------------------------------------- | ----------------------------- | ------------------------ |
+| PEP declaration form    | Signed original                           | CRM AMLRecord + physical file | 7 years post-transaction |
+| PEP screening results   | Database, date, outcome, reference number | CRM AMLRecord.pepScreening    | 7 years post-transaction |
+| EDD Summary Report      | Full report per 4.3.4                     | CRM AMLRecord + secure drive  | 7 years post-transaction |
+| MD approval record      | Signed email/form                         | CRM AMLRecord.eddApproval     | 7 years post-transaction |
+| Ongoing monitoring logs | Each review date + outcome                | CRM AMLRecord.pepReviews[]    | 7 years post-last review |
 
 ---
 
@@ -593,30 +602,30 @@ ONGOING: Adverse media monitoring (news search monthly minimum)
 
 White Caves screens all clients and transactions against the following lists:
 
-| List | Authority | URL / Access | Mandatory? |
-|------|-----------|-------------|-----------|
-| UAE Terrorist List (Cabinet Decision No. 74 of 2020) | UAE Government | uaefiu.gov.ae | ✅ Mandatory |
-| UN Security Council Consolidated List | United Nations | scsanctions.un.org | ✅ Mandatory |
-| OFAC SDN (Specially Designated Nationals) List | US Treasury | ofac.treas.gov/sdn | ✅ Mandatory |
-| OFAC Non-SDN Lists (FSE, NS-MBS, etc.) | US Treasury | ofac.treas.gov | ✅ Mandatory |
-| EU Consolidated Financial Sanctions List | European Union | eeas.europa.eu/cfsp/sanctions | ✅ Mandatory |
-| HM Treasury Financial Sanctions (UK) | UK Government | gov.uk/government/organisations/his-majestys-treasury | ✅ Recommended |
-| Interpol Red Notices | Interpol | interpol.int (public list) | ✅ For High-Risk |
-| World Bank Debarred Entities | World Bank | worldbank.org/projects-operations/procurement/debarred-firms | ✅ For Corporate |
-| FATF High-Risk Jurisdictions List | FATF | fatf-gafi.org | Reference only |
+| List                                                 | Authority      | URL / Access                                                 | Mandatory?       |
+| ---------------------------------------------------- | -------------- | ------------------------------------------------------------ | ---------------- |
+| UAE Terrorist List (Cabinet Decision No. 74 of 2020) | UAE Government | uaefiu.gov.ae                                                | ✅ Mandatory     |
+| UN Security Council Consolidated List                | United Nations | scsanctions.un.org                                           | ✅ Mandatory     |
+| OFAC SDN (Specially Designated Nationals) List       | US Treasury    | ofac.treas.gov/sdn                                           | ✅ Mandatory     |
+| OFAC Non-SDN Lists (FSE, NS-MBS, etc.)               | US Treasury    | ofac.treas.gov                                               | ✅ Mandatory     |
+| EU Consolidated Financial Sanctions List             | European Union | eeas.europa.eu/cfsp/sanctions                                | ✅ Mandatory     |
+| HM Treasury Financial Sanctions (UK)                 | UK Government  | gov.uk/government/organisations/his-majestys-treasury        | ✅ Recommended   |
+| Interpol Red Notices                                 | Interpol       | interpol.int (public list)                                   | ✅ For High-Risk |
+| World Bank Debarred Entities                         | World Bank     | worldbank.org/projects-operations/procurement/debarred-firms | ✅ For Corporate |
+| FATF High-Risk Jurisdictions List                    | FATF           | fatf-gafi.org                                                | Reference only   |
 
 ---
 
 ### 6.2 Screening Frequency
 
-| Trigger | Who is Screened | Action |
-|---------|----------------|--------|
-| Client onboarding (new lead enters CRM) | Client name, DOB, nationality, any associated entities | Full list screen before first contact |
-| Before transaction execution | All parties to transaction (buyer, seller, representatives, corporate officers) | Full list screen |
-| Annually (all active clients) | All clients with active relationships or pending transactions | Batch re-screen |
-| When client provides updated identity docs | Client and newly disclosed associates | Re-screen |
-| When new sanctions lists are updated | All active clients (automated — Phase 5; manual currently) | Targeted batch screen |
-| Before funds are received | Sending party | Screen before accepting |
+| Trigger                                    | Who is Screened                                                                 | Action                                |
+| ------------------------------------------ | ------------------------------------------------------------------------------- | ------------------------------------- |
+| Client onboarding (new lead enters CRM)    | Client name, DOB, nationality, any associated entities                          | Full list screen before first contact |
+| Before transaction execution               | All parties to transaction (buyer, seller, representatives, corporate officers) | Full list screen                      |
+| Annually (all active clients)              | All clients with active relationships or pending transactions                   | Batch re-screen                       |
+| When client provides updated identity docs | Client and newly disclosed associates                                           | Re-screen                             |
+| When new sanctions lists are updated       | All active clients (automated — Phase 5; manual currently)                      | Targeted batch screen                 |
+| Before funds are received                  | Sending party                                                                   | Screen before accepting               |
 
 ---
 
@@ -666,6 +675,7 @@ Step 5b — TRUE MATCH CONFIRMED
 False positives are common (particularly for common names). The following process prevents delays while maintaining compliance integrity:
 
 **Differentiating Factors (any one of the following may confirm false positive):**
+
 - Date of birth does not match (confirmed different person)
 - Nationality does not match and no aliases suggest this nationality
 - Passport number confirmed as different person by issuing authority
@@ -674,6 +684,7 @@ False positives are common (particularly for common names). The following proces
 - Entity: different country of incorporation, different registration number
 
 **Documentation Required for False Positive File:**
+
 ```json
 {
   "falsePositiveId": "FP-2026-001",
@@ -819,6 +830,7 @@ Section 5 — Supporting Documents (attachments):
 ```
 
 **Post-Filing:**
+
 - goAML will issue a reference number — record in `AMLRecord.sarFiuRef`
 - UAE FIU may contact White Caves for additional information — respond promptly
 - UAE FIU may issue a "no consent to proceed" order — halt all actions if received
@@ -833,6 +845,7 @@ Under UAE AML Law Article 17:
 > It is a **criminal offence** to disclose to the person who is the subject of a SAR, or to any third party, that a SAR has been filed, is being considered, or that a FIU investigation is underway.
 
 **What this means in practice:**
+
 - Do NOT tell the client "we have concerns about your application"
 - Do NOT tell the client "we cannot proceed at this time" with any hint of the reason
 - Do NOT discuss the SAR with colleagues who do not need to know
@@ -840,6 +853,7 @@ Under UAE AML Law Article 17:
 - Do NOT share SAR records with the client in response to any Subject Access Request (exempt from DSAR disclosure)
 
 **Persons who may know about a SAR (need-to-know basis only):**
+
 - Compliance Officer (primary handler)
 - Managing Director (approval)
 - External legal counsel engaged specifically for this matter
@@ -849,15 +863,15 @@ Under UAE AML Law Article 17:
 
 ### 7.5 SAR Record Keeping
 
-| Record | Content | Retention |
-|--------|---------|-----------|
-| Internal Suspicion Report (ISR) | Staff member's original report | 7 years |
-| SAR Investigation Report | Compliance Officer's analysis | 7 years |
-| MD decision record | Signed decision + reasoning | 7 years |
-| SAR copy (goAML submission) | Full text of filed SAR | 7 years |
-| FIU reference number | goAML reference | 7 years |
-| Post-filing monitoring log | Actions taken after filing | 7 years |
-| No-file decisions | Full documentation of why not filed | 7 years |
+| Record                          | Content                             | Retention |
+| ------------------------------- | ----------------------------------- | --------- |
+| Internal Suspicion Report (ISR) | Staff member's original report      | 7 years   |
+| SAR Investigation Report        | Compliance Officer's analysis       | 7 years   |
+| MD decision record              | Signed decision + reasoning         | 7 years   |
+| SAR copy (goAML submission)     | Full text of filed SAR              | 7 years   |
+| FIU reference number            | goAML reference                     | 7 years   |
+| Post-filing monitoring log      | Actions taken after filing          | 7 years   |
+| No-file decisions               | Full documentation of why not filed | 7 years   |
 
 **CRM Storage:** All SAR-related records stored in `AMLRecord` model with `type: 'SAR'`. Access restricted to Compliance Officer + MD roles only. Audit log on every access.
 
@@ -881,56 +895,56 @@ The following catalogue contains at least 25 specific red flags relevant to real
 
 ### 8.1 Property Transaction Red Flags
 
-| # | Red Flag | Risk Level | Recommended Action | CRM Field |
-|---|----------|-----------|-------------------|-----------|
-| RT-01 | Client offers significantly more than asking price without clear reason (>10% above) | HIGH | EDD; investigate motivation; consider SAR if unexplained | `AMLRecord.redFlagsIdentified` + note in `Lead.notes` |
-| RT-02 | Client requests to purchase in a different name or a name change near completion | HIGH | Refuse unless legitimate reason; EDD; consider SAR | `AMLRecord.pepEddFlag` |
-| RT-03 | Client requests property to be deliberately undervalued in SPA/transfer documents | CRITICAL | Refuse; immediate SAR filing | `AMLRecord` type: SAR |
-| RT-04 | Client proposes adding or removing third parties to the transaction without clear reason | HIGH | EDD; KYC all parties; MD approval | `AMLRecord.eddRequired` |
-| RT-05 | Rapid buy-sell (purchase and listing within 6 months) with no apparent investment rationale | HIGH | EDD; investigate; monitor for round-tripping | `Property.ownedSince` flag |
-| RT-06 | Client purchases multiple properties simultaneously through different agents/entities | HIGH | Consolidate CRM records; EDD; UBO check all entities | Cross-reference `Client.linkedEntities` |
-| RT-07 | Transaction abandonment specifically after CDD documentation is requested | MEDIUM | Log abandonment reason; SAR consideration; retain all records | `Lead.abandonReason` |
-| RT-08 | Unusual interest in specific property without legitimate connection to area or investment thesis | MEDIUM | Enhanced enquiry; note in CRM | `Lead.notes` |
+| #     | Red Flag                                                                                         | Risk Level | Recommended Action                                            | CRM Field                                             |
+| ----- | ------------------------------------------------------------------------------------------------ | ---------- | ------------------------------------------------------------- | ----------------------------------------------------- |
+| RT-01 | Client offers significantly more than asking price without clear reason (>10% above)             | HIGH       | EDD; investigate motivation; consider SAR if unexplained      | `AMLRecord.redFlagsIdentified` + note in `Lead.notes` |
+| RT-02 | Client requests to purchase in a different name or a name change near completion                 | HIGH       | Refuse unless legitimate reason; EDD; consider SAR            | `AMLRecord.pepEddFlag`                                |
+| RT-03 | Client requests property to be deliberately undervalued in SPA/transfer documents                | CRITICAL   | Refuse; immediate SAR filing                                  | `AMLRecord` type: SAR                                 |
+| RT-04 | Client proposes adding or removing third parties to the transaction without clear reason         | HIGH       | EDD; KYC all parties; MD approval                             | `AMLRecord.eddRequired`                               |
+| RT-05 | Rapid buy-sell (purchase and listing within 6 months) with no apparent investment rationale      | HIGH       | EDD; investigate; monitor for round-tripping                  | `Property.ownedSince` flag                            |
+| RT-06 | Client purchases multiple properties simultaneously through different agents/entities            | HIGH       | Consolidate CRM records; EDD; UBO check all entities          | Cross-reference `Client.linkedEntities`               |
+| RT-07 | Transaction abandonment specifically after CDD documentation is requested                        | MEDIUM     | Log abandonment reason; SAR consideration; retain all records | `Lead.abandonReason`                                  |
+| RT-08 | Unusual interest in specific property without legitimate connection to area or investment thesis | MEDIUM     | Enhanced enquiry; note in CRM                                 | `Lead.notes`                                          |
 
 ### 8.2 Client Identity Red Flags
 
-| # | Red Flag | Risk Level | Recommended Action | CRM Field |
-|---|----------|-----------|-------------------|-----------|
-| CI-01 | Client refuses or is unable to produce standard identity documents | HIGH | Do not proceed; log refusal | `AMLRecord.cddStatus: 'REFUSED'` |
-| CI-02 | Identity documents show signs of alteration (different fonts, inconsistent details, poor quality reprints) | HIGH | Do not accept; refer to Compliance Officer; consider SAR | `AMLRecord.docVerification: 'SUSPECT'` |
-| CI-03 | Client uses multiple names or aliases without clear legal explanation | HIGH | EDD; request all historical identity documents | `Client.aliases[]` |
-| CI-04 | Client is unable to provide consistent details about their background, occupation, or place of residence | MEDIUM | EDD; detailed interview; cross-check documents | `AMLRecord.eddInterview` |
-| CI-05 | Client nationality is from a FATF grey or blacklisted country (Iran, North Korea, Myanmar, etc.) | HIGH | Automatic EDD; check FATF current list | `Client.riskCountry` flag |
-| CI-06 | Corporate client with complex multi-layer ownership where UBO cannot be identified | HIGH | Refuse transaction if UBO cannot be established; EDD | `AMLRecord.uboUnidentified` |
-| CI-07 | Client is a legal entity with bearer shares or nominee shareholders | HIGH | EDD; require UBO declaration; consider refusing | `AMLRecord.bearerSharesFlag` |
-| CI-08 | Client shares same address, phone, or email with multiple unrelated clients | MEDIUM | Cross-check CRM; investigate connection; EDD | CRM duplicate detection |
-| CI-09 | Third party acting for client cannot or will not provide authorisation documentation (Power of Attorney) | HIGH | Refuse to proceed without valid PoA; EDD on both | `AMLRecord.poaFlag` |
+| #     | Red Flag                                                                                                   | Risk Level | Recommended Action                                       | CRM Field                              |
+| ----- | ---------------------------------------------------------------------------------------------------------- | ---------- | -------------------------------------------------------- | -------------------------------------- |
+| CI-01 | Client refuses or is unable to produce standard identity documents                                         | HIGH       | Do not proceed; log refusal                              | `AMLRecord.cddStatus: 'REFUSED'`       |
+| CI-02 | Identity documents show signs of alteration (different fonts, inconsistent details, poor quality reprints) | HIGH       | Do not accept; refer to Compliance Officer; consider SAR | `AMLRecord.docVerification: 'SUSPECT'` |
+| CI-03 | Client uses multiple names or aliases without clear legal explanation                                      | HIGH       | EDD; request all historical identity documents           | `Client.aliases[]`                     |
+| CI-04 | Client is unable to provide consistent details about their background, occupation, or place of residence   | MEDIUM     | EDD; detailed interview; cross-check documents           | `AMLRecord.eddInterview`               |
+| CI-05 | Client nationality is from a FATF grey or blacklisted country (Iran, North Korea, Myanmar, etc.)           | HIGH       | Automatic EDD; check FATF current list                   | `Client.riskCountry` flag              |
+| CI-06 | Corporate client with complex multi-layer ownership where UBO cannot be identified                         | HIGH       | Refuse transaction if UBO cannot be established; EDD     | `AMLRecord.uboUnidentified`            |
+| CI-07 | Client is a legal entity with bearer shares or nominee shareholders                                        | HIGH       | EDD; require UBO declaration; consider refusing          | `AMLRecord.bearerSharesFlag`           |
+| CI-08 | Client shares same address, phone, or email with multiple unrelated clients                                | MEDIUM     | Cross-check CRM; investigate connection; EDD             | CRM duplicate detection                |
+| CI-09 | Third party acting for client cannot or will not provide authorisation documentation (Power of Attorney)   | HIGH       | Refuse to proceed without valid PoA; EDD on both         | `AMLRecord.poaFlag`                    |
 
 ### 8.3 Payment Red Flags
 
-| # | Red Flag | Risk Level | Recommended Action | CRM Field |
-|---|----------|-----------|-------------------|-----------|
-| PA-01 | Client requests or attempts to pay in cash (any amount) | HIGH | Decline cash payment; log request; EDD; SAR if large amount | `AMLRecord.cashPaymentAttempt` |
-| PA-02 | Client requests to pay via cryptocurrency directly to White Caves | HIGH | Decline; explain White Caves does not accept crypto; log; EDD | `AMLRecord.cryptoPaymentAttempt` |
-| PA-03 | Payment received from a third-party account not party to the transaction | HIGH | Return funds; request payment from buyer/client directly; EDD; SAR consideration | `AMLRecord.thirdPartyPayment` |
-| PA-04 | Multiple payments from different accounts just below the AED 55,000 CDD threshold (structuring) | HIGH | Treat as single transaction exceeding threshold; SAR filing | `AMLRecord.structuringFlag` |
-| PA-05 | Payment from an offshore account in a jurisdiction with no legitimate business connection to client | HIGH | EDD; verify source; request explanation; SAR consideration | `AMLRecord.offshorePayment` |
-| PA-06 | Client requests to overpay and have excess refunded to a different account | HIGH | Refuse; immediate SAR consideration | `AMLRecord.overpaymentRequest` |
-| PA-07 | Late-stage change of payment instructions (different bank, different account holder) | HIGH | Pause transaction; verify with known contacts; EDD | `AMLRecord.paymentInstructionChange` |
-| PA-08 | Use of unusual financial instruments (promissory notes, informal hawala transfers) | HIGH | EDD; legal advice; SAR consideration | `AMLRecord.unusualInstrument` |
+| #     | Red Flag                                                                                            | Risk Level | Recommended Action                                                               | CRM Field                            |
+| ----- | --------------------------------------------------------------------------------------------------- | ---------- | -------------------------------------------------------------------------------- | ------------------------------------ |
+| PA-01 | Client requests or attempts to pay in cash (any amount)                                             | HIGH       | Decline cash payment; log request; EDD; SAR if large amount                      | `AMLRecord.cashPaymentAttempt`       |
+| PA-02 | Client requests to pay via cryptocurrency directly to White Caves                                   | HIGH       | Decline; explain White Caves does not accept crypto; log; EDD                    | `AMLRecord.cryptoPaymentAttempt`     |
+| PA-03 | Payment received from a third-party account not party to the transaction                            | HIGH       | Return funds; request payment from buyer/client directly; EDD; SAR consideration | `AMLRecord.thirdPartyPayment`        |
+| PA-04 | Multiple payments from different accounts just below the AED 55,000 CDD threshold (structuring)     | HIGH       | Treat as single transaction exceeding threshold; SAR filing                      | `AMLRecord.structuringFlag`          |
+| PA-05 | Payment from an offshore account in a jurisdiction with no legitimate business connection to client | HIGH       | EDD; verify source; request explanation; SAR consideration                       | `AMLRecord.offshorePayment`          |
+| PA-06 | Client requests to overpay and have excess refunded to a different account                          | HIGH       | Refuse; immediate SAR consideration                                              | `AMLRecord.overpaymentRequest`       |
+| PA-07 | Late-stage change of payment instructions (different bank, different account holder)                | HIGH       | Pause transaction; verify with known contacts; EDD                               | `AMLRecord.paymentInstructionChange` |
+| PA-08 | Use of unusual financial instruments (promissory notes, informal hawala transfers)                  | HIGH       | EDD; legal advice; SAR consideration                                             | `AMLRecord.unusualInstrument`        |
 
 ### 8.4 Behavioural Red Flags
 
-| # | Red Flag | Risk Level | Recommended Action | CRM Field |
-|---|----------|-----------|-------------------|-----------|
-| BH-01 | Client displays unusual secrecy about the transaction or is unwilling to disclose information standard buyers typically share | MEDIUM | EDD; note behaviour; investigate | `Lead.notes` + `AMLRecord.behaviouralFlag` |
-| BH-02 | Client shows abnormal urgency to complete the transaction, particularly around year-end or regulatory reporting dates | HIGH | Slow down; full EDD; SAR consideration if unexplained | `AMLRecord.urgencyFlag` |
-| BH-03 | Client appears disinterested in property features, price negotiation, or investment return — atypical for genuine property purchaser | HIGH | EDD; verify genuine investment rationale | `AMLRecord.behaviouralFlag` |
-| BH-04 | Client uses an unusual number of intermediaries, lawyers, or nominees without clear business reason | HIGH | EDD; KYC all intermediaries; consider SAR | `AMLRecord.multipleIntermediaries` |
-| BH-05 | Client aggressively questions or resists CDD/KYC requirements beyond reasonable privacy concern | MEDIUM | Note; EDD; if persistent — consider refusing | `AMLRecord.cddResistance` |
-| BH-06 | Client appears to be acting on instructions from an undisclosed third party | HIGH | Identify and KYC the third party; EDD | `AMLRecord.thirdPartyController` |
-| BH-07 | Agent receives referral from unknown or unusual source for very large transaction with minimal prior contact | MEDIUM | EDD; verify referral source | `Lead.referralSource` |
-| BH-08 | Client becomes hostile, threatening, or unusually aggressive when compliance procedures are raised | HIGH | Stop engagement; escalate to MD + Compliance; do NOT proceed; SAR consideration | `AMLRecord.hostileSubjectFlag` |
+| #     | Red Flag                                                                                                                             | Risk Level | Recommended Action                                                              | CRM Field                                  |
+| ----- | ------------------------------------------------------------------------------------------------------------------------------------ | ---------- | ------------------------------------------------------------------------------- | ------------------------------------------ |
+| BH-01 | Client displays unusual secrecy about the transaction or is unwilling to disclose information standard buyers typically share        | MEDIUM     | EDD; note behaviour; investigate                                                | `Lead.notes` + `AMLRecord.behaviouralFlag` |
+| BH-02 | Client shows abnormal urgency to complete the transaction, particularly around year-end or regulatory reporting dates                | HIGH       | Slow down; full EDD; SAR consideration if unexplained                           | `AMLRecord.urgencyFlag`                    |
+| BH-03 | Client appears disinterested in property features, price negotiation, or investment return — atypical for genuine property purchaser | HIGH       | EDD; verify genuine investment rationale                                        | `AMLRecord.behaviouralFlag`                |
+| BH-04 | Client uses an unusual number of intermediaries, lawyers, or nominees without clear business reason                                  | HIGH       | EDD; KYC all intermediaries; consider SAR                                       | `AMLRecord.multipleIntermediaries`         |
+| BH-05 | Client aggressively questions or resists CDD/KYC requirements beyond reasonable privacy concern                                      | MEDIUM     | Note; EDD; if persistent — consider refusing                                    | `AMLRecord.cddResistance`                  |
+| BH-06 | Client appears to be acting on instructions from an undisclosed third party                                                          | HIGH       | Identify and KYC the third party; EDD                                           | `AMLRecord.thirdPartyController`           |
+| BH-07 | Agent receives referral from unknown or unusual source for very large transaction with minimal prior contact                         | MEDIUM     | EDD; verify referral source                                                     | `Lead.referralSource`                      |
+| BH-08 | Client becomes hostile, threatening, or unusually aggressive when compliance procedures are raised                                   | HIGH       | Stop engagement; escalate to MD + Compliance; do NOT proceed; SAR consideration | `AMLRecord.hostileSubjectFlag`             |
 
 ---
 
@@ -948,13 +962,13 @@ White Caves must conduct a formal Annual AML Risk Review to demonstrate complian
 
 ### 9.2 Who Conducts the Review
 
-| Role | Responsibility |
-|------|--------------|
-| Compliance Officer (Laila) | Primary conductor; compiles all inputs; drafts updated assessment |
-| Managing Director | Approves updated assessment; signs off annual report |
-| Technology Lead (Radia/Daniela) | Provides system data: screening logs, access logs, CRM statistics |
-| Senior Agents | Provide input on emerging client patterns and red flags encountered |
-| External Legal Counsel (if retained) | Reviews for regulatory changes and advises on updates |
+| Role                                 | Responsibility                                                      |
+| ------------------------------------ | ------------------------------------------------------------------- |
+| Compliance Officer (Laila)           | Primary conductor; compiles all inputs; drafts updated assessment   |
+| Managing Director                    | Approves updated assessment; signs off annual report                |
+| Technology Lead (Radia/Daniela)      | Provides system data: screening logs, access logs, CRM statistics   |
+| Senior Agents                        | Provide input on emerging client patterns and red flags encountered |
+| External Legal Counsel (if retained) | Reviews for regulatory changes and advises on updates               |
 
 ---
 
@@ -981,29 +995,35 @@ Required Inputs:
 The Annual Review must assess and update each of the following:
 
 **A. Business Risk Profile:**
+
 - Have new products or services been introduced?
 - Have client segments changed (e.g., new source market nationalities)?
 - Has transaction volume changed significantly (implying capacity strain)?
 - Have any new high-risk jurisdictions been identified by FATF?
 
 **B. Client Risk Register:**
+
 - Are all medium and high-risk clients still correctly rated?
 - Are EDD requirements complete for all high-risk clients?
 - Are annual rescreening obligations met for all active clients?
 
 **C. Red Flag Effectiveness:**
+
 - Were any red flags identified in the past year? Were they handled correctly?
 - Are there emerging typologies from FATF or UAE FIU guidance that require new red flags?
 
 **D. Policies and Procedures:**
+
 - Have changes to UAE AML Law or RERA regulations required policy updates?
 - Are staff following the procedures documented here?
 
 **E. Training:**
+
 - Have all staff completed annual AML training?
 - Have any training gaps been identified from incidents?
 
 **F. System and Technology:**
+
 - Is the CRM capturing AML data correctly?
 - Are Phase 5 (automated screening) deliverables on track?
 
@@ -1013,14 +1033,14 @@ The Annual Review must assess and update each of the following:
 
 Following the review, the risk rating for each business line (from Section 3.1) must be reaffirmed or updated:
 
-| Business Line | Prior Year Rating | Updated Rating | Rationale for Change |
-|--------------|-----------------|---------------|---------------------|
-| Residential property sales (ready) | Medium | [Updated] | [Document reason] |
-| Off-plan property sales | High | [Updated] | [Document reason] |
-| Residential lettings (long-term) | Low | [Updated] | [Document reason] |
-| Commercial leases | Medium | [Updated] | [Document reason] |
-| Property management | Low | [Updated] | [Document reason] |
-| Mortgage referral | Low | [Updated] | [Document reason] |
+| Business Line                      | Prior Year Rating | Updated Rating | Rationale for Change |
+| ---------------------------------- | ----------------- | -------------- | -------------------- |
+| Residential property sales (ready) | Medium            | [Updated]      | [Document reason]    |
+| Off-plan property sales            | High              | [Updated]      | [Document reason]    |
+| Residential lettings (long-term)   | Low               | [Updated]      | [Document reason]    |
+| Commercial leases                  | Medium            | [Updated]      | [Document reason]    |
+| Property management                | Low               | [Updated]      | [Document reason]    |
+| Mortgage referral                  | Low               | [Updated]      | [Document reason]    |
 
 ---
 
@@ -1050,12 +1070,14 @@ Prior version archived (do not delete — 7-year retention)
 ### 9.7 Regulatory Submission
 
 **RERA Annual Compliance Report:**
+
 - RERA may require submission of an annual compliance declaration confirming AML procedures are in place
 - Check RERA portal announcements for annual submission deadline (typically Q1)
 - Submit using RERA REST portal (compliance section)
 - Retain submission confirmation for 7 years
 
 **UAE FIU Annual Report:**
+
 - DNFBs may be required to submit statistics on CDD, EDD, and SAR activity
 - Monitor UAE FIU website for annual reporting requirements
 - Compliance Officer responsible for checking requirement by 15 January each year

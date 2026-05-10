@@ -2,6 +2,7 @@ import React, { Suspense, lazy, useState, useMemo } from 'react';
 import { useLeadsData } from './hooks/useLeadsData';
 import SuspenseLoader from '../../common/SuspenseLoader';
 import { Tabs, Badge, ProgressBar } from '../../../components/ui';
+import AssistantLifecycleTab from '../shared/AssistantLifecycleTab';
 import './ClaraLeadsCRM.css';
 
 // Lazy-load all tabs
@@ -81,6 +82,13 @@ export default function ClaraLeadsCRM() {
       description: 'Clara\'s capabilities',
       component: FeaturesTab,
       order: 6
+    },
+    {
+      id: 'lifecycle',
+      label: 'Lifecycle',
+      description: 'Task lifecycle board',
+      component: null,
+      order: 7
     }
   ];
 
@@ -153,7 +161,11 @@ export default function ClaraLeadsCRM() {
       {/* Tab Content with Suspense */}
       <div className="clara-tabs-content">
         <Suspense fallback={<SuspenseLoader />}>
-          {ActiveTabComponent && <ActiveTabComponent />}
+          {activeTab === 'lifecycle' ? (
+            <AssistantLifecycleTab assistantId="clara" color="#0EA5E9" assistantName="Clara" />
+          ) : (
+            ActiveTabComponent && <ActiveTabComponent />
+          )}
         </Suspense>
       </div>
     </div>

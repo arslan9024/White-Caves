@@ -252,7 +252,7 @@
 .btn-sm.danger {
   background: rgba(227, 30, 36, 0.1);
   border-color: rgba(227, 30, 36, 0.3);
-  color: #E31E24;
+  color: #e31e24;
 }
 
 .users-table-container {
@@ -417,7 +417,7 @@
 .action-btn.danger:hover {
   background: rgba(227, 30, 36, 0.1);
   border-color: rgba(227, 30, 36, 0.3);
-  color: #E31E24;
+  color: #e31e24;
 }
 
 .no-results {

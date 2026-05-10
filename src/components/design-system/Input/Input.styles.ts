@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Input Component Styles
  */
@@ -148,4 +147,3 @@ export const HelperText = styled.span<{ $error?: boolean }>`
   color: ${props => (props.$error ? theme.colors.error : theme.colors.text.tertiary)};
   margin-top: ${theme.spacing.xs};
 `;
-

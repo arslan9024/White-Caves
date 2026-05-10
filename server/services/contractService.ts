@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any, security/detect-non-literal-fs-filename */
 import { prisma } from '../database.js';
 import logger from '../utils/logger.js';
 import PDFDocument from 'pdfkit';
@@ -13,16 +12,14 @@ const uploadsDir = path.join(__dirname, '../public/uploads');
 export const generateDraftContract = async (propertyId: string, userId?: string) => {
   try {
     const property = await prisma.property.findUnique({
-      where: { id: propertyId },
+      where: { id: propertyId }
     });
 
     if (!property) {
       throw new Error('Property not found for contract generation');
     }
 
-    logger.info(
-      `Generating PDF Tenancy Contract for property ${property.unitNumber || property.title}`
-    );
+    logger.info(`Generating PDF Tenancy Contract for property ${property.unitNumber || property.title}`);
 
     // Ensure uploads directory exists
     if (!fs.existsSync(uploadsDir)) {
@@ -35,7 +32,7 @@ export const generateDraftContract = async (propertyId: string, userId?: string)
     return new Promise((resolve, reject) => {
       const doc = new PDFDocument({ margin: 50 });
       const stream = fs.createWriteStream(filePath);
-
+      
       doc.pipe(stream);
 
       // PDF Content (Simulated by @Victoria)
@@ -50,10 +47,8 @@ export const generateDraftContract = async (propertyId: string, userId?: string)
       doc.text(`Location: ${property.location}`);
       doc.text(`Rental Price: AED ${property.rentalPrice?.toLocaleString() || 'TBD'} / year`);
       doc.moveDown();
-
-      doc.text(
-        'This document represents a formal agreement between the Landlord and Tenant, mediated by White Caves Real Estate.'
-      );
+      
+      doc.text('This document represents a formal agreement between the Landlord and Tenant, mediated by White Caves Real Estate.');
       doc.moveDown(4);
 
       doc.text('_____________________________', { align: 'left' });
@@ -69,24 +64,24 @@ export const generateDraftContract = async (propertyId: string, userId?: string)
             action: 'created',
             description: `Draft Tenancy Contract PDF generated for ${property.unitNumber || property.title}`,
             userId: userId || null,
-            metadata: { fileUrl: `/uploads/${fileName}` },
-          },
+            metadata: { fileUrl: `/uploads/${fileName}` }
+          }
         });
-
+        
         // Also update the property to store the contract URL
         await prisma.property.update({
           where: { id: property.id },
           data: {
             documents: {
-              push: `/uploads/${fileName}`,
-            },
-          },
-        } as any);
+              push: `/uploads/${fileName}`
+            }
+          }
+        });
 
         resolve(true);
       });
 
-      stream.on('error', err => {
+      stream.on('error', (err) => {
         logger.error('Error writing PDF', err);
         reject(err);
       });

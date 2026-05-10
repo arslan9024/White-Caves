@@ -1,4 +1,3 @@
-/* eslint-disable security/detect-object-injection */
 /**
  * CRM Lead Management Page (Refactored)
  * Full CRUD lead management with filtering, search, and status pipeline.
@@ -6,6 +5,7 @@
  * Shared styles imported from CrmPageStyles.
  * Route: /owner/crm/leads
  */
+
 import React, { FC } from 'react';
 import styled from 'styled-components';
 import { Badge, Pagination } from '../../components/ui';
@@ -263,6 +263,7 @@ const LeadManagementPage: FC = () => {
             $color={cfg.color}
             onClick={() => handleStatusFilterChange(key)}
           >
+            {/* eslint-disable-next-line security/detect-object-injection */}
             {cfg.label} ({statusCounts[key] || 0})
           </PipelineStage>
         ))}

@@ -51,6 +51,7 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({
   const [pendingText, setPendingText] = useState<string | null>(null);
   const [viewportClass] = useState(getViewportClass);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const textInputRef = useRef<HTMLInputElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -58,6 +59,10 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({
       messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
     }
   }, [messages]);
+
+  useEffect(() => {
+    textInputRef.current?.focus();
+  }, []);
 
   const doSend = async (text: string) => {
     setSendError(null);
@@ -104,9 +109,7 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({
       style={{ display: 'flex', flexDirection: 'column', height: '100%' }}
     >
       {/* Screen-reader live region */}
-      <div role="status" aria-live="polite" style={{ position: 'absolute', left: '-9999px' }}>
-        {sendError || ''}
-      </div>
+      <div role="status" aria-live="polite" style={{ position: 'absolute', left: '-9999px' }} />
 
       {/* Header */}
       <div className="chat-header" style={{ padding: '12px 16px', borderBottom: '1px solid #e0e0e0', background: '#f5f5f5' }}>
@@ -140,29 +143,48 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({
 
       {/* Messages */}
       <div className="messages-list" style={{ flex: 1, overflowY: 'auto', padding: '16px' }}>
-        {visibleMessages.map((msg) => {
+        {visibleMessages.map((msg, index) => {
           const d = new Date(msg.timestamp);
           const dateStr = `${MONTH_SHORT[d.getMonth()]} ${d.getDate()}`;
           const timeStr = d.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+          const prev = index > 0 ? new Date(visibleMessages[index - 1].timestamp) : null;
+          const showDateSeparator =
+            !prev ||
+            prev.getFullYear() !== d.getFullYear() ||
+            prev.getMonth() !== d.getMonth() ||
+            prev.getDate() !== d.getDate();
           return (
-            <div
-              key={msg.id}
-              data-testid={`message-${msg.id}`}
-              className={`message ${msg.fromMe ? 'sent' : 'received'}`}
-              style={{ display: 'flex', justifyContent: msg.fromMe ? 'flex-end' : 'flex-start', marginBottom: 8 }}
-            >
-              <div>
-                <div style={{ background: msg.fromMe ? '#25d366' : '#e5e5ea', padding: '8px 12px', borderRadius: 8 }}>
-                  {msg.content}
+            <React.Fragment key={msg.id}>
+              {showDateSeparator && (
+                <div
+                  style={{
+                    fontSize: 11,
+                    color: '#999',
+                    textAlign: 'center',
+                    margin: '4px 0 8px',
+                  }}
+                >
+                  {dateStr}
                 </div>
-                <div style={{ fontSize: 11, color: '#999', marginTop: 2 }}>
-                  {dateStr} {timeStr}
-                </div>
-                <div data-testid="message-status" style={{ fontSize: 11, color: '#aaa' }}>
-                  {msg.status || 'sent'}
+              )}
+              <div
+                data-testid={`message-${msg.id}`}
+                className={`message ${msg.fromMe ? 'sent' : 'received'}`}
+                style={{ display: 'flex', justifyContent: msg.fromMe ? 'flex-end' : 'flex-start', marginBottom: 8 }}
+              >
+                <div>
+                  <div style={{ background: msg.fromMe ? '#25d366' : '#e5e5ea', padding: '8px 12px', borderRadius: 8 }}>
+                    {msg.content}
+                  </div>
+                  <div style={{ fontSize: 11, color: '#999', marginTop: 2 }}>
+                    {timeStr}
+                  </div>
+                  <div data-testid="message-status" style={{ fontSize: 11, color: '#aaa' }}>
+                    {msg.status || 'sent'}
+                  </div>
                 </div>
               </div>
-            </div>
+            </React.Fragment>
           );
         })}
         <div ref={messagesEndRef} />
@@ -184,6 +206,7 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({
         <button
           type="button"
           aria-label="Attach media"
+          tabIndex={-1}
           onClick={() => fileInputRef.current?.click()}
           style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 20, padding: 4 }}
         >
@@ -191,6 +214,7 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({
         </button>
 
         <input
+          ref={textInputRef}
           type="text"
           placeholder="Type a message"
           aria-label="Type a message"
@@ -214,4 +238,3 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({
     </div>
   );
 };
-

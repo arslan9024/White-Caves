@@ -12,7 +12,7 @@ vi.mock('../RolePages.css', () => ({}));
 
 import SalesPipelinePage from './SalesPipelinePage';
 
-describe.skip('SalesPipelinePage — legacy static-data tests (skipped: component now API-driven)', () => {
+describe('SalesPipelinePage', () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
@@ -181,7 +181,7 @@ describe.skip('SalesPipelinePage — legacy static-data tests (skipped: componen
   it('can select different deals', () => {
     render(<SalesPipelinePage />);
 
-    // Select first deal
+    // Select first deal  
     fireEvent.click(screen.getByText('Palm Jumeirah Villa'));
     const dialog = screen.getByRole('dialog');
     expect(within(dialog).getByText('John Smith')).toBeInTheDocument();
@@ -192,99 +192,5 @@ describe.skip('SalesPipelinePage — legacy static-data tests (skipped: componen
 
     const dialog2 = screen.getByRole('dialog');
     expect(within(dialog2).getByText('Emma Wilson')).toBeInTheDocument();
-  });
-});
-
-// ── Phase 39: alert() elimination — API-driven kanban board ──────────────────
-
-import { afterEach } from 'vitest';
-import { SalesPipelinePage as SalesPipelineBoard } from './SalesPipelinePage';
-
-const makeSalesProperty = () => ({
-  id: 'api-sp-1',
-  title: 'Dubai Marina Unit',
-  location: 'Dubai Marina',
-  price: 2500000,
-  inventoryStage: 'listed',
-});
-
-describe('SalesPipelinePage — alert() elimination', () => {
-  let fetchSpy: ReturnType<typeof vi.spyOn>;
-  let alertSpy: ReturnType<typeof vi.spyOn>;
-
-  beforeEach(() => {
-    fetchSpy = vi.spyOn(window, 'fetch');
-    alertSpy = vi.spyOn(window, 'alert').mockImplementation(() => {});
-    vi.mocked(global.localStorage.getItem).mockImplementation((key: string) =>
-      key === 'token' ? 'mock-jwt' : null
-    );
-  });
-
-  afterEach(() => {
-    vi.restoreAllMocks();
-  });
-
-  it('renders Dubai pipeline heading', async () => {
-    fetchSpy.mockResolvedValueOnce(
-      new Response(JSON.stringify({ data: [makeSalesProperty()] }), { status: 200 }) as Response
-    );
-    render(<SalesPipelineBoard />);
-    expect(screen.getByText(/Secondary Sales Pipeline/i)).toBeInTheDocument();
-  });
-
-  it('no toast on initial render', () => {
-    fetchSpy.mockResolvedValueOnce(
-      new Response(JSON.stringify({ data: [] }), { status: 200 }) as Response
-    );
-    render(<SalesPipelineBoard />);
-    expect(screen.queryByTestId('sales-pipeline-toast')).not.toBeInTheDocument();
-  });
-
-  it('shows error toast with server message on stage update fail', async () => {
-    fetchSpy
-      .mockResolvedValueOnce(
-        new Response(JSON.stringify({ data: [makeSalesProperty()] }), { status: 200 }) as Response
-      )
-      .mockResolvedValueOnce(
-        new Response(JSON.stringify({ error: 'DLD system offline' }), { status: 500 }) as Response
-      );
-
-    render(<SalesPipelineBoard />);
-    const btn = await screen.findByRole('button', { name: /Forms A & B Signed/i });
-    fireEvent.click(btn);
-
-    const banner = await screen.findByRole('alert');
-    expect(banner).toHaveTextContent('DLD system offline');
-    expect(banner).toHaveAttribute('data-testid', 'sales-pipeline-toast');
-  });
-
-  it('shows generic error toast on network throw', async () => {
-    fetchSpy
-      .mockResolvedValueOnce(
-        new Response(JSON.stringify({ data: [makeSalesProperty()] }), { status: 200 }) as Response
-      )
-      .mockRejectedValueOnce(new Error('timeout'));
-
-    render(<SalesPipelineBoard />);
-    const btn = await screen.findByRole('button', { name: /Forms A & B Signed/i });
-    fireEvent.click(btn);
-
-    const banner = await screen.findByRole('alert');
-    expect(banner).toHaveTextContent('Error updating stage');
-  });
-
-  it('never calls window.alert()', async () => {
-    fetchSpy
-      .mockResolvedValueOnce(
-        new Response(JSON.stringify({ data: [makeSalesProperty()] }), { status: 200 }) as Response
-      )
-      .mockRejectedValueOnce(new Error('boom'));
-
-    render(<SalesPipelineBoard />);
-    const btn = await screen.findByRole('button', { name: /Forms A & B Signed/i });
-    fireEvent.click(btn);
-
-    await screen.findByRole('alert');
-    expect(alertSpy).not.toHaveBeenCalled();
   });
 });

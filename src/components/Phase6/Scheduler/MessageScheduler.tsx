@@ -166,7 +166,7 @@ const Button = styled.button<{ variant?: 'primary' | 'secondary' }>`
   cursor: pointer;
   transition: all 0.3s ease;
 
-  ${props =>
+  ${(props) =>
     props.variant === 'primary'
       ? `
     background-color: #4caf50;
@@ -204,17 +204,6 @@ const WarningBox = styled.div`
   color: #e65100;
 `;
 
-const StatusBanner = styled.div<{ $type: 'success' | 'error' }>`
-  padding: 12px 16px;
-  border-radius: 6px;
-  font-size: 14px;
-  font-weight: 500;
-  ${({ $type }) =>
-    $type === 'success'
-      ? 'background-color: #e8f5e9; border-left: 4px solid #4caf50; color: #2e7d32;'
-      : 'background-color: #fdecea; border-left: 4px solid #f44336; color: #b71c1c;'}
-`;
-
 export const MessageScheduler: React.FC<MessageSchedulerProps> = ({
   onScheduleMessage,
   defaultRecipients = [],
@@ -225,10 +214,6 @@ export const MessageScheduler: React.FC<MessageSchedulerProps> = ({
   const [scheduledAt, setScheduledAt] = useState('');
   const [timezone, setTimezone] = useState(Intl.DateTimeFormat().resolvedOptions().timeZone);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [statusMessage, setStatusMessage] = useState<{
-    type: 'success' | 'error';
-    text: string;
-  } | null>(null);
 
   const handleAddRecipient = () => {
     if (newRecipient.trim() && !recipients.includes(newRecipient)) {
@@ -238,7 +223,7 @@ export const MessageScheduler: React.FC<MessageSchedulerProps> = ({
   };
 
   const handleRemoveRecipient = (recipient: string) => {
-    setRecipients(recipients.filter(r => r !== recipient));
+    setRecipients(recipients.filter((r) => r !== recipient));
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -250,20 +235,19 @@ export const MessageScheduler: React.FC<MessageSchedulerProps> = ({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setStatusMessage(null);
 
     if (!content.trim()) {
-      setStatusMessage({ type: 'error', text: 'Please enter a message.' });
+      alert('Please enter a message');
       return;
     }
 
     if (recipients.length === 0) {
-      setStatusMessage({ type: 'error', text: 'Please add at least one recipient.' });
+      alert('Please add at least one recipient');
       return;
     }
 
     if (!scheduledAt) {
-      setStatusMessage({ type: 'error', text: 'Please select a schedule date/time.' });
+      alert('Please select a schedule date/time');
       return;
     }
 
@@ -271,7 +255,7 @@ export const MessageScheduler: React.FC<MessageSchedulerProps> = ({
     const now = new Date();
 
     if (scheduledDate <= now) {
-      setStatusMessage({ type: 'error', text: 'Please select a future date and time.' });
+      alert('Please select a future date and time');
       return;
     }
 
@@ -284,14 +268,15 @@ export const MessageScheduler: React.FC<MessageSchedulerProps> = ({
         scheduledAt: scheduledDate.toISOString(),
         timezone,
       });
+
+      // Reset form
       setContent('');
       setRecipients([]);
       setScheduledAt('');
-      setStatusMessage({ type: 'success', text: 'Message scheduled successfully!' });
-    } catch (err) {
-      const msg =
-        err instanceof Error ? err.message : 'Failed to schedule message. Please try again.';
-      setStatusMessage({ type: 'error', text: msg });
+      alert('Message scheduled successfully!');
+    } catch (error) {
+      console.error('Failed to schedule message:', error);
+      alert('Failed to schedule message. Please try again.');
     } finally {
       setIsSubmitting(false);
     }
@@ -301,19 +286,18 @@ export const MessageScheduler: React.FC<MessageSchedulerProps> = ({
     setContent('');
     setRecipients(defaultRecipients);
     setScheduledAt('');
-    setStatusMessage(null);
   };
 
   const minDateTime = new Date().toISOString().slice(0, 16);
 
   return (
     <Container>
-      <form onSubmit={handleSubmit} aria-label="Schedule message">
+      <form onSubmit={handleSubmit}>
         <FormSection>
           <Label>Message Content</Label>
           <TextArea
             value={content}
-            onChange={e => setContent(e.target.value)}
+            onChange={(e) => setContent(e.target.value)}
             placeholder="Enter the message you want to schedule..."
             disabled={isSubmitting}
           />
@@ -332,7 +316,7 @@ export const MessageScheduler: React.FC<MessageSchedulerProps> = ({
               <Input
                 type="text"
                 value={newRecipient}
-                onChange={e => setNewRecipient(e.target.value)}
+                onChange={(e) => setNewRecipient(e.target.value)}
                 onKeyDown={handleKeyDown}
                 placeholder="Enter recipient (phone number or ID)"
                 disabled={isSubmitting}
@@ -349,10 +333,13 @@ export const MessageScheduler: React.FC<MessageSchedulerProps> = ({
             </div>
             {recipients.length > 0 && (
               <RecipientList>
-                {recipients.map(recipient => (
+                {recipients.map((recipient) => (
                   <RecipientChip key={recipient}>
                     <span>{recipient}</span>
-                    <RemoveButton type="button" onClick={() => handleRemoveRecipient(recipient)}>
+                    <RemoveButton
+                      type="button"
+                      onClick={() => handleRemoveRecipient(recipient)}
+                    >
                       ✕
                     </RemoveButton>
                   </RecipientChip>
@@ -369,7 +356,7 @@ export const MessageScheduler: React.FC<MessageSchedulerProps> = ({
               <Input
                 type="datetime-local"
                 value={scheduledAt}
-                onChange={e => setScheduledAt(e.target.value)}
+                onChange={(e) => setScheduledAt(e.target.value)}
                 min={minDateTime}
                 disabled={isSubmitting}
               />
@@ -377,7 +364,7 @@ export const MessageScheduler: React.FC<MessageSchedulerProps> = ({
             <div>
               <Select
                 value={timezone}
-                onChange={e => setTimezone(e.target.value)}
+                onChange={(e) => setTimezone(e.target.value)}
                 disabled={isSubmitting}
               >
                 <option value="UTC">UTC</option>
@@ -407,8 +394,8 @@ export const MessageScheduler: React.FC<MessageSchedulerProps> = ({
               ({timezone})
             </span>
             <span>
-              ({Math.round((new Date(scheduledAt).getTime() - new Date().getTime()) / 60000)}{' '}
-              minutes from now)
+              ({Math.round((new Date(scheduledAt).getTime() - new Date().getTime()) / 60000)} minutes
+              from now)
             </span>
           </ScheduleInfo>
         )}
@@ -426,16 +413,6 @@ export const MessageScheduler: React.FC<MessageSchedulerProps> = ({
             {recipients.length !== 1 ? 's' : ''}. Make sure the details are correct before
             scheduling.
           </WarningBox>
-        )}
-
-        {statusMessage && (
-          <StatusBanner
-            $type={statusMessage.type}
-            role={statusMessage.type === 'error' ? 'alert' : 'status'}
-          >
-            {statusMessage.type === 'success' ? '✅ ' : '⚠️ '}
-            {statusMessage.text}
-          </StatusBanner>
         )}
 
         <ButtonGroup>

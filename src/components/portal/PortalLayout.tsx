@@ -24,15 +24,9 @@ interface PortalLayoutProps {
 }
 
 const PortalLayout: FC<PortalLayoutProps> = ({ portalType, children }) => (
-  <div
-    className={`portal-layout portal-layout--${portalType}`}
-    data-testid="portal-layout"
-  >
+  <div className={`portal-layout portal-layout--${portalType}`} data-testid="portal-layout">
     <PortalNavbar portalType={portalType} />
-    <main
-      className="portal-layout__main"
-      id="portal-main-content"
-    >
+    <main className="portal-layout__main" id="portal-main-content">
       {children}
     </main>
   </div>
