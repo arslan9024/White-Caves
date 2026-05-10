@@ -15,12 +15,16 @@ import {
 import { PDC_CHEQUES, RENEWAL_RECORDS } from '../data/leasingExtended';
 import { DAISY_LEASING_FEATURES } from '../data/features';
 
+const MAX_LEASING_STAGE = 10;
+
 export type { LeasingStage };
 export { LEASING_STAGE_LABELS };
 
 export const useLeasingData = () => {
   const [activeTab, setActiveTab] = useState<string>('leases');
   const [selectedProperty, setSelectedProperty] = useState<number | null>(null);
+  // In production, these datasets are intentionally initialized empty to avoid rendering mock fixtures.
+  // They are expected to be hydrated from live endpoints by the consuming flows.
   const [leases, setLeases] = useState<ActiveLease[]>(import.meta.env.DEV ? ACTIVE_LEASES : []);
   const [maintenance, setMaintenance] = useState<MaintenanceRequest[]>(
     import.meta.env.DEV ? MAINTENANCE_REQUESTS : []
@@ -86,7 +90,9 @@ export const useLeasingData = () => {
 
   const getPipelineStats = useCallback((): Record<number, number> => {
     const stats: Record<number, number> = {};
-    for (let s = 1; s <= 10; s++) stats[s] = 0;
+    for (let stage = 1; stage <= MAX_LEASING_STAGE; stage++) {
+      stats[stage] = 0;
+    }
     RENTAL_INQUIRIES.forEach(inq => {
       stats[inq.leasingStage] = (stats[inq.leasingStage] || 0) + 1;
     });

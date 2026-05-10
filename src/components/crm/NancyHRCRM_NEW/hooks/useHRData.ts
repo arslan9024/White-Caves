@@ -48,8 +48,8 @@ function mapUserToEmployee(u: UserApiItem): Employee {
   };
 }
 
-function mapApplicantStatus(s: string): Applicant['status'] {
-  switch (s) {
+function mapApplicantStatus(rawStatus: string): Applicant['status'] {
+  switch (rawStatus) {
     case 'shortlisted':
       return 'shortlisted';
     case 'interview':

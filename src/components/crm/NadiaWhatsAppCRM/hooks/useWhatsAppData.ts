@@ -3,6 +3,9 @@ import { DUMMY_CONVERSATIONS, QUICK_REPLIES, Conversation } from '../data/conver
 import { NADIA_WHATSAPP_FEATURES } from '../data/features';
 import { authFetch } from '../../../../utils/authFetch';
 
+const HOT_LEAD_THRESHOLD = 80;
+const WARM_LEAD_THRESHOLD = 50;
+
 interface NadiaMessageApi {
   id: string;
   direction: 'inbound' | 'outbound';
@@ -50,7 +53,12 @@ export const useWhatsAppData = () => {
           );
           const last = sorted[sorted.length - 1];
           const leadScore = Number(conv.leadScore ?? 0);
-          const priority = leadScore >= 80 ? 'hot' : leadScore >= 50 ? 'warm' : 'cold';
+          const priority =
+            leadScore >= HOT_LEAD_THRESHOLD
+              ? 'hot'
+              : leadScore >= WARM_LEAD_THRESHOLD
+                ? 'warm'
+                : 'cold';
           return {
             id: conv.id,
             contact: {
