@@ -21,9 +21,11 @@ export { LEASING_STAGE_LABELS };
 export const useLeasingData = () => {
   const [activeTab, setActiveTab] = useState<string>('leases');
   const [selectedProperty, setSelectedProperty] = useState<number | null>(null);
-  const [leases, setLeases] = useState<ActiveLease[]>(ACTIVE_LEASES);
-  const [maintenance, setMaintenance] = useState<MaintenanceRequest[]>(MAINTENANCE_REQUESTS);
-  const [pdcCheques, setPdcCheques] = useState<PDCCheque[]>(PDC_CHEQUES);
+  const [leases, setLeases] = useState<ActiveLease[]>(import.meta.env.DEV ? ACTIVE_LEASES : []);
+  const [maintenance, setMaintenance] = useState<MaintenanceRequest[]>(
+    import.meta.env.DEV ? MAINTENANCE_REQUESTS : []
+  );
+  const [pdcCheques, setPdcCheques] = useState<PDCCheque[]>(import.meta.env.DEV ? PDC_CHEQUES : []);
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [filterStatus, setFilterStatus] = useState<string>('all');
 

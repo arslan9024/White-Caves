@@ -1,13 +1,117 @@
-import { useState, useCallback, useMemo } from 'react';
+import { useState, useCallback, useMemo, useEffect } from 'react';
 import { DUMMY_EMPLOYEES, Employee } from '../data/employees';
 import { DUMMY_JOBS, Job } from '../data/jobs';
 import { DUMMY_APPLICANTS, Applicant } from '../data/applicants';
+import { authFetch } from '../../../../utils/authFetch';
+
+interface UserApiItem {
+  id: string;
+  name: string;
+  email: string;
+  phone: string | null;
+  role: string;
+  department: string | null;
+  status: string;
+  photoUrl: string | null;
+  createdAt: string;
+}
+
+interface JobAppApiItem {
+  id: string;
+  name: string;
+  email: string;
+  phone: string | null;
+  position: string;
+  experience: string | null;
+  resumeUrl: string | null;
+  status: string;
+  createdAt: string;
+}
+
+function mapUserToEmployee(u: UserApiItem): Employee {
+  return {
+    id: u.id,
+    name: u.name,
+    email: u.email,
+    phone: u.phone ?? '',
+    avatar: u.photoUrl ?? '',
+    position: u.role,
+    department: u.department ?? 'General',
+    status: u.status === 'active' ? 'active' : u.status === 'suspended' ? 'terminated' : 'active',
+    joinDate: u.createdAt,
+    salary: 0,
+    manager: '',
+    location: 'Dubai',
+    performance: 0,
+    leaveBalance: 0,
+    attendance: 0,
+  };
+}
+
+function mapApplicantStatus(s: string): Applicant['status'] {
+  switch (s) {
+    case 'shortlisted':
+      return 'shortlisted';
+    case 'interview':
+      return 'interviewed';
+    case 'offered':
+    case 'hired':
+      return 'hired';
+    case 'rejected':
+      return 'rejected';
+    default:
+      return 'new';
+  }
+}
+
+function mapJobAppToApplicant(a: JobAppApiItem): Applicant {
+  return {
+    id: a.id,
+    name: a.name,
+    email: a.email,
+    phone: a.phone ?? '',
+    avatar: '',
+    job: a.position,
+    status: mapApplicantStatus(a.status),
+    appliedDate: a.createdAt,
+    experience: a.experience ?? '',
+    resume: a.resumeUrl ?? '',
+    score: 0,
+  };
+}
 
 export const useHRData = () => {
   // Only use dummy data in development — production fetches from API
   const [employees, setEmployees] = useState<Employee[]>(import.meta.env.DEV ? DUMMY_EMPLOYEES : []);
   const [jobs, setJobs] = useState<Job[]>(import.meta.env.DEV ? DUMMY_JOBS : []);
   const [applicants, setApplicants] = useState<Applicant[]>(import.meta.env.DEV ? DUMMY_APPLICANTS : []);
+
+  useEffect(() => {
+    if (import.meta.env.DEV) return;
+
+    let cancelled = false;
+
+    Promise.all([
+      authFetch('/api/users?pageSize=50').then((r: Response) => r.json() as Promise<{ data?: UserApiItem[] }>),
+      authFetch('/api/job-applications?pageSize=50').then(
+        (r: Response) => r.json() as Promise<{ data?: JobAppApiItem[] }>
+      ),
+    ])
+      .then(([usersRes, appsRes]) => {
+        if (cancelled) return;
+        const users = Array.isArray(usersRes.data) ? usersRes.data : [];
+        const apps = Array.isArray(appsRes.data) ? appsRes.data : [];
+        setEmployees(users.map(mapUserToEmployee));
+        setApplicants(apps.map(mapJobAppToApplicant));
+      })
+      .catch(() => {
+        // Keep empty production state if API request fails.
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
   
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [filterDepartment, setFilterDepartment] = useState<string>('all');
