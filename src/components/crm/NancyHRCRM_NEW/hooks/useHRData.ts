@@ -81,7 +81,7 @@ function mapJobAppToApplicant(a: JobAppApiItem): Applicant {
 }
 
 export const useHRData = () => {
-  // Only use dummy data in development — production fetches from API
+  // Development starts with local fixtures; production starts empty and hydrates via the effect below.
   const [employees, setEmployees] = useState<Employee[]>(import.meta.env.DEV ? DUMMY_EMPLOYEES : []);
   const [jobs, setJobs] = useState<Job[]>(import.meta.env.DEV ? DUMMY_JOBS : []);
   const [applicants, setApplicants] = useState<Applicant[]>(import.meta.env.DEV ? DUMMY_APPLICANTS : []);

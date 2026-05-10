@@ -48,9 +48,9 @@ export const useWhatsAppData = () => {
         const rows = Array.isArray(payload.data) ? payload.data : [];
         const mapped: Conversation[] = rows.map((conv) => {
           const messages = Array.isArray(conv.messages) ? conv.messages : [];
-          const sorted = [...messages].sort(
-            (a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime()
-          );
+          const sorted = messages
+            .map((m) => ({ ...m, timestampMs: new Date(m.timestamp).getTime() }))
+            .sort((a, b) => a.timestampMs - b.timestampMs);
           const last = sorted[sorted.length - 1];
           const leadScore = Number(conv.leadScore ?? 0);
           const priority =
@@ -76,7 +76,7 @@ export const useWhatsAppData = () => {
               id: idx + 1,
               type: m.direction === 'outbound' ? 'sent' : 'received',
               text: m.body,
-              time: new Date(m.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+              time: new Date(m.timestampMs).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
               status: m.status,
             })),
           };

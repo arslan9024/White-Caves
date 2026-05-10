@@ -23,8 +23,8 @@ export { LEASING_STAGE_LABELS };
 export const useLeasingData = () => {
   const [activeTab, setActiveTab] = useState<string>('leases');
   const [selectedProperty, setSelectedProperty] = useState<number | null>(null);
-  // In production, these datasets are intentionally initialized empty to avoid rendering mock fixtures.
-  // They are expected to be hydrated from live endpoints by the consuming flows.
+  // In production, these datasets intentionally start empty to avoid rendering mock fixtures
+  // until dedicated Daisy API hydration is wired into this hook.
   const [leases, setLeases] = useState<ActiveLease[]>(import.meta.env.DEV ? ACTIVE_LEASES : []);
   const [maintenance, setMaintenance] = useState<MaintenanceRequest[]>(
     import.meta.env.DEV ? MAINTENANCE_REQUESTS : []
