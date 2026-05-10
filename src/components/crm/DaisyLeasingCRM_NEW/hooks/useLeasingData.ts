@@ -16,6 +16,7 @@ import { PDC_CHEQUES, RENEWAL_RECORDS } from '../data/leasingExtended';
 import { DAISY_LEASING_FEATURES } from '../data/features';
 
 const MAX_LEASING_STAGE = 10;
+const MONTHS_PER_YEAR = 12;
 
 export type { LeasingStage };
 export { LEASING_STAGE_LABELS };
@@ -23,8 +24,8 @@ export { LEASING_STAGE_LABELS };
 export const useLeasingData = () => {
   const [activeTab, setActiveTab] = useState<string>('leases');
   const [selectedProperty, setSelectedProperty] = useState<number | null>(null);
-  // In production, these datasets intentionally start empty to avoid rendering mock fixtures
-  // until dedicated Daisy API hydration is wired into this hook.
+  // In production, these datasets intentionally start empty to avoid rendering mock fixtures.
+  // This hook currently has no API hydration path in production mode.
   const [leases, setLeases] = useState<ActiveLease[]>(import.meta.env.DEV ? ACTIVE_LEASES : []);
   const [maintenance, setMaintenance] = useState<MaintenanceRequest[]>(
     import.meta.env.DEV ? MAINTENANCE_REQUESTS : []
@@ -42,7 +43,7 @@ export const useLeasingData = () => {
   }, [leases]);
 
   const getTotalAnnualRent = useCallback((): number => {
-    return leases.reduce((sum, lease) => sum + (lease.rent * 12), 0);
+    return leases.reduce((sum, lease) => sum + lease.rent * MONTHS_PER_YEAR, 0);
   }, [leases]);
 
   const getOccupancyRate = useCallback((): string => {
