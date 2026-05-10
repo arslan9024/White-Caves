@@ -22,7 +22,14 @@ interface ThemeContextType {
   setIsDark: Dispatch<SetStateAction<boolean>>;
 }
 
-const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
+const FALLBACK_THEME_CONTEXT: ThemeContextType = {
+  isDark: false,
+  themeMode: 'light',
+  setThemeMode: () => {},
+  setIsDark: () => {},
+};
+
+const ThemeContext = createContext<ThemeContextType>(FALLBACK_THEME_CONTEXT);
 
 interface ThemeProviderProps {
   children: ReactNode;
@@ -92,9 +99,5 @@ export const ThemeProvider: FC<ThemeProviderProps> = ({ children }) => {
 };
 
 export const useTheme = (): ThemeContextType => {
-  const context = useContext(ThemeContext);
-  if (!context) {
-    throw new Error('useTheme must be used within a ThemeProvider');
-  }
-  return context;
+  return useContext(ThemeContext);
 };

@@ -1,6 +1,26 @@
 import { useState, useCallback, useRef, useEffect, useMemo } from 'react';
 import { DUMMY_CONVERSATIONS, QUICK_REPLIES, Conversation } from '../data/conversations';
 import { NADIA_WHATSAPP_FEATURES } from '../data/features';
+import { authFetch } from '../../../../utils/authFetch';
+
+const HOT_LEAD_THRESHOLD = 80;
+const WARM_LEAD_THRESHOLD = 50;
+
+interface NadiaMessageApi {
+  id: string;
+  direction: 'inbound' | 'outbound';
+  body: string;
+  status?: string;
+  timestamp: string;
+}
+
+interface NadiaConversationApi {
+  id: string;
+  customerPhone: string;
+  status?: string;
+  leadScore?: number;
+  messages?: NadiaMessageApi[];
+}
 
 export const useWhatsAppData = () => {
   // Only use dummy data in development — production fetches from API
@@ -15,6 +35,62 @@ export const useWhatsAppData = () => {
   const [showAgentAssign, setShowAgentAssign] = useState<boolean>(false);
   const [assignedAgent, setAssignedAgent] = useState<string | null>(null);
   const aiTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    if (import.meta.env.DEV) return;
+
+    let cancelled = false;
+
+    authFetch('/api/nadia/conversations?limit=50')
+      .then((r: Response) => r.json() as Promise<{ data?: NadiaConversationApi[] }>)
+      .then((payload) => {
+        if (cancelled) return;
+        const rows = Array.isArray(payload.data) ? payload.data : [];
+        const mapped: Conversation[] = rows.map((conv) => {
+          const messages = Array.isArray(conv.messages) ? conv.messages : [];
+          const sorted = messages
+            .map((m) => ({ ...m, timestampMs: new Date(m.timestamp).getTime() }))
+            .sort((a, b) => a.timestampMs - b.timestampMs);
+          const last = sorted[sorted.length - 1];
+          const leadScore = Number(conv.leadScore ?? 0);
+          const priority =
+            leadScore >= HOT_LEAD_THRESHOLD
+              ? 'hot'
+              : leadScore >= WARM_LEAD_THRESHOLD
+                ? 'warm'
+                : 'cold';
+          return {
+            id: conv.id,
+            contact: {
+              name: conv.customerPhone,
+              phone: conv.customerPhone,
+              avatar: '',
+              status: conv.status ?? 'active',
+            },
+            lastMessage: last?.body ?? '',
+            unread: 0,
+            time: last ? new Date(last.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '',
+            priority,
+            tags: conv.status ? [conv.status] : [],
+            messages: sorted.map((m, idx) => ({
+              id: idx + 1,
+              type: m.direction === 'outbound' ? 'sent' : 'received',
+              text: m.body,
+              time: new Date(m.timestampMs).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+              status: m.status,
+            })),
+          };
+        });
+        setConversations(mapped);
+      })
+      .catch(() => {
+        // Keep empty production state if API request fails.
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   // Cleanup timer on unmount
   useEffect(() => {

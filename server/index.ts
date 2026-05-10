@@ -71,7 +71,9 @@ import invoicesLeaseRoutes from './routes/invoicesLease.js';
 import usersRoutes from './routes/users.js';
 import leasingInventoryRoutes from './routes/leasing-inventory.js';
 import secondarySalesRoutes from './routes/secondary-sales.js';
-import { requireRole, requirePermission } from './middleware/rbac.js';
+import commissionsRoutes from './routes/commissions.js';
+import henryRoutes from './routes/henry.js';
+import { requireRole, requirePermission, ROLE_ALIAS_MAP } from './middleware/rbac.js';
 import { startLeadScoringScheduler } from './services/ai/leadScoringScheduler.js';
 import { startFollowUpScheduler } from './services/automation/followUpScheduler.js';
 import { startRateRefresh } from './services/currencyService.js';
@@ -381,6 +383,11 @@ app.use('/api/leasing-inventory', leasingInventoryRoutes);
 // Secondary Sales API
 app.use('/api/secondary-sales', secondarySalesRoutes);
 
+// Commissions API (Phase 35 - Dubai Real Estate Commission Tracker)
+app.use('/api/commissions', commissionsRoutes);
+
+// Henry Document Hub API (AI Assistant WC-AI-003 — The Record Keeper)
+app.use('/api/henry', henryRoutes);
 // WhatsApp Webhook (public endpoint — requires webhook secret for verification)
 app.post(
   '/api/whatsapp/webhook',
@@ -742,8 +749,9 @@ app.get(
   })
 );
 
-// Admin Role Management stubs (RoleSelectionForm, RoleApprovalQueue)
-// TODO: Add Prisma model for RoleRequest when role management module is prioritised
+// Admin Role Management — direct role override (admin+) + role-request CRUD via roleRequestsRoutes above
+// /api/users/role-request  → POST /api/role-requests (roleRequestsRoutes)
+// /api/admin/role-requests → GET/POST /api/role-requests (roleRequestsRoutes)
 app.post(
   '/api/users/role',
   authMiddleware,
@@ -753,7 +761,6 @@ app.post(
     if (!userId || !role) throw new AppError('userId and role are required', 400);
 
     // Validate role against the full alias map to prevent arbitrary strings being stored
-    const { ROLE_ALIAS_MAP } = await import('./middleware/rbac.js');
     if (!Object.hasOwn(ROLE_ALIAS_MAP, role)) {
       throw new AppError(
         `Invalid role: "${role}". Must be one of: ${Object.keys(ROLE_ALIAS_MAP).join(', ')}`,

@@ -42,6 +42,8 @@ const NinaWhatsAppBotCRM = lazy(() => import('../components/crm/NinaWhatsAppBotC
 const NancyHRCRM = lazy(() => import('../components/crm/NancyHRCRM_NEW'));
 const SophiaSalesCRM = lazy(() => import('../components/crm/SophiaSalesCRM_NEW'));
 const DaisyLeasingCRM = lazy(() => import('../components/crm/DaisyLeasingCRM_NEW'));
+const LindaAdminCRM = lazy(() => import('../components/crm/LindaAdminCRM_NEW'));
+const HenryDocumentHub = lazy(() => import('../features/henry/HenryDocumentHub'));
 const TheodoraFinanceCRM = lazy(() => import('../components/crm/TheodoraFinanceCRM_NEW'));
 const OliviaMarketingCRM = lazy(() => import('../components/crm/OliviaMarketingCRM_NEW'));
 const ZoeExecutiveCRM = lazy(() => import('../components/crm/ZoeExecutiveCRM_NEW'));
@@ -139,6 +141,10 @@ const CRM_MODULES: Record<string, CRMModule> = {
   valuation: { Component: PropertyValuationModule, label: 'Property Valuation' },
   analytics: { Component: MarketAnalyticsModule, label: 'Market Analytics' },
 
+  // White Caves Channel & Document Modules
+  linda: { Component: (LindaAdminCRM as ComponentType<CRMModuleProps>), label: 'Linda WhatsApp Bot' },
+  henry: { Component: (HenryDocumentHub as ComponentType<CRMModuleProps>), label: '📄 Document Hub (Henry)' },
+
   // Legacy JSX CRM modules (pre-NEW era) — now routable
   kairos: { Component: KairosCRM, label: 'Luxury Concierge CRM' },
   juno: { Component: JunoCRM, label: 'Community & Facilities CRM' },
@@ -147,7 +153,6 @@ const CRM_MODULES: Record<string, CRMModule> = {
   atlas: { Component: AtlasCRM, label: 'Projects Intelligence CRM' },
   maven: { Component: MavenCRM, label: 'Investment Strategy CRM' },
   sentinel: { Component: SentinelCRM, label: 'Property Monitoring CRM' },
-  henry: { Component: HenryCRM, label: 'Audit & Records CRM' },
   evangeline: { Component: EvangelineCRM, label: 'Legal Risk CRM' },
   hunter: { Component: HunterCRM, label: 'Lead Prospecting CRM' },
 
@@ -167,7 +172,6 @@ const CRM_MODULES: Record<string, CRMModule> = {
   quill: { Component: QuillCRM, label: 'Document Generator CRM' },
   lumen: { Component: LumenCRM, label: 'Visual Analytics CRM' },
   crest: { Component: CrestCRM, label: 'Property Valuation CRM' },
-  linda: { Component: LindaCRM, label: 'WhatsApp LocalAuth CRM' },
 };
 
 // ─── Page Component ───────────────────────────────────────────
