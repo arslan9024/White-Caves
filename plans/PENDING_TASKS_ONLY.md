@@ -1,52 +1,29 @@
-﻿# Pending Tasks Only
+# Pending Tasks Only
 
-## Canonical Source
+**Last Updated:** 2026-05-11
 
-- [`MASTER_PLAN.md`](./MASTER_PLAN.md) — official project source of truth
+## Canonical Sources
 
-- [ ] [`IMPROVEMENTS_BACKLOG.md`](./IMPROVEMENTS_BACKLOG.md) — 38-item improvement backlog (all phases)
+- Roadmap: [`MASTER_PLAN.md`](./MASTER_PLAN.md)
+- Operational dashboard: [`../PROJECT_PROGRESS.md`](../PROJECT_PROGRESS.md)
+- Governance policy: [`PLANNING_GOVERNANCE.md`](./PLANNING_GOVERNANCE.md)
 
 ## Active Pending Plans
 
-- [ ] [`PHASE_26_CONTEXT_ENRICHMENT_SPRINT.md`](./PHASE_26_CONTEXT_ENRICHMENT_SPRINT.md) 🆕 _(active: free-agent documentation completion gates)_
-- [ ] [`PHASE_23_24_25_IMPLEMENTATION_PLAN.md`](./PHASE_23_24_25_IMPLEMENTATION_PLAN.md) _(current active canonical plan)_
-- [x] [`PHASE_24_MODULE_TRACEABILITY_MATRIX.md`](./PHASE_24_MODULE_TRACEABILITY_MATRIX.md) ✅ **COMPLETE** — detailed role matrices + cross-module dependency chain
-- [x] [`PHASE_24_ACCEPTANCE_TEST_PLAN.md`](./PHASE_24_ACCEPTANCE_TEST_PLAN.md) ✅ **NEW: 144 audit-testable scenarios**
-- [x] [`PHASE_25_OPERATIONAL_VERIFICATION_LOG.md`](./PHASE_25_OPERATIONAL_VERIFICATION_LOG.md) ✅ **COMPLETE** — runtime/build verification evidence logged
-- [x] [`PHASE_25_EXECUTION_GUIDE.md`](./PHASE_25_EXECUTION_GUIDE.md) ✅ **COMPLETE** — planned items implemented and pushed
-- [ ] [`PHASE_1_HOMEPAGE.md`](./PHASE_1_HOMEPAGE.md)
-- [ ] [`PHASE_2_LANDLORD_TENANT.md`](./PHASE_2_LANDLORD_TENANT.md)
-- [ ] [`PHASE_3_CRM_SUPERUSER.md`](./PHASE_3_CRM_SUPERUSER.md)
-- [ ] [`PHASE_3_AND_BEYOND.md`](./PHASE_3_AND_BEYOND.md)
-- [ ] [`PHASE_19_NEXT_PHASE_EXECUTION_CHECKLIST_APR27.md`](./PHASE_19_NEXT_PHASE_EXECUTION_CHECKLIST_APR27.md)
-- [ ] [`MASTER_PLAN_CRM_EXCELLENCE.md`](./MASTER_PLAN_CRM_EXCELLENCE.md)
+- [ ] [`PHASE_26_CONTEXT_ENRICHMENT_SPRINT.md`](./PHASE_26_CONTEXT_ENRICHMENT_SPRINT.md)
+- [ ] [`PHASE_23_24_25_IMPLEMENTATION_PLAN.md`](./PHASE_23_24_25_IMPLEMENTATION_PLAN.md)
+- [x] [`PHASE_24_MODULE_TRACEABILITY_MATRIX.md`](./PHASE_24_MODULE_TRACEABILITY_MATRIX.md)
+- [x] [`PHASE_24_ACCEPTANCE_TEST_PLAN.md`](./PHASE_24_ACCEPTANCE_TEST_PLAN.md)
+- [x] [`PHASE_25_OPERATIONAL_VERIFICATION_LOG.md`](./PHASE_25_OPERATIONAL_VERIFICATION_LOG.md)
+- [x] [`PHASE_25_EXECUTION_GUIDE.md`](./PHASE_25_EXECUTION_GUIDE.md)
 
-## Active Audit Work
+## Immediate Focus
 
-- [ ] [`audit-round-66.md`](./audit-round-66.md)
-- [ ] [`audit-round-69.md`](./audit-round-69.md)
-- [ ] [`audit-round-70.md`](./audit-round-70.md)
-
-## Immediate Pending Focus
-
-- [ ] Phase 26: free-agent context enrichment completion (landlord-portal, revenue-model, analytics-dashboard, AI personas 25-40)
-- [ ] Phase 23: business docs + module business-logic alignment (Leads, Inventory, Sales, Finance, Leasing, WhatsApp)
-- [ ] Branch governance unification: development daily commits, main monthly release-only merges
-
-- [x] Phase 25: homepage improvement task ownership + operational dev/build verification log
-- [x] Homepage polish: featured properties visibility, image integrity, mobile audit, contact success state, lighthouse target
-- [ ] Portals: wire maintenance/payment persistence, add portal subroutes + mobile verification
-- [ ] CRM: managing director sign-in flow, dashboard landing, core tab integration, assistant dashboard render validation
-- [ ] Phase 19 week-4 hardening: baseline capture, OWASP gap closure, DR rehearsal, monitoring accuracy
-
-## Newly Completed Progress (April 29, 2026)
-
-- [x] Landlord portal UI MVP complete: Properties, Tenants, Payments, Maintenance, Documents
-- [x] Tenant portal UI MVP complete: Lease, Payment History, Maintenance, Documents
-- [x] Portal route protection present for `/landlord-portal` and `/tenant-portal`
-- [x] Focused portal regression suite passing: 139 tests
-- [x] Portal production builds verified during implementation sessions
+- [ ] Close remaining Phase 26 audit item or mark as deferred with owner/date
+- [ ] Keep status consistent across `MASTER_PLAN`, `PROJECT_PROGRESS`, and this file
+- [ ] Enforce archive rule for superseded/ad-hoc plan artifacts
+- [ ] Complete planning tooling hardening for `/api/plans`
 
 ## Archive Rule
 
-When a phase-plan file is completed or superseded, move it to `../archives/plans/completed/` so this folder stays focused on unfinished work.
+When a phase plan is completed or superseded, move it to `../archives/plans/completed/` or `../archives/plans/superseded/`.

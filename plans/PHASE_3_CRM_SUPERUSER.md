@@ -3,6 +3,7 @@
 > **Priority**: #3 — High  
 > **Goal**: A fully working CRM accessible with the managing director super user, all features usable  
 > **Approach**: Log in as `arslanmalikgoraha@gmail.com` → access every CRM tab and feature  
+> **Last Updated**: 2026-05-11  
 > **Status**: 🔲 Not Started — dashboard shell and routes exist, full integration in progress
 
 ---
@@ -20,13 +21,13 @@ and compliance features.
 
 The primary super user is the **Managing Director**.
 
-| Detail | Value |
-|--------|-------|
-| Email | `arslanmalikgoraha@gmail.com` |
-| Password | `password123` (change via seed env `SEED_PASSWORD`) |
-| Role | `managing_director` (maps to "Managing Director" in ROLE_TAB_MAPPING) |
-| CRM Tabs | Overview, Properties, Agents, Leads, Contracts, Analytics, Users, Settings (8 tabs) |
-| Backend access | Full executive access across all API endpoints |
+| Detail         | Value                                                                               |
+| -------------- | ----------------------------------------------------------------------------------- |
+| Email          | `arslanmalikgoraha@gmail.com`                                                       |
+| Password       | `password123` (change via seed env `SEED_PASSWORD`)                                 |
+| Role           | `managing_director` (maps to "Managing Director" in ROLE_TAB_MAPPING)               |
+| CRM Tabs       | Overview, Properties, Agents, Leads, Contracts, Analytics, Users, Settings (8 tabs) |
+| Backend access | Full executive access across all API endpoints                                      |
 
 > **No duplicate**: `owner@whitecaves.ae` is a seed/dummy data account only. The real super user
 > is `arslanmalikgoraha@gmail.com`. Do not create a second `managing_director` for this email.
@@ -37,35 +38,36 @@ The primary super user is the **Managing Director**.
 
 ## What Already Exists ✅
 
-| Feature | Location | Status |
-|---------|----------|--------|
-| Sign-in page | `src/pages/auth/SignInPage.tsx` | ✅ Email/password + Firebase OAuth |
-| JWT auth backend | `server/routes/auth.ts` | ✅ Login returns token, bcrypt verify |
-| `lion` role tab mapping | `src/config/ROLE_TAB_MAPPING.ts` | ✅ 11 tabs configured |
-| UnifiedDashboardPage | `src/pages/UnifiedDashboardPage.tsx` | ✅ Dual sidebar, role-based tabs |
-| Overview tab | `src/components/owner/tabs/OverviewTab.tsx` | ✅ KPI cards, recent activity |
-| Properties tab | `src/components/owner/tabs/PropertiesTab.tsx` | ✅ Property list with CRUD |
-| Agents tab | `src/components/owner/tabs/AgentsTab.tsx` | ✅ Agent list |
-| Leads tab | `src/components/owner/tabs/LeadsTab.tsx` | ✅ Lead list with status |
-| Contracts tab | `src/components/owner/tabs/ContractsTab.tsx` | ✅ Contract list |
-| Analytics tab | `src/components/owner/tabs/AnalyticsTab.tsx` | ✅ Charts and KPIs |
-| Settings tab | `src/components/owner/tabs/SettingsTab.tsx` | ✅ System settings |
-| Users tab | `src/components/owner/tabs/UsersTab.tsx` | ✅ User management |
-| Admin dashboard | `src/components/admin/AdminDashboard.tsx` | ✅ Admin panel |
-| AI Hub | `src/components/crm/AIAssistantHub.tsx` | ✅ 17 AI assistants listed |
-| AI Command Center | `src/components/crm/AICommandCenter.tsx` | ✅ Assistant interface |
-| CRM Hub page | `src/pages/crm/CRMHubPage.tsx` | ✅ Department selector |
-| All 13 AI dashboards | `src/components/crm/*CRM_NEW/` | ✅ Clara, Mary, Sophia, Daisy, Laila, Nadia, Zoe, Nina, Olivia, Nancy, Aurora, Hazel, Willow, Theodora |
-| Lead management page | `src/pages/crm/LeadManagementPage.tsx` | ✅ Full CRUD UI |
-| Property management page | `src/pages/crm/PropertyManagementPage.tsx` | ✅ Full CRUD UI |
-| Agent performance page | `src/pages/crm/AgentPerformancePage.tsx` | ✅ Performance charts |
-| Backend APIs | `server/routes/` (12 route files) | ✅ leads, properties, agents, transactions, finance, tenants, compliance, reporting, crm, assistants |
+| Feature                  | Location                                      | Status                                                                                                 |
+| ------------------------ | --------------------------------------------- | ------------------------------------------------------------------------------------------------------ |
+| Sign-in page             | `src/pages/auth/SignInPage.tsx`               | ✅ Email/password + Firebase OAuth                                                                     |
+| JWT auth backend         | `server/routes/auth.ts`                       | ✅ Login returns token, bcrypt verify                                                                  |
+| `lion` role tab mapping  | `src/config/ROLE_TAB_MAPPING.ts`              | ✅ 11 tabs configured                                                                                  |
+| UnifiedDashboardPage     | `src/pages/UnifiedDashboardPage.tsx`          | ✅ Dual sidebar, role-based tabs                                                                       |
+| Overview tab             | `src/components/owner/tabs/OverviewTab.tsx`   | ✅ KPI cards, recent activity                                                                          |
+| Properties tab           | `src/components/owner/tabs/PropertiesTab.tsx` | ✅ Property list with CRUD                                                                             |
+| Agents tab               | `src/components/owner/tabs/AgentsTab.tsx`     | ✅ Agent list                                                                                          |
+| Leads tab                | `src/components/owner/tabs/LeadsTab.tsx`      | ✅ Lead list with status                                                                               |
+| Contracts tab            | `src/components/owner/tabs/ContractsTab.tsx`  | ✅ Contract list                                                                                       |
+| Analytics tab            | `src/components/owner/tabs/AnalyticsTab.tsx`  | ✅ Charts and KPIs                                                                                     |
+| Settings tab             | `src/components/owner/tabs/SettingsTab.tsx`   | ✅ System settings                                                                                     |
+| Users tab                | `src/components/owner/tabs/UsersTab.tsx`      | ✅ User management                                                                                     |
+| Admin dashboard          | `src/components/admin/AdminDashboard.tsx`     | ✅ Admin panel                                                                                         |
+| AI Hub                   | `src/components/crm/AIAssistantHub.tsx`       | ✅ 17 AI assistants listed                                                                             |
+| AI Command Center        | `src/components/crm/AICommandCenter.tsx`      | ✅ Assistant interface                                                                                 |
+| CRM Hub page             | `src/pages/crm/CRMHubPage.tsx`                | ✅ Department selector                                                                                 |
+| All 13 AI dashboards     | `src/components/crm/*CRM_NEW/`                | ✅ Clara, Mary, Sophia, Daisy, Laila, Nadia, Zoe, Nina, Olivia, Nancy, Aurora, Hazel, Willow, Theodora |
+| Lead management page     | `src/pages/crm/LeadManagementPage.tsx`        | ✅ Full CRUD UI                                                                                        |
+| Property management page | `src/pages/crm/PropertyManagementPage.tsx`    | ✅ Full CRUD UI                                                                                        |
+| Agent performance page   | `src/pages/crm/AgentPerformancePage.tsx`      | ✅ Performance charts                                                                                  |
+| Backend APIs             | `server/routes/` (12 route files)             | ✅ leads, properties, agents, transactions, finance, tenants, compliance, reporting, crm, assistants   |
 
 ---
 
 ## What Needs To Be Done 🚧
 
 ### 2.1 — Sign-In Flow End-to-End
+
 **Goal**: Managing director can open the app, sign in, and land on the CRM dashboard in < 5 clicks.
 
 - [ ] **Sign-in page renders cleanly** — no layout breaks, loading spinner works
@@ -78,6 +80,7 @@ The primary super user is the **Managing Director**.
 - [ ] **Loading state**: button shows spinner during API call, disabled while loading
 
 **Files to check/fix**:
+
 - `src/pages/auth/SignInPage.tsx` — `handleSignInSuccess()` and redirect logic
 - `src/services/authService.ts` — `loginWithEmail()` function
 - `src/App.tsx` — protected route guarding `/dashboard`
@@ -85,6 +88,7 @@ The primary super user is the **Managing Director**.
 ---
 
 ### 2.2 — Dashboard Landing (Overview Tab)
+
 **Goal**: First screen after login shows meaningful data.
 
 - [ ] **Overview tab loads** without errors or blank state
@@ -97,6 +101,7 @@ The primary super user is the **Managing Director**.
 ---
 
 ### 2.3 — Properties Tab (Full CRUD)
+
 **Goal**: Owner can add, view, edit, and delete properties.
 
 - [ ] **Property list** loads from `/api/properties` — shows title, price, status, location, type, beds/baths
@@ -112,6 +117,7 @@ The primary super user is the **Managing Director**.
 ---
 
 ### 2.4 — Leads Tab (Full CRUD)
+
 **Goal**: Owner can manage the full sales pipeline.
 
 - [ ] **Lead list** loads from `/api/leads` with status badges (new/contacted/qualified/hot/cold/won/lost)
@@ -128,6 +134,7 @@ The primary super user is the **Managing Director**.
 ---
 
 ### 2.5 — Agents Tab (Full CRUD)
+
 **Goal**: Owner can manage the agent team.
 
 - [ ] **Agent list** loads from `/api/agents` — name, email, role, status, department
@@ -140,6 +147,7 @@ The primary super user is the **Managing Director**.
 ---
 
 ### 2.6 — Users Tab (User Management)
+
 **Goal**: Owner can manage all user accounts in the system.
 
 - [ ] **Users list** loads from `/api/user-management` (already mounted at this path)
@@ -152,6 +160,7 @@ The primary super user is the **Managing Director**.
 ---
 
 ### 2.7 — Analytics Tab
+
 **Goal**: Owner sees real charts with live or dummy data.
 
 - [ ] **Revenue chart** (monthly bar chart — Recharts) — from `/api/finance/summary` or dummy
@@ -164,6 +173,7 @@ The primary super user is the **Managing Director**.
 ---
 
 ### 2.8 — AI Assistant Hub
+
 **Goal**: Owner can browse and interact with all 17 registered AI assistants.
 
 - [ ] **AI Hub tab** shows all 17 assistant cards: name, role description, avatar
@@ -175,29 +185,31 @@ The primary super user is the **Managing Director**.
 ---
 
 ### 2.9 — Individual CRM Dashboards (All 13 AI Assistants)
+
 **Goal**: Every AI assistant dashboard is navigable and renders without errors.
 
-| Assistant | Dashboard | Key Tabs | Status |
-|-----------|-----------|----------|--------|
-| Clara | `ClaraLeadsCRM_NEW` | Prospects, Deals, Activity, Insights, Tasks | ✅ UI exists — verify renders |
-| Mary | `MaryInventoryCRM_NEW` | Inventory, Details, Tools | ✅ UI exists — verify renders |
-| Sophia | `SophiaSalesCRM_NEW` | Pipeline, Deals, Forecasting, Agents | ✅ UI exists — verify renders |
-| Theodora | `TheodoraFinanceCRM_NEW` | Overview, Payments, Reports | ✅ UI exists — verify renders |
-| Daisy | `DaisyLeasingCRM_NEW` | Leases, Maintenance, Renewals, Inquiries | ✅ UI exists — verify renders |
-| Laila | `LailaComplianceCRM_NEW` | KYC, AML, Contracts, Regulations | ✅ UI exists — verify renders |
-| Nadia | `NadiaWhatsAppCRM` | Conversations, Agent Assignment, Insights | ✅ UI exists — verify renders |
-| Zoe | `ZoeExecutiveCRM_NEW` | Executives, Reports, Calendar, Suggestions | ✅ UI exists — verify renders |
-| Nina | `NinaWhatsAppBotCRM_NEW` | Bots, Sessions, Analytics, Settings | ✅ UI exists — backend stub (OK for Phase 2) |
-| Olivia | `OliviaMarketingCRM_NEW` | Campaigns, Automation, Listings, Publish | ✅ UI exists — backend stub (OK for Phase 2) |
-| Nancy | `NancyHRCRM_NEW` | HR module tabs | ✅ UI exists — verify renders |
-| Aurora | `AuroraCTODashboard_NEW` | API Perf, Applications, Architecture, Assistants | ✅ UI exists — verify renders |
-| Hazel | `HazelFrontendCRM_NEW` | Components, Design, Accessibility, Performance | ✅ UI exists — verify renders |
+| Assistant | Dashboard                | Key Tabs                                         | Status                                       |
+| --------- | ------------------------ | ------------------------------------------------ | -------------------------------------------- |
+| Clara     | `ClaraLeadsCRM_NEW`      | Prospects, Deals, Activity, Insights, Tasks      | ✅ UI exists — verify renders                |
+| Mary      | `MaryInventoryCRM_NEW`   | Inventory, Details, Tools                        | ✅ UI exists — verify renders                |
+| Sophia    | `SophiaSalesCRM_NEW`     | Pipeline, Deals, Forecasting, Agents             | ✅ UI exists — verify renders                |
+| Theodora  | `TheodoraFinanceCRM_NEW` | Overview, Payments, Reports                      | ✅ UI exists — verify renders                |
+| Daisy     | `DaisyLeasingCRM_NEW`    | Leases, Maintenance, Renewals, Inquiries         | ✅ UI exists — verify renders                |
+| Laila     | `LailaComplianceCRM_NEW` | KYC, AML, Contracts, Regulations                 | ✅ UI exists — verify renders                |
+| Nadia     | `NadiaWhatsAppCRM`       | Conversations, Agent Assignment, Insights        | ✅ UI exists — verify renders                |
+| Zoe       | `ZoeExecutiveCRM_NEW`    | Executives, Reports, Calendar, Suggestions       | ✅ UI exists — verify renders                |
+| Nina      | `NinaWhatsAppBotCRM_NEW` | Bots, Sessions, Analytics, Settings              | ✅ UI exists — backend stub (OK for Phase 2) |
+| Olivia    | `OliviaMarketingCRM_NEW` | Campaigns, Automation, Listings, Publish         | ✅ UI exists — backend stub (OK for Phase 2) |
+| Nancy     | `NancyHRCRM_NEW`         | HR module tabs                                   | ✅ UI exists — verify renders                |
+| Aurora    | `AuroraCTODashboard_NEW` | API Perf, Applications, Architecture, Assistants | ✅ UI exists — verify renders                |
+| Hazel     | `HazelFrontendCRM_NEW`   | Components, Design, Accessibility, Performance   | ✅ UI exists — verify renders                |
 
 **Task**: Navigate to each one and confirm no crash, no blank screen, no missing import errors.
 
 ---
 
 ### 2.10 — Settings Tab
+
 **Goal**: Owner can update system settings.
 
 - [ ] Company name, logo URL, contact email, phone, RERA license number fields
@@ -208,6 +220,7 @@ The primary super user is the **Managing Director**.
 ---
 
 ### 2.11 — Navigation & Sidebar Polish
+
 **Goal**: Moving between tabs feels fast and professional.
 
 - [ ] Left sidebar shows department icons + labels for all 13 AI assistant dashboards
@@ -220,6 +233,7 @@ The primary super user is the **Managing Director**.
 ---
 
 ### 2.12 — Error States & Loading States
+
 **Goal**: Nothing crashes when the backend is unavailable or returns empty data.
 
 - [ ] Every API call has a loading spinner (existing `SuspenseLoader` or `<Skeleton>`)
@@ -231,6 +245,7 @@ The primary super user is the **Managing Director**.
 ---
 
 ### 2.13 — Super User "Demo Mode" with Dummy Data
+
 **Goal**: CRM is fully usable even without a live database connection.
 
 Since the seed script already populates data, document the steps for a full demo:
