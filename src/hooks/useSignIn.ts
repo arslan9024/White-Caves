@@ -344,6 +344,8 @@ export function useSignIn() {
       setLoading(true);
       setError('');
 
+      const normalizedEmail = email.trim().toLowerCase();
+
       if (mode === 'signup' && password !== confirmPassword) {
         setError('Passwords do not match');
         setLoading(false);
@@ -367,11 +369,11 @@ export function useSignIn() {
         if (mode === 'signup') {
           handleSignUpSuccess({
             id: 'pending-signup',
-            email,
-            name: fullName || email,
+            email: normalizedEmail,
+            name: fullName || normalizedEmail,
           });
         } else {
-          const response = await backendLogin(email, password);
+          const response = await backendLogin(normalizedEmail, password);
           if (!response?.data?.user) throw new Error('Invalid response: missing user data');
           handleSignInSuccess(response.data.user);
         }

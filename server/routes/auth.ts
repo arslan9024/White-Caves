@@ -597,17 +597,53 @@ router.post(
       throw new AppError('Firebase token is required', 400);
     }
 
-    let decodedToken;
+    const normalizedBodyEmail = typeof email === 'string' ? email.toLowerCase().trim() : null;
+
+    let decodedToken: {
+      uid: string;
+      email?: string;
+      name?: string;
+      picture?: string;
+    };
     try {
       decodedToken = await verifyFirebaseIdToken(firebaseToken);
     } catch (error: unknown) {
-      if (error instanceof FirebaseAdminInitError) {
-        throw new AppError(
-          'Firebase Admin is not configured on the server. Set FIREBASE_SERVICE_ACCOUNT or FIREBASE_PROJECT_ID/FIREBASE_CLIENT_EMAIL/FIREBASE_PRIVATE_KEY.',
-          503
-        );
+      const isFirebaseAdminInitError =
+        error instanceof FirebaseAdminInitError ||
+        (typeof error === 'object' &&
+          error !== null &&
+          (error as { name?: string }).name === 'FirebaseAdminInitError');
+
+      if (isFirebaseAdminInitError) {
+        const allowDevFallback =
+          process.env.NODE_ENV !== 'production' &&
+          (process.env.ALLOW_FIREBASE_SYNC_DEV_FALLBACK ?? 'true') === 'true';
+
+        if (!allowDevFallback) {
+          throw new AppError(
+            'Firebase Admin is not configured on the server. Set FIREBASE_SERVICE_ACCOUNT or FIREBASE_PROJECT_ID/FIREBASE_CLIENT_EMAIL/FIREBASE_PRIVATE_KEY.',
+            503
+          );
+        }
+
+        if (!normalizedBodyEmail) {
+          throw new AppError('Email is required for development firebase-sync fallback', 400);
+        }
+
+        logger.warn('Using development firebase-sync fallback (Firebase Admin unavailable)', {
+          firebaseUid,
+          email: normalizedBodyEmail,
+        });
+
+        decodedToken = {
+          uid: firebaseUid,
+          email: normalizedBodyEmail,
+          name: typeof name === 'string' ? sanitizeString(name.trim()) : undefined,
+          picture: typeof photoUrl === 'string' ? photoUrl : undefined,
+        };
+      } else {
+        throw new AppError('Invalid Firebase token', 401);
       }
-      throw new AppError('Invalid Firebase token', 401);
     }
 
     if (decodedToken.uid !== firebaseUid) {
@@ -619,7 +655,6 @@ router.post(
       throw new AppError('Verified Firebase email is required', 400);
     }
 
-    const normalizedBodyEmail = typeof email === 'string' ? email.toLowerCase().trim() : null;
     if (normalizedBodyEmail && normalizedBodyEmail !== verifiedEmail) {
       throw new AppError('Firebase email mismatch', 401);
     }

@@ -78,6 +78,12 @@ vi.mock('../utils/sanitize', () => ({
 }));
 vi.mock('../config/firebaseAdmin.js', () => ({
   verifyFirebaseIdToken: mockVerifyFirebaseIdToken,
+  FirebaseAdminInitError: class FirebaseAdminInitError extends Error {
+    constructor(message: string) {
+      super(message);
+      this.name = 'FirebaseAdminInitError';
+    }
+  },
 }));
 vi.mock('../utils/logger.js', () => ({
   default: { info: vi.fn(), warn: vi.fn(), error: vi.fn(), debug: vi.fn() },
@@ -735,6 +741,38 @@ describe('Auth Routes — /api/auth', () => {
       expect(res.body.success).toBe(true);
       expect(res.body.data.token).toBe('mock-jwt-token');
       expect(mockVerifyFirebaseIdToken).toHaveBeenCalledWith('valid-token');
+    });
+
+    it('uses development fallback when Firebase Admin is unavailable', async () => {
+      process.env.NODE_ENV = 'development';
+      process.env.ALLOW_FIREBASE_SYNC_DEV_FALLBACK = 'true';
+
+      const adminInitError = new Error('Firebase Admin SDK has not been initialized');
+      adminInitError.name = 'FirebaseAdminInitError';
+      mockVerifyFirebaseIdToken.mockRejectedValueOnce(adminInitError);
+
+      mockPrisma.user.findUnique.mockResolvedValueOnce(null);
+      mockPrisma.user.create.mockResolvedValueOnce({
+        id: 'user-dev-1',
+        email: 'devuser@whitecaves.ae',
+        name: 'Dev User',
+        role: 'agent',
+        department: null,
+        photoUrl: null,
+        status: 'active',
+      });
+
+      const res = await request(createApp()).post('/api/auth/firebase-sync').send({
+        firebaseUid: 'firebase-dev-123',
+        firebaseToken: 'dev-token',
+        email: 'devuser@whitecaves.ae',
+        name: 'Dev User',
+      });
+
+      expect(res.status).toBe(200);
+      expect(res.body.success).toBe(true);
+      expect(res.body.data.token).toBe('mock-jwt-token');
+      expect(res.body.data.user.email).toBe('devuser@whitecaves.ae');
     });
   });
 
