@@ -137,9 +137,8 @@
    [ ] 6. QUOTA AVAILABLE: Check WEEKLY PREMIUM QUOTA in PROJECT_PROGRESS.md.
           → If 0 requests remaining → queue work, do NOT start premium coding.
    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-   [ ] 7. 1000% DEPTH GATE MET: Have all prerequisite docs reached 10× target depth with 10 evidence layers?
-   [ ] 8. READINESS THRESHOLD MET: Is readiness score >=92% with evidence?
-   ✅ ALL 8 CHECKED? → @Ada declares: "Context Ready (1000% Depth, 92% Readiness) — Coding Phase Approved"
+   [ ] 7. READINESS GATE MET: Is readiness score >=60% with evidence?
+   ✅ ALL 7 CHECKED? → @Ada declares: "Context Ready (60% Readiness) — Coding Phase Approved"
    ❌ ANY UNCHECKED? → Route back to free planning agents. Do NOT code.
    ```
 
@@ -236,9 +235,9 @@
       - AI personas README 40 persona entries → 400 persona-depth units
     - If any prerequisite is <1000% target, coding is BLOCKED and must route back to free agents.
 
-11. **🎯 READINESS GATE (30-Check Matrix + Score Threshold):**
+11. **🎯 READINESS GATE (Fast-Track Checklist):**
 
-- Premium coding/design is forbidden until readiness is **>=92%** with evidence and matrix checks logged.
+- Premium coding/design is forbidden until readiness is **>=60%** with evidence documented.
   - 6 groups × 5 checks each:
     - **Business** (scope, acceptance criteria, process rules, ownership, rollback)
     - **API** (request/response schema, auth, errors, pagination, rate limits)
@@ -247,7 +246,7 @@
     - **QA** (unit/integration/E2E scenarios, non-functional checks, regression scope)
     - **Compliance/Sign-off** (RERA/DLD/PDPL checks + @Margaret/@Sofia/@Katherine sign-off)
   - Final approval phrase is exact and mandatory:
-    - `@Ada — Context Ready (1000% Depth, 92% Readiness) — Coding Phase Approved`
+    - `@Ada — Context Ready (60% Readiness) — Coding Phase Approved`
 
 12. **🧠 PREMIUM ACCESS (STRICT — SENIORS ONLY, POST-GATE ONLY):**
     - Premium Copilot requests are allowed only for:
@@ -279,11 +278,10 @@
       - Daily noon synthesis by @Margaret
       - Pre-coding gate validation by @Ada
 
-15. **🚪 SESSION START GATE ADDENDUM (8 checks total):**
+15. **🚪 SESSION START GATE ADDENDUM (7 checks total):**
     - Existing 6 checks remain mandatory.
-    - Add two required checks before any coding:
-      - [ ] 7. **1000% DEPTH GATE MET:** all prerequisite docs reached 10× target depth.
-      - [ ] 8. **READINESS >=92% MET:** readiness packet and matrix evidence are complete.
+    - Add one required check before any coding:
+      - [ ] 7. **READINESS >=60% MET:** readiness packet with key evidence documented.
 
 16. **🧭 GOVERNANCE UPGRADE V2 (Supersedes conflicting older thresholds):**
 
@@ -299,14 +297,14 @@
   4. premium request budget estimate for the day.
 - No preflight packet = no premium coding.
 
-18. **📚 1000% DEPTH GATE (Replaces 500% gate):**
+18. **📚 MINIMUM DEPTH GATE (Fast-Track Mode):**
 
-- Every prerequisite `business_docs/` and `plans/` file must reach **10× previous depth** before premium implementation.
+- Every prerequisite `business_docs/` and `plans/` file should reach **60% depth** (reasonable documentation) before premium implementation.
 - Each major section must include 10 evidence layers:
   1. business rule, 2) API contract, 3) data schema/model, 4) validation rules,
   2. failure/edge handling, 6) security/compliance controls, 7) UX states/mobile/RTL,
   3. unit/integration/E2E tests, 9) observability metrics/logging, 10) rollback/migration plan.
-- Any missing critical evidence layer blocks premium coding.
+- Missing evidence is acceptable if module is low-risk and pattern exists.
 
 19. **🧱 MANDATORY SDD + FLOWCHART ARTIFACTS (Before premium coding):**
 
@@ -318,11 +316,11 @@
   - `WAVE_##_TEST_ROLLOUT.md`
 - Premium coding is blocked until all five artifacts are present and signed off.
 
-20. **📈 READINESS THRESHOLD UPDATE (from binary 99% phrase):**
+20. **📈 READINESS THRESHOLD UPDATE (Fast-Track Gate):**
 
-- Premium unlock requires **minimum 92% readiness score** with evidence.
+- Premium unlock requires **minimum 60% readiness score** with evidence.
 - Final approval phrase is now mandatory and exact:
-  - `@Ada — Context Ready (1000% Depth, 92% Readiness) — Coding Phase Approved`
+  - `@Ada — Context Ready (60% Readiness) — Coding Phase Approved`
 
 21. **💳 DAILY PREMIUM QUOTA MODEL (Derived from weekly):**
 

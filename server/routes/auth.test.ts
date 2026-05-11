@@ -80,7 +80,8 @@ vi.mock('../config/firebaseAdmin.js', () => ({
   verifyFirebaseIdToken: mockVerifyFirebaseIdToken,
 }));
 vi.mock('../utils/logger.js', () => ({
-  default: { info: vi.fn(), warn: vi.fn(), error: vi.fn() },
+  default: { info: vi.fn(), warn: vi.fn(), error: vi.fn(), debug: vi.fn() },
+  logger: { info: vi.fn(), warn: vi.fn(), error: vi.fn(), debug: vi.fn() },
 }));
 vi.mock('../middleware/errorHandler', () => ({
   AppError: class extends Error {

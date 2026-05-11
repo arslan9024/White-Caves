@@ -1,8 +1,20 @@
 # Daily Wave Command Center
 
+**Purpose:** Daily execution board (single source for today).  
+**Owner:** @Margaret  
+**Update cadence:** Daily
+
 ## Date
 
 -
+
+## Blocker Burn-Down (Required Daily)
+
+- Start blockers:
+- End blockers:
+- Reduction today (%):
+- Critical blockers remaining:
+- Target trajectory: 27 → <=13
 
 ## Daily Quota Model
 
@@ -13,14 +25,22 @@
 - Actual premium requests:
 - Variance:
 
-## Researcher Preflight
+## AI Velocity Scorecard (Weekly Roll-Up)
 
-- [ ] Context scan completed
-- [ ] Dependency map completed
-- [ ] Risk summary completed
-- [ ] Ready-code plan packet completed
+- AI-assisted tasks completed:
+- Average cycle time per task:
+- Human-only baseline comparator:
+- Net speedup (%):
+- Build/test gate failure rate:
 
-## Wave Execution Queue (3-5 modules)
+## Fast-Track Lane
+
+- [ ] Module has existing implementation pattern
+- [ ] Risk is low and rollback is clear
+- [ ] Gate 1 criteria met
+- [ ] Weekly governance follow-up scheduled
+
+## Wave Execution Queue (max 5 modules)
 
 1.
 2.
@@ -28,14 +48,12 @@
 4.
 5.
 
-## Gate Check (1000% + 92%)
+## Gate Check (Execution-First)
 
-- [ ] SDD complete
-- [ ] Flowcharts complete
-- [ ] Readiness packet complete
-- [ ] Traceability matrix complete
-- [ ] Test rollout complete
-- [ ] DRI/DU evidence complete
+- [ ] Gate 1 passed (ready to implement)
+- [ ] Blocker cap respected (<=3 critical blockers per module)
+- [ ] Test scenarios listed
+- [ ] Build/test checks scheduled
 
 ## Decision
 
@@ -44,6 +62,7 @@
 - [ ] EXECUTING
 - [ ] VERIFIED
 
-## Ada Approval
+## Notes
 
-`@Ada — Context Ready (1000% Depth, 92% Readiness) — Coding Phase Approved`
+- Keep this file under 100 lines.
+- Deep governance evidence is tracked weekly, not as daily hard-stop.

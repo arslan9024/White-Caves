@@ -475,13 +475,13 @@ This file defines the White Caves multi-expert operating model for all agent-ass
 
 ### Governance Handoff Chain
 
-`All 17 Free Agents → @Margaret (daily synthesis) → @Ada (1000% depth + 92% readiness gate) → Senior Coders/Designers`
+`All 17 Free Agents → @Margaret (daily synthesis) → @Ada (60% readiness gate) → Senior Coders/Designers`
 
 ### Collaboration Cadence
 
 - Every 4 hours: mini-sync updates in FEEDS/CONSUMES format
 - Every day at noon: @Margaret merges all handoffs into sprint context
-- Before any coding: @Ada validates 1000% depth and readiness >=92% gates are complete
+- Before any coding: @Ada validates readiness >=60% gate is complete
 
 ### Per-Agent Handoff Contracts (Execution Required)
 
@@ -522,9 +522,10 @@ This file defines the White Caves multi-expert operating model for all agent-ass
 
 ## 🚀 GOVERNANCE UPGRADE V2 — LARGE WAVE EXECUTION MODE
 
-1. **1000% Depth Enforcement:**
-   - All prerequisite docs must meet 10× depth with 10 evidence layers before premium coding.
-   - Each agent output must include DU (Depth Unit) score and DRI (Doc Readiness Index) contribution.
+1. **60% Readiness Enforcement (Fast-Track Mode):**
+   - All prerequisite docs must demonstrate 60% readiness with key evidence before premium coding.
+   - Readiness = business rules + API contract + data schema + 1+ test scenario.
+   - Deep documentation is encouraged but not a blocker for low-risk modules.
 
 2. **Mandatory Artifact Bundle (Before Premium):**
    - Required for each coding wave under `plans/waves/`:

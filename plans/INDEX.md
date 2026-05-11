@@ -1,43 +1,31 @@
-﻿# Plans Index
+﻿# Plans Index (Compact)
 
-## Start Here
+**Purpose:** Single navigation page for active execution planning.  
+**Owner:** @Margaret  
+**Update cadence:** Daily (execution days)
 
-- [`PENDING_TASKS_ONLY.md`](./PENDING_TASKS_ONLY.md)
+## Active Planning Surface (Use These Only)
 
-## Active Pending Plans
+1. [`PENDING_TASKS_ONLY.md`](./PENDING_TASKS_ONLY.md) — daily queue + blockers
+2. [`MASTER_PLAN.md`](./MASTER_PLAN.md) — roadmap + next 5 phases
+3. [`DAILY_WAVE_COMMAND_CENTER.md`](./DAILY_WAVE_COMMAND_CENTER.md) — daily ops board
+4. [`waves/WAVE_01_READINESS_PACKET.md`](./waves/WAVE_01_READINESS_PACKET.md) — blocker/readiness baseline
+5. [`PHASE_23_24_25_IMPLEMENTATION_PLAN.md`](./PHASE_23_24_25_IMPLEMENTATION_PLAN.md) — stable historical baseline
 
-- [`PHASE_26_CONTEXT_ENRICHMENT_SPRINT.md`](./PHASE_26_CONTEXT_ENRICHMENT_SPRINT.md) 🆕 **NEW: free-agent 24/7 docs completion gate**
-- [`PHASE_23_24_25_IMPLEMENTATION_PLAN.md`](./PHASE_23_24_25_IMPLEMENTATION_PLAN.md)
-- [`PHASE_24_MODULE_TRACEABILITY_MATRIX.md`](./PHASE_24_MODULE_TRACEABILITY_MATRIX.md) ✅ **DETAILED ROLE MATRICES COMPLETE**
-- [`PHASE_24_ACCEPTANCE_TEST_PLAN.md`](./PHASE_24_ACCEPTANCE_TEST_PLAN.md) ✅ **NEW: 144 test scenarios**
-- [`PHASE_25_OPERATIONAL_VERIFICATION_LOG.md`](./PHASE_25_OPERATIONAL_VERIFICATION_LOG.md) ✅ **COMPLETE: runtime/build evidence captured**
-- [`PHASE_25_EXECUTION_GUIDE.md`](./PHASE_25_EXECUTION_GUIDE.md) ✅ **COMPLETE: implementation delivered + pushed**
-- [`MASTER_PLAN.md`](./MASTER_PLAN.md)
-- [`MASTER_PLAN_CRM_EXCELLENCE.md`](./MASTER_PLAN_CRM_EXCELLENCE.md)
-- [`PHASE_1_HOMEPAGE.md`](./PHASE_1_HOMEPAGE.md)
-- [`PHASE_2_LANDLORD_TENANT.md`](./PHASE_2_LANDLORD_TENANT.md)
-- [`PHASE_3_CRM_SUPERUSER.md`](./PHASE_3_CRM_SUPERUSER.md)
-- [`PHASE_3_AND_BEYOND.md`](./PHASE_3_AND_BEYOND.md)
-- [`PHASE_19_NEXT_PHASE_EXECUTION_CHECKLIST_APR27.md`](./PHASE_19_NEXT_PHASE_EXECUTION_CHECKLIST_APR27.md)
-- [`PHASE_20_21_22_PARALLEL_EXECUTION_MASTER_PLAN.md`](./PHASE_20_21_22_PARALLEL_EXECUTION_MASTER_PLAN.md) _(predecessor baseline)_
-- [`audit-round-66.md`](./audit-round-66.md)
-- [`audit-round-69.md`](./audit-round-69.md)
-- [`audit-round-70.md`](./audit-round-70.md)
+## Current Targets
 
-## Reference Docs
+- Blockers: **27 → <=13** (50% reduction)
+- Entry gate for implementation: **Gate 1**
+- Keep active planning set small; avoid creating duplicate active docs
+
+## References (Read Only When Needed)
 
 - [`ARCHITECTURE.md`](./ARCHITECTURE.md)
 - [`API_DOCUMENTATION.md`](./API_DOCUMENTATION.md)
 - [`TECHNICAL_REFERENCE.md`](./TECHNICAL_REFERENCE.md)
-- [`DEPLOYMENT_GUIDE.md`](./DEPLOYMENT_GUIDE.md)
-- [`PRODUCTION_DEPLOYMENT_RUNBOOK.md`](./PRODUCTION_DEPLOYMENT_RUNBOOK.md)
-- [`CICD_SETUP_DOCUMENTATION.md`](./CICD_SETUP_DOCUMENTATION.md)
-- [`CICD_QUICK_REFERENCE.md`](./CICD_QUICK_REFERENCE.md)
-- [`MONITORING_AND_ALERTING_SETUP.md`](./MONITORING_AND_ALERTING_SETUP.md)
-- [`EMERGENCY_RESPONSE_PROCEDURES.md`](./EMERGENCY_RESPONSE_PROCEDURES.md)
-- [`DASHBOARD_INTEGRATION_GUIDE.md`](./DASHBOARD_INTEGRATION_GUIDE.md)
 - [`PHASE_3_E2E_TEST_PLAN.md`](./PHASE_3_E2E_TEST_PLAN.md)
 
-## Archive Note
+## Archive Policy
 
-Completed and historical phase-plan files now live under `../archives/plans/completed/`.
+Historical plans remain in `../archives/plans/completed/`.  
+If a new active plan is introduced, one active plan must be merged or archived.
