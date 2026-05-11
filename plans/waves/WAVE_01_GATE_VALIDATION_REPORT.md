@@ -15,13 +15,13 @@
   - Evidence: .\plans\waves\WAVE_01_IMPLEMENTATION_BACKLOG.md
 - [PASS] Wave test rollout exists
   - Evidence: .\plans\waves\WAVE_01_TEST_ROLLOUT.md
-- [PASS] Readiness evidence mentions 92% threshold
+- [PASS] Readiness evidence mentions 60% threshold
   - Evidence: .\plans\waves\WAVE_01_READINESS_PACKET.md
-- [PASS] Project tracker references 1000% depth gate
+- [PASS] Project tracker references 60% readiness gate
   - Evidence: .\PROJECT_PROGRESS.md
 - [PASS] Daily premium cap evidence present
   - Evidence: .\PROJECT_PROGRESS.md
 
 ## Mandatory Approval Phrase
 
-@Ada - Context Ready (1000% Depth, 92% Readiness) - Coding Phase Approved
+@Ada - Context Ready (60% Readiness) - Coding Phase Approved

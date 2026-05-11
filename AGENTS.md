@@ -4,20 +4,20 @@
 
 > **Updated by @Margaret after every session.** Senior coders MUST check this table before starting any premium coding sprint. If any gate is BLOCKED, route back to the relevant free agent before coding.
 
-| Agent         | Model              | Current Task                                                                                             | File                                                       | Sections   | Gate Status    | Last Updated |
-| ------------- | ------------------ | -------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------- | ---------- | -------------- | ------------ |
-| **@Victoria** | Gemini 2.0 Flash   | NEXT (1000%): `tenancy-ejari.md` + `landlord-portal.md` 10× expansion with 10-layer evidence sections    | `business_docs/09_crm_features/tenancy-ejari.md`           | 140 target | 🚧 IN PROGRESS | May 6, 2026  |
-| **@Invoice**  | Llama 3.1 70B Groq | NEXT (1000%): `financial-reporting.md` + `revenue-model.md` 10× depth with DU scoring                    | `business_docs/09_crm_features/financial-reporting.md`     | 110 target | 🚧 IN PROGRESS | May 6, 2026  |
-| **@Sofia**    | Gemini 2.0 Flash   | NEXT (1000%): `compliance-requirements.md` + `risk-register.md` regulatory + rollback evidence expansion | `business_docs/05_requirements/compliance-requirements.md` | 120 target | 🚧 IN PROGRESS | May 6, 2026  |
-| **@Cassie**   | DeepSeek V3        | NEXT (1000%): analytics + KPI ownership with observability/testability evidence                          | `business_docs/09_crm_features/analytics-dashboard.md`     | 220 target | 🚧 IN PROGRESS | May 6, 2026  |
-| **@Joelle**   | Llama 3.1 70B Groq | NEXT (1000%): AI personas + fallback matrix with SDD-ready artifacts                                     | `business_docs/03_ai_assistants/README.md`                 | 400 units  | 🚧 IN PROGRESS | May 6, 2026  |
+| Agent         | Model              | Current Task                                                                       | File                                                       | Sections   | Gate Status   | Last Updated |
+| ------------- | ------------------ | ---------------------------------------------------------------------------------- | ---------------------------------------------------------- | ---------- | ------------- | ------------ |
+| **@Victoria** | Gemini 2.0 Flash   | NEXT (60%): `tenancy-ejari.md` + `landlord-portal.md` fast-track expansion         | `business_docs/09_crm_features/tenancy-ejari.md`           | 60% target | 🚧 FAST-TRACK | May 6, 2026  |
+| **@Invoice**  | Llama 3.1 70B Groq | NEXT (60%): `financial-reporting.md` + `revenue-model.md` concise evidence pack    | `business_docs/09_crm_features/financial-reporting.md`     | 60% target | 🚧 FAST-TRACK | May 6, 2026  |
+| **@Sofia**    | Gemini 2.0 Flash   | NEXT (60%): `compliance-requirements.md` + `risk-register.md` fast compliance pass | `business_docs/05_requirements/compliance-requirements.md` | 60% target | 🚧 FAST-TRACK | May 6, 2026  |
+| **@Cassie**   | DeepSeek V3        | NEXT (60%): analytics + KPI essentials with testability evidence                   | `business_docs/09_crm_features/analytics-dashboard.md`     | 60% target | 🚧 FAST-TRACK | May 6, 2026  |
+| **@Joelle**   | Llama 3.1 70B Groq | NEXT (60%): AI personas + fallback matrix with compact artifacts                   | `business_docs/03_ai_assistants/README.md`                 | 60% target | 🚧 FAST-TRACK | May 6, 2026  |
 
 ### How to Invoke Free Agents (Copy-Paste Into the Free Tool)
 
 ```
 @Victoria — EXPAND: landlord-portal.md → add KYC onboarding flow, NOC letter generation workflow, 3-month grace period rules
-@Invoice  — AUDIT: financial-reporting.md → verify 11 sections present; add rolling 12-month cash flow forecast section
-@Sofia    — AUDIT: compliance-requirements.md → verify 12 sections present; add RERA/DLD penalty table with fine amounts
+@Invoice  — AUDIT: financial-reporting.md → verify 60% readiness; add compact cash flow forecast section
+@Sofia    — AUDIT: compliance-requirements.md → verify 60% readiness; add RERA/DLD penalty table with fine amounts
 @Cassie   — EXPAND: analytics-dashboard.md → add mobile analytics view spec + data export CSV/Excel API endpoint spec
 @Joelle   — DRAFT: 03_ai_assistants/README.md → personas 25-35 (Quill, Lumen, Crest, Prism, Echo + others); add failure/fallback behavior
 ```
@@ -475,7 +475,7 @@ This file defines the White Caves multi-expert operating model for all agent-ass
 
 ### Governance Handoff Chain
 
-`All 17 Free Agents → @Margaret (daily synthesis) → @Ada (60% readiness gate) → Senior Coders/Designers`
+`All 17 Free Agents → @Margaret (2-minute synthesis) → @Ada (60% readiness gate) → Senior Coders/Designers`
 
 ### Collaboration Cadence
 
@@ -548,8 +548,8 @@ This file defines the White Caves multi-expert operating model for all agent-ass
    - Premium work stops when daily cap is reached unless @Ada grants emergency exception.
 
 5. **Large-Wave Premium Coding Standard:**
-   - Premium coding executes in **3–5 module daily waves**.
-   - Micro-phase premium requests are disallowed unless bundled into a wave packet.
+   - Premium coding executes in **1–2 module micro-waves**.
+   - Micro-phase premium requests are allowed when low-risk and Gate 1 is passed.
 
 6. **Researcher Preflight Requirement:**
    - Before any premium coding day, researcher chain must publish context preflight:

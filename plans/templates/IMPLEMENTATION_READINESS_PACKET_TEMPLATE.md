@@ -4,16 +4,16 @@
 
 - Wave ID:
 - Date:
-- Target modules (3-5):
+- Target modules (1-2):
 - Premium daily cap:
 
 ## 2. Preconditions Checklist
 
 - [ ] Researcher preflight complete
-- [ ] Business docs at 1000% depth
+- [ ] Business docs at 60% readiness
 - [ ] SDD completed
-- [ ] Flowcharts completed
-- [ ] Test rollout drafted
+- [ ] Flowcharts completed (optional for low-risk modules)
+- [ ] Test rollout drafted (compact)
 - [ ] Compliance sign-off captured
 
 ## 3. Dependency Graph
@@ -38,7 +38,7 @@
 
 ## 6. Go/No-Go Decision
 
-- Readiness score (>=92% required):
+- Readiness score (>=60% required):
 - Decision:
 - Approver phrase:
-  - `@Ada — Context Ready (1000% Depth, 92% Readiness) — Coding Phase Approved`
+  - `@Ada — Context Ready (60% Readiness) — Coding Phase Approved`

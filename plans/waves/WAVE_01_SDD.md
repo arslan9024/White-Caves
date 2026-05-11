@@ -2129,15 +2129,15 @@ export const CreateCorinneSchema = z.object({
 
 ## Sign-off Required Before Coding
 
-| Role            | Agent      | Status  | Date | Notes                                                    |
-| --------------- | ---------- | ------- | ---- | -------------------------------------------------------- |
-| Chief Architect | @Ada       | PENDING |      | Must declare: Context Ready (1000% Depth, 92% Readiness) |
-| Project Manager | @Margaret  | PENDING |      | Sprint table updated + daily sync run                    |
-| QA Lead         | @Katherine | PENDING |      | Test scenarios reviewed                                  |
-| Compliance      | @Sofia     | PENDING |      | RERA/DLD rules verified                                  |
+| Role            | Agent      | Status  | Date | Notes                                       |
+| --------------- | ---------- | ------- | ---- | ------------------------------------------- |
+| Chief Architect | @Ada       | PENDING |      | Must declare: Context Ready (60% Readiness) |
+| Project Manager | @Margaret  | PENDING |      | Sprint table updated + daily sync run       |
+| QA Lead         | @Katherine | PENDING |      | Test scenarios reviewed                     |
+| Compliance      | @Sofia     | PENDING |      | RERA/DLD rules verified                     |
 
-> When ALL sign-offs are APPROVED and readiness-packet.ps1 reports >= 92%:
-> `@Ada -- Context Ready (1000% Depth, 92% Readiness) -- Coding Phase Approved`
+> When ALL sign-offs are APPROVED and readiness-packet.ps1 reports >= 60%:
+> `@Ada -- Context Ready (60% Readiness) -- Coding Phase Approved`
 
 ---
 

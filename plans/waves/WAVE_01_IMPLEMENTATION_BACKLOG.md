@@ -158,17 +158,19 @@
 
 ---
 
-## Sprint Scheduling -- Recommended 5-Day Wave
+## Sprint Scheduling -- Recommended Micro-Waves
 
-> Rule 22: Default premium batch = 3-5 modules per day. Planned across 5 days below.
+> Rule 22: Default premium batch = 1-2 modules per day. Planned across 7 short days below.
 
-| Day   | Agents                             | Modules   | Story Points | Gate                   |
-| ----- | ---------------------------------- | --------- | ------------ | ---------------------- |
-| Day 1 | @Sofia, @Timnit, @Victoria         | 3 modules | 15 SP        | @Ada sign-off required |
-| Day 2 | @Annie, @Marissa, @Rachel, @Joelle | 4 modules | 20 SP        | @Ada sign-off required |
-| Day 3 | @Fei-Fei, @Anima, @Mary, @Invoice  | 4 modules | 20 SP        | @Ada sign-off required |
-| Day 4 | @Booking, @Maya, @Hedy, @Cassie    | 4 modules | 20 SP        | @Ada sign-off required |
-| Day 5 | @Jaime, @Corinne                   | 2 modules | 10 SP        | @Ada sign-off required |
+| Day   | Agents                     | Modules   | Story Points | Gate                   |
+| ----- | -------------------------- | --------- | ------------ | ---------------------- |
+| Day 1 | @Sofia, @Timnit            | 2 modules | 10 SP        | @Ada sign-off required |
+| Day 2 | @Victoria, @Annie          | 2 modules | 10 SP        | @Ada sign-off required |
+| Day 3 | @Marissa, @Rachel, @Joelle | 2 modules | 10 SP        | @Ada sign-off required |
+| Day 4 | @Fei-Fei, @Anima, @Mary    | 2 modules | 10 SP        | @Ada sign-off required |
+| Day 5 | @Invoice, @Booking, @Maya  | 2 modules | 10 SP        | @Ada sign-off required |
+| Day 6 | @Hedy, @Cassie, @Jaime     | 2 modules | 10 SP        | @Ada sign-off required |
+| Day 7 | @Corinne                   | 1 module  | 5 SP         | @Ada sign-off required |
 
 ---
 
