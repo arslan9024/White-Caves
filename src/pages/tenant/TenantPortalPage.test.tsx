@@ -97,6 +97,8 @@ describe('TenantPortalPage', () => {
     it('renders home dashboard tab by default', () => {
       renderWithStore(<TenantPortalPage />);
 
+      expect(screen.getByTestId('portal-layout')).toBeInTheDocument();
+      expect(screen.getByTestId('portal-navbar')).toBeInTheDocument();
       expect(screen.getByTestId('home-tab')).toBeInTheDocument();
       expect(screen.getByTestId('tabpanel-home')).toBeInTheDocument();
     });
@@ -161,7 +163,7 @@ describe('TenantPortalPage', () => {
     it('displays welcome message with tenant name', () => {
       renderWithStore(<TenantPortalPage />);
 
-      expect(screen.getByText('Tenant Portal')).toBeInTheDocument();
+      expect(screen.getByRole('heading', { name: 'Tenant Portal' })).toBeInTheDocument();
       expect(screen.getByText(/Welcome, Fatima Al-Mansoori/)).toBeInTheDocument();
     });
 
@@ -254,13 +256,13 @@ describe('TenantPortalPage', () => {
     it('displays correct user role greeting', () => {
       renderWithStore(<TenantPortalPage />);
 
-      expect(screen.getByText(/Tenant Portal/)).toBeInTheDocument();
+      expect(screen.getByRole('heading', { name: 'Tenant Portal' })).toBeInTheDocument();
     });
 
     it('uses tenant user data from Redux store', () => {
       renderWithStore(<TenantPortalPage />);
 
-      expect(screen.getByText(/Fatima Al-Mansoori/)).toBeInTheDocument();
+      expect(screen.getByTestId('portal-navbar-user')).toHaveTextContent('Fatima Al-Mansoori');
     });
   });
 });

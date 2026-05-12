@@ -102,6 +102,8 @@ describe('LandlordPortalPage', () => {
     it('renders home dashboard tab by default', () => {
       renderWithStore(<LandlordPortalPage />);
 
+      expect(screen.getByTestId('portal-layout')).toBeInTheDocument();
+      expect(screen.getByTestId('portal-navbar')).toBeInTheDocument();
       expect(screen.getByTestId('tab-home')).toBeInTheDocument();
       expect(screen.getByTestId('home-tab')).toBeInTheDocument();
       expect(screen.getByTestId('tabpanel-home')).toBeInTheDocument();
@@ -165,7 +167,7 @@ describe('LandlordPortalPage', () => {
     it('displays welcome message with user name', () => {
       renderWithStore(<LandlordPortalPage />);
 
-      expect(screen.getByText('Landlord Portal')).toBeInTheDocument();
+      expect(screen.getByRole('heading', { name: 'Landlord Portal' })).toBeInTheDocument();
       expect(screen.getByText(/Welcome, Ahmed Al-Mansouri/)).toBeInTheDocument();
     });
 

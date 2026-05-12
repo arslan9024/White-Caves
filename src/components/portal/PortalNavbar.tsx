@@ -30,14 +30,26 @@ interface PortalNavbarProps {
   portalType: PortalType;
 }
 
-const PORTAL_LABELS: Record<PortalType, string> = {
-  landlord: 'Landlord Portal',
-  tenant: 'Tenant Portal',
+const getPortalLabel = (portalType: PortalType): string => {
+  switch (portalType) {
+    case 'landlord':
+      return 'Landlord Portal';
+    case 'tenant':
+      return 'Tenant Portal';
+    default:
+      return 'Portal';
+  }
 };
 
-const PORTAL_COLORS: Record<PortalType, string> = {
-  landlord: '#C41E3A',
-  tenant: '#0f766e',
+const getPortalColor = (portalType: PortalType): string => {
+  switch (portalType) {
+    case 'landlord':
+      return '#C41E3A';
+    case 'tenant':
+      return '#0f766e';
+    default:
+      return '#0f766e';
+  }
 };
 
 const PortalNavbar: FC<PortalNavbarProps> = ({ portalType }) => {
@@ -59,8 +71,8 @@ const PortalNavbar: FC<PortalNavbarProps> = ({ portalType }) => {
   }, [dispatch, navigate]);
 
   const avatarInitial = currentUser?.name?.charAt(0)?.toUpperCase() ?? '?';
-  const portalLabel = PORTAL_LABELS[portalType];
-  const badgeColor = PORTAL_COLORS[portalType];
+  const portalLabel = getPortalLabel(portalType);
+  const badgeColor = getPortalColor(portalType);
 
   return (
     <nav
@@ -70,11 +82,7 @@ const PortalNavbar: FC<PortalNavbarProps> = ({ portalType }) => {
     >
       {/* Left: Logo + portal badge */}
       <div className="portal-navbar__brand">
-        <Link
-          to="/"
-          className="portal-navbar__logo"
-          aria-label="White Caves – go to homepage"
-        >
+        <Link to="/" className="portal-navbar__logo" aria-label="White Caves – go to homepage">
           <img
             src="/company-logo.jpg"
             alt="White Caves Real Estate"
@@ -107,10 +115,7 @@ const PortalNavbar: FC<PortalNavbarProps> = ({ portalType }) => {
               aria-label={`View profile for ${currentUser.name}`}
               data-testid="portal-navbar-user"
             >
-              <span
-                className="portal-navbar__avatar"
-                aria-hidden="true"
-              >
+              <span className="portal-navbar__avatar" aria-hidden="true">
                 {avatarInitial}
               </span>
               <span className="portal-navbar__username">{currentUser.name}</span>
