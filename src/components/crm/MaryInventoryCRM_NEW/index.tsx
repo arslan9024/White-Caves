@@ -55,7 +55,7 @@ export default function MaryInventoryCRM() {
       label: 'Property Details',
       description: 'Detailed property information',
       component: MaryDetailsTab,
-      order: 4,
+      order: 6,
       hidden: true, // This tab is shown via modal, not main nav
     },
     {

@@ -1,4 +1,5 @@
-import { useState, useCallback, useMemo } from 'react';
+import { useState, useCallback, useMemo, useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import {
   ACTIVE_LEASES,
   MAINTENANCE_REQUESTS,
@@ -14,6 +15,12 @@ import {
 } from '../data/leasing';
 import { PDC_CHEQUES, RENEWAL_RECORDS } from '../data/leasingExtended';
 import { DAISY_LEASING_FEATURES } from '../data/features';
+import {
+  fetchPropertiesFromAPI,
+  selectAllProperties,
+  selectPropertiesLoading,
+} from '../../../../store/crmDataSlice';
+import type { AppDispatch } from '../../../../store/store';
 
 const MAX_LEASING_STAGE = 10;
 const MONTHS_PER_YEAR = 12;
@@ -22,10 +29,11 @@ export type { LeasingStage };
 export { LEASING_STAGE_LABELS };
 
 export const useLeasingData = () => {
+  const dispatch = useDispatch<AppDispatch>();
   const [activeTab, setActiveTab] = useState<string>('leases');
   const [selectedProperty, setSelectedProperty] = useState<number | null>(null);
-  // In production, these datasets intentionally start empty to avoid rendering mock fixtures.
-  // This hook currently has no API hydration path in production mode.
+
+  // In DEV, seed with mock data for faster iteration; in production, data comes from Redux/API
   const [leases, setLeases] = useState<ActiveLease[]>(import.meta.env.DEV ? ACTIVE_LEASES : []);
   const [maintenance, setMaintenance] = useState<MaintenanceRequest[]>(
     import.meta.env.DEV ? MAINTENANCE_REQUESTS : []
@@ -33,6 +41,17 @@ export const useLeasingData = () => {
   const [pdcCheques, setPdcCheques] = useState<PDCCheque[]>(import.meta.env.DEV ? PDC_CHEQUES : []);
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [filterStatus, setFilterStatus] = useState<string>('all');
+
+  // Hydrate from API in production mode
+  const reduxProperties = useSelector(selectAllProperties);
+  const propertiesLoading = useSelector(selectPropertiesLoading);
+
+  useEffect(() => {
+    if (!import.meta.env.DEV) {
+      // Fetch properties (which include lease data) from the API in production
+      dispatch(fetchPropertiesFromAPI());
+    }
+  }, [dispatch]);
 
   const handleSelectProperty = useCallback((propertyId: number) => {
     setSelectedProperty(propertyId);
@@ -140,5 +159,8 @@ export const useLeasingData = () => {
     updatePDCStatus,
     getPipelineStats,
     getPnLSummary,
+    // API state (available in production)
+    reduxProperties,
+    loading: propertiesLoading ?? false,
   };
 };

@@ -1,6 +1,6 @@
 import { useState, useCallback, useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { DashboardView, UserRole, DashboardFilters, Metric } from './types';
+import { DashboardView, UserRole, DashboardFilters, Metric, ROLE_ACCESS_MATRIX, DashboardState } from './types';
 import { RootState, AppDispatch } from '../../store/store';
 import { createLogger } from '../../utils/logger';
 
@@ -98,20 +98,8 @@ export const useDashboardAccess = () => {
   );
 
   const getAccessibleDashboards = useCallback((allDashboards: DashboardView[]): DashboardView[] => {
-    // Filter dashboards based on user role
-    const roleAccessMap: Record<UserRole, DashboardView[]> = {
-      admin: ['company', 'department', 'sales', 'property', 'commission', 'leads', 'office', 'agent', 'financial', 'performance', 'inventory', 'client'],
-      ceo: ['company', 'financial', 'performance'],
-      coo: ['company', 'department', 'office', 'financial'],
-      manager: ['department', 'sales', 'property', 'commission', 'leads', 'agent', 'office', 'performance'],
-      finance: ['financial', 'commission', 'company'],
-      operations: ['office', 'property', 'inventory'],
-      agent: ['sales', 'leads', 'agent', 'commission', 'client'],
-      viewer: ['company', 'performance'],
-      support: ['client', 'leads'],
-    };
-
-    const accessibleViews = roleAccessMap[userRole as UserRole] || [];
+    // P2-7: Use canonical ROLE_ACCESS_MATRIX from ./types instead of a local duplicate
+    const accessibleViews = ROLE_ACCESS_MATRIX[userRole as UserRole] || [];
     return allDashboards.filter((view) => accessibleViews.includes(view));
   }, [userRole]);
 
@@ -126,7 +114,8 @@ export const useDashboardAccess = () => {
  * Hook to manage dashboard customization
  */
 export const useDashboardCustomization = () => {
-  const [customLayout, setCustomLayout] = useState<Record<string, any>>({});
+  // P2-8: Use concrete customLayout type from DashboardState instead of Record<string, any>
+  const [customLayout, setCustomLayout] = useState<DashboardState['customLayout']>({});
   const [expandedMetrics, setExpandedMetrics] = useState<string[]>([]);
 
   const toggleMetricExpanded = useCallback((metricId: string) => {
@@ -135,7 +124,7 @@ export const useDashboardCustomization = () => {
     );
   }, []);
 
-  const updateLayout = useCallback((newLayout: Record<string, any>) => {
+  const updateLayout = useCallback((newLayout: NonNullable<DashboardState['customLayout']>) => {
     setCustomLayout(newLayout);
   }, []);
 
@@ -322,6 +311,16 @@ export const useDashboardPerformance = () => {
       const duration = end - start;
 
       log.debug(`${label} took ${duration.toFixed(2)}ms`);
+
+      // P1-9: persist measurement into state so consumers can read real values
+      setMetrics(prev => {
+        switch (label) {
+          case 'render': return { ...prev, renderTime: duration };
+          case 'fetch':  return { ...prev, dataFetchTime: duration };
+          case 'load':   return { ...prev, totalLoadTime: duration };
+          default:       return { ...prev, renderTime: duration };
+        }
+      });
 
       return duration;
     };

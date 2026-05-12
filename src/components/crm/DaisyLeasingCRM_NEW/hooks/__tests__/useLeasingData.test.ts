@@ -58,6 +58,8 @@ vi.mock('../../../../../utils/authFetch', () => ({
 
 // Mock the data imports (still needed for RENTAL_INQUIRIES and types)
 vi.mock('../../data/leasing', () => ({
+  ACTIVE_LEASES: [],
+  MAINTENANCE_REQUESTS: [],
   RENTAL_INQUIRIES: [{ id: 'r1', property: 'Villa 101', name: 'Prospect A' }],
   ActiveLease: {},
   MaintenanceRequest: {},
@@ -70,11 +72,28 @@ vi.mock('../../data/leasing', () => ({
 }));
 
 vi.mock('../../data/leasingExtended', () => ({
+  PDC_CHEQUES: [],
   RENEWAL_RECORDS: [],
 }));
 
 vi.mock('../../data/features', () => ({
   DAISY_LEASING_FEATURES: ['Lease Management', 'Tenant Portal'],
+}));
+
+// Mock Redux dependencies added by the API hydration upgrade
+vi.mock('react-redux', async () => {
+  const actual = await vi.importActual<typeof import('react-redux')>('react-redux');
+  return {
+    ...actual,
+    useDispatch: () => vi.fn(),
+    useSelector: (selector: (s: unknown) => unknown) => selector({ crmData: { properties: { items: [], loading: false, error: null } } }),
+  };
+});
+
+vi.mock('../../../../../store/crmDataSlice', () => ({
+  fetchPropertiesFromAPI: vi.fn(() => ({ type: 'crmData/fetchPropertiesFromAPI/pending' })),
+  selectAllProperties: (state: { crmData: { properties: { items: unknown[] } } }) => state?.crmData?.properties?.items ?? [],
+  selectPropertiesLoading: (state: { crmData: { properties: { loading: boolean } } }) => state?.crmData?.properties?.loading ?? false,
 }));
 
 import { useLeasingData } from '../useLeasingData';

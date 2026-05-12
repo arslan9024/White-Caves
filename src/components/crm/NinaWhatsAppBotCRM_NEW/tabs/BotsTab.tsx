@@ -18,8 +18,8 @@ interface BotsData {
   selectedBot: Bot | null;
   setSelectedBot: (bot: Bot | null) => void;
   handleAddBot: () => void;
-  handleDeleteBot: (id: string | number) => void;
-  handleToggleBotStatus: (id: string | number) => void;
+  handleDeleteBot: (id: string) => void;
+  handleToggleBotStatus: (id: string) => void;
   getStatusColor: (status: string) => string;
 }
 

@@ -157,12 +157,12 @@ export default function NancyHRCRM() {
 
       <div className="nancy-content">
         <Suspense fallback={<SuspenseLoader />}>
-          {activeTab === 'employees' && <EmployeesTab state={state as never} />}
-          {activeTab === 'careers' && <JobBoardTab state={state as never} />}
-          {activeTab === 'applicants' && <ApplicantsTab state={state as never} />}
+          {activeTab === 'employees' && <EmployeesTab state={state} />}
+          {activeTab === 'careers' && <JobBoardTab state={state} />}
+          {activeTab === 'applicants' && <ApplicantsTab state={state} />}
           {activeTab === 'attendance' && <AttendanceTab state={state} />}
           {activeTab === 'performance' && <PerformanceTab state={state} />}
-          {activeTab === 'post-job' && <PostJobTab state={state as never} />}
+          {activeTab === 'post-job' && <PostJobTab state={state} />}
           {activeTab === 'features' && <FeaturesTab />}
           {activeTab === 'lifecycle' && (
             <AssistantLifecycleTab assistantId="nancy" color="#10B981" assistantName="Nancy" />
