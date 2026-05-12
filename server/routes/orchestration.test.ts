@@ -55,6 +55,20 @@ describe('Orchestration Routes — /api/orchestration', () => {
     expect(res.body.data.profiles).toHaveProperty('henry');
   });
 
+  it('GET /contracts/assistant-endpoints returns runtime endpoint contract payload', async () => {
+    const res = await request(createApp()).get('/api/orchestration/contracts/assistant-endpoints');
+
+    expect(res.status).toBe(200);
+    expect(res.body.success).toBe(true);
+    expect(Array.isArray(res.body.data.mountedPrefixes)).toBe(true);
+    expect(Array.isArray(res.body.data.activeAssistantIds)).toBe(true);
+    expect(res.body.data.mountedPrefixes).toContain('/api/orchestration');
+    expect(res.body.data.mountedPrefixes).toContain('/api/invoices/lease');
+    expect(res.body.data.activeAssistantIds).toContain('mary');
+    expect(res.body.data.activeAssistantIds).toContain('henry');
+    expect(typeof res.body.data.generatedAt).toBe('string');
+  });
+
   it('POST /tasks creates queued task for allowed assistant/task type', async () => {
     const res = await request(createApp()).post('/api/orchestration/tasks').send({
       assistantId: 'linda',

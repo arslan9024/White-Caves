@@ -124,6 +124,50 @@ const COLLABORATION_GRAPH: CollaborationEdge[] = [
 
 const orchestrationTasks: OrchestrationTask[] = [];
 
+const ASSISTANT_ENDPOINT_CONTRACT = {
+  mountedPrefixes: [
+    '/api/properties',
+    '/api/leasing-inventory',
+    '/api/documents',
+    '/api/finance',
+    '/api/invoices/lease',
+    '/api/transactions',
+    '/api/homepage',
+    '/api/analytics',
+    '/api/communications',
+    '/api/orchestration',
+    '/api/activities',
+    '/api/compliance',
+    '/api/nadia',
+    '/api/linda',
+    '/api/leads',
+    '/api/crm',
+    '/api/leases',
+    '/api/tenants',
+    '/api/maintenance',
+    '/api/users',
+    '/api/job-applications',
+    '/api/integrations',
+    '/api/assistants',
+  ] as const,
+  activeAssistantIds: [
+    'mary',
+    'theodora',
+    'olivia',
+    'zoe',
+    'laila',
+    'nadia',
+    'linda',
+    'sophia',
+    'daisy',
+    'clara',
+    'nina',
+    'nancy',
+    'aurora',
+    'henry',
+  ] as const,
+};
+
 let weeklyPremiumRemaining = 48;
 let businessDaysRemaining = 5;
 let premiumConsumedToday = 0;
@@ -177,7 +221,7 @@ router.get(
         tasks: orchestrationTasks.slice(0, 50),
       },
     });
-  }),
+  })
 );
 
 router.get(
@@ -186,23 +230,31 @@ router.get(
     const assistantId = typeof req.query.assistantId === 'string' ? req.query.assistantId : null;
 
     const filtered = assistantId
-      ? orchestrationTasks.filter((task) => task.assistantId === assistantId)
+      ? orchestrationTasks.filter(task => task.assistantId === assistantId)
       : orchestrationTasks;
 
     res.json({ success: true, data: filtered.slice(0, 50) });
-  }),
+  })
+);
+
+router.get(
+  '/contracts/assistant-endpoints',
+  asyncHandler(async (_req: Request, res: Response) => {
+    res.json({
+      success: true,
+      data: {
+        ...ASSISTANT_ENDPOINT_CONTRACT,
+        generatedAt: new Date().toISOString(),
+      },
+    });
+  })
 );
 
 router.post(
   '/tasks',
   requireRole('owner', 'admin', 'manager'),
   asyncHandler(async (req: Request, res: Response) => {
-    const {
-      assistantId,
-      taskType,
-      title,
-      requestedTier,
-    } = req.body as {
+    const { assistantId, taskType, title, requestedTier } = req.body as {
       assistantId?: string;
       taskType?: TaskType;
       title?: string;
@@ -213,13 +265,18 @@ router.post(
       throw new AppError('assistantId, taskType, and title are required', 400);
     }
 
-    const profile = ASSISTANT_EXECUTION_PROFILES[assistantId];
+    const profile = Object.values(ASSISTANT_EXECUTION_PROFILES).find(
+      candidate => candidate.id === assistantId
+    );
     if (!profile) {
       throw new AppError(`Unknown assistant '${assistantId}'`, 404);
     }
 
     if (!profile.taskTypes.includes(taskType)) {
-      throw new AppError(`Task type '${taskType}' is not allowed for assistant '${assistantId}'`, 400);
+      throw new AppError(
+        `Task type '${taskType}' is not allowed for assistant '${assistantId}'`,
+        400
+      );
     }
 
     const tier = requestedTier ?? profile.modelPolicy.defaultTier;
@@ -239,7 +296,7 @@ router.post(
     orchestrationTasks.unshift(task);
 
     res.status(201).json({ success: true, data: task });
-  }),
+  })
 );
 
 router.patch(
@@ -253,14 +310,14 @@ router.patch(
       throw new AppError('state is required', 400);
     }
 
-    const task = orchestrationTasks.find((item) => item.id === id);
+    const task = orchestrationTasks.find(item => item.id === id);
     if (!task) {
       throw new AppError('Task not found', 404);
     }
 
     task.state = state;
     res.json({ success: true, data: task });
-  }),
+  })
 );
 
 router.put(
@@ -296,7 +353,7 @@ router.put(
         dailyCap: calculateDailyPremiumCap(),
       },
     });
-  }),
+  })
 );
 
 export default router;
