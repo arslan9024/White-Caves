@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import axios from 'axios';
+import { authFetch } from '../utils/authFetch';
 import PropertyInfoForm from './TenancyForms/PropertyInfoForm';
 import LandlordForm from './TenancyForms/LandlordForm';
 import TenantForm from './TenancyForms/TenantForm';
@@ -125,19 +125,60 @@ const TenancyContractForm = ({ onSuccess, initialContractId }) => {
     try {
       setLoading(true);
       setError(null);
+      setStatusMessage(null);
+
+      const payload = {
+        propertyId:
+          formData.propertyInfo.unitNumber?.trim() ||
+          formData.propertyInfo.plotNumber?.trim() ||
+          `property_${Date.now()}`,
+        landlordName: formData.landlordInfo.name?.trim(),
+        tenantName: formData.tenantInfo.name?.trim(),
+        startDate: formData.tenancyTerms.leaseStartDate,
+        endDate: formData.tenancyTerms.leaseEndDate,
+        annualRent: Number(formData.tenancyTerms.rentAmount || 0),
+      };
+
+      if (!payload.landlordName || !payload.tenantName) {
+        throw new Error('Landlord and tenant names are required');
+      }
+      if (!payload.startDate || !payload.endDate) {
+        throw new Error('Lease start and end dates are required');
+      }
+      if (!payload.annualRent || payload.annualRent <= 0) {
+        throw new Error('Annual rent must be greater than 0');
+      }
 
       let response;
       if (contractId) {
         // Update existing draft
-        response = await axios.put(`/api/tenancy-contracts/${contractId}`, {
-          formData,
+        response = await authFetch(`/api/tenancy-agreements/${contractId}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            ...payload,
+            status: 'draft',
+          }),
         });
       } else {
         // Create new draft
-        response = await axios.post('/api/tenancy-contracts/create', {
-          formData,
+        response = await authFetch('/api/tenancy-agreements', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            ...payload,
+            status: 'draft',
+          }),
         });
-        setContractId(response.data.data.contractId);
+      }
+
+      const json = await response.json();
+      if (!response.ok || !json.success) {
+        throw new Error(json.error || 'Error saving draft');
+      }
+
+      if (!contractId) {
+        setContractId(json.data?.id);
       }
 
       setError(null);
@@ -145,7 +186,9 @@ const TenancyContractForm = ({ onSuccess, initialContractId }) => {
       const message = contractId ? 'Draft updated successfully' : 'Draft created successfully';
       setStatusMessage({ type: 'success', text: message });
     } catch (err) {
-      setError(err.response?.data?.error || 'Error saving draft');
+      const message = err?.message || 'Error saving draft';
+      setError(message);
+      setStatusMessage({ type: 'error', text: message });
       console.error('Error saving draft:', err);
     } finally {
       setLoading(false);
@@ -162,23 +205,30 @@ const TenancyContractForm = ({ onSuccess, initialContractId }) => {
     try {
       setLoading(true);
       setError(null);
+      setStatusMessage(null);
 
-      const response = await axios.post(`/api/tenancy-contracts/${contractId}/generate-pdf`);
+      const response = await authFetch(`/api/tenancy-agreements/${contractId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status: 'active' }),
+      });
+      const json = await response.json();
 
-      if (response.data.success) {
-        setStatusMessage({ type: 'success', text: 'PDF generated successfully!' });
-        // Open PDF in new tab
-        window.open(response.data.data.pdfUrl, '_blank');
+      if (response.ok && json.success) {
+        setStatusMessage({ type: 'success', text: 'Tenancy agreement activated successfully!' });
         if (onSuccess) {
           onSuccess({
             contractId,
-            pdfUrl: response.data.data.pdfUrl,
-            referenceNumber: response.data.data.referenceNumber,
+            agreement: json.data,
           });
         }
+      } else {
+        throw new Error(json.error || 'Error activating tenancy agreement');
       }
     } catch (err) {
-      setError(err.response?.data?.error || 'Error generating PDF');
+      const message = err?.message || 'Error activating tenancy agreement';
+      setError(message);
+      setStatusMessage({ type: 'error', text: message });
       console.error('Error generating PDF:', err);
     } finally {
       setLoading(false);
