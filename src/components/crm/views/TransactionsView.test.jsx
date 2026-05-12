@@ -1,16 +1,12 @@
 import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import axios from 'axios';
 import TransactionsView from './TransactionsView';
 
-vi.mock('axios', () => ({
-  default: {
-    get: vi.fn(),
-    post: vi.fn(),
-    put: vi.fn(),
-    delete: vi.fn(),
-  },
+const mockAuthFetch = vi.fn();
+
+vi.mock('../../../utils/authFetch', () => ({
+  authFetch: (...args) => mockAuthFetch(...args),
 }));
 
 vi.mock('framer-motion', () => ({
@@ -27,33 +23,37 @@ vi.mock('framer-motion', () => ({
   ),
 }));
 
-const mockTransactionsResponse = {
-  data: {
-    success: true,
-    data: [],
-    pagination: { page: 1, limit: 25, total: 0, pages: 0 },
-  },
+function jsonResponse(payload, status = 200) {
+  return Promise.resolve({
+    ok: status >= 200 && status < 300,
+    status,
+    json: () => Promise.resolve(payload),
+  });
+}
+
+const mockTransactionsPayload = {
+  success: true,
+  data: [],
+  pagination: { page: 1, limit: 25, total: 0, pages: 0 },
 };
 
-const mockStatsResponse = {
-  data: {
-    success: true,
-    stats: {
-      totalTransactions: 0,
-      totalValue: 0,
-      topAreas: [],
-      propertyTypes: [],
-    },
+const mockStatsPayload = {
+  success: true,
+  stats: {
+    totalTransactions: 0,
+    totalValue: 0,
+    topAreas: [],
+    propertyTypes: [],
   },
 };
 
 const setupDefaultGets = () => {
-  axios.get.mockImplementation(url => {
+  mockAuthFetch.mockImplementation(url => {
     if (String(url).startsWith('/api/transactions?')) {
-      return Promise.resolve(mockTransactionsResponse);
+      return jsonResponse(mockTransactionsPayload);
     }
     if (url === '/api/transactions/stats') {
-      return Promise.resolve(mockStatsResponse);
+      return jsonResponse(mockStatsPayload);
     }
     return Promise.reject(new Error(`Unhandled GET ${url}`));
   });
@@ -77,7 +77,15 @@ describe('TransactionsView — alert elimination', () => {
   });
 
   it('shows error banner when saving a transaction fails', async () => {
-    axios.post.mockRejectedValueOnce(new Error('save failed'));
+    mockAuthFetch.mockImplementation((url, options) => {
+      if (String(url).startsWith('/api/transactions?'))
+        return jsonResponse(mockTransactionsPayload);
+      if (url === '/api/transactions/stats') return jsonResponse(mockStatsPayload);
+      if (url === '/api/transactions' && options?.method === 'POST') {
+        return Promise.reject(new Error('save failed'));
+      }
+      return Promise.reject(new Error(`Unhandled request ${url}`));
+    });
 
     render(<TransactionsView />);
     await screen.findByText('DLD Transactions');
@@ -91,7 +99,15 @@ describe('TransactionsView — alert elimination', () => {
   });
 
   it('shows success banner when CSV import succeeds', async () => {
-    axios.post.mockResolvedValueOnce({ data: { success: true, imported: 12 } });
+    mockAuthFetch.mockImplementation((url, options) => {
+      if (String(url).startsWith('/api/transactions?'))
+        return jsonResponse(mockTransactionsPayload);
+      if (url === '/api/transactions/stats') return jsonResponse(mockStatsPayload);
+      if (url === '/api/transactions/import' && options?.method === 'POST') {
+        return jsonResponse({ success: true, imported: 12 });
+      }
+      return Promise.reject(new Error(`Unhandled request ${url}`));
+    });
 
     render(<TransactionsView />);
     await screen.findByText('DLD Transactions');
@@ -105,7 +121,15 @@ describe('TransactionsView — alert elimination', () => {
   });
 
   it('shows error banner when CSV import fails', async () => {
-    axios.post.mockRejectedValueOnce(new Error('import failed'));
+    mockAuthFetch.mockImplementation((url, options) => {
+      if (String(url).startsWith('/api/transactions?'))
+        return jsonResponse(mockTransactionsPayload);
+      if (url === '/api/transactions/stats') return jsonResponse(mockStatsPayload);
+      if (url === '/api/transactions/import' && options?.method === 'POST') {
+        return Promise.reject(new Error('import failed'));
+      }
+      return Promise.reject(new Error(`Unhandled request ${url}`));
+    });
 
     render(<TransactionsView />);
     await screen.findByText('DLD Transactions');
@@ -120,7 +144,15 @@ describe('TransactionsView — alert elimination', () => {
 
   it('never calls window.alert()', async () => {
     const alertSpy = vi.spyOn(window, 'alert').mockImplementation(() => {});
-    axios.post.mockRejectedValueOnce(new Error('import failed'));
+    mockAuthFetch.mockImplementation((url, options) => {
+      if (String(url).startsWith('/api/transactions?'))
+        return jsonResponse(mockTransactionsPayload);
+      if (url === '/api/transactions/stats') return jsonResponse(mockStatsPayload);
+      if (url === '/api/transactions/import' && options?.method === 'POST') {
+        return Promise.reject(new Error('import failed'));
+      }
+      return Promise.reject(new Error(`Unhandled request ${url}`));
+    });
 
     render(<TransactionsView />);
     await screen.findByText('DLD Transactions');
