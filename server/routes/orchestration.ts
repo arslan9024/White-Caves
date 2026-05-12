@@ -507,6 +507,54 @@ function buildSnapshotLabelFacets(
     .sort((left, right) => right.count - left.count);
 }
 
+function buildRestoreRecommendation(input: {
+  totalTasks: number;
+  runningTasks: number;
+  failedTasks: number;
+  premiumConsumedToday: number;
+}): {
+  decision: 'safe' | 'caution' | 'risky';
+  score: number;
+  reasons: string[];
+} {
+  const reasons: string[] = [];
+  let score = 100;
+
+  if (Math.abs(input.totalTasks) >= 20) {
+    score -= 30;
+    reasons.push('Large task volume delta detected (>=20).');
+  } else if (Math.abs(input.totalTasks) >= 10) {
+    score -= 15;
+    reasons.push('Moderate task volume delta detected (>=10).');
+  }
+
+  if (Math.abs(input.runningTasks) >= 3) {
+    score -= 25;
+    reasons.push('Running task delta is high (>=3).');
+  }
+
+  if (input.failedTasks > 0) {
+    score -= 20;
+    reasons.push('Target introduces additional failed tasks.');
+  }
+
+  if (input.premiumConsumedToday > 0) {
+    score -= 15;
+    reasons.push('Target increases premium consumption for today.');
+  }
+
+  score = Math.max(0, Math.min(100, score));
+
+  if (reasons.length === 0) {
+    reasons.push('No material risk deltas detected.');
+  }
+
+  const decision: 'safe' | 'caution' | 'risky' =
+    score >= 80 ? 'safe' : score >= 55 ? 'caution' : 'risky';
+
+  return { decision, score, reasons };
+}
+
 hydrateState();
 
 function calculateDailyPremiumCap(): number {
@@ -707,6 +755,7 @@ router.get(
     res.json({
       success: true,
       data: {
+        targetQuery: targetFileName,
         source,
         target,
         delta: {
@@ -724,6 +773,54 @@ router.get(
           premiumConsumedToday:
             target.quota.premiumConsumedToday - source.quota.premiumConsumedToday,
         },
+      },
+    });
+  })
+);
+
+router.get(
+  '/snapshots/:fileName/recommend-restore',
+  asyncHandler(async (req: Request, res: Response) => {
+    const sourceSnapshot = readSnapshotDetail(req.params.fileName);
+    const targetFileName =
+      typeof req.query.target === 'string' && req.query.target.trim().length > 0
+        ? req.query.target.trim()
+        : 'current';
+
+    const targetMetrics =
+      targetFileName === 'current'
+        ? computeMetrics(orchestrationTasks)
+        : readSnapshotDetail(targetFileName).metrics;
+    const targetQuota =
+      targetFileName === 'current'
+        ? {
+            weeklyPremiumRemaining,
+            businessDaysRemaining,
+            premiumConsumedToday,
+          }
+        : readSnapshotDetail(targetFileName).quota;
+
+    const delta = {
+      totalTasks: targetMetrics.totalTasks - sourceSnapshot.metrics.totalTasks,
+      runningTasks: targetMetrics.runningTasks - sourceSnapshot.metrics.runningTasks,
+      failedTasks: targetMetrics.failedTasks - sourceSnapshot.metrics.failedTasks,
+      premiumConsumedToday:
+        targetQuota.premiumConsumedToday - sourceSnapshot.quota.premiumConsumedToday,
+    };
+
+    const recommendation = buildRestoreRecommendation(delta);
+
+    res.json({
+      success: true,
+      data: {
+        source: {
+          fileName: sourceSnapshot.fileName,
+          createdAt: sourceSnapshot.createdAt,
+          label: sourceSnapshot.label,
+        },
+        target: targetFileName,
+        delta,
+        recommendation,
       },
     });
   })

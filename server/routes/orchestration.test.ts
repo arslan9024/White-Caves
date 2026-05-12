@@ -227,9 +227,35 @@ describe('Orchestration Routes — /api/orchestration', () => {
 
     expect(compareRes.status).toBe(200);
     expect(compareRes.body.success).toBe(true);
+    expect(compareRes.body.data.targetQuery).toBe('current');
     expect(compareRes.body.data.source.snapshot.fileName).toBe(fileName);
     expect(compareRes.body.data.target.kind).toBe('current');
     expect(compareRes.body.data).toHaveProperty('delta');
+  });
+
+  it('GET /snapshots/:fileName/recommend-restore returns restore decision payload', async () => {
+    await request(createApp()).post('/api/orchestration/tasks').send({
+      assistantId: 'henry',
+      taskType: 'review',
+      title: 'Recommendation seed task',
+    });
+
+    const exportRes = await request(createApp())
+      .post('/api/orchestration/snapshots/export')
+      .send({ label: 'recommend-check' });
+
+    const fileName = exportRes.body?.data?.fileName;
+    const recommendationRes = await request(createApp()).get(
+      `/api/orchestration/snapshots/${fileName}/recommend-restore?target=current`
+    );
+
+    expect(recommendationRes.status).toBe(200);
+    expect(recommendationRes.body.success).toBe(true);
+    expect(recommendationRes.body.data.source.fileName).toBe(fileName);
+    expect(recommendationRes.body.data.target).toBe('current');
+    expect(recommendationRes.body.data.recommendation).toHaveProperty('decision');
+    expect(recommendationRes.body.data.recommendation).toHaveProperty('score');
+    expect(Array.isArray(recommendationRes.body.data.recommendation.reasons)).toBe(true);
   });
 
   it('GET /snapshots/:fileName returns snapshot detail including tasks and metrics', async () => {

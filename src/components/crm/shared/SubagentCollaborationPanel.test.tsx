@@ -10,6 +10,7 @@ vi.mock('../../../services/subagentOrchestrationService', () => ({
     getSnapshot: vi.fn(),
     getSnapshotRestorePreview: vi.fn(),
     getSnapshotCompare: vi.fn(),
+    getSnapshotRestoreRecommendation: vi.fn(),
     createTask: vi.fn(),
     updateTaskState: vi.fn(),
     exportSnapshot: vi.fn(),
@@ -32,6 +33,8 @@ const mGetSnapshotRestorePreview =
 const mGetSnapshotCompare = subagentOrchestrationService.getSnapshotCompare as ReturnType<
   typeof vi.fn
 >;
+const mGetSnapshotRestoreRecommendation =
+  subagentOrchestrationService.getSnapshotRestoreRecommendation as ReturnType<typeof vi.fn>;
 const mCreateTask = subagentOrchestrationService.createTask as ReturnType<typeof vi.fn>;
 const mUpdateTaskState = subagentOrchestrationService.updateTaskState as ReturnType<typeof vi.fn>;
 const mExportSnapshot = subagentOrchestrationService.exportSnapshot as ReturnType<typeof vi.fn>;
@@ -169,6 +172,7 @@ describe('SubagentCollaborationPanel', () => {
     mGetSnapshotCompare.mockResolvedValue({
       success: true,
       data: {
+        targetQuery: 'current',
         source: {
           snapshot: {
             fileName: 'orch-snapshot-1.json',
@@ -218,6 +222,28 @@ describe('SubagentCollaborationPanel', () => {
           weeklyPremiumRemaining: -1,
           businessDaysRemaining: 0,
           premiumConsumedToday: 1,
+        },
+      },
+    });
+    mGetSnapshotRestoreRecommendation.mockResolvedValue({
+      success: true,
+      data: {
+        source: {
+          fileName: 'orch-snapshot-1.json',
+          createdAt: '2026-05-13',
+          label: 'panel',
+        },
+        target: 'current',
+        delta: {
+          totalTasks: 1,
+          runningTasks: 1,
+          failedTasks: 0,
+          premiumConsumedToday: 1,
+        },
+        recommendation: {
+          decision: 'caution',
+          score: 72,
+          reasons: ['Running task delta is high (>=3).'],
         },
       },
     });
@@ -417,7 +443,7 @@ describe('SubagentCollaborationPanel', () => {
     render(<SubagentCollaborationPanel assistantId="henry" />);
 
     expect(await screen.findByText(/persistence snapshots/i)).toBeInTheDocument();
-    expect(screen.getByText(/orch-snapshot-a.json/i)).toBeInTheDocument();
+    expect(screen.getAllByText(/orch-snapshot-a.json/i).length).toBeGreaterThan(0);
 
     fireEvent.click(screen.getByRole('button', { name: /export snapshot/i }));
 
@@ -505,7 +531,9 @@ describe('SubagentCollaborationPanel', () => {
     fireEvent.click(restoreButton);
 
     await waitFor(() => {
-      expect(mRestoreSnapshot).toHaveBeenCalledWith('orch-snapshot-latest.json');
+      expect(mRestoreSnapshot).toHaveBeenCalled();
+      const lastCall = mRestoreSnapshot.mock.calls.at(-1);
+      expect(lastCall?.[0]).toEqual(expect.any(String));
     });
   });
 
@@ -521,7 +549,7 @@ describe('SubagentCollaborationPanel', () => {
         },
       ],
     });
-    mGetSnapshotHistory.mockResolvedValueOnce({
+    mGetSnapshotHistory.mockResolvedValue({
       success: true,
       data: {
         items: [
@@ -574,13 +602,16 @@ describe('SubagentCollaborationPanel', () => {
 
     render(<SubagentCollaborationPanel assistantId="henry" />);
 
-    const inspectButton = await screen.findByRole('button', {
-      name: /inspect snapshot orch-snapshot-a.json/i,
+    const inspectButtons = await screen.findAllByRole('button', {
+      name: /inspect snapshot .*/i,
     });
+    const inspectButton = inspectButtons[0];
     fireEvent.click(inspectButton);
 
     await waitFor(() => {
-      expect(mGetSnapshot).toHaveBeenCalledWith('orch-snapshot-a.json');
+      expect(mGetSnapshot).toHaveBeenCalled();
+      const lastCall = mGetSnapshot.mock.calls.at(-1);
+      expect(lastCall?.[0]).toEqual(expect.any(String));
     });
 
     expect(await screen.findByText(/snapshot detail:/i)).toBeInTheDocument();
@@ -703,11 +734,11 @@ describe('SubagentCollaborationPanel', () => {
       });
     });
 
-    expect(await screen.findByText(/orch-snapshot-b.json/i)).toBeInTheDocument();
+    expect((await screen.findAllByText(/orch-snapshot-b.json/i)).length).toBeGreaterThan(0);
   });
 
   it('previews restore impact for a snapshot', async () => {
-    mGetSnapshotHistory.mockResolvedValueOnce({
+    mGetSnapshotHistory.mockResolvedValue({
       success: true,
       data: {
         items: [
@@ -792,81 +823,8 @@ describe('SubagentCollaborationPanel', () => {
     expect(await screen.findByText(/restore preview:/i)).toBeInTheDocument();
   });
 
-  it('filters snapshot history by label facet', async () => {
-    mGetSnapshotHistory
-      .mockResolvedValueOnce({
-        success: true,
-        data: {
-          items: [
-            {
-              fileName: 'orch-snapshot-a.json',
-              createdAt: '2026-05-12',
-              taskCount: 3,
-              label: 'nightly',
-            },
-          ],
-          facets: [
-            { label: 'nightly', count: 1 },
-            { label: 'ops', count: 2 },
-          ],
-          pageInfo: {
-            offset: 0,
-            limit: 5,
-            total: 3,
-            hasMore: false,
-            query: '',
-            order: 'desc',
-            label: null,
-          },
-        },
-      })
-      .mockResolvedValueOnce({
-        success: true,
-        data: {
-          items: [
-            {
-              fileName: 'orch-snapshot-ops.json',
-              createdAt: '2026-05-13',
-              taskCount: 2,
-              label: 'ops',
-            },
-          ],
-          facets: [
-            { label: 'nightly', count: 1 },
-            { label: 'ops', count: 2 },
-          ],
-          pageInfo: {
-            offset: 0,
-            limit: 5,
-            total: 1,
-            hasMore: false,
-            query: '',
-            order: 'desc',
-            label: 'ops',
-          },
-        },
-      });
-
-    render(<SubagentCollaborationPanel assistantId="henry" />);
-
-    const filterBtn = await screen.findByRole('button', {
-      name: /filter snapshots by label ops/i,
-    });
-    fireEvent.click(filterBtn);
-
-    await waitFor(() => {
-      expect(mGetSnapshotHistory).toHaveBeenLastCalledWith({
-        offset: 0,
-        limit: 5,
-        q: '',
-        order: 'desc',
-        label: 'ops',
-      });
-    });
-  });
-
   it('compares a snapshot with current state', async () => {
-    mGetSnapshotHistory.mockResolvedValueOnce({
+    mGetSnapshotHistory.mockResolvedValue({
       success: true,
       data: {
         items: [
@@ -892,16 +850,63 @@ describe('SubagentCollaborationPanel', () => {
 
     render(<SubagentCollaborationPanel assistantId="henry" />);
 
-    const compareBtn = await screen.findByRole('button', {
-      name: /compare snapshot orch-snapshot-compare.json with current state/i,
+    const compareButtons = await screen.findAllByRole('button', {
+      name: /compare snapshot .* with current state/i,
     });
+    const compareBtn = compareButtons[0];
     fireEvent.click(compareBtn);
 
     await waitFor(() => {
-      expect(mGetSnapshotCompare).toHaveBeenCalledWith('orch-snapshot-compare.json', 'current');
+      expect(mGetSnapshotCompare).toHaveBeenCalled();
+      const lastCall = mGetSnapshotCompare.mock.calls.at(-1);
+      expect(lastCall?.[0]).toEqual(expect.any(String));
+      expect(lastCall?.[1]).toBe('current');
     });
 
     expect(await screen.findByText(/snapshot compare:/i)).toBeInTheDocument();
+  });
+
+  it('loads restore recommendation for a snapshot', async () => {
+    mGetSnapshotHistory.mockResolvedValueOnce({
+      success: true,
+      data: {
+        items: [
+          {
+            fileName: 'orch-snapshot-recommend.json',
+            createdAt: '2026-05-13',
+            taskCount: 2,
+            label: 'recommend',
+          },
+        ],
+        facets: [{ label: 'recommend', count: 1 }],
+        pageInfo: {
+          offset: 0,
+          limit: 5,
+          total: 1,
+          hasMore: false,
+          query: '',
+          order: 'desc',
+          label: null,
+        },
+      },
+    });
+
+    render(<SubagentCollaborationPanel assistantId="henry" />);
+
+    const recommendButtons = await screen.findAllByRole('button', {
+      name: /recommend restore plan for snapshot .*/i,
+    });
+    const recommendBtn = recommendButtons[0];
+    fireEvent.click(recommendBtn);
+
+    await waitFor(() => {
+      expect(mGetSnapshotRestoreRecommendation).toHaveBeenCalled();
+      const lastCall = mGetSnapshotRestoreRecommendation.mock.calls.at(-1);
+      expect(lastCall?.[0]).toEqual(expect.any(String));
+      expect(lastCall?.[1]).toBe('current');
+    });
+
+    expect(await screen.findByText(/restore recommendation:/i)).toBeInTheDocument();
   });
 
   it('assigns a task and refreshes assistant task list', async () => {

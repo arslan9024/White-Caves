@@ -119,6 +119,7 @@ export interface OrchestrationSnapshotHistoryPayload {
 }
 
 export interface OrchestrationSnapshotComparePayload {
+  targetQuery: string;
   source: {
     snapshot: OrchestrationSnapshotSummary;
     quota: {
@@ -149,6 +150,26 @@ export interface OrchestrationSnapshotComparePayload {
     weeklyPremiumRemaining: number;
     businessDaysRemaining: number;
     premiumConsumedToday: number;
+  };
+}
+
+export interface OrchestrationSnapshotRestoreRecommendationPayload {
+  source: {
+    fileName: string;
+    createdAt: string;
+    label: string | null;
+  };
+  target: string;
+  delta: {
+    totalTasks: number;
+    runningTasks: number;
+    failedTasks: number;
+    premiumConsumedToday: number;
+  };
+  recommendation: {
+    decision: 'safe' | 'caution' | 'risky';
+    score: number;
+    reasons: string[];
   };
 }
 
@@ -270,6 +291,20 @@ export const subagentOrchestrationService = {
     return (await apiClient.get(url)) as {
       success: boolean;
       data: OrchestrationSnapshotComparePayload;
+    };
+  },
+
+  async getSnapshotRestoreRecommendation(fileName: string, target?: string) {
+    const params = new URLSearchParams();
+    if (typeof target === 'string' && target.trim().length > 0) {
+      params.set('target', target.trim());
+    }
+    const query = params.toString();
+    const url = `${BASE}/snapshots/${encodeURIComponent(fileName)}/recommend-restore${query ? `?${query}` : ''}`;
+
+    return (await apiClient.get(url)) as {
+      success: boolean;
+      data: OrchestrationSnapshotRestoreRecommendationPayload;
     };
   },
 

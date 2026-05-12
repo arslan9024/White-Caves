@@ -258,6 +258,7 @@ describe('subagentOrchestrationService', () => {
     const response = {
       success: true,
       data: {
+        targetQuery: 'current',
         source: {
           snapshot: {
             fileName: 'orch-snapshot-test.json',
@@ -297,6 +298,42 @@ describe('subagentOrchestrationService', () => {
 
     expect(mApiGet).toHaveBeenCalledWith(
       '/orchestration/snapshots/orch-snapshot-test.json/compare?target=current'
+    );
+    expect(result).toEqual(response);
+  });
+
+  it('getSnapshotRestoreRecommendation calls GET /orchestration/snapshots/:fileName/recommend-restore', async () => {
+    const response = {
+      success: true,
+      data: {
+        source: {
+          fileName: 'orch-snapshot-test.json',
+          createdAt: '',
+          label: null,
+        },
+        target: 'current',
+        delta: {
+          totalTasks: 1,
+          runningTasks: 0,
+          failedTasks: 0,
+          premiumConsumedToday: 0,
+        },
+        recommendation: {
+          decision: 'safe',
+          score: 90,
+          reasons: ['No material risk deltas detected.'],
+        },
+      },
+    };
+    mApiGet.mockResolvedValue(response);
+
+    const result = await subagentOrchestrationService.getSnapshotRestoreRecommendation(
+      'orch-snapshot-test.json',
+      'current'
+    );
+
+    expect(mApiGet).toHaveBeenCalledWith(
+      '/orchestration/snapshots/orch-snapshot-test.json/recommend-restore?target=current'
     );
     expect(result).toEqual(response);
   });

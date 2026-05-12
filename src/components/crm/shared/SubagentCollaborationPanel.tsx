@@ -10,6 +10,7 @@ import {
   subagentOrchestrationService,
   type OrchestrationSnapshotComparePayload,
   type OrchestrationSnapshotDetail,
+  type OrchestrationSnapshotRestoreRecommendationPayload,
   type OrchestrationSnapshotRestorePreviewPayload,
   type OrchestrationSnapshotSummary,
   type OrchestrationTask,
@@ -65,6 +66,7 @@ const SubagentCollaborationPanel = memo(
     const [snapshotSearch, setSnapshotSearch] = useState<string>('');
     const [snapshotOrder, setSnapshotOrder] = useState<'asc' | 'desc'>('desc');
     const [snapshotLabelFilter, setSnapshotLabelFilter] = useState<string | null>(null);
+    const [snapshotCompareTarget, setSnapshotCompareTarget] = useState<string>('current');
     const [snapshotHasMore, setSnapshotHasMore] = useState<boolean>(false);
     const [snapshotTotal, setSnapshotTotal] = useState<number>(0);
     const [snapshotFacets, setSnapshotFacets] = useState<Array<{ label: string; count: number }>>(
@@ -74,6 +76,8 @@ const SubagentCollaborationPanel = memo(
       useState<OrchestrationSnapshotRestorePreviewPayload | null>(null);
     const [selectedSnapshotCompare, setSelectedSnapshotCompare] =
       useState<OrchestrationSnapshotComparePayload | null>(null);
+    const [selectedSnapshotRecommendation, setSelectedSnapshotRecommendation] =
+      useState<OrchestrationSnapshotRestoreRecommendationPayload | null>(null);
     const [snapshotLimit] = useState<number>(5);
     const [snapshotAction, setSnapshotAction] = useState<
       'export' | 'restore' | 'delete' | 'detail' | null
@@ -340,10 +344,29 @@ const SubagentCollaborationPanel = memo(
       setSnapshotAction('detail');
       setStatusError(null);
       try {
-        const response = await subagentOrchestrationService.getSnapshotCompare(fileName, 'current');
+        const response = await subagentOrchestrationService.getSnapshotCompare(
+          fileName,
+          snapshotCompareTarget
+        );
         setSelectedSnapshotCompare(response.data);
       } catch (error) {
         setStatusError(error instanceof Error ? error.message : 'Failed to compare snapshot');
+      } finally {
+        setSnapshotAction(null);
+      }
+    };
+
+    const handleRecommendSnapshotRestore = async (fileName: string) => {
+      setSnapshotAction('detail');
+      setStatusError(null);
+      try {
+        const response = await subagentOrchestrationService.getSnapshotRestoreRecommendation(
+          fileName,
+          snapshotCompareTarget
+        );
+        setSelectedSnapshotRecommendation(response.data);
+      } catch (error) {
+        setStatusError(error instanceof Error ? error.message : 'Failed to load recommendation');
       } finally {
         setSnapshotAction(null);
       }
@@ -571,6 +594,29 @@ const SubagentCollaborationPanel = memo(
                 <option value="asc">Oldest first</option>
               </select>
             </label>
+            <label style={{ ...mutedTextStyle, display: 'flex', alignItems: 'center', gap: 6 }}>
+              Compare target
+              <select
+                value={snapshotCompareTarget}
+                onChange={event => setSnapshotCompareTarget(event.target.value)}
+                style={{
+                  background: 'rgba(15,23,42,0.5)',
+                  color: '#E2E8F0',
+                  border: '1px solid rgba(148,163,184,0.35)',
+                  borderRadius: 8,
+                  padding: '4px 8px',
+                  fontSize: 12,
+                }}
+                aria-label="Snapshot compare target"
+              >
+                <option value="current">current state</option>
+                {snapshots.slice(0, 20).map(snapshot => (
+                  <option key={snapshot.fileName} value={snapshot.fileName}>
+                    {snapshot.fileName}
+                  </option>
+                ))}
+              </select>
+            </label>
           </div>
 
           {snapshotFacets.length > 0 ? (
@@ -727,6 +773,25 @@ const SubagentCollaborationPanel = memo(
                     >
                       Compare
                     </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        void handleRecommendSnapshotRestore(snapshot.fileName);
+                      }}
+                      disabled={snapshotAction !== null}
+                      style={{
+                        border: '1px solid rgba(16,185,129,0.38)',
+                        background: 'rgba(6,78,59,0.22)',
+                        color: '#A7F3D0',
+                        borderRadius: 999,
+                        padding: '3px 8px',
+                        fontSize: 11,
+                        cursor: snapshotAction ? 'not-allowed' : 'pointer',
+                      }}
+                      aria-label={`Recommend restore plan for snapshot ${snapshot.fileName}`}
+                    >
+                      Recommend
+                    </button>
                   </div>
                 </li>
               ))}
@@ -834,6 +899,29 @@ const SubagentCollaborationPanel = memo(
               <p style={{ ...mutedTextStyle, marginBottom: 0 }}>
                 Δ Weekly premium remaining:{' '}
                 <strong>{selectedSnapshotCompare.delta.weeklyPremiumRemaining}</strong>
+              </p>
+            </div>
+          ) : null}
+
+          {selectedSnapshotRecommendation ? (
+            <div
+              style={{
+                marginTop: 10,
+                borderTop: '1px solid rgba(255,255,255,0.08)',
+                paddingTop: 10,
+              }}
+            >
+              <p style={{ color: '#E2E8F0', margin: '0 0 4px 0', fontSize: 12 }}>
+                <strong>Restore recommendation:</strong>{' '}
+                {selectedSnapshotRecommendation.source.fileName} →{' '}
+                {selectedSnapshotRecommendation.target}
+              </p>
+              <p style={mutedTextStyle}>
+                Decision: <strong>{selectedSnapshotRecommendation.recommendation.decision}</strong>{' '}
+                · Score: <strong>{selectedSnapshotRecommendation.recommendation.score}</strong>
+              </p>
+              <p style={{ ...mutedTextStyle, marginBottom: 0 }}>
+                {selectedSnapshotRecommendation.recommendation.reasons.slice(0, 2).join(' · ')}
               </p>
             </div>
           ) : null}
