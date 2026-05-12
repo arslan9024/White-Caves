@@ -6,10 +6,12 @@ vi.mock('../../../services/subagentOrchestrationService', () => ({
   subagentOrchestrationService: {
     getStatus: vi.fn(),
     getSnapshots: vi.fn(),
+    getSnapshot: vi.fn(),
     createTask: vi.fn(),
     updateTaskState: vi.fn(),
     exportSnapshot: vi.fn(),
     restoreSnapshot: vi.fn(),
+    deleteSnapshot: vi.fn(),
   },
 }));
 
@@ -18,10 +20,12 @@ import { subagentOrchestrationService } from '../../../services/subagentOrchestr
 
 const mGetStatus = subagentOrchestrationService.getStatus as ReturnType<typeof vi.fn>;
 const mGetSnapshots = subagentOrchestrationService.getSnapshots as ReturnType<typeof vi.fn>;
+const mGetSnapshot = subagentOrchestrationService.getSnapshot as ReturnType<typeof vi.fn>;
 const mCreateTask = subagentOrchestrationService.createTask as ReturnType<typeof vi.fn>;
 const mUpdateTaskState = subagentOrchestrationService.updateTaskState as ReturnType<typeof vi.fn>;
 const mExportSnapshot = subagentOrchestrationService.exportSnapshot as ReturnType<typeof vi.fn>;
 const mRestoreSnapshot = subagentOrchestrationService.restoreSnapshot as ReturnType<typeof vi.fn>;
+const mDeleteSnapshot = subagentOrchestrationService.deleteSnapshot as ReturnType<typeof vi.fn>;
 
 const makeStatusResponse = (
   overrides?: Partial<{ tasks: Array<Record<string, unknown>>; metrics: Record<string, unknown> }>
@@ -58,6 +62,32 @@ describe('SubagentCollaborationPanel', () => {
     vi.clearAllMocks();
     mGetStatus.mockResolvedValue(makeStatusResponse());
     mGetSnapshots.mockResolvedValue({ success: true, data: [] });
+    mGetSnapshot.mockResolvedValue({
+      success: true,
+      data: {
+        fileName: 'orch-snapshot-1.json',
+        createdAt: '2026-05-13',
+        taskCount: 1,
+        quota: {
+          weeklyPremiumRemaining: 25,
+          businessDaysRemaining: 5,
+          premiumConsumedToday: 1,
+        },
+        metrics: {
+          totalTasks: 1,
+          queuedTasks: 1,
+          runningTasks: 0,
+          doneTasks: 0,
+          failedTasks: 0,
+          blockedTasks: 0,
+          premiumTasks: 0,
+          standardTasks: 1,
+          freeTasks: 0,
+          lastTaskCreatedAt: null,
+        },
+        tasks: [],
+      },
+    });
     mCreateTask.mockResolvedValue({ success: true, data: { id: 't-1' } });
     mUpdateTaskState.mockResolvedValue({ success: true, data: { id: 't-1' } });
     mExportSnapshot.mockResolvedValue({
@@ -67,6 +97,10 @@ describe('SubagentCollaborationPanel', () => {
     mRestoreSnapshot.mockResolvedValue({
       success: true,
       data: { snapshot: { fileName: 'orch-snapshot-1.json' } },
+    });
+    mDeleteSnapshot.mockResolvedValue({
+      success: true,
+      data: { snapshot: { fileName: 'orch-snapshot-1.json' }, remaining: [] },
     });
   });
 
@@ -165,7 +199,7 @@ describe('SubagentCollaborationPanel', () => {
     });
   });
 
-  it('restores latest snapshot from snapshot action button', async () => {
+  it('restores selected snapshot from snapshot action button', async () => {
     mGetSnapshots
       .mockResolvedValueOnce({
         success: true,
@@ -178,11 +212,77 @@ describe('SubagentCollaborationPanel', () => {
 
     render(<SubagentCollaborationPanel assistantId="henry" />);
 
-    const restoreButton = await screen.findByRole('button', { name: /restore latest/i });
+    const restoreButton = await screen.findByRole('button', { name: /restore selected/i });
     fireEvent.click(restoreButton);
 
     await waitFor(() => {
       expect(mRestoreSnapshot).toHaveBeenCalledWith('orch-snapshot-latest.json');
+    });
+  });
+
+  it('inspects a snapshot and renders snapshot detail summary', async () => {
+    mGetSnapshots.mockResolvedValueOnce({
+      success: true,
+      data: [{ fileName: 'orch-snapshot-a.json', createdAt: '2026-05-12', taskCount: 3 }],
+    });
+    mGetSnapshot.mockResolvedValueOnce({
+      success: true,
+      data: {
+        fileName: 'orch-snapshot-a.json',
+        createdAt: '2026-05-12',
+        taskCount: 3,
+        quota: {
+          weeklyPremiumRemaining: 25,
+          businessDaysRemaining: 5,
+          premiumConsumedToday: 1,
+        },
+        metrics: {
+          totalTasks: 3,
+          queuedTasks: 1,
+          runningTasks: 1,
+          doneTasks: 1,
+          failedTasks: 0,
+          blockedTasks: 0,
+          premiumTasks: 0,
+          standardTasks: 3,
+          freeTasks: 0,
+          lastTaskCreatedAt: null,
+        },
+        tasks: [],
+      },
+    });
+
+    render(<SubagentCollaborationPanel assistantId="henry" />);
+
+    const inspectButton = await screen.findByRole('button', {
+      name: /inspect snapshot orch-snapshot-a.json/i,
+    });
+    fireEvent.click(inspectButton);
+
+    await waitFor(() => {
+      expect(mGetSnapshot).toHaveBeenCalledWith('orch-snapshot-a.json');
+    });
+
+    expect(await screen.findByText(/snapshot detail:/i)).toBeInTheDocument();
+  });
+
+  it('deletes a snapshot from the history list', async () => {
+    mGetSnapshots
+      .mockResolvedValueOnce({
+        success: true,
+        data: [{ fileName: 'orch-snapshot-a.json', createdAt: '2026-05-12', taskCount: 3 }],
+      })
+      .mockResolvedValueOnce({ success: true, data: [] });
+
+    render(<SubagentCollaborationPanel assistantId="henry" />);
+
+    const deleteButton = await screen.findByRole('button', {
+      name: /delete snapshot orch-snapshot-a.json/i,
+    });
+    fireEvent.click(deleteButton);
+
+    await waitFor(() => {
+      expect(mDeleteSnapshot).toHaveBeenCalledWith('orch-snapshot-a.json');
     });
   });
 

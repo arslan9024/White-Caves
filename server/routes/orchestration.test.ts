@@ -113,6 +113,56 @@ describe('Orchestration Routes — /api/orchestration', () => {
     expect(restoreRes.body.data).toHaveProperty('metrics');
   });
 
+  it('GET /snapshots/:fileName returns snapshot detail including tasks and metrics', async () => {
+    await request(createApp()).post('/api/orchestration/tasks').send({
+      assistantId: 'henry',
+      taskType: 'review',
+      title: 'Snapshot detail seed task',
+    });
+
+    const exportRes = await request(createApp())
+      .post('/api/orchestration/snapshots/export')
+      .send({ label: 'detail-check' });
+
+    const fileName = exportRes.body?.data?.fileName;
+    expect(fileName).toBeTruthy();
+
+    const detailRes = await request(createApp()).get(`/api/orchestration/snapshots/${fileName}`);
+
+    expect(detailRes.status).toBe(200);
+    expect(detailRes.body.success).toBe(true);
+    expect(detailRes.body.data.fileName).toBe(fileName);
+    expect(detailRes.body.data).toHaveProperty('quota');
+    expect(detailRes.body.data).toHaveProperty('metrics');
+    expect(Array.isArray(detailRes.body.data.tasks)).toBe(true);
+    expect(detailRes.body.data.tasks.length).toBeGreaterThan(0);
+  });
+
+  it('DELETE /snapshots/:fileName removes a snapshot from history', async () => {
+    await request(createApp()).post('/api/orchestration/tasks').send({
+      assistantId: 'henry',
+      taskType: 'review',
+      title: 'Snapshot delete seed task',
+    });
+
+    const exportRes = await request(createApp())
+      .post('/api/orchestration/snapshots/export')
+      .send({ label: 'delete-check' });
+
+    const fileName = exportRes.body?.data?.fileName;
+    expect(fileName).toBeTruthy();
+
+    const deleteRes = await request(createApp()).delete(`/api/orchestration/snapshots/${fileName}`);
+
+    expect(deleteRes.status).toBe(200);
+    expect(deleteRes.body.success).toBe(true);
+    expect(deleteRes.body.data.snapshot.fileName).toBe(fileName);
+    expect(Array.isArray(deleteRes.body.data.remaining)).toBe(true);
+
+    const missingRes = await request(createApp()).get(`/api/orchestration/snapshots/${fileName}`);
+    expect(missingRes.status).toBe(404);
+  });
+
   it('GET /contracts/assistant-endpoints returns runtime endpoint contract payload', async () => {
     const res = await request(createApp()).get('/api/orchestration/contracts/assistant-endpoints');
 

@@ -93,6 +93,16 @@ export interface OrchestrationSnapshotSummary {
   taskCount: number;
 }
 
+export interface OrchestrationSnapshotDetail extends OrchestrationSnapshotSummary {
+  quota: {
+    weeklyPremiumRemaining: number;
+    businessDaysRemaining: number;
+    premiumConsumedToday: number;
+  };
+  metrics: OrchestrationMetricsPayload['metrics'];
+  tasks: OrchestrationTask[];
+}
+
 const BASE = '/orchestration';
 
 export const subagentOrchestrationService = {
@@ -125,6 +135,13 @@ export const subagentOrchestrationService = {
     };
   },
 
+  async getSnapshot(fileName: string) {
+    return (await apiClient.get(`${BASE}/snapshots/${encodeURIComponent(fileName)}`)) as {
+      success: boolean;
+      data: OrchestrationSnapshotDetail;
+    };
+  },
+
   async exportSnapshot(label?: string) {
     const payload =
       typeof label === 'string' && label.trim().length > 0 ? { label: label.trim() } : {};
@@ -146,6 +163,16 @@ export const subagentOrchestrationService = {
       data: {
         snapshot: OrchestrationSnapshotSummary;
         metrics: OrchestrationMetricsPayload['metrics'];
+      };
+    };
+  },
+
+  async deleteSnapshot(fileName: string) {
+    return (await apiClient.delete(`${BASE}/snapshots/${encodeURIComponent(fileName)}`)) as {
+      success: boolean;
+      data: {
+        snapshot: OrchestrationSnapshotSummary;
+        remaining: OrchestrationSnapshotSummary[];
       };
     };
   },

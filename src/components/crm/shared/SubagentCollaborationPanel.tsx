@@ -8,6 +8,7 @@ import {
 } from '../../../config/subagentOrchestration';
 import {
   subagentOrchestrationService,
+  type OrchestrationSnapshotDetail,
   type OrchestrationSnapshotSummary,
   type OrchestrationTask,
   type OrchestrationStatusPayload,
@@ -59,7 +60,12 @@ const SubagentCollaborationPanel = memo(
     const [isSubmittingTask, setIsSubmittingTask] = useState<boolean>(false);
     const [updatingTaskId, setUpdatingTaskId] = useState<string | null>(null);
     const [snapshots, setSnapshots] = useState<OrchestrationSnapshotSummary[]>([]);
-    const [snapshotAction, setSnapshotAction] = useState<'export' | 'restore' | null>(null);
+    const [snapshotAction, setSnapshotAction] = useState<
+      'export' | 'restore' | 'delete' | 'detail' | null
+    >(null);
+    const [selectedSnapshotFileName, setSelectedSnapshotFileName] = useState<string | null>(null);
+    const [selectedSnapshotDetail, setSelectedSnapshotDetail] =
+      useState<OrchestrationSnapshotDetail | null>(null);
 
     const profile = assistantId ? getAssistantExecutionProfile(assistantId) : null;
     const collaborations = useMemo(
@@ -90,6 +96,18 @@ const SubagentCollaborationPanel = memo(
           ]);
           setStatusData(response.data);
           setSnapshots(snapshotResponse.data);
+          if (snapshotResponse.data.length > 0) {
+            const latestSnapshotFileName = snapshotResponse.data[0]?.fileName ?? null;
+            setSelectedSnapshotFileName(latestSnapshotFileName);
+            if (latestSnapshotFileName) {
+              const snapshotDetail =
+                await subagentOrchestrationService.getSnapshot(latestSnapshotFileName);
+              setSelectedSnapshotDetail(snapshotDetail.data);
+            }
+          } else {
+            setSelectedSnapshotFileName(null);
+            setSelectedSnapshotDetail(null);
+          }
         } catch (error) {
           setStatusError(
             error instanceof Error
@@ -168,6 +186,22 @@ const SubagentCollaborationPanel = memo(
       ]);
       setStatusData(response.data);
       setSnapshots(snapshotResponse.data);
+
+      const preferredSnapshotFileName =
+        selectedSnapshotFileName &&
+        snapshotResponse.data.some(snapshot => snapshot.fileName === selectedSnapshotFileName)
+          ? selectedSnapshotFileName
+          : (snapshotResponse.data[0]?.fileName ?? null);
+
+      setSelectedSnapshotFileName(preferredSnapshotFileName);
+
+      if (preferredSnapshotFileName) {
+        const snapshotDetail =
+          await subagentOrchestrationService.getSnapshot(preferredSnapshotFileName);
+        setSelectedSnapshotDetail(snapshotDetail.data);
+      } else {
+        setSelectedSnapshotDetail(null);
+      }
     };
 
     const handleExportSnapshot = async () => {
@@ -185,15 +219,46 @@ const SubagentCollaborationPanel = memo(
       }
     };
 
-    const handleRestoreLatestSnapshot = async () => {
+    const handleRestoreLatestSnapshot = async (fileName?: string) => {
       setSnapshotAction('restore');
       setStatusError(null);
       try {
-        const latestSnapshot = snapshots[0]?.fileName;
-        await subagentOrchestrationService.restoreSnapshot(latestSnapshot);
+        const targetSnapshot = fileName ?? selectedSnapshotFileName ?? snapshots[0]?.fileName;
+        await subagentOrchestrationService.restoreSnapshot(targetSnapshot);
         await loadStatusData();
       } catch (error) {
         setStatusError(error instanceof Error ? error.message : 'Failed to restore snapshot');
+      } finally {
+        setSnapshotAction(null);
+      }
+    };
+
+    const handleSelectSnapshot = async (fileName: string) => {
+      setSnapshotAction('detail');
+      setStatusError(null);
+      try {
+        const response = await subagentOrchestrationService.getSnapshot(fileName);
+        setSelectedSnapshotFileName(fileName);
+        setSelectedSnapshotDetail(response.data);
+      } catch (error) {
+        setStatusError(error instanceof Error ? error.message : 'Failed to load snapshot detail');
+      } finally {
+        setSnapshotAction(null);
+      }
+    };
+
+    const handleDeleteSnapshot = async (fileName: string) => {
+      setSnapshotAction('delete');
+      setStatusError(null);
+      try {
+        await subagentOrchestrationService.deleteSnapshot(fileName);
+        if (selectedSnapshotFileName === fileName) {
+          setSelectedSnapshotFileName(null);
+          setSelectedSnapshotDetail(null);
+        }
+        await loadStatusData();
+      } catch (error) {
+        setStatusError(error instanceof Error ? error.message : 'Failed to delete snapshot');
       } finally {
         setSnapshotAction(null);
       }
@@ -380,7 +445,7 @@ const SubagentCollaborationPanel = memo(
                 cursor: snapshotAction || snapshots.length === 0 ? 'not-allowed' : 'pointer',
               }}
             >
-              {snapshotAction === 'restore' ? 'Restoring…' : 'Restore Latest'}
+              {snapshotAction === 'restore' ? 'Restoring…' : 'Restore Selected'}
             </button>
           </div>
 
@@ -388,17 +453,104 @@ const SubagentCollaborationPanel = memo(
             <ul style={{ margin: 0, paddingLeft: 16, color: '#CBD5E1', fontSize: 12 }}>
               {snapshots.slice(0, 3).map(snapshot => (
                 <li key={snapshot.fileName} style={{ marginBottom: 6 }}>
-                  <strong>{snapshot.fileName}</strong>
+                  <strong>
+                    {snapshot.fileName}
+                    {selectedSnapshotFileName === snapshot.fileName ? ' · selected' : ''}
+                  </strong>
                   <br />
                   <span style={mutedTextStyle}>
                     Tasks: {snapshot.taskCount} · Created: {snapshot.createdAt}
                   </span>
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginTop: 6 }}>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        void handleSelectSnapshot(snapshot.fileName);
+                      }}
+                      disabled={snapshotAction !== null}
+                      style={{
+                        border: '1px solid rgba(148,163,184,0.38)',
+                        background: 'rgba(15,23,42,0.45)',
+                        color: '#CBD5E1',
+                        borderRadius: 999,
+                        padding: '3px 8px',
+                        fontSize: 11,
+                        cursor: snapshotAction ? 'not-allowed' : 'pointer',
+                      }}
+                      aria-label={`Inspect snapshot ${snapshot.fileName}`}
+                    >
+                      Inspect
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setSelectedSnapshotFileName(snapshot.fileName);
+                        void handleRestoreLatestSnapshot(snapshot.fileName);
+                      }}
+                      disabled={snapshotAction !== null}
+                      style={{
+                        border: '1px solid rgba(96,165,250,0.38)',
+                        background: 'rgba(30,64,175,0.22)',
+                        color: '#BFDBFE',
+                        borderRadius: 999,
+                        padding: '3px 8px',
+                        fontSize: 11,
+                        cursor: snapshotAction ? 'not-allowed' : 'pointer',
+                      }}
+                      aria-label={`Restore snapshot ${snapshot.fileName}`}
+                    >
+                      Restore
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        void handleDeleteSnapshot(snapshot.fileName);
+                      }}
+                      disabled={snapshotAction !== null}
+                      style={{
+                        border: '1px solid rgba(248,113,113,0.38)',
+                        background: 'rgba(127,29,29,0.25)',
+                        color: '#FCA5A5',
+                        borderRadius: 999,
+                        padding: '3px 8px',
+                        fontSize: 11,
+                        cursor: snapshotAction ? 'not-allowed' : 'pointer',
+                      }}
+                      aria-label={`Delete snapshot ${snapshot.fileName}`}
+                    >
+                      Delete
+                    </button>
+                  </div>
                 </li>
               ))}
             </ul>
           ) : (
             <p style={mutedTextStyle}>No orchestration snapshots available yet.</p>
           )}
+
+          {selectedSnapshotDetail ? (
+            <div
+              style={{
+                marginTop: 10,
+                borderTop: '1px solid rgba(255,255,255,0.08)',
+                paddingTop: 10,
+              }}
+            >
+              <p style={{ color: '#E2E8F0', margin: '0 0 4px 0', fontSize: 12 }}>
+                <strong>Snapshot detail:</strong> {selectedSnapshotDetail.fileName}
+              </p>
+              <p style={mutedTextStyle}>
+                Tasks: <strong>{selectedSnapshotDetail.taskCount}</strong> · Running:{' '}
+                <strong>{selectedSnapshotDetail.metrics.runningTasks}</strong> · Done:{' '}
+                <strong>{selectedSnapshotDetail.metrics.doneTasks}</strong>
+              </p>
+              <p style={{ ...mutedTextStyle, marginBottom: 0 }}>
+                Premium consumed:{' '}
+                <strong>{selectedSnapshotDetail.quota.premiumConsumedToday}</strong> · Weekly
+                remaining: <strong>{selectedSnapshotDetail.quota.weeklyPremiumRemaining}</strong>
+              </p>
+            </div>
+          ) : null}
         </div>
 
         <div style={cardStyle}>

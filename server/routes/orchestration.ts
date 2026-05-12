@@ -1,5 +1,12 @@
 import { Router, Request, Response } from 'express';
-import { existsSync, mkdirSync, readFileSync, readdirSync, writeFileSync } from 'node:fs';
+import {
+  existsSync,
+  mkdirSync,
+  readFileSync,
+  readdirSync,
+  unlinkSync,
+  writeFileSync,
+} from 'node:fs';
 import path from 'node:path';
 import { asyncHandler, AppError } from '../middleware/errorHandler.js';
 import { requireRole } from '../middleware/rbac.js';
@@ -70,6 +77,16 @@ interface OrchestrationSnapshotSummary {
   fileName: string;
   createdAt: string;
   taskCount: number;
+}
+
+interface OrchestrationSnapshotDetail extends OrchestrationSnapshotSummary {
+  quota: {
+    weeklyPremiumRemaining: number;
+    businessDaysRemaining: number;
+    premiumConsumedToday: number;
+  };
+  metrics: OrchestrationMetrics;
+  tasks: OrchestrationTask[];
 }
 
 const ASSISTANT_EXECUTION_PROFILES: Record<string, AssistantExecutionProfile> = {
@@ -315,13 +332,50 @@ function getSnapshotFiles(): string[] {
     .sort((left, right) => right.localeCompare(left));
 }
 
+function getSnapshotFilePath(fileName: string): string {
+  return path.join(ORCHESTRATION_SNAPSHOT_DIR, path.basename(fileName));
+}
+
+function readSnapshotDetail(fileName: string): OrchestrationSnapshotDetail {
+  const normalizedFileName = path.basename(fileName);
+  const snapshotFiles = getSnapshotFiles();
+
+  if (!snapshotFiles.includes(normalizedFileName)) {
+    throw new AppError('Snapshot not found', 404);
+  }
+
+  const filePath = getSnapshotFilePath(normalizedFileName);
+  // eslint-disable-next-line security/detect-non-literal-fs-filename -- fileName restricted to local snapshot directory entries
+  const parsed = JSON.parse(
+    readFileSync(filePath, 'utf-8')
+  ) as Partial<PersistedOrchestrationState>;
+  const tasks = Array.isArray(parsed.tasks) ? parsed.tasks.slice(0, 500) : [];
+  const createdAt = normalizedFileName.replace(/^orch-snapshot-/, '').replace(/\.json$/, '');
+
+  return {
+    fileName: normalizedFileName,
+    createdAt,
+    taskCount: tasks.length,
+    quota: {
+      weeklyPremiumRemaining:
+        typeof parsed.weeklyPremiumRemaining === 'number' ? parsed.weeklyPremiumRemaining : 0,
+      businessDaysRemaining:
+        typeof parsed.businessDaysRemaining === 'number' ? parsed.businessDaysRemaining : 0,
+      premiumConsumedToday:
+        typeof parsed.premiumConsumedToday === 'number' ? parsed.premiumConsumedToday : 0,
+    },
+    metrics: computeMetrics(tasks),
+    tasks,
+  };
+}
+
 function listSnapshotSummaries(): OrchestrationSnapshotSummary[] {
   return getSnapshotFiles().map(fileName => {
     const createdAt = fileName.replace(/^orch-snapshot-/, '').replace(/\.json$/, '');
     try {
       const filePath = path.join(ORCHESTRATION_SNAPSHOT_DIR, fileName);
-      // eslint-disable-next-line security/detect-non-literal-fs-filename -- fileName restricted to local snapshot directory entries
       const parsed = JSON.parse(
+        // eslint-disable-next-line security/detect-non-literal-fs-filename -- fileName restricted to local snapshot directory entries
         readFileSync(filePath, 'utf-8')
       ) as Partial<PersistedOrchestrationState>;
       const taskCount = Array.isArray(parsed.tasks) ? parsed.tasks.length : 0;
@@ -378,6 +432,18 @@ function restoreSnapshot(fileName?: string): OrchestrationSnapshotSummary {
       taskCount: orchestrationTasks.length,
     }
   );
+}
+
+function deleteSnapshot(fileName: string): OrchestrationSnapshotSummary {
+  const snapshot = readSnapshotDetail(fileName);
+  const filePath = getSnapshotFilePath(snapshot.fileName);
+  // eslint-disable-next-line security/detect-non-literal-fs-filename -- fileName restricted to local snapshot directory entries
+  unlinkSync(filePath);
+  return {
+    fileName: snapshot.fileName,
+    createdAt: snapshot.createdAt,
+    taskCount: snapshot.taskCount,
+  };
 }
 
 hydrateState();
@@ -465,6 +531,14 @@ router.get(
   })
 );
 
+router.get(
+  '/snapshots/:fileName',
+  asyncHandler(async (req: Request, res: Response) => {
+    const snapshot = readSnapshotDetail(req.params.fileName);
+    res.json({ success: true, data: snapshot });
+  })
+);
+
 router.post(
   '/snapshots/export',
   requireRole('owner', 'admin', 'manager'),
@@ -486,6 +560,21 @@ router.post(
       data: {
         snapshot,
         metrics: computeMetrics(orchestrationTasks),
+      },
+    });
+  })
+);
+
+router.delete(
+  '/snapshots/:fileName',
+  requireRole('owner', 'admin', 'manager'),
+  asyncHandler(async (req: Request, res: Response) => {
+    const deletedSnapshot = deleteSnapshot(req.params.fileName);
+    res.json({
+      success: true,
+      data: {
+        snapshot: deletedSnapshot,
+        remaining: listSnapshotSummaries().slice(0, 20),
       },
     });
   })

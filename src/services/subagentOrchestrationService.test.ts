@@ -5,6 +5,7 @@ vi.mock('../utils/apiClient', () => ({
     get: vi.fn(),
     post: vi.fn(),
     patch: vi.fn(),
+    delete: vi.fn(),
   },
 }));
 
@@ -14,6 +15,7 @@ import { subagentOrchestrationService } from './subagentOrchestrationService';
 const mApiGet = apiClient.get as ReturnType<typeof vi.fn>;
 const mApiPost = apiClient.post as ReturnType<typeof vi.fn>;
 const mApiPatch = apiClient.patch as ReturnType<typeof vi.fn>;
+const mApiDelete = apiClient.delete as ReturnType<typeof vi.fn>;
 
 describe('subagentOrchestrationService', () => {
   beforeEach(() => {
@@ -113,6 +115,19 @@ describe('subagentOrchestrationService', () => {
     expect(result).toEqual(response);
   });
 
+  it('getSnapshot calls GET /orchestration/snapshots/:fileName', async () => {
+    const response = {
+      success: true,
+      data: { fileName: 'orch-snapshot-test.json', createdAt: '', taskCount: 1, tasks: [] },
+    };
+    mApiGet.mockResolvedValue(response);
+
+    const result = await subagentOrchestrationService.getSnapshot('orch-snapshot-test.json');
+
+    expect(mApiGet).toHaveBeenCalledWith('/orchestration/snapshots/orch-snapshot-test.json');
+    expect(result).toEqual(response);
+  });
+
   it('restoreSnapshot calls POST /orchestration/snapshots/restore', async () => {
     const response = {
       success: true,
@@ -128,6 +143,22 @@ describe('subagentOrchestrationService', () => {
     expect(mApiPost).toHaveBeenCalledWith('/orchestration/snapshots/restore', {
       fileName: 'orch-snapshot-test.json',
     });
+    expect(result).toEqual(response);
+  });
+
+  it('deleteSnapshot calls DELETE /orchestration/snapshots/:fileName', async () => {
+    const response = {
+      success: true,
+      data: {
+        snapshot: { fileName: 'orch-snapshot-test.json', createdAt: '', taskCount: 1 },
+        remaining: [],
+      },
+    };
+    mApiDelete.mockResolvedValue(response);
+
+    const result = await subagentOrchestrationService.deleteSnapshot('orch-snapshot-test.json');
+
+    expect(mApiDelete).toHaveBeenCalledWith('/orchestration/snapshots/orch-snapshot-test.json');
     expect(result).toEqual(response);
   });
 
