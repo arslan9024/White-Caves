@@ -13,6 +13,7 @@ import {
   setLayout,
 } from '../../store/slices/aiAssistantDashboardSlice';
 import { getInternalModuleMountConfig } from '../../config/internalModuleMounts';
+import { getInternalModuleArchitecture } from '../../config/internalModuleArchitecture';
 
 const NadiaWhatsAppCRM = lazy(() => import('./NadiaWhatsAppCRM'));
 const MaryInventoryCRM = lazy(() => import('./MaryInventoryCRM_NEW'));
@@ -139,6 +140,10 @@ const AICommandCenter = memo(() => {
     () => (currentAssistant ? getInternalModuleMountConfig(currentAssistant.id) : null),
     [currentAssistant]
   );
+  const moduleArchitecture = useMemo(
+    () => (currentAssistant ? getInternalModuleArchitecture(currentAssistant.id) : null),
+    [currentAssistant]
+  );
   const [mountHealth, setMountHealth] = useState<MountHealthStatus>('checking');
 
   useEffect(() => {
@@ -246,6 +251,26 @@ const AICommandCenter = memo(() => {
                     title={`Module health endpoint status: ${healthMeta.label}`}
                   >
                     {healthMeta.label}
+                  </span>
+                ) : null}
+
+                {moduleArchitecture ? (
+                  <span
+                    style={{
+                      fontSize: 11,
+                      fontWeight: 600,
+                      letterSpacing: 0.3,
+                      textTransform: 'uppercase',
+                      color: '#DDD6FE',
+                      border: '1px solid rgba(196, 181, 253, 0.4)',
+                      borderRadius: 999,
+                      padding: '2px 8px',
+                      background: 'rgba(109, 40, 217, 0.18)',
+                    }}
+                    aria-label={`Architecture ${moduleArchitecture.moduleId}`}
+                    title={`Internal module architecture: ${moduleArchitecture.moduleId}`}
+                  >
+                    {moduleArchitecture.moduleId}
                   </span>
                 ) : null}
               </>

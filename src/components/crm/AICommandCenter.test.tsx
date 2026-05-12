@@ -19,6 +19,7 @@ let mockRecentActivity: unknown[] = [];
 let mockUI: Record<string, unknown> = { layout: 'grid' };
 const mockDispatch = vi.fn();
 let mockMountConfig: Record<string, unknown> | null = null;
+let mockArchitecture: Record<string, unknown> | null = null;
 
 vi.mock('react-redux', () => ({
   useSelector: (selector: (s: unknown) => unknown) => selector({}),
@@ -38,6 +39,10 @@ vi.mock('../../store/slices/aiAssistant/types', () => ({}));
 
 vi.mock('../../config/internalModuleMounts', () => ({
   getInternalModuleMountConfig: () => mockMountConfig,
+}));
+
+vi.mock('../../config/internalModuleArchitecture', () => ({
+  getInternalModuleArchitecture: () => mockArchitecture,
 }));
 
 vi.mock('lucide-react', () => {
@@ -270,6 +275,7 @@ describe('AICommandCenter', () => {
     vi.clearAllMocks();
     vi.unstubAllGlobals();
     mockMountConfig = null;
+    mockArchitecture = null;
     mockCurrentAssistant = null;
     mockAllAssistants = [
       { id: 'nadia', name: 'Nadia', metrics: { systemHealth: 'optimal' } },
@@ -511,6 +517,23 @@ describe('AICommandCenter', () => {
       render(<AICommandCenter />);
       expect(screen.getByLabelText(/Current mount mode iframe/i)).toBeInTheDocument();
       expect(screen.getByText(/iframe mount/i)).toBeInTheDocument();
+    });
+
+    it('shows architecture badge when architecture metadata exists', () => {
+      mockCurrentAssistant = { id: 'henry', name: 'Henry', colorScheme: '#8B5CF6' };
+      mockMountConfig = {
+        assistantId: 'henry',
+        mountMode: 'native',
+        enabled: true,
+      };
+      mockArchitecture = {
+        moduleId: 'henry-records-core',
+      };
+
+      render(<AICommandCenter />);
+
+      expect(screen.getByLabelText(/Architecture henry-records-core/i)).toBeInTheDocument();
+      expect(screen.getByText(/henry-records-core/i)).toBeInTheDocument();
     });
 
     it('shows healthy status when health endpoint responds OK', async () => {

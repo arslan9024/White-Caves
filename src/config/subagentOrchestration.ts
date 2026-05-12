@@ -103,17 +103,87 @@ export const ASSISTANT_EXECUTION_PROFILES: Record<string, AssistantExecutionProf
 };
 
 export const SUBAGENT_COLLABORATION_GRAPH: CollaborationEdge[] = [
-  { from: 'linda', to: 'henry', reason: 'Conversation and message events for immutable audit trails' },
+  {
+    from: 'linda',
+    to: 'henry',
+    reason: 'Conversation and message events for immutable audit trails',
+  },
   { from: 'henry', to: 'katherine', reason: 'Compliance and anomaly findings for QA validation' },
-  { from: 'katherine', to: 'mira', reason: 'Actionable bug and validation outcomes for implementation' },
+  {
+    from: 'katherine',
+    to: 'mira',
+    reason: 'Actionable bug and validation outcomes for implementation',
+  },
   { from: 'mira', to: 'una', reason: 'Functional implementation ready for UI/UX refinement' },
-  { from: 'una', to: 'katherine', reason: 'UX changes require accessibility and regression checks' },
+  {
+    from: 'una',
+    to: 'katherine',
+    reason: 'UX changes require accessibility and regression checks',
+  },
 ];
 
 export const getRecommendedCollaborators = (assistantId: string): CollaborationEdge[] =>
-  SUBAGENT_COLLABORATION_GRAPH.filter(
-    (edge) => edge.from === assistantId || edge.to === assistantId,
-  );
+  SUBAGENT_COLLABORATION_GRAPH.filter(edge => edge.from === assistantId || edge.to === assistantId);
+
+export const getAssistantExecutionProfile = (
+  assistantId: string
+): AssistantExecutionProfile | null => {
+  switch (assistantId) {
+    case 'linda':
+      return ASSISTANT_EXECUTION_PROFILES.linda;
+    case 'henry':
+      return ASSISTANT_EXECUTION_PROFILES.henry;
+    case 'mira':
+      return ASSISTANT_EXECUTION_PROFILES.mira;
+    case 'una':
+      return ASSISTANT_EXECUTION_PROFILES.una;
+    case 'katherine':
+      return ASSISTANT_EXECUTION_PROFILES.katherine;
+    default:
+      return null;
+  }
+};
+
+export interface PremiumRequestContext {
+  assistantId: string;
+  requestedTier: ModelTier;
+  contextGateApproved?: boolean;
+}
+
+export const canAssistantRequestTier = ({
+  assistantId,
+  requestedTier,
+  contextGateApproved = false,
+}: PremiumRequestContext): { allowed: boolean; reason?: string } => {
+  const profile = getAssistantExecutionProfile(assistantId);
+
+  if (!profile) {
+    return {
+      allowed: false,
+      reason: `Unknown assistant profile: ${assistantId}`,
+    };
+  }
+
+  if (requestedTier !== 'premium') {
+    return { allowed: true };
+  }
+
+  if (!profile.modelPolicy.premiumAllowed) {
+    return {
+      allowed: false,
+      reason: `${assistantId} is not permitted to use premium tier`,
+    };
+  }
+
+  if (profile.modelPolicy.requiresContextGate && !contextGateApproved) {
+    return {
+      allowed: false,
+      reason: `${assistantId} requires context gate approval before premium tasks`,
+    };
+  }
+
+  return { allowed: true };
+};
 
 export const calculateDailyPremiumCap = ({
   weeklyRemaining,

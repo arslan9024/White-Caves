@@ -8,10 +8,16 @@ export interface InternalModuleMountConfig {
   moduleUrl?: string;
   healthUrl?: string;
   description: string;
+  architectureId?: 'linda-whatsapp-core' | 'henry-records-core';
+  orchestrationOwner?: string;
 }
 
 const getEnv = (
-  key: 'VITE_LINDA_MODULE_URL' | 'VITE_LINDA_API_URL' | 'VITE_HENRY_MODULE_URL'
+  key:
+    | 'VITE_LINDA_MODULE_URL'
+    | 'VITE_LINDA_API_URL'
+    | 'VITE_HENRY_MODULE_URL'
+    | 'VITE_HENRY_API_URL'
 ): string | undefined => {
   const env = (
     import.meta as ImportMeta & {
@@ -19,6 +25,7 @@ const getEnv = (
         VITE_LINDA_MODULE_URL?: string;
         VITE_LINDA_API_URL?: string;
         VITE_HENRY_MODULE_URL?: string;
+        VITE_HENRY_API_URL?: string;
       };
     }
   ).env;
@@ -34,6 +41,9 @@ const getEnv = (
     case 'VITE_HENRY_MODULE_URL':
       value = env?.VITE_HENRY_MODULE_URL;
       break;
+    case 'VITE_HENRY_API_URL':
+      value = env?.VITE_HENRY_API_URL;
+      break;
     default:
       value = undefined;
   }
@@ -44,6 +54,7 @@ const getEnv = (
 const lindaModuleUrl = getEnv('VITE_LINDA_MODULE_URL');
 const lindaApiUrl = getEnv('VITE_LINDA_API_URL');
 const henryModuleUrl = getEnv('VITE_HENRY_MODULE_URL');
+const henryApiUrl = getEnv('VITE_HENRY_API_URL');
 
 export const INTERNAL_MODULE_MOUNTS: Record<string, InternalModuleMountConfig> = {
   linda: {
@@ -53,6 +64,8 @@ export const INTERNAL_MODULE_MOUNTS: Record<string, InternalModuleMountConfig> =
     enabled: true,
     moduleUrl: lindaModuleUrl,
     healthUrl: lindaApiUrl ? `${lindaApiUrl.replace(/\/$/, '')}/health` : undefined,
+    architectureId: 'linda-whatsapp-core',
+    orchestrationOwner: 'linda',
     description:
       'WhatsApp orchestration module. Runs native by default and can be remote-mounted through VITE_LINDA_MODULE_URL.',
   },
@@ -62,6 +75,9 @@ export const INTERNAL_MODULE_MOUNTS: Record<string, InternalModuleMountConfig> =
     mountMode: henryModuleUrl ? 'iframe' : 'native',
     enabled: true,
     moduleUrl: henryModuleUrl,
+    healthUrl: henryApiUrl ? `${henryApiUrl.replace(/\/$/, '')}/health` : undefined,
+    architectureId: 'henry-records-core',
+    orchestrationOwner: 'henry',
     description:
       'Record keeper module. Remote mount supported via VITE_HENRY_MODULE_URL with native fallback.',
   },
