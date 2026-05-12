@@ -50,7 +50,41 @@ export interface OrchestrationStatusPayload {
     premiumConsumedToday: number;
     premiumRemainingToday: number;
   };
+  metrics?: {
+    totalTasks: number;
+    queuedTasks: number;
+    runningTasks: number;
+    doneTasks: number;
+    failedTasks: number;
+    blockedTasks: number;
+    premiumTasks: number;
+    standardTasks: number;
+    freeTasks: number;
+    lastTaskCreatedAt: string | null;
+  };
   tasks: OrchestrationTask[];
+}
+
+export interface OrchestrationMetricsPayload {
+  quota: {
+    weeklyPremiumRemaining: number;
+    businessDaysRemaining: number;
+    dailyCap: number;
+    premiumConsumedToday: number;
+    premiumRemainingToday: number;
+  };
+  metrics: {
+    totalTasks: number;
+    queuedTasks: number;
+    runningTasks: number;
+    doneTasks: number;
+    failedTasks: number;
+    blockedTasks: number;
+    premiumTasks: number;
+    standardTasks: number;
+    freeTasks: number;
+    lastTaskCreatedAt: string | null;
+  };
 }
 
 const BASE = '/orchestration';
@@ -68,6 +102,13 @@ export const subagentOrchestrationService = {
     return (await apiClient.get(`${BASE}/tasks${query}`)) as {
       success: boolean;
       data: OrchestrationTask[];
+    };
+  },
+
+  async getMetrics() {
+    return (await apiClient.get(`${BASE}/metrics`)) as {
+      success: boolean;
+      data: OrchestrationMetricsPayload;
     };
   },
 

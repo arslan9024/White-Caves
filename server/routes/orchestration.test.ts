@@ -50,9 +50,24 @@ describe('Orchestration Routes — /api/orchestration', () => {
     expect(res.body.data).toHaveProperty('profiles');
     expect(res.body.data).toHaveProperty('collaborationGraph');
     expect(res.body.data).toHaveProperty('quota');
+    expect(res.body.data).toHaveProperty('metrics');
     expect(res.body.data).toHaveProperty('tasks');
     expect(res.body.data.profiles).toHaveProperty('linda');
     expect(res.body.data.profiles).toHaveProperty('henry');
+    expect(res.body.data.metrics).toHaveProperty('totalTasks');
+    expect(res.body.data.metrics).toHaveProperty('queuedTasks');
+  });
+
+  it('GET /metrics returns quota and aggregated metrics payload', async () => {
+    const res = await request(createApp()).get('/api/orchestration/metrics');
+
+    expect(res.status).toBe(200);
+    expect(res.body.success).toBe(true);
+    expect(res.body.data).toHaveProperty('quota');
+    expect(res.body.data).toHaveProperty('metrics');
+    expect(res.body.data.metrics).toHaveProperty('totalTasks');
+    expect(res.body.data.metrics).toHaveProperty('premiumTasks');
+    expect(res.body.data.metrics).toHaveProperty('lastTaskCreatedAt');
   });
 
   it('GET /contracts/assistant-endpoints returns runtime endpoint contract payload', async () => {

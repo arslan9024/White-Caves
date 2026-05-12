@@ -114,6 +114,26 @@ const SubagentCollaborationPanel = memo(
       return statusData.tasks.filter(task => task.assistantId === assistantId).slice(0, 5);
     }, [assistantId, statusData?.tasks]);
 
+    const runtimeMetrics = useMemo(() => {
+      if (statusData?.metrics) {
+        return statusData.metrics;
+      }
+
+      const tasks = statusData?.tasks ?? [];
+      return {
+        totalTasks: tasks.length,
+        queuedTasks: tasks.filter(task => task.state === 'queued').length,
+        runningTasks: tasks.filter(task => task.state === 'running').length,
+        doneTasks: tasks.filter(task => task.state === 'done').length,
+        failedTasks: tasks.filter(task => task.state === 'failed').length,
+        blockedTasks: tasks.filter(task => task.state === 'blocked').length,
+        premiumTasks: tasks.filter(task => task.requestedTier === 'premium').length,
+        standardTasks: tasks.filter(task => task.requestedTier === 'standard').length,
+        freeTasks: tasks.filter(task => task.requestedTier === 'free').length,
+        lastTaskCreatedAt: tasks.length > 0 ? tasks[0].createdAt : null,
+      };
+    }, [statusData?.metrics, statusData?.tasks]);
+
     const allowedTaskTypes = useMemo(() => {
       if (!profile) {
         return ['planning'] as TaskType[];
@@ -260,6 +280,23 @@ const SubagentCollaborationPanel = memo(
             Daily premium cap: <strong>{dailyPremiumCap}</strong> · Consumed:{' '}
             <strong>{premiumConsumedToday}</strong> · Remaining:{' '}
             <strong>{premiumRemainingToday}</strong>
+          </p>
+        </div>
+
+        <div style={cardStyle}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10 }}>
+            <ShieldCheck size={16} color="#60A5FA" />
+            <strong style={{ color: '#E2E8F0', fontSize: 13 }}>Runtime Task Metrics</strong>
+          </div>
+          <p style={mutedTextStyle}>
+            Total: <strong>{runtimeMetrics.totalTasks}</strong> · Running:{' '}
+            <strong>{runtimeMetrics.runningTasks}</strong> · Blocked:{' '}
+            <strong>{runtimeMetrics.blockedTasks}</strong>
+          </p>
+          <p style={{ color: '#E2E8F0', margin: '6px 0 0 0', fontSize: 12 }}>
+            Done: <strong>{runtimeMetrics.doneTasks}</strong> · Failed:{' '}
+            <strong>{runtimeMetrics.failedTasks}</strong> · Premium tasks:{' '}
+            <strong>{runtimeMetrics.premiumTasks}</strong>
           </p>
         </div>
 

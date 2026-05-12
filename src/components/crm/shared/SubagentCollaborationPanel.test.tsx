@@ -17,7 +17,9 @@ const mGetStatus = subagentOrchestrationService.getStatus as ReturnType<typeof v
 const mCreateTask = subagentOrchestrationService.createTask as ReturnType<typeof vi.fn>;
 const mUpdateTaskState = subagentOrchestrationService.updateTaskState as ReturnType<typeof vi.fn>;
 
-const makeStatusResponse = (overrides?: Partial<{ tasks: Array<Record<string, unknown>> }>) => ({
+const makeStatusResponse = (
+  overrides?: Partial<{ tasks: Array<Record<string, unknown>>; metrics: Record<string, unknown> }>
+) => ({
   success: true,
   data: {
     profiles: {},
@@ -28,6 +30,18 @@ const makeStatusResponse = (overrides?: Partial<{ tasks: Array<Record<string, un
       dailyCap: 5,
       premiumConsumedToday: 1,
       premiumRemainingToday: 4,
+    },
+    metrics: overrides?.metrics ?? {
+      totalTasks: 0,
+      queuedTasks: 0,
+      runningTasks: 0,
+      doneTasks: 0,
+      failedTasks: 0,
+      blockedTasks: 0,
+      premiumTasks: 0,
+      standardTasks: 0,
+      freeTasks: 0,
+      lastTaskCreatedAt: null,
     },
     tasks: overrides?.tasks ?? [],
   },
@@ -82,6 +96,32 @@ describe('SubagentCollaborationPanel', () => {
     expect(dailyLine).toHaveTextContent('Daily premium cap:');
     expect(dailyLine).toHaveTextContent('Consumed:');
     expect(dailyLine).toHaveTextContent('Remaining:');
+  });
+
+  it('renders runtime task metrics from orchestration status payload', async () => {
+    mGetStatus.mockResolvedValueOnce(
+      makeStatusResponse({
+        metrics: {
+          totalTasks: 7,
+          queuedTasks: 2,
+          runningTasks: 1,
+          doneTasks: 3,
+          failedTasks: 1,
+          blockedTasks: 0,
+          premiumTasks: 2,
+          standardTasks: 5,
+          freeTasks: 0,
+          lastTaskCreatedAt: null,
+        },
+      })
+    );
+
+    render(<SubagentCollaborationPanel assistantId="henry" />);
+
+    expect(await screen.findByText(/runtime task metrics/i)).toBeInTheDocument();
+    expect(screen.getByText(/Total:/i)).toHaveTextContent('7');
+    expect(screen.getByText(/Done:/i)).toHaveTextContent('3');
+    expect(screen.getByText(/Premium tasks:/i)).toHaveTextContent('2');
   });
 
   it('assigns a task and refreshes assistant task list', async () => {

@@ -60,6 +60,39 @@ describe('subagentOrchestrationService', () => {
     expect(mApiGet).toHaveBeenCalledWith('/orchestration/tasks?assistantId=henry%20%2B%20qa');
   });
 
+  it('getMetrics calls GET /orchestration/metrics', async () => {
+    const response = {
+      success: true,
+      data: {
+        quota: {
+          weeklyPremiumRemaining: 10,
+          businessDaysRemaining: 5,
+          dailyCap: 2,
+          premiumConsumedToday: 1,
+          premiumRemainingToday: 1,
+        },
+        metrics: {
+          totalTasks: 3,
+          queuedTasks: 1,
+          runningTasks: 1,
+          doneTasks: 1,
+          failedTasks: 0,
+          blockedTasks: 0,
+          premiumTasks: 1,
+          standardTasks: 2,
+          freeTasks: 0,
+          lastTaskCreatedAt: null,
+        },
+      },
+    };
+    mApiGet.mockResolvedValue(response);
+
+    const result = await subagentOrchestrationService.getMetrics();
+
+    expect(mApiGet).toHaveBeenCalledWith('/orchestration/metrics');
+    expect(result).toEqual(response);
+  });
+
   it('createTask calls POST /orchestration/tasks with payload', async () => {
     const payload = {
       assistantId: 'henry',
@@ -108,5 +141,16 @@ describe('subagentOrchestrationService', () => {
 
     expect(mApiPatch).toHaveBeenCalledWith('/orchestration/tasks/t-1/state', { state: 'running' });
     expect(result).toEqual(response);
+  });
+
+  it('updateTaskState includes trimmed blockedReason when provided', async () => {
+    mApiPatch.mockResolvedValue({ success: true, data: { id: 't-2' } });
+
+    await subagentOrchestrationService.updateTaskState('t-2', 'blocked', '  waiting legal  ');
+
+    expect(mApiPatch).toHaveBeenCalledWith('/orchestration/tasks/t-2/state', {
+      state: 'blocked',
+      blockedReason: 'waiting legal',
+    });
   });
 });

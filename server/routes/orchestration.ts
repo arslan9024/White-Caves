@@ -1,4 +1,6 @@
 import { Router, Request, Response } from 'express';
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
+import path from 'node:path';
 import { asyncHandler, AppError } from '../middleware/errorHandler.js';
 import { requireRole } from '../middleware/rbac.js';
 
@@ -42,6 +44,26 @@ interface OrchestrationTask {
   requestedTier: ModelTier;
   blockedReason: string | null;
   createdAt: string;
+}
+
+interface OrchestrationMetrics {
+  totalTasks: number;
+  queuedTasks: number;
+  runningTasks: number;
+  doneTasks: number;
+  failedTasks: number;
+  blockedTasks: number;
+  premiumTasks: number;
+  standardTasks: number;
+  freeTasks: number;
+  lastTaskCreatedAt: string | null;
+}
+
+interface PersistedOrchestrationState {
+  weeklyPremiumRemaining: number;
+  businessDaysRemaining: number;
+  premiumConsumedToday: number;
+  tasks: OrchestrationTask[];
 }
 
 const ASSISTANT_EXECUTION_PROFILES: Record<string, AssistantExecutionProfile> = {
@@ -180,6 +202,84 @@ let weeklyPremiumRemaining = 48;
 let businessDaysRemaining = 5;
 let premiumConsumedToday = 0;
 
+const ORCHESTRATION_STATE_FILE = path.join(process.cwd(), 'logs', 'orchestration-state.json');
+
+function computeMetrics(tasks: OrchestrationTask[]): OrchestrationMetrics {
+  const totalTasks = tasks.length;
+  const queuedTasks = tasks.filter(task => task.state === 'queued').length;
+  const runningTasks = tasks.filter(task => task.state === 'running').length;
+  const doneTasks = tasks.filter(task => task.state === 'done').length;
+  const failedTasks = tasks.filter(task => task.state === 'failed').length;
+  const blockedTasks = tasks.filter(task => task.state === 'blocked').length;
+  const premiumTasks = tasks.filter(task => task.requestedTier === 'premium').length;
+  const standardTasks = tasks.filter(task => task.requestedTier === 'standard').length;
+  const freeTasks = tasks.filter(task => task.requestedTier === 'free').length;
+
+  return {
+    totalTasks,
+    queuedTasks,
+    runningTasks,
+    doneTasks,
+    failedTasks,
+    blockedTasks,
+    premiumTasks,
+    standardTasks,
+    freeTasks,
+    lastTaskCreatedAt: tasks.length > 0 ? tasks[0].createdAt : null,
+  };
+}
+
+function persistState(): void {
+  try {
+    const dirPath = path.dirname(ORCHESTRATION_STATE_FILE);
+    if (!existsSync(dirPath)) {
+      mkdirSync(dirPath, { recursive: true });
+    }
+
+    const payload: PersistedOrchestrationState = {
+      weeklyPremiumRemaining,
+      businessDaysRemaining,
+      premiumConsumedToday,
+      tasks: orchestrationTasks.slice(0, 500),
+    };
+
+    writeFileSync(ORCHESTRATION_STATE_FILE, JSON.stringify(payload, null, 2), 'utf-8');
+  } catch {
+    // Persistence failures should never break orchestration APIs.
+  }
+}
+
+function hydrateState(): void {
+  try {
+    if (!existsSync(ORCHESTRATION_STATE_FILE)) {
+      return;
+    }
+
+    const fileContents = readFileSync(ORCHESTRATION_STATE_FILE, 'utf-8');
+    const parsed = JSON.parse(fileContents) as Partial<PersistedOrchestrationState>;
+
+    if (typeof parsed.weeklyPremiumRemaining === 'number' && parsed.weeklyPremiumRemaining >= 0) {
+      weeklyPremiumRemaining = Math.floor(parsed.weeklyPremiumRemaining);
+    }
+
+    if (typeof parsed.businessDaysRemaining === 'number' && parsed.businessDaysRemaining >= 0) {
+      businessDaysRemaining = Math.floor(parsed.businessDaysRemaining);
+    }
+
+    if (typeof parsed.premiumConsumedToday === 'number' && parsed.premiumConsumedToday >= 0) {
+      premiumConsumedToday = Math.floor(parsed.premiumConsumedToday);
+    }
+
+    if (Array.isArray(parsed.tasks)) {
+      orchestrationTasks.splice(0, orchestrationTasks.length, ...parsed.tasks.slice(0, 500));
+    }
+  } catch {
+    // Corrupt state is ignored safely and re-created on next successful mutation.
+  }
+}
+
+hydrateState();
+
 function calculateDailyPremiumCap(): number {
   if (businessDaysRemaining <= 0) return 0;
   return Math.max(0, Math.floor(weeklyPremiumRemaining / businessDaysRemaining));
@@ -226,7 +326,28 @@ router.get(
           premiumConsumedToday,
           premiumRemainingToday: Math.max(0, dailyCap - premiumConsumedToday),
         },
+        metrics: computeMetrics(orchestrationTasks),
         tasks: orchestrationTasks.slice(0, 50),
+      },
+    });
+  })
+);
+
+router.get(
+  '/metrics',
+  asyncHandler(async (_req: Request, res: Response) => {
+    const dailyCap = calculateDailyPremiumCap();
+    res.json({
+      success: true,
+      data: {
+        quota: {
+          weeklyPremiumRemaining,
+          businessDaysRemaining,
+          dailyCap,
+          premiumConsumedToday,
+          premiumRemainingToday: Math.max(0, dailyCap - premiumConsumedToday),
+        },
+        metrics: computeMetrics(orchestrationTasks),
       },
     });
   })
@@ -302,6 +423,7 @@ router.post(
     };
 
     orchestrationTasks.unshift(task);
+    persistState();
 
     res.status(201).json({ success: true, data: task });
   })
@@ -339,6 +461,9 @@ router.patch(
           ? blockedReason.trim()
           : (task.blockedReason ?? 'Blocked by orchestration policy')
         : null;
+
+    persistState();
+
     res.json({ success: true, data: task });
   })
 );
@@ -366,6 +491,8 @@ router.put(
     if (typeof consumedInput === 'number' && consumedInput >= 0) {
       premiumConsumedToday = Math.floor(consumedInput);
     }
+
+    persistState();
 
     res.json({
       success: true,
