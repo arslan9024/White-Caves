@@ -447,6 +447,15 @@ describe('App', () => {
     });
   });
 
+  it('redirects /login to /signin', async () => {
+    await act(async () => {
+      renderAtRoute('/login');
+    });
+    await waitFor(() => {
+      expect(screen.getByTestId('signin-page')).toBeInTheDocument();
+    });
+  });
+
   // ── Profile Route ──
 
   it('redirects /profile to /signin when not logged in', async () => {
@@ -530,6 +539,17 @@ describe('App', () => {
     mockSafeStorage.getJSON.mockReturnValue({ role: 'owner', selectedAt: '', locked: true } as any);
     await act(async () => {
       renderAtRoute('/modern-dashboard');
+    });
+    await waitFor(() => {
+      expect(screen.getByTestId('dashboard-page')).toBeInTheDocument();
+    });
+  });
+
+  it('redirects /crm to /dashboard', async () => {
+    mockReduxState.currentUser = { id: '1', role: 'owner', email: 'test@test.com' };
+    mockSafeStorage.getJSON.mockReturnValue({ role: 'owner', selectedAt: '', locked: true } as any);
+    await act(async () => {
+      renderAtRoute('/crm');
     });
     await waitFor(() => {
       expect(screen.getByTestId('dashboard-page')).toBeInTheDocument();

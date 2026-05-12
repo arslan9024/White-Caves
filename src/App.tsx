@@ -408,6 +408,7 @@ function App(): React.JSX.Element {
                     )
                   }
                 />
+                <Route path="/login" element={<Navigate to="/signin" replace />} />
                 <Route
                   path="/signup"
                   element={
@@ -535,6 +536,7 @@ function App(): React.JSX.Element {
                     </ProtectedRoute>
                   }
                 />
+                <Route path="/crm" element={<Navigate to="/dashboard" replace />} />
 
                 {/* ==================== ROLE-SPECIFIC SUB-PAGES ==================== */}
                 <Route
