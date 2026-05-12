@@ -1,6 +1,6 @@
 # White Caves — Daily Milestone Tracker
 
-> Use this file as the live execution ledger for the recovery program.  
+> Use this file as the live execution ledger for the recovery program.
 > Canonical roadmap: `/home/runner/work/White-Caves/White-Caves/plans/MASTER_PLAN.md`
 
 ---

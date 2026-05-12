@@ -1,6 +1,6 @@
 # White Caves — Verified Progress Dashboard
 
-> **Last Updated:** May 12, 2026  
+> **Last Updated:** May 12, 2026
 > **Canonical roadmap:** `/home/runner/work/White-Caves/White-Caves/plans/MASTER_PLAN.md`
 
 ---

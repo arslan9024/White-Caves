@@ -1,7 +1,7 @@
 # White Caves Real Estate — Master Plan
 
-> **Single Source of Truth** — Updated May 12, 2026  
-> **Goal**: Move from a stale 40% headline to a **verified 75% completion target**  
+> **Single Source of Truth** — Updated May 12, 2026
+> **Goal**: Move from a stale 40% headline to a **verified 75% completion target**
 > **Canonical Path**: `/plans/MASTER_PLAN.md`
 
 ---

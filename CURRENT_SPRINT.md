@@ -1,7 +1,7 @@
 # CURRENT SPRINT — 40% Baseline to 75% Verified Recovery
 
-**Sprint Goal:** Establish one truthful completion baseline and execute the highest-value lanes that can move the project to **75% verified completion**.  
-**Date:** 2026-05-12  
+**Sprint Goal:** Establish one truthful completion baseline and execute the highest-value lanes that can move the project to **75% verified completion**.
+**Date:** 2026-05-12
 **Status:** Ready
 
 ---

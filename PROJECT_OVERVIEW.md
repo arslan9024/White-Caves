@@ -1,6 +1,6 @@
 # White Caves Dashboard — Historical Overview
 
-> **Archived snapshot** — January 21, 2026  
+> **Archived snapshot** — January 21, 2026
 > This file is preserved for historical context only. It is **not** the live source of truth for project completion.
 
 ## Status
