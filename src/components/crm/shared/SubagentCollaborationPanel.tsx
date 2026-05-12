@@ -8,6 +8,7 @@ import {
 } from '../../../config/subagentOrchestration';
 import {
   subagentOrchestrationService,
+  type OrchestrationSnapshotComparePayload,
   type OrchestrationSnapshotDetail,
   type OrchestrationSnapshotRestorePreviewPayload,
   type OrchestrationSnapshotSummary,
@@ -63,6 +64,7 @@ const SubagentCollaborationPanel = memo(
     const [snapshots, setSnapshots] = useState<OrchestrationSnapshotSummary[]>([]);
     const [snapshotSearch, setSnapshotSearch] = useState<string>('');
     const [snapshotOrder, setSnapshotOrder] = useState<'asc' | 'desc'>('desc');
+    const [snapshotLabelFilter, setSnapshotLabelFilter] = useState<string | null>(null);
     const [snapshotHasMore, setSnapshotHasMore] = useState<boolean>(false);
     const [snapshotTotal, setSnapshotTotal] = useState<number>(0);
     const [snapshotFacets, setSnapshotFacets] = useState<Array<{ label: string; count: number }>>(
@@ -70,6 +72,8 @@ const SubagentCollaborationPanel = memo(
     );
     const [selectedSnapshotPreview, setSelectedSnapshotPreview] =
       useState<OrchestrationSnapshotRestorePreviewPayload | null>(null);
+    const [selectedSnapshotCompare, setSelectedSnapshotCompare] =
+      useState<OrchestrationSnapshotComparePayload | null>(null);
     const [snapshotLimit] = useState<number>(5);
     const [snapshotAction, setSnapshotAction] = useState<
       'export' | 'restore' | 'delete' | 'detail' | null
@@ -108,6 +112,7 @@ const SubagentCollaborationPanel = memo(
               limit: snapshotLimit,
               q: snapshotSearch,
               order: snapshotOrder,
+              ...(snapshotLabelFilter ? { label: snapshotLabelFilter } : {}),
             }),
           ]);
           setStatusData(response.data);
@@ -139,7 +144,7 @@ const SubagentCollaborationPanel = memo(
       };
 
       void loadStatus();
-    }, [snapshotLimit, snapshotSearch, snapshotOrder]);
+    }, [snapshotLimit, snapshotSearch, snapshotOrder, snapshotLabelFilter]);
 
     const dailyPremiumCap =
       statusData?.quota.dailyCap ??
@@ -206,6 +211,7 @@ const SubagentCollaborationPanel = memo(
           limit: snapshots.length > 0 ? snapshots.length : snapshotLimit,
           q: snapshotSearch,
           order: snapshotOrder,
+          ...(snapshotLabelFilter ? { label: snapshotLabelFilter } : {}),
         }),
       ]);
       setStatusData(response.data);
@@ -243,6 +249,7 @@ const SubagentCollaborationPanel = memo(
           limit: snapshotLimit,
           q: snapshotSearch,
           order: snapshotOrder,
+          ...(snapshotLabelFilter ? { label: snapshotLabelFilter } : {}),
         });
 
         setSnapshots(prev => [...prev, ...response.data.items]);
@@ -324,6 +331,19 @@ const SubagentCollaborationPanel = memo(
         setSelectedSnapshotPreview(response.data);
       } catch (error) {
         setStatusError(error instanceof Error ? error.message : 'Failed to preview snapshot');
+      } finally {
+        setSnapshotAction(null);
+      }
+    };
+
+    const handleCompareSnapshot = async (fileName: string) => {
+      setSnapshotAction('detail');
+      setStatusError(null);
+      try {
+        const response = await subagentOrchestrationService.getSnapshotCompare(fileName, 'current');
+        setSelectedSnapshotCompare(response.data);
+      } catch (error) {
+        setStatusError(error instanceof Error ? error.message : 'Failed to compare snapshot');
       } finally {
         setSnapshotAction(null);
       }
@@ -554,13 +574,46 @@ const SubagentCollaborationPanel = memo(
           </div>
 
           {snapshotFacets.length > 0 ? (
-            <p style={{ ...mutedTextStyle, marginBottom: 10 }}>
-              Labels:{' '}
-              {snapshotFacets
-                .slice(0, 4)
-                .map(facet => `${facet.label} (${facet.count})`)
-                .join(' · ')}
-            </p>
+            <div style={{ marginBottom: 10 }}>
+              <p style={{ ...mutedTextStyle, margin: '0 0 4px 0' }}>Labels</p>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+                <button
+                  type="button"
+                  onClick={() => setSnapshotLabelFilter(null)}
+                  style={{
+                    ...chipStyle,
+                    cursor: 'pointer',
+                    border:
+                      snapshotLabelFilter === null
+                        ? '1px solid rgba(250,204,21,0.55)'
+                        : chipStyle.border,
+                    color: snapshotLabelFilter === null ? '#FDE68A' : chipStyle.color,
+                  }}
+                  aria-label="Filter snapshots by all labels"
+                >
+                  all ({snapshotTotal})
+                </button>
+                {snapshotFacets.slice(0, 6).map(facet => (
+                  <button
+                    key={facet.label}
+                    type="button"
+                    onClick={() => setSnapshotLabelFilter(facet.label)}
+                    style={{
+                      ...chipStyle,
+                      cursor: 'pointer',
+                      border:
+                        snapshotLabelFilter === facet.label
+                          ? '1px solid rgba(250,204,21,0.55)'
+                          : chipStyle.border,
+                      color: snapshotLabelFilter === facet.label ? '#FDE68A' : chipStyle.color,
+                    }}
+                    aria-label={`Filter snapshots by label ${facet.label}`}
+                  >
+                    {facet.label} ({facet.count})
+                  </button>
+                ))}
+              </div>
+            </div>
           ) : null}
 
           {snapshots.length > 0 ? (
@@ -655,6 +708,25 @@ const SubagentCollaborationPanel = memo(
                     >
                       Preview
                     </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        void handleCompareSnapshot(snapshot.fileName);
+                      }}
+                      disabled={snapshotAction !== null}
+                      style={{
+                        border: '1px solid rgba(56,189,248,0.38)',
+                        background: 'rgba(12,74,110,0.22)',
+                        color: '#BAE6FD',
+                        borderRadius: 999,
+                        padding: '3px 8px',
+                        fontSize: 11,
+                        cursor: snapshotAction ? 'not-allowed' : 'pointer',
+                      }}
+                      aria-label={`Compare snapshot ${snapshot.fileName} with current state`}
+                    >
+                      Compare
+                    </button>
                   </div>
                 </li>
               ))}
@@ -735,6 +807,33 @@ const SubagentCollaborationPanel = memo(
               <p style={{ ...mutedTextStyle, marginBottom: 0 }}>
                 Δ Premium consumed today:{' '}
                 <strong>{selectedSnapshotPreview.delta.premiumConsumedToday}</strong>
+              </p>
+            </div>
+          ) : null}
+
+          {selectedSnapshotCompare ? (
+            <div
+              style={{
+                marginTop: 10,
+                borderTop: '1px solid rgba(255,255,255,0.08)',
+                paddingTop: 10,
+              }}
+            >
+              <p style={{ color: '#E2E8F0', margin: '0 0 4px 0', fontSize: 12 }}>
+                <strong>Snapshot compare:</strong>{' '}
+                {selectedSnapshotCompare.source.snapshot.fileName} →{' '}
+                {selectedSnapshotCompare.target.kind === 'current'
+                  ? 'current state'
+                  : selectedSnapshotCompare.target.snapshot?.fileName}
+              </p>
+              <p style={mutedTextStyle}>
+                Δ Total tasks: <strong>{selectedSnapshotCompare.delta.totalTasks}</strong> · Δ
+                Running: <strong>{selectedSnapshotCompare.delta.runningTasks}</strong> · Δ Premium
+                tasks: <strong>{selectedSnapshotCompare.delta.premiumTasks}</strong>
+              </p>
+              <p style={{ ...mutedTextStyle, marginBottom: 0 }}>
+                Δ Weekly premium remaining:{' '}
+                <strong>{selectedSnapshotCompare.delta.weeklyPremiumRemaining}</strong>
               </p>
             </div>
           ) : null}

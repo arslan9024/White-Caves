@@ -596,6 +596,7 @@ router.get(
   '/snapshots/history',
   asyncHandler(async (req: Request, res: Response) => {
     const q = typeof req.query.q === 'string' ? req.query.q.trim().toLowerCase() : '';
+    const labelQuery = typeof req.query.label === 'string' ? req.query.label.trim() : '';
     const order = req.query.order === 'asc' ? 'asc' : 'desc';
     const rawOffset = Number.parseInt(String(req.query.offset ?? '0'), 10);
     const rawLimit = Number.parseInt(String(req.query.limit ?? '10'), 10);
@@ -609,7 +610,7 @@ router.get(
       const compare = leftValue.localeCompare(rightValue);
       return order === 'asc' ? compare : -compare;
     });
-    const filtered =
+    const searched =
       q.length > 0
         ? ordered.filter(snapshot => {
             const label = snapshot.label ? snapshot.label.toLowerCase() : '';
@@ -621,8 +622,19 @@ router.get(
           })
         : ordered;
 
+    const normalizedLabelFilter = labelQuery.length > 0 ? labelQuery.toLowerCase() : null;
+    const filtered =
+      normalizedLabelFilter === null
+        ? searched
+        : searched.filter(snapshot => {
+            if (normalizedLabelFilter === 'unlabeled') {
+              return snapshot.label === null;
+            }
+            return (snapshot.label ?? '').toLowerCase() === normalizedLabelFilter;
+          });
+
     const items = filtered.slice(offset, offset + limit);
-    const facets = buildSnapshotLabelFacets(filtered);
+    const facets = buildSnapshotLabelFacets(searched);
 
     res.json({
       success: true,
@@ -636,6 +648,81 @@ router.get(
           hasMore: offset + items.length < filtered.length,
           query: q,
           order,
+          label: normalizedLabelFilter,
+        },
+      },
+    });
+  })
+);
+
+router.get(
+  '/snapshots/:fileName/compare',
+  asyncHandler(async (req: Request, res: Response) => {
+    const sourceSnapshot = readSnapshotDetail(req.params.fileName);
+    const targetFileName =
+      typeof req.query.target === 'string' && req.query.target.trim().length > 0
+        ? req.query.target.trim()
+        : 'current';
+
+    const currentTarget = {
+      kind: 'current' as const,
+      snapshot: null,
+      quota: {
+        weeklyPremiumRemaining,
+        businessDaysRemaining,
+        premiumConsumedToday,
+      },
+      metrics: computeMetrics(orchestrationTasks),
+    };
+
+    const target =
+      targetFileName === 'current'
+        ? currentTarget
+        : (() => {
+            const detail = readSnapshotDetail(targetFileName);
+            return {
+              kind: 'snapshot' as const,
+              snapshot: {
+                fileName: detail.fileName,
+                createdAt: detail.createdAt,
+                taskCount: detail.taskCount,
+                label: detail.label,
+              },
+              quota: detail.quota,
+              metrics: detail.metrics,
+            };
+          })();
+
+    const source = {
+      snapshot: {
+        fileName: sourceSnapshot.fileName,
+        createdAt: sourceSnapshot.createdAt,
+        taskCount: sourceSnapshot.taskCount,
+        label: sourceSnapshot.label,
+      },
+      quota: sourceSnapshot.quota,
+      metrics: sourceSnapshot.metrics,
+    };
+
+    res.json({
+      success: true,
+      data: {
+        source,
+        target,
+        delta: {
+          totalTasks: target.metrics.totalTasks - source.metrics.totalTasks,
+          queuedTasks: target.metrics.queuedTasks - source.metrics.queuedTasks,
+          runningTasks: target.metrics.runningTasks - source.metrics.runningTasks,
+          doneTasks: target.metrics.doneTasks - source.metrics.doneTasks,
+          failedTasks: target.metrics.failedTasks - source.metrics.failedTasks,
+          blockedTasks: target.metrics.blockedTasks - source.metrics.blockedTasks,
+          premiumTasks: target.metrics.premiumTasks - source.metrics.premiumTasks,
+          weeklyPremiumRemaining:
+            target.quota.weeklyPremiumRemaining - source.quota.weeklyPremiumRemaining,
+          businessDaysRemaining:
+            target.quota.businessDaysRemaining - source.quota.businessDaysRemaining,
+          premiumConsumedToday:
+            target.quota.premiumConsumedToday - source.quota.premiumConsumedToday,
         },
       },
     });

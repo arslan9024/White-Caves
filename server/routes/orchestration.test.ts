@@ -163,6 +163,28 @@ describe('Orchestration Routes — /api/orchestration', () => {
     expect(res.body.data.pageInfo.order).toBe('asc');
   });
 
+  it('GET /snapshots/history supports label filtering with unlabeled support', async () => {
+    await request(createApp()).post('/api/orchestration/snapshots/export').send({ label: 'ops' });
+    await request(createApp()).post('/api/orchestration/snapshots/export').send({});
+
+    const opsRes = await request(createApp()).get('/api/orchestration/snapshots/history?label=ops');
+    expect(opsRes.status).toBe(200);
+    expect(opsRes.body.success).toBe(true);
+    expect(opsRes.body.data.pageInfo.label).toBe('ops');
+    expect(
+      opsRes.body.data.items.every(
+        (item: { label: string | null }) => String(item.label || '').toLowerCase() === 'ops'
+      )
+    ).toBe(true);
+
+    const unlabeledRes = await request(createApp()).get(
+      '/api/orchestration/snapshots/history?label=unlabeled'
+    );
+    expect(unlabeledRes.status).toBe(200);
+    expect(unlabeledRes.body.success).toBe(true);
+    expect(unlabeledRes.body.data.pageInfo.label).toBe('unlabeled');
+  });
+
   it('GET /snapshots/:fileName/preview returns current vs snapshot delta payload', async () => {
     await request(createApp()).post('/api/orchestration/tasks').send({
       assistantId: 'henry',
@@ -185,6 +207,29 @@ describe('Orchestration Routes — /api/orchestration', () => {
     expect(previewRes.body.data).toHaveProperty('preview');
     expect(previewRes.body.data).toHaveProperty('delta');
     expect(previewRes.body.data.snapshot.fileName).toBe(fileName);
+  });
+
+  it('GET /snapshots/:fileName/compare compares snapshot against current', async () => {
+    await request(createApp()).post('/api/orchestration/tasks').send({
+      assistantId: 'henry',
+      taskType: 'review',
+      title: 'Compare seed task',
+    });
+
+    const exportRes = await request(createApp())
+      .post('/api/orchestration/snapshots/export')
+      .send({ label: 'compare-check' });
+
+    const fileName = exportRes.body?.data?.fileName;
+    const compareRes = await request(createApp()).get(
+      `/api/orchestration/snapshots/${fileName}/compare?target=current`
+    );
+
+    expect(compareRes.status).toBe(200);
+    expect(compareRes.body.success).toBe(true);
+    expect(compareRes.body.data.source.snapshot.fileName).toBe(fileName);
+    expect(compareRes.body.data.target.kind).toBe('current');
+    expect(compareRes.body.data).toHaveProperty('delta');
   });
 
   it('GET /snapshots/:fileName returns snapshot detail including tasks and metrics', async () => {

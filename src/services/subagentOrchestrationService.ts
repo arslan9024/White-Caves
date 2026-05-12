@@ -114,6 +114,41 @@ export interface OrchestrationSnapshotHistoryPayload {
     hasMore: boolean;
     query: string;
     order: 'asc' | 'desc';
+    label: string | null;
+  };
+}
+
+export interface OrchestrationSnapshotComparePayload {
+  source: {
+    snapshot: OrchestrationSnapshotSummary;
+    quota: {
+      weeklyPremiumRemaining: number;
+      businessDaysRemaining: number;
+      premiumConsumedToday: number;
+    };
+    metrics: OrchestrationMetricsPayload['metrics'];
+  };
+  target: {
+    kind: 'current' | 'snapshot';
+    snapshot: OrchestrationSnapshotSummary | null;
+    quota: {
+      weeklyPremiumRemaining: number;
+      businessDaysRemaining: number;
+      premiumConsumedToday: number;
+    };
+    metrics: OrchestrationMetricsPayload['metrics'];
+  };
+  delta: {
+    totalTasks: number;
+    queuedTasks: number;
+    runningTasks: number;
+    doneTasks: number;
+    failedTasks: number;
+    blockedTasks: number;
+    premiumTasks: number;
+    weeklyPremiumRemaining: number;
+    businessDaysRemaining: number;
+    premiumConsumedToday: number;
   };
 }
 
@@ -183,6 +218,7 @@ export const subagentOrchestrationService = {
     limit?: number;
     q?: string;
     order?: 'asc' | 'desc';
+    label?: string;
   }) {
     const params = new URLSearchParams();
     if (typeof options?.offset === 'number' && Number.isFinite(options.offset)) {
@@ -196,6 +232,9 @@ export const subagentOrchestrationService = {
     }
     if (options?.order === 'asc' || options?.order === 'desc') {
       params.set('order', options.order);
+    }
+    if (typeof options?.label === 'string' && options.label.trim().length > 0) {
+      params.set('label', options.label.trim());
     }
     const query = params.toString();
     const url = `${BASE}/snapshots/history${query ? `?${query}` : ''}`;
@@ -217,6 +256,20 @@ export const subagentOrchestrationService = {
     return (await apiClient.get(`${BASE}/snapshots/${encodeURIComponent(fileName)}/preview`)) as {
       success: boolean;
       data: OrchestrationSnapshotRestorePreviewPayload;
+    };
+  },
+
+  async getSnapshotCompare(fileName: string, target?: string) {
+    const params = new URLSearchParams();
+    if (typeof target === 'string' && target.trim().length > 0) {
+      params.set('target', target.trim());
+    }
+    const query = params.toString();
+    const url = `${BASE}/snapshots/${encodeURIComponent(fileName)}/compare${query ? `?${query}` : ''}`;
+
+    return (await apiClient.get(url)) as {
+      success: boolean;
+      data: OrchestrationSnapshotComparePayload;
     };
   },
 

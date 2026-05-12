@@ -118,6 +118,7 @@ describe('subagentOrchestrationService', () => {
           hasMore: false,
           query: 'nightly label',
           order: 'desc',
+          label: null,
         },
       },
     };
@@ -141,13 +142,44 @@ describe('subagentOrchestrationService', () => {
       data: {
         items: [],
         facets: [],
-        pageInfo: { offset: 0, limit: 5, total: 0, hasMore: false, query: '', order: 'asc' },
+        pageInfo: {
+          offset: 0,
+          limit: 5,
+          total: 0,
+          hasMore: false,
+          query: '',
+          order: 'asc',
+          label: null,
+        },
       },
     });
 
     await subagentOrchestrationService.getSnapshotHistory({ limit: 5, order: 'asc' });
 
     expect(mApiGet).toHaveBeenCalledWith('/orchestration/snapshots/history?limit=5&order=asc');
+  });
+
+  it('getSnapshotHistory includes label filter when provided', async () => {
+    mApiGet.mockResolvedValue({
+      success: true,
+      data: {
+        items: [],
+        facets: [],
+        pageInfo: {
+          offset: 0,
+          limit: 5,
+          total: 0,
+          hasMore: false,
+          query: '',
+          order: 'desc',
+          label: 'nightly',
+        },
+      },
+    });
+
+    await subagentOrchestrationService.getSnapshotHistory({ limit: 5, label: 'nightly' });
+
+    expect(mApiGet).toHaveBeenCalledWith('/orchestration/snapshots/history?limit=5&label=nightly');
   });
 
   it('exportSnapshot calls POST /orchestration/snapshots/export', async () => {
@@ -218,6 +250,53 @@ describe('subagentOrchestrationService', () => {
 
     expect(mApiGet).toHaveBeenCalledWith(
       '/orchestration/snapshots/orch-snapshot-test.json/preview'
+    );
+    expect(result).toEqual(response);
+  });
+
+  it('getSnapshotCompare calls GET /orchestration/snapshots/:fileName/compare', async () => {
+    const response = {
+      success: true,
+      data: {
+        source: {
+          snapshot: {
+            fileName: 'orch-snapshot-test.json',
+            createdAt: '',
+            taskCount: 1,
+            label: null,
+          },
+          quota: { weeklyPremiumRemaining: 10, businessDaysRemaining: 5, premiumConsumedToday: 1 },
+          metrics: { totalTasks: 2 },
+        },
+        target: {
+          kind: 'current',
+          snapshot: null,
+          quota: { weeklyPremiumRemaining: 9, businessDaysRemaining: 5, premiumConsumedToday: 2 },
+          metrics: { totalTasks: 3 },
+        },
+        delta: {
+          totalTasks: 1,
+          queuedTasks: 0,
+          runningTasks: 0,
+          doneTasks: 0,
+          failedTasks: 0,
+          blockedTasks: 0,
+          premiumTasks: 0,
+          weeklyPremiumRemaining: -1,
+          businessDaysRemaining: 0,
+          premiumConsumedToday: 1,
+        },
+      },
+    };
+    mApiGet.mockResolvedValue(response);
+
+    const result = await subagentOrchestrationService.getSnapshotCompare(
+      'orch-snapshot-test.json',
+      'current'
+    );
+
+    expect(mApiGet).toHaveBeenCalledWith(
+      '/orchestration/snapshots/orch-snapshot-test.json/compare?target=current'
     );
     expect(result).toEqual(response);
   });

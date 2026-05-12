@@ -9,6 +9,7 @@ vi.mock('../../../services/subagentOrchestrationService', () => ({
     getSnapshotHistory: vi.fn(),
     getSnapshot: vi.fn(),
     getSnapshotRestorePreview: vi.fn(),
+    getSnapshotCompare: vi.fn(),
     createTask: vi.fn(),
     updateTaskState: vi.fn(),
     exportSnapshot: vi.fn(),
@@ -28,6 +29,9 @@ const mGetSnapshotHistory = subagentOrchestrationService.getSnapshotHistory as R
 const mGetSnapshot = subagentOrchestrationService.getSnapshot as ReturnType<typeof vi.fn>;
 const mGetSnapshotRestorePreview =
   subagentOrchestrationService.getSnapshotRestorePreview as ReturnType<typeof vi.fn>;
+const mGetSnapshotCompare = subagentOrchestrationService.getSnapshotCompare as ReturnType<
+  typeof vi.fn
+>;
 const mCreateTask = subagentOrchestrationService.createTask as ReturnType<typeof vi.fn>;
 const mUpdateTaskState = subagentOrchestrationService.updateTaskState as ReturnType<typeof vi.fn>;
 const mExportSnapshot = subagentOrchestrationService.exportSnapshot as ReturnType<typeof vi.fn>;
@@ -74,7 +78,15 @@ describe('SubagentCollaborationPanel', () => {
       data: {
         items: [],
         facets: [],
-        pageInfo: { offset: 0, limit: 5, total: 0, hasMore: false, query: '', order: 'desc' },
+        pageInfo: {
+          offset: 0,
+          limit: 5,
+          total: 0,
+          hasMore: false,
+          query: '',
+          order: 'desc',
+          label: null,
+        },
       },
     });
     mGetSnapshot.mockResolvedValue({
@@ -151,6 +163,61 @@ describe('SubagentCollaborationPanel', () => {
           failedTasks: 0,
           blockedTasks: 0,
           premiumConsumedToday: 0,
+        },
+      },
+    });
+    mGetSnapshotCompare.mockResolvedValue({
+      success: true,
+      data: {
+        source: {
+          snapshot: {
+            fileName: 'orch-snapshot-1.json',
+            createdAt: '2026-05-13',
+            taskCount: 1,
+            label: 'panel',
+          },
+          quota: { weeklyPremiumRemaining: 25, businessDaysRemaining: 5, premiumConsumedToday: 1 },
+          metrics: {
+            totalTasks: 1,
+            queuedTasks: 1,
+            runningTasks: 0,
+            doneTasks: 0,
+            failedTasks: 0,
+            blockedTasks: 0,
+            premiumTasks: 0,
+            standardTasks: 1,
+            freeTasks: 0,
+            lastTaskCreatedAt: null,
+          },
+        },
+        target: {
+          kind: 'current',
+          snapshot: null,
+          quota: { weeklyPremiumRemaining: 24, businessDaysRemaining: 5, premiumConsumedToday: 2 },
+          metrics: {
+            totalTasks: 2,
+            queuedTasks: 1,
+            runningTasks: 1,
+            doneTasks: 0,
+            failedTasks: 0,
+            blockedTasks: 0,
+            premiumTasks: 1,
+            standardTasks: 1,
+            freeTasks: 0,
+            lastTaskCreatedAt: null,
+          },
+        },
+        delta: {
+          totalTasks: 1,
+          queuedTasks: 0,
+          runningTasks: 1,
+          doneTasks: 0,
+          failedTasks: 0,
+          blockedTasks: 0,
+          premiumTasks: 1,
+          weeklyPremiumRemaining: -1,
+          businessDaysRemaining: 0,
+          premiumConsumedToday: 1,
         },
       },
     });
@@ -302,7 +369,15 @@ describe('SubagentCollaborationPanel', () => {
               label: 'nightly',
             },
           ],
-          pageInfo: { offset: 0, limit: 5, total: 2, hasMore: true, query: '' },
+          pageInfo: {
+            offset: 0,
+            limit: 5,
+            total: 2,
+            hasMore: true,
+            query: '',
+            order: 'desc',
+            label: null,
+          },
           facets: [{ label: 'nightly', count: 1 }],
         },
       })
@@ -327,7 +402,15 @@ describe('SubagentCollaborationPanel', () => {
             { label: 'nightly', count: 1 },
             { label: 'unlabeled', count: 1 },
           ],
-          pageInfo: { offset: 0, limit: 5, total: 2, hasMore: false, query: '', order: 'desc' },
+          pageInfo: {
+            offset: 0,
+            limit: 5,
+            total: 2,
+            hasMore: false,
+            query: '',
+            order: 'desc',
+            label: null,
+          },
         },
       });
 
@@ -381,7 +464,15 @@ describe('SubagentCollaborationPanel', () => {
             },
           ],
           facets: [{ label: 'latest', count: 1 }],
-          pageInfo: { offset: 0, limit: 5, total: 1, hasMore: false, query: '', order: 'desc' },
+          pageInfo: {
+            offset: 0,
+            limit: 5,
+            total: 1,
+            hasMore: false,
+            query: '',
+            order: 'desc',
+            label: null,
+          },
         },
       })
       .mockResolvedValueOnce({
@@ -396,7 +487,15 @@ describe('SubagentCollaborationPanel', () => {
             },
           ],
           facets: [{ label: 'latest', count: 1 }],
-          pageInfo: { offset: 0, limit: 5, total: 1, hasMore: false, query: '', order: 'desc' },
+          pageInfo: {
+            offset: 0,
+            limit: 5,
+            total: 1,
+            hasMore: false,
+            query: '',
+            order: 'desc',
+            label: null,
+          },
         },
       });
 
@@ -434,7 +533,15 @@ describe('SubagentCollaborationPanel', () => {
           },
         ],
         facets: [{ label: 'nightly', count: 1 }],
-        pageInfo: { offset: 0, limit: 5, total: 1, hasMore: false, query: '', order: 'desc' },
+        pageInfo: {
+          offset: 0,
+          limit: 5,
+          total: 1,
+          hasMore: false,
+          query: '',
+          order: 'desc',
+          label: null,
+        },
       },
     });
     mGetSnapshot.mockResolvedValueOnce({
@@ -493,7 +600,15 @@ describe('SubagentCollaborationPanel', () => {
             },
           ],
           facets: [{ label: 'nightly', count: 1 }],
-          pageInfo: { offset: 0, limit: 5, total: 1, hasMore: false, query: '', order: 'desc' },
+          pageInfo: {
+            offset: 0,
+            limit: 5,
+            total: 1,
+            hasMore: false,
+            query: '',
+            order: 'desc',
+            label: null,
+          },
         },
       })
       .mockResolvedValueOnce({
@@ -501,7 +616,15 @@ describe('SubagentCollaborationPanel', () => {
         data: {
           items: [],
           facets: [],
-          pageInfo: { offset: 0, limit: 5, total: 0, hasMore: false, query: '', order: 'desc' },
+          pageInfo: {
+            offset: 0,
+            limit: 5,
+            total: 0,
+            hasMore: false,
+            query: '',
+            order: 'desc',
+            label: null,
+          },
         },
       });
 
@@ -531,7 +654,15 @@ describe('SubagentCollaborationPanel', () => {
             },
           ],
           facets: [{ label: 'nightly', count: 2 }],
-          pageInfo: { offset: 0, limit: 5, total: 2, hasMore: true, query: '', order: 'desc' },
+          pageInfo: {
+            offset: 0,
+            limit: 5,
+            total: 2,
+            hasMore: true,
+            query: '',
+            order: 'desc',
+            label: null,
+          },
         },
       })
       .mockResolvedValueOnce({
@@ -546,7 +677,15 @@ describe('SubagentCollaborationPanel', () => {
             },
           ],
           facets: [{ label: 'nightly', count: 2 }],
-          pageInfo: { offset: 1, limit: 5, total: 2, hasMore: false, query: '', order: 'desc' },
+          pageInfo: {
+            offset: 1,
+            limit: 5,
+            total: 2,
+            hasMore: false,
+            query: '',
+            order: 'desc',
+            label: null,
+          },
         },
       });
 
@@ -580,7 +719,15 @@ describe('SubagentCollaborationPanel', () => {
           },
         ],
         facets: [{ label: 'preview', count: 1 }],
-        pageInfo: { offset: 0, limit: 5, total: 1, hasMore: false, query: '', order: 'desc' },
+        pageInfo: {
+          offset: 0,
+          limit: 5,
+          total: 1,
+          hasMore: false,
+          query: '',
+          order: 'desc',
+          label: null,
+        },
       },
     });
 
@@ -643,6 +790,118 @@ describe('SubagentCollaborationPanel', () => {
     fireEvent.click(previewBtn);
 
     expect(await screen.findByText(/restore preview:/i)).toBeInTheDocument();
+  });
+
+  it('filters snapshot history by label facet', async () => {
+    mGetSnapshotHistory
+      .mockResolvedValueOnce({
+        success: true,
+        data: {
+          items: [
+            {
+              fileName: 'orch-snapshot-a.json',
+              createdAt: '2026-05-12',
+              taskCount: 3,
+              label: 'nightly',
+            },
+          ],
+          facets: [
+            { label: 'nightly', count: 1 },
+            { label: 'ops', count: 2 },
+          ],
+          pageInfo: {
+            offset: 0,
+            limit: 5,
+            total: 3,
+            hasMore: false,
+            query: '',
+            order: 'desc',
+            label: null,
+          },
+        },
+      })
+      .mockResolvedValueOnce({
+        success: true,
+        data: {
+          items: [
+            {
+              fileName: 'orch-snapshot-ops.json',
+              createdAt: '2026-05-13',
+              taskCount: 2,
+              label: 'ops',
+            },
+          ],
+          facets: [
+            { label: 'nightly', count: 1 },
+            { label: 'ops', count: 2 },
+          ],
+          pageInfo: {
+            offset: 0,
+            limit: 5,
+            total: 1,
+            hasMore: false,
+            query: '',
+            order: 'desc',
+            label: 'ops',
+          },
+        },
+      });
+
+    render(<SubagentCollaborationPanel assistantId="henry" />);
+
+    const filterBtn = await screen.findByRole('button', {
+      name: /filter snapshots by label ops/i,
+    });
+    fireEvent.click(filterBtn);
+
+    await waitFor(() => {
+      expect(mGetSnapshotHistory).toHaveBeenLastCalledWith({
+        offset: 0,
+        limit: 5,
+        q: '',
+        order: 'desc',
+        label: 'ops',
+      });
+    });
+  });
+
+  it('compares a snapshot with current state', async () => {
+    mGetSnapshotHistory.mockResolvedValueOnce({
+      success: true,
+      data: {
+        items: [
+          {
+            fileName: 'orch-snapshot-compare.json',
+            createdAt: '2026-05-13',
+            taskCount: 2,
+            label: 'compare',
+          },
+        ],
+        facets: [{ label: 'compare', count: 1 }],
+        pageInfo: {
+          offset: 0,
+          limit: 5,
+          total: 1,
+          hasMore: false,
+          query: '',
+          order: 'desc',
+          label: null,
+        },
+      },
+    });
+
+    render(<SubagentCollaborationPanel assistantId="henry" />);
+
+    const compareBtn = await screen.findByRole('button', {
+      name: /compare snapshot orch-snapshot-compare.json with current state/i,
+    });
+    fireEvent.click(compareBtn);
+
+    await waitFor(() => {
+      expect(mGetSnapshotCompare).toHaveBeenCalledWith('orch-snapshot-compare.json', 'current');
+    });
+
+    expect(await screen.findByText(/snapshot compare:/i)).toBeInTheDocument();
   });
 
   it('assigns a task and refreshes assistant task list', async () => {
