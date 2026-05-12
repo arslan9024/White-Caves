@@ -3,6 +3,7 @@ import { configureStore } from '@reduxjs/toolkit';
 import contactStatusReducer, {
   loadContactStatuses,
   updateContactStatus,
+  selectContactStatusError,
   setFilter,
   selectFilteredContactStatuses,
 } from './contactStatusSlice';
@@ -77,5 +78,15 @@ describe('contactStatusSlice', () => {
     const filtered = selectFilteredContactStatuses(filteredState);
     expect(filtered).toHaveLength(1);
     expect(filtered[0]._id).toBe('o1');
+  });
+
+  it('stores rejected error message when API responds non-OK', async () => {
+    mockAuthFetch.mockResolvedValueOnce(jsonResponse({ error: 'Backend exploded' }, 500));
+
+    const store = configureStore({ reducer: { contactStatus: contactStatusReducer } });
+    await store.dispatch(loadContactStatuses());
+
+    const root = store.getState();
+    expect(selectContactStatusError(root)).toBe('Backend exploded');
   });
 });

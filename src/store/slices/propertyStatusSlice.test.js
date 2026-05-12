@@ -3,6 +3,8 @@ import { configureStore } from '@reduxjs/toolkit';
 import propertyStatusReducer, {
   loadPropertyStatuses,
   updatePropertyStatus,
+  selectPropertyStatusError,
+  selectStatusFilters,
   setStatusFilter,
   selectFilteredPropertyStatuses,
 } from './propertyStatusSlice';
@@ -78,5 +80,30 @@ describe('propertyStatusSlice', () => {
     const result = selectFilteredPropertyStatuses(filteredState);
     expect(result).toHaveLength(1);
     expect(result[0]._id).toBe('p2');
+  });
+
+  it('stores rejected error message when API responds non-OK', async () => {
+    mockAuthFetch.mockResolvedValueOnce(jsonResponse({ error: 'Inventory API down' }, 503));
+
+    const store = configureStore({ reducer: { propertyStatus: propertyStatusReducer } });
+    await store.dispatch(loadPropertyStatuses());
+
+    const root = store.getState();
+    expect(selectPropertyStatusError(root)).toBe('Inventory API down');
+  });
+
+  it('ignores unknown filter field in setStatusFilter', () => {
+    const initial = {
+      propertyStatus: propertyStatusReducer(undefined, { type: 'unknown' }),
+    };
+
+    const next = {
+      propertyStatus: propertyStatusReducer(
+        initial.propertyStatus,
+        setStatusFilter({ field: 'unknownField', value: 'foo' })
+      ),
+    };
+
+    expect(selectStatusFilters(next)).toEqual(selectStatusFilters(initial));
   });
 });
