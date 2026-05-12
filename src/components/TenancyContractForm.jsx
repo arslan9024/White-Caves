@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { authFetch } from '../utils/authFetch';
 import PropertyInfoForm from './TenancyForms/PropertyInfoForm';
 import LandlordForm from './TenancyForms/LandlordForm';
@@ -13,6 +13,7 @@ const TenancyContractForm = ({ onSuccess, initialContractId }) => {
   const [error, setError] = useState(null);
   const [statusMessage, setStatusMessage] = useState(null);
   const [contractId, setContractId] = useState(initialContractId || null);
+  const [agreements, setAgreements] = useState([]);
 
   const [formData, setFormData] = useState({
     propertyInfo: {
@@ -94,6 +95,22 @@ const TenancyContractForm = ({ onSuccess, initialContractId }) => {
       damageResponsibility: '',
     },
   });
+
+  const loadAgreements = useCallback(async () => {
+    try {
+      const response = await authFetch('/api/tenancy-agreements');
+      const json = await response.json();
+      if (response.ok && json.success) {
+        setAgreements(json.data || []);
+      }
+    } catch (err) {
+      console.error('Error loading tenancy agreements:', err);
+    }
+  }, []);
+
+  useEffect(() => {
+    void loadAgreements();
+  }, [loadAgreements]);
 
   // Update form data section
   const updateFormSection = (section, data) => {
@@ -181,6 +198,8 @@ const TenancyContractForm = ({ onSuccess, initialContractId }) => {
         setContractId(json.data?.id);
       }
 
+      await loadAgreements();
+
       setError(null);
       // Show success message
       const message = contractId ? 'Draft updated successfully' : 'Draft created successfully';
@@ -222,6 +241,7 @@ const TenancyContractForm = ({ onSuccess, initialContractId }) => {
             agreement: json.data,
           });
         }
+        await loadAgreements();
       } else {
         throw new Error(json.error || 'Error activating tenancy agreement');
       }
@@ -250,6 +270,23 @@ const TenancyContractForm = ({ onSuccess, initialContractId }) => {
         <h1>Tenancy Contract Form</h1>
         {contractId && <div className="contract-id-badge">Contract ID: {contractId}</div>}
       </div>
+
+      {agreements.length > 0 && (
+        <div className="review-section" data-testid="tenancy-agreements-list">
+          <h3>Recent Agreements</h3>
+          <div className="review-grid">
+            {agreements.slice(0, 5).map(agreement => (
+              <div key={agreement.id}>
+                <strong>{agreement.id}</strong>
+                <div>
+                  {agreement.landlordName} → {agreement.tenantName}
+                </div>
+                <div>Status: {agreement.status}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       {error && (
         <div className="error-message">

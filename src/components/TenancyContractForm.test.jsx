@@ -44,7 +44,8 @@ describe('TenancyContractForm — alert elimination', () => {
     const banner = await screen.findByRole('alert');
     expect(banner).toHaveAttribute('data-testid', 'tenancy-contract-status-banner');
     expect(banner.textContent).toMatch(/required|Error/i);
-    expect(mockAuthFetch).not.toHaveBeenCalled();
+    expect(mockAuthFetch).toHaveBeenCalled();
+    expect(mockAuthFetch.mock.calls[0][0]).toBe('/api/tenancy-agreements');
     expect(alertSpy).not.toHaveBeenCalled();
   });
 });
