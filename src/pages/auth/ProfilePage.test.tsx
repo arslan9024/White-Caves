@@ -24,7 +24,10 @@ vi.mock('../../hooks/useDocumentTitle', () => ({
 
 vi.mock('../../utils/logger', () => ({
   createLogger: () => ({
-    info: vi.fn(), warn: vi.fn(), error: vi.fn(), debug: vi.fn(),
+    info: vi.fn(),
+    warn: vi.fn(),
+    error: vi.fn(),
+    debug: vi.fn(),
   }),
 }));
 
@@ -75,9 +78,12 @@ const MOCK_USER = {
 };
 
 function createMockStore(user: Record<string, unknown> | null = MOCK_USER) {
+  type MockUserState = { currentUser: Record<string, unknown> | null };
+  type MockAction = { type?: string; payload?: Record<string, unknown> | null };
+
   return configureStore({
     reducer: {
-      user: (state: any = { currentUser: user }, action: any) => {
+      user: (state: MockUserState = { currentUser: user }, action: MockAction) => {
         if (action.type === 'user/setUser') {
           return { ...state, currentUser: action.payload };
         }
@@ -265,9 +271,12 @@ describe('ProfilePage', () => {
     fireEvent.click(saveButton);
 
     await waitFor(() => {
-      expect(mockAuthFetch).toHaveBeenCalledWith('/api/users/profile', expect.objectContaining({
-        method: 'PATCH',
-      }));
+      expect(mockAuthFetch).toHaveBeenCalledWith(
+        '/api/auth/profile',
+        expect.objectContaining({
+          method: 'PATCH',
+        })
+      );
       expect(mockToast.success).toHaveBeenCalledWith('Profile updated successfully.');
     });
   });
@@ -331,6 +340,7 @@ describe('ProfilePage', () => {
 
     await waitFor(() => {
       expect(mockSignOut).toHaveBeenCalled();
+      expect(safeStorage.remove).toHaveBeenCalledWith('token');
       expect(safeStorage.remove).toHaveBeenCalledWith('userRole');
       expect(mockNavigate).toHaveBeenCalledWith('/');
     });
@@ -359,6 +369,13 @@ describe('ProfilePage', () => {
   it('shows Go to Dashboard link', () => {
     renderPage();
     expect(screen.getByText('Go to Dashboard')).toBeDefined();
+  });
+
+  it('normalizes lion dashboard link to owner dashboard', () => {
+    (safeStorage.getJSON as ReturnType<typeof vi.fn>).mockReturnValue({ role: 'lion' });
+    renderPage();
+    const dashboardLink = screen.getByText('Go to Dashboard').closest('a');
+    expect(dashboardLink?.getAttribute('href')).toBe('/owner/dashboard');
   });
 
   it('shows Home link', () => {

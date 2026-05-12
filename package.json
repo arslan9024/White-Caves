@@ -30,6 +30,7 @@
     "test:ui": "vitest --ui",
     "test:ops": "vitest run server/__tests__/generate-seo-assets.script.test.ts server/__tests__/verify-deployment.script.test.ts server/__tests__/verify-runtime-endpoints.script.test.ts",
     "test:e2e": "playwright test",
+    "test:assistant-contract": "vitest run src/store/slices/aiAssistant/registry.test.ts",
     "test:e2e:accessibility": "playwright test src/e2e/accessibility.audit.spec.ts --reporter=html",
     "test:e2e:performance": "playwright test src/e2e/performance.layer5.spec.ts --reporter=html",
     "test:e2e:performance:json": "playwright test src/e2e/performance.layer5.spec.ts --reporter=json",

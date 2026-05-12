@@ -11,6 +11,11 @@ import {
   generateNotifications,
   generateTasks,
 } from './registry';
+import {
+  getAssistantEndpointCoverage,
+  isEndpointMapped,
+  validateAssistantEndpointContract,
+} from './endpointContract';
 
 // ─── Tests ──────────────────────────────────────────────────────────────
 
@@ -219,6 +224,32 @@ describe('AI Assistant Registry', () => {
       departments.forEach(dept => {
         expect(DEPARTMENT_COLORS[dept]).toBeDefined();
       });
+    });
+  });
+
+  describe('assistant endpoint contract', () => {
+    it('flags no unmapped endpoint prefixes for current registry', () => {
+      const issues = validateAssistantEndpointContract();
+      expect(issues).toEqual([]);
+    });
+
+    it('detects unmapped endpoints when mounted prefixes are incomplete', () => {
+      const issues = validateAssistantEndpointContract(['/api/properties', '/api/leads']);
+      expect(issues.length).toBeGreaterThan(0);
+      expect(issues.some(issue => issue.reason === 'unmapped-prefix')).toBe(true);
+    });
+
+    it('matches endpoints by mounted prefix', () => {
+      expect(isEndpointMapped('/api/nadia/messages/send', ['/api/nadia'])).toBe(true);
+      expect(isEndpointMapped('/api/finance/reports', ['/api/finance'])).toBe(true);
+      expect(isEndpointMapped('/api/unknown/resource', ['/api/finance'])).toBe(false);
+    });
+
+    it('reports 100% endpoint coverage for current mounted prefixes', () => {
+      const coverage = getAssistantEndpointCoverage();
+      expect(coverage.totalEndpoints).toBeGreaterThan(0);
+      expect(coverage.mappedEndpoints).toBe(coverage.totalEndpoints);
+      expect(coverage.coveragePct).toBe(100);
     });
   });
 

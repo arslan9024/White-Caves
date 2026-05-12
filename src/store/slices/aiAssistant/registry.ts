@@ -41,7 +41,7 @@ export const AI_ASSISTANTS_REGISTRY: Record<string, AIAssistant> = {
     },
     quickStats: { value: 9378, label: 'Properties', change: 0 },
     dashboardUrl: '/owner/dashboard?tab=mary',
-    apiEndpoints: ['/api/inventory', '/api/properties', '/api/assets'],
+    apiEndpoints: ['/api/properties', '/api/leasing-inventory', '/api/documents'],
   },
   theodora: {
     id: 'theodora',
@@ -72,7 +72,7 @@ export const AI_ASSISTANTS_REGISTRY: Record<string, AIAssistant> = {
     },
     quickStats: { value: 12, label: 'Invoices', change: 8.5 },
     dashboardUrl: '/owner/dashboard?tab=theodora',
-    apiEndpoints: ['/api/finance', '/api/invoices', '/api/payments'],
+    apiEndpoints: ['/api/finance', '/api/invoices/lease', '/api/transactions'],
   },
   olivia: {
     id: 'olivia',
@@ -98,7 +98,7 @@ export const AI_ASSISTANTS_REGISTRY: Record<string, AIAssistant> = {
     },
     quickStats: { value: 15, label: 'Campaigns', change: 12.3 },
     dashboardUrl: '/owner/dashboard?tab=olivia',
-    apiEndpoints: ['/api/marketing', '/api/campaigns', '/api/social'],
+    apiEndpoints: ['/api/homepage', '/api/analytics', '/api/communications'],
   },
   zoe: {
     id: 'zoe',
@@ -129,7 +129,7 @@ export const AI_ASSISTANTS_REGISTRY: Record<string, AIAssistant> = {
     },
     quickStats: { value: 8, label: 'Meetings', change: -5.2 },
     dashboardUrl: '/owner/dashboard?tab=zoe',
-    apiEndpoints: ['/api/executive', '/api/calendar', '/api/meetings'],
+    apiEndpoints: ['/api/orchestration/status', '/api/activities', '/api/communications'],
   },
   laila: {
     id: 'laila',
@@ -155,7 +155,7 @@ export const AI_ASSISTANTS_REGISTRY: Record<string, AIAssistant> = {
     },
     quickStats: { value: 5, label: 'Reviews', change: 0 },
     dashboardUrl: '/owner/dashboard?tab=laila',
-    apiEndpoints: ['/api/compliance', '/api/legal', '/api/kyc'],
+    apiEndpoints: ['/api/compliance', '/api/documents', '/api/activities'],
   },
   nadia: {
     id: 'nadia',
@@ -273,7 +273,7 @@ export const AI_ASSISTANTS_REGISTRY: Record<string, AIAssistant> = {
     },
     quickStats: { value: 23, label: 'Active Deals', change: 4.2 },
     dashboardUrl: '/owner/dashboard?tab=sophia',
-    apiEndpoints: ['/api/sales', '/api/pipeline', '/api/deals'],
+    apiEndpoints: ['/api/leads', '/api/crm', '/api/transactions'],
   },
   daisy: {
     id: 'daisy',
@@ -304,7 +304,7 @@ export const AI_ASSISTANTS_REGISTRY: Record<string, AIAssistant> = {
     },
     quickStats: { value: 156, label: 'Active Leases', change: 2.1 },
     dashboardUrl: '/owner/dashboard?tab=daisy',
-    apiEndpoints: ['/api/leasing', '/api/tenants', '/api/maintenance'],
+    apiEndpoints: ['/api/leases', '/api/tenants', '/api/maintenance'],
   },
   clara: {
     id: 'clara',
@@ -336,7 +336,7 @@ export const AI_ASSISTANTS_REGISTRY: Record<string, AIAssistant> = {
     },
     quickStats: { value: 38, label: 'Active Leads', change: 12.5 },
     dashboardUrl: '/owner/dashboard?tab=clara',
-    apiEndpoints: ['/api/leads', '/api/pipeline', '/api/activities'],
+    apiEndpoints: ['/api/leads', '/api/crm', '/api/activities'],
   },
   nina: {
     id: 'nina',
@@ -373,16 +373,7 @@ export const AI_ASSISTANTS_REGISTRY: Record<string, AIAssistant> = {
     },
     quickStats: { value: 3, label: 'Active Bots', change: 0 },
     dashboardUrl: '/owner/dashboard?tab=nina',
-    apiEndpoints: [
-      '/api/nina/flows',
-      '/api/nina/flows/:id/versions',
-      '/api/nina/flows/:id/test',
-      '/api/nina/nlp/intent',
-      '/api/nina/nlp/slots',
-      '/api/nina/bots',
-      '/api/nina/analytics/flows',
-      '/api/nina/analytics/intents',
-    ],
+    apiEndpoints: ['/api/communications', '/api/nadia/conversations', '/api/analytics'],
   },
   nancy: {
     id: 'nancy',
@@ -407,7 +398,7 @@ export const AI_ASSISTANTS_REGISTRY: Record<string, AIAssistant> = {
     },
     quickStats: { value: 24, label: 'Employees', change: 0 },
     dashboardUrl: '/owner/dashboard?tab=nancy',
-    apiEndpoints: ['/api/hr', '/api/employees', '/api/recruitment'],
+    apiEndpoints: ['/api/users', '/api/job-applications', '/api/activities'],
   },
   aurora: {
     id: 'aurora',
@@ -442,7 +433,7 @@ export const AI_ASSISTANTS_REGISTRY: Record<string, AIAssistant> = {
     },
     quickStats: { value: 99.98, label: 'Uptime %', change: 0.02 },
     dashboardUrl: '/owner/dashboard?tab=aurora',
-    apiEndpoints: ['/api/system', '/api/deployments', '/api/applications'],
+    apiEndpoints: ['/api/orchestration/status', '/api/integrations', '/api/analytics'],
     techStack: {
       frontend: ['React 18', 'Redux Toolkit', 'Vite'],
       backend: ['Node.js 20', 'Express', 'MongoDB 7'],
@@ -670,14 +661,7 @@ export const AI_ASSISTANTS_REGISTRY: Record<string, AIAssistant> = {
     },
     quickStats: { value: 8921, label: 'Events Logged', change: 1.2 },
     dashboardUrl: '/owner/dashboard?tab=henry',
-    apiEndpoints: [
-      '/api/henry/health',
-      '/api/henry/archive',
-      '/api/events',
-      '/api/timeline',
-      '/api/audit',
-      '/api/reports',
-    ],
+    apiEndpoints: ['/api/orchestration/tasks', '/api/activities', '/api/assistants'],
   },
   cipher: {
     id: 'cipher',

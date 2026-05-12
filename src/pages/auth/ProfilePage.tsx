@@ -24,6 +24,13 @@ const ProfilePage: FC = () => {
     getRoleLabel,
   } = useUserProfile();
 
+  const normalizeDashboardRole = (role: string): string => {
+    if (role === 'lion' || role === 'managing_director' || role === 'md') {
+      return 'owner';
+    }
+    return role;
+  };
+
   if (!user) {
     return null;
   }
@@ -39,56 +46,60 @@ const ProfilePage: FC = () => {
 
           <div className="profile-user-card">
             <div className="profile-avatar">
-              {user.photo ? (
-                <img src={user.photo} alt={user.name || 'User'} loading="lazy" width={48} height={48} />
+              {user.photo || user.photoURL || user.photoUrl ? (
+                <img
+                  src={user.photo || user.photoURL || user.photoUrl}
+                  alt={user.name || 'User'}
+                  loading="lazy"
+                  width={48}
+                  height={48}
+                />
               ) : (
                 <span>{(user.name || user.email || 'U')[0].toUpperCase()}</span>
               )}
             </div>
             <h3>{user.name || 'User'}</h3>
             <p>{user.email}</p>
-            {userRole && (
-              <span className="role-badge">{getRoleLabel(userRole.role)}</span>
-            )}
+            {userRole && <span className="role-badge">{getRoleLabel(userRole.role)}</span>}
           </div>
 
           <nav className="profile-nav">
-            <button 
+            <button
               className={`nav-item ${activeTab === 'overview' ? 'active' : ''}`}
               onClick={() => setActiveTab('overview')}
             >
               <span className="nav-icon">📊</span>
               Overview
             </button>
-            <button 
+            <button
               className={`nav-item ${activeTab === 'settings' ? 'active' : ''}`}
               onClick={() => setActiveTab('settings')}
             >
               <span className="nav-icon">⚙️</span>
               Settings
             </button>
-            <button 
+            <button
               className={`nav-item ${activeTab === 'security' ? 'active' : ''}`}
               onClick={() => setActiveTab('security')}
             >
               <span className="nav-icon">🔒</span>
               Security
             </button>
-            
+
             <div className="nav-divider"></div>
-            
+
             {userRole && (
-              <Link to={`/${userRole.role}/dashboard`} className="nav-item">
+              <Link to={`/${normalizeDashboardRole(userRole.role)}/dashboard`} className="nav-item">
                 <span className="nav-icon">🏠</span>
                 Go to Dashboard
               </Link>
             )}
-            
+
             <Link to="/" className="nav-item">
               <span className="nav-icon">🏡</span>
               Home
             </Link>
-            
+
             <button className="nav-item logout" onClick={handleLogout}>
               <span className="nav-icon">🚪</span>
               Sign Out
@@ -120,7 +131,9 @@ const ProfilePage: FC = () => {
                     </div>
                     <div className="info-row">
                       <span className="info-label">Role</span>
-                      <span className="info-value">{userRole ? getRoleLabel(userRole.role) : 'Not selected'}</span>
+                      <span className="info-value">
+                        {userRole ? getRoleLabel(userRole.role) : 'Not selected'}
+                      </span>
                     </div>
                   </div>
                 </div>
@@ -179,20 +192,45 @@ const ProfilePage: FC = () => {
               <div className="settings-form">
                 <div className="form-group">
                   <label htmlFor="profile-name">Full Name</label>
-                  <input id="profile-name" type="text" value={profileName} onChange={(e) => setProfileName(e.target.value)} placeholder="Enter your name" autoComplete="name" />
+                  <input
+                    id="profile-name"
+                    type="text"
+                    value={profileName}
+                    onChange={e => setProfileName(e.target.value)}
+                    placeholder="Enter your name"
+                    autoComplete="name"
+                  />
                 </div>
                 <div className="form-group">
                   <label htmlFor="profile-email">Email Address</label>
-                  <input id="profile-email" type="email" value={user.email || ''} placeholder="Enter your email" disabled autoComplete="email" />
+                  <input
+                    id="profile-email"
+                    type="email"
+                    value={user.email || ''}
+                    placeholder="Enter your email"
+                    disabled
+                    autoComplete="email"
+                  />
                   <span className="input-hint">Email cannot be changed</span>
                 </div>
                 <div className="form-group">
                   <label htmlFor="profile-phone">Phone Number</label>
-                  <input id="profile-phone" type="tel" value={profilePhone} onChange={(e) => setProfilePhone(e.target.value)} placeholder="+971 50 123 4567" autoComplete="tel" />
+                  <input
+                    id="profile-phone"
+                    type="tel"
+                    value={profilePhone}
+                    onChange={e => setProfilePhone(e.target.value)}
+                    placeholder="+971 50 123 4567"
+                    autoComplete="tel"
+                  />
                 </div>
                 <div className="form-group">
                   <label htmlFor="profile-language">Preferred Language</label>
-                  <select id="profile-language" value={profileLanguage} onChange={(e) => setProfileLanguage(e.target.value)}>
+                  <select
+                    id="profile-language"
+                    value={profileLanguage}
+                    onChange={e => setProfileLanguage(e.target.value)}
+                  >
                     <option value="en">English</option>
                     <option value="ar">Arabic</option>
                   </select>
@@ -239,15 +277,30 @@ const ProfilePage: FC = () => {
                   <div className="settings-form">
                     <div className="form-group">
                       <label htmlFor="current-password">Current Password</label>
-                      <input id="current-password" type="password" placeholder="Enter current password" autoComplete="current-password" />
+                      <input
+                        id="current-password"
+                        type="password"
+                        placeholder="Enter current password"
+                        autoComplete="current-password"
+                      />
                     </div>
                     <div className="form-group">
                       <label htmlFor="new-password">New Password</label>
-                      <input id="new-password" type="password" placeholder="Enter new password" autoComplete="new-password" />
+                      <input
+                        id="new-password"
+                        type="password"
+                        placeholder="Enter new password"
+                        autoComplete="new-password"
+                      />
                     </div>
                     <div className="form-group">
                       <label htmlFor="confirm-new-password">Confirm New Password</label>
-                      <input id="confirm-new-password" type="password" placeholder="Confirm new password" autoComplete="new-password" />
+                      <input
+                        id="confirm-new-password"
+                        type="password"
+                        placeholder="Confirm new password"
+                        autoComplete="new-password"
+                      />
                     </div>
                     <button className="btn btn-primary">Update Password</button>
                   </div>
@@ -271,6 +324,6 @@ const ProfilePage: FC = () => {
       </div>
     </div>
   );
-}
+};
 
 export default ProfilePage;
