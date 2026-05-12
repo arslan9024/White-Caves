@@ -243,9 +243,13 @@ class APIClient {
     }
   }
 
-  private setAuthToken(token: string): void {
+  public setAuthToken(token: string | null): void {
     try {
-      localStorage.setItem('authToken', token);
+      if (token) {
+        localStorage.setItem('authToken', token);
+      } else {
+        localStorage.removeItem('authToken');
+      }
     } catch {
       // ignore storage errors
     }
