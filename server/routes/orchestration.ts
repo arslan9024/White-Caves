@@ -572,6 +572,46 @@ router.get(
 );
 
 router.get(
+  '/snapshots/history',
+  asyncHandler(async (req: Request, res: Response) => {
+    const q = typeof req.query.q === 'string' ? req.query.q.trim().toLowerCase() : '';
+    const rawOffset = Number.parseInt(String(req.query.offset ?? '0'), 10);
+    const rawLimit = Number.parseInt(String(req.query.limit ?? '10'), 10);
+    const offset = Number.isFinite(rawOffset) ? Math.max(0, rawOffset) : 0;
+    const limit = Number.isFinite(rawLimit) ? Math.min(50, Math.max(1, rawLimit)) : 10;
+
+    const all = listSnapshotSummaries();
+    const filtered =
+      q.length > 0
+        ? all.filter(snapshot => {
+            const label = snapshot.label ? snapshot.label.toLowerCase() : '';
+            return (
+              snapshot.fileName.toLowerCase().includes(q) ||
+              snapshot.createdAt.toLowerCase().includes(q) ||
+              label.includes(q)
+            );
+          })
+        : all;
+
+    const items = filtered.slice(offset, offset + limit);
+
+    res.json({
+      success: true,
+      data: {
+        items,
+        pageInfo: {
+          offset,
+          limit,
+          total: filtered.length,
+          hasMore: offset + items.length < filtered.length,
+          query: q,
+        },
+      },
+    });
+  })
+);
+
+router.get(
   '/snapshots/:fileName',
   asyncHandler(async (req: Request, res: Response) => {
     const snapshot = readSnapshotDetail(req.params.fileName);

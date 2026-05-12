@@ -113,6 +113,41 @@ describe('Orchestration Routes — /api/orchestration', () => {
     expect(restoreRes.body.data).toHaveProperty('metrics');
   });
 
+  it('GET /snapshots/history returns paginated snapshot items', async () => {
+    await request(createApp()).post('/api/orchestration/tasks').send({
+      assistantId: 'henry',
+      taskType: 'review',
+      title: 'History seed task',
+    });
+
+    await request(createApp()).post('/api/orchestration/snapshots/export').send({ label: 'alpha' });
+    await request(createApp()).post('/api/orchestration/snapshots/export').send({ label: 'beta' });
+
+    const res = await request(createApp()).get(
+      '/api/orchestration/snapshots/history?limit=1&offset=0'
+    );
+
+    expect(res.status).toBe(200);
+    expect(res.body.success).toBe(true);
+    expect(Array.isArray(res.body.data.items)).toBe(true);
+    expect(res.body.data.items.length).toBe(1);
+    expect(res.body.data.pageInfo).toHaveProperty('total');
+    expect(res.body.data.pageInfo).toHaveProperty('hasMore');
+  });
+
+  it('GET /snapshots/history supports q search on label and filename', async () => {
+    await request(createApp())
+      .post('/api/orchestration/snapshots/export')
+      .send({ label: 'searchable-label' });
+
+    const res = await request(createApp()).get('/api/orchestration/snapshots/history?q=searchable');
+
+    expect(res.status).toBe(200);
+    expect(res.body.success).toBe(true);
+    expect(Array.isArray(res.body.data.items)).toBe(true);
+    expect(res.body.data.items.length).toBeGreaterThan(0);
+  });
+
   it('GET /snapshots/:fileName returns snapshot detail including tasks and metrics', async () => {
     await request(createApp()).post('/api/orchestration/tasks').send({
       assistantId: 'henry',

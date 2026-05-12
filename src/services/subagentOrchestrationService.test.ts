@@ -105,6 +105,28 @@ describe('subagentOrchestrationService', () => {
     expect(result).toEqual(response);
   });
 
+  it('getSnapshotHistory calls GET /orchestration/snapshots/history with encoded query', async () => {
+    const response = {
+      success: true,
+      data: {
+        items: [],
+        pageInfo: { offset: 0, limit: 5, total: 0, hasMore: false, query: 'nightly label' },
+      },
+    };
+    mApiGet.mockResolvedValue(response);
+
+    const result = await subagentOrchestrationService.getSnapshotHistory({
+      offset: 0,
+      limit: 5,
+      q: 'nightly label',
+    });
+
+    expect(mApiGet).toHaveBeenCalledWith(
+      '/orchestration/snapshots/history?offset=0&limit=5&q=nightly+label'
+    );
+    expect(result).toEqual(response);
+  });
+
   it('exportSnapshot calls POST /orchestration/snapshots/export', async () => {
     const response = {
       success: true,

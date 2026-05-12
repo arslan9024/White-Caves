@@ -60,6 +60,10 @@ const SubagentCollaborationPanel = memo(
     const [isSubmittingTask, setIsSubmittingTask] = useState<boolean>(false);
     const [updatingTaskId, setUpdatingTaskId] = useState<string | null>(null);
     const [snapshots, setSnapshots] = useState<OrchestrationSnapshotSummary[]>([]);
+    const [snapshotSearch, setSnapshotSearch] = useState<string>('');
+    const [snapshotHasMore, setSnapshotHasMore] = useState<boolean>(false);
+    const [snapshotTotal, setSnapshotTotal] = useState<number>(0);
+    const [snapshotLimit] = useState<number>(5);
     const [snapshotAction, setSnapshotAction] = useState<
       'export' | 'restore' | 'delete' | 'detail' | null
     >(null);
@@ -92,12 +96,18 @@ const SubagentCollaborationPanel = memo(
         try {
           const [response, snapshotResponse] = await Promise.all([
             subagentOrchestrationService.getStatus(),
-            subagentOrchestrationService.getSnapshots(),
+            subagentOrchestrationService.getSnapshotHistory({
+              offset: 0,
+              limit: snapshotLimit,
+              q: snapshotSearch,
+            }),
           ]);
           setStatusData(response.data);
-          setSnapshots(snapshotResponse.data);
-          if (snapshotResponse.data.length > 0) {
-            const latestSnapshotFileName = snapshotResponse.data[0]?.fileName ?? null;
+          setSnapshots(snapshotResponse.data.items);
+          setSnapshotHasMore(snapshotResponse.data.pageInfo.hasMore);
+          setSnapshotTotal(snapshotResponse.data.pageInfo.total);
+          if (snapshotResponse.data.items.length > 0) {
+            const latestSnapshotFileName = snapshotResponse.data.items[0]?.fileName ?? null;
             setSelectedSnapshotFileName(latestSnapshotFileName);
             if (latestSnapshotFileName) {
               const snapshotDetail =
@@ -120,7 +130,7 @@ const SubagentCollaborationPanel = memo(
       };
 
       void loadStatus();
-    }, []);
+    }, [snapshotLimit, snapshotSearch]);
 
     const dailyPremiumCap =
       statusData?.quota.dailyCap ??
@@ -182,16 +192,22 @@ const SubagentCollaborationPanel = memo(
     const loadStatusData = async () => {
       const [response, snapshotResponse] = await Promise.all([
         subagentOrchestrationService.getStatus(),
-        subagentOrchestrationService.getSnapshots(),
+        subagentOrchestrationService.getSnapshotHistory({
+          offset: 0,
+          limit: snapshots.length > 0 ? snapshots.length : snapshotLimit,
+          q: snapshotSearch,
+        }),
       ]);
       setStatusData(response.data);
-      setSnapshots(snapshotResponse.data);
+      setSnapshots(snapshotResponse.data.items);
+      setSnapshotHasMore(snapshotResponse.data.pageInfo.hasMore);
+      setSnapshotTotal(snapshotResponse.data.pageInfo.total);
 
       const preferredSnapshotFileName =
         selectedSnapshotFileName &&
-        snapshotResponse.data.some(snapshot => snapshot.fileName === selectedSnapshotFileName)
+        snapshotResponse.data.items.some(snapshot => snapshot.fileName === selectedSnapshotFileName)
           ? selectedSnapshotFileName
-          : (snapshotResponse.data[0]?.fileName ?? null);
+          : (snapshotResponse.data.items[0]?.fileName ?? null);
 
       setSelectedSnapshotFileName(preferredSnapshotFileName);
 
@@ -201,6 +217,29 @@ const SubagentCollaborationPanel = memo(
         setSelectedSnapshotDetail(snapshotDetail.data);
       } else {
         setSelectedSnapshotDetail(null);
+      }
+    };
+
+    const handleLoadMoreSnapshots = async () => {
+      if (!snapshotHasMore) {
+        return;
+      }
+      setSnapshotAction('detail');
+      setStatusError(null);
+      try {
+        const response = await subagentOrchestrationService.getSnapshotHistory({
+          offset: snapshots.length,
+          limit: snapshotLimit,
+          q: snapshotSearch,
+        });
+
+        setSnapshots(prev => [...prev, ...response.data.items]);
+        setSnapshotHasMore(response.data.pageInfo.hasMore);
+        setSnapshotTotal(response.data.pageInfo.total);
+      } catch (error) {
+        setStatusError(error instanceof Error ? error.message : 'Failed to load more snapshots');
+      } finally {
+        setSnapshotAction(null);
       }
     };
 
@@ -449,9 +488,26 @@ const SubagentCollaborationPanel = memo(
             </button>
           </div>
 
+          <input
+            value={snapshotSearch}
+            onChange={event => setSnapshotSearch(event.target.value)}
+            placeholder="Search snapshots by label, filename, or timestamp"
+            style={{
+              width: '100%',
+              marginBottom: 10,
+              background: 'rgba(15,23,42,0.5)',
+              color: '#E2E8F0',
+              border: '1px solid rgba(148,163,184,0.35)',
+              borderRadius: 8,
+              padding: '8px 10px',
+              fontSize: 12,
+            }}
+            aria-label="Search snapshots"
+          />
+
           {snapshots.length > 0 ? (
             <ul style={{ margin: 0, paddingLeft: 16, color: '#CBD5E1', fontSize: 12 }}>
-              {snapshots.slice(0, 3).map(snapshot => (
+              {snapshots.map(snapshot => (
                 <li key={snapshot.fileName} style={{ marginBottom: 6 }}>
                   <strong>
                     {snapshot.fileName}
@@ -529,6 +585,32 @@ const SubagentCollaborationPanel = memo(
           ) : (
             <p style={mutedTextStyle}>No orchestration snapshots available yet.</p>
           )}
+
+          <p style={{ ...mutedTextStyle, marginTop: 8 }}>
+            Showing {snapshots.length} of {snapshotTotal} snapshots
+          </p>
+
+          {snapshotHasMore ? (
+            <button
+              type="button"
+              onClick={() => {
+                void handleLoadMoreSnapshots();
+              }}
+              disabled={snapshotAction !== null}
+              style={{
+                marginTop: 8,
+                border: '1px solid rgba(148,163,184,0.38)',
+                background: 'rgba(15,23,42,0.45)',
+                color: '#CBD5E1',
+                borderRadius: 8,
+                padding: '6px 10px',
+                fontSize: 12,
+                cursor: snapshotAction ? 'not-allowed' : 'pointer',
+              }}
+            >
+              Load More Snapshots
+            </button>
+          ) : null}
 
           {selectedSnapshotDetail ? (
             <div

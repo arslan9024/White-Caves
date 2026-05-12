@@ -104,6 +104,17 @@ export interface OrchestrationSnapshotDetail extends OrchestrationSnapshotSummar
   tasks: OrchestrationTask[];
 }
 
+export interface OrchestrationSnapshotHistoryPayload {
+  items: OrchestrationSnapshotSummary[];
+  pageInfo: {
+    offset: number;
+    limit: number;
+    total: number;
+    hasMore: boolean;
+    query: string;
+  };
+}
+
 const BASE = '/orchestration';
 
 export const subagentOrchestrationService = {
@@ -133,6 +144,26 @@ export const subagentOrchestrationService = {
     return (await apiClient.get(`${BASE}/snapshots`)) as {
       success: boolean;
       data: OrchestrationSnapshotSummary[];
+    };
+  },
+
+  async getSnapshotHistory(options?: { offset?: number; limit?: number; q?: string }) {
+    const params = new URLSearchParams();
+    if (typeof options?.offset === 'number' && Number.isFinite(options.offset)) {
+      params.set('offset', String(Math.max(0, Math.floor(options.offset))));
+    }
+    if (typeof options?.limit === 'number' && Number.isFinite(options.limit)) {
+      params.set('limit', String(Math.max(1, Math.floor(options.limit))));
+    }
+    if (typeof options?.q === 'string' && options.q.trim().length > 0) {
+      params.set('q', options.q.trim());
+    }
+    const query = params.toString();
+    const url = `${BASE}/snapshots/history${query ? `?${query}` : ''}`;
+
+    return (await apiClient.get(url)) as {
+      success: boolean;
+      data: OrchestrationSnapshotHistoryPayload;
     };
   },
 
