@@ -87,6 +87,12 @@ export interface OrchestrationMetricsPayload {
   };
 }
 
+export interface OrchestrationSnapshotSummary {
+  fileName: string;
+  createdAt: string;
+  taskCount: number;
+}
+
 const BASE = '/orchestration';
 
 export const subagentOrchestrationService = {
@@ -109,6 +115,38 @@ export const subagentOrchestrationService = {
     return (await apiClient.get(`${BASE}/metrics`)) as {
       success: boolean;
       data: OrchestrationMetricsPayload;
+    };
+  },
+
+  async getSnapshots() {
+    return (await apiClient.get(`${BASE}/snapshots`)) as {
+      success: boolean;
+      data: OrchestrationSnapshotSummary[];
+    };
+  },
+
+  async exportSnapshot(label?: string) {
+    const payload =
+      typeof label === 'string' && label.trim().length > 0 ? { label: label.trim() } : {};
+
+    return (await apiClient.post(`${BASE}/snapshots/export`, payload)) as {
+      success: boolean;
+      data: OrchestrationSnapshotSummary;
+    };
+  },
+
+  async restoreSnapshot(fileName?: string) {
+    const payload =
+      typeof fileName === 'string' && fileName.trim().length > 0
+        ? { fileName: fileName.trim() }
+        : {};
+
+    return (await apiClient.post(`${BASE}/snapshots/restore`, payload)) as {
+      success: boolean;
+      data: {
+        snapshot: OrchestrationSnapshotSummary;
+        metrics: OrchestrationMetricsPayload['metrics'];
+      };
     };
   },
 

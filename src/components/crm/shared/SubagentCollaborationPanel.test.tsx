@@ -5,8 +5,11 @@ import React from 'react';
 vi.mock('../../../services/subagentOrchestrationService', () => ({
   subagentOrchestrationService: {
     getStatus: vi.fn(),
+    getSnapshots: vi.fn(),
     createTask: vi.fn(),
     updateTaskState: vi.fn(),
+    exportSnapshot: vi.fn(),
+    restoreSnapshot: vi.fn(),
   },
 }));
 
@@ -14,8 +17,11 @@ import SubagentCollaborationPanel from './SubagentCollaborationPanel';
 import { subagentOrchestrationService } from '../../../services/subagentOrchestrationService';
 
 const mGetStatus = subagentOrchestrationService.getStatus as ReturnType<typeof vi.fn>;
+const mGetSnapshots = subagentOrchestrationService.getSnapshots as ReturnType<typeof vi.fn>;
 const mCreateTask = subagentOrchestrationService.createTask as ReturnType<typeof vi.fn>;
 const mUpdateTaskState = subagentOrchestrationService.updateTaskState as ReturnType<typeof vi.fn>;
+const mExportSnapshot = subagentOrchestrationService.exportSnapshot as ReturnType<typeof vi.fn>;
+const mRestoreSnapshot = subagentOrchestrationService.restoreSnapshot as ReturnType<typeof vi.fn>;
 
 const makeStatusResponse = (
   overrides?: Partial<{ tasks: Array<Record<string, unknown>>; metrics: Record<string, unknown> }>
@@ -51,8 +57,17 @@ describe('SubagentCollaborationPanel', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     mGetStatus.mockResolvedValue(makeStatusResponse());
+    mGetSnapshots.mockResolvedValue({ success: true, data: [] });
     mCreateTask.mockResolvedValue({ success: true, data: { id: 't-1' } });
     mUpdateTaskState.mockResolvedValue({ success: true, data: { id: 't-1' } });
+    mExportSnapshot.mockResolvedValue({
+      success: true,
+      data: { fileName: 'orch-snapshot-1.json' },
+    });
+    mRestoreSnapshot.mockResolvedValue({
+      success: true,
+      data: { snapshot: { fileName: 'orch-snapshot-1.json' } },
+    });
   });
 
   it('renders default prompt when no assistant is selected', async () => {
@@ -122,6 +137,53 @@ describe('SubagentCollaborationPanel', () => {
     expect(screen.getByText(/Total:/i)).toHaveTextContent('7');
     expect(screen.getByText(/Done:/i)).toHaveTextContent('3');
     expect(screen.getByText(/Premium tasks:/i)).toHaveTextContent('2');
+  });
+
+  it('renders snapshot list and exports a snapshot', async () => {
+    mGetSnapshots
+      .mockResolvedValueOnce({
+        success: true,
+        data: [{ fileName: 'orch-snapshot-a.json', createdAt: '2026-05-12', taskCount: 3 }],
+      })
+      .mockResolvedValueOnce({
+        success: true,
+        data: [
+          { fileName: 'orch-snapshot-a.json', createdAt: '2026-05-12', taskCount: 3 },
+          { fileName: 'orch-snapshot-b.json', createdAt: '2026-05-13', taskCount: 4 },
+        ],
+      });
+
+    render(<SubagentCollaborationPanel assistantId="henry" />);
+
+    expect(await screen.findByText(/persistence snapshots/i)).toBeInTheDocument();
+    expect(screen.getByText(/orch-snapshot-a.json/i)).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole('button', { name: /export snapshot/i }));
+
+    await waitFor(() => {
+      expect(mExportSnapshot).toHaveBeenCalledWith('henry-panel');
+    });
+  });
+
+  it('restores latest snapshot from snapshot action button', async () => {
+    mGetSnapshots
+      .mockResolvedValueOnce({
+        success: true,
+        data: [{ fileName: 'orch-snapshot-latest.json', createdAt: '2026-05-13', taskCount: 2 }],
+      })
+      .mockResolvedValueOnce({
+        success: true,
+        data: [{ fileName: 'orch-snapshot-latest.json', createdAt: '2026-05-13', taskCount: 2 }],
+      });
+
+    render(<SubagentCollaborationPanel assistantId="henry" />);
+
+    const restoreButton = await screen.findByRole('button', { name: /restore latest/i });
+    fireEvent.click(restoreButton);
+
+    await waitFor(() => {
+      expect(mRestoreSnapshot).toHaveBeenCalledWith('orch-snapshot-latest.json');
+    });
   });
 
   it('assigns a task and refreshes assistant task list', async () => {

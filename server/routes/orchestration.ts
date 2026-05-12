@@ -1,5 +1,5 @@
 import { Router, Request, Response } from 'express';
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, readFileSync, readdirSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
 import { asyncHandler, AppError } from '../middleware/errorHandler.js';
 import { requireRole } from '../middleware/rbac.js';
@@ -64,6 +64,12 @@ interface PersistedOrchestrationState {
   businessDaysRemaining: number;
   premiumConsumedToday: number;
   tasks: OrchestrationTask[];
+}
+
+interface OrchestrationSnapshotSummary {
+  fileName: string;
+  createdAt: string;
+  taskCount: number;
 }
 
 const ASSISTANT_EXECUTION_PROFILES: Record<string, AssistantExecutionProfile> = {
@@ -203,6 +209,7 @@ let businessDaysRemaining = 5;
 let premiumConsumedToday = 0;
 
 const ORCHESTRATION_STATE_FILE = path.join(process.cwd(), 'logs', 'orchestration-state.json');
+const ORCHESTRATION_SNAPSHOT_DIR = path.join(process.cwd(), 'logs', 'orchestration-snapshots');
 
 function computeMetrics(tasks: OrchestrationTask[]): OrchestrationMetrics {
   const totalTasks = tasks.length;
@@ -229,24 +236,61 @@ function computeMetrics(tasks: OrchestrationTask[]): OrchestrationMetrics {
   };
 }
 
+function buildPersistedState(): PersistedOrchestrationState {
+  return {
+    weeklyPremiumRemaining,
+    businessDaysRemaining,
+    premiumConsumedToday,
+    tasks: orchestrationTasks.slice(0, 500),
+  };
+}
+
+function ensureDir(dirPath: string): void {
+  // eslint-disable-next-line security/detect-non-literal-fs-filename -- internal logs path built from process.cwd()
+  if (!existsSync(dirPath)) {
+    // eslint-disable-next-line security/detect-non-literal-fs-filename -- internal logs path built from process.cwd()
+    mkdirSync(dirPath, { recursive: true });
+  }
+}
+
+function writeStateToFile(filePath: string): void {
+  const dirPath = path.dirname(filePath);
+  ensureDir(dirPath);
+  // eslint-disable-next-line security/detect-non-literal-fs-filename -- internal logs/snapshots path built from process.cwd()
+  writeFileSync(filePath, JSON.stringify(buildPersistedState(), null, 2), 'utf-8');
+}
+
 function persistState(): void {
   try {
-    const dirPath = path.dirname(ORCHESTRATION_STATE_FILE);
-    if (!existsSync(dirPath)) {
-      mkdirSync(dirPath, { recursive: true });
-    }
-
-    const payload: PersistedOrchestrationState = {
-      weeklyPremiumRemaining,
-      businessDaysRemaining,
-      premiumConsumedToday,
-      tasks: orchestrationTasks.slice(0, 500),
-    };
-
-    writeFileSync(ORCHESTRATION_STATE_FILE, JSON.stringify(payload, null, 2), 'utf-8');
+    writeStateToFile(ORCHESTRATION_STATE_FILE);
   } catch {
     // Persistence failures should never break orchestration APIs.
   }
+}
+
+function applyPersistedState(parsed: Partial<PersistedOrchestrationState>): void {
+  if (typeof parsed.weeklyPremiumRemaining === 'number' && parsed.weeklyPremiumRemaining >= 0) {
+    weeklyPremiumRemaining = Math.floor(parsed.weeklyPremiumRemaining);
+  }
+
+  if (typeof parsed.businessDaysRemaining === 'number' && parsed.businessDaysRemaining >= 0) {
+    businessDaysRemaining = Math.floor(parsed.businessDaysRemaining);
+  }
+
+  if (typeof parsed.premiumConsumedToday === 'number' && parsed.premiumConsumedToday >= 0) {
+    premiumConsumedToday = Math.floor(parsed.premiumConsumedToday);
+  }
+
+  if (Array.isArray(parsed.tasks)) {
+    orchestrationTasks.splice(0, orchestrationTasks.length, ...parsed.tasks.slice(0, 500));
+  }
+}
+
+function readStateFile(filePath: string): void {
+  // eslint-disable-next-line security/detect-non-literal-fs-filename -- internal logs/snapshots path built from process.cwd()
+  const fileContents = readFileSync(filePath, 'utf-8');
+  const parsed = JSON.parse(fileContents) as Partial<PersistedOrchestrationState>;
+  applyPersistedState(parsed);
 }
 
 function hydrateState(): void {
@@ -255,27 +299,85 @@ function hydrateState(): void {
       return;
     }
 
-    const fileContents = readFileSync(ORCHESTRATION_STATE_FILE, 'utf-8');
-    const parsed = JSON.parse(fileContents) as Partial<PersistedOrchestrationState>;
-
-    if (typeof parsed.weeklyPremiumRemaining === 'number' && parsed.weeklyPremiumRemaining >= 0) {
-      weeklyPremiumRemaining = Math.floor(parsed.weeklyPremiumRemaining);
-    }
-
-    if (typeof parsed.businessDaysRemaining === 'number' && parsed.businessDaysRemaining >= 0) {
-      businessDaysRemaining = Math.floor(parsed.businessDaysRemaining);
-    }
-
-    if (typeof parsed.premiumConsumedToday === 'number' && parsed.premiumConsumedToday >= 0) {
-      premiumConsumedToday = Math.floor(parsed.premiumConsumedToday);
-    }
-
-    if (Array.isArray(parsed.tasks)) {
-      orchestrationTasks.splice(0, orchestrationTasks.length, ...parsed.tasks.slice(0, 500));
-    }
+    readStateFile(ORCHESTRATION_STATE_FILE);
   } catch {
     // Corrupt state is ignored safely and re-created on next successful mutation.
   }
+}
+
+function getSnapshotFiles(): string[] {
+  if (!existsSync(ORCHESTRATION_SNAPSHOT_DIR)) {
+    return [];
+  }
+
+  return readdirSync(ORCHESTRATION_SNAPSHOT_DIR)
+    .filter(fileName => fileName.endsWith('.json'))
+    .sort((left, right) => right.localeCompare(left));
+}
+
+function listSnapshotSummaries(): OrchestrationSnapshotSummary[] {
+  return getSnapshotFiles().map(fileName => {
+    const createdAt = fileName.replace(/^orch-snapshot-/, '').replace(/\.json$/, '');
+    try {
+      const filePath = path.join(ORCHESTRATION_SNAPSHOT_DIR, fileName);
+      // eslint-disable-next-line security/detect-non-literal-fs-filename -- fileName restricted to local snapshot directory entries
+      const parsed = JSON.parse(
+        readFileSync(filePath, 'utf-8')
+      ) as Partial<PersistedOrchestrationState>;
+      const taskCount = Array.isArray(parsed.tasks) ? parsed.tasks.length : 0;
+
+      return { fileName, createdAt, taskCount };
+    } catch {
+      return { fileName, createdAt, taskCount: 0 };
+    }
+  });
+}
+
+function exportSnapshot(label?: string): OrchestrationSnapshotSummary {
+  ensureDir(ORCHESTRATION_SNAPSHOT_DIR);
+  const safeLabel =
+    typeof label === 'string' && label.trim().length > 0
+      ? `-${label
+          .trim()
+          .toLowerCase()
+          .replace(/[^a-z0-9]+/g, '-')}`
+      : '';
+  const createdAt = new Date().toISOString().replace(/[:.]/g, '-');
+  const fileName = `orch-snapshot-${createdAt}${safeLabel}.json`;
+  const filePath = path.join(ORCHESTRATION_SNAPSHOT_DIR, fileName);
+
+  writeStateToFile(filePath);
+
+  return {
+    fileName,
+    createdAt,
+    taskCount: orchestrationTasks.length,
+  };
+}
+
+function restoreSnapshot(fileName?: string): OrchestrationSnapshotSummary {
+  const snapshotFiles = getSnapshotFiles();
+  const targetFile = fileName ? path.basename(fileName) : snapshotFiles[0];
+
+  if (!targetFile) {
+    throw new AppError('No orchestration snapshots available', 404);
+  }
+
+  if (!snapshotFiles.includes(targetFile)) {
+    throw new AppError('Snapshot not found', 404);
+  }
+
+  const filePath = path.join(ORCHESTRATION_SNAPSHOT_DIR, targetFile);
+  readStateFile(filePath);
+  persistState();
+
+  return (
+    listSnapshotSummaries().find(snapshot => snapshot.fileName === targetFile) ?? {
+      fileName: targetFile,
+      createdAt: '',
+      taskCount: orchestrationTasks.length,
+    }
+  );
 }
 
 hydrateState();
@@ -347,6 +449,42 @@ router.get(
           premiumConsumedToday,
           premiumRemainingToday: Math.max(0, dailyCap - premiumConsumedToday),
         },
+        metrics: computeMetrics(orchestrationTasks),
+      },
+    });
+  })
+);
+
+router.get(
+  '/snapshots',
+  asyncHandler(async (_req: Request, res: Response) => {
+    res.json({
+      success: true,
+      data: listSnapshotSummaries().slice(0, 20),
+    });
+  })
+);
+
+router.post(
+  '/snapshots/export',
+  requireRole('owner', 'admin', 'manager'),
+  asyncHandler(async (req: Request, res: Response) => {
+    const { label } = req.body as { label?: string };
+    const snapshot = exportSnapshot(label);
+    res.status(201).json({ success: true, data: snapshot });
+  })
+);
+
+router.post(
+  '/snapshots/restore',
+  requireRole('owner', 'admin', 'manager'),
+  asyncHandler(async (req: Request, res: Response) => {
+    const { fileName } = req.body as { fileName?: string };
+    const snapshot = restoreSnapshot(fileName);
+    res.json({
+      success: true,
+      data: {
+        snapshot,
         metrics: computeMetrics(orchestrationTasks),
       },
     });

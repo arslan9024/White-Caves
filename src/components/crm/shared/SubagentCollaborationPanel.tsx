@@ -8,6 +8,7 @@ import {
 } from '../../../config/subagentOrchestration';
 import {
   subagentOrchestrationService,
+  type OrchestrationSnapshotSummary,
   type OrchestrationTask,
   type OrchestrationStatusPayload,
   type TaskState,
@@ -57,6 +58,8 @@ const SubagentCollaborationPanel = memo(
     const [contextGateApproved, setContextGateApproved] = useState<boolean>(false);
     const [isSubmittingTask, setIsSubmittingTask] = useState<boolean>(false);
     const [updatingTaskId, setUpdatingTaskId] = useState<string | null>(null);
+    const [snapshots, setSnapshots] = useState<OrchestrationSnapshotSummary[]>([]);
+    const [snapshotAction, setSnapshotAction] = useState<'export' | 'restore' | null>(null);
 
     const profile = assistantId ? getAssistantExecutionProfile(assistantId) : null;
     const collaborations = useMemo(
@@ -81,8 +84,12 @@ const SubagentCollaborationPanel = memo(
         setIsLoading(true);
         setStatusError(null);
         try {
-          const response = await subagentOrchestrationService.getStatus();
+          const [response, snapshotResponse] = await Promise.all([
+            subagentOrchestrationService.getStatus(),
+            subagentOrchestrationService.getSnapshots(),
+          ]);
           setStatusData(response.data);
+          setSnapshots(snapshotResponse.data);
         } catch (error) {
           setStatusError(
             error instanceof Error
@@ -155,8 +162,41 @@ const SubagentCollaborationPanel = memo(
     }, [profile?.id, profile?.modelPolicy.defaultTier]);
 
     const loadStatusData = async () => {
-      const response = await subagentOrchestrationService.getStatus();
+      const [response, snapshotResponse] = await Promise.all([
+        subagentOrchestrationService.getStatus(),
+        subagentOrchestrationService.getSnapshots(),
+      ]);
       setStatusData(response.data);
+      setSnapshots(snapshotResponse.data);
+    };
+
+    const handleExportSnapshot = async () => {
+      setSnapshotAction('export');
+      setStatusError(null);
+      try {
+        await subagentOrchestrationService.exportSnapshot(
+          assistantId ? `${assistantId}-panel` : 'command-center'
+        );
+        await loadStatusData();
+      } catch (error) {
+        setStatusError(error instanceof Error ? error.message : 'Failed to export snapshot');
+      } finally {
+        setSnapshotAction(null);
+      }
+    };
+
+    const handleRestoreLatestSnapshot = async () => {
+      setSnapshotAction('restore');
+      setStatusError(null);
+      try {
+        const latestSnapshot = snapshots[0]?.fileName;
+        await subagentOrchestrationService.restoreSnapshot(latestSnapshot);
+        await loadStatusData();
+      } catch (error) {
+        setStatusError(error instanceof Error ? error.message : 'Failed to restore snapshot');
+      } finally {
+        setSnapshotAction(null);
+      }
     };
 
     const getNextStates = (state: TaskState): TaskState[] => {
@@ -298,6 +338,67 @@ const SubagentCollaborationPanel = memo(
             <strong>{runtimeMetrics.failedTasks}</strong> · Premium tasks:{' '}
             <strong>{runtimeMetrics.premiumTasks}</strong>
           </p>
+        </div>
+
+        <div style={cardStyle}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10 }}>
+            <Sparkles size={16} color="#A78BFA" />
+            <strong style={{ color: '#E2E8F0', fontSize: 13 }}>Persistence Snapshots</strong>
+          </div>
+          <div style={{ display: 'flex', gap: 8, marginBottom: 10 }}>
+            <button
+              type="button"
+              onClick={() => {
+                void handleExportSnapshot();
+              }}
+              disabled={snapshotAction !== null}
+              style={{
+                border: '1px solid rgba(167,139,250,0.45)',
+                background: 'rgba(124,58,237,0.16)',
+                color: '#DDD6FE',
+                borderRadius: 8,
+                padding: '6px 10px',
+                fontSize: 12,
+                cursor: snapshotAction ? 'not-allowed' : 'pointer',
+              }}
+            >
+              {snapshotAction === 'export' ? 'Exporting…' : 'Export Snapshot'}
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                void handleRestoreLatestSnapshot();
+              }}
+              disabled={snapshotAction !== null || snapshots.length === 0}
+              style={{
+                border: '1px solid rgba(96,165,250,0.45)',
+                background: 'rgba(37,99,235,0.16)',
+                color: '#BFDBFE',
+                borderRadius: 8,
+                padding: '6px 10px',
+                fontSize: 12,
+                cursor: snapshotAction || snapshots.length === 0 ? 'not-allowed' : 'pointer',
+              }}
+            >
+              {snapshotAction === 'restore' ? 'Restoring…' : 'Restore Latest'}
+            </button>
+          </div>
+
+          {snapshots.length > 0 ? (
+            <ul style={{ margin: 0, paddingLeft: 16, color: '#CBD5E1', fontSize: 12 }}>
+              {snapshots.slice(0, 3).map(snapshot => (
+                <li key={snapshot.fileName} style={{ marginBottom: 6 }}>
+                  <strong>{snapshot.fileName}</strong>
+                  <br />
+                  <span style={mutedTextStyle}>
+                    Tasks: {snapshot.taskCount} · Created: {snapshot.createdAt}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p style={mutedTextStyle}>No orchestration snapshots available yet.</p>
+          )}
         </div>
 
         <div style={cardStyle}>

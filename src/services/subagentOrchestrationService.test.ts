@@ -93,6 +93,44 @@ describe('subagentOrchestrationService', () => {
     expect(result).toEqual(response);
   });
 
+  it('getSnapshots calls GET /orchestration/snapshots', async () => {
+    const response = { success: true, data: [] };
+    mApiGet.mockResolvedValue(response);
+
+    const result = await subagentOrchestrationService.getSnapshots();
+
+    expect(mApiGet).toHaveBeenCalledWith('/orchestration/snapshots');
+    expect(result).toEqual(response);
+  });
+
+  it('exportSnapshot calls POST /orchestration/snapshots/export', async () => {
+    const response = { success: true, data: { fileName: 'orch-snapshot-test.json' } };
+    mApiPost.mockResolvedValue(response);
+
+    const result = await subagentOrchestrationService.exportSnapshot('nightly');
+
+    expect(mApiPost).toHaveBeenCalledWith('/orchestration/snapshots/export', { label: 'nightly' });
+    expect(result).toEqual(response);
+  });
+
+  it('restoreSnapshot calls POST /orchestration/snapshots/restore', async () => {
+    const response = {
+      success: true,
+      data: {
+        snapshot: { fileName: 'orch-snapshot-test.json', createdAt: '', taskCount: 1 },
+        metrics: { totalTasks: 1 },
+      },
+    };
+    mApiPost.mockResolvedValue(response);
+
+    const result = await subagentOrchestrationService.restoreSnapshot('orch-snapshot-test.json');
+
+    expect(mApiPost).toHaveBeenCalledWith('/orchestration/snapshots/restore', {
+      fileName: 'orch-snapshot-test.json',
+    });
+    expect(result).toEqual(response);
+  });
+
   it('createTask calls POST /orchestration/tasks with payload', async () => {
     const payload = {
       assistantId: 'henry',

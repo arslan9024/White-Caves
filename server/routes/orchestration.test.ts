@@ -70,6 +70,49 @@ describe('Orchestration Routes — /api/orchestration', () => {
     expect(res.body.data.metrics).toHaveProperty('lastTaskCreatedAt');
   });
 
+  it('POST /snapshots/export creates a snapshot and GET /snapshots lists it', async () => {
+    await request(createApp()).post('/api/orchestration/tasks').send({
+      assistantId: 'henry',
+      taskType: 'review',
+      title: 'Snapshot seed task',
+    });
+
+    const exportRes = await request(createApp())
+      .post('/api/orchestration/snapshots/export')
+      .send({ label: 'nightly' });
+
+    expect(exportRes.status).toBe(201);
+    expect(exportRes.body.success).toBe(true);
+    expect(String(exportRes.body.data.fileName || '')).toMatch(/orch-snapshot-/i);
+
+    const listRes = await request(createApp()).get('/api/orchestration/snapshots');
+    expect(listRes.status).toBe(200);
+    expect(listRes.body.success).toBe(true);
+    expect(Array.isArray(listRes.body.data)).toBe(true);
+    expect(listRes.body.data.length).toBeGreaterThan(0);
+  });
+
+  it('POST /snapshots/restore restores latest snapshot when fileName omitted', async () => {
+    await request(createApp()).post('/api/orchestration/tasks').send({
+      assistantId: 'henry',
+      taskType: 'review',
+      title: 'Restore baseline task',
+    });
+
+    await request(createApp())
+      .post('/api/orchestration/snapshots/export')
+      .send({ label: 'baseline' });
+
+    const restoreRes = await request(createApp())
+      .post('/api/orchestration/snapshots/restore')
+      .send({});
+
+    expect(restoreRes.status).toBe(200);
+    expect(restoreRes.body.success).toBe(true);
+    expect(restoreRes.body.data).toHaveProperty('snapshot');
+    expect(restoreRes.body.data).toHaveProperty('metrics');
+  });
+
   it('GET /contracts/assistant-endpoints returns runtime endpoint contract payload', async () => {
     const res = await request(createApp()).get('/api/orchestration/contracts/assistant-endpoints');
 
