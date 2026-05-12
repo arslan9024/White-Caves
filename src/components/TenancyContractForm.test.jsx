@@ -28,6 +28,7 @@ vi.mock('./TenancyForms/TenancyTermsForm', () => ({
 describe('TenancyContractForm — alert elimination', () => {
   beforeEach(() => {
     vi.restoreAllMocks();
+    vi.spyOn(console, 'error').mockImplementation(() => {});
     mockAuthFetch.mockResolvedValue({
       ok: true,
       json: () => Promise.resolve({ success: true, data: { id: 'agreement-123' } }),
