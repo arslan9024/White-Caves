@@ -8,7 +8,7 @@
  */
 
 import { describe, it, expect, vi, beforeEach, type Mock } from 'vitest';
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen, waitFor, fireEvent } from '@testing-library/react';
 import {
   BuyerOverview,
   SavedProperties,
@@ -36,7 +36,9 @@ function jsonResponse(body: unknown, status = 200): Response {
 
 // Helper: make authFetch always return { success: true, data: [] } by default
 function setDefaultEmpty() {
-  mockAuthFetch.mockResolvedValue(jsonResponse({ success: true, data: [], pagination: { total: 0 } }));
+  mockAuthFetch.mockResolvedValue(
+    jsonResponse({ success: true, data: [], pagination: { total: 0 } })
+  );
 }
 
 // ─── Tests ───────────────────────────────────────────────────────────
@@ -76,13 +78,20 @@ describe('BuyerTabs', () => {
       // Override: viewings endpoint returns data
       mockAuthFetch.mockImplementation((url: string) => {
         if (url.includes('/api/viewings')) {
-          return Promise.resolve(jsonResponse({
-            success: true,
-            data: [
-              { id: 'v1', property: { title: 'Marina Studio' }, scheduledAt: '2026-04-01T10:00:00Z', status: 'scheduled' },
-            ],
-            pagination: { total: 1 },
-          }));
+          return Promise.resolve(
+            jsonResponse({
+              success: true,
+              data: [
+                {
+                  id: 'v1',
+                  property: { title: 'Marina Studio' },
+                  scheduledAt: '2026-04-01T10:00:00Z',
+                  status: 'scheduled',
+                },
+              ],
+              pagination: { total: 1 },
+            })
+          );
         }
         return Promise.resolve(jsonResponse({ success: true, data: [] }));
       });
@@ -110,12 +119,23 @@ describe('BuyerTabs', () => {
     });
 
     it('renders property cards when data returned', async () => {
-      mockAuthFetch.mockResolvedValue(jsonResponse({
-        success: true,
-        data: [
-          { id: 'f1', property: { title: 'Palm Villa', location: 'Palm Jumeirah', price: 2500000, bedrooms: 3, bathrooms: 2 } },
-        ],
-      }));
+      mockAuthFetch.mockResolvedValue(
+        jsonResponse({
+          success: true,
+          data: [
+            {
+              id: 'f1',
+              property: {
+                title: 'Palm Villa',
+                location: 'Palm Jumeirah',
+                price: 2500000,
+                bedrooms: 3,
+                bathrooms: 2,
+              },
+            },
+          ],
+        })
+      );
       render(<SavedProperties />);
       await waitFor(() => {
         expect(screen.getByText('Palm Villa')).toBeInTheDocument();
@@ -141,16 +161,77 @@ describe('BuyerTabs', () => {
     });
 
     it('renders table with viewing data', async () => {
-      mockAuthFetch.mockResolvedValue(jsonResponse({
-        success: true,
-        data: [
-          { id: 'v1', property: { title: 'Creek Harbour Apt' }, agent: { name: 'Sarah' }, scheduledAt: '2026-04-15T14:00:00Z', status: 'scheduled', rating: null },
-        ],
-      }));
+      mockAuthFetch.mockImplementation((url: string) => {
+        if (url.includes('/api/viewings')) {
+          return Promise.resolve(
+            jsonResponse({
+              success: true,
+              data: [
+                {
+                  id: 'v1',
+                  property: { title: 'Creek Harbour Apt' },
+                  agent: { name: 'Sarah' },
+                  scheduledAt: '2026-04-15T14:00:00Z',
+                  status: 'scheduled',
+                  rating: null,
+                },
+              ],
+            })
+          );
+        }
+        if (url.includes('/api/appointments')) {
+          return Promise.resolve(jsonResponse({ success: true, data: [] }));
+        }
+        return Promise.resolve(jsonResponse({ success: true, data: [] }));
+      });
       render(<ViewingSchedule />);
       await waitFor(() => {
         expect(screen.getByText('Creek Harbour Apt')).toBeInTheDocument();
         expect(screen.getByText('Sarah')).toBeInTheDocument();
+      });
+    });
+
+    it('schedules appointment via /api/appointments and shows success', async () => {
+      mockAuthFetch.mockImplementation((url: string, options?: RequestInit) => {
+        if (url.includes('/api/viewings')) {
+          return Promise.resolve(jsonResponse({ success: true, data: [] }));
+        }
+        if (
+          url === '/api/appointments' &&
+          (!options || !options.method || options.method === 'GET')
+        ) {
+          return Promise.resolve(jsonResponse({ success: true, data: [] }));
+        }
+        if (url === '/api/appointments' && options?.method === 'POST') {
+          return Promise.resolve(
+            jsonResponse({
+              success: true,
+              data: {
+                id: 'appt_1',
+                propertyId: 'property_123',
+                scheduledAt: '2026-06-01T10:00',
+                status: 'scheduled',
+              },
+            })
+          );
+        }
+        return Promise.resolve(jsonResponse({ success: true, data: [] }));
+      });
+
+      render(<ViewingSchedule />);
+
+      await waitFor(() => expect(screen.getByText(/Viewing Schedule/i)).toBeInTheDocument());
+
+      const propertyInput = screen.getByTestId('buyer-appointment-property-id');
+      const datetimeInput = screen.getByTestId('buyer-appointment-datetime');
+      const submit = screen.getByTestId('buyer-appointment-submit');
+
+      fireEvent.change(propertyInput, { target: { value: 'property_123' } });
+      fireEvent.change(datetimeInput, { target: { value: '2026-06-01T10:00' } });
+      fireEvent.click(submit);
+
+      await waitFor(() => {
+        expect(screen.getByText('Appointment scheduled successfully.')).toBeInTheDocument();
       });
     });
   });
@@ -172,12 +253,20 @@ describe('BuyerTabs', () => {
     });
 
     it('renders alert cards with data', async () => {
-      mockAuthFetch.mockResolvedValue(jsonResponse({
-        success: true,
-        data: [
-          { id: 'ss1', name: 'Marina 2BR', alertEnabled: true, matchCount: 7, filters: { type: 'Apartment', location: 'Dubai Marina', bedrooms: 2 } },
-        ],
-      }));
+      mockAuthFetch.mockResolvedValue(
+        jsonResponse({
+          success: true,
+          data: [
+            {
+              id: 'ss1',
+              name: 'Marina 2BR',
+              alertEnabled: true,
+              matchCount: 7,
+              filters: { type: 'Apartment', location: 'Dubai Marina', bedrooms: 2 },
+            },
+          ],
+        })
+      );
       render(<PriceAlerts />);
       await waitFor(() => {
         expect(screen.getByText('Marina 2BR')).toBeInTheDocument();
@@ -203,12 +292,21 @@ describe('BuyerTabs', () => {
     });
 
     it('renders offers table with data', async () => {
-      mockAuthFetch.mockResolvedValue(jsonResponse({
-        success: true,
-        data: [
-          { id: 'o1', property: { title: 'JBR Penthouse' }, amount: 3000000, counterAmount: null, status: 'pending', createdAt: '2026-03-20T00:00:00Z' },
-        ],
-      }));
+      mockAuthFetch.mockResolvedValue(
+        jsonResponse({
+          success: true,
+          data: [
+            {
+              id: 'o1',
+              property: { title: 'JBR Penthouse' },
+              amount: 3000000,
+              counterAmount: null,
+              status: 'pending',
+              createdAt: '2026-03-20T00:00:00Z',
+            },
+          ],
+        })
+      );
       render(<BuyerOffers />);
       await waitFor(() => {
         expect(screen.getByText('JBR Penthouse')).toBeInTheDocument();
@@ -217,13 +315,27 @@ describe('BuyerTabs', () => {
     });
 
     it('renders accepted/rejected status badges', async () => {
-      mockAuthFetch.mockResolvedValue(jsonResponse({
-        success: true,
-        data: [
-          { id: 'o1', property: { title: 'Villa A' }, amount: 1000000, status: 'accepted', createdAt: '2026-03-01' },
-          { id: 'o2', property: { title: 'Villa B' }, amount: 2000000, status: 'rejected', createdAt: '2026-03-02' },
-        ],
-      }));
+      mockAuthFetch.mockResolvedValue(
+        jsonResponse({
+          success: true,
+          data: [
+            {
+              id: 'o1',
+              property: { title: 'Villa A' },
+              amount: 1000000,
+              status: 'accepted',
+              createdAt: '2026-03-01',
+            },
+            {
+              id: 'o2',
+              property: { title: 'Villa B' },
+              amount: 2000000,
+              status: 'rejected',
+              createdAt: '2026-03-02',
+            },
+          ],
+        })
+      );
       render(<BuyerOffers />);
       await waitFor(() => {
         expect(screen.getByText('Accepted')).toBeInTheDocument();
@@ -241,8 +353,8 @@ describe('BuyerTabs', () => {
       });
       const urls = mockAuthFetch.mock.calls.map((c: unknown[]) => c[0] as string);
       expect(urls).toContain('/api/favorites/ids');
-      expect(urls.some((u) => u.includes('/api/viewings'))).toBe(true);
-      expect(urls.some((u) => u.includes('/api/offers'))).toBe(true);
+      expect(urls.some(u => u.includes('/api/viewings'))).toBe(true);
+      expect(urls.some(u => u.includes('/api/offers'))).toBe(true);
       expect(urls).toContain('/api/saved-searches');
     });
 
@@ -252,10 +364,12 @@ describe('BuyerTabs', () => {
       expect(mockAuthFetch.mock.calls[0][0]).toContain('/api/favorites');
     });
 
-    it('ViewingSchedule calls /api/viewings', async () => {
+    it('ViewingSchedule calls /api/viewings and /api/appointments', async () => {
       render(<ViewingSchedule />);
       await waitFor(() => expect(mockAuthFetch).toHaveBeenCalled());
-      expect(mockAuthFetch.mock.calls[0][0]).toContain('/api/viewings');
+      const urls = mockAuthFetch.mock.calls.map((c: unknown[]) => c[0] as string);
+      expect(urls.some((u: string) => u.includes('/api/viewings'))).toBe(true);
+      expect(urls.some((u: string) => u.includes('/api/appointments'))).toBe(true);
     });
 
     it('PriceAlerts calls /api/saved-searches', async () => {

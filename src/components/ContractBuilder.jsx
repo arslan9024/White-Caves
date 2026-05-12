@@ -29,7 +29,7 @@ export default function ContractBuilder({
       const response = await authFetch('/api/contracts');
       const data = await response.json();
       if (data.success) {
-        setTemplates(data.data);
+        setTemplates(data.data || data.contracts || []);
       }
     } catch (err) {
       setError('Failed to load templates');
