@@ -110,7 +110,15 @@ describe('subagentOrchestrationService', () => {
       success: true,
       data: {
         items: [],
-        pageInfo: { offset: 0, limit: 5, total: 0, hasMore: false, query: 'nightly label' },
+        facets: [],
+        pageInfo: {
+          offset: 0,
+          limit: 5,
+          total: 0,
+          hasMore: false,
+          query: 'nightly label',
+          order: 'desc',
+        },
       },
     };
     mApiGet.mockResolvedValue(response);
@@ -125,6 +133,21 @@ describe('subagentOrchestrationService', () => {
       '/orchestration/snapshots/history?offset=0&limit=5&q=nightly+label'
     );
     expect(result).toEqual(response);
+  });
+
+  it('getSnapshotHistory includes order when provided', async () => {
+    mApiGet.mockResolvedValue({
+      success: true,
+      data: {
+        items: [],
+        facets: [],
+        pageInfo: { offset: 0, limit: 5, total: 0, hasMore: false, query: '', order: 'asc' },
+      },
+    });
+
+    await subagentOrchestrationService.getSnapshotHistory({ limit: 5, order: 'asc' });
+
+    expect(mApiGet).toHaveBeenCalledWith('/orchestration/snapshots/history?limit=5&order=asc');
   });
 
   it('exportSnapshot calls POST /orchestration/snapshots/export', async () => {
@@ -161,6 +184,41 @@ describe('subagentOrchestrationService', () => {
     const result = await subagentOrchestrationService.getSnapshot('orch-snapshot-test.json');
 
     expect(mApiGet).toHaveBeenCalledWith('/orchestration/snapshots/orch-snapshot-test.json');
+    expect(result).toEqual(response);
+  });
+
+  it('getSnapshotRestorePreview calls GET /orchestration/snapshots/:fileName/preview', async () => {
+    const response = {
+      success: true,
+      data: {
+        snapshot: { fileName: 'orch-snapshot-test.json', createdAt: '', taskCount: 1, label: null },
+        current: {
+          quota: { weeklyPremiumRemaining: 10, businessDaysRemaining: 5, premiumConsumedToday: 1 },
+          metrics: { totalTasks: 2 },
+        },
+        preview: {
+          quota: { weeklyPremiumRemaining: 8, businessDaysRemaining: 4, premiumConsumedToday: 2 },
+          metrics: { totalTasks: 3 },
+        },
+        delta: {
+          totalTasks: 1,
+          queuedTasks: 0,
+          runningTasks: 0,
+          doneTasks: 0,
+          failedTasks: 0,
+          blockedTasks: 0,
+          premiumConsumedToday: 1,
+        },
+      },
+    };
+    mApiGet.mockResolvedValue(response);
+
+    const result =
+      await subagentOrchestrationService.getSnapshotRestorePreview('orch-snapshot-test.json');
+
+    expect(mApiGet).toHaveBeenCalledWith(
+      '/orchestration/snapshots/orch-snapshot-test.json/preview'
+    );
     expect(result).toEqual(response);
   });
 

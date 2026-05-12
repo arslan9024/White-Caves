@@ -9,6 +9,7 @@ import {
 import {
   subagentOrchestrationService,
   type OrchestrationSnapshotDetail,
+  type OrchestrationSnapshotRestorePreviewPayload,
   type OrchestrationSnapshotSummary,
   type OrchestrationTask,
   type OrchestrationStatusPayload,
@@ -61,8 +62,14 @@ const SubagentCollaborationPanel = memo(
     const [updatingTaskId, setUpdatingTaskId] = useState<string | null>(null);
     const [snapshots, setSnapshots] = useState<OrchestrationSnapshotSummary[]>([]);
     const [snapshotSearch, setSnapshotSearch] = useState<string>('');
+    const [snapshotOrder, setSnapshotOrder] = useState<'asc' | 'desc'>('desc');
     const [snapshotHasMore, setSnapshotHasMore] = useState<boolean>(false);
     const [snapshotTotal, setSnapshotTotal] = useState<number>(0);
+    const [snapshotFacets, setSnapshotFacets] = useState<Array<{ label: string; count: number }>>(
+      []
+    );
+    const [selectedSnapshotPreview, setSelectedSnapshotPreview] =
+      useState<OrchestrationSnapshotRestorePreviewPayload | null>(null);
     const [snapshotLimit] = useState<number>(5);
     const [snapshotAction, setSnapshotAction] = useState<
       'export' | 'restore' | 'delete' | 'detail' | null
@@ -100,10 +107,12 @@ const SubagentCollaborationPanel = memo(
               offset: 0,
               limit: snapshotLimit,
               q: snapshotSearch,
+              order: snapshotOrder,
             }),
           ]);
           setStatusData(response.data);
           setSnapshots(snapshotResponse.data.items);
+          setSnapshotFacets(snapshotResponse.data.facets ?? []);
           setSnapshotHasMore(snapshotResponse.data.pageInfo.hasMore);
           setSnapshotTotal(snapshotResponse.data.pageInfo.total);
           if (snapshotResponse.data.items.length > 0) {
@@ -130,7 +139,7 @@ const SubagentCollaborationPanel = memo(
       };
 
       void loadStatus();
-    }, [snapshotLimit, snapshotSearch]);
+    }, [snapshotLimit, snapshotSearch, snapshotOrder]);
 
     const dailyPremiumCap =
       statusData?.quota.dailyCap ??
@@ -196,10 +205,12 @@ const SubagentCollaborationPanel = memo(
           offset: 0,
           limit: snapshots.length > 0 ? snapshots.length : snapshotLimit,
           q: snapshotSearch,
+          order: snapshotOrder,
         }),
       ]);
       setStatusData(response.data);
       setSnapshots(snapshotResponse.data.items);
+      setSnapshotFacets(snapshotResponse.data.facets ?? []);
       setSnapshotHasMore(snapshotResponse.data.pageInfo.hasMore);
       setSnapshotTotal(snapshotResponse.data.pageInfo.total);
 
@@ -231,9 +242,11 @@ const SubagentCollaborationPanel = memo(
           offset: snapshots.length,
           limit: snapshotLimit,
           q: snapshotSearch,
+          order: snapshotOrder,
         });
 
         setSnapshots(prev => [...prev, ...response.data.items]);
+        setSnapshotFacets(response.data.facets ?? []);
         setSnapshotHasMore(response.data.pageInfo.hasMore);
         setSnapshotTotal(response.data.pageInfo.total);
       } catch (error) {
@@ -298,6 +311,19 @@ const SubagentCollaborationPanel = memo(
         await loadStatusData();
       } catch (error) {
         setStatusError(error instanceof Error ? error.message : 'Failed to delete snapshot');
+      } finally {
+        setSnapshotAction(null);
+      }
+    };
+
+    const handlePreviewSnapshotRestore = async (fileName: string) => {
+      setSnapshotAction('detail');
+      setStatusError(null);
+      try {
+        const response = await subagentOrchestrationService.getSnapshotRestorePreview(fileName);
+        setSelectedSnapshotPreview(response.data);
+      } catch (error) {
+        setStatusError(error instanceof Error ? error.message : 'Failed to preview snapshot');
       } finally {
         setSnapshotAction(null);
       }
@@ -505,6 +531,38 @@ const SubagentCollaborationPanel = memo(
             aria-label="Search snapshots"
           />
 
+          <div style={{ display: 'flex', gap: 8, marginBottom: 10 }}>
+            <label style={{ ...mutedTextStyle, display: 'flex', alignItems: 'center', gap: 6 }}>
+              Order
+              <select
+                value={snapshotOrder}
+                onChange={event => setSnapshotOrder(event.target.value as 'asc' | 'desc')}
+                style={{
+                  background: 'rgba(15,23,42,0.5)',
+                  color: '#E2E8F0',
+                  border: '1px solid rgba(148,163,184,0.35)',
+                  borderRadius: 8,
+                  padding: '4px 8px',
+                  fontSize: 12,
+                }}
+                aria-label="Snapshot order"
+              >
+                <option value="desc">Newest first</option>
+                <option value="asc">Oldest first</option>
+              </select>
+            </label>
+          </div>
+
+          {snapshotFacets.length > 0 ? (
+            <p style={{ ...mutedTextStyle, marginBottom: 10 }}>
+              Labels:{' '}
+              {snapshotFacets
+                .slice(0, 4)
+                .map(facet => `${facet.label} (${facet.count})`)
+                .join(' · ')}
+            </p>
+          ) : null}
+
           {snapshots.length > 0 ? (
             <ul style={{ margin: 0, paddingLeft: 16, color: '#CBD5E1', fontSize: 12 }}>
               {snapshots.map(snapshot => (
@@ -578,6 +636,25 @@ const SubagentCollaborationPanel = memo(
                     >
                       Delete
                     </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        void handlePreviewSnapshotRestore(snapshot.fileName);
+                      }}
+                      disabled={snapshotAction !== null}
+                      style={{
+                        border: '1px solid rgba(251,191,36,0.38)',
+                        background: 'rgba(146,64,14,0.22)',
+                        color: '#FDE68A',
+                        borderRadius: 999,
+                        padding: '3px 8px',
+                        fontSize: 11,
+                        cursor: snapshotAction ? 'not-allowed' : 'pointer',
+                      }}
+                      aria-label={`Preview restore impact for snapshot ${snapshot.fileName}`}
+                    >
+                      Preview
+                    </button>
                   </div>
                 </li>
               ))}
@@ -635,6 +712,29 @@ const SubagentCollaborationPanel = memo(
                 Premium consumed:{' '}
                 <strong>{selectedSnapshotDetail.quota.premiumConsumedToday}</strong> · Weekly
                 remaining: <strong>{selectedSnapshotDetail.quota.weeklyPremiumRemaining}</strong>
+              </p>
+            </div>
+          ) : null}
+
+          {selectedSnapshotPreview ? (
+            <div
+              style={{
+                marginTop: 10,
+                borderTop: '1px solid rgba(255,255,255,0.08)',
+                paddingTop: 10,
+              }}
+            >
+              <p style={{ color: '#E2E8F0', margin: '0 0 4px 0', fontSize: 12 }}>
+                <strong>Restore preview:</strong> {selectedSnapshotPreview.snapshot.fileName}
+              </p>
+              <p style={mutedTextStyle}>
+                Δ Total tasks: <strong>{selectedSnapshotPreview.delta.totalTasks}</strong> · Δ
+                Running: <strong>{selectedSnapshotPreview.delta.runningTasks}</strong> · Δ Done:{' '}
+                <strong>{selectedSnapshotPreview.delta.doneTasks}</strong>
+              </p>
+              <p style={{ ...mutedTextStyle, marginBottom: 0 }}>
+                Δ Premium consumed today:{' '}
+                <strong>{selectedSnapshotPreview.delta.premiumConsumedToday}</strong>
               </p>
             </div>
           ) : null}

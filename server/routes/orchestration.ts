@@ -96,6 +96,11 @@ interface OrchestrationSnapshotDetail extends OrchestrationSnapshotSummary {
   tasks: OrchestrationTask[];
 }
 
+interface SnapshotHistoryFacet {
+  label: string;
+  count: number;
+}
+
 const ASSISTANT_EXECUTION_PROFILES: Record<string, AssistantExecutionProfile> = {
   linda: {
     id: 'linda',
@@ -486,6 +491,22 @@ function deleteSnapshot(fileName: string): OrchestrationSnapshotSummary {
   };
 }
 
+function buildSnapshotLabelFacets(
+  snapshots: OrchestrationSnapshotSummary[]
+): SnapshotHistoryFacet[] {
+  const counts = new Map<string, number>();
+
+  snapshots.forEach(snapshot => {
+    const key = snapshot.label ?? 'unlabeled';
+    const existing = counts.get(key) ?? 0;
+    counts.set(key, existing + 1);
+  });
+
+  return Array.from(counts.entries())
+    .map(([label, count]) => ({ label, count }))
+    .sort((left, right) => right.count - left.count);
+}
+
 hydrateState();
 
 function calculateDailyPremiumCap(): number {
@@ -575,15 +596,22 @@ router.get(
   '/snapshots/history',
   asyncHandler(async (req: Request, res: Response) => {
     const q = typeof req.query.q === 'string' ? req.query.q.trim().toLowerCase() : '';
+    const order = req.query.order === 'asc' ? 'asc' : 'desc';
     const rawOffset = Number.parseInt(String(req.query.offset ?? '0'), 10);
     const rawLimit = Number.parseInt(String(req.query.limit ?? '10'), 10);
     const offset = Number.isFinite(rawOffset) ? Math.max(0, rawOffset) : 0;
     const limit = Number.isFinite(rawLimit) ? Math.min(50, Math.max(1, rawLimit)) : 10;
 
     const all = listSnapshotSummaries();
+    const ordered = all.slice().sort((left, right) => {
+      const leftValue = left.createdAt;
+      const rightValue = right.createdAt;
+      const compare = leftValue.localeCompare(rightValue);
+      return order === 'asc' ? compare : -compare;
+    });
     const filtered =
       q.length > 0
-        ? all.filter(snapshot => {
+        ? ordered.filter(snapshot => {
             const label = snapshot.label ? snapshot.label.toLowerCase() : '';
             return (
               snapshot.fileName.toLowerCase().includes(q) ||
@@ -591,20 +619,65 @@ router.get(
               label.includes(q)
             );
           })
-        : all;
+        : ordered;
 
     const items = filtered.slice(offset, offset + limit);
+    const facets = buildSnapshotLabelFacets(filtered);
 
     res.json({
       success: true,
       data: {
         items,
+        facets,
         pageInfo: {
           offset,
           limit,
           total: filtered.length,
           hasMore: offset + items.length < filtered.length,
           query: q,
+          order,
+        },
+      },
+    });
+  })
+);
+
+router.get(
+  '/snapshots/:fileName/preview',
+  asyncHandler(async (req: Request, res: Response) => {
+    const snapshot = readSnapshotDetail(req.params.fileName);
+    const currentMetrics = computeMetrics(orchestrationTasks);
+    const snapshotMetrics = snapshot.metrics;
+
+    res.json({
+      success: true,
+      data: {
+        snapshot: {
+          fileName: snapshot.fileName,
+          createdAt: snapshot.createdAt,
+          taskCount: snapshot.taskCount,
+          label: snapshot.label,
+        },
+        current: {
+          quota: {
+            weeklyPremiumRemaining,
+            businessDaysRemaining,
+            premiumConsumedToday,
+          },
+          metrics: currentMetrics,
+        },
+        preview: {
+          quota: snapshot.quota,
+          metrics: snapshotMetrics,
+        },
+        delta: {
+          totalTasks: snapshotMetrics.totalTasks - currentMetrics.totalTasks,
+          queuedTasks: snapshotMetrics.queuedTasks - currentMetrics.queuedTasks,
+          runningTasks: snapshotMetrics.runningTasks - currentMetrics.runningTasks,
+          doneTasks: snapshotMetrics.doneTasks - currentMetrics.doneTasks,
+          failedTasks: snapshotMetrics.failedTasks - currentMetrics.failedTasks,
+          blockedTasks: snapshotMetrics.blockedTasks - currentMetrics.blockedTasks,
+          premiumConsumedToday: snapshot.quota.premiumConsumedToday - premiumConsumedToday,
         },
       },
     });

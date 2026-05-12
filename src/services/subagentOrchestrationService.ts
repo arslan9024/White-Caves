@@ -106,12 +106,43 @@ export interface OrchestrationSnapshotDetail extends OrchestrationSnapshotSummar
 
 export interface OrchestrationSnapshotHistoryPayload {
   items: OrchestrationSnapshotSummary[];
+  facets: Array<{ label: string; count: number }>;
   pageInfo: {
     offset: number;
     limit: number;
     total: number;
     hasMore: boolean;
     query: string;
+    order: 'asc' | 'desc';
+  };
+}
+
+export interface OrchestrationSnapshotRestorePreviewPayload {
+  snapshot: OrchestrationSnapshotSummary;
+  current: {
+    quota: {
+      weeklyPremiumRemaining: number;
+      businessDaysRemaining: number;
+      premiumConsumedToday: number;
+    };
+    metrics: OrchestrationMetricsPayload['metrics'];
+  };
+  preview: {
+    quota: {
+      weeklyPremiumRemaining: number;
+      businessDaysRemaining: number;
+      premiumConsumedToday: number;
+    };
+    metrics: OrchestrationMetricsPayload['metrics'];
+  };
+  delta: {
+    totalTasks: number;
+    queuedTasks: number;
+    runningTasks: number;
+    doneTasks: number;
+    failedTasks: number;
+    blockedTasks: number;
+    premiumConsumedToday: number;
   };
 }
 
@@ -147,7 +178,12 @@ export const subagentOrchestrationService = {
     };
   },
 
-  async getSnapshotHistory(options?: { offset?: number; limit?: number; q?: string }) {
+  async getSnapshotHistory(options?: {
+    offset?: number;
+    limit?: number;
+    q?: string;
+    order?: 'asc' | 'desc';
+  }) {
     const params = new URLSearchParams();
     if (typeof options?.offset === 'number' && Number.isFinite(options.offset)) {
       params.set('offset', String(Math.max(0, Math.floor(options.offset))));
@@ -157,6 +193,9 @@ export const subagentOrchestrationService = {
     }
     if (typeof options?.q === 'string' && options.q.trim().length > 0) {
       params.set('q', options.q.trim());
+    }
+    if (options?.order === 'asc' || options?.order === 'desc') {
+      params.set('order', options.order);
     }
     const query = params.toString();
     const url = `${BASE}/snapshots/history${query ? `?${query}` : ''}`;
@@ -171,6 +210,13 @@ export const subagentOrchestrationService = {
     return (await apiClient.get(`${BASE}/snapshots/${encodeURIComponent(fileName)}`)) as {
       success: boolean;
       data: OrchestrationSnapshotDetail;
+    };
+  },
+
+  async getSnapshotRestorePreview(fileName: string) {
+    return (await apiClient.get(`${BASE}/snapshots/${encodeURIComponent(fileName)}/preview`)) as {
+      success: boolean;
+      data: OrchestrationSnapshotRestorePreviewPayload;
     };
   },
 

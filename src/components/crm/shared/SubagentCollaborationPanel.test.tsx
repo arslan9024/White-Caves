@@ -8,6 +8,7 @@ vi.mock('../../../services/subagentOrchestrationService', () => ({
     getSnapshots: vi.fn(),
     getSnapshotHistory: vi.fn(),
     getSnapshot: vi.fn(),
+    getSnapshotRestorePreview: vi.fn(),
     createTask: vi.fn(),
     updateTaskState: vi.fn(),
     exportSnapshot: vi.fn(),
@@ -25,6 +26,8 @@ const mGetSnapshotHistory = subagentOrchestrationService.getSnapshotHistory as R
   typeof vi.fn
 >;
 const mGetSnapshot = subagentOrchestrationService.getSnapshot as ReturnType<typeof vi.fn>;
+const mGetSnapshotRestorePreview =
+  subagentOrchestrationService.getSnapshotRestorePreview as ReturnType<typeof vi.fn>;
 const mCreateTask = subagentOrchestrationService.createTask as ReturnType<typeof vi.fn>;
 const mUpdateTaskState = subagentOrchestrationService.updateTaskState as ReturnType<typeof vi.fn>;
 const mExportSnapshot = subagentOrchestrationService.exportSnapshot as ReturnType<typeof vi.fn>;
@@ -70,7 +73,8 @@ describe('SubagentCollaborationPanel', () => {
       success: true,
       data: {
         items: [],
-        pageInfo: { offset: 0, limit: 5, total: 0, hasMore: false, query: '' },
+        facets: [],
+        pageInfo: { offset: 0, limit: 5, total: 0, hasMore: false, query: '', order: 'desc' },
       },
     });
     mGetSnapshot.mockResolvedValue({
@@ -98,6 +102,56 @@ describe('SubagentCollaborationPanel', () => {
           lastTaskCreatedAt: null,
         },
         tasks: [],
+      },
+    });
+    mGetSnapshotRestorePreview.mockResolvedValue({
+      success: true,
+      data: {
+        snapshot: {
+          fileName: 'orch-snapshot-1.json',
+          createdAt: '2026-05-13',
+          taskCount: 1,
+          label: 'panel',
+        },
+        current: {
+          quota: { weeklyPremiumRemaining: 25, businessDaysRemaining: 5, premiumConsumedToday: 1 },
+          metrics: {
+            totalTasks: 1,
+            queuedTasks: 1,
+            runningTasks: 0,
+            doneTasks: 0,
+            failedTasks: 0,
+            blockedTasks: 0,
+            premiumTasks: 0,
+            standardTasks: 1,
+            freeTasks: 0,
+            lastTaskCreatedAt: null,
+          },
+        },
+        preview: {
+          quota: { weeklyPremiumRemaining: 25, businessDaysRemaining: 5, premiumConsumedToday: 1 },
+          metrics: {
+            totalTasks: 1,
+            queuedTasks: 1,
+            runningTasks: 0,
+            doneTasks: 0,
+            failedTasks: 0,
+            blockedTasks: 0,
+            premiumTasks: 0,
+            standardTasks: 1,
+            freeTasks: 0,
+            lastTaskCreatedAt: null,
+          },
+        },
+        delta: {
+          totalTasks: 0,
+          queuedTasks: 0,
+          runningTasks: 0,
+          doneTasks: 0,
+          failedTasks: 0,
+          blockedTasks: 0,
+          premiumConsumedToday: 0,
+        },
       },
     });
     mCreateTask.mockResolvedValue({ success: true, data: { id: 't-1' } });
@@ -249,6 +303,7 @@ describe('SubagentCollaborationPanel', () => {
             },
           ],
           pageInfo: { offset: 0, limit: 5, total: 2, hasMore: true, query: '' },
+          facets: [{ label: 'nightly', count: 1 }],
         },
       })
       .mockResolvedValueOnce({
@@ -268,7 +323,11 @@ describe('SubagentCollaborationPanel', () => {
               label: null,
             },
           ],
-          pageInfo: { offset: 0, limit: 5, total: 2, hasMore: false, query: '' },
+          facets: [
+            { label: 'nightly', count: 1 },
+            { label: 'unlabeled', count: 1 },
+          ],
+          pageInfo: { offset: 0, limit: 5, total: 2, hasMore: false, query: '', order: 'desc' },
         },
       });
 
@@ -321,7 +380,8 @@ describe('SubagentCollaborationPanel', () => {
               label: 'latest',
             },
           ],
-          pageInfo: { offset: 0, limit: 5, total: 1, hasMore: false, query: '' },
+          facets: [{ label: 'latest', count: 1 }],
+          pageInfo: { offset: 0, limit: 5, total: 1, hasMore: false, query: '', order: 'desc' },
         },
       })
       .mockResolvedValueOnce({
@@ -335,7 +395,8 @@ describe('SubagentCollaborationPanel', () => {
               label: 'latest',
             },
           ],
-          pageInfo: { offset: 0, limit: 5, total: 1, hasMore: false, query: '' },
+          facets: [{ label: 'latest', count: 1 }],
+          pageInfo: { offset: 0, limit: 5, total: 1, hasMore: false, query: '', order: 'desc' },
         },
       });
 
@@ -372,7 +433,8 @@ describe('SubagentCollaborationPanel', () => {
             label: 'nightly',
           },
         ],
-        pageInfo: { offset: 0, limit: 5, total: 1, hasMore: false, query: '' },
+        facets: [{ label: 'nightly', count: 1 }],
+        pageInfo: { offset: 0, limit: 5, total: 1, hasMore: false, query: '', order: 'desc' },
       },
     });
     mGetSnapshot.mockResolvedValueOnce({
@@ -430,14 +492,16 @@ describe('SubagentCollaborationPanel', () => {
               label: 'nightly',
             },
           ],
-          pageInfo: { offset: 0, limit: 5, total: 1, hasMore: false, query: '' },
+          facets: [{ label: 'nightly', count: 1 }],
+          pageInfo: { offset: 0, limit: 5, total: 1, hasMore: false, query: '', order: 'desc' },
         },
       })
       .mockResolvedValueOnce({
         success: true,
         data: {
           items: [],
-          pageInfo: { offset: 0, limit: 5, total: 0, hasMore: false, query: '' },
+          facets: [],
+          pageInfo: { offset: 0, limit: 5, total: 0, hasMore: false, query: '', order: 'desc' },
         },
       });
 
@@ -466,7 +530,8 @@ describe('SubagentCollaborationPanel', () => {
               label: 'nightly',
             },
           ],
-          pageInfo: { offset: 0, limit: 5, total: 2, hasMore: true, query: '' },
+          facets: [{ label: 'nightly', count: 2 }],
+          pageInfo: { offset: 0, limit: 5, total: 2, hasMore: true, query: '', order: 'desc' },
         },
       })
       .mockResolvedValueOnce({
@@ -480,7 +545,8 @@ describe('SubagentCollaborationPanel', () => {
               label: 'nightly',
             },
           ],
-          pageInfo: { offset: 1, limit: 5, total: 2, hasMore: false, query: '' },
+          facets: [{ label: 'nightly', count: 2 }],
+          pageInfo: { offset: 1, limit: 5, total: 2, hasMore: false, query: '', order: 'desc' },
         },
       });
 
@@ -490,10 +556,93 @@ describe('SubagentCollaborationPanel', () => {
     fireEvent.click(loadMoreBtn);
 
     await waitFor(() => {
-      expect(mGetSnapshotHistory).toHaveBeenLastCalledWith({ offset: 1, limit: 5, q: '' });
+      expect(mGetSnapshotHistory).toHaveBeenLastCalledWith({
+        offset: 1,
+        limit: 5,
+        q: '',
+        order: 'desc',
+      });
     });
 
     expect(await screen.findByText(/orch-snapshot-b.json/i)).toBeInTheDocument();
+  });
+
+  it('previews restore impact for a snapshot', async () => {
+    mGetSnapshotHistory.mockResolvedValueOnce({
+      success: true,
+      data: {
+        items: [
+          {
+            fileName: 'orch-snapshot-preview.json',
+            createdAt: '2026-05-13',
+            taskCount: 2,
+            label: 'preview',
+          },
+        ],
+        facets: [{ label: 'preview', count: 1 }],
+        pageInfo: { offset: 0, limit: 5, total: 1, hasMore: false, query: '', order: 'desc' },
+      },
+    });
+
+    mGetSnapshotRestorePreview.mockResolvedValueOnce({
+      success: true,
+      data: {
+        snapshot: {
+          fileName: 'orch-snapshot-preview.json',
+          createdAt: '2026-05-13',
+          taskCount: 2,
+          label: 'preview',
+        },
+        current: {
+          quota: { weeklyPremiumRemaining: 25, businessDaysRemaining: 5, premiumConsumedToday: 1 },
+          metrics: {
+            totalTasks: 2,
+            queuedTasks: 1,
+            runningTasks: 0,
+            doneTasks: 1,
+            failedTasks: 0,
+            blockedTasks: 0,
+            premiumTasks: 0,
+            standardTasks: 2,
+            freeTasks: 0,
+            lastTaskCreatedAt: null,
+          },
+        },
+        preview: {
+          quota: { weeklyPremiumRemaining: 24, businessDaysRemaining: 5, premiumConsumedToday: 2 },
+          metrics: {
+            totalTasks: 3,
+            queuedTasks: 1,
+            runningTasks: 1,
+            doneTasks: 1,
+            failedTasks: 0,
+            blockedTasks: 0,
+            premiumTasks: 1,
+            standardTasks: 2,
+            freeTasks: 0,
+            lastTaskCreatedAt: null,
+          },
+        },
+        delta: {
+          totalTasks: 1,
+          queuedTasks: 0,
+          runningTasks: 1,
+          doneTasks: 0,
+          failedTasks: 0,
+          blockedTasks: 0,
+          premiumConsumedToday: 1,
+        },
+      },
+    });
+
+    render(<SubagentCollaborationPanel assistantId="henry" />);
+
+    const previewBtn = await screen.findByRole('button', {
+      name: /preview restore impact for snapshot orch-snapshot-preview.json/i,
+    });
+    fireEvent.click(previewBtn);
+
+    expect(await screen.findByText(/restore preview:/i)).toBeInTheDocument();
   });
 
   it('assigns a task and refreshes assistant task list', async () => {

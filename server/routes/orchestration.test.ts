@@ -148,6 +148,45 @@ describe('Orchestration Routes — /api/orchestration', () => {
     expect(res.body.data.items.length).toBeGreaterThan(0);
   });
 
+  it('GET /snapshots/history supports ordering and returns label facets', async () => {
+    await request(createApp()).post('/api/orchestration/snapshots/export').send({ label: 'zeta' });
+    await request(createApp()).post('/api/orchestration/snapshots/export').send({ label: 'alpha' });
+
+    const res = await request(createApp()).get(
+      '/api/orchestration/snapshots/history?order=asc&limit=5'
+    );
+
+    expect(res.status).toBe(200);
+    expect(res.body.success).toBe(true);
+    expect(Array.isArray(res.body.data.items)).toBe(true);
+    expect(Array.isArray(res.body.data.facets)).toBe(true);
+    expect(res.body.data.pageInfo.order).toBe('asc');
+  });
+
+  it('GET /snapshots/:fileName/preview returns current vs snapshot delta payload', async () => {
+    await request(createApp()).post('/api/orchestration/tasks').send({
+      assistantId: 'henry',
+      taskType: 'review',
+      title: 'Preview seed task',
+    });
+
+    const exportRes = await request(createApp())
+      .post('/api/orchestration/snapshots/export')
+      .send({ label: 'preview-check' });
+
+    const fileName = exportRes.body?.data?.fileName;
+    const previewRes = await request(createApp()).get(
+      `/api/orchestration/snapshots/${fileName}/preview`
+    );
+
+    expect(previewRes.status).toBe(200);
+    expect(previewRes.body.success).toBe(true);
+    expect(previewRes.body.data).toHaveProperty('current');
+    expect(previewRes.body.data).toHaveProperty('preview');
+    expect(previewRes.body.data).toHaveProperty('delta');
+    expect(previewRes.body.data.snapshot.fileName).toBe(fileName);
+  });
+
   it('GET /snapshots/:fileName returns snapshot detail including tasks and metrics', async () => {
     await request(createApp()).post('/api/orchestration/tasks').send({
       assistantId: 'henry',
