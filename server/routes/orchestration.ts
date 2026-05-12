@@ -123,6 +123,14 @@ const COLLABORATION_GRAPH: CollaborationEdge[] = [
 ];
 
 const orchestrationTasks: OrchestrationTask[] = [];
+const TASK_STATES: TaskState[] = ['queued', 'running', 'done', 'failed', 'blocked'];
+const TASK_STATE_TRANSITIONS: Record<TaskState, TaskState[]> = {
+  queued: ['running', 'blocked', 'failed'],
+  running: ['done', 'failed', 'blocked'],
+  done: [],
+  failed: ['queued', 'blocked'],
+  blocked: ['queued', 'failed'],
+};
 
 const ASSISTANT_ENDPOINT_CONTRACT = {
   mountedPrefixes: [
@@ -304,10 +312,14 @@ router.patch(
   requireRole('owner', 'admin', 'manager'),
   asyncHandler(async (req: Request, res: Response) => {
     const { id } = req.params;
-    const { state } = req.body as { state?: TaskState };
+    const { state, blockedReason } = req.body as { state?: TaskState; blockedReason?: string };
 
     if (!state) {
       throw new AppError('state is required', 400);
+    }
+
+    if (!TASK_STATES.includes(state)) {
+      throw new AppError(`Invalid task state '${state}'`, 400);
     }
 
     const task = orchestrationTasks.find(item => item.id === id);
@@ -315,7 +327,18 @@ router.patch(
       throw new AppError('Task not found', 404);
     }
 
+    const allowedNext = TASK_STATE_TRANSITIONS[task.state];
+    if (!allowedNext.includes(state)) {
+      throw new AppError(`Invalid state transition from '${task.state}' to '${state}'`, 400);
+    }
+
     task.state = state;
+    task.blockedReason =
+      state === 'blocked'
+        ? typeof blockedReason === 'string' && blockedReason.trim().length > 0
+          ? blockedReason.trim()
+          : (task.blockedReason ?? 'Blocked by orchestration policy')
+        : null;
     res.json({ success: true, data: task });
   })
 );

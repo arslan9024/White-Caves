@@ -6,6 +6,7 @@ vi.mock('../../../services/subagentOrchestrationService', () => ({
   subagentOrchestrationService: {
     getStatus: vi.fn(),
     createTask: vi.fn(),
+    updateTaskState: vi.fn(),
   },
 }));
 
@@ -14,6 +15,7 @@ import { subagentOrchestrationService } from '../../../services/subagentOrchestr
 
 const mGetStatus = subagentOrchestrationService.getStatus as ReturnType<typeof vi.fn>;
 const mCreateTask = subagentOrchestrationService.createTask as ReturnType<typeof vi.fn>;
+const mUpdateTaskState = subagentOrchestrationService.updateTaskState as ReturnType<typeof vi.fn>;
 
 const makeStatusResponse = (overrides?: Partial<{ tasks: Array<Record<string, unknown>> }>) => ({
   success: true,
@@ -36,6 +38,7 @@ describe('SubagentCollaborationPanel', () => {
     vi.clearAllMocks();
     mGetStatus.mockResolvedValue(makeStatusResponse());
     mCreateTask.mockResolvedValue({ success: true, data: { id: 't-1' } });
+    mUpdateTaskState.mockResolvedValue({ success: true, data: { id: 't-1' } });
   });
 
   it('renders default prompt when no assistant is selected', async () => {
@@ -177,5 +180,54 @@ describe('SubagentCollaborationPanel', () => {
     });
 
     expect(screen.getByRole('button', { name: /assign task/i })).toBeEnabled();
+  });
+
+  it('updates task state from queued to running via task action button', async () => {
+    mGetStatus
+      .mockResolvedValueOnce(
+        makeStatusResponse({
+          tasks: [
+            {
+              id: 'task-q1',
+              assistantId: 'henry',
+              taskType: 'review',
+              title: 'Review compliance bundle',
+              state: 'queued',
+              requestedTier: 'standard',
+              blockedReason: null,
+              createdAt: new Date().toISOString(),
+            },
+          ],
+        })
+      )
+      .mockResolvedValueOnce(
+        makeStatusResponse({
+          tasks: [
+            {
+              id: 'task-q1',
+              assistantId: 'henry',
+              taskType: 'review',
+              title: 'Review compliance bundle',
+              state: 'running',
+              requestedTier: 'standard',
+              blockedReason: null,
+              createdAt: new Date().toISOString(),
+            },
+          ],
+        })
+      );
+
+    render(<SubagentCollaborationPanel assistantId="henry" />);
+
+    const runningBtn = await screen.findByLabelText(
+      /set task review compliance bundle to running/i
+    );
+    fireEvent.click(runningBtn);
+
+    await waitFor(() => {
+      expect(mUpdateTaskState).toHaveBeenCalledWith('task-q1', 'running', undefined);
+    });
+
+    expect(mGetStatus).toHaveBeenCalledTimes(2);
   });
 });

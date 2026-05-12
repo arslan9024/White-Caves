@@ -195,6 +195,65 @@ describe('Orchestration Routes — /api/orchestration', () => {
     expect(patchRes.body.data.state).toBe('running');
   });
 
+  it('PATCH /tasks/:id/state rejects invalid state values', async () => {
+    const createRes = await request(createApp()).post('/api/orchestration/tasks').send({
+      assistantId: 'henry',
+      taskType: 'review',
+      title: 'State validation test',
+    });
+
+    const taskId = createRes.body?.data?.id;
+
+    const patchRes = await request(createApp())
+      .patch(`/api/orchestration/tasks/${taskId}/state`)
+      .send({ state: 'invalid-state' });
+
+    expect(patchRes.status).toBe(400);
+    expect(patchRes.body.success).toBe(false);
+    expect(String(patchRes.body.error || '')).toMatch(/invalid task state/i);
+  });
+
+  it('PATCH /tasks/:id/state rejects invalid transitions', async () => {
+    const createRes = await request(createApp()).post('/api/orchestration/tasks').send({
+      assistantId: 'henry',
+      taskType: 'review',
+      title: 'Transition validation test',
+    });
+
+    const taskId = createRes.body?.data?.id;
+
+    const patchRes = await request(createApp())
+      .patch(`/api/orchestration/tasks/${taskId}/state`)
+      .send({ state: 'done' });
+
+    expect(patchRes.status).toBe(400);
+    expect(patchRes.body.success).toBe(false);
+    expect(String(patchRes.body.error || '')).toMatch(/invalid state transition/i);
+  });
+
+  it('PATCH /tasks/:id/state stores blocked reason when moving to blocked', async () => {
+    const createRes = await request(createApp()).post('/api/orchestration/tasks').send({
+      assistantId: 'henry',
+      taskType: 'review',
+      title: 'Blocked reason test',
+    });
+
+    const taskId = createRes.body?.data?.id;
+
+    await request(createApp())
+      .patch(`/api/orchestration/tasks/${taskId}/state`)
+      .send({ state: 'running' });
+
+    const patchRes = await request(createApp())
+      .patch(`/api/orchestration/tasks/${taskId}/state`)
+      .send({ state: 'blocked', blockedReason: 'Awaiting legal sign-off' });
+
+    expect(patchRes.status).toBe(200);
+    expect(patchRes.body.success).toBe(true);
+    expect(patchRes.body.data.state).toBe('blocked');
+    expect(patchRes.body.data.blockedReason).toBe('Awaiting legal sign-off');
+  });
+
   it('PATCH /tasks/:id/state rejects missing state', async () => {
     const createRes = await request(createApp()).post('/api/orchestration/tasks').send({
       assistantId: 'henry',

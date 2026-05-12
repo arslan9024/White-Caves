@@ -83,8 +83,13 @@ export const subagentOrchestrationService = {
     };
   },
 
-  async updateTaskState(id: string, state: TaskState) {
-    return (await apiClient.patch(`${BASE}/tasks/${id}/state`, { state })) as {
+  async updateTaskState(id: string, state: TaskState, blockedReason?: string) {
+    const payload =
+      typeof blockedReason === 'string' && blockedReason.trim().length > 0
+        ? { state, blockedReason: blockedReason.trim() }
+        : { state };
+
+    return (await apiClient.patch(`${BASE}/tasks/${id}/state`, payload)) as {
       success: boolean;
       data: OrchestrationTask;
     };

@@ -10,6 +10,7 @@ import {
   subagentOrchestrationService,
   type OrchestrationTask,
   type OrchestrationStatusPayload,
+  type TaskState,
   type TaskType,
 } from '../../../services/subagentOrchestrationService';
 
@@ -55,6 +56,7 @@ const SubagentCollaborationPanel = memo(
     const [requestedTier, setRequestedTier] = useState<ModelTier>('standard');
     const [contextGateApproved, setContextGateApproved] = useState<boolean>(false);
     const [isSubmittingTask, setIsSubmittingTask] = useState<boolean>(false);
+    const [updatingTaskId, setUpdatingTaskId] = useState<string | null>(null);
 
     const profile = assistantId ? getAssistantExecutionProfile(assistantId) : null;
     const collaborations = useMemo(
@@ -132,6 +134,44 @@ const SubagentCollaborationPanel = memo(
       setContextGateApproved(false);
     }, [profile?.id, profile?.modelPolicy.defaultTier]);
 
+    const loadStatusData = async () => {
+      const response = await subagentOrchestrationService.getStatus();
+      setStatusData(response.data);
+    };
+
+    const getNextStates = (state: TaskState): TaskState[] => {
+      switch (state) {
+        case 'queued':
+          return ['running', 'blocked', 'failed'];
+        case 'running':
+          return ['done', 'blocked', 'failed'];
+        case 'blocked':
+          return ['queued', 'failed'];
+        case 'failed':
+          return ['queued', 'blocked'];
+        case 'done':
+        default:
+          return [];
+      }
+    };
+
+    const handleTaskStateUpdate = async (task: OrchestrationTask, nextState: TaskState) => {
+      setUpdatingTaskId(task.id);
+      setStatusError(null);
+      try {
+        const blockedReason =
+          nextState === 'blocked'
+            ? (task.blockedReason ?? 'Blocked by command center operator')
+            : undefined;
+        await subagentOrchestrationService.updateTaskState(task.id, nextState, blockedReason);
+        await loadStatusData();
+      } catch (error) {
+        setStatusError(error instanceof Error ? error.message : 'Failed to update task state');
+      } finally {
+        setUpdatingTaskId(null);
+      }
+    };
+
     const handleAssignTask = async () => {
       if (!assistantId || !taskTitle.trim()) {
         return;
@@ -152,8 +192,7 @@ const SubagentCollaborationPanel = memo(
           requestedTier,
         });
 
-        const response = await subagentOrchestrationService.getStatus();
-        setStatusData(response.data);
+        await loadStatusData();
         setTaskTitle('');
       } catch (error) {
         setStatusError(error instanceof Error ? error.message : 'Failed to assign task');
@@ -370,6 +409,33 @@ const SubagentCollaborationPanel = memo(
                         State: {task.state}
                         {task.blockedReason ? ` · ${task.blockedReason}` : ''}
                       </span>
+                      {getNextStates(task.state).length > 0 ? (
+                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginTop: 6 }}>
+                          {getNextStates(task.state).map(nextState => (
+                            <button
+                              key={`${task.id}-${nextState}`}
+                              type="button"
+                              onClick={() => {
+                                void handleTaskStateUpdate(task, nextState);
+                              }}
+                              disabled={updatingTaskId === task.id}
+                              style={{
+                                border: '1px solid rgba(148,163,184,0.38)',
+                                background: 'rgba(15,23,42,0.45)',
+                                color: '#CBD5E1',
+                                borderRadius: 999,
+                                padding: '3px 8px',
+                                fontSize: 11,
+                                cursor: updatingTaskId === task.id ? 'not-allowed' : 'pointer',
+                                opacity: updatingTaskId === task.id ? 0.6 : 1,
+                              }}
+                              aria-label={`Set task ${task.title} to ${nextState}`}
+                            >
+                              {nextState}
+                            </button>
+                          ))}
+                        </div>
+                      ) : null}
                     </li>
                   ))}
                 </ul>
