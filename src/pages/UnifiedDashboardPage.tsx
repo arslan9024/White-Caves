@@ -2,7 +2,7 @@ import React, { FC, lazy, Suspense, ReactNode, ComponentType } from 'react';
 import SuspenseLoader from '../components/common/SuspenseLoader';
 import RouteErrorBoundary from '../components/RouteErrorBoundary';
 import DepartmentContentPanel from '../components/layout/DepartmentContentPanel/DepartmentContentPanel';
-import { Badge, ProgressBar } from '../components/ui';
+import { Badge } from '../components/ui';
 import SubNavBar from '../components/common/SubNavBar';
 import { DashboardSubTabRenderer } from '../components/dashboard/DashboardRenderer';
 import { useUnifiedDashboard } from '../hooks/useUnifiedDashboard';
@@ -136,15 +136,18 @@ const UnifiedDashboardPage: FC = () => {
     handleBackFromCRM,
   } = useUnifiedDashboard();
 
+  // eslint-disable-next-line security/detect-object-injection
+  const selectedCRMModuleConfig = selectedCRMModule ? CRM_MODULES[selectedCRMModule] : null;
+
   // Helper: Render tab content based on activeTab
   const renderTabContent = (): ReactNode => {
     // Use the memoized role-filtered data
     const dataToRender = filteredData || dashboardData;
 
     // Check if user selected a CRM module
-    if (selectedCRMModule && CRM_MODULES[selectedCRMModule]) {
-      const Module = CRM_MODULES[selectedCRMModule].Component;
-      const label = CRM_MODULES[selectedCRMModule].label;
+    if (selectedCRMModuleConfig) {
+      const Module = selectedCRMModuleConfig.Component;
+      const label = selectedCRMModuleConfig.label;
       return (
         <RouteErrorBoundary section={label}>
           <Suspense fallback={<TabLoadingFallback />}>
@@ -158,7 +161,7 @@ const UnifiedDashboardPage: FC = () => {
     // When a sub-module is active (via SubNavBar click), resolve the
     // component name from featureRegistry and render via DashboardSubTabRenderer.
     if (currentSubModule && roleSubNavItems.length > 0) {
-      const subItem = roleSubNavItems.find((s) => s.id === currentSubModule);
+      const subItem = roleSubNavItems.find(s => s.id === currentSubModule);
       if (subItem) {
         return (
           <RouteErrorBoundary section={subItem.label}>
@@ -279,47 +282,27 @@ const UnifiedDashboardPage: FC = () => {
       <div className="dashboard-stats-container">
         <div className="stat-item">
           <span className="stat-label">Properties:</span>
-          <Badge color="green" size="md" label={String(propertiesCount)} />
+          <Badge variant="success" size="medium">
+            {String(propertiesCount)}
+          </Badge>
         </div>
         <div className="stat-item">
           <span className="stat-label">Agents:</span>
-          <Badge color="blue" size="md" label={String(agentsCount)} />
+          <Badge variant="info" size="medium">
+            {String(agentsCount)}
+          </Badge>
         </div>
         <div className="stat-item">
           <span className="stat-label">Leads:</span>
-          <Badge color="purple" size="md" label={String(leadsCount)} />
+          <Badge variant="secondary" size="medium">
+            {String(leadsCount)}
+          </Badge>
         </div>
         <div className="stat-item">
           <span className="stat-label">Contracts:</span>
-          <Badge color="red" size="md" label={String(contractsCount)} />
-        </div>
-      </div>
-    );
-  };
-
-  // Helper: Render performance metrics with progress bars
-  const renderPerformanceMetrics = (): ReactNode => {
-    const propertiesCount = dashboardData?.properties?.length || 0;
-    const agentsCount = dashboardData?.agents?.length || 0;
-    const leadsCount = dashboardData?.leads?.length || 0;
-    const overallProgress = Math.min(100, (propertiesCount * 2 + agentsCount * 3 + leadsCount) / 10);
-
-    return (
-      <div className="performance-metrics">
-        <h3>Performance Metrics</h3>
-        <div className="metrics-list">
-          <div className="metric-item">
-            <label className="metric-label">
-              Dashboard Completion: {Math.round(overallProgress)}%
-            </label>
-            <ProgressBar variant="success" value={overallProgress} striped animated />
-          </div>
-          <div className="metric-item">
-            <label className="metric-label">
-              Data Synchronization: 95%
-            </label>
-            <ProgressBar variant="info" value={95} />
-          </div>
+          <Badge variant="warning" size="medium">
+            {String(contractsCount)}
+          </Badge>
         </div>
       </div>
     );
@@ -350,34 +333,29 @@ const UnifiedDashboardPage: FC = () => {
 
       {/* Error Message */}
       {error && (
-        <div
-          className="unified-dashboard-error-banner"
-          role="alert"
-          aria-live="assertive"
-        >
-          <span className="error-icon" aria-hidden="true">⚠️</span>
+        <div className="unified-dashboard-error-banner" role="alert" aria-live="assertive">
+          <span className="error-icon" aria-hidden="true">
+            ⚠️
+          </span>
           <p>{error}</p>
-          <button
-            onClick={handleRetryAll}
-            aria-label="Retry loading dashboard data"
-          >
+          <button onClick={handleRetryAll} aria-label="Retry loading dashboard data">
             Retry
           </button>
         </div>
       )}
 
       {/* CRM Module View */}
-      {selectedCRMModule && CRM_MODULES[selectedCRMModule] && isSuperUser && (
+      {selectedCRMModuleConfig && isSuperUser && (
         <div className="crm-module-view">
           <button className="crm-back-button" onClick={handleBackFromCRM}>
             Back to Dashboard
           </button>
           <div className="crm-module-container">
             <Suspense fallback={<TabLoadingFallback />}>
-              {React.createElement(CRM_MODULES[selectedCRMModule].Component, {
+              {React.createElement(selectedCRMModuleConfig.Component, {
                 role: currentRole,
                 user,
-                data: dashboardData
+                data: dashboardData,
               })}
             </Suspense>
           </div>
@@ -395,14 +373,12 @@ const UnifiedDashboardPage: FC = () => {
           ) : (
             <>
               {/* Role-specific Sub-Navigation (from featureRegistry) */}
-              {roleSubNavItems.length > 0 && (
-                <SubNavBar moduleId={currentModule ?? currentRole} />
-              )}
+              {roleSubNavItems.length > 0 && <SubNavBar moduleId={currentModule ?? currentRole} />}
 
               {/* Tab Navigation */}
               <div className="unified-dashboard-tabs">
                 <div className="tabs-scroll">
-                  {availableTabs.map((tab) => (
+                  {availableTabs.map(tab => (
                     <button
                       key={tab.id}
                       className={`tab-button ${activeTab === tab.id ? 'active' : ''}`}
@@ -450,9 +426,7 @@ const UnifiedDashboardPage: FC = () => {
                 {isLoading ? (
                   <TabLoadingFallback />
                 ) : (
-                  <Suspense fallback={<TabLoadingFallback />}>
-                    {renderTabContent()}
-                  </Suspense>
+                  <Suspense fallback={<TabLoadingFallback />}>{renderTabContent()}</Suspense>
                 )}
               </div>
             </>
@@ -461,6 +435,6 @@ const UnifiedDashboardPage: FC = () => {
       )}
     </div>
   );
-}
+};
 
 export default UnifiedDashboardPage;

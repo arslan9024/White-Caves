@@ -56,33 +56,32 @@ export const validateAssistantEndpointContract = (
   mountedPrefixes: readonly string[] = MOUNTED_API_PREFIXES,
   assistantIds: readonly string[] = ACTIVE_CONTRACT_ASSISTANT_IDS
 ): EndpointContractIssue[] => {
-  return Object.values(AI_ASSISTANTS_REGISTRY)
-    .filter(assistant => assistantIds.includes(assistant.id))
-    .flatMap(assistant => {
-      return assistant.apiEndpoints.flatMap(endpoint => {
-        if (!endpoint.startsWith('/api/')) {
-          return [
-            {
-              assistantId: assistant.id,
-              endpoint,
-              reason: 'invalid-format' as const,
-            },
-          ];
-        }
+  const issues: EndpointContractIssue[] = [];
 
-        if (!isEndpointMapped(endpoint, mountedPrefixes)) {
-          return [
-            {
-              assistantId: assistant.id,
-              endpoint,
-              reason: 'unmapped-prefix' as const,
-            },
-          ];
-        }
+  for (const assistant of Object.values(AI_ASSISTANTS_REGISTRY)) {
+    if (!assistantIds.includes(assistant.id)) continue;
 
-        return [];
-      });
-    });
+    for (const endpoint of assistant.apiEndpoints) {
+      if (!endpoint.startsWith('/api/')) {
+        issues.push({
+          assistantId: assistant.id,
+          endpoint,
+          reason: 'invalid-format',
+        });
+        continue;
+      }
+
+      if (!isEndpointMapped(endpoint, mountedPrefixes)) {
+        issues.push({
+          assistantId: assistant.id,
+          endpoint,
+          reason: 'unmapped-prefix',
+        });
+      }
+    }
+  }
+
+  return issues;
 };
 
 export const getAssistantEndpointCoverage = (
