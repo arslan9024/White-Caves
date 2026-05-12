@@ -4,9 +4,9 @@
  */
 
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
-import type { RootState } from '@/store/store';
-import nadiaAPI from '@/services/nadiaAPI';
-import { getErrorMessage } from '@/constants';
+import type { RootState } from '../store';
+import nadiaAPI from '../../services/nadiaAPI';
+import { getErrorMessage } from '../../constants';
 import {
   Conversation,
   Message,
@@ -16,7 +16,7 @@ import {
   ListConversationsQuery,
   SendMessagePayload,
   AssignAgentPayload,
-} from '@/types/nadia';
+} from '../../types/nadia';
 
 /**
  * Initial State

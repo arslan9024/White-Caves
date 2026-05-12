@@ -4,6 +4,9 @@
  * Right Sidebar: AI Assistants
  * Displays all available AI assistants with their status and capabilities
  * Provides quick access to AI tools and WhatsApp integrations
+ *
+ * @deprecated Canonical CRM sidebar is `src/components/layout/UnifiedSidebar/UnifiedSidebar.tsx`.
+ * Keep this file for compatibility until all legacy imports are retired.
  */
 
 import React, { useMemo } from 'react';

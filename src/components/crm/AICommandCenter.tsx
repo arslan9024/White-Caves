@@ -1,4 +1,4 @@
-import React, { memo, lazy, Suspense, useCallback, useMemo } from 'react';
+import React, { memo, lazy, Suspense, useCallback, useEffect, useMemo, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { RefreshCw, Settings, Bell, LayoutGrid, List } from 'lucide-react';
 import type { AssistantPerformance } from '../../store/slices/aiAssistant/types';
@@ -17,6 +17,7 @@ import {
   selectUI,
   setLayout
 } from '../../store/slices/aiAssistantDashboardSlice';
+import { getInternalModuleMountConfig } from '../../config/internalModuleMounts';
 import {
   CommandCenterContainer,
   CommandCenterHeader,
@@ -114,6 +115,8 @@ const QuickStatsBar = memo(({ assistants, performance }: QuickStatsBarProps) => 
   );
 });
 
+type MountHealthStatus = 'idle' | 'checking' | 'healthy' | 'unhealthy' | 'error';
+
 const AICommandCenter = memo(() => {
   const dispatch = useDispatch();
   const currentAssistant = useSelector(selectCurrentAssistant);
@@ -133,12 +136,118 @@ const AICommandCenter = memo(() => {
   }, [currentAssistant]);
   
   const assistantColor = currentAssistant?.colorScheme || '#0EA5E9';
+  const mountConfig = useMemo(
+    () => (currentAssistant ? getInternalModuleMountConfig(currentAssistant.id) : null),
+    [currentAssistant],
+  );
+  const [mountHealth, setMountHealth] = useState<MountHealthStatus>('idle');
+
+  useEffect(() => {
+    if (!mountConfig?.healthUrl || !mountConfig.enabled) {
+      setMountHealth('idle');
+      return;
+    }
+
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 5000);
+
+    setMountHealth('checking');
+
+    fetch(mountConfig.healthUrl, {
+      method: 'GET',
+      signal: controller.signal,
+      headers: {
+        Accept: 'application/json',
+      },
+    })
+      .then((response) => {
+        setMountHealth(response.ok ? 'healthy' : 'unhealthy');
+      })
+      .catch(() => {
+        setMountHealth('error');
+      })
+      .finally(() => {
+        clearTimeout(timeoutId);
+      });
+
+    return () => {
+      controller.abort();
+      clearTimeout(timeoutId);
+    };
+  }, [mountConfig?.enabled, mountConfig?.healthUrl]);
+
+  const healthMeta = useMemo(() => {
+    switch (mountHealth) {
+      case 'checking':
+        return { label: 'checking', color: '#FBBF24', background: 'rgba(251, 191, 36, 0.15)' };
+      case 'healthy':
+        return { label: 'healthy', color: '#34D399', background: 'rgba(52, 211, 153, 0.15)' };
+      case 'unhealthy':
+        return { label: 'degraded', color: '#F97316', background: 'rgba(249, 115, 22, 0.15)' };
+      case 'error':
+        return { label: 'unreachable', color: '#F87171', background: 'rgba(248, 113, 113, 0.15)' };
+      default:
+        return { label: 'n/a', color: '#94A3B8', background: 'rgba(148, 163, 184, 0.15)' };
+    }
+  }, [mountHealth]);
   
   return (
     <div className="ai-command-center" style={{ '--primary-color': assistantColor } as React.CSSProperties}>
       <header className="command-center-header">
         <div className="header-left">
-          <h1 className="command-center-title">AI Command Center</h1>
+          <h1
+            className="command-center-title"
+            style={{ display: 'flex', alignItems: 'center', gap: 10 }}
+          >
+            AI Command Center
+            {mountConfig?.enabled ? (
+              <>
+                <span
+                  style={{
+                    fontSize: 11,
+                    fontWeight: 600,
+                    letterSpacing: 0.3,
+                    textTransform: 'uppercase',
+                    color: mountConfig.mountMode === 'iframe' ? '#67E8F9' : '#A7F3D0',
+                    border:
+                      mountConfig.mountMode === 'iframe'
+                        ? '1px solid rgba(103, 232, 249, 0.45)'
+                        : '1px solid rgba(167, 243, 208, 0.45)',
+                    borderRadius: 999,
+                    padding: '2px 8px',
+                    background:
+                      mountConfig.mountMode === 'iframe'
+                        ? 'rgba(8, 145, 178, 0.15)'
+                        : 'rgba(22, 163, 74, 0.15)',
+                  }}
+                  aria-label={`Current mount mode ${mountConfig.mountMode}`}
+                  title={`Current module mount: ${mountConfig.mountMode}`}
+                >
+                  {mountConfig.mountMode} mount
+                </span>
+
+                {mountConfig.healthUrl ? (
+                  <span
+                    style={{
+                      fontSize: 11,
+                      fontWeight: 600,
+                      letterSpacing: 0.3,
+                      textTransform: 'uppercase',
+                      color: healthMeta.color,
+                      border: `1px solid ${healthMeta.color}55`,
+                      borderRadius: 999,
+                      padding: '2px 8px',
+                      background: healthMeta.background,
+                    }}
+                    aria-label={`Mount health ${healthMeta.label}`}
+                    title={`Module health endpoint status: ${healthMeta.label}`}
+                  >
+                    {healthMeta.label}
+                  </span>
+                ) : null}
+              </>
+            ) : null}
+          </h1>
           <span className="command-center-subtitle">
             Unified dashboard for all AI assistants
           </span>

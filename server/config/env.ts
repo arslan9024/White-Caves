@@ -65,6 +65,15 @@ export const CORS_ORIGINS = (process.env.CORS_ORIGIN || 'http://localhost:5000')
   .split(',')
   .map(s => s.trim());
 
+// In development, auto-allow common Vite fallback ports to prevent local auth/CORS breakage
+// when port 5000 is occupied and Vite moves to 5001/5173.
+if (!process.env.CORS_ORIGIN && !IS_PRODUCTION) {
+  const devDefaults = ['http://localhost:5000', 'http://localhost:5001', 'http://localhost:5173'];
+  for (const origin of devDefaults) {
+    if (!CORS_ORIGINS.includes(origin)) CORS_ORIGINS.push(origin);
+  }
+}
+
 // ─── Webhooks ────────────────────────────────────────────────────────────
 const _whatsappSecret = process.env.WHATSAPP_WEBHOOK_SECRET;
 if (!_whatsappSecret && IS_PRODUCTION) {

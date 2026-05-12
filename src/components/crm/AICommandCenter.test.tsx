@@ -6,8 +6,8 @@
  * CSS custom property, notification badge, Redux dispatch
  */
 
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, fireEvent, within } from '@testing-library/react';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { render, screen, fireEvent, within, waitFor } from '@testing-library/react';
 import React from 'react';
 
 // ── Redux mock state ────────────────────────────────────────────
@@ -18,6 +18,7 @@ let mockPerformance: Record<string, unknown> | undefined = undefined;
 let mockRecentActivity: unknown[] = [];
 let mockUI: Record<string, unknown> = { layout: 'grid' };
 const mockDispatch = vi.fn();
+let mockMountConfig: Record<string, unknown> | null = null;
 
 vi.mock('react-redux', () => ({
   useSelector: (selector: (s: unknown) => unknown) => selector({}),
@@ -34,6 +35,10 @@ vi.mock('../../store/slices/aiAssistantDashboardSlice', () => ({
 }));
 
 vi.mock('../../store/slices/aiAssistant/types', () => ({}));
+
+vi.mock('../../config/internalModuleMounts', () => ({
+  getInternalModuleMountConfig: () => mockMountConfig,
+}));
 
 vi.mock('lucide-react', () => {
   const stub = (name: string) => {
@@ -209,6 +214,8 @@ import AICommandCenter from './AICommandCenter';
 describe('AICommandCenter', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    vi.unstubAllGlobals();
+    mockMountConfig = null;
     mockCurrentAssistant = null;
     mockAllAssistants = [
       { id: 'nadia', name: 'Nadia', metrics: { systemHealth: 'optimal' } },
@@ -218,6 +225,10 @@ describe('AICommandCenter', () => {
     mockPerformance = { overallHealth: 97, activeTasks: 42, criticalAlerts: [] };
     mockRecentActivity = [{ id: 1, text: 'Test activity' }];
     mockUI = { layout: 'grid' };
+  });
+
+  afterEach(() => {
+    vi.unstubAllGlobals();
   });
 
   // ────── Header ──────
@@ -430,6 +441,67 @@ describe('AICommandCenter', () => {
       const { container } = render(<AICommandCenter />);
       const root = container.querySelector('.ai-command-center');
       expect((root as HTMLElement).style.getPropertyValue('--primary-color')).toBe('#10B981');
+    });
+  });
+
+  describe('internal module mount metadata', () => {
+    it('shows mount mode badge when assistant has module mount config', () => {
+      mockCurrentAssistant = { id: 'linda', name: 'Linda', colorScheme: '#8B5CF6' };
+      mockMountConfig = {
+        assistantId: 'linda',
+        mountMode: 'iframe',
+        enabled: true,
+        moduleUrl: 'http://localhost:5200',
+      };
+
+      render(<AICommandCenter />);
+      expect(screen.getByLabelText(/Current mount mode iframe/i)).toBeInTheDocument();
+      expect(screen.getByText(/iframe mount/i)).toBeInTheDocument();
+    });
+
+    it('shows healthy status when health endpoint responds OK', async () => {
+      mockCurrentAssistant = { id: 'linda', name: 'Linda', colorScheme: '#8B5CF6' };
+      mockMountConfig = {
+        assistantId: 'linda',
+        mountMode: 'iframe',
+        enabled: true,
+        moduleUrl: 'http://localhost:5200',
+        healthUrl: 'http://localhost:3005/health',
+      };
+
+      const fetchMock = vi.fn().mockResolvedValue({ ok: true });
+      vi.stubGlobal('fetch', fetchMock);
+
+      render(<AICommandCenter />);
+
+      await waitFor(() => {
+        expect(fetchMock).toHaveBeenCalledWith(
+          'http://localhost:3005/health',
+          expect.objectContaining({ method: 'GET' }),
+        );
+      });
+
+      expect(screen.getByLabelText(/Mount health healthy/i)).toBeInTheDocument();
+    });
+
+    it('shows unreachable status when health endpoint fails', async () => {
+      mockCurrentAssistant = { id: 'linda', name: 'Linda', colorScheme: '#8B5CF6' };
+      mockMountConfig = {
+        assistantId: 'linda',
+        mountMode: 'iframe',
+        enabled: true,
+        moduleUrl: 'http://localhost:5200',
+        healthUrl: 'http://localhost:3005/health',
+      };
+
+      const fetchMock = vi.fn().mockRejectedValue(new Error('connection refused'));
+      vi.stubGlobal('fetch', fetchMock);
+
+      render(<AICommandCenter />);
+
+      await waitFor(() => {
+        expect(screen.getByLabelText(/Mount health unreachable/i)).toBeInTheDocument();
+      });
     });
   });
 });

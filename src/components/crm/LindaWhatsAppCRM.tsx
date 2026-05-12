@@ -1,5 +1,6 @@
 import React, { memo } from 'react';
 import { MessageSquare, PhoneCall, ShieldCheck, Workflow } from 'lucide-react';
+import InternalModuleMount from './shared/InternalModuleMount';
 
 const statCardStyle: React.CSSProperties = {
   background: 'rgba(15, 23, 42, 0.62)',
@@ -10,7 +11,7 @@ const statCardStyle: React.CSSProperties = {
 };
 
 const LindaWhatsAppCRM = memo(() => {
-  return (
+  const fallbackContent = (
     <section aria-label="Linda WhatsApp CRM" style={{ display: 'grid', gap: 16 }}>
       <header
         style={{
@@ -66,6 +67,10 @@ const LindaWhatsAppCRM = memo(() => {
         </ul>
       </article>
     </section>
+  );
+
+  return (
+    <InternalModuleMount assistantId="linda" fallback={fallbackContent} />
   );
 });
 

@@ -250,6 +250,14 @@ const legacyColors = {
   primaryLight: '#FCE4E6',
   primaryVeryLight: '#FFF5F5',
   secondaryDark: '#0284C7',
+  luxury: {
+    goldShimmer: 'linear-gradient(135deg, #E31E24 0%, #EF5350 50%, #E31E24 100%)',
+    goldToGreen: 'linear-gradient(135deg, #E31E24 0%, #2E5A4F 100%)',
+    darkGreen: 'linear-gradient(135deg, #2E5A4F 0%, #1E3A32 100%)',
+    goldDark: 'linear-gradient(180deg, #E31E24, #B71C1C)',
+    warmSand: 'linear-gradient(135deg, #F5E6D3 0%, #FDF8E8 100%)',
+    premiumDark: 'linear-gradient(135deg, #1A1A1A 0%, #2E5A4F 100%)',
+  },
   border: lightTheme.colors.border.medium,
   borderDark: lightTheme.colors.border.dark,
   background: {
@@ -271,6 +279,15 @@ const legacyTypography = {
   fontFamily: {
     primary: 'Inter, system-ui, -apple-system, sans-serif',
     heading: 'Inter, system-ui, -apple-system, sans-serif',
+  },
+  sizes: {
+    xs: '0.75rem',
+    sm: '0.875rem',
+    base: '1rem',
+    lg: '1.125rem',
+    xl: lightTheme.typography.h5.size,
+    xxl: lightTheme.typography.h3.size,
+    xxxl: lightTheme.typography.h2.size,
   },
   weights: {
     regular: 400,
@@ -319,6 +336,8 @@ const legacySpacing = {
   md: lightTheme.spacing[4],
   lg: lightTheme.spacing[6],
   xl: lightTheme.spacing[8],
+  xxl: lightTheme.spacing[12],
+  xxxl: lightTheme.spacing[16],
 };
 
 const legacyShadows = {
@@ -339,6 +358,7 @@ export const theme = {
   radius: legacyRadius,
   spacing: legacySpacing,
   shadows: legacyShadows,
+  mediaQueries: MEDIA_QUERIES,
 };
 
 // Backwards-compatible named exports for individual tokens

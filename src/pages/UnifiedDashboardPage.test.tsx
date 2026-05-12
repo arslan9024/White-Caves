@@ -9,7 +9,7 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import React from 'react';
 import { Provider } from 'react-redux';
 import { configureStore } from '@reduxjs/toolkit';
-import { MemoryRouter } from 'react-router-dom';
+import { MemoryRouter, useLocation } from 'react-router-dom';
 
 // ── Mocks ────────────────────────────────────────────────────────
 
@@ -25,16 +25,6 @@ vi.mock('../components/RouteErrorBoundary', () => ({
   default: ({ children, section }: { children: React.ReactNode; section: string }) => (
     <div data-testid={`error-boundary-${section}`}>{children}</div>
   ),
-}));
-
-vi.mock('../components/layout/MainNavBar/MainNavBar', () => ({
-  default: (props: Record<string, unknown>) => <nav data-testid="main-navbar">MainNavBar</nav>,
-}));
-vi.mock('../components/layout/SidebarContainer/SidebarContainer', () => ({
-  default: (props: Record<string, unknown>) => <aside data-testid="sidebar-container">Sidebar</aside>,
-}));
-vi.mock('../components/layout/DepartmentContentPanel/DepartmentContentPanel', () => ({
-  default: (props: Record<string, unknown>) => <div data-testid="dept-panel">Dept Panel</div>,
 }));
 
 // Mock tab components
@@ -162,13 +152,23 @@ const createMockStore = (overrides: Record<string, unknown> = {}) => {
   });
 };
 
-const renderPage = (tab = 'overview', overrides: Record<string, unknown> = {}) => {
+const LocationProbe = () => {
+  const location = useLocation();
+  return <div data-testid="location-search">{location.search}</div>;
+};
+
+const renderPage = (
+  tab = 'overview',
+  overrides: Record<string, unknown> = {},
+  extraQuery = '',
+) => {
   const store = createMockStore(overrides);
   return {
     store,
     ...render(
       <Provider store={store}>
-        <MemoryRouter initialEntries={[`/owner/dashboard?tab=${tab}`]}>
+        <MemoryRouter initialEntries={[`/owner/dashboard?tab=${tab}${extraQuery}`]}>
+          <LocationProbe />
           <UnifiedDashboardPage />
         </MemoryRouter>
       </Provider>,
@@ -193,17 +193,18 @@ describe('UnifiedDashboardPage', () => {
       });
     });
 
-    it('should render the MainNavBar', async () => {
+    it('should render the dashboard header title for the active role', async () => {
       renderPage();
       await waitFor(() => {
-        expect(screen.getByTestId('main-navbar')).toBeInTheDocument();
+        expect(screen.getByRole('heading', { name: /Owner Dashboard/i })).toBeInTheDocument();
       });
     });
 
-    it('should render the sidebar container', async () => {
+    it('should render the tab navigation inside the dashboard content area', async () => {
       renderPage();
       await waitFor(() => {
-        expect(screen.getByTestId('sidebar-container')).toBeInTheDocument();
+        expect(screen.getByRole('button', { name: 'Overview' })).toBeInTheDocument();
+        expect(screen.getByRole('button', { name: 'Analytics' })).toBeInTheDocument();
       });
     });
 
@@ -277,10 +278,35 @@ describe('UnifiedDashboardPage', () => {
     });
 
     it('should render AdminDashboard when tab=admin', async () => {
-      renderPage('admin');
+      renderPage('admin', { navigation: { activeRole: 'lion' } });
       await waitFor(() => {
         expect(screen.getByTestId('admin-dashboard')).toBeInTheDocument();
       });
+    });
+
+    it('should render AI Command Center when tab is assistant deep-link (linda)', async () => {
+      renderPage('linda');
+      await waitFor(() => {
+        expect(screen.getByTestId('ai-command')).toBeInTheDocument();
+      });
+    });
+
+    it('should render AI Command Center when tab is assistant deep-link (henry)', async () => {
+      renderPage('henry');
+      await waitFor(() => {
+        expect(screen.getByTestId('ai-command')).toBeInTheDocument();
+      });
+    });
+
+    it('should preserve existing query params while syncing tab', async () => {
+      renderPage('linda', {}, '&assistantMode=iframe');
+      await waitFor(() => {
+        expect(screen.getByTestId('ai-command')).toBeInTheDocument();
+      });
+
+      const search = screen.getByTestId('location-search').textContent || '';
+      expect(search).toContain('tab=linda');
+      expect(search).toContain('assistantMode=iframe');
     });
 
     it('should fallback to OverviewTab for unknown tab', async () => {

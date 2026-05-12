@@ -267,7 +267,11 @@ function App(): React.JSX.Element {
           dispatch(setLoading(false));
         }
       } catch (err) {
-        if (err instanceof DOMException && err.name === 'AbortError') return;
+        if (err instanceof DOMException && err.name === 'AbortError') {
+          // Avoid indefinite loading states during navigation/StrictMode aborts in development
+          dispatch(setLoading(false));
+          return;
+        }
         // Auth check failed — user stays logged out
         log.warn('Auth check failed:', err instanceof Error ? err.message : 'Unknown error');
         safeStorage.remove('token');

@@ -7,6 +7,7 @@ import SubNavBar from '../components/common/SubNavBar';
 import { DashboardSubTabRenderer } from '../components/dashboard/DashboardRenderer';
 import { useUnifiedDashboard } from '../hooks/useUnifiedDashboard';
 import type { DashboardData, CRMModuleProps } from '../hooks/useUnifiedDashboard';
+import { AI_ASSISTANTS_REGISTRY } from '../store/slices/aiAssistant/registry';
 import './UnifiedDashboardPage.css';
 
 // Import tab components (non-lazy for critical paths)
@@ -171,6 +172,16 @@ const UnifiedDashboardPage: FC = () => {
     }
 
     // Render standard tabs
+    if (activeTab && activeTab in AI_ASSISTANTS_REGISTRY) {
+      return (
+        <RouteErrorBoundary section="AI Command Center">
+          <Suspense fallback={<TabLoadingFallback />}>
+            <AICommandCenter />
+          </Suspense>
+        </RouteErrorBoundary>
+      );
+    }
+
     switch (activeTab) {
       case 'overview':
         return (
@@ -268,19 +279,19 @@ const UnifiedDashboardPage: FC = () => {
       <div className="dashboard-stats-container">
         <div className="stat-item">
           <span className="stat-label">Properties:</span>
-          <Badge variant="success" size="medium">{propertiesCount}</Badge>
+          <Badge color="green" size="md" label={String(propertiesCount)} />
         </div>
         <div className="stat-item">
           <span className="stat-label">Agents:</span>
-          <Badge variant="info" size="medium">{agentsCount}</Badge>
+          <Badge color="blue" size="md" label={String(agentsCount)} />
         </div>
         <div className="stat-item">
           <span className="stat-label">Leads:</span>
-          <Badge variant="warning" size="medium">{leadsCount}</Badge>
+          <Badge color="purple" size="md" label={String(leadsCount)} />
         </div>
         <div className="stat-item">
           <span className="stat-label">Contracts:</span>
-          <Badge variant="primary" size="medium">{contractsCount}</Badge>
+          <Badge color="red" size="md" label={String(contractsCount)} />
         </div>
       </div>
     );

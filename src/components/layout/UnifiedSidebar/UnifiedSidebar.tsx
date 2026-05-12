@@ -17,6 +17,7 @@
 
 import React, { useMemo, useCallback, useState, useRef, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 import type { RootState } from '../../../store/store';
 import {
   Home,
@@ -178,6 +179,7 @@ const UnifiedSidebar: React.FC<UnifiedSidebarProps> = ({
   isSuperUser = false,
 }) => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const sidebarRef = useRef<HTMLElement>(null);
   const searchInputRef = useRef<HTMLInputElement>(null);
 
@@ -213,7 +215,7 @@ const UnifiedSidebar: React.FC<UnifiedSidebarProps> = ({
   // ─── Department tree (for non-search view) ─────────────────────────
   const deptTree: DepartmentTreeNode[] = useMemo(() => {
     return Object.entries(DEPARTMENTS).map(([deptId, dept]) => {
-      // eslint-disable-next-line security/detect-object-injection
+       
       const badge = dept.badgeKey ? badgeCounts[dept.badgeKey] : undefined;
       const services: ServiceTreeNode[] = dept.services.map(svc => ({
         id: svc.toLowerCase().replace(/\s+/g, '-'),
@@ -255,9 +257,9 @@ const UnifiedSidebar: React.FC<UnifiedSidebarProps> = ({
   const groupedAssistants = useMemo(() => {
     const groups: Record<string, Assistant[]> = {};
     filteredAssistants.forEach(a => {
-      // eslint-disable-next-line security/detect-object-injection
+       
       if (!groups[a.department]) groups[a.department] = [];
-      // eslint-disable-next-line security/detect-object-injection
+       
       groups[a.department].push(a);
     });
     return groups;
@@ -273,7 +275,7 @@ const UnifiedSidebar: React.FC<UnifiedSidebarProps> = ({
     Object.entries(DEPARTMENTS).forEach(([deptId, dept]) => {
       const deptMatches = dept.label.toLowerCase().includes(q);
       if (deptMatches) {
-        // eslint-disable-next-line security/detect-object-injection
+         
         const badge = dept.badgeKey ? badgeCounts[dept.badgeKey] : undefined;
         results.push({
           type: 'department',
@@ -348,9 +350,26 @@ const UnifiedSidebar: React.FC<UnifiedSidebarProps> = ({
 
   const handleQuickNavClick = useCallback(
     (itemId: string) => {
+      // Default internal navigation path (used when parent does not intercept clicks)
+      switch (itemId) {
+        case 'home':
+          navigate('/dashboard');
+          break;
+        case 'analytics':
+          navigate('/owner/system-health');
+          break;
+        case 'admin':
+          navigate('/lion/admin-dashboard');
+          break;
+        case 'settings':
+          navigate('/owner/whatsapp/settings');
+          break;
+        default:
+          break;
+      }
       onItemClick?.('quick-nav', { itemId });
     },
-    [onItemClick]
+    [navigate, onItemClick]
   );
 
   const toggleDeptExpand = useCallback((deptId: string, shouldExpand?: boolean) => {
@@ -395,7 +414,7 @@ const UnifiedSidebar: React.FC<UnifiedSidebarProps> = ({
     }));
 
     deptTree.forEach(dept => {
-      // eslint-disable-next-line security/detect-object-injection
+       
       const expanded = expandedDepts[dept.id] !== false;
       items.push({
         id: `dept-${dept.id}`,
@@ -532,7 +551,7 @@ const UnifiedSidebar: React.FC<UnifiedSidebarProps> = ({
         {/* Department icons */}
         {Object.entries(DEPARTMENTS).map(([deptId, dept]) => {
           const Icon = dept.icon;
-          // eslint-disable-next-line security/detect-object-injection
+           
           const badge = dept.badgeKey ? badgeCounts[dept.badgeKey] : 0;
           return (
             <CollapsedNavItem

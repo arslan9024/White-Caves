@@ -53,7 +53,13 @@ const ASSISTANT_EXECUTION_PROFILES: Record<string, AssistantExecutionProfile> = 
       premiumAllowed: false,
       requiresContextGate: false,
     },
-    capabilities: ['conversation_routing', 'lead_intake', 'message_audit'],
+    capabilities: [
+      'conversation_routing',
+      'lead_intake',
+      'handoff_to_sales',
+      'template_execution',
+      'message_audit',
+    ],
     taskTypes: ['research', 'planning', 'documentation', 'review'],
   },
   henry: {
@@ -64,7 +70,13 @@ const ASSISTANT_EXECUTION_PROFILES: Record<string, AssistantExecutionProfile> = 
       premiumAllowed: false,
       requiresContextGate: false,
     },
-    capabilities: ['audit_trail_validation', 'compliance_review', 'risk_flagging'],
+    capabilities: [
+      'audit_trail_validation',
+      'compliance_review',
+      'timeline_tracking',
+      'risk_flagging',
+      'report_packaging',
+    ],
     taskTypes: ['review', 'compliance', 'documentation', 'qa'],
   },
   mira: {

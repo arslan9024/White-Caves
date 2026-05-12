@@ -6,6 +6,7 @@
 
 import crypto from 'crypto';
 import { createServer } from 'http';
+import { createServer as createNetServer } from 'net';
 import express, { Express, Request, Response, NextFunction } from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
@@ -93,6 +94,45 @@ const PORT =
   process.env.API_PORT ||
   (process.env.NODE_ENV === 'development' ? 3001 : process.env.PORT || 3001);
 
+const findAvailablePort = async (startPort: number, maxAttempts: number): Promise<number> => {
+  for (let attempt = 0; attempt < maxAttempts; attempt += 1) {
+    const candidatePort = startPort + attempt;
+
+    const isAvailable = await new Promise<boolean>((resolve, reject) => {
+      const probe = createNetServer();
+
+      const cleanup = () => {
+        probe.removeAllListeners('error');
+        probe.removeAllListeners('listening');
+      };
+
+      probe.once('error', (error: NodeJS.ErrnoException) => {
+        cleanup();
+        if (error.code === 'EADDRINUSE') {
+          resolve(false);
+          return;
+        }
+        reject(error);
+      });
+
+      probe.once('listening', () => {
+        probe.close(() => {
+          cleanup();
+          resolve(true);
+        });
+      });
+
+      probe.listen(candidatePort);
+    });
+
+    if (isAvailable) {
+      return candidatePort;
+    }
+  }
+
+  throw new Error(`No available port found in range ${startPort}-${startPort + maxAttempts - 1}`);
+};
+
 // ============================================================================
 // MIDDLEWARE SETUP
 // ============================================================================
@@ -167,8 +207,11 @@ app.use((_req: Request, res: Response, next: NextFunction) => {
 app.use(
   cors({
     origin: (origin, callback) => {
+      const isLocalhostOrigin =
+        typeof origin === 'string' && /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/i.test(origin);
+
       // Allow requests with no origin (server-to-server, curl, mobile apps)
-      if (!origin || CORS_ORIGINS.includes(origin)) {
+      if (!origin || CORS_ORIGINS.includes(origin) || (!IS_PRODUCTION && isLocalhostOrigin)) {
         callback(null, true);
       } else {
         callback(new Error('Not allowed by CORS'));
@@ -839,21 +882,49 @@ const startServer = async () => {
     logger.warn('Server will start without database — API calls will return errors');
   }
 
-  // Start listening regardless of DB status
-  const host = process.env.API_URL || `http://localhost:${PORT}`;
-
   // Wrap Express in a raw http.Server so Socket.io can share the same port
   const httpServer = createServer(app);
 
   // Attach Socket.io to the http server (must happen before listen)
   createSocketServer(httpServer);
 
-  httpServer.listen(PORT, () => {
-    logger.info(`Server started on ${host}`);
-    logger.info(`Environment: ${process.env.NODE_ENV || 'development'}`);
-    logger.info(`API Base: ${host}/api`);
-    logger.info(`Socket.io: ws://${host.replace(/^https?:\/\//, '')}`);
+  const requestedPort = Number(PORT) || 3001;
+  const shouldAutoFallbackPort =
+    !IS_PRODUCTION &&
+    !process.env.API_PORT;
+
+  let activePort = requestedPort;
+  if (shouldAutoFallbackPort) {
+    const maxAttempts = 10;
+    activePort = await findAvailablePort(requestedPort, maxAttempts);
+    if (activePort !== requestedPort) {
+      logger.warn(
+        `Port ${requestedPort} is in use — server started on fallback port ${activePort}`
+      );
+    }
+  }
+
+  await new Promise<void>((resolve, reject) => {
+    const onError = (error: NodeJS.ErrnoException) => {
+      httpServer.off('listening', onListening);
+      reject(error);
+    };
+
+    const onListening = () => {
+      httpServer.off('error', onError);
+      resolve();
+    };
+
+    httpServer.once('error', onError);
+    httpServer.once('listening', onListening);
+    httpServer.listen(activePort);
   });
+
+  const host = process.env.API_URL || `http://localhost:${activePort}`;
+  logger.info(`Server started on ${host}`);
+  logger.info(`Environment: ${process.env.NODE_ENV || 'development'}`);
+  logger.info(`API Base: ${host}/api`);
+  logger.info(`Socket.io: ws://${host.replace(/^https?:\/\//, '')}`);
 
   return httpServer;
 };

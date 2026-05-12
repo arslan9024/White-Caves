@@ -1,8 +1,24 @@
 ﻿// @ts-nocheck
 import styled from 'styled-components';
-import { theme } from '../../styles/theme';
+import { theme } from '../../styles/theme/index';
 
 const { colors, spacing, radius, shadows, transitions, mediaQueries, typography } = theme;
+const typeSizes = typography?.sizes || {
+  xs: '0.75rem',
+  sm: '0.875rem',
+  base: '1rem',
+  lg: '1.125rem',
+  xl: '1.25rem',
+  xxl: '1.5rem',
+  xxxl: '2rem',
+  display: '2.25rem',
+};
+const typeWeights = typography?.weights || {
+  regular: 400,
+  medium: 500,
+  semibold: 600,
+  bold: 700,
+};
 const reducedMotion = `@media (prefers-reduced-motion: reduce)`;
 
 export const AdminContainer = styled.div`
@@ -30,14 +46,14 @@ export const AdminHeader = styled.div`
 export const AdminTitle = styled.div`
   h1 {
     margin: 0 0 ${spacing.xs} 0;
-    font-size: ${typography.sizes.xxxl};
-    font-weight: ${typography.weights.bold};
+    font-size: ${typeSizes.xxxl};
+    font-weight: ${typeWeights.bold};
     color: ${colors.text.primary};
   }
 
   p {
     margin: 0;
-    font-size: ${typography.sizes.base};
+    font-size: ${typeSizes.base};
     color: ${colors.text.secondary};
   }
 `;
@@ -50,15 +66,15 @@ export const AdminUserInfo = styled.div`
 `;
 
 export const UserName = styled.span`
-  font-size: ${typography.sizes.base};
-  font-weight: ${typography.weights.semibold};
+  font-size: ${typeSizes.base};
+  font-weight: ${typeWeights.semibold};
   color: ${colors.text.primary};
 `;
 
 export const UserRole = styled.span`
-  font-size: ${typography.sizes.xs};
+  font-size: ${typeSizes.xs};
   color: ${colors.primary};
-  font-weight: ${typography.weights.medium};
+  font-weight: ${typeWeights.medium};
 `;
 
 export const AdminTabs = styled.div`
@@ -79,8 +95,8 @@ export const Tab = styled.button<{ $active?: boolean }>`
   border: none;
   border-bottom: 3px solid ${props => (props.$active ? colors.primary : 'transparent')};
   color: ${props => (props.$active ? colors.primary : colors.text.secondary)};
-  font-size: ${typography.sizes.base};
-  font-weight: ${typography.weights.medium};
+  font-size: ${typeSizes.base};
+  font-weight: ${typeWeights.medium};
   cursor: pointer;
   transition: ${transitions.hover};
   white-space: nowrap;
@@ -147,22 +163,22 @@ export const MetricHeader = styled.div`
 `;
 
 export const MetricTitle = styled.span`
-  font-size: ${typography.sizes.sm};
-  font-weight: ${typography.weights.medium};
+  font-size: ${typeSizes.sm};
+  font-weight: ${typeWeights.medium};
   color: ${colors.text.secondary};
   text-transform: uppercase;
   letter-spacing: 0.5px;
 `;
 
 export const MetricValue = styled.div`
-  font-size: ${typography.sizes.display};
-  font-weight: ${typography.weights.bold};
+  font-size: ${typeSizes.display};
+  font-weight: ${typeWeights.bold};
   color: ${colors.text.primary};
   margin-bottom: ${spacing.xs};
 `;
 
 export const MetricSubtext = styled.div`
-  font-size: ${typography.sizes.sm};
+  font-size: ${typeSizes.sm};
   color: ${colors.text.tertiary};
   margin-bottom: ${radius.xl};
 `;
@@ -182,8 +198,8 @@ export const MetricBarFill = styled.div<{ $color?: string }>`
 `;
 
 export const MetricStatus = styled.div<{ $status?: string }>`
-  font-size: ${typography.sizes.xl};
-  font-weight: ${typography.weights.bold};
+  font-size: ${typeSizes.xl};
+  font-weight: ${typeWeights.bold};
   color: ${props => {
     switch (props.$status) {
       case 'excellent':
@@ -208,12 +224,12 @@ export const MetricDetails = styled.div`
 export const DetailItem = styled.div`
   display: flex;
   justify-content: space-between;
-  font-size: ${typography.sizes.xs};
+  font-size: ${typeSizes.xs};
   color: ${colors.text.secondary};
 `;
 
 export const DetailValue = styled.span`
-  font-weight: ${typography.weights.semibold};
+  font-weight: ${typeWeights.semibold};
   color: ${colors.text.primary};
 `;
 
@@ -231,8 +247,8 @@ export const SectionHeader = styled.div`
 
   h3 {
     margin: 0;
-    font-size: ${typography.sizes.lg};
-    font-weight: ${typography.weights.semibold};
+    font-size: ${typeSizes.lg};
+    font-weight: ${typeWeights.semibold};
     color: ${colors.text.primary};
   }
 
@@ -284,7 +300,7 @@ export const AlertContent = styled.div`
 `;
 
 export const AlertMessage = styled.span`
-  font-size: ${typography.sizes.base};
+  font-size: ${typeSizes.base};
   color: ${colors.text.primary};
   font-weight: ${typography.weights.medium};
 `;

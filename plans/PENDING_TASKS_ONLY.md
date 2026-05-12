@@ -109,13 +109,15 @@ Fast-track rule:
 ### Now (Implementation-critical)
 
 - [ ] N+1 Auth/login hardening + route consistency
-- [ ] N+2 Tenant portal live data parity
-- [ ] N+3 Managing-director CRM critical tabs end-to-end
+- [x] N+2 CRM shell consolidation (TopBar + UnifiedSidebar + UnifiedDashboard canonical only)
+- [ ] N+3 Tenant portal live data parity
+- [x] N+4 AI Command Center internal module mounting (Linda/Henry) + orchestration config alignment
 
 ### Next (High impact, not blocking today)
 
-- [ ] N+4 Convert top 3 revenue-impact stub endpoints
-- [ ] N+5 Test + release hardening (build + smoke E2E + release gate)
+- [ ] N+5 Managing-director CRM critical tabs end-to-end
+- [ ] N+6 Convert top 3 revenue-impact stub endpoints
+- [ ] N+7 Test + release hardening (build + smoke E2E + release gate)
 - [ ] Phase 26 compliance/KPI audit closure
 
 ### Later (Deferred backlog)

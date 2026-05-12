@@ -329,27 +329,33 @@ router.post(
       },
     });
 
-    // Notify assigned agent via email (fire-and-forget)
+    // Notify assigned agent via email (fire-and-forget, never blocks API success)
     const assignedAgent = lead.assignedTo as { name?: string; email?: string } | null;
     if (assignedAgent?.email) {
-      const { sendEmailTracked, EMAIL_TEMPLATES } = await import('../services/emailService.js');
-      const template = EMAIL_TEMPLATES.leadAssigned(
-        assignedAgent.name || 'Agent',
-        lead.name,
-        lead.email || '',
-        lead.source || 'direct'
-      );
-      sendEmailTracked({
-        to: assignedAgent.email,
-        subject: template.subject,
-        html: template.html,
-        text: template.text,
-        tags: [{ name: 'type', value: 'lead_assigned' }],
-      }).catch(err => console.error('[email] leadAssigned send failed:', err));
+      try {
+        const { sendEmailTracked, EMAIL_TEMPLATES } = await import('../services/emailService.js');
+        const template = EMAIL_TEMPLATES.leadAssigned(
+          assignedAgent.name || 'Agent',
+          lead.name,
+          lead.email || '',
+          lead.source || 'direct'
+        );
+        sendEmailTracked({
+          to: assignedAgent.email,
+          subject: template.subject,
+          html: template.html,
+          text: template.text,
+          tags: [{ name: 'type', value: 'lead_assigned' }],
+        }).catch(err => console.error('[email] leadAssigned send failed:', err));
+      } catch (err) {
+        console.error('[email] leadAssigned import failed:', err);
+      }
     }
 
-    // Calculate score automatically in the background
-    calculateLeadScore(lead.id).catch(err => console.error('Background scoring failed:', err));
+    // Calculate score automatically in the background (non-blocking)
+    Promise.resolve(calculateLeadScore?.(lead.id)).catch(err =>
+      console.error('Background scoring failed:', err)
+    );
 
     res.status(201).json({ success: true, data: lead });
   })
@@ -443,17 +449,23 @@ router.patch(
       },
     });
 
-    // Emit real-time lead:updated event to all CRM users
-    (getSocketServer() as any)?.emitLeadUpdated({
-      leadId: lead.id,
-      status: lead.status,
-      assignedTo: lead.assignedTo?.id,
-      score: lead.score ?? undefined,
-      updatedBy: req.user?.id,
-    });
+    // Emit real-time lead:updated event to all CRM users (non-blocking)
+    try {
+      (getSocketServer() as any)?.emitLeadUpdated({
+        leadId: lead.id,
+        status: lead.status,
+        assignedTo: lead.assignedTo?.id,
+        score: lead.score ?? undefined,
+        updatedBy: req.user?.id,
+      });
+    } catch (err) {
+      console.error('Socket emit lead:updated failed:', err);
+    }
 
-    // Calculate score automatically in the background
-    calculateLeadScore(lead.id).catch(err => console.error('Background scoring failed:', err));
+    // Calculate score automatically in the background (non-blocking)
+    Promise.resolve(calculateLeadScore?.(lead.id)).catch(err =>
+      console.error('Background scoring failed:', err)
+    );
 
     res.status(200).json({ success: true, data: lead });
   })

@@ -132,27 +132,64 @@ const checkIpLockout = async (
 ): Promise<{ locked: boolean; retryAfterSeconds: number; failureCount: number }> => {
   if (!ip || ip === 'unknown') return { locked: false, retryAfterSeconds: 0, failureCount: 0 };
   const since = new Date(Date.now() - LOGIN_LOCKOUT_WINDOW_MINUTES * 60 * 1000);
-  const failureCount = await prisma.activity.count({
-    where: {
-      type: 'system',
-      action: 'login_failed',
-      createdAt: { gte: since },
-      metadata: { path: ['ip'], equals: ip } as Prisma.JsonFilter,
-    },
-  });
+
+  const extractIp = (metadata: unknown): string | null => {
+    if (!metadata || typeof metadata !== 'object') return null;
+    const value = (metadata as { ip?: unknown }).ip;
+    return typeof value === 'string' ? value : null;
+  };
+
+  let failureCount = 0;
+  let oldestFailure: { createdAt: Date } | null = null;
+
+  try {
+    // Preferred (when supported by Prisma runtime/driver)
+    failureCount = await prisma.activity.count({
+      where: {
+        type: 'system',
+        action: 'login_failed',
+        createdAt: { gte: since },
+        metadata: { path: ['ip'], equals: ip } as Prisma.JsonFilter,
+      },
+    });
+
+    if (failureCount >= LOGIN_IP_LOCKOUT_THRESHOLD) {
+      oldestFailure = await prisma.activity.findFirst({
+        where: {
+          type: 'system',
+          action: 'login_failed',
+          createdAt: { gte: since },
+          metadata: { path: ['ip'], equals: ip } as Prisma.JsonFilter,
+        },
+        orderBy: { createdAt: 'asc' },
+      });
+    }
+  } catch (error: unknown) {
+    // Fallback for runtimes where JsonFilter.path is unsupported (observed on some Prisma+Mongo setups)
+    logger.warn('IP lockout JSON path filter unsupported, using in-memory fallback', {
+      reason: error instanceof Error ? error.message : 'unknown',
+    });
+
+    const recentFailures = await prisma.activity.findMany({
+      where: {
+        type: 'system',
+        action: 'login_failed',
+        createdAt: { gte: since },
+      },
+      orderBy: { createdAt: 'asc' },
+      select: { createdAt: true, metadata: true },
+    });
+
+    const ipFailures = recentFailures.filter(row => extractIp(row.metadata) === ip);
+    failureCount = ipFailures.length;
+    oldestFailure = ipFailures[0] ?? null;
+  }
+
   if (failureCount < LOGIN_IP_LOCKOUT_THRESHOLD) {
     return { locked: false, retryAfterSeconds: 0, failureCount };
   }
-  const oldest = await prisma.activity.findFirst({
-    where: {
-      type: 'system',
-      action: 'login_failed',
-      createdAt: { gte: since },
-      metadata: { path: ['ip'], equals: ip } as Prisma.JsonFilter,
-    },
-    orderBy: { createdAt: 'asc' },
-  });
-  const baseTs = oldest?.createdAt?.getTime?.() ?? Date.now();
+
+  const baseTs = oldestFailure?.createdAt?.getTime?.() ?? Date.now();
   const unlockAt = baseTs + LOGIN_LOCKOUT_WINDOW_MINUTES * 60 * 1000;
   const retryAfterSeconds = Math.max(1, Math.ceil((unlockAt - Date.now()) / 1000));
   return { locked: true, retryAfterSeconds, failureCount };

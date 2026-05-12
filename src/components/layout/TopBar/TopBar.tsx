@@ -124,10 +124,12 @@ const TopBar: React.FC<TopBarProps> = React.memo(function TopBar({
   const navigate = useNavigate();
   const crumbs = useBreadcrumbs();
 
-  // User from Redux
-  const user = useSelector((state: RootState) => state.auth?.user);
-  const userRole = user?.role || 'user';
-  const isSuperUser = userRole === 'lion';
+  // User from Redux (auth slice is canonical, user slice kept as backward-compatible fallback)
+  const authUser = useSelector((state: RootState) => state.auth?.user);
+  const currentUser = useSelector((state: RootState) => state.user?.currentUser);
+  const user = authUser ?? currentUser;
+  const userRole = (user?.role || 'user').toLowerCase();
+  const isSuperUser = ['lion', 'owner', 'admin', 'managing_director'].includes(userRole);
 
   // Dropdown state
   const [showUserMenu, setShowUserMenu] = useState(false);

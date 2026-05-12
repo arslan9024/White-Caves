@@ -1,5 +1,6 @@
 import React, { memo } from 'react';
 import { BookOpenCheck, FileSearch, ShieldAlert, TimerReset } from 'lucide-react';
+import InternalModuleMount from './shared/InternalModuleMount';
 
 const cardStyle: React.CSSProperties = {
   background: 'rgba(15, 23, 42, 0.62)',
@@ -10,7 +11,7 @@ const cardStyle: React.CSSProperties = {
 };
 
 const HenryRecordsCRM = memo(() => {
-  return (
+  const fallbackContent = (
     <section aria-label="Henry Records and Compliance" style={{ display: 'grid', gap: 16 }}>
       <header
         style={{
@@ -66,6 +67,10 @@ const HenryRecordsCRM = memo(() => {
         </ul>
       </article>
     </section>
+  );
+
+  return (
+    <InternalModuleMount assistantId="henry" fallback={fallbackContent} />
   );
 });
 

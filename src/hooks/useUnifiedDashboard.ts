@@ -51,6 +51,10 @@ import {
   selectRecentActivities,
   selectHotLeads,
 } from '../store/crmDataSlice';
+import {
+  selectAssistant as selectAIAssistant,
+} from '../store/slices/aiAssistantDashboardSlice';
+import { AI_ASSISTANTS_REGISTRY } from '../store/slices/aiAssistant/registry';
 
 // ─── Types ────────────────────────────────────────────────────
 
@@ -216,6 +220,10 @@ export function useUnifiedDashboard() {
 
   // ─── Tab / Role Info ──────────────────────────────────────
   const availableTabs = getTabsForRole(currentRole);
+  const availableTabIds = useMemo(
+    () => new Set(availableTabs.map((tab) => tab.id)),
+    [availableTabs],
+  );
   const roleInfo = getRoleInfo(currentRole);
   useDocumentTitle(`${roleInfo.label} Dashboard`);
 
@@ -342,10 +350,52 @@ export function useUnifiedDashboard() {
 
   // Sync active tab to URL search params
   useEffect((): void => {
-    if (activeTab) {
-      setSearchParams({ tab: activeTab });
+    if (!activeTab) {
+      return;
     }
-  }, [activeTab, setSearchParams]);
+
+    if (searchParams.get('tab') === activeTab) {
+      return;
+    }
+
+    const nextParams = new URLSearchParams(searchParams);
+    nextParams.set('tab', activeTab);
+    setSearchParams(nextParams);
+  }, [activeTab, searchParams, setSearchParams]);
+
+  // Deep-link handling: /dashboard?tab=<assistantId>
+  // If tab matches an AI assistant key, route to AI Command Center context while
+  // preserving the assistant id in URL and selecting the assistant in dashboard state.
+  useEffect(() => {
+    const requestedTab = (searchParams.get('tab') || 'overview').toLowerCase();
+
+    if (requestedTab in AI_ASSISTANTS_REGISTRY) {
+      if (activeTab !== requestedTab) {
+        setActiveTab(requestedTab);
+      }
+
+      if (selectedAssistantRedux !== requestedTab) {
+        dispatch(selectAIAssistant(requestedTab));
+      }
+
+      return;
+    }
+
+    if (availableTabIds.has(requestedTab) && activeTab !== requestedTab) {
+      setActiveTab(requestedTab);
+      return;
+    }
+
+    if (!availableTabIds.has(requestedTab) && activeTab !== 'overview') {
+      setActiveTab('overview');
+    }
+  }, [
+    searchParams,
+    activeTab,
+    dispatch,
+    availableTabIds,
+    selectedAssistantRedux,
+  ]);
 
   // Fetch CRM data on mount (skip if already loaded)
   useEffect(() => {
