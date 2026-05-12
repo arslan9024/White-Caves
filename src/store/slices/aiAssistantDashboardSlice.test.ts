@@ -84,7 +84,6 @@ import {
   selectSidebar,
   selectNotifications,
   selectNotificationsByAssistant,
-  selectUnreadCountByAssistant,
   selectGlobalUnreadCount,
   selectTasks,
   selectTasksByAssistant,
@@ -102,8 +101,9 @@ import {
   selectComplianceMetrics,
 } from './aiAssistantDashboardSlice';
 
-import type { AIAssistantDashboardState } from './aiAssistantDashboardSlice';
 import type { RootState } from '../store';
+
+/* eslint-disable security/detect-object-injection */
 
 // ── Helpers ─────────────────────────────────────────────────────────────
 
@@ -219,7 +219,7 @@ describe('aiAssistantDashboardSlice', () => {
     it('merges metrics for existing assistant', () => {
       const state = reducer(
         initialState(),
-        updateAssistantMetrics({ assistantId: 'mary', metrics: { tasksCompleted: 999 } }),
+        updateAssistantMetrics({ assistantId: 'mary', metrics: { tasksCompleted: 999 } })
       );
       expect(state.allAssistants.byId.mary.metrics.tasksCompleted).toBe(999);
     });
@@ -227,9 +227,7 @@ describe('aiAssistantDashboardSlice', () => {
     it('does nothing for non-existent assistant', () => {
       const before = initialState();
       const after = reducer(before, updateAssistantMetrics({ assistantId: 'xxx', metrics: {} }));
-      expect(Object.keys(after.allAssistants.byId)).toEqual(
-        Object.keys(before.allAssistants.byId),
-      );
+      expect(Object.keys(after.allAssistants.byId)).toEqual(Object.keys(before.allAssistants.byId));
     });
   });
 
@@ -238,7 +236,7 @@ describe('aiAssistantDashboardSlice', () => {
     it('updates systemHealth for existing assistant', () => {
       const state = reducer(
         initialState(),
-        updateAssistantHealth({ assistantId: 'nadia', health: 'degraded' }),
+        updateAssistantHealth({ assistantId: 'nadia', health: 'degraded' })
       );
       expect(state.allAssistants.byId.nadia.metrics.systemHealth).toBe('degraded');
     });
@@ -291,7 +289,7 @@ describe('aiAssistantDashboardSlice', () => {
       const before = initialState().assistantPerformance.recentActivity.length;
       const state = reducer(
         initialState(),
-        addActivity({ assistantId: 'mary', action: 'test', target: 'test', type: 'info' }),
+        addActivity({ assistantId: 'mary', action: 'test', target: 'test', type: 'info' })
       );
       expect(state.assistantPerformance.recentActivity.length).toBe(before + 1);
       expect(state.assistantPerformance.recentActivity[0].action).toBe('test');
@@ -312,10 +310,7 @@ describe('aiAssistantDashboardSlice', () => {
   // ── Owner preferences ─────────────────────────────────────────────
   describe('owner preferences', () => {
     it('updateOwnerPreferences merges', () => {
-      const state = reducer(
-        initialState(),
-        updateOwnerPreferences({ dashboardLayout: 'compact' }),
-      );
+      const state = reducer(initialState(), updateOwnerPreferences({ dashboardLayout: 'compact' }));
       expect(state.ownerPreferences.dashboardLayout).toBe('compact');
       expect(state.ownerPreferences.defaultAssistant).toBe('mary'); // unchanged
     });
@@ -356,11 +351,9 @@ describe('aiAssistantDashboardSlice', () => {
         addNotification({
           assistantId: 'mary',
           notification: { type: 'alert', message: 'test', severity: 'info' },
-        }),
+        })
       );
-      expect(
-        state.notifications.byAssistantId.mary.length,
-      ).toBeGreaterThan(0);
+      expect(state.notifications.byAssistantId.mary.length).toBeGreaterThan(0);
       expect(state.notifications.globalUnreadCount).toBe(before + 1);
     });
 
@@ -371,11 +364,14 @@ describe('aiAssistantDashboardSlice', () => {
         addNotification({
           assistantId: 'laila',
           notification: { type: 'alert', message: 'check', severity: 'warning' },
-        }),
+        })
       );
       const notifId = state.notifications.byAssistantId.laila[0].id;
       const unreadBefore = state.notifications.globalUnreadCount;
-      state = reducer(state, markNotificationRead({ assistantId: 'laila', notificationId: notifId }));
+      state = reducer(
+        state,
+        markNotificationRead({ assistantId: 'laila', notificationId: notifId })
+      );
       expect(state.notifications.globalUnreadCount).toBe(unreadBefore - 1);
       expect(state.notifications.byAssistantId.laila[0].isRead).toBe(true);
     });
@@ -386,22 +382,40 @@ describe('aiAssistantDashboardSlice', () => {
         addNotification({
           assistantId: 'laila',
           notification: { type: 'a', message: 'b', severity: 'info' },
-        }),
+        })
       );
       const notifId = state.notifications.byAssistantId.laila[0].id;
-      state = reducer(state, markNotificationRead({ assistantId: 'laila', notificationId: notifId }));
+      state = reducer(
+        state,
+        markNotificationRead({ assistantId: 'laila', notificationId: notifId })
+      );
       const count = state.notifications.globalUnreadCount;
-      state = reducer(state, markNotificationRead({ assistantId: 'laila', notificationId: notifId }));
+      state = reducer(
+        state,
+        markNotificationRead({ assistantId: 'laila', notificationId: notifId })
+      );
       expect(state.notifications.globalUnreadCount).toBe(count); // unchanged
     });
 
     it('markAllNotificationsRead marks all and adjusts count', () => {
       let state = initialState();
-      state = reducer(state, addNotification({ assistantId: 'sophia', notification: { type: 'a', message: 'b', severity: 'info' } }));
-      state = reducer(state, addNotification({ assistantId: 'sophia', notification: { type: 'a', message: 'c', severity: 'info' } }));
+      state = reducer(
+        state,
+        addNotification({
+          assistantId: 'sophia',
+          notification: { type: 'a', message: 'b', severity: 'info' },
+        })
+      );
+      state = reducer(
+        state,
+        addNotification({
+          assistantId: 'sophia',
+          notification: { type: 'a', message: 'c', severity: 'info' },
+        })
+      );
       const before = state.notifications.globalUnreadCount;
       state = reducer(state, markAllNotificationsRead('sophia'));
-      expect(state.notifications.byAssistantId.sophia.every((n) => n.isRead)).toBe(true);
+      expect(state.notifications.byAssistantId.sophia.every(n => n.isRead)).toBe(true);
       expect(state.notifications.globalUnreadCount).toBeLessThan(before);
     });
 
@@ -419,8 +433,13 @@ describe('aiAssistantDashboardSlice', () => {
         initialState(),
         addTask({
           assistantId: 'nadia',
-          task: { title: 'Test task', priority: 'high', assignedTo: null, dueDate: new Date().toISOString() },
-        }),
+          task: {
+            title: 'Test task',
+            priority: 'high',
+            assignedTo: null,
+            dueDate: new Date().toISOString(),
+          },
+        })
       );
       expect(state.tasks.activeTasksCount).toBe(before + 1);
       const tasks = state.tasks.byAssistantId.nadia;
@@ -435,11 +454,14 @@ describe('aiAssistantDashboardSlice', () => {
         addTask({
           assistantId: 'clara',
           task: { title: 'Task', priority: 'medium', assignedTo: null, dueDate: '' },
-        }),
+        })
       );
       const taskId = state.tasks.byAssistantId.clara[state.tasks.byAssistantId.clara.length - 1].id;
       const before = state.tasks.activeTasksCount;
-      state = reducer(state, updateTaskStatus({ assistantId: 'clara', taskId, status: 'completed' }));
+      state = reducer(
+        state,
+        updateTaskStatus({ assistantId: 'clara', taskId, status: 'completed' })
+      );
       expect(state.tasks.activeTasksCount).toBe(before - 1);
     });
 
@@ -449,11 +471,11 @@ describe('aiAssistantDashboardSlice', () => {
         addTask({
           assistantId: 'mary',
           task: { title: 'Assign me', priority: 'low', assignedTo: null, dueDate: '' },
-        }),
+        })
       );
       const taskId = state.tasks.byAssistantId.mary[state.tasks.byAssistantId.mary.length - 1].id;
       state = reducer(state, assignTask({ assistantId: 'mary', taskId, agentId: 'agent-1' }));
-      const task = state.tasks.byAssistantId.mary.find((t) => t.id === taskId);
+      const task = state.tasks.byAssistantId.mary.find(t => t.id === taskId);
       expect(task?.assignedTo).toBe('agent-1');
       expect(task?.status).toBe('assigned');
     });
@@ -469,13 +491,13 @@ describe('aiAssistantDashboardSlice', () => {
           sourceAssistant: 'olivia',
           targetAssistants: ['mary', 'theodora'],
           data: { message: 'Need report' },
-        }),
+        })
       );
       expect(state.notifications.byAssistantId.mary[0].message).toContain('olivia');
       expect(state.notifications.byAssistantId.theodora[0].message).toContain('olivia');
       // globalUnreadCount increased by 2
       expect(state.notifications.globalUnreadCount).toBe(
-        initialState().notifications.globalUnreadCount + 2,
+        initialState().notifications.globalUnreadCount + 2
       );
     });
   });
@@ -504,28 +526,22 @@ describe('aiAssistantDashboardSlice', () => {
     });
 
     it('updateOliviaInsights merges and sets lastUpdated', () => {
-      const state = reducer(
-        initialState(),
-        updateOliviaInsights({ priceIndex: 200 }),
-      );
+      const state = reducer(initialState(), updateOliviaInsights({ priceIndex: 200 }));
       expect(state.oliviaAutomation.insightsData.priceIndex).toBe(200);
       expect(state.oliviaAutomation.insightsData.lastUpdated).toBeDefined();
     });
 
     it('updateOliviaCoordination merges', () => {
-      const state = reducer(
-        initialState(),
-        updateOliviaCoordination({ maryConnected: false }),
-      );
+      const state = reducer(initialState(), updateOliviaCoordination({ maryConnected: false }));
       expect(state.oliviaAutomation.coordination.maryConnected).toBe(false);
     });
 
     it('updateOliviaSiteStatus updates matching site', () => {
       const state = reducer(
         initialState(),
-        updateOliviaSiteStatus({ siteName: 'Bayut', status: 'degraded' }),
+        updateOliviaSiteStatus({ siteName: 'Bayut', status: 'degraded' })
       );
-      const site = state.oliviaAutomation.monitoredSites.find((s) => s.name === 'Bayut');
+      const site = state.oliviaAutomation.monitoredSites.find(s => s.name === 'Bayut');
       expect(site?.status).toBe('degraded');
       expect(site?.lastCheck).not.toBeNull();
     });
@@ -533,7 +549,12 @@ describe('aiAssistantDashboardSlice', () => {
     it('addOliviaActivity prepends to log', () => {
       const state = reducer(
         initialState(),
-        addOliviaActivity({ assistantId: 'olivia', action: 'sync', target: 'market', type: 'success' }),
+        addOliviaActivity({
+          assistantId: 'olivia',
+          action: 'sync',
+          target: 'market',
+          type: 'success',
+        })
       );
       expect(state.oliviaAutomation.activityLog[0].action).toBe('sync');
     });
@@ -555,7 +576,7 @@ describe('aiAssistantDashboardSlice', () => {
           dataPoints: ['point1'],
           projectedImpact: 'High',
           confidence: 0.9,
-        }),
+        })
       );
       expect(state.executiveSuggestions.inbox.length).toBe(before + 1);
       expect(state.executiveSuggestions.inbox[0].status).toBe('unreviewed');
@@ -565,21 +586,21 @@ describe('aiAssistantDashboardSlice', () => {
       const id = initialState().executiveSuggestions.inbox[0].id;
       const state = reducer(
         initialState(),
-        updateSuggestionStatus({ suggestionId: id, status: 'acknowledged' }),
+        updateSuggestionStatus({ suggestionId: id, status: 'acknowledged' })
       );
-      expect(state.executiveSuggestions.inbox.find((s) => s.id === id)?.status).toBe('acknowledged');
+      expect(state.executiveSuggestions.inbox.find(s => s.id === id)?.status).toBe('acknowledged');
     });
 
     it('setSuggestionFilters merges', () => {
-      const state = reducer(
-        initialState(),
-        setSuggestionFilters({ priority: 'critical' }),
-      );
+      const state = reducer(initialState(), setSuggestionFilters({ priority: 'critical' }));
       expect(state.executiveSuggestions.filters.priority).toBe('critical');
     });
 
     it('clearSuggestionFilters resets to defaults', () => {
-      let state = reducer(initialState(), setSuggestionFilters({ priority: 'high', department: 'sales' }));
+      let state = reducer(
+        initialState(),
+        setSuggestionFilters({ priority: 'high', department: 'sales' })
+      );
       state = reducer(state, clearSuggestionFilters());
       expect(state.executiveSuggestions.filters).toEqual({
         priority: 'all',
@@ -594,7 +615,11 @@ describe('aiAssistantDashboardSlice', () => {
     it('requestVaultAccess adds pending request', () => {
       const state = reducer(
         initialState(),
-        requestVaultAccess({ documentId: 'doc_001', requesterId: 'theodora', reason: 'Need Q4 report' }),
+        requestVaultAccess({
+          documentId: 'doc_001',
+          requesterId: 'theodora',
+          reason: 'Need Q4 report',
+        })
       );
       expect(state.confidentialVault.accessRequests).toHaveLength(1);
       expect(state.confidentialVault.accessRequests[0].status).toBe('pending');
@@ -604,31 +629,31 @@ describe('aiAssistantDashboardSlice', () => {
     it('approveVaultRequest approves and logs access', () => {
       let state = reducer(
         initialState(),
-        requestVaultAccess({ documentId: 'doc_001', requesterId: 'theodora', reason: 'Need it' }),
+        requestVaultAccess({ documentId: 'doc_001', requesterId: 'theodora', reason: 'Need it' })
       );
       const reqId = state.confidentialVault.accessRequests[0].id;
       state = reducer(state, approveVaultRequest({ requestId: reqId, approverId: 'zoe' }));
-      const req = state.confidentialVault.accessRequests.find((r) => r.id === reqId);
+      const req = state.confidentialVault.accessRequests.find(r => r.id === reqId);
       expect(req?.status).toBe('approved');
       expect(req?.reviewedBy).toBe('zoe');
       expect(state.confidentialVault.vaultStats.pendingRequests).toBe(0);
       expect(state.confidentialVault.vaultStats.recentAccesses).toBe(1);
       // Document access log updated
-      const doc = state.confidentialVault.documents.find((d) => d.id === 'doc_001');
+      const doc = state.confidentialVault.documents.find(d => d.id === 'doc_001');
       expect(doc?.accessLog).toHaveLength(1);
     });
 
     it('denyVaultRequest denies with reason', () => {
       let state = reducer(
         initialState(),
-        requestVaultAccess({ documentId: 'doc_002', requesterId: 'nancy', reason: 'Review' }),
+        requestVaultAccess({ documentId: 'doc_002', requesterId: 'nancy', reason: 'Review' })
       );
       const reqId = state.confidentialVault.accessRequests[0].id;
       state = reducer(
         state,
-        denyVaultRequest({ requestId: reqId, approverId: 'zoe', reason: 'Not authorized' }),
+        denyVaultRequest({ requestId: reqId, approverId: 'zoe', reason: 'Not authorized' })
       );
-      const req = state.confidentialVault.accessRequests.find((r) => r.id === reqId);
+      const req = state.confidentialVault.accessRequests.find(r => r.id === reqId);
       expect(req?.status).toBe('denied');
       expect(req?.denyReason).toBe('Not authorized');
     });
@@ -640,17 +665,14 @@ describe('aiAssistantDashboardSlice', () => {
       const before = initialState().leadManagementHub.funnelMetrics.totalIncoming;
       const state = reducer(
         initialState(),
-        addIncomingLead({ name: 'Ahmed', phone: '+971501234567' } as never),
+        addIncomingLead({ name: 'Ahmed', phone: '+971501234567' } as never)
       );
       expect(state.leadManagementHub.incomingLeads).toHaveLength(1);
       expect(state.leadManagementHub.funnelMetrics.totalIncoming).toBe(before + 1);
     });
 
     it('qualifyLead creates processed lead entry', () => {
-      let state = reducer(
-        initialState(),
-        addIncomingLead({ name: 'Test' } as never),
-      );
+      let state = reducer(initialState(), addIncomingLead({ name: 'Test' } as never));
       const leadId = state.leadManagementHub.incomingLeads[0].id;
       state = reducer(
         state,
@@ -659,7 +681,7 @@ describe('aiAssistantDashboardSlice', () => {
           assignedIntent: 'buy',
           qualificationScore: 85,
           structuredData: { budget: '2M' },
-        }),
+        })
       );
       expect(state.leadManagementHub.processedLeads[leadId]).toBeDefined();
       expect(state.leadManagementHub.processedLeads[leadId].status).toBe('qualified');
@@ -668,7 +690,10 @@ describe('aiAssistantDashboardSlice', () => {
     it('routeLeadToSpecialist routes qualified lead', () => {
       let state = reducer(initialState(), addIncomingLead({ name: 'Route me' } as never));
       const leadId = state.leadManagementHub.incomingLeads[0].id;
-      state = reducer(state, qualifyLead({ leadId, assignedIntent: 'rent', qualificationScore: 70, structuredData: {} }));
+      state = reducer(
+        state,
+        qualifyLead({ leadId, assignedIntent: 'rent', qualificationScore: 70, structuredData: {} })
+      );
       state = reducer(state, routeLeadToSpecialist({ leadId, specialist: 'sophia' }));
       expect(state.leadManagementHub.processedLeads[leadId].status).toBe('routed');
       expect(state.leadManagementHub.processedLeads[leadId].routedTo).toBe('sophia');
@@ -678,8 +703,14 @@ describe('aiAssistantDashboardSlice', () => {
     it('updateLeadPipelineStage updates stage', () => {
       let state = reducer(initialState(), addIncomingLead({ name: 'Stage me' } as never));
       const leadId = state.leadManagementHub.incomingLeads[0].id;
-      state = reducer(state, qualifyLead({ leadId, assignedIntent: 'buy', qualificationScore: 90, structuredData: {} }));
-      state = reducer(state, updateLeadPipelineStage({ leadId, specialist: 'sophia', stage: 'Negotiation' }));
+      state = reducer(
+        state,
+        qualifyLead({ leadId, assignedIntent: 'buy', qualificationScore: 90, structuredData: {} })
+      );
+      state = reducer(
+        state,
+        updateLeadPipelineStage({ leadId, specialist: 'sophia', stage: 'Negotiation' })
+      );
       expect(state.leadManagementHub.processedLeads[leadId].currentStage).toBe('Negotiation');
     });
   });
@@ -689,17 +720,16 @@ describe('aiAssistantDashboardSlice', () => {
     it('addComplianceAuditLog prepends entry', () => {
       const state = reducer(
         initialState(),
-        addComplianceAuditLog({ action: 'KYC check', actor: 'laila' }),
+        addComplianceAuditLog({ action: 'KYC check', actor: 'laila' })
       );
       expect(state.complianceEngine.auditLog).toHaveLength(1);
-      expect((state.complianceEngine.auditLog[0] as Record<string, unknown>).action).toBe('KYC check');
+      expect((state.complianceEngine.auditLog[0] as Record<string, unknown>).action).toBe(
+        'KYC check'
+      );
     });
 
     it('flagTransaction adds to flagged and investigation queue', () => {
-      const state = reducer(
-        initialState(),
-        flagTransaction({ amount: 500000, source: 'unknown' }),
-      );
+      const state = reducer(initialState(), flagTransaction({ amount: 500000, source: 'unknown' }));
       expect(state.complianceEngine.amlMonitor.flaggedTransactions).toHaveLength(1);
       expect(state.complianceEngine.amlMonitor.investigationQueue).toHaveLength(1);
     });
@@ -726,7 +756,7 @@ describe('aiAssistantDashboardSlice', () => {
       const payload = { ...args, timestamp: new Date().toISOString() };
       const state = reducer(
         initialState(),
-        updateAssistantMetricsAsync.fulfilled(payload, 'r1', args),
+        updateAssistantMetricsAsync.fulfilled(payload, 'r1', args)
       );
       expect(state.allAssistants.byId.mary.metrics.tasksCompleted).toBe(1000);
     });
@@ -856,7 +886,7 @@ describe('aiAssistantDashboardSlice', () => {
     it('selectFilteredSuggestions with default filters returns unreviewed', () => {
       const filtered = selectFilteredSuggestions(rootWith());
       expect(filtered.length).toBeGreaterThan(0);
-      expect(filtered.every((s) => s.status === 'unreviewed')).toBe(true);
+      expect(filtered.every(s => s.status === 'unreviewed')).toBe(true);
     });
 
     it('selectUnreviewedSuggestionsCount', () => {
@@ -865,7 +895,7 @@ describe('aiAssistantDashboardSlice', () => {
 
     it('selectCriticalSuggestions', () => {
       const critical = selectCriticalSuggestions(rootWith());
-      expect(critical.every((s) => s.priority === 'critical')).toBe(true);
+      expect(critical.every(s => s.priority === 'critical')).toBe(true);
     });
 
     it('selectAssistantStatus returns status string', () => {
