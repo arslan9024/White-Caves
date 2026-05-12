@@ -2,12 +2,7 @@ import React, { memo, lazy, Suspense, useCallback, useEffect, useMemo, useState 
 import { useSelector, useDispatch } from 'react-redux';
 import { RefreshCw, Settings, Bell, LayoutGrid, List } from 'lucide-react';
 import type { AssistantPerformance } from '../../store/slices/aiAssistant/types';
-import { 
-  AIDropdownSelector, 
-  UniversalAssistantLayout,
-  StatCard,
-  ActivityTimeline
-} from './shared';
+import { AIDropdownSelector, StatCard, ActivityTimeline } from './shared';
 import SubagentCollaborationPanel from './shared/SubagentCollaborationPanel';
 import {
   selectCurrentAssistant,
@@ -15,25 +10,9 @@ import {
   selectPerformance,
   selectRecentActivity,
   selectUI,
-  setLayout
+  setLayout,
 } from '../../store/slices/aiAssistantDashboardSlice';
 import { getInternalModuleMountConfig } from '../../config/internalModuleMounts';
-import {
-  CommandCenterContainer,
-  CommandCenterHeader,
-  HeaderLeft,
-  CommandCenterTitle,
-  CommandCenterSubtitle,
-  HeaderControls,
-  ViewToggleContainer,
-  ToggleBtn,
-  HeaderAction,
-  NotificationBadge,
-  CommandCenterMain,
-  DashboardContainer,
-  ActivitySidebar,
-  LoadingContainer
-} from './AICommandCenter.styles';
 
 const NadiaWhatsAppCRM = lazy(() => import('./NadiaWhatsAppCRM'));
 const MaryInventoryCRM = lazy(() => import('./MaryInventoryCRM_NEW'));
@@ -50,21 +29,39 @@ const AuroraCTODashboard = lazy(() => import('./AuroraCTODashboard_NEW'));
 const LindaWhatsAppCRM = lazy(() => import('./LindaWhatsAppCRM'));
 const HenryRecordsCRM = lazy(() => import('./HenryRecordsCRM'));
 
-const ASSISTANT_COMPONENTS = {
-  nadia: NadiaWhatsAppCRM,
-  mary: MaryInventoryCRM,
-  clara: ClaraLeadsCRM,
-  nina: NinaWhatsAppBotCRM,
-  nancy: NancyHRCRM,
-  sophia: SophiaSalesCRM,
-  daisy: DaisyLeasingCRM,
-  theodora: TheodoraFinanceCRM,
-  olivia: OliviaMarketingCRM,
-  zoe: ZoeExecutiveCRM,
-  laila: LailaComplianceCRM,
-  aurora: AuroraCTODashboard,
-  linda: LindaWhatsAppCRM,
-  henry: HenryRecordsCRM,
+const renderAssistantDashboard = (assistantId?: string) => {
+  switch (assistantId) {
+    case 'nadia':
+      return <NadiaWhatsAppCRM />;
+    case 'mary':
+      return <MaryInventoryCRM />;
+    case 'clara':
+      return <ClaraLeadsCRM />;
+    case 'nina':
+      return <NinaWhatsAppBotCRM />;
+    case 'nancy':
+      return <NancyHRCRM />;
+    case 'sophia':
+      return <SophiaSalesCRM />;
+    case 'daisy':
+      return <DaisyLeasingCRM />;
+    case 'theodora':
+      return <TheodoraFinanceCRM />;
+    case 'olivia':
+      return <OliviaMarketingCRM />;
+    case 'zoe':
+      return <ZoeExecutiveCRM />;
+    case 'laila':
+      return <LailaComplianceCRM />;
+    case 'aurora':
+      return <AuroraCTODashboard />;
+    case 'linda':
+      return <LindaWhatsAppCRM />;
+    case 'henry':
+      return <HenryRecordsCRM />;
+    default:
+      return null;
+  }
 };
 
 const LoadingSpinner = memo(() => (
@@ -82,31 +79,31 @@ interface QuickStatsBarProps {
 const QuickStatsBar = memo(({ assistants, performance }: QuickStatsBarProps) => {
   const activeCount = assistants.filter(a => a.metrics?.systemHealth === 'optimal').length;
   const alertCount = performance?.criticalAlerts?.length || 0;
-  
+
   return (
     <div className="quick-stats-bar">
-      <StatCard 
-        label="Active Assistants" 
+      <StatCard
+        label="Active Assistants"
         value={`${activeCount}/${assistants.length}`}
         icon={LayoutGrid}
         color="#10B981"
       />
-      <StatCard 
-        label="System Health" 
+      <StatCard
+        label="System Health"
         value={`${performance?.overallHealth ?? 95}%`}
         icon={Settings}
         color="#0EA5E9"
         change={0.5}
       />
-      <StatCard 
-        label="Active Tasks" 
+      <StatCard
+        label="Active Tasks"
         value={performance?.activeTasks ?? 47}
         icon={List}
         color="#8B5CF6"
         change={12}
       />
-      <StatCard 
-        label="Alerts" 
+      <StatCard
+        label="Alerts"
         value={alertCount}
         icon={Bell}
         color={alertCount > 0 ? '#EF4444' : '#64748B'}
@@ -115,7 +112,7 @@ const QuickStatsBar = memo(({ assistants, performance }: QuickStatsBarProps) => 
   );
 });
 
-type MountHealthStatus = 'idle' | 'checking' | 'healthy' | 'unhealthy' | 'error';
+type MountHealthStatus = 'checking' | 'healthy' | 'unhealthy' | 'error';
 
 const AICommandCenter = memo(() => {
   const dispatch = useDispatch();
@@ -124,34 +121,33 @@ const AICommandCenter = memo(() => {
   const performance = useSelector(selectPerformance);
   const recentActivity = useSelector(selectRecentActivity);
   const ui = useSelector(selectUI);
-  
-  const handleLayoutChange = useCallback((layout: 'grid' | 'list') => {
-    dispatch(setLayout(layout));
-  }, [dispatch]);
-  
-  const DashboardComponent = useMemo(() => {
-    if (!currentAssistant) return null;
-    const id = currentAssistant.id as keyof typeof ASSISTANT_COMPONENTS;
-    return ASSISTANT_COMPONENTS[id] || null;
-  }, [currentAssistant]);
-  
+
+  const handleLayoutChange = useCallback(
+    (layout: 'grid' | 'list') => {
+      dispatch(setLayout(layout));
+    },
+    [dispatch]
+  );
+
+  const dashboardNode = useMemo(
+    () => renderAssistantDashboard(currentAssistant?.id ? String(currentAssistant.id) : undefined),
+    [currentAssistant?.id]
+  );
+
   const assistantColor = currentAssistant?.colorScheme || '#0EA5E9';
   const mountConfig = useMemo(
     () => (currentAssistant ? getInternalModuleMountConfig(currentAssistant.id) : null),
-    [currentAssistant],
+    [currentAssistant]
   );
-  const [mountHealth, setMountHealth] = useState<MountHealthStatus>('idle');
+  const [mountHealth, setMountHealth] = useState<MountHealthStatus>('checking');
 
   useEffect(() => {
     if (!mountConfig?.healthUrl || !mountConfig.enabled) {
-      setMountHealth('idle');
       return;
     }
 
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 5000);
-
-    setMountHealth('checking');
 
     fetch(mountConfig.healthUrl, {
       method: 'GET',
@@ -160,7 +156,7 @@ const AICommandCenter = memo(() => {
         Accept: 'application/json',
       },
     })
-      .then((response) => {
+      .then(response => {
         setMountHealth(response.ok ? 'healthy' : 'unhealthy');
       })
       .catch(() => {
@@ -177,6 +173,10 @@ const AICommandCenter = memo(() => {
   }, [mountConfig?.enabled, mountConfig?.healthUrl]);
 
   const healthMeta = useMemo(() => {
+    if (!mountConfig?.healthUrl || !mountConfig.enabled) {
+      return { label: 'n/a', color: '#94A3B8', background: 'rgba(148, 163, 184, 0.15)' };
+    }
+
     switch (mountHealth) {
       case 'checking':
         return { label: 'checking', color: '#FBBF24', background: 'rgba(251, 191, 36, 0.15)' };
@@ -187,12 +187,15 @@ const AICommandCenter = memo(() => {
       case 'error':
         return { label: 'unreachable', color: '#F87171', background: 'rgba(248, 113, 113, 0.15)' };
       default:
-        return { label: 'n/a', color: '#94A3B8', background: 'rgba(148, 163, 184, 0.15)' };
+        return { label: 'checking', color: '#FBBF24', background: 'rgba(251, 191, 36, 0.15)' };
     }
-  }, [mountHealth]);
-  
+  }, [mountConfig?.enabled, mountConfig?.healthUrl, mountHealth]);
+
   return (
-    <div className="ai-command-center" style={{ '--primary-color': assistantColor } as React.CSSProperties}>
+    <div
+      className="ai-command-center"
+      style={{ '--primary-color': assistantColor } as React.CSSProperties}
+    >
       <header className="command-center-header">
         <div className="header-left">
           <h1
@@ -248,23 +251,21 @@ const AICommandCenter = memo(() => {
               </>
             ) : null}
           </h1>
-          <span className="command-center-subtitle">
-            Unified dashboard for all AI assistants
-          </span>
+          <span className="command-center-subtitle">Unified dashboard for all AI assistants</span>
         </div>
-        
+
         <div className="header-controls">
           <AIDropdownSelector />
-          
+
           <div className="view-toggle">
-            <button 
+            <button
               className={`toggle-btn ${ui?.layout === 'grid' ? 'active' : ''}`}
               onClick={() => handleLayoutChange('grid')}
               title="Grid view"
             >
               <LayoutGrid size={18} />
             </button>
-            <button 
+            <button
               className={`toggle-btn ${ui?.layout === 'list' ? 'active' : ''}`}
               onClick={() => handleLayoutChange('list')}
               title="List view"
@@ -272,29 +273,29 @@ const AICommandCenter = memo(() => {
               <List size={18} />
             </button>
           </div>
-          
+
           <button className="header-action" title="Settings" aria-label="Open settings">
             <Settings size={18} />
           </button>
-          <button className="header-action notification" title="Notifications" aria-label="View notifications">
+          <button
+            className="header-action notification"
+            title="Notifications"
+            aria-label="View notifications"
+          >
             <Bell size={18} />
             {performance?.criticalAlerts?.length > 0 && (
-              <span className="notification-badge">
-                {performance.criticalAlerts.length}
-              </span>
+              <span className="notification-badge">{performance.criticalAlerts.length}</span>
             )}
           </button>
         </div>
       </header>
-      
+
       <QuickStatsBar assistants={allAssistants} performance={performance} />
-      
+
       <main className="command-center-main">
         <div className="dashboard-container">
-          {DashboardComponent ? (
-            <Suspense fallback={<LoadingSpinner />}>
-              <DashboardComponent />
-            </Suspense>
+          {dashboardNode ? (
+            <Suspense fallback={<LoadingSpinner />}>{dashboardNode}</Suspense>
           ) : (
             <div className="no-assistant-selected">
               <div className="empty-state-icon">🤖</div>
@@ -303,16 +304,12 @@ const AICommandCenter = memo(() => {
             </div>
           )}
         </div>
-        
+
         <aside className="activity-sidebar">
           <SubagentCollaborationPanel assistantId={currentAssistant?.id} />
           <div className="sidebar-section">
             <h3 className="sidebar-title">Recent Activity</h3>
-            <ActivityTimeline 
-              activities={recentActivity} 
-              maxItems={8}
-              color={assistantColor}
-            />
+            <ActivityTimeline activities={recentActivity} maxItems={8} color={assistantColor} />
           </div>
         </aside>
       </main>

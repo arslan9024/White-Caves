@@ -44,7 +44,6 @@ import {
   setGlobalSearch,
   clearGlobalSearch,
   setSidebarCollapsed,
-  toggleSidebarCollapsed,
 } from '../../../store/slices/sidebarSlice';
 import {
   getAllAssistants,
@@ -59,7 +58,10 @@ import {
   useKeyboardNavigation,
   type NavigableItem,
 } from '../../../hooks/navigation/useKeyboardNavigation';
-import SidebarTree, { type DepartmentTreeNode, type ServiceTreeNode } from '../EnhancedLeftSidebar/SidebarTree';
+import SidebarTree, {
+  type DepartmentTreeNode,
+  type ServiceTreeNode,
+} from '../EnhancedLeftSidebar/SidebarTree';
 import SidebarNavItem from '../EnhancedLeftSidebar/SidebarNavItem';
 import {
   SidebarWrapper,
@@ -174,10 +176,7 @@ export interface UnifiedSidebarProps {
 
 // ─── Component ───────────────────────────────────────────────────────────
 
-const UnifiedSidebar: React.FC<UnifiedSidebarProps> = ({
-  onItemClick,
-  isSuperUser = false,
-}) => {
+const UnifiedSidebar: React.FC<UnifiedSidebarProps> = ({ onItemClick, isSuperUser = false }) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const sidebarRef = useRef<HTMLElement>(null);
@@ -215,7 +214,6 @@ const UnifiedSidebar: React.FC<UnifiedSidebarProps> = ({
   // ─── Department tree (for non-search view) ─────────────────────────
   const deptTree: DepartmentTreeNode[] = useMemo(() => {
     return Object.entries(DEPARTMENTS).map(([deptId, dept]) => {
-       
       const badge = dept.badgeKey ? badgeCounts[dept.badgeKey] : undefined;
       const services: ServiceTreeNode[] = dept.services.map(svc => ({
         id: svc.toLowerCase().replace(/\s+/g, '-'),
@@ -257,9 +255,8 @@ const UnifiedSidebar: React.FC<UnifiedSidebarProps> = ({
   const groupedAssistants = useMemo(() => {
     const groups: Record<string, Assistant[]> = {};
     filteredAssistants.forEach(a => {
-       
       if (!groups[a.department]) groups[a.department] = [];
-       
+
       groups[a.department].push(a);
     });
     return groups;
@@ -275,7 +272,6 @@ const UnifiedSidebar: React.FC<UnifiedSidebarProps> = ({
     Object.entries(DEPARTMENTS).forEach(([deptId, dept]) => {
       const deptMatches = dept.label.toLowerCase().includes(q);
       if (deptMatches) {
-         
         const badge = dept.badgeKey ? badgeCounts[dept.badgeKey] : undefined;
         results.push({
           type: 'department',
@@ -319,7 +315,9 @@ const UnifiedSidebar: React.FC<UnifiedSidebarProps> = ({
   const deptServiceResults = searchResults.filter(
     r => r.type === 'department' || r.type === 'service'
   ) as (DeptSearchResult | ServiceSearchResult)[];
-  const assistantResults = searchResults.filter(r => r.type === 'assistant') as AssistantSearchResult[];
+  const assistantResults = searchResults.filter(
+    r => r.type === 'assistant'
+  ) as AssistantSearchResult[];
 
   // ─── Handlers ────────────────────────────────────────────────────
 
@@ -414,7 +412,6 @@ const UnifiedSidebar: React.FC<UnifiedSidebarProps> = ({
     }));
 
     deptTree.forEach(dept => {
-       
       const expanded = expandedDepts[dept.id] !== false;
       items.push({
         id: `dept-${dept.id}`,
@@ -473,7 +470,11 @@ const UnifiedSidebar: React.FC<UnifiedSidebarProps> = ({
     [toggleDeptExpand]
   );
 
-  const { handleKeyDown: handleNavigationKeyDown, getFocusProps, setFocus } = useKeyboardNavigation({
+  const {
+    handleKeyDown: handleNavigationKeyDown,
+    getFocusProps,
+    setFocus,
+  } = useKeyboardNavigation({
     items: navigableItems,
     onSelect: handleNavigableSelect,
     onExpand: handleNavigableExpand,
@@ -551,7 +552,7 @@ const UnifiedSidebar: React.FC<UnifiedSidebarProps> = ({
         {/* Department icons */}
         {Object.entries(DEPARTMENTS).map(([deptId, dept]) => {
           const Icon = dept.icon;
-           
+
           const badge = dept.badgeKey ? badgeCounts[dept.badgeKey] : 0;
           return (
             <CollapsedNavItem
@@ -574,11 +575,19 @@ const UnifiedSidebar: React.FC<UnifiedSidebarProps> = ({
         <SidebarDivider />
 
         {isSuperUser && (
-          <CollapsedNavItem onClick={() => handleQuickNavClick('admin')} title="Admin" aria-label="Admin">
+          <CollapsedNavItem
+            onClick={() => handleQuickNavClick('admin')}
+            title="Admin"
+            aria-label="Admin"
+          >
             <Shield />
           </CollapsedNavItem>
         )}
-        <CollapsedNavItem onClick={() => handleQuickNavClick('settings')} title="Settings" aria-label="Settings">
+        <CollapsedNavItem
+          onClick={() => handleQuickNavClick('settings')}
+          title="Settings"
+          aria-label="Settings"
+        >
           <Settings />
         </CollapsedNavItem>
       </SidebarWrapper>
@@ -600,7 +609,11 @@ const UnifiedSidebar: React.FC<UnifiedSidebarProps> = ({
     >
       {/* ─── Header ─────────────────────────────────────────────── */}
       <SidebarHeader>
-        <SidebarLogo src="/white-caves-logo.png" alt="White Caves" title="White Caves CRM Platform" />
+        <SidebarLogo
+          src="/white-caves-logo.png"
+          alt="White Caves"
+          title="White Caves CRM Platform"
+        />
         <SidebarTitle>White Caves</SidebarTitle>
         <CollapseToggle
           onClick={handleToggleCollapsed}
@@ -641,11 +654,17 @@ const UnifiedSidebar: React.FC<UnifiedSidebarProps> = ({
 
       {/* ─── Search Results (when query is active) ──────────────── */}
       {isSearching ? (
-        <SearchResultsContainer id="sidebar-search-results" role="region" aria-label="Search results">
+        <SearchResultsContainer
+          id="sidebar-search-results"
+          role="region"
+          aria-label="Search results"
+        >
           {searchResults.length === 0 ? (
             <SearchEmptyState>
               <SearchX aria-hidden="true" />
-              <span>No results for "<strong>{globalSearch}</strong>"</span>
+              <span>
+                No results for &quot;<strong>{globalSearch}</strong>&quot;
+              </span>
             </SearchEmptyState>
           ) : (
             <>
@@ -716,7 +735,10 @@ const UnifiedSidebar: React.FC<UnifiedSidebarProps> = ({
                         onClick={() => handleAssistantClick(a.id)}
                         aria-label={`${a.name} AI assistant`}
                       >
-                        <AIAssistantAvatar $color={a.color} style={{ width: 24, height: 24, borderRadius: 6, fontSize: 10 }}>
+                        <AIAssistantAvatar
+                          $color={a.color}
+                          style={{ width: 24, height: 24, borderRadius: 6, fontSize: 10 }}
+                        >
                           {a.avatar || a.name[0]}
                         </AIAssistantAvatar>
                         <SearchResultText>

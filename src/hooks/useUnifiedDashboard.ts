@@ -51,9 +51,7 @@ import {
   selectRecentActivities,
   selectHotLeads,
 } from '../store/crmDataSlice';
-import {
-  selectAssistant as selectAIAssistant,
-} from '../store/slices/aiAssistantDashboardSlice';
+import { selectAssistant as selectAIAssistant } from '../store/slices/aiAssistantDashboardSlice';
 import { AI_ASSISTANTS_REGISTRY } from '../store/slices/aiAssistant/registry';
 
 // ─── Types ────────────────────────────────────────────────────
@@ -101,31 +99,18 @@ export function useUnifiedDashboard() {
   const [searchParams, setSearchParams] = useSearchParams();
 
   // ─── Core Redux State ─────────────────────────────────────
-  const currentRole = useSelector(
-    (state: RootState) => state.navigation?.activeRole || 'buyer',
-  );
-  const currentModule = useSelector(
-    (state: RootState) => state.navigation?.currentModule,
-  );
-  const currentSubModule = useSelector(
-    (state: RootState) => state.navigation?.currentSubModule,
-  );
+  const currentRole = useSelector((state: RootState) => state.navigation?.activeRole || 'buyer');
+  const currentModule = useSelector((state: RootState) => state.navigation?.currentModule);
+  const currentSubModule = useSelector((state: RootState) => state.navigation?.currentSubModule);
   const user = useSelector((state: RootState) => state.user.currentUser);
 
   // ─── Local UI State ───────────────────────────────────────
-  const [activeTab, setActiveTab] = useState<string>(
-    searchParams.get('tab') || 'overview',
-  );
-  const [selectedCRMModule, setSelectedCRMModule] = useState<string | null>(
-    null,
-  );
+  const [activeTab, setActiveTab] = useState<string>(searchParams.get('tab') || 'overview');
+  const [selectedCRMModule, setSelectedCRMModule] = useState<string | null>(null);
 
   // ─── Feature Registry ─────────────────────────────────────
   const roleModule = getModuleById(currentModule ?? currentRole);
-  const roleSubNavItems = getSubNavItems(
-    currentRole,
-    currentModule ?? currentRole,
-  );
+  const roleSubNavItems = getSubNavItems(currentRole, currentModule ?? currentRole);
 
   // ─── Redux CRM Data Selectors ─────────────────────────────
   const allLeads = useSelector(selectAllLeads);
@@ -134,9 +119,7 @@ export function useUnifiedDashboard() {
   const allAgents = useSelector(selectAllAgents);
   const allCommissions = useSelector(selectAllCommissions);
   const overview = useSelector(selectOverviewData);
-  const recentActivities = useSelector((state: RootState) =>
-    selectRecentActivities(state, 10),
-  );
+  const recentActivities = useSelector((state: RootState) => selectRecentActivities(state, 10));
   const leadsLoading = useSelector(selectLeadsLoading);
   const propertiesLoading = useSelector(selectPropertiesLoading);
   const agentsLoading = useSelector(selectAgentsLoading);
@@ -147,8 +130,7 @@ export function useUnifiedDashboard() {
 
   // Composite loading / error
   const isLoading = leadsLoading || propertiesLoading || agentsLoading;
-  const error: string | null =
-    leadsError || propertiesError || agentsError || null;
+  const error: string | null = leadsError || propertiesError || agentsError || null;
 
   // ─── Dashboard Data (memoized) ────────────────────────────
   const dashboardData = useMemo<DashboardData>(
@@ -173,15 +155,7 @@ export function useUnifiedDashboard() {
       maintenanceRequests: EMPTY_CRM_ARRAY,
       leaseInfo: EMPTY_CRM_ARRAY,
     }),
-    [
-      allProperties,
-      allAgents,
-      allLeads,
-      hotLeads,
-      allCommissions,
-      recentActivities,
-      overview,
-    ],
+    [allProperties, allAgents, allLeads, hotLeads, allCommissions, recentActivities, overview]
   );
 
   // ─── Sidebar State ────────────────────────────────────────
@@ -196,19 +170,16 @@ export function useUnifiedDashboard() {
     if (flyoutOpen) {
       dispatch(closeFlyout());
     } else {
-      dispatch(
-        openFlyout(flyoutDepartment || selectedDepartment || 'general'),
-      );
+      dispatch(openFlyout(flyoutDepartment || selectedDepartment || 'general'));
     }
   }, [dispatch, flyoutOpen, flyoutDepartment, selectedDepartment]);
 
   const handleSelectAssistant = useCallback(
     (assistant: string | { id?: string }): void => {
-      const id =
-        typeof assistant === 'string' ? assistant : assistant?.id || '';
+      const id = typeof assistant === 'string' ? assistant : assistant?.id || '';
       dispatch(selectAssistant(id));
     },
-    [dispatch],
+    [dispatch]
   );
 
   const handleRetryAll = useCallback(() => {
@@ -220,10 +191,7 @@ export function useUnifiedDashboard() {
 
   // ─── Tab / Role Info ──────────────────────────────────────
   const availableTabs = getTabsForRole(currentRole);
-  const availableTabIds = useMemo(
-    () => new Set(availableTabs.map((tab) => tab.id)),
-    [availableTabs],
-  );
+  const availableTabIds = useMemo(() => new Set(availableTabs.map(tab => tab.id)), [availableTabs]);
   const roleInfo = getRoleInfo(currentRole);
   useDocumentTitle(`${roleInfo.label} Dashboard`);
 
@@ -246,95 +214,63 @@ export function useUnifiedDashboard() {
 
     switch (currentRole) {
       case 'landlord':
-        filtered.properties = (dashboardData.properties ?? []).filter(
-          (p) => p.ownerId === user?.id,
-        );
-        filtered.tenants = (dashboardData.tenants ?? []).filter(
-          (t) => t.landlordId === user?.id,
-        );
+        filtered.properties = (dashboardData.properties ?? []).filter(p => p.ownerId === user?.id);
+        filtered.tenants = (dashboardData.tenants ?? []).filter(t => t.landlordId === user?.id);
         filtered.agents = (dashboardData.agents ?? []).filter(
-          (a) => a.id === (user as CRMEntity)?.assignedAgentId,
+          a => a.id === (user as CRMEntity)?.assignedAgentId
         );
-        filtered.leases = (dashboardData.leases ?? []).filter(
-          (l) => l.landlordId === user?.id,
-        );
-        filtered.payments = (dashboardData.payments ?? []).filter(
-          (p) => p.landlordId === user?.id,
-        );
+        filtered.leases = (dashboardData.leases ?? []).filter(l => l.landlordId === user?.id);
+        filtered.payments = (dashboardData.payments ?? []).filter(p => p.landlordId === user?.id);
         break;
 
       case 'tenant':
-        filtered.myRental = (dashboardData.myRental ?? []).filter(
-          (r) => r.tenantId === user?.id,
+        filtered.myRental = (dashboardData.myRental ?? []).filter(r => r.tenantId === user?.id);
+        filtered.payments = (dashboardData.payments ?? []).filter(p => p.tenantId === user?.id);
+        filtered.maintenanceRequests = (dashboardData.maintenanceRequests ?? []).filter(
+          m => m.tenantId === user?.id
         );
-        filtered.payments = (dashboardData.payments ?? []).filter(
-          (p) => p.tenantId === user?.id,
-        );
-        filtered.maintenanceRequests = (
-          dashboardData.maintenanceRequests ?? []
-        ).filter((m) => m.tenantId === user?.id);
-        filtered.leaseInfo = (dashboardData.leaseInfo ?? []).filter(
-          (l) => l.tenantId === user?.id,
-        );
+        filtered.leaseInfo = (dashboardData.leaseInfo ?? []).filter(l => l.tenantId === user?.id);
         break;
 
       case 'leasing-agent':
         filtered.properties = (dashboardData.properties ?? []).filter(
-          (p) => p.managingAgentId === user?.id,
+          p => p.managingAgentId === user?.id
         );
-        filtered.tenants = (dashboardData.tenants ?? []).filter(
-          (t) => t.agentId === user?.id,
-        );
-        filtered.contracts = (dashboardData.contracts ?? []).filter(
-          (c) => c.agentId === user?.id,
-        );
+        filtered.tenants = (dashboardData.tenants ?? []).filter(t => t.agentId === user?.id);
+        filtered.contracts = (dashboardData.contracts ?? []).filter(c => c.agentId === user?.id);
         filtered.applications = (dashboardData.applications ?? []).filter(
-          (a) => a.agentId === user?.id,
+          a => a.agentId === user?.id
         );
         break;
 
       case 'secondary-sales-agent':
-        filtered.properties = (dashboardData.properties ?? []).filter(
-          (p) => p.agentId === user?.id,
-        );
-        filtered.leads = (dashboardData.leads ?? []).filter(
-          (l) => l.agentId === user?.id,
-        );
-        filtered.contracts = (dashboardData.contracts ?? []).filter(
-          (c) => c.agentId === user?.id,
-        );
+        filtered.properties = (dashboardData.properties ?? []).filter(p => p.agentId === user?.id);
+        filtered.leads = (dashboardData.leads ?? []).filter(l => l.agentId === user?.id);
+        filtered.contracts = (dashboardData.contracts ?? []).filter(c => c.agentId === user?.id);
         break;
 
       case 'buyer':
-        filtered.savedProperties = (
-          dashboardData.savedProperties ?? []
-        ).filter((p) => p.userId === user?.id);
+        filtered.savedProperties = (dashboardData.savedProperties ?? []).filter(
+          p => p.userId === user?.id
+        );
         filtered.searchHistory = (dashboardData.searchHistory ?? []).filter(
-          (s) => s.userId === user?.id,
+          s => s.userId === user?.id
         );
-        filtered.offers = (dashboardData.offers ?? []).filter(
-          (o) => o.buyerId === user?.id,
-        );
+        filtered.offers = (dashboardData.offers ?? []).filter(o => o.buyerId === user?.id);
         filtered.applications = (dashboardData.applications ?? []).filter(
-          (a) => a.buyerId === user?.id,
+          a => a.buyerId === user?.id
         );
         break;
 
       case 'seller':
-        filtered.properties = (dashboardData.properties ?? []).filter(
-          (p) => p.sellerId === user?.id,
-        );
-        filtered.offers = (dashboardData.offers ?? []).filter((o) => {
-          const propertyBelongsToSeller = (
-            dashboardData.properties ?? []
-          ).some(
-            (p) => p.id === o.propertyId && p.sellerId === user?.id,
+        filtered.properties = (dashboardData.properties ?? []).filter(p => p.sellerId === user?.id);
+        filtered.offers = (dashboardData.offers ?? []).filter(o => {
+          const propertyBelongsToSeller = (dashboardData.properties ?? []).some(
+            p => p.id === o.propertyId && p.sellerId === user?.id
           );
           return propertyBelongsToSeller;
         });
-        filtered.sales = (dashboardData.sales ?? []).filter(
-          (s) => s.sellerId === user?.id,
-        );
+        filtered.sales = (dashboardData.sales ?? []).filter(s => s.sellerId === user?.id);
         break;
 
       default:
@@ -344,7 +280,7 @@ export function useUnifiedDashboard() {
     }
 
     return filtered;
-  }, [dashboardData, isSuperUser, currentRole, user?.id]);
+  }, [dashboardData, isSuperUser, currentRole, user]);
 
   // ─── Effects ──────────────────────────────────────────────
 
@@ -389,27 +325,19 @@ export function useUnifiedDashboard() {
     if (!availableTabIds.has(requestedTab) && activeTab !== 'overview') {
       setActiveTab('overview');
     }
-  }, [
-    searchParams,
-    activeTab,
-    dispatch,
-    availableTabIds,
-    selectedAssistantRedux,
-  ]);
+  }, [searchParams, activeTab, dispatch, availableTabIds, selectedAssistantRedux]);
 
   // Fetch CRM data on mount (skip if already loaded)
   useEffect(() => {
     const promises: Array<{ abort?: () => void }> = [];
-    if (!allLeads.length && !leadsLoading)
-      promises.push(dispatch(fetchLeadsFromAPI({})));
+    if (!allLeads.length && !leadsLoading) promises.push(dispatch(fetchLeadsFromAPI({})));
     if (!allProperties.length && !propertiesLoading)
       promises.push(dispatch(fetchPropertiesFromAPI({})));
-    if (!allAgents.length && !agentsLoading)
-      promises.push(dispatch(fetchAgentsFromAPI()));
+    if (!allAgents.length && !agentsLoading) promises.push(dispatch(fetchAgentsFromAPI()));
     if (!overview) promises.push(dispatch(fetchDashboardOverview()));
 
     return () => {
-      promises.forEach((p) => p.abort?.());
+      promises.forEach(p => p.abort?.());
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps -- run once on mount
   }, [dispatch]);
@@ -436,9 +364,7 @@ export function useUnifiedDashboard() {
         if (flyoutOpen) {
           dispatch(closeFlyout());
         } else {
-          dispatch(
-            openFlyout(flyoutDepartment || selectedDepartment || 'general'),
-          );
+          dispatch(openFlyout(flyoutDepartment || selectedDepartment || 'general'));
         }
       }
     };

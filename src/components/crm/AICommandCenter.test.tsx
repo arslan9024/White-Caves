@@ -42,7 +42,9 @@ vi.mock('../../config/internalModuleMounts', () => ({
 
 vi.mock('lucide-react', () => {
   const stub = (name: string) => {
-    const IconStub = (props: Record<string, unknown>) => <span data-testid={`${name}-icon`}>{name}</span>;
+    const IconStub = (_props: Record<string, unknown>) => (
+      <span data-testid={`${name}-icon`}>{name}</span>
+    );
     IconStub.displayName = name;
     return IconStub;
   };
@@ -145,7 +147,7 @@ vi.mock('lucide-react', () => {
     Sparkles: stub('Sparkles'),
     Link2: stub('Link2'),
     ShieldCheck: stub('ShieldCheck'),
-    type: stub('type') as unknown,   // LucideIcon type
+    type: stub('type') as unknown, // LucideIcon type
     LucideIcon: stub('LucideIcon'),
   };
 });
@@ -154,11 +156,22 @@ vi.mock('lucide-react', () => {
 vi.mock('./shared', () => ({
   AIDropdownSelector: () => <div data-testid="ai-dropdown">Dropdown</div>,
   UniversalAssistantLayout: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
-  StatCard: ({ label, value, color }: { label: string; value: unknown; color: string }) => (
-    <div data-testid="stat-card"><span>{label}</span><span>{String(value)}</span></div>
+  StatCard: ({ label, value, color: _color }: { label: string; value: unknown; color: string }) => (
+    <div data-testid="stat-card">
+      <span>{label}</span>
+      <span>{String(value)}</span>
+    </div>
   ),
-  ActivityTimeline: ({ activities, maxItems }: { activities: unknown[]; maxItems: number }) => (
-    <div data-testid="activity-timeline">{Array.isArray(activities) ? activities.length : 0} items</div>
+  ActivityTimeline: ({
+    activities,
+    maxItems: _maxItems,
+  }: {
+    activities: unknown[];
+    maxItems: number;
+  }) => (
+    <div data-testid="activity-timeline">
+      {Array.isArray(activities) ? activities.length : 0} items
+    </div>
   ),
 }));
 
@@ -166,7 +179,12 @@ vi.mock('./shared', () => ({
 vi.mock('./AICommandCenter.styles', () => {
   const c = (tag: string, testId: string) => {
     const Comp = React.forwardRef(({ children, ...props }: Record<string, unknown>, ref) =>
-      React.createElement(tag, { 'data-testid': testId, ref, ...props }, children as React.ReactNode));
+      React.createElement(
+        tag,
+        { 'data-testid': testId, ref, ...props },
+        children as React.ReactNode
+      )
+    );
     Comp.displayName = testId;
     return Comp;
   };
@@ -194,18 +212,54 @@ vi.mock('./shared/SubagentCollaborationPanel', () => ({
 }));
 
 // Mock all lazy-loaded CRM components as simple stubs (must be individual calls for hoisting)
-vi.mock('./NadiaWhatsAppCRM', () => ({ __esModule: true, default: () => <div data-testid="crm-nadia">Nadia Dashboard</div> }));
-vi.mock('./MaryInventoryCRM_NEW', () => ({ __esModule: true, default: () => <div data-testid="crm-mary">Mary Dashboard</div> }));
-vi.mock('./ClaraLeadsCRM_NEW', () => ({ __esModule: true, default: () => <div data-testid="crm-clara">Clara Dashboard</div> }));
-vi.mock('./NinaWhatsAppBotCRM_NEW', () => ({ __esModule: true, default: () => <div data-testid="crm-nina">Nina Dashboard</div> }));
-vi.mock('./NancyHRCRM_NEW', () => ({ __esModule: true, default: () => <div data-testid="crm-nancy">Nancy Dashboard</div> }));
-vi.mock('./SophiaSalesCRM_NEW', () => ({ __esModule: true, default: () => <div data-testid="crm-sophia">Sophia Dashboard</div> }));
-vi.mock('./DaisyLeasingCRM_NEW', () => ({ __esModule: true, default: () => <div data-testid="crm-daisy">Daisy Dashboard</div> }));
-vi.mock('./TheodoraFinanceCRM_NEW', () => ({ __esModule: true, default: () => <div data-testid="crm-theodora">Theodora Dashboard</div> }));
-vi.mock('./OliviaMarketingCRM_NEW', () => ({ __esModule: true, default: () => <div data-testid="crm-olivia">Olivia Dashboard</div> }));
-vi.mock('./ZoeExecutiveCRM_NEW', () => ({ __esModule: true, default: () => <div data-testid="crm-zoe">Zoe Dashboard</div> }));
-vi.mock('./LailaComplianceCRM_NEW', () => ({ __esModule: true, default: () => <div data-testid="crm-laila">Laila Dashboard</div> }));
-vi.mock('./AuroraCTODashboard_NEW', () => ({ __esModule: true, default: () => <div data-testid="crm-aurora">Aurora Dashboard</div> }));
+vi.mock('./NadiaWhatsAppCRM', () => ({
+  __esModule: true,
+  default: () => <div data-testid="crm-nadia">Nadia Dashboard</div>,
+}));
+vi.mock('./MaryInventoryCRM_NEW', () => ({
+  __esModule: true,
+  default: () => <div data-testid="crm-mary">Mary Dashboard</div>,
+}));
+vi.mock('./ClaraLeadsCRM_NEW', () => ({
+  __esModule: true,
+  default: () => <div data-testid="crm-clara">Clara Dashboard</div>,
+}));
+vi.mock('./NinaWhatsAppBotCRM_NEW', () => ({
+  __esModule: true,
+  default: () => <div data-testid="crm-nina">Nina Dashboard</div>,
+}));
+vi.mock('./NancyHRCRM_NEW', () => ({
+  __esModule: true,
+  default: () => <div data-testid="crm-nancy">Nancy Dashboard</div>,
+}));
+vi.mock('./SophiaSalesCRM_NEW', () => ({
+  __esModule: true,
+  default: () => <div data-testid="crm-sophia">Sophia Dashboard</div>,
+}));
+vi.mock('./DaisyLeasingCRM_NEW', () => ({
+  __esModule: true,
+  default: () => <div data-testid="crm-daisy">Daisy Dashboard</div>,
+}));
+vi.mock('./TheodoraFinanceCRM_NEW', () => ({
+  __esModule: true,
+  default: () => <div data-testid="crm-theodora">Theodora Dashboard</div>,
+}));
+vi.mock('./OliviaMarketingCRM_NEW', () => ({
+  __esModule: true,
+  default: () => <div data-testid="crm-olivia">Olivia Dashboard</div>,
+}));
+vi.mock('./ZoeExecutiveCRM_NEW', () => ({
+  __esModule: true,
+  default: () => <div data-testid="crm-zoe">Zoe Dashboard</div>,
+}));
+vi.mock('./LailaComplianceCRM_NEW', () => ({
+  __esModule: true,
+  default: () => <div data-testid="crm-laila">Laila Dashboard</div>,
+}));
+vi.mock('./AuroraCTODashboard_NEW', () => ({
+  __esModule: true,
+  default: () => <div data-testid="crm-aurora">Aurora Dashboard</div>,
+}));
 
 import AICommandCenter from './AICommandCenter';
 
@@ -388,7 +442,7 @@ describe('AICommandCenter', () => {
       mockPerformance = undefined;
       render(<AICommandCenter />);
       expect(screen.getByText('95%')).toBeInTheDocument(); // default fallback
-      expect(screen.getByText('47')).toBeInTheDocument();  // default fallback
+      expect(screen.getByText('47')).toBeInTheDocument(); // default fallback
     });
   });
 
@@ -477,7 +531,7 @@ describe('AICommandCenter', () => {
       await waitFor(() => {
         expect(fetchMock).toHaveBeenCalledWith(
           'http://localhost:3005/health',
-          expect.objectContaining({ method: 'GET' }),
+          expect.objectContaining({ method: 'GET' })
         );
       });
 

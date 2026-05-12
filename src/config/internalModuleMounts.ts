@@ -10,8 +10,34 @@ export interface InternalModuleMountConfig {
   description: string;
 }
 
-const getEnv = (key: string): string | undefined => {
-  const value = (import.meta as ImportMeta & { env?: Record<string, string | undefined> }).env?.[key];
+const getEnv = (
+  key: 'VITE_LINDA_MODULE_URL' | 'VITE_LINDA_API_URL' | 'VITE_HENRY_MODULE_URL'
+): string | undefined => {
+  const env = (
+    import.meta as ImportMeta & {
+      env?: {
+        VITE_LINDA_MODULE_URL?: string;
+        VITE_LINDA_API_URL?: string;
+        VITE_HENRY_MODULE_URL?: string;
+      };
+    }
+  ).env;
+
+  let value: string | undefined;
+  switch (key) {
+    case 'VITE_LINDA_MODULE_URL':
+      value = env?.VITE_LINDA_MODULE_URL;
+      break;
+    case 'VITE_LINDA_API_URL':
+      value = env?.VITE_LINDA_API_URL;
+      break;
+    case 'VITE_HENRY_MODULE_URL':
+      value = env?.VITE_HENRY_MODULE_URL;
+      break;
+    default:
+      value = undefined;
+  }
+
   return typeof value === 'string' && value.trim().length > 0 ? value.trim() : undefined;
 };
 
@@ -41,6 +67,15 @@ export const INTERNAL_MODULE_MOUNTS: Record<string, InternalModuleMountConfig> =
   },
 };
 
-export const getInternalModuleMountConfig = (assistantId: string): InternalModuleMountConfig | null => {
-  return INTERNAL_MODULE_MOUNTS[assistantId] ?? null;
+export const getInternalModuleMountConfig = (
+  assistantId: string
+): InternalModuleMountConfig | null => {
+  switch (assistantId) {
+    case 'linda':
+      return INTERNAL_MODULE_MOUNTS.linda;
+    case 'henry':
+      return INTERNAL_MODULE_MOUNTS.henry;
+    default:
+      return null;
+  }
 };
