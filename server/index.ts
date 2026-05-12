@@ -207,8 +207,18 @@ app.use((_req: Request, res: Response, next: NextFunction) => {
 app.use(
   cors({
     origin: (origin, callback) => {
-      const isLocalhostOrigin =
-        typeof origin === 'string' && /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/i.test(origin);
+      const isLocalhostOrigin = (() => {
+        if (typeof origin !== 'string') return false;
+        try {
+          const parsed = new URL(origin);
+          return (
+            (parsed.hostname === 'localhost' || parsed.hostname === '127.0.0.1') &&
+            (parsed.protocol === 'http:' || parsed.protocol === 'https:')
+          );
+        } catch {
+          return false;
+        }
+      })();
 
       // Allow requests with no origin (server-to-server, curl, mobile apps)
       if (!origin || CORS_ORIGINS.includes(origin) || (!IS_PRODUCTION && isLocalhostOrigin)) {
@@ -257,6 +267,9 @@ app.use('/api/auth/login', authLimiter);
 app.use('/api/auth/register', registerLimiter);
 app.use('/api/auth/password', passwordLimiter);
 app.use('/api/auth/verify-2fa', strictLimiter);
+app.use('/api/auth/2fa/setup', strictLimiter);
+app.use('/api/auth/2fa/verify', strictLimiter);
+app.use('/api/auth/2fa/disable', strictLimiter);
 app.use('/api/auth/firebase-sync', authLimiter);
 app.use('/api/auth/webauthn/register', authLimiter);
 app.use('/api/auth/webauthn/authenticate', authLimiter);
@@ -889,9 +902,7 @@ const startServer = async () => {
   createSocketServer(httpServer);
 
   const requestedPort = Number(PORT) || 3001;
-  const shouldAutoFallbackPort =
-    !IS_PRODUCTION &&
-    !process.env.API_PORT;
+  const shouldAutoFallbackPort = !IS_PRODUCTION && !process.env.API_PORT;
 
   let activePort = requestedPort;
   if (shouldAutoFallbackPort) {

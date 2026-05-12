@@ -1,8 +1,9 @@
-import React, { FC } from 'react';
+import React, { FC, useCallback, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useDocumentTitle } from '../../hooks/useDocumentTitle';
 import { useUserProfile } from '../../hooks/useUserProfile';
 import { BiometricSetup } from '../../features/auth/components/BiometricLogin';
+import { authFetch } from '../../utils/authFetch';
 import './AuthPages.css';
 
 const ProfilePage: FC = () => {
@@ -30,6 +31,34 @@ const ProfilePage: FC = () => {
     }
     return role;
   };
+
+  const [twoFactorSetupUri, setTwoFactorSetupUri] = useState<string | null>(null);
+  const [twoFactorSetupError, setTwoFactorSetupError] = useState<string | null>(null);
+  const [twoFactorSetupLoading, setTwoFactorSetupLoading] = useState(false);
+
+  const handleEnableTwoFactor = useCallback(async () => {
+    setTwoFactorSetupLoading(true);
+    setTwoFactorSetupError(null);
+
+    try {
+      const response = await authFetch('/api/auth/2fa/setup', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({}),
+      });
+      const payload = await response.json();
+
+      if (payload.success && payload.data?.otpAuthUrl) {
+        setTwoFactorSetupUri(payload.data.otpAuthUrl as string);
+      } else {
+        setTwoFactorSetupError(payload.error || 'Unable to start 2FA setup.');
+      }
+    } catch {
+      setTwoFactorSetupError('Unable to start 2FA setup. Please try again.');
+    } finally {
+      setTwoFactorSetupLoading(false);
+    }
+  }, []);
 
   if (!user) {
     return null;
@@ -309,7 +338,30 @@ const ProfilePage: FC = () => {
                 <div className="info-card">
                   <h3>Two-Factor Authentication</h3>
                   <p>Add an extra layer of security to your account</p>
-                  <button className="btn btn-secondary">Enable 2FA</button>
+                  <button
+                    className="btn btn-secondary"
+                    onClick={() => void handleEnableTwoFactor()}
+                    disabled={twoFactorSetupLoading}
+                  >
+                    {twoFactorSetupLoading ? 'Preparing…' : 'Enable 2FA'}
+                  </button>
+                  {twoFactorSetupUri && (
+                    <p
+                      className="field-hint"
+                      style={{ marginTop: '0.75rem', wordBreak: 'break-word' }}
+                    >
+                      Scan this URI in your authenticator app: {twoFactorSetupUri}
+                    </p>
+                  )}
+                  {twoFactorSetupError && (
+                    <p
+                      className="field-hint"
+                      role="alert"
+                      style={{ color: '#b91c1c', marginTop: '0.75rem' }}
+                    >
+                      {twoFactorSetupError}
+                    </p>
+                  )}
                 </div>
 
                 <div className="info-card danger">

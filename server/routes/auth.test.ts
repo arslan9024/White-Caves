@@ -208,6 +208,28 @@ describe('Auth Routes — /api/auth', () => {
       expect(res.body.requiresTwoFactor).toBe(false);
     });
 
+    it('returns a 2FA challenge when the account has two-factor enabled', async () => {
+      mockPrisma.user.findUnique.mockResolvedValueOnce({
+        id: 'user-1',
+        email: 'test@whitecaves.ae',
+        name: 'Test User',
+        role: 'owner',
+        department: 'management',
+        photoUrl: null,
+        passwordHash: '$2a$10$validhash',
+        twoFactorEnabled: true,
+        twoFactorSecret: 'secret',
+      });
+      mockBcrypt.compare.mockResolvedValueOnce(true);
+      const res = await request(createApp())
+        .post('/api/auth/login')
+        .send({ email: 'test@whitecaves.ae', password: 'Test1234' });
+      expect(res.status).toBe(200);
+      expect(res.body.requiresTwoFactor).toBe(true);
+      expect(res.body.data.twoFactorToken).toBeDefined();
+      expect(res.body.data.token).toBeUndefined();
+    });
+
     it('auto-migrates legacy wc$ password hash on login', async () => {
       const legacyHash = 'wc$' + Buffer.from('Test1234').toString('base64');
       mockPrisma.user.findUnique.mockResolvedValueOnce({
@@ -587,13 +609,32 @@ describe('Auth Routes — /api/auth', () => {
       expect(res.status).toBe(400);
     });
 
-    it('returns 501 when not in development mode', async () => {
-      // NODE_ENV is 'test', not 'development', so 2FA should fail
+    it('verifies a code in development bypass mode', async () => {
+      const originalEnv = process.env.NODE_ENV;
+      const originalBypass = process.env.DEV_2FA_BYPASS;
+      process.env.NODE_ENV = 'development';
+      process.env.DEV_2FA_BYPASS = 'true';
+
+      mockPrisma.user.findUnique.mockResolvedValueOnce({
+        id: 'user-1',
+        email: 'test@whitecaves.ae',
+        name: 'Test User',
+        role: 'owner',
+        passwordHash: '$2a$10$validhash',
+        twoFactorEnabled: true,
+        twoFactorSecret: 'encrypted-secret',
+      });
+
       const res = await request(createApp())
         .post('/api/auth/verify-2fa')
         .send({ email: 'test@whitecaves.ae', code: '000000' });
-      expect(res.status).toBe(501);
-      expect(res.body.error).toMatch(/not yet configured/i);
+
+      process.env.NODE_ENV = originalEnv;
+      process.env.DEV_2FA_BYPASS = originalBypass;
+
+      expect(res.status).toBe(200);
+      expect(res.body.success).toBe(true);
+      expect(res.body.data.token).toBe('mock-jwt-token');
     });
 
     it('returns 400 if code is missing', async () => {
@@ -602,6 +643,60 @@ describe('Auth Routes — /api/auth', () => {
         .send({ email: 'test@whitecaves.ae' });
       expect(res.status).toBe(400);
       expect(res.body.error).toMatch(/verification code.*required/i);
+    });
+  });
+
+  // ── POST /2fa/setup ─────────────────────────────────────────────
+  describe('POST /api/auth/2fa/setup', () => {
+    it('returns a QR auth URI and stores the encrypted secret', async () => {
+      mockPrisma.user.findUnique.mockResolvedValueOnce({
+        id: 'user-1',
+        email: 'test@whitecaves.ae',
+        name: 'Test User',
+        role: 'owner',
+        passwordHash: '$2a$10$validhash',
+      });
+
+      const res = await request(createApp('owner')).post('/api/auth/2fa/setup').send({});
+
+      expect(res.status).toBe(200);
+      expect(res.body.success).toBe(true);
+      expect(res.body.data.otpAuthUrl).toMatch(/^otpauth:\/\//i);
+      expect(mockPrisma.user.update).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: { id: 'user-1' },
+          data: expect.objectContaining({ twoFactorEnabled: false }),
+        })
+      );
+    });
+  });
+
+  // ── POST /2fa/disable ───────────────────────────────────────────
+  describe('POST /api/auth/2fa/disable', () => {
+    it('disables 2FA after password confirmation', async () => {
+      mockPrisma.user.findUnique.mockResolvedValueOnce({
+        id: 'user-1',
+        email: 'test@whitecaves.ae',
+        name: 'Test User',
+        role: 'owner',
+        passwordHash: '$2a$10$validhash',
+        twoFactorEnabled: true,
+        twoFactorSecret: 'encrypted-secret',
+      });
+
+      const res = await request(createApp('owner'))
+        .post('/api/auth/2fa/disable')
+        .send({ currentPassword: 'Test1234' });
+
+      expect(res.status).toBe(200);
+      expect(res.body.success).toBe(true);
+      expect(res.body.data.disabled).toBe(true);
+      expect(mockPrisma.user.update).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: { id: 'user-1' },
+          data: expect.objectContaining({ twoFactorEnabled: false, twoFactorSecret: null }),
+        })
+      );
     });
   });
 
