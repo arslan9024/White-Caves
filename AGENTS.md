@@ -7,7 +7,7 @@ This file defines the White Caves multi-expert operating model for all agent-ass
 ## 🏛️ EXECUTIVE LEADERSHIP
 
 1. **@Ada (Chief Architect):** Named after Ada Lovelace (1st Programmer). Oversees the entire project architecture and integration.
-2. **@Margaret (Project Manager):** Named after Margaret Hamilton (Apollo Software). Plans the 40% remaining tasks into daily sprints.
+2. **@Margaret (Strategic Planner):** Named after Margaret Hamilton (Apollo Software). Decomposes the recovery program into dependency-safe daily milestones from the stale 40% baseline toward the verified 75% target.
 3. **@Grace (Lead Engineer):** Named after Grace Hopper (COBOL Pioneer). Enforces "Best Technologies" and modern coding standards.
 
 ## 🎨 FRONTEND & UX DEPARTMENT
@@ -190,6 +190,60 @@ This file defines the White Caves multi-expert operating model for all agent-ass
 - **Synergy:** Use `@workspace` to ensure all 35 roles share the same project context.
 - **Free Agent Policy (STRICT):** @Victoria, @Invoice, @Sofia, @Cassie, @Joelle use ONLY free models. Zero exceptions. See copilot-instructions.md Rule 4 for full policy.
 - **Coding Gate:** No senior coding agent begins a feature without passing the Context Enrichment Gate (copilot-instructions.md Rule 5). Free agents must complete their docs first.
+
+## Multi-Agent Execution Model v2
+
+### Callable vs named agents
+
+The 35 named personas in this file are the **ownership model**. The directly callable execution agents in this environment are the orchestration and delivery agents such as **Architect, Planner, Explore, Coder, Database, Designer, Security, SEO, DevOps, QA, and guardian**.
+
+### Squad model
+
+| Squad                           | Ownership labels                  | Primary callable agents               | Mission                                       |
+| ------------------------------- | --------------------------------- | ------------------------------------- | --------------------------------------------- |
+| Squad A — Planning/Coordination | @Ada, @Margaret, @Grace           | Architect, Planner, Explore, guardian | define scope, dependencies, truth maintenance |
+| Squad B — Frontend Delivery     | @Una, @Lea, @Tracy, @Africa       | Designer, SEO, Coder, QA              | homepage and public UX delivery               |
+| Squad C — Backend/Data Delivery | @Mira, @Barbara, @Ruchi, @Daniela | Coder, Database, Security             | APIs, data, auth, business logic              |
+| Squad D — QA/Security           | @Katherine, @Radia, @Ecem, @Joy   | QA, Security, guardian                | verification, risk review, release gates      |
+| Squad E — Release/Ops           | @Gwynne, @Lila, @Rachel, @Lisa    | DevOps, SEO, guardian                 | CI, deploy, runtime, discoverability          |
+
+### Handoff protocol
+
+Every task handoff must include:
+
+- task ID
+- files affected
+- dependencies
+- acceptance criteria
+- validation steps
+- blocker status
+
+### Shared status model
+
+- Planned
+- Ready
+- In Progress
+- Code Complete
+- In Verification
+- Verified
+- Blocked
+- Shipped
+
+### Proof requirements
+
+A task is not complete until it has:
+
+- evidence of the implementation or documentation change
+- required tests/build results for the scope
+- a verifier that is different from the implementer
+- tracker updates in the live sprint and progress documents
+
+### Execution rules
+
+- Do not assign multiple coding agents to the same file at the same time.
+- Work in vertical slices instead of broad scattered edits.
+- Escalate P0 blockers to @Ada immediately.
+- No milestone changes the project percentage until independent verification is recorded.
 
 ## Working Agreement for This Repository
 
