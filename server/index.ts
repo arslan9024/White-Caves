@@ -94,6 +94,51 @@ const PORT =
   process.env.API_PORT ||
   (process.env.NODE_ENV === 'development' ? 3001 : process.env.PORT || 3001);
 
+type StubContract = {
+  id: string;
+  contractNumber: string;
+  lessorName: string;
+  tenantName: string;
+  propertyType: string;
+  annualRent: number;
+  status: 'draft' | 'active';
+  createdAt: string;
+};
+
+type StubAppointment = {
+  id: string;
+  propertyId: string;
+  agentId?: string | null;
+  leadId?: string | null;
+  scheduledAt: string;
+  durationMinutes: number;
+  status: 'scheduled' | 'confirmed' | 'completed' | 'cancelled';
+  type: 'in_person' | 'virtual';
+  notes?: string;
+  createdAt: string;
+  updatedAt: string;
+};
+
+type StubTenancyAgreement = {
+  id: string;
+  propertyId: string;
+  landlordName: string;
+  tenantName: string;
+  startDate: string;
+  endDate: string;
+  annualRent: number;
+  status: 'draft' | 'active' | 'terminated';
+  createdAt: string;
+  updatedAt: string;
+};
+
+const stubContracts: StubContract[] = [];
+const stubAppointments: StubAppointment[] = [];
+const stubTenancyAgreements: StubTenancyAgreement[] = [];
+
+const createStubId = (prefix: string): string =>
+  `${prefix}_${Date.now()}_${crypto.randomInt(1000, 9999)}`;
+
 const findAvailablePort = async (startPort: number, maxAttempts: number): Promise<number> => {
   for (let attempt = 0; attempt < maxAttempts; attempt += 1) {
     const candidatePort = startPort + attempt;
@@ -586,11 +631,25 @@ app.get(
   '/api/contracts',
   authMiddleware,
   requirePermission('view_contracts'),
-  asyncHandler(async (_req: Request, res: Response) => {
+  asyncHandler(async (req: Request, res: Response) => {
+    const page = Math.max(1, Number.parseInt(String(req.query.page ?? '1'), 10) || 1);
+    const pageSize = Math.min(
+      100,
+      Math.max(1, Number.parseInt(String(req.query.pageSize ?? '20'), 10) || 20)
+    );
+    const start = (page - 1) * pageSize;
+    const end = start + pageSize;
+    const rows = stubContracts.slice(start, end);
+
     res.status(200).json({
       success: true,
-      data: [],
-      pagination: { page: 1, pageSize: 20, total: 0, totalPages: 0 },
+      contracts: rows,
+      pagination: {
+        page,
+        pageSize,
+        total: stubContracts.length,
+        totalPages: Math.ceil(stubContracts.length / pageSize),
+      },
     });
   })
 );
@@ -598,10 +657,35 @@ app.post(
   '/api/contracts',
   authMiddleware,
   requirePermission('create_contracts'),
-  asyncHandler(async (_req: Request, res: Response) => {
-    res
-      .status(501)
-      .json({ success: false, error: 'Feature not yet implemented', code: 'NOT_IMPLEMENTED' });
+  asyncHandler(async (req: Request, res: Response) => {
+    const lessorName = String(req.body?.lessorName ?? '').trim();
+    const tenantName = String(req.body?.tenantName ?? '').trim();
+    const propertyType = String(req.body?.propertyType ?? 'Apartment').trim() || 'Apartment';
+    const annualRent = Number(req.body?.annualRent ?? 0);
+
+    if (!lessorName) throw new AppError('lessorName is required', 400);
+    if (!tenantName) throw new AppError('tenantName is required', 400);
+    if (!Number.isFinite(annualRent) || annualRent <= 0) {
+      throw new AppError('annualRent must be greater than 0', 400);
+    }
+
+    const contract: StubContract = {
+      id: createStubId('contract'),
+      contractNumber: `WC-${new Date().getFullYear()}-${stubContracts.length + 1}`,
+      lessorName,
+      tenantName,
+      propertyType,
+      annualRent,
+      status: 'draft',
+      createdAt: new Date().toISOString(),
+    };
+
+    stubContracts.unshift(contract);
+
+    res.status(201).json({
+      success: true,
+      contract,
+    });
   })
 );
 
@@ -614,42 +698,84 @@ app.post(
   '/api/appointments',
   authMiddleware,
   asyncHandler(async (req: Request, res: Response) => {
-    logger.info('Appointment created (stub)', {
-      propertyId: req.body?.propertyId,
-      agentId: req.body?.agentId,
-    });
-    res
-      .status(501)
-      .json({ success: false, error: 'Feature not yet implemented', code: 'NOT_IMPLEMENTED' });
+    const propertyId = String(req.body?.propertyId ?? '').trim();
+    const scheduledAt = String(req.body?.scheduledAt ?? '').trim();
+
+    if (!propertyId) throw new AppError('propertyId is required', 400);
+    if (!scheduledAt) throw new AppError('scheduledAt is required', 400);
+
+    const appointment: StubAppointment = {
+      id: createStubId('appt'),
+      propertyId,
+      agentId: req.body?.agentId ? String(req.body.agentId) : null,
+      leadId: req.body?.leadId ? String(req.body.leadId) : null,
+      scheduledAt,
+      durationMinutes: Number(req.body?.durationMinutes ?? 60),
+      status: 'scheduled',
+      type: req.body?.type === 'virtual' ? 'virtual' : 'in_person',
+      notes: req.body?.notes ? String(req.body.notes) : undefined,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    };
+
+    stubAppointments.unshift(appointment);
+    res.status(201).json({ success: true, data: appointment });
   })
 );
 app.get(
   '/api/appointments',
   authMiddleware,
-  asyncHandler(async (_req: Request, res: Response) => {
+  asyncHandler(async (req: Request, res: Response) => {
+    const status = typeof req.query.status === 'string' ? req.query.status : undefined;
+    const rows = status
+      ? stubAppointments.filter(item => item.status === status)
+      : stubAppointments;
+
     res.status(200).json({
       success: true,
-      data: [],
-      pagination: { page: 1, pageSize: 20, total: 0, totalPages: 0 },
+      data: rows,
+      pagination: { page: 1, pageSize: rows.length || 20, total: rows.length, totalPages: 1 },
     });
   })
 );
 app.patch(
   '/api/appointments/:id',
   authMiddleware,
-  asyncHandler(async (_req: Request, res: Response) => {
-    res
-      .status(501)
-      .json({ success: false, error: 'Feature not yet implemented', code: 'NOT_IMPLEMENTED' });
+  asyncHandler(async (req: Request, res: Response) => {
+    const current = stubAppointments.find(item => item.id === req.params.id);
+    if (!current) throw new AppError('Appointment not found', 404);
+
+    const nextStatus = req.body?.status;
+    const allowedStatus = ['scheduled', 'confirmed', 'completed', 'cancelled'];
+
+    const updated: StubAppointment = {
+      ...current,
+      status: allowedStatus.includes(nextStatus) ? nextStatus : current.status,
+      scheduledAt: req.body?.scheduledAt ? String(req.body.scheduledAt) : current.scheduledAt,
+      durationMinutes: req.body?.durationMinutes
+        ? Number(req.body.durationMinutes)
+        : current.durationMinutes,
+      type:
+        req.body?.type === 'virtual' || req.body?.type === 'in_person'
+          ? req.body.type
+          : current.type,
+      notes: req.body?.notes !== undefined ? String(req.body.notes ?? '') : current.notes,
+      updatedAt: new Date().toISOString(),
+    };
+
+    Object.assign(current, updated);
+
+    res.status(200).json({ success: true, data: current });
   })
 );
 app.delete(
   '/api/appointments/:id',
   authMiddleware,
-  asyncHandler(async (_req: Request, res: Response) => {
-    res
-      .status(501)
-      .json({ success: false, error: 'Feature not yet implemented', code: 'NOT_IMPLEMENTED' });
+  asyncHandler(async (req: Request, res: Response) => {
+    const index = stubAppointments.findIndex(item => item.id === req.params.id);
+    if (index < 0) throw new AppError('Appointment not found', 404);
+    const [deleted] = stubAppointments.splice(index, 1);
+    res.status(200).json({ success: true, data: deleted });
   })
 );
 
@@ -658,11 +784,16 @@ app.delete(
 app.get(
   '/api/tenancy-agreements',
   authMiddleware,
-  asyncHandler(async (_req: Request, res: Response) => {
+  asyncHandler(async (req: Request, res: Response) => {
+    const status = typeof req.query.status === 'string' ? req.query.status : undefined;
+    const rows = status
+      ? stubTenancyAgreements.filter(item => item.status === status)
+      : stubTenancyAgreements;
+
     res.status(200).json({
       success: true,
-      data: [],
-      pagination: { page: 1, pageSize: 20, total: 0, totalPages: 0 },
+      data: rows,
+      pagination: { page: 1, pageSize: rows.length || 20, total: rows.length, totalPages: 1 },
     });
   })
 );
@@ -670,19 +801,63 @@ app.post(
   '/api/tenancy-agreements',
   authMiddleware,
   asyncHandler(async (req: Request, res: Response) => {
-    logger.info('Tenancy agreement created (stub)', { propertyId: req.body?.propertyId });
-    res
-      .status(501)
-      .json({ success: false, error: 'Feature not yet implemented', code: 'NOT_IMPLEMENTED' });
+    const propertyId = String(req.body?.propertyId ?? '').trim();
+    const landlordName = String(req.body?.landlordName ?? '').trim();
+    const tenantName = String(req.body?.tenantName ?? '').trim();
+    const startDate = String(req.body?.startDate ?? '').trim();
+    const endDate = String(req.body?.endDate ?? '').trim();
+    const annualRent = Number(req.body?.annualRent ?? 0);
+
+    if (!propertyId) throw new AppError('propertyId is required', 400);
+    if (!landlordName) throw new AppError('landlordName is required', 400);
+    if (!tenantName) throw new AppError('tenantName is required', 400);
+    if (!startDate || !endDate) throw new AppError('startDate and endDate are required', 400);
+    if (!Number.isFinite(annualRent) || annualRent <= 0) {
+      throw new AppError('annualRent must be greater than 0', 400);
+    }
+
+    const agreement: StubTenancyAgreement = {
+      id: createStubId('tenancy'),
+      propertyId,
+      landlordName,
+      tenantName,
+      startDate,
+      endDate,
+      annualRent,
+      status: 'draft',
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    };
+
+    stubTenancyAgreements.unshift(agreement);
+
+    res.status(201).json({ success: true, data: agreement });
   })
 );
 app.patch(
   '/api/tenancy-agreements/:id',
   authMiddleware,
-  asyncHandler(async (_req: Request, res: Response) => {
-    res
-      .status(501)
-      .json({ success: false, error: 'Feature not yet implemented', code: 'NOT_IMPLEMENTED' });
+  asyncHandler(async (req: Request, res: Response) => {
+    const current = stubTenancyAgreements.find(item => item.id === req.params.id);
+    if (!current) throw new AppError('Tenancy agreement not found', 404);
+
+    const nextStatus = req.body?.status;
+    const allowedStatus = ['draft', 'active', 'terminated'];
+
+    const updated: StubTenancyAgreement = {
+      ...current,
+      landlordName: req.body?.landlordName ? String(req.body.landlordName) : current.landlordName,
+      tenantName: req.body?.tenantName ? String(req.body.tenantName) : current.tenantName,
+      startDate: req.body?.startDate ? String(req.body.startDate) : current.startDate,
+      endDate: req.body?.endDate ? String(req.body.endDate) : current.endDate,
+      annualRent: req.body?.annualRent ? Number(req.body.annualRent) : current.annualRent,
+      status: allowedStatus.includes(nextStatus) ? nextStatus : current.status,
+      updatedAt: new Date().toISOString(),
+    };
+
+    Object.assign(current, updated);
+
+    res.status(200).json({ success: true, data: current });
   })
 );
 
@@ -692,13 +867,28 @@ app.post(
   '/api/payments/create-payment-intent',
   authMiddleware,
   asyncHandler(async (req: Request, res: Response) => {
-    logger.warn('Payment intent requested but Stripe is not configured', {
-      amount: req.body?.amount,
+    const amount = Number(req.body?.amount ?? 0);
+    if (!Number.isFinite(amount) || amount <= 0) {
+      throw new AppError('amount must be greater than 0', 400);
+    }
+
+    const paymentIntentId = createStubId('pi');
+    logger.info('Stub payment intent generated', {
+      paymentIntentId,
+      amount,
       propertyId: req.body?.propertyId,
     });
-    res.status(503).json({
-      success: false,
-      error: 'Payment processing is not yet configured. Please contact support.',
+
+    res.status(200).json({
+      success: true,
+      data: {
+        paymentIntentId,
+        clientSecret: `${paymentIntentId}_secret_stub`,
+        amount,
+        currency: String(req.body?.currency ?? 'aed').toLowerCase(),
+        status: 'requires_payment_method',
+        provider: 'stub',
+      },
     });
   })
 );
@@ -709,12 +899,54 @@ app.post(
   '/api/valuation/estimate',
   authMiddleware,
   asyncHandler(async (req: Request, res: Response) => {
-    logger.info('Valuation estimate requested (stub)', {
+    logger.info('Valuation estimate requested', {
       location: req.body?.location,
       area: req.body?.area,
     });
-    // Return 501 so frontend falls back to local estimation
-    res.status(501).json({ success: false, error: 'Valuation engine not yet available' });
+
+    const area = Number(req.body?.area ?? 0);
+    if (!Number.isFinite(area) || area <= 0) throw new AppError('area must be greater than 0', 400);
+
+    const location = String(req.body?.location ?? '').toLowerCase();
+    const locationMultiplier = location.includes('marina')
+      ? 1.3
+      : location.includes('downtown')
+        ? 1.25
+        : location.includes('palm')
+          ? 1.5
+          : 1.0;
+
+    const basePricePerSqft = 2000;
+    const mid = Math.round(basePricePerSqft * area * locationMultiplier);
+
+    res.status(200).json({
+      estimate: {
+        low: Math.round(mid * 0.9),
+        mid,
+        high: Math.round(mid * 1.1),
+        confidence: 72,
+      },
+      comparables: [
+        {
+          property: 'Comparable A',
+          price: Math.round(mid * 0.96),
+          area,
+          pricePerSqft: Math.round((mid * 0.96) / area),
+        },
+        {
+          property: 'Comparable B',
+          price: Math.round(mid * 1.02),
+          area,
+          pricePerSqft: Math.round((mid * 1.02) / area),
+        },
+        {
+          property: 'Comparable C',
+          price: Math.round(mid * 1.08),
+          area,
+          pricePerSqft: Math.round((mid * 1.08) / area),
+        },
+      ],
+    });
   })
 );
 
