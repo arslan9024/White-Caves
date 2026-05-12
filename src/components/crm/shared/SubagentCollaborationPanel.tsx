@@ -459,7 +459,9 @@ const SubagentCollaborationPanel = memo(
                   </strong>
                   <br />
                   <span style={mutedTextStyle}>
-                    Tasks: {snapshot.taskCount} · Created: {snapshot.createdAt}
+                    Tasks: {snapshot.taskCount}
+                    {snapshot.label ? ` · Label: ${snapshot.label}` : ''} · Created:{' '}
+                    {snapshot.createdAt}
                   </span>
                   <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginTop: 6 }}>
                     <button
@@ -539,6 +541,9 @@ const SubagentCollaborationPanel = memo(
               <p style={{ color: '#E2E8F0', margin: '0 0 4px 0', fontSize: 12 }}>
                 <strong>Snapshot detail:</strong> {selectedSnapshotDetail.fileName}
               </p>
+              {selectedSnapshotDetail.label ? (
+                <p style={mutedTextStyle}>Label: {selectedSnapshotDetail.label}</p>
+              ) : null}
               <p style={mutedTextStyle}>
                 Tasks: <strong>{selectedSnapshotDetail.taskCount}</strong> · Running:{' '}
                 <strong>{selectedSnapshotDetail.metrics.runningTasks}</strong> · Done:{' '}

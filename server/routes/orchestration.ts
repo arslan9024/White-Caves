@@ -71,12 +71,19 @@ interface PersistedOrchestrationState {
   businessDaysRemaining: number;
   premiumConsumedToday: number;
   tasks: OrchestrationTask[];
+  snapshotMeta?: SnapshotMeta;
+}
+
+interface SnapshotMeta {
+  createdAt: string;
+  label: string | null;
 }
 
 interface OrchestrationSnapshotSummary {
   fileName: string;
   createdAt: string;
   taskCount: number;
+  label: string | null;
 }
 
 interface OrchestrationSnapshotDetail extends OrchestrationSnapshotSummary {
@@ -253,13 +260,19 @@ function computeMetrics(tasks: OrchestrationTask[]): OrchestrationMetrics {
   };
 }
 
-function buildPersistedState(): PersistedOrchestrationState {
-  return {
+function buildPersistedState(snapshotMeta?: SnapshotMeta): PersistedOrchestrationState {
+  const baseState: PersistedOrchestrationState = {
     weeklyPremiumRemaining,
     businessDaysRemaining,
     premiumConsumedToday,
     tasks: orchestrationTasks.slice(0, 500),
   };
+
+  if (snapshotMeta) {
+    baseState.snapshotMeta = snapshotMeta;
+  }
+
+  return baseState;
 }
 
 function ensureDir(dirPath: string): void {
@@ -270,11 +283,11 @@ function ensureDir(dirPath: string): void {
   }
 }
 
-function writeStateToFile(filePath: string): void {
+function writeStateToFile(filePath: string, snapshotMeta?: SnapshotMeta): void {
   const dirPath = path.dirname(filePath);
   ensureDir(dirPath);
   // eslint-disable-next-line security/detect-non-literal-fs-filename -- internal logs/snapshots path built from process.cwd()
-  writeFileSync(filePath, JSON.stringify(buildPersistedState(), null, 2), 'utf-8');
+  writeFileSync(filePath, JSON.stringify(buildPersistedState(snapshotMeta), null, 2), 'utf-8');
 }
 
 function persistState(): void {
@@ -345,17 +358,28 @@ function readSnapshotDetail(fileName: string): OrchestrationSnapshotDetail {
   }
 
   const filePath = getSnapshotFilePath(normalizedFileName);
-  // eslint-disable-next-line security/detect-non-literal-fs-filename -- fileName restricted to local snapshot directory entries
   const parsed = JSON.parse(
+    // eslint-disable-next-line security/detect-non-literal-fs-filename -- fileName restricted to local snapshot directory entries
     readFileSync(filePath, 'utf-8')
   ) as Partial<PersistedOrchestrationState>;
   const tasks = Array.isArray(parsed.tasks) ? parsed.tasks.slice(0, 500) : [];
-  const createdAt = normalizedFileName.replace(/^orch-snapshot-/, '').replace(/\.json$/, '');
+  const fallbackCreatedAt = normalizedFileName
+    .replace(/^orch-snapshot-/, '')
+    .replace(/\.json$/, '');
+  const createdAt =
+    typeof parsed.snapshotMeta?.createdAt === 'string' && parsed.snapshotMeta.createdAt.length > 0
+      ? parsed.snapshotMeta.createdAt
+      : fallbackCreatedAt;
+  const label =
+    typeof parsed.snapshotMeta?.label === 'string' && parsed.snapshotMeta.label.length > 0
+      ? parsed.snapshotMeta.label
+      : null;
 
   return {
     fileName: normalizedFileName,
     createdAt,
     taskCount: tasks.length,
+    label,
     quota: {
       weeklyPremiumRemaining:
         typeof parsed.weeklyPremiumRemaining === 'number' ? parsed.weeklyPremiumRemaining : 0,
@@ -371,7 +395,7 @@ function readSnapshotDetail(fileName: string): OrchestrationSnapshotDetail {
 
 function listSnapshotSummaries(): OrchestrationSnapshotSummary[] {
   return getSnapshotFiles().map(fileName => {
-    const createdAt = fileName.replace(/^orch-snapshot-/, '').replace(/\.json$/, '');
+    const fallbackCreatedAt = fileName.replace(/^orch-snapshot-/, '').replace(/\.json$/, '');
     try {
       const filePath = path.join(ORCHESTRATION_SNAPSHOT_DIR, fileName);
       const parsed = JSON.parse(
@@ -379,33 +403,48 @@ function listSnapshotSummaries(): OrchestrationSnapshotSummary[] {
         readFileSync(filePath, 'utf-8')
       ) as Partial<PersistedOrchestrationState>;
       const taskCount = Array.isArray(parsed.tasks) ? parsed.tasks.length : 0;
+      const createdAt =
+        typeof parsed.snapshotMeta?.createdAt === 'string' &&
+        parsed.snapshotMeta.createdAt.length > 0
+          ? parsed.snapshotMeta.createdAt
+          : fallbackCreatedAt;
+      const label =
+        typeof parsed.snapshotMeta?.label === 'string' && parsed.snapshotMeta.label.length > 0
+          ? parsed.snapshotMeta.label
+          : null;
 
-      return { fileName, createdAt, taskCount };
+      return { fileName, createdAt, taskCount, label };
     } catch {
-      return { fileName, createdAt, taskCount: 0 };
+      return { fileName, createdAt: fallbackCreatedAt, taskCount: 0, label: null };
     }
   });
 }
 
 function exportSnapshot(label?: string): OrchestrationSnapshotSummary {
   ensureDir(ORCHESTRATION_SNAPSHOT_DIR);
-  const safeLabel =
+  const normalizedLabel =
     typeof label === 'string' && label.trim().length > 0
       ? `-${label
           .trim()
           .toLowerCase()
           .replace(/[^a-z0-9]+/g, '-')}`
       : '';
-  const createdAt = new Date().toISOString().replace(/[:.]/g, '-');
-  const fileName = `orch-snapshot-${createdAt}${safeLabel}.json`;
+  const exportedAt = new Date().toISOString();
+  const createdAtSlug = exportedAt.replace(/[:.]/g, '-');
+  const fileName = `orch-snapshot-${createdAtSlug}${normalizedLabel}.json`;
   const filePath = path.join(ORCHESTRATION_SNAPSHOT_DIR, fileName);
+  const snapshotMeta: SnapshotMeta = {
+    createdAt: exportedAt,
+    label: typeof label === 'string' && label.trim().length > 0 ? label.trim() : null,
+  };
 
-  writeStateToFile(filePath);
+  writeStateToFile(filePath, snapshotMeta);
 
   return {
     fileName,
-    createdAt,
+    createdAt: exportedAt,
     taskCount: orchestrationTasks.length,
+    label: snapshotMeta.label,
   };
 }
 
@@ -443,6 +482,7 @@ function deleteSnapshot(fileName: string): OrchestrationSnapshotSummary {
     fileName: snapshot.fileName,
     createdAt: snapshot.createdAt,
     taskCount: snapshot.taskCount,
+    label: snapshot.label,
   };
 }
 

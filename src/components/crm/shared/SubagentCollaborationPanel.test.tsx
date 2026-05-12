@@ -68,6 +68,7 @@ describe('SubagentCollaborationPanel', () => {
         fileName: 'orch-snapshot-1.json',
         createdAt: '2026-05-13',
         taskCount: 1,
+        label: 'panel',
         quota: {
           weeklyPremiumRemaining: 25,
           businessDaysRemaining: 5,
@@ -92,15 +93,35 @@ describe('SubagentCollaborationPanel', () => {
     mUpdateTaskState.mockResolvedValue({ success: true, data: { id: 't-1' } });
     mExportSnapshot.mockResolvedValue({
       success: true,
-      data: { fileName: 'orch-snapshot-1.json' },
+      data: {
+        fileName: 'orch-snapshot-1.json',
+        createdAt: '2026-05-13',
+        taskCount: 1,
+        label: 'panel',
+      },
     });
     mRestoreSnapshot.mockResolvedValue({
       success: true,
-      data: { snapshot: { fileName: 'orch-snapshot-1.json' } },
+      data: {
+        snapshot: {
+          fileName: 'orch-snapshot-1.json',
+          createdAt: '2026-05-13',
+          taskCount: 1,
+          label: 'panel',
+        },
+      },
     });
     mDeleteSnapshot.mockResolvedValue({
       success: true,
-      data: { snapshot: { fileName: 'orch-snapshot-1.json' }, remaining: [] },
+      data: {
+        snapshot: {
+          fileName: 'orch-snapshot-1.json',
+          createdAt: '2026-05-13',
+          taskCount: 1,
+          label: 'panel',
+        },
+        remaining: [],
+      },
     });
   });
 
@@ -177,13 +198,30 @@ describe('SubagentCollaborationPanel', () => {
     mGetSnapshots
       .mockResolvedValueOnce({
         success: true,
-        data: [{ fileName: 'orch-snapshot-a.json', createdAt: '2026-05-12', taskCount: 3 }],
+        data: [
+          {
+            fileName: 'orch-snapshot-a.json',
+            createdAt: '2026-05-12',
+            taskCount: 3,
+            label: 'nightly',
+          },
+        ],
       })
       .mockResolvedValueOnce({
         success: true,
         data: [
-          { fileName: 'orch-snapshot-a.json', createdAt: '2026-05-12', taskCount: 3 },
-          { fileName: 'orch-snapshot-b.json', createdAt: '2026-05-13', taskCount: 4 },
+          {
+            fileName: 'orch-snapshot-a.json',
+            createdAt: '2026-05-12',
+            taskCount: 3,
+            label: 'nightly',
+          },
+          {
+            fileName: 'orch-snapshot-b.json',
+            createdAt: '2026-05-13',
+            taskCount: 4,
+            label: null,
+          },
         ],
       });
 
@@ -203,11 +241,25 @@ describe('SubagentCollaborationPanel', () => {
     mGetSnapshots
       .mockResolvedValueOnce({
         success: true,
-        data: [{ fileName: 'orch-snapshot-latest.json', createdAt: '2026-05-13', taskCount: 2 }],
+        data: [
+          {
+            fileName: 'orch-snapshot-latest.json',
+            createdAt: '2026-05-13',
+            taskCount: 2,
+            label: 'latest',
+          },
+        ],
       })
       .mockResolvedValueOnce({
         success: true,
-        data: [{ fileName: 'orch-snapshot-latest.json', createdAt: '2026-05-13', taskCount: 2 }],
+        data: [
+          {
+            fileName: 'orch-snapshot-latest.json',
+            createdAt: '2026-05-13',
+            taskCount: 2,
+            label: 'latest',
+          },
+        ],
       });
 
     render(<SubagentCollaborationPanel assistantId="henry" />);
@@ -223,7 +275,14 @@ describe('SubagentCollaborationPanel', () => {
   it('inspects a snapshot and renders snapshot detail summary', async () => {
     mGetSnapshots.mockResolvedValueOnce({
       success: true,
-      data: [{ fileName: 'orch-snapshot-a.json', createdAt: '2026-05-12', taskCount: 3 }],
+      data: [
+        {
+          fileName: 'orch-snapshot-a.json',
+          createdAt: '2026-05-12',
+          taskCount: 3,
+          label: 'nightly',
+        },
+      ],
     });
     mGetSnapshot.mockResolvedValueOnce({
       success: true,
@@ -231,6 +290,7 @@ describe('SubagentCollaborationPanel', () => {
         fileName: 'orch-snapshot-a.json',
         createdAt: '2026-05-12',
         taskCount: 3,
+        label: 'nightly',
         quota: {
           weeklyPremiumRemaining: 25,
           businessDaysRemaining: 5,
@@ -270,7 +330,14 @@ describe('SubagentCollaborationPanel', () => {
     mGetSnapshots
       .mockResolvedValueOnce({
         success: true,
-        data: [{ fileName: 'orch-snapshot-a.json', createdAt: '2026-05-12', taskCount: 3 }],
+        data: [
+          {
+            fileName: 'orch-snapshot-a.json',
+            createdAt: '2026-05-12',
+            taskCount: 3,
+            label: 'nightly',
+          },
+        ],
       })
       .mockResolvedValueOnce({ success: true, data: [] });
 

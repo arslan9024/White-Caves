@@ -91,6 +91,7 @@ export interface OrchestrationSnapshotSummary {
   fileName: string;
   createdAt: string;
   taskCount: number;
+  label: string | null;
 }
 
 export interface OrchestrationSnapshotDetail extends OrchestrationSnapshotSummary {

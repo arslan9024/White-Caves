@@ -106,7 +106,15 @@ describe('subagentOrchestrationService', () => {
   });
 
   it('exportSnapshot calls POST /orchestration/snapshots/export', async () => {
-    const response = { success: true, data: { fileName: 'orch-snapshot-test.json' } };
+    const response = {
+      success: true,
+      data: {
+        fileName: 'orch-snapshot-test.json',
+        createdAt: '2026-05-12',
+        taskCount: 1,
+        label: 'nightly',
+      },
+    };
     mApiPost.mockResolvedValue(response);
 
     const result = await subagentOrchestrationService.exportSnapshot('nightly');
@@ -118,7 +126,13 @@ describe('subagentOrchestrationService', () => {
   it('getSnapshot calls GET /orchestration/snapshots/:fileName', async () => {
     const response = {
       success: true,
-      data: { fileName: 'orch-snapshot-test.json', createdAt: '', taskCount: 1, tasks: [] },
+      data: {
+        fileName: 'orch-snapshot-test.json',
+        createdAt: '',
+        taskCount: 1,
+        label: 'nightly',
+        tasks: [],
+      },
     };
     mApiGet.mockResolvedValue(response);
 
@@ -133,6 +147,7 @@ describe('subagentOrchestrationService', () => {
       success: true,
       data: {
         snapshot: { fileName: 'orch-snapshot-test.json', createdAt: '', taskCount: 1 },
+
         metrics: { totalTasks: 1 },
       },
     };
@@ -151,6 +166,7 @@ describe('subagentOrchestrationService', () => {
       success: true,
       data: {
         snapshot: { fileName: 'orch-snapshot-test.json', createdAt: '', taskCount: 1 },
+
         remaining: [],
       },
     };
