@@ -1,8 +1,10 @@
 import React, { memo, useEffect, useMemo, useState } from 'react';
 import { Bot, Link2, ShieldCheck, Sparkles } from 'lucide-react';
 import {
-  ASSISTANT_EXECUTION_PROFILES,
+  canAssistantRequestTier,
+  getAssistantExecutionProfile,
   getRecommendedCollaborators,
+  type ModelTier,
 } from '../../../config/subagentOrchestration';
 import {
   subagentOrchestrationService,
@@ -50,13 +52,27 @@ const SubagentCollaborationPanel = memo(
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [taskTitle, setTaskTitle] = useState<string>('');
     const [taskType, setTaskType] = useState<TaskType>('planning');
+    const [requestedTier, setRequestedTier] = useState<ModelTier>('standard');
+    const [contextGateApproved, setContextGateApproved] = useState<boolean>(false);
     const [isSubmittingTask, setIsSubmittingTask] = useState<boolean>(false);
 
-    const profile = assistantId ? ASSISTANT_EXECUTION_PROFILES[assistantId] : undefined;
+    const profile = assistantId ? getAssistantExecutionProfile(assistantId) : null;
     const collaborations = useMemo(
       () => (assistantId ? getRecommendedCollaborators(assistantId) : []),
-      [assistantId],
+      [assistantId]
     );
+
+    const tierPolicyResult = useMemo(() => {
+      if (!assistantId) {
+        return { allowed: true };
+      }
+
+      return canAssistantRequestTier({
+        assistantId,
+        requestedTier,
+        contextGateApproved,
+      });
+    }, [assistantId, contextGateApproved, requestedTier]);
 
     useEffect(() => {
       const loadStatus = async () => {
@@ -69,7 +85,7 @@ const SubagentCollaborationPanel = memo(
           setStatusError(
             error instanceof Error
               ? error.message
-              : 'Failed to load orchestration status. Using local defaults.',
+              : 'Failed to load orchestration status. Using local defaults.'
           );
         } finally {
           setIsLoading(false);
@@ -79,20 +95,21 @@ const SubagentCollaborationPanel = memo(
       void loadStatus();
     }, []);
 
-    const dailyPremiumCap = statusData?.quota.dailyCap
-      ?? Math.max(0, Math.floor(weeklyPremiumRemaining / Math.max(1, businessDaysRemaining)));
+    const dailyPremiumCap =
+      statusData?.quota.dailyCap ??
+      Math.max(0, Math.floor(weeklyPremiumRemaining / Math.max(1, businessDaysRemaining)));
 
     const premiumConsumedToday = statusData?.quota.premiumConsumedToday ?? 0;
-    const premiumRemainingToday = statusData?.quota.premiumRemainingToday ?? Math.max(0, dailyPremiumCap - premiumConsumedToday);
+    const premiumRemainingToday =
+      statusData?.quota.premiumRemainingToday ??
+      Math.max(0, dailyPremiumCap - premiumConsumedToday);
 
     const assistantTasks = useMemo(() => {
       if (!assistantId || !statusData?.tasks) {
         return [] as OrchestrationTask[];
       }
 
-      return statusData.tasks
-        .filter((task) => task.assistantId === assistantId)
-        .slice(0, 5);
+      return statusData.tasks.filter(task => task.assistantId === assistantId).slice(0, 5);
     }, [assistantId, statusData?.tasks]);
 
     const allowedTaskTypes = useMemo(() => {
@@ -108,8 +125,20 @@ const SubagentCollaborationPanel = memo(
       }
     }, [allowedTaskTypes, taskType]);
 
+    useEffect(() => {
+      if (profile?.modelPolicy.defaultTier) {
+        setRequestedTier(profile.modelPolicy.defaultTier);
+      }
+      setContextGateApproved(false);
+    }, [profile?.id, profile?.modelPolicy.defaultTier]);
+
     const handleAssignTask = async () => {
       if (!assistantId || !taskTitle.trim()) {
+        return;
+      }
+
+      if (!tierPolicyResult.allowed) {
+        setStatusError(tierPolicyResult.reason ?? 'Task blocked by tier policy');
         return;
       }
 
@@ -120,15 +149,14 @@ const SubagentCollaborationPanel = memo(
           assistantId,
           taskType,
           title: taskTitle.trim(),
+          requestedTier,
         });
 
         const response = await subagentOrchestrationService.getStatus();
         setStatusData(response.data);
         setTaskTitle('');
       } catch (error) {
-        setStatusError(
-          error instanceof Error ? error.message : 'Failed to assign task',
-        );
+        setStatusError(error instanceof Error ? error.message : 'Failed to assign task');
       } finally {
         setIsSubmittingTask(false);
       }
@@ -160,7 +188,7 @@ const SubagentCollaborationPanel = memo(
                   marginTop: 8,
                 }}
               >
-                {profile.taskTypes.map((taskType) => (
+                {profile.taskTypes.map(taskType => (
                   <span key={taskType} style={chipStyle}>
                     {taskType}
                   </span>
@@ -170,8 +198,12 @@ const SubagentCollaborationPanel = memo(
           ) : (
             <p style={mutedTextStyle}>Select an assistant to view role and capability routing.</p>
           )}
-          {isLoading ? <p style={{ ...mutedTextStyle, marginTop: 8 }}>Loading orchestration status…</p> : null}
-          {statusError ? <p style={{ color: '#FCA5A5', fontSize: 12, marginTop: 8 }}>{statusError}</p> : null}
+          {isLoading ? (
+            <p style={{ ...mutedTextStyle, marginTop: 8 }}>Loading orchestration status…</p>
+          ) : null}
+          {statusError ? (
+            <p style={{ color: '#FCA5A5', fontSize: 12, marginTop: 8 }}>{statusError}</p>
+          ) : null}
         </div>
 
         <div style={cardStyle}>
@@ -180,7 +212,9 @@ const SubagentCollaborationPanel = memo(
             <strong style={{ color: '#E2E8F0', fontSize: 13 }}>Premium Quota Guard</strong>
           </div>
           <p style={mutedTextStyle}>
-            Weekly remaining: <strong>{statusData?.quota.weeklyPremiumRemaining ?? weeklyPremiumRemaining}</strong> · Business days left:{' '}
+            Weekly remaining:{' '}
+            <strong>{statusData?.quota.weeklyPremiumRemaining ?? weeklyPremiumRemaining}</strong> ·
+            Business days left:{' '}
             <strong>{statusData?.quota.businessDaysRemaining ?? businessDaysRemaining}</strong>
           </p>
           <p style={{ color: '#E2E8F0', margin: '6px 0 0 0', fontSize: 12 }}>
@@ -200,7 +234,7 @@ const SubagentCollaborationPanel = memo(
             <p style={mutedTextStyle}>No chain available for the selected assistant.</p>
           ) : (
             <ul style={{ margin: 0, paddingLeft: 16, color: '#CBD5E1', fontSize: 12 }}>
-              {collaborations.map((edge) => (
+              {collaborations.map(edge => (
                 <li key={`${edge.from}-${edge.to}`} style={{ marginBottom: 6 }}>
                   <strong>{edge.from}</strong> → <strong>{edge.to}</strong>
                   <br />
@@ -222,7 +256,7 @@ const SubagentCollaborationPanel = memo(
               <label style={mutedTextStyle}>Task type</label>
               <select
                 value={taskType}
-                onChange={(event) => setTaskType(event.target.value as TaskType)}
+                onChange={event => setTaskType(event.target.value as TaskType)}
                 style={{
                   width: '100%',
                   marginTop: 4,
@@ -234,7 +268,7 @@ const SubagentCollaborationPanel = memo(
                   padding: '8px 10px',
                 }}
               >
-                {allowedTaskTypes.map((type) => (
+                {allowedTaskTypes.map(type => (
                   <option key={type} value={type}>
                     {type}
                   </option>
@@ -244,7 +278,7 @@ const SubagentCollaborationPanel = memo(
               <label style={mutedTextStyle}>Task title</label>
               <input
                 value={taskTitle}
-                onChange={(event) => setTaskTitle(event.target.value)}
+                onChange={event => setTaskTitle(event.target.value)}
                 placeholder="e.g. Draft AI handoff rules for leasing pipeline"
                 style={{
                   width: '100%',
@@ -258,12 +292,58 @@ const SubagentCollaborationPanel = memo(
                 }}
               />
 
+              <label style={mutedTextStyle}>Requested model tier</label>
+              <select
+                value={requestedTier}
+                onChange={event => setRequestedTier(event.target.value as ModelTier)}
+                style={{
+                  width: '100%',
+                  marginTop: 4,
+                  marginBottom: 8,
+                  background: 'rgba(15,23,42,0.5)',
+                  color: '#E2E8F0',
+                  border: '1px solid rgba(148,163,184,0.35)',
+                  borderRadius: 8,
+                  padding: '8px 10px',
+                }}
+                aria-label="Requested model tier"
+              >
+                <option value="free">free</option>
+                <option value="standard">standard</option>
+                <option value="premium">premium</option>
+              </select>
+
+              {profile?.modelPolicy.requiresContextGate ? (
+                <label
+                  style={{
+                    ...mutedTextStyle,
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 8,
+                    marginBottom: 8,
+                  }}
+                >
+                  <input
+                    type="checkbox"
+                    checked={contextGateApproved}
+                    onChange={event => setContextGateApproved(event.target.checked)}
+                  />
+                  Context gate approved for premium requests
+                </label>
+              ) : null}
+
+              {!tierPolicyResult.allowed && tierPolicyResult.reason ? (
+                <p style={{ color: '#FCA5A5', fontSize: 12, margin: '0 0 8px 0' }}>
+                  {tierPolicyResult.reason}
+                </p>
+              ) : null}
+
               <button
                 type="button"
                 onClick={() => {
                   void handleAssignTask();
                 }}
-                disabled={isSubmittingTask || !taskTitle.trim()}
+                disabled={isSubmittingTask || !taskTitle.trim() || !tierPolicyResult.allowed}
                 style={{
                   width: '100%',
                   border: '1px solid rgba(56,189,248,0.45)',
@@ -279,8 +359,10 @@ const SubagentCollaborationPanel = memo(
               </button>
 
               {assistantTasks.length > 0 ? (
-                <ul style={{ margin: '10px 0 0 0', paddingLeft: 16, color: '#CBD5E1', fontSize: 12 }}>
-                  {assistantTasks.map((task) => (
+                <ul
+                  style={{ margin: '10px 0 0 0', paddingLeft: 16, color: '#CBD5E1', fontSize: 12 }}
+                >
+                  {assistantTasks.map(task => (
                     <li key={task.id} style={{ marginBottom: 6 }}>
                       <strong>{task.taskType}</strong> — {task.title}
                       <br />
@@ -292,7 +374,9 @@ const SubagentCollaborationPanel = memo(
                   ))}
                 </ul>
               ) : (
-                <p style={{ ...mutedTextStyle, marginTop: 10 }}>No assigned tasks yet for this assistant.</p>
+                <p style={{ ...mutedTextStyle, marginTop: 10 }}>
+                  No assigned tasks yet for this assistant.
+                </p>
               )}
             </>
           ) : (
@@ -301,7 +385,7 @@ const SubagentCollaborationPanel = memo(
         </div>
       </section>
     );
-  },
+  }
 );
 
 SubagentCollaborationPanel.displayName = 'SubagentCollaborationPanel';

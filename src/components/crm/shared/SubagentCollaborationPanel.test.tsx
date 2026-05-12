@@ -111,6 +111,7 @@ describe('SubagentCollaborationPanel', () => {
         assistantId: 'henry',
         taskType: 'review',
         title: 'Review legal handoff package',
+        requestedTier: 'standard',
       });
     });
 
@@ -141,5 +142,40 @@ describe('SubagentCollaborationPanel', () => {
     expect(await screen.findByText(/task creation failed/i)).toBeInTheDocument();
     expect(button).toBeEnabled();
     expect(input).toHaveValue('Escalate compliance evidence gap');
+  });
+
+  it('blocks premium task assignment for non-premium assistants', async () => {
+    render(<SubagentCollaborationPanel assistantId="linda" />);
+
+    const input = await screen.findByPlaceholderText(/draft ai handoff rules/i);
+    fireEvent.change(input, { target: { value: 'Run premium strategy synthesis' } });
+
+    fireEvent.change(screen.getByLabelText(/requested model tier/i), {
+      target: { value: 'premium' },
+    });
+
+    expect(screen.getByText(/not permitted to use premium tier/i)).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /assign task/i })).toBeDisabled();
+  });
+
+  it('requires context gate approval for premium-capable gated assistants', async () => {
+    render(<SubagentCollaborationPanel assistantId="mira" />);
+
+    const input = await screen.findByPlaceholderText(/draft ai handoff rules/i);
+    fireEvent.change(input, { target: { value: 'Implement orchestration endpoint' } });
+
+    fireEvent.change(screen.getByLabelText(/requested model tier/i), {
+      target: { value: 'premium' },
+    });
+
+    expect(screen.getByText(/requires context gate approval/i)).toBeInTheDocument();
+
+    fireEvent.click(screen.getByLabelText(/context gate approved for premium requests/i));
+
+    await waitFor(() => {
+      expect(screen.queryByText(/requires context gate approval/i)).not.toBeInTheDocument();
+    });
+
+    expect(screen.getByRole('button', { name: /assign task/i })).toBeEnabled();
   });
 });
