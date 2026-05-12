@@ -1,4 +1,4 @@
-import React, { FC, useCallback, useState } from 'react';
+import React, { FC, useCallback, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useDocumentTitle } from '../../hooks/useDocumentTitle';
 import { useUserProfile } from '../../hooks/useUserProfile';
@@ -35,10 +35,40 @@ const ProfilePage: FC = () => {
   const [twoFactorSetupUri, setTwoFactorSetupUri] = useState<string | null>(null);
   const [twoFactorSetupError, setTwoFactorSetupError] = useState<string | null>(null);
   const [twoFactorSetupLoading, setTwoFactorSetupLoading] = useState(false);
+  const [twoFactorCode, setTwoFactorCode] = useState('');
+  const [twoFactorVerifyLoading, setTwoFactorVerifyLoading] = useState(false);
+  const [twoFactorVerifyError, setTwoFactorVerifyError] = useState<string | null>(null);
+  const [twoFactorVerifySuccess, setTwoFactorVerifySuccess] = useState<string | null>(null);
+  const [twoFactorEnabled, setTwoFactorEnabled] = useState(false);
+  const [twoFactorDisablePassword, setTwoFactorDisablePassword] = useState('');
+  const [twoFactorDisableLoading, setTwoFactorDisableLoading] = useState(false);
+  const [twoFactorDisableError, setTwoFactorDisableError] = useState<string | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    authFetch('/api/auth/profile')
+      .then(response => response.json())
+      .then(payload => {
+        if (!cancelled && payload.success) {
+          setTwoFactorEnabled(Boolean(payload.data?.twoFactorEnabled));
+        }
+      })
+      .catch(() => {
+        // non-blocking: keep default false when profile bootstrap fails
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   const handleEnableTwoFactor = useCallback(async () => {
     setTwoFactorSetupLoading(true);
     setTwoFactorSetupError(null);
+    setTwoFactorVerifyError(null);
+    setTwoFactorVerifySuccess(null);
+    setTwoFactorDisableError(null);
 
     try {
       const response = await authFetch('/api/auth/2fa/setup', {
@@ -50,6 +80,7 @@ const ProfilePage: FC = () => {
 
       if (payload.success && payload.data?.otpAuthUrl) {
         setTwoFactorSetupUri(payload.data.otpAuthUrl as string);
+        setTwoFactorCode('');
       } else {
         setTwoFactorSetupError(payload.error || 'Unable to start 2FA setup.');
       }
@@ -59,6 +90,78 @@ const ProfilePage: FC = () => {
       setTwoFactorSetupLoading(false);
     }
   }, []);
+
+  const handleVerifyTwoFactor = useCallback(async () => {
+    const normalizedCode = twoFactorCode.trim();
+    if (!/^\d{6}$/.test(normalizedCode)) {
+      setTwoFactorVerifyError('Please enter a valid 6-digit code.');
+      return;
+    }
+
+    setTwoFactorVerifyLoading(true);
+    setTwoFactorVerifyError(null);
+    setTwoFactorVerifySuccess(null);
+
+    try {
+      const response = await authFetch('/api/auth/2fa/verify', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: user.email,
+          code: normalizedCode,
+        }),
+      });
+      const payload = await response.json();
+
+      if (payload.success) {
+        setTwoFactorEnabled(true);
+        setTwoFactorSetupUri(null);
+        setTwoFactorCode('');
+        setTwoFactorDisableError(null);
+        setTwoFactorVerifySuccess('Two-factor authentication is now enabled.');
+      } else {
+        setTwoFactorVerifyError(payload.error || 'Invalid verification code. Please try again.');
+      }
+    } catch {
+      setTwoFactorVerifyError('Unable to verify 2FA code. Please try again.');
+    } finally {
+      setTwoFactorVerifyLoading(false);
+    }
+  }, [twoFactorCode, user.email]);
+
+  const handleDisableTwoFactor = useCallback(async () => {
+    const password = twoFactorDisablePassword.trim();
+    if (!password) {
+      setTwoFactorDisableError('Please enter your current password to disable 2FA.');
+      return;
+    }
+
+    setTwoFactorDisableLoading(true);
+    setTwoFactorDisableError(null);
+
+    try {
+      const response = await authFetch('/api/auth/2fa/disable', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ currentPassword: password }),
+      });
+      const payload = await response.json();
+
+      if (payload.success) {
+        setTwoFactorEnabled(false);
+        setTwoFactorSetupUri(null);
+        setTwoFactorCode('');
+        setTwoFactorDisablePassword('');
+        setTwoFactorVerifySuccess('Two-factor authentication has been disabled.');
+      } else {
+        setTwoFactorDisableError(payload.error || 'Unable to disable 2FA.');
+      }
+    } catch {
+      setTwoFactorDisableError('Unable to disable 2FA. Please try again.');
+    } finally {
+      setTwoFactorDisableLoading(false);
+    }
+  }, [twoFactorDisablePassword]);
 
   if (!user) {
     return null;
@@ -338,21 +441,50 @@ const ProfilePage: FC = () => {
                 <div className="info-card">
                   <h3>Two-Factor Authentication</h3>
                   <p>Add an extra layer of security to your account</p>
-                  <button
-                    className="btn btn-secondary"
-                    onClick={() => void handleEnableTwoFactor()}
-                    disabled={twoFactorSetupLoading}
-                  >
-                    {twoFactorSetupLoading ? 'Preparing…' : 'Enable 2FA'}
-                  </button>
-                  {twoFactorSetupUri && (
-                    <p
-                      className="field-hint"
-                      style={{ marginTop: '0.75rem', wordBreak: 'break-word' }}
+                  {!twoFactorEnabled && !twoFactorSetupUri && (
+                    <button
+                      className="btn btn-secondary"
+                      onClick={() => void handleEnableTwoFactor()}
+                      disabled={twoFactorSetupLoading}
+                      style={{ marginTop: '0.75rem' }}
                     >
-                      Scan this URI in your authenticator app: {twoFactorSetupUri}
+                      {twoFactorSetupLoading ? 'Preparing…' : 'Enable 2FA'}
+                    </button>
+                  )}
+
+                  {twoFactorEnabled && (
+                    <p className="field-hint" style={{ marginTop: '0.75rem', color: '#065f46' }}>
+                      2FA is currently enabled on your account.
                     </p>
                   )}
+
+                  {twoFactorSetupUri && (
+                    <div style={{ marginTop: '0.75rem' }}>
+                      <p className="field-hint" style={{ wordBreak: 'break-word' }}>
+                        Scan this URI in your authenticator app: {twoFactorSetupUri}
+                      </p>
+                      <div className="form-group" style={{ marginTop: '0.75rem' }}>
+                        <label htmlFor="two-factor-code">Verification code</label>
+                        <input
+                          id="two-factor-code"
+                          type="text"
+                          inputMode="numeric"
+                          maxLength={6}
+                          value={twoFactorCode}
+                          onChange={e => setTwoFactorCode(e.target.value.replace(/\D/g, ''))}
+                          placeholder="Enter 6-digit code"
+                        />
+                      </div>
+                      <button
+                        className="btn btn-primary"
+                        onClick={() => void handleVerifyTwoFactor()}
+                        disabled={twoFactorVerifyLoading}
+                      >
+                        {twoFactorVerifyLoading ? 'Verifying…' : 'Verify & Activate 2FA'}
+                      </button>
+                    </div>
+                  )}
+
                   {twoFactorSetupError && (
                     <p
                       className="field-hint"
@@ -361,6 +493,58 @@ const ProfilePage: FC = () => {
                     >
                       {twoFactorSetupError}
                     </p>
+                  )}
+
+                  {twoFactorVerifyError && (
+                    <p
+                      className="field-hint"
+                      role="alert"
+                      style={{ color: '#b91c1c', marginTop: '0.75rem' }}
+                    >
+                      {twoFactorVerifyError}
+                    </p>
+                  )}
+
+                  {twoFactorVerifySuccess && (
+                    <p
+                      className="field-hint"
+                      role="status"
+                      style={{ color: '#065f46', marginTop: '0.75rem' }}
+                    >
+                      {twoFactorVerifySuccess}
+                    </p>
+                  )}
+
+                  {twoFactorEnabled && (
+                    <div style={{ marginTop: '1rem' }}>
+                      <div className="form-group" style={{ marginTop: 0 }}>
+                        <label htmlFor="disable-two-factor-password">Current password</label>
+                        <input
+                          id="disable-two-factor-password"
+                          type="password"
+                          autoComplete="current-password"
+                          value={twoFactorDisablePassword}
+                          onChange={e => setTwoFactorDisablePassword(e.target.value)}
+                          placeholder="Enter current password"
+                        />
+                      </div>
+                      <button
+                        className="btn btn-danger"
+                        onClick={() => void handleDisableTwoFactor()}
+                        disabled={twoFactorDisableLoading}
+                      >
+                        {twoFactorDisableLoading ? 'Disabling…' : 'Disable 2FA'}
+                      </button>
+                      {twoFactorDisableError && (
+                        <p
+                          className="field-hint"
+                          role="alert"
+                          style={{ color: '#b91c1c', marginTop: '0.75rem' }}
+                        >
+                          {twoFactorDisableError}
+                        </p>
+                      )}
+                    </div>
                   )}
                 </div>
 

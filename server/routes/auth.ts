@@ -850,6 +850,7 @@ router.get(
         department: true,
         photoUrl: true,
         status: true,
+        twoFactorEnabled: true,
         createdAt: true,
         _count: {
           select: {
