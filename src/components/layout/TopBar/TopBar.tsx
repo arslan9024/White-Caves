@@ -29,7 +29,9 @@ import type { RootState } from '../../../store/store';
 import {
   selectSelectedDepartment,
   selectSelectedService,
+  selectSelectedAssistant,
   toggleCommandPalette,
+  clearSelectedAssistant,
 } from '../../../store/slices/sidebarSlice';
 import {
   TopBarContainer,
@@ -73,6 +75,7 @@ interface TopBarProps {
 
 // ─── Breadcrumb builder ───────────────────────────────────────────────────
 
+/** All 12 CRM departments */
 const DEPARTMENT_LABELS: Record<string, string> = {
   operations: 'Operations',
   finance: 'Finance',
@@ -83,14 +86,43 @@ const DEPARTMENT_LABELS: Record<string, string> = {
   compliance: 'Compliance',
   technology: 'Technology',
   legal: 'Legal',
+  intelligence: 'Intelligence',
+  customer_experience: 'Customer Experience',
+  data_and_ai: 'Data & AI',
+};
+
+/** Assistant display names (from registry — resolved at runtime) */
+const ASSISTANT_LABELS: Record<string, string> = {
+  nadia: 'Nadia',
+  mary: 'Mary',
+  clara: 'Clara',
+  nina: 'Nina',
+  nancy: 'Nancy',
+  sophia: 'Sophia',
+  daisy: 'Daisy',
+  theodora: 'Theodora',
+  olivia: 'Olivia',
+  zoe: 'Zoe',
+  laila: 'Laila',
+  aurora: 'Aurora',
+  hazel: 'Hazel',
+  willow: 'Willow',
+  evangeline: 'Evangeline',
+  sentinel: 'Sentinel',
+  hunter: 'Hunter',
+  henry: 'Henry',
+  cipher: 'Cipher',
+  atlas: 'Atlas',
 };
 
 function useBreadcrumbs() {
+  const dispatch = useDispatch();
   const location = useLocation();
   const department = useSelector(selectSelectedDepartment);
   const service = useSelector(selectSelectedService);
+  const assistant = useSelector(selectSelectedAssistant);
 
-  const crumbs: Array<{ label: string; path?: string }> = [
+  const crumbs: Array<{ label: string; path?: string; action?: () => void }> = [
     { label: 'Dashboard', path: '/dashboard' },
   ];
 
@@ -110,18 +142,37 @@ function useBreadcrumbs() {
     }
   }
 
-  // If a department is selected in the sidebar, add it
+  // Department level
   if (department && Object.prototype.hasOwnProperty.call(DEPARTMENT_LABELS, department)) {
-    // Only add if not already in path crumbs
     const alreadyInPath = crumbs.some(c => c.label.toLowerCase() === department);
     if (!alreadyInPath) {
-      // eslint-disable-next-line security/detect-object-injection
-      crumbs.push({ label: DEPARTMENT_LABELS[department] });
+      crumbs.push({
+        // eslint-disable-next-line security/detect-object-injection
+        label: DEPARTMENT_LABELS[department],
+        action: () => {
+          dispatch(clearSelectedAssistant());
+        },
+      });
     }
   }
 
+  // Service level
   if (service) {
-    crumbs.push({ label: service });
+    crumbs.push({
+      label: service.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase()),
+      action: () => {
+        dispatch(clearSelectedAssistant());
+      },
+    });
+  }
+
+  // Assistant level (deepest)
+  if (assistant) {
+    const label =
+      // eslint-disable-next-line security/detect-object-injection
+      ASSISTANT_LABELS[assistant] ??
+      assistant.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+    crumbs.push({ label });
   }
 
   return crumbs;
@@ -235,7 +286,15 @@ const TopBar: React.FC<TopBarProps> = React.memo(function TopBar({
             {i > 0 && <BreadcrumbSeparator>/</BreadcrumbSeparator>}
             <BreadcrumbItem
               $isLast={i === crumbs.length - 1}
-              onClick={() => crumb.path && i < crumbs.length - 1 && navigate(crumb.path)}
+              onClick={() => {
+                if (i < crumbs.length - 1) {
+                  if (crumb.action) {
+                    crumb.action();
+                  } else if (crumb.path) {
+                    navigate(crumb.path);
+                  }
+                }
+              }}
               aria-current={i === crumbs.length - 1 ? 'page' : undefined}
             >
               {crumb.label}

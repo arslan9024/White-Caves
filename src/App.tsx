@@ -1,4 +1,4 @@
-import React, { useState, useEffect, lazy, Suspense, type ReactNode } from 'react';
+import React, { useState, useEffect, useRef, lazy, Suspense, type ReactNode } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { SpeedInsights } from '@vercel/speed-insights/react';
@@ -38,10 +38,16 @@ interface ProtectedRouteProps {
   allowedRoles?: string[];
 }
 
+/** Creator email — always receives super_admin elevation regardless of server-stored role. */
+const CREATOR_EMAIL = 'arslanmalikgoraha@gmail.com';
+
 function resolveEffectiveRole(
-  user: { role?: string } | null,
+  user: { role?: string; email?: string } | null,
   storedRoleData: UserRoleData | null
 ): string | null {
+  // Creator always gets super_admin regardless of server role
+  if (user?.email === CREATOR_EMAIL) return 'super_admin';
+
   const normalizeRole = (role?: string): string | null => {
     if (!role) return null;
     if (role === 'lion' || role === 'managing_director') return 'owner';
@@ -122,10 +128,32 @@ function ProtectedRoute({ children, allowedRoles }: ProtectedRouteProps) {
 
 function DashboardEntryRoute() {
   const user = useSelector((state: RootState) => state.user.currentUser);
+  const isAuthLoading = useSelector((state: RootState) => state.user.isLoading);
+  const { info } = useStatus();
+  const hasShownSigninNotice = useRef(false);
   const storedRoleData = safeStorage.getJSON<UserRoleData>('userRole');
   const effectiveRole = resolveEffectiveRole(user, storedRoleData);
 
-  if (effectiveRole === 'landlord') {
+  useEffect(() => {
+    if (!isAuthLoading && !user && !hasShownSigninNotice.current) {
+      info('Please sign in to access CRM', {
+        title: 'Authentication Required',
+        duration: 4500,
+      });
+      hasShownSigninNotice.current = true;
+    }
+  }, [isAuthLoading, user, info]);
+
+  if (isAuthLoading) {
+    return <SuspenseLoader />;
+  }
+
+  // Unauthenticated access: redirect home
+  if (!user) {
+    return <Navigate to="/signin" replace />;
+  }
+
+  if (effectiveRole === 'landlord' || effectiveRole === 'property-owner') {
     return <Navigate to="/landlord-portal" replace />;
   }
 
@@ -230,7 +258,7 @@ const BiometricPrompt = lazy(() =>
     })
 );
 const WebVitalsTracker = lazy(() => import('./components/analytics/WebVitalsTracker'));
-import { StatusProvider } from './components/common/StatusNotification';
+import { StatusProvider, useStatus } from './components/common/StatusNotification';
 import { createLogger } from './utils/logger';
 import { useSocket } from './hooks/useSocket';
 

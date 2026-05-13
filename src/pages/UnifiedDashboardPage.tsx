@@ -1,4 +1,5 @@
-import React, { FC, lazy, Suspense, ReactNode, ComponentType } from 'react';
+import React, { FC, lazy, Suspense, ReactNode, ComponentType, useEffect } from 'react';
+import { useSelector } from 'react-redux';
 import SuspenseLoader from '../components/common/SuspenseLoader';
 import RouteErrorBoundary from '../components/RouteErrorBoundary';
 import DepartmentContentPanel from '../components/layout/DepartmentContentPanel/DepartmentContentPanel';
@@ -8,6 +9,8 @@ import { DashboardSubTabRenderer } from '../components/dashboard/DashboardRender
 import { useUnifiedDashboard } from '../hooks/useUnifiedDashboard';
 import type { DashboardData, CRMModuleProps } from '../hooks/useUnifiedDashboard';
 import { AI_ASSISTANTS_REGISTRY } from '../store/slices/aiAssistant/registry';
+import { selectSelectedAssistant } from '../store/slices/sidebarSlice';
+import type { RootState } from '../store/store';
 import './UnifiedDashboardPage.css';
 
 // Import tab components (non-lazy for critical paths)
@@ -135,6 +138,17 @@ const UnifiedDashboardPage: FC = () => {
     handleCRMModuleSelect,
     handleBackFromCRM,
   } = useUnifiedDashboard();
+
+  // ─── Phase 5: Auto-load CRM module when an AI assistant is selected ──────
+  const selectedAssistant = useSelector((state: RootState) => selectSelectedAssistant(state));
+
+  useEffect(() => {
+    if (!selectedAssistant) return;
+    // Only auto-switch if a matching CRM module exists for this assistant
+    if (selectedAssistant in CRM_MODULES) {
+      handleCRMModuleSelect(selectedAssistant);
+    }
+  }, [selectedAssistant, handleCRMModuleSelect]);
 
   // eslint-disable-next-line security/detect-object-injection
   const selectedCRMModuleConfig = selectedCRMModule ? CRM_MODULES[selectedCRMModule] : null;

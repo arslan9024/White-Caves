@@ -1,6 +1,36 @@
 import { createSlice, createSelector } from '@reduxjs/toolkit';
 
 const ROLE_PERMISSIONS = {
+  super_admin: {
+    canViewAllDashboards: true,
+    canManageAgents: true,
+    canManageFinances: true,
+    canAccessAIAssistants: true,
+    canManageProperties: true,
+    canManageLeads: true,
+    canAccessAnalytics: true,
+    canManageSettings: true,
+    canViewExecutiveReports: true,
+    canAccessConfidentialVault: true,
+    canManageAllUsers: true,
+    canManageSystemSettings: true,
+    isSuperUser: true,
+    isDecisionMaker: true,
+    isCreator: true,
+    isFounder: true,
+    dashboards: [
+      'executive',
+      'agents',
+      'properties',
+      'leads',
+      'finance',
+      'analytics',
+      'settings',
+      'ai-command',
+      'system',
+      'admin',
+    ],
+  },
   md: {
     canViewAllDashboards: true,
     canManageAgents: true,
@@ -98,6 +128,8 @@ const ROLE_PERMISSIONS = {
 
 const getRolePermissions = role => {
   switch (role) {
+    case 'super_admin':
+      return ROLE_PERMISSIONS.super_admin;
     case 'md':
       return ROLE_PERMISSIONS.md;
     case 'owner':

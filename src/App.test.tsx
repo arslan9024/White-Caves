@@ -53,6 +53,16 @@ vi.mock('./context/LanguageContext', () => ({
 // Mock StatusProvider
 vi.mock('./components/common/StatusNotification', () => ({
   StatusProvider: ({ children }: any) => <div data-testid="status-provider">{children}</div>,
+  useStatus: () => ({
+    notifications: [],
+    addNotification: vi.fn(),
+    removeNotification: vi.fn(),
+    success: vi.fn(),
+    error: vi.fn(),
+    warning: vi.fn(),
+    info: vi.fn(),
+    clear: vi.fn(),
+  }),
 }));
 
 // Mock AppLayout
