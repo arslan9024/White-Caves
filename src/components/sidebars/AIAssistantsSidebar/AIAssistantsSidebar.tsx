@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 // src/components/sidebars/AIAssistantsSidebar/AIAssistantsSidebar.tsx
 /**
  * Right Sidebar: AI Assistants
@@ -13,11 +12,7 @@ import React, { useMemo } from 'react';
 import styled from 'styled-components';
 import { BaseSidebar, SidebarSection, SidebarItem } from '../../shared/sidebars';
 import { useSidebarState } from '../../../hooks/useSidebarState';
-import {
-  AI_ASSISTANTS,
-  getAssistantsByDepartment,
-  getAssistantsByRole,
-} from '../../../config/aiAssistantsRegistry';
+import { getAssistantsByRole } from '../../../config/aiAssistantsRegistry';
 
 const SidebarContainer = styled.div`
   height: 100%;
@@ -72,7 +67,10 @@ const AIItemContainer = styled.div`
 `;
 
 export interface AIAssistantsSidebarProps {
-  onAssistantSelect?: (assistantId: string, context?: { role?: string; department?: string }) => void;
+  onAssistantSelect?: (
+    assistantId: string,
+    context?: { role?: string; department?: string }
+  ) => void;
   activeAssistant?: string;
   className?: string;
 }
@@ -103,24 +101,24 @@ export const AIAssistantsSidebar: React.FC<AIAssistantsSidebarProps> = ({
     [allAssistants, groupedAssistantIds],
   );
 
-  const handleAssistantClick = (assistantId: string, assistant: any) => {
+  const handleAssistantClick = (assistantId: string, assistant: Record<string, unknown>) => {
     setActiveFeature(`ai-${assistantId}`);
     if (onAssistantSelect) {
       onAssistantSelect(assistantId, {
-        role: assistant.role,
-        department: assistant.assignedTo?.[0],
+        role: assistant.role as string,
+        department: (assistant.assignedTo as string[] | undefined)?.[0],
       });
     }
   };
 
-  const renderAssistantItem = (assistant: any) => (
+  const renderAssistantItem = (assistant: Record<string, unknown>) => (
     <SidebarItem
       key={assistant.id}
       itemId={`ai-${assistant.id}`}
-      label={assistant.name}
-      icon={assistant.icon}
+      label={assistant.name as string}
+      icon={assistant.icon as string}
       isActive={activeAssistant === assistant.id}
-      onClick={() => handleAssistantClick(assistant.id, assistant)}
+      onClick={() => handleAssistantClick(assistant.id as string, assistant)}
       description={
         <AIItemContainer>
           <StatusBadge status={assistant.status || 'active'} />
@@ -288,4 +286,3 @@ export const AIAssistantsSidebar: React.FC<AIAssistantsSidebarProps> = ({
 };
 
 export default AIAssistantsSidebar;
-

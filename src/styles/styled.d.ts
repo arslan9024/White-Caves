@@ -4,15 +4,15 @@ import 'styled-components';
 
 declare module 'styled-components' {
   export interface DefaultTheme {
-    [key: string]: any;
-    colors: Record<string, any>;
-    spacing: Record<string, any>;
-    typography: Record<string, any>;
-    transitions: Record<string, any>;
-    shadows: Record<string, any>;
-    breakpoints: Record<string, any>;
-    zIndex: Record<string, any>;
-    radius?: Record<string, any>;
-    fonts?: Record<string, any>;
+    [key: string]: unknown;
+    colors: Record<string, unknown>;
+    spacing: Record<string, unknown>;
+    typography: Record<string, unknown>;
+    transitions: Record<string, unknown>;
+    shadows: Record<string, unknown>;
+    breakpoints: Record<string, unknown>;
+    zIndex: Record<string, unknown>;
+    radius?: Record<string, unknown>;
+    fonts?: Record<string, unknown>;
   }
 }

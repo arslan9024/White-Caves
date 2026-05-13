@@ -1,3 +1,4 @@
+/* eslint-disable security/detect-object-injection */
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import reducer, {
   // Async thunks
@@ -64,6 +65,10 @@ import reducer, {
   // Compliance
   addComplianceAuditLog,
   flagTransaction,
+  // Lifecycle
+  advanceTaskLifecycle,
+  addTaskAction,
+  setTaskResult,
   // Re-exports
   DEPARTMENT_COLORS,
 } from './aiAssistantDashboardSlice';
@@ -99,6 +104,10 @@ import {
   selectLeadFunnelMetrics,
   selectComplianceEngine,
   selectComplianceMetrics,
+  selectTasksByLifecycleStage,
+  selectPendingActionsCount,
+  selectCompletedTasksCount,
+  selectInProgressTasksCount,
 } from './aiAssistantDashboardSlice';
 
 import type { RootState } from '../store';
@@ -927,6 +936,368 @@ describe('aiAssistantDashboardSlice', () => {
     it('selectComplianceMetrics', () => {
       const m = selectComplianceMetrics(rootWith());
       expect(m).toBeDefined();
+    });
+  });
+
+  // ── Task lifecycle reducers ───────────────────────────────────────
+  describe('advanceTaskLifecycle', () => {
+    it('moves task to in_progress stage and sets status', () => {
+      const s = initialState();
+      const taskId = s.tasks.byAssistantId.nadia[0].id;
+      const state = reducer(
+        s,
+        advanceTaskLifecycle({ assistantId: 'nadia', taskId, stage: 'in_progress' })
+      );
+      const task = state.tasks.byAssistantId.nadia.find(t => t.id === taskId);
+      expect(task?.lifecycleStage).toBe('in_progress');
+      expect(task?.status).toBe('in_progress');
+      expect(task?.startedAt).toBeDefined();
+      expect(task?.updatedAt).toBeDefined();
+    });
+
+    it('moves task to completed and decrements activeTasksCount', () => {
+      // First get an in_progress task
+      const s = initialState();
+      const inProgressTask = Object.values(s.tasks.byAssistantId)
+        .flat()
+        .find(t => t.status === 'in_progress');
+      expect(inProgressTask).toBeDefined();
+      const { id: taskId } = inProgressTask!;
+      const assistantId = Object.entries(s.tasks.byAssistantId).find(([, tasks]) =>
+        tasks.some(t => t.id === taskId)
+      )![0];
+      const countBefore = s.tasks.activeTasksCount;
+      const state = reducer(s, advanceTaskLifecycle({ assistantId, taskId, stage: 'completed' }));
+      const task = state.tasks.byAssistantId[assistantId].find(t => t.id === taskId);
+      expect(task?.lifecycleStage).toBe('completed');
+      expect(task?.status).toBe('completed');
+      expect(task?.completedAt).toBeDefined();
+      expect(state.tasks.activeTasksCount).toBe(Math.max(0, countBefore - 1));
+    });
+
+    it('auto-fires a notification with correct severity', () => {
+      const s = initialState();
+      const taskId = s.tasks.byAssistantId.clara[0].id;
+      const unreadBefore = s.notifications.globalUnreadCount;
+
+      let state = reducer(
+        s,
+        advanceTaskLifecycle({ assistantId: 'clara', taskId, stage: 'pending_review' })
+      );
+      expect(state.notifications.globalUnreadCount).toBe(unreadBefore + 1);
+      const notif = state.notifications.byAssistantId.clara[0];
+      expect(notif.type).toBe('task_lifecycle');
+      expect(notif.severity).toBe('warning');
+      expect(notif.isRead).toBe(false);
+
+      state = reducer(
+        state,
+        advanceTaskLifecycle({ assistantId: 'clara', taskId, stage: 'failed' })
+      );
+      const failNotif = state.notifications.byAssistantId.clara[0];
+      expect(failNotif.severity).toBe('critical');
+
+      state = reducer(
+        state,
+        advanceTaskLifecycle({ assistantId: 'clara', taskId, stage: 'completed' })
+      );
+      const doneNotif = state.notifications.byAssistantId.clara[0];
+      expect(doneNotif.severity).toBe('info');
+    });
+
+    it('fires info notification for queued stage', () => {
+      const s = initialState();
+      const taskId = s.tasks.byAssistantId.mary[0].id;
+      const state = reducer(
+        s,
+        advanceTaskLifecycle({ assistantId: 'mary', taskId, stage: 'queued' })
+      );
+      const notif = state.notifications.byAssistantId.mary[0];
+      expect(notif.type).toBe('task_lifecycle');
+      expect(notif.severity).toBe('info');
+      expect(notif.message).toContain('queued');
+    });
+
+    it('does nothing for non-existent task', () => {
+      const before = initialState();
+      const after = reducer(
+        before,
+        advanceTaskLifecycle({ assistantId: 'nadia', taskId: 'not_a_real_id', stage: 'completed' })
+      );
+      expect(after.tasks.activeTasksCount).toBe(before.tasks.activeTasksCount);
+      expect(after.notifications.globalUnreadCount).toBe(before.notifications.globalUnreadCount);
+    });
+  });
+
+  describe('addTaskAction', () => {
+    it('appends action to task and fires success notification', () => {
+      const s = initialState();
+      const taskId = s.tasks.byAssistantId.mary[0].id;
+      const unreadBefore = s.notifications.globalUnreadCount;
+      const state = reducer(
+        s,
+        addTaskAction({
+          assistantId: 'mary',
+          taskId,
+          taskAction: {
+            type: 'file_uploaded',
+            description: 'Excel file uploaded with 30 units',
+            actor: 'agent_3',
+            status: 'success',
+            result: '30 records ready for import',
+          },
+        })
+      );
+      const task = state.tasks.byAssistantId.mary.find(t => t.id === taskId);
+      expect(task?.actions?.length).toBeGreaterThanOrEqual(1);
+      const lastAction = task!.actions![task!.actions!.length - 1];
+      expect(lastAction.type).toBe('file_uploaded');
+      expect(lastAction.status).toBe('success');
+      expect(lastAction.id).toMatch(/^ta_/);
+      expect(lastAction.timestamp).toBeDefined();
+      expect(task?.updatedAt).toBeDefined();
+      // notification
+      expect(state.notifications.globalUnreadCount).toBe(unreadBefore + 1);
+      const notif = state.notifications.byAssistantId.mary[0];
+      expect(notif.type).toBe('task_action');
+      expect(notif.severity).toBe('info');
+    });
+
+    it('fires warning notification for pending action', () => {
+      const s = initialState();
+      const taskId = s.tasks.byAssistantId.theodora[0].id;
+      const state = reducer(
+        s,
+        addTaskAction({
+          assistantId: 'theodora',
+          taskId,
+          taskAction: {
+            type: 'review_requested',
+            description: 'Awaiting MD approval',
+            actor: 'system',
+            status: 'pending',
+          },
+        })
+      );
+      const notif = state.notifications.byAssistantId.theodora[0];
+      expect(notif.severity).toBe('warning');
+      expect(notif.message).toContain('Pending action');
+    });
+
+    it('fires critical notification for failed action', () => {
+      const s = initialState();
+      const taskId = s.tasks.byAssistantId.laila[0].id;
+      const state = reducer(
+        s,
+        addTaskAction({
+          assistantId: 'laila',
+          taskId,
+          taskAction: {
+            type: 'api_error',
+            description: 'KYC API timeout',
+            actor: 'system',
+            status: 'failed',
+          },
+        })
+      );
+      const notif = state.notifications.byAssistantId.laila[0];
+      expect(notif.severity).toBe('critical');
+      expect(notif.message).toContain('Action failed');
+    });
+
+    it('does nothing for non-existent task', () => {
+      const before = initialState();
+      const after = reducer(
+        before,
+        addTaskAction({
+          assistantId: 'nadia',
+          taskId: 'ghost_task',
+          taskAction: { type: 'x', description: 'y', actor: 'z', status: 'success' },
+        })
+      );
+      expect(after.notifications.globalUnreadCount).toBe(before.notifications.globalUnreadCount);
+    });
+  });
+
+  describe('setTaskResult', () => {
+    it('writes result, marks completed, decrements activeTasksCount', () => {
+      const s = initialState();
+      const inProgressTask = Object.values(s.tasks.byAssistantId)
+        .flat()
+        .find(t => t.status === 'in_progress');
+      expect(inProgressTask).toBeDefined();
+      const { id: taskId } = inProgressTask!;
+      const assistantId = Object.entries(s.tasks.byAssistantId).find(([, tasks]) =>
+        tasks.some(t => t.id === taskId)
+      )![0];
+      const countBefore = s.tasks.activeTasksCount;
+      const completedAt = new Date().toISOString();
+
+      const state = reducer(
+        s,
+        setTaskResult({
+          assistantId,
+          taskId,
+          result: {
+            outcome: 'success',
+            summary: '23 units imported successfully',
+            completedAt,
+            metrics: { unitsImported: 23, errors: 0 },
+          },
+        })
+      );
+      const task = state.tasks.byAssistantId[assistantId].find(t => t.id === taskId);
+      expect(task?.result?.outcome).toBe('success');
+      expect(task?.result?.summary).toBe('23 units imported successfully');
+      expect(task?.lifecycleStage).toBe('completed');
+      expect(task?.status).toBe('completed');
+      expect(task?.completedAt).toBe(completedAt);
+      expect(state.tasks.activeTasksCount).toBe(Math.max(0, countBefore - 1));
+    });
+
+    it('fires info notification for successful result', () => {
+      const s = initialState();
+      const taskId = s.tasks.byAssistantId.sophia[0].id;
+      const unreadBefore = s.notifications.globalUnreadCount;
+      const state = reducer(
+        s,
+        setTaskResult({
+          assistantId: 'sophia',
+          taskId,
+          result: {
+            outcome: 'success',
+            summary: 'All 6 leads assigned',
+            completedAt: new Date().toISOString(),
+          },
+        })
+      );
+      expect(state.notifications.globalUnreadCount).toBe(unreadBefore + 1);
+      const notif = state.notifications.byAssistantId.sophia[0];
+      expect(notif.type).toBe('task_result');
+      expect(notif.severity).toBe('info');
+      expect(notif.message).toContain('✓ Completed');
+    });
+
+    it('fires warning notification for partial result and sets pending_review stage', () => {
+      const s = initialState();
+      const taskId = s.tasks.byAssistantId.olivia[0].id;
+      const state = reducer(
+        s,
+        setTaskResult({
+          assistantId: 'olivia',
+          taskId,
+          result: {
+            outcome: 'partial',
+            summary: '3 of 5 posts scheduled',
+            completedAt: new Date().toISOString(),
+          },
+        })
+      );
+      const task = state.tasks.byAssistantId.olivia.find(t => t.id === taskId);
+      // partial outcome → pending_review stage (needs further action)
+      expect(task?.lifecycleStage).toBe('pending_review');
+      const notif = state.notifications.byAssistantId.olivia[0];
+      expect(notif.severity).toBe('warning');
+      expect(notif.message).toContain('⚠ Partially completed');
+    });
+
+    it('fires critical notification and keeps task active for failed result', () => {
+      const s = initialState();
+      const taskId = s.tasks.byAssistantId.aurora[0].id;
+      const state = reducer(
+        s,
+        setTaskResult({
+          assistantId: 'aurora',
+          taskId,
+          result: {
+            outcome: 'failed',
+            summary: 'Deployment rolled back',
+            completedAt: new Date().toISOString(),
+            errorMessage: 'Container crashed on startup',
+          },
+        })
+      );
+      const task = state.tasks.byAssistantId.aurora.find(t => t.id === taskId);
+      expect(task?.lifecycleStage).toBe('failed');
+      expect(task?.status).toBe('in_progress'); // not changed for failed
+      const notif = state.notifications.byAssistantId.aurora[0];
+      expect(notif.severity).toBe('critical');
+      expect(notif.message).toContain('✗ Failed');
+    });
+
+    it('does nothing for non-existent task', () => {
+      const before = initialState();
+      const after = reducer(
+        before,
+        setTaskResult({
+          assistantId: 'nadia',
+          taskId: 'phantom',
+          result: { outcome: 'success', summary: 'ok', completedAt: new Date().toISOString() },
+        })
+      );
+      expect(after.notifications.globalUnreadCount).toBe(before.notifications.globalUnreadCount);
+    });
+  });
+
+  // ── Task lifecycle selectors ──────────────────────────────────────
+  describe('task lifecycle selectors', () => {
+    it('selectTasksByLifecycleStage returns tasks at the given stage', () => {
+      const state = rootWith();
+      // All seed tasks are enriched to queued or in_progress
+      const inProgressTasks = selectTasksByLifecycleStage('nadia', 'in_progress')(state);
+      const queuedTasks = selectTasksByLifecycleStage('nadia', 'queued')(state);
+      expect(Array.isArray(inProgressTasks)).toBe(true);
+      expect(Array.isArray(queuedTasks)).toBe(true);
+      // Total should equal all tasks for nadia
+      expect(inProgressTasks.length + queuedTasks.length).toBe(
+        selectTasksByAssistant('nadia')(state).length
+      );
+    });
+
+    it('selectTasksByLifecycleStage returns empty array for unknown assistant', () => {
+      expect(selectTasksByLifecycleStage('nobody', 'in_progress')(rootWith())).toHaveLength(0);
+    });
+
+    it('selectPendingActionsCount returns count of pending/queued tasks', () => {
+      const count = selectPendingActionsCount('nadia')(rootWith());
+      expect(typeof count).toBe('number');
+      expect(count).toBeGreaterThanOrEqual(0);
+    });
+
+    it('selectPendingActionsCount returns 0 for unknown assistant', () => {
+      expect(selectPendingActionsCount('nobody')(rootWith())).toBe(0);
+    });
+
+    it('selectCompletedTasksCount returns 0 before any completions', () => {
+      // Seed tasks are all queued or in_progress, never completed
+      const count = selectCompletedTasksCount('nadia')(rootWith());
+      expect(count).toBe(0);
+    });
+
+    it('selectCompletedTasksCount increases after setTaskResult success', () => {
+      const s = initialState();
+      const taskId = s.tasks.byAssistantId.nadia[0].id;
+      const state = reducer(
+        s,
+        setTaskResult({
+          assistantId: 'nadia',
+          taskId,
+          result: { outcome: 'success', summary: 'Done', completedAt: new Date().toISOString() },
+        })
+      );
+      const count = selectCompletedTasksCount('nadia')(rootWith({ tasks: state.tasks }));
+      expect(count).toBe(1);
+    });
+
+    it('selectInProgressTasksCount matches in_progress tasks', () => {
+      const count = selectInProgressTasksCount('nadia')(rootWith());
+      const tasks = selectTasksByAssistant('nadia')(rootWith());
+      const expected = tasks.filter(t => t.status === 'in_progress').length;
+      expect(count).toBe(expected);
+    });
+
+    it('selectInProgressTasksCount returns 0 for unknown assistant', () => {
+      expect(selectInProgressTasksCount('nobody')(rootWith())).toBe(0);
     });
   });
 });

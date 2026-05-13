@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 import React from 'react';
 import BaseDepartmentView from './BaseDepartmentView';
 import { getDepartmentConfig } from '../../config/departmentViewConfigs';
@@ -12,26 +11,24 @@ import { DataCard } from '../shared/dashboard';
 interface TechnologyViewProps {
   serviceName?: string;
   subitemId?: string;
-  departmentData?: any;
+  departmentData?: Record<string, unknown>;
 }
 
-const TechnologyView: React.FC<TechnologyViewProps> = ({ serviceName = 'infrastructure', subitemId, departmentData }) => {
+const TechnologyView: React.FC<TechnologyViewProps> = ({
+  serviceName = 'infrastructure',
+  subitemId,
+  departmentData,
+}) => {
   const config = getDepartmentConfig('TECHNOLOGY')!;
 
-  const renderContent = (data: any) => {
+  const renderContent = (data: Record<string, unknown>) => {
     if (!subitemId && serviceName === 'infrastructure-status') {
       return (
         <>
-          <DataCard 
-            title="System Status"
-            subtitle="All systems and services health"
-          >
+          <DataCard title="System Status" subtitle="All systems and services health">
             Services: {JSON.stringify(data?.systemStatus?.length || 0)} items
           </DataCard>
-          <DataCard 
-            title="Active Incidents"
-            subtitle="Ongoing incidents and issues"
-          >
+          <DataCard title="Active Incidents" subtitle="Ongoing incidents and issues">
             Incidents: {JSON.stringify(data?.incidents?.length || 0)} items
           </DataCard>
         </>
@@ -85,4 +82,3 @@ const TechnologyView: React.FC<TechnologyViewProps> = ({ serviceName = 'infrastr
 };
 
 export default TechnologyView;
-

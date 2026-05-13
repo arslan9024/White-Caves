@@ -1,15 +1,25 @@
 /**
- * Linda - WhatsApp LocalAuth Client
- * Handles real WhatsApp message ingestion via LocalAuth (no credentials needed)
- * Features: Session persistence, real-time message receiving, bidirectional messaging
- * Status: This is a template - actual implementation requires whatsapp-web.js
+ * Linda — WhatsApp LocalAuth Client
+ *
+ * Full implementation using whatsapp-web.js with LocalAuth session persistence.
+ * Handles QR-based authentication, incoming message events, bidirectional
+ * messaging, reconnect logic, and per-bot session tracking.
+ *
+ * Design decisions:
+ * - Dynamically imports whatsapp-web.js so the rest of the server can start
+ *   even when LINDA_ENABLED=false or when Chrome is unavailable.
+ * - Exposes a singleton via getLindaClient() that routes share.
+ * - Emits typed EventEmitter events that the Socket.io layer can forward
+ *   to connected browser clients.
  */
 
 import { EventEmitter } from 'events';
+import path from 'path';
+import { LINDA_SESSIONS_PATH, LINDA_HEADLESS, LINDA_RECONNECT_DELAY, LINDA_MAX_RECONNECT_ATTEMPTS } from '../../config/env.js';
 
 export interface WhatsAppMessage {
   id: string;
-  from: string; // Phone number
+  from: string;
   to?: string;
   body: string;
   timestamp: Date;
@@ -19,13 +29,12 @@ export interface WhatsAppMessage {
 }
 
 export interface LindaConfig {
-  authStrategy: 'LOCAL_AUTH' | 'CLOUD';
-  sessionPath: string; // Default: ~/.linda-session
-  headless: boolean;
-  port?: number;
-  autoRestart: boolean;
-  maxReconnectAttempts: number;
-  reconnectDelay: number; // ms
+  authStrategy?: 'LOCAL_AUTH';
+  sessionPath?: string;
+  headless?: boolean;
+  autoRestart?: boolean;
+  maxReconnectAttempts?: number;
+  reconnectDelay?: number;
 }
 
 export enum LindaStatus {
@@ -36,68 +45,87 @@ export enum LindaStatus {
   ERROR = 'ERROR',
 }
 
+interface LindaStats {
+  status: LindaStatus;
+  isConnected: boolean;
+  queuedMessages: number;
+  reconnectAttempts: number;
+  messagesSent: number;
+  messagesReceived: number;
+}
+
 /**
  * Linda WhatsApp Client
- * Wrapper around whatsapp-web.js with LocalAuth
+ *
+ * Wraps whatsapp-web.js with LocalAuth strategy, reconnect logic,
+ * and an internal message queue for polling-based consumers.
  */
 export class LindaClient extends EventEmitter {
   private status: LindaStatus = LindaStatus.DISCONNECTED;
-  private config: LindaConfig;
+  private config: Required<LindaConfig>;
   private reconnectAttempts = 0;
   private sessionActive = false;
   private messageQueue: WhatsAppMessage[] = [];
+  private qrCode: string | null = null;
+  private messagesSent = 0;
+  private messagesReceived = 0;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  private client: any = null; // whatsapp-web.js Client instance
 
-  constructor(config: Partial<LindaConfig> = {}) {
+  constructor(config: LindaConfig = {}) {
     super();
-
     this.config = {
       authStrategy: 'LOCAL_AUTH',
-      sessionPath: process.env.LINDA_SESSION_PATH || './.linda-session',
-      headless: process.env.LINDA_HEADLESS !== 'false',
-      autoRestart: true,
-      maxReconnectAttempts: 5,
-      reconnectDelay: process.env.LINDA_RECONNECT_DELAY ? parseInt(process.env.LINDA_RECONNECT_DELAY) : 5000,
-      ...config,
+      sessionPath: config.sessionPath ?? LINDA_SESSIONS_PATH,
+      headless: config.headless ?? LINDA_HEADLESS,
+      autoRestart: config.autoRestart ?? true,
+      maxReconnectAttempts: config.maxReconnectAttempts ?? LINDA_MAX_RECONNECT_ATTEMPTS,
+      reconnectDelay: config.reconnectDelay ?? LINDA_RECONNECT_DELAY,
     };
   }
 
   /**
-   * Initialize WhatsApp connection
-   * Note: In real implementation, this would use whatsapp-web.js
+   * Initialize WhatsApp connection using whatsapp-web.js LocalAuth.
+   * Safe to call multiple times — subsequent calls are no-ops if already ready.
    */
   public async initialize(): Promise<void> {
+    if (this.sessionActive) return;
+
     try {
       this.setStatus(LindaStatus.AUTHENTICATING);
-
       console.log('[Linda] Initializing WhatsApp LocalAuth client...');
       console.log(`[Linda] Session path: ${this.config.sessionPath}`);
 
-      // In production, this would be:
-      // const { Client } = require('whatsapp-web.js');
-      // const LocalAuth = require('whatsapp-web.js/lib/stores/LocalAuth');
-      //
-      // this.client = new Client({
-      //   authStrategy: new LocalAuth({ clientId: 'linda' }),
-      //   puppeteer: {
-      //     headless: this.config.headless,
-      //     args: ['--no-sandbox', '--disable-setuid-sandbox'],
-      //     executablePath: process.platform === 'win32' ? undefined : '/usr/bin/chromium'
-      //   },
-      //   restartOnAuthFail: true,
-      //   takeoverOnConflict: true,
-      //   qrTimeout: 0,
-      // });
+      // Dynamic import avoids hard dependency when Chrome is unavailable
+      const wwjs = await import('whatsapp-web.js');
+      const { Client, LocalAuth } = wwjs.default ?? wwjs;
 
-      // Setup event listeners
+      const sessionDir = path.resolve(this.config.sessionPath);
+
+      this.client = new Client({
+        authStrategy: new LocalAuth({
+          clientId: 'linda',
+          dataPath: sessionDir,
+        }),
+        puppeteer: {
+          headless: this.config.headless,
+          args: [
+            '--no-sandbox',
+            '--disable-setuid-sandbox',
+            '--disable-dev-shm-usage',
+            '--disable-accelerated-2d-canvas',
+            '--no-first-run',
+            '--no-zygote',
+            '--single-process',
+            '--disable-gpu',
+          ],
+        },
+        restartOnAuthFail: true,
+        takeoverOnConflict: true,
+      });
+
       this.setupEventListeners();
-
-      // Emit ready event
-      this.setStatus(LindaStatus.READY);
-      this.sessionActive = true;
-      this.reconnectAttempts = 0;
-
-      console.log('[Linda] WhatsApp client ready!');
-      this.emit('ready');
+      await this.client.initialize();
     } catch (error) {
       this.setStatus(LindaStatus.ERROR);
       console.error('[Linda] Initialization failed:', error);
@@ -107,272 +135,286 @@ export class LindaClient extends EventEmitter {
   }
 
   /**
-   * Setup event listeners
+   * Wire whatsapp-web.js events to internal handlers.
    */
   private setupEventListeners(): void {
-    // Note: These would be real whatsapp-web.js event handlers:
+    if (!this.client) return;
 
-    // QR Code (for initial auth)
-    // this.client.on('qr', (qr) => {
-    //   console.log('[Linda] QR Code generated - scan to authenticate');
-    //   this.emit('qr', qr);
-    // });
+    // QR code generated — emit so admin UI can display it
+    this.client.on('qr', (qr: string) => {
+      console.log('[Linda] QR Code generated — scan to authenticate');
+      this.qrCode = qr;
+      this.emit('qr', qr);
+    });
 
     // Authentication failed
-    // this.client.on('auth_failure', (msg) => {
-    //   console.error('[Linda] Auth failure:', msg);
-    //   this.setStatus(LindaStatus.ERROR);
-    //   this.emit('auth_failure', msg);
-    // });
+    this.client.on('auth_failure', (msg: string) => {
+      console.error('[Linda] Auth failure:', msg);
+      this.qrCode = null;
+      this.setStatus(LindaStatus.ERROR);
+      this.emit('auth_failure', msg);
+      if (this.config.autoRestart) {
+        this.attemptReconnect();
+      }
+    });
 
-    // Ready (authenticated)
-    // this.client.on('ready', () => {
-    //   console.log('[Linda] Client ready and authenticated');
-    //   this.setStatus(LindaStatus.READY);
-    // });
+    // Authenticated and ready
+    this.client.on('ready', () => {
+      console.log('[Linda] Client ready and authenticated');
+      this.qrCode = null; // Clear QR once authenticated
+      this.reconnectAttempts = 0;
+      this.sessionActive = true;
+      this.setStatus(LindaStatus.READY);
+      this.emit('ready');
+    });
 
-    // Message received
-    // this.client.on('message', async (message) => {
-    //   await this.handleIncomingMessage(message);
-    // });
+    // Incoming message
+    this.client.on('message', async (message: any) => { // eslint-disable-line @typescript-eslint/no-explicit-any
+      await this.handleIncomingMessage(message);
+    });
 
-    // Disconnected
-    // this.client.on('disconnected', (reason) => {
-    //   console.log('[Linda] Disconnected:', reason);
-    //   this.setStatus(LindaStatus.DISCONNECTED);
-    //   this.sessionActive = false;
-    //   this.attemptReconnect();
-    // });
+    // Disconnected (session logged out from phone or network loss)
+    this.client.on('disconnected', (reason: string) => {
+      console.log('[Linda] Disconnected:', reason);
+      this.setStatus(LindaStatus.DISCONNECTED);
+      this.sessionActive = false;
+      this.qrCode = null;
+      this.emit('disconnected', reason);
+      if (this.config.autoRestart) {
+        this.attemptReconnect();
+      }
+    });
 
-    console.log('[Linda] Event listeners setup complete');
+    console.log('[Linda] Event listeners registered');
   }
 
   /**
-   * Handle incoming message from WhatsApp
+   * Normalise an incoming whatsapp-web.js message into our WhatsAppMessage shape.
    */
-  private async handleIncomingMessage(message: any): Promise<void> {
+  private async handleIncomingMessage(message: any): Promise<void> { // eslint-disable-line @typescript-eslint/no-explicit-any
     try {
-      // Note: In real implementation:
-      // const chat = await message.getChat();
-      // const contact = await message.getContact();
-
-      const wrappedMessage: WhatsAppMessage = {
-        id: message.id?.id || `msg_${Date.now()}`,
-        from: message.from,
+      const wrapped: WhatsAppMessage = {
+        id: message.id?.id ?? `msg_${Date.now()}`,
+        from: message.from ?? '',
         to: message.to,
-        body: message.body,
-        timestamp: new Date(message.timestamp * 1000),
-        isFromMe: message.fromMe || false,
-        hasMedia: message.hasMedia || false,
+        body: message.body ?? '',
+        timestamp: new Date((message.timestamp ?? Date.now() / 1000) * 1000),
+        isFromMe: message.fromMe ?? false,
+        hasMedia: message.hasMedia ?? false,
         type: this.detectMessageType(message),
       };
 
-      // Add to queue
-      this.messageQueue.push(wrappedMessage);
+      this.messageQueue.push(wrapped);
+      this.messagesReceived += 1;
+      this.emit('message', wrapped);
 
-      // Emit event
-      this.emit('message', wrappedMessage);
-
-      console.log(`[Linda] Message received from ${wrappedMessage.from}: ${wrappedMessage.body.substring(0, 50)}`);
+      console.log(`[Linda] ← from ${wrapped.from}: ${wrapped.body.substring(0, 60)}`);
     } catch (error) {
-      console.error('[Linda] Error handling message:', error);
+      console.error('[Linda] Error handling incoming message:', error);
     }
   }
 
   /**
-   * Detect message type
+   * Detect message type from MIME type or hasMedia flag.
    */
-  private detectMessageType(
-    message: any
-  ): 'text' | 'image' | 'document' | 'audio' | 'video' {
+  private detectMessageType(message: any): WhatsAppMessage['type'] { // eslint-disable-line @typescript-eslint/no-explicit-any
     if (!message.hasMedia) return 'text';
-
-    const mimeType = message.mimetype || '';
-    if (mimeType.includes('image')) return 'image';
-    if (mimeType.includes('audio')) return 'audio';
-    if (mimeType.includes('video')) return 'video';
-    if (mimeType.includes('pdf') || mimeType.includes('document')) return 'document';
-
+    const mime: string = message.mimetype ?? '';
+    if (mime.startsWith('image/')) return 'image';
+    if (mime.startsWith('audio/')) return 'audio';
+    if (mime.startsWith('video/')) return 'video';
+    if (mime.includes('pdf') || mime.includes('document') || mime.startsWith('application/')) return 'document';
     return 'text';
   }
 
+  // ─── Public API ─────────────────────────────────────────────────────────
+
   /**
-   * Send message to WhatsApp contact
+   * Send a message to a WhatsApp number.
+   * @param phoneNumber  E.164 number without "+" (e.g. "971501234567")
+   * @param message      Plain text body
    */
   public async sendMessage(phoneNumber: string, message: string): Promise<string> {
-    try {
-      // Note: In real implementation:
-      // const number = phoneNumber.includes('@') ? phoneNumber : `${phoneNumber}@c.us`;
-      // const msg = await this.client.sendMessage(number, message);
-      // return msg.id?.id;
-
-      if (!this.sessionActive) {
-        throw new Error('Linda session not active');
-      }
-
-      const messageId = `msg_${Date.now()}_${Math.random().toString(36)}`;
-
-      console.log(`[Linda] Message sent to ${phoneNumber}: ${message.substring(0, 50)}`);
-
-      this.emit('message_sent', {
-        to: phoneNumber,
-        message,
-        messageId,
-        timestamp: new Date(),
-      });
-
-      return messageId;
-    } catch (error) {
-      console.error('[Linda] Error sending message:', error);
-      this.emit('error', { type: 'send_failed', error });
-      throw error;
+    if (!this.sessionActive || !this.client) {
+      throw new Error('Linda session not active — call initialize() first');
     }
+    const chatId = phoneNumber.includes('@') ? phoneNumber : `${phoneNumber}@c.us`;
+    const sent = await this.client.sendMessage(chatId, message);
+    const messageId: string = sent?.id?.id ?? `msg_${Date.now()}_${Math.random().toString(36).slice(2)}`;
+    this.messagesSent += 1;
+    this.emit('message_sent', { to: phoneNumber, message, messageId, timestamp: new Date() });
+    console.log(`[Linda] → to ${phoneNumber}: ${message.substring(0, 60)}`);
+    return messageId;
   }
 
   /**
-   * Get message queue (polling mechanism)
+   * Send the same message to multiple phone numbers in sequence.
+   * Returns per-number results so the caller can log failures.
+   */
+  public async broadcastMessage(
+    phoneNumbers: string[],
+    message: string
+  ): Promise<Array<{ phone: string; messageId?: string; error?: string }>> {
+    const results: Array<{ phone: string; messageId?: string; error?: string }> = [];
+    for (const phone of phoneNumbers) {
+      try {
+        const id = await this.sendMessage(phone, message);
+        results.push({ phone, messageId: id });
+        // Brief random delay 2–8 s between messages to avoid spam detection
+        const delay = 2000 + Math.floor(Math.random() * 6000);
+        await new Promise(r => setTimeout(r, delay));
+      } catch (err) {
+        results.push({ phone, error: err instanceof Error ? err.message : String(err) });
+      }
+    }
+    return results;
+  }
+
+  /**
+   * Retrieve and clear the internal message queue (for polling consumers).
    */
   public getMessageQueue(): WhatsAppMessage[] {
-    const messages = [...this.messageQueue];
+    const msgs = [...this.messageQueue];
     this.messageQueue = [];
-    return messages;
+    return msgs;
   }
 
   /**
-   * Get conversation list
+   * List active chats/conversations.
    */
-  public async getConversations(): Promise<any[]> {
-    try {
-      // Note: In real implementation:
-      // const chats = await this.client.getChats();
-      // return chats.map(chat => ({ id: chat.id, name: chat.name, lastMessage: chat.lastMessage }));
-
-      console.log('[Linda] Fetching conversations');
-      return [];
-    } catch (error) {
-      console.error('[Linda] Error getting conversations:', error);
-      throw error;
-    }
+  public async getConversations(): Promise<Array<{ id: string; name: string; unreadCount: number; lastMessage?: string }>> {
+    if (!this.sessionActive || !this.client) return [];
+    const chats = await this.client.getChats();
+    return chats.slice(0, 50).map((c: any) => ({ // eslint-disable-line @typescript-eslint/no-explicit-any
+      id: c.id?._serialized ?? String(c.id),
+      name: c.name ?? c.id?._serialized ?? 'Unknown',
+      unreadCount: c.unreadCount ?? 0,
+      lastMessage: c.lastMessage?.body,
+    }));
   }
 
   /**
-   * Get conversation history
+   * Fetch message history for a specific contact.
    */
-  public async getConversationHistory(phoneNumber: string, limit: number = 50): Promise<WhatsAppMessage[]> {
-    try {
-      // Note: In real implementation:
-      // const number = phoneNumber.includes('@') ? phoneNumber : `${phoneNumber}@c.us`;
-      // const chat = await this.client.getChatById(number);
-      // const messages = await chat.fetchMessages({ limit });
-
-      console.log(`[Linda] Fetching conversation history for ${phoneNumber}`);
-      return [];
-    } catch (error) {
-      console.error('[Linda] Error getting conversation history:', error);
-      throw error;
-    }
+  public async getConversationHistory(phoneNumber: string, limit = 50): Promise<WhatsAppMessage[]> {
+    if (!this.sessionActive || !this.client) return [];
+    const chatId = phoneNumber.includes('@') ? phoneNumber : `${phoneNumber}@c.us`;
+    const chat = await this.client.getChatById(chatId);
+    const messages = await chat.fetchMessages({ limit });
+    return messages.map((m: any): WhatsAppMessage => ({ // eslint-disable-line @typescript-eslint/no-explicit-any
+      id: m.id?.id ?? String(Date.now()),
+      from: m.from ?? phoneNumber,
+      to: m.to,
+      body: m.body ?? '',
+      timestamp: new Date((m.timestamp ?? 0) * 1000),
+      isFromMe: m.fromMe ?? false,
+      hasMedia: m.hasMedia ?? false,
+      type: this.detectMessageType(m),
+    }));
   }
 
   /**
-   * Close/disconnect client
+   * Return the current QR code string (null when authenticated or not yet generated).
    */
+  public getQRCode(): string | null {
+    return this.qrCode;
+  }
+
+  /** Gracefully destroy the WhatsApp session. */
   public async disconnect(): Promise<void> {
     try {
-      // Note: In real implementation:
-      // await this.client.destroy();
+      if (this.client) {
+        await this.client.destroy();
+        this.client = null;
+      }
+    } catch (err) {
+      console.warn('[Linda] Error during destroy:', err);
+    }
+    this.setStatus(LindaStatus.DISCONNECTED);
+    this.sessionActive = false;
+    this.qrCode = null;
+    this.emit('disconnected', 'manual');
+    console.log('[Linda] Client disconnected');
+  }
 
-      this.setStatus(LindaStatus.DISCONNECTED);
-      this.sessionActive = false;
-      console.log('[Linda] Client disconnected');
-      this.emit('disconnected');
-    } catch (error) {
-      console.error('[Linda] Error disconnecting:', error);
-      throw error;
+  /** Current connection status enum. */
+  public getStatus(): LindaStatus {
+    return this.status;
+  }
+
+  /** Whether the session is authenticated and ready to send messages. */
+  public isConnected(): boolean {
+    return this.status === LindaStatus.READY && this.sessionActive;
+  }
+
+  /** Statistics snapshot for the admin UI and status endpoints. */
+  public getStats(): LindaStats {
+    return {
+      status: this.status,
+      isConnected: this.isConnected(),
+      queuedMessages: this.messageQueue.length,
+      reconnectAttempts: this.reconnectAttempts,
+      messagesSent: this.messagesSent,
+      messagesReceived: this.messagesReceived,
+    };
+  }
+
+  // ─── Private helpers ─────────────────────────────────────────────────────
+
+  private setStatus(newStatus: LindaStatus): void {
+    if (this.status !== newStatus) {
+      console.log(`[Linda] Status: ${this.status} → ${newStatus}`);
+      this.status = newStatus;
+      this.emit('status_changed', newStatus);
     }
   }
 
-  /**
-   * Attempt reconnection with exponential backoff
-   */
   private async attemptReconnect(): Promise<void> {
-    if (!this.config.autoRestart || this.reconnectAttempts >= this.config.maxReconnectAttempts) {
+    if (this.reconnectAttempts >= this.config.maxReconnectAttempts) {
       this.setStatus(LindaStatus.ERROR);
       console.error('[Linda] Max reconnection attempts reached');
       return;
     }
 
     this.reconnectAttempts += 1;
-    const delay = this.config.reconnectDelay * Math.pow(2, this.reconnectAttempts - 1);
-
-    console.log(
-      `[Linda] Attempting reconnection (attempt ${this.reconnectAttempts}/${this.config.maxReconnectAttempts}) in ${delay}ms`
-    );
-
+    // Exponential back-off capped at 5 minutes
+    const delay = Math.min(this.config.reconnectDelay * Math.pow(2, this.reconnectAttempts - 1), 300_000);
+    console.log(`[Linda] Reconnect attempt ${this.reconnectAttempts}/${this.config.maxReconnectAttempts} in ${delay}ms`);
     this.setStatus(LindaStatus.RECONNECTING);
 
     setTimeout(async () => {
       try {
+        // Reset session state before re-initializing
+        this.sessionActive = false;
+        this.client = null;
         await this.initialize();
-      } catch (error) {
-        console.error('[Linda] Reconnection failed:', error);
+      } catch (err) {
+        console.error('[Linda] Reconnection attempt failed:', err);
         await this.attemptReconnect();
       }
     }, delay);
   }
-
-  /**
-   * Set status and log
-   */
-  private setStatus(newStatus: LindaStatus): void {
-    if (this.status !== newStatus) {
-      console.log(`[Linda] Status: ${this.status} -> ${newStatus}`);
-      this.status = newStatus;
-      this.emit('status_changed', newStatus);
-    }
-  }
-
-  /**
-   * Get current status
-   */
-  public getStatus(): LindaStatus {
-    return this.status;
-  }
-
-  /**
-   * Check if connected
-   */
-  public isConnected(): boolean {
-    return this.status === LindaStatus.READY && this.sessionActive;
-  }
-
-  /**
-   * Get stats
-   */
-  public getStats(): {
-    status: LindaStatus;
-    isConnected: boolean;
-    queuedMessages: number;
-    reconnectAttempts: number;
-  } {
-    return {
-      status: this.status,
-      isConnected: this.isConnected(),
-      queuedMessages: this.messageQueue.length,
-      reconnectAttempts: this.reconnectAttempts,
-    };
-  }
 }
 
-// Export singleton instance
+// ─── Singleton management ─────────────────────────────────────────────────
+
 let lindaInstance: LindaClient | null = null;
 
-export function getLindaClient(config?: Partial<LindaConfig>): LindaClient {
+/** Return the process-wide Linda singleton, optionally applying config on first call. */
+export function getLindaClient(config?: LindaConfig): LindaClient {
   if (!lindaInstance) {
     lindaInstance = new LindaClient(config);
   }
   return lindaInstance;
 }
 
-export function createLindaClient(config?: Partial<LindaConfig>): LindaClient {
+/** Create a fresh LindaClient instance (useful for multi-bot scenarios). */
+export function createLindaClient(config?: LindaConfig): LindaClient {
   return new LindaClient(config);
 }
+
+/** Reset the singleton (primarily for tests). */
+export function resetLindaClient(): void {
+  lindaInstance = null;
+}
+

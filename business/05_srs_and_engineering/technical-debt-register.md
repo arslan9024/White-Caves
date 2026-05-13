@@ -1,4 +1,5 @@
 # Technical Debt Register
+
 # White Caves Real Estate Platform
 
 > **Document ID:** WC-TECH-DEBT-001
@@ -22,16 +23,16 @@ This register tracks all known technical debt, stub implementations, deferred fe
 
 ### TD-001: Stub API Endpoints (8 active stubs)
 
-| Endpoint | Status | Blocking | Target Phase |
-|----------|--------|---------|-------------|
-| `/api/contracts` | 501 Not Implemented | Lease management, compliance | Phase 2 |
-| `/api/appointments` | 501 Not Implemented | Viewing bookings, calendar | Phase 2 |
-| `/api/payments` | 503 Service Unavailable | Tenant rent payment, portal | Phase 2 |
-| `/api/valuation` | 501 Not Implemented | Seller appraisal flow | Phase 2 |
-| `/api/tenancy-agreements` | 501 Not Implemented | Full lease lifecycle | Phase 2 |
-| `/api/role-requests` | Not implemented | Agent self-serve RBAC | Phase 9 |
-| `/api/2fa` | 501 Not Implemented | Compliance security | Phase 9 |
-| `/api/whatsapp/*` | Stub (logs only) | WhatsApp CRM core feature | Phase 4 |
+| Endpoint                  | Status                  | Blocking                     | Target Phase |
+| ------------------------- | ----------------------- | ---------------------------- | ------------ |
+| `/api/contracts`          | 501 Not Implemented     | Lease management, compliance | Phase 2      |
+| `/api/appointments`       | 501 Not Implemented     | Viewing bookings, calendar   | Phase 2      |
+| `/api/payments`           | 503 Service Unavailable | Tenant rent payment, portal  | Phase 2      |
+| `/api/valuation`          | 501 Not Implemented     | Seller appraisal flow        | Phase 2      |
+| `/api/tenancy-agreements` | 501 Not Implemented     | Full lease lifecycle         | Phase 2      |
+| `/api/role-requests`      | Not implemented         | Agent self-serve RBAC        | Phase 9      |
+| `/api/2fa`                | 501 Not Implemented     | Compliance security          | Phase 9      |
+| `/api/whatsapp/*`         | Stub (logs only)        | WhatsApp CRM core feature    | Phase 4      |
 
 **Remediation:** Implement Prisma models + full CRUD handlers for Phase 2 items in sprint order.
 
@@ -39,11 +40,11 @@ This register tracks all known technical debt, stub implementations, deferred fe
 
 ### TD-002: npm Audit Vulnerabilities (7 total, 1 critical)
 
-| Severity | Count | Action |
-|---------|-------|--------|
-| Critical | 1 | Patch immediately before Phase 2 deploy |
-| High | 2 | Patch in Phase 2 security sprint |
-| Moderate | 4 | Patch in Phase 2 security sprint |
+| Severity | Count | Action                                  |
+| -------- | ----- | --------------------------------------- |
+| Critical | 1     | Patch immediately before Phase 2 deploy |
+| High     | 2     | Patch in Phase 2 security sprint        |
+| Moderate | 4     | Patch in Phase 2 security sprint        |
 
 **Command to check:** `npm audit`
 **Target:** 0 vulnerabilities before production launch
@@ -53,6 +54,7 @@ This register tracks all known technical debt, stub implementations, deferred fe
 ### TD-003: Missing Prisma Models
 
 **Needed for Phase 2:**
+
 ```
 Contract        — sales + lease contracts
 Appointment     — property viewing bookings
@@ -62,12 +64,14 @@ MaintenanceRequest — landlord/tenant portal requests
 ```
 
 **Needed for Phase 4:**
+
 ```
 WhatsAppConversation — message threads, participants
 WhatsAppMessage      — individual messages, status
 ```
 
 **Needed for Phase 5:**
+
 ```
 AMLRecord       — AML screening results
 KYCDocument     — uploaded identity documents
@@ -235,50 +239,49 @@ ComplianceAudit — immutable audit entries
 
 ## 5. Resolved Debt (Archive)
 
-| ID | Description | Resolved | Version |
-|----|------------|---------|---------|
-| TD-R-001 | Firebase-sync timing attack | March 2026 | v1.1 |
-| TD-R-002 | CRM export data leakage via Prisma select | April 2026 | v1.1 |
-| TD-R-003 | Auth route ordering bug | April 2026 | v1.1 |
-| TD-R-004 | Lead/Property edit modal missing validation | April 2026 | v1.1 |
-| TD-R-005 | Dead code — 190KB across 24 files removed | April 2026 | v1.1 |
-| TD-R-006 | Stale console.log — 3.0MB cleaned | April 2026 | v1.1 |
-| TD-R-007 | TypeScript strict mode — 0 compile errors | March 2026 | v1.0 |
+| ID       | Description                                 | Resolved   | Version |
+| -------- | ------------------------------------------- | ---------- | ------- |
+| TD-R-001 | Firebase-sync timing attack                 | March 2026 | v1.1    |
+| TD-R-002 | CRM export data leakage via Prisma select   | April 2026 | v1.1    |
+| TD-R-003 | Auth route ordering bug                     | April 2026 | v1.1    |
+| TD-R-004 | Lead/Property edit modal missing validation | April 2026 | v1.1    |
+| TD-R-005 | Dead code — 190KB across 24 files removed   | April 2026 | v1.1    |
+| TD-R-006 | Stale console.log — 3.0MB cleaned           | April 2026 | v1.1    |
+| TD-R-007 | TypeScript strict mode — 0 compile errors   | March 2026 | v1.0    |
 
 ---
 
 ## 6. Debt Metrics Dashboard
 
-| Category | Count | Critical | High | Medium | Low |
-|---------|-------|---------|------|--------|-----|
-| Stub endpoints | 8 | 5 | 3 | 0 | 0 |
-| Security vulnerabilities | 7 | 1 | 2 | 4 | 0 |
-| Missing models | 11 | 5 | 6 | 0 | 0 |
-| Missing libraries | 5 | 1 | 3 | 1 | 0 |
-| Test gaps | 4 | 0 | 2 | 2 | 0 |
-| DevOps | 3 | 0 | 1 | 1 | 1 |
-| **Total** | **38** | **12** | **17** | **8** | **1** |
+| Category                 | Count  | Critical | High   | Medium | Low   |
+| ------------------------ | ------ | -------- | ------ | ------ | ----- |
+| Stub endpoints           | 8      | 5        | 3      | 0      | 0     |
+| Security vulnerabilities | 7      | 1        | 2      | 4      | 0     |
+| Missing models           | 11     | 5        | 6      | 0      | 0     |
+| Missing libraries        | 5      | 1        | 3      | 1      | 0     |
+| Test gaps                | 4      | 0        | 2      | 2      | 0     |
+| DevOps                   | 3      | 0        | 1      | 1      | 1     |
+| **Total**                | **38** | **12**   | **17** | **8**  | **1** |
 
 ---
 
 ## 7. Resolution Priority Schedule
 
-| Sprint | Debt Items | Rationale |
-|--------|-----------|-----------|
-| Phase 2 Sprint 1 | TD-001 (contracts, appointments), TD-003 (models), TD-004 (Firebase) | Core portal blockers |
-| Phase 2 Sprint 2 | TD-001 (payments, valuation), TD-008 (PDFKit), TD-009 (cron), TD-010 (Stripe) | Revenue features |
-| Phase 2 Sprint 3 | TD-002 (npm audit), TD-005 (OpenAPI), TD-016 (Prometheus), TD-017 (Sentry) | Security + observability |
-| Phase 3 | TD-011 (any types), TD-014 (E2E), TD-015 (factories), TD-019 (Storybook) | Quality sprint |
-| Phase 4 | TD-007 (WhatsApp), TD-009 (Bull queue) | WhatsApp launch |
-| Phase 6 | TD-006 (Arabic i18n) | Localisation launch |
-| Phase 7 | TD-012 (Redis), TD-013 (Elasticsearch) | Performance at scale |
+| Sprint           | Debt Items                                                                    | Rationale                |
+| ---------------- | ----------------------------------------------------------------------------- | ------------------------ |
+| Phase 2 Sprint 1 | TD-001 (contracts, appointments), TD-003 (models), TD-004 (Firebase)          | Core portal blockers     |
+| Phase 2 Sprint 2 | TD-001 (payments, valuation), TD-008 (PDFKit), TD-009 (cron), TD-010 (Stripe) | Revenue features         |
+| Phase 2 Sprint 3 | TD-002 (npm audit), TD-005 (OpenAPI), TD-016 (Prometheus), TD-017 (Sentry)    | Security + observability |
+| Phase 3          | TD-011 (any types), TD-014 (E2E), TD-015 (factories), TD-019 (Storybook)      | Quality sprint           |
+| Phase 4          | TD-007 (WhatsApp), TD-009 (Bull queue)                                        | WhatsApp launch          |
+| Phase 6          | TD-006 (Arabic i18n)                                                          | Localisation launch      |
+| Phase 7          | TD-012 (Redis), TD-013 (Elasticsearch)                                        | Performance at scale     |
 
 ---
 
 **Document Owner:** Technology Department
 **Update Frequency:** Every sprint start (fortnightly)
 **Related:** `business/05_srs_and_engineering/srs-v2-2026.md`, `plans/MASTER_PLAN.md`
-
 
 ---
 
@@ -358,34 +361,34 @@ Any of the following require an architectural review meeting (30 min, Aurora + G
 
 ### 9.1 Dependency Audit Schedule
 
-| Action | Frequency | Owner |
-|--------|----------|-------|
-| `npm audit` run locally | Every PR | Developer |
-| `npm audit` in CI pipeline | Every push to `main` | Automated |
-| Dependabot alerts review | Weekly | Ecem (Security) |
-| Full dependency update sprint | Quarterly | Aurora + Ecem |
-| Major version upgrade review | Before each Phase | Architecture review |
+| Action                        | Frequency            | Owner               |
+| ----------------------------- | -------------------- | ------------------- |
+| `npm audit` run locally       | Every PR             | Developer           |
+| `npm audit` in CI pipeline    | Every push to `main` | Automated           |
+| Dependabot alerts review      | Weekly               | Ecem (Security)     |
+| Full dependency update sprint | Quarterly            | Aurora + Ecem       |
+| Major version upgrade review  | Before each Phase    | Architecture review |
 
 ### 9.2 Dependency Categories
 
-| Category | Policy | Example |
-|---------|--------|---------|
-| Security patches (patch version) | Auto-merge if CI passes | `express 4.18.1 → 4.18.2` |
-| Feature updates (minor version) | Auto-merge if CI passes + Ecem review | `react 18.2.0 → 18.3.0` |
-| Breaking changes (major version) | Manual review + testing sprint | `react 18 → react 19` |
-| New dependencies | Architecture review (see 8.3) | Any new `npm install` |
+| Category                         | Policy                                | Example                   |
+| -------------------------------- | ------------------------------------- | ------------------------- |
+| Security patches (patch version) | Auto-merge if CI passes               | `express 4.18.1 → 4.18.2` |
+| Feature updates (minor version)  | Auto-merge if CI passes + Ecem review | `react 18.2.0 → 18.3.0`   |
+| Breaking changes (major version) | Manual review + testing sprint        | `react 18 → react 19`     |
+| New dependencies                 | Architecture review (see 8.3)         | Any new `npm install`     |
 
 ### 9.3 Current Vulnerability Resolution Plan
 
-| Package | Vulnerability | CVSS | Resolution | Target Date |
-|---------|-------------|------|-----------|------------|
-| `semver` | Prototype pollution (ReDoS) | 6.5 (Medium) | `npm update semver` | Phase 2 Sprint 1 |
-| `tough-cookie` | Prototype pollution | 6.5 (Medium) | Update `axios` (transitive dep) | Phase 2 Sprint 1 |
-| `word-wrap` | ReDoS | 5.3 (Medium) | `npm update word-wrap` | Phase 2 Sprint 2 |
-| `@babel/traverse` | Arbitrary code exec (indirect) | 9.8 (Critical) | Update babel devDependencies | Phase 2 Sprint 1 — **URGENT** |
-| `ip` | SSRF bypass | 6.5 (Medium) | Update `zod` or remove `ip` | Phase 2 Sprint 1 |
-| `postcss` | ReDoS | 5.3 (Medium) | `npm update postcss` | Phase 2 Sprint 2 |
-| `braces` | Uncontrolled resource consumption | 7.5 (High) | Update `micromatch` | Phase 2 Sprint 1 |
+| Package           | Vulnerability                     | CVSS           | Resolution                      | Target Date                   |
+| ----------------- | --------------------------------- | -------------- | ------------------------------- | ----------------------------- |
+| `semver`          | Prototype pollution (ReDoS)       | 6.5 (Medium)   | `npm update semver`             | Phase 2 Sprint 1              |
+| `tough-cookie`    | Prototype pollution               | 6.5 (Medium)   | Update `axios` (transitive dep) | Phase 2 Sprint 1              |
+| `word-wrap`       | ReDoS                             | 5.3 (Medium)   | `npm update word-wrap`          | Phase 2 Sprint 2              |
+| `@babel/traverse` | Arbitrary code exec (indirect)    | 9.8 (Critical) | Update babel devDependencies    | Phase 2 Sprint 1 — **URGENT** |
+| `ip`              | SSRF bypass                       | 6.5 (Medium)   | Update `zod` or remove `ip`     | Phase 2 Sprint 1              |
+| `postcss`         | ReDoS                             | 5.3 (Medium)   | `npm update postcss`            | Phase 2 Sprint 2              |
+| `braces`          | Uncontrolled resource consumption | 7.5 (High)     | Update `micromatch`             | Phase 2 Sprint 1              |
 
 **Current count:** 7 open vulnerabilities (1 critical, 2 high, 4 medium) — target 0 before Phase 2 production deployment.
 
@@ -395,26 +398,26 @@ Any of the following require an architectural review meeting (30 min, Aurora + G
 
 ### 10.1 Current Coverage (April 2026)
 
-| Module | Lines | Statements | Branches | Functions | Status |
-|--------|-------|-----------|---------|----------|--------|
-| `routes/auth.ts` | 45% | 43% | 38% | 55% | 🔴 Poor |
-| `routes/leads.ts` | 62% | 60% | 52% | 68% | 🟡 Fair |
-| `routes/properties.ts` | 58% | 56% | 48% | 64% | 🟡 Fair |
-| `routes/aiAssistants.ts` | 78% | 76% | 70% | 82% | 🟢 Good |
-| `middleware/auth.ts` | 85% | 83% | 78% | 90% | 🟢 Good |
-| `middleware/rbac.ts` | 72% | 70% | 65% | 76% | 🟡 Fair |
-| `services/WhatsAppBotService.ts` | 28% | 26% | 22% | 35% | 🔴 Poor |
-| `store/slices/aiAssistantDashboardSlice.tsx` | 91% | 89% | 85% | 94% | 🟢 Excellent |
-| **Overall** | **61%** | **59%** | **52%** | **68%** | 🟡 **Fair** |
+| Module                                       | Lines   | Statements | Branches | Functions | Status       |
+| -------------------------------------------- | ------- | ---------- | -------- | --------- | ------------ |
+| `routes/auth.ts`                             | 45%     | 43%        | 38%      | 55%       | 🔴 Poor      |
+| `routes/leads.ts`                            | 62%     | 60%        | 52%      | 68%       | 🟡 Fair      |
+| `routes/properties.ts`                       | 58%     | 56%        | 48%      | 64%       | 🟡 Fair      |
+| `routes/aiAssistants.ts`                     | 78%     | 76%        | 70%      | 82%       | 🟢 Good      |
+| `middleware/auth.ts`                         | 85%     | 83%        | 78%      | 90%       | 🟢 Good      |
+| `middleware/rbac.ts`                         | 72%     | 70%        | 65%      | 76%       | 🟡 Fair      |
+| `services/WhatsAppBotService.ts`             | 28%     | 26%        | 22%      | 35%       | 🔴 Poor      |
+| `store/slices/aiAssistantDashboardSlice.tsx` | 91%     | 89%        | 85%      | 94%       | 🟢 Excellent |
+| **Overall**                                  | **61%** | **59%**    | **52%**  | **68%**   | 🟡 **Fair**  |
 
 ### 10.2 Coverage Targets by Phase
 
-| Phase | Target | Priority Modules |
-|-------|--------|----------------|
-| Phase 2 | 70% overall | auth.ts, all portal routes |
+| Phase   | Target      | Priority Modules                            |
+| ------- | ----------- | ------------------------------------------- |
+| Phase 2 | 70% overall | auth.ts, all portal routes                  |
 | Phase 3 | 80% overall | leads.ts, transactions.ts, analytics routes |
-| Phase 4 | 85% overall | WhatsApp service, webhook handlers |
-| Phase 5 | 90% overall | Full coverage sprint |
+| Phase 4 | 85% overall | WhatsApp service, webhook handlers          |
+| Phase 5 | 90% overall | Full coverage sprint                        |
 
 ### 10.3 Test Factory Pattern (Removing `any` Types in Tests)
 
@@ -485,14 +488,14 @@ const dbQueryDuration = new Histogram({
 
 ### 11.2 Grafana Alert Rules
 
-| Alert | Condition | Severity | Response |
-|-------|---------|---------|---------|
-| API Error Rate High | `rate(http_requests_total{status_code=~"5.."}[5m]) > 0.01` | Critical | PagerDuty → on-call engineer |
-| Slow API Responses | `http_request_duration_seconds{quantile="0.95"} > 2` | High | Slack → #engineering |
-| MongoDB Slow Queries | `db_query_duration_seconds{quantile="0.99"} > 1` | High | Slack → #engineering |
-| Low Disk Space | `node_filesystem_avail_bytes / node_filesystem_size_bytes < 0.1` | Critical | PagerDuty |
-| High Memory Usage | `(1 - node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes) > 0.9` | High | Slack |
-| SSL Certificate Expiry | `ssl_certificate_expiry_days < 14` | Critical | PagerDuty + Email |
+| Alert                  | Condition                                                                 | Severity | Response                     |
+| ---------------------- | ------------------------------------------------------------------------- | -------- | ---------------------------- |
+| API Error Rate High    | `rate(http_requests_total{status_code=~"5.."}[5m]) > 0.01`                | Critical | PagerDuty → on-call engineer |
+| Slow API Responses     | `http_request_duration_seconds{quantile="0.95"} > 2`                      | High     | Slack → #engineering         |
+| MongoDB Slow Queries   | `db_query_duration_seconds{quantile="0.99"} > 1`                          | High     | Slack → #engineering         |
+| Low Disk Space         | `node_filesystem_avail_bytes / node_filesystem_size_bytes < 0.1`          | Critical | PagerDuty                    |
+| High Memory Usage      | `(1 - node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes) > 0.9` | High     | Slack                        |
+| SSL Certificate Expiry | `ssl_certificate_expiry_days < 14`                                        | Critical | PagerDuty + Email            |
 
 ---
 
@@ -500,6 +503,7 @@ const dbQueryDuration = new Histogram({
 **Update Frequency:** Every sprint start (fortnightly); vulnerability table updated immediately on discovery
 **Version History:** v1.0 April 2026 (initial); v2.0 April 2026 (expanded with DoD, testing plan, metrics)
 **Related Documents:**
+
 - `business/05_srs_and_engineering/srs-v2-2026.md`
 - `business/08_market_research/technology_upgrades.md`
 - `plans/MASTER_PLAN.md`

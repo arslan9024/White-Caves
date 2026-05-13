@@ -5,6 +5,7 @@ import {
   ArrowUp, ArrowDown, Filter, Search, Eye, Plus, MapPin
 } from 'lucide-react';
 import AssistantDocsTab from './shared/AssistantDocsTab';
+import AssistantLifecycleTab from './shared/AssistantLifecycleTab';
 import './AssistantDashboard.css';
 
 const PROJECTS = [
@@ -101,7 +102,7 @@ const AtlasProjectsCRM = () => {
       </div>
 
       <div className="assistant-tabs">
-        {['projects', 'developers', 'feasibility', 'gaps', 'docs'].map(tab => (
+        {['projects', 'developers', 'feasibility', 'gaps', 'lifecycle', 'docs'].map(tab => (
           <button
             key={tab}
             className={`tab-btn ${activeTab === tab ? 'active' : ''}`}
@@ -228,6 +229,10 @@ const AtlasProjectsCRM = () => {
               ))}
             </div>
           </div>
+        )}
+
+        {activeTab === 'lifecycle' && (
+          <AssistantLifecycleTab assistantId="atlas" color="#6366F1" assistantName="Atlas" />
         )}
 
         {activeTab === 'docs' && (

@@ -1,6 +1,6 @@
 /**
  * WhatsApp Hooks Index
- * 
+ *
  * Centralized export for all WhatsApp-related custom hooks
  */
 

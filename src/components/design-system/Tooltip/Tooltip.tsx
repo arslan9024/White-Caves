@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Tooltip Component
  * Non-intrusive hover information display
@@ -30,13 +29,15 @@ const TooltipContent = styled.div<{ $visible: boolean; $position: string }>`
   font-size: ${theme.typography.sizes.xs};
   white-space: nowrap;
   z-index: ${theme.zIndex.tooltip};
-  opacity: ${(props) => (props.$visible ? 1 : 0)};
-  visibility: ${(props) => (props.$visible ? 'visible' : 'hidden')};
-  transition: opacity 0.2s, visibility 0.2s;
+  opacity: ${props => (props.$visible ? 1 : 0)};
+  visibility: ${props => (props.$visible ? 'visible' : 'hidden')};
+  transition:
+    opacity 0.2s,
+    visibility 0.2s;
   pointer-events: none;
   box-shadow: ${theme.shadows.md};
 
-  ${(props) => {
+  ${props => {
     const offset = theme.spacing.md;
     switch (props.$position) {
       case 'top':
@@ -55,7 +56,7 @@ const TooltipContent = styled.div<{ $visible: boolean; $position: string }>`
   &::after {
     content: '';
     position: absolute;
-    ${(props) => {
+    ${props => {
       switch (props.$position) {
         case 'top':
           return `top: 100%; left: 50%; transform: translateX(-50%); border: 5px solid transparent; border-top-color: ${theme.colors.dark.bg};`;
@@ -98,7 +99,11 @@ export const Tooltip: React.FC<TooltipProps> = ({
   };
 
   return (
-    <TooltipContainer className={className} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
+    <TooltipContainer
+      className={className}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+    >
       {children}
       <TooltipContent $visible={visible} $position={position}>
         {content}
@@ -110,4 +115,3 @@ export const Tooltip: React.FC<TooltipProps> = ({
 Tooltip.displayName = 'Tooltip';
 
 export default Tooltip;
-

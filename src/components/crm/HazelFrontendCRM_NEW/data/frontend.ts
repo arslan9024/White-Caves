@@ -35,14 +35,14 @@ export const COMPONENT_LIBRARY: ComponentEntry[] = [
   { name: 'ActivityTimeline', category: 'Timeline', usage: 8, status: 'stable', a11y: 'AA' },
   { name: 'NotificationBadge', category: 'Alerts', usage: 34, status: 'stable', a11y: 'AAA' },
   { name: 'ExecutiveKPIWidget', category: 'Analytics', usage: 6, status: 'new', a11y: 'AAA' },
-  { name: 'GlobalAlertStream', category: 'Alerts', usage: 4, status: 'new', a11y: 'AA' }
+  { name: 'GlobalAlertStream', category: 'Alerts', usage: 4, status: 'new', a11y: 'AA' },
 ];
 
 export const DESIGN_TOKENS: DesignTokens = {
   colors: { primary: '#E31E24', secondary: '#1A1A2E', accent: '#43E97B', surface: '#16213E' },
   typography: { heading: 'Montserrat', body: 'Open Sans', mono: 'JetBrains Mono' },
   spacing: ['4px', '8px', '12px', '16px', '24px', '32px', '48px', '64px'],
-  radius: ['4px', '8px', '12px', '16px', '24px', '9999px']
+  radius: ['4px', '8px', '12px', '16px', '24px', '9999px'],
 };
 
 export const PERFORMANCE_METRICS: PerformanceMetric[] = [
@@ -50,7 +50,7 @@ export const PERFORMANCE_METRICS: PerformanceMetric[] = [
   { metric: 'First Contentful Paint', value: '1.2s', target: '1.0s', trend: 'stable' },
   { metric: 'Time to Interactive', value: '2.1s', target: '2.0s', trend: 'up' },
   { metric: 'Cumulative Layout Shift', value: 0.02, target: 0.1, trend: 'stable' },
-  { metric: 'Bundle Size', value: '7.9 MB', target: '6.0 MB', trend: 'down' }
+  { metric: 'Bundle Size', value: '7.9 MB', target: '6.0 MB', trend: 'down' },
 ];
 
 export const ACCESSIBILITY_AUDIT: AccessibilityAuditEntry[] = [
@@ -58,5 +58,5 @@ export const ACCESSIBILITY_AUDIT: AccessibilityAuditEntry[] = [
   { category: 'Keyboard Navigation', score: 100, issues: 0, status: 'pass' },
   { category: 'ARIA Labels', score: 95, issues: 5, status: 'pass' },
   { category: 'Focus Management', score: 92, issues: 4, status: 'warning' },
-  { category: 'Semantic HTML', score: 97, issues: 3, status: 'pass' }
+  { category: 'Semantic HTML', score: 97, issues: 3, status: 'pass' },
 ];

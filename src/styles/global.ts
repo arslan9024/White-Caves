@@ -6,26 +6,30 @@
 import { createGlobalStyle } from 'styled-components';
 import { theme } from './theme';
 
-const themeColors = theme.colors as Record<string, any>;
+const themeColors = theme.colors as Record<string, unknown>;
 const borderColor = themeColors.borderColor ?? themeColors.border ?? '#E5E7EB';
 const borderDark = themeColors.borderDark ?? borderColor;
 const borderLight = themeColors.borderLight ?? borderColor;
 
 const primaryDark = (theme.colors as { primaryDark?: string }).primaryDark ?? theme.colors.primary;
 const primaryLight = (theme.colors as { primaryLight?: string }).primaryLight ?? '#FCE4E6';
-const primaryVeryLight = (theme.colors as { primaryVeryLight?: string }).primaryVeryLight ?? '#FFF5F5';
-const secondaryDark = (theme.colors as { secondaryDark?: string }).secondaryDark ?? theme.colors.secondary;
+const primaryVeryLight =
+  (theme.colors as { primaryVeryLight?: string }).primaryVeryLight ?? '#FFF5F5';
+const secondaryDark =
+  (theme.colors as { secondaryDark?: string }).secondaryDark ?? theme.colors.secondary;
 
-const a11yColors = (theme.colors as {
-  a11y?: {
-    goldText?: string;
-    goldLargeText?: string;
-    goldUI?: string;
-    focusRing?: string;
-    errorText?: string;
-    warningText?: string;
-  };
-}).a11y;
+const a11yColors = (
+  theme.colors as {
+    a11y?: {
+      goldText?: string;
+      goldLargeText?: string;
+      goldUI?: string;
+      focusRing?: string;
+      errorText?: string;
+      warningText?: string;
+    };
+  }
+).a11y;
 
 const a11yFocusRing = a11yColors?.focusRing ?? theme.colors.focus ?? theme.colors.info;
 const a11yGoldText = a11yColors?.goldText ?? '#8A6A1D';
@@ -34,10 +38,15 @@ const a11yGoldUI = a11yColors?.goldUI ?? theme.colors.primary;
 const a11yErrorText = a11yColors?.errorText ?? theme.colors.error;
 const a11yWarningText = a11yColors?.warningText ?? theme.colors.warning;
 
-const fontHeading = (theme.typography as { fontFamily?: { heading?: string } }).fontFamily?.heading ?? 'Inter, system-ui, -apple-system, sans-serif';
-const fontBody = (theme.typography as { fontFamily?: { primary?: string } }).fontFamily?.primary ?? 'Inter, system-ui, -apple-system, sans-serif';
+const fontHeading =
+  (theme.typography as { fontFamily?: { heading?: string } }).fontFamily?.heading ??
+  'Inter, system-ui, -apple-system, sans-serif';
+const fontBody =
+  (theme.typography as { fontFamily?: { primary?: string } }).fontFamily?.primary ??
+  'Inter, system-ui, -apple-system, sans-serif';
 
-const bodyStyle = (theme.typography as { body?: { size?: string; lineHeight?: string | number } }).body;
+const bodyStyle = (theme.typography as { body?: { size?: string; lineHeight?: string | number } })
+  .body;
 const h1Style = (theme.typography as { h1?: { size?: string; lineHeight?: string | number } }).h1;
 const h2Style = (theme.typography as { h2?: { size?: string; lineHeight?: string | number } }).h2;
 const h3Style = (theme.typography as { h3?: { size?: string; lineHeight?: string | number } }).h3;

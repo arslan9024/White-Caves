@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Alert Component Styles
  */
@@ -47,6 +46,7 @@ const getVariantStyles = (variant: AlertVariant) => {
     `,
   };
 
+  // eslint-disable-next-line security/detect-object-injection
   return variants[variant] || variants.info;
 };
 
@@ -56,8 +56,8 @@ export const StyledAlert = styled.div<{ $variant?: AlertVariant }>`
   padding: ${theme.spacing.md};
   border-radius: ${theme.spacing.xs};
   border: 1px solid;
-  ${(props) => getVariantStyles(props.$variant || 'info')}
-  
+  ${props => getVariantStyles(props.$variant || 'info')}
+
   @media ${theme.mediaQueries.mobile} {
     padding: ${theme.spacing.sm};
   }
@@ -117,4 +117,3 @@ export const AlertCloseButton = styled.button`
     color: ${theme.colors.text.primary};
   }
 `;
-

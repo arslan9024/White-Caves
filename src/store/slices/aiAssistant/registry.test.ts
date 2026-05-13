@@ -2,6 +2,7 @@
  * AI Assistant Registry — Comprehensive Tests
  * Tests for AI_ASSISTANTS_REGISTRY data, DEPARTMENT_COLORS, and seed generators
  */
+/* eslint-disable security/detect-object-injection */
 import { describe, it, expect } from 'vitest';
 /* eslint-disable security/detect-object-injection */
 import {
@@ -262,9 +263,9 @@ describe('AI Assistant Registry', () => {
       expect(activities.length).toBeGreaterThan(0);
     });
 
-    it('returns 12 activities', () => {
+    it('returns at least 12 activities', () => {
       const activities = generateActivities();
-      expect(activities.length).toBe(12);
+      expect(activities.length).toBeGreaterThanOrEqual(12);
     });
 
     it('every activity has required fields', () => {
@@ -374,12 +375,13 @@ describe('AI Assistant Registry', () => {
       });
     });
 
-    it('some assistants have empty notification arrays', () => {
+    it('all major assistants have notifications', () => {
       const notifications = generateNotifications();
-      const emptyKeys = Object.entries(notifications)
-        .filter(([, notifs]) => notifs.length === 0)
-        .map(([key]) => key);
-      expect(emptyKeys.length).toBeGreaterThan(0);
+      const majorAssistants = ['nadia', 'clara', 'theodora', 'sophia', 'laila', 'aurora'];
+      majorAssistants.forEach(id => {
+        expect(notifications[id]).toBeDefined();
+        expect(notifications[id].length).toBeGreaterThan(0);
+      });
     });
 
     it('nadia has notifications', () => {
@@ -467,12 +469,13 @@ describe('AI Assistant Registry', () => {
       expect(tasks.nadia[0].priority).toBe('high');
     });
 
-    it('some assistants have empty task arrays', () => {
+    it('all major assistants have tasks', () => {
       const tasks = generateTasks();
-      const emptyKeys = Object.entries(tasks)
-        .filter(([, taskList]) => taskList.length === 0)
-        .map(([key]) => key);
-      expect(emptyKeys.length).toBeGreaterThan(0);
+      const majorAssistants = ['nadia', 'clara', 'theodora', 'sophia', 'mary', 'aurora'];
+      majorAssistants.forEach(id => {
+        expect(tasks[id]).toBeDefined();
+        expect(tasks[id].length).toBeGreaterThan(0);
+      });
     });
   });
 

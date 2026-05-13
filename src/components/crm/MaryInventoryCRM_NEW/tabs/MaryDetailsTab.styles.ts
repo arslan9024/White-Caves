@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 import styled from 'styled-components';
 import { theme } from '../../../../styles/theme';
 
@@ -576,4 +575,3 @@ export const EmptyMatrix = styled.div`
   [data-theme='dark'] & {
   }
 `;
-

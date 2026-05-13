@@ -1,4 +1,5 @@
 # Partnership Framework
+
 # White Caves Real Estate LLC
 
 > **Document ID:** WC-PARTNER-001
@@ -13,6 +14,7 @@
 ## 1. Partnership Philosophy
 
 White Caves pursues partnerships that:
+
 1. **Multiply reach** without multiplying overhead
 2. **Protect the brand** — White Caves associates only with trusted partners
 3. **Create mutual value** — both parties win
@@ -23,15 +25,15 @@ White Caves pursues partnerships that:
 
 ## 2. Partnership Categories
 
-| Category | Examples | Phase | Priority |
-|---------|---------|-------|---------|
-| Developer Off-Plan | DAMAC, Emaar, Sobha, Meraas | Phase 8 | 🔴 High |
-| Portal Syndication | PropertyFinder, Bayut | Phase 8 | 🔴 High |
-| Mortgage Referral | UAE national banks, broker networks | Phase 3 | 🟡 Medium |
-| Legal Services | UAE law firms (property law) | Phase 3 | 🟡 Medium |
-| Property Management Co-Agent | Co-agent agreements | Phase 3 | 🟡 Medium |
-| Technology | Matterport, DocuSign, proptech | Phase 7 | 🟠 Low |
-| Co-brokerage / RERA Form I | Other Dubai agencies | Ongoing | 🟡 Medium |
+| Category                     | Examples                            | Phase   | Priority  |
+| ---------------------------- | ----------------------------------- | ------- | --------- |
+| Developer Off-Plan           | DAMAC, Emaar, Sobha, Meraas         | Phase 8 | 🔴 High   |
+| Portal Syndication           | PropertyFinder, Bayut               | Phase 8 | 🔴 High   |
+| Mortgage Referral            | UAE national banks, broker networks | Phase 3 | 🟡 Medium |
+| Legal Services               | UAE law firms (property law)        | Phase 3 | 🟡 Medium |
+| Property Management Co-Agent | Co-agent agreements                 | Phase 3 | 🟡 Medium |
+| Technology                   | Matterport, DocuSign, proptech      | Phase 7 | 🟠 Low    |
+| Co-brokerage / RERA Form I   | Other Dubai agencies                | Ongoing | 🟡 Medium |
 
 ---
 
@@ -59,15 +61,15 @@ White Caves agrees to:
 
 ### 3.2 Developer Commission Structure
 
-| Developer | Commission Rate | Payment Trigger | Payment Terms |
-|----------|----------------|----------------|--------------|
-| DAMAC Properties | 5–7% | SPA signing | 30 days from SPA |
-| Emaar Properties | 5% | SPA signing | 30 days from SPA |
-| Sobha Realty | 5–6% | SPA signing | 30 days from SPA |
-| Meraas | 5% | SPA signing | 45 days from SPA |
-| Nakheel | 4–5% | SPA signing | 30 days from SPA |
+| Developer        | Commission Rate | Payment Trigger | Payment Terms    |
+| ---------------- | --------------- | --------------- | ---------------- |
+| DAMAC Properties | 5–7%            | SPA signing     | 30 days from SPA |
+| Emaar Properties | 5%              | SPA signing     | 30 days from SPA |
+| Sobha Realty     | 5–6%            | SPA signing     | 30 days from SPA |
+| Meraas           | 5%              | SPA signing     | 45 days from SPA |
+| Nakheel          | 4–5%            | SPA signing     | 30 days from SPA |
 
-*Rates subject to project-specific agreements*
+_Rates subject to project-specific agreements_
 
 ### 3.3 Developer Agreement Checklist
 
@@ -92,13 +94,13 @@ Before signing any developer partnership agreement:
 
 ### 3.4 Co-Marketing Agreements
 
-| Activity | White Caves Provides | Developer Provides |
-|---------|--------------------|--------------------|
-| Digital advertising | Targeting, creative | Marketing budget (shared) |
-| Property events | Venue (option), invites, CRM leads | Marketing materials, gifts |
-| Social media | Content production, posting | Brand assets, approval |
-| Email campaigns | CRM list, template, send | Approved content |
-| Virtual tours | Tech integration | 360° assets |
+| Activity            | White Caves Provides               | Developer Provides         |
+| ------------------- | ---------------------------------- | -------------------------- |
+| Digital advertising | Targeting, creative                | Marketing budget (shared)  |
+| Property events     | Venue (option), invites, CRM leads | Marketing materials, gifts |
+| Social media        | Content production, posting        | Brand assets, approval     |
+| Email campaigns     | CRM list, template, send           | Approved content           |
+| Virtual tours       | Tech integration                   | 360° assets                |
 
 ---
 
@@ -140,16 +142,16 @@ Lead capture from portals:
   Portal receives enquiry → sends webhook to White Caves
   POST https://api.whitecaves.ae/api/leads/webhook/propertyfinder
   POST https://api.whitecaves.ae/api/leads/webhook/bayut
-  
+
   Response: Lead created in CRM, assigned to agent, notifications sent
 ```
 
 ### 4.3 Portal Budget Allocation (Planned)
 
-| Portal | Monthly Cost | Lead Target | Cost Per Lead Target |
-|--------|-------------|-------------|---------------------|
-| PropertyFinder | AED 5,000–10,000 | 30 leads | < AED 300/lead |
-| Bayut | AED 3,000–8,000 | 20 leads | < AED 300/lead |
+| Portal         | Monthly Cost     | Lead Target | Cost Per Lead Target |
+| -------------- | ---------------- | ----------- | -------------------- |
+| PropertyFinder | AED 5,000–10,000 | 30 leads    | < AED 300/lead       |
+| Bayut          | AED 3,000–8,000  | 20 leads    | < AED 300/lead       |
 
 ---
 
@@ -159,10 +161,10 @@ Lead capture from portals:
 
 White Caves refers buyers who need financing to approved mortgage partners.
 
-| Partner | Rate | Referral Trigger | Referral Fee |
-|---------|------|-----------------|-------------|
-| UAE national banks | TBD | Buyer requests mortgage | None (goodwill) |
-| Independent mortgage brokers | TBD | Buyer requests mortgage | 0.5% of mortgage value |
+| Partner                      | Rate | Referral Trigger        | Referral Fee           |
+| ---------------------------- | ---- | ----------------------- | ---------------------- |
+| UAE national banks           | TBD  | Buyer requests mortgage | None (goodwill)        |
+| Independent mortgage brokers | TBD  | Buyer requests mortgage | 0.5% of mortgage value |
 
 **RERA rule:** Referral fees from mortgage brokers must be disclosed to the client.
 
@@ -210,24 +212,24 @@ Terms must be agreed in writing (RERA Form I) before:
 
 ## 7. Partnership Performance Review
 
-| Partnership Type | Review Frequency | Key Metrics |
-|----------------|-----------------|------------|
-| Developer (DAMAC, Emaar) | Quarterly | Units marketed, deals closed, commission paid |
-| Portal (Bayut, PF) | Monthly | Impressions, leads, cost per lead, conversion |
-| Mortgage referral | Quarterly | Referrals sent, applications approved, satisfaction |
-| Co-brokerage | Per transaction | Resolution time, client satisfaction |
+| Partnership Type         | Review Frequency | Key Metrics                                         |
+| ------------------------ | ---------------- | --------------------------------------------------- |
+| Developer (DAMAC, Emaar) | Quarterly        | Units marketed, deals closed, commission paid       |
+| Portal (Bayut, PF)       | Monthly          | Impressions, leads, cost per lead, conversion       |
+| Mortgage referral        | Quarterly        | Referrals sent, applications approved, satisfaction |
+| Co-brokerage             | Per transaction  | Resolution time, client satisfaction                |
 
 ---
 
 ## 8. Partnership Risk Management
 
-| Risk | Mitigation |
-|------|-----------|
-| Developer delays payment | Invoice tracking + escalation after 30 days |
-| Portal changes pricing | Lock in 12-month contracts; have backup portal |
-| RERA Form I partner doesn't honour split | All terms in writing; RERA dispute mechanism |
-| Developer goes into receivership | Due diligence before partnership; RERA escrow requirement protects buyers |
-| Partner misrepresents White Caves | Clear brand guidelines in every partnership agreement |
+| Risk                                     | Mitigation                                                                |
+| ---------------------------------------- | ------------------------------------------------------------------------- |
+| Developer delays payment                 | Invoice tracking + escalation after 30 days                               |
+| Portal changes pricing                   | Lock in 12-month contracts; have backup portal                            |
+| RERA Form I partner doesn't honour split | All terms in writing; RERA dispute mechanism                              |
+| Developer goes into receivership         | Due diligence before partnership; RERA escrow requirement protects buyers |
+| Partner misrepresents White Caves        | Clear brand guidelines in every partnership agreement                     |
 
 ---
 
@@ -235,24 +237,24 @@ Terms must be agreed in writing (RERA Form I) before:
 **Review Cycle:** Quarterly or when new partnership initiated
 **Related:** `business/09_operations/vendor-management.md`, `business_docs/08_market_research/portal-api-research.md`
 
-
 ---
 
 ## 9. Portal Syndication Partnership — Full Specification (Phase 8)
 
 ### 9.1 PropertyFinder Partnership
 
-| Field | Details |
-|-------|---------|
-| Type | Subscription-based portal listing |
-| URL | propertyfinder.ae |
-| Audience | 2.5M+ monthly users; UAE + GCC buyers |
-| Listing package | Premium (recommended): enhanced photos + video + top search placement |
-| Cost structure | Annual subscription: AED 25,000–80,000 depending on listing volume and package |
-| Lead routing | Lead form → email → White Caves CRM ingestion (via API webhook Phase 8) |
-| API access | PropertyFinder API requires agency account + API credentials (apply at pf.com/agency) |
+| Field           | Details                                                                               |
+| --------------- | ------------------------------------------------------------------------------------- |
+| Type            | Subscription-based portal listing                                                     |
+| URL             | propertyfinder.ae                                                                     |
+| Audience        | 2.5M+ monthly users; UAE + GCC buyers                                                 |
+| Listing package | Premium (recommended): enhanced photos + video + top search placement                 |
+| Cost structure  | Annual subscription: AED 25,000–80,000 depending on listing volume and package        |
+| Lead routing    | Lead form → email → White Caves CRM ingestion (via API webhook Phase 8)               |
+| API access      | PropertyFinder API requires agency account + API credentials (apply at pf.com/agency) |
 
 **Step-by-step application process:**
+
 ```
 1. Apply for agency account: propertyfinder.ae/agencies/apply
 2. Submit: RERA brokerage certificate, DED license, ORN number
@@ -280,16 +282,17 @@ Terms must be agreed in writing (RERA Form I) before:
 
 ### 9.2 Bayut Partnership
 
-| Field | Details |
-|-------|---------|
-| Type | Pay-per-click or subscription portal |
-| URL | bayut.com |
-| Audience | 3M+ monthly users; strong Indian subcontinent investor segment |
+| Field          | Details                                                                    |
+| -------------- | -------------------------------------------------------------------------- |
+| Type           | Pay-per-click or subscription portal                                       |
+| URL            | bayut.com                                                                  |
+| Audience       | 3M+ monthly users; strong Indian subcontinent investor segment             |
 | Cost structure | Credits-based: purchase credit bundles; each listing costs credits per day |
-| Agent profiles | Each agent gets a public Bayut profile (photo + BRN displayed) |
-| Lead routing | Bayut Lead Manager → email + SMS → CRM API webhook (Phase 8) |
+| Agent profiles | Each agent gets a public Bayut profile (photo + BRN displayed)             |
+| Lead routing   | Bayut Lead Manager → email + SMS → CRM API webhook (Phase 8)               |
 
 **Bayut vs PropertyFinder Strategy:**
+
 - PropertyFinder: stronger with European + GCC buyers; better for villa + luxury market
 - Bayut: stronger with Indian/Pakistani investor market; higher volume but more competitive
 - Recommended: list DAMAC Hills 2 units on both; analyse lead quality monthly
@@ -317,6 +320,7 @@ On CRM delete/unpublish → DELETE to portal API immediately
 ```
 
 **Inbound Lead Routing:**
+
 ```
 Client submits lead form on PropertyFinder/Bayut
          ↓
@@ -344,21 +348,21 @@ Agent notified via WhatsApp (Nina) + CRM notification
 
 ### 10.2 Approved Mortgage Partners
 
-| Partner | Type | Products | Referral Contact |
-|---------|------|---------|-----------------|
-| Emirates NBD | UAE National Bank | Expat + national mortgages; fixed + variable; Golden Visa mortgages | [Relationship Manager TBD] |
-| Abu Dhabi Commercial Bank (ADCB) | UAE National Bank | Competitive rates for DAMAC community buyers | [RM TBD] |
-| Mashreq Bank | UAE National Bank | Fast pre-approval (48h); expat-friendly | [RM TBD] |
-| Mortgage Finder (broker) | Independent broker | Access to 20+ banks; comparison service | partner@mortgagefinder.ae |
-| Bankrate UAE (broker) | Independent broker | Online mortgage marketplace; digital journey | [Contact TBD] |
+| Partner                          | Type               | Products                                                            | Referral Contact           |
+| -------------------------------- | ------------------ | ------------------------------------------------------------------- | -------------------------- |
+| Emirates NBD                     | UAE National Bank  | Expat + national mortgages; fixed + variable; Golden Visa mortgages | [Relationship Manager TBD] |
+| Abu Dhabi Commercial Bank (ADCB) | UAE National Bank  | Competitive rates for DAMAC community buyers                        | [RM TBD]                   |
+| Mashreq Bank                     | UAE National Bank  | Fast pre-approval (48h); expat-friendly                             | [RM TBD]                   |
+| Mortgage Finder (broker)         | Independent broker | Access to 20+ banks; comparison service                             | partner@mortgagefinder.ae  |
+| Bankrate UAE (broker)            | Independent broker | Online mortgage marketplace; digital journey                        | [Contact TBD]              |
 
 ### 10.3 Referral Fee Structure
 
-| Scenario | Fee |
-|---------|-----|
-| Bank mortgage (direct referral) | 0.5% of mortgage value (paid by bank to White Caves) |
-| Mortgage broker referral | 0.3–0.5% of mortgage value (paid by broker) |
-| No fee scenario | Certain banks prohibit referral fees — confirm in writing |
+| Scenario                        | Fee                                                       |
+| ------------------------------- | --------------------------------------------------------- |
+| Bank mortgage (direct referral) | 0.5% of mortgage value (paid by bank to White Caves)      |
+| Mortgage broker referral        | 0.3–0.5% of mortgage value (paid by broker)               |
+| No fee scenario                 | Certain banks prohibit referral fees — confirm in writing |
 
 **Revenue Example:** Client buys AED 2M property with AED 1.5M mortgage → referral fee = AED 7,500 (0.5%)
 
@@ -379,6 +383,7 @@ Step 9: Commission: partner pays referral fee within 30 days of mortgage complet
 ### 10.5 Mortgage Partner Agreement Requirements
 
 Before formalising any mortgage referral partnership:
+
 - ☐ Confirm referral fee rate and payment terms in writing
 - ☐ Confirm RERA / UAE Central Bank compliance (no kickbacks that violate regulations)
 - ☐ Confirm client data sharing is covered in White Caves privacy notice + PDPL compliant
@@ -394,23 +399,23 @@ Quarterly review process for all active partnerships:
 
 ### 11.1 Developer Partnership KPIs
 
-| KPI | Measurement | Target | Action if Below |
-|-----|------------|--------|----------------|
-| Units marketed | COUNT(properties with developer NOC active) | As per contract | Review if significantly below target |
-| Deals closed | COUNT(WON leads from developer project) | As per contract minimum | Investigate pipeline; request developer support |
-| Commission paid on time | % of commissions paid within SPA terms | 100% within 30 days | Escalate to developer account manager |
-| Developer materials up to date | Floor plans, prices, renders current | < 7 days old | Request update from developer |
-| Client satisfaction (off-plan) | CSAT from off-plan buyers | > 8.0 | Review handover procedure; escalate to developer |
+| KPI                            | Measurement                                 | Target                  | Action if Below                                  |
+| ------------------------------ | ------------------------------------------- | ----------------------- | ------------------------------------------------ |
+| Units marketed                 | COUNT(properties with developer NOC active) | As per contract         | Review if significantly below target             |
+| Deals closed                   | COUNT(WON leads from developer project)     | As per contract minimum | Investigate pipeline; request developer support  |
+| Commission paid on time        | % of commissions paid within SPA terms      | 100% within 30 days     | Escalate to developer account manager            |
+| Developer materials up to date | Floor plans, prices, renders current        | < 7 days old            | Request update from developer                    |
+| Client satisfaction (off-plan) | CSAT from off-plan buyers                   | > 8.0                   | Review handover procedure; escalate to developer |
 
 ### 11.2 Portal Partnership KPIs
 
-| KPI | Measurement | Target | Action if Below |
-|-----|------------|--------|----------------|
-| Listing impressions | Portal dashboard | Growing MoM | Review listing quality (photos, description, price) |
-| Lead volume from portal | CRM source filter | >20 leads/month per portal | Review listing prominence; consider paid boost |
-| Cost per lead | Annual contract cost / total leads | < AED 300 | If > AED 500: consider renegotiation |
-| Lead-to-viewing conversion | Viewings / portal leads | > 30% | Review agent response time to portal leads |
-| Listing compliance score | % listings with permit, photos, BRN | 100% | Immediate remediation — non-compliant listings removed |
+| KPI                        | Measurement                         | Target                     | Action if Below                                        |
+| -------------------------- | ----------------------------------- | -------------------------- | ------------------------------------------------------ |
+| Listing impressions        | Portal dashboard                    | Growing MoM                | Review listing quality (photos, description, price)    |
+| Lead volume from portal    | CRM source filter                   | >20 leads/month per portal | Review listing prominence; consider paid boost         |
+| Cost per lead              | Annual contract cost / total leads  | < AED 300                  | If > AED 500: consider renegotiation                   |
+| Lead-to-viewing conversion | Viewings / portal leads             | > 30%                      | Review agent response time to portal leads             |
+| Listing compliance score   | % listings with permit, photos, BRN | 100%                       | Immediate remediation — non-compliant listings removed |
 
 ### 11.3 Quarterly Review Meeting Agenda (30 min)
 
@@ -432,6 +437,7 @@ Decision criteria:
 **Version History:** v1.0 April 2026 (initial)
 **Review Cycle:** Quarterly or when new partnership initiated
 **Related Documents:**
+
 - `business/09_operations/vendor-management.md`
 - `business_docs/08_market_research/portal-api-research.md`
 - `business/07_strategy/competitive-positioning.md`

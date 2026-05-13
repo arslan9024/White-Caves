@@ -25,7 +25,7 @@ const StatusIndicator = styled.div<{ $status: 'online' | 'offline' | 'warning' }
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background: ${(props) => {
+  background: ${props => {
     switch (props.$status) {
       case 'online':
         return theme.colors.success;
@@ -37,13 +37,11 @@ const StatusIndicator = styled.div<{ $status: 'online' | 'offline' | 'warning' }
         return theme.colors.border;
     }
   }};
-  animation: ${(props) =>
-    props.$status === 'online'
-      ? `pulse 2s infinite`
-      : 'none'};
-  
+  animation: ${props => (props.$status === 'online' ? `pulse 2s infinite` : 'none')};
+
   @keyframes pulse {
-    0%, 100% {
+    0%,
+    100% {
       opacity: 1;
     }
     50% {
@@ -87,7 +85,7 @@ const Dropdown = styled.div<{ $isOpen: boolean }>`
   box-shadow: ${theme.shadows.lg};
   min-width: 240px;
   z-index: ${theme.zIndex.dropdown};
-  display: ${(props) => (props.$isOpen ? 'block' : 'none')};
+  display: ${props => (props.$isOpen ? 'block' : 'none')};
 `;
 
 const MenuItem = styled.button`
@@ -160,12 +158,7 @@ export const AdminControls: React.FC<AdminControlsProps> = ({
           <MenuItem onClick={handleSettings}>Admin Settings</MenuItem>
         </Dropdown>
 
-        {isOpen && (
-          <Backdrop
-            onClick={() => setIsOpen(false)}
-            role="presentation"
-          />
-        )}
+        {isOpen && <Backdrop onClick={() => setIsOpen(false)} role="presentation" />}
       </div>
     </AdminContainer>
   );

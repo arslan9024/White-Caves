@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 import styled from 'styled-components';
 import { theme } from '../../../styles/theme';
 import { typography } from '../../../styles/theme/typography';
@@ -737,4 +736,3 @@ export const SidebarToggleButton = styled(NavIconButton)`
     height: 36px;
   }
 `;
-

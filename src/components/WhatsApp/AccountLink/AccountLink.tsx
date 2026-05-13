@@ -1,6 +1,6 @@
 /**
  * AccountLink Component
- * 
+ *
  * UI for linking WhatsApp accounts via QR code or phone verification
  * Manages device linking workflow and authentication
  */
@@ -50,7 +50,7 @@ const Select = styled.select`
   font-size: 14px;
   background-color: white;
   cursor: pointer;
-  
+
   &:focus {
     outline: none;
     border-color: #25d366;
@@ -156,7 +156,7 @@ const Input = styled.input`
   border: 1px solid #ddd;
   border-radius: 8px;
   font-size: 14px;
-  
+
   &:focus {
     outline: none;
     border-color: #25d366;
@@ -192,8 +192,12 @@ const LoadingSpinner = styled.div`
   margin: 20px auto;
 
   @keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
+    0% {
+      transform: rotate(0deg);
+    }
+    100% {
+      transform: rotate(360deg);
+    }
   }
 `;
 
@@ -212,7 +216,7 @@ const StepBadge = styled.div<{ active?: boolean; completed?: boolean }>`
   justify-content: center;
   font-size: 14px;
   font-weight: 600;
-  
+
   ${props => {
     if (props.completed) {
       return `
@@ -241,7 +245,7 @@ interface AccountLinkProps {
 export const AccountLink: React.FC<AccountLinkProps> = ({ onSuccess, onCancel }) => {
   const {
     accounts,
-    currentAccount,
+    currentAccount: _currentAccount,
     isLoading,
     error,
     isLinking,
@@ -262,8 +266,11 @@ export const AccountLink: React.FC<AccountLinkProps> = ({ onSuccess, onCancel })
   // Set initial account
   useEffect(() => {
     if (accounts.length > 0 && !selectedAccountId) {
-      setSelectedAccountId(accounts[0].accountId);
-      selectAccount(accounts[0].accountId);
+      const init = async () => {
+        setSelectedAccountId(accounts[0].accountId);
+        selectAccount(accounts[0].accountId);
+      };
+      void init();
     }
   }, [accounts, selectedAccountId, selectAccount]);
 
@@ -281,14 +288,14 @@ export const AccountLink: React.FC<AccountLinkProps> = ({ onSuccess, onCancel })
     try {
       await linkDevice(selectedAccountId, phoneNumber);
       setStep('qr');
-    } catch (err) {
+    } catch {
       // Error is handled by the hook
     }
   };
 
   const handleConfirmLink = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!sessionId || !authToken || !phoneNumber) {
       return;
     }
@@ -299,11 +306,11 @@ export const AccountLink: React.FC<AccountLinkProps> = ({ onSuccess, onCancel })
       setStep('select');
       setPhoneNumber('');
       setAuthToken('');
-      
+
       setTimeout(() => {
         onSuccess?.(selectedAccountId);
       }, 1500);
-    } catch (err) {
+    } catch {
       // Error is handled by the hook
     }
   };
@@ -325,21 +332,29 @@ export const AccountLink: React.FC<AccountLinkProps> = ({ onSuccess, onCancel })
           {error}
           <button
             onClick={clearError}
-            style={{ marginLeft: '12px', background: 'none', border: 'none', cursor: 'pointer', color: 'inherit' }}
+            style={{
+              marginLeft: '12px',
+              background: 'none',
+              border: 'none',
+              cursor: 'pointer',
+              color: 'inherit',
+            }}
           >
             ✕
           </button>
         </ErrorMessage>
       )}
 
-      {successMessage && (
-        <SuccessMessage>{successMessage}</SuccessMessage>
-      )}
+      {successMessage && <SuccessMessage>{successMessage}</SuccessMessage>}
 
       <Card>
         <StepIndicator>
-          <StepBadge active={step === 'select'} completed={step !== 'select'}>1</StepBadge>
-          <StepBadge active={step === 'qr'} completed={step === 'verify'}>2</StepBadge>
+          <StepBadge active={step === 'select'} completed={step !== 'select'}>
+            1
+          </StepBadge>
+          <StepBadge active={step === 'qr'} completed={step === 'verify'}>
+            2
+          </StepBadge>
           <StepBadge active={step === 'verify'}>3</StepBadge>
         </StepIndicator>
 
@@ -359,7 +374,7 @@ export const AccountLink: React.FC<AccountLinkProps> = ({ onSuccess, onCancel })
               type="tel"
               placeholder="+1 (555) 000-0000"
               value={phoneNumber}
-              onChange={(e) => setPhoneNumber(e.target.value)}
+              onChange={e => setPhoneNumber(e.target.value)}
               disabled={isLoading || isLinking}
             />
 
@@ -406,7 +421,7 @@ export const AccountLink: React.FC<AccountLinkProps> = ({ onSuccess, onCancel })
               type="text"
               placeholder="000000"
               value={authToken}
-              onChange={(e) => setAuthToken(e.target.value.replace(/\D/g, '').slice(0, 6))}
+              onChange={e => setAuthToken(e.target.value.replace(/\D/g, '').slice(0, 6))}
               maxLength={6}
               disabled={isLoading}
             />
@@ -426,9 +441,7 @@ export const AccountLink: React.FC<AccountLinkProps> = ({ onSuccess, onCancel })
           </PhoneVerificationForm>
         )}
 
-        {(isLoading || isLinking) && step === 'qr' && (
-          <LoadingSpinner />
-        )}
+        {(isLoading || isLinking) && step === 'qr' && <LoadingSpinner />}
       </Card>
     </Container>
   );

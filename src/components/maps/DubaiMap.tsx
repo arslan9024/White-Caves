@@ -127,11 +127,11 @@ const DubaiMap: FC<DubaiMapProps> = ({
   const markers = useMemo(() => {
     // Group properties by location to track jitter index
     const locationIndices: Record<string, number> = {};
-    return properties.map((prop) => {
+    return properties.map(prop => {
       const community = getCommunityCoords(prop.location);
       const baseLat = community?.lat ?? DUBAI_CENTER[0];
       const baseLng = community?.lng ?? DUBAI_CENTER[1];
-      const idx = (locationIndices[prop.location] ?? 0);
+      const idx = locationIndices[prop.location] ?? 0;
       locationIndices[prop.location] = idx + 1;
       const [lat, lng] = jitterCoords(baseLat, baseLng, idx);
       return { ...prop, lat, lng };
@@ -140,20 +140,20 @@ const DubaiMap: FC<DubaiMapProps> = ({
 
   // All marker positions for fit-bounds
   const markerPositions = useMemo<[number, number][]>(
-    () => markers.map((m) => [m.lat, m.lng]),
+    () => markers.map(m => [m.lat, m.lng]),
     [markers]
   );
 
   // Community stats (count per community)
   const communityStats = useMemo(() => {
     const stats = new Map<string, { count: number; avgPrice: number }>();
-    properties.forEach((p) => {
+    properties.forEach(p => {
       const entry = stats.get(p.location) ?? { count: 0, avgPrice: 0 };
       entry.count += 1;
       entry.avgPrice += p.price;
       stats.set(p.location, entry);
     });
-    stats.forEach((entry) => {
+    stats.forEach(entry => {
       entry.avgPrice = Math.round(entry.avgPrice / entry.count);
     });
     return stats;
@@ -167,11 +167,7 @@ const DubaiMap: FC<DubaiMapProps> = ({
   );
 
   return (
-    <div
-      className={`dubai-map-container ${className}`}
-      style={{ height }}
-      data-testid="dubai-map"
-    >
+    <div className={`dubai-map-container ${className}`} style={{ height }} data-testid="dubai-map">
       <MapContainer
         center={DUBAI_CENTER}
         zoom={DEFAULT_ZOOM}
@@ -192,7 +188,7 @@ const DubaiMap: FC<DubaiMapProps> = ({
 
         {/* Community boundary circles */}
         {showCommunities &&
-          COMMUNITY_COORDS.map((community) => {
+          COMMUNITY_COORDS.map(community => {
             const stats = communityStats.get(community.name);
             return (
               <Circle
@@ -216,7 +212,9 @@ const DubaiMap: FC<DubaiMapProps> = ({
                     <p className="community-desc">{community.description}</p>
                     {stats && (
                       <div className="community-stats">
-                        <span>{stats.count} {stats.count === 1 ? 'property' : 'properties'}</span>
+                        <span>
+                          {stats.count} {stats.count === 1 ? 'property' : 'properties'}
+                        </span>
                         <span>Avg: {formatPrice(stats.avgPrice)}</span>
                       </div>
                     )}
@@ -233,7 +231,7 @@ const DubaiMap: FC<DubaiMapProps> = ({
           })}
 
         {/* Property markers */}
-        {markers.map((marker) => (
+        {markers.map(marker => (
           <Marker
             key={marker.id}
             position={[marker.lat, marker.lng]}
@@ -244,9 +242,7 @@ const DubaiMap: FC<DubaiMapProps> = ({
           >
             <Popup className="property-map-popup">
               <div
-                className={`property-popup-card ${
-                  activePropertyId === marker.id ? 'active' : ''
-                }`}
+                className={`property-popup-card ${activePropertyId === marker.id ? 'active' : ''}`}
                 onClick={() => onPropertyClick?.(marker)}
                 role="button"
                 tabIndex={0}

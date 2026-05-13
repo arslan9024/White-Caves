@@ -1,32 +1,28 @@
-// @ts-nocheck
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
-// @ts-ignore
+// @ts-expect-error -- relationalSidebarSlice types not fully defined yet
 import {
   setSelectedDepartment,
   setSelectedService,
-  setFilteredServices,
   selectSelectedDepartment,
   selectSelectedService,
   selectFilteredServices,
 } from '../../../redux/slices/relationalSidebarSlice';
-// @ts-ignore
+// @ts-expect-error -- thunk types not fully typed
 import { fetchDepartments } from '../../../store/thunks/relationalSidebarThunks';
-// @ts-ignore
-import {
-  filterServicesByAssistant,
-  DEPARTMENTS,
-  filterAssistantsByService,
-} from '../../../utils/relationalSidebarUtils';
+
 import { BaseSidebar, SidebarSection, SidebarItem } from '../../shared/sidebars';
 
 // Styled Components
 const LeftSidebarContainer = styled.div`
   width: 100%;
   height: 100%;
-  background: ${(props: any) => props.theme?.colors?.sidebarBg || '#1a1a1a'};
-  border-right: 1px solid ${(props: any) => props.theme?.colors?.border || '#333'};
+  background: ${(props: { theme?: { colors?: { sidebarBg?: string } } }) =>
+    props.theme?.colors?.sidebarBg || '#1a1a1a'};
+  border-right: 1px solid
+    ${(props: { theme?: { colors?: { border?: string } } }) =>
+      props.theme?.colors?.border || '#333'};
   overflow-y: auto;
   overflow-x: hidden;
 
@@ -40,33 +36,22 @@ const LeftSidebarContainer = styled.div`
   }
 
   &::-webkit-scrollbar-thumb {
-    background: ${(props: any) => props.theme?.colors?.scrollbar || '#555'};
+    background: ${(props: { theme?: { colors?: { scrollbar?: string } } }) =>
+      props.theme?.colors?.scrollbar || '#555'};
     border-radius: 4px;
 
     &:hover {
-      background: ${(props: any) => props.theme?.colors?.scrollbarHover || '#777'};
+      background: ${(props: { theme?: { colors?: { scrollbarHover?: string } } }) =>
+        props.theme?.colors?.scrollbarHover || '#777'};
     }
-  }
-`;
-
-const DepartmentHeader = styled.div`
-  padding: 12px 16px;
-  font-weight: 600;
-  font-size: 12px;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  color: ${(props: any) => props.theme?.colors?.textSecondary || '#999'};
-  margin-top: 16px;
-
-  &:first-child {
-    margin-top: 0;
   }
 `;
 
 const NoServicesMessage = styled.div`
   padding: 12px 32px;
   font-size: 12px;
-  color: ${(props: any) => props.theme?.colors?.textSecondary || '#999'};
+  color: ${(props: { theme?: { colors?: { textSecondary?: string } } }) =>
+    props.theme?.colors?.textSecondary || '#999'};
   font-style: italic;
 `;
 
@@ -78,10 +63,14 @@ const SkeletonItem = styled.div`
   animation: shimmer 1.5s infinite;
   margin: 8px 16px;
   border-radius: 4px;
-  
+
   @keyframes shimmer {
-    0% { background-position: 200% 0; }
-    100% { background-position: -200% 0; }
+    0% {
+      background-position: 200% 0;
+    }
+    100% {
+      background-position: -200% 0;
+    }
   }
 `;
 
@@ -110,11 +99,11 @@ const RetryButton = styled.button`
   font-size: 11px;
   cursor: pointer;
   transition: background 0.2s ease;
-  
+
   &:hover {
     background: #dc2626;
   }
-  
+
   &:disabled {
     background: #999;
     cursor: not-allowed;
@@ -126,24 +115,37 @@ const RetryButton = styled.button`
  * Displays departments and their associated services
  * Filters services based on selected department
  * Filters assistants on right sidebar based on selected service
- * 
+ *
  * Redux Integration: Uses fetchDepartments thunk to load data from API
  */
-const RelationalLeftSidebar = ({ userPermissions = {} }: { userPermissions?: Record<string, boolean> }): JSX.Element => {
-  const dispatch = useDispatch() as any;
+const RelationalLeftSidebar = ({
+  userPermissions: _userPermissions = {},
+}: {
+  userPermissions?: Record<string, boolean>;
+}): JSX.Element => {
+  const dispatch = useDispatch<(action: { type: string; payload?: unknown }) => void>();
   const selectedDepartment = useSelector(selectSelectedDepartment) as string | null;
   const selectedService = useSelector(selectSelectedService) as string | null;
-  const filteredServices = useSelector(selectFilteredServices) as Array<any>;
-  
+  const filteredServices = useSelector(selectFilteredServices) as Array<Record<string, unknown>>;
+
   // Redux selectors for loading/error states
-  const departmentsLoading = useSelector((state: any) => state.relationalSidebar?.departmentLoading || false) as boolean;
-  const departmentsError = useSelector((state: any) => state.relationalSidebar?.departmentError || null) as string | null;
-  const departments = useSelector((state: any) => state.relationalSidebar?.departments || []) as string[];
+  const departmentsLoading = useSelector(
+    (state: { relationalSidebar?: { departmentLoading?: boolean } }) =>
+      state.relationalSidebar?.departmentLoading ?? false
+  );
+  const departmentsError = useSelector(
+    (state: { relationalSidebar?: { departmentError?: string | null } }) =>
+      state.relationalSidebar?.departmentError ?? null
+  );
+  const departments = useSelector(
+    (state: { relationalSidebar?: { departments?: string[] } }) =>
+      state.relationalSidebar?.departments ?? []
+  );
 
   // Fetch departments on mount
   useEffect(() => {
     try {
-      console.debug('[RelationalLeftSidebar] Mounting - fetching departments...');
+      console.warn('[RelationalLeftSidebar] Mounting - fetching departments...');
       dispatch(fetchDepartments());
     } catch (error) {
       console.error('[RelationalLeftSidebar] Error fetching departments:', error);
@@ -153,7 +155,7 @@ const RelationalLeftSidebar = ({ userPermissions = {} }: { userPermissions?: Rec
   // Set default department when departments load
   useEffect(() => {
     if (!selectedDepartment && departments.length > 0) {
-      console.debug('[RelationalLeftSidebar] Setting default department:', departments[0]);
+      console.warn('[RelationalLeftSidebar] Setting default department:', departments[0]);
       dispatch(setSelectedDepartment(departments[0]));
     }
   }, [departments, selectedDepartment, dispatch]);
@@ -161,7 +163,7 @@ const RelationalLeftSidebar = ({ userPermissions = {} }: { userPermissions?: Rec
   // Handle department selection
   const handleDepartmentSelect = (departmentId: string): void => {
     try {
-      console.debug('[RelationalLeftSidebar] Selected department:', departmentId);
+      console.warn('[RelationalLeftSidebar] Selected department:', departmentId);
       dispatch(setSelectedDepartment(departmentId));
       dispatch(setSelectedService(null)); // Reset service selection
     } catch (error) {
@@ -172,7 +174,7 @@ const RelationalLeftSidebar = ({ userPermissions = {} }: { userPermissions?: Rec
   // Handle service selection
   const handleServiceSelect = (serviceId: string): void => {
     try {
-      console.debug('[RelationalLeftSidebar] Selected service:', serviceId);
+      console.warn('[RelationalLeftSidebar] Selected service:', serviceId);
       dispatch(setSelectedService(serviceId));
     } catch (error) {
       console.error('Error selecting service:', error);
@@ -181,22 +183,17 @@ const RelationalLeftSidebar = ({ userPermissions = {} }: { userPermissions?: Rec
 
   // Handle retry on error
   const handleRetry = (): void => {
-    console.debug('[RelationalLeftSidebar] Retrying department fetch...');
+    console.warn('[RelationalLeftSidebar] Retrying department fetch...');
     dispatch(fetchDepartments());
   };
 
   return (
     <LeftSidebarContainer>
-      <BaseSidebar
-        name="relational-left-sidebar"
-        title="Organization"
-        icon="🏢"
-        position="left"
-      >
+      <BaseSidebar name="relational-left-sidebar" title="Organization" icon="🏢" position="left">
         {/* Loading State */}
         {departmentsLoading && (
           <div>
-            {[1, 2, 3].map((i) => (
+            {[1, 2, 3].map(i => (
               <SkeletonItem key={`skeleton-${i}`} />
             ))}
           </div>
@@ -224,13 +221,13 @@ const RelationalLeftSidebar = ({ userPermissions = {} }: { userPermissions?: Rec
                   sidebarName="relational-left-sidebar"
                 />
 
-                {selectedDepartment === dept && (filteredServices as any[]).length > 0 && (
-                  <SidebarSection 
+                {selectedDepartment === dept && filteredServices.length > 0 && (
+                  <SidebarSection
                     id={`services-${dept}`}
                     title="Services"
                     sidebarName="relational-left-sidebar"
                   >
-                    {(filteredServices as any[]).map((service: any) => (
+                    {filteredServices.map(service => (
                       <SidebarItem
                         key={`service-${service.id}`}
                         id={`service-${service.id}`}
@@ -244,7 +241,7 @@ const RelationalLeftSidebar = ({ userPermissions = {} }: { userPermissions?: Rec
                   </SidebarSection>
                 )}
 
-                {selectedDepartment === dept && (filteredServices as any[]).length === 0 && (
+                {selectedDepartment === dept && filteredServices.length === 0 && (
                   <NoServicesMessage>No services available</NoServicesMessage>
                 )}
               </div>

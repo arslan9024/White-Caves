@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 import React from 'react';
 import BaseDepartmentView from './BaseDepartmentView';
 import { getDepartmentConfig } from '../../config/departmentViewConfigs';
@@ -12,26 +11,24 @@ import { DataCard } from '../shared/dashboard';
 interface ComplianceViewProps {
   serviceName?: string;
   subitemId?: string;
-  departmentData?: any;
+  departmentData?: Record<string, unknown>;
 }
 
-const ComplianceView: React.FC<ComplianceViewProps> = ({ serviceName = 'compliance-dashboard', subitemId, departmentData }) => {
+const ComplianceView: React.FC<ComplianceViewProps> = ({
+  serviceName = 'compliance-dashboard',
+  subitemId,
+  departmentData,
+}) => {
   const config = getDepartmentConfig('COMPLIANCE')!;
 
-  const renderContent = (data: any) => {
+  const renderContent = (data: Record<string, unknown>) => {
     if (!subitemId && serviceName === 'compliance-dashboard') {
       return (
         <>
-          <DataCard 
-            title="Compliance Dashboard"
-            subtitle="Compliance status and issues"
-          >
+          <DataCard title="Compliance Dashboard" subtitle="Compliance status and issues">
             Issues: {JSON.stringify(data?.issues?.length || 0)} items
           </DataCard>
-          <DataCard 
-            title="Audit Trails"
-            subtitle="Recent audit activities and logs"
-          >
+          <DataCard title="Audit Trails" subtitle="Recent audit activities and logs">
             Audits: {JSON.stringify(data?.auditTrails?.length || 0)} items
           </DataCard>
         </>
@@ -85,4 +82,3 @@ const ComplianceView: React.FC<ComplianceViewProps> = ({ serviceName = 'complian
 };
 
 export default ComplianceView;
-

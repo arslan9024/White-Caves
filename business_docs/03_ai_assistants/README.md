@@ -2,7 +2,7 @@
 
 ## Overview
 
-- **Total AI Personalities**: 24 documented personas
+- **Total AI Personalities**: 40 documented personas
 - **Core Assistants**: 14 active (Aurora, Clara, Daisy, Hazel, Laila, Nadia, Mary, Nancy, Nina, Olivia, Sophia, Theodora, Willow, Zoe)
 - **Architecture**: Integrated AI-powered CRM ecosystem with WhatsApp as primary communication layer
 - **Design Philosophy**: Each assistant has a specific business function, department alignment, and data ecosystem
@@ -1045,21 +1045,3 @@ IF Third-party API (WhatsApp, OpenAI) is degraded:
 
 **Version:** 2.0 | **Last Updated:** May 2026 | **Personas Documented:** 40/40 ✅  
 **Agent Activity:** @Joelle (Llama 3.1 70B via Groq — FREE) | Sections: 9 → 11 | Personas: 24 → 40 | Quality Score: ⭐⭐⭐⭐⭐
-
-| Assistant | Primary KPI             | Target    | Phase    |
-| --------- | ----------------------- | --------- | -------- |
-| Cipher    | MTTD (threat detection) | < 15 min  | Phase 26 |
-| Atlas     | Report freshness        | Weekly    | Phase 26 |
-| Oracle    | AUC-ROC score           | ≥ 0.82    | Phase 27 |
-| Flux      | Occupancy maintained    | ≥ 95%     | Phase 27 |
-| Nova      | Insight action rate     | > 40%     | Phase 26 |
-| Sentinel  | Avg repair resolution   | < 5 days  | Phase 26 |
-| Quill     | Human edit rate         | < 20%     | Phase 26 |
-| Lumen     | OCR accuracy            | ≥ 95%     | Phase 26 |
-| Crest     | Partner payout cycle    | < 14 days | Phase 27 |
-| Beacon    | Client retention rate   | ≥ 35%     | Phase 27 |
-
----
-
-**Version:** 1.2 | **Last Updated:** May 2026 | **Personas Documented:** 24/40 (Personas 25-40 in next @Joelle sprint)  
-**Agent Activity:** @Joelle (Llama 3.1 70B via Groq — FREE) | Sections: 7 → 9 + Personas: 14 → 24 | Quality: ⭐⭐⭐⭐⭐

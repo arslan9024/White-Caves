@@ -39,10 +39,14 @@ function mapAgent(a: GeneratedAgent, idx: number) {
     role: a.role,
     sales: a.deals_closed,
     roi: a.roi,
-    performance: a.performance >= 90 ? 'Excellent'
-               : a.performance >= 75 ? 'Very Good'
-               : a.performance >= 60 ? 'Good'
-               : 'Average',
+    performance:
+      a.performance >= 90
+        ? 'Excellent'
+        : a.performance >= 75
+          ? 'Very Good'
+          : a.performance >= 60
+            ? 'Good'
+            : 'Average',
     rating: a.rating,
     leads_assigned: a.leads_assigned,
     deals_closed: a.deals_closed,
@@ -60,8 +64,31 @@ function mapAgent(a: GeneratedAgent, idx: number) {
 // ─── Leads → CRMItem (matches DUMMY_HOT_LEADS / DUMMY_ALL_LEADS shape) ──
 
 const STAGES = ['inquiry', 'viewing', 'negotiation', 'proposal', 'closing', 'research', 'initial'];
-const CONTACT_LABELS = ['Just now', '1 hour ago', '2 hours ago', '3 hours ago', 'Today', 'Yesterday', '2 days ago', '3 days ago', '1 week ago', '2 weeks ago', '1 month ago'];
-const NEXT_ACTIONS = ['Send contract', 'Schedule site visit', 'Close deal', 'Send property catalog', 'Prepare offer', 'Follow up call', 'Send market report', 'Arrange second viewing', 'Negotiate terms', 'Submit documentation'];
+const CONTACT_LABELS = [
+  'Just now',
+  '1 hour ago',
+  '2 hours ago',
+  '3 hours ago',
+  'Today',
+  'Yesterday',
+  '2 days ago',
+  '3 days ago',
+  '1 week ago',
+  '2 weeks ago',
+  '1 month ago',
+];
+const NEXT_ACTIONS = [
+  'Send contract',
+  'Schedule site visit',
+  'Close deal',
+  'Send property catalog',
+  'Prepare offer',
+  'Follow up call',
+  'Send market report',
+  'Arrange second viewing',
+  'Negotiate terms',
+  'Submit documentation',
+];
 
 function mapLead(l: GeneratedLead, idx: number, agents: ReturnType<typeof mapAgent>[]) {
   const agentNum = parseInt(l.assigned_agent.replace('agent-', ''), 10);
@@ -78,10 +105,13 @@ function mapLead(l: GeneratedLead, idx: number, agents: ReturnType<typeof mapAge
     status: l.status,
     priority: l.priority.toUpperCase(),
     amount: l.budget,
+    // eslint-disable-next-line security/detect-object-injection
     stage: STAGES[stageIdx],
     agent_id: agent.id,
     agent_name: agent.name,
+    // eslint-disable-next-line security/detect-object-injection
     last_contact: CONTACT_LABELS[contactIdx],
+    // eslint-disable-next-line security/detect-object-injection
     next_action: NEXT_ACTIONS[actionIdx],
     notes: l.notes,
     property_interest: l.property_interest,
@@ -167,7 +197,7 @@ function mapActivity(a: GeneratedActivity) {
 function buildOverview(
   agents: ReturnType<typeof mapAgent>[],
   leads: ReturnType<typeof mapLead>[],
-  activities: ReturnType<typeof mapActivity>[],
+  activities: ReturnType<typeof mapActivity>[]
 ) {
   const hotLeads = leads.filter(l => l.status === 'hot');
   const warmLeads = leads.filter(l => l.status === 'warm');
@@ -183,7 +213,7 @@ function buildOverview(
       agentsOnline: onlineAgents.length,
       agentsTotal: agents.length,
       conversionsThisMonth: Math.round(hotLeads.length * 0.4),
-      revenuethisMonth: agents.reduce((s, a) => s + (a.revenue_generated / 12), 0),
+      revenuethisMonth: agents.reduce((s, a) => s + a.revenue_generated / 12, 0),
       activeClients: Math.round(leads.length * 0.3),
       activeDeals: hotLeads.length + warmLeads.length,
       pendingPayments: Math.round(hotLeads.length * 0.2),
@@ -194,15 +224,17 @@ function buildOverview(
     performance: {
       thisMonth: {
         deals_closed: Math.round(hotLeads.length * 0.5),
-        revenue: agents.reduce((s, a) => s + (a.revenue_generated / 12), 0),
+        revenue: agents.reduce((s, a) => s + a.revenue_generated / 12, 0),
         new_clients: Math.round(leads.length * 0.05),
-        conversion_rate: hotLeads.length > 0 ? parseFloat(((hotLeads.length / leads.length) * 100).toFixed(1)) : 0,
+        conversion_rate:
+          hotLeads.length > 0 ? parseFloat(((hotLeads.length / leads.length) * 100).toFixed(1)) : 0,
       },
       lastMonth: {
         deals_closed: Math.round(hotLeads.length * 0.4),
-        revenue: agents.reduce((s, a) => s + (a.revenue_generated / 14), 0),
+        revenue: agents.reduce((s, a) => s + a.revenue_generated / 14, 0),
         new_clients: Math.round(leads.length * 0.04),
-        conversion_rate: hotLeads.length > 0 ? parseFloat(((hotLeads.length / leads.length) * 90).toFixed(1)) : 0,
+        conversion_rate:
+          hotLeads.length > 0 ? parseFloat(((hotLeads.length / leads.length) * 90).toFixed(1)) : 0,
       },
     },
   };
@@ -256,13 +288,18 @@ export const DEV_CLIENTS = DEV_DATA.leads
     name: l.name,
     email: l.email,
     phone: l.phone,
-    type: l.tags.includes('Corporate') ? 'Corporate' : l.tags.includes('Investor') ? 'Investment Firm' : 'Individual',
+    type: l.tags.includes('Corporate')
+      ? 'Corporate'
+      : l.tags.includes('Investor')
+        ? 'Investment Firm'
+        : 'Individual',
     status: 'active',
     total_value: l.amount,
     last_contact: l.last_contact,
     agent_id: l.agent_id,
     agent_name: l.agent_name,
     properties_owned: Math.abs(hashStr(l.email)) % 8,
-    deals_count: Math.abs(hashStr(l.name)) % 12 + 1,
-    avatar_color: DEV_DATA.agents[(l.agent_id - 1) % DEV_DATA.agents.length]?.avatar_color || '#E31E24',
+    deals_count: (Math.abs(hashStr(l.name)) % 12) + 1,
+    avatar_color:
+      DEV_DATA.agents[(l.agent_id - 1) % DEV_DATA.agents.length]?.avatar_color || '#E31E24',
   }));

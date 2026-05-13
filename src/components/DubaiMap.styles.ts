@@ -76,15 +76,21 @@ export const MapFilters = styled.div`
   margin-bottom: 2rem;
 `;
 
-export const FilterButton = styled.button<{ $isActive?: boolean; $variant?: 'residential' | 'commercial' | 'luxury' }>`
+export const FilterButton = styled.button<{
+  $isActive?: boolean;
+  $variant?: 'residential' | 'commercial' | 'luxury';
+}>`
   padding: 0.75rem 1.5rem;
-  background: ${props => props.$isActive ? 'var(--primary-color, #1a365d)' : 'var(--bg-primary, #ffffff)'};
-  border: 2px solid ${props => props.$isActive ? 'var(--primary-color, #1a365d)' : 'var(--border-color, #e2e8f0)'};
+  background: ${props =>
+    props.$isActive ? 'var(--primary-color, #1a365d)' : 'var(--bg-primary, #ffffff)'};
+  border: 2px solid
+    ${props => (props.$isActive ? 'var(--primary-color, #1a365d)' : 'var(--border-color, #e2e8f0)')};
   border-radius: ${radius.full};
   font-family: ${typography.fontFamily.primary};
   font-size: 0.9rem;
   font-weight: ${typography.weights.medium};
-  color: ${props => props.$isActive ? 'var(--text-on-primary, #ffffff)' : 'var(--text-primary, #1a202c)'};
+  color: ${props =>
+    props.$isActive ? 'var(--text-on-primary, #ffffff)' : 'var(--text-primary, #1a202c)'};
   cursor: pointer;
   transition: ${transitions.hover};
 
@@ -92,17 +98,26 @@ export const FilterButton = styled.button<{ $isActive?: boolean; $variant?: 'res
     border-color: var(--primary-color, #1a365d);
   }
 
-  ${props => props.$isActive && props.$variant === 'residential' && `
+  ${props =>
+    props.$isActive &&
+    props.$variant === 'residential' &&
+    `
     background: var(--success-color, #38a169);
     border-color: var(--success-color, #38a169);
   `}
 
-  ${props => props.$isActive && props.$variant === 'commercial' && `
+  ${props =>
+    props.$isActive &&
+    props.$variant === 'commercial' &&
+    `
     background: var(--primary-color, #1a365d);
     border-color: var(--primary-color, #1a365d);
   `}
 
-  ${props => props.$isActive && props.$variant === 'luxury' && `
+  ${props =>
+    props.$isActive &&
+    props.$variant === 'luxury' &&
+    `
     background: var(--secondary-color, #c53030);
     border-color: var(--secondary-color, #c53030);
   `}
@@ -156,7 +171,7 @@ export const MarkerGroup = styled.g`
   }
 
   &.active .marker-dot {
-    stroke: var(--primary-color, #E31E24);
+    stroke: var(--primary-color, #e31e24);
     stroke-width: 3;
   }
 `;
@@ -171,7 +186,9 @@ export const MarkerDot = styled.circle`
 
 export const MarkerLabel = styled.text`
   pointer-events: none;
-  text-shadow: 1px 1px 2px white, -1px -1px 2px white;
+  text-shadow:
+    1px 1px 2px white,
+    -1px -1px 2px white;
 `;
 
 // Info Window
@@ -217,15 +234,21 @@ export const AreaType = styled.span<{ type?: 'luxury' | 'residential' | 'commerc
   background: rgba(255, 255, 255, 0.2);
   margin-top: 0.5rem;
 
-  ${props => props.type === 'luxury' && `
+  ${props =>
+    props.type === 'luxury' &&
+    `
     background: var(--secondary-color, #c53030);
   `}
 
-  ${props => props.type === 'residential' && `
+  ${props =>
+    props.type === 'residential' &&
+    `
     background: var(--success-color, #38a169);
   `}
 
-  ${props => props.type === 'commercial' && `
+  ${props =>
+    props.type === 'commercial' &&
+    `
     background: rgba(255, 255, 255, 0.3);
   `}
 `;

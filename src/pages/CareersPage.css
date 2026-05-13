@@ -12,7 +12,7 @@
 .careers-hero {
   position: relative;
   height: 500px;
-  background: linear-gradient(135deg, #E31E24 0%, #c0001d 100%);
+  background: linear-gradient(135deg, #e31e24 0%, #c0001d 100%);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -231,12 +231,12 @@
 
 .job-tag.department {
   background: rgba(227, 30, 36, 0.1);
-  color: #E31E24;
+  color: #e31e24;
 }
 
 .job-tag.type {
   background: rgba(227, 30, 36, 0.15);
-  color: #E31E24;
+  color: #e31e24;
 }
 
 [data-theme='dark'] .job-tag.department {
@@ -298,7 +298,7 @@
 .apply-btn {
   width: 100%;
   padding: 0.875rem;
-  background: linear-gradient(135deg, #E31E24 0%, #c0001d 100%);
+  background: linear-gradient(135deg, #e31e24 0%, #c0001d 100%);
   color: white;
   border: none;
   border-radius: 8px;
@@ -411,7 +411,7 @@
 .form-group select:focus,
 .form-group textarea:focus {
   outline: none;
-  border-color: #E31E24;
+  border-color: #e31e24;
   box-shadow: 0 0 0 3px rgba(227, 30, 36, 0.15);
 }
 
@@ -444,7 +444,7 @@
 
 .submit-btn {
   padding: 0.875rem 2.5rem;
-  background: linear-gradient(135deg, #E31E24 0%, #c0001d 100%);
+  background: linear-gradient(135deg, #e31e24 0%, #c0001d 100%);
   color: white;
   border: none;
   border-radius: 8px;
@@ -461,7 +461,7 @@
 
 .careers-cta {
   padding: 5rem 0;
-  background: linear-gradient(135deg, #E31E24 0%, #c0001d 100%);
+  background: linear-gradient(135deg, #e31e24 0%, #c0001d 100%);
   color: white;
 }
 
@@ -591,7 +591,7 @@
   display: inline-block;
   padding: 0.4rem 1.1rem;
   background: rgba(227, 30, 36, 0.08);
-  color: #E31E24;
+  color: #e31e24;
   font-size: 0.78rem;
   font-weight: 700;
   border-radius: 50px;
@@ -602,7 +602,7 @@
 
 [data-theme='dark'] .careers-section-tag {
   background: rgba(227, 30, 36, 0.14);
-  color: #E31E24;
+  color: #e31e24;
 }
 
 .careers-section-title {
@@ -615,7 +615,7 @@
 .careers-divider {
   width: 52px;
   height: 3px;
-  background: linear-gradient(90deg, #E31E24, #c0001d);
+  background: linear-gradient(90deg, #e31e24, #c0001d);
   border-radius: 3px;
   margin: 1.1rem auto 0;
 }
@@ -626,7 +626,7 @@
   height: 62px;
   border-radius: 18px;
   background: linear-gradient(135deg, rgba(227, 30, 36, 0.1) 0%, rgba(192, 0, 29, 0.08) 100%);
-  color: #E31E24;
+  color: #e31e24;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -636,7 +636,7 @@
 
 [data-theme='dark'] .benefit-icon-wrapper {
   background: rgba(227, 30, 36, 0.14);
-  color: #E31E24;
+  color: #e31e24;
 }
 
 .benefit-card:hover .benefit-icon-wrapper {
@@ -659,7 +659,7 @@
 
 .position-card:hover {
   box-shadow: 0 12px 36px rgba(0, 0, 0, 0.12);
-  border-color: #E31E24;
+  border-color: #e31e24;
   transform: translateY(-3px);
 }
 
@@ -668,7 +668,7 @@
   height: 50px;
   border-radius: 14px;
   background: rgba(227, 30, 36, 0.12);
-  color: #E31E24;
+  color: #e31e24;
   display: flex;
   align-items: center;
   justify-content: center;

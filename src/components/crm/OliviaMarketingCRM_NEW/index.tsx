@@ -6,10 +6,12 @@ import {
   Instagram,
   Home,
   Share2,
-  Zap
+  Zap,
+  GitBranch
 } from 'lucide-react';
 import { useMarketingData } from './hooks/useMarketingData';
 import SuspenseLoader from '../../common/SuspenseLoader';
+import AssistantLifecycleTab from '../shared/AssistantLifecycleTab';
 import './OliviaMarketingCRM.css';
 
 // Lazy-loaded tabs
@@ -132,6 +134,13 @@ export default function OliviaMarketingCRM() {
           <Zap size={16} />
           Features
         </button>
+        <button
+          className={`olivia-tab ${activeTab === 'lifecycle' ? 'active' : ''}`}
+          onClick={() => setActiveTab('lifecycle')}
+        >
+          <GitBranch size={16} />
+          Lifecycle
+        </button>
       </div>
 
       <div className="olivia-content">
@@ -143,6 +152,9 @@ export default function OliviaMarketingCRM() {
           {activeTab === 'listings' && <ListingsTab state={state} />}
           {activeTab === 'publish' && <PublishTab state={state} />}
           {activeTab === 'features' && <FeaturesTab />}
+          {activeTab === 'lifecycle' && (
+            <AssistantLifecycleTab assistantId="olivia" color="#EC4899" assistantName="Olivia" />
+          )}
         </Suspense>
       </div>
     </div>

@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 import React from 'react';
 import styled from 'styled-components';
 
@@ -7,6 +6,20 @@ import styled from 'styled-components';
  * Reusable card component for displaying data in dashboard views
  * Supports loading skeleton, animations, and flexible content
  */
+
+interface DataCardProps {
+  title?: React.ReactNode;
+  subtitle?: React.ReactNode;
+  icon?: React.ReactNode;
+  children?: React.ReactNode;
+  footer?: React.ReactNode;
+  actions?: React.ReactNode;
+  loading?: boolean;
+  skeleton?: 'content' | 'grid' | 'grid-4' | 'table' | 'table-3' | 'custom';
+  hoverable?: boolean;
+  onClick?: () => void;
+  className?: string;
+}
 
 const CardContainer = styled.div`
   background-color: #ffffff;
@@ -22,7 +35,7 @@ const CardContainer = styled.div`
     transform: translateY(-2px);
   }
 
-  ${(props) => props.hoverable === false && 'cursor: default;'}
+  ${props => props.hoverable === false && 'cursor: default;'}
 `;
 
 const CardHeader = styled.div`
@@ -79,12 +92,7 @@ const CardFooter = styled.div`
 `;
 
 const SkeletonBase = styled.div`
-  background: linear-gradient(
-    90deg,
-    #f3f4f6 0%,
-    #e5e7eb 50%,
-    #f3f4f6 100%
-  );
+  background: linear-gradient(90deg, #f3f4f6 0%, #e5e7eb 50%, #f3f4f6 100%);
   background-size: 200% 100%;
   animation: shimmer 2s infinite;
 
@@ -161,7 +169,7 @@ const TableSkeleton = ({ rows = 5, columns = 4 }) => (
 /**
  * Main DataCard Component
  */
-const DataCard = ({
+const DataCard: React.FC<DataCardProps> = ({
   title,
   subtitle,
   icon,
@@ -227,4 +235,3 @@ export default DataCard;
 
 // Export skeleton components for use outside of DataCard
 export { TitleSkeleton, ContentSkeleton, GridSkeleton, TableSkeleton };
-

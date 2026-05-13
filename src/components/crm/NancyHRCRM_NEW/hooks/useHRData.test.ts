@@ -1,13 +1,61 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { renderHook, act } from '@testing-library/react';
 
-// Mock data
 vi.mock('../data/employees', () => ({
   DUMMY_EMPLOYEES: [
-    { id: 'EMP-001', name: 'Alice Smith', email: 'alice@wc.com', position: 'Manager', department: 'Sales', status: 'active' },
-    { id: 'EMP-002', name: 'Bob Jones', email: 'bob@wc.com', position: 'Developer', department: 'Engineering', status: 'active' },
-    { id: 'EMP-003', name: 'Carol White', email: 'carol@wc.com', position: 'Designer', department: 'Sales', status: 'on_leave' },
+    {
+      id: 'EMP-001',
+      name: 'Alice Smith',
+      email: 'alice@wc.com',
+      phone: '',
+      avatar: '',
+      position: 'Manager',
+      department: 'Sales',
+      status: 'active',
+      joinDate: '2025-01-01',
+      salary: 0,
+      manager: '',
+      location: 'Dubai',
+      performance: 0,
+      leaveBalance: 0,
+      attendance: 0,
+    },
+    {
+      id: 'EMP-002',
+      name: 'Bob Jones',
+      email: 'bob@wc.com',
+      phone: '',
+      avatar: '',
+      position: 'Developer',
+      department: 'Engineering',
+      status: 'active',
+      joinDate: '2025-01-01',
+      salary: 0,
+      manager: '',
+      location: 'Dubai',
+      performance: 0,
+      leaveBalance: 0,
+      attendance: 0,
+    },
+    {
+      id: 'EMP-003',
+      name: 'Carol White',
+      email: 'carol@wc.com',
+      phone: '',
+      avatar: '',
+      position: 'Designer',
+      department: 'Sales',
+      status: 'on_leave',
+      joinDate: '2025-01-01',
+      salary: 0,
+      manager: '',
+      location: 'Dubai',
+      performance: 0,
+      leaveBalance: 0,
+      attendance: 0,
+    },
   ],
+  Employee: {},
 }));
 
 vi.mock('../data/jobs', () => ({
@@ -16,14 +64,52 @@ vi.mock('../data/jobs', () => ({
     { id: 'JOB-002', title: 'Marketing Lead', department: 'Marketing', status: 'closed' },
     { id: 'JOB-003', title: 'Analyst', department: 'Finance', status: 'paused' },
   ],
+  Job: {},
 }));
 
 vi.mock('../data/applicants', () => ({
   DUMMY_APPLICANTS: [
-    { id: 'APP-001', name: 'Dan Lee', email: 'dan@mail.com', status: 'new', jobId: 'JOB-001' },
-    { id: 'APP-002', name: 'Eve Ray', email: 'eve@mail.com', status: 'shortlisted', jobId: 'JOB-001' },
-    { id: 'APP-003', name: 'Frank May', email: 'frank@mail.com', status: 'hired', jobId: 'JOB-002' },
+    {
+      id: 'APP-001',
+      name: 'Dan Lee',
+      email: 'dan@mail.com',
+      phone: '',
+      avatar: '',
+      job: 'Dev',
+      status: 'new',
+      appliedDate: '2025-01-01',
+      experience: '',
+      resume: '',
+      score: 0,
+    },
+    {
+      id: 'APP-002',
+      name: 'Eve Ray',
+      email: 'eve@mail.com',
+      phone: '',
+      avatar: '',
+      job: 'Design',
+      status: 'shortlisted',
+      appliedDate: '2025-01-01',
+      experience: '',
+      resume: '',
+      score: 0,
+    },
+    {
+      id: 'APP-003',
+      name: 'Frank May',
+      email: 'frank@mail.com',
+      phone: '',
+      avatar: '',
+      job: 'HR',
+      status: 'hired',
+      appliedDate: '2025-01-01',
+      experience: '',
+      resume: '',
+      score: 0,
+    },
   ],
+  Applicant: {},
 }));
 
 import { useHRData } from './useHRData';
@@ -34,7 +120,7 @@ describe('useHRData', () => {
   });
 
   describe('initialization', () => {
-    it('initializes with dummy employees in dev mode', () => {
+    it('initializes with employees from dummy data', () => {
       const { result } = renderHook(() => useHRData());
       expect(result.current.employees.length).toBe(3);
     });
@@ -44,7 +130,7 @@ describe('useHRData', () => {
       expect(result.current.jobs.length).toBe(3);
     });
 
-    it('initializes with dummy applicants', () => {
+    it('initializes with applicants from dummy data', () => {
       const { result } = renderHook(() => useHRData());
       expect(result.current.applicants.length).toBe(3);
     });
@@ -88,14 +174,18 @@ describe('useHRData', () => {
   describe('employee filtering', () => {
     it('filters by search query (name)', () => {
       const { result } = renderHook(() => useHRData());
-      act(() => { result.current.setSearchQuery('alice'); });
+      act(() => {
+        result.current.setSearchQuery('alice');
+      });
       expect(result.current.filteredEmployees.length).toBe(1);
       expect(result.current.filteredEmployees[0].name).toBe('Alice Smith');
     });
 
     it('filters by department', () => {
       const { result } = renderHook(() => useHRData());
-      act(() => { result.current.setFilterDepartment('Sales'); });
+      act(() => {
+        result.current.setFilterDepartment('Sales');
+      });
       expect(result.current.filteredEmployees.length).toBe(2);
     });
 
@@ -117,7 +207,9 @@ describe('useHRData', () => {
   describe('job filtering', () => {
     it('filters jobs by status', () => {
       const { result } = renderHook(() => useHRData());
-      act(() => { result.current.setFilterJobStatus('open'); });
+      act(() => {
+        result.current.setFilterJobStatus('open');
+      });
       expect(result.current.filteredJobs.length).toBe(1);
     });
 
@@ -130,13 +222,17 @@ describe('useHRData', () => {
   describe('applicant filtering', () => {
     it('filters applicants by status', () => {
       const { result } = renderHook(() => useHRData());
-      act(() => { result.current.setFilterApplicantStatus('new'); });
+      act(() => {
+        result.current.setFilterApplicantStatus('new');
+      });
       expect(result.current.filteredApplicants.length).toBe(1);
     });
 
     it('filters applicants by search query', () => {
       const { result } = renderHook(() => useHRData());
-      act(() => { result.current.setSearchQuery('eve'); });
+      act(() => {
+        result.current.setSearchQuery('eve');
+      });
       expect(result.current.filteredApplicants.length).toBe(1);
     });
   });
@@ -184,8 +280,10 @@ describe('useHRData', () => {
   describe('CRUD - employees', () => {
     it('adds an employee', () => {
       const { result } = renderHook(() => useHRData());
-      let emp: any;
-      act(() => { emp = result.current.addEmployee({ name: 'New Emp', department: 'Sales' }); });
+      let emp: ReturnType<typeof result.current.addEmployee>;
+      act(() => {
+        emp = result.current.addEmployee({ name: 'New Emp', department: 'Sales' });
+      });
       expect(result.current.employees.length).toBe(4);
       expect(emp.status).toBe('active');
       expect(emp.id).toMatch(/^EMP-/);
@@ -193,13 +291,17 @@ describe('useHRData', () => {
 
     it('updates an employee', () => {
       const { result } = renderHook(() => useHRData());
-      act(() => { result.current.updateEmployee('EMP-001', { position: 'Director' }); });
+      act(() => {
+        result.current.updateEmployee('EMP-001', { position: 'Director' });
+      });
       expect(result.current.employees.find(e => e.id === 'EMP-001')?.position).toBe('Director');
     });
 
     it('deletes an employee', () => {
       const { result } = renderHook(() => useHRData());
-      act(() => { result.current.deleteEmployee('EMP-002'); });
+      act(() => {
+        result.current.deleteEmployee('EMP-002');
+      });
       expect(result.current.employees.length).toBe(2);
       expect(result.current.employees.find(e => e.id === 'EMP-002')).toBeUndefined();
     });
@@ -208,8 +310,10 @@ describe('useHRData', () => {
   describe('CRUD - jobs', () => {
     it('adds a job', () => {
       const { result } = renderHook(() => useHRData());
-      let job: any;
-      act(() => { job = result.current.addJob({ title: 'New Job', department: 'HR' }); });
+      let job: ReturnType<typeof result.current.addJob>;
+      act(() => {
+        job = result.current.addJob({ title: 'New Job', department: 'HR' });
+      });
       expect(result.current.jobs.length).toBe(4);
       expect(job.status).toBe('open');
       expect(job.id).toMatch(/^JOB-/);
@@ -217,13 +321,17 @@ describe('useHRData', () => {
 
     it('updates a job', () => {
       const { result } = renderHook(() => useHRData());
-      act(() => { result.current.updateJob('JOB-001', { status: 'closed' }); });
+      act(() => {
+        result.current.updateJob('JOB-001', { status: 'closed' });
+      });
       expect(result.current.jobs.find(j => j.id === 'JOB-001')?.status).toBe('closed');
     });
 
     it('deletes a job', () => {
       const { result } = renderHook(() => useHRData());
-      act(() => { result.current.deleteJob('JOB-002'); });
+      act(() => {
+        result.current.deleteJob('JOB-002');
+      });
       expect(result.current.jobs.length).toBe(2);
     });
   });
@@ -231,8 +339,10 @@ describe('useHRData', () => {
   describe('CRUD - applicants', () => {
     it('adds an applicant', () => {
       const { result } = renderHook(() => useHRData());
-      let app: any;
-      act(() => { app = result.current.addApplicant({ name: 'Gina', email: 'g@m.com' }); });
+      let app: ReturnType<typeof result.current.addApplicant>;
+      act(() => {
+        app = result.current.addApplicant({ name: 'Gina', email: 'g@m.com' });
+      });
       expect(result.current.applicants.length).toBe(4);
       expect(app.status).toBe('new');
       expect(app.id).toMatch(/^APP-/);
@@ -240,13 +350,17 @@ describe('useHRData', () => {
 
     it('updates an applicant', () => {
       const { result } = renderHook(() => useHRData());
-      act(() => { result.current.updateApplicant('APP-001', { status: 'interviewed' }); });
+      act(() => {
+        result.current.updateApplicant('APP-001', { status: 'interviewed' });
+      });
       expect(result.current.applicants.find(a => a.id === 'APP-001')?.status).toBe('interviewed');
     });
 
     it('deletes an applicant', () => {
       const { result } = renderHook(() => useHRData());
-      act(() => { result.current.deleteApplicant('APP-003'); });
+      act(() => {
+        result.current.deleteApplicant('APP-003');
+      });
       expect(result.current.applicants.length).toBe(2);
     });
   });
@@ -255,32 +369,42 @@ describe('useHRData', () => {
     it('toggles employee modal', () => {
       const { result } = renderHook(() => useHRData());
       expect(result.current.showEmployeeModal).toBe(false);
-      act(() => { result.current.setShowEmployeeModal(true); });
+      act(() => {
+        result.current.setShowEmployeeModal(true);
+      });
       expect(result.current.showEmployeeModal).toBe(true);
     });
 
     it('toggles job modal', () => {
       const { result } = renderHook(() => useHRData());
-      act(() => { result.current.setShowJobModal(true); });
+      act(() => {
+        result.current.setShowJobModal(true);
+      });
       expect(result.current.showJobModal).toBe(true);
     });
 
     it('toggles applicant modal', () => {
       const { result } = renderHook(() => useHRData());
-      act(() => { result.current.setShowApplicantModal(true); });
+      act(() => {
+        result.current.setShowApplicantModal(true);
+      });
       expect(result.current.showApplicantModal).toBe(true);
     });
 
     it('sets selected employee', () => {
       const { result } = renderHook(() => useHRData());
-      act(() => { result.current.setSelectedEmployee(result.current.employees[0]); });
+      act(() => {
+        result.current.setSelectedEmployee(result.current.employees[0]);
+      });
       expect(result.current.selectedEmployee?.id).toBe('EMP-001');
     });
 
     it('nancy active state', () => {
       const { result } = renderHook(() => useHRData());
       expect(result.current.nancyActive).toBe(true);
-      act(() => { result.current.setNancyActive(false); });
+      act(() => {
+        result.current.setNancyActive(false);
+      });
       expect(result.current.nancyActive).toBe(false);
     });
   });

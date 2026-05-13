@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 // src/components/sidebars/CompanyDepartmentSidebar/CompanyDepartmentSidebar.tsx
 /**
  * Left Sidebar: Company Departments & Management
@@ -13,7 +12,7 @@ import React, { useMemo } from 'react';
 import styled from 'styled-components';
 import { BaseSidebar, SidebarSection, SidebarItem } from '../../shared/sidebars';
 import { useSidebarState } from '../../../hooks/useSidebarState';
-import { DEPARTMENTS, getDepartmentsByHierarchy } from '../../../config/departmentsRegistry';
+import { getDepartmentsByHierarchy } from '../../../config/departmentsRegistry';
 
 const SidebarContainer = styled.div`
   height: 100%;
@@ -260,4 +259,3 @@ export const CompanyDepartmentSidebar: React.FC<CompanyDepartmentSidebarProps> =
 };
 
 export default CompanyDepartmentSidebar;
-

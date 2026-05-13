@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 import styled from 'styled-components';
 import { theme } from '../../styles/theme/index';
 
@@ -754,4 +753,3 @@ export const SaveBtn = styled.button`
     box-shadow: ${shadows.luxuryGlow};
   }
 `;
-

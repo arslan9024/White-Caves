@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Pagination Component
  * Navigate through pages of data
@@ -116,4 +115,3 @@ export const Pagination: React.FC<PaginationProps> = ({
 Pagination.displayName = 'Pagination';
 
 export default Pagination;
-

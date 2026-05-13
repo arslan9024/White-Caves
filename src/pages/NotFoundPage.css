@@ -36,14 +36,19 @@
 }
 
 @keyframes bounce {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-10px); }
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
 }
 
 .not-found-content h1 {
   font-size: 100px;
   font-weight: 800;
-  color: #E31E24;
+  color: #e31e24;
   margin: 0;
   line-height: 1;
   text-shadow: 0 0 40px rgba(227, 30, 36, 0.3);
@@ -71,7 +76,7 @@
 
 .not-found-content .countdown {
   display: inline-block;
-  background: linear-gradient(135deg, #E31E24, #B71C1C);
+  background: linear-gradient(135deg, #e31e24, #b71c1c);
   color: #0a0a0f;
   width: 28px;
   height: 28px;
@@ -84,7 +89,7 @@
 .home-btn {
   margin-top: 25px;
   padding: 14px 32px;
-  background: linear-gradient(135deg, #E31E24, #B71C1C);
+  background: linear-gradient(135deg, #e31e24, #b71c1c);
   color: #0a0a0f;
   border: none;
   border-radius: 12px;

@@ -156,7 +156,10 @@ const TenantMaintenanceTab: FC = () => {
           value={descriptionInput}
           onChange={event => setDescriptionInput(event.target.value)}
         />
-        <label htmlFor="maintenance-priority" style={{ fontSize: '0.875rem', color: 'var(--text-secondary)' }}>
+        <label
+          htmlFor="maintenance-priority"
+          style={{ fontSize: '0.875rem', color: 'var(--text-secondary)' }}
+        >
           Priority
         </label>
         <select
