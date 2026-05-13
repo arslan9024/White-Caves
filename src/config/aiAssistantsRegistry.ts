@@ -94,6 +94,36 @@ export const AI_ASSISTANTS: Record<string, AIAssistant> = {
     },
   },
 
+  henry: {
+    id: 'henry',
+    name: 'Henry',
+    title: 'Record Keeper & Compliance Auditor',
+    avatar: '📚',
+    icon: 'BookOpenCheck',
+    color: '#7C3AED',
+    status: 'active',
+    role: 'Analytics & Reporting',
+    assignedTo: ['TECH', 'LEGAL', 'EXEC'],
+    department: 'TECH',
+    category: 'analytics',
+    description: 'Maintains immutable audit trails, validates assistant handoffs, and flags compliance anomalies.',
+    capabilities: [
+      'Audit Timeline Integrity',
+      'Cross-Assistant Event Tracking',
+      'Compliance Risk Flagging',
+      'Governance Report Packaging',
+      'Incident Evidence Chain',
+    ],
+    reportsTo: 'Tariq Al Qasimi (Dir. Technology)',
+    dashboardPath: '/henry/dashboard',
+    accessLevel: 'P1 - High',
+    features: 14,
+    dataFlows: {
+      inputs: ['Linda', 'Daisy', 'Theodora', 'Clara'],
+      outputs: ['Katherine QA', 'Executive Reports'],
+    },
+  },
+
   // INVENTORY LAYER
   mary: {
     id: 'mary',

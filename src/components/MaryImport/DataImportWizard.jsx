@@ -1,9 +1,8 @@
 import React, { useState, useCallback } from 'react';
+import { authFetch } from '../../utils/authFetch';
 import './DataImportWizard.css';
 import ColumnMappingEditor from './ColumnMappingEditor';
 import PreviewGridWithFilters from './PreviewGridWithFilters';
-import DuplicateResolutionPanel from './DuplicateResolutionPanel';
-import StatusMappingPreview from './StatusMappingPreview';
 
 /**
  * DataImportWizard Component
@@ -24,13 +23,12 @@ const DataImportWizard = () => {
   const [columnMapping, setColumnMapping] = useState({});
   const [validationResult, setValidationResult] = useState(null);
   const [importStrategy, setImportStrategy] = useState('balanced');
-  const [deduplicationStrategy, setDeduplicationStrategy] = useState('keep');
+  const [deduplicationStrategy] = useState('keep');
   const [duplicates, setDuplicates] = useState([]);
-  const [statusMapping, setStatusMapping] = useState({});
+  const [statusMapping] = useState({});
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [importProgress, setImportProgress] = useState(0);
-  const [importResult, setImportResult] = useState(null);
+  const [importProgress] = useState(0);
 
   const steps = [
     { number: 1, label: 'Upload', icon: '📤' },
@@ -40,11 +38,11 @@ const DataImportWizard = () => {
     { number: 5, label: 'Duplicates', icon: '⚠️' },
     { number: 6, label: 'Status', icon: '📊' },
     { number: 7, label: 'Review', icon: '📋' },
-    { number: 8, label: 'Execute', icon: '▶️' }
+    { number: 8, label: 'Execute', icon: '▶️' },
   ];
 
   // Step 1: File Upload Handler
-  const handleFileUpload = useCallback(async (file) => {
+  const handleFileUpload = useCallback(async file => {
     if (!file) return;
 
     setIsLoading(true);
@@ -57,9 +55,9 @@ const DataImportWizard = () => {
       const formData = new FormData();
       formData.append('file', file);
 
-      const response = await fetch('/api/inventory/import/upload', {
+      const response = await authFetch('/api/inventory/import/upload', {
         method: 'POST',
-        body: formData
+        body: formData,
       });
 
       if (!response.ok) throw new Error('Upload failed');
@@ -82,16 +80,16 @@ const DataImportWizard = () => {
   }, []);
 
   // Drag and drop handler
-  const handleDragOver = (e) => {
+  const handleDragOver = e => {
     e.preventDefault();
     e.currentTarget.classList.add('drag-over');
   };
 
-  const handleDragLeave = (e) => {
+  const handleDragLeave = e => {
     e.currentTarget.classList.remove('drag-over');
   };
 
-  const handleDrop = (e) => {
+  const handleDrop = e => {
     e.preventDefault();
     e.currentTarget.classList.remove('drag-over');
     const file = e.dataTransfer.files[0];
@@ -121,7 +119,7 @@ const DataImportWizard = () => {
         type="file"
         accept=".xlsx,.xls,.csv"
         hidden
-        onChange={(e) => handleFileUpload(e.target.files[0])}
+        onChange={e => handleFileUpload(e.target.files[0])}
       />
     </div>
   );
@@ -147,11 +145,8 @@ const DataImportWizard = () => {
         {sheetNames.length > 1 && (
           <div className="sheet-selection">
             <label>Select Sheet:</label>
-            <select
-              value={selectedSheet}
-              onChange={(e) => setSelectedSheet(e.target.value)}
-            >
-              {sheetNames.map((sheet) => (
+            <select value={selectedSheet} onChange={e => setSelectedSheet(e.target.value)}>
+              {sheetNames.map(sheet => (
                 <option key={sheet} value={sheet}>
                   {sheet}
                 </option>
@@ -166,9 +161,11 @@ const DataImportWizard = () => {
           <thead>
             <tr>
               <th>#</th>
-              {Object.keys(preview[0] || {}).slice(0, 8).map((header) => (
-                <th key={header}>{header}</th>
-              ))}
+              {Object.keys(preview[0] || {})
+                .slice(0, 8)
+                .map(header => (
+                  <th key={header}>{header}</th>
+                ))}
             </tr>
           </thead>
           <tbody>
@@ -199,10 +196,10 @@ const DataImportWizard = () => {
         onMappingChange={setColumnMapping}
         onAutoDetect={async (cols, data) => {
           try {
-            const response = await fetch('/api/inventory/import/detect-mapping', {
+            const response = await authFetch('/api/inventory/import/detect-mapping', {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ columns: cols, sampleData: data })
+              body: JSON.stringify({ columns: cols, sampleData: data }),
             });
             const result = await response.json();
             return result.data.mapping;
@@ -224,18 +221,17 @@ const DataImportWizard = () => {
 
         <div className="strategy-selector">
           <label>Import Strategy:</label>
-          <select
-            value={importStrategy}
-            onChange={(e) => setImportStrategy(e.target.value)}
-          >
+          <select value={importStrategy} onChange={e => setImportStrategy(e.target.value)}>
             <option value="strict">Strict (Reject on any error)</option>
             <option value="balanced">Balanced (Default - Smart judgment)</option>
             <option value="lenient">Lenient (Import valid data, flag warnings)</option>
           </select>
           <p className="hint">
             {importStrategy === 'strict' && 'Strict mode requires all data to be perfectly valid.'}
-            {importStrategy === 'balanced' && 'Balanced mode uses intelligent judgment to handle minor issues.'}
-            {importStrategy === 'lenient' && 'Lenient mode imports valid data and flags warnings for review.'}
+            {importStrategy === 'balanced' &&
+              'Balanced mode uses intelligent judgment to handle minor issues.'}
+            {importStrategy === 'lenient' &&
+              'Lenient mode imports valid data and flags warnings for review.'}
           </p>
         </div>
       </div>
@@ -257,14 +253,14 @@ const DataImportWizard = () => {
             onClick={async () => {
               setIsLoading(true);
               try {
-                const response = await fetch('/api/inventory/import/validate', {
+                const response = await authFetch('/api/inventory/import/validate', {
                   method: 'POST',
                   headers: { 'Content-Type': 'application/json' },
                   body: JSON.stringify({
                     sessionId,
                     strategy: importStrategy,
-                    mapping: columnMapping
-                  })
+                    mapping: columnMapping,
+                  }),
                 });
                 const result = await response.json();
                 setValidationResult(result.data.validationResult);
@@ -284,39 +280,6 @@ const DataImportWizard = () => {
     </div>
   );
 
-  // Step 5: Duplicate Resolution UI
-  const renderDuplicatesStep = () => (
-    <div className="wizard-step">
-      <DuplicateResolutionPanel
-        duplicates={duplicates}
-        deduplicationStrategy={deduplicationStrategy}
-        onResolutionChange={(rowIndex, resolution, duplicate) => {
-          // Update resolution in state
-        }}
-        onResolveAll={(resolutions, strategy) => {
-          setDeduplicationStrategy(strategy);
-          setCurrentStep(6);
-        }}
-      />
-    </div>
-  );
-
-  // Step 6: Status Mapping UI
-  const renderStatusStep = () => (
-    <div className="wizard-step">
-      <StatusMappingPreview
-        data={preview}
-        statusMapping={statusMapping}
-        legacyStatusField="status"
-        mappingStrategy="auto"
-        onMappingApproval={(mapping, adjustments) => {
-          setStatusMapping(mapping);
-          setCurrentStep(7);
-        }}
-      />
-    </div>
-  );
-
   // Step 5: Review UI
   const renderReviewStep = () => (
     <div className="wizard-step">
@@ -326,30 +289,57 @@ const DataImportWizard = () => {
         <div className="review-card">
           <h3>File Information</h3>
           <ul>
-            <li><strong>File:</strong> {fileName}</li>
-            <li><strong>Size:</strong> {(fileSize / 1024 / 1024).toFixed(2)} MB</li>
-            <li><strong>Total Rows:</strong> {totalRows}</li>
-            <li><strong>Columns:</strong> {columns.length}</li>
+            <li>
+              <strong>File:</strong> {fileName}
+            </li>
+            <li>
+              <strong>Size:</strong> {(fileSize / 1024 / 1024).toFixed(2)} MB
+            </li>
+            <li>
+              <strong>Total Rows:</strong> {totalRows}
+            </li>
+            <li>
+              <strong>Columns:</strong> {columns.length}
+            </li>
           </ul>
         </div>
 
         <div className="review-card">
           <h3>Import Settings</h3>
           <ul>
-            <li><strong>Import Strategy:</strong> {importStrategy}</li>
-            <li><strong>Deduplication:</strong> {deduplicationStrategy}</li>
-            <li><strong>Validation:</strong> {validationResult?.isValid ? '✓ Passed' : '⚠ Review needed'}</li>
-            <li><strong>Duplicates:</strong> {duplicates.length} found</li>
+            <li>
+              <strong>Import Strategy:</strong> {importStrategy}
+            </li>
+            <li>
+              <strong>Deduplication:</strong> {deduplicationStrategy}
+            </li>
+            <li>
+              <strong>Validation:</strong>{' '}
+              {validationResult?.isValid ? '✓ Passed' : '⚠ Review needed'}
+            </li>
+            <li>
+              <strong>Duplicates:</strong> {duplicates.length} found
+            </li>
           </ul>
         </div>
 
         <div className="review-card">
           <h3>Data Mapping</h3>
           <ul>
-            <li><strong>Mapped Columns:</strong> {Object.values(columnMapping).filter(v => v).length} of {columns.length}</li>
-            <li><strong>Property Fields:</strong> Configured</li>
-            <li><strong>Owner Fields:</strong> Configured</li>
-            <li><strong>Status Mapping:</strong> {Object.keys(statusMapping).length > 0 ? '✓ Done' : '⚠ Pending'}</li>
+            <li>
+              <strong>Mapped Columns:</strong> {Object.values(columnMapping).filter(v => v).length}{' '}
+              of {columns.length}
+            </li>
+            <li>
+              <strong>Property Fields:</strong> Configured
+            </li>
+            <li>
+              <strong>Owner Fields:</strong> Configured
+            </li>
+            <li>
+              <strong>Status Mapping:</strong>{' '}
+              {Object.keys(statusMapping).length > 0 ? '✓ Done' : '⚠ Pending'}
+            </li>
           </ul>
         </div>
       </div>
@@ -375,10 +365,7 @@ const DataImportWizard = () => {
       {importProgress > 0 && (
         <div className="progress-container">
           <div className="progress-bar">
-            <div
-              className="progress-fill"
-              style={{ width: `${importProgress}%` }}
-            ></div>
+            <div className="progress-fill" style={{ width: `${importProgress}%` }}></div>
           </div>
           <p className="progress-text">{importProgress}% Complete</p>
         </div>
@@ -418,7 +405,7 @@ const DataImportWizard = () => {
     <div className="data-import-wizard">
       {/* Progress Indicator */}
       <div className="wizard-progress">
-        {steps.map((step) => (
+        {steps.map(step => (
           <div
             key={step.number}
             className={`progress-step ${

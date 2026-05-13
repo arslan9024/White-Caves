@@ -1,4 +1,5 @@
 import { createLogger } from '../utils/logger';
+import { authFetch } from '../utils/authFetch';
 
 const log = createLogger('WebAuthn');
 
@@ -90,7 +91,7 @@ const removeCredential = async (credentialId: string, userId: string): Promise<v
   safeStorage.setJSON(CREDENTIAL_STORAGE_KEY, credentials);
 
   try {
-    await fetch(
+    await authFetch(
       `/api/auth/webauthn/credentials/${encodeURIComponent(userId)}/${encodeURIComponent(credentialId)}`,
       {
         method: 'DELETE',
@@ -106,7 +107,7 @@ const registerBiometric = async (userId: string, userName: string, displayName: 
     throw new Error('Biometric authentication is not available on this device');
   }
 
-  const optionsResponse = await fetch('/api/auth/webauthn/register/options', {
+  const optionsResponse = await authFetch('/api/auth/webauthn/register/options', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ userId, userName, displayName }),
@@ -164,7 +165,7 @@ const registerBiometric = async (userId: string, userName: string, displayName: 
       },
     };
 
-    const verifyResponse = await fetch('/api/auth/webauthn/register/verify', {
+    const verifyResponse = await authFetch('/api/auth/webauthn/register/verify', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ userId, credential: credentialForServer }),
@@ -214,7 +215,7 @@ const authenticateWithBiometric = async (userId: string | null = null) => {
     throw new Error('No biometric credentials registered. Please set up biometric login first.');
   }
 
-  const optionsResponse = await fetch('/api/auth/webauthn/authenticate/options', {
+  const optionsResponse = await authFetch('/api/auth/webauthn/authenticate/options', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ userId }),
@@ -276,7 +277,7 @@ const authenticateWithBiometric = async (userId: string | null = null) => {
       },
     };
 
-    const verifyResponse = await fetch('/api/auth/webauthn/authenticate/verify', {
+    const verifyResponse = await authFetch('/api/auth/webauthn/authenticate/verify', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ credential: assertionForServer }),

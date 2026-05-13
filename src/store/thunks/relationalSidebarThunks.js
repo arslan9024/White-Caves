@@ -1,6 +1,6 @@
 /**
  * Redux Thunks for Relational Sidebar API Integration
- * 
+ *
  * These thunks connect the Redux state to the API service
  * They handle async operations and dispatch actions to update state
  */
@@ -16,16 +16,16 @@ export const fetchDepartments = createAsyncThunk(
   'relationalSidebar/fetchDepartments',
   async (_, { rejectWithValue }) => {
     try {
-      console.debug('[Thunk] Fetching departments...');
-      
+      console.warn('[Thunk] Fetching departments...');
+
       const response = await sidebarAPI.getDepartments();
-      
+
       if (!response.success) {
         console.error('[Thunk] Failed to fetch departments:', response.error);
         return rejectWithValue(response.error);
       }
 
-      console.debug('[Thunk] Departments fetched successfully:', response.data);
+      console.warn('[Thunk] Departments fetched successfully:', response.data);
       return response.data;
     } catch (error) {
       console.error('[Thunk] Error in fetchDepartments:', error);
@@ -46,7 +46,7 @@ export const fetchDepartmentById = createAsyncThunk(
         return rejectWithValue('Department ID is required');
       }
 
-      console.debug(`[Thunk] Fetching department: ${departmentId}`);
+      console.warn(`[Thunk] Fetching department: ${departmentId}`);
 
       const response = await sidebarAPI.getDepartmentById(departmentId);
 
@@ -55,7 +55,7 @@ export const fetchDepartmentById = createAsyncThunk(
         return rejectWithValue(response.error);
       }
 
-      console.debug(`[Thunk] Department ${departmentId} fetched successfully`);
+      console.warn(`[Thunk] Department ${departmentId} fetched successfully`);
       return response.data;
     } catch (error) {
       console.error('[Thunk] Error in fetchDepartmentById:', error);
@@ -72,7 +72,7 @@ export const fetchAssistants = createAsyncThunk(
   'relationalSidebar/fetchAssistants',
   async (filters = {}, { rejectWithValue }) => {
     try {
-      console.debug('[Thunk] Fetching assistants...', filters);
+      console.warn('[Thunk] Fetching assistants...', filters);
 
       const response = await sidebarAPI.getAssistants(filters);
 
@@ -81,7 +81,7 @@ export const fetchAssistants = createAsyncThunk(
         return rejectWithValue(response.error);
       }
 
-      console.debug('[Thunk] Assistants fetched successfully:', response.data);
+      console.warn('[Thunk] Assistants fetched successfully:', response.data);
       return {
         assistants: response.data,
         filters: filters,
@@ -105,7 +105,7 @@ export const fetchAssistantById = createAsyncThunk(
         return rejectWithValue('Assistant ID is required');
       }
 
-      console.debug(`[Thunk] Fetching assistant: ${assistantId}`);
+      console.warn(`[Thunk] Fetching assistant: ${assistantId}`);
 
       const response = await sidebarAPI.getAssistantById(assistantId);
 
@@ -114,7 +114,7 @@ export const fetchAssistantById = createAsyncThunk(
         return rejectWithValue(response.error);
       }
 
-      console.debug(`[Thunk] Assistant ${assistantId} fetched successfully`);
+      console.warn(`[Thunk] Assistant ${assistantId} fetched successfully`);
       return response.data;
     } catch (error) {
       console.error('[Thunk] Error in fetchAssistantById:', error);
@@ -135,7 +135,7 @@ export const fetchContextualData = createAsyncThunk(
         return rejectWithValue('Assistant ID and context are required');
       }
 
-      console.debug(`[Thunk] Fetching context data: ${assistantId}/${context}`);
+      console.warn(`[Thunk] Fetching context data: ${assistantId}/${context}`);
 
       const response = await sidebarAPI.getContextualData(assistantId, context);
 
@@ -147,7 +147,7 @@ export const fetchContextualData = createAsyncThunk(
         return rejectWithValue(response.error);
       }
 
-      console.debug(`[Thunk] Context data ${assistantId}/${context} fetched successfully`);
+      console.warn(`[Thunk] Context data ${assistantId}/${context} fetched successfully`);
       return {
         assistantId,
         context,
@@ -172,28 +172,16 @@ export const sendNotification = createAsyncThunk(
         return rejectWithValue('Assistant ID and message are required');
       }
 
-      console.debug(
-        `[Thunk] Sending notification to ${assistantId}:`,
-        message
-      );
+      console.warn(`[Thunk] Sending notification to ${assistantId}:`, message);
 
-      const response = await sidebarAPI.sendNotification(
-        assistantId,
-        message,
-        type
-      );
+      const response = await sidebarAPI.sendNotification(assistantId, message, type);
 
       if (!response.success) {
-        console.error(
-          `[Thunk] Failed to send notification to ${assistantId}:`,
-          response.error
-        );
+        console.error(`[Thunk] Failed to send notification to ${assistantId}:`, response.error);
         return rejectWithValue(response.error);
       }
 
-      console.debug(
-        `[Thunk] Notification sent to ${assistantId} successfully`
-      );
+      console.warn(`[Thunk] Notification sent to ${assistantId} successfully`);
       return {
         assistantId,
         notification: response.data,
@@ -211,9 +199,9 @@ export const sendNotification = createAsyncThunk(
  */
 export const initializeSidebar = createAsyncThunk(
   'relationalSidebar/initializeSidebar',
-  async (_, { rejectWithValue, dispatch }) => {
+  async (_, { rejectWithValue, dispatch: _dispatch }) => {
     try {
-      console.debug('[Thunk] Initializing sidebar...');
+      console.warn('[Thunk] Initializing sidebar...');
 
       const response = await sidebarAPI.initializeSidebarData();
 
@@ -222,7 +210,7 @@ export const initializeSidebar = createAsyncThunk(
         return rejectWithValue(response.error);
       }
 
-      console.debug('[Thunk] Sidebar initialized successfully');
+      console.warn('[Thunk] Sidebar initialized successfully');
       return {
         departments: response.data.departments,
         assistants: response.data.assistants,
@@ -246,7 +234,7 @@ export const fetchFilteredAssistants = createAsyncThunk(
         return rejectWithValue('Filter type and ID are required');
       }
 
-      console.debug(`[Thunk] Fetching filtered assistants: ${filterType}=${filterId}`);
+      console.warn(`[Thunk] Fetching filtered assistants: ${filterType}=${filterId}`);
 
       const response = await sidebarAPI.getFilteredAssistants(filterType, filterId);
 
@@ -255,9 +243,7 @@ export const fetchFilteredAssistants = createAsyncThunk(
         return rejectWithValue(response.error);
       }
 
-      console.debug(
-        `[Thunk] Filtered assistants (${filterType}=${filterId}) fetched successfully`
-      );
+      console.warn(`[Thunk] Filtered assistants (${filterType}=${filterId}) fetched successfully`);
       return {
         assistants: response.data,
         filter: {
@@ -284,7 +270,7 @@ export const loadFullContext = createAsyncThunk(
         return rejectWithValue('Assistant ID and context are required');
       }
 
-      console.debug(`[Thunk] Loading full context: ${assistantId}/${context}`);
+      console.warn(`[Thunk] Loading full context: ${assistantId}/${context}`);
 
       const response = await sidebarAPI.loadContextFull(assistantId, context);
 
@@ -296,7 +282,7 @@ export const loadFullContext = createAsyncThunk(
         return rejectWithValue(response.error);
       }
 
-      console.debug(`[Thunk] Full context ${assistantId}/${context} loaded successfully`);
+      console.warn(`[Thunk] Full context ${assistantId}/${context} loaded successfully`);
       return {
         assistantId,
         context,
@@ -315,7 +301,7 @@ export const loadFullContext = createAsyncThunk(
  * These are helper functions to handle pending/fulfilled/rejected states
  */
 
-export const handlePendingState = (state) => {
+export const handlePendingState = state => {
   state.loading = true;
   state.error = null;
 };
@@ -325,7 +311,7 @@ export const handleRejectedState = (state, action) => {
   state.error = action.payload || 'An error occurred';
 };
 
-export const handleFulfilledState = (state) => {
+export const handleFulfilledState = state => {
   state.loading = false;
   state.error = null;
 };

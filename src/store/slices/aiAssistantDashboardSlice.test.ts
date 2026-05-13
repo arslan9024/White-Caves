@@ -112,6 +112,8 @@ import {
 
 import type { RootState } from '../store';
 
+/* eslint-disable security/detect-object-injection */
+
 // ── Helpers ─────────────────────────────────────────────────────────────
 
 const initialState = () => reducer(undefined, { type: '@@INIT' });

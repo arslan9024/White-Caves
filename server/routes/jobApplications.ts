@@ -8,14 +8,22 @@
 import { Router, Request, Response } from 'express';
 import { asyncHandler, AppError } from '../middleware/errorHandler.js';
 import type { AuthRequest } from '../middleware/auth.js';
-import { authMiddleware } from '../middleware/auth.js';
+import authMiddleware from '../middleware/auth.js';
 import { prisma } from '../database.js';
 import { sanitizeString } from '../utils/sanitize.js';
 import { requireRole } from '../middleware/rbac.js';
 
 const router = Router();
 
-const VALID_STATUSES = ['received', 'reviewed', 'shortlisted', 'interview', 'offered', 'hired', 'rejected'] as const;
+const VALID_STATUSES = [
+  'received',
+  'reviewed',
+  'shortlisted',
+  'interview',
+  'offered',
+  'hired',
+  'rejected',
+] as const;
 
 // ─── POST /api/job-applications — Public: submit a job application ────────
 router.post(
@@ -70,7 +78,7 @@ router.post(
 router.get(
   '/',
   authMiddleware,
-  requireRole(['owner', 'admin', 'manager', 'managing_director']),
+  requireRole('owner', 'admin', 'manager', 'managing_director'),
   asyncHandler(async (req: AuthRequest, res: Response) => {
     const { status, position, page = '1', pageSize = '20' } = req.query;
 
@@ -107,7 +115,7 @@ router.get(
 router.patch(
   '/:id',
   authMiddleware,
-  requireRole(['owner', 'admin', 'manager', 'managing_director']),
+  requireRole('owner', 'admin', 'manager', 'managing_director'),
   asyncHandler(async (req: AuthRequest, res: Response) => {
     const { id } = req.params;
     const { status, notes } = req.body || {};

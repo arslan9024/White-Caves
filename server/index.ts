@@ -6,6 +6,7 @@
 
 import crypto from 'crypto';
 import { createServer } from 'http';
+import { createServer as createNetServer } from 'net';
 import express, { Express, Request, Response, NextFunction } from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
@@ -40,6 +41,8 @@ import reportingRoutes from './routes/reporting.js';
 import complianceRoutes from './routes/compliance.js';
 import crmRoutes from './routes/crm.js';
 import assistantsRoutes from './routes/assistants.js';
+import integrationsRoutes from './routes/integrations.js';
+import orchestrationRoutes from './routes/orchestration.js';
 import nadiaRoutes from './routes/nadia.js';
 import lindaRoutes from './routes/linda.js';
 import metaWebhookRoutes from './routes/meta-webhook.js';
@@ -57,23 +60,17 @@ import currencyRoutes from './routes/currency.js';
 import emailRoutes from './routes/email.js';
 import agentAvailabilityRoutes from './routes/agentAvailability.js';
 import analyticsRoutes from './routes/analytics.js';
+import departmentsRoutes from './routes/departments.js';
 import homepageRoutes from './routes/homepage.js';
 import contactRoutes from './routes/contact.js';
 import aiChatRoutes from './routes/aiChat.js';
 import jobApplicationsRoutes from './routes/jobApplications.js';
-import contractsRoutes from './routes/contracts.js';
-import appointmentsRoutes from './routes/appointments.js';
-import { roleRequestRouter, adminRoleRequestRouter } from './routes/roleRequests.js';
-import phase6Routes from './routes/phase6.routes.js';
-import landlordPortalRoutes from './routes/landlord.js';
-import tenantPortalRoutes from './routes/tenantPortal.js';
 import invoicesLeaseRoutes from './routes/invoicesLease.js';
 import usersRoutes from './routes/users.js';
 import leasingInventoryRoutes from './routes/leasing-inventory.js';
 import secondarySalesRoutes from './routes/secondary-sales.js';
 import commissionsRoutes from './routes/commissions.js';
-import henryRoutes from './routes/henry.js';
-import { requireRole, requirePermission, ROLE_ALIAS_MAP } from './middleware/rbac.js';
+import { requireRole, requirePermission } from './middleware/rbac.js';
 import { startLeadScoringScheduler } from './services/ai/leadScoringScheduler.js';
 import { startFollowUpScheduler } from './services/automation/followUpScheduler.js';
 import { startRateRefresh } from './services/currencyService.js';
@@ -96,6 +93,90 @@ app.set('trust proxy', 1);
 const PORT =
   process.env.API_PORT ||
   (process.env.NODE_ENV === 'development' ? 3001 : process.env.PORT || 3001);
+
+type StubContract = {
+  id: string;
+  contractNumber: string;
+  lessorName: string;
+  tenantName: string;
+  propertyType: string;
+  annualRent: number;
+  status: 'draft' | 'active';
+  createdAt: string;
+};
+
+type StubAppointment = {
+  id: string;
+  propertyId: string;
+  agentId?: string | null;
+  leadId?: string | null;
+  scheduledAt: string;
+  durationMinutes: number;
+  status: 'scheduled' | 'confirmed' | 'completed' | 'cancelled';
+  type: 'in_person' | 'virtual';
+  notes?: string;
+  createdAt: string;
+  updatedAt: string;
+};
+
+type StubTenancyAgreement = {
+  id: string;
+  propertyId: string;
+  landlordName: string;
+  tenantName: string;
+  startDate: string;
+  endDate: string;
+  annualRent: number;
+  status: 'draft' | 'active' | 'terminated';
+  createdAt: string;
+  updatedAt: string;
+};
+
+const stubContracts: StubContract[] = [];
+const stubAppointments: StubAppointment[] = [];
+const stubTenancyAgreements: StubTenancyAgreement[] = [];
+
+const createStubId = (prefix: string): string =>
+  `${prefix}_${Date.now()}_${crypto.randomInt(1000, 9999)}`;
+
+const findAvailablePort = async (startPort: number, maxAttempts: number): Promise<number> => {
+  for (let attempt = 0; attempt < maxAttempts; attempt += 1) {
+    const candidatePort = startPort + attempt;
+
+    const isAvailable = await new Promise<boolean>((resolve, reject) => {
+      const probe = createNetServer();
+
+      const cleanup = () => {
+        probe.removeAllListeners('error');
+        probe.removeAllListeners('listening');
+      };
+
+      probe.once('error', (error: NodeJS.ErrnoException) => {
+        cleanup();
+        if (error.code === 'EADDRINUSE') {
+          resolve(false);
+          return;
+        }
+        reject(error);
+      });
+
+      probe.once('listening', () => {
+        probe.close(() => {
+          cleanup();
+          resolve(true);
+        });
+      });
+
+      probe.listen(candidatePort);
+    });
+
+    if (isAvailable) {
+      return candidatePort;
+    }
+  }
+
+  throw new Error(`No available port found in range ${startPort}-${startPort + maxAttempts - 1}`);
+};
 
 // ============================================================================
 // MIDDLEWARE SETUP
@@ -171,8 +252,21 @@ app.use((_req: Request, res: Response, next: NextFunction) => {
 app.use(
   cors({
     origin: (origin, callback) => {
+      const isLocalhostOrigin = (() => {
+        if (typeof origin !== 'string') return false;
+        try {
+          const parsed = new URL(origin);
+          return (
+            (parsed.hostname === 'localhost' || parsed.hostname === '127.0.0.1') &&
+            (parsed.protocol === 'http:' || parsed.protocol === 'https:')
+          );
+        } catch {
+          return false;
+        }
+      })();
+
       // Allow requests with no origin (server-to-server, curl, mobile apps)
-      if (!origin || CORS_ORIGINS.includes(origin)) {
+      if (!origin || CORS_ORIGINS.includes(origin) || (!IS_PRODUCTION && isLocalhostOrigin)) {
         callback(null, true);
       } else {
         callback(new Error('Not allowed by CORS'));
@@ -218,6 +312,9 @@ app.use('/api/auth/login', authLimiter);
 app.use('/api/auth/register', registerLimiter);
 app.use('/api/auth/password', passwordLimiter);
 app.use('/api/auth/verify-2fa', strictLimiter);
+app.use('/api/auth/2fa/setup', strictLimiter);
+app.use('/api/auth/2fa/verify', strictLimiter);
+app.use('/api/auth/2fa/disable', strictLimiter);
 app.use('/api/auth/firebase-sync', authLimiter);
 app.use('/api/auth/webauthn/register', authLimiter);
 app.use('/api/auth/webauthn/authenticate', authLimiter);
@@ -334,6 +431,7 @@ app.use('/api/contact', contactRoutes);
 
 // Market Analytics API (Phase 4C - Market Analyst Bot)
 app.use('/api/analytics', analyticsRoutes);
+app.use('/api/departments', departmentsRoutes);
 
 // Currency API (Phase 2E - Multi-Currency Support)
 app.use('/api/currency', currencyRoutes);
@@ -386,8 +484,6 @@ app.use('/api/secondary-sales', secondarySalesRoutes);
 // Commissions API (Phase 35 - Dubai Real Estate Commission Tracker)
 app.use('/api/commissions', commissionsRoutes);
 
-// Henry Document Hub API (AI Assistant WC-AI-003 — The Record Keeper)
-app.use('/api/henry', henryRoutes);
 // WhatsApp Webhook (public endpoint — requires webhook secret for verification)
 app.post(
   '/api/whatsapp/webhook',
@@ -426,6 +522,10 @@ app.use('/api/crm', crmRoutes);
 
 // AI Assistants API (Phase 0.8 — plan management)
 app.use('/api/assistants', assistantsRoutes);
+
+// External module gateway (Linda + Henry separate repos)
+app.use('/api/integrations', integrationsRoutes);
+app.use('/api/orchestration', orchestrationRoutes);
 
 // ============================================================================
 // STUB ROUTES — Placeholder APIs for frontend pages not yet backed by full CRUD
@@ -502,84 +602,264 @@ app.get(
   '/api/whatsapp/chatbot/messages',
   authMiddleware,
   requirePermission('access_whatsapp_business'),
-  asyncHandler(async (req: Request, res: Response) => {
-    const conversationId = req.query.conversationId as string | undefined;
-    const limit = Math.min(100, Math.max(1, parseInt(req.query.limit as string) || 50));
-
-    const where = conversationId ? { conversationId } : {};
-    const messages = await prisma.nadiaMessage.findMany({
-      where,
-      orderBy: { timestamp: 'desc' },
-      take: limit,
-      include: { conversation: { select: { id: true, customerPhone: true, status: true } } },
-    });
-
-    res.status(200).json({ success: true, data: messages.reverse() });
+  asyncHandler(async (_req: Request, res: Response) => {
+    res.status(200).json({ success: true, data: [] });
   })
 );
 app.post(
   '/api/whatsapp/chatbot/messages',
   authMiddleware,
   requirePermission('access_whatsapp_business'),
-  asyncHandler(async (req: Request, res: Response) => {
-    const { conversationId, body, messageType = 'text', direction = 'outbound' } = req.body;
-    if (!conversationId || !body) {
-      throw new AppError('conversationId and body are required', 400);
-    }
-
-    const conversation = await prisma.nadiaConversation.findUnique({
-      where: { id: conversationId },
+  asyncHandler(async (_req: Request, res: Response) => {
+    res.status(200).json({
+      success: true,
+      data: { id: Date.now().toString(), role: 'user', createdAt: new Date() },
     });
-    if (!conversation) throw new AppError('Conversation not found', 404);
-
-    const message = await prisma.nadiaMessage.create({
-      data: {
-        conversationId,
-        waMessageId: `manual-${Date.now()}`,
-        direction: ['inbound', 'outbound'].includes(direction) ? direction : 'outbound',
-        body: String(body).slice(0, 4096),
-        messageType: ['text', 'image', 'document', 'audio', 'video'].includes(messageType)
-          ? messageType
-          : 'text',
-        status: 'sent',
-        timestamp: new Date(),
-      },
-    });
-
-    res.status(201).json({ success: true, data: message });
   })
 );
 app.delete(
   '/api/whatsapp/chatbot/messages/:id',
   authMiddleware,
   requirePermission('access_whatsapp_business'),
-  asyncHandler(async (req: Request, res: Response) => {
-    const { id } = req.params;
-    const message = await prisma.nadiaMessage.findUnique({ where: { id } });
-    if (!message) throw new AppError('Message not found', 404);
-    await prisma.nadiaMessage.delete({ where: { id } });
+  asyncHandler(async (_req: Request, res: Response) => {
     res.status(200).json({ success: true });
   })
 );
 
-// Contracts API — full CRUD via contracts router
-app.use('/api/contracts', authMiddleware, contractsRoutes);
+// Contracts API stubs (ContractManagementPage)
+app.get(
+  '/api/contracts',
+  authMiddleware,
+  requirePermission('view_contracts'),
+  asyncHandler(async (req: Request, res: Response) => {
+    const page = Math.max(1, Number.parseInt(String(req.query.page ?? '1'), 10) || 1);
+    const pageSize = Math.min(
+      100,
+      Math.max(1, Number.parseInt(String(req.query.pageSize ?? '20'), 10) || 20)
+    );
+    const start = (page - 1) * pageSize;
+    const end = start + pageSize;
+    const rows = stubContracts.slice(start, end);
+
+    res.status(200).json({
+      success: true,
+      contracts: rows,
+      pagination: {
+        page,
+        pageSize,
+        total: stubContracts.length,
+        totalPages: Math.ceil(stubContracts.length / pageSize),
+      },
+    });
+  })
+);
+app.post(
+  '/api/contracts',
+  authMiddleware,
+  requirePermission('create_contracts'),
+  asyncHandler(async (req: Request, res: Response) => {
+    const lessorName = String(req.body?.lessorName ?? '').trim();
+    const tenantName = String(req.body?.tenantName ?? '').trim();
+    const propertyType = String(req.body?.propertyType ?? 'Apartment').trim() || 'Apartment';
+    const annualRent = Number(req.body?.annualRent ?? 0);
+
+    if (!lessorName) throw new AppError('lessorName is required', 400);
+    if (!tenantName) throw new AppError('tenantName is required', 400);
+    if (!Number.isFinite(annualRent) || annualRent <= 0) {
+      throw new AppError('annualRent must be greater than 0', 400);
+    }
+
+    const contract: StubContract = {
+      id: createStubId('contract'),
+      contractNumber: `WC-${new Date().getFullYear()}-${stubContracts.length + 1}`,
+      lessorName,
+      tenantName,
+      propertyType,
+      annualRent,
+      status: 'draft',
+      createdAt: new Date().toISOString(),
+    };
+
+    stubContracts.unshift(contract);
+
+    res.status(201).json({
+      success: true,
+      contract,
+    });
+  })
+);
 
 // Job Applications API
 app.use('/api/job-applications', jobApplicationsRoutes);
 
-// Appointments API — full CRUD via appointments router
-app.use('/api/appointments', authMiddleware, appointmentsRoutes);
+// Appointments API stubs (AppointmentScheduler)
+// TODO: Add Prisma model and full CRUD when scheduling module is prioritised
+app.post(
+  '/api/appointments',
+  authMiddleware,
+  asyncHandler(async (req: Request, res: Response) => {
+    const propertyId = String(req.body?.propertyId ?? '').trim();
+    const scheduledAt = String(req.body?.scheduledAt ?? '').trim();
 
-// Tenancy Agreements API — fully delegated to the leases router.
-// /api/tenancy-agreements is an alias for /api/leases: same model, different UI label.
-app.use('/api/tenancy-agreements', authMiddleware, leasesRoutes);
+    if (!propertyId) throw new AppError('propertyId is required', 400);
+    if (!scheduledAt) throw new AppError('scheduledAt is required', 400);
 
-// Landlord Portal API — stats, properties, maintenance, finances for the portal
-app.use('/api/landlord', authMiddleware, landlordPortalRoutes);
+    const appointment: StubAppointment = {
+      id: createStubId('appt'),
+      propertyId,
+      agentId: req.body?.agentId ? String(req.body.agentId) : null,
+      leadId: req.body?.leadId ? String(req.body.leadId) : null,
+      scheduledAt,
+      durationMinutes: Number(req.body?.durationMinutes ?? 60),
+      status: 'scheduled',
+      type: req.body?.type === 'virtual' ? 'virtual' : 'in_person',
+      notes: req.body?.notes ? String(req.body.notes) : undefined,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    };
 
-// Tenant Portal API — lease, payments, documents, maintenance for the tenant portal
-app.use('/api/portal/tenant', authMiddleware, tenantPortalRoutes);
+    stubAppointments.unshift(appointment);
+    res.status(201).json({ success: true, data: appointment });
+  })
+);
+app.get(
+  '/api/appointments',
+  authMiddleware,
+  asyncHandler(async (req: Request, res: Response) => {
+    const status = typeof req.query.status === 'string' ? req.query.status : undefined;
+    const rows = status
+      ? stubAppointments.filter(item => item.status === status)
+      : stubAppointments;
+
+    res.status(200).json({
+      success: true,
+      data: rows,
+      pagination: { page: 1, pageSize: rows.length || 20, total: rows.length, totalPages: 1 },
+    });
+  })
+);
+app.patch(
+  '/api/appointments/:id',
+  authMiddleware,
+  asyncHandler(async (req: Request, res: Response) => {
+    const current = stubAppointments.find(item => item.id === req.params.id);
+    if (!current) throw new AppError('Appointment not found', 404);
+
+    const nextStatus = req.body?.status;
+    const allowedStatus = ['scheduled', 'confirmed', 'completed', 'cancelled'];
+
+    const updated: StubAppointment = {
+      ...current,
+      status: allowedStatus.includes(nextStatus) ? nextStatus : current.status,
+      scheduledAt: req.body?.scheduledAt ? String(req.body.scheduledAt) : current.scheduledAt,
+      durationMinutes: req.body?.durationMinutes
+        ? Number(req.body.durationMinutes)
+        : current.durationMinutes,
+      type:
+        req.body?.type === 'virtual' || req.body?.type === 'in_person'
+          ? req.body.type
+          : current.type,
+      notes: req.body?.notes !== undefined ? String(req.body.notes ?? '') : current.notes,
+      updatedAt: new Date().toISOString(),
+    };
+
+    Object.assign(current, updated);
+
+    res.status(200).json({ success: true, data: current });
+  })
+);
+app.delete(
+  '/api/appointments/:id',
+  authMiddleware,
+  asyncHandler(async (req: Request, res: Response) => {
+    const index = stubAppointments.findIndex(item => item.id === req.params.id);
+    if (index < 0) throw new AppError('Appointment not found', 404);
+    const [deleted] = stubAppointments.splice(index, 1);
+    res.status(200).json({ success: true, data: deleted });
+  })
+);
+
+// Tenancy Agreements API stubs (CreateTenancyAgreement)
+// TODO: Add Prisma model and full CRUD when lease management module is prioritised
+app.get(
+  '/api/tenancy-agreements',
+  authMiddleware,
+  asyncHandler(async (req: Request, res: Response) => {
+    const status = typeof req.query.status === 'string' ? req.query.status : undefined;
+    const rows = status
+      ? stubTenancyAgreements.filter(item => item.status === status)
+      : stubTenancyAgreements;
+
+    res.status(200).json({
+      success: true,
+      data: rows,
+      pagination: { page: 1, pageSize: rows.length || 20, total: rows.length, totalPages: 1 },
+    });
+  })
+);
+app.post(
+  '/api/tenancy-agreements',
+  authMiddleware,
+  asyncHandler(async (req: Request, res: Response) => {
+    const propertyId = String(req.body?.propertyId ?? '').trim();
+    const landlordName = String(req.body?.landlordName ?? '').trim();
+    const tenantName = String(req.body?.tenantName ?? '').trim();
+    const startDate = String(req.body?.startDate ?? '').trim();
+    const endDate = String(req.body?.endDate ?? '').trim();
+    const annualRent = Number(req.body?.annualRent ?? 0);
+
+    if (!propertyId) throw new AppError('propertyId is required', 400);
+    if (!landlordName) throw new AppError('landlordName is required', 400);
+    if (!tenantName) throw new AppError('tenantName is required', 400);
+    if (!startDate || !endDate) throw new AppError('startDate and endDate are required', 400);
+    if (!Number.isFinite(annualRent) || annualRent <= 0) {
+      throw new AppError('annualRent must be greater than 0', 400);
+    }
+
+    const agreement: StubTenancyAgreement = {
+      id: createStubId('tenancy'),
+      propertyId,
+      landlordName,
+      tenantName,
+      startDate,
+      endDate,
+      annualRent,
+      status: 'draft',
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    };
+
+    stubTenancyAgreements.unshift(agreement);
+
+    res.status(201).json({ success: true, data: agreement });
+  })
+);
+app.patch(
+  '/api/tenancy-agreements/:id',
+  authMiddleware,
+  asyncHandler(async (req: Request, res: Response) => {
+    const current = stubTenancyAgreements.find(item => item.id === req.params.id);
+    if (!current) throw new AppError('Tenancy agreement not found', 404);
+
+    const nextStatus = req.body?.status;
+    const allowedStatus = ['draft', 'active', 'terminated'];
+
+    const updated: StubTenancyAgreement = {
+      ...current,
+      landlordName: req.body?.landlordName ? String(req.body.landlordName) : current.landlordName,
+      tenantName: req.body?.tenantName ? String(req.body.tenantName) : current.tenantName,
+      startDate: req.body?.startDate ? String(req.body.startDate) : current.startDate,
+      endDate: req.body?.endDate ? String(req.body.endDate) : current.endDate,
+      annualRent: req.body?.annualRent ? Number(req.body.annualRent) : current.annualRent,
+      status: allowedStatus.includes(nextStatus) ? nextStatus : current.status,
+      updatedAt: new Date().toISOString(),
+    };
+
+    Object.assign(current, updated);
+
+    res.status(200).json({ success: true, data: current });
+  })
+);
 
 // Payments API stub (Checkout — Stripe integration pending)
 // TODO: Integrate Stripe SDK when payment processing is prioritised
@@ -587,133 +867,86 @@ app.post(
   '/api/payments/create-payment-intent',
   authMiddleware,
   asyncHandler(async (req: Request, res: Response) => {
-    logger.warn('Payment intent requested but Stripe is not configured', {
-      amount: req.body?.amount,
+    const amount = Number(req.body?.amount ?? 0);
+    if (!Number.isFinite(amount) || amount <= 0) {
+      throw new AppError('amount must be greater than 0', 400);
+    }
+
+    const paymentIntentId = createStubId('pi');
+    logger.info('Stub payment intent generated', {
+      paymentIntentId,
+      amount,
       propertyId: req.body?.propertyId,
     });
-    res.status(503).json({
-      success: false,
-      error: 'Payment processing is not yet configured. Please contact support.',
+
+    res.status(200).json({
+      success: true,
+      data: {
+        paymentIntentId,
+        clientSecret: `${paymentIntentId}_secret_stub`,
+        amount,
+        currency: String(req.body?.currency ?? 'aed').toLowerCase(),
+        status: 'requires_payment_method',
+        provider: 'stub',
+      },
     });
   })
 );
 
-// Valuation API — heuristic estimator based on Dubai area price-per-sqft benchmarks
+// Valuation API stub (PropertyValuationModule — ML engine pending)
+// TODO: Integrate property valuation ML model when available
 app.post(
   '/api/valuation/estimate',
   authMiddleware,
   asyncHandler(async (req: Request, res: Response) => {
-    const { location, area, propertyType, bedrooms, bathrooms, sqft, yearBuilt, amenities } =
-      req.body;
-
-    if (!location && !area) {
-      throw new AppError('location or area is required for valuation', 400);
-    }
-
-    // Dubai area price-per-sqft benchmarks (AED, 2025/2026 market data)
-    const areaBenchmarks: Record<string, { sale: number; rent: number }> = {
-      'palm jumeirah': { sale: 3800, rent: 260 },
-      'downtown dubai': { sale: 3200, rent: 220 },
-      'dubai marina': { sale: 2600, rent: 175 },
-      'business bay': { sale: 2200, rent: 150 },
-      jumeirah: { sale: 2800, rent: 190 },
-      'arabian ranches': { sale: 1800, rent: 110 },
-      'dubai hills': { sale: 2100, rent: 135 },
-      jvc: { sale: 1200, rent: 80 },
-      'jumeirah village circle': { sale: 1200, rent: 80 },
-      mirdif: { sale: 1100, rent: 75 },
-      deira: { sale: 900, rent: 60 },
-      'bur dubai': { sale: 950, rent: 65 },
-      'al barsha': { sale: 1300, rent: 90 },
-      'sport city': { sale: 1000, rent: 70 },
-      'motor city': { sale: 1050, rent: 72 },
-      jlt: { sale: 1500, rent: 100 },
-      'jumeirah lake towers': { sale: 1500, rent: 100 },
-      'emaar beachfront': { sale: 3500, rent: 240 },
-      'creek harbour': { sale: 2900, rent: 195 },
-      'sobha hartland': { sale: 2400, rent: 160 },
-    };
-
-    const key = (location || area || '').toLowerCase().trim();
-    const matchKey = Object.keys(areaBenchmarks).find(k => key.includes(k) || k.includes(key));
-    // eslint-disable-next-line security/detect-object-injection
-    const benchmark = matchKey ? areaBenchmarks[matchKey] : { sale: 1500, rent: 100 };
-
-    const sqftNum = sqft ? parseFloat(sqft) : 1000;
-    const bedsNum = bedrooms ? parseInt(String(bedrooms), 10) : 1;
-    const bathsNum = bathrooms ? parseInt(String(bathrooms), 10) : 1;
-    const typeMultiplier = propertyType === 'villa' || propertyType === 'townhouse' ? 1.15 : 1.0;
-
-    // Age discount: -1% per year over 10 years old, max -20%
-    const ageDiscount = yearBuilt
-      ? Math.min(
-          0.2,
-          Math.max(0, (new Date().getFullYear() - parseInt(String(yearBuilt), 10) - 10) * 0.01)
-        )
-      : 0;
-
-    // Amenity premium: +3% per luxury amenity up to 15%
-    const luxuryAmenities = [
-      'pool',
-      'gym',
-      'concierge',
-      'sea view',
-      'marina view',
-      'private pool',
-      'smart home',
-    ];
-    const amenityList: string[] = Array.isArray(amenities) ? amenities : [];
-    const amenityPremium = Math.min(
-      0.15,
-      amenityList.filter(a => luxuryAmenities.some(l => String(a).toLowerCase().includes(l)))
-        .length * 0.03
-    );
-
-    const saleEstimate = Math.round(
-      sqftNum * benchmark.sale * typeMultiplier * (1 - ageDiscount) * (1 + amenityPremium)
-    );
-    const rentEstimate = Math.round(
-      sqftNum * benchmark.rent * typeMultiplier * (1 - ageDiscount) * (1 + amenityPremium)
-    );
-
-    // ±15% confidence range
-    const margin = 0.15;
-    const result = {
-      estimatedSalePrice: saleEstimate,
-      estimatedAnnualRent: rentEstimate,
-      estimatedMonthlyRent: Math.round(rentEstimate / 12),
-      priceRange: {
-        sale: {
-          low: Math.round(saleEstimate * (1 - margin)),
-          high: Math.round(saleEstimate * (1 + margin)),
-        },
-        rent: {
-          lowAnnual: Math.round(rentEstimate * (1 - margin)),
-          highAnnual: Math.round(rentEstimate * (1 + margin)),
-        },
-      },
-      inputs: {
-        location: location || area,
-        sqft: sqftNum,
-        propertyType: propertyType || 'apartment',
-        bedrooms: bedsNum,
-        bathrooms: bathsNum,
-        yearBuilt: yearBuilt || null,
-      },
-      methodology: 'Dubai area price-per-sqft heuristic (2025/2026 benchmarks)',
-      confidenceLevel: matchKey ? 'medium' : 'low',
-      disclaimer:
-        'This is an indicative estimate only and does not constitute a formal valuation. Actual market prices may differ significantly.',
-      generatedAt: new Date().toISOString(),
-    };
-
-    logger.info('Valuation estimate generated', {
-      location: location || area,
-      sqft: sqftNum,
-      saleEstimate,
+    logger.info('Valuation estimate requested', {
+      location: req.body?.location,
+      area: req.body?.area,
     });
 
-    res.status(200).json({ success: true, data: result });
+    const area = Number(req.body?.area ?? 0);
+    if (!Number.isFinite(area) || area <= 0) throw new AppError('area must be greater than 0', 400);
+
+    const location = String(req.body?.location ?? '').toLowerCase();
+    const locationMultiplier = location.includes('marina')
+      ? 1.3
+      : location.includes('downtown')
+        ? 1.25
+        : location.includes('palm')
+          ? 1.5
+          : 1.0;
+
+    const basePricePerSqft = 2000;
+    const mid = Math.round(basePricePerSqft * area * locationMultiplier);
+
+    res.status(200).json({
+      estimate: {
+        low: Math.round(mid * 0.9),
+        mid,
+        high: Math.round(mid * 1.1),
+        confidence: 72,
+      },
+      comparables: [
+        {
+          property: 'Comparable A',
+          price: Math.round(mid * 0.96),
+          area,
+          pricePerSqft: Math.round((mid * 0.96) / area),
+        },
+        {
+          property: 'Comparable B',
+          price: Math.round(mid * 1.02),
+          area,
+          pricePerSqft: Math.round((mid * 1.02) / area),
+        },
+        {
+          property: 'Comparable C',
+          price: Math.round(mid * 1.08),
+          area,
+          pricePerSqft: Math.round((mid * 1.08) / area),
+        },
+      ],
+    });
   })
 );
 
@@ -749,9 +982,8 @@ app.get(
   })
 );
 
-// Admin Role Management — direct role override (admin+) + role-request CRUD via roleRequestsRoutes above
-// /api/users/role-request  → POST /api/role-requests (roleRequestsRoutes)
-// /api/admin/role-requests → GET/POST /api/role-requests (roleRequestsRoutes)
+// Admin Role Management stubs (RoleSelectionForm, RoleApprovalQueue)
+// TODO: Add Prisma model for RoleRequest when role management module is prioritised
 app.post(
   '/api/users/role',
   authMiddleware,
@@ -761,6 +993,7 @@ app.post(
     if (!userId || !role) throw new AppError('userId and role are required', 400);
 
     // Validate role against the full alias map to prevent arbitrary strings being stored
+    const { ROLE_ALIAS_MAP } = await import('./middleware/rbac.js');
     if (!Object.hasOwn(ROLE_ALIAS_MAP, role)) {
       throw new AppError(
         `Invalid role: "${role}". Must be one of: ${Object.keys(ROLE_ALIAS_MAP).join(', ')}`,
@@ -784,70 +1017,52 @@ app.post(
     res.status(200).json({ success: true, data: updated });
   })
 );
-app.use('/api/users/role-request', authMiddleware, roleRequestRouter);
-app.use('/api/admin/role-requests', authMiddleware, adminRoleRequestRouter);
-
-// Admin Settings — read and write system-wide configuration
+app.post(
+  '/api/users/role-request',
+  authMiddleware,
+  asyncHandler(async (req: Request, res: Response) => {
+    const { requestedRole } = req.body;
+    if (!requestedRole) throw new AppError('requestedRole is required', 400);
+    logger.info('Role request submitted (stub)', { userId: req.user?.id, requestedRole });
+    res
+      .status(501)
+      .json({ success: false, error: 'Feature not yet implemented', code: 'NOT_IMPLEMENTED' });
+  })
+);
 app.get(
-  '/api/admin/settings',
+  '/api/admin/role-requests',
   authMiddleware,
   requirePermission('manage_users'),
   asyncHandler(async (_req: Request, res: Response) => {
-    const settings = await prisma.systemSetting.findMany({ orderBy: { category: 'asc' } });
-    const settingsMap = Object.fromEntries(settings.map(s => [s.key, s.value]));
-    res.json({ success: true, data: settingsMap, meta: { count: settings.length } });
+    res.status(200).json({ success: true, data: { requests: [] } });
   })
 );
 app.post(
-  '/api/admin/settings',
+  '/api/admin/role-requests/:id/approve',
   authMiddleware,
   requirePermission('manage_users'),
   asyncHandler(async (req: Request, res: Response) => {
-    const { settings } = req.body;
-    if (!settings || typeof settings !== 'object' || Array.isArray(settings)) {
-      throw new AppError('Request body must contain a "settings" object', 400);
-    }
-
-    const userId = (req as Request & { user?: { id: string } }).user?.id;
-    const entries = Object.entries(settings as Record<string, unknown>);
-    if (entries.length === 0) throw new AppError('No settings provided', 400);
-    if (entries.length > 50) throw new AppError('Cannot update more than 50 settings at once', 400);
-
-    // Upsert each key
-    const updated = await Promise.all(
-      entries.map(([key, value]) =>
-        prisma.systemSetting.upsert({
-          where: { key },
-          create: {
-            key,
-            value: value as Parameters<typeof prisma.systemSetting.create>[0]['data']['value'],
-            updatedBy: userId,
-          },
-          update: {
-            value: value as Parameters<typeof prisma.systemSetting.update>[0]['data']['value'],
-            updatedBy: userId,
-          },
-        })
-      )
-    );
-
-    logger.info('Admin settings updated', { keys: entries.map(([k]) => k), userId });
-    res.json({ success: true, data: { updatedCount: updated.length } });
+    res.status(200).json({
+      success: true,
+      data: { id: req.params.id, status: 'approved', reviewedBy: req.user?.id },
+    });
   })
 );
-
-// Phase 6 — queue, analytics, notifications, encryption, presence
-// The phase6 router uses x-user-id header auth; bridge it from the JWT-authenticated user.
-app.use(
-  '/api/platform',
+app.post(
+  '/api/admin/role-requests/:id/reject',
   authMiddleware,
-  (req: Request, _res: Response, next: NextFunction) => {
-    // Bridge JWT identity into the x-user-id header expected by phase6 routes
-    const userId = (req as Request & { user?: { id: string } }).user?.id;
-    if (userId) req.headers['x-user-id'] = userId;
-    next();
-  },
-  phase6Routes
+  requirePermission('manage_users'),
+  asyncHandler(async (req: Request, res: Response) => {
+    res.status(200).json({
+      success: true,
+      data: {
+        id: req.params.id,
+        status: 'rejected',
+        reviewedBy: req.user?.id,
+        reason: req.body?.reason,
+      },
+    });
+  })
 );
 
 // ============================================================================
@@ -912,21 +1127,47 @@ const startServer = async () => {
     logger.warn('Server will start without database — API calls will return errors');
   }
 
-  // Start listening regardless of DB status
-  const host = process.env.API_URL || `http://localhost:${PORT}`;
-
   // Wrap Express in a raw http.Server so Socket.io can share the same port
   const httpServer = createServer(app);
 
   // Attach Socket.io to the http server (must happen before listen)
   createSocketServer(httpServer);
 
-  httpServer.listen(PORT, () => {
-    logger.info(`Server started on ${host}`);
-    logger.info(`Environment: ${process.env.NODE_ENV || 'development'}`);
-    logger.info(`API Base: ${host}/api`);
-    logger.info(`Socket.io: ws://${host.replace(/^https?:\/\//, '')}`);
+  const requestedPort = Number(PORT) || 3001;
+  const shouldAutoFallbackPort = !IS_PRODUCTION && !process.env.API_PORT;
+
+  let activePort = requestedPort;
+  if (shouldAutoFallbackPort) {
+    const maxAttempts = 10;
+    activePort = await findAvailablePort(requestedPort, maxAttempts);
+    if (activePort !== requestedPort) {
+      logger.warn(
+        `Port ${requestedPort} is in use — server started on fallback port ${activePort}`
+      );
+    }
+  }
+
+  await new Promise<void>((resolve, reject) => {
+    const onError = (error: NodeJS.ErrnoException) => {
+      httpServer.off('listening', onListening);
+      reject(error);
+    };
+
+    const onListening = () => {
+      httpServer.off('error', onError);
+      resolve();
+    };
+
+    httpServer.once('error', onError);
+    httpServer.once('listening', onListening);
+    httpServer.listen(activePort);
   });
+
+  const host = process.env.API_URL || `http://localhost:${activePort}`;
+  logger.info(`Server started on ${host}`);
+  logger.info(`Environment: ${process.env.NODE_ENV || 'development'}`);
+  logger.info(`API Base: ${host}/api`);
+  logger.info(`Socket.io: ws://${host.replace(/^https?:\/\//, '')}`);
 
   return httpServer;
 };

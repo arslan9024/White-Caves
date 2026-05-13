@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { authFetch } from '../../utils/authFetch';
 import './AdminDashboard.css';
 
 /**
@@ -15,18 +16,19 @@ const AdminDashboard = () => {
   useEffect(() => {
     fetchDashboardData();
     fetchSystemHealth();
-    
+
     const interval = setInterval(() => {
       fetchDashboardData();
       fetchSystemHealth();
     }, 30000); // Refresh every 30 seconds
 
     return () => clearInterval(interval);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedPeriod]);
 
   const fetchDashboardData = async () => {
     try {
-      const response = await fetch(`/api/admin/dashboard?period=${selectedPeriod}`);
+      const response = await authFetch(`/api/admin/dashboard?period=${selectedPeriod}`);
       const result = await response.json();
       if (result.success) {
         setDashboardData(result.data);
@@ -40,7 +42,7 @@ const AdminDashboard = () => {
 
   const fetchSystemHealth = async () => {
     try {
-      const response = await fetch('/api/admin/system-health');
+      const response = await authFetch('/api/admin/system-health');
       const result = await response.json();
       if (result.success) {
         setSystemHealth(result.data);
@@ -59,9 +61,9 @@ const AdminDashboard = () => {
       <div className="dashboard-header">
         <h1>🎛️ Admin Dashboard</h1>
         <div className="header-controls">
-          <select 
-            value={selectedPeriod} 
-            onChange={(e) => setSelectedPeriod(e.target.value)}
+          <select
+            value={selectedPeriod}
+            onChange={e => setSelectedPeriod(e.target.value)}
             className="period-select"
           >
             <option value="today">Today</option>
@@ -77,9 +79,7 @@ const AdminDashboard = () => {
       </div>
 
       {/* System Health Section */}
-      {systemHealth && (
-        <SystemHealthSection health={systemHealth} />
-      )}
+      {systemHealth && <SystemHealthSection health={systemHealth} />}
 
       {/* Navigation Tabs */}
       <div className="dashboard-tabs">
@@ -117,21 +117,11 @@ const AdminDashboard = () => {
 
       {/* Tab Contents */}
       <div className="dashboard-content">
-        {activeView === 'overview' && dashboardData && (
-          <OverviewTab data={dashboardData} />
-        )}
-        {activeView === 'imports' && dashboardData && (
-          <ImportsTab data={dashboardData} />
-        )}
-        {activeView === 'users' && dashboardData && (
-          <UsersTab data={dashboardData} />
-        )}
-        {activeView === 'database' && dashboardData && (
-          <DatabaseTab data={dashboardData} />
-        )}
-        {activeView === 'alerts' && dashboardData && (
-          <AlertsTab data={dashboardData} />
-        )}
+        {activeView === 'overview' && dashboardData && <OverviewTab data={dashboardData} />}
+        {activeView === 'imports' && dashboardData && <ImportsTab data={dashboardData} />}
+        {activeView === 'users' && dashboardData && <UsersTab data={dashboardData} />}
+        {activeView === 'database' && dashboardData && <DatabaseTab data={dashboardData} />}
+        {activeView === 'alerts' && dashboardData && <AlertsTab data={dashboardData} />}
       </div>
     </div>
   );
@@ -141,7 +131,7 @@ const AdminDashboard = () => {
  * System Health Section
  */
 const SystemHealthSection = ({ health }) => {
-  const getHealthColor = (percentage) => {
+  const getHealthColor = percentage => {
     if (percentage >= 90) return 'success';
     if (percentage >= 70) return 'warning';
     return 'error';
@@ -192,9 +182,7 @@ const HealthCard = ({ label, status, uptime, percentage, color }) => {
           <div className="meter-fill" style={{ width: `${percentage}%` }} />
         </div>
       )}
-      {percentage !== undefined && (
-        <div className="percentage">{percentage.toFixed(1)}%</div>
-      )}
+      {percentage !== undefined && <div className="percentage">{percentage.toFixed(1)}%</div>}
     </div>
   );
 };
@@ -258,26 +246,10 @@ const OverviewTab = ({ data }) => {
       </div>
 
       <div className="charts-grid">
-        <ChartCard
-          title="Import Trend (Last 7 Days)"
-          data={data.importTrend}
-          type="line"
-        />
-        <ChartCard
-          title="Status Distribution"
-          data={data.statusDistribution}
-          type="pie"
-        />
-        <ChartCard
-          title="Import Size Distribution"
-          data={data.sizeDistribution}
-          type="bar"
-        />
-        <ChartCard
-          title="Hourly Activity"
-          data={data.hourlyActivity}
-          type="area"
-        />
+        <ChartCard title="Import Trend (Last 7 Days)" data={data.importTrend} type="line" />
+        <ChartCard title="Status Distribution" data={data.statusDistribution} type="pie" />
+        <ChartCard title="Import Size Distribution" data={data.sizeDistribution} type="bar" />
+        <ChartCard title="Hourly Activity" data={data.hourlyActivity} type="area" />
       </div>
     </div>
   );
@@ -310,16 +282,14 @@ const ImportsTab = ({ data }) => {
           </tr>
         </thead>
         <tbody>
-          {data.recentImports?.map((imp) => (
+          {data.recentImports?.map(imp => (
             <React.Fragment key={imp.sessionId}>
               <tr className={`import-row ${imp.status}`}>
                 <td className="code">{imp.sessionId.substring(0, 8)}...</td>
                 <td>{imp.fileName}</td>
                 <td>{imp.importedBy}</td>
                 <td>
-                  <span className={`status-badge ${imp.status}`}>
-                    {imp.status}
-                  </span>
+                  <span className={`status-badge ${imp.status}`}>{imp.status}</span>
                 </td>
                 <td>{imp.totalRows}</td>
                 <td>
@@ -332,11 +302,15 @@ const ImportsTab = ({ data }) => {
                 <td className="actions">
                   <button
                     className="btn-icon"
-                    onClick={() => setExpandedSession(expandedSession === imp.sessionId ? null : imp.sessionId)}
+                    onClick={() =>
+                      setExpandedSession(expandedSession === imp.sessionId ? null : imp.sessionId)
+                    }
                   >
                     {expandedSession === imp.sessionId ? '▼' : '▶'}
                   </button>
-                  <button className="btn-icon" title="View Report">📊</button>
+                  <button className="btn-icon" title="View Report">
+                    📊
+                  </button>
                 </td>
               </tr>
               {expandedSession === imp.sessionId && (
@@ -395,7 +369,7 @@ const UsersTab = ({ data }) => {
           </tr>
         </thead>
         <tbody>
-          {data.activeUsers?.map((user) => (
+          {data.activeUsers?.map(user => (
             <tr key={user.id}>
               <td className="user-name">{user.name}</td>
               <td>{user.email}</td>
@@ -431,21 +405,13 @@ const DatabaseTab = ({ data }) => {
           value={data.totalProperties?.toLocaleString()}
           icon="🏠"
         />
-        <StatCard
-          label="Total Owners"
-          value={data.totalOwners?.toLocaleString()}
-          icon="👤"
-        />
+        <StatCard label="Total Owners" value={data.totalOwners?.toLocaleString()} icon="👤" />
         <StatCard
           label="Total Relationships"
           value={data.totalRelationships?.toLocaleString()}
           icon="🔗"
         />
-        <StatCard
-          label="Database Size"
-          value={data.databaseSize}
-          icon="💾"
-        />
+        <StatCard label="Database Size" value={data.databaseSize} icon="💾" />
       </div>
 
       <div className="collections-info">
@@ -461,7 +427,7 @@ const DatabaseTab = ({ data }) => {
             </tr>
           </thead>
           <tbody>
-            {data.collections?.map((col) => (
+            {data.collections?.map(col => (
               <tr key={col.name}>
                 <td className="code">{col.name}</td>
                 <td>{col.documentCount}</td>
@@ -483,7 +449,7 @@ const DatabaseTab = ({ data }) => {
 const AlertsTab = ({ data }) => {
   const [alertFilter, setAlertFilter] = useState('all');
 
-  const filteredAlerts = data.alerts?.filter((alert) => {
+  const filteredAlerts = data.alerts?.filter(alert => {
     if (alertFilter === 'all') return true;
     return alert.severity === alertFilter;
   });
@@ -492,9 +458,9 @@ const AlertsTab = ({ data }) => {
     <div className="alerts-section">
       <div className="section-header">
         <h3>System Alerts & Logs</h3>
-        <select 
+        <select
           value={alertFilter}
-          onChange={(e) => setAlertFilter(e.target.value)}
+          onChange={e => setAlertFilter(e.target.value)}
           className="filter-select"
         >
           <option value="all">All Alerts</option>
@@ -505,7 +471,7 @@ const AlertsTab = ({ data }) => {
       </div>
 
       <div className="alerts-list">
-        {filteredAlerts?.map((alert) => (
+        {filteredAlerts?.map(alert => (
           <AlertItem key={alert.id} alert={alert} />
         ))}
       </div>
@@ -514,15 +480,25 @@ const AlertsTab = ({ data }) => {
 };
 
 const AlertItem = ({ alert }) => {
-  const getSeverityIcon = (severity) => {
-    const icons = { critical: '🔴', warning: '🟡', info: '🔵' };
-    return icons[severity] || '⚪';
+  const getSeverityIcon = severity => {
+    switch (severity) {
+      case 'critical':
+        return '🔴';
+      case 'warning':
+        return '🟡';
+      case 'info':
+        return '🔵';
+      default:
+        return '⚪';
+    }
   };
 
   return (
     <div className={`alert-item ${alert.severity}`}>
       <div className="alert-header">
-        <span className="severity">{getSeverityIcon(alert.severity)} {alert.severity}</span>
+        <span className="severity">
+          {getSeverityIcon(alert.severity)} {alert.severity}
+        </span>
         <span className="time">{formatTimeAgo(alert.timestamp)}</span>
       </div>
       <div className="alert-message">{alert.message}</div>
@@ -536,7 +512,8 @@ const AlertItem = ({ alert }) => {
  */
 
 const MetricCard = ({ icon, label, value, change, negative }) => {
-  const changeClass = (change > 0 && !negative) || (change < 0 && negative) ? 'positive' : 'negative';
+  const changeClass =
+    (change > 0 && !negative) || (change < 0 && negative) ? 'positive' : 'negative';
   const changeSymbol = change > 0 ? '↑' : '↓';
 
   return (

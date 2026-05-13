@@ -4,6 +4,67 @@
 >
 > **Last updated:** April 2026
 
+## 0. Linda + Henry Monorepo Import Strategy (New Canonical Direction)
+
+Linda and Henry codebases are now **copied into this repository** and will be enhanced directly inside White Caves moving forward.
+
+### Repositories
+
+- **Linda (WhatsApp LocalAuth Bot Manager):**
+  - https://github.com/arslan9024/whatsapp-bot-linda
+- **Henry (Record Keeper & Compliance Document Engine):**
+  - https://github.com/arslan9024/Henry
+
+### Source-of-Truth Rule
+
+1. `modules/linda` and `modules/henry` are the in-project module sources for future work.
+2. External repos are now reference inputs only (for ideas, historical context, and selective backports).
+3. New features, fixes, and UX upgrades must be implemented in White Caves monorepo first.
+4. AI Command Center remains the orchestration surface for Linda/Henry alongside other assistants.
+
+### Imported Module Paths
+
+- `modules/linda` — snapshot from `https://github.com/arslan9024/whatsapp-bot-linda`
+- `modules/henry` — snapshot from `https://github.com/arslan9024/Henry`
+
+### Monorepo Development Scripts (Root package.json)
+
+- `npm run install:ai-modules`
+- `npm run dev:linda`
+- `npm run dev:henry`
+- `npm run dev:ai-modules`
+
+### Runtime Integration Strategy (Current Phase)
+
+1. Keep internal gateway endpoints (`/api/integrations/*`) for contract compatibility while migration continues.
+2. Gradually replace cross-repo assumptions with in-repo adapters/components.
+3. Unify Linda/Henry identity and capabilities across registries + command center UI.
+4. Refactor inconsistencies/errors from imported snapshots to White Caves standards (authFetch, linting, strict typing, UX system).
+
+### White Caves Integration Endpoints (Gateway)
+
+Mounted in backend at `/api/integrations`:
+
+- `GET /api/integrations/status`
+- `GET /api/integrations/linda/health`
+- `GET /api/integrations/linda/status`
+- `GET /api/integrations/henry/health`
+- `GET /api/integrations/henry/archive`
+- `POST /api/integrations/henry/archive`
+
+### Key Files
+
+- `server/services/integrations/externalModulesService.ts`
+- `server/routes/integrations.ts`
+- `server/routes/assistants.ts` (Linda/Henry metadata normalized)
+- `server/index.ts` (route mounting)
+
+### Notes for Future Sessions
+
+- Linda already has local White Caves routes at `/api/linda/*`; prioritize convergence with `modules/linda` implementation.
+- Henry capabilities (records/compliance/document engine) should be ported from `modules/henry` into command-center-native UX flows.
+- Priority is not a literal 1:1 copy forever; objective is a cleaner, unified White Caves implementation that surpasses both source repos.
+
 ---
 
 ## 1. What the Platform Is

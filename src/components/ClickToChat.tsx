@@ -1,5 +1,6 @@
 import React, { FC, useState, useCallback, useEffect, useRef } from 'react';
 import { Config } from '../config/constants';
+import { authFetch } from '../utils/authFetch';
 import {
   ClickToChatContainer,
   ChatTrigger,
@@ -229,7 +230,7 @@ const ClickToChat: FC = () => {
       setAiInput('');
       setIsAiTyping(true);
       try {
-        const res = await fetch('/api/ai/chat', {
+        const res = await authFetch('/api/ai/chat', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ messages: updated }),

@@ -180,7 +180,7 @@ describe('useSignIn — handleSocialAuth (integration)', () => {
       vi.useRealTimers();
     });
 
-    it('navigates to /tenant/portal for a tenant role', async () => {
+    it('navigates to /tenant-portal for a tenant role', async () => {
       vi.useFakeTimers();
       mockSyncFirebaseUser.mockResolvedValue(successResponse(backendTenantUser));
       const { result } = renderHook(() => useSignIn(), { wrapper: createWrapper(store) });
@@ -190,11 +190,11 @@ describe('useSignIn — handleSocialAuth (integration)', () => {
       });
       act(() => vi.runAllTimers());
 
-      expect(mockNavigate).toHaveBeenCalledWith('/tenant/portal');
+      expect(mockNavigate).toHaveBeenCalledWith('/tenant-portal');
       vi.useRealTimers();
     });
 
-    it('navigates to /landlord/portal for a landlord role', async () => {
+    it('navigates to /landlord-portal for a landlord role', async () => {
       vi.useFakeTimers();
       mockSyncFirebaseUser.mockResolvedValue(successResponse(backendLandlordUser));
       const { result } = renderHook(() => useSignIn(), { wrapper: createWrapper(store) });
@@ -204,7 +204,7 @@ describe('useSignIn — handleSocialAuth (integration)', () => {
       });
       act(() => vi.runAllTimers());
 
-      expect(mockNavigate).toHaveBeenCalledWith('/landlord/portal');
+      expect(mockNavigate).toHaveBeenCalledWith('/landlord-portal');
       vi.useRealTimers();
     });
   });
