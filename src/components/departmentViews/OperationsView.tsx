@@ -22,14 +22,16 @@ const OperationsView: React.FC<OperationsViewProps> = ({
   const config = getDepartmentConfig('OPERATIONS')!;
 
   const renderContent = (data: Record<string, unknown>) => {
+    const getCount = (value: unknown): number => (Array.isArray(value) ? value.length : 0);
+
     if (!subitemId && serviceName === 'daily-operations') {
       return (
         <>
           <DataCard title="Daily Operations" subtitle="Operational metrics and task management">
-            Tasks: {JSON.stringify(data?.tasks?.length || 0)} items
+            Tasks: {JSON.stringify(getCount(data?.tasks))} items
           </DataCard>
           <DataCard title="Team Performance" subtitle="Individual and team metrics">
-            Performance: {JSON.stringify(data?.teamPerformance?.length || 0)} items
+            Performance: {JSON.stringify(getCount(data?.teamPerformance))} items
           </DataCard>
         </>
       );
@@ -38,7 +40,7 @@ const OperationsView: React.FC<OperationsViewProps> = ({
     if (subitemId === 'task-board') {
       return (
         <DataCard title="Task Board" subtitle="All tasks and assignments">
-          Tasks: {JSON.stringify(data?.tasks?.length || 0)} items
+          Tasks: {JSON.stringify(getCount(data?.tasks))} items
         </DataCard>
       );
     }
@@ -46,7 +48,7 @@ const OperationsView: React.FC<OperationsViewProps> = ({
     if (subitemId === 'team-schedule') {
       return (
         <DataCard title="Team Schedule" subtitle="Team member availability">
-          Schedule: {JSON.stringify(data?.schedule?.length || 0)} items
+          Schedule: {JSON.stringify(getCount(data?.schedule))} items
         </DataCard>
       );
     }
@@ -54,7 +56,7 @@ const OperationsView: React.FC<OperationsViewProps> = ({
     if (subitemId === 'quality-metrics') {
       return (
         <DataCard title="Quality Metrics" subtitle="Service quality and standards">
-          Metrics: {JSON.stringify(data?.metrics?.length || 0)} items
+          Metrics: {JSON.stringify(getCount(data?.metrics))} items
         </DataCard>
       );
     }

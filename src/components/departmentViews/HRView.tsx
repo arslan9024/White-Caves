@@ -21,15 +21,17 @@ const HRView: React.FC<HRViewProps> = ({
 }) => {
   const config = getDepartmentConfig('HR')!;
 
-  const renderContent = (_data: Record<string, unknown>) => {
+  const renderContent = (data: Record<string, unknown>) => {
+    const getCount = (value: unknown): number => (Array.isArray(value) ? value.length : 0);
+
     if (!subitemId && serviceName === 'employee-management') {
       return (
         <>
           <DataCard title="Employee Directory" subtitle="All employees and their information">
-            Employees: {JSON.stringify(data?.employees?.length || 0)} items
+            Employees: {JSON.stringify(getCount(data?.employees))} items
           </DataCard>
           <DataCard title="Open Positions" subtitle="Active job openings and applications">
-            Positions: {JSON.stringify(data?.openPositions?.length || 0)} items
+            Positions: {JSON.stringify(getCount(data?.openPositions))} items
           </DataCard>
         </>
       );
@@ -38,7 +40,7 @@ const HRView: React.FC<HRViewProps> = ({
     if (subitemId === 'employee-directory') {
       return (
         <DataCard title="Employee Directory" subtitle="All employees">
-          Employees: {JSON.stringify(data?.employees?.length || 0)} items
+          Employees: {JSON.stringify(getCount(data?.employees))} items
         </DataCard>
       );
     }
@@ -46,7 +48,7 @@ const HRView: React.FC<HRViewProps> = ({
     if (subitemId === 'recruitment') {
       return (
         <DataCard title="Recruitment" subtitle="Job openings and candidates">
-          Positions: {JSON.stringify(data?.openPositions?.length || 0)} items
+          Positions: {JSON.stringify(getCount(data?.openPositions))} items
         </DataCard>
       );
     }
@@ -54,7 +56,7 @@ const HRView: React.FC<HRViewProps> = ({
     if (subitemId === 'payroll') {
       return (
         <DataCard title="Payroll" subtitle="Salary and compensation management">
-          Payroll: {JSON.stringify(data?.payroll?.length || 0)} items
+          Payroll: {JSON.stringify(getCount(data?.payroll))} items
         </DataCard>
       );
     }
@@ -62,7 +64,7 @@ const HRView: React.FC<HRViewProps> = ({
     if (subitemId === 'performance-reviews') {
       return (
         <DataCard title="Performance Reviews" subtitle="Employee evaluations and feedback">
-          Reviews: {JSON.stringify(data?.performanceReviews?.length || 0)} items
+          Reviews: {JSON.stringify(getCount(data?.performanceReviews))} items
         </DataCard>
       );
     }
