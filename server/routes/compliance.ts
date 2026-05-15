@@ -33,6 +33,7 @@ import {
   getComplianceOverview,
   updateEjariStatus,
 } from '../services/compliance/complianceService.js';
+import { screenAML } from '../services/compliance/amlAdapter.js';
 import logger from '../utils/logger.js';
 
 const router = Router();
@@ -727,6 +728,197 @@ router.patch(
         decision,
         metadata: nextMetadata,
       },
+    });
+  })
+);
+
+// ─── POST /api/compliance/aml/screen — AML screening adapter flow ───────
+router.post(
+  '/aml/screen',
+  requireMinRole('agent'),
+  asyncHandler(async (req: Request, res: Response) => {
+    const allowedRoles = ['owner', 'manager', 'admin', 'finance', 'agent'];
+    if (!allowedRoles.includes(req.user?.role || '')) {
+      throw new AppError('Access denied — AML screening requires agent role or above', 403);
+    }
+
+    const { leadId, amount, currency, transactionType, nationality, sourceOfFunds } = req.body;
+    if (!leadId) {
+      throw new AppError('leadId is required', 400);
+    }
+
+    const lead = await prisma.lead.findUnique({
+      where: { id: String(leadId) },
+      select: { id: true, name: true, tags: true, email: true, phone: true },
+    });
+
+    if (!lead) {
+      throw new AppError('Lead not found for AML screening', 404);
+    }
+
+    const screening = await screenAML({
+      leadId: lead.id,
+      leadName: lead.name,
+      amount: Number.isFinite(Number(amount)) ? Number(amount) : null,
+      currency: currency ? String(currency) : null,
+      transactionType: transactionType ? String(transactionType) : null,
+      nationality: nationality ? String(nationality) : null,
+      sourceOfFunds: sourceOfFunds ? String(sourceOfFunds) : null,
+    });
+
+    const isFlagged = screening.riskLevel === 'high' || screening.flags.length > 0;
+
+    const activity = await prisma.activity.create({
+      data: {
+        type: 'compliance',
+        action: isFlagged ? 'aml_alert_created' : 'aml_screened',
+        description: isFlagged
+          ? `AML alert created for lead ${lead.name || lead.id}`
+          : `AML screening completed for lead ${lead.name || lead.id}`,
+        userId: req.user?.id || null,
+        leadId: lead.id,
+        metadata: {
+          screening,
+          status: isFlagged ? 'open' : 'cleared',
+          severity: screening.riskLevel,
+          flags: screening.flags,
+          amount: Number.isFinite(Number(amount)) ? Number(amount) : null,
+          currency: currency ? String(currency) : 'AED',
+          transactionType: transactionType ? String(transactionType) : null,
+        },
+      },
+    });
+
+    if (isFlagged) {
+      const normalizedTags = (lead.tags || []).map(t => String(t).toLowerCase());
+      const hasAmlFlagged = normalizedTags.includes('aml_flagged');
+      if (!hasAmlFlagged) {
+        await prisma.lead.update({
+          where: { id: lead.id },
+          data: { tags: [...(lead.tags || []), 'aml_flagged'] },
+        });
+      }
+    }
+
+    res.status(201).json({
+      success: true,
+      data: {
+        alertId: isFlagged ? activity.id : null,
+        screening,
+        status: isFlagged ? 'open' : 'cleared',
+      },
+    });
+  })
+);
+
+// ─── GET /api/compliance/aml/alerts — list AML alerts ───────────────────
+router.get(
+  '/aml/alerts',
+  requirePermission('view_analytics'),
+  asyncHandler(async (req: Request, res: Response) => {
+    const allowedRoles = ['owner', 'manager', 'admin', 'finance'];
+    if (!allowedRoles.includes(req.user?.role || '')) {
+      throw new AppError('Access denied — AML alerts require manager role', 403);
+    }
+
+    const status = String(req.query.status || 'open');
+    const take = Math.min(parseInt(String(req.query.limit || '100'), 10) || 100, 300);
+
+    const alerts = await prisma.activity.findMany({
+      where: {
+        type: 'compliance',
+        action: 'aml_alert_created',
+      },
+      include: {
+        lead: { select: { id: true, name: true, email: true, phone: true, status: true } },
+        user: { select: { id: true, name: true, email: true, role: true } },
+      },
+      orderBy: { createdAt: 'desc' },
+      take,
+    });
+
+    const filtered = alerts.filter(a => {
+      const metadata = normalizeMetadata(a.metadata);
+      const alertStatus = String(metadata.status || 'open');
+      return status === 'all' ? true : alertStatus === status;
+    });
+
+    res.json({
+      success: true,
+      data: filtered.map(a => {
+        const metadata = normalizeMetadata(a.metadata);
+        return {
+          id: a.id,
+          leadId: a.leadId,
+          lead: a.lead,
+          createdBy: a.user,
+          status: metadata.status || 'open',
+          severity: metadata.severity || 'medium',
+          flags: metadata.flags || [],
+          screening: metadata.screening || null,
+          resolvedAt: metadata.resolvedAt || null,
+          resolvedBy: metadata.resolvedBy || null,
+          createdAt: a.createdAt,
+        };
+      }),
+      summary: {
+        totalFetched: alerts.length,
+        returned: filtered.length,
+      },
+    });
+  })
+);
+
+// ─── PATCH /api/compliance/aml/alerts/:alertId/resolve ───────────────────
+router.patch(
+  '/aml/alerts/:alertId/resolve',
+  requirePermission('view_analytics'),
+  asyncHandler(async (req: Request, res: Response) => {
+    const allowedRoles = ['owner', 'manager', 'admin', 'finance'];
+    if (!allowedRoles.includes(req.user?.role || '')) {
+      throw new AppError('Access denied — AML alert resolution requires manager role', 403);
+    }
+
+    const { alertId } = req.params;
+    const { resolution, notes } = req.body;
+
+    const alert = await prisma.activity.findUnique({ where: { id: alertId } });
+    if (!alert || alert.type !== 'compliance' || alert.action !== 'aml_alert_created') {
+      throw new AppError('AML alert not found', 404);
+    }
+
+    const metadata = normalizeMetadata(alert.metadata);
+    const nextMetadata = {
+      ...metadata,
+      status: 'resolved',
+      resolution: resolution ? sanitizeString(String(resolution)).substring(0, 500) : 'resolved',
+      notes: notes ? sanitizeString(String(notes)).substring(0, 2000) : null,
+      resolvedAt: new Date().toISOString(),
+      resolvedBy: req.user?.id || null,
+    };
+
+    const updated = await prisma.activity.update({
+      where: { id: alertId },
+      data: { metadata: nextMetadata },
+    });
+
+    await prisma.activity.create({
+      data: {
+        type: 'compliance',
+        action: 'aml_alert_resolved',
+        description: `AML alert resolved: ${alertId}`,
+        userId: req.user?.id || null,
+        leadId: alert.leadId || null,
+        metadata: {
+          alertId,
+          resolution: nextMetadata.resolution,
+        },
+      },
+    });
+
+    res.json({
+      success: true,
+      data: { id: updated.id, status: 'resolved', metadata: nextMetadata },
     });
   })
 );

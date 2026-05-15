@@ -57,6 +57,16 @@ vi.mock('../middleware/auth', () => ({ default: null }));
 vi.mock('../utils/sanitize', () => ({
   sanitizeString: (s: string) => s,
 }));
+vi.mock('../services/compliance/amlAdapter.js', () => ({
+  screenAML: vi.fn(async () => ({
+    provider: 'internal_aml_baseline',
+    providerReference: 'AML-TEST-001',
+    riskScore: 78,
+    riskLevel: 'high',
+    flags: ['high_value_transaction'],
+    screenedAt: new Date('2026-05-16T10:00:00.000Z').toISOString(),
+  })),
+}));
 
 import complianceRoutes from './compliance';
 
@@ -452,6 +462,103 @@ describe('Compliance Routes — /api/compliance', () => {
           }),
         })
       );
+    });
+  });
+
+  // ── W4-005 AML workflow ─────────────────────────────────────────
+  describe('AML adapter and flagging workflow', () => {
+    it('screens lead and creates AML alert when high risk', async () => {
+      mockPrisma.lead.findUnique.mockResolvedValueOnce({
+        id: 'lead-1',
+        name: 'Lead AML',
+        tags: [],
+        email: 'lead@example.com',
+        phone: '+971500000001',
+      });
+      mockPrisma.activity.create
+        .mockResolvedValueOnce({
+          id: 'aml-alert-1',
+          createdAt: new Date('2026-05-16T10:00:00.000Z'),
+        })
+        .mockResolvedValueOnce({
+          id: 'audit-aml-1',
+          createdAt: new Date('2026-05-16T10:00:01.000Z'),
+        });
+
+      const res = await request(createApp('agent')).post('/api/compliance/aml/screen').send({
+        leadId: 'lead-1',
+        amount: 750000,
+        currency: 'AED',
+        transactionType: 'sale',
+      });
+
+      expect(res.status).toBe(201);
+      expect(res.body.success).toBe(true);
+      expect(res.body.data.status).toBe('open');
+      expect(res.body.data.alertId).toBe('aml-alert-1');
+      expect(mockPrisma.lead.update).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: { id: 'lead-1' },
+          data: expect.objectContaining({
+            tags: expect.arrayContaining(['aml_flagged']),
+          }),
+        })
+      );
+    });
+
+    it('lists open AML alerts', async () => {
+      mockPrisma.activity.findMany.mockResolvedValueOnce([
+        {
+          id: 'aml-alert-1',
+          type: 'compliance',
+          action: 'aml_alert_created',
+          leadId: 'lead-1',
+          createdAt: new Date('2026-05-16T10:00:00.000Z'),
+          metadata: {
+            status: 'open',
+            severity: 'high',
+            flags: ['high_value_transaction'],
+            screening: { riskScore: 78 },
+          },
+          lead: {
+            id: 'lead-1',
+            name: 'Lead AML',
+            email: 'lead@example.com',
+            phone: '+971500000001',
+            status: 'new',
+          },
+          user: { id: 'user-1', name: 'Owner', email: 'owner@whitecaves.ae', role: 'owner' },
+        },
+      ]);
+
+      const res = await request(createApp('owner')).get('/api/compliance/aml/alerts?status=open');
+      expect(res.status).toBe(200);
+      expect(res.body.success).toBe(true);
+      expect(res.body.data).toHaveLength(1);
+      expect(res.body.data[0].status).toBe('open');
+    });
+
+    it('resolves AML alert', async () => {
+      mockPrisma.activity.findUnique.mockResolvedValueOnce({
+        id: 'aml-alert-1',
+        type: 'compliance',
+        action: 'aml_alert_created',
+        leadId: 'lead-1',
+        metadata: { status: 'open', severity: 'high' },
+      });
+      mockPrisma.activity.update.mockResolvedValueOnce({ id: 'aml-alert-1' });
+      mockPrisma.activity.create.mockResolvedValueOnce({
+        id: 'aml-resolve-audit-1',
+        createdAt: new Date(),
+      });
+
+      const res = await request(createApp('manager'))
+        .patch('/api/compliance/aml/alerts/aml-alert-1/resolve')
+        .send({ resolution: 'false_positive', notes: 'Documents verified manually' });
+
+      expect(res.status).toBe(200);
+      expect(res.body.success).toBe(true);
+      expect(res.body.data.status).toBe('resolved');
     });
   });
 });
