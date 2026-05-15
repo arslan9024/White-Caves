@@ -60,6 +60,7 @@
 | May 15, 2026 | @Mira + @Sofia + @Katherine         | Wave 04 W4-002 partial delivery: added `/api/compliance/permit-alerts` (listing permit issues + BRN expiring/expired alert feed for dashboard path), with route tests green (26/26 ✅) and build pass ✅                                        | 1             |
 | May 15, 2026 | @Mira + @Jaime + @Katherine         | Wave 03 W3-004 progression: explicit Nadia inbox endpoints added (`/conversations/:id/assign`, `/conversations/:id/close`, `/conversations/:id/reply`) with stricter status/sender validation; new route tests green (6/6 ✅) and build pass ✅ | 1             |
 | May 16, 2026 | @Mira + @Joelle + @Katherine        | Wave 03 W3-006 delivered: inbound Meta webhook now auto-links/creates CRM lead (`source=whatsapp`) with duplicate-safe behavior + activity trail, backed by new route tests (3/3 ✅) and build pass ✅                                          | 1             |
+| May 16, 2026 | @Mira + @Sofia + @Katherine         | Wave 04 W4-004 baseline delivered: risky transaction creation now blocked without verified lead KYC (`kyc_verified` tag) in `POST /api/transactions`, with targeted transaction tests green (27/27 ✅) and build pass ✅                        | 1             |
 
 ---
 
@@ -134,6 +135,7 @@
 - [x] Wave 04 alert path baseline added (`GET /api/compliance/permit-alerts`) for permit issue + BRN expiry monitoring
 - [x] Wave 03 inbox path expanded with explicit assign/close/reply endpoints + targeted route tests
 - [x] Wave 03 lead auto-linking baseline added in Meta webhook (auto-create/link lead from inbound WhatsApp)
+- [x] Wave 04 risky transaction baseline: KYC verification gate enforced on transaction create flow
 - [ ] Continue Wave 03 and Wave 04 implementation backlog execution
 
 ### MILESTONE-PHASE-2
