@@ -68,6 +68,7 @@
 | May 16, 2026 | @Mira + @Sofia + @Katherine         | Wave 04 W4-006 delivered: PDPL consent controls baseline added (`POST /api/compliance/consent`, `PATCH /api/compliance/consent/:consentId/revoke`, `GET /api/compliance/consent/export`, `DELETE /api/compliance/consent/:consentId`) covering consent create/revoke/export/delete lifecycle with permission guards; route tests green (35/35 ✅) and build pass ✅                 | 1             |
 | May 16, 2026 | @Mira + @Lea + @Katherine           | Wave 04 W4-007 baseline delivered: unified compliance queue feed endpoint added (`GET /api/compliance/queues`) aggregating permit issues + pending KYC docs + open AML alerts for dashboard consumption, with focused queue tests and access guard checks green (37/37 ✅) and build pass ✅                                                                                        | 1             |
 | May 16, 2026 | @Mira + @Timnit + @Katherine        | Wave 04 W4-005 hardening: added dedicated AML adapter unit suite (`server/services/compliance/__tests__/amlAdapter.test.ts`) covering low/high-risk scoring, flag generation, and 100-score cap; focused verification green (41/41 targeted tests ✅) with lint/build pass ✅                                                                                                       | 1             |
+| May 16, 2026 | @Mira + @Sofia + @Katherine         | Wave 04 W4-006 hardening: consent governance audit trail expanded with explicit revoke/delete compliance events (`pdpl_consent_revoked`, `pdpl_consent_deleted`) and verified assertions in route tests; focused verification green (41/41 targeted tests ✅) with lint/build pass ✅                                                                                               | 1             |
 
 ---
 
@@ -149,6 +150,7 @@
 - [x] Wave 04 AML baseline: provider abstraction + AML alert create/list/resolve flow with lead flag tagging
 - [x] Wave 04 AML hardening baseline: adapter unit tests for scoring thresholds, flags, and max-score cap
 - [x] Wave 04 PDPL consent baseline: consent create/revoke/export/delete endpoints with guarded access
+- [x] Wave 04 PDPL hardening baseline: revoke/delete audit events now logged for consent lifecycle actions
 - [x] Wave 04 queue baseline: unified compliance queue feed endpoint for permit/KYC/AML dashboard cards
 - [ ] Continue Wave 03 and Wave 04 implementation backlog execution
 

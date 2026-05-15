@@ -1007,6 +1007,20 @@ router.patch(
       data: { metadata: updatedMetadata },
     });
 
+    await prisma.activity.create({
+      data: {
+        type: 'compliance',
+        action: 'pdpl_consent_revoked',
+        description: `PDPL consent revoked: ${consentId}`,
+        userId: req.user?.id || null,
+        leadId: consent.leadId || null,
+        metadata: {
+          consentId,
+          reason: updatedMetadata.revokeReason,
+        },
+      },
+    });
+
     res.json({
       success: true,
       data: { id: updated.id, status: 'revoked', metadata: updatedMetadata },
@@ -1105,6 +1119,20 @@ router.delete(
     await prisma.activity.update({
       where: { id: consentId },
       data: { metadata: updatedMetadata },
+    });
+
+    await prisma.activity.create({
+      data: {
+        type: 'compliance',
+        action: 'pdpl_consent_deleted',
+        description: `PDPL consent deleted/anonymized: ${consentId}`,
+        userId: req.user?.id || null,
+        leadId: consent.leadId || null,
+        metadata: {
+          consentId,
+          status: 'deleted',
+        },
+      },
     });
 
     res.json({ success: true, data: { id: consentId, status: 'deleted' } });

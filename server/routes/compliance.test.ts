@@ -600,6 +600,13 @@ describe('Compliance Routes — /api/compliance', () => {
       expect(res.status).toBe(200);
       expect(res.body.success).toBe(true);
       expect(res.body.data.status).toBe('revoked');
+      expect(mockPrisma.activity.create).toHaveBeenCalledWith(
+        expect.objectContaining({
+          data: expect.objectContaining({
+            action: 'pdpl_consent_revoked',
+          }),
+        })
+      );
     });
 
     it('exports consent records and allows deletion baseline', async () => {
@@ -646,6 +653,13 @@ describe('Compliance Routes — /api/compliance', () => {
       expect(deleteRes.status).toBe(200);
       expect(deleteRes.body.success).toBe(true);
       expect(deleteRes.body.data.status).toBe('deleted');
+      expect(mockPrisma.activity.create).toHaveBeenCalledWith(
+        expect.objectContaining({
+          data: expect.objectContaining({
+            action: 'pdpl_consent_deleted',
+          }),
+        })
+      );
     });
   });
 
