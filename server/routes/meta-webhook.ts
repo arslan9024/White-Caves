@@ -1,4 +1,4 @@
-/* eslint-disable no-console, @typescript-eslint/no-explicit-any, @typescript-eslint/no-unused-vars */
+/* eslint-disable no-console, @typescript-eslint/no-explicit-any */
 /**
  * Meta Business API Webhook Routes
  * Endpoints for receiving production WhatsApp messages from Meta
@@ -156,12 +156,27 @@ router.post('/', async (req: Request, res: Response) => {
  */
 async function handleIncomingMessage(message: any, phoneNumberId: string): Promise<void> {
   try {
+    const waMessageId = message.id as string | undefined;
     const customerPhone = normalizePhone(message.from) || message.from;
     const content = message.text?.body || '';
     const messageType = message.type || 'text';
     const timestamp = new Date(parseInt(message.timestamp) * 1000);
 
     console.log(`[Meta Webhook] Message from ${customerPhone}: ${content.substring(0, 80)}`);
+
+    // Idempotency guard: Meta can deliver duplicate webhook events.
+    // If we have already persisted this WA message ID, skip re-processing.
+    if (waMessageId) {
+      const existingMessage = await prisma.nadiaMessage.findFirst({
+        where: { waMessageId },
+        select: { id: true, conversationId: true },
+      });
+
+      if (existingMessage) {
+        console.log(`[Meta Webhook] Duplicate message ignored: ${waMessageId}`);
+        return;
+      }
+    }
 
     // 1. Find or create conversation
     let conversation = await prisma.nadiaConversation.findFirst({
@@ -180,11 +195,47 @@ async function handleIncomingMessage(message: any, phoneNumberId: string): Promi
       console.log(`[Meta Webhook] New conversation created: ${conversation.id}`);
     }
 
+    // 1.5. Link or create CRM lead for inbound WhatsApp contact (W3-006)
+    const existingLead = await prisma.lead.findFirst({
+      where: {
+        OR: [{ phone: customerPhone }, { phone: message.from }],
+      },
+      select: { id: true, status: true, source: true },
+    });
+
+    let leadId: string | null = existingLead?.id || null;
+    if (!existingLead) {
+      const createdLead = await prisma.lead.create({
+        data: {
+          name: `WhatsApp Lead ${customerPhone}`,
+          phone: customerPhone,
+          source: 'whatsapp',
+          status: 'new',
+          notes: `Auto-created from inbound WhatsApp message (${conversation.id})`,
+        },
+        select: { id: true },
+      });
+      leadId = createdLead.id;
+
+      await prisma.activity.create({
+        data: {
+          type: 'lead',
+          action: 'created',
+          description: `Lead auto-created from WhatsApp inbound: ${customerPhone}`,
+          leadId,
+          metadata: {
+            channel: 'META_API',
+            conversationId: conversation.id,
+          },
+        },
+      });
+    }
+
     // 2. Store message
     const storedMessage = await prisma.nadiaMessage.create({
       data: {
         conversationId: conversation.id,
-        waMessageId: message.id,
+        waMessageId: waMessageId || `meta-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
         direction: 'inbound',
         body: content,
         messageType,
@@ -231,6 +282,7 @@ async function handleIncomingMessage(message: any, phoneNumberId: string): Promi
     getSocketServer()?.emitMetaMessage({
       id: storedMessage.id,
       conversationId: conversation.id,
+      leadId,
       from: customerPhone,
       content,
       type: messageType,
@@ -300,6 +352,15 @@ router.post('/send', requireRole('owner'), async (req: Request, res: Response) =
       });
     }
 
+    const sendAllowance = rateLimiter.canSend(to);
+    if (!sendAllowance.allowed) {
+      return res.status(429).json({
+        success: false,
+        error: 'Rate limit exceeded for WhatsApp sends',
+        retryAfterMs: sendAllowance.retryAfterMs,
+      });
+    }
+
     const meta = getMetaClient();
     const messageId = await meta.sendMessage(to, message);
 
@@ -336,6 +397,15 @@ router.post('/template', requireRole('owner'), async (req: Request, res: Respons
       return res.status(400).json({
         success: false,
         error: 'Missing required fields: to, template',
+      });
+    }
+
+    const sendAllowance = rateLimiter.canSend(to);
+    if (!sendAllowance.allowed) {
+      return res.status(429).json({
+        success: false,
+        error: 'Rate limit exceeded for WhatsApp template sends',
+        retryAfterMs: sendAllowance.retryAfterMs,
       });
     }
 
