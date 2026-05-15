@@ -5,7 +5,7 @@
  */
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import express from 'express';
+import express, { type NextFunction, type Request, type Response } from 'express';
 import request from 'supertest';
 
 // ── Hoisted mocks ────────────────────────────────────────────────────
@@ -15,15 +15,18 @@ const { mockPrisma } = vi.hoisted(() => {
     mockPrisma: {
       property: {
         count: fn().mockResolvedValue(20),
+        findMany: fn().mockResolvedValue([]),
       },
       user: {
         count: fn().mockResolvedValue(5),
+        findMany: fn().mockResolvedValue([]),
       },
       activity: {
         findMany: fn().mockResolvedValue([]),
         count: fn().mockResolvedValue(0),
         create: fn().mockResolvedValue({
-          id: 'act-1', createdAt: new Date('2026-01-15'),
+          id: 'act-1',
+          createdAt: new Date('2026-01-15'),
         }),
       },
     },
@@ -39,8 +42,10 @@ vi.mock('../middleware/errorHandler', () => ({
       this.statusCode = statusCode;
     }
   },
-  asyncHandler: (fn: any) => (req: any, res: any, next: any) =>
-    Promise.resolve(fn(req, res, next)).catch(next),
+  asyncHandler: (fn: unknown) => (req: Request, res: Response, next: NextFunction) =>
+    Promise.resolve(
+      (fn as (req: Request, res: Response, next: NextFunction) => unknown)(req, res, next)
+    ).catch(next),
 }));
 vi.mock('../middleware/auth', () => ({ default: null }));
 vi.mock('../utils/sanitize', () => ({
@@ -54,13 +59,19 @@ function createApp(role: string = 'owner') {
   const app = express();
   app.use(express.json());
   app.use((req, _res, next) => {
-    (req as any).user = { id: 'user-1', email: 'admin@whitecaves.ae', role };
+    (req as Request & { user?: { id: string; email: string; role: string } }).user = {
+      id: 'user-1',
+      email: 'admin@whitecaves.ae',
+      role,
+    };
     next();
   });
   app.use('/api/compliance', complianceRoutes);
-  app.use((err: any, _req: any, res: any, _next: any) => {
-    res.status(err.statusCode || 500).json({ success: false, error: err.message });
-  });
+  app.use(
+    (err: Error & { statusCode?: number }, _req: Request, res: Response, _next: NextFunction) => {
+      res.status(err.statusCode || 500).json({ success: false, error: err.message });
+    }
+  );
   return app;
 }
 
@@ -70,20 +81,21 @@ describe('Compliance Routes — /api/compliance', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     mockPrisma.property.count.mockResolvedValue(20);
+    mockPrisma.property.findMany.mockResolvedValue([]);
     mockPrisma.user.count.mockResolvedValue(5);
+    mockPrisma.user.findMany.mockResolvedValue([]);
   });
 
   // ── GET /status ──────────────────────────────────────────────────
   describe('GET /api/compliance/status', () => {
     it('returns 200 with compliance status for owner', async () => {
       mockPrisma.property.count
-        .mockResolvedValueOnce(20)   // totalProperties
-        .mockResolvedValueOnce(18);  // propertiesWithDocs
+        .mockResolvedValueOnce(20) // totalProperties
+        .mockResolvedValueOnce(18); // propertiesWithDocs
       mockPrisma.user.count
-        .mockResolvedValueOnce(10)   // totalAgents
-        .mockResolvedValueOnce(9);   // activeAgents
-      const res = await request(createApp('owner'))
-        .get('/api/compliance/status');
+        .mockResolvedValueOnce(10) // totalAgents
+        .mockResolvedValueOnce(9); // activeAgents
+      const res = await request(createApp('owner')).get('/api/compliance/status');
       expect(res.status).toBe(200);
       expect(res.body.success).toBe(true);
       expect(res.body.data.overallScore).toBeDefined();
@@ -93,33 +105,26 @@ describe('Compliance Routes — /api/compliance', () => {
     });
 
     it('returns 403 for agent role', async () => {
-      const res = await request(createApp('agent'))
-        .get('/api/compliance/status');
+      const res = await request(createApp('agent')).get('/api/compliance/status');
       expect(res.status).toBe(403);
       expect(res.body.error).toMatch(/access denied/i);
     });
 
     it('returns 200 for finance role', async () => {
-      mockPrisma.property.count
-        .mockResolvedValueOnce(10)
-        .mockResolvedValueOnce(10);
-      mockPrisma.user.count
-        .mockResolvedValueOnce(5)
-        .mockResolvedValueOnce(5);
-      const res = await request(createApp('finance'))
-        .get('/api/compliance/status');
+      mockPrisma.property.count.mockResolvedValueOnce(10).mockResolvedValueOnce(10);
+      mockPrisma.user.count.mockResolvedValueOnce(5).mockResolvedValueOnce(5);
+      const res = await request(createApp('finance')).get('/api/compliance/status');
       expect(res.status).toBe(200);
     });
 
     it('calculates compliance scores correctly', async () => {
       mockPrisma.property.count
-        .mockResolvedValueOnce(10)   // totalProperties
-        .mockResolvedValueOnce(8);   // propertiesWithDocs (80%)
+        .mockResolvedValueOnce(10) // totalProperties
+        .mockResolvedValueOnce(8); // propertiesWithDocs (80%)
       mockPrisma.user.count
-        .mockResolvedValueOnce(10)   // totalAgents
-        .mockResolvedValueOnce(10);  // activeAgents (100%)
-      const res = await request(createApp('owner'))
-        .get('/api/compliance/status');
+        .mockResolvedValueOnce(10) // totalAgents
+        .mockResolvedValueOnce(10); // activeAgents (100%)
+      const res = await request(createApp('owner')).get('/api/compliance/status');
       expect(res.body.data.metrics.documentationCompliance).toBe(80);
       expect(res.body.data.metrics.agentCompliance).toBe(100);
       expect(res.body.data.overallScore).toBe(90);
@@ -127,14 +132,9 @@ describe('Compliance Routes — /api/compliance', () => {
     });
 
     it('marks as non-compliant when score below 80', async () => {
-      mockPrisma.property.count
-        .mockResolvedValueOnce(10)
-        .mockResolvedValueOnce(3);   // 30% doc compliance
-      mockPrisma.user.count
-        .mockResolvedValueOnce(10)
-        .mockResolvedValueOnce(5);   // 50% agent compliance
-      const res = await request(createApp('owner'))
-        .get('/api/compliance/status');
+      mockPrisma.property.count.mockResolvedValueOnce(10).mockResolvedValueOnce(3); // 30% doc compliance
+      mockPrisma.user.count.mockResolvedValueOnce(10).mockResolvedValueOnce(5); // 50% agent compliance
+      const res = await request(createApp('owner')).get('/api/compliance/status');
       expect(res.body.data.overallScore).toBe(40);
       expect(res.body.data.compliant).toBe(false);
     });
@@ -142,8 +142,7 @@ describe('Compliance Routes — /api/compliance', () => {
     it('handles zero properties/agents gracefully', async () => {
       mockPrisma.property.count.mockResolvedValue(0);
       mockPrisma.user.count.mockResolvedValue(0);
-      const res = await request(createApp('owner'))
-        .get('/api/compliance/status');
+      const res = await request(createApp('owner')).get('/api/compliance/status');
       expect(res.status).toBe(200);
       expect(res.body.data.overallScore).toBe(100);
       expect(res.body.data.compliant).toBe(true);
@@ -153,8 +152,7 @@ describe('Compliance Routes — /api/compliance', () => {
   // ── GET /requirements ────────────────────────────────────────────
   describe('GET /api/compliance/requirements', () => {
     it('returns RERA compliance requirements for owner', async () => {
-      const res = await request(createApp('owner'))
-        .get('/api/compliance/requirements');
+      const res = await request(createApp('owner')).get('/api/compliance/requirements');
       expect(res.status).toBe(200);
       expect(res.body.success).toBe(true);
       expect(res.body.data).toBeInstanceOf(Array);
@@ -162,23 +160,20 @@ describe('Compliance Routes — /api/compliance', () => {
     });
 
     it('includes key requirement categories', async () => {
-      const res = await request(createApp('owner'))
-        .get('/api/compliance/requirements');
-      const categories = res.body.data.map((r: any) => r.category);
+      const res = await request(createApp('owner')).get('/api/compliance/requirements');
+      const categories = res.body.data.map((r: { category: string }) => r.category);
       expect(categories).toContain('licensing');
       expect(categories).toContain('compliance');
       expect(categories).toContain('privacy');
     });
 
     it('returns 403 for agent role', async () => {
-      const res = await request(createApp('agent'))
-        .get('/api/compliance/requirements');
+      const res = await request(createApp('agent')).get('/api/compliance/requirements');
       expect(res.status).toBe(403);
     });
 
     it('each requirement has id, name, category, status', async () => {
-      const res = await request(createApp('manager'))
-        .get('/api/compliance/requirements');
+      const res = await request(createApp('manager')).get('/api/compliance/requirements');
       const first = res.body.data[0];
       expect(first).toHaveProperty('id');
       expect(first).toHaveProperty('name');
@@ -192,52 +187,54 @@ describe('Compliance Routes — /api/compliance', () => {
     it('returns 200 with audit logs for owner', async () => {
       mockPrisma.activity.findMany.mockResolvedValueOnce([
         {
-          id: 'log-1', type: 'system', action: 'login',
-          description: 'User logged in', createdAt: new Date(), metadata: null,
+          id: 'log-1',
+          type: 'system',
+          action: 'login',
+          description: 'User logged in',
+          createdAt: new Date(),
+          metadata: null,
           user: { id: 'user-1', name: 'Admin', role: 'owner' },
         },
       ]);
       mockPrisma.activity.count.mockResolvedValueOnce(1);
-      const res = await request(createApp('owner'))
-        .get('/api/compliance/audit-logs');
+      const res = await request(createApp('owner')).get('/api/compliance/audit-logs');
       expect(res.status).toBe(200);
       expect(res.body.success).toBe(true);
       expect(res.body.pagination).toBeDefined();
     });
 
     it('returns 403 for admin role (not owner/manager)', async () => {
-      const res = await request(createApp('admin'))
-        .get('/api/compliance/audit-logs');
+      const res = await request(createApp('admin')).get('/api/compliance/audit-logs');
       expect(res.status).toBe(403);
     });
 
     it('returns 403 for agent role', async () => {
-      const res = await request(createApp('agent'))
-        .get('/api/compliance/audit-logs');
+      const res = await request(createApp('agent')).get('/api/compliance/audit-logs');
       expect(res.status).toBe(403);
     });
 
     it('returns 200 for manager role', async () => {
       mockPrisma.activity.findMany.mockResolvedValueOnce([]);
       mockPrisma.activity.count.mockResolvedValueOnce(0);
-      const res = await request(createApp('manager'))
-        .get('/api/compliance/audit-logs');
+      const res = await request(createApp('manager')).get('/api/compliance/audit-logs');
       expect(res.status).toBe(200);
     });
 
     it('supports pagination params', async () => {
       mockPrisma.activity.findMany.mockResolvedValueOnce([]);
       mockPrisma.activity.count.mockResolvedValueOnce(200);
-      const res = await request(createApp('owner'))
-        .get('/api/compliance/audit-logs?page=3&pageSize=25');
+      const res = await request(createApp('owner')).get(
+        '/api/compliance/audit-logs?page=3&pageSize=25'
+      );
       expect(res.status).toBe(200);
     });
 
     it('supports type and action filters', async () => {
       mockPrisma.activity.findMany.mockResolvedValueOnce([]);
       mockPrisma.activity.count.mockResolvedValueOnce(0);
-      const res = await request(createApp('owner'))
-        .get('/api/compliance/audit-logs?type=system&action=login');
+      const res = await request(createApp('owner')).get(
+        '/api/compliance/audit-logs?type=system&action=login'
+      );
       expect(res.status).toBe(200);
     });
   });
@@ -245,13 +242,11 @@ describe('Compliance Routes — /api/compliance', () => {
   // ── POST /reports ────────────────────────────────────────────────
   describe('POST /api/compliance/reports', () => {
     it('returns 201 on successful report submission', async () => {
-      const res = await request(createApp('owner'))
-        .post('/api/compliance/reports')
-        .send({
-          title: 'Q1 2026 Compliance Report',
-          findings: 'All properties compliant',
-          recommendations: 'Continue regular audits',
-        });
+      const res = await request(createApp('owner')).post('/api/compliance/reports').send({
+        title: 'Q1 2026 Compliance Report',
+        findings: 'All properties compliant',
+        recommendations: 'Continue regular audits',
+      });
       expect(res.status).toBe(201);
       expect(res.body.success).toBe(true);
       expect(res.body.data.title).toBe('Q1 2026 Compliance Report');
@@ -296,13 +291,11 @@ describe('Compliance Routes — /api/compliance', () => {
     });
 
     it('saves report as activity with metadata', async () => {
-      await request(createApp('owner'))
-        .post('/api/compliance/reports')
-        .send({
-          title: 'Audit Report',
-          findings: 'Finding details',
-          recommendations: 'Next steps',
-        });
+      await request(createApp('owner')).post('/api/compliance/reports').send({
+        title: 'Audit Report',
+        findings: 'Finding details',
+        recommendations: 'Next steps',
+      });
       expect(mockPrisma.activity.create).toHaveBeenCalledWith(
         expect.objectContaining({
           data: expect.objectContaining({
@@ -314,6 +307,68 @@ describe('Compliance Routes — /api/compliance', () => {
           }),
         })
       );
+    });
+  });
+
+  // ── GET /permit-alerts ───────────────────────────────────────────
+  describe('GET /api/compliance/permit-alerts', () => {
+    it('returns permit alerts for owner', async () => {
+      mockPrisma.property.findMany.mockResolvedValueOnce([
+        {
+          id: 'prop-1',
+          title: 'Marina Tower 1204',
+          status: 'available',
+          municipalityNumber: null,
+          buildingPermitNumber: 'BPN-1',
+          createdAt: new Date('2026-05-10T00:00:00.000Z'),
+        },
+      ]);
+
+      const tomorrow = new Date(Date.now() + 24 * 60 * 60 * 1000);
+      const yesterday = new Date(Date.now() - 24 * 60 * 60 * 1000);
+      mockPrisma.user.findMany.mockResolvedValueOnce([
+        {
+          id: 'u-1',
+          name: 'Agent One',
+          email: 'a1@whitecaves.ae',
+          role: 'agent',
+          brnNumber: 'BRN-001',
+          brnExpiry: tomorrow,
+        },
+        {
+          id: 'u-2',
+          name: 'Agent Two',
+          email: 'a2@whitecaves.ae',
+          role: 'agent',
+          brnNumber: 'BRN-002',
+          brnExpiry: yesterday,
+        },
+      ]);
+
+      const res = await request(createApp('owner')).get(
+        '/api/compliance/permit-alerts?daysAhead=30'
+      );
+
+      expect(res.status).toBe(200);
+      expect(res.body.success).toBe(true);
+      expect(res.body.data.summary.listingPermitIssues).toBe(1);
+      expect(res.body.data.summary.brnExpiringSoon).toBe(1);
+      expect(res.body.data.summary.brnExpired).toBe(1);
+      expect(res.body.data.listingPermitIssues).toHaveLength(1);
+      expect(res.body.data.brnPermitAlerts).toHaveLength(2);
+    });
+
+    it('returns 403 for agent role', async () => {
+      const res = await request(createApp('agent')).get('/api/compliance/permit-alerts');
+      expect(res.status).toBe(403);
+    });
+
+    it('returns 400 for invalid daysAhead', async () => {
+      const res = await request(createApp('owner')).get(
+        '/api/compliance/permit-alerts?daysAhead=0'
+      );
+      expect(res.status).toBe(400);
+      expect(res.body.error).toMatch(/daysAhead/i);
     });
   });
 });

@@ -1,0 +1,223 @@
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+import express, { type NextFunction, type Request, type Response } from 'express';
+import request from 'supertest';
+
+const { mockPrisma } = vi.hoisted(() => {
+  const fn = vi.fn;
+  return {
+    mockPrisma: {
+      nadiaConversation: {
+        create: fn(),
+        findUnique: fn(),
+        findMany: fn(),
+        count: fn(),
+        update: fn(),
+      },
+      nadiaMessage: {
+        create: fn(),
+        findMany: fn(),
+        count: fn(),
+      },
+      nadiaConversationQueue: {
+        count: fn(),
+      },
+    },
+  };
+});
+
+vi.mock('../database.js', () => ({ prisma: mockPrisma }));
+
+vi.mock('../middleware/errorHandler.js', () => ({
+  AppError: class extends Error {
+    statusCode: number;
+    constructor(message: string, statusCode: number) {
+      super(message);
+      this.statusCode = statusCode;
+    }
+  },
+  asyncHandler: (fn: unknown) => (req: Request, res: Response, next: NextFunction) =>
+    Promise.resolve(
+      (fn as (req: Request, res: Response, next: NextFunction) => unknown)(req, res, next)
+    ).catch(next),
+}));
+
+vi.mock('../middleware/rbac', () => ({
+  requirePermission: () => (_req: unknown, _res: unknown, next: () => void) => next(),
+}));
+
+vi.mock('../services/nadia/messageProcessor.js', () => ({
+  detectIntent: vi.fn(() => 'property_search'),
+  calculateLeadScore: vi.fn(() => 72),
+  detectSentiment: vi.fn(() => 'neutral'),
+  extractEntities: vi.fn(() => []),
+  generateBotResponse: vi.fn(() => 'Thanks for your message'),
+}));
+
+vi.mock('../services/nadia/queueManager.js', () => ({
+  getQueuedConversations: vi.fn(async () => []),
+  assignFromQueue: vi.fn(async () => ({ id: 'q-1', status: 'assigned' })),
+  queueConversationForAssignment: vi.fn(async () => ({ id: 'q-1' })),
+}));
+
+vi.mock('../services/nadia/whatsappAssistant.js', () => ({
+  classifyWhatsAppIntent: vi.fn(() => ({
+    intent: 'property_search',
+    confidence: 0.8,
+    sentiment: 'positive',
+    entities: [],
+    leadScore: 70,
+    shouldEscalate: false,
+    escalationReason: null,
+  })),
+  generateWhatsAppAutoResponse: vi.fn(() => ({
+    classification: {
+      intent: 'property_search',
+      confidence: 0.8,
+      sentiment: 'positive',
+      entities: [],
+      leadScore: 70,
+      shouldEscalate: false,
+      escalationReason: null,
+    },
+    response: 'Here are some options',
+    responseType: 'auto_reply',
+  })),
+}));
+
+import nadiaRoutes from './nadia';
+
+function createApp() {
+  const app = express();
+  app.use(express.json());
+  app.use((req, _res, next) => {
+    (req as Request & { user?: { id: string; role: string; email: string } }).user = {
+      id: 'u-1',
+      role: 'manager',
+      email: 'manager@whitecaves.ae',
+    };
+    next();
+  });
+  app.use('/api/nadia', nadiaRoutes);
+  app.use(
+    (err: Error & { statusCode?: number }, _req: Request, res: Response, _next: NextFunction) => {
+      res.status(err.statusCode || 500).json({ success: false, error: err.message });
+    }
+  );
+  return app;
+}
+
+describe('Nadia Routes — inbox wiring endpoints', () => {
+  const conversation = {
+    id: 'conv-1',
+    status: 'active',
+    customerPhone: '+971500000000',
+    routedAt: null,
+  };
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+
+    mockPrisma.nadiaConversation.findUnique.mockResolvedValue(conversation);
+    mockPrisma.nadiaConversation.update.mockResolvedValue({
+      ...conversation,
+      status: 'assigned_to_agent',
+      agentPhone: '+971511111111',
+      messages: [],
+      queue: null,
+    });
+
+    mockPrisma.nadiaMessage.create.mockResolvedValue({
+      id: 'msg-1',
+      conversationId: 'conv-1',
+      direction: 'outbound',
+      body: 'Hello',
+      messageType: 'text',
+      status: 'delivered',
+      timestamp: new Date(),
+    });
+    mockPrisma.nadiaMessage.findMany.mockResolvedValue([]);
+    mockPrisma.nadiaMessage.count.mockResolvedValue(0);
+    mockPrisma.nadiaConversation.findMany.mockResolvedValue([]);
+    mockPrisma.nadiaConversation.count.mockResolvedValue(0);
+    mockPrisma.nadiaConversationQueue.count.mockResolvedValue(0);
+  });
+
+  it('assigns a conversation using explicit assign endpoint', async () => {
+    const res = await request(createApp())
+      .patch('/api/nadia/conversations/conv-1/assign')
+      .send({ agentPhone: '+971511111111' });
+
+    expect(res.status).toBe(200);
+    expect(res.body.success).toBe(true);
+    expect(mockPrisma.nadiaConversation.update).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: { id: 'conv-1' },
+        data: expect.objectContaining({
+          status: 'assigned_to_agent',
+          agentPhone: '+971511111111',
+        }),
+      })
+    );
+  });
+
+  it('rejects assign endpoint when agentPhone is missing', async () => {
+    const res = await request(createApp()).patch('/api/nadia/conversations/conv-1/assign').send({});
+
+    expect(res.status).toBe(400);
+    expect(res.body.error).toMatch(/agentPhone/i);
+  });
+
+  it('closes a conversation using explicit close endpoint', async () => {
+    mockPrisma.nadiaConversation.update.mockResolvedValueOnce({
+      ...conversation,
+      status: 'closed',
+      closedReason: 'resolved',
+      closedAt: new Date(),
+      messages: [],
+      queue: null,
+    });
+
+    const res = await request(createApp())
+      .patch('/api/nadia/conversations/conv-1/close')
+      .send({ reason: 'resolved' });
+
+    expect(res.status).toBe(200);
+    expect(res.body.success).toBe(true);
+    expect(res.body.data.status).toBe('closed');
+  });
+
+  it('sends an agent reply via explicit reply endpoint', async () => {
+    const res = await request(createApp())
+      .post('/api/nadia/conversations/conv-1/reply')
+      .send({ content: 'Thanks, I can help with that.' });
+
+    expect(res.status).toBe(201);
+    expect(res.body.success).toBe(true);
+    expect(mockPrisma.nadiaMessage.create).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: expect.objectContaining({
+          conversationId: 'conv-1',
+          direction: 'outbound',
+        }),
+      })
+    );
+  });
+
+  it('rejects generic patch with invalid status', async () => {
+    const res = await request(createApp())
+      .patch('/api/nadia/conversations/conv-1')
+      .send({ status: 'unknown_status' });
+
+    expect(res.status).toBe(400);
+    expect(res.body.error).toMatch(/Invalid status/i);
+  });
+
+  it('rejects message creation with invalid senderType', async () => {
+    const res = await request(createApp())
+      .post('/api/nadia/conversations/conv-1/messages')
+      .send({ content: 'hello', senderType: 'bot' });
+
+    expect(res.status).toBe(400);
+    expect(res.body.error).toMatch(/senderType/i);
+  });
+});

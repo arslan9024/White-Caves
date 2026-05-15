@@ -12,9 +12,12 @@ import {
   calculateLeadScore,
   detectSentiment,
   extractEntities,
-  generateBotResponse,
 } from '../services/nadia/messageProcessor.js';
-import { getQueuedConversations, assignFromQueue, queueConversationForAssignment } from '../services/nadia/queueManager.js';
+import {
+  getQueuedConversations,
+  assignFromQueue,
+  queueConversationForAssignment,
+} from '../services/nadia/queueManager.js';
 import {
   classifyWhatsAppIntent,
   generateWhatsAppAutoResponse,
@@ -22,6 +25,8 @@ import {
 import { requirePermission } from '../middleware/rbac';
 
 const router = Router();
+
+const ALLOWED_CONVERSATION_STATUSES = ['active', 'assigned_to_agent', 'in_bot_flow', 'closed'];
 
 // ============================================================================
 // CONVERSATION ENDPOINTS
@@ -61,7 +66,6 @@ router.post(
     if (initialMessage) {
       const intent = detectIntent(initialMessage);
       const sentiment = detectSentiment(initialMessage);
-      const entities = extractEntities(initialMessage);
       const leadScore = calculateLeadScore({
         messageCount: 1,
         intent,
@@ -156,7 +160,7 @@ router.get(
     } = req.query;
 
     // Build filter
-    const filter: any = {};
+    const filter: Record<string, unknown> = {};
     if (status && status !== 'all') {
       filter.status = status;
     }
@@ -166,11 +170,7 @@ router.get(
 
     // Determine sort field
     const sortField =
-      sortBy === 'leadScore'
-        ? 'leadScore'
-        : sortBy === 'updatedAt'
-          ? 'updatedAt'
-          : 'createdAt';
+      sortBy === 'leadScore' ? 'leadScore' : sortBy === 'updatedAt' ? 'updatedAt' : 'createdAt';
 
     // Get total count
     const total = await prisma.nadiaConversation.count({
@@ -201,7 +201,7 @@ router.get(
         total,
         offset: parseInt(offset as string) || 0,
         limit: parseInt(limit as string) || 20,
-        hasMore: (parseInt(offset as string) || 0) + parseInt(limit as string || '20') < total,
+        hasMore: (parseInt(offset as string) || 0) + parseInt((limit as string) || '20') < total,
       },
     });
   })
@@ -226,7 +226,20 @@ router.patch(
       throw new AppError('Conversation not found', 404);
     }
 
-    const updateData: any = {};
+    if (status !== undefined) {
+      if (typeof status !== 'string' || !ALLOWED_CONVERSATION_STATUSES.includes(status)) {
+        throw new AppError(
+          `Invalid status. Must be one of: ${ALLOWED_CONVERSATION_STATUSES.join(', ')}`,
+          400
+        );
+      }
+
+      if (status === 'assigned_to_agent' && (!agentPhone || typeof agentPhone !== 'string')) {
+        throw new AppError('agentPhone is required when assigning a conversation', 400);
+      }
+    }
+
+    const updateData: Record<string, unknown> = {};
 
     if (status) {
       updateData.status = status;
@@ -238,6 +251,10 @@ router.patch(
         updateData.closedAt = new Date();
         updateData.closedReason = closedReason || 'completed';
       }
+    }
+
+    if (Object.keys(updateData).length === 0) {
+      throw new AppError('No valid update fields provided', 400);
     }
 
     const updated = await prisma.nadiaConversation.update({
@@ -253,6 +270,80 @@ router.patch(
       success: true,
       data: updated,
     });
+  })
+);
+
+/**
+ * PATCH /api/nadia/conversations/:conversationId/assign
+ * Explicit assignment endpoint for inbox workflow
+ */
+router.patch(
+  '/conversations/:conversationId/assign',
+  requirePermission('access_whatsapp_business'),
+  asyncHandler(async (req: Request, res: Response) => {
+    const { conversationId } = req.params;
+    const { agentPhone } = req.body;
+
+    if (!agentPhone || typeof agentPhone !== 'string') {
+      throw new AppError('agentPhone is required', 400);
+    }
+
+    const conversation = await prisma.nadiaConversation.findUnique({
+      where: { id: conversationId },
+    });
+    if (!conversation) {
+      throw new AppError('Conversation not found', 404);
+    }
+
+    const updated = await prisma.nadiaConversation.update({
+      where: { id: conversationId },
+      data: {
+        status: 'assigned_to_agent',
+        agentPhone,
+        routedAt: new Date(),
+      },
+      include: {
+        messages: true,
+        queue: true,
+      },
+    });
+
+    res.status(200).json({ success: true, data: updated });
+  })
+);
+
+/**
+ * PATCH /api/nadia/conversations/:conversationId/close
+ * Explicit close endpoint for inbox workflow
+ */
+router.patch(
+  '/conversations/:conversationId/close',
+  requirePermission('access_whatsapp_business'),
+  asyncHandler(async (req: Request, res: Response) => {
+    const { conversationId } = req.params;
+    const { reason } = req.body;
+
+    const conversation = await prisma.nadiaConversation.findUnique({
+      where: { id: conversationId },
+    });
+    if (!conversation) {
+      throw new AppError('Conversation not found', 404);
+    }
+
+    const closed = await prisma.nadiaConversation.update({
+      where: { id: conversationId },
+      data: {
+        status: 'closed',
+        closedAt: new Date(),
+        closedReason: typeof reason === 'string' && reason.trim() ? reason : 'closed_by_user',
+      },
+      include: {
+        messages: true,
+        queue: true,
+      },
+    });
+
+    res.status(200).json({ success: true, data: closed });
   })
 );
 
@@ -309,10 +400,14 @@ router.post(
   requirePermission('access_whatsapp_business'),
   asyncHandler(async (req: Request, res: Response) => {
     const { conversationId } = req.params;
-    const { content, senderType = 'customer', senderPhone } = req.body;
+    const { content, senderType = 'customer' } = req.body;
 
     if (!content) {
       throw new AppError('content is required', 400);
+    }
+
+    if (!['customer', 'agent'].includes(senderType)) {
+      throw new AppError('senderType must be customer or agent', 400);
     }
 
     const conversation = await prisma.nadiaConversation.findUnique({
@@ -325,9 +420,8 @@ router.post(
 
     // Process message if from customer
     const sentiment = senderType === 'customer' ? detectSentiment(content) : null;
-    const entities = senderType === 'customer' ? extractEntities(content) : null;
-    const updatedIntent =
-      senderType === 'customer' ? detectIntent(content) : conversation.intent;
+    extractEntities(content);
+    const updatedIntent = senderType === 'customer' ? detectIntent(content) : conversation.intent;
 
     // Create message
     const message = await prisma.nadiaMessage.create({
@@ -368,6 +462,52 @@ router.post(
       success: true,
       data: message,
     });
+  })
+);
+
+/**
+ * POST /api/nadia/conversations/:conversationId/reply
+ * Explicit agent reply endpoint for inbox workflow
+ */
+router.post(
+  '/conversations/:conversationId/reply',
+  requirePermission('access_whatsapp_business'),
+  asyncHandler(async (req: Request, res: Response) => {
+    const { conversationId } = req.params;
+    const { content } = req.body;
+
+    if (!content || typeof content !== 'string' || !content.trim()) {
+      throw new AppError('content is required', 400);
+    }
+
+    const conversation = await prisma.nadiaConversation.findUnique({
+      where: { id: conversationId },
+    });
+    if (!conversation) {
+      throw new AppError('Conversation not found', 404);
+    }
+
+    const outbound = await prisma.nadiaMessage.create({
+      data: {
+        conversationId,
+        waMessageId: `local-reply-${Date.now()}`,
+        direction: 'outbound',
+        body: content.trim(),
+        messageType: 'text',
+        status: 'delivered',
+        timestamp: new Date(),
+      },
+    });
+
+    await prisma.nadiaConversation.update({
+      where: { id: conversationId },
+      data: {
+        status: conversation.status === 'closed' ? 'assigned_to_agent' : conversation.status,
+        updatedAt: new Date(),
+      },
+    });
+
+    res.status(201).json({ success: true, data: outbound });
   })
 );
 
@@ -419,9 +559,7 @@ router.get(
   asyncHandler(async (req: Request, res: Response) => {
     const { limit = 10 } = req.query;
 
-    const queued = await getQueuedConversations(
-      Math.min(parseInt(limit as string) || 10, 100)
-    );
+    const queued = await getQueuedConversations(Math.min(parseInt(limit as string) || 10, 100));
 
     res.status(200).json({
       success: true,
@@ -515,7 +653,9 @@ router.post(
       throw new AppError('message is required', 400);
     }
 
-    const conversation = await prisma.nadiaConversation.findUnique({ where: { id: conversationId } });
+    const conversation = await prisma.nadiaConversation.findUnique({
+      where: { id: conversationId },
+    });
     if (!conversation) {
       throw new AppError('Conversation not found', 404);
     }
@@ -557,7 +697,10 @@ router.post(
     });
 
     if (assistant.classification.shouldEscalate) {
-      await queueConversationForAssignment(conversationId, assistant.classification.escalationReason || 'assistant_escalation');
+      await queueConversationForAssignment(
+        conversationId,
+        assistant.classification.escalationReason || 'assistant_escalation'
+      );
     }
 
     res.status(200).json({

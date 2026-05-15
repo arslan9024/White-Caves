@@ -11,6 +11,7 @@
  * GET    /api/compliance/brn-expiry     — BRN expiry report for all agents
  * GET    /api/compliance/ejari-export   — Ejari CSV download
  * GET    /api/compliance/vat-summary    — VAT breakdown by property type
+ * GET    /api/compliance/permit-alerts  — permit alert feed (property permits + BRN expiry)
  * GET    /api/compliance/overview       — Full compliance dashboard data
  * PATCH  /api/compliance/ejari/:leaseId — Update Ejari status for a lease
  * POST   /api/compliance/brn-check      — Trigger manual BRN expiry check
@@ -22,7 +23,10 @@ import type { AuthRequest } from '../middleware/auth';
 import { prisma } from '../database.js';
 import { sanitizeString } from '../utils/sanitize';
 import { requirePermission, requireMinRole } from '../middleware/rbac';
-import { getBRNExpiryReport, checkBRNExpirations } from '../services/compliance/reraExpiryScheduler.js';
+import {
+  getBRNExpiryReport,
+  checkBRNExpirations,
+} from '../services/compliance/reraExpiryScheduler.js';
 import {
   generateEjariExport,
   calculateVATSummary,
@@ -53,7 +57,8 @@ router.get(
       prisma.user.count({ where: { role: { in: ['agent', 'owner'] }, status: 'active' } }),
     ]);
 
-    const docCompliance = totalProperties > 0 ? Math.round((propertiesWithDocs / totalProperties) * 100) : 100;
+    const docCompliance =
+      totalProperties > 0 ? Math.round((propertiesWithDocs / totalProperties) * 100) : 100;
     const agentCompliance = totalAgents > 0 ? Math.round((activeAgents / totalAgents) * 100) : 100;
     const overallScore = Math.round((docCompliance + agentCompliance) / 2);
 
@@ -87,14 +92,62 @@ router.get(
     }
 
     const requirements = [
-      { id: 'rera-license', name: 'RERA Broker License', category: 'licensing', status: 'compliant', dueDate: '2027-01-01' },
-      { id: 'dld-registration', name: 'DLD Registration', category: 'licensing', status: 'compliant', dueDate: '2027-01-01' },
-      { id: 'agent-cards', name: 'Agent Broker Cards', category: 'agents', status: 'pending_review', dueDate: '2026-06-30' },
-      { id: 'aml-kyc', name: 'AML/KYC Procedures', category: 'compliance', status: 'compliant', dueDate: null },
-      { id: 'data-protection', name: 'Data Protection (PDPL)', category: 'privacy', status: 'compliant', dueDate: null },
-      { id: 'escrow-accounts', name: 'Escrow Account Management', category: 'finance', status: 'compliant', dueDate: null },
-      { id: 'property-ads', name: 'Property Advertisement Compliance', category: 'marketing', status: 'compliant', dueDate: null },
-      { id: 'contract-templates', name: 'Contract Templates (SPA/MOU)', category: 'legal', status: 'pending_review', dueDate: '2026-04-30' },
+      {
+        id: 'rera-license',
+        name: 'RERA Broker License',
+        category: 'licensing',
+        status: 'compliant',
+        dueDate: '2027-01-01',
+      },
+      {
+        id: 'dld-registration',
+        name: 'DLD Registration',
+        category: 'licensing',
+        status: 'compliant',
+        dueDate: '2027-01-01',
+      },
+      {
+        id: 'agent-cards',
+        name: 'Agent Broker Cards',
+        category: 'agents',
+        status: 'pending_review',
+        dueDate: '2026-06-30',
+      },
+      {
+        id: 'aml-kyc',
+        name: 'AML/KYC Procedures',
+        category: 'compliance',
+        status: 'compliant',
+        dueDate: null,
+      },
+      {
+        id: 'data-protection',
+        name: 'Data Protection (PDPL)',
+        category: 'privacy',
+        status: 'compliant',
+        dueDate: null,
+      },
+      {
+        id: 'escrow-accounts',
+        name: 'Escrow Account Management',
+        category: 'finance',
+        status: 'compliant',
+        dueDate: null,
+      },
+      {
+        id: 'property-ads',
+        name: 'Property Advertisement Compliance',
+        category: 'marketing',
+        status: 'compliant',
+        dueDate: null,
+      },
+      {
+        id: 'contract-templates',
+        name: 'Contract Templates (SPA/MOU)',
+        category: 'legal',
+        status: 'pending_review',
+        dueDate: '2026-04-30',
+      },
     ];
 
     res.status(200).json({ success: true, data: requirements });
@@ -136,7 +189,7 @@ router.get(
 
     res.status(200).json({
       success: true,
-      data: logs.map((l) => ({
+      data: logs.map(l => ({
         id: l.id,
         type: l.type,
         action: l.action,
@@ -171,7 +224,9 @@ router.post(
 
     const sanitizedTitle = sanitizeString(title.trim());
     const sanitizedFindings = findings ? sanitizeString(String(findings).substring(0, 10000)) : '';
-    const sanitizedRecommendations = recommendations ? sanitizeString(String(recommendations).substring(0, 10000)) : '';
+    const sanitizedRecommendations = recommendations
+      ? sanitizeString(String(recommendations).substring(0, 10000))
+      : '';
 
     const activity = await prisma.activity.create({
       data: {
@@ -214,14 +269,14 @@ router.get(
 
     const summary = {
       total: report.length,
-      valid: report.filter((a) => a.status === 'valid').length,
-      expiringSoon: report.filter((a) => a.status === 'expiring_soon').length,
-      expired: report.filter((a) => a.status === 'expired').length,
-      notSet: report.filter((a) => a.status === 'not_set').length,
+      valid: report.filter(a => a.status === 'valid').length,
+      expiringSoon: report.filter(a => a.status === 'expiring_soon').length,
+      expired: report.filter(a => a.status === 'expired').length,
+      notSet: report.filter(a => a.status === 'not_set').length,
     };
 
     res.json({ success: true, data: { agents: report, summary } });
-  }),
+  })
 );
 
 // ─── POST /api/compliance/brn-check — Manual BRN expiry check ───────────
@@ -245,7 +300,7 @@ router.post(
         agents: result.agents,
       },
     });
-  }),
+  })
 );
 
 // ─── GET /api/compliance/ejari-export — Ejari CSV export ─────────────────
@@ -272,9 +327,12 @@ router.get(
 
     // CSV download
     res.setHeader('Content-Type', 'text/csv; charset=utf-8');
-    res.setHeader('Content-Disposition', `attachment; filename="ejari-export-${new Date().toISOString().split('T')[0]}.csv"`);
+    res.setHeader(
+      'Content-Disposition',
+      `attachment; filename="ejari-export-${new Date().toISOString().split('T')[0]}.csv"`
+    );
     res.send(result.csv);
-  }),
+  })
 );
 
 // ─── PATCH /api/compliance/ejari/:leaseId — Update Ejari status ──────────
@@ -291,7 +349,10 @@ router.patch(
     const { ejariNumber, ejariStatus, ejariRegistrationDate, ejariExpiryDate } = req.body;
 
     if (ejariStatus && !['pending', 'registered', 'expired', 'cancelled'].includes(ejariStatus)) {
-      throw new AppError('Invalid ejariStatus. Must be: pending, registered, expired, cancelled', 400);
+      throw new AppError(
+        'Invalid ejariStatus. Must be: pending, registered, expired, cancelled',
+        400
+      );
     }
 
     const updated = await updateEjariStatus(leaseId, {
@@ -313,7 +374,7 @@ router.patch(
     });
 
     res.json({ success: true, data: updated });
-  }),
+  })
 );
 
 // ─── GET /api/compliance/vat-summary — VAT breakdown ─────────────────────
@@ -332,7 +393,94 @@ router.get(
     const summary = await calculateVATSummary(fromDate, toDate);
 
     res.json({ success: true, data: summary });
-  }),
+  })
+);
+
+// ─── GET /api/compliance/permit-alerts — permit monitoring alerts ─────────
+router.get(
+  '/permit-alerts',
+  requirePermission('view_analytics'),
+  asyncHandler(async (req: Request, res: Response) => {
+    const allowedRoles = ['owner', 'manager', 'admin', 'finance'];
+    if (!allowedRoles.includes(req.user?.role || '')) {
+      throw new AppError('Access denied — permit alerts require manager role', 403);
+    }
+
+    const parsedDaysAhead = parseInt(String(req.query.daysAhead || '30'), 10);
+    if (!Number.isFinite(parsedDaysAhead) || parsedDaysAhead < 1 || parsedDaysAhead > 365) {
+      throw new AppError('daysAhead must be a number between 1 and 365', 400);
+    }
+
+    const now = new Date();
+    const cutoff = new Date(now.getTime() + parsedDaysAhead * 24 * 60 * 60 * 1000);
+
+    // Active listings that fail permit baseline requirements.
+    const missingPermitListings = await prisma.property.findMany({
+      where: {
+        status: 'available',
+        OR: [
+          { municipalityNumber: null },
+          { municipalityNumber: '' },
+          { buildingPermitNumber: null },
+          { buildingPermitNumber: '' },
+        ],
+      },
+      select: {
+        id: true,
+        title: true,
+        status: true,
+        municipalityNumber: true,
+        buildingPermitNumber: true,
+        createdAt: true,
+      },
+      orderBy: { createdAt: 'desc' },
+      take: 200,
+    });
+
+    // BRN is treated as permit/license expiry signal for compliance alerts.
+    const brnExpiringOrExpired = await prisma.user.findMany({
+      where: {
+        role: { in: ['agent', 'owner'] },
+        status: 'active',
+        brnNumber: { not: null },
+        brnExpiry: { not: null, lte: cutoff },
+      },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        role: true,
+        brnNumber: true,
+        brnExpiry: true,
+      },
+      orderBy: { brnExpiry: 'asc' },
+      take: 200,
+    });
+
+    const brnAlerts = brnExpiringOrExpired.map(agent => {
+      const expiry = agent.brnExpiry as Date;
+      const daysToExpiry = Math.ceil((expiry.getTime() - now.getTime()) / (24 * 60 * 60 * 1000));
+      return {
+        ...agent,
+        status: daysToExpiry < 0 ? 'expired' : 'expiring_soon',
+        daysToExpiry,
+      };
+    });
+
+    res.status(200).json({
+      success: true,
+      data: {
+        summary: {
+          daysAhead: parsedDaysAhead,
+          listingPermitIssues: missingPermitListings.length,
+          brnExpired: brnAlerts.filter(a => a.status === 'expired').length,
+          brnExpiringSoon: brnAlerts.filter(a => a.status === 'expiring_soon').length,
+        },
+        listingPermitIssues: missingPermitListings,
+        brnPermitAlerts: brnAlerts,
+      },
+    });
+  })
 );
 
 // ─── GET /api/compliance/overview — Full dashboard data ──────────────────
@@ -348,7 +496,7 @@ router.get(
     const overview = await getComplianceOverview();
 
     res.json({ success: true, data: overview });
-  }),
+  })
 );
 
 export default router;

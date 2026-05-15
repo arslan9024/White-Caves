@@ -2,7 +2,7 @@
 
 > **Agency:** White Caves Global Agency
 > **Orchestrator:** @Ada (Chief Architect)
-> **Last Updated:** May 6, 2026
+> **Last Updated:** May 15, 2026
 > **Policy Mode:** 1000% Depth Gate + 92% Readiness Threshold (Governance V2 active)
 
 ---
@@ -31,28 +31,34 @@
 
 **Usage Log (this week):**
 
-| Date        | Agent              | Task                                                                                                                                                                                                                 | Requests Used |
-| ----------- | ------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------- |
-| May 3, 2026 | @Mira + @Gwynne    | Phase 29: Landlord portal live API wiring                                                                                                                                                                            | 3             |
-| May 4, 2026 | @Gwynne            | Merge development → main + push                                                                                                                                                                                      | 1             |
-| May 5, 2026 | @Mira              | Phase 31: Income + Offer Review live wiring                                                                                                                                                                          | 1             |
-| May 5, 2026 | @Mira + @Una       | Phase 32: Payments date-filter + mobile CSS completion                                                                                                                                                               | 1             |
-| May 5, 2026 | @Mira + @Una       | Phase 33 Step 2: Homepage leasing conversion tracking                                                                                                                                                                | 1             |
-| May 5, 2026 | @Katherine         | Phase 33 Step 3: Leasing continuity E2E spec (18/18 ✅ Chromium+Firefox+WebKit)                                                                                                                                      | 1             |
-| May 5, 2026 | @Mira              | Phase 34: Wire ?mode=rent/buy URL param → Properties purpose filter (3-file change, 7/7 tests ✅)                                                                                                                    | 1             |
-| May 5, 2026 | @Mira              | Phase 35: Wire 'Request Viewing' to POST /api/viewings — auth path + WhatsApp fallback (51/51 tests ✅)                                                                                                              | 1             |
-| May 5, 2026 | @Mira + @Katherine | Phase 36: Replace alert() with inline StatusBanner in MessageScheduler — 5 alerts removed (9/9 tests ✅)                                                                                                             | 1             |
-| May 6, 2026 | @Mira + @Katherine | Phase 37: Replace 8 alert() calls in LeasingAcquisition with ToastBanner — added LeasingProperty interface, typed state, eslint clean (10/10 tests ✅)                                                               | 1             |
-| May 6, 2026 | @Mira + @Katherine | Phase 38: Replace 6 alert() calls across 3 leasing modals (ContractSignModal, EjariRegistrationModal, DocumentChecklist) — typed interfaces, ErrorBanner, 25/25 tests ✅                                             | 1             |
-| May 6, 2026 | @Mira + @Katherine | Phase 39: Replace 5 alert() calls in SalesPipelinePage (2), CompanyProfile (2), and SettingsTab (1) — 39/39 tests ✅; later audit found additional legacy alert() clusters outside the original Phase 36–39 scope    | 1             |
-| May 6, 2026 | @Mira + @Katherine | Phase 40: Replace 3 alert() calls in TransactionsView with inline status banner; added 5 tests and fixed loading-state regression in fetchTransactions() ✅                                                          | 1             |
-| May 6, 2026 | @Mira + @Katherine | Phase 41: Replace 3 alert() calls in AIModelSelector with inline status banner; added 5 fetch-mocked tests and removed unused helper for ESLint clean ✅                                                             | 1             |
-| May 6, 2026 | @Mira + @Katherine | Phase 42: Replace 3 alert() calls in PropertyDetailPage, PropertyGalleryPage, and PriceRangeFilter with inline live-region banners; added 4 focused tests and lint hardening ✅                                      | 1             |
-| May 6, 2026 | @Mira + @Katherine | Phase 43: Replace 2 alert() calls in DocumentVerificationProcessor and PropertyOpportunityList with inline status banners; added focused test coverage for inventory-queue flow and lint hardening ✅                | 1             |
-| May 6, 2026 | @Mira + @Katherine | Phase 44: Replace 4 alert() calls in ProfilePage (2) and TenancyContractForm (2) with inline status banners; added 2 focused tests, fixed missing legacy imports/assets, lint clean and build verified ✅            | 1             |
-| May 6, 2026 | @Mira + @Katherine | Phase 45: Replace 2 alert() calls in ZoeExecutiveDashboard escalation actions with inline status banner; added focused alert-elimination test and local lint hardening ✅                                            | 1             |
-| May 6, 2026 | @Mira + @Katherine | Phase 46: Replace 19 alert() calls in PlanManager (main + CreatePlanModal + MergePlansModal + PlanEditor) with inline live-region banners; added focused validation test, removed local lint debt, build verified ✅ | 1             |
-| May 6, 2026 | @Mira + @Katherine | Phase 47: Added runtime alert regression guard test for non-test source files to enforce zero production `alert()` calls going forward ✅                                                                            | 1             |
+| Date         | Agent                               | Task                                                                                                                                                                                                                                            | Requests Used |
+| ------------ | ----------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------- |
+| May 3, 2026  | @Mira + @Gwynne                     | Phase 29: Landlord portal live API wiring                                                                                                                                                                                                       | 3             |
+| May 4, 2026  | @Gwynne                             | Merge development → main + push                                                                                                                                                                                                                 | 1             |
+| May 5, 2026  | @Mira                               | Phase 31: Income + Offer Review live wiring                                                                                                                                                                                                     | 1             |
+| May 5, 2026  | @Mira + @Una                        | Phase 32: Payments date-filter + mobile CSS completion                                                                                                                                                                                          | 1             |
+| May 5, 2026  | @Mira + @Una                        | Phase 33 Step 2: Homepage leasing conversion tracking                                                                                                                                                                                           | 1             |
+| May 5, 2026  | @Katherine                          | Phase 33 Step 3: Leasing continuity E2E spec (18/18 ✅ Chromium+Firefox+WebKit)                                                                                                                                                                 | 1             |
+| May 5, 2026  | @Mira                               | Phase 34: Wire ?mode=rent/buy URL param → Properties purpose filter (3-file change, 7/7 tests ✅)                                                                                                                                               | 1             |
+| May 5, 2026  | @Mira                               | Phase 35: Wire 'Request Viewing' to POST /api/viewings — auth path + WhatsApp fallback (51/51 tests ✅)                                                                                                                                         | 1             |
+| May 5, 2026  | @Mira + @Katherine                  | Phase 36: Replace alert() with inline StatusBanner in MessageScheduler — 5 alerts removed (9/9 tests ✅)                                                                                                                                        | 1             |
+| May 6, 2026  | @Mira + @Katherine                  | Phase 37: Replace 8 alert() calls in LeasingAcquisition with ToastBanner — added LeasingProperty interface, typed state, eslint clean (10/10 tests ✅)                                                                                          | 1             |
+| May 6, 2026  | @Mira + @Katherine                  | Phase 38: Replace 6 alert() calls across 3 leasing modals (ContractSignModal, EjariRegistrationModal, DocumentChecklist) — typed interfaces, ErrorBanner, 25/25 tests ✅                                                                        | 1             |
+| May 6, 2026  | @Mira + @Katherine                  | Phase 39: Replace 5 alert() calls in SalesPipelinePage (2), CompanyProfile (2), and SettingsTab (1) — 39/39 tests ✅; later audit found additional legacy alert() clusters outside the original Phase 36–39 scope                               | 1             |
+| May 6, 2026  | @Mira + @Katherine                  | Phase 40: Replace 3 alert() calls in TransactionsView with inline status banner; added 5 tests and fixed loading-state regression in fetchTransactions() ✅                                                                                     | 1             |
+| May 6, 2026  | @Mira + @Katherine                  | Phase 41: Replace 3 alert() calls in AIModelSelector with inline status banner; added 5 fetch-mocked tests and removed unused helper for ESLint clean ✅                                                                                        | 1             |
+| May 6, 2026  | @Mira + @Katherine                  | Phase 42: Replace 3 alert() calls in PropertyDetailPage, PropertyGalleryPage, and PriceRangeFilter with inline live-region banners; added 4 focused tests and lint hardening ✅                                                                 | 1             |
+| May 6, 2026  | @Mira + @Katherine                  | Phase 43: Replace 2 alert() calls in DocumentVerificationProcessor and PropertyOpportunityList with inline status banners; added focused test coverage for inventory-queue flow and lint hardening ✅                                           | 1             |
+| May 6, 2026  | @Mira + @Katherine                  | Phase 44: Replace 4 alert() calls in ProfilePage (2) and TenancyContractForm (2) with inline status banners; added 2 focused tests, fixed missing legacy imports/assets, lint clean and build verified ✅                                       | 1             |
+| May 6, 2026  | @Mira + @Katherine                  | Phase 45: Replace 2 alert() calls in ZoeExecutiveDashboard escalation actions with inline status banner; added focused alert-elimination test and local lint hardening ✅                                                                       | 1             |
+| May 6, 2026  | @Mira + @Katherine                  | Phase 46: Replace 19 alert() calls in PlanManager (main + CreatePlanModal + MergePlansModal + PlanEditor) with inline live-region banners; added focused validation test, removed local lint debt, build verified ✅                            | 1             |
+| May 6, 2026  | @Mira + @Katherine                  | Phase 47: Added runtime alert regression guard test for non-test source files to enforce zero production `alert()` calls going forward ✅                                                                                                       | 1             |
+| May 15, 2026 | @Ada + @Margaret + guardian + @Dena | Multiagent 11-wave execution program synthesis, canonical planning alignment, and tracker update                                                                                                                                                | 0             |
+| May 15, 2026 | @Mira + @Radia                      | Wave 03 kickoff: Meta webhook idempotency hardening in `server/routes/meta-webhook.ts` (duplicate `waMessageId` guard) with test/build validation ✅                                                                                            | 1             |
+| May 15, 2026 | @Mira + @Radia                      | Wave 03 hardening: outbound WhatsApp send/template rate-limit enforcement (`429` + `retryAfterMs`) in `server/routes/meta-webhook.ts` with green tests/build ✅                                                                                 | 1             |
+| May 15, 2026 | @Mira + @Sofia + @Katherine         | Wave 04 kickoff: property compliance guard in `server/routes/properties.ts` requiring `municipalityNumber` + `buildingPermitNumber` for `available` listings/transition, with updated route tests (25/25 ✅) and build pass ✅                  | 1             |
+| May 15, 2026 | @Mira + @Sofia + @Katherine         | Wave 04 W4-002 partial delivery: added `/api/compliance/permit-alerts` (listing permit issues + BRN expiring/expired alert feed for dashboard path), with route tests green (26/26 ✅) and build pass ✅                                        | 1             |
+| May 15, 2026 | @Mira + @Jaime + @Katherine         | Wave 03 W3-004 progression: explicit Nadia inbox endpoints added (`/conversations/:id/assign`, `/conversations/:id/close`, `/conversations/:id/reply`) with stricter status/sender validation; new route tests green (6/6 ✅) and build pass ✅ | 1             |
 
 ---
 
@@ -107,6 +113,26 @@
 - [ ] Readiness score packet at >=92% with evidence
 - [ ] Daily quota plan logged before premium coding
 - [ ] Mandatory wave artifact bundle present in `plans/waves/` for each premium wave
+
+### MILESTONE-11-WAVE-PROGRAM
+
+**Multiagent 11-Wave Execution Program — coordinated implementation layer**
+
+**Status:** 🔨 PLANNING UPDATED (May 15 synthesis)
+
+- [x] Cross-agent synthesis completed (@Ada + @Margaret + guardian + @Dena)
+- [x] Compact execution program created (`plans/MULTIAGENT_11_WAVE_EXECUTION_PROGRAM.md`)
+- [x] Active master plan linked to 11-wave program (`plans/MASTER_PLAN.md`)
+- [x] Wave 02 artifact bundle created (`plans/waves/WAVE_02_SDD.md`, `WAVE_02_READINESS_PACKET.md`, `WAVE_02_IMPLEMENTATION_BACKLOG.md`, `WAVE_02_TEST_ROLLOUT.md`)
+- [x] Wave 02 governance inventories completed (`WAVE_02_READINESS_SOURCE_OF_TRUTH.md`, `WAVE_02_ROUTE_OWNERSHIP_INVENTORY.md`, `WAVE_02_PERMISSION_BOUNDARY_MAP.md`, `WAVE_02_DATA_CONTRACT_INVENTORY.md`)
+- [x] Wave 03 artifact bundle prepared (`plans/waves/WAVE_03_SDD.md`, `WAVE_03_READINESS_PACKET.md`, `WAVE_03_IMPLEMENTATION_BACKLOG.md`, `WAVE_03_TEST_ROLLOUT.md`)
+- [x] Wave 04 artifact bundle prepared (`plans/waves/WAVE_04_SDD.md`, `WAVE_04_READINESS_PACKET.md`, `WAVE_04_IMPLEMENTATION_BACKLOG.md`, `WAVE_04_TEST_ROLLOUT.md`)
+- [x] Reconcile canonical readiness source and close Wave 02 entry gate
+- [x] Wave 03 pre-implementation hardening started (webhook idempotency guard + green test/build)
+- [x] Wave 04 pre-implementation hardening started (property route compliance guard + green route tests/build)
+- [x] Wave 04 alert path baseline added (`GET /api/compliance/permit-alerts`) for permit issue + BRN expiry monitoring
+- [x] Wave 03 inbox path expanded with explicit assign/close/reply endpoints + targeted route tests
+- [ ] Continue Wave 03 and Wave 04 implementation backlog execution
 
 ### MILESTONE-PHASE-2
 
