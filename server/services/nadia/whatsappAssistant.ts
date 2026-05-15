@@ -22,6 +22,7 @@ export interface IntentClassificationResult {
   sentiment: Sentiment;
   entities: string[];
   leadScore: number;
+  firstResponseState: 'auto_reply' | 'clarify' | 'escalate_to_agent';
   shouldEscalate: boolean;
   escalationReason: string | null;
 }
@@ -44,7 +45,7 @@ const ESCALATION_KEYWORDS = [
 
 function detectEscalationRequest(message: string): boolean {
   const lower = message.toLowerCase();
-  return ESCALATION_KEYWORDS.some((kw) => lower.includes(kw));
+  return ESCALATION_KEYWORDS.some(kw => lower.includes(kw));
 }
 
 /**
@@ -56,6 +57,34 @@ function estimateConfidence(intent: string, entities: string[], message: string)
   const entityBoost = Math.min(entities.length * 0.08, 0.24);
   const lengthBoost = msgLen >= 30 ? 0.08 : msgLen >= 15 ? 0.05 : 0.02;
   return Math.max(0.2, Math.min(0.98, base + entityBoost + lengthBoost));
+}
+
+function resolveFirstResponseState(params: {
+  explicitEscalation: boolean;
+  intentEscalation: boolean;
+  confidence: number;
+  sentiment: Sentiment;
+  intent: string;
+}): 'auto_reply' | 'clarify' | 'escalate_to_agent' {
+  const { explicitEscalation, intentEscalation, confidence, sentiment, intent } = params;
+
+  if (explicitEscalation || intentEscalation || confidence < 0.6) {
+    if (intent === 'general_inquiry' && !explicitEscalation && !intentEscalation) {
+      return 'clarify';
+    }
+    return 'escalate_to_agent';
+  }
+
+  const needsClarification =
+    intent === 'general_inquiry' ||
+    (confidence >= 0.6 && confidence < 0.72) ||
+    (sentiment === 'negative' && confidence >= 0.72 && confidence < 0.8);
+
+  if (needsClarification) {
+    return 'clarify';
+  }
+
+  return 'auto_reply';
 }
 
 export function classifyWhatsAppIntent(message: string): IntentClassificationResult {
@@ -75,16 +104,21 @@ export function classifyWhatsAppIntent(message: string): IntentClassificationRes
   const explicitEscalation = detectEscalationRequest(message);
   const confidenceEscalation = confidence < 0.6;
   const intentEscalation = intent === 'complaint' || intent === 'legal_enquiry';
-  const sentimentEscalation = sentiment === 'negative' && confidence < 0.75;
 
-  const shouldEscalate =
-    explicitEscalation || confidenceEscalation || intentEscalation || sentimentEscalation;
+  const firstResponseState = resolveFirstResponseState({
+    explicitEscalation,
+    intentEscalation,
+    confidence,
+    sentiment,
+    intent,
+  });
+
+  const shouldEscalate = firstResponseState === 'escalate_to_agent';
 
   let escalationReason: string | null = null;
   if (explicitEscalation) escalationReason = 'customer_requested_human';
   else if (intentEscalation) escalationReason = 'intent_requires_agent';
-  else if (confidenceEscalation) escalationReason = 'low_intent_confidence';
-  else if (sentimentEscalation) escalationReason = 'negative_sentiment';
+  else if (shouldEscalate && confidenceEscalation) escalationReason = 'low_intent_confidence';
 
   return {
     intent,
@@ -92,6 +126,7 @@ export function classifyWhatsAppIntent(message: string): IntentClassificationRes
     sentiment,
     entities,
     leadScore,
+    firstResponseState,
     shouldEscalate,
     escalationReason,
   };
@@ -110,6 +145,16 @@ export function generateWhatsAppAutoResponse(input: {
         `Thanks for your message${input.customerName ? `, ${input.customerName}` : ''}. ` +
         `I'm connecting you to a WhatsApp specialist right now for faster assistance.`,
       responseType: 'escalate_to_agent',
+    };
+  }
+
+  if (classification.firstResponseState === 'clarify') {
+    return {
+      classification,
+      response:
+        `Thanks${input.customerName ? `, ${input.customerName}` : ''}. ` +
+        `To help you faster, could you share your preferred area, budget, and property type?`,
+      responseType: 'bot',
     };
   }
 

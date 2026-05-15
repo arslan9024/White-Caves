@@ -3,25 +3,34 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import {
-  classifyWhatsAppIntent,
-  generateWhatsAppAutoResponse,
-} from './whatsappAssistant';
+import { classifyWhatsAppIntent, generateWhatsAppAutoResponse } from './whatsappAssistant';
 
 describe('WhatsApp Assistant (Phase 4D)', () => {
   it('classifies property search intent with confidence', () => {
-    const result = classifyWhatsAppIntent('I am looking for a 2 bed apartment in Dubai Marina around 2 million');
+    const result = classifyWhatsAppIntent(
+      'I am looking for a 2 bed apartment in Dubai Marina around 2 million'
+    );
     expect(result.intent).toBe('property_search');
     expect(result.entities.length).toBeGreaterThan(0);
     expect(result.confidence).toBeGreaterThan(0.6);
+    expect(result.firstResponseState).toBe('auto_reply');
     expect(result.shouldEscalate).toBe(false);
   });
 
   it('escalates complaint intent', () => {
-    const result = classifyWhatsAppIntent('I have a serious complaint, this is urgent and not working');
+    const result = classifyWhatsAppIntent(
+      'I have a serious complaint, this is urgent and not working'
+    );
     expect(result.intent).toBe('complaint');
+    expect(result.firstResponseState).toBe('escalate_to_agent');
     expect(result.shouldEscalate).toBe(true);
     expect(result.escalationReason).toBeTruthy();
+  });
+
+  it('uses clarify state for broad low-context inquiries', () => {
+    const result = classifyWhatsAppIntent('Need details please');
+    expect(result.firstResponseState).toBe('clarify');
+    expect(result.shouldEscalate).toBe(false);
   });
 
   it('auto-generates bot response for non-escalation flow', () => {
@@ -39,5 +48,15 @@ describe('WhatsApp Assistant (Phase 4D)', () => {
     });
     expect(result.responseType).toBe('escalate_to_agent');
     expect(result.classification.shouldEscalate).toBe(true);
+  });
+
+  it('returns clarification prompt when classification state is clarify', () => {
+    const result = generateWhatsAppAutoResponse({
+      message: 'Need options',
+      customerName: 'Sara',
+    });
+    expect(result.responseType).toBe('bot');
+    expect(result.classification.firstResponseState).toBe('clarify');
+    expect(result.response.toLowerCase()).toContain('preferred area');
   });
 });
