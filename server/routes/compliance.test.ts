@@ -17,13 +17,19 @@ const { mockPrisma } = vi.hoisted(() => {
         count: fn().mockResolvedValue(20),
         findMany: fn().mockResolvedValue([]),
       },
+      lead: {
+        findUnique: fn().mockResolvedValue({ id: 'lead-1', tags: [] }),
+        update: fn().mockResolvedValue({ id: 'lead-1', tags: ['kyc_verified'] }),
+      },
       user: {
         count: fn().mockResolvedValue(5),
         findMany: fn().mockResolvedValue([]),
       },
       activity: {
         findMany: fn().mockResolvedValue([]),
+        findUnique: fn().mockResolvedValue(null),
         count: fn().mockResolvedValue(0),
+        update: fn().mockResolvedValue({ id: 'doc-1' }),
         create: fn().mockResolvedValue({
           id: 'act-1',
           createdAt: new Date('2026-01-15'),
@@ -82,8 +88,12 @@ describe('Compliance Routes — /api/compliance', () => {
     vi.clearAllMocks();
     mockPrisma.property.count.mockResolvedValue(20);
     mockPrisma.property.findMany.mockResolvedValue([]);
+    mockPrisma.lead.findUnique.mockResolvedValue({ id: 'lead-1', tags: [] });
+    mockPrisma.lead.update.mockResolvedValue({ id: 'lead-1', tags: ['kyc_verified'] });
     mockPrisma.user.count.mockResolvedValue(5);
     mockPrisma.user.findMany.mockResolvedValue([]);
+    mockPrisma.activity.findUnique.mockResolvedValue(null);
+    mockPrisma.activity.update.mockResolvedValue({ id: 'doc-1' });
   });
 
   // ── GET /status ──────────────────────────────────────────────────
@@ -369,6 +379,79 @@ describe('Compliance Routes — /api/compliance', () => {
       );
       expect(res.status).toBe(400);
       expect(res.body.error).toMatch(/daysAhead/i);
+    });
+  });
+
+  // ── W4-003 KYC workflow ─────────────────────────────────────────
+  describe('KYC upload/list/review workflow', () => {
+    it('uploads KYC document metadata for a lead', async () => {
+      mockPrisma.lead.findUnique.mockResolvedValueOnce({ id: 'lead-1' });
+      mockPrisma.activity.create.mockResolvedValueOnce({
+        id: 'doc-1',
+        createdAt: new Date('2026-05-16T08:00:00.000Z'),
+      });
+
+      const res = await request(createApp('agent'))
+        .post('/api/compliance/kyc/lead-1/documents')
+        .send({
+          documentType: 'passport',
+          documentUrl: 'https://cdn.whitecaves.ae/docs/passport.pdf',
+          fileName: 'passport.pdf',
+        });
+
+      expect(res.status).toBe(201);
+      expect(res.body.success).toBe(true);
+      expect(res.body.data.reviewStatus).toBe('pending');
+      expect(mockPrisma.activity.create).toHaveBeenCalled();
+    });
+
+    it('lists KYC documents for a lead', async () => {
+      mockPrisma.activity.findMany.mockResolvedValueOnce([
+        {
+          id: 'doc-1',
+          leadId: 'lead-1',
+          createdAt: new Date('2026-05-16T08:00:00.000Z'),
+          metadata: {
+            documentType: 'passport',
+            documentUrl: 'https://cdn.whitecaves.ae/docs/passport.pdf',
+            reviewStatus: 'pending',
+          },
+        },
+      ]);
+
+      const res = await request(createApp('manager')).get('/api/compliance/kyc/lead-1/documents');
+      expect(res.status).toBe(200);
+      expect(res.body.success).toBe(true);
+      expect(res.body.data).toHaveLength(1);
+      expect(res.body.data[0].documentType).toBe('passport');
+    });
+
+    it('reviews KYC document and updates lead tags on approval', async () => {
+      mockPrisma.activity.findUnique.mockResolvedValueOnce({
+        id: 'doc-1',
+        type: 'compliance',
+        action: 'kyc_document_uploaded',
+        leadId: 'lead-1',
+        metadata: { reviewStatus: 'pending' },
+      });
+      mockPrisma.activity.update.mockResolvedValueOnce({ id: 'doc-1' });
+      mockPrisma.lead.findUnique.mockResolvedValueOnce({ id: 'lead-1', tags: [] });
+
+      const res = await request(createApp('owner'))
+        .patch('/api/compliance/kyc/documents/doc-1/review')
+        .send({ decision: 'approved', comments: 'Verified against Emirates ID' });
+
+      expect(res.status).toBe(200);
+      expect(res.body.success).toBe(true);
+      expect(res.body.data.decision).toBe('approved');
+      expect(mockPrisma.lead.update).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: { id: 'lead-1' },
+          data: expect.objectContaining({
+            tags: expect.arrayContaining(['kyc_verified']),
+          }),
+        })
+      );
     });
   });
 });
