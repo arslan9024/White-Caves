@@ -968,12 +968,10 @@ router.post(
       },
     });
 
-    res
-      .status(201)
-      .json({
-        success: true,
-        data: { id: consent.id, status: 'active', metadata: consent.metadata },
-      });
+    res.status(201).json({
+      success: true,
+      data: { id: consent.id, status: 'active', metadata: consent.metadata },
+    });
   })
 );
 
@@ -1110,6 +1108,106 @@ router.delete(
     });
 
     res.json({ success: true, data: { id: consentId, status: 'deleted' } });
+  })
+);
+
+// ─── GET /api/compliance/queues — unified compliance queue feed ──────────
+router.get(
+  '/queues',
+  requirePermission('view_analytics'),
+  asyncHandler(async (req: Request, res: Response) => {
+    const allowedRoles = ['owner', 'manager', 'admin', 'finance'];
+    if (!allowedRoles.includes(req.user?.role || '')) {
+      throw new AppError('Access denied — compliance queues require manager role', 403);
+    }
+
+    const [permitIssues, kycDocs, amlAlerts] = await Promise.all([
+      prisma.property.findMany({
+        where: {
+          status: 'available',
+          OR: [
+            { municipalityNumber: null },
+            { municipalityNumber: '' },
+            { buildingPermitNumber: null },
+            { buildingPermitNumber: '' },
+          ],
+        },
+        select: {
+          id: true,
+          title: true,
+          municipalityNumber: true,
+          buildingPermitNumber: true,
+          createdAt: true,
+        },
+        orderBy: { createdAt: 'desc' },
+        take: 50,
+      }),
+      prisma.activity.findMany({
+        where: {
+          type: 'compliance',
+          action: 'kyc_document_uploaded',
+        },
+        include: {
+          lead: { select: { id: true, name: true, email: true, phone: true, status: true } },
+        },
+        orderBy: { createdAt: 'desc' },
+        take: 200,
+      }),
+      prisma.activity.findMany({
+        where: {
+          type: 'compliance',
+          action: 'aml_alert_created',
+        },
+        include: {
+          lead: { select: { id: true, name: true, email: true, phone: true, status: true } },
+        },
+        orderBy: { createdAt: 'desc' },
+        take: 200,
+      }),
+    ]);
+
+    const pendingKyc = kycDocs.filter(d => {
+      const metadata = normalizeMetadata(d.metadata);
+      return (metadata.reviewStatus || 'pending') === 'pending';
+    });
+
+    const openAml = amlAlerts.filter(a => {
+      const metadata = normalizeMetadata(a.metadata);
+      return String(metadata.status || 'open') === 'open';
+    });
+
+    res.json({
+      success: true,
+      data: {
+        summary: {
+          permitIssues: permitIssues.length,
+          kycPendingReview: pendingKyc.length,
+          amlOpenAlerts: openAml.length,
+        },
+        permitIssues: permitIssues.slice(0, 20),
+        kycPendingReview: pendingKyc.slice(0, 20).map(d => {
+          const metadata = normalizeMetadata(d.metadata);
+          return {
+            id: d.id,
+            leadId: d.leadId,
+            lead: d.lead,
+            documentType: metadata.documentType || null,
+            uploadedAt: metadata.uploadedAt || d.createdAt.toISOString(),
+          };
+        }),
+        amlOpenAlerts: openAml.slice(0, 20).map(a => {
+          const metadata = normalizeMetadata(a.metadata);
+          return {
+            id: a.id,
+            leadId: a.leadId,
+            lead: a.lead,
+            severity: metadata.severity || 'medium',
+            flags: metadata.flags || [],
+            createdAt: a.createdAt,
+          };
+        }),
+      },
+    });
   })
 );
 

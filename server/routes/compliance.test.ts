@@ -648,4 +648,64 @@ describe('Compliance Routes — /api/compliance', () => {
       expect(deleteRes.body.data.status).toBe('deleted');
     });
   });
+
+  // ── W4-007 Compliance queues feed ───────────────────────────────
+  describe('Compliance queue feed', () => {
+    it('returns unified queue summary for owner', async () => {
+      mockPrisma.property.findMany.mockResolvedValueOnce([
+        {
+          id: 'prop-1',
+          title: 'JVC Tower 1103',
+          municipalityNumber: null,
+          buildingPermitNumber: 'B-1103',
+          createdAt: new Date('2026-05-16T12:00:00.000Z'),
+        },
+      ]);
+
+      mockPrisma.activity.findMany
+        .mockResolvedValueOnce([
+          {
+            id: 'kyc-doc-1',
+            leadId: 'lead-1',
+            createdAt: new Date('2026-05-16T12:05:00.000Z'),
+            metadata: { reviewStatus: 'pending', documentType: 'passport' },
+            lead: {
+              id: 'lead-1',
+              name: 'Lead One',
+              email: 'lead1@example.com',
+              phone: '+971500000001',
+              status: 'new',
+            },
+          },
+        ])
+        .mockResolvedValueOnce([
+          {
+            id: 'aml-1',
+            leadId: 'lead-2',
+            createdAt: new Date('2026-05-16T12:10:00.000Z'),
+            metadata: { status: 'open', severity: 'high', flags: ['high_value_transaction'] },
+            lead: {
+              id: 'lead-2',
+              name: 'Lead Two',
+              email: 'lead2@example.com',
+              phone: '+971500000002',
+              status: 'contacted',
+            },
+          },
+        ]);
+
+      const res = await request(createApp('owner')).get('/api/compliance/queues');
+
+      expect(res.status).toBe(200);
+      expect(res.body.success).toBe(true);
+      expect(res.body.data.summary.permitIssues).toBe(1);
+      expect(res.body.data.summary.kycPendingReview).toBe(1);
+      expect(res.body.data.summary.amlOpenAlerts).toBe(1);
+    });
+
+    it('returns 403 for agent role', async () => {
+      const res = await request(createApp('agent')).get('/api/compliance/queues');
+      expect(res.status).toBe(403);
+    });
+  });
 });
