@@ -67,6 +67,7 @@
 | May 16, 2026 | @Mira + @Timnit + @Katherine        | Wave 04 W4-005 delivered: AML adapter + flagging flow baseline added (`POST /api/compliance/aml/screen`, `GET /api/compliance/aml/alerts`, `PATCH /api/compliance/aml/alerts/:alertId/resolve`) with provider abstraction (`server/services/compliance/amlAdapter.ts`), compliance alert lifecycle, and lead `aml_flagged` tag sync; route tests green (32/32 ✅) and build pass ✅ | 1             |
 | May 16, 2026 | @Mira + @Sofia + @Katherine         | Wave 04 W4-006 delivered: PDPL consent controls baseline added (`POST /api/compliance/consent`, `PATCH /api/compliance/consent/:consentId/revoke`, `GET /api/compliance/consent/export`, `DELETE /api/compliance/consent/:consentId`) covering consent create/revoke/export/delete lifecycle with permission guards; route tests green (35/35 ✅) and build pass ✅                 | 1             |
 | May 16, 2026 | @Mira + @Lea + @Katherine           | Wave 04 W4-007 baseline delivered: unified compliance queue feed endpoint added (`GET /api/compliance/queues`) aggregating permit issues + pending KYC docs + open AML alerts for dashboard consumption, with focused queue tests and access guard checks green (37/37 ✅) and build pass ✅                                                                                        | 1             |
+| May 16, 2026 | @Mira + @Timnit + @Katherine        | Wave 04 W4-005 hardening: added dedicated AML adapter unit suite (`server/services/compliance/__tests__/amlAdapter.test.ts`) covering low/high-risk scoring, flag generation, and 100-score cap; focused verification green (41/41 targeted tests ✅) with lint/build pass ✅                                                                                                       | 1             |
 
 ---
 
@@ -146,6 +147,7 @@
 - [x] Wave 03 campaign foundation baseline: persisted Linda campaign endpoints + scheduled dispatch path with rate-limit filtering
 - [x] Wave 04 KYC workflow baseline: upload/list/review queue + review decision path integrated with lead tags
 - [x] Wave 04 AML baseline: provider abstraction + AML alert create/list/resolve flow with lead flag tagging
+- [x] Wave 04 AML hardening baseline: adapter unit tests for scoring thresholds, flags, and max-score cap
 - [x] Wave 04 PDPL consent baseline: consent create/revoke/export/delete endpoints with guarded access
 - [x] Wave 04 queue baseline: unified compliance queue feed endpoint for permit/KYC/AML dashboard cards
 - [ ] Continue Wave 03 and Wave 04 implementation backlog execution
