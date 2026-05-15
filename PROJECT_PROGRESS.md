@@ -65,6 +65,7 @@
 | May 16, 2026 | @Mira + @Jaime + @Katherine         | Wave 03 W3-007 foundation delivered: persisted Linda broadcast campaigns added (`GET/POST /api/linda/campaigns`, `POST /api/linda/campaigns/:id/dispatch`, `POST /api/linda/campaigns/dispatch-due`) using `LindaBroadcastCampaign` + per-recipient rate-limit gate; focused route tests green (3/3 ✅) and build pass ✅                                                           | 1             |
 | May 16, 2026 | @Mira + @Sofia + @Katherine         | Wave 04 W4-003 delivered: compliance KYC upload/list/review workflow added (`POST /api/compliance/kyc/:leadId/documents`, `GET /api/compliance/kyc/:leadId/documents`, `GET /api/compliance/kyc/review-queue`, `PATCH /api/compliance/kyc/documents/:documentId/review`) with lead-tag sync to `kyc_verified`/`kyc_rejected`; route tests green (29/29 ✅) and build pass ✅        | 1             |
 | May 16, 2026 | @Mira + @Timnit + @Katherine        | Wave 04 W4-005 delivered: AML adapter + flagging flow baseline added (`POST /api/compliance/aml/screen`, `GET /api/compliance/aml/alerts`, `PATCH /api/compliance/aml/alerts/:alertId/resolve`) with provider abstraction (`server/services/compliance/amlAdapter.ts`), compliance alert lifecycle, and lead `aml_flagged` tag sync; route tests green (32/32 ✅) and build pass ✅ | 1             |
+| May 16, 2026 | @Mira + @Sofia + @Katherine         | Wave 04 W4-006 delivered: PDPL consent controls baseline added (`POST /api/compliance/consent`, `PATCH /api/compliance/consent/:consentId/revoke`, `GET /api/compliance/consent/export`, `DELETE /api/compliance/consent/:consentId`) covering consent create/revoke/export/delete lifecycle with permission guards; route tests green (35/35 ✅) and build pass ✅                 | 1             |
 
 ---
 
@@ -144,6 +145,7 @@
 - [x] Wave 03 campaign foundation baseline: persisted Linda campaign endpoints + scheduled dispatch path with rate-limit filtering
 - [x] Wave 04 KYC workflow baseline: upload/list/review queue + review decision path integrated with lead tags
 - [x] Wave 04 AML baseline: provider abstraction + AML alert create/list/resolve flow with lead flag tagging
+- [x] Wave 04 PDPL consent baseline: consent create/revoke/export/delete endpoints with guarded access
 - [ ] Continue Wave 03 and Wave 04 implementation backlog execution
 
 ### MILESTONE-PHASE-2

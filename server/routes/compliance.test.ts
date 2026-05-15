@@ -561,4 +561,91 @@ describe('Compliance Routes — /api/compliance', () => {
       expect(res.body.data.status).toBe('resolved');
     });
   });
+
+  // ── W4-006 PDPL consent controls ────────────────────────────────
+  describe('PDPL consent controls', () => {
+    it('creates consent record', async () => {
+      mockPrisma.lead.findUnique.mockResolvedValueOnce({ id: 'lead-1' });
+      mockPrisma.activity.create.mockResolvedValueOnce({
+        id: 'consent-1',
+        createdAt: new Date('2026-05-16T11:00:00.000Z'),
+        metadata: { status: 'active', purpose: 'marketing_sms' },
+      });
+
+      const res = await request(createApp('agent')).post('/api/compliance/consent').send({
+        entityType: 'lead',
+        entityId: 'lead-1',
+        purpose: 'marketing_sms',
+        channel: 'whatsapp_widget',
+      });
+
+      expect(res.status).toBe(201);
+      expect(res.body.success).toBe(true);
+      expect(res.body.data.status).toBe('active');
+    });
+
+    it('revokes consent record', async () => {
+      mockPrisma.activity.findUnique.mockResolvedValueOnce({
+        id: 'consent-1',
+        type: 'compliance',
+        action: 'pdpl_consent_created',
+        metadata: { status: 'active' },
+      });
+      mockPrisma.activity.update.mockResolvedValueOnce({ id: 'consent-1' });
+
+      const res = await request(createApp('manager'))
+        .patch('/api/compliance/consent/consent-1/revoke')
+        .send({ reason: 'user_requested_opt_out' });
+
+      expect(res.status).toBe(200);
+      expect(res.body.success).toBe(true);
+      expect(res.body.data.status).toBe('revoked');
+    });
+
+    it('exports consent records and allows deletion baseline', async () => {
+      mockPrisma.activity.findMany.mockResolvedValueOnce([
+        {
+          id: 'consent-1',
+          type: 'compliance',
+          action: 'pdpl_consent_created',
+          leadId: 'lead-1',
+          createdAt: new Date('2026-05-16T11:00:00.000Z'),
+          metadata: {
+            entityType: 'lead',
+            entityId: 'lead-1',
+            purpose: 'marketing_sms',
+            status: 'active',
+            consentedAt: '2026-05-16T11:00:00.000Z',
+          },
+          user: { id: 'user-1', name: 'Owner', email: 'owner@whitecaves.ae', role: 'owner' },
+          lead: {
+            id: 'lead-1',
+            name: 'Lead One',
+            email: 'lead@example.com',
+            phone: '+971500000001',
+          },
+        },
+      ]);
+
+      const exportRes = await request(createApp('owner')).get('/api/compliance/consent/export');
+      expect(exportRes.status).toBe(200);
+      expect(exportRes.body.success).toBe(true);
+      expect(exportRes.body.data).toHaveLength(1);
+
+      mockPrisma.activity.findUnique.mockResolvedValueOnce({
+        id: 'consent-1',
+        type: 'compliance',
+        action: 'pdpl_consent_created',
+        metadata: { status: 'active', purpose: 'marketing_sms', channel: 'crm_form' },
+      });
+      mockPrisma.activity.update.mockResolvedValueOnce({ id: 'consent-1' });
+
+      const deleteRes = await request(createApp('admin')).delete(
+        '/api/compliance/consent/consent-1'
+      );
+      expect(deleteRes.status).toBe(200);
+      expect(deleteRes.body.success).toBe(true);
+      expect(deleteRes.body.data.status).toBe('deleted');
+    });
+  });
 });
