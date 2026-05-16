@@ -1,33 +1,37 @@
-﻿# Plans Index (Compact)
+# Plans Index
 
-**Purpose:** Single navigation page for active execution planning.  
-**Owner:** @Margaret  
-**Update cadence:** Daily (execution days)
+**Last Updated:** 2026-05-16
 
-## Active Planning Surface (Use These Only)
+## Start Here (Canonical)
 
-1. [`PENDING_TASKS_ONLY.md`](./PENDING_TASKS_ONLY.md) — daily queue + blockers
-2. [`MASTER_PLAN.md`](./MASTER_PLAN.md) — roadmap + next 5 phases
-3. [`DAILY_WAVE_COMMAND_CENTER.md`](./DAILY_WAVE_COMMAND_CENTER.md) — daily ops board
-4. [`waves/WAVE_01_READINESS_PACKET.md`](./waves/WAVE_01_READINESS_PACKET.md) — blocker/readiness baseline
-5. [`PHASE_23_24_25_IMPLEMENTATION_PLAN.md`](./PHASE_23_24_25_IMPLEMENTATION_PLAN.md) — stable historical baseline
+- [`MASTER_PLAN.md`](./MASTER_PLAN.md)
+- [`PENDING_TASKS_ONLY.md`](./PENDING_TASKS_ONLY.md)
+- [`PLANNING_GOVERNANCE.md`](./PLANNING_GOVERNANCE.md)
 
-## Current Targets
+## Current Active Stream
 
-- Blockers: **27 → <=13** (50% reduction)
-- Entry gate for implementation: **Gate 1**
-- Keep active planning set small; avoid creating duplicate active docs
+- [`PHASE_26_CONTEXT_ENRICHMENT_SPRINT.md`](./PHASE_26_CONTEXT_ENRICHMENT_SPRINT.md)
+- N+1 to N+5 execution queue (tracked in [`MASTER_PLAN.md`](./MASTER_PLAN.md) and [`PENDING_TASKS_ONLY.md`](./PENDING_TASKS_ONLY.md))
 
-## References (Read Only When Needed)
+## Governance and Quality
 
-- [`ARCHITECTURE.md`](./ARCHITECTURE.md)
-- [`API_DOCUMENTATION.md`](./API_DOCUMENTATION.md)
-- [`TECHNICAL_REFERENCE.md`](./TECHNICAL_REFERENCE.md)
-- [`PHASE_3_E2E_TEST_PLAN.md`](./PHASE_3_E2E_TEST_PLAN.md)
-- [`CRM_REORGANIZATION_MASTER_PLAN_MAY_2026.md`](./CRM_REORGANIZATION_MASTER_PLAN_MAY_2026.md)
-- [`AI_COMMAND_CENTER_LINDA_HENRY_MOUNT_PLAN_MAY_2026.md`](./AI_COMMAND_CENTER_LINDA_HENRY_MOUNT_PLAN_MAY_2026.md)
+- [`PHASE_PLAN_TEMPLATE.md`](./PHASE_PLAN_TEMPLATE.md)
+- [`PLANNING_DOC_DEFINITION_OF_DONE.md`](./PLANNING_DOC_DEFINITION_OF_DONE.md)
 
-## Archive Policy
+## Historical / Legacy References
 
-Historical plans remain in `../archives/plans/completed/`.  
-If a new active plan is introduced, one active plan must be merged or archived.
+- [`PHASE_23_24_25_IMPLEMENTATION_PLAN.md`](./PHASE_23_24_25_IMPLEMENTATION_PLAN.md)
+- [`PHASE_24_MODULE_TRACEABILITY_MATRIX.md`](./PHASE_24_MODULE_TRACEABILITY_MATRIX.md)
+- [`PHASE_24_ACCEPTANCE_TEST_PLAN.md`](./PHASE_24_ACCEPTANCE_TEST_PLAN.md)
+- [`PHASE_25_OPERATIONAL_VERIFICATION_LOG.md`](./PHASE_25_OPERATIONAL_VERIFICATION_LOG.md)
+- [`PHASE_25_EXECUTION_GUIDE.md`](./PHASE_25_EXECUTION_GUIDE.md)
+
+## Agent and Subagent Planning
+
+- [`CUSTOM_AGENTS_PLAN.md`](./CUSTOM_AGENTS_PLAN.md)
+
+## Notes
+
+- Operational dashboard: [`../PROJECT_PROGRESS.md`](../PROJECT_PROGRESS.md)
+- Daily execution log: [`../DAILY_MILESTONE_TRACKER.md`](../DAILY_MILESTONE_TRACKER.md)
+- Agent roster and free-agent queue: [`../AGENTS.md`](../AGENTS.md)

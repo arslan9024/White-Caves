@@ -4,22 +4,22 @@
 
 > **Updated by @Margaret after every session.** Senior coders MUST check this table before starting any premium coding sprint. If any gate is BLOCKED, route back to the relevant free agent before coding.
 
-| Agent         | Model              | Current Task                                                                       | File                                                       | Sections   | Gate Status   | Last Updated |
-| ------------- | ------------------ | ---------------------------------------------------------------------------------- | ---------------------------------------------------------- | ---------- | ------------- | ------------ |
-| **@Victoria** | Gemini 2.0 Flash   | NEXT (60%): `tenancy-ejari.md` + `landlord-portal.md` fast-track expansion         | `business_docs/09_crm_features/tenancy-ejari.md`           | 60% target | 🚧 FAST-TRACK | May 6, 2026  |
-| **@Invoice**  | Llama 3.1 70B Groq | NEXT (60%): `financial-reporting.md` + `revenue-model.md` concise evidence pack    | `business_docs/09_crm_features/financial-reporting.md`     | 60% target | 🚧 FAST-TRACK | May 6, 2026  |
-| **@Sofia**    | Gemini 2.0 Flash   | NEXT (60%): `compliance-requirements.md` + `risk-register.md` fast compliance pass | `business_docs/05_requirements/compliance-requirements.md` | 60% target | 🚧 FAST-TRACK | May 6, 2026  |
-| **@Cassie**   | DeepSeek V3        | NEXT (60%): analytics + KPI essentials with testability evidence                   | `business_docs/09_crm_features/analytics-dashboard.md`     | 60% target | 🚧 FAST-TRACK | May 6, 2026  |
-| **@Joelle**   | Llama 3.1 70B Groq | NEXT (60%): AI personas + fallback matrix with compact artifacts                   | `business_docs/03_ai_assistants/README.md`                 | 60% target | 🚧 FAST-TRACK | May 6, 2026  |
+| Agent         | Model              | Current Task                                                                          | File                                                       | Sections       | Gate Status    | Last Updated  |
+| ------------- | ------------------ | ------------------------------------------------------------------------------------- | ---------------------------------------------------------- | -------------- | -------------- | ------------- |
+| **@Victoria** | Gemini 2.0 Flash   | REVIEW (60%+): `tenancy-ejari.md` — verify PDC tracking, Form 12, bounced cheque flow | `business_docs/09_crm_features/tenancy-ejari.md`           | 60%+ reached   | ✅ READY        | May 16, 2026  |
+| **@Invoice**  | Llama 3.1 70B Groq | REVIEW (60%+): `financial-reporting.md` — verify VAT section + cash flow forecast     | `business_docs/09_crm_features/financial-reporting.md`     | 60%+ reached   | ✅ READY        | May 16, 2026  |
+| **@Sofia**    | Gemini 2.0 Flash   | REVIEW (60%+): `compliance-requirements.md` — verify RERA/DLD penalty table           | `business_docs/05_requirements/compliance-requirements.md` | 60%+ reached   | ✅ READY        | May 16, 2026  |
+| **@Cassie**   | DeepSeek V3        | EXPAND: `analytics-dashboard.md` → mobile analytics view + data export API spec       | `business_docs/09_crm_features/analytics-dashboard.md`     | 22 → 24 target | 🚧 IN PROGRESS | May 16, 2026  |
+| **@Joelle**   | Llama 3.1 70B Groq | EXPAND: `03_ai_assistants/README.md` → personas 36–40 + fallback matrix               | `business_docs/03_ai_assistants/README.md`                 | 40/40 complete | ✅ READY        | May 16, 2026  |
 
 ### How to Invoke Free Agents (Copy-Paste Into the Free Tool)
 
 ```
-@Victoria — EXPAND: landlord-portal.md → add KYC onboarding flow, NOC letter generation workflow, 3-month grace period rules
-@Invoice  — AUDIT: financial-reporting.md → verify 60% readiness; add compact cash flow forecast section
-@Sofia    — AUDIT: compliance-requirements.md → verify 60% readiness; add RERA/DLD penalty table with fine amounts
+@Victoria — REVIEW: tenancy-ejari.md → check gaps, verify all acceptance criteria have testable definitions
+@Invoice  — REVIEW: financial-reporting.md → verify all AED calculations are consistent; add invoice TRN format
+@Sofia    — REVIEW: compliance-requirements.md → check for missing RERA 2024 updates; verify UAE PDPL sections
 @Cassie   — EXPAND: analytics-dashboard.md → add mobile analytics view spec + data export CSV/Excel API endpoint spec
-@Joelle   — DRAFT: 03_ai_assistants/README.md → personas 25-35 (Quill, Lumen, Crest, Prism, Echo + others); add failure/fallback behavior
+@Joelle   — EXPAND: 03_ai_assistants/README.md → add FEEDS_ACK from @Margaret for Phase N+1 context readiness
 ```
 
 **Free Tool Links:**

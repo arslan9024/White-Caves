@@ -1,11 +1,10 @@
-# Phase 3 — CRM Full Super User Access (Executive Identity Unified)
+# Phase 3 — CRM Full Super User Access (All CRM Features, Managing Director)
 
 > **Priority**: #3 — High  
-> **Goal**: A fully working CRM accessible through a single executive superuser identity, all features usable  
-> **Approach**: Log in as `arslanmalikgoraha@gmail.com` → canonical executive route → access every CRM tab and feature  
+> **Goal**: A fully working CRM accessible with the managing director super user, all features usable  
+> **Approach**: Log in as `arslanmalikgoraha@gmail.com` → access every CRM tab and feature  
+> **Last Updated**: 2026-05-11  
 > **Status**: 🔲 Not Started — dashboard shell and routes exist, full integration in progress
-
-> **Linked P0 Module:** `plans/PHASE_33_PRIORITY_MODULE_HOMEPAGE_SUPERUSER_LEASING.md`
 
 ---
 
@@ -18,7 +17,7 @@ and compliance features.
 
 ---
 
-## Super User Definition (Canonical)
+## Super User Definition
 
 The primary super user is the **Managing Director**.
 
@@ -26,26 +25,12 @@ The primary super user is the **Managing Director**.
 | -------------- | ----------------------------------------------------------------------------------- |
 | Email          | `arslanmalikgoraha@gmail.com`                                                       |
 | Password       | `password123` (change via seed env `SEED_PASSWORD`)                                 |
-| Role           | Canonical executive behavior (`owner`-equivalent with alias normalization support)  |
+| Role           | `managing_director` (maps to "Managing Director" in ROLE_TAB_MAPPING)               |
 | CRM Tabs       | Overview, Properties, Agents, Leads, Contracts, Analytics, Users, Settings (8 tabs) |
 | Backend access | Full executive access across all API endpoints                                      |
 
 > **No duplicate**: `owner@whitecaves.ae` is a seed/dummy data account only. The real super user
-> is `arslanmalikgoraha@gmail.com`.
-
-### Executive alias unification policy
-
-The business identity is one person with multiple historical labels:
-
-- `lion`
-- `owner`
-- `managing_director`
-
-Implementation direction for this phase:
-
-1. Continue accepting aliases for backward compatibility
-2. Normalize authorization behavior to canonical executive role semantics
-3. Ensure dashboard entry is single-path from successful login
+> is `arslanmalikgoraha@gmail.com`. Do not create a second `managing_director` for this email.
 
 > **How to seed**: Run `npm run db:seed` — creates both accounts + 6 agents + sample data.
 
@@ -85,14 +70,12 @@ Implementation direction for this phase:
 
 **Goal**: Managing director can open the app, sign in, and land on the CRM dashboard in < 5 clicks.
 
-- [ ] **Canonical executive login policy** documented and enforced for `arslanmalikgoraha@gmail.com`
 - [ ] **Sign-in page renders cleanly** — no layout breaks, loading spinner works
 - [ ] **Email login works**: `arslanmalikgoraha@gmail.com` + `password123` → success → redirect to `/dashboard`
 - [ ] **JWT stored in localStorage** via `safeStorage` — verify `auth_token` is set after login
 - [ ] **Redux user state** populated: `state.user.currentUser` or `state.auth.user` has `id`, `email`, `role: 'managing_director'`
 - [ ] **Protected route** on `/dashboard`: redirect to `/signin` if no token
 - [ ] **"Skip category selection" for managing director**: if a user logs in with role `managing_director`, bypass the signup category flow and go straight to the dashboard
-- [ ] **Alias normalization**: `lion` and `managing_director` must route/authorize identically to canonical executive behavior
 - [ ] **Error state**: wrong password shows "Invalid credentials" in the form
 - [ ] **Loading state**: button shows spinner during API call, disabled while loading
 
