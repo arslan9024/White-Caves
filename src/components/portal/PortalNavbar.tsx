@@ -30,14 +30,26 @@ interface PortalNavbarProps {
   portalType: PortalType;
 }
 
-const PORTAL_LABELS: Record<PortalType, string> = {
-  landlord: 'Landlord Portal',
-  tenant: 'Tenant Portal',
+const getPortalLabel = (portalType: PortalType): string => {
+  switch (portalType) {
+    case 'landlord':
+      return 'Landlord Portal';
+    case 'tenant':
+      return 'Tenant Portal';
+    default:
+      return 'Portal';
+  }
 };
 
-const PORTAL_COLORS: Record<PortalType, string> = {
-  landlord: '#C41E3A',
-  tenant: '#0f766e',
+const getPortalColor = (portalType: PortalType): string => {
+  switch (portalType) {
+    case 'landlord':
+      return '#C41E3A';
+    case 'tenant':
+      return '#0f766e';
+    default:
+      return '#0f766e';
+  }
 };
 
 const PortalNavbar: FC<PortalNavbarProps> = ({ portalType }) => {
@@ -59,10 +71,8 @@ const PortalNavbar: FC<PortalNavbarProps> = ({ portalType }) => {
   }, [dispatch, navigate]);
 
   const avatarInitial = currentUser?.name?.charAt(0)?.toUpperCase() ?? '?';
-  // eslint-disable-next-line security/detect-object-injection
-  const portalLabel = PORTAL_LABELS[portalType];
-  // eslint-disable-next-line security/detect-object-injection
-  const badgeColor = PORTAL_COLORS[portalType];
+  const portalLabel = getPortalLabel(portalType);
+  const badgeColor = getPortalColor(portalType);
 
   return (
     <nav

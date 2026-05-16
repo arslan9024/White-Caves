@@ -146,6 +146,8 @@ const LandlordPaymentsTab: FC = () => {
   const currentUser = useSelector((state: RootState) => state.user.currentUser);
   const [statusFilter, setStatusFilter] = useState<'all' | 'paid' | 'pending' | 'overdue'>('all');
   const [searchQuery, setSearchQuery] = useState('');
+  const [dateFrom, setDateFrom] = useState('');
+  const [dateTo, setDateTo] = useState('');
   const [selectedLeaseId, setSelectedLeaseId] = useState<string | null>(null);
   const [leases, setLeases] = useState<ApiLease[]>([]);
   const [loading, setLoading] = useState(true);
@@ -192,15 +194,25 @@ const LandlordPaymentsTab: FC = () => {
 
   const filteredPayments = useMemo(() => {
     const normalizedSearch = searchQuery.trim().toLowerCase();
+    const fromMs = dateFrom ? new Date(dateFrom).getTime() : null;
+    const toMs = dateTo ? new Date(dateTo + 'T23:59:59').getTime() : null;
     return payments.filter(payment => {
       const statusMatch = statusFilter === 'all' || payment.status === statusFilter;
       const searchMatch =
         normalizedSearch.length === 0 ||
         payment.property.toLowerCase().includes(normalizedSearch) ||
         payment.tenant.toLowerCase().includes(normalizedSearch);
-      return statusMatch && searchMatch;
+      // date-range filter: compare against the raw ISO due date from the lease
+      const leaseForPayment = leases.find(l => l.id === payment.id);
+      const dueDateMs = leaseForPayment?.nextPaymentDue
+        ? new Date(leaseForPayment.nextPaymentDue).getTime()
+        : null;
+      const dateMatch =
+        (!fromMs || (dueDateMs !== null && dueDateMs >= fromMs)) &&
+        (!toMs || (dueDateMs !== null && dueDateMs <= toMs));
+      return statusMatch && searchMatch && dateMatch;
     });
-  }, [payments, searchQuery, statusFilter]);
+  }, [payments, searchQuery, statusFilter, dateFrom, dateTo, leases]);
 
   const summary = useMemo(
     () => ({
@@ -292,6 +304,42 @@ const LandlordPaymentsTab: FC = () => {
           <option value="pending">Pending</option>
           <option value="overdue">Overdue</option>
         </select>
+
+        <div className="date-range-filter" data-testid="payment-date-range">
+          <label htmlFor="payment-date-from" style={{ fontSize: '0.78rem', color: 'var(--text-secondary)', marginRight: '0.35rem' }}>
+            From
+          </label>
+          <input
+            id="payment-date-from"
+            data-testid="payment-date-from"
+            type="date"
+            value={dateFrom}
+            onChange={e => { setDateFrom(e.target.value); }}
+            style={{ padding: '0.4rem 0.5rem', fontSize: '0.85rem', borderRadius: '6px', border: '1px solid var(--card-border)', background: 'var(--card-bg)', color: 'var(--text-primary)' }}
+          />
+          <label htmlFor="payment-date-to" style={{ fontSize: '0.78rem', color: 'var(--text-secondary)', margin: '0 0.35rem' }}>
+            To
+          </label>
+          <input
+            id="payment-date-to"
+            data-testid="payment-date-to"
+            type="date"
+            value={dateTo}
+            onChange={e => { setDateTo(e.target.value); }}
+            style={{ padding: '0.4rem 0.5rem', fontSize: '0.85rem', borderRadius: '6px', border: '1px solid var(--card-border)', background: 'var(--card-bg)', color: 'var(--text-primary)' }}
+          />
+          {(dateFrom || dateTo) && (
+            <button
+              type="button"
+              data-testid="payment-date-clear"
+              onClick={() => { setDateFrom(''); setDateTo(''); }}
+              style={{ fontSize: '0.78rem', padding: '0.3rem 0.6rem', borderRadius: '6px', border: '1px solid var(--card-border)', background: 'transparent', color: 'var(--text-secondary)', cursor: 'pointer' }}
+              aria-label="Clear date filter"
+            >
+              ✕ Clear
+            </button>
+          )}
+        </div>
       </div>
 
       {filteredPayments.length === 0 ? (

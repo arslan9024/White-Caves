@@ -1,14 +1,16 @@
 # White Caves — Phase 23–25 Implementation Plan
 
 **Date:** May 2, 2026  
-**Status:** Active (Canonical)  
+**Status:** Baseline Reference (Canonical)  
+**Owner:** @Ada + @Margaret  
+**Update cadence:** Reference only (do not duplicate into active daily plans)  
 **Priority Order:** 1) Business docs + module logic alignment, 2) homepage improvement planning, 3) dev/build operational verification, 4) git governance hardening
 
 ---
 
 ## Executive Intent
 
-This phase starts implementation of the multi-agent research outcomes with one practical objective: **align business truth, module logic truth, and delivery governance truth** before new feature expansion.
+Align business rules, module logic, and delivery governance before expansion.
 
 ---
 

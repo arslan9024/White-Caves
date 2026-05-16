@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
 import AreaSummaryCard from './AreaSummaryCard';
 import PropertyCard from './PropertyCard';
 import PropertyListItem from './PropertyListItem';
@@ -12,11 +11,10 @@ import BulkTagModal from '../../BulkOperations/BulkTagModal';
 import BulkNotificationModal from '../../BulkOperations/BulkNotificationModal';
 import BulkDeleteModal from '../../BulkOperations/BulkDeleteModal';
 import cacheUtils from '../../../utils/cacheUtils';
+import { authFetch } from '../../../utils/authFetch';
 import './InventoryDashboard.css';
 
 const InventoryDashboard = () => {
-  const dispatch = useDispatch();
-  
   // State
   const [areaSummaries, setAreaSummaries] = useState([]);
   const [expandedAreas, setExpandedAreas] = useState([]);
@@ -30,7 +28,7 @@ const InventoryDashboard = () => {
   // Bulk Operations State
   const [selectedProperties, setSelectedProperties] = useState(new Set());
   const [bulkActionType, setBulkActionType] = useState(null);
-  const [bulkActionData, setBulkActionData] = useState(null);
+  const [, setBulkActionData] = useState(null);
   const [isBulkLoading, setIsBulkLoading] = useState(false);
   const [bulkError, setBulkError] = useState(null);
   const [bulkSuccess, setBulkSuccess] = useState(null);
@@ -65,6 +63,7 @@ const InventoryDashboard = () => {
 
     document.addEventListener('visibilitychange', handleVisibilityChange);
     return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Fetch area summaries on mount
@@ -82,6 +81,7 @@ const InventoryDashboard = () => {
     return () => {
       if (statsPollingRef.current) clearInterval(statsPollingRef.current);
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Poll expanded areas every 10 seconds (reduced from 5s)
@@ -93,7 +93,7 @@ const InventoryDashboard = () => {
 
     areaPollingRef.current = setInterval(() => {
       if (isTabActiveRef.current) {
-        expandedAreas.forEach((area) => {
+        expandedAreas.forEach(area => {
           loadAreaProperties(area, 1);
         });
       }
@@ -102,6 +102,7 @@ const InventoryDashboard = () => {
     return () => {
       if (areaPollingRef.current) clearInterval(areaPollingRef.current);
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [expandedAreas]);
 
   const loadAreaSummaries = useCallback(async () => {
@@ -109,30 +110,32 @@ const InventoryDashboard = () => {
       // Check cache freshness
       const cacheKey = 'areas-summary';
       const cachedResponse = cacheUtils.getCacheResponse(cacheKey);
-      
+
+      // eslint-disable-next-line security/detect-object-injection
       if (cacheUtils.isCacheFresh(lastFetchTimeRef.current[cacheKey])) {
         return; // Use cached data
       }
 
       setLoading(true);
-      
+
       // Create abort controller for this request
       if (abortControllerRef.current) {
         abortControllerRef.current.abort();
       }
       abortControllerRef.current = new AbortController();
 
-      const response = await fetch('/api/property-inventory/dashboard/areas-summary', {
+      const response = await authFetch('/api/property-inventory/dashboard/areas-summary', {
         signal: abortControllerRef.current.signal,
       });
       const data = await response.json();
-      
+
       if (data.success) {
         // Check if data changed
         if (cacheUtils.hasDataChanged(data.data, cachedResponse)) {
           setAreaSummaries(data.data);
           cacheUtils.setCacheResponse(cacheKey, data.data);
         }
+        // eslint-disable-next-line security/detect-object-injection
         lastFetchTimeRef.current[cacheKey] = Date.now();
       }
     } catch (error) {
@@ -149,7 +152,8 @@ const InventoryDashboard = () => {
       // Check cache freshness
       const cacheKey = 'dashboard-stats';
       const cachedResponse = cacheUtils.getCacheResponse(cacheKey);
-      
+
+      // eslint-disable-next-line security/detect-object-injection
       if (cacheUtils.isCacheFresh(lastFetchTimeRef.current[cacheKey])) {
         return; // Use cached data
       }
@@ -159,11 +163,11 @@ const InventoryDashboard = () => {
       }
       abortControllerRef.current = new AbortController();
 
-      const response = await fetch('/api/property-inventory/dashboard/stats', {
+      const response = await authFetch('/api/property-inventory/dashboard/stats', {
         signal: abortControllerRef.current.signal,
       });
       const data = await response.json();
-      
+
       if (data.success) {
         // Check if data changed
         if (cacheUtils.hasDataChanged(data.data, cachedResponse)) {
@@ -171,6 +175,7 @@ const InventoryDashboard = () => {
           cacheUtils.setCacheResponse(cacheKey, data.data);
           setLastRefreshTime(new Date());
         }
+        // eslint-disable-next-line security/detect-object-injection
         lastFetchTimeRef.current[cacheKey] = Date.now();
       }
     } catch (error) {
@@ -184,34 +189,36 @@ const InventoryDashboard = () => {
     try {
       const cacheKey = `area-properties-${area}`;
       const cachedResponse = cacheUtils.getCacheResponse(cacheKey);
-      
+
       // Skip fetch if cache is fresh
+      // eslint-disable-next-line security/detect-object-injection
       if (cacheUtils.isCacheFresh(lastFetchTimeRef.current[cacheKey])) {
         return;
       }
 
-      setAreaLoadingState((prev) => ({ ...prev, [area]: true }));
-      
+      setAreaLoadingState(prev => ({ ...prev, [area]: true }));
+
       if (abortControllerRef.current) {
         abortControllerRef.current.abort();
       }
       abortControllerRef.current = new AbortController();
 
-      const response = await fetch(
+      const response = await authFetch(
         `/api/property-inventory/dashboard/properties-by-area/${encodeURIComponent(area)}?page=${page}&limit=10`,
         { signal: abortControllerRef.current.signal }
       );
       const data = await response.json();
-      
+
       if (data.success) {
         // Check if data changed
         if (cacheUtils.hasDataChanged(data.data, cachedResponse)) {
-          setAreaProperties((prev) => ({
+          setAreaProperties(prev => ({
             ...prev,
             [area]: data.data,
           }));
           cacheUtils.setCacheResponse(cacheKey, data.data);
         }
+        // eslint-disable-next-line security/detect-object-injection
         lastFetchTimeRef.current[cacheKey] = Date.now();
       }
     } catch (error) {
@@ -219,13 +226,13 @@ const InventoryDashboard = () => {
         console.error(`Error loading properties for ${area}:`, error);
       }
     } finally {
-      setAreaLoadingState((prev) => ({ ...prev, [area]: false }));
+      setAreaLoadingState(prev => ({ ...prev, [area]: false }));
     }
   }, []);
 
   // Filter handlers
   const handleFilterChange = useCallback((filterKey, value) => {
-    setFilters((prevFilters) => ({
+    setFilters(prevFilters => ({
       ...prevFilters,
       [filterKey]: value,
     }));
@@ -235,13 +242,14 @@ const InventoryDashboard = () => {
     // Clear related caches when filters change
     cacheUtils.clearCacheKey('areas-summary');
     cacheUtils.clearCacheKey('dashboard-stats');
-    expandedAreas.forEach((area) => {
+    expandedAreas.forEach(area => {
       cacheUtils.clearCacheKey(`area-properties-${area}`);
     });
 
     // Reload with new filters
     await loadAreaSummaries();
     await loadDashboardStats();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [expandedAreas]);
 
   const handleResetFilters = useCallback(() => {
@@ -256,9 +264,9 @@ const InventoryDashboard = () => {
   }, []);
 
   // Handle area expansion
-  const toggleAreaExpand = (area) => {
+  const toggleAreaExpand = area => {
     if (expandedAreas.includes(area)) {
-      setExpandedAreas(expandedAreas.filter((a) => a !== area));
+      setExpandedAreas(expandedAreas.filter(a => a !== area));
     } else {
       setExpandedAreas([...expandedAreas, area]);
       loadAreaProperties(area, 1);
@@ -282,11 +290,11 @@ const InventoryDashboard = () => {
     setBulkActionData(null);
   };
 
-  const handleBulkActionOpen = (type) => {
+  const handleBulkActionOpen = type => {
     setBulkActionType(type);
   };
 
-  const handleBulkActionConfirm = async (data) => {
+  const handleBulkActionConfirm = async data => {
     if (selectedProperties.size === 0) return;
 
     setIsBulkLoading(true);
@@ -327,7 +335,7 @@ const InventoryDashboard = () => {
           return;
       }
 
-      const response = await fetch(endpoint, {
+      const response = await authFetch(endpoint, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
@@ -336,12 +344,14 @@ const InventoryDashboard = () => {
       const result = await response.json();
 
       if (result.success) {
-        setBulkSuccess(`${bulkActionType} updated successfully for ${propertyIds.length} properties`);
+        setBulkSuccess(
+          `${bulkActionType} updated successfully for ${propertyIds.length} properties`
+        );
         handleClearSelection();
         // Reload data
         loadAreaSummaries();
         loadDashboardStats();
-        expandedAreas.forEach((area) => loadAreaProperties(area, 1));
+        expandedAreas.forEach(area => loadAreaProperties(area, 1));
         // Clear message after 3 seconds
         setTimeout(() => setBulkSuccess(null), 3000);
       } else {
@@ -358,7 +368,8 @@ const InventoryDashboard = () => {
   };
 
   // Render area properties
-  const renderAreaProperties = (area) => {
+  const renderAreaProperties = area => {
+    // eslint-disable-next-line security/detect-object-injection
     const properties = areaProperties[area];
     if (!properties) return null;
 
@@ -366,7 +377,7 @@ const InventoryDashboard = () => {
       <div className="area-properties">
         <div className={viewMode === 'grid' ? 'grid-view' : 'list-view'}>
           {properties && properties.length > 0 ? (
-            properties.map((property) =>
+            properties.map(property =>
               viewMode === 'grid' ? (
                 <PropertyCard key={property._id} property={property} />
               ) : (
@@ -376,9 +387,9 @@ const InventoryDashboard = () => {
                   inventory={property.inventory}
                   isSelected={selectedProperties.has(property._id)}
                   onSelect={handlePropertySelect}
-                  onViewDetails={() => console.log('View details:', property)}
-                  onCreateOffer={() => console.log('Create offer:', property)}
-                  onAssignAgent={() => console.log('Assign agent:', property)}
+                  onViewDetails={() => undefined}
+                  onCreateOffer={() => undefined}
+                  onAssignAgent={() => undefined}
                 />
               )
             )
@@ -406,7 +417,7 @@ const InventoryDashboard = () => {
         onFilterChange={handleFilterChange}
         onApplyFilters={handleApplyFilters}
         onResetFilters={handleResetFilters}
-        areas={areaSummaries.map((area) => area.name)}
+        areas={areaSummaries.map(area => area.name)}
         isLoading={loading}
       />
 
@@ -434,16 +445,10 @@ const InventoryDashboard = () => {
 
       {/* View Mode Toggle */}
       <div className="view-mode-toggle">
-        <button
-          className={viewMode === 'grid' ? 'active' : ''}
-          onClick={() => setViewMode('grid')}
-        >
+        <button className={viewMode === 'grid' ? 'active' : ''} onClick={() => setViewMode('grid')}>
           Grid View
         </button>
-        <button
-          className={viewMode === 'list' ? 'active' : ''}
-          onClick={() => setViewMode('list')}
-        >
+        <button className={viewMode === 'list' ? 'active' : ''} onClick={() => setViewMode('list')}>
           List View
         </button>
       </div>
@@ -454,7 +459,7 @@ const InventoryDashboard = () => {
       ) : (
         <div className="areas-summary">
           {areaSummaries && areaSummaries.length > 0 ? (
-            areaSummaries.map((area) => (
+            areaSummaries.map(area => (
               <div key={area._id} className="area-section">
                 <AreaSummaryCard
                   area={area}
@@ -533,16 +538,8 @@ const InventoryDashboard = () => {
       />
 
       {/* Bulk Success/Error Messages */}
-      {bulkSuccess && (
-        <div className="bulk-notification bulk-success">
-          ✓ {bulkSuccess}
-        </div>
-      )}
-      {bulkError && (
-        <div className="bulk-notification bulk-error">
-          ✕ {bulkError}
-        </div>
-      )}
+      {bulkSuccess && <div className="bulk-notification bulk-success">✓ {bulkSuccess}</div>}
+      {bulkError && <div className="bulk-notification bulk-error">✕ {bulkError}</div>}
     </div>
   );
 };

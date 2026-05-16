@@ -96,12 +96,13 @@ export default defineConfig({
           if (id.includes('src/styles/')) {
             return 'theme-tokens';
           }
-          // Redux store, utils, config — shared foundations
-          if (id.includes('src/store/')) {
-            return 'store';
-          }
-          if (id.includes('src/utils/') || id.includes('src/config/')) {
-            return 'app-utils';
+          // Foundational app runtime (single chunk to avoid app-utils <-> store circular cross-chunk refs)
+          if (
+            id.includes('src/store/') ||
+            id.includes('src/utils/') ||
+            id.includes('src/config/')
+          ) {
+            return 'app-foundation';
           }
           // Application code splitting by feature
           // Charts: lazy-loaded, separate from app-core

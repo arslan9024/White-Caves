@@ -19,99 +19,166 @@ import { verifyFirebaseIdToken, FirebaseAdminInitError } from '../config/firebas
 
 const router = Router();
 
-// ─── TOTP (RFC 6238) helpers — no external dependencies ─────────────────────
-
-/** Encode a buffer as a base32 string (RFC 4648, no padding). */
-function base32Encode(buf: Buffer): string {
-  const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567';
-  let bits = 0;
-  let value = 0;
-  let output = '';
-  for (let i = 0; i < buf.length; i++) {
-    // eslint-disable-next-line security/detect-object-injection
-    value = (value << 8) | buf[i];
-    bits += 8;
-    while (bits >= 5) {
-      bits -= 5;
-      output += alphabet[(value >>> bits) & 0x1f];
-    }
-  }
-  if (bits > 0) {
-    output += alphabet[(value << (5 - bits)) & 0x1f];
-  }
-  return output;
-}
-
-/** Decode a base32 string to Buffer. */
-function base32Decode(encoded: string): Buffer {
-  const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567';
-  const clean = encoded.toUpperCase().replace(/=+$/, '');
-  let bits = 0;
-  let value = 0;
-  const bytes: number[] = [];
-  for (const char of clean) {
-    const idx = alphabet.indexOf(char);
-    if (idx < 0) continue;
-    value = (value << 5) | idx;
-    bits += 5;
-    if (bits >= 8) {
-      bits -= 8;
-      bytes.push((value >>> bits) & 0xff);
-    }
-  }
-  return Buffer.from(bytes);
-}
-
-/**
- * Compute a HOTP value from key + counter (RFC 4226).
- * Returns a 6-digit string.
- */
-function hotpCode(key: Buffer, counter: bigint): string {
-  const msg = Buffer.alloc(8);
-  msg.writeBigUInt64BE(counter);
-  const hmac = crypto.createHmac('sha1', key).update(msg).digest();
-  const offset = hmac[19] & 0x0f;
-  // Extract 4 bytes at the dynamic offset — safe: offset is 0–15, hmac is 20 bytes
-  // eslint-disable-next-line security/detect-object-injection
-  const b = [hmac[offset], hmac[offset + 1], hmac[offset + 2], hmac[offset + 3]] as const;
-  const code =
-    (((b[0] & 0x7f) << 24) | ((b[1] & 0xff) << 16) | ((b[2] & 0xff) << 8) | (b[3] & 0xff)) %
-    1_000_000;
-  return code.toString().padStart(6, '0');
-}
-
-const TOTP_STEP = 30; // seconds per time step
-const TOTP_WINDOW = 1; // ± 1 step tolerance
-
-/**
- * Verify a TOTP code against a base32-encoded secret.
- * Allows ±TOTP_WINDOW steps of clock drift.
- */
-function verifyTOTP(secret: string, userCode: string): boolean {
-  if (!/^\d{6}$/.test(userCode)) return false;
-  const key = base32Decode(secret);
-  const counter = BigInt(Math.floor(Date.now() / 1000 / TOTP_STEP));
-  for (let delta = -TOTP_WINDOW; delta <= TOTP_WINDOW; delta++) {
-    if (hotpCode(key, counter + BigInt(delta)) === userCode) return true;
-  }
-  return false;
-}
-
-/** Generate a new TOTP secret (20 random bytes → base32). */
-function generateTOTPSecret(): string {
-  return base32Encode(crypto.randomBytes(20));
-}
-
-/** Generate N one-time backup codes (8 hex chars each). */
-function generateBackupCodes(n = 8): string[] {
-  return Array.from({ length: n }, () => crypto.randomBytes(4).toString('hex').toUpperCase());
-}
-
 const JWT_SIGN_OPTIONS: SignOptions = {
   expiresIn: JWT_EXPIRES_SECONDS,
   algorithm: 'HS256',
   issuer: process.env.JWT_ISSUER || 'white-caves-crm',
   audience: process.env.JWT_AUDIENCE || 'white-caves-clients',
+};
+
+const TWO_FACTOR_ISSUER = process.env.TWO_FACTOR_ISSUER || 'White Caves Real Estate';
+const TWO_FACTOR_PERIOD_SECONDS = 30;
+const TWO_FACTOR_DIGITS = 6;
+const TWO_FACTOR_ALGORITHM = 'sha1';
+
+const base32Alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567';
+
+const base32Encode = (buffer: Buffer): string => {
+  let value = 0;
+  let bits = 0;
+  let output = '';
+
+  for (const byte of buffer) {
+    value = (value << 8) | byte;
+    bits += 8;
+    while (bits >= 5) {
+      output += base32Alphabet.charAt((value >>> (bits - 5)) & 31);
+      bits -= 5;
+    }
+  }
+
+  if (bits > 0) {
+    output += base32Alphabet.charAt((value << (5 - bits)) & 31);
+  }
+
+  while (output.length % 8 !== 0) {
+    output += '=';
+  }
+
+  return output;
+};
+
+const base32Decode = (input: string): Buffer => {
+  const clean = input.replace(/=+$/u, '').replace(/\s+/gu, '').toUpperCase();
+  let value = 0;
+  let bits = 0;
+  const bytes: number[] = [];
+
+  for (const char of clean) {
+    const index = base32Alphabet.indexOf(char);
+    if (index === -1) continue;
+    value = (value << 5) | index;
+    bits += 5;
+    if (bits >= 8) {
+      bytes.push((value >>> (bits - 8)) & 255);
+      bits -= 8;
+    }
+  }
+
+  return Buffer.from(bytes);
+};
+
+const deriveTwoFactorKey = (): Buffer => {
+  return crypto.createHash('sha256').update(JWT_SECRET).digest();
+};
+
+const encryptTwoFactorSecret = (secret: string): string => {
+  const key = deriveTwoFactorKey();
+  const iv = crypto.randomBytes(12);
+  const cipher = crypto.createCipheriv('aes-256-gcm', key, iv);
+  const encrypted = Buffer.concat([cipher.update(secret, 'utf8'), cipher.final()]);
+  const tag = cipher.getAuthTag();
+  return [iv.toString('base64'), tag.toString('base64'), encrypted.toString('base64')].join('.');
+};
+
+const decryptTwoFactorSecret = (payload: string): string => {
+  const [ivPart, tagPart, dataPart] = payload.split('.');
+  if (!ivPart || !tagPart || !dataPart) {
+    throw new Error('Invalid 2FA secret payload');
+  }
+
+  const decipher = crypto.createDecipheriv(
+    'aes-256-gcm',
+    deriveTwoFactorKey(),
+    Buffer.from(ivPart, 'base64')
+  );
+  decipher.setAuthTag(Buffer.from(tagPart, 'base64'));
+  const decrypted = Buffer.concat([
+    decipher.update(Buffer.from(dataPart, 'base64')),
+    decipher.final(),
+  ]);
+  return decrypted.toString('utf8');
+};
+
+const generateTwoFactorSecret = (): string => base32Encode(crypto.randomBytes(20));
+
+const generateHotp = (secret: string, counter: number): string => {
+  const key = base32Decode(secret);
+  const counterBuffer = Buffer.alloc(8);
+  counterBuffer.writeBigUInt64BE(BigInt(counter));
+  const hmac = crypto.createHmac(TWO_FACTOR_ALGORITHM, key).update(counterBuffer).digest();
+  const offset = hmac[hmac.length - 1] & 15;
+  const binary = hmac.subarray(offset, offset + 4).readUInt32BE(0) & 0x7fffffff;
+  const otp = binary % 10 ** TWO_FACTOR_DIGITS;
+  return otp.toString().padStart(TWO_FACTOR_DIGITS, '0');
+};
+
+const verifyTotp = (secret: string, code: string, window = 1): boolean => {
+  const normalizedCode = String(code).trim();
+  if (!/^\d{6}$/.test(normalizedCode)) return false;
+
+  const currentCounter = Math.floor(Date.now() / 1000 / TWO_FACTOR_PERIOD_SECONDS);
+  for (let offset = -window; offset <= window; offset += 1) {
+    if (generateHotp(secret, currentCounter + offset) === normalizedCode) {
+      return true;
+    }
+  }
+  return false;
+};
+
+const buildTwoFactorOtpAuthUrl = (email: string, secret: string): string => {
+  const label = encodeURIComponent(`${TWO_FACTOR_ISSUER}:${email}`);
+  const issuer = encodeURIComponent(TWO_FACTOR_ISSUER);
+  return `otpauth://totp/${label}?secret=${secret}&issuer=${issuer}&algorithm=${TWO_FACTOR_ALGORITHM.toUpperCase()}&digits=${TWO_FACTOR_DIGITS}&period=${TWO_FACTOR_PERIOD_SECONDS}`;
+};
+
+const issueAuthToken = (user: { id: string; email: string; role: string }) => {
+  return jwt.sign(
+    { id: user.id, email: user.email, role: user.role },
+    JWT_SECRET,
+    JWT_SIGN_OPTIONS
+  );
+};
+
+const issueTwoFactorPendingToken = (user: { id: string; email: string; role: string }) => {
+  return jwt.sign(
+    { id: user.id, email: user.email, role: user.role, twoFactorPending: true },
+    JWT_SECRET,
+    {
+      ...JWT_SIGN_OPTIONS,
+      expiresIn: 15 * 60,
+    }
+  );
+};
+
+const getTwoFactorSecret = (user: { twoFactorSecret?: string | null }): string | null => {
+  if (!user.twoFactorSecret) return null;
+  try {
+    return decryptTwoFactorSecret(user.twoFactorSecret);
+  } catch {
+    return null;
+  }
+};
+
+const getTwoFactorSetupPayload = (user: { email: string; twoFactorSecret?: string | null }) => {
+  const secret = user.twoFactorSecret
+    ? (getTwoFactorSecret(user) ?? generateTwoFactorSecret())
+    : generateTwoFactorSecret();
+  const otpAuthUrl = buildTwoFactorOtpAuthUrl(user.email, secret);
+  return {
+    secret,
+    otpAuthUrl,
+  };
 };
 
 /**
@@ -220,27 +287,64 @@ const checkIpLockout = async (
 ): Promise<{ locked: boolean; retryAfterSeconds: number; failureCount: number }> => {
   if (!ip || ip === 'unknown') return { locked: false, retryAfterSeconds: 0, failureCount: 0 };
   const since = new Date(Date.now() - LOGIN_LOCKOUT_WINDOW_MINUTES * 60 * 1000);
-  const failureCount = await prisma.activity.count({
-    where: {
-      type: 'system',
-      action: 'login_failed',
-      createdAt: { gte: since },
-      metadata: { path: ['ip'], equals: ip } as Prisma.JsonFilter,
-    },
-  });
+
+  const extractIp = (metadata: unknown): string | null => {
+    if (!metadata || typeof metadata !== 'object') return null;
+    const value = (metadata as { ip?: unknown }).ip;
+    return typeof value === 'string' ? value : null;
+  };
+
+  let failureCount = 0;
+  let oldestFailure: { createdAt: Date } | null = null;
+
+  try {
+    // Preferred (when supported by Prisma runtime/driver)
+    failureCount = await prisma.activity.count({
+      where: {
+        type: 'system',
+        action: 'login_failed',
+        createdAt: { gte: since },
+        metadata: { path: ['ip'], equals: ip } as Prisma.JsonFilter,
+      },
+    });
+
+    if (failureCount >= LOGIN_IP_LOCKOUT_THRESHOLD) {
+      oldestFailure = await prisma.activity.findFirst({
+        where: {
+          type: 'system',
+          action: 'login_failed',
+          createdAt: { gte: since },
+          metadata: { path: ['ip'], equals: ip } as Prisma.JsonFilter,
+        },
+        orderBy: { createdAt: 'asc' },
+      });
+    }
+  } catch (error: unknown) {
+    // Fallback for runtimes where JsonFilter.path is unsupported (observed on some Prisma+Mongo setups)
+    logger.warn('IP lockout JSON path filter unsupported, using in-memory fallback', {
+      reason: error instanceof Error ? error.message : 'unknown',
+    });
+
+    const recentFailures = await prisma.activity.findMany({
+      where: {
+        type: 'system',
+        action: 'login_failed',
+        createdAt: { gte: since },
+      },
+      orderBy: { createdAt: 'asc' },
+      select: { createdAt: true, metadata: true },
+    });
+
+    const ipFailures = recentFailures.filter(row => extractIp(row.metadata) === ip);
+    failureCount = ipFailures.length;
+    oldestFailure = ipFailures[0] ?? null;
+  }
+
   if (failureCount < LOGIN_IP_LOCKOUT_THRESHOLD) {
     return { locked: false, retryAfterSeconds: 0, failureCount };
   }
-  const oldest = await prisma.activity.findFirst({
-    where: {
-      type: 'system',
-      action: 'login_failed',
-      createdAt: { gte: since },
-      metadata: { path: ['ip'], equals: ip } as Prisma.JsonFilter,
-    },
-    orderBy: { createdAt: 'asc' },
-  });
-  const baseTs = oldest?.createdAt?.getTime?.() ?? Date.now();
+
+  const baseTs = oldestFailure?.createdAt?.getTime?.() ?? Date.now();
   const unlockAt = baseTs + LOGIN_LOCKOUT_WINDOW_MINUTES * 60 * 1000;
   const retryAfterSeconds = Math.max(1, Math.ceil((unlockAt - Date.now()) / 1000));
   return { locked: true, retryAfterSeconds, failureCount };
@@ -357,11 +461,32 @@ router.post(
     }
 
     // Generate JWT token
-    const token = jwt.sign(
-      { id: user.id, email: user.email, role: user.role },
-      JWT_SECRET,
-      JWT_SIGN_OPTIONS
-    );
+    if (user.twoFactorEnabled) {
+      const twoFactorToken = issueTwoFactorPendingToken({
+        id: user.id,
+        email: user.email,
+        role: user.role,
+      });
+
+      res.status(200).json({
+        success: true,
+        data: {
+          twoFactorToken,
+          user: {
+            id: user.id,
+            email: user.email,
+            name: user.name,
+            role: user.role,
+            department: user.department,
+            photoUrl: user.photoUrl,
+          },
+        },
+        requiresTwoFactor: true,
+      });
+      return;
+    }
+
+    const token = issueAuthToken({ id: user.id, email: user.email, role: user.role });
 
     // Log activity with enriched audit metadata (IP + UA) for forensics.
     const ip = getClientIp(req);
@@ -390,7 +515,45 @@ router.post(
           photoUrl: user.photoUrl,
         },
       },
-      requiresTwoFactor: false, // 2FA can be enabled later
+      requiresTwoFactor: false,
+    });
+  })
+);
+
+/**
+ * POST /api/auth/2fa/setup
+ * Generate a TOTP secret and persist it for the current authenticated user.
+ */
+router.post(
+  '/2fa/setup',
+  authMiddleware,
+  asyncHandler(async (req: Request, res: Response) => {
+    const userId = (req as AuthRequest).user?.id;
+    if (!userId) throw new AppError('Not authenticated', 401);
+
+    const user = await prisma.user.findUnique({ where: { id: userId } });
+    if (!user) throw new AppError('User not found', 404);
+
+    const { secret, otpAuthUrl } = getTwoFactorSetupPayload(user);
+    const encryptedSecret = encryptTwoFactorSecret(secret);
+
+    await prisma.user.update({
+      where: { id: user.id },
+      data: {
+        twoFactorEnabled: false,
+        twoFactorSecret: encryptedSecret,
+      },
+    });
+
+    res.status(200).json({
+      success: true,
+      data: {
+        secret,
+        otpAuthUrl,
+        issuer: TWO_FACTOR_ISSUER,
+        period: TWO_FACTOR_PERIOD_SECONDS,
+        digits: TWO_FACTOR_DIGITS,
+      },
     });
   })
 );
@@ -540,264 +703,127 @@ router.post(
 
 /**
  * POST /api/auth/verify-2fa
- * Verify TOTP code to complete login when 2FA is required.
- * Accepts 6-digit TOTP code or an 8-char backup recovery code.
+ * Verify 2FA code (placeholder — ready for SMS/TOTP integration)
  */
-router.post(
-  '/verify-2fa',
-  asyncHandler(async (req: Request, res: Response) => {
-    const { email, code } = req.body;
+const verifyTwoFactorRequest = asyncHandler(async (req: Request, res: Response) => {
+  const { email, code, twoFactorToken } = req.body;
 
-    if (!email || !code) {
-      throw new AppError('Email and verification code are required', 400);
-    }
+  if (!code) {
+    throw new AppError('Verification code is required', 400);
+  }
 
-    // Dev-only 2FA bypass: requires BOTH NODE_ENV=development AND DEV_2FA_BYPASS=true
-    if (
-      process.env.NODE_ENV === 'development' &&
-      process.env.DEV_2FA_BYPASS === 'true' &&
-      code === '000000'
-    ) {
-      const user = await prisma.user.findUnique({ where: { email } });
-      if (!user) throw new AppError('User not found', 404);
+  let resolvedEmail = typeof email === 'string' ? email.trim().toLowerCase() : '';
 
-      const token = jwt.sign(
-        { id: user.id, email: user.email, role: user.role },
-        JWT_SECRET,
-        JWT_SIGN_OPTIONS
-      );
-
-      return res.status(200).json({
-        success: true,
-        data: { token, verified: true },
-      });
-    }
-
-    const sanitizedEmail = sanitizeString(email).toLowerCase().trim();
-    const user = await prisma.user.findUnique({ where: { email: sanitizedEmail } });
-    if (!user) throw new AppError('Invalid credentials', 401);
-
-    if (!user.totpEnabled || !user.totpSecret) {
-      throw new AppError('Two-factor authentication is not enabled for this account', 400);
-    }
-
-    // Try TOTP code first, then backup codes
-    const codeStr = String(code).trim().toUpperCase();
-    let verified = false;
-
-    if (/^\d{6}$/.test(codeStr)) {
-      // Regular 6-digit TOTP
-      verified = verifyTOTP(user.totpSecret, codeStr);
-    } else if (/^[A-F0-9]{8}$/.test(codeStr)) {
-      // Backup recovery code — check against hashed list
-      for (const hashed of user.totpBackupCodes) {
-        if (await bcrypt.compare(codeStr, hashed)) {
-          // Consume the backup code (single-use)
-          await prisma.user.update({
-            where: { id: user.id },
-            data: { totpBackupCodes: user.totpBackupCodes.filter(h => h !== hashed) },
-          });
-          verified = true;
-          break;
-        }
-      }
-    }
-
-    if (!verified) {
-      logger.warn('Failed 2FA attempt', { userId: user.id });
-      throw new AppError('Invalid verification code', 401);
-    }
-
-    const token = jwt.sign(
-      { id: user.id, email: user.email, role: user.role },
-      JWT_SECRET,
-      JWT_SIGN_OPTIONS
-    );
-
-    logger.info('2FA verification successful', { userId: user.id });
-    res.status(200).json({ success: true, data: { token, verified: true } });
-  })
-);
-
-/**
- * POST /api/auth/2fa/setup
- * Generate a new TOTP secret for the authenticated user.
- * Returns the secret and an otpauth:// URI for QR-code display.
- * The user must still call /enable after scanning to activate.
- */
-router.post(
-  '/2fa/setup',
-  authMiddleware,
-  asyncHandler(async (req: AuthRequest, res: Response) => {
-    const userId = req.user?.id;
-    if (!userId) throw new AppError('Authentication required', 401);
-
-    const secret = generateTOTPSecret();
-    const appName = encodeURIComponent('White Caves CRM');
-    const user = await prisma.user.findUnique({ where: { id: userId }, select: { email: true } });
-    if (!user) throw new AppError('User not found', 404);
-
-    const accountLabel = encodeURIComponent(user.email);
-    const otpauthUri = `otpauth://totp/${appName}:${accountLabel}?secret=${secret}&issuer=${appName}&algorithm=SHA1&digits=6&period=30`;
-
-    // Temporarily store secret (not yet enabled — no DB write until /enable confirms)
-    // Store as pending in a short-lived signed token so the secret never sits idle in the DB
-    const pendingToken = jwt.sign({ userId, totpSecret: secret }, JWT_SECRET, { expiresIn: 600 });
-
-    res.status(200).json({
-      success: true,
-      data: {
-        secret,
-        otpauthUri,
-        pendingToken,
-        instructions: [
-          '1. Scan the QR code (or enter the secret) in your authenticator app (Google Authenticator, Authy, etc.)',
-          '2. Enter the 6-digit code from your app to confirm setup at POST /api/auth/2fa/enable',
-        ],
-      },
-    });
-  })
-);
-
-/**
- * POST /api/auth/2fa/enable
- * Activate TOTP 2FA by verifying the first code from the authenticator app.
- * Requires { pendingToken, code } in the request body.
- */
-router.post(
-  '/2fa/enable',
-  authMiddleware,
-  asyncHandler(async (req: AuthRequest, res: Response) => {
-    const userId = req.user?.id;
-    if (!userId) throw new AppError('Authentication required', 401);
-
-    const { pendingToken, code } = req.body;
-    if (!pendingToken || !code) {
-      throw new AppError('pendingToken and code are required', 400);
-    }
-
-    // Decode the pending token to retrieve the secret
-    let totpSecret: string;
+  if (!resolvedEmail && twoFactorToken) {
     try {
-      const payload = jwt.verify(pendingToken, JWT_SECRET) as {
-        userId: string;
-        totpSecret: string;
+      const decoded = jwt.verify(twoFactorToken, JWT_SECRET) as {
+        email?: string;
+        twoFactorPending?: boolean;
       };
-      if (payload.userId !== userId)
-        throw new AppError('Token does not match the current user', 403);
-      totpSecret = payload.totpSecret;
-    } catch (err) {
-      if (err instanceof AppError) throw err;
-      throw new AppError('Setup token is invalid or has expired — please restart 2FA setup', 400);
+      if (!decoded.twoFactorPending || !decoded.email) {
+        throw new AppError('Invalid 2FA verification token', 401);
+      }
+      resolvedEmail = decoded.email.toLowerCase();
+    } catch {
+      throw new AppError('Invalid 2FA verification token', 401);
     }
+  }
 
-    if (!verifyTOTP(totpSecret, String(code).trim())) {
-      throw new AppError(
-        'Verification code is incorrect — ensure your device clock is accurate',
-        400
-      );
-    }
+  if (!resolvedEmail) {
+    throw new AppError('Email or 2FA token is required', 400);
+  }
 
-    // Generate backup codes and hash them
-    const plainCodes = generateBackupCodes(8);
-    const hashedCodes = await Promise.all(plainCodes.map(c => bcrypt.hash(c, BCRYPT_ROUNDS)));
+  const user = await prisma.user.findUnique({ where: { email: resolvedEmail } });
+  if (!user) throw new AppError('User not found', 404);
 
-    await prisma.user.update({
-      where: { id: userId },
-      data: { totpSecret, totpEnabled: true, totpBackupCodes: hashedCodes },
-    });
+  if (
+    process.env.NODE_ENV === 'development' &&
+    process.env.DEV_2FA_BYPASS === 'true' &&
+    String(code) === '000000'
+  ) {
+    const token = issueAuthToken({ id: user.id, email: user.email, role: user.role });
 
-    logger.info('TOTP 2FA enabled', { userId });
     res.status(200).json({
       success: true,
-      data: {
-        enabled: true,
-        backupCodes: plainCodes,
-        message:
-          'Two-factor authentication is now active. Store your backup codes in a safe place — they will not be shown again.',
-      },
+      data: { token, verified: true },
     });
-  })
-);
+    return;
+  }
+
+  const rawSecret = getTwoFactorSecret(user);
+  if (!rawSecret) {
+    throw new AppError('2FA is not configured for this account', 409);
+  }
+
+  const isValid = verifyTotp(rawSecret, String(code));
+
+  if (!isValid) {
+    recordLoginFailure(req, 'invalid_password', resolvedEmail, user.id);
+    throw new AppError('Invalid verification code', 401);
+  }
+
+  if (!user.twoFactorEnabled) {
+    await prisma.user.update({
+      where: { id: user.id },
+      data: { twoFactorEnabled: true },
+    });
+  }
+
+  const token = issueAuthToken({ id: user.id, email: user.email, role: user.role });
+
+  await prisma.activity.create({
+    data: {
+      type: 'system',
+      action: 'login',
+      description: `${user.name || user.email} completed 2FA verification`,
+      userId: user.id,
+      metadata: { twoFactor: true } as Prisma.InputJsonValue,
+    },
+  });
+
+  res.status(200).json({
+    success: true,
+    data: { token, verified: true },
+  });
+});
+
+router.post('/verify-2fa', verifyTwoFactorRequest);
+router.post('/2fa/verify', verifyTwoFactorRequest);
 
 /**
  * POST /api/auth/2fa/disable
- * Deactivate TOTP 2FA after confirming with a valid code.
- * Requires { code } — either a current TOTP or a backup code.
+ * Disable TOTP after password confirmation.
  */
 router.post(
   '/2fa/disable',
   authMiddleware,
-  asyncHandler(async (req: AuthRequest, res: Response) => {
-    const userId = req.user?.id;
-    if (!userId) throw new AppError('Authentication required', 401);
+  asyncHandler(async (req: Request, res: Response) => {
+    const userId = (req as AuthRequest).user?.id;
+    if (!userId) throw new AppError('Not authenticated', 401);
 
-    const { code } = req.body;
-    if (!code) throw new AppError('Verification code is required to disable 2FA', 400);
+    const { currentPassword } = req.body ?? {};
+    if (!currentPassword) {
+      throw new AppError('Current password is required', 400);
+    }
 
-    const user = await prisma.user.findUnique({
-      where: { id: userId },
-      select: { totpSecret: true, totpEnabled: true, totpBackupCodes: true },
-    });
+    const user = await prisma.user.findUnique({ where: { id: userId } });
     if (!user) throw new AppError('User not found', 404);
-    if (!user.totpEnabled || !user.totpSecret) {
-      throw new AppError('Two-factor authentication is not enabled', 400);
+
+    if (!user.passwordHash || !(await verifyPassword(currentPassword, user.passwordHash))) {
+      throw new AppError('Current password is incorrect', 401);
     }
-
-    const codeStr = String(code).trim().toUpperCase();
-    let verified = false;
-
-    if (/^\d{6}$/.test(codeStr)) {
-      verified = verifyTOTP(user.totpSecret, codeStr);
-    } else if (/^[A-F0-9]{8}$/.test(codeStr)) {
-      for (const hashed of user.totpBackupCodes) {
-        if (await bcrypt.compare(codeStr, hashed)) {
-          verified = true;
-          break;
-        }
-      }
-    }
-
-    if (!verified) throw new AppError('Invalid verification code', 401);
 
     await prisma.user.update({
-      where: { id: userId },
-      data: { totpEnabled: false, totpSecret: null, totpBackupCodes: [] },
+      where: { id: user.id },
+      data: {
+        twoFactorEnabled: false,
+        twoFactorSecret: null,
+      },
     });
-
-    logger.info('TOTP 2FA disabled', { userId });
-    res
-      .status(200)
-      .json({
-        success: true,
-        data: { enabled: false, message: 'Two-factor authentication has been disabled.' },
-      });
-  })
-);
-
-/**
- * GET /api/auth/2fa/status
- * Return whether 2FA is enabled for the current user.
- */
-router.get(
-  '/2fa/status',
-  authMiddleware,
-  asyncHandler(async (req: AuthRequest, res: Response) => {
-    const userId = req.user?.id;
-    if (!userId) throw new AppError('Authentication required', 401);
-
-    const user = await prisma.user.findUnique({
-      where: { id: userId },
-      select: { totpEnabled: true, totpBackupCodes: true },
-    });
-    if (!user) throw new AppError('User not found', 404);
 
     res.status(200).json({
       success: true,
-      data: {
-        totpEnabled: user.totpEnabled,
-        backupCodesRemaining: user.totpBackupCodes.length,
-      },
+      data: { disabled: true },
     });
   })
 );
@@ -824,6 +850,7 @@ router.get(
         department: true,
         photoUrl: true,
         status: true,
+        twoFactorEnabled: true,
         createdAt: true,
         _count: {
           select: {
@@ -910,17 +937,53 @@ router.post(
       throw new AppError('Firebase token is required', 400);
     }
 
-    let decodedToken;
+    const normalizedBodyEmail = typeof email === 'string' ? email.toLowerCase().trim() : null;
+
+    let decodedToken: {
+      uid: string;
+      email?: string;
+      name?: string;
+      picture?: string;
+    };
     try {
       decodedToken = await verifyFirebaseIdToken(firebaseToken);
     } catch (error: unknown) {
-      if (error instanceof FirebaseAdminInitError) {
-        throw new AppError(
-          'Firebase Admin is not configured on the server. Set FIREBASE_SERVICE_ACCOUNT or FIREBASE_PROJECT_ID/FIREBASE_CLIENT_EMAIL/FIREBASE_PRIVATE_KEY.',
-          503
-        );
+      const isFirebaseAdminInitError =
+        error instanceof FirebaseAdminInitError ||
+        (typeof error === 'object' &&
+          error !== null &&
+          (error as { name?: string }).name === 'FirebaseAdminInitError');
+
+      if (isFirebaseAdminInitError) {
+        const allowDevFallback =
+          process.env.NODE_ENV !== 'production' &&
+          (process.env.ALLOW_FIREBASE_SYNC_DEV_FALLBACK ?? 'true') === 'true';
+
+        if (!allowDevFallback) {
+          throw new AppError(
+            'Firebase Admin is not configured on the server. Set FIREBASE_SERVICE_ACCOUNT or FIREBASE_PROJECT_ID/FIREBASE_CLIENT_EMAIL/FIREBASE_PRIVATE_KEY.',
+            503
+          );
+        }
+
+        if (!normalizedBodyEmail) {
+          throw new AppError('Email is required for development firebase-sync fallback', 400);
+        }
+
+        logger.warn('Using development firebase-sync fallback (Firebase Admin unavailable)', {
+          firebaseUid,
+          email: normalizedBodyEmail,
+        });
+
+        decodedToken = {
+          uid: firebaseUid,
+          email: normalizedBodyEmail,
+          name: typeof name === 'string' ? sanitizeString(name.trim()) : undefined,
+          picture: typeof photoUrl === 'string' ? photoUrl : undefined,
+        };
+      } else {
+        throw new AppError('Invalid Firebase token', 401);
       }
-      throw new AppError('Invalid Firebase token', 401);
     }
 
     if (decodedToken.uid !== firebaseUid) {
@@ -932,7 +995,6 @@ router.post(
       throw new AppError('Verified Firebase email is required', 400);
     }
 
-    const normalizedBodyEmail = typeof email === 'string' ? email.toLowerCase().trim() : null;
     if (normalizedBodyEmail && normalizedBodyEmail !== verifiedEmail) {
       throw new AppError('Firebase email mismatch', 401);
     }

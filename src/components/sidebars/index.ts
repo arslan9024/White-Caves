@@ -1,8 +1,19 @@
 // src/components/sidebars/index.ts
 /**
  * Sidebar Components Barrel Export
- * Exports all sidebar-related components for clean imports
+ * Canonical sidebars for CRM shell + legacy compatibility exports.
+ *
+ * Canonical (use these in new code):
+ * - EnhancedLeftSidebar
+ * - EnhancedRightSidebar
+ *
+ * Legacy (kept temporarily for backwards compatibility):
+ * - CompanyDepartmentSidebar
+ * - AIAssistantsSidebar
  */
+
+export { default as EnhancedLeftSidebar } from './EnhancedLeftSidebar/EnhancedLeftSidebar';
+export { default as EnhancedRightSidebar } from './EnhancedRightSidebar/EnhancedRightSidebar';
 
 export { CompanyDepartmentSidebar } from './CompanyDepartmentSidebar/CompanyDepartmentSidebar';
 export type { CompanyDepartmentSidebarProps } from './CompanyDepartmentSidebar/CompanyDepartmentSidebar';

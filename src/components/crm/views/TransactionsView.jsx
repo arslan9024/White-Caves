@@ -19,7 +19,7 @@ import {
   RefreshCw,
   FileSpreadsheet,
 } from 'lucide-react';
-import axios from 'axios';
+import { authFetch } from '../../../utils/authFetch';
 
 const PROPERTY_TYPES = [
   'Flat',
@@ -67,6 +67,11 @@ export default function TransactionsView() {
   const [modalMode, setModalMode] = useState('view');
   const [editForm, setEditForm] = useState({});
   const [importing, setImporting] = useState(false);
+  const [statusMessage, setStatusMessage] = useState(null);
+
+  const showStatus = (type, text) => {
+    setStatusMessage({ type, text });
+  };
 
   const fetchTransactions = useCallback(async () => {
     setLoading(true);
@@ -79,22 +84,27 @@ export default function TransactionsView() {
         ...Object.fromEntries(Object.entries(filters).filter(([_, v]) => v)),
       });
 
-      const response = await axios.get(`/api/transactions?${params}`);
-      if (response.data.success) {
-        setTransactions(response.data.data);
-        setPagination(prev => ({ ...prev, ...response.data.pagination }));
+      const response = await authFetch(`/api/transactions?${params}`);
+      if (!response.ok) return;
+      const payload = await response.json();
+      if (payload.success) {
+        setTransactions(payload.data);
+        setPagination(prev => ({ ...prev, ...payload.pagination }));
       }
     } catch {
       // handled silently
+    } finally {
       setLoading(false);
     }
   }, [pagination.page, pagination.limit, sortConfig, filters]);
 
   const fetchStats = async () => {
     try {
-      const response = await axios.get('/api/transactions/stats');
-      if (response.data.success) {
-        setStats(response.data.stats);
+      const response = await authFetch('/api/transactions/stats');
+      if (!response.ok) return;
+      const payload = await response.json();
+      if (payload.success) {
+        setStats(payload.stats);
       }
     } catch {
       // handled silently
@@ -172,22 +182,30 @@ export default function TransactionsView() {
   const handleSave = async () => {
     try {
       if (modalMode === 'create') {
-        await axios.post('/api/transactions', editForm);
+        await authFetch('/api/transactions', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(editForm),
+        });
       } else {
-        await axios.put(`/api/transactions/${selectedTransaction._id}`, editForm);
+        await authFetch(`/api/transactions/${selectedTransaction._id}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(editForm),
+        });
       }
       setShowModal(false);
       fetchTransactions();
       fetchStats();
     } catch {
-      alert('Failed to save transaction');
+      showStatus('error', 'Failed to save transaction');
     }
   };
 
   const handleDelete = async id => {
     if (!window.confirm('Are you sure you want to delete this transaction?')) return;
     try {
-      await axios.delete(`/api/transactions/${id}`);
+      await authFetch(`/api/transactions/${id}`, { method: 'DELETE' });
       fetchTransactions();
       fetchStats();
     } catch {
@@ -204,16 +222,21 @@ export default function TransactionsView() {
     formData.append('file', file);
 
     try {
-      const response = await axios.post('/api/transactions/import', formData, {
-        headers: { 'Content-Type': 'multipart/form-data' },
+      const response = await authFetch('/api/transactions/import', {
+        method: 'POST',
+        body: formData,
       });
-      if (response.data.success) {
-        alert(`Successfully imported ${response.data.imported} transactions`);
+      if (!response.ok) {
+        throw new Error('Import failed');
+      }
+      const payload = await response.json();
+      if (payload.success) {
+        showStatus('success', `Successfully imported ${payload.imported} transactions`);
         fetchTransactions();
         fetchStats();
       }
     } catch {
-      alert('Failed to import file');
+      showStatus('error', 'Failed to import file');
     } finally {
       setImporting(false);
       e.target.value = '';
@@ -242,6 +265,25 @@ export default function TransactionsView() {
           </button>
         </div>
       </div>
+
+      {statusMessage && (
+        <div
+          role={statusMessage.type === 'error' ? 'alert' : 'status'}
+          data-testid="transactions-status-banner"
+          style={{
+            marginBottom: '16px',
+            padding: '12px 16px',
+            borderRadius: '8px',
+            fontSize: '14px',
+            fontWeight: 600,
+            borderLeft: `4px solid ${statusMessage.type === 'error' ? '#F04438' : '#12B76A'}`,
+            background: statusMessage.type === 'error' ? '#FEF3F2' : '#ECFDF3',
+            color: statusMessage.type === 'error' ? '#B42318' : '#027A48',
+          }}
+        >
+          {statusMessage.type === 'error' ? '⚠️' : '✅'} {statusMessage.text}
+        </div>
+      )}
 
       {stats && (
         <div className="stats-grid">

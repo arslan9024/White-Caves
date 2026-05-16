@@ -1,3 +1,5 @@
+import { authFetch } from '../utils/authFetch';
+
 const API_BASE = '/api';
 
 class CRMDataService {
@@ -9,24 +11,19 @@ class CRMDataService {
   async fetchWithAuth(endpoint, options = {}) {
     const headers = {
       'Content-Type': 'application/json',
-      ...options.headers
+      ...options.headers,
     };
 
-    try {
-      const response = await fetch(`${API_BASE}${endpoint}`, {
-        ...options,
-        headers
-      });
+    const response = await authFetch(`${API_BASE}${endpoint}`, {
+      ...options,
+      headers,
+    });
 
-      if (!response.ok) {
-        throw new Error(`API Error: ${response.status} ${response.statusText}`);
-      }
-
-      return await response.json();
-    } catch (error) {
-      
-      throw error;
+    if (!response.ok) {
+      throw new Error(`API Error: ${response.status} ${response.statusText}`);
     }
+
+    return response.json();
   }
 
   getCached(key) {

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Home, TrendingUp, DollarSign, Users, BarChart3 } from 'lucide-react';
-import axios from 'axios';
+import { authFetch } from '../../../utils/authFetch';
 import MetricCard from './MetricCard';
 import PropertyDistributionChart from './PropertyDistributionChart';
 import PricingAnalyticsChart from './PricingAnalyticsChart';
@@ -24,12 +24,16 @@ function AnalyticsDashboard() {
       setRefreshing(true);
       setError(null);
 
-      const response = await axios.get(
-        '/api/property-inventory/analytics/dashboard'
-      );
+      const response = await authFetch('/api/property-inventory/analytics/dashboard');
 
-      if (response.data.success) {
-        setStats(response.data.data);
+      if (!response.ok) {
+        throw new Error(`Failed to fetch dashboard statistics (${response.status})`);
+      }
+
+      const payload = await response.json();
+
+      if (payload.success) {
+        setStats(payload.data);
         setLastUpdated(new Date());
       } else {
         throw new Error('Failed to fetch dashboard statistics');
@@ -48,9 +52,12 @@ function AnalyticsDashboard() {
     fetchDashboardStats();
 
     // Set up auto-refresh every 5 minutes
-    const refreshInterval = setInterval(() => {
-      fetchDashboardStats();
-    }, 5 * 60 * 1000);
+    const refreshInterval = setInterval(
+      () => {
+        fetchDashboardStats();
+      },
+      5 * 60 * 1000
+    );
 
     return () => clearInterval(refreshInterval);
   }, []);
@@ -63,10 +70,16 @@ function AnalyticsDashboard() {
   // Handle export
   const handleExport = async () => {
     try {
-      const response = await axios.get('/api/property-inventory/analytics/export');
-      
+      const response = await authFetch('/api/property-inventory/analytics/export');
+
+      if (!response.ok) {
+        throw new Error(`Failed to export analytics data (${response.status})`);
+      }
+
+      const payload = await response.json();
+
       // Convert to JSON and download
-      const dataStr = JSON.stringify(response.data.data, null, 2);
+      const dataStr = JSON.stringify(payload.data, null, 2);
       const dataBlob = new Blob([dataStr], { type: 'application/json' });
       const url = URL.createObjectURL(dataBlob);
       const link = document.createElement('a');
@@ -111,7 +124,7 @@ function AnalyticsDashboard() {
     distribution = {},
     pricing = {},
     occupancy = {},
-    areaAnalytics = []
+    areaAnalytics = [],
   } = stats || {};
 
   return (
@@ -144,9 +157,7 @@ function AnalyticsDashboard() {
 
       {/* Last Updated Info */}
       {lastUpdated && (
-        <div className="last-updated">
-          Last updated: {lastUpdated.toLocaleTimeString()}
-        </div>
+        <div className="last-updated">Last updated: {lastUpdated.toLocaleTimeString()}</div>
       )}
 
       {/* Key Metrics Section */}
@@ -179,14 +190,22 @@ function AnalyticsDashboard() {
             />
             <MetricCard
               title="Average Price"
-              value={keyMetrics.averagePrice ? `AED ${(keyMetrics.averagePrice / 1000).toFixed(0)}K` : 'N/A'}
+              value={
+                keyMetrics.averagePrice
+                  ? `AED ${(keyMetrics.averagePrice / 1000).toFixed(0)}K`
+                  : 'N/A'
+              }
               unit=""
               icon={<TrendingUp size={24} />}
               color="purple"
             />
             <MetricCard
               title="Portfolio Value"
-              value={keyMetrics.totalPortfolioValue ? `AED ${(keyMetrics.totalPortfolioValue / 1000000).toFixed(1)}M` : 'N/A'}
+              value={
+                keyMetrics.totalPortfolioValue
+                  ? `AED ${(keyMetrics.totalPortfolioValue / 1000000).toFixed(1)}M`
+                  : 'N/A'
+              }
               unit=""
               icon={<BarChart3 size={24} />}
               color="red"
@@ -197,7 +216,13 @@ function AnalyticsDashboard() {
               unit="occupied"
               icon={<TrendingUp size={24} />}
               color="green"
-              trend={keyMetrics.occupancyRate >= 75 ? 'up' : keyMetrics.occupancyRate >= 50 ? 'neutral' : 'down'}
+              trend={
+                keyMetrics.occupancyRate >= 75
+                  ? 'up'
+                  : keyMetrics.occupancyRate >= 50
+                    ? 'neutral'
+                    : 'down'
+              }
             />
           </div>
         </section>

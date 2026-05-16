@@ -239,7 +239,8 @@ router.post(
     });
 
     // Fire-and-forget notification (don't block response)
-    sendViewingNotification(viewing, 'created').catch(err =>
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    sendViewingNotification(viewing as any, 'created').catch(err =>
       logger.warn('Failed to send viewing creation notification', { err })
     );
 
@@ -348,7 +349,8 @@ router.patch(
 
     // Send notification on status change
     if (status === 'confirmed' || status === 'cancelled') {
-      sendViewingNotification(updated, status).catch(err =>
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      sendViewingNotification(updated as any, status).catch(err =>
         logger.warn('Failed to send viewing status notification', { err })
       );
     }

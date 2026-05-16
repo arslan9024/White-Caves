@@ -1,17 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
-import {
-  User,
-  Mail,
-  Phone,
-  MapPin,
-  Heart,
-  Settings,
-  FileCheck,
-  Camera,
-  Save,
-  X
-} from 'lucide-react';
+import { Mail, Phone, MapPin, Heart, Settings, FileCheck, Camera, Save, X } from 'lucide-react';
+import { authFetch } from '../utils/authFetch';
 import './ProfilePage.css';
 
 const ProfilePage = () => {
@@ -20,6 +10,7 @@ const ProfilePage = () => {
   const [editing, setEditing] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [statusMessage, setStatusMessage] = useState(null);
   const [activeTab, setActiveTab] = useState('personal'); // personal, documents, preferences, favorites
 
   const [formData, setFormData] = useState({
@@ -30,14 +21,14 @@ const ProfilePage = () => {
     avatar: '',
     address: {},
     preferences: {},
-    social: {}
+    social: {},
   });
 
   useEffect(() => {
     const fetchProfile = async () => {
       try {
         setLoading(true);
-        const response = await fetch(`/api/profiles/${user.id}`);
+        const response = await authFetch(`/api/profiles/${user.id}`);
         if (response.ok) {
           const data = await response.json();
           setProfile(data);
@@ -55,38 +46,62 @@ const ProfilePage = () => {
     }
   }, [user?.id]);
 
-  const handleInputChange = (e) => {
+  const handleInputChange = e => {
     const { name, value } = e.target;
-    setFormData((prev) => ({
+    setFormData(prev => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
   };
 
   const handleNestedInputChange = (e, parent) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [parent]: {
-        ...prev[parent],
-        [name]: value
-      }
-    }));
+    if (parent === 'address') {
+      setFormData(prev => ({
+        ...prev,
+        address: {
+          ...prev.address,
+          [name]: value,
+        },
+      }));
+      return;
+    }
+
+    if (parent === 'preferences') {
+      setFormData(prev => ({
+        ...prev,
+        preferences: {
+          ...prev.preferences,
+          [name]: value,
+        },
+      }));
+      return;
+    }
+
+    if (parent === 'social') {
+      setFormData(prev => ({
+        ...prev,
+        social: {
+          ...prev.social,
+          [name]: value,
+        },
+      }));
+    }
   };
 
   const handleSaveProfile = async () => {
     try {
-      const response = await fetch(`/api/profiles/${user.id}`, {
+      const response = await authFetch(`/api/profiles/${user.id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData)
+        body: JSON.stringify(formData),
       });
 
       if (response.ok) {
         const updated = await response.json();
         setProfile(updated.profile);
         setEditing(false);
-        alert('Profile updated successfully!');
+        setStatusMessage({ type: 'success', text: 'Profile updated successfully!' });
       }
     } catch (err) {
       setError(err.message);
@@ -97,22 +112,22 @@ const ProfilePage = () => {
     try {
       // Convert file to base64
       const reader = new FileReader();
-      reader.onload = async (e) => {
+      reader.onload = async e => {
         const base64 = e.target.result;
 
-        const response = await fetch(`/api/profiles/${user.id}/documents/${docType}`, {
+        const response = await authFetch(`/api/profiles/${user.id}/documents/${docType}`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             document: base64,
-            expiryDate: new Date() // Update as needed
-          })
+            expiryDate: new Date(), // Update as needed
+          }),
         });
 
         if (response.ok) {
           const updated = await response.json();
           setProfile(updated.profile);
-          alert(`${docType} uploaded successfully!`);
+          setStatusMessage({ type: 'success', text: `${docType} uploaded successfully!` });
         }
       };
       reader.readAsDataURL(file);
@@ -129,14 +144,14 @@ const ProfilePage = () => {
     <div className="profile-page">
       {/* Header */}
       <div className="profile-header">
-        <div className="profile-cover" style={{ backgroundImage: 'url(https://via.placeholder.com/1200x300)' }} />
+        <div
+          className="profile-cover"
+          style={{ backgroundImage: 'url(https://via.placeholder.com/1200x300)' }}
+        />
 
         <div className="profile-avatar-section">
           <div className="profile-avatar">
-            <img
-              src={profile?.avatar || `https://via.placeholder.com/120`}
-              alt={profile?.name}
-            />
+            <img src={profile?.avatar || `https://via.placeholder.com/120`} alt={profile?.name} />
             {editing && (
               <label className="upload-avatar">
                 <Camera size={20} />
@@ -190,6 +205,15 @@ const ProfilePage = () => {
 
       {/* Content */}
       <div className="profile-content">
+        {statusMessage && (
+          <div
+            className={`status-message ${statusMessage.type === 'error' ? 'error-message' : 'success-message'}`}
+            role={statusMessage.type === 'error' ? 'alert' : 'status'}
+            data-testid="profile-status-banner"
+          >
+            {statusMessage.text}
+          </div>
+        )}
         {error && <div className="error-message">{error}</div>}
 
         {/* Personal Info Tab */}
@@ -218,7 +242,8 @@ const ProfilePage = () => {
                   <div>
                     <label>Address</label>
                     <p>
-                      {profile?.address?.street || ''} {profile?.address?.emirate || ''} {profile?.address?.country || 'Not provided'}
+                      {profile?.address?.street || ''} {profile?.address?.emirate || ''}{' '}
+                      {profile?.address?.country || 'Not provided'}
                     </p>
                   </div>
                 </div>
@@ -266,7 +291,7 @@ const ProfilePage = () => {
                     type="text"
                     name="street"
                     value={formData.address?.street || ''}
-                    onChange={(e) => handleNestedInputChange(e, 'address')}
+                    onChange={e => handleNestedInputChange(e, 'address')}
                   />
                 </div>
 
@@ -277,7 +302,7 @@ const ProfilePage = () => {
                       type="text"
                       name="emirate"
                       value={formData.address?.emirate || ''}
-                      onChange={(e) => handleNestedInputChange(e, 'address')}
+                      onChange={e => handleNestedInputChange(e, 'address')}
                     />
                   </div>
 
@@ -287,19 +312,14 @@ const ProfilePage = () => {
                       type="text"
                       name="country"
                       value={formData.address?.country || ''}
-                      onChange={(e) => handleNestedInputChange(e, 'address')}
+                      onChange={e => handleNestedInputChange(e, 'address')}
                     />
                   </div>
                 </div>
 
                 <div className="form-group">
                   <label>Bio</label>
-                  <textarea
-                    name="bio"
-                    value={formData.bio}
-                    onChange={handleInputChange}
-                    rows={4}
-                  />
+                  <textarea name="bio" value={formData.bio} onChange={handleInputChange} rows={4} />
                 </div>
 
                 <div className="form-actions">
@@ -327,9 +347,7 @@ const ProfilePage = () => {
                   {profile?.kyc?.status?.toUpperCase()}
                 </div>
                 {profile?.kyc?.rejectionReason && (
-                  <p className="rejection-reason">
-                    Reason: {profile.kyc.rejectionReason}
-                  </p>
+                  <p className="rejection-reason">Reason: {profile.kyc.rejectionReason}</p>
                 )}
               </div>
 
@@ -349,9 +367,7 @@ const ProfilePage = () => {
                         <input
                           type="file"
                           accept="image/*"
-                          onChange={(e) =>
-                            handleDocumentUpload('emiratesId', e.target.files[0])
-                          }
+                          onChange={e => handleDocumentUpload('emiratesId', e.target.files[0])}
                           hidden
                         />
                         Upload Document
@@ -375,7 +391,7 @@ const ProfilePage = () => {
                         <input
                           type="file"
                           accept="image/*"
-                          onChange={(e) => handleDocumentUpload('passport', e.target.files[0])}
+                          onChange={e => handleDocumentUpload('passport', e.target.files[0])}
                           hidden
                         />
                         Upload Document
@@ -399,9 +415,7 @@ const ProfilePage = () => {
                         <input
                           type="file"
                           accept="image/*,application/pdf"
-                          onChange={(e) =>
-                            handleDocumentUpload('addressProof', e.target.files[0])
-                          }
+                          onChange={e => handleDocumentUpload('addressProof', e.target.files[0])}
                           hidden
                         />
                         Upload Document
@@ -414,10 +428,7 @@ const ProfilePage = () => {
               <div className="profile-completion">
                 <h4>Profile Completion</h4>
                 <div className="progress-bar">
-                  <div
-                    className="progress-fill"
-                    style={{ width: `${completionPercentage}%` }}
-                  />
+                  <div className="progress-fill" style={{ width: `${completionPercentage}%` }} />
                 </div>
                 <p>{completionPercentage}% Complete</p>
               </div>
@@ -435,13 +446,13 @@ const ProfilePage = () => {
                   <input
                     type="checkbox"
                     checked={profile?.notifications?.emailNotifications}
-                    onChange={(e) => {
-                      setFormData((prev) => ({
+                    onChange={e => {
+                      setFormData(prev => ({
                         ...prev,
                         notifications: {
                           ...prev.notifications,
-                          emailNotifications: e.target.checked
-                        }
+                          emailNotifications: e.target.checked,
+                        },
                       }));
                     }}
                   />
@@ -454,13 +465,13 @@ const ProfilePage = () => {
                   <input
                     type="checkbox"
                     checked={profile?.notifications?.newPropertyAlerts}
-                    onChange={(e) => {
-                      setFormData((prev) => ({
+                    onChange={e => {
+                      setFormData(prev => ({
                         ...prev,
                         notifications: {
                           ...prev.notifications,
-                          newPropertyAlerts: e.target.checked
-                        }
+                          newPropertyAlerts: e.target.checked,
+                        },
                       }));
                     }}
                   />
@@ -474,13 +485,13 @@ const ProfilePage = () => {
                 <select
                   id="visibility"
                   value={profile?.privacy?.profileVisibility || 'agents-only'}
-                  onChange={(e) => {
-                    setFormData((prev) => ({
+                  onChange={e => {
+                    setFormData(prev => ({
                       ...prev,
                       privacy: {
                         ...prev.privacy,
-                        profileVisibility: e.target.value
-                      }
+                        profileVisibility: e.target.value,
+                      },
                     }));
                   }}
                 >
