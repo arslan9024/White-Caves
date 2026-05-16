@@ -2,7 +2,8 @@
 
 **Purpose:** Canonical roadmap for execution decisions.  
 **Owners:** @Ada + @Margaret  
-**Update cadence:** Weekly roadmap refresh (daily progress in `DAILY_WAVE_COMMAND_CENTER.md`)
+**Last Updated:** 2026-05-16  
+**Update cadence:** Weekly roadmap refresh (daily progress in `PROJECT_PROGRESS.md`)
 
 ---
 
@@ -48,10 +49,12 @@
 
 ## Active Metrics
 
-- Blockers baseline: **27**
-- Blockers target: **<=13**
-- Daily blocker burn-down: `DAILY_WAVE_COMMAND_CENTER.md`
-- Readiness baseline: `plans/waves/WAVE_01_READINESS_PACKET.md`
+- Historical baseline: Phases 1–33 complete, Phases 28–30 integration delivered
+- Phases 33–47 execution stream: complete
+- Current blockers count: track in `PROJECT_PROGRESS.md`
+- Blocker target: <=5 before release hardening (N+5)
+- Daily progress: `PROJECT_PROGRESS.md`
+- Readiness baseline: `waves/WAVE_01_READINESS_PACKET.md`
 - AI speed KPI: cycle-time reduction, blocker lead time, test-pass lead time
 
 ---
@@ -59,7 +62,7 @@
 ## Canonical Links
 
 - Queue: [`PENDING_TASKS_ONLY.md`](./PENDING_TASKS_ONLY.md)
-- Daily board: [`DAILY_WAVE_COMMAND_CENTER.md`](./DAILY_WAVE_COMMAND_CENTER.md)
+- Operational dashboard: [`../PROJECT_PROGRESS.md`](../PROJECT_PROGRESS.md)
 - Readiness packet: [`waves/WAVE_01_READINESS_PACKET.md`](./waves/WAVE_01_READINESS_PACKET.md)
 - Historical baseline: [`PHASE_23_24_25_IMPLEMENTATION_PLAN.md`](./PHASE_23_24_25_IMPLEMENTATION_PLAN.md)
 - Full backlog: [`IMPROVEMENTS_BACKLOG.md`](./IMPROVEMENTS_BACKLOG.md)

@@ -1,7 +1,7 @@
 # Planning Governance — Single Source of Truth
 
-**Version:** 1.0  
-**Last Updated:** 2026-05-11  
+**Version:** 1.1  
+**Last Updated:** 2026-05-16  
 **Owner:** Product + Technical Planning
 
 ---
@@ -10,9 +10,9 @@
 
 This governance applies to:
 
-- `/home/runner/work/White-Caves/White-Caves/plans/*`
-- `/home/runner/work/White-Caves/White-Caves/business_docs/*` (planning-linked strategic docs)
-- `/home/runner/work/White-Caves/White-Caves/server/routes/plans.js` and `/home/runner/work/White-Caves/White-Caves/src/server/services/PlanService.js`
+- `plans/*`
+- `business_docs/*` (planning-linked strategic docs)
+- `server/routes/plans.js` and `src/server/services/PlanService.js`
 
 ---
 
@@ -73,8 +73,8 @@ All tracker files must include a `Status Source Pointers` section linking:
 
 - `plans/MASTER_PLAN.md`
 - `plans/PENDING_TASKS_ONLY.md`
-- active `plans/PHASE_*.md`
-- `plans/PHASE_24_MODULE_TRACEABILITY_MATRIX.md`
+- `PROJECT_PROGRESS.md` (operational dashboard)
+- active `plans/PHASE_*.md` (current execution stream)
 
 ---
 

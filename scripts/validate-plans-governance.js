@@ -96,16 +96,36 @@ function assertCrossTrackerConsistency() {
   const daily = readFileSafe(path.join(repoRoot, 'DAILY_MILESTONE_TRACKER.md'));
   const pending = readFileSafe(path.join(plansDir, 'PENDING_TASKS_ONLY.md'));
 
-  const requiredToken = 'PHASE_23_24_25_IMPLEMENTATION_PLAN.md';
-  const files = [
+  // All tracker/queue files must reference the canonical roadmap
+  const requiredInAll = ['MASTER_PLAN.md'];
+
+  // Dashboard and daily log must also reference the pending queue
+  const requiredInDashboards = ['PENDING_TASKS_ONLY.md'];
+
+  const allFiles = [
     ['PROJECT_PROGRESS.md', projectProgress],
     ['DAILY_MILESTONE_TRACKER.md', daily],
     ['plans/PENDING_TASKS_ONLY.md', pending],
   ];
 
-  for (const [name, content] of files) {
-    if (!content.includes(requiredToken)) {
-      errors.push(`${name} missing required active stream reference: ${requiredToken}`);
+  const dashboardFiles = [
+    ['PROJECT_PROGRESS.md', projectProgress],
+    ['DAILY_MILESTONE_TRACKER.md', daily],
+  ];
+
+  for (const [name, content] of allFiles) {
+    for (const token of requiredInAll) {
+      if (!content.includes(token)) {
+        errors.push(`${name} missing required active stream reference: ${token}`);
+      }
+    }
+  }
+
+  for (const [name, content] of dashboardFiles) {
+    for (const token of requiredInDashboards) {
+      if (!content.includes(token)) {
+        errors.push(`${name} missing required active stream reference: ${token}`);
+      }
     }
   }
 }
