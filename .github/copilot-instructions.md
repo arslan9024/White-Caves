@@ -2,6 +2,18 @@
 
 ## Strategy: High-Efficiency Multi-Agent Autonomous Framework
 
+## Canonical Control Files (Single Source of Truth)
+
+- Roadmap authority: `plans/MASTER_PLAN.md`
+- Pending queue authority: `plans/PENDING_TASKS_ONLY.md`
+- Operational dashboard: `PROJECT_PROGRESS.md`
+- Daily execution log: `DAILY_MILESTONE_TRACKER.md`
+- Agent roster + task board authority: `AGENTS.md`
+
+If any document conflicts, follow this precedence: `MASTER_PLAN.md` → `PENDING_TASKS_ONLY.md` → `PROJECT_PROGRESS.md` → `AGENTS.md` → `DAILY_MILESTONE_TRACKER.md`.
+
+---
+
 ### 0. THE EXECUTIVE CORE (The Brains)
 
 | Agent         | Role              | Model                 | Context & Skills                                                           |
@@ -77,7 +89,7 @@
 
 1. **Model Routing:** Use **GPT-4o** for 80% of tasks (standard UI, debugging, documentation). Save **Claude 3.5 Sonnet** for the "Orchestrators" and "Lead Coders" doing complex logic.
 2. **Autonomous Execution:** If an agent is assigned a task, they must complete it without asking for permission unless there is a critical conflict.
-3. **Daily Milestone Tracker:** @Margaret must update `PROJECT_PROGRESS.md` at the end of every session.
+3. **Tracking Discipline:** @Margaret must update `PROJECT_PROGRESS.md` and append `DAILY_MILESTONE_TRACKER.md` at the end of every session.
 
 4. **🔒 TOKEN POLICY (STRICT — Zero Exceptions):**
    - **FREE PLANNING AGENTS** (@Victoria, @Invoice, @Sofia, @Cassie, @Joelle):
@@ -85,7 +97,7 @@
      → **ZERO premium Copilot requests.** No exceptions. Work scope: `business_docs/` and `plans/` only. No code changes ever.
      → Weekly Copilot quota is shared — free agents must NEVER consume it.
    - **SENIOR CODING AGENTS** (@Ada, @Mira, @Barbara, @Una, @Daniela, @Ruchi, @Gwynne, @Katherine):
-     → Premium requests PERMITTED **only** when @Margaret explicitly declares: **"Context Ready — Coding Phase Approved"**
+     → Premium requests PERMITTED **only** when @Ada declares: **"@Ada — Context Ready (60% Readiness) — Coding Phase Approved"** after @Margaret sign-off.
      → Without that declaration: use GPT-4o (standard) or queue the task for next approved sprint.
    - **INVOCATION PROTOCOL** (exact syntax):
      ```
@@ -132,13 +144,13 @@
           → Check PENDING_TASKS_ONLY.md and DAILY_MILESTONE_TRACKER.md
    [ ] 4. MARGARET SIGNED OFF: Has @Margaret reviewed the plan and confirmed scope?
           → Signal: @Margaret entry in DAILY_MILESTONE_TRACKER.md for today.
-   [ ] 5. ADA AUTHORIZED: Has @Ada declared "Context Ready — Coding Phase Approved"?
+   [ ] 5. ADA AUTHORIZED: Has @Ada declared "@Ada — Context Ready (60% Readiness) — Coding Phase Approved"?
           → This declaration MUST appear in the session before any senior agent codes.
    [ ] 6. QUOTA AVAILABLE: Check WEEKLY PREMIUM QUOTA in PROJECT_PROGRESS.md.
           → If 0 requests remaining → queue work, do NOT start premium coding.
    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
    [ ] 7. READINESS GATE MET: Is readiness score >=60% with evidence?
-   ✅ ALL 7 CHECKED? → @Ada declares: "Context Ready (60% Readiness) — Coding Phase Approved"
+   ✅ ALL 7 CHECKED? → @Ada declares: "@Ada — Context Ready (60% Readiness) — Coding Phase Approved"
    ❌ ANY UNCHECKED? → Route back to free planning agents. Do NOT code.
    ```
 
