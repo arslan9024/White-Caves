@@ -17,8 +17,8 @@ let responsiveLayoutMock = {
   isMobile: false,
 };
 
-const enhancedLeftSidebarMock = vi.fn((_props?: Record<string, unknown>) => (
-  <div data-testid="enhanced-left-sidebar">EnhancedLeftSidebar</div>
+const unifiedSidebarMock = vi.fn((_props?: Record<string, unknown>) => (
+  <div data-testid="unified-sidebar">UnifiedSidebar</div>
 ));
 
 // ── Mocks ────────────────────────────────────────────────────────
@@ -27,12 +27,8 @@ vi.mock('./TopBar', () => ({
   TopBar: () => <div data-testid="top-bar">TopBar</div>,
 }));
 
-vi.mock('./SidebarContainer', () => ({
-  default: () => <div data-testid="sidebar-container">SidebarContainer</div>,
-}));
-
-vi.mock('./EnhancedLeftSidebar/EnhancedLeftSidebar', () => ({
-  default: (props: Record<string, unknown>) => enhancedLeftSidebarMock(props),
+vi.mock('./UnifiedSidebar', () => ({
+  default: (props: Record<string, unknown>) => unifiedSidebarMock(props),
 }));
 
 vi.mock('../../hooks/navigation/useResponsiveLayout', () => ({
@@ -79,7 +75,7 @@ const createMockStore = (overrides: Record<string, unknown> = {}) => {
     },
     preloadedState: {
       user: {
-        currentUser: null,
+        currentUser: { id: 'u1', name: 'Admin', email: 'admin@wc.ae', role: 'owner' },
         isLoading: false,
         error: null,
         ...overrides,
@@ -118,7 +114,7 @@ const setResponsiveMode = (mode: 'desktop' | 'tablet' | 'mobile') => {
 describe('AppLayout', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    enhancedLeftSidebarMock.mockClear();
+    unifiedSidebarMock.mockClear();
     setResponsiveMode('desktop');
   });
 
@@ -140,9 +136,9 @@ describe('AppLayout', () => {
       expect(screen.getByTestId('command-palette')).toBeInTheDocument();
     });
 
-    it('should render the EnhancedLeftSidebar by default (desktop)', () => {
+    it('should render the UnifiedSidebar by default for authenticated CRM users', () => {
       renderLayout();
-      expect(screen.getByTestId('enhanced-left-sidebar')).toBeInTheDocument();
+      expect(screen.getByTestId('unified-sidebar')).toBeInTheDocument();
     });
 
     it('should render BiometricReminder', () => {
@@ -181,35 +177,34 @@ describe('AppLayout', () => {
   describe('Nav Visibility', () => {
     it('should hide sidebar navigation when showNav is false', () => {
       renderLayout('/', {}, { showNav: false });
-      expect(screen.queryByTestId('sidebar-container')).not.toBeInTheDocument();
-      expect(screen.queryByTestId('enhanced-left-sidebar')).not.toBeInTheDocument();
+      expect(screen.queryByTestId('unified-sidebar')).not.toBeInTheDocument();
+      expect(screen.queryByTestId('top-bar')).not.toBeInTheDocument();
     });
 
-    it('should show EnhancedLeftSidebar when showNav is true (default)', () => {
+    it('should show UnifiedSidebar when showNav is true (default)', () => {
       renderLayout();
-      expect(screen.getByTestId('enhanced-left-sidebar')).toBeInTheDocument();
+      expect(screen.getByTestId('unified-sidebar')).toBeInTheDocument();
     });
 
-    it('should pass isSuperUser to EnhancedLeftSidebar on desktop', () => {
+    it('should pass isSuperUser to UnifiedSidebar', () => {
       renderLayout('/', {}, { isSuperUser: true });
-      expect(enhancedLeftSidebarMock).toHaveBeenCalled();
-      expect(enhancedLeftSidebarMock).toHaveBeenCalledWith(
+      expect(unifiedSidebarMock).toHaveBeenCalled();
+      expect(unifiedSidebarMock).toHaveBeenCalledWith(
         expect.objectContaining({ isSuperUser: true })
       );
     });
 
-    it('should render SidebarContainer on tablet', () => {
+    it('should still render UnifiedSidebar on tablet for authenticated users', () => {
       setResponsiveMode('tablet');
       renderLayout();
-      expect(screen.getByTestId('sidebar-container')).toBeInTheDocument();
-      expect(screen.queryByTestId('enhanced-left-sidebar')).not.toBeInTheDocument();
+      expect(screen.getByTestId('unified-sidebar')).toBeInTheDocument();
     });
 
-    it('should hide sidebars on mobile', () => {
-      setResponsiveMode('mobile');
-      renderLayout();
-      expect(screen.queryByTestId('sidebar-container')).not.toBeInTheDocument();
-      expect(screen.queryByTestId('enhanced-left-sidebar')).not.toBeInTheDocument();
+    it('should hide CRM chrome when there is no authenticated user', () => {
+      renderLayout('/', { currentUser: null });
+      expect(screen.queryByTestId('unified-sidebar')).not.toBeInTheDocument();
+      expect(screen.queryByTestId('top-bar')).not.toBeInTheDocument();
+      expect(screen.queryByTestId('command-palette')).not.toBeInTheDocument();
     });
   });
 

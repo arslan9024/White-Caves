@@ -30,10 +30,9 @@ interface ProfilePageUser {
   email?: string;
   phone?: string;
   photo?: string;
-}
-
-interface RoleLabels {
-  [key: string]: string;
+  photoURL?: string;
+  photoUrl?: string;
+  role?: string;
 }
 
 export function useUserProfile() {
@@ -64,6 +63,12 @@ export function useUserProfile() {
     const stored = safeStorage.getJSON<UserData>('userRole');
     if (stored) {
       setUserRole(stored);
+      return;
+    }
+
+    // Fallback for social-login users where role is present on the user object
+    if (user.role) {
+      setUserRole({ role: user.role, locked: true });
     }
   }, [user, navigate]);
 
@@ -72,6 +77,7 @@ export function useUserProfile() {
       if (auth) {
         await signOut(auth);
       }
+      safeStorage.remove('token');
       safeStorage.remove('userRole');
       dispatch(setUser(null));
       navigate('/');
@@ -87,7 +93,7 @@ export function useUserProfile() {
     }
     setIsSaving(true);
     try {
-      const response = await authFetch('/api/users/profile', {
+      const response = await authFetch('/api/auth/profile', {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -106,11 +112,20 @@ export function useUserProfile() {
       await response.json();
       // Update Redux user state with new data
       if (user?.id && user?.email) {
-        dispatch(setUser({ ...user, id: user.id, email: user.email, name: profileName.trim(), phone: profilePhone.trim() || undefined }));
+        dispatch(
+          setUser({
+            ...user,
+            id: user.id,
+            email: user.email,
+            name: profileName.trim(),
+            phone: profilePhone.trim() || undefined,
+          })
+        );
       }
       toast.success('Profile updated successfully.');
     } catch (err) {
-      const message = err instanceof Error ? err.message : 'Failed to save profile. Please try again.';
+      const message =
+        err instanceof Error ? err.message : 'Failed to save profile. Please try again.';
       toast.error(message);
       log.error('Save profile error:', err);
     } finally {
@@ -119,17 +134,31 @@ export function useUserProfile() {
   };
 
   const getRoleLabel = (role: string): string => {
-    const labels: RoleLabels = {
-      'buyer': 'Buyer',
-      'seller': 'Seller',
-      'landlord': 'Landlord',
-      'leasing-agent': 'Leasing Agent',
-      'secondary-sales-agent': 'Sales Agent',
-      'leasing-team-leader': 'Leasing Team Leader',
-      'sales-team-leader': 'Sales Team Leader',
-      'admin': 'Administrator'
-    };
-    return labels[role] || role;
+    switch (role) {
+      case 'buyer':
+        return 'Buyer';
+      case 'seller':
+        return 'Seller';
+      case 'landlord':
+        return 'Landlord';
+      case 'leasing-agent':
+        return 'Leasing Agent';
+      case 'secondary-sales-agent':
+        return 'Sales Agent';
+      case 'leasing-team-leader':
+        return 'Leasing Team Leader';
+      case 'sales-team-leader':
+        return 'Sales Team Leader';
+      case 'admin':
+        return 'Administrator';
+      case 'owner':
+        return 'Owner';
+      case 'lion':
+      case 'managing_director':
+        return 'Managing Director';
+      default:
+        return role;
+    }
   };
 
   return {

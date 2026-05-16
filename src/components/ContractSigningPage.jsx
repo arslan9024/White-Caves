@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import SignatureCollection from './SignatureCollection';
+import { authFetch } from '../utils/authFetch';
 import './ContractSigningPage.css';
 
 /**
@@ -21,9 +22,7 @@ const ContractSigningPage = () => {
     const verifyToken = async () => {
       try {
         setIsLoading(true);
-        const response = await fetch(
-          `/api/signatures/${contractId}/${token}`
-        );
+        const response = await authFetch(`/api/signatures/${contractId}/${token}`);
 
         if (!response.ok) {
           const errorData = await response.json();
@@ -50,9 +49,9 @@ const ContractSigningPage = () => {
   /**
    * Handle signature completion
    */
-  const handleSignatureComplete = (result) => {
+  const handleSignatureComplete = result => {
     setSignatureComplete(true);
-    console.log('Signature submitted successfully:', result);
+    console.warn('Signature submitted successfully:', result);
 
     // Redirect after a delay
     setTimeout(() => {
@@ -90,10 +89,7 @@ const ContractSigningPage = () => {
           <p className="error-hint">
             The signing link may be invalid, expired, or has already been used.
           </p>
-          <button
-            className="btn btn-primary"
-            onClick={() => (window.location.href = '/')}
-          >
+          <button className="btn btn-primary" onClick={() => (window.location.href = '/')}>
             Return Home
           </button>
         </div>

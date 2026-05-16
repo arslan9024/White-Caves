@@ -1,6 +1,36 @@
 import { createSlice, createSelector } from '@reduxjs/toolkit';
 
 const ROLE_PERMISSIONS = {
+  super_admin: {
+    canViewAllDashboards: true,
+    canManageAgents: true,
+    canManageFinances: true,
+    canAccessAIAssistants: true,
+    canManageProperties: true,
+    canManageLeads: true,
+    canAccessAnalytics: true,
+    canManageSettings: true,
+    canViewExecutiveReports: true,
+    canAccessConfidentialVault: true,
+    canManageAllUsers: true,
+    canManageSystemSettings: true,
+    isSuperUser: true,
+    isDecisionMaker: true,
+    isCreator: true,
+    isFounder: true,
+    dashboards: [
+      'executive',
+      'agents',
+      'properties',
+      'leads',
+      'finance',
+      'analytics',
+      'settings',
+      'ai-command',
+      'system',
+      'admin',
+    ],
+  },
   md: {
     canViewAllDashboards: true,
     canManageAgents: true,
@@ -14,7 +44,16 @@ const ROLE_PERMISSIONS = {
     canAccessConfidentialVault: true,
     isSuperUser: true,
     isDecisionMaker: true,
-    dashboards: ['executive', 'agents', 'properties', 'leads', 'finance', 'analytics', 'settings', 'ai-command']
+    dashboards: [
+      'executive',
+      'agents',
+      'properties',
+      'leads',
+      'finance',
+      'analytics',
+      'settings',
+      'ai-command',
+    ],
   },
   owner: {
     canViewAllDashboards: true,
@@ -26,7 +65,16 @@ const ROLE_PERMISSIONS = {
     canAccessAnalytics: true,
     canManageSettings: true,
     canViewExecutiveReports: true,
-    dashboards: ['executive', 'agents', 'properties', 'leads', 'finance', 'analytics', 'settings', 'ai-command']
+    dashboards: [
+      'executive',
+      'agents',
+      'properties',
+      'leads',
+      'finance',
+      'analytics',
+      'settings',
+      'ai-command',
+    ],
   },
   agent: {
     canViewAllDashboards: false,
@@ -38,7 +86,7 @@ const ROLE_PERMISSIONS = {
     canAccessAnalytics: false,
     canManageSettings: false,
     canViewExecutiveReports: false,
-    dashboards: ['agent', 'my-properties', 'my-leads', 'tasks']
+    dashboards: ['agent', 'my-properties', 'my-leads', 'tasks'],
   },
   buyer: {
     canViewAllDashboards: false,
@@ -50,7 +98,7 @@ const ROLE_PERMISSIONS = {
     canAccessAnalytics: false,
     canManageSettings: false,
     canViewExecutiveReports: false,
-    dashboards: ['search', 'favorites', 'inquiries', 'profile']
+    dashboards: ['search', 'favorites', 'inquiries', 'profile'],
   },
   seller: {
     canViewAllDashboards: false,
@@ -62,7 +110,7 @@ const ROLE_PERMISSIONS = {
     canAccessAnalytics: false,
     canManageSettings: false,
     canViewExecutiveReports: false,
-    dashboards: ['my-listings', 'inquiries', 'analytics', 'profile']
+    dashboards: ['my-listings', 'inquiries', 'analytics', 'profile'],
   },
   tenant: {
     canViewAllDashboards: false,
@@ -74,7 +122,50 @@ const ROLE_PERMISSIONS = {
     canAccessAnalytics: false,
     canManageSettings: false,
     canViewExecutiveReports: false,
-    dashboards: ['rentals', 'applications', 'contracts', 'profile']
+    dashboards: ['rentals', 'applications', 'contracts', 'profile'],
+  },
+};
+
+const getRolePermissions = role => {
+  switch (role) {
+    case 'super_admin':
+      return ROLE_PERMISSIONS.super_admin;
+    case 'md':
+      return ROLE_PERMISSIONS.md;
+    case 'owner':
+      return ROLE_PERMISSIONS.owner;
+    case 'agent':
+      return ROLE_PERMISSIONS.agent;
+    case 'buyer':
+      return ROLE_PERMISSIONS.buyer;
+    case 'seller':
+      return ROLE_PERMISSIONS.seller;
+    case 'tenant':
+      return ROLE_PERMISSIONS.tenant;
+    default:
+      return null;
+  }
+};
+
+const setFeatureFlagValue = (featureFlags, flag, enabled) => {
+  switch (flag) {
+    case 'aiAssistants':
+      featureFlags.aiAssistants = enabled;
+      break;
+    case 'whatsappIntegration':
+      featureFlags.whatsappIntegration = enabled;
+      break;
+    case 'advancedAnalytics':
+      featureFlags.advancedAnalytics = enabled;
+      break;
+    case 'documentManagement':
+      featureFlags.documentManagement = enabled;
+      break;
+    case 'paymentProcessing':
+      featureFlags.paymentProcessing = enabled;
+      break;
+    default:
+      break;
   }
 };
 
@@ -91,13 +182,13 @@ const initialState = {
     whatsappIntegration: true,
     advancedAnalytics: true,
     documentManagement: true,
-    paymentProcessing: true
+    paymentProcessing: true,
   },
   sessionInfo: {
     loginTime: null,
     lastActivity: null,
-    deviceType: null
-  }
+    deviceType: null,
+  },
 };
 
 const accessControlSlice = createSlice({
@@ -106,9 +197,10 @@ const accessControlSlice = createSlice({
   reducers: {
     setActiveRole: (state, action) => {
       const role = action.payload;
-      if (ROLE_PERMISSIONS[role]) {
+      const permissions = getRolePermissions(role);
+      if (permissions) {
         state.activeRole = role;
-        state.permissions = ROLE_PERMISSIONS[role];
+        state.permissions = permissions;
       }
     },
     setUserInfo: (state, action) => {
@@ -118,12 +210,13 @@ const accessControlSlice = createSlice({
       state.userEmail = userEmail;
       state.userAvatar = userAvatar;
       state.isAuthenticated = true;
-      if (role && ROLE_PERMISSIONS[role]) {
+      const permissions = role ? getRolePermissions(role) : null;
+      if (permissions) {
         state.activeRole = role;
-        state.permissions = ROLE_PERMISSIONS[role];
+        state.permissions = permissions;
       }
     },
-    clearUserInfo: (state) => {
+    clearUserInfo: state => {
       state.userId = null;
       state.userName = null;
       state.userEmail = null;
@@ -134,23 +227,16 @@ const accessControlSlice = createSlice({
     },
     updateFeatureFlag: (state, action) => {
       const { flag, enabled } = action.payload;
-      if (flag in state.featureFlags) {
-        state.featureFlags[flag] = enabled;
-      }
+      setFeatureFlagValue(state.featureFlags, flag, enabled);
     },
     updateSessionInfo: (state, action) => {
       state.sessionInfo = { ...state.sessionInfo, ...action.payload };
-    }
-  }
+    },
+  },
 });
 
-export const {
-  setActiveRole,
-  setUserInfo,
-  clearUserInfo,
-  updateFeatureFlag,
-  updateSessionInfo
-} = accessControlSlice.actions;
+export const { setActiveRole, setUserInfo, clearUserInfo, updateFeatureFlag, updateSessionInfo } =
+  accessControlSlice.actions;
 
 const selectAccessControl = state => state.accessControl;
 
@@ -164,41 +250,60 @@ export const selectPermissions = createSelector(
   ac => ac?.permissions || ROLE_PERMISSIONS.owner
 );
 
-export const selectUserInfo = createSelector(
-  [selectAccessControl],
-  ac => ({
-    userId: ac?.userId,
-    userName: ac?.userName,
-    userEmail: ac?.userEmail,
-    userAvatar: ac?.userAvatar,
-    isAuthenticated: ac?.isAuthenticated || false
-  })
-);
+export const selectUserInfo = createSelector([selectAccessControl], ac => ({
+  userId: ac?.userId,
+  userName: ac?.userName,
+  userEmail: ac?.userEmail,
+  userAvatar: ac?.userAvatar,
+  isAuthenticated: ac?.isAuthenticated || false,
+}));
 
 export const selectFeatureFlags = createSelector(
   [selectAccessControl],
   ac => ac?.featureFlags || initialState.featureFlags
 );
 
-export const selectCanAccessDashboard = (dashboardId) => createSelector(
-  [selectPermissions],
-  permissions => permissions?.dashboards?.includes(dashboardId) || false
-);
+export const selectCanAccessDashboard = dashboardId =>
+  createSelector(
+    [selectPermissions],
+    permissions => permissions?.dashboards?.includes(dashboardId) || false
+  );
 
-export const selectHasPermission = (permission) => createSelector(
-  [selectPermissions],
-  permissions => permissions?.[permission] || false
-);
+export const selectHasPermission = permission =>
+  createSelector([selectPermissions], permissions => {
+    switch (permission) {
+      case 'canViewAllDashboards':
+        return Boolean(permissions?.canViewAllDashboards);
+      case 'canManageAgents':
+        return Boolean(permissions?.canManageAgents);
+      case 'canManageFinances':
+        return Boolean(permissions?.canManageFinances);
+      case 'canAccessAIAssistants':
+        return Boolean(permissions?.canAccessAIAssistants);
+      case 'canManageProperties':
+        return Boolean(permissions?.canManageProperties);
+      case 'canManageLeads':
+        return Boolean(permissions?.canManageLeads);
+      case 'canAccessAnalytics':
+        return Boolean(permissions?.canAccessAnalytics);
+      case 'canManageSettings':
+        return Boolean(permissions?.canManageSettings);
+      case 'canViewExecutiveReports':
+        return Boolean(permissions?.canViewExecutiveReports);
+      case 'canAccessConfidentialVault':
+        return Boolean(permissions?.canAccessConfidentialVault);
+      case 'isSuperUser':
+        return Boolean(permissions?.isSuperUser);
+      case 'isDecisionMaker':
+        return Boolean(permissions?.isDecisionMaker);
+      default:
+        return false;
+    }
+  });
 
-export const selectIsOwner = createSelector(
-  [selectActiveRole],
-  role => role === 'owner'
-);
+export const selectIsOwner = createSelector([selectActiveRole], role => role === 'owner');
 
-export const selectIsAgent = createSelector(
-  [selectActiveRole],
-  role => role === 'agent'
-);
+export const selectIsAgent = createSelector([selectActiveRole], role => role === 'agent');
 
 export const ROLE_PERMISSIONS_MAP = ROLE_PERMISSIONS;
 

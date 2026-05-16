@@ -6,6 +6,8 @@
 > **Last Updated**: 2026-05-11  
 > **Status**: 🚧 In Progress — shell exists, sections need polishing
 
+> **Priority Module Alignment (May 2026):** Homepage must be optimized for **Dubai leasing conversion** and feed the unified leasing end-to-end journey defined in `plans/PHASE_33_PRIORITY_MODULE_HOMEPAGE_SUPERUSER_LEASING.md`.
+
 ---
 
 ## Why This Is Priority #1
@@ -51,6 +53,7 @@ swap in real data later without changing any component code.
 - [ ] Search bar in Hero (area, property type, min/max price) — if hidden, surface it prominently
 - [ ] Mobile responsiveness: hero must look polished on 375px iPhone and 768px iPad
 - [ ] Lighthouse performance score on hero load: aim for > 90 (hero image should be WebP + lazy-loaded below fold)
+- [ ] **Leasing-first hero intent**: primary CTA hierarchy emphasizes rent/leasing journey (not only generic browse)
 
 **Dummy data to add** (if not present):
 
@@ -146,6 +149,7 @@ export const DUBAI_AREAS = [
 - [ ] On submit: show success message (no backend needed — just UI confirmation for now)
 - [ ] WhatsApp "Chat with us" button: opens `wa.me/971XXXXXXXX` in new tab
 - [ ] Phone number prominently displayed
+- [ ] Lead source tagging includes homepage leasing channels (`homepage_cta`, `homepage_search`, `homepage_whatsapp`)
 
 ---
 
@@ -195,6 +199,18 @@ export const DUBAI_AREAS = [
 - [ ] Meta description: 155-character description including "Dubai", "luxury", "RERA"
 - [ ] Open Graph image: 1200×630 brand image
 - [ ] JSON-LD: `Organization` + `RealEstateAgent` schema (already partially in place)
+
+---
+
+### 1.12 — Leasing Conversion Analytics (P0 Add-on)
+
+**Goal**: Make homepage performance measurable for the leasing business journey.
+
+- [ ] Track `homepage_hero_cta_click`
+- [ ] Track `homepage_leasing_search_submit`
+- [ ] Track `homepage_whatsapp_start`
+- [ ] Track `homepage_viewing_request_submit`
+- [ ] Weekly dashboard view for homepage→lead conversion rate
 
 ---
 

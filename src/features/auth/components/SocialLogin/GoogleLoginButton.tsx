@@ -3,6 +3,7 @@ import { useDispatch } from 'react-redux';
 import { signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
 import { auth } from '../../../../config/firebase';
 import { loginSuccess, loginStart, loginFailure } from '../../../../store/authSlice';
+import { setUser } from '../../../../store/userSlice';
 import { syncFirebaseUser } from '../../../../services/authService';
 import { createLogger } from '../../../../utils/logger';
 
@@ -55,6 +56,16 @@ const GoogleLoginButton = ({ onSuccess, onError, disabled }: GoogleLoginButtonPr
           },
           token: backendResponse.data.token,
           provider: 'google',
+        })
+      );
+
+      dispatch(
+        setUser({
+          id: backendUser.id,
+          email: backendUser.email,
+          name: backendUser.name || undefined,
+          role: backendUser.role,
+          photoURL: backendUser.photoUrl || undefined,
         })
       );
 

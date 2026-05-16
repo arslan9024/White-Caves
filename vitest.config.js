@@ -19,9 +19,19 @@ export default defineConfig({
           include: [
             'test/**/*.{test,spec}.{js,jsx,ts,tsx}',
             'src/**/*.{test,spec}.{js,jsx,ts,tsx}',
-            '**/__tests__/**/*.{js,jsx,ts,tsx}',
+            'src/**/__tests__/**/*.{js,jsx,ts,tsx}',
+            'test/**/__tests__/**/*.{js,jsx,ts,tsx}',
           ],
-          exclude: ['node_modules', 'dist', '.wwebjs_auth', '.wwebjs_cache', 'build', 'server/**'],
+          exclude: [
+            'node_modules',
+            '**/node_modules/**',
+            'modules/**',
+            'dist',
+            '.wwebjs_auth',
+            '.wwebjs_cache',
+            'build',
+            'server/**',
+          ],
         },
       },
       {

@@ -41,7 +41,7 @@ router.get(
     });
 
     res.json({ success: true, data: offers });
-  }),
+  })
 );
 
 // ─── GET /api/offers/received — Offers on user's properties (as seller) ──────
@@ -56,7 +56,7 @@ router.get(
       where: { userId },
       select: { id: true },
     });
-    const propertyIds = userProperties.map((p) => p.id);
+    const propertyIds = userProperties.map(p => p.id);
 
     const offers = await prisma.offer.findMany({
       where: { propertyId: { in: propertyIds } },
@@ -72,7 +72,7 @@ router.get(
     });
 
     res.json({ success: true, data: offers });
-  }),
+  })
 );
 
 // ─── POST /api/offers — Submit a new offer ───────────────────────────────────
@@ -93,7 +93,8 @@ router.post(
     if (!property) throw new AppError('Property not found', 404);
 
     const validOfferTypes = ['lease', 'sale'];
-    const resolvedOfferType = offerType && validOfferTypes.includes(offerType) ? offerType : 'lease';
+    const resolvedOfferType =
+      offerType && validOfferTypes.includes(offerType) ? offerType : 'lease';
 
     const offer = await prisma.offer.create({
       data: {
@@ -114,7 +115,7 @@ router.post(
 
     logger.info('Offer submitted', { userId, offerId: offer.id, propertyId, amount });
     res.status(201).json({ success: true, data: offer });
-  }),
+  })
 );
 
 // ─── PATCH /api/offers/:id — Update offer status ────────────────────────────
@@ -140,7 +141,14 @@ router.patch(
     const updateData: Record<string, unknown> = {};
 
     if (status !== undefined) {
-      const validStatuses = ['pending', 'accepted', 'rejected', 'countered', 'expired', 'withdrawn'];
+      const validStatuses = [
+        'pending',
+        'accepted',
+        'rejected',
+        'countered',
+        'expired',
+        'withdrawn',
+      ];
       if (!validStatuses.includes(status)) {
         throw new AppError(`Invalid status. Must be one of: ${validStatuses.join(', ')}`, 400);
       }
@@ -153,8 +161,13 @@ router.patch(
     if (counterAmount !== undefined) {
       updateData.counterAmount = counterAmount;
       // Track counter history
-      const existing2 = await prisma.offer.findUnique({ where: { id }, select: { counterHistory: true } });
-      const history = Array.isArray(existing2?.counterHistory) ? existing2.counterHistory as unknown[] : [];
+      const existing2 = await prisma.offer.findUnique({
+        where: { id },
+        select: { counterHistory: true },
+      });
+      const history = Array.isArray(existing2?.counterHistory)
+        ? (existing2!.counterHistory as unknown[])
+        : [];
       history.push({ amount: counterAmount, terms, by: userId, at: new Date().toISOString() });
       updateData.counterHistory = history;
     }
@@ -199,7 +212,7 @@ router.patch(
 
     logger.info('Offer updated', { userId, offerId: id, status: updated.status });
     res.json({ success: true, data: updated });
-  }),
+  })
 );
 
 // ─── DELETE /api/offers/:id — Delete an offer ────────────────────────────────
@@ -218,7 +231,7 @@ router.delete(
 
     logger.info('Offer deleted', { userId, offerId: id });
     res.json({ success: true, message: 'Offer deleted' });
-  }),
+  })
 );
 
 // ─── PATCH /api/offers/:id/decision — Accept / Reject / Counter ─────────────
@@ -249,15 +262,23 @@ router.patch(
       throw new AppError(`decision must be one of: ${validDecisions.join(', ')}`, 400);
     }
 
-    if (decision === 'countered' && (!counterAmount || typeof counterAmount !== 'number' || counterAmount <= 0)) {
-      throw new AppError('counterAmount is required and must be a positive number for counter decisions', 400);
+    if (
+      decision === 'countered' &&
+      (!counterAmount || typeof counterAmount !== 'number' || counterAmount <= 0)
+    ) {
+      throw new AppError(
+        'counterAmount is required and must be a positive number for counter decisions',
+        400
+      );
     }
     if (decision === 'rejected' && !rejectionReason) {
       throw new AppError('rejectionReason is required when rejecting an offer', 400);
     }
 
     // Build counter history
-    const history = Array.isArray(existing.counterHistory) ? existing.counterHistory as unknown[] : [];
+    const history = Array.isArray(existing.counterHistory)
+      ? (existing.counterHistory as unknown[])
+      : [];
     if (decision === 'countered') {
       history.push({ amount: counterAmount, terms, by: userId, at: new Date().toISOString() });
     }
@@ -269,7 +290,8 @@ router.patch(
         ...(decision === 'countered' ? { counterAmount, counterHistory: history } : {}),
         ...(decision === 'rejected' ? { rejectionReason } : {}),
         ...(terms ? { terms } : {}),
-      },
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      } as any,
       include: {
         property: { select: { id: true, title: true, location: true } },
         buyer: { select: { id: true, name: true, email: true } },
@@ -278,23 +300,27 @@ router.patch(
 
     // If accepted, advance associated lead to stage 6 (Deposit)
     if (decision === 'accepted' && existing.leadId) {
-      await prisma.lead.update({
-        where: { id: existing.leadId },
-        data: { leasingStage: 6, status: 'qualified' },
-      }).catch((err) => logger.warn('Failed to advance lead stage on offer acceptance', { err }));
+      await prisma.lead
+        .update({
+          where: { id: existing.leadId },
+          data: { leasingStage: 6, status: 'qualified' },
+        })
+        .catch(err => logger.warn('Failed to advance lead stage on offer acceptance', { err }));
     }
 
     // If rejected, revert lead to stage 2 (Matching) so agent can find alternatives
     if (decision === 'rejected' && existing.leadId) {
-      await prisma.lead.update({
-        where: { id: existing.leadId },
-        data: { leasingStage: 2, status: 'warm' },
-      }).catch((err) => logger.warn('Failed to revert lead stage on offer rejection', { err }));
+      await prisma.lead
+        .update({
+          where: { id: existing.leadId },
+          data: { leasingStage: 2, status: 'warm' },
+        })
+        .catch(err => logger.warn('Failed to revert lead stage on offer rejection', { err }));
     }
 
     logger.info('Offer decision recorded', { userId, offerId: id, decision });
     res.json({ success: true, data: updated, message: `Offer ${decision}` });
-  }),
+  })
 );
 
 export default router;

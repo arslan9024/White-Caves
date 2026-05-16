@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
 import { Bell, MessageSquare, TrendingUp, Users, Eye, CheckCircle } from 'lucide-react';
+import { authFetch } from '../utils/authFetch';
 import './WhatsAppLeadsDashboard.css';
 
 const WhatsAppLeadsDashboard = () => {
@@ -19,12 +19,13 @@ const WhatsAppLeadsDashboard = () => {
       fetchStats();
     }, 30000); // Refresh every 30 seconds
     return () => clearInterval(interval);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filter]);
 
   const fetchLeads = async () => {
     try {
       setLoading(true);
-      const response = await fetch(`/api/whatsapp/leads?status=${filter}&limit=50`);
+      const response = await authFetch(`/api/whatsapp/leads?status=${filter}&limit=50`);
       const data = await response.json();
       setLeads(data.leads || []);
     } catch (error) {
@@ -36,59 +37,30 @@ const WhatsAppLeadsDashboard = () => {
 
   const fetchStats = async () => {
     try {
-      const response = await fetch('/api/whatsapp/leads?limit=1000');
+      const response = await authFetch('/api/whatsapp/leads?limit=1000');
       const data = await response.json();
       const allLeads = data.leads || [];
 
       setStats({
         total: allLeads.length,
-        new: allLeads.filter((l) => l.status === 'new').length,
-        hot: allLeads.filter((l) => l.engagementLevel === 'hot').length,
-        warm: allLeads.filter((l) => l.engagementLevel === 'warm').length,
-        cold: allLeads.filter((l) => l.engagementLevel === 'cold').length,
-        converted: allLeads.filter((l) => l.status === 'converted').length,
-        avgScore: (
-          allLeads.reduce((sum, l) => sum + (l.leadScore || 0), 0) / allLeads.length
-        ).toFixed(1),
+        new: allLeads.filter(lead => lead.status === 'new').length,
+        hot: allLeads.filter(lead => lead.leadScore >= 80).length,
+        converted: allLeads.filter(lead => lead.status === 'converted').length,
+        avgScore:
+          allLeads.length > 0
+            ? Math.round(
+                allLeads.reduce((sum, lead) => sum + (lead.leadScore || 0), 0) / allLeads.length
+              )
+            : 0,
       });
     } catch (error) {
       console.error('Error fetching stats:', error);
     }
   };
 
-  const handleLeadClick = (lead) => {
+  const handleLeadClick = lead => {
     setSelectedLead(lead);
     setShowModal(true);
-  };
-
-  const handleAssignAgent = async (leadId, agentId) => {
-    try {
-      const response = await fetch(`/api/whatsapp/leads/${leadId}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ assignedAgentId: agentId }),
-      });
-      if (response.ok) {
-        fetchLeads();
-      }
-    } catch (error) {
-      console.error('Error assigning agent:', error);
-    }
-  };
-
-  const handleStatusChange = async (leadId, newStatus) => {
-    try {
-      const response = await fetch(`/api/whatsapp/leads/${leadId}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ status: newStatus }),
-      });
-      if (response.ok) {
-        fetchLeads();
-      }
-    } catch (error) {
-      console.error('Error updating lead status:', error);
-    }
   };
 
   return (
@@ -108,24 +80,9 @@ const WhatsAppLeadsDashboard = () => {
 
       {/* Stats Cards */}
       <div className="stats-grid">
-        <StatCard
-          icon={<Users />}
-          label="Total Leads"
-          value={stats.total || 0}
-          color="#3498db"
-        />
-        <StatCard
-          icon={<Eye />}
-          label="New Leads"
-          value={stats.new || 0}
-          color="#e74c3c"
-        />
-        <StatCard
-          icon={<TrendingUp />}
-          label="Hot Leads"
-          value={stats.hot || 0}
-          color="#f39c12"
-        />
+        <StatCard icon={<Users />} label="Total Leads" value={stats.total || 0} color="#3498db" />
+        <StatCard icon={<Eye />} label="New Leads" value={stats.new || 0} color="#e74c3c" />
+        <StatCard icon={<TrendingUp />} label="Hot Leads" value={stats.hot || 0} color="#f39c12" />
         <StatCard
           icon={<CheckCircle />}
           label="Conversions"
@@ -142,7 +99,7 @@ const WhatsAppLeadsDashboard = () => {
 
       {/* Filter Tabs */}
       <div className="filter-tabs">
-        {['new', 'contacted', 'qualified', 'converted', 'lost'].map((status) => (
+        {['new', 'contacted', 'qualified', 'converted', 'lost'].map(status => (
           <button
             key={status}
             className={`tab ${filter === status ? 'active' : ''}`}
@@ -174,7 +131,7 @@ const WhatsAppLeadsDashboard = () => {
               </tr>
             </thead>
             <tbody>
-              {leads.map((lead) => (
+              {leads.map(lead => (
                 <tr key={lead._id} className="lead-row">
                   <td className="contact-cell">
                     <div className="contact-info">
@@ -216,10 +173,7 @@ const WhatsAppLeadsDashboard = () => {
                     )}
                   </td>
                   <td>
-                    <button
-                      className="btn-view"
-                      onClick={() => handleLeadClick(lead)}
-                    >
+                    <button className="btn-view" onClick={() => handleLeadClick(lead)}>
                       View
                     </button>
                   </td>
@@ -233,13 +187,10 @@ const WhatsAppLeadsDashboard = () => {
       {/* Lead Details Modal */}
       {showModal && selectedLead && (
         <div className="modal-overlay" onClick={() => setShowModal(false)}>
-          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+          <div className="modal-content" onClick={e => e.stopPropagation()}>
             <div className="modal-header">
               <h2>{selectedLead.displayName}</h2>
-              <button
-                className="close-btn"
-                onClick={() => setShowModal(false)}
-              >
+              <button className="close-btn" onClick={() => setShowModal(false)}>
                 ✕
               </button>
             </div>
@@ -297,9 +248,7 @@ const WhatsAppLeadsDashboard = () => {
                   {selectedLead.conversationHistory?.slice(-5).map((msg, idx) => (
                     <div key={idx} className={`message ${msg.sender}`}>
                       <p>{msg.message}</p>
-                      <span className="timestamp">
-                        {formatTime(new Date(msg.timestamp))}
-                      </span>
+                      <span className="timestamp">{formatTime(new Date(msg.timestamp))}</span>
                     </div>
                   ))}
                 </div>
@@ -321,9 +270,7 @@ const WhatsAppLeadsDashboard = () => {
                     {selectedLead.nlpAnalysis.keywords && (
                       <div className="nlp-item">
                         <label>Keywords</label>
-                        <p>
-                          {selectedLead.nlpAnalysis.keywords.slice(0, 3).join(', ')}
-                        </p>
+                        <p>{selectedLead.nlpAnalysis.keywords.slice(0, 3).join(', ')}</p>
                       </div>
                     )}
                   </div>
@@ -360,13 +307,13 @@ const StatCard = ({ icon, label, value, color }) => (
 );
 
 // Utility Functions
-const getScoreColor = (score) => {
+const getScoreColor = score => {
   if (score >= 70) return '#4caf50'; // Green for hot
   if (score >= 40) return '#ff9800'; // Orange for warm
   return '#ccc'; // Gray for cold
 };
 
-const formatTime = (date) => {
+const formatTime = date => {
   const now = new Date();
   const diff = now - date;
   const hours = Math.floor(diff / (1000 * 60 * 60));

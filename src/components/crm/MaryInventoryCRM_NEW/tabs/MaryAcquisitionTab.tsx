@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { authFetch } from '../../../../utils/authFetch';
 import {
   Home,
   FileText,
@@ -107,8 +108,8 @@ function DocumentFlags({ form }: { form: AcquisitionFormData }) {
     <div className="doc-flags-banner doc-flags-warn">
       <AlertTriangle size={16} />
       <span>
-        <strong>Missing Documents:</strong> {missing.join(', ')} — property will be
-        flagged as incomplete.
+        <strong>Missing Documents:</strong> {missing.join(', ')} — property will be flagged as
+        incomplete.
       </span>
     </div>
   );
@@ -162,10 +163,8 @@ const MaryAcquisitionTab: React.FC = () => {
         description: form.notes || undefined,
       };
 
-      const res = await fetch('/api/properties', {
+      const res = await authFetch('/api/properties', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
         body: JSON.stringify(payload),
       });
 
@@ -190,14 +189,10 @@ const MaryAcquisitionTab: React.FC = () => {
           <CheckCircle size={48} color="#10b981" />
           <h3>Property Acquired!</h3>
           <p>
-            The property has been added to inventory as{' '}
-            <strong>Draft / Collected</strong>. @Mary will process it for
-            verification.
+            The property has been added to inventory as <strong>Draft / Collected</strong>. @Mary
+            will process it for verification.
           </p>
-          <button
-            className="action-btn primary"
-            onClick={() => setSubmitted(false)}
-          >
+          <button className="action-btn primary" onClick={() => setSubmitted(false)}>
             Add Another Property
           </button>
         </div>
@@ -375,7 +370,9 @@ const MaryAcquisitionTab: React.FC = () => {
                 onChange={handleChange}
               >
                 {CURRENCIES.map(c => (
-                  <option key={c} value={c}>{c}</option>
+                  <option key={c} value={c}>
+                    {c}
+                  </option>
                 ))}
               </select>
             </label>
@@ -519,11 +516,7 @@ const MaryAcquisitionTab: React.FC = () => {
           >
             Reset
           </button>
-          <button
-            type="submit"
-            className="action-btn primary"
-            disabled={submitting}
-          >
+          <button type="submit" className="action-btn primary" disabled={submitting}>
             {submitting ? 'Saving…' : '+ Add to Inventory'}
           </button>
         </div>

@@ -3,6 +3,9 @@
  * Left Sidebar: Company Departments & Management
  * Organizes all 10+ departments hierarchically
  * Provides navigation to department-specific features
+ *
+ * @deprecated Canonical CRM sidebar is `src/components/layout/UnifiedSidebar/UnifiedSidebar.tsx`.
+ * Keep this file for compatibility until all legacy imports are retired.
  */
 
 import React, { useMemo } from 'react';

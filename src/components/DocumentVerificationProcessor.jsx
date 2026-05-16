@@ -1,8 +1,17 @@
 import React, { useState, useRef, useCallback } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import {
-  Upload, FileCheck, AlertTriangle, CheckCircle, Loader2,
-  X, RefreshCw, Eye, EyeOff, Download, Copy
+  Upload,
+  FileCheck,
+  AlertTriangle,
+  CheckCircle,
+  Loader2,
+  X,
+  RefreshCw,
+  Eye,
+  EyeOff,
+  Download,
+  Copy,
 } from 'lucide-react';
 import { verifyDocument } from '../store/slices/kycAmlSlice';
 import './DocumentVerificationProcessor.css';
@@ -10,16 +19,16 @@ import './DocumentVerificationProcessor.css';
 const DOCUMENT_TYPES = {
   emirates_id: { label: 'Emirates ID', accept: 'image/*' },
   passport: { label: 'Passport', accept: 'image/*' },
-  visa: { label: 'UAE Visa', accept: 'image/*' }
+  visa: { label: 'UAE Visa', accept: 'image/*' },
 };
 
 const DocumentVerificationProcessor = ({
   documentType,
   onSuccess,
   onError,
-  required = true,
+  required: _required = true,
   userId,
-  token
+  token,
 }) => {
   const dispatch = useDispatch();
   const fileInputRef = useRef(null);
@@ -30,16 +39,14 @@ const DocumentVerificationProcessor = ({
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState(null);
   const [error, setError] = useState(null);
+  const [statusMessage, setStatusMessage] = useState(null);
   const [showRawData, setShowRawData] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
-
-  // Redux state
-  const kycState = useSelector(state => state.kycAml);
 
   /**
    * Handle file selection from input
    */
-  const handleFileSelect = useCallback((event) => {
+  const handleFileSelect = useCallback(event => {
     const selectedFile = event.target.files?.[0];
     if (!selectedFile) return;
 
@@ -61,7 +68,7 @@ const DocumentVerificationProcessor = ({
 
     // Create preview
     const reader = new FileReader();
-    reader.onload = (e) => {
+    reader.onload = e => {
       setPreview(e.target.result);
     };
     reader.readAsDataURL(selectedFile);
@@ -70,16 +77,16 @@ const DocumentVerificationProcessor = ({
   /**
    * Handle drag and drop
    */
-  const handleDragOver = (e) => {
+  const handleDragOver = e => {
     e.preventDefault();
     e.currentTarget.classList.add('drag-active');
   };
 
-  const handleDragLeave = (e) => {
+  const handleDragLeave = e => {
     e.currentTarget.classList.remove('drag-active');
   };
 
-  const handleDrop = (e) => {
+  const handleDrop = e => {
     e.preventDefault();
     e.currentTarget.classList.remove('drag-active');
 
@@ -115,9 +122,7 @@ const DocumentVerificationProcessor = ({
       }, 200);
 
       // Call Redux thunk
-      const response = await dispatch(
-        verifyDocument({ formData, token })
-      ).unwrap();
+      const response = await dispatch(verifyDocument({ formData, token })).unwrap();
 
       clearInterval(progressInterval);
       setUploadProgress(100);
@@ -131,7 +136,7 @@ const DocumentVerificationProcessor = ({
         parsedData: response.parsedData,
         validation: response.validation,
         verification: response.verification,
-        timestamp: new Date(response.timestamp)
+        timestamp: new Date(response.timestamp),
       });
 
       if (onSuccess) {
@@ -158,6 +163,7 @@ const DocumentVerificationProcessor = ({
     setError(null);
     setShowRawData(false);
     setUploadProgress(0);
+    setStatusMessage(null);
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
     }
@@ -166,12 +172,13 @@ const DocumentVerificationProcessor = ({
   /**
    * Copy text to clipboard
    */
-  const handleCopyText = async (text) => {
+  const handleCopyText = async text => {
     try {
       await navigator.clipboard.writeText(text);
-      alert('Copied to clipboard!');
+      setStatusMessage({ type: 'success', text: 'Copied to clipboard!' });
     } catch (err) {
       console.error('Failed to copy:', err);
+      setStatusMessage({ type: 'error', text: 'Failed to copy text.' });
     }
   };
 
@@ -196,10 +203,39 @@ const DocumentVerificationProcessor = ({
         <div className="error-banner">
           <AlertTriangle size={20} />
           <span>{error}</span>
+          <button className="close-btn" onClick={() => setError(null)} aria-label="Close error">
+            <X size={18} />
+          </button>
+        </div>
+      )}
+
+      {statusMessage && (
+        <div
+          role={statusMessage.type === 'error' ? 'alert' : 'status'}
+          data-testid="document-verification-status-banner"
+          className={statusMessage.type === 'error' ? 'error-banner' : 'success-banner'}
+          style={
+            statusMessage.type === 'error'
+              ? undefined
+              : {
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                  background: '#ECFDF3',
+                  color: '#027A48',
+                  border: '1px solid #12B76A',
+                  borderRadius: '8px',
+                  padding: '10px 12px',
+                  marginBottom: '12px',
+                }
+          }
+        >
+          <span>{statusMessage.type === 'error' ? '⚠️' : '✅'}</span>
+          <span>{statusMessage.text}</span>
           <button
             className="close-btn"
-            onClick={() => setError(null)}
-            aria-label="Close error"
+            onClick={() => setStatusMessage(null)}
+            aria-label="Close status"
           >
             <X size={18} />
           </button>
@@ -213,6 +249,7 @@ const DocumentVerificationProcessor = ({
             <div className="step-header">
               <Upload size={32} className={loading ? 'icon spinning' : 'icon'} />
               <div>
+                {/* eslint-disable-next-line security/detect-object-injection */}
                 <h3>Upload {DOCUMENT_TYPES[documentType]?.label || 'Document'}</h3>
                 <p className="step-description">
                   Ensure document is clear and all details are visible
@@ -231,6 +268,7 @@ const DocumentVerificationProcessor = ({
               <input
                 ref={fileInputRef}
                 type="file"
+                // eslint-disable-next-line security/detect-object-injection
                 accept={DOCUMENT_TYPES[documentType]?.accept || 'image/*'}
                 onChange={handleFileSelect}
                 disabled={loading}
@@ -243,9 +281,7 @@ const DocumentVerificationProcessor = ({
                   <img src={preview} alt="Document preview" className="preview-image" />
                   <div className="preview-info">
                     <p className="file-name">{file?.name}</p>
-                    <p className="file-size">
-                      {(file?.size / 1024).toFixed(2)} KB
-                    </p>
+                    <p className="file-size">{(file?.size / 1024).toFixed(2)} KB</p>
                   </div>
                 </div>
               ) : (
@@ -254,9 +290,7 @@ const DocumentVerificationProcessor = ({
                   <p className="upload-text">
                     Drag and drop your document here, or click to select
                   </p>
-                  <p className="upload-hint">
-                    Supported formats: JPG, PNG, GIF (Max 10MB)
-                  </p>
+                  <p className="upload-hint">Supported formats: JPG, PNG, GIF (Max 10MB)</p>
                 </div>
               )}
             </div>
@@ -264,10 +298,7 @@ const DocumentVerificationProcessor = ({
             {/* Progress Bar */}
             {loading && uploadProgress > 0 && (
               <div className="progress-bar">
-                <div
-                  className="progress-fill"
-                  style={{ width: `${uploadProgress}%` }}
-                />
+                <div className="progress-fill" style={{ width: `${uploadProgress}%` }} />
               </div>
             )}
 
@@ -283,11 +314,7 @@ const DocumentVerificationProcessor = ({
                     <X size={18} />
                     Clear
                   </button>
-                  <button
-                    className="btn btn-primary"
-                    onClick={handleUpload}
-                    disabled={loading}
-                  >
+                  <button className="btn btn-primary" onClick={handleUpload} disabled={loading}>
                     {loading ? (
                       <>
                         <Loader2 size={18} className="spinner" />
@@ -336,7 +363,9 @@ const DocumentVerificationProcessor = ({
 
             {/* Validation Status */}
             {result.validation && (
-              <div className={`validation-box ${result.validation.isValid ? 'success' : 'warning'}`}>
+              <div
+                className={`validation-box ${result.validation.isValid ? 'success' : 'warning'}`}
+              >
                 <h4>Validation Status</h4>
                 {result.validation.errors.length > 0 && (
                   <div className="errors">
@@ -421,7 +450,8 @@ const DocumentVerificationProcessor = ({
                 <h4>Document Status</h4>
                 <div className="status-info">
                   <p>
-                    Status: <span className={result.verification.isExpired ? 'expired' : 'valid'}>
+                    Status:{' '}
+                    <span className={result.verification.isExpired ? 'expired' : 'valid'}>
                       {result.verification.isExpired ? 'Expired' : 'Valid'}
                     </span>
                   </p>
@@ -445,17 +475,11 @@ const DocumentVerificationProcessor = ({
 
             {/* Action Buttons */}
             <div className="button-group">
-              <button
-                className="btn btn-secondary"
-                onClick={handleReset}
-              >
+              <button className="btn btn-secondary" onClick={handleReset}>
                 <RefreshCw size={18} />
                 Upload Another
               </button>
-              <button
-                className="btn btn-secondary"
-                onClick={handleDownloadResult}
-              >
+              <button className="btn btn-secondary" onClick={handleDownloadResult}>
                 <Download size={18} />
                 Download Result
               </button>
@@ -468,7 +492,7 @@ const DocumentVerificationProcessor = ({
 };
 
 // Helper method for formatting field labels
-DocumentVerificationProcessor.prototype.formatFieldLabel = function(fieldName) {
+DocumentVerificationProcessor.prototype.formatFieldLabel = function (fieldName) {
   return fieldName
     .replace(/_/g, ' ')
     .split(' ')

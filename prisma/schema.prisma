@@ -20,6 +20,8 @@ model User {
   department   String?
   status       String   @default("active")
   passwordHash String?  // bcrypt hash — null means password not set yet
+  twoFactorEnabled Boolean @default(false)
+  twoFactorSecret   String?  // Encrypted TOTP secret (base32 payload)
   firebaseUid  String?  // Firebase UID for social/phone auth sync (optional, indexed but not unique)
   brnNumber    String?  // RERA Broker Registration Number
   brnExpiry    DateTime? // BRN expiry date
@@ -825,7 +827,6 @@ model WebAuthnCredential {
   lastUsedAt      DateTime?
 
   @@index([userId])
-  @@index([credentialId])
 }
 
 // ─── DOCUMENT ───────────────────────────────────────────────────────────

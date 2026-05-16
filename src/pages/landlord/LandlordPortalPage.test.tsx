@@ -37,12 +37,6 @@ vi.mock('../../components/portal/landlord/LandlordMaintenanceTab', () => ({
 vi.mock('../../components/portal/landlord/LandlordDocumentsTab', () => ({
   default: () => <div data-testid="documents-tab">Documents Tab</div>,
 }));
-vi.mock('../../components/portal/landlord/LandlordOfferReviewTab', () => ({
-  default: () => <div data-testid="offers-tab">Offer Review Tab</div>,
-}));
-vi.mock('../../components/portal/landlord/LandlordIncomeTab', () => ({
-  default: () => <div data-testid="income-tab">Income Tab</div>,
-}));
 
 const mockUser = {
   id: 'landlord-1',
@@ -68,13 +62,11 @@ const createMockStore = (preloadedState?: Partial<TestState>) => {
       },
       ...preloadedState,
     },
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } as any);
 };
 
-const renderWithStore = (
-  component: React.ReactElement,
-  preloadedState?: Partial<TestState>
-) => {
+const renderWithStore = (component: React.ReactElement, preloadedState?: Partial<TestState>) => {
   const store = createMockStore(preloadedState);
   return render(
     <Provider store={store}>
@@ -110,6 +102,8 @@ describe('LandlordPortalPage', () => {
     it('renders home dashboard tab by default', () => {
       renderWithStore(<LandlordPortalPage />);
 
+      expect(screen.getByTestId('portal-layout')).toBeInTheDocument();
+      expect(screen.getByTestId('portal-navbar')).toBeInTheDocument();
       expect(screen.getByTestId('tab-home')).toBeInTheDocument();
       expect(screen.getByTestId('home-tab')).toBeInTheDocument();
       expect(screen.getByTestId('tabpanel-home')).toBeInTheDocument();
@@ -173,7 +167,7 @@ describe('LandlordPortalPage', () => {
     it('displays welcome message with user name', () => {
       renderWithStore(<LandlordPortalPage />);
 
-      expect(screen.getByText('Landlord Portal')).toBeInTheDocument();
+      expect(screen.getByRole('heading', { name: 'Landlord Portal' })).toBeInTheDocument();
       expect(screen.getByText(/Welcome, Ahmed Al-Mansouri/)).toBeInTheDocument();
     });
 

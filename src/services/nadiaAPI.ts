@@ -15,10 +15,10 @@ import {
   AssignAgentPayload,
   ListConversationsQuery,
   ApiResponse,
-} from '@/types/nadia';
-import { Config } from '@/config/constants';
-import { authFetch } from '@/utils/authFetch';
-import { createLogger } from '@/utils/logger';
+} from '../types/nadia';
+import { Config } from '../config/constants';
+import { authFetch } from '../utils/authFetch';
+import { createLogger } from '../utils/logger';
 
 const log = createLogger('nadiaAPI');
 const NADIA_API = `${Config.API_URL}/api/nadia`;

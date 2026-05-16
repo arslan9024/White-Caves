@@ -1,11 +1,20 @@
 import React, { useState, useCallback } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { 
-  Shield, Upload, FileCheck, AlertTriangle, CheckCircle,
-  User, CreditCard, Building, ChevronRight, X, Loader2
+import { useDispatch } from 'react-redux';
+import {
+  Shield,
+  Upload,
+  FileCheck,
+  AlertTriangle,
+  CheckCircle,
+  User,
+  CreditCard,
+  Building,
+  ChevronRight,
+  X,
+  Loader2,
 } from 'lucide-react';
 import { addNotification } from '../store/slices/kycAmlSlice';
-import DocumentVerificationProcessor from './DocumentVerificationProcessor';
+import { authFetch } from '../utils/authFetch';
 import './KYCVerificationStep.css';
 
 const ROLES_REQUIRING_KYC = ['buyer', 'seller', 'landlord', 'tenant', 'investor', 'agent'];
@@ -15,26 +24,26 @@ const DOCUMENT_TYPES = {
     label: 'Emirates ID',
     description: 'Front and back of valid Emirates ID card',
     required: true,
-    icon: CreditCard
+    icon: CreditCard,
   },
   passport: {
     label: 'Passport',
     description: 'Bio-data page of valid passport',
     required: true,
-    icon: User
+    icon: User,
   },
   visa: {
     label: 'UAE Visa',
     description: 'Valid UAE residence visa (if applicable)',
     required: false,
-    icon: FileCheck
+    icon: FileCheck,
   },
   proof_of_address: {
     label: 'Proof of Address',
     description: 'Utility bill or bank statement (within 3 months)',
     required: false,
-    icon: Building
-  }
+    icon: Building,
+  },
 };
 
 const KYCVerificationStep = ({ user, token, role, onComplete, onSkip }) => {
@@ -50,16 +59,17 @@ const KYCVerificationStep = ({ user, token, role, onComplete, onSkip }) => {
     sourceOfFunds: '',
     occupation: '',
     employerName: '',
-    annualIncome: ''
+    annualIncome: '',
   });
 
   const requiredDocs = Object.entries(DOCUMENT_TYPES)
     .filter(([_, info]) => info.required)
     .map(([type]) => type);
 
-  const handleInputChange = (e) => {
+  const handleInputChange = e => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
+    // eslint-disable-next-line security/detect-object-injection
     if (errors[name]) {
       setErrors(prev => ({ ...prev, [name]: null }));
     }
@@ -82,9 +92,10 @@ const KYCVerificationStep = ({ user, token, role, onComplete, onSkip }) => {
     }
   }, []);
 
-  const removeDocument = useCallback((docType) => {
+  const removeDocument = useCallback(docType => {
     setDocuments(prev => {
       const updated = { ...prev };
+      // eslint-disable-next-line security/detect-object-injection
       delete updated[docType];
       return updated;
     });
@@ -102,7 +113,7 @@ const KYCVerificationStep = ({ user, token, role, onComplete, onSkip }) => {
     if (!formData.dateOfBirth) newErrors.dateOfBirth = 'Date of birth is required';
     if (!formData.sourceOfFunds) newErrors.sourceOfFunds = 'Source of funds is required';
     if (!formData.occupation) newErrors.occupation = 'Occupation is required';
-    
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -110,7 +121,9 @@ const KYCVerificationStep = ({ user, token, role, onComplete, onSkip }) => {
   const validateDocuments = () => {
     const newErrors = {};
     requiredDocs.forEach(docType => {
+      // eslint-disable-next-line security/detect-object-injection
       if (!documents[docType]) {
+        // eslint-disable-next-line security/detect-object-injection
         newErrors[docType] = `${DOCUMENT_TYPES[docType].label} is required`;
       }
     });
@@ -152,12 +165,10 @@ const KYCVerificationStep = ({ user, token, role, onComplete, onSkip }) => {
         formDataToSend.append(`document_${docType}`, file);
       });
 
-      const response = await fetch('/api/compliance/kyc', {
+      const response = await authFetch('/api/compliance/kyc', {
         method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`
-        },
-        body: formDataToSend
+        headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+        body: formDataToSend,
       });
 
       const data = await response.json();
@@ -166,16 +177,18 @@ const KYCVerificationStep = ({ user, token, role, onComplete, onSkip }) => {
         throw new Error(data.error || 'KYC submission failed');
       }
 
-      dispatch(addNotification({
-        type: 'kyc_submitted',
-        title: 'KYC Verification Submitted',
-        message: 'Your documents have been submitted for verification. We will notify you once reviewed.',
-        severity: 'success'
-      }));
+      dispatch(
+        addNotification({
+          type: 'kyc_submitted',
+          title: 'KYC Verification Submitted',
+          message:
+            'Your documents have been submitted for verification. We will notify you once reviewed.',
+          severity: 'success',
+        })
+      );
 
       setStep('success');
     } catch (error) {
-      
       setErrors({ submit: error.message });
     } finally {
       setLoading(false);
@@ -189,10 +202,10 @@ const KYCVerificationStep = ({ user, token, role, onComplete, onSkip }) => {
       </div>
       <h2>Identity Verification Required</h2>
       <p>
-        As a {role}, we need to verify your identity to comply with UAE regulations 
-        and ensure secure transactions on our platform.
+        As a {role}, we need to verify your identity to comply with UAE regulations and ensure
+        secure transactions on our platform.
       </p>
-      
+
       <div className="kyc-info-cards">
         <div className="info-card">
           <CheckCircle size={20} />
@@ -220,9 +233,15 @@ const KYCVerificationStep = ({ user, token, role, onComplete, onSkip }) => {
       <div className="kyc-requirements">
         <h4>You will need:</h4>
         <ul>
-          <li><CreditCard size={16} /> Valid Emirates ID (front & back)</li>
-          <li><User size={16} /> Passport (bio-data page)</li>
-          <li><Building size={16} /> Proof of address (optional)</li>
+          <li>
+            <CreditCard size={16} /> Valid Emirates ID (front & back)
+          </li>
+          <li>
+            <User size={16} /> Passport (bio-data page)
+          </li>
+          <li>
+            <Building size={16} /> Proof of address (optional)
+          </li>
         </ul>
       </div>
     </div>
@@ -236,7 +255,7 @@ const KYCVerificationStep = ({ user, token, role, onComplete, onSkip }) => {
       <div className="form-grid">
         <div className="form-group">
           <label htmlFor="nationality">Nationality *</label>
-          <select 
+          <select
             id="nationality"
             name="nationality"
             value={formData.nationality}
@@ -365,12 +384,14 @@ const KYCVerificationStep = ({ user, token, role, onComplete, onSkip }) => {
       <div className="document-upload-grid">
         {Object.entries(DOCUMENT_TYPES).map(([docType, info]) => {
           const Icon = info.icon;
+          // eslint-disable-next-line security/detect-object-injection
           const uploaded = documents[docType];
+          // eslint-disable-next-line security/detect-object-injection
           const hasError = errors[docType];
 
           return (
-            <div 
-              key={docType} 
+            <div
+              key={docType}
               className={`document-upload-card ${uploaded ? 'uploaded' : ''} ${hasError ? 'error' : ''}`}
             >
               <div className="doc-icon">
@@ -388,8 +409,8 @@ const KYCVerificationStep = ({ user, token, role, onComplete, onSkip }) => {
                 <div className="uploaded-file">
                   <CheckCircle size={16} className="success-icon" />
                   <span className="file-name">{uploaded.name}</span>
-                  <button 
-                    type="button" 
+                  <button
+                    type="button"
                     className="remove-btn"
                     onClick={() => removeDocument(docType)}
                   >
@@ -403,7 +424,7 @@ const KYCVerificationStep = ({ user, token, role, onComplete, onSkip }) => {
                   <input
                     type="file"
                     accept="image/jpeg,image/png,application/pdf"
-                    onChange={(e) => handleFileChange(docType, e)}
+                    onChange={e => handleFileChange(docType, e)}
                     hidden
                   />
                 </label>
@@ -429,14 +450,14 @@ const KYCVerificationStep = ({ user, token, role, onComplete, onSkip }) => {
       </div>
       <h2>Verification Submitted!</h2>
       <p>
-        Your documents have been submitted for review. Our compliance team will 
-        verify your identity within 1-2 business days.
+        Your documents have been submitted for review. Our compliance team will verify your identity
+        within 1-2 business days.
       </p>
       <div className="success-next-steps">
         <h4>What happens next?</h4>
         <ul>
           <li>You can browse properties while we verify your identity</li>
-          <li>We'll notify you via email and SMS once verified</li>
+          <li>We&apos;ll notify you via email and SMS once verified</li>
           <li>Some features may be limited until verification is complete</li>
         </ul>
       </div>
@@ -456,15 +477,21 @@ const KYCVerificationStep = ({ user, token, role, onComplete, onSkip }) => {
         {step !== 'success' && (
           <div className="kyc-header">
             <div className="step-indicator">
-              <div className={`step ${step === 'intro' ? 'active' : step !== 'intro' ? 'completed' : ''}`}>
+              <div
+                className={`step ${step === 'intro' ? 'active' : step !== 'intro' ? 'completed' : ''}`}
+              >
                 <span>1</span>
               </div>
               <div className="step-line" />
-              <div className={`step ${step === 'personal' ? 'active' : step === 'documents' || step === 'success' ? 'completed' : ''}`}>
+              <div
+                className={`step ${step === 'personal' ? 'active' : step === 'documents' || step === 'success' ? 'completed' : ''}`}
+              >
                 <span>2</span>
               </div>
               <div className="step-line" />
-              <div className={`step ${step === 'documents' ? 'active' : step === 'success' ? 'completed' : ''}`}>
+              <div
+                className={`step ${step === 'documents' ? 'active' : step === 'success' ? 'completed' : ''}`}
+              >
                 <span>3</span>
               </div>
             </div>
@@ -489,7 +516,7 @@ const KYCVerificationStep = ({ user, token, role, onComplete, onSkip }) => {
         {step !== 'success' && (
           <div className="kyc-actions">
             {step !== 'intro' && (
-              <button 
+              <button
                 className="btn-secondary"
                 onClick={() => setStep(step === 'documents' ? 'personal' : 'intro')}
                 disabled={loading}
@@ -497,11 +524,7 @@ const KYCVerificationStep = ({ user, token, role, onComplete, onSkip }) => {
                 Back
               </button>
             )}
-            <button 
-              className="btn-primary"
-              onClick={handleNext}
-              disabled={loading}
-            >
+            <button className="btn-primary" onClick={handleNext} disabled={loading}>
               {loading ? (
                 <>
                   <Loader2 size={16} className="spinner" />

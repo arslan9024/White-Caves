@@ -1,0 +1,62 @@
+{
+  "whatsappBots": {
+    "arslan-malik": {
+      "id": "arslan-malik",
+      "phoneNumber": "+971505760056",
+      "displayName": "Arslan Malik",
+      "description": "Master WhatsApp Account - Linda AI Assistant",
+      "role": "primary",
+      "sessionPath": "sessions/session-arslan-malik",
+      "enabled": true,
+      "features": {
+        "messaging": true,
+        "contacts": true,
+        "campaigns": true,
+        "analytics": true,
+        "scheduling": true
+      },
+      "status": "pending",
+      "createdAt": "2026-02-11",
+      "lastSync": null
+    },
+    "bigbroker": {
+      "id": "master_1771448396526",
+      "phoneNumber": "+971553633595",
+      "displayName": "\"big broker\"",
+      "description": "Master Account - \"big broker\"",
+      "role": "primary",
+      "sessionPath": "sessions/session-971553633595",
+      "enabled": true,
+      "features": {
+        "messaging": true,
+        "contacts": true,
+        "campaigns": true,
+        "analytics": true,
+        "scheduling": true
+      },
+      "status": "pending",
+      "createdAt": "2026-02-18",
+      "lastSync": null
+    }
+  },
+  "default": "arslan-malik",
+  "primaryAccount": "arslan-malik",
+  "version": "2.0",
+  "format": "Dynamic WhatsApp Bot Accounts Registry",
+  "metadata": {
+    "totalBots": 1,
+    "activeBots": 0,
+    "pendingBots": 1,
+    "lastModified": "2026-02-11T00:00:00Z",
+    "managedBy": "DynamicAccountManager",
+    "notes": "Master account only. Secondary accounts added dynamically via WhatsApp commands: /add-account <phone> <name>"
+  },
+  "capabilities": {
+    "multi-account": true,
+    "dynamic-management": true,
+    "contact-sync": true,
+    "campaign-management": true,
+    "message-routing": true,
+    "analytics-aggregation": true
+  }
+}

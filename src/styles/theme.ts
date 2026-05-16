@@ -1,14 +1,12 @@
 // src/styles/theme.ts
 // Complete Theme System with Light/Dark Modes & Design Tokens
 
-import { mediaQueries } from './theme/breakpoints';
-
 export const lightTheme = {
   colors: {
     // Primary & Secondary
     primary: '#C41E3A', // Red/Crimson
     secondary: '#0EA5E9', // Sky Blue
-
+    
     // Backgrounds (nested structure for styled-components)
     background: {
       primary: '#FFFFFF',
@@ -17,7 +15,7 @@ export const lightTheme = {
     },
     backgroundAlt: '#F9FAFB',
     cardBg: '#FFFFFF',
-
+    
     // Text (nested structure)
     text: {
       primary: '#1F2937',
@@ -29,7 +27,7 @@ export const lightTheme = {
     textSecondary: '#6B7280',
     textTertiary: '#9CA3AF',
     textInverse: '#FFFFFF',
-
+    
     // Borders & Dividers (nested structure)
     border: {
       light: '#F3F4F6',
@@ -38,33 +36,33 @@ export const lightTheme = {
     },
     borderLight: '#F3F4F6',
     divider: '#E5E7EB',
-
+    
     // States
     success: '#10B981',
     warning: '#F59E0B',
     danger: '#EF4444',
     error: '#EF4444',
     info: '#3B82F6',
-
+    
     // Status Indicators
     statusOnline: '#10B981',
     statusBusy: '#F59E0B',
     statusOffline: '#9CA3AF',
-
+    
     // Interactive
     hover: '#F3F4F6',
     active: '#EEF2FF',
     disabled: '#D1D5DB',
     focus: '#3B82F6',
-
+    
     // Semantic
     activeBg: '#FCE4E6',
     hoverBg: '#F9FAFB',
-
+    
     // Sidebar specific
     sidebarBg: '#FFFFFF',
   },
-
+  
   spacing: {
     0: '0px',
     1: '4px',
@@ -80,7 +78,7 @@ export const lightTheme = {
     12: '48px',
     16: '64px',
   },
-
+  
   typography: {
     h1: {
       size: '32px',
@@ -137,7 +135,7 @@ export const lightTheme = {
       letterSpacing: '0.5px',
     },
   },
-
+  
   borderRadius: {
     xs: '2px',
     sm: '4px',
@@ -146,7 +144,7 @@ export const lightTheme = {
     xl: '16px',
     full: '9999px',
   },
-
+  
   shadows: {
     none: 'none',
     sm: '0 1px 2px 0 rgba(0, 0, 0, 0.05)',
@@ -155,20 +153,20 @@ export const lightTheme = {
     xl: '0 20px 25px -5px rgba(0, 0, 0, 0.1)',
     elevated: '0 12px 24px rgba(0, 0, 0, 0.15)',
   },
-
+  
   transitions: {
     fast: '150ms cubic-bezier(0.4, 0, 0.2, 1)',
     standard: '200ms cubic-bezier(0.4, 0, 0.2, 1)',
     slow: '300ms cubic-bezier(0.4, 0, 0.2, 1)',
   },
-
+  
   easing: {
     in: 'cubic-bezier(0.4, 0, 1, 1)',
     out: 'cubic-bezier(0, 0, 0.2, 1)',
     inOut: 'cubic-bezier(0.4, 0, 0.2, 1)',
     standard: 'cubic-bezier(0.4, 0, 0.2, 1)',
   },
-
+  
   breakpoints: {
     mobile: '480px',
     tablet: '768px',
@@ -176,7 +174,7 @@ export const lightTheme = {
     desktop: '1440px',
     widescreen: '1920px',
   },
-
+  
   zIndex: {
     hide: -1,
     base: 0,
@@ -252,20 +250,6 @@ const legacyColors = {
   primaryLight: '#FCE4E6',
   primaryVeryLight: '#FFF5F5',
   secondaryDark: '#0284C7',
-  border: lightTheme.colors.border.medium,
-  borderDark: lightTheme.colors.border.dark,
-  errorLight: '#EF5350',
-  successLight: '#81C784',
-  background: {
-    ...lightTheme.colors.background,
-    dark: '#1E293B',
-    darkSecondary: '#2A2A2A',
-    overlay: 'rgba(0, 0, 0, 0.5)',
-  },
-  text: {
-    ...lightTheme.colors.text,
-    disabled: '#BDBDBD',
-  },
   luxury: {
     goldShimmer: 'linear-gradient(135deg, #E31E24 0%, #EF5350 50%, #E31E24 100%)',
     goldToGreen: 'linear-gradient(135deg, #E31E24 0%, #2E5A4F 100%)',
@@ -274,22 +258,11 @@ const legacyColors = {
     warmSand: 'linear-gradient(135deg, #F5E6D3 0%, #FDF8E8 100%)',
     premiumDark: 'linear-gradient(135deg, #1A1A1A 0%, #2E5A4F 100%)',
   },
-  status: {
-    active: '#10B981',
-    inactive: '#9CA3AF',
-    pending: '#F59E0B',
-    completed: '#10B981',
-    failed: '#EF4444',
-    draft: '#6B7280',
-  },
-  dark: {
-    bg: '#1A1A1A',
-    bgSecondary: '#2A2A2A',
-    bgTertiary: '#3A3A3A',
-    text: '#FFFFFF',
-    textSecondary: '#D1D5DB',
-    border: '#404040',
-    shadow: 'rgba(0, 0, 0, 0.3)',
+  border: lightTheme.colors.border.medium,
+  borderDark: lightTheme.colors.border.dark,
+  background: {
+    ...lightTheme.colors.background,
+    dark: '#1E293B',
   },
   a11y: {
     goldText: '#8A6A1D',
@@ -308,30 +281,19 @@ const legacyTypography = {
     heading: 'Inter, system-ui, -apple-system, sans-serif',
   },
   sizes: {
-    xs: '12px',
-    sm: '13px',
-    base: '14px',
-    md: '16px',
-    lg: '18px',
-    xl: '20px',
-    xxl: '24px',
-    xxxl: '28px',
-    display: '32px',
-    hero: '48px',
-  },
-  lineHeights: {
-    tight: 1.2,
-    snug: 1.375,
-    normal: 1.5,
-    relaxed: 1.625,
-    loose: 2,
+    xs: '0.75rem',
+    sm: '0.875rem',
+    base: '1rem',
+    lg: '1.125rem',
+    xl: lightTheme.typography.h5.size,
+    xxl: lightTheme.typography.h3.size,
+    xxxl: lightTheme.typography.h2.size,
   },
   weights: {
     regular: 400,
     medium: 500,
     semibold: 600,
     bold: 700,
-    extrabold: 800,
   },
   styles: {
     h1: lightTheme.typography.h1,
@@ -359,9 +321,7 @@ const legacyTransitions = {
   easing: {
     ...lightTheme.easing,
     easeInOut: lightTheme.easing.inOut,
-    easeOut: 'cubic-bezier(0.0, 0, 0.2, 1)',
   },
-  active: '150ms cubic-bezier(0.4, 0, 0.2, 1)',
 };
 
 const legacyRadius = {
@@ -376,19 +336,13 @@ const legacySpacing = {
   md: lightTheme.spacing[4],
   lg: lightTheme.spacing[6],
   xl: lightTheme.spacing[8],
+  xxl: lightTheme.spacing[12],
+  xxxl: lightTheme.spacing[16],
 };
 
 const legacyShadows = {
   ...lightTheme.shadows,
   focus: `0 0 0 3px ${legacyColors.a11y.focusRing}33`,
-  xs: '0 1px 2px rgba(0, 0, 0, 0.05)',
-  active: '0 2px 4px rgba(0, 0, 0, 0.1)',
-  card: '0 2px 8px rgba(0, 0, 0, 0.08)',
-  luxuryCard: '0 4px 16px rgba(227, 30, 36, 0.12), 0 2px 4px rgba(0, 0, 0, 0.06)',
-  luxuryHover: '0 8px 24px rgba(227, 30, 36, 0.18), 0 4px 8px rgba(0, 0, 0, 0.08)',
-  luxuryGlow: '0 0 20px rgba(227, 30, 36, 0.25)',
-  luxuryElevated: '0 12px 32px rgba(227, 30, 36, 0.15), 0 4px 12px rgba(46, 90, 79, 0.08)',
-  luxuryFocus: '0 0 0 3px rgba(227, 30, 36, 0.3)',
 };
 
 // Extract individual color/spacing objects for backward compatibility
@@ -404,17 +358,7 @@ export const theme = {
   radius: legacyRadius,
   spacing: legacySpacing,
   shadows: legacyShadows,
-  mediaQueries,
-  zIndex: {
-    ...lightTheme.zIndex,
-    // Extended zIndex values not present in lightTheme
-    navbar: 300,
-    sidebar: 310,
-    overlay: 600,
-    notification: 800,
-    toast: 810,
-    absolute: 9999,
-  },
+  mediaQueries: MEDIA_QUERIES,
 };
 
 // Backwards-compatible named exports for individual tokens

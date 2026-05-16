@@ -153,8 +153,7 @@ const Hero = ({ marketStats, isLoading = false }: HeroProps) => {
           src="https://images.unsplash.com/photo-1582268611958-ebfd161ef9cf?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80"
           alt=""
           aria-hidden="true"
-          // fetchPriority is a valid HTML attribute; @types/react lags — cast to avoid TS2322
-          {...({ fetchPriority: 'high' } as React.ImgHTMLAttributes<HTMLImageElement>)}
+          loading="eager"
           style={{
             position: 'absolute',
             width: 1,

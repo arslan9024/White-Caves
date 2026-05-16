@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { X, Phone, MessageCircle, Calendar, Star, MapPin, Award } from 'lucide-react';
+import { authFetch } from '../utils/authFetch';
 import './ContactAgentModal.css';
 
 const ContactAgentModal = ({
@@ -8,7 +9,7 @@ const ContactAgentModal = ({
   propertyId,
   property,
   availableAgents = [],
-  onScheduleViewing,
+  onScheduleViewing: _onScheduleViewing,
 }) => {
   const [selectedAgent, setSelectedAgent] = useState(null);
   const [contactMethod, setContactMethod] = useState('whatsapp');
@@ -24,21 +25,13 @@ const ContactAgentModal = ({
     }
   }, [availableAgents]);
 
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value
-    }));
-  };
-
-  const handleSubmit = async (e) => {
+  const handleSubmit = async e => {
     e.preventDefault();
     setLoading(true);
 
     try {
       // Create agent contact request
-      const response = await fetch('/api/agent-contact', {
+      const response = await authFetch('/api/agent-contact', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -69,7 +62,7 @@ const ContactAgentModal = ({
 
   return (
     <div className="modal-overlay" onClick={onClose}>
-      <div className="agent-modal-content" onClick={(e) => e.stopPropagation()}>
+      <div className="agent-modal-content" onClick={e => e.stopPropagation()}>
         <button className="modal-close" onClick={onClose}>
           <X size={24} />
         </button>
@@ -96,19 +89,14 @@ const ContactAgentModal = ({
               <h3>Select an Agent</h3>
               <div className="agents-grid">
                 {availableAgents && availableAgents.length > 0 ? (
-                  availableAgents.map((agent) => (
+                  availableAgents.map(agent => (
                     <div
                       key={agent._id}
-                      className={`agent-card ${
-                        selectedAgent?._id === agent._id ? 'selected' : ''
-                      }`}
+                      className={`agent-card ${selectedAgent?._id === agent._id ? 'selected' : ''}`}
                       onClick={() => setSelectedAgent(agent)}
                     >
                       <div className="agent-avatar">
-                        <img
-                          src={agent.profilePicture || '/default-avatar.png'}
-                          alt={agent.name}
-                        />
+                        <img src={agent.profilePicture || '/default-avatar.png'} alt={agent.name} />
                         {agent.isOnline && <div className="online-indicator" />}
                       </div>
                       <div className="agent-info">
@@ -120,13 +108,9 @@ const ContactAgentModal = ({
                         </div>
                       </div>
                       <div className="agent-meta">
-                        <span className="listings-count">
-                          {agent.activeListings} listings
-                        </span>
+                        <span className="listings-count">{agent.activeListings} listings</span>
                         {agent.responseTime && (
-                          <span className="response-time">
-                            ⚡ {agent.responseTime}min avg
-                          </span>
+                          <span className="response-time">⚡ {agent.responseTime}min avg</span>
                         )}
                       </div>
                     </div>
@@ -146,7 +130,7 @@ const ContactAgentModal = ({
                     type="radio"
                     value="whatsapp"
                     checked={contactMethod === 'whatsapp'}
-                    onChange={(e) => setContactMethod(e.target.value)}
+                    onChange={e => setContactMethod(e.target.value)}
                   />
                   <div className="method-info">
                     <MessageCircle size={20} />
@@ -162,7 +146,7 @@ const ContactAgentModal = ({
                     type="radio"
                     value="call"
                     checked={contactMethod === 'call'}
-                    onChange={(e) => setContactMethod(e.target.value)}
+                    onChange={e => setContactMethod(e.target.value)}
                   />
                   <div className="method-info">
                     <Phone size={20} />
@@ -178,7 +162,7 @@ const ContactAgentModal = ({
                     type="radio"
                     value="email"
                     checked={contactMethod === 'email'}
-                    onChange={(e) => setContactMethod(e.target.value)}
+                    onChange={e => setContactMethod(e.target.value)}
                   />
                   <div className="method-info">
                     <span className="email-icon">📧</span>
@@ -197,7 +181,7 @@ const ContactAgentModal = ({
                 <label>Your Message (Optional)</label>
                 <textarea
                   value={message}
-                  onChange={(e) => setMessage(e.target.value)}
+                  onChange={e => setMessage(e.target.value)}
                   placeholder="Tell the agent about your preferences or ask specific questions..."
                   rows={3}
                 />
@@ -209,7 +193,7 @@ const ContactAgentModal = ({
                   <input
                     type="date"
                     value={preferredDate}
-                    onChange={(e) => setPreferredDate(e.target.value)}
+                    onChange={e => setPreferredDate(e.target.value)}
                     min={new Date().toISOString().split('T')[0]}
                   />
                 </div>
@@ -218,7 +202,7 @@ const ContactAgentModal = ({
                   <input
                     type="time"
                     value={preferredTime}
-                    onChange={(e) => setPreferredTime(e.target.value)}
+                    onChange={e => setPreferredTime(e.target.value)}
                     disabled={!preferredDate}
                   />
                 </div>
@@ -228,11 +212,7 @@ const ContactAgentModal = ({
                 <button type="button" className="btn-cancel" onClick={onClose}>
                   Cancel
                 </button>
-                <button
-                  type="submit"
-                  className="btn-submit"
-                  disabled={loading || !selectedAgent}
-                >
+                <button type="submit" className="btn-submit" disabled={loading || !selectedAgent}>
                   {loading ? 'Sending...' : 'Contact Agent'}
                 </button>
               </div>
@@ -267,9 +247,7 @@ const ContactAgentModal = ({
                     </div>
                   </div>
                 </div>
-                {selectedAgent.bio && (
-                  <p className="agent-bio">{selectedAgent.bio}</p>
-                )}
+                {selectedAgent.bio && <p className="agent-bio">{selectedAgent.bio}</p>}
               </div>
             )}
           </>

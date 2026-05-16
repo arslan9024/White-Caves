@@ -1,20 +1,33 @@
 import React, { useState, useEffect } from 'react';
-import { useSelector } from 'react-redux';
-import { LineChart, Line, AreaChart, Area, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
+import {
+  LineChart,
+  Line,
+  AreaChart,
+  Area,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
+  PieChart,
+  Pie,
+  Cell,
+} from 'recharts';
+import { authFetch } from '../../utils/authFetch';
 import './AuroraTechnicalDashboard.css';
 
 const AuroraTechnicalDashboard = () => {
-  const auroraSlice = useSelector(state => state.aurora);
   const [activeTab, setActiveTab] = useState('health');
   const [refreshInterval, setRefreshInterval] = useState(10000); // 10 seconds
-  const [metrics, setMetrics] = useState(null);
 
   useEffect(() => {
     const fetchMetrics = async () => {
       try {
-        const response = await fetch('/api/aurora/monitoring/health');
+        const response = await authFetch('/api/aurora/monitoring/health');
         const data = await response.json();
-        setMetrics(data);
+        // Future: wire data into chart state
+        void data;
       } catch (error) {
         console.error('Failed to fetch metrics:', error);
       }
@@ -34,7 +47,7 @@ const AuroraTechnicalDashboard = () => {
     { time: '12:00 PM', api: 510, db: 52, avg: 520 },
     { time: '1:00 PM', api: 490, db: 48, avg: 498 },
     { time: '2:00 PM', api: 475, db: 45, avg: 482 },
-    { time: '3:00 PM', api: 460, db: 42, avg: 467 }
+    { time: '3:00 PM', api: 460, db: 42, avg: 467 },
   ];
 
   const errorRateTrend = [
@@ -45,12 +58,12 @@ const AuroraTechnicalDashboard = () => {
     { time: '12:00 PM', rate: 0.4, threshold: 0.5 },
     { time: '1:00 PM', rate: 0.35, threshold: 0.5 },
     { time: '2:00 PM', rate: 0.3, threshold: 0.5 },
-    { time: '3:00 PM', rate: 0.25, threshold: 0.5 }
+    { time: '3:00 PM', rate: 0.25, threshold: 0.5 },
   ];
 
   const serviceHealth = [
     { name: 'Healthy', value: 10, color: '#10b981' },
-    { name: 'Degraded', value: 1, color: '#fb923c' }
+    { name: 'Degraded', value: 1, color: '#fb923c' },
   ];
 
   const concurrentUsersTrend = [
@@ -61,7 +74,7 @@ const AuroraTechnicalDashboard = () => {
     { time: '12:00 PM', users: 45, capacity: 100 },
     { time: '1:00 PM', users: 50, capacity: 100 },
     { time: '2:00 PM', users: 55, capacity: 100 },
-    { time: '3:00 PM', users: 65, capacity: 100 }
+    { time: '3:00 PM', users: 65, capacity: 100 },
   ];
 
   const apiPerformance = [
@@ -74,12 +87,24 @@ const AuroraTechnicalDashboard = () => {
     { endpoint: '/messages/send', latency: 120, errorRate: 0.1, throughput: 920 },
     { endpoint: '/analytics/reports', latency: 600, errorRate: 0.5, throughput: 45 },
     { endpoint: '/webauthn/verify', latency: 280, errorRate: 0.3, throughput: 200 },
-    { endpoint: '/system/health', latency: 45, errorRate: 0.05, throughput: 2000 }
+    { endpoint: '/system/health', latency: 45, errorRate: 0.05, throughput: 2000 },
   ];
 
   const alerts = [
-    { id: 'ALERT-001', severity: 'warning', service: 'Analytics Service', message: 'Report generation time >1s', timestamp: '14:32:15' },
-    { id: 'ALERT-002', severity: 'info', service: 'MongoDB', message: 'Connection pool 70% utilized', timestamp: '14:25:42' }
+    {
+      id: 'ALERT-001',
+      severity: 'warning',
+      service: 'Analytics Service',
+      message: 'Report generation time >1s',
+      timestamp: '14:32:15',
+    },
+    {
+      id: 'ALERT-002',
+      severity: 'info',
+      service: 'MongoDB',
+      message: 'Connection pool 70% utilized',
+      timestamp: '14:25:42',
+    },
   ];
 
   const services = [
@@ -93,7 +118,7 @@ const AuroraTechnicalDashboard = () => {
     { name: 'Authentication Service', status: 'healthy', latency: 80, errorRate: 0.05 },
     { name: 'API Gateway', status: 'healthy', latency: 50, errorRate: 0.02 },
     { name: 'WebAuthn Service', status: 'healthy', latency: 90, errorRate: 0.15 },
-    { name: 'Session Management', status: 'healthy', latency: 70, errorRate: 0.03 }
+    { name: 'Session Management', status: 'healthy', latency: 70, errorRate: 0.03 },
   ];
 
   const renderHealthOverview = () => (
@@ -131,10 +156,24 @@ const AuroraTechnicalDashboard = () => {
             <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
             <XAxis dataKey="time" stroke="#888" />
             <YAxis stroke="#888" />
-            <Tooltip contentStyle={{ background: 'rgba(0,0,0,0.8)', border: '1px solid #10b981' }} />
+            <Tooltip
+              contentStyle={{ background: 'rgba(0,0,0,0.8)', border: '1px solid #10b981' }}
+            />
             <Legend />
-            <Line type="monotone" dataKey="api" stroke="#dc2626" strokeWidth={2} name="API Latency (ms)" />
-            <Line type="monotone" dataKey="db" stroke="#10b981" strokeWidth={2} name="DB Latency (ms)" />
+            <Line
+              type="monotone"
+              dataKey="api"
+              stroke="#dc2626"
+              strokeWidth={2}
+              name="API Latency (ms)"
+            />
+            <Line
+              type="monotone"
+              dataKey="db"
+              stroke="#10b981"
+              strokeWidth={2}
+              name="DB Latency (ms)"
+            />
           </LineChart>
         </ResponsiveContainer>
       </section>
@@ -146,9 +185,24 @@ const AuroraTechnicalDashboard = () => {
             <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
             <XAxis dataKey="time" stroke="#888" />
             <YAxis stroke="#888" />
-            <Tooltip contentStyle={{ background: 'rgba(0,0,0,0.8)', border: '1px solid #10b981' }} />
-            <Area type="monotone" dataKey="rate" fill="rgba(239, 68, 68, 0.3)" stroke="#ef4444" name="Error Rate %" />
-            <Line type="stepAfter" dataKey="threshold" stroke="#10b981" strokeDasharray="5 5" name="Threshold" strokeWidth={2} />
+            <Tooltip
+              contentStyle={{ background: 'rgba(0,0,0,0.8)', border: '1px solid #10b981' }}
+            />
+            <Area
+              type="monotone"
+              dataKey="rate"
+              fill="rgba(239, 68, 68, 0.3)"
+              stroke="#ef4444"
+              name="Error Rate %"
+            />
+            <Line
+              type="stepAfter"
+              dataKey="threshold"
+              stroke="#10b981"
+              strokeDasharray="5 5"
+              name="Threshold"
+              strokeWidth={2}
+            />
           </AreaChart>
         </ResponsiveContainer>
       </section>
@@ -160,9 +214,24 @@ const AuroraTechnicalDashboard = () => {
             <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
             <XAxis dataKey="time" stroke="#888" />
             <YAxis stroke="#888" />
-            <Tooltip contentStyle={{ background: 'rgba(0,0,0,0.8)', border: '1px solid #10b981' }} />
-            <Area type="monotone" dataKey="capacity" fill="rgba(255, 255, 255, 0.05)" stroke="#888" name="Capacity" />
-            <Area type="monotone" dataKey="users" fill="rgba(16, 185, 129, 0.3)" stroke="#10b981" strokeWidth={2} name="Active Users" />
+            <Tooltip
+              contentStyle={{ background: 'rgba(0,0,0,0.8)', border: '1px solid #10b981' }}
+            />
+            <Area
+              type="monotone"
+              dataKey="capacity"
+              fill="rgba(255, 255, 255, 0.05)"
+              stroke="#888"
+              name="Capacity"
+            />
+            <Area
+              type="monotone"
+              dataKey="users"
+              fill="rgba(16, 185, 129, 0.3)"
+              stroke="#10b981"
+              strokeWidth={2}
+              name="Active Users"
+            />
           </AreaChart>
         </ResponsiveContainer>
       </section>
@@ -171,12 +240,23 @@ const AuroraTechnicalDashboard = () => {
         <h3>🔍 Service Health Distribution</h3>
         <ResponsiveContainer width="100%" height={300}>
           <PieChart>
-            <Pie data={serviceHealth} cx="50%" cy="50%" labelLine={false} label={({ name, value }) => `${name}: ${value}`} outerRadius={100} fill="#8884d8" dataKey="value">
+            <Pie
+              data={serviceHealth}
+              cx="50%"
+              cy="50%"
+              labelLine={false}
+              label={({ name, value }) => `${name}: ${value}`}
+              outerRadius={100}
+              fill="#8884d8"
+              dataKey="value"
+            >
               {serviceHealth.map((entry, index) => (
                 <Cell key={`cell-${index}`} fill={entry.color} />
               ))}
             </Pie>
-            <Tooltip contentStyle={{ background: 'rgba(0,0,0,0.8)', border: '1px solid #10b981' }} />
+            <Tooltip
+              contentStyle={{ background: 'rgba(0,0,0,0.8)', border: '1px solid #10b981' }}
+            />
           </PieChart>
         </ResponsiveContainer>
       </section>
@@ -207,7 +287,9 @@ const AuroraTechnicalDashboard = () => {
                   </span>
                 </td>
                 <td>{svc.latency}ms</td>
-                <td className={`error-rate ${svc.errorRate > 0.3 ? 'high' : 'low'}`}>{(svc.errorRate * 100).toFixed(2)}%</td>
+                <td className={`error-rate ${svc.errorRate > 0.3 ? 'high' : 'low'}`}>
+                  {(svc.errorRate * 100).toFixed(2)}%
+                </td>
                 <td>
                   <button className="action-btn">Details</button>
                 </td>
@@ -240,7 +322,9 @@ const AuroraTechnicalDashboard = () => {
                 <tr key={idx} className={isAboveThreshold ? 'warning' : 'healthy'}>
                   <td className="endpoint-name">{api.endpoint}</td>
                   <td className={isAboveThreshold ? 'alert' : ''}>{api.latency}ms</td>
-                  <td className={api.errorRate > 0.3 ? 'alert' : ''}>{(api.errorRate * 100).toFixed(1)}%</td>
+                  <td className={api.errorRate > 0.3 ? 'alert' : ''}>
+                    {(api.errorRate * 100).toFixed(1)}%
+                  </td>
                   <td>{api.throughput}</td>
                   <td>
                     <span className={`perf-badge ${isAboveThreshold ? 'warning' : 'healthy'}`}>
@@ -269,7 +353,9 @@ const AuroraTechnicalDashboard = () => {
             <div key={idx} className={`alert-item severity-${alert.severity}`}>
               <div className="alert-header">
                 <span className="alert-id">{alert.id}</span>
-                <span className={`severity-badge ${alert.severity}`}>{alert.severity.toUpperCase()}</span>
+                <span className={`severity-badge ${alert.severity}`}>
+                  {alert.severity.toUpperCase()}
+                </span>
                 <span className="alert-time">{alert.timestamp}</span>
               </div>
               <div className="alert-service">{alert.service}</div>
@@ -286,13 +372,13 @@ const AuroraTechnicalDashboard = () => {
     <div className="aurora-technical-dashboard">
       <header className="aurora-header">
         <div className="aurora-title">
-          <h1>🤖 Aurora's Technical Monitoring Dashboard</h1>
+          <h1>🤖 Aurora&apos;s Technical Monitoring Dashboard</h1>
           <p>Real-Time System Health & Performance Tracking (Wednesday, Jan 22)</p>
         </div>
         <div className="aurora-controls">
-          <select 
-            value={refreshInterval} 
-            onChange={(e) => setRefreshInterval(parseInt(e.target.value))}
+          <select
+            value={refreshInterval}
+            onChange={e => setRefreshInterval(parseInt(e.target.value))}
             className="refresh-select"
           >
             <option value={5000}>Refresh: 5s</option>
@@ -304,25 +390,25 @@ const AuroraTechnicalDashboard = () => {
       </header>
 
       <nav className="aurora-nav">
-        <button 
+        <button
           className={`nav-btn ${activeTab === 'health' ? 'active' : ''}`}
           onClick={() => setActiveTab('health')}
         >
           🟢 Health Overview
         </button>
-        <button 
+        <button
           className={`nav-btn ${activeTab === 'services' ? 'active' : ''}`}
           onClick={() => setActiveTab('services')}
         >
           🔧 Services ({services.filter(s => s.status === 'healthy').length}/{services.length})
         </button>
-        <button 
+        <button
           className={`nav-btn ${activeTab === 'apis' ? 'active' : ''}`}
           onClick={() => setActiveTab('apis')}
         >
           📡 API Endpoints
         </button>
-        <button 
+        <button
           className={`nav-btn ${activeTab === 'alerts' ? 'active' : ''}`}
           onClick={() => setActiveTab('alerts')}
         >
@@ -338,7 +424,10 @@ const AuroraTechnicalDashboard = () => {
       </main>
 
       <footer className="aurora-footer">
-        <p>Aurora's Technical Authority: Real-time monitoring, performance analysis, and infrastructure optimization</p>
+        <p>
+          Aurora&apos;s Technical Authority: Real-time monitoring, performance analysis, and
+          infrastructure optimization
+        </p>
       </footer>
     </div>
   );
