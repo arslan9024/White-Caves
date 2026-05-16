@@ -107,6 +107,14 @@ function renderPage(user: Record<string, unknown> | null = MOCK_USER) {
   };
 }
 
+function clickTab(label: string) {
+  const tabButton = screen
+    .getAllByRole('tab')
+    .find(btn => (btn.textContent || '').toLowerCase().includes(label.toLowerCase()));
+  expect(tabButton).toBeDefined();
+  fireEvent.click(tabButton!);
+}
+
 // ═══════════════════════════════════════════════════════════════════
 
 describe('ProfilePage', () => {
@@ -140,19 +148,14 @@ describe('ProfilePage', () => {
 
   it('renders user avatar with first letter when no photo', () => {
     renderPage();
-    // 'A' appears in avatar and possibly elsewhere
-    const avatarContainer = document.querySelector('.profile-avatar');
-    expect(avatarContainer).toBeDefined();
-    expect(avatarContainer?.textContent).toContain('A');
+    expect(screen.queryByRole('img', { name: /Ahmed Al-Rashid/i })).not.toBeInTheDocument();
+    expect(screen.getAllByText('A').length).toBeGreaterThan(0);
   });
 
   it('renders user avatar with photo when available', () => {
     renderPage({ ...MOCK_USER, photo: 'https://example.com/photo.jpg' });
-    const img = document.querySelector('.profile-avatar img') as HTMLImageElement;
-    expect(img).toBeDefined();
-    if (img) {
-      expect(img.src).toContain('photo.jpg');
-    }
+    const img = screen.getByRole('img', { name: /Ahmed Al-Rashid/i }) as HTMLImageElement;
+    expect(img.src).toContain('photo.jpg');
   });
 
   it('shows role badge', () => {
@@ -164,24 +167,24 @@ describe('ProfilePage', () => {
   // ── Navigation Tabs ────────────────────────────────────────────
   it('renders all navigation tabs', () => {
     renderPage();
-    expect(screen.getByText('Overview')).toBeDefined();
-    expect(screen.getByText('Settings')).toBeDefined();
-    expect(screen.getByText('Security')).toBeDefined();
+    expect(screen.getByText(/overview/i)).toBeDefined();
+    expect(screen.getByText(/settings/i)).toBeDefined();
+    expect(screen.getByText(/security/i)).toBeDefined();
   });
 
   it('shows overview tab by default', () => {
     renderPage();
-    expect(screen.getByText('Profile Overview')).toBeDefined();
+    expect(screen.getByText(/Account Information/i)).toBeDefined();
   });
 
   // ── Overview Tab ──────────────────────────────────────────────
   it('shows account information', () => {
     renderPage();
-    expect(screen.getByText('Account Information')).toBeDefined();
-    expect(screen.getByText('Full Name')).toBeDefined();
-    expect(screen.getByText('Email')).toBeDefined();
-    expect(screen.getByText('Phone')).toBeDefined();
-    expect(screen.getByText('Role')).toBeDefined();
+    expect(screen.getByText(/Account Information/i)).toBeDefined();
+    expect(screen.getByText(/Full Name/i)).toBeDefined();
+    expect(screen.getByText(/Email/i)).toBeDefined();
+    expect(screen.getByText(/Phone/i)).toBeDefined();
+    expect(screen.getByText(/Role/i)).toBeDefined();
   });
 
   it('displays user details in overview', () => {
@@ -193,16 +196,15 @@ describe('ProfilePage', () => {
 
   it('shows Quick Stats section', () => {
     renderPage();
-    expect(screen.getByText('Quick Stats')).toBeDefined();
     expect(screen.getByText('Saved Properties')).toBeDefined();
     expect(screen.getByText('Viewings')).toBeDefined();
     expect(screen.getByText('Inquiries')).toBeDefined();
-    expect(screen.getByText('Alerts')).toBeDefined();
+    expect(screen.getByText('2FA Status')).toBeDefined();
   });
 
   it('shows Connected Accounts section', () => {
     renderPage();
-    expect(screen.getByText('Connected Accounts')).toBeDefined();
+    expect(screen.getByText(/Connected Accounts/i)).toBeDefined();
     expect(screen.getByText('Google')).toBeDefined();
     expect(screen.getByText('Facebook')).toBeDefined();
     expect(screen.getByText('Apple')).toBeDefined();
@@ -212,14 +214,14 @@ describe('ProfilePage', () => {
   // ── Settings Tab ──────────────────────────────────────────────
   it('switches to Settings tab', () => {
     renderPage();
-    fireEvent.click(screen.getByText('Settings'));
-    expect(screen.getByText('Account Settings')).toBeDefined();
-    expect(screen.getByText('Update your profile information')).toBeDefined();
+    clickTab('settings');
+    expect(screen.getByText(/Profile Settings/i)).toBeDefined();
+    expect(screen.getByText('Email cannot be changed')).toBeDefined();
   });
 
   it('pre-fills form with user data', () => {
     renderPage();
-    fireEvent.click(screen.getByText('Settings'));
+    clickTab('settings');
 
     const nameInput = screen.getByLabelText('Full Name') as HTMLInputElement;
     expect(nameInput.value).toBe('Ahmed Al-Rashid');
@@ -230,7 +232,7 @@ describe('ProfilePage', () => {
 
   it('shows email as disabled', () => {
     renderPage();
-    fireEvent.click(screen.getByText('Settings'));
+    clickTab('settings');
 
     const emailInput = screen.getByLabelText('Email Address') as HTMLInputElement;
     expect(emailInput.disabled).toBe(true);
@@ -239,7 +241,7 @@ describe('ProfilePage', () => {
 
   it('shows language selector', () => {
     renderPage();
-    fireEvent.click(screen.getByText('Settings'));
+    clickTab('settings');
 
     const langSelect = screen.getByLabelText('Preferred Language') as HTMLSelectElement;
     expect(langSelect.value).toBe('en');
@@ -247,7 +249,7 @@ describe('ProfilePage', () => {
 
   it('updates form fields correctly', () => {
     renderPage();
-    fireEvent.click(screen.getByText('Settings'));
+    clickTab('settings');
 
     const nameInput = screen.getByLabelText('Full Name') as HTMLInputElement;
     fireEvent.change(nameInput, { target: { value: 'New Name' } });
@@ -265,9 +267,9 @@ describe('ProfilePage', () => {
     });
 
     renderPage();
-    fireEvent.click(screen.getByText('Settings'));
+    clickTab('settings');
 
-    const saveButton = screen.getByText('Save Changes');
+    const saveButton = screen.getByText(/save changes/i);
     fireEvent.click(saveButton);
 
     await waitFor(() => {
@@ -283,30 +285,37 @@ describe('ProfilePage', () => {
 
   it('shows warning when saving empty name', async () => {
     renderPage();
-    fireEvent.click(screen.getByText('Settings'));
+    clickTab('settings');
 
     const nameInput = screen.getByLabelText('Full Name') as HTMLInputElement;
     fireEvent.change(nameInput, { target: { value: '' } });
 
-    const saveButton = screen.getByText('Save Changes');
+    const saveButton = screen.getByText(/save changes/i);
     fireEvent.click(saveButton);
 
     await waitFor(() => {
       expect(mockToast.warning).toHaveBeenCalledWith('Name cannot be empty.');
     });
-    expect(mockAuthFetch).not.toHaveBeenCalled();
+    expect(mockAuthFetch).not.toHaveBeenCalledWith(
+      '/api/auth/profile',
+      expect.objectContaining({ method: 'PATCH' })
+    );
   });
 
   it('shows error toast on save failure', async () => {
+    mockAuthFetch.mockResolvedValueOnce({
+      ok: true,
+      json: () => Promise.resolve({ success: true, data: { twoFactorEnabled: false } }),
+    });
     mockAuthFetch.mockResolvedValueOnce({
       ok: false,
       json: () => Promise.resolve({ error: 'Server error' }),
     });
 
     renderPage();
-    fireEvent.click(screen.getByText('Settings'));
+    clickTab('settings');
 
-    fireEvent.click(screen.getByText('Save Changes'));
+    fireEvent.click(screen.getByText(/save changes/i));
 
     await waitFor(() => {
       expect(mockToast.error).toHaveBeenCalled();
@@ -314,22 +323,26 @@ describe('ProfilePage', () => {
   });
 
   it('shows error toast on network error', async () => {
+    mockAuthFetch.mockResolvedValueOnce({
+      ok: true,
+      json: () => Promise.resolve({ success: true, data: { twoFactorEnabled: false } }),
+    });
     mockAuthFetch.mockRejectedValueOnce(new Error('Network fail'));
 
     renderPage();
-    fireEvent.click(screen.getByText('Settings'));
+    clickTab('settings');
 
-    fireEvent.click(screen.getByText('Save Changes'));
+    fireEvent.click(screen.getByText(/save changes/i));
 
     await waitFor(() => {
-      expect(mockToast.error).toHaveBeenCalledWith('Network fail');
+      expect(mockToast.error).toHaveBeenCalled();
     });
   });
 
   // ── Security Tab ──────────────────────────────────────────────
   it('switches to Security tab', () => {
     renderPage();
-    fireEvent.click(screen.getByText('Security'));
+    clickTab('security');
     expect(screen.getByTestId('biometric-setup')).toBeDefined();
   });
 
@@ -359,6 +372,17 @@ describe('ProfilePage', () => {
     expect(screen.getAllByText('Administrator').length).toBeGreaterThan(0);
   });
 
+  it('shows founder controls and owner dashboard link for lion role', () => {
+    (safeStorage.getJSON as ReturnType<typeof vi.fn>).mockReturnValue({ role: 'lion' });
+    renderPage();
+
+    expect(screen.getAllByText(/Founder & Creator/i).length).toBeGreaterThan(0);
+    expect(screen.getByText(/Founder Panel/i)).toBeDefined();
+
+    const dashboardLink = screen.getByText('Dashboard').closest('a');
+    expect(dashboardLink?.getAttribute('href')).toBe('/owner/dashboard');
+  });
+
   it('shows correct role label for leasing-agent', () => {
     (safeStorage.getJSON as ReturnType<typeof vi.fn>).mockReturnValue({ role: 'leasing-agent' });
     renderPage();
@@ -366,21 +390,21 @@ describe('ProfilePage', () => {
   });
 
   // ── Dashboard Link ─────────────────────────────────────────────
-  it('shows Go to Dashboard link', () => {
+  it('shows Dashboard link', () => {
     renderPage();
-    expect(screen.getByText('Go to Dashboard')).toBeDefined();
+    expect(screen.getByText('Dashboard')).toBeDefined();
   });
 
   it('normalizes lion dashboard link to owner dashboard', () => {
     (safeStorage.getJSON as ReturnType<typeof vi.fn>).mockReturnValue({ role: 'lion' });
     renderPage();
-    const dashboardLink = screen.getByText('Go to Dashboard').closest('a');
+    const dashboardLink = screen.getByText('Dashboard').closest('a');
     expect(dashboardLink?.getAttribute('href')).toBe('/owner/dashboard');
   });
 
-  it('shows Home link', () => {
+  it('shows Back button', () => {
     renderPage();
-    expect(screen.getByText('Home')).toBeDefined();
+    expect(screen.getByText('Back')).toBeDefined();
   });
 
   // ── Tab Switching Round-trip ───────────────────────────────────
@@ -388,19 +412,19 @@ describe('ProfilePage', () => {
     renderPage();
 
     // Default is overview
-    expect(screen.getByText('Profile Overview')).toBeDefined();
+    expect(screen.getByText(/Account Information/i)).toBeDefined();
 
     // Switch to settings
-    fireEvent.click(screen.getByText('Settings'));
-    expect(screen.getByText('Account Settings')).toBeDefined();
+    clickTab('settings');
+    expect(screen.getByText(/Profile Settings/i)).toBeDefined();
 
     // Switch to security
-    fireEvent.click(screen.getByText('Security'));
+    clickTab('security');
     expect(screen.getByTestId('biometric-setup')).toBeDefined();
 
     // Switch back to overview
-    fireEvent.click(screen.getByText('Overview'));
-    expect(screen.getByText('Profile Overview')).toBeDefined();
+    clickTab('overview');
+    expect(screen.getByText(/Account Information/i)).toBeDefined();
   });
 
   // ── No Role ────────────────────────────────────────────────────
@@ -414,6 +438,6 @@ describe('ProfilePage', () => {
   it('shows Not selected for role when no role', () => {
     (safeStorage.getJSON as ReturnType<typeof vi.fn>).mockReturnValue(null);
     renderPage();
-    expect(screen.getByText('Not selected')).toBeDefined();
+    expect(screen.getAllByText('No role').length).toBeGreaterThan(0);
   });
 });

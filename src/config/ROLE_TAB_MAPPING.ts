@@ -415,7 +415,7 @@ export const isSuperUserRole = (role?: string): boolean => {
 
 /** Check if role is the platform creator/founder */
 export const isCreatorRole = (role?: string): boolean => {
-  return role === 'super_admin';
+  return role === 'super_admin' || role === 'lion' || role === 'managing_director' || role === 'md';
 };
 
 /** Check if a role has admin-level access (includes backend admin roles) */
