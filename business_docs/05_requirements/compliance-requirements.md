@@ -588,3 +588,289 @@ This table enables the compliance officer and ownership team to understand the f
 
 **Version:** 1.2 | **Last Updated:** May 2026 | **Sections:** 12/12 (Target Met ✅)  
 **Agent Activity:** @Sofia (Gemini 2.0 Flash — FREE) | Sections: 7 → 12 | Quality: ⭐⭐⭐⭐⭐
+
+---
+
+## 13. UAE PDPL — Expanded Data Subject Rights & Obligations
+
+> **Regulation:** UAE Federal Law No. 45 of 2021 (Personal Data Protection Law — PDPL)  
+> **Regulatory Authority:** UAE Telecommunications and Digital Government Regulatory Authority (TDRA)
+
+### COMP-PDPL-006: Data Breach Notification (72-Hour Rule)
+
+**Regulation:** UAE PDPL Art. 14  
+**Requirement:** Upon discovering a personal data breach that is likely to result in harm to data subjects, White Caves must notify the UAE TDRA within **72 hours** of becoming aware of the breach.  
+**Platform Impact:**
+- Breach detection timestamp auto-logged when Compliance Officer triggers a breach investigation
+- Breach severity classification UI: Low / Medium / High / Critical (based on: number of data subjects affected, categories of data exposed, likelihood of harm)
+- System auto-drafts TDRA Breach Notification with mandatory fields:
+  - Nature of the breach (access, disclosure, loss, alteration)
+  - Categories and approximate number of data subjects
+  - Categories and approximate volume of records concerned
+  - Name and contact details of Data Protection Officer
+  - Likely consequences of the breach
+  - Measures taken or proposed to address the breach
+- 72-hour countdown timer displayed on compliance dashboard from breach creation
+- If Data Subjects also need notification (likely harm): separate notification template generated
+
+**Acceptance Criteria:**
+- **Given** a data breach record is created with severity "High" or "Critical", **When** the breach is saved, **Then** the system creates a 72-hour TDRA notification countdown, alerts Compliance Officer (in-app + WhatsApp) within 5 minutes, and auto-drafts the notification form
+- **Given** 72 hours elapses without the TDRA notification being submitted, **When** the countdown expires, **Then** the MD receives a Critical alert: "PDPL BREACH: 72-hour notification SLA overdue"
+- **Given** breach affects > 500 data subjects, **When** severity is assessed, **Then** system auto-classifies as "Critical" regardless of other factors
+
+**Status:** Planned | **Priority:** Critical | **Test Reference:** TC-COMP-PDPL-006
+
+---
+
+### COMP-PDPL-007: Cross-Border Data Transfer Controls
+
+**Regulation:** UAE PDPL Art. 22-23  
+**Requirement:** Personal data of UAE residents may only be transferred outside the UAE to countries that have been approved by the UAE TDRA as having adequate data protection, or where appropriate safeguards (Standard Contractual Clauses) are in place.
+
+**UAE TDRA Approved Transfer Destinations (as of 2026):**
+
+| Region / Country | Basis |
+|-----------------|-------|
+| GCC States (KSA, Kuwait, Bahrain, Qatar, Oman) | Mutual data protection agreement |
+| European Union (GDPR jurisdictions) | Adequacy (GDPR level) |
+| United Kingdom | Adequacy |
+| Switzerland | Adequacy |
+| South Korea | Adequacy |
+| New Zealand | Adequacy |
+| Others | Requires Standard Contractual Clauses (SCCs) |
+
+**Platform Impact:**
+- All third-party integrations documented with data residency country in Integration Registry
+- Integration onboarding checklist includes: "Does this integration transfer UAE personal data outside the country? If yes, to which country?"
+- System displays warning badge on any integration processing PII if destination country is not on TDRA approved list
+- Standard Contractual Clauses (SCCs) uploaded and linked for any non-approved country integrations
+- Annual review of integration data residency map by Compliance Officer
+
+**Acceptance Criteria:**
+- **Given** a new integration is configured with data residency in a non-TDRA-approved country, **When** the integration is saved, **Then** a PDPL warning is displayed: "Cross-border transfer requires TDRA-approved SCCs" and the integration is flagged for Compliance Officer review
+- **Given** the compliance officer reviews an integration, **When** SCCs are uploaded and approved, **Then** the integration is marked "PDPL Compliant: SCC on file" with upload date
+- Test Reference: TC-COMP-PDPL-007
+
+**Status:** Planned | **Priority:** High
+
+---
+
+### COMP-PDPL-008: Data Retention Schedule
+
+**Regulation:** UAE PDPL Art. 13 + relevant sector-specific laws  
+**Requirement:** Personal data must not be retained longer than necessary for the purpose for which it was collected, subject to minimum retention requirements under other UAE laws.
+
+| Record Type | Minimum Retention | Maximum Retention | Legal Basis | CRM Enforcement |
+|-------------|:-----------------:|:-----------------:|-------------|-----------------|
+| Transaction records (sale/lease) | 5 years from transaction date | 10 years | RERA Law 16/2007 | System lock — cannot delete before 5 years |
+| KYC / AML documents | **7 years** from transaction date | 10 years | UAE AML Law 20/2018 | Hard lock — compliance officer approval required |
+| Financial records & invoices | 5 years from financial year-end | 7 years | UAE Commercial Transactions Law | Finance Director approval required |
+| Commission records | 5 years | 7 years | UAE AML Law + Finance Policy | Finance lock |
+| Employee records | 2 years after end of employment | 5 years | UAE Labour Law | HR approval after 2 years |
+| Marketing consent logs | Until withdrawal + 1 year | 3 years from last interaction | UAE PDPL | Auto-purge eligible after period |
+| Audit logs | **7 years** | 10 years | UAE AML Law 20/2018 | Immutable — no deletion permitted |
+| WhatsApp message logs | **7 years** | 10 years | UAE AML Law (for transactions) | AML-linked logs locked for 7 years |
+| CCTV / access logs | 30 days (standard) | 90 days | TDRA guidance | Auto-purge after 30 days unless incident flag |
+| Breach incident records | 5 years | Permanent | UAE PDPL Art. 14 | Immutable after submission |
+
+**Acceptance Criteria:**
+- **Given** a KYC document is 7 years old from its transaction date, **When** the retention review job runs, **Then** the document appears in a "Purge Eligible" queue — no auto-deletion; Compliance Officer must approve
+- **Given** any user attempts to delete a record within its retention lock period, **When** the delete action is attempted, **Then** the system returns HTTP 403 "Record locked: {retention_type} — cannot delete until {date}"
+- **Given** a nightly retention audit runs, **When** executed, **Then** it produces a report of: records approaching expiry (within 30 days), records past expiry awaiting purge approval
+- Test Reference: TC-COMP-PDPL-008
+
+**Status:** Planned | **Priority:** Critical
+
+---
+
+### COMP-PDPL-009: Consent Management Specification
+
+**Regulation:** UAE PDPL Art. 5-9  
+**Requirement:** Consent must be freely given, specific, informed, and unambiguous. Separate consent is required for each distinct processing purpose.
+
+**Consent Categories (Granular):**
+
+| Consent Type | Purpose | Optional? | Default |
+|-------------|---------|-----------|---------|
+| Core CRM Data Processing | Lead management, tenancy, transactions | No (contractual necessity) | Required |
+| Marketing Communications (Email) | Newsletters, property alerts | Yes | Off |
+| Marketing Communications (WhatsApp) | Property offers, campaign broadcasts | Yes | Off |
+| Data Sharing with Partners | PropertyFinder, Bayut, developer partners | Yes | Off |
+| Analytics & Profiling | Lead scoring, behaviour analysis | Yes | Off |
+| Third-Party Services | Exchange rates, maps, virtual tours | Yes | On (functional) |
+
+**Platform Impact:**
+- Consent UI: separate checkbox per category on registration and lead capture forms
+- Consent version tracked: each update to privacy policy creates a new consent version; users re-prompted on next login
+- Consent audit table: `consent_audit { userId, consentType, action: granted|withdrawn, timestamp, privacyPolicyVersion, ipAddress }`
+- Withdrawal mechanism: Account Settings → Privacy → per-category toggle → immediate effect
+- Consent withdrawal audit: all withdrawals logged; marketing systems receive opt-out signal within 1 hour
+
+**Acceptance Criteria:**
+- **Given** a new lead form is submitted, **When** the lead is created, **Then** at least one consent entry is stored in `consent_audit` with: userId/leadId, timestamp, IP address, policy version
+- **Given** a user withdraws WhatsApp marketing consent, **When** withdrawal is saved, **Then** user's phone number is added to WhatsApp opt-out list within 1 hour; no further broadcast campaigns sent
+- **Given** a new version of the privacy policy is published, **When** a user next logs in, **Then** they are shown the updated policy and asked to confirm or update their consent preferences before accessing the system
+- Test Reference: TC-COMP-PDPL-009
+
+**Status:** Planned | **Priority:** High
+
+---
+
+## 14. AML/CFT Requirements (Expanded)
+
+### COMP-AML-006: Counter-Financing of Terrorism (CFT) Screening
+
+**Regulation:** UAE Federal Decree Law No. 7 of 2014 (Combating Terrorism Offences); Cabinet Decision No. 35 of 2019 (UAE Local Terrorist Designations)  
+**Requirement:** All clients must be screened against terrorism financing designation lists in addition to money laundering sanctions lists.
+
+**Screening Lists Required:**
+- UAE Local Terrorist Designation List (Cabinet Decision 35/2019 — updated in near real-time)
+- UN Security Council Consolidated Sanctions List (Resolution 1267)
+- OFAC Specially Designated Nationals (SDN) List
+- EU Consolidated Sanctions List
+- FATF High-Risk and Other Monitored Jurisdictions list
+
+**Screening Triggers:** client record creation, transaction creation, monthly refresh of all active clients
+
+**Acceptance Criteria:**
+- **Given** a client record is created, **When** KYC screening runs, **Then** system checks all 5 lists simultaneously, returns result within 30 seconds, stores result with timestamp on client record
+- **Given** a client matches any screening list, **When** the match is detected, **Then** a "Compliance Hold" is placed on all associated transactions within 1 minute; Compliance Officer and MD notified immediately
+- **Given** a false positive is cleared by Compliance Officer, **When** the clearance is saved, **Then** audit log records: officer name, reasoning, decision timestamp; hold is lifted and transactions can proceed
+- Test Reference: TC-COMP-AML-006
+
+**Status:** Planned | **Priority:** Critical
+
+---
+
+### COMP-AML-007: Cash Transaction Reporting (CTR)
+
+**Regulation:** UAE Cabinet Resolution No. 36 of 2017; CBUAE AML/CFT Standards for DNFBPs (Designated Non-Financial Businesses and Professions — of which real estate brokers are included)  
+**Requirement:** Cash or cash-equivalent transactions above AED 55,000 must be reported to UAE FIU via the goAML portal.
+
+**Platform Impact:**
+- Payment method field: `Cash / Bank Transfer / Cheque / PDC / Crypto (not accepted) / Online`
+- When `payment_method = Cash` AND `amount > AED 55,000`: auto-trigger CTR creation
+- CTR form fields: date, amount, payer details, payee details, nature of transaction, property details
+- CTR submitted via goAML portal; reference number recorded in CRM
+- CTR records retained for 7 years (AML retention rule applies)
+- Finance Director and Compliance Officer co-approve before CTR submission
+
+**Acceptance Criteria:**
+- **Given** a cash payment of AED 55,001 or more is recorded against any transaction, **When** the payment is saved, **Then** system creates a Cash Transaction Report record with status "Pending Submission" and alerts Compliance Officer within 1 hour
+- **Given** a CTR is not submitted within 3 business days of detection, **When** the SLA expires, **Then** MD receives Critical alert "CTR overdue submission"
+- Test Reference: TC-COMP-AML-007
+
+**Status:** Planned | **Priority:** Critical
+
+---
+
+### COMP-AML-008: Ultimate Beneficial Owner (UBO) Declaration
+
+**Regulation:** UAE Cabinet Decision No. 109 of 2023 (UBO Register Requirements); CBUAE AML/CFT Standards  
+**Requirement:** For corporate clients (companies, trusts, foundations), all Ultimate Beneficial Owners (natural persons owning or controlling > 25% of shares or voting rights) must be identified and verified.
+
+**UBO Requirements:**
+- Full legal name, nationality, date of birth, ID number of each UBO
+- Copy of valid passport and/or Emirates ID for each UBO
+- Corporate structure chart (if layered ownership)
+- UBO declaration signed by authorised signatory of the entity
+
+**Platform Impact:**
+- Client type "Company" triggers mandatory UBO declaration section in KYC workflow
+- Each UBO added as a linked Person record with own KYC status
+- Transaction cannot advance to "Offer Accepted" until all UBOs declared and at least one has verified documents
+- UBO records subject to same 7-year AML retention rule
+
+**Acceptance Criteria:**
+- **Given** client type is "Company", **When** the KYC checklist is displayed, **Then** UBO Declaration section is mandatory (cannot be skipped)
+- **Given** a company transaction has no UBO declared, **When** status change to "Offer Accepted" is attempted, **Then** system blocks with error "UBO declaration required for corporate clients"
+- Test Reference: TC-COMP-AML-008
+
+**Status:** Planned | **Priority:** Critical
+
+---
+
+## 15. Acceptance Criteria — Existing RERA & DLD Requirements
+
+### COMP-RERA-001: Broker License Display
+
+**Acceptance Criteria:**
+- **Given** a property report is exported as PDF, **When** the export renders, **Then** the company RERA broker license number appears in the document footer on every page
+- **Given** a property listing is published to PropertyFinder/Bayut, **When** the portal sync payload is prepared, **Then** it includes `broker_license_number` in the syndication payload
+- **Given** an email template is sent to a client, **When** the email is generated, **Then** the RERA license number appears in the footer alongside the company registration
+- **Test Reference:** TC-COMP-001
+
+### COMP-RERA-002: Trakheesi Permit Number
+
+**Acceptance Criteria:**
+- **Given** a property has `permitNumber = null`, **When** an agent attempts to set status to "Available", **Then** the system blocks the action with: "❌ RERA Trakheesi Permit required before publishing. Penalty for non-compliance: AED 50,000"
+- **Given** a property's `permitExpiryDate` is in the past, **When** the nightly compliance job runs, **Then** property status changes to "Draft", agent receives WhatsApp + email notification: "Your listing [title] has been unpublished — Trakheesi permit expired on [date]"
+- **Given** a listing is displayed on the property detail page, **When** viewed, **Then** Trakheesi permit number is displayed prominently (not in a collapsed metadata section)
+- **Given** portal syndication is triggered for a property without a valid permit, **When** the sync runs, **Then** the property is blocked from syndication and the sync error log shows: "Blocked — RERA permit missing or expired"
+- **Test Reference:** TC-COMP-002
+
+### COMP-RERA-003: Agent BRN
+
+**Acceptance Criteria:**
+- **Given** an agent profile is created without a BRN, **When** the profile is saved, **Then** agent status is set to "Pending Verification" and cannot be assigned leads or create listings
+- **Given** an agent's BRN expiry date is 30 days away, **When** the nightly reminder job runs, **Then** agent, HR Manager, and Compliance Officer all receive an alert
+- **Given** an agent's BRN expires, **When** midnight passes on the expiry date, **Then** agent status changes to "License Expired" and no new leads or transactions can be assigned
+- **Test Reference:** TC-COMP-003
+
+### COMP-DLD-001: Title Deed Transfer Tracking
+
+**Acceptance Criteria:**
+- **Given** a sale transaction is set to "Closed", **When** the status change is saved, **Then** system validates `dldTransferReference` is not null; blocks closure if missing
+- **Given** a sale price is AED 2,000,000, **When** the transaction is created, **Then** DLD fee line items show: Transfer Fee = AED 80,000 (4%); DLD Admin Fee = AED 580; these values are non-editable
+- **Test Reference:** TC-COMP-004
+
+### COMP-DLD-002: Oqood Registration (Off-Plan)
+
+**Acceptance Criteria:**
+- **Given** a property type is "Off-Plan" and `oqoodRegistrationDate` is null, **When** an agent tries to advance transaction to "SPA Signed", **Then** system blocks with error "Oqood registration required before SPA execution (Dubai Law 13/2008)"
+- **Given** an off-plan developer's RERA license is expired, **When** a new off-plan unit is being created under that developer, **Then** system displays Critical warning: "Developer RERA license expired — cannot list off-plan units"
+- **Test Reference:** TC-COMP-005
+
+### COMP-EJARI-001: Mandatory Ejari Registration
+
+**Acceptance Criteria:**
+- **Given** a lease is in "Signed" status with no `ejariContractNumber`, **When** an agent tries to set status to "Active", **Then** system returns validation error: "Ejari registration required before activating lease (Dubai Decree 26/2013)"
+- **Given** a lease becomes "Signed" today, **When** 7 days pass without Ejari entry, **Then** leasing agent receives WhatsApp alert: "⚠️ Ejari overdue: [Tenant] at [Property]. Register within 48 hours to avoid penalty."
+- **Given** Ejari coverage drops below 95% on the dashboard, **When** calculated during daily report, **Then** Compliance Officer receives daily digest with list of non-compliant leases
+- **Test Reference:** TC-COMP-006
+
+### COMP-AML-001: Customer Due Diligence
+
+**Acceptance Criteria:**
+- **Given** a transaction is in "Offer Made" status with `kycStatus ≠ "Verified"`, **When** agent tries to advance to "Offer Accepted", **Then** system blocks with error "KYC verification required before accepting offer (UAE AML Law 20/2018)"
+- **Given** a KYC document (passport) has expired, **When** the expiry check runs, **Then** client KYC status changes to "Documents Expired" and assigned agent receives reminder to collect renewed documents
+- **Test Reference:** TC-COMP-007
+
+---
+
+## 16. Compliance Testing Reference Matrix
+
+| Requirement | Test ID | Test Type | Priority | Owner |
+|-------------|---------|-----------|----------|-------|
+| COMP-RERA-001 (Broker License) | TC-COMP-001 | Automated (PDF generation test) | Critical | QA |
+| COMP-RERA-002 (Trakheesi Permit) | TC-COMP-002 | Automated (status change gate) | Critical | QA |
+| COMP-RERA-003 (Agent BRN) | TC-COMP-003 | Automated (agent assignment gate) | High | QA |
+| COMP-DLD-001 (Title Deed) | TC-COMP-004 | Automated (transaction close gate) | High | QA |
+| COMP-DLD-002 (Oqood) | TC-COMP-005 | Automated (off-plan workflow) | Medium | QA |
+| COMP-EJARI-001 (Ejari) | TC-COMP-006 | Automated (lease activation gate) | Critical | QA |
+| COMP-AML-001 (CDD) | TC-COMP-007 | Automated (transaction advance gate) | Critical | QA |
+| COMP-AML-002 (EDD) | TC-COMP-008 | Automated (EDD trigger > AED 55,000) | Critical | QA |
+| COMP-AML-003 (SAR) | TC-COMP-009 | Manual walkthrough + audit | High | Compliance |
+| COMP-PDPL-001 (Consent) | TC-COMP-010 | Automated (form submission test) | High | QA |
+| COMP-PDPL-006 (Breach 72h) | TC-COMP-PDPL-006 | Manual drill + automated timer | Critical | Compliance |
+| COMP-PDPL-007 (Cross-border) | TC-COMP-PDPL-007 | Integration audit | High | Compliance |
+| COMP-PDPL-008 (Retention) | TC-COMP-PDPL-008 | Automated (retention lock test) | Critical | QA |
+| COMP-PDPL-009 (Consent mgmt) | TC-COMP-PDPL-009 | Automated (consent withdrawal test) | High | QA |
+| COMP-AML-006 (CFT Screening) | TC-COMP-AML-006 | Automated (screening trigger test) | Critical | QA |
+| COMP-AML-007 (CTR) | TC-COMP-AML-007 | Automated (cash payment threshold) | Critical | QA |
+| COMP-AML-008 (UBO) | TC-COMP-AML-008 | Automated (company client gate) | Critical | QA |
+
+---
+
+**Version:** 1.3 | **Last Updated:** June 2026 | **Sections:** 16 ✅  
+**Change Log:** v1.1 — Initial RERA/DLD/AML/PDPL sections (March 2026); v1.2 — Oqood, escrow, pricing, refunds, penalty table (May 2026); v1.3 — PDPL expanded (COMP-PDPL-006–009), AML/CFT expanded (COMP-AML-006–008), acceptance criteria matrix (June 2026)
