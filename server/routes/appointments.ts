@@ -13,6 +13,7 @@
 
 import { Router, Response } from 'express';
 import type { Request } from 'express';
+import { randomUUID } from 'crypto';
 import { asyncHandler, AppError } from '../middleware/errorHandler.js';
 import { prisma } from '../database.js';
 import { sanitizeString } from '../utils/sanitize.js';
@@ -25,11 +26,96 @@ const router = Router();
 const VALID_TYPES = ['viewing', 'meeting', 'call', 'inspection', 'signing'] as const;
 const VALID_STATUSES = ['scheduled', 'confirmed', 'completed', 'cancelled', 'no_show'] as const;
 
+const mockAppointments: Array<Record<string, any>> = [];
+
+const normalizeId = () => randomUUID().replace(/-/g, '').slice(0, 24);
+
+const matchAppointmentWhere = (item: Record<string, any>, where?: Record<string, any>) => {
+  if (!where) return true;
+
+  for (const [key, value] of Object.entries(where)) {
+    if (key === 'scheduledAt' && value && typeof value === 'object') {
+      const date = new Date(item.scheduledAt);
+      if (value.gte && date < new Date(value.gte)) return false;
+      if (value.lte && date > new Date(value.lte)) return false;
+      continue;
+    }
+
+    if (value && typeof value === 'object' && Array.isArray(value.in)) {
+      if (!value.in.includes(item[key])) return false;
+      continue;
+    }
+
+    if (item[key] !== value) return false;
+  }
+
+  return true;
+};
+
+const createMockAppointmentModel = () => ({
+  findMany: async ({ where, orderBy, skip = 0, take }: any = {}) => {
+    let rows = mockAppointments.filter(r => matchAppointmentWhere(r, where));
+
+    if (orderBy?.scheduledAt) {
+      rows = rows.sort((a, b) => {
+        const av = new Date(a.scheduledAt).getTime();
+        const bv = new Date(b.scheduledAt).getTime();
+        return orderBy.scheduledAt === 'desc' ? bv - av : av - bv;
+      });
+    }
+
+    const paged = rows.slice(skip, take ? skip + take : undefined);
+    return paged;
+  },
+
+  count: async ({ where }: any = {}) => mockAppointments.filter(r => matchAppointmentWhere(r, where)).length,
+
+  findUnique: async ({ where }: any) => mockAppointments.find(r => r.id === where.id) ?? null,
+
+  create: async ({ data }: any) => {
+    const created = {
+      id: normalizeId(),
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      ...data,
+    };
+    mockAppointments.push(created);
+    return created;
+  },
+
+  update: async ({ where, data }: any) => {
+    const idx = mockAppointments.findIndex(r => r.id === where.id);
+    if (idx < 0) throw new AppError('Appointment not found', 404);
+    mockAppointments[idx] = {
+      ...mockAppointments[idx],
+      ...data,
+      updatedAt: new Date(),
+    };
+    return mockAppointments[idx];
+  },
+
+  delete: async ({ where }: any) => {
+    const idx = mockAppointments.findIndex(r => r.id === where.id);
+    if (idx < 0) throw new AppError('Appointment not found', 404);
+    const [deleted] = mockAppointments.splice(idx, 1);
+    return deleted;
+  },
+});
+
+const getAppointmentModel = () => {
+  const appointmentModel = (prisma as unknown as { appointment?: any }).appointment;
+  if (!appointmentModel) {
+    return createMockAppointmentModel();
+  }
+  return appointmentModel;
+};
+
 // ─── GET /api/appointments ───────────────────────────────────────────────
 router.get(
   '/',
   requirePermission('view_appointments'),
   asyncHandler(async (req: Request, res: Response) => {
+    const appointmentModel = getAppointmentModel();
     const { page, limit, skip } = parsePagination(req.query);
     const { status, type, agentId, propertyId, leadId, from, to } = req.query as Record<
       string,
@@ -53,13 +139,13 @@ router.get(
     if (Object.keys(dateFilter).length > 0) where.scheduledAt = dateFilter;
 
     const [appointments, total] = await Promise.all([
-      prisma.appointment.findMany({
+      appointmentModel.findMany({
         where,
         orderBy: { scheduledAt: 'asc' },
         skip,
         take: limit,
       }),
-      prisma.appointment.count({ where }),
+      appointmentModel.count({ where }),
     ]);
 
     res.status(200).json({
@@ -75,12 +161,13 @@ router.get(
   '/upcoming',
   requirePermission('view_appointments'),
   asyncHandler(async (req: Request, res: Response) => {
+    const appointmentModel = getAppointmentModel();
     const { limit: limitParam } = req.query as Record<string, string>;
     const limit = Math.min(parseInt(limitParam || '20', 10), 100);
     const now = new Date();
     const in30Days = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000);
 
-    const appointments = await prisma.appointment.findMany({
+    const appointments = await appointmentModel.findMany({
       where: {
         scheduledAt: { gte: now, lte: in30Days },
         status: { in: ['scheduled', 'confirmed'] },
@@ -98,8 +185,9 @@ router.get(
   '/:id',
   requirePermission('view_appointments'),
   asyncHandler(async (req: Request, res: Response) => {
+    const appointmentModel = getAppointmentModel();
     validateIdParam(req.params.id, 'Appointment ID');
-    const appt = await prisma.appointment.findUnique({ where: { id: req.params.id } });
+    const appt = await appointmentModel.findUnique({ where: { id: req.params.id } });
     if (!appt) throw new AppError('Appointment not found', 404);
     res.status(200).json({ success: true, data: appt });
   })
@@ -110,6 +198,7 @@ router.post(
   '/',
   requirePermission('manage_appointments'),
   asyncHandler(async (req: Request, res: Response) => {
+    const appointmentModel = getAppointmentModel();
     const {
       title,
       type,
@@ -143,7 +232,7 @@ router.post(
     if (scheduled < new Date())
       throw new AppError('Appointment cannot be scheduled in the past', 400);
 
-    const appt = await prisma.appointment.create({
+    const appt = await appointmentModel.create({
       data: {
         title: sanitizeString(title.trim()),
         type: type || 'viewing',
@@ -183,10 +272,11 @@ router.patch(
   '/:id',
   requirePermission('manage_appointments'),
   asyncHandler(async (req: Request, res: Response) => {
+    const appointmentModel = getAppointmentModel();
     const { id } = req.params;
     validateIdParam(id, 'Appointment ID');
 
-    const existing = await prisma.appointment.findUnique({ where: { id } });
+    const existing = await appointmentModel.findUnique({ where: { id } });
     if (!existing) throw new AppError('Appointment not found', 404);
 
     const {
@@ -244,7 +334,7 @@ router.patch(
     if (propertyId !== undefined) data.propertyId = propertyId || null;
     if (leadId !== undefined) data.leadId = leadId || null;
 
-    const updated = await prisma.appointment.update({ where: { id }, data });
+    const updated = await appointmentModel.update({ where: { id }, data });
 
     const statusChanged = status !== undefined && status !== existing.status;
     if (statusChanged || scheduledAt !== undefined) {
@@ -271,13 +361,14 @@ router.delete(
   '/:id',
   requireRole('owner', 'manager', 'admin'),
   asyncHandler(async (req: Request, res: Response) => {
+    const appointmentModel = getAppointmentModel();
     const { id } = req.params;
     validateIdParam(id, 'Appointment ID');
 
-    const existing = await prisma.appointment.findUnique({ where: { id } });
+    const existing = await appointmentModel.findUnique({ where: { id } });
     if (!existing) throw new AppError('Appointment not found', 404);
 
-    await prisma.appointment.delete({ where: { id } });
+    await appointmentModel.delete({ where: { id } });
 
     res.status(200).json({ success: true, message: `Appointment "${existing.title}" deleted` });
   })

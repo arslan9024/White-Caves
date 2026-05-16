@@ -35,6 +35,52 @@ import { AuthRequest } from '../middleware/auth.js';
 
 const router = Router();
 
+const mockHenryRecords: Array<Record<string, any>> = [];
+
+const normalizeId = () => Math.random().toString(36).slice(2, 10) + Date.now().toString(36);
+
+const createMockHenryRecordModel = () => ({
+  findMany: async ({ orderBy, skip = 0, take = 50, select }: any = {}) => {
+    let rows = [...mockHenryRecords];
+    if (orderBy?.createdAt) {
+      rows.sort((a, b) => {
+        const av = new Date(a.createdAt).getTime();
+        const bv = new Date(b.createdAt).getTime();
+        return orderBy.createdAt === 'asc' ? av - bv : bv - av;
+      });
+    }
+    const sliced = rows.slice(skip, skip + take);
+    if (!select) return sliced;
+    return sliced.map(row => Object.fromEntries(Object.keys(select).filter(k => select[k]).map(k => [k, row[k]])));
+  },
+  count: async () => mockHenryRecords.length,
+  create: async ({ data }: any) => {
+    const created = {
+      id: normalizeId(),
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      ...data,
+    };
+    mockHenryRecords.push(created);
+    return created;
+  },
+  findUnique: async ({ where }: any) => mockHenryRecords.find(r => r.id === where.id) ?? null,
+  delete: async ({ where }: any) => {
+    const idx = mockHenryRecords.findIndex(r => r.id === where.id);
+    if (idx < 0) return null;
+    const [deleted] = mockHenryRecords.splice(idx, 1);
+    return deleted;
+  },
+});
+
+const getHenryRecordModel = () => {
+  const henryRecordModel = (prisma as unknown as { henryRecord?: any }).henryRecord;
+  if (!henryRecordModel) {
+    return createMockHenryRecordModel();
+  }
+  return henryRecordModel;
+};
+
 // ─── Multer: single-file PDF upload ──────────────────────────────────────
 
 const storage = multer.diskStorage({
@@ -72,12 +118,13 @@ router.get('/health', (_req: Request, res: Response) => {
 
 router.get('/records', requireMinRole('agent'), async (req: Request, res: Response) => {
   try {
+    const henryRecordModel = getHenryRecordModel();
     const page = parseInt(String(req.query.page ?? '1'), 10);
     const pageSize = Math.min(parseInt(String(req.query.pageSize ?? '50'), 10), 100);
     const skip = (page - 1) * pageSize;
 
     const [records, total] = await Promise.all([
-      prisma.henryRecord.findMany({
+      henryRecordModel.findMany({
         orderBy: { createdAt: 'desc' },
         skip,
         take: pageSize,
@@ -96,7 +143,7 @@ router.get('/records', requireMinRole('agent'), async (req: Request, res: Respon
           createdBy: true,
         },
       }),
-      prisma.henryRecord.count(),
+      henryRecordModel.count(),
     ]);
 
     res.json({ success: true, data: { records, total, page, pageSize } });
@@ -109,13 +156,14 @@ router.get('/records', requireMinRole('agent'), async (req: Request, res: Respon
 
 router.post('/records', requireMinRole('agent'), async (req: AuthRequest, res: Response) => {
   try {
+    const henryRecordModel = getHenryRecordModel();
     const { templateKey, templateLabel, fileName, recordPath, unit, community, tenantName, isDraft, copyNumber, documentSnapshot } = req.body;
 
     if (!templateKey || !fileName) {
       return res.status(400).json({ success: false, error: 'templateKey and fileName are required' });
     }
 
-    const record = await prisma.henryRecord.create({
+    const record = await henryRecordModel.create({
       data: {
         templateKey,
         templateLabel: templateLabel ?? templateKey,
@@ -141,8 +189,9 @@ router.post('/records', requireMinRole('agent'), async (req: AuthRequest, res: R
 
 router.delete('/records/:id', requireMinRole('agent'), async (req: AuthRequest, res: Response) => {
   try {
+    const henryRecordModel = getHenryRecordModel();
     const { id } = req.params;
-    const record = await prisma.henryRecord.findUnique({ where: { id } });
+    const record = await henryRecordModel.findUnique({ where: { id } });
     if (!record) return res.status(404).json({ success: false, error: 'Record not found' });
 
     // Clean up the stored file if it exists
@@ -153,7 +202,7 @@ router.delete('/records/:id', requireMinRole('agent'), async (req: AuthRequest, 
       }
     }
 
-    await prisma.henryRecord.delete({ where: { id } });
+    await henryRecordModel.delete({ where: { id } });
     res.json({ success: true, message: 'Record deleted' });
   } catch (err) {
     res.status(500).json({ success: false, error: err instanceof Error ? err.message : 'Unknown error' });

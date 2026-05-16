@@ -65,18 +65,26 @@ import homepageRoutes from './routes/homepage.js';
 import contactRoutes from './routes/contact.js';
 import aiChatRoutes from './routes/aiChat.js';
 import jobApplicationsRoutes from './routes/jobApplications.js';
+import contractsRoutes from './routes/contracts.js';
+import appointmentsRoutes from './routes/appointments.js';
+import commissionsRoutes from './routes/commissions.js';
+import henryRoutes from './routes/henry.js';
+import { roleRequestRouter, adminRoleRequestRouter } from './routes/roleRequests.js';
+import { phase6Router } from './routes/phase6.routes.js';
+import landlordPortalRoutes from './routes/landlord.js';
+import tenantPortalRoutes from './routes/tenantPortal.js';
 import invoicesLeaseRoutes from './routes/invoicesLease.js';
 import usersRoutes from './routes/users.js';
 import leasingInventoryRoutes from './routes/leasing-inventory.js';
 import secondarySalesRoutes from './routes/secondary-sales.js';
-import commissionsRoutes from './routes/commissions.js';
-import { requireRole, requirePermission } from './middleware/rbac.js';
+import { requireRole, requirePermission, ROLE_ALIAS_MAP } from './middleware/rbac.js';
 import { startLeadScoringScheduler } from './services/ai/leadScoringScheduler.js';
 import { startFollowUpScheduler } from './services/automation/followUpScheduler.js';
 import { startRateRefresh } from './services/currencyService.js';
 import { startViewingReminderScheduler } from './services/schedulingService.js';
 import { startRERAExpiryScheduler } from './services/compliance/reraExpiryScheduler.js';
 import { startAutoRouting } from './services/ai/leadAutoRouter.js';
+import { startLindaCampaignScheduler } from './services/whatsapp/lindaCampaignService.js';
 import { createSocketServer } from './services/socketServer.js';
 
 const app: Express = express();
@@ -138,6 +146,86 @@ const stubTenancyAgreements: StubTenancyAgreement[] = [];
 
 const createStubId = (prefix: string): string =>
   `${prefix}_${Date.now()}_${crypto.randomInt(1000, 9999)}`;
+
+const getPrismaModel = (modelName: string): Record<string, any> | null => {
+  const model = (prisma as unknown as Record<string, any>)[modelName];
+  return model && typeof model === 'object' ? model : null;
+};
+
+const getTenancyPrismaModel = (): Record<string, any> | null => {
+  return (
+    getPrismaModel('tenancyAgreement') ||
+    getPrismaModel('leaseAgreement') ||
+    getPrismaModel('tenancy')
+  );
+};
+
+const normalizeContract = (row: Record<string, any>): StubContract => ({
+  id: String(row.id ?? createStubId('contract')),
+  contractNumber: String(row.contractNumber ?? row.reference ?? `WC-${new Date().getFullYear()}-N/A`),
+  lessorName: String(
+    row.lessorName ?? row.landlordName ?? row.metadata?.lessorName ?? row.parties?.lessor ?? 'Unknown Lessor'
+  ),
+  tenantName: String(
+    row.tenantName ?? row.metadata?.tenantName ?? row.parties?.tenant ?? 'Unknown Tenant'
+  ),
+  propertyType: String(row.propertyType ?? row.metadata?.propertyType ?? row.type ?? 'Apartment'),
+  annualRent: Number(row.annualRent ?? row.rentAmount ?? row.metadata?.annualRent ?? 0),
+  status: row.status === 'active' || row.status === 'terminated' ? row.status : 'draft',
+  createdAt: new Date(row.createdAt ?? Date.now()).toISOString(),
+});
+
+const normalizeAppointment = (row: Record<string, any>): StubAppointment => {
+  const allowedStatus: StubAppointment['status'][] = [
+    'scheduled',
+    'confirmed',
+    'completed',
+    'cancelled',
+  ];
+
+  const rawType = String(row.type ?? row.appointmentType ?? 'in_person');
+  const type: StubAppointment['type'] = rawType === 'virtual' ? 'virtual' : 'in_person';
+
+  return {
+    id: String(row.id ?? createStubId('appt')),
+    propertyId: String(row.propertyId ?? row.assetId ?? ''),
+    agentId: row.agentId ? String(row.agentId) : null,
+    leadId: row.leadId ? String(row.leadId) : null,
+    scheduledAt: new Date(row.scheduledAt ?? row.startAt ?? Date.now()).toISOString(),
+    durationMinutes: Number(row.durationMinutes ?? row.duration ?? 60),
+    status: allowedStatus.includes(row.status) ? row.status : 'scheduled',
+    type,
+    notes: row.notes ? String(row.notes) : undefined,
+    createdAt: new Date(row.createdAt ?? Date.now()).toISOString(),
+    updatedAt: new Date(row.updatedAt ?? Date.now()).toISOString(),
+  };
+};
+
+const normalizeTenancyAgreement = (row: Record<string, any>): StubTenancyAgreement => {
+  const allowedStatus: StubTenancyAgreement['status'][] = ['draft', 'active', 'terminated'];
+  return {
+    id: String(row.id ?? createStubId('tenancy')),
+    propertyId: String(row.propertyId ?? row.assetId ?? ''),
+    landlordName: String(
+      row.landlordName ?? row.lessorName ?? row.metadata?.landlordName ?? 'Unknown Landlord'
+    ),
+    tenantName: String(row.tenantName ?? row.metadata?.tenantName ?? 'Unknown Tenant'),
+    startDate: new Date(row.startDate ?? Date.now()).toISOString(),
+    endDate: new Date(row.endDate ?? Date.now()).toISOString(),
+    annualRent: Number(row.annualRent ?? row.rentAmount ?? row.metadata?.annualRent ?? 0),
+    status: allowedStatus.includes(row.status) ? row.status : 'draft',
+    createdAt: new Date(row.createdAt ?? Date.now()).toISOString(),
+    updatedAt: new Date(row.updatedAt ?? Date.now()).toISOString(),
+  };
+};
+
+const canTransitionStatus = <T extends string>(
+  current: T,
+  next: T,
+  transitions: Record<T, readonly T[]>
+): boolean => {
+  return transitions[current]?.includes(next) ?? false;
+};
 
 const findAvailablePort = async (startPort: number, maxAttempts: number): Promise<number> => {
   for (let attempt = 0; attempt < maxAttempts; attempt += 1) {
@@ -286,7 +374,16 @@ app.use('/uploads', express.static(path.join(process.cwd(), 'server', 'public', 
 app.use(morgan(process.env.NODE_ENV === 'production' ? 'combined' : 'dev'));
 
 // Body parsing
-app.use(express.json({ limit: '1mb' }));
+app.use(
+  express.json({
+    limit: '1mb',
+    verify: (req, _res, buf) => {
+      if (req.originalUrl?.startsWith('/api/webhooks/meta')) {
+        (req as Request & { rawBody?: string }).rawBody = buf.toString('utf8');
+      }
+    },
+  })
+);
 app.use(express.urlencoded({ limit: '1mb', extended: true }));
 
 // Content-Type validation for mutation endpoints
@@ -484,6 +581,8 @@ app.use('/api/secondary-sales', secondarySalesRoutes);
 // Commissions API (Phase 35 - Dubai Real Estate Commission Tracker)
 app.use('/api/commissions', commissionsRoutes);
 
+// Henry Document Hub API (AI Assistant WC-AI-003 — The Record Keeper)
+app.use('/api/henry', henryRoutes);
 // WhatsApp Webhook (public endpoint — requires webhook secret for verification)
 app.post(
   '/api/whatsapp/webhook',
@@ -536,7 +635,7 @@ app.use('/api/orchestration', orchestrationRoutes);
 app.get(
   '/api/whatsapp/stats',
   authMiddleware,
-  requirePermission('access_whatsapp_business'),
+  requirePermission('view_whatsapp_conversations'),
   asyncHandler(async (_req: Request, res: Response) => {
     res.status(200).json({
       success: true,
@@ -547,7 +646,7 @@ app.get(
 app.get(
   '/api/whatsapp/settings',
   authMiddleware,
-  requirePermission('access_whatsapp_business'),
+  requirePermission('view_whatsapp_conversations'),
   asyncHandler(async (_req: Request, res: Response) => {
     res.status(200).json({
       success: true,
@@ -593,7 +692,7 @@ app.post(
 app.post(
   '/api/whatsapp/message',
   authMiddleware,
-  requirePermission('access_whatsapp_business'),
+  requirePermission('reply_whatsapp_conversations'),
   asyncHandler(async (_req: Request, res: Response) => {
     res.status(200).json({ success: true, data: { id: Date.now().toString(), status: 'queued' } });
   })
@@ -601,27 +700,63 @@ app.post(
 app.get(
   '/api/whatsapp/chatbot/messages',
   authMiddleware,
-  requirePermission('access_whatsapp_business'),
-  asyncHandler(async (_req: Request, res: Response) => {
-    res.status(200).json({ success: true, data: [] });
+  requirePermission('view_whatsapp_conversations'),
+  asyncHandler(async (req: Request, res: Response) => {
+    const conversationId = req.query.conversationId as string | undefined;
+    const limit = Math.min(100, Math.max(1, parseInt(req.query.limit as string) || 50));
+
+    const where = conversationId ? { conversationId } : {};
+    const messages = await prisma.nadiaMessage.findMany({
+      where,
+      orderBy: { timestamp: 'desc' },
+      take: limit,
+      include: { conversation: { select: { id: true, customerPhone: true, status: true } } },
+    });
+
+    res.status(200).json({ success: true, data: messages.reverse() });
   })
 );
 app.post(
   '/api/whatsapp/chatbot/messages',
   authMiddleware,
-  requirePermission('access_whatsapp_business'),
-  asyncHandler(async (_req: Request, res: Response) => {
-    res.status(200).json({
-      success: true,
-      data: { id: Date.now().toString(), role: 'user', createdAt: new Date() },
+  requirePermission('reply_whatsapp_conversations'),
+  asyncHandler(async (req: Request, res: Response) => {
+    const { conversationId, body, messageType = 'text', direction = 'outbound' } = req.body;
+    if (!conversationId || !body) {
+      throw new AppError('conversationId and body are required', 400);
+    }
+
+    const conversation = await prisma.nadiaConversation.findUnique({
+      where: { id: conversationId },
     });
+    if (!conversation) throw new AppError('Conversation not found', 404);
+
+    const message = await prisma.nadiaMessage.create({
+      data: {
+        conversationId,
+        waMessageId: `manual-${Date.now()}`,
+        direction: ['inbound', 'outbound'].includes(direction) ? direction : 'outbound',
+        body: String(body).slice(0, 4096),
+        messageType: ['text', 'image', 'document', 'audio', 'video'].includes(messageType)
+          ? messageType
+          : 'text',
+        status: 'sent',
+        timestamp: new Date(),
+      },
+    });
+
+    res.status(201).json({ success: true, data: message });
   })
 );
 app.delete(
   '/api/whatsapp/chatbot/messages/:id',
   authMiddleware,
-  requirePermission('access_whatsapp_business'),
-  asyncHandler(async (_req: Request, res: Response) => {
+  requirePermission('close_whatsapp_conversations'),
+  asyncHandler(async (req: Request, res: Response) => {
+    const { id } = req.params;
+    const message = await prisma.nadiaMessage.findUnique({ where: { id } });
+    if (!message) throw new AppError('Message not found', 404);
+    await prisma.nadiaMessage.delete({ where: { id } });
     res.status(200).json({ success: true });
   })
 );
@@ -632,6 +767,19 @@ app.get(
   authMiddleware,
   requirePermission('view_contracts'),
   asyncHandler(async (req: Request, res: Response) => {
+    let sourceContracts: StubContract[] = stubContracts;
+    const contractModel = getPrismaModel('contract');
+    if (contractModel?.findMany) {
+      try {
+        const dbContracts = await contractModel.findMany({ orderBy: { createdAt: 'desc' } });
+        sourceContracts = dbContracts.map((row: Record<string, any>) => normalizeContract(row));
+      } catch (error) {
+        logger.warn('Contracts API fallback to in-memory store', {
+          reason: error instanceof Error ? error.message : String(error),
+        });
+      }
+    }
+
     const page = Math.max(1, Number.parseInt(String(req.query.page ?? '1'), 10) || 1);
     const pageSize = Math.min(
       100,
@@ -639,7 +787,7 @@ app.get(
     );
     const start = (page - 1) * pageSize;
     const end = start + pageSize;
-    const rows = stubContracts.slice(start, end);
+    const rows = sourceContracts.slice(start, end);
 
     res.status(200).json({
       success: true,
@@ -647,8 +795,8 @@ app.get(
       pagination: {
         page,
         pageSize,
-        total: stubContracts.length,
-        totalPages: Math.ceil(stubContracts.length / pageSize),
+        total: sourceContracts.length,
+        totalPages: Math.ceil(sourceContracts.length / pageSize),
       },
     });
   })
@@ -680,12 +828,148 @@ app.post(
       createdAt: new Date().toISOString(),
     };
 
+    const contractModel = getPrismaModel('contract');
+    if (contractModel?.create) {
+      try {
+        const dbContract = await contractModel.create({
+          data: {
+            contractNumber: contract.contractNumber,
+            status: 'draft',
+            type: propertyType,
+            annualRent,
+            metadata: {
+              lessorName,
+              tenantName,
+              propertyType,
+            },
+          },
+        });
+
+        const normalized = normalizeContract(dbContract);
+        return res.status(201).json({
+          success: true,
+          contract: normalized,
+        });
+      } catch (error) {
+        logger.warn('Contract create fallback to in-memory store', {
+          reason: error instanceof Error ? error.message : String(error),
+        });
+      }
+    }
+
     stubContracts.unshift(contract);
 
     res.status(201).json({
       success: true,
       contract,
     });
+  })
+);
+app.patch(
+  '/api/contracts/:id',
+  authMiddleware,
+  requirePermission('create_contracts'),
+  asyncHandler(async (req: Request, res: Response) => {
+    const nextStatus = req.body?.status;
+    const allowedStatus: StubContract['status'][] = ['draft', 'active'];
+    const contractTransitions: Record<StubContract['status'], readonly StubContract['status'][]> = {
+      draft: ['draft', 'active'],
+      active: ['active'],
+    };
+
+    const contractModel = getPrismaModel('contract');
+    if (contractModel?.update && contractModel?.findUnique) {
+      try {
+        const existing = await contractModel.findUnique({ where: { id: req.params.id } });
+        if (existing) {
+          const currentStatus: StubContract['status'] =
+            existing.status === 'active' ? 'active' : 'draft';
+          if (nextStatus !== undefined) {
+            if (!allowedStatus.includes(nextStatus)) {
+              throw new AppError('Invalid contract status', 400);
+            }
+            if (!canTransitionStatus(currentStatus, nextStatus, contractTransitions)) {
+              throw new AppError(
+                `Invalid contract status transition: ${currentStatus} -> ${nextStatus}`,
+                400
+              );
+            }
+          }
+
+          const dbUpdated = await contractModel.update({
+            where: { id: req.params.id },
+            data: {
+              status: allowedStatus.includes(nextStatus) ? nextStatus : undefined,
+              type: req.body?.propertyType ? String(req.body.propertyType) : undefined,
+              annualRent: req.body?.annualRent ? Number(req.body.annualRent) : undefined,
+              metadata:
+                req.body?.lessorName || req.body?.tenantName || req.body?.propertyType
+                  ? {
+                      lessorName: req.body?.lessorName,
+                      tenantName: req.body?.tenantName,
+                      propertyType: req.body?.propertyType,
+                    }
+                  : undefined,
+            },
+          });
+
+          return res.status(200).json({ success: true, contract: normalizeContract(dbUpdated) });
+        }
+      } catch (error) {
+        logger.warn('Contract update fallback to in-memory store', {
+          reason: error instanceof Error ? error.message : String(error),
+        });
+      }
+    }
+
+    const current = stubContracts.find(item => item.id === req.params.id);
+    if (!current) throw new AppError('Contract not found', 404);
+    if (nextStatus !== undefined) {
+      if (!allowedStatus.includes(nextStatus)) {
+        throw new AppError('Invalid contract status', 400);
+      }
+      if (!canTransitionStatus(current.status, nextStatus, contractTransitions)) {
+        throw new AppError(`Invalid contract status transition: ${current.status} -> ${nextStatus}`, 400);
+      }
+    }
+
+    const updated: StubContract = {
+      ...current,
+      lessorName: req.body?.lessorName ? String(req.body.lessorName) : current.lessorName,
+      tenantName: req.body?.tenantName ? String(req.body.tenantName) : current.tenantName,
+      propertyType: req.body?.propertyType ? String(req.body.propertyType) : current.propertyType,
+      annualRent: req.body?.annualRent ? Number(req.body.annualRent) : current.annualRent,
+      status: allowedStatus.includes(nextStatus) ? nextStatus : current.status,
+    };
+
+    Object.assign(current, updated);
+    res.status(200).json({ success: true, contract: current });
+  })
+);
+app.delete(
+  '/api/contracts/:id',
+  authMiddleware,
+  requireRole('owner', 'manager', 'admin'),
+  asyncHandler(async (req: Request, res: Response) => {
+    const contractModel = getPrismaModel('contract');
+    if (contractModel?.delete && contractModel?.findUnique) {
+      try {
+        const existing = await contractModel.findUnique({ where: { id: req.params.id } });
+        if (existing) {
+          const deleted = await contractModel.delete({ where: { id: req.params.id } });
+          return res.status(200).json({ success: true, contract: normalizeContract(deleted) });
+        }
+      } catch (error) {
+        logger.warn('Contract delete fallback to in-memory store', {
+          reason: error instanceof Error ? error.message : String(error),
+        });
+      }
+    }
+
+    const index = stubContracts.findIndex(item => item.id === req.params.id);
+    if (index < 0) throw new AppError('Contract not found', 404);
+    const [deleted] = stubContracts.splice(index, 1);
+    res.status(200).json({ success: true, contract: deleted });
   })
 );
 
@@ -718,6 +1002,32 @@ app.post(
       updatedAt: new Date().toISOString(),
     };
 
+    const appointmentModel = getPrismaModel('appointment');
+    if (appointmentModel?.create) {
+      try {
+        const dbAppointment = await appointmentModel.create({
+          data: {
+            title: String(req.body?.title ?? 'Viewing Appointment'),
+            type: appointment.type,
+            status: appointment.status,
+            scheduledAt: new Date(appointment.scheduledAt),
+            durationMinutes: appointment.durationMinutes,
+            notes: appointment.notes,
+            propertyId: appointment.propertyId,
+            agentId: appointment.agentId,
+            leadId: appointment.leadId,
+            createdById: req.user?.id,
+          },
+        });
+
+        return res.status(201).json({ success: true, data: normalizeAppointment(dbAppointment) });
+      } catch (error) {
+        logger.warn('Appointment create fallback to in-memory store', {
+          reason: error instanceof Error ? error.message : String(error),
+        });
+      }
+    }
+
     stubAppointments.unshift(appointment);
     res.status(201).json({ success: true, data: appointment });
   })
@@ -727,9 +1037,24 @@ app.get(
   authMiddleware,
   asyncHandler(async (req: Request, res: Response) => {
     const status = typeof req.query.status === 'string' ? req.query.status : undefined;
-    const rows = status
+    let rows: StubAppointment[] = status
       ? stubAppointments.filter(item => item.status === status)
       : stubAppointments;
+
+    const appointmentModel = getPrismaModel('appointment');
+    if (appointmentModel?.findMany) {
+      try {
+        const dbAppointments = await appointmentModel.findMany({
+          where: status ? { status } : undefined,
+          orderBy: { scheduledAt: 'asc' },
+        });
+        rows = dbAppointments.map((row: Record<string, any>) => normalizeAppointment(row));
+      } catch (error) {
+        logger.warn('Appointments list fallback to in-memory store', {
+          reason: error instanceof Error ? error.message : String(error),
+        });
+      }
+    }
 
     res.status(200).json({
       success: true,
@@ -742,11 +1067,82 @@ app.patch(
   '/api/appointments/:id',
   authMiddleware,
   asyncHandler(async (req: Request, res: Response) => {
+    const nextStatus = req.body?.status;
+    const allowedStatus: StubAppointment['status'][] = [
+      'scheduled',
+      'confirmed',
+      'completed',
+      'cancelled',
+    ];
+    const appointmentTransitions: Record<
+      StubAppointment['status'],
+      readonly StubAppointment['status'][]
+    > = {
+      scheduled: ['scheduled', 'confirmed', 'cancelled'],
+      confirmed: ['confirmed', 'completed', 'cancelled'],
+      completed: ['completed'],
+      cancelled: ['cancelled'],
+    };
+
+    const appointmentModel = getPrismaModel('appointment');
+    if (appointmentModel?.update && appointmentModel?.findUnique) {
+      try {
+        const existing = await appointmentModel.findUnique({ where: { id: req.params.id } });
+        if (existing) {
+          const currentStatus: StubAppointment['status'] = allowedStatus.includes(existing.status)
+            ? existing.status
+            : 'scheduled';
+          if (nextStatus !== undefined) {
+            if (!allowedStatus.includes(nextStatus)) {
+              throw new AppError('Invalid appointment status', 400);
+            }
+            if (!canTransitionStatus(currentStatus, nextStatus, appointmentTransitions)) {
+              throw new AppError(
+                `Invalid appointment status transition: ${currentStatus} -> ${nextStatus}`,
+                400
+              );
+            }
+          }
+
+          const dbUpdated = await appointmentModel.update({
+            where: { id: req.params.id },
+            data: {
+              status: allowedStatus.includes(nextStatus) ? nextStatus : existing.status,
+              scheduledAt: req.body?.scheduledAt ? new Date(String(req.body.scheduledAt)) : undefined,
+              durationMinutes: req.body?.durationMinutes
+                ? Number(req.body.durationMinutes)
+                : undefined,
+              type:
+                req.body?.type === 'virtual' || req.body?.type === 'in_person'
+                  ? req.body.type
+                  : undefined,
+              notes: req.body?.notes !== undefined ? String(req.body.notes ?? '') : undefined,
+            },
+          });
+
+          return res.status(200).json({ success: true, data: normalizeAppointment(dbUpdated) });
+        }
+      } catch (error) {
+        logger.warn('Appointment update fallback to in-memory store', {
+          reason: error instanceof Error ? error.message : String(error),
+        });
+      }
+    }
+
     const current = stubAppointments.find(item => item.id === req.params.id);
     if (!current) throw new AppError('Appointment not found', 404);
 
-    const nextStatus = req.body?.status;
-    const allowedStatus = ['scheduled', 'confirmed', 'completed', 'cancelled'];
+    if (nextStatus !== undefined) {
+      if (!allowedStatus.includes(nextStatus)) {
+        throw new AppError('Invalid appointment status', 400);
+      }
+      if (!canTransitionStatus(current.status, nextStatus, appointmentTransitions)) {
+        throw new AppError(
+          `Invalid appointment status transition: ${current.status} -> ${nextStatus}`,
+          400
+        );
+      }
+    }
 
     const updated: StubAppointment = {
       ...current,
@@ -772,6 +1168,21 @@ app.delete(
   '/api/appointments/:id',
   authMiddleware,
   asyncHandler(async (req: Request, res: Response) => {
+    const appointmentModel = getPrismaModel('appointment');
+    if (appointmentModel?.delete && appointmentModel?.findUnique) {
+      try {
+        const existing = await appointmentModel.findUnique({ where: { id: req.params.id } });
+        if (existing) {
+          const deleted = await appointmentModel.delete({ where: { id: req.params.id } });
+          return res.status(200).json({ success: true, data: normalizeAppointment(deleted) });
+        }
+      } catch (error) {
+        logger.warn('Appointment delete fallback to in-memory store', {
+          reason: error instanceof Error ? error.message : String(error),
+        });
+      }
+    }
+
     const index = stubAppointments.findIndex(item => item.id === req.params.id);
     if (index < 0) throw new AppError('Appointment not found', 404);
     const [deleted] = stubAppointments.splice(index, 1);
@@ -786,9 +1197,24 @@ app.get(
   authMiddleware,
   asyncHandler(async (req: Request, res: Response) => {
     const status = typeof req.query.status === 'string' ? req.query.status : undefined;
-    const rows = status
+    let rows: StubTenancyAgreement[] = status
       ? stubTenancyAgreements.filter(item => item.status === status)
       : stubTenancyAgreements;
+
+    const tenancyModel = getTenancyPrismaModel();
+    if (tenancyModel?.findMany) {
+      try {
+        const dbRows = await tenancyModel.findMany({
+          where: status ? { status } : undefined,
+          orderBy: { createdAt: 'desc' },
+        });
+        rows = dbRows.map((row: Record<string, any>) => normalizeTenancyAgreement(row));
+      } catch (error) {
+        logger.warn('Tenancy agreements list fallback to in-memory store', {
+          reason: error instanceof Error ? error.message : String(error),
+        });
+      }
+    }
 
     res.status(200).json({
       success: true,
@@ -829,6 +1255,32 @@ app.post(
       updatedAt: new Date().toISOString(),
     };
 
+    const tenancyModel = getTenancyPrismaModel();
+    if (tenancyModel?.create) {
+      try {
+        const dbAgreement = await tenancyModel.create({
+          data: {
+            propertyId,
+            landlordName,
+            tenantName,
+            startDate: new Date(startDate),
+            endDate: new Date(endDate),
+            annualRent,
+            status: 'draft',
+          },
+        });
+
+        return res.status(201).json({
+          success: true,
+          data: normalizeTenancyAgreement(dbAgreement),
+        });
+      } catch (error) {
+        logger.warn('Tenancy agreement create fallback to in-memory store', {
+          reason: error instanceof Error ? error.message : String(error),
+        });
+      }
+    }
+
     stubTenancyAgreements.unshift(agreement);
 
     res.status(201).json({ success: true, data: agreement });
@@ -838,11 +1290,74 @@ app.patch(
   '/api/tenancy-agreements/:id',
   authMiddleware,
   asyncHandler(async (req: Request, res: Response) => {
+    const nextStatus = req.body?.status;
+    const allowedStatus: StubTenancyAgreement['status'][] = ['draft', 'active', 'terminated'];
+    const tenancyTransitions: Record<
+      StubTenancyAgreement['status'],
+      readonly StubTenancyAgreement['status'][]
+    > = {
+      draft: ['draft', 'active', 'terminated'],
+      active: ['active', 'terminated'],
+      terminated: ['terminated'],
+    };
+
+    const tenancyModel = getTenancyPrismaModel();
+    if (tenancyModel?.update && tenancyModel?.findUnique) {
+      try {
+        const existing = await tenancyModel.findUnique({ where: { id: req.params.id } });
+        if (existing) {
+          const currentStatus: StubTenancyAgreement['status'] = allowedStatus.includes(existing.status)
+            ? existing.status
+            : 'draft';
+          if (nextStatus !== undefined) {
+            if (!allowedStatus.includes(nextStatus)) {
+              throw new AppError('Invalid tenancy agreement status', 400);
+            }
+            if (!canTransitionStatus(currentStatus, nextStatus, tenancyTransitions)) {
+              throw new AppError(
+                `Invalid tenancy agreement status transition: ${currentStatus} -> ${nextStatus}`,
+                400
+              );
+            }
+          }
+
+          const dbUpdated = await tenancyModel.update({
+            where: { id: req.params.id },
+            data: {
+              landlordName: req.body?.landlordName ? String(req.body.landlordName) : undefined,
+              tenantName: req.body?.tenantName ? String(req.body.tenantName) : undefined,
+              startDate: req.body?.startDate ? new Date(String(req.body.startDate)) : undefined,
+              endDate: req.body?.endDate ? new Date(String(req.body.endDate)) : undefined,
+              annualRent: req.body?.annualRent ? Number(req.body.annualRent) : undefined,
+              status: allowedStatus.includes(nextStatus) ? nextStatus : undefined,
+            },
+          });
+
+          return res.status(200).json({
+            success: true,
+            data: normalizeTenancyAgreement(dbUpdated),
+          });
+        }
+      } catch (error) {
+        logger.warn('Tenancy agreement update fallback to in-memory store', {
+          reason: error instanceof Error ? error.message : String(error),
+        });
+      }
+    }
+
     const current = stubTenancyAgreements.find(item => item.id === req.params.id);
     if (!current) throw new AppError('Tenancy agreement not found', 404);
-
-    const nextStatus = req.body?.status;
-    const allowedStatus = ['draft', 'active', 'terminated'];
+    if (nextStatus !== undefined) {
+      if (!allowedStatus.includes(nextStatus)) {
+        throw new AppError('Invalid tenancy agreement status', 400);
+      }
+      if (!canTransitionStatus(current.status, nextStatus, tenancyTransitions)) {
+        throw new AppError(
+          `Invalid tenancy agreement status transition: ${current.status} -> ${nextStatus}`,
+          400
+        );
+      }
+    }
 
     const updated: StubTenancyAgreement = {
       ...current,
@@ -858,6 +1373,32 @@ app.patch(
     Object.assign(current, updated);
 
     res.status(200).json({ success: true, data: current });
+  })
+);
+app.delete(
+  '/api/tenancy-agreements/:id',
+  authMiddleware,
+  requireRole('owner', 'manager', 'admin'),
+  asyncHandler(async (req: Request, res: Response) => {
+    const tenancyModel = getTenancyPrismaModel();
+    if (tenancyModel?.delete && tenancyModel?.findUnique) {
+      try {
+        const existing = await tenancyModel.findUnique({ where: { id: req.params.id } });
+        if (existing) {
+          const deleted = await tenancyModel.delete({ where: { id: req.params.id } });
+          return res.status(200).json({ success: true, data: normalizeTenancyAgreement(deleted) });
+        }
+      } catch (error) {
+        logger.warn('Tenancy agreement delete fallback to in-memory store', {
+          reason: error instanceof Error ? error.message : String(error),
+        });
+      }
+    }
+
+    const index = stubTenancyAgreements.findIndex(item => item.id === req.params.id);
+    if (index < 0) throw new AppError('Tenancy agreement not found', 404);
+    const [deleted] = stubTenancyAgreements.splice(index, 1);
+    res.status(200).json({ success: true, data: deleted });
   })
 );
 
@@ -893,8 +1434,7 @@ app.post(
   })
 );
 
-// Valuation API stub (PropertyValuationModule — ML engine pending)
-// TODO: Integrate property valuation ML model when available
+// Valuation API — heuristic estimator based on Dubai area price-per-sqft benchmarks
 app.post(
   '/api/valuation/estimate',
   authMiddleware,
@@ -982,8 +1522,9 @@ app.get(
   })
 );
 
-// Admin Role Management stubs (RoleSelectionForm, RoleApprovalQueue)
-// TODO: Add Prisma model for RoleRequest when role management module is prioritised
+// Admin Role Management — direct role override (admin+) + role-request CRUD via roleRequestsRoutes above
+// /api/users/role-request  → POST /api/role-requests (roleRequestsRoutes)
+// /api/admin/role-requests → GET/POST /api/role-requests (roleRequestsRoutes)
 app.post(
   '/api/users/role',
   authMiddleware,
@@ -993,7 +1534,6 @@ app.post(
     if (!userId || !role) throw new AppError('userId and role are required', 400);
 
     // Validate role against the full alias map to prevent arbitrary strings being stored
-    const { ROLE_ALIAS_MAP } = await import('./middleware/rbac.js');
     if (!Object.hasOwn(ROLE_ALIAS_MAP, role)) {
       throw new AppError(
         `Invalid role: "${role}". Must be one of: ${Object.keys(ROLE_ALIAS_MAP).join(', ')}`,
@@ -1017,52 +1557,121 @@ app.post(
     res.status(200).json({ success: true, data: updated });
   })
 );
-app.post(
-  '/api/users/role-request',
-  authMiddleware,
-  asyncHandler(async (req: Request, res: Response) => {
-    const { requestedRole } = req.body;
-    if (!requestedRole) throw new AppError('requestedRole is required', 400);
-    logger.info('Role request submitted (stub)', { userId: req.user?.id, requestedRole });
-    res
-      .status(501)
-      .json({ success: false, error: 'Feature not yet implemented', code: 'NOT_IMPLEMENTED' });
-  })
-);
+app.use('/api/users/role-request', authMiddleware, roleRequestRouter);
+app.use('/api/admin/role-requests', authMiddleware, adminRoleRequestRouter);
+
+// Admin Settings — read and write system-wide configuration
+const mockAdminSettings = new Map<string, { key: string; value: unknown; updatedBy?: string | null; category?: string | null; updatedAt: Date }>();
+
+const getSystemSettingModel = () => {
+  return (prisma as unknown as { systemSetting?: any }).systemSetting;
+};
+
 app.get(
-  '/api/admin/role-requests',
+  '/api/admin/settings',
   authMiddleware,
   requirePermission('manage_users'),
   asyncHandler(async (_req: Request, res: Response) => {
-    res.status(200).json({ success: true, data: { requests: [] } });
+    const systemSetting = getSystemSettingModel();
+    if (!systemSetting) {
+      const settings = Array.from(mockAdminSettings.values()).sort((a, b) =>
+        String(a.category ?? '').localeCompare(String(b.category ?? ''))
+      );
+      const settingsMap = Object.fromEntries(
+        settings.map((s: { key: string; value: unknown }) => [s.key, s.value])
+      );
+      res.json({ success: true, data: settingsMap, meta: { count: settings.length, fallback: true } });
+      return;
+    }
+
+    const settings = await systemSetting.findMany({ orderBy: { category: 'asc' } });
+    const settingsMap = Object.fromEntries(
+      settings.map((s: { key: string; value: unknown }) => [s.key, s.value])
+    );
+    res.json({ success: true, data: settingsMap, meta: { count: settings.length } });
   })
 );
 app.post(
-  '/api/admin/role-requests/:id/approve',
+  '/api/admin/settings',
   authMiddleware,
   requirePermission('manage_users'),
   asyncHandler(async (req: Request, res: Response) => {
-    res.status(200).json({
-      success: true,
-      data: { id: req.params.id, status: 'approved', reviewedBy: req.user?.id },
-    });
+    const systemSetting = getSystemSettingModel();
+    if (!systemSetting) {
+      const { settings } = req.body;
+      if (!settings || typeof settings !== 'object' || Array.isArray(settings)) {
+        throw new AppError('Request body must contain a "settings" object', 400);
+      }
+
+      const userId = (req as Request & { user?: { id: string } }).user?.id;
+      const entries = Object.entries(settings as Record<string, unknown>);
+      if (entries.length === 0) throw new AppError('No settings provided', 400);
+      if (entries.length > 50) throw new AppError('Cannot update more than 50 settings at once', 400);
+
+      for (const [key, value] of entries) {
+        const existing = mockAdminSettings.get(key);
+        mockAdminSettings.set(key, {
+          key,
+          value,
+          updatedBy: userId ?? null,
+          category: existing?.category ?? null,
+          updatedAt: new Date(),
+        });
+      }
+
+      res.json({
+        success: true,
+        data: Object.fromEntries(Array.from(mockAdminSettings.values()).map(s => [s.key, s.value])),
+        meta: { count: mockAdminSettings.size, fallback: true },
+      });
+      return;
+    }
+
+    const { settings } = req.body;
+    if (!settings || typeof settings !== 'object' || Array.isArray(settings)) {
+      throw new AppError('Request body must contain a "settings" object', 400);
+    }
+
+    const userId = (req as Request & { user?: { id: string } }).user?.id;
+    const entries = Object.entries(settings as Record<string, unknown>);
+    if (entries.length === 0) throw new AppError('No settings provided', 400);
+    if (entries.length > 50) throw new AppError('Cannot update more than 50 settings at once', 400);
+
+    // Upsert each key
+    const updated = await Promise.all(
+      entries.map(([key, value]) =>
+        systemSetting.upsert({
+          where: { key },
+          create: {
+            key,
+            value,
+            updatedBy: userId,
+          },
+          update: {
+            value,
+            updatedBy: userId,
+          },
+        })
+      )
+    );
+
+    logger.info('Admin settings updated', { keys: entries.map(([k]) => k), userId });
+    res.json({ success: true, data: { updatedCount: updated.length } });
   })
 );
-app.post(
-  '/api/admin/role-requests/:id/reject',
+
+// Phase 6 — queue, analytics, notifications, encryption, presence
+// The phase6 router uses x-user-id header auth; bridge it from the JWT-authenticated user.
+app.use(
+  '/api/platform',
   authMiddleware,
-  requirePermission('manage_users'),
-  asyncHandler(async (req: Request, res: Response) => {
-    res.status(200).json({
-      success: true,
-      data: {
-        id: req.params.id,
-        status: 'rejected',
-        reviewedBy: req.user?.id,
-        reason: req.body?.reason,
-      },
-    });
-  })
+  (req: Request, _res: Response, next: NextFunction) => {
+    // Bridge JWT identity into the x-user-id header expected by phase6 routes
+    const userId = (req as Request & { user?: { id: string } }).user?.id;
+    if (userId) req.headers['x-user-id'] = userId;
+    next();
+  },
+  phase6Router
 );
 
 // ============================================================================
@@ -1100,6 +1709,7 @@ const startServer = async () => {
     startViewingReminderScheduler(); // Phase 3C: viewing reminders every 15 min
     startRERAExpiryScheduler(); // Phase 3D: RERA BRN expiry checks daily
     startAutoRouting(); // Phase 4A: auto-route hot leads to best agents
+    startLindaCampaignScheduler(); // Wave 03: auto-dispatch due Olivia/Linda campaigns
 
     // Auto-migrate any remaining legacy base64 password hashes to bcrypt
     try {
@@ -1174,46 +1784,54 @@ const startServer = async () => {
 
 // Start the server
 let httpServer: ReturnType<typeof createServer> | null = null;
-startServer()
-  .then(s => {
-    httpServer = s;
-  })
-  .catch(err => {
-    logger.error('Failed to start server', {
-      error: err instanceof Error ? err.message : String(err),
+const shouldAutoStartServer =
+  process.env.DISABLE_SERVER_AUTO_START !== 'true' && process.env.VITEST !== 'true';
+
+if (shouldAutoStartServer) {
+  startServer()
+    .then(s => {
+      httpServer = s;
+    })
+    .catch(err => {
+      logger.error('Failed to start server', {
+        error: err instanceof Error ? err.message : String(err),
+      });
+      process.exit(1);
     });
-    process.exit(1);
+
+  // Handle unhandled promise rejections
+  process.on('unhandledRejection', (reason: Error) => {
+    logger.error('Unhandled Rejection', { reason: reason?.message || reason });
+    prisma.$disconnect().finally(() => process.exit(1));
   });
 
-// Handle unhandled promise rejections
-process.on('unhandledRejection', (reason: Error) => {
-  logger.error('Unhandled Rejection', { reason: reason?.message || reason });
-  prisma.$disconnect().finally(() => process.exit(1));
-});
+  // Handle uncaught exceptions
+  process.on('uncaughtException', (error: Error) => {
+    logger.error('Uncaught Exception', { error: error?.message || error });
+    prisma.$disconnect().finally(() => process.exit(1));
+  });
 
-// Handle uncaught exceptions
-process.on('uncaughtException', (error: Error) => {
-  logger.error('Uncaught Exception', { error: error?.message || error });
-  prisma.$disconnect().finally(() => process.exit(1));
-});
+  // Graceful shutdown
+  const gracefulShutdown = async (signal: string) => {
+    logger.info(`${signal} received — shutting down gracefully`);
+    // 1. Stop accepting new connections
+    if (httpServer) {
+      httpServer.close(() => {
+        logger.info('HTTP server closed — no new connections');
+      });
+    }
+    // 2. Allow in-flight requests up to 10s to finish
+    await new Promise(resolve => setTimeout(resolve, 10_000));
+    // 3. Disconnect database
+    await prisma.$disconnect();
+    logger.info('Database disconnected — exiting');
+    process.exit(0);
+  };
 
-// Graceful shutdown
-const gracefulShutdown = async (signal: string) => {
-  logger.info(`${signal} received — shutting down gracefully`);
-  // 1. Stop accepting new connections
-  if (httpServer) {
-    httpServer.close(() => {
-      logger.info('HTTP server closed — no new connections');
-    });
-  }
-  // 2. Allow in-flight requests up to 10s to finish
-  await new Promise(resolve => setTimeout(resolve, 10_000));
-  // 3. Disconnect database
-  await prisma.$disconnect();
-  logger.info('Database disconnected — exiting');
-  process.exit(0);
-};
-process.on('SIGTERM', () => gracefulShutdown('SIGTERM'));
-process.on('SIGINT', () => gracefulShutdown('SIGINT'));
+  process.on('SIGTERM', () => gracefulShutdown('SIGTERM'));
+  process.on('SIGINT', () => gracefulShutdown('SIGINT'));
+} else {
+  logger.info('Server auto-start disabled (test/import mode)');
+}
 
 export default app;
