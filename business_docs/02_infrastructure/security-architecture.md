@@ -465,4 +465,324 @@ All state-changing operations are recorded in the `Activity` collection:
 
 ---
 
-*This document is reviewed quarterly, after security incidents, and when new features affect the security architecture. All security-related changes require review by the Security Officer before deployment.*
+---
+
+## 12. JWT Token Rotation & Session Policy
+
+### 12.1 Current Token Configuration
+
+| Parameter | Current Value | Target Value | Notes |
+|-----------|--------------|-------------|-------|
+| Algorithm | HS256 | **RS256** (target) | Asymmetric signing for multi-service trust |
+| Expiry | 7 days | **15 minutes** (access) + **7 days** (refresh) | Rotate frequently for AML compliance |
+| Secret length | ≥ 32 chars | ≥ 64 chars | Increase entropy |
+| Storage (client) | localStorage | **httpOnly cookie** (target) | Eliminate XSS token theft vector |
+| Refresh token | Not implemented | **Implemented** (see below) | Required for short-lived access tokens |
+
+### 12.2 Token Rotation Policy
+
+**Immediate (current state):**
+- Access token expiry: **7 days** (stored in localStorage)
+- No refresh token rotation
+
+**Target state (implement by Q3 2026):**
+
+```
+ACCESS TOKEN:  15-minute expiry, RS256, httpOnly cookie (SameSite=Strict)
+REFRESH TOKEN: 7-day expiry, stored in httpOnly cookie, single-use (rotate on use)
+ROTATION:      On every refresh → issue new access + refresh token pair
+REVOCATION:    Refresh token stored in Redis; DELETE on logout / revoke
+FAMILY:        Refresh token families tracked; reuse detection → full family revoke
+```
+
+**Token rotation flow:**
+
+```
+Client                     API                      Redis
+  │                          │                        │
+  │── POST /auth/refresh ───▶│                        │
+  │   (sends refresh token)  │── EXISTS refresh_id?──▶│
+  │                          │◀── YES / NO ───────────│
+  │                          │ if NO → 401 + revoke family
+  │                          │── DEL old_refresh_id ─▶│
+  │                          │── SET new_refresh_id ──▶│ (TTL: 7 days)
+  │◀── 200 new token pair ───│                        │
+```
+
+### 12.3 JWT Invalidation on Security Events
+
+| Security Event | Action | Timeline |
+|---------------|--------|----------|
+| User password change | Invalidate all refresh tokens for user | Immediate |
+| Admin suspends user | Invalidate all tokens for user | Immediate |
+| JWT_SECRET rotation (quarterly) | All sessions invalidated | Coordinated with users |
+| Detected token reuse | Invalidate entire refresh token family | Immediate |
+| User-initiated logout | Invalidate single refresh token | Immediate |
+| Data breach detected | Rotate JWT_SECRET; invalidate all sessions | Emergency: < 1 hour |
+
+**Acceptance Criteria:**
+- [ ] Access token expiry ≤ 15 minutes (after migration from 7-day tokens)
+- [ ] Refresh tokens stored in httpOnly cookies, never in localStorage
+- [ ] Token reuse detection implemented: second use of same refresh token → full family revoke + security alert
+- [ ] JWT_SECRET rotation procedure documented in runbook; tested quarterly
+- [ ] `Authorization` header never logged in application logs (redacted)
+
+---
+
+## 13. Extended OWASP Top 10 Mitigation Matrix
+
+The following expands on Section 6 with detailed implementation notes, test scenarios, and acceptance criteria per vulnerability class.
+
+| # | Vulnerability | Threat | Primary Mitigations | Secondary Mitigations | Test Scenario | Acceptance Criteria |
+|---|--------------|--------|--------------------|-----------------------|---------------|---------------------|
+| A01 | **Broken Access Control** | Agent reads another agent's leads; privilege escalation | RBAC middleware (12 roles, 45+ perms); `scopeToOwn` row-level security | JWT role embedded; re-verified on every request; no client-side role trust | Authenticated agent requests `GET /api/leads` belonging to another agent | [ ] Returns 403; [ ] Activity log records denial; [ ] Alert fires after 5 denials |
+| A02 | **Cryptographic Failures** | Password exposed; AML data stolen in transit | bcrypt 12 rounds; AES-256 at rest (Atlas); TLS 1.2+ in transit | Target: TLS 1.3 for AML connections; HSTS 2-year preload; no HTTP | Request to `/api/auth/login` over HTTP | [ ] HTTP redirected to HTTPS; [ ] TLS 1.0/1.1 connections rejected |
+| A03 | **Injection** | NoSQL injection via `{ $where: ... }` in filters | Prisma ORM (parameterized); no raw query with user input; MongoDB driver escaping | Input validation before Prisma (type checks, enum whitelisting) | `POST /api/leads` with `{ "status": { "$ne": null } }` | [ ] Prisma rejects non-string status; [ ] 400 error returned |
+| A04 | **Insecure Design** | Business logic bypass (e.g., commission manipulation) | Threat model per feature; RBAC enforces financial role separation | Security review checklist on every PR | Agent directly calls `POST /api/commissions` marking own commission as 'paid' | [ ] 403: only `finance` role can update commission status |
+| A05 | **Security Misconfiguration** | Exposed debug endpoints; default credentials | Helmet headers; CORS whitelist; env-specific config; no default secrets | Production config diff reviewed pre-deploy | `GET /api/debug` in production | [ ] 404 in production; [ ] No stack traces in API error responses |
+| A06 | **Vulnerable Components** | Compromised npm package with CVE | `npm audit` in CI (blocks merge on CRITICAL CVE); Dependabot auto-PRs | Quarterly manual dependency audit; Software Bill of Materials (SBOM) generated | CI pipeline with known vulnerable package | [ ] Build fails; [ ] Slack alert to security channel |
+| A07 | **Authentication Failures** | Brute force on `/api/auth/login` | Rate limit: 5 attempts / 15 min per IP; account lockout after 10 fails | bcrypt constant-time compare; no username enumeration (same response for wrong user vs wrong password) | 6 rapid login attempts with wrong password | [ ] 429 on 6th attempt; [ ] IP blocked for 15 min; [ ] Alert fires |
+| A08 | **Data Integrity Failures** | Forged webhook from Meta; tampered JWT | HMAC-SHA256 webhook verification; RS256 JWT (target); CSP headers; SRI for CDN assets | Pinned dependencies; signed Docker images | Webhook with invalid signature | [ ] 403 immediately; [ ] No processing of unauthenticated webhooks |
+| A09 | **Logging & Monitoring** | Attack proceeds undetected | Structured logs for all state changes; Activity audit trail; real-time dashboards | PagerDuty alerts for anomalies; log retention 90 days operational, 7 years compliance | Delete all properties (simulated attack) | [ ] Activity log records all deletions; [ ] Alert fires after 10 deletes in 1 min |
+| A10 | **SSRF** | Internal metadata endpoint reached via user-controlled URL | No user-controlled URL fetching in API; K8s NetworkPolicy blocks unexpected egress | Cloud metadata endpoint blocked (`169.254.169.254`); egress allowlist | `POST /api/webhooks/preview` with `{ "url": "http://169.254.169.254/latest/meta-data/" }` | [ ] 400: URL validation rejects internal ranges |
+
+---
+
+## 14. API Rate Limiting — Per-Endpoint Rules
+
+### 14.1 Rate Limit Configuration Table
+
+All limits are **per IP address** unless noted. Redis-backed store required for multi-instance deployments.
+
+| Endpoint Group | Method | Limit | Window | Store | Notes |
+|---------------|--------|-------|--------|-------|-------|
+| `POST /api/auth/login` | Write | **5 req** | 15 min | Redis | Brute force protection |
+| `POST /api/auth/register` | Write | **3 req** | 1 hour | Redis | Registration spam prevention |
+| `POST /api/auth/forgot-password` | Write | **5 req** | 1 hour | Redis | Password reset abuse |
+| `POST /api/auth/firebase-sync` | Write | **10 req** | 15 min | Redis | Firebase token sync |
+| `POST /api/auth/refresh` | Write | **30 req** | 1 hour | Redis | Per user ID (not IP) |
+| `GET /api/properties` | Read | **200 req** | 1 min | Redis | Public property listing |
+| `GET /api/properties/:id` | Read | **500 req** | 1 min | Redis | Property detail page |
+| `POST /api/properties` | Write | **30 req** | 1 min | Redis | Property creation |
+| `GET /api/leads` | Read | **100 req** | 1 min | Redis | Per authenticated user |
+| `POST /api/leads` | Write | **60 req** | 1 min | Redis | Lead creation |
+| `POST /api/nadia/webhooks/messages` | Write | **1,000 req** | 1 min | Redis | Meta webhook; high volume |
+| `POST /api/linda/send-message` | Write | **100 req** | 1 min | Redis | Agent message send |
+| `POST /api/nina/nlp/intent` | Write | **200 req** | 1 min | Redis | NLP processing |
+| `POST /api/analytics/export` | Write | **5 req** | 1 hour | Redis | Bulk export throttle |
+| `GET /api/reports/*` | Read | **20 req** | 1 min | Redis | Heavy aggregation queries |
+| `POST /api/admin/*` | Write | **30 req** | 1 min | Redis | Admin operations |
+| `ALL /api/*` (global fallback) | Any | **100 req** | 60 sec | Redis | Global catch-all |
+
+### 14.2 Rate Limit Response
+
+```json
+{
+  "error": "Too Many Requests",
+  "message": "Rate limit exceeded for this endpoint. Please retry after 847 seconds.",
+  "retryAfter": 847,
+  "limit": 5,
+  "remaining": 0,
+  "resetAt": "2026-06-01T10:15:00Z"
+}
+```
+
+Headers returned on all rate-limited responses:
+```
+HTTP/1.1 429 Too Many Requests
+X-RateLimit-Limit: 5
+X-RateLimit-Remaining: 0
+X-RateLimit-Reset: 1748772900
+Retry-After: 847
+```
+
+### 14.3 Rate Limit Bypass Prevention
+
+- **Redis-backed store:** `express-rate-limit` + `rate-limit-redis` to share limits across all API instances
+- **IP spoofing protection:** Trust only Vercel/Cloudflare proxy IPs (`trust proxy` configured correctly)
+- **User-level limits:** Auth endpoints use user ID as key (not IP) after first successful auth, preventing shared-IP abuse
+- **DDoS protection:** Cloudflare WAF handles volumetric attacks before they reach the Express layer
+
+**Acceptance Criteria:**
+- [ ] Redis store active in production (not in-memory); verified by multi-instance test
+- [ ] Login rate limit (5/15min) tested via automated test
+- [ ] WhatsApp webhook limit (1000/min) sufficient for peak campaign volume (80 msg/sec × 12sec buffer)
+- [ ] Rate limit headers present on every API response
+- [ ] Rate limit exceeded events logged with IP, endpoint, timestamp
+
+---
+
+## 15. RERA Data Handling Requirements
+
+Dubai Real Estate Regulatory Agency (RERA) mandates specific data handling obligations for licensed brokers.
+
+| Requirement | RERA Reference | Implementation | Acceptance Criteria |
+|------------|---------------|---------------|---------------------|
+| Agent RERA BRN (Broker Registration Number) | RERA Regulation | `User.reraLicenseNumber` field; required for agent role | [ ] BRN field present; API returns 400 if missing for agent creation |
+| Agent license expiry tracking | RERA | `User.reraLicenseExpiry` date field; cron alert 60/30/7 days before expiry | [ ] Cron fires at 60/30/7 days; notifications sent to agent + manager |
+| Commission disclosure (Form A) | RERA | `Commission` model with full audit trail; PDF generation | [ ] Every commission record linked to signed Form A |
+| Transaction records (7 years) | UAE Commercial Law | No TTL on Transaction collection | [ ] Transaction count verified in annual audit |
+| Ejari registration number | RERA | `Lease.ejariNumber` unique index | [ ] Unique index prevents duplicate Ejari |
+| DLD fee recording | DLD | `Transaction.dldFee` field + `Transaction.dldTransactionId` | [ ] DLD fees recorded on every sale transaction |
+| Off-plan Oqood registration | RERA / DLD | `Transaction.oqoodReference` field | [ ] Required field for `type='off_plan'` transactions |
+| RERA Form 7 (rent increase) | RERA | Lease amendment workflow with 90-day notice tracking | [ ] Form 7 generated 90 days before rent increase effective date |
+| Property listing permit number | RERA | `Property.reraPermitNumber` field; required before status='available' | [ ] API rejects listing activation without permit number |
+
+**Testability:** Integration test suite includes RERA data completeness checks. A `rera-compliance-check.js` script runs weekly in CI against production data and produces a compliance gap report.
+
+---
+
+## 16. AML Encryption Standards
+
+### 16.1 Encryption Requirements for AML/KYC Data
+
+Per CBUAE AML guidelines and Federal Law No. 20 of 2018:
+
+| Data Category | Encryption at Rest | Encryption in Transit | Key Management |
+|--------------|-------------------|-----------------------|----------------|
+| Emirates ID / Passport copy | **AES-256** (Atlas default) | **TLS 1.3** (target) / TLS 1.2 (current minimum) | Atlas-managed KMS |
+| Source of funds declarations | **AES-256** (Atlas default) | **TLS 1.3** (target) | Atlas-managed KMS |
+| PEP screening results | **AES-256** + CSFLE (target) | **TLS 1.3** (target) | Customer-managed key (BYOK) |
+| STR (Suspicious Transaction Reports) | **AES-256** + CSFLE (target) | **TLS 1.3** (target) | Customer-managed key (BYOK) |
+| Beneficial ownership records | **AES-256** (Atlas default) | **TLS 1.3** (target) | Atlas-managed KMS |
+
+### 16.2 TLS Version Policy (Updated)
+
+| Connection | Minimum Version | Target Version | Current Status |
+|-----------|----------------|---------------|----------------|
+| Client → API | TLS 1.2 | **TLS 1.3** | ✅ TLS 1.2 enforced |
+| API → MongoDB Atlas | TLS 1.2 | **TLS 1.3** | ✅ TLS 1.2 enforced |
+| API → Redis | TLS 1.2 | **TLS 1.3** | ⏳ Planned Q3 2026 |
+| API → Firebase | TLS 1.2 | **TLS 1.3** | ✅ Google-managed |
+| API → Stripe | TLS 1.2 | **TLS 1.3** | ✅ Stripe-managed |
+| API → WhatsApp Cloud | TLS 1.2 | **TLS 1.3** | ✅ Meta-managed |
+| Nginx → API (internal) | TLS 1.2 | **TLS 1.3** | ⏳ Planned Q3 2026 |
+
+> **TLS 1.0 and TLS 1.1 are explicitly disabled** in all Nginx and Atlas configurations. Connections using these versions are rejected.
+
+### 16.3 Client-Side Field-Level Encryption (CSFLE) Plan
+
+CSFLE adds per-field encryption on the client side before data reaches MongoDB, providing an additional protection layer for the most sensitive PII and AML fields.
+
+**Target fields for CSFLE (Phase 2 security hardening):**
+
+```javascript
+// CSFLE schema for User collection
+const encryptedFieldsMap = {
+  "whitecaves.users": {
+    fields: [
+      {
+        path: "emiratesId",
+        bsonType: "string",
+        algorithm: "AEAD_AES_256_CBC_HMAC_SHA_512-Deterministic"
+      },
+      {
+        path: "passportNumber",
+        bsonType: "string",
+        algorithm: "AEAD_AES_256_CBC_HMAC_SHA_512-Deterministic"
+      }
+    ]
+  }
+};
+```
+
+**Acceptance Criteria:**
+- [ ] TLS 1.0 and 1.1 disabled on all endpoints (verified via `nmap --script ssl-enum-ciphers`)
+- [ ] AES-256 at rest confirmed via Atlas encryption-at-rest dashboard
+- [ ] CSFLE implemented for `emiratesId` and `passportNumber` fields by Q4 2026
+- [ ] Annual key rotation schedule documented and tested
+- [ ] TLS 1.3 migration completed for all internal connections by Q3 2026
+
+---
+
+## 17. Vulnerability Disclosure Policy
+
+### 17.1 Responsible Disclosure Program
+
+White Caves LLC operates a responsible disclosure program. Security researchers who discover vulnerabilities are encouraged to report them in good faith.
+
+**Contact:** `security@whitecaves.ae`
+
+**Scope (in-scope):**
+- `whitecaves.ae` and all subdomains
+- `api.whitecaves.ae` (REST API)
+- `status.whitecaves.ae`
+- Mobile applications (if published)
+
+**Out of scope:**
+- Third-party services (Meta WhatsApp, Firebase, Stripe)
+- Social engineering attacks on staff
+- Physical security testing
+- Denial-of-service attacks
+
+### 17.2 Disclosure Timeline
+
+| Timeline | Action |
+|----------|--------|
+| Day 0 | Researcher reports vulnerability to `security@whitecaves.ae` |
+| Day 1 | Acknowledgement sent to researcher (within 24 hours) |
+| Day 7 | Initial triage completed; severity assessed |
+| Day 30 | Fix developed and tested |
+| Day 45 | Fix deployed to production |
+| Day 90 | Public disclosure (if researcher consents) |
+| Ongoing | Reporter credited in security acknowledgements (optional) |
+
+### 17.3 Safe Harbour
+
+White Caves LLC will **not pursue legal action** against researchers who:
+- Act in good faith
+- Report findings before public disclosure
+- Do not exploit vulnerabilities beyond proof-of-concept
+- Do not access or exfiltrate user data
+
+---
+
+## 18. UAE Cybercrime Law Compliance
+
+### 18.1 Federal Decree-Law No. 34 of 2021 (Cybercrime Law)
+
+*(Supersedes Federal Law No. 5 of 2012; updated in 2021)*
+
+| Article | Obligation | White Caves Implementation |
+|---------|-----------|--------------------------|
+| Art. 2 | Unauthorized access to IT systems is a criminal offence | RBAC; MFA for admin roles; access logging; anomaly detection |
+| Art. 6 | Disclosure of electronic data is prohibited | PDPL-aligned data handling; RBAC restricts data access |
+| Art. 8 | Electronic fraud is a criminal offence | Webhook signature verification; JWT integrity; audit trail |
+| Art. 12 | Violations affecting financial systems carry enhanced penalties | PCI-DSS-aligned Stripe integration; AML transaction monitoring |
+| Art. 26 | Entities must report cybercrime to authorities | Incident response plan includes TRA/TDRA notification within 72 hours |
+| Art. 40 | Jurisdiction extends to acts affecting UAE or UAE residents regardless of origin | Global threat monitoring; geo-based suspicious access alerts |
+
+### 18.2 UAE Cybersecurity Council Obligations
+
+| Requirement | Authority | Implementation |
+|------------|-----------|---------------|
+| Critical Information Infrastructure (CII) — if designated | UAE Cybersecurity Council | N/A unless White Caves designated as CII |
+| Data classification | UAE IA (Information Assurance) Standards | Applied in Section 4 of this document |
+| Incident reporting within 6 hours (critical) | UAE Cybersecurity Council | Incident response runbook; PagerDuty P1 SLA = 4 hours |
+| Annual security assessment | UAE Cybersecurity Council | Penetration test annually; report submitted if required |
+| Vulnerability management | UAE Cybersecurity Council | `npm audit` in CI; quarterly pen test; Dependabot |
+
+### 18.3 Penetration Testing Schedule (Updated)
+
+| Test Type | Frequency | Scope | Provider | CVSS Minimum | Report Retention |
+|-----------|-----------|-------|----------|-------------|-----------------|
+| Automated DAST (OWASP ZAP) | **Weekly** (CI pipeline) | All API endpoints | Internal automated | Any | 30 days |
+| Dependency vulnerability scan | **On every PR** + weekly | npm packages | `npm audit` + Snyk | Any | Per PR |
+| API security assessment | **Quarterly** | All `/api/*` routes, RBAC, auth flows | Internal security team | 4.0+ | 1 year |
+| Infrastructure pen test | **Annually** | K8s cluster, MongoDB Atlas, Nginx, TLS | **External CREST-certified firm** | 1.0+ | 3 years (regulatory) |
+| Social engineering assessment | **Annually** | Staff awareness (phishing simulation) | External provider | N/A | 1 year |
+| Red team exercise | **Every 2 years** | Full adversarial simulation | External red team | N/A | 3 years |
+| Code security review | **Every PR** | Changed files (TypeScript, config) | CodeQL + peer review | Any | Per PR |
+
+**Penetration test result handling:**
+
+```
+CRITICAL (CVSS 9.0+) → Fix within 24 hours → Re-test within 48 hours → Report to Board
+HIGH (CVSS 7.0–8.9)  → Fix within 7 days  → Re-test within 14 days → Report to CTO
+MEDIUM (CVSS 4.0–6.9)→ Fix within 30 days → Next pen test confirmation
+LOW (CVSS 0.1–3.9)   → Fix within 90 days → Track in sprint backlog
+```
+
+---
+
+*This document is reviewed quarterly, after security incidents, and when new features affect the security architecture. All security-related changes require review by the Security Officer before deployment. Regulatory references (UAE Cybercrime Law, PDPL, CBUAE AML) are reviewed annually against current legislation.*

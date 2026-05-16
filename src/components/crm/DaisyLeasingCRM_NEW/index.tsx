@@ -24,7 +24,7 @@ import AnalyticsTab from './tabs/AnalyticsTab';
 import '../AssistantDashboard.css';
 import './DaisyLeasingCRM.css';
 
-type TabId = 'leases' | 'pipeline' | 'inquiries' | 'pdc' | 'maintenance' | 'renewals' | 'analytics';
+type TabId = 'leases' | 'pipeline' | 'inquiries' | 'pdc' | 'maintenance' | 'renewals' | 'analytics' | 'lifecycle';
 
 const TABS: Array<{ id: TabId; label: string; icon: React.ReactNode }> = [
   { id: 'leases', label: 'Leases', icon: <FileText size={14} /> },
@@ -34,6 +34,7 @@ const TABS: Array<{ id: TabId; label: string; icon: React.ReactNode }> = [
   { id: 'maintenance', label: 'Maintenance', icon: <Wrench size={14} /> },
   { id: 'renewals', label: 'Renewals', icon: <RefreshCw size={14} /> },
   { id: 'analytics', label: 'Analytics', icon: <BarChart2 size={14} /> },
+  { id: 'lifecycle', label: 'Lifecycle', icon: <RefreshCw size={14} /> },
 ];
 
 const DaisyLeasingCRM = () => {

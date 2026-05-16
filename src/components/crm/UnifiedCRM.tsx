@@ -1,28 +1,17 @@
 import React, { useMemo, useState, useCallback, useRef, useEffect } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+import { useSelector } from 'react-redux';
 import styled from 'styled-components';
-import { RootState, AppDispatch } from '../../store/store';
+import { RootState } from '../../store/store';
 import { spacing } from '../../styles/theme/spacing';
+import type { DashboardView, UnifiedCRMProps } from './types';
+import { DASHBOARD_CONFIGS } from './types';
 
 // ============================================================================
 // TYPES & CONSTANTS
 // ============================================================================
 
-export type DashboardView =
-  | 'company'
-  | 'department'
-  | 'sales'
-  | 'property'
-  | 'commission'
-  | 'leads'
-  | 'office'
-  | 'agent'
-  | 'financial'
-  | 'performance'
-  | 'inventory'
-  | 'client';
-
-interface DashboardConfig {
+// Local dashboard configuration type (used only in this component's DASHBOARD_CONFIGS)
+interface LocalDashboardConfig {
   id: DashboardView;
   label: string;
   icon: string;
@@ -32,7 +21,7 @@ interface DashboardConfig {
   features: string[];
 }
 
-const DASHBOARD_CONFIGS: Record<DashboardView, DashboardConfig> = {
+const DASHBOARD_CONFIGS: Record<DashboardView, LocalDashboardConfig> = {
   company: {
     id: 'company',
     label: 'Company Overview',
@@ -354,13 +343,15 @@ const LoadingSpinner = styled.div`
 // COMPONENT
 // ============================================================================
 
-export interface UnifiedCRMProps {
-  defaultView?: DashboardView;
-  onViewChange?: (view: DashboardView) => void;
-}
-
-const UnifiedCRM: React.FC<UnifiedCRMProps> = ({ defaultView = 'company', onViewChange }) => {
-  const dispatch = useDispatch<AppDispatch>();
+const UnifiedCRM: React.FC<UnifiedCRMProps> = ({
+  defaultView = 'company',
+  onViewChange,
+  // Additional props from UnifiedCRMProps interface (reserved for future use)
+  refreshInterval: _refreshInterval,
+  enableExport: _enableExport,
+  enableCustomization: _enableCustomization,
+  onMetricsUpdate: _onMetricsUpdate,
+}) => {
   const [currentView, setCurrentView] = useState<DashboardView>(defaultView);
   const [loading, setLoading] = useState(false);
 

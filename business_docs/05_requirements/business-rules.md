@@ -230,4 +230,226 @@ Records are never permanently deleted. They are soft-deleted (hidden from UI) an
 
 ---
 
-**Version:** 1.0 | **Last Updated:** March 2026 | **Maintained By:** Product & Legal Teams
+---
+
+## Business Rule Metadata Reference
+
+Each rule has the following governance attributes for regulatory traceability and audit purposes.
+
+| Rule ID | Category | Source Regulation | Exception Handling | Last Reviewed |
+|---------|----------|------------------|--------------------|---------------|
+| BR-001 | Lead Scoring | Internal Policy — Sales Operations Manual v1.0 | Manager can flag a lead as "Manually Hot" via override button (logged with reason in audit trail) | March 2026 |
+| BR-002 | Lead Assignment | Internal Policy — HR Operations | Admin can bypass round-robin and directly assign (logged in activity trail) | March 2026 |
+| BR-003 | Lead Lifecycle | Internal CRM Policy | Re-opening a Won deal requires MD approval; logged in audit trail | March 2026 |
+| BR-004 | Property Compliance | RERA Circular No. 4/2021 | Zero tolerance — no exception for unpermitted listings (AED 100,000 fine per advert) | March 2026 |
+| BR-005 | Commission | Internal Finance Policy + RERA Agency Rules | Commission rate adjustable per deal with Sales Manager approval; logged and auditable | March 2026 |
+| BR-006 | Rental & Lease | Dubai Decree No. 26/2013 (Ejari) + RERA Rental Rules | Security deposit waiver requires MD written approval for institutional tenants | March 2026 |
+| BR-007 | WhatsApp Comms | Meta Business API Terms + UAE Telecom Regulations | No exception to 24-hour window rule — Meta policy is legally binding | March 2026 |
+| BR-008 | KYC/AML | UAE Federal Decree Law No. 20/2018 + FATF Recommendations | No exception for AED 55,000 threshold — EDD is mandatory by law | March 2026 |
+| BR-009 | User Access | Internal Security Policy + UAE PDPL Art. 5 | Admin can extend session for specific operations with documented approval | March 2026 |
+| BR-010 | Data Quality | UAE PDPL + Internal Data Governance | Hard delete requires MD written approval + Legal review + DBA operation | March 2026 |
+
+---
+
+## Acceptance Criteria by Existing Rule
+
+### BR-001 Lead Scoring — Acceptance Criteria
+- **Given** an agent updates a lead's budget from AED 800K to AED 3.5M, **When** the lead is saved, **Then** the score increases by the correct delta (BR-001-B vs BR-001-C) within 1 second
+- **Given** a lead has had no activity for 31 days, **When** the nightly score job runs, **Then** the score decreases by 20 points (BR-001-K) and lead is flagged "Dormant"
+- **Given** a lead score reaches 90+, **When** recalculated, **Then** a "Hot Lead 🔴" notification is sent to the assigned agent within 1 minute via in-app notification
+- **Given** score is manually overridden (exception path), **When** the override is saved, **Then** audit trail records: userId, original score, override score, reason, timestamp
+- **Test Reference:** TC-BR-001
+
+### BR-002 Lead Assignment — Acceptance Criteria
+- **Given** a new lead is created without an assigned agent, **When** the lead is saved, **Then** it is assigned to the next agent in round-robin rotation within 30 seconds
+- **Given** an agent has exactly 50 active leads, **When** new leads are created via round-robin, **Then** that agent is skipped and the next agent in rotation is assigned
+- **Given** a lead remains unassigned for 30 minutes, **When** the assignment check runs, **Then** sales manager receives in-app notification: "Unassigned lead: [lead name] — created 30 minutes ago"
+- **Test Reference:** TC-BR-002
+
+### BR-004 Property Listing — Acceptance Criteria
+- **Given** `permitNumber` is null, **When** an agent tries to set property status to "Available", **Then** the action is blocked with error "RERA Trakheesi Permit number required before publishing (Penalty: AED 50,000)"
+- **Given** `permitExpiryDate` is today at 23:59, **When** midnight passes and the nightly job runs, **Then** property status changes to "Draft" and WhatsApp + email notification sent to agent
+- **Given** a property has fewer than 3 photos, **When** publish is attempted, **Then** error displayed: "Minimum 3 photos required before publishing"
+- **Test Reference:** TC-BR-004
+
+### BR-005 Commission — Acceptance Criteria
+- **Given** a sale price of AED 1,500,000 with 2% rate and 50/50 split, **When** the transaction closes, **Then** commission record shows: Total = AED 30,000; Broker = AED 15,000; Agent = AED 15,000
+- **Given** a commission is in "Paid" status, **When** any user attempts to edit the commission amount, **Then** system returns HTTP 403 "Commission record locked after payment"
+- **Given** DLD fees are calculated on a AED 2,000,000 sale, **When** fee breakdown is displayed, **Then** Transfer Fee = AED 80,000 (4%) and DLD Admin = AED 580
+- **Test Reference:** TC-BR-005
+
+### BR-006 Rental & Lease — Acceptance Criteria
+- **Given** a lease has no `ejariContractNumber`, **When** status change to "Active" is attempted, **Then** system returns validation error: "Ejari registration required (Dubai Decree 26/2013)"
+- **Given** a rent payment is 5 days overdue, **When** the daily overdue check runs, **Then** WhatsApp reminder is sent to tenant and "Overdue 🔴" flag appears on lease dashboard
+- **Given** lease expiry is 60 days away, **When** the renewal job runs, **Then** a renewal task is created in the leasing agent's dashboard with alert: "[Tenant] lease expires in 60 days"
+- **Test Reference:** TC-BR-006
+
+### BR-008 KYC/AML — Acceptance Criteria
+- **Given** a transaction value is AED 60,000 (above EDD threshold), **When** the transaction is created, **Then** EDD workflow is auto-triggered and transaction status is set to "KYC Pending" blocking further progression
+- **Given** a client nationality is on the FATF high-risk list, **When** the KYC screening runs, **Then** the record is flagged "High Risk 🔴" and Compliance Officer receives in-app notification within 5 minutes
+- **Given** a cash payment of AED 55,001 is recorded, **When** the payment is saved, **Then** a Cash Transaction Report is auto-created with status "Pending goAML submission"
+- **Test Reference:** TC-BR-008
+
+### BR-009 User Access — Acceptance Criteria
+- **Given** a user session is inactive for 24 hours, **When** the user attempts any API call, **Then** the system returns HTTP 401 "Session expired — please log in again"
+- **Given** a user attempts a 4th concurrent login, **When** the login succeeds, **Then** the oldest session is invalidated and the user on that session receives: "You have been signed out — new login detected"
+- **Given** 5 consecutive failed login attempts occur, **When** the 5th attempt fails, **Then** account is locked for 30 minutes and an alert is sent to the account owner's email
+- **Test Reference:** TC-BR-009
+
+---
+
+## BR-011: Commission Split Calculation Rules
+
+**Rule ID:** BR-011  
+**Rule Category:** Finance — Commission Management  
+**Source Regulation:** RERA Agency Regulations — Broker Remuneration Rules; Internal Finance Policy  
+**Last Reviewed:** June 2026
+
+### BR-011-A: Standard Sale Commission Split
+```
+Gross Commission = Sale Price × Commission Rate (default 2%)
+Company Share    = Gross Commission × Company Split % (configurable, default 50%)
+Agent Share      = Gross Commission × Agent Split %   (configurable, default 50%)
+Constraint: Company Split % + Agent Split % = 100% (validated by system)
+```
+
+### BR-011-B: Referral Commission — Tri-Party Split
+When a referring external agent is involved:
+```
+Referral Fee          = Gross Commission × Referral % (max 25%; must be agreed in writing and uploaded)
+Remaining Commission  = Gross Commission − Referral Fee
+Company Share         = Remaining Commission × Company Split %
+Originating Agent Share = Remaining Commission × Agent Split %
+```
+Referral agreement PDF must be uploaded before the split is applied. System blocks referral fee if no document attached.
+
+### BR-011-C: Co-Broking Split (Internal)
+When two White Caves agents co-broker a deal:
+```
+Combined Agent Pool = Gross Commission × Agent Split %
+Agent 1 Share       = Combined Agent Pool × Agent1 Co-Broker %
+Agent 2 Share       = Combined Agent Pool × Agent2 Co-Broker %
+Constraint: Agent1 % + Agent2 % = 100%
+```
+Co-broker percentages must be agreed and entered before deal status = "Offer Accepted".
+
+### BR-011-D: Performance Tier Escalator
+| Monthly Closed Deals (Calendar Month) | Agent Split Override |
+|--------------------------------------|---------------------|
+| 1–3 deals | 50% (default) |
+| 4–6 deals | 55% |
+| 7–10 deals | 60% |
+| 11+ deals | 65% |
+
+Tier override is approved by Finance Director; applies to all deals in the qualifying month.
+
+**Acceptance Criteria:**
+- **Given** a sale of AED 2,000,000 at 2% commission with default 50/50 split, **When** the deal closes, **Then** Total = AED 40,000; Company = AED 20,000; Agent = AED 20,000
+- **Given** a co-broker deal: Agent A (60%), Agent B (40%) on a AED 40,000 agent pool, **When** calculated, **Then** Agent A = AED 24,000; Agent B = AED 16,000
+- **Given** referral fee is 20% on a AED 30,000 gross commission, **When** calculated, **Then** Referral = AED 6,000; Remaining = AED 24,000 split per BR-011-A
+- **Given** no referral agreement PDF is uploaded, **When** referral fee > 0 is entered, **Then** system blocks with "Referral agreement document required"
+- **Test Reference:** TC-BR-011
+
+**Exception Handling:** All split overrides require Finance Director approval before deal reaches "Closed" status. No retroactive split changes after commission status = "Paid".
+
+---
+
+## BR-012: Post-Dated Cheque (PDC) Validity Rules
+
+**Rule ID:** BR-012  
+**Rule Category:** Finance — Payment Management  
+**Source Regulation:** UAE Federal Decree Law No. 14 of 2020 (Commercial Transactions Law); RERA Rental Payment Rules  
+**Last Reviewed:** June 2026
+
+### BR-012-A: PDC Collection for Leases
+- Maximum cheques per lease year: 12 (monthly); minimum: 1 (annual lump sum)
+- Each PDC covers exactly one rental period; no partial cheques
+- All PDCs collected before lease activation (Ejari registration date)
+- CRM PDC record fields: `chequeNumber, bankName, bankBranchUAE, amountAED, dueDate, status, imageUrl`
+
+### BR-012-B: PDC Status Lifecycle
+```
+Scheduled → Presented → Cleared
+                      ↘ Bounced → Replaced (new PDC) / Legal Escalation
+Cancelled
+```
+
+### BR-012-C: Bounced Cheque Procedure
+Upon a cheque dishonour notification from the bank:
+1. Finance records `status = "Bounced"` immediately on bank notification
+2. WhatsApp to tenant within 2 hours: "Your cheque [number] for AED [amount] dated [date] was returned by your bank. Please arrange replacement within 5 business days."
+3. Late fee applied: 5% of cheque amount (minimum AED 200)
+4. Bank return fee charged to tenant (per bank schedule: typically AED 100–200)
+5. Tenant has **5 business days** to replace with new PDC or bank transfer
+6. Day 5 (no replacement): Compliance (Laila) initiates formal legal demand letter
+7. Under UAE law (Federal Decree 14/2020 Art. 635): bounced cheque is a criminal offence and may be reported to Dubai Police
+
+### BR-012-D: PDC Validity Warning
+A cheque presented more than 6 months after its date may be dishonoured by the bank under UAE Cheque Law. System alerts Finance team when a PDC is within 30 days of its 6-month validity limit.
+
+### BR-012-E: Replacement PDC
+- Original bounced cheque record status → "Bounced" (preserved for audit — never deleted)
+- New PDC created as separate record with field `replacesChequePdcId` linking to original
+
+**Acceptance Criteria:**
+- **Given** a PDC is collected with a due date 7 months in the future, **When** the record is saved, **Then** system displays warning: "⚠️ PDC validity may expire (6-month limit) before presentation date"
+- **Given** a cheque bounces on Day 1, **When** status is updated to "Bounced", **Then** WhatsApp notification sent to tenant within 2 hours AND late fee record auto-created
+- **Given** a tenant has 2+ bounced cheques in the current lease period, **When** the 2nd bounce is recorded, **Then** Compliance Officer receives Critical alert and eviction notice workflow task is auto-created
+- **Given** it is Day 5 with no replacement after a bounce, **When** the business-day counter expires, **Then** Laila (Compliance) receives Critical alert "Legal demand letter required for [Tenant]"
+- **Test Reference:** TC-BR-012
+
+**Exception Handling:** Cheque waivers (waiving late fees) require Finance Director written approval. Criminal filings (police report) are the exclusive decision of MD in consultation with Legal counsel.
+
+---
+
+## BR-013: RERA Rental Index Compliance Rules
+
+**Rule ID:** BR-013  
+**Rule Category:** Leasing — Rent Increase Compliance  
+**Source Regulation:** RERA Rental Increase Calculator; Dubai Decree No. 43 of 2013 (Rental Increase Regulation); RERA Annual Rental Index  
+**Last Reviewed:** June 2026
+
+### BR-013-A: Maximum Permissible Rent Increase Calculation
+Per Dubai Decree No. 43/2013 Schedule of Permissible Increases:
+```
+Current Rent as % of RERA Index → Maximum Permissible Increase
+≥ 90% of RERA Index Price      → 0%  (no increase permitted)
+75–89% of RERA Index Price     → 5%
+65–74% of RERA Index Price     → 10%
+< 65% of RERA Index Price      → 15%
+```
+Note: In exceptional market conditions RERA may issue circular allowing up to 20% — system must be configurable.
+
+### BR-013-B: RERA Index Data Integration
+- RERA index data sourced from RERA's official Rental Index API (or manually updated quarterly if API unavailable)
+- Index lookup parameters: community/area, property type, number of bedrooms
+- System displays on renewal screen: "RERA Index for this property: AED [amount]/year — Last updated: [date]"
+- If index data > 90 days old: system shows warning banner: "⚠️ RERA Index data may be outdated — verify before processing increase"
+- If index data unavailable for specific community: any rent increase above 5% requires Compliance Officer approval
+
+### BR-013-C: Rent Increase Notice Requirements
+Per UAE Law No. 26 of 2007 (Tenancy Law) Art. 14:
+- Landlord must give **90 days written notice** before rent increase effective date
+- System auto-calculates: `effective_date = notice_date + 90 calendar days`
+- Notice sent via: registered letter (physical) AND WhatsApp (digital record both logged in CRM)
+- CRM auto-generates **RERA Form 7** (Rent Increase Notice) pre-populated with:
+  - Current registered rent (from Ejari), proposed rent, increase %, RERA index reference, effective date, both party details
+
+### BR-013-D: Tenant Right to Request Rent Reduction
+If current rent is more than 10% above RERA market index at renewal, tenant has the right to request a rent reduction. System flags this scenario:
+- Alert to Leasing Manager: "Market rate has dropped — current rent may be challengeable by tenant"
+- Proactive notification to Landlord recommended
+
+**Acceptance Criteria:**
+- **Given** current rent is AED 80,000/year and RERA index for that unit is AED 100,000/year (80% of index), **When** renewal is initiated, **Then** system shows "Maximum permissible increase: 5%"; any proposed rent above AED 84,000 is blocked with validation error
+- **Given** a rent increase notice is generated, **When** the notice date is set, **Then** effective date = notice date + 90 days; system blocks sending notice if effective date < 90 days away from today
+- **Given** RERA index data is stale (> 90 days old), **When** a renewal screen is opened, **Then** system displays amber warning banner "⚠️ RERA Index data may be outdated"
+- **Given** current rent is 60% of RERA index, **When** renewal is processed, **Then** system shows "Maximum permissible increase: 15%" and RERA index comparison tool shows the gap
+- **Test Reference:** TC-BR-013
+
+**Exception Handling:** Any rent increase above the RERA maximum requires written consent from both landlord and tenant PLUS Compliance Officer review. System requires document upload and CO approval before allowing the exception.
+
+---
+
+**Version:** 1.2 | **Last Updated:** June 2026 | **Maintained By:** Product & Legal Teams  
+**Change Log:** v1.1 — Added rule metadata reference table and acceptance criteria for BR-001 to BR-010 (June 2026); v1.2 — Added BR-011 (Commission Split), BR-012 (PDC Validity), BR-013 (RERA Rental Index) (June 2026)

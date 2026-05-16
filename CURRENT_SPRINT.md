@@ -1,64 +1,46 @@
-# CURRENT SPRINT — Homepage Production-Readiness
+# CURRENT SPRINT — 40% Baseline to 75% Verified Recovery
 
-**Sprint Goal:** Eliminate all TypeScript errors blocking `tsc --noEmit` on the homepage and its component tree. Ensure the Vite production build remains green.
-
-**Date:** 2026-05-08
-**Status:** In Progress
-
----
-
-## Bug Inventory
-
-| #   | Severity   | File                                                              | Error                                                                                                                                                                                                                                         | Status                                     |
-| --- | ---------- | ----------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------ |
-| 1   | 🔴 BLOCKER | `src/components/homepage/Hero/Hero.tsx:156`                       | TS2322 — `fetchPriority` not in `@types/react`                                                                                                                                                                                                | ✅ Fixed                                   |
-| 2   | 🟡 MEDIUM  | `src/styles/theme.ts` legacy objects                              | Design-token drift: `shadows.card`, `transitions.easing.easeOut`, `colors.background.darkSecondary`, `colors.background.overlay`, `colors.luxury`, `typography.sizes`, `shadows.luxuryHover/Card/Glow/Elevated`, `theme.mediaQueries` missing | ✅ Fixed                                   |
-| 3   | 🟡 MEDIUM  | `UnifiedDashboardPage.tsx` + 18 `.jsx` CRM files                  | TS7016 — implicit `any` for `.jsx` modules (`allowJs: false`)                                                                                                                                                                                 | ✅ Fixed (`allowJs: true, checkJs: false`) |
-| 4   | 🟡 MEDIUM  | `src/redux/slices/relationalSidebarSlice.js`                      | TS7016 — implicit `any` from JS slice causing 15+ cascading errors in `RelationalDashboardLayout.tsx`                                                                                                                                         | ✅ Fixed (`allowJs: true, checkJs: false`) |
-| 5   | 🟡 MEDIUM  | `src/components/shared/dashboard/DataCard.tsx`                    | Missing TypeScript props interface → required-any errors in `AnalyticsView.tsx`                                                                                                                                                               | ✅ Fixed (added `DataCardProps` interface) |
-| 6   | 🟡 MEDIUM  | `src/pages/departments/finance/EnhancedFinanceDepartmentView.tsx` | `ErrorState` called with `title`/`message` props (expects `error`); `displayData` typed as `{}`                                                                                                                                               | ✅ Fixed                                   |
-| 7   | 🟡 MEDIUM  | `src/pages/departments/hr/EnhancedHRDepartmentView.tsx`           | Same `ErrorState` props mismatch + `displayData` typed as `{}`                                                                                                                                                                                | ✅ Fixed                                   |
+**Sprint Goal:** Establish one truthful completion baseline and execute the highest-value lanes that can move the project to **75% verified completion**.
+**Date:** 2026-05-12
+**Status:** Ready
 
 ---
 
-## Acceptance Criteria
+## P0 Must Ship
 
-- [ ] `npx tsc --noEmit` reports **zero errors** in `src/components/homepage/**` and `src/pages/HomePage.tsx`
-- [ ] `npm run build` succeeds (Vite production build ≤ 30s)
-- [ ] No new runtime regressions on the Homepage route
-- [ ] All Vercel env vars (`VITE_API_URL`, `VITE_DOMAIN`, `VITE_APP_URL`, `VITE_FIREBASE_*`, `DATABASE_URL`, `JWT_SECRET`) confirmed in Vercel project settings
-
----
-
-## Remaining Warnings (non-blocking)
-
-- ESLint: 302 errors (mostly `no-undef` in `test/utils/testUtilities.js` and `security/*` warnings in CRM files) — not blocking Vite build
-- `RelationalDashboardLayout.tsx` styled-component interpolation errors — only affect CRM dashboard, not homepage
+| ID  | Milestone                   | Owner Lane | Acceptance Criteria                                                                             | Verification Owner | Status          |
+| --- | --------------------------- | ---------- | ----------------------------------------------------------------------------------------------- | ------------------ | --------------- |
+| S0  | Baseline reset              | Lane A     | Canonical roadmap, progress ledger, sprint board, and tracker are aligned                       | guardian           | In Verification |
+| S1  | Homepage verification slice | Lane B     | Search flow, mobile, accessibility, and performance tasks are sequenced with proof requirements | QA                 | Ready           |
+| S2  | Portal verification slice   | Lane C     | Portal integration gaps and UX-state coverage are enumerated and assigned                       | QA                 | Ready           |
+| S3  | CRM integration slice       | Lane D     | Remaining mock-backed CRM priorities are identified and ordered                                 | Security + QA      | Ready           |
+| S4  | Hardening slice             | Lane E     | Lint/test/build blockers are recorded and triaged without overstating readiness                 | guardian           | Ready           |
 
 ---
 
-## Git Workflow
+## P1 If Capacity
 
-```bash
-git add .
-git commit -m "fix: homepage production-readiness — fetchPriority, theme tokens, allowJs, DataCard types, ErrorState props"
-git pull --rebase origin main
-git push origin main
-```
+- refine weighted milestone accounting
+- split CRM lane into module-specific sub-sprints
+- add release evidence links for staging/runtime verification
 
 ---
 
-## Environment Variable Checklist
+## Dependency Map
 
-| Variable                    | Required    | Notes                                        |
-| --------------------------- | ----------- | -------------------------------------------- |
-| `VITE_API_URL`              | ✅          | Default `/api` — works without setting       |
-| `VITE_DOMAIN`               | ✅          | Set to production domain                     |
-| `VITE_APP_URL`              | ✅          | Set to production URL                        |
-| `VITE_FIREBASE_API_KEY`     | ⚠️ Optional | Social login disabled gracefully when absent |
-| `VITE_FIREBASE_AUTH_DOMAIN` | ⚠️ Optional | Social login disabled gracefully when absent |
-| `VITE_FIREBASE_PROJECT_ID`  | ⚠️ Optional | Social login disabled gracefully when absent |
-| `DATABASE_URL`              | ✅          | Must be set in Vercel                        |
-| `JWT_SECRET`                | ✅          | Must be set in Vercel                        |
-| `VITE_WHATSAPP_NUMBER`      | ⚠️ Optional | WhatsApp CTA button                          |
-| `VITE_BANK_*`               | ⚠️ Optional | Finance/invoice module                       |
+1. **S0** must complete before any % claim changes.
+2. **S1–S3** can run in parallel once acceptance criteria are approved.
+3. **S4** consumes outputs from S1–S3 for build/QA/security sign-off.
+4. No milestone becomes **Verified** until recorded in `PROJECT_PROGRESS.md`.
+
+---
+
+## Verification Queue
+
+| Item            | Needed Evidence                                         |
+| --------------- | ------------------------------------------------------- |
+| Baseline reset  | updated docs + reviewer confirmation                    |
+| Homepage slice  | targeted tests/build/accessibility/performance evidence |
+| Portal slice    | targeted UI/API verification evidence                   |
+| CRM slice       | module inventory + real API coverage evidence           |
+| Hardening slice | lint/test/build/security findings with disposition      |

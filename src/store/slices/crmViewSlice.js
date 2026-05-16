@@ -211,8 +211,8 @@ const AI_ASSISTANTS_REGISTRY = [
   {
     id: 'sophia',
     name: 'Sophia',
-    role: 'Contract Manager',
-    dept: 'legal',
+    role: 'Sales Pipeline Manager',
+    dept: 'sales',
     color: '#DC2626',
     status: 'online',
   },
@@ -267,8 +267,8 @@ const AI_ASSISTANTS_REGISTRY = [
   {
     id: 'laila',
     name: 'Laila',
-    role: 'Arabic Communications',
-    dept: 'communications',
+    role: 'Compliance & Legal Officer',
+    dept: 'compliance',
     color: '#F97316',
     status: 'online',
   },
@@ -505,6 +505,23 @@ const initialState = {
   documentHistoryIndex: -1,
 };
 
+// P2-2: Labels for nav-group breadcrumbs — group IDs are not in CRM_OBJECT_CATEGORIES
+const CRM_NAV_GROUP_LABELS = {
+  executive:   'Executive Overview',
+  operations:  'Operations & Organization',
+  sales:       'Sales & Pipeline',
+  properties:  'Properties & Inventory',
+  services:    'Services & Fulfillment',
+  leasing:     'Leasing & Tenancy',
+  marketing:   'Marketing & Communications',
+  finance:     'Finance & Payments',
+  compliance:  'Compliance & Legal',
+  analytics:   'Analytics & Intelligence',
+  admin:       'Administration',
+  technology:  'Technology',
+  hr:          'Human Resources',
+};
+
 const crmViewSlice = createSlice({
   name: 'crmView',
   initialState,
@@ -516,7 +533,11 @@ const crmViewSlice = createSlice({
       state.breadcrumbs = [
         {
           id: action.payload,
-          label: CRM_OBJECT_CATEGORIES[action.payload]?.label || action.payload,
+          // P2-2: check nav group labels first, then object categories, then raw id
+          label:
+            CRM_NAV_GROUP_LABELS[action.payload] ||
+            CRM_OBJECT_CATEGORIES[action.payload]?.label ||
+            action.payload,
         },
       ];
     },
@@ -741,7 +762,8 @@ export const selectAllAiAssistants = createSelector(
   cv => cv?.aiAssistants || AI_ASSISTANTS_REGISTRY
 );
 
-export const selectAiAssistantById = assistantId =>
+// P2-5: Factory pattern so each call site gets a stable, memoized selector instance
+export const makeSelectAiAssistantById = assistantId =>
   createSelector([selectAllAiAssistants], assistants => assistants.find(a => a.id === assistantId));
 
 export const selectAiAssistantsByDepartment = createSelector(

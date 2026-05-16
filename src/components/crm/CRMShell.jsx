@@ -2,8 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate, Link } from 'react-router-dom';
 import { 
-  Menu, X, Search, Bell, Moon, Sun, User, Settings, LogOut,
-  LayoutDashboard, Building2, Users, Briefcase, Bot, ChevronDown, ChevronUp,
+  Menu, X, Search, Bell, Moon, Sun, Settings, LogOut,
+  LayoutDashboard, Building2, Users, Briefcase, ChevronDown, ChevronUp,
   Home, FileText, MessageSquare, BarChart3, Shield, Sparkles, ChevronRight,
   Crown, Settings2, Target, Key, Megaphone, Wallet, Activity,
   TrendingUp, Building, Network, Calendar, UserPlus, UserSearch, Handshake,
@@ -13,9 +13,9 @@ import {
   Receipt, Percent, PieChart, CheckCircle, Lock, UserCheck, History,
   FileBarChart, LineChart, Award, Plug, BookOpen
 } from 'lucide-react';
-import { SUPER_ADMIN, isMDAuthorized } from '../../config/superAdmin';
+import { SUPER_ADMIN } from '../../config/superAdmin';
+import { logout } from '../../store/authSlice';
 import {
-  setActiveCategory,
   setActiveObjectId,
   setActiveAssistant,
   toggleSidebar,
@@ -24,6 +24,7 @@ import {
   navigateToBreadcrumb,
   toggleNavGroup,
   setActiveSubItem,
+  setSearchQuery as setReduxSearchQuery,
   selectActiveCategory,
   selectSidebarOpen,
   selectAiPanelOpen,
@@ -48,7 +49,7 @@ const ICON_MAP = {
   BookOpen, Activity
 };
 
-export default function CRMShell({ children, activeTab, onTabChange }) {
+export default function CRMShell({ children, activeTab: _activeTab, onTabChange }) {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const user = useSelector(state => state.user?.currentUser);
@@ -63,15 +64,14 @@ export default function CRMShell({ children, activeTab, onTabChange }) {
   const navTree = useSelector(selectNavTree);
   const expandedGroups = useSelector(selectExpandedGroups);
   
-  const [theme, setTheme] = useState('light');
+  const [theme, setTheme] = useState(() => localStorage.getItem('theme') || 'light');
   const [searchQuery, setSearchQuery] = useState('');
   const [showUserMenu, setShowUserMenu] = useState(false);
+  const [showNotifications, setShowNotifications] = useState(false);
 
   useEffect(() => {
-    const savedTheme = localStorage.getItem('theme') || 'light';
-    setTheme(savedTheme);
-    document.body.setAttribute('data-theme', savedTheme);
-  }, []);
+    document.body.setAttribute('data-theme', theme);
+  }, [theme]);
 
   const toggleTheme = () => {
     const newTheme = theme === 'light' ? 'dark' : 'light';
@@ -113,10 +113,13 @@ export default function CRMShell({ children, activeTab, onTabChange }) {
   };
 
   const handleLogout = () => {
+    dispatch(logout());
+    localStorage.removeItem('token');
     navigate('/');
   };
 
   const getIcon = (iconName) => {
+    // eslint-disable-next-line security/detect-object-injection
     const IconComponent = ICON_MAP[iconName];
     return IconComponent || LayoutDashboard;
   };
@@ -128,9 +131,9 @@ export default function CRMShell({ children, activeTab, onTabChange }) {
   ].filter(Boolean).join(' ');
 
   const groupedAssistants = aiAssistants.reduce((acc, assistant) => {
-    const dept = assistant.dept;
-    if (!acc[dept]) acc[dept] = [];
-    acc[dept].push(assistant);
+    const dept = String(assistant.dept || 'other');
+    if (!acc[dept]) acc[dept] = []; // eslint-disable-line security/detect-object-injection
+    acc[dept].push(assistant); // eslint-disable-line security/detect-object-injection
     return acc;
   }, {});
 
@@ -190,7 +193,10 @@ export default function CRMShell({ children, activeTab, onTabChange }) {
               className="crm-search-input"
               placeholder="Search properties, leads, clients..."
               value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
+              onChange={(e) => {
+                setSearchQuery(e.target.value);
+                dispatch(setReduxSearchQuery(e.target.value));
+              }}
             />
           </div>
         </div>
@@ -204,9 +210,29 @@ export default function CRMShell({ children, activeTab, onTabChange }) {
             {theme === 'light' ? <Moon size={18} /> : <Sun size={18} />}
           </button>
 
-          <button className="crm-toggle-btn" title="Notifications">
+          <button className="crm-toggle-btn" title="Notifications" onClick={() => setShowNotifications(!showNotifications)}>
             <Bell size={18} />
           </button>
+
+          {showNotifications && (
+            <div style={{
+              position: 'absolute',
+              top: '100%',
+              right: '160px',
+              marginTop: '8px',
+              background: 'var(--surface-primary)',
+              border: '1px solid var(--border-color)',
+              borderRadius: '10px',
+              padding: '12px 16px',
+              minWidth: '220px',
+              boxShadow: '0 8px 24px rgba(0,0,0,0.12)',
+              zIndex: 200,
+              fontSize: '0.875rem',
+              color: 'var(--text-muted)'
+            }}>
+              No new notifications
+            </div>
+          )}
 
           <button 
             className={`crm-toggle-btn ai-toggle ${aiPanelOpen ? 'active' : ''}`}
@@ -391,6 +417,7 @@ export default function CRMShell({ children, activeTab, onTabChange }) {
             {Object.entries(groupedAssistants).map(([dept, assistants]) => (
               <div key={dept} className="ai-assistant-group">
                 <div className="ai-group-header">
+                  {/* eslint-disable-next-line security/detect-object-injection */}
                   {departmentLabels[dept] || dept}
                 </div>
                 <div className="ai-assistant-list">
@@ -490,6 +517,12 @@ export default function CRMShell({ children, activeTab, onTabChange }) {
         <div 
           style={{ position: 'fixed', inset: 0, zIndex: 100 }}
           onClick={() => setShowUserMenu(false)}
+        />
+      )}
+      {showNotifications && (
+        <div 
+          style={{ position: 'fixed', inset: 0, zIndex: 100 }}
+          onClick={() => setShowNotifications(false)}
         />
       )}
     </div>

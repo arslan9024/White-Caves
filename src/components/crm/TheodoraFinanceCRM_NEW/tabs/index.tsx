@@ -55,7 +55,7 @@ const TheodoraFinanceCRM = () => {
             pendingCommissions={pendingCommissions}
             approvedCommissions={approvedCommissions}
             paidCommissions={paidCommissions}
-            loading={commissionsLoading as boolean}
+            loading={commissionsLoading ?? false}
             onApprove={(id) => handleUpdateCommission({ id, status: 'approved' })}
             onReject={(id) => handleUpdateCommission({ id, status: 'cancelled' })}
             onBulkPay={handleBulkPay}

@@ -27,13 +27,13 @@ const NinaWhatsAppBotCRM = () => {
   const renderTab = () => {
     switch (activeTab) {
       case 'bots':
-        return <BotsTab data={data as never} />;
+        return <BotsTab data={data} />;
       case 'code':
         return <CodeModulesTab data={data} />;
       case 'sessions':
-        return <SessionsTab data={data as never} />;
+        return <SessionsTab data={data} />;
       case 'analytics':
-        return <AnalyticsTab data={data as never} />;
+        return <AnalyticsTab data={data} />;
       case 'settings':
         return <NinaSettingsTab data={data} />;
       case 'features':
@@ -41,7 +41,7 @@ const NinaWhatsAppBotCRM = () => {
       case 'lifecycle':
         return <AssistantLifecycleTab assistantId="nina" color="#F59E0B" assistantName="Nina" />;
       default:
-        return <BotsTab data={data as never} />;
+        return <BotsTab data={data} />;
     }
   };
 
