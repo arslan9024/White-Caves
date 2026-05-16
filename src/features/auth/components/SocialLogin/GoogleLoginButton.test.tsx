@@ -5,7 +5,7 @@
  */
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor, act } from '@testing-library/react';
 import React from 'react';
 import { Provider } from 'react-redux';
 import { configureStore } from '@reduxjs/toolkit';
@@ -144,14 +144,16 @@ describe('GoogleLoginButton', () => {
       });
 
       // Resolve to avoid unhandled promise rejections
-      resolvePopup!({
-        user: {
-          uid: 'u1',
-          email: 'a@b.com',
-          displayName: null,
-          photoURL: null,
-          getIdToken: vi.fn(),
-        },
+      await act(async () => {
+        resolvePopup!({
+          user: {
+            uid: 'u1',
+            email: 'a@b.com',
+            displayName: null,
+            photoURL: null,
+            getIdToken: vi.fn(),
+          },
+        });
       });
     });
   });
@@ -319,14 +321,16 @@ describe('GoogleLoginButton', () => {
         expect(mockSignInWithPopup).toHaveBeenCalledTimes(1);
       });
 
-      resolvePopup!({
-        user: {
-          uid: 'u1',
-          email: 'a@b.com',
-          displayName: null,
-          photoURL: null,
-          getIdToken: vi.fn(),
-        },
+      await act(async () => {
+        resolvePopup!({
+          user: {
+            uid: 'u1',
+            email: 'a@b.com',
+            displayName: null,
+            photoURL: null,
+            getIdToken: vi.fn(),
+          },
+        });
       });
     });
   });
