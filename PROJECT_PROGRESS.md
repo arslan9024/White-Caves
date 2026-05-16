@@ -101,6 +101,8 @@
 - [x] E2E stabilization wave completed for active suites (latest targeted runs green)
 - [x] Phase 99 signoff automation implemented (`scripts/orchestrator/phase99-signoff.ps1`)
 - [x] New unified commands added (`npm run orchestrator:phase99`, `npm run orchestrator:phase99:quick`)
+- [x] Full signoff run validated end-to-end: gate PASS, build PASS, and critical Chromium E2E pack PASS (**37 passed / 0 failed / 41 skipped**)
+- [x] Milestone matrix aligned with readiness evidence (**42/42 files READY**, **84% average score**)
 
 **Cross-Agent Coordination Used:** @Ada, @Margaret, @Mira, @Katherine, @Gwynne, @Radia
 
@@ -133,8 +135,8 @@
 - [x] Free/junior model lock policy (17 agents, zero premium)
 - [x] Senior premium-only routing (coders + designers)
 - [x] Collaboration mesh and FEEDS/CONSUMES handoff protocol
-- [ ] Evidence packet at >=60% with business rules, API contract, data schema, and test scenario
-- [ ] Readiness score packet at >=60% with evidence
+- [x] Evidence packet at >=60% with business rules, API contract, data schema, and test scenario
+- [x] Readiness score packet at >=60% with evidence
 - [ ] Daily quota plan logged before premium coding
 - [ ] Mandatory wave artifact bundle present in `plans/waves/` for each premium wave
 
