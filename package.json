@@ -163,6 +163,8 @@
     "orchestrator:phase-bundle:quick": "powershell -ExecutionPolicy Bypass -File scripts/orchestrator/phase-bundle.ps1 -SkipTests",
     "orchestrator:phase-bundle:2x": "powershell -ExecutionPolicy Bypass -File scripts/orchestrator/phase-bundle.ps1 -Cycles 2",
     "orchestrator:phase-bundle:2x:quick": "powershell -ExecutionPolicy Bypass -File scripts/orchestrator/phase-bundle.ps1 -Cycles 2 -SkipTests",
+    "orchestrator:phase-bundle:report": "powershell -ExecutionPolicy Bypass -File scripts/orchestrator/phase-bundle-report.ps1",
+    "orchestrator:phase-bundle:report:json": "powershell -ExecutionPolicy Bypass -File scripts/orchestrator/phase-bundle-report.ps1 -Json",
     "orchestrator:phase99": "powershell -ExecutionPolicy Bypass -File scripts/orchestrator/phase99-signoff.ps1",
     "orchestrator:phase99:quick": "powershell -ExecutionPolicy Bypass -File scripts/orchestrator/phase99-signoff.ps1 -SkipTests"
   },
