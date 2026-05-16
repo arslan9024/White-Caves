@@ -4,6 +4,7 @@ param(
   [string]$WorkspaceRoot = ".",
   [int]$PhaseCount = 5,
   [int]$Cycles = 1,
+  [string]$ReportPath = "logs/orchestrator/phase-bundle-latest.json",
   [switch]$SkipTests,
   [switch]$SkipBuild,
   [switch]$PrintOnly
@@ -20,6 +21,7 @@ if ($Cycles -lt 1) {
 }
 
 $root = Resolve-Path $WorkspaceRoot
+$startedAt = Get-Date
 
 function Invoke-PhaseStep([string]$phaseLabel, [string]$name, [string]$command) {
   Write-Host ""
@@ -51,6 +53,48 @@ function Add-Result([string]$phase, [string]$step, [string]$status, [string]$not
     Status = $status
     Notes  = $notes
   }) | Out-Null
+}
+
+function Write-BundleReport([string]$pipelineStatus, [string]$errorMessage = "") {
+  $endedAt = Get-Date
+  $passCount = @($results | Where-Object { $_.Status -eq "PASS" }).Count
+  $skippedCount = @($results | Where-Object { $_.Status -eq "SKIPPED" }).Count
+  $failCount = @($results | Where-Object { $_.Status -eq "FAIL" }).Count
+
+  $report = [PSCustomObject]@{
+    generatedAt = $endedAt.ToString("o")
+    startedAt = $startedAt.ToString("o")
+    endedAt = $endedAt.ToString("o")
+    pipelineStatus = $pipelineStatus
+    workspaceRoot = $root.Path
+    phaseCount = $PhaseCount
+    cycles = $Cycles
+    skipBuild = [bool]$SkipBuild
+    skipTests = [bool]$SkipTests
+    summary = [PSCustomObject]@{
+      total = $results.Count
+      pass = $passCount
+      skipped = $skippedCount
+      fail = $failCount
+    }
+    error = $errorMessage
+    results = $results
+  }
+
+  $reportAbsPath = if ([System.IO.Path]::IsPathRooted($ReportPath)) {
+    $ReportPath
+  }
+  else {
+    Join-Path $root.Path $ReportPath
+  }
+
+  $reportDir = Split-Path -Parent $reportAbsPath
+  if (-not (Test-Path $reportDir)) {
+    New-Item -ItemType Directory -Path $reportDir -Force | Out-Null
+  }
+
+  $report | ConvertTo-Json -Depth 8 | Set-Content -Path $reportAbsPath -Encoding UTF8
+  Write-Host "[REPORT] $reportAbsPath" -ForegroundColor DarkCyan
 }
 
 function Run-BundleCycle([int]$cycleNumber, [int]$totalCycles) {
@@ -115,6 +159,8 @@ try {
     Write-Host "Progress objective: sustain readiness toward 90%+ project completion." -ForegroundColor Magenta
   }
 
+  Write-BundleReport -pipelineStatus "PASS"
+
   exit 0
 }
 catch {
@@ -129,5 +175,6 @@ catch {
   Write-Host "================================================================" -ForegroundColor Red
 
   Write-Host "[ERROR] 5-phase bundle failed: $_" -ForegroundColor Red
+  Write-BundleReport -pipelineStatus "FAIL" -errorMessage "$_"
   exit 1
 }
