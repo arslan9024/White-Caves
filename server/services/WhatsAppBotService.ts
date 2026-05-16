@@ -12,11 +12,14 @@ const log = createLogger('WhatsApp');
 
 class WhatsAppBotService {
   private client: MetaAPIClient | null = null;
+  private isConfigured = false;
 
   constructor() {
     const accessToken = process.env.WHATSAPP_ACCESS_TOKEN || process.env.WHATSAPP_BOT_TOKEN;
     const businessAccountId = process.env.WHATSAPP_BUSINESS_ACCOUNT_ID;
     const phoneNumberId = process.env.WHATSAPP_PHONE_NUMBER_ID;
+
+    this.isConfigured = Boolean(accessToken && phoneNumberId);
 
     if (accessToken && businessAccountId && phoneNumberId) {
       try {
@@ -25,11 +28,16 @@ class WhatsAppBotService {
       } catch (err) {
         log.error('Failed to init MetaAPIClient:', err);
       }
+    } else if (this.isConfigured) {
+      log.warn(
+        'WhatsApp running in compatibility mode (missing WHATSAPP_BUSINESS_ACCOUNT_ID) — send operations will no-op'
+      );
     } else {
       if (process.env.NODE_ENV === 'production') {
-        log.error(
-          'CRITICAL: WHATSAPP_ACCESS_TOKEN, WHATSAPP_BUSINESS_ACCOUNT_ID, and WHATSAPP_PHONE_NUMBER_ID must be set in production'
-        );
+        const message =
+          'CRITICAL: WHATSAPP_ACCESS_TOKEN (or WHATSAPP_BOT_TOKEN) and WHATSAPP_PHONE_NUMBER_ID must be set in production';
+        log.error(message);
+        throw new Error(message);
       } else {
         log.warn('WhatsApp credentials not configured — message sending disabled');
       }
@@ -40,7 +48,7 @@ class WhatsAppBotService {
    * Initialize and verify WhatsApp bot connection
    */
   async initialize(): Promise<void> {
-    if (!this.client) {
+    if (!this.isConfigured) {
       throw new Error(
         'WhatsApp credentials not configured. Set WHATSAPP_ACCESS_TOKEN, WHATSAPP_BUSINESS_ACCOUNT_ID, and WHATSAPP_PHONE_NUMBER_ID.'
       );
@@ -50,12 +58,16 @@ class WhatsAppBotService {
 
   /**
    * Send a plain-text message to a phone number.
-   * Returns the Meta message ID, or null when credentials are absent.
+   * Sends message when client is available; otherwise no-ops in compatibility mode.
    */
-  async sendMessage(phoneNumber: string, message: string): Promise<string | null> {
-    if (!this.client) {
+  async sendMessage(phoneNumber: string, message: string): Promise<string | undefined> {
+    if (!this.isConfigured) {
       log.warn(`sendMessage skipped (no credentials) to ${phoneNumber}`);
-      return null;
+      return undefined;
+    }
+    if (!this.client) {
+      log.info(`sendMessage compatibility no-op for ${phoneNumber}`);
+      return undefined;
     }
     try {
       const messageId = await this.client.sendMessage(phoneNumber, message);
@@ -118,10 +130,14 @@ class WhatsAppBotService {
     phoneNumber: string,
     templateName: string,
     parameters?: Array<{ type: string; text: string }>
-  ): Promise<string | null> {
-    if (!this.client) {
+  ): Promise<string | undefined> {
+    if (!this.isConfigured) {
       log.warn(`sendTemplateMessage skipped (no credentials) to ${phoneNumber}`);
-      return null;
+      return undefined;
+    }
+    if (!this.client) {
+      log.info(`sendTemplateMessage compatibility no-op for ${phoneNumber}`);
+      return undefined;
     }
     try {
       const paramTexts = parameters?.map(p => p.text);
