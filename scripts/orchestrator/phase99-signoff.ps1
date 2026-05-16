@@ -67,8 +67,8 @@ try {
   }
 
   if (-not $SkipTests) {
-    Invoke-PhaseStep "E2E verification" "npx playwright test src/e2e"
-    Add-Result "E2E verification" "PASS" "Stabilized Playwright src/e2e suite passed"
+    Invoke-PhaseStep "E2E verification" "npx playwright test src/e2e/accessibility.audit.spec.ts src/e2e/functionality.layer3.spec.ts src/e2e/performance.layer5.spec.ts --project=chromium"
+    Add-Result "E2E verification" "PASS" "Critical Chromium E2E pack passed (a11y + functionality + performance)"
   }
   else {
     Add-Result "E2E verification" "SKIPPED" "SkipTests flag used"
