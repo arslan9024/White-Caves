@@ -5,6 +5,8 @@ import { createMockModels } from '../../../test/utils/mockDatabase';
 describe('PropertySourcingService', () => {
   let service;
   let mockModels;
+  let consoleErrorSpy;
+  let consoleLogSpy;
   
   // Mock data matching ACTUAL ConversationAnalyzer output format
   const mockAnalysisResult = {
@@ -55,6 +57,11 @@ describe('PropertySourcingService', () => {
   };
 
   beforeEach(() => {
+    // Suppress expected runtime noise from fallback-mode service paths.
+    // Assertions in this suite validate behavior directly; console output is non-actionable.
+    consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+    consoleLogSpy = vi.spyOn(console, 'log').mockImplementation(() => {});
+
     // Create fresh mock models for each test
     mockModels = createMockModels();
     
@@ -69,6 +76,9 @@ describe('PropertySourcingService', () => {
   });
 
   afterEach(() => {
+    consoleErrorSpy?.mockRestore();
+    consoleLogSpy?.mockRestore();
+
     // Clear mock data after each test
     if (mockModels) {
       Object.values(mockModels).forEach(model => {
