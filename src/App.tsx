@@ -10,6 +10,7 @@ import AppLayout from './components/layout/AppLayout';
 import PortalLayout from './components/portal/PortalLayout';
 import SuspenseLoader from './components/common/SuspenseLoader';
 import RouteErrorBoundary from './components/RouteErrorBoundary';
+import SignInPage from './pages/auth/SignInPage';
 import type { RootState, AppDispatch } from './store/store';
 import { safeStorage } from './utils/safeStorage';
 import { authFetch } from './utils/authFetch';
@@ -19,7 +20,6 @@ const UniversalComponents = lazy(() => import('./components/layout/UniversalComp
 const RoleGateway = lazy(() => import('./components/RoleGateway'));
 
 // All pages lazy-loaded for optimal bundle splitting
-const SignInPage = lazy(() => import('./pages/auth/SignInPage'));
 const ProfilePage = lazy(() => import('./pages/auth/ProfilePage'));
 const PendingApprovalPage = lazy(() => import('./pages/auth/PendingApprovalPage'));
 const HomePage = lazy(() => import('./pages/HomePage'));
@@ -426,7 +426,7 @@ function App(): React.JSX.Element {
                   path="/signin"
                   element={
                     user ? (
-                      <Navigate to="/dashboard" replace />
+                      <Navigate to="/crm" replace />
                     ) : (
                       <RouteErrorBoundary section="Sign In">
                         <Suspense fallback={<SuspenseLoader />}>
@@ -441,7 +441,7 @@ function App(): React.JSX.Element {
                   path="/signup"
                   element={
                     user ? (
-                      <Navigate to="/dashboard" replace />
+                      <Navigate to="/crm" replace />
                     ) : (
                       <RouteErrorBoundary section="Sign Up">
                         <Suspense fallback={<SuspenseLoader />}>
@@ -557,14 +557,14 @@ function App(): React.JSX.Element {
 
                 {/* ==================== UNIFIED DASHBOARD ==================== */}
                 <Route
-                  path="/dashboard"
+                  path="/crm"
                   element={
                     <ProtectedRoute>
                       <DashboardEntryRoute />
                     </ProtectedRoute>
                   }
                 />
-                <Route path="/crm" element={<Navigate to="/dashboard" replace />} />
+                <Route path="/dashboard" element={<Navigate to="/crm" replace />} />
 
                 {/* ==================== ROLE-SPECIFIC SUB-PAGES ==================== */}
                 <Route

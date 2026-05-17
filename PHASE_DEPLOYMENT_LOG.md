@@ -11,6 +11,7 @@
 - Updated repository guidance to require the `develop`-first workflow for future sessions.
 - Verified the production build and confirmed the local dev server starts successfully.
 - Pulled the latest `origin/main`, merged `develop` into the production worktree, and resolved all merge conflicts.
+- Pulled the latest `origin/main`, merged `develop` into the production worktree, resolved conflicts, and pushed `main`.
 
 ## Files Modified This Session
 
@@ -43,7 +44,14 @@
 ## Deployment Notes
 
 - Release merge to `main` completed successfully after validation.
+- Release merge to `main` completed successfully after validation.
 - `main` push confirmed with release commit: `5c85e058`.
+
+## Release Update (2026-05-18)
+
+- Merged Google login resilience + CRM-first authenticated routing from `develop`.
+- Validation completed before merge: focused auth tests + production build pass.
+- Release objective: remove social-login hard-fail when backend sync is transiently unavailable and ensure successful login lands in CRM.
 
 ## Confirmation
 
