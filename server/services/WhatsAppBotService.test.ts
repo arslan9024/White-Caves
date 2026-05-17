@@ -24,6 +24,13 @@ vi.mock('./whatsapp/metaAPI.js', () => ({
   MetaAPIClient: class {
     sendMessage = mockMetaSendMessage;
     sendTemplate = mockMetaSendTemplate;
+    getStats() {
+      return {
+        apiVersion: 'v17.0',
+        phoneNumberId: process.env.WHATSAPP_PHONE_NUMBER_ID || 'mock-phone-id',
+        businessAccountId: process.env.WHATSAPP_BUSINESS_ACCOUNT_ID,
+      };
+    }
   },
 }));
 
@@ -91,6 +98,20 @@ describe('WhatsAppBotService', () => {
       const service = await importFresh();
       expect(service).toBeDefined();
     });
+
+    it('exposes initial stats and client metadata', async () => {
+      const service = await importFresh();
+      expect(service.getStats()).toMatchObject({
+        configured: true,
+        clientReady: true,
+        totalSendRequests: 0,
+        successfulSends: 0,
+        failedSends: 0,
+        client: {
+          phoneNumberId: 'phone-123',
+        },
+      });
+    });
   });
 
   // ─── initialize ───────────────────────────────────────────────────
@@ -138,6 +159,14 @@ describe('WhatsAppBotService', () => {
       const service = await importFresh();
       await expect(service.sendMessage('+971501234567', 'Hello')).resolves.toBe('wa-msg-recovered');
       expect(mockMetaSendMessage).toHaveBeenCalledTimes(3);
+      expect(service.getStats()).toMatchObject({
+        totalSendRequests: 1,
+        messageSendRequests: 1,
+        successfulSends: 1,
+        failedSends: 0,
+        retryableFailureEvents: 2,
+        retriesScheduled: 2,
+      });
     });
 
     it('throws after max retries when transient failures persist', async () => {
@@ -162,6 +191,12 @@ describe('WhatsAppBotService', () => {
       const service = await importFresh();
       await expect(service.sendMessage('+971501234567', 'Hello')).rejects.toThrow(/400/i);
       expect(mockMetaSendMessage).toHaveBeenCalledTimes(1);
+      expect(service.getStats()).toMatchObject({
+        failedSends: 1,
+        nonRetryableFailureEvents: 1,
+        retriesScheduled: 0,
+        lastFailureMessage: 'Meta API Error [400]: invalid recipient',
+      });
     });
 
     it('honors WHATSAPP_MAX_SEND_RETRIES override', async () => {
@@ -187,6 +222,12 @@ describe('WhatsAppBotService', () => {
       const service = await importFresh();
       await expect(service.sendMessage('', 'Hello')).rejects.toThrow(/phoneNumber is required/i);
       expect(mockMetaSendMessage).not.toHaveBeenCalled();
+      expect(service.getStats()).toMatchObject({
+        totalSendRequests: 1,
+        failedSends: 1,
+        validationFailures: 1,
+        lastFailureMessage: 'phoneNumber is required',
+      });
     });
 
     it('rejects empty message body early', async () => {
@@ -199,6 +240,12 @@ describe('WhatsAppBotService', () => {
         /message body is required/i
       );
       expect(mockMetaSendMessage).not.toHaveBeenCalled();
+      expect(service.getStats()).toMatchObject({
+        totalSendRequests: 1,
+        failedSends: 1,
+        validationFailures: 1,
+        lastFailureMessage: 'message body is required',
+      });
     });
   });
 
@@ -302,6 +349,13 @@ describe('WhatsAppBotService', () => {
         ])
       ).rejects.toThrow(/403/i);
       expect(mockMetaSendTemplate).toHaveBeenCalledTimes(1);
+      expect(service.getStats()).toMatchObject({
+        totalSendRequests: 1,
+        templateSendRequests: 1,
+        failedSends: 1,
+        nonRetryableFailureEvents: 1,
+        lastFailureMessage: 'Meta API Error [403]: forbidden template',
+      });
     });
 
     it('rejects empty phone number for template message', async () => {
@@ -314,6 +368,13 @@ describe('WhatsAppBotService', () => {
         /phoneNumber is required/i
       );
       expect(mockMetaSendTemplate).not.toHaveBeenCalled();
+      expect(service.getStats()).toMatchObject({
+        totalSendRequests: 1,
+        templateSendRequests: 1,
+        failedSends: 1,
+        validationFailures: 1,
+        lastFailureMessage: 'phoneNumber is required',
+      });
     });
 
     it('rejects empty template name early', async () => {
