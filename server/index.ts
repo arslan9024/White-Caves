@@ -45,6 +45,9 @@ import lindaRoutes from './routes/linda.js';
 import metaWebhookRoutes from './routes/meta-webhook.js';
 import favoritesRoutes from './routes/favorites.js';
 import orchestratorRoutes from './routes/orchestrator.js';
+import henryRoutes from './routes/henry.js';
+import ninaRoutes from './routes/nina.js';
+import maryRoutes from './routes/mary.js';
 import savedSearchesRoutes from './routes/saved-searches.js';
 import viewingsRoutes from './routes/viewings.js';
 import offersRoutes from './routes/offers.js';
@@ -357,6 +360,9 @@ app.use('/api/linda', lindaRoutes);
 
 // AssistantOrchestrator API — cross-assistant event bus status, events, and admin emit
 app.use('/api/orchestrator', orchestratorRoutes);
+app.use('/api/henry',       henryRoutes);
+app.use('/api/nina',        ninaRoutes);
+app.use('/api/mary',        maryRoutes);
 
 // Meta Business API Webhooks and Sending (production scale channel)
 app.use('/api/webhooks/meta', metaWebhookRoutes);

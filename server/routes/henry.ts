@@ -712,4 +712,59 @@ router.get('/event-log', requireMinRole('agent'), (_req: Request, res: Response)
   }
 });
 
+// ─── POST /api/henry/ai-draft ─────────────────────────────────────────────────
+
+/**
+ * Generate an AI first-draft for a legal document using Groq.
+ * Falls back to a handlebars template when GROQ_API_KEY is absent.
+ *
+ * Body: DocumentDraftInput (see server/services/henry/aiDocumentDrafter.ts)
+ */
+router.post('/ai-draft', requireMinRole('agent'), async (req: Request, res: Response) => {
+  try {
+    const { generateDocumentDraft } = await import('../services/henry/aiDocumentDrafter.js');
+    const result = await generateDocumentDraft(req.body);
+    res.json({ success: true, data: result });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err instanceof Error ? err.message : 'Unknown error' });
+  }
+});
+
+// ─── POST /api/henry/ejari-submit ────────────────────────────────────────────
+
+/**
+ * Submit a tenancy contract to Ejari / DLD.
+ * Returns mock response when DLD_API_KEY is not configured.
+ *
+ * Body: EjariPayload (see server/services/henry/ejariService.ts)
+ */
+router.post('/ejari-submit', requireMinRole('agent'), async (req: Request, res: Response) => {
+  try {
+    const { submitToEjari } = await import('../services/henry/ejariService.js');
+    const result = await submitToEjari(req.body);
+    const status = result.success ? 200 : 422;
+    res.status(status).json({ success: result.success, data: result });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err instanceof Error ? err.message : 'Unknown error' });
+  }
+});
+
+// ─── POST /api/henry/translate ────────────────────────────────────────────────
+
+/**
+ * Translate or produce a bilingual (AR/EN) version of a legal document.
+ * Uses OpenAI when OPENAI_API_KEY is set, otherwise falls back to clause bank.
+ *
+ * Body: TranslationInput (see server/services/henry/multiLangContract.ts)
+ */
+router.post('/translate', requireMinRole('agent'), async (req: Request, res: Response) => {
+  try {
+    const { generateMultiLangContract } = await import('../services/henry/multiLangContract.js');
+    const result = await generateMultiLangContract(req.body);
+    res.json({ success: true, data: result });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err instanceof Error ? err.message : 'Unknown error' });
+  }
+});
+
 export default router;

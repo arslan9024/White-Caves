@@ -771,4 +771,77 @@ router.post('/henry-trigger', async (req: Request, res: Response) => {
   }
 });
 
+// ─── POST /api/linda/transcribe ──────────────────────────────────────────────
+
+/**
+ * Transcribe a WhatsApp voice message using Whisper API.
+ * Accepts multipart/form-data with field `audio` (buffer) and `format` (string).
+ * Also accepts JSON with `audioBase64` and `format` for smaller messages.
+ *
+ * Returns graceful error when OPENAI_API_KEY is not set.
+ */
+router.post('/transcribe', requirePermission('view_whatsapp_conversations'), async (req: Request, res: Response) => {
+  try {
+    const { transcribeVoiceMessage } = await import('../services/linda/voiceTranscription.js');
+    const { audioBase64, format = 'ogg', languageHint, contextPrompt } = req.body as {
+      audioBase64?: string;
+      format?: string;
+      languageHint?: string;
+      contextPrompt?: string;
+    };
+
+    if (!audioBase64) {
+      return res.status(400).json({ success: false, error: 'audioBase64 is required' });
+    }
+
+    const audioBuffer = Buffer.from(audioBase64, 'base64');
+    const result = await transcribeVoiceMessage({
+      audioBuffer,
+      format:        format as 'ogg' | 'mp3' | 'm4a' | 'wav' | 'webm',
+      languageHint,
+      contextPrompt,
+    });
+    res.json({ success: true, data: result });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err instanceof Error ? err.message : 'Unknown error' });
+  }
+});
+
+// ─── GET /api/linda/sentiment-alerts ─────────────────────────────────────────
+
+/**
+ * Return real-time sentiment alerts for the CRM agent dashboard.
+ * Query params: unacknowledged=true|false, limit=N (default 50)
+ */
+router.get('/sentiment-alerts', requirePermission('view_whatsapp_conversations'), async (req: Request, res: Response) => {
+  try {
+    const { getAlerts, getAlertSummary } = await import('../services/linda/sentimentAlertService.js');
+    const onlyUnacked = req.query['unacknowledged'] === 'true';
+    const limit       = parseInt(String(req.query['limit'] ?? '50'), 10);
+    const alerts  = getAlerts(onlyUnacked, limit);
+    const summary = getAlertSummary();
+    res.json({ success: true, data: { alerts, summary, count: alerts.length } });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err instanceof Error ? err.message : 'Unknown error' });
+  }
+});
+
+// ─── POST /api/linda/sentiment-alerts/:alertId/acknowledge ───────────────────
+
+/**
+ * Acknowledge a sentiment alert (mark as seen by agent).
+ */
+router.post('/sentiment-alerts/:alertId/acknowledge', requirePermission('view_whatsapp_conversations'), async (req: AuthRequest, res: Response) => {
+  try {
+    const { acknowledgeAlert } = await import('../services/linda/sentimentAlertService.js');
+    const { alertId } = req.params as { alertId: string };
+    const agentId     = req.user?.id ?? 'unknown';
+    const ok = acknowledgeAlert(alertId, agentId);
+    if (!ok) return res.status(404).json({ success: false, error: `Alert ${alertId} not found` });
+    res.json({ success: true, data: { acknowledged: true, alertId } });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err instanceof Error ? err.message : 'Unknown error' });
+  }
+});
+
 export default router;
