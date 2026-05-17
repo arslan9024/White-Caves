@@ -6,7 +6,7 @@
  * service card clicks, Suspense fallbacks
  */
 
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeAll, beforeEach, afterAll } from 'vitest';
 import { render, screen, fireEvent, within } from '@testing-library/react';
 import React from 'react';
 
@@ -47,7 +47,10 @@ vi.mock('../../../hooks/useActionHandler', () => ({
 
 vi.mock('../../../utils/logger', () => ({
   createLogger: () => ({
-    info: vi.fn(), warn: vi.fn(), error: vi.fn(), debug: vi.fn(),
+    info: vi.fn(),
+    warn: vi.fn(),
+    error: vi.fn(),
+    debug: vi.fn(),
   }),
 }));
 
@@ -63,16 +66,12 @@ vi.mock('../../charts/MetricsChart', () => ({
 
 vi.mock('../../charts/TrendChart', () => ({
   __esModule: true,
-  default: ({ title }: { title: string }) => (
-    <div data-testid="trend-chart">{title}</div>
-  ),
+  default: ({ title }: { title: string }) => <div data-testid="trend-chart">{title}</div>,
 }));
 
 vi.mock('../../charts/DistributionChart', () => ({
   __esModule: true,
-  default: ({ title }: { title: string }) => (
-    <div data-testid="distribution-chart">{title}</div>
-  ),
+  default: ({ title }: { title: string }) => <div data-testid="distribution-chart">{title}</div>,
 }));
 
 vi.mock('../../charts/EnhancedStatCard', () => ({
@@ -112,11 +111,9 @@ vi.mock('./departmentData', () => {
               { label: 'Import Data', icon: () => React.createElement('span', null, '📥') },
             ],
           },
-          'Properties': {
+          Properties: {
             description: 'Property Management & Tracking',
-            stats: [
-              { label: 'Total Properties', value: '9,378' },
-            ],
+            stats: [{ label: 'Total Properties', value: '9,378' }],
             actions: [
               { label: 'View Properties', icon: () => React.createElement('span', null, '📄') },
             ],
@@ -137,9 +134,13 @@ vi.mock('./styles', () => {
   const createStyledMock = (tag: string, testId: string) => {
     const Component = React.forwardRef(({ children, ...props }: Record<string, unknown>, ref) => {
       const sanitizedProps = Object.fromEntries(
-        Object.entries(props).filter(([key]) => key !== 'as' && !key.startsWith('$')),
+        Object.entries(props).filter(([key]) => key !== 'as' && !key.startsWith('$'))
       );
-      return React.createElement(tag, { 'data-testid': testId, ref, ...sanitizedProps }, children as React.ReactNode);
+      return React.createElement(
+        tag,
+        { 'data-testid': testId, ref, ...sanitizedProps },
+        children as React.ReactNode
+      );
     });
     Component.displayName = testId;
     return Component;
@@ -194,10 +195,19 @@ import DepartmentContentPanel from './DepartmentContentPanel';
 // ── Test Suite ───────────────────────────────────────────────────
 
 describe('DepartmentContentPanel', () => {
+  beforeAll(() => {
+    vi.spyOn(console, 'error').mockImplementation(() => {});
+    vi.spyOn(console, 'warn').mockImplementation(() => {});
+  });
+
   beforeEach(() => {
     vi.clearAllMocks();
     mockSelectedDepartment = null;
     mockSelectedService = null;
+  });
+
+  afterAll(() => {
+    vi.restoreAllMocks();
   });
 
   // ────── Empty State ──────
@@ -210,9 +220,7 @@ describe('DepartmentContentPanel', () => {
 
     it('renders empty state help text', () => {
       render(<DepartmentContentPanel />);
-      expect(
-        screen.getByText(/Choose a department from the left sidebar/),
-      ).toBeInTheDocument();
+      expect(screen.getByText(/Choose a department from the left sidebar/)).toBeInTheDocument();
     });
 
     it('renders icon in empty state', () => {
@@ -261,9 +269,7 @@ describe('DepartmentContentPanel', () => {
 
     it('renders overview guidance text', () => {
       render(<DepartmentContentPanel />);
-      expect(
-        screen.getByText(/Select a service from the left sidebar/),
-      ).toBeInTheDocument();
+      expect(screen.getByText(/Select a service from the left sidebar/)).toBeInTheDocument();
     });
 
     it('renders "Key Metrics" section', () => {
@@ -342,7 +348,7 @@ describe('DepartmentContentPanel', () => {
     it('service cards have role="button" and tabIndex=0', () => {
       render(<DepartmentContentPanel />);
       const cards = screen.getAllByTestId('service-card');
-      cards.forEach((card) => {
+      cards.forEach(card => {
         expect(card.getAttribute('role')).toBe('button');
         expect(card.getAttribute('tabindex')).toBe('0');
         expect(card.getAttribute('aria-label')).toMatch(/^Open .* service$/);
@@ -359,7 +365,11 @@ describe('DepartmentContentPanel', () => {
     it('activates service on Space key press', () => {
       render(<DepartmentContentPanel />);
       const card = screen.getByText('Properties').closest('[data-testid="service-card"]');
-      const didBubbleWithoutCancel = fireEvent.keyDown(card!, { key: ' ', code: 'Space', charCode: 32 });
+      const didBubbleWithoutCancel = fireEvent.keyDown(card!, {
+        key: ' ',
+        code: 'Space',
+        charCode: 32,
+      });
       expect(didBubbleWithoutCancel).toBe(false);
       expect(mockDispatch).toHaveBeenCalled();
     });
@@ -370,7 +380,7 @@ describe('DepartmentContentPanel', () => {
       expect(card).toHaveAttribute('aria-describedby', 'service-desc-inventory-management');
       expect(screen.getByText('Manage All Property Inventory')).toHaveAttribute(
         'id',
-        'service-desc-inventory-management',
+        'service-desc-inventory-management'
       );
     });
 
@@ -435,7 +445,7 @@ describe('DepartmentContentPanel', () => {
       expect(mockHandleAction).toHaveBeenCalledWith(
         'View Inventory',
         'operations',
-        'Inventory Management',
+        'Inventory Management'
       );
     });
 

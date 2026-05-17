@@ -1,0 +1,42 @@
+62`t[22m[39mWarning: An update to AdminDashboard inside a test was not wrapped
+29`t[22m[39mWarning: An update to WhatsAppSettingsPage inside a test was not
+28`tWarning: An update to PropertyManagementPage inside a test was not wrapped in
+28`t[22m[39mWarning: An update to PropertyManagementPage inside a test was not
+21`t[22m[39mWarning: An update to CRMHubPage inside a test was not wrapped in
+16`tWarning: An update to TestComponent inside a test was not wrapped in act(...).
+16`t[22m[39mWarning: An update to TestComponent inside a test was not wrapped in
+6`t[22m[39mWarning: An update to PropertiesPage inside a test was not wrapped
+5`tWarning: An update to LeadScoringModule inside a test was not wrapped in
+5`tWarning: Encountered two children with the same key, `role`. Keys should be
+5`t[22m[39mWarning: An update to LeadScoringModule inside a test was not
+3`tWarning: An update to RentalManagementPage inside a test was not wrapped in
+3`tWarning: A suspended resource finished loading inside a test, but the event
+3`twas not wrapped in act(...).
+3`t[22m[39mWarning: An update to RentalManagementPage inside a test was not
+2`tWarning: An update to AdminDashboard inside a test was not wrapped in act(...).
+2`t[22m[39mWarning: An update to ToastItemComponent inside a test was not
+2`t[22m[39mWarning: A suspended resource finished loading inside a test, but
+2`tthe event was not wrapped in act(...).
+2`t[22m[39mWarning: Failed prop type: Invalid prop `size` of value `small`
+2`tWarning: An update to LoginSecurityPage inside a test was not wrapped in
+1`tWarning: Invalid attribute name: `$processing`
+1`tWarning: Received `false` for a non-boolean attribute `$processing`.
+1`t[22m[39mWarning: Received `false` for a non-boolean attribute `$active`.
+1`tWarning: Invalid attribute name: `$active`
+1`t[22m[39mWarning: validateDOMNesting(...): <thead> cannot appear as a child
+1`tWarning: Function components cannot be given refs. Attempts to access this ref
+1`t[22m[39mWarning: Failed prop type: Invalid prop `size` of value `medium`
+1`t[22m[39mWarning: Received `true` for a non-boolean attribute `$danger`.
+1`tWarning: Invalid attribute name: `$danger`
+1`t[22m[39mWarning: Encountered two children with the same key, `role`. Keys
+1`tWarning: Invalid attribute name: `$isActive`
+1`t[22m[39mWarning: An update to TenantScreeningPage inside a test was not
+1`t[22m[39mWarning: React does not recognize the `$isActive` prop on a DOM
+1`tWarning: Received NaN for the `x` attribute. If this is expected, cast the
+1`t[22m[39mWarning: Received NaN for the `cx` attribute. If this is expected,
+1`tWarning: An update to TenantScreeningPage inside a test was not wrapped in
+1`t[22m[39mWarning: An update to LoginSecurityPage inside a test was not
+1`t[22m[39mWarning: Invalid attribute name: `$platform`
+1`tWarning: validateDOMNesting(...): <tbody> cannot appear as a child of <div>.
+1`tWarning: Received `false` for a non-boolean attribute `completed`.
+1`t[22m[39mWarning: Received `true` for a non-boolean attribute `active`.

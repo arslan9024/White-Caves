@@ -2,6 +2,14 @@
 
 ## Strategy: High-Efficiency Multi-Agent Autonomous Framework
 
+## Branch & Release Workflow
+
+- Start implementation sessions on the local `develop` branch.
+- If the workspace is on `development`, switch to `develop` from `origin/development` before editing.
+- Keep `main` reserved for verified release merges only.
+- Before merging to `main`, log modified files, resolved conflicts, and build health in `PHASE_DEPLOYMENT_LOG.md`.
+- Prefer the safe release chain: build, runtime verification, merge, conflict resolution, commit, push.
+
 ### 0. THE EXECUTIVE CORE (The Brains)
 
 | Agent         | Role              | Model                 | Context & Skills                                                           |
@@ -137,9 +145,8 @@
    [ ] 6. QUOTA AVAILABLE: Check WEEKLY PREMIUM QUOTA in PROJECT_PROGRESS.md.
           → If 0 requests remaining → queue work, do NOT start premium coding.
    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-   [ ] 7. 1000% DEPTH GATE MET: Have all prerequisite docs reached 10× target depth with 10 evidence layers?
-   [ ] 8. READINESS THRESHOLD MET: Is readiness score >=92% with evidence?
-   ✅ ALL 8 CHECKED? → @Ada declares: "Context Ready (1000% Depth, 92% Readiness) — Coding Phase Approved"
+   [ ] 7. READINESS GATE MET: Is readiness score >=60% with evidence?
+   ✅ ALL 7 CHECKED? → @Ada declares: "Context Ready (60% Readiness) — Coding Phase Approved"
    ❌ ANY UNCHECKED? → Route back to free planning agents. Do NOT code.
    ```
 
@@ -175,10 +182,11 @@
    Session ends with @Gwynne committing + pushing to development branch.
    ```
 
-9. **🔄 NO-IDLE POLICY — Expanded Free Agent Pool (17 Agents Total):**
-   The free agent team has been expanded from 5 to 17 agents. All run in external free tools. All follow the same zero-premium rule. Every agent has a 3-task backlog queue in AGENTS.md. No agent ever idles.
+9. **🔄 NO-IDLE POLICY — Expanded Free Agent Pool (40 Agents Total):**
+   The free agent team has been expanded from 17 to 40 agents (17 core + 23 growth). All run in external free tools. All follow the same zero-premium rule. Every agent has a 3-task backlog queue in AGENTS.md. No agent ever idles.
+   The planning pool is divided into 4 parallel teams so 4 different tasks can move at the same time.
 
-   **Complete Free Agent Roster (17 agents — 60-minute loop):**
+   **Complete Free Agent Roster (40 agents — 60-minute loop inside 4 teams):**
 
    ```
    Slot  Agent      Tool                 Model              Domain
@@ -222,23 +230,15 @@
    5. Return to terminal — script will show the next agent in 5 minutes
    ```
 
-10. **📚 1000% DEPTH ENFORCEMENT (Mandatory Before Any Premium Coding):**
-    - Every prerequisite `business_docs/` and `plans/` file must reach **10× previous depth** before implementation begins.
-    - “1000%” means both **quantity and quality**: each major section must include all 10 evidence layers:
-      1. business rule, 2) API contract, 3) data schema/model, 4) validation rules, 5) failure/edge handling,
-      6) security/compliance controls, 7) UX states/mobile/RTL, 8) unit/integration/E2E tests,
-      7) observability metrics/logging, 10) rollback/migration plan.
-    - Baseline multipliers (examples):
-      - tenancy-ejari 14→140, landlord-portal 13→130
-      - financial-reporting 11→110, revenue-model 13→130
-      - compliance-requirements 12→120
-      - analytics-dashboard 22→220, agent-performance 14→140
-      - AI personas README 40 persona entries → 400 persona-depth units
-    - If any prerequisite is <1000% target, coding is BLOCKED and must route back to free agents.
+10. **🎯 READINESS ENFORCEMENT (Fast-Track Mode):**
+    - Implementation starts when readiness score reaches **>=60%** with documented evidence.
+    - Evidence includes: business rules defined, API contract drafted, data schema available, 1+ test scenario listed.
+    - Deep documentation is encouraged but NOT a coding blocker.
+    - Missing deep detail is acceptable for low-risk modules when pattern exists and rollback is clear.
 
-11. **🎯 READINESS GATE (30-Check Matrix + Score Threshold):**
+11. **🎯 READINESS GATE (Fast-Track Checklist):**
 
-- Premium coding/design is forbidden until readiness is **>=92%** with evidence and matrix checks logged.
+- Premium coding/design is forbidden until readiness is **>=60%** with evidence documented.
   - 6 groups × 5 checks each:
     - **Business** (scope, acceptance criteria, process rules, ownership, rollback)
     - **API** (request/response schema, auth, errors, pagination, rate limits)
@@ -247,7 +247,7 @@
     - **QA** (unit/integration/E2E scenarios, non-functional checks, regression scope)
     - **Compliance/Sign-off** (RERA/DLD/PDPL checks + @Margaret/@Sofia/@Katherine sign-off)
   - Final approval phrase is exact and mandatory:
-    - `@Ada — Context Ready (1000% Depth, 92% Readiness) — Coding Phase Approved`
+    - `@Ada — Context Ready (60% Readiness) — Coding Phase Approved`
 
 12. **🧠 PREMIUM ACCESS (STRICT — SENIORS ONLY, POST-GATE ONLY):**
     - Premium Copilot requests are allowed only for:
@@ -275,15 +275,14 @@
       - @Marissa → @Rachel → @Joelle
       - Cross-cutting synthesis: all free agents → @Margaret → @Ada approval gate.
     - Cadence:
-      - 4-hour mini-sync handoff notes from active free agents
+      - 2-minute micro-sync handoff notes from active free agents
       - Daily noon synthesis by @Margaret
       - Pre-coding gate validation by @Ada
 
-15. **🚪 SESSION START GATE ADDENDUM (8 checks total):**
+15. **🚪 SESSION START GATE ADDENDUM (7 checks total):**
     - Existing 6 checks remain mandatory.
-    - Add two required checks before any coding:
-      - [ ] 7. **1000% DEPTH GATE MET:** all prerequisite docs reached 10× target depth.
-      - [ ] 8. **READINESS >=92% MET:** readiness packet and matrix evidence are complete.
+    - Add one required check before any coding:
+      - [ ] 7. **READINESS >=60% MET:** readiness packet with key evidence documented.
 
 16. **🧭 GOVERNANCE UPGRADE V2 (Supersedes conflicting older thresholds):**
 
@@ -299,30 +298,25 @@
   4. premium request budget estimate for the day.
 - No preflight packet = no premium coding.
 
-18. **📚 1000% DEPTH GATE (Replaces 500% gate):**
+18. **📚 MINIMUM DEPTH GATE (Fast-Track Mode):**
 
-- Every prerequisite `business_docs/` and `plans/` file must reach **10× previous depth** before premium implementation.
-- Each major section must include 10 evidence layers:
-  1. business rule, 2) API contract, 3) data schema/model, 4) validation rules,
-  2. failure/edge handling, 6) security/compliance controls, 7) UX states/mobile/RTL,
-  3. unit/integration/E2E tests, 9) observability metrics/logging, 10) rollback/migration plan.
-- Any missing critical evidence layer blocks premium coding.
+- Every prerequisite `business_docs/` and `plans/` file should reach **60% readiness** before premium implementation.
+- Evidence should cover: business rule, API contract, data schema, validation, 1 test, and rollback note.
+- Deep evidence layers are encouraged but do not block low-risk work.
 
-19. **🧱 MANDATORY SDD + FLOWCHART ARTIFACTS (Before premium coding):**
+19. **🧱 LIGHTWEIGHT WAVE ARTIFACTS (Before premium coding):**
 
-- Each premium wave must have an approved artifact bundle in `plans/waves/`:
+- Each premium wave should have a compact artifact bundle in `plans/waves/`:
   - `WAVE_##_SDD.md`
-  - `WAVE_##_FLOWCHARTS.md` (Mermaid flowchart + sequence diagram)
   - `WAVE_##_READINESS_PACKET.md`
   - `WAVE_##_IMPLEMENTATION_BACKLOG.md`
-  - `WAVE_##_TEST_ROLLOUT.md`
-- Premium coding is blocked until all five artifacts are present and signed off.
+- `WAVE_##_FLOWCHARTS.md` and `WAVE_##_TEST_ROLLOUT.md` are recommended, not blocking, for low-risk modules.
 
-20. **📈 READINESS THRESHOLD UPDATE (from binary 99% phrase):**
+20. **📈 READINESS THRESHOLD UPDATE (Fast-Track Gate):**
 
-- Premium unlock requires **minimum 92% readiness score** with evidence.
+- Premium unlock requires **minimum 60% readiness score** with evidence.
 - Final approval phrase is now mandatory and exact:
-  - `@Ada — Context Ready (1000% Depth, 92% Readiness) — Coding Phase Approved`
+  - `@Ada — Context Ready (60% Readiness) — Coding Phase Approved`
 
 21. **💳 DAILY PREMIUM QUOTA MODEL (Derived from weekly):**
 
@@ -331,11 +325,11 @@
 - Daily cap must be logged in `PROJECT_PROGRESS.md` before coding.
 - If daily cap is exhausted, remaining work is queued to next day unless emergency exception approved by @Ada.
 
-22. **🚀 LARGE-WAVE PREMIUM EXECUTION (No micro-phase premium requests):**
+22. **🚀 MICRO-WAVE PREMIUM EXECUTION (Fast Implementation):**
 
-- Default premium coding batch size is **3–5 modules per day**.
-- Small isolated premium tasks are disallowed unless bundled into an approved wave packet.
-- Time is not a constraint; depth, correctness, and integration quality are the priority.
+- Default premium coding batch size is **1–2 modules per day**.
+- Small isolated premium tasks are allowed when risk is low and Gate 1 is passed.
+- Time-to-implementation is the priority; keep waves short and focused.
 
 23. **🛡️ POST-PREMIUM COMMIT RUNTIME GUARD (Mandatory):**
 
@@ -350,3 +344,24 @@
 - Free planning teams should run in background (MVP) using:
   - `npm run orchestrator:bg:start`
   - `npm run orchestrator:bg:stop`
+
+24. **🤖 AUTONOMOUS CONTINUATION MODE (No Repeated "go" Prompts):**
+
+- Default execution mode for approved implementation sessions is **continuous autonomous progression**.
+- Once user intent is clear (e.g., "start implementation", "continue"), execution should proceed micro-wave by micro-wave without waiting for repeated manual confirmation.
+- Hard-stop only on:
+  - failing tests/lint/build,
+  - policy/gate mismatch,
+  - missing credentials/secrets,
+  - irreversible-risk operation requiring explicit user approval.
+- Operational command surface:
+  - `npm run orchestrator:agent-loop:auto`
+  - `npm run orchestrator:agent-loop:auto:nobrowser`
+
+25. **🧩 ORCHESTRATOR POLICY SOURCE OF TRUTH:**
+
+- Runtime gate thresholds and final approval phrase must be sourced from:
+  - `scripts/orchestrator/policy.json`
+- Scripts must not hardcode legacy thresholds (e.g., 92% / 1000% depth).
+- Mandatory approval phrase value remains exact:
+  - `@Ada — Context Ready (60% Readiness) — Coding Phase Approved`

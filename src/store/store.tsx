@@ -13,12 +13,14 @@ import sidebarReducer from './slices/sidebarSlice';
 import notificationReducer from './slices/notificationSlice';
 import whatsappReducer from './slices/whatsappSlice';
 import nadiaReducer from './slices/nadiaSlice';
+import lindaReducer from './slices/lindaSlice';
 import crmDataReducer from './crmDataSlice';
 import roleReducer from './roleSlice';
 import featuresReducer from './featuresSlice';
 import savedSearchesReducer from './slices/savedSearchesSlice';
 import homepageReducer from './slices/homepageSlice';
 import searchLeadsReducer from './slices/searchLeadsSlice';
+import crmViewReducer from './slices/crmViewSlice';
 import eventBusMiddleware from './middleware/eventBusMiddleware';
 import { createLogger } from '../utils/logger';
 
@@ -52,12 +54,14 @@ export const store = configureStore({
     notifications: notificationReducer,
     whatsapp: whatsappReducer,
     nadia: nadiaReducer,
+    linda: lindaReducer,
     crmData: crmDataReducer,
     role: roleReducer,
     features: featuresReducer,
     savedSearches: savedSearchesReducer,
     homepage: homepageReducer,
     searchLeads: searchLeadsReducer,
+    crmView: crmViewReducer,
   },
   middleware: getDefaultMiddleware =>
     getDefaultMiddleware({

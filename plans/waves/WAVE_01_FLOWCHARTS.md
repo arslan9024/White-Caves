@@ -198,7 +198,7 @@ sequenceDiagram
             MG->>ADA: Request coding authorization
             ADA->>ADA: npm run orchestrator:wave-bundle
             ADA-->>SC: Context Ready -- Coding Phase Approved
-            SC->>SC: Implement 3-5 modules
+            SC->>SC: Implement 1-2 modules
             SC->>UA: git commit - premium-wave -
         else Score < 92 pct
             MG->>FA: Route back to free agents

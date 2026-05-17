@@ -3,7 +3,7 @@
 // ============================================================================
 
 export { default as UnifiedCRM } from './UnifiedCRM';
-export type { UnifiedCRMProps } from './UnifiedCRM';
+export type { UnifiedCRMProps } from './types';
 
 // Export custom hooks
 export {

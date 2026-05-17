@@ -143,6 +143,38 @@ export const selectTasks = (state: RootState) => state.aiAssistantDashboard?.tas
 export const selectTasksByAssistant = (assistantId: string) => (state: RootState) =>
   state.aiAssistantDashboard?.tasks?.byAssistantId?.[assistantId] ?? EMPTY_ARRAY;
 
+const deriveLifecycleStage = (task: { lifecycleStage?: string; status?: string }) => {
+  if (task.lifecycleStage) return task.lifecycleStage;
+  if (task.status === 'in_progress') return 'in_progress';
+  if (task.status === 'completed') return 'completed';
+  if (task.status === 'assigned' || task.status === 'pending') return 'queued';
+  return 'created';
+};
+
+export const selectTasksByLifecycleStage =
+  (assistantId: string, stage: string) => (state: RootState) => {
+    const tasks = state.aiAssistantDashboard?.tasks?.byAssistantId?.[assistantId] ?? EMPTY_ARRAY;
+    return tasks.filter(task => deriveLifecycleStage(task) === stage);
+  };
+
+export const selectPendingActionsCount = (assistantId: string) => (state: RootState) => {
+  const tasks = state.aiAssistantDashboard?.tasks?.byAssistantId?.[assistantId] ?? EMPTY_ARRAY;
+  return tasks.filter(task => {
+    const stage = deriveLifecycleStage(task);
+    return stage === 'created' || stage === 'queued' || stage === 'pending_review';
+  }).length;
+};
+
+export const selectCompletedTasksCount = (assistantId: string) => (state: RootState) => {
+  const tasks = state.aiAssistantDashboard?.tasks?.byAssistantId?.[assistantId] ?? EMPTY_ARRAY;
+  return tasks.filter(task => deriveLifecycleStage(task) === 'completed').length;
+};
+
+export const selectInProgressTasksCount = (assistantId: string) => (state: RootState) => {
+  const tasks = state.aiAssistantDashboard?.tasks?.byAssistantId?.[assistantId] ?? EMPTY_ARRAY;
+  return tasks.filter(task => deriveLifecycleStage(task) === 'in_progress').length;
+};
+
 // ── Olivia Automation ───────────────────────────────────────────────────
 
 export const selectOliviaAutomation = (state: RootState) =>
@@ -230,56 +262,3 @@ export const selectAssistantPlanError =
   (id: string) =>
   (state: RootState): string | null =>
     state.aiAssistantDashboard?.plansError?.[id] ?? null;
-
-// ── Task lifecycle selectors ─────────────────────────────────────────────────
-
-/**
- * Returns all tasks for an assistant that are in the given lifecycle stage.
- */
-export const selectTasksByLifecycleStage =
-  (assistantId: string, stage: string) => (state: RootState) =>
-    (state.aiAssistantDashboard?.tasks?.byAssistantId?.[assistantId] ?? EMPTY_ARRAY).filter(
-      (t: { lifecycleStage?: string }) => t.lifecycleStage === stage
-    );
-
-/**
- * Returns the number of tasks for an assistant that are waiting for action
- * (lifecycleStage = "queued" | "pending_review", or status = "pending").
- */
-export const selectPendingActionsCount =
-  (assistantId: string) =>
-  (state: RootState): number => {
-    const tasks = state.aiAssistantDashboard?.tasks?.byAssistantId?.[assistantId] ?? EMPTY_ARRAY;
-    return tasks.filter(
-      (t: { lifecycleStage?: string; status?: string }) =>
-        t.lifecycleStage === 'queued' ||
-        t.lifecycleStage === 'pending_review' ||
-        t.status === 'pending'
-    ).length;
-  };
-
-/**
- * Returns the number of completed tasks for an assistant.
- */
-export const selectCompletedTasksCount =
-  (assistantId: string) =>
-  (state: RootState): number => {
-    const tasks = state.aiAssistantDashboard?.tasks?.byAssistantId?.[assistantId] ?? EMPTY_ARRAY;
-    return tasks.filter(
-      (t: { lifecycleStage?: string; status?: string }) =>
-        t.status === 'completed' || t.lifecycleStage === 'completed'
-    ).length;
-  };
-
-/**
- * Returns the number of in-progress tasks for an assistant.
- */
-export const selectInProgressTasksCount =
-  (assistantId: string) =>
-  (state: RootState): number => {
-    const tasks = state.aiAssistantDashboard?.tasks?.byAssistantId?.[assistantId] ?? EMPTY_ARRAY;
-    return tasks.filter(
-      (t: { lifecycleStage?: string; status?: string }) =>
-        t.status === 'in_progress' || t.lifecycleStage === 'in_progress'
-    ).length;
-  };

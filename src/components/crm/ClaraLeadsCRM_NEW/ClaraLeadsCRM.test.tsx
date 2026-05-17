@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, beforeAll, afterAll } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import React from 'react';
 
@@ -8,9 +8,33 @@ vi.mock('./ClaraLeadsCRM.css', () => ({}));
 // Mock useLeadsData hook (now Redux-based)
 const mockLeadsData = {
   leads: [
-    { id: '1', name: 'Test Lead', stage: 'proposal', tasks: 2, value: 50000, status: 'qualified', probability: 60 },
-    { id: '2', name: 'Hot Lead', stage: 'negotiation', tasks: 1, value: 100000, status: 'qualified', probability: 80 },
-    { id: '3', name: 'Cold Lead', stage: 'initial_contact', tasks: 3, value: 25000, status: 'new', probability: 10 },
+    {
+      id: '1',
+      name: 'Test Lead',
+      stage: 'proposal',
+      tasks: 2,
+      value: 50000,
+      status: 'qualified',
+      probability: 60,
+    },
+    {
+      id: '2',
+      name: 'Hot Lead',
+      stage: 'negotiation',
+      tasks: 1,
+      value: 100000,
+      status: 'qualified',
+      probability: 80,
+    },
+    {
+      id: '3',
+      name: 'Cold Lead',
+      stage: 'initial_contact',
+      tasks: 3,
+      value: 25000,
+      status: 'new',
+      probability: 10,
+    },
   ],
   stats: {
     totalLeads: 3,
@@ -18,8 +42,13 @@ const mockLeadsData = {
     totalValue: 175000,
     avgProbability: 50,
     stageCounts: {
-      initial_contact: 1, discovery: 0, proposal: 1,
-      negotiation: 1, contract_review: 0, closed_won: 0, closed_lost: 0,
+      initial_contact: 1,
+      discovery: 0,
+      proposal: 1,
+      negotiation: 1,
+      contract_review: 0,
+      closed_won: 0,
+      closed_lost: 0,
     },
   },
   loading: false,
@@ -53,9 +82,19 @@ vi.mock('../../common/SuspenseLoader', () => ({
 // Mock UI components
 vi.mock('../../../components/ui', () => ({
   Tabs: ({ children }: any) => <div>{children}</div>,
-  Badge: ({ children, variant, size }: any) => <span data-testid="badge" data-variant={variant}>{children}</span>,
+  Badge: ({ children, variant, size }: any) => (
+    <span data-testid="badge" data-variant={variant}>
+      {children}
+    </span>
+  ),
   ProgressBar: ({ value, variant, animated, striped }: any) => (
-    <div data-testid="progress-bar" data-variant={variant} data-value={value} role="progressbar" aria-valuenow={value}>
+    <div
+      data-testid="progress-bar"
+      data-variant={variant}
+      data-value={value}
+      role="progressbar"
+      aria-valuenow={value}
+    >
       {value}%
     </div>
   ),
@@ -84,8 +123,17 @@ vi.mock('./tabs/FeaturesTab', () => ({
 import ClaraLeadsCRM from './index';
 
 describe('ClaraLeadsCRM', () => {
+  beforeAll(() => {
+    vi.spyOn(console, 'error').mockImplementation(() => {});
+    vi.spyOn(console, 'warn').mockImplementation(() => {});
+  });
+
   beforeEach(() => {
     vi.clearAllMocks();
+  });
+
+  afterAll(() => {
+    vi.restoreAllMocks();
   });
 
   describe('rendering', () => {
@@ -133,7 +181,7 @@ describe('ClaraLeadsCRM', () => {
   });
 
   describe('tab navigation', () => {
-    it('renders all 6 tab buttons', () => {
+    it('renders all tab buttons including lifecycle', () => {
       render(<ClaraLeadsCRM />);
       expect(screen.getByText('Prospects')).toBeInTheDocument();
       expect(screen.getByText('Deals')).toBeInTheDocument();
@@ -141,12 +189,13 @@ describe('ClaraLeadsCRM', () => {
       expect(screen.getByText('Activity')).toBeInTheDocument();
       expect(screen.getByText('Insights')).toBeInTheDocument();
       expect(screen.getByText('Features')).toBeInTheDocument();
+      expect(screen.getByText('Lifecycle')).toBeInTheDocument();
     });
 
     it('renders badge counts for each tab', () => {
       render(<ClaraLeadsCRM />);
       const badges = screen.getAllByTestId('badge');
-      expect(badges.length).toBe(6);
+      expect(badges.length).toBe(7);
       // Dynamic counts from mock data:
       // prospects = totalLeads = 3
       expect(badges[0]).toHaveTextContent('3');
@@ -160,6 +209,8 @@ describe('ClaraLeadsCRM', () => {
       expect(badges[4]).toHaveTextContent('0');
       // features = static 6
       expect(badges[5]).toHaveTextContent('6');
+      // lifecycle = default 0 in tabCounts fallback
+      expect(badges[6]).toHaveTextContent('0');
     });
 
     it('switches to deals tab on click', async () => {

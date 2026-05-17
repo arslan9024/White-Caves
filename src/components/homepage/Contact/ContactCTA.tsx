@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { Send, Phone, Mail, MapPin, ArrowRight, LucideIcon, MessageSquare } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Config } from '../../../config/constants';
+import { authFetch } from '../../../utils/authFetch';
 import { trackHomepageEvent } from '../../../utils/homepageTracking';
 import './ContactCTA.css';
 
@@ -71,7 +72,7 @@ const ContactCTA = () => {
     setIsSubmitting(true);
 
     try {
-      const response = await fetch('/api/contact', {
+      const response = await authFetch('/api/contact', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

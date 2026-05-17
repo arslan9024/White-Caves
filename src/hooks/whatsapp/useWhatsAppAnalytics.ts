@@ -91,7 +91,7 @@ export const useWhatsAppAnalytics = (): UseWhatsAppAnalyticsReturn => {
         setIsLoading(true);
         setError(null);
 
-        const _targetRange = range || dateRange;
+        const targetRange = range || dateRange;
         const response = await whatsappService.getConversations(accountId);
         return { conversations: response.data, range: targetRange } as AnalyticsData;
       } catch (err) {

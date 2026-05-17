@@ -290,7 +290,6 @@ const customerDueDiligenceSchema = new mongoose.Schema(
 // Indexes for efficient queries
 customerDueDiligenceSchema.index({ customerId: 1, riskLevel: 1 });
 customerDueDiligenceSchema.index({ approvalStatus: 1, riskLevel: 1 });
-customerDueDiligenceSchema.index({ createdDate: -1 });
 customerDueDiligenceSchema.index({ pepStatus: 1, riskLevel: 1 });
 
 // Middleware to update timestamps

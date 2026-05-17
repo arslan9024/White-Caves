@@ -35,10 +35,8 @@ interface SubNavItemType {
 
 const SubNavBar: React.FC<SubNavBarProps> = ({ moduleId, onSubModuleChange }) => {
   const dispatch = useDispatch();
-  const { currentSubModule, activeRole } = useSelector((state: RootState) => ({
-    currentSubModule: state.navigation.currentSubModule,
-    activeRole: state.navigation.activeRole,
-  }));
+  const currentSubModule = useSelector((state: RootState) => state.navigation.currentSubModule);
+  const activeRole = useSelector((state: RootState) => state.navigation.activeRole);
 
   const role = moduleId || activeRole || '';
   const subNavItems = getSubNavItems(role, role) as SubNavItemType[];
@@ -66,7 +64,7 @@ const SubNavBar: React.FC<SubNavBarProps> = ({ moduleId, onSubModuleChange }) =>
         </SubNavBarHeader>
 
         <SubNavBarNav>
-          {subNavItems.map((item) => (
+          {subNavItems.map(item => (
             <SubNavItem
               key={item.id}
               $isActive={currentSubModule === item.id}
@@ -78,7 +76,9 @@ const SubNavBar: React.FC<SubNavBarProps> = ({ moduleId, onSubModuleChange }) =>
               <SubNavIcon>{item.icon}</SubNavIcon>
               <SubNavLabel>{item.label}</SubNavLabel>
               {item.badgeCount && item.badgeCount > 0 && (
-                <SubNavBadge $isActive={currentSubModule === item.id}>{item.badgeCount}</SubNavBadge>
+                <SubNavBadge $isActive={currentSubModule === item.id}>
+                  {item.badgeCount}
+                </SubNavBadge>
               )}
               {currentSubModule === item.id && <SubNavIndicator />}
             </SubNavItem>

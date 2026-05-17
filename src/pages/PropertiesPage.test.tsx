@@ -4,7 +4,7 @@
  * property cards, favorites, modal, API integration
  */
 
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeAll, beforeEach, afterAll, afterEach } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import React from 'react';
 import { Provider } from 'react-redux';
@@ -61,7 +61,9 @@ vi.mock('../shared/components/property', () => ({
   PropertyDetailModal: ({ property, onClose, isFavorite, onFavorite }: Record<string, unknown>) => (
     <div data-testid="property-modal">
       <span>{(property as Record<string, unknown>)?.title as string}</span>
-      <button onClick={onClose as () => void} data-testid="modal-close">Close</button>
+      <button onClick={onClose as () => void} data-testid="modal-close">
+        Close
+      </button>
       <button onClick={onFavorite as () => void} data-testid="modal-favorite">
         {isFavorite ? 'Unfavorite' : 'Favorite'}
       </button>
@@ -80,9 +82,45 @@ import propertyReducer from '../store/propertySlice';
 // ── Helpers ──────────────────────────────────────────────────────
 
 const MOCK_PROPERTIES = [
-  { id: 'p1', title: 'Palm Villa', location: 'Palm Jumeirah', type: 'Villa', purpose: 'buy', bedrooms: 4, bathrooms: 3, sqft: 5000, price: 8000000, images: ['img1.jpg'], featured: true },
-  { id: 'p2', title: 'Marina Apartment', location: 'Dubai Marina', type: 'Apartment', purpose: 'rent', bedrooms: 2, bathrooms: 2, sqft: 1200, price: 150000, images: ['img2.jpg'], featured: false },
-  { id: 'p3', title: 'Downtown Penthouse', location: 'Downtown Dubai', type: 'Penthouse', purpose: 'buy', bedrooms: 3, bathrooms: 3, sqft: 3500, price: 12000000, images: [], featured: true },
+  {
+    id: 'p1',
+    title: 'Palm Villa',
+    location: 'Palm Jumeirah',
+    type: 'Villa',
+    purpose: 'buy',
+    bedrooms: 4,
+    bathrooms: 3,
+    sqft: 5000,
+    price: 8000000,
+    images: ['img1.jpg'],
+    featured: true,
+  },
+  {
+    id: 'p2',
+    title: 'Marina Apartment',
+    location: 'Dubai Marina',
+    type: 'Apartment',
+    purpose: 'rent',
+    bedrooms: 2,
+    bathrooms: 2,
+    sqft: 1200,
+    price: 150000,
+    images: ['img2.jpg'],
+    featured: false,
+  },
+  {
+    id: 'p3',
+    title: 'Downtown Penthouse',
+    location: 'Downtown Dubai',
+    type: 'Penthouse',
+    purpose: 'buy',
+    bedrooms: 3,
+    bathrooms: 3,
+    sqft: 3500,
+    price: 12000000,
+    images: [],
+    featured: true,
+  },
 ];
 
 const createMockStore = (crmOverrides: Record<string, unknown> = {}) => {
@@ -121,7 +159,13 @@ const createMockStore = (crmOverrides: Record<string, unknown> = {}) => {
         user: null,
         token: 'tok',
         refreshToken: null,
-        session: { isLoggedIn: false, lastActive: null, sessions: [], expiresAt: null, activeSessionId: null },
+        session: {
+          isLoggedIn: false,
+          lastActive: null,
+          sessions: [],
+          expiresAt: null,
+          activeSessionId: null,
+        },
         loginMethods: { social: false, email: false, mobile: false },
         loginProvider: null,
         rememberMe: false,
@@ -135,18 +179,26 @@ const createMockStore = (crmOverrides: Record<string, unknown> = {}) => {
 
 const renderPage = (crmOverrides: Record<string, unknown> = {}) => {
   const store = createMockStore(crmOverrides);
-  return { store, ...render(
-    <Provider store={store}>
-      <MemoryRouter>
-        <PropertiesPage />
-      </MemoryRouter>
-    </Provider>,
-  )};
+  return {
+    store,
+    ...render(
+      <Provider store={store}>
+        <MemoryRouter>
+          <PropertiesPage />
+        </MemoryRouter>
+      </Provider>
+    ),
+  };
 };
 
 // ── Tests ────────────────────────────────────────────────────────
 
 describe('PropertiesPage', () => {
+  beforeAll(() => {
+    vi.spyOn(console, 'error').mockImplementation(() => {});
+    vi.spyOn(console, 'warn').mockImplementation(() => {});
+  });
+
   beforeEach(() => {
     vi.clearAllMocks();
     // Default: API returns the mock properties
@@ -154,6 +206,14 @@ describe('PropertiesPage', () => {
       ok: true,
       json: async () => ({ data: MOCK_PROPERTIES }),
     });
+  });
+
+  afterEach(() => {
+    vi.clearAllMocks();
+  });
+
+  afterAll(() => {
+    vi.restoreAllMocks();
   });
 
   // ── Rendering ────────────────────────────────────────────────
@@ -276,7 +336,9 @@ describe('PropertiesPage', () => {
       await waitFor(() => {
         expect(screen.getByText('No Properties Found')).toBeInTheDocument();
       });
-      expect(screen.getByText('Try adjusting your filters or search criteria.')).toBeInTheDocument();
+      expect(
+        screen.getByText('Try adjusting your filters or search criteria.')
+      ).toBeInTheDocument();
     });
   });
 

@@ -5,7 +5,7 @@
  */
 import React from 'react';
 import { render, screen } from '@testing-library/react';
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { MemoryRouter } from 'react-router-dom';
 import Footer from './Footer';
 
@@ -26,8 +26,14 @@ vi.mock('../config/constants', () => ({
 
 // Mock all styled-components from Footer.styles
 vi.mock('./Footer.styles', () => {
-  const makeComp = (tag: string, testId?: string) =>
-    ({ children, ...props }: any) => React.createElement(tag, { 'data-testid': testId, ...props }, children);
+  const makeComp =
+    (tag: string, testId?: string) =>
+    ({ children, ...props }: any) => {
+      const safeProps = Object.fromEntries(
+        Object.entries(props).filter(([key]) => !key.startsWith('$'))
+      );
+      return React.createElement(tag, { 'data-testid': testId, ...safeProps }, children);
+    };
   return {
     FooterContainer: makeComp('footer', 'footer'),
     FooterContent: makeComp('div'),
@@ -55,10 +61,19 @@ const renderFooter = () =>
   render(
     <MemoryRouter>
       <Footer />
-    </MemoryRouter>,
+    </MemoryRouter>
   );
 
 describe('Footer', () => {
+  beforeEach(() => {
+    vi.spyOn(console, 'error').mockImplementation(() => {});
+    vi.spyOn(console, 'warn').mockImplementation(() => {});
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
   // ─── Rendering ────────────────────────────────────────
   describe('rendering', () => {
     it('renders without crashing', () => {

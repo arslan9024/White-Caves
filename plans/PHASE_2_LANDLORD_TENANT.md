@@ -3,6 +3,7 @@
 > **Priority**: #2 — High  
 > **Goal**: Separate, simple portals for landlords and tenants to log in and self-serve  
 > **Approach**: Read-only views of their own data — no CRM editing required  
+> **Last Updated**: 2026-05-11  
 > **Status**: 🟡 In Progress — UI MVP implemented for both portals; auth/data integration, seed accounts, mobile validation, and persistence still pending
 
 ---

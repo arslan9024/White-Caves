@@ -25,6 +25,7 @@ import type { LucideIcon } from 'lucide-react';
 import PropertyImageSlider from './PropertyImageSlider';
 import { formatPrice } from '../../../utils';
 import { Config } from '../../../config/constants';
+import { authFetch } from '../../../utils/authFetch';
 import './PropertyDetailModal.css';
 
 const AMENITY_ICONS: Record<string, LucideIcon> = {
@@ -135,14 +136,13 @@ export default function PropertyDetailModal({
     setViewingError('');
 
     try {
-      const token = localStorage.getItem('authToken');
+      const token = localStorage.getItem('token') || localStorage.getItem('authToken');
 
       if (token && property.id) {
         // Authenticated path → create a formal viewing record
         const scheduledAt = `${viewingDate}T${viewingTime}:00.000Z`;
-        const res = await fetch('/api/viewings', {
+        const res = await authFetch('/api/viewings', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
           body: JSON.stringify({ propertyId: property.id, scheduledAt, type: 'in_person' }),
         });
         if (!res.ok) {

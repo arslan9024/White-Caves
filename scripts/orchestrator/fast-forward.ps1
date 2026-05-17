@@ -8,6 +8,7 @@
 #   npm run orchestrator:fast-forward -- -TaskId T002            -- full flow
 #   npm run orchestrator:fast-forward -- -TaskId T002 -Force     -- skip confirmation
 #   npm run orchestrator:fast-forward -- -TaskId T002 -DryRun    -- preview only
+#   npm run orchestrator:fast-forward -- -TaskId T002 -NonInteractive  -- autonomous no-prompt
 #   npm run orchestrator:fast-forward -- -TaskId T002 -Force -EvidenceNote "expanded dld-integration.md to 14 sections"
 
 param(
@@ -16,7 +17,8 @@ param(
   [string]$WorkspaceRoot = ".",
   [string]$EvidenceNote  = "",
   [switch]$Force,
-  [switch]$DryRun
+  [switch]$DryRun,
+  [switch]$NonInteractive
 )
 
 $w        = 72
@@ -231,12 +233,15 @@ if ($DryRun) {
   exit 0
 }
 
-if (-not $Force) {
+if (-not $Force -and -not $NonInteractive) {
   Write-Host "  Proceed? Mark {0} done and run cascade?  [y/N]" -f $TaskId -ForegroundColor Yellow
   $ans = Read-Host "  > "
   if ($ans.Trim().ToLower() -notin @("y","yes")) {
     Write-Host "  Cancelled." -ForegroundColor DarkGray; exit 0
   }
+  Write-Host ""
+} elseif ($NonInteractive -and -not $Force) {
+  Write-Host "  [AUTO] Non-interactive mode enabled -- confirmation prompt skipped." -ForegroundColor DarkGray
   Write-Host ""
 }
 
@@ -252,7 +257,11 @@ if ($null -eq $rootTask1) {
 }
 $now = (Get-Date).ToString("o")
 $ev  = if ([string]::IsNullOrWhiteSpace($EvidenceNote)) {
-  "Completed via fast-forward.ps1 -- manual paste session"
+  if ($NonInteractive) {
+    "Completed via fast-forward.ps1 non-interactive mode"
+  } else {
+    "Completed via fast-forward.ps1 -- manual paste session"
+  }
 } else {
   $EvidenceNote
 }

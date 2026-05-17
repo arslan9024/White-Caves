@@ -1,6 +1,5 @@
 ﻿/* eslint-disable @typescript-eslint/no-unused-vars, @typescript-eslint/no-explicit-any */
 import React, { useEffect, useState, ReactNode } from 'react';
-import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { DashboardShell, DataCardGrid } from '../shared/dashboard';
 import { LoadingState } from '../shared/LoadingState';
@@ -91,6 +90,61 @@ export const BaseDepartmentView: React.FC<BaseDepartmentViewProps> = ({
       setError(externalError);
     }
   }, [externalError]);
+
+  useEffect(() => {
+    if (departmentData || isLoading === true) {
+      return;
+    }
+
+    let isMounted = true;
+
+    const loadDepartmentData = async () => {
+      setLoading(true);
+      setError(null);
+
+      try {
+        const response = await fetch(`${config.apiBasePath}/${serviceName}`);
+
+        if (!response.ok) {
+          throw new Error(`Failed to load ${config.departmentName} data`);
+        }
+
+        const payload = await response.json();
+
+        if (!isMounted) {
+          return;
+        }
+
+        setData(payload);
+        onDataLoaded?.(payload);
+      } catch (err) {
+        if (!isMounted) {
+          return;
+        }
+
+        setError(
+          err instanceof Error ? err.message : `Failed to load ${config.departmentName} data`
+        );
+      } finally {
+        if (isMounted) {
+          setLoading(false);
+        }
+      }
+    };
+
+    loadDepartmentData();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [
+    config.apiBasePath,
+    config.departmentName,
+    departmentData,
+    isLoading,
+    onDataLoaded,
+    serviceName,
+  ]);
 
   // Determine title and subtitle
   const title = subitemId

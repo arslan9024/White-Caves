@@ -2,10 +2,57 @@
 
 ## Overview
 
-- **Total AI Personalities**: 24 documented personas
+- **Total AI Personalities**: 40 documented personas
 - **Core Assistants**: 14 active (Aurora, Clara, Daisy, Hazel, Laila, Nadia, Mary, Nancy, Nina, Olivia, Sophia, Theodora, Willow, Zoe)
 - **Architecture**: Integrated AI-powered CRM ecosystem with WhatsApp as primary communication layer
 - **Design Philosophy**: Each assistant has a specific business function, department alignment, and data ecosystem
+
+---
+
+## Individual Assistant Files (40/40)
+
+> Canonical per-assistant identity/context/capability docs.
+
+- [`apex.md`](./apex.md) — Apex (Agent Performance Coach)
+- [`archer.md`](./archer.md) — Archer (Lead Scoring Engine)
+- [`atlas.md`](./atlas.md) — Atlas (Development & Project Intelligence)
+- [`aurora.md`](./aurora.md) — Aurora (Chief Technology Officer)
+- [`cipher.md`](./cipher.md) — Cipher (Predictive Market Analyst)
+- [`clara.md`](./clara.md) — Clara (Leads CRM Manager)
+- [`crest.md`](./crest.md) — Crest (Property Valuation Engine (AVM))
+- [`daisy.md`](./daisy.md) — Daisy (Leasing & Tenant Manager)
+- [`echo.md`](./echo.md) — Echo (Client Communication History & Timeline)
+- [`evangeline.md`](./evangeline.md) — Evangeline (Legal Risk Analyst)
+- [`flux.md`](./flux.md) — Flux (Real-Time Market Data Feed)
+- [`halo.md`](./halo.md) — Halo (Client Satisfaction & NPS Tracker)
+- [`hazel.md`](./hazel.md) — Hazel (Elite Frontend Engineer)
+- [`henry.md`](./henry.md) — Henry (Record Keeper & Compliance Auditor)
+- [`hunter.md`](./hunter.md) — Hunter (Lead Prospecting AI)
+- [`iris.md`](./iris.md) — Iris (Virtual Staging & 3D Visualization AI)
+- [`juno.md`](./juno.md) — Juno (Smart Community & Facilities Manager)
+- [`kairos.md`](./kairos.md) — Kairos (Luxury Concierge & VIP Experience)
+- [`laila.md`](./laila.md) — Laila (Compliance & Legal Officer)
+- [`linda.md`](./linda.md) — Linda (WhatsApp LocalAuth Bot Manager)
+- [`lumen.md`](./lumen.md) — Lumen (Visual Analytics & Reporting Engine)
+- [`mary.md`](./mary.md) — Mary (Inventory & Data Manager)
+- [`maven.md`](./maven.md) — Maven (Investment Strategy & Portfolio Optimizer)
+- [`mira.md`](./mira.md) — Mira (Multilingual Translation Engine)
+- [`nadia.md`](./nadia.md) — Nadia (WhatsApp Business CRM Manager)
+- [`nancy.md`](./nancy.md) — Nancy (HR Manager)
+- [`nina.md`](./nina.md) — Nina (WhatsApp Bot Developer & Flow Designer)
+- [`nova.md`](./nova.md) — Nova (New Development & Off-Plan Tracker)
+- [`olivia.md`](./olivia.md) — Olivia (Marketing & Brand Manager)
+- [`oracle.md`](./oracle.md) — Oracle (Market Analyst Bot)
+- [`prism.md`](./prism.md) — Prism (AI Property Matching Engine)
+- [`quill.md`](./quill.md) — Quill (Document Generation Engine)
+- [`rex.md`](./rex.md) — Rex (Regulatory Document Verifier)
+- [`sage.md`](./sage.md) — Sage (Mortgage & Financing Advisor)
+- [`sentinel.md`](./sentinel.md) — Sentinel (Property Monitoring AI)
+- [`sophia.md`](./sophia.md) — Sophia (Sales Pipeline Manager)
+- [`theodora.md`](./theodora.md) — Theodora (Finance & Accounts Director)
+- [`vesta.md`](./vesta.md) — Vesta (Project & Snagging Coordinator)
+- [`willow.md`](./willow.md) — Willow (Elite Backend Engineer)
+- [`zoe.md`](./zoe.md) — Zoe (Executive Assistant)
 
 ---
 
@@ -1045,21 +1092,3 @@ IF Third-party API (WhatsApp, OpenAI) is degraded:
 
 **Version:** 2.0 | **Last Updated:** May 2026 | **Personas Documented:** 40/40 ✅  
 **Agent Activity:** @Joelle (Llama 3.1 70B via Groq — FREE) | Sections: 9 → 11 | Personas: 24 → 40 | Quality Score: ⭐⭐⭐⭐⭐
-
-| Assistant | Primary KPI             | Target    | Phase    |
-| --------- | ----------------------- | --------- | -------- |
-| Cipher    | MTTD (threat detection) | < 15 min  | Phase 26 |
-| Atlas     | Report freshness        | Weekly    | Phase 26 |
-| Oracle    | AUC-ROC score           | ≥ 0.82    | Phase 27 |
-| Flux      | Occupancy maintained    | ≥ 95%     | Phase 27 |
-| Nova      | Insight action rate     | > 40%     | Phase 26 |
-| Sentinel  | Avg repair resolution   | < 5 days  | Phase 26 |
-| Quill     | Human edit rate         | < 20%     | Phase 26 |
-| Lumen     | OCR accuracy            | ≥ 95%     | Phase 26 |
-| Crest     | Partner payout cycle    | < 14 days | Phase 27 |
-| Beacon    | Client retention rate   | ≥ 35%     | Phase 27 |
-
----
-
-**Version:** 1.2 | **Last Updated:** May 2026 | **Personas Documented:** 24/40 (Personas 25-40 in next @Joelle sprint)  
-**Agent Activity:** @Joelle (Llama 3.1 70B via Groq — FREE) | Sections: 7 → 9 + Personas: 14 → 24 | Quality: ⭐⭐⭐⭐⭐

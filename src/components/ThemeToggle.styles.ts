@@ -14,10 +14,12 @@ export const ThemeToggleButton = styled.button`
 export const ToggleTrack = styled.div<{ $isDark: boolean }>`
   width: 52px;
   height: 28px;
-  background: ${props =>
-    props.$isDark
-      ? props.theme?.colors?.primary || '#2196F3'
-      : props.theme?.colors?.borderColor || '#cccccc'};
+  background: ${({ $isDark, theme }) =>
+    String(
+      $isDark
+        ? ((theme as any)?.colors?.primary ?? '#2196F3')
+        : ((theme as any)?.colors?.borderColor ?? '#cccccc')
+    )};
   border-radius: 14px;
   position: relative;
   transition: background 0.3s ease;
@@ -41,7 +43,7 @@ export const ToggleIcons = styled.div`
 `;
 
 export const IconSun = styled.span<{ $isDark: boolean }>`
-  color: ${props => props.theme?.colors?.accentGold || '#E31E24'};
+  color: ${({ theme }) => String((theme as any)?.colors?.accentGold ?? '#E31E24')};
   opacity: ${props => (props.$isDark ? 0.5 : 1)};
   transition: opacity 0.3s ease;
 `;

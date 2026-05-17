@@ -11,6 +11,7 @@ import {
   Maximize2,
   DollarSign,
 } from 'lucide-react';
+import { authFetch } from '../utils/authFetch';
 import './PropertyGalleryPage.css';
 
 const PropertyGalleryPage = () => {
@@ -30,13 +31,13 @@ const PropertyGalleryPage = () => {
     const fetchProperty = async () => {
       try {
         setLoading(true);
-        const response = await fetch(`/api/crud/properties/${propertyId}`);
+        const response = await authFetch(`/api/crud/properties/${propertyId}`);
         if (!response.ok) throw new Error('Failed to fetch property');
         const data = await response.json();
         setProperty(data);
 
         // Fetch similar properties
-        const similarResponse = await fetch(`/api/properties/${propertyId}/similar`);
+        const similarResponse = await authFetch(`/api/properties/${propertyId}/similar`);
         if (similarResponse.ok) {
           const similarData = await similarResponse.json();
           setSimilarProperties(similarData);
@@ -87,7 +88,7 @@ const PropertyGalleryPage = () => {
 
   const handleFavorite = async () => {
     try {
-      const response = await fetch(`/api/favorites`, {
+      const response = await authFetch(`/api/favorites`, {
         method: isFavorite ? 'DELETE' : 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ propertyId }),

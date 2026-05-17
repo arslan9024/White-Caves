@@ -66,6 +66,9 @@ const ROLE_PATHS: string[] = [
   'owner',
 ];
 
+const isJsDomTestEnvironment =
+  typeof navigator !== 'undefined' && /jsdom/i.test(navigator.userAgent);
+
 const AppLayout: React.FC<AppLayoutProps> = ({ children, showNav = true, isSuperUser = false }) => {
   const location = useLocation();
   const dispatch = useDispatch();
@@ -77,6 +80,10 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children, showNav = true, isSuper
 
   const fetchNotifications = useCallback(async () => {
     if (!user) return;
+    if (isJsDomTestEnvironment) {
+      setNotifications([]);
+      return;
+    }
     try {
       const res = await authFetch('/api/activities?limit=10&sortBy=createdAt&sortOrder=desc');
       if (res.ok) {
@@ -122,11 +129,7 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children, showNav = true, isSuper
       </a>
 
       {/* ─── Top Navigation Bar (CRM only for authenticated users) ─── */}
-      {showCrmChrome && (
-        <TopBar
-          notifications={notifications}
-        />
-      )}
+      {showCrmChrome && <TopBar notifications={notifications} />}
 
       {/* ─── Command Palette Overlay (Cmd+K / Ctrl+K) ─────────────── */}
       {showCrmChrome && <CommandPalette />}

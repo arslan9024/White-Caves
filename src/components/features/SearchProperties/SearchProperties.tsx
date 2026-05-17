@@ -16,8 +16,8 @@ import { authFetch } from '../../../utils/authFetch';
 
 const Container = styled.div`
   padding: 24px;
-  background: ${props => props.theme.colors.background};
-  color: ${props => props.theme.colors.text};
+  background: ${({ theme }) => String((theme as any)?.colors?.backgroundAlt ?? '#f9fafb')};
+  color: ${({ theme }) => String((theme as any)?.colors?.textPrimary ?? '#1f2937')};
   overflow-y: auto;
   height: 100%;
 `;
@@ -29,12 +29,12 @@ const Header = styled.div`
     margin: 0 0 8px 0;
     font-size: 28px;
     font-weight: 600;
-    color: ${props => props.theme.colors.text};
+    color: ${({ theme }) => String((theme as any)?.colors?.textPrimary ?? '#1f2937')};
   }
 
   p {
     margin: 0;
-    color: ${props => props.theme.colors.textSecondary};
+    color: ${({ theme }) => String((theme as any)?.colors?.textSecondary ?? '#6b7280')};
     font-size: 14px;
   }
 `;
@@ -48,10 +48,10 @@ const SearchForm = styled.form`
 
 const SearchInput = styled.input`
   padding: 10px 14px;
-  border: 1px solid ${props => props.theme.colors.border};
+  border: 1px solid ${({ theme }) => String((theme as any)?.colors?.border ?? '#e5e7eb')};
   border-radius: 6px;
-  background: ${props => props.theme.colors.cardBg};
-  color: ${props => props.theme.colors.text};
+  background: ${({ theme }) => String((theme as any)?.colors?.cardBg ?? '#ffffff')};
+  color: ${({ theme }) => String((theme as any)?.colors?.textPrimary ?? '#1f2937')};
   font-family: ${props => props.theme.fonts?.family ?? 'inherit'};
   font-size: 14px;
 
@@ -86,8 +86,8 @@ const SearchButton = styled.button`
 `;
 
 const FilterSection = styled.div`
-  background: ${props => props.theme.colors.cardBg};
-  border: 1px solid ${props => props.theme.colors.border};
+  background: ${({ theme }) => String((theme as any)?.colors?.cardBg ?? '#ffffff')};
+  border: 1px solid ${({ theme }) => String((theme as any)?.colors?.border ?? '#e5e7eb')};
   border-radius: 8px;
   padding: 16px;
   margin-bottom: 24px;
@@ -113,7 +113,7 @@ const FilterCheckbox = styled.label`
   align-items: center;
   gap: 8px;
   cursor: pointer;
-  color: ${props => props.theme.colors.text};
+  color: ${({ theme }) => String((theme as any)?.colors?.textPrimary ?? '#1f2937')};
   font-size: 14px;
 
   input {
@@ -133,7 +133,7 @@ const ResultsHeader = styled.h2`
   margin: 0 0 16px 0;
   font-size: 16px;
   font-weight: 600;
-  color: ${props => props.theme.colors.text};
+  color: ${({ theme }) => String((theme as any)?.colors?.textPrimary ?? '#1f2937')};
 `;
 
 const ResultsList = styled.div`
@@ -142,8 +142,8 @@ const ResultsList = styled.div`
 `;
 
 const ResultCard = styled.div`
-  background: ${props => props.theme.colors.cardBg};
-  border: 1px solid ${props => props.theme.colors.border};
+  background: ${({ theme }) => String((theme as any)?.colors?.cardBg ?? '#ffffff')};
+  border: 1px solid ${({ theme }) => String((theme as any)?.colors?.border ?? '#e5e7eb')};
   border-radius: 8px;
   padding: 16px;
   cursor: pointer;
@@ -156,13 +156,13 @@ const ResultCard = styled.div`
 
   .property-name {
     font-weight: 600;
-    color: ${props => props.theme.colors.text};
+    color: ${({ theme }) => String((theme as any)?.colors?.textPrimary ?? '#1f2937')};
     margin-bottom: 4px;
   }
 
   .property-location {
     font-size: 13px;
-    color: ${props => props.theme.colors.textSecondary};
+    color: ${({ theme }) => String((theme as any)?.colors?.textSecondary ?? '#6b7280')};
     margin-bottom: 8px;
   }
 
@@ -193,7 +193,7 @@ const ResultCard = styled.div`
 const EmptyState = styled.div`
   text-align: center;
   padding: 40px 20px;
-  color: ${props => props.theme.colors.textSecondary};
+  color: ${({ theme }) => String((theme as any)?.colors?.textSecondary ?? '#6b7280')};
 
   .icon {
     font-size: 48px;
@@ -202,7 +202,7 @@ const EmptyState = styled.div`
 
   h3 {
     margin: 0 0 8px 0;
-    color: ${props => props.theme.colors.text};
+    color: ${({ theme }) => String((theme as any)?.colors?.textPrimary ?? '#1f2937')};
   }
 
   p {

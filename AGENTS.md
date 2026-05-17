@@ -4,22 +4,22 @@
 
 > **Updated by @Margaret after every session.** Senior coders MUST check this table before starting any premium coding sprint. If any gate is BLOCKED, route back to the relevant free agent before coding.
 
-| Agent         | Model              | Current Task                                                                                             | File                                                       | Sections   | Gate Status    | Last Updated |
-| ------------- | ------------------ | -------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------- | ---------- | -------------- | ------------ |
-| **@Victoria** | Gemini 2.0 Flash   | NEXT (1000%): `tenancy-ejari.md` + `landlord-portal.md` 10× expansion with 10-layer evidence sections    | `business_docs/09_crm_features/tenancy-ejari.md`           | 140 target | 🚧 IN PROGRESS | May 6, 2026  |
-| **@Invoice**  | Llama 3.1 70B Groq | NEXT (1000%): `financial-reporting.md` + `revenue-model.md` 10× depth with DU scoring                    | `business_docs/09_crm_features/financial-reporting.md`     | 110 target | 🚧 IN PROGRESS | May 6, 2026  |
-| **@Sofia**    | Gemini 2.0 Flash   | NEXT (1000%): `compliance-requirements.md` + `risk-register.md` regulatory + rollback evidence expansion | `business_docs/05_requirements/compliance-requirements.md` | 120 target | 🚧 IN PROGRESS | May 6, 2026  |
-| **@Cassie**   | DeepSeek V3        | NEXT (1000%): analytics + KPI ownership with observability/testability evidence                          | `business_docs/09_crm_features/analytics-dashboard.md`     | 220 target | 🚧 IN PROGRESS | May 6, 2026  |
-| **@Joelle**   | Llama 3.1 70B Groq | NEXT (1000%): AI personas + fallback matrix with SDD-ready artifacts                                     | `business_docs/03_ai_assistants/README.md`                 | 400 units  | 🚧 IN PROGRESS | May 6, 2026  |
+| Agent         | Model              | Current Task                                                                          | File                                                       | Sections       | Gate Status    | Last Updated |
+| ------------- | ------------------ | ------------------------------------------------------------------------------------- | ---------------------------------------------------------- | -------------- | -------------- | ------------ |
+| **@Victoria** | Gemini 2.0 Flash   | REVIEW (60%+): `tenancy-ejari.md` — verify PDC tracking, Form 12, bounced cheque flow | `business_docs/09_crm_features/tenancy-ejari.md`           | 60%+ reached   | ✅ READY       | May 16, 2026 |
+| **@Invoice**  | Llama 3.1 70B Groq | REVIEW (60%+): `financial-reporting.md` — verify VAT section + cash flow forecast     | `business_docs/09_crm_features/financial-reporting.md`     | 60%+ reached   | ✅ READY       | May 16, 2026 |
+| **@Sofia**    | Gemini 2.0 Flash   | REVIEW (60%+): `compliance-requirements.md` — verify RERA/DLD penalty table           | `business_docs/05_requirements/compliance-requirements.md` | 60%+ reached   | ✅ READY       | May 16, 2026 |
+| **@Cassie**   | DeepSeek V3        | EXPAND: `analytics-dashboard.md` → mobile analytics view + data export API spec       | `business_docs/09_crm_features/analytics-dashboard.md`     | 22 → 24 target | 🚧 IN PROGRESS | May 16, 2026 |
+| **@Joelle**   | Llama 3.1 70B Groq | EXPAND: `03_ai_assistants/README.md` → personas 36–40 + fallback matrix               | `business_docs/03_ai_assistants/README.md`                 | 40/40 complete | ✅ READY       | May 16, 2026 |
 
 ### How to Invoke Free Agents (Copy-Paste Into the Free Tool)
 
 ```
-@Victoria — EXPAND: landlord-portal.md → add KYC onboarding flow, NOC letter generation workflow, 3-month grace period rules
-@Invoice  — AUDIT: financial-reporting.md → verify 11 sections present; add rolling 12-month cash flow forecast section
-@Sofia    — AUDIT: compliance-requirements.md → verify 12 sections present; add RERA/DLD penalty table with fine amounts
+@Victoria — REVIEW: tenancy-ejari.md → check gaps, verify all acceptance criteria have testable definitions
+@Invoice  — REVIEW: financial-reporting.md → verify all AED calculations are consistent; add invoice TRN format
+@Sofia    — REVIEW: compliance-requirements.md → check for missing RERA 2024 updates; verify UAE PDPL sections
 @Cassie   — EXPAND: analytics-dashboard.md → add mobile analytics view spec + data export CSV/Excel API endpoint spec
-@Joelle   — DRAFT: 03_ai_assistants/README.md → personas 25-35 (Quill, Lumen, Crest, Prism, Echo + others); add failure/fallback behavior
+@Joelle   — EXPAND: 03_ai_assistants/README.md → add FEEDS_ACK from @Margaret for Phase N+1 context readiness
 ```
 
 **Free Tool Links:**
@@ -37,7 +37,7 @@ This file defines the White Caves multi-expert operating model for all agent-ass
 ## 🏛️ EXECUTIVE LEADERSHIP
 
 1. **@Ada (Chief Architect):** Named after Ada Lovelace (1st Programmer). Oversees the entire project architecture and integration.
-2. **@Margaret (Project Manager):** Named after Margaret Hamilton (Apollo Software). Plans the 40% remaining tasks into daily sprints.
+2. **@Margaret (Strategic Planner):** Named after Margaret Hamilton (Apollo Software). Decomposes the recovery program into dependency-safe daily milestones from the stale 40% baseline toward the verified 75% target.
 3. **@Grace (Lead Engineer):** Named after Grace Hopper (COBOL Pioneer). Enforces "Best Technologies" and modern coding standards.
 
 ## 🎨 FRONTEND & UX DEPARTMENT
@@ -213,11 +213,280 @@ This file defines the White Caves multi-expert operating model for all agent-ass
 
 ---
 
+### 36. **@Annie (Content & Tenant Portal Specialist)**
+
+**Model:** Gemini 2.0 Flash | **Token Type:** FREE ONLY
+**Focus:** tenant portal, document generation, email automation
+**Queue:** DRAFT tenant portal tabs, EXPAND document generation rules, REVIEW email triggers
+
+### 37. **@Rachel (SEO & Marketing Content Specialist)**
+
+**Model:** Gemini 2.0 Flash | **Token Type:** FREE ONLY
+**Focus:** SEO strategy, campaigns, careers content
+**Queue:** EXPAND SEO metadata, DRAFT marketing workflows, REVIEW keyword coverage
+
+### 38. **@Marissa (UX & Luxury Segment Specialist)**
+
+**Model:** Gemini 2.0 Flash | **Token Type:** FREE ONLY
+**Focus:** luxury segment UX, community management, interface polish
+**Queue:** DRAFT luxury segment spec, EXPAND community workflows, REVIEW UI consistency
+
+### 39. **@Timnit (DLD & Legal Compliance Specialist)**
+
+**Model:** Gemini 2.0 Flash | **Token Type:** FREE ONLY
+**Focus:** DLD integration, legal CRM, data privacy
+**Queue:** DRAFT DLD workflow, EXPAND legal management notes, REVIEW compliance gaps
+
+### 40. **@Hedy (Audit & Logic Specialist)**
+
+**Model:** Llama 3.1 70B via Groq | **Token Type:** FREE ONLY
+**Focus:** audit trail, activity feed, follow-up automation
+**Queue:** DRAFT audit trail schema, EXPAND activity templates, REVIEW follow-up logic
+
+### 41. **@Maya (Off-Plan & Handover Workflow Specialist)**
+
+**Model:** Llama 3.1 70B via Groq | **Token Type:** FREE ONLY
+**Focus:** off-plan projects, handover management
+**Queue:** DRAFT off-plan project workflow, EXPAND handover checklist, REVIEW milestone rules
+
+### 42. **@Booking (Scheduling & Calendar Specialist)**
+
+**Model:** Llama 3.1 70B via Groq | **Token Type:** FREE ONLY
+**Focus:** scheduling calendar, viewings
+**Queue:** DRAFT viewing schema, EXPAND calendar sync, REVIEW appointment flow
+
+### 43. **@Jaime (Offers & WhatsApp Integration Specialist)**
+
+**Model:** Llama 3.1 70B via Groq | **Token Type:** FREE ONLY
+**Focus:** offers workflow, WhatsApp integration
+**Queue:** DRAFT offer flow, EXPAND WhatsApp routing, REVIEW broadcast rules
+
+### 44. **@Fei-Fei (Property Valuation & Market Intelligence Specialist)**
+
+**Model:** DeepSeek V3 | **Token Type:** FREE ONLY
+**Focus:** valuation, market intelligence, price analytics
+**Queue:** DRAFT valuation engine, EXPAND market report rules, REVIEW comp logic
+
+### 45. **@Anima (Data Pipeline & Secondary Sales Specialist)**
+
+**Model:** DeepSeek V3 | **Token Type:** FREE ONLY
+**Focus:** secondary sales, pipelines, currency management
+**Queue:** DRAFT sales pipeline, EXPAND currency model, REVIEW transfer flow
+
+### 46. **@Mary (Inventory & Investment Specialist)**
+
+**Model:** DeepSeek V3 | **Token Type:** FREE ONLY
+**Focus:** sentinel property, investment, prospecting
+**Queue:** DRAFT inventory state machine, EXPAND investor dashboards, REVIEW prospecting notes
+
+### 47. **@Corinne (Maps, AI Chat & Maintenance Specialist)**
+
+**Model:** DeepSeek V3 | **Token Type:** FREE ONLY
+**Focus:** AI chat, maintenance, map search
+**Queue:** DRAFT maintenance schema, EXPAND AI chat rules, REVIEW map search notes
+
+### 48. **@Amina (Leasing Intake Specialist)**
+
+**Model:** Gemini 2.0 Flash | **Token Type:** FREE ONLY
+
+**Focus:** tenancy intake, KYC capture, onboarding checklists
+
+**Queue:** DRAFT leasing intake forms, EXPAND tenant onboarding steps, AUDIT missing handoff fields
+
+### 49. **@Samira (Document Operations Specialist)**
+
+**Model:** Llama 3.1 70B via Groq | **Token Type:** FREE ONLY
+
+**Focus:** document prep, attachments, file naming, filing flow
+
+**Queue:** DRAFT document handling rules, EXPAND attachment validation, REVIEW document completeness
+
+### 50. **@Hala (Bilingual Contracts Specialist)**
+
+**Model:** Gemini 2.0 Flash | **Token Type:** FREE ONLY
+
+**Focus:** Arabic/English contract wording, clause parity, translation accuracy
+
+**Queue:** EXPAND bilingual clause library, AUDIT translation mismatches, REVIEW signature blocks
+
+### 51. **@Rania (Tenant Support Specialist)**
+
+**Model:** DeepSeek V3 | **Token Type:** FREE ONLY
+
+**Focus:** tenant support flows, issue triage, escalation notes
+
+**Queue:** DRAFT support flow, EXPAND escalation matrix, REVIEW response SLAs
+
+### 52. **@Noor (Requirements Synthesis Specialist)**
+
+**Model:** Gemini 2.0 Flash | **Token Type:** FREE ONLY
+
+**Focus:** summarizing business rules into concise acceptance criteria
+
+**Queue:** DRAFT criteria summaries, EXPAND acceptance checkpoints, AUDIT missing business rules
+
+### 53. **@Amal (Reconciliation Specialist)**
+
+**Model:** Llama 3.1 70B via Groq | **Token Type:** FREE ONLY
+
+**Focus:** payment reconciliation, invoice matching, discrepancy notes
+
+**Queue:** EXPAND reconciliation steps, DRAFT variance handling, REVIEW payout logic
+
+### 54. **@Yasmin (Market Comps Specialist)**
+
+**Model:** DeepSeek V3 | **Token Type:** FREE ONLY
+
+**Focus:** comparable pricing, area benchmarks, market snapshots
+
+**Queue:** EXPAND comp tables, AUDIT pricing assumptions, REVIEW yield notes
+
+### 55. **@Lina (Analytics Polish Specialist)**
+
+**Model:** DeepSeek V3 | **Token Type:** FREE ONLY
+
+**Focus:** dashboard clarity, KPI labels, chart readability
+
+**Queue:** EXPAND dashboard notes, DRAFT KPI annotations, REVIEW chart copy
+
+### 56. **@Iman (Data Governance Specialist)**
+
+**Model:** Gemini 2.0 Flash | **Token Type:** FREE ONLY
+
+**Focus:** retention, archival, data handling rules
+
+**Queue:** DRAFT retention matrix, EXPAND archival steps, AUDIT privacy gaps
+
+### 57. **@Basma (Security & Privacy Specialist)**
+
+**Model:** Gemini 2.0 Flash | **Token Type:** FREE ONLY
+
+**Focus:** privacy notes, security hygiene, consent wording
+
+**Queue:** AUDIT sensitive fields, EXPAND consent safeguards, REVIEW security notes
+
+### 58. **@Dina (Workflow Automation Specialist)**
+
+**Model:** Llama 3.1 70B via Groq | **Token Type:** FREE ONLY
+
+**Focus:** automation triggers, handoff rules, state transitions
+
+**Queue:** DRAFT workflow triggers, EXPAND automation rules, REVIEW exception paths
+
+### 59. **@Layla (Lead Routing Specialist)**
+
+**Model:** DeepSeek V3 | **Token Type:** FREE ONLY
+
+**Focus:** lead assignment, routing priority, team queues
+
+**Queue:** EXPAND routing matrix, AUDIT assignment conflicts, REVIEW lane balance
+
+### 60. **@Maha (Resident Communications Specialist)**
+
+**Model:** Gemini 2.0 Flash | **Token Type:** FREE ONLY
+
+**Focus:** community notices, resident updates, announcement cadence
+
+**Queue:** DRAFT comms templates, EXPAND announcement workflow, REVIEW tone consistency
+
+### 61. **@Reem (SEO Metadata Specialist)**
+
+**Model:** Gemini 2.0 Flash | **Token Type:** FREE ONLY
+
+**Focus:** metadata, hreflang, structured snippets
+
+**Queue:** EXPAND SEO metadata, DRAFT locale tags, AUDIT keyword coverage
+
+### 62. **@Sanaa (Accessibility Specialist)**
+
+**Model:** DeepSeek V3 | **Token Type:** FREE ONLY
+
+**Focus:** accessibility notes, keyboard flow, color contrast
+
+**Queue:** EXPAND WCAG notes, AUDIT contrast gaps, REVIEW keyboard states
+
+### 63. **@Noura (Design Tokens Specialist)**
+
+**Model:** Gemini 2.0 Flash | **Token Type:** FREE ONLY
+
+**Focus:** color tokens, spacing tokens, visual consistency
+
+**Queue:** DRAFT token rules, EXPAND UI tokens, REVIEW theme alignment
+
+### 64. **@Farah (Media Optimization Specialist)**
+
+**Model:** DeepSeek V3 | **Token Type:** FREE ONLY
+
+**Focus:** image sizing, media metadata, lazy-load rules
+
+**Queue:** EXPAND media rules, AUDIT asset sizes, REVIEW upload guidance
+
+### 65. **@Huda (Geo & Map Data Specialist)**
+
+**Model:** DeepSeek V3 | **Token Type:** FREE ONLY
+
+**Focus:** map data, area boundaries, location QA
+
+**Queue:** DRAFT geo notes, EXPAND map boundaries, REVIEW location labels
+
+### 66. **@Zainab (Integration Docs Specialist)**
+
+**Model:** Llama 3.1 70B via Groq | **Token Type:** FREE ONLY
+
+**Focus:** integrations, webhooks, endpoint summaries
+
+**Queue:** EXPAND integration checklist, AUDIT webhook gaps, REVIEW API handoffs
+
+### 67. **@Salma (Testing Criteria Specialist)**
+
+**Model:** DeepSeek V3 | **Token Type:** FREE ONLY
+
+**Focus:** test scenarios, acceptance criteria, regression notes
+
+**Queue:** DRAFT test matrices, EXPAND pass/fail criteria, REVIEW edge cases
+
+### 68. **@Manal (Operations Playbook Specialist)**
+
+**Model:** Gemini 2.0 Flash | **Token Type:** FREE ONLY
+
+**Focus:** operations runbooks, checklist sequencing, handoff timing
+
+**Queue:** DRAFT ops steps, EXPAND runbook order, REVIEW escalation paths
+
+### 69. **@Ghada (Executive Reporting Specialist)**
+
+**Model:** Llama 3.1 70B via Groq | **Token Type:** FREE ONLY
+
+**Focus:** concise leadership summaries, progress highlights, risk callouts
+
+**Queue:** DRAFT report summaries, EXPAND weekly views, REVIEW KPI snapshots
+
+### 70. **@Rehab (Queue Management Specialist)**
+
+**Model:** Gemini 2.0 Flash | **Token Type:** FREE ONLY
+
+**Focus:** backlog order, queue health, next-task selection
+
+**Queue:** AUDIT queue ordering, EXPAND prioritization rules, REVIEW readiness flow
+
+---
+
 ---
 
 ## 🔄 EXPANDED FREE AGENT POOL — Continuous 60-Minute Loop
 
-> **17 total free agents** (5 original + 12 new). All run in external free tools — zero Copilot premium tokens ever. Each agent has a **60-minute hourly slot**: user pastes the agent's current prompt into the free tool, pastes output into the owned file, commits. Loop restarts automatically. **No agent ever idles** — if backlog is empty, @Margaret assigns a REVIEW task. Run `scripts/free-agents-loop.ps1` to see which agent is active right now.
+> **40 total free agents** (17 core + 23 growth). All run in external free tools — zero Copilot premium tokens ever. The pool is divided into **4 parallel teams of 10** so the planning layer can work on **4 different tasks simultaneously**. Each agent has a **60-minute hourly slot** inside a team rotation: user pastes the agent's current prompt into the free tool, pastes output into the owned file, commits. Loop restarts automatically. **No agent ever idles** — if backlog is empty, @Margaret assigns a REVIEW task. Run `scripts/free-agents-loop.ps1` to see which agent is active right now.
+
+### 4-Team Parallel Planning Model
+
+| Team       | Focus Area                   | Members                                                                          | Simultaneous Task Lane                         |
+| ---------- | ---------------------------- | -------------------------------------------------------------------------------- | ---------------------------------------------- |
+| **Team A** | Leasing, Legal, Compliance   | @Victoria, @Sofia, @Timnit, @Annie, @Hedy, @Amina, @Samira, @Hala, @Rania, @Noor | Tenancy, landlord, compliance, legal docs      |
+| **Team B** | Finance, Data, Analytics     | @Invoice, @Cassie, @Fei-Fei, @Anima, @Mary, @Amal, @Yasmin, @Lina, @Iman, @Basma | Finance, market data, KPI, privacy             |
+| **Team C** | Sales, Workflow, Growth      | @Maya, @Booking, @Jaime, @Corinne, @Marissa, @Dina, @Layla, @Maha, @Reem, @Sanaa | Offers, viewings, WhatsApp, SEO, UX copy       |
+| **Team D** | UX, Media, Integrations, Ops | @Rachel, @Joelle, @Noura, @Farah, @Huda, @Zainab, @Salma, @Manal, @Ghada, @Rehab | Design tokens, media, maps, testing, reporting |
+
+**Parallel execution rule:** each team may own one active task at a time, allowing four independent planning tasks to move forward simultaneously.
 
 ### ⏰ Hourly Rotation Schedule
 
@@ -475,13 +744,13 @@ This file defines the White Caves multi-expert operating model for all agent-ass
 
 ### Governance Handoff Chain
 
-`All 17 Free Agents → @Margaret (daily synthesis) → @Ada (1000% depth + 92% readiness gate) → Senior Coders/Designers`
+`All 17 Free Agents → @Margaret (2-minute synthesis) → @Ada (60% readiness gate) → Senior Coders/Designers`
 
 ### Collaboration Cadence
 
 - Every 4 hours: mini-sync updates in FEEDS/CONSUMES format
 - Every day at noon: @Margaret merges all handoffs into sprint context
-- Before any coding: @Ada validates 1000% depth and readiness >=92% gates are complete
+- Before any coding: @Ada validates readiness >=60% gate is complete
 
 ### Per-Agent Handoff Contracts (Execution Required)
 
@@ -517,14 +786,18 @@ This file defines the White Caves multi-expert operating model for all agent-ass
 - **Coding Gate:** No senior coding agent begins a feature without passing the Context Enrichment Gate (copilot-instructions.md Rule 5). Free agents must complete their docs first.
 - **Loop Script:** Run `scripts/free-agents-loop.ps1` at any time to see which agent is active right now and get the exact copy-paste prompt.
 - **Background Mode (MVP):** Start free-agent planning workers in background with `npm run orchestrator:bg:start` and stop with `npm run orchestrator:bg:stop`.
+- **Autonomous Continuation Default:** After an approved "start/continue" instruction, execution continues in micro-waves without requiring repeated "go" prompts; stop only on hard blockers (tests/lint/build/policy/security/credentials).
+- **Autonomous Loop Commands:** `npm run orchestrator:agent-loop:auto` (or `:auto:nobrowser` in terminal-only mode).
+- **Policy Source of Truth:** Gate thresholds + approval phrase are read from `scripts/orchestrator/policy.json` (no hardcoded legacy thresholds).
 - **Post-Premium QA Watchdog (Mandatory):** **@Katherine** owns runtime verification after each big premium wave commit via `node scripts/orchestrator/post-commit-premium-guard.js`.
 - **Big Premium Commit Trigger:** Runtime watchdog checks execute only when commit contains `[premium-wave]` and qualifies as a big diff (threshold/critical paths).
 
 ## 🚀 GOVERNANCE UPGRADE V2 — LARGE WAVE EXECUTION MODE
 
-1. **1000% Depth Enforcement:**
-   - All prerequisite docs must meet 10× depth with 10 evidence layers before premium coding.
-   - Each agent output must include DU (Depth Unit) score and DRI (Doc Readiness Index) contribution.
+1. **60% Readiness Enforcement (Fast-Track Mode):**
+   - All prerequisite docs must demonstrate 60% readiness with key evidence before premium coding.
+   - Readiness = business rules + API contract + data schema + 1+ test scenario.
+   - Deep documentation is encouraged but not a blocker for low-risk modules.
 
 2. **Mandatory Artifact Bundle (Before Premium):**
    - Required for each coding wave under `plans/waves/`:
@@ -547,8 +820,8 @@ This file defines the White Caves multi-expert operating model for all agent-ass
    - Premium work stops when daily cap is reached unless @Ada grants emergency exception.
 
 5. **Large-Wave Premium Coding Standard:**
-   - Premium coding executes in **3–5 module daily waves**.
-   - Micro-phase premium requests are disallowed unless bundled into a wave packet.
+   - Premium coding executes in **1–2 module micro-waves**.
+   - Micro-phase premium requests are allowed when low-risk and Gate 1 is passed.
 
 6. **Researcher Preflight Requirement:**
    - Before any premium coding day, researcher chain must publish context preflight:
@@ -558,8 +831,110 @@ This file defines the White Caves multi-expert operating model for all agent-ass
      - day quota plan.
    - No preflight = no premium coding.
 
+## ⚡ SUBAGENT EXECUTION UPGRADE — WORK BETTER MODE (Effective 2026-05-17)
+
+### A) Mandatory Dispatch Packet (all subagents)
+
+Every task assignment must include:
+
+- `Task ID`
+- `Owner`
+- `Objective`
+- `Input Artifact(s)` (exact file + section)
+- `Output Artifact` (exact file + section)
+- `Acceptance Criteria` (minimum 3 measurable checks)
+- `Handoff` (`FEEDS→...` + expected `FEEDS_ACK`)
+
+Assignments missing fields are invalid and must not run.
+
+### B) Fast Reliability Loop
+
+- Run `npm run orchestrator:verify-prompts` before first dispatch.
+- Run `npm run orchestrator:health:brief` every session handoff window.
+- Use `npm run orchestrator:next-agent:all` to prevent idle slots.
+- Use `npm run orchestrator:blockers:brief` on any stalled queue.
+
+### C) Completion Rule (Planning Outputs)
+
+A planning task is not done until:
+
+- output is placed in the declared target section,
+- `CONSUMES`, `FEEDS`, and `FEEDS_ACK` are all present,
+- acceptance criteria are testable and explicit,
+- status is synced into `AGENTS.md`, `PROJECT_PROGRESS.md`, and `DAILY_MILESTONE_TRACKER.md`.
+
+### D) Escalation SLA
+
+- `P0`: immediate escalation to @Ada + @Margaret
+- `P1`: escalate within 30 minutes
+- `P2`: escalate within 4 hours
+
+Escalation payload must include impacted files, dependency owner, and next action.
+
+## Multi-Agent Execution Model v2
+
+### Callable vs named agents
+
+The 35 named personas in this file are the **ownership model**. The directly callable execution agents in this environment are the orchestration and delivery agents such as **Architect, Planner, Explore, Coder, Database, Designer, Security, SEO, DevOps, QA, and guardian**.
+
+### Squad model
+
+| Squad                           | Ownership labels                  | Primary callable agents               | Mission                                       |
+| ------------------------------- | --------------------------------- | ------------------------------------- | --------------------------------------------- |
+| Squad A — Planning/Coordination | @Ada, @Margaret, @Grace           | Architect, Planner, Explore, guardian | define scope, dependencies, truth maintenance |
+| Squad B — Frontend Delivery     | @Una, @Lea, @Tracy, @Africa       | Designer, SEO, Coder, QA              | homepage and public UX delivery               |
+| Squad C — Backend/Data Delivery | @Mira, @Barbara, @Ruchi, @Daniela | Coder, Database, Security             | APIs, data, auth, business logic              |
+| Squad D — QA/Security           | @Katherine, @Radia, @Ecem, @Joy   | QA, Security, guardian                | verification, risk review, release gates      |
+| Squad E — Release/Ops           | @Gwynne, @Lila, @Rachel, @Lisa    | DevOps, SEO, guardian                 | CI, deploy, runtime, discoverability          |
+
+### Handoff protocol
+
+Every task handoff must include:
+
+- task ID
+- files affected
+- dependencies
+- acceptance criteria
+- validation steps
+- blocker status
+
+### Shared status model
+
+- Planned
+- Ready
+- In Progress
+- Code Complete
+- In Verification
+- Verified
+- Blocked
+- Shipped
+
+### Proof requirements
+
+A task is not complete until it has:
+
+- evidence of the implementation or documentation change
+- required tests/build results for the scope
+- a verifier that is different from the implementer
+- tracker updates in the live sprint and progress documents
+
+### Execution rules
+
+- Do not assign multiple coding agents to the same file at the same time.
+- Work in vertical slices instead of broad scattered edits.
+- Escalate P0 blockers to @Ada immediately.
+- No milestone changes the project percentage until independent verification is recorded.
+
 ## Working Agreement for This Repository
 
 - Treat this role model as an execution mindset for planning, implementation, review, testing, security, and deployment.
 - Prioritize production-safe decisions, automated validation, and clear delivery checkpoints.
 - Default to autonomous execution unless blocked by missing credentials, external approvals, or irreversible-risk operations.
+
+## Branch & Deployment Protocol
+
+- Start every implementation session on the local `develop` branch.
+- If the workspace is on `development`, create or switch to `develop` from `origin/development` before making changes.
+- Keep `main` reserved for verified release merges only.
+- Before any merge to `main`, record the exact change set and build health in `PHASE_DEPLOYMENT_LOG.md`.
+- Use the verified sequence: build -> local runtime check -> merge -> conflict resolution -> push.

@@ -1,5 +1,21 @@
 import React, { useState, useEffect } from 'react';
+import { authFetch } from '../utils/authFetch';
 import './ContractBuilder.css';
+
+const DEFAULT_TEMPLATES = [
+  {
+    _id: 'tpl-residential-standard',
+    name: 'Residential Lease — Standard',
+    description: 'Standard residential tenancy agreement for apartments and villas.',
+    category: 'Residential',
+  },
+  {
+    _id: 'tpl-commercial-standard',
+    name: 'Commercial Lease — Standard',
+    description: 'Standard commercial lease agreement for office and retail spaces.',
+    category: 'Commercial',
+  },
+];
 
 /**
  * ContractBuilder - Component for creating contracts from templates
@@ -7,8 +23,8 @@ import './ContractBuilder.css';
  */
 export default function ContractBuilder({
   onContractCreated,
-  propertyData,
-  partyData
+  propertyData: _propertyData,
+  partyData,
 }) {
   const [templates, setTemplates] = useState([]);
   const [selectedTemplate, setSelectedTemplate] = useState(null);
@@ -25,19 +41,34 @@ export default function ContractBuilder({
 
   const fetchTemplates = async () => {
     try {
-      const response = await fetch('/api/contracts');
+      const response = await authFetch('/api/contracts');
       const data = await response.json();
       if (data.success) {
-        setTemplates(data.data);
+        const apiTemplates = data.data || data.contracts || [];
+        if (Array.isArray(apiTemplates) && apiTemplates.length > 0) {
+          setTemplates(
+            apiTemplates.map(item => ({
+              _id: item.id || item._id,
+              name: item.name || item.contractNumber || 'Contract Template',
+              description:
+                item.description ||
+                `Lessor: ${item.lessorName || '—'} · Tenant: ${item.tenantName || '—'}`,
+              category: item.propertyType || item.category || 'General',
+            }))
+          );
+        } else {
+          setTemplates(DEFAULT_TEMPLATES);
+        }
       }
     } catch (err) {
+      setTemplates(DEFAULT_TEMPLATES);
       setError('Failed to load templates');
       console.error(err);
     }
   };
 
   // Handle template selection
-  const handleSelectTemplate = (template) => {
+  const handleSelectTemplate = template => {
     setSelectedTemplate(template);
     setFormData({});
     setPreview('');
@@ -46,43 +77,50 @@ export default function ContractBuilder({
   };
 
   // Handle form input change
-  const handleInputChange = (e) => {
+  const handleInputChange = e => {
     const { name, value } = e.target;
-    setFormData((prev) => ({
+    setFormData(prev => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
   };
 
-  // Validate and preview
+  // Local validation + preview (backend template validation endpoint is deprecated)
   const handlePreview = async () => {
+    setLoading(true);
+    setError('');
+
     try {
-      setLoading(true);
-      setError('');
-
-      const response = await fetch(
-        '/api/contracts/from-template/validate',
-        {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            templateId: selectedTemplate._id,
-            data: formData
-          })
-        }
-      );
-
-      const data = await response.json();
-
-      if (data.success) {
-        setPreview(data.data.content);
-        setStep('review');
-      } else {
-        setError(data.error || 'Validation failed');
+      if (!formData.landlordName?.trim()) {
+        setError('Landlord name is required.');
+        return;
       }
-    } catch (err) {
-      setError('Failed to preview contract');
-      console.error(err);
+      if (!formData.tenantName?.trim()) {
+        setError('Tenant name is required.');
+        return;
+      }
+      if (!formData.rentAmount || Number(formData.rentAmount) <= 0) {
+        setError('Monthly rent must be greater than 0.');
+        return;
+      }
+      if (!formData.startDate) {
+        setError('Start date is required.');
+        return;
+      }
+
+      const html = `
+        <h4>${selectedTemplate?.name || 'Tenancy Contract'}</h4>
+        <p><strong>Property:</strong> ${formData.propertyAddress || '—'}</p>
+        <p><strong>Property Type:</strong> ${formData.propertyType || '—'}</p>
+        <p><strong>Landlord:</strong> ${formData.landlordName || '—'} (${formData.landlordEmail || 'no email'})</p>
+        <p><strong>Tenant:</strong> ${formData.tenantName || '—'} (${formData.tenantEmail || 'no email'})</p>
+        <p><strong>Monthly Rent:</strong> AED ${Number(formData.rentAmount || 0).toLocaleString()}</p>
+        <p><strong>Lease Start:</strong> ${formData.startDate || '—'}</p>
+        <p><strong>Security Deposit:</strong> AED ${Number(formData.securityDeposit || 0).toLocaleString()}</p>
+      `;
+
+      setPreview(html);
+      setStep('review');
     } finally {
       setLoading(false);
     }
@@ -94,37 +132,39 @@ export default function ContractBuilder({
       setLoading(true);
       setError('');
 
-      const response = await fetch(
-        '/api/contracts/from-template',
-        {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            templateId: selectedTemplate._id,
-            templateData: formData,
-            partyData: {
-              ...partyData,
-              createdBy: {
-                userId: 'current-user-id', // TODO: Get from auth
-                email: 'user@example.com',
-                name: 'Current User'
-              }
-            }
-          })
-        }
-      );
+      const response = await authFetch('/api/contracts', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          lessorName: formData.landlordName?.trim(),
+          tenantName: formData.tenantName?.trim(),
+          propertyType: formData.propertyType || selectedTemplate?.category || 'Apartment',
+          annualRent: Math.round(Number(formData.rentAmount || 0) * 12),
+          metadata: {
+            templateId: selectedTemplate?._id,
+            templateName: selectedTemplate?.name,
+            monthlyRent: Number(formData.rentAmount || 0),
+            durationMonths: Number(formData.durationMonths || 12),
+            startDate: formData.startDate,
+            securityDeposit: Number(formData.securityDeposit || 0),
+            propertyAddress: formData.propertyAddress,
+            partyData: partyData || {},
+          },
+        }),
+      });
 
       const data = await response.json();
 
-      if (data.success) {
+      if (response.ok && data.success) {
         if (onContractCreated) {
-          onContractCreated(data);
+          onContractCreated(data.contract || data.data || data);
         }
         // Reset form
         setSelectedTemplate(null);
         setFormData({});
         setPreview('');
         setStep('select');
+        await fetchTemplates();
       } else {
         setError(data.error || 'Failed to create contract');
       }
@@ -149,7 +189,7 @@ export default function ContractBuilder({
             <h3>Select a Template</h3>
             <div className="template-grid">
               {templates.length > 0 ? (
-                templates.map((template) => (
+                templates.map(template => (
                   <div
                     key={template._id}
                     className="template-card"
@@ -158,9 +198,7 @@ export default function ContractBuilder({
                     <div className="template-icon">📄</div>
                     <h4>{template.name}</h4>
                     <p>{template.description}</p>
-                    <span className="template-category">
-                      {template.category}
-                    </span>
+                    <span className="template-category">{template.category}</span>
                   </div>
                 ))
               ) : (
@@ -340,11 +378,7 @@ export default function ContractBuilder({
               </fieldset>
 
               <div className="form-actions">
-                <button
-                  type="button"
-                  className="btn-secondary"
-                  onClick={() => setStep('select')}
-                >
+                <button type="button" className="btn-secondary" onClick={() => setStep('select')}>
                   Back
                 </button>
                 <button
@@ -366,18 +400,11 @@ export default function ContractBuilder({
             <h3>Review Contract</h3>
 
             <div className="contract-preview">
-              <div
-                className="preview-content"
-                dangerouslySetInnerHTML={{ __html: preview }}
-              />
+              <div className="preview-content" dangerouslySetInnerHTML={{ __html: preview }} />
             </div>
 
             <div className="form-actions">
-              <button
-                type="button"
-                className="btn-secondary"
-                onClick={() => setStep('fill')}
-              >
+              <button type="button" className="btn-secondary" onClick={() => setStep('fill')}>
                 Back to Edit
               </button>
               <button

@@ -8,7 +8,7 @@ import axios, { AxiosInstance, AxiosError } from 'axios';
 
 export interface MetaAPIConfig {
   accessToken: string; // Permanent access token from Meta
-  businessAccountId: string; // Business Account ID
+  businessAccountId?: string; // Optional: needed only for account-info lookup paths
   phoneNumberId: string; // WhatsApp Business Phone Number ID
   webhookVerifyToken?: string; // For webhook verification
   apiVersion?: string; // Default: v17.0
@@ -106,8 +106,8 @@ export class MetaAPIClient {
   private readonly BASE_URL = 'https://graph.facebook.com';
 
   constructor(config: MetaAPIConfig) {
-    if (!config.accessToken || !config.businessAccountId || !config.phoneNumberId) {
-      throw new Error('Meta API config incomplete: accessToken, businessAccountId, phoneNumberId required');
+    if (!config.accessToken || !config.phoneNumberId) {
+      throw new Error('Meta API config incomplete: accessToken and phoneNumberId required');
     }
 
     this.config = {
@@ -120,7 +120,7 @@ export class MetaAPIClient {
       baseURL: `${this.BASE_URL}/${this.config.apiVersion}`,
       timeout: this.config.timeout,
       headers: {
-        'Authorization': `Bearer ${this.config.accessToken}`,
+        Authorization: `Bearer ${this.config.accessToken}`,
         'Content-Type': 'application/json',
       },
     });
@@ -141,7 +141,10 @@ export class MetaAPIClient {
         },
       };
 
-      const response = await this.client.post<MessageResponse>(`/${this.config.phoneNumberId}/messages`, payload);
+      const response = await this.client.post<MessageResponse>(
+        `/${this.config.phoneNumberId}/messages`,
+        payload
+      );
 
       const messageId = response.data.messages[0]?.id;
       console.log(`[Meta API] Message sent: ${messageId} to ${toPhoneNumber}`);
@@ -173,7 +176,7 @@ export class MetaAPIClient {
           ...(parameters && {
             parameters: {
               body: {
-                parameters: parameters.map((param) => ({
+                parameters: parameters.map(param => ({
                   type: 'text',
                   text: param,
                 })),
@@ -183,7 +186,10 @@ export class MetaAPIClient {
         },
       };
 
-      const response = await this.client.post<MessageResponse>(`/${this.config.phoneNumberId}/messages`, payload);
+      const response = await this.client.post<MessageResponse>(
+        `/${this.config.phoneNumberId}/messages`,
+        payload
+      );
 
       return response.data.messages[0]?.id;
     } catch (error) {
@@ -207,7 +213,10 @@ export class MetaAPIClient {
         },
       };
 
-      const response = await this.client.post<MessageResponse>(`/${this.config.phoneNumberId}/messages`, payload);
+      const response = await this.client.post<MessageResponse>(
+        `/${this.config.phoneNumberId}/messages`,
+        payload
+      );
 
       return response.data.messages[0]?.id;
     } catch (error) {
@@ -219,7 +228,11 @@ export class MetaAPIClient {
   /**
    * Send document
    */
-  public async sendDocument(toPhoneNumber: string, documentUrl: string, filename?: string): Promise<string> {
+  public async sendDocument(
+    toPhoneNumber: string,
+    documentUrl: string,
+    filename?: string
+  ): Promise<string> {
     try {
       const payload: SendMessagePayload = {
         messaging_product: 'whatsapp',
@@ -231,7 +244,10 @@ export class MetaAPIClient {
         },
       };
 
-      const response = await this.client.post<MessageResponse>(`/${this.config.phoneNumberId}/messages`, payload);
+      const response = await this.client.post<MessageResponse>(
+        `/${this.config.phoneNumberId}/messages`,
+        payload
+      );
 
       return response.data.messages[0]?.id;
     } catch (error) {
@@ -263,18 +279,26 @@ export class MetaAPIClient {
   /**
    * Upload media for reuse
    */
-  public async uploadMedia(fileBuffer: Buffer, mimeType: string, filename: string): Promise<MediaUploadResponse> {
+  public async uploadMedia(
+    fileBuffer: Buffer,
+    mimeType: string,
+    filename: string
+  ): Promise<MediaUploadResponse> {
     try {
       const formData = new FormData();
       const blob = new Blob([fileBuffer], { type: mimeType });
       formData.append('file', blob, filename);
       formData.append('type', mimeType);
 
-      const response = await this.client.post<{ id: string }>(`/${this.config.phoneNumberId}/media`, formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      });
+      const response = await this.client.post<{ id: string }>(
+        `/${this.config.phoneNumberId}/media`,
+        formData,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        }
+      );
 
       return {
         id: response.data.id,
@@ -326,6 +350,10 @@ export class MetaAPIClient {
    */
   public async getAccountInfo(): Promise<any> {
     try {
+      if (!this.config.businessAccountId) {
+        throw new Error('businessAccountId is required for getAccountInfo()');
+      }
+
       const response = await this.client.get(`/${this.config.businessAccountId}`);
       return response.data;
     } catch (error) {
@@ -370,7 +398,7 @@ export class MetaAPIClient {
    */
   public getStats(): {
     apiVersion: string;
-    businessAccountId: string;
+    businessAccountId?: string;
     phoneNumberId: string;
   } {
     return {

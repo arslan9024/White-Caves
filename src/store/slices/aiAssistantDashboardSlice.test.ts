@@ -112,6 +112,8 @@ import {
 
 import type { RootState } from '../store';
 
+/* eslint-disable security/detect-object-injection */
+
 // ── Helpers ─────────────────────────────────────────────────────────────
 
 const initialState = () => reducer(undefined, { type: '@@INIT' });
@@ -1084,11 +1086,11 @@ describe('aiAssistantDashboardSlice', () => {
 
     it('fires critical notification for failed action', () => {
       const s = initialState();
-      const taskId = s.tasks.byAssistantId.laila[0].id;
+      const taskId = s.tasks.byAssistantId.theodora[0].id;
       const state = reducer(
         s,
         addTaskAction({
-          assistantId: 'laila',
+          assistantId: 'theodora',
           taskId,
           taskAction: {
             type: 'api_error',
@@ -1098,7 +1100,7 @@ describe('aiAssistantDashboardSlice', () => {
           },
         })
       );
-      const notif = state.notifications.byAssistantId.laila[0];
+      const notif = state.notifications.byAssistantId.theodora[0];
       expect(notif.severity).toBe('critical');
       expect(notif.message).toContain('Action failed');
     });

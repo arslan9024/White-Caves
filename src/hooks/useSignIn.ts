@@ -32,6 +32,7 @@ interface PendingUser {
   email: string;
   name: string;
   photo?: string;
+  fromSocialProvider?: string;
 }
 
 interface ConfirmationResult {
@@ -178,24 +179,28 @@ export function useSignIn() {
           ? '/landlord-portal'
           : user.role === 'tenant'
             ? '/tenant-portal'
-            : '/dashboard';
+            : '/crm';
       navTimerRef.current = setTimeout(() => navigate(destination), TIMING.NAVIGATION_DELAY);
     },
     [dispatch, navigate]
   );
 
   const handleSignUpSuccess = useCallback(
-    (user: {
-      id: string;
-      email: string | null;
-      name: string | null;
-      photoUrl?: string | null;
-    }): void => {
+    (
+      user: {
+        id: string;
+        email: string | null;
+        name: string | null;
+        photoUrl?: string | null;
+      },
+      options?: { fromSocialProvider?: string }
+    ): void => {
       setPendingUser({
         id: user.id,
         email: user.email || '',
         name: user.name || fullName,
         photo: user.photoUrl || undefined,
+        fromSocialProvider: options?.fromSocialProvider,
       });
       setStep(2);
     },
@@ -259,10 +264,13 @@ export function useSignIn() {
         );
       } else {
         setSuccess('Account created successfully!');
-        navTimerRef.current = setTimeout(
-          () => navigate(`/${selectedRole}/dashboard`),
-          TIMING.NAVIGATION_DELAY
-        );
+        const destination =
+          selectedRole === 'landlord'
+            ? '/landlord-portal'
+            : selectedRole === 'tenant'
+              ? '/tenant-portal'
+              : '/crm';
+        navTimerRef.current = setTimeout(() => navigate(destination), TIMING.NAVIGATION_DELAY);
       }
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : 'Registration failed';
@@ -302,14 +310,11 @@ export function useSignIn() {
           const backendUser = backendResponse.data.user;
 
           if (mode === 'signup') {
-            handleSignUpSuccess(backendUser);
+            handleSignUpSuccess(backendUser, { fromSocialProvider: provider });
           } else {
             handleSignInSuccess(backendUser);
           }
-        } catch (syncError: unknown) {
-          if (mode === 'signin') {
-            throw syncError;
-          }
+        } catch {
           const firebaseUser = result.user;
           const fallbackUser = {
             id: firebaseUser.uid,
@@ -317,8 +322,9 @@ export function useSignIn() {
             name: firebaseUser.displayName,
           };
           if (mode === 'signup') {
-            handleSignUpSuccess(fallbackUser);
+            handleSignUpSuccess(fallbackUser, { fromSocialProvider: provider });
           } else {
+            setSuccess('Signed in with Firebase session. Backend sync will retry automatically.');
             handleSignInSuccess(fallbackUser);
           }
         }
@@ -338,6 +344,8 @@ export function useSignIn() {
       e.preventDefault();
       setLoading(true);
       setError('');
+
+      const normalizedEmail = email.trim().toLowerCase();
 
       if (mode === 'signup' && password !== confirmPassword) {
         setError('Passwords do not match');
@@ -362,11 +370,11 @@ export function useSignIn() {
         if (mode === 'signup') {
           handleSignUpSuccess({
             id: 'pending-signup',
-            email,
-            name: fullName || email,
+            email: normalizedEmail,
+            name: fullName || normalizedEmail,
           });
         } else {
-          const response = await backendLogin(email, password);
+          const response = await backendLogin(normalizedEmail, password);
           if (!response?.data?.user) throw new Error('Invalid response: missing user data');
           handleSignInSuccess(response.data.user);
         }

@@ -1,7 +1,7 @@
 // src/components/layout/DashboardWorkspace/DynamicContentRouter.tsx
 import React, { Suspense, useMemo } from 'react';
 import styled from 'styled-components';
-import { MEDIA_QUERIES } from '../../../styles/theme';
+import { MEDIA_QUERIES, theme } from '../../../styles/theme';
 import { featureRegistry, Feature } from './FeatureRegistry';
 
 interface DynamicContentRouterProps {
@@ -22,12 +22,12 @@ const ContentContainer = styled.div`
   flex-direction: column;
   height: 100%;
   width: 100%;
-  background: ${props => props.theme.colors.background.primary};
-  border-radius: ${props => props.theme.borderRadius.lg};
+  background: ${theme.colors.background.primary};
+  border-radius: ${theme.borderRadius.lg};
   overflow: hidden;
 
   @media ${MEDIA_QUERIES.tablet} {
-    border-radius: ${props => props.theme.borderRadius.md};
+    border-radius: ${theme.borderRadius.md};
   }
 `;
 
@@ -44,15 +44,15 @@ const ContentWrapper = styled.div`
   }
 
   &::-webkit-scrollbar-track {
-    background: ${props => props.theme.colors.background.secondary};
+    background: ${theme.colors.background.secondary};
   }
 
   &::-webkit-scrollbar-thumb {
-    background: ${props => props.theme.colors.border.light};
+    background: ${theme.colors.border};
     border-radius: 4px;
 
     &:hover {
-      background: ${props => props.theme.colors.border.medium};
+      background: ${theme.colors.borderDark};
     }
   }
 `;
@@ -63,7 +63,7 @@ const LoadingContainer = styled.div`
   justify-content: center;
   height: 100%;
   width: 100%;
-  background: ${props => props.theme.colors.background.primary};
+  background: ${theme.colors.background.primary};
 `;
 
 const ErrorContainer = styled.div`
@@ -74,12 +74,12 @@ const ErrorContainer = styled.div`
   height: 100%;
   width: 100%;
   padding: 2rem;
-  background: ${props => props.theme.colors.background.primary};
-  color: ${props => props.theme.colors.text.secondary};
+  background: ${theme.colors.background.primary};
+  color: ${theme.colors.text.secondary};
 `;
 
 const ErrorTitle = styled.h2`
-  color: ${props => props.theme.colors.danger};
+  color: ${theme.colors.danger};
   margin-bottom: 1rem;
 `;
 
@@ -97,8 +97,8 @@ const EmptyStateContainer = styled.div`
   height: 100%;
   width: 100%;
   padding: 2rem;
-  background: ${props => props.theme.colors.background.primary};
-  color: ${props => props.theme.colors.text.tertiary};
+  background: ${theme.colors.background.primary};
+  color: ${theme.colors.text.tertiary};
   text-align: center;
 
   svg {
@@ -119,8 +119,8 @@ const ContentHeader = styled.div`
   align-items: center;
   justify-content: space-between;
   padding: 1.5rem;
-  border-bottom: 1px solid ${props => props.theme.colors.border.light};
-  background: ${props => props.theme.colors.background.secondary};
+  border-bottom: 1px solid ${theme.colors.border};
+  background: ${theme.colors.background.secondary};
   flex-shrink: 0;
 
   @media ${MEDIA_QUERIES.tablet} {
@@ -135,7 +135,7 @@ const ContentTitle = styled.h1`
   margin: 0;
   font-size: 1.5rem;
   font-weight: 600;
-  color: ${props => props.theme.colors.text.primary};
+  color: ${theme.colors.text.primary};
 
   svg {
     width: 28px;
@@ -164,16 +164,16 @@ const CloseButton = styled.button`
   width: 36px;
   height: 36px;
   padding: 0;
-  background: ${props => props.theme.colors.background.primary};
-  border: 1px solid ${props => props.theme.colors.border.light};
-  border-radius: ${props => props.theme.borderRadius.md};
+  background: ${theme.colors.background.primary};
+  border: 1px solid ${theme.colors.border};
+  border-radius: ${theme.borderRadius.md};
   cursor: pointer;
-  color: ${props => props.theme.colors.text.secondary};
+  color: ${theme.colors.text.secondary};
   transition: all 0.2s ease;
 
   &:hover {
-    background: ${props => props.theme.colors.background.tertiary};
-    color: ${props => props.theme.colors.text.primary};
+    background: ${theme.colors.background.tertiary};
+    color: ${theme.colors.text.primary};
   }
 
   svg {
@@ -200,10 +200,7 @@ interface ErrorBoundaryState {
   error: Error | null;
 }
 
-class ErrorBoundary extends React.Component<
-  ErrorBoundaryProps,
-  ErrorBoundaryState
-> {
+class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundaryState> {
   constructor(props: ErrorBoundaryProps) {
     super(props);
     this.state = { hasError: false, error: null };
@@ -251,8 +248,8 @@ class ErrorBoundary extends React.Component<
 const Spinner = styled.div`
   width: 40px;
   height: 40px;
-  border: 4px solid ${props => props.theme.colors.border.light};
-  border-top-color: ${props => props.theme.colors.primary};
+  border: 4px solid ${theme.colors.border};
+  border-top-color: ${theme.colors.primary};
   border-radius: 50%;
   animation: spin 1s linear infinite;
 
@@ -372,9 +369,7 @@ export const DynamicContentRouter: React.FC<DynamicContentRouterProps> = ({
 
       <ContentWrapper>
         <ErrorBoundary fallback={errorFallback}>
-          <Suspense fallback={fallback || <DefaultLoadingFallback />}>
-            {renderContent}
-          </Suspense>
+          <Suspense fallback={fallback || <DefaultLoadingFallback />}>{renderContent}</Suspense>
         </ErrorBoundary>
       </ContentWrapper>
     </ContentContainer>

@@ -36,7 +36,7 @@ export default defineConfig({
   webServer: USE_EXTERNAL_BASE_URL
     ? undefined
     : {
-        command: 'npm run dev',
+        command: 'npm run dev:all',
         url: BASE_URL,
         reuseExistingServer: !process.env.CI,
         timeout: 120 * 1000,

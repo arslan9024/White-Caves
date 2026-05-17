@@ -10,7 +10,7 @@ interface Bot {
 
 interface AnalyticsData {
   getTotalMessagesProcessed: () => number;
-  getAverageResponseRate: () => number;
+  getAverageResponseRate: () => number | string;
   getConnectedBotCount: () => number;
   bots: Bot[];
 }

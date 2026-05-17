@@ -3,13 +3,33 @@
  * Full message pipeline: WhatsApp → NLP → Queue → Agent Response
  */
 
-import { describe, it, expect, beforeAll, afterAll } from 'vitest';
+import { describe, it, expect, beforeAll, afterAll, beforeEach, afterEach, vi } from 'vitest';
+
+vi.hoisted(() => {
+  process.env.NODE_ENV = 'test';
+  process.env.JWT_SECRET = process.env.JWT_SECRET || 'test-jwt-secret';
+  process.env.DATABASE_URL =
+    process.env.DATABASE_URL || 'mongodb://localhost:27017/white-caves-test';
+});
+
 import { ninaEngine, Intent } from '../services/nadia/ninaEngine.js';
 import { conversationMemory } from '../services/nadia/conversationMemory.js';
 import { LindaClient } from '../services/whatsapp/lindaClient.js';
 import { MetaAPIClient } from '../services/whatsapp/metaAPI.js';
 
 describe('Phase 3: End-to-End WhatsApp CRM Pipeline', () => {
+  beforeEach(() => {
+    vi.spyOn(console, 'log').mockImplementation(() => {});
+    vi.spyOn(console, 'warn').mockImplementation(() => {});
+    vi.spyOn(console, 'error').mockImplementation(() => {});
+    vi.spyOn(process.stdout, 'write').mockImplementation((() => true) as never);
+    vi.spyOn(process.stderr, 'write').mockImplementation((() => true) as never);
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
   describe('E2E: Customer Message → Intent → Response', () => {
     it('should process complete message flow: inquiry → intent detection → agent queue', async () => {
       // 1. Simulate customer message
@@ -32,21 +52,25 @@ describe('Phase 3: End-to-End WhatsApp CRM Pipeline', () => {
 
       // 4. Verify entity extraction
       expect(result.entities.length).toBeGreaterThan(2);
-      const hasLocation = result.entities.some((e) => e.type === 'LOCATION');
-      const hasBedroms = result.entities.some((e) => e.type === 'BEDROOMS');
+      const hasLocation = result.entities.some(e => e.type === 'LOCATION');
+      const hasBedroms = result.entities.some(e => e.type === 'BEDROOMS');
       expect(hasLocation || hasBedroms).toBe(true);
 
       // 5. Verify suggested response
       expect(result.suggestedResponse).toBeTruthy();
 
       // 6. Store in conversation memory
-      conversationMemory.updateContext(conversation.conversationId, {
-        id: 'msg_e2e_1',
-        conversationId: conversation.conversationId,
-        content: message,
-        sender: 'CUSTOMER',
-        timestamp: new Date(),
-      }, result);
+      conversationMemory.updateContext(
+        conversation.conversationId,
+        {
+          id: 'msg_e2e_1',
+          conversationId: conversation.conversationId,
+          content: message,
+          sender: 'CUSTOMER',
+          timestamp: new Date(),
+        },
+        result
+      );
 
       // 7. Verify memory updated
       const stored = conversationMemory.getContext(conversation.conversationId);
@@ -62,13 +86,17 @@ describe('Phase 3: End-to-End WhatsApp CRM Pipeline', () => {
       const msg1 = 'Show me villas in the Marina';
       const result1 = ninaEngine.processMessage(msg1, context);
 
-      conversationMemory.updateContext(conversationId, {
-        id: 'msg_1',
+      conversationMemory.updateContext(
         conversationId,
-        content: msg1,
-        sender: 'CUSTOMER',
-        timestamp: new Date(),
-      }, result1);
+        {
+          id: 'msg_1',
+          conversationId,
+          content: msg1,
+          sender: 'CUSTOMER',
+          timestamp: new Date(),
+        },
+        result1
+      );
 
       // Turn 2: Use context from previous intent
       context = conversationMemory.getContext(conversationId)!;
@@ -78,13 +106,17 @@ describe('Phase 3: End-to-End WhatsApp CRM Pipeline', () => {
       // Should detect viewing request with context boost
       expect(result2.primary.intent).toMatch(/VIEWING/);
 
-      conversationMemory.updateContext(conversationId, {
-        id: 'msg_2',
+      conversationMemory.updateContext(
         conversationId,
-        content: msg2,
-        sender: 'CUSTOMER',
-        timestamp: new Date(),
-      }, result2);
+        {
+          id: 'msg_2',
+          conversationId,
+          content: msg2,
+          sender: 'CUSTOMER',
+          timestamp: new Date(),
+        },
+        result2
+      );
 
       // Turn 3: Price inquiry
       context = conversationMemory.getContext(conversationId)!;
@@ -93,13 +125,17 @@ describe('Phase 3: End-to-End WhatsApp CRM Pipeline', () => {
 
       expect(result3.primary.intent).toMatch(/INFORMATION/);
 
-      conversationMemory.updateContext(conversationId, {
-        id: 'msg_3',
+      conversationMemory.updateContext(
         conversationId,
-        content: msg3,
-        sender: 'CUSTOMER',
-        timestamp: new Date(),
-      }, result3);
+        {
+          id: 'msg_3',
+          conversationId,
+          content: msg3,
+          sender: 'CUSTOMER',
+          timestamp: new Date(),
+        },
+        result3
+      );
 
       // Verify conversation history
       const final = conversationMemory.getContext(conversationId)!;
@@ -237,13 +273,17 @@ describe('Phase 3: End-to-End WhatsApp CRM Pipeline', () => {
 
       // Add first message
       const msg1 = ninaEngine.processMessage('I want to buy', ctx);
-      conversationMemory.updateContext(conversationId, {
-        id: 'msg_1',
+      conversationMemory.updateContext(
         conversationId,
-        content: 'I want to buy',
-        sender: 'CUSTOMER',
-        timestamp: new Date(),
-      }, msg1);
+        {
+          id: 'msg_1',
+          conversationId,
+          content: 'I want to buy',
+          sender: 'CUSTOMER',
+          timestamp: new Date(),
+        },
+        msg1
+      );
 
       // Retrieve and verify
       ctx = conversationMemory.getContext(conversationId)!;
@@ -252,20 +292,24 @@ describe('Phase 3: End-to-End WhatsApp CRM Pipeline', () => {
 
       // Add second message
       const msg2 = ninaEngine.processMessage('In Marina', ctx);
-      conversationMemory.updateContext(conversationId, {
-        id: 'msg_2',
+      conversationMemory.updateContext(
         conversationId,
-        content: 'In Marina',
-        sender: 'CUSTOMER',
-        timestamp: new Date(),
-      }, msg2);
+        {
+          id: 'msg_2',
+          conversationId,
+          content: 'In Marina',
+          sender: 'CUSTOMER',
+          timestamp: new Date(),
+        },
+        msg2
+      );
 
       // Retrieve again
       ctx = conversationMemory.getContext(conversationId)!;
       expect(ctx.messageHistory.length).toBe(2);
 
       // Verify history is preserved
-      expect(ctx.messageHistory.map((m) => m.content)).toEqual(['I want to buy', 'In Marina']);
+      expect(ctx.messageHistory.map(m => m.content)).toEqual(['I want to buy', 'In Marina']);
     });
   });
 
@@ -358,56 +402,75 @@ describe('Phase 3: End-to-End WhatsApp CRM Pipeline', () => {
       let result = ninaEngine.processMessage('I am new to Dubai. Help me find a property.', ctx);
       expect(result.primary.intent).toMatch(/PROPERTY|ASSISTANCE/);
 
-      conversationMemory.updateContext(conversationId, {
-        id: 'msg_1',
+      conversationMemory.updateContext(
         conversationId,
-        content: 'I am new to Dubai. Help me find a property.',
-        sender: 'CUSTOMER',
-        timestamp: new Date(),
-      }, result);
+        {
+          id: 'msg_1',
+          conversationId,
+          content: 'I am new to Dubai. Help me find a property.',
+          sender: 'CUSTOMER',
+          timestamp: new Date(),
+        },
+        result
+      );
 
       // Step 2: Specific requirement
       ctx = conversationMemory.getContext(conversationId)!;
       result = ninaEngine.processMessage('I want a 3BR villa in Marina with gym and pool', ctx);
       expect(result.entities.length).toBeGreaterThan(2);
 
-      conversationMemory.updateContext(conversationId, {
-        id: 'msg_2',
+      conversationMemory.updateContext(
         conversationId,
-        content: 'I want a 3BR villa in Marina with gym and pool',
-        sender: 'CUSTOMER',
-        timestamp: new Date(),
-      }, result);
+        {
+          id: 'msg_2',
+          conversationId,
+          content: 'I want a 3BR villa in Marina with gym and pool',
+          sender: 'CUSTOMER',
+          timestamp: new Date(),
+        },
+        result
+      );
 
       // Step 3: Viewing request
       ctx = conversationMemory.getContext(conversationId)!;
       result = ninaEngine.processMessage('Can I view something this weekend?', ctx);
       expect(result.primary.intent).toMatch(/VIEWING/);
 
-      conversationMemory.updateContext(conversationId, {
-        id: 'msg_3',
+      conversationMemory.updateContext(
         conversationId,
-        content: 'Can I view something this weekend?',
-        sender: 'CUSTOMER',
-        timestamp: new Date(),
-      }, result);
+        {
+          id: 'msg_3',
+          conversationId,
+          content: 'Can I view something this weekend?',
+          sender: 'CUSTOMER',
+          timestamp: new Date(),
+        },
+        result
+      );
 
       // Step 4: Price inquiry
       ctx = conversationMemory.getContext(conversationId)!;
       result = ninaEngine.processMessage('What is the price range?', ctx);
       expect(result.primary.intent).toMatch(/INFORMATION/);
 
-      conversationMemory.updateContext(conversationId, {
-        id: 'msg_4',
+      conversationMemory.updateContext(
         conversationId,
-        content: 'What is the price range?',
-        sender: 'CUSTOMER',
-        timestamp: new Date(),
-      }, result);
+        {
+          id: 'msg_4',
+          conversationId,
+          content: 'What is the price range?',
+          sender: 'CUSTOMER',
+          timestamp: new Date(),
+        },
+        result
+      );
 
       // Step 5: Purchase interest
       ctx = conversationMemory.getContext(conversationId)!;
-      result = ninaEngine.processMessage('I want to buy and purchase this property now. Ready to acquire it.', ctx);
+      result = ninaEngine.processMessage(
+        'I want to buy and purchase this property now. Ready to acquire it.',
+        ctx
+      );
       expect(result.primary.intent).toMatch(/PURCHASE/);
       expect(result.requiresAgentHandoff).toBe(false);
 

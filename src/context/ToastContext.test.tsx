@@ -6,7 +6,7 @@
 
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, screen, act } from '@testing-library/react';
-import React, { useContext } from 'react';
+import React, { useContext, useEffect } from 'react';
 import { ToastProvider, ToastContext, ToastContextType } from './ToastContext';
 
 // ── Test Helper ──────────────────────────────────────────────────
@@ -15,7 +15,9 @@ let capturedCtx: ToastContextType | undefined;
 
 const TestConsumer: React.FC = () => {
   const ctx = useContext(ToastContext);
-  capturedCtx = ctx;
+  useEffect(() => {
+    capturedCtx = ctx;
+  }, [ctx]);
   return (
     <div>
       <span data-testid="toast-count">{ctx?.toasts.length ?? 0}</span>
@@ -23,7 +25,9 @@ const TestConsumer: React.FC = () => {
         <div key={t.id} data-testid={`toast-${t.id}`} data-type={t.type} data-position={t.position}>
           <span>{t.message}</span>
           {t.action && (
-            <button data-testid={`action-${t.id}`} onClick={t.action.onClick}>{t.action.label}</button>
+            <button data-testid={`action-${t.id}`} onClick={t.action.onClick}>
+              {t.action.label}
+            </button>
           )}
         </div>
       ))}
@@ -35,7 +39,7 @@ const renderWithProvider = () => {
   return render(
     <ToastProvider>
       <TestConsumer />
-    </ToastProvider>,
+    </ToastProvider>
   );
 };
 
@@ -142,7 +146,8 @@ describe('ToastContext', () => {
 
     it('should only dismiss the targeted toast', () => {
       renderWithProvider();
-      let id1: string = '', id2: string = '';
+      let id1: string = '',
+        id2: string = '';
       act(() => {
         id1 = capturedCtx!.show({ message: 'Keep', type: 'info', position: 'top-right' });
         id2 = capturedCtx!.show({ message: 'Remove', type: 'warning', position: 'top-right' });
@@ -249,7 +254,12 @@ describe('ToastContext', () => {
       renderWithProvider();
       let id: string = '';
       act(() => {
-        id = capturedCtx!.show({ message: 'Manual', type: 'info', position: 'top-right', duration: 5000 });
+        id = capturedCtx!.show({
+          message: 'Manual',
+          type: 'info',
+          position: 'top-right',
+          duration: 5000,
+        });
       });
       act(() => {
         capturedCtx!.dismiss(id); // manual dismiss clears timer
@@ -298,8 +308,12 @@ describe('ToastContext', () => {
 
   describe('Positions', () => {
     const positions = [
-      'top-left', 'top-center', 'top-right',
-      'bottom-left', 'bottom-center', 'bottom-right',
+      'top-left',
+      'top-center',
+      'top-right',
+      'bottom-left',
+      'bottom-center',
+      'bottom-right',
     ] as const;
 
     positions.forEach(pos => {

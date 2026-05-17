@@ -7,10 +7,14 @@ vi.mock('../AuroraCTODashboard.css', () => ({}));
 
 // Mock tab components
 vi.mock('./OverviewTab', () => ({
-  default: ({ stats, systemStatus }: any) => <div data-testid="overview-tab">Overview - Health: {stats?.systemHealth?.toFixed(0)}%</div>,
+  default: ({ stats, systemStatus }: any) => (
+    <div data-testid="overview-tab">Overview - Health: {stats?.systemHealth?.toFixed(0)}%</div>
+  ),
 }));
 vi.mock('./AssistantsTab', () => ({
-  default: ({ assistants }: any) => <div data-testid="assistants-tab">Assistants ({assistants?.length || 0})</div>,
+  default: ({ assistants }: any) => (
+    <div data-testid="assistants-tab">Assistants ({assistants?.length || 0})</div>
+  ),
 }));
 vi.mock('./ArchitectureTab', () => ({
   default: ({ modules }: any) => <div data-testid="architecture-tab">Architecture</div>,
@@ -33,7 +37,10 @@ vi.mock('../hooks/useCTOData', () => ({
       productionModules: 18,
       systemHealth: 92.5,
     },
-    assistants: [{ id: 1, name: 'Zoe' }, { id: 2, name: 'Clara' }],
+    assistants: [
+      { id: 1, name: 'Zoe' },
+      { id: 2, name: 'Clara' },
+    ],
     departments: { Sales: [], Engineering: [] },
     selectedAssistant: null,
     onSelectAssistant: mockOnSelectAssistant,
@@ -74,15 +81,16 @@ describe('AuroraCTODashboard', () => {
   });
 
   describe('tab navigation', () => {
-    it('renders all 5 tab buttons', () => {
+    it('renders all 6 tab buttons', () => {
       const { container } = render(<AuroraCTODashboard />);
       const tabNav = container.querySelector('.tab-navigation')!;
-      expect(tabNav.querySelectorAll('button').length).toBe(5);
+      expect(tabNav.querySelectorAll('button').length).toBe(6);
       expect(screen.getByText('Overview')).toBeInTheDocument();
       expect(screen.getAllByText('Assistants').length).toBe(2); // stats + tab
       expect(screen.getByText('Architecture')).toBeInTheDocument();
       expect(screen.getByText('Applications')).toBeInTheDocument();
       expect(screen.getByText('API Performance')).toBeInTheDocument();
+      expect(screen.getByText('Lifecycle')).toBeInTheDocument();
     });
 
     it('shows overview tab as active by default', () => {

@@ -390,10 +390,31 @@ export const selectDepartmentTrends = (state: {
 export const selectDepartmentSummaries = (state: {
   departments: { summaries: Record<string, unknown> };
 }) => state.departments.summaries;
-export const selectDepartmentLoading = (state: { departments: { loading: boolean } }) =>
-  state.departments.loading;
-export const selectDepartmentError = (state: { departments: { error: string | null } }) =>
-  state.departments.error;
+
+// NOTE: loading/error are keyed maps, not primitive values.
+export const selectDepartmentLoading = (state: {
+  departments: {
+    loading: {
+      departments: boolean;
+      data: boolean;
+      kpis: boolean;
+      trends: boolean;
+      summary: boolean;
+    };
+  };
+}) => state.departments.loading;
+
+export const selectDepartmentError = (state: {
+  departments: {
+    error: {
+      departments: string | null;
+      data: string | null;
+      kpis: string | null;
+      trends: string | null;
+      summary: string | null;
+    };
+  };
+}) => state.departments.error;
 export const selectSelectedDepartment = (state: {
   departments: { selectedDepartment: string | null };
 }) => state.departments.selectedDepartment;

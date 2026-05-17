@@ -5,7 +5,7 @@
 
 import React from 'react';
 import styled from 'styled-components';
-import { getDepartmentMetadata } from '../../../config/departmentMetadata';
+import { getDepartmentMetadata } from '../../config/departmentMetadata';
 
 const DepartmentItemContainer = styled.div<{ $isActive: boolean; $color: string }>`
   display: flex;

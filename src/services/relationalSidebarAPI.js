@@ -1,19 +1,21 @@
 /**
  * Relational Sidebar API Service
  * Handles all API calls for the relational sidebar system
- * 
+ *
  * Base URL: /api/relational-sidebar
  * API Version: v1
  */
+
+import { authFetch } from '../utils/authFetch';
 
 const API_BASE = process.env.REACT_APP_API_URL || 'http://localhost:3000';
 const SIDEBAR_API = `${API_BASE}/api/relational-sidebar`;
 
 // Response interceptor
-const handleResponse = async (response) => {
+const handleResponse = async response => {
   if (!response.ok) {
     const error = await response.json().catch(() => ({
-      message: response.statusText || 'Unknown error'
+      message: response.statusText || 'Unknown error',
     }));
     throw new Error(error.message || `API error: ${response.status}`);
   }
@@ -24,20 +26,19 @@ const handleResponse = async (response) => {
 const apiCall = async (endpoint, options = {}) => {
   try {
     const url = `${SIDEBAR_API}${endpoint}`;
-    const response = await fetch(url, {
+    const response = await authFetch(url, {
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${localStorage.getItem('authToken') || ''}`,
         ...options.headers,
       },
       ...options,
     });
 
     const data = await handleResponse(response);
-    
+
     // Log successful request
-    console.debug(`[API] ${options.method || 'GET'} ${endpoint} - Success`, data);
-    
+    console.warn(`[API] ${options.method || 'GET'} ${endpoint} - Success`, data);
+
     return {
       success: true,
       data,
@@ -46,7 +47,7 @@ const apiCall = async (endpoint, options = {}) => {
   } catch (error) {
     // Log error
     console.error(`[API] ${options.method || 'GET'} ${endpoint} - Error:`, error.message);
-    
+
     return {
       success: false,
       error: error.message,
@@ -58,7 +59,7 @@ const apiCall = async (endpoint, options = {}) => {
 /**
  * ENDPOINT 1: Get all departments
  * GET /departments
- * 
+ *
  * Returns list of all departments with their services
  */
 export const getDepartments = async () => {
@@ -70,11 +71,11 @@ export const getDepartments = async () => {
 /**
  * ENDPOINT 2: Get department details
  * GET /departments/:id
- * 
+ *
  * Returns specific department with full details
  * @param {string} departmentId - Department ID (e.g., 'OPERATIONS')
  */
-export const getDepartmentById = async (departmentId) => {
+export const getDepartmentById = async departmentId => {
   if (!departmentId) {
     return {
       success: false,
@@ -91,7 +92,7 @@ export const getDepartmentById = async (departmentId) => {
 /**
  * ENDPOINT 3: Get all assistants (with optional filtering)
  * GET /assistants?department=OPERATIONS&service=inventory&hasPermission=true
- * 
+ *
  * Returns list of assistants, optionally filtered
  */
 export const getAssistants = async (filters = {}) => {
@@ -114,11 +115,11 @@ export const getAssistants = async (filters = {}) => {
 /**
  * ENDPOINT 4: Get assistant details
  * GET /assistants/:id
- * 
+ *
  * Returns specific assistant with full profile and available contexts
  * @param {string} assistantId - Assistant ID (e.g., 'mary_001')
  */
-export const getAssistantById = async (assistantId) => {
+export const getAssistantById = async assistantId => {
   if (!assistantId) {
     return {
       success: false,
@@ -135,7 +136,7 @@ export const getAssistantById = async (assistantId) => {
 /**
  * ENDPOINT 5: Get contextual data for assistant
  * GET /assistants/:id/contexts/:context
- * 
+ *
  * Returns context-specific data (e.g., inventory data for Mary)
  * @param {string} assistantId - Assistant ID (e.g., 'mary_001')
  * @param {string} context - Context name (e.g., 'inventory')
@@ -157,7 +158,7 @@ export const getContextualData = async (assistantId, context) => {
 /**
  * ENDPOINT 6: Send notification to assistant
  * POST /assistants/:id/notifications
- * 
+ *
  * Creates a notification for the specified assistant
  * @param {string} assistantId - Assistant ID (e.g., 'linda_001')
  * @param {string} message - Notification message
@@ -192,10 +193,7 @@ export const sendNotification = async (assistantId, message, type = 'info') => {
  */
 export const initializeSidebarData = async () => {
   try {
-    const [departmentsRes, assistantsRes] = await Promise.all([
-      getDepartments(),
-      getAssistants(),
-    ]);
+    const [departmentsRes, assistantsRes] = await Promise.all([getDepartments(), getAssistants()]);
 
     if (!departmentsRes.success || !assistantsRes.success) {
       throw new Error('Failed to load sidebar data');
@@ -277,7 +275,7 @@ export const loadContextFull = async (assistantId, context) => {
  */
 export const healthCheck = async () => {
   try {
-    const response = await fetch(`${SIDEBAR_API}/health`, {
+    const response = await authFetch(`${SIDEBAR_API}/health`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',

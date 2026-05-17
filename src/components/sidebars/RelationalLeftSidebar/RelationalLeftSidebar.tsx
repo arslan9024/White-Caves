@@ -1,7 +1,6 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
-// @ts-expect-error -- relationalSidebarSlice types not fully defined yet
 import {
   setSelectedDepartment,
   setSelectedService,
@@ -9,7 +8,6 @@ import {
   selectSelectedService,
   selectFilteredServices,
 } from '../../../redux/slices/relationalSidebarSlice';
-// @ts-expect-error -- thunk types not fully typed
 import { fetchDepartments } from '../../../store/thunks/relationalSidebarThunks';
 
 import { BaseSidebar, SidebarSection, SidebarItem } from '../../shared/sidebars';
@@ -123,10 +121,14 @@ const RelationalLeftSidebar = ({
 }: {
   userPermissions?: Record<string, boolean>;
 }): JSX.Element => {
-  const dispatch = useDispatch<(action: { type: string; payload?: unknown }) => void>();
+  const dispatch = useDispatch<any>();
   const selectedDepartment = useSelector(selectSelectedDepartment) as string | null;
   const selectedService = useSelector(selectSelectedService) as string | null;
-  const filteredServices = useSelector(selectFilteredServices) as Array<Record<string, unknown>>;
+  const filteredServices = useSelector(selectFilteredServices) as Array<{
+    id: string;
+    label: string;
+    icon?: React.ReactNode;
+  }>;
 
   // Redux selectors for loading/error states
   const departmentsLoading = useSelector(

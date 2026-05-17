@@ -1,10 +1,22 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { 
-  Send, Bot, User, Calendar, BarChart3, Users, Phone, 
-  List, Workflow, Loader2, ChevronRight, Clock, Sparkles,
-  MessageSquare, History, Trash2, RefreshCw
+import {
+  Send,
+  Bot,
+  User,
+  Calendar,
+  BarChart3,
+  Users,
+  Phone,
+  List,
+  Workflow,
+  Loader2,
+  Clock,
+  Sparkles,
+  History,
+  Trash2,
 } from 'lucide-react';
 import { getAuth } from 'firebase/auth';
+import { authFetch } from '../../utils/authFetch';
 import './ZoeConsole.css';
 
 const getAuthToken = async () => {
@@ -20,16 +32,30 @@ const QUICK_ACTIONS = [
   { id: 'briefing', label: 'Daily Briefing', icon: Calendar, query: "Give me today's briefing" },
   { id: 'metrics', label: 'View Metrics', icon: BarChart3, query: 'Show me current statistics' },
   { id: 'leads', label: 'Lead Status', icon: Users, query: 'How many leads do we have?' },
-  { id: 'contacts', label: 'Find Contact', icon: Phone, query: 'Who should I contact about commercial leasing?' },
+  {
+    id: 'contacts',
+    label: 'Find Contact',
+    icon: Phone,
+    query: 'Who should I contact about commercial leasing?',
+  },
   { id: 'services', label: 'Our Services', icon: List, query: 'List all services we offer' },
-  { id: 'process', label: 'Sales Process', icon: Workflow, query: 'Walk me through the sales journey' }
+  {
+    id: 'process',
+    label: 'Sales Process',
+    icon: Workflow,
+    query: 'Walk me through the sales journey',
+  },
 ];
 
 const MessageBubble = ({ message, isUser }) => {
-  const formatResponse = (text) => {
+  const formatResponse = text => {
     return text.split('\n').map((line, i) => {
       if (line.startsWith('**') && line.endsWith('**')) {
-        return <h4 key={i} className="response-heading">{line.replace(/\*\*/g, '')}</h4>;
+        return (
+          <h4 key={i} className="response-heading">
+            {line.replace(/\*\*/g, '')}
+          </h4>
+        );
       }
       if (line.startsWith('• **')) {
         const parts = line.replace('• **', '').split('**');
@@ -67,12 +93,16 @@ const MessageBubble = ({ message, isUser }) => {
         const parts = line.split(/\*\*([^*]+)\*\*/g);
         return (
           <p key={i} className="response-paragraph">
-            {parts.map((part, j) => j % 2 === 1 ? <strong key={j}>{part}</strong> : part)}
+            {parts.map((part, j) => (j % 2 === 1 ? <strong key={j}>{part}</strong> : part))}
           </p>
         );
       }
       if (line.trim()) {
-        return <p key={i} className="response-paragraph">{line}</p>;
+        return (
+          <p key={i} className="response-paragraph">
+            {line}
+          </p>
+        );
       }
       return null;
     });
@@ -80,24 +110,22 @@ const MessageBubble = ({ message, isUser }) => {
 
   return (
     <div className={`message-bubble ${isUser ? 'user' : 'assistant'}`}>
-      <div className="message-avatar">
-        {isUser ? <User size={18} /> : <Bot size={18} />}
-      </div>
+      <div className="message-avatar">{isUser ? <User size={18} /> : <Bot size={18} />}</div>
       <div className="message-content">
         {isUser ? (
           <p>{message.text}</p>
         ) : (
-          <div className="formatted-response">
-            {formatResponse(message.text)}
-          </div>
+          <div className="formatted-response">{formatResponse(message.text)}</div>
         )}
         <div className="message-meta">
           <Clock size={12} />
-          <span>{new Date(message.timestamp).toLocaleTimeString('en-AE', { 
-            hour: '2-digit', 
-            minute: '2-digit',
-            hour12: true 
-          })}</span>
+          <span>
+            {new Date(message.timestamp).toLocaleTimeString('en-AE', {
+              hour: '2-digit',
+              minute: '2-digit',
+              hour12: true,
+            })}
+          </span>
           {!isUser && message.confidence && (
             <span className="confidence-badge">
               <Sparkles size={12} />
@@ -133,105 +161,120 @@ const ZoeConsole = () => {
     localStorage.setItem('zoe_session_id', session);
     setSessionId(session);
 
-    setMessages([{
-      id: 'welcome',
-      text: "Hello! I'm **Zoe**, your Executive AI Assistant. I can help you with:\n\n• **Department Info** - Find who handles what\n• **Services** - Learn about our offerings\n• **Processes** - Understand our workflows\n• **Contacts** - Get the right person's details\n• **Daily Briefing** - Get today's summary\n• **Metrics** - View current statistics\n\nHow can I assist you today?",
-      isUser: false,
-      timestamp: new Date(),
-      confidence: 1
-    }]);
-  }, []);
-
-  const sendMessage = useCallback(async (text) => {
-    if (!text.trim() || isLoading) return;
-
-    const userMessage = {
-      id: `user-${Date.now()}`,
-      text: text.trim(),
-      isUser: true,
-      timestamp: new Date()
-    };
-
-    setMessages(prev => [...prev, userMessage]);
-    setInputValue('');
-    setIsLoading(true);
-
-    try {
-      const token = await getAuthToken();
-      if (!token) {
-        setMessages(prev => [...prev, {
-          id: `auth-${Date.now()}`,
-          text: "**Executive Access Required**\n\nPlease sign in with an authorized executive account to use Zoe's knowledge base. This feature is restricted to company executives for security purposes.",
-          isUser: false,
-          timestamp: new Date(),
-          confidence: 0
-        }]);
-        setIsLoading(false);
-        return;
-      }
-
-      const headers = {
-        'Content-Type': 'application/json',
-        'x-user-id': 'executive-user',
-        'Authorization': `Bearer ${token}`
-      };
-
-      const response = await fetch('/api/zoe/query', {
-        method: 'POST',
-        headers,
-        body: JSON.stringify({
-          query: text.trim(),
-          sessionId
-        })
-      });
-
-      const data = await response.json();
-
-      if (response.status === 401 || response.status === 403) {
-        setMessages(prev => [...prev, {
-          id: `auth-error-${Date.now()}`,
-          text: data.message || "**Access Denied**\n\nYour account is not authorized for executive access. Please contact the administrator.",
-          isUser: false,
-          timestamp: new Date(),
-          confidence: 0
-        }]);
-        return;
-      }
-
-      if (data.success) {
-        const assistantMessage = {
-          id: `assistant-${Date.now()}`,
-          text: data.response,
-          isUser: false,
-          timestamp: new Date(),
-          intent: data.intent,
-          confidence: data.metadata?.confidence
-        };
-        setMessages(prev => [...prev, assistantMessage]);
-      } else {
-        throw new Error(data.message || 'Failed to get response');
-      }
-    } catch (error) {
-      
-      setMessages(prev => [...prev, {
-        id: `error-${Date.now()}`,
-        text: "I'm having trouble connecting right now. Please try again in a moment.",
+    setMessages([
+      {
+        id: 'welcome',
+        text: "Hello! I'm **Zoe**, your Executive AI Assistant. I can help you with:\n\n• **Department Info** - Find who handles what\n• **Services** - Learn about our offerings\n• **Processes** - Understand our workflows\n• **Contacts** - Get the right person's details\n• **Daily Briefing** - Get today's summary\n• **Metrics** - View current statistics\n\nHow can I assist you today?",
         isUser: false,
         timestamp: new Date(),
-        confidence: 0
-      }]);
-    } finally {
-      setIsLoading(false);
-      inputRef.current?.focus();
-    }
-  }, [isLoading, sessionId]);
+        confidence: 1,
+      },
+    ]);
+  }, []);
 
-  const handleSubmit = (e) => {
+  const sendMessage = useCallback(
+    async text => {
+      if (!text.trim() || isLoading) return;
+
+      const userMessage = {
+        id: `user-${Date.now()}`,
+        text: text.trim(),
+        isUser: true,
+        timestamp: new Date(),
+      };
+
+      setMessages(prev => [...prev, userMessage]);
+      setInputValue('');
+      setIsLoading(true);
+
+      try {
+        const token = await getAuthToken();
+        if (!token) {
+          setMessages(prev => [
+            ...prev,
+            {
+              id: `auth-${Date.now()}`,
+              text: "**Executive Access Required**\n\nPlease sign in with an authorized executive account to use Zoe's knowledge base. This feature is restricted to company executives for security purposes.",
+              isUser: false,
+              timestamp: new Date(),
+              confidence: 0,
+            },
+          ]);
+          setIsLoading(false);
+          return;
+        }
+
+        const headers = {
+          'Content-Type': 'application/json',
+          'x-user-id': 'executive-user',
+          Authorization: `Bearer ${token}`,
+        };
+
+        const response = await authFetch('/api/zoe/query', {
+          method: 'POST',
+          headers,
+          body: JSON.stringify({
+            query: text.trim(),
+            sessionId,
+          }),
+        });
+
+        const data = await response.json();
+
+        if (response.status === 401 || response.status === 403) {
+          setMessages(prev => [
+            ...prev,
+            {
+              id: `auth-error-${Date.now()}`,
+              text:
+                data.message ||
+                '**Access Denied**\n\nYour account is not authorized for executive access. Please contact the administrator.',
+              isUser: false,
+              timestamp: new Date(),
+              confidence: 0,
+            },
+          ]);
+          return;
+        }
+
+        if (data.success) {
+          const assistantMessage = {
+            id: `assistant-${Date.now()}`,
+            text: data.response,
+            isUser: false,
+            timestamp: new Date(),
+            intent: data.intent,
+            confidence: data.metadata?.confidence,
+          };
+          setMessages(prev => [...prev, assistantMessage]);
+        } else {
+          throw new Error(data.message || 'Failed to get response');
+        }
+      } catch {
+        setMessages(prev => [
+          ...prev,
+          {
+            id: `error-${Date.now()}`,
+            text: "I'm having trouble connecting right now. Please try again in a moment.",
+            isUser: false,
+            timestamp: new Date(),
+            confidence: 0,
+          },
+        ]);
+      } finally {
+        setIsLoading(false);
+        inputRef.current?.focus();
+      }
+    },
+    [isLoading, sessionId]
+  );
+
+  const handleSubmit = e => {
     e.preventDefault();
     sendMessage(inputValue);
   };
 
-  const handleQuickAction = (query) => {
+  const handleQuickAction = query => {
     sendMessage(query);
   };
 
@@ -239,34 +282,36 @@ const ZoeConsole = () => {
     try {
       const token = await getAuthToken();
       if (!token) {
-        
         return;
       }
       const headers = {
-        'Authorization': `Bearer ${token}`
+        Authorization: `Bearer ${token}`,
       };
-      const response = await fetch(`/api/zoe/history?sessionId=${sessionId}&limit=20`, { headers });
+      const response = await authFetch(`/api/zoe/history?sessionId=${sessionId}&limit=20`, {
+        headers,
+      });
       if (response.status === 401 || response.status === 403) {
-        
         return;
       }
       const data = await response.json();
       if (data.success) {
         setConversationHistory(data.history);
       }
-    } catch (error) {
-      
+    } catch {
+      return;
     }
   };
 
   const clearConversation = () => {
-    setMessages([{
-      id: 'welcome-new',
-      text: "Conversation cleared. How can I help you?",
-      isUser: false,
-      timestamp: new Date(),
-      confidence: 1
-    }]);
+    setMessages([
+      {
+        id: 'welcome-new',
+        text: 'Conversation cleared. How can I help you?',
+        isUser: false,
+        timestamp: new Date(),
+        confidence: 1,
+      },
+    ]);
   };
 
   const toggleHistory = () => {
@@ -292,18 +337,14 @@ const ZoeConsole = () => {
           </div>
         </div>
         <div className="console-actions">
-          <button 
+          <button
             className={`action-btn ${showHistory ? 'active' : ''}`}
             onClick={toggleHistory}
             title="View History"
           >
             <History size={18} />
           </button>
-          <button 
-            className="action-btn"
-            onClick={clearConversation}
-            title="Clear Conversation"
-          >
+          <button className="action-btn" onClick={clearConversation} title="Clear Conversation">
             <Trash2 size={18} />
           </button>
         </div>
@@ -313,7 +354,9 @@ const ZoeConsole = () => {
         {showHistory && (
           <div className="history-sidebar">
             <div className="history-header">
-              <h4><History size={16} /> Recent Queries</h4>
+              <h4>
+                <History size={16} /> Recent Queries
+              </h4>
               <button onClick={() => setShowHistory(false)}>×</button>
             </div>
             <div className="history-list">
@@ -321,8 +364,8 @@ const ZoeConsole = () => {
                 <p className="no-history">No previous queries</p>
               ) : (
                 conversationHistory.map((item, index) => (
-                  <div 
-                    key={index} 
+                  <div
+                    key={index}
                     className="history-item"
                     onClick={() => {
                       sendMessage(item.query);
@@ -355,11 +398,7 @@ const ZoeConsole = () => {
 
           <div className="messages-container">
             {messages.map(message => (
-              <MessageBubble 
-                key={message.id} 
-                message={message} 
-                isUser={message.isUser} 
-              />
+              <MessageBubble key={message.id} message={message} isUser={message.isUser} />
             ))}
             {isLoading && (
               <div className="message-bubble assistant loading">
@@ -382,15 +421,11 @@ const ZoeConsole = () => {
               ref={inputRef}
               type="text"
               value={inputValue}
-              onChange={(e) => setInputValue(e.target.value)}
+              onChange={e => setInputValue(e.target.value)}
               placeholder="Ask Zoe anything about the company..."
               disabled={isLoading}
             />
-            <button 
-              type="submit" 
-              className="send-btn"
-              disabled={!inputValue.trim() || isLoading}
-            >
+            <button type="submit" className="send-btn" disabled={!inputValue.trim() || isLoading}>
               {isLoading ? <Loader2 size={18} className="spinning" /> : <Send size={18} />}
             </button>
           </form>

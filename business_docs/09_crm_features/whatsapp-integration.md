@@ -68,4 +68,36 @@
 
 ---
 
+## Template Governance
+
+- Template catalog by category: utility, marketing, authentication.
+- Approval state tracked (draft, pending, approved, rejected).
+- Locale variants for EN/AR with compliance checks.
+
+## Retry and Delivery Reliability
+
+- Retry queue with exponential backoff for transient failures.
+- Dead-letter queue for permanent failures.
+- Idempotency keys to prevent duplicate sends.
+
+## Bot-to-Human Handoff
+
+- Handoff trigger when confidence below threshold or explicit user intent.
+- Preserve full conversation context for assigned human agent.
+- SLA timer starts at handoff event.
+
+## Observability and KPI
+
+- Metrics: first response time, resolution time, conversion rate, queue depth.
+- Webhook success/failure counters with alerting thresholds.
+- Agent dashboard includes backlog aging view.
+
+## Security and Compliance
+
+- Webhook signature verification mandatory.
+- Consent and opt-out tracking for marketing templates.
+- Role-based controls for broadcast and template management.
+
+---
+
 **Last Updated:** May 2026

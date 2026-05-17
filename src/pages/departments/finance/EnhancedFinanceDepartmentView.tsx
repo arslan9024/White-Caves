@@ -99,7 +99,7 @@ export const FinanceDepartmentView: React.FC<FinanceDepartmentViewProps> = ({
   );
 
   // Use API data if available, fallback to mock data
-  const displayData = financeData || mockFinanceData;
+  const displayData = (financeData || mockFinanceData) as typeof mockFinanceData;
 
   // Handle loading state
   if (dataLoading || kpiLoading) {
@@ -110,12 +110,7 @@ export const FinanceDepartmentView: React.FC<FinanceDepartmentViewProps> = ({
   if (dataError || kpiError) {
     return (
       <ErrorState
-        title="Failed to Load Finance Data"
-        message={
-          dataError?.message ||
-          kpiError?.message ||
-          'Unable to fetch finance data. Using fallback data.'
-        }
+        error={dataError || kpiError || 'Unable to fetch finance data. Using fallback data.'}
         onRetry={() => window.location.reload()}
       />
     );

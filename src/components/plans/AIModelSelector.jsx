@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Zap, Server, Cloud, CheckCircle, AlertCircle, Settings } from 'lucide-react';
+import { authFetch } from '../../utils/authFetch';
 import './AIModelSelector.css';
 
 /**
@@ -32,7 +33,7 @@ export default function AIModelSelector({ onModelChange = null }) {
   const checkModelsAvailability = async () => {
     try {
       setLoading(true);
-      const response = await fetch('/api/plans/ai-status');
+      const response = await authFetch('/api/plans/ai-status');
       if (response.ok) {
         const data = await response.json();
         setModelStatus({
@@ -53,7 +54,7 @@ export default function AIModelSelector({ onModelChange = null }) {
    */
   const handleSwitchModel = async modelName => {
     try {
-      const response = await fetch('/api/plans/set-ai-model', {
+      const response = await authFetch('/api/plans/set-ai-model', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ model: modelName }),

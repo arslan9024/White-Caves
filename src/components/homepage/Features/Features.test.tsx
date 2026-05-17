@@ -37,6 +37,7 @@ vi.mock('framer-motion', () => ({
       },
     }
   ),
+  AnimatePresence: ({ children }: { children: React.ReactNode }) => <>{children}</>,
 }));
 
 import Features from './Features';

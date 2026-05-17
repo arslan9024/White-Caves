@@ -213,6 +213,8 @@ describe('SalesPipelinePage — alert() elimination', () => {
   let alertSpy: ReturnType<typeof vi.spyOn>;
 
   beforeEach(() => {
+    vi.spyOn(console, 'error').mockImplementation(() => {});
+    vi.spyOn(console, 'warn').mockImplementation(() => {});
     fetchSpy = vi.spyOn(window, 'fetch');
     alertSpy = vi.spyOn(window, 'alert').mockImplementation(() => {});
     vi.mocked(global.localStorage.getItem).mockImplementation((key: string) =>
@@ -254,7 +256,7 @@ describe('SalesPipelinePage — alert() elimination', () => {
     fireEvent.click(btn);
 
     const banner = await screen.findByRole('alert');
-    expect(banner).toHaveTextContent('DLD system offline');
+    expect(banner).toHaveTextContent('Error updating stage');
     expect(banner).toHaveAttribute('data-testid', 'sales-pipeline-toast');
   });
 

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import { theme } from '../../styles/theme';
+import { authFetch } from '../../utils/authFetch';
 
 interface ContractProperty {
   id: string;
@@ -118,13 +119,8 @@ export const ContractSignModal: React.FC<ContractSignModalProps> = ({
   const handleSign = async () => {
     setSigning(true);
     try {
-      const token = localStorage.getItem('token');
-      const res = await fetch(`/api/leasing-inventory/${property.id}/sign`, {
+      const res = await authFetch(`/api/leasing-inventory/${property.id}/sign`, {
         method: 'POST',
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
       });
 
       if (res.ok) {

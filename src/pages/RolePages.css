@@ -1852,10 +1852,13 @@
 /* --- PortalNavbar --- */
 .portal-navbar {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
-  height: 60px;
-  padding: 0 1.5rem;
+  gap: 0.75rem;
+  min-height: 60px;
+  height: auto;
+  padding: 0.75rem 1.5rem;
   background: var(--card-bg, #ffffff);
   border-bottom: 2px solid var(--card-border, #e5e7eb);
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
@@ -1867,7 +1870,9 @@
 .portal-navbar__brand {
   display: flex;
   align-items: center;
+  flex: 1 1 auto;
   gap: 0.75rem;
+  min-width: 0;
 }
 
 .portal-navbar__logo {
@@ -1899,6 +1904,9 @@
 .portal-navbar__actions {
   display: flex;
   align-items: center;
+  flex: 0 1 auto;
+  flex-wrap: wrap;
+  justify-content: flex-end;
   gap: 1rem;
 }
 
@@ -1963,7 +1971,7 @@
 
   .portal-navbar {
     padding: 0 1rem;
-    height: 56px;
+    min-height: 56px;
   }
 
   .portal-navbar__company {
@@ -1978,9 +1986,31 @@
     font-size: 0.7rem;
     padding: 0.2rem 0.6rem;
   }
+
+  .portal-navbar__actions {
+    gap: 0.75rem;
+  }
 }
 
 @media (max-width: 480px) {
+  .portal-navbar {
+    padding: 0.625rem 0.875rem;
+    gap: 0.5rem;
+  }
+
+  .portal-navbar__brand {
+    gap: 0.5rem;
+  }
+
+  .portal-navbar__user {
+    padding: 0.3rem 0.55rem;
+  }
+
+  .portal-navbar__logout {
+    padding: 0.35rem 0.75rem;
+    font-size: 0.8rem;
+  }
+
   .portal-navbar__badge {
     display: none;
   }

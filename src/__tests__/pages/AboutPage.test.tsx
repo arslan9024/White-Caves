@@ -8,20 +8,28 @@ import { render, screen } from '@testing-library/react';
 import React from 'react';
 
 // Mock dependencies
-vi.mock('react-router-dom', () => ({
-  Link: ({ children, to, ...rest }: any) => <a href={to} {...rest}>{children}</a>,
-}));
+vi.mock('react-router-dom', async importOriginal => {
+  const actual = await importOriginal<typeof import('react-router-dom')>();
+  return {
+    ...actual,
+    Link: ({ children, to, ...rest }: any) => (
+      <a href={to} {...rest}>
+        {children}
+      </a>
+    ),
+  };
+});
 
 vi.mock('../../hooks/useDocumentTitle', () => ({
   useDocumentTitle: vi.fn(),
 }));
 
-vi.mock('../../components/layout/AppLayout', () => ({
-  default: ({ children, ...rest }: any) => <div data-testid="app-layout" {...rest}>{children}</div>,
-}));
-
-vi.mock('../../components/Footer', () => ({
-  default: () => <footer data-testid="footer">Footer</footer>,
+vi.mock('../../components/layout/PublicLayout', () => ({
+  default: ({ children, ...rest }: any) => (
+    <div data-testid="public-layout" {...rest}>
+      {children}
+    </div>
+  ),
 }));
 
 vi.mock('../../components/WhatsAppButton', () => ({
@@ -45,19 +53,14 @@ describe('AboutPage', () => {
       expect(screen.getByText('About White Caves')).toBeInTheDocument();
     });
 
-    it('wraps in AppLayout', () => {
+    it('wraps in PublicLayout', () => {
       render(<AboutPage />);
-      expect(screen.getByTestId('app-layout')).toBeInTheDocument();
+      expect(screen.getByTestId('public-layout')).toBeInTheDocument();
     });
 
     it('sets document title', () => {
       render(<AboutPage />);
       expect(useDocumentTitle).toHaveBeenCalledWith('About Us');
-    });
-
-    it('renders Footer', () => {
-      render(<AboutPage />);
-      expect(screen.getByTestId('footer')).toBeInTheDocument();
     });
 
     it('renders WhatsAppButton', () => {
@@ -75,7 +78,11 @@ describe('AboutPage', () => {
 
     it('renders hero subtitle', () => {
       render(<AboutPage />);
-      expect(screen.getByText("Dubai's Premier Luxury Real Estate Agency")).toBeInTheDocument();
+      expect(
+        screen.getByText(
+          "Dubai's Premier Luxury Real Estate Agency — trusted by clients since 2009"
+        )
+      ).toBeInTheDocument();
     });
   });
 
@@ -114,7 +121,7 @@ describe('AboutPage', () => {
 
     it('renders 15+ Years Experience', () => {
       render(<AboutPage />);
-      expect(screen.getByText('15+')).toBeInTheDocument();
+      expect(screen.getAllByText('15+').length).toBeGreaterThan(0);
       expect(screen.getByText('Years Experience')).toBeInTheDocument();
     });
 
@@ -134,7 +141,9 @@ describe('AboutPage', () => {
 
     it('renders team subtitle', () => {
       render(<AboutPage />);
-      expect(screen.getByText('Expert professionals dedicated to your success')).toBeInTheDocument();
+      expect(
+        screen.getByText('Expert professionals dedicated to your success')
+      ).toBeInTheDocument();
     });
 
     it('renders all 4 team members', () => {
@@ -147,15 +156,17 @@ describe('AboutPage', () => {
 
     it('renders team member roles', () => {
       render(<AboutPage />);
-      expect(screen.getByText('CEO & Founder')).toBeInTheDocument();
-      expect(screen.getByText('Head of Sales')).toBeInTheDocument();
-      expect(screen.getByText('Senior Property Consultant')).toBeInTheDocument();
-      expect(screen.getByText('Marketing Director')).toBeInTheDocument();
+      expect(screen.getAllByText('CEO & Founder').length).toBeGreaterThan(0);
+      expect(screen.getAllByText('Head of Sales').length).toBeGreaterThan(0);
+      expect(screen.getAllByText('Senior Property Consultant').length).toBeGreaterThan(0);
+      expect(screen.getAllByText('Marketing Director').length).toBeGreaterThan(0);
     });
 
     it('renders team member bios', () => {
       render(<AboutPage />);
-      expect(screen.getByText('20+ years experience in Dubai real estate market')).toBeInTheDocument();
+      expect(
+        screen.getByText('20+ years experience in Dubai real estate market')
+      ).toBeInTheDocument();
       expect(screen.getByText('Specializing in luxury villa transactions')).toBeInTheDocument();
     });
 

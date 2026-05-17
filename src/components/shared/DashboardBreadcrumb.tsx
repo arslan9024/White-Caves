@@ -1,6 +1,7 @@
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
+import type { RootState } from '../../store/store';
 import {
   selectSelectedDepartment,
   selectSelectedService,
@@ -9,7 +10,51 @@ import {
   restoreFromHistory,
   setSelectedService,
   setSelectedSubitem,
-} from '../../../redux/slices/relationalSidebarSlice';
+} from '../../redux/slices/relationalSidebarSlice';
+
+interface BreadcrumbEntry {
+  id: string;
+  label: string;
+  type: 'department' | 'service' | 'subitem';
+  active: boolean;
+}
+
+interface SelectionHistoryEntry {
+  dept: string | null;
+  service: string | null;
+  subitem: string | null;
+}
+
+interface DashboardBreadcrumbProps {
+  onNavigate?: (selection: SelectionHistoryEntry) => void;
+}
+
+const generateBreadcrumbs = (
+  department: string | null,
+  service: string | null,
+  subitem: string | null
+): BreadcrumbEntry[] => {
+  const breadcrumbs: BreadcrumbEntry[] = [];
+
+  if (department) {
+    breadcrumbs.push({
+      id: department,
+      label: department,
+      type: 'department',
+      active: !service && !subitem,
+    });
+  }
+
+  if (service) {
+    breadcrumbs.push({ id: service, label: service, type: 'service', active: !subitem });
+  }
+
+  if (subitem) {
+    breadcrumbs.push({ id: subitem, label: subitem, type: 'subitem', active: true });
+  }
+
+  return breadcrumbs;
+};
 
 /**
  * DashboardBreadcrumb.tsx
@@ -49,19 +94,19 @@ const BreadcrumbList = styled.div`
   min-width: min-content;
 `;
 
-const BreadcrumbItem = styled.button`
+const BreadcrumbItem = styled.button<{ $active?: boolean }>`
   padding: 0.375rem 0.75rem;
   border: none;
-  background: ${props => (props.active ? '#eef2ff' : 'transparent')};
-  color: ${props => (props.active ? '#6366f1' : '#6b7280')};
-  font-weight: ${props => (props.active ? '600' : '500')};
-  cursor: ${props => (props.active ? 'default' : 'pointer')};
+  background: ${props => (props.$active ? '#eef2ff' : 'transparent')};
+  color: ${props => (props.$active ? '#6366f1' : '#6b7280')};
+  font-weight: ${props => (props.$active ? '600' : '500')};
+  cursor: ${props => (props.$active ? 'default' : 'pointer')};
   border-radius: 4px;
   transition: all 0.2s;
   white-space: nowrap;
 
   &:hover:not(:disabled) {
-    background-color: ${props => (props.active ? '#eef2ff' : '#f3f4f6')};
+    background-color: ${props => (props.$active ? '#eef2ff' : '#f3f4f6')};
     color: #1f2937;
   }
 
@@ -117,14 +162,18 @@ const MoreIndicator = styled.span`
 /**
  * DashboardBreadcrumb Component
  */
-const DashboardBreadcrumb = ({ onNavigate }) => {
-  const dispatch = useDispatch();
+const DashboardBreadcrumb: React.FC<DashboardBreadcrumbProps> = ({ onNavigate }) => {
+  const dispatch = useDispatch<any>();
 
   // Redux state
-  const selectedDept = useSelector(selectSelectedDepartment);
-  const selectedService = useSelector(selectSelectedService);
-  const selectedSubitem = useSelector(selectSelectedSubitem);
-  const selectionHistory = useSelector(selectSelectionHistory);
+  const selectedDept = useSelector(selectSelectedDepartment) as string | null;
+  const selectedService = useSelector(selectSelectedService) as string | null;
+  const selectedSubitem = useSelector(selectSelectedSubitem) as string | null;
+  const selectionHistory = useSelector((state: RootState) =>
+    selectSelectionHistory(
+      state as unknown as { relationalSidebar: { selectionHistory: SelectionHistoryEntry[] } }
+    )
+  ) as SelectionHistoryEntry[];
 
   // Generate breadcrumbs
   const breadcrumbs = selectedDept
@@ -135,7 +184,11 @@ const DashboardBreadcrumb = ({ onNavigate }) => {
   const canGoBack = selectionHistory.length > 1;
   const previousEntry = selectionHistory[1];
 
-  const handleBreadcrumbClick = (dept, service = null, subitem = null) => {
+  const handleBreadcrumbClick = (
+    dept: string | null,
+    service: string | null = null,
+    subitem: string | null = null
+  ) => {
     // Dispatch restoration
     dispatch(restoreFromHistory({ dept, service, subitem }));
 
@@ -191,7 +244,7 @@ const DashboardBreadcrumb = ({ onNavigate }) => {
           <React.Fragment key={crumb.id}>
             {idx > 0 && <Separator>/</Separator>}
             <BreadcrumbItem
-              active={crumb.active}
+              $active={crumb.active}
               disabled={crumb.active}
               onClick={() => {
                 // Navigate based on type

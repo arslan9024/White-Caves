@@ -1,4 +1,5 @@
 import React from 'react';
+import type { ComponentType } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import styled from 'styled-components';
 import {
@@ -8,12 +9,13 @@ import {
   selectMainContentLoading,
   selectMainContentError,
   setMainContentError,
-} from '../../../redux/slices/relationalSidebarSlice';
+} from '../../redux/slices/relationalSidebarSlice';
 import {
   getDepartmentById,
   getServiceById,
   getSubitemsByService,
-} from '../../../config/departmentContentMap';
+} from '../../config/departmentContentMap';
+
 import {
   ExecutiveView,
   SalesView,
@@ -249,11 +251,11 @@ const DynamicContentRouter = ({ userPermissions = [] }) => {
   const dispatch = useDispatch();
 
   // Redux state
-  const selectedDept = useSelector(selectSelectedDepartment);
-  const selectedService = useSelector(selectSelectedService);
-  const selectedSubitem = useSelector(selectSelectedSubitem);
-  const loading = useSelector(selectMainContentLoading);
-  const error = useSelector(selectMainContentError);
+  const selectedDept = useSelector(selectSelectedDepartment) as string | null;
+  const selectedService = useSelector(selectSelectedService) as string | null;
+  const selectedSubitem = useSelector(selectSelectedSubitem) as string | null;
+  const loading = useSelector(selectMainContentLoading) as boolean;
+  const error = useSelector(selectMainContentError) as string | null;
 
   // Get metadata
   const deptInfo = selectedDept ? getDepartmentById(selectedDept) : null;
@@ -261,7 +263,9 @@ const DynamicContentRouter = ({ userPermissions = [] }) => {
     selectedDept && selectedService ? getServiceById(selectedDept, selectedService) : null;
   const subitems =
     selectedDept && selectedService ? getSubitemsByService(selectedDept, selectedService) : [];
-  const selectedSubitemInfo = selectedSubitem ? subitems.find(s => s.id === selectedSubitem) : null;
+  const selectedSubitemInfo = selectedSubitem
+    ? subitems.find((s: { id: string; permissions: string[] }) => s.id === selectedSubitem)
+    : null;
 
   // Determine which component to render
   const getComponentToRender = () => {
@@ -287,7 +291,9 @@ const DynamicContentRouter = ({ userPermissions = [] }) => {
     }
 
     // Check permissions
-    if (!serviceInfo?.permissions.some(perm => userPermissions.includes(perm))) {
+    if (
+      !serviceInfo?.permissions.some((perm: string) => (userPermissions as string[]).includes(perm))
+    ) {
       return {
         type: 'access-denied',
         message: 'You do not have permission to access this service',
@@ -296,7 +302,9 @@ const DynamicContentRouter = ({ userPermissions = [] }) => {
 
     if (
       selectedSubitemInfo &&
-      !selectedSubitemInfo.permissions.some(perm => userPermissions.includes(perm))
+      !selectedSubitemInfo.permissions.some((perm: string) =>
+        (userPermissions as string[]).includes(perm)
+      )
     ) {
       return {
         type: 'access-denied',
@@ -306,7 +314,12 @@ const DynamicContentRouter = ({ userPermissions = [] }) => {
 
     // Return component info
     // eslint-disable-next-line security/detect-object-injection
-    const componentClass = viewComponentRegistry[selectedDept]?.[selectedService];
+    const componentClass = (viewComponentRegistry as Record<string, Record<string, unknown>>)[
+      selectedDept
+    ]?.[selectedService] as ComponentType<{
+      serviceName: string | null;
+      subitemId: string | null;
+    }> | null;
 
     return {
       type: 'view',
@@ -361,7 +374,7 @@ const DynamicContentRouter = ({ userPermissions = [] }) => {
           {componentInfo.type === 'view' && (
             <>
               {componentInfo.componentClass &&
-                React.createElement(componentInfo.componentClass, {
+                React.createElement(componentInfo.componentClass as ComponentType<any>, {
                   serviceName: selectedService,
                   subitemId: selectedSubitem,
                 })}

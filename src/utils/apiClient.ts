@@ -40,7 +40,8 @@ class ApiClient {
       }
     }
 
-    const { signal: _ignoredSignal, ...restOptions } = options;
+    const restOptions: RequestOptions = { ...options };
+    delete restOptions.signal;
     const config: RequestInit = {
       ...restOptions,
       signal: controller.signal,
@@ -52,7 +53,7 @@ class ApiClient {
 
     try {
       const response = await fetch(url, config);
-      
+
       const contentType = response.headers.get('content-type');
       const isJson = contentType && contentType.includes('application/json');
       let data: unknown;
@@ -86,7 +87,10 @@ class ApiClient {
         throw error;
       }
 
-      if ((error instanceof DOMException && error.name === 'AbortError') || (error instanceof Error && error.name === 'AbortError')) {
+      if (
+        (error instanceof DOMException && error.name === 'AbortError') ||
+        (error instanceof Error && error.name === 'AbortError')
+      ) {
         const wasCancelled = externalSignal?.aborted;
         throw new HttpError(
           wasCancelled
@@ -94,16 +98,13 @@ class ApiClient {
             : `Request to ${endpoint} timed out after ${timeout}ms`,
           wasCancelled ? 499 : 408,
           '',
-          { endpoint, timeout, cancelled: !!wasCancelled },
+          { endpoint, timeout, cancelled: !!wasCancelled }
         );
       }
-      
-      throw new HttpError(
-        ERROR_MESSAGES.NETWORK_ERROR,
-        0,
-        '',
-        { originalError: error instanceof Error ? error.message : String(error) },
-      );
+
+      throw new HttpError(ERROR_MESSAGES.NETWORK_ERROR, 0, '', {
+        originalError: error instanceof Error ? error.message : String(error),
+      });
     } finally {
       if (timeoutId) clearTimeout(timeoutId);
       if (externalSignal && externalAbortHandler) {
@@ -125,7 +126,7 @@ class ApiClient {
     } catch (e) {
       throw new HttpError(
         `Failed to serialize request body: ${e instanceof Error ? e.message : 'Unknown error'}`,
-        400,
+        400
       );
     }
   }

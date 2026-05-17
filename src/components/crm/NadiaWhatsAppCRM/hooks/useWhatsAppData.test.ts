@@ -6,8 +6,8 @@
  * timer cleanup, Nadia toggle
  */
 
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { renderHook, act } from '@testing-library/react';
+import { describe, it, expect, vi, beforeAll, beforeEach, afterAll } from 'vitest';
+import { renderHook, act, waitFor } from '@testing-library/react';
 
 // ── Mock external data ───────────────────────────────────────────
 const MOCK_CONVERSATIONS = [
@@ -19,9 +19,7 @@ const MOCK_CONVERSATIONS = [
     time: '10:30',
     priority: 'hot',
     tags: ['buyer'],
-    messages: [
-      { id: 1, type: 'received', text: 'Hello', time: '10:00', status: 'read' },
-    ],
+    messages: [{ id: 1, type: 'received', text: 'Hello', time: '10:00', status: 'read' }],
   },
   {
     id: 'conv-2',
@@ -31,9 +29,7 @@ const MOCK_CONVERSATIONS = [
     time: '09:15',
     priority: 'warm',
     tags: ['seller'],
-    messages: [
-      { id: 2, type: 'sent', text: 'Hi Sara', time: '09:00', status: 'delivered' },
-    ],
+    messages: [{ id: 2, type: 'sent', text: 'Hi Sara', time: '09:00', status: 'delivered' }],
   },
   {
     id: 'conv-3',
@@ -53,8 +49,71 @@ const MOCK_QUICK_REPLIES = [
 ];
 
 const MOCK_FEATURES = [
-  { id: '1', name: 'Auto Response', description: 'Automated replies', category: 'Communication', status: 'active' },
+  {
+    id: '1',
+    name: 'Auto Response',
+    description: 'Automated replies',
+    category: 'Communication',
+    status: 'active',
+  },
 ];
+
+// Mock authFetch — return NadiaConversationApiItem-shaped data that maps to expected Conversation objects.
+// customerPhone is used as both name and phone by mapNadiaConversation, so include searchable text in it.
+vi.mock('../../../../utils/authFetch', () => ({
+  authFetch: vi.fn().mockImplementation(() =>
+    Promise.resolve({
+      json: () =>
+        Promise.resolve({
+          data: [
+            {
+              id: 'conv-1',
+              customerPhone: 'Ahmed Khan',
+              status: 'open',
+              intent: 'buyer',
+              leadScore: 75,
+              updatedAt: new Date().toISOString(),
+              messages: [
+                {
+                  id: '1',
+                  direction: 'inbound',
+                  body: 'Hello',
+                  status: 'read',
+                  timestamp: new Date().toISOString(),
+                },
+              ],
+            },
+            {
+              id: 'conv-2',
+              customerPhone: 'Sara Ali +971509876543',
+              status: 'open',
+              intent: 'seller',
+              leadScore: 50,
+              updatedAt: new Date().toISOString(),
+              messages: [
+                {
+                  id: '2',
+                  direction: 'outbound',
+                  body: 'Hi Sara',
+                  status: 'delivered',
+                  timestamp: new Date().toISOString(),
+                },
+              ],
+            },
+            {
+              id: 'conv-3',
+              customerPhone: 'John Smith',
+              status: 'open',
+              intent: null,
+              leadScore: 20,
+              updatedAt: new Date().toISOString(),
+              messages: [],
+            },
+          ],
+        }),
+    })
+  ),
+}));
 
 vi.mock('../data/conversations', () => ({
   DUMMY_CONVERSATIONS: [
@@ -66,9 +125,7 @@ vi.mock('../data/conversations', () => ({
       time: '10:30',
       priority: 'hot',
       tags: ['buyer'],
-      messages: [
-        { id: 1, type: 'received', text: 'Hello', time: '10:00', status: 'read' },
-      ],
+      messages: [{ id: 1, type: 'received', text: 'Hello', time: '10:00', status: 'read' }],
     },
     {
       id: 'conv-2',
@@ -78,9 +135,7 @@ vi.mock('../data/conversations', () => ({
       time: '09:15',
       priority: 'warm',
       tags: ['seller'],
-      messages: [
-        { id: 2, type: 'sent', text: 'Hi Sara', time: '09:00', status: 'delivered' },
-      ],
+      messages: [{ id: 2, type: 'sent', text: 'Hi Sara', time: '09:00', status: 'delivered' }],
     },
     {
       id: 'conv-3',
@@ -101,26 +156,36 @@ vi.mock('../data/conversations', () => ({
 
 vi.mock('../data/features', () => ({
   NADIA_WHATSAPP_FEATURES: [
-    { id: '1', name: 'Auto Response', description: 'Automated replies', category: 'Communication', status: 'active' },
+    {
+      id: '1',
+      name: 'Auto Response',
+      description: 'Automated replies',
+      category: 'Communication',
+      status: 'active',
+    },
   ],
 }));
 
 import { useWhatsAppData } from './useWhatsAppData';
 
-beforeEach(() => {
-  vi.clearAllMocks();
-  vi.useFakeTimers();
-});
-
-afterEach(() => {
-  vi.useRealTimers();
-});
-
 describe('useWhatsAppData', () => {
+  beforeAll(() => {
+    vi.spyOn(console, 'error').mockImplementation(() => {});
+    vi.spyOn(console, 'warn').mockImplementation(() => {});
+  });
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  afterAll(() => {
+    vi.restoreAllMocks();
+  });
+
   describe('initial state', () => {
-    it('returns all conversations', () => {
+    it('returns all conversations after loading', async () => {
       const { result } = renderHook(() => useWhatsAppData());
-      expect(result.current.conversations).toHaveLength(3);
+      await waitFor(() => expect(result.current.conversations).toHaveLength(3));
     });
 
     it('returns null selected conversation', () => {
@@ -160,8 +225,9 @@ describe('useWhatsAppData', () => {
   });
 
   describe('conversation filtering', () => {
-    it('filters by contact name', () => {
+    it('filters by contact name', async () => {
       const { result } = renderHook(() => useWhatsAppData());
+      await waitFor(() => expect(result.current.conversations).toHaveLength(3));
       act(() => {
         result.current.setSearchQuery('ahmed');
       });
@@ -169,8 +235,9 @@ describe('useWhatsAppData', () => {
       expect(result.current.filteredConversations[0].id).toBe('conv-1');
     });
 
-    it('filters by phone number', () => {
+    it('filters by phone number', async () => {
       const { result } = renderHook(() => useWhatsAppData());
+      await waitFor(() => expect(result.current.conversations).toHaveLength(3));
       act(() => {
         result.current.setSearchQuery('9876543');
       });
@@ -178,8 +245,9 @@ describe('useWhatsAppData', () => {
       expect(result.current.filteredConversations[0].id).toBe('conv-2');
     });
 
-    it('filters by priority', () => {
+    it('filters by priority', async () => {
       const { result } = renderHook(() => useWhatsAppData());
+      await waitFor(() => expect(result.current.conversations).toHaveLength(3));
       act(() => {
         result.current.setFilterPriority('hot');
       });
@@ -187,8 +255,9 @@ describe('useWhatsAppData', () => {
       expect(result.current.filteredConversations[0].id).toBe('conv-1');
     });
 
-    it('combines search and priority filter', () => {
+    it('combines search and priority filter', async () => {
       const { result } = renderHook(() => useWhatsAppData());
+      await waitFor(() => expect(result.current.conversations).toHaveLength(3));
       act(() => {
         result.current.setSearchQuery('sara');
         result.current.setFilterPriority('warm');
@@ -197,16 +266,18 @@ describe('useWhatsAppData', () => {
       expect(result.current.filteredConversations[0].id).toBe('conv-2');
     });
 
-    it('returns all conversations when filter is "all"', () => {
+    it('returns all conversations when filter is "all"', async () => {
       const { result } = renderHook(() => useWhatsAppData());
+      await waitFor(() => expect(result.current.conversations).toHaveLength(3));
       act(() => {
         result.current.setFilterPriority('all');
       });
       expect(result.current.filteredConversations).toHaveLength(3);
     });
 
-    it('returns empty array when no matches', () => {
+    it('returns empty array when no matches', async () => {
       const { result } = renderHook(() => useWhatsAppData());
+      await waitFor(() => expect(result.current.conversations).toHaveLength(3));
       act(() => {
         result.current.setSearchQuery('nonexistent');
       });
@@ -215,10 +286,11 @@ describe('useWhatsAppData', () => {
   });
 
   describe('message sending', () => {
-    it('does nothing when no message input', () => {
+    it('does nothing when no message input', async () => {
       const { result } = renderHook(() => useWhatsAppData());
+      await waitFor(() => expect(result.current.conversations).toHaveLength(3));
       act(() => {
-        result.current.setSelectedConversation(MOCK_CONVERSATIONS[0] as any);
+        result.current.setSelectedConversation(MOCK_CONVERSATIONS[0] as Conversation);
         result.current.setMessageInput('');
       });
       act(() => {
@@ -227,8 +299,9 @@ describe('useWhatsAppData', () => {
       expect(result.current.conversations[0].messages).toHaveLength(1);
     });
 
-    it('does nothing when no conversation selected', () => {
+    it('does nothing when no conversation selected', async () => {
       const { result } = renderHook(() => useWhatsAppData());
+      await waitFor(() => expect(result.current.conversations).toHaveLength(3));
       act(() => {
         result.current.setMessageInput('Hello');
       });
@@ -238,10 +311,11 @@ describe('useWhatsAppData', () => {
       // No crash, message still in input
     });
 
-    it('adds message to conversation', () => {
+    it('adds message to conversation', async () => {
       const { result } = renderHook(() => useWhatsAppData());
+      await waitFor(() => expect(result.current.conversations).toHaveLength(3));
       act(() => {
-        result.current.setSelectedConversation({ ...MOCK_CONVERSATIONS[0] } as any);
+        result.current.setSelectedConversation({ ...MOCK_CONVERSATIONS[0] } as Conversation);
         result.current.setMessageInput('Test message');
       });
       act(() => {
@@ -253,10 +327,11 @@ describe('useWhatsAppData', () => {
       expect(conv!.messages[1].type).toBe('sent');
     });
 
-    it('clears message input after send', () => {
+    it('clears message input after send', async () => {
       const { result } = renderHook(() => useWhatsAppData());
+      await waitFor(() => expect(result.current.conversations).toHaveLength(3));
       act(() => {
-        result.current.setSelectedConversation({ ...MOCK_CONVERSATIONS[0] } as any);
+        result.current.setSelectedConversation({ ...MOCK_CONVERSATIONS[0] } as Conversation);
         result.current.setMessageInput('Test message');
       });
       act(() => {
@@ -265,10 +340,11 @@ describe('useWhatsAppData', () => {
       expect(result.current.messageInput).toBe('');
     });
 
-    it('updates lastMessage on the conversation', () => {
+    it('updates lastMessage on the conversation', async () => {
       const { result } = renderHook(() => useWhatsAppData());
+      await waitFor(() => expect(result.current.conversations).toHaveLength(3));
       act(() => {
-        result.current.setSelectedConversation({ ...MOCK_CONVERSATIONS[0] } as any);
+        result.current.setSelectedConversation({ ...MOCK_CONVERSATIONS[0] } as Conversation);
         result.current.setMessageInput('New last message');
       });
       act(() => {
@@ -280,10 +356,23 @@ describe('useWhatsAppData', () => {
   });
 
   describe('AI auto-response', () => {
-    it('adds AI response after timeout when Nadia is active', () => {
+    beforeEach(() => {
+      vi.useFakeTimers();
+    });
+    afterEach(() => {
+      vi.useRealTimers();
+    });
+
+    it('adds AI response after timeout when Nadia is active', async () => {
       const { result } = renderHook(() => useWhatsAppData());
+      // Flush API fetch Promises while fake timers are active
+      await act(async () => {
+        await Promise.resolve();
+        await Promise.resolve();
+        await Promise.resolve();
+      });
       act(() => {
-        result.current.setSelectedConversation({ ...MOCK_CONVERSATIONS[0] } as any);
+        result.current.setSelectedConversation({ ...MOCK_CONVERSATIONS[0] } as Conversation);
         result.current.setMessageInput('Hello AI');
       });
       act(() => {
@@ -303,13 +392,18 @@ describe('useWhatsAppData', () => {
       expect(convAfter!.messages[2].text).toContain('Nadia AI');
     });
 
-    it('does not add AI response when Nadia is inactive', () => {
+    it('does not add AI response when Nadia is inactive', async () => {
       const { result } = renderHook(() => useWhatsAppData());
+      await act(async () => {
+        await Promise.resolve();
+        await Promise.resolve();
+        await Promise.resolve();
+      });
       act(() => {
         result.current.setNadiaActive(false);
       });
       act(() => {
-        result.current.setSelectedConversation({ ...MOCK_CONVERSATIONS[0] } as any);
+        result.current.setSelectedConversation({ ...MOCK_CONVERSATIONS[0] } as Conversation);
         result.current.setMessageInput('Hello');
       });
       act(() => {
@@ -408,7 +502,7 @@ describe('useWhatsAppData', () => {
       const { result, unmount } = renderHook(() => useWhatsAppData());
 
       act(() => {
-        result.current.setSelectedConversation({ ...MOCK_CONVERSATIONS[0] } as any);
+        result.current.setSelectedConversation({ ...MOCK_CONVERSATIONS[0] } as Conversation);
         result.current.setMessageInput('Hello');
       });
       act(() => {

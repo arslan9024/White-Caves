@@ -5,7 +5,7 @@
  * custom renderers, row click, empty state, page reset on search
  */
 
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, screen, fireEvent, within } from '@testing-library/react';
 import React from 'react';
 
@@ -20,22 +20,89 @@ vi.mock('lucide-react', () => ({
 
 // Mock styled components
 vi.mock('./DataGridView.styles', () => ({
-  DataGridViewContainer: ({ children, style, ...p }: React.PropsWithChildren<{ style?: React.CSSProperties }>) => <div data-testid="grid-container" style={style} {...p}>{children}</div>,
-  GridToolbar: ({ children, ...p }: React.PropsWithChildren) => <div data-testid="toolbar" {...p}>{children}</div>,
-  GridSearch: ({ children, ...p }: React.PropsWithChildren) => <div data-testid="search-box" {...p}>{children}</div>,
-  GridFilterButton: ({ children, ...p }: React.PropsWithChildren<{ type?: 'button' | 'submit' | 'reset' }>) => <button {...p}>{children}</button>,
+  DataGridViewContainer: ({
+    children,
+    style,
+    ...p
+  }: React.PropsWithChildren<{ style?: React.CSSProperties }>) => (
+    <div data-testid="grid-container" style={style} {...p}>
+      {children}
+    </div>
+  ),
+  GridToolbar: ({ children, ...p }: React.PropsWithChildren) => (
+    <div data-testid="toolbar" {...p}>
+      {children}
+    </div>
+  ),
+  GridSearch: ({ children, ...p }: React.PropsWithChildren) => (
+    <div data-testid="search-box" {...p}>
+      {children}
+    </div>
+  ),
+  GridFilterButton: ({
+    children,
+    ...p
+  }: React.PropsWithChildren<{ type?: 'button' | 'submit' | 'reset' }>) => (
+    <button {...p}>{children}</button>
+  ),
   GridTableWrapper: ({ children, ...p }: React.PropsWithChildren) => <div {...p}>{children}</div>,
   GridTable: ({ children, ...p }: React.PropsWithChildren) => <table {...p}>{children}</table>,
-  GridTableHeader: ({ children, className, ...p }: React.PropsWithChildren<{ className?: string; style?: React.CSSProperties; onClick?: () => void }>) => <th className={className} {...p}>{children}</th>,
-  GridTableCell: ({ children, ...p }: React.PropsWithChildren<{ colSpan?: number }>) => <td {...p}>{children}</td>,
-  GridTableRow: ({ children, $clickable, ...p }: React.PropsWithChildren<{ $clickable?: boolean; onClick?: () => void }>) => <tr data-clickable={$clickable} {...p}>{children}</tr>,
+  GridTableHeader: ({
+    children,
+    className,
+    ...p
+  }: React.PropsWithChildren<{
+    className?: string;
+    style?: React.CSSProperties;
+    onClick?: () => void;
+  }>) => (
+    <th className={className} {...p}>
+      {children}
+    </th>
+  ),
+  GridTableCell: ({ children, ...p }: React.PropsWithChildren<{ colSpan?: number }>) => (
+    <td {...p}>{children}</td>
+  ),
+  GridTableRow: ({
+    children,
+    $clickable,
+    ...p
+  }: React.PropsWithChildren<{ $clickable?: boolean; onClick?: () => void }>) => (
+    <tr data-clickable={$clickable} {...p}>
+      {children}
+    </tr>
+  ),
   ActionsColumn: ({ children, ...p }: React.PropsWithChildren) => <td {...p}>{children}</td>,
-  RowActionsButton: ({ children, ...p }: React.PropsWithChildren<{ type?: 'button' | 'submit' | 'reset'; 'aria-label'?: string }>) => <button {...p}>{children}</button>,
-  GridPagination: ({ children, ...p }: React.PropsWithChildren) => <div data-testid="pagination" {...p}>{children}</div>,
-  PaginationInfo: ({ children, ...p }: React.PropsWithChildren) => <span data-testid="page-info" {...p}>{children}</span>,
+  RowActionsButton: ({
+    children,
+    ...p
+  }: React.PropsWithChildren<{ type?: 'button' | 'submit' | 'reset'; 'aria-label'?: string }>) => (
+    <button {...p}>{children}</button>
+  ),
+  GridPagination: ({ children, ...p }: React.PropsWithChildren) => (
+    <div data-testid="pagination" {...p}>
+      {children}
+    </div>
+  ),
+  PaginationInfo: ({ children, ...p }: React.PropsWithChildren) => (
+    <span data-testid="page-info" {...p}>
+      {children}
+    </span>
+  ),
   PaginationControls: ({ children, ...p }: React.PropsWithChildren) => <div {...p}>{children}</div>,
-  PaginationButton: ({ children, ...p }: React.PropsWithChildren<{ disabled?: boolean; onClick?: () => void; type?: 'button' | 'submit' | 'reset' }>) => <button {...p}>{children}</button>,
-  PageNumber: ({ children, ...p }: React.PropsWithChildren) => <span data-testid="page-number" {...p}>{children}</span>,
+  PaginationButton: ({
+    children,
+    ...p
+  }: React.PropsWithChildren<{
+    disabled?: boolean;
+    onClick?: () => void;
+    type?: 'button' | 'submit' | 'reset';
+  }>) => <button {...p}>{children}</button>,
+  PageNumber: ({ children, ...p }: React.PropsWithChildren) => (
+    <span data-testid="page-number" {...p}>
+      {children}
+    </span>
+  ),
 }));
 
 import DataGridView from './DataGridView';
@@ -57,7 +124,13 @@ const data = [
 ];
 
 beforeEach(() => {
+  vi.spyOn(console, 'error').mockImplementation(() => {});
+  vi.spyOn(console, 'warn').mockImplementation(() => {});
   vi.clearAllMocks();
+});
+
+afterEach(() => {
+  vi.restoreAllMocks();
 });
 
 // ── Tests ────────────────────────────────────────────────────────

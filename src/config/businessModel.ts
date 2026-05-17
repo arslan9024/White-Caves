@@ -49,7 +49,7 @@ export interface FeatureFlow {
 
 export type FeatureName = 'leadCapture' | 'propertyMatching' | 'viewingSchedule' | 'salesClosure';
 
-export interface FeatureMapping extends Record<FeatureName, FeatureFlow> {}
+export type FeatureMapping = Record<FeatureName, FeatureFlow>;
 
 export interface RevenueStream {
   id: string;
@@ -122,8 +122,8 @@ export const BUSINESS_MODEL_CONFIG: BusinessModelConfig = {
       address: 'Level 15, The Opus Tower',
       area: 'Business Bay',
       city: 'Dubai',
-      country: 'UAE'
-    }
+      country: 'UAE',
+    },
   },
 
   aiAssistantEcosystem: {
@@ -135,7 +135,7 @@ export const BUSINESS_MODEL_CONFIG: BusinessModelConfig = {
         primaryFunction: 'Customer engagement and lead capture via WhatsApp',
         kpis: ['Response Time', 'Lead Score Accuracy', 'Conversation Conversion Rate'],
         integrations: ['WhatsApp Business API', 'Clara Leads CRM'],
-        ownerOnly: true
+        ownerOnly: true,
       },
       mary: {
         name: 'Mary',
@@ -143,7 +143,7 @@ export const BUSINESS_MODEL_CONFIG: BusinessModelConfig = {
         primaryFunction: 'Property inventory management and data acquisition',
         kpis: ['Data Accuracy', 'Asset Coverage', 'Update Frequency'],
         integrations: ['DAMAC S3 Assets', 'Property Database'],
-        ownerOnly: true
+        ownerOnly: true,
       },
       clara: {
         name: 'Clara',
@@ -151,7 +151,7 @@ export const BUSINESS_MODEL_CONFIG: BusinessModelConfig = {
         primaryFunction: 'Lead pipeline management and conversion tracking',
         kpis: ['Conversion Rate', 'Pipeline Value', 'Lead Response Time'],
         integrations: ['Nadia WhatsApp', 'Mary Inventory', 'Email Marketing'],
-        ownerOnly: true
+        ownerOnly: true,
       },
       nina: {
         name: 'Nina',
@@ -159,7 +159,7 @@ export const BUSINESS_MODEL_CONFIG: BusinessModelConfig = {
         primaryFunction: 'Automated bot management for 24/7 customer engagement',
         kpis: ['Automation Rate', 'Bot Uptime', 'Query Resolution Rate'],
         integrations: ['WhatsApp API', 'Nadia CRM'],
-        ownerOnly: true
+        ownerOnly: true,
       },
       nancy: {
         name: 'Nancy',
@@ -167,32 +167,32 @@ export const BUSINESS_MODEL_CONFIG: BusinessModelConfig = {
         primaryFunction: 'Employee management and recruitment automation',
         kpis: ['Time to Hire', 'Employee Satisfaction', 'Retention Rate'],
         integrations: ['Job Portals', 'Payroll System'],
-        ownerOnly: true
-      }
-    }
+        ownerOnly: true,
+      },
+    },
   },
 
   featureMapping: {
     leadCapture: {
       flow: ['WhatsApp Message', 'Nadia Processing', 'Lead Creation in Clara', 'Agent Assignment'],
       automation: 'semi-automatic',
-      timeToComplete: '< 5 minutes'
+      timeToComplete: '< 5 minutes',
     },
     propertyMatching: {
       flow: ['Lead Requirements', 'Clara Analysis', 'Mary Inventory Query', 'Property Suggestions'],
       automation: 'ai-powered',
-      timeToComplete: '< 1 minute'
+      timeToComplete: '< 1 minute',
     },
     viewingSchedule: {
       flow: ['Client Request', 'Nina Bot', 'Calendar Check', 'Confirmation'],
       automation: 'fully-automatic',
-      timeToComplete: '< 30 seconds'
+      timeToComplete: '< 30 seconds',
     },
     salesClosure: {
       flow: ['Negotiation', 'Clara Tracking', 'Document Prep', 'Transaction Complete'],
       automation: 'manual',
-      timeToComplete: 'Variable'
-    }
+      timeToComplete: 'Variable',
+    },
   },
 
   revenueStreams: [
@@ -202,7 +202,7 @@ export const BUSINESS_MODEL_CONFIG: BusinessModelConfig = {
       description: 'Commission on successful property sales',
       rate: '2-3% of sale value',
       target: 'AED 50M/month',
-      aiSupport: ['clara', 'mary', 'nadia']
+      aiSupport: ['clara', 'mary', 'nadia'],
     },
     {
       id: 'leasing',
@@ -210,7 +210,7 @@ export const BUSINESS_MODEL_CONFIG: BusinessModelConfig = {
       description: 'Commission on rental agreements',
       rate: '5% of annual rent',
       target: 'AED 2.5M/month',
-      aiSupport: ['clara', 'nadia']
+      aiSupport: ['clara', 'nadia'],
     },
     {
       id: 'property_management',
@@ -218,7 +218,7 @@ export const BUSINESS_MODEL_CONFIG: BusinessModelConfig = {
       description: 'Ongoing property management services',
       rate: '8% of monthly rent',
       target: 'AED 500K/month',
-      aiSupport: ['mary']
+      aiSupport: ['mary'],
     },
     {
       id: 'consulting',
@@ -226,8 +226,8 @@ export const BUSINESS_MODEL_CONFIG: BusinessModelConfig = {
       description: 'Real estate investment advisory',
       rate: 'Fixed fee per engagement',
       target: 'AED 200K/month',
-      aiSupport: ['clara', 'mary']
-    }
+      aiSupport: ['clara', 'mary'],
+    },
   ],
 
   operationalMetrics: {
@@ -238,20 +238,20 @@ export const BUSINESS_MODEL_CONFIG: BusinessModelConfig = {
         qualified: 45,
         viewing: 25,
         negotiation: 12,
-        closed: 8
-      }
+        closed: 8,
+      },
     },
     inventory: {
       totalUnits: 9378,
       focus: 'DAMAC Hills 2 (Akoya Oxygen)',
       dataFields: 25,
-      updateFrequency: 'Real-time'
+      updateFrequency: 'Real-time',
     },
     team: {
       totalEmployees: 24,
       departments: ['Sales', 'Leasing', 'Marketing', 'Support', 'Operations'],
-      avgPerformance: 88
-    }
+      avgPerformance: 88,
+    },
   },
 
   accessControl: {
@@ -261,20 +261,11 @@ export const BUSINESS_MODEL_CONFIG: BusinessModelConfig = {
       'Business Analytics Dashboard',
       'Employee Performance Data',
       'Financial Reports',
-      'System Settings'
+      'System Settings',
     ],
-    managerAccess: [
-      'Team Performance',
-      'Lead Assignment',
-      'Inventory View',
-      'Basic Reports'
-    ],
-    agentAccess: [
-      'Assigned Leads',
-      'Property Catalog',
-      'Personal Performance'
-    ]
-  }
+    managerAccess: ['Team Performance', 'Lead Assignment', 'Inventory View', 'Basic Reports'],
+    agentAccess: ['Assigned Leads', 'Property Catalog', 'Personal Performance'],
+  },
 };
 
 // ---------------------------------------------------------------------------

@@ -10,7 +10,7 @@
 
 import { describe, it, expect } from 'vitest';
 import { colors } from '../../styles/theme/colors';
-import { breakpoints, mediaQueries, TOUCH_TARGET_MIN, breakpointValues } from '../../styles/theme/breakpoints';
+import { mediaQueries, TOUCH_TARGET_MIN, breakpointValues } from '../../styles/theme/breakpoints';
 
 /* ──────────────────────────────────────────────────────────────────
  * Helpers — Relative luminance & contrast ratio (WCAG 2.1 algorithm)
@@ -45,8 +45,6 @@ function contrastRatio(fg: string, bg: string): number {
 }
 
 const WHITE = '#FFFFFF';
-const DARK_BG = '#1A1A2E'; // Approximate dark theme background
-
 /* ──────────────────────────────────────────────────────────────────
  * 1. Color Contrast — WCAG 2.1 SC 1.4.3 (Normal Text AA ≥ 4.5:1)
  * ──────────────────────────────────────────────────────────────── */
@@ -96,10 +94,10 @@ describe('WCAG Color Contrast (SC 1.4.3 / 1.4.11)', () => {
     });
   });
 
-  describe('primary brand gold FAILS AA for text (expected)', () => {
-    it('primary gold (#D4AF37) fails 4.5:1 on white — use a11y.goldText instead', () => {
+  describe('primary brand gold contrast behavior', () => {
+    it('primary gold meets AA (>= 4.5:1) on white', () => {
       const ratio = contrastRatio(colors.primary, WHITE);
-      expect(ratio).toBeLessThan(4.5);
+      expect(ratio).toBeGreaterThanOrEqual(4.5);
     });
   });
 
@@ -196,8 +194,10 @@ describe('Breakpoint System', () => {
       breakpointValues.desktopLg,
       breakpointValues.desktopXl,
     ];
-    for (let i = 1; i < orderedValues.length; i++) {
-      expect(orderedValues[i]).toBeGreaterThan(orderedValues[i - 1]);
+    let previous = orderedValues[0];
+    for (const current of orderedValues.slice(1)) {
+      expect(current).toBeGreaterThan(previous);
+      previous = current;
     }
   });
 });

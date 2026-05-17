@@ -20,7 +20,7 @@ export const NavBarContainer = styled.header`
   align-items: center;
   justify-content: space-between;
   padding: 0 ${theme.spacing.lg};
-  z-index: ${theme.zIndex.navbar};
+  z-index: ${theme.zIndex.fixed};
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
   gap: ${theme.spacing.lg};
 
@@ -76,7 +76,7 @@ export const LogoIcon = styled.div`
 
 export const LogoLetter = styled.span`
   font-size: 20px;
-  font-weight: ${typography.weights.extrabold};
+  font-weight: ${typography.weights.bold};
   color: white;
   font-family: ${theme.typography.fontFamily.heading};
 `;
@@ -368,7 +368,7 @@ export const DropdownMenu = styled.div`
   min-width: 280px;
   overflow: hidden;
   animation: dropdownFadeIn 0.2s ease;
-  z-index: ${theme.zIndex.navbar + 10};
+  z-index: ${theme.zIndex.fixed + 10};
 
   @keyframes dropdownFadeIn {
     from {

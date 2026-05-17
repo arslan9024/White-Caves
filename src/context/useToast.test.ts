@@ -42,9 +42,11 @@ describe('useToast', () => {
     });
 
     it('throws when used outside ToastProvider', () => {
+      const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
       expect(() => {
         renderHook(() => useToast());
       }).toThrow('useToast must be used inside a ToastProvider');
+      consoleErrorSpy.mockRestore();
     });
 
     it('show returns a toast ID', () => {
@@ -128,11 +130,14 @@ describe('useToast', () => {
       });
       // Different hook instances share the same provider? No, different wrappers.
       // Use a combined hook instead:
-      const { result } = renderHook(() => {
-        const toast = useToast();
-        const showSuccess = useSuccessToast();
-        return { toast, showSuccess };
-      }, { wrapper });
+      const { result } = renderHook(
+        () => {
+          const toast = useToast();
+          const showSuccess = useSuccessToast();
+          return { toast, showSuccess };
+        },
+        { wrapper }
+      );
 
       act(() => {
         result.current.showSuccess('Operation successful');
@@ -145,11 +150,14 @@ describe('useToast', () => {
     });
 
     it('accepts custom duration', () => {
-      const { result } = renderHook(() => {
-        const toast = useToast();
-        const showSuccess = useSuccessToast();
-        return { toast, showSuccess };
-      }, { wrapper });
+      const { result } = renderHook(
+        () => {
+          const toast = useToast();
+          const showSuccess = useSuccessToast();
+          return { toast, showSuccess };
+        },
+        { wrapper }
+      );
 
       act(() => {
         result.current.showSuccess('Success!', 5000);
@@ -175,11 +183,14 @@ describe('useToast', () => {
     });
 
     it('creates an error toast with 4000ms default duration', () => {
-      const { result } = renderHook(() => {
-        const toast = useToast();
-        const showError = useErrorToast();
-        return { toast, showError };
-      }, { wrapper });
+      const { result } = renderHook(
+        () => {
+          const toast = useToast();
+          const showError = useErrorToast();
+          return { toast, showError };
+        },
+        { wrapper }
+      );
 
       act(() => {
         result.current.showError('Something went wrong');
@@ -189,11 +200,14 @@ describe('useToast', () => {
     });
 
     it('accepts custom duration', () => {
-      const { result } = renderHook(() => {
-        const toast = useToast();
-        const showError = useErrorToast();
-        return { toast, showError };
-      }, { wrapper });
+      const { result } = renderHook(
+        () => {
+          const toast = useToast();
+          const showError = useErrorToast();
+          return { toast, showError };
+        },
+        { wrapper }
+      );
 
       act(() => {
         result.current.showError('Error!', 6000);
@@ -209,11 +223,14 @@ describe('useToast', () => {
     });
 
     it('creates a warning toast with 3500ms default duration', () => {
-      const { result } = renderHook(() => {
-        const toast = useToast();
-        const showWarning = useWarningToast();
-        return { toast, showWarning };
-      }, { wrapper });
+      const { result } = renderHook(
+        () => {
+          const toast = useToast();
+          const showWarning = useWarningToast();
+          return { toast, showWarning };
+        },
+        { wrapper }
+      );
 
       act(() => {
         result.current.showWarning('Be careful');
@@ -230,11 +247,14 @@ describe('useToast', () => {
     });
 
     it('creates an info toast with 3000ms default duration', () => {
-      const { result } = renderHook(() => {
-        const toast = useToast();
-        const showInfo = useInfoToast();
-        return { toast, showInfo };
-      }, { wrapper });
+      const { result } = renderHook(
+        () => {
+          const toast = useToast();
+          const showInfo = useInfoToast();
+          return { toast, showInfo };
+        },
+        { wrapper }
+      );
 
       act(() => {
         result.current.showInfo('FYI');
@@ -255,11 +275,14 @@ describe('useToast', () => {
     });
 
     it('show creates a toast with full config', () => {
-      const { result } = renderHook(() => {
-        const toast = useToast();
-        const custom = useCustomToast();
-        return { toast, custom };
-      }, { wrapper });
+      const { result } = renderHook(
+        () => {
+          const toast = useToast();
+          const custom = useCustomToast();
+          return { toast, custom };
+        },
+        { wrapper }
+      );
 
       act(() => {
         result.current.custom.show({
@@ -275,11 +298,14 @@ describe('useToast', () => {
     });
 
     it('dismiss removes a toast by id', () => {
-      const { result } = renderHook(() => {
-        const toast = useToast();
-        const custom = useCustomToast();
-        return { toast, custom };
-      }, { wrapper });
+      const { result } = renderHook(
+        () => {
+          const toast = useToast();
+          const custom = useCustomToast();
+          return { toast, custom };
+        },
+        { wrapper }
+      );
 
       let id = '';
       act(() => {
@@ -297,11 +323,14 @@ describe('useToast', () => {
     });
 
     it('dismissAll removes all toasts', () => {
-      const { result } = renderHook(() => {
-        const toast = useToast();
-        const custom = useCustomToast();
-        return { toast, custom };
-      }, { wrapper });
+      const { result } = renderHook(
+        () => {
+          const toast = useToast();
+          const custom = useCustomToast();
+          return { toast, custom };
+        },
+        { wrapper }
+      );
 
       act(() => {
         result.current.custom.show({ message: 'A', type: 'info', position: 'bottom-right' });
@@ -319,11 +348,14 @@ describe('useToast', () => {
 
   describe('edge cases', () => {
     it('empty message is handled', () => {
-      const { result } = renderHook(() => {
-        const toast = useToast();
-        const showSuccess = useSuccessToast();
-        return { toast, showSuccess };
-      }, { wrapper });
+      const { result } = renderHook(
+        () => {
+          const toast = useToast();
+          const showSuccess = useSuccessToast();
+          return { toast, showSuccess };
+        },
+        { wrapper }
+      );
 
       act(() => {
         result.current.showSuccess('');
@@ -333,11 +365,14 @@ describe('useToast', () => {
 
     it('very long message is passed through', () => {
       const longMessage = 'A'.repeat(1000);
-      const { result } = renderHook(() => {
-        const toast = useToast();
-        const showInfo = useInfoToast();
-        return { toast, showInfo };
-      }, { wrapper });
+      const { result } = renderHook(
+        () => {
+          const toast = useToast();
+          const showInfo = useInfoToast();
+          return { toast, showInfo };
+        },
+        { wrapper }
+      );
 
       act(() => {
         result.current.showInfo(longMessage);

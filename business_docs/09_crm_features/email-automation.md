@@ -18,6 +18,37 @@
 
 > _TODO: expand this section with full spec._
 
+## 4. Template Catalog
+
+- Lease expiry reminders.
+- Rent due notices.
+- Maintenance status updates.
+- Tenant onboarding welcome emails.
+
+## 5. Trigger Schedule
+
+- Lease reminders at 90/60/30 days.
+- Rent reminders at T-3 days and due date.
+- Maintenance updates on each status change.
+
+## 6. Delivery Reliability
+
+- Retry attempts with backoff.
+- Dead-letter tracking for failed sends.
+- Idempotent send keys.
+
+## 7. Unsubscribe and Consent
+
+- One-click unsubscribe links.
+- Category-level subscription controls.
+- Consent logging for compliance.
+
+## 8. Acceptance Criteria and Tests
+
+- Trigger execution coverage for all scenarios.
+- Retry and unsubscribe flows validated.
+- Email activity logged in CRM timeline.
+
 ---
 
 _This file was scaffolded by scripts/orchestrator/scaffold-docs.ps1.

@@ -1,11 +1,12 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import { authFetch } from '../../utils/authFetch';
 
 // Async thunks for API calls
 export const fetchLandlordStats = createAsyncThunk(
   'landlord/fetchStats',
   async (_, { rejectWithValue }) => {
     try {
-      const response = await fetch('/api/landlord/stats');
+      const response = await authFetch('/api/landlord/stats');
       if (!response.ok) throw new Error('Failed to fetch stats');
       return await response.json();
     } catch (error) {
@@ -18,7 +19,7 @@ export const fetchLandlordProperties = createAsyncThunk(
   'landlord/fetchProperties',
   async (_, { rejectWithValue }) => {
     try {
-      const response = await fetch('/api/landlord/properties');
+      const response = await authFetch('/api/landlord/properties');
       if (!response.ok) throw new Error('Failed to fetch properties');
       return await response.json();
     } catch (error) {
@@ -31,7 +32,7 @@ export const fetchLandlordMaintenance = createAsyncThunk(
   'landlord/fetchMaintenance',
   async (_, { rejectWithValue }) => {
     try {
-      const response = await fetch('/api/landlord/maintenance');
+      const response = await authFetch('/api/landlord/maintenance');
       if (!response.ok) throw new Error('Failed to fetch maintenance');
       return await response.json();
     } catch (error) {
@@ -44,7 +45,7 @@ export const fetchLandlordFinances = createAsyncThunk(
   'landlord/fetchFinances',
   async (_, { rejectWithValue }) => {
     try {
-      const response = await fetch('/api/landlord/finances');
+      const response = await authFetch('/api/landlord/finances');
       if (!response.ok) throw new Error('Failed to fetch finances');
       return await response.json();
     } catch (error) {
@@ -57,10 +58,10 @@ export const addProperty = createAsyncThunk(
   'landlord/addProperty',
   async (propertyData, { rejectWithValue }) => {
     try {
-      const response = await fetch('/api/landlord/properties', {
+      const response = await authFetch('/api/landlord/properties', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(propertyData)
+        body: JSON.stringify(propertyData),
       });
       if (!response.ok) throw new Error('Failed to add property');
       return await response.json();
@@ -74,10 +75,10 @@ export const updateMaintenance = createAsyncThunk(
   'landlord/updateMaintenance',
   async ({ id, status }, { rejectWithValue }) => {
     try {
-      const response = await fetch(`/api/landlord/maintenance/${id}`, {
+      const response = await authFetch(`/api/landlord/maintenance/${id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ status })
+        body: JSON.stringify({ status }),
       });
       if (!response.ok) throw new Error('Failed to update maintenance');
       return await response.json();
@@ -109,7 +110,7 @@ const landlordSlice = createSlice({
     selectProperty: (state, action) => {
       state.selectedProperty = action.payload;
     },
-    clearError: (state) => {
+    clearError: state => {
       state.error = null;
     },
     // Optimistic updates
@@ -121,12 +122,12 @@ const landlordSlice = createSlice({
       if (request) {
         request.status = action.payload.status;
       }
-    }
+    },
   },
-  extraReducers: (builder) => {
+  extraReducers: builder => {
     // Fetch Stats
     builder
-      .addCase(fetchLandlordStats.pending, (state) => {
+      .addCase(fetchLandlordStats.pending, state => {
         state.loading = true;
         state.error = null;
       })
@@ -142,7 +143,7 @@ const landlordSlice = createSlice({
 
     // Fetch Properties
     builder
-      .addCase(fetchLandlordProperties.pending, (state) => {
+      .addCase(fetchLandlordProperties.pending, state => {
         state.loading = true;
         state.error = null;
       })
@@ -158,7 +159,7 @@ const landlordSlice = createSlice({
 
     // Fetch Maintenance
     builder
-      .addCase(fetchLandlordMaintenance.pending, (state) => {
+      .addCase(fetchLandlordMaintenance.pending, state => {
         state.loading = true;
         state.error = null;
       })
@@ -174,7 +175,7 @@ const landlordSlice = createSlice({
 
     // Fetch Finances
     builder
-      .addCase(fetchLandlordFinances.pending, (state) => {
+      .addCase(fetchLandlordFinances.pending, state => {
         state.loading = true;
         state.error = null;
       })
@@ -203,6 +204,7 @@ const landlordSlice = createSlice({
       .addCase(updateMaintenance.fulfilled, (state, action) => {
         const index = state.maintenance.findIndex(r => r.id === action.payload.id);
         if (index !== -1) {
+          // eslint-disable-next-line security/detect-object-injection
           state.maintenance[index] = action.payload;
         }
         state.error = null;
@@ -210,7 +212,7 @@ const landlordSlice = createSlice({
       .addCase(updateMaintenance.rejected, (state, action) => {
         state.error = action.payload;
       });
-  }
+  },
 });
 
 export const {
@@ -218,7 +220,7 @@ export const {
   selectProperty,
   clearError,
   optimisticAddProperty,
-  optimisticUpdateMaintenance
+  optimisticUpdateMaintenance,
 } = landlordSlice.actions;
 
 export default landlordSlice.reducer;

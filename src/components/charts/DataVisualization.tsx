@@ -25,15 +25,15 @@ const BarChartWrapper = styled.div`
 
 const BarItem = styled.div<{ $height: number; $color?: string }>`
   flex: 1;
-  height: ${(props) => props.$height}%;
-  background: ${(props) => props.$color || '#3498db'};
+  height: ${props => props.$height}%;
+  background: ${props => props.$color || '#3498db'};
   border-radius: 4px 4px 0 0;
   transition: all 0.3s ease;
   position: relative;
   cursor: pointer;
 
   &:hover {
-    background: ${(props) => props.$color || '#2980b9'};
+    background: ${props => props.$color || '#2980b9'};
     opacity: 0.9;
 
     &::after {
@@ -78,12 +78,8 @@ interface BarChartProps {
 /**
  * Simple Bar Chart Component
  */
-export const BarChart: React.FC<BarChartProps> = ({
-  data,
-  maxValue,
-  animated = true,
-}) => {
-  const max = maxValue || Math.max(...data.map((d) => d.value), 1);
+export const BarChart: React.FC<BarChartProps> = ({ data, maxValue, animated = true }) => {
+  const max = maxValue || Math.max(...data.map(d => d.value), 1);
 
   return (
     <ChartContainer>
@@ -105,6 +101,7 @@ export const BarChart: React.FC<BarChartProps> = ({
               $height={(item.value / max) * 100}
               $color={item.color}
               data-label={`${item.label}: ${item.value}`}
+              style={{ background: item.color || '#3498db' }}
             />
             <ChartLabel>{item.label}</ChartLabel>
           </div>
@@ -123,20 +120,15 @@ interface LineChartProps {
 /**
  * Simple Line Chart Component
  */
-export const LineChart: React.FC<LineChartProps> = ({
-  data,
-  color = '#3498db',
-  maxValue,
-}) => {
-  const max = maxValue || Math.max(...data.map((d) => d.value), 1);
+export const LineChart: React.FC<LineChartProps> = ({ data, color = '#3498db', maxValue }) => {
+  const max = maxValue || Math.max(...data.map(d => d.value), 1);
   const chartHeight = 200;
   const chartWidth = 800;
   const padding = 40;
 
   const points = useMemo(() => {
     return data.map((item, index) => {
-      const x =
-        padding + (index / (data.length - 1)) * (chartWidth - 2 * padding);
+      const x = padding + (index / (data.length - 1)) * (chartWidth - 2 * padding);
       const y = chartHeight - (item.value / max) * (chartHeight - 2 * padding);
       return { x, y, ...item };
     });
@@ -211,10 +203,7 @@ interface PieChartProps {
 /**
  * Simple Pie Chart Component
  */
-export const PieChart: React.FC<PieChartProps> = ({
-  data,
-  size = 200,
-}) => {
+export const PieChart: React.FC<PieChartProps> = ({ data, size = 200 }) => {
   const total = data.reduce((sum, item) => sum + item.value, 0);
 
   const slices = useMemo(() => {
@@ -246,16 +235,10 @@ export const PieChart: React.FC<PieChartProps> = ({
 
   return (
     <ChartContainer>
-      <LineChartWrapper viewBox={`0 0 ${size} ${size}`}>
+      <LineChartWrapper viewBox={`0 0 ${size} ${size}`} width={size} height={size}>
         {slices.map((slice, index) => (
           <g key={index}>
-            <path
-              d={slice.path}
-              fill={slice.color}
-              stroke="#000"
-              strokeWidth="1"
-              opacity="0.8"
-            />
+            <path d={slice.path} fill={slice.color} stroke="#000" strokeWidth="1" opacity="0.8" />
           </g>
         ))}
       </LineChartWrapper>

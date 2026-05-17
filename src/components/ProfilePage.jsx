@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { Mail, Phone, MapPin, Heart, Settings, FileCheck, Camera, Save, X } from 'lucide-react';
+import { authFetch } from '../utils/authFetch';
 import './ProfilePage.css';
 
 const ProfilePage = () => {
@@ -27,7 +28,7 @@ const ProfilePage = () => {
     const fetchProfile = async () => {
       try {
         setLoading(true);
-        const response = await fetch(`/api/profiles/${user.id}`);
+        const response = await authFetch(`/api/profiles/${user.id}`);
         if (response.ok) {
           const data = await response.json();
           setProfile(data);
@@ -90,7 +91,7 @@ const ProfilePage = () => {
 
   const handleSaveProfile = async () => {
     try {
-      const response = await fetch(`/api/profiles/${user.id}`, {
+      const response = await authFetch(`/api/profiles/${user.id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData),
@@ -114,7 +115,7 @@ const ProfilePage = () => {
       reader.onload = async e => {
         const base64 = e.target.result;
 
-        const response = await fetch(`/api/profiles/${user.id}/documents/${docType}`, {
+        const response = await authFetch(`/api/profiles/${user.id}/documents/${docType}`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({

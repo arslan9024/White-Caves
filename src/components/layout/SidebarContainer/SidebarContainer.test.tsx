@@ -15,14 +15,30 @@ import sidebarReducer from '../../../store/slices/sidebarSlice';
 let _lsStore: Record<string, string> = {};
 const mockLocalStorage = {
   getItem: vi.fn((key: string): string | null => _lsStore[key] ?? null),
-  setItem: vi.fn((key: string, value: string) => { _lsStore[key] = value; }),
-  removeItem: vi.fn((key: string) => { delete _lsStore[key]; }),
-  clear: vi.fn(() => { _lsStore = {}; }),
-  get length() { return Object.keys(_lsStore).length; },
+  setItem: vi.fn((key: string, value: string) => {
+    _lsStore[key] = value;
+  }),
+  removeItem: vi.fn((key: string) => {
+    delete _lsStore[key];
+  }),
+  clear: vi.fn(() => {
+    _lsStore = {};
+  }),
+  get length() {
+    return Object.keys(_lsStore).length;
+  },
   key: vi.fn((i: number): string | null => Object.keys(_lsStore)[i] ?? null),
 };
-Object.defineProperty(window, 'localStorage', { value: mockLocalStorage, writable: true, configurable: true });
-Object.defineProperty(globalThis, 'localStorage', { value: mockLocalStorage, writable: true, configurable: true });
+Object.defineProperty(window, 'localStorage', {
+  value: mockLocalStorage,
+  writable: true,
+  configurable: true,
+});
+Object.defineProperty(globalThis, 'localStorage', {
+  value: mockLocalStorage,
+  writable: true,
+  configurable: true,
+});
 
 // Minimal auth reducer
 const authReducer = (state = { user: { role: 'user' } }, action: any) => {
@@ -31,16 +47,19 @@ const authReducer = (state = { user: { role: 'user' } }, action: any) => {
 };
 
 // Minimal crmData reducer (supports badge selectors)
-const crmDataReducer = (state: any = {
-  leads: { items: [], loading: false, error: null, selected: null },
-  properties: { items: [], loading: false, error: null, selected: null },
-  clients: { items: [], loading: false, error: null, selected: null },
-  agents: { items: [], loading: false, error: null, selected: null },
-  commissions: { items: [], loading: false, error: null, selected: null },
-  activities: { items: [], loading: false, error: null },
-  overview: null,
-  lastUpdated: null,
-}, action: any) => {
+const crmDataReducer = (
+  state: any = {
+    leads: { items: [], loading: false, error: null, selected: null },
+    properties: { items: [], loading: false, error: null, selected: null },
+    clients: { items: [], loading: false, error: null, selected: null },
+    agents: { items: [], loading: false, error: null, selected: null },
+    commissions: { items: [], loading: false, error: null, selected: null },
+    activities: { items: [], loading: false, error: null },
+    overview: null,
+    lastUpdated: null,
+  },
+  action: any
+) => {
   if (action.type === 'SET_HOT_LEADS') {
     return { ...state, leads: { ...state.leads, items: action.payload } };
   }
@@ -50,18 +69,21 @@ const crmDataReducer = (state: any = {
   return state;
 };
 
-// Minimal nadia reducer  
-const nadiaReducer = (state: any = {
-  queue: [],
-  connectionStatus: 'disconnected',
-  conversations: [],
-  stats: null,
-  isLoading: false,
-  error: null,
-  selectedConversation: null,
-  settings: {},
-  syncStatus: { lastSync: null, inProgress: false, error: null },
-}, action: any) => {
+// Minimal nadia reducer
+const nadiaReducer = (
+  state: any = {
+    queue: [],
+    connectionStatus: 'disconnected',
+    conversations: [],
+    stats: null,
+    isLoading: false,
+    error: null,
+    selectedConversation: null,
+    settings: {},
+    syncStatus: { lastSync: null, inProgress: false, error: null },
+  },
+  action: any
+) => {
   if (action.type === 'SET_QUEUE') return { ...state, queue: action.payload };
   return state;
 };
@@ -86,6 +108,7 @@ vi.mock('lucide-react', async () => {
     Lock: stub('Lock'),
     Code: stub('Code'),
     Scale: stub('Scale'),
+    KeySquare: stub('KeySquare'),
     Bot: stub('Bot'),
     Shield: stub('Shield'),
     ChevronLeft: stub('ChevronLeft'),
@@ -97,12 +120,38 @@ vi.mock('lucide-react', async () => {
 // Mock assistantRegistry
 vi.mock('../../../config/assistantRegistry', () => ({
   getAllAssistants: () => [
-    { id: 'hazel', name: 'Hazel', title: 'CRM Assistant', department: 'operations', color: '#3B82F6', avatar: 'H' },
-    { id: 'clara', name: 'Clara', title: 'Communications', department: 'communications', color: '#8B5CF6', avatar: 'C' },
+    {
+      id: 'hazel',
+      name: 'Hazel',
+      title: 'CRM Assistant',
+      department: 'operations',
+      color: '#3B82F6',
+      avatar: 'H',
+    },
+    {
+      id: 'clara',
+      name: 'Clara',
+      title: 'Communications',
+      department: 'communications',
+      color: '#8B5CF6',
+      avatar: 'C',
+    },
   ],
   DEPARTMENTS: {
-    operations: { id: 'operations', label: 'Operations', color: '#3B82F6', gradient: '', icon: 'building' },
-    communications: { id: 'communications', label: 'Communications', color: '#8B5CF6', gradient: '', icon: 'message' },
+    operations: {
+      id: 'operations',
+      label: 'Operations',
+      color: '#3B82F6',
+      gradient: '',
+      icon: 'building',
+    },
+    communications: {
+      id: 'communications',
+      label: 'Communications',
+      color: '#8B5CF6',
+      gradient: '',
+      icon: 'message',
+    },
   },
 }));
 
@@ -115,7 +164,11 @@ vi.mock('./styles', () => {
       for (const [k, v] of Object.entries(rest)) {
         if (!k.startsWith('$')) filtered[k] = v;
       }
-      return React.createElement(tag, { 'data-testid': name, onClick, title, ...filtered }, children);
+      return React.createElement(
+        tag,
+        { 'data-testid': name, onClick, title, ...filtered },
+        children
+      );
     };
     C.displayName = name;
     return C;
@@ -155,9 +208,19 @@ import SidebarContainer from './SidebarContainer';
 
 // ── Helpers ──────────────────────────────────────────────────────
 
-function makeStore(overrides: Record<string, unknown> = {}, role = 'user', crmOverrides: any = {}, nadiaOverrides: any = {}) {
+function makeStore(
+  overrides: Record<string, unknown> = {},
+  role = 'user',
+  crmOverrides: any = {},
+  nadiaOverrides: any = {}
+) {
   return configureStore({
-    reducer: { sidebar: sidebarReducer, auth: authReducer, crmData: crmDataReducer, nadia: nadiaReducer },
+    reducer: {
+      sidebar: sidebarReducer,
+      auth: authReducer,
+      crmData: crmDataReducer,
+      nadia: nadiaReducer,
+    },
     preloadedState: {
       sidebar: {
         flyoutOpen: false,
@@ -175,7 +238,13 @@ function makeStore(overrides: Record<string, unknown> = {}, role = 'user', crmOv
       auth: { user: { role } } as any,
       crmData: {
         leads: { items: [], loading: false, error: null, selected: null, ...crmOverrides.leads },
-        properties: { items: [], loading: false, error: null, selected: null, ...crmOverrides.properties },
+        properties: {
+          items: [],
+          loading: false,
+          error: null,
+          selected: null,
+          ...crmOverrides.properties,
+        },
         clients: { items: [], loading: false, error: null, selected: null },
         agents: { items: [], loading: false, error: null, selected: null },
         commissions: { items: [], loading: false, error: null, selected: null },
@@ -198,12 +267,17 @@ function makeStore(overrides: Record<string, unknown> = {}, role = 'user', crmOv
   });
 }
 
-function renderSidebar(overrides: Record<string, unknown> = {}, role = 'user', crmOverrides: any = {}, nadiaOverrides: any = {}) {
+function renderSidebar(
+  overrides: Record<string, unknown> = {},
+  role = 'user',
+  crmOverrides: any = {},
+  nadiaOverrides: any = {}
+) {
   const store = makeStore(overrides, role, crmOverrides, nadiaOverrides);
   const utils = render(
     <Provider store={store}>
       <SidebarContainer />
-    </Provider>,
+    </Provider>
   );
   return { store, ...utils };
 }
@@ -342,7 +416,7 @@ describe('SidebarContainer', () => {
       // localStorage should be updated
       expect(mockLocalStorage.setItem).toHaveBeenCalledWith(
         'wc-sidebar-collapse',
-        expect.stringContaining('"company":true'),
+        expect.stringContaining('"company":true')
       );
     });
 
@@ -352,7 +426,7 @@ describe('SidebarContainer', () => {
       fireEvent.click(header);
       expect(mockLocalStorage.setItem).toHaveBeenCalledWith(
         'wc-sidebar-collapse',
-        expect.stringContaining('"ai":true'),
+        expect.stringContaining('"ai":true')
       );
     });
 
@@ -374,11 +448,13 @@ describe('SidebarContainer', () => {
 
     it('shows badge on Sales when hot leads exist', () => {
       renderSidebar({}, 'user', {
-        leads: { items: [
-          { id: '1', name: 'A', status: 'hot' },
-          { id: '2', name: 'B', status: 'hot' },
-          { id: '3', name: 'C', status: 'warm' },
-        ] },
+        leads: {
+          items: [
+            { id: '1', name: 'A', status: 'hot' },
+            { id: '2', name: 'B', status: 'hot' },
+            { id: '3', name: 'C', status: 'warm' },
+          ],
+        },
       });
       const badges = screen.getAllByTestId('RailBadge');
       expect(badges.length).toBeGreaterThanOrEqual(1);
@@ -388,11 +464,13 @@ describe('SidebarContainer', () => {
 
     it('shows badge on Operations when properties exist', () => {
       renderSidebar({}, 'user', {
-        properties: { items: [
-          { id: '1', title: 'P1', status: 'available' },
-          { id: '2', title: 'P2', status: 'available' },
-          { id: '3', title: 'P3', status: 'sold' },
-        ] },
+        properties: {
+          items: [
+            { id: '1', title: 'P1', status: 'available' },
+            { id: '2', title: 'P2', status: 'available' },
+            { id: '3', title: 'P3', status: 'sold' },
+          ],
+        },
       });
       const badges = screen.getAllByTestId('RailBadge');
       expect(badges.length).toBeGreaterThanOrEqual(1);
@@ -401,15 +479,20 @@ describe('SidebarContainer', () => {
     });
 
     it('shows badge on Communications when queued messages exist', () => {
-      renderSidebar({}, 'user', {}, {
-        queue: [
-          { id: '1', contact: 'A', message: 'hi' },
-          { id: '2', contact: 'B', message: 'hello' },
-          { id: '3', contact: 'C', message: 'hey' },
-          { id: '4', contact: 'D', message: 'yo' },
-          { id: '5', contact: 'E', message: 'sup' },
-        ],
-      });
+      renderSidebar(
+        {},
+        'user',
+        {},
+        {
+          queue: [
+            { id: '1', contact: 'A', message: 'hi' },
+            { id: '2', contact: 'B', message: 'hello' },
+            { id: '3', contact: 'C', message: 'hey' },
+            { id: '4', contact: 'D', message: 'yo' },
+            { id: '5', contact: 'E', message: 'sup' },
+          ],
+        }
+      );
       const badges = screen.getAllByTestId('RailBadge');
       expect(badges.length).toBeGreaterThanOrEqual(1);
       // 5 queued
@@ -418,7 +501,9 @@ describe('SidebarContainer', () => {
 
     it('shows 99+ for counts over 99', () => {
       const bigLeads = Array.from({ length: 120 }, (_, i) => ({
-        id: String(i), name: `Lead ${i}`, status: 'hot',
+        id: String(i),
+        name: `Lead ${i}`,
+        status: 'hot',
       }));
       renderSidebar({}, 'user', { leads: { items: bigLeads } });
       expect(screen.getByText('99+')).toBeInTheDocument();

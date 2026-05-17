@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /**
  * API Service Integration Tests
  * @description Tests HttpClient service with mocked API calls
@@ -6,27 +7,8 @@
  */
 
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import axios, { AxiosError } from 'axios';
 
-/**
- * Mock API client setup
- * In production, you'd use msw or fetchMock
- */
-const mockAxios = axios as any;
-
-// Mock the axios module
-vi.mock('axios', () => ({
-  default: {
-    create: vi.fn(() => ({
-      get: vi.fn(),
-      post: vi.fn(),
-      put: vi.fn(),
-      patch: vi.fn(),
-      delete: vi.fn(),
-      request: vi.fn(),
-    })),
-  },
-}));
+let mockInstance: any;
 
 /**
  * Mock HttpClient class
@@ -38,7 +20,7 @@ class HttpClient {
 
   constructor(baseURL: string = 'http://localhost:5000/api') {
     this.baseURL = baseURL;
-    this.axiosInstance = axios.create({ baseURL });
+    this.axiosInstance = mockInstance;
   }
 
   async get<T>(url: string, config?: any): Promise<T> {
@@ -86,12 +68,7 @@ class ClientApiService {
     return this.httpClient.get(`/clients/${id}`);
   }
 
-  async createClient(data: {
-    name: string;
-    email: string;
-    phone?: string;
-    company?: string;
-  }) {
+  async createClient(data: { name: string; email: string; phone?: string; company?: string }) {
     // Validate required fields
     if (!data.name?.trim()) {
       throw new Error('Client name is required');
@@ -126,7 +103,6 @@ class ClientApiService {
 describe('ClientApiService Integration Tests', () => {
   let httpClient: HttpClient;
   let clientApi: ClientApiService;
-  let mockInstance: any;
 
   beforeEach(() => {
     // Reset all mocks
@@ -140,8 +116,6 @@ describe('ClientApiService Integration Tests', () => {
       patch: vi.fn(),
       delete: vi.fn(),
     };
-
-    (axios.create as any).mockReturnValue(mockInstance);
 
     // Initialize services
     httpClient = new HttpClient();
@@ -325,9 +299,9 @@ describe('ClientApiService Integration Tests', () => {
       mockInstance.put.mockRejectedValueOnce(apiError);
 
       // Act & Assert
-      await expect(
-        clientApi.updateClient(clientId, updatePayload)
-      ).rejects.toThrow('Client not found');
+      await expect(clientApi.updateClient(clientId, updatePayload)).rejects.toThrow(
+        'Client not found'
+      );
     });
   });
 

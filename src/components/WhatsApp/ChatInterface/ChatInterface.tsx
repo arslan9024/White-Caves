@@ -1,410 +1,240 @@
 /**
  * ChatInterface Component
  *
- * Main WhatsApp chat interface with message list and composer
- * Displays conversations and handles real-time messaging
+ * Main WhatsApp chat interface with message list and composer.
+ * Supports a prop-driven interface for easy testing.
  */
 
 import React, { useState, useEffect, useRef } from 'react';
-import styled from 'styled-components';
-import { useWhatsAppConversations } from '../../../hooks/whatsapp';
 
-const Container = styled.div`
-  display: flex;
-  flex-direction: column;
-  height: 100vh;
-  background: #fff;
-`;
+const MONTH_SHORT = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const MAX_VISIBLE = 50;
 
-const Header = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 16px 20px;
-  border-bottom: 1px solid #e0e0e0;
-  background: #f5f5f5;
-`;
+const getViewportClass = () => {
+  const w = typeof window !== 'undefined' ? window.innerWidth : 1024;
+  if (w <= 480) return 'mobile';
+  if (w <= 768) return 'tablet';
+  return 'desktop';
+};
 
-const ContactInfo = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 12px;
-`;
-
-const Avatar = styled.div<{ bg?: string }>`
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  background: ${props => props.bg || '#25d366'};
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: white;
-  font-weight: 600;
-  font-size: 16px;
-`;
-
-const ContactDetails = styled.div`
-  display: flex;
-  flex-direction: column;
-`;
-
-const ContactName = styled.span`
-  font-weight: 600;
-  font-size: 14px;
-  color: #1a1a1a;
-`;
-
-const OnlineStatus = styled.span`
-  font-size: 12px;
-  color: #999;
-`;
-
-const HeaderActions = styled.div`
-  display: flex;
-  gap: 8px;
-`;
-
-const IconButton = styled.button`
-  width: 36px;
-  height: 36px;
-  border: none;
-  border-radius: 50%;
-  background: transparent;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #666;
-  font-size: 18px;
-  transition: all 0.2s ease;
-
-  &:hover {
-    background: #e0e0e0;
-  }
-`;
-
-const MessagesList = styled.div`
-  flex: 1;
-  overflow-y: auto;
-  padding: 16px 20px;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-
-  &::-webkit-scrollbar {
-    width: 6px;
-  }
-
-  &::-webkit-scrollbar-track {
-    background: transparent;
-  }
-
-  &::-webkit-scrollbar-thumb {
-    background: #ccc;
-    border-radius: 3px;
-
-    &:hover {
-      background: #999;
-    }
-  }
-`;
-
-const MessageGroup = styled.div<{ isOwn: boolean }>`
-  display: flex;
-  justify-content: ${props => (props.isOwn ? 'flex-end' : 'flex-start')};
-  margin-bottom: 8px;
-`;
-
-const MessageBubble = styled.div<{ isOwn: boolean }>`
-  max-width: 60%;
-  padding: 8px 12px;
-  border-radius: 8px;
-  word-wrap: break-word;
-  background: ${props => (props.isOwn ? '#25d366' : '#e5e5ea')};
-  color: ${props => (props.isOwn ? 'white' : '#000')};
-  font-size: 14px;
-  line-height: 1.4;
-`;
-
-const MessageTime = styled.span<{ isOwn: boolean }>`
-  font-size: 12px;
-  color: #999;
-  margin-top: 4px;
-  text-align: ${props => (props.isOwn ? 'right' : 'left')};
-`;
-
-const EmptyState = styled.div`
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  color: #999;
-  text-align: center;
-`;
-
-const EmptyIcon = styled.div`
-  font-size: 48px;
-  margin-bottom: 16px;
-`;
-
-const EmptyText = styled.p`
-  font-size: 14px;
-  margin: 0;
-`;
-
-const MessageComposer = styled.form`
-  display: flex;
-  gap: 8px;
-  padding: 12px 20px;
-  border-top: 1px solid #e0e0e0;
-  background: #f5f5f5;
-`;
-
-const MessageInput = styled.input`
-  flex: 1;
-  padding: 10px 12px;
-  border: 1px solid #ddd;
-  border-radius: 20px;
-  font-size: 14px;
-  outline: none;
-
-  &:focus {
-    border-color: #25d366;
-  }
-`;
-
-const SendButton = styled.button`
-  width: 40px;
-  height: 40px;
-  border: none;
-  border-radius: 50%;
-  background: #25d366;
-  color: white;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 18px;
-  transition: all 0.2s ease;
-
-  &:hover {
-    background: #20ba5a;
-  }
-
-  &:disabled {
-    background: #ccc;
-    cursor: not-allowed;
-  }
-`;
-
-const LoadingContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  height: 100%;
-  color: #999;
-`;
-
-const LoadingSpinner = styled.div`
-  border: 3px solid #f3f3f3;
-  border-top: 3px solid #25d366;
-  border-radius: 50%;
-  width: 40px;
-  height: 40px;
-  animation: spin 1s linear infinite;
-  margin-bottom: 16px;
-
-  @keyframes spin {
-    0% {
-      transform: rotate(0deg);
-    }
-    100% {
-      transform: rotate(360deg);
-    }
-  }
-`;
-
-const ErrorAlert = styled.div`
-  background: #f8d7da;
-  color: #721c24;
-  padding: 12px 20px;
-  border-bottom: 1px solid #f5c6cb;
-`;
+export interface ChatMessage {
+  id: string;
+  content: string;
+  fromMe: boolean;
+  timestamp: Date | string;
+  status?: string;
+  contentType?: string;
+}
 
 interface ChatInterfaceProps {
-  accountId: string;
   conversationId?: string;
-  recipientNumber?: string;
-  recipientName?: string;
-  onBack?: () => void;
+  contactName: string;
+  contactNumber: string;
+  messages: ChatMessage[];
+  onSendMessage: (content: string) => void | Promise<void>;
+  onSendMedia?: (file: File) => void | Promise<void>;
+  isLoading?: boolean;
+  error?: string | null;
 }
 
 export const ChatInterface: React.FC<ChatInterfaceProps> = ({
-  accountId,
-  conversationId,
-  recipientNumber,
-  recipientName,
-  onBack,
+  contactName,
+  contactNumber,
+  messages,
+  onSendMessage,
+  onSendMedia,
+  isLoading = false,
+  error = null,
 }) => {
-  const { messages, isLoading, error, loadMessages, sendMessage, clearError } =
-    useWhatsAppConversations();
-
   const [messageText, setMessageText] = useState('');
-  const [isSending, setIsSending] = useState(false);
+  const [sendError, setSendError] = useState<string | null>(null);
+  const [pendingText, setPendingText] = useState<string | null>(null);
+  const [viewportClass] = useState(getViewportClass);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const textInputRef = useRef<HTMLInputElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  // Load messages on mount or when conversation changes
   useEffect(() => {
-    if (accountId && recipientNumber) {
-      loadMessages(accountId, recipientNumber, 50);
+    if (messagesEndRef.current && typeof messagesEndRef.current.scrollIntoView === 'function') {
+      messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
     }
-  }, [accountId, recipientNumber, conversationId, loadMessages]);
-
-  // Scroll to bottom when messages change
-  useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
-  const handleSendMessage = async (e: React.FormEvent) => {
-    e.preventDefault();
+  useEffect(() => {
+    textInputRef.current?.focus();
+  }, []);
 
-    if (!messageText.trim() || !accountId || !recipientNumber) {
-      return;
-    }
-
-    setIsSending(true);
+  const doSend = async (text: string) => {
+    setSendError(null);
+    setPendingText(null);
     try {
-      await sendMessage(accountId, recipientNumber, messageText.trim());
-      setMessageText('');
-    } catch {
-      // Error handled by hook
-    } finally {
-      setIsSending(false);
+      await onSendMessage(text);
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Failed to send message';
+      setSendError(msg);
+      setPendingText(text);
     }
   };
 
-  if (!accountId || !recipientNumber) {
-    return (
-      <Container>
-        <EmptyState>
-          <EmptyIcon>💬</EmptyIcon>
-          <EmptyText>Select a conversation to start messaging</EmptyText>
-        </EmptyState>
-      </Container>
-    );
-  }
+  const handleSend = async () => {
+    const text = messageText.trim();
+    if (!text || isLoading) return;
+    setMessageText('');
+    await doSend(text);
+  };
 
-  if (isLoading && messages.length === 0) {
-    return (
-      <Container>
-        <Header>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-            {onBack && <IconButton onClick={onBack}>←</IconButton>}
-            <ContactInfo>
-              <Avatar>{recipientName?.[0] || '?'}</Avatar>
-              <ContactDetails>
-                <ContactName>{recipientName || recipientNumber}</ContactName>
-                <OnlineStatus>Loading...</OnlineStatus>
-              </ContactDetails>
-            </ContactInfo>
-          </div>
-          <HeaderActions>
-            <IconButton>📞</IconButton>
-            <IconButton>📹</IconButton>
-            <IconButton>⋯</IconButton>
-          </HeaderActions>
-        </Header>
-        <LoadingContainer>
-          <LoadingSpinner />
-          <p>Loading messages...</p>
-        </LoadingContainer>
-      </Container>
-    );
-  }
+  const handleRetry = async () => {
+    if (pendingText) await doSend(pendingText);
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      handleSend();
+    }
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file && onSendMedia) onSendMedia(file);
+  };
+
+  // Virtualize: render only last MAX_VISIBLE messages
+  const visibleMessages = messages.slice(-MAX_VISIBLE);
 
   return (
-    <Container>
-      <Header>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-          {onBack && <IconButton onClick={onBack}>←</IconButton>}
-          <ContactInfo>
-            <Avatar>{recipientName?.[0] || '?'}</Avatar>
-            <ContactDetails>
-              <ContactName>{recipientName || recipientNumber}</ContactName>
-              <OnlineStatus>Active now</OnlineStatus>
-            </ContactDetails>
-          </ContactInfo>
-        </div>
-        <HeaderActions>
-          <IconButton>📞</IconButton>
-          <IconButton>📹</IconButton>
-          <IconButton>⋯</IconButton>
-        </HeaderActions>
-      </Header>
+    <div
+      data-testid="chat-interface"
+      className={`chat-interface ${viewportClass}`}
+      style={{ display: 'flex', flexDirection: 'column', height: '100%' }}
+    >
+      {/* Screen-reader live region */}
+      <div role="status" aria-live="polite" style={{ position: 'absolute', left: '-9999px' }} />
 
-      {error && (
-        <ErrorAlert>
-          {error}
-          <button
-            onClick={clearError}
-            style={{
-              marginLeft: '12px',
-              background: 'none',
-              border: 'none',
-              cursor: 'pointer',
-              color: 'inherit',
-              fontSize: '18px',
-            }}
-          >
-            ✕
-          </button>
-        </ErrorAlert>
+      {/* Header */}
+      <div className="chat-header" style={{ padding: '12px 16px', borderBottom: '1px solid #e0e0e0', background: '#f5f5f5' }}>
+        <div className="contact-name" style={{ fontWeight: 600 }}>{contactName}</div>
+        <div className="contact-number" style={{ fontSize: 12, color: '#666' }}>{contactNumber}</div>
+      </div>
+
+      {/* Loading indicator */}
+      {isLoading && (
+        <div data-testid="chat-loading" style={{ padding: 16, textAlign: 'center' }}>
+          Loading messages...
+        </div>
       )}
 
-      <MessagesList>
-        {messages.length === 0 ? (
-          <EmptyState>
-            <EmptyIcon>👋</EmptyIcon>
-            <EmptyText>No messages yet. Start the conversation!</EmptyText>
-          </EmptyState>
-        ) : (
-          messages.map((message, index) => (
-            <div key={message.messageId || index}>
-              <MessageGroup isOwn={message.direction === 'outgoing'}>
-                <div>
-                  <MessageBubble isOwn={message.direction === 'outgoing'}>
-                    {message.body}
-                  </MessageBubble>
-                  <MessageTime isOwn={message.direction === 'outgoing'}>
-                    {new Date(message.timestamp).toLocaleTimeString([], {
-                      hour: '2-digit',
-                      minute: '2-digit',
-                    })}
-                  </MessageTime>
-                </div>
-              </MessageGroup>
-            </div>
-          ))
-        )}
-        <div ref={messagesEndRef} />
-      </MessagesList>
+      {/* External error */}
+      {error && (
+        <div role="alert" style={{ padding: '8px 16px', background: '#f8d7da', color: '#721c24' }}>
+          {error}
+        </div>
+      )}
 
-      <MessageComposer onSubmit={handleSendMessage}>
-        <MessageInput
-          type="text"
-          placeholder="Type a message..."
-          value={messageText}
-          onChange={e => setMessageText(e.target.value)}
-          disabled={isSending}
-          autoFocus
+      {/* Send error + retry */}
+      {sendError && (
+        <div role="alert" style={{ padding: '8px 16px', background: '#fff3cd', color: '#856404', display: 'flex', gap: 8, alignItems: 'center' }}>
+          <span>{sendError}</span>
+          <button type="button" aria-label="Retry" onClick={handleRetry} style={{ background: 'none', border: '1px solid currentColor', borderRadius: 4, padding: '2px 8px', cursor: 'pointer' }}>
+            Retry
+          </button>
+        </div>
+      )}
+
+      {/* Messages */}
+      <div className="messages-list" style={{ flex: 1, overflowY: 'auto', padding: '16px' }}>
+        {visibleMessages.map((msg, index) => {
+          const d = new Date(msg.timestamp);
+          const dateStr = `${MONTH_SHORT[d.getMonth()]} ${d.getDate()}`;
+          const timeStr = d.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+          const prev = index > 0 ? new Date(visibleMessages[index - 1].timestamp) : null;
+          const showDateSeparator =
+            !prev ||
+            prev.getFullYear() !== d.getFullYear() ||
+            prev.getMonth() !== d.getMonth() ||
+            prev.getDate() !== d.getDate();
+          return (
+            <React.Fragment key={msg.id}>
+              {showDateSeparator && (
+                <div
+                  style={{
+                    fontSize: 11,
+                    color: '#999',
+                    textAlign: 'center',
+                    margin: '4px 0 8px',
+                  }}
+                >
+                  {dateStr}
+                </div>
+              )}
+              <div
+                data-testid={`message-${msg.id}`}
+                className={`message ${msg.fromMe ? 'sent' : 'received'}`}
+                style={{ display: 'flex', justifyContent: msg.fromMe ? 'flex-end' : 'flex-start', marginBottom: 8 }}
+              >
+                <div>
+                  <div style={{ background: msg.fromMe ? '#25d366' : '#e5e5ea', padding: '8px 12px', borderRadius: 8 }}>
+                    {msg.content}
+                  </div>
+                  <div style={{ fontSize: 11, color: '#999', marginTop: 2 }}>
+                    {timeStr}
+                  </div>
+                  <div data-testid="message-status" style={{ fontSize: 11, color: '#aaa' }}>
+                    {msg.status || 'sent'}
+                  </div>
+                </div>
+              </div>
+            </React.Fragment>
+          );
+        })}
+        <div ref={messagesEndRef} />
+      </div>
+
+      {/* Composer */}
+      <form
+        onSubmit={(e) => { e.preventDefault(); handleSend(); }}
+        style={{ display: 'flex', gap: 8, padding: '12px 16px', borderTop: '1px solid #e0e0e0', background: '#f5f5f5', alignItems: 'center' }}
+      >
+        {/* Hidden file input */}
+        <input
+          ref={fileInputRef}
+          type="file"
+          style={{ display: 'none' }}
+          onChange={handleFileChange}
         />
-        <SendButton type="submit" disabled={!messageText.trim() || isSending}>
-          {isSending ? '...' : '➤'}
-        </SendButton>
-      </MessageComposer>
-    </Container>
+        {/* Attach button */}
+        <button
+          type="button"
+          aria-label="Attach media"
+          tabIndex={-1}
+          onClick={() => fileInputRef.current?.click()}
+          style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 20, padding: 4 }}
+        >
+          📎
+        </button>
+
+        <input
+          ref={textInputRef}
+          type="text"
+          placeholder="Type a message"
+          aria-label="Type a message"
+          value={messageText}
+          onChange={(e) => setMessageText(e.target.value)}
+          onKeyDown={handleKeyDown}
+          disabled={isLoading}
+          autoFocus
+          style={{ flex: 1, padding: '8px 12px', borderRadius: 20, border: '1px solid #ddd', fontSize: 14, outline: 'none' }}
+        />
+
+        <button
+          type="submit"
+          aria-label="Send"
+          disabled={!messageText.trim() || isLoading}
+          style={{ width: 40, height: 40, borderRadius: '50%', border: 'none', background: '#25d366', color: 'white', cursor: 'pointer', fontSize: 18 }}
+        >
+          ➤
+        </button>
+      </form>
+    </div>
   );
 };

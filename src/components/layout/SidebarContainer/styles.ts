@@ -50,7 +50,7 @@ export const RailWrapper = styled.nav`
   overflow-y: auto;
   overflow-x: hidden;
   flex-shrink: 0;
-  box-shadow: ${shadows.sidebar};
+  box-shadow: ${shadows.elevated};
 
   /* Hide scrollbar */
   &::-webkit-scrollbar {
@@ -107,7 +107,7 @@ export const RailIconButton = styled.button<{
         ? p.$color
         : '${colors.text.tertiary}'};
   position: relative;
-  transition: ${transitions.active};
+  transition: ${transitions.standard};
 
   ${reducedMotion} {
     transition: none;
@@ -171,9 +171,9 @@ export const RailTooltip = styled.span`
   opacity: 0;
   z-index: 600;
   transition:
-    opacity ${transitions.durations.shortest} ${transitions.easing.easeOut},
-    transform ${transitions.durations.shortest} ${transitions.easing.easeOut};
-  box-shadow: ${shadows.dropdown};
+    opacity ${transitions.durations.shorter} ${transitions.easing.out},
+    transform ${transitions.durations.shorter} ${transitions.easing.out};
+  box-shadow: ${shadows.md};
 
   &::before {
     content: '';
@@ -227,7 +227,7 @@ export const FlyoutPanel = styled.div<{ $open?: boolean; $color?: string }>`
   transition: width ${transitions.durations.short} ${transitions.easing.easeInOut};
   display: flex;
   flex-direction: column;
-  box-shadow: ${p => (p.$open ? shadows.luxuryCard : 'none')};
+  box-shadow: ${p => (p.$open ? shadows.elevated : 'none')};
 
   ${reducedMotion} {
     transition: none;
@@ -246,7 +246,7 @@ export const FlyoutHeader = styled.div`
   justify-content: space-between;
   padding: ${spacing.md} ${spacing.md} ${spacing.md};
   border-bottom: 1px solid ${colors.border};
-  animation: ${slideIn} ${transitions.durations.shorter} ${transitions.easing.easeOut};
+  animation: ${slideIn} ${transitions.durations.shorter} ${transitions.easing.out};
 
   ${reducedMotion} {
     animation: none;
@@ -276,7 +276,7 @@ export const FlyoutClose = styled.button`
   border-radius: 6px;
   cursor: pointer;
   color: ${colors.text.tertiary};
-  transition: ${transitions.active};
+  transition: ${transitions.standard};
 
   &:hover {
     background: ${colors.background.tertiary};
@@ -298,7 +298,7 @@ export const FlyoutNav = styled.div`
   display: flex;
   flex-direction: column;
   gap: 2px;
-  animation: ${slideIn} ${transitions.durations.short} ${transitions.easing.easeOut};
+  animation: ${slideIn} ${transitions.durations.short} ${transitions.easing.out};
 
   ${reducedMotion} {
     animation: none;
@@ -322,7 +322,7 @@ export const FlyoutItem = styled.button<{ $active?: boolean; $color?: string }>`
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  transition: ${transitions.active};
+  transition: ${transitions.standard};
 
   &:hover {
     background: ${p => (p.$active ? `${p.$color}18` : colors.background.tertiary)};
@@ -368,12 +368,12 @@ export const AISearchInput = styled.div`
   background: ${colors.background.tertiary};
   border-radius: ${radius.lg};
   border: 1px solid transparent;
-  transition: ${transitions.active};
+  transition: ${transitions.standard};
 
   &:focus-within {
     border-color: ${colors.primary};
     background: ${colors.background.secondary};
-    box-shadow: ${shadows.luxuryFocus};
+    box-shadow: ${shadows.focus};
   }
 
   input {
@@ -418,7 +418,7 @@ export const AIGroupHeader = styled.button`
   color: ${colors.text.tertiary};
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  transition: ${transitions.active};
+  transition: ${transitions.standard};
 
   &:hover {
     color: ${colors.text.secondary};
@@ -441,7 +441,7 @@ export const AIAssistantBtn = styled.button<{ $selected?: boolean }>`
   background: ${p => (p.$selected ? 'rgba(227, 30, 36, 0.10)' : 'transparent')};
   border: none;
   cursor: pointer;
-  transition: ${transitions.active};
+  transition: ${transitions.standard};
   text-align: left;
 
   &:hover {
@@ -553,7 +553,7 @@ export const RailGroupHeader = styled.button<{ $collapsed?: boolean }>`
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  transition: ${transitions.active};
+  transition: ${transitions.standard};
   gap: 2px;
 
   svg {
@@ -584,7 +584,7 @@ export const RailGroupContent = styled.div<{ $collapsed?: boolean }>`
   opacity: ${p => (p.$collapsed ? '0' : '1')};
   transition:
     max-height ${transitions.durations.standard} ${transitions.easing.easeInOut},
-    opacity ${transitions.durations.shorter} ${transitions.easing.easeOut};
+    opacity ${transitions.durations.shorter} ${transitions.easing.out};
 
   ${reducedMotion} {
     transition: none;

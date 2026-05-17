@@ -2,6 +2,41 @@
 import styled, { css } from 'styled-components';
 import { MEDIA_QUERIES, SPACING, COLORS, TYPOGRAPHY } from '../../../../styles/theme';
 
+const BORDER_VALUE = COLORS.border as unknown;
+const BORDER_COLORS = {
+  light:
+    typeof BORDER_VALUE === 'string'
+      ? BORDER_VALUE
+      : ((BORDER_VALUE as { light?: string }).light ?? COLORS.divider),
+  medium:
+    typeof BORDER_VALUE === 'string'
+      ? COLORS.divider
+      : ((BORDER_VALUE as { medium?: string }).medium ?? COLORS.divider),
+  dark:
+    typeof BORDER_VALUE === 'string'
+      ? COLORS.borderDark
+      : ((BORDER_VALUE as { dark?: string }).dark ?? COLORS.borderDark),
+};
+
+const INPUT_COLORS = {
+  background: COLORS.background.primary,
+  backgroundFocus: COLORS.background.secondary,
+};
+
+const HEADING_SM = {
+  fontSize: TYPOGRAPHY.h4.fontSize,
+  fontWeight: TYPOGRAPHY.h4.fontWeight,
+  lineHeight: TYPOGRAPHY.h4.lineHeight,
+};
+
+const SIDEBAR_COLORS = {
+  background: COLORS.sidebarBg,
+  headerBackground: COLORS.background.secondary,
+  hoverBackground: COLORS.hoverBg,
+  activeBackground: COLORS.activeBg,
+  dragBackground: COLORS.hover,
+};
+
 // ============================================================================
 // SIDEBAR CONTAINER
 // ============================================================================
@@ -14,8 +49,8 @@ export const SidebarContainer = styled.div<{
   display: flex;
   flex-direction: column;
   height: 100%;
-  background: ${COLORS.sidebar.background};
-  border-right: 1px solid ${COLORS.border.light};
+  background: ${SIDEBAR_COLORS.background};
+  border-right: 1px solid ${BORDER_COLORS.light};
   transition: all 0.3s ease;
   overflow: hidden;
   z-index: 100;
@@ -38,7 +73,7 @@ export const SidebarContainer = styled.div<{
     props.position === 'right' &&
     css`
       border-right: none;
-      border-left: 1px solid ${COLORS.border.light};
+      border-left: 1px solid ${BORDER_COLORS.light};
     `}
 
   ${props =>
@@ -76,15 +111,15 @@ export const SidebarHeader = styled.div`
   align-items: center;
   justify-content: space-between;
   padding: ${SPACING.md};
-  border-bottom: 1px solid ${COLORS.border.light};
-  background: ${COLORS.sidebar.headerBackground};
+  border-bottom: 1px solid ${BORDER_COLORS.light};
+  background: ${SIDEBAR_COLORS.headerBackground};
   flex-shrink: 0;
 `;
 
 export const SidebarTitle = styled.h2`
-  font-size: ${TYPOGRAPHY.heading.sm.fontSize};
-  font-weight: ${TYPOGRAPHY.heading.sm.fontWeight};
-  line-height: ${TYPOGRAPHY.heading.sm.lineHeight};
+  font-size: ${HEADING_SM.fontSize};
+  font-weight: ${HEADING_SM.fontWeight};
+  line-height: ${HEADING_SM.lineHeight};
   color: ${COLORS.text.primary};
   margin: 0;
   display: flex;
@@ -103,16 +138,16 @@ export const SidebarTitle = styled.h2`
 
 export const SidebarSearchContainer = styled.div`
   padding: ${SPACING.md};
-  border-bottom: 1px solid ${COLORS.border.light};
+  border-bottom: 1px solid ${BORDER_COLORS.light};
   flex-shrink: 0;
 `;
 
 export const SidebarSearchInput = styled.input`
   width: 100%;
   padding: ${SPACING.sm} ${SPACING.md};
-  border: 1px solid ${COLORS.border.light};
+  border: 1px solid ${BORDER_COLORS.light};
   border-radius: 8px;
-  background: ${COLORS.input.background};
+  background: ${INPUT_COLORS.background};
   color: ${COLORS.text.primary};
   font-size: ${TYPOGRAPHY.body.fontSize};
 
@@ -123,7 +158,7 @@ export const SidebarSearchInput = styled.input`
   &:focus {
     outline: none;
     border-color: ${COLORS.primary};
-    background: ${COLORS.input.backgroundFocus};
+    background: ${INPUT_COLORS.backgroundFocus};
   }
 
   transition: all 0.2s ease;
@@ -146,15 +181,15 @@ export const SidebarContent = styled.div<{ hasHeader?: boolean }>`
   }
 
   &::-webkit-scrollbar-track {
-    background: ${COLORS.sidebar.background};
+    background: ${SIDEBAR_COLORS.background};
   }
 
   &::-webkit-scrollbar-thumb {
-    background: ${COLORS.border.medium};
+    background: ${BORDER_COLORS.medium};
     border-radius: 3px;
 
     &:hover {
-      background: ${COLORS.border.dark};
+      background: ${BORDER_COLORS.dark};
     }
   }
 `;
@@ -167,7 +202,7 @@ export const SidebarSection = styled.div`
   flex: 0 0 auto;
 
   &:not(:last-child) {
-    border-top: 1px solid ${COLORS.border.light};
+    border-top: 1px solid ${BORDER_COLORS.light};
     margin-top: ${SPACING.md};
     padding-top: ${SPACING.md};
   }
@@ -189,14 +224,14 @@ export const SidebarSectionHeader = styled.button<{
   transition: all 0.2s ease;
 
   &:hover {
-    background: ${COLORS.sidebar.hoverBackground};
+    background: ${SIDEBAR_COLORS.hoverBackground};
     color: ${COLORS.text.primary};
   }
 
   ${props =>
     props.isExpanded &&
     css`
-      background: ${COLORS.sidebar.activeBackground};
+      background: ${SIDEBAR_COLORS.activeBackground};
     `}
 `;
 
@@ -224,25 +259,25 @@ export const SidebarItemWrapper = styled.div<{
 
   background-color: ${props => {
     if (props.$isActive) {
-      return COLORS.sidebar.activeBackground;
+      return SIDEBAR_COLORS.activeBackground;
     }
     if (props.$isDragging) {
-      return COLORS.sidebar.dragBackground;
+      return SIDEBAR_COLORS.dragBackground;
     }
-    return props.$isRelated ? COLORS.sidebar.background : 'transparent';
+    return props.$isRelated ? SIDEBAR_COLORS.background : 'transparent';
   }};
 
   color: ${props => (props.$isActive ? COLORS.primary : COLORS.text.primary)};
 
   &:hover {
     background: ${props =>
-      props.$isActive ? COLORS.sidebar.activeBackground : COLORS.sidebar.hoverBackground};
+      props.$isActive ? SIDEBAR_COLORS.activeBackground : SIDEBAR_COLORS.hoverBackground};
   }
 
   ${props =>
     props.$isActive &&
     css`
-      background: ${COLORS.sidebar.activeBackground};
+      background: ${SIDEBAR_COLORS.activeBackground};
       box-shadow: inset 2px 0 0 ${COLORS.primary};
     `}
 `;
@@ -343,7 +378,7 @@ export const SidebarFavoriteButton = styled.button<{
   }
 
   &:hover {
-    background: ${COLORS.border.light};
+    background: ${BORDER_COLORS.light};
     color: ${COLORS.primary};
   }
 
@@ -367,7 +402,7 @@ export const StatusIndicator = styled.span<{
   ${props => {
     const colors = {
       online: COLORS.success,
-      offline: COLORS.border.medium,
+      offline: BORDER_COLORS.medium,
       idle: COLORS.warning,
       busy: COLORS.danger,
       custom: props.color || COLORS.primary,
@@ -398,7 +433,7 @@ export const StatusIndicator = styled.span<{
 
 export const SidebarDivider = styled.div`
   height: 1px;
-  background: ${COLORS.border.light};
+  background: ${BORDER_COLORS.light};
   margin: ${SPACING.sm} 0;
   flex-shrink: 0;
 `;
@@ -412,8 +447,8 @@ export const SidebarFooter = styled.div`
   align-items: center;
   justify-content: space-between;
   padding: ${SPACING.md};
-  border-top: 1px solid ${COLORS.border.light};
-  background: ${COLORS.sidebar.background};
+  border-top: 1px solid ${BORDER_COLORS.light};
+  background: ${SIDEBAR_COLORS.background};
   flex-shrink: 0;
   gap: ${SPACING.sm};
 `;
@@ -431,7 +466,7 @@ export const SidebarActionButton = styled.button`
   transition: all 0.2s ease;
 
   &:hover {
-    background: ${COLORS.sidebar.hoverBackground};
+    background: ${SIDEBAR_COLORS.hoverBackground};
     color: ${COLORS.primary};
   }
 
@@ -463,6 +498,8 @@ export const EmptySidebarState = styled.div`
   }
 `;
 
+export const SidebarEmptyState = EmptySidebarState;
+
 export const LoadingSkeleton = styled.div`
   display: flex;
   flex-direction: column;
@@ -473,9 +510,9 @@ export const LoadingSkeleton = styled.div`
     height: 48px;
     background: linear-gradient(
       90deg,
-      ${COLORS.border.light} 25%,
-      ${COLORS.sidebar.background} 50%,
-      ${COLORS.border.light} 75%
+      ${BORDER_COLORS.light} 25%,
+      ${SIDEBAR_COLORS.background} 50%,
+      ${BORDER_COLORS.light} 75%
     );
     background-size: 200% 100%;
     animation: loading 1.5s infinite;

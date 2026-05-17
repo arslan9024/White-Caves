@@ -10,6 +10,7 @@
 #   npm run orchestrator:agent-loop -- -Once            -- one slot, then exit
 #   npm run orchestrator:agent-loop -- -NoBrowser       -- skip browser launch
 #   npm run orchestrator:agent-loop -- -ShowSchedule    -- print schedule, exit
+#   npm run orchestrator:agent-loop -- -NonInteractive   -- auto-confirm and continue
 #   npm run orchestrator:agent-loop -- -Agent @Sofia -Once -NoBrowser
 
 param(
@@ -17,7 +18,8 @@ param(
   [string]$WorkspaceRoot = ".",
   [switch]$Once,
   [switch]$NoBrowser,
-  [switch]$ShowSchedule
+  [switch]$ShowSchedule,
+  [switch]$NonInteractive
 )
 
 $w       = 72
@@ -306,21 +308,33 @@ $loopCount = 0
   Write-Host "   2. Paste AI output into the target .md file" -ForegroundColor DarkGray
   Write-Host "   3. Press Enter below to mark task done" -ForegroundColor DarkGray
   Write-Host ""
-  Write-Host "  [Press Enter when paste is done, or type 'skip' to skip this task]" -ForegroundColor Yellow
-  $confirm = Read-Host "  > "
-  if ($confirm.Trim().ToLower() -eq "skip") {
-    Write-Host "  [SKIP] Task $taskId skipped." -ForegroundColor DarkYellow
-    Write-Host ""
-    if ($Once) { break outerLoop }
-    continue
+  if (-not $NonInteractive) {
+    Write-Host "  [Press Enter when paste is done, or type 'skip' to skip this task]" -ForegroundColor Yellow
+    $confirm = Read-Host "  > "
+    if ($confirm.Trim().ToLower() -eq "skip") {
+      Write-Host "  [SKIP] Task $taskId skipped." -ForegroundColor DarkYellow
+      Write-Host ""
+      if ($Once) { break outerLoop }
+      continue
+    }
+  } else {
+    Write-Host "  [AUTO] Non-interactive mode enabled -- auto-confirming task step." -ForegroundColor DarkGray
   }
 
   # 7. COLLECT EVIDENCE NOTE
   Write-Host ""
   Write-Host "  Evidence note (describe what was expanded, or press Enter to use default):" -ForegroundColor White
-  $evNote = Read-Host "  > "
+  if (-not $NonInteractive) {
+    $evNote = Read-Host "  > "
+  } else {
+    $evNote = ""
+  }
   if ([string]::IsNullOrWhiteSpace($evNote)) {
-    $evNote = "Expanded via agent-loop paste session -- $taskId"
+    $evNote = if ($NonInteractive) {
+      "Auto-advanced via agent-loop non-interactive mode -- $taskId"
+    } else {
+      "Expanded via agent-loop paste session -- $taskId"
+    }
   }
 
   # 8. MARK TASK DONE
@@ -379,8 +393,12 @@ $loopCount = 0
     $nextSlotMin = Get-MinutesUntilNextSlot
     $nextSlotAg  = Get-NextSlotAgent
     Write-Host ("  Next slot: {0} ({1}) in ~{2} min" -f $nextSlotAg, ($toolName[$nextSlotAg]), $nextSlotMin) -ForegroundColor DarkGray
-    Write-Host "  [Press Enter to continue to the next agent, or Ctrl+C to exit]" -ForegroundColor DarkGray
-    $null = Read-Host "  > "
+    if (-not $NonInteractive) {
+      Write-Host "  [Press Enter to continue to the next agent, or Ctrl+C to exit]" -ForegroundColor DarkGray
+      $null = Read-Host "  > "
+    } else {
+      Write-Host "  [AUTO] Advancing to next slot without prompt." -ForegroundColor DarkGray
+    }
     Write-Host ""
   }
 }

@@ -4,7 +4,7 @@
  * rejection modal, empty state, role labels, status badges
  */
 
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import React from 'react';
 import { Provider } from 'react-redux';
@@ -90,7 +90,7 @@ const REJECTED_REQUEST: RoleRequest = {
 
 const createMockStore = (
   roleOverrides: Partial<{ pendingRequests: RoleRequest[] }> = {},
-  authOverrides: Record<string, unknown> = {},
+  authOverrides: Record<string, unknown> = {}
 ) => {
   return configureStore({
     reducer: {
@@ -103,7 +103,11 @@ const createMockStore = (
         userRoles: [],
         activeRole: null,
         pendingRequests: [],
-        userRoleRequest: { isRequesting: false, lastRequestStatus: 'idle' as const, errorMessage: null },
+        userRoleRequest: {
+          isRequesting: false,
+          lastRequestStatus: 'idle' as const,
+          errorMessage: null,
+        },
         statusHistory: [],
         ...roleOverrides,
       } as ReturnType<typeof roleReducer>,
@@ -111,7 +115,13 @@ const createMockStore = (
         user: { id: 'admin-1', displayName: 'Admin', email: 'admin@whitecaves.ae', role: 'admin' },
         token: 'test-token',
         refreshToken: null,
-        session: { isLoggedIn: true, lastActive: null, sessions: [], expiresAt: null, activeSessionId: null },
+        session: {
+          isLoggedIn: true,
+          lastActive: null,
+          sessions: [],
+          expiresAt: null,
+          activeSessionId: null,
+        },
         loginMethods: { social: false, email: false, mobile: false },
         loginProvider: null,
         rememberMe: false,
@@ -126,13 +136,13 @@ const createMockStore = (
 
 const renderWithStore = (
   roleOverrides: Partial<{ pendingRequests: RoleRequest[] }> = {},
-  authOverrides: Record<string, unknown> = {},
+  authOverrides: Record<string, unknown> = {}
 ) => {
   const store = createMockStore(roleOverrides, authOverrides);
   return render(
     <Provider store={store}>
       <RoleApprovalQueue />
-    </Provider>,
+    </Provider>
   );
 };
 
@@ -141,8 +151,14 @@ const renderWithStore = (
 describe('RoleApprovalQueue', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    vi.spyOn(console, 'error').mockImplementation(() => {});
+    vi.spyOn(console, 'warn').mockImplementation(() => {});
     (apiClient.get as ReturnType<typeof vi.fn>).mockResolvedValue({ requests: [] });
     (apiClient.post as ReturnType<typeof vi.fn>).mockResolvedValue({ success: true });
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
   });
 
   // ── Rendering ────────────────────────────────────────────────
@@ -282,7 +298,7 @@ describe('RoleApprovalQueue', () => {
       await waitFor(() => {
         expect(apiClient.post).toHaveBeenCalledWith(
           '/admin/role-requests/req-1/approve',
-          expect.objectContaining({ reviewedBy: 'admin-1' }),
+          expect.objectContaining({ reviewedBy: 'admin-1' })
         );
       });
     });
@@ -293,14 +309,14 @@ describe('RoleApprovalQueue', () => {
 
       await waitFor(() => {
         expect(mockToast.success).toHaveBeenCalledWith(
-          expect.stringContaining('approved successfully'),
+          expect.stringContaining('approved successfully')
         );
       });
     });
 
     it('should show error toast when approve fails', async () => {
       (apiClient.post as ReturnType<typeof vi.fn>).mockRejectedValueOnce(
-        new Error('Network error'),
+        new Error('Network error')
       );
       renderWithStore({ pendingRequests: [MOCK_REQUEST] });
       fireEvent.click(screen.getByText('Approve'));
@@ -376,14 +392,14 @@ describe('RoleApprovalQueue', () => {
       await waitFor(() => {
         expect(apiClient.post).toHaveBeenCalledWith(
           '/admin/role-requests/req-1/reject',
-          expect.objectContaining({ reason: 'Not qualified' }),
+          expect.objectContaining({ reason: 'Not qualified' })
         );
       });
     });
 
     it('should show warning toast when trying to reject without reason', async () => {
       renderWithStore({ pendingRequests: [MOCK_REQUEST] });
-      // Directly try to reject by calling handleReject path - 
+      // Directly try to reject by calling handleReject path -
       // The button is disabled so the actual check is in handleReject
       // Just verify the button is disabled
       fireEvent.click(screen.getByText('Reject'));

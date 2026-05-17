@@ -5,6 +5,7 @@ import { PropertyCard } from '../components/leasing/PropertyCard';
 import { DocumentChecklist } from '../components/leasing/DocumentChecklist';
 import { ContractSignModal } from '../components/leasing/ContractSignModal';
 import { EjariRegistrationModal } from '../components/leasing/EjariRegistrationModal';
+import { authFetch } from '../utils/authFetch';
 
 const PageContainer = styled.div`
   padding: ${theme.spacing.xl};
@@ -97,10 +98,7 @@ export const LeasingAcquisition: React.FC = () => {
 
   const fetchProperties = async () => {
     try {
-      const token = localStorage.getItem('token');
-      const res = await fetch('/api/leasing-inventory', {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const res = await authFetch('/api/leasing-inventory');
       if (res.ok) {
         const data = await res.json();
         setProperties(data.data);
@@ -117,13 +115,8 @@ export const LeasingAcquisition: React.FC = () => {
 
   const handleStageChange = async (id: string, newStage: string) => {
     try {
-      const token = localStorage.getItem('token');
-      const res = await fetch(`/api/leasing-inventory/${id}/stage`, {
+      const res = await authFetch(`/api/leasing-inventory/${id}/stage`, {
         method: 'PATCH',
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
         body: JSON.stringify({ newStage }),
       });
 
@@ -142,10 +135,8 @@ export const LeasingAcquisition: React.FC = () => {
 
   const handleHandover = async (id: string) => {
     try {
-      const token = localStorage.getItem('token');
-      const res = await fetch(`/api/leasing-inventory/${id}/handover`, {
+      const res = await authFetch(`/api/leasing-inventory/${id}/handover`, {
         method: 'POST',
-        headers: { Authorization: `Bearer ${token}` },
       });
       if (res.ok) {
         fetchProperties();

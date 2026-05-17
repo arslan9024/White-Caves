@@ -3,6 +3,7 @@
 > **Priority**: #1 — Highest  
 > **Goal**: A complete, polished, publicly visible homepage that showcases White Caves  
 > **Approach**: All content uses static/dummy data — no backend dependency  
+> **Last Updated**: 2026-05-11  
 > **Status**: 🚧 In Progress — shell exists, sections need polishing
 
 > **Priority Module Alignment (May 2026):** Homepage must be optimized for **Dubai leasing conversion** and feed the unified leasing end-to-end journey defined in `plans/PHASE_33_PRIORITY_MODULE_HOMEPAGE_SUPERUSER_LEASING.md`.

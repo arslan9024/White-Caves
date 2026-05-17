@@ -1,7 +1,7 @@
 import { Search, Plus, Edit, Trash2, Eye, Download, ChevronDown } from 'lucide-react';
 
 interface Employee {
-  id: string | number;
+  id: string;
   name: string;
   avatar: string;
   email?: string;
@@ -25,7 +25,7 @@ interface EmployeesState {
   showEmployeeModal: boolean;
   setShowEmployeeModal: (show: boolean) => void;
   getStatusColor: (status: string) => string;
-  deleteEmployee: (id: string | number) => void;
+  deleteEmployee: (id: string) => void;
 }
 
 interface EmployeesTabProps {

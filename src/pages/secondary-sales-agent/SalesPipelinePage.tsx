@@ -1,6 +1,7 @@
 import React, { FC, useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { theme } from '../../styles/theme';
+import { authFetch } from '../../utils/authFetch';
 
 const PageContainer = styled.div`
   padding: ${theme.spacing.xl};
@@ -95,10 +96,7 @@ export const SalesPipelinePage: FC = () => {
 
   const fetchProperties = async () => {
     try {
-      const token = localStorage.getItem('token');
-      const res = await fetch('/api/secondary-sales', {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const res = await authFetch('/api/secondary-sales');
       if (res.ok) {
         const json = await res.json();
         setProperties(json.data);
@@ -115,13 +113,8 @@ export const SalesPipelinePage: FC = () => {
 
   const handleStageChange = async (id: string, newStage: string) => {
     try {
-      const token = localStorage.getItem('token');
-      const res = await fetch(`/api/secondary-sales/${id}/stage`, {
+      const res = await authFetch(`/api/secondary-sales/${id}/stage`, {
         method: 'PATCH',
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
         body: JSON.stringify({ newStage }),
       });
       if (res.ok) {

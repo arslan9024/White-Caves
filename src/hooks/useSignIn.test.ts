@@ -167,7 +167,7 @@ describe('useSignIn — handleSocialAuth (integration)', () => {
       expect(currentUser?.email).toBe(backendBuyerUser.email);
     });
 
-    it('navigates to /dashboard for a buyer role', async () => {
+    it('navigates to /crm for a buyer role', async () => {
       vi.useFakeTimers();
       const { result } = renderHook(() => useSignIn(), { wrapper: createWrapper(store) });
 
@@ -176,11 +176,11 @@ describe('useSignIn — handleSocialAuth (integration)', () => {
       });
       act(() => vi.runAllTimers());
 
-      expect(mockNavigate).toHaveBeenCalledWith('/dashboard');
+      expect(mockNavigate).toHaveBeenCalledWith('/crm');
       vi.useRealTimers();
     });
 
-    it('navigates to /tenant/portal for a tenant role', async () => {
+    it('navigates to /tenant-portal for a tenant role', async () => {
       vi.useFakeTimers();
       mockSyncFirebaseUser.mockResolvedValue(successResponse(backendTenantUser));
       const { result } = renderHook(() => useSignIn(), { wrapper: createWrapper(store) });
@@ -190,11 +190,11 @@ describe('useSignIn — handleSocialAuth (integration)', () => {
       });
       act(() => vi.runAllTimers());
 
-      expect(mockNavigate).toHaveBeenCalledWith('/tenant/portal');
+      expect(mockNavigate).toHaveBeenCalledWith('/tenant-portal');
       vi.useRealTimers();
     });
 
-    it('navigates to /landlord/portal for a landlord role', async () => {
+    it('navigates to /landlord-portal for a landlord role', async () => {
       vi.useFakeTimers();
       mockSyncFirebaseUser.mockResolvedValue(successResponse(backendLandlordUser));
       const { result } = renderHook(() => useSignIn(), { wrapper: createWrapper(store) });
@@ -204,7 +204,7 @@ describe('useSignIn — handleSocialAuth (integration)', () => {
       });
       act(() => vi.runAllTimers());
 
-      expect(mockNavigate).toHaveBeenCalledWith('/landlord/portal');
+      expect(mockNavigate).toHaveBeenCalledWith('/landlord-portal');
       vi.useRealTimers();
     });
   });
@@ -296,16 +296,20 @@ describe('useSignIn — handleSocialAuth (integration)', () => {
   // ── Backend sync error (signin mode) ──────────────────────────────────────
 
   describe('backend sync error in signin mode', () => {
-    it('sets error state when syncFirebaseUser fails', async () => {
+    it('falls back to Firebase user and still logs in', async () => {
       mockSignInWithGoogle.mockResolvedValue({ user: firebaseUser });
       mockSyncFirebaseUser.mockRejectedValue(new Error('Backend unreachable'));
+      vi.useFakeTimers();
       const { result } = renderHook(() => useSignIn(), { wrapper: createWrapper(store) });
 
       await act(async () => {
         await result.current.handleSocialAuth('google');
       });
 
-      expect(result.current.error).toBe('Backend unreachable');
+      act(() => vi.runAllTimers());
+      expect(result.current.error).toBe('');
+      expect(mockNavigate).toHaveBeenCalledWith('/crm');
+      vi.useRealTimers();
     });
   });
 

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import { theme } from '../../styles/theme';
+import { authFetch } from '../../utils/authFetch';
 
 interface ChecklistProperty {
   id: string;
@@ -120,12 +121,8 @@ export const DocumentChecklist: React.FC<DocumentChecklistProps> = ({
     formData.append('documentType', docType);
 
     try {
-      const token = localStorage.getItem('token');
-      const res = await fetch(`/api/leasing-inventory/${property.id}/upload`, {
+      const res = await authFetch(`/api/leasing-inventory/${property.id}/upload`, {
         method: 'POST',
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
         body: formData,
       });
 

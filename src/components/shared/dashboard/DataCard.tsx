@@ -7,7 +7,21 @@ import styled from 'styled-components';
  * Supports loading skeleton, animations, and flexible content
  */
 
-const CardContainer = styled.div`
+interface DataCardProps {
+  title?: React.ReactNode;
+  subtitle?: React.ReactNode;
+  icon?: React.ReactNode;
+  children?: React.ReactNode;
+  footer?: React.ReactNode;
+  actions?: React.ReactNode;
+  loading?: boolean;
+  skeleton?: 'content' | 'grid' | 'grid-4' | 'table' | 'table-3' | 'custom';
+  hoverable?: boolean;
+  onClick?: () => void;
+  className?: string;
+}
+
+const CardContainer = styled.div<{ $hoverable?: boolean }>`
   background-color: #ffffff;
   border: 1px solid #e5e7eb;
   border-radius: 8px;
@@ -21,7 +35,7 @@ const CardContainer = styled.div`
     transform: translateY(-2px);
   }
 
-  ${props => props.hoverable === false && 'cursor: default;'}
+  ${props => props.$hoverable === false && 'cursor: default;'}
 `;
 
 const CardHeader = styled.div`
@@ -155,7 +169,7 @@ const TableSkeleton = ({ rows = 5, columns = 4 }) => (
 /**
  * Main DataCard Component
  */
-const DataCard = ({
+const DataCard: React.FC<DataCardProps> = ({
   title,
   subtitle,
   icon,
@@ -177,7 +191,7 @@ const DataCard = ({
   return (
     <CardContainer
       data-loading={loading}
-      hoverable={hoverable}
+      $hoverable={hoverable}
       onClick={handleClick}
       className={className}
       style={{ position: 'relative', cursor: hoverable && !loading ? 'pointer' : 'default' }}
@@ -188,7 +202,7 @@ const DataCard = ({
             {title && (
               <CardTitle>
                 {icon}
-                {loading ? <TitleSkeleton /> : title}
+                {title}
               </CardTitle>
             )}
             {subtitle && !loading && <CardSubtitle>{subtitle}</CardSubtitle>}
@@ -200,6 +214,7 @@ const DataCard = ({
       <CardBody>
         {loading ? (
           <>
+            {!title && <TitleSkeleton />}
             {skeleton === 'content' && <ContentSkeleton />}
             {skeleton === 'grid' && <GridSkeleton />}
             {skeleton === 'grid-4' && <GridSkeleton columns={4} />}

@@ -17,6 +17,7 @@
 
 import React, { useMemo, useCallback, useState, useRef, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 import type { RootState } from '../../../store/store';
 import {
   Home,
@@ -43,7 +44,6 @@ import {
   setGlobalSearch,
   clearGlobalSearch,
   setSidebarCollapsed,
-  toggleSidebarCollapsed,
 } from '../../../store/slices/sidebarSlice';
 import {
   getAllAssistants,
@@ -58,7 +58,10 @@ import {
   useKeyboardNavigation,
   type NavigableItem,
 } from '../../../hooks/navigation/useKeyboardNavigation';
-import SidebarTree, { type DepartmentTreeNode, type ServiceTreeNode } from '../EnhancedLeftSidebar/SidebarTree';
+import SidebarTree, {
+  type DepartmentTreeNode,
+  type ServiceTreeNode,
+} from '../EnhancedLeftSidebar/SidebarTree';
 import SidebarNavItem from '../EnhancedLeftSidebar/SidebarNavItem';
 import {
   SidebarWrapper,
@@ -83,7 +86,6 @@ import {
   SearchEmptyState,
   SidebarSection,
   SidebarDivider,
-  SidebarSectionTitle,
   DeptGroupHeader,
   SidebarNav,
   AISearchContainer,
@@ -97,6 +99,11 @@ import {
   CollapsedBadge,
   SidebarSpacer,
   SidebarFooter,
+  SidebarScrollArea,
+  SectionDivider,
+  AICommandCenterWrapper,
+  AICommandHeader,
+  AssistantStatusDot,
 } from './styles';
 
 const log = createLogger('UnifiedSidebar');
@@ -173,11 +180,9 @@ export interface UnifiedSidebarProps {
 
 // ─── Component ───────────────────────────────────────────────────────────
 
-const UnifiedSidebar: React.FC<UnifiedSidebarProps> = ({
-  onItemClick,
-  isSuperUser = false,
-}) => {
+const UnifiedSidebar: React.FC<UnifiedSidebarProps> = ({ onItemClick, isSuperUser = false }) => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const sidebarRef = useRef<HTMLElement>(null);
   const searchInputRef = useRef<HTMLInputElement>(null);
 
@@ -196,9 +201,18 @@ const UnifiedSidebar: React.FC<UnifiedSidebarProps> = ({
     readExpandedDepts()
   );
   const [companyExpanded, setCompanyExpanded] = useState(true);
-  const [aiExpanded, setAiExpanded] = useState(true);
   // AI-section–only search (used when globalSearch is empty)
   const [aiOnlySearch, setAiOnlySearch] = useState('');
+
+  // ─── AI Command Center: filter by selected department ────────────────
+  // When a department is selected, show only its assistants; otherwise top 6
+  const deptFilteredAssistants = useMemo(() => {
+    const allA = getAllAssistants();
+    const base = selectedDept ? allA.filter(a => a.department === selectedDept) : allA.slice(0, 6);
+    const q = aiOnlySearch.trim().toLowerCase();
+    if (!q) return base;
+    return base.filter(a => a.name.toLowerCase().includes(q) || a.title.toLowerCase().includes(q));
+  }, [selectedDept, aiOnlySearch]);
 
   // ─── Badge counts ──────────────────────────────────────────────────
   const badgeCounts = useMemo(
@@ -213,7 +227,6 @@ const UnifiedSidebar: React.FC<UnifiedSidebarProps> = ({
   // ─── Department tree (for non-search view) ─────────────────────────
   const deptTree: DepartmentTreeNode[] = useMemo(() => {
     return Object.entries(DEPARTMENTS).map(([deptId, dept]) => {
-      // eslint-disable-next-line security/detect-object-injection
       const badge = dept.badgeKey ? badgeCounts[dept.badgeKey] : undefined;
       const services: ServiceTreeNode[] = dept.services.map(svc => ({
         id: svc.toLowerCase().replace(/\s+/g, '-'),
@@ -252,17 +265,6 @@ const UnifiedSidebar: React.FC<UnifiedSidebarProps> = ({
     );
   }, [allAssistants, effectiveAISearch]);
 
-  const groupedAssistants = useMemo(() => {
-    const groups: Record<string, Assistant[]> = {};
-    filteredAssistants.forEach(a => {
-      // eslint-disable-next-line security/detect-object-injection
-      if (!groups[a.department]) groups[a.department] = [];
-      // eslint-disable-next-line security/detect-object-injection
-      groups[a.department].push(a);
-    });
-    return groups;
-  }, [filteredAssistants]);
-
   // ─── Global search results ────────────────────────────────────────
   const searchResults = useMemo<SearchResult[]>(() => {
     if (!globalSearch.trim()) return [];
@@ -273,7 +275,6 @@ const UnifiedSidebar: React.FC<UnifiedSidebarProps> = ({
     Object.entries(DEPARTMENTS).forEach(([deptId, dept]) => {
       const deptMatches = dept.label.toLowerCase().includes(q);
       if (deptMatches) {
-        // eslint-disable-next-line security/detect-object-injection
         const badge = dept.badgeKey ? badgeCounts[dept.badgeKey] : undefined;
         results.push({
           type: 'department',
@@ -317,7 +318,9 @@ const UnifiedSidebar: React.FC<UnifiedSidebarProps> = ({
   const deptServiceResults = searchResults.filter(
     r => r.type === 'department' || r.type === 'service'
   ) as (DeptSearchResult | ServiceSearchResult)[];
-  const assistantResults = searchResults.filter(r => r.type === 'assistant') as AssistantSearchResult[];
+  const assistantResults = searchResults.filter(
+    r => r.type === 'assistant'
+  ) as AssistantSearchResult[];
 
   // ─── Handlers ────────────────────────────────────────────────────
 
@@ -348,9 +351,26 @@ const UnifiedSidebar: React.FC<UnifiedSidebarProps> = ({
 
   const handleQuickNavClick = useCallback(
     (itemId: string) => {
+      // Default internal navigation path (used when parent does not intercept clicks)
+      switch (itemId) {
+        case 'home':
+          navigate('/dashboard');
+          break;
+        case 'analytics':
+          navigate('/owner/system-health');
+          break;
+        case 'admin':
+          navigate('/lion/admin-dashboard');
+          break;
+        case 'settings':
+          navigate('/owner/whatsapp/settings');
+          break;
+        default:
+          break;
+      }
       onItemClick?.('quick-nav', { itemId });
     },
-    [onItemClick]
+    [navigate, onItemClick]
   );
 
   const toggleDeptExpand = useCallback((deptId: string, shouldExpand?: boolean) => {
@@ -395,7 +415,6 @@ const UnifiedSidebar: React.FC<UnifiedSidebarProps> = ({
     }));
 
     deptTree.forEach(dept => {
-      // eslint-disable-next-line security/detect-object-injection
       const expanded = expandedDepts[dept.id] !== false;
       items.push({
         id: `dept-${dept.id}`,
@@ -454,7 +473,11 @@ const UnifiedSidebar: React.FC<UnifiedSidebarProps> = ({
     [toggleDeptExpand]
   );
 
-  const { handleKeyDown: handleNavigationKeyDown, getFocusProps, setFocus } = useKeyboardNavigation({
+  const {
+    handleKeyDown: handleNavigationKeyDown,
+    getFocusProps,
+    setFocus,
+  } = useKeyboardNavigation({
     items: navigableItems,
     onSelect: handleNavigableSelect,
     onExpand: handleNavigableExpand,
@@ -532,7 +555,7 @@ const UnifiedSidebar: React.FC<UnifiedSidebarProps> = ({
         {/* Department icons */}
         {Object.entries(DEPARTMENTS).map(([deptId, dept]) => {
           const Icon = dept.icon;
-          // eslint-disable-next-line security/detect-object-injection
+
           const badge = dept.badgeKey ? badgeCounts[dept.badgeKey] : 0;
           return (
             <CollapsedNavItem
@@ -555,11 +578,19 @@ const UnifiedSidebar: React.FC<UnifiedSidebarProps> = ({
         <SidebarDivider />
 
         {isSuperUser && (
-          <CollapsedNavItem onClick={() => handleQuickNavClick('admin')} title="Admin" aria-label="Admin">
+          <CollapsedNavItem
+            onClick={() => handleQuickNavClick('admin')}
+            title="Admin"
+            aria-label="Admin"
+          >
             <Shield />
           </CollapsedNavItem>
         )}
-        <CollapsedNavItem onClick={() => handleQuickNavClick('settings')} title="Settings" aria-label="Settings">
+        <CollapsedNavItem
+          onClick={() => handleQuickNavClick('settings')}
+          title="Settings"
+          aria-label="Settings"
+        >
           <Settings />
         </CollapsedNavItem>
       </SidebarWrapper>
@@ -581,7 +612,11 @@ const UnifiedSidebar: React.FC<UnifiedSidebarProps> = ({
     >
       {/* ─── Header ─────────────────────────────────────────────── */}
       <SidebarHeader>
-        <SidebarLogo src="/white-caves-logo.png" alt="White Caves" title="White Caves CRM Platform" />
+        <SidebarLogo
+          src="/white-caves-logo.png"
+          alt="White Caves"
+          title="White Caves CRM Platform"
+        />
         <SidebarTitle>White Caves</SidebarTitle>
         <CollapseToggle
           onClick={handleToggleCollapsed}
@@ -620,226 +655,222 @@ const UnifiedSidebar: React.FC<UnifiedSidebarProps> = ({
         </GlobalSearchInputWrapper>
       </GlobalSearchBar>
 
-      {/* ─── Search Results (when query is active) ──────────────── */}
-      {isSearching ? (
-        <SearchResultsContainer id="sidebar-search-results" role="region" aria-label="Search results">
-          {searchResults.length === 0 ? (
-            <SearchEmptyState>
-              <SearchX aria-hidden="true" />
-              <span>No results for "<strong>{globalSearch}</strong>"</span>
-            </SearchEmptyState>
-          ) : (
-            <>
-              {/* Departments & Services section */}
-              {deptServiceResults.length > 0 && (
-                <SearchResultsSection>
-                  <SearchResultsSectionTitle>
-                    Departments &amp; Services ({deptServiceResults.length})
-                  </SearchResultsSectionTitle>
-                  {deptServiceResults.map((result, idx) => {
-                    if (result.type === 'department') {
-                      const Icon = result.icon;
+      {/* ─── SECTION 1: Scrollable Departments Area ─────────────── */}
+      <SidebarScrollArea>
+        {isSearching ? (
+          <SearchResultsContainer
+            id="sidebar-search-results"
+            role="region"
+            aria-label="Search results"
+          >
+            {searchResults.length === 0 ? (
+              <SearchEmptyState>
+                <SearchX aria-hidden="true" />
+                <span>
+                  No results for &quot;<strong>{globalSearch}</strong>&quot;
+                </span>
+              </SearchEmptyState>
+            ) : (
+              <>
+                {/* Departments & Services section */}
+                {deptServiceResults.length > 0 && (
+                  <SearchResultsSection>
+                    <SearchResultsSectionTitle>
+                      Departments &amp; Services ({deptServiceResults.length})
+                    </SearchResultsSectionTitle>
+                    {deptServiceResults.map((result, idx) => {
+                      if (result.type === 'department') {
+                        const Icon = result.icon;
+                        return (
+                          <SearchResultItem
+                            key={`dept-${result.deptId}-${idx}`}
+                            $active={selectedDept === result.deptId}
+                            $color={result.color}
+                            onClick={() => handleDeptClick(result.deptId)}
+                            aria-label={`Department: ${result.label}`}
+                          >
+                            <SearchResultIcon $color={result.color}>
+                              <Icon />
+                            </SearchResultIcon>
+                            <SearchResultText>
+                              <SearchResultLabel>{result.label}</SearchResultLabel>
+                            </SearchResultText>
+                            <SearchResultBadge>dept</SearchResultBadge>
+                          </SearchResultItem>
+                        );
+                      }
+                      // service
+                      const DeptIcon = result.deptIcon;
                       return (
                         <SearchResultItem
-                          key={`dept-${result.deptId}-${idx}`}
-                          $active={selectedDept === result.deptId}
-                          $color={result.color}
-                          onClick={() => handleDeptClick(result.deptId)}
-                          aria-label={`Department: ${result.label}`}
+                          key={`svc-${result.deptId}-${result.serviceId}-${idx}`}
+                          $active={
+                            selectedDept === result.deptId && selectedSvc === result.serviceId
+                          }
+                          $color={result.deptColor}
+                          onClick={() => handleServiceClick(result.deptId, result.serviceId)}
+                          aria-label={`${result.label} in ${result.deptLabel}`}
                         >
-                          <SearchResultIcon $color={result.color}>
-                            <Icon />
+                          <SearchResultIcon $color={result.deptColor}>
+                            <DeptIcon />
                           </SearchResultIcon>
                           <SearchResultText>
                             <SearchResultLabel>{result.label}</SearchResultLabel>
+                            <SearchResultSubLabel>{result.deptLabel}</SearchResultSubLabel>
                           </SearchResultText>
-                          <SearchResultBadge>dept</SearchResultBadge>
+                          <SearchResultBadge>service</SearchResultBadge>
                         </SearchResultItem>
                       );
-                    }
-                    // service
-                    const DeptIcon = result.deptIcon;
-                    return (
-                      <SearchResultItem
-                        key={`svc-${result.deptId}-${result.serviceId}-${idx}`}
-                        $active={selectedDept === result.deptId && selectedSvc === result.serviceId}
-                        $color={result.deptColor}
-                        onClick={() => handleServiceClick(result.deptId, result.serviceId)}
-                        aria-label={`${result.label} in ${result.deptLabel}`}
-                      >
-                        <SearchResultIcon $color={result.deptColor}>
-                          <DeptIcon />
-                        </SearchResultIcon>
-                        <SearchResultText>
-                          <SearchResultLabel>{result.label}</SearchResultLabel>
-                          <SearchResultSubLabel>{result.deptLabel}</SearchResultSubLabel>
-                        </SearchResultText>
-                        <SearchResultBadge>service</SearchResultBadge>
-                      </SearchResultItem>
-                    );
-                  })}
-                </SearchResultsSection>
-              )}
+                    })}
+                  </SearchResultsSection>
+                )}
 
-              {/* AI Assistants section */}
-              {assistantResults.length > 0 && (
-                <SearchResultsSection>
-                  <SearchResultsSectionTitle>
-                    AI Assistants ({assistantResults.length})
-                  </SearchResultsSectionTitle>
-                  {assistantResults.map((result, idx) => {
-                    const a = result.assistant;
-                    return (
-                      <SearchResultItem
-                        key={`assistant-${a.id}-${idx}`}
-                        $active={selectedAssistantId === a.id}
-                        $color={a.color}
-                        onClick={() => handleAssistantClick(a.id)}
-                        aria-label={`${a.name} AI assistant`}
-                      >
-                        <AIAssistantAvatar $color={a.color} style={{ width: 24, height: 24, borderRadius: 6, fontSize: 10 }}>
-                          {a.avatar || a.name[0]}
-                        </AIAssistantAvatar>
-                        <SearchResultText>
-                          <SearchResultLabel>{a.name}</SearchResultLabel>
-                          <SearchResultSubLabel>{a.title}</SearchResultSubLabel>
-                        </SearchResultText>
-                        <SearchResultBadge>AI</SearchResultBadge>
-                      </SearchResultItem>
-                    );
-                  })}
-                </SearchResultsSection>
-              )}
-            </>
-          )}
-        </SearchResultsContainer>
-      ) : (
-        <>
-          {/* ─── Quick Navigation ──────────────────────────────────── */}
-          <SidebarSection>
-            <SidebarNav aria-label="Quick navigation">
-              {QUICK_NAV.map(item => {
-                const Icon = item.icon;
-                return (
-                  <SidebarNavItem
-                    key={item.id}
-                    id={`quick-${item.id}`}
-                    icon={Icon}
-                    label={item.label}
-                    onClick={() => handleQuickNavClick(item.id)}
-                    onKeyDown={handleNavigationKeyDown}
-                    focusProps={getItemFocusProps(`quick-${item.id}`)}
-                    ariaCurrent={false}
-                    title={item.label}
-                  />
-                );
-              })}
-            </SidebarNav>
-          </SidebarSection>
-
-          <SidebarDivider />
-
-          {/* ─── Company Departments ────────────────────────────────── */}
-          <SidebarSection>
-            <DeptGroupHeader
-              onClick={() => setCompanyExpanded(v => !v)}
-              aria-label="Toggle company departments"
-              aria-expanded={companyExpanded}
-            >
-              <span>Company</span>
-              <ChevronDown
-                style={{
-                  transform: companyExpanded ? 'rotate(0)' : 'rotate(-90deg)',
-                  transition: 'transform 0.2s',
-                }}
-              />
-            </DeptGroupHeader>
-            {companyExpanded && (
-              <SidebarTree
-                departments={deptTree}
-                selectedDept={selectedDept ?? undefined}
-                selectedService={selectedSvc ?? undefined}
-                onDeptClick={handleDeptClick}
-                onServiceClick={handleServiceClick}
-                expandedDepts={expandedDepts}
-                onToggleDept={toggleDeptExpand}
-                onItemKeyDown={handleNavigationKeyDown}
-                getFocusProps={getItemFocusProps}
-              />
-            )}
-          </SidebarSection>
-
-          <SidebarDivider />
-
-          {/* ─── AI Command Center ──────────────────────────────────── */}
-          <SidebarSection>
-            <DeptGroupHeader
-              onClick={() => setAiExpanded(v => !v)}
-              aria-label="Toggle AI Command Center"
-              aria-expanded={aiExpanded}
-            >
-              <span>AI Command Center</span>
-              <ChevronDown
-                style={{
-                  transform: aiExpanded ? 'rotate(0)' : 'rotate(-90deg)',
-                  transition: 'transform 0.2s',
-                }}
-              />
-            </DeptGroupHeader>
-
-            {aiExpanded && (
-              <>
-                <AISearchContainer>
-                  <AISearchInput
-                    type="text"
-                    placeholder="Filter assistants…"
-                    value={aiOnlySearch}
-                    onChange={e => setAiOnlySearch(e.target.value)}
-                    aria-label="Filter AI assistants"
-                  />
-                </AISearchContainer>
-
-                <SidebarNav aria-label="AI assistants">
-                  {Object.entries(groupedAssistants).map(([deptId, assistants]) => {
-                    const deptInfo = REGISTRY_DEPARTMENTS[deptId as DepartmentId];
-                    return (
-                      <div key={deptId}>
-                        {filteredAssistants.length > 1 && (
-                          <SidebarSectionTitle style={{ padding: '4px 14px', fontSize: '10px' }}>
-                            {deptInfo?.label || deptId} ({assistants.length})
-                          </SidebarSectionTitle>
-                        )}
-                        {assistants.map(assistant => (
-                          <AIAssistantItem
-                            key={assistant.id}
-                            $selected={selectedAssistantId === assistant.id}
-                            onClick={() => handleAssistantClick(assistant.id)}
-                            onKeyDown={handleNavigationKeyDown}
-                            {...(getItemFocusProps(`assistant-${assistant.id}`) ?? {})}
-                            aria-label={`${assistant.name} assistant`}
-                            aria-selected={selectedAssistantId === assistant.id}
-                            title={assistant.title}
+                {/* AI Assistants section */}
+                {assistantResults.length > 0 && (
+                  <SearchResultsSection>
+                    <SearchResultsSectionTitle>
+                      AI Assistants ({assistantResults.length})
+                    </SearchResultsSectionTitle>
+                    {assistantResults.map((result, idx) => {
+                      const a = result.assistant;
+                      return (
+                        <SearchResultItem
+                          key={`assistant-${a.id}-${idx}`}
+                          $active={selectedAssistantId === a.id}
+                          $color={a.color}
+                          onClick={() => handleAssistantClick(a.id)}
+                          aria-label={`${a.name} AI assistant`}
+                        >
+                          <AIAssistantAvatar
+                            $color={a.color}
+                            style={{ width: 24, height: 24, borderRadius: 6, fontSize: 10 }}
                           >
-                            <AIAssistantAvatar $color={assistant.color}>
-                              {assistant.avatar || assistant.name[0]}
-                            </AIAssistantAvatar>
-                            <AIAssistantInfo>
-                              <AIAssistantName>{assistant.name}</AIAssistantName>
-                              <AIAssistantTitle>{assistant.title}</AIAssistantTitle>
-                            </AIAssistantInfo>
-                          </AIAssistantItem>
-                        ))}
-                      </div>
-                    );
-                  })}
-                </SidebarNav>
+                            {a.avatar || a.name[0]}
+                          </AIAssistantAvatar>
+                          <SearchResultText>
+                            <SearchResultLabel>{a.name}</SearchResultLabel>
+                            <SearchResultSubLabel>{a.title}</SearchResultSubLabel>
+                          </SearchResultText>
+                          <SearchResultBadge>AI</SearchResultBadge>
+                        </SearchResultItem>
+                      );
+                    })}
+                  </SearchResultsSection>
+                )}
               </>
             )}
-          </SidebarSection>
+          </SearchResultsContainer>
+        ) : (
+          <>
+            {/* ─── Quick Navigation ──────────────────────────────── */}
+            <SidebarSection>
+              <SidebarNav aria-label="Quick navigation">
+                {QUICK_NAV.map(item => {
+                  const Icon = item.icon;
+                  return (
+                    <SidebarNavItem
+                      key={item.id}
+                      id={`quick-${item.id}`}
+                      icon={Icon}
+                      label={item.label}
+                      onClick={() => handleQuickNavClick(item.id)}
+                      onKeyDown={handleNavigationKeyDown}
+                      focusProps={getItemFocusProps(`quick-${item.id}`)}
+                      ariaCurrent={false}
+                      title={item.label}
+                    />
+                  );
+                })}
+              </SidebarNav>
+            </SidebarSection>
 
-          <SidebarSpacer />
-        </>
-      )}
+            <SidebarDivider />
+
+            {/* ─── Company Departments ─────────────────────────────── */}
+            <SidebarSection>
+              <DeptGroupHeader
+                onClick={() => setCompanyExpanded(v => !v)}
+                aria-label="Toggle company departments"
+                aria-expanded={companyExpanded}
+              >
+                <span>Departments</span>
+                <ChevronDown
+                  style={{
+                    transform: companyExpanded ? 'rotate(0)' : 'rotate(-90deg)',
+                    transition: 'transform 0.2s',
+                  }}
+                />
+              </DeptGroupHeader>
+              {companyExpanded && (
+                <SidebarTree
+                  departments={deptTree}
+                  selectedDept={selectedDept ?? undefined}
+                  selectedService={selectedSvc ?? undefined}
+                  onDeptClick={handleDeptClick}
+                  onServiceClick={handleServiceClick}
+                  expandedDepts={expandedDepts}
+                  onToggleDept={toggleDeptExpand}
+                  onItemKeyDown={handleNavigationKeyDown}
+                  getFocusProps={getItemFocusProps}
+                />
+              )}
+            </SidebarSection>
+          </>
+        )}
+      </SidebarScrollArea>
+
+      {/* ─── SECTION 2: AI Command Center (pinned bottom) ─────── */}
+      <SectionDivider />
+      <AICommandCenterWrapper aria-label="AI Command Center">
+        <AICommandHeader>
+          <span>🤖 AI Command Center</span>
+          {selectedDept && (
+            <SearchResultBadge style={{ background: '#C9A84C20', color: '#C9A84C' }}>
+              {REGISTRY_DEPARTMENTS[selectedDept as DepartmentId]?.label ?? selectedDept}
+            </SearchResultBadge>
+          )}
+        </AICommandHeader>
+
+        <AISearchContainer>
+          <AISearchInput
+            type="text"
+            placeholder="Filter assistants…"
+            value={aiOnlySearch}
+            onChange={e => setAiOnlySearch(e.target.value)}
+            aria-label="Filter AI assistants"
+          />
+        </AISearchContainer>
+
+        <SidebarNav aria-label="AI assistants">
+          {deptFilteredAssistants.length === 0 ? (
+            <div style={{ padding: '8px 14px', fontSize: 11, color: '#6B7280' }}>
+              No assistants found
+            </div>
+          ) : (
+            deptFilteredAssistants.map(assistant => (
+              <AIAssistantItem
+                key={assistant.id}
+                $selected={selectedAssistantId === assistant.id}
+                onClick={() => handleAssistantClick(assistant.id)}
+                onKeyDown={handleNavigationKeyDown}
+                {...(getItemFocusProps(`assistant-${assistant.id}`) ?? {})}
+                aria-label={`${assistant.name} assistant`}
+                aria-selected={selectedAssistantId === assistant.id}
+                title={assistant.title}
+              >
+                <AIAssistantAvatar $color={assistant.color}>
+                  {assistant.avatar || assistant.name[0]}
+                </AIAssistantAvatar>
+                <AIAssistantInfo>
+                  <AIAssistantName>{assistant.name}</AIAssistantName>
+                  <AIAssistantTitle>{assistant.title}</AIAssistantTitle>
+                </AIAssistantInfo>
+                <AssistantStatusDot $active={selectedAssistantId === assistant.id} />
+              </AIAssistantItem>
+            ))
+          )}
+        </SidebarNav>
+      </AICommandCenterWrapper>
 
       {/* ─── Footer (Admin + Settings) ──────────────────────────── */}
       <SidebarDivider />

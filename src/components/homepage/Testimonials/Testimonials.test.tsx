@@ -1,7 +1,7 @@
 /**
  * Testimonials Component Tests
  * ============================
- * Tests for the homepage Testimonials carousel — 4 testimonials,
+ * Tests for the homepage Testimonials carousel — 6 testimonials,
  * navigation, autoplay, indicator dots, accessibility
  */
 
@@ -145,21 +145,21 @@ describe('Testimonials', () => {
   it('navigates to previous testimonial on "Prev" click', () => {
     render(<Testimonials />);
 
-    // Prev from index 0 wraps to last (index 3)
+    // Prev from index 0 wraps to last (index 5)
     fireEvent.click(screen.getByLabelText('Previous testimonial'));
 
-    expect(screen.getByText('Sophie Chen')).toBeTruthy();
-    expect(screen.getByText('Entrepreneur')).toBeTruthy();
+    expect(screen.getByText('Natalia Ivanova')).toBeTruthy();
+    expect(screen.getAllByText('Property Investor').length).toBeGreaterThanOrEqual(1);
   });
 
   // ──────────────────────────────────────────────────────────
   // Carousel Indicators
   // ──────────────────────────────────────────────────────────
 
-  it('renders 4 indicator dots', () => {
+  it('renders 6 indicator dots', () => {
     render(<Testimonials />);
     const indicators = screen.getAllByRole('tab');
-    expect(indicators.length).toBe(4);
+    expect(indicators.length).toBe(6);
   });
 
   it('first indicator is active by default', () => {
@@ -242,6 +242,8 @@ describe('Testimonials', () => {
     expect(screen.getByLabelText(/Go to testimonial 2:/i)).toBeTruthy();
     expect(screen.getByLabelText(/Go to testimonial 3:/i)).toBeTruthy();
     expect(screen.getByLabelText(/Go to testimonial 4:/i)).toBeTruthy();
+    expect(screen.getByLabelText(/Go to testimonial 5:/i)).toBeTruthy();
+    expect(screen.getByLabelText(/Go to testimonial 6:/i)).toBeTruthy();
   });
 
   it('indicator tablist has proper role and label', () => {
@@ -265,7 +267,9 @@ describe('Testimonials', () => {
   it('wraps from last to first on "Next"', () => {
     render(<Testimonials />);
 
-    // Navigate: 0→1→2→3→0
+    // Navigate: 0→1→2→3→4→5→0
+    fireEvent.click(screen.getByLabelText('Next testimonial'));
+    fireEvent.click(screen.getByLabelText('Next testimonial'));
     fireEvent.click(screen.getByLabelText('Next testimonial'));
     fireEvent.click(screen.getByLabelText('Next testimonial'));
     fireEvent.click(screen.getByLabelText('Next testimonial'));

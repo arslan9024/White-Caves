@@ -26,7 +26,7 @@ const NETWORK_DELAY = 300; // milliseconds
  * Simulate API call with delay
  */
 const simulateApiDelay = (): Promise<void> => {
-  return new Promise((resolve) => {
+  return new Promise(resolve => {
     setTimeout(resolve, NETWORK_DELAY + Math.random() * 200);
   });
 };
@@ -35,6 +35,9 @@ const simulateApiDelay = (): Promise<void> => {
  * Simulate random errors (5% chance)
  */
 const shouldSimulateError = (): boolean => {
+  if (typeof process !== 'undefined' && process.env.NODE_ENV === 'test') {
+    return false;
+  }
   return Math.random() < 0.05; // 5% error rate
 };
 
@@ -142,10 +145,7 @@ export const fetchDepartmentSummary = async (departmentCode: string) => {
 /**
  * Search department data
  */
-export const searchDepartmentData = async (
-  departmentCode: string,
-  searchTerm: string
-) => {
+export const searchDepartmentData = async (departmentCode: string, searchTerm: string) => {
   await simulateApiDelay();
 
   const data = getMockDepartmentData(departmentCode);
@@ -159,9 +159,7 @@ export const searchDepartmentData = async (
 
   // Simple search implementation
   const results = {
-    kpis: data.kpis.filter((kpi) =>
-      kpi.label.toLowerCase().includes(searchTerm.toLowerCase())
-    ),
+    kpis: data.kpis.filter(kpi => kpi.label.toLowerCase().includes(searchTerm.toLowerCase())),
   };
 
   return {

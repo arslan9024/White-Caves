@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { authFetch } from '../utils/authFetch';
 import './ContractGeneratorPage.css';
 
 /**
@@ -16,18 +17,18 @@ const ContractGeneratorPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [generateError, setGenerateError] = useState(null);
-  const [showCustomize, setShowCustomize] = useState(false);
   const [customizations, setCustomizations] = useState({});
 
   // Fetch offer and contract on mount
   useEffect(() => {
     fetchOffer();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [offerId]);
 
   const fetchOffer = async () => {
     try {
       setLoading(true);
-      const response = await fetch(`/api/offers/${offerId}`);
+      const response = await authFetch(`/api/offers/${offerId}`);
 
       if (!response.ok) {
         throw new Error('Failed to fetch offer');
@@ -45,7 +46,7 @@ const ContractGeneratorPage = () => {
   const generateContract = async () => {
     try {
       setGenerateError(null);
-      const response = await fetch(`/api/contract-generator/from-offer/${offerId}`, {
+      const response = await authFetch(`/api/contract-generator/from-offer/${offerId}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -78,7 +79,7 @@ const ContractGeneratorPage = () => {
     if (!contract) return;
 
     try {
-      const response = await fetch(`/api/contract-generator/${contract._id}/preview`);
+      const response = await authFetch(`/api/contract-generator/${contract._id}/preview`);
       const html = await response.text();
 
       // Open in new window for preview
@@ -94,7 +95,7 @@ const ContractGeneratorPage = () => {
     if (!contract) return;
 
     try {
-      const response = await fetch(`/api/contract-generator/${contract._id}`, {
+      const response = await authFetch(`/api/contract-generator/${contract._id}`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
@@ -147,11 +148,15 @@ const ContractGeneratorPage = () => {
             <span className="number">1</span> Preview
           </span>
           <span className="separator">→</span>
-          <span className={`step ${step === 'review' ? 'active' : step === 'preview' ? 'pending' : 'completed'}`}>
+          <span
+            className={`step ${step === 'review' ? 'active' : step === 'preview' ? 'pending' : 'completed'}`}
+          >
             <span className="number">2</span> Review
           </span>
           <span className="separator">→</span>
-          <span className={`step ${step === 'customize' ? 'active' : step === 'review' ? 'pending' : 'completed'}`}>
+          <span
+            className={`step ${step === 'customize' ? 'active' : step === 'review' ? 'pending' : 'completed'}`}
+          >
             <span className="number">3</span> Customize
           </span>
           <span className="separator">→</span>
@@ -202,8 +207,8 @@ const ContractGeneratorPage = () => {
             <div className="step-info">
               <h3>Step 1: Ready to Generate?</h3>
               <p>
-                The offer has been approved by both the landlord and tenant. You can now generate a formal EJARI-compliant
-                tenancy contract based on the offer details.
+                The offer has been approved by both the landlord and tenant. You can now generate a
+                formal EJARI-compliant tenancy contract based on the offer details.
               </p>
             </div>
 
@@ -229,7 +234,10 @@ const ContractGeneratorPage = () => {
           <div className="step-content">
             <div className="step-info">
               <h3>Step 2: Review Contract Details</h3>
-              <p>Review the generated contract details below. You can customize specific fields if needed.</p>
+              <p>
+                Review the generated contract details below. You can customize specific fields if
+                needed.
+              </p>
             </div>
 
             <div className="contract-preview-box">
@@ -260,7 +268,9 @@ const ContractGeneratorPage = () => {
                 <div className="preview-grid">
                   <div className="preview-item">
                     <span className="label">Monthly Rent</span>
-                    <span className="value">AED {contract.leaseTerms?.monthlyRent?.toLocaleString()}</span>
+                    <span className="value">
+                      AED {contract.leaseTerms?.monthlyRent?.toLocaleString()}
+                    </span>
                   </div>
                   <div className="preview-item">
                     <span className="label">Duration</span>
@@ -268,7 +278,9 @@ const ContractGeneratorPage = () => {
                   </div>
                   <div className="preview-item">
                     <span className="label">Security Deposit</span>
-                    <span className="value">AED {contract.leaseTerms?.securityDeposit?.toLocaleString()}</span>
+                    <span className="value">
+                      AED {contract.leaseTerms?.securityDeposit?.toLocaleString()}
+                    </span>
                   </div>
                   <div className="preview-item">
                     <span className="label">Cheque Frequency</span>
@@ -282,10 +294,7 @@ const ContractGeneratorPage = () => {
               <button onClick={handlePreview} className="btn btn-secondary">
                 Preview Full Contract
               </button>
-              <button
-                onClick={() => setStep('customize')}
-                className="btn btn-primary"
-              >
+              <button onClick={() => setStep('customize')} className="btn btn-primary">
                 Customize Details
               </button>
             </div>
@@ -309,7 +318,7 @@ const ContractGeneratorPage = () => {
                     <input
                       type="text"
                       defaultValue={contract.landlordDetails?.name}
-                      onChange={(e) => updateCustomization('landlordDetails.name', e.target.value)}
+                      onChange={e => updateCustomization('landlordDetails.name', e.target.value)}
                     />
                   </div>
                   <div className="form-group">
@@ -317,7 +326,7 @@ const ContractGeneratorPage = () => {
                     <input
                       type="email"
                       defaultValue={contract.landlordDetails?.email}
-                      onChange={(e) => updateCustomization('landlordDetails.email', e.target.value)}
+                      onChange={e => updateCustomization('landlordDetails.email', e.target.value)}
                     />
                   </div>
                   <div className="form-group">
@@ -325,7 +334,7 @@ const ContractGeneratorPage = () => {
                     <input
                       type="tel"
                       defaultValue={contract.landlordDetails?.phone}
-                      onChange={(e) => updateCustomization('landlordDetails.phone', e.target.value)}
+                      onChange={e => updateCustomization('landlordDetails.phone', e.target.value)}
                     />
                   </div>
                   <div className="form-group">
@@ -333,7 +342,9 @@ const ContractGeneratorPage = () => {
                     <input
                       type="text"
                       defaultValue={contract.landlordDetails?.emiratesId}
-                      onChange={(e) => updateCustomization('landlordDetails.emiratesId', e.target.value)}
+                      onChange={e =>
+                        updateCustomization('landlordDetails.emiratesId', e.target.value)
+                      }
                     />
                   </div>
                 </div>
@@ -347,7 +358,7 @@ const ContractGeneratorPage = () => {
                     <input
                       type="text"
                       defaultValue={contract.tenantDetails?.name}
-                      onChange={(e) => updateCustomization('tenantDetails.name', e.target.value)}
+                      onChange={e => updateCustomization('tenantDetails.name', e.target.value)}
                     />
                   </div>
                   <div className="form-group">
@@ -355,7 +366,7 @@ const ContractGeneratorPage = () => {
                     <input
                       type="email"
                       defaultValue={contract.tenantDetails?.email}
-                      onChange={(e) => updateCustomization('tenantDetails.email', e.target.value)}
+                      onChange={e => updateCustomization('tenantDetails.email', e.target.value)}
                     />
                   </div>
                   <div className="form-group">
@@ -363,7 +374,7 @@ const ContractGeneratorPage = () => {
                     <input
                       type="tel"
                       defaultValue={contract.tenantDetails?.phone}
-                      onChange={(e) => updateCustomization('tenantDetails.phone', e.target.value)}
+                      onChange={e => updateCustomization('tenantDetails.phone', e.target.value)}
                     />
                   </div>
                   <div className="form-group">
@@ -371,7 +382,9 @@ const ContractGeneratorPage = () => {
                     <input
                       type="text"
                       defaultValue={contract.tenantDetails?.emiratesId}
-                      onChange={(e) => updateCustomization('tenantDetails.emiratesId', e.target.value)}
+                      onChange={e =>
+                        updateCustomization('tenantDetails.emiratesId', e.target.value)
+                      }
                     />
                   </div>
                 </div>
@@ -385,7 +398,9 @@ const ContractGeneratorPage = () => {
                     <input
                       type="number"
                       defaultValue={contract.leaseTerms?.monthlyRent}
-                      onChange={(e) => updateCustomization('leaseTerms.monthlyRent', parseFloat(e.target.value))}
+                      onChange={e =>
+                        updateCustomization('leaseTerms.monthlyRent', parseFloat(e.target.value))
+                      }
                     />
                   </div>
                   <div className="form-group">
@@ -393,7 +408,12 @@ const ContractGeneratorPage = () => {
                     <input
                       type="number"
                       defaultValue={contract.leaseTerms?.securityDeposit}
-                      onChange={(e) => updateCustomization('leaseTerms.securityDeposit', parseFloat(e.target.value))}
+                      onChange={e =>
+                        updateCustomization(
+                          'leaseTerms.securityDeposit',
+                          parseFloat(e.target.value)
+                        )
+                      }
                     />
                   </div>
                   <div className="form-group">
@@ -401,14 +421,19 @@ const ContractGeneratorPage = () => {
                     <input
                       type="number"
                       defaultValue={contract.leaseTerms?.rentIncreasePercentage}
-                      onChange={(e) => updateCustomization('leaseTerms.rentIncreasePercentage', parseFloat(e.target.value))}
+                      onChange={e =>
+                        updateCustomization(
+                          'leaseTerms.rentIncreasePercentage',
+                          parseFloat(e.target.value)
+                        )
+                      }
                     />
                   </div>
                   <div className="form-group">
                     <label>Special Terms</label>
                     <textarea
                       defaultValue={contract.leaseTerms?.specialTerms}
-                      onChange={(e) => updateCustomization('leaseTerms.specialTerms', e.target.value)}
+                      onChange={e => updateCustomization('leaseTerms.specialTerms', e.target.value)}
                       rows="3"
                     />
                   </div>
@@ -468,7 +493,10 @@ const ContractGeneratorPage = () => {
               <button onClick={handlePreview} className="btn btn-secondary">
                 Preview Contract
               </button>
-              <button onClick={() => navigate(`/contracts/${contract._id}/signature`)} className="btn btn-primary">
+              <button
+                onClick={() => navigate(`/contracts/${contract._id}/signature`)}
+                className="btn btn-primary"
+              >
                 Proceed to Signatures
               </button>
             </div>

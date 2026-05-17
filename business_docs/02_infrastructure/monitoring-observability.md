@@ -430,3 +430,323 @@ Generated on the 1st of each month, distributed to Engineering Lead and CTO:
 ---
 
 *This document is reviewed quarterly and updated when monitoring infrastructure changes. All P1 post-mortems should reference and potentially update this document.*
+
+---
+
+## 11. Complete Alerting Threshold Matrix
+
+All alerts are **PagerDuty-routed** for P1/P2 and **Slack #alerts** for P3/P4.
+
+| Metric | Warning Threshold | Critical Threshold | Auto-Action | Routing |
+|--------|------------------|--------------------|-------------|---------|
+| API response time p95 | > 500 ms for 5 min | > 2,000 ms for 2 min | Scale-up trigger | P2→Slack; P1→PagerDuty |
+| API response time p99 | > 1,000 ms for 5 min | > 5,000 ms for 2 min | Incident created | P1→PagerDuty |
+| API error rate (5xx) | > 1% for 5 min | > 5% for 2 min | PagerDuty page | P1→PagerDuty |
+| API error rate (4xx) | > 10% for 10 min | > 25% for 5 min | Slack alert | P2→Slack |
+| API availability | < 99.9% (30-day) | < 99.5% (7-day) | SLA breach alert | P1→PagerDuty |
+| MongoDB Atlas CPU | > 70% for 10 min | > 90% for 5 min | Auto-scale trigger | P2→Slack; P1→PagerDuty |
+| MongoDB Atlas storage | > 75% | > 90% | Atlas auto-scale | P2→Slack |
+| MongoDB connections | > 70% max pool | > 90% max pool | Alert + investigate | P2→Slack; P1→PagerDuty |
+| MongoDB oplog window | < 12 hours | < 4 hours | Immediate alert | P1→PagerDuty |
+| MongoDB Atlas query latency p99 | > 100 ms | > 500 ms | Slow query alert | P3→Slack |
+| Redis memory usage | > 75% | > 90% | Eviction check | P2→Slack |
+| Redis hit rate | < 80% | < 60% | Cache analysis | P3→Slack |
+| Redis connection errors | > 0 for 1 min | > 10/min | PagerDuty | P1→PagerDuty |
+| WhatsApp webhook queue depth | > 500 messages | > 2,000 messages | Scale worker | P2→Slack; P1→PagerDuty |
+| WhatsApp webhook processing latency | > 5 s | > 15 s | Alert | P2→Slack |
+| WhatsApp webhook error rate | > 1% | > 5% | PagerDuty | P1→PagerDuty |
+| CPU (API pods) | > 70% for 5 min | > 90% for 2 min | HPA scale-up | P2→Slack |
+| Memory (API pods) | > 80% for 5 min | > 95% for 2 min | HPA scale-up | P1→PagerDuty |
+| Pod restart count | > 2 in 10 min | > 5 in 10 min | Alert + investigate | P2→Slack; P1→PagerDuty |
+| SSL certificate expiry | 30 days remaining | 7 days remaining | Auto-renew trigger | P2→Slack; P1→PagerDuty |
+| Failed login attempts (per IP) | > 5 in 15 min | > 20 in 15 min | Auto-block IP | P2→Security Slack |
+| Failed login attempts (per user) | > 10 in 1 hour | > 25 in 1 hour | Account lock | P2→Security Slack |
+| Unusual data export volume | > 10,000 records in 1 hour | > 50,000 records in 1 hour | Alert security | P1→PagerDuty |
+| RERA license expiry (agent) | 60 days before | 7 days before | Email + Slack agent | P3→Slack |
+
+---
+
+## 12. Slack / Email Alert Routing
+
+### 12.1 Slack Channel Assignments
+
+| Channel | Severity | Alert Types |
+|---------|----------|-------------|
+| `#p1-incidents` | P1 (Critical) | API down, data loss, security breach, DB failure |
+| `#alerts` | P2 (High) | High latency, elevated error rate, pod restarts, queue depth |
+| `#monitoring` | P3 (Medium) | Cache miss rate, slow queries, disk usage warnings |
+| `#security-alerts` | P1/P2 (Security) | Failed login spikes, unauthorized access, export anomalies |
+| `#deploys` | Info | Deployment start/success/failure, rollback events |
+| `#on-call` | P1/P2 | PagerDuty escalation mirror |
+
+### 12.2 Alertmanager Route Configuration
+
+```yaml
+# monitoring/alertmanager/config.yml
+global:
+  resolve_timeout: 5m
+  slack_api_url: "$SLACK_WEBHOOK_URL"
+
+route:
+  group_by: ['alertname', 'severity']
+  group_wait: 30s
+  group_interval: 5m
+  repeat_interval: 12h
+  receiver: 'default-slack'
+  routes:
+    - match:
+        severity: critical
+      receiver: 'pagerduty-critical'
+      continue: true   # Also send to Slack
+    - match:
+        severity: critical
+      receiver: 'slack-p1-incidents'
+    - match:
+        severity: warning
+      receiver: 'slack-alerts'
+    - match:
+        category: security
+      receiver: 'slack-security'
+
+receivers:
+  - name: 'pagerduty-critical'
+    pagerduty_configs:
+      - routing_key: "$PAGERDUTY_INTEGRATION_KEY"
+        description: '{{ .CommonAnnotations.summary }}'
+
+  - name: 'slack-p1-incidents'
+    slack_configs:
+      - channel: '#p1-incidents'
+        title: '🚨 P1 CRITICAL: {{ .CommonAnnotations.summary }}'
+        text: |
+          *Alert:* {{ .CommonAnnotations.description }}
+          *Severity:* {{ .CommonLabels.severity }}
+          *Started:* {{ .StartsAt | time }}
+          *Runbook:* {{ .CommonAnnotations.runbook_url }}
+
+  - name: 'slack-alerts'
+    slack_configs:
+      - channel: '#alerts'
+        title: '⚠️ WARNING: {{ .CommonAnnotations.summary }}'
+        text: '{{ .CommonAnnotations.description }}'
+
+  - name: 'slack-security'
+    slack_configs:
+      - channel: '#security-alerts'
+        title: '🔐 SECURITY ALERT: {{ .CommonAnnotations.summary }}'
+        text: '{{ .CommonAnnotations.description }}'
+
+  - name: 'default-slack'
+    slack_configs:
+      - channel: '#monitoring'
+```
+
+### 12.3 Email Alert Routing
+
+| Alert Type | Recipients | Frequency |
+|-----------|-----------|-----------|
+| P1 incidents | CTO, Backend Lead, On-call | Immediate |
+| Daily health summary | CTO, Managing Director | 08:00 GST daily |
+| Weekly SLA report | CTO, Management team | Monday 09:00 GST |
+| Security alerts | Security Officer, CTO | Immediate |
+| RERA license expiry (60 days) | Agent + Manager + HR | Once at 60 days, once at 30 days, once at 7 days |
+| SSL certificate expiry | DevOps lead | 30 days, 14 days, 7 days |
+
+---
+
+## 13. Daily Health Report Template
+
+**Delivery:** Automated email + Slack `#monitoring`, every day at **08:00 GST**
+**Recipients:** CTO, Managing Director, Backend Lead
+
+```
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+WHITE CAVES CRM — DAILY HEALTH REPORT
+Date: {YYYY-MM-DD} | Generated: {HH:MM} GST
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📊 SYSTEM HEALTH OVERVIEW
+  Overall Status: ● HEALTHY / ⚠ DEGRADED / ✖ DOWN
+
+  Component        Status   p95 Latency   Error Rate   Uptime (24h)
+  ─────────────────────────────────────────────────────────────────
+  API              ●        {X}ms         {X}%         {X}%
+  MongoDB Atlas    ●        {X}ms         N/A          {X}%
+  Redis            ●        N/A           N/A          {X}%
+  WhatsApp (Nadia) ●        {X}ms         {X}%         {X}%
+  CDN (Cloudflare) ●        {X}ms         N/A          {X}%
+
+📈 KEY METRICS (Last 24 Hours)
+  Total API Requests:       {X,XXX}
+  Successful Requests:      {X,XXX} ({X}%)
+  Failed Requests (5xx):    {XX}   ({X}%)
+  WhatsApp Messages Received: {XXX}
+  WhatsApp Messages Sent:     {XXX}
+  New Leads Created:          {XX}
+  Active User Sessions:       {XX} peak
+
+🗄️ DATABASE HEALTH
+  MongoDB Atlas Tier:    {M20/M30/M50}
+  Connections Used:      {XXX} / {MAX}  ({X}%)
+  Storage Used:          {X.X} GB / {MAX} GB  ({X}%)
+  Oplog Window:          {XX} hours
+  Slowest Query (p99):   {X}ms — Collection: {name}
+
+⚠️ ALERTS FIRED (Last 24 Hours)
+  P1 (Critical):  {X} fired, {X} resolved
+  P2 (Warning):   {X} fired, {X} resolved
+  P3 (Info):      {X} fired
+
+🔒 SECURITY EVENTS
+  Failed Login Attempts:  {XX} (flagged IPs: {X})
+  Rate Limit Hits:        {XXX}
+  Suspicious Export Attempts: {X}
+
+📋 UPCOMING MAINTENANCE
+  {List any scheduled maintenance windows}
+
+🔗 Full Dashboard: https://grafana.whitecaves.ae/d/daily-health
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+```
+
+**Implementation:** Grafana scheduled report or custom `scripts/monitoring/daily-health-report.js` cron at 07:55 GST, pushes to Slack and sends email via Resend API.
+
+---
+
+## 14. SLA Breach Early Warning System (Burn Rate Alerts)
+
+### 14.1 SLA Burn Rate Concept
+
+A burn-rate alert fires when the current error rate, if sustained, would exhaust the monthly SLA error budget before the end of the month.
+
+**Current SLA target:** 99.9% API availability = **43.8 minutes downtime/month** allowed
+
+**Error budget = 0.1% of all requests per month**
+
+### 14.2 Burn Rate Alert Thresholds
+
+| Alert Name | Burn Rate | Look-Back Window | Pages? | Meaning |
+|-----------|-----------|-----------------|--------|---------|
+| `critical_burn` | **14.4×** (consumes 2% of budget in 1 hour) | 5 min window | **Yes (PagerDuty)** | At this rate, entire monthly budget exhausted in ~2 days |
+| `high_burn` | **6×** (consumes 5% of budget in 6 hours) | 30 min window | **Yes (Slack P1)** | Serious degradation; act within 1 hour |
+| `medium_burn` | **3×** (consumes 10% of budget in 1 day) | 2 hour window | Slack P2 | Elevated error rate; investigate same day |
+| `low_burn` | **1×** (consuming budget at baseline rate) | 6 hour window | Slack P3 | Normal operations; no action needed |
+
+### 14.3 Prometheus Burn Rate Alert Rules
+
+```yaml
+# monitoring/prometheus/sla-burn-rate.yml
+groups:
+  - name: sla_burn_rate
+    rules:
+      - alert: SLABurnRateCritical
+        expr: |
+          (
+            rate(http_requests_total{job="whitecaves-api", status=~"5.."}[5m])
+            /
+            rate(http_requests_total{job="whitecaves-api"}[5m])
+          ) > (14.4 * 0.001)
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "SLA error budget burning at 14.4× rate"
+          description: "At current error rate ({{ $value | humanizePercentage }}), the monthly error budget will be exhausted in < 2 days."
+          runbook_url: "https://docs.whitecaves.ae/runbooks/sla-breach"
+
+      - alert: SLABurnRateHigh
+        expr: |
+          (
+            rate(http_requests_total{job="whitecaves-api", status=~"5.."}[30m])
+            /
+            rate(http_requests_total{job="whitecaves-api"}[30m])
+          ) > (6 * 0.001)
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "SLA error budget burning at 6× rate"
+          description: "Elevated error rate detected. Monthly budget at risk."
+```
+
+### 14.4 Monthly Error Budget Tracker
+
+Tracked in Grafana dashboard `SLA Error Budget`:
+- **Budget remaining (%):** Real-time gauge (green → yellow at 50% remaining, red at 10% remaining)
+- **Burn rate (30-day rolling):** Line chart
+- **Top error contributors:** Table (endpoint, error count, error %)
+- **SLA compliance history:** Month-by-month bar chart
+
+---
+
+## 15. Log Retention Policy (Formal)
+
+### 15.1 Retention Schedule
+
+| Log Category | Retention Period | Storage | Legal Basis |
+|-------------|-----------------|---------|-------------|
+| **Application logs** (INFO/DEBUG) | **90 days** | Grafana Loki / CloudWatch | Operational; no legal mandate |
+| **Error logs** (WARN/ERROR) | **1 year** | Grafana Loki | Post-incident analysis |
+| **Access logs** (HTTP requests) | **90 days** | Cloudflare log push → S3 | GDPR/PDPL — personal data minimisation |
+| **Authentication audit logs** | **3 years** | MongoDB Atlas (append-only) | PDPL; internal security policy |
+| **Activity audit trail** (CRUD on all entities) | **7 years** | MongoDB Atlas (append-only) | UAE Commercial Transactions Law (Federal Law No. 18/1993) |
+| **Financial transaction logs** | **7 years** | MongoDB Atlas (append-only) + S3 WORM | UAE Commercial Law + CBUAE |
+| **AML / Compliance logs** | **7 years** | MongoDB Atlas (append-only) + S3 WORM | Federal Law No. 20/2018 (AML) + CBUAE |
+| **Security incident logs** | **3 years** | Separate isolated storage | UAE Cybercrime Law No. 34/2021 |
+| **WhatsApp message logs** | **90 days** (operational) / **7 years** (compliance flags) | MongoDB Atlas | PDPL + CBUAE |
+| **RERA Ejari transaction logs** | **7 years** | MongoDB Atlas (append-only) | RERA mandate |
+
+### 15.2 Log Archival Automation
+
+```bash
+# scripts/monitoring/archive-old-logs.sh
+# Run nightly at 01:00 GST via cron
+
+# Archive Loki logs older than 90 days to S3 (UAE region)
+loki-canary archive \
+  --from="$(date -d '91 days ago' +%Y-%m-%dT00:00:00Z)" \
+  --to="$(date -d '90 days ago' +%Y-%m-%dT00:00:00Z)" \
+  --s3-bucket="whitecaves-log-archive" \
+  --s3-region="me-south-1" \
+  --compress="gzip"
+
+# Verify S3 archive write succeeded
+aws s3 ls s3://whitecaves-log-archive/$(date +%Y/%m)/ \
+  --region me-south-1 | tail -5
+```
+
+### 15.3 Log Access Controls
+
+| Log Type | Who Can Read | Who Can Delete | Notes |
+|---------|-------------|---------------|-------|
+| Application logs | Engineering team | DevOps lead only | Standard logs |
+| Audit trail | Engineering + Compliance + Management | **Nobody** (append-only collection) | Immutable by design |
+| Financial logs | Finance + Management + External auditor | **Nobody** (S3 WORM policy) | S3 Object Lock: Compliance mode |
+| Security logs | Security officer + CTO | **Nobody for 3 years** | Isolated access |
+| AML logs | Compliance officer + CBUAE (on request) | **Nobody for 7 years** | CBUAE may request access |
+
+**S3 WORM Configuration for Financial Logs:**
+```json
+{
+  "ObjectLockConfiguration": {
+    "ObjectLockEnabled": "Enabled",
+    "Rule": {
+      "DefaultRetention": {
+        "Mode": "COMPLIANCE",
+        "Years": 7
+      }
+    }
+  }
+}
+```
+
+**Acceptance Criteria:**
+- [ ] Audit trail collection has no `deleteOne` or `updateOne` calls in codebase
+- [ ] S3 bucket for financial logs has Object Lock enabled in COMPLIANCE mode
+- [ ] Log retention dashboard shows all categories meeting minimum retention
+- [ ] Annual log integrity check script (`scripts/monitoring/verify-log-retention.js`) passes
+- [ ] PDPL data subject deletion requests delete PII from application data but preserve audit trail skeleton (action recorded, PII redacted)
+
+---
+
+*This document is reviewed quarterly and updated when monitoring infrastructure changes. All P1 post-mortems should reference and potentially update this document. Log retention periods are reviewed annually by the Compliance Officer against current UAE legislation.*

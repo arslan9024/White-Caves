@@ -19,7 +19,7 @@ import {
   RefreshCw,
   FileSpreadsheet,
 } from 'lucide-react';
-import axios from 'axios';
+import { authFetch } from '../../../utils/authFetch';
 
 const PROPERTY_TYPES = [
   'Flat',
@@ -84,10 +84,12 @@ export default function TransactionsView() {
         ...Object.fromEntries(Object.entries(filters).filter(([_, v]) => v)),
       });
 
-      const response = await axios.get(`/api/transactions?${params}`);
-      if (response.data.success) {
-        setTransactions(response.data.data);
-        setPagination(prev => ({ ...prev, ...response.data.pagination }));
+      const response = await authFetch(`/api/transactions?${params}`);
+      if (!response.ok) return;
+      const payload = await response.json();
+      if (payload.success) {
+        setTransactions(payload.data);
+        setPagination(prev => ({ ...prev, ...payload.pagination }));
       }
     } catch {
       // handled silently
@@ -98,9 +100,11 @@ export default function TransactionsView() {
 
   const fetchStats = async () => {
     try {
-      const response = await axios.get('/api/transactions/stats');
-      if (response.data.success) {
-        setStats(response.data.stats);
+      const response = await authFetch('/api/transactions/stats');
+      if (!response.ok) return;
+      const payload = await response.json();
+      if (payload.success) {
+        setStats(payload.stats);
       }
     } catch {
       // handled silently
@@ -178,9 +182,17 @@ export default function TransactionsView() {
   const handleSave = async () => {
     try {
       if (modalMode === 'create') {
-        await axios.post('/api/transactions', editForm);
+        await authFetch('/api/transactions', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(editForm),
+        });
       } else {
-        await axios.put(`/api/transactions/${selectedTransaction._id}`, editForm);
+        await authFetch(`/api/transactions/${selectedTransaction._id}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(editForm),
+        });
       }
       setShowModal(false);
       fetchTransactions();
@@ -193,7 +205,7 @@ export default function TransactionsView() {
   const handleDelete = async id => {
     if (!window.confirm('Are you sure you want to delete this transaction?')) return;
     try {
-      await axios.delete(`/api/transactions/${id}`);
+      await authFetch(`/api/transactions/${id}`, { method: 'DELETE' });
       fetchTransactions();
       fetchStats();
     } catch {
@@ -210,11 +222,16 @@ export default function TransactionsView() {
     formData.append('file', file);
 
     try {
-      const response = await axios.post('/api/transactions/import', formData, {
-        headers: { 'Content-Type': 'multipart/form-data' },
+      const response = await authFetch('/api/transactions/import', {
+        method: 'POST',
+        body: formData,
       });
-      if (response.data.success) {
-        showStatus('success', `Successfully imported ${response.data.imported} transactions`);
+      if (!response.ok) {
+        throw new Error('Import failed');
+      }
+      const payload = await response.json();
+      if (payload.success) {
+        showStatus('success', `Successfully imported ${payload.imported} transactions`);
         fetchTransactions();
         fetchStats();
       }

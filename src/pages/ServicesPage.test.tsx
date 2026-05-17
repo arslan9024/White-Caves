@@ -5,7 +5,7 @@
  * trust indicators, consultation form, and user interactions.
  */
 import React from 'react';
-import { render, screen, fireEvent, within } from '@testing-library/react';
+import { render, screen, fireEvent, within, waitFor } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import { MemoryRouter } from 'react-router-dom';
 import { configureStore } from '@reduxjs/toolkit';
@@ -46,6 +46,13 @@ vi.mock('../components/layout/PublicLayout', () => ({
   ),
 }));
 
+vi.mock('../utils/authFetch', () => ({
+  authFetch: vi.fn(async () => ({
+    ok: true,
+    json: async () => ({}),
+  })),
+}));
+
 // ─── Helpers ────────────────────────────────────────────────────
 const createStore = (userOverrides: Record<string, unknown> = {}) =>
   configureStore({
@@ -66,7 +73,7 @@ const renderPage = (userOverrides: Record<string, unknown> = {}) =>
       <MemoryRouter>
         <ServicesPage />
       </MemoryRouter>
-    </Provider>,
+    </Provider>
   );
 
 beforeEach(() => {
@@ -279,39 +286,47 @@ describe('ServicesPage', () => {
     it('submits form and shows success toast', () => {
       renderPage();
       const nameInput = screen.getByPlaceholderText('Your Name');
+      const emailInput = screen.getByPlaceholderText('Email Address');
       const phoneInput = screen.getByPlaceholderText('Phone Number');
-      const serviceSelect = screen.getAllByRole('combobox').find(
-        (el) => el.getAttribute('name') === 'service'
-      )!;
+      const serviceSelect = screen
+        .getAllByRole('combobox')
+        .find(el => el.getAttribute('name') === 'service')!;
 
       fireEvent.change(nameInput, { target: { value: 'John Doe', name: 'name' } });
+      fireEvent.change(emailInput, { target: { value: 'john@example.com', name: 'email' } });
       fireEvent.change(phoneInput, { target: { value: '+971561234567', name: 'phone' } });
       fireEvent.change(serviceSelect, { target: { value: 'buying', name: 'service' } });
 
       const submitBtn = screen.getByText('Send Inquiry');
       fireEvent.click(submitBtn);
 
-      expect(mockToast.success).toHaveBeenCalledWith(
-        'Thank you for your inquiry! Our team will contact you shortly.',
-      );
+      return waitFor(() => {
+        expect(mockToast.success).toHaveBeenCalledWith(
+          'Thank you for your inquiry! Our team will contact you shortly.'
+        );
+      });
     });
 
     it('resets form after submission', () => {
       renderPage();
       const nameInput = screen.getByPlaceholderText('Your Name') as HTMLInputElement;
+      const emailInput = screen.getByPlaceholderText('Email Address') as HTMLInputElement;
       const phoneInput = screen.getByPlaceholderText('Phone Number') as HTMLInputElement;
-      const serviceSelect = screen.getAllByRole('combobox').find(
-        (el) => el.getAttribute('name') === 'service'
-      )! as HTMLSelectElement;
+      const serviceSelect = screen
+        .getAllByRole('combobox')
+        .find(el => el.getAttribute('name') === 'service')! as HTMLSelectElement;
 
       fireEvent.change(nameInput, { target: { value: 'John Doe', name: 'name' } });
+      fireEvent.change(emailInput, { target: { value: 'john@example.com', name: 'email' } });
       fireEvent.change(phoneInput, { target: { value: '+971561234567', name: 'phone' } });
       fireEvent.change(serviceSelect, { target: { value: 'buying', name: 'service' } });
 
       const submitBtn = screen.getByText('Send Inquiry');
       fireEvent.click(submitBtn);
 
-      expect(nameInput.value).toBe('');
+      return waitFor(() => {
+        expect(nameInput.value).toBe('');
+      });
     });
   });
 

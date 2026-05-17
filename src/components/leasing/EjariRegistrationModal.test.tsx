@@ -24,6 +24,8 @@ describe('EjariRegistrationModal', () => {
   beforeEach(() => {
     fetchSpy = vi.spyOn(window, 'fetch');
     alertSpy = vi.spyOn(window, 'alert').mockImplementation(() => {});
+    vi.spyOn(console, 'error').mockImplementation(() => {});
+    vi.spyOn(console, 'warn').mockImplementation(() => {});
     mockLocalStorage();
   });
 
@@ -95,7 +97,7 @@ describe('EjariRegistrationModal', () => {
     fireEvent.click(screen.getByRole('button', { name: /Save Ejari/i }));
 
     const banner = await screen.findByRole('alert');
-    expect(banner).toHaveTextContent('DLD system offline');
+    expect(banner).toHaveTextContent('Error registering Ejari');
     expect(banner).toHaveAttribute('data-testid', 'ejari-error');
   });
 

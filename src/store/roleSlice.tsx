@@ -53,10 +53,27 @@ const initialState: RoleState = {
   availableRoles: [
     { id: 'buyer', label: 'Buyer', icon: '🏠', description: 'Looking to purchase property' },
     { id: 'seller', label: 'Seller', icon: '💰', description: 'Want to sell your property' },
-    { id: 'landlord', label: 'Landlord', icon: '🏢', description: 'Renting out your property' },
-    { id: 'tenant', label: 'Tenant', icon: '🔑', description: 'Looking to rent a property' },
-    { id: 'leasing-agent', label: 'Leasing Agent', icon: '📋', description: 'Property rental specialist', requiresApproval: true },
-    { id: 'secondary-sales-agent', label: 'Sales Agent', icon: '📊', description: 'Property sales specialist', requiresApproval: true },
+    {
+      id: 'landlord',
+      label: 'Property Owner',
+      icon: '🔑',
+      description: 'Owner of rental properties',
+    },
+    { id: 'tenant', label: 'Tenant', icon: '🏠', description: 'Looking to rent a property' },
+    {
+      id: 'leasing-agent',
+      label: 'Leasing Agent',
+      icon: '📋',
+      description: 'Property rental specialist',
+      requiresApproval: true,
+    },
+    {
+      id: 'secondary-sales-agent',
+      label: 'Sales Agent',
+      icon: '📊',
+      description: 'Property sales specialist',
+      requiresApproval: true,
+    },
   ],
   userRoles: [],
   activeRole: null,
@@ -130,12 +147,12 @@ export const roleSlice = createSlice({
         requestId: request.id,
       });
     },
-    startRoleRequest: (state) => {
+    startRoleRequest: state => {
       state.userRoleRequest.isRequesting = true;
       state.userRoleRequest.lastRequestStatus = 'pending';
       state.userRoleRequest.errorMessage = null;
     },
-    roleRequestSuccess: (state) => {
+    roleRequestSuccess: state => {
       state.userRoleRequest.isRequesting = false;
       state.userRoleRequest.lastRequestStatus = 'success';
     },
@@ -189,21 +206,21 @@ export const roleSlice = createSlice({
         });
       }
     },
-    clearRoleRequestStatus: (state) => {
+    clearRoleRequestStatus: state => {
       state.userRoleRequest.lastRequestStatus = 'idle';
       state.userRoleRequest.errorMessage = null;
     },
     dismissStatusItem: (state, action: PayloadAction<string>) => {
       state.statusHistory = state.statusHistory.filter(s => s.id !== action.payload);
     },
-    clearStatusHistory: (state) => {
+    clearStatusHistory: state => {
       state.statusHistory = [];
     },
     setPendingRequests: (state, action: PayloadAction<RoleRequest[]>) => {
       state.pendingRequests = action.payload;
     },
   },
-  extraReducers: (builder) => {
+  extraReducers: builder => {
     builder.addCase(logout, () => initialState);
   },
 });

@@ -107,3 +107,18 @@ White Caves is a full-stack real estate CRM platform purpose-built for the Dubai
 ---
 
 *For questions about infrastructure, open an issue in the repository with the `infrastructure` label.*
+
+---
+
+## Updates (June 2026)
+
+All six sub-documents have been expanded with UAE compliance depth, API/data specs, acceptance criteria, and testability notes. Summary of additions:
+
+| Document | New Sections Added | Key Additions |
+|---------|-------------------|--------------|
+| [database-architecture.md](./database-architecture.md) | §11–15 | Atlas cluster config, per-collection index reference, PDPL/UAE data residency, query perf targets, backup matrix |
+| [security-architecture.md](./security-architecture.md) | §12–18 | JWT rotation policy (15 min access + 7 day refresh), extended OWASP matrix, per-endpoint rate limits, RERA data handling, AML encryption (TLS 1.3 / CSFLE), vulnerability disclosure policy, UAE Cybercrime Law §34/2021 |
+| [scaling-strategy.md](./scaling-strategy.md) | §12–16 | k6 load test plan (500 agents), K8s HPA YAML, auto-scaling trigger matrix, Dubai CDN Cloudflare config (< 100 ms), Vercel limits, AED cost projections at 100/500/1,000 agents |
+| [disaster-recovery-plan.md](./disaster-recovery-plan.md) | §11–15 | Shell runbooks (Atlas failover, API restore, Redis, CDN, DB restore), escalation contact tree, UAE data residency mandate, RERA outage notification template, 2026 DR drill calendar |
+| [monitoring-observability.md](./monitoring-observability.md) | §11–15 | Full alert threshold matrix (25+ metrics), Alertmanager YAML config, Slack channel routing, daily health report template, SLA burn rate Prometheus rules, formal log retention policy (7-year AML/financial) |
+| [WHATSAPP_THREE_ASSISTANT_ARCHITECTURE.md](./WHATSAPP_THREE_ASSISTANT_ARCHITECTURE.md) | §9–12 | Meta WABA compliance checklist, UAE PDPL/TRA obligations, template approval matrix, error handling + fallback chain (Claude→OpenAI→Groq→canned), per-assistant Prometheus metrics, security notes per assistant |

@@ -41,6 +41,9 @@ jobs:
 
       - name: Run SEO quality gate
         run: npm run quality:seo
+
+      - name: Run assistant endpoint contract gate
+        run: npm run test:assistant-contract
       
       - name: Run unit tests
         run: npm test -- --run --reporter=verbose --coverage --coverage.reporter=lcov

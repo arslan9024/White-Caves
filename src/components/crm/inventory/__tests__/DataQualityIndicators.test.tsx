@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import React from 'react';
 import { Provider } from 'react-redux';
@@ -15,15 +15,43 @@ vi.mock('lucide-react', () => ({
 
 // Mock styled components
 vi.mock('../DataQualityIndicators.styles', () => ({
-  DataQualityIndicatorsContainer: ({ children, ...props }: any) => <div data-testid="dq-container" {...props}>{children}</div>,
-  IndicatorsHeader: ({ children, ...props }: any) => <div data-testid="dq-header" {...props}>{children}</div>,
-  IndicatorsGrid: ({ children, ...props }: any) => <div data-testid="dq-grid" {...props}>{children}</div>,
-  IndicatorCard: ({ children, onClick, ...props }: any) => <button data-testid="indicator-card" onClick={onClick} {...props}>{children}</button>,
+  DataQualityIndicatorsContainer: ({ children, ...props }: any) => (
+    <div data-testid="dq-container" {...props}>
+      {children}
+    </div>
+  ),
+  IndicatorsHeader: ({ children, ...props }: any) => (
+    <div data-testid="dq-header" {...props}>
+      {children}
+    </div>
+  ),
+  IndicatorsGrid: ({ children, ...props }: any) => (
+    <div data-testid="dq-grid" {...props}>
+      {children}
+    </div>
+  ),
+  IndicatorCard: ({ children, onClick, ...props }: any) => (
+    <button data-testid="indicator-card" onClick={onClick} {...props}>
+      {children}
+    </button>
+  ),
   IndicatorIcon: ({ children, ...props }: any) => <div {...props}>{children}</div>,
   IndicatorContent: ({ children, ...props }: any) => <div {...props}>{children}</div>,
-  IndicatorValue: ({ children, ...props }: any) => <span data-testid="indicator-value" {...props}>{children}</span>,
-  IndicatorLabel: ({ children, ...props }: any) => <span data-testid="indicator-label" {...props}>{children}</span>,
-  IndicatorDesc: ({ children, ...props }: any) => <span data-testid="indicator-desc" {...props}>{children}</span>,
+  IndicatorValue: ({ children, ...props }: any) => (
+    <span data-testid="indicator-value" {...props}>
+      {children}
+    </span>
+  ),
+  IndicatorLabel: ({ children, ...props }: any) => (
+    <span data-testid="indicator-label" {...props}>
+      {children}
+    </span>
+  ),
+  IndicatorDesc: ({ children, ...props }: any) => (
+    <span data-testid="indicator-desc" {...props}>
+      {children}
+    </span>
+  ),
 }));
 
 // Mock the Redux selectors
@@ -61,6 +89,8 @@ const renderWithStore = (props: { onFilterClick?: (key: string) => void } = {}) 
 describe('DataQualityIndicators', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    vi.spyOn(console, 'error').mockImplementation(() => {});
+    vi.spyOn(console, 'warn').mockImplementation(() => {});
     mockSelectInventoryStats.mockReturnValue({
       multiOwnerProperties: 5,
       ownersWithMultipleProperties: 10,
@@ -75,9 +105,11 @@ describe('DataQualityIndicators', () => {
       { id: 'O2', name: 'Owner 2', properties: ['P3', 'P4'] },
       { id: 'O3', name: 'Owner 3', properties: ['P5', 'P6'] },
     ]);
-    mockSelectOwnersWithMultiplePhones.mockReturnValue([
-      { id: 'O1', name: 'Owner 1' },
-    ]);
+    mockSelectOwnersWithMultiplePhones.mockReturnValue([{ id: 'O1', name: 'Owner 1' }]);
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
   });
 
   it('should render Data Quality Insights heading', () => {

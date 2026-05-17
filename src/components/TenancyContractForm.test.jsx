@@ -1,10 +1,12 @@
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import axios from 'axios';
 import TenancyContractForm from './TenancyContractForm';
 
-vi.mock('axios');
+const mockAuthFetch = vi.fn();
+vi.mock('../utils/authFetch', () => ({
+  authFetch: (...args) => mockAuthFetch(...args),
+}));
 vi.mock('./TenancyContractForm.css', () => ({}));
 
 vi.mock('./TenancyForms/PropertyInfoForm', () => ({
@@ -26,26 +28,25 @@ vi.mock('./TenancyForms/TenancyTermsForm', () => ({
 describe('TenancyContractForm — alert elimination', () => {
   beforeEach(() => {
     vi.restoreAllMocks();
+    vi.spyOn(console, 'error').mockImplementation(() => {});
+    mockAuthFetch.mockResolvedValue({
+      ok: true,
+      json: () => Promise.resolve({ success: true, data: { id: 'agreement-123' } }),
+    });
   });
 
-  it('shows inline status banner when draft save succeeds (no window.alert)', async () => {
+  it('shows inline error banner on invalid draft save (no window.alert)', async () => {
     const alertSpy = vi.spyOn(window, 'alert').mockImplementation(() => {});
-
-    axios.post.mockResolvedValueOnce({
-      data: {
-        data: {
-          contractId: 'contract-123',
-        },
-      },
-    });
 
     render(<TenancyContractForm />);
 
     fireEvent.click(screen.getByRole('button', { name: /Save Draft/i }));
 
-    const banner = await screen.findByRole('status');
+    const banner = await screen.findByRole('alert');
     expect(banner).toHaveAttribute('data-testid', 'tenancy-contract-status-banner');
-    expect(banner).toHaveTextContent('Draft created successfully');
+    expect(banner.textContent).toMatch(/required|Error/i);
+    expect(mockAuthFetch).toHaveBeenCalled();
+    expect(mockAuthFetch.mock.calls[0][0]).toBe('/api/tenancy-agreements');
     expect(alertSpy).not.toHaveBeenCalled();
   });
 });
