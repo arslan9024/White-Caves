@@ -6,7 +6,7 @@
  * service card clicks, Suspense fallbacks
  */
 
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeAll, beforeEach, afterAll } from 'vitest';
 import { render, screen, fireEvent, within } from '@testing-library/react';
 import React from 'react';
 
@@ -47,7 +47,10 @@ vi.mock('../../../hooks/useActionHandler', () => ({
 
 vi.mock('../../../utils/logger', () => ({
   createLogger: () => ({
-    info: vi.fn(), warn: vi.fn(), error: vi.fn(), debug: vi.fn(),
+    info: vi.fn(),
+    warn: vi.fn(),
+    error: vi.fn(),
+    debug: vi.fn(),
   }),
 }));
 
@@ -63,16 +66,12 @@ vi.mock('../../charts/MetricsChart', () => ({
 
 vi.mock('../../charts/TrendChart', () => ({
   __esModule: true,
-  default: ({ title }: { title: string }) => (
-    <div data-testid="trend-chart">{title}</div>
-  ),
+  default: ({ title }: { title: string }) => <div data-testid="trend-chart">{title}</div>,
 }));
 
 vi.mock('../../charts/DistributionChart', () => ({
   __esModule: true,
-  default: ({ title }: { title: string }) => (
-    <div data-testid="distribution-chart">{title}</div>
-  ),
+  default: ({ title }: { title: string }) => <div data-testid="distribution-chart">{title}</div>,
 }));
 
 vi.mock('../../charts/EnhancedStatCard', () => ({
@@ -112,11 +111,9 @@ vi.mock('./departmentData', () => {
               { label: 'Import Data', icon: () => React.createElement('span', null, '📥') },
             ],
           },
-          'Properties': {
+          Properties: {
             description: 'Property Management & Tracking',
-            stats: [
-              { label: 'Total Properties', value: '9,378' },
-            ],
+            stats: [{ label: 'Total Properties', value: '9,378' }],
             actions: [
               { label: 'View Properties', icon: () => React.createElement('span', null, '📄') },
             ],
@@ -136,7 +133,14 @@ vi.mock('lucide-react', () => ({
 vi.mock('./styles', () => {
   const createStyledMock = (tag: string, testId: string) => {
     const Component = React.forwardRef(({ children, ...props }: Record<string, unknown>, ref) => {
-      return React.createElement(tag, { 'data-testid': testId, ref, ...props }, children as React.ReactNode);
+      const sanitizedProps = Object.fromEntries(
+        Object.entries(props).filter(([key]) => key !== 'as' && !key.startsWith('$'))
+      );
+      return React.createElement(
+        tag,
+        { 'data-testid': testId, ref, ...sanitizedProps },
+        children as React.ReactNode
+      );
     });
     Component.displayName = testId;
     return Component;
@@ -146,6 +150,9 @@ vi.mock('./styles', () => {
     DepartmentPanel: createStyledMock('div', 'department-panel'),
     ContentHeader: createStyledMock('div', 'content-header'),
     HeaderContent: createStyledMock('div', 'header-content'),
+    ContentBreadcrumbs: createStyledMock('nav', 'content-breadcrumbs'),
+    BreadcrumbItem: createStyledMock('span', 'breadcrumb-item'),
+    BreadcrumbSeparator: createStyledMock('span', 'breadcrumb-separator'),
     HeaderTitle: createStyledMock('h1', 'header-title'),
     HeaderDescription: createStyledMock('p', 'header-description'),
     ContentBody: createStyledMock('div', 'content-body'),
@@ -167,6 +174,7 @@ vi.mock('./styles', () => {
     MetricsSection: createStyledMock('div', 'metrics-section'),
     MetricsSectionHeading: createStyledMock('h2', 'metrics-heading'),
     MetricsGrid: createStyledMock('div', 'metrics-grid'),
+    LoadingSection: createStyledMock('div', 'loading-section'),
     AnalyticsSection: createStyledMock('div', 'analytics-section'),
     ServicesSection: createStyledMock('div', 'services-section'),
     ServicesSectionHeading: createStyledMock('h2', 'services-heading'),
@@ -187,10 +195,19 @@ import DepartmentContentPanel from './DepartmentContentPanel';
 // ── Test Suite ───────────────────────────────────────────────────
 
 describe('DepartmentContentPanel', () => {
+  beforeAll(() => {
+    vi.spyOn(console, 'error').mockImplementation(() => {});
+    vi.spyOn(console, 'warn').mockImplementation(() => {});
+  });
+
   beforeEach(() => {
     vi.clearAllMocks();
     mockSelectedDepartment = null;
     mockSelectedService = null;
+  });
+
+  afterAll(() => {
+    vi.restoreAllMocks();
   });
 
   // ────── Empty State ──────
@@ -203,9 +220,7 @@ describe('DepartmentContentPanel', () => {
 
     it('renders empty state help text', () => {
       render(<DepartmentContentPanel />);
-      expect(
-        screen.getByText(/Choose a department from the left sidebar/),
-      ).toBeInTheDocument();
+      expect(screen.getByText(/Choose a department from the left sidebar/)).toBeInTheDocument();
     });
 
     it('renders icon in empty state', () => {
@@ -230,12 +245,21 @@ describe('DepartmentContentPanel', () => {
 
     it('renders department name in header', () => {
       render(<DepartmentContentPanel />);
-      expect(screen.getByText('Operations')).toBeInTheDocument();
+      expect(screen.getByTestId('header-title')).toHaveTextContent('Operations');
     });
 
     it('renders department description in header', () => {
       render(<DepartmentContentPanel />);
       expect(screen.getByText(/Manage inventory, properties, assets/)).toBeInTheDocument();
+    });
+
+    it('renders overview breadcrumb context', () => {
+      render(<DepartmentContentPanel />);
+      expect(screen.getByTestId('content-breadcrumbs')).toBeInTheDocument();
+      expect(screen.getAllByText('Operations').length).toBeGreaterThan(0);
+      expect(screen.getByText('Overview')).toBeInTheDocument();
+      const breadcrumbItems = screen.getAllByTestId('breadcrumb-item');
+      expect(breadcrumbItems[1]).toHaveAttribute('aria-current', 'page');
     });
 
     it('renders "Department Overview" section heading', () => {
@@ -245,9 +269,7 @@ describe('DepartmentContentPanel', () => {
 
     it('renders overview guidance text', () => {
       render(<DepartmentContentPanel />);
-      expect(
-        screen.getByText(/Select a service from the left sidebar/),
-      ).toBeInTheDocument();
+      expect(screen.getByText(/Select a service from the left sidebar/)).toBeInTheDocument();
     });
 
     it('renders "Key Metrics" section', () => {
@@ -326,9 +348,10 @@ describe('DepartmentContentPanel', () => {
     it('service cards have role="button" and tabIndex=0', () => {
       render(<DepartmentContentPanel />);
       const cards = screen.getAllByTestId('service-card');
-      cards.forEach((card) => {
+      cards.forEach(card => {
         expect(card.getAttribute('role')).toBe('button');
         expect(card.getAttribute('tabindex')).toBe('0');
+        expect(card.getAttribute('aria-label')).toMatch(/^Open .* service$/);
       });
     });
 
@@ -342,8 +365,23 @@ describe('DepartmentContentPanel', () => {
     it('activates service on Space key press', () => {
       render(<DepartmentContentPanel />);
       const card = screen.getByText('Properties').closest('[data-testid="service-card"]');
-      fireEvent.keyDown(card!, { key: ' ' });
+      const didBubbleWithoutCancel = fireEvent.keyDown(card!, {
+        key: ' ',
+        code: 'Space',
+        charCode: 32,
+      });
+      expect(didBubbleWithoutCancel).toBe(false);
       expect(mockDispatch).toHaveBeenCalled();
+    });
+
+    it('connects service card description for screen readers', () => {
+      render(<DepartmentContentPanel />);
+      const card = screen.getByText('Inventory Management').closest('[data-testid="service-card"]');
+      expect(card).toHaveAttribute('aria-describedby', 'service-desc-inventory-management');
+      expect(screen.getByText('Manage All Property Inventory')).toHaveAttribute(
+        'id',
+        'service-desc-inventory-management'
+      );
     });
 
     it('does NOT dispatch on other key presses', () => {
@@ -364,7 +402,14 @@ describe('DepartmentContentPanel', () => {
 
     it('renders service title', () => {
       render(<DepartmentContentPanel />);
-      expect(screen.getByText('Inventory Management')).toBeInTheDocument();
+      expect(screen.getByTestId('service-title')).toHaveTextContent('Inventory Management');
+    });
+
+    it('renders service breadcrumb context', () => {
+      render(<DepartmentContentPanel />);
+      expect(screen.getByTestId('content-breadcrumbs')).toBeInTheDocument();
+      const breadcrumbItems = screen.getAllByTestId('breadcrumb-item');
+      expect(breadcrumbItems[1]).toHaveTextContent('Inventory Management');
     });
 
     it('renders service description', () => {
@@ -400,7 +445,7 @@ describe('DepartmentContentPanel', () => {
       expect(mockHandleAction).toHaveBeenCalledWith(
         'View Inventory',
         'operations',
-        'Inventory Management',
+        'Inventory Management'
       );
     });
 
@@ -418,7 +463,7 @@ describe('DepartmentContentPanel', () => {
 
     it('still renders department header with name and description', () => {
       render(<DepartmentContentPanel />);
-      expect(screen.getByText('Operations')).toBeInTheDocument();
+      expect(screen.getByTestId('header-title')).toHaveTextContent('Operations');
       expect(screen.getByText(/Manage inventory, properties, assets/)).toBeInTheDocument();
     });
   });
@@ -436,12 +481,12 @@ describe('DepartmentContentPanel', () => {
   // ────── Service Not Found ──────
 
   describe('service not found in department', () => {
-    it('falls back to department overview when service is invalid', () => {
+    it('renders explicit service not found empty state', () => {
       mockSelectedDepartment = 'operations';
       mockSelectedService = 'Nonexistent Service';
       render(<DepartmentContentPanel />);
-      // Should show overview since serviceContent will be undefined
-      expect(screen.getByText('Department Overview')).toBeInTheDocument();
+      expect(screen.getByText('Service Not Found')).toBeInTheDocument();
+      expect(screen.getByText(/no longer available in Operations/i)).toBeInTheDocument();
     });
   });
 });

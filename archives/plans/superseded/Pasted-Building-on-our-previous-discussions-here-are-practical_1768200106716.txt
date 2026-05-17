@@ -1,0 +1,5218 @@
+Building on our previous discussions, here are practical steps to add the requested features to your WhatsApp campaign system. However, I must again **strongly emphasize** that implementing these features increases system complexity but does not eliminate the fundamental risk of permanent account bans when using unofficial methods.
+
+Here is an overview of how to approach these features:
+
+| Feature | Key Implementation Strategy | Main Challenge |
+| :--- | :--- | :--- |
+| **1. Opt-Out/Block Detection** | Analyze chat history for keywords and check message delivery status for specific error codes like `131050`. | Reliably distinguishing a formal opt-out from casual conversation. |
+| **2. Country Code & Nationality Detection** | Parse the number's country code and map it to a country name using a standardized list like ISO 3166-1 alpha-2. | Maintaining an accurate, up-to-date mapping of all international dialing codes to countries. |
+| **3. Local Timezone Scheduling** | Store all times in UTC internally and convert to the contact's local time for scheduling using a reliable timezone database. | Correctly handling Daylight Saving Time (DST) and timezone rule changes across many countries. |
+
+### 🛡️ Implementing the Three Key Features
+
+Here is the code and strategy to integrate each feature into your existing `DailyCampaignManager`.
+
+**1. Check Chat History & Respect Opt-Out Requests**
+You should check both the chat history for keywords and the status of previously sent messages.
+```javascript
+// Add to your DailyCampaignManager class
+async checkContactOptOutStatus(contactId) {
+    try {
+        // Method 1: Check for explicit opt-out keywords in chat history
+        const chat = await this.client.getChatById(contactId);
+        const messages = await chat.fetchMessages({ limit: 50 }); // Check last 50 messages
+
+        const optOutKeywords = ['stop', 'unsubscribe', 'remove', 'do not send', 'opt-out'];
+        let hasOptedOut = false;
+        let optOutReason = '';
+
+        for (const msg of messages) {
+            if (msg.fromMe) continue; // Ignore messages we sent
+            const bodyLower = msg.body.toLowerCase();
+            
+            for (const keyword of optOutKeywords) {
+                if (bodyLower.includes(keyword)) {
+                    hasOptedOut = true;
+                    optOutReason = `User requested removal via message: "${msg.body.substring(0, 50)}..."`;
+                    break;
+                }
+            }
+            if (hasOptedOut) break;
+        }
+
+        // Method 2: Check delivery status of our last marketing message
+        // Error 131050 indicates user opted out of marketing
+        // You would need to track your own message send statuses
+        // if (lastMarketingMessage && lastMarketingMessage.errorCode === '131050') {
+        //     hasOptedOut = true;
+        //     optOutReason = 'User officially opted out of marketing (Error 131050)';
+        // }
+
+        return {
+            optedOut: hasOptedOut,
+            reason: optOutReason,
+            lastChecked: new Date().toISOString()
+        };
+    } catch (error) {
+        console.error(`Error checking opt-out status for ${contactId}:`, error.message);
+        // If we can't check, err on the side of caution - don't send
+        return { optedOut: true, reason: `Error checking status: ${error.message}` };
+    }
+}
+```
+*Use this function:* Before sending in your campaign loop, call `const optOutStatus = await this.checkContactOptOutStatus(contactId);` and skip if `optedOut` is `true`.
+
+**2. Detect Country Code and Log Nationality**
+Use a library or a static mapping to convert international dialing codes to country names.
+```javascript
+// country-code-mapper.js
+// A utility to map phone number prefixes to country names and nationality.
+// Based on ISO 3166-1 alpha-2 codes.
+class CountryCodeMapper {
+    constructor() {
+        // A subset of mappings: Key = Country Code, Value = { countryName, nationality }
+        this.countryData = {
+            '1': { countryName: 'United States / Canada', nationality: 'American/Canadian' },
+            '44': { countryName: 'United Kingdom', nationality: 'British' },
+            '91': { countryName: 'India', nationality: 'Indian' },
+            '86': { countryName: 'China', nationality: 'Chinese' },
+            '33': { countryName: 'France', nationality: 'French' },
+            '49': { countryName: 'Germany', nationality: 'German' },
+            '81': { countryName: 'Japan', nationality: 'Japanese' },
+            // ... Add more from a comprehensive list like ISO 3166-1
+        };
+    }
+
+    analyzeNumber(fullNumber) {
+        // Remove the '+' and any non-digit characters to get the clean number
+        const cleanNumber = fullNumber.replace(/\D/g, '');
+        
+        // Iterate through known country codes (longest first to avoid partial matches)
+        const sortedCodes = Object.keys(this.countryData).sort((a, b) => b.length - a.length);
+        
+        for (const code of sortedCodes) {
+            if (cleanNumber.startsWith(code)) {
+                const data = this.countryData[code];
+                return {
+                    countryCode: code,
+                    countryName: data.countryName,
+                    nationality: data.nationality,
+                    localNumber: cleanNumber.substring(code.length)
+                };
+            }
+        }
+        // Default/unknown
+        return {
+            countryCode: 'Unknown',
+            countryName: 'Unknown',
+            nationality: 'Unknown',
+            localNumber: cleanNumber
+        };
+    }
+}
+
+// In your campaign execution, log the nationality
+const mapper = new CountryCodeMapper();
+const numberInfo = mapper.analyzeNumber(contact.validatedNumber);
+console.log(`Sending to ${contact.name} (${numberInfo.nationality})`);
+
+// Add to your result details for logging to Google Sheets
+results.details.push({
+    ...otherDetails,
+    nationality: numberInfo.nationality,
+    countryName: numberInfo.countryName,
+    countryCode: numberInfo.countryCode
+});
+```
+
+**3. Schedule According to Local Timezone**
+The best practice is to store all times in UTC internally and convert for display and scheduling.
+```javascript
+// local-time-scheduler.js
+const moment = require('moment-timezone'); // Use moment-timezone for robust handling
+
+class LocalTimeScheduler {
+    constructor() {
+        // Map country codes to primary timezones (this is a simplified example)
+        this.countryToTimezone = {
+            '1': 'America/New_York', // US
+            '44': 'Europe/London',    // UK
+            '91': 'Asia/Kolkata',     // India
+            '86': 'Asia/Shanghai',    // China
+            '33': 'Europe/Paris',     // France
+            '49': 'Europe/Berlin',    // Germany
+            '81': 'Asia/Tokyo',       // Japan
+            // ... expand as needed
+        };
+    }
+
+    // Determine the best send window for a contact's local time
+    getOptimalSendWindow(countryCode) {
+        const timezone = this.countryToTimezone[countryCode] || 'UTC';
+        
+        // Define "business hours" in the local timezone (e.g., 9 AM to 5 PM)
+        return {
+            timezone: timezone,
+            startHourLocal: 9,
+            endHourLocal: 17,
+            // Avoid lunch hours, etc.
+            excludedHours: [{ start: 12, end: 13 }] // Local lunch break
+        };
+    }
+
+    // Check if "now" is a good time to send in the contact's locale
+    isGoodTimeToSend(countryCode) {
+        const window = this.getOptimalSendWindow(countryCode);
+        const nowLocal = moment().tz(window.timezone);
+        const currentHour = nowLocal.hour();
+        const currentDay = nowLocal.day(); // 0 = Sunday, 1 = Monday, etc.
+
+        // Don't send on weekends
+        if (currentDay === 0 || currentDay === 6) {
+            return { allowed: false, reason: 'Weekend in target locale' };
+        }
+
+        // Check if within business hours
+        if (currentHour < window.startHourLocal || currentHour >= window.endHourLocal) {
+            return { allowed: false, reason: 'Outside business hours in target locale' };
+        }
+
+        // Check excluded hours (e.g., lunch)
+        for (const block of window.excludedHours) {
+            if (currentHour >= block.start && currentHour < block.end) {
+                return { allowed: false, reason: 'Local lunch break' };
+            }
+        }
+
+        return { allowed: true, nextAvailable: null };
+    }
+
+    // Calculate delay until the next good send window
+    calculateDelayUntilWindow(countryCode) {
+        const window = this.getOptimalSendWindow(countryCode);
+        const nowLocal = moment().tz(window.timezone);
+        
+        // If currently in a bad period, calculate when the next good period starts
+        // (Simplified logic - you would expand this)
+        if (nowLocal.hour() < window.startHourLocal) {
+            const nextStart = moment().tz(window.timezone).startOf('day').hour(window.startHourLocal);
+            return nextStart.diff(nowLocal, 'milliseconds');
+        }
+        // ... handle other cases (after hours, weekend)
+        
+        return 0; // Good to send now
+    }
+}
+
+// Integrate into your campaign loop
+const scheduler = new LocalTimeScheduler();
+const numberInfo = mapper.analyzeNumber(contact.validatedNumber);
+const scheduleCheck = scheduler.isGoodTimeToSend(numberInfo.countryCode);
+
+if (!scheduleCheck.allowed) {
+    console.log(`Skipping ${contact.validatedNumber}: ${scheduleCheck.reason}`);
+    // Optionally, calculate delay and schedule for later
+    const delayMs = scheduler.calculateDelayUntilWindow(numberInfo.countryCode);
+    // ... add to a queue for future sending
+    return;
+}
+```
+
+### 📊 Updating Google Sheets Logs
+Modify your logging function to include the new data points:
+```javascript
+// When logging results to Google Sheets, include:
+const logRow = [
+    contact.validatedNumber,
+    contact.name || '',
+    numberInfo.countryName,    // Added: Country
+    numberInfo.nationality,    // Added: Nationality
+    optOutStatus.optedOut ? 'YES' : 'NO', // Added: Opt-Out Status
+    optOutStatus.reason || '',
+    scheduleCheck.allowed ? 'Within Window' : scheduleCheck.reason, // Added: Schedule Info
+    result.success ? 'Delivered' : 'Failed',
+    result.error || '',
+    new Date().toISOString()
+];
+// Append this row to your Google Sheet
+```
+
+### ⚠️ Critical Risks and Final Cautions
+While implementing these features improves your system's sophistication, it **significantly increases** the risk profile because:
+
+1.  **Increased Detection Risk**: More active chat history checks and complex scheduling create patterns WhatsApp can detect as non-human.
+2.  **Unofficial API Dangers**: As noted, using unofficial APIs violates WhatsApp's terms and is a primary reason for account bans.
+3.  **Strict Policy Enforcement**: WhatsApp has stringent policies against unsolicited messages and uses algorithms to detect spam, which can lead to warnings, rate limits, or permanent bans.
+4.  **Opt-Out Complexity**: WhatsApp's official system has a clear opt-out mechanism (Error `131050`). Trying to replicate this unofficially is error-prone and may not satisfy compliance requirements.
+
+For any business-critical or customer-facing communication, these features should be implemented using the **official WhatsApp Business API**, which provides proper support for opt-out management, global scaling, and compliance.
+
+If you want to explore how to implement similar contact management and scheduling in a low-risk environment (like for internal notifications), I can suggest alternative approaches.
+
+integrate all your requirements into a comprehensive system. Here's the enhanced implementation:
+
+## 🌍 1. Complete ISO 3166-1 Country Code Mapper
+
+```javascript
+// iso-country-mapper.js
+class ISOCountryMapper {
+    constructor() {
+        // Complete ISO 3166-1 alpha-2 country codes with dialing codes and timezones
+        this.countryData = {
+            '971': { // UAE as primary focus
+                alpha2: 'AE',
+                countryName: 'United Arab Emirates',
+                nationality: 'Emirati',
+                primaryTimezone: 'Asia/Dubai',
+                businessHours: { start: 9, end: 18, lunch: { start: 13, end: 14 } },
+                weekend: [5, 6] // Friday, Saturday
+            },
+            '1': {
+                alpha2: 'US',
+                countryName: 'United States',
+                nationality: 'American',
+                primaryTimezone: 'America/New_York',
+                businessHours: { start: 9, end: 17, lunch: { start: 12, end: 13 } },
+                weekend: [0, 6]
+            },
+            '44': {
+                alpha2: 'GB',
+                countryName: 'United Kingdom',
+                nationality: 'British',
+                primaryTimezone: 'Europe/London',
+                businessHours: { start: 9, end: 17, lunch: { start: 13, end: 14 } },
+                weekend: [0, 6]
+            },
+            '91': {
+                alpha2: 'IN',
+                countryName: 'India',
+                nationality: 'Indian',
+                primaryTimezone: 'Asia/Kolkata',
+                businessHours: { start: 10, end: 18, lunch: { start: 13, end: 14 } },
+                weekend: [0]
+            },
+            // ... Add ALL ISO 3166-1 countries (200+ entries)
+            // Here's a template for adding more:
+            /*
+            '966': { // Saudi Arabia
+                alpha2: 'SA',
+                countryName: 'Saudi Arabia',
+                nationality: 'Saudi',
+                primaryTimezone: 'Asia/Riyadh',
+                businessHours: { start: 8, end: 17, lunch: { start: 12, end: 13 } },
+                weekend: [5, 6]
+            },
+            */
+        };
+        
+        // Cache for analyzed numbers
+        this.cache = new Map();
+        this.cacheDuration = 24 * 60 * 60 * 1000; // 24 hours
+    }
+    
+    analyzeNumber(fullNumber) {
+        const cacheKey = fullNumber;
+        const cached = this.cache.get(cacheKey);
+        
+        if (cached && (Date.now() - cached.timestamp) < this.cacheDuration) {
+            return cached.data;
+        }
+        
+        // Extract country code
+        const cleanNumber = fullNumber.replace(/\D/g, '');
+        
+        // Special handling for UAE as primary focus
+        if (cleanNumber.startsWith('971')) {
+            const data = this.getCountryData('971', cleanNumber);
+            this.cache.set(cacheKey, { data, timestamp: Date.now() });
+            return data;
+        }
+        
+        // Find country code (longest match first)
+        let matchedCode = 'Unknown';
+        let matchedLength = 0;
+        
+        for (const code of Object.keys(this.countryData).sort((a, b) => b.length - a.length)) {
+            if (cleanNumber.startsWith(code) && code.length > matchedLength) {
+                matchedCode = code;
+                matchedLength = code.length;
+            }
+        }
+        
+        const data = this.getCountryData(matchedCode, cleanNumber);
+        this.cache.set(cacheKey, { data, timestamp: Date.now() });
+        return data;
+    }
+    
+    getCountryData(code, fullNumber) {
+        if (code === 'Unknown' || !this.countryData[code]) {
+            return {
+                countryCode: 'Unknown',
+                alpha2: 'XX',
+                countryName: 'Unknown',
+                nationality: 'Unknown',
+                primaryTimezone: 'UTC',
+                businessHours: { start: 9, end: 17, lunch: null },
+                weekend: [0, 6],
+                localNumber: fullNumber,
+                isValid: false
+            };
+        }
+        
+        const data = this.countryData[code];
+        return {
+            countryCode: code,
+            alpha2: data.alpha2,
+            countryName: data.countryName,
+            nationality: data.nationality,
+            primaryTimezone: data.primaryTimezone,
+            businessHours: data.businessHours,
+            weekend: data.weekend,
+            localNumber: fullNumber.substring(code.length),
+            whatsappId: `${fullNumber}@c.us`,
+            isValid: true
+        };
+    }
+    
+    // Get all country codes for reference
+    getAllCountryCodes() {
+        return Object.keys(this.countryData).sort();
+    }
+    
+    // Add missing country code (like UAE if missing)
+    addCountryCode(code, data) {
+        if (!this.countryData[code]) {
+            this.countryData[code] = data;
+            console.log(`Added country code ${code}: ${data.countryName}`);
+        }
+    }
+}
+
+module.exports = ISOCountryMapper;
+```
+
+## 🛡️ 2. Enhanced Opt-Out & Block Detection System
+
+```javascript
+// enhanced-optout-detector.js
+class EnhancedOptOutDetector {
+    constructor(client) {
+        this.client = client;
+        this.optOutKeywords = [
+            'stop', 'unsubscribe', 'remove', 'do not send', 'opt-out',
+            'opt out', 'don\'t message', 'no messages', 'block',
+            'خذني من القائمة', // Arabic: remove me from list
+            'أوقف الرسائل', // Arabic: stop messages
+            'إلغاء الاشتراك' // Arabic: unsubscribe
+        ];
+        
+        this.blockDetectionKeywords = [
+            'blocked', 'block you', 'blocked you', 'حظرتك', // Arabic: I blocked you
+            'مش حابب', // Arabic: don't like
+            'مزعج' // Arabic: annoying
+        ];
+        
+        // WhatsApp specific error codes for blocks
+        this.whatsappBlockErrors = {
+            '131021': 'Recipient blocked sender',
+            '131026': 'Recipient not on WhatsApp',
+            '131045': 'Recipient deactivated account',
+            '131050': 'User opted out of marketing messages'
+        };
+        
+        // Rate limiting for chat history checks
+        this.chatCheckHistory = new Map();
+        this.maxChecksPerMonth = 5;
+        
+        // Cache for opt-out status
+        this.optOutCache = new Map();
+        this.cacheDuration = 7 * 24 * 60 * 60 * 1000; // 7 days
+    }
+    
+    async checkContactStatus(contactId, forceCheck = false) {
+        const cacheKey = contactId;
+        const cached = this.optOutCache.get(cacheKey);
+        
+        // Return cached result if still valid
+        if (cached && (Date.now() - cached.timestamp) < this.cacheDuration && !forceCheck) {
+            return cached.status;
+        }
+        
+        // Check rate limiting
+        if (!this.canCheckChatHistory(contactId)) {
+            console.log(`Rate limited: Skipping chat check for ${contactId}`);
+            return {
+                canMessage: true, // Default to allowing when rate limited
+                reason: 'Rate limited - assuming safe',
+                lastChecked: new Date().toISOString(),
+                requiresManualReview: true
+            };
+        }
+        
+        const status = {
+            canMessage: true,
+            reason: 'No issues detected',
+            lastChecked: new Date().toISOString(),
+            details: {},
+            requiresManualReview: false
+        };
+        
+        try {
+            // 1. Check if we can get chat (indicates not blocked)
+            const chat = await this.client.getChatById(contactId);
+            
+            if (!chat) {
+                status.canMessage = false;
+                status.reason = 'Cannot access chat - may be blocked';
+                status.details.chatAccess = 'failed';
+                this.recordChatCheck(contactId, 'failed_access');
+            } else {
+                status.details.chatAccess = 'success';
+                this.recordChatCheck(contactId, 'success');
+                
+                // 2. Check last 50 messages for opt-out keywords
+                const messages = await chat.fetchMessages({ limit: 50 });
+                status.details.totalMessages = messages.length;
+                
+                let foundOptOut = false;
+                let foundBlock = false;
+                
+                for (const msg of messages) {
+                    if (msg.fromMe) {
+                        // Check our own message delivery status
+                        if (msg.ack === -1 || msg.ack === 0) {
+                            // Message not delivered or sent
+                            status.details.lastDeliveryStatus = 'failed';
+                        }
+                        continue;
+                    }
+                    
+                    const bodyLower = msg.body.toLowerCase();
+                    
+                    // Check for opt-out requests
+                    for (const keyword of this.optOutKeywords) {
+                        if (bodyLower.includes(keyword)) {
+                            foundOptOut = true;
+                            status.details.optOutFound = {
+                                keyword: keyword,
+                                message: msg.body.substring(0, 100),
+                                timestamp: msg.timestamp
+                            };
+                            break;
+                        }
+                    }
+                    
+                    // Check for block threats
+                    for (const keyword of this.blockDetectionKeywords) {
+                        if (bodyLower.includes(keyword)) {
+                            foundBlock = true;
+                            status.details.blockThreat = {
+                                keyword: keyword,
+                                message: msg.body.substring(0, 100),
+                                timestamp: msg.timestamp
+                            };
+                            break;
+                        }
+                    }
+                    
+                    if (foundOptOut || foundBlock) break;
+                }
+                
+                if (foundOptOut) {
+                    status.canMessage = false;
+                    status.reason = 'User requested opt-out in chat history';
+                }
+                
+                if (foundBlock) {
+                    status.canMessage = false;
+                    status.reason = 'User indicated they may block us';
+                    status.requiresManualReview = true;
+                }
+                
+                // 3. Check if we've sent to this contact recently and failed
+                const ourMessages = messages.filter(m => m.fromMe);
+                if (ourMessages.length > 0) {
+                    const lastOurMessage = ourMessages[0];
+                    if (lastOurMessage.ack === -1) {
+                        // Message not delivered
+                        status.details.lastMessageStatus = 'undelivered';
+                        status.details.lastMessageTime = lastOurMessage.timestamp;
+                        
+                        // If multiple undelivered, likely blocked
+                        const undeliveredCount = ourMessages.filter(m => m.ack === -1).length;
+                        if (undeliveredCount > 2) {
+                            status.canMessage = false;
+                            status.reason = `Multiple messages undelivered (${undeliveredCount}) - likely blocked`;
+                        }
+                    }
+                }
+            }
+            
+            // 4. Try to send a test "ping" message (with user permission simulation)
+            if (status.canMessage && process.env.ENABLE_PING_TEST === 'true') {
+                const pingResult = await this.pingTest(contactId);
+                if (!pingResult.success) {
+                    status.canMessage = false;
+                    status.reason = `Ping test failed: ${pingResult.error}`;
+                    status.details.pingTest = pingResult;
+                    
+                    // Check if it's a WhatsApp block error
+                    if (this.whatsappBlockErrors[pingResult.errorCode]) {
+                        status.details.blockError = this.whatsappBlockErrors[pingResult.errorCode];
+                    }
+                }
+            }
+            
+        } catch (error) {
+            console.error(`Error checking status for ${contactId}:`, error.message);
+            
+            // Analyze error for block indications
+            const errorMsg = error.message.toLowerCase();
+            if (errorMsg.includes('not found') || 
+                errorMsg.includes('blocked') || 
+                errorMsg.includes('401') ||
+                errorMsg.includes('failed to fetch')) {
+                status.canMessage = false;
+                status.reason = `Error suggests blocked: ${error.message}`;
+                status.details.errorAnalysis = 'likely_blocked';
+            } else {
+                // Unknown error - be conservative
+                status.canMessage = false;
+                status.reason = `Check failed: ${error.message}`;
+                status.requiresManualReview = true;
+            }
+            
+            this.recordChatCheck(contactId, 'error');
+        }
+        
+        // Cache the result
+        this.optOutCache.set(cacheKey, {
+            status: status,
+            timestamp: Date.now()
+        });
+        
+        return status;
+    }
+    
+    async pingTest(contactId) {
+        // Send a minimal, non-intrusive test message
+        // This should only be done with extreme caution
+        try {
+            const testMessage = " "; // Empty space message
+            const result = await this.client.sendMessage(contactId, testMessage);
+            
+            return {
+                success: true,
+                messageId: result.id?.id,
+                timestamp: result.timestamp
+            };
+        } catch (error) {
+            // Extract error code if present
+            const errorCode = error.message.match(/\d+/)?.[0];
+            
+            return {
+                success: false,
+                error: error.message,
+                errorCode: errorCode,
+                timestamp: new Date().toISOString()
+            };
+        }
+    }
+    
+    canCheckChatHistory(contactId) {
+        const now = new Date();
+        const monthKey = `${now.getFullYear()}-${now.getMonth()}`;
+        const contactKey = `${contactId}-${monthKey}`;
+        
+        if (!this.chatCheckHistory.has(contactKey)) {
+            this.chatCheckHistory.set(contactKey, {
+                count: 0,
+                firstCheck: Date.now(),
+                lastCheck: Date.now()
+            });
+        }
+        
+        const record = this.chatCheckHistory.get(contactKey);
+        
+        if (record.count >= this.maxChecksPerMonth) {
+            // Check if we're in a new month
+            const recordMonth = new Date(record.firstCheck).getMonth();
+            if (now.getMonth() !== recordMonth) {
+                // Reset for new month
+                record.count = 0;
+                record.firstCheck = Date.now();
+            } else {
+                return false;
+            }
+        }
+        
+        record.count++;
+        record.lastCheck = Date.now();
+        
+        return true;
+    }
+    
+    recordChatCheck(contactId, result) {
+        const now = new Date();
+        const monthKey = `${now.getFullYear()}-${now.getMonth()}`;
+        const contactKey = `${contactId}-${monthKey}`;
+        
+        if (!this.chatCheckHistory.has(contactKey)) {
+            this.chatCheckHistory.set(contactKey, {
+                count: 0,
+                checks: []
+            });
+        }
+        
+        const record = this.chatCheckHistory.get(contactKey);
+        record.checks.push({
+            timestamp: now.toISOString(),
+            result: result
+        });
+        
+        // Keep only last 10 checks
+        if (record.checks.length > 10) {
+            record.checks.shift();
+        }
+    }
+    
+    getChatCheckStats(contactId) {
+        const now = new Date();
+        const monthKey = `${now.getFullYear()}-${now.getMonth()}`;
+        const contactKey = `${contactId}-${monthKey}`;
+        
+        return this.chatCheckHistory.get(contactKey) || {
+            count: 0,
+            checks: []
+        };
+    }
+    
+    // Manual override for opt-out status
+    markAsOptedOut(contactId, reason = 'Manual override') {
+        const status = {
+            canMessage: false,
+            reason: reason,
+            lastChecked: new Date().toISOString(),
+            details: { manualOverride: true },
+            requiresManualReview: false
+        };
+        
+        this.optOutCache.set(contactId, {
+            status: status,
+            timestamp: Date.now()
+        });
+        
+        console.log(`Manually marked ${contactId} as opted out: ${reason}`);
+    }
+    
+    // Clear cache for a contact
+    clearCache(contactId) {
+        this.optOutCache.delete(contactId);
+        
+        // Also clear from check history
+        for (const [key] of this.chatCheckHistory) {
+            if (key.startsWith(contactId)) {
+                this.chatCheckHistory.delete(key);
+            }
+        }
+    }
+}
+
+module.exports = EnhancedOptOutDetector;
+```
+
+## 📅 3. Contact Recency Filter (2-Month Rule)
+
+```javascript
+// contact-recency-filter.js
+const moment = require('moment');
+
+class ContactRecencyFilter {
+    constructor(googleSheetsService) {
+        this.sheetsService = googleSheetsService;
+        this.minDaysBetweenContacts = 60; // 2 months
+        this.contactHistory = new Map();
+    }
+    
+    async filterByRecency(contacts, spreadsheetId, range) {
+        console.log(`🔍 Applying 2-month recency filter to ${contacts.length} contacts`);
+        
+        const filteredContacts = [];
+        const skippedContacts = [];
+        
+        for (const contact of contacts) {
+            try {
+                const canContact = await this.canContactNow(contact, spreadsheetId, range);
+                
+                if (canContact.allowed) {
+                    filteredContacts.push({
+                        ...contact,
+                        lastContacted: canContact.lastContacted,
+                        daysSinceLastContact: canContact.daysSince
+                    });
+                } else {
+                    skippedContacts.push({
+                        contact: contact,
+                        reason: canContact.reason,
+                        lastContacted: canContact.lastContacted,
+                        daysSinceLastContact: canContact.daysSince
+                    });
+                    
+                    console.log(`⏸️ Skipping ${contact.name || contact.validatedNumber}: ${canContact.reason}`);
+                }
+            } catch (error) {
+                console.error(`Error checking recency for ${contact.validatedNumber}:`, error.message);
+                // On error, be conservative and skip
+                skippedContacts.push({
+                    contact: contact,
+                    reason: `Error checking: ${error.message}`,
+                    error: true
+                });
+            }
+        }
+        
+        return {
+            filteredContacts,
+            skippedContacts,
+            stats: {
+                total: contacts.length,
+                passedFilter: filteredContacts.length,
+                skipped: skippedContacts.length,
+                filterRate: (filteredContacts.length / contacts.length * 100).toFixed(1) + '%'
+            }
+        };
+    }
+    
+    async canContactNow(contact, spreadsheetId, range) {
+        const now = moment();
+        
+        // Check cache first
+        const cacheKey = contact.validatedNumber;
+        if (this.contactHistory.has(cacheKey)) {
+            const cached = this.contactHistory.get(cacheKey);
+            if (now.diff(moment(cached.timestamp), 'hours') < 1) {
+                return cached.result;
+            }
+        }
+        
+        // Check if we have last contacted date in contact data
+        let lastContacted = contact.lastContacted;
+        
+        if (!lastContacted && contact.sheetRow) {
+            // Try to fetch from Google Sheets
+            try {
+                const sheetData = await this.sheetsService.getCellValue(
+                    spreadsheetId,
+                    `${range.split('!')[0]}!D${contact.sheetRow}` // Assuming column D has last contacted
+                );
+                lastContacted = sheetData?.value || null;
+            } catch (error) {
+                console.log(`Could not fetch sheet data for ${contact.validatedNumber}`);
+            }
+        }
+        
+        if (!lastContacted) {
+            // Never contacted before
+            const result = {
+                allowed: true,
+                reason: 'Never contacted before',
+                lastContacted: null,
+                daysSince: null
+            };
+            
+            this.contactHistory.set(cacheKey, {
+                result: result,
+                timestamp: now.toISOString()
+            });
+            
+            return result;
+        }
+        
+        // Parse last contacted date
+        const lastContactMoment = moment(lastContacted);
+        const daysSince = now.diff(lastContactMoment, 'days');
+        
+        if (daysSince < this.minDaysBetweenContacts) {
+            const result = {
+                allowed: false,
+                reason: `Contacted ${daysSince} days ago (minimum ${this.minDaysBetweenContacts} days required)`,
+                lastContacted: lastContacted,
+                daysSince: daysSince,
+                nextAvailable: lastContactMoment.add(this.minDaysBetweenContacts, 'days').format('YYYY-MM-DD')
+            };
+            
+            this.contactHistory.set(cacheKey, {
+                result: result,
+                timestamp: now.toISOString()
+            });
+            
+            return result;
+        }
+        
+        // Can contact
+        const result = {
+            allowed: true,
+            reason: `Last contacted ${daysSince} days ago (ok)`,
+            lastContacted: lastContacted,
+            daysSince: daysSince
+        };
+        
+        this.contactHistory.set(cacheKey, {
+            result: result,
+            timestamp: now.toISOString()
+        });
+        
+        return result;
+    }
+    
+    // Batch update last contacted dates
+    async updateLastContacted(contacts, spreadsheetId, range) {
+        const today = moment().format('YYYY-MM-DD');
+        const updates = [];
+        
+        for (const contact of contacts) {
+            if (contact.sheetRow) {
+                updates.push({
+                    range: `${range.split('!')[0]}!D${contact.sheetRow}`,
+                    values: [[today]]
+                });
+                
+                // Update cache
+                this.contactHistory.set(contact.validatedNumber, {
+                    result: {
+                        allowed: false,
+                        reason: `Just contacted today`,
+                        lastContacted: today,
+                        daysSince: 0,
+                        nextAvailable: moment().add(this.minDaysBetweenContacts, 'days').format('YYYY-MM-DD')
+                    },
+                    timestamp: moment().toISOString()
+                });
+            }
+        }
+        
+        // Update in batches
+        if (updates.length > 0) {
+            try {
+                await this.sheetsService.batchUpdateValues(spreadsheetId, updates);
+                console.log(`✅ Updated last contacted for ${updates.length} contacts`);
+            } catch (error) {
+                console.error('Failed to update last contacted dates:', error);
+            }
+        }
+    }
+    
+    // Get contact history summary
+    getContactHistorySummary() {
+        const summary = {
+            totalContacts: this.contactHistory.size,
+            recentlyContacted: 0,
+            availableForContact: 0,
+            next30Days: []
+        };
+        
+        const now = moment();
+        
+        for (const [number, data] of this.contactHistory) {
+            const lastContacted = data.result.lastContacted;
+            
+            if (!lastContacted) {
+                summary.availableForContact++;
+                continue;
+            }
+            
+            const lastContactMoment = moment(lastContacted);
+            const daysSince = now.diff(lastContactMoment, 'days');
+            
+            if (daysSince < 30) {
+                summary.recentlyContacted++;
+            }
+            
+            if (daysSince < this.minDaysBetweenContacts) {
+                const nextAvailable = lastContactMoment.add(this.minDaysBetweenContacts, 'days');
+                if (nextAvailable.diff(now, 'days') <= 30) {
+                    summary.next30Days.push({
+                        number: number,
+                        lastContacted: lastContacted,
+                        nextAvailable: nextAvailable.format('YYYY-MM-DD'),
+                        daysUntil: nextAvailable.diff(now, 'days')
+                    });
+                }
+            } else {
+                summary.availableForContact++;
+            }
+        }
+        
+        // Sort next30Days by soonest available
+        summary.next30Days.sort((a, b) => a.daysUntil - b.daysUntil);
+        
+        return summary;
+    }
+}
+
+module.exports = ContactRecencyFilter;
+```
+
+## 🕐 4. Complete Timezone-Aware Scheduler
+
+```javascript
+// timezone-scheduler.js
+const moment = require('moment-timezone');
+const ISOCountryMapper = require('./iso-country-mapper');
+
+class TimezoneScheduler {
+    constructor() {
+        this.countryMapper = new ISOCountryMapper();
+        
+        // Default schedule for unknown countries
+        this.defaultSchedule = {
+            businessHours: { start: 9, end: 17, lunch: { start: 12, end: 13 } },
+            weekend: [0, 6], // Sunday, Saturday
+            optimalWindows: [
+                { start: 9, end: 11, weight: 0.4 },  // Morning
+                { start: 14, end: 16, weight: 0.4 }, // Afternoon
+                { start: 17, end: 19, weight: 0.2 }  // Evening
+            ]
+        };
+        
+        // Special schedules for specific countries
+        this.countrySpecificSchedules = {
+            'AE': { // UAE - Friday/Saturday weekend
+                businessHours: { start: 8, end: 18, lunch: { start: 13, end: 14 } },
+                weekend: [5, 6], // Friday, Saturday
+                optimalWindows: [
+                    { start: 9, end: 12, weight: 0.5 },
+                    { start: 16, end: 19, weight: 0.5 }
+                ],
+                ramadanAdjustment: true // Special consideration for Ramadan
+            },
+            'SA': { // Saudi Arabia
+                businessHours: { start: 8, end: 17, lunch: { start: 12, end: 13 } },
+                weekend: [5, 6],
+                optimalWindows: [
+                    { start: 10, end: 13, weight: 0.6 },
+                    { start: 16, end: 19, weight: 0.4 }
+                ]
+            },
+            'IN': { // India
+                businessHours: { start: 10, end: 19, lunch: { start: 13, end: 14 } },
+                weekend: [0], // Sunday only
+                optimalWindows: [
+                    { start: 10, end: 13, weight: 0.4 },
+                    { start: 16, end: 19, weight: 0.6 }
+                ]
+            }
+        };
+    }
+    
+    analyzeContactSchedule(contactNumber) {
+        const countryInfo = this.countryMapper.analyzeNumber(contactNumber);
+        const schedule = this.countrySpecificSchedules[countryInfo.alpha2] || this.defaultSchedule;
+        
+        return {
+            ...countryInfo,
+            schedule: schedule,
+            currentLocalTime: this.getLocalTime(countryInfo.primaryTimezone),
+            optimalSendTimes: this.calculateOptimalTimes(countryInfo, schedule)
+        };
+    }
+    
+    getLocalTime(timezone) {
+        return {
+            time: moment().tz(timezone).format('HH:mm'),
+            day: moment().tz(timezone).day(),
+            hour: moment().tz(timezone).hour(),
+            timezone: timezone,
+            isDST: moment().tz(timezone).isDST()
+        };
+    }
+    
+    canSendNow(contactNumber, options = {}) {
+        const analysis = this.analyzeContactSchedule(contactNumber);
+        const localTime = analysis.currentLocalTime;
+        const schedule = analysis.schedule;
+        
+        // Check if it's weekend
+        if (schedule.weekend.includes(localTime.day)) {
+            return {
+                allowed: false,
+                reason: `Weekend in ${analysis.countryName} (${this.getDayName(localTime.day)})`,
+                nextAvailable: this.getNextWeekday(analysis.primaryTimezone, schedule.weekend),
+                analysis: analysis
+            };
+        }
+        
+        // Check business hours
+        const hour = localTime.hour;
+        if (hour < schedule.businessHours.start || hour >= schedule.businessHours.end) {
+            return {
+                allowed: false,
+                reason: `Outside business hours (${schedule.businessHours.start}:00-${schedule.businessHours.end}:00 local time)`,
+                nextAvailable: this.getNextBusinessHour(analysis.primaryTimezone, schedule.businessHours),
+                analysis: analysis
+            };
+        }
+        
+        // Check lunch break
+        if (schedule.businessHours.lunch && 
+            hour >= schedule.businessHours.lunch.start && 
+            hour < schedule.businessHours.lunch.end) {
+            return {
+                allowed: false,
+                reason: `Lunch break in ${analysis.countryName}`,
+                nextAvailable: moment().tz(analysis.primaryTimezone)
+                    .hour(schedule.businessHours.lunch.end)
+                    .minute(0)
+                    .second(0)
+                    .toISOString(),
+                analysis: analysis
+            };
+        }
+        
+        // Check optimal windows (optional)
+        if (options.requireOptimalWindow) {
+            const inOptimalWindow = schedule.optimalWindows.some(window => 
+                hour >= window.start && hour < window.end
+            );
+            
+            if (!inOptimalWindow) {
+                const nextWindow = this.getNextOptimalWindow(analysis, schedule);
+                return {
+                    allowed: false,
+                    reason: 'Not in optimal sending window',
+                    nextAvailable: nextWindow,
+                    analysis: analysis
+                };
+            }
+        }
+        
+        return {
+            allowed: true,
+            reason: 'Within acceptable sending window',
+            analysis: analysis,
+            optimality: this.calculateOptimalityScore(hour, schedule)
+        };
+    }
+    
+    calculateOptimalTimes(countryInfo, schedule) {
+        const now = moment().tz(countryInfo.primaryTimezone);
+        const today = now.clone().startOf('day');
+        const optimalTimes = [];
+        
+        for (const window of schedule.optimalWindows) {
+            const startTime = today.clone().hour(window.start).minute(0);
+            const endTime = today.clone().hour(window.end).minute(0);
+            
+            // If window has already passed today, schedule for tomorrow
+            if (now.isAfter(endTime)) {
+                startTime.add(1, 'day');
+                endTime.add(1, 'day');
+            }
+            
+            optimalTimes.push({
+                start: startTime.toISOString(),
+                end: endTime.toISOString(),
+                localStart: startTime.format('HH:mm'),
+                localEnd: endTime.format('HH:mm'),
+                weight: window.weight,
+                isToday: startTime.isSame(now, 'day')
+            });
+        }
+        
+        // Sort by soonest
+        optimalTimes.sort((a, b) => new Date(a.start) - new Date(b.start));
+        
+        return optimalTimes;
+    }
+    
+    getNextBusinessHour(timezone, businessHours) {
+        const now = moment().tz(timezone);
+        const today = now.clone().startOf('day');
+        
+        if (now.hour() < businessHours.start) {
+            // Business hours haven't started today
+            return today.clone().hour(businessHours.start).minute(0).toISOString();
+        } else if (now.hour() >= businessHours.end) {
+            // Business hours ended, schedule for tomorrow
+            return today.clone().add(1, 'day').hour(businessHours.start).minute(0).toISOString();
+        }
+        
+        // Shouldn't reach here if checking properly
+        return now.clone().add(1, 'hour').toISOString();
+    }
+    
+    getNextWeekday(timezone, weekendDays) {
+        let date = moment().tz(timezone);
+        
+        // Keep adding days until we find a non-weekend day
+        while (weekendDays.includes(date.day())) {
+            date = date.add(1, 'day');
+        }
+        
+        return date.startOf('day').hour(9).minute(0).toISOString();
+    }
+    
+    calculateOptimalityScore(currentHour, schedule) {
+        let maxWeight = 0;
+        let currentWeight = 0;
+        
+        for (const window of schedule.optimalWindows) {
+            maxWeight += window.weight;
+            if (currentHour >= window.start && currentHour < window.end) {
+                currentWeight = window.weight;
+            }
+        }
+        
+        return maxWeight > 0 ? (currentWeight / maxWeight) * 100 : 50;
+    }
+    
+    getDayName(dayIndex) {
+        const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+        return days[dayIndex];
+    }
+    
+    // Batch schedule analysis
+    analyzeContactList(contactNumbers) {
+        const results = {
+            canSendNow: [],
+            cannotSendNow: [],
+            byCountry: {},
+            summary: {
+                total: contactNumbers.length,
+                availableNow: 0,
+                byTimeWindow: {
+                    morning: 0,
+                    afternoon: 0,
+                    evening: 0,
+                    outsideHours: 0,
+                    weekend: 0
+                }
+            }
+        };
+        
+        for (const number of contactNumbers) {
+            const check = this.canSendNow(number);
+            const analysis = check.analysis;
+            
+            // Categorize by country
+            if (!results.byCountry[analysis.countryName]) {
+                results.byCountry[analysis.countryName] = {
+                    count: 0,
+                    availableNow: 0,
+                    timezone: analysis.primaryTimezone
+                };
+            }
+            results.byCountry[analysis.countryName].count++;
+            
+            if (check.allowed) {
+                results.canSendNow.push({
+                    number: number,
+                    country: analysis.countryName,
+                    localTime: analysis.currentLocalTime.time,
+                    optimality: check.optimality
+                });
+                results.summary.availableNow++;
+                results.byCountry[analysis.countryName].availableNow++;
+                
+                // Categorize by time window
+                const hour = analysis.currentLocalTime.hour;
+                if (hour >= 6 && hour < 12) results.summary.byTimeWindow.morning++;
+                else if (hour >= 12 && hour < 17) results.summary.byTimeWindow.afternoon++;
+                else results.summary.byTimeWindow.evening++;
+            } else {
+                results.cannotSendNow.push({
+                    number: number,
+                    country: analysis.countryName,
+                    reason: check.reason,
+                    nextAvailable: check.nextAvailable,
+                    localTime: analysis.currentLocalTime.time
+                });
+                
+                if (check.reason.includes('Weekend')) {
+                    results.summary.byTimeWindow.weekend++;
+                } else {
+                    results.summary.byTimeWindow.outsideHours++;
+                }
+            }
+        }
+        
+        return results;
+    }
+    
+    // Generate sending schedule for next 24 hours
+    generate24HourSchedule(contactNumbers) {
+        const schedule = {};
+        const now = moment();
+        
+        // Create hourly slots for next 24 hours
+        for (let i = 0; i < 24; i++) {
+            const hourTime = now.clone().add(i, 'hours');
+            const hourKey = hourTime.format('YYYY-MM-DD HH:00');
+            schedule[hourKey] = {
+                contacts: [],
+                countries: new Set(),
+                optimalCount: 0
+            };
+        }
+        
+        // Assign contacts to optimal slots
+        for (const number of contactNumbers) {
+            const analysis = this.analyzeContactSchedule(number);
+            const optimalTimes = analysis.optimalSendTimes;
+            
+            for (const slot of optimalTimes) {
+                const slotTime = moment(slot.start);
+                const hourKey = slotTime.format('YYYY-MM-DD HH:00');
+                
+                if (schedule[hourKey]) {
+                    schedule[hourKey].contacts.push({
+                        number: number,
+                        country: analysis.countryName,
+                        optimality: slot.weight * 100
+                    });
+                    schedule[hourKey].countries.add(analysis.countryName);
+                    if (slot.weight > 0.5) schedule[hourKey].optimalCount++;
+                }
+            }
+        }
+        
+        // Filter out empty slots and sort
+        const filteredSchedule = Object.entries(schedule)
+            .filter(([_, data]) => data.contacts.length > 0)
+            .sort((a, b) => a[0].localeCompare(b[0]))
+            .slice(0, 12); // Next 12 hours
+        
+        return filteredSchedule;
+    }
+}
+
+module.exports = TimezoneScheduler;
+```
+
+## 🚀 5. Integrated Campaign Manager with All Features
+
+```javascript
+// integrated-campaign-manager.js
+const ISOCountryMapper = require('./iso-country-mapper');
+const EnhancedOptOutDetector = require('./enhanced-optout-detector');
+const ContactRecencyFilter = require('./contact-recency-filter');
+const TimezoneScheduler = require('./timezone-scheduler');
+const moment = require('moment');
+
+class IntegratedCampaignManager {
+    constructor(client, googleSheetsService) {
+        this.client = client;
+        this.sheetsService = googleSheetsService;
+        
+        // Initialize all modules
+        this.countryMapper = new ISOCountryMapper();
+        this.optOutDetector = new EnhancedOptOutDetector(client);
+        this.recencyFilter = new ContactRecencyFilter(googleSheetsService);
+        this.timezoneScheduler = new TimezoneScheduler();
+        
+        // Campaign settings
+        this.settings = {
+            maxDailyMessages: parseInt(process.env.MAX_DAILY_MESSAGES) || 50,
+            minDaysBetweenContacts: 60, // 2 months
+            requireOptimalWindow: false,
+            enablePingTest: false,
+            respectTimezones: true,
+            logToGoogleSheets: true
+        };
+        
+        // Campaign state
+        this.state = {
+            todaySent: 0,
+            todayFailed: 0,
+            contactsProcessed: new Set(),
+            campaignStart: new Date().toISOString(),
+            lastGoogleSheetUpdate: null
+        };
+    }
+    
+    async runIntegratedCampaign(campaignConfig) {
+        console.log('🚀 Starting Integrated Campaign with all filters');
+        
+        const {
+            spreadsheetId,
+            range,
+            messageTemplate,
+            campaignName = `campaign-${moment().format('YYYY-MM-DD-HHmm')}`
+        } = campaignConfig;
+        
+        // 1. Load contacts from Google Sheets
+        const contactsData = await this.loadAndValidateContacts(spreadsheetId, range);
+        if (!contactsData.validContacts.length) {
+            return this.createResult('No valid contacts found', campaignName);
+        }
+        
+        // 2. Apply 2-month recency filter
+        const recencyResult = await this.recencyFilter.filterByRecency(
+            contactsData.validContacts,
+            spreadsheetId,
+            range
+        );
+        
+        console.log(`📊 After 2-month filter: ${recencyResult.filteredContacts.length} contacts`);
+        
+        // 3. Apply opt-out and block detection
+        const safetyResult = await this.applySafetyChecks(recencyResult.filteredContacts);
+        
+        // 4. Apply timezone scheduling
+        const schedulingResult = this.applyTimezoneScheduling(safetyResult.safeContacts);
+        
+        // 5. Random selection within daily limits
+        const finalSelection = this.selectFinalContacts(
+            schedulingResult.availableNow,
+            campaignConfig.randomize || true
+        );
+        
+        if (finalSelection.length === 0) {
+            return this.createResult('No contacts available after all filters', campaignName, {
+                recency: recencyResult.stats,
+                safety: safetyResult.stats,
+                scheduling: schedulingResult.summary
+            });
+        }
+        
+        // 6. Execute campaign
+        const campaignResult = await this.executeCampaign(
+            finalSelection,
+            messageTemplate,
+            campaignName,
+            spreadsheetId,
+            range
+        );
+        
+        // 7. Update Google Sheets
+        if (this.settings.logToGoogleSheets) {
+            await this.updateCampaignLogs(campaignResult, spreadsheetId);
+        }
+        
+        // 8. Return comprehensive result
+        return this.compileFinalResult(
+            campaignName,
+            contactsData,
+            recencyResult,
+            safetyResult,
+            schedulingResult,
+            campaignResult
+        );
+    }
+    
+    async loadAndValidateContacts(spreadsheetId, range) {
+        try {
+            const contactsData = await this.sheetsService.getValidatedContacts(spreadsheetId, range);
+            
+            // Enhance with country information
+            const enhancedContacts = contactsData.validContacts.map(contact => {
+                const countryInfo = this.countryMapper.analyzeNumber(contact.validatedNumber);
+                return {
+                    ...contact,
+                    ...countryInfo,
+                    fullAnalysis: countryInfo
+                };
+            });
+            
+            return {
+                ...contactsData,
+                validContacts: enhancedContacts,
+                byCountry: this.groupByCountry(enhancedContacts)
+            };
+        } catch (error) {
+            console.error('Failed to load contacts:', error);
+            throw error;
+        }
+    }
+    
+    async applySafetyChecks(contacts) {
+        console.log('🛡️ Applying safety checks (opt-out/block detection)');
+        
+        const safeContacts = [];
+        const unsafeContacts = [];
+        const stats = {
+            totalChecked: 0,
+            passed: 0,
+            failed: 0,
+            reasons: {}
+        };
+        
+        for (const contact of contacts) {
+            stats.totalChecked++;
+            
+            try {
+                const safetyStatus = await this.optOutDetector.checkContactStatus(
+                    contact.whatsappId || contact.validatedNumber
+                );
+                
+                if (safetyStatus.canMessage) {
+                    safeContacts.push({
+                        ...contact,
+                        safetyStatus: safetyStatus,
+                        lastSafetyCheck: safetyStatus.lastChecked
+                    });
+                    stats.passed++;
+                } else {
+                    unsafeContacts.push({
+                        contact: contact,
+                        safetyStatus: safetyStatus,
+                        reason: safetyStatus.reason
+                    });
+                    stats.failed++;
+                    
+                    // Track reasons
+                    if (!stats.reasons[safetyStatus.reason]) {
+                        stats.reasons[safetyStatus.reason] = 0;
+                    }
+                    stats.reasons[safetyStatus.reason]++;
+                    
+                    console.log(`🚫 Unsafe: ${contact.validatedNumber} - ${safetyStatus.reason}`);
+                }
+            } catch (error) {
+                console.error(`Safety check failed for ${contact.validatedNumber}:`, error.message);
+                // On error, be conservative and mark as unsafe
+                unsafeContacts.push({
+                    contact: contact,
+                    error: error.message,
+                    reason: 'Safety check failed'
+                });
+                stats.failed++;
+            }
+        }
+        
+        return {
+            safeContacts,
+            unsafeContacts,
+            stats
+        };
+    }
+    
+    applyTimezoneScheduling(contacts) {
+        if (!this.settings.respectTimezones) {
+            return {
+                availableNow: contacts,
+                unavailableNow: [],
+                summary: { total: contacts.length, availableNow: contacts.length }
+            };
+        }
+        
+        console.log('🕐 Applying timezone-aware scheduling');
+        
+        const availableNow = [];
+        const unavailableNow = [];
+        
+        for (const contact of contacts) {
+            const scheduleCheck = this.timezoneScheduler.canSendNow(
+                contact.validatedNumber,
+                { requireOptimalWindow: this.settings.requireOptimalWindow }
+            );
+            
+            if (scheduleCheck.allowed) {
+                availableNow.push({
+                    ...contact,
+                    scheduleCheck: scheduleCheck,
+                    optimality: scheduleCheck.optimality
+                });
+            } else {
+                unavailableNow.push({
+                    contact: contact,
+                    scheduleCheck: scheduleCheck,
+                    reason: scheduleCheck.reason,
+                    nextAvailable: scheduleCheck.nextAvailable
+                });
+            }
+        }
+        
+        return {
+            availableNow,
+            unavailableNow,
+            summary: {
+                total: contacts.length,
+                availableNow: availableNow.length,
+                byCountry: this.groupSchedulingByCountry(availableNow, unavailableNow)
+            }
+        };
+    }
+    
+    selectFinalContacts(contacts, randomize = true) {
+        const availableQuota = this.settings.maxDailyMessages - this.state.todaySent;
+        
+        if (availableQuota <= 0) {
+            return [];
+        }
+        
+        let selectedContacts = [...contacts];
+        
+        if (randomize) {
+            // Weighted random selection based on optimality
+            selectedContacts = this.weightedRandomSelection(contacts, availableQuota);
+        } else {
+            // Take first N contacts
+            selectedContacts = contacts.slice(0, Math.min(availableQuota, contacts.length));
+        }
+        
+        console.log(`🎯 Selected ${selectedContacts.length} contacts (quota: ${availableQuota})`);
+        
+        return selectedContacts;
+    }
+    
+    weightedRandomSelection(contacts, n) {
+        if (contacts.length <= n) {
+            return this.shuffleArray([...contacts]);
+        }
+        
+        // Calculate weights based on optimality
+        const weightedContacts = contacts.map(contact => {
+            let weight = 1;
+            
+            // Higher weight for better optimality
+            if (contact.optimality > 80) weight = 3;
+            else if (contact.optimality > 60) weight = 2;
+            
+            // Higher weight for never contacted
+            if (!contact.lastContacted) weight *= 2;
+            
+            return { contact, weight };
+        });
+        
+        const selected = [];
+        const totalWeight = weightedContacts.reduce((sum, wc) => sum + wc.weight, 0);
+        
+        while (selected.length < n && weightedContacts.length > 0) {
+            const random = Math.random() * totalWeight;
+            let cumulative = 0;
+            
+            for (let i = 0; i < weightedContacts.length; i++) {
+                cumulative += weightedContacts[i].weight;
+                if (random <= cumulative) {
+                    selected.push(weightedContacts[i].contact);
+                    totalWeight -= weightedContacts[i].weight;
+                    weightedContacts.splice(i, 1);
+                    break;
+                }
+            }
+        }
+        
+        return selected;
+    }
+    
+    shuffleArray(array) {
+        for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
+        }
+        return array;
+    }
+    
+    async executeCampaign(contacts, messageTemplate, campaignName, spreadsheetId, range) {
+        console.log(`📤 Executing campaign: ${campaignName}`);
+        
+        const results = {
+            sent: 0,
+            failed: 0,
+            details: [],
+            startTime: new Date().toISOString()
+        };
+        
+        for (const contact of contacts) {
+            // Check daily limit
+            if (this.state.todaySent >= this.settings.maxDailyMessages) {
+                console.log('⏹️ Daily limit reached. Stopping campaign.');
+                break;
+            }
+            
+            // Personalize message
+            const personalizedMessage = this.personalizeMessage(messageTemplate, contact);
+            
+            // Calculate dynamic delay
+            const delay = this.calculateDynamicDelay(results.sent);
+            await this.delay(delay);
+            
+            try {
+                // Send message
+                const sendResult = await this.client.sendMessage(
+                    contact.whatsappId || contact.validatedNumber,
+                    personalizedMessage
+                );
+                
+                results.sent++;
+                this.state.todaySent++;
+                this.state.contactsProcessed.add(contact.validatedNumber);
+                
+                // Update last contacted
+                await this.recencyFilter.updateLastContacted(
+                    [contact],
+                    spreadsheetId,
+                    range
+                );
+                
+                results.details.push({
+                    contact: contact.validatedNumber,
+                    name: contact.name,
+                    country: contact.countryName,
+                    nationality: contact.nationality,
+                    success: true,
+                    messageId: sendResult.id?.id,
+                    timestamp: new Date().toISOString(),
+                    localTime: contact.fullAnalysis?.currentLocalTime?.time,
+                    optimality: contact.optimality,
+                    safetyStatus: contact.safetyStatus?.reason
+                });
+                
+                console.log(`✅ Sent to ${contact.name || contact.validatedNumber} (${contact.countryName})`);
+                
+            } catch (error) {
+                results.failed++;
+                this.state.todayFailed++;
+                
+                results.details.push({
+                    contact: contact.validatedNumber,
+                    name: contact.name,
+                    country: contact.countryName,
+                    nationality: contact.nationality,
+                    success: false,
+                    error: error.message,
+                    timestamp: new Date().toISOString(),
+                    localTime: contact.fullAnalysis?.currentLocalTime?.time
+                });
+                
+                console.error(`❌ Failed to send to ${contact.validatedNumber}:`, error.message);
+                
+                // Check if it's a block error
+                const errorCode = error.message.match(/\d+/)?.[0];
+                if (errorCode && ['131021', '131026', '131045', '131050'].includes(errorCode)) {
+                    // Mark as blocked/opted out
+                    this.optOutDetector.markAsOptedOut(
+                        contact.validatedNumber,
+                        `WhatsApp error ${errorCode}: ${error.message}`
+                    );
+                }
+            }
+        }
+        
+        results.endTime = new Date().toISOString();
+        results.duration = moment(results.endTime).diff(moment(results.startTime), 'minutes');
+        
+        return results;
+    }
+    
+    personalizeMessage(template, contact) {
+        const variables = {
+            name: contact.name || 'there',
+            firstName: contact.name?.split(' ')[0] || 'there',
+            country: contact.countryName,
+            day: moment().format('dddd'),
+            date: moment().format('MMMM Do'),
+            time: moment().format('h:mm a'),
+            localTime: contact.fullAnalysis?.currentLocalTime?.time || moment().format('HH:mm'),
+            nationality: contact.nationality
+        };
+        
+        let personalized = template;
+        Object.entries(variables).forEach(([key, value]) => {
+            personalized = personalized.replace(new RegExp(`{${key}}`, 'gi'), value);
+        });
+        
+        return personalized;
+    }
+    
+    calculateDynamicDelay(messageCount) {
+        // Base delay with fatigue factor
+        const baseDelay = 5000 + (Math.log(messageCount + 1) * 1000);
+        
+        // Random variation
+        const randomFactor = 0.5 + Math.random() * 0.5;
+        const randomDelay = baseDelay * randomFactor;
+        
+        // Occasional longer pauses
+        const pauseChance = 0.03;
+        const pause = Math.random() < pauseChance ? 
+                      30000 + Math.random() * 60000 : 0;
+        
+        return Math.min(30000, baseDelay + randomDelay + pause);
+    }
+    
+    async updateCampaignLogs(campaignResult, spreadsheetId) {
+        const logSheet = process.env.LOG_SHEET_RANGE || 'CampaignLogs!A:K';
+        const logRows = [];
+        
+        for (const detail of campaignResult.details) {
+            logRows.push([
+                detail.timestamp,
+                detail.contact,
+                detail.name || '',
+                detail.country,
+                detail.nationality,
+                detail.success ? 'Success' : 'Failed',
+                detail.messageId || '',
+                detail.error || '',
+                detail.localTime || '',
+                detail.optimality || '',
+                detail.safetyStatus || ''
+            ]);
+        }
+        
+        try {
+            await this.sheetsService.appendRows(spreadsheetId, logSheet, logRows);
+            this.state.lastGoogleSheetUpdate = new Date().toISOString();
+            console.log(`📝 Logged ${logRows.length} results to Google Sheets`);
+        } catch (error) {
+            console.error('Failed to log to Google Sheets:', error);
+        }
+    }
+    
+    compileFinalResult(campaignName, contactsData, recencyResult, safetyResult, schedulingResult, campaignResult) {
+        return {
+            campaignName,
+            timestamp: new Date().toISOString(),
+            
+            summary: {
+                totalContacts: contactsData.total,
+                validContacts: contactsData.validContacts.length,
+                afterRecencyFilter: recencyResult.filteredContacts.length,
+                afterSafetyChecks: safetyResult.safeContacts.length,
+                afterScheduling: schedulingResult.availableNow.length,
+                finallySent: campaignResult.sent,
+                failed: campaignResult.failed,
+                successRate: (campaignResult.sent / (campaignResult.sent + campaignResult.failed) * 100).toFixed(1) + '%',
+                duration: campaignResult.duration + ' minutes'
+            },
+            
+            filters: {
+                recency: recencyResult.stats,
+                safety: safetyResult.stats,
+                scheduling: schedulingResult.summary
+            },
+            
+            geographical: {
+                byCountry: this.groupByCountry(campaignResult.details.filter(d => d.success)),
+                uaeContacts: campaignResult.details.filter(d => d.country === 'United Arab Emirates').length
+            },
+            
+            dailyStats: {
+                sentToday: this.state.todaySent,
+                failedToday: this.state.todayFailed,
+                remainingQuota: this.settings.maxDailyMessages - this.state.todaySent,
+                uniqueContacts: this.state.contactsProcessed.size
+            },
+            
+            details: {
+                successful: campaignResult.details.filter(d => d.success),
+                failed: campaignResult.details.filter(d => !d.success),
+                sampleSize: Math.min(5, campaignResult.details.length)
+            },
+            
+            recommendations: this.generateRecommendations(
+                contactsData,
+                recencyResult,
+                safetyResult,
+                schedulingResult,
+                campaignResult
+            )
+        };
+    }
+    
+    groupByCountry(items) {
+        const byCountry = {};
+        
+        for (const item of items) {
+            const country = item.countryName || item.country || 'Unknown';
+            if (!byCountry[country]) {
+                byCountry[country] = [];
+            }
+            byCountry[country].push(item);
+        }
+        
+        // Convert to array with counts
+        return Object.entries(byCountry).map(([country, items]) => ({
+            country,
+            count: items.length,
+            sample: items.slice(0, 3)
+        })).sort((a, b) => b.count - a.count);
+    }
+    
+    groupSchedulingByCountry(available, unavailable) {
+        const byCountry = {};
+        
+        // Add available
+        for (const contact of available) {
+            const country = contact.countryName;
+            if (!byCountry[country]) {
+                byCountry[country] = { available: 0, unavailable: 0 };
+            }
+            byCountry[country].available++;
+        }
+        
+        // Add unavailable
+        for (const item of unavailable) {
+            const country = item.contact.countryName;
+            if (!byCountry[country]) {
+                byCountry[country] = { available: 0, unavailable: 0 };
+            }
+            byCountry[country].unavailable++;
+        }
+        
+        return byCountry;
+    }
+    
+    generateRecommendations(contactsData, recencyResult, safetyResult, schedulingResult, campaignResult) {
+        const recommendations = [];
+        
+        // Check UAE focus
+        const uaeContacts = contactsData.validContacts.filter(c => c.countryCode === '971').length;
+        if (uaeContacts === 0) {
+            recommendations.push('⚠️ No UAE (+971) contacts found in your list. Consider adding UAE contacts.');
+        }
+        
+        // Check safety failure rate
+        const safetyFailureRate = safetyResult.stats.failed / safetyResult.stats.totalChecked;
+        if (safetyFailureRate > 0.3) {
+            recommendations.push('🚨 High safety failure rate (>30%). Review your contact list for opt-outs/blocks.');
+        }
+        
+        // Check scheduling efficiency
+        const schedulingEfficiency = schedulingResult.availableNow.length / safetyResult.safeContacts.length;
+        if (schedulingEfficiency < 0.5) {
+            recommendations.push('⏰ Low scheduling efficiency (<50%). Consider expanding sending windows or targeting different timezones.');
+        }
+        
+        // Check chat check rate
+        const checkStats = this.optOutDetector.getChatCheckStats('sample');
+        if (checkStats.count > 3) {
+            recommendations.push('🔍 High chat check frequency detected. Maintain <5 checks per month per contact to avoid detection.');
+        }
+        
+        return recommendations;
+    }
+    
+    createResult(message, campaignName, details = {}) {
+        return {
+            success: false,
+            campaignName,
+            message,
+            timestamp: new Date().toISOString(),
+            details,
+            dailyStats: {
+                sentToday: this.state.todaySent,
+                remainingQuota: this.settings.maxDailyMessages - this.state.todaySent
+            }
+        };
+    }
+    
+    delay(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms));
+    }
+    
+    // Reset daily counters
+    resetDailyCounters() {
+        this.state.todaySent = 0;
+        this.state.todayFailed = 0;
+        this.state.contactsProcessed.clear();
+        this.state.campaignStart = new Date().toISOString();
+        console.log('🔄 Daily counters reset');
+    }
+    
+    // Get comprehensive stats
+    getCampaignStats() {
+        return {
+            settings: this.settings,
+            state: this.state,
+            detectors: {
+                chatChecksThisMonth: this.optOutDetector.chatCheckHistory.size,
+                cachedOptOutStatus: this.optOutDetector.optOutCache.size,
+                recencyFilterCache: this.recencyFilter.contactHistory.size
+            },
+            limits: {
+                dailyRemaining: this.settings.maxDailyMessages - this.state.todaySent,
+                canSendMore: this.state.todaySent < this.settings.maxDailyMessages
+            }
+        };
+    }
+}
+
+module.exports = IntegratedCampaignManager;
+```
+
+## 📋 **Enhanced .env Configuration**
+
+```env
+# ==================== INTEGRATED CAMPAIGN SETTINGS ====================
+MAX_DAILY_MESSAGES=50
+MIN_DAYS_BETWEEN_CONTACTS=60
+REQUIRE_OPTIMAL_WINDOW=false
+ENABLE_PING_TEST=false
+RESPECT_TIMEZONES=true
+LOG_TO_GOOGLE_SHEETS=true
+
+# ==================== SAFETY DETECTION ====================
+MAX_CHAT_CHECKS_PER_MONTH=5
+OPT_OUT_KEYWORDS=stop,unsubscribe,remove,opt-out,block
+BLOCK_DETECTION_KEYWORDS=blocked,block you,حظرتك,مزعج
+
+# ==================== UAE FOCUS ====================
+PRIMARY_COUNTRY_CODE=971
+UAE_TIMEZONE=Asia/Dubai
+UAE_BUSINESS_HOURS_START=8
+UAE_BUSINESS_HOURS_END=18
+UAE_WEEKEND=5,6  # Friday, Saturday
+
+# ==================== GOOGLE SHEETS ====================
+MAIN_SHEET_ID=your_main_sheet_id
+MAIN_SHEET_RANGE=Contacts!A2:F
+LOG_SHEET_RANGE=CampaignLogs!A2:K
+CONTACT_HISTORY_SHEET=ContactHistory!A2:E
+
+# ==================== BEHAVIOR PATTERNS ====================
+MIN_DELAY_MS=5000
+MAX_DELAY_MS=30000
+RANDOMIZATION_FACTOR=0.7
+HUMAN_PAUSE_PROBABILITY=0.03
+```
+
+## 🚀 **Usage Example**
+
+```javascript
+const WhatsAppClient = require('./your-whatsapp-client');
+const GoogleSheetsService = require('./google-sheets-service');
+const IntegratedCampaignManager = require('./integrated-campaign-manager');
+
+async function runFullCampaign() {
+    // Initialize
+    const client = new WhatsAppClient();
+    await client.initialize();
+    
+    const sheetsService = new GoogleSheetsService();
+    const campaignManager = new IntegratedCampaignManager(client, sheetsService);
+    
+    // Configure campaign
+    const campaignConfig = {
+        spreadsheetId: process.env.MAIN_SHEET_ID,
+        range: process.env.MAIN_SHEET_RANGE,
+        messageTemplate: "Hello {firstName} from {country}! Hope you're having a great {day} in {localTime} your time. 😊",
+        campaignName: 'Global-Engagement-' + new Date().toISOString().split('T')[0],
+        randomize: true
+    };
+    
+    // Run integrated campaign
+    const result = await campaignManager.runIntegratedCampaign(campaignConfig);
+    
+    console.log('🎯 Campaign Complete!');
+    console.log('Summary:', JSON.stringify(result.summary, null, 2));
+    console.log('Geographical:', JSON.stringify(result.geographical, null, 2));
+    console.log('Recommendations:', result.recommendations);
+    
+    // Get detailed stats
+    const stats = campaignManager.getCampaignStats();
+    console.log('Detailed Stats:', JSON.stringify(stats, null, 2));
+}
+
+// Schedule daily run
+const cron = require('node-cron');
+cron.schedule('0 9 * * 1-5', () => { // Weekdays at 9 AM
+    console.log('⏰ Scheduled campaign starting...');
+    runFullCampaign().catch(console.error);
+});
+
+// Manual trigger
+// runFullCampaign().catch(console.error);
+```
+
+## ⚠️ **Critical Implementation Notes**
+
+1. **ISO 3166-1 Data**: You need to complete the `countryData` object with all 200+ country codes. Consider using a library like `country-codes` or `libphonenumber-js`.
+
+2. **Chat Check Rate Limiting**: The system enforces ≤5 chat checks per month per contact. Monitor this closely.
+
+3. **UAE Focus**: The system prioritizes UAE numbers and uses UAE-specific scheduling.
+
+4. **Detection Avoidance**:
+   - Random delays between 5-30 seconds
+   - Human-like pauses (3% probability)
+   - Limited chat history checks
+   - Timezone-aware scheduling
+   - Weighted random contact selection
+
+5. **Safety First**: When in doubt, the system errs on the side of not sending to avoid blocks.
+
+This integrated system provides maximum protection while maintaining functionality. However, remember that **no unofficial WhatsApp solution is completely safe from detection**. Use with extreme caution and consider migrating to the official WhatsApp Business API for production use.
+
+ implement all these advanced features. Here's the comprehensive system with all your requested capabilities:
+
+## 🔐 1. WhatsApp Code-Based Authentication (No QR)
+
+```javascript
+// whatsapp-auth-manager.js
+const { Client, LocalAuth } = require('whatsapp-web.js');
+const crypto = require('crypto');
+const EventEmitter = require('events');
+
+class WhatsAppAuthManager extends EventEmitter {
+    constructor() {
+        super();
+        this.authCodes = new Map(); // Stores active auth codes
+        this.linkedDevices = new Map(); // Stores linked devices
+        this.authExpiry = 5 * 60 * 1000; // 5 minutes
+        
+        // Client configuration
+        this.clientConfig = {
+            authStrategy: new LocalAuth({
+                dataPath: '.wwebjs_auth',
+                clientId: `client-${Date.now()}`
+            }),
+            puppeteer: {
+                headless: process.env.NODE_ENV === 'production' ? 'new' : false,
+                args: [
+                    '--no-sandbox',
+                    '--disable-setuid-sandbox',
+                    '--disable-dev-shm-usage',
+                    '--disable-accelerated-2d-canvas',
+                    '--disable-web-security',
+                    '--disable-features=IsolateOrigins,site-per-process',
+                    '--disable-blink-features=AutomationControlled'
+                ]
+            },
+            webVersionCache: {
+                type: 'remote',
+                remotePath: 'https://raw.githubusercontent.com/wppconnect-team/wa-version/main/html/2.2412.54.html'
+            }
+        };
+    }
+    
+    /**
+     * Generate a 6-digit code for device linking
+     */
+    generateAuthCode() {
+        const code = Math.floor(100000 + Math.random() * 900000).toString();
+        const sessionData = {
+            code,
+            timestamp: Date.now(),
+            clientId: `client-${crypto.randomBytes(8).toString('hex')}`,
+            status: 'pending',
+            attempts: 0
+        };
+        
+        this.authCodes.set(code, sessionData);
+        
+        // Auto-expire after 5 minutes
+        setTimeout(() => {
+            if (this.authCodes.get(code)?.status === 'pending') {
+                this.authCodes.delete(code);
+                console.log(`Auth code ${code} expired`);
+            }
+        }, this.authExpiry);
+        
+        console.log(`📱 Generated auth code: ${code} (valid for 5 minutes)`);
+        return { code, expiresIn: this.authExpiry };
+    }
+    
+    /**
+     * Verify auth code and link device
+     */
+    async verifyAndLinkDevice(code) {
+        const sessionData = this.authCodes.get(code);
+        
+        if (!sessionData) {
+            return { success: false, error: 'Invalid or expired code' };
+        }
+        
+        if (sessionData.status !== 'pending') {
+            return { success: false, error: 'Code already used' };
+        }
+        
+        sessionData.attempts++;
+        
+        if (sessionData.attempts > 3) {
+            this.authCodes.delete(code);
+            return { success: false, error: 'Too many attempts' };
+        }
+        
+        try {
+            // Create new client with unique clientId
+            const client = new Client({
+                ...this.clientConfig,
+                authStrategy: new LocalAuth({
+                    dataPath: '.wwebjs_auth',
+                    clientId: sessionData.clientId
+                })
+            });
+            
+            // Set up event handlers
+            return await this.initializeClientWithCode(client, code, sessionData);
+            
+        } catch (error) {
+            return { success: false, error: error.message };
+        }
+    }
+    
+    async initializeClientWithCode(client, code, sessionData) {
+        return new Promise((resolve) => {
+            let qrTimer;
+            let authTimer;
+            
+            client.on('qr', (qr) => {
+                console.log('QR received (fallback)');
+                // Clear timers if QR is shown
+                clearTimeout(qrTimer);
+                clearTimeout(authTimer);
+                
+                sessionData.status = 'qr_shown';
+                this.authCodes.set(code, sessionData);
+                
+                resolve({
+                    success: false,
+                    requiresQR: true,
+                    qrCode: qr,
+                    message: 'Authentication requires QR code scanning'
+                });
+            });
+            
+            client.on('authenticated', () => {
+                console.log(`✅ Device linked successfully with code: ${code}`);
+                
+                sessionData.status = 'authenticated';
+                sessionData.authenticatedAt = Date.now();
+                this.authCodes.set(code, sessionData);
+                
+                // Store linked device
+                this.linkedDevices.set(sessionData.clientId, {
+                    client,
+                    code,
+                    linkedAt: new Date().toISOString(),
+                    lastActivity: Date.now()
+                });
+                
+                resolve({
+                    success: true,
+                    clientId: sessionData.clientId,
+                    message: 'Device linked successfully',
+                    timestamp: new Date().toISOString()
+                });
+            });
+            
+            client.on('ready', () => {
+                console.log(`Client ${sessionData.clientId} is ready`);
+                this.emit('device-ready', sessionData.clientId);
+            });
+            
+            client.on('auth_failure', (error) => {
+                resolve({
+                    success: false,
+                    error: `Authentication failed: ${error}`
+                });
+            });
+            
+            // Timeout handling
+            qrTimer = setTimeout(() => {
+                if (sessionData.status === 'pending') {
+                    resolve({
+                        success: false,
+                        error: 'Authentication timed out (no QR received)'
+                    });
+                    client.destroy();
+                }
+            }, 30000);
+            
+            authTimer = setTimeout(() => {
+                if (sessionData.status !== 'authenticated') {
+                    resolve({
+                        success: false,
+                        error: 'Authentication process timed out'
+                    });
+                    client.destroy();
+                }
+            }, 120000);
+            
+            // Initialize client
+            client.initialize();
+        });
+    }
+    
+    /**
+     * Get all linked devices
+     */
+    getLinkedDevices() {
+        const devices = [];
+        
+        for (const [clientId, device] of this.linkedDevices) {
+            devices.push({
+                clientId,
+                code: device.code,
+                linkedAt: device.linkedAt,
+                lastActivity: new Date(device.lastActivity),
+                status: device.client?.info ? 'active' : 'inactive'
+            });
+        }
+        
+        return devices;
+    }
+    
+    /**
+     * Get client by clientId
+     */
+    getClient(clientId) {
+        const device = this.linkedDevices.get(clientId);
+        return device?.client || null;
+    }
+    
+    /**
+     * Switch between multiple linked devices
+     */
+    switchDevice(clientId) {
+        const device = this.linkedDevices.get(clientId);
+        if (!device || !device.client) {
+            throw new Error(`Device ${clientId} not found or inactive`);
+        }
+        
+        // Update last activity
+        device.lastActivity = Date.now();
+        this.linkedDevices.set(clientId, device);
+        
+        return device.client;
+    }
+    
+    /**
+     * Unlink device
+     */
+    async unlinkDevice(clientId) {
+        const device = this.linkedDevices.get(clientId);
+        if (device) {
+            if (device.client) {
+                await device.client.destroy();
+            }
+            this.linkedDevices.delete(clientId);
+            
+            // Also remove from auth codes
+            for (const [code, data] of this.authCodes) {
+                if (data.clientId === clientId) {
+                    this.authCodes.delete(code);
+                }
+            }
+            
+            console.log(`Device ${clientId} unlinked successfully`);
+            return true;
+        }
+        return false;
+    }
+    
+    /**
+     * Clean up expired codes and inactive devices
+     */
+    cleanup() {
+        const now = Date.now();
+        let cleaned = 0;
+        
+        // Clean expired auth codes
+        for (const [code, data] of this.authCodes) {
+            if (now - data.timestamp > this.authExpiry) {
+                this.authCodes.delete(code);
+                cleaned++;
+            }
+        }
+        
+        // Clean inactive devices (more than 24 hours)
+        for (const [clientId, device] of this.linkedDevices) {
+            if (now - device.lastActivity > 24 * 60 * 60 * 1000) {
+                this.unlinkDevice(clientId);
+                cleaned++;
+            }
+        }
+        
+        return cleaned;
+    }
+    
+    /**
+     * REST API endpoints for authentication
+     */
+    setupAuthAPI(app) {
+        // Generate new auth code
+        app.post('/api/auth/generate-code', (req, res) => {
+            const result = this.generateAuthCode();
+            res.json(result);
+        });
+        
+        // Verify auth code
+        app.post('/api/auth/verify-code', async (req, res) => {
+            const { code } = req.body;
+            if (!code) {
+                return res.status(400).json({ error: 'Code required' });
+            }
+            
+            const result = await this.verifyAndLinkDevice(code);
+            res.json(result);
+        });
+        
+        // List linked devices
+        app.get('/api/auth/devices', (req, res) => {
+            const devices = this.getLinkedDevices();
+            res.json({ devices });
+        });
+        
+        // Switch active device
+        app.post('/api/auth/switch-device', (req, res) => {
+            const { clientId } = req.body;
+            try {
+                const client = this.switchDevice(clientId);
+                res.json({
+                    success: true,
+                    message: `Switched to device ${clientId}`,
+                    clientId
+                });
+            } catch (error) {
+                res.status(400).json({ error: error.message });
+            }
+        });
+        
+        // Unlink device
+        app.delete('/api/auth/devices/:clientId', async (req, res) => {
+            const { clientId } = req.params;
+            const success = await this.unlinkDevice(clientId);
+            res.json({ success });
+        });
+        
+        // Get auth status
+        app.get('/api/auth/status', (req, res) => {
+            res.json({
+                activeCodes: this.authCodes.size,
+                linkedDevices: this.linkedDevices.size,
+                lastCleanup: new Date().toISOString()
+            });
+        });
+    }
+}
+
+module.exports = WhatsAppAuthManager;
+```
+
+## 📊 2. Dynamic Sheet Rotation System
+
+```javascript
+// sheet-rotation-manager.js
+const moment = require('moment');
+const crypto = require('crypto');
+
+class SheetRotationManager {
+    constructor(googleSheetsService) {
+        this.sheetsService = googleSheetsService;
+        
+        // Sheet rotation configuration
+        this.config = {
+            rotationMode: process.env.SHEET_ROTATION_MODE || 'sequential', // sequential, random, weighted
+            sheetConfigs: [], // Will be loaded from env or config file
+            currentIndex: 0,
+            rotationHistory: [],
+            maxHistorySize: 100
+        };
+        
+        // Load sheet configurations
+        this.loadSheetConfigs();
+    }
+    
+    /**
+     * Load sheet configurations from environment or config file
+     */
+    loadSheetConfigs() {
+        try {
+            // Option 1: From environment variable (JSON string)
+            if (process.env.SHEET_CONFIGS) {
+                this.config.sheetConfigs = JSON.parse(process.env.SHEET_CONFIGS);
+                console.log(`Loaded ${this.config.sheetConfigs.length} sheet configurations from env`);
+            }
+            
+            // Option 2: From config file
+            else {
+                const configFile = require('./sheet-configs.json');
+                this.config.sheetConfigs = configFile.sheets || [];
+                console.log(`Loaded ${this.config.sheetConfigs.length} sheet configurations from file`);
+            }
+            
+            // Validate configurations
+            this.validateSheetConfigs();
+            
+        } catch (error) {
+            console.error('Failed to load sheet configs:', error);
+            // Fallback to single sheet
+            this.config.sheetConfigs = [{
+                id: 'default',
+                spreadsheetId: process.env.GOOGLE_SHEETS_SPREADSHEET_ID,
+                range: process.env.GOOGLE_SHEETS_RANGE,
+                name: 'Default Sheet',
+                weight: 1,
+                lastUsed: null,
+                useCount: 0
+            }];
+        }
+    }
+    
+    /**
+     * Get next sheet based on rotation strategy
+     */
+    getNextSheet(campaignName = '') {
+        if (this.config.sheetConfigs.length === 0) {
+            throw new Error('No sheet configurations available');
+        }
+        
+        let selectedSheet;
+        
+        switch (this.config.rotationMode) {
+            case 'sequential':
+                selectedSheet = this.getSequentialSheet();
+                break;
+                
+            case 'random':
+                selectedSheet = this.getRandomSheet();
+                break;
+                
+            case 'weighted':
+                selectedSheet = this.getWeightedSheet();
+                break;
+                
+            case 'round_robin':
+                selectedSheet = this.getRoundRobinSheet();
+                break;
+                
+            default:
+                selectedSheet = this.getSequentialSheet();
+        }
+        
+        // Update sheet usage statistics
+        this.updateSheetUsage(selectedSheet, campaignName);
+        
+        return selectedSheet;
+    }
+    
+    /**
+     * Sequential rotation (one after another)
+     */
+    getSequentialSheet() {
+        const sheet = { ...this.config.sheetConfigs[this.config.currentIndex] };
+        this.config.currentIndex = (this.config.currentIndex + 1) % this.config.sheetConfigs.length;
+        return sheet;
+    }
+    
+    /**
+     * Random selection
+     */
+    getRandomSheet() {
+        const randomIndex = Math.floor(Math.random() * this.config.sheetConfigs.length);
+        return { ...this.config.sheetConfigs[randomIndex] };
+    }
+    
+    /**
+     * Weighted random selection
+     */
+    getWeightedSheet() {
+        const totalWeight = this.config.sheetConfigs.reduce((sum, sheet) => sum + (sheet.weight || 1), 0);
+        const random = Math.random() * totalWeight;
+        
+        let cumulative = 0;
+        for (const sheet of this.config.sheetConfigs) {
+            cumulative += sheet.weight || 1;
+            if (random <= cumulative) {
+                return { ...sheet };
+            }
+        }
+        
+        // Fallback
+        return { ...this.config.sheetConfigs[0] };
+    }
+    
+    /**
+     * Round robin with usage tracking
+     */
+    getRoundRobinSheet() {
+        // Sort by last used timestamp (oldest first)
+        const sortedSheets = [...this.config.sheetConfigs].sort((a, b) => {
+            const timeA = a.lastUsed ? new Date(a.lastUsed).getTime() : 0;
+            const timeB = b.lastUsed ? new Date(b.lastUsed).getTime() : 0;
+            return timeA - timeB;
+        });
+        
+        return { ...sortedSheets[0] };
+    }
+    
+    /**
+     * Update sheet usage statistics
+     */
+    updateSheetUsage(sheet, campaignName) {
+        const now = new Date().toISOString();
+        
+        // Find and update the sheet in configs
+        const sheetIndex = this.config.sheetConfigs.findIndex(s => 
+            s.spreadsheetId === sheet.spreadsheetId && s.range === sheet.range
+        );
+        
+        if (sheetIndex !== -1) {
+            this.config.sheetConfigs[sheetIndex].lastUsed = now;
+            this.config.sheetConfigs[sheetIndex].useCount = (this.config.sheetConfigs[sheetIndex].useCount || 0) + 1;
+            this.config.sheetConfigs[sheetIndex].lastCampaign = campaignName;
+        }
+        
+        // Add to rotation history
+        this.config.rotationHistory.unshift({
+            timestamp: now,
+            sheetId: sheet.id || sheet.spreadsheetId,
+            sheetName: sheet.name,
+            campaignName,
+            mode: this.config.rotationMode
+        });
+        
+        // Trim history
+        if (this.config.rotationHistory.length > this.config.maxHistorySize) {
+            this.config.rotationHistory.pop();
+        }
+        
+        console.log(`📄 Selected sheet: ${sheet.name} (${sheet.spreadsheetId})`);
+    }
+    
+    /**
+     * Get sheet by ID
+     */
+    getSheetById(sheetId) {
+        return this.config.sheetConfigs.find(sheet => 
+            sheet.id === sheetId || sheet.spreadsheetId === sheetId
+        );
+    }
+    
+    /**
+     * Manually force rotation to specific sheet
+     */
+    forceSheetSelection(sheetId) {
+        const sheet = this.getSheetById(sheetId);
+        if (!sheet) {
+            throw new Error(`Sheet ${sheetId} not found`);
+        }
+        
+        // Update current index if in sequential mode
+        if (this.config.rotationMode === 'sequential') {
+            const currentIndex = this.config.sheetConfigs.findIndex(s => 
+                s.spreadsheetId === sheet.spreadsheetId
+            );
+            if (currentIndex !== -1) {
+                this.config.currentIndex = currentIndex;
+            }
+        }
+        
+        return { ...sheet };
+    }
+    
+    /**
+     * Get rotation statistics
+     */
+    getRotationStats() {
+        const now = Date.now();
+        const oneWeekAgo = now - (7 * 24 * 60 * 60 * 1000);
+        
+        // Calculate usage in last 7 days
+        const recentUsage = this.config.rotationHistory.filter(entry => 
+            new Date(entry.timestamp).getTime() > oneWeekAgo
+        );
+        
+        const stats = {
+            totalSheets: this.config.sheetConfigs.length,
+            rotationMode: this.config.rotationMode,
+            currentIndex: this.config.currentIndex,
+            usageLast7Days: recentUsage.length,
+            
+            sheetUsage: this.config.sheetConfigs.map(sheet => ({
+                name: sheet.name,
+                useCount: sheet.useCount || 0,
+                lastUsed: sheet.lastUsed || 'Never',
+                weight: sheet.weight || 1
+            })),
+            
+            recentRotations: this.config.rotationHistory.slice(0, 10)
+        };
+        
+        return stats;
+    }
+    
+    /**
+     * Validate sheet configurations
+     */
+    validateSheetConfigs() {
+        const validSheets = [];
+        
+        for (const sheet of this.config.sheetConfigs) {
+            if (!sheet.spreadsheetId || !sheet.range) {
+                console.warn(`Invalid sheet config missing spreadsheetId or range:`, sheet);
+                continue;
+            }
+            
+            // Set defaults
+            if (!sheet.id) {
+                sheet.id = crypto.createHash('md5')
+                    .update(`${sheet.spreadsheetId}-${sheet.range}`)
+                    .digest('hex')
+                    .substring(0, 8);
+            }
+            
+            if (!sheet.name) {
+                sheet.name = `Sheet-${sheet.id}`;
+            }
+            
+            if (!sheet.weight) {
+                sheet.weight = 1;
+            }
+            
+            sheet.useCount = sheet.useCount || 0;
+            validSheets.push(sheet);
+        }
+        
+        this.config.sheetConfigs = validSheets;
+    }
+    
+    /**
+     * Add new sheet configuration dynamically
+     */
+    addSheetConfig(config) {
+        if (!config.spreadsheetId || !config.range) {
+            throw new Error('spreadsheetId and range are required');
+        }
+        
+        const newSheet = {
+            id: config.id || crypto.createHash('md5')
+                .update(`${config.spreadsheetId}-${config.range}`)
+                .digest('hex')
+                .substring(0, 8),
+            name: config.name || `Sheet-${Date.now()}`,
+            spreadsheetId: config.spreadsheetId,
+            range: config.range,
+            weight: config.weight || 1,
+            lastUsed: null,
+            useCount: 0,
+            tags: config.tags || []
+        };
+        
+        this.config.sheetConfigs.push(newSheet);
+        console.log(`Added new sheet: ${newSheet.name} (${newSheet.id})`);
+        
+        return newSheet;
+    }
+    
+    /**
+     * Export current configuration
+     */
+    exportConfig() {
+        return {
+            rotationMode: this.config.rotationMode,
+            sheetConfigs: this.config.sheetConfigs,
+            currentIndex: this.config.currentIndex
+        };
+    }
+}
+
+module.exports = SheetRotationManager;
+```
+
+## ⏳ 3. 7-Day Selection Restriction with Log Tracking
+
+```javascript
+// selection-restriction-manager.js
+const moment = require('moment');
+
+class SelectionRestrictionManager {
+    constructor(googleSheetsService) {
+        this.sheetsService = googleSheetsService;
+        
+        this.restrictionConfig = {
+            daysBetweenSelections: 7, // Don't select same number within 7 days
+            maxDailySelections: 50, // Maximum unique selections per day
+            selectionHistory: new Map(), // In-memory cache
+            failedMessageCache: new Map(), // Cache for failed messages
+            autoCleanupHours: 24 // Cleanup cache every 24 hours
+        };
+        
+        // Auto-cleanup timer
+        this.startAutoCleanup();
+    }
+    
+    /**
+     * Check if number can be selected based on 7-day rule
+     */
+    async canSelectNumber(phoneNumber, campaignName = '') {
+        const cacheKey = this.normalizePhoneNumber(phoneNumber);
+        
+        // Check in-memory cache first
+        const cached = this.restrictionConfig.selectionHistory.get(cacheKey);
+        if (cached) {
+            const daysSince = moment().diff(moment(cached.lastSelected), 'days');
+            
+            if (daysSince < this.restrictionConfig.daysBetweenSelections) {
+                return {
+                    allowed: false,
+                    reason: `Selected ${daysSince} days ago (min ${this.restrictionConfig.daysBetweenSelections} days required)`,
+                    lastSelected: cached.lastSelected,
+                    lastCampaign: cached.lastCampaign,
+                    nextAvailable: moment(cached.lastSelected)
+                        .add(this.restrictionConfig.daysBetweenSelections, 'days')
+                        .format('YYYY-MM-DD')
+                };
+            }
+        }
+        
+        // Check Google Sheets history
+        const sheetHistory = await this.checkSheetHistory(phoneNumber);
+        if (sheetHistory) {
+            const daysSince = moment().diff(moment(sheetHistory.lastSelected), 'days');
+            
+            if (daysSince < this.restrictionConfig.daysBetweenSelections) {
+                // Update cache
+                this.restrictionConfig.selectionHistory.set(cacheKey, {
+                    lastSelected: sheetHistory.lastSelected,
+                    lastCampaign: sheetHistory.lastCampaign,
+                    checkedAt: new Date().toISOString()
+                });
+                
+                return {
+                    allowed: false,
+                    reason: `Selected ${daysSince} days ago in Google Sheets`,
+                    lastSelected: sheetHistory.lastSelected,
+                    lastCampaign: sheetHistory.lastCampaign,
+                    nextAvailable: moment(sheetHistory.lastSelected)
+                        .add(this.restrictionConfig.daysBetweenSelections, 'days')
+                        .format('YYYY-MM-DD')
+                };
+            }
+        }
+        
+        // Check if we've exceeded daily selection limit
+        const dailyCount = await this.getTodaySelectionCount();
+        if (dailyCount >= this.restrictionConfig.maxDailySelections) {
+            return {
+                allowed: false,
+                reason: `Daily selection limit reached (${this.restrictionConfig.maxDailySelections})`,
+                dailyCount,
+                nextAvailable: 'Tomorrow'
+            };
+        }
+        
+        return {
+            allowed: true,
+            lastSelected: cached?.lastSelected || sheetHistory?.lastSelected,
+            daysSince: cached ? moment().diff(moment(cached.lastSelected), 'days') : null
+        };
+    }
+    
+    /**
+     * Check Google Sheets for selection history
+     */
+    async checkSheetHistory(phoneNumber) {
+        try {
+            // Assuming you have a "SelectionHistory" sheet
+            const normalizedNumber = this.normalizePhoneNumber(phoneNumber);
+            const query = `SelectHistory!A:D`;
+            
+            // This is a simplified example - adjust based on your actual sheet structure
+            const data = await this.sheetsService.getSheetData(
+                process.env.SELECTION_HISTORY_SHEET_ID,
+                query
+            );
+            
+            if (!data || !data.values) return null;
+            
+            // Find the number in the history
+            for (const row of data.values) {
+                const [timestamp, number, campaign, action] = row;
+                if (this.normalizePhoneNumber(number) === normalizedNumber && action === 'selected') {
+                    return {
+                        lastSelected: timestamp,
+                        lastCampaign: campaign,
+                        action
+                    };
+                }
+            }
+            
+            return null;
+        } catch (error) {
+            console.error('Error checking sheet history:', error);
+            return null;
+        }
+    }
+    
+    /**
+     * Record number selection
+     */
+    async recordSelection(phoneNumber, campaignName, action = 'selected') {
+        const cacheKey = this.normalizePhoneNumber(phoneNumber);
+        const now = new Date().toISOString();
+        
+        // Update in-memory cache
+        this.restrictionConfig.selectionHistory.set(cacheKey, {
+            lastSelected: now,
+            lastCampaign: campaignName,
+            checkedAt: now,
+            action
+        });
+        
+        // Log to Google Sheets
+        await this.logToSelectionHistory(phoneNumber, campaignName, action);
+        
+        // Update daily counter
+        await this.incrementDailyCounter();
+        
+        console.log(`📝 Recorded ${action} for ${phoneNumber} in campaign ${campaignName}`);
+    }
+    
+    /**
+     * Check for failed messages and avoid retrying
+     */
+    async checkFailedMessages(phoneNumber) {
+        const cacheKey = this.normalizePhoneNumber(phoneNumber);
+        
+        // Check in-memory cache
+        const cachedFailure = this.restrictionConfig.failedMessageCache.get(cacheKey);
+        if (cachedFailure) {
+            const hoursSince = moment().diff(moment(cachedFailure.timestamp), 'hours');
+            
+            // Don't retry for 72 hours if it was a block/opt-out error
+            if (cachedFailure.isPermanent && hoursSince < 72) {
+                return {
+                    shouldRetry: false,
+                    reason: `Permanent failure detected ${hoursSince} hours ago`,
+                    error: cachedFailure.error,
+                    lastAttempt: cachedFailure.timestamp,
+                    nextRetry: moment(cachedFailure.timestamp).add(72, 'hours').format()
+                };
+            }
+            
+            // Don't retry for 24 hours for other errors
+            if (!cachedFailure.isPermanent && hoursSince < 24) {
+                return {
+                    shouldRetry: false,
+                    reason: `Temporary failure detected ${hoursSince} hours ago`,
+                    error: cachedFailure.error,
+                    lastAttempt: cachedFailure.timestamp,
+                    nextRetry: moment(cachedFailure.timestamp).add(24, 'hours').format()
+                };
+            }
+        }
+        
+        // Check Google Sheets failure logs
+        const sheetFailure = await this.checkSheetFailures(phoneNumber);
+        if (sheetFailure) {
+            const hoursSince = moment().diff(moment(sheetFailure.timestamp), 'hours');
+            
+            if (sheetFailure.isPermanent && hoursSince < 72) {
+                return {
+                    shouldRetry: false,
+                    reason: `Sheet shows permanent failure ${hoursSince} hours ago`,
+                    error: sheetFailure.error,
+                    campaign: sheetFailure.campaign,
+                    nextRetry: moment(sheetFailure.timestamp).add(72, 'hours').format()
+                };
+            }
+            
+            if (!sheetFailure.isPermanent && hoursSince < 24) {
+                return {
+                    shouldRetry: false,
+                    reason: `Sheet shows temporary failure ${hoursSince} hours ago`,
+                    error: sheetFailure.error,
+                    campaign: sheetFailure.campaign,
+                    nextRetry: moment(sheetFailure.timestamp).add(24, 'hours').format()
+                };
+            }
+        }
+        
+        return {
+            shouldRetry: true,
+            lastFailure: cachedFailure || sheetFailure
+        };
+    }
+    
+    /**
+     * Record failed message
+     */
+    async recordFailedMessage(phoneNumber, error, campaignName, isPermanent = false) {
+        const cacheKey = this.normalizePhoneNumber(phoneNumber);
+        const now = new Date().toISOString();
+        
+        // Update cache
+        this.restrictionConfig.failedMessageCache.set(cacheKey, {
+            timestamp: now,
+            error: typeof error === 'string' ? error : error.message,
+            campaign: campaignName,
+            isPermanent,
+            retryCount: (this.restrictionConfig.failedMessageCache.get(cacheKey)?.retryCount || 0) + 1
+        });
+        
+        // Log to Google Sheets
+        await this.logToFailureHistory(phoneNumber, error, campaignName, isPermanent);
+        
+        console.log(`❌ Recorded failure for ${phoneNumber}: ${error} (permanent: ${isPermanent})`);
+    }
+    
+    /**
+     * Filter contacts based on all restrictions
+     */
+    async filterContacts(contacts, campaignName) {
+        const filtered = [];
+        const filteredOut = [];
+        
+        console.log(`🔍 Applying 7-day and failure restrictions to ${contacts.length} contacts`);
+        
+        for (const contact of contacts) {
+            try {
+                // Check 7-day restriction
+                const selectionCheck = await this.canSelectNumber(contact.validatedNumber, campaignName);
+                if (!selectionCheck.allowed) {
+                    filteredOut.push({
+                        contact,
+                        reason: selectionCheck.reason,
+                        type: '7-day-restriction',
+                        details: selectionCheck
+                    });
+                    continue;
+                }
+                
+                // Check failed messages
+                const failureCheck = await this.checkFailedMessages(contact.validatedNumber);
+                if (!failureCheck.shouldRetry) {
+                    filteredOut.push({
+                        contact,
+                        reason: failureCheck.reason,
+                        type: 'failure-restriction',
+                        details: failureCheck
+                    });
+                    continue;
+                }
+                
+                // Passed all checks
+                filtered.push({
+                    ...contact,
+                    selectionCheck,
+                    failureCheck
+                });
+                
+            } catch (error) {
+                console.error(`Error checking restrictions for ${contact.validatedNumber}:`, error);
+                // On error, be conservative and skip
+                filteredOut.push({
+                    contact,
+                    reason: `Error checking: ${error.message}`,
+                    type: 'error',
+                    error: true
+                });
+            }
+        }
+        
+        return {
+            filteredContacts: filtered,
+            filteredOut,
+            stats: {
+                total: contacts.length,
+                passed: filtered.length,
+                filteredOut: filteredOut.length,
+                filterRate: ((filteredOut.length / contacts.length) * 100).toFixed(1) + '%'
+            }
+        };
+    }
+    
+    /**
+     * Get today's selection count
+     */
+    async getTodaySelectionCount() {
+        const today = moment().format('YYYY-MM-DD');
+        const cacheKey = `daily_count_${today}`;
+        
+        // You could implement a more sophisticated counter here
+        // For now, return count from in-memory cache
+        let count = 0;
+        for (const [_, data] of this.restrictionConfig.selectionHistory) {
+            if (moment(data.lastSelected).format('YYYY-MM-DD') === today) {
+                count++;
+            }
+        }
+        
+        return count;
+    }
+    
+    async incrementDailyCounter() {
+        // Implement daily counter logic
+        // This could write to a Google Sheet or use a database
+    }
+    
+    async logToSelectionHistory(phoneNumber, campaignName, action) {
+        // Implement Google Sheets logging
+        const logRow = [
+            new Date().toISOString(),
+            phoneNumber,
+            campaignName,
+            action,
+            'auto' // source
+        ];
+        
+        // Call your Google Sheets service
+        // await this.sheetsService.appendRow(...);
+    }
+    
+    async logToFailureHistory(phoneNumber, error, campaignName, isPermanent) {
+        // Implement failure logging to Google Sheets
+        const logRow = [
+            new Date().toISOString(),
+            phoneNumber,
+            typeof error === 'string' ? error : error.message,
+            campaignName,
+            isPermanent ? 'PERMANENT' : 'TEMPORARY',
+            moment().add(isPermanent ? 72 : 24, 'hours').format() // next retry
+        ];
+        
+        // Call your Google Sheets service
+        // await this.sheetsService.appendRow(...);
+    }
+    
+    async checkSheetFailures(phoneNumber) {
+        // Implement reading from failure log sheet
+        return null;
+    }
+    
+    /**
+     * Normalize phone number for consistent comparison
+     */
+    normalizePhoneNumber(phoneNumber) {
+        return phoneNumber.replace(/\D/g, '').replace(/^\+/, '');
+    }
+    
+    /**
+     * Start auto-cleanup of old cache entries
+     */
+    startAutoCleanup() {
+        setInterval(() => {
+            this.cleanupOldEntries();
+        }, this.restrictionConfig.autoCleanupHours * 60 * 60 * 1000);
+    }
+    
+    cleanupOldEntries() {
+        const now = Date.now();
+        const sevenDaysAgo = now - (7 * 24 * 60 * 60 * 1000);
+        let cleaned = 0;
+        
+        // Clean selection history
+        for (const [key, data] of this.restrictionConfig.selectionHistory) {
+            if (new Date(data.lastSelected).getTime() < sevenDaysAgo) {
+                this.restrictionConfig.selectionHistory.delete(key);
+                cleaned++;
+            }
+        }
+        
+        // Clean failure cache (keep for 30 days)
+        const thirtyDaysAgo = now - (30 * 24 * 60 * 60 * 1000);
+        for (const [key, data] of this.restrictionConfig.failedMessageCache) {
+            if (new Date(data.timestamp).getTime() < thirtyDaysAgo) {
+                this.restrictionConfig.failedMessageCache.delete(key);
+                cleaned++;
+            }
+        }
+        
+        if (cleaned > 0) {
+            console.log(`🧹 Cleaned ${cleaned} old cache entries`);
+        }
+    }
+    
+    /**
+     * Get restriction statistics
+     */
+    getRestrictionStats() {
+        return {
+            selectionHistorySize: this.restrictionConfig.selectionHistory.size,
+            failedMessageCacheSize: this.restrictionConfig.failedMessageCache.size,
+            dailySelections: this.getTodaySelectionCount(),
+            config: {
+                daysBetweenSelections: this.restrictionConfig.daysBetweenSelections,
+                maxDailySelections: this.restrictionConfig.maxDailySelections
+            }
+        };
+    }
+}
+
+module.exports = SelectionRestrictionManager;
+```
+
+## 🚀 4. Enhanced Campaign Manager with All Features
+
+```javascript
+// enhanced-campaign-orchestrator.js
+const WhatsAppAuthManager = require('./whatsapp-auth-manager');
+const SheetRotationManager = require('./sheet-rotation-manager');
+const SelectionRestrictionManager = require('./selection-restriction-manager');
+const ISOCountryMapper = require('./iso-country-mapper');
+const TimezoneScheduler = require('./timezone-scheduler');
+const moment = require('moment');
+
+class EnhancedCampaignOrchestrator {
+    constructor(googleSheetsService) {
+        this.sheetsService = googleSheetsService;
+        
+        // Initialize all managers
+        this.authManager = new WhatsAppAuthManager();
+        this.sheetManager = new SheetRotationManager(googleSheetsService);
+        this.restrictionManager = new SelectionRestrictionManager(googleSheetsService);
+        this.countryMapper = new ISOCountryMapper();
+        this.timezoneScheduler = new TimezoneScheduler();
+        
+        // Campaign state
+        this.state = {
+            activeCampaigns: new Map(),
+            campaignHistory: [],
+            dailyStats: {
+                date: moment().format('YYYY-MM-DD'),
+                campaignsRun: 0,
+                messagesSent: 0,
+                uniqueContacts: new Set(),
+                sheetsUsed: new Set()
+            },
+            clientStatus: 'disconnected'
+        };
+        
+        // Auto-cleanup
+        this.setupAutoCleanup();
+    }
+    
+    /**
+     * Main orchestration method
+     */
+    async orchestrateCampaign(campaignConfig) {
+        const campaignId = `campaign-${moment().format('YYYY-MM-DD-HHmmss')}-${Math.random().toString(36).substr(2, 5)}`;
+        
+        console.log(`🎬 Starting orchestrated campaign: ${campaignId}`);
+        
+        // 1. Authentication check
+        const authStatus = await this.checkAuthentication();
+        if (!authStatus.authenticated) {
+            return {
+                success: false,
+                campaignId,
+                error: 'Not authenticated with WhatsApp',
+                requiresAuth: true,
+                authOptions: {
+                    code: await this.authManager.generateAuthCode(),
+                    qr: null // We prefer code-based
+                }
+            };
+        }
+        
+        // 2. Get next sheet for rotation
+        const sheetConfig = this.sheetManager.getNextSheet(campaignId);
+        
+        // 3. Load contacts from selected sheet
+        const contactsData = await this.loadContacts(sheetConfig);
+        
+        // 4. Apply 7-day restriction filter
+        const restrictionResult = await this.restrictionManager.filterContacts(
+            contactsData.validContacts,
+            campaignId
+        );
+        
+        // 5. Apply timezone scheduling
+        const timezoneResult = this.applyTimezoneFilter(restrictionResult.filteredContacts);
+        
+        // 6. Apply country-specific filters
+        const countryResult = this.applyCountryFilters(timezoneResult.availableNow);
+        
+        // 7. Random selection within limits
+        const finalSelection = this.selectFinalContacts(countryResult.filtered, campaignConfig);
+        
+        if (finalSelection.length === 0) {
+            return {
+                success: false,
+                campaignId,
+                error: 'No contacts available after all filters',
+                filters: {
+                    restriction: restrictionResult.stats,
+                    timezone: timezoneResult.summary,
+                    country: countryResult.stats
+                }
+            };
+        }
+        
+        // 8. Execute campaign with selected client
+        const client = this.authManager.getClient('default'); // Get default client
+        const campaignResult = await this.executeCampaign(
+            client,
+            finalSelection,
+            campaignConfig,
+            campaignId,
+            sheetConfig
+        );
+        
+        // 9. Update all logs and rotate sheet
+        await this.postCampaignProcessing(campaignResult, sheetConfig, campaignId);
+        
+        return this.compileResults(
+            campaignId,
+            campaignConfig,
+            sheetConfig,
+            contactsData,
+            restrictionResult,
+            timezoneResult,
+            countryResult,
+            campaignResult
+        );
+    }
+    
+    /**
+     * Check authentication status
+     */
+    async checkAuthentication() {
+        const devices = this.authManager.getLinkedDevices();
+        
+        if (devices.length === 0) {
+            return {
+                authenticated: false,
+                devices: 0,
+                requiresAction: 'generate_code'
+            };
+        }
+        
+        // Check if any device is active
+        const activeDevice = devices.find(device => device.status === 'active');
+        
+        if (!activeDevice) {
+            return {
+                authenticated: false,
+                devices: devices.length,
+                requiresAction: 'reconnect',
+                availableDevices: devices
+            };
+        }
+        
+        return {
+            authenticated: true,
+            activeDevice,
+            devices: devices.length
+        };
+    }
+    
+    /**
+     * Load contacts with validation
+     */
+    async loadContacts(sheetConfig) {
+        console.log(`📥 Loading contacts from sheet: ${sheetConfig.name}`);
+        
+        try {
+            const contactsData = await this.sheetsService.getValidatedContacts(
+                sheetConfig.spreadsheetId,
+                sheetConfig.range
+            );
+            
+            // Enhance with country information
+            const enhancedContacts = contactsData.validContacts.map(contact => {
+                const countryInfo = this.countryMapper.analyzeNumber(contact.validatedNumber);
+                return {
+                    ...contact,
+                    ...countryInfo,
+                    sheetSource: sheetConfig.name,
+                    loadedAt: new Date().toISOString()
+                };
+            });
+            
+            // Update daily stats
+            this.state.dailyStats.sheetsUsed.add(sheetConfig.name);
+            
+            return {
+                ...contactsData,
+                validContacts: enhancedContacts,
+                sheetConfig
+            };
+            
+        } catch (error) {
+            console.error('Failed to load contacts:', error);
+            throw new Error(`Failed to load contacts from ${sheetConfig.name}: ${error.message}`);
+        }
+    }
+    
+    /**
+     * Apply timezone filtering
+     */
+    applyTimezoneFilter(contacts) {
+        const availableNow = [];
+        const unavailableNow = [];
+        
+        for (const contact of contacts) {
+            const scheduleCheck = this.timezoneScheduler.canSendNow(
+                contact.validatedNumber,
+                { requireOptimalWindow: true }
+            );
+            
+            if (scheduleCheck.allowed) {
+                availableNow.push({
+                    ...contact,
+                    scheduleCheck,
+                    optimality: scheduleCheck.optimality || 0
+                });
+            } else {
+                unavailableNow.push({
+                    contact,
+                    scheduleCheck,
+                    reason: scheduleCheck.reason
+                });
+            }
+        }
+        
+        return {
+            availableNow,
+            unavailableNow,
+            summary: {
+                total: contacts.length,
+                available: availableNow.length,
+                unavailable: unavailableNow.length,
+                availabilityRate: (availableNow.length / contacts.length * 100).toFixed(1) + '%'
+            }
+        };
+    }
+    
+    /**
+     * Apply country-specific filters
+     */
+    applyCountryFilters(contacts) {
+        const filtered = [];
+        const filteredOut = [];
+        
+        // UAE focus - prioritize UAE numbers
+        const uaeContacts = contacts.filter(c => c.countryCode === '971');
+        const otherContacts = contacts.filter(c => c.countryCode !== '971');
+        
+        // Ensure at least 30% are UAE contacts if available
+        const uaeQuota = Math.max(3, Math.floor(contacts.length * 0.3));
+        const selectedUae = uaeContacts.slice(0, Math.min(uaeQuota, uaeContacts.length));
+        
+        // Add UAE contacts first
+        filtered.push(...selectedUae);
+        
+        // Then add other contacts
+        const remainingQuota = Math.max(0, 50 - selectedUae.length); // Assuming max 50 per campaign
+        const selectedOthers = otherContacts.slice(0, remainingQuota);
+        filtered.push(...selectedOthers);
+        
+        // Track filtered out
+        const filteredUae = uaeContacts.slice(selectedUae.length);
+        const filteredOthers = otherContacts.slice(selectedOthers.length);
+        filteredOut.push(...filteredUae.map(c => ({ contact: c, reason: 'UAE quota filled' })));
+        filteredOut.push(...filteredOthers.map(c => ({ contact: c, reason: 'General quota filled' })));
+        
+        return {
+            filtered,
+            filteredOut,
+            stats: {
+                total: contacts.length,
+                uaeContacts: uaeContacts.length,
+                selectedUae: selectedUae.length,
+                selectedOthers: selectedOthers.length,
+                uaePercentage: (selectedUae.length / filtered.length * 100).toFixed(1) + '%'
+            }
+        };
+    }
+    
+    /**
+     * Final contact selection
+     */
+    selectFinalContacts(contacts, campaignConfig) {
+        const maxContacts = campaignConfig.maxContacts || 50;
+        
+        if (contacts.length <= maxContacts) {
+            return this.shuffleArray([...contacts]);
+        }
+        
+        // Weighted selection based on country priority and optimality
+        const weightedContacts = contacts.map(contact => {
+            let weight = 1;
+            
+            // Higher weight for UAE contacts
+            if (contact.countryCode === '971') weight *= 3;
+            
+            // Higher weight for optimal send times
+            if (contact.optimality > 80) weight *= 2;
+            else if (contact.optimality > 60) weight *= 1.5;
+            
+            // Lower weight for recently contacted
+            if (contact.lastContacted) {
+                const daysSince = moment().diff(moment(contact.lastContacted), 'days');
+                if (daysSince < 30) weight *= 0.5;
+            }
+            
+            return { contact, weight };
+        });
+        
+        return this.weightedRandomSelection(weightedContacts, maxContacts);
+    }
+    
+    /**
+     * Execute campaign with all protections
+     */
+    async executeCampaign(client, contacts, campaignConfig, campaignId, sheetConfig) {
+        console.log(`🚀 Executing campaign ${campaignId} with ${contacts.length} contacts`);
+        
+        const results = {
+            campaignId,
+            startTime: new Date().toISOString(),
+            sheetUsed: sheetConfig.name,
+            sent: 0,
+            failed: 0,
+            permanentFailures: 0,
+            details: []
+        };
+        
+        for (let i = 0; i < contacts.length; i++) {
+            const contact = contacts[i];
+            
+            try {
+                // 1. Pre-send validation
+                const preSendCheck = await this.preSendValidation(contact, campaignId);
+                if (!preSendCheck.valid) {
+                    results.failed++;
+                    results.details.push({
+                        contact: contact.validatedNumber,
+                        success: false,
+                        reason: preSendCheck.reason,
+                        timestamp: new Date().toISOString(),
+                        stage: 'pre_send_validation'
+                    });
+                    continue;
+                }
+                
+                // 2. Calculate dynamic delay
+                const delay = this.calculateSmartDelay(i, results.sent);
+                await this.delay(delay);
+                
+                // 3. Personalize message
+                const personalizedMessage = this.personalizeMessage(
+                    campaignConfig.messageTemplate,
+                    contact,
+                    campaignConfig
+                );
+                
+                // 4. Send message
+                const sendResult = await client.sendMessage(
+                    contact.whatsappId || contact.validatedNumber,
+                    personalizedMessage
+                );
+                
+                // 5. Record success
+                results.sent++;
+                this.state.dailyStats.messagesSent++;
+                this.state.dailyStats.uniqueContacts.add(contact.validatedNumber);
+                
+                await this.restrictionManager.recordSelection(
+                    contact.validatedNumber,
+                    campaignId,
+                    'sent_successfully'
+                );
+                
+                results.details.push({
+                    contact: contact.validatedNumber,
+                    name: contact.name,
+                    country: contact.countryName,
+                    nationality: contact.nationality,
+                    success: true,
+                    messageId: sendResult.id?.id,
+                    timestamp: new Date().toISOString(),
+                    localTime: contact.currentLocalTime?.time,
+                    delayUsed: delay,
+                    campaignId
+                });
+                
+                console.log(`✅ Sent to ${contact.name || contact.validatedNumber} (${contact.countryName})`);
+                
+                // 6. Update contact history in sheet
+                await this.updateContactHistory(contact, sheetConfig, 'sent');
+                
+            } catch (error) {
+                // 7. Handle failure
+                results.failed++;
+                
+                const errorMsg = error.message.toLowerCase();
+                const isPermanent = this.isPermanentError(errorMsg);
+                
+                if (isPermanent) {
+                    results.permanentFailures++;
+                }
+                
+                await this.restrictionManager.recordFailedMessage(
+                    contact.validatedNumber,
+                    error,
+                    campaignId,
+                    isPermanent
+                );
+                
+                results.details.push({
+                    contact: contact.validatedNumber,
+                    success: false,
+                    error: error.message,
+                    isPermanent,
+                    timestamp: new Date().toISOString(),
+                    retryRecommendation: isPermanent ? 'Do not retry' : 'Retry after 24h'
+                });
+                
+                console.error(`❌ Failed to send to ${contact.validatedNumber}:`, error.message);
+                
+                // 8. Adaptive response to failures
+                if (isPermanent || results.failed > 5) {
+                    console.warn('⚠️ Multiple failures detected, considering pause');
+                    await this.delay(10000); // Extra pause
+                }
+            }
+            
+            // 9. Check daily limits
+            if (this.state.dailyStats.messagesSent >= 100) { // Hard daily limit
+                console.log('⏹️ Daily message limit reached, stopping campaign');
+                break;
+            }
+        }
+        
+        results.endTime = new Date().toISOString();
+        results.duration = moment(results.endTime).diff(moment(results.startTime), 'minutes');
+        
+        return results;
+    }
+    
+    /**
+     * Pre-send validation
+     */
+    async preSendValidation(contact, campaignId) {
+        const checks = [
+            // Check if number was selected in last 7 days
+            async () => {
+                const selectionCheck = await this.restrictionManager.canSelectNumber(
+                    contact.validatedNumber,
+                    campaignId
+                );
+                if (!selectionCheck.allowed) {
+                    return { valid: false, reason: selectionCheck.reason };
+                }
+                return { valid: true };
+            },
+            
+            // Check for recent failures
+            async () => {
+                const failureCheck = await this.restrictionManager.checkFailedMessages(
+                    contact.validatedNumber
+                );
+                if (!failureCheck.shouldRetry) {
+                    return { valid: false, reason: failureCheck.reason };
+                }
+                return { valid: true };
+            },
+            
+            // Check if still in optimal time window
+            () => {
+                const currentHour = moment().tz(contact.primaryTimezone).hour();
+                const schedule = this.timezoneScheduler.getCountrySchedule(contact.countryCode);
+                
+                if (schedule && schedule.businessHours) {
+                    if (currentHour < schedule.businessHours.start || 
+                        currentHour >= schedule.businessHours.end) {
+                        return {
+                            valid: false,
+                            reason: `Outside business hours in ${contact.countryName}`
+                        };
+                    }
+                }
+                return { valid: true };
+            }
+        ];
+        
+        for (const check of checks) {
+            const result = await check();
+            if (!result.valid) {
+                return result;
+            }
+        }
+        
+        return { valid: true };
+    }
+    
+    /**
+     * Post-campaign processing
+     */
+    async postCampaignProcessing(campaignResult, sheetConfig, campaignId) {
+        // 1. Log campaign results
+        await this.logCampaignResults(campaignResult, sheetConfig);
+        
+        // 2. Update sheet rotation statistics
+        this.sheetManager.updateSheetUsage(sheetConfig, campaignId);
+        
+        // 3. Update campaign history
+        this.state.campaignHistory.push({
+            campaignId,
+            timestamp: new Date().toISOString(),
+            sheet: sheetConfig.name,
+            stats: {
+                sent: campaignResult.sent,
+                failed: campaignResult.failed,
+                duration: campaignResult.duration
+            }
+        });
+        
+        // 4. Clean old history
+        if (this.state.campaignHistory.length > 100) {
+            this.state.campaignHistory = this.state.campaignHistory.slice(-100);
+        }
+        
+        // 5. Run cleanup
+        this.restrictionManager.cleanupOldEntries();
+        this.authManager.cleanup();
+        
+        console.log(`📊 Campaign ${campaignId} completed processing`);
+    }
+    
+    /**
+     * Compile final results
+     */
+    compileResults(campaignId, campaignConfig, sheetConfig, contactsData, 
+                   restrictionResult, timezoneResult, countryResult, campaignResult) {
+        return {
+            success: true,
+            campaignId,
+            timestamp: new Date().toISOString(),
+            
+            summary: {
+                sheetUsed: sheetConfig.name,
+                totalContactsLoaded: contactsData.total,
+                afterRestrictions: restrictionResult.filteredContacts.length,
+                afterTimezone: timezoneResult.availableNow.length,
+                afterCountryFilter: countryResult.filtered.length,
+                finallySent: campaignResult.sent,
+                failed: campaignResult.failed,
+                permanentFailures: campaignResult.permanentFailures,
+                successRate: (campaignResult.sent / (campaignResult.sent + campaignResult.failed) * 100).toFixed(1) + '%',
+                duration: campaignResult.duration + ' minutes'
+            },
+            
+            geographical: {
+                uaeContacts: countryResult.filtered.filter(c => c.countryCode === '971').length,
+                byCountry: this.groupByCountry(campaignResult.details.filter(d => d.success)),
+                uaePercentage: (countryResult.filtered.filter(c => c.countryCode === '971').length / 
+                              countryResult.filtered.length * 100).toFixed(1) + '%'
+            },
+            
+            filters: {
+                restriction: restrictionResult.stats,
+                timezone: timezoneResult.summary,
+                country: countryResult.stats
+            },
+            
+            dailyStats: {
+                campaignsToday: this.state.dailyStats.campaignsRun,
+                messagesToday: this.state.dailyStats.messagesSent,
+                uniqueContactsToday: this.state.dailyStats.uniqueContacts.size,
+                sheetsUsedToday: Array.from(this.state.dailyStats.sheetsUsed)
+            },
+            
+            recommendations: this.generateRecommendations(
+                contactsData,
+                restrictionResult,
+                timezoneResult,
+                countryResult,
+                campaignResult
+            ),
+            
+            nextSteps: {
+                nextSheet: this.sheetManager.getNextSheet(),
+                nextOptimalTime: this.calculateNextOptimalTime(),
+                suggestedDelay: this.calculateNextCampaignDelay(campaignResult)
+            }
+        };
+    }
+    
+    /**
+     * Utility methods
+     */
+    calculateSmartDelay(messageIndex, successCount) {
+        // Base delay increases with message count
+        let baseDelay = 5000 + (Math.log(messageIndex + 1) * 1000);
+        
+        // Adjust based on success rate
+        if (successCount > 0) {
+            const successRate = successCount / (messageIndex + 1);
+            if (successRate > 0.9) baseDelay *= 0.8; // Speed up if high success
+            if (successRate < 0.5) baseDelay *= 1.5; // Slow down if low success
+        }
+        
+        // Random variation
+        baseDelay *= (0.8 + Math.random() * 0.4);
+        
+        // Hard limits
+        return Math.max(3000, Math.min(30000, baseDelay));
+    }
+    
+    isPermanentError(errorMessage) {
+        const permanentIndicators = [
+            'blocked',
+            'banned',
+            'not authorized',
+            '131021',
+            '131026',
+            '131045',
+            '131050',
+            'user not found',
+            'not on whatsapp'
+        ];
+        
+        return permanentIndicators.some(indicator => 
+            errorMessage.toLowerCase().includes(indicator.toLowerCase())
+        );
+    }
+    
+    weightedRandomSelection(weightedItems, n) {
+        const selected = [];
+        const items = [...weightedItems];
+        
+        while (selected.length < n && items.length > 0) {
+            const totalWeight = items.reduce((sum, item) => sum + item.weight, 0);
+            const random = Math.random() * totalWeight;
+            let cumulative = 0;
+            
+            for (let i = 0; i < items.length; i++) {
+                cumulative += items[i].weight;
+                if (random <= cumulative) {
+                    selected.push(items[i].contact);
+                    items.splice(i, 1);
+                    break;
+                }
+            }
+        }
+        
+        return selected;
+    }
+    
+    shuffleArray(array) {
+        for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
+        }
+        return array;
+    }
+    
+    async updateContactHistory(contact, sheetConfig, status) {
+        // Implement updating contact history in Google Sheets
+    }
+    
+    async logCampaignResults(campaignResult, sheetConfig) {
+        // Implement logging to Google Sheets
+    }
+    
+    groupByCountry(items) {
+        const byCountry = {};
+        for (const item of items) {
+            const country = item.country || 'Unknown';
+            if (!byCountry[country]) byCountry[country] = 0;
+            byCountry[country]++;
+        }
+        return byCountry;
+    }
+    
+    calculateNextOptimalTime() {
+        // Calculate next optimal campaign time based on timezones
+        const now = moment();
+        const nextHour = now.clone().add(1, 'hour').startOf('hour');
+        return nextHour.format('YYYY-MM-DD HH:mm:ss');
+    }
+    
+    calculateNextCampaignDelay(campaignResult) {
+        if (campaignResult.failed > campaignResult.sent * 0.3) {
+            return '2 hours'; // Wait longer if high failure rate
+        }
+        return '30 minutes'; // Default delay
+    }
+    
+    generateRecommendations() {
+        // Generate recommendations based on campaign performance
+        return [
+            'Monitor failure rates closely',
+            'Consider adjusting timezone filters',
+            'Review UAE contact ratio'
+        ];
+    }
+    
+    setupAutoCleanup() {
+        // Reset daily stats at midnight
+        const now = new Date();
+        const night = new Date(now);
+        night.setHours(24, 0, 0, 0);
+        
+        setTimeout(() => {
+            this.resetDailyStats();
+            this.setupAutoCleanup(); // Reschedule
+        }, night - now);
+    }
+    
+    resetDailyStats() {
+        this.state.dailyStats = {
+            date: moment().format('YYYY-MM-DD'),
+            campaignsRun: 0,
+            messagesSent: 0,
+            uniqueContacts: new Set(),
+            sheetsUsed: new Set()
+        };
+        console.log('🔄 Daily stats reset');
+    }
+    
+    delay(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms));
+    }
+    
+    /**
+     * API endpoints for management
+     */
+    setupManagementAPI(app) {
+        // Campaign management
+        app.post('/api/campaigns/start', async (req, res) => {
+            try {
+                const result = await this.orchestrateCampaign(req.body);
+                res.json(result);
+            } catch (error) {
+                res.status(500).json({ error: error.message });
+            }
+        });
+        
+        // Get campaign history
+        app.get('/api/campaigns/history', (req, res) => {
+            res.json({
+                total: this.state.campaignHistory.length,
+                campaigns: this.state.campaignHistory.slice(0, 20),
+                dailyStats: this.state.dailyStats
+            });
+        });
+        
+        // Get restriction statistics
+        app.get('/api/restrictions/stats', (req, res) => {
+            res.json(this.restrictionManager.getRestrictionStats());
+        });
+        
+        // Get sheet rotation statistics
+        app.get('/api/sheets/stats', (req, res) => {
+            res.json(this.sheetManager.getRotationStats());
+        });
+        
+        // Get authentication status
+        app.get('/api/auth/status', (req, res) => {
+            const authStatus = this.checkAuthentication();
+            res.json(authStatus);
+        });
+        
+        // Generate auth code
+        app.post('/api/auth/generate-code', (req, res) => {
+            const result = this.authManager.generateAuthCode();
+            res.json(result);
+        });
+        
+        // Switch active sheet
+        app.post('/api/sheets/switch', (req, res) => {
+            const { sheetId } = req.body;
+            try {
+                const sheet = this.sheetManager.forceSheetSelection(sheetId);
+                res.json({
+                    success: true,
+                    sheet,
+                    message: `Switched to sheet: ${sheet.name}`
+                });
+            } catch (error) {
+                res.status(400).json({ error: error.message });
+            }
+        });
+    }
+}
+
+module.exports = EnhancedCampaignOrchestrator;
+```
+
+## 📋 **Complete Configuration File**
+
+```json
+{
+  "whatsapp": {
+    "authMode": "code", // or "qr"
+    "maxLinkedDevices": 3,
+    "sessionExpiryDays": 7
+  },
+  
+  "sheets": {
+    "rotationMode": "sequential",
+    "sheets": [
+      {
+        "id": "sheet1",
+        "name": "UAE Primary Contacts",
+        "spreadsheetId": "your-uae-sheet-id",
+        "range": "Contacts!A2:F",
+        "weight": 3,
+        "tags": ["uae", "primary"]
+      },
+      {
+        "id": "sheet2", 
+        "name": "International Contacts",
+        "spreadsheetId": "your-international-sheet-id",
+        "range": "Contacts!A2:E",
+        "weight": 1,
+        "tags": ["international"]
+      },
+      {
+        "id": "sheet3",
+        "name": "VIP Contacts",
+        "spreadsheetId": "your-vip-sheet-id", 
+        "range": "VIP!A2:G",
+        "weight": 2,
+        "tags": ["vip", "priority"]
+      }
+    ]
+  },
+  
+  "restrictions": {
+    "daysBetweenSelections": 7,
+    "maxDailySelections": 50,
+    "permanentFailureRetryDays": 72,
+    "temporaryFailureRetryHours": 24,
+    "uaeContactQuota": 0.3
+  },
+  
+  "scheduling": {
+    "uae": {
+      "timezone": "Asia/Dubai",
+      "businessHours": {"start": 9, "end": 18},
+      "weekend": [5, 6],
+      "optimalWindows": [
+        {"start": 10, "end": 12, "weight": 0.4},
+        {"start": 16, "end": 18, "weight": 0.6}
+      ]
+    },
+    "default": {
+      "businessHours": {"start": 9, "end": 17},
+      "weekend": [0, 6]
+    }
+  }
+}
+```
+
+## 🚀 **Main Application Entry Point**
+
+```javascript
+// main.js
+require('dotenv').config();
+const express = require('express');
+const helmet = require('helmet');
+const compression = require('compression');
+const rateLimit = require('express-rate-limit');
+const GoogleSheetsService = require('./google-sheets-service');
+const EnhancedCampaignOrchestrator = require('./enhanced-campaign-orchestrator');
+const WhatsAppAuthManager = require('./whatsapp-auth-manager');
+
+// Initialize services
+const app = express();
+const sheetsService = new GoogleSheetsService();
+const orchestrator = new EnhancedCampaignOrchestrator(sheetsService);
+const authManager = new WhatsAppAuthManager();
+
+// Middleware
+app.use(helmet());
+app.use(compression());
+app.use(express.json());
+
+// Rate limiting
+const limiter = rateLimit({
+    windowMs: 15 * 60 * 1000,
+    max: 100
+});
+app.use('/api/', limiter);
+
+// Setup APIs
+orchestrator.setupManagementAPI(app);
+authManager.setupAuthAPI(app);
+
+// Health endpoint
+app.get('/health', (req, res) => {
+    res.json({
+        status: 'ok',
+        timestamp: new Date().toISOString(),
+        services: {
+            whatsapp: 'connected',
+            sheets: 'connected',
+            orchestrator: 'ready'
+        }
+    });
+});
+
+// Dashboard endpoint
+app.get('/dashboard', (req, res) => {
+    res.sendFile(__dirname + '/public/dashboard.html');
+});
+
+// Start server
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, '127.0.0.1', () => {
+    console.log(`
+    🚀 Enhanced WhatsApp Campaign System
+    ===================================
+    
+    📍 Local: http://127.0.0.1:${PORT}
+    🔒 Auth: http://127.0.0.1:${PORT}/api/auth/generate-code
+    📊 Dashboard: http://127.0.0.1:${PORT}/dashboard
+    
+    ⚠️  SECURITY WARNING:
+    - Never expose this server to the internet
+    - Use VPN or SSH tunnel for remote access
+    - Enable authentication for all endpoints
+    
+    ✅ Features Enabled:
+    - Code-based WhatsApp authentication
+    - Dynamic sheet rotation
+    - 7-day selection restriction
+    - Failed message tracking
+    - UAE-focused scheduling
+    - Country-specific filtering
+    
+    🔧 Configuration loaded from:
+    - Environment variables
+    - Google Sheets integration
+    - Country code database
+    `);
+});
+
+// Graceful shutdown
+process.on('SIGINT', async () => {
+    console.log('\n🛑 Shutting down gracefully...');
+    
+    // Cleanup resources
+    await authManager.cleanup();
+    
+    console.log('✅ Cleanup complete');
+    process.exit(0);
+});
+```
+
+## 📊 **Dashboard HTML for Monitoring**
+
+```html
+<!-- public/dashboard.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>WhatsApp Campaign Dashboard</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif; background: #f5f5f5; }
+        .dashboard { max-width: 1400px; margin: 0 auto; padding: 20px; }
+        .header { background: white; padding: 30px; border-radius: 10px; margin-bottom: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin: 20px 0; }
+        .stat-card { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        .stat-value { font-size: 2em; font-weight: bold; margin: 10px 0; }
+        .stat-label { color: #666; font-size: 0.9em; }
+        .section { background: white; padding: 25px; border-radius: 10px; margin-bottom: 20px; }
+        .btn { background: #25D366; color: white; border: none; padding: 12px 24px; border-radius: 6px; cursor: pointer; font-size: 16px; }
+        .btn:hover { background: #1da851; }
+        .auth-code { font-family: monospace; font-size: 2em; letter-spacing: 5px; background: #f0f0f0; padding: 20px; text-align: center; margin: 20px 0; }
+        .log-entry { padding: 10px; border-bottom: 1px solid #eee; }
+        .log-success { color: #28a745; }
+        .log-error { color: #dc3545; }
+        .log-warning { color: #ffc107; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #eee; }
+        th { background: #f8f9fa; font-weight: 600; }
+    </style>
+</head>
+<body>
+    <div class="dashboard">
+        <div class="header">
+            <h1>📱 WhatsApp Campaign Dashboard</h1>
+            <p>Advanced campaign management with code-based authentication</p>
+        </div>
+        
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-label">Today's Messages</div>
+                <div class="stat-value" id="todayMessages">0</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Active Sheets</div>
+                <div class="stat-value" id="activeSheets">0</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Linked Devices</div>
+                <div class="stat-value" id="linkedDevices">0</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">UAE Contacts Today</div>
+                <div class="stat-value" id="uaeContacts">0</div>
+            </div>
+        </div>
+        
+        <div class="section">
+            <h2>🔐 Authentication</h2>
+            <button class="btn" onclick="generateAuthCode()">Generate Auth Code</button>
+            <div id="authCodeContainer" style="display: none;">
+                <div class="auth-code" id="authCode"></div>
+                <p>Enter this code in your WhatsApp app under Linked Devices</p>
+                <p><small>Code expires in 5 minutes</small></p>
+            </div>
+        </div>
+        
+        <div class="section">
+            <h2>📊 Campaign Control</h2>
+            <div style="display: flex; gap: 10px; margin: 20px 0;">
+                <button class="btn" onclick="startCampaign()">Start Campaign</button>
+                <button class="btn" onclick="getStats()">Refresh Stats</button>
+                <button class="btn" style="background: #6c757d;" onclick="cleanup()">Cleanup</button>
+            </div>
+            <div id="campaignResult"></div>
+        </div>
+        
+        <div class="section">
+            <h2>📋 Recent Activity</h2>
+            <div id="activityLog"></div>
+        </div>
+        
+        <div class="section">
+            <h2>📄 Sheet Rotation</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Sheet Name</th>
+                        <th>Usage Count</th>
+                        <th>Last Used</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody id="sheetTable"></tbody>
+            </table>
+        </div>
+    </div>
+    
+    <script>
+        async function generateAuthCode() {
+            const response = await fetch('/api/auth/generate-code', { method: 'POST' });
+            const data = await response.json();
+            
+            document.getElementById('authCode').textContent = data.code;
+            document.getElementById('authCodeContainer').style.display = 'block';
+            
+            // Auto-hide after 5 minutes
+            setTimeout(() => {
+                document.getElementById('authCodeContainer').style.display = 'none';
+            }, 5 * 60 * 1000);
+        }
+        
+        async function startCampaign() {
+            const campaignConfig = {
+                messageTemplate: "Hello {name}! This is a test message from the enhanced campaign system.",
+                maxContacts: 20,
+                focusUAE: true
+            };
+            
+            const response = await fetch('/api/campaigns/start', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(campaignConfig)
+            });
+            
+            const result = await response.json();
+            displayResult(result);
+        }
+        
+        async function getStats() {
+            const [health, auth, sheets, campaigns] = await Promise.all([
+                fetch('/health').then(r => r.json()),
+                fetch('/api/auth/status').then(r => r.json()),
+                fetch('/api/sheets/stats').then(r => r.json()),
+                fetch('/api/campaigns/history').then(r => r.json())
+            ]);
+            
+            updateDashboard(health, auth, sheets, campaigns);
+        }
+        
+        function updateDashboard(health, auth, sheets, campaigns) {
+            document.getElementById('todayMessages').textContent = campaigns.dailyStats?.messagesSent || 0;
+            document.getElementById('activeSheets').textContent = sheets.totalSheets || 0;
+            document.getElementById('linkedDevices').textContent = auth.devices || 0;
+            document.getElementById('uaeContacts').textContent = 'N/A';
+        }
+        
+        function displayResult(result) {
+            const container = document.getElementById('campaignResult');
+            container.innerHTML = `
+                <div style="margin-top: 20px; padding: 15px; background: #f8f9fa; border-radius: 5px;">
+                    <h3>${result.success ? '✅ Campaign Successful' : '❌ Campaign Failed'}</h3>
+                    ${result.success ? `
+                        <p>Campaign ID: ${result.campaignId}</p>
+                        <p>Messages Sent: ${result.summary.finallySent}</p>
+                        <p>Success Rate: ${result.summary.successRate}</p>
+                        <p>UAE Contacts: ${result.geographical.uaeContacts}</p>
+                    ` : `
+                        <p>Error: ${result.error}</p>
+                        ${result.requiresAuth ? '<p>Authentication required. Please generate an auth code.</p>' : ''}
+                    `}
+                </div>
+            `;
+        }
+        
+        // Auto-refresh every 30 seconds
+        setInterval(getStats, 30000);
+        
+        // Initial load
+        getStats();
+    </script>
+</body>
+</html>
+```
+
+## ⚠️ **Critical Implementation Notes**
+
+1. **Code-Based Authentication**:
+   - Uses 6-digit codes instead of QR
+   - Each code valid for 5 minutes
+   - Supports multiple linked devices
+   - Automatic cleanup of expired sessions
+
+2. **Dynamic Sheet Rotation**:
+   - Multiple rotation strategies (sequential, random, weighted, round-robin)
+   - Tracks sheet usage history
+   - Supports adding sheets dynamically
+   - UAE-focused prioritization
+
+3. **7-Day Selection Restriction**:
+   - Tracks when each number was last selected
+   - Prevents re-selection within 7 days
+   - Integrates with Google Sheets history
+   - Daily selection limits
+
+4. **Failed Message Tracking**:
+   - Distinguishes between temporary and permanent failures
+   - Automatic retry avoidance
+   - 72-hour block for permanent failures
+   - 24-hour block for temporary failures
+
+5. **UAE Focus**:
+   - Prioritizes +971 numbers
+   - UAE-specific scheduling
+   - Configurable UAE contact quota
+   - Local timezone consideration
+
+This system provides enterprise-level campaign management while attempting to minimize detection through sophisticated behavior patterns and strict scheduling. However, **remember that using unofficial WhatsApp APIs remains high-risk and violates their Terms of Service**.
+
+provide you with enhanced code for sending messages, creating campaigns, and validating phone numbers. **Please remember that using `whatsapp-web.js` is highly risky and violates WhatsApp's Terms of Service**, which can lead to permanent account bans.
+
+## Enhanced Backend Code with Advanced Features
+
+Here's an enhanced `server.js` with comprehensive message handling, campaign functionality, and utility features:
+
+```javascript
+// server.js - Enhanced Version
+const { Client, LocalAuth, MessageMedia } = require('whatsapp-web.js');
+const qrcode = require('qrcode-terminal');
+const express = require('express');
+const http = require('http');
+const socketIo = require('socket.io');
+const bodyParser = require('body-parser');
+
+const app = express();
+const server = http.createServer(app);
+const io = socketIo(server);
+
+// Middleware
+app.use(bodyParser.json());
+app.use(express.static('public'));
+
+// WhatsApp client setup
+const client = new Client({
+    authStrategy: new LocalAuth({
+        dataPath: '.wwebjs_auth',
+        clientId: 'client-1' // Useful for multiple sessions
+    }),
+    puppeteer: {
+        headless: true,
+        args: [
+            '--no-sandbox',
+            '--disable-setuid-sandbox',
+            '--disable-dev-shm-usage',
+            '--disable-accelerated-2d-canvas'
+        ]
+    },
+    webVersionCache: {
+        type: 'remote',
+        remotePath: 'https://raw.githubusercontent.com/wppconnect-team/wa-version/main/html/2.2412.54.html'
+    }
+});
+
+// ==================== UTILITY FUNCTIONS ====================
+
+/**
+ * Validate and correct phone number format
+ * @param {string} number - Phone number to validate
+ * @returns {object} {isValid: boolean, correctedNumber: string, countryCode: string}
+ */
+function validateAndCorrectNumber(number) {
+    // Remove all non-digit characters
+    let cleaned = number.replace(/\D/g, '');
+    
+    // Common country codes for validation
+    const countryCodes = {
+        '1': 'US/Canada',
+        '44': 'UK',
+        '91': 'India',
+        '86': 'China',
+        '33': 'France',
+        '49': 'Germany',
+        '81': 'Japan',
+        '55': 'Brazil',
+        '7': 'Russia',
+        '61': 'Australia'
+    };
+    
+    // Check if number already has country code
+    let countryCode = '';
+    let correctedNumber = '';
+    let isValid = false;
+    
+    // Check for known country codes
+    for (const [code, country] of Object.entries(countryCodes)) {
+        if (cleaned.startsWith(code)) {
+            countryCode = code;
+            correctedNumber = cleaned;
+            isValid = true;
+            break;
+        }
+    }
+    
+    // If no country code found, try to detect
+    if (!isValid) {
+        // For demonstration, assuming Indian numbers if 10 digits
+        if (cleaned.length === 10) {
+            countryCode = '91';
+            correctedNumber = '91' + cleaned;
+            isValid = true;
+        } else if (cleaned.length >= 10 && cleaned.length <= 15) {
+            // Generic formatting
+            correctedNumber = cleaned;
+            isValid = true;
+        }
+    }
+    
+    // Format for WhatsApp (add @c.us for non-group chats)
+    if (isValid && !correctedNumber.includes('@')) {
+        correctedNumber = correctedNumber + '@c.us';
+    }
+    
+    return {
+        isValid,
+        correctedNumber,
+        countryCode,
+        original: number
+    };
+}
+
+/**
+ * Send message to a single number
+ * @param {string} number - WhatsApp number
+ * @param {string} message - Message content
+ * @param {object} options - Additional options
+ */
+async function sendMessage(number, message, options = {}) {
+    try {
+        const validation = validateAndCorrectNumber(number);
+        
+        if (!validation.isValid) {
+            throw new Error(`Invalid number format: ${number}`);
+        }
+        
+        const chatId = validation.correctedNumber;
+        
+        // Send the message
+        const response = await client.sendMessage(chatId, message, options);
+        
+        return {
+            success: true,
+            messageId: response.id.id,
+            timestamp: response.timestamp,
+            to: chatId,
+            validation: validation
+        };
+    } catch (error) {
+        console.error('Error sending message:', error);
+        return {
+            success: false,
+            error: error.message,
+            number: number
+        };
+    }
+}
+
+/**
+ * Send media message
+ * @param {string} number - WhatsApp number
+ * @param {string} filePath - Path to media file
+ * @param {string} caption - Optional caption
+ */
+async function sendMediaMessage(number, filePath, caption = '') {
+    try {
+        const validation = validateAndCorrectNumber(number);
+        
+        if (!validation.isValid) {
+            throw new Error(`Invalid number format: ${number}`);
+        }
+        
+        const media = await MessageMedia.fromFilePath(filePath);
+        const chatId = validation.correctedNumber;
+        const response = await client.sendMessage(chatId, media, { caption });
+        
+        return {
+            success: true,
+            messageId: response.id.id,
+            mediaType: media.mimetype,
+            to: chatId
+        };
+    } catch (error) {
+        return {
+            success: false,
+            error: error.message
+        };
+    }
+}
+
+/**
+ * Run a messaging campaign to multiple numbers
+ * @param {Array} numbers - Array of phone numbers
+ * @param {string} message - Message to send
+ * @param {object} options - Campaign options
+ */
+async function runCampaign(numbers, message, options = {}) {
+    const results = {
+        total: numbers.length,
+        successful: 0,
+        failed: 0,
+        details: []
+    };
+    
+    const {
+        delayBetweenMessages = 2000, // 2 seconds delay
+        batchSize = 10,
+        maxRetries = 3
+    } = options;
+    
+    // Process in batches to avoid rate limiting
+    for (let i = 0; i < numbers.length; i += batchSize) {
+        const batch = numbers.slice(i, i + batchSize);
+        
+        // Process each number in the batch
+        for (const number of batch) {
+            let retries = 0;
+            let sent = false;
+            
+            while (retries < maxRetries && !sent) {
+                try {
+                    const result = await sendMessage(number, message);
+                    
+                    results.details.push({
+                        number,
+                        success: result.success,
+                        timestamp: new Date().toISOString(),
+                        retries: retries,
+                        error: result.error || null
+                    });
+                    
+                    if (result.success) {
+                        results.successful++;
+                    } else {
+                        results.failed++;
+                    }
+                    
+                    sent = true;
+                } catch (error) {
+                    retries++;
+                    if (retries === maxRetries) {
+                        results.details.push({
+                            number,
+                            success: false,
+                            timestamp: new Date().toISOString(),
+                            retries: retries,
+                            error: `Failed after ${maxRetries} retries: ${error.message}`
+                        });
+                        results.failed++;
+                    }
+                }
+            }
+            
+            // Delay between messages in the same batch
+            if (delayBetweenMessages > 0) {
+                await new Promise(resolve => setTimeout(resolve, delayBetweenMessages));
+            }
+        }
+        
+        // Optional delay between batches
+        if (options.delayBetweenBatches && i + batchSize < numbers.length) {
+            await new Promise(resolve => setTimeout(resolve, options.delayBetweenBatches));
+        }
+    }
+    
+    return results;
+}
+
+// ==================== API ENDPOINTS ====================
+
+// API to send single message
+app.post('/api/send-message', async (req, res) => {
+    try {
+        const { number, message } = req.body;
+        
+        if (!number || !message) {
+            return res.status(400).json({ error: 'Number and message are required' });
+        }
+        
+        const result = await sendMessage(number, message);
+        res.json(result);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// API to send media
+app.post('/api/send-media', async (req, res) => {
+    try {
+        const { number, filePath, caption } = req.body;
+        
+        if (!number || !filePath) {
+            return res.status(400).json({ error: 'Number and filePath are required' });
+        }
+        
+        const result = await sendMediaMessage(number, filePath, caption);
+        res.json(result);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// API to run campaign
+app.post('/api/run-campaign', async (req, res) => {
+    try {
+        const { numbers, message, options } = req.body;
+        
+        if (!numbers || !Array.isArray(numbers) || !message) {
+            return res.status(400).json({ 
+                error: 'Numbers array and message are required' 
+            });
+        }
+        
+        // Validate all numbers first
+        const invalidNumbers = [];
+        const validNumbers = [];
+        
+        numbers.forEach(num => {
+            const validation = validateAndCorrectNumber(num);
+            if (validation.isValid) {
+                validNumbers.push(validation.correctedNumber);
+            } else {
+                invalidNumbers.push(num);
+            }
+        });
+        
+        if (invalidNumbers.length > 0 && !options?.allowInvalid) {
+            return res.status(400).json({
+                error: 'Some numbers are invalid',
+                invalidNumbers,
+                validCount: validNumbers.length
+            });
+        }
+        
+        // Run campaign with valid numbers
+        const campaignResults = await runCampaign(validNumbers, message, options || {});
+        
+        res.json({
+            campaignResults,
+            validationSummary: {
+                totalSubmitted: numbers.length,
+                valid: validNumbers.length,
+                invalid: invalidNumbers.length,
+                invalidNumbers: invalidNumbers
+            }
+        });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// API to validate numbers
+app.post('/api/validate-numbers', (req, res) => {
+    try {
+        const { numbers } = req.body;
+        
+        if (!numbers || !Array.isArray(numbers)) {
+            return res.status(400).json({ error: 'Numbers array is required' });
+        }
+        
+        const validationResults = numbers.map(num => validateAndCorrectNumber(num));
+        
+        const summary = {
+            total: validationResults.length,
+            valid: validationResults.filter(r => r.isValid).length,
+            invalid: validationResults.filter(r => !r.isValid).length
+        };
+        
+        res.json({
+            summary,
+            details: validationResults
+        });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// API to get chat information
+app.get('/api/chats', async (req, res) => {
+    try {
+        const chats = await client.getChats();
+        const simplifiedChats = chats.map(chat => ({
+            id: chat.id._serialized,
+            name: chat.name,
+            isGroup: chat.isGroup,
+            participants: chat.isGroup ? chat.participants.length : 1,
+            unreadCount: chat.unreadCount,
+            timestamp: chat.timestamp
+        }));
+        
+        res.json({
+            total: chats.length,
+            chats: simplifiedChats
+        });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// ==================== EVENT HANDLERS ====================
+
+client.on('qr', (qr) => {
+    console.log('QR received');
+    qrcode.generate(qr, { small: true });
+    io.emit('qr', qr);
+});
+
+client.on('authenticated', () => {
+    console.log('Authentication successful!');
+    io.emit('status', 'Authenticated!');
+});
+
+client.on('ready', () => {
+    console.log('Client is ready!');
+    io.emit('status', 'Connected and ready!');
+    io.emit('client-ready', true);
+});
+
+client.on('message', msg => {
+    console.log('New message:', msg.body);
+    io.emit('message', {
+        from: msg.from,
+        body: msg.body,
+        timestamp: msg.timestamp,
+        hasMedia: msg.hasMedia,
+        id: msg.id.id
+    });
+    
+    // Auto-reply example (customize as needed)
+    if (msg.body.toLowerCase().includes('hello') || msg.body.toLowerCase().includes('hi')) {
+        setTimeout(async () => {
+            try {
+                await msg.reply('Hello! This is an automated response. How can I help you?');
+            } catch (error) {
+                console.error('Auto-reply failed:', error);
+            }
+        }, 1000);
+    }
+});
+
+client.on('disconnected', (reason) => {
+    console.log('Client disconnected:', reason);
+    io.emit('status', 'Disconnected: ' + reason);
+    io.emit('client-ready', false);
+});
+
+client.on('message_create', (msg) => {
+    // Triggered when a message is created by the client
+    if (msg.fromMe) {
+        console.log('Message sent:', msg.body);
+        io.emit('message_sent', {
+            to: msg.to,
+            body: msg.body,
+            timestamp: msg.timestamp,
+            id: msg.id.id
+        });
+    }
+});
+
+// ==================== SERVER INITIALIZATION ====================
+
+client.initialize();
+
+server.listen(3000, () => {
+    console.log('Server running at http://localhost:3000');
+    console.log('API endpoints available:');
+    console.log('  POST /api/send-message');
+    console.log('  POST /api/send-media');
+    console.log('  POST /api/run-campaign');
+    console.log('  POST /api/validate-numbers');
+    console.log('  GET  /api/chats');
+});
+```
+
+## Enhanced Frontend Interface
+
+Here's an enhanced `public/index.html` with a control panel:
+
+```html
+<!DOCTYPE html>
+<html>
+<head>
+    <title>WhatsApp Web Dashboard</title>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <style>
+        * { box-sizing: border-box; }
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            margin: 0; 
+            padding: 20px; 
+            background: #f5f5f5; 
+        }
+        .container { 
+            max-width: 1200px; 
+            margin: 0 auto; 
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        .panel { 
+            background: white; 
+            border-radius: 10px; 
+            padding: 20px; 
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1); 
+        }
+        .status-panel { grid-column: 1 / -1; }
+        h2 { color: #333; margin-top: 0; }
+        .status { 
+            padding: 15px; 
+            border-radius: 5px; 
+            margin: 10px 0; 
+            font-weight: bold; 
+        }
+        .connected { background: #d4edda; color: #155724; }
+        .disconnected { background: #f8d7da; color: #721c24; }
+        .authenticating { background: #fff3cd; color: #856404; }
+        .btn { 
+            background: #25D366; 
+            color: white; 
+            border: none; 
+            padding: 10px 20px; 
+            border-radius: 5px; 
+            cursor: pointer; 
+            margin: 5px; 
+            font-size: 14px; 
+        }
+        .btn:hover { background: #1da851; }
+        .btn-danger { background: #dc3545; }
+        .btn-danger:hover { background: #c82333; }
+        textarea, input { 
+            width: 100%; 
+            padding: 10px; 
+            margin: 10px 0; 
+            border: 1px solid #ddd; 
+            border-radius: 5px; 
+        }
+        .campaign-input { 
+            height: 150px; 
+            font-family: monospace; 
+        }
+        .result { 
+            margin: 10px 0; 
+            padding: 10px; 
+            background: #f8f9fa; 
+            border-radius: 5px; 
+            font-size: 14px; 
+        }
+        .success { color: #28a745; }
+        .error { color: #dc3545; }
+        .message-log { 
+            max-height: 400px; 
+            overflow-y: auto; 
+            border: 1px solid #ddd; 
+            padding: 10px; 
+            margin-top: 10px; 
+        }
+        .message { 
+            padding: 8px; 
+            margin: 5px 0; 
+            border-radius: 5px; 
+        }
+        .incoming { background: #e3f2fd; }
+        .outgoing { background: #e8f5e9; }
+        .tab-container { margin-top: 20px; }
+        .tabs { display: flex; border-bottom: 2px solid #ddd; }
+        .tab { 
+            padding: 10px 20px; 
+            cursor: pointer; 
+            background: #f8f9fa; 
+            margin-right: 2px; 
+        }
+        .tab.active { 
+            background: #25D366; 
+            color: white; 
+            font-weight: bold; 
+        }
+        .tab-content { 
+            padding: 20px 0; 
+            display: none; 
+        }
+        .tab-content.active { display: block; }
+        #qrcode { margin: 20px auto; text-align: center; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Status Panel -->
+        <div class="panel status-panel">
+            <h2>WhatsApp Web Dashboard</h2>
+            <div id="status" class="status">Connecting to server...</div>
+            <div id="qrcode"></div>
+            <div>
+                <button class="btn" onclick="sendTestMessage()">Send Test Message</button>
+                <button class="btn" onclick="getChats()">Load Chats</button>
+                <button class="btn btn-danger" onclick="logout()">Logout</button>
+            </div>
+        </div>
+
+        <!-- Tab Container -->
+        <div class="tab-container" style="grid-column: 1 / -1;">
+            <div class="tabs">
+                <div class="tab active" onclick="switchTab('single')">Single Message</div>
+                <div class="tab" onclick="switchTab('campaign')">Campaign</div>
+                <div class="tab" onclick="switchTab('validate')">Validate Numbers</div>
+                <div class="tab" onclick="switchTab('messages')">Message Log</div>
+            </div>
+
+            <!-- Single Message Tab -->
+            <div id="tab-single" class="tab-content active">
+                <h3>Send Single Message</h3>
+                <input type="text" id="single-number" placeholder="Phone number (e.g., 919876543210)" />
+                <textarea id="single-message" placeholder="Your message here..." rows="4"></textarea>
+                <button class="btn" onclick="sendSingleMessage()">Send Message</button>
+                <div id="single-result" class="result"></div>
+            </div>
+
+            <!-- Campaign Tab -->
+            <div id="tab-campaign" class="tab-content">
+                <h3>Run Campaign</h3>
+                <textarea id="campaign-numbers" class="campaign-input" 
+                    placeholder="Enter phone numbers (one per line):
+919876543210
+918765432109
+917654321098"></textarea>
+                <textarea id="campaign-message" placeholder="Campaign message..." rows="4"></textarea>
+                <div>
+                    <label>Delay between messages (ms):</label>
+                    <input type="number" id="campaign-delay" value="2000" min="1000" />
+                </div>
+                <button class="btn" onclick="runCampaign()">Start Campaign</button>
+                <div id="campaign-result" class="result"></div>
+                <div id="campaign-progress"></div>
+            </div>
+
+            <!-- Validate Numbers Tab -->
+            <div id="tab-validate" class="tab-content">
+                <h3>Validate Phone Numbers</h3>
+                <textarea id="validate-numbers" class="campaign-input" 
+                    placeholder="Enter phone numbers to validate (one per line)"></textarea>
+                <button class="btn" onclick="validateNumbers()">Validate</button>
+                <div id="validate-result" class="result"></div>
+            </div>
+
+            <!-- Message Log Tab -->
+            <div id="tab-messages" class="tab-content">
+                <h3>Recent Messages</h3>
+                <div id="messageLog" class="message-log"></div>
+            </div>
+        </div>
+
+        <!-- Chats Panel -->
+        <div class="panel">
+            <h3>Recent Chats</h3>
+            <div id="chats-list"></div>
+        </div>
+    </div>
+
+    <script>
+        const socket = io();
+        let isClientReady = false;
+
+        // Socket event handlers
+        socket.on('qr', (qrData) => {
+            document.getElementById('status').textContent = 'Scan QR Code with WhatsApp';
+            document.getElementById('status').className = 'status authenticating';
+            document.getElementById('qrcode').innerHTML = '';
+            QRCode.toCanvas(document.getElementById('qrcode'), qrData, { width: 200 });
+        });
+
+        socket.on('status', (newStatus) => {
+            const statusEl = document.getElementById('status');
+            statusEl.textContent = newStatus;
+            
+            if (newStatus.includes('ready')) {
+                statusEl.className = 'status connected';
+                document.getElementById('qrcode').innerHTML = '';
+                isClientReady = true;
+            } else if (newStatus.includes('Authenticated')) {
+                statusEl.className = 'status authenticating';
+            } else if (newStatus.includes('Disconnected')) {
+                statusEl.className = 'status disconnected';
+                isClientReady = false;
+            }
+        });
+
+        socket.on('client-ready', (ready) => {
+            isClientReady = ready;
+        });
+
+        socket.on('message', (msg) => {
+            addMessageToLog(msg, 'incoming');
+        });
+
+        socket.on('message_sent', (msg) => {
+            addMessageToLog({
+                from: 'You → ' + msg.to,
+                body: msg.body,
+                timestamp: msg.timestamp
+            }, 'outgoing');
+        });
+
+        // Tab switching
+        function switchTab(tabName) {
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Show selected tab
+            document.getElementById(`tab-${tabName}`).classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        // Add message to log
+        function addMessageToLog(msg, type) {
+            const log = document.getElementById('messageLog');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${type}`;
+            
+            const time = new Date(msg.timestamp * 1000).toLocaleTimeString();
+            messageDiv.innerHTML = `
+                <strong>${msg.from}</strong> <small>${time}</small><br>
+                ${msg.body}
+            `;
+            
+            log.prepend(messageDiv);
+        }
+
+        // API Functions
+        async function sendSingleMessage() {
+            if (!isClientReady) {
+                showResult('single-result', 'Client not ready. Please authenticate first.', 'error');
+                return;
+            }
+
+            const number = document.getElementById('single-number').value;
+            const message = document.getElementById('single-message').value;
+
+            if (!number || !message) {
+                showResult('single-result', 'Please enter both number and message', 'error');
+                return;
+            }
+
+            try {
+                const response = await axios.post('/api/send-message', { number, message });
+                showResult('single-result', 
+                    response.data.success 
+                        ? `✓ Message sent to ${response.data.to}`
+                        : `✗ Failed: ${response.data.error}`, 
+                    response.data.success ? 'success' : 'error'
+                );
+            } catch (error) {
+                showResult('single-result', `Error: ${error.message}`, 'error');
+            }
+        }
+
+        async function runCampaign() {
+            if (!isClientReady) {
+                showResult('campaign-result', 'Client not ready. Please authenticate first.', 'error');
+                return;
+            }
+
+            const numbersText = document.getElementById('campaign-numbers').value;
+            const message = document.getElementById('campaign-message').value;
+            const delay = parseInt(document.getElementById('campaign-delay').value);
+
+            if (!numbersText || !message) {
+                showResult('campaign-result', 'Please enter numbers and message', 'error');
+                return;
+            }
+
+            const numbers = numbersText.split('\n').filter(n => n.trim());
+            
+            try {
+                const response = await axios.post('/api/run-campaign', {
+                    numbers,
+                    message,
+                    options: { delayBetweenMessages: delay }
+                });
+
+                const result = response.data.campaignResults;
+                showResult('campaign-result', 
+                    `Campaign completed: ${result.successful} successful, ${result.failed} failed`,
+                    result.failed === 0 ? 'success' : 'error'
+                );
+
+                // Show detailed results
+                const progressDiv = document.getElementById('campaign-progress');
+                progressDiv.innerHTML = `
+                    <h4>Detailed Results:</h4>
+                    <ul>
+                        ${result.details.map(d => 
+                            `<li>${d.number}: ${d.success ? '✓' : '✗'} ${d.error || ''}</li>`
+                        ).join('')}
+                    </ul>
+                `;
+            } catch (error) {
+                showResult('campaign-result', `Error: ${error.message}`, 'error');
+            }
+        }
+
+        async function validateNumbers() {
+            const numbersText = document.getElementById('validate-numbers').value;
+            if (!numbersText.trim()) {
+                showResult('validate-result', 'Please enter numbers to validate', 'error');
+                return;
+            }
+
+            const numbers = numbersText.split('\n').filter(n => n.trim());
+            
+            try {
+                const response = await axios.post('/api/validate-numbers', { numbers });
+                const data = response.data;
+                
+                let html = `<strong>Validation Summary:</strong><br>`;
+                html += `Total: ${data.summary.total} | Valid: ${data.summary.valid} | Invalid: ${data.summary.invalid}<br><br>`;
+                
+                html += `<strong>Details:</strong><br>`;
+                data.details.forEach(d => {
+                    html += `${d.original}: ${d.isValid ? '✓' : '✗'} `;
+                    if (d.isValid) {
+                        html += `→ ${d.correctedNumber} (${d.countryCode})`;
+                    } else {
+                        html += `Invalid format`;
+                    }
+                    html += `<br>`;
+                });
+                
+                document.getElementById('validate-result').innerHTML = html;
+            } catch (error) {
+                showResult('validate-result', `Error: ${error.message}`, 'error');
+            }
+        }
+
+        async function getChats() {
+            try {
+                const response = await axios.get('/api/chats');
+                const chats = response.data.chats.slice(0, 10); // Show first 10 chats
+                
+                const chatsList = document.getElementById('chats-list');
+                chatsList.innerHTML = chats.map(chat => `
+                    <div style="padding: 10px; border-bottom: 1px solid #eee;">
+                        <strong>${chat.name || 'Unknown'}</strong>
+                        <small>${chat.isGroup ? '👥 Group' : '👤 Individual'}</small>
+                        <div style="font-size: 12px; color: #666;">
+                            ${chat.participants} participants
+                        </div>
+                    </div>
+                `).join('');
+            } catch (error) {
+                console.error('Error loading chats:', error);
+            }
+        }
+
+        function sendTestMessage() {
+            document.getElementById('single-number').value = '919876543210'; // Test number
+            document.getElementById('single-message').value = 'Hello from WhatsApp Web Dashboard!';
+            sendSingleMessage();
+        }
+
+        function logout() {
+            if (confirm('Are you sure you want to logout? This will disconnect your WhatsApp session.')) {
+                // In a real implementation, you would call an API to logout
+                alert('Logout functionality would be implemented here. For now, restart the server to logout.');
+            }
+        }
+
+        function showResult(elementId, message, type) {
+            const element = document.getElementById(elementId);
+            element.textContent = message;
+            element.className = `result ${type}`;
+            setTimeout(() => element.textContent = '', 5000);
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('Dashboard loaded');
+        });
+    </script>
+</body>
+</html>
+```
+
+## Installation & Setup Instructions
+
+1. **Update package.json dependencies:**
+```json
+{
+  "dependencies": {
+    "whatsapp-web.js": "^1.23.0",
+    "qrcode-terminal": "^0.12.0",
+    "express": "^4.18.2",
+    "socket.io": "^4.7.2",
+    "axios": "^1.6.2",
+    "body-parser": "^1.20.2"
+  }
+}
+```
+
+2. **Install dependencies:**
+```bash
+npm install
+```
+
+3. **Folder structure:**
+```
+whatsapp-web-client/
+├── server.js
+├── package.json
+├── public/
+│   └── index.html
+└── .wwebjs_auth/ (auto-generated)
+```
+
+4. **Run the application:**
+```bash
+node server.js
+```
+
+## Key Features Explained
+
+1. **Number Validation & Correction**: Automatically detects country codes and formats numbers correctly
+2. **Campaign System**: Send messages to multiple numbers with configurable delays
+3. **Media Support**: Send images and documents with captions
+4. **Real-time Dashboard**: Monitor messages, send status, and campaign progress
+5. **API Endpoints**: RESTful API for integration with other systems
+6. **Error Handling**: Comprehensive error handling with retry logic
+
+## Important Security Notes
+
+- **Never expose this server to the public internet** without proper authentication
+- **Use environment variables** for sensitive configuration
+- **Implement rate limiting** to avoid detection
+- **Consider using a proxy** if sending large volumes of messages
+
+Remember that this solution is for **educational purposes only**. For production business use, you must use the **official WhatsApp Business API** through a verified Business Solution Provider.
+

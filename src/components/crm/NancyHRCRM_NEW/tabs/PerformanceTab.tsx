@@ -1,4 +1,3 @@
-import React from 'react';
 import { Plus, Star } from 'lucide-react';
 
 interface Employee {
@@ -36,7 +35,7 @@ export default function PerformanceTab({ state }: PerformanceTabProps) {
         {employees.map((emp) => (
           <div key={emp.id} className="performance-card">
             <div className="perf-header">
-              <img src={emp.avatar} alt={emp.name} className="perf-avatar" loading="lazy" />
+              <img src={emp.avatar} alt={emp.name} className="perf-avatar" loading="lazy" width={56} height={56} />
               <div className="perf-info">
                 <h4>{emp.name}</h4>
                 <p>{emp.position}</p>

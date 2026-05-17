@@ -15,20 +15,26 @@ export default defineConfig({
       provider: 'v8',
       reporter: ['text', 'json', 'html'],
       include: ['src/**/*.{js,jsx,ts,tsx}'],
-      exclude: ['src/test/**', 'src/e2e/**', 'src/**/*.test.*', 'src/**/*.spec.*', 'node_modules/**']
-    }
+      exclude: [
+        'src/test/**',
+        'src/e2e/**',
+        'src/**/*.test.*',
+        'src/**/*.spec.*',
+        'node_modules/**',
+      ],
+    },
   },
   server: {
     host: '0.0.0.0',
     port: 5000,
-    strictPort: true,
+    strictPort: false,
     allowedHosts: true,
     proxy: {
       '/api': {
         target: 'http://localhost:3001',
-        changeOrigin: true
-      }
-    }
+        changeOrigin: true,
+      },
+    },
   },
   resolve: {
     alias: {
@@ -36,8 +42,8 @@ export default defineConfig({
       '@assets': path.resolve(__dirname, 'attached_assets'),
       '@components': path.resolve(__dirname, 'src/components'),
       '@pages': path.resolve(__dirname, 'src/pages'),
-      '@utils': path.resolve(__dirname, 'src/utils')
-    }
+      '@utils': path.resolve(__dirname, 'src/utils'),
+    },
   },
   build: {
     outDir: 'dist',
@@ -47,7 +53,7 @@ export default defineConfig({
     target: 'es2020',
     rollupOptions: {
       output: {
-        manualChunks: (id) => {
+        manualChunks: id => {
           if (id.includes('node_modules')) {
             // Core React + Router + Redux (single vendor bundle to avoid circular deps)
             if (
@@ -90,12 +96,13 @@ export default defineConfig({
           if (id.includes('src/styles/')) {
             return 'theme-tokens';
           }
-          // Redux store, utils, config — shared foundations
-          if (id.includes('src/store/')) {
-            return 'store';
-          }
-          if (id.includes('src/utils/') || id.includes('src/config/')) {
-            return 'app-utils';
+          // Foundational app runtime (single chunk to avoid app-utils <-> store circular cross-chunk refs)
+          if (
+            id.includes('src/store/') ||
+            id.includes('src/utils/') ||
+            id.includes('src/config/')
+          ) {
+            return 'app-foundation';
           }
           // Application code splitting by feature
           // Charts: lazy-loaded, separate from app-core
@@ -114,8 +121,10 @@ export default defineConfig({
             if (id.includes('/AuroraCTODashboard_NEW/')) return 'crm-cto';
             if (id.includes('/MaryInventoryCRM_NEW/')) return 'crm-mary';
             if (id.includes('/OliviaMarketingCRM_NEW/')) return 'crm-marketing';
-            if (id.includes('/NadiaWhatsAppCRM/') || id.includes('/NinaWhatsAppBotCRM_NEW/')) return 'crm-whatsapp';
-            if (id.includes('/WillowBackendCRM_NEW/') || id.includes('/HazelFrontendCRM_NEW/')) return 'crm-dev';
+            if (id.includes('/NadiaWhatsAppCRM/') || id.includes('/NinaWhatsAppBotCRM_NEW/'))
+              return 'crm-whatsapp';
+            if (id.includes('/WillowBackendCRM_NEW/') || id.includes('/HazelFrontendCRM_NEW/'))
+              return 'crm-dev';
             if (id.includes('/TheodoraFinanceCRM_NEW/')) return 'crm-finance';
             if (id.includes('/LailaComplianceCRM_NEW/')) return 'crm-compliance';
             if (id.includes('/SophiaSalesCRM_NEW/')) return 'crm-sales';
@@ -128,7 +137,10 @@ export default defineConfig({
             // Shared + standalone modules in one chunk (avoid circular deps)
             return 'crm-shared';
           }
-          if (id.includes('src/components/dashboard/') || id.includes('src/components/dashboards/')) {
+          if (
+            id.includes('src/components/dashboard/') ||
+            id.includes('src/components/dashboards/')
+          ) {
             return 'dashboards';
           }
           // Owner tabs: heavy dashboard sub-components — split from dashboards
@@ -149,28 +161,25 @@ export default defineConfig({
           }
           // Core app shell: layout + common-ui (navbar, sidebar, status bar)
           // Charts and design-system split into own lazy chunks above
-          if (
-            id.includes('src/components/layout/') ||
-            id.includes('src/components/common/')
-          ) {
+          if (id.includes('src/components/layout/') || id.includes('src/components/common/')) {
             return 'app-core';
           }
-        }
-      }
+        },
+      },
     },
     chunkSizeWarningLimit: 1000,
     // Suppress esbuild CSS nesting warnings from styled-components output
-    cssMinify: 'esbuild'
+    cssMinify: 'esbuild',
   },
   css: {
-    devSourcemap: true
+    devSourcemap: true,
   },
   esbuild: {
     logOverride: {
-      'css-syntax-error': 'silent'
-    }
+      'css-syntax-error': 'silent',
+    },
   },
   optimizeDeps: {
-    include: ['react', 'react-dom', 'react-router-dom']
-  }
-})
+    include: ['react', 'react-dom', 'react-router-dom'],
+  },
+});

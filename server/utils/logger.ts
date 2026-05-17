@@ -68,4 +68,6 @@ export function createLogger(context: string) {
 /** Default server logger */
 const logger = createLogger('Server');
 
+export { logger };
+
 export default logger;

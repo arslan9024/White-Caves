@@ -1,5 +1,6 @@
+/* eslint-disable @typescript-eslint/no-explicit-any, react/display-name, security/detect-object-injection */
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { render, screen, fireEvent, act } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { Provider } from 'react-redux';
 import { configureStore } from '@reduxjs/toolkit';
@@ -7,20 +8,24 @@ import React from 'react';
 
 // Mock framer-motion
 vi.mock('framer-motion', () => ({
-  motion: new Proxy({}, {
-    get: (_target: any, prop: string) => {
-      return React.forwardRef(({ children, ...props }: any, ref: any) => {
-        const clean: Record<string, unknown> = {};
-        for (const [k, v] of Object.entries(props)) {
-          if (typeof v !== 'object' || v === null) clean[k] = v;
-          // Skip animation objects: whileHover, whileTap, animate, transition, variants, initial, style
-        }
-        return React.createElement(prop, { ...clean, ref }, children);
-      });
-    },
-  }),
+  motion: new Proxy(
+    {},
+    {
+      get: (_target: any, prop: string) => {
+        return React.forwardRef(({ children, ...props }: any, ref: any) => {
+          const clean: Record<string, unknown> = {};
+          for (const [k, v] of Object.entries(props)) {
+            if (typeof v !== 'object' || v === null) clean[k] = v;
+            // Skip animation objects: whileHover, whileTap, animate, transition, variants, initial, style
+          }
+          return React.createElement(prop, { ...clean, ref }, children);
+        });
+      },
+    }
+  ),
   useScroll: () => ({ scrollY: { get: () => 0 } }),
   useTransform: () => 0,
+  useReducedMotion: () => false,
   type: {} as any,
 }));
 
@@ -37,6 +42,44 @@ vi.mock('lucide-react', async () => {
 
 // Mock CSS module
 vi.mock('../Hero.css', () => ({}));
+vi.mock('../HeroSearchBar.css', () => ({}));
+
+// Mock HeroSearchBar to isolate Hero rendering tests
+vi.mock('../HeroSearchBar', () => ({
+  default: () => <div data-testid="hero-search-bar" />,
+}));
+
+// Mock LanguageContext — return English translations via t()
+vi.mock('../../../../context/LanguageContext', () => ({
+  useLanguage: () => ({
+    language: 'en',
+    isRTL: false,
+    t: (key: string, params?: Record<string, string | number>) => {
+      const map: Record<string, string> = {
+        'hero.premiumProperties': 'Premium Properties',
+        'hero.happyClients': 'Happy Clients',
+        'hero.yearsExperience': 'Years Experience',
+        'hero.expertAgents': 'Expert Agents',
+        'hero.title': 'Find Your Dream',
+        'hero.titleHighlight': 'Luxury Home',
+        'hero.titleSuffix': 'in Dubai',
+        'hero.description':
+          "Experience unparalleled luxury living in Dubai's most prestigious locations. White Caves Real Estate brings you exclusive properties with world-class amenities.",
+        'hero.browseProperties': 'Browse Properties',
+        'hero.bookConsultation': 'Book Consultation',
+        'hero.scrollToExplore': 'Scroll to explore',
+        'hero.verifiedProperties': 'Verified Properties',
+        'hero.reraLicensed': 'RERA Licensed',
+        'hero.bestValue': 'Best Value',
+        'hero.trustedByClients': `Trusted by ${params?.count ?? 1000}+ Clients in Dubai`,
+        'hero.propertiesAvailable': `${params?.count}+ Properties Available Today`,
+      };
+      return Object.hasOwn(map, key) ? map[key] : key;
+    },
+  }),
+  LanguageProvider: ({ children }: { children: React.ReactNode }) => <>{children}</>,
+  LANGUAGES: { EN: 'en', AR: 'ar' },
+}));
 
 const mockNavigate = vi.fn();
 vi.mock('react-router-dom', async () => {
@@ -104,32 +147,32 @@ describe('Hero', () => {
 
   // ── CTA Buttons ────────────────────────────────────────────
   describe('CTA buttons', () => {
-    it('renders Get Started button', () => {
+    it('renders Browse Properties button', () => {
       renderHero();
-      expect(screen.getByText('Get Started')).toBeInTheDocument();
+      expect(screen.getByText('Browse Properties')).toBeInTheDocument();
     });
 
-    it('renders View Properties button', () => {
+    it('renders Book Consultation button', () => {
       renderHero();
-      expect(screen.getByText('View Properties')).toBeInTheDocument();
+      expect(screen.getByText('Book Consultation')).toBeInTheDocument();
     });
 
-    it('navigates to /signin when Get Started clicked (no user)', () => {
+    it('navigates to /properties when Browse Properties clicked', () => {
       renderHero();
-      fireEvent.click(screen.getByText('Get Started'));
-      expect(mockNavigate).toHaveBeenCalledWith('/signin');
-    });
-
-    it('navigates to /select-role when Get Started clicked (logged in user)', () => {
-      renderHero({ id: '1', email: 'test@test.com', displayName: 'Test' });
-      fireEvent.click(screen.getByText('Get Started'));
-      expect(mockNavigate).toHaveBeenCalledWith('/select-role');
-    });
-
-    it('navigates to /properties when View Properties clicked', () => {
-      renderHero();
-      fireEvent.click(screen.getByText('View Properties'));
+      fireEvent.click(screen.getByText('Browse Properties'));
       expect(mockNavigate).toHaveBeenCalledWith('/properties');
+    });
+
+    it('navigates to /properties when Browse Properties clicked (logged in user)', () => {
+      renderHero({ id: '1', email: 'test@test.com', displayName: 'Test' });
+      fireEvent.click(screen.getByText('Browse Properties'));
+      expect(mockNavigate).toHaveBeenCalledWith('/properties');
+    });
+
+    it('navigates to /contact when Book Consultation clicked', () => {
+      renderHero();
+      fireEvent.click(screen.getByText('Book Consultation'));
+      expect(mockNavigate).toHaveBeenCalledWith('/contact');
     });
   });
 
@@ -169,20 +212,21 @@ describe('Hero', () => {
       expect(screen.getByText('Scroll to explore')).toBeInTheDocument();
     });
 
-    it('renders ChevronDown icon', () => {
+    it('renders ChevronDown icon in scroll indicator', () => {
       renderHero();
+      // HeroSearchBar is mocked, so only the scroll indicator ChevronDown remains
       expect(screen.getByTestId('chevron-down')).toBeInTheDocument();
     });
   });
 
   // ── Icons ──────────────────────────────────────────────────
   describe('icons', () => {
-    it('renders ArrowRight icon in Get Started button', () => {
+    it('renders ArrowRight icon in Browse Properties button', () => {
       renderHero();
       expect(screen.getByTestId('arrow-right')).toBeInTheDocument();
     });
 
-    it('renders Play icon in View Properties button', () => {
+    it('renders Play icon in Book Consultation button', () => {
       renderHero();
       expect(screen.getByTestId('play-icon')).toBeInTheDocument();
     });

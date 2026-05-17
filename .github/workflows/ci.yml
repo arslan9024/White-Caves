@@ -6,13 +6,18 @@ on:
   pull_request:
     branches: [main, development]
 
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   test:
     runs-on: ubuntu-latest
+    timeout-minutes: 35
     
     strategy:
       matrix:
-        node-version: [18.x, 20.x]
+        node-version: [20.x]
     
     steps:
       - uses: actions/checkout@v4
@@ -33,12 +38,18 @@ jobs:
       
       - name: Build application
         run: npm run build
+
+      - name: Run SEO quality gate
+        run: npm run quality:seo
+
+      - name: Run assistant endpoint contract gate
+        run: npm run test:assistant-contract
       
       - name: Run unit tests
         run: npm test -- --run --reporter=verbose --coverage --coverage.reporter=lcov
       
       - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v4
+        uses: codecov/codecov-action@v5
         with:
           files: ./coverage/lcov.info
           flags: unittests
@@ -46,6 +57,7 @@ jobs:
 
   e2e:
     runs-on: ubuntu-latest
+    timeout-minutes: 45
     
     steps:
       - uses: actions/checkout@v4
@@ -65,16 +77,8 @@ jobs:
       - name: Build application
         run: npm run build
       
-      - name: Start development server
-        run: npm run dev &
-        env:
-          CI: true
-      
-      - name: Wait for server
-        run: npx wait-on http://localhost:5000 --timeout 30000
-      
       - name: Run E2E tests
-        run: npm run test:e2e -- --reporter=html
+        run: npm run test:e2e
       
       - name: Upload E2E test report
         uses: actions/upload-artifact@v4
@@ -86,6 +90,7 @@ jobs:
 
   accessibility:
     runs-on: ubuntu-latest
+    timeout-minutes: 35
     
     steps:
       - uses: actions/checkout@v4
@@ -105,16 +110,8 @@ jobs:
       - name: Build application
         run: npm run build
       
-      - name: Start development server
-        run: npm run dev &
-        env:
-          CI: true
-      
-      - name: Wait for server
-        run: npx wait-on http://localhost:5000 --timeout 30000
-      
-      - name: Run accessibility compliance tests
-        run: npx playwright test e2e/accessibility-compliance.spec.ts --reporter=html
+      - name: Run accessibility audit tests
+        run: npm run test:e2e:accessibility
       
       - name: Upload accessibility report
         uses: actions/upload-artifact@v4
@@ -124,8 +121,28 @@ jobs:
           path: playwright-report/
           retention-days: 30
 
+  orchestrator-health:
+    name: Orchestrator Queue Health
+    runs-on: windows-latest
+    timeout-minutes: 5
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check queue integrity (9-group health check)
+        run: powershell -ExecutionPolicy Bypass -File scripts/orchestrator/queue-health.ps1 -CI
+
+      - name: Upload queue health report on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: queue-health-failure-report
+          path: logs/orchestrator/task-queue.json
+          retention-days: 7
+
   performance:
     runs-on: ubuntu-latest
+    timeout-minutes: 35
     
     steps:
       - uses: actions/checkout@v4
@@ -145,16 +162,8 @@ jobs:
       - name: Build application
         run: npm run build
       
-      - name: Start development server
-        run: npm run dev &
-        env:
-          CI: true
-      
-      - name: Wait for server
-        run: npx wait-on http://localhost:5000 --timeout 30000
-      
       - name: Run performance baseline tests
-        run: npx playwright test e2e/performance-baseline.spec.ts --reporter=html
+        run: npm run test:e2e:performance
       
       - name: Upload performance report
         uses: actions/upload-artifact@v4
@@ -166,6 +175,7 @@ jobs:
 
   build-check:
     runs-on: ubuntu-latest
+    timeout-minutes: 25
     
     steps:
       - uses: actions/checkout@v4

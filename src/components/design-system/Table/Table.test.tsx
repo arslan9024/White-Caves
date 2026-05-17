@@ -26,7 +26,7 @@ vi.mock('../../../styles/theme', () => ({
       border: '#e0e0e0',
       background: { secondary: '#f5f5f5', tertiary: '#eee' },
       text: { primary: '#222', secondary: '#666' },
-      primary: '#E31E24',
+      primary: '#D4AF37',
     },
     typography: {
       sizes: { sm: '13px', base: '14px' },

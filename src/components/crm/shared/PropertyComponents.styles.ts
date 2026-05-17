@@ -1,4 +1,7 @@
 import styled from 'styled-components';
+import { theme } from '../../../styles/theme';
+
+const { colors, transitions, radius, typography } = theme;
 
 /* ============================================================================
  * Property Components Styled Components
@@ -10,11 +13,11 @@ import styled from 'styled-components';
 // ============================================================================
 
 export const PropertyGallery = styled.div<{ $isEmpty?: boolean }>`
-  border-radius: 12px;
+  border-radius: ${radius.xl};
   overflow: hidden;
   background: rgba(15, 23, 42, 0.6);
 
-  ${(props) =>
+  ${props =>
     props.$isEmpty &&
     `
     display: flex;
@@ -27,7 +30,7 @@ export const PropertyGallery = styled.div<{ $isEmpty?: boolean }>`
   `}
 
   @media (max-width: 768px) {
-    border-radius: 8px;
+    border-radius: ${radius.lg};
   }
 `;
 
@@ -64,10 +67,10 @@ export const GalleryNav = styled.button<{ $position?: 'prev' | 'next' }>`
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.2s ease;
+  transition: ${transitions.hover};
   z-index: 10;
 
-  ${(props) => (props.$position === 'prev' ? `left: 1rem;` : `right: 1rem;`)}
+  ${props => (props.$position === 'prev' ? `left: 1rem;` : `right: 1rem;`)}
 
   &:hover {
     background: rgba(0, 0, 0, 0.7);
@@ -96,7 +99,7 @@ export const FullscreenBtn = styled.button`
   right: 1rem;
   width: 36px;
   height: 36px;
-  border-radius: 8px;
+  border-radius: ${radius.lg};
   background: rgba(0, 0, 0, 0.5);
   border: none;
   color: #fff;
@@ -104,7 +107,7 @@ export const FullscreenBtn = styled.button`
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.2s ease;
+  transition: ${transitions.hover};
   z-index: 10;
 
   &:hover {
@@ -123,10 +126,10 @@ export const ImageCounter = styled.div`
   left: 1rem;
   padding: 0.375rem 0.75rem;
   background: rgba(0, 0, 0, 0.5);
-  border-radius: 6px;
+  border-radius: ${radius.md};
   color: #fff;
   font-size: 0.75rem;
-  font-weight: 500;
+  font-weight: ${typography.weights.medium};
   z-index: 10;
 `;
 
@@ -164,15 +167,15 @@ export const Thumbnail = styled.button<{ $active?: boolean; $isMore?: boolean }>
   flex-shrink: 0;
   width: 64px;
   height: 48px;
-  border-radius: 6px;
+  border-radius: ${radius.md};
   overflow: hidden;
-  border: 2px solid ${(props) => (props.$active ? '#3b82f6' : 'transparent')};
+  border: 2px solid ${props => (props.$active ? colors.primary : 'transparent')};
   cursor: pointer;
   background: #1e293b;
   padding: 0;
-  transition: all 0.2s ease;
+  transition: ${transitions.hover};
 
-  ${(props) =>
+  ${props =>
     props.$isMore &&
     `
     display: flex;
@@ -185,7 +188,7 @@ export const Thumbnail = styled.button<{ $active?: boolean; $isMore?: boolean }>
   `}
 
   &:hover {
-    border-color: #3b82f6;
+    border-color: ${colors.primary};
     opacity: 0.8;
   }
 
@@ -239,7 +242,7 @@ export const CloseFullscreenBtn = styled.button`
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.2s ease;
+  transition: ${transitions.hover};
   z-index: var(--z-overlay, 600);
 
   &:hover {
@@ -266,10 +269,10 @@ export const FullscreenNav = styled.button<{ $position?: 'prev' | 'next' }>`
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.2s ease;
+  transition: ${transitions.hover};
   z-index: var(--z-overlay, 600);
 
-  ${(props) => (props.$position === 'prev' ? `left: 2rem;` : `right: 2rem;`)}
+  ${props => (props.$position === 'prev' ? `left: 2rem;` : `right: 2rem;`)}
 
   &:hover {
     background: rgba(255, 255, 255, 0.2);
@@ -289,7 +292,7 @@ export const FullscreenNav = styled.button<{ $position?: 'prev' | 'next' }>`
       height: 22px;
     }
 
-    ${(props) => (props.$position === 'prev' ? `left: 1rem;` : `right: 1rem;`)}
+    ${props => (props.$position === 'prev' ? `left: 1rem;` : `right: 1rem;`)}
   }
 `;
 
@@ -345,7 +348,7 @@ export const SpecContent = styled.div`
 
 export const SpecValue = styled.span`
   font-size: 0.9375rem;
-  font-weight: 600;
+  font-weight: ${typography.weights.semibold};
   color: #fff;
 
   @media (max-width: 768px) {
@@ -369,12 +372,12 @@ export const SpecLabel = styled.span`
 export const PropertyDetailContainer = styled.div`
   background: rgba(15, 23, 42, 0.6);
   border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 12px;
+  border-radius: ${radius.xl};
   padding: 1.5rem;
 
   @media (max-width: 768px) {
     padding: 1rem;
-    border-radius: 8px;
+    border-radius: ${radius.lg};
   }
 `;
 
@@ -396,7 +399,7 @@ export const HeaderInfo = styled.div`
 
   h2 {
     font-size: 1.25rem;
-    font-weight: 600;
+    font-weight: ${typography.weights.semibold};
     color: #fff;
     margin: 0 0 0.5rem 0;
   }
@@ -443,7 +446,7 @@ export const PriceLabel = styled.span`
 export const PriceValue = styled.span`
   display: block;
   font-size: 1.25rem;
-  font-weight: 700;
+  font-weight: ${typography.weights.bold};
   color: #10b981;
 
   @media (max-width: 768px) {
@@ -483,7 +486,7 @@ export const DetailSection = styled.div`
 
   h4 {
     font-size: 0.875rem;
-    font-weight: 600;
+    font-weight: ${typography.weights.semibold};
     color: #94a3b8;
     margin: 0 0 1rem 0;
     text-transform: uppercase;
@@ -517,14 +520,14 @@ export const OwnerCard = styled.div`
 export const OwnerAvatar = styled.div`
   width: 48px;
   height: 48px;
-  border-radius: 12px;
-  background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+  border-radius: ${radius.xl};
+  background: ${colors.luxury.goldDark};
   display: flex;
   align-items: center;
   justify-content: center;
   color: #fff;
   font-size: 1.25rem;
-  font-weight: 600;
+  font-weight: ${typography.weights.semibold};
   flex-shrink: 0;
 
   @media (max-width: 768px) {
@@ -542,7 +545,7 @@ export const OwnerDetails = styled.div`
 `;
 
 export const OwnerName = styled.span`
-  font-weight: 600;
+  font-weight: ${typography.weights.semibold};
   color: #fff;
   font-size: 0.9375rem;
 
@@ -578,7 +581,7 @@ export const FinancialGrid = styled.div`
 export const FinancialItem = styled.div`
   padding: 1rem;
   background: rgba(255, 255, 255, 0.02);
-  border-radius: 8px;
+  border-radius: ${radius.lg};
 
   @media (max-width: 768px) {
     padding: 0.75rem;
@@ -597,7 +600,7 @@ export const FinLabel = styled.span`
 export const FinValue = styled.span`
   display: block;
   font-size: 1rem;
-  font-weight: 600;
+  font-weight: ${typography.weights.semibold};
   color: #fff;
 
   @media (max-width: 768px) {
@@ -616,7 +619,7 @@ export const DescriptionSection = styled.div`
 
   h4 {
     font-size: 0.875rem;
-    font-weight: 600;
+    font-weight: ${typography.weights.semibold};
     color: #94a3b8;
     margin: 0 0 1rem 0;
     text-transform: uppercase;

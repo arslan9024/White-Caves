@@ -4,15 +4,64 @@
  * guidelines/red flags, best practices, checkbox interaction, progress bars
  */
 
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import React from 'react';
 
+const mockAuthFetch = vi.fn();
+vi.mock('../../utils/authFetch', () => ({
+  authFetch: (...args: unknown[]) => mockAuthFetch(...args),
+}));
+
 import TenantScreeningPage from './TenantScreeningPage';
+
+const MOCK_TENANTS = [
+  {
+    id: 't1',
+    name: 'Ahmed Al-Rashid',
+    email: 'ahmed@example.com',
+    phone: '+971501111111',
+    status: 'documents_pending',
+    createdAt: '2026-04-01T00:00:00.000Z',
+    income: 300000,
+  },
+  {
+    id: 't2',
+    name: 'Sarah Johnson',
+    email: 'sarah@example.com',
+    phone: '+971502222222',
+    status: 'under_review',
+    createdAt: '2026-04-02T00:00:00.000Z',
+    income: 216000,
+  },
+  {
+    id: 't3',
+    name: 'Mohammed Khan',
+    email: 'mohammed@example.com',
+    phone: '+971503333333',
+    status: 'approved',
+    createdAt: '2026-04-03T00:00:00.000Z',
+    income: 540000,
+  },
+];
 
 // ═══════════════════════════════════════════════════════════════════
 
 describe('TenantScreeningPage', () => {
+  beforeEach(() => {
+    vi.spyOn(console, 'error').mockImplementation(() => {});
+    vi.spyOn(console, 'warn').mockImplementation(() => {});
+    vi.clearAllMocks();
+    mockAuthFetch.mockResolvedValue({
+      ok: true,
+      json: () => Promise.resolve({ data: MOCK_TENANTS }),
+    });
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
   // ── Render & Header ─────────────────────────────────────────────
   it('renders the page header', () => {
     render(<TenantScreeningPage />);
@@ -74,7 +123,7 @@ describe('TenantScreeningPage', () => {
     render(<TenantScreeningPage />);
     const checkboxes = screen.getAllByRole('checkbox');
     const firstCheckbox = checkboxes[0] as HTMLInputElement;
-    
+
     expect(firstCheckbox.checked).toBe(false);
     fireEvent.click(firstCheckbox);
     expect(firstCheckbox.checked).toBe(true);
@@ -83,66 +132,78 @@ describe('TenantScreeningPage', () => {
   });
 
   // ── Pending Applications Tab ───────────────────────────────────
-  it('switches to Pending Applications tab', () => {
+  it('switches to Pending Applications tab', async () => {
     render(<TenantScreeningPage />);
     fireEvent.click(screen.getByText('Pending Applications'));
-    expect(screen.getByText('Pending Tenant Applications')).toBeDefined();
+
+    await waitFor(() => {
+      expect(screen.getByText('Tenant Applications')).toBeDefined();
+    });
   });
 
-  it('shows all pending applications', () => {
+  it('shows all pending applications', async () => {
     render(<TenantScreeningPage />);
     fireEvent.click(screen.getByText('Pending Applications'));
 
-    expect(screen.getByText('Ahmed Al-Rashid')).toBeDefined();
-    expect(screen.getByText('Sarah Johnson')).toBeDefined();
-    expect(screen.getByText('Mohammed Khan')).toBeDefined();
+    await waitFor(() => {
+      expect(screen.getByText('Ahmed Al-Rashid')).toBeDefined();
+      expect(screen.getByText('Sarah Johnson')).toBeDefined();
+      expect(screen.getByText('Mohammed Khan')).toBeDefined();
+    });
   });
 
-  it('shows properties for each application', () => {
+  it('shows email for each application', async () => {
     render(<TenantScreeningPage />);
     fireEvent.click(screen.getByText('Pending Applications'));
 
-    expect(screen.getByText('Marina View 2BR')).toBeDefined();
-    expect(screen.getByText('Downtown Studio')).toBeDefined();
-    expect(screen.getByText('JBR 3BR')).toBeDefined();
+    await waitFor(() => {
+      expect(screen.getByText('ahmed@example.com')).toBeDefined();
+      expect(screen.getByText('sarah@example.com')).toBeDefined();
+      expect(screen.getByText('mohammed@example.com')).toBeDefined();
+    });
   });
 
-  it('shows salary information', () => {
+  it('shows income information', async () => {
     render(<TenantScreeningPage />);
     fireEvent.click(screen.getByText('Pending Applications'));
 
-    expect(screen.getByText(/Salary: AED 25,000\/mo/)).toBeDefined();
-    expect(screen.getByText(/Salary: AED 18,000\/mo/)).toBeDefined();
-    expect(screen.getByText(/Salary: AED 45,000\/mo/)).toBeDefined();
+    await waitFor(() => {
+      expect(screen.getByText(/Income: AED 300,000\/yr/)).toBeDefined();
+      expect(screen.getByText(/Income: AED 216,000\/yr/)).toBeDefined();
+      expect(screen.getByText(/Income: AED 540,000\/yr/)).toBeDefined();
+    });
   });
 
-  it('shows status badges', () => {
+  it('shows status badges', async () => {
     render(<TenantScreeningPage />);
     fireEvent.click(screen.getByText('Pending Applications'));
 
-    expect(screen.getByText('Documents Pending')).toBeDefined();
-    expect(screen.getByText('Under Review')).toBeDefined();
-    expect(screen.getByText('Approved')).toBeDefined();
+    await waitFor(() => {
+      expect(screen.getByText('Documents pending')).toBeDefined();
+      expect(screen.getByText('Under review')).toBeDefined();
+      expect(screen.getByText('Approved')).toBeDefined();
+    });
   });
 
-  it('shows verification progress percentages', () => {
+  it('shows phone details', async () => {
     render(<TenantScreeningPage />);
     fireEvent.click(screen.getByText('Pending Applications'));
 
-    expect(screen.getByText(/Verification Progress: 60%/)).toBeDefined();
-    expect(screen.getByText(/Verification Progress: 80%/)).toBeDefined();
-    expect(screen.getByText(/Verification Progress: 100%/)).toBeDefined();
+    await waitFor(() => {
+      expect(screen.getByText(/Phone: \+971501111111/)).toBeDefined();
+      expect(screen.getByText(/Phone: \+971502222222/)).toBeDefined();
+      expect(screen.getByText(/Phone: \+971503333333/)).toBeDefined();
+    });
   });
 
-  it('renders progress bars with correct widths', () => {
+  it('shows added date details', async () => {
     render(<TenantScreeningPage />);
     fireEvent.click(screen.getByText('Pending Applications'));
 
-    const progressBars = document.querySelectorAll('.progress-bar-fill');
-    expect(progressBars.length).toBe(3);
-    expect((progressBars[0] as HTMLElement).style.width).toBe('60%');
-    expect((progressBars[1] as HTMLElement).style.width).toBe('80%');
-    expect((progressBars[2] as HTMLElement).style.width).toBe('100%');
+    await waitFor(() => {
+      const addedLabels = screen.getAllByText(/Added:/);
+      expect(addedLabels.length).toBe(3);
+    });
   });
 
   // ── Guidelines Tab ─────────────────────────────────────────────
@@ -176,7 +237,9 @@ describe('TenantScreeningPage', () => {
     render(<TenantScreeningPage />);
     fireEvent.click(screen.getByText('Guidelines'));
 
-    expect(screen.getByText('Always verify original documents before accepting copies')).toBeDefined();
+    expect(
+      screen.getByText('Always verify original documents before accepting copies')
+    ).toBeDefined();
     expect(screen.getByText(/Check visa validity and employment status/i)).toBeDefined();
     expect(screen.getByText(/Contact previous landlords/i)).toBeDefined();
     expect(screen.getByText(/Verify salary through employment letter/i)).toBeDefined();
@@ -184,7 +247,7 @@ describe('TenantScreeningPage', () => {
   });
 
   // ── Tab Switching Round-trip ───────────────────────────────────
-  it('switches between all tabs correctly', () => {
+  it('switches between all tabs correctly', async () => {
     render(<TenantScreeningPage />);
 
     // Default is checklist
@@ -192,7 +255,9 @@ describe('TenantScreeningPage', () => {
 
     // Switch to applications
     fireEvent.click(screen.getByText('Pending Applications'));
-    expect(screen.getByText('Ahmed Al-Rashid')).toBeDefined();
+    await waitFor(() => {
+      expect(screen.getByText('Ahmed Al-Rashid')).toBeDefined();
+    });
 
     // Switch to guidelines
     fireEvent.click(screen.getByText('Guidelines'));
@@ -212,7 +277,7 @@ describe('TenantScreeningPage', () => {
 
   it('moves active class when switching tabs', () => {
     render(<TenantScreeningPage />);
-    
+
     fireEvent.click(screen.getByText('Pending Applications'));
     const appTab = screen.getByText('Pending Applications').closest('button');
     expect(appTab?.className).toContain('active');

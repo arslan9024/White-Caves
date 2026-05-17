@@ -10,13 +10,23 @@ export { default as AIDropdownSelector } from './AIDropdownSelector';
 export { default as AssistantFeatureMatrix } from './AssistantFeatureMatrix';
 export { default as NotificationBadge } from './NotificationBadge';
 export { default as StatusIndicator } from './StatusIndicator';
-export { default as PersistentAssistantSidebar } from './PersistentAssistantSidebar';
-export { default as PaymentInstructionDeck, PaymentMethodSelector, BankTransferDetails } from './PaymentInstructionDeck';
+export {
+  default as PaymentInstructionDeck,
+  PaymentMethodSelector,
+  BankTransferDetails,
+} from './PaymentInstructionDeck';
 export { default as DualCategoryTabStrip } from './DualCategoryTabStrip';
 export { default as AssignmentDropdown } from './AssignmentDropdown';
-export { default as PropertyMediaGallery, PropertySpecsGrid, PropertyDetailContainer } from './PropertyMediaGallery';
+export {
+  default as PropertyMediaGallery,
+  PropertySpecsGrid,
+  PropertyDetailContainer,
+} from './PropertyMediaGallery';
 export { default as BotSessionManager } from './BotSessionManager';
 export { default as PlatformPublisherForm } from './PlatformPublisherForm';
 export { default as JobPostComposer } from './JobPostComposer';
 export { default as WeeklyResearchModule } from './WeeklyResearchModule';
-
+export { default as TaskLifecyclePanel } from './TaskLifecyclePanel';
+export { default as LifecycleNotificationFeed } from './LifecycleNotificationFeed';
+export { default as TaskLifecycleBoard } from './TaskLifecycleBoard';
+export { default as AssistantLifecycleTab } from './AssistantLifecycleTab';

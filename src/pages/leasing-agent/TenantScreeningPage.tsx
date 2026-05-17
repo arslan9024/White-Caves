@@ -1,5 +1,19 @@
-import React, { FC, useState } from 'react';
+import React, { FC, useState, useEffect, useRef } from 'react';
+import { authFetch } from '../../utils/authFetch';
+import { createLogger } from '../../utils/logger';
 import '../RolePages.css';
+
+const log = createLogger('TenantScreening');
+
+interface Tenant {
+  id: string;
+  name: string;
+  email: string;
+  phone: string | null;
+  status: string;
+  createdAt: string;
+  income?: number | null;
+}
 
 interface ScreeningChecklistItem {
   id: number;
@@ -12,19 +26,47 @@ interface ChecklistSection {
   items: ScreeningChecklistItem[];
 }
 
-interface ApplicationData {
-  id: number;
-  name: string;
-  property: string;
-  salary: string;
-  status: string;
-  progress: number;
-}
-
-interface TenantScreeningPageProps {}
-
-const TenantScreeningPage: FC<TenantScreeningPageProps> = () => {
+const TenantScreeningPage: FC = () => {
   const [activeTab, setActiveTab] = useState<string>('checklist');
+  const [tenants, setTenants] = useState<Tenant[]>([]);
+  const [loadingTenants, setLoadingTenants] = useState<boolean>(false);
+  const [tenantsError, setTenantsError] = useState<string | null>(null);
+  const isMountedRef = useRef(true);
+
+  useEffect(() => {
+    isMountedRef.current = true;
+    return () => { isMountedRef.current = false; };
+  }, []);
+
+  useEffect(() => {
+    if (activeTab !== 'applications') return;
+    const controller = new AbortController();
+
+    const fetchTenants = async (): Promise<void> => {
+      try {
+        setLoadingTenants(true);
+        setTenantsError(null);
+        const res = await authFetch('/api/tenants?pageSize=50', { signal: controller.signal });
+        if (!isMountedRef.current) return;
+        if (res.ok) {
+          const json = await res.json();
+          setTenants(json.data || []);
+        } else {
+          setTenantsError('Failed to load tenant applications.');
+        }
+      } catch (err) {
+        if (!isMountedRef.current) return;
+        if (err instanceof DOMException && err.name === 'AbortError') return;
+        log.error('Error fetching tenants:', err);
+        setTenantsError('Unable to connect to the server.');
+      } finally {
+        if (isMountedRef.current) setLoadingTenants(false);
+      }
+    };
+
+    fetchTenants();
+    return () => controller.abort();
+  }, [activeTab]);
 
   const screeningChecklist: ChecklistSection[] = [
     { category: 'Identity Verification', items: [
@@ -44,12 +86,6 @@ const TenantScreeningPage: FC<TenantScreeningPageProps> = () => {
     ]},
   ];
 
-  const pendingApplications: ApplicationData[] = [
-    { id: 1, name: 'Ahmed Al-Rashid', property: 'Marina View 2BR', salary: 'AED 25,000/mo', status: 'Documents Pending', progress: 60 },
-    { id: 2, name: 'Sarah Johnson', property: 'Downtown Studio', salary: 'AED 18,000/mo', status: 'Under Review', progress: 80 },
-    { id: 3, name: 'Mohammed Khan', property: 'JBR 3BR', salary: 'AED 45,000/mo', status: 'Approved', progress: 100 },
-  ];
-
   const redFlags: string[] = [
     'Salary less than 3x monthly rent',
     'Visa expiring within 6 months',
@@ -61,6 +97,9 @@ const TenantScreeningPage: FC<TenantScreeningPageProps> = () => {
   const handleTabChange = (tab: string): void => {
     setActiveTab(tab);
   };
+
+  const statusLabel = (status: string): string =>
+    status.charAt(0).toUpperCase() + status.slice(1).replace(/_/g, ' ');
 
   return (
     <div className="role-page no-sidebar">
@@ -99,24 +138,43 @@ const TenantScreeningPage: FC<TenantScreeningPageProps> = () => {
 
         {activeTab === 'applications' && (
           <div className="applications-list">
-            <h3>Pending Tenant Applications</h3>
-            {pendingApplications.map(app => (
-              <div key={app.id} className="application-card">
+            <h3>Tenant Applications</h3>
+
+            {loadingTenants && (
+              <div style={{ textAlign: 'center', padding: '2rem', color: 'var(--text-secondary)' }}>
+                Loading applications…
+              </div>
+            )}
+
+            {tenantsError && (
+              <div style={{ padding: '1rem', background: '#FEF2F2', border: '1px solid #FECACA', borderRadius: '8px', color: '#B91C1C', marginBottom: '1rem' }}>
+                {tenantsError}
+              </div>
+            )}
+
+            {!loadingTenants && !tenantsError && tenants.length === 0 && (
+              <div style={{ textAlign: 'center', padding: '3rem 2rem', border: '2px dashed var(--border-color, #e5e7eb)', borderRadius: '12px' }}>
+                <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>📋</div>
+                <h4>No tenant applications yet</h4>
+                <p style={{ color: 'var(--text-secondary)' }}>Tenant records will appear here once created.</p>
+              </div>
+            )}
+
+            {tenants.map((tenant) => (
+              <div key={tenant.id} className="application-card">
                 <div className="application-header">
                   <div className="applicant-info">
-                    <h4>{app.name}</h4>
-                    <span className="property-name">{app.property}</span>
+                    <h4>{tenant.name}</h4>
+                    <span className="property-name">{tenant.email}</span>
                   </div>
-                  <span className={`status-badge ${app.status.toLowerCase().replace(' ', '-')}`}>{app.status}</span>
+                  <span className={`status-badge ${tenant.status.toLowerCase().replace(/_/g, '-')}`}>
+                    {statusLabel(tenant.status)}
+                  </span>
                 </div>
                 <div className="application-details">
-                  <span className="detail">Salary: {app.salary}</span>
-                  <div className="progress-container">
-                    <span>Verification Progress: {app.progress}%</span>
-                    <div className="progress-bar-bg">
-                      <div className="progress-bar-fill" style={{width: `${app.progress}%`}}></div>
-                    </div>
-                  </div>
+                  {tenant.phone && <span className="detail">Phone: {tenant.phone}</span>}
+                  {tenant.income && <span className="detail">Income: AED {tenant.income.toLocaleString()}/yr</span>}
+                  <span className="detail">Added: {new Date(tenant.createdAt).toLocaleDateString('en-AE')}</span>
                 </div>
               </div>
             ))}

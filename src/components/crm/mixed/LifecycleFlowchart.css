@@ -1,0 +1,332 @@
+.lifecycle-flowchart {
+  padding: 20px;
+}
+
+.flowchart-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-primary, #1a1a1a);
+  margin: 0 0 20px 0;
+}
+
+.stages-container {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.stage-node {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 12px;
+  border-radius: 12px;
+  transition: all 0.2s ease;
+  position: relative;
+  min-width: 80px;
+}
+
+.stage-node:hover {
+  background: var(--surface-secondary, #f1f5f9);
+}
+
+.stage-icon-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pulse-ring {
+  position: absolute;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: rgba(227, 30, 36, 0.3);
+}
+
+.stage-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  z-index: 1;
+}
+
+.stage-node.completed .stage-icon {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: white;
+}
+
+.stage-node.active .stage-icon {
+  background: linear-gradient(135deg, #b03737 0%, #c5a030 100%);
+  color: #1a1a1a;
+  box-shadow: 0 0 0 4px rgba(227, 30, 36, 0.2);
+}
+
+.stage-node.pending .stage-icon {
+  background: var(--surface-secondary, #e2e8f0);
+  color: var(--text-muted, #94a3b8);
+}
+
+.stage-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.stage-name {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-primary, #1e293b);
+  text-align: center;
+}
+
+.stage-node.pending .stage-name {
+  color: var(--text-muted, #94a3b8);
+}
+
+.stage-count {
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: #b03737;
+  background: rgba(227, 30, 36, 0.1);
+  padding: 2px 8px;
+  border-radius: 10px;
+}
+
+.stage-alert {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  color: #ef4444;
+  animation: bounce 1s infinite;
+}
+
+@keyframes bounce {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-3px);
+  }
+}
+
+.stage-connector {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+  transform-origin: left center;
+}
+
+.connector-line {
+  width: 24px;
+  height: 2px;
+  background: var(--border-color, #e2e8f0);
+}
+
+.stage-connector.completed .connector-line {
+  background: #10b981;
+}
+
+.connector-arrow {
+  color: var(--text-muted, #94a3b8);
+}
+
+.stage-connector.completed .connector-arrow {
+  color: #10b981;
+}
+
+.stage-legend {
+  display: flex;
+  justify-content: center;
+  gap: 24px;
+  margin-top: 24px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border-color, #e2e8f0);
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.75rem;
+  color: var(--text-muted, #64748b);
+}
+
+.legend-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+
+.legend-dot.completed {
+  background: #10b981;
+}
+
+.legend-dot.active {
+  background: #b03737;
+}
+
+.legend-dot.pending {
+  background: #e2e8f0;
+}
+
+.lifecycle-flowchart.compact .stages-container {
+  gap: 4px;
+}
+
+.lifecycle-flowchart.compact .stage-node {
+  padding: 8px;
+  min-width: 60px;
+}
+
+.lifecycle-flowchart.compact .stage-icon {
+  width: 28px;
+  height: 28px;
+}
+
+.lifecycle-flowchart.compact .stage-name {
+  font-size: 0.65rem;
+}
+
+.vertical-lifecycle {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.vertical-stage {
+  display: flex;
+  gap: 16px;
+  padding: 12px 0;
+}
+
+.vertical-connector {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 20px;
+}
+
+.connector-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.connector-dot.completed {
+  background: #10b981;
+}
+
+.connector-dot.active {
+  background: #b03737;
+  box-shadow: 0 0 0 4px rgba(227, 30, 36, 0.2);
+}
+
+.connector-dot.pending {
+  background: #e2e8f0;
+  border: 2px solid #cbd5e1;
+}
+
+.vertical-connector .connector-line {
+  width: 2px;
+  flex: 1;
+  min-height: 20px;
+  background: #e2e8f0;
+}
+
+.vertical-connector .connector-line.completed {
+  background: #10b981;
+}
+
+.vertical-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.stage-label {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-primary, #1e293b);
+}
+
+.vertical-stage.pending .stage-label {
+  color: var(--text-muted, #94a3b8);
+}
+
+.stage-desc {
+  font-size: 0.75rem;
+  color: var(--text-muted, #64748b);
+  margin: 0;
+}
+
+.stage-badge {
+  display: inline-block;
+  width: fit-content;
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: #b03737;
+  background: rgba(227, 30, 36, 0.1);
+  padding: 2px 8px;
+  border-radius: 10px;
+}
+
+@media (max-width: 768px) {
+  .stages-container {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .stage-node {
+    flex-direction: row;
+    justify-content: flex-start;
+    gap: 16px;
+  }
+
+  .stage-info {
+    align-items: flex-start;
+  }
+
+  .stage-connector {
+    transform: rotate(90deg);
+    margin: 4px 0 4px 20px;
+  }
+}
+
+[data-theme='dark'] .flowchart-title {
+  color: var(--text-primary, #f8fafc);
+}
+
+[data-theme='dark'] .stage-node:hover {
+  background: var(--surface-secondary, #1e293b);
+}
+
+[data-theme='dark'] .stage-name {
+  color: var(--text-primary, #f8fafc);
+}
+
+[data-theme='dark'] .stage-node.pending .stage-icon {
+  background: var(--surface-secondary, #334155);
+}
+
+[data-theme='dark'] .connector-line {
+  background: var(--border-color, #475569);
+}
+
+[data-theme='dark'] .connector-dot.pending {
+  background: #475569;
+  border-color: #64748b;
+}

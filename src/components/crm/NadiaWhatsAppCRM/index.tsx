@@ -7,6 +7,7 @@ import { AgentAssignmentTab } from './tabs/AgentAssignmentTab';
 import { InsightsTab } from './tabs/InsightsTab';
 import { SettingsTab } from './tabs/SettingsTab';
 import { FeaturesTab } from './tabs/FeaturesTab';
+import AssistantLifecycleTab from '../shared/AssistantLifecycleTab';
 import './NadiaWhatsAppCRM.css';
 
 const NadiaWhatsAppCRM = () => {
@@ -19,7 +20,8 @@ const NadiaWhatsAppCRM = () => {
     { id: 'agents', label: 'Agent Assignment', icon: '👤' },
     { id: 'insights', label: 'Insights', icon: '📊' },
     { id: 'settings', label: 'Settings', icon: '⚙️' },
-    { id: 'features', label: 'Features', icon: '✨' }
+    { id: 'features', label: 'Features', icon: '✨' },
+    { id: 'lifecycle', label: 'Lifecycle', icon: '🔄' }
   ];
 
   const renderTab = () => {
@@ -36,6 +38,8 @@ const NadiaWhatsAppCRM = () => {
         return <SettingsTab data={data} />;
       case 'features':
         return <FeaturesTab data={data} />;
+      case 'lifecycle':
+        return <AssistantLifecycleTab assistantId="nadia" color="#25D366" assistantName="Nadia" />;
       default:
         return <ConversationsTab data={data} />;
     }
@@ -63,10 +67,10 @@ const NadiaWhatsAppCRM = () => {
           >
             {data.nadiaActive ? 'Pause Nadia' : 'Activate Nadia'}
           </button>
-          <button className="nadia-action-btn">
+          <button className="nadia-action-btn" aria-label="Refresh conversations">
             <RefreshCw size={18} />
           </button>
-          <button className="nadia-action-btn">
+          <button className="nadia-action-btn" aria-label="Download chat export">
             <Download size={18} />
           </button>
         </div>

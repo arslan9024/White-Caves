@@ -58,9 +58,9 @@ export const CodeModulesTab: React.FC<CodeModulesTabProps> = ({ data }) => {
                       <span className="file-lines">{file.lines} lines</span>
                     </div>
                     <div className="file-actions">
-                      <button className="action-btn" title="View"><FileCode size={14} /></button>
-                      <button className="action-btn" title="Copy"><Copy size={14} /></button>
-                      <button className="action-btn" title="Edit"><Edit2 size={14} /></button>
+                      <button className="action-btn" title="View" aria-label="View file"><FileCode size={14} /></button>
+                      <button className="action-btn" title="Copy" aria-label="Copy code"><Copy size={14} /></button>
+                      <button className="action-btn" title="Edit" aria-label="Edit file"><Edit2 size={14} /></button>
                     </div>
                   </div>
                 ))}

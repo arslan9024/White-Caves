@@ -2,31 +2,62 @@
  * @file useFinanceData.test.ts
  * @description Comprehensive tests for useFinanceData hook — Finance & invoicing management
  * Tests: invoice selection, payment message, expense approve/reject, finance stats
+ * Updated for Phase 1B: Now tests Redux-based invoice/expense state instead of mock imports
  */
 
 import { renderHook, act } from '@testing-library/react';
 import { vi, describe, it, expect, beforeEach } from 'vitest';
 
-// Mock react-redux so useDispatch returns a mock that handles thunks,
-// and useSelector always returns [] / false / null for commission selectors
+// ── Mock Data ──────────────────────────────────────────
+const MOCK_INVOICES = [
+  { id: 'INV-001', client: 'Ahmed Al Rashid', property: 'Villa 348', amount: 250000, totalAmount: 250000, status: 'paid', date: '2024-01-08', dueDate: '2024-01-15' },
+  { id: 'INV-002', client: 'Sara Hassan', property: 'Apt 205', amount: 180000, totalAmount: 180000, status: 'pending', date: '2024-01-09', dueDate: '2024-01-20' },
+  { id: 'INV-003', client: 'Omar Khalid', property: 'Villa 102', amount: 95000, totalAmount: 95000, status: 'overdue', date: '2024-01-01', dueDate: '2024-01-05' },
+];
+
+const MOCK_EXPENSES = [
+  { id: 1, category: 'Marketing', description: 'Facebook Ads', amount: 15000, date: '2024-01-08', status: 'approved' },
+  { id: 2, category: 'Office', description: 'Rent', amount: 5000, date: '2024-01-09', status: 'pending' },
+  { id: 3, category: 'Travel', description: 'Site Visit', amount: 700, date: '2024-01-10', status: 'pending' },
+];
+
+// Map selector names to mock return values
+// (handled by mock Redux state + real selectors — see mockState below)
+
+// ── Mock react-redux ──────────────────────────────────
 const mockDispatch = vi.fn((action) => {
-  // If thunk returns a promise, return it; otherwise return a resolved promise
   if (action && typeof action.then === 'function') return action;
   return Promise.resolve({ meta: { requestStatus: 'rejected' }, payload: null });
 });
 
+// Provide a mock Redux state — real selectors will execute against this
+const mockState = {
+  crmData: {
+    leads: { items: [], loading: false, error: null, selected: null },
+    clients: { items: [], loading: false, error: null, selected: null },
+    agents: { items: [], loading: false, error: null, selected: null },
+    properties: { items: [], loading: false, error: null, selected: null },
+    commissions: { items: [], loading: false, error: null },
+    invoices: { items: MOCK_INVOICES, loading: false, error: null },
+    expenses: { items: MOCK_EXPENSES, loading: false, error: null },
+    activities: { items: [] },
+    overview: {},
+    lastUpdated: null,
+  },
+};
+
 vi.mock('react-redux', () => ({
   useDispatch: () => mockDispatch,
   useSelector: (selector: any) => {
-    // Return empty defaults for all commission selectors
-    const name = selector?.name || '';
-    if (name.includes('Loading')) return false;
-    if (name.includes('Error')) return null;
-    return [];
+    try {
+      return selector(mockState);
+    } catch {
+      return undefined;
+    }
   },
 }));
 
-// Mock the thunks to return plain action-like objects
+// ── Mock the thunks ──────────────────────────────────
 vi.mock('../../../../../store/crmDataSlice', async (importOriginal) => {
   const original = await importOriginal<typeof import('../../../../../store/crmDataSlice')>();
   return {
@@ -36,6 +67,14 @@ vi.mock('../../../../../store/crmDataSlice', async (importOriginal) => {
     createCommissionAPI: vi.fn(() => ({ type: 'mock/createCommission' })),
     updateCommissionAPI: vi.fn(() => ({ type: 'mock/updateCommission' })),
     bulkPayCommissionsAPI: vi.fn(() => ({ type: 'mock/bulkPay' })),
+    fetchInvoicesFromAPI: vi.fn(() => ({ type: 'mock/fetchInvoices' })),
+    createInvoiceAPI: vi.fn(() => ({ type: 'mock/createInvoice' })),
+    updateInvoiceAPI: vi.fn(() => ({ type: 'mock/updateInvoice' })),
+    deleteInvoiceAPI: vi.fn(() => ({ type: 'mock/deleteInvoice' })),
+    fetchExpensesFromAPI: vi.fn(() => ({ type: 'mock/fetchExpenses' })),
+    createExpenseAPI: vi.fn(() => ({ type: 'mock/createExpense' })),
+    updateExpenseAPI: vi.fn((data: any) => ({ type: 'mock/updateExpense', payload: data })),
+    deleteExpenseAPI: vi.fn(() => ({ type: 'mock/deleteExpense' })),
   };
 });
 
@@ -44,18 +83,8 @@ vi.mock('../../../../../store/store', () => ({
   AppDispatch: undefined,
 }));
 
-// Mock data modules
+// Mock data modules (still needed for type exports)
 vi.mock('../../data/finance', () => ({
-  INVOICES: [
-    { id: 'INV-001', client: 'Ahmed Al Rashid', property: 'Villa 348', amount: 250000, status: 'paid', date: '2024-01-08', dueDate: '2024-01-15' },
-    { id: 'INV-002', client: 'Sara Hassan', property: 'Apt 205', amount: 180000, status: 'pending', date: '2024-01-09', dueDate: '2024-01-20' },
-    { id: 'INV-003', client: 'Omar Khalid', property: 'Villa 102', amount: 95000, status: 'overdue', date: '2024-01-01', dueDate: '2024-01-05' },
-  ],
-  EXPENSES: [
-    { id: 1, category: 'Marketing', description: 'Facebook Ads', amount: 15000, date: '2024-01-08', status: 'approved' },
-    { id: 2, category: 'Office', description: 'Rent', amount: 5000, date: '2024-01-09', status: 'pending' },
-    { id: 3, category: 'Travel', description: 'Site Visit', amount: 700, date: '2024-01-10', status: 'pending' },
-  ],
   Invoice: undefined,
   Expense: undefined,
 }));
@@ -69,15 +98,15 @@ import { useFinanceData } from '../useFinanceData';
 describe('useFinanceData', () => {
   beforeEach(() => vi.clearAllMocks());
 
-  // ── Initial State ──────────────────────────────────────
+  // ── Initial State ────────────────────────────────────
   describe('Initial State', () => {
-    it('returns invoices from data', () => {
+    it('returns invoices from Redux', () => {
       const { result } = renderHook(() => useFinanceData());
       expect(result.current.invoices).toHaveLength(3);
       expect(result.current.invoices[0].id).toBe('INV-001');
     });
 
-    it('returns expenses from data', () => {
+    it('returns expenses from Redux', () => {
       const { result } = renderHook(() => useFinanceData());
       expect(result.current.expenses).toHaveLength(3);
     });
@@ -96,37 +125,62 @@ describe('useFinanceData', () => {
       const { result } = renderHook(() => useFinanceData());
       expect(result.current.features).toHaveLength(3);
     });
+
+    it('dispatches fetch on mount for commissions, invoices, and expenses', () => {
+      renderHook(() => useFinanceData());
+      const dispatchedTypes = mockDispatch.mock.calls.map(([a]: any[]) => a?.type).filter(Boolean);
+      expect(dispatchedTypes).toContain('mock/fetchCommissions');
+      expect(dispatchedTypes).toContain('mock/fetchInvoices');
+      expect(dispatchedTypes).toContain('mock/fetchExpenses');
+    });
   });
 
   // ── Finance Stats ──────────────────────────────────────
   describe('financeStats', () => {
-    it('has totalRevenue', () => {
+    it('computes totalRevenue from invoice data', () => {
       const { result } = renderHook(() => useFinanceData());
-      expect(result.current.financeStats.totalRevenue).toBe(4200000);
+      // 250000 + 180000 + 95000 = 525000
+      expect(result.current.financeStats.totalRevenue).toBe(525000);
     });
 
-    it('has revenueTrend', () => {
+    it('computes pendingAmount from pending invoices', () => {
       const { result } = renderHook(() => useFinanceData());
-      expect(result.current.financeStats.revenueTrend).toBe(18);
+      // Only INV-002: 180000
+      expect(result.current.financeStats.pendingAmount).toBe(180000);
     });
 
-    it('has pendingAmount and pendingCount', () => {
+    it('computes pendingCount from pending invoices', () => {
       const { result } = renderHook(() => useFinanceData());
-      expect(result.current.financeStats.pendingAmount).toBe(860000);
-      expect(result.current.financeStats.pendingCount).toBe(12);
+      expect(result.current.financeStats.pendingCount).toBe(1);
     });
 
-    it('has overdueAmount and overdueCount', () => {
+    it('computes overdueAmount from overdue invoices', () => {
       const { result } = renderHook(() => useFinanceData());
+      // Only INV-003: 95000
       expect(result.current.financeStats.overdueAmount).toBe(95000);
-      expect(result.current.financeStats.overdueCount).toBe(3);
     });
 
-    it('has totalExpenses, approvedExpenses, pendingExpenses', () => {
+    it('computes overdueCount from overdue invoices', () => {
       const { result } = renderHook(() => useFinanceData());
-      expect(result.current.financeStats.totalExpenses).toBe(470700);
-      expect(result.current.financeStats.approvedExpenses).toBe(20700);
-      expect(result.current.financeStats.pendingExpenses).toBe(2500);
+      expect(result.current.financeStats.overdueCount).toBe(1);
+    });
+
+    it('computes totalExpenses from expenses data', () => {
+      const { result } = renderHook(() => useFinanceData());
+      // 15000 + 5000 + 700 = 20700
+      expect(result.current.financeStats.totalExpenses).toBe(20700);
+    });
+
+    it('computes approvedExpenses from approved expenses', () => {
+      const { result } = renderHook(() => useFinanceData());
+      // Only Marketing 15000
+      expect(result.current.financeStats.approvedExpenses).toBe(15000);
+    });
+
+    it('computes pendingExpenses from pending expenses', () => {
+      const { result } = renderHook(() => useFinanceData());
+      // 5000 + 700 = 5700
+      expect(result.current.financeStats.pendingExpenses).toBe(5700);
     });
   });
 
@@ -162,50 +216,78 @@ describe('useFinanceData', () => {
     });
   });
 
-  // ── Approve Expense ────────────────────────────────────
+  // ── Approve Expense (now dispatches Redux thunk) ───────
   describe('handleApproveExpense', () => {
-    it('changes expense status to approved', () => {
+    it('dispatches updateExpenseAPI with approved status', () => {
       const { result } = renderHook(() => useFinanceData());
       act(() => result.current.handleApproveExpense(2));
-      const exp = result.current.expenses.find(e => e.id === 2);
-      expect(exp?.status).toBe('approved');
-    });
-
-    it('does not affect other expenses', () => {
-      const { result } = renderHook(() => useFinanceData());
-      act(() => result.current.handleApproveExpense(2));
-      expect(result.current.expenses[0].status).toBe('approved'); // id:1 stays
-      expect(result.current.expenses[2].status).toBe('pending');   // id:3 stays
-    });
-
-    it('is idempotent for already approved', () => {
-      const { result } = renderHook(() => useFinanceData());
-      act(() => result.current.handleApproveExpense(1)); // already approved
-      expect(result.current.expenses[0].status).toBe('approved');
+      const updateCalls = mockDispatch.mock.calls.filter(
+        ([a]: any[]) => a?.type === 'mock/updateExpense'
+      );
+      expect(updateCalls.length).toBeGreaterThanOrEqual(1);
+      // Verify the dispatched payload
+      const lastCall = updateCalls[updateCalls.length - 1][0];
+      expect(lastCall.payload).toEqual({ id: '2', status: 'approved' });
     });
   });
 
-  // ── Reject Expense ─────────────────────────────────────
+  // ── Reject Expense (now dispatches Redux thunk) ────────
   describe('handleRejectExpense', () => {
-    it('changes expense status to rejected', () => {
+    it('dispatches updateExpenseAPI with rejected status', () => {
       const { result } = renderHook(() => useFinanceData());
       act(() => result.current.handleRejectExpense(2));
-      const exp = result.current.expenses.find(e => e.id === 2);
-      expect(exp?.status).toBe('rejected');
+      const updateCalls = mockDispatch.mock.calls.filter(
+        ([a]: any[]) => a?.type === 'mock/updateExpense'
+      );
+      expect(updateCalls.length).toBeGreaterThanOrEqual(1);
+      const lastCall = updateCalls[updateCalls.length - 1][0];
+      expect(lastCall.payload).toEqual({ id: '2', status: 'rejected' });
+    });
+  });
+
+  // ── CRUD Handlers ──────────────────────────────────────
+  describe('CRUD handlers', () => {
+    it('exposes handleCreateInvoice', () => {
+      const { result } = renderHook(() => useFinanceData());
+      expect(typeof result.current.handleCreateInvoice).toBe('function');
     });
 
-    it('does not affect other expenses', () => {
+    it('exposes handleUpdateInvoice', () => {
       const { result } = renderHook(() => useFinanceData());
-      act(() => result.current.handleRejectExpense(2));
-      expect(result.current.expenses[0].status).toBe('approved');
-      expect(result.current.expenses[2].status).toBe('pending');
+      expect(typeof result.current.handleUpdateInvoice).toBe('function');
     });
 
-    it('can reject after approval', () => {
+    it('exposes handleDeleteInvoice', () => {
       const { result } = renderHook(() => useFinanceData());
-      act(() => result.current.handleApproveExpense(2));
-      act(() => result.current.handleRejectExpense(2));
-      expect(result.current.expenses[1].status).toBe('rejected');
+      expect(typeof result.current.handleDeleteInvoice).toBe('function');
+    });
+
+    it('exposes handleCreateExpense', () => {
+      const { result } = renderHook(() => useFinanceData());
+      expect(typeof result.current.handleCreateExpense).toBe('function');
+    });
+
+    it('exposes handleUpdateExpense', () => {
+      const { result } = renderHook(() => useFinanceData());
+      expect(typeof result.current.handleUpdateExpense).toBe('function');
+    });
+
+    it('exposes handleDeleteExpense', () => {
+      const { result } = renderHook(() => useFinanceData());
+      expect(typeof result.current.handleDeleteExpense).toBe('function');
+    });
+  });
+
+  // ── Refresh ────────────────────────────────────────────
+  describe('handleRefreshCommissions', () => {
+    it('dispatches fetch for commissions, invoices, and expenses on refresh', () => {
+      const { result } = renderHook(() => useFinanceData());
+      mockDispatch.mockClear();
+      act(() => result.current.handleRefreshCommissions());
+      const dispatchedTypes = mockDispatch.mock.calls.map(([a]: any[]) => a?.type).filter(Boolean);
+      expect(dispatchedTypes).toContain('mock/fetchCommissions');
+      expect(dispatchedTypes).toContain('mock/fetchInvoices');
+      expect(dispatchedTypes).toContain('mock/fetchExpenses');
     });
   });
 });

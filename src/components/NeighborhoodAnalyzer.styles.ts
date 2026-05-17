@@ -1,5 +1,7 @@
 import styled from 'styled-components';
 import { typography } from '../styles/theme/typography';
+import { transitions } from '../styles/theme/transitions';
+import { radius } from '../styles/theme/radius';
 
 export const NeighborhoodAnalyzerContainer = styled.div`
   padding: 3rem 5%;
@@ -42,15 +44,17 @@ export const AreaSelector = styled.div`
 
 export const AreaButton = styled.button<{ $isActive?: boolean }>`
   padding: 0.75rem 1.5rem;
-  background: ${props => props.$isActive ? 'var(--primary-color, #1a365d)' : 'var(--bg-light, #f7fafc)'};
-  border: 2px solid ${props => props.$isActive ? 'var(--primary-color, #1a365d)' : 'transparent'};
-  border-radius: 9999px;
+  background: ${props =>
+    props.$isActive ? 'var(--primary-color, #1a365d)' : 'var(--bg-light, #f7fafc)'};
+  border: 2px solid ${props => (props.$isActive ? 'var(--primary-color, #1a365d)' : 'transparent')};
+  border-radius: ${radius.full};
   font-family: ${typography.fontFamily.primary};
   font-size: 0.9rem;
-  font-weight: 500;
-  color: ${props => props.$isActive ? 'var(--text-on-primary, #ffffff)' : 'var(--text-primary, #1a202c)'};
+  font-weight: ${typography.weights.medium};
+  color: ${props =>
+    props.$isActive ? 'var(--text-on-primary, #ffffff)' : 'var(--text-primary, #1a202c)'};
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: ${transitions.hover};
 
   &:hover {
     border-color: var(--primary-color, #1a365d);
@@ -83,7 +87,12 @@ export const AreaHero = styled.div<{ $backgroundImage: string }>`
 
 export const HeroOverlay = styled.div`
   height: 100%;
-  background: linear-gradient(to right, rgba(26, 54, 93, 0.9) 0%, rgba(26, 54, 93, 0.6) 50%, transparent 100%);
+  background: linear-gradient(
+    to right,
+    rgba(26, 54, 93, 0.9) 0%,
+    rgba(26, 54, 93, 0.6) 50%,
+    transparent 100%
+  );
   display: flex;
   align-items: center;
   padding: 0 3rem;
@@ -126,11 +135,15 @@ export const HeroBadges = styled.div`
   gap: 0.75rem;
 `;
 
-export const Badge = styled.span<{ $variant?: 'score' | 'grade' | 'trend'; $score?: string; $trend?: 'rising' | 'stable' | 'declining' }>`
+export const Badge = styled.span<{
+  $variant?: 'score' | 'grade' | 'trend';
+  $score?: string;
+  $trend?: 'rising' | 'stable' | 'declining';
+}>`
   padding: 0.5rem 1rem;
-  border-radius: 9999px;
+  border-radius: ${radius.full};
   font-size: 0.85rem;
-  font-weight: 600;
+  font-weight: ${typography.weights.semibold};
   color: white;
 
   ${props => {
@@ -173,11 +186,12 @@ export const MetricsGrid = styled.div`
 `;
 
 export const MetricCard = styled.div<{ $isPrimary?: boolean }>`
-  background: ${props => props.$isPrimary ? 'var(--primary-color, #1a365d)' : 'var(--bg-light, #f7fafc)'};
-  color: ${props => props.$isPrimary ? 'white' : 'inherit'};
+  background: ${props =>
+    props.$isPrimary ? 'var(--primary-color, #1a365d)' : 'var(--bg-light, #f7fafc)'};
+  color: ${props => (props.$isPrimary ? 'white' : 'inherit')};
   padding: 1.5rem;
   border-radius: 0.75rem;
-  border: 1px solid ${props => props.$isPrimary ? 'transparent' : 'var(--border-light, #edf2f7)'};
+  border: 1px solid ${props => (props.$isPrimary ? 'transparent' : 'var(--border-light, #edf2f7)')};
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
@@ -185,13 +199,13 @@ export const MetricCard = styled.div<{ $isPrimary?: boolean }>`
 
 export const MetricLabel = styled.span`
   font-size: 0.85rem;
-  font-weight: 500;
+  font-weight: ${typography.weights.medium};
   opacity: 0.7;
 `;
 
 export const MetricValue = styled.span`
   font-size: 1.75rem;
-  font-weight: 700;
+  font-weight: ${typography.weights.bold};
 `;
 
 export const InsightsSection = styled.div`
@@ -230,7 +244,7 @@ export const InsightItem = styled.li`
   &::before {
     content: '✓';
     color: var(--success-color, #38a169);
-    font-weight: 700;
+    font-weight: ${typography.weights.bold};
     flex-shrink: 0;
   }
 `;
@@ -239,7 +253,7 @@ export const RisksSection = styled.div`
   background: #fff5f5;
   padding: 2rem;
   border-radius: 0.75rem;
-  border-left: 4px solid #EF4444;
+  border-left: 4px solid #ef4444;
 
   @media (max-width: 768px) {
     padding: 1.5rem;
@@ -271,7 +285,7 @@ export const RiskItem = styled.li`
 
   &::before {
     content: '⚠';
-    font-weight: 700;
+    font-weight: ${typography.weights.bold};
     flex-shrink: 0;
   }
 `;

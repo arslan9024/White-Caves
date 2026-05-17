@@ -368,7 +368,246 @@ Formal SLA definitions for the White Caves Real Estate CRM platform — covering
 
 ---
 
-*SLAs are reviewed and updated annually. Current terms effective from April 1, 2026.*
+## 10. SLA Breach Consequences & Financial Penalties
 
+### Breach Definition
+
+An SLA breach occurs when White Caves fails to meet a committed SLA metric within the measurement period, after excluding agreed exempt events (scheduled maintenance, third-party outages, force majeure).
+
+### Financial Penalty Schedule by Contract Tier
+
+#### Professional Tier — SLA Breach Penalties
+
+| Breach Scenario | Threshold | Penalty (% of Monthly Fee) | Maximum Penalty/Month |
+|-----------------|-----------|---------------------------|----------------------|
+| Uptime below 99.9% for the month | < 99.9% uptime | 10% credit | 100% of monthly fee |
+| Uptime below 99.0% | < 99.0% uptime | 25% credit | 100% of monthly fee |
+| Uptime below 95.0% | < 95.0% uptime | 50% credit | 100% of monthly fee |
+| Uptime below 90.0% | < 90.0% uptime | 100% credit | 100% of monthly fee |
+| S1 response time breach (> 1 hour) | Per incident | AED 500 credit/incident | AED 5,000/month |
+| S1 resolution time breach (> 8 hours) | Per incident | AED 1,000 credit/incident | AED 10,000/month |
+| Data backup RPO breach | > 6 hours actual RPO | AED 2,500 credit | One-time per incident |
+| Security patch critical (> 72 hours) | Per CVE | AED 2,500 credit | AED 10,000/month |
+| API rate limit false rejection | > 5 incidents/day | AED 250 credit/day | AED 2,500/month |
+
+#### Enterprise Tier — SLA Breach Penalties
+
+| Breach Scenario | Threshold | Penalty | Maximum Penalty/Month |
+|-----------------|-----------|---------|----------------------|
+| Uptime below 99.95% | < 99.95% uptime | Negotiated; minimum 15% credit | Per contract |
+| S1 response breach (> 15 minutes) | Per incident | AED 2,000 credit/incident | AED 20,000/month |
+| S1 resolution breach (> 4 hours) | Per incident | AED 5,000 credit/incident | AED 50,000/month |
+| Data loss event (any records lost) | Any confirmed data loss | AED 50,000 + root cause analysis | Per incident |
+| Security breach resulting in data exposure | Any confirmed exposure | AED 100,000 + forensic audit | Per incident |
+| API response p95 > 500ms sustained (> 30 min) | Per episode | AED 1,000 credit | AED 5,000/month |
+| WhatsApp API downtime > 1 hour | Per hour beyond 1h | AED 500/hour credit | AED 10,000/month |
+
+### Contractual Penalty Conditions
+
+| Condition | Rule |
+|-----------|------|
+| **Credit-only policy** | Penalties are applied as service credits against future invoices, not cash refunds, unless otherwise agreed in writing |
+| **Request window** | Customer must submit penalty claim within **30 calendar days** of the breach occurrence |
+| **Dispute process** | White Caves validates against monitoring data within **5 business days**; disputed findings escalated to L4 management within **10 business days** |
+| **Maximum annual liability** | Total annual credits capped at 3× monthly contract value for Professional; negotiated cap for Enterprise |
+| **Exclusions** | UAE public holidays (see Section 11), client-caused issues, force majeure events, Meta/WhatsApp API outages, DLD/Ejari system downtime |
+| **Contractual basis** | All SLA commitments governed by UAE law; disputes subject to Dubai Courts jurisdiction or DIAC arbitration per contract terms |
+
+---
+
+## 11. UAE Public Holiday Impact on SLAs
+
+### UAE Public Holidays 2026
+
+> Source: UAE Government Portal (government.ae). Islamic calendar holidays subject to moon sighting confirmation — dates may shift by ±1 day.
+
+| Holiday | Date (2026) | Type | Duration |
+|---------|------------|------|---------|
+| New Year's Day | January 1 | Fixed | 1 day |
+| Eid Al Fitr (end of Ramadan) | ~March 29–31 | Islamic | 3 days (approx.) |
+| Eid Al Fitr Holiday Extension | ~April 1 | Islamic | 1 day |
+| Arafat Day (Eid Al Adha Eve) | ~June 5 | Islamic | 1 day |
+| Eid Al Adha | ~June 6–8 | Islamic | 3 days |
+| Islamic New Year (Hijri New Year) | ~June 26 | Islamic | 1 day |
+| Prophet's Birthday (Mawlid) | ~September 4 | Islamic | 1 day |
+| UAE National Day | December 2–3 | Fixed | 2 days |
+| **Total statutory days** | | | **~13 days** |
+
+### Impact on SLA Measurements
+
+| SLA Category | Holiday Treatment | Rationale |
+|-------------|-------------------|-----------|
+| **Platform Uptime** | SLA measured 24/7/365 including holidays. Uptime % is not adjusted for holidays — system must remain available. | Infrastructure availability is independent of working calendar |
+| **Support Response Times (Basic, Professional)** | Support hours exclude UAE public holidays. Holiday days do not count against response-time SLA for non-Critical issues. | Basic/Professional support runs Sun–Thu business hours |
+| **Support Response Times (Enterprise — Critical/S1)** | S1 response SLA applies 24/7/365 including public holidays. Enterprise customers are guaranteed 15-minute response always. | Enterprise is a 24/7 commitment |
+| **Support Response Times (Enterprise — S2/S3/S4)** | Business-day SLA excludes UAE public holidays. Clock pauses on holiday start, resumes next business day. | Standard enterprise support is business-hours based for non-critical |
+| **Scheduled Maintenance Windows** | Maintenance windows may be scheduled during public holidays to minimise business impact. Advance notice still required (72 hours). | Holidays are preferred maintenance windows |
+| **SLA Credit Claims** | Holiday days are excluded when calculating the 30-day credit request window for Basic/Professional. Enterprise: calendar days apply. | Aligns with business-day support hours |
+| **Integration SLAs (DLD/Ejari)** | DLD and government portal integrations may be unavailable on UAE public holidays and weekends. Downtime during government closures is excluded from integration SLA. | Government systems follow UAE public calendar |
+| **Ejari & DLD Submission Deadlines** | The 30-day Ejari registration window and DLD transfer appointments exclude public holidays (government offices closed). | Statutory deadlines per RERA/DLD follow working day calendar |
+
+### Ramadan Operating Notes
+
+| Aspect | Policy |
+|--------|--------|
+| **Support Hours (Ramadan)** | Business hours adjusted to 9am–3pm GST for non-critical support during Ramadan (approximately March 1–29, 2026) |
+| **WhatsApp Campaign Restrictions** | RERA/Meta guidelines recommend reduced marketing intensity during Ramadan. Broadcast campaigns reduced to ≤ 50% of normal volume during daylight hours |
+| **System Maintenance** | Preferred window during Ramadan: 1am–5am GST (outside Suhoor period) |
+
+---
+
+## 12. SLA Measurement Methodology
+
+### How Uptime SLA Percentage Is Calculated
+
+```
+Uptime % = ((Total Minutes in Month - Downtime Minutes) / Total Minutes in Month) × 100
+
+Where:
+  Total Minutes in Month = calendar days × 24 hours × 60 minutes
+  Example (March 2026 = 31 days): 31 × 24 × 60 = 44,640 minutes
+
+  Downtime Minutes = Sum of all minutes where platform returns:
+    - HTTP 5xx errors on health check endpoint (/api/health)
+    - Connection timeout (> 30 seconds no response)
+    - WebSocket server unavailable
+
+  Excluded from Downtime Minutes:
+    - Scheduled maintenance (announced 72h+ in advance)
+    - Third-party outages (Meta WhatsApp, MongoDB Atlas, Vercel CDN)
+    - Client network/ISP issues (verified by check from multiple regions)
+    - DDoS attack periods (force majeure)
+```
+
+### Monitoring Infrastructure
+
+| Component | Tool | Check Frequency | Regions |
+|-----------|------|----------------|---------|
+| Platform health check | External synthetic monitoring | Every 60 seconds | UAE (Dubai), EU (Frankfurt), APAC (Singapore) |
+| API endpoint availability | Uptime Robot + Custom health probe | Every 60 seconds | 3 regions |
+| Database connectivity | Internal probe on `/api/health/db` | Every 30 seconds | Internal |
+| WhatsApp API health | Meta webhook delivery tracking | Real-time | Meta infrastructure |
+| Frontend availability | Vercel analytics + synthetic | Every 60 seconds | Global CDN |
+
+### How Support Response Time SLA Is Measured
+
+```
+Response Time = Timestamp of first meaningful agent reply - Timestamp of ticket creation
+
+"Meaningful reply" = Human response that:
+  - Acknowledges the issue with a ticket reference number, AND
+  - Indicates initial triage has begun (not a generic auto-acknowledgment)
+
+Auto-acknowledgment emails (system-generated) do NOT count as SLA response.
+```
+
+### How API p95 Response Time Is Measured
+
+```
+p95 Response Time = The 95th percentile value of all API response times
+                    measured in the trailing 5-minute rolling window.
+
+Measured at: API gateway layer (before authentication middleware)
+Excludes: File upload endpoints (/api/upload/*), Report generation (/api/reports/*)
+Tool: APM (Application Performance Monitoring) — e.g., Datadog, New Relic, or custom middleware
+Alert threshold: p95 > 350ms triggers performance alert; p95 > 500ms triggers S2 incident
+```
+
+### How Backup RPO Is Verified
+
+```
+RPO Test (automated, weekly):
+  1. Identify timestamp of most recent data mutation in production DB
+  2. Measure elapsed time since last successful incremental backup
+  3. RPO = (current time) - (timestamp of most recent backup)
+  4. Pass if RPO ≤ committed value; fail if exceeded
+
+Verification logged to: /admin/system/backup-status
+Frequency: Automated weekly test on Saturday 04:00 GST
+```
+
+---
+
+## 13. SLA Reporting Cadence
+
+### Standard Reporting Schedule
+
+| Report | Frequency | Delivery Method | Recipients | Contents |
+|--------|-----------|----------------|------------|---------|
+| **Real-Time Status Page** | Live (continuous) | status.whitecaves.ae | All customers | Current uptime, active incidents, resolved incidents (30-day history) |
+| **Daily Uptime Summary** | Daily (08:00 GST) | Email + in-app | Enterprise customers | Prior day uptime %, API p95, incident summary |
+| **Weekly SLA Report** | Weekly (Monday 09:00 GST) | Email | Professional + Enterprise | 7-day uptime, incident count by severity, response/resolution times, top 5 slow endpoints |
+| **Monthly SLA Statement** | Monthly (1st of month, 09:00 GST) | Email + PDF download | All tiers | Full uptime % vs committed, incident log, credit entitlement, next month forecast |
+| **Quarterly Business Review (QBR)** | Quarterly | Video call + report | Enterprise | SLA trend (3-month), usage analytics, roadmap preview, credit reconciliation |
+| **Annual SLA Audit Report** | Annual (January) | PDF + email | Enterprise | Full-year SLA performance, trend analysis, improvement plan, updated SLA terms if any |
+
+### Incident Communication Schedule
+
+| Severity | Communication Timeline | Channel | Template |
+|----------|----------------------|---------|---------|
+| **S1 — Critical** | T+15 min: Initial alert | Status page + email + WhatsApp | "We are investigating an issue affecting [system]. Impact: [description]. Next update in 30 minutes." |
+| | T+30 min, T+60 min, T+90 min... | Status page + email + WhatsApp | Progress update with timeline estimate |
+| | T+Resolution: All-clear | Status page + email + WhatsApp | "Issue resolved. Duration: [X min]. Root cause summary. Full RCA in 48h." |
+| **S2 — High** | T+2 hours: Initial | Email + in-app notification | "Degraded service on [feature]. Workaround: [if available]. Tracking ID: [ID]." |
+| | T+4 hours, T+8 hours | Email | Progress update |
+| | Resolution | Email | All-clear + summary |
+| **S3 — Medium** | Resolution | Email | "Issue resolved: [description]. No further action needed." |
+| **S4 — Low** | Next release notes | In-app release notes | Included in release changelog |
+
+### Post-Incident Review (PIR) Process
+
+| Step | Timeline | Owner | Output |
+|------|----------|-------|--------|
+| Incident timeline documented | Within 4 hours of resolution | On-call engineer | Incident timeline in incident tracker |
+| Preliminary root cause identified | Within 24 hours | Senior engineer | Email to affected Enterprise customers |
+| Full Root Cause Analysis (RCA) | Within 48 hours (S1) / 5 days (S2) | Engineering Manager | RCA document: what happened, why, what we're fixing |
+| Corrective actions assigned | Within 48 hours | CTO / Lead Developer | Action items with owners and deadlines in backlog |
+| Customer RCA delivered | Within 48 hours of completion | Account Manager | PDF RCA sent to Enterprise customers; summary sent to Professional |
+| Corrective actions verified closed | Within 30 days | Engineering Manager | Follow-up report to Enterprise customers |
+
+---
+
+## 14. Escalation Matrix — Named Contacts
+
+> Contact details are internal and not published externally. For customer-facing escalation, customers should use the standard support channels.
+
+### Internal Escalation Contacts
+
+| Level | Role | Escalation Trigger | Internal Contact | Response Commitment |
+|-------|------|--------------------|-----------------|-------------------|
+| **L1 — First Response** | Support Agent | Any new ticket | Support queue (support@whitecaves.ae) | Per severity SLA |
+| **L2 — Engineering** | On-Call Engineer | L1 cannot resolve within SLA; any S1 | On-call rotation (PagerDuty alert) | 30-minute response |
+| **L3 — Senior Engineering** | Lead Developer / Senior Engineer | Complex issue; architecture impact; 2+ hours on S1 | Lead Developer (direct message) | 1-hour response |
+| **L4 — Management** | Engineering Manager + CTO | SLA breach confirmed; customer escalation; any S1 > 2h | Engineering Manager + CTO (Aurora AI oversight) | 30-minute response |
+| **L5 — Executive** | Managing Director | Data loss; security breach; regulatory notification trigger; public-facing outage > 4h | Managing Director | 1-hour response |
+
+### Customer-Facing Escalation Path
+
+| Step | Action | Contact |
+|------|--------|---------|
+| 1 | Submit ticket with full description and severity | support@whitecaves.ae or in-app chat |
+| 2 | Reference ticket number in follow-up | Ticket ID provided in auto-acknowledgment |
+| 3 | If no meaningful response within SLA | Reply to ticket requesting L2 escalation; or WhatsApp Enterprise Slack (Enterprise only) |
+| 4 | If still unresolved | Email account manager (Enterprise: named contact) |
+| 5 | If SLA breach confirmed | Submit credit claim via support ticket citing SLA clause |
+| 6 | Formal dispute | Send written notice to legal@whitecaves.ae; resolved under Dubai Courts or DIAC arbitration per contract |
+
+### Escalation Contact by Issue Type
+
+| Issue Type | Primary Contact | Secondary Contact | Regulatory Contact (if applicable) |
+|------------|----------------|-------------------|-----------------------------------|
+| Platform availability (S1/S2) | support@whitecaves.ae | On-call engineer (via ticket escalation) | — |
+| Data breach / security incident | security@whitecaves.ae | Managing Director | UAE TDRA (within 72h): tdra.gov.ae |
+| AML / KYC compliance failure | compliance@whitecaves.ae | Managing Director | UAE FIU via goAML |
+| RERA compliance question | compliance@whitecaves.ae | Legal Specialist | RERA portal: rera.gov.ae |
+| DLD transaction error | legal@whitecaves.ae | Managing Director | DLD eServices portal |
+| VAT / invoice dispute | finance@whitecaves.ae | Finance Director | UAE FTA: tax.gov.ae |
+| Commission dispute | finance@whitecaves.ae | Sales Manager → Managing Director | — |
+| API integration failure (Tier 1) | support@whitecaves.ae | IT Lead Developer | Partner-specific support |
+| WhatsApp/Meta API issue | support@whitecaves.ae | IT Lead Developer | Meta Business Support: business.facebook.com |
+
+---
+
+*SLAs are reviewed and updated annually. Current terms effective from April 1, 2026.*
 *For platform architecture details, see [../14_devops/README.md](../14_devops/README.md).*
 *For incident response procedures, see [../14_devops/incident-response.md](../14_devops/incident-response.md).*

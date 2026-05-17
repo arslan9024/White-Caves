@@ -5,6 +5,7 @@
 
 import { PrismaClient } from '@prisma/client';
 import { createLogger } from './utils/logger.js';
+import { registerLeadScoringMiddleware } from './services/ai/leadScoringMiddleware.js';
 
 const log = createLogger('Database');
 
@@ -24,6 +25,9 @@ if (process.env.NODE_ENV === 'production') {
   }
   prisma = global.prisma;
 }
+
+// Register real-time lead scoring middleware (Phase 4A)
+registerLeadScoringMiddleware(prisma);
 
 // Global type augmentation for TypeScript
 declare global {

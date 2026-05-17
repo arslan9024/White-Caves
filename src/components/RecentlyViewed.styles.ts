@@ -1,4 +1,8 @@
 import styled from 'styled-components';
+import { colors } from '../styles/theme/colors';
+import { typography } from '../styles/theme/typography';
+import { transitions } from '../styles/theme/transitions';
+import { radius } from '../styles/theme/radius';
 
 export const RecentlyViewedSection = styled.section`
   position: relative;
@@ -40,7 +44,7 @@ export const HeaderLeft = styled.div`
 
 export const SectionTitle = styled.h3`
   font-size: 1.5rem;
-  font-weight: 700;
+  font-weight: ${typography.weights.bold};
   color: var(--text-primary);
   margin: 0;
 
@@ -54,7 +58,7 @@ export const ItemCount = styled.span`
   color: var(--text-muted);
   padding: 0.25rem 0.75rem;
   background: var(--bg-tertiary);
-  border-radius: 9999px;
+  border-radius: ${radius.full};
 
   [data-theme='dark'] & {
     color: var(--text-muted, #808080);
@@ -68,9 +72,9 @@ export const ClearButton = styled.button`
   color: var(--text-muted);
   background: transparent;
   border: 1px solid var(--border-color);
-  border-radius: 8px;
+  border-radius: ${radius.lg};
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: ${transitions.hover};
 
   &:hover {
     color: var(--error);
@@ -117,10 +121,10 @@ export const RecentlyViewedTrack = styled.div`
 
 export const RecentPropertyCard = styled.div<{ $animationDelay?: string }>`
   flex: 0 0 280px;
-  border-radius: 16px;
+  border-radius: ${radius.xxl};
   overflow: hidden;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: ${transitions.all};
   animation: fadeSlideIn 0.4s ease-out forwards;
   opacity: 0;
   transform: translateY(10px);
@@ -174,10 +178,10 @@ export const PropertyTypeBadge = styled.span`
   left: 0.75rem;
   padding: 0.25rem 0.75rem;
   font-size: 0.75rem;
-  font-weight: 600;
+  font-weight: ${typography.weights.semibold};
   color: white;
   background: var(--primary);
-  border-radius: 9999px;
+  border-radius: ${radius.full};
   text-transform: uppercase;
   letter-spacing: 0.5px;
 `;
@@ -191,7 +195,7 @@ export const RecentPropertyInfo = styled.div`
 
 export const PropertyTitle = styled.h4`
   font-size: 1rem;
-  font-weight: 600;
+  font-weight: ${typography.weights.semibold};
   color: var(--text-primary);
   margin: 0 0 0.5rem 0;
   white-space: nowrap;
@@ -248,12 +252,12 @@ export const SpecDot = styled.span`
 
 export const PropertyPrice = styled.p`
   font-size: 1.125rem;
-  font-weight: 700;
+  font-weight: ${typography.weights.bold};
   color: var(--primary);
   margin: 0;
 
   [data-theme='dark'] & {
-    color: var(--primary, #dc2626);
+    color: var(--primary, ${colors.primary});
   }
 `;
 
@@ -287,7 +291,7 @@ export const ScrollButton = styled.button`
   justify-content: center;
   cursor: pointer;
   pointer-events: all;
-  transition: all 0.2s ease;
+  transition: ${transitions.hover};
   box-shadow: var(--shadow-md);
   color: var(--text-primary);
 
@@ -308,8 +312,8 @@ export const ScrollButton = styled.button`
     color: var(--text-primary, white);
 
     &:hover {
-      background: var(--primary, #dc2626);
-      border-color: var(--primary, #dc2626);
+      background: var(--primary, ${colors.primary});
+      border-color: var(--primary, ${colors.primary});
       color: white;
     }
   }

@@ -1,155 +1,271 @@
-import React, { FC, useState } from 'react';
-import '../RolePages.css';
+import React, { FC, useState, useEffect } from 'react';
+import styled from 'styled-components';
+import { theme } from '../../styles/theme';
+import { authFetch } from '../../utils/authFetch';
 
-interface PipelineStage {
+const PageContainer = styled.div`
+  padding: ${theme.spacing.xl};
+  background: ${theme.colors.background.secondary};
+  min-height: 100vh;
+`;
+
+const Header = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: ${theme.spacing.xl};
+`;
+
+const Title = styled.h1`
+  font-size: 2rem;
+  color: ${theme.colors.text.primary};
+  margin: 0;
+`;
+
+const Board = styled.div`
+  display: flex;
+  gap: ${theme.spacing.lg};
+  overflow-x: auto;
+  padding-bottom: ${theme.spacing.md};
+  min-height: 70vh;
+`;
+
+const Column = styled.div`
+  background: ${theme.colors.background.primary};
+  border-radius: ${theme.spacing.md};
+  min-width: 320px;
+  max-width: 320px;
+  padding: ${theme.spacing.md};
+  box-shadow: ${theme.shadows.sm};
+  display: flex;
+  flex-direction: column;
+`;
+
+const ToastBanner = styled.div<{ $type: 'success' | 'error' }>`
+  padding: 12px 16px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  margin-bottom: ${theme.spacing.md};
+  ${({ $type }) =>
+    $type === 'success'
+      ? 'background:#e8f5e9; border-left:4px solid #4caf50; color:#2e7d32;'
+      : 'background:#fdecea; border-left:4px solid #f44336; color:#b71c1c;'}
+`;
+
+interface SalesProperty {
   id: string;
-  name: string;
-  color: string;
+  title: string;
+  location: string;
+  price?: number;
+  inventoryStage?: string;
+  [key: string]: unknown;
 }
 
-interface Deal {
-  id: number;
-  property: string;
-  buyer: string;
-  price: string;
-  stage: string;
-  daysInStage: number;
-}
+const ColumnHeader = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: ${theme.spacing.md};
+  padding-bottom: ${theme.spacing.sm};
+  border-bottom: 2px solid ${theme.colors.border};
+`;
 
-interface SalesPipelinePageProps {}
+const Card = styled.div`
+  background: white;
+  border: 1px solid ${theme.colors.border};
+  border-radius: ${theme.spacing.sm};
+  padding: ${theme.spacing.md};
+  margin-bottom: ${theme.spacing.sm};
+  box-shadow: ${theme.shadows.sm};
+  cursor: grab;
+  &:active {
+    cursor: grabbing;
+  }
+  transition: transform 0.1s;
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: ${theme.shadows.md};
+  }
+`;
 
-const SalesPipelinePage: FC<SalesPipelinePageProps> = () => {
-  const [selectedDeal, setSelectedDeal] = useState<Deal | null>(null);
+export const SalesPipelinePage: FC = () => {
+  const [properties, setProperties] = useState<SalesProperty[]>([]);
+  const [toast, setToast] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+  const showToast = (type: 'success' | 'error', text: string) => setToast({ type, text });
 
-  const pipelineStages: PipelineStage[] = [
-    { id: 'inquiry', name: 'Inquiry', color: '#6b7280' },
-    { id: 'viewing', name: 'Viewing', color: '#3b82f6' },
-    { id: 'negotiating', name: 'Negotiating', color: '#f59e0b' },
-    { id: 'documentation', name: 'Documentation', color: '#8b5cf6' },
-    { id: 'closing', name: 'Closing', color: '#10b981' },
+  const fetchProperties = async () => {
+    try {
+      const res = await authFetch('/api/secondary-sales');
+      if (res.ok) {
+        const json = await res.json();
+        setProperties(json.data);
+      }
+    } catch {
+      // ignore fetch errors silently
+    }
+  };
+
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    fetchProperties();
+  }, []);
+
+  const handleStageChange = async (id: string, newStage: string) => {
+    try {
+      const res = await authFetch(`/api/secondary-sales/${id}/stage`, {
+        method: 'PATCH',
+        body: JSON.stringify({ newStage }),
+      });
+      if (res.ok) {
+        fetchProperties();
+      } else {
+        const err = await res.json();
+        showToast('error', err.error || 'Failed to update stage');
+      }
+    } catch {
+      showToast('error', 'Error updating stage');
+    }
+  };
+
+  const columns = [
+    { id: 'listed', title: 'Listed (Active)' },
+    { id: 'form_a_b_signed', title: 'Form A & B Signed' },
+    { id: 'form_f_mou', title: 'Form F (MOU)' },
+    { id: 'noc_pending', title: 'NOC Pending' },
+    { id: 'dld_transfer', title: 'DLD Transfer' },
   ];
-
-  const deals: Deal[] = [
-    { id: 1, property: 'Palm Jumeirah Villa', buyer: 'John Smith', price: 'AED 45M', stage: 'negotiating', daysInStage: 5 },
-    { id: 2, property: 'Downtown Penthouse', buyer: 'Emma Wilson', price: 'AED 28M', stage: 'documentation', daysInStage: 3 },
-    { id: 3, property: 'Marina 3BR Apt', buyer: 'Michael Brown', price: 'AED 3.5M', stage: 'viewing', daysInStage: 2 },
-    { id: 4, property: 'Emirates Hills Villa', buyer: 'Lisa Chen', price: 'AED 65M', stage: 'inquiry', daysInStage: 1 },
-  ];
-
-  const getDealsByStage = (stageId: string): Deal[] => deals.filter(d => d.stage === stageId);
-
-  const totalPipelineValue = deals.reduce((sum, deal) => {
-    if (!deal.price || typeof deal.price !== 'string') return sum;
-    const parsed = parseFloat(deal.price.replace('AED ', '').replace('M', ''));
-    const value = Number.isNaN(parsed) ? 0 : parsed * 1000000;
-    return sum + value;
-  }, 0);
 
   return (
-    <div className="role-page no-sidebar">
-      <div className="role-page-content full-width">
-        <div className="page-header">
-          <h1>Sales Pipeline</h1>
-          <p>Track your deals from inquiry to closing</p>
+    <PageContainer>
+      <Header>
+        <div>
+          <Title>Secondary Sales Pipeline (Dubai)</Title>
+          <p style={{ color: theme.colors.text.secondary, margin: '8px 0 0 0' }}>
+            Manage the DLD secondary transaction workflow.
+          </p>
         </div>
+      </Header>
+      {toast && (
+        <ToastBanner
+          $type={toast.type}
+          role={toast.type === 'error' ? 'alert' : 'status'}
+          data-testid="sales-pipeline-toast"
+        >
+          {toast.type === 'success' ? '✅ ' : '⚠️ '}
+          {toast.text}
+        </ToastBanner>
+      )}
 
-        <div className="pipeline-summary">
-          <div className="summary-card">
-            <span className="summary-label">Total Deals</span>
-            <span className="summary-value">{deals.length}</span>
-          </div>
-          <div className="summary-card">
-            <span className="summary-label">Pipeline Value</span>
-            <span className="summary-value">AED {(totalPipelineValue / 1000000).toFixed(0)}M</span>
-          </div>
-        </div>
+      <Board>
+        {columns.map(col => (
+          <Column key={col.id}>
+            <ColumnHeader>
+              <h3 style={{ margin: 0, fontSize: '1.1rem' }}>{col.title}</h3>
+              <span
+                style={{
+                  background: theme.colors.primary,
+                  color: 'white',
+                  padding: '2px 8px',
+                  borderRadius: '12px',
+                  fontSize: '0.8rem',
+                }}
+              >
+                {properties.filter(p => (p.inventoryStage || 'listed') === col.id).length}
+              </span>
+            </ColumnHeader>
 
-        <div className="pipeline-board">
-          {pipelineStages.map(stage => (
-            <div key={stage.id} className="pipeline-column">
-              <div className="column-header" style={{borderTopColor: stage.color}}>
-                <h3>{stage.name}</h3>
-                <span className="deal-count">{getDealsByStage(stage.id).length}</span>
-              </div>
-              <div className="column-deals">
-                {getDealsByStage(stage.id).map(deal => (
-                  <div 
-                    key={deal.id} 
-                    className="deal-card"
-                    onClick={() => setSelectedDeal(deal)}
-                  >
-                    <h4>{deal.property}</h4>
-                    <p className="deal-buyer">{deal.buyer}</p>
-                    <div className="deal-details">
-                      <span className="deal-price">{deal.price}</span>
-                      <span className="deal-days">{deal.daysInStage}d</span>
+            <div style={{ flex: 1, overflowY: 'auto' }}>
+              {properties
+                .filter(p => (p.inventoryStage || 'listed') === col.id)
+                .map(p => (
+                  <Card key={p.id}>
+                    <h4 style={{ margin: '0 0 8px 0' }}>{p.title}</h4>
+                    <div
+                      style={{
+                        fontSize: '0.9rem',
+                        color: theme.colors.text.secondary,
+                        marginBottom: '8px',
+                      }}
+                    >
+                      <div>💰 AED {p.price?.toLocaleString()}</div>
+                      <div>📍 {p.location}</div>
                     </div>
-                  </div>
+
+                    {col.id === 'listed' && (
+                      <button
+                        onClick={() => handleStageChange(p.id, 'form_a_b_signed')}
+                        style={{
+                          width: '100%',
+                          padding: '8px',
+                          cursor: 'pointer',
+                          background: theme.colors.primary,
+                          color: 'white',
+                          border: 'none',
+                          borderRadius: '4px',
+                        }}
+                      >
+                        Forms A & B Signed
+                      </button>
+                    )}
+                    {col.id === 'form_a_b_signed' && (
+                      <button
+                        onClick={() => handleStageChange(p.id, 'form_f_mou')}
+                        style={{
+                          width: '100%',
+                          padding: '8px',
+                          cursor: 'pointer',
+                          background: theme.colors.primary,
+                          color: 'white',
+                          border: 'none',
+                          borderRadius: '4px',
+                        }}
+                      >
+                        MOU (Form F) Signed
+                      </button>
+                    )}
+                    {col.id === 'form_f_mou' && (
+                      <button
+                        onClick={() => handleStageChange(p.id, 'noc_pending')}
+                        style={{
+                          width: '100%',
+                          padding: '8px',
+                          cursor: 'pointer',
+                          background: '#f39c12',
+                          color: 'white',
+                          border: 'none',
+                          borderRadius: '4px',
+                        }}
+                      >
+                        Apply for NOC
+                      </button>
+                    )}
+                    {col.id === 'noc_pending' && (
+                      <>
+                        {/* For now, just a button to simulate NOC upload/approval */}
+                        <button
+                          onClick={() => handleStageChange(p.id, 'dld_transfer')}
+                          style={{
+                            width: '100%',
+                            padding: '8px',
+                            cursor: 'pointer',
+                            background: theme.colors.success || '#2ecc71',
+                            color: 'white',
+                            border: 'none',
+                            borderRadius: '4px',
+                          }}
+                        >
+                          NOC Issued &rarr; DLD
+                        </button>
+                      </>
+                    )}
+                  </Card>
                 ))}
-              </div>
             </div>
-          ))}
-        </div>
-
-        {selectedDeal && (
-          <div className="deal-modal-overlay" onClick={() => setSelectedDeal(null)} role="dialog" aria-modal="true" aria-label="Deal details">
-            <div className="deal-modal" onClick={e => e.stopPropagation()}>
-              <button className="modal-close" onClick={() => setSelectedDeal(null)}>×</button>
-              <h2>{selectedDeal.property}</h2>
-              <div className="modal-details">
-                <div className="detail-row">
-                  <span className="detail-label">Buyer</span>
-                  <span className="detail-value">{selectedDeal.buyer}</span>
-                </div>
-                <div className="detail-row">
-                  <span className="detail-label">Price</span>
-                  <span className="detail-value">{selectedDeal.price}</span>
-                </div>
-                <div className="detail-row">
-                  <span className="detail-label">Stage</span>
-                  <span className="detail-value">{selectedDeal.stage}</span>
-                </div>
-                <div className="detail-row">
-                  <span className="detail-label">Days in Stage</span>
-                  <span className="detail-value">{selectedDeal.daysInStage} days</span>
-                </div>
-              </div>
-              <div className="modal-actions">
-                <button className="btn btn-primary">Move to Next Stage</button>
-                <button className="btn btn-secondary">View Details</button>
-              </div>
-            </div>
-          </div>
-        )}
-
-        <div className="info-section">
-          <h3>Sales Process Guide</h3>
-          <div className="process-steps">
-            <div className="process-step">
-              <span className="step-number">1</span>
-              <div className="step-content">
-                <h4>Inquiry</h4>
-                <p>Initial buyer contact. Qualify the lead, understand requirements and budget.</p>
-              </div>
-            </div>
-            <div className="process-step">
-              <span className="step-number">2</span>
-              <div className="step-content">
-                <h4>Viewing</h4>
-                <p>Property viewings. Show matching properties, gather feedback, address concerns.</p>
-              </div>
-            </div>
-            <div className="process-step">
-              <span className="step-number">3</span>
-              <div className="step-content">
-                <h4>Negotiating</h4>
-                <p>Price negotiation. Facilitate offers between buyer and seller, reach agreement.</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+          </Column>
+        ))}
+      </Board>
+    </PageContainer>
   );
 };
 

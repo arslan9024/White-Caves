@@ -10,6 +10,7 @@ import React from 'react';
 import { Provider } from 'react-redux';
 import { configureStore } from '@reduxjs/toolkit';
 import { MemoryRouter } from 'react-router-dom';
+import { ThemeProvider } from '../../../context/ThemeContext';
 
 // ── Mocks ────────────────────────────────────────────────────────
 const mockNavigate = vi.fn();
@@ -25,11 +26,15 @@ vi.mock('./styles', () => {
       ({ children, ...props }: Record<string, unknown>, ref) => {
         // Filter out styled-component transient props ($-prefixed)
         const cleaned: Record<string, unknown> = {};
-        Object.keys(props).forEach((k) => {
+        Object.keys(props).forEach(k => {
           if (!k.startsWith('$')) cleaned[k] = props[k];
         });
-        return React.createElement('div', { ...cleaned, 'data-testid': name, ref }, children as React.ReactNode);
-      },
+        return React.createElement(
+          'div',
+          { ...cleaned, 'data-testid': name, ref },
+          children as React.ReactNode
+        );
+      }
     );
     C.displayName = name;
     return C;
@@ -38,11 +43,15 @@ vi.mock('./styles', () => {
     const C = React.forwardRef<HTMLButtonElement, Record<string, unknown>>(
       ({ children, ...props }: Record<string, unknown>, ref) => {
         const cleaned: Record<string, unknown> = {};
-        Object.keys(props).forEach((k) => {
+        Object.keys(props).forEach(k => {
           if (!k.startsWith('$')) cleaned[k] = props[k];
         });
-        return React.createElement('button', { ...cleaned, 'data-testid': name, ref }, children as React.ReactNode);
-      },
+        return React.createElement(
+          'button',
+          { ...cleaned, 'data-testid': name, ref },
+          children as React.ReactNode
+        );
+      }
     );
     C.displayName = name;
     return C;
@@ -50,10 +59,14 @@ vi.mock('./styles', () => {
   const createSpan = (name: string) => {
     const C = ({ children, ...props }: Record<string, unknown>) => {
       const cleaned: Record<string, unknown> = {};
-      Object.keys(props).forEach((k) => {
+      Object.keys(props).forEach(k => {
         if (!k.startsWith('$')) cleaned[k] = props[k];
       });
-      return React.createElement('span', { ...cleaned, 'data-testid': name }, children as React.ReactNode);
+      return React.createElement(
+        'span',
+        { ...cleaned, 'data-testid': name },
+        children as React.ReactNode
+      );
     };
     C.displayName = name;
     return C;
@@ -61,10 +74,14 @@ vi.mock('./styles', () => {
   const createH4 = (name: string) => {
     const C = ({ children, ...props }: Record<string, unknown>) => {
       const cleaned: Record<string, unknown> = {};
-      Object.keys(props).forEach((k) => {
+      Object.keys(props).forEach(k => {
         if (!k.startsWith('$')) cleaned[k] = props[k];
       });
-      return React.createElement('h4', { ...cleaned, 'data-testid': name }, children as React.ReactNode);
+      return React.createElement(
+        'h4',
+        { ...cleaned, 'data-testid': name },
+        children as React.ReactNode
+      );
     };
     C.displayName = name;
     return C;
@@ -72,7 +89,7 @@ vi.mock('./styles', () => {
   const createImg = (name: string) => {
     const C = (props: Record<string, unknown>) => {
       const cleaned: Record<string, unknown> = {};
-      Object.keys(props).forEach((k) => {
+      Object.keys(props).forEach(k => {
         if (!k.startsWith('$')) cleaned[k] = props[k];
       });
       return React.createElement('img', { ...cleaned, 'data-testid': name });
@@ -84,11 +101,11 @@ vi.mock('./styles', () => {
     const C = React.forwardRef<HTMLInputElement, Record<string, unknown>>(
       (props: Record<string, unknown>, ref) => {
         const cleaned: Record<string, unknown> = {};
-        Object.keys(props).forEach((k) => {
+        Object.keys(props).forEach(k => {
           if (!k.startsWith('$')) cleaned[k] = props[k];
         });
         return React.createElement('input', { ...cleaned, 'data-testid': name, ref });
-      },
+      }
     );
     C.displayName = name;
     return C;
@@ -96,10 +113,14 @@ vi.mock('./styles', () => {
   const createP = (name: string) => {
     const C = ({ children, ...props }: Record<string, unknown>) => {
       const cleaned: Record<string, unknown> = {};
-      Object.keys(props).forEach((k) => {
+      Object.keys(props).forEach(k => {
         if (!k.startsWith('$')) cleaned[k] = props[k];
       });
-      return React.createElement('p', { ...cleaned, 'data-testid': name }, children as React.ReactNode);
+      return React.createElement(
+        'p',
+        { ...cleaned, 'data-testid': name },
+        children as React.ReactNode
+      );
     };
     C.displayName = name;
     return C;
@@ -170,7 +191,13 @@ const createMockStore = (authOverrides: Record<string, unknown> = {}) => {
         user: { id: 'u1', displayName: 'Ahmed', email: 'ahmed@wc.ae', role: 'owner' },
         token: 'tok',
         refreshToken: null,
-        session: { isLoggedIn: true, lastActive: null, sessions: [], expiresAt: null, activeSessionId: null },
+        session: {
+          isLoggedIn: true,
+          lastActive: null,
+          sessions: [],
+          expiresAt: null,
+          activeSessionId: null,
+        },
         loginMethods: { social: false, email: false, mobile: false },
         loginProvider: null,
         rememberMe: false,
@@ -187,19 +214,20 @@ const renderNavBar = (props: Record<string, unknown> = {}) => {
   const store = createMockStore(props.authOverrides as Record<string, unknown>);
   return render(
     <Provider store={store}>
-      <MemoryRouter>
-        <MainNavBar
-          theme="light"
-          onThemeToggle={vi.fn()}
-          user={{ displayName: 'Ahmed Al-Rashid', email: 'ahmed@whitecaves.ae' }}
-          notifications={[]}
-          onLogout={vi.fn()}
-          onToggleLeftSidebar={vi.fn()}
-          onToggleRightSidebar={vi.fn()}
-          {...props}
-        />
-      </MemoryRouter>
-    </Provider>,
+      <ThemeProvider>
+        <MemoryRouter>
+          <MainNavBar
+            theme="light"
+            onThemeToggle={vi.fn()}
+            user={{ displayName: 'Ahmed Al-Rashid', email: 'ahmed@whitecaves.ae' }}
+            notifications={[]}
+            onLogout={vi.fn()}
+            onToggleLeftSidebar={vi.fn()}
+            {...props}
+          />
+        </MemoryRouter>
+      </ThemeProvider>
+    </Provider>
   );
 };
 
@@ -227,13 +255,15 @@ describe('MainNavBar', () => {
 
     it('should render search input', () => {
       renderNavBar();
-      expect(screen.getByPlaceholderText('Search assistants, properties, leads...')).toBeInTheDocument();
+      expect(
+        screen.getByPlaceholderText('Search assistants, properties, leads...')
+      ).toBeInTheDocument();
     });
 
-    it('should render sidebar toggle buttons', () => {
+    it('should render sidebar toggle button', () => {
       renderNavBar();
       const toggleBtns = screen.getAllByTestId('SidebarToggleButton');
-      expect(toggleBtns.length).toBe(2); // left + right
+      expect(toggleBtns.length).toBe(1); // left only (unified sidebar)
     });
   });
 
@@ -252,7 +282,9 @@ describe('MainNavBar', () => {
   describe('Search', () => {
     it('should update search value on input', () => {
       renderNavBar();
-      const input = screen.getByPlaceholderText('Search assistants, properties, leads...') as HTMLInputElement;
+      const input = screen.getByPlaceholderText(
+        'Search assistants, properties, leads...'
+      ) as HTMLInputElement;
       fireEvent.change(input, { target: { value: 'test query' } });
       expect(input.value).toBe('test query');
     });
@@ -264,10 +296,8 @@ describe('MainNavBar', () => {
     it('should call onThemeToggle when theme button is clicked', () => {
       const onThemeToggle = vi.fn();
       renderNavBar({ onThemeToggle });
-      // Theme toggle is one of the NavIconButtons
-      const buttons = screen.getAllByTestId('NavIconButton');
-      // Click theme toggle (first one due to order)
-      fireEvent.click(buttons[0]);
+      // 3-way theme pill uses titled buttons (Light/System/Dark)
+      fireEvent.click(screen.getByTitle('Light mode'));
       expect(onThemeToggle).toHaveBeenCalled();
     });
   });
@@ -277,9 +307,7 @@ describe('MainNavBar', () => {
   describe('Notifications', () => {
     it('should show "No notifications" when list is empty', () => {
       renderNavBar();
-      // Click on notification bell button (second NavIconButton)
-      const buttons = screen.getAllByTestId('NavIconButton');
-      fireEvent.click(buttons[1]);
+      fireEvent.click(screen.getByTitle('Notifications'));
       expect(screen.getByText('No notifications')).toBeInTheDocument();
     });
 
@@ -289,8 +317,7 @@ describe('MainNavBar', () => {
         { id: 'n2', isRead: true, title: 'Task completed', time: '1h ago', color: '#10B981' },
       ];
       renderNavBar({ notifications });
-      const buttons = screen.getAllByTestId('NavIconButton');
-      fireEvent.click(buttons[1]);
+      fireEvent.click(screen.getByTitle('Notifications'));
       expect(screen.getByText('New lead arrived')).toBeInTheDocument();
       expect(screen.getByText('Task completed')).toBeInTheDocument();
     });
@@ -318,8 +345,7 @@ describe('MainNavBar', () => {
 
     it('should show Notifications header and Mark all read in dropdown', () => {
       renderNavBar();
-      const buttons = screen.getAllByTestId('NavIconButton');
-      fireEvent.click(buttons[1]);
+      fireEvent.click(screen.getByTitle('Notifications'));
       expect(screen.getByText('Notifications')).toBeInTheDocument();
       expect(screen.getByText('Mark all read')).toBeInTheDocument();
     });
@@ -327,8 +353,7 @@ describe('MainNavBar', () => {
     it('should show View all notifications link when notifications exist', () => {
       const notifications = [{ id: 'n1', isRead: false, title: 'Test', time: '1m' }];
       renderNavBar({ notifications });
-      const buttons = screen.getAllByTestId('NavIconButton');
-      fireEvent.click(buttons[1]);
+      fireEvent.click(screen.getByTitle('Notifications'));
       expect(screen.getByText('View all notifications')).toBeInTheDocument();
     });
   });
@@ -454,14 +479,6 @@ describe('MainNavBar', () => {
       const toggleBtns = screen.getAllByTestId('SidebarToggleButton');
       fireEvent.click(toggleBtns[0]);
       expect(onToggleLeftSidebar).toHaveBeenCalled();
-    });
-
-    it('should call onToggleRightSidebar when right toggle clicked', () => {
-      const onToggleRightSidebar = vi.fn();
-      renderNavBar({ onToggleRightSidebar });
-      const toggleBtns = screen.getAllByTestId('SidebarToggleButton');
-      fireEvent.click(toggleBtns[1]);
-      expect(onToggleRightSidebar).toHaveBeenCalled();
     });
   });
 

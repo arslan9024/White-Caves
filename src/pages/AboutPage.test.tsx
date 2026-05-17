@@ -21,9 +21,14 @@ vi.mock('../components/WhatsAppButton', () => ({
   default: () => <div data-testid="whatsapp-btn">WhatsApp</div>,
 }));
 
-// Mock AppLayout to just render children
-vi.mock('../components/layout/AppLayout', () => ({
-  default: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
+// Mock PublicLayout to just render children
+vi.mock('../components/layout/PublicLayout', () => ({
+  default: ({ children }: { children: React.ReactNode }) => (
+    <div>
+      {children}
+      <div data-testid="footer">Footer</div>
+    </div>
+  ),
 }));
 
 import AboutPage from './AboutPage';
@@ -32,7 +37,7 @@ function renderPage() {
   return render(
     <MemoryRouter>
       <AboutPage />
-    </MemoryRouter>,
+    </MemoryRouter>
   );
 }
 
@@ -58,7 +63,7 @@ describe('AboutPage', () => {
     expect(screen.getByText('Properties Sold')).toBeTruthy();
     expect(screen.getByText('1000+')).toBeTruthy();
     expect(screen.getByText('Happy Clients')).toBeTruthy();
-    expect(screen.getByText('15+')).toBeTruthy();
+    expect(screen.getAllByText('15+').length).toBeGreaterThan(0);
     expect(screen.getByText('50+')).toBeTruthy();
   });
 
@@ -73,10 +78,10 @@ describe('AboutPage', () => {
 
   it('renders team member roles', () => {
     renderPage();
-    expect(screen.getByText('CEO & Founder')).toBeTruthy();
-    expect(screen.getByText('Head of Sales')).toBeTruthy();
-    expect(screen.getByText('Senior Property Consultant')).toBeTruthy();
-    expect(screen.getByText('Marketing Director')).toBeTruthy();
+    expect(screen.getAllByText('CEO & Founder').length).toBeGreaterThan(0);
+    expect(screen.getAllByText('Head of Sales').length).toBeGreaterThan(0);
+    expect(screen.getAllByText('Senior Property Consultant').length).toBeGreaterThan(0);
+    expect(screen.getAllByText('Marketing Director').length).toBeGreaterThan(0);
   });
 
   it('renders milestones section', () => {
@@ -91,7 +96,7 @@ describe('AboutPage', () => {
   it('renders all 6 milestones', () => {
     renderPage();
     const years = ['2009', '2012', '2015', '2018', '2021', '2024'];
-    years.forEach((year) => {
+    years.forEach(year => {
       expect(screen.getByText(year)).toBeTruthy();
     });
   });

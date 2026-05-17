@@ -1,7 +1,7 @@
 /**
  * Shared CRM Page Styled Components
  * Eliminates duplication across LeadManagementPage, PropertyManagementPage, and other CRM pages.
- * 
+ *
  * Usage:
  *   import { PageContainer, PageHeader, PrimaryButton, ... } from '../styles/CrmPageStyles';
  */
@@ -15,6 +15,9 @@ export const PageContainer = styled.div`
   margin: 0 auto;
   padding: 2rem;
   font-family: ${typography.fontFamily.primary};
+  background:
+    radial-gradient(circle at top right, rgba(227, 30, 36, 0.08), transparent 30%),
+    radial-gradient(circle at bottom left, rgba(46, 90, 79, 0.05), transparent 35%);
 `;
 
 export const PageHeader = styled.div`
@@ -39,7 +42,7 @@ export const PageTitle = styled.h1`
 export const BackLink = styled.button`
   background: none;
   border: none;
-  color: #3B82F6;
+  color: #3b82f6;
   cursor: pointer;
   font-size: 0.85rem;
   font-weight: 500;
@@ -63,14 +66,14 @@ export const ActionBar = styled.div`
 export const SearchInput = styled.input`
   border: 1px solid #ddd;
   border-radius: 8px;
-  padding: 0.5rem 1rem;
+  padding: 0.6rem 1rem;
   font-size: 0.85rem;
   width: 280px;
   outline: none;
   transition: border-color 0.15s;
 
   &:focus {
-    border-color: #3B82F6;
+    border-color: #3b82f6;
     box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
   }
 `;
@@ -78,25 +81,25 @@ export const SearchInput = styled.input`
 export const FilterSelect = styled.select`
   border: 1px solid #ddd;
   border-radius: 8px;
-  padding: 0.5rem 0.75rem;
+  padding: 0.6rem 0.75rem;
   font-size: 0.85rem;
   outline: none;
   background: white;
   cursor: pointer;
 
   &:focus {
-    border-color: #3B82F6;
+    border-color: #3b82f6;
   }
 `;
 
 // ─── Buttons ────────────────────────────────────────────────────────────
 
 export const PrimaryButton = styled.button`
-  background: #3B82F6;
-  color: white;
+  background: linear-gradient(135deg, #e31e24 0%, #b71c1c 100%);
+  color: #1a1a2e;
   border: none;
   border-radius: 8px;
-  padding: 0.5rem 1.25rem;
+  padding: 0.6rem 1.25rem;
   font-size: 0.85rem;
   font-weight: 500;
   cursor: pointer;
@@ -106,8 +109,8 @@ export const PrimaryButton = styled.button`
   gap: 0.4rem;
 
   &:hover {
-    background: #2563EB;
-    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+    background: linear-gradient(135deg, #e2c35a 0%, #e31e24 100%);
+    box-shadow: 0 8px 18px rgba(227, 30, 36, 0.28);
   }
 
   &:disabled {
@@ -117,7 +120,7 @@ export const PrimaryButton = styled.button`
 `;
 
 export const DangerButton = styled.button`
-  background: #EF4444;
+  background: #ef4444;
   color: white;
   border: none;
   border-radius: 6px;
@@ -127,7 +130,7 @@ export const DangerButton = styled.button`
   transition: all 0.15s;
 
   &:hover {
-    background: #DC2626;
+    background: #dc2626;
   }
 `;
 
@@ -208,56 +211,74 @@ export const FormGroup = styled.div`
 
 export const FormLabel = styled.label`
   display: block;
-  font-size: 0.8rem;
-  font-weight: 500;
-  color: #555;
-  margin-bottom: 0.35rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #435467;
+  margin-bottom: 0.45rem;
 `;
 
 export const FormInput = styled.input`
   width: 100%;
-  border: 1px solid #ddd;
-  border-radius: 6px;
-  padding: 0.5rem 0.75rem;
+  border: 1px solid #d8dee9;
+  border-radius: 10px;
+  padding: 0.65rem 0.85rem;
   font-size: 0.85rem;
   outline: none;
   box-sizing: border-box;
+  background: rgba(255, 255, 255, 0.9);
+  transition:
+    border-color 0.18s ease,
+    box-shadow 0.18s ease,
+    background-color 0.18s ease;
 
   &:focus {
-    border-color: #3B82F6;
-    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
+    border-color: #e31e24;
+    box-shadow: 0 0 0 3px rgba(227, 30, 36, 0.2);
+    background: white;
   }
 `;
 
 export const FormTextarea = styled.textarea`
   width: 100%;
-  border: 1px solid #ddd;
-  border-radius: 6px;
-  padding: 0.5rem 0.75rem;
+  border: 1px solid #d8dee9;
+  border-radius: 10px;
+  padding: 0.65rem 0.85rem;
   font-size: 0.85rem;
   outline: none;
   resize: vertical;
   min-height: 80px;
   box-sizing: border-box;
+  background: rgba(255, 255, 255, 0.9);
+  transition:
+    border-color 0.18s ease,
+    box-shadow 0.18s ease,
+    background-color 0.18s ease;
 
   &:focus {
-    border-color: #3B82F6;
-    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
+    border-color: #e31e24;
+    box-shadow: 0 0 0 3px rgba(227, 30, 36, 0.2);
+    background: white;
   }
 `;
 
 export const FormSelect = styled.select`
   width: 100%;
-  border: 1px solid #ddd;
-  border-radius: 6px;
-  padding: 0.5rem 0.75rem;
+  border: 1px solid #d8dee9;
+  border-radius: 10px;
+  padding: 0.65rem 0.75rem;
   font-size: 0.85rem;
   outline: none;
   background: white;
   box-sizing: border-box;
+  transition:
+    border-color 0.18s ease,
+    box-shadow 0.18s ease;
 
   &:focus {
-    border-color: #3B82F6;
+    border-color: #e31e24;
+    box-shadow: 0 0 0 3px rgba(227, 30, 36, 0.2);
   }
 `;
 
@@ -265,6 +286,11 @@ export const FormRow = styled.div`
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 1rem;
+
+  @media (max-width: 900px) {
+    grid-template-columns: 1fr;
+    gap: 0.65rem;
+  }
 `;
 
 // ─── Pagination ─────────────────────────────────────────────────────────
@@ -278,23 +304,23 @@ export const PaginationWrapper = styled.div`
 // ─── Banners ────────────────────────────────────────────────────────────
 
 export const LoadingBanner = styled.div`
-  background: #EFF6FF;
-  border: 1px solid #BFDBFE;
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
   border-radius: 8px;
   padding: 0.75rem 1rem;
   margin-bottom: 1rem;
   font-size: 0.85rem;
-  color: #1D4ED8;
+  color: #1d4ed8;
 `;
 
 export const ErrorBanner = styled.div`
-  background: #FEF2F2;
-  border: 1px solid #FECACA;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
   border-radius: 8px;
   padding: 0.75rem 1rem;
   margin-bottom: 1rem;
   font-size: 0.85rem;
-  color: #DC2626;
+  color: #dc2626;
   display: flex;
   justify-content: space-between;
   align-items: center;

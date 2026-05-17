@@ -1,20 +1,214 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import Pagination from '../../ui/Pagination';
-import type { ContractsTabProps, ContractStatus, EjariStatus } from './types';
+import type { ContractsTabProps, Contract } from './types';
 import './TabStyles.css';
 
-const ContractsTab: React.FC<ContractsTabProps> = ({ data, loading, onAction }) => {
+const MOCK_CONTRACTS: Contract[] = [
+  {
+    id: 1,
+    contractNumber: 'WC-CNT-2024-001',
+    type: 'tenancy',
+    tenant: 'James Hartwell',
+    landlord: 'Al Futtaim Properties',
+    property: 'Marina Heights, Unit 12A',
+    startDate: '2024-01-15',
+    endDate: '2025-01-14',
+    amount: 120000,
+    status: 'active',
+    ejariStatus: 'registered',
+  },
+  {
+    id: 2,
+    contractNumber: 'WC-CNT-2024-002',
+    type: 'sale',
+    buyer: 'Chen Wei',
+    seller: 'White Caves LLC',
+    property: 'Downtown Dubai, Burj Vista 4B',
+    completionDate: '2024-03-20',
+    amount: 3500000,
+    status: 'completed',
+    ejariStatus: '',
+  },
+  {
+    id: 3,
+    contractNumber: 'WC-CNT-2024-003',
+    type: 'tenancy',
+    tenant: 'Priya Sharma',
+    landlord: 'Emirates REIT',
+    property: 'JBR, The Walk Tower 7, Unit 3C',
+    startDate: '2024-04-01',
+    endDate: '2025-03-31',
+    amount: 95000,
+    status: 'active',
+    ejariStatus: 'registered',
+  },
+  {
+    id: 4,
+    contractNumber: 'WC-CNT-2024-004',
+    type: 'tenancy',
+    tenant: 'Omar Al Rashidi',
+    landlord: 'Emaar Properties',
+    property: 'Arabian Ranches, Villa 22',
+    startDate: '2024-05-01',
+    endDate: '2025-04-30',
+    amount: 180000,
+    status: 'active',
+    ejariStatus: 'pending',
+  },
+  {
+    id: 5,
+    contractNumber: 'WC-CNT-2024-005',
+    type: 'sale',
+    buyer: 'Sarah Johnson',
+    seller: 'Damac Properties',
+    property: 'Business Bay, Executive Tower',
+    completionDate: '2024-06-15',
+    amount: 2200000,
+    status: 'pending',
+    ejariStatus: '',
+  },
+  {
+    id: 6,
+    contractNumber: 'WC-CNT-2024-006',
+    type: 'tenancy',
+    tenant: 'Mohammed Al Hassan',
+    landlord: 'Nakheel',
+    property: 'Palm Jumeirah, Frond G Villa',
+    startDate: '2023-07-01',
+    endDate: '2024-06-30',
+    amount: 350000,
+    status: 'expired',
+    ejariStatus: 'registered',
+  },
+  {
+    id: 7,
+    contractNumber: 'WC-CNT-2024-007',
+    type: 'sale',
+    buyer: 'Fatima Al Mansoori',
+    seller: 'Meraas Holding',
+    property: 'City Walk, Bldg 12, Unit 504',
+    completionDate: '2024-08-01',
+    amount: 1850000,
+    status: 'active',
+    ejariStatus: '',
+  },
+  {
+    id: 8,
+    contractNumber: 'WC-CNT-2024-008',
+    type: 'tenancy',
+    tenant: 'Viktor Petrov',
+    landlord: 'Select Group',
+    property: 'Dubai Marina, 5242 Tower A',
+    startDate: '2024-09-01',
+    endDate: '2025-08-31',
+    amount: 140000,
+    status: 'active',
+    ejariStatus: 'pending',
+  },
+];
+
+type ModalMode = 'none' | 'add' | 'edit' | 'delete';
+
+const EMPTY_FORM: Omit<Contract, 'id'> = {
+  contractNumber: '',
+  type: 'tenancy',
+  tenant: '',
+  landlord: '',
+  buyer: '',
+  seller: '',
+  property: '',
+  startDate: '',
+  endDate: '',
+  completionDate: '',
+  amount: 0,
+  status: 'pending',
+  ejariStatus: 'pending',
+};
+
+const ContractsTab: React.FC<ContractsTabProps> = ({ data, loading }) => {
   const [typeFilter, setTypeFilter] = useState('all');
   const [statusFilter, setStatusFilter] = useState('all');
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 5;
+  const [localContracts, setLocalContracts] = useState<Contract[]>(() =>
+    data?.contracts && data.contracts.length > 0 ? data.contracts : MOCK_CONTRACTS
+  );
+  const [modalMode, setModalMode] = useState<ModalMode>('none');
+  const [editTarget, setEditTarget] = useState<Contract | null>(null);
+  const [form, setForm] = useState<Omit<Contract, 'id'>>(EMPTY_FORM);
+  const [toast, setToast] = useState<string | null>(null);
+
+  const showToast = (msg: string) => {
+    setToast(msg);
+    setTimeout(() => setToast(null), 3000);
+  };
+
+  const openAdd = useCallback(() => {
+    setForm({
+      ...EMPTY_FORM,
+      contractNumber: `WC-CNT-${new Date().getFullYear()}-${String(localContracts.length + 1).padStart(3, '0')}`,
+    });
+    setEditTarget(null);
+    setModalMode('add');
+  }, [localContracts.length]);
+
+  const openEdit = useCallback((c: Contract) => {
+    setForm({
+      contractNumber: c.contractNumber,
+      type: c.type,
+      tenant: c.tenant ?? '',
+      landlord: c.landlord ?? '',
+      buyer: c.buyer ?? '',
+      seller: c.seller ?? '',
+      property: c.property,
+      startDate: c.startDate ?? '',
+      endDate: c.endDate ?? '',
+      completionDate: c.completionDate ?? '',
+      amount: c.amount,
+      status: c.status,
+      ejariStatus: c.ejariStatus,
+    });
+    setEditTarget(c);
+    setModalMode('edit');
+  }, []);
+
+  const openDelete = useCallback((c: Contract) => {
+    setEditTarget(c);
+    setModalMode('delete');
+  }, []);
+  const closeModal = () => {
+    setModalMode('none');
+    setEditTarget(null);
+  };
+
+  const handleSave = () => {
+    if (!form.contractNumber.trim() || !form.property.trim() || form.amount <= 0) return;
+    if (modalMode === 'add') {
+      const nextId = Math.max(0, ...localContracts.map(c => c.id)) + 1;
+      setLocalContracts(prev => [...prev, { id: nextId, ...form }]);
+      showToast('✅ Contract added successfully');
+    } else if (modalMode === 'edit' && editTarget) {
+      setLocalContracts(prev => prev.map(c => (c.id === editTarget.id ? { ...c, ...form } : c)));
+      showToast('✅ Contract updated');
+    }
+    closeModal();
+  };
+
+  const handleDelete = () => {
+    if (!editTarget) return;
+    setLocalContracts(prev => prev.filter(c => c.id !== editTarget.id));
+    showToast('🗑️ Contract removed');
+    closeModal();
+  };
 
   // Reset pagination when filters change (must be before early returns — Rules of Hooks)
   useEffect(() => {
-    setCurrentPage(1);
+    const reset = async () => {
+      setCurrentPage(1);
+    };
+    reset();
   }, [typeFilter, statusFilter]);
 
-  // Show loading state
   if (loading) {
     return (
       <div className="contracts-tab">
@@ -26,15 +220,13 @@ const ContractsTab: React.FC<ContractsTabProps> = ({ data, loading, onAction }) 
     );
   }
 
-  const contracts = data?.contracts || [];
-
-  const filteredContracts = contracts.filter(contract => {
+  const filteredContracts = localContracts.filter(contract => {
     const matchesType = typeFilter === 'all' || contract.type === typeFilter;
     const matchesStatus = statusFilter === 'all' || contract.status === statusFilter;
     return matchesType && matchesStatus;
   });
 
-  const totalPages = Math.ceil(filteredContracts.length / itemsPerPage);
+  const _totalPages = Math.ceil(filteredContracts.length / itemsPerPage);
   const paginatedContracts = filteredContracts.slice(
     (currentPage - 1) * itemsPerPage,
     currentPage * itemsPerPage
@@ -46,42 +238,52 @@ const ContractsTab: React.FC<ContractsTabProps> = ({ data, loading, onAction }) 
       pending: { color: '#F59E0B', text: 'Pending' },
       completed: { color: '#3B82F6', text: 'Completed' },
       expired: { color: '#EF4444', text: 'Expired' },
-      cancelled: { color: '#6B7280', text: 'Cancelled' }
+      cancelled: { color: '#6B7280', text: 'Cancelled' },
     };
+    // eslint-disable-next-line security/detect-object-injection
     const c = config[status] || { color: '#6B7280', text: status };
-    return <span className="status-badge" style={{ backgroundColor: `${c.color}20`, color: c.color }}>{c.text}</span>;
+    return (
+      <span className="status-badge" style={{ backgroundColor: `${c.color}20`, color: c.color }}>
+        {c.text}
+      </span>
+    );
   };
 
   const getEjariBadge = (status: string) => {
     if (!status) return null;
     const isRegistered = status === 'registered';
     return (
-      <span className="ejari-badge" style={{ 
-        backgroundColor: isRegistered ? '#22C55E20' : '#EF444420',
-        color: isRegistered ? '#22C55E' : '#EF4444'
-      }}>
+      <span
+        className="ejari-badge"
+        style={{
+          backgroundColor: isRegistered ? '#22C55E20' : '#EF444420',
+          color: isRegistered ? '#22C55E' : '#EF4444',
+        }}
+      >
         {isRegistered ? '✓ Registered' : '⏳ Pending'}
       </span>
     );
   };
 
   const contractStats = {
-    total: contracts.length,
-    active: contracts.filter(c => c.status === 'active').length,
-    pending: contracts.filter(c => c.status === 'pending').length,
-    ejariRegistered: contracts.filter(c => c.ejariStatus === 'registered').length
+    total: localContracts.length,
+    active: localContracts.filter(c => c.status === 'active').length,
+    pending: localContracts.filter(c => c.status === 'pending').length,
+    ejariRegistered: localContracts.filter(c => c.ejariStatus === 'registered').length,
   };
 
   return (
     <div className="contracts-tab">
+      {toast && (
+        <div className="crud-toast" role="status">
+          {toast}
+        </div>
+      )}
       <div className="tab-header">
         <h3>Contract Management</h3>
         <div className="header-actions">
-          <button className="secondary-btn" onClick={() => onAction?.('generateContract')}>
-            <span>📄</span> Generate Contract
-          </button>
-          <button className="primary-btn" onClick={() => onAction?.('addContract')}>
-            <span>➕</span> Add Contract
+          <button className="secondary-btn" onClick={openAdd}>
+            <span>📄</span> New Contract
           </button>
         </div>
       </div>
@@ -106,12 +308,12 @@ const ContractsTab: React.FC<ContractsTabProps> = ({ data, loading, onAction }) 
       </div>
 
       <div className="filters-bar">
-        <select value={typeFilter} onChange={(e) => setTypeFilter(e.target.value)}>
+        <select value={typeFilter} onChange={e => setTypeFilter(e.target.value)}>
           <option value="all">All Types</option>
           <option value="tenancy">Tenancy</option>
           <option value="sale">Sale</option>
         </select>
-        <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}>
+        <select value={statusFilter} onChange={e => setStatusFilter(e.target.value)}>
           <option value="all">All Status</option>
           <option value="active">Active</option>
           <option value="pending">Pending</option>
@@ -136,9 +338,11 @@ const ContractsTab: React.FC<ContractsTabProps> = ({ data, loading, onAction }) 
             </tr>
           </thead>
           <tbody>
-            {paginatedContracts.map((contract) => (
+            {paginatedContracts.map(contract => (
               <tr key={contract.id}>
-                <td><strong>{contract.contractNumber}</strong></td>
+                <td>
+                  <strong>{contract.contractNumber}</strong>
+                </td>
                 <td>
                   <span className={`type-badge ${contract.type}`}>
                     {contract.type === 'tenancy' ? '🏠 Tenancy' : '💰 Sale'}
@@ -175,9 +379,22 @@ const ContractsTab: React.FC<ContractsTabProps> = ({ data, loading, onAction }) 
                 <td>{getEjariBadge(contract.ejariStatus)}</td>
                 <td>
                   <div className="action-buttons">
-                    <button className="icon-btn" title="View" onClick={() => onAction?.('viewContract', contract.id)}>👁️</button>
-                    <button className="icon-btn" title="Download PDF" onClick={() => onAction?.('downloadContract', contract.id)}>📥</button>
-                    <button className="icon-btn" title="Edit" onClick={() => onAction?.('editContract', contract.id)}>✏️</button>
+                    <button
+                      className="icon-btn"
+                      title="Edit"
+                      aria-label="Edit contract"
+                      onClick={() => openEdit(contract)}
+                    >
+                      ✏️
+                    </button>
+                    <button
+                      className="icon-btn"
+                      title="Delete"
+                      aria-label="Delete contract"
+                      onClick={() => openDelete(contract)}
+                    >
+                      🗑️
+                    </button>
                   </div>
                 </td>
               </tr>
@@ -191,6 +408,202 @@ const ContractsTab: React.FC<ContractsTabProps> = ({ data, loading, onAction }) 
         totalItems={filteredContracts.length}
         onPageChange={setCurrentPage}
       />
+
+      {/* Add / Edit Modal */}
+      {(modalMode === 'add' || modalMode === 'edit') && (
+        <div
+          className="crud-modal-overlay"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="contract-modal-title"
+        >
+          <div className="crud-modal">
+            <div className="crud-modal__header">
+              <h3 id="contract-modal-title">
+                {modalMode === 'add' ? 'New Contract' : 'Edit Contract'}
+              </h3>
+              <button className="crud-modal__close" onClick={closeModal} aria-label="Close">
+                ✕
+              </button>
+            </div>
+            <div className="crud-modal__body">
+              <div className="crud-form-grid">
+                <div className="form-group">
+                  <label>Contract No.</label>
+                  <input
+                    type="text"
+                    value={form.contractNumber}
+                    onChange={e => setForm(f => ({ ...f, contractNumber: e.target.value }))}
+                  />
+                </div>
+                <div className="form-group">
+                  <label>Type</label>
+                  <select
+                    value={form.type}
+                    onChange={e =>
+                      setForm(f => ({ ...f, type: e.target.value as 'tenancy' | 'sale' }))
+                    }
+                  >
+                    <option value="tenancy">Tenancy</option>
+                    <option value="sale">Sale</option>
+                  </select>
+                </div>
+                <div className="form-group" style={{ gridColumn: '1 / -1' }}>
+                  <label>Property *</label>
+                  <input
+                    type="text"
+                    value={form.property}
+                    onChange={e => setForm(f => ({ ...f, property: e.target.value }))}
+                    placeholder="Building, Unit..."
+                  />
+                </div>
+                {form.type === 'tenancy' ? (
+                  <>
+                    <div className="form-group">
+                      <label>Tenant</label>
+                      <input
+                        type="text"
+                        value={form.tenant ?? ''}
+                        onChange={e => setForm(f => ({ ...f, tenant: e.target.value }))}
+                      />
+                    </div>
+                    <div className="form-group">
+                      <label>Landlord</label>
+                      <input
+                        type="text"
+                        value={form.landlord ?? ''}
+                        onChange={e => setForm(f => ({ ...f, landlord: e.target.value }))}
+                      />
+                    </div>
+                    <div className="form-group">
+                      <label>Start Date</label>
+                      <input
+                        type="date"
+                        value={form.startDate ?? ''}
+                        onChange={e => setForm(f => ({ ...f, startDate: e.target.value }))}
+                      />
+                    </div>
+                    <div className="form-group">
+                      <label>End Date</label>
+                      <input
+                        type="date"
+                        value={form.endDate ?? ''}
+                        onChange={e => setForm(f => ({ ...f, endDate: e.target.value }))}
+                      />
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <div className="form-group">
+                      <label>Buyer</label>
+                      <input
+                        type="text"
+                        value={form.buyer ?? ''}
+                        onChange={e => setForm(f => ({ ...f, buyer: e.target.value }))}
+                      />
+                    </div>
+                    <div className="form-group">
+                      <label>Seller</label>
+                      <input
+                        type="text"
+                        value={form.seller ?? ''}
+                        onChange={e => setForm(f => ({ ...f, seller: e.target.value }))}
+                      />
+                    </div>
+                    <div className="form-group">
+                      <label>Completion Date</label>
+                      <input
+                        type="date"
+                        value={form.completionDate ?? ''}
+                        onChange={e => setForm(f => ({ ...f, completionDate: e.target.value }))}
+                      />
+                    </div>
+                  </>
+                )}
+                <div className="form-group">
+                  <label>Amount (AED) *</label>
+                  <input
+                    type="number"
+                    value={form.amount || ''}
+                    min={0}
+                    onChange={e => setForm(f => ({ ...f, amount: Number(e.target.value) }))}
+                  />
+                </div>
+                <div className="form-group">
+                  <label>Status</label>
+                  <select
+                    value={form.status}
+                    onChange={e => setForm(f => ({ ...f, status: e.target.value }))}
+                  >
+                    <option value="pending">Pending</option>
+                    <option value="active">Active</option>
+                    <option value="completed">Completed</option>
+                    <option value="expired">Expired</option>
+                    <option value="cancelled">Cancelled</option>
+                  </select>
+                </div>
+                {form.type === 'tenancy' && (
+                  <div className="form-group">
+                    <label>Ejari Status</label>
+                    <select
+                      value={form.ejariStatus}
+                      onChange={e => setForm(f => ({ ...f, ejariStatus: e.target.value }))}
+                    >
+                      <option value="pending">Pending</option>
+                      <option value="registered">Registered</option>
+                    </select>
+                  </div>
+                )}
+              </div>
+            </div>
+            <div className="crud-modal__footer">
+              <button className="secondary-btn" onClick={closeModal}>
+                Cancel
+              </button>
+              <button
+                className="primary-btn"
+                onClick={handleSave}
+                disabled={!form.contractNumber.trim() || !form.property.trim() || form.amount <= 0}
+              >
+                {modalMode === 'add' ? 'Add Contract' : 'Save Changes'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Delete Confirm */}
+      {modalMode === 'delete' && editTarget && (
+        <div
+          className="crud-modal-overlay"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="contract-del-title"
+        >
+          <div className="crud-modal crud-modal--sm">
+            <div className="crud-modal__header">
+              <h3 id="contract-del-title">Remove Contract</h3>
+              <button className="crud-modal__close" onClick={closeModal} aria-label="Close">
+                ✕
+              </button>
+            </div>
+            <div className="crud-modal__body">
+              <p>
+                Remove <strong>{editTarget.contractNumber}</strong>?
+              </p>
+              <p className="crud-warn">This action cannot be undone.</p>
+            </div>
+            <div className="crud-modal__footer">
+              <button className="secondary-btn" onClick={closeModal}>
+                Cancel
+              </button>
+              <button className="danger-btn" onClick={handleDelete}>
+                Remove
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

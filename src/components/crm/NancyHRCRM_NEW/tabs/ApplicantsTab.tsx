@@ -1,8 +1,7 @@
-import React from 'react';
 import { Search, Edit, Trash2, Eye, Download, Mail } from 'lucide-react';
 
 interface Applicant {
-  id: string | number;
+  id: string;
   name: string;
   avatar: string;
   email: string;
@@ -30,8 +29,8 @@ interface ApplicantsState {
   showApplicantModal: boolean;
   setShowApplicantModal: (show: boolean) => void;
   getApplicantStatusBadge: (status: string) => StatusBadgeStyle;
-  updateApplicant: (id: string | number, data: Partial<Applicant>) => void;
-  deleteApplicant: (id: string | number) => void;
+  updateApplicant: (id: string, data: Partial<Applicant>) => void;
+  deleteApplicant: (id: string) => void;
 }
 
 interface ApplicantsTabProps {
@@ -54,13 +53,13 @@ export default function ApplicantsTab({ state }: ApplicantsTabProps) {
     deleteApplicant
   } = state;
 
-  const handleDelete = (id: string | number) => {
+  const handleDelete = (id: string) => {
     if (window.confirm('Are you sure you want to delete this applicant?')) {
       deleteApplicant(id);
     }
   };
 
-  const handleStatusChange = (id: string | number, newStatus: string) => {
+  const handleStatusChange = (id: string, newStatus: string) => {
     updateApplicant(id, { status: newStatus });
   };
 
@@ -155,7 +154,7 @@ export default function ApplicantsTab({ state }: ApplicantsTabProps) {
               </div>
 
               <div className="applicant-actions">
-                <button className="action-btn secondary" title="Send Email">
+                <button className="action-btn secondary" title="Send Email" aria-label="Send email to applicant">
                   <Mail size={16} />
                 </button>
                 <button

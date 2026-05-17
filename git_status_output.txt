@@ -1,0 +1,233 @@
+ M .github/copilot-instructions.md
+ M AGENTS.md
+ M business_docs/09_crm_features/activity-feed.md
+ M business_docs/09_crm_features/ai-chat.md
+ M business_docs/09_crm_features/audit-trail.md
+ M business_docs/09_crm_features/community-management.md
+ M business_docs/09_crm_features/currency-management.md
+ M business_docs/09_crm_features/dld-integration.md
+ M business_docs/09_crm_features/document-generation.md
+ M business_docs/09_crm_features/email-automation.md
+ M business_docs/09_crm_features/follow-up-automation.md
+ M business_docs/09_crm_features/handover-management.md
+ M business_docs/09_crm_features/investment-management.md
+ M business_docs/09_crm_features/legal-management.md
+ M business_docs/09_crm_features/luxury-segment.md
+ M business_docs/09_crm_features/maintenance.md
+ M business_docs/09_crm_features/market-analytics.md
+ M business_docs/09_crm_features/market-intelligence.md
+ M business_docs/09_crm_features/marketing-campaigns.md
+ M business_docs/09_crm_features/off-plan-projects.md
+ M business_docs/09_crm_features/offers.md
+ M business_docs/09_crm_features/property-valuation.md
+ M business_docs/09_crm_features/prospecting-outbound.md
+ M business_docs/09_crm_features/scheduling-calendar.md
+ M business_docs/09_crm_features/secondary-sales.md
+ M business_docs/09_crm_features/sentinel-property.md
+ M business_docs/09_crm_features/seo-strategy.md
+ M business_docs/09_crm_features/viewings.md
+ M business_docs/09_crm_features/whatsapp-integration.md
+ M plans/MASTER_PLAN.md
+ M plans/waves/WAVE_01_GATE_VALIDATION_REPORT.md
+ M plans/waves/WAVE_01_READINESS_PACKET.md
+ M playwright-report/index.html
+ M scripts/orchestrator/agent-loop.ps1
+ M scripts/orchestrator/fast-forward.ps1
+ M scripts/orchestrator/gate-check.ps1
+ M scripts/orchestrator/margaret-sync.ps1
+ M scripts/orchestrator/progress-report.ps1
+ M scripts/orchestrator/sdd-generator.ps1
+ M scripts/orchestrator/session-start.ps1
+ M scripts/orchestrator/validate-gates.ps1
+ M server/config/env.ts
+ M server/index.test.ts
+ M server/index.ts
+ D server/middleware/auth.js
+ D server/middleware/rateLimiter.js
+ M server/middleware/rbac.test.ts
+ M server/middleware/rbac.ts
+ M server/models/Agent.js
+ M server/models/Contract.js
+ M server/models/ContractSignature.js
+ M server/models/NinaBlocklist.js
+ M server/models/OwnerRelationship.js
+ M server/models/PropertyOpportunity.js
+ M server/models/SRSDocument.js
+ M server/models/SavedSearch.js
+ M server/models/SignatureToken.js
+ M server/models/User.js
+ M server/models/UserProfile.js
+ M server/models/compliance/CustomerDueDiligence.js
+ M server/routes/appointments.ts
+ M server/routes/contracts.ts
+ M server/routes/henry.ts
+ M server/routes/linda.routes.test.ts
+ M server/routes/linda.ts
+ M server/routes/meta-webhook.routes.test.ts
+ M server/routes/meta-webhook.ts
+ M server/routes/nadia.routes.test.ts
+ M server/routes/nadia.ts
+ M server/routes/orchestration.ts
+ M server/routes/roleRequests.ts
+ M server/services/nadia/whatsappAssistant.test.ts
+ M server/services/nadia/whatsappAssistant.ts
+ M src/__tests__/api/whatsapp-api.test.ts
+ M src/__tests__/components/AccountLink.test.tsx
+ M src/__tests__/components/departmentViews/ExecutiveView.test.tsx
+ M src/__tests__/hooks/useWhatsAppAnalytics.test.ts
+ M src/__tests__/hooks/useWhatsAppIntegration.test.ts
+ M src/__tests__/pages/AboutPage.test.tsx
+ M src/__tests__/redux/relationalSidebar.test.ts
+ M src/components/BlogSection.test.tsx
+ M src/components/ClickToChat.test.tsx
+ M src/components/InteractiveMap.test.tsx
+ M src/components/JobBoard.styles.ts
+ M src/components/Phase6/Messaging/GroupMessagingComponent.tsx
+ M src/components/ResizableSidebar/ResizableSidebar.tsx
+ M src/components/RoleGateway.styles.ts
+ M src/components/ThemeToggle.styles.ts
+ M src/components/ThemeToggle.test.tsx
+ M src/components/ThemeToggle.tsx
+ M src/components/UnifiedNavbar/UnifiedNavbar.test.tsx
+ M src/components/__snapshots__/BlogSection.test.tsx.snap
+ M src/components/__tests__/Footer.test.tsx
+ M src/components/admin/AdminDashboard.tsx
+ M src/components/cards/KPICard.tsx
+ M src/components/charts/DataVisualization.tsx
+ M src/components/crm/AIAssistantHub.test.tsx
+ M src/components/crm/AuroraCTODashboard_NEW/tabs/AuroraCTODashboard.test.tsx
+ M src/components/crm/ClaraLeadsCRM_NEW/ClaraLeadsCRM.test.tsx
+ M src/components/crm/NancyHRCRM_NEW/__tests__/NancyHRCRM.test.tsx
+ M src/components/crm/NancyHRCRM_NEW/hooks/useHRData.ts
+ M src/components/crm/RERAComplianceModule.test.tsx
+ M src/components/crm/SophiaSalesCRM_NEW/__tests__/SophiaSalesCRM.test.tsx
+ M src/components/crm/ZoeExecutiveCRM_NEW/ZoeExecutiveCRM.test.tsx
+ M src/components/crm/ZoeExecutiveCRM_NEW/index.tsx
+ M src/components/crm/shared/TaskLifecycleBoard.test.tsx
+ M src/components/crm/shared/TaskLifecycleBoard.tsx
+ M src/components/departmentViews/BaseDepartmentView.tsx
+ M src/components/examples/DashboardExamples.tsx
+ M src/components/features/AIAssistantDashboard/AIAssistantDashboard.tsx
+ M src/components/features/SearchProperties/SearchProperties.tsx
+ M src/components/homepage/Features/Features.test.tsx
+ M src/components/homepage/Testimonials/Testimonials.test.tsx
+ M src/components/layout/AppLayout.tsx
+ M src/components/layout/DashboardLayout/DashboardLayout.tsx
+ M src/components/layout/DashboardLayout/DynamicContentRouter.tsx
+ M src/components/layout/DashboardWorkspace/DynamicContentRouter.tsx
+ M src/components/layout/DepartmentContentPanel/styles.ts
+ M src/components/layout/DynamicContentRouter.tsx
+ M src/components/layout/MainNavBar/MainNavBar.test.tsx
+ M src/components/layout/MainNavBar/MainNavBar.tsx
+ M src/components/layout/MainNavBar/styles.ts
+ M src/components/layout/MobileMenuDrawer/styles.ts
+ M src/components/layout/SidebarContainer/SidebarContainer.test.tsx
+ M src/components/layout/SidebarContainer/styles.ts
+ M src/components/leasing/ContractSignModal.test.tsx
+ M src/components/leasing/EjariRegistrationModal.test.tsx
+ M src/components/nadia/nadia.styles.ts
+ M src/components/owner/tabs/AgentsTab.tsx
+ M src/components/owner/tabs/OverviewTab.tsx
+ M src/components/owner/tabs/PropertiesTab.tsx
+ M src/components/portal/landlord/LandlordDocumentsTab.tsx
+ M src/components/portal/landlord/LandlordMaintenanceTab.tsx
+ M src/components/portal/landlord/LandlordPaymentsTab.tsx
+ M src/components/portal/landlord/LandlordPropertiesTab.tsx
+ M src/components/portal/landlord/LandlordTenantsTab.tsx
+ M src/components/portal/tenant/TenantDocumentsTab.tsx
+ M src/components/portal/tenant/TenantLeaseTab.tsx
+ M src/components/portal/tenant/TenantPaymentHistoryTab.tsx
+ M src/components/shared/DashboardBreadcrumb.tsx
+ M src/components/shared/dashboard/DashboardShell.tsx
+ M src/components/shared/dashboard/DataCard.tsx
+ M src/components/shared/dashboard/index.ts
+ M src/components/shared/sidebars/styled/SidebarStyledComponents.tsx
+ M src/components/sidebars/AIAssistantsSidebar/AIAssistantsSidebar.tsx
+ M src/components/sidebars/CompanyDepartmentSidebar/CompanyDepartmentSidebar.tsx
+ M src/components/sidebars/EnhancedDepartmentItem.tsx
+ M src/components/sidebars/EnhancedLeftSidebar/EnhancedLeftSidebar.tsx
+ M src/components/sidebars/EnhancedRightSidebar/EnhancedRightSidebar.tsx
+ M src/components/sidebars/MaryInventorySidebar/MaryInventorySidebar.tsx
+ M src/components/sidebars/RelationalLeftSidebar/RelationalLeftSidebar.tsx
+ M src/components/sidebars/RelationalRightSidebar/RelationalRightSidebar.tsx
+ M src/components/ui/Badge.jsx
+ M src/components/ui/__tests__/Tooltip.test.tsx
+ M src/context/ThemeContext.tsx
+ M src/e2e/auth.spec.ts
+ M src/e2e/dashboard.spec.ts
+ M src/e2e/department-content-accessibility.spec.ts
+ M src/e2e/sidebar-accessibility.spec.ts
+ M src/hooks/whatsapp/useWhatsAppAnalytics.ts
+ M src/mocks/apiHandler.ts
+ M src/pages/AboutPage.test.tsx
+ M src/pages/CareersPage.test.tsx
+ M src/pages/ContactPage.test.tsx
+ M src/pages/PropertyDetailPage.test.tsx
+ M src/pages/ServicesPage.test.tsx
+ M src/pages/WhatsApp/WhatsAppDashboard.tsx
+ M src/pages/buyer/FavoriteListings.test.tsx
+ M src/pages/departments/finance/EnhancedFinanceDepartmentView.tsx
+ M src/pages/departments/hr/EnhancedHRDepartmentView.tsx
+ M src/pages/departments/sales/EnhancedSalesDepartmentView.tsx
+ M src/pages/landlord/RentalManagementPage.test.tsx
+ M src/pages/leasing-agent/TenantScreeningPage.test.tsx
+ M src/pages/owner/InventoryManagementPage.jsx
+ M src/pages/secondary-sales-agent/SalesPipelinePage.test.tsx
+ M src/server/models/ServiceBooking.js
+ M src/services/ConversationAnalyzer.js
+ M src/services/PropertySourcingServices.js
+ M src/services/webAuthnService.test.ts
+ M src/store/slices/aiAssistant/registry.ts
+ M src/store/slices/aiAssistantDashboardSlice.test.ts
+ M src/store/slices/aiAssistantDashboardSlice.tsx
+ M src/store/slices/departmentSlice.ts
+ M src/store/slices/homepageSlice.test.ts
+ M src/store/slices/lindaSlice.ts
+ D src/store/slices/whatsappSlice.js
+ M src/store/store.test.tsx
+ M src/styled.d.ts
+ M src/styles/global.ts
+ M src/styles/styled.d.ts
+ M src/tests/a11y/a11y-infrastructure.test.ts
+ M src/tests/performance/performance-infrastructure.test.ts
+ M src/utils/authFetch.ts
+ M src/utils/departmentKPIRenderer.tsx
+ M test/mocks/api.test.ts
+ M test/unit/components/PropertyCard.test.jsx
+?? DAILY_MILESTONE_TRACKER.md
+?? PROJECT_PROGRESS_REPORT.md
+?? artifacts/
+?? business_docs/09_crm_features/careers.md
+?? business_docs/09_crm_features/ui-ux-specification.md
+?? plans/MULTIAGENT_11_WAVE_EXECUTION_PROGRAM.md
+?? plans/PHASE_PARALLEL_IMPLEMENTATION_WAR_ROOM.md
+?? plans/TEAM_PARALLEL_LAUNCH_BOARD.md
+?? plans/waves/WAVE_02_DATA_CONTRACT_INVENTORY.md
+?? plans/waves/WAVE_02_IMPLEMENTATION_BACKLOG.md
+?? plans/waves/WAVE_02_PERMISSION_BOUNDARY_MAP.md
+?? plans/waves/WAVE_02_READINESS_PACKET.md
+?? plans/waves/WAVE_02_READINESS_SOURCE_OF_TRUTH.md
+?? plans/waves/WAVE_02_ROUTE_OWNERSHIP_INVENTORY.md
+?? plans/waves/WAVE_02_SDD.md
+?? plans/waves/WAVE_02_TEST_ROLLOUT.md
+?? plans/waves/WAVE_03_IMPLEMENTATION_BACKLOG.md
+?? plans/waves/WAVE_03_READINESS_PACKET.md
+?? plans/waves/WAVE_03_SDD.md
+?? plans/waves/WAVE_03_TEST_ROLLOUT.md
+?? plans/waves/WAVE_04_IMPLEMENTATION_BACKLOG.md
+?? plans/waves/WAVE_04_READINESS_PACKET.md
+?? plans/waves/WAVE_04_SDD.md
+?? plans/waves/WAVE_04_TEST_ROLLOUT.md
+?? plans/waves/WAVE_05_COMMUNICATIONS_BOUNDARY_CONTRACT.md
+?? plans/waves/WAVE_05_IMPLEMENTATION_BACKLOG.md
+?? plans/waves/WAVE_05_LINDA_REPO_SYNC_BLUEPRINT.md
+?? plans/waves/WAVE_05_READINESS_PACKET.md
+?? plans/waves/WAVE_05_SDD.md
+?? plans/waves/WAVE_05_TEST_ROLLOUT.md
+?? scripts/orchestrator/policy.json
+?? server/index.app.integration.test.ts
+?? server/services/whatsapp/linda-core/
+?? server/services/whatsapp/lindaCampaignService.test.ts
+?? server/services/whatsapp/lindaCampaignService.ts
+?? src/components/shared/dashboard/KPI.tsx
+?? src/components/shared/dashboard/Table.tsx

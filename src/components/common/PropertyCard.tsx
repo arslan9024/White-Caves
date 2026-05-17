@@ -111,6 +111,29 @@ function PropertyCard({
           {price}
           {type === 'rent' && <PriceSuffix>/year</PriceSuffix>}
         </PropertyPrice>
+
+        <div
+          aria-label="Property card highlights"
+          style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.7rem' }}
+        >
+          <span
+            style={{
+              fontSize: '0.68rem',
+              fontWeight: 700,
+              color: '#8a6a00',
+              background: 'rgba(212,175,55,0.16)',
+              padding: '0.2rem 0.45rem',
+              borderRadius: '999px',
+              textTransform: 'uppercase',
+              letterSpacing: '0.04em',
+            }}
+          >
+            Luxury
+          </span>
+          <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
+            Curated by White Caves
+          </span>
+        </div>
         {(beds != null && beds > 0 || baths != null && baths > 0 || area) && (
           <PropertySpecs>
             {beds != null && beds > 0 && <span>🛏️ {beds}</span>}

@@ -1,4 +1,8 @@
 import styled, { keyframes } from 'styled-components';
+import { colors } from '../../../styles/theme/colors';
+import { typography } from '../../../styles/theme/typography';
+import { transitions } from '../../../styles/theme/transitions';
+import { radius } from '../../../styles/theme/radius';
 
 const pulse = keyframes`
   0%, 100% { opacity: 1; }
@@ -18,7 +22,7 @@ export const SubNavBarWrapper = styled.div`
   top: 64px;
   z-index: var(--z-sticky, 200);
   backdrop-filter: blur(10px);
-  transition: all 0.3s ease;
+  transition: ${transitions.all};
 
   [data-theme='dark'] & {
     background: rgba(30, 30, 40, 0.95);
@@ -57,7 +61,7 @@ export const ModuleIcon = styled.span`
 `;
 
 export const ModuleTitle = styled.span`
-  font-weight: 600;
+  font-weight: ${typography.weights.semibold};
   color: var(--text-primary, #1f2937);
   font-size: 0.95rem;
 
@@ -91,24 +95,24 @@ export const SubNavItem = styled.button<{ $isActive?: boolean }>`
   padding: 0.5rem 1rem;
   background: transparent;
   border: none;
-  border-radius: 8px;
+  border-radius: ${radius.lg};
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: ${transitions.hover};
   position: relative;
   white-space: nowrap;
-  color: ${(props) => (props.$isActive ? 'white' : 'var(--text-secondary, #6b7280)')};
-  font-weight: 500;
+  color: ${props => (props.$isActive ? 'white' : 'var(--text-secondary, #6b7280)')};
+  font-weight: ${typography.weights.medium};
   font-size: 0.875rem;
   font-family: inherit;
 
-  ${(props) =>
+  ${props =>
     props.$isActive
       ? `
-    background: var(--primary-color, #DC2626);
-    box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
+    background: var(--primary-color, ${colors.primary});
+    box-shadow: 0 4px 12px rgba(227, 30, 36, 0.25);
 
     &:hover {
-      background: var(--primary-dark, #b91c1c);
+      background: var(--primary-dark, ${colors.primaryDark});
       transform: translateY(-1px);
     }
   `
@@ -128,7 +132,7 @@ export const SubNavItem = styled.button<{ $isActive?: boolean }>`
   `}
 
   [data-theme='dark'] & {
-    color: ${(props) => (props.$isActive ? 'white' : 'var(--text-secondary, #9ca3af)')};
+    color: ${props => (props.$isActive ? 'white' : 'var(--text-secondary, #9ca3af)')};
   }
 
   @media (max-width: 992px) {
@@ -146,18 +150,19 @@ export const SubNavIcon = styled.span`
 `;
 
 export const SubNavLabel = styled.span`
-  font-weight: 500;
+  font-weight: ${typography.weights.medium};
 `;
 
 export const SubNavBadge = styled.span<{ $isActive?: boolean }>`
-  background: ${(props) => (props.$isActive ? 'rgba(255, 255, 255, 0.3)' : 'var(--accent-color, #f59e0b)')};
+  background: ${props =>
+    props.$isActive ? 'rgba(255, 255, 255, 0.3)' : 'var(--accent-color, #f59e0b)'};
   color: white;
   font-size: 0.7rem;
   padding: 0.1rem 0.4rem;
   border-radius: 10px;
   min-width: 1.25rem;
   text-align: center;
-  font-weight: 600;
+  font-weight: ${typography.weights.semibold};
 `;
 
 export const SubNavIndicator = styled.span`
@@ -184,19 +189,23 @@ export const SubNavActionButton = styled.button`
   align-items: center;
   gap: 0.5rem;
   padding: 0.5rem 1rem;
-  background: linear-gradient(135deg, var(--primary-color, #DC2626), var(--accent-color, #f59e0b));
+  background: linear-gradient(
+    135deg,
+    var(--primary-color, ${colors.primary}),
+    var(--accent-color, #f59e0b)
+  );
   color: white;
   border: none;
-  border-radius: 8px;
+  border-radius: ${radius.lg};
   cursor: pointer;
-  font-weight: 500;
+  font-weight: ${typography.weights.medium};
   font-size: 0.875rem;
   font-family: inherit;
-  transition: all 0.3s ease;
+  transition: ${transitions.all};
 
   &:hover {
     transform: translateY(-2px);
-    box-shadow: 0 6px 16px rgba(220, 38, 38, 0.4);
+    box-shadow: 0 6px 16px rgba(227, 30, 36, 0.3);
   }
 `;
 

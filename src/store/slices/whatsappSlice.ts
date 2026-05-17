@@ -1,6 +1,6 @@
 /**
  * WhatsApp Redux State Management
- * 
+ *
  * Manages:
  * - Session state (connection, authentication)
  * - Messages (sending, receiving, history)
@@ -12,6 +12,7 @@ import { createSlice, createAsyncThunk, createSelector, PayloadAction } from '@r
 import { logout } from '../authSlice';
 import type { RootState } from '../store';
 import { authFetch } from '../../utils/authFetch';
+import { getErrorMessage } from '../../constants';
 
 // ================================
 // Types
@@ -84,25 +85,25 @@ const initialState: WhatsAppState = {
     size: 0,
     maxSize: 100,
     processing: 0,
-    messages: []
+    messages: [],
   },
   health: {
     activeSessions: 0,
     authenticatedSessions: 0,
     uptime: 0,
-    status: 'offline'
+    status: 'offline',
   },
   loading: {
     connecting: false,
     disconnecting: false,
     sending: false,
-    fetchingHistory: false
+    fetchingHistory: false,
   },
   error: null,
   success: null,
   qrCode: null,
   showModal: false,
-  modalType: null
+  modalType: null,
 };
 
 // ================================
@@ -120,9 +121,11 @@ async function extractErrorMessage(response: Response): Promise<string> {
   } catch {
     // Response body not parseable — use default message
   }
-  return (typeof errorData?.message === 'string' ? errorData.message : '') ||
-         (typeof errorData?.error === 'string' ? errorData.error : '') ||
-         `Request failed with status ${response.status}`;
+  return (
+    (typeof errorData?.message === 'string' ? errorData.message : '') ||
+    (typeof errorData?.error === 'string' ? errorData.error : '') ||
+    `Request failed with status ${response.status}`
+  );
 }
 
 // ================================
@@ -139,7 +142,7 @@ export const initializeWhatsAppSession = createAsyncThunk(
       const response = await authFetch('/api/whatsapp/sessions', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ sessionId, ownerEmail })
+        body: JSON.stringify({ sessionId, ownerEmail }),
       });
 
       if (!response.ok) {
@@ -152,15 +155,16 @@ export const initializeWhatsAppSession = createAsyncThunk(
         } catch {
           // Response body not parseable — use default message
         }
-        const msg = (typeof errorData?.message === 'string' ? errorData.message : '') ||
-                    (typeof errorData?.error === 'string' ? errorData.error : '') ||
-                    `Request failed with status ${response.status}`;
+        const msg =
+          (typeof errorData?.message === 'string' ? errorData.message : '') ||
+          (typeof errorData?.error === 'string' ? errorData.error : '') ||
+          `Request failed with status ${response.status}`;
         return rejectWithValue(msg);
       }
 
       return await response.json();
     } catch (error: unknown) {
-      const message = error instanceof Error ? error.message : 'An unexpected error occurred';
+      const message = getErrorMessage(error);
       return rejectWithValue(message);
     }
   }
@@ -173,7 +177,7 @@ export const connectWhatsApp = createAsyncThunk(
       const response = await authFetch('/api/whatsapp/connect', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ connectionMethod: 'qr' })
+        body: JSON.stringify({ connectionMethod: 'qr' }),
       });
 
       if (!response.ok) {
@@ -183,7 +187,7 @@ export const connectWhatsApp = createAsyncThunk(
 
       return await response.json();
     } catch (error: unknown) {
-      const message = error instanceof Error ? error.message : 'An unexpected error occurred';
+      const message = getErrorMessage(error);
       return rejectWithValue(message);
     }
   }
@@ -202,7 +206,7 @@ export const getSessionStatus = createAsyncThunk(
 
       return await response.json();
     } catch (error: unknown) {
-      const message = error instanceof Error ? error.message : 'An unexpected error occurred';
+      const message = getErrorMessage(error);
       return rejectWithValue(message);
     }
   }
@@ -211,14 +215,18 @@ export const getSessionStatus = createAsyncThunk(
 export const sendMessage = createAsyncThunk(
   'whatsapp/sendMessage',
   async (
-    { phoneNumber, message, priority = 'normal' }: { phoneNumber: string; message: string; priority?: 'high' | 'normal' | 'low' },
+    {
+      phoneNumber,
+      message,
+      priority = 'normal',
+    }: { phoneNumber: string; message: string; priority?: 'high' | 'normal' | 'low' },
     { rejectWithValue }
   ) => {
     try {
       const response = await authFetch('/api/whatsapp/send-message', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ phoneNumber, message, priority })
+        body: JSON.stringify({ phoneNumber, message, priority }),
       });
 
       if (!response.ok) {
@@ -228,7 +236,7 @@ export const sendMessage = createAsyncThunk(
 
       return await response.json();
     } catch (error: unknown) {
-      const message = error instanceof Error ? error.message : 'An unexpected error occurred';
+      const message = getErrorMessage(error);
       return rejectWithValue(message);
     }
   }
@@ -247,7 +255,7 @@ export const getQueueStatus = createAsyncThunk(
 
       return await response.json();
     } catch (error: unknown) {
-      const message = error instanceof Error ? error.message : 'An unexpected error occurred';
+      const message = getErrorMessage(error);
       return rejectWithValue(message);
     }
   }
@@ -259,7 +267,7 @@ export const disconnectWhatsApp = createAsyncThunk(
     try {
       const response = await authFetch('/api/whatsapp/disconnect', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' }
+        headers: { 'Content-Type': 'application/json' },
       });
 
       if (!response.ok) {
@@ -269,7 +277,7 @@ export const disconnectWhatsApp = createAsyncThunk(
 
       return await response.json();
     } catch (error: unknown) {
-      const message = error instanceof Error ? error.message : 'An unexpected error occurred';
+      const message = getErrorMessage(error);
       return rejectWithValue(message);
     }
   }
@@ -288,7 +296,7 @@ export const getServiceHealth = createAsyncThunk(
 
       return await response.json();
     } catch (error: unknown) {
-      const message = error instanceof Error ? error.message : 'An unexpected error occurred';
+      const message = getErrorMessage(error);
       return rejectWithValue(message);
     }
   }
@@ -308,7 +316,7 @@ const whatsappSlice = createSlice({
       state.showModal = true;
       state.modalType = 'qr';
     },
-    clearQRCode: (state) => {
+    clearQRCode: state => {
       state.qrCode = null;
       state.showModal = false;
       state.modalType = null;
@@ -316,13 +324,19 @@ const whatsappSlice = createSlice({
     addMessage: (state, action: PayloadAction<WhatsAppMessage>) => {
       state.messages.push(action.payload);
     },
-    clearError: (state) => {
+    clearError: state => {
       state.error = null;
     },
-    clearSuccess: (state) => {
+    clearSuccess: state => {
       state.success = null;
     },
-    toggleModal: (state, action: PayloadAction<{ show: boolean; type?: 'qr' | 'messages' | 'queue' | 'settings' | null }>) => {
+    toggleModal: (
+      state,
+      action: PayloadAction<{
+        show: boolean;
+        type?: 'qr' | 'messages' | 'queue' | 'settings' | null;
+      }>
+    ) => {
       state.showModal = action.payload.show;
       if (action.payload.type) {
         state.modalType = action.payload.type;
@@ -340,25 +354,27 @@ const whatsappSlice = createSlice({
     removeQueuedMessage: (state, action: PayloadAction<string>) => {
       state.queue.messages = state.queue.messages.filter(m => m.id !== action.payload);
       state.queue.size = state.queue.messages.length;
-    }
+    },
   },
-  extraReducers: (builder) => {
+  extraReducers: builder => {
     // Initialize Session
     builder
-      .addCase(initializeWhatsAppSession.pending, (state) => {
+      .addCase(initializeWhatsAppSession.pending, state => {
         state.loading.connecting = true;
         state.error = null;
       })
       .addCase(initializeWhatsAppSession.fulfilled, (state, action) => {
         state.loading.connecting = false;
-        state.session = action.payload.sessionId ? {
-          sessionId: action.payload.sessionId,
-          ownerEmail: action.payload.ownerEmail,
-          connectionStatus: 'connecting' as const,
-          messageCount: 0,
-          autoReplyEnabled: false,
-          chatbotEnabled: false,
-        } : null;
+        state.session = action.payload.sessionId
+          ? {
+              sessionId: action.payload.sessionId,
+              ownerEmail: action.payload.ownerEmail,
+              connectionStatus: 'connecting' as const,
+              messageCount: 0,
+              autoReplyEnabled: false,
+              chatbotEnabled: false,
+            }
+          : null;
         state.success = 'Session initialized';
       })
       .addCase(initializeWhatsAppSession.rejected, (state, action) => {
@@ -368,7 +384,7 @@ const whatsappSlice = createSlice({
 
     // Connect WhatsApp
     builder
-      .addCase(connectWhatsApp.pending, (state) => {
+      .addCase(connectWhatsApp.pending, state => {
         state.loading.connecting = true;
         state.error = null;
       })
@@ -395,11 +411,11 @@ const whatsappSlice = createSlice({
 
     // Send Message
     builder
-      .addCase(sendMessage.pending, (state) => {
+      .addCase(sendMessage.pending, state => {
         state.loading.sending = true;
         state.error = null;
       })
-      .addCase(sendMessage.fulfilled, (state, action) => {
+      .addCase(sendMessage.fulfilled, (state, _action) => {
         state.loading.sending = false;
         state.success = 'Message sent successfully';
       })
@@ -419,11 +435,11 @@ const whatsappSlice = createSlice({
 
     // Disconnect
     builder
-      .addCase(disconnectWhatsApp.pending, (state) => {
+      .addCase(disconnectWhatsApp.pending, state => {
         state.loading.disconnecting = true;
         state.error = null;
       })
-      .addCase(disconnectWhatsApp.fulfilled, (state) => {
+      .addCase(disconnectWhatsApp.fulfilled, state => {
         state.loading.disconnecting = false;
         state.session = null;
         state.messages = [];
@@ -445,7 +461,7 @@ const whatsappSlice = createSlice({
 
     // --- SECURITY: Reset all WhatsApp data on logout ---
     builder.addCase(logout, () => initialState);
-  }
+  },
 });
 
 export const {
@@ -457,7 +473,7 @@ export const {
   toggleModal,
   updateSessionStatus,
   addQueuedMessage,
-  removeQueuedMessage
+  removeQueuedMessage,
 } = whatsappSlice.actions;
 
 // ================================
@@ -477,10 +493,10 @@ export const selectWhatsAppModal = createSelector(
   (state: RootState) => state.whatsapp.modalType,
   (show, type) => ({ show, type })
 );
-export const selectWhatsAppIsConnected = (state: RootState) => 
+export const selectWhatsAppIsConnected = (state: RootState) =>
   state.whatsapp.session?.connectionStatus === 'authenticated';
-export const selectWhatsAppIsConnecting = (state: RootState) => 
-  state.whatsapp.session?.connectionStatus === 'connecting' || 
+export const selectWhatsAppIsConnecting = (state: RootState) =>
+  state.whatsapp.session?.connectionStatus === 'connecting' ||
   state.whatsapp.session?.connectionStatus === 'qr_pending';
 
 export default whatsappSlice.reducer;

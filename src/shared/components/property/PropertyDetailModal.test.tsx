@@ -1,9 +1,10 @@
 /**
  * PropertyDetailModal – comprehensive test suite
- * Covers rendering, tabs, contact actions, favourites, amenities, edge cases
+ * Covers rendering, tabs, contact actions, favourites, amenities, edge cases,
+ * and Phase 35: Request Viewing form (API booking + WhatsApp fallback)
  */
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { render, screen, fireEvent, act, waitFor } from '@testing-library/react';
 import PropertyDetailModal from './PropertyDetailModal';
 import type { PropertyData, PropertyDetailModalProps } from './PropertyDetailModal';
 
@@ -67,7 +68,9 @@ let windowOpenSpy: ReturnType<typeof vi.spyOn>;
 describe('PropertyDetailModal', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    windowOpenSpy = vi.spyOn(window, 'open').mockImplementation(() => null) as any;
+    windowOpenSpy = vi.spyOn(window, 'open').mockImplementation(() => null) as ReturnType<
+      typeof vi.spyOn
+    >;
   });
 
   /* ── Null Property ──────────────────────────────────────────── */
@@ -191,7 +194,9 @@ describe('PropertyDetailModal', () => {
 
     it('shows custom description when provided', () => {
       render(<PropertyDetailModal {...defaultProps} />);
-      expect(screen.getByText('A stunning luxury apartment with panoramic views.')).toBeInTheDocument();
+      expect(
+        screen.getByText('A stunning luxury apartment with panoramic views.')
+      ).toBeInTheDocument();
     });
 
     it('switches to amenities tab', () => {
@@ -240,10 +245,7 @@ describe('PropertyDetailModal', () => {
     it('opens tel: link on Call click', () => {
       render(<PropertyDetailModal {...defaultProps} />);
       fireEvent.click(screen.getByText('Call Now'));
-      expect(windowOpenSpy).toHaveBeenCalledWith(
-        expect.stringContaining('tel:'),
-        '_self'
-      );
+      expect(windowOpenSpy).toHaveBeenCalledWith(expect.stringContaining('tel:'), '_self');
     });
 
     it('renders Email button', () => {
@@ -254,10 +256,7 @@ describe('PropertyDetailModal', () => {
     it('opens mailto: link on Email click', () => {
       render(<PropertyDetailModal {...defaultProps} />);
       fireEvent.click(screen.getByText('Email'));
-      expect(windowOpenSpy).toHaveBeenCalledWith(
-        expect.stringContaining('mailto:'),
-        '_self'
-      );
+      expect(windowOpenSpy).toHaveBeenCalledWith(expect.stringContaining('mailto:'), '_self');
     });
   });
 
@@ -314,9 +313,192 @@ describe('PropertyDetailModal', () => {
       render(<PropertyDetailModal {...defaultProps} />);
       fireEvent.click(screen.getByText('Floor Plan'));
       fireEvent.click(screen.getByText('Request Floor Plan'));
+      expect(windowOpenSpy).toHaveBeenCalledWith(expect.stringContaining('mailto:'), '_self');
+    });
+  });
+
+  /* ── Phase 35: Request Viewing ─────────────────────────────── */
+  describe('Request Viewing — Phase 35', () => {
+    const propertyWithId: PropertyData = { ...sampleProperty, id: 'prop-abc-123' };
+    const propsWithId: PropertyDetailModalProps = { ...defaultProps, property: propertyWithId };
+
+    // Helper: make localStorage.getItem return a token for this test
+    const setAuthToken = (token: string | null): void => {
+      vi.mocked(global.localStorage.getItem).mockImplementation((key: string) =>
+        key === 'authToken' ? token : null
+      );
+    };
+
+    afterEach(() => {
+      vi.mocked(global.localStorage.getItem).mockReset();
+      vi.restoreAllMocks();
+    });
+
+    it('shows "Schedule a Viewing" heading', () => {
+      render(<PropertyDetailModal {...propsWithId} />);
+      expect(screen.getByText('Schedule a Viewing')).toBeInTheDocument();
+    });
+
+    it('renders date input and time select', () => {
+      render(<PropertyDetailModal {...propsWithId} />);
+      expect(screen.getByLabelText(/preferred date/i)).toBeInTheDocument();
+      expect(screen.getByLabelText(/preferred time/i)).toBeInTheDocument();
+    });
+
+    it('shows error if Request Viewing clicked with no date', () => {
+      render(<PropertyDetailModal {...propsWithId} />);
+      fireEvent.click(screen.getByRole('button', { name: /request viewing/i }));
+      expect(screen.getByRole('alert')).toHaveTextContent(/select a date/i);
+    });
+
+    it('shows error if Request Viewing clicked with date but no time', () => {
+      render(<PropertyDetailModal {...propsWithId} />);
+      fireEvent.change(screen.getByLabelText(/preferred date/i), {
+        target: { value: '2026-07-15' },
+      });
+      fireEvent.click(screen.getByRole('button', { name: /request viewing/i }));
+      expect(screen.getByRole('alert')).toHaveTextContent(/preferred time/i);
+    });
+
+    it('opens WhatsApp when date+time selected and NOT authenticated', async () => {
+      setAuthToken(null);
+      render(<PropertyDetailModal {...propsWithId} />);
+      fireEvent.change(screen.getByLabelText(/preferred date/i), {
+        target: { value: '2026-07-15' },
+      });
+      fireEvent.change(screen.getByLabelText(/preferred time/i), { target: { value: '10:00' } });
+      await act(async () => {
+        fireEvent.click(screen.getByRole('button', { name: /request viewing/i }));
+      });
       expect(windowOpenSpy).toHaveBeenCalledWith(
-        expect.stringContaining('mailto:'),
-        '_self'
+        expect.stringContaining('wa.me'),
+        '_blank',
+        'noopener,noreferrer'
+      );
+    });
+
+    it('WhatsApp message contains property title and location', async () => {
+      setAuthToken(null);
+      render(<PropertyDetailModal {...propsWithId} />);
+      fireEvent.change(screen.getByLabelText(/preferred date/i), {
+        target: { value: '2026-07-15' },
+      });
+      fireEvent.change(screen.getByLabelText(/preferred time/i), { target: { value: '14:00' } });
+      await act(async () => {
+        fireEvent.click(screen.getByRole('button', { name: /request viewing/i }));
+      });
+      const url: string = (windowOpenSpy.mock.calls[0] as string[])[0];
+      expect(url).toContain(encodeURIComponent('Marina View Tower'));
+      expect(url).toContain(encodeURIComponent('Dubai Marina'));
+    });
+
+    it('calls POST /api/viewings when authenticated with property id', async () => {
+      setAuthToken('fake-jwt-token');
+      const fetchSpy = vi.spyOn(window, 'fetch').mockResolvedValue({
+        ok: true,
+        status: 201,
+        json: vi.fn().mockResolvedValue({ success: true }),
+      } as unknown as Response);
+      render(<PropertyDetailModal {...propsWithId} />);
+      fireEvent.change(screen.getByLabelText(/preferred date/i), {
+        target: { value: '2026-07-15' },
+      });
+      fireEvent.change(screen.getByLabelText(/preferred time/i), { target: { value: '10:00' } });
+      await act(async () => {
+        fireEvent.click(screen.getByRole('button', { name: /request viewing/i }));
+      });
+      await waitFor(() =>
+        expect(fetchSpy).toHaveBeenCalledWith(
+          '/api/viewings',
+          expect.objectContaining({ method: 'POST' })
+        )
+      );
+      const body = JSON.parse(
+        (fetchSpy.mock.calls[0] as [string, RequestInit])[1].body as string
+      ) as Record<string, unknown>;
+      expect(body.propertyId).toBe('prop-abc-123');
+      expect(typeof body.scheduledAt).toBe('string');
+      expect(body.type).toBe('in_person');
+    });
+
+    it('shows success message after successful API booking', async () => {
+      setAuthToken('fake-jwt-token');
+      vi.spyOn(window, 'fetch').mockResolvedValue({
+        ok: true,
+        status: 201,
+        json: vi.fn().mockResolvedValue({ success: true }),
+      } as unknown as Response);
+      render(<PropertyDetailModal {...propsWithId} />);
+      fireEvent.change(screen.getByLabelText(/preferred date/i), {
+        target: { value: '2026-07-15' },
+      });
+      fireEvent.change(screen.getByLabelText(/preferred time/i), { target: { value: '10:00' } });
+      await act(async () => {
+        fireEvent.click(screen.getByRole('button', { name: /request viewing/i }));
+      });
+      await waitFor(() => expect(screen.getByRole('status')).toBeInTheDocument());
+      expect(screen.getByText(/viewing request submitted/i)).toBeInTheDocument();
+    });
+
+    it('shows error message when API returns non-OK', async () => {
+      setAuthToken('fake-jwt-token');
+      vi.spyOn(window, 'fetch').mockResolvedValue({
+        ok: false,
+        status: 409,
+        json: vi.fn().mockResolvedValue({ message: 'Slot already taken' }),
+      } as unknown as Response);
+      render(<PropertyDetailModal {...propsWithId} />);
+      fireEvent.change(screen.getByLabelText(/preferred date/i), {
+        target: { value: '2026-07-15' },
+      });
+      fireEvent.change(screen.getByLabelText(/preferred time/i), { target: { value: '10:00' } });
+      await act(async () => {
+        fireEvent.click(screen.getByRole('button', { name: /request viewing/i }));
+      });
+      await waitFor(() =>
+        expect(screen.getByRole('alert')).toHaveTextContent(/slot already taken/i)
+      );
+    });
+
+    it('"Book Another Viewing" resets form back to idle', async () => {
+      setAuthToken('fake-jwt-token');
+      vi.spyOn(window, 'fetch').mockResolvedValue({
+        ok: true,
+        status: 201,
+        json: vi.fn().mockResolvedValue({ success: true }),
+      } as unknown as Response);
+      render(<PropertyDetailModal {...propsWithId} />);
+      fireEvent.change(screen.getByLabelText(/preferred date/i), {
+        target: { value: '2026-07-15' },
+      });
+      fireEvent.change(screen.getByLabelText(/preferred time/i), { target: { value: '10:00' } });
+      await act(async () => {
+        fireEvent.click(screen.getByRole('button', { name: /request viewing/i }));
+      });
+      await waitFor(() =>
+        expect(screen.getByRole('button', { name: /book another viewing/i })).toBeInTheDocument()
+      );
+      await act(async () => {
+        fireEvent.click(screen.getByRole('button', { name: /book another viewing/i }));
+      });
+      expect(screen.getByRole('button', { name: /request viewing/i })).toBeInTheDocument();
+    });
+
+    it('falls back to WhatsApp when authenticated but property has no id', async () => {
+      setAuthToken('fake-jwt-token');
+      const propsNoId: PropertyDetailModalProps = { ...defaultProps, property: sampleProperty }; // no id
+      render(<PropertyDetailModal {...propsNoId} />);
+      fireEvent.change(screen.getByLabelText(/preferred date/i), {
+        target: { value: '2026-07-15' },
+      });
+      fireEvent.change(screen.getByLabelText(/preferred time/i), { target: { value: '10:00' } });
+      await act(async () => {
+        fireEvent.click(screen.getByRole('button', { name: /request viewing/i }));
+      });
+      expect(windowOpenSpy).toHaveBeenCalledWith(
+        expect.stringContaining('wa.me'),
+        '_blank',
+        'noopener,noreferrer'
       );
     });
   });
@@ -330,9 +512,7 @@ describe('PropertyDetailModal', () => {
         price: 1000000,
         type: 'Villa',
       };
-      const { container } = render(
-        <PropertyDetailModal property={minimal} onClose={vi.fn()} />
-      );
+      const { container } = render(<PropertyDetailModal property={minimal} onClose={vi.fn()} />);
       expect(container).toBeTruthy();
       expect(screen.getByText('Basic Property')).toBeInTheDocument();
     });

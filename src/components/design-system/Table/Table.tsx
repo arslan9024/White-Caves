@@ -3,7 +3,7 @@
  * Data display table with sorting and selection
  */
 
-import React, { useState } from 'react';
+import React, { useState, memo } from 'react';
 import styled from 'styled-components';
 import { theme } from '../../../styles/theme';
 import { Checkbox } from '../Checkbox';
@@ -51,11 +51,11 @@ const TableHeaderCell = styled.th<{ $sortable?: boolean }>`
   text-align: left;
   font-weight: ${theme.typography.weights.semibold};
   color: ${theme.colors.text.secondary};
-  cursor: ${(props) => (props.$sortable ? 'pointer' : 'default')};
+  cursor: ${props => (props.$sortable ? 'pointer' : 'default')};
   user-select: none;
   transition: ${theme.transitions.all};
 
-  ${(props) =>
+  ${props =>
     props.$sortable &&
     `
     &:hover {
@@ -66,11 +66,12 @@ const TableHeaderCell = styled.th<{ $sortable?: boolean }>`
 
 const TableBody = styled.tbody``;
 
-const TableRow = styled.tr<{ $striped?: boolean; $hoverable?: boolean }>`
+const StyledTableRow = styled.tr<{ $striped?: boolean; $hoverable?: boolean }>`
   border-bottom: 1px solid ${theme.colors.border};
-  background-color: ${(props) => (props.$striped ? theme.colors.background.secondary : 'transparent')};
+  background-color: ${props =>
+    props.$striped ? theme.colors.background.secondary : 'transparent'};
 
-  ${(props) =>
+  ${props =>
     props.$hoverable &&
     `
     &:hover {
@@ -88,95 +89,101 @@ const TableCell = styled.td`
   color: ${theme.colors.text.primary};
 `;
 
-export const Table = React.forwardRef<HTMLTableElement, TableProps>(
-  (
-    {
-      columns,
-      data,
-      selectable = false,
-      onSelectChange,
-      onRowClick,
-      striped = true,
-      hoverable = true,
-    },
-    ref
-  ) => {
-    const [selectedIds, setSelectedIds] = useState<Set<unknown>>(new Set());
+export const Table = memo(
+  React.forwardRef<HTMLTableElement, TableProps>(
+    (
+      {
+        columns,
+        data,
+        selectable = false,
+        onSelectChange,
+        onRowClick,
+        striped = true,
+        hoverable = true,
+      },
+      ref
+    ) => {
+      const [selectedIds, setSelectedIds] = useState<Set<unknown>>(new Set());
 
-    // Derive a stable row key (prefer 'id', fall back to '_id', then index)
-    const getRowKey = (row: TableRow, index?: number): unknown =>
-      row.id ?? row._id ?? index;
+      // Derive a stable row key (prefer 'id', fall back to '_id', then index)
+      const getRowKey = (row: TableRow, index?: number): unknown => row.id ?? row._id ?? index;
 
-    const handleSelectAll = (checked: boolean) => {
-      if (checked) {
-        const allIds = new Set(data.map((row, i) => getRowKey(row, i)));
-        setSelectedIds(allIds);
-        onSelectChange?.(data);
-      } else {
-        setSelectedIds(new Set());
-        onSelectChange?.([]);
-      }
-    };
+      const handleSelectAll = (checked: boolean) => {
+        if (checked) {
+          const allIds = new Set(data.map((row, i) => getRowKey(row, i)));
+          setSelectedIds(allIds);
+          onSelectChange?.(data);
+        } else {
+          setSelectedIds(new Set());
+          onSelectChange?.([]);
+        }
+      };
 
-    const handleSelectRow = (row: TableRow, rowIndex: number, checked: boolean) => {
-      const key = getRowKey(row, rowIndex);
-      const next = new Set(selectedIds);
-      if (checked) {
-        next.add(key);
-      } else {
-        next.delete(key);
-      }
-      setSelectedIds(next);
-      onSelectChange?.(data.filter((r, i) => next.has(getRowKey(r, i))));
-    };
+      const handleSelectRow = (row: TableRow, rowIndex: number, checked: boolean) => {
+        const key = getRowKey(row, rowIndex);
+        const next = new Set(selectedIds);
+        if (checked) {
+          next.add(key);
+        } else {
+          next.delete(key);
+        }
+        setSelectedIds(next);
+        onSelectChange?.(data.filter((r, i) => next.has(getRowKey(r, i))));
+      };
 
-    const isRowSelected = (row: TableRow, index: number): boolean =>
-      selectedIds.has(getRowKey(row, index));
+      const isRowSelected = (row: TableRow, index: number): boolean =>
+        selectedIds.has(getRowKey(row, index));
 
-    return (
-      <TableWrapper>
-        <StyledTable ref={ref}>
-          <TableHeader>
-            <tr>
-              {selectable && (
-                <TableHeaderCell>
-                  <Checkbox
-                    checked={selectedIds.size === data.length && data.length > 0}
-                    onChange={(e) => handleSelectAll(e.currentTarget.checked)}
-                  />
-                </TableHeaderCell>
-              )}
-              {columns.map((col) => (
-                <TableHeaderCell key={col.key} $sortable={col.sortable}>
-                  {col.header}
-                </TableHeaderCell>
-              ))}
-            </tr>
-          </TableHeader>
-          <TableBody>
-            {data.map((row, rowIndex) => (
-              <TableRow key={rowIndex} $striped={striped} $hoverable={hoverable} onClick={() => onRowClick?.(row)}>
+      return (
+        <TableWrapper>
+          <StyledTable ref={ref}>
+            <TableHeader>
+              <tr>
                 {selectable && (
-                  <TableCell>
+                  <TableHeaderCell>
                     <Checkbox
-                      checked={isRowSelected(row, rowIndex)}
-                      onChange={(e) => handleSelectRow(row, rowIndex, e.currentTarget.checked)}
-                      onClick={(e) => e.stopPropagation()}
+                      checked={selectedIds.size === data.length && data.length > 0}
+                      onChange={e => handleSelectAll(e.currentTarget.checked)}
                     />
-                  </TableCell>
+                  </TableHeaderCell>
                 )}
-                {columns.map((col) => (
-                  <TableCell key={col.key} style={{ width: col.width }}>
-                    {col.render ? col.render(row[col.key], row) : String(row[col.key] ?? '')}
-                  </TableCell>
+                {columns.map(col => (
+                  <TableHeaderCell key={col.key} $sortable={col.sortable}>
+                    {col.header}
+                  </TableHeaderCell>
                 ))}
-              </TableRow>
-            ))}
-          </TableBody>
-        </StyledTable>
-      </TableWrapper>
-    );
-  }
+              </tr>
+            </TableHeader>
+            <TableBody>
+              {data.map((row, rowIndex) => (
+                <StyledTableRow
+                  key={rowIndex}
+                  $striped={striped}
+                  $hoverable={hoverable}
+                  onClick={() => onRowClick?.(row)}
+                >
+                  {selectable && (
+                    <TableCell>
+                      <Checkbox
+                        checked={isRowSelected(row, rowIndex)}
+                        onChange={e => handleSelectRow(row, rowIndex, e.currentTarget.checked)}
+                        onClick={e => e.stopPropagation()}
+                      />
+                    </TableCell>
+                  )}
+                  {columns.map(col => (
+                    <TableCell key={col.key} style={{ width: col.width }}>
+                      {col.render ? col.render(row[col.key], row) : String(row[col.key] ?? '')}
+                    </TableCell>
+                  ))}
+                </StyledTableRow>
+              ))}
+            </TableBody>
+          </StyledTable>
+        </TableWrapper>
+      );
+    }
+  )
 );
 
 Table.displayName = 'Table';

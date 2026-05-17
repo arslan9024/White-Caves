@@ -1,0 +1,88 @@
+{
+  "timeline": [
+    {
+      "id": "evt-1",
+      "timestamp": "2026-01-09T10:45:00Z",
+      "type": "lead_created",
+      "actor": "Clara",
+      "target": "Abdullah Al Maktoum",
+      "description": "New hot lead created from website inquiry",
+      "metadata": { "score": 92, "source": "website" }
+    },
+    {
+      "id": "evt-2",
+      "timestamp": "2026-01-09T09:30:00Z",
+      "type": "property_updated",
+      "actor": "Mary",
+      "target": "VH-A-101",
+      "description": "Property status changed to Reserved",
+      "metadata": { "previousStatus": "available", "newStatus": "reserved" }
+    },
+    {
+      "id": "evt-3",
+      "timestamp": "2026-01-09T08:15:00Z",
+      "type": "payment_received",
+      "actor": "Theodora",
+      "target": "INV-2026-001",
+      "description": "Payment of AED 105,000 received",
+      "metadata": { "amount": 105000, "method": "bank_transfer" }
+    },
+    {
+      "id": "evt-4",
+      "timestamp": "2026-01-08T16:20:00Z",
+      "type": "contract_signed",
+      "actor": "Evangeline",
+      "target": "CONT-2026-045",
+      "description": "Tenancy contract signed by all parties",
+      "metadata": { "property": "AM-B-205", "value": 95000 }
+    },
+    {
+      "id": "evt-5",
+      "timestamp": "2026-01-08T14:00:00Z",
+      "type": "suggestion_sent",
+      "actor": "Cipher",
+      "target": "Zoe",
+      "description": "Market opportunity suggestion submitted to executive",
+      "metadata": { "priority": "high", "confidence": 87 }
+    }
+  ],
+  "auditLogs": [
+    {
+      "id": "log-1",
+      "timestamp": "2026-01-09T10:30:00Z",
+      "action": "user_login",
+      "user": "admin@whitecaves.ae",
+      "ip": "192.168.1.100",
+      "status": "success"
+    },
+    {
+      "id": "log-2",
+      "timestamp": "2026-01-09T09:45:00Z",
+      "action": "data_export",
+      "user": "mary@whitecaves.ae",
+      "resource": "properties",
+      "records": 500,
+      "status": "success"
+    },
+    {
+      "id": "log-3",
+      "timestamp": "2026-01-08T17:00:00Z",
+      "action": "permission_change",
+      "user": "admin@whitecaves.ae",
+      "target": "new_agent@whitecaves.ae",
+      "change": "Added sales role",
+      "status": "success"
+    }
+  ],
+  "reports": [
+    { "id": "rep-1", "name": "Monthly Activity Report", "period": "December 2025", "generated": "2026-01-02", "status": "completed" },
+    { "id": "rep-2", "name": "Compliance Audit", "period": "Q4 2025", "generated": "2026-01-05", "status": "completed" },
+    { "id": "rep-3", "name": "Security Assessment", "period": "January 2026", "generated": "2026-01-09", "status": "in_progress" }
+  ],
+  "stats": {
+    "eventsToday": 156,
+    "eventsThisWeek": 1245,
+    "criticalEvents": 3,
+    "dataIntegrity": 99.98
+  }
+}

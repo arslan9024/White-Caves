@@ -1,5 +1,6 @@
 import { useState, useMemo, ReactNode } from 'react';
 import { useSelector } from 'react-redux';
+import { formatPrice } from '../utils';
 import './PropertyComparison.css';
 
 interface Property {
@@ -27,14 +28,7 @@ interface PropertiesState {
   properties: Property[];
 }
 
-const formatPrice = (price: number): string => {
-  if (price >= 1000000) {
-    return `AED ${(price / 1000000).toFixed(1)}M`;
-  }
-  return `AED ${(price / 1000).toFixed(0)}K`;
-};
-
-const PropertyComparison: React.FC = () => {
+const PropertyComparison = () => {
   const properties = useSelector((state: { properties: PropertiesState }) => state.properties.properties) || [];
   const [selectedIds, setSelectedIds] = useState<(string | number)[]>([]);
   const [showSelector, setShowSelector] = useState<boolean>(false);

@@ -3,13 +3,18 @@
  * Covers rendering, payment methods, bank transfer, QR, cheque, copy, expand/collapse
  */
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { render, screen, fireEvent, within, act } from '@testing-library/react';
+import { render, screen, fireEvent, act } from '@testing-library/react';
 import PaymentInstructionDeck, {
   PaymentMethodSelector,
-  QRCodeDisplay,
   ChequeInstructions,
   BankTransferDetails,
 } from './PaymentInstructionDeck';
+
+const mockAuthFetch = vi.fn();
+
+vi.mock('../../../utils/authFetch', () => ({
+  authFetch: (...args: unknown[]) => mockAuthFetch(...args),
+}));
 
 /* ── Mock CSS import ─────────────────────────────────────────── */
 vi.mock('./PaymentComponents.css', () => ({}));
@@ -22,6 +27,18 @@ describe('PaymentInstructionDeck', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     vi.useFakeTimers();
+    mockAuthFetch.mockResolvedValue({
+      ok: true,
+      json: () =>
+        Promise.resolve({
+          success: true,
+          data: {
+            paymentIntentId: 'pi_stub_1',
+            clientSecret: 'secret',
+            status: 'requires_payment_method',
+          },
+        }),
+    });
   });
 
   afterEach(() => {
@@ -219,6 +236,35 @@ describe('PaymentInstructionDeck', () => {
 
   /* ── Action Buttons ─────────────────────────────────────────── */
   describe('action buttons', () => {
+    it('renders Generate Payment Link button', () => {
+      render(<PaymentInstructionDeck />);
+      expect(screen.getByText('Generate Payment Link')).toBeInTheDocument();
+    });
+
+    it('calls payment-intent API and shows success feedback', async () => {
+      render(<PaymentInstructionDeck amount={1000} reference="INV-100" />);
+      fireEvent.click(screen.getByText('Generate Payment Link'));
+
+      expect(mockAuthFetch).toHaveBeenCalledWith(
+        '/api/payments/create-payment-intent',
+        expect.objectContaining({ method: 'POST' })
+      );
+
+      await act(async () => {
+        await Promise.resolve();
+      });
+
+      expect(screen.getByText(/Payment link generated/i)).toBeInTheDocument();
+    });
+
+    it('shows validation error when amount is missing or zero', () => {
+      render(<PaymentInstructionDeck amount={0} reference="INV-100" />);
+      fireEvent.click(screen.getByText('Generate Payment Link'));
+      expect(
+        screen.getByText('Please provide a valid amount before generating a payment link.')
+      ).toBeInTheDocument();
+    });
+
     it('renders Download PDF button', () => {
       render(<PaymentInstructionDeck />);
       expect(screen.getByText('Download PDF')).toBeInTheDocument();
@@ -289,18 +335,14 @@ describe('ChequeInstructions', () => {
 
 describe('BankTransferDetails', () => {
   it('renders bank details grid', () => {
-    render(
-      <BankTransferDetails amount={10000} reference="REF-1" onCopy={vi.fn()} copied={null} />
-    );
+    render(<BankTransferDetails amount={10000} reference="REF-1" onCopy={vi.fn()} copied={null} />);
     expect(screen.getByText('Account Holder Name')).toBeInTheDocument();
     expect(screen.getByText('IBAN')).toBeInTheDocument();
   });
 
   it('calls onCopy when copy button is clicked', () => {
     const onCopy = vi.fn();
-    render(
-      <BankTransferDetails amount={10000} reference="REF-1" onCopy={onCopy} copied={null} />
-    );
+    render(<BankTransferDetails amount={10000} reference="REF-1" onCopy={onCopy} copied={null} />);
     // Click first copy button (account name)
     const copyBtns = screen.getAllByRole('button');
     if (copyBtns.length > 0) {

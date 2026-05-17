@@ -1,5 +1,7 @@
 import styled, { keyframes } from 'styled-components';
 import { typography } from '../styles/theme/typography';
+import { transitions } from '../styles/theme/transitions';
+import { radius } from '../styles/theme/radius';
 
 // Keyframes
 const slideIn = keyframes`
@@ -74,33 +76,48 @@ export const MapFilters = styled.div`
   margin-bottom: 2rem;
 `;
 
-export const FilterButton = styled.button<{ $isActive?: boolean; $variant?: 'residential' | 'commercial' | 'luxury' }>`
+export const FilterButton = styled.button<{
+  $isActive?: boolean;
+  $variant?: 'residential' | 'commercial' | 'luxury';
+}>`
   padding: 0.75rem 1.5rem;
-  background: ${props => props.$isActive ? 'var(--primary-color, #1a365d)' : 'var(--bg-primary, #ffffff)'};
-  border: 2px solid ${props => props.$isActive ? 'var(--primary-color, #1a365d)' : 'var(--border-color, #e2e8f0)'};
-  border-radius: 9999px;
+  background: ${props =>
+    props.$isActive ? 'var(--primary-color, #1a365d)' : 'var(--bg-primary, #ffffff)'};
+  border: 2px solid
+    ${props => (props.$isActive ? 'var(--primary-color, #1a365d)' : 'var(--border-color, #e2e8f0)')};
+  border-radius: ${radius.full};
   font-family: ${typography.fontFamily.primary};
   font-size: 0.9rem;
-  font-weight: 500;
-  color: ${props => props.$isActive ? 'var(--text-on-primary, #ffffff)' : 'var(--text-primary, #1a202c)'};
+  font-weight: ${typography.weights.medium};
+  color: ${props =>
+    props.$isActive ? 'var(--text-on-primary, #ffffff)' : 'var(--text-primary, #1a202c)'};
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: ${transitions.hover};
 
   &:hover {
     border-color: var(--primary-color, #1a365d);
   }
 
-  ${props => props.$isActive && props.$variant === 'residential' && `
+  ${props =>
+    props.$isActive &&
+    props.$variant === 'residential' &&
+    `
     background: var(--success-color, #38a169);
     border-color: var(--success-color, #38a169);
   `}
 
-  ${props => props.$isActive && props.$variant === 'commercial' && `
+  ${props =>
+    props.$isActive &&
+    props.$variant === 'commercial' &&
+    `
     background: var(--primary-color, #1a365d);
     border-color: var(--primary-color, #1a365d);
   `}
 
-  ${props => props.$isActive && props.$variant === 'luxury' && `
+  ${props =>
+    props.$isActive &&
+    props.$variant === 'luxury' &&
+    `
     background: var(--secondary-color, #c53030);
     border-color: var(--secondary-color, #c53030);
   `}
@@ -154,7 +171,7 @@ export const MarkerGroup = styled.g`
   }
 
   &.active .marker-dot {
-    stroke: var(--accent-gold, #E31E24);
+    stroke: var(--primary-color, #e31e24);
     stroke-width: 3;
   }
 `;
@@ -164,12 +181,14 @@ export const MarkerPulse = styled.circle`
 `;
 
 export const MarkerDot = styled.circle`
-  transition: all 0.2s ease;
+  transition: ${transitions.hover};
 `;
 
 export const MarkerLabel = styled.text`
   pointer-events: none;
-  text-shadow: 1px 1px 2px white, -1px -1px 2px white;
+  text-shadow:
+    1px 1px 2px white,
+    -1px -1px 2px white;
 `;
 
 // Info Window
@@ -208,22 +227,28 @@ export const InfoTitle = styled.h4`
 export const AreaType = styled.span<{ type?: 'luxury' | 'residential' | 'commercial' }>`
   display: inline-block;
   padding: 0.25rem 0.75rem;
-  border-radius: 9999px;
+  border-radius: ${radius.full};
   font-size: 0.7rem;
-  font-weight: 600;
+  font-weight: ${typography.weights.semibold};
   text-transform: uppercase;
   background: rgba(255, 255, 255, 0.2);
   margin-top: 0.5rem;
 
-  ${props => props.type === 'luxury' && `
+  ${props =>
+    props.type === 'luxury' &&
+    `
     background: var(--secondary-color, #c53030);
   `}
 
-  ${props => props.type === 'residential' && `
+  ${props =>
+    props.type === 'residential' &&
+    `
     background: var(--success-color, #38a169);
   `}
 
-  ${props => props.type === 'commercial' && `
+  ${props =>
+    props.type === 'commercial' &&
+    `
     background: rgba(255, 255, 255, 0.3);
   `}
 `;
@@ -242,7 +267,7 @@ export const PropertyPreview = styled.div`
   border-radius: 0.5rem;
   margin-bottom: 0.75rem;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: ${transitions.hover};
 
   &:hover {
     background: var(--bg-tertiary, #edf2f7);
@@ -267,7 +292,7 @@ export const PreviewInfo = styled.div`
 
 export const PreviewTitle = styled.h5`
   font-size: 0.9rem;
-  font-weight: 600;
+  font-weight: ${typography.weights.semibold};
   color: var(--text-primary, #1a202c);
   margin-bottom: 0.25rem;
   margin: 0;
@@ -275,7 +300,7 @@ export const PreviewTitle = styled.h5`
 
 export const PreviewPrice = styled.div`
   font-size: 0.85rem;
-  font-weight: 700;
+  font-weight: ${typography.weights.bold};
   color: var(--secondary-color, #c53030);
   margin-bottom: 0.25rem;
 `;
@@ -301,9 +326,9 @@ export const ViewAllButton = styled.button`
   border-radius: 0.75rem;
   color: var(--text-on-primary, #ffffff);
   font-family: ${typography.fontFamily.heading};
-  font-weight: 600;
+  font-weight: ${typography.weights.semibold};
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: ${transitions.hover};
 
   &:hover {
     background: var(--primary-hover, #234773);

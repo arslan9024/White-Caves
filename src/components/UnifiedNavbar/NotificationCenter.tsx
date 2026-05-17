@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Notification Center Component
  * Bell icon with notification dropdown
  */
@@ -6,6 +6,7 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import { theme } from '../../styles/theme';
+import { spacing } from '../../styles/theme/spacing';
 import { Badge } from '../design-system';
 
 export type NotificationCenterProps = {
@@ -34,9 +35,9 @@ const BellButton = styled.button`
   color: ${theme.colors.text.primary};
   font-size: 20px;
   cursor: pointer;
-  padding: 8px;
+  padding: ${spacing.sm};
   position: relative;
-  transition: ${theme.transitions.create('all', theme.transitions.durations.standard)};
+  transition: ${theme.transitions.all};
   display: flex;
   align-items: center;
   justify-content: center;
@@ -78,7 +79,7 @@ const DropdownMenu = styled.div<{ $isOpen: boolean }>`
   max-height: 400px;
   overflow-y: auto;
   z-index: ${theme.zIndex.dropdown};
-  display: ${(props) => (props.$isOpen ? 'block' : 'none')};
+  display: ${props => (props.$isOpen ? 'block' : 'none')};
 `;
 
 const DropdownHeader = styled.div`
@@ -96,10 +97,10 @@ const NotificationList = styled.div`
 const NotificationItem = styled.div<{ $read: boolean }>`
   padding: ${theme.spacing.md};
   border-bottom: 1px solid ${theme.colors.border};
-  background: ${(props) =>
+  background: ${props =>
     props.$read ? theme.colors.background.primary : theme.colors.background.secondary};
   cursor: pointer;
-  transition: ${theme.transitions.create('all', theme.transitions.durations.standard)};
+  transition: ${theme.transitions.all};
 
   &:hover {
     background: ${theme.colors.background.secondary};
@@ -114,25 +115,25 @@ const NotificationTitle = styled.div`
   font-weight: ${theme.typography.weights.semibold};
   color: ${theme.colors.text.primary};
   margin-bottom: ${theme.spacing.xs};
-  font-size: ${theme.typography.sizes.sm};
+  font-size: ${'0.875rem'};
 `;
 
 const NotificationMessage = styled.div`
   color: ${theme.colors.text.secondary};
-  font-size: ${theme.typography.sizes.xs};
+  font-size: ${'0.75rem'};
   margin-bottom: ${theme.spacing.xs};
 `;
 
 const NotificationTime = styled.div`
-  color: ${theme.colors.text.disabled};
-  font-size: ${theme.typography.sizes.xs};
+  color: ${theme.colors.disabled};
+  font-size: ${'0.75rem'};
 `;
 
 const EmptyState = styled.div`
   padding: ${theme.spacing.lg};
   text-align: center;
-  color: ${theme.colors.text.disabled};
-  font-size: ${theme.typography.sizes.sm};
+  color: ${theme.colors.disabled};
+  font-size: ${'0.875rem'};
 `;
 
 const ViewAllButton = styled.button`
@@ -144,7 +145,7 @@ const ViewAllButton = styled.button`
   border-radius: 0;
   cursor: pointer;
   font-weight: ${theme.typography.weights.medium};
-  transition: ${theme.transitions.create('all', theme.transitions.durations.standard)};
+  transition: ${theme.transitions.all};
 
   &:hover {
     background: ${theme.colors.primary};
@@ -155,12 +156,12 @@ const ViewAllButton = styled.button`
 export const NotificationCenter: React.FC<NotificationCenterProps> = ({
   notifications = [],
   onMarkAsRead,
-  onDismiss,
+  onDismiss: _onDismiss,
   onViewAll,
   className = '',
 }) => {
   const [isOpen, setIsOpen] = useState(false);
-  const unreadCount = notifications.filter((n) => !n.read).length;
+  const unreadCount = notifications.filter(n => !n.read).length;
 
   const handleBellClick = () => {
     setIsOpen(!isOpen);
@@ -189,7 +190,7 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({
         ) : (
           <>
             <NotificationList>
-              {notifications.slice(0, 5).map((notif) => (
+              {notifications.slice(0, 5).map(notif => (
                 <NotificationItem
                   key={notif.id}
                   $read={notif.read}
@@ -210,12 +211,7 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({
         )}
       </DropdownMenu>
 
-      {isOpen && (
-        <Backdrop
-          onClick={() => setIsOpen(false)}
-          role="presentation"
-        />
-      )}
+      {isOpen && <Backdrop onClick={() => setIsOpen(false)} role="presentation" />}
     </NotificationContainer>
   );
 };

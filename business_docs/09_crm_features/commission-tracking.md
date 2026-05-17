@@ -1,8 +1,8 @@
 # Commission Tracking — CRM Feature Specification
 
-> **Status:** In Progress  
+> **Status:** Active (Production + Enhancement)  
 > **Module Owner:** Theodora (Finance Director AI)  
-> **API Endpoints:** `/api/finance/commissions`  
+> **API Endpoints (Canonical):** `/api/commissions`  
 > **Priority:** Critical
 
 ---
@@ -93,28 +93,32 @@ Commission {
 
 ## API Endpoints
 
-| Method | Path | Access | Description |
-|--------|------|--------|-------------|
-| GET | `/api/finance/commissions` | Manager, Finance, Owner | List all commissions (filterable) |
-| GET | `/api/finance/commissions/my` | Agent | Own commissions only |
-| GET | `/api/finance/commissions/:id` | Agent (own), Manager, Finance | Single commission detail |
-| PATCH | `/api/finance/commissions/:id/approve` | Manager, Owner | Approve a commission |
-| PATCH | `/api/finance/commissions/:id/reject` | Manager, Owner | Reject with reason |
-| PATCH | `/api/finance/commissions/:id/pay` | Finance, Owner | Mark as paid |
-| GET | `/api/finance/commissions/summary` | Finance, Owner | Aggregate summary |
-| GET | `/api/finance/commissions/statement/:agentId` | Agent (own), Manager, Finance | Agent commission statement |
+> **Compatibility Note:** Some legacy routes may still proxy through finance namespace. Canonical path for all new implementation and tests is `/api/commissions`.
+
+| Method | Path                                  | Access                        | Description                       |
+| ------ | ------------------------------------- | ----------------------------- | --------------------------------- |
+| GET    | `/api/commissions`                    | Manager, Finance, Owner       | List all commissions (filterable) |
+| GET    | `/api/commissions/my`                 | Agent                         | Own commissions only              |
+| GET    | `/api/commissions/:id`                | Agent (own), Manager, Finance | Single commission detail          |
+| PATCH  | `/api/commissions/:id/approve`        | Manager, Owner                | Approve a commission              |
+| PATCH  | `/api/commissions/:id/reject`         | Manager, Owner                | Reject with reason                |
+| PATCH  | `/api/commissions/:id/pay`            | Finance, Owner                | Mark as paid                      |
+| GET    | `/api/commissions/summary`            | Finance, Owner                | Aggregate summary                 |
+| GET    | `/api/commissions/statement/:agentId` | Agent (own), Manager, Finance | Agent commission statement        |
 
 ---
 
 ## UI Components
 
 ### Commission Dashboard (Finance Director view)
+
 - Summary cards: Total Pending (AED), Total Approved (AED), Total Paid MTD
 - Commission list table: filterable by status, agent, date range
 - Bulk approval action for multiple "Pending" records
 - Bulk payment processing with confirmation dialog
 
 ### Agent Commission View
+
 - Personal earnings summary: This month / This quarter / YTD
 - Commission list: transaction reference, property, date, amount, status
 - Status badges: Pending (amber), Approved (blue), Paid (green), Rejected (red)

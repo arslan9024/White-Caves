@@ -209,9 +209,9 @@ describe('PropertyMatrix', () => {
     it('calls onPropertySelect when view button clicked', () => {
       const onPropertySelect = vi.fn();
       render(<PropertyMatrix onPropertySelect={onPropertySelect} />);
-      const viewBtns = screen.getAllByRole('button', { name: '' });
+      const viewBtns = screen.getAllByRole('button', { name: /view property details/i });
       // The view buttons are at the end of each row
-      const viewBtn = Array.from(document.querySelectorAll('.view-btn'))[0] as HTMLElement;
+      const viewBtn = viewBtns[0] as HTMLElement;
       if (viewBtn) {
         fireEvent.click(viewBtn);
         expect(onPropertySelect).toHaveBeenCalled();

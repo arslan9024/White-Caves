@@ -9,6 +9,7 @@ import styled from 'styled-components';
 import { ChevronDown, Search } from 'lucide-react';
 import { DropdownProps, DropdownItem, DropdownAlignment } from './advancedUI.types';
 import Badge from './Badge';
+import { spacing } from '../../styles/theme/spacing';
 
 // ============================================================================
 // STYLES
@@ -78,7 +79,7 @@ const DropdownContent = styled.div<{
 const SearchInput = styled.input`
   width: calc(100% - 24px);
   padding: 8px 12px;
-  margin: 8px 12px;
+  margin: ${spacing.sm} 12px;
   border: 1px solid #ddd;
   border-radius: 4px;
   font-size: 13px;
@@ -136,7 +137,7 @@ const ItemBadge = styled.div`
 const DividerItem = styled.div`
   height: 1px;
   background-color: #e0e0e0;
-  margin: 4px 0;
+  margin: ${spacing.xs} 0;
 `;
 
 const SubmenuIndicator = styled(ChevronDown)`

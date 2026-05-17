@@ -1,4 +1,8 @@
 import styled, { keyframes } from 'styled-components';
+import { transitions } from '../../../styles/theme/transitions';
+import { typography } from '../../../styles/theme/typography';
+import { radius } from '../../../styles/theme/radius';
+import { spacing } from '../../../styles/theme/spacing';
 
 const spin = keyframes`
   from {
@@ -11,8 +15,8 @@ const spin = keyframes`
 
 export const ImageExtractorContainer = styled.div`
   background: var(--bg-secondary);
-  border-radius: 12px;
-  padding: 24px;
+  border-radius: ${radius.xl};
+  padding: ${spacing.lg};
   border: 1px solid var(--border-color);
 `;
 
@@ -22,7 +26,7 @@ export const ExtractorHeader = styled.div`
   align-items: center;
   margin-bottom: 24px;
   flex-wrap: wrap;
-  gap: 16px;
+  gap: ${spacing.md};
 
   @media (max-width: 768px) {
     flex-direction: column;
@@ -53,7 +57,7 @@ export const HeaderSubtext = styled.span`
 
 export const HeaderActions = styled.div`
   display: flex;
-  gap: 8px;
+  gap: ${spacing.sm};
 `;
 
 export const ActionBtn = styled.button<{ $danger?: boolean }>`
@@ -63,11 +67,11 @@ export const ActionBtn = styled.button<{ $danger?: boolean }>`
   padding: 8px 16px;
   border: 1px solid var(--border-color);
   background: var(--bg-tertiary);
-  border-radius: 8px;
+  border-radius: ${radius.lg};
   cursor: pointer;
   font-size: 0.85rem;
   color: ${(props) => (props.$danger ? '#ef4444' : 'var(--text-primary)')};
-  transition: all 0.2s;
+  transition: ${transitions.hover};
   border-color: ${(props) => (props.$danger ? 'rgba(239, 68, 68, 0.3)' : 'var(--border-color)')};
 
   &:hover {
@@ -77,11 +81,11 @@ export const ActionBtn = styled.button<{ $danger?: boolean }>`
 
 export const DropZone = styled.div<{ $active?: boolean; $processing?: boolean }>`
   border: 2px dashed var(--border-color);
-  border-radius: 12px;
+  border-radius: ${radius.xl};
   padding: 48px;
   text-align: center;
   cursor: pointer;
-  transition: all 0.3s;
+  transition: ${transitions.all};
   background: var(--bg-tertiary);
   border-color: ${(props) => (props.$active ? '#f59e0b' : 'var(--border-color)')};
   background: ${(props) => (props.$active ? 'rgba(245, 158, 11, 0.1)' : 'var(--bg-tertiary)')};
@@ -129,7 +133,7 @@ export const ProcessingState = styled.div`
 export const UploadedFiles = styled.div`
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: ${spacing.sm};
   margin-top: 16px;
 `;
 
@@ -179,19 +183,19 @@ export const ResultHeader = styled.div`
 export const ResultSource = styled.div`
   display: flex;
   align-items: center;
-  gap: 8px;
-  font-weight: 500;
+  gap: ${spacing.sm};
+  font-weight: ${typography.weights.medium};
   color: var(--text-primary);
 `;
 
 export const PreviewBtn = styled.button`
-  padding: 4px;
+  padding: ${spacing.xs};
   border: none;
   background: transparent;
   color: var(--text-muted);
   cursor: pointer;
-  border-radius: 4px;
-  transition: all 0.2s;
+  border-radius: ${radius.sm};
+  transition: ${transitions.hover};
 
   &:hover {
     background: var(--bg-hover);
@@ -201,7 +205,7 @@ export const PreviewBtn = styled.button`
 
 export const ResultActions = styled.div`
   display: flex;
-  gap: 4px;
+  gap: ${spacing.xs};
 
   button {
     padding: 6px;
@@ -209,8 +213,8 @@ export const ResultActions = styled.div`
     background: transparent;
     color: var(--text-muted);
     cursor: pointer;
-    border-radius: 4px;
-    transition: all 0.2s;
+    border-radius: ${radius.sm};
+    transition: ${transitions.hover};
 
     &:hover {
       background: var(--bg-hover);
@@ -220,7 +224,7 @@ export const ResultActions = styled.div`
 `;
 
 export const ResultData = styled.div`
-  padding: 16px;
+  padding: ${spacing.md};
   display: flex;
   flex-direction: column;
   gap: 12px;
@@ -240,7 +244,7 @@ export const DataField = styled.div`
 export const FieldValues = styled.div`
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: ${spacing.sm};
 `;
 
 export const ValueChip = styled.div`
@@ -250,7 +254,7 @@ export const ValueChip = styled.div`
   padding: 6px 12px;
   background: var(--bg-tertiary);
   border: 1px solid var(--border-color);
-  border-radius: 6px;
+  border-radius: ${radius.md};
   font-size: 0.85rem;
   color: var(--text-primary);
 
@@ -284,7 +288,7 @@ export const EditBtn = styled.button`
 
 export const ImportSection = styled.div`
   margin-top: 24px;
-  padding: 16px;
+  padding: ${spacing.md};
   background: rgba(245, 158, 11, 0.1);
   border: 1px solid rgba(245, 158, 11, 0.3);
   border-radius: 10px;
@@ -313,9 +317,9 @@ export const ImportBtn = styled.button`
   padding: 10px 24px;
   background: #f59e0b;
   border: none;
-  border-radius: 8px;
+  border-radius: ${radius.lg};
   color: white;
-  font-weight: 600;
+  font-weight: ${typography.weights.semibold};
   cursor: pointer;
   transition: background 0.2s;
 
@@ -350,7 +354,7 @@ export const PreviewContent = styled.div`
   img {
     max-width: 100%;
     max-height: 80vh;
-    border-radius: 8px;
+    border-radius: ${radius.lg};
   }
 `;
 
@@ -362,7 +366,7 @@ export const ClosePreviewBtn = styled.button`
   border: none;
   color: white;
   cursor: pointer;
-  padding: 8px;
+  padding: ${spacing.sm};
   display: flex;
   align-items: center;
   justify-content: center;

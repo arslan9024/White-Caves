@@ -1,6 +1,9 @@
 import { useEffect, useRef } from 'react';
 import { useDispatch } from 'react-redux';
 import { updateWebVital, recordPageView } from '../../store/analyticsSlice';
+import { createLogger } from '../../utils/logger';
+
+const log = createLogger('WebVitalsTracker');
 
 interface WebVitalMetric {
   name: string;
@@ -39,7 +42,7 @@ const WebVitalsTracker = () => {
       } catch (error) {
         // Web vitals may not be available in all environments (e.g., test, SSR)
         if (import.meta.env.DEV) {
-          console.debug('Web vitals unavailable:', error);
+          log.debug('Web vitals unavailable:', error);
         }
       }
     };

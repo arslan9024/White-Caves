@@ -1,6 +1,9 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import { logout } from './authSlice';
 import { authFetch } from '../utils/authFetch';
+import { getErrorMessage } from '../constants';
+// TASK-019 / Phase 27: Track homepage search lead events in analytics
+import { createSearchLead } from './slices/searchLeadsSlice';
 
 interface WebVital {
   value: number;
@@ -44,6 +47,9 @@ interface AnalyticsState {
   recentEvents: AnalyticsEvent[];
   loading: boolean;
   error: string | null;
+  // TASK-019 / Phase 27: Homepage search lead metrics
+  homepageSearchLeads: number;
+  homepageSearchLeadIds: string[];
 }
 
 const initialState: AnalyticsState = {
@@ -70,6 +76,9 @@ const initialState: AnalyticsState = {
   recentEvents: [],
   loading: false,
   error: null,
+  // TASK-019 / Phase 27
+  homepageSearchLeads: 0,
+  homepageSearchLeadIds: [],
 };
 
 interface FetchAnalyticsPayload {
@@ -81,59 +90,56 @@ export const fetchAnalytics = createAsyncThunk<
   FetchAnalyticsPayload,
   void,
   { rejectValue: string }
->(
-  'analytics/fetchAnalytics',
-  async (_, { rejectWithValue }) => {
-    try {
-      const response = await authFetch('/api/dashboard/summary');
-      if (!response.ok) throw new Error('Failed to fetch analytics');
-      const raw = await response.json();
-      return raw.data || raw;
-    } catch (error: unknown) {
-      return rejectWithValue(error instanceof Error ? error.message : 'Failed to fetch analytics');
-    }
+>('analytics/fetchAnalytics', async (_, { rejectWithValue }) => {
+  try {
+    const response = await authFetch('/api/dashboard/summary');
+    if (!response.ok) throw new Error('Failed to fetch analytics');
+    const raw = await response.json();
+    return raw.data || raw;
+  } catch (error: unknown) {
+    return rejectWithValue(getErrorMessage(error, 'Failed to fetch analytics'));
   }
-);
+});
 
 function calculatePerformanceScore(vitals: WebVitals): number {
   const scores: number[] = [];
-  
+
   if (vitals.lcp?.value) {
     if (vitals.lcp.value <= 2500) scores.push(100);
     else if (vitals.lcp.value <= 4000) scores.push(50);
     else scores.push(0);
   }
-  
+
   if (vitals.fid?.value) {
     if (vitals.fid.value <= 100) scores.push(100);
     else if (vitals.fid.value <= 300) scores.push(50);
     else scores.push(0);
   }
-  
+
   if (vitals.cls?.value) {
     if (vitals.cls.value <= 0.1) scores.push(100);
     else if (vitals.cls.value <= 0.25) scores.push(50);
     else scores.push(0);
   }
-  
+
   if (vitals.fcp?.value) {
     if (vitals.fcp.value <= 1800) scores.push(100);
     else if (vitals.fcp.value <= 3000) scores.push(50);
     else scores.push(0);
   }
-  
+
   if (vitals.ttfb?.value) {
     if (vitals.ttfb.value <= 800) scores.push(100);
     else if (vitals.ttfb.value <= 1800) scores.push(50);
     else scores.push(0);
   }
-  
+
   if (vitals.inp?.value) {
     if (vitals.inp.value <= 200) scores.push(100);
     else if (vitals.inp.value <= 500) scores.push(50);
     else scores.push(0);
   }
-  
+
   if (scores.length === 0) return 0;
   return Math.round(scores.reduce((a, b) => a + b, 0) / scores.length);
 }
@@ -149,25 +155,30 @@ const analyticsSlice = createSlice({
   name: 'analytics',
   initialState,
   reducers: {
-    updateWebVital: (state, action: PayloadAction<{ name: string; value: number; rating: string }>) => {
+    updateWebVital: (
+      state,
+      action: PayloadAction<{ name: string; value: number; rating: string }>
+    ) => {
       const { name, value, rating } = action.payload;
       const metricMap: Record<string, keyof WebVitals> = {
-        'LCP': 'lcp',
-        'FID': 'fid',
-        'CLS': 'cls',
-        'FCP': 'fcp',
-        'TTFB': 'ttfb',
-        'INP': 'inp',
+        LCP: 'lcp',
+        FID: 'fid',
+        CLS: 'cls',
+        FCP: 'fcp',
+        TTFB: 'ttfb',
+        INP: 'inp',
       };
+      // eslint-disable-next-line security/detect-object-injection
       const key = (metricMap[name] || name.toLowerCase()) as keyof WebVitals;
       if (key in state.webVitals) {
+        // eslint-disable-next-line security/detect-object-injection
         state.webVitals[key] = { value, rating, timestamp: Date.now() };
       }
       state.performance.lastUpdated = Date.now();
       state.performance.score = calculatePerformanceScore(state.webVitals);
       state.performance.status = getPerformanceStatus(state.performance.score);
     },
-    recordPageView: (state) => {
+    recordPageView: state => {
       state.traffic.pageViews += 1;
       state.traffic.activeUsers = Math.max(1, state.traffic.activeUsers);
     },
@@ -185,9 +196,9 @@ const analyticsSlice = createSlice({
     },
     resetAnalytics: () => initialState,
   },
-  extraReducers: (builder) => {
+  extraReducers: builder => {
     builder
-      .addCase(fetchAnalytics.pending, (state) => {
+      .addCase(fetchAnalytics.pending, state => {
         state.loading = true;
         state.error = null;
       })
@@ -204,10 +215,39 @@ const analyticsSlice = createSlice({
         state.loading = false;
         state.error = action.payload || 'Unknown error';
       })
-      .addCase(logout, () => initialState);
+      .addCase(logout, () => initialState)
+      // TASK-019 / Phase 27: Record homepage search lead events in analytics
+      .addCase(createSearchLead.fulfilled, (state, action) => {
+        state.homepageSearchLeads += 1;
+        if (action.payload.id) {
+          state.homepageSearchLeadIds.push(action.payload.id);
+          // Cap at 100 IDs to prevent memory bloat
+          if (state.homepageSearchLeadIds.length > 100) {
+            state.homepageSearchLeadIds = state.homepageSearchLeadIds.slice(-100);
+          }
+        }
+        // Also push to the general recentEvents stream
+        state.recentEvents.unshift({
+          type: 'homepage_search_lead',
+          leadId: action.payload.id,
+          source: 'homepage_search',
+          timestamp: Date.now(),
+        });
+        if (state.recentEvents.length > 50) {
+          state.recentEvents = state.recentEvents.slice(0, 50);
+        }
+      });
   },
 });
 
-export const { updateWebVital, recordPageView, updateTraffic, addEvent, resetAnalytics } = analyticsSlice.actions;
+export const { updateWebVital, recordPageView, updateTraffic, addEvent, resetAnalytics } =
+  analyticsSlice.actions;
+
+// TASK-019 / Phase 27: Selectors for homepage search lead analytics
+import type { RootState } from './store';
+export const selectHomepageSearchLeadCount = (state: RootState) =>
+  state.analytics.homepageSearchLeads;
+export const selectHomepageSearchLeadIds = (state: RootState) =>
+  state.analytics.homepageSearchLeadIds;
 
 export default analyticsSlice.reducer;

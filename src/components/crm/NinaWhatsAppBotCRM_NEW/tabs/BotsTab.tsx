@@ -18,8 +18,8 @@ interface BotsData {
   selectedBot: Bot | null;
   setSelectedBot: (bot: Bot | null) => void;
   handleAddBot: () => void;
-  handleDeleteBot: (id: string | number) => void;
-  handleToggleBotStatus: (id: string | number) => void;
+  handleDeleteBot: (id: string) => void;
+  handleToggleBotStatus: (id: string) => void;
   getStatusColor: (status: string) => string;
 }
 
@@ -45,7 +45,7 @@ export const BotsTab: React.FC<BotsTabProps> = ({ data }) => {
             <div className="bot-header">
               <h4>{bot.name}</h4>
               <div className="bot-actions">
-                <button className="action-btn" title="More options">
+                <button className="action-btn" title="More options" aria-label="More bot options">
                   <MoreVertical size={16} />
                 </button>
               </div>

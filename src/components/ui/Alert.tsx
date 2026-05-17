@@ -10,6 +10,7 @@ import {
   Info, CheckCircle, AlertCircle, XCircle, X,
 } from 'lucide-react';
 import { AlertProps, AlertType } from './advancedUI.types';
+import { spacing } from '../../styles/theme/spacing';
 
 // ============================================================================
 // STYLES
@@ -48,7 +49,7 @@ const AlertContainer = styled.div<{ $type: AlertType; $filled?: boolean }>`
       info: '#1565c0',
       success: '#2e7d32',
       warning: '#e65100',
-      error: '#c62828',
+      error: '#C62828',
     };
     return colors[props.$type];
   }};
@@ -92,7 +93,7 @@ const AlertDescription = styled.div`
 
 const AlertActions = styled.div`
   display: flex;
-  gap: 8px;
+  gap: ${spacing.sm};
   margin-top: 10px;
 `;
 
@@ -122,7 +123,7 @@ const CloseButton = styled.button`
   flex-shrink: 0;
   background: none;
   border: none;
-  padding: 4px;
+  padding: ${spacing.xs};
   cursor: pointer;
   color: inherit;
   display: flex;

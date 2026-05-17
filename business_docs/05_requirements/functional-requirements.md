@@ -652,3 +652,93 @@ Daily automated backups of all database data. Manual restore capability.
 ---
 
 **Version:** 1.0 | **Last Updated:** March 2026 | **Maintained By:** Product Team
+
+---
+
+## Appendix A: MoSCoW Priority Reference
+
+All requirements above carry MoSCoW labels. Existing labels are recorded in each requirement block. The overall distribution is:
+
+| Priority | Symbol | Definition |
+|----------|--------|-----------|
+| Critical (Must Have) | 🔴 | System cannot launch without this; regulatory or contractual obligation |
+| High (Should Have) | 🟠 | High business value; workaround exists but it is costly |
+| Medium (Could Have) | 🟡 | Adds value; can be deferred to the next sprint without user impact |
+| Low (Won't Have This Cycle) | 🟢 | Nice to have; planned for a future version |
+
+---
+
+## Appendix B: Acceptance Criteria Template (Given/When/Then)
+
+All acceptance criteria in this document follow the format:
+- **Given** [a context or precondition], **When** [an action is performed], **Then** [an expected outcome is observed]
+
+---
+
+## Appendix C: Test Traceability Matrix (Requirements → Test Cases)
+
+| Requirement ID | Test Case ID | Test Type | Priority | Owner | Status |
+|---------------|:------------:|-----------|:--------:|-------|--------|
+| REQ-AUTH-001 | TC-AUTH-001 | Automated (E2E) | Critical | QA | Planned |
+| REQ-AUTH-002 | TC-AUTH-002 | Automated (Unit) | Critical | QA | Planned |
+| REQ-AUTH-003 | TC-AUTH-003 | Automated (Integration) | Critical | QA | Planned |
+| REQ-AUTH-004 | TC-AUTH-004 | Automated (E2E) | High | QA | Planned |
+| REQ-AUTH-005 | TC-AUTH-005 | Automated (Unit) | High | QA | Planned |
+| REQ-AUTH-006 | TC-AUTH-006 | Manual Security Test | Critical | Security | Planned |
+| REQ-LEAD-001 | TC-LEAD-001 | Automated (E2E) | Critical | QA | Planned |
+| REQ-LEAD-002 | TC-LEAD-002 | Automated (Unit) | Critical | QA | Planned |
+| REQ-LEAD-003 | TC-LEAD-003 | Automated (Unit) | High | QA | Planned |
+| REQ-LEAD-004 | TC-LEAD-004 | Automated (Unit) | High | QA | Planned |
+| REQ-LEAD-005 | TC-LEAD-005 | Automated (E2E) | Critical | QA | Planned |
+| REQ-LEAD-006 | TC-LEAD-006 | Automated (E2E) | Medium | QA | Planned |
+| REQ-LEAD-007 | TC-LEAD-007 | Automated (Integration) | Medium | QA | Planned |
+| REQ-PROP-001 | TC-PROP-001 | Automated (E2E) | Critical | QA | Planned |
+| REQ-PROP-002 | TC-PROP-002 | Automated (Unit) | Critical | QA | Planned |
+| REQ-PROP-003 | TC-PROP-003 | Automated (E2E) | High | QA | Planned |
+| REQ-PROP-004 | TC-PROP-004 | Automated (Unit) | High | QA | Planned |
+| REQ-PROP-005 | TC-PROP-005 | Automated (Integration) | High | QA | Planned |
+| REQ-PROP-006 | TC-PROP-006 | Automated (Unit) | Medium | QA | Planned |
+| REQ-PROP-007 | TC-PROP-007 | Automated (Compliance Gate) | Critical | QA | Planned |
+| REQ-PROP-008 | TC-PROP-008 | Automated (Integration) | High | QA | Planned |
+| REQ-WA-001 | TC-WA-001 | Automated (E2E) | Critical | QA | Planned |
+| REQ-WA-002 | TC-WA-002 | Automated (Unit) | High | QA | Planned |
+| REQ-WA-003 | TC-WA-003 | Automated (Integration) | Critical | QA | Planned |
+| REQ-WA-004 | TC-WA-004 | Automated (Integration) | High | QA | Planned |
+| REQ-WA-005 | TC-WA-005 | Automated (E2E) | Medium | QA | Planned |
+| REQ-PIPELINE-001 | TC-PIPELINE-001 | Automated (E2E) | Critical | QA | Planned |
+| REQ-PIPELINE-002 | TC-PIPELINE-002 | Automated (E2E) | Critical | QA | Planned |
+| REQ-PIPELINE-003 | TC-PIPELINE-003 | Automated (Unit) | High | QA | Planned |
+| REQ-PIPELINE-004 | TC-PIPELINE-004 | Automated (Unit + Integration) | Critical | QA | Planned |
+
+---
+
+## Appendix D: Enhanced Acceptance Criteria — Key Requirements (Given/When/Then)
+
+### REQ-AUTH-001 — Acceptance Criteria (Enhanced)
+**Given** a user with email `admin@whitecaves.ae` and correct password attempts login, **When** they submit the form, **Then** a JWT is issued with 24-hour expiry and the user is redirected to the dashboard within 2 seconds.  
+**Given** an incorrect password is entered 5 times consecutively, **When** the 5th failed attempt occurs, **Then** the account is locked for 30 minutes and a lockout email is sent to the account owner.  
+**Test Reference:** TC-AUTH-001
+
+### REQ-LEAD-001 — Acceptance Criteria (Enhanced)
+**Given** an agent fills in the lead creation form with: name, phone, source=WhatsApp, **When** the form is submitted, **Then** the lead is created within 1 second with a unique ID, source = "WhatsApp" is set, the lead appears in the agent's lead list immediately, and the lead score is initialised to the source baseline value.  
+**Given** a lead with phone `+971 50 XXX XXXX` already exists, **When** a new lead with the same phone is submitted, **Then** a duplicate warning is shown: "Lead with this phone number already exists — [Lead Name]" with a link to the existing record.  
+**Test Reference:** TC-LEAD-001
+
+### REQ-LEAD-002 — Acceptance Criteria (Enhanced)
+**Given** a lead record exists with source=WhatsApp and a conversation thread, **When** an agent updates the lead's budget to AED 3.5M, **Then** the activity log entry is created within 3 seconds showing: who made the change, what changed (budget: null → AED 3,500,000), and the timestamp in UTC+4.  
+**Test Reference:** TC-LEAD-002
+
+### REQ-PROP-007 — RERA Compliance (Enhanced — Given/When/Then)
+**Given** a property has `permitNumber = null`, **When** an agent attempts to change status to "Available", **Then** the system returns a 422 validation error: "RERA Trakheesi Permit number required (RERA Circular 4/2021). Penalty for non-compliance: AED 50,000 per listing."  
+**Given** a property's `permitExpiryDate` is exactly midnight tonight, **When** the nightly compliance job executes, **Then** the property status is changed to "Draft", the event is logged in the audit trail, and the assigned agent receives both an in-app notification and a WhatsApp message.  
+**Test Reference:** TC-PROP-007
+
+### REQ-PIPELINE-004 — Commission (Enhanced — Given/When/Then)
+**Given** a sale transaction at AED 2,000,000 with 2% commission rate and a 50/50 split closes, **When** the "Close Deal" button is clicked, **Then** a commission record is auto-created: total = AED 40,000; company = AED 20,000; agent = AED 20,000; status = "Pending Approval"; and a notification is sent to the Sales Manager.  
+**Given** a commission record has status = "Paid", **When** any user calls `PATCH /api/commissions/{id}`, **Then** the response is HTTP 403 with body `{"error": "commission_locked", "message": "Commission record is locked after payment"}`.  
+**Test Reference:** TC-PIPELINE-004
+
+---
+
+**Version:** 1.1 | **Last Updated:** June 2026 | **Maintained By:** Product Team  
+**Change Log:** v1.0 — Initial requirements REQ-AUTH through REQ-ADMIN (March 2026); v1.1 — Added Appendix A (MoSCoW legend), Appendix B (acceptance criteria template), Appendix C (test traceability matrix), Appendix D (enhanced Given/When/Then for critical requirements) (June 2026)

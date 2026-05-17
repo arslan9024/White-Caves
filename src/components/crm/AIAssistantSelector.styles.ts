@@ -1,4 +1,8 @@
 import styled from 'styled-components';
+import { transitions } from '../../styles/theme/transitions';
+import { typography } from '../../styles/theme/typography';
+import { radius } from '../../styles/theme/radius';
+import { spacing } from '../../styles/theme/spacing';
 
 export const SelectorContainer = styled.div<{ $compact?: boolean }>`
   position: relative;
@@ -6,7 +10,7 @@ export const SelectorContainer = styled.div<{ $compact?: boolean }>`
   border-radius: 15px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
   width: 100%;
-  max-width: ${(props) => (props.$compact ? '300px' : '100%')};
+  max-width: ${props => (props.$compact ? '300px' : '100%')};
 `;
 
 export const CurrentAssistantDisplay = styled.div`
@@ -14,7 +18,7 @@ export const CurrentAssistantDisplay = styled.div`
   align-items: center;
   padding: 16px 20px;
   cursor: pointer;
-  transition: all 0.3s;
+  transition: ${transitions.all};
   border-radius: 15px;
   gap: 12px;
 
@@ -31,7 +35,7 @@ export const AssistantAvatar = styled.div`
 export const AvatarIcon = styled.div`
   width: 48px;
   height: 48px;
-  border-radius: 12px;
+  border-radius: ${radius.xl};
   display: flex;
   align-items: center;
   justify-content: center;
@@ -54,13 +58,13 @@ export const AssistantInfo = styled.div`
 `;
 
 export const AssistantName = styled.div`
-  font-size: 16px;
-  font-weight: 600;
+  font-size: ${typography.sizes.md};
+  font-weight: ${typography.weights.semibold};
   color: var(--text-primary);
 `;
 
 export const AssistantTitle = styled.div`
-  font-size: 12px;
+  font-size: ${typography.sizes.xs};
   color: var(--text-secondary);
   white-space: nowrap;
   overflow: hidden;
@@ -91,7 +95,7 @@ export const DropdownSearch = styled.div`
   align-items: center;
   padding: 12px 16px;
   border-bottom: 1px solid var(--border-color);
-  gap: 8px;
+  gap: ${spacing.sm};
   position: sticky;
   top: 0;
   background: var(--card-bg);
@@ -107,7 +111,7 @@ export const SearchInput = styled.input`
   flex: 1;
   border: none;
   background: transparent;
-  font-size: 14px;
+  font-size: ${typography.sizes.base};
   color: var(--text-primary);
   outline: none;
 
@@ -119,14 +123,14 @@ export const SearchInput = styled.input`
 export const ClearSearchBtn = styled.button`
   background: none;
   border: none;
-  padding: 4px;
+  padding: ${spacing.xs};
   cursor: pointer;
   color: var(--text-secondary);
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 4px;
-  transition: all 0.2s;
+  border-radius: ${radius.sm};
+  transition: ${transitions.hover};
 
   &:hover {
     background: var(--hover-bg);
@@ -144,16 +148,13 @@ export const DepartmentFilter = styled.div`
 export const DeptBtn = styled.button<{ $active?: boolean }>`
   padding: 6px 12px;
   border: 1px solid var(--border-color);
-  background: ${(props) =>
-    props.$active ? 'var(--primary-color)' : 'transparent'};
-  border-color: ${(props) =>
-    props.$active ? 'var(--primary-color)' : 'var(--border-color)'};
-  color: ${(props) =>
-    props.$active ? 'white' : 'var(--text-secondary)'};
+  background: ${props => (props.$active ? 'var(--primary-color)' : 'transparent')};
+  border-color: ${props => (props.$active ? 'var(--primary-color)' : 'var(--border-color)')};
+  color: ${props => (props.$active ? 'white' : 'var(--text-secondary)')};
   border-radius: 20px;
   font-size: 11px;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: ${transitions.hover};
 
   &:hover {
     background: var(--hover-bg);
@@ -174,10 +175,10 @@ export const DropdownSection = styled.div`
 export const SectionHeader = styled.div`
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: ${spacing.sm};
   padding: 8px 16px;
   font-size: 11px;
-  font-weight: 600;
+  font-weight: ${typography.weights.semibold};
   text-transform: uppercase;
   color: var(--text-tertiary);
   letter-spacing: 0.5px;
@@ -185,7 +186,7 @@ export const SectionHeader = styled.div`
 
 export const SectionCount = styled.span`
   margin-left: auto;
-  font-weight: 400;
+  font-weight: ${typography.weights.regular};
 `;
 
 export const SectionIcon = styled.span`
@@ -197,12 +198,10 @@ export const AssistantItem = styled.div<{ $selected?: boolean }>`
   align-items: center;
   padding: 10px 16px;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: ${transitions.hover};
   gap: 12px;
-  background: ${(props) =>
-    props.$selected
-      ? 'var(--primary-light, rgba(59, 130, 246, 0.1))'
-      : 'transparent'};
+  background: ${props =>
+    props.$selected ? 'var(--primary-light, rgba(59, 130, 246, 0.1))' : 'transparent'};
 
   &:hover {
     background: var(--hover-bg, rgba(0, 0, 0, 0.05));
@@ -234,8 +233,8 @@ export const ItemInfo = styled.div`
 `;
 
 export const ItemName = styled.div`
-  font-size: 14px;
-  font-weight: 600;
+  font-size: ${typography.sizes.base};
+  font-weight: ${typography.weights.semibold};
   color: var(--text-primary);
 `;
 
@@ -250,14 +249,14 @@ export const ItemTitle = styled.div`
 export const ItemMetrics = styled.div`
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: ${spacing.sm};
   margin-top: 4px;
 `;
 
 export const Metric = styled.div`
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: ${spacing.xs};
   font-size: 10px;
   color: var(--text-tertiary);
 `;
@@ -266,9 +265,9 @@ export const HealthBadge = styled.span<{ $status?: string }>`
   padding: 2px 6px;
   border-radius: 10px;
   font-size: 9px;
-  font-weight: 600;
+  font-weight: ${typography.weights.semibold};
   text-transform: capitalize;
-  background: ${(props) => {
+  background: ${props => {
     switch (props.$status) {
       case 'optimal':
         return 'rgba(16, 185, 129, 0.1)';
@@ -280,7 +279,7 @@ export const HealthBadge = styled.span<{ $status?: string }>`
         return 'rgba(107, 114, 128, 0.1)';
     }
   }};
-  color: ${(props) => {
+  color: ${props => {
     switch (props.$status) {
       case 'optimal':
         return '#10B981';
@@ -310,12 +309,12 @@ export const FavoriteBtn = styled.button`
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 6px;
-  transition: all 0.2s;
+  border-radius: ${radius.md};
+  transition: ${transitions.hover};
 
   &:hover {
     color: var(--primary-color);
-    background: rgba(220, 38, 38, 0.1);
+    background: rgba(227, 30, 36, 0.1);
   }
 
   svg {

@@ -1,5 +1,7 @@
 import styled from 'styled-components';
 import { theme } from '../../../styles/theme';
+import { typography } from '../../../styles/theme/typography';
+import { spacing } from '../../../styles/theme/spacing';
 
 /* ===============================================
    NAVBAR CONTAINER
@@ -18,7 +20,7 @@ export const NavBarContainer = styled.header`
   align-items: center;
   justify-content: space-between;
   padding: 0 ${theme.spacing.lg};
-  z-index: ${theme.zIndex.navbar};
+  z-index: ${theme.zIndex.fixed};
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
   gap: ${theme.spacing.lg};
 
@@ -74,7 +76,7 @@ export const LogoIcon = styled.div`
 
 export const LogoLetter = styled.span`
   font-size: 20px;
-  font-weight: 800;
+  font-weight: ${typography.weights.bold};
   color: white;
   font-family: ${theme.typography.fontFamily.heading};
 `;
@@ -207,10 +209,12 @@ export const SearchContainer = styled.div<{ $focused?: boolean }>`
     background: rgba(255, 255, 255, 0.08);
   }
 
-  ${props => props.$focused && `
+  ${props =>
+    props.$focused &&
+    `
     background: ${theme.colors.background.secondary};
     border-color: ${theme.colors.primary};
-    box-shadow: 0 0 0 3px rgba(211, 47, 47, 0.1);
+    box-shadow: 0 0 0 3px rgba(227, 30, 36, 0.15);
 
     @media (prefers-color-scheme: dark) {
       background: rgba(255, 255, 255, 0.12);
@@ -250,7 +254,7 @@ export const SearchInput = styled.input`
 
 export const SearchShortcut = styled.div`
   display: flex;
-  gap: 4px;
+  gap: ${spacing.xs};
 
   @media (max-width: 768px) {
     display: none;
@@ -310,7 +314,9 @@ export const NavIconButton = styled.button<{ $hasUnread?: boolean }>`
     }
   }
 
-  ${props => props.$hasUnread && `
+  ${props =>
+    props.$hasUnread &&
+    `
     &::after {
       content: '';
       position: absolute;
@@ -362,7 +368,7 @@ export const DropdownMenu = styled.div`
   min-width: 280px;
   overflow: hidden;
   animation: dropdownFadeIn 0.2s ease;
-  z-index: ${theme.zIndex.navbar + 10};
+  z-index: ${theme.zIndex.fixed + 10};
 
   @keyframes dropdownFadeIn {
     from {
@@ -461,18 +467,19 @@ export const NotificationItem = styled.div<{ $unread?: boolean }>`
   padding: ${theme.spacing.md};
   cursor: pointer;
   transition: background 0.15s ease;
-  background: ${props => (props.$unread ? '#ffebee' : 'transparent')};
+  background: ${props => (props.$unread ? 'rgba(227, 30, 36, 0.08)' : 'transparent')};
 
   &:hover {
-    background: ${props => (props.$unread ? '#ffcdd2' : theme.colors.background.tertiary)};
+    background: ${props =>
+      props.$unread ? 'rgba(227, 30, 36, 0.14)' : theme.colors.background.tertiary};
   }
 
   @media (prefers-color-scheme: dark) {
-    background: ${props => (props.$unread ? 'rgba(211, 47, 47, 0.1)' : 'transparent')};
+    background: ${props => (props.$unread ? 'rgba(227, 30, 36, 0.10)' : 'transparent')};
 
     &:hover {
       background: ${props =>
-        props.$unread ? 'rgba(211, 47, 47, 0.15)' : 'rgba(255, 255, 255, 0.05)'};
+        props.$unread ? 'rgba(227, 30, 36, 0.15)' : 'rgba(255, 255, 255, 0.05)'};
     }
   }
 `;
@@ -614,7 +621,7 @@ export const ChevronIcon = styled.div<{ $open?: boolean }>`
 export const DropdownDivider = styled.div`
   height: 1px;
   background: ${theme.colors.border};
-  margin: 4px 0;
+  margin: ${spacing.xs} 0;
 
   @media (prefers-color-scheme: dark) {
     background: rgba(255, 255, 255, 0.1);
@@ -630,13 +637,13 @@ export const DropdownItem = styled.button<{ $isLogout?: boolean; $isAdmin?: bool
   background: none;
   border: none;
   font-size: 13px;
-  color: ${props => (props.$isLogout ? '#c62828' : theme.colors.text.primary)};
+  color: ${props => (props.$isLogout ? '#D32F2F' : theme.colors.text.primary)};
   cursor: pointer;
   transition: background 0.15s ease;
   text-align: left;
 
   svg {
-    color: ${props => (props.$isLogout ? '#c62828' : theme.colors.text.secondary)};
+    color: ${props => (props.$isLogout ? '#D32F2F' : theme.colors.text.secondary)};
     flex-shrink: 0;
   }
 

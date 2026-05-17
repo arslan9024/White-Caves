@@ -1,11 +1,15 @@
 import styled from 'styled-components';
+import { transitions } from '../../../styles/theme/transitions';
+import { typography } from '../../../styles/theme/typography';
+import { radius } from '../../../styles/theme/radius';
+import { spacing } from '../../../styles/theme/spacing';
 
 export const PropertyDetailsCardContainer = styled.div`
   background: var(--bg-primary);
   border: 1px solid var(--border-color);
-  border-radius: 12px;
+  border-radius: ${radius.xl};
   overflow: hidden;
-  font-size: ${(props) => (props.className?.includes('compact') ? '13px' : '14px')};
+  font-size: ${props => (props.className?.includes('compact') ? '13px' : '14px')};
 `;
 
 export const CardHeader = styled.div`
@@ -20,19 +24,19 @@ export const CardHeader = styled.div`
 export const PropertyId = styled.div`
   display: flex;
   align-items: center;
-  gap: 8px;
-  font-size: 18px;
-  font-weight: 700;
+  gap: ${spacing.sm};
+  font-size: ${typography.sizes.lg};
+  font-weight: ${typography.weights.bold};
   color: var(--text-primary);
 `;
 
 export const StatusBadge = styled.span<{ $status?: string }>`
   padding: 6px 12px;
   border-radius: 20px;
-  font-size: 12px;
-  font-weight: 600;
+  font-size: ${typography.sizes.xs};
+  font-weight: ${typography.weights.semibold};
   text-transform: uppercase;
-  background: ${(props) => {
+  background: ${props => {
     switch (props.$status) {
       case 'rented':
         return 'rgba(34, 197, 94, 0.15)';
@@ -46,14 +50,14 @@ export const StatusBadge = styled.span<{ $status?: string }>`
         return 'rgba(107, 114, 128, 0.15)';
     }
   }};
-  color: ${(props) => {
+  color: ${props => {
     switch (props.$status) {
       case 'rented':
         return '#22c55e';
       case 'available':
         return '#3b82f6';
       case 'sold':
-        return '#dc2626';
+        return '#E31E24';
       case 'reserved':
         return '#f59e0b';
       default:
@@ -77,9 +81,9 @@ export const DetailsSection = styled.div`
 export const SectionTitle = styled.h3`
   display: flex;
   align-items: center;
-  gap: 8px;
-  font-size: 13px;
-  font-weight: 600;
+  gap: ${spacing.sm};
+  font-size: ${typography.sizes.sm};
+  font-weight: ${typography.weights.semibold};
   color: var(--text-secondary);
   text-transform: uppercase;
   letter-spacing: 0.5px;
@@ -95,7 +99,7 @@ export const FieldsGrid = styled.div`
 
   &.compact {
     grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-    gap: 8px;
+    gap: ${spacing.sm};
   }
 `;
 
@@ -105,12 +109,12 @@ export const FieldItem = styled.div<{ $empty?: boolean }>`
   gap: 10px;
   padding: 10px 12px;
   background: var(--bg-secondary);
-  border-radius: 8px;
-  transition: all 0.2s ease;
-  opacity: ${(props) => (props.$empty ? '0.5' : '1')};
+  border-radius: ${radius.lg};
+  transition: ${transitions.hover};
+  opacity: ${props => (props.$empty ? '0.5' : '1')};
 
   &:hover {
-    background: rgba(220, 38, 38, 0.05);
+    background: rgba(227, 30, 36, 0.05);
   }
 `;
 
@@ -120,8 +124,8 @@ export const FieldIcon = styled.div`
   justify-content: center;
   width: 28px;
   height: 28px;
-  background: rgba(220, 38, 38, 0.1);
-  border-radius: 6px;
+  background: rgba(227, 30, 36, 0.1);
+  border-radius: ${radius.md};
   color: var(--primary);
   flex-shrink: 0;
 
@@ -146,13 +150,13 @@ export const FieldLabel = styled.span`
 `;
 
 export const FieldValue = styled.span`
-  font-size: 14px;
-  font-weight: 600;
+  font-size: ${typography.sizes.base};
+  font-weight: ${typography.weights.semibold};
   color: var(--text-primary);
   word-break: break-word;
 
   &.compact {
-    font-size: 12px;
+    font-size: ${typography.sizes.xs};
   }
 `;
 
@@ -177,7 +181,7 @@ export const OwnerItem = styled.button`
   border: 1px solid var(--border-color);
   border-radius: 10px;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: ${transitions.hover};
   text-align: left;
 
   &:hover {
@@ -189,18 +193,14 @@ export const OwnerItem = styled.button`
 export const OwnerAvatar = styled.div`
   width: 40px;
   height: 40px;
-  background: linear-gradient(
-    135deg,
-    var(--primary),
-    #ff6b6b
-  );
+  background: linear-gradient(135deg, var(--primary), #ff6b6b);
   border-radius: 10px;
   display: flex;
   align-items: center;
   justify-content: center;
   color: white;
-  font-weight: 700;
-  font-size: 16px;
+  font-weight: ${typography.weights.bold};
+  font-size: ${typography.sizes.md};
   flex-shrink: 0;
 `;
 
@@ -211,7 +211,7 @@ export const OwnerInfo = styled.div`
 
 export const OwnerName = styled.span`
   display: block;
-  font-weight: 600;
+  font-weight: ${typography.weights.semibold};
   color: var(--text-primary);
   margin-bottom: 4px;
 `;
@@ -225,19 +225,19 @@ export const OwnerContacts = styled.div`
 export const ContactBadge = styled.span`
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: ${spacing.xs};
   padding: 3px 8px;
   background: var(--bg-secondary);
-  border-radius: 4px;
+  border-radius: ${radius.sm};
   font-size: 11px;
   color: var(--text-secondary);
 `;
 
 export const MoreContacts = styled.span`
   padding: 3px 8px;
-  background: rgba(220, 38, 38, 0.1);
-  border-radius: 4px;
+  background: rgba(227, 30, 36, 0.1);
+  border-radius: ${radius.sm};
   font-size: 11px;
   color: var(--primary);
-  font-weight: 600;
+  font-weight: ${typography.weights.semibold};
 `;

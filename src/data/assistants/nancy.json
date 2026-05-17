@@ -1,0 +1,77 @@
+{
+  "employees": [
+    {
+      "id": "emp-1",
+      "name": "Ahmed Hassan",
+      "title": "Senior Sales Agent",
+      "department": "Sales",
+      "email": "ahmed.h@whitecaves.ae",
+      "phone": "+971501111111",
+      "startDate": "2023-06-15",
+      "status": "active",
+      "performance": 95
+    },
+    {
+      "id": "emp-2",
+      "name": "Fatima Al-Sayed",
+      "title": "Leasing Specialist",
+      "department": "Leasing",
+      "email": "fatima.s@whitecaves.ae",
+      "phone": "+971502222222",
+      "startDate": "2024-02-01",
+      "status": "active",
+      "performance": 88
+    },
+    {
+      "id": "emp-3",
+      "name": "John Smith",
+      "title": "Sales Executive",
+      "department": "Sales",
+      "email": "john.s@whitecaves.ae",
+      "phone": "+971503333333",
+      "startDate": "2022-09-10",
+      "status": "active",
+      "performance": 92
+    }
+  ],
+  "recruitment": [
+    {
+      "id": "job-1",
+      "title": "Property Consultant",
+      "department": "Sales",
+      "status": "open",
+      "applications": 45,
+      "interviews": 8,
+      "postedDate": "2026-01-02"
+    },
+    {
+      "id": "job-2",
+      "title": "Marketing Coordinator",
+      "department": "Marketing",
+      "status": "interviewing",
+      "applications": 67,
+      "interviews": 5,
+      "postedDate": "2025-12-15"
+    }
+  ],
+  "attendance": {
+    "today": { "present": 23, "absent": 2, "leave": 3, "remote": 5 },
+    "thisMonth": { "avgAttendance": 94.5, "leaveDays": 45, "overtime": 120 }
+  },
+  "performance": [
+    { "employee": "Ahmed Hassan", "rating": 4.8, "targets": 112, "feedback": "Exceptional" },
+    { "employee": "Fatima Al-Sayed", "rating": 4.4, "targets": 95, "feedback": "Very Good" },
+    { "employee": "John Smith", "rating": 4.6, "targets": 108, "feedback": "Excellent" }
+  ],
+  "training": [
+    { "id": "train-1", "name": "RERA Certification", "participants": 12, "status": "scheduled", "date": "2026-01-20" },
+    { "id": "train-2", "name": "Sales Mastery Workshop", "participants": 8, "status": "completed", "date": "2026-01-05" }
+  ],
+  "stats": {
+    "totalEmployees": 33,
+    "departments": 6,
+    "avgTenure": "2.3 years",
+    "turnoverRate": 8.5,
+    "openPositions": 4
+  }
+}

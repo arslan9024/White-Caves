@@ -1,0 +1,3 @@
+steps:
+  - name: Install global tools
+    run: npm i -g openclaw

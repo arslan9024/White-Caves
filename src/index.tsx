@@ -7,13 +7,22 @@ import ErrorBoundary from './components/ErrorBoundary';
 import { ToastProvider } from './components/Toast';
 import { ThemeProvider } from './context/ThemeContext';
 import { validateEnvironment } from './config/validateEnv';
+// Dubai Luxury design tokens — loaded globally so any component opting into
+// the `dubai-luxury-theme` class inherits --luxury-cta-bg / --primary-color etc.
+import './styles/dubaiLuxuryTheme.css';
+// RTL utility overrides — applied automatically when dir="rtl" is set on <html>
+import './styles/rtl.css';
 import { createLogger } from './utils/logger';
 import { restoreAuthToken } from './services/authService';
+import { registerServiceWorker } from './utils/registerServiceWorker';
 
 const log = createLogger('App');
 
 // Restore JWT token from storage on app init (sets apiClient header)
 restoreAuthToken();
+
+// Phase 10: Register PWA service worker in production
+void registerServiceWorker();
 
 // Validate environment at startup — halt render if critical vars missing
 const envResult = validateEnvironment();
@@ -24,7 +33,8 @@ if (!envResult.valid) {
 // Find root element
 const rootElement = document.getElementById('root');
 if (!rootElement) {
-  document.body.innerHTML = '<p style="color: red; padding: 20px;">Root element not found. Please check index.html.</p>';
+  document.body.innerHTML =
+    '<p style="color: red; padding: 20px;">Root element not found. Please check index.html.</p>';
 } else {
   try {
     const root = ReactDOM.createRoot(rootElement);

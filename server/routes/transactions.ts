@@ -15,6 +15,7 @@ import { sanitizeString } from '../utils/sanitize';
 import { requirePermission } from '../middleware/rbac';
 
 const router = Router();
+const RISKY_TRANSACTION_AMOUNT_AED = 500000;
 
 // ─── GET /api/transactions ──────────────────────────────────────────────
 router.get(
@@ -27,12 +28,13 @@ router.get(
       throw new AppError('Access denied — insufficient role for transaction data', 403);
     }
 
-    const {
-      status, type,
-      sortBy = 'createdAt', sortOrder = 'desc',
-    } = req.query;
+    const { status, type, sortBy = 'createdAt', sortOrder = 'desc' } = req.query;
 
-    const { page: pageNum, limit, skip } = parsePagination({
+    const {
+      page: pageNum,
+      limit,
+      skip,
+    } = parsePagination({
       page: req.query.page as string,
       limit: req.query.pageSize as string,
     });
@@ -43,7 +45,9 @@ router.get(
 
     const validSorts = ['createdAt', 'amount', 'status', 'closingDate'];
     const field = validSorts.includes(sortBy as string) ? (sortBy as string) : 'createdAt';
-    const orderBy: Prisma.TransactionOrderByWithRelationInput = { [field]: sortOrder === 'asc' ? 'asc' : 'desc' };
+    const orderBy: Prisma.TransactionOrderByWithRelationInput = {
+      [field]: sortOrder === 'asc' ? 'asc' : 'desc',
+    };
 
     const [transactions, total] = await Promise.all([
       prisma.transaction.findMany({
@@ -67,11 +71,13 @@ router.get(
 router.get(
   '/stats',
   requirePermission('view_payments'),
-  asyncHandler(async (req: Request, res: Response) => {    // Authorization: Only managers+ can view transaction statistics
+  asyncHandler(async (req: Request, res: Response) => {
+    // Authorization: Only managers+ can view transaction statistics
     const allowedRoles = ['owner', 'manager', 'admin', 'finance'];
     if (!allowedRoles.includes((req as AuthRequest).user?.role || '')) {
       throw new AppError('Access denied — transaction statistics require manager role', 403);
-    }    const [total, byStatus, byType, valueStats] = await Promise.all([
+    }
+    const [total, byStatus, byType, valueStats] = await Promise.all([
       prisma.transaction.count(),
       prisma.transaction.groupBy({ by: ['status'], _count: { _all: true } }),
       prisma.transaction.groupBy({ by: ['type'], _count: { _all: true }, _sum: { amount: true } }),
@@ -83,14 +89,20 @@ router.get(
     ]);
 
     const statusCounts: Record<string, number> = {};
-    byStatus.forEach((s) => { statusCounts[s.status] = s._count._all; });
+    byStatus.forEach(s => {
+      statusCounts[s.status] = s._count._all;
+    });
 
     res.status(200).json({
       success: true,
       data: {
         total,
         byStatus: statusCounts,
-        byType: byType.map((t) => ({ type: t.type, count: t._count._all, value: t._sum.amount || 0 })),
+        byType: byType.map(t => ({
+          type: t.type,
+          count: t._count._all,
+          value: t._sum.amount || 0,
+        })),
         totalValue: valueStats._sum.amount || 0,
         averageValue: Math.round(valueStats._avg.amount || 0),
       },
@@ -134,13 +146,49 @@ router.post(
     const { type, amount, propertyId, leadId, agentId, closingDate, notes } = req.body;
 
     validate(req.body, {
-      amount:     rules.positiveNumber('Amount'),
-      type:       rules.oneOf('Transaction type', ['sale', 'lease', 'rental']),
+      amount: rules.positiveNumber('Amount'),
+      type: rules.oneOf('Transaction type', ['sale', 'lease', 'rental']),
       propertyId: rules.optionalMongoId('Property ID'),
-      leadId:     rules.optionalMongoId('Lead ID'),
-      agentId:    rules.optionalMongoId('Agent ID'),
-      notes:      rules.optionalString('Notes'),
+      leadId: rules.optionalMongoId('Lead ID'),
+      agentId: rules.optionalMongoId('Agent ID'),
+      notes: rules.optionalString('Notes'),
     });
+
+    const parsedAmount = parseFloat(amount);
+    const transactionType = type || 'sale';
+
+    // W4-004 compliance baseline: risky transaction flows require verified KYC.
+    // Risk definition: any sale OR amount >= AED 500k.
+    const isRiskyTransaction =
+      transactionType === 'sale' || parsedAmount >= RISKY_TRANSACTION_AMOUNT_AED;
+    if (isRiskyTransaction) {
+      if (!leadId) {
+        throw new AppError(
+          'KYC verification required: risky transactions must be linked to a verified lead',
+          400
+        );
+      }
+
+      const linkedLead = await prisma.lead.findUnique({
+        where: { id: String(leadId) },
+        select: { id: true, tags: true },
+      });
+
+      if (!linkedLead) {
+        throw new AppError('Linked lead not found for KYC verification', 400);
+      }
+
+      const hasVerifiedKyc =
+        Array.isArray(linkedLead.tags) &&
+        linkedLead.tags.some(tag => String(tag).toLowerCase() === 'kyc_verified');
+
+      if (!hasVerifiedKyc) {
+        throw new AppError(
+          'KYC verification required: linked lead is not verified for risky transaction',
+          403
+        );
+      }
+    }
 
     // Validate closingDate if provided
     let validClosingDate: Date | null = null;
@@ -154,9 +202,9 @@ router.post(
 
     const transaction = await prisma.transaction.create({
       data: {
-        type: type || 'sale',
+        type: transactionType,
         status: 'draft',
-        amount: parseFloat(amount),
+        amount: parsedAmount,
         propertyId: propertyId || null,
         leadId: leadId || null,
         agentId: agentId || null,
@@ -189,14 +237,14 @@ router.patch(
     const { status, amount, type, closingDate, notes, documents } = req.body;
 
     validate(req.body, {
-      status:    rules.oneOf('Status', ['draft', 'pending', 'active', 'completed', 'cancelled']),
-      amount:    rules.optionalPositiveNumber('Amount'),
-      type:      rules.oneOf('Transaction type', ['sale', 'lease', 'rental']),
+      status: rules.oneOf('Status', ['draft', 'pending', 'active', 'completed', 'cancelled']),
+      amount: rules.optionalPositiveNumber('Amount'),
+      type: rules.oneOf('Transaction type', ['sale', 'lease', 'rental']),
       documents: rules.optionalArray('Documents'),
     });
 
     // Wrap in Prisma transaction for atomicity (prevent race conditions)
-    const transaction = await prisma.$transaction(async (tx) => {
+    const transaction = await prisma.$transaction(async tx => {
       const existing = await tx.transaction.findUnique({ where: { id } });
       if (!existing) throw new AppError('Transaction not found', 404);
 
@@ -219,7 +267,10 @@ router.patch(
         if (closingDate) {
           const d = new Date(closingDate);
           if (isNaN(d.getTime())) {
-            throw new AppError('Invalid closing date format. Use ISO 8601 format (YYYY-MM-DD)', 400);
+            throw new AppError(
+              'Invalid closing date format. Use ISO 8601 format (YYYY-MM-DD)',
+              400
+            );
           }
           data.closingDate = d;
         } else {
@@ -227,7 +278,10 @@ router.patch(
         }
       }
       if (notes !== undefined) data.notes = notes ? sanitizeString(String(notes)) : null;
-      if (documents !== undefined) data.documents = Array.isArray(documents) ? documents.map((d: unknown) => typeof d === 'string' ? sanitizeString(d) : String(d)) : [];
+      if (documents !== undefined)
+        data.documents = Array.isArray(documents)
+          ? documents.map((d: unknown) => (typeof d === 'string' ? sanitizeString(d) : String(d)))
+          : [];
 
       const updated = await tx.transaction.update({ where: { id }, data });
 
@@ -267,7 +321,7 @@ router.delete(
       throw new AppError('Only managers can delete transactions', 403);
     }
 
-    await prisma.$transaction(async (tx) => {
+    await prisma.$transaction(async tx => {
       await tx.transaction.delete({ where: { id } });
 
       await tx.activity.create({

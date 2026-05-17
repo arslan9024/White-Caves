@@ -2,11 +2,14 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
+    <!-- Favicon and App Icons -->
+    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <link rel="manifest" href="/manifest.json" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     
-    <meta name="theme-color" content="#D4AF37" />
+    <meta name="theme-color" content="#E31E24" />
     <title>White Caves Real Estate Dubai | Luxury Villas, Apartments & Penthouses</title>
     <meta name="description" content="White Caves is Dubai's premier luxury real estate platform. Find exclusive villas, apartments, and penthouses in Palm Jumeirah, Downtown Dubai, Emirates Hills, and Dubai Marina. Expert agents, virtual tours, and personalized service." />
     <meta name="keywords" content="Dubai real estate, luxury villas Dubai, apartments Dubai, penthouses Dubai, Palm Jumeirah properties, Downtown Dubai real estate, Emirates Hills villas, Dubai Marina apartments, buy property Dubai, rent property Dubai, off-plan Dubai, real estate investment Dubai" />
@@ -19,9 +22,10 @@
     <meta property="og:url" content="https://whitecaves.com/" />
     <meta property="og:title" content="White Caves Real Estate Dubai | Luxury Properties" />
     <meta property="og:description" content="Dubai's premier luxury real estate platform. Find exclusive villas, apartments, and penthouses in Palm Jumeirah, Downtown Dubai, and more." />
-    <meta property="og:image" content="https://whitecaves.com/company-logo.jpg" />
+    <meta property="og:image" content="https://whitecaves.com/white-caves-logo.png" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="White Caves Real Estate - Unbox Real Estate: Buy and Sell with Confidence!" />
     <meta property="og:site_name" content="White Caves Real Estate" />
     <meta property="og:locale" content="en_AE" />
     
@@ -44,7 +48,21 @@
     <!-- Resource hints: only preconnect to actually-used origins -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <!-- Phase 25: Preconnect for hero background image (LCP element) -->
+    <link rel="preconnect" href="https://images.unsplash.com" crossorigin />
+    <link rel="dns-prefetch" href="https://images.unsplash.com" />
+    <!-- Phase 25: Preload hero background image — critical LCP resource -->
+    <link
+      rel="preload"
+      as="image"
+      href="https://images.unsplash.com/photo-1582268611958-ebfd161ef9cf?ixlib=rb-4.0.3&auto=format&fit=crop&w=1440&q=75"
+      fetchpriority="high"
+    />
+    <!-- Latin fonts — used for LTR (English) layout -->
+    <!-- Primary UI fonts + Cormorant Garamond for luxury display headings (agency brand requirement) -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700;800&family=Inter:wght@400;500;600;700&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,600&display=swap" rel="stylesheet" />
+    <!-- Arabic font — loaded for RTL (Arabic) layout; display=swap avoids FOIT -->
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
     <link rel="dns-prefetch" href="https://maps.googleapis.com" />
     <link rel="dns-prefetch" href="https://www.googletagmanager.com" />
     
@@ -57,7 +75,7 @@
       #root { min-height: 100vh; }
       /* Skip-to-content (a11y) */
       .skip-to-content { position: absolute; left: -9999px; top: auto; width: 1px; height: 1px; overflow: hidden; }
-      .skip-to-content:focus { position: fixed; top: 0; left: 0; width: auto; height: auto; z-index: 100000; background: #D4AF37; color: #fff; padding: 12px 24px; font-size: 16px; text-decoration: none; }
+      .skip-to-content:focus { position: fixed; top: 0; left: 0; width: auto; height: auto; z-index: 100000; background: #E31E24; color: #fff; padding: 12px 24px; font-size: 16px; text-decoration: none; }
       /* Loading skeleton */
       @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
       .app-skeleton { display: flex; flex-direction: column; min-height: 100vh; }

@@ -8,7 +8,14 @@ import cors from 'cors';
 import { PrismaClient } from '@prisma/client';
 
 const app = express();
-const prisma = new PrismaClient();
+let prisma = null;
+
+function getPrismaClient() {
+  if (!prisma) {
+    prisma = new PrismaClient();
+  }
+  return prisma;
+}
 
 // CORS: restrict origins in production
 const ALLOWED_ORIGINS = (process.env.CORS_ORIGIN || 'http://localhost:5000,http://localhost:3000')
@@ -42,7 +49,7 @@ app.get('/api/health', (_req, res) => {
 app.get('/api/system/health', async (_req, res) => {
   let dbConnected = false;
   try {
-    await prisma.$runCommandRaw({ ping: 1 });
+    await getPrismaClient().$runCommandRaw({ ping: 1 });
     dbConnected = true;
   } catch { /* db unreachable */ }
 
@@ -91,8 +98,8 @@ app.get('/api/properties', async (req, res) => {
     }
 
     const [properties, total] = await Promise.all([
-      prisma.property.findMany({ where, skip, take: limit, orderBy: { [sortBy]: sortOrder } }),
-      prisma.property.count({ where }),
+      getPrismaClient().property.findMany({ where, skip, take: limit, orderBy: { [sortBy]: sortOrder } }),
+      getPrismaClient().property.count({ where }),
     ]);
 
     res.json({
@@ -108,7 +115,7 @@ app.get('/api/properties', async (req, res) => {
 
 app.get('/api/properties/:id', async (req, res) => {
   try {
-    const property = await prisma.property.findUnique({ where: { id: req.params.id } });
+    const property = await getPrismaClient().property.findUnique({ where: { id: req.params.id } });
     if (!property) return res.status(404).json({ success: false, error: 'Property not found' });
     res.json({ success: true, property });
   } catch (error) {
@@ -138,18 +145,20 @@ app.post('/api/chatbot/test', (req, res) => {
     if (kws.some(k => lower.includes(k))) { detected = intent; confidence = 85; break; }
   }
 
-  const responses = {
-    property_inquiry: { en: "I'd be happy to help you find the perfect property. What type are you looking for?", ar: "يسعدني مساعدتك في العثور على العقار المثالي. ما نوع العقار؟" },
-    viewing_request: { en: "I can schedule a viewing for you. When would be convenient?", ar: "يمكنني تحديد موعد للمعاينة. ما هو الوقت المناسب؟" },
-    price_inquiry: { en: "Our properties range from affordable to luxury. What's your budget?", ar: "تتراوح عقاراتنا من الميزانية المعقولة إلى الفاخرة. ما ميزانيتك؟" },
-    agent_request: { en: "I'll connect you with an experienced agent right away.", ar: "سأقوم بتوصيلك بأحد وكلائنا فوراً." },
-    greeting: { en: "Hello! Welcome to White Caves Real Estate. How can I assist you?", ar: "مرحباً! أهلاً بك في وايت كيفز العقارية. كيف يمكنني مساعدتك؟" },
-    general_inquiry: { en: "Thank you for your message. How can I help with your real estate needs?", ar: "شكراً لرسالتك. كيف يمكنني مساعدتك؟" },
-  };
+  const responses = new Map([
+    ['property_inquiry', { en: "I'd be happy to help you find the perfect property. What type are you looking for?", ar: "يسعدني مساعدتك في العثور على العقار المثالي. ما نوع العقار؟" }],
+    ['viewing_request', { en: "I can schedule a viewing for you. When would be convenient?", ar: "يمكنني تحديد موعد للمعاينة. ما هو الوقت المناسب؟" }],
+    ['price_inquiry', { en: "Our properties range from affordable to luxury. What's your budget?", ar: "تتراوح عقاراتنا من الميزانية المعقولة إلى الفاخرة. ما ميزانيتك؟" }],
+    ['agent_request', { en: "I'll connect you with an experienced agent right away.", ar: "سأقوم بتوصيلك بأحد وكلائنا فوراً." }],
+    ['greeting', { en: "Hello! Welcome to White Caves Real Estate. How can I assist you?", ar: "مرحباً! أهلاً بك في وايت كيفز العقارية. كيف يمكنني مساعدتك؟" }],
+    ['general_inquiry', { en: "Thank you for your message. How can I help with your real estate needs?", ar: "شكراً لرسالتك. كيف يمكنني مساعدتك؟" }],
+  ]);
+  const entry = responses.get(detected);
+  const responseText = entry ? (lang === 'ar' ? entry.ar : entry.en) : '';
 
   res.json({
     success: true,
-    response: responses[detected][lang],
+    response: responseText,
     intent: detected,
     confidence,
     language: lang,
@@ -157,7 +166,8 @@ app.post('/api/chatbot/test', (req, res) => {
 });
 
 // ─── Catch-all ───────────────────────────────────────────────────────────
-app.all('/api/*', (_req, res) => {
+// Express 5 + path-to-regexp requires a named wildcard or regex path.
+app.all(/^\/api\/.*$/, (_req, res) => {
   res.status(404).json({ success: false, error: 'Endpoint not found' });
 });
 

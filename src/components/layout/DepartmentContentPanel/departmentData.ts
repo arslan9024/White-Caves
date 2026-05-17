@@ -7,8 +7,18 @@
  */
 
 import {
-  FileText, Download, Plus, Settings, TrendingUp, Users, AlertCircle,
-  Clock, CheckCircle, Activity, Briefcase, BarChart3, MessageSquare,
+  FileText,
+  Download,
+  Plus,
+  Settings,
+  TrendingUp,
+  Users,
+  Clock,
+  CheckCircle,
+  Activity,
+  Briefcase,
+  BarChart3,
+  MessageSquare,
   type LucideIcon,
 } from 'lucide-react';
 
@@ -76,7 +86,7 @@ export const DEPARTMENT_CONTENT: Record<string, DepartmentContent> = {
           { label: 'Add Property', icon: Plus },
         ],
       },
-      'Properties': {
+      Properties: {
         description: 'Property Management & Tracking',
         stats: [
           { label: 'Total Properties', value: '9,378' },
@@ -130,7 +140,7 @@ export const DEPARTMENT_CONTENT: Record<string, DepartmentContent> = {
       { label: 'Budget Utilization', value: '76%', change: 'On Track', trend: 'stable' },
     ],
     services: {
-      'Invoicing': {
+      Invoicing: {
         description: 'Invoice Management & Generation',
         stats: [
           { label: 'Total Invoices', value: '1,245' },
@@ -210,7 +220,7 @@ export const DEPARTMENT_CONTENT: Record<string, DepartmentContent> = {
           { label: 'Lead Analytics', icon: BarChart3 },
         ],
       },
-      'Negotiations': {
+      Negotiations: {
         description: 'Manage Deal Negotiations',
         stats: [
           { label: 'Active Negotiations', value: '34' },
@@ -264,7 +274,7 @@ export const DEPARTMENT_CONTENT: Record<string, DepartmentContent> = {
       { label: 'Lead Generation', value: '342/mo', change: '+24%', trend: 'up' },
     ],
     services: {
-      'Campaigns': {
+      Campaigns: {
         description: 'Create & Manage Campaigns',
         stats: [
           { label: 'Active Campaigns', value: '12' },
@@ -277,7 +287,7 @@ export const DEPARTMENT_CONTENT: Record<string, DepartmentContent> = {
           { label: 'Campaign Analytics', icon: TrendingUp },
         ],
       },
-      'Content': {
+      Content: {
         description: 'Content Management',
         stats: [
           { label: 'Published Posts', value: '234' },
@@ -290,7 +300,7 @@ export const DEPARTMENT_CONTENT: Record<string, DepartmentContent> = {
           { label: 'Performance', icon: BarChart3 },
         ],
       },
-      'Analytics': {
+      Analytics: {
         description: 'Marketing Analytics & Reporting',
         stats: [
           { label: 'Website Visits', value: '23.4K' },
@@ -331,7 +341,7 @@ export const DEPARTMENT_CONTENT: Record<string, DepartmentContent> = {
       { label: 'Customer Sat.', value: '9.2/10', change: '+0.8', trend: 'up' },
     ],
     services: {
-      'Messages': {
+      Messages: {
         description: 'Internal & External Messages',
         stats: [
           { label: 'Unread', value: '34' },
@@ -344,7 +354,7 @@ export const DEPARTMENT_CONTENT: Record<string, DepartmentContent> = {
           { label: 'Message Templates', icon: FileText },
         ],
       },
-      'Emails': {
+      Emails: {
         description: 'Email Management',
         stats: [
           { label: 'Sent Today', value: '245' },
@@ -357,7 +367,7 @@ export const DEPARTMENT_CONTENT: Record<string, DepartmentContent> = {
           { label: 'Email Analytics', icon: BarChart3 },
         ],
       },
-      'Templates': {
+      Templates: {
         description: 'Message & Email Templates',
         stats: [
           { label: 'Email Templates', value: '32' },
@@ -370,7 +380,7 @@ export const DEPARTMENT_CONTENT: Record<string, DepartmentContent> = {
           { label: 'Template Analytics', icon: BarChart3 },
         ],
       },
-      'Notifications': {
+      Notifications: {
         description: 'Notification Management',
         stats: [
           { label: 'Sent Today', value: '1,203' },
@@ -388,8 +398,8 @@ export const DEPARTMENT_CONTENT: Record<string, DepartmentContent> = {
   executive: {
     name: 'Executive',
     icon: 'Globe',
-    color: '#DC2626',
-    bgGradient: 'linear-gradient(135deg, #DC2626 0%, #991B1B 100%)',
+    color: '#E31E24',
+    bgGradient: 'linear-gradient(135deg, #E31E24 0%, #991B1B 100%)',
     description: 'Strategic oversight, KPIs, executive reports, and board insights',
     metrics: [
       { label: 'Revenue YTD', value: 'AED 24.8M', change: '+32%', trend: 'up' },
@@ -411,7 +421,7 @@ export const DEPARTMENT_CONTENT: Record<string, DepartmentContent> = {
           { label: 'Strategic Plan', icon: Briefcase },
         ],
       },
-      'KPIs': {
+      KPIs: {
         description: 'Key Performance Indicators',
         stats: [
           { label: 'Total KPIs', value: '42' },
@@ -424,7 +434,7 @@ export const DEPARTMENT_CONTENT: Record<string, DepartmentContent> = {
           { label: 'Create KPI', icon: Plus },
         ],
       },
-      'Reports': {
+      Reports: {
         description: 'Executive Reports & Dashboards',
         stats: [
           { label: 'Monthly Reports', value: '24' },
@@ -437,7 +447,7 @@ export const DEPARTMENT_CONTENT: Record<string, DepartmentContent> = {
           { label: 'Export Reports', icon: Download },
         ],
       },
-      'Insights': {
+      Insights: {
         description: 'Business Intelligence & Insights',
         stats: [
           { label: 'Insights Generated', value: '156' },
@@ -465,7 +475,7 @@ export const DEPARTMENT_CONTENT: Record<string, DepartmentContent> = {
       { label: 'Policy Updates', value: '12', change: '+3 pending', trend: 'up' },
     ],
     services: {
-      'Regulations': {
+      Regulations: {
         description: 'Regulatory Requirements & Standards',
         stats: [
           { label: 'Active Regulations', value: '24' },
@@ -478,7 +488,7 @@ export const DEPARTMENT_CONTENT: Record<string, DepartmentContent> = {
           { label: 'Status Report', icon: BarChart3 },
         ],
       },
-      'Audits': {
+      Audits: {
         description: 'Audit Tracking & Management',
         stats: [
           { label: 'Annual Audits', value: '4' },
@@ -491,7 +501,7 @@ export const DEPARTMENT_CONTENT: Record<string, DepartmentContent> = {
           { label: 'Audit Reports', icon: BarChart3 },
         ],
       },
-      'Policies': {
+      Policies: {
         description: 'Company Policies & Procedures',
         stats: [
           { label: 'Total Policies', value: '34' },
@@ -504,7 +514,7 @@ export const DEPARTMENT_CONTENT: Record<string, DepartmentContent> = {
           { label: 'Approval Workflow', icon: CheckCircle },
         ],
       },
-      'Documentation': {
+      Documentation: {
         description: 'Compliance Documentation',
         stats: [
           { label: 'Documents', value: '245' },
@@ -532,7 +542,7 @@ export const DEPARTMENT_CONTENT: Record<string, DepartmentContent> = {
       { label: 'Deployment Cycles', value: '24/mo', change: '+6', trend: 'up' },
     ],
     services: {
-      'Systems': {
+      Systems: {
         description: 'Infrastructure & System Management',
         stats: [
           { label: 'Servers Active', value: '42' },
@@ -545,7 +555,7 @@ export const DEPARTMENT_CONTENT: Record<string, DepartmentContent> = {
           { label: 'Performance Metrics', icon: TrendingUp },
         ],
       },
-      'Integration': {
+      Integration: {
         description: 'System Integration & APIs',
         stats: [
           { label: 'Active Integrations', value: '18' },
@@ -558,7 +568,7 @@ export const DEPARTMENT_CONTENT: Record<string, DepartmentContent> = {
           { label: 'Test Integration', icon: CheckCircle },
         ],
       },
-      'Support': {
+      Support: {
         description: 'Technical Support & Ticketing',
         stats: [
           { label: 'Open Tickets', value: '8' },
@@ -571,7 +581,7 @@ export const DEPARTMENT_CONTENT: Record<string, DepartmentContent> = {
           { label: 'Knowledge Base', icon: Activity },
         ],
       },
-      'Development': {
+      Development: {
         description: 'Development & Feature Releases',
         stats: [
           { label: 'Active Projects', value: '6' },
@@ -599,7 +609,7 @@ export const DEPARTMENT_CONTENT: Record<string, DepartmentContent> = {
       { label: 'Compliance Status', value: '100%', change: 'All Clear', trend: 'stable' },
     ],
     services: {
-      'Contracts': {
+      Contracts: {
         description: 'Contract Management & Execution',
         stats: [
           { label: 'Active Contracts', value: '156' },
@@ -612,7 +622,7 @@ export const DEPARTMENT_CONTENT: Record<string, DepartmentContent> = {
           { label: 'Contract Analysis', icon: BarChart3 },
         ],
       },
-      'Agreements': {
+      Agreements: {
         description: 'Service Agreements & Terms',
         stats: [
           { label: 'Master Agreements', value: '24' },
@@ -625,7 +635,7 @@ export const DEPARTMENT_CONTENT: Record<string, DepartmentContent> = {
           { label: 'Template Library', icon: Briefcase },
         ],
       },
-      'Compliance': {
+      Compliance: {
         description: 'Legal Compliance & Regulations',
         stats: [
           { label: 'Regulatory Requirements', value: '28' },
@@ -638,7 +648,7 @@ export const DEPARTMENT_CONTENT: Record<string, DepartmentContent> = {
           { label: 'Regulatory Updates', icon: Plus },
         ],
       },
-      'Documentation': {
+      Documentation: {
         description: 'Legal Documents & Records',
         stats: [
           { label: 'Legal Documents', value: '432' },
@@ -649,6 +659,112 @@ export const DEPARTMENT_CONTENT: Record<string, DepartmentContent> = {
           { label: 'Document Archive', icon: FileText },
           { label: 'Upload Document', icon: Plus },
           { label: 'Legal Search', icon: Activity },
+        ],
+      },
+    },
+  },
+  leasing: {
+    name: 'Leasing',
+    icon: 'KeySquare',
+    color: '#E31E24',
+    bgGradient: 'linear-gradient(135deg, #E31E24 0%, #B91C1C 100%)',
+    description: 'End-to-end lease lifecycle: leads, viewings, offers, contracts, PDC, and P&L',
+    metrics: [
+      { label: 'Active Leases', value: '—', change: 'Live', trend: 'stable' },
+      { label: 'Monthly Recurring Revenue', value: 'AED —', change: 'MRR', trend: 'stable' },
+      { label: 'Pending Offers', value: '—', change: 'Awaiting decision', trend: 'stable' },
+      { label: 'Leases Expiring (90d)', value: '—', change: 'Renewal pipeline', trend: 'stable' },
+    ],
+    services: {
+      'Leasing Pipeline': {
+        description: '10-Stage Leasing Kanban — Lead Acquisition → P&L',
+        stats: [
+          { label: 'Leads in Pipeline', value: '—' },
+          { label: 'Active Stage', value: 'Stage 1–10' },
+          { label: 'Conversions', value: '—' },
+        ],
+        actions: [
+          { label: 'View Pipeline', icon: Activity },
+          { label: 'New Lead', icon: Plus },
+          { label: 'Pipeline Report', icon: BarChart3 },
+        ],
+      },
+      'Active Leases': {
+        description: 'All active tenancy agreements with Ejari status',
+        stats: [
+          { label: 'Active Leases', value: '—' },
+          { label: 'Ejari Registered', value: '—' },
+          { label: 'Expiring in 30 days', value: '—' },
+        ],
+        actions: [
+          { label: 'View Leases', icon: FileText },
+          { label: 'New Lease', icon: Plus },
+          { label: 'Expiry Report', icon: Clock },
+        ],
+      },
+      'Viewing Calendar': {
+        description: 'Schedule and track property viewings for leasing prospects',
+        stats: [
+          { label: 'Scheduled Viewings', value: '—' },
+          { label: 'Completed This Month', value: '—' },
+          { label: 'No-Shows', value: '—' },
+        ],
+        actions: [
+          { label: 'Book Viewing', icon: Plus },
+          { label: 'View Calendar', icon: Clock },
+          { label: 'Viewing Report', icon: BarChart3 },
+        ],
+      },
+      'Offer Management': {
+        description: 'Lease offers — pending, countered, accepted, rejected',
+        stats: [
+          { label: 'Pending Offers', value: '—' },
+          { label: 'Accepted', value: '—' },
+          { label: 'Countered', value: '—' },
+        ],
+        actions: [
+          { label: 'Create Offer', icon: Plus },
+          { label: 'View All Offers', icon: FileText },
+          { label: 'Offer Analytics', icon: TrendingUp },
+        ],
+      },
+      'Contract Center': {
+        description: 'RERA-compliant tenancy contracts, addenda, and Ejari registration',
+        stats: [
+          { label: 'Contracts Generated', value: '—' },
+          { label: 'Ejari Registered', value: '—' },
+          { label: 'Addenda', value: '—' },
+        ],
+        actions: [
+          { label: 'Generate Contract', icon: FileText },
+          { label: 'Upload Signed PDF', icon: Download },
+          { label: 'Register Ejari', icon: CheckCircle },
+        ],
+      },
+      'PDC Tracker': {
+        description: 'Post-dated cheque schedule — standard Dubai payment method',
+        stats: [
+          { label: 'PDC Cheques Total', value: '—' },
+          { label: 'Cleared', value: '—' },
+          { label: 'Bounced', value: '—' },
+        ],
+        actions: [
+          { label: 'Add PDC Entry', icon: Plus },
+          { label: 'View PDC Schedule', icon: FileText },
+          { label: 'Send Reminder', icon: MessageSquare },
+        ],
+      },
+      'Leasing P&L Report': {
+        description: 'Revenue, commissions, expenses, and net profit per lease',
+        stats: [
+          { label: 'MRR (AED)', value: '—' },
+          { label: 'Commission Earned', value: '—' },
+          { label: 'Net Profit', value: '—' },
+        ],
+        actions: [
+          { label: 'View P&L Dashboard', icon: BarChart3 },
+          { label: 'Export to PDF', icon: Download },
+          { label: 'Export to Excel', icon: Download },
         ],
       },
     },

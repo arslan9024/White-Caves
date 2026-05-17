@@ -9,8 +9,6 @@ import './AuthPages.css';
 
 const log = createLogger('UAEPassSuccess');
 
-interface UAEPassSuccessPageProps {}
-
 interface UserData {
   name: string;
   email: string;
@@ -19,7 +17,7 @@ interface UserData {
   phone?: string;
 }
 
-const UAEPassSuccessPage: FC<UAEPassSuccessPageProps> = () => {
+const UAEPassSuccessPage: FC = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const dispatch = useDispatch();
@@ -89,7 +87,10 @@ const UAEPassSuccessPage: FC<UAEPassSuccessPageProps> = () => {
           navigate('/dashboard');
         }, 3000);
       } else {
-        const errorData = await response.json().catch(() => ({ message: 'Authentication failed' }));
+        const errorData = await response.json().catch(e => {
+          log.debug('Non-JSON error response:', e);
+          return { message: 'Authentication failed' };
+        });
         if (isMountedRef.current) setError(errorData.message || 'Authentication failed');
       }
     } catch (err: unknown) {

@@ -1,6 +1,7 @@
 import { defineConfig, devices } from '@playwright/test';
 
 const BASE_URL = process.env.TEST_BASE_URL || 'http://localhost:5000';
+const USE_EXTERNAL_BASE_URL = Boolean(process.env.TEST_BASE_URL);
 
 export default defineConfig({
   testDir: './src/e2e',
@@ -32,10 +33,12 @@ export default defineConfig({
     },
   ],
 
-  webServer: {
-    command: 'npm run dev',
-    url: BASE_URL,
-    reuseExistingServer: !process.env.CI,
-    timeout: 120 * 1000,
-  },
+  webServer: USE_EXTERNAL_BASE_URL
+    ? undefined
+    : {
+        command: 'npm run dev:all',
+        url: BASE_URL,
+        reuseExistingServer: !process.env.CI,
+        timeout: 120 * 1000,
+      },
 });

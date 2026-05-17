@@ -1,9 +1,13 @@
 import styled from 'styled-components';
+import { transitions } from '../../../styles/theme/transitions';
+import { typography } from '../../../styles/theme/typography';
+import { radius } from '../../../styles/theme/radius';
+import { spacing } from '../../../styles/theme/spacing';
 
 export const FilterPanelContainer = styled.div`
   background: var(--bg-primary);
   border: 1px solid var(--border-color);
-  border-radius: 12px;
+  border-radius: ${radius.xl};
   padding: 20px;
   margin-bottom: 20px;
 `;
@@ -20,9 +24,9 @@ export const FilterPanelHeader = styled.div`
 export const FilterTitle = styled.div`
   display: flex;
   align-items: center;
-  gap: 8px;
-  font-size: 16px;
-  font-weight: 600;
+  gap: ${spacing.sm};
+  font-size: ${typography.sizes.md};
+  font-weight: ${typography.weights.semibold};
   color: var(--text-primary);
 `;
 
@@ -30,7 +34,7 @@ export const ActiveCount = styled.span`
   background: var(--primary);
   color: white;
   font-size: 11px;
-  font-weight: 600;
+  font-weight: ${typography.weights.semibold};
   padding: 2px 8px;
   border-radius: 10px;
 `;
@@ -42,15 +46,15 @@ export const ClearFiltersBtn = styled.button`
   padding: 8px 14px;
   background: transparent;
   border: 1px solid var(--border-color);
-  border-radius: 6px;
+  border-radius: ${radius.md};
   color: var(--text-secondary);
-  font-size: 12px;
-  font-weight: 500;
+  font-size: ${typography.sizes.xs};
+  font-weight: ${typography.weights.medium};
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: ${transitions.hover};
 
   &:hover {
-    background: rgba(220, 38, 38, 0.1);
+    background: rgba(227, 30, 36, 0.08);
     border-color: var(--primary);
     color: var(--primary);
   }
@@ -59,7 +63,7 @@ export const ClearFiltersBtn = styled.button`
 export const FilterGrid = styled.div`
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-  gap: 16px;
+  gap: ${spacing.md};
 
   @media (max-width: 768px) {
     grid-template-columns: repeat(2, 1fr);

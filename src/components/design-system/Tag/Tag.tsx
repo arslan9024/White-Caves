@@ -24,18 +24,23 @@ const getVariantColor = (variant: string) => {
     warning: `background: ${theme.colors.warning}; color: white;`,
     error: `background: ${theme.colors.error}; color: white;`,
   };
+  // eslint-disable-next-line security/detect-object-injection
   return colors[variant] || colors.primary;
 };
 
 const TagContainer = styled.span<{ $variant?: string; $size?: 'sm' | 'md' }>`
   display: inline-flex;
   align-items: center;
-  gap: ${(props) => (props.$size === 'sm' ? theme.spacing.xs : theme.spacing.sm)};
-  padding: ${(props) => (props.$size === 'sm' ? `${theme.spacing.xs} ${theme.spacing.md}` : `${theme.spacing.sm} ${theme.spacing.lg}`)};
+  gap: ${props => (props.$size === 'sm' ? theme.spacing.xs : theme.spacing.sm)};
+  padding: ${props =>
+    props.$size === 'sm'
+      ? `${theme.spacing.xs} ${theme.spacing.md}`
+      : `${theme.spacing.sm} ${theme.spacing.lg}`};
   border-radius: 12px;
-  font-size: ${(props) => (props.$size === 'sm' ? theme.typography.sizes.xs : theme.typography.sizes.sm)};
+  font-size: ${props =>
+    props.$size === 'sm' ? theme.typography.sizes.xs : theme.typography.sizes.sm};
   font-weight: ${theme.typography.weights.medium};
-  ${(props) => getVariantColor(props.$variant || 'primary')}
+  ${props => getVariantColor(props.$variant || 'primary')}
 `;
 
 const RemoveButton = styled.button`

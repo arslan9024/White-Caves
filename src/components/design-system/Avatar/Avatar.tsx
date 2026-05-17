@@ -3,7 +3,7 @@
  * User avatar with initials or image
  */
 
-import React from 'react';
+import React, { memo } from 'react';
 import styled from 'styled-components';
 import { theme } from '../../../styles/theme';
 
@@ -80,7 +80,7 @@ const StatusIndicator = styled.div<{ $status?: 'online' | 'offline' | 'away' }>`
   }};
 `;
 
-export const Avatar: React.FC<AvatarProps> = ({
+export const Avatar: React.FC<AvatarProps> = memo(function Avatar({
   src,
   alt = 'Avatar',
   initials = '?',
@@ -88,7 +88,7 @@ export const Avatar: React.FC<AvatarProps> = ({
   variant = 'primary',
   status,
   className = '',
-}) => {
+}) {
   return (
     <AvatarContainer $size={size} className={className}>
       {src ? (
@@ -101,7 +101,7 @@ export const Avatar: React.FC<AvatarProps> = ({
       {status && <StatusIndicator $status={status} />}
     </AvatarContainer>
   );
-};
+});
 
 Avatar.displayName = 'Avatar';
 

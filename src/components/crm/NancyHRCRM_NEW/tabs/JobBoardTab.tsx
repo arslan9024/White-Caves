@@ -1,8 +1,7 @@
-import React from 'react';
 import { Plus, Edit, Trash2, Users, Eye } from 'lucide-react';
 
 interface Job {
-  id: string | number;
+  id: string;
   title: string;
   status: string;
   department?: string;
@@ -28,7 +27,7 @@ interface JobBoardState {
   showJobModal: boolean;
   setShowJobModal: (show: boolean) => void;
   getJobStatusBadge: (status: string) => StatusBadgeStyle;
-  deleteJob: (id: string | number) => void;
+  deleteJob: (id: string) => void;
 }
 
 interface JobBoardTabProps {
@@ -48,7 +47,7 @@ export default function JobBoardTab({ state }: JobBoardTabProps) {
     deleteJob
   } = state;
 
-  const handleDelete = (id: string | number) => {
+  const handleDelete = (id: string) => {
     if (window.confirm('Are you sure you want to delete this job posting?')) {
       deleteJob(id);
     }

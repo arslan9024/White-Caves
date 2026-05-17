@@ -1,6 +1,9 @@
 import styled from 'styled-components';
 import { keyframes } from 'styled-components';
 import { typography } from '../../../styles/theme/typography';
+import { theme } from '../../../styles/theme';
+
+const { colors, transitions, radius, spacing } = theme;
 
 const spin = keyframes`
   from { transform: rotate(0deg); }
@@ -9,8 +12,8 @@ const spin = keyframes`
 
 export const DamacFetcherContainer = styled.div`
   background: var(--bg-secondary);
-  border-radius: 12px;
-  padding: 24px;
+  border-radius: ${radius.xl};
+  padding: ${spacing.lg};
   border: 1px solid var(--border-color);
 
   @media (prefers-color-scheme: dark) {
@@ -34,7 +37,7 @@ export const HeaderInfo = styled.div`
   gap: 12px;
 
   svg {
-    color: #8b5cf6;
+    color: ${colors.primary};
     flex-shrink: 0;
   }
 
@@ -61,10 +64,10 @@ export const HeaderInfo = styled.div`
 
 export const ViewToggle = styled.div`
   display: flex;
-  gap: 4px;
+  gap: ${spacing.xs};
   background: var(--bg-tertiary);
-  padding: 4px;
-  border-radius: 8px;
+  padding: ${spacing.xs};
+  border-radius: ${radius.lg};
 
   @media (prefers-color-scheme: dark) {
     background: #333333;
@@ -72,27 +75,27 @@ export const ViewToggle = styled.div`
 `;
 
 export const ViewToggleButton = styled.button<{ $active?: boolean }>`
-  padding: 8px;
+  padding: ${spacing.sm};
   border: none;
-  background: ${props => props.$active ? 'var(--bg-primary)' : 'transparent'};
-  border-radius: 6px;
+  background: ${props => (props.$active ? 'var(--bg-primary)' : 'transparent')};
+  border-radius: ${radius.md};
   cursor: pointer;
-  color: ${props => props.$active ? '#8b5cf6' : 'var(--text-muted)'};
-  transition: all 0.2s;
+  color: ${props => (props.$active ? colors.primary : 'var(--text-muted)')};
+  transition: ${transitions.hover};
 
   &:hover {
-    color: #8b5cf6;
+    color: ${colors.primary};
   }
 
   @media (prefers-color-scheme: dark) {
-    background: ${props => props.$active ? '#2a2a3e' : 'transparent'};
+    background: ${props => (props.$active ? '#2a2a3e' : 'transparent')};
   }
 `;
 
 export const FetcherInputs = styled.div`
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 16px;
+  gap: ${spacing.md};
   margin-bottom: 20px;
 
   @media (max-width: 768px) {
@@ -103,12 +106,12 @@ export const FetcherInputs = styled.div`
 export const InputGroup = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: ${spacing.sm};
 `;
 
 export const InputLabel = styled.label`
   font-size: 0.85rem;
-  font-weight: 500;
+  font-weight: ${typography.weights.medium};
   color: var(--text-secondary);
   display: flex;
   align-items: center;
@@ -124,16 +127,16 @@ export const AutoFillButton = styled.button`
   padding: 4px 8px;
   border: 1px solid var(--border-color);
   background: var(--bg-tertiary);
-  border-radius: 4px;
+  border-radius: ${radius.sm};
   cursor: pointer;
-  color: #8b5cf6;
+  color: ${colors.primary};
   display: flex;
   align-items: center;
-  gap: 4px;
-  transition: all 0.2s;
+  gap: ${spacing.xs};
+  transition: ${transitions.hover};
 
   &:hover {
-    background: rgba(139, 92, 246, 0.1);
+    background: rgba(227, 30, 36, 0.1);
   }
 
   @media (prefers-color-scheme: dark) {
@@ -141,7 +144,7 @@ export const AutoFillButton = styled.button`
     border-color: #444444;
 
     &:hover {
-      background: rgba(139, 92, 246, 0.15);
+      background: rgba(227, 30, 36, 0.15);
     }
   }
 `;
@@ -149,7 +152,7 @@ export const AutoFillButton = styled.button`
 export const TextArea = styled.textarea`
   padding: 12px;
   border: 1px solid var(--border-color);
-  border-radius: 8px;
+  border-radius: ${radius.lg};
   background: var(--bg-primary);
   color: var(--text-primary);
   font-family: ${typography.fontFamily.mono};
@@ -159,8 +162,8 @@ export const TextArea = styled.textarea`
 
   &:focus {
     outline: none;
-    border-color: #8b5cf6;
-    box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
+    border-color: ${colors.primary};
+    box-shadow: 0 0 0 3px rgba(227, 30, 36, 0.1);
   }
 
   &::placeholder {
@@ -185,20 +188,20 @@ export const FetcherActions = styled.div`
 export const FetchButton = styled.button<{ $variant?: 'primary' | 'danger' | 'default' }>`
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: ${spacing.sm};
   padding: 10px 20px;
   border: 1px solid var(--border-color);
   background: ${props => {
     switch (props.$variant) {
       case 'primary':
-        return '#8b5cf6';
+        return colors.primary;
       case 'danger':
         return 'transparent';
       default:
         return 'var(--bg-tertiary)';
     }
   }};
-  border-radius: 8px;
+  border-radius: ${radius.lg};
   cursor: pointer;
   font-size: 0.9rem;
   color: ${props => {
@@ -206,7 +209,7 @@ export const FetchButton = styled.button<{ $variant?: 'primary' | 'danger' | 'de
       case 'primary':
         return 'white';
       case 'danger':
-        return '#ef4444';
+        return colors.error;
       default:
         return 'var(--text-primary)';
     }
@@ -214,20 +217,20 @@ export const FetchButton = styled.button<{ $variant?: 'primary' | 'danger' | 'de
   border-color: ${props => {
     switch (props.$variant) {
       case 'primary':
-        return '#8b5cf6';
+        return colors.primary;
       case 'danger':
         return 'rgba(239, 68, 68, 0.3)';
       default:
         return 'var(--border-color)';
     }
   }};
-  transition: all 0.2s;
+  transition: ${transitions.hover};
 
   &:hover:not(:disabled) {
     ${props => {
       switch (props.$variant) {
         case 'primary':
-          return 'background: #7c3aed;';
+          return `background: ${colors.primaryDark};`;
         case 'danger':
           return 'background: rgba(239, 68, 68, 0.1);';
         default:
@@ -245,7 +248,7 @@ export const FetchButton = styled.button<{ $variant?: 'primary' | 'danger' | 'de
     background: ${props => {
       switch (props.$variant) {
         case 'primary':
-          return '#8b5cf6';
+          return colors.primary;
         case 'danger':
           return 'transparent';
         default:
@@ -257,7 +260,7 @@ export const FetchButton = styled.button<{ $variant?: 'primary' | 'danger' | 'de
       ${props => {
         switch (props.$variant) {
           case 'primary':
-            return 'background: #7c3aed;';
+            return `background: ${colors.primaryDark};`;
           case 'danger':
             return 'background: rgba(239, 68, 68, 0.15);';
           default:
@@ -274,11 +277,11 @@ export const SpinningIcon = styled.svg`
 
 export const ResultsSummary = styled.div`
   display: flex;
-  gap: 16px;
+  gap: ${spacing.md};
   margin-bottom: 20px;
   padding: 12px;
   background: var(--bg-tertiary);
-  border-radius: 8px;
+  border-radius: ${radius.lg};
   flex-wrap: wrap;
 
   @media (prefers-color-scheme: dark) {
@@ -291,13 +294,21 @@ export const SummaryItem = styled.div<{ $variant?: 'success' | 'error' }>`
   align-items: center;
   gap: 6px;
   font-size: 0.9rem;
-  font-weight: 500;
-  color: ${props => props.$variant === 'success' ? '#22c55e' : props.$variant === 'error' ? '#ef4444' : 'var(--text-primary)'};
+  font-weight: ${typography.weights.medium};
+  color: ${props =>
+    props.$variant === 'success'
+      ? colors.success
+      : props.$variant === 'error'
+        ? colors.error
+        : 'var(--text-primary)'};
 `;
 
 export const AssetsGrid = styled.div<{ $viewMode?: 'grid' | 'list' }>`
-  display: ${props => props.$viewMode === 'list' ? 'flex' : 'grid'};
-  ${props => props.$viewMode === 'list' ? 'flex-direction: column;' : 'grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));'}
+  display: ${props => (props.$viewMode === 'list' ? 'flex' : 'grid')};
+  ${props =>
+    props.$viewMode === 'list'
+      ? 'flex-direction: column;'
+      : 'grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));'}
   gap: 12px;
   margin-bottom: 20px;
 
@@ -308,21 +319,21 @@ export const AssetsGrid = styled.div<{ $viewMode?: 'grid' | 'list' }>`
 
 export const AssetCard = styled.div<{ $selected?: boolean }>`
   position: relative;
-  border-radius: 8px;
+  border-radius: ${radius.lg};
   overflow: hidden;
-  border: 2px solid ${props => props.$selected ? '#8b5cf6' : 'var(--border-color)'};
+  border: 2px solid ${props => (props.$selected ? colors.primary : 'var(--border-color)')};
   cursor: pointer;
-  transition: all 0.2s;
+  transition: ${transitions.hover};
   background: var(--bg-secondary);
 
   &:hover {
-    border-color: #8b5cf6;
-    box-shadow: 0 4px 12px rgba(139, 92, 246, 0.2);
+    border-color: ${colors.primary};
+    box-shadow: 0 4px 12px rgba(227, 30, 36, 0.2);
   }
 
   @media (prefers-color-scheme: dark) {
     background: #1e1e2e;
-    border-color: ${props => props.$selected ? '#8b5cf6' : '#333333'};
+    border-color: ${props => (props.$selected ? colors.primary : '#333333')};
   }
 `;
 
@@ -348,9 +359,9 @@ export const SelectionBadge = styled.div`
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  background: rgba(139, 92, 246, 0.9);
+  background: rgba(227, 30, 36, 0.9);
   border-radius: 50%;
-  padding: 8px;
+  padding: ${spacing.sm};
   display: flex;
   align-items: center;
   justify-content: center;
@@ -358,15 +369,15 @@ export const SelectionBadge = styled.div`
 `;
 
 export const AssetInfo = styled.div`
-  padding: 8px;
+  padding: ${spacing.sm};
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: ${spacing.xs};
   font-size: 0.75rem;
 `;
 
 export const AssetSD = styled.span`
-  font-weight: 600;
+  font-weight: ${typography.weights.semibold};
   color: var(--text-primary);
 
   @media (prefers-color-scheme: dark) {
@@ -386,31 +397,32 @@ export const AssetRegistration = styled.span`
 export const AssetType = styled.span<{ $type?: string }>`
   display: inline-block;
   padding: 2px 6px;
-  border-radius: 4px;
-  background: ${props => props.$type === 'primary' ? 'rgba(99, 102, 241, 0.2)' : 'rgba(156, 163, 175, 0.2)'};
-  color: ${props => props.$type === 'primary' ? '#6366f1' : '#6b7280'};
+  border-radius: ${radius.sm};
+  background: ${props =>
+    props.$type === 'primary' ? 'rgba(227, 30, 36, 0.2)' : 'rgba(156, 163, 175, 0.2)'};
+  color: ${props => (props.$type === 'primary' ? colors.primary : '#6b7280')};
   text-transform: capitalize;
-  font-weight: 500;
+  font-weight: ${typography.weights.medium};
 `;
 
 export const OpenLink = styled.a`
   position: absolute;
   top: 4px;
   right: 4px;
-  background: rgba(139, 92, 246, 0.2);
-  color: #8b5cf6;
+  background: rgba(227, 30, 36, 0.2);
+  color: ${colors.primary};
   width: 24px;
   height: 24px;
-  border-radius: 4px;
+  border-radius: ${radius.sm};
   display: flex;
   align-items: center;
   justify-content: center;
   opacity: 0;
-  transition: all 0.2s;
+  transition: ${transitions.hover};
   cursor: pointer;
 
   &:hover {
-    background: rgba(139, 92, 246, 0.4);
+    background: rgba(227, 30, 36, 0.4);
   }
 
   ${AssetCard}:hover & {
@@ -420,15 +432,15 @@ export const OpenLink = styled.a`
 
 export const NotFoundSection = styled.div`
   margin-top: 20px;
-  padding: 16px;
+  padding: ${spacing.md};
   background: rgba(239, 68, 68, 0.05);
   border: 1px solid rgba(239, 68, 68, 0.2);
-  border-radius: 8px;
+  border-radius: ${radius.lg};
 
   h4 {
     margin: 0 0 12px 0;
     color: #ef4444;
-    font-size: 14px;
+    font-size: ${typography.sizes.base};
   }
 
   @media (prefers-color-scheme: dark) {
@@ -444,13 +456,13 @@ export const NotFoundSection = styled.div`
 export const NotFoundList = styled.div`
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: ${spacing.sm};
 `;
 
 export const NotFoundItem = styled.span`
   padding: 4px 8px;
   background: rgba(239, 68, 68, 0.1);
-  border-radius: 4px;
+  border-radius: ${radius.sm};
   font-size: 0.85rem;
   color: #ef4444;
 

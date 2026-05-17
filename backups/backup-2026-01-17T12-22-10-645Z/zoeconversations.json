@@ -1,0 +1,118 @@
+[
+  {
+    "_id": "6961ad284dfef76051d1c931",
+    "userId": "anonymous",
+    "sessionId": "2a100fde-bec2-49a3-8508-d4d07d1f4c1a",
+    "assistant": "zoe",
+    "query": "Give me todays briefing",
+    "response": "I'm Zoe, your Executive AI Assistant. I can help you with:\n\n• **Department Info** - \"Who handles commercial leasing?\"\n• **Services** - \"What services do you offer for investors?\"\n• **Processes** - \"Walk me through the sales journey\"\n• **Contacts** - \"Who should I contact about property management?\"\n• **Daily Briefing** - \"Give me today's briefing\"\n• **Metrics** - \"Show me current statistics\"\n\nWhat would you like to know?",
+    "intent": "general",
+    "entities": {
+      "departments": [],
+      "services": [],
+      "persons": [],
+      "keywords": []
+    },
+    "metadata": {
+      "responseTime": 0,
+      "confidence": 0.3,
+      "sourcesUsed": [],
+      "matchedItems": 0
+    },
+    "feedback": {
+      "helpful": null
+    },
+    "createdAt": "2026-01-10T01:36:40.288Z",
+    "updatedAt": "2026-01-10T01:36:40.288Z",
+    "__v": 0
+  },
+  {
+    "_id": "6961ad334dfef76051d1c936",
+    "userId": "anonymous",
+    "sessionId": "0ff48404-9f1f-416f-85fd-51dfd6b45186",
+    "assistant": "zoe",
+    "query": "Who handles commercial leasing?",
+    "response": "**Department:** Sales & Leasing Division\n**Head:** Tariq Al-Farsi (Director of Sales)\n**Contact:** sales@whitecaves.ae | Ext. 201\n**Teams:** Residential Sales, Commercial Leasing, Off-Plan & New Developments",
+    "intent": "department_query",
+    "entities": {
+      "departments": [],
+      "services": [
+        "COMM-LEASE-001",
+        "COMM-LEASE-002"
+      ],
+      "persons": [],
+      "keywords": [
+        "commercial",
+        "leasing"
+      ]
+    },
+    "metadata": {
+      "responseTime": 1,
+      "confidence": 0.8,
+      "sourcesUsed": [
+        "departments"
+      ],
+      "matchedItems": 1
+    },
+    "feedback": {
+      "helpful": null
+    },
+    "createdAt": "2026-01-10T01:36:51.419Z",
+    "updatedAt": "2026-01-10T01:36:51.419Z",
+    "__v": 0
+  },
+  {
+    "_id": "696379adc9b57adf0a9e26ac",
+    "userId": "executive-user",
+    "sessionId": "2c0086c6-6dca-455a-8ea6-2e68ff298393",
+    "assistant": "zoe",
+    "query": "deparmtent inof",
+    "response": "I'm Zoe, your Executive AI Assistant. I can help you with:\n\n• **Department Info** - \"Who handles commercial leasing?\"\n• **Services** - \"What services do you offer for investors?\"\n• **Processes** - \"Walk me through the sales journey\"\n• **Contacts** - \"Who should I contact about property management?\"\n• **Daily Briefing** - \"Give me today's briefing\"\n• **Metrics** - \"Show me current statistics\"\n\nWhat would you like to know?",
+    "intent": "general",
+    "entities": {
+      "departments": [],
+      "services": [],
+      "persons": [],
+      "keywords": []
+    },
+    "metadata": {
+      "responseTime": 1,
+      "confidence": 0.3,
+      "sourcesUsed": [],
+      "matchedItems": 0
+    },
+    "feedback": {
+      "helpful": null
+    },
+    "createdAt": "2026-01-11T10:21:33.930Z",
+    "updatedAt": "2026-01-11T10:21:33.930Z",
+    "__v": 0
+  },
+  {
+    "_id": "696379b8c9b57adf0a9e26ae",
+    "userId": "executive-user",
+    "sessionId": "2c0086c6-6dca-455a-8ea6-2e68ff298393",
+    "assistant": "zoe",
+    "query": "Department Info",
+    "response": "I'm Zoe, your Executive AI Assistant. I can help you with:\n\n• **Department Info** - \"Who handles commercial leasing?\"\n• **Services** - \"What services do you offer for investors?\"\n• **Processes** - \"Walk me through the sales journey\"\n• **Contacts** - \"Who should I contact about property management?\"\n• **Daily Briefing** - \"Give me today's briefing\"\n• **Metrics** - \"Show me current statistics\"\n\nWhat would you like to know?",
+    "intent": "general",
+    "entities": {
+      "departments": [],
+      "services": [],
+      "persons": [],
+      "keywords": []
+    },
+    "metadata": {
+      "responseTime": 1,
+      "confidence": 0.3,
+      "sourcesUsed": [],
+      "matchedItems": 0
+    },
+    "feedback": {
+      "helpful": null
+    },
+    "createdAt": "2026-01-11T10:21:44.952Z",
+    "updatedAt": "2026-01-11T10:21:44.952Z",
+    "__v": 0
+  }
+]

@@ -1,4 +1,7 @@
 import styled from 'styled-components';
+import { radius } from '../../styles/theme/radius';
+import { typography } from '../../styles/theme/typography';
+import { spacing } from '../../styles/theme/spacing';
 
 export const StatusNotificationContainer = styled.div`
   position: fixed;
@@ -16,7 +19,7 @@ export const StatusNotificationContainer = styled.div`
 export const StatusNotificationItem = styled.div<{ $type: 'success' | 'error' | 'warning' | 'info' }>`
   gap: 12px;
   padding: 14px 16px;
-  border-radius: 12px;
+  border-radius: ${radius.xl};
   background: var(--bg-primary, #ffffff);
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(0, 0, 0, 0.05);
   pointer-events: auto;
@@ -62,7 +65,7 @@ export const StatusNotificationItem = styled.div<{ $type: 'success' | 'error' | 
 export const StatusIcon = styled.div<{ $type: 'success' | 'error' | 'warning' | 'info' }>`
   width: 32px;
   height: 32px;
-  border-radius: 8px;
+  border-radius: ${radius.lg};
   flex-shrink: 0;
   display: flex;
   align-items: center;
@@ -109,8 +112,8 @@ export const StatusContent = styled.div`
 `;
 
 export const StatusTitle = styled.strong`
-  font-size: 14px;
-  font-weight: 600;
+  font-size: ${typography.sizes.base};
+  font-weight: ${typography.weights.semibold};
   color: var(--text-primary, #1f2937);
   line-height: 1.3;
 
@@ -120,7 +123,7 @@ export const StatusTitle = styled.strong`
 `;
 
 export const StatusMessage = styled.span`
-  font-size: 13px;
+  font-size: ${typography.sizes.sm};
   color: var(--text-secondary, #6b7280);
   line-height: 1.4;
   word-wrap: break-word;
@@ -133,10 +136,10 @@ export const StatusMessage = styled.span`
 export const StatusDismiss = styled.button`
   background: transparent;
   border: none;
-  padding: 4px;
+  padding: ${spacing.xs};
   cursor: pointer;
   color: var(--text-muted, #9ca3af);
-  border-radius: 4px;
+  border-radius: ${radius.sm};
   flex-shrink: 0;
   display: flex;
   align-items: center;

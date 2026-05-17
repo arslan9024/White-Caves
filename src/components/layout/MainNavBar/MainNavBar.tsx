@@ -3,11 +3,23 @@ import { useSelector } from 'react-redux';
 import type { RootState } from '../../../store/store';
 import { useNavigate } from 'react-router-dom';
 import {
-  Search, Bell, Moon, Sun, ChevronDown, User,
-  Settings, LogOut, HelpCircle, Shield, CreditCard,
-  Zap, Activity, Users, Home, TrendingUp, AlertCircle, Command,
-  Menu, X
+  Search,
+  Bell,
+  ChevronDown,
+  User,
+  Settings,
+  LogOut,
+  HelpCircle,
+  Shield,
+  CreditCard,
+  Activity,
+  Users,
+  Home,
+  TrendingUp,
+  Menu,
+  X,
 } from 'lucide-react';
+import ThemeToggle from '../../ThemeToggle';
 import {
   NavBarContainer,
   NavLeftSection,
@@ -56,7 +68,7 @@ import {
   ProfileName,
   ProfileEmail,
   DropdownFooter,
-  SidebarToggleButton
+  SidebarToggleButton,
 } from './styles';
 
 // ---------------------------------------------------------------------------
@@ -95,11 +107,7 @@ interface MainNavBarProps {
   isSuperUser?: boolean;
   quickStats?: QuickStats | null;
   leftSidebarCollapsed?: boolean;
-  rightSidebarCollapsed?: boolean;
   onToggleLeftSidebar?: () => void;
-  onToggleRightSidebar?: () => void;
-  onAssistantPanelToggle?: () => void;
-  isAssistantPanelOpen?: boolean;
 }
 
 type ProfileAction = 'admin' | 'profile' | 'settings' | 'billing' | 'help' | 'logout';
@@ -109,33 +117,31 @@ type ProfileAction = 'admin' | 'profile' | 'settings' | 'billing' | 'help' | 'lo
 // ---------------------------------------------------------------------------
 
 const MainNavBar: React.FC<MainNavBarProps> = ({
-  theme = 'light',
-  onThemeToggle,
+  theme: _theme = 'light',
+  onThemeToggle: _onThemeToggle,
   user = null,
   notifications = [],
   onLogout,
   isSuperUser = false,
   quickStats = null,
   leftSidebarCollapsed = false,
-  rightSidebarCollapsed = false,
   onToggleLeftSidebar = () => {},
-  onToggleRightSidebar = () => {}
 }) => {
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [showNotifications, setShowNotifications] = useState<boolean>(false);
   const [showProfileMenu, setShowProfileMenu] = useState<boolean>(false);
   const [searchFocused, setSearchFocused] = useState<boolean>(false);
-  const [showCommandPalette, setShowCommandPalette] = useState<boolean>(false);
-  
+  const [_showCommandPalette, setShowCommandPalette] = useState<boolean>(false);
+
   const notifRef = useRef<HTMLDivElement>(null);
   const profileRef = useRef<HTMLDivElement>(null);
   const searchRef = useRef<HTMLInputElement>(null);
 
   // Get user role from Redux or props
-  const userRole = useSelector((state: RootState) => state.auth?.user?.role || 'user');
+  const _userRole = useSelector((state: RootState) => state.auth?.user?.role || 'user');
   const isSuperUserRole = useSelector((state: RootState) => state.auth?.user?.role === 'lion');
-  
+
   const effectiveIsSuperUser = isSuperUser || isSuperUserRole;
   const unreadCount = notifications.filter((n: NotificationItem_T) => !n.isRead).length;
 
@@ -170,7 +176,15 @@ const MainNavBar: React.FC<MainNavBarProps> = ({
   const getUserInitials = (): string => {
     if (!user) return 'WC';
     if (user.displayName && user.displayName.length > 0) {
-      return user.displayName.split(' ').filter((n: string) => n.length > 0).map((n: string) => n[0]).join('').toUpperCase().slice(0, 2) || 'WC';
+      return (
+        user.displayName
+          .split(' ')
+          .filter((n: string) => n.length > 0)
+          .map((n: string) => n[0])
+          .join('')
+          .toUpperCase()
+          .slice(0, 2) || 'WC'
+      );
     }
     if (user.email && user.email.length > 0) {
       return user.email[0].toUpperCase();
@@ -252,8 +266,8 @@ const MainNavBar: React.FC<MainNavBarProps> = ({
                   quickStats.systemHealth === 'good'
                     ? 'good'
                     : quickStats.systemHealth === 'warning'
-                    ? 'warning'
-                    : 'critical'
+                      ? 'warning'
+                      : 'critical'
                 }
               >
                 {quickStats.systemHealth?.toUpperCase() || 'OK'}
@@ -283,20 +297,7 @@ const MainNavBar: React.FC<MainNavBarProps> = ({
       </NavCenterSection>
 
       <NavRightSection>
-        {/* Right Sidebar Toggle Button */}
-        <SidebarToggleButton
-          onClick={onToggleRightSidebar}
-          title={rightSidebarCollapsed ? 'Open right sidebar' : 'Close right sidebar'}
-        >
-          {rightSidebarCollapsed ? <Menu size={20} /> : <X size={20} />}
-        </SidebarToggleButton>
-
-        <NavIconButton
-          onClick={onThemeToggle}
-          title={theme === 'dark' ? 'Light Mode' : 'Dark Mode'}
-        >
-          {theme === 'dark' ? <Sun size={20} /> : <Moon size={20} />}
-        </NavIconButton>
+        <ThemeToggle onToggle={_onThemeToggle} />
 
         <DropdownContainer ref={notifRef}>
           <NavIconButton
@@ -324,8 +325,11 @@ const MainNavBar: React.FC<MainNavBarProps> = ({
                   </EmptyState>
                 ) : (
                   notifications.slice(0, 5).map((notif: NotificationItem_T, idx: number) => (
-                    <NotificationItem key={notif.id ?? `${notif.title}-${idx}`} $unread={!notif.isRead}>
-                      <NotifIcon $color={notif.color || '#D32F2F'}>
+                    <NotificationItem
+                      key={notif.id ?? `${notif.title}-${idx}`}
+                      $unread={!notif.isRead}
+                    >
+                      <NotifIcon $color={notif.color || '#E31E24'}>
                         {notif.icon || <Bell size={14} />}
                       </NotifIcon>
                       <NotifContent>
@@ -338,9 +342,7 @@ const MainNavBar: React.FC<MainNavBarProps> = ({
               </DropdownContent>
               {notifications.length > 0 && (
                 <DropdownFooter>
-                  <button onClick={() => navigate('/notifications')}>
-                    View all notifications
-                  </button>
+                  <button onClick={() => navigate('/notifications')}>View all notifications</button>
                 </DropdownFooter>
               )}
             </DropdownMenu>
@@ -351,7 +353,13 @@ const MainNavBar: React.FC<MainNavBarProps> = ({
           <ProfileTrigger onClick={() => setShowProfileMenu(!showProfileMenu)}>
             <UserAvatar>
               {user?.photoURL ? (
-                <img src={user.photoURL} alt={user.displayName || 'User'} loading="lazy" width={40} height={40} />
+                <img
+                  src={user.photoURL}
+                  alt={user.displayName || 'User'}
+                  loading="lazy"
+                  width={40}
+                  height={40}
+                />
               ) : (
                 <span>{getUserInitials()}</span>
               )}
@@ -373,7 +381,13 @@ const MainNavBar: React.FC<MainNavBarProps> = ({
               <ProfileHeader>
                 <ProfileAvatar>
                   {user?.photoURL ? (
-                    <img src={user.photoURL} alt={user.displayName || 'User'} loading="lazy" width={48} height={48} />
+                    <img
+                      src={user.photoURL}
+                      alt={user.displayName || 'User'}
+                      loading="lazy"
+                      width={48}
+                      height={48}
+                    />
                   ) : (
                     <span>{getUserInitials()}</span>
                   )}
@@ -387,10 +401,7 @@ const MainNavBar: React.FC<MainNavBarProps> = ({
               <DropdownContent>
                 {effectiveIsSuperUser && (
                   <>
-                    <DropdownItem
-                      $isAdmin={true}
-                      onClick={() => handleProfileAction('admin')}
-                    >
+                    <DropdownItem $isAdmin={true} onClick={() => handleProfileAction('admin')}>
                       <Shield size={18} />
                       <span>Admin Dashboard</span>
                     </DropdownItem>

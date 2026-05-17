@@ -33,6 +33,7 @@ export default function RERAComplianceModule({ role, user, data }: CRMModuleProp
   const [agents, setAgents] = useState<RERAAgent[]>([]);
   const [reraStatus, setReraStatus] = useState<Record<string, unknown>>({});
   const [isLoading, setIsLoading] = useState(true);
+  const [fetchError, setFetchError] = useState<string | null>(null);
   const [selectedAgent, setSelectedAgent] = useState<RERAAgent | null>(null);
   const [formData, setFormData] = useState({
     licenseNumber: '',
@@ -43,6 +44,7 @@ export default function RERAComplianceModule({ role, user, data }: CRMModuleProp
 
   const fetchRERAStatus = useCallback(async () => {
     setIsLoading(true);
+    setFetchError(null);
     try {
       const response = await authFetch('/api/rera/status');
       if (!isMountedRef.current) return;
@@ -51,21 +53,14 @@ export default function RERAComplianceModule({ role, user, data }: CRMModuleProp
         setReraStatus(data);
         setAgents(data.agents || []);
       } else {
-        // Mock data for development
-        setAgents([
-          { id: 1, name: 'Ahmed Al-Mansouri', reraNumber: 'RERA-123456', status: 'valid', expiryDate: '2025-12-31' },
-          { id: 2, name: 'Fatima Al-Naqbi', reraNumber: 'RERA-234567', status: 'expired', expiryDate: '2023-06-30' },
-          { id: 3, name: 'Mohammed Al-Ketbi', reraNumber: null, status: 'pending', expiryDate: null },
-        ]);
+        setFetchError('Failed to load RERA compliance data.');
+        setAgents([]);
       }
     } catch (error) {
       if (!isMountedRef.current) return;
       log.error('Failed to fetch RERA status:', error);
-      // Fallback to mock data
-      setAgents([
-        { id: 1, name: 'Ahmed Al-Mansouri', reraNumber: 'RERA-123456', status: 'valid', expiryDate: '2025-12-31' },
-        { id: 2, name: 'Fatima Al-Naqbi', reraNumber: 'RERA-234567', status: 'expired', expiryDate: '2023-06-30' },
-      ]);
+      setFetchError('Unable to connect to the server.');
+      setAgents([]);
     } finally {
       if (isMountedRef.current) setIsLoading(false);
     }
@@ -237,6 +232,13 @@ export default function RERAComplianceModule({ role, user, data }: CRMModuleProp
       <div className="module-content">
         {isLoading ? (
           <div className="loading">Loading RERA data...</div>
+        ) : fetchError ? (
+          <div style={{ padding: '1.5rem', background: '#FEF2F2', border: '1px solid #FECACA', borderRadius: '8px', color: '#B91C1C', textAlign: 'center' }}>
+            <p style={{ marginBottom: '1rem' }}>{fetchError}</p>
+            <button onClick={fetchRERAStatus} style={{ padding: '0.5rem 1rem', background: '#B91C1C', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer' }}>
+              Retry
+            </button>
+          </div>
         ) : activeTab === 'dashboard' ? (
           renderDashboard()
         ) : (

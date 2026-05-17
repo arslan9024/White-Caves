@@ -1,5 +1,4 @@
-@import url('../../../styles/dashboard-base.css');
-
+﻿
 .deals-table .table-header,
 .deals-table .table-row {
   grid-template-columns: 2fr 1.5fr 1fr 1fr 1fr 1fr 0.5fr;

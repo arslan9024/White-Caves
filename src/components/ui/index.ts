@@ -12,6 +12,10 @@ export { default as Dropdown } from './Dropdown';
 export { default as Toast } from './Toast';
 export { default as Spinner } from './Spinner';
 
+// Form Components
+export { FormField } from './FormField';
+export type { FormFieldProps } from './FormField';
+
 // Additional Components
 export { default as Popover } from './Popover';
 export { default as Tooltip } from './Tooltip';

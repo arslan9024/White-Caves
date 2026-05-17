@@ -30,7 +30,7 @@ const MessageInput: React.FC<MessageInputProps> = ({
   loading = false,
 }) => {
   const [content, setContent] = useState('');
-  const [messageType, setMessageType] = useState<MessageSender>('CUSTOMER');
+  const [messageType, setMessageType] = useState<MessageSender>('AGENT');
   const [error, setError] = useState<string | null>(null);
 
   /**
@@ -54,7 +54,7 @@ const MessageInput: React.FC<MessageInputProps> = ({
 
       // Send message
       try {
-        onSendMessage(content.trim(), messageType);
+        await Promise.resolve(onSendMessage(content.trim(), messageType));
         setContent(''); // Clear input on success
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Failed to send message');
@@ -118,7 +118,7 @@ const MessageInput: React.FC<MessageInputProps> = ({
         <MessageInputControls>
           <MessageTypeSelect
             value={messageType}
-            onChange={(e) => setMessageType(e.target.value as MessageSender)}
+            onChange={e => setMessageType(e.target.value as MessageSender)}
             disabled={disabled || loading}
             aria-label="Message type"
           >
@@ -130,7 +130,7 @@ const MessageInput: React.FC<MessageInputProps> = ({
         <MessageTextarea
           placeholder="Type message here... (Ctrl+Enter to send)"
           value={content}
-          onChange={(e) => setContent(e.target.value.substring(0, MAX_MESSAGE_LENGTH))}
+          onChange={e => setContent(e.target.value.substring(0, MAX_MESSAGE_LENGTH))}
           onKeyDown={handleKeyDown}
           disabled={disabled || loading}
           rows={3}

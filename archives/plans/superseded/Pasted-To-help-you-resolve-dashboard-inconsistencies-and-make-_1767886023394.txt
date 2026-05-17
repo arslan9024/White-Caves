@@ -1,0 +1,74 @@
+To help you resolve dashboard inconsistencies and make Aurora an effective Chief Technology Officer & Systems Architect for your White Caves Real Estate LLC app, I've synthesized best practices for AI assistants, MERN stack development, and project management. Below is a comprehensive AI prompt for Aurora, followed by actionable steps for your project setup.
+
+### 🤖 **Core AI System Prompt for "Aurora"**
+This prompt defines Aurora's role, knowledge base, and operational protocols. It is designed to be entered into Aurora's configuration or custom instructions panel.
+
+*   **Role & Primary Objective:** "You are Aurora, the Chief Technology Officer (CTO) & Systems Architect for White Caves Real Estate LLC. Your primary function is to oversee all technical documentation, architectural decisions, and code quality for our MERN stack real estate application. You must ensure consistency across all development phases and act as the single source of truth for the project's technical state."
+*   **Core Knowledge & Context:**
+    *   **Project:** White Caves Real Estate LLC. A web application for property listings, virtual tours, agent management, and client inquiries.
+    *   **Tech Stack:** MERN (MongoDB, Express.js, React, Node.js). You are an expert in this stack's integration, best practices, and common pitfalls.
+    *   **Code Philosophy:** Advocate for clean, modular, and documented code. Prioritize security (data validation, authentication), performance (database indexing, React optimization), and scalability from the start.
+*   **Operational Protocols:**
+    1.  **Documentation First:** For any query about a feature, bug, or decision, first reference or request the existing project documentation (GitHub README, architecture diagrams, API docs). If none exists, your first output must be a draft of that missing documentation.
+    2.  **Decision Logging:** All architectural suggestions or solutions must include a brief rationale. For significant decisions, prompt the user to log them in the project's `ADRs.md` (Architecture Decision Record) file.
+    3.  **Holistic Analysis:** When presented with a code snippet or bug, always consider its implications across the full stack (frontend React state, Express API, MongoDB schema) and mention them.
+    4.  **Security & Compliance Guardian:** Flag any suggested code or practice that could pose a security risk (e.g., unprotected API keys, unsanitized user input) or data privacy issue, referencing industry best practices.
+
+### 📁 **Structuring Your Project with GitHub**
+To combat dashboard inconsistencies, use **GitHub Projects** as Aurora's command center for tracking work.
+
+*   **Create a Project Board:** Link it to your repository. Use a **Table** layout for a high-density overview of all tasks.
+*   **Define Custom Fields:** This is key for consistency. Add fields like:
+    *   `Status` (Single select: Backlog, In Progress, Review, Done)
+    *   `Priority` (Single select: Low, Medium, High)
+    *   `Component` (Single select: Frontend (React), Backend (API), Database, DevOps)
+    *   `Aurora Review` (Status: Pending, Approved, Changes Requested)
+*   **Automation:** Use built-in workflows to auto-set the `Status` to "Review" when a Pull Request is linked, or archive items marked "Done" after a week.
+
+### 🧱 **MERN Stack Foundation for Aurora**
+Aurora needs to understand your app's structure. Here are the essentials based on MERN best practices:
+
+*   **Project Structure:**
+    ```
+    whitecaves-app/
+    ├── client/                 # React frontend
+    │   ├── public/
+    │   ├── src/
+    │   │   ├── components/    # Reusable UI components (PropertyCard, SearchBar)
+    │   │   ├── pages/        # Page components (Home, Listings, Dashboard)
+    │   │   ├── services/     # API calling functions (api.js)
+    │   │   └── context/      # React Context for global state (e.g., auth)
+    ├── server/                # Express.js backend
+    │   ├── models/           # Mongoose schemas (Property, User, Inquiry)
+    │   ├── routes/           # API endpoints (/api/properties, /api/users)
+    │   ├── controllers/      # Route handling logic
+    │   ├── middleware/       # Auth, logging, error handling
+    │   └── config/           # DB connection, environment vars
+    ├── .env.example          # Template for environment variables
+    └── README.md             # Project overview and setup instructions
+    ```
+*   **Key Technical Decisions for Aurora to Uphold:**
+    *   **API Design:** RESTful conventions for Express routes (e.g., `GET /api/properties`, `POST /api/inquiries`).
+    *   **State Management:** Use React Context for global state like user authentication; consider Redux Toolkit if complexity grows.
+    *   **Database:** Use Mongoose ODM for schema validation, models, and efficient queries. Ensure indexes are created for frequently searched fields (e.g., property location, price).
+
+### 🔍 **Choosing & Integrating the Right AI Assistant**
+Aurora's prompt can be adapted for different AI coding assistants. Here’s a comparison based on their suitability for MERN tasks:
+
+| Assistant | Strengths for MERN | Weaknesses | Best for Aurora's Role |
+| :--- | :--- | :--- | :--- |
+| **Cursor** | Excellent context handling, can edit codebase-wide. | Can be slower. | **Ideal.** Its project-wide understanding matches the CTO oversight role. |
+| **GitHub Copilot** | Fast, IDE-integrated, great for line-by-line code. | Less holistic project context. | Good for daily coding, may need supplements for architecture. |
+| **Phind** | Strong for research & explaining complex solutions. | Less integrated into editor workflow. | Good for initial research and solving specific bugs. |
+
+**Integration Tip:** If dashboard inconsistencies stem from multiple AI tools, consider standardizing on one (like Cursor) and using the Aurora prompt as its core directive. For persistent memory (recalling past decisions), explore solutions like connecting an AI agent platform (e.g., Letta) to a dedicated PostgreSQL database with vector search, which can store conversation history and context.
+
+### 🚀 **Recommended Implementation Plan**
+1.  **Week 1 - Foundation:** Set up the GitHub Project with the custom fields above. Populate it with current tasks. Write a basic `README.md` and project structure.
+2.  **Week 2 - Integrate Aurora:** Configure your chosen primary AI assistant (e.g., Cursor) with the **Core AI System Prompt**. Begin all development sessions by checking the GitHub Project board.
+3.  **Week 3 - Establish Workflow:** Mandate that all bug reports or feature requests must be added as an Issue to GitHub and linked to the Project board. Use Aurora to triage and draft solutions from there.
+4.  **Ongoing:** Use the board's charts and insights to track progress and identify bottlenecks.
+
+By implementing this structured approach, you transform Aurora from a reactive chat interface into a proactive, context-aware system architect. This should directly address the root cause of dashboard inconsistencies by centralizing tracking and decision-logging.
+
+To help you further, **what is the most pressing source of inconsistency in your dashboard right now?** Is it conflicting code styles, duplicate features, or mismatched API responses? Knowing this can help tailor the next steps.

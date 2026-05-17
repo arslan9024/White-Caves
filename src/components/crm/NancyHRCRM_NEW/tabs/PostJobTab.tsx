@@ -1,17 +1,20 @@
-import React from 'react';
 import { JobPostComposer } from '../../shared';
 import { useToast } from '../../../Toast';
 
+// P1-8: Remove index signature so JobData is assignable to Partial<Job>
 interface JobData {
-  title: string;
+  title?: string;
   department?: string;
   location?: string;
   description?: string;
-  [key: string]: unknown;
+  status?: string;
+  type?: string;
+  salary?: string;
+  requirements?: string[];
 }
 
 interface PostedJob {
-  title: string;
+  title?: string;
   [key: string]: unknown;
 }
 
@@ -29,7 +32,7 @@ export default function PostJobTab({ state }: PostJobTabProps) {
 
   const handlePostJob = (jobData: JobData) => {
     const newJob = addJob(jobData);
-    toast.success(`Job posted successfully: ${newJob.title}`);
+    toast.success(`Job posted successfully: ${newJob.title || 'Untitled job'}`);
   };
 
   return (
@@ -40,7 +43,7 @@ export default function PostJobTab({ state }: PostJobTabProps) {
       </div>
 
       <div className="post-job-form-container">
-        <JobPostComposer onPublish={(data: any) => handlePostJob(data)} />
+        <JobPostComposer onPublish={(data: JobData, _platforms: string[]) => handlePostJob(data)} />
       </div>
     </div>
   );

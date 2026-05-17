@@ -100,6 +100,7 @@ const BotSessionManager = memo(({
                   className="action-btn refresh"
                   onClick={(e) => { e.stopPropagation(); onRefreshSession?.(bot.id); }}
                   title="Refresh Session"
+                  aria-label="Refresh bot session"
                 >
                   <RefreshCw size={14} />
                 </button>
@@ -107,6 +108,7 @@ const BotSessionManager = memo(({
                   className="action-btn delete"
                   onClick={(e) => { e.stopPropagation(); setShowDeleteConfirm(bot.id); }}
                   title="Delete Bot"
+                  aria-label="Delete bot"
                 >
                   <Trash2 size={14} />
                 </button>
@@ -167,7 +169,7 @@ const BotSessionManager = memo(({
           <div className="modal-content" role="dialog" aria-modal="true" aria-label="Create new WhatsApp bot" onClick={e => e.stopPropagation()} onKeyDown={e => { if (e.key === 'Escape') setShowCreateModal(false); }}>
             <div className="modal-header">
               <h4>Create New WhatsApp Bot</h4>
-              <button className="close-btn" onClick={() => setShowCreateModal(false)}>
+              <button className="close-btn" onClick={() => setShowCreateModal(false)} aria-label="Close dialog">
                 <X size={18} />
               </button>
             </div>

@@ -1,5 +1,6 @@
 import styled from 'styled-components';
 import { keyframes } from 'styled-components';
+import { transitions } from '../styles/theme/transitions';
 
 const pulse = keyframes`
   0% {
@@ -16,7 +17,7 @@ const pulse = keyframes`
 export const WhatsAppFloatingBtn = styled.button`
   position: fixed;
   bottom: 30px;
-  right: 30px;
+  left: 30px;
   width: 60px;
   height: 60px;
   background-color: #25D366;
@@ -29,7 +30,7 @@ export const WhatsAppFloatingBtn = styled.button`
   align-items: center;
   justify-content: center;
   z-index: var(--z-toast, 400);
-  transition: all 0.3s ease;
+  transition: ${transitions.all};
   animation: ${pulse} 2s infinite;
 
   &:hover {
@@ -44,7 +45,7 @@ export const WhatsAppFloatingBtn = styled.button`
 
   @media (max-width: 768px) {
     bottom: 20px;
-    right: 20px;
+    left: 20px;
     width: 56px;
     height: 56px;
   }

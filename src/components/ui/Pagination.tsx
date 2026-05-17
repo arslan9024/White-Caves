@@ -4,8 +4,9 @@
  * Accessible pagination control with configurable items per page.
  */
 
-import React, { useMemo } from 'react';
+import React, { useMemo, memo } from 'react';
 import styled from 'styled-components';
+import { spacing } from '../../styles/theme/spacing';
 
 export interface PaginationProps {
   currentPage: number;
@@ -21,7 +22,7 @@ const PaginationContainer = styled.nav`
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
+  gap: ${spacing.sm};
   padding: 16px 0;
 `;
 
@@ -63,7 +64,7 @@ const EllipsisSpan = styled.span`
  * Pagination Component
  * Accessible pagination control
  */
-export const Pagination: React.FC<PaginationProps> = ({
+export const Pagination: React.FC<PaginationProps> = memo(function Pagination({
   currentPage,
   totalItems,
   itemsPerPage = 10,
@@ -71,7 +72,7 @@ export const Pagination: React.FC<PaginationProps> = ({
   maxPages = 7,
   showFirstLast = true,
   showPrevNext = true,
-}) => {
+}) {
   const totalPages = Math.ceil(totalItems / itemsPerPage);
 
   const pageNumbers = useMemo(() => {
@@ -192,6 +193,6 @@ export const Pagination: React.FC<PaginationProps> = ({
       )}
     </PaginationContainer>
   );
-};
+});
 
 export default Pagination;

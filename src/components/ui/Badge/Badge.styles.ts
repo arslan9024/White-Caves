@@ -22,12 +22,12 @@ const sizeStyles = {
   md: css`
     height: 26px;
     padding: 0 10px;
-    font-size: 12px;
+    font-size: ${typography.sizes.xs};
   `,
   lg: css`
     height: 32px;
     padding: 0 14px;
-    font-size: 14px;
+    font-size: ${typography.sizes.base};
   `,
 };
 
@@ -85,7 +85,7 @@ export const StyledBadge = styled.span<BadgeProps>`
   align-items: center;
   gap: 6px;
   font-family: ${typography.fontFamily.heading};
-  font-weight: 600;
+  font-weight: ${typography.weights.semibold};
   white-space: nowrap;
   border: 1px solid transparent;
   transition: all 0.15s ease;

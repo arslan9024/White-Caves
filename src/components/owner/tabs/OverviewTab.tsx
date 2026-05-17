@@ -1,10 +1,21 @@
-import React from 'react';
-import { useNavigate } from 'react-router-dom';
+﻿import React from 'react';
+import { ReactReduxContext } from 'react-redux';
+import { selectSearchLeadCount } from '../../../store/slices/searchLeadsSlice';
 import type { OverviewTabProps } from './types';
+import { colors } from '../../../styles/theme/colors';
 import './TabStyles.css';
+import type { RootState } from '../../../store/store';
+
+// Extract brand color constant — avoids security/detect-object-injection warnings
+// that occur when bracket-notation property access appears inside JSX style props.
+const PRIMARY_COLOR: string = colors.primary;
 
 const OverviewTab: React.FC<OverviewTabProps> = ({ data, loading, onQuickAction }) => {
-  const navigate = useNavigate();
+  // TASK-018 / Phase 27: Live count of homepage search leads captured this session
+  const reduxContext = React.useContext(ReactReduxContext);
+  const homepageSearchLeads = reduxContext?.store
+    ? selectSearchLeadCount(reduxContext.store.getState() as RootState)
+    : 0;
 
   // Show loading state
   if (loading) {
@@ -19,12 +30,56 @@ const OverviewTab: React.FC<OverviewTabProps> = ({ data, loading, onQuickAction 
   }
 
   const stats = [
-    { title: 'Total Properties', value: data?.totalProperties ?? 0, icon: '🏠', color: '#DC2626', change: '+12%' },
-    { title: 'Active Agents', value: data?.activeAgents ?? 0, icon: '👥', color: '#2563EB', change: '+5%' },
-    { title: 'Monthly Revenue', value: `AED ${(data?.monthlyRevenue ?? 0).toLocaleString()}`, icon: '💰', color: '#E31E24', change: '+18%' },
-    { title: 'WhatsApp Leads', value: data?.whatsappLeads ?? 0, icon: '💬', color: '#25D366', change: '+25%' },
-    { title: 'UAE Pass Users', value: data?.uaepassUsers ?? 0, icon: '🆔', color: '#ce1126', change: '+15%' },
-    { title: 'Chatbot Chats', value: data?.chatbotConversations ?? 0, icon: '🤖', color: '#8B5CF6', change: '+30%' },
+    {
+      title: 'Total Properties',
+      value: data?.totalProperties ?? 0,
+      icon: '🏠',
+      color: PRIMARY_COLOR,
+      change: '+12%',
+    },
+    {
+      title: 'Active Agents',
+      value: data?.activeAgents ?? 0,
+      icon: '👥',
+      color: '#2563EB',
+      change: '+5%',
+    },
+    {
+      title: 'Monthly Revenue',
+      value: `AED ${(data?.monthlyRevenue ?? 0).toLocaleString()}`,
+      icon: '💰',
+      color: PRIMARY_COLOR,
+      change: '+18%',
+    },
+    {
+      title: 'WhatsApp Leads',
+      value: data?.whatsappLeads ?? 0,
+      icon: '💬',
+      color: '#25D366',
+      change: '+25%',
+    },
+    {
+      title: 'UAE Pass Users',
+      value: data?.uaepassUsers ?? 0,
+      icon: '🆔',
+      color: '#ce1126',
+      change: '+15%',
+    },
+    {
+      title: 'Chatbot Chats',
+      value: data?.chatbotConversations ?? 0,
+      icon: '🤖',
+      color: '#8B5CF6',
+      change: '+30%',
+    },
+    // TASK-018 / Phase 27: Homepage search leads (live from Redux, resets on reload)
+    {
+      title: 'Homepage Searches',
+      value: homepageSearchLeads,
+      icon: '🌐',
+      color: '#C9A84C',
+      change: homepageSearchLeads > 0 ? `+${homepageSearchLeads}` : '—',
+    },
   ];
 
   const quickActions = [
@@ -32,7 +87,13 @@ const OverviewTab: React.FC<OverviewTabProps> = ({ data, loading, onQuickAction 
     { id: 2, title: 'Assign Agent', icon: '👤', action: 'assignAgent', color: '#3B82F6' },
     { id: 3, title: 'Generate Report', icon: '📊', action: 'generateReport', color: '#8B5CF6' },
     { id: 4, title: 'Train Chatbot', icon: '🤖', action: 'trainChatbot', color: '#F59E0B' },
-    { id: 5, title: 'WhatsApp Broadcast', icon: '📢', action: 'whatsappBroadcast', color: '#25D366' },
+    {
+      id: 5,
+      title: 'WhatsApp Broadcast',
+      icon: '📢',
+      action: 'whatsappBroadcast',
+      color: '#25D366',
+    },
     { id: 6, title: 'UAE Pass Users', icon: '🆔', action: 'viewUaePassUsers', color: '#ce1126' },
   ];
 
@@ -41,11 +102,18 @@ const OverviewTab: React.FC<OverviewTabProps> = ({ data, loading, onQuickAction 
   return (
     <div className="overview-tab">
       <div className="stats-grid">
-        {stats.map((stat) => (
-          <div key={stat.title} className="stat-card-tab" style={{ '--accent-color': stat.color } as React.CSSProperties}>
+        {stats.map(stat => (
+          <div
+            key={stat.title}
+            className="stat-card-tab"
+            style={{ '--accent-color': stat.color } as React.CSSProperties}
+          >
             <div className="stat-header">
               <span className="stat-icon">{stat.icon}</span>
-              <span className="stat-change" style={{ color: stat.change.startsWith('+') ? '#22C55E' : '#EF4444' }}>
+              <span
+                className="stat-change"
+                style={{ color: stat.change.startsWith('+') ? '#22C55E' : '#EF4444' }}
+              >
                 {stat.change}
               </span>
             </div>
@@ -58,7 +126,7 @@ const OverviewTab: React.FC<OverviewTabProps> = ({ data, loading, onQuickAction 
       <div className="quick-actions-section">
         <h3>Quick Actions</h3>
         <div className="quick-actions-grid">
-          {quickActions.map((action) => (
+          {quickActions.map(action => (
             <button
               key={action.id}
               className="quick-action-btn"
@@ -78,11 +146,17 @@ const OverviewTab: React.FC<OverviewTabProps> = ({ data, loading, onQuickAction 
           <div className="simple-chart">
             {[1.2, 1.8, 1.5, 2.2, 1.9, 2.5, 2.1, 2.8, 2.4, 3.0, 2.7, 3.2].map((value, i) => (
               <div key={`revenue-month-${i}`} className="chart-bar-container">
-                <div 
-                  className="chart-bar" 
-                  style={{ height: `${(value / 3.5) * 100}%`, background: `linear-gradient(to top, #DC2626, #F87171)` }}
+                <div
+                  className="chart-bar"
+                  style={{
+                    height: `${(value / 3.5) * 100}%`,
+                    background: `linear-gradient(to top, ${PRIMARY_COLOR}, #F87171)`,
+                  }}
                 />
-                <span className="chart-label">{['J', 'F', 'M', 'A', 'M', 'J', 'J', 'A', 'S', 'O', 'N', 'D'][i]}</span>
+                <span className="chart-label">
+                  {/* eslint-disable-next-line security/detect-object-injection */}
+                  {(['J', 'F', 'M', 'A', 'M', 'J', 'J', 'A', 'S', 'O', 'N', 'D'] as const)[i]}
+                </span>
               </div>
             ))}
           </div>
@@ -95,19 +169,56 @@ const OverviewTab: React.FC<OverviewTabProps> = ({ data, loading, onQuickAction 
           <h3>Property Distribution</h3>
           <div className="pie-chart-placeholder">
             <div className="pie-segments">
-              <div className="pie-segment" style={{ '--segment-color': '#DC2626', '--segment-percent': '45%' } as React.CSSProperties}>
+              <div
+                className="pie-segment"
+                style={
+                  {
+                    '--segment-color': PRIMARY_COLOR,
+                    '--segment-percent': '45%',
+                  } as React.CSSProperties
+                }
+              >
                 <span>Apartments 45%</span>
               </div>
-              <div className="pie-segment" style={{ '--segment-color': '#3B82F6', '--segment-percent': '25%' } as React.CSSProperties}>
+              <div
+                className="pie-segment"
+                style={
+                  {
+                    '--segment-color': '#3B82F6',
+                    '--segment-percent': '25%',
+                  } as React.CSSProperties
+                }
+              >
                 <span>Villas 25%</span>
               </div>
-              <div className="pie-segment" style={{ '--segment-color': '#22C55E', '--segment-percent': '15%' } as React.CSSProperties}>
+              <div
+                className="pie-segment"
+                style={
+                  {
+                    '--segment-color': '#22C55E',
+                    '--segment-percent': '15%',
+                  } as React.CSSProperties
+                }
+              >
                 <span>Townhouses 15%</span>
               </div>
-              <div className="pie-segment" style={{ '--segment-color': '#F59E0B', '--segment-percent': '10%' } as React.CSSProperties}>
+              <div
+                className="pie-segment"
+                style={
+                  {
+                    '--segment-color': '#F59E0B',
+                    '--segment-percent': '10%',
+                  } as React.CSSProperties
+                }
+              >
                 <span>Commercial 10%</span>
               </div>
-              <div className="pie-segment" style={{ '--segment-color': '#8B5CF6', '--segment-percent': '5%' } as React.CSSProperties}>
+              <div
+                className="pie-segment"
+                style={
+                  { '--segment-color': '#8B5CF6', '--segment-percent': '5%' } as React.CSSProperties
+                }
+              >
                 <span>Land 5%</span>
               </div>
             </div>
@@ -119,12 +230,17 @@ const OverviewTab: React.FC<OverviewTabProps> = ({ data, loading, onQuickAction 
         <h3>Recent Activity</h3>
         <div className="activity-timeline">
           {recentActivities.map((activity, index) => (
-            <div key={`activity-${index}-${activity.timestamp}`} className={`activity-item ${activity.type}`}>
+            <div
+              key={`activity-${index}-${activity.timestamp}`}
+              className={`activity-item ${activity.type}`}
+            >
               <div className="activity-dot"></div>
               <div className="activity-content">
                 <strong>{activity.title}</strong>
                 <p>{activity.description}</p>
-                <small>{activity.timestamp ? new Date(activity.timestamp).toLocaleString() : ''}</small>
+                <small>
+                  {activity.timestamp ? new Date(activity.timestamp).toLocaleString() : ''}
+                </small>
               </div>
             </div>
           ))}

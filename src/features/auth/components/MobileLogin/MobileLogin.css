@@ -25,7 +25,7 @@
 
 .country-code-select:focus {
   outline: none;
-  border-color: var(--primary-color, #DC2626);
+  border-color: var(--primary-color, #e31e24);
 }
 
 .phone-input {
@@ -40,8 +40,8 @@
 
 .phone-input:focus {
   outline: none;
-  border-color: var(--primary-color, #DC2626);
-  box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
+  border-color: var(--primary-color, #e31e24);
+  box-shadow: 0 0 0 3px rgba(227, 30, 36, 0.1);
 }
 
 .phone-input::placeholder {
@@ -50,7 +50,7 @@
 
 .mobile-submit-btn {
   padding: 14px 20px;
-  background: var(--primary-color, #DC2626);
+  background: var(--primary-color, #e31e24);
   color: #ffffff;
   border: none;
   border-radius: 10px;
@@ -61,7 +61,7 @@
 }
 
 .mobile-submit-btn:hover:not(:disabled) {
-  background: #b91c1c;
+  background: #b71c1c;
 }
 
 .mobile-submit-btn:disabled {
@@ -116,8 +116,8 @@
 
 .otp-input:focus {
   outline: none;
-  border-color: var(--primary-color, #DC2626);
-  box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
+  border-color: var(--primary-color, #e31e24);
+  box-shadow: 0 0 0 3px rgba(227, 30, 36, 0.1);
 }
 
 .otp-input.error {
@@ -132,7 +132,7 @@
 .otp-submit-btn {
   width: 100%;
   padding: 14px 20px;
-  background: var(--primary-color, #DC2626);
+  background: var(--primary-color, #e31e24);
   color: #ffffff;
   border: none;
   border-radius: 10px;
@@ -143,7 +143,7 @@
 }
 
 .otp-submit-btn:hover:not(:disabled) {
-  background: #b91c1c;
+  background: #b71c1c;
 }
 
 .otp-submit-btn:disabled {
@@ -163,7 +163,7 @@
 .resend-section button {
   background: none;
   border: none;
-  color: var(--primary-color, #DC2626);
+  color: var(--primary-color, #e31e24);
   font-weight: 600;
   cursor: pointer;
   font-size: 14px;
@@ -179,15 +179,15 @@
   text-align: center;
 }
 
-[data-theme="dark"] .country-code-select,
-[data-theme="dark"] .phone-input,
-[data-theme="dark"] .otp-input {
+[data-theme='dark'] .country-code-select,
+[data-theme='dark'] .phone-input,
+[data-theme='dark'] .otp-input {
   background: var(--bg-secondary, #1f2937);
   border-color: var(--border-color, #374151);
   color: var(--text-primary, #f9fafb);
 }
 
-[data-theme="dark"] .otp-header h3 {
+[data-theme='dark'] .otp-header h3 {
   color: var(--text-primary, #f9fafb);
 }
 
@@ -197,11 +197,11 @@
     height: 48px;
     font-size: 20px;
   }
-  
+
   .phone-input-group {
     flex-direction: column;
   }
-  
+
   .country-code-select {
     width: 100%;
   }

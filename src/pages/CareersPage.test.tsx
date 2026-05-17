@@ -14,8 +14,8 @@ vi.mock('../hooks/useDocumentTitle', () => ({
   useDocumentTitle: vi.fn(),
 }));
 
-// Mock AppLayout
-vi.mock('../components/layout/AppLayout', () => ({
+// Mock PublicLayout
+vi.mock('../components/layout/PublicLayout', () => ({
   default: ({ children }: any) => <div data-testid="app-layout">{children}</div>,
 }));
 
@@ -23,7 +23,7 @@ const renderCareers = () =>
   render(
     <MemoryRouter>
       <CareersPage />
-    </MemoryRouter>,
+    </MemoryRouter>
   );
 
 describe('CareersPage', () => {
@@ -64,14 +64,12 @@ describe('CareersPage', () => {
 
     it('shows AED 2B+ transactions stat', () => {
       renderCareers();
-      expect(screen.getByText('AED 2B+')).toBeInTheDocument();
-      expect(screen.getByText('Transactions')).toBeInTheDocument();
+      expect(screen.getByText(/AED 2B\+ in transactions/i)).toBeInTheDocument();
     });
 
-    it('shows 100% growth support stat', () => {
+    it('highlights growth support in hero copy', () => {
       renderCareers();
-      expect(screen.getByText('100%')).toBeInTheDocument();
-      expect(screen.getByText('Growth Support')).toBeInTheDocument();
+      expect(screen.getByText(/unlock your potential/i)).toBeInTheDocument();
     });
   });
 

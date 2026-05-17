@@ -1,4 +1,7 @@
 import styled from 'styled-components';
+import { transitions } from '../styles/theme/transitions';
+import { typography } from '../styles/theme/typography';
+import { radius } from '../styles/theme/radius';
 
 export const ErrorBoundaryContainer = styled.div`
   min-height: 100vh;
@@ -16,7 +19,7 @@ export const ErrorBoundaryContent = styled.div`
   padding: 60px 40px;
   max-width: 500px;
   text-align: center;
-  border: 1px solid rgba(212, 175, 55, 0.2);
+  border: 1px solid rgba(227, 30, 36, 0.2);
   animation: fadeIn 0.5s ease;
 
   @keyframes fadeIn {
@@ -51,7 +54,7 @@ export const ErrorTitle = styled.h1`
   color: white;
   font-size: 2rem;
   margin-bottom: 1rem;
-  font-weight: 700;
+  font-weight: ${typography.weights.bold};
 `;
 
 export const ErrorMessage = styled.p`
@@ -63,19 +66,19 @@ export const ErrorMessage = styled.p`
 
 export const RedirectNotice = styled.p`
   color: rgba(255, 255, 255, 0.5);
-  font-size: 14px;
+  font-size: ${typography.sizes.base};
   margin-bottom: 25px;
 `;
 
 export const Countdown = styled.span`
   display: inline-block;
-  background: linear-gradient(135deg, #E31E24, #C62828);
-  color: #0a0a0f;
+  background: linear-gradient(135deg, #ef5350, #d32f2f);
+  color: #ffffff;
   width: 28px;
   height: 28px;
   line-height: 28px;
   border-radius: 50%;
-  font-weight: 700;
+  font-weight: ${typography.weights.bold};
   margin: 0 4px;
 `;
 
@@ -89,34 +92,34 @@ export const ErrorActions = styled.div`
 
 export const ErrorButton = styled.button<{ $variant?: 'primary' | 'secondary' }>`
   padding: 0.875rem 2rem;
-  border-radius: 8px;
+  border-radius: ${radius.lg};
   font-size: 1rem;
-  font-weight: 600;
+  font-weight: ${typography.weights.semibold};
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: ${transitions.all};
   border: none;
   outline: none;
 
-  ${(props) => {
+  ${props => {
     if (props.$variant === 'secondary') {
       return `
         background: transparent;
-        border: 2px solid rgba(212, 175, 55, 0.5);
-        color: #E31E24;
+        border: 2px solid rgba(211, 47, 47, 0.5);
+        color: #EF5350;
 
         &:hover {
-          background: rgba(212, 175, 55, 0.1);
-          border-color: #E31E24;
+          background: rgba(211, 47, 47, 0.1);
+          border-color: #EF5350;
         }
       `;
     }
     return `
-      background: linear-gradient(135deg, #E31E24, #C62828);
-      color: #0a0a0f;
+      background: linear-gradient(135deg, #EF5350, #D32F2F);
+      color: #FFFFFF;
 
       &:hover {
         transform: translateY(-2px);
-        box-shadow: 0 6px 20px rgba(212, 175, 55, 0.4);
+        box-shadow: 0 6px 20px rgba(211, 47, 47, 0.4);
       }
 
       &:active {
@@ -131,13 +134,13 @@ export const ErrorDetails = styled.details`
   text-align: left;
   background: rgba(0, 0, 0, 0.2);
   padding: 1rem;
-  border-radius: 8px;
+  border-radius: ${radius.lg};
   border: 1px solid rgba(255, 255, 255, 0.1);
 
   summary {
     cursor: pointer;
     color: rgba(255, 255, 255, 0.7);
-    font-weight: 600;
+    font-weight: ${typography.weights.semibold};
     margin-bottom: 0.5rem;
 
     &:hover {
@@ -149,7 +152,7 @@ export const ErrorDetails = styled.details`
 export const ErrorStack = styled.pre`
   background: rgba(0, 0, 0, 0.5);
   padding: 1rem;
-  border-radius: 4px;
+  border-radius: ${radius.sm};
   overflow-x: auto;
   color: #ff6b6b;
   font-size: 0.75rem;
@@ -165,11 +168,11 @@ export const ErrorStack = styled.pre`
   }
 
   &::-webkit-scrollbar-thumb {
-    background: rgba(212, 175, 55, 0.3);
+    background: rgba(211, 47, 47, 0.3);
     border-radius: 2px;
 
     &:hover {
-      background: rgba(212, 175, 55, 0.5);
+      background: rgba(211, 47, 47, 0.5);
     }
   }
 `;

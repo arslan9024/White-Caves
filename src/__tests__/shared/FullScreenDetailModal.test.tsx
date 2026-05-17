@@ -4,7 +4,7 @@
  * Covers: rendering, open/close, image gallery, tabs, actions, keyboard nav, favorites, fullscreen
  */
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { render, screen, fireEvent, act } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import React from 'react';
 
 vi.mock('../../shared/components/ui/FullScreenDetailModal.css', () => ({}));
@@ -71,9 +71,7 @@ describe('FullScreenDetailModal', () => {
     });
 
     it('renders sidebar when provided', () => {
-      render(
-        <FullScreenDetailModal {...defaultProps} sidebar={<div>Sidebar Content</div>} />
-      );
+      render(<FullScreenDetailModal {...defaultProps} sidebar={<div>Sidebar Content</div>} />);
       expect(screen.getByText('Sidebar Content')).toBeInTheDocument();
     });
 
@@ -111,6 +109,12 @@ describe('FullScreenDetailModal', () => {
       render(<FullScreenDetailModal {...defaultProps} />);
       fireEvent.keyDown(window, { key: 'Escape' });
       expect(defaultProps.onClose).toHaveBeenCalled();
+    });
+
+    it('does not call onClose from Escape when modal is closed', () => {
+      render(<FullScreenDetailModal {...defaultProps} isOpen={false} />);
+      fireEvent.keyDown(window, { key: 'Escape' });
+      expect(defaultProps.onClose).not.toHaveBeenCalled();
     });
   });
 
@@ -193,6 +197,21 @@ describe('FullScreenDetailModal', () => {
       fireEvent.keyDown(window, { key: 'ArrowLeft' });
       expect(screen.getByAltText('Luxury Villa — image 1 of 3')).toBeInTheDocument();
     });
+
+    it('clamps rendered image index when images shrink after selection', () => {
+      const { rerender } = render(<FullScreenDetailModal {...defaultProps} images={images} />);
+
+      fireEvent.click(screen.getByLabelText('Next image'));
+      fireEvent.click(screen.getByLabelText('Next image'));
+      expect(screen.getByAltText('Luxury Villa — image 3 of 3')).toBeInTheDocument();
+      expect(screen.getByText('3 / 3')).toBeInTheDocument();
+
+      rerender(<FullScreenDetailModal {...defaultProps} images={['/img1.jpg']} />);
+
+      expect(screen.getByAltText('Luxury Villa — image 1 of 1')).toBeInTheDocument();
+      expect(screen.getByText('1 / 1')).toBeInTheDocument();
+      expect(screen.queryByAltText('Luxury Villa — image 3 of 1')).not.toBeInTheDocument();
+    });
   });
 
   // ─── TABS ──────────────────────────────────────────────────
@@ -225,6 +244,35 @@ describe('FullScreenDetailModal', () => {
     it('respects defaultTab prop', () => {
       render(<FullScreenDetailModal {...defaultProps} tabs={tabs} defaultTab={2} />);
       expect(screen.getByText('Location content')).toBeInTheDocument();
+    });
+
+    it('safely clamps out-of-bounds defaultTab to last available tab', () => {
+      render(<FullScreenDetailModal {...defaultProps} tabs={tabs} defaultTab={99} />);
+      expect(screen.getByText('Location content')).toBeInTheDocument();
+      expect(screen.queryByText('Details content')).not.toBeInTheDocument();
+    });
+
+    it('clamps negative defaultTab to the first available tab', () => {
+      render(<FullScreenDetailModal {...defaultProps} tabs={tabs} defaultTab={-1} />);
+      expect(screen.getByText('Details content')).toBeInTheDocument();
+      expect(screen.queryByText('Location content')).not.toBeInTheDocument();
+    });
+
+    it('keeps rendering valid tab content when tabs shrink after selection', () => {
+      const { rerender } = render(<FullScreenDetailModal {...defaultProps} tabs={tabs} />);
+
+      fireEvent.click(screen.getByText('Location'));
+      expect(screen.getByText('Location content')).toBeInTheDocument();
+
+      rerender(
+        <FullScreenDetailModal
+          {...defaultProps}
+          tabs={[{ label: 'Details', content: <div>Details content</div> }]}
+        />
+      );
+
+      expect(screen.getByText('Details content')).toBeInTheDocument();
+      expect(screen.queryByText('Location content')).not.toBeInTheDocument();
     });
 
     it('shows children when no tabs provided', () => {

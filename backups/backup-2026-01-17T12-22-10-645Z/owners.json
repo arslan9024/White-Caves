@@ -1,0 +1,3737 @@
+[
+  {
+    "_id": "69619fbcba063ab4384a8c44",
+    "name": "Amina Reddy",
+    "nameNormalized": "aminareddy",
+    "nationality": "France",
+    "emiratesId": "784-1992-9678553-1",
+    "contacts": [
+      {
+        "type": "mobile",
+        "value": "+971 56 4624788",
+        "isPrimary": true,
+        "isVerified": true,
+        "_id": "69619fbcba063ab4384a8c45",
+        "addedAt": "2026-01-10T00:39:24.054Z"
+      },
+      {
+        "type": "email",
+        "value": "amina.reddy@icloud.com",
+        "isPrimary": false,
+        "isVerified": true,
+        "_id": "69619fbcba063ab4384a8c46",
+        "addedAt": "2026-01-10T00:39:24.054Z"
+      },
+      {
+        "type": "whatsapp",
+        "value": "+971 56 4624788",
+        "isPrimary": false,
+        "isVerified": true,
+        "_id": "69619fbcba063ab4384a8c47",
+        "addedAt": "2026-01-10T00:39:24.054Z"
+      }
+    ],
+    "properties": [],
+    "notes": "",
+    "tags": [],
+    "source": "manual",
+    "isActive": true,
+    "createdAt": "2025-03-25T00:39:24.049Z",
+    "updatedAt": "2025-03-25T00:39:24.049Z",
+    "__v": 0
+  },
+  {
+    "_id": "69619fbcba063ab4384a8c4a",
+    "name": "Victoria Nair",
+    "nameNormalized": "victorianair",
+    "nationality": "Oman",
+    "emiratesId": "784-1976-8401665-1",
+    "contacts": [
+      {
+        "type": "mobile",
+        "value": "+971 50 4873920",
+        "isPrimary": true,
+        "isVerified": true,
+        "_id": "69619fbcba063ab4384a8c4b",
+        "addedAt": "2026-01-10T00:39:24.068Z"
+      },
+      {
+        "type": "email",
+        "value": "victoria.nair@outlook.com",
+        "isPrimary": false,
+        "isVerified": true,
+        "_id": "69619fbcba063ab4384a8c4c",
+        "addedAt": "2026-01-10T00:39:24.068Z"
+      },
+      {
+        "type": "whatsapp",
+        "value": "+971 50 4873920",
+        "isPrimary": false,
+        "isVerified": true,
+        "_id": "69619fbcba063ab4384a8c4d",
+        "addedAt": "2026-01-10T00:39:24.068Z"
+      }
+    ],
+    "properties": [
+      "69619fbeba063ab4384a8eb8",
+      "69619fc1ba063ab4384a9242"
+    ],
+    "notes": "",
+    "tags": [
+      "Sea View Required",
+      "Mortgage Required"
+    ],
+    "source": "api",
+    "isActive": true,
+    "createdAt": "2025-01-23T00:39:24.068Z",
+    "updatedAt": "2026-01-10T00:39:29.171Z",
+    "__v": 0
+  },
+  {
+    "_id": "69619fbcba063ab4384a8c50",
+    "name": "Emma Brown",
+    "nameNormalized": "emmabrown",
+    "nationality": "Bahrain",
+    "emiratesId": "784-1997-4238851-1",
+    "contacts": [
+      {
+        "type": "mobile",
+        "value": "+971 58 9943908",
+        "isPrimary": true,
+        "isVerified": true,
+        "_id": "69619fbcba063ab4384a8c51",
+        "addedAt": "2026-01-10T00:39:24.075Z"
+      },
+      {
+        "type": "email",
+        "value": "emma.brown@outlook.com",
+        "isPrimary": false,
+        "isVerified": false,
+        "_id": "69619fbcba063ab4384a8c52",
+        "addedAt": "2026-01-10T00:39:24.075Z"
+      },
+      {
+        "type": "whatsapp",
+        "value": "+971 58 9943908",
+        "isPrimary": false,
+        "isVerified": true,
+        "_id": "69619fbcba063ab4384a8c53",
+        "addedAt": "2026-01-10T00:39:24.076Z"
+      }
+    ],
+    "properties": [
+      "69619fc1ba063ab4384a920c"
+    ],
+    "notes": "",
+    "tags": [
+      "Family",
+      "VIP"
+    ],
+    "source": "excel_import",
+    "isActive": true,
+    "createdAt": "2025-05-14T00:39:24.075Z",
+    "updatedAt": "2026-01-10T00:39:29.071Z",
+    "__v": 0
+  },
+  {
+    "_id": "69619fbcba063ab4384a8c55",
+    "name": "David Brown",
+    "nameNormalized": "davidbrown",
+    "nationality": "Lebanon",
+    "emiratesId": "784-1978-9600720-1",
+    "contacts": [
+      {
+        "type": "mobile",
+        "value": "+971 58 8274515",
+        "isPrimary": true,
+        "isVerified": false,
+        "_id": "69619fbcba063ab4384a8c56",
+        "addedAt": "2026-01-10T00:39:24.090Z"
+      },
+      {
+        "type": "email",
+        "value": "david.brown@outlook.com",
+        "isPrimary": false,
+        "isVerified": true,
+        "_id": "69619fbcba063ab4384a8c57",
+        "addedAt": "2026-01-10T00:39:24.090Z"
+      },
+      {
+        "type": "whatsapp",
+        "value": "+971 58 8274515",
+        "isPrimary": false,
+        "isVerified": true,
+        "_id": "69619fbcba063ab4384a8c58",
+        "addedAt": "2026-01-10T00:39:24.090Z"
+      }
+    ],
+    "properties": [
+      "69619fbeba063ab4384a8eac",
+      "69619fc1ba063ab4384a91ee"
+    ],
+    "notes": "",
+    "tags": [
+      "VIP"
+    ],
+    "source": "manual",
+    "isActive": true,
+    "createdAt": "2025-06-09T00:39:24.090Z",
+    "updatedAt": "2026-01-10T00:39:29.026Z",
+    "__v": 0
+  },
+  {
+    "_id": "69619fbcba063ab4384a8c5a",
+    "name": "Isabella Al Sharqi",
+    "nameNormalized": "isabellaalsharqi",
+    "nationality": "Canada",
+    "emiratesId": "784-1985-8145959-1",
+    "contacts": [
+      {
+        "type": "mobile",
+        "value": "+971 54 2452049",
+        "isPrimary": true,
+        "isVerified": false,
+        "_id": "69619fbcba063ab4384a8c5b",
+        "addedAt": "2026-01-10T00:39:24.096Z"
+      },
+      {
+        "type": "email",
+        "value": "isabella.alsharqi@yahoo.com",
+        "isPrimary": false,
+        "isVerified": false,
+        "_id": "69619fbcba063ab4384a8c5c",
+        "addedAt": "2026-01-10T00:39:24.096Z"
+      },
+      {
+        "type": "whatsapp",
+        "value": "+971 54 2452049",
+        "isPrimary": false,
+        "isVerified": false,
+        "_id": "69619fbcba063ab4384a8c5d",
+        "addedAt": "2026-01-10T00:39:24.097Z"
+      }
+    ],
+    "properties": [
+      "69619fbeba063ab4384a8f24",
+      "69619fbeba063ab4384a8f78",
+      "69619fbfba063ab4384a9026"
+    ],
+    "notes": "VIP client, preferred communication via WhatsApp",
+    "tags": [
+      "Mortgage Required"
+    ],
+    "source": "api",
+    "isActive": true,
+    "createdAt": "2025-10-11T00:39:24.096Z",
+    "updatedAt": "2026-01-10T00:39:27.332Z",
+    "__v": 0
+  },
+  {
+    "_id": "69619fbcba063ab4384a8c60",
+    "name": "Amina Reddy",
+    "nameNormalized": "aminareddy",
+    "nationality": "UK",
+    "emiratesId": "784-1985-5109297-1",
+    "contacts": [
+      {
+        "type": "mobile",
+        "value": "+971 58 6199744",
+        "isPrimary": true,
+        "isVerified": true,
+        "_id": "69619fbcba063ab4384a8c61",
+        "addedAt": "2026-01-10T00:39:24.103Z"
+      },
+      {
+        "type": "email",
+        "value": "amina.reddy@outlook.com",
+        "isPrimary": false,
+        "isVerified": true,
+        "_id": "69619fbcba063ab4384a8c62",
+        "addedAt": "2026-01-10T00:39:24.103Z"
+      },
+      {
+        "type": "whatsapp",
+        "value": "+971 58 6199744",
+        "isPrimary": false,
+        "isVerified": false,
+        "_id": "69619fbcba063ab4384a8c63",
+        "addedAt": "2026-01-10T00:39:24.103Z"
+      }
+    ],
+    "properties": [
+      "69619fbdba063ab4384a8e46",
+      "69619fc0ba063ab4384a90da",
+      "69619fc0ba063ab4384a9134",
+      "69619fc0ba063ab4384a918e"
+    ],
+    "notes": "",
+    "tags": [
+      "Family"
+    ],
+    "source": "api",
+    "isActive": true,
+    "createdAt": "2025-05-15T00:39:24.103Z",
+    "updatedAt": "2026-01-10T00:39:28.868Z",
+    "__v": 0
+  },
+  {
+    "_id": "69619fbcba063ab4384a8c66",
+    "name": "Shamsa Johnson",
+    "nameNormalized": "shamsajohnson",
+    "nationality": "Philippines",
+    "emiratesId": "784-1975-2768563-1",
+    "contacts": [
+      {
+        "type": "mobile",
+        "value": "+971 54 5718101",
+        "isPrimary": true,
+        "isVerified": true,
+        "_id": "69619fbcba063ab4384a8c67",
+        "addedAt": "2026-01-10T00:39:24.108Z"
+      },
+      {
+        "type": "email",
+        "value": "shamsa.johnson@yahoo.com",
+        "isPrimary": false,
+        "isVerified": false,
+        "_id": "69619fbcba063ab4384a8c68",
+        "addedAt": "2026-01-10T00:39:24.108Z"
+      },
+      {
+        "type": "whatsapp",
+        "value": "+971 54 5718101",
+        "isPrimary": false,
+        "isVerified": true,
+        "_id": "69619fbcba063ab4384a8c69",
+        "addedAt": "2026-01-10T00:39:24.108Z"
+      }
+    ],
+    "properties": [
+      "69619fbdba063ab4384a8e4c",
+      "69619fbfba063ab4384a8fc0"
+    ],
+    "notes": "VIP client, preferred communication via WhatsApp",
+    "tags": [
+      "Furnished Only",
+      "Pet Friendly",
+      "Urgent"
+    ],
+    "source": "manual",
+    "isActive": true,
+    "createdAt": "2025-07-08T00:39:24.108Z",
+    "updatedAt": "2026-01-10T00:39:27.166Z",
+    "__v": 0
+  },
+  {
+    "_id": "69619fbcba063ab4384a8c6c",
+    "name": "Sultan Johnson",
+    "nameNormalized": "sultanjohnson",
+    "nationality": "Germany",
+    "emiratesId": null,
+    "contacts": [
+      {
+        "type": "mobile",
+        "value": "+971 55 9779117",
+        "isPrimary": true,
+        "isVerified": false,
+        "_id": "69619fbcba063ab4384a8c6d",
+        "addedAt": "2026-01-10T00:39:24.114Z"
+      },
+      {
+        "type": "email",
+        "value": "sultan.johnson@hotmail.com",
+        "isPrimary": false,
+        "isVerified": true,
+        "_id": "69619fbcba063ab4384a8c6e",
+        "addedAt": "2026-01-10T00:39:24.114Z"
+      },
+      {
+        "type": "whatsapp",
+        "value": "+971 55 9779117",
+        "isPrimary": false,
+        "isVerified": true,
+        "_id": "69619fbcba063ab4384a8c6f",
+        "addedAt": "2026-01-10T00:39:24.114Z"
+      }
+    ],
+    "properties": [
+      "69619fbdba063ab4384a8e10",
+      "69619fbeba063ab4384a8ea0",
+      "69619fbeba063ab4384a8ec4"
+    ],
+    "notes": "",
+    "tags": [
+      "Corporate"
+    ],
+    "source": "excel_import",
+    "isActive": true,
+    "createdAt": "2025-04-17T00:39:24.114Z",
+    "updatedAt": "2026-01-10T00:39:26.199Z",
+    "__v": 0
+  },
+  {
+    "_id": "69619fbcba063ab4384a8c71",
+    "name": "William Brown",
+    "nameNormalized": "williambrown",
+    "nationality": "Egypt",
+    "emiratesId": "784-1980-7403884-1",
+    "contacts": [
+      {
+        "type": "mobile",
+        "value": "+971 52 1462490",
+        "isPrimary": true,
+        "isVerified": true,
+        "_id": "69619fbcba063ab4384a8c72",
+        "addedAt": "2026-01-10T00:39:24.120Z"
+      },
+      {
+        "type": "email",
+        "value": "william.brown@icloud.com",
+        "isPrimary": false,
+        "isVerified": true,
+        "_id": "69619fbcba063ab4384a8c73",
+        "addedAt": "2026-01-10T00:39:24.120Z"
+      },
+      {
+        "type": "whatsapp",
+        "value": "+971 52 1462490",
+        "isPrimary": false,
+        "isVerified": true,
+        "_id": "69619fbcba063ab4384a8c74",
+        "addedAt": "2026-01-10T00:39:24.120Z"
+      }
+    ],
+    "properties": [
+      "69619fbeba063ab4384a8edc",
+      "69619fbfba063ab4384a9056",
+      "69619fc0ba063ab4384a916a",
+      "69619fc0ba063ab4384a9182"
+    ],
+    "notes": "",
+    "tags": [],
+    "source": "api",
+    "isActive": true,
+    "createdAt": "2025-06-24T00:39:24.120Z",
+    "updatedAt": "2026-01-10T00:39:28.847Z",
+    "__v": 0
+  },
+  {
+    "_id": "69619fbcba063ab4384a8c77",
+    "name": "Hamdan Nair",
+    "nameNormalized": "hamdannair",
+    "nationality": "France",
+    "emiratesId": "784-1989-4115608-1",
+    "contacts": [
+      {
+        "type": "mobile",
+        "value": "+971 58 4733554",
+        "isPrimary": true,
+        "isVerified": false,
+        "_id": "69619fbcba063ab4384a8c78",
+        "addedAt": "2026-01-10T00:39:24.126Z"
+      },
+      {
+        "type": "email",
+        "value": "hamdan.nair@icloud.com",
+        "isPrimary": false,
+        "isVerified": false,
+        "_id": "69619fbcba063ab4384a8c79",
+        "addedAt": "2026-01-10T00:39:24.126Z"
+      },
+      {
+        "type": "whatsapp",
+        "value": "+971 58 4733554",
+        "isPrimary": false,
+        "isVerified": false,
+        "_id": "69619fbcba063ab4384a8c7a",
+        "addedAt": "2026-01-10T00:39:24.126Z"
+      }
+    ],
+    "properties": [
+      "69619fc0ba063ab4384a919a"
+    ],
+    "notes": "",
+    "tags": [
+      "VIP",
+      "Family"
+    ],
+    "source": "api",
+    "isActive": true,
+    "createdAt": "2025-05-08T00:39:24.126Z",
+    "updatedAt": "2026-01-10T00:39:28.887Z",
+    "__v": 0
+  },
+  {
+    "_id": "69619fbcba063ab4384a8c7d",
+    "name": "Hessa Al Thani",
+    "nameNormalized": "hessaalthani",
+    "nationality": "UK",
+    "emiratesId": "784-1974-1211244-1",
+    "contacts": [
+      {
+        "type": "mobile",
+        "value": "+971 55 6984072",
+        "isPrimary": true,
+        "isVerified": true,
+        "_id": "69619fbcba063ab4384a8c7e",
+        "addedAt": "2026-01-10T00:39:24.131Z"
+      },
+      {
+        "type": "email",
+        "value": "hessa.althani@outlook.com",
+        "isPrimary": false,
+        "isVerified": true,
+        "_id": "69619fbcba063ab4384a8c7f",
+        "addedAt": "2026-01-10T00:39:24.131Z"
+      },
+      {
+        "type": "whatsapp",
+        "value": "+971 55 6984072",
+        "isPrimary": false,
+        "isVerified": true,
+        "_id": "69619fbcba063ab4384a8c80",
+        "addedAt": "2026-01-10T00:39:24.132Z"
+      }
+    ],
+    "properties": [
+      "69619fbeba063ab4384a8e76",
+      "69619fbfba063ab4384a8fcc",
+      "69619fbfba063ab4384a9020",
+      "69619fc0ba063ab4384a90c2"
+    ],
+    "notes": "",
+    "tags": [],
+    "source": "excel_import",
+    "isActive": true,
+    "createdAt": "2025-09-08T00:39:24.131Z",
+    "updatedAt": "2026-01-10T00:39:28.106Z",
+    "__v": 0
+  },
+  {
+    "_id": "69619fbcba063ab4384a8c82",
+    "name": "Amina Al Mualla",
+    "nameNormalized": "aminaalmualla",
+    "nationality": "India",
+    "emiratesId": "784-1971-6551356-1",
+    "contacts": [
+      {
+        "type": "mobile",
+        "value": "+971 55 8960972",
+        "isPrimary": true,
+        "isVerified": false,
+        "_id": "69619fbcba063ab4384a8c83",
+        "addedAt": "2026-01-10T00:39:24.138Z"
+      },
+      {
+        "type": "email",
+        "value": "amina.almualla@yahoo.com",
+        "isPrimary": false,
+        "isVerified": true,
+        "_id": "69619fbcba063ab4384a8c84",
+        "addedAt": "2026-01-10T00:39:24.138Z"
+      },
+      {
+        "type": "whatsapp",
+        "value": "+971 55 8960972",
+        "isPrimary": false,
+        "isVerified": false,
+        "_id": "69619fbcba063ab4384a8c85",
+        "addedAt": "2026-01-10T00:39:24.138Z"
+      }
+    ],
+    "properties": [
+      "69619fbeba063ab4384a8e64",
+      "69619fbeba063ab4384a8ebe",
+      "69619fbeba063ab4384a8f30",
+      "69619fbeba063ab4384a8f3c",
+      "69619fbfba063ab4384a8f7e",
+      "69619fc0ba063ab4384a90b0",
+      "69619fc0ba063ab4384a913a"
+    ],
+    "notes": "",
+    "tags": [
+      "Relocating",
+      "First-time Buyer",
+      "Cash Buyer"
+    ],
+    "source": "manual",
+    "isActive": true,
+    "createdAt": "2025-06-16T00:39:24.138Z",
+    "updatedAt": "2026-01-10T00:39:28.306Z",
+    "__v": 0
+  },
+  {
+    "_id": "69619fbcba063ab4384a8c88",
+    "name": "William Taylor",
+    "nameNormalized": "williamtaylor",
+    "nationality": "India",
+    "emiratesId": "784-1970-9518215-1",
+    "contacts": [
+      {
+        "type": "mobile",
+        "value": "+971 52 1034572",
+        "isPrimary": true,
+        "isVerified": false,
+        "_id": "69619fbcba063ab4384a8c89",
+        "addedAt": "2026-01-10T00:39:24.144Z"
+      },
+      {
+        "type": "email",
+        "value": "william.taylor@hotmail.com",
+        "isPrimary": false,
+        "isVerified": false,
+        "_id": "69619fbcba063ab4384a8c8a",
+        "addedAt": "2026-01-10T00:39:24.144Z"
+      },
+      {
+        "type": "whatsapp",
+        "value": "+971 52 1034572",
+        "isPrimary": false,
+        "isVerified": false,
+        "_id": "69619fbcba063ab4384a8c8b",
+        "addedAt": "2026-01-10T00:39:24.144Z"
+      }
+    ],
+    "properties": [
+      "69619fbdba063ab4384a8e22",
+      "69619fbeba063ab4384a8f60",
+      "69619fbfba063ab4384a8f9c",
+      "69619fc0ba063ab4384a908c"
+    ],
+    "notes": "VIP client, preferred communication via WhatsApp",
+    "tags": [],
+    "source": "manual",
+    "isActive": true,
+    "createdAt": "2025-09-16T00:39:24.143Z",
+    "updatedAt": "2026-01-10T00:39:28.013Z",
+    "__v": 0
+  },
+  {
+    "_id": "69619fbcba063ab4384a8c8e",
+    "name": "Isabella Kumar",
+    "nameNormalized": "isabellakumar",
+    "nationality": "China",
+    "emiratesId": "784-1982-5852511-1",
+    "contacts": [
+      {
+        "type": "mobile",
+        "value": "+971 56 8718343",
+        "isPrimary": true,
+        "isVerified": false,
+        "_id": "69619fbcba063ab4384a8c8f",
+        "addedAt": "2026-01-10T00:39:24.151Z"
+      },
+      {
+        "type": "email",
+        "value": "isabella.kumar@hotmail.com",
+        "isPrimary": false,
+        "isVerified": true,
+        "_id": "69619fbcba063ab4384a8c90",
+        "addedAt": "2026-01-10T00:39:24.151Z"
+      },
+      {
+        "type": "whatsapp",
+        "value": "+971 56 8718343",
+        "isPrimary": false,
+        "isVerified": true,
+        "_id": "69619fbcba063ab4384a8c91",
+        "addedAt": "2026-01-10T00:39:24.151Z"
+      }
+    ],
+    "properties": [
+      "69619fbdba063ab4384a8df2",
+      "69619fc0ba063ab4384a90aa"
+    ],
+    "notes": "VIP client, preferred communication via WhatsApp",
+    "tags": [
+      "Family",
+      "Urgent",
+      "VIP"
+    ],
+    "source": "excel_import",
+    "isActive": true,
+    "createdAt": "2025-05-24T00:39:24.151Z",
+    "updatedAt": "2026-01-10T00:39:28.065Z",
+    "__v": 0
+  },
+  {
+    "_id": "69619fbcba063ab4384a8c94",
+    "name": "Olivia Al Sharqi",
+    "nameNormalized": "oliviaalsharqi",
+    "nationality": "UAE",
+    "emiratesId": "784-2000-6196155-1",
+    "contacts": [
+      {
+        "type": "mobile",
+        "value": "+971 52 8547499",
+        "isPrimary": true,
+        "isVerified": false,
+        "_id": "69619fbcba063ab4384a8c95",
+        "addedAt": "2026-01-10T00:39:24.156Z"
+      },
+      {
+        "type": "email",
+        "value": "olivia.alsharqi@outlook.com",
+        "isPrimary": false,
+        "isVerified": true,
+        "_id": "69619fbcba063ab4384a8c96",
+        "addedAt": "2026-01-10T00:39:24.157Z"
+      },
+      {
+        "type": "whatsapp",
+        "value": "+971 52 8547499",
+        "isPrimary": false,
+        "isVerified": false,
+        "_id": "69619fbcba063ab4384a8c97",
+        "addedAt": "2026-01-10T00:39:24.157Z"
+      }
+    ],
+    "properties": [
+      "69619fbeba063ab4384a8f42"
+    ],
+    "notes": "VIP client, preferred communication via WhatsApp",
+    "tags": [
+      "Cash Buyer",
+      "Mortgage Required"
+    ],
+    "source": "manual",
+    "isActive": true,
+    "createdAt": "2025-04-11T00:39:24.156Z",
+    "updatedAt": "2026-01-10T00:39:26.902Z",
+    "__v": 0
+  },
+  {
+    "_id": "69619fbcba063ab4384a8c99",
+    "name": "Robert Johnson",
+    "nameNormalized": "robertjohnson",
+    "nationality": "UAE",
+    "emiratesId": null,
+    "contacts": [
+      {
+        "type": "mobile",
+        "value": "+971 56 3564639",
+        "isPrimary": true,
+        "isVerified": false,
+        "_id": "69619fbcba063ab4384a8c9a",
+        "addedAt": "2026-01-10T00:39:24.163Z"
+      },
+      {
+        "type": "email",
+        "value": "robert.johnson@outlook.com",
+        "isPrimary": false,
+        "isVerified": true,
+        "_id": "69619fbcba063ab4384a8c9b",
+        "addedAt": "2026-01-10T00:39:24.163Z"
+      },
+      {
+        "type": "whatsapp",
+        "value": "+971 56 3564639",
+        "isPrimary": false,
+        "isVerified": false,
+        "_id": "69619fbcba063ab4384a8c9c",
+        "addedAt": "2026-01-10T00:39:24.163Z"
+      }
+    ],
+    "properties": [
+      "69619fbeba063ab4384a8f06",
+      "69619fc0ba063ab4384a9104"
+    ],
+    "notes": "VIP client, preferred communication via WhatsApp",
+    "tags": [
+      "Corporate"
+    ],
+    "source": "manual",
+    "isActive": true,
+    "createdAt": "2025-04-29T00:39:24.163Z",
+    "updatedAt": "2026-01-10T00:39:28.221Z",
+    "__v": 0
+  },
+  {
+    "_id": "69619fbcba063ab4384a8c9e",
+    "name": "Sultan Rao",
+    "nameNormalized": "sultanrao",
+    "nationality": "Lebanon",
+    "emiratesId": "784-1975-8053895-1",
+    "contacts": [
+      {
+        "type": "mobile",
+        "value": "+971 56 4232908",
+        "isPrimary": true,
+        "isVerified": false,
+        "_id": "69619fbcba063ab4384a8c9f",
+        "addedAt": "2026-01-10T00:39:24.168Z"
+      },
+      {
+        "type": "email",
+        "value": "sultan.rao@icloud.com",
+        "isPrimary": false,
+        "isVerified": false,
+        "_id": "69619fbcba063ab4384a8ca0",
+        "addedAt": "2026-01-10T00:39:24.168Z"
+      },
+      {
+        "type": "whatsapp",
+        "value": "+971 56 4232908",
+        "isPrimary": false,
+        "isVerified": false,
+        "_id": "69619fbcba063ab4384a8ca1",
+        "addedAt": "2026-01-10T00:39:24.168Z"
+      }
+    ],
+    "properties": [
+      "69619fbeba063ab4384a8f5a",
+      "69619fbfba063ab4384a8fae",
+      "69619fbfba063ab4384a8fde",
+      "69619fc0ba063ab4384a90f8",
+      "69619fc0ba063ab4384a9110",
+      "69619fc0ba063ab4384a9170"
+    ],
+    "notes": "",
+    "tags": [
+      "VIP",
+      "Relocating",
+      "Investor"
+    ],
+    "source": "api",
+    "isActive": true,
+    "createdAt": "2025-08-25T00:39:24.168Z",
+    "updatedAt": "2026-01-10T00:39:28.390Z",
+    "__v": 0
+  },
+  {
+    "_id": "69619fbcba063ab4384a8ca4",
+    "name": "Olivia Al Nuaimi",
+    "nameNormalized": "oliviaalnuaimi",
+    "nationality": "China",
+    "emiratesId": null,
+    "contacts": [
+      {
+        "type": "mobile",
+        "value": "+971 55 9239697",
+        "isPrimary": true,
+        "isVerified": false,
+        "_id": "69619fbcba063ab4384a8ca5",
+        "addedAt": "2026-01-10T00:39:24.173Z"
+      },
+      {
+        "type": "email",
+        "value": "olivia.alnuaimi@hotmail.com",
+        "isPrimary": false,
+        "isVerified": false,
+        "_id": "69619fbcba063ab4384a8ca6",
+        "addedAt": "2026-01-10T00:39:24.173Z"
+      },
+      {
+        "type": "whatsapp",
+        "value": "+971 55 9239697",
+        "isPrimary": false,
+        "isVerified": true,
+        "_id": "69619fbcba063ab4384a8ca7",
+        "addedAt": "2026-01-10T00:39:24.173Z"
+      }
+    ],
+    "properties": [],
+    "notes": "",
+    "tags": [
+      "Relocating",
+      "First-time Buyer",
+      "Family"
+    ],
+    "source": "api",
+    "isActive": true,
+    "createdAt": "2025-07-25T00:39:24.173Z",
+    "updatedAt": "2025-07-25T00:39:24.173Z",
+    "__v": 0
+  },
+  {
+    "_id": "69619fbcba063ab4384a8ca9",
+    "name": "Isabella Taylor",
+    "nameNormalized": "isabellataylor",
+    "nationality": "Iran",
+    "emiratesId": null,
+    "contacts": [
+      {
+        "type": "mobile",
+        "value": "+971 56 8740328",
+        "isPrimary": true,
+        "isVerified": false,
+        "_id": "69619fbcba063ab4384a8caa",
+        "addedAt": "2026-01-10T00:39:24.178Z"
+      },
+      {
+        "type": "email",
+        "value": "isabella.taylor@outlook.com",
+        "isPrimary": false,
+        "isVerified": true,
+        "_id": "69619fbcba063ab4384a8cab",
+        "addedAt": "2026-01-10T00:39:24.178Z"
+      },
+      {
+        "type": "whatsapp",
+        "value": "+971 56 8740328",
+        "isPrimary": false,
+        "isVerified": true,
+        "_id": "69619fbcba063ab4384a8cac",
+        "addedAt": "2026-01-10T00:39:24.178Z"
+      }
+    ],
+    "properties": [
+      "69619fc0ba063ab4384a9164",
+      "69619fc1ba063ab4384a9260"
+    ],
+    "notes": "VIP client, preferred communication via WhatsApp",
+    "tags": [
+      "Mortgage Required",
+      "First-time Buyer",
+      "Pet Friendly"
+    ],
+    "source": "excel_import",
+    "isActive": true,
+    "createdAt": "2025-12-17T00:39:24.178Z",
+    "updatedAt": "2026-01-10T00:39:29.222Z",
+    "__v": 0
+  },
+  {
+    "_id": "69619fbcba063ab4384a8cae",
+    "name": "Moza Al Qassimi",
+    "nameNormalized": "mozaalqassimi",
+    "nationality": "Iran",
+    "emiratesId": null,
+    "contacts": [
+      {
+        "type": "mobile",
+        "value": "+971 55 2979313",
+        "isPrimary": true,
+        "isVerified": true,
+        "_id": "69619fbcba063ab4384a8caf",
+        "addedAt": "2026-01-10T00:39:24.183Z"
+      },
+      {
+        "type": "email",
+        "value": "moza.alqassimi@hotmail.com",
+        "isPrimary": false,
+        "isVerified": false,
+        "_id": "69619fbcba063ab4384a8cb0",
+        "addedAt": "2026-01-10T00:39:24.183Z"
+      },
+      {
+        "type": "whatsapp",
+        "value": "+971 55 2979313",
+        "isPrimary": false,
+        "isVerified": false,
+        "_id": "69619fbcba063ab4384a8cb1",
+        "addedAt": "2026-01-10T00:39:24.184Z"
+      }
+    ],
+    "properties": [
+      "69619fc1ba063ab4384a922a"
+    ],
+    "notes": "",
+    "tags": [
+      "Relocating",
+      "Pet Friendly",
+      "Family"
+    ],
+    "source": "api",
+    "isActive": true,
+    "createdAt": "2025-06-17T00:39:24.183Z",
+    "updatedAt": "2026-01-10T00:39:29.129Z",
+    "__v": 0
+  },
+  {
+    "_id": "69619fbcba063ab4384a8cb4",
+    "name": "Mansour Al Thani",
+    "nameNormalized": "mansouralthani",
+    "nationality": "Egypt",
+    "emiratesId": "784-1999-2115072-1",
+    "contacts": [
+      {
+        "type": "mobile",
+        "value": "+971 52 7777709",
+        "isPrimary": true,
+        "isVerified": true,
+        "_id": "69619fbcba063ab4384a8cb5",
+        "addedAt": "2026-01-10T00:39:24.189Z"
+      },
+      {
+        "type": "email",
+        "value": "mansour.althani@gmail.com",
+        "isPrimary": false,
+        "isVerified": true,
+        "_id": "69619fbcba063ab4384a8cb6",
+        "addedAt": "2026-01-10T00:39:24.189Z"
+      },
+      {
+        "type": "whatsapp",
+        "value": "+971 52 7777709",
+        "isPrimary": false,
+        "isVerified": false,
+        "_id": "69619fbcba063ab4384a8cb7",
+        "addedAt": "2026-01-10T00:39:24.189Z"
+      }
+    ],
+    "properties": [
+      "69619fbfba063ab4384a903e",
+      "69619fbfba063ab4384a906e"
+    ],
+    "notes": "",
+    "tags": [
+      "Furnished Only",
+      "VIP"
+    ],
+    "source": "excel_import",
+    "isActive": true,
+    "createdAt": "2025-04-25T00:39:24.189Z",
+    "updatedAt": "2026-01-10T00:39:27.891Z",
+    "__v": 0
+  },
+  {
+    "_id": "69619fbcba063ab4384a8cb9",
+    "name": "Michael Johnson",
+    "nameNormalized": "michaeljohnson",
+    "nationality": "Bahrain",
+    "emiratesId": "784-1971-7652485-1",
+    "contacts": [
+      {
+        "type": "mobile",
+        "value": "+971 55 7785717",
+        "isPrimary": true,
+        "isVerified": true,
+        "_id": "69619fbcba063ab4384a8cba",
+        "addedAt": "2026-01-10T00:39:24.194Z"
+      },
+      {
+        "type": "email",
+        "value": "michael.johnson@hotmail.com",
+        "isPrimary": false,
+        "isVerified": false,
+        "_id": "69619fbcba063ab4384a8cbb",
+        "addedAt": "2026-01-10T00:39:24.194Z"
+      },
+      {
+        "type": "whatsapp",
+        "value": "+971 55 7785717",
+        "isPrimary": false,
+        "isVerified": true,
+        "_id": "69619fbcba063ab4384a8cbc",
+        "addedAt": "2026-01-10T00:39:24.194Z"
+      }
+    ],
+    "properties": [
+      "69619fc1ba063ab4384a924e",
+      "69619fc1ba063ab4384a9254"
+    ],
+    "notes": "",
+    "tags": [],
+    "source": "api",
+    "isActive": true,
+    "createdAt": "2025-01-16T00:39:24.194Z",
+    "updatedAt": "2026-01-10T00:39:29.201Z",
+    "__v": 0
+  },
+  {
+    "_id": "69619fbcba063ab4384a8cbe",
+    "name": "Sophia Williams",
+    "nameNormalized": "sophiawilliams",
+    "nationality": "Australia",
+    "emiratesId": null,
+    "contacts": [
+      {
+        "type": "mobile",
+        "value": "+971 55 8743988",
+        "isPrimary": true,
+        "isVerified": true,
+        "_id": "69619fbcba063ab4384a8cbf",
+        "addedAt": "2026-01-10T00:39:24.199Z"
+      },
+      {
+        "type": "email",
+        "value": "sophia.williams@gmail.com",
+        "isPrimary": false,
+        "isVerified": true,
+        "_id": "69619fbcba063ab4384a8cc0",
+        "addedAt": "2026-01-10T00:39:24.199Z"
+      },
+      {
+        "type": "whatsapp",
+        "value": "+971 55 8743988",
+        "isPrimary": false,
+        "isVerified": true,
+        "_id": "69619fbcba063ab4384a8cc1",
+        "addedAt": "2026-01-10T00:39:24.199Z"
+      }
+    ],
+    "properties": [
+      "69619fbdba063ab4384a8e3a",
+      "69619fbfba063ab4384a8fb4",
+      "69619fbfba063ab4384a8fba"
+    ],
+    "notes": "",
+    "tags": [
+      "VIP",
+      "Pet Friendly"
+    ],
+    "source": "manual",
+    "isActive": true,
+    "createdAt": "2025-05-15T00:39:24.199Z",
+    "updatedAt": "2026-01-10T00:39:27.156Z",
+    "__v": 0
+  },
+  {
+    "_id": "69619fbcba063ab4384a8cc3",
+    "name": "Hamdan Rao",
+    "nameNormalized": "hamdanrao",
+    "nationality": "Iran",
+    "emiratesId": "784-1981-1541100-1",
+    "contacts": [
+      {
+        "type": "mobile",
+        "value": "+971 52 7438795",
+        "isPrimary": true,
+        "isVerified": false,
+        "_id": "69619fbcba063ab4384a8cc4",
+        "addedAt": "2026-01-10T00:39:24.204Z"
+      },
+      {
+        "type": "email",
+        "value": "hamdan.rao@icloud.com",
+        "isPrimary": false,
+        "isVerified": false,
+        "_id": "69619fbcba063ab4384a8cc5",
+        "addedAt": "2026-01-10T00:39:24.204Z"
+      },
+      {
+        "type": "whatsapp",
+        "value": "+971 52 7438795",
+        "isPrimary": false,
+        "isVerified": true,
+        "_id": "69619fbcba063ab4384a8cc6",
+        "addedAt": "2026-01-10T00:39:24.204Z"
+      }
+    ],
+    "properties": [
+      "69619fbeba063ab4384a8eb2",
+      "69619fbeba063ab4384a8efa"
+    ],
+    "notes": "VIP client, preferred communication via WhatsApp",
+    "tags": [
+      "First-time Buyer",
+      "Investor",
+      "Relocating"
+    ],
+    "source": "api",
+    "isActive": true,
+    "createdAt": "2025-12-22T00:39:24.204Z",
+    "updatedAt": "2026-01-10T00:39:26.285Z",
+    "__v": 0
+  },
+  {
+    "_id": "69619fbcba063ab4384a8cc8",
+    "name": "Hessa Williams",
+    "nameNormalized": "hessawilliams",
+    "nationality": "Iran",
+    "emiratesId": "784-1993-5167295-1",
+    "contacts": [
+      {
+        "type": "mobile",
+        "value": "+971 52 6096460",
+        "isPrimary": true,
+        "isVerified": false,
+        "_id": "69619fbcba063ab4384a8cc9",
+        "addedAt": "2026-01-10T00:39:24.210Z"
+      },
+      {
+        "type": "email",
+        "value": "hessa.williams@icloud.com",
+        "isPrimary": false,
+        "isVerified": true,
+        "_id": "69619fbcba063ab4384a8cca",
+        "addedAt": "2026-01-10T00:39:24.210Z"
+      },
+      {
+        "type": "whatsapp",
+        "value": "+971 52 6096460",
+        "isPrimary": false,
+        "isVerified": true,
+        "_id": "69619fbcba063ab4384a8ccb",
+        "addedAt": "2026-01-10T00:39:24.210Z"
+      }
+    ],
+    "properties": [
+      "69619fbeba063ab4384a8f0c",
+      "69619fbfba063ab4384a8f96",
+      "69619fbfba063ab4384a8ff0",
+      "69619fc0ba063ab4384a91dc"
+    ],
+    "notes": "",
+    "tags": [
+      "Pet Friendly",
+      "VIP"
+    ],
+    "source": "excel_import",
+    "isActive": true,
+    "createdAt": "2025-04-24T00:39:24.210Z",
+    "updatedAt": "2026-01-10T00:39:28.989Z",
+    "__v": 0
+  },
+  {
+    "_id": "69619fbcba063ab4384a8ccd",
+    "name": "Hessa Rao",
+    "nameNormalized": "hessarao",
+    "nationality": "Oman",
+    "emiratesId": "784-1975-6558181-1",
+    "contacts": [
+      {
+        "type": "mobile",
+        "value": "+971 52 3555880",
+        "isPrimary": true,
+        "isVerified": true,
+        "_id": "69619fbcba063ab4384a8cce",
+        "addedAt": "2026-01-10T00:39:24.215Z"
+      },
+      {
+        "type": "email",
+        "value": "hessa.rao@hotmail.com",
+        "isPrimary": false,
+        "isVerified": true,
+        "_id": "69619fbcba063ab4384a8ccf",
+        "addedAt": "2026-01-10T00:39:24.215Z"
+      },
+      {
+        "type": "whatsapp",
+        "value": "+971 52 3555880",
+        "isPrimary": false,
+        "isVerified": true,
+        "_id": "69619fbcba063ab4384a8cd0",
+        "addedAt": "2026-01-10T00:39:24.215Z"
+      }
+    ],
+    "properties": [
+      "69619fbdba063ab4384a8e28",
+      "69619fc1ba063ab4384a9218"
+    ],
+    "notes": "",
+    "tags": [
+      "VIP",
+      "Investor",
+      "First-time Buyer"
+    ],
+    "source": "api",
+    "isActive": true,
+    "createdAt": "2025-10-06T00:39:24.215Z",
+    "updatedAt": "2026-01-10T00:39:29.090Z",
+    "__v": 0
+  },
+  {
+    "_id": "69619fbcba063ab4384a8cd2",
+    "name": "Emma Rao",
+    "nameNormalized": "emmarao",
+    "nationality": "UAE",
+    "emiratesId": "784-1994-6877665-1",
+    "contacts": [
+      {
+        "type": "mobile",
+        "value": "+971 52 4066540",
+        "isPrimary": true,
+        "isVerified": false,
+        "_id": "69619fbcba063ab4384a8cd3",
+        "addedAt": "2026-01-10T00:39:24.221Z"
+      },
+      {
+        "type": "email",
+        "value": "emma.rao@hotmail.com",
+        "isPrimary": false,
+        "isVerified": true,
+        "_id": "69619fbcba063ab4384a8cd4",
+        "addedAt": "2026-01-10T00:39:24.221Z"
+      },
+      {
+        "type": "whatsapp",
+        "value": "+971 52 4066540",
+        "isPrimary": false,
+        "isVerified": true,
+        "_id": "69619fbcba063ab4384a8cd5",
+        "addedAt": "2026-01-10T00:39:24.221Z"
+      }
+    ],
+    "properties": [
+      "69619fbeba063ab4384a8ed0",
+      "69619fbfba063ab4384a904a",
+      "69619fc0ba063ab4384a9092",
+      "69619fc0ba063ab4384a90a4"
+    ],
+    "notes": "",
+    "tags": [],
+    "source": "excel_import",
+    "isActive": true,
+    "createdAt": "2025-04-30T00:39:24.221Z",
+    "updatedAt": "2026-01-10T00:39:28.056Z",
+    "__v": 0
+  },
+  {
+    "_id": "69619fbcba063ab4384a8cd7",
+    "name": "Moza Menon",
+    "nameNormalized": "mozamenon",
+    "nationality": "Iran",
+    "emiratesId": "784-1996-2516648-1",
+    "contacts": [
+      {
+        "type": "mobile",
+        "value": "+971 58 1487078",
+        "isPrimary": true,
+        "isVerified": false,
+        "_id": "69619fbcba063ab4384a8cd8",
+        "addedAt": "2026-01-10T00:39:24.226Z"
+      },
+      {
+        "type": "email",
+        "value": "moza.menon@gmail.com",
+        "isPrimary": false,
+        "isVerified": true,
+        "_id": "69619fbcba063ab4384a8cd9",
+        "addedAt": "2026-01-10T00:39:24.226Z"
+      },
+      {
+        "type": "whatsapp",
+        "value": "+971 58 1487078",
+        "isPrimary": false,
+        "isVerified": true,
+        "_id": "69619fbcba063ab4384a8cda",
+        "addedAt": "2026-01-10T00:39:24.226Z"
+      }
+    ],
+    "properties": [
+      "69619fbfba063ab4384a8fea",
+      "69619fc0ba063ab4384a910a"
+    ],
+    "notes": "",
+    "tags": [
+      "Mortgage Required",
+      "Investor"
+    ],
+    "source": "excel_import",
+    "isActive": true,
+    "createdAt": "2025-10-04T00:39:24.226Z",
+    "updatedAt": "2026-01-10T00:39:28.231Z",
+    "__v": 0
+  },
+  {
+    "_id": "69619fbcba063ab4384a8cdc",
+    "name": "David Reddy",
+    "nameNormalized": "davidreddy",
+    "nationality": "Philippines",
+    "emiratesId": "784-1980-3152176-1",
+    "contacts": [
+      {
+        "type": "mobile",
+        "value": "+971 55 5345481",
+        "isPrimary": true,
+        "isVerified": false,
+        "_id": "69619fbcba063ab4384a8cdd",
+        "addedAt": "2026-01-10T00:39:24.232Z"
+      },
+      {
+        "type": "email",
+        "value": "david.reddy@outlook.com",
+        "isPrimary": false,
+        "isVerified": true,
+        "_id": "69619fbcba063ab4384a8cde",
+        "addedAt": "2026-01-10T00:39:24.232Z"
+      },
+      {
+        "type": "whatsapp",
+        "value": "+971 55 5345481",
+        "isPrimary": false,
+        "isVerified": false,
+        "_id": "69619fbcba063ab4384a8cdf",
+        "addedAt": "2026-01-10T00:39:24.232Z"
+      }
+    ],
+    "properties": [
+      "69619fbeba063ab4384a8e7c",
+      "69619fbeba063ab4384a8ea6",
+      "69619fc0ba063ab4384a90c8",
+      "69619fc1ba063ab4384a9278"
+    ],
+    "notes": "",
+    "tags": [
+      "Investor"
+    ],
+    "source": "manual",
+    "isActive": true,
+    "createdAt": "2025-05-03T00:39:24.232Z",
+    "updatedAt": "2026-01-10T00:39:29.261Z",
+    "__v": 0
+  },
+  {
+    "_id": "69619fbcba063ab4384a8ce1",
+    "name": "Abdullah Brown",
+    "nameNormalized": "abdullahbrown",
+    "nationality": "Bahrain",
+    "emiratesId": null,
+    "contacts": [
+      {
+        "type": "mobile",
+        "value": "+971 58 2147015",
+        "isPrimary": true,
+        "isVerified": false,
+        "_id": "69619fbcba063ab4384a8ce2",
+        "addedAt": "2026-01-10T00:39:24.237Z"
+      },
+      {
+        "type": "email",
+        "value": "abdullah.brown@yahoo.com",
+        "isPrimary": false,
+        "isVerified": true,
+        "_id": "69619fbcba063ab4384a8ce3",
+        "addedAt": "2026-01-10T00:39:24.237Z"
+      },
+      {
+        "type": "whatsapp",
+        "value": "+971 58 2147015",
+        "isPrimary": false,
+        "isVerified": false,
+        "_id": "69619fbcba063ab4384a8ce4",
+        "addedAt": "2026-01-10T00:39:24.237Z"
+      }
+    ],
+    "properties": [
+      "69619fbeba063ab4384a8ee8",
+      "69619fc0ba063ab4384a914c",
+      "69619fc0ba063ab4384a9176"
+    ],
+    "notes": "",
+    "tags": [
+      "Mortgage Required",
+      "Relocating"
+    ],
+    "source": "manual",
+    "isActive": true,
+    "createdAt": "2025-03-04T00:39:24.237Z",
+    "updatedAt": "2026-01-10T00:39:28.399Z",
+    "__v": 0
+  },
+  {
+    "_id": "69619fbcba063ab4384a8ce6",
+    "name": "Robert Anderson",
+    "nameNormalized": "robertanderson",
+    "nationality": "UK",
+    "emiratesId": "784-1972-5155573-1",
+    "contacts": [
+      {
+        "type": "mobile",
+        "value": "+971 56 3289132",
+        "isPrimary": true,
+        "isVerified": false,
+        "_id": "69619fbcba063ab4384a8ce7",
+        "addedAt": "2026-01-10T00:39:24.242Z"
+      },
+      {
+        "type": "email",
+        "value": "robert.anderson@icloud.com",
+        "isPrimary": false,
+        "isVerified": false,
+        "_id": "69619fbcba063ab4384a8ce8",
+        "addedAt": "2026-01-10T00:39:24.242Z"
+      },
+      {
+        "type": "whatsapp",
+        "value": "+971 56 3289132",
+        "isPrimary": false,
+        "isVerified": false,
+        "_id": "69619fbcba063ab4384a8ce9",
+        "addedAt": "2026-01-10T00:39:24.242Z"
+      }
+    ],
+    "properties": [
+      "69619fbeba063ab4384a8f36",
+      "69619fbfba063ab4384a905c",
+      "69619fbfba063ab4384a9080",
+      "69619fc0ba063ab4384a90b6",
+      "69619fc0ba063ab4384a911c"
+    ],
+    "notes": "",
+    "tags": [
+      "VIP",
+      "Mortgage Required"
+    ],
+    "source": "api",
+    "isActive": true,
+    "createdAt": "2025-05-13T00:39:24.242Z",
+    "updatedAt": "2026-01-10T00:39:28.260Z",
+    "__v": 0
+  },
+  {
+    "_id": "69619fbcba063ab4384a8ceb",
+    "name": "Emma Anderson",
+    "nameNormalized": "emmaanderson",
+    "nationality": "Iran",
+    "emiratesId": null,
+    "contacts": [
+      {
+        "type": "mobile",
+        "value": "+971 54 1917741",
+        "isPrimary": true,
+        "isVerified": false,
+        "_id": "69619fbcba063ab4384a8cec",
+        "addedAt": "2026-01-10T00:39:24.247Z"
+      },
+      {
+        "type": "email",
+        "value": "emma.anderson@gmail.com",
+        "isPrimary": false,
+        "isVerified": true,
+        "_id": "69619fbcba063ab4384a8ced",
+        "addedAt": "2026-01-10T00:39:24.247Z"
+      },
+      {
+        "type": "whatsapp",
+        "value": "+971 54 1917741",
+        "isPrimary": false,
+        "isVerified": false,
+        "_id": "69619fbcba063ab4384a8cee",
+        "addedAt": "2026-01-10T00:39:24.247Z"
+      }
+    ],
+    "properties": [
+      "69619fbdba063ab4384a8df8",
+      "69619fc0ba063ab4384a9146"
+    ],
+    "notes": "",
+    "tags": [
+      "Mortgage Required"
+    ],
+    "source": "api",
+    "isActive": true,
+    "createdAt": "2025-12-22T00:39:24.247Z",
+    "updatedAt": "2026-01-10T00:39:28.324Z",
+    "__v": 0
+  },
+  {
+    "_id": "69619fbcba063ab4384a8cf0",
+    "name": "Hamdan Nair",
+    "nameNormalized": "hamdannair",
+    "nationality": "Jordan",
+    "emiratesId": "784-1988-1273855-1",
+    "contacts": [
+      {
+        "type": "mobile",
+        "value": "+971 52 6981801",
+        "isPrimary": true,
+        "isVerified": true,
+        "_id": "69619fbcba063ab4384a8cf1",
+        "addedAt": "2026-01-10T00:39:24.252Z"
+      },
+      {
+        "type": "email",
+        "value": "hamdan.nair@yahoo.com",
+        "isPrimary": false,
+        "isVerified": false,
+        "_id": "69619fbcba063ab4384a8cf2",
+        "addedAt": "2026-01-10T00:39:24.252Z"
+      },
+      {
+        "type": "whatsapp",
+        "value": "+971 52 6981801",
+        "isPrimary": false,
+        "isVerified": true,
+        "_id": "69619fbcba063ab4384a8cf3",
+        "addedAt": "2026-01-10T00:39:24.252Z"
+      }
+    ],
+    "properties": [
+      "69619fbdba063ab4384a8e1c",
+      "69619fbfba063ab4384a8fc6"
+    ],
+    "notes": "VIP client, preferred communication via WhatsApp",
+    "tags": [
+      "First-time Buyer",
+      "Pet Friendly",
+      "Family"
+    ],
+    "source": "excel_import",
+    "isActive": true,
+    "createdAt": "2025-07-15T00:39:24.252Z",
+    "updatedAt": "2026-01-10T00:39:27.176Z",
+    "__v": 0
+  },
+  {
+    "_id": "69619fbcba063ab4384a8cf5",
+    "name": "Michael Kumar",
+    "nameNormalized": "michaelkumar",
+    "nationality": "UAE",
+    "emiratesId": "784-1986-8151598-1",
+    "contacts": [
+      {
+        "type": "mobile",
+        "value": "+971 55 9440805",
+        "isPrimary": true,
+        "isVerified": false,
+        "_id": "69619fbcba063ab4384a8cf6",
+        "addedAt": "2026-01-10T00:39:24.257Z"
+      },
+      {
+        "type": "email",
+        "value": "michael.kumar@gmail.com",
+        "isPrimary": false,
+        "isVerified": true,
+        "_id": "69619fbcba063ab4384a8cf7",
+        "addedAt": "2026-01-10T00:39:24.257Z"
+      },
+      {
+        "type": "whatsapp",
+        "value": "+971 55 9440805",
+        "isPrimary": false,
+        "isVerified": false,
+        "_id": "69619fbcba063ab4384a8cf8",
+        "addedAt": "2026-01-10T00:39:24.257Z"
+      }
+    ],
+    "properties": [
+      "69619fbeba063ab4384a8f12",
+      "69619fbfba063ab4384a8ff6",
+      "69619fbfba063ab4384a9032",
+      "69619fc0ba063ab4384a91a0",
+      "69619fc1ba063ab4384a91e8"
+    ],
+    "notes": "",
+    "tags": [
+      "Investor",
+      "Relocating"
+    ],
+    "source": "api",
+    "isActive": true,
+    "createdAt": "2025-06-12T00:39:24.257Z",
+    "updatedAt": "2026-01-10T00:39:29.016Z",
+    "__v": 0
+  },
+  {
+    "_id": "69619fbcba063ab4384a8cfa",
+    "name": "Moza Menon",
+    "nameNormalized": "mozamenon",
+    "nationality": "Bangladesh",
+    "emiratesId": "784-1991-5554024-1",
+    "contacts": [
+      {
+        "type": "mobile",
+        "value": "+971 58 3315403",
+        "isPrimary": true,
+        "isVerified": false,
+        "_id": "69619fbcba063ab4384a8cfb",
+        "addedAt": "2026-01-10T00:39:24.262Z"
+      },
+      {
+        "type": "email",
+        "value": "moza.menon@yahoo.com",
+        "isPrimary": false,
+        "isVerified": false,
+        "_id": "69619fbcba063ab4384a8cfc",
+        "addedAt": "2026-01-10T00:39:24.262Z"
+      },
+      {
+        "type": "whatsapp",
+        "value": "+971 58 3315403",
+        "isPrimary": false,
+        "isVerified": false,
+        "_id": "69619fbcba063ab4384a8cfd",
+        "addedAt": "2026-01-10T00:39:24.262Z"
+      }
+    ],
+    "properties": [
+      "69619fbeba063ab4384a8e6a",
+      "69619fbfba063ab4384a900e",
+      "69619fc0ba063ab4384a91ca",
+      "69619fc1ba063ab4384a91f4"
+    ],
+    "notes": "",
+    "tags": [
+      "Sea View Required",
+      "Relocating"
+    ],
+    "source": "api",
+    "isActive": true,
+    "createdAt": "2025-05-04T00:39:24.262Z",
+    "updatedAt": "2026-01-10T00:39:29.035Z",
+    "__v": 0
+  },
+  {
+    "_id": "69619fbcba063ab4384a8cff",
+    "name": "Emma Johnson",
+    "nameNormalized": "emmajohnson",
+    "nationality": "Qatar",
+    "emiratesId": "784-1993-5542320-1",
+    "contacts": [
+      {
+        "type": "mobile",
+        "value": "+971 56 6240512",
+        "isPrimary": true,
+        "isVerified": true,
+        "_id": "69619fbcba063ab4384a8d00",
+        "addedAt": "2026-01-10T00:39:24.267Z"
+      },
+      {
+        "type": "email",
+        "value": "emma.johnson@hotmail.com",
+        "isPrimary": false,
+        "isVerified": true,
+        "_id": "69619fbcba063ab4384a8d01",
+        "addedAt": "2026-01-10T00:39:24.267Z"
+      },
+      {
+        "type": "whatsapp",
+        "value": "+971 56 6240512",
+        "isPrimary": false,
+        "isVerified": true,
+        "_id": "69619fbcba063ab4384a8d02",
+        "addedAt": "2026-01-10T00:39:24.267Z"
+      }
+    ],
+    "properties": [
+      "69619fbfba063ab4384a9044",
+      "69619fc0ba063ab4384a90d4",
+      "69619fc1ba063ab4384a9212"
+    ],
+    "notes": "",
+    "tags": [
+      "VIP"
+    ],
+    "source": "excel_import",
+    "isActive": true,
+    "createdAt": "2025-12-26T00:39:24.267Z",
+    "updatedAt": "2026-01-10T00:39:29.081Z",
+    "__v": 0
+  },
+  {
+    "_id": "69619fbcba063ab4384a8d04",
+    "name": "Moza Al Sharqi",
+    "nameNormalized": "mozaalsharqi",
+    "nationality": "Egypt",
+    "emiratesId": "784-1983-9686964-1",
+    "contacts": [
+      {
+        "type": "mobile",
+        "value": "+971 50 2456726",
+        "isPrimary": true,
+        "isVerified": true,
+        "_id": "69619fbcba063ab4384a8d05",
+        "addedAt": "2026-01-10T00:39:24.272Z"
+      },
+      {
+        "type": "email",
+        "value": "moza.alsharqi@hotmail.com",
+        "isPrimary": false,
+        "isVerified": false,
+        "_id": "69619fbcba063ab4384a8d06",
+        "addedAt": "2026-01-10T00:39:24.272Z"
+      },
+      {
+        "type": "whatsapp",
+        "value": "+971 50 2456726",
+        "isPrimary": false,
+        "isVerified": true,
+        "_id": "69619fbcba063ab4384a8d07",
+        "addedAt": "2026-01-10T00:39:24.272Z"
+      }
+    ],
+    "properties": [
+      "69619fbfba063ab4384a8fa2",
+      "69619fbfba063ab4384a901a",
+      "69619fc0ba063ab4384a91a6",
+      "69619fc0ba063ab4384a91d0"
+    ],
+    "notes": "",
+    "tags": [
+      "Relocating"
+    ],
+    "source": "api",
+    "isActive": true,
+    "createdAt": "2025-07-08T00:39:24.272Z",
+    "updatedAt": "2026-01-10T00:39:28.969Z",
+    "__v": 0
+  },
+  {
+    "_id": "69619fbcba063ab4384a8d09",
+    "name": "Robert Al Qassimi",
+    "nameNormalized": "robertalqassimi",
+    "nationality": "UK",
+    "emiratesId": "784-2000-3621906-1",
+    "contacts": [
+      {
+        "type": "mobile",
+        "value": "+971 52 7360310",
+        "isPrimary": true,
+        "isVerified": true,
+        "_id": "69619fbcba063ab4384a8d0a",
+        "addedAt": "2026-01-10T00:39:24.277Z"
+      },
+      {
+        "type": "email",
+        "value": "robert.alqassimi@outlook.com",
+        "isPrimary": false,
+        "isVerified": true,
+        "_id": "69619fbcba063ab4384a8d0b",
+        "addedAt": "2026-01-10T00:39:24.277Z"
+      },
+      {
+        "type": "whatsapp",
+        "value": "+971 52 7360310",
+        "isPrimary": false,
+        "isVerified": false,
+        "_id": "69619fbcba063ab4384a8d0c",
+        "addedAt": "2026-01-10T00:39:24.277Z"
+      }
+    ],
+    "properties": [
+      "69619fbdba063ab4384a8de6",
+      "69619fbeba063ab4384a8f72",
+      "69619fc0ba063ab4384a90fe"
+    ],
+    "notes": "VIP client, preferred communication via WhatsApp",
+    "tags": [],
+    "source": "excel_import",
+    "isActive": true,
+    "createdAt": "2025-09-25T00:39:24.277Z",
+    "updatedAt": "2026-01-10T00:39:28.211Z",
+    "__v": 0
+  },
+  {
+    "_id": "69619fbcba063ab4384a8d0e",
+    "name": "David Reddy",
+    "nameNormalized": "davidreddy",
+    "nationality": "Russia",
+    "emiratesId": null,
+    "contacts": [
+      {
+        "type": "mobile",
+        "value": "+971 50 8727576",
+        "isPrimary": true,
+        "isVerified": true,
+        "_id": "69619fbcba063ab4384a8d0f",
+        "addedAt": "2026-01-10T00:39:24.282Z"
+      },
+      {
+        "type": "email",
+        "value": "david.reddy@hotmail.com",
+        "isPrimary": false,
+        "isVerified": true,
+        "_id": "69619fbcba063ab4384a8d10",
+        "addedAt": "2026-01-10T00:39:24.282Z"
+      },
+      {
+        "type": "whatsapp",
+        "value": "+971 50 8727576",
+        "isPrimary": false,
+        "isVerified": true,
+        "_id": "69619fbcba063ab4384a8d11",
+        "addedAt": "2026-01-10T00:39:24.282Z"
+      }
+    ],
+    "properties": [
+      "69619fc1ba063ab4384a926c"
+    ],
+    "notes": "VIP client, preferred communication via WhatsApp",
+    "tags": [
+      "Urgent",
+      "VIP"
+    ],
+    "source": "excel_import",
+    "isActive": true,
+    "createdAt": "2025-06-17T00:39:24.282Z",
+    "updatedAt": "2026-01-10T00:39:29.242Z",
+    "__v": 0
+  },
+  {
+    "_id": "69619fbcba063ab4384a8d13",
+    "name": "William Al Qassimi",
+    "nameNormalized": "williamalqassimi",
+    "nationality": "UAE",
+    "emiratesId": "784-1995-8060750-1",
+    "contacts": [
+      {
+        "type": "mobile",
+        "value": "+971 50 1390556",
+        "isPrimary": true,
+        "isVerified": false,
+        "_id": "69619fbcba063ab4384a8d14",
+        "addedAt": "2026-01-10T00:39:24.287Z"
+      },
+      {
+        "type": "email",
+        "value": "william.alqassimi@icloud.com",
+        "isPrimary": false,
+        "isVerified": true,
+        "_id": "69619fbcba063ab4384a8d15",
+        "addedAt": "2026-01-10T00:39:24.287Z"
+      },
+      {
+        "type": "whatsapp",
+        "value": "+971 50 1390556",
+        "isPrimary": false,
+        "isVerified": false,
+        "_id": "69619fbcba063ab4384a8d16",
+        "addedAt": "2026-01-10T00:39:24.287Z"
+      }
+    ],
+    "properties": [],
+    "notes": "",
+    "tags": [
+      "Family",
+      "Cash Buyer",
+      "Furnished Only"
+    ],
+    "source": "manual",
+    "isActive": true,
+    "createdAt": "2025-05-17T00:39:24.287Z",
+    "updatedAt": "2025-05-17T00:39:24.287Z",
+    "__v": 0
+  },
+  {
+    "_id": "69619fbcba063ab4384a8d18",
+    "name": "Mansour Reddy",
+    "nameNormalized": "mansourreddy",
+    "nationality": "UAE",
+    "emiratesId": "784-1994-7849213-1",
+    "contacts": [
+      {
+        "type": "mobile",
+        "value": "+971 55 2374218",
+        "isPrimary": true,
+        "isVerified": true,
+        "_id": "69619fbcba063ab4384a8d19",
+        "addedAt": "2026-01-10T00:39:24.292Z"
+      },
+      {
+        "type": "email",
+        "value": "mansour.reddy@hotmail.com",
+        "isPrimary": false,
+        "isVerified": true,
+        "_id": "69619fbcba063ab4384a8d1a",
+        "addedAt": "2026-01-10T00:39:24.292Z"
+      },
+      {
+        "type": "whatsapp",
+        "value": "+971 55 2374218",
+        "isPrimary": false,
+        "isVerified": true,
+        "_id": "69619fbcba063ab4384a8d1b",
+        "addedAt": "2026-01-10T00:39:24.292Z"
+      }
+    ],
+    "properties": [
+      "69619fbdba063ab4384a8e34"
+    ],
+    "notes": "",
+    "tags": [
+      "VIP"
+    ],
+    "source": "manual",
+    "isActive": true,
+    "createdAt": "2025-02-06T00:39:24.292Z",
+    "updatedAt": "2026-01-10T00:39:25.953Z",
+    "__v": 0
+  },
+  {
+    "_id": "69619fbcba063ab4384a8d1d",
+    "name": "David Anderson",
+    "nameNormalized": "davidanderson",
+    "nationality": "Lebanon",
+    "emiratesId": "784-1987-6386340-1",
+    "contacts": [
+      {
+        "type": "mobile",
+        "value": "+971 52 1331120",
+        "isPrimary": true,
+        "isVerified": true,
+        "_id": "69619fbcba063ab4384a8d1e",
+        "addedAt": "2026-01-10T00:39:24.845Z"
+      },
+      {
+        "type": "email",
+        "value": "david.anderson@outlook.com",
+        "isPrimary": false,
+        "isVerified": true,
+        "_id": "69619fbcba063ab4384a8d1f",
+        "addedAt": "2026-01-10T00:39:24.845Z"
+      },
+      {
+        "type": "whatsapp",
+        "value": "+971 52 1331120",
+        "isPrimary": false,
+        "isVerified": true,
+        "_id": "69619fbcba063ab4384a8d20",
+        "addedAt": "2026-01-10T00:39:24.845Z"
+      }
+    ],
+    "properties": [
+      "69619fbdba063ab4384a8e52",
+      "69619fc1ba063ab4384a9236"
+    ],
+    "notes": "",
+    "tags": [],
+    "source": "excel_import",
+    "isActive": true,
+    "createdAt": "2025-03-19T00:39:24.845Z",
+    "updatedAt": "2026-01-10T00:39:29.151Z",
+    "__v": 0
+  },
+  {
+    "_id": "69619fbcba063ab4384a8d22",
+    "name": "William Kumar",
+    "nameNormalized": "williamkumar",
+    "nationality": "UK",
+    "emiratesId": "784-1995-7371628-1",
+    "contacts": [
+      {
+        "type": "mobile",
+        "value": "+971 50 4596509",
+        "isPrimary": true,
+        "isVerified": true,
+        "_id": "69619fbcba063ab4384a8d23",
+        "addedAt": "2026-01-10T00:39:24.851Z"
+      },
+      {
+        "type": "email",
+        "value": "william.kumar@icloud.com",
+        "isPrimary": false,
+        "isVerified": true,
+        "_id": "69619fbcba063ab4384a8d24",
+        "addedAt": "2026-01-10T00:39:24.852Z"
+      },
+      {
+        "type": "whatsapp",
+        "value": "+971 50 4596509",
+        "isPrimary": false,
+        "isVerified": false,
+        "_id": "69619fbcba063ab4384a8d25",
+        "addedAt": "2026-01-10T00:39:24.852Z"
+      }
+    ],
+    "properties": [
+      "69619fbdba063ab4384a8e40",
+      "69619fbfba063ab4384a8f90",
+      "69619fc0ba063ab4384a9116",
+      "69619fc1ba063ab4384a9272"
+    ],
+    "notes": "VIP client, preferred communication via WhatsApp",
+    "tags": [
+      "Sea View Required",
+      "Relocating",
+      "First-time Buyer"
+    ],
+    "source": "api",
+    "isActive": true,
+    "createdAt": "2025-08-18T00:39:24.851Z",
+    "updatedAt": "2026-01-10T00:39:29.252Z",
+    "__v": 0
+  },
+  {
+    "_id": "69619fbcba063ab4384a8d27",
+    "name": "Hessa Al Mualla",
+    "nameNormalized": "hessaalmualla",
+    "nationality": "Pakistan",
+    "emiratesId": "784-1979-1194846-1",
+    "contacts": [
+      {
+        "type": "mobile",
+        "value": "+971 56 9910661",
+        "isPrimary": true,
+        "isVerified": true,
+        "_id": "69619fbcba063ab4384a8d28",
+        "addedAt": "2026-01-10T00:39:24.857Z"
+      },
+      {
+        "type": "email",
+        "value": "hessa.almualla@hotmail.com",
+        "isPrimary": false,
+        "isVerified": true,
+        "_id": "69619fbcba063ab4384a8d29",
+        "addedAt": "2026-01-10T00:39:24.858Z"
+      },
+      {
+        "type": "whatsapp",
+        "value": "+971 56 9910661",
+        "isPrimary": false,
+        "isVerified": false,
+        "_id": "69619fbcba063ab4384a8d2a",
+        "addedAt": "2026-01-10T00:39:24.858Z"
+      }
+    ],
+    "properties": [],
+    "notes": "",
+    "tags": [
+      "Urgent",
+      "Relocating",
+      "Sea View Required"
+    ],
+    "source": "excel_import",
+    "isActive": true,
+    "createdAt": "2025-07-04T00:39:24.857Z",
+    "updatedAt": "2025-07-04T00:39:24.857Z",
+    "__v": 0
+  },
+  {
+    "_id": "69619fbcba063ab4384a8d2c",
+    "name": "Sheikha Al Nuaimi",
+    "nameNormalized": "sheikhaalnuaimi",
+    "nationality": "Oman",
+    "emiratesId": "784-1981-3008956-1",
+    "contacts": [
+      {
+        "type": "mobile",
+        "value": "+971 52 7952385",
+        "isPrimary": true,
+        "isVerified": false,
+        "_id": "69619fbcba063ab4384a8d2d",
+        "addedAt": "2026-01-10T00:39:24.863Z"
+      },
+      {
+        "type": "email",
+        "value": "sheikha.alnuaimi@hotmail.com",
+        "isPrimary": false,
+        "isVerified": true,
+        "_id": "69619fbcba063ab4384a8d2e",
+        "addedAt": "2026-01-10T00:39:24.863Z"
+      },
+      {
+        "type": "whatsapp",
+        "value": "+971 52 7952385",
+        "isPrimary": false,
+        "isVerified": false,
+        "_id": "69619fbcba063ab4384a8d2f",
+        "addedAt": "2026-01-10T00:39:24.863Z"
+      }
+    ],
+    "properties": [],
+    "notes": "",
+    "tags": [
+      "Pet Friendly",
+      "Cash Buyer"
+    ],
+    "source": "excel_import",
+    "isActive": true,
+    "createdAt": "2025-02-06T00:39:24.863Z",
+    "updatedAt": "2025-02-06T00:39:24.863Z",
+    "__v": 0
+  },
+  {
+    "_id": "69619fbcba063ab4384a8d31",
+    "name": "Hessa Al Mualla",
+    "nameNormalized": "hessaalmualla",
+    "nationality": "India",
+    "emiratesId": "784-1979-9848588-1",
+    "contacts": [
+      {
+        "type": "mobile",
+        "value": "+971 50 3017090",
+        "isPrimary": true,
+        "isVerified": true,
+        "_id": "69619fbcba063ab4384a8d32",
+        "addedAt": "2026-01-10T00:39:24.869Z"
+      },
+      {
+        "type": "email",
+        "value": "hessa.almualla@hotmail.com",
+        "isPrimary": false,
+        "isVerified": true,
+        "_id": "69619fbcba063ab4384a8d33",
+        "addedAt": "2026-01-10T00:39:24.869Z"
+      },
+      {
+        "type": "whatsapp",
+        "value": "+971 50 3017090",
+        "isPrimary": false,
+        "isVerified": true,
+        "_id": "69619fbcba063ab4384a8d34",
+        "addedAt": "2026-01-10T00:39:24.869Z"
+      }
+    ],
+    "properties": [
+      "69619fbfba063ab4384a9038",
+      "69619fbfba063ab4384a907a",
+      "69619fc0ba063ab4384a91c4"
+    ],
+    "notes": "VIP client, preferred communication via WhatsApp",
+    "tags": [
+      "Urgent",
+      "Family"
+    ],
+    "source": "api",
+    "isActive": true,
+    "createdAt": "2025-05-09T00:39:24.869Z",
+    "updatedAt": "2026-01-10T00:39:28.952Z",
+    "__v": 0
+  },
+  {
+    "_id": "69619fbcba063ab4384a8d36",
+    "name": "Mansour Al Thani",
+    "nameNormalized": "mansouralthani",
+    "nationality": "Bangladesh",
+    "emiratesId": "784-1987-5487371-1",
+    "contacts": [
+      {
+        "type": "mobile",
+        "value": "+971 58 8228977",
+        "isPrimary": true,
+        "isVerified": false,
+        "_id": "69619fbcba063ab4384a8d37",
+        "addedAt": "2026-01-10T00:39:24.875Z"
+      },
+      {
+        "type": "email",
+        "value": "mansour.althani@icloud.com",
+        "isPrimary": false,
+        "isVerified": true,
+        "_id": "69619fbcba063ab4384a8d38",
+        "addedAt": "2026-01-10T00:39:24.875Z"
+      },
+      {
+        "type": "whatsapp",
+        "value": "+971 58 8228977",
+        "isPrimary": false,
+        "isVerified": false,
+        "_id": "69619fbcba063ab4384a8d39",
+        "addedAt": "2026-01-10T00:39:24.875Z"
+      }
+    ],
+    "properties": [
+      "69619fbdba063ab4384a8e16",
+      "69619fc0ba063ab4384a91b8"
+    ],
+    "notes": "",
+    "tags": [
+      "VIP",
+      "Cash Buyer",
+      "Sea View Required"
+    ],
+    "source": "api",
+    "isActive": true,
+    "createdAt": "2025-12-11T00:39:24.874Z",
+    "updatedAt": "2026-01-10T00:39:28.934Z",
+    "__v": 0
+  },
+  {
+    "_id": "69619fbcba063ab4384a8d3b",
+    "name": "Sheikha Anderson",
+    "nameNormalized": "sheikhaanderson",
+    "nationality": "France",
+    "emiratesId": null,
+    "contacts": [
+      {
+        "type": "mobile",
+        "value": "+971 55 3315242",
+        "isPrimary": true,
+        "isVerified": true,
+        "_id": "69619fbcba063ab4384a8d3c",
+        "addedAt": "2026-01-10T00:39:24.880Z"
+      },
+      {
+        "type": "email",
+        "value": "sheikha.anderson@icloud.com",
+        "isPrimary": false,
+        "isVerified": true,
+        "_id": "69619fbcba063ab4384a8d3d",
+        "addedAt": "2026-01-10T00:39:24.880Z"
+      },
+      {
+        "type": "whatsapp",
+        "value": "+971 55 3315242",
+        "isPrimary": false,
+        "isVerified": false,
+        "_id": "69619fbcba063ab4384a8d3e",
+        "addedAt": "2026-01-10T00:39:24.880Z"
+      }
+    ],
+    "properties": [
+      "69619fc0ba063ab4384a9152",
+      "69619fc1ba063ab4384a9206"
+    ],
+    "notes": "VIP client, preferred communication via WhatsApp",
+    "tags": [
+      "Cash Buyer",
+      "Urgent"
+    ],
+    "source": "api",
+    "isActive": true,
+    "createdAt": "2025-07-15T00:39:24.880Z",
+    "updatedAt": "2026-01-10T00:39:29.062Z",
+    "__v": 0
+  },
+  {
+    "_id": "69619fbcba063ab4384a8d40",
+    "name": "James Rao",
+    "nameNormalized": "jamesrao",
+    "nationality": "UK",
+    "emiratesId": "784-1998-8666405-1",
+    "contacts": [
+      {
+        "type": "mobile",
+        "value": "+971 56 6312717",
+        "isPrimary": true,
+        "isVerified": false,
+        "_id": "69619fbcba063ab4384a8d41",
+        "addedAt": "2026-01-10T00:39:24.886Z"
+      },
+      {
+        "type": "email",
+        "value": "james.rao@icloud.com",
+        "isPrimary": false,
+        "isVerified": true,
+        "_id": "69619fbcba063ab4384a8d42",
+        "addedAt": "2026-01-10T00:39:24.886Z"
+      },
+      {
+        "type": "whatsapp",
+        "value": "+971 56 6312717",
+        "isPrimary": false,
+        "isVerified": false,
+        "_id": "69619fbcba063ab4384a8d43",
+        "addedAt": "2026-01-10T00:39:24.886Z"
+      }
+    ],
+    "properties": [
+      "69619fbfba063ab4384a9074"
+    ],
+    "notes": "",
+    "tags": [],
+    "source": "manual",
+    "isActive": true,
+    "createdAt": "2025-04-24T00:39:24.886Z",
+    "updatedAt": "2026-01-10T00:39:27.901Z",
+    "__v": 0
+  },
+  {
+    "_id": "69619fbcba063ab4384a8d45",
+    "name": "James Menon",
+    "nameNormalized": "jamesmenon",
+    "nationality": "Jordan",
+    "emiratesId": "784-1973-8002650-1",
+    "contacts": [
+      {
+        "type": "mobile",
+        "value": "+971 54 9004688",
+        "isPrimary": true,
+        "isVerified": true,
+        "_id": "69619fbcba063ab4384a8d46",
+        "addedAt": "2026-01-10T00:39:24.892Z"
+      },
+      {
+        "type": "email",
+        "value": "james.menon@gmail.com",
+        "isPrimary": false,
+        "isVerified": true,
+        "_id": "69619fbcba063ab4384a8d47",
+        "addedAt": "2026-01-10T00:39:24.892Z"
+      },
+      {
+        "type": "whatsapp",
+        "value": "+971 54 9004688",
+        "isPrimary": false,
+        "isVerified": false,
+        "_id": "69619fbcba063ab4384a8d48",
+        "addedAt": "2026-01-10T00:39:24.892Z"
+      }
+    ],
+    "properties": [
+      "69619fbeba063ab4384a8e70"
+    ],
+    "notes": "VIP client, preferred communication via WhatsApp",
+    "tags": [
+      "Cash Buyer",
+      "VIP",
+      "Investor"
+    ],
+    "source": "api",
+    "isActive": true,
+    "createdAt": "2025-11-03T00:39:24.892Z",
+    "updatedAt": "2026-01-10T00:39:26.060Z",
+    "__v": 0
+  },
+  {
+    "_id": "69619fbcba063ab4384a8d4a",
+    "name": "Hessa Anderson",
+    "nameNormalized": "hessaanderson",
+    "nationality": "Bangladesh",
+    "emiratesId": null,
+    "contacts": [
+      {
+        "type": "mobile",
+        "value": "+971 56 2601841",
+        "isPrimary": true,
+        "isVerified": true,
+        "_id": "69619fbcba063ab4384a8d4b",
+        "addedAt": "2026-01-10T00:39:24.897Z"
+      },
+      {
+        "type": "email",
+        "value": "hessa.anderson@yahoo.com",
+        "isPrimary": false,
+        "isVerified": true,
+        "_id": "69619fbcba063ab4384a8d4c",
+        "addedAt": "2026-01-10T00:39:24.897Z"
+      },
+      {
+        "type": "whatsapp",
+        "value": "+971 56 2601841",
+        "isPrimary": false,
+        "isVerified": true,
+        "_id": "69619fbcba063ab4384a8d4d",
+        "addedAt": "2026-01-10T00:39:24.897Z"
+      }
+    ],
+    "properties": [
+      "69619fbdba063ab4384a8e0a",
+      "69619fbfba063ab4384a9014",
+      "69619fc0ba063ab4384a915e",
+      "69619fc0ba063ab4384a9188",
+      "69619fc0ba063ab4384a91d6",
+      "69619fc1ba063ab4384a927e"
+    ],
+    "notes": "",
+    "tags": [],
+    "source": "api",
+    "isActive": true,
+    "createdAt": "2025-07-11T00:39:24.897Z",
+    "updatedAt": "2026-01-10T00:39:29.278Z",
+    "__v": 0
+  },
+  {
+    "_id": "69619fbcba063ab4384a8d4f",
+    "name": "Victoria Nair",
+    "nameNormalized": "victorianair",
+    "nationality": "Canada",
+    "emiratesId": "784-1979-3716047-1",
+    "contacts": [
+      {
+        "type": "mobile",
+        "value": "+971 52 1280373",
+        "isPrimary": true,
+        "isVerified": false,
+        "_id": "69619fbcba063ab4384a8d50",
+        "addedAt": "2026-01-10T00:39:24.902Z"
+      },
+      {
+        "type": "email",
+        "value": "victoria.nair@hotmail.com",
+        "isPrimary": false,
+        "isVerified": false,
+        "_id": "69619fbcba063ab4384a8d51",
+        "addedAt": "2026-01-10T00:39:24.902Z"
+      },
+      {
+        "type": "whatsapp",
+        "value": "+971 52 1280373",
+        "isPrimary": false,
+        "isVerified": false,
+        "_id": "69619fbcba063ab4384a8d52",
+        "addedAt": "2026-01-10T00:39:24.902Z"
+      }
+    ],
+    "properties": [
+      "69619fbfba063ab4384a9008",
+      "69619fc1ba063ab4384a921e"
+    ],
+    "notes": "",
+    "tags": [
+      "Family"
+    ],
+    "source": "excel_import",
+    "isActive": true,
+    "createdAt": "2025-06-12T00:39:24.902Z",
+    "updatedAt": "2026-01-10T00:39:29.100Z",
+    "__v": 0
+  },
+  {
+    "_id": "69619fbcba063ab4384a8d54",
+    "name": "Sultan Reddy",
+    "nameNormalized": "sultanreddy",
+    "nationality": "India",
+    "emiratesId": null,
+    "contacts": [
+      {
+        "type": "mobile",
+        "value": "+971 58 4089955",
+        "isPrimary": true,
+        "isVerified": false,
+        "_id": "69619fbcba063ab4384a8d55",
+        "addedAt": "2026-01-10T00:39:24.907Z"
+      },
+      {
+        "type": "email",
+        "value": "sultan.reddy@gmail.com",
+        "isPrimary": false,
+        "isVerified": true,
+        "_id": "69619fbcba063ab4384a8d56",
+        "addedAt": "2026-01-10T00:39:24.907Z"
+      },
+      {
+        "type": "whatsapp",
+        "value": "+971 58 4089955",
+        "isPrimary": false,
+        "isVerified": true,
+        "_id": "69619fbcba063ab4384a8d57",
+        "addedAt": "2026-01-10T00:39:24.907Z"
+      }
+    ],
+    "properties": [
+      "69619fbdba063ab4384a8de0",
+      "69619fbeba063ab4384a8f4e",
+      "69619fbfba063ab4384a9050",
+      "69619fc0ba063ab4384a90e6",
+      "69619fc0ba063ab4384a9140"
+    ],
+    "notes": "",
+    "tags": [
+      "Furnished Only"
+    ],
+    "source": "excel_import",
+    "isActive": true,
+    "createdAt": "2025-08-14T00:39:24.907Z",
+    "updatedAt": "2026-01-10T00:39:28.315Z",
+    "__v": 0
+  },
+  {
+    "_id": "69619fbcba063ab4384a8d59",
+    "name": "Shamsa Al Nuaimi",
+    "nameNormalized": "shamsaalnuaimi",
+    "nationality": "Jordan",
+    "emiratesId": "784-1982-9368792-1",
+    "contacts": [
+      {
+        "type": "mobile",
+        "value": "+971 54 5021334",
+        "isPrimary": true,
+        "isVerified": true,
+        "_id": "69619fbcba063ab4384a8d5a",
+        "addedAt": "2026-01-10T00:39:24.912Z"
+      },
+      {
+        "type": "email",
+        "value": "shamsa.alnuaimi@yahoo.com",
+        "isPrimary": false,
+        "isVerified": false,
+        "_id": "69619fbcba063ab4384a8d5b",
+        "addedAt": "2026-01-10T00:39:24.912Z"
+      },
+      {
+        "type": "whatsapp",
+        "value": "+971 54 5021334",
+        "isPrimary": false,
+        "isVerified": false,
+        "_id": "69619fbcba063ab4384a8d5c",
+        "addedAt": "2026-01-10T00:39:24.912Z"
+      }
+    ],
+    "properties": [
+      "69619fc0ba063ab4384a9194"
+    ],
+    "notes": "",
+    "tags": [
+      "Relocating",
+      "First-time Buyer"
+    ],
+    "source": "api",
+    "isActive": true,
+    "createdAt": "2026-01-02T00:39:24.912Z",
+    "updatedAt": "2026-01-10T00:39:28.877Z",
+    "__v": 0
+  },
+  {
+    "_id": "69619fbcba063ab4384a8d5e",
+    "name": "Saeed Al Thani",
+    "nameNormalized": "saeedalthani",
+    "nationality": "Pakistan",
+    "emiratesId": "784-1983-2734813-1",
+    "contacts": [
+      {
+        "type": "mobile",
+        "value": "+971 50 7328123",
+        "isPrimary": true,
+        "isVerified": false,
+        "_id": "69619fbcba063ab4384a8d5f",
+        "addedAt": "2026-01-10T00:39:24.917Z"
+      },
+      {
+        "type": "email",
+        "value": "saeed.althani@yahoo.com",
+        "isPrimary": false,
+        "isVerified": true,
+        "_id": "69619fbcba063ab4384a8d60",
+        "addedAt": "2026-01-10T00:39:24.917Z"
+      },
+      {
+        "type": "whatsapp",
+        "value": "+971 50 7328123",
+        "isPrimary": false,
+        "isVerified": true,
+        "_id": "69619fbcba063ab4384a8d61",
+        "addedAt": "2026-01-10T00:39:24.917Z"
+      }
+    ],
+    "properties": [
+      "69619fbfba063ab4384a8ffc"
+    ],
+    "notes": "",
+    "tags": [
+      "Mortgage Required"
+    ],
+    "source": "manual",
+    "isActive": true,
+    "createdAt": "2025-11-30T00:39:24.917Z",
+    "updatedAt": "2026-01-10T00:39:27.265Z",
+    "__v": 0
+  },
+  {
+    "_id": "69619fbcba063ab4384a8d63",
+    "name": "David Brown",
+    "nameNormalized": "davidbrown",
+    "nationality": "China",
+    "emiratesId": null,
+    "contacts": [
+      {
+        "type": "mobile",
+        "value": "+971 56 8286598",
+        "isPrimary": true,
+        "isVerified": false,
+        "_id": "69619fbcba063ab4384a8d64",
+        "addedAt": "2026-01-10T00:39:24.923Z"
+      },
+      {
+        "type": "email",
+        "value": "david.brown@outlook.com",
+        "isPrimary": false,
+        "isVerified": true,
+        "_id": "69619fbcba063ab4384a8d65",
+        "addedAt": "2026-01-10T00:39:24.923Z"
+      },
+      {
+        "type": "whatsapp",
+        "value": "+971 56 8286598",
+        "isPrimary": false,
+        "isVerified": true,
+        "_id": "69619fbcba063ab4384a8d66",
+        "addedAt": "2026-01-10T00:39:24.923Z"
+      }
+    ],
+    "properties": [
+      "69619fbeba063ab4384a8e9a",
+      "69619fc0ba063ab4384a9158",
+      "69619fc0ba063ab4384a91e2"
+    ],
+    "notes": "VIP client, preferred communication via WhatsApp",
+    "tags": [
+      "Corporate",
+      "Furnished Only"
+    ],
+    "source": "api",
+    "isActive": true,
+    "createdAt": "2025-02-19T00:39:24.923Z",
+    "updatedAt": "2026-01-10T00:39:28.999Z",
+    "__v": 0
+  },
+  {
+    "_id": "69619fbcba063ab4384a8d68",
+    "name": "William Taylor",
+    "nameNormalized": "williamtaylor",
+    "nationality": "China",
+    "emiratesId": "784-1990-3824836-1",
+    "contacts": [
+      {
+        "type": "mobile",
+        "value": "+971 50 5283420",
+        "isPrimary": true,
+        "isVerified": true,
+        "_id": "69619fbcba063ab4384a8d69",
+        "addedAt": "2026-01-10T00:39:24.929Z"
+      },
+      {
+        "type": "email",
+        "value": "william.taylor@yahoo.com",
+        "isPrimary": false,
+        "isVerified": true,
+        "_id": "69619fbcba063ab4384a8d6a",
+        "addedAt": "2026-01-10T00:39:24.929Z"
+      },
+      {
+        "type": "whatsapp",
+        "value": "+971 50 5283420",
+        "isPrimary": false,
+        "isVerified": false,
+        "_id": "69619fbcba063ab4384a8d6b",
+        "addedAt": "2026-01-10T00:39:24.929Z"
+      }
+    ],
+    "properties": [
+      "69619fbeba063ab4384a8ef4"
+    ],
+    "notes": "",
+    "tags": [],
+    "source": "api",
+    "isActive": true,
+    "createdAt": "2025-08-08T00:39:24.928Z",
+    "updatedAt": "2026-01-10T00:39:26.275Z",
+    "__v": 0
+  },
+  {
+    "_id": "69619fbcba063ab4384a8d6d",
+    "name": "Sheikha Al Mualla",
+    "nameNormalized": "sheikhaalmualla",
+    "nationality": "Germany",
+    "emiratesId": "784-1979-6872591-1",
+    "contacts": [
+      {
+        "type": "mobile",
+        "value": "+971 55 4548452",
+        "isPrimary": true,
+        "isVerified": true,
+        "_id": "69619fbcba063ab4384a8d6e",
+        "addedAt": "2026-01-10T00:39:24.935Z"
+      },
+      {
+        "type": "email",
+        "value": "sheikha.almualla@yahoo.com",
+        "isPrimary": false,
+        "isVerified": false,
+        "_id": "69619fbcba063ab4384a8d6f",
+        "addedAt": "2026-01-10T00:39:24.935Z"
+      },
+      {
+        "type": "whatsapp",
+        "value": "+971 55 4548452",
+        "isPrimary": false,
+        "isVerified": false,
+        "_id": "69619fbcba063ab4384a8d70",
+        "addedAt": "2026-01-10T00:39:24.935Z"
+      }
+    ],
+    "properties": [
+      "69619fc1ba063ab4384a9200"
+    ],
+    "notes": "",
+    "tags": [],
+    "source": "api",
+    "isActive": true,
+    "createdAt": "2025-11-15T00:39:24.935Z",
+    "updatedAt": "2026-01-10T00:39:29.053Z",
+    "__v": 0
+  },
+  {
+    "_id": "69619fbcba063ab4384a8d72",
+    "name": "Mansour Al Qassimi",
+    "nameNormalized": "mansouralqassimi",
+    "nationality": "Saudi Arabia",
+    "emiratesId": null,
+    "contacts": [
+      {
+        "type": "mobile",
+        "value": "+971 50 9852506",
+        "isPrimary": true,
+        "isVerified": false,
+        "_id": "69619fbcba063ab4384a8d73",
+        "addedAt": "2026-01-10T00:39:24.941Z"
+      },
+      {
+        "type": "email",
+        "value": "mansour.alqassimi@hotmail.com",
+        "isPrimary": false,
+        "isVerified": true,
+        "_id": "69619fbcba063ab4384a8d74",
+        "addedAt": "2026-01-10T00:39:24.941Z"
+      },
+      {
+        "type": "whatsapp",
+        "value": "+971 50 9852506",
+        "isPrimary": false,
+        "isVerified": true,
+        "_id": "69619fbcba063ab4384a8d75",
+        "addedAt": "2026-01-10T00:39:24.941Z"
+      }
+    ],
+    "properties": [
+      "69619fc0ba063ab4384a9098"
+    ],
+    "notes": "VIP client, preferred communication via WhatsApp",
+    "tags": [],
+    "source": "manual",
+    "isActive": true,
+    "createdAt": "2025-03-27T00:39:24.941Z",
+    "updatedAt": "2026-01-10T00:39:28.034Z",
+    "__v": 0
+  },
+  {
+    "_id": "69619fbcba063ab4384a8d77",
+    "name": "Sophia Menon",
+    "nameNormalized": "sophiamenon",
+    "nationality": "Philippines",
+    "emiratesId": "784-1983-2616262-1",
+    "contacts": [
+      {
+        "type": "mobile",
+        "value": "+971 56 8021111",
+        "isPrimary": true,
+        "isVerified": false,
+        "_id": "69619fbcba063ab4384a8d78",
+        "addedAt": "2026-01-10T00:39:24.947Z"
+      },
+      {
+        "type": "email",
+        "value": "sophia.menon@icloud.com",
+        "isPrimary": false,
+        "isVerified": true,
+        "_id": "69619fbcba063ab4384a8d79",
+        "addedAt": "2026-01-10T00:39:24.947Z"
+      },
+      {
+        "type": "whatsapp",
+        "value": "+971 56 8021111",
+        "isPrimary": false,
+        "isVerified": false,
+        "_id": "69619fbcba063ab4384a8d7a",
+        "addedAt": "2026-01-10T00:39:24.947Z"
+      }
+    ],
+    "properties": [
+      "69619fbfba063ab4384a9068",
+      "69619fc0ba063ab4384a91ac"
+    ],
+    "notes": "VIP client, preferred communication via WhatsApp",
+    "tags": [
+      "VIP",
+      "Family",
+      "Investor"
+    ],
+    "source": "manual",
+    "isActive": true,
+    "createdAt": "2025-04-26T00:39:24.947Z",
+    "updatedAt": "2026-01-10T00:39:28.915Z",
+    "__v": 0
+  },
+  {
+    "_id": "69619fbcba063ab4384a8d7c",
+    "name": "William Al Sharqi",
+    "nameNormalized": "williamalsharqi",
+    "nationality": "Bahrain",
+    "emiratesId": "784-1974-3105875-1",
+    "contacts": [
+      {
+        "type": "mobile",
+        "value": "+971 58 4888703",
+        "isPrimary": true,
+        "isVerified": false,
+        "_id": "69619fbcba063ab4384a8d7d",
+        "addedAt": "2026-01-10T00:39:24.953Z"
+      },
+      {
+        "type": "email",
+        "value": "william.alsharqi@gmail.com",
+        "isPrimary": false,
+        "isVerified": false,
+        "_id": "69619fbcba063ab4384a8d7e",
+        "addedAt": "2026-01-10T00:39:24.953Z"
+      },
+      {
+        "type": "whatsapp",
+        "value": "+971 58 4888703",
+        "isPrimary": false,
+        "isVerified": false,
+        "_id": "69619fbcba063ab4384a8d7f",
+        "addedAt": "2026-01-10T00:39:24.953Z"
+      }
+    ],
+    "properties": [
+      "69619fbdba063ab4384a8dec",
+      "69619fbeba063ab4384a8e58",
+      "69619fbeba063ab4384a8f66",
+      "69619fc0ba063ab4384a90bc",
+      "69619fc0ba063ab4384a91be",
+      "69619fc1ba063ab4384a9284"
+    ],
+    "notes": "VIP client, preferred communication via WhatsApp",
+    "tags": [],
+    "source": "manual",
+    "isActive": true,
+    "createdAt": "2025-10-06T00:39:24.953Z",
+    "updatedAt": "2026-01-10T00:39:29.289Z",
+    "__v": 0
+  },
+  {
+    "_id": "69619fbcba063ab4384a8d81",
+    "name": "Isabella Al Mualla",
+    "nameNormalized": "isabellaalmualla",
+    "nationality": "UK",
+    "emiratesId": null,
+    "contacts": [
+      {
+        "type": "mobile",
+        "value": "+971 52 1612097",
+        "isPrimary": true,
+        "isVerified": false,
+        "_id": "69619fbcba063ab4384a8d82",
+        "addedAt": "2026-01-10T00:39:24.959Z"
+      },
+      {
+        "type": "email",
+        "value": "isabella.almualla@outlook.com",
+        "isPrimary": false,
+        "isVerified": true,
+        "_id": "69619fbcba063ab4384a8d83",
+        "addedAt": "2026-01-10T00:39:24.959Z"
+      },
+      {
+        "type": "whatsapp",
+        "value": "+971 52 1612097",
+        "isPrimary": false,
+        "isVerified": false,
+        "_id": "69619fbcba063ab4384a8d84",
+        "addedAt": "2026-01-10T00:39:24.959Z"
+      }
+    ],
+    "properties": [
+      "69619fbdba063ab4384a8e04",
+      "69619fbeba063ab4384a8eee",
+      "69619fbeba063ab4384a8f6c",
+      "69619fc0ba063ab4384a90e0",
+      "69619fc0ba063ab4384a917c"
+    ],
+    "notes": "VIP client, preferred communication via WhatsApp",
+    "tags": [],
+    "source": "excel_import",
+    "isActive": true,
+    "createdAt": "2025-09-06T00:39:24.958Z",
+    "updatedAt": "2026-01-10T00:39:28.409Z",
+    "__v": 0
+  },
+  {
+    "_id": "69619fbcba063ab4384a8d86",
+    "name": "David Brown",
+    "nameNormalized": "davidbrown",
+    "nationality": "Iran",
+    "emiratesId": "784-1988-1577860-1",
+    "contacts": [
+      {
+        "type": "mobile",
+        "value": "+971 50 1748112",
+        "isPrimary": true,
+        "isVerified": true,
+        "_id": "69619fbcba063ab4384a8d87",
+        "addedAt": "2026-01-10T00:39:24.966Z"
+      },
+      {
+        "type": "email",
+        "value": "david.brown@hotmail.com",
+        "isPrimary": false,
+        "isVerified": false,
+        "_id": "69619fbcba063ab4384a8d88",
+        "addedAt": "2026-01-10T00:39:24.966Z"
+      },
+      {
+        "type": "whatsapp",
+        "value": "+971 50 1748112",
+        "isPrimary": false,
+        "isVerified": false,
+        "_id": "69619fbcba063ab4384a8d89",
+        "addedAt": "2026-01-10T00:39:24.966Z"
+      }
+    ],
+    "properties": [
+      "69619fbeba063ab4384a8f1e",
+      "69619fbfba063ab4384a8f8a"
+    ],
+    "notes": "",
+    "tags": [
+      "Investor"
+    ],
+    "source": "excel_import",
+    "isActive": true,
+    "createdAt": "2025-08-27T00:39:24.966Z",
+    "updatedAt": "2026-01-10T00:39:27.064Z",
+    "__v": 0
+  },
+  {
+    "_id": "69619fbcba063ab4384a8d8b",
+    "name": "Mansour Al Mualla",
+    "nameNormalized": "mansouralmualla",
+    "nationality": "Egypt",
+    "emiratesId": null,
+    "contacts": [
+      {
+        "type": "mobile",
+        "value": "+971 55 2602510",
+        "isPrimary": true,
+        "isVerified": false,
+        "_id": "69619fbcba063ab4384a8d8c",
+        "addedAt": "2026-01-10T00:39:24.973Z"
+      },
+      {
+        "type": "email",
+        "value": "mansour.almualla@yahoo.com",
+        "isPrimary": false,
+        "isVerified": true,
+        "_id": "69619fbcba063ab4384a8d8d",
+        "addedAt": "2026-01-10T00:39:24.973Z"
+      },
+      {
+        "type": "whatsapp",
+        "value": "+971 55 2602510",
+        "isPrimary": false,
+        "isVerified": true,
+        "_id": "69619fbcba063ab4384a8d8e",
+        "addedAt": "2026-01-10T00:39:24.973Z"
+      }
+    ],
+    "properties": [
+      "69619fc0ba063ab4384a90f2"
+    ],
+    "notes": "VIP client, preferred communication via WhatsApp",
+    "tags": [
+      "Corporate",
+      "Mortgage Required",
+      "Furnished Only"
+    ],
+    "source": "excel_import",
+    "isActive": true,
+    "createdAt": "2025-11-14T00:39:24.972Z",
+    "updatedAt": "2026-01-10T00:39:28.191Z",
+    "__v": 0
+  },
+  {
+    "_id": "69619fbcba063ab4384a8d90",
+    "name": "David Anderson",
+    "nameNormalized": "davidanderson",
+    "nationality": "Bahrain",
+    "emiratesId": "784-1973-7398033-1",
+    "contacts": [
+      {
+        "type": "mobile",
+        "value": "+971 50 5687111",
+        "isPrimary": true,
+        "isVerified": true,
+        "_id": "69619fbcba063ab4384a8d91",
+        "addedAt": "2026-01-10T00:39:24.979Z"
+      },
+      {
+        "type": "email",
+        "value": "david.anderson@icloud.com",
+        "isPrimary": false,
+        "isVerified": true,
+        "_id": "69619fbcba063ab4384a8d92",
+        "addedAt": "2026-01-10T00:39:24.979Z"
+      },
+      {
+        "type": "whatsapp",
+        "value": "+971 50 5687111",
+        "isPrimary": false,
+        "isVerified": false,
+        "_id": "69619fbcba063ab4384a8d93",
+        "addedAt": "2026-01-10T00:39:24.979Z"
+      }
+    ],
+    "properties": [
+      "69619fbfba063ab4384a8fd8",
+      "69619fc0ba063ab4384a90ce"
+    ],
+    "notes": "VIP client, preferred communication via WhatsApp",
+    "tags": [],
+    "source": "api",
+    "isActive": true,
+    "createdAt": "2025-04-14T00:39:24.979Z",
+    "updatedAt": "2026-01-10T00:39:28.126Z",
+    "__v": 0
+  },
+  {
+    "_id": "69619fbcba063ab4384a8d95",
+    "name": "William Williams",
+    "nameNormalized": "williamwilliams",
+    "nationality": "UAE",
+    "emiratesId": "784-1983-1000124-1",
+    "contacts": [
+      {
+        "type": "mobile",
+        "value": "+971 58 2279714",
+        "isPrimary": true,
+        "isVerified": false,
+        "_id": "69619fbcba063ab4384a8d96",
+        "addedAt": "2026-01-10T00:39:24.985Z"
+      },
+      {
+        "type": "email",
+        "value": "william.williams@gmail.com",
+        "isPrimary": false,
+        "isVerified": false,
+        "_id": "69619fbcba063ab4384a8d97",
+        "addedAt": "2026-01-10T00:39:24.985Z"
+      },
+      {
+        "type": "whatsapp",
+        "value": "+971 58 2279714",
+        "isPrimary": false,
+        "isVerified": false,
+        "_id": "69619fbcba063ab4384a8d98",
+        "addedAt": "2026-01-10T00:39:24.985Z"
+      }
+    ],
+    "properties": [
+      "69619fbeba063ab4384a8e94",
+      "69619fbfba063ab4384a8fa8"
+    ],
+    "notes": "",
+    "tags": [
+      "Mortgage Required"
+    ],
+    "source": "excel_import",
+    "isActive": true,
+    "createdAt": "2025-09-30T00:39:24.985Z",
+    "updatedAt": "2026-01-10T00:39:27.124Z",
+    "__v": 0
+  },
+  {
+    "_id": "69619fbcba063ab4384a8d9a",
+    "name": "Saeed Reddy",
+    "nameNormalized": "saeedreddy",
+    "nationality": "Russia",
+    "emiratesId": "784-1995-8023466-1",
+    "contacts": [
+      {
+        "type": "mobile",
+        "value": "+971 56 5303815",
+        "isPrimary": true,
+        "isVerified": false,
+        "_id": "69619fbcba063ab4384a8d9b",
+        "addedAt": "2026-01-10T00:39:24.991Z"
+      },
+      {
+        "type": "email",
+        "value": "saeed.reddy@outlook.com",
+        "isPrimary": false,
+        "isVerified": false,
+        "_id": "69619fbcba063ab4384a8d9c",
+        "addedAt": "2026-01-10T00:39:24.991Z"
+      },
+      {
+        "type": "whatsapp",
+        "value": "+971 56 5303815",
+        "isPrimary": false,
+        "isVerified": true,
+        "_id": "69619fbcba063ab4384a8d9d",
+        "addedAt": "2026-01-10T00:39:24.991Z"
+      }
+    ],
+    "properties": [
+      "69619fbdba063ab4384a8e2e",
+      "69619fbeba063ab4384a8e8e",
+      "69619fbfba063ab4384a8f84",
+      "69619fc1ba063ab4384a9230"
+    ],
+    "notes": "VIP client, preferred communication via WhatsApp",
+    "tags": [
+      "First-time Buyer",
+      "Urgent"
+    ],
+    "source": "manual",
+    "isActive": true,
+    "createdAt": "2025-04-09T00:39:24.991Z",
+    "updatedAt": "2026-01-10T00:39:29.140Z",
+    "__v": 0
+  },
+  {
+    "_id": "69619fbcba063ab4384a8d9f",
+    "name": "Amina Taylor",
+    "nameNormalized": "aminataylor",
+    "nationality": "Qatar",
+    "emiratesId": "784-1998-7410063-1",
+    "contacts": [
+      {
+        "type": "mobile",
+        "value": "+971 52 5304262",
+        "isPrimary": true,
+        "isVerified": true,
+        "_id": "69619fbcba063ab4384a8da0",
+        "addedAt": "2026-01-10T00:39:24.996Z"
+      },
+      {
+        "type": "email",
+        "value": "amina.taylor@gmail.com",
+        "isPrimary": false,
+        "isVerified": true,
+        "_id": "69619fbcba063ab4384a8da1",
+        "addedAt": "2026-01-10T00:39:24.996Z"
+      },
+      {
+        "type": "whatsapp",
+        "value": "+971 52 5304262",
+        "isPrimary": false,
+        "isVerified": true,
+        "_id": "69619fbcba063ab4384a8da2",
+        "addedAt": "2026-01-10T00:39:24.996Z"
+      }
+    ],
+    "properties": [
+      "69619fbfba063ab4384a9086"
+    ],
+    "notes": "",
+    "tags": [],
+    "source": "excel_import",
+    "isActive": true,
+    "createdAt": "2025-02-17T00:39:24.996Z",
+    "updatedAt": "2026-01-10T00:39:27.997Z",
+    "__v": 0
+  },
+  {
+    "_id": "69619fbdba063ab4384a8da4",
+    "name": "Abdullah Williams",
+    "nameNormalized": "abdullahwilliams",
+    "nationality": "Bahrain",
+    "emiratesId": null,
+    "contacts": [
+      {
+        "type": "mobile",
+        "value": "+971 52 3196624",
+        "isPrimary": true,
+        "isVerified": true,
+        "_id": "69619fbdba063ab4384a8da5",
+        "addedAt": "2026-01-10T00:39:25.001Z"
+      },
+      {
+        "type": "email",
+        "value": "abdullah.williams@outlook.com",
+        "isPrimary": false,
+        "isVerified": true,
+        "_id": "69619fbdba063ab4384a8da6",
+        "addedAt": "2026-01-10T00:39:25.001Z"
+      },
+      {
+        "type": "whatsapp",
+        "value": "+971 52 3196624",
+        "isPrimary": false,
+        "isVerified": true,
+        "_id": "69619fbdba063ab4384a8da7",
+        "addedAt": "2026-01-10T00:39:25.001Z"
+      }
+    ],
+    "properties": [
+      "69619fc0ba063ab4384a909e"
+    ],
+    "notes": "",
+    "tags": [
+      "VIP",
+      "Relocating",
+      "Investor"
+    ],
+    "source": "api",
+    "isActive": true,
+    "createdAt": "2025-02-12T00:39:25.001Z",
+    "updatedAt": "2026-01-10T00:39:28.045Z",
+    "__v": 0
+  },
+  {
+    "_id": "69619fbdba063ab4384a8da9",
+    "name": "Mansour Al Mualla",
+    "nameNormalized": "mansouralmualla",
+    "nationality": "Iran",
+    "emiratesId": "784-1983-5567799-1",
+    "contacts": [
+      {
+        "type": "mobile",
+        "value": "+971 54 6215297",
+        "isPrimary": true,
+        "isVerified": false,
+        "_id": "69619fbdba063ab4384a8daa",
+        "addedAt": "2026-01-10T00:39:25.012Z"
+      },
+      {
+        "type": "email",
+        "value": "mansour.almualla@yahoo.com",
+        "isPrimary": false,
+        "isVerified": true,
+        "_id": "69619fbdba063ab4384a8dab",
+        "addedAt": "2026-01-10T00:39:25.012Z"
+      },
+      {
+        "type": "whatsapp",
+        "value": "+971 54 6215297",
+        "isPrimary": false,
+        "isVerified": true,
+        "_id": "69619fbdba063ab4384a8dac",
+        "addedAt": "2026-01-10T00:39:25.012Z"
+      }
+    ],
+    "properties": [],
+    "notes": "VIP client, preferred communication via WhatsApp",
+    "tags": [
+      "Cash Buyer"
+    ],
+    "source": "excel_import",
+    "isActive": true,
+    "createdAt": "2025-12-18T00:39:25.012Z",
+    "updatedAt": "2025-12-18T00:39:25.012Z",
+    "__v": 0
+  },
+  {
+    "_id": "69619fbdba063ab4384a8dae",
+    "name": "Moza Nair",
+    "nameNormalized": "mozanair",
+    "nationality": "Philippines",
+    "emiratesId": "784-1987-7765147-1",
+    "contacts": [
+      {
+        "type": "mobile",
+        "value": "+971 52 3877598",
+        "isPrimary": true,
+        "isVerified": false,
+        "_id": "69619fbdba063ab4384a8daf",
+        "addedAt": "2026-01-10T00:39:25.018Z"
+      },
+      {
+        "type": "email",
+        "value": "moza.nair@icloud.com",
+        "isPrimary": false,
+        "isVerified": false,
+        "_id": "69619fbdba063ab4384a8db0",
+        "addedAt": "2026-01-10T00:39:25.018Z"
+      },
+      {
+        "type": "whatsapp",
+        "value": "+971 52 3877598",
+        "isPrimary": false,
+        "isVerified": true,
+        "_id": "69619fbdba063ab4384a8db1",
+        "addedAt": "2026-01-10T00:39:25.018Z"
+      }
+    ],
+    "properties": [
+      "69619fbeba063ab4384a8f48",
+      "69619fbeba063ab4384a8f54",
+      "69619fbfba063ab4384a9002",
+      "69619fc1ba063ab4384a9266"
+    ],
+    "notes": "VIP client, preferred communication via WhatsApp",
+    "tags": [
+      "Family",
+      "Mortgage Required"
+    ],
+    "source": "api",
+    "isActive": true,
+    "createdAt": "2025-06-03T00:39:25.017Z",
+    "updatedAt": "2026-01-10T00:39:29.232Z",
+    "__v": 0
+  },
+  {
+    "_id": "69619fbdba063ab4384a8db3",
+    "name": "Saeed Reddy",
+    "nameNormalized": "saeedreddy",
+    "nationality": "Philippines",
+    "emiratesId": "784-1989-4951986-1",
+    "contacts": [
+      {
+        "type": "mobile",
+        "value": "+971 52 4512184",
+        "isPrimary": true,
+        "isVerified": true,
+        "_id": "69619fbdba063ab4384a8db4",
+        "addedAt": "2026-01-10T00:39:25.023Z"
+      },
+      {
+        "type": "email",
+        "value": "saeed.reddy@outlook.com",
+        "isPrimary": false,
+        "isVerified": true,
+        "_id": "69619fbdba063ab4384a8db5",
+        "addedAt": "2026-01-10T00:39:25.023Z"
+      },
+      {
+        "type": "whatsapp",
+        "value": "+971 52 4512184",
+        "isPrimary": false,
+        "isVerified": true,
+        "_id": "69619fbdba063ab4384a8db6",
+        "addedAt": "2026-01-10T00:39:25.023Z"
+      }
+    ],
+    "properties": [
+      "69619fbeba063ab4384a8f00",
+      "69619fbeba063ab4384a8f18",
+      "69619fbfba063ab4384a902c",
+      "69619fc1ba063ab4384a91fa"
+    ],
+    "notes": "",
+    "tags": [
+      "Relocating",
+      "Furnished Only"
+    ],
+    "source": "api",
+    "isActive": true,
+    "createdAt": "2025-04-09T00:39:25.023Z",
+    "updatedAt": "2026-01-10T00:39:29.044Z",
+    "__v": 0
+  },
+  {
+    "_id": "69619fbdba063ab4384a8db8",
+    "name": "Michael Reddy",
+    "nameNormalized": "michaelreddy",
+    "nationality": "Australia",
+    "emiratesId": "784-1974-2533891-1",
+    "contacts": [
+      {
+        "type": "mobile",
+        "value": "+971 54 4571452",
+        "isPrimary": true,
+        "isVerified": true,
+        "_id": "69619fbdba063ab4384a8db9",
+        "addedAt": "2026-01-10T00:39:25.028Z"
+      },
+      {
+        "type": "email",
+        "value": "michael.reddy@hotmail.com",
+        "isPrimary": false,
+        "isVerified": true,
+        "_id": "69619fbdba063ab4384a8dba",
+        "addedAt": "2026-01-10T00:39:25.028Z"
+      },
+      {
+        "type": "whatsapp",
+        "value": "+971 54 4571452",
+        "isPrimary": false,
+        "isVerified": true,
+        "_id": "69619fbdba063ab4384a8dbb",
+        "addedAt": "2026-01-10T00:39:25.028Z"
+      }
+    ],
+    "properties": [
+      "69619fbfba063ab4384a9062",
+      "69619fc0ba063ab4384a9128"
+    ],
+    "notes": "",
+    "tags": [
+      "Relocating"
+    ],
+    "source": "api",
+    "isActive": true,
+    "createdAt": "2025-11-08T00:39:25.028Z",
+    "updatedAt": "2026-01-10T00:39:28.279Z",
+    "__v": 0
+  },
+  {
+    "_id": "69619fbdba063ab4384a8dbd",
+    "name": "James Williams",
+    "nameNormalized": "jameswilliams",
+    "nationality": "Kuwait",
+    "emiratesId": "784-2000-2709803-1",
+    "contacts": [
+      {
+        "type": "mobile",
+        "value": "+971 55 5501246",
+        "isPrimary": true,
+        "isVerified": false,
+        "_id": "69619fbdba063ab4384a8dbe",
+        "addedAt": "2026-01-10T00:39:25.033Z"
+      },
+      {
+        "type": "email",
+        "value": "james.williams@outlook.com",
+        "isPrimary": false,
+        "isVerified": true,
+        "_id": "69619fbdba063ab4384a8dbf",
+        "addedAt": "2026-01-10T00:39:25.033Z"
+      },
+      {
+        "type": "whatsapp",
+        "value": "+971 55 5501246",
+        "isPrimary": false,
+        "isVerified": false,
+        "_id": "69619fbdba063ab4384a8dc0",
+        "addedAt": "2026-01-10T00:39:25.033Z"
+      }
+    ],
+    "properties": [
+      "69619fbeba063ab4384a8ed6",
+      "69619fc0ba063ab4384a9122",
+      "69619fc0ba063ab4384a912e",
+      "69619fc1ba063ab4384a923c"
+    ],
+    "notes": "",
+    "tags": [],
+    "source": "manual",
+    "isActive": true,
+    "createdAt": "2025-08-25T00:39:25.033Z",
+    "updatedAt": "2026-01-10T00:39:29.161Z",
+    "__v": 0
+  },
+  {
+    "_id": "69619fbdba063ab4384a8dc2",
+    "name": "James Al Nuaimi",
+    "nameNormalized": "jamesalnuaimi",
+    "nationality": "China",
+    "emiratesId": "784-1983-7710366-1",
+    "contacts": [
+      {
+        "type": "mobile",
+        "value": "+971 58 6646245",
+        "isPrimary": true,
+        "isVerified": false,
+        "_id": "69619fbdba063ab4384a8dc3",
+        "addedAt": "2026-01-10T00:39:25.039Z"
+      },
+      {
+        "type": "email",
+        "value": "james.alnuaimi@gmail.com",
+        "isPrimary": false,
+        "isVerified": false,
+        "_id": "69619fbdba063ab4384a8dc4",
+        "addedAt": "2026-01-10T00:39:25.039Z"
+      },
+      {
+        "type": "whatsapp",
+        "value": "+971 58 6646245",
+        "isPrimary": false,
+        "isVerified": true,
+        "_id": "69619fbdba063ab4384a8dc5",
+        "addedAt": "2026-01-10T00:39:25.039Z"
+      }
+    ],
+    "properties": [
+      "69619fbdba063ab4384a8dfe",
+      "69619fbeba063ab4384a8eca",
+      "69619fbeba063ab4384a8ee2",
+      "69619fbfba063ab4384a8fe4",
+      "69619fc1ba063ab4384a925a"
+    ],
+    "notes": "",
+    "tags": [
+      "Relocating",
+      "First-time Buyer",
+      "Cash Buyer"
+    ],
+    "source": "api",
+    "isActive": true,
+    "createdAt": "2025-06-29T00:39:25.039Z",
+    "updatedAt": "2026-01-10T00:39:29.212Z",
+    "__v": 0
+  },
+  {
+    "_id": "69619fbdba063ab4384a8dc7",
+    "name": "William Williams",
+    "nameNormalized": "williamwilliams",
+    "nationality": "UAE",
+    "emiratesId": "784-1987-2403883-1",
+    "contacts": [
+      {
+        "type": "mobile",
+        "value": "+971 52 5442117",
+        "isPrimary": true,
+        "isVerified": true,
+        "_id": "69619fbdba063ab4384a8dc8",
+        "addedAt": "2026-01-10T00:39:25.044Z"
+      },
+      {
+        "type": "email",
+        "value": "william.williams@yahoo.com",
+        "isPrimary": false,
+        "isVerified": false,
+        "_id": "69619fbdba063ab4384a8dc9",
+        "addedAt": "2026-01-10T00:39:25.044Z"
+      },
+      {
+        "type": "whatsapp",
+        "value": "+971 52 5442117",
+        "isPrimary": false,
+        "isVerified": true,
+        "_id": "69619fbdba063ab4384a8dca",
+        "addedAt": "2026-01-10T00:39:25.044Z"
+      }
+    ],
+    "properties": [
+      "69619fbfba063ab4384a8fd2",
+      "69619fc0ba063ab4384a91b2"
+    ],
+    "notes": "",
+    "tags": [],
+    "source": "excel_import",
+    "isActive": true,
+    "createdAt": "2025-04-01T00:39:25.044Z",
+    "updatedAt": "2026-01-10T00:39:28.925Z",
+    "__v": 0
+  },
+  {
+    "_id": "69619fbdba063ab4384a8dcc",
+    "name": "Hessa Al Qassimi",
+    "nameNormalized": "hessaalqassimi",
+    "nationality": "Russia",
+    "emiratesId": "784-1980-8415639-1",
+    "contacts": [
+      {
+        "type": "mobile",
+        "value": "+971 55 6482102",
+        "isPrimary": true,
+        "isVerified": false,
+        "_id": "69619fbdba063ab4384a8dcd",
+        "addedAt": "2026-01-10T00:39:25.049Z"
+      },
+      {
+        "type": "email",
+        "value": "hessa.alqassimi@gmail.com",
+        "isPrimary": false,
+        "isVerified": false,
+        "_id": "69619fbdba063ab4384a8dce",
+        "addedAt": "2026-01-10T00:39:25.049Z"
+      },
+      {
+        "type": "whatsapp",
+        "value": "+971 55 6482102",
+        "isPrimary": false,
+        "isVerified": true,
+        "_id": "69619fbdba063ab4384a8dcf",
+        "addedAt": "2026-01-10T00:39:25.049Z"
+      }
+    ],
+    "properties": [
+      "69619fc1ba063ab4384a9248"
+    ],
+    "notes": "",
+    "tags": [
+      "First-time Buyer",
+      "Urgent",
+      "Investor"
+    ],
+    "source": "manual",
+    "isActive": true,
+    "createdAt": "2025-06-21T00:39:25.049Z",
+    "updatedAt": "2026-01-10T00:39:29.181Z",
+    "__v": 0
+  },
+  {
+    "_id": "69619fbdba063ab4384a8dd1",
+    "name": "David Al Thani",
+    "nameNormalized": "davidalthani",
+    "nationality": "France",
+    "emiratesId": "784-1973-6076214-1",
+    "contacts": [
+      {
+        "type": "mobile",
+        "value": "+971 52 8429112",
+        "isPrimary": true,
+        "isVerified": false,
+        "_id": "69619fbdba063ab4384a8dd2",
+        "addedAt": "2026-01-10T00:39:25.054Z"
+      },
+      {
+        "type": "email",
+        "value": "david.althani@gmail.com",
+        "isPrimary": false,
+        "isVerified": true,
+        "_id": "69619fbdba063ab4384a8dd3",
+        "addedAt": "2026-01-10T00:39:25.054Z"
+      },
+      {
+        "type": "whatsapp",
+        "value": "+971 52 8429112",
+        "isPrimary": false,
+        "isVerified": true,
+        "_id": "69619fbdba063ab4384a8dd4",
+        "addedAt": "2026-01-10T00:39:25.054Z"
+      }
+    ],
+    "properties": [
+      "69619fbeba063ab4384a8e88",
+      "69619fbeba063ab4384a8f2a",
+      "69619fc0ba063ab4384a90ec",
+      "69619fc1ba063ab4384a9224"
+    ],
+    "notes": "VIP client, preferred communication via WhatsApp",
+    "tags": [
+      "VIP"
+    ],
+    "source": "manual",
+    "isActive": true,
+    "createdAt": "2025-07-10T00:39:25.054Z",
+    "updatedAt": "2026-01-10T00:39:29.118Z",
+    "__v": 0
+  },
+  {
+    "_id": "69619fbdba063ab4384a8dd6",
+    "name": "Saeed Al Sharqi",
+    "nameNormalized": "saeedalsharqi",
+    "nationality": "Qatar",
+    "emiratesId": null,
+    "contacts": [
+      {
+        "type": "mobile",
+        "value": "+971 50 2551540",
+        "isPrimary": true,
+        "isVerified": false,
+        "_id": "69619fbdba063ab4384a8dd7",
+        "addedAt": "2026-01-10T00:39:25.058Z"
+      },
+      {
+        "type": "email",
+        "value": "saeed.alsharqi@yahoo.com",
+        "isPrimary": false,
+        "isVerified": false,
+        "_id": "69619fbdba063ab4384a8dd8",
+        "addedAt": "2026-01-10T00:39:25.058Z"
+      },
+      {
+        "type": "whatsapp",
+        "value": "+971 50 2551540",
+        "isPrimary": false,
+        "isVerified": false,
+        "_id": "69619fbdba063ab4384a8dd9",
+        "addedAt": "2026-01-10T00:39:25.058Z"
+      }
+    ],
+    "properties": [
+      "69619fc1ba063ab4384a928a"
+    ],
+    "notes": "",
+    "tags": [
+      "Corporate"
+    ],
+    "source": "excel_import",
+    "isActive": true,
+    "createdAt": "2025-06-30T00:39:25.058Z",
+    "updatedAt": "2026-01-10T00:39:29.299Z",
+    "__v": 0
+  },
+  {
+    "_id": "69619fbdba063ab4384a8ddb",
+    "name": "David Al Mualla",
+    "nameNormalized": "davidalmualla",
+    "nationality": "Russia",
+    "emiratesId": "784-1989-1634004-1",
+    "contacts": [
+      {
+        "type": "mobile",
+        "value": "+971 54 9194356",
+        "isPrimary": true,
+        "isVerified": true,
+        "_id": "69619fbdba063ab4384a8ddc",
+        "addedAt": "2026-01-10T00:39:25.063Z"
+      },
+      {
+        "type": "email",
+        "value": "david.almualla@icloud.com",
+        "isPrimary": false,
+        "isVerified": true,
+        "_id": "69619fbdba063ab4384a8ddd",
+        "addedAt": "2026-01-10T00:39:25.063Z"
+      },
+      {
+        "type": "whatsapp",
+        "value": "+971 54 9194356",
+        "isPrimary": false,
+        "isVerified": true,
+        "_id": "69619fbdba063ab4384a8dde",
+        "addedAt": "2026-01-10T00:39:25.063Z"
+      }
+    ],
+    "properties": [
+      "69619fbeba063ab4384a8e5e",
+      "69619fbeba063ab4384a8e82"
+    ],
+    "notes": "",
+    "tags": [],
+    "source": "api",
+    "isActive": true,
+    "createdAt": "2025-06-16T00:39:25.063Z",
+    "updatedAt": "2026-01-10T00:39:26.089Z",
+    "__v": 0
+  }
+]

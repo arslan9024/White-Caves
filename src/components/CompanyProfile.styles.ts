@@ -1,4 +1,7 @@
 import styled from 'styled-components';
+import { theme } from '../styles/theme';
+
+const { shadows, transitions, colors, radius, typography } = theme;
 
 export const CompanyProfileSection = styled.section`
   padding: 5rem 2rem;
@@ -20,7 +23,7 @@ export const CompanyProfileHeader = styled.div`
   gap: 2rem;
   margin-bottom: 3rem;
   padding-bottom: 2rem;
-  border-bottom: 2px solid var(--primary-color, #c41e3a);
+  border-bottom: 2px solid var(--primary-color, ${colors.primary});
 
   @media (max-width: 768px) {
     flex-direction: column;
@@ -32,14 +35,14 @@ export const CompanyLogoLarge = styled.img`
   width: 120px;
   height: 120px;
   object-fit: cover;
-  border-radius: 16px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  border-radius: ${radius.xxl};
+  box-shadow: ${shadows.luxuryElevated};
 `;
 
 export const CompanyProfileTitle = styled.div`
   h2 {
     font-size: 2.5rem;
-    font-weight: 700;
+    font-weight: ${typography.weights.bold};
     color: var(--text-primary, #1a1a2e);
     margin: 0 0 0.5rem 0;
 
@@ -51,8 +54,8 @@ export const CompanyProfileTitle = styled.div`
 
 export const CompanyTagline = styled.p`
   font-size: 1.25rem;
-  color: var(--primary-color, #c41e3a);
-  font-weight: 500;
+  color: var(--primary-color, ${colors.primary});
+  font-weight: ${typography.weights.medium};
   margin: 0;
 `;
 
@@ -65,23 +68,25 @@ export const CompanyProfileGrid = styled.div`
 
 export const ProfileCard = styled.div`
   background: var(--card-bg, #ffffff);
-  border-radius: 16px;
+  border-radius: ${radius.xxl};
   padding: 2rem;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  box-shadow: ${shadows.luxuryCard};
+  transition:
+    transform ${transitions.durations.standard} ${transitions.easing.easeOut},
+    box-shadow ${transitions.durations.standard} ${transitions.easing.easeOut};
 
   [data-theme='dark'] & {
-    background: var(--card-bg, #252542);
+    background: var(--card-bg, ${colors.background.darkSecondary});
   }
 
   &:hover {
     transform: translateY(-4px);
-    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+    box-shadow: ${shadows.luxuryHover};
   }
 
   h3 {
     font-size: 1.25rem;
-    font-weight: 600;
+    font-weight: ${typography.weights.semibold};
     color: var(--text-primary, #1a1a2e);
     margin: 0 0 0.75rem 0;
 
@@ -109,18 +114,18 @@ export const ProfileCardIcon = styled.div`
 
 export const CompanyServicesOverview = styled.div`
   background: var(--card-bg, #ffffff);
-  border-radius: 16px;
+  border-radius: ${radius.xxl};
   padding: 2rem;
   margin-bottom: 3rem;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  box-shadow: ${shadows.luxuryCard};
 
   [data-theme='dark'] & {
-    background: var(--card-bg, #252542);
+    background: var(--card-bg, ${colors.background.darkSecondary});
   }
 
   h3 {
     font-size: 1.5rem;
-    font-weight: 600;
+    font-weight: ${typography.weights.semibold};
     color: var(--text-primary, #1a1a2e);
     margin: 0 0 1.5rem 0;
     text-align: center;
@@ -143,7 +148,7 @@ export const ServiceItem = styled.div`
   gap: 0.75rem;
   padding: 0.75rem 1rem;
   background: var(--bg-secondary, #f8f9fa);
-  border-radius: 8px;
+  border-radius: ${radius.lg};
   transition: background 0.2s ease;
 
   [data-theme='dark'] & {
@@ -151,13 +156,13 @@ export const ServiceItem = styled.div`
   }
 
   &:hover {
-    background: var(--primary-light, rgba(196, 30, 58, 0.1));
+    background: var(--primary-light, rgba(227, 30, 36, 0.1));
   }
 
   span:last-child {
     font-size: 0.9rem;
     color: var(--text-primary, #1a1a2e);
-    font-weight: 500;
+    font-weight: ${typography.weights.medium};
 
     [data-theme='dark'] & {
       color: var(--text-primary, #ffffff);
@@ -177,10 +182,10 @@ export const CompanyStatsBar = styled.div`
   padding: 2rem;
   background: linear-gradient(
     135deg,
-    var(--primary-color, #c41e3a),
-    var(--primary-dark, #a01830)
+    var(--primary-color, ${colors.primary}),
+    var(--primary-dark, ${colors.primaryDark})
   );
-  border-radius: 16px;
+  border-radius: ${radius.xxl};
 
   @media (max-width: 768px) {
     grid-template-columns: repeat(2, 1fr);
@@ -199,7 +204,7 @@ export const StatBlock = styled.div`
 export const StatNumber = styled.span`
   display: block;
   font-size: 2.5rem;
-  font-weight: 700;
+  font-weight: ${typography.weights.bold};
   margin-bottom: 0.25rem;
 `;
 
@@ -211,23 +216,23 @@ export const StatLabel = styled.span`
 
 export const CompanyContactInfo = styled.div`
   background: var(--card-bg, #ffffff);
-  border-radius: 16px;
+  border-radius: ${radius.xxl};
   padding: 2rem;
   margin-bottom: 3rem;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  box-shadow: ${shadows.luxuryCard};
 
   [data-theme='dark'] & {
-    background: var(--card-bg, #252542);
+    background: var(--card-bg, ${colors.background.darkSecondary});
   }
 
   h3 {
     font-size: 1.5rem;
-    font-weight: 600;
-    color: var(--text-primary, #1a1a2e);
+    font-weight: ${typography.weights.semibold};
+    color: var(--text-primary, ${colors.text.primary});
     margin: 0 0 1.5rem 0;
 
     [data-theme='dark'] & {
-      color: var(--text-primary, #ffffff);
+      color: var(--text-primary, ${colors.text.inverse});
     }
   }
 `;
@@ -286,16 +291,16 @@ export const DownloadProfileBtn = styled.button`
   padding: 0.875rem 2rem;
   background: linear-gradient(
     135deg,
-    var(--primary-color, #c41e3a),
-    var(--primary-dark, #a01830)
+    var(--primary-color, ${colors.primary}),
+    var(--primary-dark, ${colors.primaryDark})
   );
   color: white;
   border: none;
-  border-radius: 8px;
+  border-radius: ${radius.lg};
   font-size: 1rem;
-  font-weight: 600;
+  font-weight: ${typography.weights.semibold};
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all ${transitions.durations.standard} ${transitions.easing.easeOut};
 
   svg {
     width: 20px;
@@ -304,7 +309,7 @@ export const DownloadProfileBtn = styled.button`
 
   &:hover {
     transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(196, 30, 58, 0.3);
+    box-shadow: ${shadows.luxuryGlow};
   }
 
   &:active {

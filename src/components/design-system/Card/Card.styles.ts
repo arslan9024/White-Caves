@@ -33,6 +33,7 @@ const getVariantStyles = (variant: CardVariant) => {
     `,
   };
 
+  // eslint-disable-next-line security/detect-object-injection
   return variants[variant] || variants.elevated;
 };
 
@@ -42,12 +43,12 @@ export const StyledCard = styled.div<{
   $padding?: string;
 }>`
   border-radius: ${theme.spacing.xs};
-  padding: ${(props) => props.$padding || theme.spacing.lg};
+  padding: ${props => props.$padding || theme.spacing.lg};
   transition: ${theme.transitions.all};
 
-  ${(props) => getVariantStyles(props.$variant || 'elevated')}
+  ${props => getVariantStyles(props.$variant || 'elevated')}
 
-  ${(props) =>
+  ${props =>
     props.$isClickable &&
     css`
       cursor: pointer;
@@ -62,7 +63,7 @@ export const StyledCard = styled.div<{
     `}
 
   @media ${theme.mediaQueries.mobile} {
-    padding: ${(props) => props.$padding || theme.spacing.md};
+    padding: ${props => props.$padding || theme.spacing.md};
   }
 `;
 

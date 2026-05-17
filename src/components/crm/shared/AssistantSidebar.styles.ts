@@ -1,17 +1,23 @@
 import styled from 'styled-components';
+import { theme } from '../../../styles/theme';
 
-export const AssistantSidebarContainer = styled.div<{ $collapsed?: boolean; $sidebarAccent?: string }>`
-  --sidebar-accent: ${props => props.$sidebarAccent || '#0EA5E9'};
+const { colors, transitions, radius, spacing, typography } = theme;
+
+export const AssistantSidebarContainer = styled.div<{
+  $collapsed?: boolean;
+  $sidebarAccent?: string;
+}>`
+  --sidebar-accent: ${props => props.$sidebarAccent || colors.info};
   display: flex;
   flex-direction: column;
   height: 100%;
   background: var(--bg-secondary);
-  border-radius: 12px;
+  border-radius: ${radius.xl};
   overflow: hidden;
-  transition: all 0.3s ease;
+  transition: all ${transitions.durations.standard} ${transitions.easing.easeOut};
 
   @media (prefers-color-scheme: dark) {
-    background: #1e1e2e;
+    background: ${colors.background.dark};
   }
 `;
 
@@ -19,11 +25,11 @@ export const SidebarHeader = styled.div`
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 16px;
+  padding: ${spacing.md};
   border-bottom: 1px solid var(--border-color);
 
   @media (prefers-color-scheme: dark) {
-    border-color: #333333;
+    border-color: ${colors.background.darkSecondary};
   }
 `;
 
@@ -36,7 +42,7 @@ export const AssistantAvatar = styled.div<{ $background?: string }>`
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  font-size: 24px;
+  font-size: ${typography.sizes.xxl};
   line-height: 1;
 `;
 
@@ -46,8 +52,8 @@ export const AssistantInfo = styled.div`
 
   h3 {
     margin: 0 0 4px 0;
-    font-size: 14px;
-    font-weight: 600;
+    font-size: ${typography.sizes.base};
+    font-weight: ${typography.weights.semibold};
     color: var(--text-primary);
     white-space: nowrap;
     overflow: hidden;
@@ -62,7 +68,7 @@ export const AssistantInfo = styled.div`
 `;
 
 export const AssistantTitle = styled.span`
-  font-size: 12px;
+  font-size: ${typography.sizes.xs};
   color: var(--text-secondary);
   display: block;
   white-space: nowrap;
@@ -77,7 +83,7 @@ export const AssistantTitle = styled.span`
 export const FavoriteButton = styled.button<{ $isFavorite?: boolean }>`
   width: 32px;
   height: 32px;
-  border-radius: 8px;
+  border-radius: ${radius.lg};
   background: transparent;
   border: 1px solid var(--border-color);
   color: var(--text-secondary);
@@ -85,7 +91,7 @@ export const FavoriteButton = styled.button<{ $isFavorite?: boolean }>`
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: ${transitions.hover};
   flex-shrink: 0;
 
   &:hover {
@@ -94,7 +100,9 @@ export const FavoriteButton = styled.button<{ $isFavorite?: boolean }>`
     color: var(--primary);
   }
 
-  ${props => props.$isFavorite && `
+  ${props =>
+    props.$isFavorite &&
+    `
     background: rgba(14, 165, 233, 0.15);
     border-color: var(--primary);
     color: var(--primary);
@@ -110,7 +118,9 @@ export const FavoriteButton = styled.button<{ $isFavorite?: boolean }>`
       color: #3b82f6;
     }
 
-    ${props => props.$isFavorite && `
+    ${props =>
+      props.$isFavorite &&
+      `
       background: rgba(59, 130, 246, 0.2);
       border-color: #3b82f6;
       color: #3b82f6;
@@ -145,7 +155,7 @@ export const SidebarNav = styled.nav`
 export const SidebarDivider = styled.div`
   height: 1px;
   background: var(--border-color);
-  margin: 8px 0;
+  margin: ${spacing.sm} 0;
 
   @media (prefers-color-scheme: dark) {
     background: #333333;
@@ -154,7 +164,7 @@ export const SidebarDivider = styled.div`
 
 export const SidebarSection = styled.div`
   font-size: 11px;
-  font-weight: 600;
+  font-weight: ${typography.weights.semibold};
   text-transform: uppercase;
   letter-spacing: 0.5px;
   color: var(--text-muted);
@@ -172,14 +182,14 @@ export const SidebarItem = styled.button<{ $active?: boolean }>`
   align-items: center;
   gap: 12px;
   padding: 10px 16px;
-  background: ${props => props.$active ? 'rgba(14, 165, 233, 0.1)' : 'transparent'};
+  background: ${props => (props.$active ? 'rgba(14, 165, 233, 0.1)' : 'transparent')};
   border: none;
-  color: ${props => props.$active ? 'var(--primary)' : 'var(--text-secondary)'};
+  color: ${props => (props.$active ? 'var(--primary)' : 'var(--text-secondary)')};
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: ${transitions.hover};
   text-align: left;
-  font-size: 14px;
-  font-weight: 500;
+  font-size: ${typography.sizes.base};
+  font-weight: ${typography.weights.medium};
 
   &:hover {
     background: rgba(14, 165, 233, 0.05);
@@ -193,8 +203,8 @@ export const SidebarItem = styled.button<{ $active?: boolean }>`
   }
 
   @media (prefers-color-scheme: dark) {
-    background: ${props => props.$active ? 'rgba(59, 130, 246, 0.15)' : 'transparent'};
-    color: ${props => props.$active ? '#3b82f6' : '#a0aec0'};
+    background: ${props => (props.$active ? 'rgba(59, 130, 246, 0.15)' : 'transparent')};
+    color: ${props => (props.$active ? '#3b82f6' : '#a0aec0')};
 
     &:hover {
       background: rgba(59, 130, 246, 0.1);
@@ -211,10 +221,10 @@ export const ItemLabel = styled.span`
 `;
 
 export const ItemBadge = styled.span`
-  background: rgba(220, 38, 38, 0.2);
-  color: #dc2626;
+  background: rgba(227, 30, 36, 0.15);
+  color: ${colors.primary};
   font-size: 11px;
-  font-weight: 600;
+  font-weight: ${typography.weights.semibold};
   padding: 2px 6px;
   border-radius: 10px;
   white-space: nowrap;
@@ -237,21 +247,21 @@ export const ItemArrow = styled.span`
 
 export const SidebarFooter = styled.div`
   display: flex;
-  gap: 8px;
+  gap: ${spacing.sm};
   padding: 12px 16px;
   border-top: 1px solid var(--border-color);
   background: var(--bg-primary);
 
   @media (prefers-color-scheme: dark) {
-    background: #1a1a2e;
-    border-color: #333333;
+    background: ${colors.background.dark};
+    border-color: ${colors.background.darkSecondary};
   }
 `;
 
 export const QuickActionButton = styled.button`
   width: 36px;
   height: 36px;
-  border-radius: 8px;
+  border-radius: ${radius.lg};
   background: transparent;
   border: 1px solid var(--border-color);
   color: var(--text-secondary);
@@ -259,7 +269,7 @@ export const QuickActionButton = styled.button`
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: ${transitions.hover};
   flex: 1;
 
   &:hover {

@@ -1,5 +1,6 @@
 import styled from 'styled-components';
 import { keyframes } from 'styled-components';
+import { colors, typography, transitions, radius, spacing } from '../styles/theme';
 
 const slideUp = keyframes`
   from {
@@ -34,8 +35,8 @@ export const ChatTrigger = styled.button<{ $expanded?: boolean }>`
   box-shadow: ${props => props.$expanded 
     ? '0 4px 12px rgba(0, 0, 0, 0.15)' 
     : '0 4px 20px rgba(37, 211, 102, 0.4)'};
-  transition: all 0.3s ease;
-  font-weight: 600;
+  transition: ${transitions.all};
+  font-weight: ${typography.weights.semibold};
   font-size: 0.9rem;
 
   &:hover {
@@ -48,7 +49,7 @@ export const ChatTrigger = styled.button<{ $expanded?: boolean }>`
 
 export const ChatLabel = styled.span`
   white-space: nowrap;
-  transition: all 0.3s ease;
+  transition: ${transitions.all};
 `;
 
 export const WhatsAppIconSmall = styled.svg`
@@ -63,7 +64,7 @@ export const ChatPopup = styled.div`
   right: 0;
   width: 340px;
   background: var(--card-bg, #ffffff);
-  border-radius: 16px;
+  border-radius: ${radius.xxl};
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
   overflow: hidden;
   animation: ${slideUp} 0.3s ease;
@@ -99,7 +100,7 @@ export const ChatAvatar = styled.img`
 export const ChatHeaderTitle = styled.h4`
   margin: 0;
   font-size: 0.95rem;
-  font-weight: 600;
+  font-weight: ${typography.weights.semibold};
 `;
 
 export const OnlineStatus = styled.div<{ $isOnline?: boolean }>`
@@ -142,7 +143,7 @@ export const ChatBody = styled.div`
 export const WelcomeMessage = styled.div`
   background: var(--bg-secondary, #f0f0f0);
   padding: 0.75rem;
-  border-radius: 12px;
+  border-radius: ${radius.xl};
   margin-bottom: 1rem;
 
   @media (prefers-color-scheme: dark) {
@@ -180,7 +181,7 @@ export const QuickMessageBtn = styled.button`
   font-size: 0.8rem;
   margin: 0.25rem 0.25rem 0.25rem 0;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: ${transitions.hover};
 
   @media (prefers-color-scheme: dark) {
     background: var(--bg-tertiary, #1a1a2e);
@@ -189,8 +190,8 @@ export const QuickMessageBtn = styled.button`
   }
 
   &:hover {
-    background: var(--primary-color, #c41e3a);
-    border-color: var(--primary-color, #c41e3a);
+    background: var(--primary-color, ${colors.primary});
+    border-color: var(--primary-color, ${colors.primary});
     color: white;
   }
 `;
@@ -208,7 +209,7 @@ export const MessageInput = styled.input`
   font-size: 0.85rem;
   color: var(--text-primary, #1a1a2e);
   background: var(--bg-secondary, #f0f0f0);
-  transition: all 0.2s ease;
+  transition: ${transitions.hover};
 
   @media (prefers-color-scheme: dark) {
     background: var(--bg-tertiary, #1a1a2e);
@@ -242,7 +243,7 @@ export const SendBtn = styled.button`
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.2s ease;
+  transition: ${transitions.hover};
 
   &:hover {
     background: #128C7E;
@@ -258,7 +259,7 @@ export const SendBtn = styled.button`
 export const ContactAppsContainer = styled.div`
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 8px;
+  gap: ${spacing.sm};
   margin-top: 12px;
 `;
 
@@ -266,16 +267,16 @@ export const ChatAppBtn = styled.button<{ $appColor?: string }>`
   padding: 10px;
   background: ${props => props.$appColor || '#25D366'};
   border: none;
-  border-radius: 8px;
+  border-radius: ${radius.lg};
   color: white;
   cursor: pointer;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 4px;
+  gap: ${spacing.xs};
   font-size: 0.75rem;
-  font-weight: 600;
-  transition: all 0.2s ease;
+  font-weight: ${typography.weights.semibold};
+  transition: ${transitions.hover};
 
   &:hover {
     transform: translateY(-2px);

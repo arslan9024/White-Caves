@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect, vi, beforeAll, beforeEach, afterAll, afterEach } from 'vitest';
 import { render, screen, waitFor, act } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import Toast from '../Toast';
@@ -13,18 +13,27 @@ const createToast = (overrides: Partial<ToastConfig> = {}): ToastConfig => ({
 });
 
 describe('Toast Component', () => {
+  beforeAll(() => {
+    vi.spyOn(console, 'error').mockImplementation(() => {});
+    vi.spyOn(console, 'warn').mockImplementation(() => {});
+  });
+
+  afterAll(() => {
+    vi.restoreAllMocks();
+  });
+
   describe('Rendering', () => {
     it('should render toast with message', () => {
       const toasts = [createToast({ message: 'Test message' })];
       render(<Toast toasts={toasts} onRemove={vi.fn()} />);
-      
+
       expect(screen.getByText('Test message')).toBeInTheDocument();
     });
 
     it('should render toast with description', () => {
       const toasts = [createToast({ message: 'Message', description: 'Description text' })];
       render(<Toast toasts={toasts} onRemove={vi.fn()} />);
-      
+
       expect(screen.getByText('Message')).toBeInTheDocument();
     });
   });
@@ -59,7 +68,7 @@ describe('Toast Component', () => {
     it('should render close button', () => {
       const toasts = [createToast()];
       render(<Toast toasts={toasts} onRemove={vi.fn()} />);
-      
+
       const closeButton = screen.queryByRole('button');
       if (closeButton) {
         expect(closeButton).toBeInTheDocument();
@@ -69,10 +78,8 @@ describe('Toast Component', () => {
     it('should call onRemove when close button is clicked', async () => {
       const handleRemove = vi.fn();
       const toasts = [createToast({ id: 'toast-1' })];
-      const { container } = render(
-        <Toast toasts={toasts} onRemove={handleRemove} />
-      );
-      
+      const { container } = render(<Toast toasts={toasts} onRemove={handleRemove} />);
+
       const closeButton = container.querySelector('button');
       if (closeButton) {
         closeButton.click();
@@ -96,7 +103,7 @@ describe('Toast Component', () => {
       const handleRemove = vi.fn();
       const toasts = [createToast({ id: 'toast-1', duration: 3000 })];
       render(<Toast toasts={toasts} onRemove={handleRemove} />);
-      
+
       // Advance past the main timeout (3000ms) - triggers setIsExiting(true)
       await act(async () => {
         vi.advanceTimersByTime(3000);
@@ -105,7 +112,7 @@ describe('Toast Component', () => {
       await act(async () => {
         vi.advanceTimersByTime(300);
       });
-      
+
       expect(handleRemove).toHaveBeenCalledWith('toast-1');
     });
 
@@ -113,9 +120,9 @@ describe('Toast Component', () => {
       const handleRemove = vi.fn();
       const toasts = [createToast({ duration: 0 })];
       render(<Toast toasts={toasts} onRemove={handleRemove} />);
-      
+
       vi.advanceTimersByTime(10000);
-      
+
       expect(handleRemove).not.toHaveBeenCalled();
     });
   });
@@ -123,15 +130,13 @@ describe('Toast Component', () => {
   describe('Position', () => {
     it('should support different positions', () => {
       const toasts = [createToast({ position: 'top-right' })];
-      const { container, rerender } = render(
-        <Toast toasts={toasts} onRemove={vi.fn()} />
-      );
-      
+      const { container, rerender } = render(<Toast toasts={toasts} onRemove={vi.fn()} />);
+
       expect(container.firstChild).toBeInTheDocument();
-      
+
       const bottomToasts = [createToast({ position: 'bottom-left' })];
       rerender(<Toast toasts={bottomToasts} onRemove={vi.fn()} />);
-      
+
       expect(container.firstChild).toBeInTheDocument();
     });
   });
@@ -140,7 +145,7 @@ describe('Toast Component', () => {
     it('should have role alert', () => {
       const toasts = [createToast({ type: 'warning' })];
       const { container } = render(<Toast toasts={toasts} onRemove={vi.fn()} />);
-      
+
       const toast = container.querySelector('[role="alert"]');
       expect(toast).toBeInTheDocument();
     });
@@ -148,7 +153,7 @@ describe('Toast Component', () => {
     it('should be announced to screen readers', () => {
       const toasts = [createToast({ message: 'Important message' })];
       const { container } = render(<Toast toasts={toasts} onRemove={vi.fn()} />);
-      
+
       const toast = container.querySelector('[role="alert"]');
       expect(toast?.textContent).toContain('Important message');
     });
@@ -161,7 +166,7 @@ describe('Toast Component', () => {
         createToast({ id: '2', message: 'Second toast' }),
       ];
       render(<Toast toasts={toasts} onRemove={vi.fn()} />);
-      
+
       expect(screen.getByText('First toast')).toBeInTheDocument();
       expect(screen.getByText('Second toast')).toBeInTheDocument();
     });
@@ -172,7 +177,7 @@ describe('Toast Component', () => {
         createToast({ id: '2', message: 'Top right 2', position: 'top-right' }),
       ];
       render(<Toast toasts={toasts} onRemove={vi.fn()} />);
-      
+
       expect(screen.getByText('Top right 1')).toBeInTheDocument();
       expect(screen.getByText('Top right 2')).toBeInTheDocument();
     });
@@ -183,7 +188,7 @@ describe('Toast Component', () => {
         createToast({ id: '2', message: 'Bottom right toast', position: 'bottom-right' }),
       ];
       render(<Toast toasts={toasts} onRemove={vi.fn()} />);
-      
+
       expect(screen.getByText('Top left toast')).toBeInTheDocument();
       expect(screen.getByText('Bottom right toast')).toBeInTheDocument();
     });
@@ -193,14 +198,14 @@ describe('Toast Component', () => {
     it('should render description text when provided', () => {
       const toasts = [createToast({ message: 'Title', description: 'Some extra detail' })];
       render(<Toast toasts={toasts} onRemove={vi.fn()} />);
-      
+
       expect(screen.getByText('Some extra detail')).toBeInTheDocument();
     });
 
     it('should not render description when not provided', () => {
       const toasts = [createToast({ message: 'Title only' })];
       const { container } = render(<Toast toasts={toasts} onRemove={vi.fn()} />);
-      
+
       // Only the message text should be present, no description
       expect(screen.getByText('Title only')).toBeInTheDocument();
     });
@@ -209,24 +214,28 @@ describe('Toast Component', () => {
   describe('Action Button', () => {
     it('should render action button when provided', () => {
       const actionFn = vi.fn();
-      const toasts = [createToast({
-        message: 'With action',
-        action: { label: 'Undo', onClick: actionFn },
-      })];
+      const toasts = [
+        createToast({
+          message: 'With action',
+          action: { label: 'Undo', onClick: actionFn },
+        }),
+      ];
       render(<Toast toasts={toasts} onRemove={vi.fn()} />);
-      
+
       expect(screen.getByText('Undo')).toBeInTheDocument();
     });
 
     it('should call action onClick when action button is clicked', async () => {
       const actionFn = vi.fn();
       const user = userEvent.setup();
-      const toasts = [createToast({
-        message: 'Undoable',
-        action: { label: 'Undo', onClick: actionFn },
-      })];
+      const toasts = [
+        createToast({
+          message: 'Undoable',
+          action: { label: 'Undo', onClick: actionFn },
+        }),
+      ];
       render(<Toast toasts={toasts} onRemove={vi.fn()} />);
-      
+
       await user.click(screen.getByText('Undo'));
       expect(actionFn).toHaveBeenCalled();
     });
@@ -234,7 +243,7 @@ describe('Toast Component', () => {
     it('should not render action button when not provided', () => {
       const toasts = [createToast({ message: 'No action' })];
       render(<Toast toasts={toasts} onRemove={vi.fn()} />);
-      
+
       // Only close button should exist
       const buttons = screen.getAllByRole('button');
       expect(buttons).toHaveLength(1); // Just the close button
@@ -242,16 +251,15 @@ describe('Toast Component', () => {
   });
 
   describe('All Positions', () => {
-    const positions: Array<'top-left' | 'top-center' | 'top-right' | 'bottom-left' | 'bottom-center' | 'bottom-right'> = [
-      'top-left', 'top-center', 'top-right',
-      'bottom-left', 'bottom-center', 'bottom-right',
-    ];
+    const positions: Array<
+      'top-left' | 'top-center' | 'top-right' | 'bottom-left' | 'bottom-center' | 'bottom-right'
+    > = ['top-left', 'top-center', 'top-right', 'bottom-left', 'bottom-center', 'bottom-right'];
 
     positions.forEach(position => {
       it(`should render toast in ${position}`, () => {
         const toasts = [createToast({ id: position, message: `Toast at ${position}`, position })];
         const { container } = render(<Toast toasts={toasts} onRemove={vi.fn()} />);
-        
+
         expect(screen.getByText(`Toast at ${position}`)).toBeInTheDocument();
       });
     });
@@ -271,16 +279,16 @@ describe('Toast Component', () => {
       const handleRemove = vi.fn();
       const toasts = [createToast({ id: 'cb-1', message: 'Closeable', onClose: onCloseFn })];
       const { container } = render(<Toast toasts={toasts} onRemove={handleRemove} />);
-      
+
       const closeButton = container.querySelector('button');
       if (closeButton) {
         closeButton.click();
-        
+
         // Wait for 300ms exit animation
         await act(async () => {
           vi.advanceTimersByTime(300);
         });
-        
+
         expect(onCloseFn).toHaveBeenCalled();
       }
     });
@@ -299,10 +307,10 @@ describe('Toast Component', () => {
       const handleRemove = vi.fn();
       const toasts = [createToast({ id: 'persistent', duration: 0, message: 'Stays forever' })];
       render(<Toast toasts={toasts} onRemove={handleRemove} />);
-      
+
       // Advance very far into the future
       vi.advanceTimersByTime(60000);
-      
+
       expect(handleRemove).not.toHaveBeenCalled();
       expect(screen.getByText('Stays forever')).toBeInTheDocument();
     });
@@ -321,14 +329,14 @@ describe('Toast Component', () => {
       const handleRemove = vi.fn();
       const toasts = [createToast({ id: 'default-timer' })];
       render(<Toast toasts={toasts} onRemove={handleRemove} />);
-      
+
       await act(async () => {
         vi.advanceTimersByTime(5000);
       });
       await act(async () => {
         vi.advanceTimersByTime(300);
       });
-      
+
       expect(handleRemove).toHaveBeenCalledWith('default-timer');
     });
   });
@@ -337,7 +345,7 @@ describe('Toast Component', () => {
     it('should have aria-label on close button', () => {
       const toasts = [createToast({ message: 'Accessible toast' })];
       render(<Toast toasts={toasts} onRemove={vi.fn()} />);
-      
+
       const closeButton = screen.getByLabelText('Close notification');
       expect(closeButton).toBeInTheDocument();
     });
@@ -345,7 +353,7 @@ describe('Toast Component', () => {
     it('should have title on close button', () => {
       const toasts = [createToast({ message: 'Titled toast' })];
       render(<Toast toasts={toasts} onRemove={vi.fn()} />);
-      
+
       const closeButton = screen.getByTitle('Close');
       expect(closeButton).toBeInTheDocument();
     });
@@ -354,7 +362,7 @@ describe('Toast Component', () => {
   describe('Empty Toasts', () => {
     it('should render nothing when toasts array is empty', () => {
       const { container } = render(<Toast toasts={[]} onRemove={vi.fn()} />);
-      
+
       // Should render empty fragment, no positioned containers
       expect(container.children.length).toBe(0);
     });
@@ -364,7 +372,7 @@ describe('Toast Component', () => {
     it('should show progress bar for timed toasts', () => {
       const toasts = [createToast({ duration: 3000, message: 'With progress' })];
       const { container } = render(<Toast toasts={toasts} onRemove={vi.fn()} />);
-      
+
       // Progress bar should exist (the ProgressBar styled component)
       expect(container.querySelector('[role="alert"]')).toBeInTheDocument();
     });
@@ -372,7 +380,7 @@ describe('Toast Component', () => {
     it('should not show progress bar for persistent toasts', () => {
       const toasts = [createToast({ duration: 0, message: 'No progress' })];
       render(<Toast toasts={toasts} onRemove={vi.fn()} />);
-      
+
       expect(screen.getByText('No progress')).toBeInTheDocument();
     });
   });

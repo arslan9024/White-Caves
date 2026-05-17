@@ -13,19 +13,23 @@ import sidebarReducer from './slices/sidebarSlice';
 import notificationReducer from './slices/notificationSlice';
 import whatsappReducer from './slices/whatsappSlice';
 import nadiaReducer from './slices/nadiaSlice';
+import lindaReducer from './slices/lindaSlice';
 import crmDataReducer from './crmDataSlice';
 import roleReducer from './roleSlice';
 import featuresReducer from './featuresSlice';
 import savedSearchesReducer from './slices/savedSearchesSlice';
+import homepageReducer from './slices/homepageSlice';
+import searchLeadsReducer from './slices/searchLeadsSlice';
+import crmViewReducer from './slices/crmViewSlice';
 import eventBusMiddleware from './middleware/eventBusMiddleware';
 import { createLogger } from '../utils/logger';
 
 const storeLog = createLogger('Store');
 
 // Wrap middleware in error handling
-const safeEventBusMiddleware: import('@reduxjs/toolkit').Middleware = (store) => {
-  return (next) => {
-    return (action) => {
+const safeEventBusMiddleware: import('@reduxjs/toolkit').Middleware = store => {
+  return next => {
+    return action => {
       try {
         return eventBusMiddleware(store)(next)(action);
       } catch (error) {
@@ -50,21 +54,25 @@ export const store = configureStore({
     notifications: notificationReducer,
     whatsapp: whatsappReducer,
     nadia: nadiaReducer,
+    linda: lindaReducer,
     crmData: crmDataReducer,
     role: roleReducer,
     features: featuresReducer,
     savedSearches: savedSearchesReducer,
+    homepage: homepageReducer,
+    searchLeads: searchLeadsReducer,
+    crmView: crmViewReducer,
   },
-  middleware: (getDefaultMiddleware) =>
+  middleware: getDefaultMiddleware =>
     getDefaultMiddleware({
       serializableCheck: {
-        ignoredPaths: ['aiAssistantDashboard', 'analytics']
+        ignoredPaths: ['aiAssistantDashboard', 'analytics'],
       },
       immutableStateInvariant: {
-        ignoredPaths: ['aiAssistantDashboard.notifications']
-      }
+        ignoredPaths: ['aiAssistantDashboard.notifications'],
+      },
     }).concat(safeEventBusMiddleware),
-  devTools: import.meta.env.DEV
+  devTools: import.meta.env.DEV,
 });
 
 // Export types

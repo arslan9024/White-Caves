@@ -95,8 +95,37 @@ export interface ContractsData {
   contracts?: Contract[];
 }
 
+export interface AnalyticsMetric {
+  label: string;
+  value: string;
+  change: string;
+  trend: 'up' | 'down';
+}
+
+export interface AnalyticsEmirateRevenue {
+  emirate: string;
+  revenue: number;
+  percentage: number;
+}
+
+export interface AnalyticsPropertyPerformance {
+  type: string;
+  views: number;
+  inquiries: number;
+  deals: number;
+}
+
+export interface AnalyticsTopAgent {
+  name: string;
+  deals: number;
+  revenue: number;
+}
+
 export interface AnalyticsData {
-  // Currently unused - component uses hardcoded data
+  metrics?: AnalyticsMetric[];
+  revenueByEmirate?: AnalyticsEmirateRevenue[];
+  propertyPerformance?: AnalyticsPropertyPerformance[];
+  topAgents?: AnalyticsTopAgent[];
   [key: string]: unknown;
 }
 

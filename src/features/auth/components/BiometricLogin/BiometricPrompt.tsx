@@ -3,6 +3,7 @@ import { useSelector } from 'react-redux';
 import type { RootState } from '../../../../store/store';
 import { useNavigate } from 'react-router-dom';
 import { createLogger } from '../../../../utils/logger';
+import { TIMING } from '../../../../constants';
 
 const log = createLogger('BiometricPrompt');
 import { 
@@ -48,7 +49,7 @@ const BiometricPrompt = ({ onClose }: BiometricPromptProps) => {
       
       if (!shownBefore) {
         sessionStorage.setItem(promptKey, 'true');
-        timerRef.current = setTimeout(() => setShow(true), 1500);
+        timerRef.current = setTimeout(() => setShow(true), TIMING.SIMULATED_API_DELAY);
       }
     };
 

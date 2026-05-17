@@ -1,0 +1,712 @@
+[
+  {
+    "_id": "6966df775a2dad4821944c23",
+    "employeeId": "WC-001",
+    "name": "Arslan Malik",
+    "email": "arslan@whitecaves.ae",
+    "department": "69628e8245cb93bb5db1d228",
+    "jobTitle": "Managing Director",
+    "level": "C-Suite",
+    "reportsTo": null,
+    "responsibilities": [
+      "Strategic Planning",
+      "Business Development",
+      "Investor Relations"
+    ],
+    "contact": {
+      "phone": "+97144567890",
+      "mobile": "+971501234567"
+    },
+    "employment": {
+      "type": "full-time",
+      "status": "active",
+      "hireDate": "2023-01-15T00:00:00.000Z"
+    },
+    "aiAssistant": "zoe",
+    "salary": {
+      "currency": "AED"
+    },
+    "photo": "/avatars/arslan-malik.jpg",
+    "skills": [],
+    "performance": {
+      "goals": []
+    },
+    "order": 0,
+    "certifications": [],
+    "createdAt": "2026-01-14T00:12:39.586Z",
+    "updatedAt": "2026-01-14T00:12:39.586Z",
+    "__v": 0
+  },
+  {
+    "_id": "6966df775a2dad4821944c25",
+    "employeeId": "WC-002",
+    "name": "Sarah Al Maktoum",
+    "email": "sarah@whitecaves.ae",
+    "department": "69628e8245cb93bb5db1d228",
+    "jobTitle": "Chief Operations Officer",
+    "level": "C-Suite",
+    "reportsTo": null,
+    "responsibilities": [
+      "Operations Management",
+      "Process Optimization",
+      "Team Leadership"
+    ],
+    "contact": {
+      "phone": "+97144567890",
+      "mobile": "+971501234567"
+    },
+    "employment": {
+      "type": "full-time",
+      "status": "active",
+      "hireDate": "2023-01-15T00:00:00.000Z"
+    },
+    "salary": {
+      "currency": "AED"
+    },
+    "photo": "/avatars/sarah-al-maktoum.jpg",
+    "skills": [],
+    "performance": {
+      "goals": []
+    },
+    "order": 0,
+    "certifications": [],
+    "createdAt": "2026-01-14T00:12:39.591Z",
+    "updatedAt": "2026-01-14T00:12:39.591Z",
+    "__v": 0
+  },
+  {
+    "_id": "6966df775a2dad4821944c27",
+    "employeeId": "WC-010",
+    "name": "Ahmed Hassan",
+    "email": "ahmed.h@whitecaves.ae",
+    "department": "69628e8245cb93bb5db1d230",
+    "jobTitle": "Sales Director",
+    "level": "Director",
+    "reportsTo": null,
+    "responsibilities": [
+      "Sales Strategy",
+      "Team Management",
+      "Key Accounts"
+    ],
+    "contact": {
+      "phone": "+97144567890",
+      "mobile": "+971501234567"
+    },
+    "employment": {
+      "type": "full-time",
+      "status": "active",
+      "hireDate": "2023-01-15T00:00:00.000Z"
+    },
+    "aiAssistant": "emma",
+    "salary": {
+      "currency": "AED"
+    },
+    "photo": "/avatars/ahmed-hassan.jpg",
+    "skills": [],
+    "performance": {
+      "goals": []
+    },
+    "order": 0,
+    "certifications": [],
+    "createdAt": "2026-01-14T00:12:39.593Z",
+    "updatedAt": "2026-01-14T00:12:39.593Z",
+    "__v": 0
+  },
+  {
+    "_id": "6966df775a2dad4821944c29",
+    "employeeId": "WC-011",
+    "name": "Fatima Al Rashid",
+    "email": "fatima@whitecaves.ae",
+    "department": "69628e8245cb93bb5db1d230",
+    "jobTitle": "Senior Sales Agent",
+    "level": "Senior",
+    "reportsTo": null,
+    "responsibilities": [
+      "Luxury Villa Sales",
+      "HNWI Clients",
+      "Palm Jumeirah Specialist"
+    ],
+    "contact": {
+      "phone": "+97144567890",
+      "mobile": "+971501234567"
+    },
+    "employment": {
+      "type": "full-time",
+      "status": "active",
+      "hireDate": "2023-01-15T00:00:00.000Z"
+    },
+    "salary": {
+      "currency": "AED"
+    },
+    "photo": "/avatars/fatima-al-rashid.jpg",
+    "skills": [],
+    "performance": {
+      "goals": []
+    },
+    "order": 0,
+    "certifications": [],
+    "createdAt": "2026-01-14T00:12:39.595Z",
+    "updatedAt": "2026-01-14T00:12:39.595Z",
+    "__v": 0
+  },
+  {
+    "_id": "6966df775a2dad4821944c2b",
+    "employeeId": "WC-012",
+    "name": "Michael Chen",
+    "email": "michael@whitecaves.ae",
+    "department": "69628e8245cb93bb5db1d230",
+    "jobTitle": "Sales Agent",
+    "level": "Mid",
+    "reportsTo": null,
+    "responsibilities": [
+      "Off-Plan Sales",
+      "International Clients",
+      "Dubai Marina Focus"
+    ],
+    "contact": {
+      "phone": "+97144567890",
+      "mobile": "+971501234567"
+    },
+    "employment": {
+      "type": "full-time",
+      "status": "active",
+      "hireDate": "2023-01-15T00:00:00.000Z"
+    },
+    "salary": {
+      "currency": "AED"
+    },
+    "photo": "/avatars/michael-chen.jpg",
+    "skills": [],
+    "performance": {
+      "goals": []
+    },
+    "order": 0,
+    "certifications": [],
+    "createdAt": "2026-01-14T00:12:39.597Z",
+    "updatedAt": "2026-01-14T00:12:39.597Z",
+    "__v": 0
+  },
+  {
+    "_id": "6966df775a2dad4821944c2d",
+    "employeeId": "WC-013",
+    "name": "Priya Sharma",
+    "email": "priya@whitecaves.ae",
+    "department": "69628e8245cb93bb5db1d230",
+    "jobTitle": "Sales Agent",
+    "level": "Mid",
+    "reportsTo": null,
+    "responsibilities": [
+      "Secondary Market",
+      "Investment Properties"
+    ],
+    "contact": {
+      "phone": "+97144567890",
+      "mobile": "+971501234567"
+    },
+    "employment": {
+      "type": "full-time",
+      "status": "active",
+      "hireDate": "2023-01-15T00:00:00.000Z"
+    },
+    "salary": {
+      "currency": "AED"
+    },
+    "photo": "/avatars/priya-sharma.jpg",
+    "skills": [],
+    "performance": {
+      "goals": []
+    },
+    "order": 0,
+    "certifications": [],
+    "createdAt": "2026-01-14T00:12:39.600Z",
+    "updatedAt": "2026-01-14T00:12:39.600Z",
+    "__v": 0
+  },
+  {
+    "_id": "6966df775a2dad4821944c2f",
+    "employeeId": "WC-014",
+    "name": "Omar Khalifa",
+    "email": "omar.k@whitecaves.ae",
+    "department": "69628e8245cb93bb5db1d230",
+    "jobTitle": "Junior Sales Agent",
+    "level": "Junior",
+    "reportsTo": null,
+    "responsibilities": [
+      "Lead Follow-up",
+      "Property Viewings",
+      "CRM Updates"
+    ],
+    "contact": {
+      "phone": "+97144567890",
+      "mobile": "+971501234567"
+    },
+    "employment": {
+      "type": "full-time",
+      "status": "active",
+      "hireDate": "2023-01-15T00:00:00.000Z"
+    },
+    "salary": {
+      "currency": "AED"
+    },
+    "photo": "/avatars/omar-khalifa.jpg",
+    "skills": [],
+    "performance": {
+      "goals": []
+    },
+    "order": 0,
+    "certifications": [],
+    "createdAt": "2026-01-14T00:12:39.602Z",
+    "updatedAt": "2026-01-14T00:12:39.602Z",
+    "__v": 0
+  },
+  {
+    "_id": "6966df775a2dad4821944c31",
+    "employeeId": "WC-020",
+    "name": "Nadia Hassan",
+    "email": "nadia@whitecaves.ae",
+    "department": null,
+    "jobTitle": "Leasing Manager",
+    "level": "Senior",
+    "reportsTo": null,
+    "responsibilities": [
+      "Leasing Strategy",
+      "Tenant Relations",
+      "Contract Negotiations"
+    ],
+    "contact": {
+      "phone": "+97144567890",
+      "mobile": "+971501234567"
+    },
+    "employment": {
+      "type": "full-time",
+      "status": "active",
+      "hireDate": "2023-01-15T00:00:00.000Z"
+    },
+    "aiAssistant": "daisy",
+    "salary": {
+      "currency": "AED"
+    },
+    "photo": "/avatars/nadia-hassan.jpg",
+    "skills": [],
+    "performance": {
+      "goals": []
+    },
+    "order": 0,
+    "certifications": [],
+    "createdAt": "2026-01-14T00:12:39.604Z",
+    "updatedAt": "2026-01-14T00:12:39.604Z",
+    "__v": 0
+  },
+  {
+    "_id": "6966df775a2dad4821944c33",
+    "employeeId": "WC-021",
+    "name": "Raj Patel",
+    "email": "raj@whitecaves.ae",
+    "department": null,
+    "jobTitle": "Leasing Agent",
+    "level": "Mid",
+    "reportsTo": null,
+    "responsibilities": [
+      "Residential Leasing",
+      "Tenant Screening",
+      "Ejari Processing"
+    ],
+    "contact": {
+      "phone": "+97144567890",
+      "mobile": "+971501234567"
+    },
+    "employment": {
+      "type": "full-time",
+      "status": "active",
+      "hireDate": "2023-01-15T00:00:00.000Z"
+    },
+    "salary": {
+      "currency": "AED"
+    },
+    "photo": "/avatars/raj-patel.jpg",
+    "skills": [],
+    "performance": {
+      "goals": []
+    },
+    "order": 0,
+    "certifications": [],
+    "createdAt": "2026-01-14T00:12:39.606Z",
+    "updatedAt": "2026-01-14T00:12:39.606Z",
+    "__v": 0
+  },
+  {
+    "_id": "6966df775a2dad4821944c35",
+    "employeeId": "WC-022",
+    "name": "Anna Petrova",
+    "email": "anna@whitecaves.ae",
+    "department": null,
+    "jobTitle": "Leasing Agent",
+    "level": "Mid",
+    "reportsTo": null,
+    "responsibilities": [
+      "Commercial Leasing",
+      "Office Spaces"
+    ],
+    "contact": {
+      "phone": "+97144567890",
+      "mobile": "+971501234567"
+    },
+    "employment": {
+      "type": "full-time",
+      "status": "active",
+      "hireDate": "2023-01-15T00:00:00.000Z"
+    },
+    "salary": {
+      "currency": "AED"
+    },
+    "photo": "/avatars/anna-petrova.jpg",
+    "skills": [],
+    "performance": {
+      "goals": []
+    },
+    "order": 0,
+    "certifications": [],
+    "createdAt": "2026-01-14T00:12:39.608Z",
+    "updatedAt": "2026-01-14T00:12:39.608Z",
+    "__v": 0
+  },
+  {
+    "_id": "6966df775a2dad4821944c37",
+    "employeeId": "WC-030",
+    "name": "David Kim",
+    "email": "david.k@whitecaves.ae",
+    "department": null,
+    "jobTitle": "Property Manager",
+    "level": "Senior",
+    "reportsTo": null,
+    "responsibilities": [
+      "Portfolio Management",
+      "Maintenance Oversight",
+      "Owner Relations"
+    ],
+    "contact": {
+      "phone": "+97144567890",
+      "mobile": "+971501234567"
+    },
+    "employment": {
+      "type": "full-time",
+      "status": "active",
+      "hireDate": "2023-01-15T00:00:00.000Z"
+    },
+    "aiAssistant": "nancy",
+    "salary": {
+      "currency": "AED"
+    },
+    "photo": "/avatars/david-kim.jpg",
+    "skills": [],
+    "performance": {
+      "goals": []
+    },
+    "order": 0,
+    "certifications": [],
+    "createdAt": "2026-01-14T00:12:39.610Z",
+    "updatedAt": "2026-01-14T00:12:39.610Z",
+    "__v": 0
+  },
+  {
+    "_id": "6966df775a2dad4821944c39",
+    "employeeId": "WC-031",
+    "name": "Layla Mansour",
+    "email": "layla@whitecaves.ae",
+    "department": null,
+    "jobTitle": "Property Coordinator",
+    "level": "Mid",
+    "reportsTo": null,
+    "responsibilities": [
+      "Maintenance Requests",
+      "Vendor Management",
+      "Inspections"
+    ],
+    "contact": {
+      "phone": "+97144567890",
+      "mobile": "+971501234567"
+    },
+    "employment": {
+      "type": "full-time",
+      "status": "active",
+      "hireDate": "2023-01-15T00:00:00.000Z"
+    },
+    "salary": {
+      "currency": "AED"
+    },
+    "photo": "/avatars/layla-mansour.jpg",
+    "skills": [],
+    "performance": {
+      "goals": []
+    },
+    "order": 0,
+    "certifications": [],
+    "createdAt": "2026-01-14T00:12:39.612Z",
+    "updatedAt": "2026-01-14T00:12:39.612Z",
+    "__v": 0
+  },
+  {
+    "_id": "6966df775a2dad4821944c3b",
+    "employeeId": "WC-040",
+    "name": "Emma Thompson",
+    "email": "emma.t@whitecaves.ae",
+    "department": null,
+    "jobTitle": "Marketing Manager",
+    "level": "Senior",
+    "reportsTo": null,
+    "responsibilities": [
+      "Digital Marketing",
+      "Brand Strategy",
+      "Lead Generation"
+    ],
+    "contact": {
+      "phone": "+97144567890",
+      "mobile": "+971501234567"
+    },
+    "employment": {
+      "type": "full-time",
+      "status": "active",
+      "hireDate": "2023-01-15T00:00:00.000Z"
+    },
+    "aiAssistant": "kate",
+    "salary": {
+      "currency": "AED"
+    },
+    "photo": "/avatars/emma-thompson.jpg",
+    "skills": [],
+    "performance": {
+      "goals": []
+    },
+    "order": 0,
+    "certifications": [],
+    "createdAt": "2026-01-14T00:12:39.614Z",
+    "updatedAt": "2026-01-14T00:12:39.614Z",
+    "__v": 0
+  },
+  {
+    "_id": "6966df775a2dad4821944c3d",
+    "employeeId": "WC-041",
+    "name": "Yusuf Al Ahmed",
+    "email": "yusuf@whitecaves.ae",
+    "department": null,
+    "jobTitle": "Content Specialist",
+    "level": "Mid",
+    "reportsTo": null,
+    "responsibilities": [
+      "Property Photography",
+      "Virtual Tours",
+      "Social Media"
+    ],
+    "contact": {
+      "phone": "+97144567890",
+      "mobile": "+971501234567"
+    },
+    "employment": {
+      "type": "full-time",
+      "status": "active",
+      "hireDate": "2023-01-15T00:00:00.000Z"
+    },
+    "salary": {
+      "currency": "AED"
+    },
+    "photo": "/avatars/yusuf-al-ahmed.jpg",
+    "skills": [],
+    "performance": {
+      "goals": []
+    },
+    "order": 0,
+    "certifications": [],
+    "createdAt": "2026-01-14T00:12:39.616Z",
+    "updatedAt": "2026-01-14T00:12:39.616Z",
+    "__v": 0
+  },
+  {
+    "_id": "6966df775a2dad4821944c3f",
+    "employeeId": "WC-050",
+    "name": "Jennifer Wong",
+    "email": "jennifer@whitecaves.ae",
+    "department": null,
+    "jobTitle": "Finance Director",
+    "level": "Director",
+    "reportsTo": null,
+    "responsibilities": [
+      "Financial Planning",
+      "Reporting",
+      "Compliance"
+    ],
+    "contact": {
+      "phone": "+97144567890",
+      "mobile": "+971501234567"
+    },
+    "employment": {
+      "type": "full-time",
+      "status": "active",
+      "hireDate": "2023-01-15T00:00:00.000Z"
+    },
+    "aiAssistant": "penny",
+    "salary": {
+      "currency": "AED"
+    },
+    "photo": "/avatars/jennifer-wong.jpg",
+    "skills": [],
+    "performance": {
+      "goals": []
+    },
+    "order": 0,
+    "certifications": [],
+    "createdAt": "2026-01-14T00:12:39.618Z",
+    "updatedAt": "2026-01-14T00:12:39.618Z",
+    "__v": 0
+  },
+  {
+    "_id": "6966df775a2dad4821944c41",
+    "employeeId": "WC-051",
+    "name": "Ali Ibrahim",
+    "email": "ali.i@whitecaves.ae",
+    "department": null,
+    "jobTitle": "Accountant",
+    "level": "Mid",
+    "reportsTo": null,
+    "responsibilities": [
+      "Invoicing",
+      "Commission Tracking",
+      "VAT Compliance"
+    ],
+    "contact": {
+      "phone": "+97144567890",
+      "mobile": "+971501234567"
+    },
+    "employment": {
+      "type": "full-time",
+      "status": "active",
+      "hireDate": "2023-01-15T00:00:00.000Z"
+    },
+    "salary": {
+      "currency": "AED"
+    },
+    "photo": "/avatars/ali-ibrahim.jpg",
+    "skills": [],
+    "performance": {
+      "goals": []
+    },
+    "order": 0,
+    "certifications": [],
+    "createdAt": "2026-01-14T00:12:39.620Z",
+    "updatedAt": "2026-01-14T00:12:39.620Z",
+    "__v": 0
+  },
+  {
+    "_id": "6966df775a2dad4821944c43",
+    "employeeId": "WC-060",
+    "name": "Sofia Rodriguez",
+    "email": "sofia@whitecaves.ae",
+    "department": "69628e8245cb93bb5db1d24c",
+    "jobTitle": "Legal Counsel",
+    "level": "Senior",
+    "reportsTo": null,
+    "responsibilities": [
+      "Contract Review",
+      "Legal Compliance",
+      "Dispute Resolution"
+    ],
+    "contact": {
+      "phone": "+97144567890",
+      "mobile": "+971501234567"
+    },
+    "employment": {
+      "type": "full-time",
+      "status": "active",
+      "hireDate": "2023-01-15T00:00:00.000Z"
+    },
+    "aiAssistant": "carl",
+    "salary": {
+      "currency": "AED"
+    },
+    "photo": "/avatars/sofia-rodriguez.jpg",
+    "skills": [],
+    "performance": {
+      "goals": []
+    },
+    "order": 0,
+    "certifications": [],
+    "createdAt": "2026-01-14T00:12:39.622Z",
+    "updatedAt": "2026-01-14T00:12:39.622Z",
+    "__v": 0
+  },
+  {
+    "_id": "6966df775a2dad4821944c45",
+    "employeeId": "WC-070",
+    "name": "Marcus Johnson",
+    "email": "marcus@whitecaves.ae",
+    "department": null,
+    "jobTitle": "HR Manager",
+    "level": "Senior",
+    "reportsTo": null,
+    "responsibilities": [
+      "Recruitment",
+      "Employee Relations",
+      "Training"
+    ],
+    "contact": {
+      "phone": "+97144567890",
+      "mobile": "+971501234567"
+    },
+    "employment": {
+      "type": "full-time",
+      "status": "active",
+      "hireDate": "2023-01-15T00:00:00.000Z"
+    },
+    "aiAssistant": "marcus",
+    "salary": {
+      "currency": "AED"
+    },
+    "photo": "/avatars/marcus-johnson.jpg",
+    "skills": [],
+    "performance": {
+      "goals": []
+    },
+    "order": 0,
+    "certifications": [],
+    "createdAt": "2026-01-14T00:12:39.624Z",
+    "updatedAt": "2026-01-14T00:12:39.624Z",
+    "__v": 0
+  },
+  {
+    "_id": "6966df775a2dad4821944c47",
+    "employeeId": "WC-080",
+    "name": "Alex Volkov",
+    "email": "alex@whitecaves.ae",
+    "department": "69628e8245cb93bb5db1d244",
+    "jobTitle": "Technology Lead",
+    "level": "Senior",
+    "reportsTo": null,
+    "responsibilities": [
+      "Platform Development",
+      "AI Integration",
+      "System Administration"
+    ],
+    "contact": {
+      "phone": "+97144567890",
+      "mobile": "+971501234567"
+    },
+    "employment": {
+      "type": "full-time",
+      "status": "active",
+      "hireDate": "2023-01-15T00:00:00.000Z"
+    },
+    "aiAssistant": "aurora",
+    "salary": {
+      "currency": "AED"
+    },
+    "photo": "/avatars/alex-volkov.jpg",
+    "skills": [],
+    "performance": {
+      "goals": []
+    },
+    "order": 0,
+    "certifications": [],
+    "createdAt": "2026-01-14T00:12:39.625Z",
+    "updatedAt": "2026-01-14T00:12:39.625Z",
+    "__v": 0
+  }
+]

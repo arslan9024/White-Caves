@@ -1,5 +1,4 @@
 /* CONSOLIDATED: Import base CRM styles to remove ~1.5KB duplicates */
-@import '../../../styles/crm-base.css';
 
 /* Mary-specific customizations - extends base .crm-* classes */
 
@@ -113,7 +112,7 @@
 
 .sort-order-btn:hover {
   background: var(--bg-hover, #f3f4f6);
-  color: var(--primary-color, #dc2626);
+  color: var(--primary-color, #e31e24);
 }
 
 /* Table Styles - CONSOLIDATED & OPTIMIZED */
@@ -225,7 +224,7 @@
 }
 
 .location-cell svg {
-  color: var(--primary-color, #dc2626);
+  color: var(--primary-color, #e31e24);
 }
 
 .specs-cell {
@@ -513,21 +512,21 @@
 }
 
 /* Dark Theme */
-[data-theme="dark"] .mary-crm-container {
+[data-theme='dark'] .mary-crm-container {
   background: var(--bg-primary, #0f172a);
 }
 
-[data-theme="dark"] .stat-card,
-[data-theme="dark"] .form-modal,
-[data-theme="dark"] .form-group input,
-[data-theme="dark"] .form-group select,
-[data-theme="dark"] .filter-group select {
+[data-theme='dark'] .stat-card,
+[data-theme='dark'] .form-modal,
+[data-theme='dark'] .form-group input,
+[data-theme='dark'] .form-group select,
+[data-theme='dark'] .filter-group select {
   background: var(--bg-card, #1e293b);
 }
 
-[data-theme="dark"] .inventory-stats,
-[data-theme="dark"] .inventory-table th,
-[data-theme="dark"] .form-modal-header {
+[data-theme='dark'] .inventory-stats,
+[data-theme='dark'] .inventory-table th,
+[data-theme='dark'] .form-modal-header {
   background: var(--bg-secondary, #1e293b);
 }
 
@@ -536,20 +535,20 @@
   .inventory-stats {
     flex-wrap: wrap;
   }
-  
+
   .stat-card {
     min-width: calc(50% - 8px);
   }
-  
+
   .inventory-filters {
     flex-direction: column;
     align-items: stretch;
   }
-  
+
   .inventory-filters .search-box {
     width: 100%;
   }
-  
+
   .filter-group {
     flex-wrap: wrap;
   }
@@ -560,16 +559,16 @@
     flex-direction: column;
     gap: 16px;
   }
-  
+
   .mary-actions {
     width: 100%;
     justify-content: center;
   }
-  
+
   .inventory-table-wrapper {
     overflow-x: scroll;
   }
-  
+
   .form-row {
     flex-direction: column;
   }
@@ -591,7 +590,6 @@
 .mary-action-btn.features.active {
   background: rgba(255, 255, 255, 0.25);
 }
-
 
 /* Import Modal Styles - CONSOLIDATED: Share pattern with form-modal */
 .import-modal-overlay {
@@ -663,7 +661,7 @@
 }
 
 .import-steps .step.active {
-  background: rgba(220, 38, 38, 0.1);
+  background: rgba(227, 30, 36, 0.1);
   color: var(--primary);
 }
 
@@ -716,7 +714,7 @@
 
 .upload-dropzone:hover {
   border-color: var(--primary);
-  background: rgba(220, 38, 38, 0.05);
+  background: rgba(227, 30, 36, 0.05);
 }
 
 .preview-section .import-info {
@@ -818,7 +816,7 @@
   align-items: center;
   gap: 8px;
   padding: 8px 12px;
-  background: rgba(220, 38, 38, 0.1);
+  background: rgba(227, 30, 36, 0.1);
   border-radius: 8px;
   color: var(--primary);
 }
@@ -838,14 +836,17 @@
 
 /* Spin animation */
 @keyframes spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .spin {
   animation: spin 1s linear infinite;
 }
-
 
 /* Additional styles for Redux-powered inventory */
 .active-filters {
@@ -860,7 +861,7 @@
   align-items: center;
   gap: 6px;
   padding: 6px 12px;
-  background: rgba(220, 38, 38, 0.1);
+  background: rgba(227, 30, 36, 0.1);
   border: 1px solid var(--primary);
   border-radius: 20px;
   color: var(--primary);
@@ -899,7 +900,7 @@
 
 .owner-card:hover {
   border-color: var(--primary);
-  background: rgba(220, 38, 38, 0.05);
+  background: rgba(227, 30, 36, 0.05);
 }
 
 .owner-info {
@@ -955,7 +956,6 @@
   border-bottom: 1px solid var(--border-color);
 }
 
-
 .filter-toggle-row {
   margin-bottom: 16px;
 }
@@ -977,7 +977,7 @@
 
 .filter-toggle-btn:hover,
 .filter-toggle-btn.active {
-  background: rgba(220, 38, 38, 0.1);
+  background: rgba(227, 30, 36, 0.1);
   border-color: var(--primary);
   color: var(--primary);
 }
@@ -1011,7 +1011,6 @@
   font-weight: 700;
   font-size: 16px;
 }
-
 
 /* Data Tools Section */
 .data-tools-section {
@@ -1085,16 +1084,16 @@
   .data-tools-section {
     margin: 8px;
   }
-  
+
   .tool-tabs {
     padding: 8px;
   }
-  
+
   .tool-tab {
     padding: 8px 12px;
     font-size: 0.8rem;
   }
-  
+
   .tool-content {
     padding: 8px;
   }
@@ -1247,5 +1246,179 @@
   .header-actions {
     margin-left: 0;
     width: 100%;
+  }
+}
+
+/* ─── Property Acquisition Tab ─────────────────────────────────────────── */
+
+.mary-acquisition-tab {
+  padding: 0 0 40px;
+}
+
+.acquisition-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.form-section {
+  border-top: 1px solid var(--border, #e5e7eb);
+  padding: 24px 0;
+}
+
+.form-section-title {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text, #1f2937);
+  margin-bottom: 16px;
+}
+
+.form-section-hint {
+  font-size: 12px;
+  color: var(--text-secondary, #6b7280);
+  margin-top: -10px;
+  margin-bottom: 14px;
+}
+
+.form-row {
+  display: grid;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.form-row-2 {
+  grid-template-columns: repeat(2, 1fr);
+}
+
+.form-row-3 {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.form-label {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text, #374151);
+}
+
+.form-input {
+  padding: 8px 12px;
+  border: 1px solid var(--border, #d1d5db);
+  border-radius: 6px;
+  font-size: 14px;
+  color: var(--text, #1f2937);
+  background: var(--input-bg, #fff);
+  transition: border-color 0.15s;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: #b8952a;
+  box-shadow: 0 0 0 2px rgba(184, 149, 42, 0.12);
+}
+
+.form-textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+.doc-checklist {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.doc-check-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+  cursor: pointer;
+  color: var(--text, #374151);
+}
+
+.doc-check-item input[type='checkbox'] {
+  width: 16px;
+  height: 16px;
+  accent-color: #b8952a;
+}
+
+.doc-flags-banner {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 10px 14px;
+  border-radius: 8px;
+  font-size: 13px;
+  margin-bottom: 16px;
+}
+
+.doc-flags-ok {
+  background: #d1fae5;
+  color: #065f46;
+  border: 1px solid #6ee7b7;
+}
+
+.doc-flags-warn {
+  background: #fef3cd;
+  color: #92400e;
+  border: 1px solid #f59e0b;
+}
+
+.acquisition-error {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #fee2e2;
+  border: 1px solid #f87171;
+  border-radius: 8px;
+  padding: 10px 14px;
+  color: #991b1b;
+  font-size: 13px;
+  margin-bottom: 12px;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  padding-top: 8px;
+}
+
+.acquisition-success {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  padding: 64px 24px;
+  text-align: center;
+}
+
+.acquisition-success h3 {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--text, #1f2937);
+}
+
+.acquisition-success p {
+  font-size: 15px;
+  color: var(--text-secondary, #6b7280);
+  max-width: 420px;
+}
+
+@media (max-width: 640px) {
+  .form-row-2,
+  .form-row-3 {
+    grid-template-columns: 1fr;
   }
 }

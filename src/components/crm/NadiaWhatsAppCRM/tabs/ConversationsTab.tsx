@@ -113,7 +113,7 @@ export const ConversationsTab: React.FC<ConversationsTabProps> = ({ data }) => {
           {selectedConversation ? (
             <>
               <div className="chat-header">
-                <img src={selectedConversation.contact.avatar} alt="Contact" className="contact-avatar" loading="lazy" width={40} height={40} />
+                <img src={selectedConversation.contact.avatar} alt={selectedConversation.contact.name} className="contact-avatar" loading="lazy" width={40} height={40} />
                 <div className="contact-info">
                   <h3>{selectedConversation.contact.name}</h3>
                   <span className="contact-status">{selectedConversation.contact.status}</span>

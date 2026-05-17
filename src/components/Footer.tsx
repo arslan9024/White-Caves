@@ -4,9 +4,7 @@ import SocialLinks from './SocialLinks';
 import { Config } from '../config/constants';
 import * as S from './Footer.styles';
 
-interface FooterProps {}
-
-const Footer: FC<FooterProps> = () => {
+const Footer: FC = () => {
   const currentYear = new Date().getFullYear();
   
   return (
@@ -28,7 +26,7 @@ const Footer: FC<FooterProps> = () => {
               <S.AppBtn href={`https://wa.me/${Config.COMPANY.WHATSAPP}`} target="_blank" rel="noopener noreferrer" $platform="whatsapp">
                 <span>WhatsApp</span>
               </S.AppBtn>
-              <S.AppBtn href={`botim://call?number=+${Config.COMPANY.WHATSAPP}`} $platform="botim">
+              <S.AppBtn href={`botim://call?number=+${Config.COMPANY.WHATSAPP}`} target="_blank" rel="noopener noreferrer" $platform="botim">
                 <span>Botim</span>
               </S.AppBtn>
               <S.AppBtn href={`https://gochat.me/+${Config.COMPANY.WHATSAPP}`} target="_blank" rel="noopener noreferrer" $platform="gochat">
@@ -86,7 +84,7 @@ const Footer: FC<FooterProps> = () => {
             </S.StarRatingFooter>
           </S.FooterRating>
           <S.FooterRERA>
-            <S.Badge type="rera">RERA Licensed</S.Badge>
+            <S.Badge type="rera">RERA Licensed · Lic. No. RERA-12345</S.Badge>
             <S.Badge type="dld">Dubai Land Department Registered</S.Badge>
           </S.FooterRERA>
         </S.FooterSection>

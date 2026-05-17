@@ -1,0 +1,101 @@
+**Prompt for Replit Agent:**
+
+**Part 1: AI Assistant Sidebar & Notification System Redesign**
+
+Convert the array of AI assistants into a persistent sidebar on the right screen edge. Each assistant displays as a compact tile showing:
+- Assistant avatar and name
+- Notification badge for pending actions
+- Status indicator (active/idle/busy)
+- Quick action button
+
+Implement a real-time notification system where user actions trigger updates in relevant assistant cards. When user performs action X, assistants Y and Z receive notification badges. Clicking an assistant tile opens their full dashboard in main view.
+
+Use Redux to manage:
+- Assistant sidebar state (collapsed/expanded)
+- Notification counts per assistant
+- User action to assistant mapping
+- Real-time updates via WebSocket/thunks
+
+**Part 2: Theodora Payment Message Generator**
+
+Upgrade Theodora to generate payment instruction messages for:
+1. QR Code payments (with integrated QR display)
+2. Cheque payment instructions
+3. Online transfer details (company bank account)
+
+Create reusable React components:
+- PaymentMethodSelector (QR/Cheque/Transfer)
+- BankDetailsDisplay
+- QRCodeGenerator
+- PaymentMessageComposer
+
+Store payment templates in Redux for quick reuse.
+
+**Part 3: Linda Agent Task Management**
+
+Add dropdown to Linda's dashboard showing all active agents. Each agent entry includes:
+- Agent name/ID
+- Current task status
+- Message quota/usage
+- Performance metrics
+
+Enable Linda to assign message-sending tasks to specific agents via this dropdown.
+
+**Part 4: Clara Lead Organization**
+
+Reorganize Clara's leads into two distinct categories:
+1. Rent Leads (with rental-specific fields)
+2. Sale Leads (with sale-specific fields)
+
+Create separate views/filters for each category while maintaining unified lead management.
+
+**Part 5: Mary Property Detail Viewer**
+
+Design a single property view container with:
+- Property image gallery
+- Detailed specifications grid
+- Owner/tenant information
+- Financial details
+- Activity timeline
+
+Ensure consistent design language across all property views.
+
+**Part 6: Nina WhatsApp Bot Manager**
+
+Add functionality to:
+1. Create new WhatsApp bots via QR code linking
+2. List existing bots with status
+3. Delete bots with confirmation
+4. Monitor bot device connections
+
+Implement QR code scanner/generator integration.
+
+**Part 7: Olivia Multi-Platform Property Integration**
+
+Create unified property adding feature that posts to:
+- Bayut
+- Property Finder
+- Dubizzle
+
+Single form with platform-specific field mapping. Store API credentials securely in Redux (encrypted).
+
+**Part 8: Nancy Job & Social Media Manager**
+
+Organize job positions with:
+- Job posting editor with rich text
+- Social media content generator
+- One-click posting to LinkedIn/Twitter/Facebook
+- Application tracking integration
+
+Add content templates and scheduling features.
+
+**Implementation Requirements:**
+- Use React functional components with hooks
+- Centralize all state in Redux store
+- Create reusable UI components for consistency
+- Implement proper error handling
+- Add loading states for all async operations
+- Ensure responsive design
+- Document all new features in Aurora
+- Maintain backward compatibility
+- Test all user flows thoroughly

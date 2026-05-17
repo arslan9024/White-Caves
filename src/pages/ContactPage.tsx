@@ -1,7 +1,28 @@
-import React, { FC, useState, useRef, useEffect, useCallback, ChangeEvent, FormEvent } from 'react';
+import React, { FC, useState, useRef, useEffect, ChangeEvent, FormEvent } from 'react';
+import { motion, Variants } from 'framer-motion';
+import { Phone, MessageCircle, Mail, MapPin } from 'lucide-react';
 import { useDocumentTitle } from '../hooks/useDocumentTitle';
-import { isValidEmail, isValidPhone, isRequired, isWithinLength, MAX_MESSAGE_LENGTH } from '../utils/validation';
+import {
+  isValidEmail,
+  isValidPhone,
+  isRequired,
+  isWithinLength,
+  MAX_MESSAGE_LENGTH,
+} from '../utils/validation';
+import { TIMING } from '../constants';
+import PublicLayout from '../components/layout/PublicLayout';
+import PageHeroBanner from '../components/layout/PageHeroBanner';
+import { authFetch } from '../utils/authFetch';
 import './ContactPage.css';
+
+const fadeUp: Variants = {
+  hidden: { opacity: 0, y: 32 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.52, ease: 'easeOut' } },
+};
+const stagger: Variants = {
+  hidden: {},
+  visible: { transition: { staggerChildren: 0.09 } },
+};
 
 // Type definitions
 interface ContactForm {
@@ -19,11 +40,29 @@ const ContactPage: FC = () => {
     email: '',
     phone: '',
     subject: '',
-    message: ''
+    message: '',
   });
   const [submitted, setSubmitted] = useState<boolean>(false);
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
   const [errors, setErrors] = useState<Partial<Record<keyof ContactForm, string>>>({});
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const mapSubjectToInquiryType = (subject: string): 'buy' | 'rent' | 'invest' | 'general' => {
+    switch (subject) {
+      case 'buy':
+      case 'offplan':
+        return 'buy';
+      case 'rent':
+      case 'landlord':
+        return 'rent';
+      case 'investment':
+      case 'sell':
+        return 'invest';
+      default:
+        return 'general';
+    }
+  };
 
   // Cleanup timeout on unmount to prevent state update on unmounted component
   useEffect(() => {
@@ -53,279 +92,416 @@ const ContactPage: FC = () => {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>): void => {
+  const handleChange = (
+    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
+  ): void => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
     // Clear field error on change
     if (errors[name as keyof ContactForm]) {
       setErrors(prev => ({ ...prev, [name]: undefined }));
     }
+    if (submitError) {
+      setSubmitError(null);
+    }
   };
 
-  const handleSubmit = (e: FormEvent<HTMLFormElement>): void => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>): Promise<void> => {
     e.preventDefault();
     if (!validate()) return;
-    setSubmitted(true);
-    // Clear any existing timer, then set a new one tracked by ref for cleanup
-    if (timerRef.current) clearTimeout(timerRef.current);
-    timerRef.current = setTimeout(() => setSubmitted(false), 5000);
-    setFormData({ name: '', email: '', phone: '', subject: '', message: '' });
-    setErrors({});
+
+    setIsSubmitting(true);
+    setSubmitError(null);
+
+    try {
+      const response = await authFetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: formData.name.trim(),
+          email: formData.email.trim(),
+          phone: formData.phone.trim() || undefined,
+          message: `[Contact Page — ${formData.subject}] ${formData.message.trim()}`,
+          inquiryType: mapSubjectToInquiryType(formData.subject),
+        }),
+      });
+
+      if (!response.ok) {
+        const data = (await response.json().catch(() => ({}))) as {
+          message?: string;
+          error?: string;
+        };
+        throw new Error(data.message ?? data.error ?? 'Failed to send message. Please try again.');
+      }
+
+      setSubmitted(true);
+      // Clear any existing timer, then set a new one tracked by ref for cleanup
+      if (timerRef.current) clearTimeout(timerRef.current);
+      timerRef.current = setTimeout(() => setSubmitted(false), TIMING.FORM_RESET_DELAY);
+      setFormData({ name: '', email: '', phone: '', subject: '', message: '' });
+      setErrors({});
+    } catch (error) {
+      const message =
+        error instanceof Error ? error.message : 'Failed to send message. Please try again.';
+      setSubmitError(message);
+      setSubmitted(false);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
-    <div className="contact-page">
-      <div className="contact-hero">
-        <div className="contact-hero-content">
-          <h1>Contact Us</h1>
-          <p>Get in touch with Dubai's premier luxury real estate experts</p>
-        </div>
-      </div>
+    <PublicLayout>
+      <div className="contact-page">
+        <PageHeroBanner
+          badge="Get in Touch"
+          title="Contact Us"
+          subtitle="Get in touch with Dubai's premier luxury real estate experts — we respond within 24 hours"
+          theme="dark"
+          breadcrumbs={[{ label: 'Contact' }]}
+        />
 
-      <div className="contact-container">
-        <div className="contact-grid">
-          <div className="contact-info-section">
-            <h2>White Caves Real Estate LLC</h2>
-            <p className="company-tagline">Your Gateway to Luxury Living in Dubai</p>
+        <div className="contact-container">
+          <div className="contact-grid">
+            {/* ── Contact info column ─────────────────────────────── */}
+            <motion.div
+              className="contact-info-section"
+              variants={fadeUp}
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true, margin: '-80px' }}
+            >
+              <span className="contact-section-tag">Reach Us</span>
+              <h2>White Caves Real Estate LLC</h2>
+              <p className="company-tagline">Your Gateway to Luxury Living in Dubai</p>
+              <div className="contact-divider" />
 
-            <div className="contact-cards">
-              <div className="contact-card">
-                <div className="contact-icon">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
-                    <circle cx="12" cy="10" r="3"/>
-                  </svg>
+              <motion.div
+                className="contact-cards"
+                variants={stagger}
+                initial="hidden"
+                whileInView="visible"
+                viewport={{ once: true }}
+              >
+                <div className="contact-card">
+                  <div className="contact-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+                      <circle cx="12" cy="10" r="3" />
+                    </svg>
+                  </div>
+                  <div className="contact-details">
+                    <h3>Office Address</h3>
+                    <p>Office D-72, El-Shaye-4</p>
+                    <p>Port Saeed, Deira</p>
+                    <p>Dubai, United Arab Emirates</p>
+                  </div>
                 </div>
-                <div className="contact-details">
-                  <h3>Office Address</h3>
-                  <p>Office D-72, El-Shaye-4</p>
-                  <p>Port Saeed, Deira</p>
-                  <p>Dubai, United Arab Emirates</p>
+
+                <div className="contact-card">
+                  <div className="contact-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
+                    </svg>
+                  </div>
+                  <div className="contact-details">
+                    <h3>Phone Numbers</h3>
+                    <p>
+                      <strong>Office:</strong> +971 56 361 6136
+                    </p>
+                    <p>
+                      <strong>Mobile:</strong> +971 56 361 6136
+                    </p>
+                    <p>
+                      <strong>WhatsApp:</strong> +971 56 361 6136
+                    </p>
+                  </div>
+                </div>
+
+                <div className="contact-card">
+                  <div className="contact-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
+                      <polyline points="22,6 12,13 2,6" />
+                    </svg>
+                  </div>
+                  <div className="contact-details">
+                    <h3>Email Addresses</h3>
+                    <p>
+                      <strong>General:</strong> admin@whitecaves.com
+                    </p>
+                    <p>
+                      <strong>Sales:</strong> sales@whitecaves.com
+                    </p>
+                    <p>
+                      <strong>Leasing:</strong> leasing@whitecaves.com
+                    </p>
+                  </div>
+                </div>
+
+                <div className="contact-card">
+                  <div className="contact-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <circle cx="12" cy="12" r="10" />
+                      <polyline points="12 6 12 12 16 14" />
+                    </svg>
+                  </div>
+                  <div className="contact-details">
+                    <h3>Business Hours</h3>
+                    <p>
+                      <strong>Monday - Friday:</strong> 9:00 AM - 6:00 PM
+                    </p>
+                    <p>
+                      <strong>Saturday:</strong> 10:00 AM - 4:00 PM
+                    </p>
+                    <p>
+                      <strong>Sunday:</strong> By Appointment Only
+                    </p>
+                  </div>
+                </div>
+
+                <div className="contact-card">
+                  <div className="contact-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <circle cx="12" cy="12" r="10" />
+                      <line x1="2" y1="12" x2="22" y2="12" />
+                      <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
+                    </svg>
+                  </div>
+                  <div className="contact-details">
+                    <h3>Online Presence</h3>
+                    <p>
+                      <strong>Website:</strong> www.whitecaves.com
+                    </p>
+                    <p>
+                      <strong>Instagram:</strong> @whitecaves.realestate
+                    </p>
+                    <p>
+                      <strong>LinkedIn:</strong> White Caves Real Estate
+                    </p>
+                  </div>
+                </div>
+
+                <div className="contact-card">
+                  <div className="contact-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+                      <line x1="16" y1="2" x2="16" y2="6" />
+                      <line x1="8" y1="2" x2="8" y2="6" />
+                      <line x1="3" y1="10" x2="21" y2="10" />
+                    </svg>
+                  </div>
+                  <div className="contact-details">
+                    <h3>License Information</h3>
+                    <p>
+                      <strong>RERA Certified</strong>
+                    </p>
+                    <p>
+                      <strong>DED Licensed</strong>
+                    </p>
+                    <p>
+                      <strong>Dubai Land Department Registered</strong>
+                    </p>
+                  </div>
+                </div>
+              </motion.div>
+
+              <div className="quick-links">
+                <h3>Quick Actions</h3>
+                <div className="quick-links-grid">
+                  <a href="tel:+971563616136" className="quick-link">
+                    <span className="quick-icon">
+                      <Phone size={18} />
+                    </span>
+                    Call Office
+                  </a>
+                  <a
+                    href="https://wa.me/971563616136"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="quick-link whatsapp"
+                  >
+                    <span className="quick-icon">
+                      <MessageCircle size={18} />
+                    </span>
+                    WhatsApp
+                  </a>
+                  <a href="mailto:admin@whitecaves.com" className="quick-link">
+                    <span className="quick-icon">
+                      <Mail size={18} />
+                    </span>
+                    Send Email
+                  </a>
+                  <a
+                    href="https://maps.google.com/?q=Port+Saeed+Dubai"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="quick-link"
+                  >
+                    <span className="quick-icon">
+                      <MapPin size={18} />
+                    </span>
+                    Get Directions
+                  </a>
                 </div>
               </div>
+            </motion.div>
 
-              <div className="contact-card">
-                <div className="contact-icon">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
-                  </svg>
-                </div>
-                <div className="contact-details">
-                  <h3>Phone Numbers</h3>
-                  <p><strong>Office:</strong> +971 56 361 6136</p>
-                  <p><strong>Mobile:</strong> +971 56 361 6136</p>
-                  <p><strong>WhatsApp:</strong> +971 56 361 6136</p>
-                </div>
-              </div>
+            <motion.div
+              className="contact-form-section"
+              variants={fadeUp}
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true, margin: '-60px' }}
+            >
+              <h2>Send Us a Message</h2>
+              <p>
+                Have a question or need assistance? Fill out the form below and we&apos;ll get back
+                to you within 24 hours.
+              </p>
 
-              <div className="contact-card">
-                <div className="contact-icon">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
-                    <polyline points="22,6 12,13 2,6"/>
-                  </svg>
+              {submitted && (
+                <div className="success-message">
+                  Thank you for your message! We&apos;ll get back to you shortly.
                 </div>
-                <div className="contact-details">
-                  <h3>Email Addresses</h3>
-                  <p><strong>General:</strong> admin@whitecaves.com</p>
-                  <p><strong>Sales:</strong> sales@whitecaves.com</p>
-                  <p><strong>Leasing:</strong> leasing@whitecaves.com</p>
+              )}
+
+              {submitError && (
+                <div className="field-error" role="alert" aria-live="polite">
+                  {submitError}
                 </div>
-              </div>
+              )}
 
-              <div className="contact-card">
-                <div className="contact-icon">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <circle cx="12" cy="12" r="10"/>
-                    <polyline points="12 6 12 12 16 14"/>
-                  </svg>
-                </div>
-                <div className="contact-details">
-                  <h3>Business Hours</h3>
-                  <p><strong>Monday - Friday:</strong> 9:00 AM - 6:00 PM</p>
-                  <p><strong>Saturday:</strong> 10:00 AM - 4:00 PM</p>
-                  <p><strong>Sunday:</strong> By Appointment Only</p>
-                </div>
-              </div>
-
-              <div className="contact-card">
-                <div className="contact-icon">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <circle cx="12" cy="12" r="10"/>
-                    <line x1="2" y1="12" x2="22" y2="12"/>
-                    <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
-                  </svg>
-                </div>
-                <div className="contact-details">
-                  <h3>Online Presence</h3>
-                  <p><strong>Website:</strong> www.whitecaves.com</p>
-                  <p><strong>Instagram:</strong> @whitecaves.realestate</p>
-                  <p><strong>LinkedIn:</strong> White Caves Real Estate</p>
-                </div>
-              </div>
-
-              <div className="contact-card">
-                <div className="contact-icon">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
-                    <line x1="16" y1="2" x2="16" y2="6"/>
-                    <line x1="8" y1="2" x2="8" y2="6"/>
-                    <line x1="3" y1="10" x2="21" y2="10"/>
-                  </svg>
-                </div>
-                <div className="contact-details">
-                  <h3>License Information</h3>
-                  <p><strong>RERA Certified</strong></p>
-                  <p><strong>DED Licensed</strong></p>
-                  <p><strong>Dubai Land Department Registered</strong></p>
-                </div>
-              </div>
-            </div>
-
-            <div className="quick-links">
-              <h3>Quick Actions</h3>
-              <div className="quick-links-grid">
-                <a href="tel:+971563616136" className="quick-link">
-                  <span className="quick-icon">📞</span>
-                  Call Office
-                </a>
-                <a href="https://wa.me/971563616136" target="_blank" rel="noopener noreferrer" className="quick-link whatsapp">
-                  <span className="quick-icon">💬</span>
-                  WhatsApp
-                </a>
-                <a href="mailto:admin@whitecaves.com" className="quick-link">
-                  <span className="quick-icon">✉️</span>
-                  Send Email
-                </a>
-                <a href="https://maps.google.com/?q=Port+Saeed+Dubai" target="_blank" rel="noopener noreferrer" className="quick-link">
-                  <span className="quick-icon">📍</span>
-                  Get Directions
-                </a>
-              </div>
-            </div>
-          </div>
-
-          <div className="contact-form-section">
-            <h2>Send Us a Message</h2>
-            <p>Have a question or need assistance? Fill out the form below and we'll get back to you within 24 hours.</p>
-
-            {submitted && (
-              <div className="success-message">
-                Thank you for your message! We'll get back to you shortly.
-              </div>
-            )}
-
-            <form onSubmit={handleSubmit} className="contact-form">
-              <div className="form-group">
-                <label htmlFor="name">Full Name *</label>
-                <input
-                  type="text"
-                  id="name"
-                  name="name"
-                  value={formData.name}
-                  onChange={handleChange}
-                  required
-                  placeholder="Enter your full name"
-                  aria-invalid={!!errors.name}
-                  aria-describedby={errors.name ? 'name-error' : undefined}
-                />
-                {errors.name && <span id="name-error" className="field-error" role="alert">{errors.name}</span>}
-              </div>
-
-              <div className="form-row">
+              <form onSubmit={handleSubmit} className="contact-form">
                 <div className="form-group">
-                  <label htmlFor="email">Email Address *</label>
+                  <label htmlFor="name">Full Name *</label>
                   <input
-                    type="email"
-                    id="email"
-                    name="email"
-                    value={formData.email}
+                    type="text"
+                    id="name"
+                    name="name"
+                    value={formData.name}
                     onChange={handleChange}
                     required
-                    placeholder="your@email.com"
-                    aria-invalid={!!errors.email}
-                    aria-describedby={errors.email ? 'email-error' : undefined}
+                    placeholder="Enter your full name"
+                    aria-invalid={!!errors.name}
+                    aria-describedby={errors.name ? 'name-error' : undefined}
                   />
-                  {errors.email && <span id="email-error" className="field-error" role="alert">{errors.email}</span>}
+                  {errors.name && (
+                    <span id="name-error" className="field-error" role="alert">
+                      {errors.name}
+                    </span>
+                  )}
                 </div>
+
+                <div className="form-row">
+                  <div className="form-group">
+                    <label htmlFor="email">Email Address *</label>
+                    <input
+                      type="email"
+                      id="email"
+                      name="email"
+                      value={formData.email}
+                      onChange={handleChange}
+                      required
+                      placeholder="your@email.com"
+                      aria-invalid={!!errors.email}
+                      aria-describedby={errors.email ? 'email-error' : undefined}
+                    />
+                    {errors.email && (
+                      <span id="email-error" className="field-error" role="alert">
+                        {errors.email}
+                      </span>
+                    )}
+                  </div>
+                  <div className="form-group">
+                    <label htmlFor="phone">Phone Number</label>
+                    <input
+                      type="tel"
+                      id="phone"
+                      name="phone"
+                      value={formData.phone}
+                      onChange={handleChange}
+                      placeholder="+971 XX XXX XXXX"
+                      aria-invalid={!!errors.phone}
+                      aria-describedby={errors.phone ? 'phone-error' : undefined}
+                    />
+                    {errors.phone && (
+                      <span id="phone-error" className="field-error" role="alert">
+                        {errors.phone}
+                      </span>
+                    )}
+                  </div>
+                </div>
+
                 <div className="form-group">
-                  <label htmlFor="phone">Phone Number</label>
-                  <input
-                    type="tel"
-                    id="phone"
-                    name="phone"
-                    value={formData.phone}
+                  <label htmlFor="subject">Subject *</label>
+                  <select
+                    id="subject"
+                    name="subject"
+                    value={formData.subject}
                     onChange={handleChange}
-                    placeholder="+971 XX XXX XXXX"
-                    aria-invalid={!!errors.phone}
-                    aria-describedby={errors.phone ? 'phone-error' : undefined}
-                  />
-                  {errors.phone && <span id="phone-error" className="field-error" role="alert">{errors.phone}</span>}
+                    required
+                  >
+                    <option value="">Select a subject</option>
+                    <option value="buy">Buying a Property</option>
+                    <option value="sell">Selling a Property</option>
+                    <option value="rent">Renting a Property</option>
+                    <option value="landlord">Landlord Services</option>
+                    <option value="investment">Investment Opportunities</option>
+                    <option value="offplan">Off-Plan Projects</option>
+                    <option value="career">Career Opportunities</option>
+                    <option value="other">Other Inquiry</option>
+                  </select>
                 </div>
-              </div>
 
-              <div className="form-group">
-                <label htmlFor="subject">Subject *</label>
-                <select
-                  id="subject"
-                  name="subject"
-                  value={formData.subject}
-                  onChange={handleChange}
-                  required
-                >
-                  <option value="">Select a subject</option>
-                  <option value="buy">Buying a Property</option>
-                  <option value="sell">Selling a Property</option>
-                  <option value="rent">Renting a Property</option>
-                  <option value="landlord">Landlord Services</option>
-                  <option value="investment">Investment Opportunities</option>
-                  <option value="offplan">Off-Plan Projects</option>
-                  <option value="career">Career Opportunities</option>
-                  <option value="other">Other Inquiry</option>
-                </select>
-              </div>
+                <div className="form-group">
+                  <label htmlFor="message">Message *</label>
+                  <textarea
+                    id="message"
+                    name="message"
+                    value={formData.message}
+                    onChange={handleChange}
+                    required
+                    rows={5}
+                    placeholder="Tell us how we can help you..."
+                  />
+                </div>
 
-              <div className="form-group">
-                <label htmlFor="message">Message *</label>
-                <textarea
-                  id="message"
-                  name="message"
-                  value={formData.message}
-                  onChange={handleChange}
-                  required
-                  rows={5}
-                  placeholder="Tell us how we can help you..."
-                />
-              </div>
-
-              <button type="submit" className="submit-btn">
-                Send Message
-              </button>
-            </form>
+                <button type="submit" className="submit-btn" disabled={isSubmitting}>
+                  {isSubmitting ? 'Sending…' : submitted ? 'Sent ✓' : 'Send Message'}
+                </button>
+              </form>
+            </motion.div>
           </div>
-        </div>
 
-        <div className="map-section">
-          <h2>Find Us</h2>
-          <div className="map-container">
-            <iframe
-              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3607.5678927463876!2d55.3367!3d25.2697!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMjXCsDE2JzEwLjkiTiA1NcKwMjAnMTIuMSJF!5e0!3m2!1sen!2sae!4v1234567890"
-              width="100%"
-              height="400"
-              style={{ border: 0 }}
-              allowFullScreen
-              loading="lazy"
-              referrerPolicy="no-referrer-when-downgrade"
-              title="White Caves Location"
-            />
-          </div>
-          <p className="map-address">
-            Office D-72, El-Shaye-4, Port Saeed, Deira, Dubai, UAE
-          </p>
+          <motion.div
+            className="map-section"
+            variants={fadeUp}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: '-60px' }}
+          >
+            <span className="contact-section-tag">Our Location</span>
+            <h2>Find Us</h2>
+            <div className="contact-divider" style={{ margin: '0.9rem 0 1.5rem' }} />
+            <div className="map-container">
+              <iframe
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3607.5678927463876!2d55.3367!3d25.2697!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMjXCsDE2JzEwLjkiTiA1NcKwMjAnMTIuMSJF!5e0!3m2!1sen!2sae!4v1234567890"
+                width="100%"
+                height="400"
+                style={{ border: 0 }}
+                allowFullScreen
+                loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
+                title="White Caves Location"
+              />
+            </div>
+            <p className="map-address">Office D-72, El-Shaye-4, Port Saeed, Deira, Dubai, UAE</p>
+          </motion.div>
         </div>
       </div>
-    </div>
+    </PublicLayout>
   );
-}
+};
 
 export default ContactPage;

@@ -23,15 +23,17 @@
 .loading-spinner {
   width: 50px;
   height: 50px;
-  border: 4px solid rgba(212, 175, 55, 0.2);
-  border-top-color: #E31E24;
+  border: 4px solid rgba(227, 30, 36, 0.2);
+  border-top-color: #e31e24;
   border-radius: 50%;
   animation: spin 1s linear infinite;
   margin-bottom: 20px;
 }
 
 @keyframes spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .error-icon {
@@ -85,7 +87,7 @@
 
 .contract-ref {
   font-weight: 600;
-  color: #E31E24 !important;
+  color: #e31e24 !important;
 }
 
 .note {
@@ -94,7 +96,7 @@
 }
 
 .home-btn {
-  background: #E31E24;
+  background: #e31e24;
   color: #000;
   border: none;
   padding: 12px 30px;
@@ -106,7 +108,7 @@
 }
 
 .home-btn:hover {
-  background: #D32F2F;
+  background: #b71c1c;
   transform: translateY(-2px);
 }
 
@@ -121,7 +123,7 @@
 
 .dark .sign-contract-container {
   background: rgba(30, 30, 50, 0.95);
-  border: 1px solid rgba(212, 175, 55, 0.2);
+  border: 1px solid rgba(227, 30, 36, 0.2);
 }
 
 .sign-header {
@@ -130,11 +132,11 @@
   align-items: center;
   padding: 25px 30px;
   background: linear-gradient(135deg, #1a1a2e 0%, #0a0a0f 100%);
-  border-bottom: 3px solid #E31E24;
+  border-bottom: 3px solid #e31e24;
 }
 
 .sign-header .logo h1 {
-  color: #E31E24;
+  color: #e31e24;
   font-size: 24px;
   margin: 0;
 }
@@ -154,7 +156,7 @@
 }
 
 .role-badge {
-  background: linear-gradient(135deg, #E31E24 0%, #D32F2F 100%);
+  background: linear-gradient(135deg, #e31e24 0%, #b71c1c 100%);
   color: #000;
   padding: 12px 20px;
   border-radius: 8px;
@@ -200,11 +202,11 @@
 }
 
 .summary-section h3 {
-  color: #E31E24;
+  color: #e31e24;
   font-size: 14px;
   margin: 0 0 12px;
   padding-bottom: 8px;
-  border-bottom: 1px solid rgba(212, 175, 55, 0.3);
+  border-bottom: 1px solid rgba(227, 30, 36, 0.3);
 }
 
 .summary-grid {
@@ -245,18 +247,18 @@
 
 .terms-acknowledgement {
   background: #fff8e6;
-  border: 1px solid #E31E24;
+  border: 1px solid #e31e24;
   border-radius: 12px;
   padding: 20px;
   margin-bottom: 25px;
 }
 
 .dark .terms-acknowledgement {
-  background: rgba(212, 175, 55, 0.1);
+  background: rgba(227, 30, 36, 0.1);
 }
 
 .terms-acknowledgement h3 {
-  color: #E31E24;
+  color: #e31e24;
   margin: 0 0 10px;
   font-size: 16px;
 }
@@ -294,7 +296,7 @@
 }
 
 .signature-section h3 {
-  color: #E31E24;
+  color: #e31e24;
   margin: 0 0 20px;
   font-size: 16px;
 }
@@ -370,7 +372,7 @@
 }
 
 .submit-signature-btn {
-  background: linear-gradient(135deg, #E31E24 0%, #D32F2F 100%);
+  background: linear-gradient(135deg, #e31e24 0%, #b71c1c 100%);
   color: #000;
   border: none;
   padding: 15px 50px;
@@ -383,7 +385,7 @@
 
 .submit-signature-btn:hover:not(:disabled) {
   transform: translateY(-2px);
-  box-shadow: 0 5px 20px rgba(212, 175, 55, 0.4);
+  box-shadow: 0 5px 20px rgba(227, 30, 36, 0.4);
 }
 
 .submit-signature-btn:disabled {
@@ -407,21 +409,21 @@
   .sign-contract-page {
     padding: 10px;
   }
-  
+
   .sign-header {
     flex-direction: column;
     gap: 10px;
     text-align: center;
   }
-  
+
   .sign-content {
     padding: 20px;
   }
-  
+
   .summary-grid {
     grid-template-columns: 1fr;
   }
-  
+
   .signature-canvas {
     height: 150px !important;
   }

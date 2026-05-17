@@ -1,0 +1,1698 @@
+# Implementation: Dynamic Sub-Navbar with Role-Based Dashboard Components
+
+I'll create a comprehensive solution for your real estate platform with a dynamic sub-navbar and reusable Redux components. Here's the complete implementation:
+
+## 1. First, update the Redux Store Structure
+
+**`src/store/uiSlice.ts`**
+```typescript
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+
+interface UISlice {
+  theme: 'light' | 'dark';
+  sidebarCollapsed: boolean;
+  currentModule: string;
+  currentSubModule: string;
+  activeDashboardTab: string;
+  userRole: 'buyer' | 'seller' | 'landlord' | 'agent_leasing' | 'agent_sales' | 'admin';
+}
+
+const initialState: UISlice = {
+  theme: 'light',
+  sidebarCollapsed: false,
+  currentModule: 'dashboard',
+  currentSubModule: 'overview',
+  activeDashboardTab: 'overview',
+  userRole: 'buyer' // Default role
+};
+
+const uiSlice = createSlice({
+  name: 'ui',
+  initialState,
+  reducers: {
+    toggleTheme: (state) => {
+      state.theme = state.theme === 'light' ? 'dark' : 'light';
+      document.documentElement.setAttribute('data-theme', state.theme);
+      localStorage.setItem('theme', state.theme);
+    },
+    setTheme: (state, action: PayloadAction<'light' | 'dark'>) => {
+      state.theme = action.payload;
+      document.documentElement.setAttribute('data-theme', action.payload);
+      localStorage.setItem('theme', action.payload);
+    },
+    toggleSidebar: (state) => {
+      state.sidebarCollapsed = !state.sidebarCollapsed;
+    },
+    setCurrentModule: (state, action: PayloadAction<string>) => {
+      state.currentModule = action.payload;
+    },
+    setCurrentSubModule: (state, action: PayloadAction<string>) => {
+      state.currentSubModule = action.payload;
+    },
+    setActiveDashboardTab: (state, action: PayloadAction<string>) => {
+      state.activeDashboardTab = action.payload;
+    },
+    setUserRole: (state, action: PayloadAction<UISlice['userRole']>) => {
+      state.userRole = action.payload;
+    }
+  }
+});
+
+export const {
+  toggleTheme,
+  setTheme,
+  toggleSidebar,
+  setCurrentModule,
+  setCurrentSubModule,
+  setActiveDashboardTab,
+  setUserRole
+} = uiSlice.actions;
+
+export default uiSlice.reducer;
+```
+
+## 2. Create Feature Registry for Dynamic Components
+
+**`src/features/featureRegistry.ts`**
+```typescript
+export type UserRole = 'buyer' | 'seller' | 'landlord' | 'agent_leasing' | 'agent_sales' | 'admin';
+export type PropertyArea = 'residential' | 'commercial' | 'industrial' | 'land' | 'mixed';
+
+export interface FeatureConfig {
+  id: string;
+  title: string;
+  description?: string;
+  icon?: string;
+  component: string; // Component name to load dynamically
+  allowedRoles: UserRole[];
+  allowedAreas?: PropertyArea[];
+  isDefault?: boolean;
+  dependencies?: string[];
+  order: number;
+}
+
+export interface SubNavItem {
+  id: string;
+  label: string;
+  icon?: string;
+  component: string;
+  roles: UserRole[];
+  areas?: PropertyArea[];
+  badgeCount?: number;
+  isActive?: boolean;
+}
+
+export interface DashboardModule {
+  id: string;
+  name: string;
+  description: string;
+  icon: string;
+  roles: UserRole[];
+  subNavItems: SubNavItem[];
+  defaultSubModule: string;
+}
+
+// Dashboard Modules Configuration
+export const DASHBOARD_MODULES: DashboardModule[] = [
+  {
+    id: 'buyer',
+    name: 'Buyer Dashboard',
+    description: 'Property search, saved properties, and viewing management',
+    icon: '🏠',
+    roles: ['buyer'],
+    defaultSubModule: 'overview',
+    subNavItems: [
+      { id: 'overview', label: 'Overview', icon: '📊', component: 'BuyerOverview', roles: ['buyer'] },
+      { id: 'saved', label: 'Saved Properties', icon: '💾', component: 'SavedProperties', roles: ['buyer'] },
+      { id: 'viewings', label: 'Viewings', icon: '👁️', component: 'ViewingSchedule', roles: ['buyer'], badgeCount: 3 },
+      { id: 'alerts', label: 'Price Alerts', icon: '🔔', component: 'PriceAlerts', roles: ['buyer'] },
+      { id: 'offers', label: 'My Offers', icon: '💰', component: 'BuyerOffers', roles: ['buyer'] },
+      { id: 'favorites', label: 'Favorites', icon: '⭐', component: 'FavoriteListings', roles: ['buyer'] }
+    ]
+  },
+  {
+    id: 'seller',
+    name: 'Seller Dashboard',
+    description: 'Manage listings, inquiries, and market insights',
+    icon: '🏢',
+    roles: ['seller'],
+    defaultSubModule: 'listings',
+    subNavItems: [
+      { id: 'listings', label: 'My Listings', icon: '📋', component: 'SellerListings', roles: ['seller'] },
+      { id: 'inquiries', label: 'Inquiries', icon: '📞', component: 'SellerInquiries', roles: ['seller'], badgeCount: 12 },
+      { id: 'market', label: 'Market Insights', icon: '📈', component: 'MarketInsights', roles: ['seller'] },
+      { id: 'offers', label: 'Received Offers', icon: '🤝', component: 'ReceivedOffers', roles: ['seller'] },
+      { id: 'analytics', label: 'Analytics', icon: '📊', component: 'SellerAnalytics', roles: ['seller'] }
+    ]
+  },
+  {
+    id: 'landlord',
+    name: 'Landlord Dashboard',
+    description: 'Property management, tenants, and financial tracking',
+    icon: '👑',
+    roles: ['landlord'],
+    defaultSubModule: 'properties',
+    subNavItems: [
+      { id: 'properties', label: 'Properties', icon: '🏘️', component: 'LandlordProperties', roles: ['landlord'] },
+      { id: 'tenants', label: 'Tenants', icon: '👥', component: 'TenantManagement', roles: ['landlord'] },
+      { id: 'maintenance', label: 'Maintenance', icon: '🔧', component: 'MaintenanceRequests', roles: ['landlord'], badgeCount: 5 },
+      { id: 'financial', label: 'Financial', icon: '💰', component: 'FinancialSummary', roles: ['landlord'] },
+      { id: 'leases', label: 'Leases', icon: '📝', component: 'LeaseManagement', roles: ['landlord'] }
+    ]
+  },
+  {
+    id: 'agent_sales',
+    name: 'Sales Agent Dashboard',
+    description: 'Sales pipeline, leads, and commission tracking',
+    icon: '👔',
+    roles: ['agent_sales'],
+    defaultSubModule: 'pipeline',
+    subNavItems: [
+      { id: 'pipeline', label: 'Sales Pipeline', icon: '📊', component: 'SalesPipeline', roles: ['agent_sales'] },
+      { id: 'leads', label: 'Leads', icon: '🎯', component: 'SalesLeads', roles: ['agent_sales'], badgeCount: 8 },
+      { id: 'deals', label: 'Active Deals', icon: '🤝', component: 'ActiveDeals', roles: ['agent_sales'] },
+      { id: 'commission', label: 'Commission', icon: '💵', component: 'CommissionTracker', roles: ['agent_sales'] },
+      { id: 'performance', label: 'Performance', icon: '📈', component: 'AgentPerformance', roles: ['agent_sales'] }
+    ]
+  },
+  {
+    id: 'agent_leasing',
+    name: 'Leasing Agent Dashboard',
+    description: 'Property leasing, contracts, and tenant management',
+    icon: '🔑',
+    roles: ['agent_leasing'],
+    defaultSubModule: 'properties',
+    subNavItems: [
+      { id: 'properties', label: 'Properties', icon: '🏠', component: 'LeasingProperties', roles: ['agent_leasing'] },
+      { id: 'contracts', label: 'Contracts', icon: '📄', component: 'LeaseContracts', roles: ['agent_leasing'] },
+      { id: 'viewings', label: 'Viewings', icon: '👁️', component: 'LeasingViewings', roles: ['agent_leasing'], badgeCount: 7 },
+      { id: 'applications', label: 'Applications', icon: '📋', component: 'TenantApplications', roles: ['agent_leasing'] },
+      { id: 'renewals', label: 'Renewals', icon: '🔄', component: 'LeaseRenewals', roles: ['agent_leasing'] }
+    ]
+  },
+  {
+    id: 'admin',
+    name: 'Admin Dashboard',
+    description: 'System management, users, and analytics',
+    icon: '⚙️',
+    roles: ['admin'],
+    defaultSubModule: 'users',
+    subNavItems: [
+      { id: 'users', label: 'Users', icon: '👥', component: 'UserManagement', roles: ['admin'] },
+      { id: 'roles', label: 'Roles & Permissions', icon: '🔐', component: 'RoleManagement', roles: ['admin'] },
+      { id: 'analytics', label: 'Analytics', icon: '📊', component: 'AdminAnalytics', roles: ['admin'] },
+      { id: 'settings', label: 'Settings', icon: '⚙️', component: 'SystemSettings', roles: ['admin'] },
+      { id: 'audit', label: 'Audit Log', icon: '📝', component: 'AuditLog', roles: ['admin'] }
+    ]
+  }
+];
+
+// Feature Registry for dynamic component loading
+export const FEATURE_REGISTRY: Record<string, FeatureConfig> = {
+  // Buyer Features
+  'buyer.overview': {
+    id: 'buyer.overview',
+    title: 'Buyer Overview',
+    component: 'BuyerOverview',
+    allowedRoles: ['buyer'],
+    order: 1
+  },
+  'buyer.saved-properties': {
+    id: 'buyer.saved-properties',
+    title: 'Saved Properties',
+    component: 'SavedProperties',
+    allowedRoles: ['buyer'],
+    order: 2
+  },
+  // Seller Features
+  'seller.listings': {
+    id: 'seller.listings',
+    title: 'My Listings',
+    component: 'SellerListings',
+    allowedRoles: ['seller'],
+    order: 1
+  },
+  // Landlord Features
+  'landlord.properties': {
+    id: 'landlord.properties',
+    title: 'Property Management',
+    component: 'LandlordProperties',
+    allowedRoles: ['landlord'],
+    order: 1
+  },
+  // Agent Features
+  'agent.sales-pipeline': {
+    id: 'agent.sales-pipeline',
+    title: 'Sales Pipeline',
+    component: 'SalesPipeline',
+    allowedRoles: ['agent_sales'],
+    order: 1
+  },
+  // Admin Features
+  'admin.users': {
+    id: 'admin.users',
+    title: 'User Management',
+    component: 'UserManagement',
+    allowedRoles: ['admin'],
+    order: 1
+  }
+};
+
+export function getModulesByRole(role: UserRole): DashboardModule[] {
+  return DASHBOARD_MODULES.filter(module => module.roles.includes(role));
+}
+
+export function getSubNavItems(role: UserRole, moduleId?: string): SubNavItem[] {
+  const modules = getModulesByRole(role);
+  if (moduleId) {
+    const module = modules.find(m => m.id === moduleId);
+    return module?.subNavItems || [];
+  }
+  // Return subnav items for all modules of this role
+  return modules.flatMap(m => m.subNavItems);
+}
+
+export function getDefaultModule(role: UserRole): DashboardModule {
+  const modules = getModulesByRole(role);
+  return modules[0];
+}
+```
+
+## 3. Dynamic Sub-Navbar Component
+
+**`src/shared/components/layout/SubNavBar/SubNavBar.tsx`**
+```typescript
+import React from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { RootState } from '../../../store';
+import { setCurrentSubModule, setActiveDashboardTab } from '../../../store/uiSlice';
+import { getSubNavItems, SubNavItem } from '../../../features/featureRegistry';
+import './SubNavBar.css';
+
+interface SubNavBarProps {
+  moduleId?: string;
+  onSubModuleChange?: (subModuleId: string) => void;
+}
+
+const SubNavBar: React.FC<SubNavBarProps> = ({ moduleId, onSubModuleChange }) => {
+  const dispatch = useDispatch();
+  const { userRole, currentSubModule } = useSelector((state: RootState) => ({
+    userRole: state.ui.userRole,
+    currentSubModule: state.ui.currentSubModule
+  }));
+
+  const subNavItems = getSubNavItems(userRole, moduleId);
+
+  const handleSubModuleClick = (subModule: SubNavItem) => {
+    dispatch(setCurrentSubModule(subModule.id));
+    dispatch(setActiveDashboardTab(subModule.id));
+    
+    if (onSubModuleChange) {
+      onSubModuleChange(subModule.id);
+    }
+  };
+
+  if (subNavItems.length === 0) return null;
+
+  return (
+    <div className="sub-navbar" data-theme="light">
+      <div className="sub-navbar-container">
+        <nav className="sub-navbar-nav">
+          {subNavItems.map((item) => (
+            <button
+              key={item.id}
+              className={`sub-nav-item ${currentSubModule === item.id ? 'active' : ''}`}
+              onClick={() => handleSubModuleClick(item)}
+              aria-label={item.label}
+              title={item.label}
+            >
+              <span className="sub-nav-icon">{item.icon}</span>
+              <span className="sub-nav-label">{item.label}</span>
+              {item.badgeCount && item.badgeCount > 0 && (
+                <span className="sub-nav-badge">{item.badgeCount}</span>
+              )}
+              {currentSubModule === item.id && (
+                <span className="sub-nav-indicator"></span>
+              )}
+            </button>
+          ))}
+        </nav>
+        
+        {/* Optional: Quick actions/buttons */}
+        <div className="sub-navbar-actions">
+          <button className="sub-nav-action-btn">
+            <span className="action-icon">⚡</span>
+            <span className="action-label">Quick Action</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default SubNavBar;
+```
+
+**`src/shared/components/layout/SubNavBar/SubNavBar.css`**
+```css
+.sub-navbar {
+  background: var(--bg-secondary);
+  border-bottom: 1px solid var(--border-color);
+  padding: 0;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  backdrop-filter: blur(10px);
+  transition: all 0.3s ease;
+}
+
+[data-theme="dark"] .sub-navbar {
+  background: rgba(30, 30, 40, 0.9);
+  border-bottom-color: var(--border-dark);
+}
+
+.sub-navbar-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 60px;
+}
+
+.sub-navbar-nav {
+  display: flex;
+  gap: 0.5rem;
+  overflow-x: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.sub-navbar-nav::-webkit-scrollbar {
+  display: none;
+}
+
+.sub-nav-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background: transparent;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+  white-space: nowrap;
+  color: var(--text-secondary);
+  font-weight: 500;
+  font-size: 0.875rem;
+}
+
+.sub-nav-item:hover {
+  background: var(--hover-bg);
+  color: var(--text-primary);
+  transform: translateY(-1px);
+}
+
+.sub-nav-item.active {
+  background: var(--primary-color);
+  color: white;
+  box-shadow: 0 4px 12px rgba(var(--primary-rgb), 0.3);
+}
+
+.sub-nav-item.active:hover {
+  background: var(--primary-dark);
+  transform: translateY(-1px);
+}
+
+.sub-nav-icon {
+  font-size: 1rem;
+  transition: transform 0.2s ease;
+}
+
+.sub-nav-item:hover .sub-nav-icon {
+  transform: scale(1.1);
+}
+
+.sub-nav-label {
+  font-weight: 500;
+}
+
+.sub-nav-badge {
+  background: var(--accent-color);
+  color: white;
+  font-size: 0.75rem;
+  padding: 0.15rem 0.4rem;
+  border-radius: 10px;
+  min-width: 1.25rem;
+  text-align: center;
+  font-weight: 600;
+}
+
+.sub-nav-indicator {
+  position: absolute;
+  bottom: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 4px;
+  height: 4px;
+  background: var(--accent-color);
+  border-radius: 50%;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+.sub-navbar-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.sub-nav-action-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 500;
+  font-size: 0.875rem;
+  transition: all 0.3s ease;
+}
+
+.sub-nav-action-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(var(--primary-rgb), 0.4);
+}
+
+.action-icon {
+  font-size: 1rem;
+  animation: bounce 2s infinite;
+}
+
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-2px); }
+}
+
+/* Responsive Design */
+@media (max-width: 992px) {
+  .sub-navbar-container {
+    padding: 0 1rem;
+  }
+  
+  .sub-nav-item {
+    padding: 0.5rem 0.75rem;
+  }
+  
+  .sub-nav-label {
+    display: none;
+  }
+  
+  .sub-nav-icon {
+    font-size: 1.2rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .sub-navbar {
+    position: fixed;
+    bottom: 0;
+    top: auto;
+    border-top: 1px solid var(--border-color);
+    border-bottom: none;
+  }
+  
+  .sub-navbar-container {
+    justify-content: center;
+    height: 56px;
+  }
+  
+  .sub-navbar-nav {
+    flex: 1;
+    justify-content: space-around;
+  }
+  
+  .sub-navbar-actions {
+    display: none;
+  }
+  
+  .sub-nav-indicator {
+    top: -6px;
+    bottom: auto;
+  }
+}
+
+@media (max-width: 480px) {
+  .sub-navbar-container {
+    padding: 0 0.5rem;
+  }
+  
+  .sub-nav-item {
+    padding: 0.5rem;
+  }
+}
+```
+
+## 4. Dynamic Component Loader
+
+**`src/shared/components/dynamic/DynamicComponentLoader.tsx`**
+```typescript
+import React, { Suspense, lazy, ComponentType } from 'react';
+import { useSelector } from 'react-redux';
+import { RootState } from '../../store';
+import { FEATURE_REGISTRY, UserRole } from '../../features/featureRegistry';
+
+// Import all dynamic components lazily
+const BuyerOverview = lazy(() => import('../../features/buyer/components/BuyerOverview'));
+const SavedProperties = lazy(() => import('../../features/buyer/components/SavedProperties'));
+const ViewingSchedule = lazy(() => import('../../features/buyer/components/ViewingSchedule'));
+const PriceAlerts = lazy(() => import('../../features/buyer/components/PriceAlerts'));
+const BuyerOffers = lazy(() => import('../../features/buyer/components/BuyerOffers'));
+const FavoriteListings = lazy(() => import('../../features/buyer/components/FavoriteListings'));
+
+const SellerListings = lazy(() => import('../../features/seller/components/SellerListings'));
+const SellerInquiries = lazy(() => import('../../features/seller/components/SellerInquiries'));
+const MarketInsights = lazy(() => import('../../features/seller/components/MarketInsights'));
+const ReceivedOffers = lazy(() => import('../../features/seller/components/ReceivedOffers'));
+const SellerAnalytics = lazy(() => import('../../features/seller/components/SellerAnalytics'));
+
+const LandlordProperties = lazy(() => import('../../features/landlord/components/LandlordProperties'));
+const TenantManagement = lazy(() => import('../../features/landlord/components/TenantManagement'));
+const MaintenanceRequests = lazy(() => import('../../features/landlord/components/MaintenanceRequests'));
+const FinancialSummary = lazy(() => import('../../features/landlord/components/FinancialSummary'));
+const LeaseManagement = lazy(() => import('../../features/landlord/components/LeaseManagement'));
+
+const SalesPipeline = lazy(() => import('../../features/agent/components/SalesPipeline'));
+const SalesLeads = lazy(() => import('../../features/agent/components/SalesLeads'));
+const ActiveDeals = lazy(() => import('../../features/agent/components/ActiveDeals'));
+const CommissionTracker = lazy(() => import('../../features/agent/components/CommissionTracker'));
+const AgentPerformance = lazy(() => import('../../features/agent/components/AgentPerformance'));
+
+const LeasingProperties = lazy(() => import('../../features/agent/components/LeasingProperties'));
+const LeaseContracts = lazy(() => import('../../features/agent/components/LeaseContracts'));
+const LeasingViewings = lazy(() => import('../../features/agent/components/LeasingViewings'));
+const TenantApplications = lazy(() => import('../../features/agent/components/TenantApplications'));
+const LeaseRenewals = lazy(() => import('../../features/agent/components/LeaseRenewals'));
+
+const UserManagement = lazy(() => import('../../features/admin/components/UserManagement'));
+const RoleManagement = lazy(() => import('../../features/admin/components/RoleManagement'));
+const AdminAnalytics = lazy(() => import('../../features/admin/components/AdminAnalytics'));
+const SystemSettings = lazy(() => import('../../features/admin/components/SystemSettings'));
+const AuditLog = lazy(() => import('../../features/admin/components/AuditLog'));
+
+// Component registry
+const COMPONENT_REGISTRY: Record<string, ComponentType> = {
+  // Buyer Components
+  'BuyerOverview': BuyerOverview,
+  'SavedProperties': SavedProperties,
+  'ViewingSchedule': ViewingSchedule,
+  'PriceAlerts': PriceAlerts,
+  'BuyerOffers': BuyerOffers,
+  'FavoriteListings': FavoriteListings,
+  
+  // Seller Components
+  'SellerListings': SellerListings,
+  'SellerInquiries': SellerInquiries,
+  'MarketInsights': MarketInsights,
+  'ReceivedOffers': ReceivedOffers,
+  'SellerAnalytics': SellerAnalytics,
+  
+  // Landlord Components
+  'LandlordProperties': LandlordProperties,
+  'TenantManagement': TenantManagement,
+  'MaintenanceRequests': MaintenanceRequests,
+  'FinancialSummary': FinancialSummary,
+  'LeaseManagement': LeaseManagement,
+  
+  // Agent Sales Components
+  'SalesPipeline': SalesPipeline,
+  'SalesLeads': SalesLeads,
+  'ActiveDeals': ActiveDeals,
+  'CommissionTracker': CommissionTracker,
+  'AgentPerformance': AgentPerformance,
+  
+  // Agent Leasing Components
+  'LeasingProperties': LeasingProperties,
+  'LeaseContracts': LeaseContracts,
+  'LeasingViewings': LeasingViewings,
+  'TenantApplications': TenantApplications,
+  'LeaseRenewals': LeaseRenewals,
+  
+  // Admin Components
+  'UserManagement': UserManagement,
+  'RoleManagement': RoleManagement,
+  'AdminAnalytics': AdminAnalytics,
+  'SystemSettings': SystemSettings,
+  'AuditLog': AuditLog
+};
+
+interface DynamicComponentLoaderProps {
+  componentName: string;
+  fallback?: React.ReactNode;
+}
+
+const DynamicComponentLoader: React.FC<DynamicComponentLoaderProps> = ({ 
+  componentName, 
+  fallback = <div className="loading-spinner">Loading...</div> 
+}) => {
+  const { userRole, currentSubModule } = useSelector((state: RootState) => ({
+    userRole: state.ui.userRole,
+    currentSubModule: state.ui.currentSubModule
+  }));
+
+  // Check if user has permission for this component
+  const hasPermission = (componentName: string, role: UserRole): boolean => {
+    const feature = Object.values(FEATURE_REGISTRY).find(
+      f => f.component === componentName
+    );
+    
+    if (!feature) return true; // If not in registry, allow access
+    
+    return feature.allowedRoles.includes(role);
+  };
+
+  const Component = COMPONENT_REGISTRY[componentName];
+
+  if (!Component) {
+    return <div className="error-message">Component "{componentName}" not found</div>;
+  }
+
+  if (!hasPermission(componentName, userRole)) {
+    return (
+      <div className="permission-denied">
+        <h3>Access Denied</h3>
+        <p>You don't have permission to view this component.</p>
+      </div>
+    );
+  }
+
+  return (
+    <Suspense fallback={fallback}>
+      <Component />
+    </Suspense>
+  );
+};
+
+export default DynamicComponentLoader;
+```
+
+## 5. Enhanced Dashboard Component with Sub-Navbar
+
+**`src/features/dashboard/components/Dashboard.tsx`**
+```typescript
+import React, { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { RootState } from '../../../store';
+import { setCurrentModule, setCurrentSubModule } from '../../../store/uiSlice';
+import { getDefaultModule, getModulesByRole } from '../../featureRegistry';
+import SubNavBar from '../../../shared/components/layout/SubNavBar/SubNavBar';
+import DynamicComponentLoader from '../../../shared/components/dynamic/DynamicComponentLoader';
+import RoleSwitcher from '../../../shared/components/role/RoleSwitcher';
+import './Dashboard.css';
+
+const Dashboard: React.FC = () => {
+  const dispatch = useDispatch();
+  const { 
+    userRole, 
+    currentModule, 
+    currentSubModule,
+    activeDashboardTab 
+  } = useSelector((state: RootState) => state.ui);
+
+  const modules = getModulesByRole(userRole);
+  const activeModule = modules.find(m => m.id === currentModule) || getDefaultModule(userRole);
+  const activeSubItem = activeModule.subNavItems.find(item => item.id === currentSubModule);
+
+  // Initialize dashboard on mount
+  useEffect(() => {
+    if (!currentModule || !modules.some(m => m.id === currentModule)) {
+      const defaultModule = getDefaultModule(userRole);
+      dispatch(setCurrentModule(defaultModule.id));
+      dispatch(setCurrentSubModule(defaultModule.defaultSubModule));
+    }
+  }, [userRole, currentModule, modules, dispatch]);
+
+  const handleModuleChange = (moduleId: string) => {
+    const module = modules.find(m => m.id === moduleId);
+    if (module) {
+      dispatch(setCurrentModule(module.id));
+      dispatch(setCurrentSubModule(module.defaultSubModule));
+    }
+  };
+
+  const handleSubModuleChange = (subModuleId: string) => {
+    dispatch(setCurrentSubModule(subModuleId));
+  };
+
+  return (
+    <div className="dashboard-container" data-theme="light">
+      {/* Dashboard Header */}
+      <header className="dashboard-header">
+        <div className="header-content">
+          <div className="header-title">
+            <h1>{activeModule.name}</h1>
+            <p className="header-description">{activeModule.description}</p>
+          </div>
+          
+          <div className="header-actions">
+            <RoleSwitcher />
+            <button className="action-button primary">
+              <span className="action-icon">+</span>
+              <span className="action-text">Add New</span>
+            </button>
+            <button className="action-button secondary">
+              <span className="action-icon">⚙️</span>
+              <span className="action-text">Settings</span>
+            </button>
+          </div>
+        </div>
+        
+        {/* Module Tabs */}
+        <div className="module-tabs">
+          {modules.map((module) => (
+            <button
+              key={module.id}
+              className={`module-tab ${currentModule === module.id ? 'active' : ''}`}
+              onClick={() => handleModuleChange(module.id)}
+            >
+              <span className="module-icon">{module.icon}</span>
+              <span className="module-name">{module.name}</span>
+              <span className="module-indicator"></span>
+            </button>
+          ))}
+        </div>
+      </header>
+
+      {/* Dynamic Sub-Navbar */}
+      <SubNavBar 
+        moduleId={currentModule}
+        onSubModuleChange={handleSubModuleChange}
+      />
+
+      {/* Main Content Area */}
+      <main className="dashboard-content">
+        <div className="content-wrapper">
+          {activeSubItem ? (
+            <DynamicComponentLoader componentName={activeSubItem.component} />
+          ) : (
+            <div className="no-content">
+              <h3>No component selected</h3>
+              <p>Please select a module from the navigation</p>
+            </div>
+          )}
+        </div>
+        
+        {/* Right Sidebar (Optional) */}
+        <aside className="dashboard-sidebar">
+          <div className="sidebar-card">
+            <h4>Quick Stats</h4>
+            <div className="stat-item">
+              <span className="stat-label">Active Items</span>
+              <span className="stat-value">24</span>
+            </div>
+            <div className="stat-item">
+              <span className="stat-label">Pending Actions</span>
+              <span className="stat-value">8</span>
+            </div>
+            <div className="stat-item">
+              <span className="stat-label">Messages</span>
+              <span className="stat-value">12</span>
+            </div>
+          </div>
+          
+          <div className="sidebar-card">
+            <h4>Recent Activity</h4>
+            <ul className="activity-list">
+              <li>New property added</li>
+              <li>Viewing scheduled</li>
+              <li>Offer received</li>
+            </ul>
+          </div>
+        </aside>
+      </main>
+    </div>
+  );
+};
+
+export default Dashboard;
+```
+
+## 6. Reusable Dashboard Components
+
+**`src/shared/components/dashboard/StatCard.tsx`**
+```typescript
+import React from 'react';
+import './StatCard.css';
+
+interface StatCardProps {
+  title: string;
+  value: string | number;
+  icon?: string;
+  change?: number;
+  trend?: 'up' | 'down' | 'neutral';
+  color?: 'primary' | 'success' | 'warning' | 'danger' | 'info';
+  onClick?: () => void;
+  className?: string;
+}
+
+const StatCard: React.FC<StatCardProps> = ({
+  title,
+  value,
+  icon,
+  change,
+  trend = 'neutral',
+  color = 'primary',
+  onClick,
+  className = ''
+}) => {
+  return (
+    <div 
+      className={`stat-card stat-card-${color} ${className} ${onClick ? 'clickable' : ''}`}
+      onClick={onClick}
+      role={onClick ? 'button' : 'article'}
+      tabIndex={onClick ? 0 : -1}
+    >
+      <div className="stat-card-header">
+        <h3 className="stat-card-title">{title}</h3>
+        {icon && <span className="stat-card-icon">{icon}</span>}
+      </div>
+      
+      <div className="stat-card-body">
+        <div className="stat-card-value">{value}</div>
+        
+        {change !== undefined && (
+          <div className={`stat-card-change trend-${trend}`}>
+            <span className="change-icon">
+              {trend === 'up' ? '↗' : trend === 'down' ? '↘' : '→'}
+            </span>
+            <span className="change-value">{Math.abs(change)}%</span>
+            <span className="change-label">{trend === 'up' ? 'increase' : 'decrease'}</span>
+          </div>
+        )}
+      </div>
+      
+      <div className="stat-card-footer">
+        <div className="stat-card-progress">
+          <div 
+            className="progress-bar" 
+            style={{ width: `${Math.min(100, Math.abs(change || 0))}%` }}
+          />
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default StatCard;
+```
+
+**`src/shared/components/dashboard/DataTable.tsx`**
+```typescript
+import React from 'react';
+import './DataTable.css';
+
+interface Column {
+  key: string;
+  label: string;
+  render?: (value: any, row: any) => React.ReactNode;
+  sortable?: boolean;
+  width?: string;
+}
+
+interface DataTableProps {
+  columns: Column[];
+  data: any[];
+  onRowClick?: (row: any) => void;
+  loading?: boolean;
+  emptyMessage?: string;
+  className?: string;
+}
+
+const DataTable: React.FC<DataTableProps> = ({
+  columns,
+  data,
+  onRowClick,
+  loading = false,
+  emptyMessage = 'No data available',
+  className = ''
+}) => {
+  const handleRowClick = (row: any) => {
+    if (onRowClick) {
+      onRowClick(row);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className={`data-table loading ${className}`}>
+        <div className="loading-spinner">Loading...</div>
+      </div>
+    );
+  }
+
+  if (data.length === 0) {
+    return (
+      <div className={`data-table empty ${className}`}>
+        <div className="empty-message">{emptyMessage}</div>
+      </div>
+    );
+  }
+
+  return (
+    <div className={`data-table ${className}`}>
+      <table>
+        <thead>
+          <tr>
+            {columns.map((column) => (
+              <th 
+                key={column.key} 
+                style={{ width: column.width }}
+                className={column.sortable ? 'sortable' : ''}
+              >
+                {column.label}
+                {column.sortable && <span className="sort-icon">⇅</span>}
+              </th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {data.map((row, index) => (
+            <tr 
+              key={index} 
+              onClick={() => handleRowClick(row)}
+              className={onRowClick ? 'clickable' : ''}
+            >
+              {columns.map((column) => (
+                <td key={column.key}>
+                  {column.render 
+                    ? column.render(row[column.key], row)
+                    : row[column.key]
+                  }
+                </td>
+              ))}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+};
+
+export default DataTable;
+```
+
+## 7. Role Switcher Component
+
+**`src/shared/components/role/RoleSwitcher.tsx`**
+```typescript
+import React, { useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { RootState } from '../../store';
+import { setUserRole, setCurrentModule, setCurrentSubModule } from '../../store/uiSlice';
+import { getDefaultModule } from '../../features/featureRegistry';
+import './RoleSwitcher.css';
+
+const ROLE_OPTIONS = [
+  { id: 'buyer', label: '👤 Buyer', icon: '🏠' },
+  { id: 'seller', label: '💼 Seller', icon: '🏢' },
+  { id: 'landlord', label: '👑 Landlord', icon: '🏘️' },
+  { id: 'agent_sales', label: '👔 Sales Agent', icon: '📊' },
+  { id: 'agent_leasing', label: '🔑 Leasing Agent', icon: '📝' },
+  { id: 'admin', label: '⚙️ Admin', icon: '🔧' }
+] as const;
+
+const RoleSwitcher: React.FC = () => {
+  const dispatch = useDispatch();
+  const currentRole = useSelector((state: RootState) => state.ui.userRole);
+  const [isOpen, setIsOpen] = useState(false);
+
+  const handleRoleChange = (roleId: string) => {
+    const role = roleId as RootState['ui']['userRole'];
+    dispatch(setUserRole(role));
+    
+    // Reset to default module for new role
+    const defaultModule = getDefaultModule(role);
+    dispatch(setCurrentModule(defaultModule.id));
+    dispatch(setCurrentSubModule(defaultModule.defaultSubModule));
+    
+    setIsOpen(false);
+  };
+
+  const currentRoleOption = ROLE_OPTIONS.find(opt => opt.id === currentRole);
+
+  return (
+    <div className="role-switcher">
+      <button 
+        className="role-switcher-toggle"
+        onClick={() => setIsOpen(!isOpen)}
+        aria-label="Switch role"
+        title="Switch User Role"
+      >
+        <span className="current-role-icon">{currentRoleOption?.icon}</span>
+        <span className="current-role-label">{currentRoleOption?.label}</span>
+        <span className={`dropdown-arrow ${isOpen ? 'open' : ''}`}>▼</span>
+      </button>
+      
+      {isOpen && (
+        <div className="role-switcher-dropdown">
+          {ROLE_OPTIONS.map((option) => (
+            <button
+              key={option.id}
+              className={`role-option ${currentRole === option.id ? 'active' : ''}`}
+              onClick={() => handleRoleChange(option.id)}
+            >
+              <span className="role-icon">{option.icon}</span>
+              <span className="role-label">{option.label}</span>
+              {currentRole === option.id && (
+                <span className="role-check">✓</span>
+              )}
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default RoleSwitcher;
+```
+
+## 8. CSS for Dashboard Components
+
+**`src/features/dashboard/components/Dashboard.css`**
+```css
+.dashboard-container {
+  min-height: 100vh;
+  background: var(--bg-primary);
+  transition: background-color 0.3s ease;
+}
+
+[data-theme="dark"] .dashboard-container {
+  background: var(--bg-dark);
+}
+
+.dashboard-header {
+  background: var(--bg-secondary);
+  border-bottom: 1px solid var(--border-color);
+  padding: 1.5rem 2rem;
+}
+
+[data-theme="dark"] .dashboard-header {
+  background: rgba(30, 30, 40, 0.8);
+  border-bottom-color: var(--border-dark);
+}
+
+.header-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1.5rem;
+  gap: 1rem;
+}
+
+.header-title h1 {
+  font-size: 1.75rem;
+  font-weight: 700;
+  margin: 0 0 0.5rem 0;
+  color: var(--text-primary);
+}
+
+.header-description {
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+  margin: 0;
+  max-width: 600px;
+}
+
+.header-actions {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.action-button {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.625rem 1.25rem;
+  border: none;
+  border-radius: 8px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.action-button.primary {
+  background: var(--primary-color);
+  color: white;
+}
+
+.action-button.primary:hover {
+  background: var(--primary-dark);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(var(--primary-rgb), 0.3);
+}
+
+.action-button.secondary {
+  background: var(--bg-tertiary);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+}
+
+.action-button.secondary:hover {
+  background: var(--hover-bg);
+  border-color: var(--primary-color);
+}
+
+.module-tabs {
+  display: flex;
+  gap: 0.5rem;
+  overflow-x: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.module-tabs::-webkit-scrollbar {
+  display: none;
+}
+
+.module-tab {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.25rem;
+  background: transparent;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+  color: var(--text-secondary);
+  font-weight: 500;
+  position: relative;
+}
+
+.module-tab:hover {
+  background: var(--hover-bg);
+  color: var(--text-primary);
+}
+
+.module-tab.active {
+  background: var(--primary-color);
+  color: white;
+  box-shadow: 0 4px 12px rgba(var(--primary-rgb), 0.2);
+}
+
+.module-tab.active:hover {
+  background: var(--primary-dark);
+}
+
+.module-icon {
+  font-size: 1.25rem;
+}
+
+.module-name {
+  font-size: 0.95rem;
+}
+
+.module-indicator {
+  position: absolute;
+  bottom: -4px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 3px;
+  background: var(--accent-color);
+  border-radius: 2px;
+  transition: width 0.3s ease;
+}
+
+.module-tab.active .module-indicator {
+  width: 60%;
+}
+
+.dashboard-content {
+  display: grid;
+  grid-template-columns: 1fr 300px;
+  gap: 1.5rem;
+  padding: 1.5rem 2rem;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.content-wrapper {
+  background: var(--bg-secondary);
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  min-height: 500px;
+}
+
+[data-theme="dark"] .content-wrapper {
+  background: rgba(30, 30, 40, 0.5);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.dashboard-sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.sidebar-card {
+  background: var(--bg-secondary);
+  border-radius: 12px;
+  padding: 1.25rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+[data-theme="dark"] .sidebar-card {
+  background: rgba(30, 30, 40, 0.5);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.sidebar-card h4 {
+  margin: 0 0 1rem 0;
+  color: var(--text-primary);
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.stat-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.stat-item:last-child {
+  border-bottom: none;
+}
+
+.stat-label {
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+}
+
+.stat-value {
+  color: var(--text-primary);
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+.activity-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.activity-list li {
+  padding: 0.5rem 0;
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.activity-list li:last-child {
+  border-bottom: none;
+}
+
+.no-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 400px;
+  color: var(--text-secondary);
+}
+
+.no-content h3 {
+  margin: 0 0 0.5rem 0;
+  color: var(--text-primary);
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+  .dashboard-content {
+    grid-template-columns: 1fr;
+  }
+  
+  .dashboard-sidebar {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+  }
+}
+
+@media (max-width: 992px) {
+  .dashboard-header,
+  .dashboard-content {
+    padding: 1rem;
+  }
+  
+  .header-content {
+    flex-direction: column;
+    gap: 1rem;
+  }
+  
+  .header-actions {
+    width: 100%;
+    justify-content: flex-start;
+  }
+}
+
+@media (max-width: 768px) {
+  .dashboard-sidebar {
+    grid-template-columns: 1fr;
+  }
+  
+  .action-button .action-text {
+    display: none;
+  }
+  
+  .action-button {
+    padding: 0.75rem;
+  }
+  
+  .module-tab .module-name {
+    display: none;
+  }
+  
+  .module-tab {
+    padding: 0.75rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .dashboard-header {
+    padding: 1rem 0.75rem;
+  }
+  
+  .dashboard-content {
+    padding: 0.75rem;
+  }
+  
+  .content-wrapper {
+    padding: 1rem;
+  }
+}
+```
+
+## 9. Example Component (Buyer Overview)
+
+**`src/features/buyer/components/BuyerOverview.tsx`**
+```typescript
+import React from 'react';
+import { useSelector } from 'react-redux';
+import { RootState } from '../../../store';
+import StatCard from '../../../shared/components/dashboard/StatCard';
+import DataTable from '../../../shared/components/dashboard/DataTable';
+import './BuyerOverview.css';
+
+const BuyerOverview: React.FC = () => {
+  const { theme } = useSelector((state: RootState) => state.ui);
+
+  const stats = [
+    {
+      title: 'Saved Properties',
+      value: 24,
+      icon: '💾',
+      change: 12,
+      trend: 'up' as const,
+      color: 'primary' as const
+    },
+    {
+      title: 'Scheduled Viewings',
+      value: 8,
+      icon: '👁️',
+      change: 3,
+      trend: 'up' as const,
+      color: 'success' as const
+    },
+    {
+      title: 'Active Offers',
+      value: 3,
+      icon: '💰',
+      change: -1,
+      trend: 'down' as const,
+      color: 'warning' as const
+    },
+    {
+      title: 'Price Alerts',
+      value: 15,
+      icon: '🔔',
+      change: 5,
+      trend: 'up' as const,
+      color: 'info' as const
+    }
+  ];
+
+  const recentProperties = [
+    {
+      id: 1,
+      property: '123 Main St',
+      price: '$750,000',
+      status: 'New',
+      savedDate: '2024-01-15',
+      actions: 'Schedule Viewing'
+    },
+    {
+      id: 2,
+      property: '456 Oak Ave',
+      price: '$650,000',
+      status: 'Price Drop',
+      savedDate: '2024-01-10',
+      actions: 'Make Offer'
+    },
+    {
+      id: 3,
+      property: '789 Pine Rd',
+      price: '$850,000',
+      status: 'Hot Deal',
+      savedDate: '2024-01-05',
+      actions: 'Contact Agent'
+    }
+  ];
+
+  const columns = [
+    { key: 'property', label: 'Property', width: '40%' },
+    { 
+      key: 'status', 
+      label: 'Status',
+      render: (value: string) => (
+        <span className={`status-badge status-${value.toLowerCase().replace(' ', '-')}`}>
+          {value}
+        </span>
+      )
+    },
+    { key: 'price', label: 'Price' },
+    { key: 'savedDate', label: 'Saved Date' },
+    { 
+      key: 'actions', 
+      label: 'Actions',
+      render: (value: string, row: any) => (
+        <button className="action-button small">
+          {value}
+        </button>
+      )
+    }
+  ];
+
+  return (
+    <div className="buyer-overview" data-theme={theme}>
+      <div className="overview-header">
+        <h2>Buyer Dashboard Overview</h2>
+        <p>Track your property search and manage viewings</p>
+      </div>
+
+      {/* Stats Grid */}
+      <div className="stats-grid">
+        {stats.map((stat, index) => (
+          <StatCard
+            key={index}
+            title={stat.title}
+            value={stat.value}
+            icon={stat.icon}
+            change={stat.change}
+            trend={stat.trend}
+            color={stat.color}
+            onClick={() => console.log(`Clicked ${stat.title}`)}
+          />
+        ))}
+      </div>
+
+      {/* Recent Properties */}
+      <div className="section">
+        <div className="section-header">
+          <h3>Recently Saved Properties</h3>
+          <button className="view-all-btn">View All →</button>
+        </div>
+        <DataTable
+          columns={columns}
+          data={recentProperties}
+          onRowClick={(row) => console.log('Row clicked:', row)}
+          className="property-table"
+        />
+      </div>
+
+      {/* Upcoming Viewings */}
+      <div className="section">
+        <h3>Upcoming Viewings</h3>
+        <div className="viewings-list">
+          <div className="viewing-item">
+            <div className="viewing-details">
+              <div className="property-name">123 Main St</div>
+              <div className="viewing-time">Tomorrow, 2:00 PM</div>
+              <div className="viewing-agent">Agent: John Smith</div>
+            </div>
+            <div className="viewing-actions">
+              <button className="btn-primary">Confirm</button>
+              <button className="btn-secondary">Reschedule</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default BuyerOverview;
+```
+
+## 10. Update App.tsx to Use New Structure
+
+**`src/App.tsx`**
+```typescript
+import React, { useEffect } from 'react';
+import { Provider, useDispatch } from 'react-redux';
+import { store } from './store';
+import Dashboard from './features/dashboard/components/Dashboard';
+import { setTheme } from './store/uiSlice';
+import './App.css';
+
+// Theme initialization
+const ThemeInitializer: React.FC = () => {
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    // Check for saved theme
+    const savedTheme = localStorage.getItem('theme') as 'light' | 'dark';
+    const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    
+    const initialTheme = savedTheme || (systemPrefersDark ? 'dark' : 'light');
+    dispatch(setTheme(initialTheme));
+    document.documentElement.setAttribute('data-theme', initialTheme);
+  }, [dispatch]);
+
+  return null;
+};
+
+function AppContent() {
+  return (
+    <div className="App">
+      <ThemeInitializer />
+      <Dashboard />
+    </div>
+  );
+}
+
+function App() {
+  return (
+    <Provider store={store}>
+      <AppContent />
+    </Provider>
+  );
+}
+
+export default App;
+```
+
+## 11. Store Configuration
+
+**`src/store/index.ts`**
+```typescript
+import { configureStore } from '@reduxjs/toolkit';
+import uiReducer from './uiSlice';
+import propertyReducer from '../features/properties/propertySlice';
+import userReducer from '../features/users/userSlice';
+import authReducer from '../features/auth/authSlice';
+
+export const store = configureStore({
+  reducer: {
+    ui: uiReducer,
+    properties: propertyReducer,
+    users: userReducer,
+    auth: authReducer
+  },
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware({
+      serializableCheck: {
+        ignoredActions: ['properties/addProperty', 'users/addUser'],
+        ignoredPaths: ['properties.entities', 'users.entities']
+      }
+    }),
+  devTools: process.env.NODE_ENV !== 'production'
+});
+
+export type RootState = ReturnType<typeof store.getState>;
+export type AppDispatch = typeof store.dispatch;
+```
+
+## Installation & Setup Instructions
+
+1. **Install required dependencies:**
+```bash
+npm install @reduxjs/toolkit react-redux
+npm install --save-dev @types/react-redux
+```
+
+2. **Update package.json for Node.js 18.x:**
+```json
+{
+  "engines": {
+    "node": "18.x"
+  }
+}
+```
+
+3. **Create .nvmrc file:**
+```
+18
+```
+
+4. **Run the application:**
+```bash
+npm start
+```
+
+## Key Features Implemented:
+
+1. **Dynamic Sub-Navbar**: Automatically shows different navigation items based on user role
+2. **Role-Based Component Loading**: Different components load for different user roles
+3. **Feature Registry**: Centralized configuration for all features and modules
+4. **Reusable Components**: StatCard, DataTable, RoleSwitcher, DynamicComponentLoader
+5. **Redux State Management**: Centralized state for UI, user roles, and module selection
+6. **Theme Support**: Light/dark theme with localStorage persistence
+7. **Responsive Design**: Works on all screen sizes
+8. **Dynamic Module Switching**: Users can switch between different dashboard modules
+9. **Permission Management**: Components check user permissions before rendering
+10. **Lazy Loading**: Components load on demand for better performance
+
+This architecture is highly scalable. You can add new modules by:
+1. Adding module configuration to `featureRegistry.ts`
+2. Creating component files in respective feature folders
+3. Registering the component in `DynamicComponentLoader.tsx`
+4. The system will automatically pick up the new module based on user roles
+
+The sub-navbar will automatically update to show the appropriate navigation items for each user role, and clicking on items will load the corresponding React components dynamically.
+

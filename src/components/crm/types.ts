@@ -287,7 +287,7 @@ export const ROLE_ACCESS_MATRIX: Record<UserRole, DashboardView[]> = {
   manager: ['department', 'sales', 'property', 'commission', 'leads', 'agent', 'office', 'performance'],
   finance: ['financial', 'commission', 'company'],
   operations: ['office', 'property', 'inventory'],
-  agent: ['sales', 'leads', 'agent', 'commission', 'client'],
+  agent: ['sales', 'leads', 'agent', 'commission', 'client', 'property', 'performance'],
   viewer: ['company', 'performance'],
   support: ['client', 'leads'],
 };

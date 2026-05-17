@@ -1,5 +1,9 @@
 import styled from 'styled-components';
 import { keyframes } from 'styled-components';
+import { transitions } from '../../../styles/theme/transitions';
+import { typography } from '../../../styles/theme/typography';
+import { radius } from '../../../styles/theme/radius';
+import { spacing } from '../../../styles/theme/spacing';
 
 const badgePulse = keyframes`
   0%, 100% { transform: scale(1); }
@@ -37,7 +41,7 @@ export const SidebarHeader = styled.div`
 export const CollapseButton = styled.button`
   width: 32px;
   height: 32px;
-  border-radius: 8px;
+  border-radius: ${radius.lg};
   background: rgba(255, 255, 255, 0.05);
   border: 1px solid rgba(255, 255, 255, 0.1);
   color: #94a3b8;
@@ -45,7 +49,7 @@ export const CollapseButton = styled.button`
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: ${transitions.hover};
   flex-shrink: 0;
 
   &:hover {
@@ -56,7 +60,7 @@ export const CollapseButton = styled.button`
 
 export const SidebarTitle = styled.div`
   font-size: 0.875rem;
-  font-weight: 600;
+  font-weight: ${typography.weights.semibold};
   color: #fff;
   flex: 1;
   white-space: nowrap;
@@ -93,12 +97,12 @@ export const DepartmentGroup = styled.div`
 
 export const DepartmentHeader = styled.div<{ $departmentColor?: string }>`
   font-size: 0.625rem;
-  font-weight: 700;
+  font-weight: ${typography.weights.bold};
   text-transform: uppercase;
   letter-spacing: 0.1em;
   color: #fff;
   padding: 0.25rem 0.75rem;
-  border-radius: 4px;
+  border-radius: ${radius.sm};
   margin-bottom: 0.25rem;
   opacity: 0.9;
   background: ${props => props.$departmentColor + '40' || 'rgba(255, 255, 255, 0.05)'};
@@ -117,9 +121,9 @@ export const AssistantTileContainer = styled.button<{ $active?: boolean; $tileCo
   padding: 0.625rem 0.75rem;
   background: ${props => props.$active ? `rgba(${props.$tileColor}, 0.15)` : 'rgba(255, 255, 255, 0.02)'};
   border: 1px solid ${props => props.$active ? `#${props.$tileColor}` : 'transparent'};
-  border-radius: 8px;
+  border-radius: ${radius.lg};
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: ${transitions.hover};
   width: 100%;
   text-align: left;
   position: relative;
@@ -161,7 +165,7 @@ export const TileInfo = styled.div`
 
 export const TileName = styled.span`
   font-size: 0.8125rem;
-  font-weight: 600;
+  font-weight: ${typography.weights.semibold};
   color: #fff;
   white-space: nowrap;
   overflow: hidden;
@@ -179,7 +183,7 @@ export const TileTitle = styled.span`
 export const TileAction = styled.button`
   width: 28px;
   height: 28px;
-  border-radius: 6px;
+  border-radius: ${radius.md};
   background: transparent;
   border: none;
   color: #64748b;
@@ -188,7 +192,7 @@ export const TileAction = styled.button`
   justify-content: center;
   cursor: pointer;
   opacity: 0;
-  transition: all 0.2s ease;
+  transition: ${transitions.hover};
   flex-shrink: 0;
 
   &:hover {
@@ -210,8 +214,8 @@ export const NotificationBadgeContainer = styled.div<{
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  font-weight: 700;
-  border-radius: 9999px;
+  font-weight: ${typography.weights.bold};
+  border-radius: ${radius.full};
   line-height: 1;
   
   ${props => {
@@ -248,7 +252,7 @@ export const NotificationBadgeContainer = styled.div<{
 export const SidebarFooter = styled.div`
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: ${spacing.sm};
   padding: 12px 16px;
   border-top: 1px solid rgba(255, 255, 255, 0.1);
   flex-shrink: 0;

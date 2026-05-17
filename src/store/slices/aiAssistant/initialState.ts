@@ -247,10 +247,10 @@ export const getInitialState = (): AIAssistantDashboardState => ({
       conversionRate: 0.23,
     },
     leadScoringRules: {
-      urgencyWeight: 0.3,
-      budgetWeight: 0.25,
-      engagementWeight: 0.25,
-      sourceWeight: 0.2,
+      engagementWeight: 0.4,
+      demographicWeight: 0.3,
+      behavioralWeight: 0.2,
+      sourceWeight: 0.1,
     },
   },
 

@@ -8,6 +8,7 @@ on:
 jobs:
   comprehensive-test-suite:
     runs-on: ubuntu-latest
+    timeout-minutes: 90
     
     steps:
       - uses: actions/checkout@v4
@@ -31,7 +32,7 @@ jobs:
         run: npx playwright install --with-deps
       
       - name: Run all E2E tests
-        run: npx playwright test --reporter=html
+        run: npm run test:e2e
       
       - name: Generate test report
         uses: actions/upload-artifact@v4
@@ -43,7 +44,8 @@ jobs:
       
       - name: Notify test results
         if: always()
-        uses: 8398a7/action-slack@v3
+        uses: 8398a7/action-slack@77eaa4f1c608a7d68b38af4e3f739dcd8cba273e
+        continue-on-error: true
         with:
           status: ${{ job.status }}
           text: |
@@ -53,6 +55,7 @@ jobs:
 
   dependency-audit:
     runs-on: ubuntu-latest
+    timeout-minutes: 25
     
     steps:
       - uses: actions/checkout@v4
@@ -72,14 +75,14 @@ jobs:
         continue-on-error: true
       
       - name: Security scanning with Snyk
-        uses: snyk/actions/node@master
+        uses: snyk/actions/node@9adf32b1121593767fc3c057af55b55db032dc04
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         continue-on-error: true
       
       - name: Notify security scan results
         if: always()
-        uses: 8398a7/action-slack@v3
+        uses: 8398a7/action-slack@77eaa4f1c608a7d68b38af4e3f739dcd8cba273e
         with:
           status: ${{ job.status }}
           text: 'Security audit and dependency check completed'
@@ -87,6 +90,7 @@ jobs:
 
   performance-benchmark:
     runs-on: ubuntu-latest
+    timeout-minutes: 45
     
     steps:
       - uses: actions/checkout@v4
@@ -107,7 +111,7 @@ jobs:
         run: npx playwright install --with-deps
       
       - name: Run performance baselines
-        run: npx playwright test e2e/performance-baseline.spec.ts --reporter=json > performance-results.json
+        run: npm run --silent test:e2e:performance:json > performance-results.json
         continue-on-error: true
       
       - name: Compare with baseline
@@ -123,7 +127,8 @@ jobs:
           retention-days: 90
       
       - name: Notify performance results
-        uses: 8398a7/action-slack@v3
+        uses: 8398a7/action-slack@77eaa4f1c608a7d68b38af4e3f739dcd8cba273e
+        continue-on-error: true
         with:
           status: ${{ job.status }}
           text: 'Performance benchmark complete - check artifacts'
@@ -131,6 +136,7 @@ jobs:
 
   code-quality-check:
     runs-on: ubuntu-latest
+    timeout-minutes: 35
     
     steps:
       - uses: actions/checkout@v4
@@ -156,14 +162,14 @@ jobs:
         run: npm run build
       
       - name: SonarQube scan
-        uses: SonarSource/sonarcloud-github-action@master
+        uses: SonarSource/sonarcloud-github-action@ffc3010689be73b8e5ae0c57ce35968afd7909e8
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         continue-on-error: true
       
       - name: Notify code quality results
-        uses: 8398a7/action-slack@v3
+        uses: 8398a7/action-slack@77eaa4f1c608a7d68b38af4e3f739dcd8cba273e
         with:
           status: ${{ job.status }}
           text: 'Code quality check complete'
@@ -171,6 +177,7 @@ jobs:
 
   accessibility-audit:
     runs-on: ubuntu-latest
+    timeout-minutes: 45
     
     steps:
       - uses: actions/checkout@v4
@@ -190,8 +197,8 @@ jobs:
       - name: Build application
         run: npm run build
       
-      - name: Run accessibility compliance tests
-        run: npx playwright test e2e/accessibility-compliance.spec.ts --reporter=html
+      - name: Run accessibility audit tests
+        run: npm run test:e2e:accessibility
         continue-on-error: true
       
       - name: Upload accessibility audit
@@ -203,7 +210,8 @@ jobs:
           retention-days: 90
       
       - name: Notify accessibility results
-        uses: 8398a7/action-slack@v3
+        uses: 8398a7/action-slack@77eaa4f1c608a7d68b38af4e3f739dcd8cba273e
+        continue-on-error: true
         with:
           status: ${{ job.status }}
           text: 'Accessibility audit complete'

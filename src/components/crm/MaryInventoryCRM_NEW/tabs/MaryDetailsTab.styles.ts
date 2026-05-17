@@ -1,4 +1,7 @@
 import styled from 'styled-components';
+import { theme } from '../../../../styles/theme';
+
+const { spacing, radius, shadows, transitions, colors, typography } = theme;
 
 export const MaryDetailsTabContainer = styled.div`
   padding: 0;
@@ -35,8 +38,8 @@ export const HeaderContent = styled.div`
 
   h3 {
     margin: 0;
-    font-size: 18px;
-    font-weight: 700;
+    font-size: ${typography.sizes.lg};
+    font-weight: ${typography.weights.bold};
     color: var(--text-primary, #1f2937);
 
     [data-theme='dark'] & {
@@ -46,8 +49,8 @@ export const HeaderContent = styled.div`
 `;
 
 export const HeaderSubtitle = styled.p`
-  margin: 4px 0 0 0;
-  font-size: 13px;
+  margin: ${spacing.xs} 0 0 0;
+  font-size: ${typography.sizes.sm};
   color: var(--text-secondary, #6b7280);
 
   [data-theme='dark'] & {
@@ -57,7 +60,7 @@ export const HeaderSubtitle = styled.p`
 
 export const DetailsViewTabs = styled.div`
   display: flex;
-  gap: 8px;
+  gap: ${spacing.sm};
   padding: 12px 20px;
   border-bottom: 1px solid var(--border-color);
   background: var(--bg-primary);
@@ -76,11 +79,11 @@ export const ViewTab = styled.button<{ $isActive: boolean }>`
   padding: 10px 16px;
   background: transparent;
   border: 1px solid transparent;
-  border-radius: 6px;
-  font-size: 14px;
-  font-weight: 500;
+  border-radius: ${radius.md};
+  font-size: ${typography.sizes.base};
+  font-weight: ${typography.weights.medium};
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: ${transitions.hover};
   white-space: nowrap;
   color: var(--text-secondary);
 
@@ -110,7 +113,7 @@ export const ViewTab = styled.button<{ $isActive: boolean }>`
       `
       background: var(--bg-secondary, #2a2a3e);
       color: white;
-      border-color: var(--primary, #dc2626);
+      border-color: var(--primary, ${colors.primary});
     `}
   }
 `;
@@ -144,7 +147,7 @@ export const DetailsViewContent = styled.div`
 export const GuideSection = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: ${spacing.lg};
 
   [data-theme='dark'] & {
   }
@@ -152,18 +155,18 @@ export const GuideSection = styled.div`
 
 export const InfoCard = styled.div`
   display: flex;
-  gap: 16px;
-  padding: 16px;
+  gap: ${spacing.md};
+  padding: ${spacing.md};
   background: var(--bg-secondary);
   border: 1px solid var(--border-color);
-  border-radius: 8px;
-  border-left: 4px solid #3b82f6;
+  border-radius: ${radius.lg};
+  border-left: 4px solid ${colors.info};
 
   h4 {
-    margin: 0 0 8px 0;
+    margin: 0 0 ${spacing.sm} 0;
     color: var(--text-primary);
     font-size: 15px;
-    font-weight: 600;
+    font-weight: ${typography.weights.semibold};
 
     [data-theme='dark'] & {
       color: white;
@@ -173,7 +176,7 @@ export const InfoCard = styled.div`
   p {
     margin: 0;
     color: var(--text-secondary);
-    font-size: 14px;
+    font-size: ${typography.sizes.base};
     line-height: 1.5;
 
     [data-theme='dark'] & {
@@ -183,7 +186,7 @@ export const InfoCard = styled.div`
 
   svg {
     flex-shrink: 0;
-    color: #3b82f6;
+    color: ${colors.info};
     margin-top: 2px;
   }
 
@@ -198,7 +201,7 @@ export const GuideContent = styled.div`
     margin: 0 0 12px 0;
     color: var(--text-primary);
     font-size: 15px;
-    font-weight: 600;
+    font-weight: ${typography.weights.semibold};
 
     &.mt-6 {
       margin-top: 24px;
@@ -220,7 +223,7 @@ export const GuideList = styled.ul`
 
   li {
     color: var(--text-secondary);
-    font-size: 14px;
+    font-size: ${typography.sizes.base};
     line-height: 1.5;
     padding-left: 24px;
     position: relative;
@@ -235,7 +238,7 @@ export const GuideList = styled.ul`
 
     strong {
       color: var(--text-primary);
-      font-weight: 600;
+      font-weight: ${typography.weights.semibold};
 
       [data-theme='dark'] & {
         color: white;
@@ -259,7 +262,7 @@ export const SelectedPropertySection = styled.div`
 export const PropertyDetails = styled.div`
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 16px;
+  gap: ${spacing.md};
 
   [data-theme='dark'] & {
   }
@@ -272,11 +275,11 @@ export const DetailGroup = styled.div`
   padding: 12px;
   background: var(--bg-secondary);
   border: 1px solid var(--border-color);
-  border-radius: 6px;
+  border-radius: ${radius.md};
 
   label {
-    font-size: 12px;
-    font-weight: 600;
+    font-size: ${typography.sizes.xs};
+    font-weight: ${typography.weights.semibold};
     color: var(--text-muted);
     text-transform: uppercase;
     letter-spacing: 0.5px;
@@ -288,8 +291,8 @@ export const DetailGroup = styled.div`
 
   > div,
   > p {
-    font-size: 14px;
-    font-weight: 500;
+    font-size: ${typography.sizes.base};
+    font-weight: ${typography.weights.medium};
     color: var(--text-primary);
 
     [data-theme='dark'] & {
@@ -305,16 +308,16 @@ export const DetailGroup = styled.div`
 
 export const StatusBadge = styled.span`
   display: inline-block;
-  padding: 4px 12px;
-  background: rgba(34, 197, 94, 0.1);
-  color: #22c55e;
-  border-radius: 6px;
-  font-size: 12px;
-  font-weight: 600;
+  padding: ${spacing.xs} ${radius.xl};
+  background: rgba(56, 142, 60, 0.1);
+  color: ${colors.success};
+  border-radius: ${radius.md};
+  font-size: ${typography.sizes.xs};
+  font-weight: ${typography.weights.semibold};
   text-transform: uppercase;
 
   [data-theme='dark'] & {
-    background: rgba(34, 197, 94, 0.2);
+    background: rgba(56, 142, 60, 0.2);
   }
 `;
 
@@ -324,11 +327,11 @@ export const OwnersList = styled.ul`
   margin: 0;
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: ${spacing.xs};
 
   li {
     color: var(--text-secondary);
-    font-size: 14px;
+    font-size: ${typography.sizes.base};
     padding-left: 16px;
     position: relative;
 
@@ -366,8 +369,8 @@ export const EmptyState = styled.div`
   h4 {
     margin: 0 0 8px 0;
     color: var(--text-primary);
-    font-size: 16px;
-    font-weight: 600;
+    font-size: ${typography.sizes.md};
+    font-weight: ${typography.weights.semibold};
 
     [data-theme='dark'] & {
       color: white;
@@ -377,7 +380,7 @@ export const EmptyState = styled.div`
   p {
     margin: 0;
     color: var(--text-secondary);
-    font-size: 14px;
+    font-size: ${typography.sizes.base};
     line-height: 1.5;
     max-width: 400px;
 
@@ -396,16 +399,16 @@ export const MatrixSection = styled.div`
 `;
 
 export const MatrixInfo = styled.div`
-  padding: 16px;
+  padding: ${spacing.md};
   background: var(--bg-secondary);
   border: 1px solid var(--border-color);
-  border-radius: 8px;
+  border-radius: ${radius.lg};
   margin-bottom: 20px;
 
   p {
     margin: 0;
     color: var(--text-secondary);
-    font-size: 14px;
+    font-size: ${typography.sizes.base};
 
     [data-theme='dark'] & {
       color: var(--text-secondary, #a0a0a0);
@@ -421,7 +424,7 @@ export const MatrixInfo = styled.div`
 export const ClustersContainer = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: ${spacing.lg};
 
   [data-theme='dark'] & {
   }
@@ -435,7 +438,7 @@ export const ClusterBlock = styled.div`
 export const ClusterTitle = styled.h4`
   margin: 0 0 12px 0;
   font-size: 15px;
-  font-weight: 600;
+  font-weight: ${typography.weights.semibold};
   color: var(--text-primary);
 
   [data-theme='dark'] & {
@@ -456,20 +459,20 @@ export const PropertyCard = styled.div<{ $isSelected: boolean }>`
   padding: 12px;
   background: var(--bg-secondary);
   border: 2px solid var(--border-color);
-  border-radius: 8px;
+  border-radius: ${radius.lg};
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: ${transitions.hover};
 
   ${props =>
     props.$isSelected &&
     `
     border-color: var(--primary);
-    background: rgba(var(--primary-rgb, 196, 30, 58), 0.05);
+    background: rgba(227, 30, 36, 0.05);
   `}
 
   &:hover {
     border-color: var(--primary);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    box-shadow: ${shadows.sm};
   }
 
   [data-theme='dark'] & {
@@ -477,15 +480,15 @@ export const PropertyCard = styled.div<{ $isSelected: boolean }>`
     border-color: var(--border-color, #3a3a5a);
 
     &:hover {
-      border-color: var(--primary, #dc2626);
+      border-color: var(--primary, ${colors.primary});
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
     }
 
     ${props =>
       props.$isSelected &&
       `
-      border-color: var(--primary, #dc2626);
-      background: rgba(220, 38, 38, 0.1);
+      border-color: var(--primary, ${colors.primary});
+      background: rgba(227, 30, 36, 0.08);
     `}
   }
 `;
@@ -495,15 +498,15 @@ export const CardHeader = styled.div`
   justify-content: space-between;
   align-items: flex-start;
   margin-bottom: 8px;
-  gap: 8px;
+  gap: ${spacing.sm};
 
   [data-theme='dark'] & {
   }
 `;
 
 export const PNumber = styled.span`
-  font-weight: 600;
-  font-size: 14px;
+  font-weight: ${typography.weights.semibold};
+  font-size: ${typography.sizes.base};
   color: var(--text-primary);
 
   [data-theme='dark'] & {
@@ -514,16 +517,16 @@ export const PNumber = styled.span`
 export const CardBody = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: ${spacing.xs};
   margin-bottom: 8px;
 
   p {
     margin: 0;
-    font-size: 12px;
+    font-size: ${typography.sizes.xs};
     color: var(--text-secondary);
 
     &.card-project {
-      font-weight: 500;
+      font-weight: ${typography.weights.medium};
       color: var(--text-primary);
 
       [data-theme='dark'] & {
@@ -546,7 +549,7 @@ export const CardFooter = styled.div`
   align-items: center;
   padding-top: 8px;
   border-top: 1px solid var(--border-color);
-  font-size: 12px;
+  font-size: ${typography.sizes.xs};
   color: var(--text-muted);
 
   [data-theme='dark'] & {
@@ -562,7 +565,7 @@ export const EmptyMatrix = styled.div`
 
   p {
     margin: 0;
-    font-size: 14px;
+    font-size: ${typography.sizes.base};
 
     [data-theme='dark'] & {
       color: var(--text-muted, #808080);

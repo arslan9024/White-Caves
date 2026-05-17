@@ -1,10 +1,10 @@
-import React from 'react';
 import { Users, TrendingUp, DollarSign, Target, Clock, ArrowUp, ArrowDown } from 'lucide-react';
 import { useSalesData } from './hooks/useSalesData';
 import PipelineTab from './tabs/PipelineTab';
 import DealsTab from './tabs/DealsTab';
 import AgentsTab from './tabs/AgentsTab';
 import ForecastingTab from './tabs/ForecastingTab';
+import AssistantLifecycleTab from '../shared/AssistantLifecycleTab';
 import '../AssistantDashboard.css';
 import './SophiaSalesCRM.css';
 
@@ -87,7 +87,7 @@ const SophiaSalesCRM = () => {
       </div>
 
       <div className="assistant-tabs">
-        {['pipeline', 'deals', 'agents', 'forecasting'].map(tab => (
+        {['pipeline', 'deals', 'agents', 'forecasting', 'lifecycle'].map(tab => (
           <button
             key={tab}
             className={`tab-btn ${activeTab === tab ? 'active' : ''}`}
@@ -123,6 +123,10 @@ const SophiaSalesCRM = () => {
 
         {activeTab === 'forecasting' && (
           <ForecastingTab />
+        )}
+
+        {activeTab === 'lifecycle' && (
+          <AssistantLifecycleTab assistantId="sophia" color="#8B5CF6" assistantName="Sophia" />
         )}
       </div>
     </div>

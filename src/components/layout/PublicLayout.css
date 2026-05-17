@@ -1,0 +1,51 @@
+/**
+ * PublicLayout.css
+ * Shared layout styles for all public pages
+ * Ensures: flex container, sticky footer, proper spacing
+ */
+
+.public-layout {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background-color: #ffffff;
+}
+
+.public-layout main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.public-layout__fallback-header {
+  padding: 1.5rem 2rem;
+  background: linear-gradient(135deg, #111827 0%, #0a0f1e 100%);
+  color: #ffffff;
+  font-size: 1.5rem;
+  font-weight: 600;
+  border-bottom: 1px solid rgba(220, 38, 38, 0.3);
+}
+
+.public-layout__fallback-footer {
+  padding: 2rem;
+  background: linear-gradient(180deg, #111827 0%, #0a0f1e 100%);
+  color: rgba(255, 255, 255, 0.7);
+  border-top: 3px solid transparent;
+  border-image: linear-gradient(90deg, #dc2626, #d97706) 1;
+  text-align: center;
+  font-size: 0.875rem;
+  margin-top: auto;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .public-layout__fallback-header {
+    padding: 1rem 1.5rem;
+    font-size: 1.25rem;
+  }
+
+  .public-layout__fallback-footer {
+    padding: 1.5rem;
+    font-size: 0.8125rem;
+  }
+}

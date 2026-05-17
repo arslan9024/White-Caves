@@ -30,6 +30,11 @@ vi.mock('./utils/logger.js', () => ({
   }),
 }));
 
+// Mock lead scoring middleware (Phase 4A)
+vi.mock('./services/ai/leadScoringMiddleware.js', () => ({
+  registerLeadScoringMiddleware: vi.fn(),
+}));
+
 import { prisma, connectDatabase, disconnectDatabase } from './database';
 
 // ─── Tests ──────────────────────────────────────────────────────────────

@@ -6,7 +6,7 @@
 
 import { Router, Request, Response } from 'express';
 import { asyncHandler, AppError } from '../middleware/errorHandler';
-import type { AuthRequest } from '../middleware/auth';
+
 import { prisma } from '../database.js';
 import { requirePermission } from '../middleware/rbac';
 
@@ -27,10 +27,14 @@ router.get(
     }
 
     const [
-      totalLeads, hotLeads, wonLeads,
-      totalProperties, availableProperties,
+      totalLeads,
+      hotLeads,
+      wonLeads,
+      totalProperties,
+      availableProperties,
       totalAgents,
-      totalCommissions, paidCommissions,
+      totalCommissions,
+      paidCommissions,
       recentActivities,
       pipelineValue,
     ] = await Promise.all([
@@ -69,7 +73,7 @@ router.get(
           paidCommissionValue: paidCommissions._sum.amount || 0,
           pipelineValue: pipelineValue._sum.budget || 0,
         },
-        recentActivities: recentActivities.map((a) => ({
+        recentActivities: recentActivities.map(a => ({
           id: a.id,
           type: a.type,
           action: a.action,
@@ -117,7 +121,7 @@ router.get(
 
     res.status(200).json({
       success: true,
-      data: activities.map((a) => ({
+      data: activities.map(a => ({
         id: a.id,
         type: a.type,
         action: a.action,
@@ -143,8 +147,10 @@ router.get(
       throw new AppError('Access denied — executive analytics requires manager or above role', 403);
     }
     const [
-      leadsByStatus, leadsBySource,
-      propertiesByStatus, propertiesByType,
+      leadsByStatus,
+      leadsBySource,
+      propertiesByStatus,
+      propertiesByType,
       commissionsByStatus,
       portfolioValue,
     ] = await Promise.all([
@@ -156,19 +162,33 @@ router.get(
       prisma.property.aggregate({ _sum: { price: true } }),
     ]);
 
-    const toMap = (arr: Array<{ _count: { _all: number }; [key: string]: unknown }>, keyField: string) => {
+    const toMap = (
+      arr: Array<{ _count: { _all: number }; [key: string]: unknown }>,
+      keyField: string
+    ) => {
       const map: Record<string, number> = {};
-      arr.forEach(item => { map[String(item[keyField])] = item._count._all; });
+      arr.forEach(item => {
+        // eslint-disable-next-line security/detect-object-injection
+        map[String(item[keyField])] = item._count._all;
+      });
       return map;
     };
 
     res.status(200).json({
       success: true,
       data: {
-        leads: { byStatus: toMap(leadsByStatus, 'status'), bySource: toMap(leadsBySource, 'source') },
-        properties: { byStatus: toMap(propertiesByStatus, 'status'), byType: toMap(propertiesByType, 'type') },
-        commissions: commissionsByStatus.map((c) => ({
-          status: c.status, count: c._count._all, totalValue: c._sum.amount || 0,
+        leads: {
+          byStatus: toMap(leadsByStatus, 'status'),
+          bySource: toMap(leadsBySource, 'source'),
+        },
+        properties: {
+          byStatus: toMap(propertiesByStatus, 'status'),
+          byType: toMap(propertiesByType, 'type'),
+        },
+        commissions: commissionsByStatus.map(c => ({
+          status: c.status,
+          count: c._count._all,
+          totalValue: c._sum.amount || 0,
         })),
         portfolioValue: portfolioValue._sum.price || 0,
       },
@@ -190,16 +210,14 @@ router.get(
     const thirtyDaysAgo = new Date();
     thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
 
-    const [
-      newLeads30d, wonDeals30d, newProperties30d,
-      totalRevenue, avgDealSize,
-    ] = await Promise.all([
-      prisma.lead.count({ where: { createdAt: { gte: thirtyDaysAgo } } }),
-      prisma.lead.count({ where: { status: 'won', updatedAt: { gte: thirtyDaysAgo } } }),
-      prisma.property.count({ where: { createdAt: { gte: thirtyDaysAgo } } }),
-      prisma.commission.aggregate({ where: { status: 'paid' }, _sum: { amount: true } }),
-      prisma.commission.aggregate({ where: { status: 'paid' }, _avg: { amount: true } }),
-    ]);
+    const [newLeads30d, wonDeals30d, newProperties30d, totalRevenue, avgDealSize] =
+      await Promise.all([
+        prisma.lead.count({ where: { createdAt: { gte: thirtyDaysAgo } } }),
+        prisma.lead.count({ where: { status: 'won', updatedAt: { gte: thirtyDaysAgo } } }),
+        prisma.property.count({ where: { createdAt: { gte: thirtyDaysAgo } } }),
+        prisma.commission.aggregate({ where: { status: 'paid' }, _sum: { amount: true } }),
+        prisma.commission.aggregate({ where: { status: 'paid' }, _avg: { amount: true } }),
+      ]);
 
     res.status(200).json({
       success: true,
@@ -211,6 +229,367 @@ router.get(
           newListings: newProperties30d,
           totalRevenue: totalRevenue._sum.amount || 0,
           avgDealSize: Math.round(avgDealSize._avg.amount || 0),
+        },
+      },
+    });
+  })
+);
+
+// ─── GET /api/dashboard/lead-funnel ─────────────────────────────────────
+// Lead conversion funnel: new → contacted → qualified → negotiating → won
+router.get(
+  '/lead-funnel',
+  requirePermission('view_analytics'),
+  asyncHandler(async (_req: Request, res: Response) => {
+    const stages = ['new', 'contacted', 'qualified', 'viewing', 'negotiating', 'won', 'lost'];
+    const counts = await Promise.all(
+      stages.map(status => prisma.lead.count({ where: { status } }))
+    );
+    const total = counts.reduce((sum, c) => sum + c, 0);
+
+    const funnel = stages.map((stage, i) => ({
+      stage,
+      // eslint-disable-next-line security/detect-object-injection
+      count: counts[i],
+      // eslint-disable-next-line security/detect-object-injection
+      percentage: total > 0 ? Math.round((counts[i] / total) * 100) : 0,
+    }));
+
+    // Score tier distribution
+    const tiers = ['hot', 'warm', 'cold', 'inactive'];
+    const tierCounts = await Promise.all(
+      tiers.map(tier => prisma.lead.count({ where: { scoreTier: tier } }))
+    );
+    const tierDistribution = tiers.map((tier, i) => ({
+      tier,
+      // eslint-disable-next-line security/detect-object-injection
+      count: tierCounts[i],
+    }));
+
+    res.status(200).json({
+      success: true,
+      data: { funnel, tierDistribution, total },
+    });
+  })
+);
+
+// ─── GET /api/dashboard/trends ──────────────────────────────────────────
+// Time-series data: leads/transactions/commissions over period
+router.get(
+  '/trends',
+  requirePermission('view_analytics'),
+  asyncHandler(async (req: Request, res: Response) => {
+    const days = parseInt(req.query.days as string) || 30;
+    const startDate = new Date();
+    startDate.setDate(startDate.getDate() - days);
+
+    // Get raw data in the period
+    const [leads, transactions, commissions] = await Promise.all([
+      prisma.lead.findMany({
+        where: { createdAt: { gte: startDate } },
+        select: { createdAt: true },
+        orderBy: { createdAt: 'asc' },
+      }),
+      prisma.transaction.findMany({
+        where: { createdAt: { gte: startDate } },
+        select: { createdAt: true, amount: true },
+        orderBy: { createdAt: 'asc' },
+      }),
+      prisma.commission.findMany({
+        where: { createdAt: { gte: startDate } },
+        select: { createdAt: true, amount: true },
+        orderBy: { createdAt: 'asc' },
+      }),
+    ]);
+
+    // Group by date
+    const groupByDate = <T extends { createdAt: Date }>(
+      items: T[],
+      getValue?: (item: T) => number
+    ) => {
+      const map: Record<string, { count: number; value: number }> = {};
+      for (const item of items) {
+        const dateKey = item.createdAt.toISOString().split('T')[0];
+        // eslint-disable-next-line security/detect-object-injection
+        if (!map[dateKey]) map[dateKey] = { count: 0, value: 0 };
+        // eslint-disable-next-line security/detect-object-injection
+        map[dateKey].count++;
+        // eslint-disable-next-line security/detect-object-injection
+        if (getValue) map[dateKey].value += getValue(item);
+      }
+      return map;
+    };
+
+    const leadsByDate = groupByDate(leads);
+    const transactionsByDate = groupByDate(transactions, t => t.amount);
+    const commissionsByDate = groupByDate(commissions, c => c.amount);
+
+    // Build daily series
+    const series: Array<{
+      date: string;
+      leads: number;
+      transactions: number;
+      transactionValue: number;
+      commissions: number;
+      commissionValue: number;
+    }> = [];
+
+    for (let d = 0; d < days; d++) {
+      const date = new Date(startDate);
+      date.setDate(date.getDate() + d);
+      const key = date.toISOString().split('T')[0];
+      series.push({
+        date: key,
+        // eslint-disable-next-line security/detect-object-injection
+        leads: leadsByDate[key]?.count || 0,
+        // eslint-disable-next-line security/detect-object-injection
+        transactions: transactionsByDate[key]?.count || 0,
+        // eslint-disable-next-line security/detect-object-injection
+        transactionValue: transactionsByDate[key]?.value || 0,
+        // eslint-disable-next-line security/detect-object-injection
+        commissions: commissionsByDate[key]?.count || 0,
+        // eslint-disable-next-line security/detect-object-injection
+        commissionValue: commissionsByDate[key]?.value || 0,
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      data: { period: `${days}d`, startDate: startDate.toISOString(), series },
+    });
+  })
+);
+
+// ─── GET /api/dashboard/property-aging ──────────────────────────────────
+// Days on market distribution for available properties
+router.get(
+  '/property-aging',
+  requirePermission('view_analytics'),
+  asyncHandler(async (_req: Request, res: Response) => {
+    const properties = await prisma.property.findMany({
+      where: { status: 'available' },
+      select: { id: true, title: true, createdAt: true, price: true, location: true },
+    });
+
+    const now = Date.now();
+    const aging = properties.map(p => {
+      const daysOnMarket = Math.floor((now - p.createdAt.getTime()) / 86400000);
+      return { id: p.id, title: p.title, location: p.location, price: p.price, daysOnMarket };
+    });
+
+    // Buckets
+    const buckets = [
+      { label: '0-7 days', min: 0, max: 7, count: 0 },
+      { label: '8-30 days', min: 8, max: 30, count: 0 },
+      { label: '31-60 days', min: 31, max: 60, count: 0 },
+      { label: '61-90 days', min: 61, max: 90, count: 0 },
+      { label: '90+ days', min: 91, max: Infinity, count: 0 },
+    ];
+
+    for (const a of aging) {
+      const bucket = buckets.find(b => a.daysOnMarket >= b.min && a.daysOnMarket <= b.max);
+      if (bucket) bucket.count++;
+    }
+
+    const avgDaysOnMarket =
+      aging.length > 0
+        ? Math.round(aging.reduce((s, a) => s + a.daysOnMarket, 0) / aging.length)
+        : 0;
+
+    res.status(200).json({
+      success: true,
+      data: {
+        totalAvailable: properties.length,
+        avgDaysOnMarket,
+        buckets: buckets.map(({ label, count }) => ({ label, count })),
+        staleProperties: aging.filter(a => a.daysOnMarket > 90).slice(0, 10),
+      },
+    });
+  })
+);
+
+// ─── GET /api/dashboard/agent-performance ───────────────────────────────
+// Comparative agent performance dashboard
+router.get(
+  '/agent-performance',
+  requirePermission('view_analytics'),
+  asyncHandler(async (_req: Request, res: Response) => {
+    const agents = await prisma.user.findMany({
+      where: { role: 'agent', status: 'active' },
+      select: { id: true, name: true, email: true, department: true },
+    });
+
+    const agentPerformance = await Promise.all(
+      agents.map(async agent => {
+        const [totalLeads, wonLeads, commissions, activeDeals] = await Promise.all([
+          prisma.lead.count({ where: { assignedToId: agent.id } }),
+          prisma.lead.count({ where: { assignedToId: agent.id, status: 'won' } }),
+          prisma.commission.aggregate({
+            where: { agentId: agent.id, status: 'paid' },
+            _sum: { amount: true },
+            _count: true,
+          }),
+          prisma.transaction.count({
+            where: { agentId: agent.id, status: { in: ['pending', 'in_progress'] } },
+          }),
+        ]);
+
+        return {
+          id: agent.id,
+          name: agent.name,
+          department: agent.department || 'General',
+          totalLeads,
+          wonLeads,
+          conversionRate: totalLeads > 0 ? Math.round((wonLeads / totalLeads) * 100) : 0,
+          totalCommission: commissions._sum.amount || 0,
+          dealsClosed: commissions._count || 0,
+          activeDeals,
+        };
+      })
+    );
+
+    // Sort by total commission descending
+    agentPerformance.sort((a, b) => b.totalCommission - a.totalCommission);
+
+    res.status(200).json({
+      success: true,
+      data: { agents: agentPerformance, total: agentPerformance.length },
+    });
+  })
+);
+
+// ─── GET /api/dashboard/leasing — Leasing P&L Dashboard ────────────────────
+router.get(
+  '/leasing',
+  requirePermission('view_analytics'),
+  asyncHandler(async (req: Request, res: Response) => {
+    const allowedRoles = ['owner', 'manager', 'admin', 'finance', 'managing_director'];
+    if (!allowedRoles.includes(req.user?.role || '')) {
+      throw new AppError('Access denied — leasing dashboard requires manager or above role', 403);
+    }
+
+    const now = new Date();
+    const thirtyDaysFromNow = new Date(now);
+    thirtyDaysFromNow.setDate(now.getDate() + 30);
+    const sixtyDaysFromNow = new Date(now);
+    sixtyDaysFromNow.setDate(now.getDate() + 60);
+    const ninetyDaysFromNow = new Date(now);
+    ninetyDaysFromNow.setDate(now.getDate() + 90);
+    const _firstOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+
+    const [
+      activeLeases,
+      expiringIn30,
+      expiringIn60,
+      expiringIn90,
+      totalLeases,
+      leasingLeads,
+      pendingOffers,
+      acceptedOffers,
+      pdcCleared,
+      pdcBounced,
+      pdcPending,
+      maintenanceCosts,
+      commissions,
+    ] = await Promise.all([
+      prisma.lease.findMany({
+        where: { status: 'active' },
+        select: {
+          id: true,
+          leaseNumber: true,
+          monthlyRent: true,
+          currency: true,
+          endDate: true,
+          ejariStatus: true,
+          ejariNumber: true,
+          property: { select: { id: true, title: true, location: true } },
+          tenant: { select: { id: true, name: true, email: true } },
+          landlord: { select: { id: true, name: true } },
+        },
+        orderBy: { endDate: 'asc' },
+      }),
+      prisma.lease.count({
+        where: { status: 'active', endDate: { lte: thirtyDaysFromNow, gte: now } },
+      }),
+      prisma.lease.count({
+        where: { status: 'active', endDate: { lte: sixtyDaysFromNow, gte: now } },
+      }),
+      prisma.lease.count({
+        where: { status: 'active', endDate: { lte: ninetyDaysFromNow, gte: now } },
+      }),
+      prisma.lease.count(),
+      prisma.lead.count({ where: { dealType: 'lease' } }),
+      prisma.offer.count({ where: { offerType: 'lease', status: 'pending' } }),
+      prisma.offer.count({ where: { offerType: 'lease', status: 'accepted' } }),
+      prisma.pDCSchedule.aggregate({
+        where: { status: 'cleared' },
+        _sum: { amount: true },
+        _count: { _all: true },
+      }),
+      prisma.pDCSchedule.aggregate({
+        where: { status: 'bounced' },
+        _sum: { amount: true },
+        _count: { _all: true },
+      }),
+      prisma.pDCSchedule.aggregate({
+        where: { status: 'pending' },
+        _sum: { amount: true },
+        _count: { _all: true },
+      }),
+      prisma.maintenance.aggregate({ where: { status: 'completed' }, _sum: { cost: true } }),
+      prisma.commission.findMany({
+        where: { type: 'rental' },
+        select: { amount: true, status: true },
+      }),
+    ]);
+
+    // Monthly recurring revenue = sum of monthly rent for all active leases
+    const mrr = activeLeases.reduce((s, l) => s + l.monthlyRent, 0);
+
+    // Commission pipeline
+    const totalCommission = commissions.reduce((s, c) => s + c.amount, 0);
+    const paidCommission = commissions
+      .filter(c => c.status === 'paid')
+      .reduce((s, c) => s + c.amount, 0);
+    const pendingCommission = commissions
+      .filter(c => c.status === 'pending')
+      .reduce((s, c) => s + c.amount, 0);
+
+    // P&L
+    const totalRentCollected = pdcCleared._sum.amount || 0;
+    const totalExpenses = (maintenanceCosts._sum.cost || 0) + totalCommission;
+    const netProfit = totalRentCollected - totalExpenses;
+
+    res.status(200).json({
+      success: true,
+      data: {
+        summary: {
+          totalLeases,
+          activeLeases: activeLeases.length,
+          mrr,
+          currency: 'AED',
+          leasingLeads,
+          pendingOffers,
+          acceptedOffers,
+        },
+        renewalForecast: {
+          expiringIn30,
+          expiringIn60,
+          expiringIn90,
+        },
+        activeLeasesList: activeLeases,
+        pdc: {
+          cleared: { count: pdcCleared._count._all, amount: pdcCleared._sum.amount || 0 },
+          pending: { count: pdcPending._count._all, amount: pdcPending._sum.amount || 0 },
+          bounced: { count: pdcBounced._count._all, amount: pdcBounced._sum.amount || 0 },
+        },
+        pnl: {
+          totalRentCollected,
+          totalCommission,
+          paidCommission,
+          pendingCommission,
+          maintenanceCost: maintenanceCosts._sum.cost || 0,
+          netProfit,
         },
       },
     });

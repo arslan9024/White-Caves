@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import React from 'react';
 
@@ -19,13 +19,13 @@ vi.mock('react-redux', () => ({
 
 // Mock stores
 vi.mock('../../../../store/userSlice', () => ({
-  setUser: (payload: any) => ({ type: 'user/setUser', payload }),
+  setUser: (payload: unknown) => ({ type: 'user/setUser', payload }),
 }));
 
 vi.mock('../../../../store/authSlice', () => ({
   loginStart: () => ({ type: 'auth/loginStart' }),
-  loginSuccess: (payload: any) => ({ type: 'auth/loginSuccess', payload }),
-  loginFailure: (msg: any) => ({ type: 'auth/loginFailure', payload: msg }),
+  loginSuccess: (payload: unknown) => ({ type: 'auth/loginSuccess', payload }),
+  loginFailure: (msg: unknown) => ({ type: 'auth/loginFailure', payload: msg }),
 }));
 
 // Mock logger
@@ -40,20 +40,19 @@ vi.mock('../../../../utils/safeStorage', () => ({
   },
 }));
 
-// Mock webAuthnService
+// Mock webAuthnService — authenticateWithBiometric now returns user + token directly
 const mockIsPlatformAuthenticatorAvailable = vi.fn().mockResolvedValue(true);
-const mockAuthenticateWithBiometric = vi.fn().mockResolvedValue({ success: true });
-const mockHasBiometricCredentials = vi.fn().mockReturnValue(true);
-const mockGetBiometricSession = vi.fn().mockReturnValue({
+const mockAuthenticateWithBiometric = vi.fn().mockResolvedValue({
+  success: true,
   user: { id: 'u1', email: 'test@test.com', name: 'Test User' },
   token: 'jwt-token-123',
 });
+const mockHasBiometricCredentials = vi.fn().mockReturnValue(true);
 
 vi.mock('../../../../services/webAuthnService', () => ({
   isPlatformAuthenticatorAvailable: () => mockIsPlatformAuthenticatorAvailable(),
   authenticateWithBiometric: () => mockAuthenticateWithBiometric(),
   hasBiometricCredentials: () => mockHasBiometricCredentials(),
-  getBiometricSession: () => mockGetBiometricSession(),
 }));
 
 import BiometricLoginButton from './BiometricLoginButton';
@@ -62,13 +61,19 @@ import { safeStorage } from '../../../../utils/safeStorage';
 describe('BiometricLoginButton', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    vi.spyOn(console, 'error').mockImplementation(() => {});
+    vi.spyOn(console, 'warn').mockImplementation(() => {});
     mockIsPlatformAuthenticatorAvailable.mockResolvedValue(true);
     mockHasBiometricCredentials.mockReturnValue(true);
-    mockAuthenticateWithBiometric.mockResolvedValue({ success: true });
-    mockGetBiometricSession.mockReturnValue({
+    mockAuthenticateWithBiometric.mockResolvedValue({
+      success: true,
       user: { id: 'u1', email: 'test@test.com', name: 'Test User' },
       token: 'jwt-token-123',
     });
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
   });
 
   describe('availability', () => {
@@ -119,7 +124,9 @@ describe('BiometricLoginButton', () => {
         expect(screen.getByLabelText('Sign in with Face ID or Touch ID')).toBeInTheDocument();
       });
       fireEvent.click(screen.getByLabelText('Sign in with Face ID or Touch ID'));
-      expect(mockDispatch).toHaveBeenCalledWith({ type: 'auth/loginStart' });
+      await waitFor(() => {
+        expect(mockDispatch).toHaveBeenCalledWith({ type: 'auth/loginStart' });
+      });
     });
 
     it('dispatches setUser and loginSuccess on successful auth', async () => {
@@ -183,7 +190,10 @@ describe('BiometricLoginButton', () => {
       });
       fireEvent.click(screen.getByLabelText('Sign in with Face ID or Touch ID'));
       await waitFor(() => {
-        expect(mockDispatch).toHaveBeenCalledWith({ type: 'auth/loginFailure', payload: 'Auth cancelled' });
+        expect(mockDispatch).toHaveBeenCalledWith({
+          type: 'auth/loginFailure',
+          payload: 'Auth cancelled',
+        });
       });
     });
 
@@ -200,8 +210,9 @@ describe('BiometricLoginButton', () => {
       });
     });
 
-    it('handles missing session data', async () => {
-      mockGetBiometricSession.mockReturnValue(null);
+    it('handles missing user/token in server response', async () => {
+      // Server returns success:true but no user data — treated as an error
+      mockAuthenticateWithBiometric.mockResolvedValue({ success: true });
       const onError = vi.fn();
       render(<BiometricLoginButton onError={onError} />);
       await waitFor(() => {

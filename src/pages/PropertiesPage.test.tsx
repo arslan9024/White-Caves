@@ -4,7 +4,7 @@
  * property cards, favorites, modal, API integration
  */
 
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeAll, beforeEach, afterAll, afterEach } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import React from 'react';
 import { Provider } from 'react-redux';
@@ -13,9 +13,12 @@ import { MemoryRouter } from 'react-router-dom';
 
 // ── Mocks ────────────────────────────────────────────────────────
 
-vi.mock('../components/layout/AppLayout', () => ({
+vi.mock('../components/layout/PublicLayout', () => ({
   default: ({ children }: { children: React.ReactNode }) => (
-    <div data-testid="app-layout">{children}</div>
+    <div data-testid="app-layout">
+      {children}
+      <div data-testid="footer">Footer</div>
+    </div>
   ),
 }));
 
@@ -26,6 +29,24 @@ vi.mock('../components/Footer', () => ({
 vi.mock('../components/WhatsAppButton', () => ({
   default: () => <div data-testid="whatsapp-btn">WhatsApp</div>,
 }));
+
+// Mock PropertyFilterPanel to simplify PropertiesPage tests
+vi.mock('./properties/PropertyFilterPanel', () => ({
+  default: ({ resultCount, totalCount }: { resultCount: number; totalCount: number }) => (
+    <div data-testid="filter-panel">
+      <span data-testid="result-count">{resultCount}</span>
+      <span data-testid="total-count">{totalCount}</span>
+    </div>
+  ),
+}));
+
+// Mock InteractiveMap (lazy-loaded)
+vi.mock('../components/maps/InteractiveMap', () => ({
+  default: () => <div data-testid="interactive-map-mock">Map</div>,
+}));
+
+// Mock leaflet CSS import
+vi.mock('leaflet/dist/leaflet.css', () => ({}));
 
 // Mock the async thunk so it resolves immediately without hitting the network
 const mockAuthFetchForProperties = vi.fn();
@@ -40,7 +61,9 @@ vi.mock('../shared/components/property', () => ({
   PropertyDetailModal: ({ property, onClose, isFavorite, onFavorite }: Record<string, unknown>) => (
     <div data-testid="property-modal">
       <span>{(property as Record<string, unknown>)?.title as string}</span>
-      <button onClick={onClose as () => void} data-testid="modal-close">Close</button>
+      <button onClick={onClose as () => void} data-testid="modal-close">
+        Close
+      </button>
       <button onClick={onFavorite as () => void} data-testid="modal-favorite">
         {isFavorite ? 'Unfavorite' : 'Favorite'}
       </button>
@@ -54,13 +77,50 @@ import dashboardReducer from '../store/dashboardSlice';
 import userReducer from '../store/userSlice';
 import navigationReducer from '../store/navigationSlice';
 import authReducer from '../store/authSlice';
+import propertyReducer from '../store/propertySlice';
 
 // ── Helpers ──────────────────────────────────────────────────────
 
 const MOCK_PROPERTIES = [
-  { id: 'p1', title: 'Palm Villa', location: 'Palm Jumeirah', type: 'Villa', purpose: 'buy', bedrooms: 4, bathrooms: 3, sqft: 5000, price: 8000000, images: ['img1.jpg'], featured: true },
-  { id: 'p2', title: 'Marina Apartment', location: 'Dubai Marina', type: 'Apartment', purpose: 'rent', bedrooms: 2, bathrooms: 2, sqft: 1200, price: 150000, images: ['img2.jpg'], featured: false },
-  { id: 'p3', title: 'Downtown Penthouse', location: 'Downtown Dubai', type: 'Penthouse', purpose: 'buy', bedrooms: 3, bathrooms: 3, sqft: 3500, price: 12000000, images: [], featured: true },
+  {
+    id: 'p1',
+    title: 'Palm Villa',
+    location: 'Palm Jumeirah',
+    type: 'Villa',
+    purpose: 'buy',
+    bedrooms: 4,
+    bathrooms: 3,
+    sqft: 5000,
+    price: 8000000,
+    images: ['img1.jpg'],
+    featured: true,
+  },
+  {
+    id: 'p2',
+    title: 'Marina Apartment',
+    location: 'Dubai Marina',
+    type: 'Apartment',
+    purpose: 'rent',
+    bedrooms: 2,
+    bathrooms: 2,
+    sqft: 1200,
+    price: 150000,
+    images: ['img2.jpg'],
+    featured: false,
+  },
+  {
+    id: 'p3',
+    title: 'Downtown Penthouse',
+    location: 'Downtown Dubai',
+    type: 'Penthouse',
+    purpose: 'buy',
+    bedrooms: 3,
+    bathrooms: 3,
+    sqft: 3500,
+    price: 12000000,
+    images: [],
+    featured: true,
+  },
 ];
 
 const createMockStore = (crmOverrides: Record<string, unknown> = {}) => {
@@ -71,6 +131,7 @@ const createMockStore = (crmOverrides: Record<string, unknown> = {}) => {
       user: userReducer,
       navigation: navigationReducer,
       auth: authReducer,
+      properties: propertyReducer,
     },
     preloadedState: {
       crmData: {
@@ -88,7 +149,7 @@ const createMockStore = (crmOverrides: Record<string, unknown> = {}) => {
         overview: null,
         lastUpdated: new Date().toISOString(),
         ...crmOverrides,
-      } as ReturnType<typeof crmDataReducer>,
+      } as unknown as ReturnType<typeof crmDataReducer>,
       user: {
         currentUser: null,
         loading: false,
@@ -98,7 +159,13 @@ const createMockStore = (crmOverrides: Record<string, unknown> = {}) => {
         user: null,
         token: 'tok',
         refreshToken: null,
-        session: { isLoggedIn: false, lastActive: null, sessions: [], expiresAt: null, activeSessionId: null },
+        session: {
+          isLoggedIn: false,
+          lastActive: null,
+          sessions: [],
+          expiresAt: null,
+          activeSessionId: null,
+        },
         loginMethods: { social: false, email: false, mobile: false },
         loginProvider: null,
         rememberMe: false,
@@ -112,18 +179,26 @@ const createMockStore = (crmOverrides: Record<string, unknown> = {}) => {
 
 const renderPage = (crmOverrides: Record<string, unknown> = {}) => {
   const store = createMockStore(crmOverrides);
-  return { store, ...render(
-    <Provider store={store}>
-      <MemoryRouter>
-        <PropertiesPage />
-      </MemoryRouter>
-    </Provider>,
-  )};
+  return {
+    store,
+    ...render(
+      <Provider store={store}>
+        <MemoryRouter>
+          <PropertiesPage />
+        </MemoryRouter>
+      </Provider>
+    ),
+  };
 };
 
 // ── Tests ────────────────────────────────────────────────────────
 
 describe('PropertiesPage', () => {
+  beforeAll(() => {
+    vi.spyOn(console, 'error').mockImplementation(() => {});
+    vi.spyOn(console, 'warn').mockImplementation(() => {});
+  });
+
   beforeEach(() => {
     vi.clearAllMocks();
     // Default: API returns the mock properties
@@ -131,6 +206,14 @@ describe('PropertiesPage', () => {
       ok: true,
       json: async () => ({ data: MOCK_PROPERTIES }),
     });
+  });
+
+  afterEach(() => {
+    vi.clearAllMocks();
+  });
+
+  afterAll(() => {
+    vi.restoreAllMocks();
   });
 
   // ── Rendering ────────────────────────────────────────────────
@@ -143,24 +226,31 @@ describe('PropertiesPage', () => {
 
     it('should render hero section', () => {
       renderPage();
-      expect(screen.getByText('Find Your Dream Property')).toBeInTheDocument();
-      expect(screen.getByText('Browse our exclusive collection of properties across Dubai')).toBeInTheDocument();
+      expect(screen.getByText('Discover Luxury Properties')).toBeInTheDocument();
+      expect(screen.getByText(/Browse our exclusive collection/)).toBeInTheDocument();
     });
 
-    it('should render search bar', () => {
+    it('should render filter panel', () => {
       renderPage();
-      expect(screen.getByPlaceholderText('Search properties by location, type, or price...')).toBeInTheDocument();
+      expect(screen.getByTestId('filter-panel')).toBeInTheDocument();
     });
 
     it('should render view toggle buttons', () => {
       renderPage();
       const buttons = document.querySelectorAll('.view-btn');
-      expect(buttons.length).toBe(2);
+      expect(buttons.length).toBe(3); // grid, list, map
     });
 
     it('should render Footer', () => {
       renderPage();
       expect(screen.getByTestId('footer')).toBeInTheDocument();
+    });
+
+    it('should apply the dubai-luxury-theme cascade class to the page root', () => {
+      renderPage();
+      const root = document.querySelector('.properties-page');
+      expect(root).not.toBeNull();
+      expect(root?.classList.contains('dubai-luxury-theme')).toBe(true);
     });
   });
 
@@ -212,82 +302,30 @@ describe('PropertiesPage', () => {
 
   // ── Search ───────────────────────────────────────────────────
 
-  describe('Search', () => {
-    it('should filter properties by search term', async () => {
-      renderPage();
-      // Wait for loading to finish
-      await waitFor(() => {
-        expect(screen.getByText('Palm Villa')).toBeInTheDocument();
-      });
-      const input = screen.getByPlaceholderText('Search properties by location, type, or price...');
-      fireEvent.change(input, { target: { value: 'Palm' } });
-
-      expect(screen.getByText('Palm Villa')).toBeInTheDocument();
-      expect(screen.queryByText('Marina Apartment')).not.toBeInTheDocument();
-      expect(screen.queryByText('Downtown Penthouse')).not.toBeInTheDocument();
-    });
-
-    it('should filter by location', async () => {
-      renderPage();
-      await waitFor(() => {
-        expect(screen.getByText('Marina Apartment')).toBeInTheDocument();
-      });
-      const input = screen.getByPlaceholderText('Search properties by location, type, or price...');
-      fireEvent.change(input, { target: { value: 'Marina' } });
-
-      expect(screen.getByText('Marina Apartment')).toBeInTheDocument();
-      expect(screen.queryByText('Palm Villa')).not.toBeInTheDocument();
-    });
-
-    it('should filter by type', async () => {
-      renderPage();
-      await waitFor(() => {
-        expect(screen.getByText('Downtown Penthouse')).toBeInTheDocument();
-      });
-      const input = screen.getByPlaceholderText('Search properties by location, type, or price...');
-      fireEvent.change(input, { target: { value: 'Penthouse' } });
-
-      expect(screen.getByText('Downtown Penthouse')).toBeInTheDocument();
-      expect(screen.queryByText('Palm Villa')).not.toBeInTheDocument();
-    });
-
-    it('should show empty state when no properties match', async () => {
+  describe('Filter Panel Integration', () => {
+    it('should pass result counts to filter panel', async () => {
       renderPage();
       await waitFor(() => {
         expect(screen.getByText('Palm Villa')).toBeInTheDocument();
       });
-      const input = screen.getByPlaceholderText('Search properties by location, type, or price...');
-      fireEvent.change(input, { target: { value: 'nonexistent xyz' } });
-
-      expect(screen.getByText('No Properties Found')).toBeInTheDocument();
-      expect(screen.getByText('Try adjusting your search terms.')).toBeInTheDocument();
-    });
-
-    it('should be case-insensitive', async () => {
-      renderPage();
-      await waitFor(() => {
-        expect(screen.getByText('Palm Villa')).toBeInTheDocument();
-      });
-      const input = screen.getByPlaceholderText('Search properties by location, type, or price...');
-      fireEvent.change(input, { target: { value: 'palm villa' } });
-
-      expect(screen.getByText('Palm Villa')).toBeInTheDocument();
+      expect(screen.getByTestId('result-count')).toBeInTheDocument();
+      expect(screen.getByTestId('total-count')).toBeInTheDocument();
     });
   });
 
   // ── Loading / Empty States ───────────────────────────────────
 
   describe('Loading & Empty States', () => {
-    it('should show loading state initially before API resolves', () => {
+    it('should show loading state when loading is true', () => {
+      // Use a never-resolving promise so loading stays true
+      mockAuthFetchForProperties.mockReturnValue(new Promise(() => {}));
       renderPage({
-        properties: { items: [], selected: null, loading: false, error: null },
+        properties: { items: [], selected: null, loading: true, error: null },
       });
-      // The dispatch of fetchPropertiesFromAPI triggers pending → loading=true
       expect(screen.getByText(/Loading properties/)).toBeInTheDocument();
     });
 
     it('should show empty state when no properties exist after loading completes', async () => {
-      // Mock API to return empty
       mockAuthFetchForProperties.mockResolvedValue({
         ok: true,
         json: async () => ({ data: [] }),
@@ -295,11 +333,12 @@ describe('PropertiesPage', () => {
       renderPage({
         properties: { items: [], selected: null, loading: false, error: null },
       });
-      // Wait for fetchPropertiesFromAPI to resolve (mocked to return empty data)
       await waitFor(() => {
         expect(screen.getByText('No Properties Found')).toBeInTheDocument();
       });
-      expect(screen.getByText('Properties will appear here once they are listed.')).toBeInTheDocument();
+      expect(
+        screen.getByText('Try adjusting your filters or search criteria.')
+      ).toBeInTheDocument();
     });
   });
 
@@ -311,7 +350,7 @@ describe('PropertiesPage', () => {
       await waitFor(() => {
         expect(screen.getByText('Palm Villa')).toBeInTheDocument();
       });
-      const propertyCard = screen.getByText('Palm Villa').closest('.property-item');
+      const propertyCard = screen.getByText('Palm Villa').closest('.property-card-enhanced');
       fireEvent.click(propertyCard!);
       expect(screen.getByTestId('property-modal')).toBeInTheDocument();
     });
@@ -321,7 +360,7 @@ describe('PropertiesPage', () => {
       await waitFor(() => {
         expect(screen.getByText('Palm Villa')).toBeInTheDocument();
       });
-      const propertyCard = screen.getByText('Palm Villa').closest('.property-item');
+      const propertyCard = screen.getByText('Palm Villa').closest('.property-card-enhanced');
       fireEvent.click(propertyCard!);
       fireEvent.click(screen.getByTestId('modal-close'));
       expect(screen.queryByTestId('property-modal')).not.toBeInTheDocument();
@@ -348,6 +387,18 @@ describe('PropertiesPage', () => {
       fireEvent.click(listBtn!);
       const listContainer = document.querySelector('.properties-grid.list');
       expect(listContainer).toBeTruthy();
+    });
+
+    it('should switch to map view', async () => {
+      renderPage();
+      await waitFor(() => {
+        expect(screen.getByText('Palm Villa')).toBeInTheDocument();
+      });
+      const mapBtn = document.querySelectorAll('.view-btn')[2];
+      fireEvent.click(mapBtn!);
+      // Map view hides the grid
+      const grid = document.querySelector('.properties-grid');
+      expect(grid?.getAttribute('style')).toContain('display: none');
     });
   });
 });

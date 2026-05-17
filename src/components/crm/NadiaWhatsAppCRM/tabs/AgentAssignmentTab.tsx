@@ -37,7 +37,7 @@ export const AgentAssignmentTab: React.FC<AgentAssignmentTabProps> = ({ data }) 
                 <span>Assigned</span>
               </div>
             </div>
-            <button className="remove-btn" title="Remove">
+            <button className="remove-btn" title="Remove" aria-label="Remove assigned agent">
               <X size={18} />
             </button>
           </div>

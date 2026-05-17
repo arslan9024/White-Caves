@@ -15,6 +15,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { Briefcase } from 'lucide-react';
 import { selectService } from '../../../store/slices/sidebarSlice';
 import useActionHandler from '../../../hooks/useActionHandler';
+import Skeleton from '../../ui/Skeleton/Skeleton';
 
 // Lazy-load charts to keep them out of the critical app-core bundle
 const MetricsChart = lazy(() => import('../../charts/MetricsChart'));
@@ -25,6 +26,38 @@ import '../../charts/charts.css';
 import type { RootState } from '../../../store/store';
 import * as S from './styles';
 import { DEPARTMENT_CONTENT } from './departmentData';
+
+const MetricsLoadingSkeleton: React.FC = () => (
+  <S.LoadingSection role="status" aria-live="polite" data-testid="metrics-loading-skeleton">
+    <S.MetricsGrid>
+      {Array.from({ length: 4 }).map((_, idx) => (
+        <Skeleton
+          key={`metric-skeleton-${idx}`}
+          variant="card"
+          height={120}
+          borderRadius="10px"
+          aria-label="Loading metric card"
+        />
+      ))}
+    </S.MetricsGrid>
+  </S.LoadingSection>
+);
+
+const AnalyticsLoadingSkeleton: React.FC = () => (
+  <S.LoadingSection role="status" aria-live="polite" data-testid="analytics-loading-skeleton">
+    <S.AnalyticsSection>
+      {Array.from({ length: 3 }).map((_, idx) => (
+        <Skeleton
+          key={`analytics-skeleton-${idx}`}
+          variant="card"
+          height={350}
+          borderRadius="12px"
+          aria-label="Loading analytics chart"
+        />
+      ))}
+    </S.AnalyticsSection>
+  </S.LoadingSection>
+);
 
 const DepartmentContentPanel: React.FC = () => {
   const dispatch = useDispatch();
@@ -40,6 +73,7 @@ const DepartmentContentPanel: React.FC = () => {
   const serviceContent = deptContent && selectedService
     ? deptContent.services[selectedService]
     : null;
+  const serviceNotFound = Boolean(deptContent && selectedService && !serviceContent);
 
   // Handle service card click
   const handleServiceCardClick = (serviceName: string) => {
@@ -60,8 +94,8 @@ const DepartmentContentPanel: React.FC = () => {
 
   if (!deptContent) {
     return (
-      <S.DepartmentPanel className="empty">
-        <S.EmptyState>
+      <S.DepartmentPanel className="empty" role="region" aria-label="Department content panel empty state">
+        <S.EmptyState role="status" aria-live="polite">
           <S.EmptyStateIcon as={Briefcase} size={64} />
           <S.EmptyStateHeading>Select a Department</S.EmptyStateHeading>
           <S.EmptyStateText>Choose a department from the left sidebar to view content and manage operations</S.EmptyStateText>
@@ -70,13 +104,33 @@ const DepartmentContentPanel: React.FC = () => {
     );
   }
 
+    if (serviceNotFound) {
+      return (
+        <S.DepartmentPanel className="empty" role="region" aria-label="Department service unavailable state">
+          <S.EmptyState role="status" aria-live="polite">
+            <S.EmptyStateIcon as={Briefcase} size={56} />
+            <S.EmptyStateHeading>Service Not Found</S.EmptyStateHeading>
+            <S.EmptyStateText>
+              The selected service is no longer available in {deptContent.name}. Please choose another service from the left sidebar.
+            </S.EmptyStateText>
+          </S.EmptyState>
+        </S.DepartmentPanel>
+      );
+    }
+
   return (
-    <S.DepartmentPanel>
+    <S.DepartmentPanel role="region" aria-label={`${deptContent.name} department content`}>
       {/* Header */}
       <S.ContentHeader 
+        as="header"
         style={{ background: deptContent.bgGradient }}
       >
         <S.HeaderContent>
+            <S.ContentBreadcrumbs aria-label="Center content breadcrumb">
+              <S.BreadcrumbItem>{deptContent.name}</S.BreadcrumbItem>
+              <S.BreadcrumbSeparator aria-hidden="true">/</S.BreadcrumbSeparator>
+              <S.BreadcrumbItem $isCurrent={true} aria-current="page">{selectedService || 'Overview'}</S.BreadcrumbItem>
+            </S.ContentBreadcrumbs>
           <S.HeaderTitle>{deptContent.name}</S.HeaderTitle>
           <S.HeaderDescription>{deptContent.description}</S.HeaderDescription>
         </S.HeaderContent>
@@ -135,7 +189,7 @@ const DepartmentContentPanel: React.FC = () => {
             {/* Department Metrics */}
             <S.MetricsSection>
               <S.MetricsSectionHeading>Key Metrics</S.MetricsSectionHeading>
-              <Suspense fallback={<S.MetricsGrid><div style={{ padding: '1rem', color: '#999' }}>Loading metrics...</div></S.MetricsGrid>}>
+              <Suspense fallback={<MetricsLoadingSkeleton />}>
                 <S.MetricsGrid>
                   {deptContent.metrics.map((metric) => (
                     <EnhancedStatCard
@@ -154,7 +208,7 @@ const DepartmentContentPanel: React.FC = () => {
             </S.MetricsSection>
 
             {/* Analytics Charts */}
-            <Suspense fallback={<S.AnalyticsSection><div style={{ padding: '2rem', color: '#999', textAlign: 'center' }}>Loading charts...</div></S.AnalyticsSection>}>
+            <Suspense fallback={<AnalyticsLoadingSkeleton />}>
               <S.AnalyticsSection>
                 <MetricsChart 
                   data={deptContent.metrics}
@@ -198,15 +252,21 @@ const DepartmentContentPanel: React.FC = () => {
                     onClick={() => handleServiceCardClick(name)}
                     role="button"
                     tabIndex={0}
+                    aria-label={`Open ${name} service`}
+                    aria-describedby={`service-desc-${name.replace(/\s+/g, '-').toLowerCase()}`}
                     onKeyDown={(e: React.KeyboardEvent) => {
                       if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
                         handleServiceCardClick(name);
                       }
                     }}
                   >
                     <S.ServiceCardTitle>{name}</S.ServiceCardTitle>
-                    <S.ServiceCardDescription>{service.description}</S.ServiceCardDescription>
+                    <S.ServiceCardDescription id={`service-desc-${name.replace(/\s+/g, '-').toLowerCase()}`}>
+                      {service.description}
+                    </S.ServiceCardDescription>
                     <S.ServiceCardAction 
+                      aria-label={`View ${name} service`}
                       onClick={(e: React.MouseEvent) => {
                         e.stopPropagation();
                         handleServiceCardClick(name);

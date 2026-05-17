@@ -1,61 +1,67 @@
 /**
  * NADIA Components - Styled Components
  * Design system integration with styled-components
+ * Now using centralized White Caves theme tokens
  */
 
 import styled, { css } from 'styled-components';
+import { theme } from '../../styles/theme';
+
+const { spacing, radius, shadows, transitions, colors, typography } = theme;
 
 /**
- * Design tokens (would normally import from your design system)
+ * Design tokens — bridge from local API to centralized theme.
+ * Keeps all tokens.xxx references working while pulling from
+ * the single source of truth in styles/theme.
  */
 const tokens = {
   colors: {
-    primary: '#4F46E5',
-    secondary: '#059669',
-    danger: '#DC2626',
-    warning: '#F97316',
-    success: '#22C55E',
+    primary: colors.primary,
+    secondary: colors.secondary,
+    danger: colors.error,
+    warning: colors.warning,
+    success: colors.success,
     background: {
-      primary: '#F8F9FA',
-      secondary: '#F3F4F6',
+      primary: colors.background.primary,
+      secondary: colors.background.tertiary,
     },
     surface: {
-      primary: '#FFFFFF',
-      secondary: '#F9FAFB',
+      primary: colors.background.secondary,
+      secondary: colors.background.tertiary,
     },
     text: {
-      primary: '#1F2937',
-      secondary: '#6B7280',
-      tertiary: '#9CA3AF',
+      primary: colors.text.primary,
+      secondary: colors.text.secondary,
+      tertiary: colors.text.tertiary,
     },
     border: {
-      subtle: '#E5E7EB',
-      light: '#D1D5DB',
+      subtle: colors.border,
+      light: colors.borderDark,
       dark: '#9CA3AF',
     },
   },
   spacing: {
-    xs: '4px',
-    sm: '8px',
-    md: '16px',
-    lg: '24px',
-    xl: '32px',
+    xs: spacing.xs,
+    sm: spacing.sm,
+    md: spacing.md,
+    lg: spacing.lg,
+    xl: spacing.xl,
   },
   borderRadius: {
-    sm: '4px',
-    md: '8px',
-    lg: '12px',
-    xl: '16px',
+    sm: radius.sm,
+    md: radius.lg, // nadia md (8px) = theme lg (8px)
+    lg: radius.xl, // nadia lg (12px) = theme xl (12px)
+    xl: radius.xxl, // nadia xl (16px) = theme xxl (16px)
   },
   shadows: {
-    sm: '0 1px 2px 0 rgba(0, 0, 0, 0.05)',
-    md: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
-    lg: '0 10px 15px -3px rgba(0, 0, 0, 0.1)',
+    sm: shadows.sm,
+    md: shadows.md,
+    lg: shadows.lg,
   },
   transitions: {
-    fast: '150ms ease',
-    base: '250ms ease',
-    slow: '350ms ease',
+    fast: `${transitions.durations.shorter} ${transitions.easing.easeInOut}`,
+    base: `${transitions.durations.short} ${transitions.easing.easeInOut}`,
+    slow: `${transitions.durations.long} ${transitions.easing.easeInOut}`,
   },
 };
 
@@ -113,8 +119,8 @@ export const ConversationListHeader = styled.div`
 
   h2 {
     margin: 0;
-    font-size: 16px;
-    font-weight: 600;
+    font-size: ${typography.sizes.base};
+    font-weight: ${typography.weights.semibold};
     color: ${tokens.colors.text.primary};
   }
 `;
@@ -133,7 +139,7 @@ export const ConversationListScroll = styled.div`
 
   &::-webkit-scrollbar-thumb {
     background: ${tokens.colors.border.light};
-    border-radius: 4px;
+    border-radius: ${radius.sm};
 
     &:hover {
       background: ${tokens.colors.border.dark};
@@ -147,7 +153,7 @@ export const ConversationListItem = styled.div<{ isSelected?: boolean }>`
   border-bottom: 1px solid ${tokens.colors.border.subtle};
   transition: background-color ${tokens.transitions.fast};
 
-  ${(props) =>
+  ${props =>
     props.isSelected &&
     css`
       background-color: ${tokens.colors.primary}15;
@@ -173,14 +179,14 @@ export const ConversationItemHeader = styled.div`
 
 export const ConversationItemName = styled.p`
   margin: 0;
-  font-weight: 600;
-  font-size: 14px;
+  font-weight: ${typography.weights.semibold};
+  font-size: ${typography.sizes.base};
   color: ${tokens.colors.text.primary};
 `;
 
 export const ConversationItemInfo = styled.p`
   margin: 0;
-  font-size: 12px;
+  font-size: ${typography.sizes.xs};
   color: ${tokens.colors.text.tertiary};
 `;
 
@@ -189,10 +195,10 @@ export const StatusBadge = styled.span<{ status: string }>`
   padding: 2px 8px;
   border-radius: ${tokens.borderRadius.sm};
   font-size: 11px;
-  font-weight: 600;
+  font-weight: ${typography.weights.semibold};
   text-transform: uppercase;
 
-  ${(props) => {
+  ${props => {
     switch (props.status) {
       case 'ACTIVE':
         return css`
@@ -227,7 +233,7 @@ export const LeadScoreBar = styled.div`
   display: flex;
   align-items: center;
   gap: ${tokens.spacing.sm};
-  font-size: 12px;
+  font-size: ${typography.sizes.xs};
   color: ${tokens.colors.text.secondary};
 `;
 
@@ -242,8 +248,8 @@ export const ScoreBarFill = styled.div<{ score: number }>`
     content: '';
     display: block;
     height: 100%;
-    width: ${(props) => props.score}%;
-    background: ${(props) =>
+    width: ${props => props.score}%;
+    background: ${props =>
       props.score >= 75
         ? tokens.colors.success
         : props.score >= 50
@@ -262,8 +268,8 @@ export const UnreadBadge = styled.span`
   background-color: ${tokens.colors.danger};
   color: white;
   border-radius: 50%;
-  font-size: 12px;
-  font-weight: 600;
+  font-size: ${typography.sizes.xs};
+  font-weight: ${typography.weights.semibold};
 `;
 
 /**
@@ -299,14 +305,14 @@ export const MessageViewerHeaderContent = styled.div`
 
   h3 {
     margin: 0;
-    font-size: 16px;
-    font-weight: 600;
+    font-size: ${typography.sizes.base};
+    font-weight: ${typography.weights.semibold};
     color: ${tokens.colors.text.primary};
   }
 
   p {
     margin: 0;
-    font-size: 13px;
+    font-size: ${typography.sizes.sm};
     color: ${tokens.colors.text.secondary};
   }
 `;
@@ -329,7 +335,7 @@ export const MessageViewerContent = styled.div`
 
   &::-webkit-scrollbar-thumb {
     background: ${tokens.colors.border.light};
-    border-radius: 4px;
+    border-radius: ${radius.sm};
 
     &:hover {
       background: ${tokens.colors.border.dark};
@@ -339,18 +345,16 @@ export const MessageViewerContent = styled.div`
 
 export const MessageBubble = styled.div<{ sender: 'CUSTOMER' | 'AGENT' }>`
   display: flex;
-  flex-direction: ${(props) => (props.sender === 'CUSTOMER' ? 'row' : 'row-reverse')};
+  flex-direction: ${props => (props.sender === 'CUSTOMER' ? 'row' : 'row-reverse')};
   align-items: flex-end;
   gap: ${tokens.spacing.sm};
 `;
 
 export const MessageContent = styled.div<{ sender: 'CUSTOMER' | 'AGENT' }>`
   max-width: 70%;
-  background: ${(props) =>
-    props.sender === 'CUSTOMER'
-      ? tokens.colors.primary
-      : tokens.colors.surface.secondary};
-  color: ${(props) => (props.sender === 'CUSTOMER' ? 'white' : tokens.colors.text.primary)};
+  background: ${props =>
+    props.sender === 'CUSTOMER' ? tokens.colors.primary : tokens.colors.surface.secondary};
+  color: ${props => (props.sender === 'CUSTOMER' ? 'white' : tokens.colors.text.primary)};
   padding: ${tokens.spacing.md};
   border-radius: ${tokens.borderRadius.lg};
   word-break: break-word;
@@ -362,7 +366,7 @@ export const MessageContent = styled.div<{ sender: 'CUSTOMER' | 'AGENT' }>`
 `;
 
 export const MessageMetadata = styled.div`
-  font-size: 12px;
+  font-size: ${typography.sizes.xs};
   color: ${tokens.colors.text.tertiary};
   display: flex;
   gap: ${tokens.spacing.sm};
@@ -375,7 +379,7 @@ export const SentimentBadge = styled.span<{ sentiment?: string }>`
   align-items: center;
   gap: ${tokens.spacing.xs};
   padding: 2px 8px;
-  background: ${(props) => {
+  background: ${props => {
     switch (props.sentiment) {
       case 'POSITIVE':
         return '#dcfce7';
@@ -385,7 +389,7 @@ export const SentimentBadge = styled.span<{ sentiment?: string }>`
         return '#f3f4f6';
     }
   }};
-  color: ${(props) => {
+  color: ${props => {
     switch (props.sentiment) {
       case 'POSITIVE':
         return '#166534';
@@ -397,7 +401,7 @@ export const SentimentBadge = styled.span<{ sentiment?: string }>`
   }};
   border-radius: ${tokens.borderRadius.sm};
   font-size: 11px;
-  font-weight: 500;
+  font-weight: ${typography.weights.medium};
 `;
 
 export const EmptyState = styled.div`
@@ -411,7 +415,7 @@ export const EmptyState = styled.div`
 
   p {
     margin: 0;
-    font-size: 14px;
+    font-size: ${typography.sizes.base};
   }
 `;
 
@@ -439,7 +443,7 @@ export const MessageTypeSelect = styled.select`
   border-radius: ${tokens.borderRadius.md};
   background: ${tokens.colors.surface.primary};
   color: ${tokens.colors.text.primary};
-  font-size: 13px;
+  font-size: ${typography.sizes.sm};
   cursor: pointer;
   transition: border-color ${tokens.transitions.fast};
 
@@ -461,7 +465,7 @@ export const MessageTextarea = styled.textarea`
   background: ${tokens.colors.surface.primary};
   color: ${tokens.colors.text.primary};
   font-family: inherit;
-  font-size: 14px;
+  font-size: ${typography.sizes.base};
   resize: none;
   max-height: 150px;
   transition: border-color ${tokens.transitions.fast};
@@ -489,9 +493,8 @@ export const MessageInputFooter = styled.div`
 `;
 
 export const CharCount = styled.span<{ isWarning?: boolean }>`
-  font-size: 12px;
-  color: ${(props) =>
-    props.isWarning ? tokens.colors.warning : tokens.colors.text.tertiary};
+  font-size: ${typography.sizes.xs};
+  color: ${props => (props.isWarning ? tokens.colors.warning : tokens.colors.text.tertiary)};
 `;
 
 export const SendButton = styled.button`
@@ -500,8 +503,8 @@ export const SendButton = styled.button`
   color: white;
   border: none;
   border-radius: ${tokens.borderRadius.md};
-  font-size: 14px;
-  font-weight: 600;
+  font-size: ${typography.sizes.base};
+  font-weight: ${typography.weights.semibold};
   cursor: pointer;
   transition: all ${tokens.transitions.fast};
 
@@ -546,8 +549,8 @@ export const QueueManagerHeader = styled.div`
 
   h3 {
     margin: 0 0 ${tokens.spacing.md} 0;
-    font-size: 16px;
-    font-weight: 600;
+    font-size: ${typography.sizes.base};
+    font-weight: ${typography.weights.semibold};
     color: ${tokens.colors.text.primary};
   }
 `;
@@ -562,7 +565,7 @@ export const StatItem = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  font-size: 12px;
+  font-size: ${typography.sizes.xs};
   padding: ${tokens.spacing.sm} 0;
 
   span:first-child {
@@ -571,7 +574,7 @@ export const StatItem = styled.div`
 
   span:last-child {
     color: ${tokens.colors.text.primary};
-    font-weight: 600;
+    font-weight: ${typography.weights.semibold};
   }
 `;
 
@@ -621,8 +624,8 @@ export const QueueItemHeader = styled.div`
 
 export const QueueItemName = styled.p`
   margin: 0;
-  font-size: 13px;
-  font-weight: 600;
+  font-size: ${typography.sizes.sm};
+  font-weight: ${typography.weights.semibold};
   color: ${tokens.colors.text.primary};
 `;
 
@@ -637,10 +640,10 @@ export const PriorityBadge = styled.span<{ priority: string }>`
   padding: 2px 6px;
   border-radius: 3px;
   font-size: 10px;
-  font-weight: 600;
+  font-weight: ${typography.weights.semibold};
   text-transform: uppercase;
 
-  ${(props) => {
+  ${props => {
     switch (props.priority) {
       case 'URGENT':
         return css`
@@ -678,7 +681,7 @@ export const AssignAgentInput = styled.input`
   border-radius: ${tokens.borderRadius.md};
   background: ${tokens.colors.surface.primary};
   color: ${tokens.colors.text.primary};
-  font-size: 12px;
+  font-size: ${typography.sizes.xs};
   transition: border-color ${tokens.transitions.fast};
 
   &:focus {
@@ -694,8 +697,8 @@ export const AssignButtonSmall = styled.button`
   color: white;
   border: none;
   border-radius: ${tokens.borderRadius.md};
-  font-size: 12px;
-  font-weight: 600;
+  font-size: ${typography.sizes.xs};
+  font-weight: ${typography.weights.semibold};
   cursor: pointer;
   transition: all ${tokens.transitions.fast};
 
@@ -745,7 +748,7 @@ export const ErrorAlert = styled.div`
   color: #991b1b;
   border: 1px solid #fecaca;
   border-radius: ${tokens.borderRadius.md};
-  font-size: 13px;
+  font-size: ${typography.sizes.sm};
   display: flex;
   gap: ${tokens.spacing.sm};
   align-items: flex-start;
@@ -756,7 +759,7 @@ export const ErrorAlert = styled.div`
     border: none;
     color: inherit;
     cursor: pointer;
-    font-size: 16px;
+    font-size: ${typography.sizes.base};
     padding: 0;
   }
 `;

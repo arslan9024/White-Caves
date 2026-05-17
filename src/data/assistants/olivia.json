@@ -1,0 +1,66 @@
+{
+  "campaigns": [
+    {
+      "id": "camp-1",
+      "name": "New Year Launch 2026",
+      "type": "digital",
+      "status": "active",
+      "budget": 150000,
+      "spent": 89000,
+      "impressions": 2500000,
+      "clicks": 45000,
+      "leads": 234,
+      "startDate": "2026-01-01",
+      "endDate": "2026-01-31"
+    },
+    {
+      "id": "camp-2",
+      "name": "DAMAC Hills 2 Feature",
+      "type": "social",
+      "status": "active",
+      "budget": 75000,
+      "spent": 45000,
+      "impressions": 890000,
+      "clicks": 23000,
+      "leads": 156,
+      "startDate": "2025-12-15",
+      "endDate": "2026-02-15"
+    },
+    {
+      "id": "camp-3",
+      "name": "Ramadan 2026",
+      "type": "multi-channel",
+      "status": "planning",
+      "budget": 250000,
+      "spent": 0,
+      "startDate": "2026-03-01"
+    }
+  ],
+  "socialMedia": {
+    "instagram": { "followers": 125000, "engagement": 4.2, "postsThisWeek": 12 },
+    "facebook": { "followers": 89000, "engagement": 2.8, "postsThisWeek": 8 },
+    "linkedin": { "followers": 45000, "engagement": 3.5, "postsThisWeek": 5 },
+    "tiktok": { "followers": 67000, "engagement": 8.5, "postsThisWeek": 15 }
+  },
+  "content": [
+    { "id": "cont-1", "title": "Luxury Living in Dubai Marina", "type": "video", "status": "published", "views": 45000, "date": "2026-01-08" },
+    { "id": "cont-2", "title": "Investment Guide 2026", "type": "article", "status": "published", "views": 12000, "date": "2026-01-05" },
+    { "id": "cont-3", "title": "Virtual Tour: Olympus Cluster", "type": "virtual_tour", "status": "in_production", "date": "2026-01-15" }
+  ],
+  "listings": {
+    "active": 156,
+    "withPhotos": 145,
+    "withVideos": 89,
+    "withVirtualTour": 34,
+    "avgViews": 2500,
+    "topPerforming": "VH-A-101 Veneto Villa"
+  },
+  "stats": {
+    "totalImpressions": 5800000,
+    "totalClicks": 89000,
+    "ctr": 1.53,
+    "totalLeads": 567,
+    "costPerLead": 125,
+    "brandMentions": 234
+  }
+}

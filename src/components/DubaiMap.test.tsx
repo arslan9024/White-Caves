@@ -158,7 +158,7 @@ describe('DubaiMap', () => {
   // ────── Custom Properties ──────
 
   it('accepts custom properties', () => {
-    const customProps = [
+    const customProps: Array<{ id: number; title: string; area: string; price: number; beds: number; type: 'luxury' | 'residential' | 'commercial'; image: string }> = [
       { id: 1, title: 'Custom Villa', area: 'palm', price: 10000000, beds: 3, type: 'luxury', image: 'custom.jpg' },
     ];
     render(<DubaiMap properties={customProps} />);

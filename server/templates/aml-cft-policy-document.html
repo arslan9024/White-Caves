@@ -1,0 +1,1100 @@
+<!-- AML/CFT Policy Document Template -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AML/CFT Policy Framework</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      line-height: 1.6;
+      color: #333;
+      background-color: #f5f5f5;
+    }
+    .document {
+      background-color: white;
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 50px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    .cover-page {
+      text-align: center;
+      padding: 80px 0;
+      border-bottom: 3px solid #003366;
+      margin-bottom: 50px;
+    }
+    .company-logo {
+      font-size: 32px;
+      font-weight: bold;
+      color: #003366;
+      margin-bottom: 20px;
+    }
+    .title {
+      font-size: 28px;
+      font-weight: bold;
+      color: #003366;
+      margin: 30px 0;
+      text-transform: uppercase;
+    }
+    .subtitle {
+      font-size: 18px;
+      color: #666;
+      margin: 20px 0;
+    }
+    .version-info {
+      margin: 40px 0;
+      font-size: 12px;
+      color: #666;
+    }
+    .approval-section {
+      margin: 60px 0;
+      border-top: 2px solid #ccc;
+      padding-top: 30px;
+    }
+    .approval-section h3 {
+      color: #003366;
+      font-size: 14px;
+      text-transform: uppercase;
+      margin-bottom: 30px;
+    }
+    .approval-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 40px;
+    }
+    .approval-item {
+      text-align: center;
+    }
+    .signature-space {
+      border-top: 2px solid #333;
+      height: 60px;
+      margin-bottom: 10px;
+    }
+    .approval-name {
+      font-weight: bold;
+      font-size: 13px;
+      margin: 10px 0;
+    }
+    .approval-title {
+      font-size: 12px;
+      color: #666;
+      margin: 5px 0;
+    }
+    .approval-date {
+      font-size: 12px;
+      color: #666;
+      margin-top: 15px;
+    }
+    .table-of-contents {
+      margin: 40px 0;
+      page-break-after: avoid;
+    }
+    .toc-title {
+      font-size: 16px;
+      font-weight: bold;
+      color: #003366;
+      margin-bottom: 20px;
+    }
+    .toc-item {
+      padding: 8px 0;
+      border-bottom: 1px dotted #ccc;
+      display: flex;
+      justify-content: space-between;
+      font-size: 13px;
+    }
+    .toc-item strong {
+      color: #003366;
+    }
+    .section {
+      margin: 40px 0;
+      page-break-inside: avoid;
+    }
+    .section-title {
+      font-size: 18px;
+      font-weight: bold;
+      color: #003366;
+      margin-bottom: 20px;
+      padding-bottom: 10px;
+      border-bottom: 2px solid #003366;
+    }
+    .section-content {
+      line-height: 1.8;
+      text-align: justify;
+    }
+    .section-content h4 {
+      color: #003366;
+      margin-top: 20px;
+      margin-bottom: 10px;
+      font-size: 14px;
+      text-transform: uppercase;
+    }
+    .section-content p {
+      margin: 12px 0;
+    }
+    .section-content ul,
+    .section-content ol {
+      margin: 15px 0 15px 30px;
+    }
+    .section-content li {
+      margin: 8px 0;
+    }
+    .highlight-box {
+      background-color: #f0f8ff;
+      border-left: 4px solid #003366;
+      padding: 15px;
+      margin: 20px 0;
+      border-radius: 3px;
+    }
+    .warning-box {
+      background-color: #fffacd;
+      border-left: 4px solid #ff9800;
+      padding: 15px;
+      margin: 20px 0;
+      border-radius: 3px;
+    }
+    .table-wrapper {
+      margin: 20px 0;
+      overflow-x: auto;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 15px 0;
+    }
+    table th {
+      background-color: #003366;
+      color: white;
+      padding: 12px;
+      text-align: left;
+      font-size: 12px;
+      font-weight: bold;
+      text-transform: uppercase;
+    }
+    table td {
+      padding: 12px;
+      border-bottom: 1px solid #ddd;
+      font-size: 13px;
+    }
+    table tr:nth-child(even) {
+      background-color: #f9f9f9;
+    }
+    .footer {
+      margin-top: 50px;
+      padding-top: 20px;
+      border-top: 1px solid #ccc;
+      text-align: center;
+      font-size: 11px;
+      color: #999;
+    }
+    .page-break {
+      page-break-before: always;
+    }
+    @media print {
+      body {
+        background: white;
+      }
+      .document {
+        box-shadow: none;
+        padding: 0;
+      }
+      .page-break {
+        page-break-before: always;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="document">
+    <!-- COVER PAGE -->
+    <div class="cover-page">
+      <div class="company-logo">WHITE CAVES REAL ESTATE LLC</div>
+      <div class="title">Anti-Money Laundering & Counter Financing of Terrorism Policy</div>
+      <div class="subtitle">AML/CFT Compliance Framework</div>
+      <div class="subtitle">Dubai, United Arab Emirates</div>
+
+      <div class="version-info">
+        <p>Document Version: 1.0</p>
+        <p>Effective Date: {{effectiveDate}}</p>
+        <p>Last Updated: {{lastUpdated}}</p>
+        <p>Next Review Date: {{nextReviewDate}}</p>
+      </div>
+
+      <div class="approval-section">
+        <h3>Approval & Ratification</h3>
+        <div class="approval-grid">
+          <div class="approval-item">
+            <div class="signature-space"></div>
+            <div class="approval-name">{{ceoName}}</div>
+            <div class="approval-title">Managing Director / Owner</div>
+            <div class="approval-date">Date: _______________</div>
+          </div>
+          <div class="approval-item">
+            <div class="signature-space"></div>
+            <div class="approval-name">{{complianceOfficer}}</div>
+            <div class="approval-title">AML Compliance Officer</div>
+            <div class="approval-date">Date: _______________</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PAGE BREAK -->
+    <div class="page-break"></div>
+
+    <!-- TABLE OF CONTENTS -->
+    <div class="table-of-contents">
+      <h2 class="toc-title">TABLE OF CONTENTS</h2>
+      <div class="toc-item"><strong>1. INTRODUCTION & PURPOSE</strong><span>3</span></div>
+      <div class="toc-item"><strong>2. LEGAL FRAMEWORK & REGULATORY COMPLIANCE</strong><span>4</span></div>
+      <div class="toc-item"><strong>3. AML COMPLIANCE OFFICER</strong><span>5</span></div>
+      <div class="toc-item"><strong>4. CUSTOMER DUE DILIGENCE (CDD)</strong><span>6</span></div>
+      <div class="toc-item"><strong>5. ENHANCED DUE DILIGENCE (EDD) FOR HIGH-RISK CUSTOMERS</strong><span>8</span></div>
+      <div class="toc-item"><strong>6. TRANSACTION MONITORING & SUSPICIOUS ACTIVITY</strong><span>9</span></div>
+      <div class="toc-item"><strong>7. REPORTING SUSPICIOUS TRANSACTIONS</strong><span>10</span></div>
+      <div class="toc-item"><strong>8. RECORD KEEPING & DOCUMENTATION</strong><span>11</span></div>
+      <div class="toc-item"><strong>9. STAFF TRAINING & AWARENESS</strong><span>12</span></div>
+      <div class="toc-item"><strong>10. INTERNAL AUDIT & COMPLIANCE REVIEW</strong><span>13</span></div>
+      <div class="toc-item"><strong>11. RISK ASSESSMENT</strong><span>14</span></div>
+      <div class="toc-item"><strong>12. PENALTIES & ENFORCEMENT</strong><span>15</span></div>
+      <div class="toc-item"><strong>13. POLICY REVIEW & AMENDMENTS</strong><span>16</span></div>
+    </div>
+
+    <!-- PAGE BREAK -->
+    <div class="page-break"></div>
+
+    <!-- SECTION 1 -->
+    <div class="section">
+      <h2 class="section-title">1. INTRODUCTION & PURPOSE</h2>
+      <div class="section-content">
+        <p>
+          White Caves Real Estate LLC ("the Company") is committed to preventing the use of its real estate transaction 
+          services for money laundering (ML), financing of terrorism (FT), and proliferation financing. This Anti-Money 
+          Laundering and Counter Financing of Terrorism Policy ("the Policy") establishes the company-wide compliance 
+          framework to ensure adherence to all applicable AML/CFT laws, regulations, and guidelines issued by the UAE 
+          government and regulatory authorities.
+        </p>
+
+        <h4>1.1 Purpose</h4>
+        <p>The purpose of this Policy is to:</p>
+        <ul>
+          <li>Establish clear AML/CFT responsibilities and procedures within White Caves Real Estate LLC</li>
+          <li>Ensure compliance with Federal Decree Law No (20) of 2018 and Cabinet Decision No (10) of 2019</li>
+          <li>Protect the company from regulatory penalties, reputational damage, and involvement in illicit activities</li>
+          <li>Implement Customer Due Diligence (CDD) and Enhanced Due Diligence (EDD) procedures</li>
+          <li>Monitor transactions for suspicious activity and file timely reports with the UAE FIU</li>
+          <li>Maintain proper documentation and record-keeping practices</li>
+          <li>Provide mandatory AML/CFT training to all staff members</li>
+          <li>Conduct periodic internal audits and compliance reviews</li>
+        </ul>
+
+        <h4>1.2 Scope</h4>
+        <p>
+          This Policy applies to all employees, agents, authorized representatives, and contractors of White Caves Real Estate LLC. 
+          All staff members must understand and comply with the procedures outlined herein.
+        </p>
+
+        <h4>1.3 Effective Date & Review</h4>
+        <p>
+          This Policy is effective as of {{effectiveDate}} and will be reviewed annually or when regulatory changes occur. 
+          The next scheduled review is {{nextReviewDate}}.
+        </p>
+      </div>
+    </div>
+
+    <!-- SECTION 2 -->
+    <div class="section">
+      <h2 class="section-title">2. LEGAL FRAMEWORK & REGULATORY COMPLIANCE</h2>
+      <div class="section-content">
+        <h4>2.1 Governing Laws & Regulations</h4>
+        <p>White Caves Real Estate LLC operates under the following legal framework:</p>
+        <ul>
+          <li><strong>Federal Decree Law No (20) of 2018</strong> on Anti-Money Laundering and Combating the Financing of Terrorism</li>
+          <li><strong>Cabinet Decision No (10) of 2019</strong> implementing the AML/CFT law</li>
+          <li><strong>Administrative Decision No (1005) of 2019</strong> on Anti-Money Laundering and Counter Financing of Terrorism Procedures and Guidelines</li>
+          <li><strong>DFSA Rulebook & General Prudential Rules (GPR)</strong> for financial institutions</li>
+          <li><strong>AMLR Rules</strong> (Anti-Money Laundering Rules) for reporting entities</li>
+          <li><strong>UAE FIU Guidelines & Directives</strong> on goAML portal procedures</li>
+          <li><strong>DED (Department of Economic Development) Guidelines</strong> on Commercial Licensees</li>
+        </ul>
+
+        <h4>2.2 Key Regulatory Obligations</h4>
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>Obligation</th>
+                <th>Responsibility</th>
+                <th>Timeline</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Register on goAML Portal</td>
+                <td>AML Compliance Officer</td>
+                <td>Upon appointment</td>
+              </tr>
+              <tr>
+                <td>Conduct Customer Due Diligence (CDD)</td>
+                <td>Sales & Compliance Teams</td>
+                <td>Before customer acceptance</td>
+              </tr>
+              <tr>
+                <td>File Suspicious Transaction Reports (STRs)</td>
+                <td>AML Compliance Officer</td>
+                <td>Within 5 business days of identification</td>
+              </tr>
+              <tr>
+                <td>Maintain Compliance Records</td>
+                <td>Compliance Officer & Data Manager</td>
+                <td>Minimum 5 years</td>
+              </tr>
+              <tr>
+                <td>Conduct Annual Staff Training</td>
+                <td>HR & Compliance Officer</td>
+                <td>Annually (100% participation)</td>
+              </tr>
+              <tr>
+                <td>Perform Internal Audit</td>
+                <td>Compliance Officer & External Auditors</td>
+                <td>Annually</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h4>2.3 Penalties for Non-Compliance</h4>
+        <p>
+          Failure to comply with AML/CFT laws exposes White Caves Real Estate LLC to serious penalties, including:
+        </p>
+        <ul>
+          <li>Administrative fines up to AED 1,000,000 for natural persons and up to AED 5,000,000 for entities</li>
+          <li>Suspension or revocation of commercial license</li>
+          <li>Criminal prosecution of responsible individuals</li>
+          <li>Seizure and forfeiture of suspicious assets</li>
+          <li>International sanctions and FATF grey-listing</li>
+          <li>Severe reputational damage</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- SECTION 3 -->
+    <div class="section">
+      <h2 class="section-title">3. AML COMPLIANCE OFFICER</h2>
+      <div class="section-content">
+        <h4>3.1 Appointment & Authority</h4>
+        <p>
+          White Caves Real Estate LLC has appointed {{complianceOfficer}} as the AML Compliance Officer, effective {{complianceOfficerStartDate}}.
+        </p>
+
+        <div class="highlight-box">
+          <p>
+            <strong>Key Responsibility:</strong> The AML Compliance Officer is the single point of contact for all AML/CFT matters 
+            and has the authority to make decisions regarding customer acceptance, transaction approval, and regulatory communications.
+          </p>
+        </div>
+
+        <h4>3.2 Key Responsibilities</h4>
+        <ul>
+          <li>Register and maintain company profile on the goAML portal</li>
+          <li>Develop and update AML/CFT policies and procedures</li>
+          <li>Approve Customer Due Diligence assessments</li>
+          <li>Monitor transactions and identify suspicious activity</li>
+          <li>File Suspicious Transaction Reports (STRs) with UAE FIU</li>
+          <li>Maintain compliance documentation and records</li>
+          <li>Conduct and document staff training</li>
+          <li>Represent the company in regulatory communications</li>
+          <li>Perform periodic internal audits</li>
+          <li>Report compliance status to Senior Management monthly</li>
+        </ul>
+
+        <h4>3.3 Authority Limitations</h4>
+        <p>
+          The AML Compliance Officer's authority is limited to AML/CFT matters. For transactions exceeding AED 50,000,000 
+          or involving government entities, approval from the Managing Director is required in addition to AML clearance.
+        </p>
+
+        <h4>3.4 Access & Resources</h4>
+        <p>
+          The AML Compliance Officer shall have:
+        </p>
+        <ul>
+          <li>Direct access to all customer information and transaction records</li>
+          <li>Authority to request additional information from employees and customers</li>
+          <li>Dedicated budget for compliance tools and training</li>
+          <li>Reporting line directly to Senior Management / Board</li>
+          <li>Protection from retaliation or interference</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- SECTION 4 -->
+    <div class="section">
+      <h2 class="section-title">4. CUSTOMER DUE DILIGENCE (CDD)</h2>
+      <div class="section-content">
+        <h4>4.1 CDD Timing & Triggers</h4>
+        <p>
+          Customer Due Diligence must be performed:
+        </p>
+        <ul>
+          <li>Before accepting a new customer for property transactions</li>
+          <li>When updating customer information</li>
+          <li>When suspicious activity is identified</li>
+          <li>Periodically (at least every 3 years) for existing customers</li>
+        </ul>
+
+        <h4>4.2 CDD Information Requirements</h4>
+        <p>
+          For all new customers, the following information must be collected and verified:
+        </p>
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>Information</th>
+                <th>Individuals</th>
+                <th>Legal Entities</th>
+                <th>Verification Method</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Full Legal Name</td>
+                <td>Yes</td>
+                <td>Yes</td>
+                <td>ID / Business License</td>
+              </tr>
+              <tr>
+                <td>Date of Birth</td>
+                <td>Yes</td>
+                <td>N/A</td>
+                <td>ID / Passport</td>
+              </tr>
+              <tr>
+                <td>Nationality</td>
+                <td>Yes</td>
+                <td>N/A</td>
+                <td>Passport / ID</td>
+              </tr>
+              <tr>
+                <td>Occupation / Business Type</td>
+                <td>Yes</td>
+                <td>Yes</td>
+                <td>Customer Statement</td>
+              </tr>
+              <tr>
+                <td>Source of Funds</td>
+                <td>Yes</td>
+                <td>Yes</td>
+                <td>Bank Statements / Business Records</td>
+              </tr>
+              <tr>
+                <td>Beneficial Owners (>25%)</td>
+                <td>N/A</td>
+                <td>Yes</td>
+                <td>Ownership Documentation</td>
+              </tr>
+              <tr>
+                <td>Residential Address</td>
+                <td>Yes</td>
+                <td>Yes</td>
+                <td>Recent Utility Bills / Lease</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h4>4.3 CDD Risk Assessment</h4>
+        <p>
+          Based on the information collected, each customer is assigned a risk classification:
+        </p>
+        <ul>
+          <li><strong>LOW RISK:</strong> Domestic individuals, established businesses, transparent source of funds</li>
+          <li><strong>MEDIUM RISK:</strong> Foreign nationals, shell companies, complex ownership structures</li>
+          <li><strong>HIGH RISK:</strong> PEPs, sanctioned jurisdictions, cash-based transactions, complex beneficial ownership</li>
+        </ul>
+
+        <h4>4.4 CDD Documentation</h4>
+        <p>
+          All CDD information must be documented in the standardized CDD Form and attached documents must include:
+        </p>
+        <ul>
+          <li>Copy of valid identification (passport, ID, business license)</li>
+          <li>Address verification (utility bill not older than 3 months)</li>
+          <li>Proof of source of funds (bank statements, employment letter, business records)</li>
+          <li>Beneficial ownership documentation (for entities)</li>
+          <li>Risk assessment conclusion and officer sign-off</li>
+        </ul>
+
+        <div class="warning-box">
+          <p>
+            <strong>CRITICAL:</strong> No customer transaction shall proceed without completed and approved CDD. 
+            Bypassing CDD procedures is grounds for immediate disciplinary action.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- PAGE BREAK -->
+    <div class="page-break"></div>
+
+    <!-- SECTION 5 -->
+    <div class="section">
+      <h2 class="section-title">5. ENHANCED DUE DILIGENCE (EDD) FOR HIGH-RISK CUSTOMERS</h2>
+      <div class="section-content">
+        <h4>5.1 EDD Triggers</h4>
+        <p>
+          Enhanced Due Diligence must be performed for customers meeting any of the following criteria:
+        </p>
+        <ul>
+          <li>Transaction value exceeds AED 5,000,000</li>
+          <li>Customer is a Politically Exposed Person (PEP) or family member</li>
+          <li>Customer is from a high-risk or FATF grey-listed jurisdiction</li>
+          <li>Customer has complex beneficial ownership or structures</li>
+          <li>Cash-based transactions or unusual payment methods</li>
+          <li>Customer refuses to provide standard CDD information</li>
+          <li>Previously identified as suspicious or involved in legal issues</li>
+        </ul>
+
+        <h4>5.2 EDD Procedures</h4>
+        <p>
+          For each high-risk customer, the Compliance Officer must:
+        </p>
+        <ul>
+          <li>Conduct enhanced background checks using international databases</li>
+          <li>Perform PEP screening against OFAC, UN, and DFSA lists</li>
+          <li>Verify source of funds with independent documentation</li>
+          <li>Conduct adverse media search</li>
+          <li>Interview customer to understand transaction purpose</li>
+          <li>Obtain additional documentation if necessary</li>
+          <li>Document all findings in the EDD Report</li>
+          <li>Obtain explicit approval from Managing Director before proceeding</li>
+        </ul>
+
+        <h4>5.3 PEP Definition & Screening</h4>
+        <p>
+          A Politically Exposed Person (PEP) is an individual who holds or has held a high-ranking public office in the 
+          last 12 months, including:
+        </p>
+        <ul>
+          <li>Government ministers and senior officials</li>
+          <li>Military or law enforcement leaders</li>
+          <li>Heads of state-owned enterprises</li>
+          <li>Senior judicial officers</li>
+          <li>Members of parliament / legislative bodies</li>
+          <li>Close family members of PEPs</li>
+          <li>Business associates of PEPs</li>
+        </ul>
+
+        <p>
+          All new customers must be screened against the following lists:
+        </p>
+        <ul>
+          <li>UAE Federal Authority for Identity & Citizenship PEP list</li>
+          <li>US OFAC Specially Designated Nationals (SDN) list</li>
+          <li>UN Security Council Sanctions lists</li>
+          <li>EU Consolidated Sanctions list</li>
+          <li>UK OFSI Sanctions list</li>
+          <li>DFSA Enforcement Directorate lists</li>
+        </ul>
+
+        <p>
+          Screening must be documented with the name, list checked, and screening result recorded in the CDD file.
+        </p>
+      </div>
+    </div>
+
+    <!-- SECTION 6 -->
+    <div class="section">
+      <h2 class="section-title">6. TRANSACTION MONITORING & SUSPICIOUS ACTIVITY</h2>
+      <div class="section-content">
+        <h4>6.1 Transaction Monitoring Framework</h4>
+        <p>
+          All property transactions shall be monitored for indicators of money laundering or terrorism financing. 
+          The Compliance Officer will maintain a transaction monitoring log documenting:
+        </p>
+        <ul>
+          <li>Customer name and identification</li>
+          <li>Transaction date, amount, and type</li>
+          <li>Property details (location, value, purpose)</li>
+          <li>Source of funds documentation</li>
+          <li>Risk assessment score</li>
+          <li>Monitoring result (cleared, referred, flagged)</li>
+        </ul>
+
+        <h4>6.2 Red Flags & Suspicious Indicators</h4>
+        <p>
+          Staff should watch for the following red flags that may indicate suspicious activity:
+        </p>
+        <ul>
+          <li><strong>Transaction Patterns:</strong> Unusual transaction amount, frequency, or timing; splitting transactions to avoid detection; cash payments for high-value properties</li>
+          <li><strong>Customer Behavior:</strong> Reluctance to provide required information; contradictory or inconsistent statements; transaction structure appears to lack commercial logic</li>
+          <li><strong>Financial Indicators:</strong> Funds from countries with weak AML controls; payment through multiple intermediaries; use of shell companies or offshore entities</li>
+          <li><strong>Relationship Indicators:</strong> Third-party involvement without clear business reason; family members or associates purchasing properties simultaneously</li>
+          <li><strong>Property-Specific:</strong> Overvaluation or undervaluation of property; purchase for immediate resale; property location in sensitive area; overpayment or unusual payment terms</li>
+        </ul>
+
+        <h4>6.3 Reporting Suspicious Activity Internally</h4>
+        <p>
+          Any employee who identifies suspicious activity must immediately report it to the AML Compliance Officer 
+          without disclosing suspicions to the customer. Failure to report is a serious compliance breach.
+        </p>
+
+        <div class="highlight-box">
+          <p>
+            <strong>Protection for Reporters:</strong> White Caves Real Estate LLC prohibits any retaliation against employees 
+            who report suspicious activity in good faith. Whistleblower protections are in place under company policy.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- SECTION 7 -->
+    <div class="section">
+      <h2 class="section-title">7. REPORTING SUSPICIOUS TRANSACTIONS</h2>
+      <div class="section-content">
+        <h4>7.1 STR Filing Obligation</h4>
+        <p>
+          When the Compliance Officer identifies a transaction that is suspected to be related to money laundering or 
+          terrorism financing, a Suspicious Transaction Report (STR) must be filed with the UAE Financial Intelligence Unit (FIU) 
+          via the goAML portal within five (5) business days of identification.
+        </p>
+
+        <h4>7.2 STR Content & Documentation</h4>
+        <p>
+          Each STR must include:
+        </p>
+        <ul>
+          <li>Complete customer identification and CDD information</li>
+          <li>Transaction details (date, amount, type, parties involved)</li>
+          <li>Detailed description of suspicious activity and red flags observed</li>
+          <li>Analysis of why activity is suspected to be ML/FT-related</li>
+          <li>All supporting documentation (CDD forms, transaction records, communications)</li>
+          <li>Officer signature and date of report</li>
+        </ul>
+
+        <h4>7.3 Post-Reporting Actions</h4>
+        <p>
+          After filing an STR:
+        </p>
+        <ul>
+          <li>The transaction shall not proceed without explicit direction from UAE FIU</li>
+          <li>The Compliance Officer shall continue monitoring the customer for further suspicious activity</li>
+          <li>No staff member shall disclose the filing of an STR to the customer (tipping off prohibited)</li>
+          <li>Documentation shall be retained in the compliance vault for minimum 5 years</li>
+          <li>Internal notification to Senior Management required (without customer awareness)</li>
+        </ul>
+
+        <h4>7.4 Prohibition on "Tipping Off"</h4>
+        <p>
+          <strong style="color: red;">IT IS STRICTLY PROHIBITED</strong> to inform a customer that an STR has been filed or that 
+          the company suspects them of involvement in money laundering or terrorism financing. Doing so is a criminal offense 
+          under UAE law and can result in imprisonment and fines. Employees found "tipping off" will face immediate termination 
+          and criminal prosecution.
+        </p>
+
+        <h4>7.5 Currency Transaction Reports (CTRs)</h4>
+        <p>
+          If not applicable to real estate transactions, this section may be omitted. However, if the company handles deposits 
+          or currency exchanges, the following applies:
+        </p>
+        <p>
+          Any deposit transaction exceeding AED 10,000 must be documented. If multiple deposits by the same customer within 
+          a 5-day period total over AED 10,000, a Currency Transaction Report should be filed.
+        </p>
+      </div>
+    </section>
+
+    <!-- SECTION 8 -->
+    <div class="section">
+      <h2 class="section-title">8. RECORD KEEPING & DOCUMENTATION</h2>
+      <div class="section-content">
+        <h4>8.1 Retention Period</h4>
+        <p>
+          All AML/CFT-related documentation must be retained for a minimum of five (5) years from the date of the transaction 
+          or the end of the customer relationship, whichever is later.
+        </p>
+
+        <h4>8.2 Records to Be Maintained</h4>
+        <ul>
+          <li>Customer identification documents (passport, ID, business license copies)</li>
+          <li>Completed CDD and EDD forms with risk assessment</li>
+          <li>Address verification documents</li>
+          <li>Source of funds documentation</li>
+          <li>Beneficial ownership information for entities</li>
+          <li>PEP screening results</li>
+          <li>Transaction records (contracts, payment receipts, wire transfer documents)</li>
+          <li>Communications with customers regarding transaction</li>
+          <li>Suspicious Activity Reports (SARs) and STRs filed</li>
+          <li>Internal compliance approvals and sign-offs</li>
+          <li>Staff training certificates and attendance records</li>
+          <li>Internal audit reports and findings</li>
+          <li>Compliance Officer monthly reports</li>
+        </ul>
+
+        <h4>8.3 Record Storage & Security</h4>
+        <p>
+          All compliance records shall be:
+        </p>
+        <ul>
+          <li>Stored in a secure, climate-controlled facility (physical records)</li>
+          <li>Maintained in an encrypted digital system with restricted access (digital records)</li>
+          <li>Protected from unauthorized access, alteration, or destruction</li>
+          <li>Organized by customer and transaction for easy retrieval during audits or regulatory inquiries</li>
+          <li>Backed up regularly with copies stored off-site</li>
+        </ul>
+
+        <h4>8.4 Inspection & Audit Access</h4>
+        <p>
+          Records must be available for inspection by:
+        </p>
+        <ul>
+          <li>UAE FIU during compliance examinations</li>
+          <li>DED inspectors during commercial license audits</li>
+          <li>External auditors performing compliance reviews</li>
+          <li>Internal auditors and Compliance Officer</li>
+          <li>Senior Management as part of governance oversight</li>
+        </ul>
+
+        <p>
+          Records should be organized and indexed to allow rapid retrieval during inspections. Any request for records 
+          from regulatory authorities should be immediately escalated to Senior Management and documented.
+        </p>
+      </div>
+    </section>
+
+    <!-- SECTION 9 -->
+    <div class="section">
+      <h2 class="section-title">9. STAFF TRAINING & AWARENESS</h2>
+      <div class="section-content">
+        <h4>9.1 Training Requirement</h4>
+        <p>
+          All employees of White Caves Real Estate LLC must complete mandatory AML/CFT training within 30 days of hire 
+          and annually thereafter. 100% staff participation is required.
+        </p>
+
+        <h4>9.2 Training Content</h4>
+        <p>
+          The annual training program shall cover:
+        </p>
+        <ul>
+          <li>Overview of UAE AML/CFT laws and regulations</li>
+          <li>Company AML/CFT policies and procedures</li>
+          <li>Customer Due Diligence (CDD) and Enhanced Due Diligence (EDD) procedures</li>
+          <li>Red flags and suspicious activity indicators</li>
+          <li>Transaction monitoring and reporting requirements</li>
+          <li>Prohibition on "tipping off" and consequences</li>
+          <li>Record keeping and documentation practices</li>
+          <li>Whistleblower protections and procedures</li>
+          <li>Case studies and real-world examples of AML/FT cases</li>
+          <li>Sanctions and consequences of non-compliance</li>
+        </ul>
+
+        <h4>9.3 Training Delivery</h4>
+        <p>
+          Training may be delivered through:
+        </p>
+        <ul>
+          <li>In-person workshops (preferred for comprehensive coverage)</li>
+          <li>Online training modules with quizzes</li>
+          <li>Video presentations</li>
+          <li>Combination of methods</li>
+        </ul>
+
+        <p>
+          All training must be documented with:
+        </p>
+        <ul>
+          <li>Attendance records (name, date, trainer)</li>
+          <li>Training materials and curriculum</li>
+          <li>Quiz or assessment results (if applicable)</li>
+          <li>Training certificate issued upon completion</li>
+          <li>Records retained for minimum 5 years</li>
+        </ul>
+
+        <h4>9.4 Role-Specific Training</h4>
+        <p>
+          The AML Compliance Officer shall receive advanced training covering:
+        </p>
+        <ul>
+          <li>Advanced money laundering typologies and techniques</li>
+          <li>goAML portal usage and reporting procedures</li>
+          <li>Investigations and STR preparation</li>
+          <li>Regulatory examination procedures</li>
+          <li>Sanctions compliance and PEP screening databases</li>
+        </ul>
+
+        <h4>9.5 Awareness Activities</h4>
+        <p>
+          Beyond formal training, ongoing awareness shall be maintained through:
+        </p>
+        <ul>
+          <li>Monthly compliance newsletters</li>
+          <li>Posters and visual reminders in office</li>
+          <li>Case studies shared during team meetings</li>
+          <li>Updates on new regulations and red flags</li>
+          <li>Compliance culture reinforcement from Senior Management</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- SECTION 10 -->
+    <div class="section">
+      <h2 class="section-title">10. INTERNAL AUDIT & COMPLIANCE REVIEW</h2>
+      <div class="section-content">
+        <h4>10.1 Audit Frequency & Scope</h4>
+        <p>
+          Internal compliance audits shall be conducted at least annually by either an internal audit team or an external 
+          independent auditor. The audit shall assess:
+        </p>
+        <ul>
+          <li>Adequacy and effectiveness of AML/CFT policies and procedures</li>
+          <li>Compliance with CDD and EDD requirements</li>
+          <li>Completeness of customer records and documentation</li>
+          <li>Transaction monitoring accuracy and STR filing timeliness</li>
+          <li>Staff training completion and effectiveness</li>
+          <li>Record retention and security measures</li>
+          <li>Compliance Officer authority and independence</li>
+        </ul>
+
+        <h4>10.2 Audit Report & Recommendations</h4>
+        <p>
+          The audit shall result in a formal report documenting:
+        </p>
+        <ul>
+          <li>Audit scope, methodology, and audit period</li>
+          <li>Findings and areas of deficiency</li>
+          <li>Recommendations for improvement</li>
+          <li>Auditor's overall compliance assessment</li>
+          <li>Management's response and action plan</li>
+          <li>Timeline for remediation of identified gaps</li>
+        </ul>
+
+        <h4>10.3 Reporting to Senior Management</h4>
+        <p>
+          The Compliance Officer shall report to Senior Management / Board monthly with:
+        </p>
+        <ul>
+          <li>Summary of transactions monitored</li>
+          <li>New customers accepted and risk classification</li>
+          <li>Any suspicious activity identified or STRs filed</li>
+          <li>Staff training completed</li>
+          <li>Compliance issues or regulatory communications received</li>
+          <li>Recommendations for policy improvements</li>
+        </ul>
+
+        <h4>10.4 Regulatory Inspection Readiness</h4>
+        <p>
+          White Caves Real Estate LLC shall maintain readiness for surprise inspections by DED or FIU examiners. 
+          All documentation should be organized and accessible. The Compliance Officer shall:
+        </p>
+        <ul>
+          <li>Designate an inspection coordinator</li>
+          <li>Ensure records are readily available</li>
+          <li>Prepare summary documentation</li>
+          <li>Conduct mock inspections annually</li>
+          <li>Maintain current policies and procedures</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- PAGE BREAK -->
+    <div class="page-break"></div>
+
+    <!-- SECTION 11 -->
+    <div class="section">
+      <h2 class="section-title">11. RISK ASSESSMENT</h2>
+      <div class="section-content">
+        <h4>11.1 Risk Factors for White Caves Real Estate</h4>
+        <p>
+          As a real estate company, White Caves faces the following ML/FT risk factors:
+        </p>
+        <ul>
+          <li><strong>Asset Laundering:</strong> Real estate properties are often used to obscure illicit origins of funds</li>
+          <li><strong>High-Value Transactions:</strong> Large property values create opportunities for value transfer</li>
+          <li><strong>International Clients:</strong> Foreign buyer base increases exposure to cross-border ML/FT</li>
+          <li><strong>Cash Involvement:</strong> Deposits, down payments, and transaction costs may involve cash</li>
+          <li><strong>Complex Structures:</strong> Use of corporate entities, trusts, and shell companies to conceal beneficial ownership</li>
+          <li><strong>Developer Relationships:</strong> Relationships with contractors and developers increase third-party risk</li>
+        </ul>
+
+        <h4>11.2 Risk Mitigation Measures</h4>
+        <p>
+          To mitigate identified risks, White Caves implements:
+        </p>
+        <ul>
+          <li>Robust CDD and EDD procedures</li>
+          <li>Beneficial ownership verification for all corporate customers</li>
+          <li>Source of funds documentation for all transactions exceeding AED 5,000,000</li>
+          <li>PEP and sanctions screening for all customers</li>
+          <li>Transaction monitoring and STR filing procedures</li>
+          <li>Staff training on ML/FT indicators specific to real estate</li>
+          <li>Enhanced monitoring of high-risk jurisdictions and cash transactions</li>
+          <li>Cooperation with DED and FIU in compliance activities</li>
+        </ul>
+
+        <h4>11.3 Annual Risk Assessment</h4>
+        <p>
+          The Compliance Officer shall conduct an annual risk assessment to:
+        </p>
+        <ul>
+          <li>Identify new or emerging ML/FT risks</li>
+          <li>Evaluate effectiveness of current risk mitigation measures</li>
+          <li>Recommend updates to policies and procedures</li>
+          <li>Assess changes in customer base or transaction patterns</li>
+          <li>Document risk assessment findings and recommendations</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- SECTION 12 -->
+    <div class="section">
+      <h2 class="section-title">12. PENALTIES & ENFORCEMENT</h2>
+      <div class="section-content">
+        <h4>12.1 Employee Disciplinary Action</h4>
+        <p>
+          Violation of this AML/CFT Policy by any employee may result in:
+        </p>
+        <ul>
+          <li>Written warning for first offense</li>
+          <li>Suspension without pay for repeated violations</li>
+          <li>Termination of employment for serious breaches</li>
+          <li>Criminal prosecution for intentional violations or "tipping off"</li>
+        </ul>
+
+        <h4>12.2 Corporate Penalties</h4>
+        <p>
+          Non-compliance by the company may result in:
+        </p>
+        <ul>
+          <li>Administrative fines: AED 1,000,000 to AED 5,000,000</li>
+          <li>Suspension or revocation of commercial license</li>
+          <li>Seizure and forfeiture of suspicious assets</li>
+          <li>International sanctions and FATF grey-listing</li>
+          <li>Reputational damage and loss of business relationships</li>
+        </ul>
+
+        <h4>12.3 Individual Criminal Liability</h4>
+        <p>
+          Officers and employees responsible for compliance breaches may face:
+        </p>
+        <ul>
+          <li>Criminal prosecution and imprisonment up to 5 years</li>
+          <li>Fines up to AED 1,000,000</li>
+          <li>Disqualification from holding company positions</li>
+          <li>International travel restrictions</li>
+        </ul>
+
+        <h4>12.4 "Tipping Off" Criminal Penalties</h4>
+        <p>
+          The intentional disclosure that an STR has been filed or that a customer is suspected of ML/FT activities 
+          is a serious criminal offense with penalties including imprisonment and substantial fines. Any employee 
+          found guilty of "tipping off" will face:
+        </p>
+        <ul>
+          <li>Termination of employment</li>
+          <li>Immediate criminal referral to law enforcement</li>
+          <li>Prosecution and potential imprisonment</li>
+          <li>Civil liability for damages</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- SECTION 13 -->
+    <div class="section">
+      <h2 class="section-title">13. POLICY REVIEW & AMENDMENTS</h2>
+      <div class="section-content">
+        <h4>13.1 Annual Review Schedule</h4>
+        <p>
+          This Policy shall be reviewed annually by the Compliance Officer and updated as necessary to reflect:
+        </p>
+        <ul>
+          <li>Changes in UAE AML/CFT laws and regulations</li>
+          <li>FIU guidelines and new goAML procedures</li>
+          <li>Lessons learned from internal audits or compliance issues</li>
+          <li>Industry best practices and international standards</li>
+          <li>Changes in the company's business activities or customer profile</li>
+          <li>Findings from regulatory inspections or examinations</li>
+        </ul>
+
+        <h4>13.2 Amendment Procedure</h4>
+        <p>
+          Amendments to this Policy require:
+        </p>
+        <ul>
+          <li>Draft amendment prepared by Compliance Officer</li>
+          <li>Review and feedback from affected departments</li>
+          <li>Final approval by Senior Management / Board</li>
+          <li>Distribution to all staff with updated training</li>
+          <li>Documentation of amendment version and effective date</li>
+        </ul>
+
+        <h4>13.3 Policy Distribution</h4>
+        <p>
+          This Policy shall be provided to:
+        </p>
+        <ul>
+          <li>All employees upon hire</li>
+          <li>Updated copies when amendments are made</li>
+          <li>Regulatory authorities upon inspection request</li>
+          <li>External auditors and consultants</li>
+          <li>Board of Directors for oversight</li>
+        </ul>
+
+        <h4>13.4 Acknowledgment of Receipt</h4>
+        <p>
+          All employees must sign and return a Policy Acknowledgment Form confirming receipt and understanding of the Policy. 
+          These acknowledgments must be retained in personnel files.
+        </p>
+      </div>
+    </section>
+
+    <!-- FINAL SECTION -->
+    <div class="page-break"></div>
+    <div class="section">
+      <h2 class="section-title">POLICY ACKNOWLEDGMENT & CERTIFICATION</h2>
+      <div class="section-content">
+        <p>
+          I/We hereby acknowledge receipt and review of the White Caves Real Estate LLC Anti-Money Laundering and 
+          Counter Financing of Terrorism (AML/CFT) Policy, effective {{effectiveDate}}.
+        </p>
+
+        <p style="margin-top: 30px;">
+          I/We confirm my/our understanding of the AML/CFT requirements and commit to full compliance with all 
+          procedures outlined in this Policy.
+        </p>
+
+        <p style="margin-top: 30px;">
+          I/We understand that violations of this Policy may result in disciplinary action, including termination 
+          of employment, and that certain violations constitute criminal offenses under UAE law.
+        </p>
+
+        <div style="margin-top: 60px;">
+          <p><strong>Employee Name (Print):</strong> _________________________________</p>
+          <p style="margin-top: 20px;"><strong>Employee Signature:</strong> _________________________________</p>
+          <p style="margin-top: 20px;"><strong>Employee ID / Title:</strong> _________________________________</p>
+          <p style="margin-top: 20px;"><strong>Date:</strong> _________________________________</p>
+        </div>
+
+        <div style="margin-top: 60px; padding-top: 40px; border-top: 2px solid #ccc;">
+          <p><strong>Department Manager / Supervisor Verification:</strong></p>
+          <p style="margin-top: 20px;">Name: _________________________ Signature: _____________ Date: ____________</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- FOOTER -->
+    <div class="footer">
+      <p>WHITE CAVES REAL ESTATE LLC - CONFIDENTIAL</p>
+      <p>This document is confidential and intended for authorized personnel only.</p>
+      <p>Document Version: 1.0 | Effective Date: {{effectiveDate}} | Next Review: {{nextReviewDate}}</p>
+    </div>
+  </div>
+</body>
+</html>

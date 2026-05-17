@@ -1,4 +1,5 @@
-import { getErrorMessage, ERROR_MESSAGES } from './errorMessages';
+import { ERROR_MESSAGES } from '@/constants';
+import { HttpError } from './HttpError';
 
 const API_BASE_URL = '/api';
 
@@ -6,26 +7,6 @@ interface RequestOptions extends RequestInit {
   headers?: Record<string, string>;
   /** Request timeout in milliseconds. Default: 30000 (30s). Set to 0 to disable. */
   timeout?: number;
-}
-
-class HttpError extends Error {
-  readonly status: number;
-  readonly data: unknown;
-  readonly response: { status: number; data: unknown };
-
-  constructor(message: string, status = 500, data: unknown = null) {
-    super(message);
-    this.name = 'HttpError';
-    this.status = status;
-    this.data = data;
-    this.response = {
-      status,
-      data,
-    };
-    if (Error.captureStackTrace) {
-      Error.captureStackTrace(this, this.constructor);
-    }
-  }
 }
 
 class ApiClient {
@@ -59,7 +40,8 @@ class ApiClient {
       }
     }
 
-    const { signal: _ignoredSignal, ...restOptions } = options;
+    const restOptions: RequestOptions = { ...options };
+    delete restOptions.signal;
     const config: RequestInit = {
       ...restOptions,
       signal: controller.signal,
@@ -71,7 +53,7 @@ class ApiClient {
 
     try {
       const response = await fetch(url, config);
-      
+
       const contentType = response.headers.get('content-type');
       const isJson = contentType && contentType.includes('application/json');
       let data: unknown;
@@ -96,7 +78,7 @@ class ApiClient {
           errorMessage = data;
         }
 
-        throw new HttpError(errorMessage, response.status, data);
+        throw new HttpError(errorMessage, response.status, response.statusText ?? '', data);
       }
 
       return data;
@@ -105,22 +87,24 @@ class ApiClient {
         throw error;
       }
 
-      if ((error instanceof DOMException && error.name === 'AbortError') || (error instanceof Error && error.name === 'AbortError')) {
+      if (
+        (error instanceof DOMException && error.name === 'AbortError') ||
+        (error instanceof Error && error.name === 'AbortError')
+      ) {
         const wasCancelled = externalSignal?.aborted;
         throw new HttpError(
           wasCancelled
             ? `Request to ${endpoint} was cancelled`
             : `Request to ${endpoint} timed out after ${timeout}ms`,
           wasCancelled ? 499 : 408,
+          '',
           { endpoint, timeout, cancelled: !!wasCancelled }
         );
       }
-      
-      throw new HttpError(
-        ERROR_MESSAGES.NETWORK_ERROR,
-        0,
-        { originalError: error instanceof Error ? error.message : String(error) }
-      );
+
+      throw new HttpError(ERROR_MESSAGES.NETWORK_ERROR, 0, '', {
+        originalError: error instanceof Error ? error.message : String(error),
+      });
     } finally {
       if (timeoutId) clearTimeout(timeoutId);
       if (externalSignal && externalAbortHandler) {
@@ -188,4 +172,4 @@ class ApiClient {
 }
 
 export const apiClient = new ApiClient();
-export { HttpError, getErrorMessage };
+export { HttpError };

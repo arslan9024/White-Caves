@@ -19,7 +19,10 @@ vi.mock('../../utils/authFetch', () => ({
 
 vi.mock('../../utils/logger', () => ({
   createLogger: () => ({
-    info: vi.fn(), warn: vi.fn(), error: vi.fn(), debug: vi.fn(),
+    info: vi.fn(),
+    warn: vi.fn(),
+    error: vi.fn(),
+    debug: vi.fn(),
   }),
 }));
 
@@ -31,8 +34,7 @@ vi.mock('./WhatsAppAnalyticsPage.css', () => ({}));
 
 let mockUser: { role: string } | null = { role: 'owner' };
 vi.mock('react-redux', () => ({
-  useSelector: (fn: (s: unknown) => unknown) =>
-    fn({ user: { currentUser: mockUser } }),
+  useSelector: (fn: (s: unknown) => unknown) => fn({ user: { currentUser: mockUser } }),
 }));
 
 // ── Helpers ──────────────────────────────────────────────────────
@@ -50,9 +52,12 @@ import WhatsAppAnalyticsPage from './WhatsAppAnalyticsPage';
 describe('WhatsAppAnalyticsPage', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    vi.spyOn(console, 'error').mockImplementation(() => {});
+    vi.spyOn(console, 'warn').mockImplementation(() => {});
     mockUser = { role: 'owner' };
     mockAuthFetch.mockResolvedValue({
-      ok: true, json: () => Promise.resolve(sampleAnalytics),
+      ok: true,
+      json: () => Promise.resolve(sampleAnalytics),
     });
   });
 
@@ -69,14 +74,18 @@ describe('WhatsAppAnalyticsPage', () => {
   });
 
   it('allows owner to view', async () => {
-    await act(async () => { render(<WhatsAppAnalyticsPage />); });
+    await act(async () => {
+      render(<WhatsAppAnalyticsPage />);
+    });
     expect(screen.getByText('WhatsApp Analytics')).toBeInTheDocument();
     expect(mockNavigate).not.toHaveBeenCalled();
   });
 
   it('allows admin to view', async () => {
     mockUser = { role: 'admin' };
-    await act(async () => { render(<WhatsAppAnalyticsPage />); });
+    await act(async () => {
+      render(<WhatsAppAnalyticsPage />);
+    });
     expect(screen.getByText('WhatsApp Analytics')).toBeInTheDocument();
   });
 
@@ -97,35 +106,45 @@ describe('WhatsAppAnalyticsPage', () => {
   // ────── Analytics Rendering ──────
 
   it('renders total messages', async () => {
-    await act(async () => { render(<WhatsAppAnalyticsPage />); });
+    await act(async () => {
+      render(<WhatsAppAnalyticsPage />);
+    });
     await waitFor(() => {
       expect(screen.getByText('1250')).toBeInTheDocument();
     });
   });
 
   it('renders sent messages', async () => {
-    await act(async () => { render(<WhatsAppAnalyticsPage />); });
+    await act(async () => {
+      render(<WhatsAppAnalyticsPage />);
+    });
     await waitFor(() => {
       expect(screen.getByText('780')).toBeInTheDocument();
     });
   });
 
   it('renders received messages', async () => {
-    await act(async () => { render(<WhatsAppAnalyticsPage />); });
+    await act(async () => {
+      render(<WhatsAppAnalyticsPage />);
+    });
     await waitFor(() => {
       expect(screen.getByText('470')).toBeInTheDocument();
     });
   });
 
   it('renders average response time', async () => {
-    await act(async () => { render(<WhatsAppAnalyticsPage />); });
+    await act(async () => {
+      render(<WhatsAppAnalyticsPage />);
+    });
     await waitFor(() => {
       expect(screen.getByText('2.5m')).toBeInTheDocument();
     });
   });
 
   it('renders stat labels', async () => {
-    await act(async () => { render(<WhatsAppAnalyticsPage />); });
+    await act(async () => {
+      render(<WhatsAppAnalyticsPage />);
+    });
     await waitFor(() => {
       expect(screen.getByText('Total Messages')).toBeInTheDocument();
       expect(screen.getByText('Sent')).toBeInTheDocument();
@@ -137,7 +156,9 @@ describe('WhatsAppAnalyticsPage', () => {
   // ────── Keywords ──────
 
   it('renders top keywords', async () => {
-    await act(async () => { render(<WhatsAppAnalyticsPage />); });
+    await act(async () => {
+      render(<WhatsAppAnalyticsPage />);
+    });
     await waitFor(() => {
       expect(screen.getByText('pricing')).toBeInTheDocument();
       expect(screen.getByText('villa')).toBeInTheDocument();
@@ -149,9 +170,12 @@ describe('WhatsAppAnalyticsPage', () => {
 
   it('shows no data when keywords empty', async () => {
     mockAuthFetch.mockResolvedValue({
-      ok: true, json: () => Promise.resolve({ ...sampleAnalytics, topKeywords: [] }),
+      ok: true,
+      json: () => Promise.resolve({ ...sampleAnalytics, topKeywords: [] }),
     });
-    await act(async () => { render(<WhatsAppAnalyticsPage />); });
+    await act(async () => {
+      render(<WhatsAppAnalyticsPage />);
+    });
     await waitFor(() => {
       expect(screen.getByText('No data available')).toBeInTheDocument();
     });
@@ -160,13 +184,17 @@ describe('WhatsAppAnalyticsPage', () => {
   // ────── Date Range Selector ──────
 
   it('shows date range dropdown with default 7d', async () => {
-    await act(async () => { render(<WhatsAppAnalyticsPage />); });
+    await act(async () => {
+      render(<WhatsAppAnalyticsPage />);
+    });
     const select = screen.getByLabelText('Date Range:') as HTMLSelectElement;
     expect(select.value).toBe('7d');
   });
 
   it('has all date range options', async () => {
-    await act(async () => { render(<WhatsAppAnalyticsPage />); });
+    await act(async () => {
+      render(<WhatsAppAnalyticsPage />);
+    });
     expect(screen.getByText('Last 7 Days')).toBeInTheDocument();
     expect(screen.getByText('Last 30 Days')).toBeInTheDocument();
     expect(screen.getByText('Last 90 Days')).toBeInTheDocument();
@@ -174,7 +202,9 @@ describe('WhatsAppAnalyticsPage', () => {
   });
 
   it('refetches analytics when date range changes', async () => {
-    await act(async () => { render(<WhatsAppAnalyticsPage />); });
+    await act(async () => {
+      render(<WhatsAppAnalyticsPage />);
+    });
 
     // Initial fetch
     expect(mockAuthFetch).toHaveBeenCalledTimes(1);
@@ -185,7 +215,8 @@ describe('WhatsAppAnalyticsPage', () => {
 
     mockAuthFetch.mockClear();
     mockAuthFetch.mockResolvedValue({
-      ok: true, json: () => Promise.resolve(sampleAnalytics),
+      ok: true,
+      json: () => Promise.resolve(sampleAnalytics),
     });
 
     await act(async () => {
@@ -203,7 +234,9 @@ describe('WhatsAppAnalyticsPage', () => {
   // ────── Chart Placeholders ──────
 
   it('renders chart placeholders', async () => {
-    await act(async () => { render(<WhatsAppAnalyticsPage />); });
+    await act(async () => {
+      render(<WhatsAppAnalyticsPage />);
+    });
     await waitFor(() => {
       expect(screen.getByText('Message Volume (7 days)')).toBeInTheDocument();
       expect(screen.getByText('Response Time Distribution')).toBeInTheDocument();
@@ -214,11 +247,14 @@ describe('WhatsAppAnalyticsPage', () => {
 
   it('handles failed fetch gracefully', async () => {
     mockAuthFetch.mockResolvedValue({
-      ok: false, status: 500,
+      ok: false,
+      status: 500,
       json: () => Promise.resolve({}),
     });
 
-    await act(async () => { render(<WhatsAppAnalyticsPage />); });
+    await act(async () => {
+      render(<WhatsAppAnalyticsPage />);
+    });
 
     // Should show zeros (initial state) not crash — multiple "0" elements expected
     await waitFor(() => {
@@ -230,7 +266,9 @@ describe('WhatsAppAnalyticsPage', () => {
   it('ignores AbortError silently', async () => {
     mockAuthFetch.mockRejectedValue(new DOMException('Aborted', 'AbortError'));
 
-    await act(async () => { render(<WhatsAppAnalyticsPage />); });
+    await act(async () => {
+      render(<WhatsAppAnalyticsPage />);
+    });
 
     expect(screen.getByText('WhatsApp Analytics')).toBeInTheDocument();
   });
@@ -238,7 +276,9 @@ describe('WhatsAppAnalyticsPage', () => {
   it('handles network exception gracefully', async () => {
     mockAuthFetch.mockRejectedValue(new Error('Network error'));
 
-    await act(async () => { render(<WhatsAppAnalyticsPage />); });
+    await act(async () => {
+      render(<WhatsAppAnalyticsPage />);
+    });
 
     // Should render with initial zero state
     expect(screen.getByText('WhatsApp Analytics')).toBeInTheDocument();

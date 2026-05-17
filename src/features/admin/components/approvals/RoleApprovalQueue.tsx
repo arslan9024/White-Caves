@@ -49,9 +49,10 @@ const RoleApprovalQueue = () => {
   });
 
   const handleApprove = async (request: RoleRequest) => {
+    if (!token) return;
     setLoading(true);
     try {
-      apiClient.setAuthToken(token!);
+      apiClient.setAuthToken(token);
       await apiClient.post(`/admin/role-requests/${request.id}/approve`, { 
         reviewedBy: user?.id 
       });
@@ -75,9 +76,11 @@ const RoleApprovalQueue = () => {
       return;
     }
 
+    if (!token) return;
+
     setLoading(true);
     try {
-      apiClient.setAuthToken(token!);
+      apiClient.setAuthToken(token);
       await apiClient.post(`/admin/role-requests/${request.id}/reject`, { 
         reviewedBy: user?.id,
         reason: rejectionReason,

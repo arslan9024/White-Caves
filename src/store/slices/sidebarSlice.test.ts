@@ -3,9 +3,9 @@ import reducer, {
   openFlyout,
   closeFlyout,
   toggleFlyout,
-  openRightPanel,
-  closeRightPanel,
-  toggleRightPanel,
+  openAICommand,
+  closeAICommand,
+  toggleAICommand,
   selectAssistant,
   clearSelectedAssistant,
   selectDepartment,
@@ -16,25 +16,15 @@ import reducer, {
   toggleCommandPalette,
   toggleMobileSheet,
   closeMobileSheet,
-  // Legacy aliases
-  toggleLeftSidebar,
-  toggleRightSidebar,
-  setLeftCollapsed,
-  setRightCollapsed,
-  setShowRightDrawer,
-  toggleShowRightDrawer,
   // Selectors
   selectFlyoutOpen,
   selectFlyoutDepartment,
-  selectRightPanelOpen,
+  selectAICommandOpen,
   selectSelectedAssistant,
   selectSelectedDepartment,
   selectSelectedService,
   selectCommandPaletteOpen,
   selectMobileSheetOpen,
-  selectLeftCollapsed,
-  selectRightCollapsed,
-  selectShowRightDrawer,
 } from './sidebarSlice';
 import { logout } from '../authSlice';
 
@@ -53,8 +43,8 @@ describe('sidebarSlice', () => {
       expect(state.flyoutDepartment).toBeNull();
     });
 
-    it('starts with right panel closed', () => {
-      expect(initialState().rightPanelOpen).toBe(false);
+    it('starts with AI command closed', () => {
+      expect(initialState().aiCommandOpen).toBe(false);
     });
 
     it('starts with no selections', () => {
@@ -108,34 +98,53 @@ describe('sidebarSlice', () => {
     });
   });
 
-  // ─── Right panel ───────────────────────────────────────────────
-  describe('right panel', () => {
-    it('openRightPanel opens', () => {
-      const state = reducer(initialState(), openRightPanel());
-      expect(state.rightPanelOpen).toBe(true);
+  // ─── AI Command Center ───────────────────────────────────────
+  describe('AI Command Center', () => {
+    it('openAICommand opens and closes flyout', () => {
+      let state = reducer(initialState(), openFlyout('sales'));
+      state = reducer(state, openAICommand());
+      expect(state.aiCommandOpen).toBe(true);
+      expect(state.flyoutOpen).toBe(false);
+      expect(state.flyoutDepartment).toBeNull();
     });
 
-    it('closeRightPanel closes', () => {
-      let state = reducer(initialState(), openRightPanel());
-      state = reducer(state, closeRightPanel());
-      expect(state.rightPanelOpen).toBe(false);
+    it('closeAICommand closes', () => {
+      let state = reducer(initialState(), openAICommand());
+      state = reducer(state, closeAICommand());
+      expect(state.aiCommandOpen).toBe(false);
     });
 
-    it('toggleRightPanel flips state', () => {
+    it('toggleAICommand flips aiCommandOpen', () => {
       let state = initialState();
-      state = reducer(state, toggleRightPanel());
-      expect(state.rightPanelOpen).toBe(true);
-      state = reducer(state, toggleRightPanel());
-      expect(state.rightPanelOpen).toBe(false);
+      state = reducer(state, toggleAICommand());
+      expect(state.aiCommandOpen).toBe(true);
+      state = reducer(state, toggleAICommand());
+      expect(state.aiCommandOpen).toBe(false);
+    });
+
+    it('opening AI closes department flyout (mutual exclusion)', () => {
+      let state = reducer(initialState(), openFlyout('finance'));
+      expect(state.flyoutOpen).toBe(true);
+      state = reducer(state, toggleAICommand());
+      expect(state.aiCommandOpen).toBe(true);
+      expect(state.flyoutOpen).toBe(false);
+    });
+
+    it('opening department closes AI (mutual exclusion)', () => {
+      let state = reducer(initialState(), openAICommand());
+      expect(state.aiCommandOpen).toBe(true);
+      state = reducer(state, openFlyout('sales'));
+      expect(state.flyoutOpen).toBe(true);
+      expect(state.aiCommandOpen).toBe(false);
     });
   });
 
   // ─── Assistant selection ────────────────────────────────────────
   describe('assistant selection', () => {
-    it('selectAssistant sets selectedAssistant and opens panel', () => {
+    it('selectAssistant sets selectedAssistant and opens AI command', () => {
       const state = reducer(initialState(), selectAssistant('hazel'));
       expect(state.selectedAssistant).toBe('hazel');
-      expect(state.rightPanelOpen).toBe(true);
+      expect(state.aiCommandOpen).toBe(true);
     });
 
     it('selectAssistant(null) clears without opening', () => {
@@ -228,50 +237,6 @@ describe('sidebarSlice', () => {
     });
   });
 
-  // ─── Legacy aliases ─────────────────────────────────────────────
-  describe('legacy aliases', () => {
-    it('toggleLeftSidebar flips flyoutOpen', () => {
-      let state = initialState();
-      state = reducer(state, toggleLeftSidebar());
-      expect(state.flyoutOpen).toBe(true);
-      state = reducer(state, toggleLeftSidebar());
-      expect(state.flyoutOpen).toBe(false);
-    });
-
-    it('toggleRightSidebar flips rightPanelOpen', () => {
-      let state = initialState();
-      state = reducer(state, toggleRightSidebar());
-      expect(state.rightPanelOpen).toBe(true);
-    });
-
-    it('setLeftCollapsed(true) closes flyout', () => {
-      let state = reducer(initialState(), openFlyout('sales'));
-      state = reducer(state, setLeftCollapsed(true));
-      expect(state.flyoutOpen).toBe(false);
-    });
-
-    it('setLeftCollapsed(false) opens flyout', () => {
-      const state = reducer(initialState(), setLeftCollapsed(false));
-      expect(state.flyoutOpen).toBe(true);
-    });
-
-    it('setRightCollapsed(false) opens right panel', () => {
-      const state = reducer(initialState(), setRightCollapsed(false));
-      expect(state.rightPanelOpen).toBe(true);
-    });
-
-    it('setShowRightDrawer sets rightPanelOpen', () => {
-      const state = reducer(initialState(), setShowRightDrawer(true));
-      expect(state.rightPanelOpen).toBe(true);
-    });
-
-    it('toggleShowRightDrawer flips rightPanelOpen', () => {
-      let state = initialState();
-      state = reducer(state, toggleShowRightDrawer());
-      expect(state.rightPanelOpen).toBe(true);
-    });
-  });
-
   // ─── logout (extraReducer) ─────────────────────────────────────
   describe('logout', () => {
     it('resets to initial state on logout', () => {
@@ -298,9 +263,9 @@ describe('sidebarSlice', () => {
       expect(selectFlyoutDepartment(rootWith({ flyoutDepartment: 'sales' }))).toBe('sales');
     });
 
-    it('selectRightPanelOpen', () => {
-      expect(selectRightPanelOpen(rootWith())).toBe(false);
-      expect(selectRightPanelOpen(rootWith({ rightPanelOpen: true }))).toBe(true);
+    it('selectAICommandOpen', () => {
+      expect(selectAICommandOpen(rootWith())).toBe(false);
+      expect(selectAICommandOpen(rootWith({ aiCommandOpen: true }))).toBe(true);
     });
 
     it('selectSelectedAssistant', () => {
@@ -327,22 +292,6 @@ describe('sidebarSlice', () => {
       expect(selectMobileSheetOpen(rootWith())).toBe(false);
       expect(selectMobileSheetOpen(rootWith({ mobileSheetOpen: true }))).toBe(true);
     });
-
-    // Legacy selectors (derived)
-    it('selectLeftCollapsed (legacy) inverts flyoutOpen', () => {
-      expect(selectLeftCollapsed(rootWith())).toBe(true);
-      expect(selectLeftCollapsed(rootWith({ flyoutOpen: true }))).toBe(false);
-    });
-
-    it('selectRightCollapsed (legacy) inverts rightPanelOpen', () => {
-      expect(selectRightCollapsed(rootWith())).toBe(true);
-      expect(selectRightCollapsed(rootWith({ rightPanelOpen: true }))).toBe(false);
-    });
-
-    it('selectShowRightDrawer (legacy) mirrors rightPanelOpen', () => {
-      expect(selectShowRightDrawer(rootWith())).toBe(false);
-      expect(selectShowRightDrawer(rootWith({ rightPanelOpen: true }))).toBe(true);
-    });
   });
 
   // ─── Action sequences ──────────────────────────────────────────
@@ -360,15 +309,15 @@ describe('sidebarSlice', () => {
       expect(state.selectedDepartment).toBeNull();
     });
 
-    it('open right → select assistant → clear → close', () => {
+    it('open AI → select assistant → clear → close', () => {
       let state = initialState();
-      state = reducer(state, openRightPanel());
+      state = reducer(state, openAICommand());
       state = reducer(state, selectAssistant('hazel'));
       expect(state.selectedAssistant).toBe('hazel');
 
       state = reducer(state, clearSelectedAssistant());
-      state = reducer(state, closeRightPanel());
-      expect(state.rightPanelOpen).toBe(false);
+      state = reducer(state, closeAICommand());
+      expect(state.aiCommandOpen).toBe(false);
       expect(state.selectedAssistant).toBeNull();
     });
   });

@@ -56,13 +56,13 @@ describe('formatCurrency', () => {
 
   it('formats positive amounts with AED prefix', () => {
     const result = formatCurrency(1500000);
-    expect(result).toMatch(/^AED /);
+    expect(result).toMatch(/^AED[\s\u00a0]/);
     expect(result).toContain('1,500,000');
   });
 
   it('formats zero', () => {
     const result = formatCurrency(0);
-    expect(result).toMatch(/^AED /);
+    expect(result).toMatch(/^AED[\s\u00a0]/);
     expect(result).toContain('0');
   });
 });

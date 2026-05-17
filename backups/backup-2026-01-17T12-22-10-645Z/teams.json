@@ -1,0 +1,483 @@
+[
+  {
+    "_id": "69628e8445cb93bb5db1d417",
+    "name": "Executive Office",
+    "code": "EXEC-OFFICE",
+    "department": "69628e8245cb93bb5db1d228",
+    "description": "C-suite leadership team driving company strategy",
+    "lead": {
+      "name": "Arslan Malik",
+      "email": "arslan@whitecaves.ae",
+      "title": "CEO"
+    },
+    "aiAssistant": null,
+    "responsibilities": [
+      "Strategic Planning",
+      "Corporate Governance",
+      "Investor Relations"
+    ],
+    "kpis": [
+      {
+        "name": "Strategic Initiatives",
+        "target": 12,
+        "current": 8,
+        "unit": "quarterly",
+        "_id": "69628e8445cb93bb5db1d418"
+      }
+    ],
+    "status": "active",
+    "size": {
+      "current": 4,
+      "capacity": 5
+    },
+    "members": [],
+    "projects": [],
+    "createdAt": "2026-01-10T17:38:12.437Z",
+    "updatedAt": "2026-01-10T17:38:12.437Z",
+    "__v": 0
+  },
+  {
+    "_id": "69628e8445cb93bb5db1d41a",
+    "name": "Property Operations",
+    "code": "PROP-OPS",
+    "department": "69628e8245cb93bb5db1d22c",
+    "description": "Day-to-day property management and maintenance",
+    "lead": {
+      "name": "Omar Siddiqui",
+      "email": "omar@whitecaves.ae",
+      "title": "Director"
+    },
+    "aiAssistant": null,
+    "responsibilities": [
+      "Property Maintenance",
+      "Vendor Management",
+      "Facility Operations"
+    ],
+    "kpis": [
+      {
+        "name": "Maintenance Resolution",
+        "target": 48,
+        "current": 52,
+        "unit": "hours",
+        "_id": "69628e8445cb93bb5db1d41b"
+      }
+    ],
+    "status": "active",
+    "size": {
+      "current": 12,
+      "capacity": 15
+    },
+    "members": [],
+    "projects": [],
+    "createdAt": "2026-01-10T17:38:12.439Z",
+    "updatedAt": "2026-01-10T17:38:12.439Z",
+    "__v": 0
+  },
+  {
+    "_id": "69628e8445cb93bb5db1d41d",
+    "name": "Inventory Team",
+    "code": "INV-TEAM",
+    "department": "69628e8245cb93bb5db1d22c",
+    "description": "Property inventory and listing management",
+    "lead": {
+      "name": "Fatima Al Hashimi",
+      "email": "fatima.h@whitecaves.ae",
+      "title": "Manager"
+    },
+    "aiAssistant": null,
+    "responsibilities": [
+      "Listing Management",
+      "Data Quality",
+      "Portal Publishing"
+    ],
+    "kpis": [
+      {
+        "name": "Listings Updated",
+        "target": 500,
+        "current": 478,
+        "unit": "weekly",
+        "_id": "69628e8445cb93bb5db1d41e"
+      }
+    ],
+    "status": "active",
+    "size": {
+      "current": 6,
+      "capacity": 8
+    },
+    "members": [],
+    "projects": [],
+    "createdAt": "2026-01-10T17:38:12.444Z",
+    "updatedAt": "2026-01-10T17:38:12.444Z",
+    "__v": 0
+  },
+  {
+    "_id": "69628e8445cb93bb5db1d420",
+    "name": "Sales Team A",
+    "code": "SALES-A",
+    "department": "69628e8245cb93bb5db1d230",
+    "description": "Primary sales off-plan and luxury properties",
+    "lead": {
+      "name": "Mohammed Al Ameri",
+      "email": "mohammed.a@whitecaves.ae",
+      "title": "Team Lead"
+    },
+    "aiAssistant": null,
+    "responsibilities": [
+      "Off-Plan Sales",
+      "Luxury Properties",
+      "VIP Clients"
+    ],
+    "kpis": [
+      {
+        "name": "Monthly Sales",
+        "target": 25000000,
+        "current": 21500000,
+        "unit": "AED",
+        "_id": "69628e8445cb93bb5db1d421"
+      }
+    ],
+    "status": "active",
+    "size": {
+      "current": 12,
+      "capacity": 15
+    },
+    "members": [],
+    "projects": [],
+    "createdAt": "2026-01-10T17:38:12.446Z",
+    "updatedAt": "2026-01-10T17:38:12.446Z",
+    "__v": 0
+  },
+  {
+    "_id": "69628e8445cb93bb5db1d423",
+    "name": "Sales Team B",
+    "code": "SALES-B",
+    "department": "69628e8245cb93bb5db1d230",
+    "description": "Secondary market and investment properties",
+    "lead": {
+      "name": "Sara Al Mazrouei",
+      "email": "sara.m@whitecaves.ae",
+      "title": "Team Lead"
+    },
+    "aiAssistant": null,
+    "responsibilities": [
+      "Secondary Sales",
+      "Investment Properties",
+      "Client Matching"
+    ],
+    "kpis": [
+      {
+        "name": "Monthly Sales",
+        "target": 20000000,
+        "current": 18200000,
+        "unit": "AED",
+        "_id": "69628e8445cb93bb5db1d424"
+      }
+    ],
+    "status": "active",
+    "size": {
+      "current": 10,
+      "capacity": 12
+    },
+    "members": [],
+    "projects": [],
+    "createdAt": "2026-01-10T17:38:12.449Z",
+    "updatedAt": "2026-01-10T17:38:12.449Z",
+    "__v": 0
+  },
+  {
+    "_id": "69628e8445cb93bb5db1d426",
+    "name": "Leasing Team",
+    "code": "LEASE-TEAM",
+    "department": "69628e8245cb93bb5db1d230",
+    "description": "Residential and commercial leasing operations",
+    "lead": {
+      "name": "Khalid Al Shamsi",
+      "email": "khalid.s@whitecaves.ae",
+      "title": "Team Lead"
+    },
+    "aiAssistant": null,
+    "responsibilities": [
+      "Tenant Acquisition",
+      "Lease Processing",
+      "Renewals"
+    ],
+    "kpis": [
+      {
+        "name": "Leases Signed",
+        "target": 50,
+        "current": 42,
+        "unit": "monthly",
+        "_id": "69628e8445cb93bb5db1d427"
+      }
+    ],
+    "status": "active",
+    "size": {
+      "current": 8,
+      "capacity": 10
+    },
+    "members": [],
+    "projects": [],
+    "createdAt": "2026-01-10T17:38:12.452Z",
+    "updatedAt": "2026-01-10T17:38:12.452Z",
+    "__v": 0
+  },
+  {
+    "_id": "69628e8445cb93bb5db1d429",
+    "name": "Finance Operations",
+    "code": "FIN-OPS",
+    "department": "69628e8245cb93bb5db1d234",
+    "description": "Financial processing and accounting",
+    "lead": {
+      "name": "Hana Al Zaabi",
+      "email": "hana@whitecaves.ae",
+      "title": "Director"
+    },
+    "aiAssistant": null,
+    "responsibilities": [
+      "Accounts Receivable",
+      "Payroll",
+      "Financial Reporting"
+    ],
+    "kpis": [
+      {
+        "name": "Collection Rate",
+        "target": 98,
+        "current": 94,
+        "unit": "percent",
+        "_id": "69628e8445cb93bb5db1d42a"
+      }
+    ],
+    "status": "active",
+    "size": {
+      "current": 6,
+      "capacity": 8
+    },
+    "members": [],
+    "projects": [],
+    "createdAt": "2026-01-10T17:38:12.453Z",
+    "updatedAt": "2026-01-10T17:38:12.453Z",
+    "__v": 0
+  },
+  {
+    "_id": "69628e8545cb93bb5db1d42c",
+    "name": "Digital Marketing",
+    "code": "DIGITAL-MKT",
+    "department": "69628e8245cb93bb5db1d238",
+    "description": "Online marketing and lead generation",
+    "lead": {
+      "name": "Layla Al Suwaidi",
+      "email": "layla@whitecaves.ae",
+      "title": "Director"
+    },
+    "aiAssistant": null,
+    "responsibilities": [
+      "SEO/SEM",
+      "Social Media",
+      "Content Marketing"
+    ],
+    "kpis": [
+      {
+        "name": "Leads Generated",
+        "target": 450,
+        "current": 385,
+        "unit": "monthly",
+        "_id": "69628e8545cb93bb5db1d42d"
+      }
+    ],
+    "status": "active",
+    "size": {
+      "current": 8,
+      "capacity": 10
+    },
+    "members": [],
+    "projects": [],
+    "createdAt": "2026-01-10T17:38:13.258Z",
+    "updatedAt": "2026-01-10T17:38:13.258Z",
+    "__v": 0
+  },
+  {
+    "_id": "69628e8545cb93bb5db1d42f",
+    "name": "Customer Support",
+    "code": "CUST-SUPPORT",
+    "department": "69628e8245cb93bb5db1d23c",
+    "description": "Client communications and support",
+    "lead": {
+      "name": "Khalid Al Mansoori",
+      "email": "khalid@whitecaves.ae",
+      "title": "Director"
+    },
+    "aiAssistant": null,
+    "responsibilities": [
+      "Client Support",
+      "WhatsApp Operations",
+      "Query Resolution"
+    ],
+    "kpis": [
+      {
+        "name": "Response Time",
+        "target": 2,
+        "current": 2.3,
+        "unit": "minutes",
+        "_id": "69628e8545cb93bb5db1d430"
+      }
+    ],
+    "status": "active",
+    "size": {
+      "current": 15,
+      "capacity": 20
+    },
+    "members": [],
+    "projects": [],
+    "createdAt": "2026-01-10T17:38:13.261Z",
+    "updatedAt": "2026-01-10T17:38:13.261Z",
+    "__v": 0
+  },
+  {
+    "_id": "69628e8545cb93bb5db1d432",
+    "name": "Compliance Team",
+    "code": "COMP-TEAM",
+    "department": "69628e8245cb93bb5db1d240",
+    "description": "Regulatory compliance and KYC verification",
+    "lead": {
+      "name": "Nadia Ibrahim",
+      "email": "nadia@whitecaves.ae",
+      "title": "Director"
+    },
+    "aiAssistant": null,
+    "responsibilities": [
+      "KYC Processing",
+      "AML Monitoring",
+      "RERA Compliance"
+    ],
+    "kpis": [
+      {
+        "name": "Compliance Score",
+        "target": 100,
+        "current": 98,
+        "unit": "percent",
+        "_id": "69628e8545cb93bb5db1d433"
+      }
+    ],
+    "status": "active",
+    "size": {
+      "current": 4,
+      "capacity": 5
+    },
+    "members": [],
+    "projects": [],
+    "createdAt": "2026-01-10T17:38:13.264Z",
+    "updatedAt": "2026-01-10T17:38:13.264Z",
+    "__v": 0
+  },
+  {
+    "_id": "69628e8545cb93bb5db1d435",
+    "name": "Development Team",
+    "code": "DEV-TEAM",
+    "department": "69628e8245cb93bb5db1d244",
+    "description": "Platform development and maintenance",
+    "lead": {
+      "name": "Tariq Al Qasimi",
+      "email": "tariq@whitecaves.ae",
+      "title": "Director"
+    },
+    "aiAssistant": null,
+    "responsibilities": [
+      "Platform Development",
+      "AI Systems",
+      "Infrastructure"
+    ],
+    "kpis": [
+      {
+        "name": "Sprint Velocity",
+        "target": 50,
+        "current": 48,
+        "unit": "points",
+        "_id": "69628e8545cb93bb5db1d436"
+      }
+    ],
+    "status": "active",
+    "size": {
+      "current": 10,
+      "capacity": 12
+    },
+    "members": [],
+    "projects": [],
+    "createdAt": "2026-01-10T17:38:13.266Z",
+    "updatedAt": "2026-01-10T17:38:13.266Z",
+    "__v": 0
+  },
+  {
+    "_id": "69628e8545cb93bb5db1d438",
+    "name": "Research Team",
+    "code": "RESEARCH",
+    "department": "69628e8245cb93bb5db1d248",
+    "description": "Market research and competitive analysis",
+    "lead": {
+      "name": "Yusuf Al Ghurair",
+      "email": "yusuf@whitecaves.ae",
+      "title": "Director"
+    },
+    "aiAssistant": null,
+    "responsibilities": [
+      "Market Research",
+      "Competitor Analysis",
+      "Price Tracking"
+    ],
+    "kpis": [
+      {
+        "name": "Reports Published",
+        "target": 8,
+        "current": 6,
+        "unit": "monthly",
+        "_id": "69628e8545cb93bb5db1d439"
+      }
+    ],
+    "status": "active",
+    "size": {
+      "current": 4,
+      "capacity": 6
+    },
+    "members": [],
+    "projects": [],
+    "createdAt": "2026-01-10T17:38:13.268Z",
+    "updatedAt": "2026-01-10T17:38:13.268Z",
+    "__v": 0
+  },
+  {
+    "_id": "69628e8545cb93bb5db1d43b",
+    "name": "Legal Team",
+    "code": "LEGAL-TEAM",
+    "department": "69628e8245cb93bb5db1d24c",
+    "description": "Contract management and legal operations",
+    "lead": {
+      "name": "Aisha Al Ketbi",
+      "email": "aisha@whitecaves.ae",
+      "title": "Director"
+    },
+    "aiAssistant": null,
+    "responsibilities": [
+      "Contract Review",
+      "Dispute Resolution",
+      "Ejari Processing"
+    ],
+    "kpis": [
+      {
+        "name": "Contracts Processed",
+        "target": 200,
+        "current": 156,
+        "unit": "monthly",
+        "_id": "69628e8545cb93bb5db1d43c"
+      }
+    ],
+    "status": "active",
+    "size": {
+      "current": 4,
+      "capacity": 5
+    },
+    "members": [],
+    "projects": [],
+    "createdAt": "2026-01-10T17:38:13.270Z",
+    "updatedAt": "2026-01-10T17:38:13.270Z",
+    "__v": 0
+  }
+]

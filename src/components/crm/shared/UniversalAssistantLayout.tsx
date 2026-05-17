@@ -1,9 +1,14 @@
-import React, { memo, Suspense, lazy, useCallback, type ReactNode } from 'react';
+import React, { memo, Suspense, useCallback, type ReactNode } from 'react';
 import { createLogger } from '../../../utils/logger';
-import { useSelector, useDispatch } from 'react-redux';
-import { Menu, X, RefreshCw } from 'lucide-react';
+import { useSelector } from 'react-redux';
+import { Menu, X, RefreshCw, Bell } from 'lucide-react';
 import AssistantSidebar from './AssistantSidebar';
-import { selectCurrentAssistant } from '../../../store/slices/aiAssistantDashboardSlice';
+import NotificationBadge from './NotificationBadge';
+import {
+  selectCurrentAssistant,
+  selectNotificationsByAssistant,
+} from '../../../store/slices/aiAssistantDashboardSlice';
+import type { RootState } from '../../../store/store';
 import './UniversalAssistantLayout.css';
 
 const LoadingSpinner = () => (
@@ -55,7 +60,7 @@ class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundarySta
   render() {
     if (this.state.hasError) {
       return (
-        <ErrorBoundaryFallback 
+        <ErrorBoundaryFallback
           error={this.state.error}
           resetError={() => this.setState({ hasError: false, error: null })}
         />
@@ -81,82 +86,108 @@ interface UniversalAssistantLayoutProps {
   collapsedSidebar?: boolean;
 }
 
-const UniversalAssistantLayout = memo(({ 
-  sidebarItems = [],
-  activeFeature,
-  onFeatureChange,
-  children,
-  headerActions,
-  showSidebar = true,
-  collapsedSidebar = false
-}: UniversalAssistantLayoutProps) => {
-  const [sidebarCollapsed, setSidebarCollapsed] = React.useState(collapsedSidebar);
-  const currentAssistant = useSelector(selectCurrentAssistant);
-  
-  const handleToggleSidebar = useCallback(() => {
-    setSidebarCollapsed(prev => !prev);
-  }, []);
-  
-  const assistantColor = currentAssistant?.colorScheme || '#0EA5E9';
-  
-  if (!currentAssistant) {
+const UniversalAssistantLayout = memo(
+  ({
+    sidebarItems = [],
+    activeFeature,
+    onFeatureChange,
+    children,
+    headerActions,
+    showSidebar = true,
+    collapsedSidebar = false,
+  }: UniversalAssistantLayoutProps) => {
+    const [sidebarCollapsed, setSidebarCollapsed] = React.useState(collapsedSidebar);
+    const currentAssistant = useSelector(selectCurrentAssistant);
+    // const pendingCount = useSelector((state: RootState) =>
+    //   currentAssistant ? selectPendingActionsCount(currentAssistant.id)(state) : 0,
+    // );
+    const pendingCount = 0; // Placeholder until selector is implemented
+    const notifications = useSelector((state: RootState) =>
+      currentAssistant ? selectNotificationsByAssistant(currentAssistant.id)(state) : []
+    );
+    const unreadCount = notifications.filter(n => !n.isRead).length;
+
+    const handleToggleSidebar = useCallback(() => {
+      setSidebarCollapsed(prev => !prev);
+    }, []);
+
+    const assistantColor = currentAssistant?.colorScheme || '#0EA5E9';
+
+    if (!currentAssistant) {
+      return (
+        <div className="universal-layout empty-state">
+          <p>Select an AI assistant to view their dashboard</p>
+        </div>
+      );
+    }
+
     return (
-      <div className="universal-layout empty-state">
-        <p>Select an AI assistant to view their dashboard</p>
+      <div
+        className={`universal-layout ${sidebarCollapsed ? 'sidebar-collapsed' : ''}`}
+        style={{ '--assistant-color': assistantColor } as React.CSSProperties}
+      >
+        {showSidebar && (
+          <AssistantSidebar
+            items={sidebarItems}
+            activeItem={activeFeature}
+            onItemClick={onFeatureChange}
+            collapsed={sidebarCollapsed}
+          />
+        )}
+
+        <div className="layout-main">
+          <header className="layout-header">
+            <div className="header-left">
+              {showSidebar && (
+                <button
+                  className="sidebar-toggle"
+                  onClick={handleToggleSidebar}
+                  title={sidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+                >
+                  {sidebarCollapsed ? <Menu size={20} /> : <X size={20} />}
+                </button>
+              )}
+              <div className="header-title">
+                <h1>{currentAssistant.name}</h1>
+                <span className="header-subtitle">{currentAssistant.title}</span>
+              </div>
+            </div>
+
+            <div className="header-actions">
+              {/* Pending-actions badge */}
+              {pendingCount > 0 && (
+                <div
+                  className="layout-header-badge"
+                  title={`${pendingCount} pending task${Number(pendingCount) !== 1 ? 's' : ''}`}
+                >
+                  <NotificationBadge count={pendingCount} severity="warning" size="medium" pulse />
+                  <span className="layout-badge-label">Pending</span>
+                </div>
+              )}
+              {/* Unread lifecycle notifications bell */}
+              {unreadCount > 0 && (
+                <div
+                  className="layout-header-badge"
+                  title={`${unreadCount} unread notification${unreadCount !== 1 ? 's' : ''}`}
+                >
+                  <Bell size={15} className="layout-bell" style={{ color: assistantColor }} />
+                  <NotificationBadge count={unreadCount} severity="critical" size="small" pulse />
+                </div>
+              )}
+              {headerActions}
+            </div>
+          </header>
+
+          <main className="layout-content">
+            <ErrorBoundary>
+              <Suspense fallback={<LoadingSpinner />}>{children}</Suspense>
+            </ErrorBoundary>
+          </main>
+        </div>
       </div>
     );
   }
-  
-  return (
-    <div 
-      className={`universal-layout ${sidebarCollapsed ? 'sidebar-collapsed' : ''}`}
-      style={{ '--assistant-color': assistantColor } as React.CSSProperties}
-    >
-      {showSidebar && (
-        <AssistantSidebar
-          items={sidebarItems}
-          activeItem={activeFeature}
-          onItemClick={onFeatureChange}
-          collapsed={sidebarCollapsed}
-        />
-      )}
-      
-      <div className="layout-main">
-        <header className="layout-header">
-          <div className="header-left">
-            {showSidebar && (
-              <button 
-                className="sidebar-toggle"
-                onClick={handleToggleSidebar}
-                title={sidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
-              >
-                {sidebarCollapsed ? <Menu size={20} /> : <X size={20} />}
-              </button>
-            )}
-            <div className="header-title">
-              <h1>{currentAssistant.name}</h1>
-              <span className="header-subtitle">{currentAssistant.title}</span>
-            </div>
-          </div>
-          
-          {headerActions && (
-            <div className="header-actions">
-              {headerActions}
-            </div>
-          )}
-        </header>
-        
-        <main className="layout-content">
-          <ErrorBoundary>
-            <Suspense fallback={<LoadingSpinner />}>
-              {children}
-            </Suspense>
-          </ErrorBoundary>
-        </main>
-      </div>
-    </div>
-  );
-});
+);
 
 UniversalAssistantLayout.displayName = 'UniversalAssistantLayout';
 export default UniversalAssistantLayout;

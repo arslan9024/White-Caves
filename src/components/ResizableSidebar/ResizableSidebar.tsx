@@ -18,16 +18,16 @@ export type ResizableSidebarProps = {
 const SidebarContainer = styled.div<{ $width: number; $isResizing: boolean }>`
   display: flex;
   flex-direction: column;
-  width: ${(props) => props.$width}px;
+  width: ${props => props.$width}px;
   height: 100vh;
   background: ${theme.colors.background.secondary};
   border-right: 1px solid ${theme.colors.border};
   overflow-y: auto;
-  transition: ${(props) =>
+  transition: ${props =>
     props.$isResizing ? 'none' : `width ${theme.transitions.durations.standard} ease`};
   position: relative;
-  user-select: ${(props) => (props.$isResizing ? 'none' : 'auto')};
-  
+  user-select: ${props => (props.$isResizing ? 'none' : 'auto')};
+
   @media (max-width: ${theme.breakpoints.tablet}) {
     width: 100%;
     border-right: none;
@@ -38,13 +38,13 @@ const SidebarContainer = styled.div<{ $width: number; $isResizing: boolean }>`
 const ResizeHandle = styled.div<{ $side: 'left' | 'right' }>`
   position: absolute;
   top: 0;
-  ${(props) => (props.$side === 'right' ? 'left: 0;' : 'right: 0;')}
+  ${props => (props.$side === 'right' ? 'left: 0;' : 'right: 0;')}
   width: 4px;
   height: 100%;
   background: transparent;
-  cursor: ${(props) => (props.$side === 'right' ? 'w-resize' : 'e-resize')};
-  transition: ${theme.transitions.create('background', theme.transitions.durations.short)};
-  
+  cursor: ${props => (props.$side === 'right' ? 'w-resize' : 'e-resize')};
+  transition: background ${theme.transitions.durations.short} ease;
+
   &:hover {
     background: ${theme.colors.primary};
   }
@@ -91,8 +91,8 @@ const ResetButton = styled.button`
   border: 1px solid ${theme.colors.border};
   border-radius: ${theme.spacing.xs};
   cursor: pointer;
-  transition: ${theme.transitions.create('all', theme.transitions.durations.standard)};
-  
+  transition: all ${theme.transitions.durations.standard} ease;
+
   &:hover {
     color: ${theme.colors.primary};
     border-color: ${theme.colors.primary};
@@ -110,19 +110,29 @@ export const ResizableSidebar: React.FC<ResizableSidebarProps> = ({
   className = '',
   onResize,
 }) => {
-  const { width, setWidth, isResizing, setIsResizing, resetWidth, MIN_WIDTH, MAX_WIDTH } =
-    useResizableSidebar(side);
+  const {
+    width,
+    setWidth,
+    isResizing,
+    setIsResizing,
+    resetWidth,
+    MIN_WIDTH: _MIN_WIDTH,
+    MAX_WIDTH: _MAX_WIDTH,
+  } = useResizableSidebar(side);
 
   // Track drag start position with refs to avoid stale closures
   const startXRef = useRef(0);
   const startWidthRef = useRef(width);
 
-  const handleMouseDown = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
-    e.preventDefault();
-    startXRef.current = e.clientX;
-    startWidthRef.current = width;
-    setIsResizing(true);
-  }, [width, setIsResizing]);
+  const handleMouseDown = useCallback(
+    (e: React.MouseEvent<HTMLDivElement>) => {
+      e.preventDefault();
+      startXRef.current = e.clientX;
+      startWidthRef.current = width;
+      setIsResizing(true);
+    },
+    [width, setIsResizing]
+  );
 
   // Manage document-level event listeners safely in useEffect
   useEffect(() => {
@@ -130,9 +140,8 @@ export const ResizableSidebar: React.FC<ResizableSidebarProps> = ({
 
     const handleMouseMove = (moveEvent: MouseEvent) => {
       const delta = moveEvent.clientX - startXRef.current;
-      const newWidth = side === 'right'
-        ? startWidthRef.current - delta
-        : startWidthRef.current + delta;
+      const newWidth =
+        side === 'right' ? startWidthRef.current - delta : startWidthRef.current + delta;
 
       setWidth(newWidth);
       onResize?.(newWidth);
@@ -154,9 +163,7 @@ export const ResizableSidebar: React.FC<ResizableSidebarProps> = ({
   return (
     <SidebarContainer $width={width} $isResizing={isResizing} className={className}>
       <ResizeHandle $side={side} onMouseDown={handleMouseDown} title="Drag to resize" />
-      <SidebarContent>
-        {children}
-      </SidebarContent>
+      <SidebarContent>{children}</SidebarContent>
       <ResetButton onClick={resetWidth} title="Reset sidebar width">
         ↺ Reset
       </ResetButton>

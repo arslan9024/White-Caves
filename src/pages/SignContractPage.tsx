@@ -15,9 +15,7 @@ interface ContractData {
   date: string;
 }
 
-interface SignContractPageProps {}
-
-const SignContractPage: FC<SignContractPageProps> = () => {
+const SignContractPage: FC = () => {
   useDocumentTitle('Sign Contract');
   const { token } = useParams<{token: string}>();
   const navigate = useNavigate();
@@ -76,6 +74,16 @@ const SignContractPage: FC<SignContractPageProps> = () => {
 
   const clearSignature = (): void => {
     sigRef.current?.clear();
+  };
+
+  const undoLastStroke = (): void => {
+    const canvas = sigRef.current;
+    if (!canvas) return;
+    // react-signature-canvas stores strokes in _data; pop the last one and redraw
+    const data = canvas.toData();
+    if (data.length > 0) {
+      canvas.fromData(data.slice(0, -1));
+    }
   };
 
   const handleSign = async (): Promise<void> => {
@@ -158,6 +166,7 @@ const SignContractPage: FC<SignContractPageProps> = () => {
               canvasProps={{ className: 'signature-canvas' }}
             />
             <div className="signature-actions">
+              <button onClick={undoLastStroke} className="btn-clear" title="Undo last stroke">Undo</button>
               <button onClick={clearSignature} className="btn-clear">Clear</button>
               <button onClick={handleSign} disabled={isSigning} className="btn-sign">
                 {isSigning ? 'Signing...' : 'Sign Contract'}

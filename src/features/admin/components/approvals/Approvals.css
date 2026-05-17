@@ -39,19 +39,19 @@
 }
 
 .filter-btn:hover {
-  border-color: var(--primary-color, #DC2626);
-  color: var(--primary-color, #DC2626);
+  border-color: var(--primary-color, #e31e24);
+  color: var(--primary-color, #e31e24);
 }
 
 .filter-btn.active {
-  background: var(--primary-color, #DC2626);
-  border-color: var(--primary-color, #DC2626);
+  background: var(--primary-color, #e31e24);
+  border-color: var(--primary-color, #e31e24);
   color: #ffffff;
 }
 
 .count-badge {
   background: #ffffff;
-  color: var(--primary-color, #DC2626);
+  color: var(--primary-color, #e31e24);
   font-size: 11px;
   font-weight: 600;
   padding: 2px 6px;
@@ -124,7 +124,7 @@
   width: 44px;
   height: 44px;
   border-radius: 50%;
-  background: var(--primary-color, #DC2626);
+  background: var(--primary-color, #e31e24);
   color: #ffffff;
   display: flex;
   align-items: center;
@@ -201,8 +201,8 @@
 }
 
 .requested-role {
-  background: rgba(220, 38, 38, 0.1);
-  color: var(--primary-color, #DC2626);
+  background: rgba(227, 30, 36, 0.1);
+  color: var(--primary-color, #e31e24);
 }
 
 .arrow {
@@ -250,7 +250,7 @@
 
 .reject-btn {
   background: #fee2e2;
-  color: #dc2626;
+  color: #e31e24;
 }
 
 .reject-btn:hover:not(:disabled) {
@@ -316,7 +316,7 @@
 
 .rejection-modal textarea:focus {
   outline: none;
-  border-color: var(--primary-color, #DC2626);
+  border-color: var(--primary-color, #e31e24);
 }
 
 .modal-actions {
@@ -338,7 +338,7 @@
 
 .confirm-reject-btn {
   padding: 10px 20px;
-  background: #dc2626;
+  background: #e31e24;
   border: none;
   border-radius: 8px;
   font-size: 14px;
@@ -352,39 +352,39 @@
   cursor: not-allowed;
 }
 
-[data-theme="dark"] .queue-header h2 {
+[data-theme='dark'] .queue-header h2 {
   color: var(--text-primary, #f9fafb);
 }
 
-[data-theme="dark"] .filter-btn {
+[data-theme='dark'] .filter-btn {
   background: var(--bg-secondary, #1f2937);
   border-color: var(--border-color, #374151);
 }
 
-[data-theme="dark"] .empty-queue {
+[data-theme='dark'] .empty-queue {
   background: var(--bg-secondary, #1f2937);
   border-color: var(--border-color, #374151);
 }
 
-[data-theme="dark"] .request-card {
+[data-theme='dark'] .request-card {
   background: var(--bg-secondary, #1f2937);
   border-color: var(--border-color, #374151);
 }
 
-[data-theme="dark"] .user-name,
-[data-theme="dark"] .empty-queue h3 {
+[data-theme='dark'] .user-name,
+[data-theme='dark'] .empty-queue h3 {
   color: var(--text-primary, #f9fafb);
 }
 
-[data-theme="dark"] .rejection-modal {
+[data-theme='dark'] .rejection-modal {
   background: var(--bg-primary, #111827);
 }
 
-[data-theme="dark"] .rejection-modal h3 {
+[data-theme='dark'] .rejection-modal h3 {
   color: var(--text-primary, #f9fafb);
 }
 
-[data-theme="dark"] .rejection-modal textarea {
+[data-theme='dark'] .rejection-modal textarea {
   background: var(--bg-secondary, #1f2937);
   border-color: var(--border-color, #374151);
   color: var(--text-primary, #f9fafb);
@@ -395,26 +395,26 @@
     flex-direction: column;
     align-items: flex-start;
   }
-  
+
   .queue-filters {
     width: 100%;
     overflow-x: auto;
   }
-  
+
   .request-header {
     flex-direction: column;
     align-items: flex-start;
     gap: 12px;
   }
-  
+
   .role-change {
     flex-wrap: wrap;
   }
-  
+
   .request-actions {
     flex-direction: column;
   }
-  
+
   .approve-btn,
   .reject-btn {
     width: 100%;

@@ -3,7 +3,15 @@
  * Tests for intent detection, entity extraction, sentiment analysis
  */
 
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+
+vi.hoisted(() => {
+  process.env.NODE_ENV = 'test';
+  process.env.JWT_SECRET = process.env.JWT_SECRET || 'test-jwt-secret';
+  process.env.DATABASE_URL =
+    process.env.DATABASE_URL || 'mongodb://localhost:27017/white-caves-test';
+});
+
 import { NinaEngine, Intent, ConversationContext } from './ninaEngine';
 import { ConversationMemory, ConversationMemoryState } from './conversationMemory';
 import { LindaClient, LindaStatus } from '../whatsapp/lindaClient';
@@ -17,6 +25,12 @@ describe('Nina NLP Engine', () => {
   let context: ConversationContext;
 
   beforeEach(() => {
+    vi.spyOn(console, 'log').mockImplementation(() => {});
+    vi.spyOn(console, 'warn').mockImplementation(() => {});
+    vi.spyOn(console, 'error').mockImplementation(() => {});
+    vi.spyOn(process.stdout, 'write').mockImplementation((() => true) as never);
+    vi.spyOn(process.stderr, 'write').mockImplementation((() => true) as never);
+
     nina = new NinaEngine();
     context = {
       conversationId: 'conv_test_1',
@@ -28,9 +42,16 @@ describe('Nina NLP Engine', () => {
     };
   });
 
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
   describe('Intent Detection', () => {
     it('should detect PROPERTY_INQUIRY_RESIDENTIAL intent', () => {
-      const result = nina.processMessage('I am looking for a residential villa or apartment in Dubai', context);
+      const result = nina.processMessage(
+        'I am looking for a residential villa or apartment in Dubai',
+        context
+      );
       expect(result.primary.intent).toMatch(/PROPERTY_INQUIRY/);
       expect(result.primary.confidence).toBeGreaterThan(30);
     });
@@ -67,32 +88,35 @@ describe('Nina NLP Engine', () => {
   describe('Entity Extraction', () => {
     it('should extract property type', () => {
       const result = nina.processMessage('I want to buy a villa', context);
-      const propertyTypes = result.entities.filter((e) => e.type === 'PROPERTY_TYPE');
+      const propertyTypes = result.entities.filter(e => e.type === 'PROPERTY_TYPE');
       expect(propertyTypes.length).toBeGreaterThan(0);
       expect(propertyTypes[0].value).toBe('villa');
     });
 
     it('should extract location', () => {
       const result = nina.processMessage('Show me properties in Dubai Marina', context);
-      const locations = result.entities.filter((e) => e.type === 'LOCATION');
+      const locations = result.entities.filter(e => e.type === 'LOCATION');
       expect(locations.length).toBeGreaterThan(0);
     });
 
     it('should extract price range', () => {
       const result = nina.processMessage('Budget is 2,000,000 AED', context);
-      const prices = result.entities.filter((e) => e.type === 'PRICE');
+      const prices = result.entities.filter(e => e.type === 'PRICE');
       expect(prices.length).toBeGreaterThan(0);
     });
 
     it('should extract bedrooms', () => {
       const result = nina.processMessage('Looking for 3BR apartment', context);
-      const bedrooms = result.entities.filter((e) => e.type === 'BEDROOMS');
+      const bedrooms = result.entities.filter(e => e.type === 'BEDROOMS');
       expect(bedrooms.length).toBeGreaterThan(0);
       expect(bedrooms[0].value).toBe('3BR');
     });
 
     it('should extract multiple entities', () => {
-      const result = nina.processMessage('2BR villa in Downtown Dubai, budget 3,000,000 AED', context);
+      const result = nina.processMessage(
+        '2BR villa in Downtown Dubai, budget 3,000,000 AED',
+        context
+      );
       expect(result.entities.length).toBeGreaterThanOrEqual(3);
     });
   });
@@ -129,7 +153,10 @@ describe('Nina NLP Engine', () => {
     });
 
     it('should limit secondary intents to 3', () => {
-      const result = nina.processMessage('Show me villas, apartments, and townhouses for viewing appointment', context);
+      const result = nina.processMessage(
+        'Show me villas, apartments, and townhouses for viewing appointment',
+        context
+      );
       expect(result.secondary.length).toBeLessThanOrEqual(3);
     });
   });
@@ -188,7 +215,17 @@ describe('Conversation Memory', () => {
   const conversationId = 'conv_test_2';
 
   beforeEach(() => {
+    vi.spyOn(console, 'log').mockImplementation(() => {});
+    vi.spyOn(console, 'warn').mockImplementation(() => {});
+    vi.spyOn(console, 'error').mockImplementation(() => {});
+    vi.spyOn(process.stdout, 'write').mockImplementation((() => true) as never);
+    vi.spyOn(process.stderr, 'write').mockImplementation((() => true) as never);
+
     memory = new ConversationMemory();
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
   });
 
   describe('Context Management', () => {
@@ -295,11 +332,21 @@ describe('Linda WhatsApp Client', () => {
   let linda: LindaClient;
 
   beforeEach(() => {
+    vi.spyOn(console, 'log').mockImplementation(() => {});
+    vi.spyOn(console, 'warn').mockImplementation(() => {});
+    vi.spyOn(console, 'error').mockImplementation(() => {});
+    vi.spyOn(process.stdout, 'write').mockImplementation((() => true) as never);
+    vi.spyOn(process.stderr, 'write').mockImplementation((() => true) as never);
+
     linda = new LindaClient({
       sessionPath: './test-session',
       headless: true,
       autoRestart: false,
     });
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
   });
 
   describe('Status Management', () => {
@@ -335,12 +382,22 @@ describe('Meta API Client', () => {
   let meta: MetaAPIClient;
 
   beforeEach(() => {
+    vi.spyOn(console, 'log').mockImplementation(() => {});
+    vi.spyOn(console, 'warn').mockImplementation(() => {});
+    vi.spyOn(console, 'error').mockImplementation(() => {});
+    vi.spyOn(process.stdout, 'write').mockImplementation((() => true) as never);
+    vi.spyOn(process.stderr, 'write').mockImplementation((() => true) as never);
+
     meta = new MetaAPIClient({
       accessToken: 'test_token',
       businessAccountId: 'test_account',
       phoneNumberId: 'test_phone',
       webhookVerifyToken: 'test_verify_token',
     });
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
   });
 
   describe('Webhook Verification', () => {

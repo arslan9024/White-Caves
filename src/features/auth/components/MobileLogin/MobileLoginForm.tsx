@@ -92,8 +92,11 @@ const MobileLoginForm: React.FC<MobileLoginFormProps> = ({ onSuccess, onError })
     
     try {
       setupRecaptcha();
+      if (!auth || !window.recaptchaVerifier) {
+        throw new Error('Firebase auth or reCAPTCHA not initialized');
+      }
       const fullPhoneNumber = `${countryCode}${phoneNumber}`;
-      const result = await signInWithPhoneNumber(auth!, fullPhoneNumber, window.recaptchaVerifier!);
+      const result = await signInWithPhoneNumber(auth, fullPhoneNumber, window.recaptchaVerifier);
       setConfirmationResult(result);
       setStep('otp');
     } catch (error) {

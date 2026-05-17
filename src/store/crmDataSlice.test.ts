@@ -111,8 +111,6 @@ import crmDataReducer, {
   selectTopAgents,
   makeSelectLeadsByAgent,
   makeSelectClientsByAgent,
-  selectLeadsByAgent,
-  selectClientsByAgent,
   selectLastUpdated,
 } from './crmDataSlice';
 import { logout } from './authSlice';
@@ -126,13 +124,15 @@ vi.mock('../utils/authFetch', () => ({
   extractApiError: (...args: unknown[]) => mockExtractApiError(...args),
 }));
 
-// ─── Mock dummy data imports ─────────────────────────────────────────────
-vi.mock('../data/dummyLeads', () => ({
-  DUMMY_ALL_LEADS: [],
-  DUMMY_CLIENTS: [],
-  DUMMY_AGENTS: [],
-  DUMMY_ACTIVITIES: [],
-  DUMMY_OVERVIEW_DATA: null,
+// ─── Mock dev data imports ───────────────────────────────────────────────
+vi.mock('../data/devData', () => ({
+  DEV_LEADS: [],
+  DEV_CLIENTS: [],
+  DEV_AGENTS: [],
+  DEV_PROPERTIES: [],
+  DEV_COMMISSIONS: [],
+  DEV_ACTIVITIES: [],
+  DEV_OVERVIEW: null,
 }));
 
 // ─── Helper: get clean initial state ─────────────────────────────────────
@@ -1090,15 +1090,6 @@ describe('crmDataSlice', () => {
         expect(selector(state)).toHaveLength(2);
       });
 
-      it('selectLeadsByAgent (deprecated) returns leads for agent', () => {
-        const items = [
-          makeLead({ id: '1', agent_id: 'a1' }),
-          makeLead({ id: '2', agent_id: 'a2' }),
-        ];
-        const state = buildState({ leads: { items, selected: null, loading: false, error: null } });
-        expect(selectLeadsByAgent(state, 'a1')).toHaveLength(1);
-      });
-
       it('makeSelectClientsByAgent returns clients for specific agent', () => {
         const items = [
           makeClient({ id: '1', agent_id: 'a1' }),
@@ -1107,15 +1098,6 @@ describe('crmDataSlice', () => {
         const state = buildState({ clients: { items, selected: null, loading: false, error: null } });
         const selector = makeSelectClientsByAgent('a1');
         expect(selector(state)).toHaveLength(1);
-      });
-
-      it('selectClientsByAgent (deprecated) returns clients for agent', () => {
-        const items = [
-          makeClient({ id: '1', agent_id: 'a1' }),
-          makeClient({ id: '2', agent_id: 'a1' }),
-        ];
-        const state = buildState({ clients: { items, selected: null, loading: false, error: null } });
-        expect(selectClientsByAgent(state, 'a1')).toHaveLength(2);
       });
     });
 

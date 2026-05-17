@@ -60,18 +60,21 @@ export const formatCurrencyAbbreviated = (amount: number, currency: string = 'AE
  * - Abbreviated by default: "AED 2.5M", "AED 450K", "AED 1,200"
  * - With priceType: "AED 120,000/year", "AED 8,000/month"
  * - Handles null/undefined → "Price on Request"
+ * - Supports multi-currency via currency param (Phase 2E)
  */
 export const formatPrice = (
   price?: number | null,
-  options?: { priceType?: string; unit?: string; fallback?: string }
+  options?: { priceType?: string; unit?: string; fallback?: string; currency?: string }
 ): string => {
   if (price == null || isNaN(price)) return options?.fallback ?? 'Price on Request';
+
+  const currency = options?.currency ?? 'AED';
 
   // If a priceType or unit suffix is specified, use full locale format
   if (options?.priceType || options?.unit) {
     const formatted = new Intl.NumberFormat('en-AE', {
       style: 'currency',
-      currency: 'AED',
+      currency,
       maximumFractionDigits: 0,
     }).format(price);
     const suffix = options.priceType
@@ -83,56 +86,10 @@ export const formatPrice = (
   }
 
   // Default: abbreviated
-  return formatCurrencyAbbreviated(price);
-};
-
-/**
- * Generate random ID
- * NOTE: Kept but currently unused — planned for Phase 6 form components
- */
-export const generateId = (prefix: string = ''): string => {
-  return prefix + Math.random().toString(36).substring(2, 11);
+  return formatCurrencyAbbreviated(price, currency);
 };
 
 /**
  * Validate email
  */
 export { isValidEmail } from './validation';
-
-/**
- * Get initials from name
- */
-export const getInitials = (name: string): string => {
-  return name
-    .trim()
-    .split(' ')
-    .filter((part) => part.length > 0)
-    .map((part) => part.charAt(0).toUpperCase())
-    .join('')
-    .substring(0, 2) || '?';
-};
-
-/**
- * Sort array by property — type-safe with proper comparisons
- */
-export const sortBy = <T extends Record<string, unknown>>(
-  array: T[],
-  key: keyof T,
-  order: 'asc' | 'desc' = 'asc'
-): T[] => {
-  return [...array].sort((a, b) => {
-    const aVal = a[key];
-    const bVal = b[key];
-    // Handle null/undefined
-    if (aVal == null && bVal == null) return 0;
-    if (aVal == null) return order === 'asc' ? -1 : 1;
-    if (bVal == null) return order === 'asc' ? 1 : -1;
-    // String comparison
-    if (typeof aVal === 'string' && typeof bVal === 'string') {
-      return order === 'asc' ? aVal.localeCompare(bVal) : bVal.localeCompare(aVal);
-    }
-    // Numeric / Date comparison
-    const comparison = (aVal as number) > (bVal as number) ? 1 : (aVal as number) < (bVal as number) ? -1 : 0;
-    return order === 'asc' ? comparison : -comparison;
-  });
-};

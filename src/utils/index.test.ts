@@ -4,9 +4,6 @@ import {
   formatCurrency,
   formatCurrencyAbbreviated,
   formatPrice,
-  generateId,
-  getInitials,
-  sortBy,
 } from './index';
 
 // ═══════════════════════════════════════════════════════════════════════
@@ -157,104 +154,5 @@ describe('utils/index', () => {
     });
   });
 
-  // ── generateId ────────────────────────────────────────────────────
-  describe('generateId', () => {
-    it('generates a non-empty string', () => {
-      expect(generateId().length).toBeGreaterThan(0);
-    });
-
-    it('includes prefix', () => {
-      expect(generateId('prop_')).toMatch(/^prop_/);
-    });
-
-    it('generates unique IDs', () => {
-      const ids = new Set(Array.from({ length: 100 }, () => generateId()));
-      expect(ids.size).toBe(100);
-    });
-  });
-
-  // ── getInitials ───────────────────────────────────────────────────
-  describe('getInitials', () => {
-    it('returns first two initials', () => {
-      expect(getInitials('John Doe')).toBe('JD');
-    });
-
-    it('returns single initial for one word', () => {
-      expect(getInitials('Alice')).toBe('A');
-    });
-
-    it('caps at 2 initials', () => {
-      expect(getInitials('John Michael Doe')).toBe('JM');
-    });
-
-    it('returns "?" for empty string', () => {
-      expect(getInitials('')).toBe('?');
-    });
-
-    it('returns "?" for whitespace-only', () => {
-      expect(getInitials('   ')).toBe('?');
-    });
-
-    it('uppercases initials', () => {
-      expect(getInitials('john doe')).toBe('JD');
-    });
-  });
-
-  // ── sortBy ────────────────────────────────────────────────────────
-  describe('sortBy', () => {
-    const items = [
-      { name: 'Charlie', age: 30 },
-      { name: 'Alice', age: 25 },
-      { name: 'Bob', age: 35 },
-    ];
-
-    it('sorts strings ascending by default', () => {
-      const sorted = sortBy(items, 'name');
-      expect(sorted.map((i) => i.name)).toEqual(['Alice', 'Bob', 'Charlie']);
-    });
-
-    it('sorts strings descending', () => {
-      const sorted = sortBy(items, 'name', 'desc');
-      expect(sorted.map((i) => i.name)).toEqual(['Charlie', 'Bob', 'Alice']);
-    });
-
-    it('sorts numbers ascending', () => {
-      const sorted = sortBy(items, 'age');
-      expect(sorted.map((i) => i.age)).toEqual([25, 30, 35]);
-    });
-
-    it('sorts numbers descending', () => {
-      const sorted = sortBy(items, 'age', 'desc');
-      expect(sorted.map((i) => i.age)).toEqual([35, 30, 25]);
-    });
-
-    it('does not mutate original array', () => {
-      const original = [...items];
-      sortBy(items, 'name');
-      expect(items).toEqual(original);
-    });
-
-    it('handles null values in ascending — nulls first', () => {
-      const data = [
-        { name: 'B', val: 2 },
-        { name: null as unknown as string, val: null as unknown as number },
-        { name: 'A', val: 1 },
-      ];
-      const sorted = sortBy(data, 'name');
-      expect(sorted[0].name).toBeNull();
-    });
-
-    it('handles all-null values', () => {
-      const data = [
-        { x: null as unknown as string },
-        { x: null as unknown as string },
-      ];
-      const sorted = sortBy(data, 'x');
-      expect(sorted).toHaveLength(2);
-    });
-
-    it('returns empty array for empty input', () => {
-      expect(sortBy([], 'name')).toEqual([]);
-    });
-  });
 });
+

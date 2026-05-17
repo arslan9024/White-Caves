@@ -1,63 +1,109 @@
 /**
- * Users API Routes — User Management & RBAC
- * User listing, role management, status control
+ * Users API Routes — Full User Management
  * Endpoints: /api/users
+ *
+ * Provides admin-level CRUD over all platform users (all roles).
+ * Separate from /api/agents which is specific to agent performance data.
+ *
+ * Access control:
+ *   GET /                  — requireMinRole('admin')
+ *   GET /me                — any authenticated user
+ *   GET /pending           — requireMinRole('admin')
+ *   GET /:id               — requireMinRole('admin')
+ *   PATCH /:id             — requireRole('owner') — change role / status
+ *   PATCH /:id/status      — requireMinRole('admin') — activate / suspend
  */
 
 import { Router, Request, Response } from 'express';
 import { asyncHandler, AppError } from '../middleware/errorHandler';
 import type { AuthRequest } from '../middleware/auth';
 import { prisma } from '../database.js';
-import { validate, rules, validateIdParam } from '../utils/validate';
+import { sanitizeString } from '../utils/sanitize';
+import { validateIdParam } from '../utils/validate';
 import { parsePagination } from '../config/pagination';
-
-const VALID_ROLES = ['owner', 'manager', 'admin', 'agent', 'finance', 'viewer'] as const;
-const VALID_USER_STATUSES = ['active', 'inactive'] as const;
-const OWNER_MANAGER_ROLES = ['owner', 'manager'];
+import {
+  requireRole,
+  requireMinRole,
+  ROLE_ALIAS_MAP,
+  resolveBackendRole,
+} from '../middleware/rbac';
 
 const router = Router();
 
-// ─── GET /api/users ─────────────────────────────────────────────────────
+// All role strings accepted by the PATCH endpoint.
+// Includes both canonical backend roles and frontend UI aliases.
+const ALL_VALID_ROLES = Object.keys(ROLE_ALIAS_MAP);
+
+// Valid status strings
+const VALID_STATUSES = ['active', 'pending', 'inactive', 'suspended', 'rejected'] as const;
+type UserStatus = (typeof VALID_STATUSES)[number];
+
+// ─── GET /api/users ──────────────────────────────────────────────────────
+/**
+ * List all users across all roles. Requires admin or above.
+ * Supports: role, status, search, page, pageSize filters.
+ */
 router.get(
   '/',
+  requireMinRole('admin'),
   asyncHandler(async (req: Request, res: Response) => {
-    // AUTHORIZATION: Only owner/manager can list all users
-    const allowedRoles = OWNER_MANAGER_ROLES;
-    if (!allowedRoles.includes((req as AuthRequest).user?.role || '')) {
-      throw new AppError('Access denied — user listing requires manager role or above', 403);
-    }
+    const { role, status, search, department } = req.query;
 
-    const { role, status, department, search } = req.query;
-
-    const { page: pageNum, limit, skip } = parsePagination({
+    const {
+      page: pageNum,
+      limit,
+      skip,
+    } = parsePagination({
       page: req.query.page as string,
       limit: req.query.pageSize as string,
     });
 
     const where: Record<string, unknown> = {};
-    if (role && role !== 'all') where.role = role as string;
-    if (status && status !== 'all') where.status = status as string;
-    if (department && department !== 'all') where.department = department as string;
-    if (search) {
-      const s = search as string;
+
+    if (role && typeof role === 'string') {
+      where.role = role;
+    }
+    if (status && VALID_STATUSES.includes(status as UserStatus)) {
+      where.status = status as string;
+    }
+    if (department && typeof department === 'string') {
+      where.department = sanitizeString(department);
+    }
+    if (search && typeof search === 'string') {
+      const s = sanitizeString(search.trim()).slice(0, 100);
       where.OR = [
         { name: { contains: s, mode: 'insensitive' } },
         { email: { contains: s, mode: 'insensitive' } },
-        { phone: { contains: s, mode: 'insensitive' } },
       ];
     }
 
     const [users, total] = await Promise.all([
       prisma.user.findMany({
         where,
+        select: {
+          id: true,
+          email: true,
+          name: true,
+          role: true,
+          phone: true,
+          department: true,
+          status: true,
+          photoUrl: true,
+          createdAt: true,
+          updatedAt: true,
+          brnNumber: true,
+          brnExpiry: true,
+          _count: {
+            select: {
+              leadsAssigned: true,
+              commissions: true,
+              properties: true,
+            },
+          },
+        },
         orderBy: { createdAt: 'desc' },
         skip,
         take: limit,
-        select: {
-          id: true, email: true, name: true, photoUrl: true,
-          role: true, phone: true, department: true, status: true,
-          createdAt: true, updatedAt: true,
-        },
       }),
       prisma.user.count({ where }),
     ]);
@@ -75,199 +121,299 @@ router.get(
   })
 );
 
-// ─── GET /api/users/stats ───────────────────────────────────────────────
+// ─── GET /api/users/me ───────────────────────────────────────────────────
+/**
+ * Return the currently authenticated user's profile.
+ * Any authenticated user can call this.
+ */
 router.get(
-  '/stats',
+  '/me',
   asyncHandler(async (req: Request, res: Response) => {
-    // AUTHORIZATION: Only owner/manager can view user statistics
-    const allowedRoles = OWNER_MANAGER_ROLES;
-    if (!allowedRoles.includes((req as AuthRequest).user?.role || '')) {
-      throw new AppError('Access denied — user statistics require manager role or above', 403);
-    }
-
-    const [total, byRole, byStatus] = await Promise.all([
-      prisma.user.count(),
-      prisma.user.groupBy({ by: ['role'], _count: { _all: true } }),
-      prisma.user.groupBy({ by: ['status'], _count: { _all: true } }),
-    ]);
-
-    const roleCounts: Record<string, number> = {};
-    byRole.forEach((r) => { roleCounts[r.role] = r._count._all; });
-
-    const statusCounts: Record<string, number> = {};
-    byStatus.forEach((s) => { statusCounts[s.status] = s._count._all; });
-
-    res.status(200).json({
-      success: true,
-      data: {
-        total,
-        byRole: roleCounts,
-        byStatus: statusCounts,
-      },
-    });
-  })
-);
-
-// ─── GET /api/users/:id ─────────────────────────────────────────────────
-router.get(
-  '/:id',
-  asyncHandler(async (req: Request, res: Response) => {
-    validateIdParam(req.params.id, 'User ID');
-
-    // AUTHORIZATION: Only owner/manager can view user details
-    const allowedRoles = OWNER_MANAGER_ROLES;
-    if (!allowedRoles.includes((req as AuthRequest).user?.role || '')) {
-      throw new AppError('Access denied — user details require manager role or above', 403);
-    }
+    const userId = (req as AuthRequest).user?.id;
+    if (!userId) throw new AppError('Not authenticated', 401);
 
     const user = await prisma.user.findUnique({
-      where: { id: req.params.id },
+      where: { id: userId },
       select: {
-        id: true, email: true, name: true, photoUrl: true,
-        role: true, phone: true, department: true, status: true,
-        createdAt: true, updatedAt: true,
+        id: true,
+        email: true,
+        name: true,
+        role: true,
+        phone: true,
+        department: true,
+        photoUrl: true,
+        status: true,
+        createdAt: true,
+        brnNumber: true,
+        brnExpiry: true,
       },
     });
+
     if (!user) throw new AppError('User not found', 404);
 
     res.status(200).json({ success: true, data: user });
   })
 );
 
-// ─── PATCH /api/users/:id/role ──────────────────────────────────────────
-router.patch(
-  '/:id/role',
+// ─── GET /api/users/pending ──────────────────────────────────────────────
+/**
+ * List users whose status is 'pending' (awaiting admin approval).
+ * Used by the managing director to approve or reject new staff sign-ups.
+ * Requires admin role or above.
+ */
+router.get(
+  '/pending',
+  requireMinRole('admin'),
   asyncHandler(async (req: Request, res: Response) => {
-    const { id } = req.params;
-    validateIdParam(id, 'User ID');
-
-    // AUTHORIZATION: Only owner can change roles
-    if ((req as AuthRequest).user?.role !== 'owner') {
-      throw new AppError('Access denied — role changes require owner role', 403);
-    }
-
-    const { role } = req.body;
-
-    validate(req.body, {
-      role: rules.oneOf('Role', [...VALID_ROLES]),
+    const {
+      page: pageNum,
+      limit,
+      skip,
+    } = parsePagination({
+      page: req.query.page as string,
+      limit: req.query.pageSize as string,
     });
 
-    if (!role) throw new AppError('Role is required', 400);
+    const [users, total] = await Promise.all([
+      prisma.user.findMany({
+        where: { status: 'pending' },
+        select: {
+          id: true,
+          email: true,
+          name: true,
+          role: true,
+          phone: true,
+          department: true,
+          status: true,
+          createdAt: true,
+        },
+        orderBy: { createdAt: 'desc' },
+        skip,
+        take: limit,
+      }),
+      prisma.user.count({ where: { status: 'pending' } }),
+    ]);
 
-    const existing = await prisma.user.findUnique({ where: { id } });
-    if (!existing) throw new AppError('User not found', 404);
+    res.status(200).json({
+      success: true,
+      data: users,
+      pagination: {
+        page: pageNum,
+        pageSize: limit,
+        total,
+        totalPages: Math.ceil(total / limit),
+      },
+    });
+  })
+);
 
-    const user = await prisma.user.update({
-      where: { id },
-      data: { role },
+// ─── GET /api/users/:id ──────────────────────────────────────────────────
+/**
+ * Get a single user by ID. Requires admin or above.
+ */
+router.get(
+  '/:id',
+  requireMinRole('admin'),
+  asyncHandler(async (req: Request, res: Response) => {
+    validateIdParam(req.params.id, 'User ID');
+
+    const user = await prisma.user.findUnique({
+      where: { id: req.params.id },
       select: {
-        id: true, email: true, name: true, role: true,
-        status: true, department: true,
+        id: true,
+        email: true,
+        name: true,
+        role: true,
+        phone: true,
+        department: true,
+        photoUrl: true,
+        status: true,
+        createdAt: true,
+        updatedAt: true,
+        brnNumber: true,
+        brnExpiry: true,
+        _count: {
+          select: {
+            leadsAssigned: true,
+            commissions: true,
+            properties: true,
+          },
+        },
       },
     });
 
+    if (!user) throw new AppError('User not found', 404);
+
+    res.status(200).json({ success: true, data: user });
+  })
+);
+
+// ─── PATCH /api/users/:id ────────────────────────────────────────────────
+/**
+ * Update a user's role, status, department, name, or phone.
+ * Only the owner (managing director) can change roles.
+ * Admins can change status only.
+ *
+ * @body role?       — new role string (owner-only)
+ * @body status?     — 'active' | 'pending' | 'inactive' | 'suspended' | 'rejected'
+ * @body department? — department string
+ * @body name?       — display name
+ * @body phone?      — phone number
+ */
+router.patch(
+  '/:id',
+  requireRole('owner'),
+  asyncHandler(async (req: Request, res: Response) => {
+    validateIdParam(req.params.id, 'User ID');
+
+    const requesterId = (req as AuthRequest).user?.id;
+    const targetId = req.params.id;
+
+    // Owners cannot remove their own owner role (safety guard)
+    if (
+      requesterId === targetId &&
+      req.body.role &&
+      resolveBackendRole(req.body.role) !== 'owner'
+    ) {
+      throw new AppError('You cannot downgrade your own owner role', 403);
+    }
+
+    const { role, status, department, name, phone } = req.body;
+    const data: Record<string, unknown> = {};
+
+    // Validate role early (before DB lookup) to return 400 fast on bad input
+    let canonicalRole: string | undefined;
+    if (role !== undefined) {
+      const rawRole = String(role).toLowerCase().trim();
+      if (!ALL_VALID_ROLES.includes(rawRole)) {
+        throw new AppError(`Invalid role. Must be one of: ${ALL_VALID_ROLES.join(', ')}`, 400);
+      }
+      // Resolve alias → canonical (e.g. 'managing_director' → 'owner')
+      canonicalRole = resolveBackendRole(rawRole);
+    }
+
+    if (status !== undefined) {
+      if (!VALID_STATUSES.includes(status as UserStatus)) {
+        throw new AppError(`Invalid status. Must be one of: ${VALID_STATUSES.join(', ')}`, 400);
+      }
+      data.status = status as string;
+    }
+
+    if (department !== undefined) {
+      data.department = sanitizeString(String(department || '').trim()) || null;
+    }
+
+    if (name !== undefined) {
+      const sanitized = sanitizeString(String(name).trim());
+      if (sanitized.length > 100) throw new AppError('Name must be 100 characters or less', 400);
+      data.name = sanitized;
+    }
+
+    if (phone !== undefined) {
+      const sanitized = sanitizeString(String(phone || '').trim());
+      if (sanitized.length > 30) throw new AppError('Phone must be 30 characters or less', 400);
+      data.phone = sanitized || null;
+    }
+
+    if (canonicalRole === undefined && Object.keys(data).length === 0) {
+      throw new AppError('No valid fields provided to update', 400);
+    }
+
+    const target = await prisma.user.findUnique({ where: { id: targetId } });
+    if (!target) throw new AppError('User not found', 404);
+
+    if (canonicalRole !== undefined) {
+      // Guard: prevent demoting the last active owner in the system
+      if (target.role === 'owner' && canonicalRole !== 'owner') {
+        const ownerCount = await prisma.user.count({
+          where: { role: 'owner', status: 'active' },
+        });
+        if (ownerCount <= 1) {
+          throw new AppError(
+            'Cannot demote the last active owner. Promote another user to owner first.',
+            409
+          );
+        }
+      }
+      data.role = canonicalRole; // Always persist canonical role, never an alias
+    }
+
+    const updated = await prisma.user.update({
+      where: { id: targetId },
+      data,
+      select: {
+        id: true,
+        email: true,
+        name: true,
+        role: true,
+        department: true,
+        status: true,
+        phone: true,
+        photoUrl: true,
+        updatedAt: true,
+      },
+    });
+
+    // Audit trail
     await prisma.activity.create({
       data: {
         type: 'system',
         action: 'updated',
-        description: `User "${user.name || user.email}" role changed: ${existing.role} → ${role}`,
-        userId: (req as AuthRequest).user?.id || null,
-        metadata: { oldRole: existing.role, newRole: role },
+        description: `User ${target.email} updated by ${requesterId}: ${JSON.stringify(data)}`,
+        userId: requesterId ?? null,
       },
     });
 
-    res.status(200).json({ success: true, data: user });
+    res.status(200).json({ success: true, data: updated });
   })
 );
 
-// ─── PATCH /api/users/:id/status ────────────────────────────────────────
+// ─── PATCH /api/users/:id/status ─────────────────────────────────────────
+/**
+ * Activate, suspend, or reject a user. Requires admin or above.
+ * The owner-only PATCH /:id endpoint also handles this — this is a
+ * convenience endpoint for the approval flow (admin can approve pending users).
+ *
+ * @body status — 'active' | 'pending' | 'inactive' | 'suspended' | 'rejected'
+ */
 router.patch(
   '/:id/status',
+  requireMinRole('admin'),
   asyncHandler(async (req: Request, res: Response) => {
-    const { id } = req.params;
-    validateIdParam(id, 'User ID');
-
-    // AUTHORIZATION: Only owner/manager can change user status
-    const allowedRoles = OWNER_MANAGER_ROLES;
-    if (!allowedRoles.includes((req as AuthRequest).user?.role || '')) {
-      throw new AppError('Access denied — user status changes require manager role or above', 403);
-    }
+    validateIdParam(req.params.id, 'User ID');
 
     const { status } = req.body;
+    if (!status || !VALID_STATUSES.includes(status as UserStatus)) {
+      throw new AppError(`Invalid status. Must be one of: ${VALID_STATUSES.join(', ')}`, 400);
+    }
 
-    validate(req.body, {
-      status: rules.oneOf('Status', [...VALID_USER_STATUSES]),
-    });
+    const target = await prisma.user.findUnique({ where: { id: req.params.id } });
+    if (!target) throw new AppError('User not found', 404);
 
-    if (!status) throw new AppError('Status is required', 400);
-
-    const existing = await prisma.user.findUnique({ where: { id } });
-    if (!existing) throw new AppError('User not found', 404);
-
-    const user = await prisma.user.update({
-      where: { id },
-      data: { status },
+    const updated = await prisma.user.update({
+      where: { id: req.params.id },
+      data: { status: status as string },
       select: {
-        id: true, email: true, name: true, role: true,
-        status: true, department: true,
+        id: true,
+        email: true,
+        name: true,
+        role: true,
+        status: true,
+        updatedAt: true,
       },
     });
 
+    const requesterId = (req as AuthRequest).user?.id;
     await prisma.activity.create({
       data: {
         type: 'system',
-        action: 'status_changed',
-        description: `User "${user.name || user.email}" status changed: ${existing.status} → ${status}`,
-        userId: (req as AuthRequest).user?.id || null,
-        metadata: { oldStatus: existing.status, newStatus: status },
+        action: 'updated',
+        description: `User ${target.email} status set to '${status}' by ${requesterId}`,
+        userId: requesterId ?? null,
       },
     });
 
-    res.status(200).json({ success: true, data: user });
-  })
-);
-
-// ─── DELETE /api/users/:id ──────────────────────────────────────────────
-router.delete(
-  '/:id',
-  asyncHandler(async (req: Request, res: Response) => {
-    const { id } = req.params;
-    validateIdParam(id, 'User ID');
-
-    // AUTHORIZATION: Only owner can deactivate users
-    if ((req as AuthRequest).user?.role !== 'owner') {
-      throw new AppError('Access denied — user deactivation requires owner role', 403);
-    }
-
-    // Prevent self-deactivation
-    if (id === (req as AuthRequest).user?.id) {
-      throw new AppError('You cannot deactivate your own account', 400);
-    }
-
-    const existing = await prisma.user.findUnique({ where: { id } });
-    if (!existing) throw new AppError('User not found', 404);
-
-    // Soft delete — set status to inactive, NOT hard delete
-    const user = await prisma.user.update({
-      where: { id },
-      data: { status: 'inactive' },
-      select: {
-        id: true, email: true, name: true, role: true,
-        status: true, department: true,
-      },
-    });
-
-    await prisma.activity.create({
-      data: {
-        type: 'system',
-        action: 'status_changed',
-        description: `User "${user.name || user.email}" deactivated by ${(req as AuthRequest).user?.email}`,
-        userId: (req as AuthRequest).user?.id || null,
-        metadata: { oldStatus: existing.status, newStatus: 'inactive' },
-      },
-    });
-
-    res.status(200).json({ success: true, data: user, message: `User "${user.name || user.email}" deactivated` });
+    res.status(200).json({ success: true, data: updated });
   })
 );
 

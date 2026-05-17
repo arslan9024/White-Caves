@@ -11,7 +11,11 @@ interface AuthPageProps {
   onSuccess?: (userData: Record<string, unknown>) => void;
 }
 
-const AuthPage: React.FC<AuthPageProps> = ({ defaultMode = 'login', defaultTab = 'email', onSuccess }) => {
+const AuthPage: React.FC<AuthPageProps> = ({
+  defaultMode = 'login',
+  defaultTab = 'email',
+  onSuccess,
+}) => {
   const navigate = useNavigate();
   const [mode, setMode] = useState<'login' | 'signup'>(defaultMode);
   const [activeTab, setActiveTab] = useState<string>(defaultTab);
@@ -22,12 +26,21 @@ const AuthPage: React.FC<AuthPageProps> = ({ defaultMode = 'login', defaultTab =
     if (onSuccess) {
       onSuccess(userData as Record<string, unknown>);
     } else {
-      navigate('/');
+      const user = userData as Record<string, unknown>;
+      let destination = '/';
+      if (user?.role === 'tenant') destination = '/tenant/portal';
+      else if (user?.role === 'landlord') destination = '/landlord/portal';
+      navigate(destination);
     }
   };
 
   const handleAuthError = (err: unknown): void => {
-    const message = err instanceof Error ? err.message : typeof err === 'object' && err !== null && 'message' in err ? String((err as { message?: string }).message) : 'Authentication failed. Please try again.';
+    const message =
+      err instanceof Error
+        ? err.message
+        : typeof err === 'object' && err !== null && 'message' in err
+          ? String((err as { message?: string }).message)
+          : 'Authentication failed. Please try again.';
     setError(message);
   };
 
@@ -52,10 +65,7 @@ const AuthPage: React.FC<AuthPageProps> = ({ defaultMode = 'login', defaultTab =
           </div>
         )}
 
-        <SocialLoginButtons
-          onSuccess={handleAuthSuccess}
-          onError={handleAuthError}
-        />
+        <SocialLoginButtons onSuccess={handleAuthSuccess} onError={handleAuthError} />
 
         <div className="auth-tabs">
           <button
@@ -81,17 +91,13 @@ const AuthPage: React.FC<AuthPageProps> = ({ defaultMode = 'login', defaultTab =
               onModeChange={setMode}
             />
           ) : (
-            <MobileLoginForm
-              onSuccess={handleAuthSuccess}
-              onError={handleAuthError}
-            />
+            <MobileLoginForm onSuccess={handleAuthSuccess} onError={handleAuthError} />
           )}
         </div>
 
         <div className="auth-footer">
           <p>
-            By continuing, you agree to our{' '}
-            <a href="/terms">Terms of Service</a> and{' '}
+            By continuing, you agree to our <a href="/terms">Terms of Service</a> and{' '}
             <a href="/privacy">Privacy Policy</a>
           </p>
         </div>

@@ -1,0 +1,188 @@
+{
+  "timestamp": "2026-01-17T12-22-10-645Z",
+  "mongoUri": "mongodb+srv://arslanmalikgoraha_db_user:WhiteCaves...",
+  "collections": {
+    "servicecatalogs": {
+      "documentCount": 24,
+      "size": 21767,
+      "file": "C:\\Users\\HP\\Downloads\\White Caves\\White Caves Web App\\White-Caves\\backups\\backup-2026-01-17T12-22-10-645Z\\servicecatalogs.json"
+    },
+    "homepagefeatures": {
+      "documentCount": 1,
+      "size": 7008,
+      "file": "C:\\Users\\HP\\Downloads\\White Caves\\White Caves Web App\\White-Caves\\backups\\backup-2026-01-17T12-22-10-645Z\\homepagefeatures.json"
+    },
+    "componentanalyses": {
+      "documentCount": 0,
+      "size": 2,
+      "file": "C:\\Users\\HP\\Downloads\\White Caves\\White Caves Web App\\White-Caves\\backups\\backup-2026-01-17T12-22-10-645Z\\componentanalyses.json"
+    },
+    "usertypes": {
+      "documentCount": 15,
+      "size": 17753,
+      "file": "C:\\Users\\HP\\Downloads\\White Caves\\White Caves Web App\\White-Caves\\backups\\backup-2026-01-17T12-22-10-645Z\\usertypes.json"
+    },
+    "departments": {
+      "documentCount": 10,
+      "size": 12884,
+      "file": "C:\\Users\\HP\\Downloads\\White Caves\\White Caves Web App\\White-Caves\\backups\\backup-2026-01-17T12-22-10-645Z\\departments.json"
+    },
+    "amlriskassessments": {
+      "documentCount": 0,
+      "size": 2,
+      "file": "C:\\Users\\HP\\Downloads\\White Caves\\White Caves Web App\\White-Caves\\backups\\backup-2026-01-17T12-22-10-645Z\\amlriskassessments.json"
+    },
+    "whatsappcontacts": {
+      "documentCount": 120,
+      "size": 65684,
+      "file": "C:\\Users\\HP\\Downloads\\White Caves\\White Caves Web App\\White-Caves\\backups\\backup-2026-01-17T12-22-10-645Z\\whatsappcontacts.json"
+    },
+    "transactions": {
+      "documentCount": 5325,
+      "size": 4271500,
+      "file": "C:\\Users\\HP\\Downloads\\White Caves\\White Caves Web App\\White-Caves\\backups\\backup-2026-01-17T12-22-10-645Z\\transactions.json"
+    },
+    "contracts": {
+      "documentCount": 60,
+      "size": 86764,
+      "file": "C:\\Users\\HP\\Downloads\\White Caves\\White Caves Web App\\White-Caves\\backups\\backup-2026-01-17T12-22-10-645Z\\contracts.json"
+    },
+    "whatsappsessions": {
+      "documentCount": 1,
+      "size": 1345,
+      "file": "C:\\Users\\HP\\Downloads\\White Caves\\White Caves Web App\\White-Caves\\backups\\backup-2026-01-17T12-22-10-645Z\\whatsappsessions.json"
+    },
+    "services": {
+      "documentCount": 35,
+      "size": 94328,
+      "file": "C:\\Users\\HP\\Downloads\\White Caves\\White Caves Web App\\White-Caves\\backups\\backup-2026-01-17T12-22-10-645Z\\services.json"
+    },
+    "aiassistants": {
+      "documentCount": 32,
+      "size": 54007,
+      "file": "C:\\Users\\HP\\Downloads\\White Caves\\White Caves Web App\\White-Caves\\backups\\backup-2026-01-17T12-22-10-645Z\\aiassistants.json"
+    },
+    "kycprofiles": {
+      "documentCount": 0,
+      "size": 2,
+      "file": "C:\\Users\\HP\\Downloads\\White Caves\\White Caves Web App\\White-Caves\\backups\\backup-2026-01-17T12-22-10-645Z\\kycprofiles.json"
+    },
+    "owners": {
+      "documentCount": 80,
+      "size": 98403,
+      "file": "C:\\Users\\HP\\Downloads\\White Caves\\White Caves Web App\\White-Caves\\backups\\backup-2026-01-17T12-22-10-645Z\\owners.json"
+    },
+    "demodatas": {
+      "documentCount": 0,
+      "size": 2,
+      "file": "C:\\Users\\HP\\Downloads\\White Caves\\White Caves Web App\\White-Caves\\backups\\backup-2026-01-17T12-22-10-645Z\\demodatas.json"
+    },
+    "commissions": {
+      "documentCount": 0,
+      "size": 2,
+      "file": "C:\\Users\\HP\\Downloads\\White Caves\\White Caves Web App\\White-Caves\\backups\\backup-2026-01-17T12-22-10-645Z\\commissions.json"
+    },
+    "dubaicommunities": {
+      "documentCount": 9,
+      "size": 19587,
+      "file": "C:\\Users\\HP\\Downloads\\White Caves\\White Caves Web App\\White-Caves\\backups\\backup-2026-01-17T12-22-10-645Z\\dubaicommunities.json"
+    },
+    "employees": {
+      "documentCount": 19,
+      "size": 16860,
+      "file": "C:\\Users\\HP\\Downloads\\White Caves\\White Caves Web App\\White-Caves\\backups\\backup-2026-01-17T12-22-10-645Z\\employees.json"
+    },
+    "zoeconversations": {
+      "documentCount": 4,
+      "size": 4244,
+      "file": "C:\\Users\\HP\\Downloads\\White Caves\\White Caves Web App\\White-Caves\\backups\\backup-2026-01-17T12-22-10-645Z\\zoeconversations.json"
+    },
+    "teams": {
+      "documentCount": 13,
+      "size": 11468,
+      "file": "C:\\Users\\HP\\Downloads\\White Caves\\White Caves Web App\\White-Caves\\backups\\backup-2026-01-17T12-22-10-645Z\\teams.json"
+    },
+    "whatsappmessages": {
+      "documentCount": 0,
+      "size": 2,
+      "file": "C:\\Users\\HP\\Downloads\\White Caves\\White Caves Web App\\White-Caves\\backups\\backup-2026-01-17T12-22-10-645Z\\whatsappmessages.json"
+    },
+    "leads": {
+      "documentCount": 21,
+      "size": 15491,
+      "file": "C:\\Users\\HP\\Downloads\\White Caves\\White Caves Web App\\White-Caves\\backups\\backup-2026-01-17T12-22-10-645Z\\leads.json"
+    },
+    "inventoryproperties": {
+      "documentCount": 46,
+      "size": 31847,
+      "file": "C:\\Users\\HP\\Downloads\\White Caves\\White Caves Web App\\White-Caves\\backups\\backup-2026-01-17T12-22-10-645Z\\inventoryproperties.json"
+    },
+    "amlalerts": {
+      "documentCount": 0,
+      "size": 2,
+      "file": "C:\\Users\\HP\\Downloads\\White Caves\\White Caves Web App\\White-Caves\\backups\\backup-2026-01-17T12-22-10-645Z\\amlalerts.json"
+    },
+    "signaturetokens": {
+      "documentCount": 0,
+      "size": 2,
+      "file": "C:\\Users\\HP\\Downloads\\White Caves\\White Caves Web App\\White-Caves\\backups\\backup-2026-01-17T12-22-10-645Z\\signaturetokens.json"
+    },
+    "whatsappchatbotrules": {
+      "documentCount": 0,
+      "size": 2,
+      "file": "C:\\Users\\HP\\Downloads\\White Caves\\White Caves Web App\\White-Caves\\backups\\backup-2026-01-17T12-22-10-645Z\\whatsappchatbotrules.json"
+    },
+    "whatsappsettings": {
+      "documentCount": 0,
+      "size": 2,
+      "file": "C:\\Users\\HP\\Downloads\\White Caves\\White Caves Web App\\White-Caves\\backups\\backup-2026-01-17T12-22-10-645Z\\whatsappsettings.json"
+    },
+    "test_connection_check": {
+      "documentCount": 0,
+      "size": 2,
+      "file": "C:\\Users\\HP\\Downloads\\White Caves\\White Caves Web App\\White-Caves\\backups\\backup-2026-01-17T12-22-10-645Z\\test_connection_check.json"
+    },
+    "importsessions": {
+      "documentCount": 1,
+      "size": 1413,
+      "file": "C:\\Users\\HP\\Downloads\\White Caves\\White Caves Web App\\White-Caves\\backups\\backup-2026-01-17T12-22-10-645Z\\importsessions.json"
+    },
+    "srsdocuments": {
+      "documentCount": 0,
+      "size": 2,
+      "file": "C:\\Users\\HP\\Downloads\\White Caves\\White Caves Web App\\White-Caves\\backups\\backup-2026-01-17T12-22-10-645Z\\srsdocuments.json"
+    },
+    "complianceaudits": {
+      "documentCount": 0,
+      "size": 2,
+      "file": "C:\\Users\\HP\\Downloads\\White Caves\\White Caves Web App\\White-Caves\\backups\\backup-2026-01-17T12-22-10-645Z\\complianceaudits.json"
+    },
+    "offplanprojects": {
+      "documentCount": 0,
+      "size": 2,
+      "file": "C:\\Users\\HP\\Downloads\\White Caves\\White Caves Web App\\White-Caves\\backups\\backup-2026-01-17T12-22-10-645Z\\offplanprojects.json"
+    },
+    "salesdeals": {
+      "documentCount": 6,
+      "size": 18598,
+      "file": "C:\\Users\\HP\\Downloads\\White Caves\\White Caves Web App\\White-Caves\\backups\\backup-2026-01-17T12-22-10-645Z\\salesdeals.json"
+    },
+    "users": {
+      "documentCount": 25,
+      "size": 19514,
+      "file": "C:\\Users\\HP\\Downloads\\White Caves\\White Caves Web App\\White-Caves\\backups\\backup-2026-01-17T12-22-10-645Z\\users.json"
+    },
+    "tenancydeals": {
+      "documentCount": 5,
+      "size": 13212,
+      "file": "C:\\Users\\HP\\Downloads\\White Caves\\White Caves Web App\\White-Caves\\backups\\backup-2026-01-17T12-22-10-645Z\\tenancydeals.json"
+    },
+    "offplanunits": {
+      "documentCount": 0,
+      "size": 2,
+      "file": "C:\\Users\\HP\\Downloads\\White Caves\\White Caves Web App\\White-Caves\\backups\\backup-2026-01-17T12-22-10-645Z\\offplanunits.json"
+    }
+  },
+  "createdAt": "2026-01-17T12:22:15.126Z",
+  "createdAtUnix": 1768652535
+}

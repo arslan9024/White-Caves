@@ -20,8 +20,8 @@ export const authLimiter = rateLimit({
     message: 'Too many login attempts from this IP. Please try again after 15 minutes.',
     statusCode: 429,
   },
-  standardHeaders: true,  // Return rate limit info in `RateLimit-*` headers
-  legacyHeaders: false,   // Disable `X-RateLimit-*` headers
+  standardHeaders: true, // Return rate limit info in `RateLimit-*` headers
+  legacyHeaders: false, // Disable `X-RateLimit-*` headers
   skipSuccessfulRequests: false,
 });
 
@@ -69,7 +69,7 @@ export const apiLimiter = rateLimit({
   },
   standardHeaders: true,
   legacyHeaders: false,
-  skip: (req) => {
+  skip: req => {
     // Skip rate limiting for health checks
     return req.path === '/health';
   },
@@ -93,10 +93,33 @@ export const strictLimiter = rateLimit({
   legacyHeaders: false,
 });
 
+// ============================================================================
+// CONTACT LIMITER — Public unauthenticated form submissions
+// ============================================================================
+
+/**
+ * Contact form: 10 submissions per hour per IP.
+ * Tighter than the general apiLimiter because this creates DB records from
+ * unauthenticated requests and is a spam/flood vector.
+ */
+export const contactLimiter = rateLimit({
+  windowMs: 60 * 60 * 1000, // 1 hour
+  max: 10,
+  message: {
+    success: false,
+    error: 'Too many contact form submissions',
+    message: 'Too many submissions from this IP. Please try again after 1 hour.',
+    statusCode: 429,
+  },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
 export default {
   authLimiter,
   registerLimiter,
   passwordLimiter,
   apiLimiter,
   strictLimiter,
+  contactLimiter,
 };

@@ -76,7 +76,7 @@ interface Neighborhood {
 
 type NeighborhoodKey = 'dubai-marina' | 'downtown-dubai' | 'palm-jumeirah';
 
-const NeighborhoodAnalyzer: React.FC = () => {
+const NeighborhoodAnalyzer = () => {
   const [selectedArea, setSelectedArea] = useState<NeighborhoodKey>('dubai-marina');
   const [showDetails, setShowDetails] = useState<boolean>(false);
 

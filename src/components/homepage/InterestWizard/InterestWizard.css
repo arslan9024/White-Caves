@@ -1,0 +1,151 @@
+.interest-wizard-section {
+  padding: 80px 24px;
+  background: #FFFFFF;
+}
+
+.wizard-container {
+  max-width: 900px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.wizard-header {
+  margin-bottom: 32px;
+}
+
+.wizard-title {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #1A1A1A;
+  margin-bottom: 8px;
+}
+
+.wizard-subtitle {
+  font-size: 1.1rem;
+  color: #6B7280;
+}
+
+.progress-bar {
+  height: 4px;
+  background: #E5E7EB;
+  border-radius: 2px;
+  margin-bottom: 40px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: #B03737;
+  border-radius: 2px;
+  transition: width 0.3s ease;
+}
+
+.options-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+
+.interest-option {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 32px 24px;
+  background: #FAFAFA;
+  border: 2px solid #E5E7EB;
+  border-radius: 16px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-align: center;
+  position: relative;
+}
+
+.interest-option:hover {
+  border-color: #B03737;
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(176, 55, 55, 0.12);
+}
+
+.interest-option.selected {
+  border-color: #B03737;
+  background: #FDEAEA;
+}
+
+.option-icon {
+  width: 64px;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #FFFFFF;
+  border-radius: 16px;
+  color: #B03737;
+  margin-bottom: 16px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.interest-option.selected .option-icon {
+  background: #B03737;
+  color: #FFFFFF;
+}
+
+.option-label {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #1A1A1A;
+  margin: 0 0 8px 0;
+}
+
+.option-description {
+  font-size: 0.9rem;
+  color: #6B7280;
+  margin: 0;
+}
+
+.option-arrow {
+  position: absolute;
+  bottom: 16px;
+  right: 16px;
+  color: #B03737;
+  opacity: 0;
+  transform: translateX(-8px);
+  transition: all 0.2s ease;
+}
+
+.interest-option:hover .option-arrow,
+.interest-option.selected .option-arrow {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+@media (max-width: 768px) {
+  .interest-wizard-section {
+    padding: 48px 16px;
+  }
+
+  .wizard-title {
+    font-size: 1.5rem;
+  }
+
+  .options-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .interest-option {
+    padding: 24px 20px;
+    flex-direction: row;
+    text-align: left;
+    gap: 16px;
+  }
+
+  .option-icon {
+    width: 48px;
+    height: 48px;
+    margin-bottom: 0;
+  }
+
+  .option-label {
+    font-size: 1.1rem;
+  }
+}

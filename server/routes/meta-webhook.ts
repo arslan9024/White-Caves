@@ -1,13 +1,26 @@
+/* eslint-disable no-console, @typescript-eslint/no-explicit-any */
 /**
  * Meta Business API Webhook Routes
  * Endpoints for receiving production WhatsApp messages from Meta
  * POST /api/webhooks/meta - Receive messages
  * GET /api/webhooks/meta/verify - Webhook verification
+ *
+ * Phase 3A: Fully wired to Nadia pipeline — stores messages in DB,
+ * triggers Nina NLP, updates conversation status.
  */
 
 import { Router, Request, Response } from 'express';
-import { createMetaAPIClient, MetaAPIClient, WebhookEvent } from '../services/whatsapp/metaAPI';
-import { requireRole } from '../middleware/rbac';
+import crypto from 'crypto';
+import { createMetaAPIClient, MetaAPIClient, WebhookEvent } from '../services/whatsapp/metaAPI.js';
+import {
+  verifyWebhookSignature,
+  normalizePhone,
+  rateLimiter,
+} from '../services/whatsapp/whatsappUtils.js';
+import { requireRole } from '../middleware/rbac.js';
+import { prisma } from '../database.js';
+import { detectIntent, calculateLeadScore } from '../services/nadia/messageProcessor.js';
+import { getSocketServer } from '../services/socketServer.js';
 
 const router = Router();
 
@@ -75,9 +88,34 @@ router.get('/verify', (req: Request, res: Response) => {
 /**
  * POST /api/webhooks/meta
  * Receive messages and status updates from Meta/WhatsApp
+ * Verifies HMAC-SHA256 signature if META_APP_SECRET is set.
  */
 router.post('/', async (req: Request, res: Response) => {
   try {
+    // Verify webhook signature (if app secret is configured)
+    const appSecret = process.env.META_APP_SECRET;
+    if (appSecret) {
+      const signature = req.headers['x-hub-signature-256'] as string | undefined;
+      if (!signature) {
+        console.warn('[Meta Webhook] Missing x-hub-signature-256 header — rejecting');
+        res.status(401).json({ success: false, error: 'Missing signature header' });
+        return;
+      }
+
+      const rawBody = (req as Request & { rawBody?: string }).rawBody;
+      if (!rawBody) {
+        console.warn('[Meta Webhook] Missing rawBody for signature verification — rejecting');
+        res.status(500).json({ success: false, error: 'Webhook raw body unavailable' });
+        return;
+      }
+
+      if (!verifyWebhookSignature(rawBody, signature, appSecret)) {
+        console.warn('[Meta Webhook] Invalid signature — rejecting');
+        res.status(401).json({ success: false, error: 'Invalid signature' });
+        return;
+      }
+    }
+
     console.log('[Meta Webhook] Incoming webhook event');
 
     // Acknowledge receipt immediately
@@ -121,64 +159,211 @@ router.post('/', async (req: Request, res: Response) => {
 });
 
 /**
- * Handle incoming message
+ * Handle incoming message — FULL PIPELINE
+ * 1. Normalize phone number
+ * 2. Find or create NadiaConversation
+ * 3. Store NadiaMessage in DB
+ * 4. Run Nina NLP analysis
+ * 5. Update conversation with NLP results
+ * 6. Emit event for real-time listeners
  */
 async function handleIncomingMessage(message: any, phoneNumberId: string): Promise<void> {
   try {
-    const messageData = {
-      id: message.id,
-      from: message.from,
-      type: message.type,
-      timestamp: parseInt(message.timestamp),
-      phoneNumberId,
-      content: message.text?.body || '',
-      hasMedia: !!message.image || !!message.document || !!message.audio || !!message.video,
-      mediaId: message.image?.id || message.document?.id || message.audio?.id || message.video?.id,
-    };
-
-    console.log(`[Meta Webhook] Message received from ${messageData.from}: ${messageData.content.substring(0, 50)}`);
-
-    // In real implementation, this would:
-    // 1. Route to NADIA message processor
-    // 2. Store in database
-    // 3. Update conversation
-    // 4. Trigger NLP analysis
-    // 5. Queue for agent if needed
-
-    // Emit event that API/service layer can listen to
-    if (global.eventEmitter) {
-      global.eventEmitter.emit('meta:message:received', messageData);
+    const customerPhone = normalizePhone(message.from) || message.from;
+    if (!customerPhone) {
+      console.warn('[Meta Webhook] Ignoring inbound message with missing sender phone');
+      return;
     }
+
+    const content = message.text?.body || '';
+    const messageType = message.type || 'text';
+    const timestampEpoch = Number.parseInt(String(message.timestamp || ''), 10);
+    const timestamp = Number.isFinite(timestampEpoch)
+      ? new Date(timestampEpoch * 1000)
+      : new Date();
+
+    const contentHash = crypto.createHash('sha256').update(content).digest('hex').slice(0, 16);
+    const waMessageId =
+      (message.id as string | undefined) ||
+      `meta-${customerPhone}-${messageType}-${String(message.timestamp || 'na')}-${contentHash}`;
+
+    console.log(`[Meta Webhook] Message from ${customerPhone}: ${content.substring(0, 80)}`);
+
+    // Idempotency guard: Meta can deliver duplicate webhook events.
+    // If we have already persisted this WA message ID, skip re-processing.
+    const existingMessage = await prisma.nadiaMessage.findFirst({
+      where: { waMessageId },
+      select: { id: true, conversationId: true },
+    });
+
+    if (existingMessage) {
+      console.log(`[Meta Webhook] Duplicate message ignored: ${waMessageId}`);
+      return;
+    }
+
+    // 1. Find or create conversation
+    let conversation = await prisma.nadiaConversation.findFirst({
+      where: { customerPhone, status: { in: ['active', 'assigned_to_agent', 'in_bot_flow'] } },
+      orderBy: { createdAt: 'desc' },
+    });
+
+    if (!conversation) {
+      conversation = await prisma.nadiaConversation.create({
+        data: {
+          wabaId: phoneNumberId,
+          customerPhone,
+          status: 'active',
+        },
+      });
+      console.log(`[Meta Webhook] New conversation created: ${conversation.id}`);
+    }
+
+    // 1.5. Link or create CRM lead for inbound WhatsApp contact (W3-006)
+    const existingLead = await prisma.lead.findFirst({
+      where: {
+        OR: [{ phone: customerPhone }, { phone: message.from }],
+      },
+      select: { id: true, status: true, source: true },
+    });
+
+    let leadId: string | null = existingLead?.id || null;
+    if (!existingLead) {
+      const createdLead = await prisma.lead.create({
+        data: {
+          name: `WhatsApp Lead ${customerPhone}`,
+          phone: customerPhone,
+          source: 'whatsapp',
+          status: 'new',
+          notes: `Auto-created from inbound WhatsApp message (${conversation.id})`,
+        },
+        select: { id: true },
+      });
+      leadId = createdLead.id;
+
+      await prisma.activity.create({
+        data: {
+          type: 'lead',
+          action: 'created',
+          description: `Lead auto-created from WhatsApp inbound: ${customerPhone}`,
+          leadId,
+          metadata: {
+            channel: 'META_API',
+            conversationId: conversation.id,
+          },
+        },
+      });
+    }
+
+    // 2. Store message
+    const storedMessage = await prisma.nadiaMessage.create({
+      data: {
+        conversationId: conversation.id,
+        waMessageId,
+        direction: 'inbound',
+        body: content,
+        messageType,
+        status: 'delivered',
+        timestamp,
+      },
+    });
+
+    // 3. Run NLP analysis (Nina)
+    let nlpResult: { intent?: string; score?: number } = {};
+    try {
+      const intent = detectIntent(content);
+      const score = calculateLeadScore({
+        messageCount: 1,
+        responseTime: 0,
+        intentClarity: intent !== 'general_inquiry' ? 1 : 0.3,
+        budgetMentioned:
+          content.toLowerCase().includes('budget') || content.toLowerCase().includes('aed'),
+        timelineMentioned:
+          content.toLowerCase().includes('asap') || content.toLowerCase().includes('urgent'),
+        propertyInterest:
+          content.toLowerCase().includes('property') || content.toLowerCase().includes('villa')
+            ? 1
+            : 0,
+      } as any);
+      nlpResult = { intent, score };
+    } catch (nlpErr) {
+      console.warn('[Meta Webhook] NLP processing failed:', nlpErr);
+    }
+
+    // 4. Update conversation with NLP results
+    if (nlpResult.intent || nlpResult.score) {
+      await prisma.nadiaConversation.update({
+        where: { id: conversation.id },
+        data: {
+          ...(nlpResult.intent && { intent: nlpResult.intent }),
+          ...(nlpResult.score && { leadScore: nlpResult.score }),
+          updatedAt: new Date(),
+        },
+      });
+    }
+
+    // 5. Emit real-time event via Socket.io (Meta API channel — Nadia / Nina pipeline)
+    getSocketServer()?.emitMetaMessage({
+      id: storedMessage.id,
+      conversationId: conversation.id,
+      leadId,
+      from: customerPhone,
+      content,
+      type: messageType,
+      timestamp,
+      nlp: nlpResult,
+    });
   } catch (error) {
     console.error('[Meta Webhook] Error handling message:', error);
   }
 }
 
 /**
- * Handle message status update
+ * Handle message status update — FULL PIPELINE
+ * Updates NadiaMessage.status in DB when Meta reports delivery/read/failed.
  */
 async function handleStatusUpdate(status: any): Promise<void> {
   try {
-    console.log(`[Meta Webhook] Status update for message ${status.id}: ${status.status}`);
+    const waMessageId = status.id;
+    const newStatus = status.status; // sent, delivered, read, failed
 
-    const statusData = {
-      messageId: status.id,
-      status: status.status,
-      timestamp: parseInt(status.timestamp),
+    if (!waMessageId || !newStatus) {
+      console.warn('[Meta Webhook] Ignoring malformed status payload');
+      return;
+    }
+
+    console.log(`[Meta Webhook] Status update: ${waMessageId} → ${newStatus}`);
+
+    // Find and update the message in DB
+    const existing = await prisma.nadiaMessage.findFirst({
+      where: { waMessageId },
+    });
+
+    if (existing) {
+      if (existing.status === newStatus) {
+        console.log(`[Meta Webhook] Duplicate status ignored: ${waMessageId} already ${newStatus}`);
+        return;
+      }
+
+      await prisma.nadiaMessage.update({
+        where: { id: existing.id },
+        data: { status: newStatus },
+      });
+    }
+
+    // If failed, log the error detail
+    if (newStatus === 'failed' && status.errors?.length) {
+      console.error(`[Meta Webhook] Message ${waMessageId} failed:`, status.errors);
+    }
+
+    // Emit real-time status update via Socket.io (Meta API channel)
+    getSocketServer()?.emitMetaStatus({
+      messageId: waMessageId,
+      dbId: existing?.id,
+      status: newStatus,
+      timestamp: new Date(parseInt(status.timestamp) * 1000),
       recipientId: status.recipient_id,
       errors: status.errors,
-    };
-
-    // In real implementation, this would:
-    // 1. Find message in database
-    // 2. Update status
-    // 3. Trigger callbacks/notifications
-    // 4. Log for analytics
-
-    // Emit event
-    if (global.eventEmitter) {
-      global.eventEmitter.emit('meta:message:status_updated', statusData);
-    }
+    });
   } catch (error) {
     console.error('[Meta Webhook] Error handling status:', error);
   }
@@ -197,6 +382,15 @@ router.post('/send', requireRole('owner'), async (req: Request, res: Response) =
       return res.status(400).json({
         success: false,
         error: 'Missing required fields: to, message',
+      });
+    }
+
+    const sendAllowance = rateLimiter.canSend(to);
+    if (!sendAllowance.allowed) {
+      return res.status(429).json({
+        success: false,
+        error: 'Rate limit exceeded for WhatsApp sends',
+        retryAfterMs: sendAllowance.retryAfterMs,
       });
     }
 
@@ -236,6 +430,15 @@ router.post('/template', requireRole('owner'), async (req: Request, res: Respons
       return res.status(400).json({
         success: false,
         error: 'Missing required fields: to, template',
+      });
+    }
+
+    const sendAllowance = rateLimiter.canSend(to);
+    if (!sendAllowance.allowed) {
+      return res.status(429).json({
+        success: false,
+        error: 'Rate limit exceeded for WhatsApp template sends',
+        retryAfterMs: sendAllowance.retryAfterMs,
       });
     }
 
@@ -281,7 +484,9 @@ router.get('/status', requireRole('owner'), async (req: Request, res: Response) 
       data: {
         configured: !!isConfigured,
         apiVersion: stats.apiVersion,
-        phoneNumberId: stats.phoneNumberId ? stats.phoneNumberId.substring(0, 5) + '***' : 'NOT_SET',
+        phoneNumberId: stats.phoneNumberId
+          ? stats.phoneNumberId.substring(0, 5) + '***'
+          : 'NOT_SET',
         timestamp: new Date(),
       },
     });

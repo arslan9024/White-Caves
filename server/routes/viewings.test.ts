@@ -4,7 +4,7 @@
  * All Prisma calls are mocked — no database needed.
  */
 
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import express from 'express';
 import request from 'supertest';
 
@@ -37,6 +37,14 @@ vi.mock('../utils/logger.js', () => ({
   default: { info: vi.fn(), warn: vi.fn(), error: vi.fn(), debug: vi.fn() },
   createLogger: vi.fn(() => ({ info: vi.fn(), warn: vi.fn(), error: vi.fn(), debug: vi.fn() })),
 }));
+// Neutralize fire-and-forget email notifications so they do not consume
+// queued prisma mock values (mockResolvedValueOnce) across tests.
+vi.mock('../services/emailService.js', () => ({
+  sendEmailTracked: vi.fn().mockResolvedValue({ success: true }),
+  EMAIL_TEMPLATES: {
+    viewingConfirmation: () => ({ subject: '', html: '', text: '' }),
+  },
+}));
 
 import viewingsRoutes from './viewings';
 import { errorHandler } from '../middleware/errorHandler';
@@ -53,7 +61,33 @@ function createApp(role = 'buyer') {
 describe('Viewings Routes — /api/viewings', () => {
   let app: ReturnType<typeof createApp>;
 
-  beforeEach(() => { vi.clearAllMocks(); app = createApp(); });
+  beforeEach(() => {
+    vi.clearAllMocks();
+    // Fully reset queued mock implementations to prevent cross-test pollution.
+    // (clearAllMocks does NOT clear queued mockResolvedValueOnce values.)
+    mockPrisma.viewing.findUnique.mockReset().mockResolvedValue(null);
+    mockPrisma.viewing.findMany.mockReset().mockResolvedValue([]);
+    mockPrisma.viewing.count.mockReset().mockResolvedValue(0);
+    mockPrisma.viewing.create.mockReset().mockResolvedValue({
+      id: 'v-1', userId: 'user-1', propertyId: 'prop-1',
+      scheduledAt: new Date('2026-06-15T10:00:00Z'),
+      type: 'in_person', status: 'scheduled', duration: 30, notes: null,
+      property: { id: 'prop-1', title: 'Marina Apt', location: 'Dubai Marina', price: 1500000 },
+    });
+    mockPrisma.viewing.update.mockReset().mockResolvedValue({ id: 'v-1', status: 'confirmed' });
+    mockPrisma.viewing.delete.mockReset().mockResolvedValue({});
+    mockPrisma.property.findUnique.mockReset().mockResolvedValue({ id: 'prop-1', title: 'Marina Apt' });
+    app = createApp();
+  });
+
+  // Flush fire-and-forget async work (e.g. sendViewingNotification which
+  // performs an additional prisma.viewing.findUnique after the response).
+  // Without this, pending promises can consume the *next* test's queued
+  // mockResolvedValueOnce values and cause intermittent 404/403 mismatches.
+  afterEach(async () => {
+    await new Promise((resolve) => setImmediate(resolve));
+    await new Promise((resolve) => setImmediate(resolve));
+  });
 
   describe('GET /api/viewings', () => {
     it('returns 200 with empty list', async () => {

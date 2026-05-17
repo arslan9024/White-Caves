@@ -25,6 +25,7 @@ const getSizeStyles = (size: InputSize) => {
     `,
   };
 
+  // eslint-disable-next-line security/detect-object-injection
   return sizes[size] || sizes.md;
 };
 
@@ -40,7 +41,7 @@ export const Label = styled.label<{ $required?: boolean }>`
   font-weight: ${theme.typography.weights.medium};
   color: ${theme.colors.text.primary};
 
-  ${(props) =>
+  ${props =>
     props.$required &&
     css`
       &::after {
@@ -70,15 +71,15 @@ export const StyledInput = styled.input<{
   transition: ${theme.transitions.all};
   font-family: ${theme.typography.fontFamily.primary};
 
-  ${(props) => getSizeStyles(props.$size || 'md')}
+  ${props => getSizeStyles(props.$size || 'md')}
 
-  ${(props) =>
+  ${props =>
     props.$hasLeftIcon &&
     css`
       padding-left: 32px;
     `}
 
-  ${(props) =>
+  ${props =>
     props.$hasRightIcon &&
     css`
       padding-right: 32px;
@@ -89,18 +90,14 @@ export const StyledInput = styled.input<{
   }
 
   &:hover:not(:disabled) {
-    border-color: ${(props) =>
-      props.$hasError ? theme.colors.error : theme.colors.primary};
+    border-color: ${props => (props.$hasError ? theme.colors.error : theme.colors.primary)};
   }
 
   &:focus {
     outline: none;
-    border-color: ${(props) =>
-      props.$hasError ? theme.colors.error : theme.colors.primary};
-    box-shadow: ${(props) =>
-      props.$hasError
-        ? `0 0 0 3px rgba(198, 40, 40, 0.1)`
-        : `0 0 0 3px rgba(211, 47, 47, 0.1)`};
+    border-color: ${props => (props.$hasError ? theme.colors.error : theme.colors.primary)};
+    box-shadow: ${props =>
+      props.$hasError ? `0 0 0 3px rgba(198, 40, 40, 0.1)` : `0 0 0 3px rgba(227, 30, 36, 0.15)`};
   }
 
   &:disabled {
@@ -110,7 +107,7 @@ export const StyledInput = styled.input<{
     cursor: not-allowed;
   }
 
-  ${(props) =>
+  ${props =>
     props.$hasError &&
     css`
       border-color: ${theme.colors.error};
@@ -147,7 +144,6 @@ export const IconWrapper = styled.span`
 
 export const HelperText = styled.span<{ $error?: boolean }>`
   font-size: ${theme.typography.sizes.xs};
-  color: ${(props) =>
-    props.$error ? theme.colors.error : theme.colors.text.tertiary};
+  color: ${props => (props.$error ? theme.colors.error : theme.colors.text.tertiary)};
   margin-top: ${theme.spacing.xs};
 `;

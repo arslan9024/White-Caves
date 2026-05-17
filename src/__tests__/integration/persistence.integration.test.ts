@@ -106,13 +106,10 @@ class CommissionPersistenceManager {
    * Merge local and remote data
    */
   private mergeData(local: any[], remote: any[]): any[] {
-    const remoteIdSet = new Set(remote.map((r) => r.id));
+    const remoteIdSet = new Set(remote.map(r => r.id));
 
     // Keep all remote items + local items not in remote
-    const merged = [
-      ...remote,
-      ...local.filter((l) => !remoteIdSet.has(l.id)),
-    ];
+    const merged = [...remote, ...local.filter(l => !remoteIdSet.has(l.id))];
 
     return merged;
   }
@@ -144,15 +141,18 @@ class CommissionPersistenceManager {
 describe('Commission Persistence Integration Tests', () => {
   let storage: StorageService;
   let persistenceManager: CommissionPersistenceManager;
+  let consoleErrorSpy: ReturnType<typeof vi.spyOn>;
 
   beforeEach(() => {
     // Reset storage
     storage = new StorageService();
     persistenceManager = new CommissionPersistenceManager(storage, mockApi);
     vi.clearAllMocks();
+    consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
   });
 
   afterEach(() => {
+    consoleErrorSpy.mockRestore();
     storage.clear();
     vi.clearAllMocks();
   });
@@ -209,7 +209,7 @@ describe('Commission Persistence Integration Tests', () => {
       const commissions = [
         {
           id: '1',
-          amount: 1000.50,
+          amount: 1000.5,
           status: 'pending',
           createdAt: '2024-01-01T00:00:00Z',
         },
@@ -220,7 +220,7 @@ describe('Commission Persistence Integration Tests', () => {
 
       // Assert
       const stored = persistenceManager.getPersistedCommissions();
-      expect(stored[0].amount).toBe(1000.50);
+      expect(stored[0].amount).toBe(1000.5);
       expect(typeof stored[0].amount).toBe('number');
       expect(typeof stored[0].status).toBe('string');
     });
@@ -232,9 +232,9 @@ describe('Commission Persistence Integration Tests', () => {
       });
 
       // Act & Assert
-      await expect(
-        persistenceManager.persistCommissions([{ id: '1' }])
-      ).rejects.toThrow('Storage persistence failed');
+      await expect(persistenceManager.persistCommissions([{ id: '1' }])).rejects.toThrow(
+        'Storage persistence failed'
+      );
       spy.mockRestore();
     });
   });
@@ -304,9 +304,7 @@ describe('Commission Persistence Integration Tests', () => {
   describe('Test 3: Sync localStorage with API changes', () => {
     it('should sync local data with API', async () => {
       // Arrange
-      const localCommissions = [
-        { id: '1', amount: 1000, status: 'pending' },
-      ];
+      const localCommissions = [{ id: '1', amount: 1000, status: 'pending' }];
       const remoteCommissions = [
         { id: '1', amount: 1500, status: 'approved' }, // Updated
         { id: '2', amount: 2000, status: 'pending' }, // New
@@ -326,12 +324,8 @@ describe('Commission Persistence Integration Tests', () => {
 
     it('should prefer remote data on conflicts', async () => {
       // Arrange
-      const localCommissions = [
-        { id: '1', amount: 1000, status: 'pending', modified: false },
-      ];
-      const remoteCommissions = [
-        { id: '1', amount: 1200, status: 'approved', modified: true },
-      ];
+      const localCommissions = [{ id: '1', amount: 1000, status: 'pending', modified: false }];
+      const remoteCommissions = [{ id: '1', amount: 1200, status: 'approved', modified: true }];
 
       await persistenceManager.persistCommissions(localCommissions);
       mockApi.fetchCommissions.mockResolvedValueOnce(remoteCommissions);
@@ -347,17 +341,13 @@ describe('Commission Persistence Integration Tests', () => {
 
     it('should handle API sync errors gracefully', async () => {
       // Arrange
-      const localCommissions = [
-        { id: '1', amount: 1000, status: 'pending' },
-      ];
+      const localCommissions = [{ id: '1', amount: 1000, status: 'pending' }];
       await persistenceManager.persistCommissions(localCommissions);
 
       mockApi.fetchCommissions.mockRejectedValueOnce(new Error('API Error'));
 
       // Act & Assert
-      await expect(persistenceManager.syncWithApi()).rejects.toThrow(
-        'API synchronization failed'
-      );
+      await expect(persistenceManager.syncWithApi()).rejects.toThrow('API synchronization failed');
 
       // Local data should remain unchanged
       const stored = persistenceManager.getPersistedCommissions();
@@ -384,15 +374,13 @@ describe('Commission Persistence Integration Tests', () => {
       // Assert
       const synced = persistenceManager.getPersistedCommissions();
       expect(synced).toHaveLength(3);
-      const ids = synced.map((c) => c.id).sort();
+      const ids = synced.map(c => c.id).sort();
       expect(ids).toEqual(['1', '2', '3']);
     });
 
     it('should handle empty remote response', async () => {
       // Arrange
-      const localCommissions = [
-        { id: '1', amount: 1000 },
-      ];
+      const localCommissions = [{ id: '1', amount: 1000 }];
       await persistenceManager.persistCommissions(localCommissions);
 
       mockApi.fetchCommissions.mockResolvedValueOnce([]);
@@ -409,9 +397,7 @@ describe('Commission Persistence Integration Tests', () => {
   describe('Test 4: Clear storage on logout', () => {
     it('should remove commission data from storage', async () => {
       // Arrange
-      const commissions = [
-        { id: '1', amount: 1000, status: 'pending' },
-      ];
+      const commissions = [{ id: '1', amount: 1000, status: 'pending' }];
       await persistenceManager.persistCommissions(commissions);
       expect(storage.has('commissions')).toBe(true);
 
@@ -461,9 +447,7 @@ describe('Commission Persistence Integration Tests', () => {
   describe('Integration: Full persistence workflow', () => {
     it('should handle complete save-sync-clear cycle', async () => {
       // Act 1: Save
-      const localCommissions = [
-        { id: '1', amount: 1000, status: 'pending' },
-      ];
+      const localCommissions = [{ id: '1', amount: 1000, status: 'pending' }];
       await persistenceManager.persistCommissions(localCommissions);
       expect(persistenceManager.getPersistedCommissions()).toEqual(localCommissions);
 
@@ -569,7 +553,7 @@ describe('Commission Persistence Integration Tests', () => {
       const commissions = [
         {
           id: '1',
-          notes: "Test with 'quotes' and \"double quotes\" and émojis 🎉",
+          notes: 'Test with \'quotes\' and "double quotes" and émojis 🎉',
         },
       ];
 
@@ -578,9 +562,7 @@ describe('Commission Persistence Integration Tests', () => {
 
       // Assert
       const retrieved = persistenceManager.getPersistedCommissions();
-      expect(retrieved[0].notes).toBe(
-        "Test with 'quotes' and \"double quotes\" and émojis 🎉"
-      );
+      expect(retrieved[0].notes).toBe('Test with \'quotes\' and "double quotes" and émojis 🎉');
     });
   });
 });

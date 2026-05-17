@@ -1,0 +1,636 @@
+# COMPREHENSIVE REFACTORING INSTRUCTIONS FOR REPLIT AGENT
+
+## **PROJECT PRIORITIZATION & IMPLEMENTATION SEQUENCE**
+
+### **STAGE 1: AUTHENTICATION & USER MANAGEMENT SYSTEM (TOP PRIORITY)**
+
+#### **1.1 SOCIAL LOGIN IMPLEMENTATION (PRIMARY)**
+**Component Structure:**
+```
+src/features/auth/components/
+├── SocialLogin/
+│   ├── SocialLoginButtons.tsx (Primary login method)
+│   ├── GoogleLoginButton.tsx
+│   ├── FacebookLoginButton.tsx
+│   ├── AppleLoginButton.tsx
+│   └── LinkedInLoginButton.tsx
+├── EmailLogin/
+│   ├── EmailLoginForm.tsx (Secondary method)
+│   └── EmailVerification.tsx
+├── MobileLogin/
+│   ├── MobileLoginForm.tsx (Tertiary method)
+│   ├── OTPVerification.tsx
+│   └── SMSGateway.tsx
+└── AuthLayout/
+    ├── AuthPage.tsx (Main auth page)
+    ├── LoginPage.tsx (Social-first login)
+    └── SignupPage.tsx (Role selection during signup)
+```
+
+**Implementation Priority:**
+1. **First:** Social login buttons (Google, Facebook, Apple)
+2. **Second:** Email login with validation
+3. **Third:** Mobile OTP login
+
+**User Flow:**
+1. Landing page shows Social Login buttons prominently
+2. Email login option below social buttons
+3. Mobile login as third option
+4. During signup: Immediate role preference selection
+
+#### **1.2 REDUX SESSION MANAGEMENT**
+**Create Authentication Slice:**
+```typescript
+// src/store/slices/authSlice.ts
+interface AuthState {
+  user: User | null;
+  token: string | null;
+  refreshToken: string | null;
+  session: {
+    isLoggedIn: boolean;
+    lastActive: string;
+    sessions: Array<Session>; // Multiple device sessions
+    expiresAt: string;
+  };
+  loginMethods: {
+    social: boolean;
+    email: boolean;
+    mobile: boolean;
+  };
+  loading: boolean;
+  error: string | null;
+}
+```
+
+**Session Features:**
+- Store multiple active sessions
+- Auto-refresh tokens
+- Session timeout handling
+- Device management
+- Remember me functionality
+
+#### **1.3 PROFILE COMPONENT WITH DROPDOWN**
+**Enhanced Profile Component:**
+```
+src/shared/components/universal/ProfileDropdown/
+├── ProfileDropdown.tsx (Main component)
+├── AvatarDisplay.tsx (User/dummy avatar)
+├── ProfileMenu.tsx (Dropdown menu)
+├── LoginButton.tsx (Sign-in when logged out)
+└── UserInfo.tsx (Logged in user details)
+```
+
+**Menu Items in Dropdown:**
+1. User Info (Name, Email, Role)
+2. Theme Toggle (Move from navbar)
+3. Edit Profile
+4. Settings
+5. Switch Role (if multiple roles approved)
+6. Logout
+
+**Behavior:**
+- When logged out: Shows "Sign In" button that opens auth modal
+- When logged in: Shows user avatar with dropdown menu
+- Theme toggle removed from navbar, placed here
+
+### **STAGE 2: ROLE-BASED ACCESS CONTROL & APPROVAL SYSTEM**
+
+#### **2.1 ROLE PREFERENCE DURING SIGNUP**
+**Signup Flow:**
+1. User signs up via preferred method (Social → Email → Mobile)
+2. **Immediate role selection:** Buyer, Seller, Landlord, Agent, Tenant
+3. Role marked as "pending approval" for non-buyer roles
+4. Buyer role auto-approved
+5. Other roles require admin approval
+
+**Role Selection Component:**
+```tsx
+// RoleSelectionForm.tsx
+const roleOptions = [
+  { value: 'buyer', label: '👤 Buyer', description: 'Looking to buy property', autoApprove: true },
+  { value: 'seller', label: '💼 Seller', description: 'Want to sell property', autoApprove: false },
+  { value: 'landlord', label: '👑 Landlord', description: 'Manage rental properties', autoApprove: false },
+  { value: 'agent', label: '👔 Agent', description: 'Real estate professional', autoApprove: false },
+  { value: 'tenant', label: '🏠 Tenant', description: 'Looking to rent', autoApprove: true },
+];
+```
+
+#### **2.2 ADMIN APPROVAL WORKFLOW**
+**Admin Dashboard Components:**
+```
+src/features/admin/components/approvals/
+├── RoleApprovalQueue.tsx (Pending role requests)
+├── UserVerification.tsx (User verification management)
+├── ApprovalHistory.tsx (Past approvals)
+└── RoleChangeRequests.tsx (Existing users requesting role change)
+```
+
+**Approval Process:**
+1. User selects role → Request sent to admin
+2. Admin reviews and approves/rejects
+3. User notified of decision
+4. Approved roles immediately available
+
+### **STAGE 3: DASHBOARD RESTRUCTURING - ROLE-SPECIFIC CONTENT**
+
+#### **3.1 LANDLORD DASHBOARD (EXAMPLE)**
+**Complete Structure:**
+```
+src/features/landlord/
+├── components/
+│   ├── dashboard/
+│   │   ├── LandlordDashboard.tsx (Main dashboard)
+│   │   ├── PropertyPortfolio.tsx (All properties)
+│   │   ├── TenantManagement.tsx (Active tenants)
+│   │   ├── RentCollection.tsx (Rent tracking)
+│   │   ├── MaintenanceRequests.tsx (Repair requests)
+│   │   ├── LeaseAgreements.tsx (Active leases)
+│   │   ├── FinancialReports.tsx (Income/expenses)
+│   │   └── PropertyAnalytics.tsx (Performance metrics)
+│   ├── properties/
+│   │   ├── AddPropertyForm.tsx
+│   │   ├── PropertyDetailsEditor.tsx
+│   │   └── PropertyDocuments.tsx
+│   ├── tenants/
+│   │   ├── TenantDirectory.tsx
+│   │   ├── TenantProfile.tsx
+│   │   └── CommunicationLog.tsx
+│   └── financial/
+│       ├── RentTracker.tsx
+│       ├── ExpenseManager.tsx
+│       └── TaxDocuments.tsx
+├── slices/
+│   └── landlordSlice.ts (Landlord-specific state)
+└── services/
+    └── landlordService.ts (API calls)
+```
+
+**Content Display Rule:** When user selects landlord role, ONLY landlord-specific components show in their dashboard.
+
+#### **3.2 OWNER DASHBOARD (BUSINESS OWNER)**
+**Components Structure:**
+```
+src/features/owner/
+├── components/
+│   ├── dashboard/
+│   │   ├── OwnerDashboard.tsx
+│   │   ├── ServicesManagement.tsx (All business services)
+│   │   ├── InventorySystem.tsx (Product/equipment tracking)
+│   │   ├── StaffManagement.tsx (Employee management)
+│   │   ├── ClientDatabase.tsx (Client relationship management)
+│   │   ├── FinancialOverview.tsx (Business finances)
+│   │   ├── BusinessAnalytics.tsx (Performance metrics)
+│   │   └── SystemSettings.tsx (Business configuration)
+│   ├── services/
+│   │   ├── ServiceCatalog.tsx
+│   │   ├── ServicePricing.tsx
+│   │   └── ServiceAnalytics.tsx
+│   ├── inventory/
+│   │   ├── InventoryDashboard.tsx
+│   │   ├── StockManagement.tsx
+│   │   └── SupplierManagement.tsx
+│   ├── staff/
+│   │   ├── EmployeeDirectory.tsx
+│   │   ├── ShiftScheduler.tsx
+│   │   └── PayrollManagement.tsx
+│   └── clients/
+│       ├── ClientDirectory.tsx
+│       ├── ClientCommunications.tsx
+│       └── ClientRetention.tsx
+```
+
+**REMOVAL FROM NAVBAR:** These components are NOT in main navbar - only accessible through Owner Dashboard.
+
+#### **3.3 LEASING BROKER & TENANCY CONTRACT**
+**Special Component: Tenancy Agreement System**
+```
+src/features/agent/components/leasing/
+├── TenancyContract/
+│   ├── ContractWizard.tsx (Step-by-step contract creation)
+│   ├── ContractTemplate.tsx (Template system)
+│   ├── ContractEditor.tsx (Custom contract editing)
+│   ├── DigitalSigning.tsx (E-signature integration)
+│   ├── ContractRepository.tsx (Stored contracts)
+│   └── ContractAnalytics.tsx (Contract performance)
+├── PropertyAssignment/
+│   ├── AssignProperty.tsx (Assign broker to property)
+│   ├── BrokerCalendar.tsx (Viewing schedules)
+│   └── CommissionCalculator.tsx (Commission tracking)
+└── TenantScreening/
+    ├── TenantApplication.tsx (Application form)
+    ├── BackgroundCheck.tsx (Tenant screening)
+    └── ReferenceChecking.tsx (Reference verification)
+```
+
+**Workflow:**
+1. Landlord assigns property to leasing broker
+2. Broker sees property in their dashboard
+3. Broker creates tenancy contract for that property
+4. Contract appears in both landlord and broker dashboards
+
+### **STAGE 4: STATUS & FEEDBACK COMPONENTS**
+
+#### **4.1 UNIVERSAL STATUS COMPONENT**
+```
+src/shared/components/feedback/
+├── StatusIndicator.tsx (Universal status display)
+├── SuccessMessage.tsx (Success feedback)
+├── ErrorMessage.tsx (Error feedback)
+├── WarningMessage.tsx (Warning feedback)
+├── InfoMessage.tsx (Information feedback)
+└── LoadingState.tsx (Loading indicators)
+```
+
+**Implementation:**
+```tsx
+// Usage in any component
+const handleAction = async () => {
+  setStatus({ type: 'loading', message: 'Processing...' });
+  try {
+    await apiCall();
+    setStatus({ type: 'success', message: 'Action completed successfully!' });
+  } catch (error) {
+    setStatus({ type: 'error', message: error.message });
+  }
+};
+
+// In component return
+return (
+  <div>
+    <StatusIndicator status={status} />
+    {/* Component content */}
+  </div>
+);
+```
+
+#### **4.2 EVENT RESULT NOTIFICATION SYSTEM**
+**Redux Integration:**
+```typescript
+// src/store/slices/notificationSlice.ts
+interface NotificationState {
+  events: Array<{
+    id: string;
+    type: 'success' | 'error' | 'warning' | 'info';
+    message: string;
+    timestamp: string;
+    component: string; // Which component triggered it
+    autoDismiss: boolean;
+    duration: number;
+  }>;
+  unreadCount: number;
+}
+```
+
+### **STAGE 5: RESPONSIVE DESIGN & LAYOUT FIXES**
+
+#### **5.1 RESPONSIVE COMPONENT PATTERN**
+**Create Responsive Wrapper:**
+```tsx
+// ResponsiveContainer.tsx
+const ResponsiveContainer: React.FC<ResponsiveContainerProps> = ({
+  children,
+  breakpoints = {
+    mobile: 1,
+    tablet: 2,
+    desktop: 3,
+    large: 4
+  }
+}) => {
+  const windowSize = useWindowSize();
+  
+  const getColumns = () => {
+    if (windowSize.width < 768) return breakpoints.mobile;
+    if (windowSize.width < 1024) return breakpoints.tablet;
+    if (windowSize.width < 1440) return breakpoints.desktop;
+    return breakpoints.large;
+  };
+  
+  return (
+    <div 
+      className="responsive-container"
+      style={{
+        '--columns': getColumns(),
+        gridTemplateColumns: `repeat(var(--columns), 1fr)`
+      }}
+    >
+      {children}
+    </div>
+  );
+};
+```
+
+#### **5.2 FIX SPECIFIC LAYOUT ISSUES**
+**Problem Areas to Address:**
+1. **Overlapping Elements:** Adjust z-index hierarchy
+2. **Mobile Navigation:** Bottom navigation bar for mobile
+3. **Touch Targets:** Minimum 44px touch targets
+4. **Text Scaling:** Use relative units (rem, em)
+5. **Image Optimization:** Responsive images with srcset
+
+**CSS Fixes:**
+```css
+/* Fix overlapping */
+.component {
+  position: relative;
+  z-index: var(--z-index-component);
+}
+
+/* Mobile navigation */
+@media (max-width: 768px) {
+  .top-navbar {
+    display: none;
+  }
+  .bottom-navbar {
+    display: flex;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+  }
+}
+
+/* Touch targets */
+button, .clickable {
+  min-height: 44px;
+  min-width: 44px;
+  padding: 12px;
+}
+```
+
+### **STAGE 6: REUSABLE COMPONENT LIBRARY**
+
+#### **6.1 ATOMIC COMPONENTS (CRITICAL)**
+**Create these first:**
+```
+src/shared/components/ui/
+├── Button/ (10 variants with icons, loading states)
+├── Input/ (Text, Number, Email, Password, Textarea)
+├── Select/ (Single, Multi, Searchable)
+├── Card/ (Basic, With header/footer, Interactive)
+├── Modal/ (Dialog, Drawer, Popover)
+├── Table/ (Sortable, Paginated, Selectable rows)
+├── Form/ (Field groups, Validation, Submission states)
+├── Navigation/ (Tabs, Breadcrumbs, Pagination)
+├── Feedback/ (Toasts, Alerts, Loaders)
+└── DataDisplay/ (Stats, Charts, Progress bars)
+```
+
+#### **6.2 PROPERTY-SPECIFIC COMPONENTS**
+```
+src/features/properties/components/shared/
+├── PropertyCard/ (Multiple view modes)
+├── PropertyGrid/ (Responsive grid layout)
+├── PropertyFilters/ (Interactive filtering)
+├── PropertyGallery/ (Image carousel with thumbnails)
+├── PropertyMap/ (Interactive map view)
+├── PropertyDetails/ (Expandable details panel)
+└── PropertyActions/ (Save, Contact, Schedule, Share)
+```
+
+#### **6.3 SERVICE-SPECIFIC COMPONENTS**
+```
+src/features/services/components/shared/
+├── ServiceCard/ (Service listing cards)
+├── ServiceBooking/ (Calendar, time slots, forms)
+├── ServiceReviews/ (Ratings, reviews, testimonials)
+├── ServiceProvider/ (Provider info, availability)
+└── ServicePricing/ (Price cards, packages, comparisons)
+```
+
+### **STAGE 7: REDUX STATE MANAGEMENT ARCHITECTURE**
+
+#### **7.1 COMPLETE SLICE STRUCTURE**
+```
+src/store/slices/
+├── authSlice.ts (Authentication, sessions)
+├── userSlice.ts (User profiles, preferences)
+├── roleSlice.ts (Roles, permissions, approvals)
+├── propertySlice.ts (Properties, filters, saved)
+├── serviceSlice.ts (Services, bookings, reviews)
+├── landlordSlice.ts (Landlord-specific data)
+├── agentSlice.ts (Agent-specific data)
+├── ownerSlice.ts (Owner business data)
+├── dashboardSlice.ts (Dashboard layouts, widgets)
+├── uiSlice.ts (Theme, layout, modals)
+├── notificationSlice.ts (Notifications, alerts)
+└── formSlice.ts (Form states, validations)
+```
+
+#### **7.2 SESSION MANAGEMENT EXAMPLE**
+```typescript
+// authSlice.ts - Session management
+const authSlice = createSlice({
+  name: 'auth',
+  initialState: {
+    user: null,
+    token: null,
+    sessions: [],
+    activeSession: null,
+    sessionTimeout: 30, // minutes
+    lastActivity: Date.now(),
+  },
+  reducers: {
+    loginSuccess: (state, action) => {
+      state.user = action.payload.user;
+      state.token = action.payload.token;
+      state.sessions.push({
+        id: generateId(),
+        device: detectDevice(),
+        loggedInAt: new Date().toISOString(),
+        lastActive: new Date().toISOString(),
+      });
+      state.lastActivity = Date.now();
+    },
+    updateLastActivity: (state) => {
+      state.lastActivity = Date.now();
+      // Update session lastActive
+      const session = state.sessions.find(s => s.id === state.activeSession);
+      if (session) {
+        session.lastActive = new Date().toISOString();
+      }
+    },
+    logout: (state) => {
+      state.user = null;
+      state.token = null;
+      state.sessions = [];
+      state.activeSession = null;
+    },
+    // Session timeout handling
+    checkSessionTimeout: (state) => {
+      const now = Date.now();
+      const diff = now - state.lastActivity;
+      const timeoutMs = state.sessionTimeout * 60 * 1000;
+      
+      if (diff > timeoutMs) {
+        // Auto-logout
+        state.user = null;
+        state.token = null;
+      }
+    },
+  },
+});
+```
+
+### **IMPLEMENTATION SEQUENCE & TIMELINE**
+
+#### **WEEK 1: AUTHENTICATION & USER MANAGEMENT**
+**Day 1-2:** Social Login Implementation
+- Create social login buttons (Google, Facebook, Apple)
+- Implement OAuth flows
+- Create auth slice with session management
+
+**Day 3:** Email & Mobile Login
+- Email login form with validation
+- Mobile OTP verification system
+- Unified auth page with priority ordering
+
+**Day 4:** Profile Component
+- Create universal profile dropdown
+- Move theme toggle to dropdown
+- Implement login/signup triggers
+
+**Day 5:** Role Selection & Approval System
+- Role selection during signup
+- Admin approval workflow
+- Role-based routing setup
+
+#### **WEEK 2: DASHBOARD RESTRUCTURING**
+**Day 6-7:** Landlord Dashboard Components
+- Complete landlord dashboard with all sub-components
+- Property management system
+- Tenant management features
+
+**Day 8:** Owner Dashboard Components
+- Services, Inventory, Staff, Clients management
+- Remove from navbar, position in owner dashboard only
+
+**Day 9:** Leasing Broker & Tenancy Contracts
+- Contract creation wizard
+- Digital signing integration
+- Assignment system
+
+**Day 10:** Status & Feedback System
+- Universal status component
+- Event notification system
+- Error boundary implementation
+
+#### **WEEK 3: RESPONSIVE DESIGN & COMPONENTS**
+**Day 11-12:** Responsive Layout Fixes
+- Fix all overlapping elements
+- Implement mobile navigation
+- Touch target optimization
+
+**Day 13-14:** Reusable Component Library
+- Create atomic components
+- Build property components
+- Build service components
+
+**Day 15:** Testing & Polish
+- Cross-browser testing
+- Mobile device testing
+- Performance optimization
+
+### **CRITICAL REQUIREMENTS & CONSTRAINTS**
+
+#### **1. ACCESSIBILITY REQUIREMENTS**
+- All interactive elements must be keyboard navigable
+- ARIA labels for all components
+- Screen reader compatibility
+- Color contrast ratio compliance (WCAG 2.1 AA)
+
+#### **2. PERFORMANCE REQUIREMENTS**
+- Initial bundle size < 500KB
+- Lazy load all route components
+- Code splitting by feature
+- Image optimization (WebP format, lazy loading)
+
+#### **3. SECURITY REQUIREMENTS**
+- JWT token management with refresh
+- Input sanitization on all forms
+- XSS protection
+- CSRF tokens for state-changing operations
+
+#### **4. RESPONSIVE BREAKPOINTS**
+```
+Mobile: 320px - 767px
+Tablet: 768px - 1023px
+Desktop: 1024px - 1439px
+Large Desktop: 1440px+
+```
+
+### **TESTING MATRIX**
+
+#### **DEVICES TO TEST:**
+- **Mobile:** iPhone SE (320px), iPhone 12 (390px), Samsung Galaxy (412px)
+- **Tablet:** iPad (768px), iPad Pro (1024px)
+- **Desktop:** 1280px, 1440px, 1920px
+
+#### **BROWSERS TO TEST:**
+- Chrome (latest)
+- Firefox (latest)
+- Safari (latest)
+- Edge (latest)
+
+#### **USER ROLES TO TEST:**
+1. **Unauthenticated User:** Login/signup flows
+2. **Buyer:** Property search, saved properties, viewings
+3. **Seller:** Listings, inquiries, analytics
+4. **Landlord:** Properties, tenants, maintenance, finances
+5. **Agent:** Leads, appointments, contracts, commission
+6. **Owner:** Services, inventory, staff, clients
+7. **Admin:** User management, role approvals, system settings
+
+### **DELIVERY CHECKLIST**
+
+#### **PHASE 1: AUTHENTICATION & PROFILE**
+✅ Social login buttons (Google, Facebook, Apple)
+✅ Email login form with validation
+✅ Mobile OTP verification
+✅ Profile dropdown with theme toggle
+✅ Session management in Redux
+✅ Role selection during signup
+✅ Admin approval workflow
+
+#### **PHASE 2: DASHBOARD RESTRUCTURING**
+✅ Owner features removed from main navbar
+✅ Owner dashboard with Services, Inventory, Staff, Clients
+✅ Landlord dashboard with all property management features
+✅ Time/online status moved to dashboard headers
+✅ Role-specific content isolation
+✅ Leasing broker tenancy contract system
+
+#### **PHASE 3: UI/UX IMPROVEMENTS**
+✅ Universal status/error component
+✅ Responsive design fixes
+✅ Mobile navigation implementation
+✅ Touch target optimization
+✅ Accessible component library
+
+#### **PHASE 4: COMPONENT LIBRARY**
+✅ Atomic UI components
+✅ Reusable property components
+✅ Reusable service components
+✅ Compound layout components
+✅ All components connected to Redux
+
+#### **PHASE 5: TESTING & POLISH**
+✅ Cross-browser compatibility
+✅ Mobile responsiveness
+✅ Performance optimization
+✅ Accessibility compliance
+✅ User flow testing for all roles
+
+### **ADDITIONAL NOTES FOR AGENT**
+
+1. **Implement Mobile-First:** Start with mobile layouts, enhance for larger screens
+2. **Use CSS Grid & Flexbox:** No float-based layouts
+3. **TypeScript Strict Mode:** Enable and fix all type errors
+4. **Error Boundaries:** Wrap all lazy-loaded components
+5. **Loading States:** Every async operation must show loading state
+6. **Offline Support:** Implement service worker for core functionality
+7. **SEO Optimization:** All pages should have proper meta tags
+8. **Analytics:** Track user interactions and page views
+9. **Internationalization Ready:** Structure for future i18n implementation
+10. **Documentation:** Add JSDoc comments for all components and functions
+
+The agent must follow this exact sequence, creating each component as specified with proper Redux integration, TypeScript typing, and responsive design. All existing functionality must be preserved while implementing these improvements.

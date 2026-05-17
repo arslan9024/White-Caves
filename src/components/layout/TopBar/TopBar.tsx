@@ -14,12 +14,24 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Search, Bell, ChevronDown, User, Settings, LogOut, Shield } from 'lucide-react';
+import {
+  Search,
+  Bell,
+  ChevronDown,
+  User,
+  Settings,
+  LogOut,
+  Shield,
+  Menu,
+  Plus,
+} from 'lucide-react';
 import type { RootState } from '../../../store/store';
 import {
   selectSelectedDepartment,
   selectSelectedService,
+  selectSelectedAssistant,
   toggleCommandPalette,
+  clearSelectedAssistant,
 } from '../../../store/slices/sidebarSlice';
 import {
   TopBarContainer,
@@ -35,6 +47,7 @@ import {
   SearchShortcut,
   IconButton,
   NotifBadge,
+  QuickActionButton,
   UserButton,
   UserAvatar,
   UserName,
@@ -46,6 +59,7 @@ import {
   DropdownHeaderName,
   DropdownHeaderEmail,
   DropdownHeaderRole,
+  HamburgerButton,
 } from './styles';
 
 // ─── Types ────────────────────────────────────────────────────────────────
@@ -55,10 +69,13 @@ interface TopBarProps {
   notifications?: Array<{ id: string; read: boolean }>;
   /** Callback when user clicks logout in the dropdown */
   onLogout?: () => void;
+  /** Callback when user clicks hamburger (mobile) — opens MobileMenuDrawer */
+  onMenuOpen?: () => void;
 }
 
 // ─── Breadcrumb builder ───────────────────────────────────────────────────
 
+/** All 12 CRM departments */
 const DEPARTMENT_LABELS: Record<string, string> = {
   operations: 'Operations',
   finance: 'Finance',
@@ -69,41 +86,93 @@ const DEPARTMENT_LABELS: Record<string, string> = {
   compliance: 'Compliance',
   technology: 'Technology',
   legal: 'Legal',
+  intelligence: 'Intelligence',
+  customer_experience: 'Customer Experience',
+  data_and_ai: 'Data & AI',
+};
+
+/** Assistant display names (from registry — resolved at runtime) */
+const ASSISTANT_LABELS: Record<string, string> = {
+  nadia: 'Nadia',
+  mary: 'Mary',
+  clara: 'Clara',
+  nina: 'Nina',
+  nancy: 'Nancy',
+  sophia: 'Sophia',
+  daisy: 'Daisy',
+  theodora: 'Theodora',
+  olivia: 'Olivia',
+  zoe: 'Zoe',
+  laila: 'Laila',
+  aurora: 'Aurora',
+  hazel: 'Hazel',
+  willow: 'Willow',
+  evangeline: 'Evangeline',
+  sentinel: 'Sentinel',
+  hunter: 'Hunter',
+  henry: 'Henry',
+  cipher: 'Cipher',
+  atlas: 'Atlas',
 };
 
 function useBreadcrumbs() {
+  const dispatch = useDispatch();
   const location = useLocation();
   const department = useSelector(selectSelectedDepartment);
   const service = useSelector(selectSelectedService);
+  const assistant = useSelector(selectSelectedAssistant);
 
-  const crumbs: Array<{ label: string; path?: string }> = [
+  const crumbs: Array<{ label: string; path?: string; action?: () => void }> = [
     { label: 'Dashboard', path: '/dashboard' },
   ];
 
   // Add path-based breadcrumbs
   const pathParts = location.pathname.split('/').filter(Boolean);
-  if (pathParts.length > 1 && pathParts[0] !== 'dashboard') {
-    const rolePart = pathParts[0];
-    crumbs[0] = { label: rolePart.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase()), path: `/${rolePart}/dashboard` };
-    for (let i = 1; i < pathParts.length; i++) {
+  const [rolePart, ...remainingParts] = pathParts;
+  if (pathParts.length > 1 && rolePart && rolePart !== 'dashboard') {
+    crumbs[0] = {
+      label: rolePart.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase()),
+      path: `/${rolePart}/dashboard`,
+    };
+    for (const [idx, part] of remainingParts.entries()) {
       crumbs.push({
-        label: pathParts[i].replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase()),
-        path: `/${pathParts.slice(0, i + 1).join('/')}`,
+        label: part.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase()),
+        path: `/${pathParts.slice(0, idx + 2).join('/')}`,
       });
     }
   }
 
-  // If a department is selected in the sidebar, add it
-  if (department && DEPARTMENT_LABELS[department]) {
-    // Only add if not already in path crumbs
+  // Department level
+  if (department && Object.prototype.hasOwnProperty.call(DEPARTMENT_LABELS, department)) {
     const alreadyInPath = crumbs.some(c => c.label.toLowerCase() === department);
     if (!alreadyInPath) {
-      crumbs.push({ label: DEPARTMENT_LABELS[department] });
+      crumbs.push({
+        // eslint-disable-next-line security/detect-object-injection
+        label: DEPARTMENT_LABELS[department],
+        action: () => {
+          dispatch(clearSelectedAssistant());
+        },
+      });
     }
   }
 
+  // Service level
   if (service) {
-    crumbs.push({ label: service });
+    crumbs.push({
+      label: service.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase()),
+      action: () => {
+        dispatch(clearSelectedAssistant());
+      },
+    });
+  }
+
+  // Assistant level (deepest)
+  if (assistant) {
+    const label =
+      // eslint-disable-next-line security/detect-object-injection
+      ASSISTANT_LABELS[assistant] ??
+      assistant.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+    crumbs.push({ label });
   }
 
   return crumbs;
@@ -111,24 +180,29 @@ function useBreadcrumbs() {
 
 // ─── Component ────────────────────────────────────────────────────────────
 
-const TopBar: React.FC<TopBarProps> = ({
+const TopBar: React.FC<TopBarProps> = React.memo(function TopBar({
   notifications = [],
   onLogout,
-}) => {
+  onMenuOpen,
+}) {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const crumbs = useBreadcrumbs();
 
-  // User from Redux
-  const user = useSelector((state: RootState) => state.auth?.user);
-  const userRole = user?.role || 'user';
-  const isSuperUser = userRole === 'lion';
+  // User from Redux (auth slice is canonical, user slice kept as backward-compatible fallback)
+  const authUser = useSelector((state: RootState) => state.auth?.user);
+  const currentUser = useSelector((state: RootState) => state.user?.currentUser);
+  const user = authUser ?? currentUser;
+  const userRole = (user?.role || 'user').toLowerCase();
+  const isSuperUser = ['lion', 'owner', 'admin', 'managing_director'].includes(userRole);
 
   // Dropdown state
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [showNotifMenu, setShowNotifMenu] = useState(false);
+  const [showQuickActions, setShowQuickActions] = useState(false);
   const userMenuRef = useRef<HTMLDivElement>(null);
   const notifMenuRef = useRef<HTMLDivElement>(null);
+  const quickActionsRef = useRef<HTMLDivElement>(null);
 
   const unreadCount = notifications.filter(n => !n.read).length;
 
@@ -139,10 +213,42 @@ const TopBar: React.FC<TopBarProps> = ({
         e.preventDefault();
         dispatch(toggleCommandPalette());
       }
+
+      if (e.key === 'Escape') {
+        setShowUserMenu(false);
+        setShowNotifMenu(false);
+        setShowQuickActions(false);
+      }
     };
     window.addEventListener('keydown', handler);
     return () => window.removeEventListener('keydown', handler);
   }, [dispatch]);
+
+  // Click outside to close open dropdowns
+  useEffect(() => {
+    const onPointerDown = (e: MouseEvent) => {
+      const target = e.target as Node;
+
+      if (showUserMenu && userMenuRef.current && !userMenuRef.current.contains(target)) {
+        setShowUserMenu(false);
+      }
+
+      if (showNotifMenu && notifMenuRef.current && !notifMenuRef.current.contains(target)) {
+        setShowNotifMenu(false);
+      }
+
+      if (
+        showQuickActions &&
+        quickActionsRef.current &&
+        !quickActionsRef.current.contains(target)
+      ) {
+        setShowQuickActions(false);
+      }
+    };
+
+    document.addEventListener('mousedown', onPointerDown);
+    return () => document.removeEventListener('mousedown', onPointerDown);
+  }, [showUserMenu, showNotifMenu, showQuickActions]);
 
   const handleSearchClick = useCallback(() => {
     dispatch(toggleCommandPalette());
@@ -150,11 +256,21 @@ const TopBar: React.FC<TopBarProps> = ({
 
   const getInitials = (name?: string): string => {
     if (!name) return 'U';
-    return name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+    return name
+      .split(' ')
+      .map(n => n[0])
+      .join('')
+      .toUpperCase()
+      .slice(0, 2);
   };
 
   return (
     <TopBarContainer>
+      {/* Hamburger — visible on mobile/tablet only */}
+      <HamburgerButton onClick={onMenuOpen} aria-label="Open navigation menu">
+        <Menu size={20} />
+      </HamburgerButton>
+
       {/* Logo */}
       <LogoSection onClick={() => navigate('/dashboard')} aria-label="Go to dashboard">
         <LogoMark>WC</LogoMark>
@@ -170,7 +286,15 @@ const TopBar: React.FC<TopBarProps> = ({
             {i > 0 && <BreadcrumbSeparator>/</BreadcrumbSeparator>}
             <BreadcrumbItem
               $isLast={i === crumbs.length - 1}
-              onClick={() => crumb.path && i < crumbs.length - 1 && navigate(crumb.path)}
+              onClick={() => {
+                if (i < crumbs.length - 1) {
+                  if (crumb.action) {
+                    crumb.action();
+                  } else if (crumb.path) {
+                    navigate(crumb.path);
+                  }
+                }
+              }}
               aria-current={i === crumbs.length - 1 ? 'page' : undefined}
             >
               {crumb.label}
@@ -181,6 +305,65 @@ const TopBar: React.FC<TopBarProps> = ({
 
       {/* Right actions */}
       <ActionsSection>
+        {/* Quick actions */}
+        <div style={{ position: 'relative' }} ref={quickActionsRef}>
+          <QuickActionButton
+            onClick={() => {
+              setShowQuickActions(p => !p);
+              setShowNotifMenu(false);
+              setShowUserMenu(false);
+            }}
+            aria-label="Quick actions"
+            data-testid="quick-actions-btn"
+          >
+            <Plus size={16} />
+            <span>Quick Actions</span>
+          </QuickActionButton>
+          {showQuickActions && (
+            <>
+              <DropdownOverlay onClick={() => setShowQuickActions(false)} />
+              <DropdownMenu $align="right" data-testid="quick-actions-menu">
+                <DropdownHeader>
+                  <DropdownHeaderName>Quick Actions</DropdownHeaderName>
+                </DropdownHeader>
+                <DropdownDivider />
+                <DropdownItem
+                  onClick={() => {
+                    navigate('/leads/new');
+                    setShowQuickActions(false);
+                  }}
+                >
+                  Create Lead
+                </DropdownItem>
+                <DropdownItem
+                  onClick={() => {
+                    navigate('/properties/new');
+                    setShowQuickActions(false);
+                  }}
+                >
+                  Add Property
+                </DropdownItem>
+                <DropdownItem
+                  onClick={() => {
+                    navigate('/transactions/new');
+                    setShowQuickActions(false);
+                  }}
+                >
+                  New Transaction
+                </DropdownItem>
+                <DropdownItem
+                  onClick={() => {
+                    dispatch(toggleCommandPalette());
+                    setShowQuickActions(false);
+                  }}
+                >
+                  Global Search
+                </DropdownItem>
+              </DropdownMenu>
+            </>
+          )}
+        </div>
+
         {/* Search trigger → opens Command Palette */}
         <SearchTrigger onClick={handleSearchClick} aria-label="Open search (Ctrl+K)">
           <Search size={16} />
@@ -191,7 +374,11 @@ const TopBar: React.FC<TopBarProps> = ({
         {/* Notifications */}
         <div style={{ position: 'relative' }}>
           <IconButton
-            onClick={() => setShowNotifMenu(p => !p)}
+            onClick={() => {
+              setShowNotifMenu(p => !p);
+              setShowUserMenu(false);
+              setShowQuickActions(false);
+            }}
             aria-label={`Notifications${unreadCount > 0 ? ` (${unreadCount} unread)` : ''}`}
           >
             <Bell size={18} />
@@ -224,7 +411,14 @@ const TopBar: React.FC<TopBarProps> = ({
 
         {/* User menu */}
         <div style={{ position: 'relative' }}>
-          <UserButton onClick={() => setShowUserMenu(p => !p)} aria-label="User menu">
+          <UserButton
+            onClick={() => {
+              setShowUserMenu(p => !p);
+              setShowNotifMenu(false);
+              setShowQuickActions(false);
+            }}
+            aria-label="User menu"
+          >
             <UserAvatar>{getInitials(user?.name || user?.email)}</UserAvatar>
             <UserName>{user?.name || user?.email || 'User'}</UserName>
             <ChevronDown size={14} style={{ color: '#9CA3AF' }} />
@@ -232,26 +426,47 @@ const TopBar: React.FC<TopBarProps> = ({
           {showUserMenu && (
             <>
               <DropdownOverlay onClick={() => setShowUserMenu(false)} />
-              <DropdownMenu $align="right">
+              <DropdownMenu $align="right" ref={userMenuRef}>
                 <DropdownHeader>
                   <DropdownHeaderName>{user?.name || 'User'}</DropdownHeaderName>
                   <DropdownHeaderEmail>{user?.email || ''}</DropdownHeaderEmail>
                   {userRole && <DropdownHeaderRole>{userRole}</DropdownHeaderRole>}
                 </DropdownHeader>
                 <DropdownDivider />
-                <DropdownItem onClick={() => { navigate('/profile'); setShowUserMenu(false); }}>
+                <DropdownItem
+                  onClick={() => {
+                    navigate('/profile');
+                    setShowUserMenu(false);
+                  }}
+                >
                   <User size={16} /> Profile
                 </DropdownItem>
-                <DropdownItem onClick={() => { navigate('/settings'); setShowUserMenu(false); }}>
+                <DropdownItem
+                  onClick={() => {
+                    navigate('/settings');
+                    setShowUserMenu(false);
+                  }}
+                >
                   <Settings size={16} /> Settings
                 </DropdownItem>
                 {isSuperUser && (
-                  <DropdownItem onClick={() => { navigate('/lion/admin-dashboard'); setShowUserMenu(false); }}>
+                  <DropdownItem
+                    onClick={() => {
+                      navigate('/lion/admin-dashboard');
+                      setShowUserMenu(false);
+                    }}
+                  >
                     <Shield size={16} /> Admin Dashboard
                   </DropdownItem>
                 )}
                 <DropdownDivider />
-                <DropdownItem $danger onClick={() => { onLogout?.(); setShowUserMenu(false); }}>
+                <DropdownItem
+                  $danger
+                  onClick={() => {
+                    onLogout?.();
+                    setShowUserMenu(false);
+                  }}
+                >
                   <LogOut size={16} /> Sign out
                 </DropdownItem>
               </DropdownMenu>
@@ -261,6 +476,6 @@ const TopBar: React.FC<TopBarProps> = ({
       </ActionsSection>
     </TopBarContainer>
   );
-};
+});
 
 export default TopBar;

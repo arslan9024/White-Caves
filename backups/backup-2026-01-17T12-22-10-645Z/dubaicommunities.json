@@ -1,0 +1,835 @@
+[
+  {
+    "_id": "6966e9062d77f9119677dba9",
+    "communityId": "COM-001",
+    "communityName": "Emirates Hills",
+    "arabicName": "إمارات هيلز",
+    "tier": "super_prime",
+    "location": {
+      "district": "Emirates Living",
+      "area": "Emirates Hills",
+      "coordinates": {
+        "lat": 25.0657,
+        "lng": 55.1666
+      },
+      "nearestMetro": "Internet City",
+      "distanceToMetroKm": 5,
+      "nearestMall": "Mall of the Emirates",
+      "nearestBeachKm": 8,
+      "distanceToAirportKm": 35,
+      "distanceToDowntownKm": 18
+    },
+    "propertyTypes": [
+      {
+        "type": "villa",
+        "available": true,
+        "priceRangeAED": {
+          "min": 25000000,
+          "max": 300000000
+        },
+        "_id": "6966e9062d77f9119677dbaa"
+      }
+    ],
+    "marketData": {
+      "averagePricePerSqFt": 2800,
+      "rentalYieldPercent": 3.5,
+      "priceGrowthYoY": 12,
+      "averageDaysOnMarket": 120,
+      "demandIndex": 95,
+      "lastUpdated": "2026-01-14T00:53:26.428Z"
+    },
+    "demographics": {
+      "primaryNationalities": [
+        "UAE",
+        "UK",
+        "India",
+        "Pakistan"
+      ],
+      "averageHouseholdIncome": 5000000,
+      "familyFriendly": true,
+      "expatFriendly": true,
+      "investorPopular": true
+    },
+    "amenities": {
+      "schools": [
+        {
+          "name": "Dubai International Academy",
+          "curriculum": "IB",
+          "rating": 5,
+          "distanceKm": 2,
+          "_id": "6966e9062d77f9119677dbab"
+        },
+        {
+          "name": "Emirates Hills School",
+          "curriculum": "British",
+          "rating": 4.5,
+          "distanceKm": 1,
+          "_id": "6966e9062d77f9119677dbac"
+        }
+      ],
+      "hospitals": [
+        {
+          "name": "American Hospital Dubai",
+          "hospitalType": "General",
+          "distanceKm": 10,
+          "_id": "6966e9062d77f9119677dbad"
+        }
+      ],
+      "malls": [
+        "Mall of the Emirates"
+      ],
+      "parks": [
+        "Emirates Hills Park"
+      ],
+      "golf": true,
+      "marina": false,
+      "gyms": []
+    },
+    "infrastructure": {
+      "futureProjects": []
+    },
+    "lifestyle": {
+      "vibe": "luxury",
+      "noiseLevel": "very_quiet",
+      "walkability": 3,
+      "nightlife": false,
+      "petFriendly": true
+    },
+    "developers": [
+      {
+        "developerName": "Emaar",
+        "projectCount": 1,
+        "majorProjects": [
+          "Emirates Hills"
+        ],
+        "_id": "6966e9062d77f9119677dbae"
+      }
+    ],
+    "serviceCharges": {
+      "averagePerSqFt": 3.5,
+      "range": {
+        "min": 3,
+        "max": 5
+      }
+    },
+    "regulations": {
+      "freeholdAvailable": true,
+      "shortTermRentalAllowed": false,
+      "visaEligible": true,
+      "minimumInvestmentForVisa": 2000000
+    },
+    "aiRecommendationScore": {
+      "forInvestors": 85,
+      "forFamilies": 95,
+      "forYoungProfessionals": 40,
+      "forRetirees": 90,
+      "forLuxurySeekers": 100
+    },
+    "images": {
+      "gallery": []
+    },
+    "isActive": true,
+    "__v": 0,
+    "createdAt": "2026-01-14T00:53:26.442Z",
+    "updatedAt": "2026-01-14T00:53:26.442Z"
+  },
+  {
+    "_id": "6966e9062d77f9119677dbaf",
+    "communityId": "COM-002",
+    "communityName": "Palm Jumeirah",
+    "arabicName": "نخلة جميرا",
+    "tier": "super_prime",
+    "location": {
+      "district": "Palm Jumeirah",
+      "area": "Palm Jumeirah",
+      "coordinates": {
+        "lat": 25.1124,
+        "lng": 55.139
+      },
+      "nearestMetro": "Palm Jumeirah Monorail",
+      "distanceToMetroKm": 0.5,
+      "nearestMall": "Nakheel Mall",
+      "nearestBeachKm": 0,
+      "distanceToAirportKm": 40,
+      "distanceToDowntownKm": 25
+    },
+    "propertyTypes": [
+      {
+        "type": "villa",
+        "available": true,
+        "priceRangeAED": {
+          "min": 15000000,
+          "max": 500000000
+        },
+        "_id": "6966e9062d77f9119677dbb0"
+      },
+      {
+        "type": "apartment",
+        "available": true,
+        "priceRangeAED": {
+          "min": 2000000,
+          "max": 50000000
+        },
+        "_id": "6966e9062d77f9119677dbb1"
+      },
+      {
+        "type": "penthouse",
+        "available": true,
+        "priceRangeAED": {
+          "min": 20000000,
+          "max": 200000000
+        },
+        "_id": "6966e9062d77f9119677dbb2"
+      }
+    ],
+    "marketData": {
+      "averagePricePerSqFt": 3200,
+      "rentalYieldPercent": 4.8,
+      "priceGrowthYoY": 15,
+      "averageDaysOnMarket": 45,
+      "demandIndex": 98,
+      "lastUpdated": "2026-01-14T00:53:26.428Z"
+    },
+    "demographics": {
+      "primaryNationalities": [
+        "UK",
+        "Russia",
+        "UAE",
+        "India"
+      ],
+      "averageHouseholdIncome": 3000000,
+      "familyFriendly": true,
+      "expatFriendly": true,
+      "investorPopular": true
+    },
+    "amenities": {
+      "malls": [],
+      "parks": [],
+      "gyms": [],
+      "schools": [],
+      "hospitals": []
+    },
+    "infrastructure": {
+      "futureProjects": []
+    },
+    "lifestyle": {
+      "vibe": "beachfront",
+      "noiseLevel": "quiet",
+      "walkability": 5,
+      "nightlife": true,
+      "petFriendly": true
+    },
+    "regulations": {
+      "freeholdAvailable": true,
+      "shortTermRentalAllowed": true,
+      "visaEligible": true,
+      "minimumInvestmentForVisa": 2000000
+    },
+    "aiRecommendationScore": {
+      "forInvestors": 95,
+      "forFamilies": 85,
+      "forYoungProfessionals": 75,
+      "forRetirees": 80,
+      "forLuxurySeekers": 100
+    },
+    "images": {
+      "gallery": []
+    },
+    "isActive": true,
+    "developers": [],
+    "__v": 0,
+    "createdAt": "2026-01-14T00:53:26.442Z",
+    "updatedAt": "2026-01-14T00:53:26.442Z"
+  },
+  {
+    "_id": "6966e9062d77f9119677dbb3",
+    "communityId": "COM-010",
+    "communityName": "Downtown Dubai",
+    "arabicName": "وسط مدينة دبي",
+    "tier": "prime",
+    "location": {
+      "district": "Downtown",
+      "area": "Downtown Dubai",
+      "coordinates": {
+        "lat": 25.1972,
+        "lng": 55.2744
+      },
+      "nearestMetro": "Burj Khalifa/Dubai Mall",
+      "distanceToMetroKm": 0.3,
+      "nearestMall": "Dubai Mall",
+      "nearestBeachKm": 15,
+      "distanceToAirportKm": 15,
+      "distanceToDowntownKm": 0
+    },
+    "propertyTypes": [
+      {
+        "type": "apartment",
+        "available": true,
+        "priceRangeAED": {
+          "min": 1500000,
+          "max": 100000000
+        },
+        "_id": "6966e9062d77f9119677dbb4"
+      },
+      {
+        "type": "penthouse",
+        "available": true,
+        "priceRangeAED": {
+          "min": 15000000,
+          "max": 300000000
+        },
+        "_id": "6966e9062d77f9119677dbb5"
+      }
+    ],
+    "marketData": {
+      "averagePricePerSqFt": 2500,
+      "rentalYieldPercent": 5.2,
+      "priceGrowthYoY": 10,
+      "averageDaysOnMarket": 30,
+      "demandIndex": 95,
+      "lastUpdated": "2026-01-14T00:53:26.428Z"
+    },
+    "demographics": {
+      "primaryNationalities": []
+    },
+    "amenities": {
+      "malls": [],
+      "parks": [],
+      "gyms": [],
+      "schools": [],
+      "hospitals": []
+    },
+    "infrastructure": {
+      "futureProjects": []
+    },
+    "lifestyle": {
+      "vibe": "urban",
+      "noiseLevel": "busy",
+      "walkability": 9,
+      "nightlife": true,
+      "petFriendly": false
+    },
+    "regulations": {
+      "freeholdAvailable": true,
+      "shortTermRentalAllowed": true,
+      "visaEligible": true,
+      "minimumInvestmentForVisa": 2000000
+    },
+    "aiRecommendationScore": {
+      "forInvestors": 90,
+      "forFamilies": 60,
+      "forYoungProfessionals": 95,
+      "forRetirees": 50,
+      "forLuxurySeekers": 90
+    },
+    "images": {
+      "gallery": []
+    },
+    "isActive": true,
+    "developers": [],
+    "__v": 0,
+    "createdAt": "2026-01-14T00:53:26.442Z",
+    "updatedAt": "2026-01-14T00:53:26.442Z"
+  },
+  {
+    "_id": "6966e9062d77f9119677dbb6",
+    "communityId": "COM-011",
+    "communityName": "Dubai Marina",
+    "arabicName": "مرسى دبي",
+    "tier": "prime",
+    "location": {
+      "district": "Dubai Marina",
+      "area": "Dubai Marina",
+      "coordinates": {
+        "lat": 25.0805,
+        "lng": 55.1403
+      },
+      "nearestMetro": "Dubai Marina",
+      "distanceToMetroKm": 0.2,
+      "nearestMall": "Marina Mall",
+      "nearestBeachKm": 0.5,
+      "distanceToAirportKm": 35,
+      "distanceToDowntownKm": 20
+    },
+    "propertyTypes": [
+      {
+        "type": "apartment",
+        "available": true,
+        "priceRangeAED": {
+          "min": 800000,
+          "max": 30000000
+        },
+        "_id": "6966e9062d77f9119677dbb7"
+      },
+      {
+        "type": "penthouse",
+        "available": true,
+        "priceRangeAED": {
+          "min": 10000000,
+          "max": 100000000
+        },
+        "_id": "6966e9062d77f9119677dbb8"
+      }
+    ],
+    "marketData": {
+      "averagePricePerSqFt": 1800,
+      "rentalYieldPercent": 6.1,
+      "priceGrowthYoY": 8,
+      "averageDaysOnMarket": 25,
+      "demandIndex": 92,
+      "lastUpdated": "2026-01-14T00:53:26.428Z"
+    },
+    "demographics": {
+      "primaryNationalities": []
+    },
+    "amenities": {
+      "malls": [],
+      "parks": [],
+      "gyms": [],
+      "schools": [],
+      "hospitals": []
+    },
+    "infrastructure": {
+      "futureProjects": []
+    },
+    "lifestyle": {
+      "vibe": "urban",
+      "noiseLevel": "moderate",
+      "walkability": 8,
+      "nightlife": true,
+      "petFriendly": true
+    },
+    "regulations": {
+      "freeholdAvailable": true,
+      "shortTermRentalAllowed": true,
+      "visaEligible": true,
+      "minimumInvestmentForVisa": 2000000
+    },
+    "aiRecommendationScore": {
+      "forInvestors": 88,
+      "forFamilies": 65,
+      "forYoungProfessionals": 95,
+      "forRetirees": 55,
+      "forLuxurySeekers": 80
+    },
+    "images": {
+      "gallery": []
+    },
+    "isActive": true,
+    "developers": [],
+    "__v": 0,
+    "createdAt": "2026-01-14T00:53:26.442Z",
+    "updatedAt": "2026-01-14T00:53:26.442Z"
+  },
+  {
+    "_id": "6966e9062d77f9119677dbb9",
+    "communityId": "COM-012",
+    "communityName": "Business Bay",
+    "arabicName": "الخليج التجاري",
+    "tier": "prime",
+    "location": {
+      "district": "Business Bay",
+      "coordinates": {
+        "lat": 25.186,
+        "lng": 55.2628
+      },
+      "nearestMetro": "Business Bay",
+      "distanceToMetroKm": 0.3,
+      "distanceToDowntownKm": 2
+    },
+    "propertyTypes": [
+      {
+        "type": "apartment",
+        "available": true,
+        "priceRangeAED": {
+          "min": 700000,
+          "max": 15000000
+        },
+        "_id": "6966e9062d77f9119677dbba"
+      }
+    ],
+    "marketData": {
+      "averagePricePerSqFt": 1600,
+      "rentalYieldPercent": 6.5,
+      "priceGrowthYoY": 9,
+      "averageDaysOnMarket": 28,
+      "demandIndex": 88,
+      "lastUpdated": "2026-01-14T00:53:26.428Z"
+    },
+    "demographics": {
+      "primaryNationalities": []
+    },
+    "amenities": {
+      "malls": [],
+      "parks": [],
+      "gyms": [],
+      "schools": [],
+      "hospitals": []
+    },
+    "infrastructure": {
+      "futureProjects": []
+    },
+    "lifestyle": {
+      "vibe": "urban",
+      "noiseLevel": "busy",
+      "walkability": 7,
+      "nightlife": true
+    },
+    "regulations": {
+      "freeholdAvailable": true,
+      "shortTermRentalAllowed": true,
+      "visaEligible": true
+    },
+    "aiRecommendationScore": {
+      "forInvestors": 90,
+      "forFamilies": 50,
+      "forYoungProfessionals": 90,
+      "forRetirees": 40,
+      "forLuxurySeekers": 70
+    },
+    "images": {
+      "gallery": []
+    },
+    "isActive": true,
+    "developers": [],
+    "__v": 0,
+    "createdAt": "2026-01-14T00:53:26.442Z",
+    "updatedAt": "2026-01-14T00:53:26.442Z"
+  },
+  {
+    "_id": "6966e9062d77f9119677dbbb",
+    "communityId": "COM-020",
+    "communityName": "Arabian Ranches",
+    "arabicName": "المرابع العربية",
+    "tier": "established",
+    "location": {
+      "district": "Dubailand",
+      "coordinates": {
+        "lat": 25.052,
+        "lng": 55.2633
+      },
+      "distanceToDowntownKm": 25
+    },
+    "propertyTypes": [
+      {
+        "type": "villa",
+        "available": true,
+        "priceRangeAED": {
+          "min": 3000000,
+          "max": 25000000
+        },
+        "_id": "6966e9062d77f9119677dbbc"
+      },
+      {
+        "type": "townhouse",
+        "available": true,
+        "priceRangeAED": {
+          "min": 2000000,
+          "max": 8000000
+        },
+        "_id": "6966e9062d77f9119677dbbd"
+      }
+    ],
+    "marketData": {
+      "averagePricePerSqFt": 1200,
+      "rentalYieldPercent": 5,
+      "priceGrowthYoY": 6,
+      "averageDaysOnMarket": 45,
+      "demandIndex": 82,
+      "lastUpdated": "2026-01-14T00:53:26.428Z"
+    },
+    "demographics": {
+      "primaryNationalities": []
+    },
+    "amenities": {
+      "malls": [],
+      "parks": [],
+      "gyms": [],
+      "schools": [],
+      "hospitals": []
+    },
+    "infrastructure": {
+      "futureProjects": []
+    },
+    "lifestyle": {
+      "vibe": "family",
+      "noiseLevel": "quiet",
+      "walkability": 4,
+      "nightlife": false,
+      "petFriendly": true
+    },
+    "regulations": {
+      "freeholdAvailable": true,
+      "shortTermRentalAllowed": false,
+      "visaEligible": true
+    },
+    "aiRecommendationScore": {
+      "forInvestors": 75,
+      "forFamilies": 95,
+      "forYoungProfessionals": 40,
+      "forRetirees": 85,
+      "forLuxurySeekers": 60
+    },
+    "images": {
+      "gallery": []
+    },
+    "isActive": true,
+    "developers": [],
+    "__v": 0,
+    "createdAt": "2026-01-14T00:53:26.443Z",
+    "updatedAt": "2026-01-14T00:53:26.443Z"
+  },
+  {
+    "_id": "6966e9062d77f9119677dbbe",
+    "communityId": "COM-030",
+    "communityName": "Dubai Hills Estate",
+    "arabicName": "دبي هيلز استيت",
+    "tier": "emerging",
+    "location": {
+      "district": "Mohammed Bin Rashid City",
+      "coordinates": {
+        "lat": 25.1128,
+        "lng": 55.2453
+      },
+      "distanceToDowntownKm": 12
+    },
+    "propertyTypes": [
+      {
+        "type": "villa",
+        "available": true,
+        "priceRangeAED": {
+          "min": 4000000,
+          "max": 50000000
+        },
+        "_id": "6966e9062d77f9119677dbbf"
+      },
+      {
+        "type": "apartment",
+        "available": true,
+        "priceRangeAED": {
+          "min": 1000000,
+          "max": 8000000
+        },
+        "_id": "6966e9062d77f9119677dbc0"
+      },
+      {
+        "type": "townhouse",
+        "available": true,
+        "priceRangeAED": {
+          "min": 2500000,
+          "max": 6000000
+        },
+        "_id": "6966e9062d77f9119677dbc1"
+      }
+    ],
+    "marketData": {
+      "averagePricePerSqFt": 1400,
+      "rentalYieldPercent": 5.5,
+      "priceGrowthYoY": 12,
+      "averageDaysOnMarket": 35,
+      "demandIndex": 90,
+      "lastUpdated": "2026-01-14T00:53:26.428Z"
+    },
+    "demographics": {
+      "primaryNationalities": []
+    },
+    "amenities": {
+      "malls": [],
+      "parks": [],
+      "gyms": [],
+      "schools": [],
+      "hospitals": []
+    },
+    "infrastructure": {
+      "futureProjects": []
+    },
+    "lifestyle": {
+      "vibe": "family",
+      "noiseLevel": "quiet",
+      "walkability": 5,
+      "nightlife": false,
+      "petFriendly": true
+    },
+    "regulations": {
+      "freeholdAvailable": true,
+      "visaEligible": true
+    },
+    "aiRecommendationScore": {
+      "forInvestors": 88,
+      "forFamilies": 90,
+      "forYoungProfessionals": 60,
+      "forRetirees": 75,
+      "forLuxurySeekers": 70
+    },
+    "images": {
+      "gallery": []
+    },
+    "isActive": true,
+    "developers": [],
+    "__v": 0,
+    "createdAt": "2026-01-14T00:53:26.443Z",
+    "updatedAt": "2026-01-14T00:53:26.443Z"
+  },
+  {
+    "_id": "6966e9062d77f9119677dbc2",
+    "communityId": "COM-031",
+    "communityName": "Jumeirah Village Circle (JVC)",
+    "arabicName": "قرية جميرا الدائرية",
+    "tier": "emerging",
+    "location": {
+      "district": "Jumeirah Village",
+      "coordinates": {
+        "lat": 25.057,
+        "lng": 55.2078
+      },
+      "distanceToDowntownKm": 18
+    },
+    "propertyTypes": [
+      {
+        "type": "apartment",
+        "available": true,
+        "priceRangeAED": {
+          "min": 400000,
+          "max": 3000000
+        },
+        "_id": "6966e9062d77f9119677dbc3"
+      },
+      {
+        "type": "townhouse",
+        "available": true,
+        "priceRangeAED": {
+          "min": 1500000,
+          "max": 4000000
+        },
+        "_id": "6966e9062d77f9119677dbc4"
+      }
+    ],
+    "marketData": {
+      "averagePricePerSqFt": 850,
+      "rentalYieldPercent": 7.2,
+      "priceGrowthYoY": 10,
+      "averageDaysOnMarket": 20,
+      "demandIndex": 85,
+      "lastUpdated": "2026-01-14T00:53:26.428Z"
+    },
+    "demographics": {
+      "primaryNationalities": []
+    },
+    "amenities": {
+      "malls": [],
+      "parks": [],
+      "gyms": [],
+      "schools": [],
+      "hospitals": []
+    },
+    "infrastructure": {
+      "futureProjects": []
+    },
+    "lifestyle": {
+      "vibe": "family",
+      "noiseLevel": "moderate",
+      "walkability": 4,
+      "petFriendly": true
+    },
+    "regulations": {
+      "freeholdAvailable": true,
+      "shortTermRentalAllowed": true,
+      "visaEligible": true
+    },
+    "aiRecommendationScore": {
+      "forInvestors": 92,
+      "forFamilies": 80,
+      "forYoungProfessionals": 75,
+      "forRetirees": 60,
+      "forLuxurySeekers": 40
+    },
+    "images": {
+      "gallery": []
+    },
+    "isActive": true,
+    "developers": [],
+    "__v": 0,
+    "createdAt": "2026-01-14T00:53:26.443Z",
+    "updatedAt": "2026-01-14T00:53:26.443Z"
+  },
+  {
+    "_id": "6966e9062d77f9119677dbc5",
+    "communityId": "COM-040",
+    "communityName": "Dubai South",
+    "arabicName": "دبي الجنوب",
+    "tier": "affordable",
+    "location": {
+      "district": "Dubai South",
+      "coordinates": {
+        "lat": 24.8917,
+        "lng": 55.1517
+      },
+      "distanceToAirportKm": 5,
+      "distanceToDowntownKm": 40
+    },
+    "propertyTypes": [
+      {
+        "type": "apartment",
+        "available": true,
+        "priceRangeAED": {
+          "min": 300000,
+          "max": 1500000
+        },
+        "_id": "6966e9062d77f9119677dbc6"
+      },
+      {
+        "type": "townhouse",
+        "available": true,
+        "priceRangeAED": {
+          "min": 800000,
+          "max": 2500000
+        },
+        "_id": "6966e9062d77f9119677dbc7"
+      }
+    ],
+    "marketData": {
+      "averagePricePerSqFt": 650,
+      "rentalYieldPercent": 7.5,
+      "priceGrowthYoY": 8,
+      "averageDaysOnMarket": 35,
+      "demandIndex": 75,
+      "lastUpdated": "2026-01-14T00:53:26.428Z"
+    },
+    "demographics": {
+      "primaryNationalities": []
+    },
+    "amenities": {
+      "malls": [],
+      "parks": [],
+      "gyms": [],
+      "schools": [],
+      "hospitals": []
+    },
+    "infrastructure": {
+      "futureProjects": []
+    },
+    "lifestyle": {
+      "vibe": "mixed",
+      "noiseLevel": "moderate"
+    },
+    "regulations": {
+      "freeholdAvailable": true,
+      "visaEligible": true
+    },
+    "aiRecommendationScore": {
+      "forInvestors": 85,
+      "forFamilies": 70,
+      "forYoungProfessionals": 65,
+      "forRetirees": 50,
+      "forLuxurySeekers": 20
+    },
+    "images": {
+      "gallery": []
+    },
+    "isActive": true,
+    "developers": [],
+    "__v": 0,
+    "createdAt": "2026-01-14T00:53:26.443Z",
+    "updatedAt": "2026-01-14T00:53:26.443Z"
+  }
+]

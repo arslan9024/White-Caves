@@ -1,4 +1,6 @@
 import styled, { keyframes, css } from 'styled-components';
+import { typography } from '../../../styles/theme/typography';
+import { spacing } from '../../../styles/theme/spacing';
 
 // ─── Animations ───────────────────────────────────────────────
 const shimmer = keyframes`
@@ -86,12 +88,12 @@ export const ErrorFallback = styled.div`
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 8px;
+  gap: ${spacing.sm};
   background: var(--color-surface-secondary, #f1f5f9);
   color: var(--color-text-tertiary, #94a3b8);
-  font-size: 13px;
+  font-size: ${typography.sizes.sm};
   text-align: center;
-  padding: 16px;
+  padding: ${spacing.md};
 
   svg {
     width: 32px;

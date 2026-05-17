@@ -1,127 +1,180 @@
-import React, { useState, useRef, useEffect } from 'react';
-import {
-  StyledNewsletterSection,
-  StyledNewsletterContainer,
-  StyledNewsletterContent,
-  StyledNewsletterText,
-  StyledNewsletterBenefits,
-  StyledNewsletterFormWrapper,
-  StyledNewsletterForm,
-  StyledFormGroup,
-  StyledNewsletterInput,
-  StyledNewsletterButton,
-  StyledSpinner,
-  StyledFormMessage,
-  StyledPrivacyNote,
-  StyledSubscriberCount,
-  StyledSubscriberAvatars,
-  StyledMoreSubscribers,
-} from './NewsletterSubscription.styles';
+import React, { useState, useRef, useEffect, type FormEvent } from 'react';
+import { motion } from 'framer-motion';
+import { Mail, ArrowRight, CheckCircle2 } from 'lucide-react';
 
-export default function NewsletterSubscription() {
+const NewsletterSubscription: React.FC = () => {
   const [email, setEmail] = useState('');
-  const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
-  const [message, setMessage] = useState('');
-  const isMountedRef = useRef(true);
-  const timeoutRefs = useRef<ReturnType<typeof setTimeout>[]>([]);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const timerRef = useRef<ReturnType<typeof setTimeout>>();
 
   useEffect(() => {
-    isMountedRef.current = true;
-    return () => {
-      isMountedRef.current = false;
-      timeoutRefs.current.forEach(clearTimeout);
-      timeoutRefs.current = [];
-    };
+    return () => clearTimeout(timerRef.current);
   }, []);
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>): Promise<void> => {
     e.preventDefault();
-    
-    if (!email || !email.includes('@')) {
-      setStatus('error');
-      setMessage('Please enter a valid email address');
+    setError(null);
+    const trimmed = email.trim();
+    if (!trimmed) return;
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmed)) {
+      setError('Please enter a valid email address.');
       return;
     }
-
-    setStatus('loading');
-    
-    const t1 = setTimeout(() => {
-      if (!isMountedRef.current) return;
-      setStatus('success');
-      setMessage('Thank you for subscribing! Check your inbox for a confirmation email.');
+    setIsSubmitting(true);
+    try {
+      // Optimistic UI — backend endpoint wired in a later phase
+      await new Promise<void>(resolve => setTimeout(resolve, 600));
+      setSubmitted(true);
       setEmail('');
-      
-      const t2 = setTimeout(() => {
-        if (!isMountedRef.current) return;
-        setStatus('idle');
-        setMessage('');
-      }, 5000);
-      // Push t2 immediately so cleanup can clear it even if component unmounts before t1 fires
-      timeoutRefs.current.push(t2);
-    }, 1500);
-    // Both timeouts are tracked for cleanup
-    timeoutRefs.current.push(t1);
+      timerRef.current = setTimeout(() => setSubmitted(false), 5000);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
-    <StyledNewsletterSection>
-      <StyledNewsletterContainer>
-        <StyledNewsletterContent>
-          <StyledNewsletterText>
-            <h2>Stay Updated on Dubai Real Estate</h2>
-            <p>Get exclusive market insights, new listings, and investment opportunities delivered to your inbox weekly.</p>
-            <StyledNewsletterBenefits>
-              <li>🏠 First access to new property listings</li>
-              <li>📊 Weekly market analysis & trends</li>
-              <li>💡 Investment tips from experts</li>
-              <li>🎁 Exclusive subscriber offers</li>
-            </StyledNewsletterBenefits>
-          </StyledNewsletterText>
-          
-          <StyledNewsletterFormWrapper>
-            <StyledNewsletterForm onSubmit={handleSubmit}>
-              <StyledFormGroup>
-                <StyledNewsletterInput
-                  type="email"
-                  placeholder="Enter your email address"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  disabled={status === 'loading'}
-                  className={status === 'error' ? 'error' : ''}
-                />
-                <StyledNewsletterButton 
-                  type="submit" 
-                  disabled={status === 'loading'}
-                >
-                  {status === 'loading' ? (
-                    <StyledSpinner />
-                  ) : (
-                    'Subscribe'
-                  )}
-                </StyledNewsletterButton>
-              </StyledFormGroup>
-              
-              {message && (
-                <StyledFormMessage $status={status === 'success' || status === 'error' ? status : undefined}>{message}</StyledFormMessage>
-              )}
-            </StyledNewsletterForm>
-            
-            <StyledPrivacyNote>
-              By subscribing, you agree to our Privacy Policy. Unsubscribe anytime.
-            </StyledPrivacyNote>
+    <section
+      className="newsletter-section"
+      aria-label="Newsletter subscription"
+      style={{
+        background: 'linear-gradient(135deg, #1a1a2e 0%, #2E5A4F 100%)',
+        padding: '4rem 1rem',
+      }}
+    >
+      <div className="container" style={{ maxWidth: 640, margin: '0 auto', textAlign: 'center' }}>
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
+        >
+          <div
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              width: 56,
+              height: 56,
+              borderRadius: '50%',
+              background: 'rgba(227, 30, 36, 0.15)',
+              marginBottom: '1.25rem',
+            }}
+          >
+            <Mail size={26} color="#E31E24" />
+          </div>
 
-            <StyledSubscriberCount>
-              <StyledSubscriberAvatars>
-                <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=crop&w=50&q=80" alt="Subscriber" loading="lazy" />
-                <img src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-1.2.1&auto=format&fit=crop&w=50&q=80" alt="Subscriber" loading="lazy" />
-                <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-1.2.1&auto=format&fit=crop&w=50&q=80" alt="Subscriber" loading="lazy" />
-                <StyledMoreSubscribers>+</StyledMoreSubscribers>
-              </StyledSubscriberAvatars>
-              <span>Join <strong>12,000+</strong> subscribers</span>
-            </StyledSubscriberCount>
-          </StyledNewsletterFormWrapper>
-        </StyledNewsletterContent>
-      </StyledNewsletterContainer>
-    </StyledNewsletterSection>
+          <h2
+            style={{
+              color: '#fff',
+              fontSize: 'clamp(1.4rem, 3vw, 2rem)',
+              fontWeight: 700,
+              marginBottom: '0.75rem',
+            }}
+          >
+            Stay Ahead of the Dubai Market
+          </h2>
+          <p style={{ color: 'rgba(255,255,255,0.7)', marginBottom: '2rem', lineHeight: 1.6 }}>
+            Get exclusive property alerts, off-plan launches, and Dubai market insights delivered to
+            your inbox — no spam, unsubscribe any time.
+          </p>
+
+          {submitted ? (
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '0.5rem',
+                color: '#10B981',
+                fontWeight: 600,
+                fontSize: '1.05rem',
+              }}
+              role="status"
+            >
+              <CheckCircle2 size={22} />
+              You're subscribed! We'll be in touch.
+            </motion.div>
+          ) : (
+            <form
+              onSubmit={handleSubmit}
+              style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', justifyContent: 'center' }}
+              aria-busy={isSubmitting}
+            >
+              <label htmlFor="newsletter-email" className="sr-only">
+                Email address
+              </label>
+              <input
+                id="newsletter-email"
+                type="email"
+                value={email}
+                onChange={e => setEmail(e.target.value)}
+                placeholder="Your email address"
+                required
+                disabled={isSubmitting}
+                aria-label="Email address for newsletter"
+                style={{
+                  flex: '1 1 260px',
+                  padding: '0.75rem 1.1rem',
+                  borderRadius: 8,
+                  border: '1px solid rgba(255,255,255,0.2)',
+                  background: 'rgba(255,255,255,0.08)',
+                  color: '#fff',
+                  fontSize: '0.95rem',
+                  outline: 'none',
+                }}
+              />
+              <motion.button
+                type="submit"
+                disabled={isSubmitting}
+                whileHover={{ scale: isSubmitting ? 1 : 1.04 }}
+                whileTap={{ scale: 0.97 }}
+                style={{
+                  padding: '0.75rem 1.5rem',
+                  borderRadius: 8,
+                  background: '#E31E24',
+                  color: '#fff',
+                  fontWeight: 600,
+                  border: 'none',
+                  cursor: isSubmitting ? 'not-allowed' : 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.4rem',
+                  fontSize: '0.95rem',
+                  opacity: isSubmitting ? 0.7 : 1,
+                }}
+              >
+                {isSubmitting ? 'Subscribing…' : 'Subscribe'}
+                {!isSubmitting && <ArrowRight size={16} />}
+              </motion.button>
+            </form>
+          )}
+
+          {error && (
+            <motion.p
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              role="alert"
+              style={{ color: '#f87171', marginTop: '0.5rem', fontSize: '0.875rem' }}
+            >
+              {error}
+            </motion.p>
+          )}
+
+          <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: '0.78rem', marginTop: '1rem' }}>
+            By subscribing you agree to our{' '}
+            <a href="/privacy-policy" style={{ color: 'rgba(255,255,255,0.6)' }}>
+              Privacy Policy
+            </a>
+            .
+          </p>
+        </motion.div>
+      </div>
+    </section>
   );
-}
+};
+
+export default NewsletterSubscription;

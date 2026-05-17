@@ -14,7 +14,9 @@ vi.mock('./NotificationCenter', () => ({
   default: ({ notifications, onViewAll, onMarkAsRead }: Record<string, unknown>) => (
     <div data-testid="notification-center">
       <span data-testid="notification-count">{(notifications as unknown[])?.length ?? 0}</span>
-      <button data-testid="view-all-btn" onClick={onViewAll as () => void}>View All</button>
+      <button data-testid="view-all-btn" onClick={onViewAll as () => void}>
+        View All
+      </button>
     </div>
   ),
 }));
@@ -23,9 +25,15 @@ vi.mock('./UserProfileMenu', () => ({
   default: ({ user, onProfile, onSettings, onLogout }: Record<string, unknown>) => (
     <div data-testid="user-profile-menu">
       <span data-testid="user-name">{(user as Record<string, string>)?.name ?? 'Guest'}</span>
-      <button data-testid="profile-btn" onClick={onProfile as () => void}>Profile</button>
-      <button data-testid="settings-btn" onClick={onSettings as () => void}>Settings</button>
-      <button data-testid="logout-btn" onClick={onLogout as () => void}>Logout</button>
+      <button data-testid="profile-btn" onClick={onProfile as () => void}>
+        Profile
+      </button>
+      <button data-testid="settings-btn" onClick={onSettings as () => void}>
+        Settings
+      </button>
+      <button data-testid="logout-btn" onClick={onLogout as () => void}>
+        Logout
+      </button>
     </div>
   ),
 }));
@@ -33,22 +41,33 @@ vi.mock('./UserProfileMenu', () => ({
 vi.mock('./AdminControls', () => ({
   default: ({ onUserManagement }: Record<string, unknown>) => (
     <div data-testid="admin-controls">
-      <button data-testid="user-management-btn" onClick={onUserManagement as () => void}>Manage</button>
+      <button data-testid="user-management-btn" onClick={onUserManagement as () => void}>
+        Manage
+      </button>
     </div>
   ),
+}));
+
+vi.mock('../ThemeToggle', () => ({
+  default: () => <button data-testid="theme-toggle">Theme</button>,
 }));
 
 vi.mock('../../styles/theme', () => ({
   theme: {
     colors: {
-      primary: '#E31E24',
-      primaryDark: '#C62828',
-      background: { primary: '#F8F9FA', secondary: '#FFFFFF', tertiary: '#F5F5F5', overlay: 'rgba(0,0,0,0.5)' },
+      primary: '#D4AF37',
+      primaryDark: '#B8960C',
+      background: {
+        primary: '#F8F9FA',
+        secondary: '#FFFFFF',
+        tertiary: '#F5F5F5',
+        overlay: 'rgba(0,0,0,0.5)',
+      },
       text: { primary: '#212121', secondary: '#666666', inverse: '#FFFFFF' },
       border: '#E0E0E0',
       success: '#388E3C',
       warning: '#F57F17',
-      error: '#C62828',
+      error: '#D32F2F',
       white: '#FFFFFF',
     },
     spacing: { xs: '4px', sm: '8px', md: '16px', lg: '24px', xl: '32px' },
@@ -79,8 +98,20 @@ const mockUser = {
 };
 
 const mockNotifications = [
-  { id: 'n1', title: 'New Lead', message: 'A new lead submitted', timestamp: '2025-06-15T10:00:00Z', read: false },
-  { id: 'n2', title: 'Task Due', message: 'Contract review due today', timestamp: '2025-06-15T09:00:00Z', read: true },
+  {
+    id: 'n1',
+    title: 'New Lead',
+    message: 'A new lead submitted',
+    timestamp: '2025-06-15T10:00:00Z',
+    read: false,
+  },
+  {
+    id: 'n2',
+    title: 'Task Due',
+    message: 'Contract review due today',
+    timestamp: '2025-06-15T09:00:00Z',
+    read: true,
+  },
 ];
 
 const defaultProps: UnifiedNavbarProps = {

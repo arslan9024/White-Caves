@@ -1,0 +1,574 @@
+**ANNA'S ANALYSIS: Google Sheets Integration Files**
+
+## **🔍 OVERVIEW OF ISSUES:**
+
+You have **8 similar files** doing Google Sheets operations with **massive code duplication** and **inconsistent patterns**. This is a maintenance nightmare.
+
+## **🔄 CRITICAL CODE DUPLICATION:**
+
+### **Files with identical/similar code:**
+1. `getGoogleSheet.js` 
+2. `getSheet.js`
+3. `getSheetWMN.js` (What does WMN mean?)
+4. `getOneRowFromSheet.js`
+5. `getNumberFromSheet.js`
+6. `getPhoneNumbersArrayFromRows.js` (99% same as getNumberFromSheet.js)
+7. `WriteToSheet.js`
+8. `CollectInputForWriteToSheet.js` (unused)
+
+## **🚨 URGENT REFACTOR NEEDED:**
+
+### **1. Create Unified Google Sheets Service:**
+```javascript
+// services/GoogleSheetsService.js
+import { google } from 'googleapis';
+import { logger } from '../utils/logger.js';
+import { PhoneNumberService } from './PhoneNumberService.js';
+
+export class GoogleSheetsService {
+  constructor(auth) {
+    this.auth = auth;
+    this.sheets = google.sheets({ version: 'v4', auth });
+    this.cache = new Map();
+  }
+
+  async getSheetData(spreadsheetId, range = 'Sheet1', useCache = true) {
+    try {
+      const cacheKey = `${spreadsheetId}:${range}`;
+      
+      if (useCache && this.cache.has(cacheKey)) {
+        return this.cache.get(cacheKey);
+      }
+
+      const response = await this.sheets.spreadsheets.values.get({
+        spreadsheetId,
+        range
+      });
+
+      const data = {
+        values: response.data.values || [],
+        spreadsheetId,
+        range,
+        timestamp: Date.now()
+      };
+
+      if (useCache) {
+        this.cache.set(cacheKey, data);
+        // Cache for 5 minutes
+        setTimeout(() => this.cache.delete(cacheKey), 5 * 60 * 1000);
+      }
+
+      logger.info(`Fetched ${data.values.length} rows from sheet ${spreadsheetId}`);
+      return data;
+
+    } catch (error) {
+      logger.error(`Failed to fetch sheet ${spreadsheetId}:`, error);
+      throw new Error(`Google Sheets error: ${error.message}`);
+    }
+  }
+
+  async appendRow(spreadsheetId, values, range = 'Sheet1!A:C') {
+    try {
+      const response = await this.sheets.spreadsheets.values.append({
+        spreadsheetId,
+        range,
+        valueInputOption: 'USER_ENTERED',
+        insertDataOption: 'INSERT_ROWS',
+        resource: { values: [values] }
+      });
+
+      logger.info(`Appended row to sheet ${spreadsheetId}`);
+      return response.data;
+
+    } catch (error) {
+      logger.error(`Failed to append to sheet ${spreadsheetId}:`, error);
+      throw error;
+    }
+  }
+
+  async findRow(spreadsheetId, searchCriteria, columnIndex = 0) {
+    try {
+      const data = await this.getSheetData(spreadsheetId);
+      
+      const row = data.values.find(row => 
+        row[columnIndex]?.toString().includes(searchCriteria)
+      );
+
+      return row || null;
+
+    } catch (error) {
+      logger.error(`Failed to find row in sheet ${spreadsheetId}:`, error);
+      throw error;
+    }
+  }
+
+  async getPhoneNumbersFromSheet(spreadsheetId, phoneColumns = [5, 7, 8]) {
+    try {
+      const data = await this.getSheetData(spreadsheetId);
+      const phoneService = new PhoneNumberService();
+      
+      const numbers = new Set();
+      
+      // Skip header row
+      for (let i = 1; i < data.values.length; i++) {
+        const row = data.values[i];
+        
+        for (const colIndex of phoneColumns) {
+          if (row[colIndex]) {
+            const formatted = phoneService.formatToInternational(row[colIndex]);
+            if (formatted) {
+              numbers.add(`${formatted}@c.us`);
+              break; // Take first valid number per row
+            }
+          }
+        }
+      }
+
+      logger.info(`Extracted ${numbers.size} phone numbers from sheet`);
+      return Array.from(numbers);
+
+    } catch (error) {
+      logger.error(`Failed to extract phone numbers:`, error);
+      throw error;
+    }
+  }
+
+  async getRowHeadings(spreadsheetId) {
+    try {
+      const data = await this.getSheetData(spreadsheetId, 'Sheet1!1:1');
+      return data.values[0] || [];
+
+    } catch (error) {
+      logger.error(`Failed to get row headings:`, error);
+      return [];
+    }
+  }
+}
+```
+
+### **2. Create Phone Number Service:**
+```javascript
+// services/PhoneNumberService.js
+import { parsePhoneNumberFromString } from 'libphonenumber-js';
+
+export class PhoneNumberService {
+  constructor(defaultCountry = 'AE') {
+    this.defaultCountry = defaultCountry;
+  }
+
+  formatToInternational(phoneNumber) {
+    try {
+      const parsed = parsePhoneNumberFromString(phoneNumber, this.defaultCountry);
+      
+      if (parsed && parsed.isValid()) {
+        return parsed.format('E.164').replace('+', '');
+      }
+      
+      // UAE-specific fallback logic
+      const sanitized = this.sanitizePhoneNumber(phoneNumber);
+      
+      if (this.isValidUAENumber(sanitized)) {
+        return this.formatUAENumber(sanitized);
+      }
+      
+      return null;
+
+    } catch (error) {
+      console.error('Phone number parsing error:', error);
+      return null;
+    }
+  }
+
+  sanitizePhoneNumber(phoneNumber) {
+    return String(phoneNumber || '').replace(/\D/g, '');
+  }
+
+  isValidUAENumber(number) {
+    const sanitized = this.sanitizePhoneNumber(number);
+    
+    // UAE numbers are 9 digits starting with 5
+    if (sanitized.length === 9 && sanitized.startsWith('5')) {
+      return true;
+    }
+    
+    // UAE numbers with country code (971 + 9 digits)
+    if (sanitized.length === 12 && sanitized.startsWith('9715')) {
+      return true;
+    }
+    
+    return false;
+  }
+
+  formatUAENumber(number) {
+    const sanitized = this.sanitizePhoneNumber(number);
+    
+    if (sanitized.length === 9 && sanitized.startsWith('5')) {
+      return `971${sanitized}`;
+    }
+    
+    if (sanitized.length === 12 && sanitized.startsWith('971')) {
+      return sanitized;
+    }
+    
+    return null;
+  }
+
+  extractFromRows(rows, columnIndices = [5, 7, 8]) {
+    const numbers = new Set();
+    
+    for (const row of rows) {
+      for (const colIndex of columnIndices) {
+        if (row[colIndex]) {
+          const formatted = this.formatToInternational(row[colIndex]);
+          if (formatted) {
+            numbers.add(formatted);
+            break; // Take first valid number per row
+          }
+        }
+      }
+    }
+    
+    return Array.from(numbers);
+  }
+}
+```
+
+### **3. Project Management Service:**
+```javascript
+// services/ProjectService.js
+export class ProjectService {
+  constructor(projectsConfig) {
+    this.projects = new Map();
+    this.loadProjects(projectsConfig);
+  }
+
+  loadProjects(config) {
+    for (const project of config) {
+      this.projects.set(project.ProjectID, project);
+      if (project.ProjectName) {
+        this.projects.set(project.ProjectName.toLowerCase(), project);
+      }
+    }
+  }
+
+  getProject(identifier) {
+    // Try by ID
+    if (this.projects.has(identifier)) {
+      return this.projects.get(identifier);
+    }
+    
+    // Try by name (case-insensitive)
+    const searchKey = String(identifier).toLowerCase();
+    return this.projects.get(searchKey) || null;
+  }
+
+  getSpreadsheetId(identifier) {
+    const project = this.getProject(identifier);
+    return project ? project.ProjectSheetID : null;
+  }
+
+  getAllProjects() {
+    return Array.from(this.projects.values())
+      .filter(project => project.ProjectID); // Only return unique by ID
+  }
+
+  getActiveProjects() {
+    return this.getAllProjects().filter(project => 
+      project.ProjectSheetID && project.ProjectSheetID.trim() !== ''
+    );
+  }
+}
+```
+
+## **🔄 REFACTORED FILE STRUCTURE:**
+
+```
+src/
+├── services/
+│   ├── GoogleSheetsService.js    # Unified sheets operations
+│   ├── PhoneNumberService.js     # Phone number processing
+│   ├── ProjectService.js         # Project management
+│   └── BroadcastService.js       # Message broadcasting
+├── config/
+│   ├── projects.config.js        # Projects configuration
+│   └── sheets.config.js          # Sheets configuration
+├── commands/
+│   └── SheetsCommandHandler.js   # Sheets-related commands
+└── utils/
+    └── logger.js
+```
+
+## **📋 CONFIGURATION FILE:**
+
+```javascript
+// config/projects.config.js
+export const ProjectsConfig = [
+  {
+    ProjectID: "9",
+    ProjectName: "Janusia",
+    ProjectSheetID: "1p0Fngwst3BEv1gl40J02o08jDcVETs67zFUv-wTED9s",
+    enabled: true,
+    phoneColumns: [5, 7, 8],
+    contactRange: "Sheet1!A:I"
+  },
+  {
+    ProjectID: "44",
+    ProjectName: "Conversation Logs",
+    ProjectSheetID: "YOUR_LOGS_SHEET_ID",
+    enabled: true,
+    logRange: "Sheet1!A:C"
+  }
+  // Add other projects
+];
+
+// config/sheets.config.js
+export const SheetsConfig = {
+  retryAttempts: 3,
+  retryDelay: 1000,
+  batchSize: 100,
+  cacheTTL: 300000, // 5 minutes
+  rateLimit: {
+    requestsPerMinute: 60,
+    concurrentRequests: 5
+  }
+};
+```
+
+## **🎯 COMMAND HANDLER INTEGRATION:**
+
+```javascript
+// commands/SheetsCommandHandler.js
+export class SheetsCommandHandler {
+  constructor(sheetsService, projectService) {
+    this.sheetsService = sheetsService;
+    this.projectService = projectService;
+  }
+
+  async handleCommand(msg, command, args) {
+    switch (command) {
+      case 'getnumbers':
+        return await this.handleGetNumbers(msg, args[0]);
+      case 'log':
+        return await this.handleLogMessage(msg);
+      case 'find':
+        return await this.handleFindRow(msg, args[0], args[1]);
+      default:
+        return null;
+    }
+  }
+
+  async handleGetNumbers(msg, projectIdentifier) {
+    try {
+      const project = this.projectService.getProject(projectIdentifier);
+      
+      if (!project || !project.ProjectSheetID) {
+        return `Project "${projectIdentifier}" not found or has no sheet configured.`;
+      }
+
+      const numbers = await this.sheetsService.getPhoneNumbersFromSheet(
+        project.ProjectSheetID
+      );
+
+      return `Found ${numbers.length} numbers in ${project.ProjectName}.`;
+      
+    } catch (error) {
+      return `Error: ${error.message}`;
+    }
+  }
+
+  async handleLogMessage(msg) {
+    try {
+      const project = this.projectService.getProject(44); // Logs project
+      
+      if (!project) {
+        console.warn('Logs project not configured');
+        return;
+      }
+
+      const logData = [
+        msg.from,
+        msg.to || 'N/A',
+        msg.body,
+        new Date().toISOString()
+      ];
+
+      await this.sheetsService.appendRow(
+        project.ProjectSheetID,
+        logData,
+        project.logRange
+      );
+
+    } catch (error) {
+      console.error('Failed to log message:', error);
+    }
+  }
+
+  async handleFindRow(msg, projectIdentifier, searchTerm) {
+    try {
+      const project = this.projectService.getProject(projectIdentifier);
+      
+      if (!project) {
+        return `Project "${projectIdentifier}" not found.`;
+      }
+
+      const row = await this.sheetsService.findRow(
+        project.ProjectSheetID,
+        searchTerm
+      );
+
+      if (row) {
+        return `Found: ${row.join(' | ')}`;
+      } else {
+        return `No results found for "${searchTerm}"`;
+      }
+      
+    } catch (error) {
+      return `Error: ${error.message}`;
+    }
+  }
+}
+```
+
+## **🚀 USAGE EXAMPLE:**
+
+```javascript
+// index.js - Updated with new services
+import { GoogleSheetsService } from './services/GoogleSheetsService.js';
+import { ProjectService } from './services/ProjectService.js';
+import { ProjectsConfig } from './config/projects.config.js';
+import { createSheetsClient } from './GoogleAPI/main.js'; // Updated secure version
+
+async function initializeServices() {
+  try {
+    // Secure authentication
+    const auth = await createSheetsClient();
+    
+    // Initialize services
+    const sheetsService = new GoogleSheetsService(auth);
+    const projectService = new ProjectService(ProjectsConfig);
+    
+    // Example: Get numbers from Janusia project
+    const janusiaNumbers = await sheetsService.getPhoneNumbersFromSheet(
+      projectService.getSpreadsheetId('Janusia')
+    );
+    
+    console.log(`Got ${janusiaNumbers.length} numbers from Janusia`);
+    
+    return { sheetsService, projectService };
+    
+  } catch (error) {
+    console.error('Failed to initialize services:', error);
+    throw error;
+  }
+}
+```
+
+## **📊 PERFORMANCE OPTIMIZATIONS:**
+
+### **1. Batch Processing:**
+```javascript
+async function processMultipleProjects(projectIds) {
+  const batchPromises = projectIds.map(async (projectId) => {
+    const project = projectService.getProject(projectId);
+    if (project && project.enabled) {
+      return sheetsService.getPhoneNumbersFromSheet(project.ProjectSheetID);
+    }
+    return [];
+  });
+
+  const results = await Promise.allSettled(batchPromises);
+  return results.filter(r => r.status === 'fulfilled').map(r => r.value);
+}
+```
+
+### **2. Memory Management:**
+```javascript
+// Stream large sheets
+async function* streamSheetData(spreadsheetId, batchSize = 100) {
+  let offset = 0;
+  
+  while (true) {
+    const range = `Sheet1!A${offset + 1}:Z${offset + batchSize}`;
+    const data = await sheetsService.getSheetData(spreadsheetId, range, false);
+    
+    if (!data.values || data.values.length === 0) break;
+    
+    yield data.values;
+    offset += batchSize;
+  }
+}
+```
+
+## **🛡️ SECURITY IMPROVEMENTS:**
+
+### **1. Input Validation:**
+```javascript
+function validateSpreadsheetId(id) {
+  // Google Sheet IDs are alphanumeric with hyphens, 44 characters
+  const regex = /^[a-zA-Z0-9-_]{44}$/;
+  return regex.test(id);
+}
+
+function sanitizeRange(range) {
+  // Remove any potentially malicious characters
+  return range.replace(/[^a-zA-Z0-9!:_]/g, '');
+}
+```
+
+### **2. Rate Limiting:**
+```javascript
+class RateLimitedSheetsService extends GoogleSheetsService {
+  constructor(auth, options = {}) {
+    super(auth);
+    this.rateLimiter = new RateLimiter(options.rateLimit);
+  }
+
+  async getSheetData(...args) {
+    await this.rateLimiter.wait();
+    return super.getSheetData(...args);
+  }
+}
+```
+
+## **📈 METRICS & MONITORING:**
+
+```javascript
+// Add to GoogleSheetsService
+trackMetrics(method, success, duration) {
+  const metrics = {
+    method,
+    success,
+    duration,
+    timestamp: Date.now()
+  };
+  
+  // Send to monitoring service
+  this.emit('metrics', metrics);
+  
+  // Log for debugging
+  if (!success) {
+    logger.warn(`Sheets API ${method} took ${duration}ms`);
+  }
+}
+```
+
+## **🎯 ACTION PLAN:**
+
+1. **Delete all duplicate files** (keep only the refactored versions)
+2. **Implement unified GoogleSheetsService**
+3. **Create PhoneNumberService** with proper validation
+4. **Set up ProjectService** for configuration management
+5. **Add proper error handling and logging**
+6. **Implement rate limiting** to avoid Google API quotas
+7. **Add comprehensive tests**
+
+## **⚠️ IMMEDIATE WARNING:**
+
+Your current code has **hardcoded column indices [5, 7, 8]** for phone numbers. This is fragile! If the sheet structure changes, your bot breaks. 
+
+**Fix:** Either:
+1. Use column names (recommended)
+2. Make column indices configurable per project
+3. Auto-detect columns by header names
+
+Would you like me to provide the complete refactored code for any specific service first?

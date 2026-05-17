@@ -1,9 +1,7 @@
-/* ============================================================================
+﻿/* ============================================================================
    CLARA LEADS CRM STYLES
    ============================================================================ */
 
-@import url('../../../styles/crm-standard-utilities.css');
-@import url('../../../styles/crm-base.css');
 
 /* CONSOLIDATED: Clara's tab navigation now extends crm-base.css .tab-* classes */
 /* This removes ~1KB of duplicate tab scrollbar and button styling */
