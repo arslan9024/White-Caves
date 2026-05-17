@@ -43,7 +43,7 @@
 ## Deployment Notes
 
 - Release merge to `main` completed successfully after validation.
-- Remaining action: commit the merge result in the main worktree and push `origin/main`.
+- `main` push confirmed with release commit: `5c85e058`.
 
 ## Confirmation
 
