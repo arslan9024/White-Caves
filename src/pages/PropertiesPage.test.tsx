@@ -4,7 +4,7 @@
  * property cards, favorites, modal, API integration
  */
 
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeAll, beforeEach, afterAll, afterEach } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import React from 'react';
 import { Provider } from 'react-redux';
@@ -147,6 +147,11 @@ const renderPage = (crmOverrides: Record<string, unknown> = {}) => {
 // ── Tests ────────────────────────────────────────────────────────
 
 describe('PropertiesPage', () => {
+  beforeAll(() => {
+    vi.spyOn(console, 'error').mockImplementation(() => {});
+    vi.spyOn(console, 'warn').mockImplementation(() => {});
+  });
+
   beforeEach(() => {
     vi.clearAllMocks();
     // Default: API returns the mock properties
@@ -154,6 +159,14 @@ describe('PropertiesPage', () => {
       ok: true,
       json: async () => ({ data: MOCK_PROPERTIES }),
     });
+  });
+
+  afterEach(() => {
+    vi.clearAllMocks();
+  });
+
+  afterAll(() => {
+    vi.restoreAllMocks();
   });
 
   // ── Rendering ────────────────────────────────────────────────

@@ -4,7 +4,7 @@
  * pagination, empty states, loading/error banners
  */
 
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, screen, fireEvent, waitFor, within } from '@testing-library/react';
 import React from 'react';
 import { Provider } from 'react-redux';
@@ -106,7 +106,13 @@ const renderPage = (properties = mockProperties, loading = false, error: string 
 
 describe('PropertyManagementPage', () => {
   beforeEach(() => {
+    vi.spyOn(console, 'error').mockImplementation(() => {});
+    vi.spyOn(console, 'warn').mockImplementation(() => {});
     vi.clearAllMocks();
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
   });
 
   // ── Rendering ────────────────────────────────────────────────

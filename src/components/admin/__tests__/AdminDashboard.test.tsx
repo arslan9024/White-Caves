@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeAll, beforeEach, afterAll, afterEach } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Provider } from 'react-redux';
@@ -48,8 +48,22 @@ const createMockStore = (authOverrides?: Record<string, unknown>) => {
 describe('AdminDashboard Integration', () => {
   let mockStore: EnhancedStore;
 
+  beforeAll(() => {
+    vi.spyOn(console, 'error').mockImplementation(() => {});
+    vi.spyOn(console, 'warn').mockImplementation(() => {});
+    vi.spyOn(console, 'log').mockImplementation(() => {});
+  });
+
   beforeEach(() => {
     mockStore = createMockStore();
+  });
+
+  afterEach(() => {
+    vi.clearAllMocks();
+  });
+
+  afterAll(() => {
+    vi.restoreAllMocks();
   });
 
   const renderWithRedux = (component: ReactElement) => {

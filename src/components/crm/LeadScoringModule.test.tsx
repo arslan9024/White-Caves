@@ -42,6 +42,8 @@ const DEFAULT_PROPS = {
 
 describe('LeadScoringModule', () => {
   beforeEach(() => {
+    vi.spyOn(console, 'error').mockImplementation(() => {});
+    vi.spyOn(console, 'warn').mockImplementation(() => {});
     vi.clearAllMocks();
     // Default: successful fetches
     mockAuthFetch.mockImplementation((url: string) => {
@@ -53,6 +55,10 @@ describe('LeadScoringModule', () => {
       }
       return Promise.resolve({ ok: false });
     });
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
   });
 
   // ── Render & Header ─────────────────────────────────────────────

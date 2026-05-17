@@ -4,7 +4,7 @@
  * quick actions, activity feed, back-to-hub, URL sync
  */
 
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import React from 'react';
 import { Provider } from 'react-redux';
@@ -170,8 +170,14 @@ const renderPage = (crmOverrides: Record<string, unknown> = {}) => {
 
 describe('CRMHubPage', () => {
   beforeEach(() => {
+    vi.spyOn(console, 'error').mockImplementation(() => {});
+    vi.spyOn(console, 'warn').mockImplementation(() => {});
     vi.clearAllMocks();
     mockSearchParamsModule = '';
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
   });
 
   // ── Rendering ────────────────────────────────────────────────

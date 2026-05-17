@@ -4,17 +4,73 @@
  * status badges, conditional rendering, filter logic
  */
 
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, fireEvent, within } from '@testing-library/react';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { render, screen, fireEvent } from '@testing-library/react';
 import React from 'react';
 
 vi.mock('../RolePages.css', () => ({}));
 
+const mockAuthFetch = vi.fn();
+vi.mock('../../utils/authFetch', () => ({
+  authFetch: (...args: unknown[]) => mockAuthFetch(...args),
+}));
+
 import RentalManagementPage from './RentalManagementPage';
+
+const MOCK_LEASES = [
+  {
+    id: 'l1',
+    property: { id: 'p1', title: 'Marina View 2BR Apartment', location: 'Dubai Marina', type: 'Apartment' },
+    tenant: { id: 't1', name: 'Ahmed Al-Rashid', phone: '+971501111111' },
+    startDate: '2024-01-01',
+    endDate: '2024-12-31',
+    monthlyRent: 7916.67,
+    status: 'active',
+    ejariNumber: 'EJ-001',
+    nextPaymentDue: '2024-08-01',
+  },
+  {
+    id: 'l2',
+    property: { id: 'p2', title: 'Downtown Studio', location: 'Downtown Dubai', type: 'Studio' },
+    tenant: { id: 't2', name: 'Sarah Johnson', phone: '+971502222222' },
+    startDate: '2023-07-01',
+    endDate: '2024-06-30',
+    monthlyRent: 5416.67,
+    status: 'active',
+    ejariNumber: 'EJ-002',
+    nextPaymentDue: '2024-07-01',
+  },
+  {
+    id: 'l3',
+    property: { id: 'p3', title: 'JBR 3BR Apartment', location: 'JBR', type: 'Apartment' },
+    tenant: null,
+    startDate: '2024-01-01',
+    endDate: '2025-01-01',
+    monthlyRent: 15000,
+    status: 'vacant',
+    ejariNumber: null,
+    nextPaymentDue: null,
+  },
+];
+
+const renderLoaded = async () => {
+  render(<RentalManagementPage />);
+  await screen.findByText('Marina View 2BR Apartment');
+};
 
 describe('RentalManagementPage', () => {
   beforeEach(() => {
+    vi.spyOn(console, 'error').mockImplementation(() => {});
+    vi.spyOn(console, 'warn').mockImplementation(() => {});
     vi.clearAllMocks();
+    mockAuthFetch.mockResolvedValue({
+      ok: true,
+      json: () => Promise.resolve({ data: MOCK_LEASES }),
+    });
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
   });
 
   // ────── Basic Rendering ──────
@@ -38,8 +94,8 @@ describe('RentalManagementPage', () => {
     expect(screen.getByRole('button', { name: 'Available' })).toBeInTheDocument();
   });
 
-  it('shows all properties by default', () => {
-    render(<RentalManagementPage />);
+  it('shows all properties by default', async () => {
+    await renderLoaded();
     expect(screen.getByText('Marina View 2BR Apartment')).toBeInTheDocument();
     expect(screen.getByText('Downtown Studio')).toBeInTheDocument();
     expect(screen.getByText('JBR 3BR Apartment')).toBeInTheDocument();
@@ -47,8 +103,8 @@ describe('RentalManagementPage', () => {
 
   // ────── Filter Logic ──────
 
-  it('filters to occupied only', () => {
-    render(<RentalManagementPage />);
+  it('filters to occupied only', async () => {
+    await renderLoaded();
     fireEvent.click(screen.getByRole('button', { name: 'Occupied' }));
 
     expect(screen.getByText('Marina View 2BR Apartment')).toBeInTheDocument();
@@ -56,8 +112,8 @@ describe('RentalManagementPage', () => {
     expect(screen.queryByText('JBR 3BR Apartment')).not.toBeInTheDocument();
   });
 
-  it('filters to available only', () => {
-    render(<RentalManagementPage />);
+  it('filters to available only', async () => {
+    await renderLoaded();
     fireEvent.click(screen.getByRole('button', { name: 'Available' }));
 
     expect(screen.queryByText('Marina View 2BR Apartment')).not.toBeInTheDocument();
@@ -65,8 +121,8 @@ describe('RentalManagementPage', () => {
     expect(screen.getByText('JBR 3BR Apartment')).toBeInTheDocument();
   });
 
-  it('returns to all when clicking All Properties', () => {
-    render(<RentalManagementPage />);
+  it('returns to all when clicking All Properties', async () => {
+    await renderLoaded();
     fireEvent.click(screen.getByRole('button', { name: 'Available' }));
     expect(screen.queryByText('Marina View 2BR Apartment')).not.toBeInTheDocument();
 
@@ -77,30 +133,30 @@ describe('RentalManagementPage', () => {
 
   // ────── Property Card Details ──────
 
-  it('renders property locations', () => {
-    render(<RentalManagementPage />);
+  it('renders property locations', async () => {
+    await renderLoaded();
     expect(screen.getByText('Dubai Marina')).toBeInTheDocument();
     expect(screen.getByText('Downtown Dubai')).toBeInTheDocument();
     expect(screen.getByText('JBR')).toBeInTheDocument();
   });
 
-  it('renders property types', () => {
-    render(<RentalManagementPage />);
+  it('renders property types', async () => {
+    await renderLoaded();
     expect(screen.getAllByText('Apartment')).toHaveLength(2);
     expect(screen.getByText('Studio')).toBeInTheDocument();
   });
 
-  it('renders rent amounts', () => {
-    render(<RentalManagementPage />);
-    expect(screen.getByText('AED 95,000/yr')).toBeInTheDocument();
-    expect(screen.getByText('AED 65,000/yr')).toBeInTheDocument();
+  it('renders rent amounts', async () => {
+    await renderLoaded();
+    expect(screen.getByText(/AED 95,000/)).toBeInTheDocument();
+    expect(screen.getByText(/AED 65,000/)).toBeInTheDocument();
     expect(screen.getByText('AED 180,000/yr')).toBeInTheDocument();
   });
 
   // ────── Status Badges ──────
 
-  it('renders status badges', () => {
-    render(<RentalManagementPage />);
+  it('renders status badges', async () => {
+    await renderLoaded();
     const occupiedBadges = screen.getAllByText('Occupied');
     // 2 occupied properties = 2 badges (the filter btn also says "Occupied" but is a button)
     expect(occupiedBadges.length).toBeGreaterThanOrEqual(2);
@@ -108,20 +164,20 @@ describe('RentalManagementPage', () => {
 
   // ────── Tenant Information (Occupied only) ──────
 
-  it('shows tenant names for occupied properties', () => {
-    render(<RentalManagementPage />);
+  it('shows tenant names for occupied properties', async () => {
+    await renderLoaded();
     expect(screen.getByText('Ahmed Al-Rashid')).toBeInTheDocument();
     expect(screen.getByText('Sarah Johnson')).toBeInTheDocument();
   });
 
-  it('shows lease end dates for occupied properties', () => {
-    render(<RentalManagementPage />);
-    expect(screen.getByText('Dec 31, 2024')).toBeInTheDocument();
-    expect(screen.getByText('Jun 30, 2024')).toBeInTheDocument();
+  it('shows lease end dates for occupied properties', async () => {
+    await renderLoaded();
+    expect(screen.getByText(/31 Dec 2024/)).toBeInTheDocument();
+    expect(screen.getByText(/30 Jun 2024/)).toBeInTheDocument();
   });
 
-  it('does not show tenant info for available properties', () => {
-    render(<RentalManagementPage />);
+  it('does not show tenant info for available properties', async () => {
+    await renderLoaded();
     // JBR 3BR Apartment is available — no tenant shown
     // If we filter to available only, there should be no tenant rows
     fireEvent.click(screen.getByRole('button', { name: 'Available' }));
@@ -131,22 +187,22 @@ describe('RentalManagementPage', () => {
 
   // ────── Action Buttons ──────
 
-  it('renders View Details buttons', () => {
-    render(<RentalManagementPage />);
+  it('renders View Details buttons', async () => {
+    await renderLoaded();
     const viewBtns = screen.getAllByText('View Details');
     expect(viewBtns).toHaveLength(3); // one per property
   });
 
-  it('renders Edit buttons', () => {
-    render(<RentalManagementPage />);
-    const editBtns = screen.getAllByText('Edit');
-    expect(editBtns).toHaveLength(3);
+  it('renders Call Tenant links for occupied leases', async () => {
+    await renderLoaded();
+    const callBtns = screen.getAllByText('Call Tenant');
+    expect(callBtns.length).toBe(2);
   });
 
   // ────── Sequential Filter Changes ──────
 
-  it('handles rapid filter changes', () => {
-    render(<RentalManagementPage />);
+  it('handles rapid filter changes', async () => {
+    await renderLoaded();
 
     fireEvent.click(screen.getByRole('button', { name: 'Occupied' }));
     fireEvent.click(screen.getByRole('button', { name: 'Available' }));

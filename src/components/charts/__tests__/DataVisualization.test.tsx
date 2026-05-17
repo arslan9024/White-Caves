@@ -6,7 +6,17 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
+import { vi, beforeEach, afterEach } from 'vitest';
 import { BarChart, LineChart, PieChart, ProgressRing } from '../DataVisualization';
+
+beforeEach(() => {
+  vi.spyOn(console, 'error').mockImplementation(() => {});
+  vi.spyOn(console, 'warn').mockImplementation(() => {});
+});
+
+afterEach(() => {
+  vi.restoreAllMocks();
+});
 
 describe('BarChart Component', () => {
   const mockData = [

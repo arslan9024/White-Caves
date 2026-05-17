@@ -102,6 +102,8 @@ const renderPage = (
 
 // ─── Setup ──────────────────────────────────────────────────────
 beforeEach(() => {
+  vi.spyOn(console, 'error').mockImplementation(() => {});
+  vi.spyOn(console, 'warn').mockImplementation(() => {});
   vi.clearAllMocks();
   mockAuthFetch.mockResolvedValue({ ok: true, json: async () => ({}) });
   vi.stubGlobal('WebSocket', MockWebSocket);
