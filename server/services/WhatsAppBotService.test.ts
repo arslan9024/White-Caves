@@ -137,6 +137,26 @@ describe('WhatsAppBotService', () => {
 
   // ─── sendMessage ──────────────────────────────────────────────────
   describe('sendMessage', () => {
+    it('returns undefined and tracks skipped sends when credentials are missing', async () => {
+      delete process.env.WHATSAPP_BOT_TOKEN;
+      delete process.env.WHATSAPP_ACCESS_TOKEN;
+      delete process.env.WHATSAPP_PHONE_NUMBER_ID;
+      process.env.NODE_ENV = 'development';
+
+      const service = await importFresh();
+      await expect(service.sendMessage('+971501234567', 'Hello')).resolves.toBeUndefined();
+      expect(mockMetaSendMessage).not.toHaveBeenCalled();
+      expect(service.getStats()).toMatchObject({
+        configured: false,
+        clientReady: false,
+        totalSendRequests: 1,
+        messageSendRequests: 1,
+        skippedNoCredentials: 1,
+        successfulSends: 0,
+        failedSends: 0,
+      });
+    });
+
     it('resolves without error', async () => {
       process.env.WHATSAPP_BOT_TOKEN = 'tok';
       process.env.WHATSAPP_PHONE_NUMBER_ID = 'pid';
@@ -292,6 +312,28 @@ describe('WhatsAppBotService', () => {
 
   // ─── sendTemplateMessage ──────────────────────────────────────────
   describe('sendTemplateMessage', () => {
+    it('returns undefined and tracks skipped template sends when credentials are missing', async () => {
+      delete process.env.WHATSAPP_BOT_TOKEN;
+      delete process.env.WHATSAPP_ACCESS_TOKEN;
+      delete process.env.WHATSAPP_PHONE_NUMBER_ID;
+      process.env.NODE_ENV = 'development';
+
+      const service = await importFresh();
+      await expect(
+        service.sendTemplateMessage('+971501234567', 'welcome_template')
+      ).resolves.toBeUndefined();
+      expect(mockMetaSendTemplate).not.toHaveBeenCalled();
+      expect(service.getStats()).toMatchObject({
+        configured: false,
+        clientReady: false,
+        totalSendRequests: 1,
+        templateSendRequests: 1,
+        skippedNoCredentials: 1,
+        successfulSends: 0,
+        failedSends: 0,
+      });
+    });
+
     it('sends template without parameters', async () => {
       process.env.WHATSAPP_BOT_TOKEN = 'tok';
       process.env.WHATSAPP_PHONE_NUMBER_ID = 'pid';
