@@ -12,7 +12,6 @@
 
 import { Router, Response } from 'express';
 import type { Request } from 'express';
-import { randomUUID } from 'crypto';
 import { asyncHandler, AppError } from '../middleware/errorHandler.js';
 import { prisma } from '../database.js';
 import { sanitizeString } from '../utils/sanitize.js';
@@ -32,93 +31,6 @@ const VALID_CONTRACT_STATUSES = [
   'cancelled',
 ] as const;
 
-const mockContracts: Array<Record<string, any>> = [];
-
-const normalizeId = () => randomUUID().replace(/-/g, '').slice(0, 24);
-
-const containsInsensitive = (value: unknown, needle: string) =>
-  String(value ?? '')
-    .toLowerCase()
-    .includes(needle.toLowerCase());
-
-const matchContractWhere = (item: Record<string, any>, where?: Record<string, any>) => {
-  if (!where) return true;
-
-  for (const [key, value] of Object.entries(where)) {
-    if (key === 'OR' && Array.isArray(value)) {
-      const orMatch = value.some((clause: Record<string, any>) => {
-        const [field, condition] = Object.entries(clause)[0] || [];
-        const contains = condition?.contains;
-        return field && contains ? containsInsensitive(item[field], contains) : false;
-      });
-      if (!orMatch) return false;
-      continue;
-    }
-
-    if (item[key] !== value) return false;
-  }
-
-  return true;
-};
-
-const createMockContractModel = () => ({
-  findMany: async ({ where, orderBy, skip = 0, take }: any = {}) => {
-    let rows = mockContracts.filter(r => matchContractWhere(r, where));
-
-    if (orderBy?.createdAt) {
-      rows = rows.sort((a, b) => {
-        const av = new Date(a.createdAt).getTime();
-        const bv = new Date(b.createdAt).getTime();
-        return orderBy.createdAt === 'asc' ? av - bv : bv - av;
-      });
-    }
-
-    return rows.slice(skip, take ? skip + take : undefined);
-  },
-
-  count: async ({ where }: any = {}) =>
-    mockContracts.filter(r => matchContractWhere(r, where)).length,
-
-  findUnique: async ({ where }: any) => mockContracts.find(r => r.id === where.id) ?? null,
-
-  create: async ({ data }: any) => {
-    const created = {
-      id: normalizeId(),
-      createdAt: new Date(),
-      updatedAt: new Date(),
-      ...data,
-    };
-    mockContracts.push(created);
-    return created;
-  },
-
-  update: async ({ where, data }: any) => {
-    const idx = mockContracts.findIndex(r => r.id === where.id);
-    if (idx < 0) throw new AppError('Contract not found', 404);
-    mockContracts[idx] = {
-      ...mockContracts[idx],
-      ...data,
-      updatedAt: new Date(),
-    };
-    return mockContracts[idx];
-  },
-
-  delete: async ({ where }: any) => {
-    const idx = mockContracts.findIndex(r => r.id === where.id);
-    if (idx < 0) throw new AppError('Contract not found', 404);
-    const [deleted] = mockContracts.splice(idx, 1);
-    return deleted;
-  },
-});
-
-const getContractModel = () => {
-  const contractModel = (prisma as unknown as { contract?: any }).contract;
-  if (!contractModel) {
-    return createMockContractModel();
-  }
-  return contractModel;
-};
-
 function generateContractNumber(): string {
   const year = new Date().getFullYear();
   const random = Math.floor(Math.random() * 100000)
@@ -132,7 +44,6 @@ router.get(
   '/',
   requirePermission('view_contracts'),
   asyncHandler(async (req: Request, res: Response) => {
-    const contractModel = getContractModel();
     const { page, limit, skip } = parsePagination(req.query);
     const { status, type, propertyId, leadId, search } = req.query as Record<string, string>;
 
@@ -158,13 +69,13 @@ router.get(
     }
 
     const [contracts, total] = await Promise.all([
-      contractModel.findMany({
+      prisma.contract.findMany({
         where,
         orderBy: { createdAt: 'desc' },
         skip,
         take: limit,
       }),
-      contractModel.count({ where }),
+      prisma.contract.count({ where }),
     ]);
 
     res.status(200).json({
@@ -180,9 +91,8 @@ router.get(
   '/:id',
   requirePermission('view_contracts'),
   asyncHandler(async (req: Request, res: Response) => {
-    const contractModel = getContractModel();
     validateIdParam(req.params.id, 'Contract ID');
-    const contract = await contractModel.findUnique({ where: { id: req.params.id } });
+    const contract = await prisma.contract.findUnique({ where: { id: req.params.id } });
     if (!contract) throw new AppError('Contract not found', 404);
     res.status(200).json({ success: true, data: contract });
   })
@@ -193,7 +103,6 @@ router.post(
   '/',
   requirePermission('create_contracts'),
   asyncHandler(async (req: Request, res: Response) => {
-    const contractModel = getContractModel();
     const {
       title,
       type,
@@ -224,7 +133,7 @@ router.post(
       assignedToId: rules.optionalMongoId('Assigned agent ID'),
     });
 
-    const contract = await contractModel.create({
+    const contract = await prisma.contract.create({
       data: {
         contractNumber: generateContractNumber(),
         title: sanitizeString(title.trim()),
@@ -265,11 +174,10 @@ router.patch(
   '/:id',
   requirePermission('create_contracts'),
   asyncHandler(async (req: Request, res: Response) => {
-    const contractModel = getContractModel();
     const { id } = req.params;
     validateIdParam(id, 'Contract ID');
 
-    const existing = await contractModel.findUnique({ where: { id } });
+    const existing = await prisma.contract.findUnique({ where: { id } });
     if (!existing) throw new AppError('Contract not found', 404);
 
     const {
@@ -330,7 +238,7 @@ router.patch(
     if (assignedToId !== undefined) data.assignedToId = assignedToId || null;
     if (metadata !== undefined) data.metadata = metadata;
 
-    const updated = await contractModel.update({ where: { id }, data });
+    const updated = await prisma.contract.update({ where: { id }, data });
 
     const statusChanged = status !== undefined && status !== existing.status;
     await prisma.activity.create({
@@ -354,14 +262,13 @@ router.delete(
   '/:id',
   requireRole('owner', 'manager', 'admin'),
   asyncHandler(async (req: Request, res: Response) => {
-    const contractModel = getContractModel();
     const { id } = req.params;
     validateIdParam(id, 'Contract ID');
 
-    const existing = await contractModel.findUnique({ where: { id } });
+    const existing = await prisma.contract.findUnique({ where: { id } });
     if (!existing) throw new AppError('Contract not found', 404);
 
-    await contractModel.delete({ where: { id } });
+    await prisma.contract.delete({ where: { id } });
 
     await prisma.activity.create({
       data: {
