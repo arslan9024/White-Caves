@@ -12,6 +12,7 @@ import helmet from 'helmet';
 import path from 'path';
 import compression from 'compression';
 import morgan from 'morgan';
+import cookieParser from 'cookie-parser';
 import { connectDatabase, prisma } from './database.js';
 import { errorHandler, asyncHandler, AppError } from './middleware/errorHandler.js';
 import authMiddleware from './middleware/auth.js';
@@ -195,9 +196,12 @@ app.use(morgan(process.env.NODE_ENV === 'production' ? 'combined' : 'dev'));
 app.use(express.json({ limit: '1mb' }));
 app.use(express.urlencoded({ limit: '1mb', extended: true }));
 
+// Cookie parsing — required for httpOnly refresh-token cookie on /api/auth/refresh
+app.use(cookieParser());
+
 // Content-Type validation for mutation endpoints
-// Exempt paths that accept non-JSON bodies (file uploads, webhooks).
-const NON_JSON_PATHS = new Set(['/api/whatsapp/webhook']);
+// Exempt paths that accept non-JSON bodies (file uploads, webhooks, cookie-only endpoints).
+const NON_JSON_PATHS = new Set(['/api/whatsapp/webhook', '/api/auth/refresh']);
 app.use('/api', (req: Request, res: Response, next) => {
   if (
     ['POST', 'PUT', 'PATCH'].includes(req.method) &&
@@ -219,6 +223,7 @@ app.use('/api/auth/register', registerLimiter);
 app.use('/api/auth/password', passwordLimiter);
 app.use('/api/auth/verify-2fa', strictLimiter);
 app.use('/api/auth/firebase-sync', authLimiter);
+app.use('/api/auth/refresh', authLimiter);
 app.use('/api/auth/webauthn/register', authLimiter);
 app.use('/api/auth/webauthn/authenticate', authLimiter);
 app.use('/api/contact', contactLimiter); // Public unauthenticated — stricter: 10/hour/IP

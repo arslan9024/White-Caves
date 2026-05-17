@@ -113,6 +113,21 @@ import authRoutes from './auth';
 function createApp(role: string = 'owner', userId = 'user-1') {
   const app = express();
   app.use(express.json());
+  // Minimal inline cookie parser for tests (avoids importing cookie-parser in test env)
+  app.use((req: any, _res: any, next: any) => {
+    const cookieHeader = req.headers.cookie as string | undefined;
+    const cookies: Record<string, string> = {};
+    if (cookieHeader) {
+      cookieHeader.split(';').forEach((part: string) => {
+        const eqIdx = part.indexOf('=');
+        if (eqIdx > 0) {
+          cookies[part.slice(0, eqIdx).trim()] = decodeURIComponent(part.slice(eqIdx + 1).trim());
+        }
+      });
+    }
+    req.cookies = cookies;
+    next();
+  });
   app.use((req, _res, next) => {
     (req as any).user = { id: userId, email: 'test@whitecaves.ae', role };
     next();
@@ -1277,6 +1292,120 @@ describe('Auth Routes — /api/auth', () => {
       );
       expect(res.status).toBe(200);
       expect(res.body.data.windowMinutes).toBe(60 * 24 * 30);
+    });
+  });
+
+  // ── POST /refresh ─────────────────────────────────────────────────
+  describe('POST /api/auth/refresh', () => {
+    // vi.clearAllMocks() (outer beforeEach) clears .mock.calls but NOT the
+    // onceImplementations queue. Stale once-values from earlier failing tests
+    // can bleed into these tests. Reset findUnique fully before every refresh
+    // test so we always start from a clean slate.
+    beforeEach(() => {
+      mockPrisma.user.findUnique.mockReset();
+      mockPrisma.user.findUnique.mockResolvedValue(null);
+      // compare also accumulates stale once-values from login test failures
+      mockBcrypt.compare.mockReset();
+      mockBcrypt.compare.mockResolvedValue(true);
+    });
+    it('returns 401 when no cookie is provided', async () => {
+      const res = await request(createApp()).post('/api/auth/refresh');
+      expect(res.status).toBe(401);
+      expect(res.body.error).toMatch(/no refresh token provided/i);
+    });
+
+    it('returns 401 when cookie value has no colon separator', async () => {
+      const res = await request(createApp())
+        .post('/api/auth/refresh')
+        .set('Cookie', 'refresh_token=MALFORMEDTOKEN');
+      expect(res.status).toBe(401);
+      expect(res.body.error).toMatch(/no refresh token provided/i);
+    });
+
+    it('returns 401 when the userId from the cookie is not found in DB', async () => {
+      mockPrisma.user.findUnique.mockResolvedValueOnce(null);
+      const res = await request(createApp())
+        .post('/api/auth/refresh')
+        .set('Cookie', 'refresh_token=ghost-user-id:somerawtoken');
+      expect(res.status).toBe(401);
+      expect(res.body.error).toMatch(/invalid or expired/i);
+    });
+
+    it('returns 401 and nulls refreshTokenHash when token hash does not match (reuse detected)', async () => {
+      mockPrisma.user.findUnique.mockResolvedValueOnce({
+        id: 'user-1',
+        email: 'test@whitecaves.ae',
+        name: 'Test User',
+        role: 'agent',
+        status: 'active',
+        refreshTokenHash: '$2a$10$realhashedvalue',
+      });
+      mockBcrypt.compare.mockResolvedValueOnce(false);
+
+      const res = await request(createApp())
+        .post('/api/auth/refresh')
+        .set('Cookie', 'refresh_token=user-1:stale-or-stolen-token');
+
+      expect(res.status).toBe(401);
+      expect(res.body.error).toMatch(/reuse detected/i);
+      expect(mockPrisma.user.update).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: { id: 'user-1' },
+          data: { refreshTokenHash: null },
+        })
+      );
+    });
+
+    it('returns 401 when the user account is inactive', async () => {
+      mockPrisma.user.findUnique.mockResolvedValueOnce({
+        id: 'user-1',
+        email: 'test@whitecaves.ae',
+        name: 'Suspended User',
+        role: 'agent',
+        status: 'suspended',
+        refreshTokenHash: '$2a$10$somevalue',
+      });
+      const res = await request(createApp())
+        .post('/api/auth/refresh')
+        .set('Cookie', 'refresh_token=user-1:sometoken');
+      expect(res.status).toBe(401);
+      expect(res.body.error).toMatch(/invalid or expired/i);
+      expect(mockBcrypt.compare).not.toHaveBeenCalled();
+    });
+
+    it('returns 200 with new access token and rotates the cookie on valid token', async () => {
+      mockPrisma.user.findUnique.mockResolvedValueOnce({
+        id: 'user-1',
+        email: 'test@whitecaves.ae',
+        name: 'Test User',
+        role: 'agent',
+        status: 'active',
+        refreshTokenHash: '$2a$10$currenthash',
+      });
+      mockBcrypt.compare.mockResolvedValueOnce(true);
+      mockBcrypt.hash.mockResolvedValueOnce('$2a$10$rotatedhash');
+      mockPrisma.user.update.mockResolvedValueOnce({ id: 'user-1' });
+
+      const res = await request(createApp())
+        .post('/api/auth/refresh')
+        .set('Cookie', 'refresh_token=user-1:validrawtoken');
+
+      expect(res.status).toBe(200);
+      expect(res.body.success).toBe(true);
+      expect(res.body.data.token).toBe('mock-jwt-token');
+      expect(res.body.data.user.id).toBe('user-1');
+
+      expect(mockPrisma.user.update).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: { id: 'user-1' },
+          data: expect.objectContaining({ refreshTokenHash: '$2a$10$rotatedhash' }),
+        })
+      );
+
+      const setCookie = res.headers['set-cookie'] as string[] | string | undefined;
+      const cookieStr = Array.isArray(setCookie) ? setCookie.join('; ') : String(setCookie ?? '');
+      expect(cookieStr).toContain('refresh_token=');
+      expect(cookieStr.toLowerCase()).toContain('httponly');
     });
   });
 });
