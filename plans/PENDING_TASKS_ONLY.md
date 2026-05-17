@@ -30,7 +30,6 @@
 - [ ] Start N+6.A: Component decomposition audit for top 20 high-traffic screens (auth + CRM + dashboards)
 - [ ] Start N+6.B: Arabic/RTL localization readiness pass (text extraction, directionality, icon mirroring)
 - [ ] Start N+6.C: Event-driven rendering hardening (selector scope, memoization boundaries, lazy-triggered rendering)
-
 ## N+1 Completion Summary (2026-05-17)
 
 - `refreshTokenHash` field added to Prisma `User` model (nullable String)
