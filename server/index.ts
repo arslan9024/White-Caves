@@ -44,6 +44,7 @@ import nadiaRoutes from './routes/nadia.js';
 import lindaRoutes from './routes/linda.js';
 import metaWebhookRoutes from './routes/meta-webhook.js';
 import favoritesRoutes from './routes/favorites.js';
+import orchestratorRoutes from './routes/orchestrator.js';
 import savedSearchesRoutes from './routes/saved-searches.js';
 import viewingsRoutes from './routes/viewings.js';
 import offersRoutes from './routes/offers.js';
@@ -353,6 +354,9 @@ app.use('/api/nadia', nadiaRoutes);
 
 // Linda LocalAuth WhatsApp Integration (alternative channel)
 app.use('/api/linda', lindaRoutes);
+
+// AssistantOrchestrator API — cross-assistant event bus status, events, and admin emit
+app.use('/api/orchestrator', orchestratorRoutes);
 
 // Meta Business API Webhooks and Sending (production scale channel)
 app.use('/api/webhooks/meta', metaWebhookRoutes);
@@ -884,6 +888,18 @@ const startServer = async () => {
     startViewingReminderScheduler(); // Phase 3C: viewing reminders every 15 min
     startRERAExpiryScheduler(); // Phase 3D: RERA BRN expiry checks daily
     startAutoRouting(); // Phase 4A: auto-route hot leads to best agents
+
+    // Boot AssistantOrchestrator — register all 5 assistant handler chains
+    import('./services/orchestrator/AssistantOrchestrator.js').then(({ assistantOrchestrator }) => {
+      assistantOrchestrator.registerLindaHandlers();
+      assistantOrchestrator.registerNadiaHandlers();
+      assistantOrchestrator.registerNinaHandlers();
+      assistantOrchestrator.registerMaryHandlers();
+      assistantOrchestrator.registerHenryHandlers();
+      logger.info('AssistantOrchestrator: all 5 assistant handlers registered.');
+    }).catch((err: unknown) => {
+      logger.warn('AssistantOrchestrator init failed:', err instanceof Error ? err.message : err);
+    });
 
     // Auto-migrate any remaining legacy base64 password hashes to bcrypt
     try {

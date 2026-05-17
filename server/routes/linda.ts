@@ -576,4 +576,199 @@ router.post('/ready', async (_req: Request, res: Response) => {
   }
 });
 
+// ============================================================================
+// CROSS-INTEGRATION ENDPOINTS — Nina NLP · Mary Inventory · Henry Documents
+// ============================================================================
+
+// ─── POST /api/linda/nlp-route ────────────────────────────────────────────────
+
+/**
+ * Route an incoming Linda WhatsApp message through the Nina NLP pipeline.
+ *
+ * Calls detectIntent + extractEntities from the shared Nadia message processor,
+ * emits 'linda:message_received' on the orchestrator (triggering Nina/Nadia handlers),
+ * and returns the classified intent, entities, and recommended routing action.
+ *
+ * Body: { message: string, phone: string }
+ */
+router.post('/nlp-route', async (req: Request, res: Response) => {
+  try {
+    const { message, phone } = req.body as { message?: unknown; phone?: unknown };
+
+    if (!message || typeof message !== 'string') {
+      return res.status(400).json({ success: false, error: 'message is required' });
+    }
+    if (!phone || typeof phone !== 'string') {
+      return res.status(400).json({ success: false, error: 'phone is required' });
+    }
+
+    // Inline NLP classification via the Nadia message processor (shared with Nina integration)
+    const { detectIntent, extractEntities } = await import(
+      '../services/nadia/messageProcessor.js'
+    );
+    const intent = detectIntent(message);
+    const entities = extractEntities(message);
+
+    // Map intent → recommended downstream routing action
+    const ACTION_MAP: Record<string, string> = {
+      property_search:     'route_to_mary_inventory',
+      schedule_tour:       'route_to_agent_calendar',
+      information_request: 'send_property_details',
+      make_offer:          'escalate_to_sales_manager',
+      financing:           'route_to_finance_team',
+      legal_enquiry:       'route_to_henry_compliance',
+      complaint:           'escalate_to_manager',
+      general_inquiry:     'route_to_nadia_queue',
+    };
+    const recommendedAction = ACTION_MAP[intent] ?? 'route_to_nadia_queue';
+
+    // Emit orchestrator event — triggers Nina NLP handler + Nadia routing handler
+    const { assistantOrchestrator } = await import(
+      '../services/orchestrator/AssistantOrchestrator.js'
+    );
+    assistantOrchestrator.emitEvent('linda:message_received', {
+      from: phone,
+      message,
+      timestamp: new Date().toISOString(),
+    });
+
+    res.json({ success: true, data: { intent, entities, recommendedAction } });
+  } catch (err) {
+    res
+      .status(500)
+      .json({ success: false, error: err instanceof Error ? err.message : 'Unknown error' });
+  }
+});
+
+// ─── POST /api/linda/inventory-broadcast ──────────────────────────────────────
+
+/**
+ * Broadcast a Mary property-status change to a list of WhatsApp contacts.
+ *
+ * Validates inputs, emits 'mary:property_status_changed' on the orchestrator
+ * (which triggers Linda's registered WA broadcast handler), and returns a
+ * queued confirmation with the recipient count.
+ *
+ * Body: { propertyId: string, propertyData: object, targetPhones: string[] }
+ */
+router.post('/inventory-broadcast', async (req: Request, res: Response) => {
+  try {
+    const { propertyId, propertyData, targetPhones } = req.body as {
+      propertyId?: unknown;
+      propertyData?: unknown;
+      targetPhones?: unknown;
+    };
+
+    if (!propertyId || typeof propertyId !== 'string') {
+      return res.status(400).json({ success: false, error: 'propertyId is required' });
+    }
+    if (!propertyData || typeof propertyData !== 'object' || Array.isArray(propertyData)) {
+      return res
+        .status(400)
+        .json({ success: false, error: 'propertyData must be a non-null object' });
+    }
+    if (!Array.isArray(targetPhones) || targetPhones.length === 0) {
+      return res
+        .status(400)
+        .json({ success: false, error: 'targetPhones must be a non-empty array' });
+    }
+    if (targetPhones.length > 500) {
+      return res
+        .status(400)
+        .json({ success: false, error: 'targetPhones cannot exceed 500 entries per broadcast' });
+    }
+
+    const data = propertyData as Record<string, unknown>;
+
+    const { assistantOrchestrator } = await import(
+      '../services/orchestrator/AssistantOrchestrator.js'
+    );
+    assistantOrchestrator.emitEvent('mary:property_status_changed', {
+      propertyId,
+      previousStatus: typeof data.previousStatus === 'string' ? data.previousStatus : 'unknown',
+      newStatus:      typeof data.newStatus       === 'string' ? data.newStatus      : 'updated',
+      broadcastPayload: data,
+      targetPhones: targetPhones as string[],
+    });
+
+    res.json({ success: true, data: { queued: true, count: targetPhones.length } });
+  } catch (err) {
+    res
+      .status(500)
+      .json({ success: false, error: err instanceof Error ? err.message : 'Unknown error' });
+  }
+});
+
+// ─── POST /api/linda/henry-trigger ────────────────────────────────────────────
+
+/**
+ * Trigger a Henry document generation event via the orchestrator.
+ *
+ * Viewing/handover keys  → emits 'cross:viewing_booked'
+ * Offer/booking/tenancy  → emits 'cross:offer_accepted'
+ *
+ * Body: { templateKey: string, documentData: object, conversationId?: string }
+ */
+router.post('/henry-trigger', async (req: Request, res: Response) => {
+  try {
+    const { templateKey, documentData, conversationId } = req.body as {
+      templateKey?: unknown;
+      documentData?: unknown;
+      conversationId?: unknown;
+    };
+
+    if (!templateKey || typeof templateKey !== 'string') {
+      return res.status(400).json({ success: false, error: 'templateKey is required' });
+    }
+    if (!documentData || typeof documentData !== 'object' || Array.isArray(documentData)) {
+      return res
+        .status(400)
+        .json({ success: false, error: 'documentData must be a non-null object' });
+    }
+
+    const data   = documentData as Record<string, unknown>;
+    const convId = typeof conversationId === 'string' ? conversationId : undefined;
+
+    const VIEWING_KEYS = ['viewing_agreement', 'key_handover'];
+    const OFFER_KEYS   = ['offer_letter', 'booking_form', 'tenancy_contract', 'gov_employee_booking'];
+
+    const { assistantOrchestrator } = await import(
+      '../services/orchestrator/AssistantOrchestrator.js'
+    );
+
+    if (VIEWING_KEYS.includes(templateKey)) {
+      assistantOrchestrator.emitEvent('cross:viewing_booked', {
+        propertyId:   String(data.propertyId ?? data.unit ?? 'unknown'),
+        contactPhone: String(data.tenantPhone ?? data.contactPhone ?? ''),
+        scheduledAt:  String(data.scheduledAt ?? new Date().toISOString()),
+        documentData: data,
+        conversationId: convId,
+      });
+    } else if (OFFER_KEYS.includes(templateKey)) {
+      assistantOrchestrator.emitEvent('cross:offer_accepted', {
+        propertyId:  String(data.propertyId ?? data.unit ?? 'unknown'),
+        buyerPhone:  String(data.buyerPhone ?? data.tenantPhone ?? ''),
+        agentPhone:  typeof data.agentPhone === 'string' ? data.agentPhone : undefined,
+        offerAmount: Number(data.offerAmount ?? data.annualRent ?? 0),
+        documentData: data,
+        conversationId: convId,
+      });
+    } else {
+      return res.status(400).json({
+        success: false,
+        error:
+          `templateKey "${templateKey}" does not map to a cross-assistant event. ` +
+          `Viewing keys: ${VIEWING_KEYS.join(', ')}. ` +
+          `Offer keys: ${OFFER_KEYS.join(', ')}.`,
+      });
+    }
+
+    res.json({ success: true, data: { triggered: true } });
+  } catch (err) {
+    res
+      .status(500)
+      .json({ success: false, error: err instanceof Error ? err.message : 'Unknown error' });
+  }
+});
+
 export default router;
