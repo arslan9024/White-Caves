@@ -4,13 +4,13 @@
 
 > **Updated by @Margaret after every session.** Senior coders MUST check this table before starting any premium coding sprint. If any gate is BLOCKED, route back to the relevant free agent before coding.
 
-| Agent         | Model              | Current Task                                                                          | File                                                       | Sections       | Gate Status    | Last Updated  |
-| ------------- | ------------------ | ------------------------------------------------------------------------------------- | ---------------------------------------------------------- | -------------- | -------------- | ------------- |
-| **@Victoria** | Gemini 2.0 Flash   | REVIEW (60%+): `tenancy-ejari.md` — verify PDC tracking, Form 12, bounced cheque flow | `business_docs/09_crm_features/tenancy-ejari.md`           | 60%+ reached   | ✅ READY        | May 16, 2026  |
-| **@Invoice**  | Llama 3.1 70B Groq | REVIEW (60%+): `financial-reporting.md` — verify VAT section + cash flow forecast     | `business_docs/09_crm_features/financial-reporting.md`     | 60%+ reached   | ✅ READY        | May 16, 2026  |
-| **@Sofia**    | Gemini 2.0 Flash   | REVIEW (60%+): `compliance-requirements.md` — verify RERA/DLD penalty table           | `business_docs/05_requirements/compliance-requirements.md` | 60%+ reached   | ✅ READY        | May 16, 2026  |
-| **@Cassie**   | DeepSeek V3        | EXPAND: `analytics-dashboard.md` → mobile analytics view + data export API spec       | `business_docs/09_crm_features/analytics-dashboard.md`     | 22 → 24 target | 🚧 IN PROGRESS | May 16, 2026  |
-| **@Joelle**   | Llama 3.1 70B Groq | EXPAND: `03_ai_assistants/README.md` → personas 36–40 + fallback matrix               | `business_docs/03_ai_assistants/README.md`                 | 40/40 complete | ✅ READY        | May 16, 2026  |
+| Agent         | Model              | Current Task                                                                          | File                                                       | Sections       | Gate Status    | Last Updated |
+| ------------- | ------------------ | ------------------------------------------------------------------------------------- | ---------------------------------------------------------- | -------------- | -------------- | ------------ |
+| **@Victoria** | Gemini 2.0 Flash   | REVIEW (60%+): `tenancy-ejari.md` — verify PDC tracking, Form 12, bounced cheque flow | `business_docs/09_crm_features/tenancy-ejari.md`           | 60%+ reached   | ✅ READY       | May 16, 2026 |
+| **@Invoice**  | Llama 3.1 70B Groq | REVIEW (60%+): `financial-reporting.md` — verify VAT section + cash flow forecast     | `business_docs/09_crm_features/financial-reporting.md`     | 60%+ reached   | ✅ READY       | May 16, 2026 |
+| **@Sofia**    | Gemini 2.0 Flash   | REVIEW (60%+): `compliance-requirements.md` — verify RERA/DLD penalty table           | `business_docs/05_requirements/compliance-requirements.md` | 60%+ reached   | ✅ READY       | May 16, 2026 |
+| **@Cassie**   | DeepSeek V3        | EXPAND: `analytics-dashboard.md` → mobile analytics view + data export API spec       | `business_docs/09_crm_features/analytics-dashboard.md`     | 22 → 24 target | 🚧 IN PROGRESS | May 16, 2026 |
+| **@Joelle**   | Llama 3.1 70B Groq | EXPAND: `03_ai_assistants/README.md` → personas 36–40 + fallback matrix               | `business_docs/03_ai_assistants/README.md`                 | 40/40 complete | ✅ READY       | May 16, 2026 |
 
 ### How to Invoke Free Agents (Copy-Paste Into the Free Tool)
 
@@ -558,6 +558,46 @@ This file defines the White Caves multi-expert operating model for all agent-ass
      - risk log,
      - day quota plan.
    - No preflight = no premium coding.
+
+## ⚡ SUBAGENT EXECUTION UPGRADE — WORK BETTER MODE (Effective 2026-05-17)
+
+### A) Mandatory Dispatch Packet (all subagents)
+
+Every task assignment must include:
+
+- `Task ID`
+- `Owner`
+- `Objective`
+- `Input Artifact(s)` (exact file + section)
+- `Output Artifact` (exact file + section)
+- `Acceptance Criteria` (minimum 3 measurable checks)
+- `Handoff` (`FEEDS→...` + expected `FEEDS_ACK`)
+
+Assignments missing fields are invalid and must not run.
+
+### B) Fast Reliability Loop
+
+- Run `npm run orchestrator:verify-prompts` before first dispatch.
+- Run `npm run orchestrator:health:brief` every session handoff window.
+- Use `npm run orchestrator:next-agent:all` to prevent idle slots.
+- Use `npm run orchestrator:blockers:brief` on any stalled queue.
+
+### C) Completion Rule (Planning Outputs)
+
+A planning task is not done until:
+
+- output is placed in the declared target section,
+- `CONSUMES`, `FEEDS`, and `FEEDS_ACK` are all present,
+- acceptance criteria are testable and explicit,
+- status is synced into `AGENTS.md`, `PROJECT_PROGRESS.md`, and `DAILY_MILESTONE_TRACKER.md`.
+
+### D) Escalation SLA
+
+- `P0`: immediate escalation to @Ada + @Margaret
+- `P1`: escalate within 30 minutes
+- `P2`: escalate within 4 hours
+
+Escalation payload must include impacted files, dependency owner, and next action.
 
 ## Multi-Agent Execution Model v2
 
