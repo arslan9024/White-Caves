@@ -3,7 +3,7 @@
 > **Agency:** White Caves Global Agency
 > **Orchestrator:** @Ada (Chief Architect)
 > **Last Updated:** May 16, 2026
-> **Policy Mode:** 60% Readiness Threshold + policy-driven gating (Governance V2 active)
+> **Policy Mode:** Dual-threshold readiness (60% unlock, 90% target) + policy-driven gating (Governance V2 active)
 > **Daily Report:** `PROJECT_PROGRESS_REPORT.md`
 
 ---
@@ -174,6 +174,18 @@
 - [x] Wave 04 PDPL hardening baseline: revoke/delete audit events now logged for consent lifecycle actions
 - [x] Wave 04 queue baseline: unified compliance queue feed endpoint for permit/KYC/AML dashboard cards
 - [ ] Continue Wave 03 and Wave 04 implementation backlog execution
+
+### MILESTONE-PHASE-27
+
+**Subagent Next-Level Upgrade — 90% Readiness + Full-Team Collaboration**
+
+**Status:** 🔨 PLANNED (May 18, 2026)
+
+- [x] Phase 27 execution plan created (`plans/PHASE_27_SUBAGENT_NEXT_LEVEL_90_READINESS.md`)
+- [x] Pending tracker linked to Phase 27 (`plans/PENDING_TASKS_ONLY.md`)
+- [x] Policy metadata extended for dual-threshold model (`scripts/orchestrator/policy.json`)
+- [ ] Run tracker sync pass across `AGENTS.md`, `PROJECT_PROGRESS.md`, `DAILY_MILESTONE_TRACKER.md`, and `plans/PENDING_TASKS_ONLY.md`
+- [ ] Introduce FEEDS_ACK audit command and daily target90 readiness check command
 
 ### MILESTONE-PHASE-2
 
