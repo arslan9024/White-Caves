@@ -288,6 +288,34 @@ describe('WhatsAppBotService', () => {
       expect(mockMetaSendTemplate).toHaveBeenCalledTimes(2);
     });
 
+    it('does not retry non-retryable template errors', async () => {
+      process.env.WHATSAPP_BOT_TOKEN = 'tok';
+      process.env.WHATSAPP_PHONE_NUMBER_ID = 'pid';
+      process.env.NODE_ENV = 'test';
+
+      mockMetaSendTemplate.mockRejectedValue(new Error('Meta API Error [403]: forbidden template'));
+
+      const service = await importFresh();
+      await expect(
+        service.sendTemplateMessage('+971501234567', 'rent_due_notice', [
+          { type: 'text', text: 'AED 5000' },
+        ])
+      ).rejects.toThrow(/403/i);
+      expect(mockMetaSendTemplate).toHaveBeenCalledTimes(1);
+    });
+
+    it('rejects empty phone number for template message', async () => {
+      process.env.WHATSAPP_BOT_TOKEN = 'tok';
+      process.env.WHATSAPP_PHONE_NUMBER_ID = 'pid';
+      process.env.NODE_ENV = 'test';
+
+      const service = await importFresh();
+      await expect(service.sendTemplateMessage('   ', 'rent_due_notice')).rejects.toThrow(
+        /phoneNumber is required/i
+      );
+      expect(mockMetaSendTemplate).not.toHaveBeenCalled();
+    });
+
     it('rejects empty template name early', async () => {
       process.env.WHATSAPP_BOT_TOKEN = 'tok';
       process.env.WHATSAPP_PHONE_NUMBER_ID = 'pid';
