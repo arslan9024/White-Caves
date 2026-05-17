@@ -88,7 +88,9 @@ import { setFilters, clearFilters } from '../../../store/propertySlice';
 beforeEach(() => {
   mockNavigate.mockClear();
   mockDispatch.mockClear();
-  mockDispatch.mockImplementation(() => Promise.resolve({ id: 'lead-1' }));
+  mockDispatch.mockImplementation(() => ({
+    unwrap: () => Promise.resolve({ id: 'lead-1' }),
+  }));
   mockToastSuccess.mockClear();
   (setFilters as unknown as ReturnType<typeof vi.fn>).mockClear();
   (clearFilters as unknown as ReturnType<typeof vi.fn>).mockClear();
