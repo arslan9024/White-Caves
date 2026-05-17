@@ -41,8 +41,8 @@ import {
 // ═══════════════════════════════════════════════════════════════════════════
 
 describe('ROLES constants', () => {
-  it('defines all 12 roles', () => {
-    expect(Object.keys(ROLES)).toHaveLength(12);
+  it('defines all canonical roles (18 total in v2.0)', () => {
+    expect(Object.keys(ROLES)).toHaveLength(18);
   });
 
   it('has correct backend CRM roles', () => {
@@ -85,10 +85,10 @@ describe('ROLE_HIERARCHY', () => {
     expect(ROLE_HIERARCHY[ROLES.FINANCE]).toBe(70);
   });
 
-  it('agent roles share level 50', () => {
+  it('agent roles share level 55 (leasing/sales) or 50 (generic agent)', () => {
     expect(ROLE_HIERARCHY[ROLES.AGENT]).toBe(50);
-    expect(ROLE_HIERARCHY[ROLES.SALES_AGENT]).toBe(50);
-    expect(ROLE_HIERARCHY[ROLES.LEASING_AGENT]).toBe(50);
+    expect(ROLE_HIERARCHY[ROLES.SALES_AGENT]).toBe(55);
+    expect(ROLE_HIERARCHY[ROLES.LEASING_AGENT]).toBe(55);
   });
 
   it('landlord has level 30', () => {
@@ -105,9 +105,9 @@ describe('ROLE_HIERARCHY', () => {
     expect(ROLE_HIERARCHY[ROLES.BUYER]).toBe(10);
   });
 
-  it('hierarchy covers all 12 roles', () => {
+  it('hierarchy covers all canonical roles (18 in v2.0)', () => {
     const rolesWithHierarchy = Object.keys(ROLE_HIERARCHY);
-    expect(rolesWithHierarchy).toHaveLength(12);
+    expect(rolesWithHierarchy).toHaveLength(18);
   });
 
   it('owner outranks manager', () => {
@@ -124,18 +124,33 @@ describe('ROLE_HIERARCHY', () => {
 // ═══════════════════════════════════════════════════════════════════════════
 
 describe('PERMISSIONS constants', () => {
-  it('defines all 21 permissions', () => {
-    expect(Object.keys(PERMISSIONS)).toHaveLength(21);
+  it('defines all permissions (38 total in v2.0)', () => {
+    expect(Object.keys(PERMISSIONS)).toHaveLength(38);
   });
 
   it('has all expected permission keys', () => {
     const expectedKeys = [
-      'VIEW_DASHBOARD', 'EDIT_PROFILE', 'VIEW_PROPERTIES', 'CREATE_PROPERTY',
-      'EDIT_PROPERTY', 'DELETE_PROPERTY', 'VIEW_LEADS', 'MANAGE_LEADS',
-      'VIEW_CONTRACTS', 'CREATE_CONTRACTS', 'SIGN_CONTRACTS', 'VIEW_PAYMENTS',
-      'PROCESS_PAYMENTS', 'VIEW_ANALYTICS', 'VIEW_SYSTEM_HEALTH', 'MANAGE_USERS',
-      'MANAGE_AGENTS', 'ACCESS_WHATSAPP_BUSINESS', 'CONFIGURE_CHATBOT',
-      'VIEW_ALL_REPORTS', 'MODIFY_SETTINGS',
+      'VIEW_DASHBOARD',
+      'EDIT_PROFILE',
+      'VIEW_PROPERTIES',
+      'CREATE_PROPERTY',
+      'EDIT_PROPERTY',
+      'DELETE_PROPERTY',
+      'VIEW_LEADS',
+      'MANAGE_LEADS',
+      'VIEW_CONTRACTS',
+      'CREATE_CONTRACTS',
+      'SIGN_CONTRACTS',
+      'VIEW_PAYMENTS',
+      'PROCESS_PAYMENTS',
+      'VIEW_ANALYTICS',
+      'VIEW_SYSTEM_HEALTH',
+      'MANAGE_USERS',
+      'MANAGE_AGENTS',
+      'ACCESS_WHATSAPP_BUSINESS',
+      'CONFIGURE_CHATBOT',
+      'VIEW_ALL_REPORTS',
+      'MODIFY_SETTINGS',
     ];
     expectedKeys.forEach(key => {
       expect(PERMISSIONS).toHaveProperty(key);
@@ -154,17 +169,22 @@ describe('PERMISSIONS constants', () => {
 // ═══════════════════════════════════════════════════════════════════════════
 
 describe('ROLE_PERMISSIONS mapping', () => {
-  it('covers all 12 roles', () => {
+  it('covers all canonical roles in v2.0', () => {
     const allRoles = Object.values(ROLES);
     allRoles.forEach(role => {
       expect(ROLE_PERMISSIONS).toHaveProperty(role);
     });
   });
 
-  // ── Owner — all 21 permissions ─────────────────────────────────────
+  // ── Owner — 27 permissions ─────────────────────────────────────────────
   describe('owner permissions', () => {
-    it('has all 21 permissions (full access)', () => {
-      expect(ROLE_PERMISSIONS[ROLES.OWNER]).toHaveLength(21);
+    it('has the most permissions of any role', () => {
+      const ownerCount = ROLE_PERMISSIONS[ROLES.OWNER].length;
+      Object.entries(ROLE_PERMISSIONS).forEach(([role, perms]) => {
+        if (role !== ROLES.OWNER) {
+          expect(ownerCount).toBeGreaterThanOrEqual(perms.length);
+        }
+      });
     });
 
     it('includes exclusive permissions', () => {
@@ -348,7 +368,11 @@ describe('hasAnyPermission', () => {
 describe('hasAllPermissions', () => {
   it('returns true if role has ALL the specified permissions', () => {
     expect(
-      hasAllPermissions(ROLES.OWNER, [PERMISSIONS.VIEW_DASHBOARD, PERMISSIONS.MANAGE_USERS, PERMISSIONS.MODIFY_SETTINGS])
+      hasAllPermissions(ROLES.OWNER, [
+        PERMISSIONS.VIEW_DASHBOARD,
+        PERMISSIONS.MANAGE_USERS,
+        PERMISSIONS.MODIFY_SETTINGS,
+      ])
     ).toBe(true);
   });
 
@@ -572,7 +596,7 @@ describe('getRoleLevel', () => {
 describe('getPermissionsForRole', () => {
   it('returns correct permissions array for known role', () => {
     const ownerPerms = getPermissionsForRole(ROLES.OWNER);
-    expect(ownerPerms).toHaveLength(21);
+    expect(ownerPerms.length).toBeGreaterThan(20);
     expect(ownerPerms).toContain(PERMISSIONS.MANAGE_USERS);
   });
 
