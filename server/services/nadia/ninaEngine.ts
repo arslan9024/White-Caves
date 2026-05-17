@@ -68,7 +68,16 @@ export interface SentimentResult {
 }
 
 export interface Entity {
-  type: 'PROPERTY_TYPE' | 'LOCATION' | 'PRICE' | 'BEDROOMS' | 'SIZE' | 'NAME' | 'PHONE' | 'DATE' | 'AMENITY';
+  type:
+    | 'PROPERTY_TYPE'
+    | 'LOCATION'
+    | 'PRICE'
+    | 'BEDROOMS'
+    | 'SIZE'
+    | 'NAME'
+    | 'PHONE'
+    | 'DATE'
+    | 'AMENITY';
   value: string;
   confidence: number;
 }
@@ -103,7 +112,10 @@ export interface ConversationContext {
 export class NinaEngine {
   private intentKeywords: Map<Intent, string[]>;
   private sentimentKeywords: Map<string, number>;
-  private learningData: Map<string, { actualIntent: Intent; predictedIntent: Intent; timestamp: Date }>;
+  private learningData: Map<
+    string,
+    { actualIntent: Intent; predictedIntent: Intent; timestamp: Date }
+  >;
 
   constructor() {
     this.intentKeywords = this.initializeIntentKeywords();
@@ -114,10 +126,7 @@ export class NinaEngine {
   /**
    * Main entry point: Process message with context
    */
-  public processMessage(
-    message: string,
-    context: ConversationContext
-  ): IntentResult {
+  public processMessage(message: string, context: ConversationContext): IntentResult {
     // Normalize message
     const normalized = this.normalizeMessage(message);
 
@@ -229,7 +238,7 @@ export class NinaEngine {
     // Sort and take top 3
     scores.sort((a, b) => b.score - a.score);
 
-    return scores.slice(0, 3).map((item) => ({
+    return scores.slice(0, 3).map(item => ({
       intent: item.intent,
       confidence: Math.min(100, item.score * 100),
       reasoning: `Secondary match for ${item.intent}`,
@@ -243,7 +252,16 @@ export class NinaEngine {
     const entities: Entity[] = [];
 
     // Property types
-    const propertyTypes = ['villa', 'apartment', 'townhouse', 'flat', 'studio', 'penthouse', 'plot', 'land'];
+    const propertyTypes = [
+      'villa',
+      'apartment',
+      'townhouse',
+      'flat',
+      'studio',
+      'penthouse',
+      'plot',
+      'land',
+    ];
     for (const type of propertyTypes) {
       if (message.includes(type)) {
         entities.push({
@@ -256,9 +274,24 @@ export class NinaEngine {
 
     // Locations (Dubai neighborhoods)
     const locations = [
-      'dubai marina', 'downtown', 'jbr', 'deira', 'bur dubai', 'mall of emirates',
-      'emirates living', 'jumeirah', 'palm jumeirah', 'creek harbor', 'creek rise',
-      'dfc', 'business bay', 'new dubai', 'difc', 'marina',
+      'dubai marina',
+      'downtown',
+      'jbr',
+      'deira',
+      'bur dubai',
+      'mall of emirates',
+      'emirates living',
+      'jumeirah',
+      'palm jumeirah',
+      'creek harbor',
+      'creek rise',
+      'dfc',
+      'business bay',
+      'new dubai',
+      'difc',
+      'marina',
+      'damac hills 2',
+      'akoya oxygen',
     ];
     for (const location of locations) {
       if (message.toLowerCase().includes(location)) {
@@ -313,7 +346,16 @@ export class NinaEngine {
     }
 
     // Amenities
-    const amenities = ['pool', 'gym', 'parking', 'garden', 'balcony', 'terrace', 'maid room', 'laundry'];
+    const amenities = [
+      'pool',
+      'gym',
+      'parking',
+      'garden',
+      'balcony',
+      'terrace',
+      'maid room',
+      'laundry',
+    ];
     for (const amenity of amenities) {
       if (message.toLowerCase().includes(amenity)) {
         entities.push({
@@ -335,7 +377,16 @@ export class NinaEngine {
     const keywords: string[] = [];
 
     // Count positive keywords
-    const positiveKeywords = ['great', 'love', 'excellent', 'perfect', 'amazing', 'beautiful', 'best', 'wonderful'];
+    const positiveKeywords = [
+      'great',
+      'love',
+      'excellent',
+      'perfect',
+      'amazing',
+      'beautiful',
+      'best',
+      'wonderful',
+    ];
     for (const keyword of positiveKeywords) {
       const count = (message.match(new RegExp(`\\b${keyword}\\b`, 'gi')) || []).length;
       if (count > 0) {
@@ -345,7 +396,16 @@ export class NinaEngine {
     }
 
     // Count negative keywords
-    const negativeKeywords = ['bad', 'terrible', 'horrible', 'awful', 'useless', 'disappointed', 'angry', 'frustrated'];
+    const negativeKeywords = [
+      'bad',
+      'terrible',
+      'horrible',
+      'awful',
+      'useless',
+      'disappointed',
+      'angry',
+      'frustrated',
+    ];
     for (const keyword of negativeKeywords) {
       const count = (message.match(new RegExp(`\\b${keyword}\\b`, 'gi')) || []).length;
       if (count > 0) {
@@ -479,7 +539,7 @@ export class NinaEngine {
    */
   private generateIntentReasoning(intent: Intent, message: string): string {
     const keywords = this.intentKeywords.get(intent) || [];
-    const found = keywords.filter((k) => message.toLowerCase().includes(k.toLowerCase()));
+    const found = keywords.filter(k => message.toLowerCase().includes(k.toLowerCase()));
     return `Detected from keywords: ${found.slice(0, 3).join(', ')}`;
   }
 
@@ -502,23 +562,41 @@ export class NinaEngine {
   private initializeIntentKeywords(): Map<Intent, string[]> {
     return new Map([
       // Property inquiry
-      [Intent.PROPERTY_INQUIRY, ['show', 'property', 'properties', 'looking for', 'interested in', 'search']],
-      [Intent.PROPERTY_INQUIRY_RESIDENTIAL, ['apartment', 'villa', 'townhouse', 'flat', 'residential']],
+      [
+        Intent.PROPERTY_INQUIRY,
+        ['show', 'property', 'properties', 'looking for', 'interested in', 'search'],
+      ],
+      [
+        Intent.PROPERTY_INQUIRY_RESIDENTIAL,
+        ['apartment', 'villa', 'townhouse', 'flat', 'residential'],
+      ],
       [Intent.PROPERTY_INQUIRY_COMMERCIAL, ['office', 'shop', 'commercial', 'retail', 'space']],
       [Intent.PROPERTY_INQUIRY_LAND, ['plot', 'land', 'terrain', 'development']],
       [Intent.PROPERTY_INQUIRY_INVESTMENT, ['investment', 'roi', 'yield', 'rental', 'income']],
 
       // Viewing
-      [Intent.VIEWING_REQUEST, ['view', 'viewing', 'tour', 'see', 'visit', 'schedule', 'appointment']],
-      [Intent.VIEWING_REQUEST_IMMEDIATE, ['today', 'now', 'asap', 'urgent', 'immediately', 'tomorrow']],
+      [
+        Intent.VIEWING_REQUEST,
+        ['view', 'viewing', 'tour', 'see', 'visit', 'schedule', 'appointment'],
+      ],
+      [
+        Intent.VIEWING_REQUEST_IMMEDIATE,
+        ['today', 'now', 'asap', 'urgent', 'immediately', 'tomorrow'],
+      ],
       [Intent.VIEWING_REQUEST_SCHEDULED, ['next week', 'next month', 'later', 'schedule', 'plan']],
       [Intent.VIEWING_REQUEST_GROUP, ['group', 'friends', 'family', 'team', 'together']],
       [Intent.VIEWING_REQUEST_VIRTUAL, ['virtual', 'video', 'online', 'video call', '360']],
 
       // Purchase
       [Intent.PURCHASE_INTEREST, ['buy', 'purchase', 'acquire', 'own', 'invest']],
-      [Intent.PURCHASE_INTEREST_READY, ['ready to buy', 'ready', 'serious', 'cash ready', 'approved']],
-      [Intent.PURCHASE_INTEREST_1_3_MONTHS, ['1 month', '2 months', '3 months', 'soon', 'next quarter']],
+      [
+        Intent.PURCHASE_INTEREST_READY,
+        ['ready to buy', 'ready', 'serious', 'cash ready', 'approved'],
+      ],
+      [
+        Intent.PURCHASE_INTEREST_1_3_MONTHS,
+        ['1 month', '2 months', '3 months', 'soon', 'next quarter'],
+      ],
       [Intent.PURCHASE_INTEREST_3_12_MONTHS, ['6 months', '9 months', 'year', 'next year']],
       [Intent.PURCHASE_INTEREST_FUTURE, ['future', 'later', 'maybe', 'consider', 'thinking']],
 
@@ -532,7 +610,10 @@ export class NinaEngine {
       [Intent.INFORMATION_REQUEST, ['what', 'how', 'tell me', 'explain', 'information']],
       [Intent.INFORMATION_REQUEST_PRICING, ['price', 'cost', 'afford', 'payment', 'aed']],
       [Intent.INFORMATION_REQUEST_AVAILABILITY, ['available', 'stock', 'inventory', 'units']],
-      [Intent.INFORMATION_REQUEST_LOCATION, ['where', 'location', 'area', 'district', 'neighborhood']],
+      [
+        Intent.INFORMATION_REQUEST_LOCATION,
+        ['where', 'location', 'area', 'district', 'neighborhood'],
+      ],
 
       // Negotiation
       [Intent.NEGOTIATION, ['negotiate', 'offer', 'discount', 'reduce', 'lower']],

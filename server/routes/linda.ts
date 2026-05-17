@@ -603,29 +603,26 @@ router.post('/nlp-route', async (req: Request, res: Response) => {
     }
 
     // Inline NLP classification via the Nadia message processor (shared with Nina integration)
-    const { detectIntent, extractEntities } = await import(
-      '../services/nadia/messageProcessor.js'
-    );
+    const { detectIntent, extractEntities } = await import('../services/nadia/messageProcessor.js');
     const intent = detectIntent(message);
     const entities = extractEntities(message);
 
     // Map intent → recommended downstream routing action
     const ACTION_MAP: Record<string, string> = {
-      property_search:     'route_to_mary_inventory',
-      schedule_tour:       'route_to_agent_calendar',
+      property_search: 'route_to_mary_inventory',
+      schedule_tour: 'route_to_agent_calendar',
       information_request: 'send_property_details',
-      make_offer:          'escalate_to_sales_manager',
-      financing:           'route_to_finance_team',
-      legal_enquiry:       'route_to_henry_compliance',
-      complaint:           'escalate_to_manager',
-      general_inquiry:     'route_to_nadia_queue',
+      make_offer: 'escalate_to_sales_manager',
+      financing: 'route_to_finance_team',
+      legal_enquiry: 'route_to_henry_compliance',
+      complaint: 'escalate_to_manager',
+      general_inquiry: 'route_to_nadia_queue',
     };
     const recommendedAction = ACTION_MAP[intent] ?? 'route_to_nadia_queue';
 
     // Emit orchestrator event — triggers Nina NLP handler + Nadia routing handler
-    const { assistantOrchestrator } = await import(
-      '../services/orchestrator/AssistantOrchestrator.js'
-    );
+    const { assistantOrchestrator } =
+      await import('../services/orchestrator/AssistantOrchestrator.js');
     assistantOrchestrator.emitEvent('linda:message_received', {
       from: phone,
       message,
@@ -680,13 +677,12 @@ router.post('/inventory-broadcast', async (req: Request, res: Response) => {
 
     const data = propertyData as Record<string, unknown>;
 
-    const { assistantOrchestrator } = await import(
-      '../services/orchestrator/AssistantOrchestrator.js'
-    );
+    const { assistantOrchestrator } =
+      await import('../services/orchestrator/AssistantOrchestrator.js');
     assistantOrchestrator.emitEvent('mary:property_status_changed', {
       propertyId,
       previousStatus: typeof data.previousStatus === 'string' ? data.previousStatus : 'unknown',
-      newStatus:      typeof data.newStatus       === 'string' ? data.newStatus      : 'updated',
+      newStatus: typeof data.newStatus === 'string' ? data.newStatus : 'updated',
       broadcastPayload: data,
       targetPhones: targetPhones as string[],
     });
@@ -726,29 +722,28 @@ router.post('/henry-trigger', async (req: Request, res: Response) => {
         .json({ success: false, error: 'documentData must be a non-null object' });
     }
 
-    const data   = documentData as Record<string, unknown>;
+    const data = documentData as Record<string, unknown>;
     const convId = typeof conversationId === 'string' ? conversationId : undefined;
 
     const VIEWING_KEYS = ['viewing_agreement', 'key_handover'];
-    const OFFER_KEYS   = ['offer_letter', 'booking_form', 'tenancy_contract', 'gov_employee_booking'];
+    const OFFER_KEYS = ['offer_letter', 'booking_form', 'tenancy_contract', 'gov_employee_booking'];
 
-    const { assistantOrchestrator } = await import(
-      '../services/orchestrator/AssistantOrchestrator.js'
-    );
+    const { assistantOrchestrator } =
+      await import('../services/orchestrator/AssistantOrchestrator.js');
 
     if (VIEWING_KEYS.includes(templateKey)) {
       assistantOrchestrator.emitEvent('cross:viewing_booked', {
-        propertyId:   String(data.propertyId ?? data.unit ?? 'unknown'),
+        propertyId: String(data.propertyId ?? data.unit ?? 'unknown'),
         contactPhone: String(data.tenantPhone ?? data.contactPhone ?? ''),
-        scheduledAt:  String(data.scheduledAt ?? new Date().toISOString()),
+        scheduledAt: String(data.scheduledAt ?? new Date().toISOString()),
         documentData: data,
         conversationId: convId,
       });
     } else if (OFFER_KEYS.includes(templateKey)) {
       assistantOrchestrator.emitEvent('cross:offer_accepted', {
-        propertyId:  String(data.propertyId ?? data.unit ?? 'unknown'),
-        buyerPhone:  String(data.buyerPhone ?? data.tenantPhone ?? ''),
-        agentPhone:  typeof data.agentPhone === 'string' ? data.agentPhone : undefined,
+        propertyId: String(data.propertyId ?? data.unit ?? 'unknown'),
+        buyerPhone: String(data.buyerPhone ?? data.tenantPhone ?? ''),
+        agentPhone: typeof data.agentPhone === 'string' ? data.agentPhone : undefined,
         offerAmount: Number(data.offerAmount ?? data.annualRent ?? 0),
         documentData: data,
         conversationId: convId,
@@ -780,32 +775,43 @@ router.post('/henry-trigger', async (req: Request, res: Response) => {
  *
  * Returns graceful error when OPENAI_API_KEY is not set.
  */
-router.post('/transcribe', requirePermission('view_whatsapp_conversations'), async (req: Request, res: Response) => {
-  try {
-    const { transcribeVoiceMessage } = await import('../services/linda/voiceTranscription.js');
-    const { audioBase64, format = 'ogg', languageHint, contextPrompt } = req.body as {
-      audioBase64?: string;
-      format?: string;
-      languageHint?: string;
-      contextPrompt?: string;
-    };
+router.post(
+  '/transcribe',
+  requirePermission('view_whatsapp_conversations'),
+  async (req: Request, res: Response) => {
+    try {
+      const { transcribeVoiceMessage } = await import('../services/linda/voiceTranscription.js');
+      const {
+        audioBase64,
+        format = 'ogg',
+        languageHint,
+        contextPrompt,
+      } = req.body as {
+        audioBase64?: string;
+        format?: string;
+        languageHint?: string;
+        contextPrompt?: string;
+      };
 
-    if (!audioBase64) {
-      return res.status(400).json({ success: false, error: 'audioBase64 is required' });
+      if (!audioBase64) {
+        return res.status(400).json({ success: false, error: 'audioBase64 is required' });
+      }
+
+      const audioBuffer = Buffer.from(audioBase64, 'base64');
+      const result = await transcribeVoiceMessage({
+        audioBuffer,
+        format: format as 'ogg' | 'mp3' | 'm4a' | 'wav' | 'webm',
+        languageHint,
+        contextPrompt,
+      });
+      res.json({ success: true, data: result });
+    } catch (err) {
+      res
+        .status(500)
+        .json({ success: false, error: err instanceof Error ? err.message : 'Unknown error' });
     }
-
-    const audioBuffer = Buffer.from(audioBase64, 'base64');
-    const result = await transcribeVoiceMessage({
-      audioBuffer,
-      format:        format as 'ogg' | 'mp3' | 'm4a' | 'wav' | 'webm',
-      languageHint,
-      contextPrompt,
-    });
-    res.json({ success: true, data: result });
-  } catch (err) {
-    res.status(500).json({ success: false, error: err instanceof Error ? err.message : 'Unknown error' });
   }
-});
+);
 
 // ─── GET /api/linda/sentiment-alerts ─────────────────────────────────────────
 
@@ -813,35 +819,146 @@ router.post('/transcribe', requirePermission('view_whatsapp_conversations'), asy
  * Return real-time sentiment alerts for the CRM agent dashboard.
  * Query params: unacknowledged=true|false, limit=N (default 50)
  */
-router.get('/sentiment-alerts', requirePermission('view_whatsapp_conversations'), async (req: Request, res: Response) => {
-  try {
-    const { getAlerts, getAlertSummary } = await import('../services/linda/sentimentAlertService.js');
-    const onlyUnacked = req.query['unacknowledged'] === 'true';
-    const limit       = parseInt(String(req.query['limit'] ?? '50'), 10);
-    const alerts  = getAlerts(onlyUnacked, limit);
-    const summary = getAlertSummary();
-    res.json({ success: true, data: { alerts, summary, count: alerts.length } });
-  } catch (err) {
-    res.status(500).json({ success: false, error: err instanceof Error ? err.message : 'Unknown error' });
+router.get(
+  '/sentiment-alerts',
+  requirePermission('view_whatsapp_conversations'),
+  async (req: Request, res: Response) => {
+    try {
+      const { getAlerts, getAlertSummary } =
+        await import('../services/linda/sentimentAlertService.js');
+      const onlyUnacked = req.query['unacknowledged'] === 'true';
+      const limit = parseInt(String(req.query['limit'] ?? '50'), 10);
+      const alerts = getAlerts(onlyUnacked, limit);
+      const summary = getAlertSummary();
+      res.json({ success: true, data: { alerts, summary, count: alerts.length } });
+    } catch (err) {
+      res
+        .status(500)
+        .json({ success: false, error: err instanceof Error ? err.message : 'Unknown error' });
+    }
   }
-});
+);
 
 // ─── POST /api/linda/sentiment-alerts/:alertId/acknowledge ───────────────────
 
 /**
  * Acknowledge a sentiment alert (mark as seen by agent).
  */
-router.post('/sentiment-alerts/:alertId/acknowledge', requirePermission('view_whatsapp_conversations'), async (req: AuthRequest, res: Response) => {
-  try {
-    const { acknowledgeAlert } = await import('../services/linda/sentimentAlertService.js');
-    const { alertId } = req.params as { alertId: string };
-    const agentId     = req.user?.id ?? 'unknown';
-    const ok = acknowledgeAlert(alertId, agentId);
-    if (!ok) return res.status(404).json({ success: false, error: `Alert ${alertId} not found` });
-    res.json({ success: true, data: { acknowledged: true, alertId } });
-  } catch (err) {
-    res.status(500).json({ success: false, error: err instanceof Error ? err.message : 'Unknown error' });
+router.post(
+  '/sentiment-alerts/:alertId/acknowledge',
+  requirePermission('view_whatsapp_conversations'),
+  async (req: AuthRequest, res: Response) => {
+    try {
+      const { acknowledgeAlert } = await import('../services/linda/sentimentAlertService.js');
+      const { alertId } = req.params as { alertId: string };
+      const agentId = req.user?.id ?? 'unknown';
+      const ok = acknowledgeAlert(alertId, agentId);
+      if (!ok) return res.status(404).json({ success: false, error: `Alert ${alertId} not found` });
+      res.json({ success: true, data: { acknowledged: true, alertId } });
+    } catch (err) {
+      res
+        .status(500)
+        .json({ success: false, error: err instanceof Error ? err.message : 'Unknown error' });
+    }
   }
-});
+);
+
+// ─── POST /api/linda/background-analysis/opt-in ──────────────────────────────
+
+/**
+ * Privacy-safe background analysis for Linda+Nina collaboration.
+ * Requires explicit consent confirmation and operates on provided conversation text.
+ *
+ * Body:
+ * {
+ *   accountLabel: string,
+ *   consentConfirmed: boolean,
+ *   consentReference: string,
+ *   messages: Array<{ conversationId: string, text: string, timestamp?: string }>
+ * }
+ */
+router.post(
+  '/background-analysis/opt-in',
+  requireRole('owner', 'admin'),
+  async (req: Request, res: Response) => {
+    try {
+      const { accountLabel, consentConfirmed, consentReference, messages } = req.body as {
+        accountLabel?: unknown;
+        consentConfirmed?: unknown;
+        consentReference?: unknown;
+        messages?: unknown;
+      };
+
+      if (consentConfirmed !== true) {
+        return res.status(400).json({
+          success: false,
+          error: 'Explicit consent is required before any background analysis.',
+        });
+      }
+
+      if (!consentReference || typeof consentReference !== 'string') {
+        return res.status(400).json({
+          success: false,
+          error: 'consentReference is required for auditability.',
+        });
+      }
+
+      if (!Array.isArray(messages) || messages.length === 0) {
+        return res.status(400).json({
+          success: false,
+          error: 'messages must be a non-empty array.',
+        });
+      }
+
+      const rows = messages
+        .filter(m => m && typeof m === 'object')
+        .map(m => ({
+          conversationId: String((m as { conversationId?: unknown }).conversationId ?? 'unknown'),
+          text: String((m as { text?: unknown }).text ?? ''),
+        }))
+        .filter(m => m.text.trim().length > 0);
+
+      const keywordHits = {
+        viewing: rows.filter(r => /view|tour|معاينة/i.test(r.text)).length,
+        pricing: rows.filter(r => /price|budget|aed|سعر|درهم/i.test(r.text)).length,
+        complaint: rows.filter(r => /problem|issue|complaint|شكوى|مشكلة/i.test(r.text)).length,
+        maintenance: rows.filter(r => /maintenance|repair|صيانة/i.test(r.text)).length,
+      };
+
+      const scheduleRecommendations = [
+        keywordHits.viewing > 0
+          ? 'Increase viewing coordination blocks for high-intent conversations.'
+          : 'No viewing surge detected.',
+        keywordHits.complaint > 0
+          ? 'Add daily complaint triage slot with a senior agent.'
+          : 'Complaint volume currently stable.',
+        keywordHits.pricing > 0
+          ? 'Prepare pricing FAQ snippets for sales agents before outbound follow-ups.'
+          : 'Pricing objection volume is low in this sample.',
+      ];
+
+      res.json({
+        success: true,
+        data: {
+          accountLabel: typeof accountLabel === 'string' ? accountLabel : 'linked-account',
+          analyzedConversationCount: new Set(rows.map(r => r.conversationId)).size,
+          analyzedMessageCount: rows.length,
+          keywordHits,
+          scheduleRecommendations,
+          compliance: {
+            consentReference,
+            consentConfirmed: true,
+            mode: 'opt-in-background-analysis',
+          },
+          analyzedAt: new Date().toISOString(),
+        },
+      });
+    } catch (err) {
+      res
+        .status(500)
+        .json({ success: false, error: err instanceof Error ? err.message : 'Unknown error' });
+    }
+  }
+);
 
 export default router;
