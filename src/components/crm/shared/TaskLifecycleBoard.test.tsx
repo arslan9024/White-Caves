@@ -19,9 +19,8 @@ vi.mock('./SharedComponents.css', () => ({}));
 vi.mock('lucide-react', () => {
   const icon =
     (name: string) =>
-    ({ size, className }: { size?: number; className?: string }) => (
-      <span data-testid={`icon-${name}`} className={className} />
-    );
+    ({ size, className }: { size?: number; className?: string }) =>
+      <span data-testid={`icon-${name}`} className={className} />;
   return {
     Bell: icon('bell'),
     BellOff: icon('bell-off'),
@@ -50,6 +49,9 @@ vi.mock('lucide-react', () => {
 // Store mocks
 const mockDispatch = vi.fn();
 let mockTasks: Record<string, unknown>[] = [];
+let mockPendingCount = 0;
+let mockInProgressCount = 0;
+let mockCompletedCount = 0;
 let mockNotifications: Record<string, unknown>[] = [];
 
 vi.mock('react-redux', () => ({
@@ -59,9 +61,12 @@ vi.mock('react-redux', () => ({
 
 vi.mock('../../../store/slices/aiAssistantDashboardSlice', () => ({
   selectTasksByAssistant: (_id: string) => () => mockTasks,
+  selectPendingActionsCount: (_id: string) => () => mockPendingCount,
+  selectInProgressTasksCount: (_id: string) => () => mockInProgressCount,
+  selectCompletedTasksCount: (_id: string) => () => mockCompletedCount,
   selectNotificationsByAssistant: (_id: string) => () => mockNotifications,
-  advanceTaskLifecycle: vi.fn(p => ({ type: 'advanceTaskLifecycle', payload: p })),
-  markAllNotificationsRead: vi.fn(id => ({ type: 'markAllNotificationsRead', payload: id })),
+  advanceTaskLifecycle: vi.fn((p) => ({ type: 'advanceTaskLifecycle', payload: p })),
+  markAllNotificationsRead: vi.fn((id) => ({ type: 'markAllNotificationsRead', payload: id })),
 }));
 
 vi.mock('../../../store/store', () => ({}));
@@ -83,7 +88,9 @@ vi.mock('./LifecycleNotificationFeed', () => ({
 
 vi.mock('./NotificationBadge', () => ({
   __esModule: true,
-  default: ({ count }: { count: number }) => <span data-testid="notification-badge">{count}</span>,
+  default: ({ count }: { count: number }) => (
+    <span data-testid="notification-badge">{count}</span>
+  ),
 }));
 
 import TaskLifecycleBoard from './TaskLifecycleBoard';
@@ -94,7 +101,7 @@ const makeTask = (
   id: string,
   stage: string,
   title: string,
-  status = 'in_progress'
+  status = 'in_progress',
 ): Record<string, unknown> => ({
   id,
   title,
@@ -111,6 +118,9 @@ const makeTask = (
 describe('TaskLifecycleBoard', () => {
   beforeEach(() => {
     mockTasks = [];
+    mockPendingCount = 0;
+    mockInProgressCount = 0;
+    mockCompletedCount = 0;
     mockNotifications = [];
     mockDispatch.mockClear();
   });
@@ -132,20 +142,9 @@ describe('TaskLifecycleBoard', () => {
   });
 
   it('shows summary pills for pending, in-progress, completed', () => {
-    mockTasks = [
-      makeTask('p1', 'queued', 'Pending 1', 'pending'),
-      makeTask('p2', 'queued', 'Pending 2', 'pending'),
-      makeTask('p3', 'queued', 'Pending 3', 'pending'),
-      makeTask('ip1', 'in_progress', 'In Progress 1'),
-      makeTask('ip2', 'in_progress', 'In Progress 2'),
-      makeTask('c1', 'completed', 'Completed 1', 'completed'),
-      makeTask('c2', 'completed', 'Completed 2', 'completed'),
-      makeTask('c3', 'completed', 'Completed 3', 'completed'),
-      makeTask('c4', 'completed', 'Completed 4', 'completed'),
-      makeTask('c5', 'completed', 'Completed 5', 'completed'),
-      makeTask('c6', 'completed', 'Completed 6', 'completed'),
-      makeTask('c7', 'completed', 'Completed 7', 'completed'),
-    ];
+    mockPendingCount = 3;
+    mockInProgressCount = 2;
+    mockCompletedCount = 7;
     render(<TaskLifecycleBoard assistantId="laila" />);
     expect(screen.getByText(/3 pending/i)).toBeTruthy();
     expect(screen.getByText(/2 in progress/i)).toBeTruthy();
@@ -241,46 +240,19 @@ describe('TaskLifecycleBoard', () => {
   });
 
   it('shows notification badge when there are unread notifications', () => {
-    mockNotifications = [
-      {
-        id: 'n1',
-        type: 'task_lifecycle',
-        message: 'x',
-        severity: 'info',
-        isRead: false,
-        timestamp: new Date().toISOString(),
-      },
-    ];
+    mockNotifications = [{ id: 'n1', type: 'task_lifecycle', message: 'x', severity: 'info', isRead: false, timestamp: new Date().toISOString() }];
     render(<TaskLifecycleBoard assistantId="laila" />);
     expect(screen.getByTestId('notification-badge')).toBeTruthy();
   });
 
   it('shows mark-all-read button when unread notifications exist', () => {
-    mockNotifications = [
-      {
-        id: 'n2',
-        type: 'task_lifecycle',
-        message: 'x',
-        severity: 'info',
-        isRead: false,
-        timestamp: new Date().toISOString(),
-      },
-    ];
+    mockNotifications = [{ id: 'n2', type: 'task_lifecycle', message: 'x', severity: 'info', isRead: false, timestamp: new Date().toISOString() }];
     render(<TaskLifecycleBoard assistantId="laila" />);
     expect(document.querySelector('.tlb-mark-read-btn')).toBeTruthy();
   });
 
   it('dispatches markAllNotificationsRead when mark-all-read is clicked', () => {
-    mockNotifications = [
-      {
-        id: 'n3',
-        type: 'task_lifecycle',
-        message: 'x',
-        severity: 'info',
-        isRead: false,
-        timestamp: new Date().toISOString(),
-      },
-    ];
+    mockNotifications = [{ id: 'n3', type: 'task_lifecycle', message: 'x', severity: 'info', isRead: false, timestamp: new Date().toISOString() }];
     render(<TaskLifecycleBoard assistantId="sophia" />);
     const btn = document.querySelector('.tlb-mark-read-btn') as HTMLButtonElement;
     fireEvent.click(btn);
@@ -296,7 +268,10 @@ describe('TaskLifecycleBoard', () => {
   });
 
   it('shows column task count badge', () => {
-    mockTasks = [makeTask('a1', 'in_progress', 'Task A'), makeTask('a2', 'in_progress', 'Task B')];
+    mockTasks = [
+      makeTask('a1', 'in_progress', 'Task A'),
+      makeTask('a2', 'in_progress', 'Task B'),
+    ];
     render(<TaskLifecycleBoard assistantId="laila" />);
     const inProgressCol = document.querySelector('.col-inprogress');
     const countBadge = inProgressCol?.querySelector('.tlb-col-count');
