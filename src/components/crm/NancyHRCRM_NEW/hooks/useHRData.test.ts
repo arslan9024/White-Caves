@@ -1,6 +1,12 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { renderHook, act } from '@testing-library/react';
 
+vi.mock('../../../../utils/authFetch', () => ({
+  // Keep API effect pending so background state updates don't trigger act warnings
+  // in tests that validate pure local hook behavior.
+  authFetch: vi.fn(() => new Promise(() => {})),
+}));
+
 vi.mock('../data/employees', () => ({
   DUMMY_EMPLOYEES: [
     {

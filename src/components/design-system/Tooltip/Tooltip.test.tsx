@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent, act } from '@testing-library/react';
 import React from 'react';
 
 // Mock styled-components for Tooltip (use simple HTML elements)
@@ -106,7 +106,9 @@ describe('Tooltip', () => {
       fireEvent.mouseEnter(target);
       // Content exists in DOM but not yet visible
       expect(screen.getByText('Delayed')).toBeInTheDocument();
-      vi.advanceTimersByTime(300);
+      act(() => {
+        vi.advanceTimersByTime(300);
+      });
       expect(screen.getByText('Delayed')).toBeInTheDocument();
       vi.useRealTimers();
     });
@@ -121,7 +123,9 @@ describe('Tooltip', () => {
       const target = screen.getByText('Target').closest('div')!;
       fireEvent.mouseEnter(target);
       fireEvent.mouseLeave(target);
-      vi.advanceTimersByTime(300);
+      act(() => {
+        vi.advanceTimersByTime(300);
+      });
       // Should not crash, content exists but hidden
       expect(screen.getByText('Delayed')).toBeInTheDocument();
       vi.useRealTimers();
