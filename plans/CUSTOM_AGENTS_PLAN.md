@@ -61,6 +61,61 @@ If any box is unchecked, route back to planning agents (no premium coding).
 
 ---
 
+## Subagent Performance Upgrade Pack (Effective 2026-05-17)
+
+### 1) Standard Task Packet (Required)
+
+Every dispatched subagent task must include these fields in one block:
+
+- `Task ID`
+- `Owner Agent`
+- `Objective`
+- `Input Artifacts` (exact file + section)
+- `Output Artifact` (exact file + section)
+- `Acceptance Criteria` (3+ measurable checks)
+- `Validation Command` (if applicable)
+- `Handoff Target` (`FEEDS→...`)
+
+Tasks missing any field are treated as invalid and must be rewritten before execution.
+
+### 2) Definition of Done (DoD) for Planning Agents
+
+A planning task is complete only when all conditions are true:
+
+- Output text is committed in the declared file/section.
+- `CONSUMES`, `FEEDS`, and `FEEDS_ACK` lines are present.
+- At least one testable acceptance criterion is explicitly documented.
+- The corresponding sprint/dashboard rows are updated (`AGENTS.md`, `PROJECT_PROGRESS.md`, `DAILY_MILESTONE_TRACKER.md`).
+
+### 3) Blocker Escalation SLA
+
+- **P0 blocker:** escalate to @Ada and @Margaret immediately.
+- **P1 blocker:** escalate within 30 minutes if unresolved.
+- **P2 blocker:** escalate within 4 hours.
+- Every escalation must include: blocker type, impacted file(s), dependency owner, and next action.
+
+### 4) Anti-Stall Rotation Rule
+
+If a free-agent task is blocked by dependency lag:
+
+1. move the agent to their next backlog item within the same ownership scope,
+2. mark original task as `Blocked (Dependency)`,
+3. log dependency owner in the tracker,
+4. requeue the blocked task after dependency ack.
+
+This keeps the no-idle policy enforceable without violating ownership boundaries.
+
+### 5) Dispatch Quality Gate (Pre-Run)
+
+Before launching any subagent task, run:
+
+- `npm run orchestrator:verify-prompts`
+- `npm run orchestrator:health:brief`
+
+If either check fails, fix queue/prompts first and do not dispatch.
+
+---
+
 ## Notes on Historical Content
 
 The old Phase 6–10 assignment snapshot (May 2026) is now historical context.
