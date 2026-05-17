@@ -40,6 +40,7 @@ import {
   dispatchLindaCampaign,
   dispatchDueLindaCampaigns,
 } from '../services/whatsapp/lindaCampaignService.js';
+import { checkPhoneSavedInGoraha } from '../services/whatsapp/gorahaContactCheckService.js';
 
 const router = Router();
 
@@ -549,6 +550,53 @@ router.get(
       const history = await messageBridge.getConversationHistory(phoneNumber, limit);
 
       res.json({ success: true, data: { phoneNumber, messages: history, count: history.length } });
+    } catch (err) {
+      res
+        .status(500)
+        .json({ success: false, error: err instanceof Error ? err.message : 'Unknown error' });
+    }
+  }
+);
+
+// ─── GET /api/linda/conversations/:phoneNumber/goraha-saved ────────────────
+
+router.get(
+  '/conversations/:phoneNumber/goraha-saved',
+  requirePermission('view_whatsapp_conversations'),
+  async (req: Request, res: Response) => {
+    try {
+      const { phoneNumber } = req.params;
+      const cleanPhone = String(phoneNumber || '').replace(/\D/g, '');
+
+      if (cleanPhone.length < 8) {
+        return res.status(400).json({ success: false, error: 'Invalid phone number format' });
+      }
+
+      const { messageBridge } = await getOrInitLindaRuntime();
+      const history = await messageBridge.getConversationHistory(cleanPhone, 1);
+      const goraha = await checkPhoneSavedInGoraha(cleanPhone);
+
+      res.json({
+        success: true,
+        data: {
+          phoneNumber: cleanPhone,
+          hasLindaConversation: history.length > 0,
+          isSavedInGoraha: goraha.isSaved,
+          conversationSavedToGoraha: history.length > 0 && goraha.isSaved,
+          gorahaAccount: {
+            isConfigured: goraha.isConfigured,
+            isCredentialValid: goraha.isCredentialValid,
+            apiAccessValid: goraha.apiAccessValid,
+          },
+          matchedContact: goraha.isSaved
+            ? {
+                name: goraha.matchedContactName || null,
+                phone: goraha.matchedPhone || null,
+              }
+            : null,
+          details: goraha.error || null,
+        },
+      });
     } catch (err) {
       res
         .status(500)
