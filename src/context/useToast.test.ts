@@ -42,9 +42,11 @@ describe('useToast', () => {
     });
 
     it('throws when used outside ToastProvider', () => {
+      const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
       expect(() => {
         renderHook(() => useToast());
       }).toThrow('useToast must be used inside a ToastProvider');
+      consoleErrorSpy.mockRestore();
     });
 
     it('show returns a toast ID', () => {
