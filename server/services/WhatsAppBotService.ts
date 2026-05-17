@@ -13,8 +13,8 @@ const log = createLogger('WhatsApp');
 class WhatsAppBotService {
   private client: MetaAPIClient | null = null;
   private isConfigured = false;
-  private readonly MAX_SEND_RETRIES = 3;
-  private readonly BASE_RETRY_DELAY_MS = 300;
+  private maxSendRetries = 3;
+  private baseRetryDelayMs = 300;
 
   constructor() {
     const accessToken = process.env.WHATSAPP_ACCESS_TOKEN || process.env.WHATSAPP_BOT_TOKEN;
@@ -22,6 +22,13 @@ class WhatsAppBotService {
     const phoneNumberId = process.env.WHATSAPP_PHONE_NUMBER_ID;
 
     this.isConfigured = Boolean(accessToken && phoneNumberId);
+    this.maxSendRetries = this.parsePositiveInt(process.env.WHATSAPP_MAX_SEND_RETRIES, 3, 1, 6);
+    this.baseRetryDelayMs = this.parsePositiveInt(
+      process.env.WHATSAPP_RETRY_BASE_DELAY_MS,
+      300,
+      0,
+      5000
+    );
 
     if (accessToken && phoneNumberId) {
       try {
@@ -59,6 +66,9 @@ class WhatsAppBotService {
    * Sends message when client is available with retry/backoff on transient failures.
    */
   async sendMessage(phoneNumber: string, message: string): Promise<string | undefined> {
+    this.assertValidPhoneNumber(phoneNumber);
+    this.assertValidMessageBody(message);
+
     if (!this.isConfigured) {
       log.warn(`sendMessage skipped (no credentials) to ${phoneNumber}`);
       return undefined;
@@ -133,6 +143,9 @@ class WhatsAppBotService {
     templateName: string,
     parameters?: Array<{ type: string; text: string }>
   ): Promise<string | undefined> {
+    this.assertValidPhoneNumber(phoneNumber);
+    this.assertValidTemplateName(templateName);
+
     if (!this.isConfigured) {
       log.warn(`sendTemplateMessage skipped (no credentials) to ${phoneNumber}`);
       return undefined;
@@ -162,19 +175,19 @@ class WhatsAppBotService {
   ): Promise<string> {
     let lastError: unknown;
 
-    for (let attempt = 1; attempt <= this.MAX_SEND_RETRIES; attempt += 1) {
+    for (let attempt = 1; attempt <= this.maxSendRetries; attempt += 1) {
       try {
         return await operation();
       } catch (error) {
         lastError = error;
 
-        if (!this.isRetryableError(error) || attempt >= this.MAX_SEND_RETRIES) {
+        if (!this.isRetryableError(error) || attempt >= this.maxSendRetries) {
           break;
         }
 
         const delayMs = this.getRetryDelayMs(attempt);
         log.warn(
-          `${operationLabel} attempt ${attempt}/${this.MAX_SEND_RETRIES} failed, retrying in ${delayMs}ms`
+          `${operationLabel} attempt ${attempt}/${this.maxSendRetries} failed, retrying in ${delayMs}ms`
         );
         await this.delay(delayMs);
       }
@@ -204,7 +217,43 @@ class WhatsAppBotService {
       return 0;
     }
 
-    return this.BASE_RETRY_DELAY_MS * attempt;
+    return this.baseRetryDelayMs * attempt;
+  }
+
+  private parsePositiveInt(
+    raw: string | undefined,
+    fallback: number,
+    min: number,
+    max: number
+  ): number {
+    if (!raw) {
+      return fallback;
+    }
+
+    const parsed = Number.parseInt(raw, 10);
+    if (!Number.isFinite(parsed)) {
+      return fallback;
+    }
+
+    return Math.max(min, Math.min(max, parsed));
+  }
+
+  private assertValidPhoneNumber(phoneNumber: string): void {
+    if (!phoneNumber || !phoneNumber.trim()) {
+      throw new Error('phoneNumber is required');
+    }
+  }
+
+  private assertValidMessageBody(message: string): void {
+    if (!message || !message.trim()) {
+      throw new Error('message body is required');
+    }
+  }
+
+  private assertValidTemplateName(templateName: string): void {
+    if (!templateName || !templateName.trim()) {
+      throw new Error('templateName is required');
+    }
   }
 
   private async delay(ms: number): Promise<void> {

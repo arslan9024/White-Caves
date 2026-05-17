@@ -151,6 +151,55 @@ describe('WhatsAppBotService', () => {
       await expect(service.sendMessage('+971501234567', 'Hello')).rejects.toThrow(/network down/i);
       expect(mockMetaSendMessage).toHaveBeenCalledTimes(3);
     });
+
+    it('does not retry non-retryable 400 style errors', async () => {
+      process.env.WHATSAPP_BOT_TOKEN = 'tok';
+      process.env.WHATSAPP_PHONE_NUMBER_ID = 'pid';
+      process.env.NODE_ENV = 'test';
+
+      mockMetaSendMessage.mockRejectedValue(new Error('Meta API Error [400]: invalid recipient'));
+
+      const service = await importFresh();
+      await expect(service.sendMessage('+971501234567', 'Hello')).rejects.toThrow(/400/i);
+      expect(mockMetaSendMessage).toHaveBeenCalledTimes(1);
+    });
+
+    it('honors WHATSAPP_MAX_SEND_RETRIES override', async () => {
+      process.env.WHATSAPP_BOT_TOKEN = 'tok';
+      process.env.WHATSAPP_PHONE_NUMBER_ID = 'pid';
+      process.env.WHATSAPP_MAX_SEND_RETRIES = '1';
+      process.env.NODE_ENV = 'test';
+
+      mockMetaSendMessage.mockRejectedValue(new Error('network timeout'));
+
+      const service = await importFresh();
+      await expect(service.sendMessage('+971501234567', 'Hello')).rejects.toThrow(
+        /network timeout/i
+      );
+      expect(mockMetaSendMessage).toHaveBeenCalledTimes(1);
+    });
+
+    it('rejects empty phone number early', async () => {
+      process.env.WHATSAPP_BOT_TOKEN = 'tok';
+      process.env.WHATSAPP_PHONE_NUMBER_ID = 'pid';
+      process.env.NODE_ENV = 'test';
+
+      const service = await importFresh();
+      await expect(service.sendMessage('', 'Hello')).rejects.toThrow(/phoneNumber is required/i);
+      expect(mockMetaSendMessage).not.toHaveBeenCalled();
+    });
+
+    it('rejects empty message body early', async () => {
+      process.env.WHATSAPP_BOT_TOKEN = 'tok';
+      process.env.WHATSAPP_PHONE_NUMBER_ID = 'pid';
+      process.env.NODE_ENV = 'test';
+
+      const service = await importFresh();
+      await expect(service.sendMessage('+971501234567', '   ')).rejects.toThrow(
+        /message body is required/i
+      );
+      expect(mockMetaSendMessage).not.toHaveBeenCalled();
+    });
   });
 
   // ─── handleIncomingMessage ────────────────────────────────────────
@@ -237,6 +286,18 @@ describe('WhatsAppBotService', () => {
       ).resolves.toBe('wa-template-recovered');
 
       expect(mockMetaSendTemplate).toHaveBeenCalledTimes(2);
+    });
+
+    it('rejects empty template name early', async () => {
+      process.env.WHATSAPP_BOT_TOKEN = 'tok';
+      process.env.WHATSAPP_PHONE_NUMBER_ID = 'pid';
+      process.env.NODE_ENV = 'test';
+
+      const service = await importFresh();
+      await expect(service.sendTemplateMessage('+971501234567', '   ')).rejects.toThrow(
+        /templateName is required/i
+      );
+      expect(mockMetaSendTemplate).not.toHaveBeenCalled();
     });
   });
 });
