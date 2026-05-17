@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, beforeAll, afterAll } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import React from 'react';
 
@@ -84,8 +84,17 @@ vi.mock('./tabs/FeaturesTab', () => ({
 import ClaraLeadsCRM from './index';
 
 describe('ClaraLeadsCRM', () => {
+  beforeAll(() => {
+    vi.spyOn(console, 'error').mockImplementation(() => {});
+    vi.spyOn(console, 'warn').mockImplementation(() => {});
+  });
+
   beforeEach(() => {
     vi.clearAllMocks();
+  });
+
+  afterAll(() => {
+    vi.restoreAllMocks();
   });
 
   describe('rendering', () => {
@@ -133,7 +142,7 @@ describe('ClaraLeadsCRM', () => {
   });
 
   describe('tab navigation', () => {
-    it('renders all 6 tab buttons', () => {
+    it('renders all tab buttons including lifecycle', () => {
       render(<ClaraLeadsCRM />);
       expect(screen.getByText('Prospects')).toBeInTheDocument();
       expect(screen.getByText('Deals')).toBeInTheDocument();
@@ -141,12 +150,13 @@ describe('ClaraLeadsCRM', () => {
       expect(screen.getByText('Activity')).toBeInTheDocument();
       expect(screen.getByText('Insights')).toBeInTheDocument();
       expect(screen.getByText('Features')).toBeInTheDocument();
+      expect(screen.getByText('Lifecycle')).toBeInTheDocument();
     });
 
     it('renders badge counts for each tab', () => {
       render(<ClaraLeadsCRM />);
       const badges = screen.getAllByTestId('badge');
-      expect(badges.length).toBe(6);
+      expect(badges.length).toBe(7);
       // Dynamic counts from mock data:
       // prospects = totalLeads = 3
       expect(badges[0]).toHaveTextContent('3');
@@ -160,6 +170,8 @@ describe('ClaraLeadsCRM', () => {
       expect(badges[4]).toHaveTextContent('0');
       // features = static 6
       expect(badges[5]).toHaveTextContent('6');
+      // lifecycle = default 0 in tabCounts fallback
+      expect(badges[6]).toHaveTextContent('0');
     });
 
     it('switches to deals tab on click', async () => {

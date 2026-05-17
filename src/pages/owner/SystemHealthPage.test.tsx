@@ -62,6 +62,8 @@ import SystemHealthPage from './SystemHealthPage';
 describe('SystemHealthPage', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    vi.spyOn(console, 'error').mockImplementation(() => {});
+    vi.spyOn(console, 'warn').mockImplementation(() => {});
     mockUser = { role: 'owner' };
     mockAuthFetch.mockResolvedValue({
       ok: true,

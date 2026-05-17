@@ -19,25 +19,25 @@ vi.mock('lucide-react', () => ({
 
 // Mock styles
 vi.mock('./AssistantSidebar.styles', () => ({
-  AssistantSidebarContainer: ({ children, ...p }: any) => <div data-testid="sidebar-container" {...p}>{children}</div>,
+  AssistantSidebarContainer: ({ children }: any) => <div data-testid="sidebar-container">{children}</div>,
   SidebarHeader: ({ children }: any) => <div data-testid="sidebar-header">{children}</div>,
   AssistantAvatar: ({ children }: any) => <div data-testid="avatar">{children}</div>,
   AssistantInfo: ({ children }: any) => <div data-testid="assistant-info">{children}</div>,
   AssistantTitle: ({ children }: any) => <span data-testid="assistant-title">{children}</span>,
-  FavoriteButton: ({ children, onClick, title, ...p }: any) => (
+  FavoriteButton: ({ children, onClick, title }: any) => (
     <button data-testid="fav-btn" onClick={onClick} title={title}>{children}</button>
   ),
   SidebarNav: ({ children }: any) => <nav data-testid="sidebar-nav">{children}</nav>,
   SidebarDivider: () => <hr data-testid="divider" />,
   SidebarSection: ({ children }: any) => <div data-testid="sidebar-section">{children}</div>,
-  SidebarItem: ({ children, onClick, ...p }: any) => (
+  SidebarItem: ({ children, onClick }: any) => (
     <div data-testid="sidebar-item" onClick={onClick} role="button">{children}</div>
   ),
   ItemLabel: ({ children }: any) => <span data-testid="item-label">{children}</span>,
   ItemBadge: ({ children }: any) => <span data-testid="item-badge">{children}</span>,
   ItemArrow: ({ children }: any) => <span data-testid="item-arrow">{children}</span>,
   SidebarFooter: ({ children }: any) => <div data-testid="sidebar-footer">{children}</div>,
-  QuickActionButton: ({ children, title, ...p }: any) => (
+  QuickActionButton: ({ children, title }: any) => (
     <button data-testid={`qa-${title?.toLowerCase()}`} title={title}>{children}</button>
   ),
 }));

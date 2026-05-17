@@ -36,16 +36,22 @@ vi.mock('./InteractiveMap.styles', () => ({
   MapVisualContainer: ({ children }: React.PropsWithChildren) => <div>{children}</div>,
   DubaiMapVisual: ({ children }: React.PropsWithChildren) => <div>{children}</div>,
   MapBackground: ({ children }: React.PropsWithChildren) => <div>{children}</div>,
-  DubaiOutlineSVG: ({ children, ...props }: React.PropsWithChildren<Record<string, unknown>>) => <svg {...props}>{children}</svg>,
+  DubaiOutlineSVG: ({ children }: React.PropsWithChildren<Record<string, unknown>>) => <svg>{children}</svg>,
   LocationMarkers: ({ children }: React.PropsWithChildren) => <div data-testid="markers">{children}</div>,
-  LocationMarker: ({ children, onClick, ...props }: React.PropsWithChildren<{ onClick?: () => void; [key: string]: unknown }>) => (
-    <button data-testid="location-marker" onClick={onClick} {...props}>{children}</button>
+  LocationMarker: ({ children, onClick }: React.PropsWithChildren<{ onClick?: () => void; [key: string]: unknown }>) => (
+    <button data-testid="location-marker" onClick={onClick}>{children}</button>
   ),
   MarkerCount: ({ children }: React.PropsWithChildren) => <span data-testid="marker-count">{children}</span>,
   SidePanel: ({ children }: React.PropsWithChildren) => <div data-testid="side-panel">{children}</div>,
+  SectionTitleSmall: ({ children }: React.PropsWithChildren) => <h4>{children}</h4>,
+  ResultsSection: ({ children }: React.PropsWithChildren) => <section>{children}</section>,
+  ResultsHeader: ({ children }: React.PropsWithChildren) => <div>{children}</div>,
+  ResultsTitle: ({ children }: React.PropsWithChildren) => <h3>{children}</h3>,
+  ResultsMeta: ({ children }: React.PropsWithChildren) => <span>{children}</span>,
+  PropertyLocation: ({ children }: React.PropsWithChildren) => <span>{children}</span>,
   LocationList: ({ children }: React.PropsWithChildren) => <div>{children}</div>,
-  LocationItem: ({ children, onClick, ...props }: React.PropsWithChildren<{ onClick?: () => void; [key: string]: unknown }>) => (
-    <div data-testid="location-item" onClick={onClick} {...props}>{children}</div>
+  LocationItem: ({ children, onClick }: React.PropsWithChildren<{ onClick?: () => void; [key: string]: unknown }>) => (
+    <div data-testid="location-item" onClick={onClick}>{children}</div>
   ),
   LocationName: ({ children }: React.PropsWithChildren) => <span data-testid="location-name">{children}</span>,
   PropertyCount: ({ children }: React.PropsWithChildren) => <span>{children}</span>,
