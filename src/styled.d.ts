@@ -4,9 +4,8 @@
  */
 
 import 'styled-components';
+import type { Theme } from './styles/theme';
 
 declare module 'styled-components' {
-  export interface DefaultTheme {
-    [key: string]: unknown;
-  }
+  export interface DefaultTheme extends Theme {}
 }
