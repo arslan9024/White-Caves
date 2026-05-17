@@ -2,10 +2,57 @@ import { defineConfig } from 'vitest/config';
 import react from '@vitejs/plugin-react';
 import path from 'path';
 
+const sanitizeNodeOptions = (value) => {
+  if (!value) return '';
+
+  const tokens = value.trim().split(/\s+/);
+  const cleaned = [];
+
+  for (let i = 0; i < tokens.length; i += 1) {
+    const token = tokens[i];
+
+    // Drop broken localstorage-file flags that cause noisy Node warnings.
+    if (token === '--localstorage-file') {
+      const next = tokens[i + 1];
+      const hasNextValue = next && !next.startsWith('--');
+      if (hasNextValue) i += 1;
+      continue;
+    }
+
+    if (token.startsWith('--localstorage-file=')) {
+      continue;
+    }
+
+    cleaned.push(token);
+  }
+
+  return cleaned.join(' ').trim();
+};
+
+const sanitizedNodeOptions = sanitizeNodeOptions(process.env.NODE_OPTIONS || '');
+if ((process.env.NODE_OPTIONS || '').trim() !== sanitizedNodeOptions) {
+  process.env.NODE_OPTIONS = sanitizedNodeOptions;
+}
+
+const sanitizedExecArgv = (process.execArgv || []).filter(
+  (arg) => arg !== '--localstorage-file' && !arg.startsWith('--localstorage-file=')
+);
+
 export default defineConfig({
   plugins: [react()],
   test: {
     globals: true,
+    env: {
+      NODE_OPTIONS: sanitizedNodeOptions,
+    },
+    poolOptions: {
+      threads: {
+        execArgv: sanitizedExecArgv,
+      },
+      forks: {
+        execArgv: sanitizedExecArgv,
+      },
+    },
     // Two test projects: frontend (jsdom) and server (node).
     // This replaces the deprecated environmentMatchGlobs feature.
     projects: [
