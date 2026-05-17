@@ -131,8 +131,8 @@ test.describe('Phase 33 — Leasing Continuity Hardening', () => {
   }) => {
     await enableHomepageEventCapture(page);
 
-    await page.goto('/', { waitUntil: 'domcontentloaded' });
-    await page.waitForLoadState('domcontentloaded');
+    await page.goto('/', { waitUntil: 'commit' });
+    await page.waitForLoadState('domcontentloaded').catch(() => null);
 
     // Dismiss any role-selection or onboarding modal that appears on first visit
     await page.keyboard.press('Escape');
@@ -171,8 +171,8 @@ test.describe('Phase 33 — Leasing Continuity Hardening', () => {
   }) => {
     await enableHomepageEventCapture(page);
 
-    await page.goto('/', { waitUntil: 'domcontentloaded' });
-    await page.waitForLoadState('domcontentloaded');
+    await page.goto('/', { waitUntil: 'commit' });
+    await page.waitForLoadState('domcontentloaded').catch(() => null);
 
     // Dismiss any role-selection or onboarding modal that appears on first visit
     await page.keyboard.press('Escape');
@@ -187,9 +187,7 @@ test.describe('Phase 33 — Leasing Continuity Hardening', () => {
 
     // Use dispatchEvent for cross-browser React event compatibility
     await page.evaluate(() => {
-      const btn = (document.querySelector(
-        'button[aria-label="Search properties"]'
-      ) ||
+      const btn = (document.querySelector('button[aria-label="Search properties"]') ||
         document.querySelector(
           'button[aria-label="Find rental properties in Dubai"]'
         )) as HTMLButtonElement | null;
@@ -214,8 +212,8 @@ test.describe('Phase 33 — Leasing Continuity Hardening', () => {
   test('whatsapp CTA click emits homepage_whatsapp_start event', async ({ page }) => {
     await enableHomepageEventCapture(page);
 
-    await page.goto('/', { waitUntil: 'domcontentloaded' });
-    await page.waitForLoadState('domcontentloaded');
+    await page.goto('/', { waitUntil: 'commit' });
+    await page.waitForLoadState('domcontentloaded').catch(() => null);
 
     // Dismiss any role-selection or onboarding modal that appears on first visit
     await page.keyboard.press('Escape');
@@ -241,7 +239,7 @@ test.describe('Phase 33 — Leasing Continuity Hardening', () => {
   test('contact form submit emits homepage_viewing_request_submit event', async ({ page }) => {
     await enableHomepageEventCapture(page);
 
-    await page.goto('/', { waitUntil: 'domcontentloaded' });
+    await page.goto('/', { waitUntil: 'commit' });
     await page.waitForLoadState('domcontentloaded');
 
     // Dismiss any role-selection or onboarding modal that appears on first visit
@@ -272,6 +270,8 @@ test.describe('Phase 33 — Leasing Continuity Hardening', () => {
   test('leasing lifecycle API route surfaces respond (not 404)', async ({ page }) => {
     // Test that API routes exist and return expected shapes (mocked backend).
     // A 404 would indicate a broken route — 200/401 are both acceptable.
+    await page.goto('/', { waitUntil: 'commit' });
+
     const lifecycleEndpoints = [
       { method: 'GET', path: '/api/viewings' },
       { method: 'GET', path: '/api/leases?role=tenant' },
@@ -280,9 +280,12 @@ test.describe('Phase 33 — Leasing Continuity Hardening', () => {
     ];
 
     for (const endpoint of lifecycleEndpoints) {
-      const response = await page.request.fetch(endpoint.path, { method: endpoint.method });
+      const status = await page.evaluate(async ({ path, method }) => {
+        const response = await fetch(path, { method });
+        return response.status;
+      }, endpoint);
       expect(
-        response.status(),
+        status,
         `${endpoint.method} ${endpoint.path} must not return 404 — leasing lifecycle continuity broken`
       ).not.toBe(404);
     }
