@@ -10,6 +10,7 @@ export default [
   {
     ignores: [
       'dist/**',
+      'modules/**',
       'coverage/**',
       'playwright-report/**',
       'test-results/**',
