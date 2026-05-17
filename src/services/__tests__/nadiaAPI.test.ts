@@ -128,4 +128,15 @@ describe('nadiaAPI Wave 03 contract mapping', () => {
     expect(result.priority).toBe('URGENT');
     expect(result.status).toBe('PENDING');
   });
+
+  it('maps list status filter to backend status values', async () => {
+    authFetchMock.mockResolvedValueOnce(successResponse([]));
+
+    await nadiaAPI.conversations.list({ status: 'PENDING', limit: 20 });
+
+    const [url] = authFetchMock.mock.calls[0] as [string];
+    expect(url).toContain('/api/nadia/conversations?');
+    expect(url).toContain('status=assigned_to_agent');
+    expect(url).toContain('limit=20');
+  });
 });

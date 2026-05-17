@@ -66,6 +66,21 @@ const denormalizeConversationStatus = (
   }
 };
 
+const denormalizeListStatus = (status: ListConversationsQuery['status']): string | undefined => {
+  switch (status) {
+    case 'ACTIVE':
+      return 'active';
+    case 'PENDING':
+      return 'assigned_to_agent';
+    case 'CLOSED':
+      return 'closed';
+    case 'SPAM':
+      return undefined;
+    default:
+      return undefined;
+  }
+};
+
 const normalizePriority = (leadScore: number): Conversation['priority'] => {
   if (leadScore >= 75) return 'HIGH';
   if (leadScore >= 50) return 'NORMAL';
@@ -189,7 +204,10 @@ const conversationsAPI = {
    */
   list: async (query?: ListConversationsQuery): Promise<Conversation[]> => {
     const params = new URLSearchParams();
-    if (query?.status) params.append('status', query.status);
+    if (query?.status) {
+      const backendStatus = denormalizeListStatus(query.status);
+      if (backendStatus) params.append('status', backendStatus);
+    }
     if (query?.skip !== undefined) params.append('offset', query.skip.toString());
     if (query?.limit !== undefined) params.append('limit', query.limit.toString());
     if (query?.sortBy) params.append('sortBy', query.sortBy);
