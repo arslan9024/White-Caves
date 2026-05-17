@@ -184,8 +184,8 @@
 - [x] Phase 27 execution plan created (`plans/PHASE_27_SUBAGENT_NEXT_LEVEL_90_READINESS.md`)
 - [x] Pending tracker linked to Phase 27 (`plans/PENDING_TASKS_ONLY.md`)
 - [x] Policy metadata extended for dual-threshold model (`scripts/orchestrator/policy.json`)
-- [ ] Run tracker sync pass across `AGENTS.md`, `PROJECT_PROGRESS.md`, `DAILY_MILESTONE_TRACKER.md`, and `plans/PENDING_TASKS_ONLY.md`
-- [ ] Introduce FEEDS_ACK audit command and daily target90 readiness check command
+- [x] Run tracker sync pass across `AGENTS.md`, `PROJECT_PROGRESS.md`, `DAILY_MILESTONE_TRACKER.md`, and `plans/PENDING_TASKS_ONLY.md`
+- [x] Introduce FEEDS_ACK audit command and daily target90 readiness check command
 
 ### MILESTONE-PHASE-2
 
