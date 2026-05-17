@@ -4,7 +4,7 @@
  * pagination, empty states, loading/error banners
  */
 
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, screen, fireEvent, waitFor, within } from '@testing-library/react';
 import React from 'react';
 import { Provider } from 'react-redux';
@@ -24,11 +24,23 @@ vi.mock('../../hooks/useDocumentTitle', () => ({
 }));
 
 vi.mock('../../shared/components/ui/Modal', () => ({
-  Modal: ({ isOpen, onClose, title, children }: { isOpen: boolean; onClose: () => void; title: string; children: React.ReactNode }) =>
+  Modal: ({
+    isOpen,
+    onClose,
+    title,
+    children,
+  }: {
+    isOpen: boolean;
+    onClose: () => void;
+    title: string;
+    children: React.ReactNode;
+  }) =>
     isOpen ? (
       <div data-testid="modal" role="dialog">
         <h2>{title}</h2>
-        <button data-testid="modal-close" onClick={onClose}>×</button>
+        <button data-testid="modal-close" onClick={onClose}>
+          ×
+        </button>
         {children}
       </div>
     ) : null,
@@ -38,13 +50,29 @@ vi.mock('../../components/ui', () => ({
   Badge: ({ children, variant }: { children: React.ReactNode; variant?: string }) => (
     <span data-testid={`badge-${variant || 'default'}`}>{children}</span>
   ),
-  Pagination: ({ currentPage, totalItems, itemsPerPage, onPageChange }: { currentPage: number; totalItems: number; itemsPerPage: number; onPageChange: (p: number) => void }) => {
+  Pagination: ({
+    currentPage,
+    totalItems,
+    itemsPerPage,
+    onPageChange,
+  }: {
+    currentPage: number;
+    totalItems: number;
+    itemsPerPage: number;
+    onPageChange: (p: number) => void;
+  }) => {
     const totalPages = Math.ceil(totalItems / itemsPerPage);
     return totalPages > 1 ? (
       <div data-testid="pagination">
-        <span>Page {currentPage} of {totalPages}</span>
-        <button onClick={() => onPageChange(currentPage + 1)} disabled={currentPage >= totalPages}>Next</button>
-        <button onClick={() => onPageChange(currentPage - 1)} disabled={currentPage <= 1}>Prev</button>
+        <span>
+          Page {currentPage} of {totalPages}
+        </span>
+        <button onClick={() => onPageChange(currentPage + 1)} disabled={currentPage >= totalPages}>
+          Next
+        </button>
+        <button onClick={() => onPageChange(currentPage - 1)} disabled={currentPage <= 1}>
+          Prev
+        </button>
       </div>
     ) : null;
   },
@@ -62,15 +90,75 @@ import crmDataReducer from '../../store/crmDataSlice';
 // ── Test Data ────────────────────────────────────────────────────
 
 const mockProperties = [
-  { id: '1', title: 'Luxury Villa - Palm Jumeirah', type: 'villa', status: 'available', featured: true, location: 'Palm Jumeirah, Dubai', price: 15000000, bedrooms: 5, bathrooms: 6, sqft: 8500, agent_name: 'Ahmed Al Rashid', description: 'Stunning beachfront villa', area: 'Palm Jumeirah' },
-  { id: '2', title: 'Modern Apartment - Downtown', type: 'apartment', status: 'reserved', featured: false, location: 'Downtown Dubai', price: 3500000, bedrooms: 2, bathrooms: 2, sqft: 1200, agent_name: 'Sara Khan', description: 'City view apartment', area: 'Downtown' },
-  { id: '3', title: 'Penthouse - Marina', type: 'penthouse', status: 'sold', featured: false, location: 'Dubai Marina', price: 8000000, bedrooms: 3, bathrooms: 4, sqft: 3200, agent_name: 'Omar Hassan', description: 'Premium penthouse', area: 'Marina' },
-  { id: '4', title: 'Commercial Office - Business Bay', type: 'commercial', status: 'available', featured: false, location: 'Business Bay', price: 5000000, bedrooms: 0, bathrooms: 2, sqft: 2000, agent_name: 'Fatima Ali', description: 'Office space', area: 'Business Bay' },
+  {
+    id: '1',
+    title: 'Luxury Villa - Palm Jumeirah',
+    type: 'villa',
+    status: 'available',
+    featured: true,
+    location: 'Palm Jumeirah, Dubai',
+    price: 15000000,
+    bedrooms: 5,
+    bathrooms: 6,
+    sqft: 8500,
+    agent_name: 'Ahmed Al Rashid',
+    description: 'Stunning beachfront villa',
+    area: 'Palm Jumeirah',
+  },
+  {
+    id: '2',
+    title: 'Modern Apartment - Downtown',
+    type: 'apartment',
+    status: 'reserved',
+    featured: false,
+    location: 'Downtown Dubai',
+    price: 3500000,
+    bedrooms: 2,
+    bathrooms: 2,
+    sqft: 1200,
+    agent_name: 'Sara Khan',
+    description: 'City view apartment',
+    area: 'Downtown',
+  },
+  {
+    id: '3',
+    title: 'Penthouse - Marina',
+    type: 'penthouse',
+    status: 'sold',
+    featured: false,
+    location: 'Dubai Marina',
+    price: 8000000,
+    bedrooms: 3,
+    bathrooms: 4,
+    sqft: 3200,
+    agent_name: 'Omar Hassan',
+    description: 'Premium penthouse',
+    area: 'Marina',
+  },
+  {
+    id: '4',
+    title: 'Commercial Office - Business Bay',
+    type: 'commercial',
+    status: 'available',
+    featured: false,
+    location: 'Business Bay',
+    price: 5000000,
+    bedrooms: 0,
+    bathrooms: 2,
+    sqft: 2000,
+    agent_name: 'Fatima Ali',
+    description: 'Office space',
+    area: 'Business Bay',
+  },
 ];
 
 // ── Helpers ──────────────────────────────────────────────────────
 
-const createMockStore = (properties = mockProperties, loading = false, error: string | null = null) => {
+const createMockStore = (
+  properties = mockProperties,
+  loading = false,
+  error: string | null = null
+) => {
   return configureStore({
     reducer: { crmData: crmDataReducer },
     preloadedState: {
@@ -97,7 +185,7 @@ const renderPage = (properties = mockProperties, loading = false, error: string 
         <MemoryRouter>
           <PropertyManagementPage />
         </MemoryRouter>
-      </Provider>,
+      </Provider>
     ),
   };
 };
@@ -106,7 +194,13 @@ const renderPage = (properties = mockProperties, loading = false, error: string 
 
 describe('PropertyManagementPage', () => {
   beforeEach(() => {
+    vi.spyOn(console, 'error').mockImplementation(() => {});
+    vi.spyOn(console, 'warn').mockImplementation(() => {});
     vi.clearAllMocks();
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
   });
 
   // ── Rendering ────────────────────────────────────────────────
@@ -233,20 +327,26 @@ describe('PropertyManagementPage', () => {
   describe('Search', () => {
     it('should filter properties by search text', () => {
       renderPage();
-      fireEvent.change(screen.getByPlaceholderText('Search properties...'), { target: { value: 'Villa' } });
+      fireEvent.change(screen.getByPlaceholderText('Search properties...'), {
+        target: { value: 'Villa' },
+      });
       expect(screen.getByText('Luxury Villa - Palm Jumeirah')).toBeInTheDocument();
       expect(screen.queryByText('Modern Apartment - Downtown')).not.toBeInTheDocument();
     });
 
     it('should search by location', () => {
       renderPage();
-      fireEvent.change(screen.getByPlaceholderText('Search properties...'), { target: { value: 'Marina' } });
+      fireEvent.change(screen.getByPlaceholderText('Search properties...'), {
+        target: { value: 'Marina' },
+      });
       expect(screen.getByText('Penthouse - Marina')).toBeInTheDocument();
     });
 
     it('should search by agent name', () => {
       renderPage();
-      fireEvent.change(screen.getByPlaceholderText('Search properties...'), { target: { value: 'Ahmed' } });
+      fireEvent.change(screen.getByPlaceholderText('Search properties...'), {
+        target: { value: 'Ahmed' },
+      });
       expect(screen.getByText('Luxury Villa - Palm Jumeirah')).toBeInTheDocument();
     });
   });
@@ -331,7 +431,7 @@ describe('PropertyManagementPage', () => {
           <MemoryRouter>
             <PropertyManagementPage />
           </MemoryRouter>
-        </Provider>,
+        </Provider>
       );
       await waitFor(() => {
         expect(screen.getByText(/Network error/)).toBeInTheDocument();
@@ -346,7 +446,7 @@ describe('PropertyManagementPage', () => {
           <MemoryRouter>
             <PropertyManagementPage />
           </MemoryRouter>
-        </Provider>,
+        </Provider>
       );
       await waitFor(() => {
         expect(screen.getByText('Retry')).toBeInTheDocument();
@@ -364,7 +464,9 @@ describe('PropertyManagementPage', () => {
 
     it('should show no-match message when filters have no results', () => {
       renderPage();
-      fireEvent.change(screen.getByPlaceholderText('Search properties...'), { target: { value: 'zzzznonexistent' } });
+      fireEvent.change(screen.getByPlaceholderText('Search properties...'), {
+        target: { value: 'zzzznonexistent' },
+      });
       expect(screen.getByText(/No properties match your filters/)).toBeInTheDocument();
     });
   });

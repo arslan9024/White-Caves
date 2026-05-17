@@ -11,7 +11,10 @@ import React from 'react';
 // ── Mocks ────────────────────────────────────────────────────────
 vi.mock('../../utils/logger', () => ({
   createLogger: () => ({
-    info: vi.fn(), warn: vi.fn(), error: vi.fn(), debug: vi.fn(),
+    info: vi.fn(),
+    warn: vi.fn(),
+    error: vi.fn(),
+    debug: vi.fn(),
   }),
 }));
 
@@ -23,9 +26,32 @@ vi.mock('../../utils/authFetch', () => ({
 import LeadScoringModule from './LeadScoringModule';
 
 const MOCK_LEADS = [
-  { id: 'l1', name: 'Ahmed Al Rashid', score: 92, budget: '2-5M', interest: 'Villa', source: 'Website', assignedAgent: 'John' },
-  { id: 'l2', name: 'Sarah Khan', score: 65, budget: '1-2M', interest: 'Apartment', source: 'Referral', assignedAgent: '' },
-  { id: 'l3', name: 'Mike Low', score: 40, budget: '500K-1M', interest: 'Studio', source: 'Walk-in' },
+  {
+    id: 'l1',
+    name: 'Ahmed Al Rashid',
+    score: 92,
+    budget: '2-5M',
+    interest: 'Villa',
+    source: 'Website',
+    assignedAgent: 'John',
+  },
+  {
+    id: 'l2',
+    name: 'Sarah Khan',
+    score: 65,
+    budget: '1-2M',
+    interest: 'Apartment',
+    source: 'Referral',
+    assignedAgent: '',
+  },
+  {
+    id: 'l3',
+    name: 'Mike Low',
+    score: 40,
+    budget: '500K-1M',
+    interest: 'Studio',
+    source: 'Walk-in',
+  },
 ];
 
 const MOCK_RULES = [
@@ -42,6 +68,8 @@ const DEFAULT_PROPS = {
 
 describe('LeadScoringModule', () => {
   beforeEach(() => {
+    vi.spyOn(console, 'error').mockImplementation(() => {});
+    vi.spyOn(console, 'warn').mockImplementation(() => {});
     vi.clearAllMocks();
     // Default: successful fetches
     mockAuthFetch.mockImplementation((url: string) => {
@@ -53,6 +81,10 @@ describe('LeadScoringModule', () => {
       }
       return Promise.resolve({ ok: false });
     });
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
   });
 
   // ── Render & Header ─────────────────────────────────────────────
@@ -190,9 +222,7 @@ describe('LeadScoringModule', () => {
   });
 
   it('handles API failure gracefully — shows empty leads', async () => {
-    mockAuthFetch.mockImplementation(() =>
-      Promise.resolve({ ok: false, status: 500 })
-    );
+    mockAuthFetch.mockImplementation(() => Promise.resolve({ ok: false, status: 500 }));
     render(<LeadScoringModule {...DEFAULT_PROPS} />);
     // Should still render the dashboard (empty state)
     await waitFor(() => {

@@ -1,0 +1,7 @@
+[3238] src/components/charts/__tests__/DataVisualization.test.tsx[2m >  || [22m[2mLineChart Component[2m > [22m[2mhandles single data point || [22m[39mWarning: Received NaN for the `cx` attribute. If this is expected, 
+[5336] [90mstderr[2m | src/components/crm/LeadScoringModule.test.tsx[2m >  || [22m[2mLeadScoringModule[2m > [22m[2mrenders the module header || [22m[39mWarning: An update to LeadScoringModule inside a test was not 
+[5369] [90mstderr[2m | src/components/crm/LeadScoringModule.test.tsx[2m >  || [22m[2mLeadScoringModule[2m > [22m[2mrenders all three tabs || [22m[39mWarning: An update to LeadScoringModule inside a test was not 
+[5507] [90mstderr[2m | src/pages/landlord/RentalManagementPage.test.tsx[2m >  || [22m[2mRentalManagementPage[2m > [22m[2mrenders page title || [22m[39mWarning: An update to RentalManagementPage inside a test was not 
+[5540] [90mstderr[2m | src/pages/landlord/RentalManagementPage.test.tsx[2m >  || [22m[2mRentalManagementPage[2m > [22m[2mrenders subtitle || [22m[39mWarning: An update to RentalManagementPage inside a test was not 
+[5574] [90mstderr[2m | src/pages/landlord/RentalManagementPage.test.tsx[2m >  || [22m[2mRentalManagementPage[2m > [22m[2mrenders all 3 filter buttons || [22m[39mWarning: An update to RentalManagementPage inside a test was not 
+[5679] [90mstderr[2m | src/components/Footer.test.tsx[2m > [22m[2mFooter[2m >  || [22m[2mrendering[2m > [22m[2mrenders without crashing || [22m[39mWarning: Invalid attribute name: `$platform`

@@ -1,11 +1,34 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 
+const MetricCard = ({ icon: Icon, label, value, trend, color }) => (
+  <div className="bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 p-6 hover:shadow-md transition-shadow">
+    <div className="flex items-start justify-between">
+      <div>
+        <p className="text-slate-600 dark:text-slate-400 text-sm font-medium">{label}</p>
+        <p className={`text-2xl font-bold mt-2 ${color}`}>{value}</p>
+        {trend && <p className="text-xs text-green-600 dark:text-green-400 mt-2">{trend}</p>}
+      </div>
+      {Icon && (
+        <div
+          className={`p-3 rounded-lg ${
+            color === 'text-red-600'
+              ? 'bg-red-100 dark:bg-red-900/20'
+              : 'bg-blue-100 dark:bg-blue-900/20'
+          }`}
+        >
+          <Icon className={`w-6 h-6 ${color}`} />
+        </div>
+      )}
+    </div>
+  </div>
+);
+
 /**
  * VATDashboard Component
  * Complete VAT management dashboard with metrics, filing status, and actions
  * Integrates with Fatima assistant for VAT filing support
- * 
+ *
  * @component
  * @param {Object} props
  * @param {Object} props.vatMetrics - VAT metrics {totalVAT, collectedVAT, payableVAT, filingStatus}
@@ -19,49 +42,22 @@ const VATDashboard = ({
     totalVAT: 45230,
     collectedVAT: 38900,
     payableVAT: 6330,
-    filingStatus: 'Due Soon'
+    filingStatus: 'Due Soon',
   },
   returns = [],
   upcomingFilings = [],
   onFileVAT = () => {},
-  onDownloadReport = () => {}
+  onDownloadReport = () => {},
 }) => {
   const [expandedReturn, setExpandedReturn] = useState(null);
   const [activeTab, setActiveTab] = useState('returns');
-
-  const MetricCard = ({ icon: Icon, label, value, trend, color }) => (
-    <div className="bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 p-6 hover:shadow-md transition-shadow">
-      <div className="flex items-start justify-between">
-        <div>
-          <p className="text-slate-600 dark:text-slate-400 text-sm font-medium">{label}</p>
-          <p className={`text-2xl font-bold mt-2 ${color}`}>{value}</p>
-          {trend && (
-            <p className="text-xs text-green-600 dark:text-green-400 mt-2">
-              {trend}
-            </p>
-          )}
-        </div>
-        {Icon && (
-          <div className={`p-3 rounded-lg ${
-            color === 'text-red-600' 
-              ? 'bg-red-100 dark:bg-red-900/20' 
-              : 'bg-blue-100 dark:bg-blue-900/20'
-          }`}>
-            <Icon className={`w-6 h-6 ${color}`} />
-          </div>
-        )}
-      </div>
-    </div>
-  );
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-900 p-4 md:p-8">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-slate-900 dark:text-white mb-2">
-            VAT Dashboard
-          </h1>
+          <h1 className="text-3xl font-bold text-slate-900 dark:text-white mb-2">VAT Dashboard</h1>
           <p className="text-slate-600 dark:text-slate-400">
             Manage your VAT filings and track returns
           </p>
@@ -138,11 +134,13 @@ const VATDashboard = ({
                           </p>
                         </div>
                         <div className="flex items-center gap-4">
-                          <span className={`px-3 py-1 rounded-full text-xs font-medium ${
-                            ret.status === 'Filed'
-                              ? 'bg-green-100 dark:bg-green-900/20 text-green-700 dark:text-green-400'
-                              : 'bg-yellow-100 dark:bg-yellow-900/20 text-yellow-700 dark:text-yellow-400'
-                          }`}>
+                          <span
+                            className={`px-3 py-1 rounded-full text-xs font-medium ${
+                              ret.status === 'Filed'
+                                ? 'bg-green-100 dark:bg-green-900/20 text-green-700 dark:text-green-400'
+                                : 'bg-yellow-100 dark:bg-yellow-900/20 text-yellow-700 dark:text-yellow-400'
+                            }`}
+                          >
                             {ret.status || 'Pending'}
                           </span>
                           <span>{expandedReturn === idx ? '▲' : '▼'}</span>
@@ -153,7 +151,7 @@ const VATDashboard = ({
                           <p>Filing Date: {ret.filingDate || 'N/A'}</p>
                           <p>Due Date: {ret.dueDate || 'N/A'}</p>
                           <button
-                            onClick={(e) => {
+                            onClick={e => {
                               e.stopPropagation();
                               onDownloadReport(ret);
                             }}
@@ -177,7 +175,10 @@ const VATDashboard = ({
               <div className="space-y-4">
                 {upcomingFilings.length > 0 ? (
                   upcomingFilings.map((filing, idx) => (
-                    <div key={idx} className="flex items-center justify-between p-4 border border-slate-200 dark:border-slate-700 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-700/50">
+                    <div
+                      key={idx}
+                      className="flex items-center justify-between p-4 border border-slate-200 dark:border-slate-700 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-700/50"
+                    >
                       <div>
                         <p className="font-medium text-slate-900 dark:text-white">
                           {filing.period || `Q${idx + 1}`}
@@ -186,11 +187,13 @@ const VATDashboard = ({
                           Due: {filing.dueDate || 'TBD'}
                         </p>
                       </div>
-                      <span className={`px-3 py-1 rounded-full text-xs font-medium ${
-                        filing.daysLeft < 7
-                          ? 'bg-red-100 dark:bg-red-900/20 text-red-700 dark:text-red-400'
-                          : 'bg-blue-100 dark:bg-blue-900/20 text-blue-700 dark:text-blue-400'
-                      }`}>
+                      <span
+                        className={`px-3 py-1 rounded-full text-xs font-medium ${
+                          filing.daysLeft < 7
+                            ? 'bg-red-100 dark:bg-red-900/20 text-red-700 dark:text-red-400'
+                            : 'bg-blue-100 dark:bg-blue-900/20 text-blue-700 dark:text-blue-400'
+                        }`}
+                      >
                         {filing.daysLeft || '30'} days
                       </span>
                     </div>
@@ -230,7 +233,7 @@ VATDashboard.propTypes = {
   returns: PropTypes.array,
   upcomingFilings: PropTypes.array,
   onFileVAT: PropTypes.func,
-  onDownloadReport: PropTypes.func
+  onDownloadReport: PropTypes.func,
 };
 
 export default VATDashboard;

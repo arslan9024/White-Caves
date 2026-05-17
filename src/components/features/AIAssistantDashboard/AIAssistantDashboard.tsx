@@ -238,11 +238,9 @@ const AIAssistantDashboard: React.FC<AIAssistantDashboardProps> = ({ assistantId
         <StatusBadge status={assistant.status || 'active'}>
           {assistant.status === 'active'
             ? 'Active'
-            : assistant.status === 'training'
-              ? 'Training'
-              : assistant.status === 'error'
-                ? 'Error'
-                : 'Inactive'}
+            : assistant.status === 'error'
+              ? 'Error'
+              : 'Inactive'}
         </StatusBadge>
       </Header>
 

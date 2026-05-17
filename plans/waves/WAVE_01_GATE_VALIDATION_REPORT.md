@@ -1,7 +1,7 @@
 ﻿# WAVE_01 Gate Validation Report
 
 - Status: **PASS**
-- Generated: 2026-05-06 04:41:50
+- Generated: 2026-05-16 12:22:31
 
 ## Checks
 
@@ -17,11 +17,11 @@
   - Evidence: .\plans\waves\WAVE_01_TEST_ROLLOUT.md
 - [PASS] Readiness evidence mentions 60% threshold
   - Evidence: .\plans\waves\WAVE_01_READINESS_PACKET.md
-- [PASS] Project tracker references 60% readiness gate
+- [PASS] Project tracker references fast-track readiness gate
   - Evidence: .\PROJECT_PROGRESS.md
 - [PASS] Daily premium cap evidence present
   - Evidence: .\PROJECT_PROGRESS.md
 
 ## Mandatory Approval Phrase
 
-@Ada - Context Ready (60% Readiness) - Coding Phase Approved
+@Ada â€” Context Ready (60% Readiness) â€” Coding Phase Approved

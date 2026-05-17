@@ -6,6 +6,7 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import { configureStore } from '@reduxjs/toolkit';
 import React from 'react';
+import { MemoryRouter } from 'react-router-dom';
 
 // Mock PropertyCard
 vi.mock('../../components/common/PropertyCard', () => ({
@@ -23,8 +24,20 @@ import FavoriteListings from './FavoriteListings';
 // ─── Store helpers ──────────────────────────────────────────────────
 
 const mockFavorites = [
-  { id: '1', title: 'Marina Tower 3BR', location: 'Dubai Marina', price: '2500000', image: '/test.jpg' },
-  { id: '2', title: 'Palm Villa', location: 'Palm Jumeirah', price: '15000000', image: '/test2.jpg' },
+  {
+    id: '1',
+    title: 'Marina Tower 3BR',
+    location: 'Dubai Marina',
+    price: '2500000',
+    image: '/test.jpg',
+  },
+  {
+    id: '2',
+    title: 'Palm Villa',
+    location: 'Palm Jumeirah',
+    price: '15000000',
+    image: '/test2.jpg',
+  },
 ];
 
 function createTestStore(favorites: any[] = [], loading = false) {
@@ -39,8 +52,10 @@ function renderWithStore(favorites: any[] = [], loading = false) {
   const store = createTestStore(favorites, loading);
   return render(
     <Provider store={store}>
-      <FavoriteListings />
-    </Provider>,
+      <MemoryRouter>
+        <FavoriteListings />
+      </MemoryRouter>
+    </Provider>
   );
 }
 

@@ -20,7 +20,7 @@ export const GlobalStyles = createGlobalStyle<{ theme: Theme }>`
   }
 
   body {
-    background-color: ${props => props.theme.colors.background};
+    background-color: ${props => props.theme.colors.background.primary};
     color: ${props => props.theme.colors.textPrimary};
     transition: background-color ${props => props.theme.transitions.standard},
                 color ${props => props.theme.transitions.standard};
@@ -67,7 +67,7 @@ export const GlobalStyles = createGlobalStyle<{ theme: Theme }>`
   }
 
   ::-webkit-scrollbar-thumb {
-    background: ${props => props.theme.colors.border};
+    background: ${props => props.theme.colors.border.medium};
     border-radius: ${props => props.theme.borderRadius.sm};
 
     &:hover {

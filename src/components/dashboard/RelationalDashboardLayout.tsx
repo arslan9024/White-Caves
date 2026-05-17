@@ -195,7 +195,9 @@ const RelationalDashboardLayout = ({
   useEffect(() => {
     if (selectedDepartment) {
       console.warn('[RelationalDashboardLayout] Fetching data for department:', selectedDepartment);
-      dispatch(fetchDepartmentData(selectedDepartment) as Parameters<typeof dispatch>[0]);
+      dispatch(
+        fetchDepartmentData(selectedDepartment) as unknown as Parameters<typeof dispatch>[0]
+      );
     }
   }, [selectedDepartment, dispatch]);
 

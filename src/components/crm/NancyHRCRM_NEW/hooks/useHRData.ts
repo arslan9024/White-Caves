@@ -1,7 +1,7 @@
 import { useState, useCallback, useMemo, useEffect } from 'react';
-import { Employee } from '../data/employees';
+import { DUMMY_EMPLOYEES, Employee } from '../data/employees';
 import { DUMMY_JOBS, Job } from '../data/jobs';
-import { Applicant } from '../data/applicants';
+import { DUMMY_APPLICANTS, Applicant } from '../data/applicants';
 import { authFetch } from '../../../../utils/authFetch';
 
 // API response types
@@ -92,9 +92,9 @@ function mapJobAppToApplicant(a: JobAppApiItem): Applicant {
 }
 
 export const useHRData = () => {
-  const [employees, setEmployees] = useState<Employee[]>([]);
+  const [employees, setEmployees] = useState<Employee[]>(DUMMY_EMPLOYEES);
   const [jobs, setJobs] = useState<Job[]>(DUMMY_JOBS);
-  const [applicants, setApplicants] = useState<Applicant[]>([]);
+  const [applicants, setApplicants] = useState<Applicant[]>(DUMMY_APPLICANTS);
   const [loading, setLoading] = useState<boolean>(true);
 
   // Fetch employees (users) and applicants from live API on mount
@@ -117,6 +117,8 @@ export const useHRData = () => {
         setLoading(false);
       })
       .catch(() => {
+        setEmployees(prev => (prev.length > 0 ? prev : DUMMY_EMPLOYEES));
+        setApplicants(prev => (prev.length > 0 ? prev : DUMMY_APPLICANTS));
         setLoading(false);
       });
   }, []);

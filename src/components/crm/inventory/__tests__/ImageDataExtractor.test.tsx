@@ -36,35 +36,146 @@ vi.mock('lucide-react', () => ({
 
 // Mock styled components
 vi.mock('../ImageDataExtractor.styles', () => ({
-  ImageExtractorContainer: ({ children, ...p }: any) => <div data-testid="extractor-container" {...p}>{children}</div>,
-  ExtractorHeader: ({ children, ...p }: any) => <div data-testid="extractor-header" {...p}>{children}</div>,
-  HeaderInfo: ({ children, ...p }: any) => <div {...p}>{children}</div>,
-  HeaderTitle: ({ children, ...p }: any) => <h2 {...p}>{children}</h2>,
-  HeaderSubtext: ({ children, ...p }: any) => <p {...p}>{children}</p>,
-  HeaderActions: ({ children, ...p }: any) => <div data-testid="header-actions" {...p}>{children}</div>,
-  ActionBtn: ({ children, onClick, ...p }: any) => <button onClick={onClick} {...p}>{children}</button>,
-  DropZone: ({ children, onDrop, onDragOver, onDragLeave, onClick, ...p }: any) => (
-    <div data-testid="drop-zone" onDrop={onDrop} onDragOver={onDragOver} onDragLeave={onDragLeave} onClick={onClick} {...p}>{children}</div>
+  ImageExtractorContainer: ({ children, ...p }: any) => (
+    <div
+      data-testid="extractor-container"
+      {...Object.fromEntries(Object.entries(p).filter(([k]) => !k.startsWith('$')))}
+    >
+      {children}
+    </div>
   ),
-  ProcessingState: ({ children, ...p }: any) => <div data-testid="processing-state" {...p}>{children}</div>,
-  UploadedFiles: ({ children, ...p }: any) => <div data-testid="uploaded-files" {...p}>{children}</div>,
-  FileChip: ({ children, ...p }: any) => <span data-testid="file-chip" {...p}>{children}</span>,
-  ExtractedResults: ({ children, ...p }: any) => <div data-testid="extracted-results" {...p}>{children}</div>,
-  ResultCard: ({ children, ...p }: any) => <div data-testid="result-card" {...p}>{children}</div>,
+  ExtractorHeader: ({ children, ...p }: any) => (
+    <div
+      data-testid="extractor-header"
+      {...Object.fromEntries(Object.entries(p).filter(([k]) => !k.startsWith('$')))}
+    >
+      {children}
+    </div>
+  ),
+  HeaderInfo: ({ children, ...p }: any) => (
+    <div {...Object.fromEntries(Object.entries(p).filter(([k]) => !k.startsWith('$')))}>
+      {children}
+    </div>
+  ),
+  HeaderTitle: ({ children, ...p }: any) => (
+    <h2 {...Object.fromEntries(Object.entries(p).filter(([k]) => !k.startsWith('$')))}>
+      {children}
+    </h2>
+  ),
+  HeaderSubtext: ({ children, ...p }: any) => (
+    <p {...Object.fromEntries(Object.entries(p).filter(([k]) => !k.startsWith('$')))}>{children}</p>
+  ),
+  HeaderActions: ({ children, ...p }: any) => (
+    <div
+      data-testid="header-actions"
+      {...Object.fromEntries(Object.entries(p).filter(([k]) => !k.startsWith('$')))}
+    >
+      {children}
+    </div>
+  ),
+  ActionBtn: ({ children, onClick, ...p }: any) => (
+    <button
+      onClick={onClick}
+      {...Object.fromEntries(Object.entries(p).filter(([k]) => !k.startsWith('$')))}
+    >
+      {children}
+    </button>
+  ),
+  DropZone: ({ children, onDrop, onDragOver, onDragLeave, onClick, ...p }: any) => (
+    <div
+      data-testid="drop-zone"
+      onDrop={onDrop}
+      onDragOver={onDragOver}
+      onDragLeave={onDragLeave}
+      onClick={onClick}
+      {...p}
+    >
+      {children}
+    </div>
+  ),
+  ProcessingState: ({ children, ...p }: any) => (
+    <div data-testid="processing-state" {...p}>
+      {children}
+    </div>
+  ),
+  UploadedFiles: ({ children, ...p }: any) => (
+    <div data-testid="uploaded-files" {...p}>
+      {children}
+    </div>
+  ),
+  FileChip: ({ children, ...p }: any) => (
+    <span data-testid="file-chip" {...p}>
+      {children}
+    </span>
+  ),
+  ExtractedResults: ({ children, ...p }: any) => (
+    <div data-testid="extracted-results" {...p}>
+      {children}
+    </div>
+  ),
+  ResultCard: ({ children, ...p }: any) => (
+    <div data-testid="result-card" {...p}>
+      {children}
+    </div>
+  ),
   ResultHeader: ({ children, ...p }: any) => <div {...p}>{children}</div>,
   ResultSource: ({ children, ...p }: any) => <div {...p}>{children}</div>,
-  ResultActions: ({ children, ...p }: any) => <div data-testid="result-actions" {...p}>{children}</div>,
-  PreviewBtn: ({ children, onClick, ...p }: any) => <button onClick={onClick} data-testid="preview-btn" {...p}>{children}</button>,
-  ResultData: ({ children, ...p }: any) => <div data-testid="result-data" {...p}>{children}</div>,
-  DataField: ({ children, ...p }: any) => <div data-testid="data-field" {...p}>{children}</div>,
+  ResultActions: ({ children, ...p }: any) => (
+    <div data-testid="result-actions" {...p}>
+      {children}
+    </div>
+  ),
+  PreviewBtn: ({ children, onClick, ...p }: any) => (
+    <button onClick={onClick} data-testid="preview-btn" {...p}>
+      {children}
+    </button>
+  ),
+  ResultData: ({ children, ...p }: any) => (
+    <div data-testid="result-data" {...p}>
+      {children}
+    </div>
+  ),
+  DataField: ({ children, ...p }: any) => (
+    <div data-testid="data-field" {...p}>
+      {children}
+    </div>
+  ),
   FieldValues: ({ children, ...p }: any) => <div {...p}>{children}</div>,
-  ValueChip: ({ children, ...p }: any) => <span data-testid="value-chip" {...p}>{children}</span>,
-  EditBtn: ({ children, onClick, ...p }: any) => <button onClick={onClick} data-testid="edit-btn" {...p}>{children}</button>,
-  ImportSection: ({ children, ...p }: any) => <div data-testid="import-section" {...p}>{children}</div>,
-  ImportBtn: ({ children, onClick, ...p }: any) => <button onClick={onClick} data-testid="import-btn" {...p}>{children}</button>,
-  ImagePreviewModal: ({ children, onClick, ...p }: any) => <div data-testid="preview-modal" onClick={onClick} {...p}>{children}</div>,
-  PreviewContent: ({ children, onClick, ...p }: any) => <div onClick={onClick} {...p}>{children}</div>,
-  ClosePreviewBtn: ({ children, onClick, ...p }: any) => <button onClick={onClick} data-testid="close-preview-btn" {...p}>{children}</button>,
+  ValueChip: ({ children, ...p }: any) => (
+    <span data-testid="value-chip" {...p}>
+      {children}
+    </span>
+  ),
+  EditBtn: ({ children, onClick, ...p }: any) => (
+    <button onClick={onClick} data-testid="edit-btn" {...p}>
+      {children}
+    </button>
+  ),
+  ImportSection: ({ children, ...p }: any) => (
+    <div data-testid="import-section" {...p}>
+      {children}
+    </div>
+  ),
+  ImportBtn: ({ children, onClick, ...p }: any) => (
+    <button onClick={onClick} data-testid="import-btn" {...p}>
+      {children}
+    </button>
+  ),
+  ImagePreviewModal: ({ children, onClick, ...p }: any) => (
+    <div data-testid="preview-modal" onClick={onClick} {...p}>
+      {children}
+    </div>
+  ),
+  PreviewContent: ({ children, onClick, ...p }: any) => (
+    <div onClick={onClick} {...p}>
+      {children}
+    </div>
+  ),
+  ClosePreviewBtn: ({ children, onClick, ...p }: any) => (
+    <button onClick={onClick} data-testid="close-preview-btn" {...p}>
+      {children}
+    </button>
+  ),
 }));
 
 import ImageDataExtractor from '../ImageDataExtractor';
@@ -85,6 +196,8 @@ describe('ImageDataExtractor', () => {
   let mockFileReader: any;
 
   beforeEach(() => {
+    vi.spyOn(console, 'error').mockImplementation(() => {});
+    vi.spyOn(console, 'warn').mockImplementation(() => {});
     vi.useFakeTimers({ shouldAdvanceTime: true });
 
     // Mock FileReader
@@ -202,7 +315,7 @@ describe('ImageDataExtractor', () => {
         fireEvent.drop(dropZone, { dataTransfer });
       });
 
-      // Trigger FileReader onload  
+      // Trigger FileReader onload
       if (mockFileReader.onload) {
         await act(async () => {
           mockFileReader.onload({ target: { result: mockFileReader.result } });

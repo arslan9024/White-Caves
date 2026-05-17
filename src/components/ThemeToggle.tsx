@@ -19,9 +19,11 @@ interface ThemeToggleProps {
   className?: string;
   /** Compact single-icon mode: cycles through light → system → dark */
   compact?: boolean;
+  /** Optional callback fired when the theme is toggled/changed */
+  onToggle?: () => void;
 }
 
-const ThemeToggle: React.FC<ThemeToggleProps> = ({ className = '', compact = false }) => {
+const ThemeToggle: React.FC<ThemeToggleProps> = ({ className = '', compact = false, onToggle }) => {
   const { themeMode, setThemeMode, isDark } = useTheme();
 
   if (compact) {
@@ -33,7 +35,10 @@ const ThemeToggle: React.FC<ThemeToggleProps> = ({ className = '', compact = fal
     return (
       <S.ThemeToggleButton
         className={className}
-        onClick={() => setThemeMode(nextMode)}
+        onClick={() => {
+          setThemeMode(nextMode);
+          onToggle?.();
+        }}
         aria-label={`Theme: ${themeMode}. Click to switch to ${nextMode} mode`}
         title={currentOption.title}
       >
@@ -77,7 +82,10 @@ const ThemeToggle: React.FC<ThemeToggleProps> = ({ className = '', compact = fal
           <button
             key={mode}
             type="button"
-            onClick={() => setThemeMode(mode)}
+            onClick={() => {
+              setThemeMode(mode);
+              onToggle?.();
+            }}
             aria-pressed={active}
             aria-label={title}
             title={title}

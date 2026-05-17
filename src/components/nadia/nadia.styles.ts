@@ -54,14 +54,14 @@ const tokens = {
     xl: radius.xxl, // nadia xl (16px) = theme xxl (16px)
   },
   shadows: {
-    sm: shadows.xs,
+    sm: shadows.sm,
     md: shadows.md,
     lg: shadows.lg,
   },
   transitions: {
-    fast: `${transitions.durations.shortest} ${transitions.easing.easeInOut}`,
+    fast: `${transitions.durations.shorter} ${transitions.easing.easeInOut}`,
     base: `${transitions.durations.short} ${transitions.easing.easeInOut}`,
-    slow: `${transitions.durations.complex} ${transitions.easing.easeInOut}`,
+    slow: `${transitions.durations.long} ${transitions.easing.easeInOut}`,
   },
 };
 
@@ -119,7 +119,7 @@ export const ConversationListHeader = styled.div`
 
   h2 {
     margin: 0;
-    font-size: ${typography.sizes.md};
+    font-size: ${typography.sizes.base};
     font-weight: ${typography.weights.semibold};
     color: ${tokens.colors.text.primary};
   }
@@ -305,7 +305,7 @@ export const MessageViewerHeaderContent = styled.div`
 
   h3 {
     margin: 0;
-    font-size: ${typography.sizes.md};
+    font-size: ${typography.sizes.base};
     font-weight: ${typography.weights.semibold};
     color: ${tokens.colors.text.primary};
   }
@@ -549,7 +549,7 @@ export const QueueManagerHeader = styled.div`
 
   h3 {
     margin: 0 0 ${tokens.spacing.md} 0;
-    font-size: ${typography.sizes.md};
+    font-size: ${typography.sizes.base};
     font-weight: ${typography.weights.semibold};
     color: ${tokens.colors.text.primary};
   }
@@ -759,7 +759,7 @@ export const ErrorAlert = styled.div`
     border: none;
     color: inherit;
     cursor: pointer;
-    font-size: ${typography.sizes.md};
+    font-size: ${typography.sizes.base};
     padding: 0;
   }
 `;

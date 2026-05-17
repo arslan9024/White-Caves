@@ -1,21 +1,36 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeAll, beforeEach, afterAll, afterEach } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import React, { Suspense } from 'react';
 
 // Mock lucide-react
-vi.mock('lucide-react', () => {
+vi.mock('lucide-react', async () => {
+  const actual = await vi.importActual<typeof import('lucide-react')>('lucide-react');
   const icon = (name: string) => (props: any) => <svg data-testid={`icon-${name}`} {...props} />;
   return {
+    ...actual,
     Bot: icon('bot'),
     Users: icon('users'),
     Briefcase: icon('briefcase'),
     Calendar: icon('calendar'),
     Award: icon('award'),
     Clock: icon('clock'),
+    Bell: icon('bell'),
+    BellOff: icon('bell-off'),
+    XCircle: icon('x-circle'),
+    AlertTriangle: icon('alert-triangle'),
+    Info: icon('info'),
+    Loader2: icon('loader-2'),
+    BarChart2: icon('bar-chart-2'),
+    ChevronDown: icon('chevron-down'),
+    ChevronRight: icon('chevron-right'),
+    User: icon('user'),
     Plus: icon('plus'),
     PenTool: icon('pen-tool'),
     Zap: icon('zap'),
+    Flag: icon('flag'),
     CheckCircle: icon('check-circle'),
+    CheckCircle2: icon('check-circle-2'),
+    Circle: icon('circle'),
     UserPlus: icon('user-plus'),
   };
 });
@@ -51,9 +66,27 @@ vi.mock('../hooks/useHRData', () => ({
 // Mock NANCY_FEATURES
 vi.mock('../data/features', () => ({
   NANCY_FEATURES: [
-    { name: 'Employee Directory', category: 'Workforce', status: 'active', description: 'Dir', capabilities: [] },
-    { name: 'Job Board', category: 'Talent', status: 'active', description: 'Jobs', capabilities: [] },
-    { name: 'AI Screening', category: 'AI', status: 'beta', description: 'Screen', capabilities: [] },
+    {
+      name: 'Employee Directory',
+      category: 'Workforce',
+      status: 'active',
+      description: 'Dir',
+      capabilities: [],
+    },
+    {
+      name: 'Job Board',
+      category: 'Talent',
+      status: 'active',
+      description: 'Jobs',
+      capabilities: [],
+    },
+    {
+      name: 'AI Screening',
+      category: 'AI',
+      status: 'beta',
+      description: 'Screen',
+      capabilities: [],
+    },
   ],
 }));
 
@@ -91,8 +124,21 @@ vi.mock('../NancyHRCRM.css', () => ({}));
 import NancyHRCRM from '../index';
 
 describe('NancyHRCRM', () => {
+  beforeAll(() => {
+    vi.spyOn(console, 'error').mockImplementation(() => {});
+    vi.spyOn(console, 'warn').mockImplementation(() => {});
+  });
+
   beforeEach(() => {
     vi.clearAllMocks();
+  });
+
+  afterEach(() => {
+    vi.clearAllMocks();
+  });
+
+  afterAll(() => {
+    vi.restoreAllMocks();
   });
 
   // ── Header ─────────────────────────────────────────────────

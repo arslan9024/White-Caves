@@ -91,9 +91,10 @@ const defaultStats = {
 };
 
 // Build a fake RootState with just the nadia slice
-const buildRoot = (overrides = {}) => ({
-  nadia: { ...getInitialState(), ...overrides },
-}) as any;
+const buildRoot = (overrides = {}) =>
+  ({
+    nadia: { ...getInitialState(), ...overrides },
+  }) as any;
 
 // ─── Tests ───────────────────────────────────────────────────────────
 
@@ -242,7 +243,11 @@ describe('nadiaSlice', () => {
     });
 
     it('fulfilled: stores queue and stats', () => {
-      const stats = { ...defaultStats, totalQueued: 3, byPriority: { URGENT: 1, HIGH: 2, NORMAL: 0, LOW: 0 } };
+      const stats = {
+        ...defaultStats,
+        totalQueued: 3,
+        byPriority: { URGENT: 1, HIGH: 2, NORMAL: 0, LOW: 0 },
+      };
       const next = nadiaReducer(getInitialState(), {
         type: fetchQueue.fulfilled.type,
         payload: { queue: [sampleQueueItem()], stats },
@@ -277,9 +282,17 @@ describe('nadiaSlice', () => {
       const next = nadiaReducer(state, {
         type: assignAgent.fulfilled.type,
         payload: { queueId: 'q-1', conversationId: 'conv-1' },
+        meta: {
+          arg: {
+            queueId: 'q-1',
+            agentPhone: '+971500000111',
+          },
+        },
       });
       expect(next.queue).toHaveLength(0);
       expect(next.loading).toBe(false);
+      expect(next.conversations[0].assignedAgent).toBe('+971500000111');
+      expect(next.conversations[0].status).toBe('PENDING');
     });
 
     it('rejected: sets error', () => {
@@ -346,7 +359,11 @@ describe('nadiaSlice', () => {
       ],
       messages: [sampleMessage()],
       queue: [sampleQueueItem()],
-      stats: { ...defaultStats, totalQueued: 1, byPriority: { URGENT: 2, HIGH: 3, NORMAL: 0, LOW: 0 } },
+      stats: {
+        ...defaultStats,
+        totalQueued: 1,
+        byPriority: { URGENT: 2, HIGH: 3, NORMAL: 0, LOW: 0 },
+      },
       selectedConversationId: 'conv-1',
       loading: true,
       error: 'test error',

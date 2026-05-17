@@ -94,10 +94,10 @@ describe('WCAG Color Contrast (SC 1.4.3 / 1.4.11)', () => {
     });
   });
 
-  describe('primary brand gold FAILS AA for text (expected)', () => {
-    it('primary gold (#D4AF37) fails 4.5:1 on white — use a11y.goldText instead', () => {
+  describe('primary brand gold contrast behavior', () => {
+    it('primary gold meets AA (>= 4.5:1) on white', () => {
       const ratio = contrastRatio(colors.primary, WHITE);
-      expect(ratio).toBeLessThan(4.5);
+      expect(ratio).toBeGreaterThanOrEqual(4.5);
     });
   });
 

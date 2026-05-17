@@ -1,16 +1,24 @@
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { APIOptimizer } from '../apiOptimizer';
 
 describe('APIOptimizer', () => {
   let optimizer: APIOptimizer;
 
   beforeEach(() => {
+    vi.spyOn(console, 'log').mockImplementation(() => {});
+    vi.spyOn(console, 'warn').mockImplementation(() => {});
+    vi.spyOn(console, 'error').mockImplementation(() => {});
+
     optimizer = new APIOptimizer({
       cacheTTL: 1000,
       enableCache: true,
       enableDedup: true,
       enablePagination: true,
     });
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
   });
 
   it('caches responses via getWithCache', async () => {

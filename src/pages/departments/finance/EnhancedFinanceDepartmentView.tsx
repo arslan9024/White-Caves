@@ -110,11 +110,7 @@ export const FinanceDepartmentView: React.FC<FinanceDepartmentViewProps> = ({
   if (dataError || kpiError) {
     return (
       <ErrorState
-        error={
-          dataError?.message ||
-          kpiError?.message ||
-          'Unable to fetch finance data. Using fallback data.'
-        }
+        error={dataError || kpiError || 'Unable to fetch finance data. Using fallback data.'}
         onRetry={() => window.location.reload()}
       />
     );

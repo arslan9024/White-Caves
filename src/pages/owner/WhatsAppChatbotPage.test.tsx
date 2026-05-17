@@ -20,7 +20,10 @@ vi.mock('../../utils/authFetch', () => ({
 
 vi.mock('../../utils/logger', () => ({
   createLogger: () => ({
-    info: vi.fn(), warn: vi.fn(), error: vi.fn(), debug: vi.fn(),
+    info: vi.fn(),
+    warn: vi.fn(),
+    error: vi.fn(),
+    debug: vi.fn(),
   }),
 }));
 
@@ -36,22 +39,23 @@ vi.mock('./WhatsAppChatbotPage.css', () => ({}));
 
 let mockUser: { role: string } | null = { role: 'owner' };
 vi.mock('react-redux', () => ({
-  useSelector: (fn: (s: unknown) => unknown) =>
-    fn({ user: { currentUser: mockUser } }),
+  useSelector: (fn: (s: unknown) => unknown) => fn({ user: { currentUser: mockUser } }),
 }));
 
 // ── Helpers ──────────────────────────────────────────────────────
 
 function ok(data: Record<string, unknown>) {
   return Promise.resolve({
-    ok: true, status: 200,
+    ok: true,
+    status: 200,
     json: () => Promise.resolve(data),
   });
 }
 
 function fail(status = 500) {
   return Promise.resolve({
-    ok: false, status,
+    ok: false,
+    status,
     json: () => Promise.resolve({ error: 'Server error' }),
   });
 }
@@ -61,6 +65,8 @@ import WhatsAppChatbotPage from './WhatsAppChatbotPage';
 describe('WhatsAppChatbotPage', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    vi.spyOn(console, 'error').mockImplementation(() => {});
+    vi.spyOn(console, 'warn').mockImplementation(() => {});
     mockUser = { role: 'owner' };
     mockAuthFetch.mockResolvedValue(ok({ messages: [] }).then(r => r));
   });
@@ -79,7 +85,8 @@ describe('WhatsAppChatbotPage', () => {
 
   it('allows owner role to view page', async () => {
     mockAuthFetch.mockResolvedValue({
-      ok: true, json: () => Promise.resolve({ messages: [] }),
+      ok: true,
+      json: () => Promise.resolve({ messages: [] }),
     });
     render(<WhatsAppChatbotPage />);
     expect(screen.getByText('WhatsApp Chatbot Manager')).toBeInTheDocument();
@@ -89,7 +96,8 @@ describe('WhatsAppChatbotPage', () => {
   it('allows admin role to view page', async () => {
     mockUser = { role: 'admin' };
     mockAuthFetch.mockResolvedValue({
-      ok: true, json: () => Promise.resolve({ messages: [] }),
+      ok: true,
+      json: () => Promise.resolve({ messages: [] }),
     });
     render(<WhatsAppChatbotPage />);
     expect(screen.getByText('WhatsApp Chatbot Manager')).toBeInTheDocument();
@@ -106,7 +114,8 @@ describe('WhatsAppChatbotPage', () => {
 
   it('renders Messages tab by default', async () => {
     mockAuthFetch.mockResolvedValue({
-      ok: true, json: () => Promise.resolve({ messages: [] }),
+      ok: true,
+      json: () => Promise.resolve({ messages: [] }),
     });
     render(<WhatsAppChatbotPage />);
     expect(screen.getByText('Add New Automated Message')).toBeInTheDocument();
@@ -114,7 +123,8 @@ describe('WhatsAppChatbotPage', () => {
 
   it('switches to Settings tab', async () => {
     mockAuthFetch.mockResolvedValue({
-      ok: true, json: () => Promise.resolve({ messages: [] }),
+      ok: true,
+      json: () => Promise.resolve({ messages: [] }),
     });
     render(<WhatsAppChatbotPage />);
     fireEvent.click(screen.getByText('Settings'));
@@ -123,7 +133,8 @@ describe('WhatsAppChatbotPage', () => {
 
   it('switches back to Messages tab', async () => {
     mockAuthFetch.mockResolvedValue({
-      ok: true, json: () => Promise.resolve({ messages: [] }),
+      ok: true,
+      json: () => Promise.resolve({ messages: [] }),
     });
     render(<WhatsAppChatbotPage />);
     fireEvent.click(screen.getByText('Settings'));
@@ -136,14 +147,17 @@ describe('WhatsAppChatbotPage', () => {
   it('shows loading indicator while fetching', async () => {
     let resolvePromise: (v: unknown) => void;
     mockAuthFetch.mockReturnValue(
-      new Promise(resolve => { resolvePromise = resolve; })
+      new Promise(resolve => {
+        resolvePromise = resolve;
+      })
     );
     render(<WhatsAppChatbotPage />);
     expect(screen.getByText('Loading messages...')).toBeInTheDocument();
 
     await act(async () => {
       resolvePromise!({
-        ok: true, json: () => Promise.resolve({ messages: [] }),
+        ok: true,
+        json: () => Promise.resolve({ messages: [] }),
       });
     });
   });
@@ -153,12 +167,13 @@ describe('WhatsAppChatbotPage', () => {
   it('renders fetched messages', async () => {
     mockAuthFetch.mockResolvedValue({
       ok: true,
-      json: () => Promise.resolve({
-        messages: [
-          { id: '1', trigger: 'hello', response: 'Welcome!', enabled: true },
-          { id: '2', trigger: 'pricing', response: 'Visit our website', enabled: false },
-        ],
-      }),
+      json: () =>
+        Promise.resolve({
+          messages: [
+            { id: '1', trigger: 'hello', response: 'Welcome!', enabled: true },
+            { id: '2', trigger: 'pricing', response: 'Visit our website', enabled: false },
+          ],
+        }),
     });
 
     render(<WhatsAppChatbotPage />);
@@ -171,7 +186,8 @@ describe('WhatsAppChatbotPage', () => {
 
   it('shows empty state when no messages', async () => {
     mockAuthFetch.mockResolvedValue({
-      ok: true, json: () => Promise.resolve({ messages: [] }),
+      ok: true,
+      json: () => Promise.resolve({ messages: [] }),
     });
     render(<WhatsAppChatbotPage />);
     await waitFor(() => {
@@ -182,12 +198,13 @@ describe('WhatsAppChatbotPage', () => {
   it('shows active/inactive status for messages', async () => {
     mockAuthFetch.mockResolvedValue({
       ok: true,
-      json: () => Promise.resolve({
-        messages: [
-          { id: '1', trigger: 'test', response: 'resp', enabled: true },
-          { id: '2', trigger: 'test2', response: 'resp2', enabled: false },
-        ],
-      }),
+      json: () =>
+        Promise.resolve({
+          messages: [
+            { id: '1', trigger: 'test', response: 'resp', enabled: true },
+            { id: '2', trigger: 'test2', response: 'resp2', enabled: false },
+          ],
+        }),
     });
     render(<WhatsAppChatbotPage />);
     await waitFor(() => {
@@ -200,7 +217,8 @@ describe('WhatsAppChatbotPage', () => {
 
   it('warns when submitting empty trigger', async () => {
     mockAuthFetch.mockResolvedValue({
-      ok: true, json: () => Promise.resolve({ messages: [] }),
+      ok: true,
+      json: () => Promise.resolve({ messages: [] }),
     });
     render(<WhatsAppChatbotPage />);
     await waitFor(() => screen.getByText('No messages configured yet'));
@@ -211,7 +229,8 @@ describe('WhatsAppChatbotPage', () => {
 
   it('warns when submitting empty response', async () => {
     mockAuthFetch.mockResolvedValue({
-      ok: true, json: () => Promise.resolve({ messages: [] }),
+      ok: true,
+      json: () => Promise.resolve({ messages: [] }),
     });
     render(<WhatsAppChatbotPage />);
     await waitFor(() => screen.getByText('No messages configured yet'));
@@ -227,7 +246,13 @@ describe('WhatsAppChatbotPage', () => {
     mockAuthFetch
       .mockResolvedValueOnce({ ok: true, json: () => Promise.resolve({ messages: [] }) })
       .mockResolvedValueOnce({ ok: true, json: () => Promise.resolve({}) })
-      .mockResolvedValueOnce({ ok: true, json: () => Promise.resolve({ messages: [{ id: '1', trigger: 'hello', response: 'Hi there', enabled: true }] }) });
+      .mockResolvedValueOnce({
+        ok: true,
+        json: () =>
+          Promise.resolve({
+            messages: [{ id: '1', trigger: 'hello', response: 'Hi there', enabled: true }],
+          }),
+      });
 
     render(<WhatsAppChatbotPage />);
     await waitFor(() => screen.getByText('No messages configured yet'));
@@ -259,8 +284,12 @@ describe('WhatsAppChatbotPage', () => {
     render(<WhatsAppChatbotPage />);
     await waitFor(() => screen.getByText('No messages configured yet'));
 
-    fireEvent.change(screen.getByPlaceholderText("e.g., 'hello', 'pricing', 'contact'"), { target: { value: 'test' } });
-    fireEvent.change(screen.getByPlaceholderText('Enter the response message...'), { target: { value: 'resp' } });
+    fireEvent.change(screen.getByPlaceholderText("e.g., 'hello', 'pricing', 'contact'"), {
+      target: { value: 'test' },
+    });
+    fireEvent.change(screen.getByPlaceholderText('Enter the response message...'), {
+      target: { value: 'resp' },
+    });
 
     await act(async () => {
       fireEvent.click(screen.getByText('Add Message'));
@@ -277,8 +306,12 @@ describe('WhatsAppChatbotPage', () => {
     render(<WhatsAppChatbotPage />);
     await waitFor(() => screen.getByText('No messages configured yet'));
 
-    fireEvent.change(screen.getByPlaceholderText("e.g., 'hello', 'pricing', 'contact'"), { target: { value: 'test' } });
-    fireEvent.change(screen.getByPlaceholderText('Enter the response message...'), { target: { value: 'resp' } });
+    fireEvent.change(screen.getByPlaceholderText("e.g., 'hello', 'pricing', 'contact'"), {
+      target: { value: 'test' },
+    });
+    fireEvent.change(screen.getByPlaceholderText('Enter the response message...'), {
+      target: { value: 'resp' },
+    });
 
     await act(async () => {
       fireEvent.click(screen.getByText('Add Message'));
@@ -293,16 +326,18 @@ describe('WhatsAppChatbotPage', () => {
     mockAuthFetch
       .mockResolvedValueOnce({
         ok: true,
-        json: () => Promise.resolve({
-          messages: [{ id: '1', trigger: 'hello', response: 'Hi', enabled: true }],
-        }),
+        json: () =>
+          Promise.resolve({
+            messages: [{ id: '1', trigger: 'hello', response: 'Hi', enabled: true }],
+          }),
       })
       .mockResolvedValueOnce({ ok: true, json: () => Promise.resolve({}) })
       .mockResolvedValueOnce({
         ok: true,
-        json: () => Promise.resolve({
-          messages: [{ id: '1', trigger: 'hello', response: 'Hi', enabled: false }],
-        }),
+        json: () =>
+          Promise.resolve({
+            messages: [{ id: '1', trigger: 'hello', response: 'Hi', enabled: false }],
+          }),
       });
 
     render(<WhatsAppChatbotPage />);
@@ -325,9 +360,10 @@ describe('WhatsAppChatbotPage', () => {
     mockAuthFetch
       .mockResolvedValueOnce({
         ok: true,
-        json: () => Promise.resolve({
-          messages: [{ id: '1', trigger: 'test', response: 'resp', enabled: true }],
-        }),
+        json: () =>
+          Promise.resolve({
+            messages: [{ id: '1', trigger: 'test', response: 'resp', enabled: true }],
+          }),
       })
       .mockRejectedValueOnce(new Error('Network error'));
 
@@ -345,7 +381,8 @@ describe('WhatsAppChatbotPage', () => {
 
   it('renders all settings controls', async () => {
     mockAuthFetch.mockResolvedValue({
-      ok: true, json: () => Promise.resolve({ messages: [] }),
+      ok: true,
+      json: () => Promise.resolve({ messages: [] }),
     });
     render(<WhatsAppChatbotPage />);
     fireEvent.click(screen.getByText('Settings'));
@@ -374,7 +411,8 @@ describe('WhatsAppChatbotPage', () => {
 
   it('handles failed initial fetch gracefully', async () => {
     mockAuthFetch.mockResolvedValue({
-      ok: false, status: 500,
+      ok: false,
+      status: 500,
       json: () => Promise.resolve({ error: 'Server error' }),
     });
 

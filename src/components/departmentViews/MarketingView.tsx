@@ -22,14 +22,16 @@ const MarketingView: React.FC<MarketingViewProps> = ({
   const config = getDepartmentConfig('MARKETING')!;
 
   const renderContent = (data: Record<string, unknown>) => {
+    const getCount = (value: unknown): number => (Array.isArray(value) ? value.length : 0);
+
     if (!subitemId && serviceName === 'campaign-management') {
       return (
         <>
           <DataCard title="Active Campaigns" subtitle="Current marketing campaigns and performance">
-            Campaigns: {JSON.stringify(data?.campaigns?.length || 0)} items
+            Campaigns: {JSON.stringify(getCount(data?.campaigns))} items
           </DataCard>
           <DataCard title="Lead Generation" subtitle="Leads by source and channel">
-            Leads: {JSON.stringify(data?.leadGeneration?.length || 0)} items
+            Leads: {JSON.stringify(getCount(data?.leadGeneration))} items
           </DataCard>
         </>
       );
@@ -38,7 +40,7 @@ const MarketingView: React.FC<MarketingViewProps> = ({
     if (subitemId === 'campaigns') {
       return (
         <DataCard title="Campaigns" subtitle="All marketing campaigns">
-          Campaigns: {JSON.stringify(data?.campaigns?.length || 0)} items
+          Campaigns: {JSON.stringify(getCount(data?.campaigns))} items
         </DataCard>
       );
     }
@@ -46,7 +48,7 @@ const MarketingView: React.FC<MarketingViewProps> = ({
     if (subitemId === 'lead-generation') {
       return (
         <DataCard title="Lead Generation" subtitle="Lead sources and performance">
-          Leads: {JSON.stringify(data?.leads?.length || 0)} items
+          Leads: {JSON.stringify(getCount(data?.leads))} items
         </DataCard>
       );
     }
@@ -54,7 +56,7 @@ const MarketingView: React.FC<MarketingViewProps> = ({
     if (subitemId === 'social-media') {
       return (
         <DataCard title="Social Media" subtitle="Social media performance">
-          Platforms: {JSON.stringify(data?.socialMedia?.length || 0)} items
+          Platforms: {JSON.stringify(getCount(data?.socialMedia))} items
         </DataCard>
       );
     }
@@ -62,7 +64,7 @@ const MarketingView: React.FC<MarketingViewProps> = ({
     if (subitemId === 'content-calendar') {
       return (
         <DataCard title="Content Calendar" subtitle="Scheduled content publication">
-          Content: {JSON.stringify(data?.contentCalendar?.length || 0)} items
+          Content: {JSON.stringify(getCount(data?.contentCalendar))} items
         </DataCard>
       );
     }

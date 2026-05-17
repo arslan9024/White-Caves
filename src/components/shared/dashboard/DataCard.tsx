@@ -21,7 +21,7 @@ interface DataCardProps {
   className?: string;
 }
 
-const CardContainer = styled.div`
+const CardContainer = styled.div<{ $hoverable?: boolean }>`
   background-color: #ffffff;
   border: 1px solid #e5e7eb;
   border-radius: 8px;
@@ -35,7 +35,7 @@ const CardContainer = styled.div`
     transform: translateY(-2px);
   }
 
-  ${props => props.hoverable === false && 'cursor: default;'}
+  ${props => props.$hoverable === false && 'cursor: default;'}
 `;
 
 const CardHeader = styled.div`
@@ -191,7 +191,7 @@ const DataCard: React.FC<DataCardProps> = ({
   return (
     <CardContainer
       data-loading={loading}
-      hoverable={hoverable}
+      $hoverable={hoverable}
       onClick={handleClick}
       className={className}
       style={{ position: 'relative', cursor: hoverable && !loading ? 'pointer' : 'default' }}
@@ -202,7 +202,7 @@ const DataCard: React.FC<DataCardProps> = ({
             {title && (
               <CardTitle>
                 {icon}
-                {loading ? <TitleSkeleton /> : title}
+                {title}
               </CardTitle>
             )}
             {subtitle && !loading && <CardSubtitle>{subtitle}</CardSubtitle>}
@@ -214,6 +214,7 @@ const DataCard: React.FC<DataCardProps> = ({
       <CardBody>
         {loading ? (
           <>
+            {!title && <TitleSkeleton />}
             {skeleton === 'content' && <ContentSkeleton />}
             {skeleton === 'grid' && <GridSkeleton />}
             {skeleton === 'grid-4' && <GridSkeleton columns={4} />}

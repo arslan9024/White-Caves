@@ -4,7 +4,7 @@
  * Redux data fetching, sidebar toggles, loading/error states, stats
  */
 
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeAll, beforeEach, afterAll } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
 import React from 'react';
 import { Provider } from 'react-redux';
@@ -190,8 +190,17 @@ const renderPage = (tab = 'overview', overrides: Record<string, unknown> = {}, e
 // ── Tests ────────────────────────────────────────────────────────
 
 describe('UnifiedDashboardPage', () => {
+  beforeAll(() => {
+    vi.spyOn(console, 'error').mockImplementation(() => {});
+    vi.spyOn(console, 'warn').mockImplementation(() => {});
+  });
+
   beforeEach(() => {
     vi.clearAllMocks();
+  });
+
+  afterAll(() => {
+    vi.restoreAllMocks();
   });
 
   // ── Rendering ────────────────────────────────────────────────

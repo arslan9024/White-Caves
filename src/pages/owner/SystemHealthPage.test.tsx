@@ -19,7 +19,10 @@ vi.mock('../../utils/authFetch', () => ({
 
 vi.mock('../../utils/logger', () => ({
   createLogger: () => ({
-    info: vi.fn(), warn: vi.fn(), error: vi.fn(), debug: vi.fn(),
+    info: vi.fn(),
+    warn: vi.fn(),
+    error: vi.fn(),
+    debug: vi.fn(),
   }),
 }));
 
@@ -31,8 +34,7 @@ vi.mock('./SystemHealthPage.css', () => ({}));
 
 let mockUser: { role: string } | null = { role: 'owner' };
 vi.mock('react-redux', () => ({
-  useSelector: (fn: (s: unknown) => unknown) =>
-    fn({ user: { currentUser: mockUser } }),
+  useSelector: (fn: (s: unknown) => unknown) => fn({ user: { currentUser: mockUser } }),
 }));
 
 // ── Helpers ──────────────────────────────────────────────────────
@@ -45,14 +47,18 @@ const healthyServices = [
 
 function okResponse(data: Record<string, unknown>) {
   return Promise.resolve({
-    ok: true, status: 200, statusText: 'OK',
+    ok: true,
+    status: 200,
+    statusText: 'OK',
     json: () => Promise.resolve(data),
   });
 }
 
 function failResponse(status = 500, statusText = 'Internal Server Error') {
   return Promise.resolve({
-    ok: false, status, statusText,
+    ok: false,
+    status,
+    statusText,
     json: () => Promise.resolve({ error: 'Server error' }),
   });
 }
@@ -62,6 +68,8 @@ import SystemHealthPage from './SystemHealthPage';
 describe('SystemHealthPage', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    vi.spyOn(console, 'error').mockImplementation(() => {});
+    vi.spyOn(console, 'warn').mockImplementation(() => {});
     mockUser = { role: 'owner' };
     mockAuthFetch.mockResolvedValue({
       ok: true,
@@ -84,9 +92,12 @@ describe('SystemHealthPage', () => {
 
   it('allows owner role to view page', async () => {
     mockAuthFetch.mockResolvedValue({
-      ok: true, json: () => Promise.resolve({ services: [], overall: 'operational' }),
+      ok: true,
+      json: () => Promise.resolve({ services: [], overall: 'operational' }),
     });
-    await act(async () => { render(<SystemHealthPage />); });
+    await act(async () => {
+      render(<SystemHealthPage />);
+    });
     expect(screen.getByText('System Health Dashboard')).toBeInTheDocument();
     expect(mockNavigate).not.toHaveBeenCalled();
   });
@@ -94,9 +105,12 @@ describe('SystemHealthPage', () => {
   it('allows admin role to view page', async () => {
     mockUser = { role: 'admin' };
     mockAuthFetch.mockResolvedValue({
-      ok: true, json: () => Promise.resolve({ services: [], overall: 'operational' }),
+      ok: true,
+      json: () => Promise.resolve({ services: [], overall: 'operational' }),
     });
-    await act(async () => { render(<SystemHealthPage />); });
+    await act(async () => {
+      render(<SystemHealthPage />);
+    });
     expect(screen.getByText('System Health Dashboard')).toBeInTheDocument();
     expect(mockNavigate).not.toHaveBeenCalled();
   });
@@ -123,7 +137,9 @@ describe('SystemHealthPage', () => {
       json: () => Promise.resolve({ services: healthyServices, overall: 'operational' }),
     });
 
-    await act(async () => { render(<SystemHealthPage />); });
+    await act(async () => {
+      render(<SystemHealthPage />);
+    });
 
     await waitFor(() => {
       expect(screen.getByText('API Server')).toBeInTheDocument();
@@ -138,7 +154,9 @@ describe('SystemHealthPage', () => {
       json: () => Promise.resolve({ services: healthyServices, overall: 'operational' }),
     });
 
-    await act(async () => { render(<SystemHealthPage />); });
+    await act(async () => {
+      render(<SystemHealthPage />);
+    });
 
     await waitFor(() => {
       expect(screen.getByText('99.99%')).toBeInTheDocument();
@@ -153,7 +171,9 @@ describe('SystemHealthPage', () => {
       json: () => Promise.resolve({ services: [], overall: 'operational' }),
     });
 
-    await act(async () => { render(<SystemHealthPage />); });
+    await act(async () => {
+      render(<SystemHealthPage />);
+    });
 
     await waitFor(() => {
       expect(screen.getByText('No services to display')).toBeInTheDocument();
@@ -168,7 +188,9 @@ describe('SystemHealthPage', () => {
       json: () => Promise.resolve({ services: [], overall: 'operational' }),
     });
 
-    await act(async () => { render(<SystemHealthPage />); });
+    await act(async () => {
+      render(<SystemHealthPage />);
+    });
 
     expect(screen.getByText(/Operational/)).toBeInTheDocument();
   });
@@ -179,7 +201,9 @@ describe('SystemHealthPage', () => {
       json: () => Promise.resolve({ services: [], overall: 'degraded' }),
     });
 
-    await act(async () => { render(<SystemHealthPage />); });
+    await act(async () => {
+      render(<SystemHealthPage />);
+    });
 
     expect(screen.getByText(/Degraded/)).toBeInTheDocument();
   });
@@ -192,7 +216,9 @@ describe('SystemHealthPage', () => {
       json: () => Promise.resolve({ services: healthyServices, overall: 'operational' }),
     });
 
-    await act(async () => { render(<SystemHealthPage />); });
+    await act(async () => {
+      render(<SystemHealthPage />);
+    });
 
     await waitFor(() => {
       expect(screen.getAllByText('✓')).toHaveLength(2); // 2 healthy
@@ -208,7 +234,9 @@ describe('SystemHealthPage', () => {
       json: () => Promise.resolve({ services: [], overall: 'operational' }),
     });
 
-    await act(async () => { render(<SystemHealthPage />); });
+    await act(async () => {
+      render(<SystemHealthPage />);
+    });
 
     expect(screen.getByText('Performance Metrics')).toBeInTheDocument();
     expect(screen.getByText('245ms')).toBeInTheDocument();
@@ -221,11 +249,15 @@ describe('SystemHealthPage', () => {
 
   it('shows error message on API failure', async () => {
     mockAuthFetch.mockResolvedValue({
-      ok: false, status: 500, statusText: 'Internal Server Error',
+      ok: false,
+      status: 500,
+      statusText: 'Internal Server Error',
       json: () => Promise.resolve({}),
     });
 
-    await act(async () => { render(<SystemHealthPage />); });
+    await act(async () => {
+      render(<SystemHealthPage />);
+    });
 
     // Should set overallStatus to 'down'
     await waitFor(() => {
@@ -236,7 +268,9 @@ describe('SystemHealthPage', () => {
   it('shows connection error on network exception', async () => {
     mockAuthFetch.mockRejectedValue(new Error('Network error'));
 
-    await act(async () => { render(<SystemHealthPage />); });
+    await act(async () => {
+      render(<SystemHealthPage />);
+    });
 
     await waitFor(() => {
       expect(screen.getByText(/Down/)).toBeInTheDocument();
@@ -247,7 +281,9 @@ describe('SystemHealthPage', () => {
     const abortError = new DOMException('Aborted', 'AbortError');
     mockAuthFetch.mockRejectedValue(abortError);
 
-    await act(async () => { render(<SystemHealthPage />); });
+    await act(async () => {
+      render(<SystemHealthPage />);
+    });
 
     // Should not show 'Down' for abort
     // page still renders normally (loading may end without setting down)
@@ -262,7 +298,9 @@ describe('SystemHealthPage', () => {
       json: () => Promise.resolve({ services: [], overall: 'operational' }),
     });
 
-    await act(async () => { render(<SystemHealthPage />); });
+    await act(async () => {
+      render(<SystemHealthPage />);
+    });
 
     expect(screen.getByText(/Refresh Status/)).toBeInTheDocument();
   });
@@ -273,7 +311,9 @@ describe('SystemHealthPage', () => {
       json: () => Promise.resolve({ services: [], overall: 'operational' }),
     });
 
-    await act(async () => { render(<SystemHealthPage />); });
+    await act(async () => {
+      render(<SystemHealthPage />);
+    });
 
     mockAuthFetch.mockClear();
     mockAuthFetch.mockResolvedValue({
@@ -285,10 +325,7 @@ describe('SystemHealthPage', () => {
       fireEvent.click(screen.getByText(/Refresh Status/));
     });
 
-    expect(mockAuthFetch).toHaveBeenCalledWith(
-      '/api/system/health',
-      expect.anything()
-    );
+    expect(mockAuthFetch).toHaveBeenCalledWith('/api/system/health', expect.anything());
   });
 
   // ────── Polling ──────
@@ -300,9 +337,13 @@ describe('SystemHealthPage', () => {
       json: () => Promise.resolve({ services: [], overall: 'operational' }),
     });
 
-    await act(async () => { render(<SystemHealthPage />); });
+    await act(async () => {
+      render(<SystemHealthPage />);
+    });
     // Flush the initial fetch microtask
-    await act(async () => { await vi.advanceTimersByTimeAsync(0); });
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(0);
+    });
 
     // Initial fetch
     expect(mockAuthFetch).toHaveBeenCalledTimes(1);

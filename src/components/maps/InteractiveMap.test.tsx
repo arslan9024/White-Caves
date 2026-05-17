@@ -3,7 +3,7 @@
  * Tests: rendering, mobile toggle, loading state, map visibility
  */
 
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, beforeAll, afterAll } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import React from 'react';
 import { Provider } from 'react-redux';
@@ -36,7 +36,19 @@ import InteractiveMap from './InteractiveMap';
 // ── Helpers ──────────────────────────────────────────────────────
 
 const MOCK_PROPERTIES: MapProperty[] = [
-  { id: 'p1', title: 'Test Property', location: 'Palm Jumeirah', type: 'Villa', purpose: 'buy', price: 5_000_000, beds: 3, baths: 2, sqft: 3000, image: 'img.jpg', featured: true },
+  {
+    id: 'p1',
+    title: 'Test Property',
+    location: 'Palm Jumeirah',
+    type: 'Villa',
+    purpose: 'buy',
+    price: 5_000_000,
+    beds: 3,
+    baths: 2,
+    sqft: 3000,
+    image: 'img.jpg',
+    featured: true,
+  },
 ];
 
 const createStore = () =>
@@ -59,8 +71,17 @@ const renderInteractiveMap = (props: Partial<React.ComponentProps<typeof Interac
 // ── Tests ────────────────────────────────────────────────────────
 
 describe('InteractiveMap', () => {
+  beforeAll(() => {
+    vi.spyOn(console, 'error').mockImplementation(() => {});
+    vi.spyOn(console, 'warn').mockImplementation(() => {});
+  });
+
   beforeEach(() => {
     vi.clearAllMocks();
+  });
+
+  afterAll(() => {
+    vi.restoreAllMocks();
   });
 
   describe('Rendering', () => {

@@ -42,6 +42,8 @@ describe('LeasingAcquisition — Phase 37', () => {
     // Default: initial inventory load returns empty list
     fetchSpy = vi.spyOn(window, 'fetch').mockResolvedValue(emptyInventoryResponse());
     alertSpy = vi.spyOn(window, 'alert').mockImplementation(() => {});
+    vi.spyOn(console, 'error').mockImplementation(() => {});
+    vi.spyOn(console, 'warn').mockImplementation(() => {});
   });
 
   afterEach(() => {

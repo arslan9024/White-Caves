@@ -2,7 +2,7 @@
  * LoginSecurityPage — Smoke Tests
  * Verifies role guard, list rendering, and unlock flow.
  */
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import React from 'react';
 
@@ -15,7 +15,10 @@ vi.mock('../../utils/authFetch', () => ({
 
 vi.mock('../../utils/logger', () => ({
   createLogger: () => ({
-    info: vi.fn(), warn: vi.fn(), error: vi.fn(), debug: vi.fn(),
+    info: vi.fn(),
+    warn: vi.fn(),
+    error: vi.fn(),
+    debug: vi.fn(),
   }),
 }));
 
@@ -27,8 +30,7 @@ vi.mock('./LoginSecurityPage.css', () => ({}));
 
 let mockUser: { role: string } | null = { role: 'owner' };
 vi.mock('react-redux', () => ({
-  useSelector: (fn: (s: unknown) => unknown) =>
-    fn({ user: { currentUser: mockUser } }),
+  useSelector: (fn: (s: unknown) => unknown) => fn({ user: { currentUser: mockUser } }),
 }));
 
 const sampleAttempts = [
@@ -56,6 +58,8 @@ import LoginSecurityPage from './LoginSecurityPage';
 
 describe('LoginSecurityPage', () => {
   beforeEach(() => {
+    vi.spyOn(console, 'error').mockImplementation(() => {});
+    vi.spyOn(console, 'warn').mockImplementation(() => {});
     vi.clearAllMocks();
     mockUser = { role: 'owner' };
     mockAuthFetch.mockResolvedValue({
@@ -69,6 +73,10 @@ describe('LoginSecurityPage', () => {
           meta: { count: 2, limit: 100, sinceMinutes: 1440, status: 'all', emailFilter: null },
         }),
     });
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
   });
 
   it('redirects non-privileged users to home', () => {
@@ -98,37 +106,61 @@ describe('LoginSecurityPage', () => {
       if (u.includes('/security/login-attempts')) {
         listCalls += 1;
         return Promise.resolve({
-          ok: true, status: 200, statusText: 'OK',
-          json: () => Promise.resolve({
-            success: true,
-            data: listCalls === 1 ? sampleAttempts : [],
-            meta: { count: 0, limit: 100, sinceMinutes: 1440, status: 'all', emailFilter: null },
-          }),
+          ok: true,
+          status: 200,
+          statusText: 'OK',
+          json: () =>
+            Promise.resolve({
+              success: true,
+              data: listCalls === 1 ? sampleAttempts : [],
+              meta: { count: 0, limit: 100, sinceMinutes: 1440, status: 'all', emailFilter: null },
+            }),
         });
       }
       if (u.includes('/security/stats')) {
         return Promise.resolve({
-          ok: true, status: 200, statusText: 'OK',
-          json: () => Promise.resolve({
-            success: true,
-            data: {
-              totals: { logins: 0, loginFailures: 0, passwordChanges: 0, passwordChangeFailures: 0, accountUnlocks: 0 },
-              uniqueIpCount: 0, topOffendingIps: [], topTargetedEmails: [], windowMinutes: 1440,
-            },
-          }),
+          ok: true,
+          status: 200,
+          statusText: 'OK',
+          json: () =>
+            Promise.resolve({
+              success: true,
+              data: {
+                totals: {
+                  logins: 0,
+                  loginFailures: 0,
+                  passwordChanges: 0,
+                  passwordChangeFailures: 0,
+                  accountUnlocks: 0,
+                },
+                uniqueIpCount: 0,
+                topOffendingIps: [],
+                topTargetedEmails: [],
+                windowMinutes: 1440,
+              },
+            }),
         });
       }
       if (u.includes('/security/unlock') && opts?.method === 'POST') {
         return Promise.resolve({
-          ok: true, status: 200, statusText: 'OK',
+          ok: true,
+          status: 200,
+          statusText: 'OK',
           text: () => Promise.resolve(''),
-          json: () => Promise.resolve({
-            success: true,
-            data: { userId: 'user-1', email: 'ghost@whitecaves.ae', clearedFailures: 5 },
-          }),
+          json: () =>
+            Promise.resolve({
+              success: true,
+              data: { userId: 'user-1', email: 'ghost@whitecaves.ae', clearedFailures: 5 },
+            }),
         });
       }
-      return Promise.resolve({ ok: false, status: 404, statusText: 'NF', text: () => Promise.resolve(''), json: () => Promise.resolve({}) });
+      return Promise.resolve({
+        ok: false,
+        status: 404,
+        statusText: 'NF',
+        text: () => Promise.resolve(''),
+        json: () => Promise.resolve({}),
+      });
     });
 
     render(<LoginSecurityPage />);
@@ -136,8 +168,8 @@ describe('LoginSecurityPage', () => {
     fireEvent.click(unlockBtn);
 
     await waitFor(() => {
-      const unlockCall = mockAuthFetch.mock.calls.find(
-        (c) => String(c[0]).endsWith('/api/auth/security/unlock'),
+      const unlockCall = mockAuthFetch.mock.calls.find(c =>
+        String(c[0]).endsWith('/api/auth/security/unlock')
       );
       expect(unlockCall).toBeTruthy();
       expect(unlockCall![1]).toMatchObject({ method: 'POST' });
@@ -171,25 +203,38 @@ describe('LoginSecurityPage', () => {
       const u = String(url);
       if (u.includes('/security/stats')) {
         return Promise.resolve({
-          ok: true, status: 200, statusText: 'OK',
-          json: () => Promise.resolve({
-            success: true,
-            data: {
-              totals: { logins: 7, loginFailures: 3, passwordChanges: 1, passwordChangeFailures: 0, accountUnlocks: 2 },
-              uniqueIpCount: 42,
-              topOffendingIps: [{ ip: '9.9.9.9', failures: 3 }],
-              topTargetedEmails: [{ email: 'ghost@x.ae', failures: 3 }],
-              windowMinutes: 1440,
-            },
-          }),
+          ok: true,
+          status: 200,
+          statusText: 'OK',
+          json: () =>
+            Promise.resolve({
+              success: true,
+              data: {
+                totals: {
+                  logins: 7,
+                  loginFailures: 3,
+                  passwordChanges: 1,
+                  passwordChangeFailures: 0,
+                  accountUnlocks: 2,
+                },
+                uniqueIpCount: 42,
+                topOffendingIps: [{ ip: '9.9.9.9', failures: 3 }],
+                topTargetedEmails: [{ email: 'ghost@x.ae', failures: 3 }],
+                windowMinutes: 1440,
+              },
+            }),
         });
       }
       return Promise.resolve({
-        ok: true, status: 200, statusText: 'OK',
-        json: () => Promise.resolve({
-          success: true, data: [],
-          meta: { count: 0, limit: 100, sinceMinutes: 1440, status: 'all', emailFilter: null },
-        }),
+        ok: true,
+        status: 200,
+        statusText: 'OK',
+        json: () =>
+          Promise.resolve({
+            success: true,
+            data: [],
+            meta: { count: 0, limit: 100, sinceMinutes: 1440, status: 'all', emailFilter: null },
+          }),
       });
     });
 
@@ -205,32 +250,49 @@ describe('LoginSecurityPage', () => {
       const u = String(url);
       if (u.includes('/security/unlock-ip')) {
         return Promise.resolve({
-          ok: true, status: 200, statusText: 'OK',
-          json: () => Promise.resolve({ success: true, data: { ip: '9.9.9.9', clearedFailures: 4 } }),
+          ok: true,
+          status: 200,
+          statusText: 'OK',
+          json: () =>
+            Promise.resolve({ success: true, data: { ip: '9.9.9.9', clearedFailures: 4 } }),
           text: () => Promise.resolve(''),
         });
       }
       if (u.includes('/security/stats')) {
         return Promise.resolve({
-          ok: true, status: 200, statusText: 'OK',
-          json: () => Promise.resolve({
-            success: true,
-            data: {
-              totals: { logins: 0, loginFailures: 4, passwordChanges: 0, passwordChangeFailures: 0, accountUnlocks: 0, ipUnlocks: 0 },
-              uniqueIpCount: 1,
-              topOffendingIps: [{ ip: '9.9.9.9', failures: 4 }],
-              topTargetedEmails: [],
-              windowMinutes: 1440,
-            },
-          }),
+          ok: true,
+          status: 200,
+          statusText: 'OK',
+          json: () =>
+            Promise.resolve({
+              success: true,
+              data: {
+                totals: {
+                  logins: 0,
+                  loginFailures: 4,
+                  passwordChanges: 0,
+                  passwordChangeFailures: 0,
+                  accountUnlocks: 0,
+                  ipUnlocks: 0,
+                },
+                uniqueIpCount: 1,
+                topOffendingIps: [{ ip: '9.9.9.9', failures: 4 }],
+                topTargetedEmails: [],
+                windowMinutes: 1440,
+              },
+            }),
         });
       }
       return Promise.resolve({
-        ok: true, status: 200, statusText: 'OK',
-        json: () => Promise.resolve({
-          success: true, data: [],
-          meta: { count: 0, limit: 100, sinceMinutes: 1440, status: 'all', emailFilter: null },
-        }),
+        ok: true,
+        status: 200,
+        statusText: 'OK',
+        json: () =>
+          Promise.resolve({
+            success: true,
+            data: [],
+            meta: { count: 0, limit: 100, sinceMinutes: 1440, status: 'all', emailFilter: null },
+          }),
       });
     });
 
@@ -239,8 +301,8 @@ describe('LoginSecurityPage', () => {
     fireEvent.click(unlockBtn);
 
     await waitFor(() => {
-      const calls = mockAuthFetch.mock.calls.map((c) => String(c[0]));
-      expect(calls.some((u) => u.includes('/security/unlock-ip'))).toBe(true);
+      const calls = mockAuthFetch.mock.calls.map(c => String(c[0]));
+      expect(calls.some(u => u.includes('/security/unlock-ip'))).toBe(true);
     });
     confirmSpy.mockRestore();
   });
@@ -251,39 +313,52 @@ describe('LoginSecurityPage', () => {
       const u = String(url);
       if (u.includes('/security/active-lockouts')) {
         return Promise.resolve({
-          ok: true, status: 200, statusText: 'OK',
-          json: () => Promise.resolve({
-            success: true,
-            data: {
-              windowMinutes: 15,
-              accountThreshold: 5,
-              ipThreshold: 20,
-              accounts: [
-                { userId: 'user-A', email: 'locked@whitecaves.ae', failures: 6, retryAfterSeconds: 600 },
-              ],
-              ips: [
-                { ip: '9.9.9.9', failures: 25, retryAfterSeconds: 540 },
-              ],
-            },
-          }),
+          ok: true,
+          status: 200,
+          statusText: 'OK',
+          json: () =>
+            Promise.resolve({
+              success: true,
+              data: {
+                windowMinutes: 15,
+                accountThreshold: 5,
+                ipThreshold: 20,
+                accounts: [
+                  {
+                    userId: 'user-A',
+                    email: 'locked@whitecaves.ae',
+                    failures: 6,
+                    retryAfterSeconds: 600,
+                  },
+                ],
+                ips: [{ ip: '9.9.9.9', failures: 25, retryAfterSeconds: 540 }],
+              },
+            }),
         });
       }
       if (u.includes('/security/unlock') && !u.includes('unlock-ip')) {
         return Promise.resolve({
-          ok: true, status: 200, statusText: 'OK',
+          ok: true,
+          status: 200,
+          statusText: 'OK',
           text: () => Promise.resolve(''),
-          json: () => Promise.resolve({
-            success: true,
-            data: { userId: 'user-A', email: 'locked@whitecaves.ae', clearedFailures: 6 },
-          }),
+          json: () =>
+            Promise.resolve({
+              success: true,
+              data: { userId: 'user-A', email: 'locked@whitecaves.ae', clearedFailures: 6 },
+            }),
         });
       }
       return Promise.resolve({
-        ok: true, status: 200, statusText: 'OK',
-        json: () => Promise.resolve({
-          success: true, data: [],
-          meta: { count: 0, limit: 100, sinceMinutes: 1440, status: 'all', emailFilter: null },
-        }),
+        ok: true,
+        status: 200,
+        statusText: 'OK',
+        json: () =>
+          Promise.resolve({
+            success: true,
+            data: [],
+            meta: { count: 0, limit: 100, sinceMinutes: 1440, status: 'all', emailFilter: null },
+          }),
       });
     });
 
@@ -292,13 +367,18 @@ describe('LoginSecurityPage', () => {
     expect(screen.getByText('locked@whitecaves.ae')).toBeInTheDocument();
     expect(screen.getByText('9.9.9.9')).toBeInTheDocument();
 
-    const accountUnlockBtn = screen.getByRole('button', { name: /unlock account locked@whitecaves\.ae/i });
+    const accountUnlockBtn = screen.getByRole('button', {
+      name: /unlock account locked@whitecaves\.ae/i,
+    });
     fireEvent.click(accountUnlockBtn);
 
     await waitFor(() => {
-      const calls = mockAuthFetch.mock.calls.map((c) => ({ url: String(c[0]), init: c[1] }));
+      const calls = mockAuthFetch.mock.calls.map(c => ({ url: String(c[0]), init: c[1] }));
       const unlockCall = calls.find(
-        (c) => c.url.includes('/security/unlock') && !c.url.includes('unlock-ip') && (c.init as { method?: string })?.method === 'POST',
+        c =>
+          c.url.includes('/security/unlock') &&
+          !c.url.includes('unlock-ip') &&
+          (c.init as { method?: string })?.method === 'POST'
       );
       expect(unlockCall).toBeTruthy();
     });
@@ -311,39 +391,52 @@ describe('LoginSecurityPage', () => {
       const u = String(url);
       if (u.includes('/security/active-lockouts')) {
         return Promise.resolve({
-          ok: true, status: 200, statusText: 'OK',
-          json: () => Promise.resolve({
-            success: true,
-            data: {
-              windowMinutes: 15,
-              accountThreshold: 5,
-              ipThreshold: 20,
-              accounts: [
-                { userId: 'user-A', email: 'locked@whitecaves.ae', failures: 6, retryAfterSeconds: 600 },
-              ],
-              ips: [
-                { ip: '9.9.9.9', failures: 25, retryAfterSeconds: 540 },
-              ],
-            },
-          }),
+          ok: true,
+          status: 200,
+          statusText: 'OK',
+          json: () =>
+            Promise.resolve({
+              success: true,
+              data: {
+                windowMinutes: 15,
+                accountThreshold: 5,
+                ipThreshold: 20,
+                accounts: [
+                  {
+                    userId: 'user-A',
+                    email: 'locked@whitecaves.ae',
+                    failures: 6,
+                    retryAfterSeconds: 600,
+                  },
+                ],
+                ips: [{ ip: '9.9.9.9', failures: 25, retryAfterSeconds: 540 }],
+              },
+            }),
         });
       }
       if (u.includes('/security/unlock') && !u.includes('unlock-ip')) {
         return Promise.resolve({
-          ok: true, status: 200, statusText: 'OK',
+          ok: true,
+          status: 200,
+          statusText: 'OK',
           text: () => Promise.resolve(''),
-          json: () => Promise.resolve({
-            success: true,
-            data: { userId: 'user-A', email: 'locked@whitecaves.ae', clearedFailures: 6 },
-          }),
+          json: () =>
+            Promise.resolve({
+              success: true,
+              data: { userId: 'user-A', email: 'locked@whitecaves.ae', clearedFailures: 6 },
+            }),
         });
       }
       return Promise.resolve({
-        ok: true, status: 200, statusText: 'OK',
-        json: () => Promise.resolve({
-          success: true, data: [],
-          meta: { count: 0, limit: 100, sinceMinutes: 1440, status: 'all', emailFilter: null },
-        }),
+        ok: true,
+        status: 200,
+        statusText: 'OK',
+        json: () =>
+          Promise.resolve({
+            success: true,
+            data: [],
+            meta: { count: 0, limit: 100, sinceMinutes: 1440, status: 'all', emailFilter: null },
+          }),
       });
     });
 
@@ -352,13 +445,18 @@ describe('LoginSecurityPage', () => {
     expect(screen.getByText('locked@whitecaves.ae')).toBeInTheDocument();
     expect(screen.getByText('9.9.9.9')).toBeInTheDocument();
 
-    const accountUnlockBtn = screen.getByRole('button', { name: /unlock account locked@whitecaves\.ae/i });
+    const accountUnlockBtn = screen.getByRole('button', {
+      name: /unlock account locked@whitecaves\.ae/i,
+    });
     fireEvent.click(accountUnlockBtn);
 
     await waitFor(() => {
-      const calls = mockAuthFetch.mock.calls.map((c) => ({ url: String(c[0]), init: c[1] }));
+      const calls = mockAuthFetch.mock.calls.map(c => ({ url: String(c[0]), init: c[1] }));
       const unlockCall = calls.find(
-        (c) => c.url.includes('/security/unlock') && !c.url.includes('unlock-ip') && (c.init as { method?: string })?.method === 'POST',
+        c =>
+          c.url.includes('/security/unlock') &&
+          !c.url.includes('unlock-ip') &&
+          (c.init as { method?: string })?.method === 'POST'
       );
       expect(unlockCall).toBeTruthy();
     });

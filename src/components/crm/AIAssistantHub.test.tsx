@@ -77,8 +77,22 @@ const createMockStore = (overrides: Record<string, unknown> = {}) => {
           activeTasks: 47,
           criticalAlerts: [],
           recentActivity: [
-            { id: 'a1', assistantId: 'nadia', action: 'Message sent', target: 'Lead #42', type: 'success', timestamp: Date.now() },
-            { id: 'a2', assistantId: 'clara', action: 'Lead qualified', target: 'Lead #55', type: 'info', timestamp: Date.now() - 60000 },
+            {
+              id: 'a1',
+              assistantId: 'nadia',
+              action: 'Message sent',
+              target: 'Lead #42',
+              type: 'success',
+              timestamp: Date.now(),
+            },
+            {
+              id: 'a2',
+              assistantId: 'clara',
+              action: 'Lead qualified',
+              target: 'Lead #55',
+              type: 'info',
+              timestamp: Date.now() - 60000,
+            },
           ],
         },
         ...overrides,
@@ -87,14 +101,17 @@ const createMockStore = (overrides: Record<string, unknown> = {}) => {
   });
 };
 
-const renderHub = (overrides: Record<string, unknown> = {}, props: Record<string, unknown> = {}) => {
+const renderHub = (
+  overrides: Record<string, unknown> = {},
+  props: Record<string, unknown> = {}
+) => {
   const store = createMockStore(overrides);
   return {
     store,
     ...render(
       <Provider store={store}>
         <AIAssistantHub {...props} />
-      </Provider>,
+      </Provider>
     ),
   };
 };
@@ -127,8 +144,9 @@ describe('AIAssistantHub', () => {
 
     it('should render assistant cards in overview', () => {
       renderHub();
-      const cards = document.querySelectorAll('.assistant-card');
-      expect(cards.length).toBe(3); // nadia, mary, clara
+      // Only count interactive overview cards (implementation-sequence cards share .assistant-card)
+      const openButtons = screen.getAllByRole('button', { name: /open dashboard/i });
+      expect(openButtons.length).toBe(3); // nadia, mary, clara
     });
 
     it('should render assistant names', () => {
@@ -280,8 +298,8 @@ describe('AIAssistantHub', () => {
       renderHub({
         allAssistants: { byId: {}, allIds: [], isLoading: false, lastFetched: null },
       });
-      const cards = document.querySelectorAll('.assistant-card');
-      expect(cards.length).toBe(0);
+      const openBtns = screen.queryAllByRole('button', { name: /open dashboard/i });
+      expect(openBtns.length).toBe(0);
     });
   });
 

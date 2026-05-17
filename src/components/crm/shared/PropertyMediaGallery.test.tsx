@@ -3,21 +3,32 @@
  * Covers gallery rendering, navigation, thumbnails, fullscreen, empty state,
  * plus PropertySpecsGrid and PropertyDetailContainer
  */
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
-import PropertyMediaGallery, { PropertySpecsGrid, PropertyDetailContainer } from './PropertyMediaGallery';
+import PropertyMediaGallery, {
+  PropertySpecsGrid,
+  PropertyDetailContainer,
+} from './PropertyMediaGallery';
 
 /* ── Mock styled-components (PropertyComponents.styles) ─────── */
 vi.mock('./PropertyComponents.styles', () => {
   const el = (name: string, tag = 'div') => {
-    const C = ({ children, onClick, className, style, src, alt, role, ...rest }: any) => {
+    const C = ({ children, onClick, className, style, src, alt, role }: any) => {
       if (tag === 'img') {
-        return <img data-testid={name} src={src} alt={alt} onClick={onClick} {...rest} />;
+        return <img data-testid={name} src={src} alt={alt} onClick={onClick} />;
       }
       if (tag === 'button') {
-        return <button data-testid={name} onClick={onClick} className={className} {...rest}>{children}</button>;
+        return (
+          <button data-testid={name} onClick={onClick} className={className}>
+            {children}
+          </button>
+        );
       }
-      return <div data-testid={name} onClick={onClick} className={className} style={style} role={role} {...rest}>{children}</div>;
+      return (
+        <div data-testid={name} onClick={onClick} className={className} style={style} role={role}>
+          {children}
+        </div>
+      );
     };
     C.displayName = name;
     return C;
@@ -26,16 +37,34 @@ vi.mock('./PropertyComponents.styles', () => {
     PropertyGallery: el('PropertyGallery'),
     GalleryMain: el('GalleryMain'),
     GalleryImage: el('GalleryImage', 'img'),
-    GalleryNav: ({ children, onClick, ...rest }: any) => <button data-testid={`GalleryNav-${rest.$position}`} onClick={onClick}>{children}</button>,
+    GalleryNav: ({ children, onClick, ...rest }: any) => (
+      <button data-testid={`GalleryNav-${rest.$position}`} onClick={onClick}>
+        {children}
+      </button>
+    ),
     FullscreenBtn: el('FullscreenBtn', 'button'),
     ImageCounter: el('ImageCounter'),
     GalleryThumbnails: el('GalleryThumbnails'),
     Thumbnail: ({ children, onClick, $active, $isMore, ...rest }: any) => (
-      <button data-testid={$isMore ? 'ThumbnailMore' : 'Thumbnail'} onClick={onClick} data-active={$active}>{children}</button>
+      <button
+        data-testid={$isMore ? 'ThumbnailMore' : 'Thumbnail'}
+        onClick={onClick}
+        data-active={$active}
+      >
+        {children}
+      </button>
     ),
-    FullscreenOverlay: ({ children, onClick, role, ...rest }: any) => <div data-testid="FullscreenOverlay" onClick={onClick} role={role}>{children}</div>,
+    FullscreenOverlay: ({ children, onClick, role, ...rest }: any) => (
+      <div data-testid="FullscreenOverlay" onClick={onClick} role={role}>
+        {children}
+      </div>
+    ),
     CloseFullscreenBtn: el('CloseFullscreenBtn', 'button'),
-    FullscreenNav: ({ children, onClick, ...rest }: any) => <button data-testid={`FullscreenNav-${rest.$position}`} onClick={onClick}>{children}</button>,
+    FullscreenNav: ({ children, onClick, ...rest }: any) => (
+      <button data-testid={`FullscreenNav-${rest.$position}`} onClick={onClick}>
+        {children}
+      </button>
+    ),
     // PropertySpecsGrid & PropertyDetailContainer styled-components
     PropertySpecsGrid: el('PropertySpecsGrid'),
     SpecItem: el('SpecItem'),
@@ -65,6 +94,15 @@ vi.mock('./PropertyComponents.styles', () => {
 });
 
 describe('PropertyMediaGallery', () => {
+  beforeEach(() => {
+    vi.spyOn(console, 'error').mockImplementation(() => {});
+    vi.spyOn(console, 'warn').mockImplementation(() => {});
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
   const images = [
     'https://example.com/img1.jpg',
     'https://example.com/img2.jpg',
@@ -199,7 +237,10 @@ describe('PropertyMediaGallery', () => {
   /* ── Object image support ───────────────────────────────────── */
   describe('object images', () => {
     it('handles MediaImage objects with url property', () => {
-      const objImages = [{ url: 'https://example.com/obj1.jpg' }, { url: 'https://example.com/obj2.jpg' }];
+      const objImages = [
+        { url: 'https://example.com/obj1.jpg' },
+        { url: 'https://example.com/obj2.jpg' },
+      ];
       render(<PropertyMediaGallery images={objImages} />);
       const img = screen.getByTestId('GalleryImage');
       expect(img).toHaveAttribute('src', 'https://example.com/obj1.jpg');

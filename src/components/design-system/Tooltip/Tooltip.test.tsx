@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent, act } from '@testing-library/react';
 import React from 'react';
 
 // Mock styled-components for Tooltip (use simple HTML elements)
@@ -21,7 +21,7 @@ describe('Tooltip', () => {
       render(
         <Tooltip content="Help text">
           <button>Hover me</button>
-        </Tooltip>,
+        </Tooltip>
       );
       expect(screen.getByText('Hover me')).toBeInTheDocument();
     });
@@ -30,7 +30,7 @@ describe('Tooltip', () => {
       render(
         <Tooltip content="Help text">
           <button>Hover me</button>
-        </Tooltip>,
+        </Tooltip>
       );
       expect(screen.getByText('Help text')).toBeInTheDocument();
     });
@@ -39,7 +39,7 @@ describe('Tooltip', () => {
       const { container } = render(
         <Tooltip content="Tip" className="custom-tip">
           <span>Target</span>
-        </Tooltip>,
+        </Tooltip>
       );
       expect(container.querySelector('.custom-tip')).toBeInTheDocument();
     });
@@ -48,7 +48,7 @@ describe('Tooltip', () => {
       render(
         <Tooltip content={<strong>Bold tip</strong>}>
           <span>Target</span>
-        </Tooltip>,
+        </Tooltip>
       );
       expect(screen.getByText('Bold tip')).toBeInTheDocument();
     });
@@ -57,12 +57,12 @@ describe('Tooltip', () => {
   // === POSITIONS ===
   describe('positions', () => {
     const positions = ['top', 'bottom', 'left', 'right'] as const;
-    positions.forEach((position) => {
+    positions.forEach(position => {
       it(`renders in ${position} position without error`, () => {
         render(
           <Tooltip content="Tip" position={position}>
             <span>Target</span>
-          </Tooltip>,
+          </Tooltip>
         );
         expect(screen.getByText('Target')).toBeInTheDocument();
       });
@@ -75,7 +75,7 @@ describe('Tooltip', () => {
       render(
         <Tooltip content="Help text">
           <button>Hover me</button>
-        </Tooltip>,
+        </Tooltip>
       );
       const target = screen.getByText('Hover me').closest('div')!;
       fireEvent.mouseEnter(target);
@@ -87,7 +87,7 @@ describe('Tooltip', () => {
       render(
         <Tooltip content="Help text">
           <button>Hover me</button>
-        </Tooltip>,
+        </Tooltip>
       );
       const target = screen.getByText('Hover me').closest('div')!;
       fireEvent.mouseEnter(target);
@@ -100,13 +100,15 @@ describe('Tooltip', () => {
       render(
         <Tooltip content="Delayed" delay={300}>
           <span>Target</span>
-        </Tooltip>,
+        </Tooltip>
       );
       const target = screen.getByText('Target').closest('div')!;
       fireEvent.mouseEnter(target);
       // Content exists in DOM but not yet visible
       expect(screen.getByText('Delayed')).toBeInTheDocument();
-      vi.advanceTimersByTime(300);
+      act(() => {
+        vi.advanceTimersByTime(300);
+      });
       expect(screen.getByText('Delayed')).toBeInTheDocument();
       vi.useRealTimers();
     });
@@ -116,12 +118,14 @@ describe('Tooltip', () => {
       render(
         <Tooltip content="Delayed" delay={300}>
           <span>Target</span>
-        </Tooltip>,
+        </Tooltip>
       );
       const target = screen.getByText('Target').closest('div')!;
       fireEvent.mouseEnter(target);
       fireEvent.mouseLeave(target);
-      vi.advanceTimersByTime(300);
+      act(() => {
+        vi.advanceTimersByTime(300);
+      });
       // Should not crash, content exists but hidden
       expect(screen.getByText('Delayed')).toBeInTheDocument();
       vi.useRealTimers();

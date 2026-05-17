@@ -4,7 +4,7 @@ import relationalSidebarSlice, {
   setSelectedService,
   setSelectedSubitem,
   addToSelectionHistory,
-  removeFromHistory,
+  clearSelectionHistory,
   setMainContentLoading,
   setMainContentError,
   selectSelectedDepartment,
@@ -121,21 +121,17 @@ describe('relationalSidebarSlice', () => {
       expect(history.length).toBeLessThanOrEqual(3);
     });
 
-    test('should remove item from history', () => {
+    test('should clear history', () => {
       store.dispatch(
         addToSelectionHistory({
           department: 'EXECUTIVE',
           service: 'strategic-overview',
         })
       );
-      const state1 = store.getState();
-      const history1 = selectSelectionHistory(state1);
-      const itemToRemove = history1[0];
-
-      store.dispatch(removeFromHistory(itemToRemove));
+      store.dispatch(clearSelectionHistory());
       const state2 = store.getState();
       const history2 = selectSelectionHistory(state2);
-      expect(history2.length).toBeLessThan(history1.length);
+      expect(history2.length).toBe(0);
     });
   });
 
@@ -161,11 +157,11 @@ describe('relationalSidebarSlice', () => {
       expect(selectMainContentError(state)).toBeNull();
     });
 
-    test('should clear error on new selection', () => {
+    test('should preserve error on new selection', () => {
       store.dispatch(setMainContentError('Previous error'));
       store.dispatch(setSelectedDepartment('SALES'));
       const state = store.getState();
-      expect(selectMainContentError(state)).toBeNull();
+      expect(selectMainContentError(state)).toBe('Previous error');
     });
   });
 

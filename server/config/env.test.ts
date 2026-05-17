@@ -19,6 +19,9 @@ describe('server/config/env', () => {
   const originalEnv = { ...process.env };
 
   beforeEach(() => {
+    vi.spyOn(console, 'warn').mockImplementation(() => {});
+    vi.spyOn(console, 'error').mockImplementation(() => {});
+
     vi.resetModules();
     // Reset to clean state
     delete process.env.PORT;
@@ -32,6 +35,7 @@ describe('server/config/env', () => {
   afterEach(() => {
     // Restore original env
     process.env = { ...originalEnv };
+    vi.restoreAllMocks();
   });
 
   // ─── PORT ─────────────────────────────────────────────────────────
@@ -164,10 +168,7 @@ describe('server/config/env', () => {
     it('splits comma-separated origins', async () => {
       process.env.CORS_ORIGIN = 'https://whitecaves.ae,https://admin.whitecaves.ae';
       const env = await importEnvFresh();
-      expect(env.CORS_ORIGINS).toEqual([
-        'https://whitecaves.ae',
-        'https://admin.whitecaves.ae',
-      ]);
+      expect(env.CORS_ORIGINS).toEqual(['https://whitecaves.ae', 'https://admin.whitecaves.ae']);
     });
 
     it('trims whitespace from origins', async () => {

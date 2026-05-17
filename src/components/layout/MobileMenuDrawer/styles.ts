@@ -40,7 +40,7 @@ export const DrawerPanel = styled.aside<{ $open: boolean }>`
   width: min(300px, 85vw);
   z-index: var(--z-overlay, 600);
   background: ${colors.background.secondary};
-  box-shadow: ${p => (p.$open ? shadows.luxuryCard : 'none')};
+  box-shadow: ${p => (p.$open ? shadows.elevated : 'none')};
   display: flex;
   flex-direction: column;
   transform: ${p => (p.$open ? 'translateX(0)' : 'translateX(-100%)')};
@@ -87,7 +87,7 @@ export const DrawerLogoMark = styled.div`
   align-items: center;
   justify-content: center;
   color: #ffffff;
-  font-weight: ${typography.weights.extrabold};
+  font-weight: ${typography.weights.bold};
   font-size: 14px;
   letter-spacing: 0.5px;
 `;
@@ -114,7 +114,7 @@ export const DrawerCloseBtn = styled.button`
   cursor: pointer;
   color: ${colors.text.tertiary};
   -webkit-tap-highlight-color: transparent;
-  transition: ${transitions.active};
+  transition: ${transitions.standard};
 
   &:hover,
   &:active {
@@ -172,7 +172,7 @@ export const DrawerNavItem = styled.button<{ $active?: boolean; $color?: string 
   text-align: left;
   min-height: 44px; /* Touch target */
   -webkit-tap-highlight-color: transparent;
-  transition: ${transitions.active};
+  transition: ${transitions.standard};
   position: relative;
 
   /* Active gold bar */
@@ -214,7 +214,7 @@ export const DrawerNavIcon = styled.span<{ $color?: string }>`
   background: ${p => (p.$color ? `${p.$color}12` : colors.background.tertiary)};
   color: ${p => p.$color || colors.text.secondary};
   flex-shrink: 0;
-  transition: ${transitions.active};
+  transition: ${transitions.standard};
 
   @media (prefers-color-scheme: dark) {
     background: ${p => (p.$color ? `${p.$color}18` : '#334155')};

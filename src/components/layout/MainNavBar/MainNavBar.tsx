@@ -297,7 +297,7 @@ const MainNavBar: React.FC<MainNavBarProps> = ({
       </NavCenterSection>
 
       <NavRightSection>
-        <ThemeToggle />
+        <ThemeToggle onToggle={_onThemeToggle} />
 
         <DropdownContainer ref={notifRef}>
           <NavIconButton

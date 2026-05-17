@@ -15,6 +15,8 @@ describe('ExecutiveView', () => {
   let store;
 
   beforeEach(() => {
+    vi.spyOn(console, 'error').mockImplementation(() => {});
+    vi.spyOn(console, 'warn').mockImplementation(() => {});
     store = configureStore({
       reducer: {
         relationalSidebar: relationalSidebarSlice,
@@ -24,7 +26,7 @@ describe('ExecutiveView', () => {
   });
 
   afterEach(() => {
-    vi.clearAllMocks();
+    vi.restoreAllMocks();
   });
 
   test('renders without crashing', () => {
@@ -72,9 +74,7 @@ describe('ExecutiveView', () => {
   });
 
   test('displays error message on failed data fetch', async () => {
-    global.fetch = vi.fn(() =>
-      Promise.reject(new Error('Network error'))
-    );
+    global.fetch = vi.fn(() => Promise.reject(new Error('Network error')));
 
     render(
       <Provider store={store}>
@@ -83,7 +83,7 @@ describe('ExecutiveView', () => {
     );
 
     await waitFor(() => {
-      expect(screen.queryByText(/Error|Failed/i)).toBeInTheDocument();
+      expect(screen.getByText(/Error Loading Data/i)).toBeInTheDocument();
     });
   });
 
@@ -125,9 +125,7 @@ describe('ExecutiveView', () => {
     );
 
     await waitFor(() => {
-      expect(global.fetch).toHaveBeenCalledWith(
-        '/api/executive/strategic-overview'
-      );
+      expect(global.fetch).toHaveBeenCalledWith('/api/executive/strategic-overview');
     });
   });
 

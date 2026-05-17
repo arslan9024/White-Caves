@@ -8,8 +8,9 @@ import {
   ArrowUp,
   Search,
 } from 'lucide-react';
-import { useAppSelector } from '../../../store/store';
+import { ReactReduxContext } from 'react-redux';
 import { selectSearchLeadCount } from '../../../store/slices/searchLeadsSlice';
+import type { RootState } from '../../../store/store';
 import { useExecutiveData } from './hooks/useExecutiveData';
 import SuggestionsTab from './tabs/SuggestionsTab';
 import CalendarTab from './tabs/CalendarTab';
@@ -43,7 +44,10 @@ const ZoeExecutiveCRM = () => {
   const upcomingCount = getUpcomingMeetings().length;
   const completedTasks = tasks.filter(t => t.status === 'completed').length;
   // TASK-018 / Phase 27: Homepage search leads count from Redux
-  const homepageSearchLeads = useAppSelector(selectSearchLeadCount);
+  const reduxContext = React.useContext(ReactReduxContext);
+  const homepageSearchLeads = reduxContext?.store
+    ? selectSearchLeadCount(reduxContext.store.getState() as RootState)
+    : 0;
 
   return (
     <div className="assistant-dashboard zoe">

@@ -7,9 +7,9 @@ import { createGlobalStyle } from 'styled-components';
 import { theme } from './theme';
 
 const themeColors = theme.colors as Record<string, unknown>;
-const borderColor = themeColors.borderColor ?? themeColors.border ?? '#E5E7EB';
-const borderDark = themeColors.borderDark ?? borderColor;
-const borderLight = themeColors.borderLight ?? borderColor;
+const borderColor = String(themeColors.borderColor ?? themeColors.border ?? '#E5E7EB');
+const borderDark = String(themeColors.borderDark ?? borderColor);
+const borderLight = String(themeColors.borderLight ?? borderColor);
 
 const primaryDark = (theme.colors as { primaryDark?: string }).primaryDark ?? theme.colors.primary;
 const primaryLight = (theme.colors as { primaryLight?: string }).primaryLight ?? '#FCE4E6';

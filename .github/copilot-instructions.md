@@ -2,17 +2,13 @@
 
 ## Strategy: High-Efficiency Multi-Agent Autonomous Framework
 
-## Canonical Control Files (Single Source of Truth)
+## Branch & Release Workflow
 
-- Roadmap authority: `plans/MASTER_PLAN.md`
-- Pending queue authority: `plans/PENDING_TASKS_ONLY.md`
-- Operational dashboard: `PROJECT_PROGRESS.md`
-- Daily execution log: `DAILY_MILESTONE_TRACKER.md`
-- Agent roster + task board authority: `AGENTS.md`
-
-If any document conflicts, follow this precedence: `MASTER_PLAN.md` → `PENDING_TASKS_ONLY.md` → `PROJECT_PROGRESS.md` → `AGENTS.md` → `DAILY_MILESTONE_TRACKER.md`.
-
----
+- Start implementation sessions on the local `develop` branch.
+- If the workspace is on `development`, switch to `develop` from `origin/development` before editing.
+- Keep `main` reserved for verified release merges only.
+- Before merging to `main`, log modified files, resolved conflicts, and build health in `PHASE_DEPLOYMENT_LOG.md`.
+- Prefer the safe release chain: build, runtime verification, merge, conflict resolution, commit, push.
 
 ### 0. THE EXECUTIVE CORE (The Brains)
 
@@ -89,7 +85,7 @@ If any document conflicts, follow this precedence: `MASTER_PLAN.md` → `PENDING
 
 1. **Model Routing:** Use **GPT-4o** for 80% of tasks (standard UI, debugging, documentation). Save **Claude 3.5 Sonnet** for the "Orchestrators" and "Lead Coders" doing complex logic.
 2. **Autonomous Execution:** If an agent is assigned a task, they must complete it without asking for permission unless there is a critical conflict.
-3. **Tracking Discipline:** @Margaret must update `PROJECT_PROGRESS.md` and append `DAILY_MILESTONE_TRACKER.md` at the end of every session.
+3. **Daily Milestone Tracker:** @Margaret must update `PROJECT_PROGRESS.md` at the end of every session.
 
 4. **🔒 TOKEN POLICY (STRICT — Zero Exceptions):**
    - **FREE PLANNING AGENTS** (@Victoria, @Invoice, @Sofia, @Cassie, @Joelle):
@@ -97,7 +93,7 @@ If any document conflicts, follow this precedence: `MASTER_PLAN.md` → `PENDING
      → **ZERO premium Copilot requests.** No exceptions. Work scope: `business_docs/` and `plans/` only. No code changes ever.
      → Weekly Copilot quota is shared — free agents must NEVER consume it.
    - **SENIOR CODING AGENTS** (@Ada, @Mira, @Barbara, @Una, @Daniela, @Ruchi, @Gwynne, @Katherine):
-     → Premium requests PERMITTED **only** when @Ada declares: **"@Ada — Context Ready (60% Readiness) — Coding Phase Approved"** after @Margaret sign-off.
+     → Premium requests PERMITTED **only** when @Margaret explicitly declares: **"Context Ready — Coding Phase Approved"**
      → Without that declaration: use GPT-4o (standard) or queue the task for next approved sprint.
    - **INVOCATION PROTOCOL** (exact syntax):
      ```
@@ -144,13 +140,13 @@ If any document conflicts, follow this precedence: `MASTER_PLAN.md` → `PENDING
           → Check PENDING_TASKS_ONLY.md and DAILY_MILESTONE_TRACKER.md
    [ ] 4. MARGARET SIGNED OFF: Has @Margaret reviewed the plan and confirmed scope?
           → Signal: @Margaret entry in DAILY_MILESTONE_TRACKER.md for today.
-   [ ] 5. ADA AUTHORIZED: Has @Ada declared "@Ada — Context Ready (60% Readiness) — Coding Phase Approved"?
+   [ ] 5. ADA AUTHORIZED: Has @Ada declared "Context Ready — Coding Phase Approved"?
           → This declaration MUST appear in the session before any senior agent codes.
    [ ] 6. QUOTA AVAILABLE: Check WEEKLY PREMIUM QUOTA in PROJECT_PROGRESS.md.
           → If 0 requests remaining → queue work, do NOT start premium coding.
    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
    [ ] 7. READINESS GATE MET: Is readiness score >=60% with evidence?
-   ✅ ALL 7 CHECKED? → @Ada declares: "@Ada — Context Ready (60% Readiness) — Coding Phase Approved"
+   ✅ ALL 7 CHECKED? → @Ada declares: "Context Ready (60% Readiness) — Coding Phase Approved"
    ❌ ANY UNCHECKED? → Route back to free planning agents. Do NOT code.
    ```
 
@@ -186,10 +182,11 @@ If any document conflicts, follow this precedence: `MASTER_PLAN.md` → `PENDING
    Session ends with @Gwynne committing + pushing to development branch.
    ```
 
-9. **🔄 NO-IDLE POLICY — Expanded Free Agent Pool (17 Agents Total):**
-   The free agent team has been expanded from 5 to 17 agents. All run in external free tools. All follow the same zero-premium rule. Every agent has a 3-task backlog queue in AGENTS.md. No agent ever idles.
+9. **🔄 NO-IDLE POLICY — Expanded Free Agent Pool (40 Agents Total):**
+   The free agent team has been expanded from 17 to 40 agents (17 core + 23 growth). All run in external free tools. All follow the same zero-premium rule. Every agent has a 3-task backlog queue in AGENTS.md. No agent ever idles.
+   The planning pool is divided into 4 parallel teams so 4 different tasks can move at the same time.
 
-   **Complete Free Agent Roster (17 agents — 60-minute loop):**
+   **Complete Free Agent Roster (40 agents — 60-minute loop inside 4 teams):**
 
    ```
    Slot  Agent      Tool                 Model              Domain
@@ -347,3 +344,24 @@ If any document conflicts, follow this precedence: `MASTER_PLAN.md` → `PENDING
 - Free planning teams should run in background (MVP) using:
   - `npm run orchestrator:bg:start`
   - `npm run orchestrator:bg:stop`
+
+24. **🤖 AUTONOMOUS CONTINUATION MODE (No Repeated "go" Prompts):**
+
+- Default execution mode for approved implementation sessions is **continuous autonomous progression**.
+- Once user intent is clear (e.g., "start implementation", "continue"), execution should proceed micro-wave by micro-wave without waiting for repeated manual confirmation.
+- Hard-stop only on:
+  - failing tests/lint/build,
+  - policy/gate mismatch,
+  - missing credentials/secrets,
+  - irreversible-risk operation requiring explicit user approval.
+- Operational command surface:
+  - `npm run orchestrator:agent-loop:auto`
+  - `npm run orchestrator:agent-loop:auto:nobrowser`
+
+25. **🧩 ORCHESTRATOR POLICY SOURCE OF TRUTH:**
+
+- Runtime gate thresholds and final approval phrase must be sourced from:
+  - `scripts/orchestrator/policy.json`
+- Scripts must not hardcode legacy thresholds (e.g., 92% / 1000% depth).
+- Mandatory approval phrase value remains exact:
+  - `@Ada — Context Ready (60% Readiness) — Coding Phase Approved`

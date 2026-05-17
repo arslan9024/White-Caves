@@ -21,7 +21,13 @@ const mockUseWhatsAppIntegration = useWhatsAppIntegration as vi.MockedFunction<
 describe('AccountLink Component', () => {
   const mockHookReturn = {
     accounts: [
-      { accountId: '1', name: 'Account 1', businessName: 'Business 1', phoneNumber: '+1234567890', isConnected: true },
+      {
+        accountId: '1',
+        name: 'Account 1',
+        businessName: 'Business 1',
+        phoneNumber: '+1234567890',
+        isConnected: true,
+      },
     ],
     currentAccount: null,
     isLoading: false,
@@ -40,9 +46,18 @@ describe('AccountLink Component', () => {
     refresh: vi.fn(),
   };
 
+  beforeAll(() => {
+    vi.spyOn(console, 'error').mockImplementation(() => {});
+    vi.spyOn(console, 'warn').mockImplementation(() => {});
+  });
+
   beforeEach(() => {
     vi.clearAllMocks();
     mockUseWhatsAppIntegration.mockReturnValue(mockHookReturn);
+  });
+
+  afterAll(() => {
+    vi.restoreAllMocks();
   });
 
   describe('rendering', () => {
@@ -53,7 +68,7 @@ describe('AccountLink Component', () => {
 
     it('should render account selector', () => {
       render(<AccountLink />);
-      expect(screen.getByLabelText('Select Account')).toBeInTheDocument();
+      expect(screen.getByRole('combobox')).toBeInTheDocument();
     });
 
     it('should render phone number input', () => {
@@ -75,7 +90,7 @@ describe('AccountLink Component', () => {
   describe('step navigation', () => {
     it('should show step indicators', () => {
       render(<AccountLink />);
-      const badges = screen.getAllByRole('img', { hidden: true }); // Step badges
+      const badges = screen.getAllByText(/^[1-3]$/); // Step number divs
       expect(badges.length).toBeGreaterThan(0);
     });
 
@@ -145,7 +160,7 @@ describe('AccountLink Component', () => {
 
       render(<AccountLink />);
       const closeButton = screen.getByText('✕').closest('button');
-      
+
       if (closeButton) {
         fireEvent.click(closeButton);
         expect(mockHookReturn.clearError).toHaveBeenCalled();

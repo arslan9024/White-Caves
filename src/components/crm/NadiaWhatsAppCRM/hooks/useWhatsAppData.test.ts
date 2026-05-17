@@ -6,7 +6,7 @@
  * timer cleanup, Nadia toggle
  */
 
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect, vi, beforeAll, beforeEach, afterAll } from 'vitest';
 import { renderHook, act, waitFor } from '@testing-library/react';
 
 // ── Mock external data ───────────────────────────────────────────
@@ -168,11 +168,20 @@ vi.mock('../data/features', () => ({
 
 import { useWhatsAppData } from './useWhatsAppData';
 
-beforeEach(() => {
-  vi.clearAllMocks();
-});
-
 describe('useWhatsAppData', () => {
+  beforeAll(() => {
+    vi.spyOn(console, 'error').mockImplementation(() => {});
+    vi.spyOn(console, 'warn').mockImplementation(() => {});
+  });
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  afterAll(() => {
+    vi.restoreAllMocks();
+  });
+
   describe('initial state', () => {
     it('returns all conversations after loading', async () => {
       const { result } = renderHook(() => useWhatsAppData());

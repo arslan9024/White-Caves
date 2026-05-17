@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import React from 'react';
 
@@ -50,7 +50,13 @@ import MobileLoginForm from './MobileLoginForm';
 describe('MobileLoginForm', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    window.recaptchaVerifier = null;
+    vi.spyOn(console, 'error').mockImplementation(() => {});
+    vi.spyOn(console, 'warn').mockImplementation(() => {});
+    window.recaptchaVerifier = { clear: vi.fn() } as unknown as typeof window.recaptchaVerifier;
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
   });
 
   describe('phone step rendering', () => {
@@ -88,10 +94,10 @@ describe('MobileLoginForm', () => {
       render(<MobileLoginForm />);
       const input = screen.getByPlaceholderText(/phone/i);
       fireEvent.change(input, { target: { value: '12345' } });
-      
+
       const form = input.closest('form')!;
       fireEvent.submit(form);
-      
+
       await waitFor(() => {
         expect(screen.getByText(/valid phone/i)).toBeInTheDocument();
       });
@@ -102,7 +108,7 @@ describe('MobileLoginForm', () => {
       const input = screen.getByPlaceholderText(/phone/i);
       const form = input.closest('form')!;
       fireEvent.submit(form);
-      
+
       await waitFor(() => {
         expect(screen.getByText(/valid phone/i)).toBeInTheDocument();
       });
@@ -113,26 +119,26 @@ describe('MobileLoginForm', () => {
     it('dispatches loginStart on form submit', async () => {
       mockSignInWithPhoneNumber.mockResolvedValue({ confirm: vi.fn() });
       render(<MobileLoginForm />);
-      
+
       const input = screen.getByPlaceholderText(/phone/i);
       fireEvent.change(input, { target: { value: '501234567' } });
-      
+
       const form = input.closest('form')!;
       fireEvent.submit(form);
-      
+
       expect(mockDispatch).toHaveBeenCalledWith({ type: 'auth/loginStart' });
     });
 
     it('transitions to OTP step on success', async () => {
       mockSignInWithPhoneNumber.mockResolvedValue({ confirm: vi.fn() });
       render(<MobileLoginForm />);
-      
+
       const input = screen.getByPlaceholderText(/phone/i);
       fireEvent.change(input, { target: { value: '501234567' } });
-      
+
       const form = input.closest('form')!;
       fireEvent.submit(form);
-      
+
       await waitFor(() => {
         expect(screen.getByTestId('otp-verification')).toBeInTheDocument();
       });
@@ -141,13 +147,13 @@ describe('MobileLoginForm', () => {
     it('shows error on OTP send failure', async () => {
       mockSignInWithPhoneNumber.mockRejectedValue(new Error('SMS quota exceeded'));
       render(<MobileLoginForm />);
-      
+
       const input = screen.getByPlaceholderText(/phone/i);
       fireEvent.change(input, { target: { value: '501234567' } });
-      
+
       const form = input.closest('form')!;
       fireEvent.submit(form);
-      
+
       await waitFor(() => {
         expect(screen.getByText(/SMS quota exceeded/i)).toBeInTheDocument();
       });
@@ -156,15 +162,18 @@ describe('MobileLoginForm', () => {
     it('dispatches loginFailure on error', async () => {
       mockSignInWithPhoneNumber.mockRejectedValue(new Error('Network error'));
       render(<MobileLoginForm />);
-      
+
       const input = screen.getByPlaceholderText(/phone/i);
       fireEvent.change(input, { target: { value: '501234567' } });
-      
+
       const form = input.closest('form')!;
       fireEvent.submit(form);
-      
+
       await waitFor(() => {
-        expect(mockDispatch).toHaveBeenCalledWith({ type: 'auth/loginFailure', payload: 'Network error' });
+        expect(mockDispatch).toHaveBeenCalledWith({
+          type: 'auth/loginFailure',
+          payload: 'Network error',
+        });
       });
     });
   });
@@ -175,13 +184,13 @@ describe('MobileLoginForm', () => {
         user: { uid: 'u1', phoneNumber: '+971501234567', displayName: 'Test' },
       });
       mockSignInWithPhoneNumber.mockResolvedValue({ confirm: mockConfirm });
-      
+
       render(<MobileLoginForm />);
       const input = screen.getByPlaceholderText(/phone/i);
       fireEvent.change(input, { target: { value: '501234567' } });
       const form = input.closest('form')!;
       fireEvent.submit(form);
-      
+
       await waitFor(() => {
         expect(screen.getByTestId('otp-verification')).toBeInTheDocument();
       });
@@ -192,13 +201,13 @@ describe('MobileLoginForm', () => {
     it('calls onError when OTP send fails', async () => {
       const onError = vi.fn();
       mockSignInWithPhoneNumber.mockRejectedValue(new Error('Auth failed'));
-      
+
       render(<MobileLoginForm onError={onError} />);
       const input = screen.getByPlaceholderText(/phone/i);
       fireEvent.change(input, { target: { value: '501234567' } });
       const form = input.closest('form')!;
       fireEvent.submit(form);
-      
+
       await waitFor(() => {
         expect(onError).toHaveBeenCalled();
       });

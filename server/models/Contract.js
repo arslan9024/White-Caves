@@ -5,34 +5,34 @@ const contractSchema = new mongoose.Schema(
     contractNumber: {
       type: String,
       unique: true,
-      required: true
+      required: true,
     },
     propertyId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Property',
-      required: true
+      required: true,
     },
     leadId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'Lead'
+      ref: 'Lead',
     },
     agentId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'Agent'
+      ref: 'Agent',
     },
     offerId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'Offer'
+      ref: 'Offer',
     },
     landlordId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'User'
+      ref: 'User',
     },
     tenantId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'User'
+      ref: 'User',
     },
-    
+
     // Parties involved
     tenant: {
       name: String,
@@ -41,7 +41,7 @@ const contractSchema = new mongoose.Schema(
       emiratesId: String,
       passport: String,
       nationality: String,
-      address: String
+      address: String,
     },
     tenantDetails: {
       name: String,
@@ -52,7 +52,7 @@ const contractSchema = new mongoose.Schema(
       passportNo: String,
       address: String,
       occupation: String,
-      employer: String
+      employer: String,
     },
     landlord: {
       name: String,
@@ -61,7 +61,7 @@ const contractSchema = new mongoose.Schema(
       emiratesId: String,
       passport: String,
       nationality: String,
-      address: String
+      address: String,
     },
     landlordDetails: {
       name: String,
@@ -70,20 +70,20 @@ const contractSchema = new mongoose.Schema(
       nationality: String,
       emiratesId: String,
       passportNo: String,
-      address: String
+      address: String,
     },
     agentDetails: {
       name: String,
       email: String,
       phone: String,
-      company: String
+      company: String,
     },
     witness: {
       name: String,
       email: String,
-      phone: String
+      phone: String,
     },
-    
+
     // Property details
     propertyDetails: {
       address: String,
@@ -98,9 +98,9 @@ const contractSchema = new mongoose.Schema(
       type: String,
       location: String,
       size: Number,
-      features: [String]
+      features: [String],
     },
-    
+
     // Lease terms
     leaseTerms: {
       rentAmount: Number,
@@ -108,7 +108,7 @@ const contractSchema = new mongoose.Schema(
       rentalPeriod: {
         startDate: Date,
         endDate: Date,
-        durationMonths: Number
+        durationMonths: Number,
       },
       paymentSchedule: String, // e.g., "Monthly", "Quarterly", "Annually"
       securityDeposit: Number,
@@ -124,22 +124,22 @@ const contractSchema = new mongoose.Schema(
       rentIncreasePercentage: Number,
       maintenanceResponsibility: String,
       utilities: String,
-      specialTerms: String
+      specialTerms: String,
     },
-    
+
     // Template & customization
     template: {
       type: String,
       enum: ['standard_ejari', 'furnished', 'commercial', 'custom'],
-      default: 'standard_ejari'
+      default: 'standard_ejari',
     },
     customClauses: [
       {
         title: String,
-        content: String
-      }
+        content: String,
+      },
     ],
-    
+
     // Signature tracking
     signatures: {
       tenant: {
@@ -149,7 +149,7 @@ const contractSchema = new mongoose.Schema(
         signatureToken: String,
         tokenExpiresAt: Date,
         ipAddress: String,
-        userAgent: String
+        userAgent: String,
       },
       landlord: {
         name: String,
@@ -158,7 +158,7 @@ const contractSchema = new mongoose.Schema(
         signatureToken: String,
         tokenExpiresAt: Date,
         ipAddress: String,
-        userAgent: String
+        userAgent: String,
       },
       witness: {
         name: String,
@@ -167,22 +167,29 @@ const contractSchema = new mongoose.Schema(
         signatureToken: String,
         tokenExpiresAt: Date,
         ipAddress: String,
-        userAgent: String
-      }
+        userAgent: String,
+      },
     },
-    
+
     // Status & Workflow
     status: {
       type: String,
-      enum: ['draft', 'pending_signatures', 'partially_signed', 'fully_signed', 'executed', 'cancelled'],
-      default: 'draft'
+      enum: [
+        'draft',
+        'pending_signatures',
+        'partially_signed',
+        'fully_signed',
+        'executed',
+        'cancelled',
+      ],
+      default: 'draft',
     },
-    
+
     // Document storage
     pdfUrl: String,
     pdfHash: String, // SHA-256 hash for verification
     googleDriveFileId: String,
-    
+
     // Ejari registration
     ejariRegistration: {
       registrationNumber: String,
@@ -191,33 +198,32 @@ const contractSchema = new mongoose.Schema(
       status: {
         type: String,
         enum: ['pending', 'registered', 'rejected'],
-        default: 'pending'
-      }
+        default: 'pending',
+      },
     },
-    
+
     // Renewal
     renewal: {
       renewalDate: Date, // 100 days before lease end
       renewalNotificationSent: Boolean,
       sentAt: Date,
-      renewalContractId: mongoose.Schema.Types.ObjectId
+      renewalContractId: mongoose.Schema.Types.ObjectId,
     },
-    
+
     // Audit trail
     history: [
       {
         action: String,
         actor: mongoose.Schema.Types.ObjectId,
         timestamp: Date,
-        details: String
-      }
-    ]
+        details: String,
+      },
+    ],
   },
   { timestamps: true }
 );
 
 // Indexes
-contractSchema.index({ contractNumber: 1 });
 contractSchema.index({ propertyId: 1 });
 contractSchema.index({ leadId: 1 });
 contractSchema.index({ offerId: 1 });

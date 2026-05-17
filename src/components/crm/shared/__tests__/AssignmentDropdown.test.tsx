@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import React from 'react';
 
@@ -23,6 +23,15 @@ const mockAgents = [
 ];
 
 describe('AssignmentDropdown', () => {
+  beforeEach(() => {
+    vi.spyOn(console, 'error').mockImplementation(() => {});
+    vi.spyOn(console, 'warn').mockImplementation(() => {});
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
   describe('Closed State', () => {
     it('should render placeholder when no agent selected', () => {
       render(<AssignmentDropdown agents={mockAgents} onSelect={vi.fn()} />);
@@ -30,7 +39,9 @@ describe('AssignmentDropdown', () => {
     });
 
     it('should render custom placeholder', () => {
-      render(<AssignmentDropdown agents={mockAgents} onSelect={vi.fn()} placeholder="Assign to..." />);
+      render(
+        <AssignmentDropdown agents={mockAgents} onSelect={vi.fn()} placeholder="Assign to..." />
+      );
       expect(screen.getByText('Assign to...')).toBeInTheDocument();
     });
 
@@ -150,7 +161,9 @@ describe('AssignmentDropdown', () => {
     });
 
     it('should have disabled class', () => {
-      const { container } = render(<AssignmentDropdown agents={mockAgents} onSelect={vi.fn()} disabled={true} />);
+      const { container } = render(
+        <AssignmentDropdown agents={mockAgents} onSelect={vi.fn()} disabled={true} />
+      );
       expect(container.querySelector('.disabled')).toBeInTheDocument();
     });
   });

@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeAll, afterAll, vi } from 'vitest';
+import { describe, it, expect, beforeAll, afterAll, beforeEach, afterEach, vi } from 'vitest';
 import request from 'supertest';
 import express from 'express';
 
@@ -32,10 +32,10 @@ const createTestApp = () => {
   // GET /api/properties - List properties
   app.get('/api/properties', (req, res) => {
     const { location } = req.query;
-    
+
     let filteredProperties = mockProperties;
     if (location) {
-      filteredProperties = mockProperties.filter(p => 
+      filteredProperties = mockProperties.filter(p =>
         p.location.toLowerCase().includes(location.toLowerCase())
       );
     }
@@ -50,7 +50,7 @@ const createTestApp = () => {
   // GET /api/properties/:id - Get single property
   app.get('/api/properties/:id', (req, res) => {
     const property = mockProperties.find(p => p._id === req.params.id);
-    
+
     if (!property) {
       return res.status(404).json({
         success: false,
@@ -98,7 +98,7 @@ const createTestApp = () => {
   // PUT /api/properties/:id - Update property
   app.put('/api/properties/:id', (req, res) => {
     const propertyIndex = mockProperties.findIndex(p => p._id === req.params.id);
-    
+
     if (propertyIndex === -1) {
       return res.status(404).json({
         success: false,
@@ -121,7 +121,7 @@ const createTestApp = () => {
   // DELETE /api/properties/:id - Delete property
   app.delete('/api/properties/:id', (req, res) => {
     const propertyIndex = mockProperties.findIndex(p => p._id === req.params.id);
-    
+
     if (propertyIndex === -1) {
       return res.status(404).json({
         success: false,
@@ -144,6 +144,15 @@ describe('Property API Endpoints', () => {
   let app;
   let server;
 
+  beforeEach(() => {
+    vi.spyOn(console, 'error').mockImplementation(() => {});
+    vi.spyOn(console, 'warn').mockImplementation(() => {});
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
   beforeAll(() => {
     app = createTestApp();
     server = app.listen(0); // Random port
@@ -155,9 +164,7 @@ describe('Property API Endpoints', () => {
 
   describe('GET /api/properties', () => {
     it('should return list of properties', async () => {
-      const response = await request(server)
-        .get('/api/properties')
-        .expect(200);
+      const response = await request(server).get('/api/properties').expect(200);
 
       expect(response.body.success).toBe(true);
       expect(response.body).toHaveProperty('properties');
@@ -172,9 +179,7 @@ describe('Property API Endpoints', () => {
 
       expect(response.body.success).toBe(true);
       expect(response.body.properties.length).toBeGreaterThan(0);
-      expect(response.body.properties.every(p => 
-        p.location.includes('Dubai Marina')
-      )).toBe(true);
+      expect(response.body.properties.every(p => p.location.includes('Dubai Marina'))).toBe(true);
     });
 
     it('should return empty array when no properties match filter', async () => {
@@ -189,9 +194,7 @@ describe('Property API Endpoints', () => {
 
   describe('GET /api/properties/:id', () => {
     it('should return a single property by ID', async () => {
-      const response = await request(server)
-        .get('/api/properties/1')
-        .expect(200);
+      const response = await request(server).get('/api/properties/1').expect(200);
 
       expect(response.body.success).toBe(true);
       expect(response.body.property).toHaveProperty('_id', '1');
@@ -200,9 +203,7 @@ describe('Property API Endpoints', () => {
     });
 
     it('should return 404 for non-existent property', async () => {
-      const response = await request(server)
-        .get('/api/properties/999')
-        .expect(404);
+      const response = await request(server).get('/api/properties/999').expect(404);
 
       expect(response.body.success).toBe(false);
       expect(response.body.message).toContain('not found');
@@ -219,10 +220,7 @@ describe('Property API Endpoints', () => {
         type: 'villa',
       };
 
-      const response = await request(server)
-        .post('/api/properties')
-        .send(newProperty)
-        .expect(201);
+      const response = await request(server).post('/api/properties').send(newProperty).expect(201);
 
       expect(response.body.success).toBe(true);
       expect(response.body.property).toMatchObject(newProperty);
@@ -252,10 +250,7 @@ describe('Property API Endpoints', () => {
         status: 'rented',
       };
 
-      const response = await request(server)
-        .put('/api/properties/1')
-        .send(updates)
-        .expect(200);
+      const response = await request(server).put('/api/properties/1').send(updates).expect(200);
 
       expect(response.body.success).toBe(true);
       expect(response.body.property.price).toBe(5500);
@@ -274,25 +269,19 @@ describe('Property API Endpoints', () => {
 
   describe('DELETE /api/properties/:id', () => {
     it('should delete an existing property', async () => {
-      const response = await request(server)
-        .delete('/api/properties/2')
-        .expect(200);
+      const response = await request(server).delete('/api/properties/2').expect(200);
 
       expect(response.body.success).toBe(true);
       expect(response.body.message).toContain('deleted');
 
       // Verify property is deleted
-      const getResponse = await request(server)
-        .get('/api/properties/2')
-        .expect(404);
+      const getResponse = await request(server).get('/api/properties/2').expect(404);
 
       expect(getResponse.body.success).toBe(false);
     });
 
     it('should return 404 when deleting non-existent property', async () => {
-      const response = await request(server)
-        .delete('/api/properties/999')
-        .expect(404);
+      const response = await request(server).delete('/api/properties/999').expect(404);
 
       expect(response.body.success).toBe(false);
     });

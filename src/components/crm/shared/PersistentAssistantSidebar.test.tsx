@@ -5,7 +5,7 @@
  * department grouping, notification badges, selection, empty state
  */
 
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, screen, fireEvent, within } from '@testing-library/react';
 import React from 'react';
 
@@ -32,23 +32,105 @@ vi.mock('lucide-react', () => ({
 
 // ── Mock styled components ───────────────────────────────────────
 vi.mock('./PersistentAssistantSidebar.styles', () => ({
-  PersistentSidebarContainer: ({ children, ...p }: React.PropsWithChildren<Record<string, unknown>>) => <div data-testid="sidebar-container" {...p}>{children}</div>,
-  SidebarHeader: ({ children, ...p }: React.PropsWithChildren) => <div data-testid="sidebar-header" {...p}>{children}</div>,
-  CollapseButton: ({ children, ...p }: React.PropsWithChildren<{ onClick?: () => void; title?: string }>) => <button data-testid="collapse-btn" {...p}>{children}</button>,
-  SidebarTitle: ({ children, ...p }: React.PropsWithChildren) => <h3 data-testid="sidebar-title" {...p}>{children}</h3>,
-  SidebarContent: ({ children, ...p }: React.PropsWithChildren) => <div data-testid="sidebar-content" {...p}>{children}</div>,
-  DepartmentGroup: ({ children, ...p }: React.PropsWithChildren) => <div data-testid="dept-group" {...p}>{children}</div>,
-  DepartmentHeader: ({ children, ...p }: React.PropsWithChildren<Record<string, unknown>>) => <div data-testid="dept-header" {...p}>{children}</div>,
-  DepartmentAssistants: ({ children, ...p }: React.PropsWithChildren) => <div data-testid="dept-assistants" {...p}>{children}</div>,
-  AssistantTileContainer: ({ children, $active, $tileColor, ...p }: React.PropsWithChildren<Record<string, unknown>>) => <div data-testid="assistant-tile" data-active={$active} {...p}>{children}</div>,
-  TileAvatar: ({ children, ...p }: React.PropsWithChildren) => <div data-testid="tile-avatar" {...p}>{children}</div>,
-  TileEmoji: ({ children, ...p }: React.PropsWithChildren) => <span data-testid="tile-emoji" {...p}>{children}</span>,
-  TileInfo: ({ children, ...p }: React.PropsWithChildren) => <div data-testid="tile-info" {...p}>{children}</div>,
-  TileName: ({ children, ...p }: React.PropsWithChildren) => <span data-testid="tile-name" {...p}>{children}</span>,
-  TileTitle: ({ children, ...p }: React.PropsWithChildren) => <span data-testid="tile-title" {...p}>{children}</span>,
-  TileAction: ({ children, ...p }: React.PropsWithChildren<{ title?: string }>) => <button data-testid="tile-action" {...p}>{children}</button>,
-  NotificationBadgeContainer: ({ children, ...p }: React.PropsWithChildren<Record<string, unknown>>) => <span data-testid="notification-badge" {...p}>{children}</span>,
-  SidebarFooter: ({ children, ...p }: React.PropsWithChildren) => <div data-testid="sidebar-footer" {...p}>{children}</div>,
+  PersistentSidebarContainer: ({
+    children,
+    ...p
+  }: React.PropsWithChildren<Record<string, unknown>>) => (
+    <div data-testid="sidebar-container" {...p}>
+      {children}
+    </div>
+  ),
+  SidebarHeader: ({ children, ...p }: React.PropsWithChildren) => (
+    <div data-testid="sidebar-header" {...p}>
+      {children}
+    </div>
+  ),
+  CollapseButton: ({
+    children,
+    ...p
+  }: React.PropsWithChildren<{ onClick?: () => void; title?: string }>) => (
+    <button data-testid="collapse-btn" {...p}>
+      {children}
+    </button>
+  ),
+  SidebarTitle: ({ children, ...p }: React.PropsWithChildren) => (
+    <h3 data-testid="sidebar-title" {...p}>
+      {children}
+    </h3>
+  ),
+  SidebarContent: ({ children, ...p }: React.PropsWithChildren) => (
+    <div data-testid="sidebar-content" {...p}>
+      {children}
+    </div>
+  ),
+  DepartmentGroup: ({ children, ...p }: React.PropsWithChildren) => (
+    <div data-testid="dept-group" {...p}>
+      {children}
+    </div>
+  ),
+  DepartmentHeader: ({ children, ...p }: React.PropsWithChildren<Record<string, unknown>>) => (
+    <div data-testid="dept-header" {...p}>
+      {children}
+    </div>
+  ),
+  DepartmentAssistants: ({ children, ...p }: React.PropsWithChildren) => (
+    <div data-testid="dept-assistants" {...p}>
+      {children}
+    </div>
+  ),
+  AssistantTileContainer: ({
+    children,
+    $active,
+    $tileColor,
+    ...p
+  }: React.PropsWithChildren<Record<string, unknown>>) => (
+    <div data-testid="assistant-tile" data-active={$active} {...p}>
+      {children}
+    </div>
+  ),
+  TileAvatar: ({ children, ...p }: React.PropsWithChildren) => (
+    <div data-testid="tile-avatar" {...p}>
+      {children}
+    </div>
+  ),
+  TileEmoji: ({ children, ...p }: React.PropsWithChildren) => (
+    <span data-testid="tile-emoji" {...p}>
+      {children}
+    </span>
+  ),
+  TileInfo: ({ children, ...p }: React.PropsWithChildren) => (
+    <div data-testid="tile-info" {...p}>
+      {children}
+    </div>
+  ),
+  TileName: ({ children, ...p }: React.PropsWithChildren) => (
+    <span data-testid="tile-name" {...p}>
+      {children}
+    </span>
+  ),
+  TileTitle: ({ children, ...p }: React.PropsWithChildren) => (
+    <span data-testid="tile-title" {...p}>
+      {children}
+    </span>
+  ),
+  TileAction: ({ children, ...p }: React.PropsWithChildren<{ title?: string }>) => (
+    <button data-testid="tile-action" {...p}>
+      {children}
+    </button>
+  ),
+  NotificationBadgeContainer: ({
+    children,
+    ...p
+  }: React.PropsWithChildren<Record<string, unknown>>) => (
+    <span data-testid="notification-badge" {...p}>
+      {children}
+    </span>
+  ),
+  SidebarFooter: ({ children, ...p }: React.PropsWithChildren) => (
+    <div data-testid="sidebar-footer" {...p}>
+      {children}
+    </div>
+  ),
 }));
 
 // ── Mock child components ────────────────────────────────────────
@@ -102,10 +184,17 @@ vi.mock('react-redux', () => ({
 import PersistentAssistantSidebar from './PersistentAssistantSidebar';
 
 // ── Helper: make assistant data ──────────────────────────────────
-function makeAssistant(overrides: Partial<{
-  id: string; name: string; title: string; avatar: string;
-  colorScheme: string; department: string; metrics: Record<string, string>;
-}> = {}) {
+function makeAssistant(
+  overrides: Partial<{
+    id: string;
+    name: string;
+    title: string;
+    avatar: string;
+    colorScheme: string;
+    department: string;
+    metrics: Record<string, string>;
+  }> = {}
+) {
   return {
     id: overrides.id || 'nadia',
     name: overrides.name || 'Nadia',
@@ -120,10 +209,16 @@ function makeAssistant(overrides: Partial<{
 
 beforeEach(() => {
   vi.clearAllMocks();
+  vi.spyOn(console, 'error').mockImplementation(() => {});
+  vi.spyOn(console, 'warn').mockImplementation(() => {});
   mockState.assistants.length = 0;
   Object.keys(mockState.unreadCounts).forEach(k => delete mockState.unreadCounts[k]);
   mockState.sidebar.isCollapsed = false;
   mockState.sidebar.isOpen = true;
+});
+
+afterEach(() => {
+  vi.restoreAllMocks();
 });
 
 describe('PersistentAssistantSidebar', () => {
@@ -180,26 +275,20 @@ describe('PersistentAssistantSidebar', () => {
     });
 
     it('shows status indicator', () => {
-      mockState.assistants.push(
-        makeAssistant({ metrics: { systemHealth: 'optimal' } })
-      );
+      mockState.assistants.push(makeAssistant({ metrics: { systemHealth: 'optimal' } }));
       render(<PersistentAssistantSidebar />);
       expect(screen.getByTestId('status-indicator')).toBeInTheDocument();
       expect(screen.getByTestId('status-indicator').dataset.status).toBe('active');
     });
 
     it('shows idle status for assistants without health data', () => {
-      mockState.assistants.push(
-        makeAssistant({ metrics: {} })
-      );
+      mockState.assistants.push(makeAssistant({ metrics: {} }));
       render(<PersistentAssistantSidebar />);
       expect(screen.getByTestId('status-indicator').dataset.status).toBe('idle');
     });
 
     it('shows busy status for degraded health', () => {
-      mockState.assistants.push(
-        makeAssistant({ metrics: { systemHealth: 'degraded' } })
-      );
+      mockState.assistants.push(makeAssistant({ metrics: { systemHealth: 'degraded' } }));
       render(<PersistentAssistantSidebar />);
       expect(screen.getByTestId('status-indicator').dataset.status).toBe('busy');
     });
@@ -216,18 +305,14 @@ describe('PersistentAssistantSidebar', () => {
     });
 
     it('shows department header with capitalized name', () => {
-      mockState.assistants.push(
-        makeAssistant({ department: 'communications' })
-      );
+      mockState.assistants.push(makeAssistant({ department: 'communications' }));
       render(<PersistentAssistantSidebar />);
       expect(screen.getByText('Communications')).toBeInTheDocument();
     });
 
     it('hides department headers when collapsed', () => {
       mockState.sidebar.isCollapsed = true;
-      mockState.assistants.push(
-        makeAssistant({ department: 'communications' })
-      );
+      mockState.assistants.push(makeAssistant({ department: 'communications' }));
       render(<PersistentAssistantSidebar />);
       expect(screen.queryByText('Communications')).not.toBeInTheDocument();
     });
@@ -235,9 +320,7 @@ describe('PersistentAssistantSidebar', () => {
 
   describe('notification badges', () => {
     it('shows notification badge for assistants with unread', () => {
-      mockState.assistants.push(
-        makeAssistant({ id: 'nadia', department: 'communications' })
-      );
+      mockState.assistants.push(makeAssistant({ id: 'nadia', department: 'communications' }));
       mockState.unreadCounts['nadia'] = 5;
       render(<PersistentAssistantSidebar />);
       const tile = screen.getByTestId('assistant-tile');
@@ -245,9 +328,7 @@ describe('PersistentAssistantSidebar', () => {
     });
 
     it('shows total unread in header', () => {
-      mockState.assistants.push(
-        makeAssistant({ id: 'nadia', department: 'communications' })
-      );
+      mockState.assistants.push(makeAssistant({ id: 'nadia', department: 'communications' }));
       mockState.unreadCounts['nadia'] = 3;
       render(<PersistentAssistantSidebar />);
       const header = screen.getByTestId('sidebar-header');
@@ -255,9 +336,7 @@ describe('PersistentAssistantSidebar', () => {
     });
 
     it('does not show badge when no unread', () => {
-      mockState.assistants.push(
-        makeAssistant({ id: 'nadia', department: 'communications' })
-      );
+      mockState.assistants.push(makeAssistant({ id: 'nadia', department: 'communications' }));
       render(<PersistentAssistantSidebar />);
       const badges = screen.queryAllByTestId('notification-badge');
       expect(badges).toHaveLength(0);
@@ -280,19 +359,18 @@ describe('PersistentAssistantSidebar', () => {
 
     it('dispatches selectAssistant and calls onSelectAssistant callback', () => {
       const onSelect = vi.fn();
-      mockState.assistants.push(
-        makeAssistant({ id: 'nadia', department: 'communications' })
-      );
+      mockState.assistants.push(makeAssistant({ id: 'nadia', department: 'communications' }));
       render(<PersistentAssistantSidebar onSelectAssistant={onSelect} />);
       fireEvent.click(screen.getByTestId('assistant-tile'));
-      expect(mockState.dispatch).toHaveBeenCalledWith({ type: 'selectAssistant', payload: 'nadia' });
+      expect(mockState.dispatch).toHaveBeenCalledWith({
+        type: 'selectAssistant',
+        payload: 'nadia',
+      });
       expect(onSelect).toHaveBeenCalledWith('nadia');
     });
 
     it('highlights active assistant', () => {
-      mockState.assistants.push(
-        makeAssistant({ id: 'nadia', department: 'communications' })
-      );
+      mockState.assistants.push(makeAssistant({ id: 'nadia', department: 'communications' }));
       render(<PersistentAssistantSidebar activeAssistantId="nadia" />);
       expect(screen.getByTestId('assistant-tile').dataset.active).toBe('true');
     });
@@ -310,7 +388,12 @@ describe('PersistentAssistantSidebar', () => {
 
     it('hides assistant info when collapsed', () => {
       mockState.assistants.push(
-        makeAssistant({ id: 'nadia', name: 'Nadia', title: 'Communications Lead', department: 'communications' })
+        makeAssistant({
+          id: 'nadia',
+          name: 'Nadia',
+          title: 'Communications Lead',
+          department: 'communications',
+        })
       );
       render(<PersistentAssistantSidebar />);
       expect(screen.queryByTestId('tile-info')).not.toBeInTheDocument();
@@ -322,9 +405,7 @@ describe('PersistentAssistantSidebar', () => {
     });
 
     it('hides bell action when collapsed', () => {
-      mockState.assistants.push(
-        makeAssistant({ id: 'nadia', department: 'communications' })
-      );
+      mockState.assistants.push(makeAssistant({ id: 'nadia', department: 'communications' }));
       render(<PersistentAssistantSidebar />);
       expect(screen.queryByTestId('icon-bell')).not.toBeInTheDocument();
     });

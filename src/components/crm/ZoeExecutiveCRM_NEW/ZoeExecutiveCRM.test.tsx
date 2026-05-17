@@ -4,7 +4,8 @@ import React from 'react';
 
 // Mock lucide-react icons
 vi.mock('lucide-react', () => {
-  const icon = (name: string) => (props: any) => React.createElement('span', { 'data-testid': `icon-${name}`, ...props });
+  const icon = (name: string) => (props: any) =>
+    React.createElement('span', { 'data-testid': `icon-${name}`, ...props });
   return {
     Briefcase: icon('briefcase'),
     Calendar: icon('calendar'),
@@ -16,6 +17,7 @@ vi.mock('lucide-react', () => {
     AlertCircle: icon('alert-circle'),
     ArrowUp: icon('arrow-up'),
     ArrowDown: icon('arrow-down'),
+    Search: icon('search'),
   };
 });
 
@@ -26,19 +28,21 @@ vi.mock('./ZoeExecutiveCRM.css', () => ({}));
 // Mock tab components
 vi.mock('./tabs/SuggestionsTab', () => ({
   default: ({ suggestions, unreviewedCount, criticalCount }: any) => (
-    <div data-testid="suggestions-tab">
-      Suggestions ({suggestions?.length || 0})
-    </div>
+    <div data-testid="suggestions-tab">Suggestions ({suggestions?.length || 0})</div>
   ),
 }));
 vi.mock('./tabs/CalendarTab', () => ({
-  default: ({ meetings }: any) => <div data-testid="calendar-tab">Calendar ({meetings?.length || 0})</div>,
+  default: ({ meetings }: any) => (
+    <div data-testid="calendar-tab">Calendar ({meetings?.length || 0})</div>
+  ),
 }));
 vi.mock('./tabs/TasksTab', () => ({
   default: ({ tasks }: any) => <div data-testid="tasks-tab">Tasks ({tasks?.length || 0})</div>,
 }));
 vi.mock('./tabs/ExecutivesTab', () => ({
-  default: ({ executives }: any) => <div data-testid="executives-tab">Executives ({executives?.length || 0})</div>,
+  default: ({ executives }: any) => (
+    <div data-testid="executives-tab">Executives ({executives?.length || 0})</div>
+  ),
 }));
 vi.mock('./tabs/ReportsTab', () => ({
   default: () => <div data-testid="reports-tab">Reports</div>,
@@ -88,7 +92,9 @@ describe('ZoeExecutiveCRM', () => {
   describe('rendering', () => {
     it('renders the dashboard header', () => {
       render(<ZoeExecutiveCRM />);
-      expect(screen.getByText('Zoe - Executive Assistant & Strategic Intelligence')).toBeInTheDocument();
+      expect(
+        screen.getByText('Zoe - Executive Assistant & Strategic Intelligence')
+      ).toBeInTheDocument();
     });
 
     it('renders the assistant description', () => {

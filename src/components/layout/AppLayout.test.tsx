@@ -4,7 +4,7 @@
  * nav visibility toggle, component composition
  */
 
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeAll, beforeEach, afterAll, afterEach } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import React from 'react';
 import { Provider } from 'react-redux';
@@ -112,10 +112,23 @@ const setResponsiveMode = (mode: 'desktop' | 'tablet' | 'mobile') => {
 // ── Tests ────────────────────────────────────────────────────────
 
 describe('AppLayout', () => {
+  beforeAll(() => {
+    vi.spyOn(console, 'error').mockImplementation(() => {});
+    vi.spyOn(console, 'warn').mockImplementation(() => {});
+  });
+
   beforeEach(() => {
     vi.clearAllMocks();
     unifiedSidebarMock.mockClear();
     setResponsiveMode('desktop');
+  });
+
+  afterEach(() => {
+    vi.clearAllMocks();
+  });
+
+  afterAll(() => {
+    vi.restoreAllMocks();
   });
 
   // ── Rendering ────────────────────────────────────────────────

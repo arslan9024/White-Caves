@@ -78,11 +78,9 @@ const MOCK_AGENTS: Agent[] = [
 const EMPTY_FORM = { name: '', email: '', phone: '', role: 'Sales Agent' };
 type ModalMode = 'none' | 'add' | 'edit';
 
-const AgentsTab: React.FC<AgentsTabProps> = ({ data, loading }) => {
+const AgentsTab: React.FC<AgentsTabProps> = ({ data, loading, onAction }) => {
   const [searchQuery, setSearchQuery] = useState('');
-  const [localAgents, setLocalAgents] = useState<Agent[]>(() =>
-    data?.agents && data.agents.length > 0 ? data.agents : MOCK_AGENTS
-  );
+  const [localAgents, setLocalAgents] = useState<Agent[]>(() => data?.agents ?? []);
   const [modalMode, setModalMode] = useState<ModalMode>('none');
   const [editTarget, setEditTarget] = useState<Agent | null>(null);
   const [form, setForm] = useState<typeof EMPTY_FORM>(EMPTY_FORM);
@@ -94,10 +92,11 @@ const AgentsTab: React.FC<AgentsTabProps> = ({ data, loading }) => {
   };
 
   const openAdd = useCallback(() => {
+    onAction?.('addAgent');
     setForm(EMPTY_FORM);
     setEditTarget(null);
     setModalMode('add');
-  }, []);
+  }, [onAction]);
   const openEdit = useCallback((agent: Agent) => {
     setForm({ name: agent.name, email: agent.email, phone: agent.phone, role: agent.role });
     setEditTarget(agent);
@@ -190,7 +189,7 @@ const AgentsTab: React.FC<AgentsTabProps> = ({ data, loading }) => {
         </div>
         <div className="agent-stat">
           <span className="stat-number">{localAgents.filter(a => a.online).length}</span>
-          <span className="stat-label">Active</span>
+          <span className="stat-label">Online Now</span>
         </div>
         <div className="agent-stat">
           <span className="stat-number">{localAgents.reduce((s, a) => s + a.dealsClosed, 0)}</span>
@@ -237,7 +236,7 @@ const AgentsTab: React.FC<AgentsTabProps> = ({ data, loading }) => {
                 )}
               </div>
               <span className={`online-status ${agent.online ? 'online' : 'offline'}`}>
-                {agent.online ? 'Active' : 'Inactive'}
+                {agent.online ? 'Online' : 'Offline'}
               </span>
             </div>
             <div className="agent-details">
@@ -268,9 +267,28 @@ const AgentsTab: React.FC<AgentsTabProps> = ({ data, loading }) => {
             <div className="agent-actions">
               <button
                 className="icon-btn"
+                title="View Profile"
+                aria-label="View agent profile"
+                onClick={() => onAction?.('viewAgent', agent.id)}
+              >
+                👤
+              </button>
+              <button
+                className="icon-btn"
+                title="Message"
+                aria-label="Message agent"
+                onClick={() => onAction?.('messageAgent', agent.id)}
+              >
+                💬
+              </button>
+              <button
+                className="icon-btn"
                 title="Edit"
                 aria-label="Edit agent"
-                onClick={() => openEdit(agent)}
+                onClick={() => {
+                  onAction?.('editAgent', agent.id);
+                  openEdit(agent);
+                }}
               >
                 ✏️
               </button>

@@ -6,35 +6,35 @@ const userProfileSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',
       required: true,
-      unique: true
+      unique: true,
     },
-    
+
     // Basic Info
     name: String,
     email: String,
     phone: String,
     avatar: String,
     bio: String,
-    
+
     // Role & Type
     role: {
       type: String,
       enum: ['buyer', 'seller', 'tenant', 'landlord', 'agent', 'admin'],
-      default: 'buyer'
+      default: 'buyer',
     },
-    
+
     // Profile Completeness
     profileCompletion: {
       percentage: { type: Number, default: 0 },
       completedFields: [String],
-      lastUpdated: Date
+      lastUpdated: Date,
     },
-    
+
     // Personal Info
     nationality: String,
     dateOfBirth: Date,
     gender: String,
-    
+
     // Contact & Address
     address: {
       street: String,
@@ -42,33 +42,35 @@ const userProfileSchema = new mongoose.Schema(
       area: String,
       emirate: String,
       country: String,
-      postalCode: String
+      postalCode: String,
     },
-    
+
     // For Buyers/Tenants
     preferences: {
       propertyType: [String], // Villa, Apartment, etc.
       budget: {
         min: Number,
         max: Number,
-        currency: { type: String, default: 'AED' }
+        currency: { type: String, default: 'AED' },
       },
       locations: [String],
       bedrooms: {
         min: Number,
-        max: Number
+        max: Number,
       },
       amenities: [String],
       rentOrBuy: { type: String, enum: ['rent', 'buy', 'both'], default: 'both' },
-      timeline: String // Immediate, Within 3 months, etc.
+      timeline: String, // Immediate, Within 3 months, etc.
     },
-    
+
     // For Sellers/Landlords
-    properties: [{
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'Property'
-    }],
-    
+    properties: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Property',
+      },
+    ],
+
     // For Agents
     agentInfo: {
       license: String,
@@ -77,87 +79,93 @@ const userProfileSchema = new mongoose.Schema(
       specialization: [String],
       yearsExperience: Number,
       officeLocation: String,
-      officePhone: String
+      officePhone: String,
     },
-    
+
     // KYC & Verification
     kyc: {
       status: {
         type: String,
         enum: ['pending', 'submitted', 'verified', 'rejected'],
-        default: 'pending'
+        default: 'pending',
       },
       submittedAt: Date,
       verifiedAt: Date,
       rejectionReason: String,
-      verifiedBy: mongoose.Schema.Types.ObjectId // Admin user
+      verifiedBy: mongoose.Schema.Types.ObjectId, // Admin user
     },
-    
+
     documents: {
       emiratesId: {
         number: String,
         expiryDate: Date,
         document: String, // URL to uploaded file
-        verified: Boolean
+        verified: Boolean,
       },
       passport: {
         number: String,
         country: String,
         expiryDate: Date,
         document: String,
-        verified: Boolean
+        verified: Boolean,
       },
       drivingLicense: {
         number: String,
         expiryDate: Date,
         document: String,
-        verified: Boolean
+        verified: Boolean,
       },
       addressProof: {
         type: String,
         document: String,
-        verified: Boolean
+        verified: Boolean,
       },
       bankStatement: {
         document: String,
-        uploadedAt: Date
-      }
+        uploadedAt: Date,
+      },
     },
-    
+
     // Financial Info (for sellers/landlords)
     financial: {
       bankAccountName: String,
       bankName: String,
       accountNumber: String,
       iban: String,
-      currency: { type: String, default: 'AED' }
+      currency: { type: String, default: 'AED' },
     },
-    
+
     // Employment Info
     employment: {
       companyName: String,
       jobTitle: String,
       monthlyIncome: Number,
       employmentType: String, // Full-time, Self-employed, etc.
-      employerContact: String
+      employerContact: String,
     },
-    
+
     // Favorites & Saved Items
     favorites: {
-      properties: [{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Property'
-      }],
-      searches: [{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'SavedSearch'
-      }],
-      agents: [{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Agent'
-      }]
+      properties: [
+        {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: 'Property',
+        },
+      ],
+      searches: [
+        {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: 'SavedSearch',
+        },
+      ],
+      agents: [
+        {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: 'Agent',
+        },
+      ],
     },
-    
+
     // Notifications
     notifications: {
       emailNotifications: { type: Boolean, default: true },
@@ -169,44 +177,45 @@ const userProfileSchema = new mongoose.Schema(
       frequencyPreference: {
         type: String,
         enum: ['instant', 'daily', 'weekly', 'monthly'],
-        default: 'daily'
-      }
+        default: 'daily',
+      },
     },
-    
+
     // Privacy & Settings
     privacy: {
       profileVisibility: {
         type: String,
         enum: ['public', 'private', 'agents-only'],
-        default: 'agents-only'
+        default: 'agents-only',
       },
       showContactInfo: Boolean,
       allowAgentContact: { type: Boolean, default: true },
-      dataCollection: { type: Boolean, default: true }
+      dataCollection: { type: Boolean, default: true },
     },
-    
+
     // Activity
-    activityLog: [{
-      action: String,
-      timestamp: Date,
-      details: String
-    }],
-    
+    activityLog: [
+      {
+        action: String,
+        timestamp: Date,
+        details: String,
+      },
+    ],
+
     lastLogin: Date,
     lastProfileUpdate: Date,
-    
+
     // Social Links
     social: {
       linkedIn: String,
       whatsApp: String,
-      instagram: String
-    }
+      instagram: String,
+    },
   },
   { timestamps: true }
 );
 
 // Indexes
-userProfileSchema.index({ userId: 1 });
 userProfileSchema.index({ email: 1 });
 userProfileSchema.index({ role: 1 });
 userProfileSchema.index({ 'kyc.status': 1 });
@@ -223,17 +232,17 @@ userProfileSchema.methods.calculateCompletion = function () {
     'preferences.propertyType',
     'preferences.budget.min',
     'documents.emiratesId.number',
-    'documents.passport.number'
+    'documents.passport.number',
   ];
 
   let completed = 0;
-  fields.forEach((field) => {
+  fields.forEach(field => {
     const value = field.split('.').reduce((obj, key) => obj?.[key], this);
     if (value) completed++;
   });
 
   this.profileCompletion.percentage = Math.round((completed / fields.length) * 100);
-  this.profileCompletion.completedFields = fields.filter((field) => {
+  this.profileCompletion.completedFields = fields.filter(field => {
     const value = field.split('.').reduce((obj, key) => obj?.[key], this);
     return !!value;
   });

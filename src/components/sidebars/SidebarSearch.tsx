@@ -3,7 +3,7 @@
  * Real-time search and filtering for sidebar items
  */
 
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useCallback, useEffect, useMemo } from 'react';
 import styled from 'styled-components';
 import { debounce } from 'lodash-es';
 
@@ -107,10 +107,11 @@ export const SidebarSearch: React.FC<SidebarSearchProps> = ({
   const [isFocused, setIsFocused] = useState(false);
 
   // Debounced search handler
-  const debouncedSearch = useCallback(
-    debounce((query: string) => {
-      onSearch(query);
-    }, 300),
+  const debouncedSearch = useMemo(
+    () =>
+      debounce((query: string) => {
+        onSearch(query);
+      }, 300),
     [onSearch]
   );
 
@@ -162,9 +163,7 @@ export const SidebarSearch: React.FC<SidebarSearchProps> = ({
       </SearchContainer>
 
       {showNoResults && searchQuery && resultsFound === 0 && (
-        <NoResultsMessage>
-          No results found for "{searchQuery}"
-        </NoResultsMessage>
+        <NoResultsMessage>No results found for "{searchQuery}"</NoResultsMessage>
       )}
     </>
   );

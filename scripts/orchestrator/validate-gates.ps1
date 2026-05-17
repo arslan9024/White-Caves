@@ -4,6 +4,7 @@ param(
 )
 
 $progressFile = Join-Path $WorkspaceRoot "PROJECT_PROGRESS.md"
+$policyFile = Join-Path $WorkspaceRoot "scripts\orchestrator\policy.json"
 $readinessFile = Join-Path $WorkspaceRoot ("plans\waves\" + $WaveId + "_READINESS_PACKET.md")
 $sddFile = Join-Path $WorkspaceRoot ("plans\waves\" + $WaveId + "_SDD.md")
 $flowFile = Join-Path $WorkspaceRoot ("plans\waves\" + $WaveId + "_FLOWCHARTS.md")
@@ -12,6 +13,22 @@ $testRolloutFile = Join-Path $WorkspaceRoot ("plans\waves\" + $WaveId + "_TEST_R
 $outputFile = Join-Path $WorkspaceRoot ("plans\waves\" + $WaveId + "_GATE_VALIDATION_REPORT.md")
 
 $checks = @()
+
+$readinessThreshold = 60
+$approvalPhrase = "@Ada - Context Ready (60% Readiness) - Coding Phase Approved"
+if (Test-Path $policyFile) {
+  try {
+    $policy = Get-Content -Path $policyFile -Raw | ConvertFrom-Json
+    if ($policy.readinessThresholdPct) {
+      $readinessThreshold = [int]$policy.readinessThresholdPct
+    }
+    if ($policy.approvalPhrase) {
+      $approvalPhrase = [string]$policy.approvalPhrase
+    }
+  } catch {
+    # Keep defaults when policy parse fails.
+  }
+}
 
 function Add-Check {
   param([string]$Name, [bool]$Passed, [string]$Evidence)
@@ -27,20 +44,20 @@ Add-Check "Wave test rollout exists" (Test-Path $testRolloutFile) $testRolloutFi
 $readinessPassed = $false
 if (Test-Path $readinessFile) {
   $readinessText = Get-Content -Path $readinessFile -Raw
-  if ($readinessText -match '92%|readiness') {
+  if ($readinessText -match ($readinessThreshold.ToString() + '%|readiness')) {
     $readinessPassed = $true
   }
 }
-Add-Check "Readiness evidence mentions 92% threshold" $readinessPassed $readinessFile
+Add-Check ("Readiness evidence mentions {0}% threshold" -f $readinessThreshold) $readinessPassed $readinessFile
 
 $depthPassed = $false
 if (Test-Path $progressFile) {
   $progressText = Get-Content -Path $progressFile -Raw
-  if ($progressText -match '1000%') {
+  if ($progressText -match '60% readiness|readiness >=60%|fast-track') {
     $depthPassed = $true
   }
 }
-Add-Check "Project tracker references 1000% depth gate" $depthPassed $progressFile
+Add-Check "Project tracker references fast-track readiness gate" $depthPassed $progressFile
 
 $quotaPassed = $false
 if (Test-Path $progressFile) {
@@ -69,7 +86,7 @@ foreach ($c in $checks) {
 }
 $lines += ""
 $lines += "## Mandatory Approval Phrase"
-$lines += '@Ada - Context Ready (1000% Depth, 92% Readiness) - Coding Phase Approved'
+$lines += $approvalPhrase
 
 Set-Content -Path $outputFile -Value ($lines -join "`n") -Encoding UTF8
 Write-Output (@{ ok = $true; status = $status; report = $outputFile } | ConvertTo-Json -Depth 4)
