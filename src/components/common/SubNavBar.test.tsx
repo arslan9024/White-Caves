@@ -61,13 +61,15 @@ import SubNavBar from './SubNavBar';
 import { setCurrentSubModule } from '../../store/navigationSlice';
 
 function createStore(overrides: any = {}) {
+  const navigationState = {
+    currentSubModule: 'dashboard',
+    activeRole: 'agent',
+    ...overrides,
+  };
+
   return configureStore({
     reducer: {
-      navigation: () => ({
-        currentSubModule: 'dashboard',
-        activeRole: 'agent',
-        ...overrides,
-      }),
+      navigation: (state = navigationState) => state,
     },
   });
 }

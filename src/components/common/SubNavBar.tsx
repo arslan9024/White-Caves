@@ -35,10 +35,8 @@ interface SubNavItemType {
 
 const SubNavBar: React.FC<SubNavBarProps> = ({ moduleId, onSubModuleChange }) => {
   const dispatch = useDispatch();
-  const { currentSubModule, activeRole } = useSelector((state: RootState) => ({
-    currentSubModule: state.navigation.currentSubModule,
-    activeRole: state.navigation.activeRole,
-  }));
+  const currentSubModule = useSelector((state: RootState) => state.navigation.currentSubModule);
+  const activeRole = useSelector((state: RootState) => state.navigation.activeRole);
 
   const role = moduleId || activeRole || '';
   const subNavItems = getSubNavItems(role, role) as SubNavItemType[];

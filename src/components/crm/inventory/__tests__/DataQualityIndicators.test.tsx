@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import React from 'react';
 import { Provider } from 'react-redux';
@@ -61,6 +61,8 @@ const renderWithStore = (props: { onFilterClick?: (key: string) => void } = {}) 
 describe('DataQualityIndicators', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    vi.spyOn(console, 'error').mockImplementation(() => {});
+    vi.spyOn(console, 'warn').mockImplementation(() => {});
     mockSelectInventoryStats.mockReturnValue({
       multiOwnerProperties: 5,
       ownersWithMultipleProperties: 10,
@@ -78,6 +80,10 @@ describe('DataQualityIndicators', () => {
     mockSelectOwnersWithMultiplePhones.mockReturnValue([
       { id: 'O1', name: 'Owner 1' },
     ]);
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
   });
 
   it('should render Data Quality Insights heading', () => {

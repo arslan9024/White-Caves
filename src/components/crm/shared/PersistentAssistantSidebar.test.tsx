@@ -5,7 +5,7 @@
  * department grouping, notification badges, selection, empty state
  */
 
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, screen, fireEvent, within } from '@testing-library/react';
 import React from 'react';
 
@@ -120,10 +120,16 @@ function makeAssistant(overrides: Partial<{
 
 beforeEach(() => {
   vi.clearAllMocks();
+  vi.spyOn(console, 'error').mockImplementation(() => {});
+  vi.spyOn(console, 'warn').mockImplementation(() => {});
   mockState.assistants.length = 0;
   Object.keys(mockState.unreadCounts).forEach(k => delete mockState.unreadCounts[k]);
   mockState.sidebar.isCollapsed = false;
   mockState.sidebar.isOpen = true;
+});
+
+afterEach(() => {
+  vi.restoreAllMocks();
 });
 
 describe('PersistentAssistantSidebar', () => {

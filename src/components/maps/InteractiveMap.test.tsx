@@ -3,7 +3,7 @@
  * Tests: rendering, mobile toggle, loading state, map visibility
  */
 
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, beforeAll, afterAll } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import React from 'react';
 import { Provider } from 'react-redux';
@@ -59,8 +59,17 @@ const renderInteractiveMap = (props: Partial<React.ComponentProps<typeof Interac
 // ── Tests ────────────────────────────────────────────────────────
 
 describe('InteractiveMap', () => {
+  beforeAll(() => {
+    vi.spyOn(console, 'error').mockImplementation(() => {});
+    vi.spyOn(console, 'warn').mockImplementation(() => {});
+  });
+
   beforeEach(() => {
     vi.clearAllMocks();
+  });
+
+  afterAll(() => {
+    vi.restoreAllMocks();
   });
 
   describe('Rendering', () => {

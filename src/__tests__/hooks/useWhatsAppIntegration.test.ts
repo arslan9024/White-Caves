@@ -12,15 +12,24 @@ vi.mock('../../services/whatsapp/whatsapp.service');
 describe('useWhatsAppIntegration', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    // Default: listAccounts returns empty list so the mount effect doesn't set error
+    vi.mocked(whatsappService.listAccounts).mockResolvedValue({
+      success: true,
+      data: { accounts: [], count: 0 },
+    });
   });
 
   describe('initialization', () => {
-    it('should initialize with empty state', () => {
+    it('should initialize with empty state', async () => {
       const { result } = renderHook(() => useWhatsAppIntegration());
+
+      // Wait for the mount-time loadAccounts() effect to settle
+      await waitFor(() => {
+        expect(result.current.isLoading).toBe(false);
+      });
 
       expect(result.current.accounts).toEqual([]);
       expect(result.current.currentAccount).toBeNull();
-      expect(result.current.isLoading).toBe(false);
       expect(result.current.error).toBeNull();
     });
 
@@ -164,6 +173,10 @@ describe('useWhatsAppIntegration', () => {
   describe('error handling', () => {
     it('should clear errors', async () => {
       const { result } = renderHook(() => useWhatsAppIntegration());
+
+      await waitFor(() => {
+        expect(result.current.isLoading).toBe(false);
+      });
 
       // Trigger an error
       (whatsappService.listAccounts as vi.Mock).mockRejectedValue(
