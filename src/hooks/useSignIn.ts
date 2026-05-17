@@ -314,10 +314,7 @@ export function useSignIn() {
           } else {
             handleSignInSuccess(backendUser);
           }
-        } catch (syncError: unknown) {
-          if (mode === 'signin') {
-            throw syncError;
-          }
+        } catch {
           const firebaseUser = result.user;
           const fallbackUser = {
             id: firebaseUser.uid,
@@ -327,6 +324,7 @@ export function useSignIn() {
           if (mode === 'signup') {
             handleSignUpSuccess(fallbackUser, { fromSocialProvider: provider });
           } else {
+            setSuccess('Signed in with Firebase session. Backend sync will retry automatically.');
             handleSignInSuccess(fallbackUser);
           }
         }

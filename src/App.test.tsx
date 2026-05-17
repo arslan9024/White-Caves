@@ -428,7 +428,7 @@ describe('App', () => {
     });
   });
 
-  it('redirects /signin to /dashboard when logged in', async () => {
+  it('redirects /signin to /crm when logged in', async () => {
     mockReduxState.currentUser = { id: '1', role: 'buyer', email: 'test@test.com' };
     await act(async () => {
       renderAtRoute('/signin');
@@ -438,7 +438,7 @@ describe('App', () => {
     });
   });
 
-  it('redirects /signup to /dashboard when logged in', async () => {
+  it('redirects /signup to /crm when logged in', async () => {
     mockReduxState.currentUser = { id: '1', role: 'buyer', email: 'test@test.com' };
     await act(async () => {
       renderAtRoute('/signup');
@@ -555,7 +555,7 @@ describe('App', () => {
     });
   });
 
-  it('redirects /crm to /dashboard', async () => {
+  it('loads protected CRM entry at /crm', async () => {
     mockReduxState.currentUser = { id: '1', role: 'owner', email: 'test@test.com' };
     mockSafeStorage.getJSON.mockReturnValue({ role: 'owner', selectedAt: '', locked: true } as any);
     await act(async () => {

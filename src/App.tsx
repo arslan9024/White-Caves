@@ -426,7 +426,7 @@ function App(): React.JSX.Element {
                   path="/signin"
                   element={
                     user ? (
-                      <Navigate to="/dashboard" replace />
+                      <Navigate to="/crm" replace />
                     ) : (
                       <RouteErrorBoundary section="Sign In">
                         <Suspense fallback={<SuspenseLoader />}>
@@ -441,7 +441,7 @@ function App(): React.JSX.Element {
                   path="/signup"
                   element={
                     user ? (
-                      <Navigate to="/dashboard" replace />
+                      <Navigate to="/crm" replace />
                     ) : (
                       <RouteErrorBoundary section="Sign Up">
                         <Suspense fallback={<SuspenseLoader />}>
@@ -557,14 +557,14 @@ function App(): React.JSX.Element {
 
                 {/* ==================== UNIFIED DASHBOARD ==================== */}
                 <Route
-                  path="/dashboard"
+                  path="/crm"
                   element={
                     <ProtectedRoute>
                       <DashboardEntryRoute />
                     </ProtectedRoute>
                   }
                 />
-                <Route path="/crm" element={<Navigate to="/dashboard" replace />} />
+                <Route path="/dashboard" element={<Navigate to="/crm" replace />} />
 
                 {/* ==================== ROLE-SPECIFIC SUB-PAGES ==================== */}
                 <Route
