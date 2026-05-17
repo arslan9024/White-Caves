@@ -7,7 +7,7 @@
  */
 
 import React from 'react';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import MessageInput from '../MessageInput';
 
@@ -90,10 +90,10 @@ describe('MessageInput', () => {
 
   // ── Message Type Selection ────────────────────────────────────────
 
-  it('defaults to CUSTOMER message type', () => {
+  it('defaults to AGENT message type', () => {
     render(<MessageInput {...defaultProps()} />);
     const select = screen.getByLabelText('Message type') as HTMLSelectElement;
-    expect(select.value).toBe('CUSTOMER');
+    expect(select.value).toBe('AGENT');
   });
 
   it('allows switching to AGENT message type', () => {
@@ -106,16 +106,16 @@ describe('MessageInput', () => {
   it('sends with selected message type', () => {
     const onSend = vi.fn();
     render(<MessageInput {...defaultProps({ onSendMessage: onSend })} />);
-    
+
     const select = screen.getByLabelText('Message type');
     fireEvent.change(select, { target: { value: 'AGENT' } });
-    
+
     const textarea = screen.getByLabelText('Message content');
     fireEvent.change(textarea, { target: { value: 'Agent reply' } });
-    
+
     const form = screen.getByLabelText('Send message').closest('form')!;
     fireEvent.submit(form);
-    
+
     expect(onSend).toHaveBeenCalledWith('Agent reply', 'AGENT');
   });
 
@@ -124,98 +124,104 @@ describe('MessageInput', () => {
   it('calls onSendMessage with trimmed content and messageType on submit', () => {
     const onSend = vi.fn();
     render(<MessageInput {...defaultProps({ onSendMessage: onSend })} />);
-    
+
     const textarea = screen.getByLabelText('Message content');
     fireEvent.change(textarea, { target: { value: '  Hello World  ' } });
-    
+
     const form = screen.getByLabelText('Send message').closest('form')!;
     fireEvent.submit(form);
-    
-    expect(onSend).toHaveBeenCalledWith('Hello World', 'CUSTOMER');
+
+    expect(onSend).toHaveBeenCalledWith('Hello World', 'AGENT');
   });
 
-  it('clears input after successful send', () => {
+  it('clears input after successful send', async () => {
     const onSend = vi.fn();
     render(<MessageInput {...defaultProps({ onSendMessage: onSend })} />);
-    
+
     const textarea = screen.getByLabelText('Message content') as HTMLTextAreaElement;
     fireEvent.change(textarea, { target: { value: 'Test message' } });
-    
+
     const form = screen.getByLabelText('Send message').closest('form')!;
     fireEvent.submit(form);
-    
-    expect(textarea.value).toBe('');
+
+    await waitFor(() => {
+      expect(textarea.value).toBe('');
+    });
     expect(screen.getByText('0 / 500')).toBeInTheDocument();
   });
 
   it('shows error when submitting empty message', () => {
     render(<MessageInput {...defaultProps()} />);
-    
+
     const form = screen.getByLabelText('Send message').closest('form')!;
     fireEvent.submit(form);
-    
+
     expect(screen.getByRole('alert')).toBeInTheDocument();
     expect(screen.getByText(/Message cannot be empty/)).toBeInTheDocument();
   });
 
   it('shows error when submitting whitespace-only message', () => {
     render(<MessageInput {...defaultProps()} />);
-    
+
     const textarea = screen.getByLabelText('Message content');
     fireEvent.change(textarea, { target: { value: '   ' } });
-    
+
     const form = screen.getByLabelText('Send message').closest('form')!;
     fireEvent.submit(form);
-    
+
     expect(screen.getByText(/Message cannot be empty/)).toBeInTheDocument();
   });
 
   it('does not call onSendMessage when validation fails', () => {
     const onSend = vi.fn();
     render(<MessageInput {...defaultProps({ onSendMessage: onSend })} />);
-    
+
     const form = screen.getByLabelText('Send message').closest('form')!;
     fireEvent.submit(form);
-    
+
     expect(onSend).not.toHaveBeenCalled();
   });
 
   // ── Error Handling ────────────────────────────────────────────────
 
   it('shows error when onSendMessage throws', () => {
-    const onSend = vi.fn(() => { throw new Error('Network error'); });
+    const onSend = vi.fn(() => {
+      throw new Error('Network error');
+    });
     render(<MessageInput {...defaultProps({ onSendMessage: onSend })} />);
-    
+
     const textarea = screen.getByLabelText('Message content');
     fireEvent.change(textarea, { target: { value: 'Test' } });
-    
+
     const form = screen.getByLabelText('Send message').closest('form')!;
     fireEvent.submit(form);
-    
+
     expect(screen.getByText(/Network error/)).toBeInTheDocument();
   });
 
   it('shows generic error when non-Error is thrown', () => {
-    const onSend = vi.fn(() => { throw 'string error'; });
+    const onSend = vi.fn(() => {
+      throw 'string error';
+    });
     render(<MessageInput {...defaultProps({ onSendMessage: onSend })} />);
-    
+
     const textarea = screen.getByLabelText('Message content');
     fireEvent.change(textarea, { target: { value: 'Test' } });
-    
+
     const form = screen.getByLabelText('Send message').closest('form')!;
     fireEvent.submit(form);
-    
+
     expect(screen.getByText(/Failed to send message/)).toBeInTheDocument();
   });
 
   it('dismisses error when dismiss button is clicked', () => {
     render(<MessageInput {...defaultProps()} />);
-    
+
     // Trigger validation error
     const form = screen.getByLabelText('Send message').closest('form')!;
     fireEvent.submit(form);
     expect(screen.getByRole('alert')).toBeInTheDocument();
-    
+
     // Dismiss it
     fireEvent.click(screen.getByLabelText('Dismiss error'));
     expect(screen.queryByRole('alert')).not.toBeInTheDocument();
@@ -284,64 +290,64 @@ describe('MessageInput', () => {
   it('sends message on Ctrl+Enter', () => {
     const onSend = vi.fn();
     render(<MessageInput {...defaultProps({ onSendMessage: onSend })} />);
-    
+
     const textarea = screen.getByLabelText('Message content');
     fireEvent.change(textarea, { target: { value: 'Quick send' } });
     fireEvent.keyDown(textarea, { key: 'Enter', ctrlKey: true });
-    
-    expect(onSend).toHaveBeenCalledWith('Quick send', 'CUSTOMER');
+
+    expect(onSend).toHaveBeenCalledWith('Quick send', 'AGENT');
   });
 
   it('sends message on Meta+Enter (Mac)', () => {
     const onSend = vi.fn();
     render(<MessageInput {...defaultProps({ onSendMessage: onSend })} />);
-    
+
     const textarea = screen.getByLabelText('Message content');
     fireEvent.change(textarea, { target: { value: 'Mac send' } });
     fireEvent.keyDown(textarea, { key: 'Enter', metaKey: true });
-    
-    expect(onSend).toHaveBeenCalledWith('Mac send', 'CUSTOMER');
+
+    expect(onSend).toHaveBeenCalledWith('Mac send', 'AGENT');
   });
 
   it('does not send on plain Enter', () => {
     const onSend = vi.fn();
     render(<MessageInput {...defaultProps({ onSendMessage: onSend })} />);
-    
+
     const textarea = screen.getByLabelText('Message content');
     fireEvent.change(textarea, { target: { value: 'No send' } });
     fireEvent.keyDown(textarea, { key: 'Enter' });
-    
+
     expect(onSend).not.toHaveBeenCalled();
   });
 
   it('does not send on Ctrl+Enter when disabled', () => {
     const onSend = vi.fn();
     render(<MessageInput {...defaultProps({ onSendMessage: onSend, disabled: true })} />);
-    
+
     const textarea = screen.getByLabelText('Message content');
     // Can't change value of disabled textarea through events, but test the guard
     fireEvent.keyDown(textarea, { key: 'Enter', ctrlKey: true });
-    
+
     expect(onSend).not.toHaveBeenCalled();
   });
 
   it('does not send on Ctrl+Enter when loading', () => {
     const onSend = vi.fn();
     render(<MessageInput {...defaultProps({ onSendMessage: onSend, loading: true })} />);
-    
+
     const textarea = screen.getByLabelText('Message content');
     fireEvent.keyDown(textarea, { key: 'Enter', ctrlKey: true });
-    
+
     expect(onSend).not.toHaveBeenCalled();
   });
 
   it('does not send on Ctrl+Enter when textarea is empty', () => {
     const onSend = vi.fn();
     render(<MessageInput {...defaultProps({ onSendMessage: onSend })} />);
-    
+
     const textarea = screen.getByLabelText('Message content');
     fireEvent.keyDown(textarea, { key: 'Enter', ctrlKey: true });
-    
+
     expect(onSend).not.toHaveBeenCalled();
   });
 

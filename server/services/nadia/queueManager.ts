@@ -16,7 +16,9 @@ import { prisma } from '../../database.js';
 export async function getQueuedConversations(limit: number = 10) {
   const queued = await prisma.nadiaConversationQueue.findMany({
     where: {
-      status: 'queued',
+      status: {
+        in: ['waiting', 'queued'],
+      },
     },
     orderBy: [
       { priority: 'asc' }, // Lower number = higher priority
@@ -35,7 +37,7 @@ export async function getQueuedConversations(limit: number = 10) {
     },
   });
 
-  return queued.map((q) => ({
+  return queued.map(q => ({
     queueId: q.id,
     conversationId: q.conversation.id,
     priority: q.priority,
@@ -44,17 +46,10 @@ export async function getQueuedConversations(limit: number = 10) {
     intent: q.conversation.intent,
     leadScore: q.conversation.leadScore,
     queuedAt: q.queuedAt,
-    waitTimeMinutes: Math.round(
-      (Date.now() - q.queuedAt.getTime()) / 60000
-    ),
+    waitTimeMinutes: Math.round((Date.now() - q.queuedAt.getTime()) / 60000),
     lastMessage: q.conversation.messages[0]?.body || null,
     messageCount: q.conversation.messages.length,
-    priority_label:
-      q.priority <= 2
-        ? '🔥 HOT'
-        : q.priority <= 5
-          ? '⭐ WARM'
-          : '❄️ COLD',
+    priority_label: q.priority <= 2 ? '🔥 HOT' : q.priority <= 5 ? '⭐ WARM' : '❄️ COLD',
   }));
 }
 
@@ -73,18 +68,24 @@ export function calculateQueuePriority(
   let priority = 5; // Base priority (warm)
 
   // Lead score boost/penalty
-  if (leadScore >= 80) priority -= 3; // Hot
-  else if (leadScore >= 60) priority -= 1; // Warm
+  if (leadScore >= 80)
+    priority -= 3; // Hot
+  else if (leadScore >= 60)
+    priority -= 1; // Warm
   else if (leadScore <= 30) priority += 4; // Cold
 
   // Intent bonus
-  if (intent === 'make_offer') priority -= 3; // Hot
-  else if (intent === 'schedule_tour') priority -= 2; // Warm
-  else if (intent === 'financing') priority -= 1; // Slightly warmer
+  if (intent === 'make_offer')
+    priority -= 3; // Hot
+  else if (intent === 'schedule_tour')
+    priority -= 2; // Warm
+  else if (intent === 'financing')
+    priority -= 1; // Slightly warmer
   else if (intent === 'complaint') priority += 5; // Lower priority
 
   // Engagement bonus
-  if (messageCount >= 10) priority -= 2; // More engaged = higher priority
+  if (messageCount >= 10)
+    priority -= 2; // More engaged = higher priority
   else if (messageCount >= 5) priority -= 1;
 
   // Clamp to 1-10 range
@@ -125,7 +126,7 @@ export async function queueConversationForAssignment(
       where: { id: existing.id },
       data: {
         priority,
-        status: 'queued',
+        status: 'waiting',
       },
       include: {
         conversation: true,
@@ -138,7 +139,7 @@ export async function queueConversationForAssignment(
     data: {
       conversationId,
       priority,
-      status: 'queued',
+      status: 'waiting',
       queuedAt: new Date(),
     },
     include: {
@@ -151,10 +152,7 @@ export async function queueConversationForAssignment(
  * Assign a queued conversation to an agent
  * Moves from queue to assigned state
  */
-export async function assignFromQueue(
-  queueId: string,
-  agentPhone: string
-): Promise<any> {
+export async function assignFromQueue(queueId: string, agentPhone: string): Promise<any> {
   const queueEntry = await prisma.nadiaConversationQueue.findUnique({
     where: { id: queueId },
     include: {
@@ -236,46 +234,58 @@ export async function removeFromQueue(conversationId: string) {
  * Get queue statistics for dashboard
  */
 export async function getQueueStats() {
-  const [
-    totalQueued,
-    hotCount,
-    warmCount,
-    coldCount,
-    averageWaitTime,
-    oldestQueuedEntry,
-  ] = await Promise.all([
-    prisma.nadiaConversationQueue.count({
-      where: { status: 'queued' },
-    }),
-    prisma.nadiaConversationQueue.count({
-      where: {
-        status: 'queued',
-        priority: { lte: 3 },
-      },
-    }),
-    prisma.nadiaConversationQueue.count({
-      where: {
-        status: 'queued',
-        priority: { gt: 3, lte: 6 },
-      },
-    }),
-    prisma.nadiaConversationQueue.count({
-      where: {
-        status: 'queued',
-        priority: { gt: 6 },
-      },
-    }),
-    prisma.nadiaConversationQueue.aggregate({
-      where: { status: 'queued' },
-      _avg: {
-        priority: true,
-      },
-    }),
-    prisma.nadiaConversationQueue.findFirst({
-      where: { status: 'queued' },
-      orderBy: { queuedAt: 'asc' },
-    }),
-  ]);
+  const [totalQueued, hotCount, warmCount, coldCount, averageWaitTime, oldestQueuedEntry] =
+    await Promise.all([
+      prisma.nadiaConversationQueue.count({
+        where: {
+          status: {
+            in: ['waiting', 'queued'],
+          },
+        },
+      }),
+      prisma.nadiaConversationQueue.count({
+        where: {
+          status: {
+            in: ['waiting', 'queued'],
+          },
+          priority: { lte: 3 },
+        },
+      }),
+      prisma.nadiaConversationQueue.count({
+        where: {
+          status: {
+            in: ['waiting', 'queued'],
+          },
+          priority: { gt: 3, lte: 6 },
+        },
+      }),
+      prisma.nadiaConversationQueue.count({
+        where: {
+          status: {
+            in: ['waiting', 'queued'],
+          },
+          priority: { gt: 6 },
+        },
+      }),
+      prisma.nadiaConversationQueue.aggregate({
+        where: {
+          status: {
+            in: ['waiting', 'queued'],
+          },
+        },
+        _avg: {
+          priority: true,
+        },
+      }),
+      prisma.nadiaConversationQueue.findFirst({
+        where: {
+          status: {
+            in: ['waiting', 'queued'],
+          },
+        },
+        orderBy: { queuedAt: 'asc' },
+      }),
+    ]);
 
   const oldestWaitMinutes = oldestQueuedEntry
     ? Math.round((Date.now() - oldestQueuedEntry.queuedAt.getTime()) / 60000)
@@ -286,9 +296,7 @@ export async function getQueueStats() {
     hotCount,
     warmCount,
     coldCount,
-    averagePriority: Math.round(
-      (averageWaitTime._avg.priority || 5) * 10
-    ) / 10,
+    averagePriority: Math.round((averageWaitTime._avg.priority || 5) * 10) / 10,
     oldestWaitMinutes,
     queueHealth:
       totalQueued === 0
@@ -318,16 +326,9 @@ export async function handleFailedAssignments() {
 
   // Re-queue them with increased priority
   for (const conv of failed) {
-    const priority = calculateQueuePriority(
-      conv.leadScore,
-      conv.intent || '',
-      0
-    );
+    const priority = calculateQueuePriority(conv.leadScore, conv.intent || '', 0);
 
-    await queueConversationForAssignment(
-      conv.id,
-      'requeue_failed_assignment'
-    );
+    await queueConversationForAssignment(conv.id, 'requeue_failed_assignment');
 
     // Increase priority since this is a failed assignment
     await reassignQueuedConversation(
@@ -350,12 +351,8 @@ export async function handleFailedAssignments() {
 /**
  * Get conversations ready for auto-close (no activity for N days)
  */
-export async function getConversationsForAutoClose(
-  inactiveDays: number = 7
-) {
-  const cutoffDate = new Date(
-    Date.now() - inactiveDays * 24 * 60 * 60 * 1000
-  );
+export async function getConversationsForAutoClose(inactiveDays: number = 7) {
+  const cutoffDate = new Date(Date.now() - inactiveDays * 24 * 60 * 60 * 1000);
 
   return await prisma.nadiaConversation.findMany({
     where: {
@@ -376,9 +373,7 @@ export async function getConversationsForAutoClose(
 /**
  * Auto-close inactive conversations
  */
-export async function autoCloseInactiveConversations(
-  inactiveDays: number = 7
-) {
+export async function autoCloseInactiveConversations(inactiveDays: number = 7) {
   const conversations = await getConversationsForAutoClose(inactiveDays);
 
   for (const conv of conversations) {

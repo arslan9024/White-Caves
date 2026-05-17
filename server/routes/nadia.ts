@@ -17,6 +17,7 @@ import {
   getQueuedConversations,
   assignFromQueue,
   queueConversationForAssignment,
+  getQueueStats,
 } from '../services/nadia/queueManager.js';
 import {
   classifyWhatsAppIntent,
@@ -621,6 +622,34 @@ router.get(
     res.status(200).json({
       success: true,
       data: queued,
+    });
+  })
+);
+
+/**
+ * GET /api/nadia/queue-stats
+ * Get queue summary for the Nadia dashboard.
+ */
+router.get(
+  '/queue-stats',
+  requirePermission('view_whatsapp_conversations'),
+  asyncHandler(async (_req: Request, res: Response) => {
+    const stats = await getQueueStats();
+
+    res.status(200).json({
+      success: true,
+      data: {
+        totalQueued: stats.totalQueued,
+        byPriority: {
+          URGENT: stats.hotCount,
+          HIGH: stats.warmCount,
+          NORMAL: 0,
+          LOW: stats.coldCount,
+        },
+        avgResponseTimeMinutes: 0,
+        agentAvailability: stats.totalQueued === 0 ? 100 : Math.max(0, 100 - stats.totalQueued * 5),
+        oldestInQueueMinutes: stats.oldestWaitMinutes,
+      },
     });
   })
 );

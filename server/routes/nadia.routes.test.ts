@@ -22,6 +22,7 @@ const { mockPrisma } = vi.hoisted(() => {
       nadiaConversationQueue: {
         count: fn(),
       },
+      getQueueStats: fn(),
     },
   };
 });
@@ -68,6 +69,7 @@ vi.mock('../services/nadia/queueManager.js', () => ({
   getQueuedConversations: vi.fn(async () => []),
   assignFromQueue: vi.fn(async () => ({ id: 'q-1', status: 'assigned' })),
   queueConversationForAssignment: vi.fn(async () => ({ id: 'q-1' })),
+  getQueueStats: mockPrisma.getQueueStats,
 }));
 
 vi.mock('../services/nadia/whatsappAssistant.js', () => ({
@@ -168,6 +170,15 @@ describe('Nadia Routes — inbox wiring endpoints', () => {
     mockPrisma.nadiaConversation.findMany.mockResolvedValue([]);
     mockPrisma.nadiaConversation.count.mockResolvedValue(0);
     mockPrisma.nadiaConversationQueue.count.mockResolvedValue(0);
+    mockPrisma.getQueueStats.mockResolvedValue({
+      totalQueued: 2,
+      hotCount: 1,
+      warmCount: 1,
+      coldCount: 0,
+      averagePriority: 2.5,
+      oldestWaitMinutes: 18,
+      queueHealth: 'Good',
+    });
   });
 
   it('assigns a conversation using explicit assign endpoint', async () => {
@@ -297,5 +308,24 @@ describe('Nadia Routes — inbox wiring endpoints', () => {
 
     expect(res.status).toBe(400);
     expect(res.body.error).toMatch(/senderType/i);
+  });
+
+  it('returns queue stats for the Nadia dashboard', async () => {
+    const res = await request(createApp()).get('/api/nadia/queue-stats');
+
+    expect(res.status).toBe(200);
+    expect(res.body.success).toBe(true);
+    expect(res.body.data).toEqual(
+      expect.objectContaining({
+        totalQueued: 2,
+        oldestInQueueMinutes: 18,
+        byPriority: expect.objectContaining({
+          URGENT: 1,
+          HIGH: 1,
+          NORMAL: 0,
+          LOW: 0,
+        }),
+      })
+    );
   });
 });
