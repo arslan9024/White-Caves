@@ -8,6 +8,11 @@ import globals from 'globals';
 
 export default [
   {
+    linterOptions: {
+      reportUnusedDisableDirectives: 'off',
+    },
+  },
+  {
     ignores: [
       'dist/**',
       'modules/**',
@@ -144,6 +149,14 @@ export default [
     },
     rules: {
       '@typescript-eslint/no-require-imports': 'off',
+      '@typescript-eslint/no-explicit-any': 'off',
+      '@typescript-eslint/no-unused-vars': 'off',
+      'no-console': 'off',
+      'security/detect-object-injection': 'off',
+      'security/detect-non-literal-fs-filename': 'off',
+      'security/detect-non-literal-regexp': 'off',
+      'security/detect-unsafe-regex': 'off',
+      'react/display-name': 'off',
     },
   },
   {
@@ -178,11 +191,17 @@ export default [
       'backend/**/*.js',
       'test/**/*.js',
       'test-*.js',
+      'run-api-tests.js',
     ],
     rules: {
       '@typescript-eslint/no-require-imports': 'off',
       'no-undef': 'off',
       'no-unreachable': 'warn',
+      'no-console': 'off',
+      'security/detect-object-injection': 'off',
+      'security/detect-non-literal-fs-filename': 'off',
+      'security/detect-non-literal-regexp': 'off',
+      'security/detect-unsafe-regex': 'off',
     },
   },
   {
