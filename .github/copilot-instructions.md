@@ -2,6 +2,14 @@
 
 ## Strategy: High-Efficiency Multi-Agent Autonomous Framework
 
+## Branch & Release Workflow
+
+- Start implementation sessions on the local `develop` branch.
+- If the workspace is on `development`, switch to `develop` from `origin/development` before editing.
+- Keep `main` reserved for verified release merges only.
+- Before merging to `main`, log modified files, resolved conflicts, and build health in `PHASE_DEPLOYMENT_LOG.md`.
+- Prefer the safe release chain: build, runtime verification, merge, conflict resolution, commit, push.
+
 ### 0. THE EXECUTIVE CORE (The Brains)
 
 | Agent         | Role              | Model                 | Context & Skills                                                           |

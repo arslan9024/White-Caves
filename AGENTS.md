@@ -836,3 +836,11 @@ This file defines the White Caves multi-expert operating model for all agent-ass
 - Treat this role model as an execution mindset for planning, implementation, review, testing, security, and deployment.
 - Prioritize production-safe decisions, automated validation, and clear delivery checkpoints.
 - Default to autonomous execution unless blocked by missing credentials, external approvals, or irreversible-risk operations.
+
+## Branch & Deployment Protocol
+
+- Start every implementation session on the local `develop` branch.
+- If the workspace is on `development`, create or switch to `develop` from `origin/development` before making changes.
+- Keep `main` reserved for verified release merges only.
+- Before any merge to `main`, record the exact change set and build health in `PHASE_DEPLOYMENT_LOG.md`.
+- Use the verified sequence: build -> local runtime check -> merge -> conflict resolution -> push.
