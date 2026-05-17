@@ -343,11 +343,21 @@ export const {
 
 export const selectFavorites = createSelector(
   (state: { dashboard?: DashboardState }) => state.dashboard?.favorites,
-  (favorites): FavoriteItem[] => favorites || []
+  (favorites): FavoriteItem[] => favorites || [],
+  {
+    devModeChecks: {
+      identityFunctionCheck: 'never',
+    },
+  }
 );
 export const selectFavoriteIds = createSelector(
   (state: { dashboard?: DashboardState }) => state.dashboard?.favoriteIds,
-  (ids): string[] => ids || []
+  (ids): string[] => ids || [],
+  {
+    devModeChecks: {
+      identityFunctionCheck: 'never',
+    },
+  }
 );
 export const selectFavoritesLoading = (state: { dashboard?: DashboardState }) =>
   state.dashboard?.favoritesLoading ?? false;

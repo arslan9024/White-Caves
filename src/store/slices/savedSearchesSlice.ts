@@ -194,6 +194,11 @@ interface RootWithSavedSearches {
 export const selectSavedSearches = createSelector(
   (state: RootWithSavedSearches) => state.savedSearches?.items,
   (items): api.SavedSearch[] => items || [],
+  {
+    devModeChecks: {
+      identityFunctionCheck: 'never',
+    },
+  }
 );
 
 export const selectSavedSearchesLoading = (state: RootWithSavedSearches) =>
