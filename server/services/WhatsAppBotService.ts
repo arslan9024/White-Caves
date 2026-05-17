@@ -13,6 +13,8 @@ const log = createLogger('WhatsApp');
 class WhatsAppBotService {
   private client: MetaAPIClient | null = null;
   private isConfigured = false;
+  private readonly MAX_SEND_RETRIES = 3;
+  private readonly BASE_RETRY_DELAY_MS = 300;
 
   constructor() {
     const accessToken = process.env.WHATSAPP_ACCESS_TOKEN || process.env.WHATSAPP_BOT_TOKEN;
@@ -54,7 +56,7 @@ class WhatsAppBotService {
 
   /**
    * Send a plain-text message to a phone number.
-   * Sends message when client is available; otherwise no-ops in compatibility mode.
+   * Sends message when client is available with retry/backoff on transient failures.
    */
   async sendMessage(phoneNumber: string, message: string): Promise<string | undefined> {
     if (!this.isConfigured) {
@@ -65,8 +67,12 @@ class WhatsAppBotService {
       log.info(`sendMessage compatibility no-op for ${phoneNumber}`);
       return undefined;
     }
+
     try {
-      const messageId = await this.client.sendMessage(phoneNumber, message);
+      const messageId = await this.sendWithRetry(
+        () => this.client!.sendMessage(phoneNumber, message),
+        `sendMessage:${phoneNumber}`
+      );
       log.info(`Message sent to ${phoneNumber}, id=${messageId}`);
       return messageId;
     } catch (err) {
@@ -135,15 +141,78 @@ class WhatsAppBotService {
       log.info(`sendTemplateMessage compatibility no-op for ${phoneNumber}`);
       return undefined;
     }
+
     try {
       const paramTexts = parameters?.map(p => p.text);
-      const messageId = await this.client.sendTemplate(phoneNumber, templateName, paramTexts);
+      const messageId = await this.sendWithRetry(
+        () => this.client!.sendTemplate(phoneNumber, templateName, paramTexts),
+        `sendTemplateMessage:${templateName}:${phoneNumber}`
+      );
       log.info(`Template "${templateName}" sent to ${phoneNumber}, id=${messageId}`);
       return messageId;
     } catch (err) {
       log.error(`sendTemplateMessage failed for ${phoneNumber}:`, err);
       throw err;
     }
+  }
+
+  private async sendWithRetry(
+    operation: () => Promise<string>,
+    operationLabel: string
+  ): Promise<string> {
+    let lastError: unknown;
+
+    for (let attempt = 1; attempt <= this.MAX_SEND_RETRIES; attempt += 1) {
+      try {
+        return await operation();
+      } catch (error) {
+        lastError = error;
+
+        if (!this.isRetryableError(error) || attempt >= this.MAX_SEND_RETRIES) {
+          break;
+        }
+
+        const delayMs = this.getRetryDelayMs(attempt);
+        log.warn(
+          `${operationLabel} attempt ${attempt}/${this.MAX_SEND_RETRIES} failed, retrying in ${delayMs}ms`
+        );
+        await this.delay(delayMs);
+      }
+    }
+
+    throw lastError instanceof Error ? lastError : new Error(`${operationLabel} failed`);
+  }
+
+  private isRetryableError(error: unknown): boolean {
+    if (!(error instanceof Error)) {
+      return true;
+    }
+
+    const normalized = error.message.toLowerCase();
+    return (
+      normalized.includes('timeout') ||
+      normalized.includes('rate') ||
+      normalized.includes('429') ||
+      normalized.includes('503') ||
+      normalized.includes('network') ||
+      normalized.includes('econn')
+    );
+  }
+
+  private getRetryDelayMs(attempt: number): number {
+    if (process.env.NODE_ENV === 'test') {
+      return 0;
+    }
+
+    return this.BASE_RETRY_DELAY_MS * attempt;
+  }
+
+  private async delay(ms: number): Promise<void> {
+    if (ms <= 0) {
+      return;
+    }
+
+    await new Promise(resolve => setTimeout(resolve, ms));
   }
 }
 

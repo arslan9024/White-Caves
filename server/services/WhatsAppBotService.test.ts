@@ -5,6 +5,11 @@
 
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 
+const { mockMetaSendMessage, mockMetaSendTemplate } = vi.hoisted(() => ({
+  mockMetaSendMessage: vi.fn(async () => 'wa-msg-1'),
+  mockMetaSendTemplate: vi.fn(async () => 'wa-template-1'),
+}));
+
 // Mock logger before importing service
 vi.mock('../utils/logger.js', () => ({
   createLogger: () => ({
@@ -17,8 +22,8 @@ vi.mock('../utils/logger.js', () => ({
 
 vi.mock('./whatsapp/metaAPI.js', () => ({
   MetaAPIClient: class {
-    sendMessage = vi.fn(async () => 'wa-msg-1');
-    sendTemplate = vi.fn(async () => 'wa-template-1');
+    sendMessage = mockMetaSendMessage;
+    sendTemplate = mockMetaSendTemplate;
   },
 }));
 
@@ -37,6 +42,12 @@ async function importFresh() {
 
 describe('WhatsAppBotService', () => {
   const ORIGINAL_ENV = { ...process.env };
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+    mockMetaSendMessage.mockResolvedValue('wa-msg-1');
+    mockMetaSendTemplate.mockResolvedValue('wa-template-1');
+  });
 
   afterEach(() => {
     // Restore env after every test
@@ -113,6 +124,33 @@ describe('WhatsAppBotService', () => {
       const service = await importFresh();
       await expect(service.sendMessage('+971501234567', 'Hello')).resolves.toBe('wa-msg-1');
     });
+
+    it('retries transient failures and eventually succeeds', async () => {
+      process.env.WHATSAPP_BOT_TOKEN = 'tok';
+      process.env.WHATSAPP_PHONE_NUMBER_ID = 'pid';
+      process.env.NODE_ENV = 'test';
+
+      mockMetaSendMessage
+        .mockRejectedValueOnce(new Error('network timeout'))
+        .mockRejectedValueOnce(new Error('429 rate limit'))
+        .mockResolvedValueOnce('wa-msg-recovered');
+
+      const service = await importFresh();
+      await expect(service.sendMessage('+971501234567', 'Hello')).resolves.toBe('wa-msg-recovered');
+      expect(mockMetaSendMessage).toHaveBeenCalledTimes(3);
+    });
+
+    it('throws after max retries when transient failures persist', async () => {
+      process.env.WHATSAPP_BOT_TOKEN = 'tok';
+      process.env.WHATSAPP_PHONE_NUMBER_ID = 'pid';
+      process.env.NODE_ENV = 'test';
+
+      mockMetaSendMessage.mockRejectedValue(new Error('network down'));
+
+      const service = await importFresh();
+      await expect(service.sendMessage('+971501234567', 'Hello')).rejects.toThrow(/network down/i);
+      expect(mockMetaSendMessage).toHaveBeenCalledTimes(3);
+    });
   });
 
   // ─── handleIncomingMessage ────────────────────────────────────────
@@ -180,6 +218,25 @@ describe('WhatsAppBotService', () => {
           { type: 'text', text: 'Palm Jumeirah 3BR' },
         ])
       ).resolves.toBe('wa-template-1');
+    });
+
+    it('retries template sends and recovers on subsequent attempt', async () => {
+      process.env.WHATSAPP_BOT_TOKEN = 'tok';
+      process.env.WHATSAPP_PHONE_NUMBER_ID = 'pid';
+      process.env.NODE_ENV = 'test';
+
+      mockMetaSendTemplate
+        .mockRejectedValueOnce(new Error('503 upstream unavailable'))
+        .mockResolvedValueOnce('wa-template-recovered');
+
+      const service = await importFresh();
+      await expect(
+        service.sendTemplateMessage('+971501234567', 'listing_update', [
+          { type: 'text', text: 'Palm Jumeirah 3BR' },
+        ])
+      ).resolves.toBe('wa-template-recovered');
+
+      expect(mockMetaSendTemplate).toHaveBeenCalledTimes(2);
     });
   });
 });
