@@ -347,7 +347,7 @@ describe('usePropertyManagement', () => {
   // ═══ CRUD OPERATIONS ════════════════════════════════════════════════
 
   describe('handleCreate', () => {
-    it('dispatches createPropertyAPI on valid data', () => {
+    it('dispatches createPropertyAPI on valid data', async () => {
       mockDispatch.mockReturnValue(Promise.resolve({ type: 'properties/create/fulfilled' }));
       const { result } = renderHook(() => usePropertyManagement());
       act(() => result.current.openCreateModal());
@@ -364,7 +364,10 @@ describe('usePropertyManagement', () => {
         agent_name: 'Agent Smith',
         featured: false,
       }));
-      act(() => result.current.handleCreate());
+      await act(async () => {
+        result.current.handleCreate();
+        await Promise.resolve();
+      });
       expect(mockDispatch).toHaveBeenCalled();
     });
 
@@ -431,7 +434,7 @@ describe('usePropertyManagement', () => {
   });
 
   describe('handleSaveEdit', () => {
-    it('dispatches updatePropertyAPI when editing', () => {
+    it('dispatches updatePropertyAPI when editing', async () => {
       mockDispatch.mockReturnValue(Promise.resolve({ type: 'properties/update/fulfilled' }));
       const { result } = renderHook(() => usePropertyManagement());
       act(() => result.current.handleEdit(MOCK_PROPERTIES[0]));
@@ -439,7 +442,10 @@ describe('usePropertyManagement', () => {
         ...result.current.formData,
         title: 'Updated Villa',
       }));
-      act(() => result.current.handleSaveEdit());
+      await act(async () => {
+        result.current.handleSaveEdit();
+        await Promise.resolve();
+      });
       expect(mockDispatch).toHaveBeenCalled();
     });
 
@@ -467,11 +473,14 @@ describe('usePropertyManagement', () => {
   });
 
   describe('handleDelete', () => {
-    it('dispatches deletePropertyAPI when property is selected', () => {
+    it('dispatches deletePropertyAPI when property is selected', async () => {
       mockDispatch.mockReturnValue(Promise.resolve({ type: 'properties/delete/fulfilled' }));
       const { result } = renderHook(() => usePropertyManagement());
       act(() => result.current.confirmDelete(MOCK_PROPERTIES[1]));
-      act(() => result.current.handleDelete());
+      await act(async () => {
+        result.current.handleDelete();
+        await Promise.resolve();
+      });
       expect(mockDispatch).toHaveBeenCalled();
     });
 

@@ -3,14 +3,19 @@
  * Tests for Phase 2.13 — Landlord home dashboard
  */
 
-import { describe, it, expect, vi } from 'vitest';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import { BrowserRouter } from 'react-router-dom';
 import { configureStore, PreloadedState } from '@reduxjs/toolkit';
 import LandlordPortalHome from './LandlordPortalHome';
 import userReducer from '../../../store/userSlice';
 import type { RootState } from '../../../store/store';
+import { authFetch } from '../../../utils/authFetch';
+
+vi.mock('../../../utils/authFetch', () => ({
+  authFetch: vi.fn(),
+}));
 
 const mockLandlord = {
   id: 'landlord-1',
@@ -46,15 +51,30 @@ const renderWithStore = (
   );
 };
 
+const mockAuthFetch = vi.mocked(authFetch);
+
+async function waitForDashboardEffectsToSettle() {
+  await waitFor(() => {
+    expect(mockAuthFetch).toHaveBeenCalledTimes(3);
+  });
+}
+
 describe('LandlordPortalHome', () => {
-  it('renders welcome banner with user name', () => {
+  beforeEach(() => {
+    mockAuthFetch.mockReset();
+    mockAuthFetch.mockResolvedValue({ json: async () => ({ data: [], pagination: { total: 0 } }) } as Response);
+  });
+
+  it('renders welcome banner with user name', async () => {
     renderWithStore(<LandlordPortalHome />);
+    await waitForDashboardEffectsToSettle();
 
     expect(screen.getByTestId('landlord-welcome-banner')).toHaveTextContent('Khalid Al-Rashid');
   });
 
-  it('renders all four metric cards', () => {
+  it('renders all four metric cards', async () => {
     renderWithStore(<LandlordPortalHome />);
+    await waitForDashboardEffectsToSettle();
 
     expect(screen.getByTestId('landlord-metric-properties')).toBeInTheDocument();
     expect(screen.getByTestId('landlord-metric-tenants')).toBeInTheDocument();
@@ -62,8 +82,9 @@ describe('LandlordPortalHome', () => {
     expect(screen.getByTestId('landlord-metric-maintenance')).toBeInTheDocument();
   });
 
-  it('renders quick link tiles', () => {
+  it('renders quick link tiles', async () => {
     renderWithStore(<LandlordPortalHome />);
+    await waitForDashboardEffectsToSettle();
 
     expect(screen.getByTestId('landlord-quick-link-properties')).toBeInTheDocument();
     expect(screen.getByTestId('landlord-quick-link-tenants')).toBeInTheDocument();
@@ -72,9 +93,10 @@ describe('LandlordPortalHome', () => {
     expect(screen.getByTestId('landlord-quick-link-documents')).toBeInTheDocument();
   });
 
-  it('calls onNavigate when a quick link is clicked', () => {
+  it('calls onNavigate when a quick link is clicked', async () => {
     const onNavigate = vi.fn();
     renderWithStore(<LandlordPortalHome onNavigate={onNavigate} />);
+    await waitForDashboardEffectsToSettle();
 
     fireEvent.click(screen.getByTestId('landlord-quick-link-properties'));
     expect(onNavigate).toHaveBeenCalledWith('properties');
