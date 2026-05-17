@@ -179,7 +179,7 @@ export function useSignIn() {
           ? '/landlord-portal'
           : user.role === 'tenant'
             ? '/tenant-portal'
-            : '/dashboard';
+            : '/crm';
       navTimerRef.current = setTimeout(() => navigate(destination), TIMING.NAVIGATION_DELAY);
     },
     [dispatch, navigate]
@@ -264,10 +264,13 @@ export function useSignIn() {
         );
       } else {
         setSuccess('Account created successfully!');
-        navTimerRef.current = setTimeout(
-          () => navigate(`/${selectedRole}/dashboard`),
-          TIMING.NAVIGATION_DELAY
-        );
+        const destination =
+          selectedRole === 'landlord'
+            ? '/landlord-portal'
+            : selectedRole === 'tenant'
+              ? '/tenant-portal'
+              : '/crm';
+        navTimerRef.current = setTimeout(() => navigate(destination), TIMING.NAVIGATION_DELAY);
       }
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : 'Registration failed';
