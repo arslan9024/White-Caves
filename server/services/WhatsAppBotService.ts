@@ -21,17 +21,13 @@ class WhatsAppBotService {
 
     this.isConfigured = Boolean(accessToken && phoneNumberId);
 
-    if (accessToken && businessAccountId && phoneNumberId) {
+    if (accessToken && phoneNumberId) {
       try {
         this.client = new MetaAPIClient({ accessToken, businessAccountId, phoneNumberId });
         log.info('WhatsApp Meta API client ready');
       } catch (err) {
         log.error('Failed to init MetaAPIClient:', err);
       }
-    } else if (this.isConfigured) {
-      log.warn(
-        'WhatsApp running in compatibility mode (missing WHATSAPP_BUSINESS_ACCOUNT_ID) — send operations will no-op'
-      );
     } else {
       if (process.env.NODE_ENV === 'production') {
         const message =
@@ -50,7 +46,7 @@ class WhatsAppBotService {
   async initialize(): Promise<void> {
     if (!this.isConfigured) {
       throw new Error(
-        'WhatsApp credentials not configured. Set WHATSAPP_ACCESS_TOKEN, WHATSAPP_BUSINESS_ACCOUNT_ID, and WHATSAPP_PHONE_NUMBER_ID.'
+        'WhatsApp credentials not configured. Set WHATSAPP_ACCESS_TOKEN (or WHATSAPP_BOT_TOKEN) and WHATSAPP_PHONE_NUMBER_ID.'
       );
     }
     log.info('WhatsApp Bot initialized');

@@ -15,6 +15,13 @@ vi.mock('../utils/logger.js', () => ({
   }),
 }));
 
+vi.mock('./whatsapp/metaAPI.js', () => ({
+  MetaAPIClient: class {
+    sendMessage = vi.fn(async () => 'wa-msg-1');
+    sendTemplate = vi.fn(async () => 'wa-template-1');
+  },
+}));
+
 // =====================================================================
 // HELPER: fresh-import the module so constructor re-runs with new env
 // =====================================================================
@@ -104,7 +111,7 @@ describe('WhatsAppBotService', () => {
       process.env.NODE_ENV = 'development';
 
       const service = await importFresh();
-      await expect(service.sendMessage('+971501234567', 'Hello')).resolves.toBeUndefined();
+      await expect(service.sendMessage('+971501234567', 'Hello')).resolves.toBe('wa-msg-1');
     });
   });
 
@@ -157,9 +164,9 @@ describe('WhatsAppBotService', () => {
       process.env.NODE_ENV = 'development';
 
       const service = await importFresh();
-      await expect(
-        service.sendTemplateMessage('+971501234567', 'welcome_template')
-      ).resolves.toBeUndefined();
+      await expect(service.sendTemplateMessage('+971501234567', 'welcome_template')).resolves.toBe(
+        'wa-template-1'
+      );
     });
 
     it('sends template with parameters', async () => {
@@ -172,7 +179,7 @@ describe('WhatsAppBotService', () => {
         service.sendTemplateMessage('+971501234567', 'listing_update', [
           { type: 'text', text: 'Palm Jumeirah 3BR' },
         ])
-      ).resolves.toBeUndefined();
+      ).resolves.toBe('wa-template-1');
     });
   });
 });
