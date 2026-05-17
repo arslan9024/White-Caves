@@ -377,7 +377,7 @@ body.dark-mode .btn-secondary:hover {
   border-radius: 12px;
   cursor: pointer;
   transition: all 0.2s ease;
-  text-align: left;
+  text-align: start;
 }
 
 .category-card:hover {
@@ -603,7 +603,7 @@ body.dark-mode .btn-secondary:hover {
 .profile-sidebar {
   width: 280px;
   background: rgba(255, 255, 255, 0.03);
-  border-right: 1px solid var(--border-color);
+  border-inline-end: 1px solid var(--border-color);
   padding: 1.5rem;
   display: flex;
   flex-direction: column;
@@ -687,7 +687,7 @@ body.dark-mode .btn-secondary:hover {
   cursor: pointer;
   transition: all 0.2s ease;
   text-decoration: none;
-  text-align: left;
+  text-align: start;
   width: 100%;
 }
 
@@ -948,7 +948,7 @@ body.dark-mode .btn-secondary:hover {
 
   .profile-sidebar {
     width: 100%;
-    border-right: none;
+    border-inline-end: none;
     border-bottom: 1px solid var(--border-color);
   }
 
