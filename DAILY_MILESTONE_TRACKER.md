@@ -1,8 +1,11 @@
 # White Caves Daily Milestone Tracker
 
-**Date:** May 16, 2026
+**Date:** May 17, 2026
 **Owner:** @Margaret
 **Status:** Active
+**Last Updated:** 2026-05-17
+
+> Roadmap: [plans/MASTER_PLAN.md](plans/MASTER_PLAN.md) · Queue: [plans/PENDING_TASKS_ONLY.md](plans/PENDING_TASKS_ONLY.md)
 
 ---
 

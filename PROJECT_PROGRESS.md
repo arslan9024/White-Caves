@@ -2,13 +2,19 @@
 
 > **Agency:** White Caves Global Agency
 > **Orchestrator:** @Ada (Chief Architect)
-> **Last Updated:** May 16, 2026
+> **Last Updated:** 2026-05-17
 > **Policy Mode:** 60% Readiness Threshold + policy-driven gating (Governance V2 active)
 > **Daily Report:** `PROJECT_PROGRESS_REPORT.md`
 
 ---
 
-## 🔒 WEEKLY PREMIUM QUOTA — Copilot Senior Coders/Designers
+## 🗺️ Roadmap & Queue References
+
+- Canonical roadmap: **[plans/MASTER_PLAN.md](plans/MASTER_PLAN.md)**
+- Active queue: **[plans/PENDING_TASKS_ONLY.md](plans/PENDING_TASKS_ONLY.md)**
+- Last Updated (ISO): 2026-05-17
+
+
 
 > Premium usage is allowed **only** for senior coders/designers **after** @Ada declares:
 > `@Ada — Context Ready (60% Readiness) — Coding Phase Approved`

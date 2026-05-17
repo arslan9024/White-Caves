@@ -299,4 +299,110 @@ router.post('/initialize', async (req, res) => {
   }
 });
 
+// ─── POST /api/nina/arabic-detect ────────────────────────────────────────────
+
+/**
+ * Detect Arabic language in a message and classify intent.
+ * Body: { message: string, leadId?: string }
+ */
+router.post('/arabic-detect', async (req, res) => {
+  try {
+    const { classifyArabicIntent, extractArabicEntities } = await import('../services/nina/arabicNLP.js');
+    const { message, leadId } = req.body;
+    if (!message || typeof message !== 'string') {
+      return res.status(400).json({ success: false, error: 'message (string) is required' });
+    }
+    const intent   = classifyArabicIntent(message);
+    const entities = extractArabicEntities(message);
+    res.json({ success: true, data: { leadId, intent, entities } });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+// ─── POST /api/nina/lead-nurture ──────────────────────────────────────────────
+
+/**
+ * Enroll a lead in a nurture sequence.
+ * Body: { leadId: string, phone: string, sequenceName: string }
+ */
+router.post('/lead-nurture', async (req, res) => {
+  try {
+    const { enrollLead, getAllSequences } = await import('../services/nina/leadNurtureEngine.js');
+    const { leadId, phone, sequenceName } = req.body;
+
+    if (req.query.listSequences === 'true') {
+      return res.json({ success: true, data: { sequences: getAllSequences() } });
+    }
+
+    if (!leadId || !phone || !sequenceName) {
+      return res.status(400).json({ success: false, error: 'leadId, phone, and sequenceName are required' });
+    }
+    const result = enrollLead(leadId, phone, sequenceName);
+    res.json({ success: true, data: result });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+// ─── GET /api/nina/lead-nurture/:leadId ───────────────────────────────────────
+
+/**
+ * Get the nurture sequence status for a specific lead.
+ */
+router.get('/lead-nurture/:leadId', async (req, res) => {
+  try {
+    const { getLeadStatus, getActiveEnrollmentCount } = await import('../services/nina/leadNurtureEngine.js');
+    const { leadId } = req.params;
+    const status = getLeadStatus(leadId);
+    if (!status) {
+      return res.status(404).json({ success: false, error: `No active nurture enrollment for lead ${leadId}` });
+    }
+    const activeCount = getActiveEnrollmentCount();
+    res.json({ success: true, data: { enrollment: status, totalActiveEnrollments: activeCount } });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+// ─── POST /api/nina/competitor-alerts ────────────────────────────────────────
+
+/**
+ * Scan a message for competitor mentions.
+ * Body: { message: string, leadId?: string, phone?: string }
+ */
+router.post('/competitor-alerts', async (req, res) => {
+  try {
+    const { scanMessage, getAllCompetitors } = await import('../services/nina/competitorDetector.js');
+    const { message, leadId, phone } = req.body;
+    if (!message || typeof message !== 'string') {
+      return res.status(400).json({ success: false, error: 'message (string) is required' });
+    }
+    const result = scanMessage(message, leadId, phone);
+    res.json({ success: true, data: result });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+// ─── GET /api/nina/competitor-alerts ─────────────────────────────────────────
+
+/**
+ * Return recent competitor alerts (last 20 by default).
+ * Query: limit=N, acknowledged=true|false
+ */
+router.get('/competitor-alerts', async (req, res) => {
+  try {
+    const { getRecentAlerts, getAllCompetitors } = await import('../services/nina/competitorDetector.js');
+    if (req.query.competitors === 'true') {
+      return res.json({ success: true, data: { competitors: getAllCompetitors() } });
+    }
+    const limit  = parseInt(String(req.query.limit ?? '20'), 10);
+    const alerts = getRecentAlerts(limit);
+    res.json({ success: true, data: { alerts, count: alerts.length } });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
 export default router;

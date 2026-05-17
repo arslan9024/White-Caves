@@ -53,6 +53,13 @@
 - Validation completed before merge: focused auth tests + production build pass.
 - Release objective: remove social-login hard-fail when backend sync is transiently unavailable and ensure successful login lands in CRM.
 
+## Wave 06 Update (2026-05-18)
+
+- Added component granularity standards for auth and CRM surfaces.
+- Added Arabic/RTL readiness rules and event-driven rendering architecture guidance.
+- Extracted auth subcomponents, hardened CRM quick actions, and tightened dashboard event handling.
+- Validation completed before merge: targeted auth/dashboard tests passed with zero diagnostics in edited files.
+
 ## Confirmation
 
 - Local runtime ecosystem is stable at the time of this log entry.
