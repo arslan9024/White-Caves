@@ -50,6 +50,8 @@ import WhatsAppAnalyticsPage from './WhatsAppAnalyticsPage';
 describe('WhatsAppAnalyticsPage', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    vi.spyOn(console, 'error').mockImplementation(() => {});
+    vi.spyOn(console, 'warn').mockImplementation(() => {});
     mockUser = { role: 'owner' };
     mockAuthFetch.mockResolvedValue({
       ok: true, json: () => Promise.resolve(sampleAnalytics),

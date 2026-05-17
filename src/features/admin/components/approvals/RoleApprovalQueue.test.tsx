@@ -4,7 +4,7 @@
  * rejection modal, empty state, role labels, status badges
  */
 
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import React from 'react';
 import { Provider } from 'react-redux';
@@ -141,8 +141,14 @@ const renderWithStore = (
 describe('RoleApprovalQueue', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    vi.spyOn(console, 'error').mockImplementation(() => {});
+    vi.spyOn(console, 'warn').mockImplementation(() => {});
     (apiClient.get as ReturnType<typeof vi.fn>).mockResolvedValue({ requests: [] });
     (apiClient.post as ReturnType<typeof vi.fn>).mockResolvedValue({ success: true });
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
   });
 
   // ── Rendering ────────────────────────────────────────────────

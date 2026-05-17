@@ -21,6 +21,8 @@ describe('AIModelSelector — alert elimination', () => {
   let fetchSpy;
 
   beforeEach(() => {
+    vi.spyOn(console, 'error').mockImplementation(() => {});
+    vi.spyOn(console, 'warn').mockImplementation(() => {});
     fetchSpy = vi.spyOn(window, 'fetch').mockImplementation(url => {
       if (url === '/api/plans/ai-status') {
         return okJson({

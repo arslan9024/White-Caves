@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import React from 'react';
 
@@ -23,6 +23,15 @@ const mockAgents = [
 ];
 
 describe('AssignmentDropdown', () => {
+  beforeEach(() => {
+    vi.spyOn(console, 'error').mockImplementation(() => {});
+    vi.spyOn(console, 'warn').mockImplementation(() => {});
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
   describe('Closed State', () => {
     it('should render placeholder when no agent selected', () => {
       render(<AssignmentDropdown agents={mockAgents} onSelect={vi.fn()} />);

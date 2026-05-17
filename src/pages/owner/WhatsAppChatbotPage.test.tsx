@@ -61,6 +61,8 @@ import WhatsAppChatbotPage from './WhatsAppChatbotPage';
 describe('WhatsAppChatbotPage', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    vi.spyOn(console, 'error').mockImplementation(() => {});
+    vi.spyOn(console, 'warn').mockImplementation(() => {});
     mockUser = { role: 'owner' };
     mockAuthFetch.mockResolvedValue(ok({ messages: [] }).then(r => r));
   });

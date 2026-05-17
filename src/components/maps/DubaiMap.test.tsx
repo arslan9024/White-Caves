@@ -4,7 +4,7 @@
  * click handlers, price formatting, responsive behavior
  */
 
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import React from 'react';
 import { Provider } from 'react-redux';
@@ -107,6 +107,12 @@ const renderMap = (props: Partial<React.ComponentProps<typeof DubaiMap>> = {}) =
 describe('DubaiMap', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    vi.spyOn(console, 'error').mockImplementation(() => {});
+    vi.spyOn(console, 'warn').mockImplementation(() => {});
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
   });
 
   // ── Rendering ──────────────────────────────────────────────────

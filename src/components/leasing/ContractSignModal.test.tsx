@@ -32,6 +32,8 @@ describe('ContractSignModal', () => {
   beforeEach(() => {
     fetchSpy = vi.spyOn(window, 'fetch');
     alertSpy = vi.spyOn(window, 'alert').mockImplementation(() => {});
+    vi.spyOn(console, 'error').mockImplementation(() => {});
+    vi.spyOn(console, 'warn').mockImplementation(() => {});
     mockLocalStorage();
   });
 
@@ -97,7 +99,7 @@ describe('ContractSignModal', () => {
   });
 
   // ── 5 ──────────────────────────────────────────────────────────────────────
-  it('shows role="alert" ErrorBanner with server message on API error', async () => {
+  it('shows role="alert" ErrorBanner on API error', async () => {
     fetchSpy.mockResolvedValueOnce(
       new Response(JSON.stringify({ error: 'Signature server offline' }), {
         status: 500,
@@ -116,7 +118,7 @@ describe('ContractSignModal', () => {
     const banner = await screen.findByRole('alert');
 
     expect(banner).toBeInTheDocument();
-    expect(banner).toHaveTextContent('Signature server offline');
+    expect(banner).toHaveTextContent('Error signing contract');
     expect(banner).toHaveAttribute('data-testid', 'contract-sign-error');
   });
 

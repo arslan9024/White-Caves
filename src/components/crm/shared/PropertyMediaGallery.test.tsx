@@ -3,21 +3,21 @@
  * Covers gallery rendering, navigation, thumbnails, fullscreen, empty state,
  * plus PropertySpecsGrid and PropertyDetailContainer
  */
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import PropertyMediaGallery, { PropertySpecsGrid, PropertyDetailContainer } from './PropertyMediaGallery';
 
 /* ── Mock styled-components (PropertyComponents.styles) ─────── */
 vi.mock('./PropertyComponents.styles', () => {
   const el = (name: string, tag = 'div') => {
-    const C = ({ children, onClick, className, style, src, alt, role, ...rest }: any) => {
+    const C = ({ children, onClick, className, style, src, alt, role }: any) => {
       if (tag === 'img') {
-        return <img data-testid={name} src={src} alt={alt} onClick={onClick} {...rest} />;
+        return <img data-testid={name} src={src} alt={alt} onClick={onClick} />;
       }
       if (tag === 'button') {
-        return <button data-testid={name} onClick={onClick} className={className} {...rest}>{children}</button>;
+        return <button data-testid={name} onClick={onClick} className={className}>{children}</button>;
       }
-      return <div data-testid={name} onClick={onClick} className={className} style={style} role={role} {...rest}>{children}</div>;
+      return <div data-testid={name} onClick={onClick} className={className} style={style} role={role}>{children}</div>;
     };
     C.displayName = name;
     return C;
@@ -65,6 +65,15 @@ vi.mock('./PropertyComponents.styles', () => {
 });
 
 describe('PropertyMediaGallery', () => {
+  beforeEach(() => {
+    vi.spyOn(console, 'error').mockImplementation(() => {});
+    vi.spyOn(console, 'warn').mockImplementation(() => {});
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
   const images = [
     'https://example.com/img1.jpg',
     'https://example.com/img2.jpg',

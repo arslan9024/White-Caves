@@ -28,6 +28,8 @@ describe('DocumentChecklist', () => {
   beforeEach(() => {
     fetchSpy = vi.spyOn(window, 'fetch');
     alertSpy = vi.spyOn(window, 'alert').mockImplementation(() => {});
+    vi.spyOn(console, 'error').mockImplementation(() => {});
+    vi.spyOn(console, 'warn').mockImplementation(() => {});
     mockLocalStorage();
   });
 

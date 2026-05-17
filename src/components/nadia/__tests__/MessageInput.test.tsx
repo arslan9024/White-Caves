@@ -8,7 +8,7 @@
 
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import MessageInput from '../MessageInput';
 
 // Default props factory
@@ -21,6 +21,15 @@ function defaultProps(overrides: Partial<React.ComponentProps<typeof MessageInpu
 }
 
 describe('MessageInput', () => {
+  beforeEach(() => {
+    vi.spyOn(console, 'error').mockImplementation(() => {});
+    vi.spyOn(console, 'warn').mockImplementation(() => {});
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
   // ── Basic Rendering ───────────────────────────────────────────────
 
   it('renders the message textarea', () => {

@@ -15,6 +15,8 @@ describe('ExecutiveView', () => {
   let store;
 
   beforeEach(() => {
+    vi.spyOn(console, 'error').mockImplementation(() => {});
+    vi.spyOn(console, 'warn').mockImplementation(() => {});
     store = configureStore({
       reducer: {
         relationalSidebar: relationalSidebarSlice,
@@ -24,7 +26,7 @@ describe('ExecutiveView', () => {
   });
 
   afterEach(() => {
-    vi.clearAllMocks();
+    vi.restoreAllMocks();
   });
 
   test('renders without crashing', () => {
@@ -83,7 +85,7 @@ describe('ExecutiveView', () => {
     );
 
     await waitFor(() => {
-      expect(screen.queryByText(/Error|Failed/i)).toBeInTheDocument();
+      expect(screen.getByText(/Error Loading Data/i)).toBeInTheDocument();
     });
   });
 
