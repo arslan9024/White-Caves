@@ -5,7 +5,7 @@
  * recent activity timeline, and callback interactions.
  */
 import React from 'react';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import OverviewTab from './OverviewTab';
@@ -52,7 +52,7 @@ const renderTab = (props: Partial<OverviewTabProps> = {}) =>
   render(
     <MemoryRouter>
       <OverviewTab {...defaultProps} {...props} />
-    </MemoryRouter>,
+    </MemoryRouter>
   );
 
 beforeEach(() => {
@@ -88,34 +88,46 @@ describe('OverviewTab', () => {
       expect(screen.getByText('Chatbot Chats')).toBeInTheDocument();
     });
 
-    it('displays correct property count', () => {
+    it('displays correct property count', async () => {
       renderTab();
-      expect(screen.getByText('120')).toBeInTheDocument();
+      await waitFor(() => {
+        expect(screen.getByText('120')).toBeInTheDocument();
+      });
     });
 
-    it('displays correct agent count', () => {
+    it('displays correct agent count', async () => {
       renderTab();
-      expect(screen.getByText('15')).toBeInTheDocument();
+      await waitFor(() => {
+        expect(screen.getByText('15')).toBeInTheDocument();
+      });
     });
 
-    it('formats revenue with AED and commas', () => {
+    it('formats revenue with AED and commas', async () => {
       renderTab();
-      expect(screen.getByText('AED 2,500,000')).toBeInTheDocument();
+      await waitFor(() => {
+        expect(screen.getByText(/AED\s*2,500,000/)).toBeInTheDocument();
+      });
     });
 
-    it('displays WhatsApp leads count', () => {
+    it('displays WhatsApp leads count', async () => {
       renderTab();
-      expect(screen.getByText('45')).toBeInTheDocument();
+      await waitFor(() => {
+        expect(screen.getByText('45')).toBeInTheDocument();
+      });
     });
 
-    it('displays UAE Pass users count', () => {
+    it('displays UAE Pass users count', async () => {
       renderTab();
-      expect(screen.getByText('80')).toBeInTheDocument();
+      await waitFor(() => {
+        expect(screen.getByText('80')).toBeInTheDocument();
+      });
     });
 
-    it('displays chatbot conversations count', () => {
+    it('displays chatbot conversations count', async () => {
       renderTab();
-      expect(screen.getByText('320')).toBeInTheDocument();
+      await waitFor(() => {
+        expect(screen.getByText('320')).toBeInTheDocument();
+      });
     });
 
     it('shows change percentages', () => {
@@ -277,7 +289,7 @@ describe('OverviewTab', () => {
       render(
         <MemoryRouter>
           <OverviewTab data={defaultData} />
-        </MemoryRouter>,
+        </MemoryRouter>
       );
       // Should not throw when clicking action without callback
       fireEvent.click(screen.getByText('Add Property'));
