@@ -3,13 +3,32 @@
  * Full message pipeline: WhatsApp → NLP → Queue → Agent Response
  */
 
-import { describe, it, expect, beforeAll, afterAll } from 'vitest';
+import { describe, it, expect, beforeAll, afterAll, beforeEach, afterEach, vi } from 'vitest';
+
+vi.hoisted(() => {
+  process.env.NODE_ENV = 'test';
+  process.env.JWT_SECRET = process.env.JWT_SECRET || 'test-jwt-secret';
+  process.env.DATABASE_URL = process.env.DATABASE_URL || 'mongodb://localhost:27017/white-caves-test';
+});
+
 import { ninaEngine, Intent } from '../services/nadia/ninaEngine.js';
 import { conversationMemory } from '../services/nadia/conversationMemory.js';
 import { LindaClient } from '../services/whatsapp/lindaClient.js';
 import { MetaAPIClient } from '../services/whatsapp/metaAPI.js';
 
 describe('Phase 3: End-to-End WhatsApp CRM Pipeline', () => {
+  beforeEach(() => {
+    vi.spyOn(console, 'log').mockImplementation(() => {});
+    vi.spyOn(console, 'warn').mockImplementation(() => {});
+    vi.spyOn(console, 'error').mockImplementation(() => {});
+    vi.spyOn(process.stdout, 'write').mockImplementation((() => true) as never);
+    vi.spyOn(process.stderr, 'write').mockImplementation((() => true) as never);
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
   describe('E2E: Customer Message → Intent → Response', () => {
     it('should process complete message flow: inquiry → intent detection → agent queue', async () => {
       // 1. Simulate customer message

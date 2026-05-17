@@ -3,7 +3,14 @@
  * Tests for intent detection, entity extraction, sentiment analysis
  */
 
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+
+vi.hoisted(() => {
+  process.env.NODE_ENV = 'test';
+  process.env.JWT_SECRET = process.env.JWT_SECRET || 'test-jwt-secret';
+  process.env.DATABASE_URL = process.env.DATABASE_URL || 'mongodb://localhost:27017/white-caves-test';
+});
+
 import { NinaEngine, Intent, ConversationContext } from './ninaEngine';
 import { ConversationMemory, ConversationMemoryState } from './conversationMemory';
 import { LindaClient, LindaStatus } from '../whatsapp/lindaClient';
@@ -17,6 +24,12 @@ describe('Nina NLP Engine', () => {
   let context: ConversationContext;
 
   beforeEach(() => {
+    vi.spyOn(console, 'log').mockImplementation(() => {});
+    vi.spyOn(console, 'warn').mockImplementation(() => {});
+    vi.spyOn(console, 'error').mockImplementation(() => {});
+    vi.spyOn(process.stdout, 'write').mockImplementation((() => true) as never);
+    vi.spyOn(process.stderr, 'write').mockImplementation((() => true) as never);
+
     nina = new NinaEngine();
     context = {
       conversationId: 'conv_test_1',
@@ -26,6 +39,10 @@ describe('Nina NLP Engine', () => {
       needsAssistance: false,
       lastMessageTimestamp: new Date(),
     };
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
   });
 
   describe('Intent Detection', () => {
@@ -188,7 +205,17 @@ describe('Conversation Memory', () => {
   const conversationId = 'conv_test_2';
 
   beforeEach(() => {
+    vi.spyOn(console, 'log').mockImplementation(() => {});
+    vi.spyOn(console, 'warn').mockImplementation(() => {});
+    vi.spyOn(console, 'error').mockImplementation(() => {});
+    vi.spyOn(process.stdout, 'write').mockImplementation((() => true) as never);
+    vi.spyOn(process.stderr, 'write').mockImplementation((() => true) as never);
+
     memory = new ConversationMemory();
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
   });
 
   describe('Context Management', () => {
@@ -295,11 +322,21 @@ describe('Linda WhatsApp Client', () => {
   let linda: LindaClient;
 
   beforeEach(() => {
+    vi.spyOn(console, 'log').mockImplementation(() => {});
+    vi.spyOn(console, 'warn').mockImplementation(() => {});
+    vi.spyOn(console, 'error').mockImplementation(() => {});
+    vi.spyOn(process.stdout, 'write').mockImplementation((() => true) as never);
+    vi.spyOn(process.stderr, 'write').mockImplementation((() => true) as never);
+
     linda = new LindaClient({
       sessionPath: './test-session',
       headless: true,
       autoRestart: false,
     });
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
   });
 
   describe('Status Management', () => {
@@ -335,12 +372,22 @@ describe('Meta API Client', () => {
   let meta: MetaAPIClient;
 
   beforeEach(() => {
+    vi.spyOn(console, 'log').mockImplementation(() => {});
+    vi.spyOn(console, 'warn').mockImplementation(() => {});
+    vi.spyOn(console, 'error').mockImplementation(() => {});
+    vi.spyOn(process.stdout, 'write').mockImplementation((() => true) as never);
+    vi.spyOn(process.stderr, 'write').mockImplementation((() => true) as never);
+
     meta = new MetaAPIClient({
       accessToken: 'test_token',
       businessAccountId: 'test_account',
       phoneNumberId: 'test_phone',
       webhookVerifyToken: 'test_verify_token',
     });
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
   });
 
   describe('Webhook Verification', () => {
