@@ -453,26 +453,51 @@ app.get(
   authMiddleware,
   requirePermission('access_whatsapp_business'),
   asyncHandler(async (_req: Request, res: Response) => {
-    res.status(200).json({
-      success: true,
-      data: { phoneNumber: '', connected: false, autoReply: false, businessHours: null },
-    });
+    const row = await prisma.systemSetting.findUnique({ where: { key: 'whatsapp_settings' } });
+    const defaults = { phoneNumber: '', connected: false, autoReply: false, businessHours: null };
+    const data = row ? { ...defaults, ...(row.value as object) } : defaults;
+    res.status(200).json({ success: true, data });
   })
 );
 app.put(
   '/api/whatsapp/settings',
   authMiddleware,
   requireRole('owner'),
-  asyncHandler(async (_req: Request, res: Response) => {
-    res.status(200).json({ success: true, message: 'Settings updated (stub)' });
+  asyncHandler(async (req: Request, res: Response) => {
+    const { phoneNumber, autoReply, businessHours } = req.body ?? {};
+    const userId = (req as Request & { user?: { id: string } }).user?.id;
+    const current = await prisma.systemSetting.findUnique({ where: { key: 'whatsapp_settings' } });
+    const existing = (current?.value ?? {}) as Record<string, unknown>;
+    const updated: Record<string, unknown> = {
+      ...existing,
+      ...(phoneNumber !== undefined && { phoneNumber: String(phoneNumber) }),
+      ...(autoReply !== undefined && { autoReply: Boolean(autoReply) }),
+      ...(businessHours !== undefined && { businessHours }),
+    };
+    await prisma.systemSetting.upsert({
+      where: { key: 'whatsapp_settings' },
+      update: { value: updated, category: 'whatsapp', updatedBy: userId },
+      create: { key: 'whatsapp_settings', value: updated, category: 'whatsapp', updatedBy: userId },
+    });
+    res.status(200).json({ success: true, data: updated });
   })
 );
 app.post(
   '/api/whatsapp/session',
   authMiddleware,
   requireRole('owner'),
-  asyncHandler(async (_req: Request, res: Response) => {
-    res.status(200).json({ success: true, data: { sessionId: 'stub-session', status: 'pending' } });
+  asyncHandler(async (req: Request, res: Response) => {
+    const { phoneNumber } = req.body ?? {};
+    const userId = (req as Request & { user?: { id: string } }).user?.id;
+    if (!phoneNumber) throw new AppError('phoneNumber is required to start a WhatsApp session', 400);
+    const sessionId = `wa-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+    const sessionData = { sessionId, phoneNumber: String(phoneNumber), status: 'pending', startedAt: new Date().toISOString() };
+    await prisma.systemSetting.upsert({
+      where: { key: 'whatsapp_session' },
+      update: { value: sessionData, category: 'whatsapp', updatedBy: userId },
+      create: { key: 'whatsapp_session', value: sessionData, category: 'whatsapp', updatedBy: userId },
+    });
+    res.status(200).json({ success: true, data: sessionData });
   })
 );
 app.post(
@@ -585,8 +610,8 @@ app.use('/api/landlord', authMiddleware, landlordPortalRoutes);
 // Tenant Portal API — lease, payments, documents, maintenance for the tenant portal
 app.use('/api/portal/tenant', authMiddleware, tenantPortalRoutes);
 
-// Payments API stub (Checkout — Stripe integration pending)
-// TODO: Integrate Stripe SDK when payment processing is prioritised
+// Payments API — Stripe integration pending; return 402 Payment Required so
+// clients can distinguish "service down" (503) from "payment not configured" (402).
 app.post(
   '/api/payments/create-payment-intent',
   authMiddleware,
@@ -595,9 +620,10 @@ app.post(
       amount: req.body?.amount,
       propertyId: req.body?.propertyId,
     });
-    res.status(503).json({
+    res.status(402).json({
       success: false,
       error: 'Payment processing is not yet configured. Please contact support.',
+      code: 'PAYMENT_NOT_CONFIGURED',
     });
   })
 );
