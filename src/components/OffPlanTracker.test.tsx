@@ -2,19 +2,24 @@
  * OffPlanTracker – comprehensive test suite
  * Covers rendering, filtering, countdown timers, project cards, stats
  */
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect, vi, beforeAll, beforeEach, afterAll, afterEach } from 'vitest';
 import { render, screen, fireEvent, act } from '@testing-library/react';
 import OffPlanTracker from './OffPlanTracker';
 
 /* ── Mock styled-components ──────────────────────────────────── */
 vi.mock('./OffPlanTracker.styles', () => {
   const stub = (name: string) => {
-    const C = ({ children, onClick, className, style, src, alt, ...rest }: any) => (
-      <div data-testid={name} onClick={onClick} className={className} style={style} {...rest}>
+    const C = ({ children, onClick, className, style, src, alt, ...rest }: any) => {
+      const clean = Object.fromEntries(
+        Object.entries(rest).filter(([key]) => !key.startsWith('$')),
+      );
+      return (
+      <div data-testid={name} onClick={onClick} className={className} style={style} {...clean}>
         {src ? <img src={src} alt={alt} /> : null}
         {children}
       </div>
-    );
+      );
+    };
     C.displayName = name;
     return C;
   };
@@ -60,12 +65,21 @@ vi.mock('./OffPlanTracker.styles', () => {
 });
 
 describe('OffPlanTracker', () => {
+  beforeAll(() => {
+    vi.spyOn(console, 'error').mockImplementation(() => {});
+    vi.spyOn(console, 'warn').mockImplementation(() => {});
+  });
+
   beforeEach(() => {
     vi.useFakeTimers();
   });
 
   afterEach(() => {
     vi.useRealTimers();
+  });
+
+  afterAll(() => {
+    vi.restoreAllMocks();
   });
 
   /* ── Basic Rendering ────────────────────────────────────────── */

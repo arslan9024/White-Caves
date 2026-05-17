@@ -36,13 +36,13 @@ vi.mock('lucide-react', () => ({
 
 // Mock styled components
 vi.mock('../ImageDataExtractor.styles', () => ({
-  ImageExtractorContainer: ({ children, ...p }: any) => <div data-testid="extractor-container" {...p}>{children}</div>,
-  ExtractorHeader: ({ children, ...p }: any) => <div data-testid="extractor-header" {...p}>{children}</div>,
-  HeaderInfo: ({ children, ...p }: any) => <div {...p}>{children}</div>,
-  HeaderTitle: ({ children, ...p }: any) => <h2 {...p}>{children}</h2>,
-  HeaderSubtext: ({ children, ...p }: any) => <p {...p}>{children}</p>,
-  HeaderActions: ({ children, ...p }: any) => <div data-testid="header-actions" {...p}>{children}</div>,
-  ActionBtn: ({ children, onClick, ...p }: any) => <button onClick={onClick} {...p}>{children}</button>,
+  ImageExtractorContainer: ({ children, ...p }: any) => <div data-testid="extractor-container" {...Object.fromEntries(Object.entries(p).filter(([k]) => !k.startsWith('$')))}>{children}</div>,
+  ExtractorHeader: ({ children, ...p }: any) => <div data-testid="extractor-header" {...Object.fromEntries(Object.entries(p).filter(([k]) => !k.startsWith('$')))}>{children}</div>,
+  HeaderInfo: ({ children, ...p }: any) => <div {...Object.fromEntries(Object.entries(p).filter(([k]) => !k.startsWith('$')))}>{children}</div>,
+  HeaderTitle: ({ children, ...p }: any) => <h2 {...Object.fromEntries(Object.entries(p).filter(([k]) => !k.startsWith('$')))}>{children}</h2>,
+  HeaderSubtext: ({ children, ...p }: any) => <p {...Object.fromEntries(Object.entries(p).filter(([k]) => !k.startsWith('$')))}>{children}</p>,
+  HeaderActions: ({ children, ...p }: any) => <div data-testid="header-actions" {...Object.fromEntries(Object.entries(p).filter(([k]) => !k.startsWith('$')))}>{children}</div>,
+  ActionBtn: ({ children, onClick, ...p }: any) => <button onClick={onClick} {...Object.fromEntries(Object.entries(p).filter(([k]) => !k.startsWith('$')))}>{children}</button>,
   DropZone: ({ children, onDrop, onDragOver, onDragLeave, onClick, ...p }: any) => (
     <div data-testid="drop-zone" onDrop={onDrop} onDragOver={onDragOver} onDragLeave={onDragLeave} onClick={onClick} {...p}>{children}</div>
   ),
@@ -85,6 +85,8 @@ describe('ImageDataExtractor', () => {
   let mockFileReader: any;
 
   beforeEach(() => {
+    vi.spyOn(console, 'error').mockImplementation(() => {});
+    vi.spyOn(console, 'warn').mockImplementation(() => {});
     vi.useFakeTimers({ shouldAdvanceTime: true });
 
     // Mock FileReader

@@ -2,7 +2,7 @@
  * LoginSecurityPage — Smoke Tests
  * Verifies role guard, list rendering, and unlock flow.
  */
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import React from 'react';
 
@@ -56,6 +56,8 @@ import LoginSecurityPage from './LoginSecurityPage';
 
 describe('LoginSecurityPage', () => {
   beforeEach(() => {
+    vi.spyOn(console, 'error').mockImplementation(() => {});
+    vi.spyOn(console, 'warn').mockImplementation(() => {});
     vi.clearAllMocks();
     mockUser = { role: 'owner' };
     mockAuthFetch.mockResolvedValue({
@@ -69,6 +71,10 @@ describe('LoginSecurityPage', () => {
           meta: { count: 2, limit: 100, sinceMinutes: 1440, status: 'all', emailFilter: null },
         }),
     });
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
   });
 
   it('redirects non-privileged users to home', () => {

@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect, vi, beforeAll, beforeEach, afterAll, afterEach } from 'vitest';
 import { render, screen, waitFor, act } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import Toast from '../Toast';
@@ -13,6 +13,15 @@ const createToast = (overrides: Partial<ToastConfig> = {}): ToastConfig => ({
 });
 
 describe('Toast Component', () => {
+  beforeAll(() => {
+    vi.spyOn(console, 'error').mockImplementation(() => {});
+    vi.spyOn(console, 'warn').mockImplementation(() => {});
+  });
+
+  afterAll(() => {
+    vi.restoreAllMocks();
+  });
+
   describe('Rendering', () => {
     it('should render toast with message', () => {
       const toasts = [createToast({ message: 'Test message' })];
