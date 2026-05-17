@@ -23,14 +23,59 @@ const originalEnv = import.meta.env;
 vi.mock('./ClickToChat.styles', () => {
   const { createElement, forwardRef } = require('react');
   const el = (name: string, tag = 'div') => {
-    const C = forwardRef(({ children, onClick, className, style, src, alt, role, type, value, onChange, placeholder, disabled, ...rest }: any, ref: any) => {
-      if (tag === 'button') return createElement('button', { ref, 'data-testid': name, onClick, disabled, 'aria-label': rest['aria-label'], 'aria-expanded': rest['aria-expanded'], title: rest.title }, children);
-      if (tag === 'input') return createElement('input', { 'data-testid': name, type: type || 'text', value, onChange, placeholder, 'aria-label': rest['aria-label'] });
-      if (tag === 'form') return createElement('form', { 'data-testid': name, onSubmit: onClick }, children);
-      if (tag === 'img') return createElement('img', { 'data-testid': name, src, alt });
-      if (tag === 'svg') return createElement('svg', { 'data-testid': name }, children);
-      return createElement('div', { ref, 'data-testid': name, onClick, role, className, style }, children);
-    });
+    const C = forwardRef(
+      (
+        {
+          children,
+          onClick,
+          className,
+          style,
+          src,
+          alt,
+          role,
+          type,
+          value,
+          onChange,
+          placeholder,
+          disabled,
+          ...rest
+        }: any,
+        ref: any
+      ) => {
+        if (tag === 'button')
+          return createElement(
+            'button',
+            {
+              ref,
+              'data-testid': name,
+              onClick,
+              disabled,
+              'aria-label': rest['aria-label'],
+              'aria-expanded': rest['aria-expanded'],
+              title: rest.title,
+            },
+            children
+          );
+        if (tag === 'input')
+          return createElement('input', {
+            'data-testid': name,
+            type: type || 'text',
+            value,
+            onChange,
+            placeholder,
+            'aria-label': rest['aria-label'],
+          });
+        if (tag === 'form')
+          return createElement('form', { 'data-testid': name, onSubmit: onClick }, children);
+        if (tag === 'img') return createElement('img', { 'data-testid': name, src, alt });
+        if (tag === 'svg') return createElement('svg', { 'data-testid': name }, children);
+        return createElement(
+          'div',
+          { ref, 'data-testid': name, onClick, role, className, style },
+          children
+        );
+      }
+    );
     C.displayName = name;
     return C;
   };
@@ -66,6 +111,11 @@ const mockWindowOpen = vi.fn();
 const origOpen = window.open;
 
 describe('ClickToChat', () => {
+  const openContactTab = () => {
+    fireEvent.click(screen.getByTestId('ChatTrigger'));
+    fireEvent.click(screen.getByRole('button', { name: /contact us/i }));
+  };
+
   beforeEach(() => {
     vi.clearAllMocks();
     window.open = mockWindowOpen;
@@ -112,8 +162,10 @@ describe('ClickToChat', () => {
 
     it('renders welcome message', () => {
       render(<ClickToChat />);
-      fireEvent.click(screen.getByTestId('ChatTrigger'));
-      expect(screen.getByText('Welcome to White Caves Real Estate! How can we assist you today?')).toBeInTheDocument();
+      openContactTab();
+      expect(
+        screen.getByText('Welcome to White Caves Real Estate! How can we assist you today?')
+      ).toBeInTheDocument();
     });
 
     it('renders close button', () => {
@@ -134,7 +186,7 @@ describe('ClickToChat', () => {
   describe('quick messages', () => {
     it('renders all 5 quick message buttons', () => {
       render(<ClickToChat />);
-      fireEvent.click(screen.getByTestId('ChatTrigger'));
+      openContactTab();
       expect(screen.getByText('Property Inquiry')).toBeInTheDocument();
       expect(screen.getByText('Schedule Viewing')).toBeInTheDocument();
       expect(screen.getByText('Rental Information')).toBeInTheDocument();
@@ -144,7 +196,7 @@ describe('ClickToChat', () => {
 
     it('opens WhatsApp on quick message click', () => {
       render(<ClickToChat />);
-      fireEvent.click(screen.getByTestId('ChatTrigger'));
+      openContactTab();
       fireEvent.click(screen.getByText('Property Inquiry'));
       expect(mockWindowOpen).toHaveBeenCalledWith(
         expect.stringContaining('https://wa.me/'),
@@ -155,7 +207,7 @@ describe('ClickToChat', () => {
 
     it('closes popup after quick message click', () => {
       render(<ClickToChat />);
-      fireEvent.click(screen.getByTestId('ChatTrigger'));
+      openContactTab();
       fireEvent.click(screen.getByText('Property Inquiry'));
       expect(screen.queryByTestId('ChatPopup')).not.toBeInTheDocument();
     });
@@ -165,25 +217,25 @@ describe('ClickToChat', () => {
   describe('custom message', () => {
     it('renders message input', () => {
       render(<ClickToChat />);
-      fireEvent.click(screen.getByTestId('ChatTrigger'));
+      openContactTab();
       expect(screen.getByPlaceholderText('Type your message...')).toBeInTheDocument();
     });
 
     it('renders send button', () => {
       render(<ClickToChat />);
-      fireEvent.click(screen.getByTestId('ChatTrigger'));
+      openContactTab();
       expect(screen.getByTestId('SendBtn')).toBeInTheDocument();
     });
 
     it('send button disabled when empty', () => {
       render(<ClickToChat />);
-      fireEvent.click(screen.getByTestId('ChatTrigger'));
+      openContactTab();
       expect(screen.getByTestId('SendBtn')).toBeDisabled();
     });
 
     it('updates message input', () => {
       render(<ClickToChat />);
-      fireEvent.click(screen.getByTestId('ChatTrigger'));
+      openContactTab();
       const input = screen.getByPlaceholderText('Type your message...');
       fireEvent.change(input, { target: { value: 'Hello!' } });
       expect(input).toHaveValue('Hello!');
@@ -194,13 +246,13 @@ describe('ClickToChat', () => {
   describe('contact apps', () => {
     it('renders contact us via label', () => {
       render(<ClickToChat />);
-      fireEvent.click(screen.getByTestId('ChatTrigger'));
+      openContactTab();
       expect(screen.getByText('Contact us via:')).toBeInTheDocument();
     });
 
     it('renders WhatsApp, Botim, GoChat, Call buttons', () => {
       render(<ClickToChat />);
-      fireEvent.click(screen.getByTestId('ChatTrigger'));
+      openContactTab();
       expect(screen.getByText('WhatsApp')).toBeInTheDocument();
       expect(screen.getByText('Botim')).toBeInTheDocument();
       expect(screen.getByText('GoChat UAE')).toBeInTheDocument();
@@ -209,7 +261,7 @@ describe('ClickToChat', () => {
 
     it('opens WhatsApp link on WhatsApp button click', () => {
       render(<ClickToChat />);
-      fireEvent.click(screen.getByTestId('ChatTrigger'));
+      openContactTab();
       fireEvent.click(screen.getByText('WhatsApp'));
       expect(mockWindowOpen).toHaveBeenCalledWith(
         expect.stringContaining('https://wa.me/'),
@@ -220,7 +272,7 @@ describe('ClickToChat', () => {
 
     it('opens Call link on Call Us button click', () => {
       render(<ClickToChat />);
-      fireEvent.click(screen.getByTestId('ChatTrigger'));
+      openContactTab();
       fireEvent.click(screen.getByText('Call Us'));
       expect(mockWindowOpen).toHaveBeenCalledWith(
         expect.stringContaining('tel:'),

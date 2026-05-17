@@ -35,8 +35,4 @@ module.exports = {
       statements: 80,
     },
   },
-  testMatch: [
-    '<rootDir>/test/**/*.test.js',
-    '<rootDir>/test/**/*.spec.js',
-  ],
 };

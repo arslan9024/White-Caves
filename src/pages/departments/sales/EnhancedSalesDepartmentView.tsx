@@ -90,7 +90,7 @@ export const SalesDepartmentView: React.FC<SalesDepartmentViewProps> = ({
   );
 
   // Use API data if available, fallback to mock data
-  const displayData = salesData || mockSalesData;
+  const displayData = (salesData || mockSalesData) as typeof mockSalesData;
 
   // Handle loading state
   if (dataLoading || kpiLoading) {
@@ -101,11 +101,7 @@ export const SalesDepartmentView: React.FC<SalesDepartmentViewProps> = ({
   if (dataError || kpiError) {
     return (
       <ErrorState
-        error={
-          dataError?.message ||
-          kpiError?.message ||
-          'Unable to fetch sales data. Using fallback data.'
-        }
+        error={dataError || kpiError || 'Unable to fetch sales data. Using fallback data.'}
         onRetry={() => window.location.reload()}
       />
     );

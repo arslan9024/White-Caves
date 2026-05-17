@@ -32,7 +32,7 @@ function handleUnauthorized(): void {
 
 export async function authFetch(
   input: RequestInfo | URL,
-  init?: RequestInit & { timeout?: number },
+  init?: RequestInit & { timeout?: number }
 ): Promise<Response> {
   const token = safeStorage.get('token');
   const headers = new Headers(init?.headers);
@@ -73,11 +73,13 @@ export async function authFetch(
   }
 
   if (response.status >= 500) {
-    log.error(`Server error ${response.status} for ${typeof input === 'string' ? input : 'request'}`);
+    log.error(
+      `Server error ${response.status} for ${typeof input === 'string' ? input : 'request'}`
+    );
     throw new HttpError(
       `Server error (${response.status}) — please try again later`,
       response.status,
-      response.statusText,
+      response.statusText
     );
   }
 
@@ -89,16 +91,29 @@ export async function authFetch(
  * Uses AbortSignal.any() where available, falls back to event listener.
  */
 function mergeAbortSignals(a: AbortSignal, b: AbortSignal): AbortSignal {
-  // Modern browsers support AbortSignal.any()
-  if ('any' in AbortSignal) {
-    return (AbortSignal as unknown as { any(signals: AbortSignal[]): AbortSignal }).any([a, b]);
-  }
-  // Fallback: wire up listeners
   const controller = new AbortController();
   const onAbort = () => controller.abort();
-  if (a.aborted || b.aborted) { controller.abort(); return controller.signal; }
-  a.addEventListener('abort', onAbort, { once: true });
-  b.addEventListener('abort', onAbort, { once: true });
+
+  const isAbortSignalLike = (signal: unknown): signal is AbortSignal => {
+    return Boolean(
+      signal &&
+      typeof signal === 'object' &&
+      'aborted' in signal &&
+      typeof (signal as AbortSignal).addEventListener === 'function'
+    );
+  };
+
+  const signals = [a, b].filter(isAbortSignalLike);
+
+  if (signals.some(signal => signal.aborted)) {
+    controller.abort();
+    return controller.signal;
+  }
+
+  signals.forEach(signal => {
+    signal.addEventListener('abort', onAbort, { once: true });
+  });
+
   return controller.signal;
 }
 

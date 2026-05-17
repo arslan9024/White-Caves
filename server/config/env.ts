@@ -65,15 +65,6 @@ export const CORS_ORIGINS = (process.env.CORS_ORIGIN || 'http://localhost:5000')
   .split(',')
   .map(s => s.trim());
 
-// In development, auto-allow common Vite fallback ports to prevent local auth/CORS breakage
-// when port 5000 is occupied and Vite moves to 5001/5173.
-if (!process.env.CORS_ORIGIN && !IS_PRODUCTION) {
-  const devDefaults = ['http://localhost:5000', 'http://localhost:5001', 'http://localhost:5173'];
-  for (const origin of devDefaults) {
-    if (!CORS_ORIGINS.includes(origin)) CORS_ORIGINS.push(origin);
-  }
-}
-
 // ─── Webhooks ────────────────────────────────────────────────────────────
 const _whatsappSecret = process.env.WHATSAPP_WEBHOOK_SECRET;
 if (!_whatsappSecret && IS_PRODUCTION) {
@@ -95,6 +86,7 @@ export const LINDA_MAX_RECONNECT_ATTEMPTS = parseInt(
 );
 export const LINDA_GOOGLE_SHEET_ID = process.env.LINDA_GOOGLE_SHEET_ID || '';
 export const LINDA_GOOGLE_KEYS_BASE64 = process.env.LINDA_GOOGLE_KEYS_BASE64 || '';
+export const LINDA_CORE_MODE = process.env.LINDA_CORE_MODE || 'legacy';
 
 // ─── Henry Document Hub ───────────────────────────────────────────────────
 export const HENRY_UPLOADS_PATH = process.env.HENRY_UPLOADS_PATH || './uploads/henry';

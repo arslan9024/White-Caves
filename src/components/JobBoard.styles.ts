@@ -42,13 +42,13 @@ export const JobCard = styled.div`
   background: ${colors.background.secondary};
   padding: 1.5rem;
   border-radius: ${radius.lg};
-  box-shadow: ${shadows.card};
-  transition: all ${transitions.durations.standard} ${transitions.easing.easeOut};
+  box-shadow: ${shadows.sm};
+  transition: all ${transitions.durations.standard} ${transitions.easing.out};
   display: flex;
   flex-direction: column;
 
   &:hover {
-    box-shadow: ${shadows.luxuryHover};
+    box-shadow: ${shadows.elevated};
     transform: translateY(-4px);
   }
 
@@ -140,7 +140,7 @@ export const FormSelect = styled.select`
   &:focus {
     outline: none;
     border-color: ${colors.primary};
-    box-shadow: ${shadows.luxuryFocus};
+    box-shadow: ${shadows.focus};
   }
 
   option {
@@ -160,7 +160,7 @@ export const FormInput = styled.input`
   &:focus {
     outline: none;
     border-color: ${colors.primary};
-    box-shadow: ${shadows.luxuryFocus};
+    box-shadow: ${shadows.focus};
   }
 
   &[type='file'] {
@@ -199,7 +199,7 @@ export const FormTextarea = styled.textarea`
   &:focus {
     outline: none;
     border-color: ${colors.primary};
-    box-shadow: ${shadows.luxuryFocus};
+    box-shadow: ${shadows.focus};
   }
 `;
 

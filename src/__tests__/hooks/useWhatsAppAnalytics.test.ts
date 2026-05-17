@@ -5,12 +5,31 @@
 import { renderHook, act, waitFor } from '@testing-library/react';
 import { useWhatsAppAnalytics } from '../../hooks/whatsapp/useWhatsAppAnalytics';
 import { whatsappService } from '../../services/whatsapp/whatsapp.service';
+import { vi } from 'vitest';
 
-vi.mock('../../services/whatsapp/whatsapp.service');
+vi.mock('../../services/whatsapp/whatsapp.service', () => ({
+  whatsappService: {
+    getCounters: vi.fn(),
+    getConversations: vi.fn(),
+  },
+}));
 
 describe('useWhatsAppAnalytics', () => {
+  let anchorClickSpy: ReturnType<typeof vi.spyOn>;
+
   beforeEach(() => {
     vi.clearAllMocks();
+
+    // Prevent jsdom from attempting real navigation via anchor.click()
+    // during export tests (which triggers "Not implemented: navigation").
+    anchorClickSpy = vi.spyOn(HTMLAnchorElement.prototype, 'click').mockImplementation(() => {});
+
+    global.URL.createObjectURL = vi.fn(() => 'blob:mock-url');
+    global.URL.revokeObjectURL = vi.fn();
+  });
+
+  afterEach(() => {
+    anchorClickSpy?.mockRestore();
   });
 
   describe('initialization', () => {
@@ -34,7 +53,7 @@ describe('useWhatsAppAnalytics', () => {
         topConversations: [],
       };
 
-      (whatsappService.getAnalytics as vi.Mock).mockResolvedValue({
+      (whatsappService.getCounters as vi.Mock).mockResolvedValue({
         data: mockAnalytics,
       });
 
@@ -52,9 +71,7 @@ describe('useWhatsAppAnalytics', () => {
     });
 
     it('should handle loading errors', async () => {
-      (whatsappService.getAnalytics as vi.Mock).mockRejectedValue(
-        new Error('Load failed')
-      );
+      (whatsappService.getCounters as vi.Mock).mockRejectedValue(new Error('Load failed'));
 
       const { result } = renderHook(() => useWhatsAppAnalytics());
 
@@ -94,7 +111,7 @@ describe('useWhatsAppAnalytics', () => {
         messageTypes: { text: 80, media: 20 },
       };
 
-      (whatsappService.getMessageStats as vi.Mock).mockResolvedValue({
+      (whatsappService.getCounters as vi.Mock).mockResolvedValue({
         data: mockStats,
       });
 
@@ -117,8 +134,8 @@ describe('useWhatsAppAnalytics', () => {
         topConversations: [],
       };
 
-      (whatsappService.getConversationStats as vi.Mock).mockResolvedValue({
-        data: mockStats,
+      (whatsappService.getConversations as vi.Mock).mockResolvedValue({
+        data: [{ id: 'conv-1' }],
       });
 
       const { result } = renderHook(() => useWhatsAppAnalytics());
@@ -128,54 +145,37 @@ describe('useWhatsAppAnalytics', () => {
         stats = await result.current.getConversationStats('account-1');
       });
 
-      expect(stats?.activeConversations).toBe(15);
+      expect((stats as Record<string, unknown>)?.conversations).toBeDefined();
     });
   });
 
   describe('exportAnalytics', () => {
     it('should export analytics as CSV', async () => {
-      (whatsappService.exportAnalytics as vi.Mock).mockResolvedValue({
-        data: 'name,count\nmessages,100',
+      (whatsappService.getCounters as vi.Mock).mockResolvedValue({
+        data: { messages: 100 },
       });
 
       const { result } = renderHook(() => useWhatsAppAnalytics());
-
-      // Mock the download function
-      global.URL.createObjectURL = vi.fn();
-      global.URL.revokeObjectURL = vi.fn();
 
       await act(async () => {
         await result.current.exportAnalytics('account-1', 'csv');
       });
 
-      expect(whatsappService.exportAnalytics).toHaveBeenCalledWith(
-        'account-1',
-        expect.any(String),
-        expect.any(String),
-        'csv'
-      );
+      expect(whatsappService.getCounters).toHaveBeenCalledWith('account-1', 'month');
     });
 
     it('should export analytics as JSON', async () => {
-      (whatsappService.exportAnalytics as vi.Mock).mockResolvedValue({
-        data: '{"messages":100}',
+      (whatsappService.getCounters as vi.Mock).mockResolvedValue({
+        data: { messages: 100 },
       });
 
       const { result } = renderHook(() => useWhatsAppAnalytics());
-
-      global.URL.createObjectURL = vi.fn();
-      global.URL.revokeObjectURL = vi.fn();
 
       await act(async () => {
         await result.current.exportAnalytics('account-1', 'json');
       });
 
-      expect(whatsappService.exportAnalytics).toHaveBeenCalledWith(
-        'account-1',
-        expect.any(String),
-        expect.any(String),
-        'json'
-      );
+      expect(whatsappService.getCounters).toHaveBeenCalledWith('account-1', 'month');
     });
   });
 
@@ -200,7 +200,7 @@ describe('useWhatsAppAnalytics', () => {
         deliveryRate: 98,
       };
 
-      (whatsappService.getAnalytics as vi.Mock).mockResolvedValue({
+      (whatsappService.getCounters as vi.Mock).mockResolvedValue({
         data: mockAnalytics,
       });
 
@@ -213,7 +213,7 @@ describe('useWhatsAppAnalytics', () => {
 
       // Refresh
       await act(async () => {
-        await result.current.refresh('account-1');
+        await result.current.refresh();
       });
 
       await waitFor(() => {

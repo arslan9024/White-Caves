@@ -148,7 +148,7 @@ const AdvancedSidebarExample = () => {
 // EXAMPLE 3: Feature Registration
 // ============================================================================
 
-import { featureRegistry } from '../../components/layout/DashboardWorkspace';
+import { featureRegistry } from '../../components/layout/DashboardWorkspace/FeatureRegistry';
 
 // Create feature components
 const PropertiesFeatureComponent: React.FC<{ featureId: string }> = ({ featureId }) => (

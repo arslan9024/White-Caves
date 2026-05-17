@@ -99,7 +99,7 @@ const MOCK_PROPERTIES: Property[] = [
 
 type ModalMode = 'none' | 'add' | 'edit' | 'delete';
 
-const PropertiesTab: React.FC<PropertiesTabProps> = ({ data, loading, error }) => {
+const PropertiesTab: React.FC<PropertiesTabProps> = ({ data, loading, error, onAction }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [typeFilter, setTypeFilter] = useState('all');
@@ -126,22 +126,38 @@ const PropertiesTab: React.FC<PropertiesTabProps> = ({ data, loading, error }) =
   };
 
   const openAdd = useCallback(() => {
+    onAction?.('addProperty');
     setForm(EMPTY_FORM);
     setEditTarget(null);
     setModalMode('add');
-  }, []);
+  }, [onAction]);
 
-  const openEdit = useCallback((prop: Property) => {
-    const { id: _id, code: _code, ...rest } = prop;
-    setForm(rest);
-    setEditTarget(prop);
-    setModalMode('edit');
-  }, []);
+  const openEdit = useCallback(
+    (prop: Property) => {
+      onAction?.('editProperty', prop.id);
+      const { id: _id, code: _code, ...rest } = prop;
+      setForm(rest);
+      setEditTarget(prop);
+      setModalMode('edit');
+    },
+    [onAction]
+  );
 
-  const openDelete = useCallback((prop: Property) => {
-    setEditTarget(prop);
-    setModalMode('delete');
-  }, []);
+  const openDelete = useCallback(
+    (prop: Property) => {
+      onAction?.('deleteProperty', prop.id);
+      setEditTarget(prop);
+      setModalMode('delete');
+    },
+    [onAction]
+  );
+
+  const handleView = useCallback(
+    (prop: Property) => {
+      onAction?.('viewProperty', prop.id);
+    },
+    [onAction]
+  );
 
   const closeModal = () => {
     setModalMode('none');
@@ -196,6 +212,9 @@ const PropertiesTab: React.FC<PropertiesTabProps> = ({ data, loading, error }) =
         <div className="tab-error-state" role="alert">
           <span className="error-icon">⚠️</span>
           <p>Failed to load properties: {error}</p>
+          <button className="secondary-btn" onClick={() => onAction?.('retryFetch')}>
+            Retry
+          </button>
         </div>
       </div>
     );
@@ -328,6 +347,14 @@ const PropertiesTab: React.FC<PropertiesTabProps> = ({ data, loading, error }) =
                   <td>{prop.agent ?? <span className="unassigned">Unassigned</span>}</td>
                   <td>
                     <div className="action-buttons">
+                      <button
+                        className="icon-btn"
+                        title="View"
+                        aria-label="View property"
+                        onClick={() => handleView(prop)}
+                      >
+                        👁️
+                      </button>
                       <button
                         className="icon-btn"
                         title="Edit"

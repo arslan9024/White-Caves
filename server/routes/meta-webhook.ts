@@ -10,6 +10,7 @@
  */
 
 import { Router, Request, Response } from 'express';
+import crypto from 'crypto';
 import { createMetaAPIClient, MetaAPIClient, WebhookEvent } from '../services/whatsapp/metaAPI.js';
 import {
   verifyWebhookSignature,
@@ -95,7 +96,19 @@ router.post('/', async (req: Request, res: Response) => {
     const appSecret = process.env.META_APP_SECRET;
     if (appSecret) {
       const signature = req.headers['x-hub-signature-256'] as string | undefined;
-      const rawBody = JSON.stringify(req.body);
+      if (!signature) {
+        console.warn('[Meta Webhook] Missing x-hub-signature-256 header — rejecting');
+        res.status(401).json({ success: false, error: 'Missing signature header' });
+        return;
+      }
+
+      const rawBody = (req as Request & { rawBody?: string }).rawBody;
+      if (!rawBody) {
+        console.warn('[Meta Webhook] Missing rawBody for signature verification — rejecting');
+        res.status(500).json({ success: false, error: 'Webhook raw body unavailable' });
+        return;
+      }
+
       if (!verifyWebhookSignature(rawBody, signature, appSecret)) {
         console.warn('[Meta Webhook] Invalid signature — rejecting');
         res.status(401).json({ success: false, error: 'Invalid signature' });
@@ -156,26 +169,36 @@ router.post('/', async (req: Request, res: Response) => {
  */
 async function handleIncomingMessage(message: any, phoneNumberId: string): Promise<void> {
   try {
-    const waMessageId = message.id as string | undefined;
     const customerPhone = normalizePhone(message.from) || message.from;
+    if (!customerPhone) {
+      console.warn('[Meta Webhook] Ignoring inbound message with missing sender phone');
+      return;
+    }
+
     const content = message.text?.body || '';
     const messageType = message.type || 'text';
-    const timestamp = new Date(parseInt(message.timestamp) * 1000);
+    const timestampEpoch = Number.parseInt(String(message.timestamp || ''), 10);
+    const timestamp = Number.isFinite(timestampEpoch)
+      ? new Date(timestampEpoch * 1000)
+      : new Date();
+
+    const contentHash = crypto.createHash('sha256').update(content).digest('hex').slice(0, 16);
+    const waMessageId =
+      (message.id as string | undefined) ||
+      `meta-${customerPhone}-${messageType}-${String(message.timestamp || 'na')}-${contentHash}`;
 
     console.log(`[Meta Webhook] Message from ${customerPhone}: ${content.substring(0, 80)}`);
 
     // Idempotency guard: Meta can deliver duplicate webhook events.
     // If we have already persisted this WA message ID, skip re-processing.
-    if (waMessageId) {
-      const existingMessage = await prisma.nadiaMessage.findFirst({
-        where: { waMessageId },
-        select: { id: true, conversationId: true },
-      });
+    const existingMessage = await prisma.nadiaMessage.findFirst({
+      where: { waMessageId },
+      select: { id: true, conversationId: true },
+    });
 
-      if (existingMessage) {
-        console.log(`[Meta Webhook] Duplicate message ignored: ${waMessageId}`);
-        return;
-      }
+    if (existingMessage) {
+      console.log(`[Meta Webhook] Duplicate message ignored: ${waMessageId}`);
+      return;
     }
 
     // 1. Find or create conversation
@@ -235,7 +258,7 @@ async function handleIncomingMessage(message: any, phoneNumberId: string): Promi
     const storedMessage = await prisma.nadiaMessage.create({
       data: {
         conversationId: conversation.id,
-        waMessageId: waMessageId || `meta-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+        waMessageId,
         direction: 'inbound',
         body: content,
         messageType,
@@ -303,6 +326,11 @@ async function handleStatusUpdate(status: any): Promise<void> {
     const waMessageId = status.id;
     const newStatus = status.status; // sent, delivered, read, failed
 
+    if (!waMessageId || !newStatus) {
+      console.warn('[Meta Webhook] Ignoring malformed status payload');
+      return;
+    }
+
     console.log(`[Meta Webhook] Status update: ${waMessageId} → ${newStatus}`);
 
     // Find and update the message in DB
@@ -311,6 +339,11 @@ async function handleStatusUpdate(status: any): Promise<void> {
     });
 
     if (existing) {
+      if (existing.status === newStatus) {
+        console.log(`[Meta Webhook] Duplicate status ignored: ${waMessageId} already ${newStatus}`);
+        return;
+      }
+
       await prisma.nadiaMessage.update({
         where: { id: existing.id },
         data: { status: newStatus },

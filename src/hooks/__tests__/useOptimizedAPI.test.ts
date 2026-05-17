@@ -42,9 +42,8 @@ const createTestStore = () => {
 };
 
 // Test wrapper component
-const TestWrapper = ({ children, store }: any) => (
-  React.createElement(Provider, { store }, children)
-);
+const TestWrapper = ({ children, store }: any) =>
+  React.createElement(Provider, { store }, children);
 
 describe('useOptimizedAPI Hooks', () => {
   let store: any;
@@ -71,8 +70,7 @@ describe('useOptimizedAPI Hooks', () => {
       });
 
       const { result } = renderHook(() => useDepartmentsOptimized(), {
-        wrapper: ({ children }) =>
-          React.createElement(TestWrapper, { store, children }),
+        wrapper: ({ children }) => React.createElement(TestWrapper, { store }, children),
       });
 
       // Initially should be loading
@@ -88,9 +86,7 @@ describe('useOptimizedAPI Hooks', () => {
     });
 
     it('should use cache on subsequent calls', async () => {
-      const mockDepartments = [
-        { id: '1', name: 'Sales', code: 'SALES' },
-      ];
+      const mockDepartments = [{ id: '1', name: 'Sales', code: 'SALES' }];
 
       (apiIntegration.getAllDepartments as any).mockResolvedValueOnce({
         data: mockDepartments,
@@ -99,8 +95,7 @@ describe('useOptimizedAPI Hooks', () => {
 
       // First call
       const { result: result1 } = renderHook(() => useDepartmentsOptimized(), {
-        wrapper: ({ children }) =>
-          React.createElement(TestWrapper, { store, children }),
+        wrapper: ({ children }) => React.createElement(TestWrapper, { store }, children),
       });
 
       await waitFor(() => {
@@ -114,8 +109,7 @@ describe('useOptimizedAPI Hooks', () => {
       });
 
       const { result: result2 } = renderHook(() => useDepartmentsOptimized(), {
-        wrapper: ({ children }) =>
-          React.createElement(TestWrapper, { store, children }),
+        wrapper: ({ children }) => React.createElement(TestWrapper, { store, children }),
       });
 
       await waitFor(() => {
@@ -127,9 +121,7 @@ describe('useOptimizedAPI Hooks', () => {
     });
 
     it('should force refresh when requested', async () => {
-      const mockDepartments = [
-        { id: '1', name: 'Sales', code: 'SALES' },
-      ];
+      const mockDepartments = [{ id: '1', name: 'Sales', code: 'SALES' }];
 
       (apiIntegration.getAllDepartments as any).mockResolvedValueOnce({
         data: mockDepartments,
@@ -139,8 +131,7 @@ describe('useOptimizedAPI Hooks', () => {
       const { result, rerender } = renderHook(
         ({ forceRefresh }) => useDepartmentsOptimized(forceRefresh),
         {
-          wrapper: ({ children }) =>
-            React.createElement(TestWrapper, { store, children }),
+          wrapper: ({ children }) => React.createElement(TestWrapper, { store }, children),
           initialProps: { forceRefresh: false },
         }
       );
@@ -167,8 +158,7 @@ describe('useOptimizedAPI Hooks', () => {
       (apiIntegration.getAllDepartments as any).mockRejectedValueOnce(error);
 
       const { result } = renderHook(() => useDepartmentsOptimized(), {
-        wrapper: ({ children }) =>
-          React.createElement(TestWrapper, { store, children }),
+        wrapper: ({ children }) => React.createElement(TestWrapper, { store }, children),
       });
 
       await waitFor(() => {
@@ -180,13 +170,10 @@ describe('useOptimizedAPI Hooks', () => {
     });
 
     it('should clear errors on demand', async () => {
-      (apiIntegration.getAllDepartments as any).mockRejectedValueOnce(
-        new Error('API Error')
-      );
+      (apiIntegration.getAllDepartments as any).mockRejectedValueOnce(new Error('API Error'));
 
       const { result } = renderHook(() => useDepartmentsOptimized(), {
-        wrapper: ({ children }) =>
-          React.createElement(TestWrapper, { store, children }),
+        wrapper: ({ children }) => React.createElement(TestWrapper, { store }, children),
       });
 
       await waitFor(() => {
@@ -219,8 +206,7 @@ describe('useOptimizedAPI Hooks', () => {
             endDate: '2025-01-31',
           }),
         {
-          wrapper: ({ children }) =>
-            React.createElement(TestWrapper, { store, children }),
+          wrapper: ({ children }) => React.createElement(TestWrapper, { store, children }),
         }
       );
 
@@ -259,8 +245,7 @@ describe('useOptimizedAPI Hooks', () => {
             limit: 10,
           }),
         {
-          wrapper: ({ children }) =>
-            React.createElement(TestWrapper, { store, children }),
+          wrapper: ({ children }) => React.createElement(TestWrapper, { store, children }),
         }
       );
 
@@ -270,11 +255,10 @@ describe('useOptimizedAPI Hooks', () => {
 
       expect(result.current.data.length).toBe(10);
       expect(result.current.total).toBe(20);
-      expect(apiIntegration.getDepartmentData).toHaveBeenCalledWith(
-        'SALES',
-        undefined,
-        { page: 1, limit: 10 }
-      );
+      expect(apiIntegration.getDepartmentData).toHaveBeenCalledWith('SALES', undefined, {
+        page: 1,
+        limit: 10,
+      });
     });
 
     it('should cache by department and date range', async () => {
@@ -293,8 +277,7 @@ describe('useOptimizedAPI Hooks', () => {
             endDate: '2025-01-31',
           }),
         {
-          wrapper: ({ children }) =>
-            React.createElement(TestWrapper, { store, children }),
+          wrapper: ({ children }) => React.createElement(TestWrapper, { store, children }),
         }
       );
 
@@ -315,8 +298,7 @@ describe('useOptimizedAPI Hooks', () => {
             endDate: '2025-01-31',
           }),
         {
-          wrapper: ({ children }) =>
-            React.createElement(TestWrapper, { store, children }),
+          wrapper: ({ children }) => React.createElement(TestWrapper, { store, children }),
         }
       );
 
@@ -341,8 +323,7 @@ describe('useOptimizedAPI Hooks', () => {
             endDate: '2025-01-01',
           }),
         {
-          wrapper: ({ children }) =>
-            React.createElement(TestWrapper, { store, children }),
+          wrapper: ({ children }) => React.createElement(TestWrapper, { store, children }),
         }
       );
 
@@ -371,8 +352,7 @@ describe('useOptimizedAPI Hooks', () => {
       });
 
       const { result } = renderHook(() => useDepartmentKPIsOptimized('SALES'), {
-        wrapper: ({ children }) =>
-          React.createElement(TestWrapper, { store, children }),
+        wrapper: ({ children }) => React.createElement(TestWrapper, { store }, children),
       });
 
       await waitFor(() => {
@@ -394,8 +374,7 @@ describe('useOptimizedAPI Hooks', () => {
       });
 
       const { result } = renderHook(() => useDepartmentKPIsOptimized('SALES'), {
-        wrapper: ({ children }) =>
-          React.createElement(TestWrapper, { store, children }),
+        wrapper: ({ children }) => React.createElement(TestWrapper, { store }, children),
       });
 
       await waitFor(() => {
@@ -423,8 +402,7 @@ describe('useOptimizedAPI Hooks', () => {
       const { result, rerender } = renderHook(
         ({ department }) => useDepartmentKPIsOptimized(department),
         {
-          wrapper: ({ children }) =>
-            React.createElement(TestWrapper, { store, children }),
+          wrapper: ({ children }) => React.createElement(TestWrapper, { store }, children),
           initialProps: { department: 'SALES' },
         }
       );
@@ -464,8 +442,7 @@ describe('useOptimizedAPI Hooks', () => {
             endDate: '2025-01-31',
           }),
         {
-          wrapper: ({ children }) =>
-            React.createElement(TestWrapper, { store, children }),
+          wrapper: ({ children }) => React.createElement(TestWrapper, { store, children }),
         }
       );
 
@@ -489,11 +466,9 @@ describe('useOptimizedAPI Hooks', () => {
       });
 
       const { result } = renderHook(
-        () =>
-          useDepartmentTrendsOptimized('SALES', undefined, 'weekly'),
+        () => useDepartmentTrendsOptimized('SALES', undefined, 'weekly'),
         {
-          wrapper: ({ children }) =>
-            React.createElement(TestWrapper, { store, children }),
+          wrapper: ({ children }) => React.createElement(TestWrapper, { store, children }),
         }
       );
 
@@ -505,22 +480,16 @@ describe('useOptimizedAPI Hooks', () => {
     });
 
     it('should return correct format', async () => {
-      const mockTrends = [
-        { date: '2025-01-01', value: 100, label: '01 Jan' },
-      ];
+      const mockTrends = [{ date: '2025-01-01', value: 100, label: '01 Jan' }];
 
       (apiIntegration.getDepartmentTrends as any).mockResolvedValueOnce({
         data: mockTrends,
         cached: false,
       });
 
-      const { result } = renderHook(
-        () => useDepartmentTrendsOptimized('SALES'),
-        {
-          wrapper: ({ children }) =>
-            React.createElement(TestWrapper, { store, children }),
-        }
-      );
+      const { result } = renderHook(() => useDepartmentTrendsOptimized('SALES'), {
+        wrapper: ({ children }) => React.createElement(TestWrapper, { store, children }),
+      });
 
       await waitFor(() => {
         expect(result.current.loading).toBe(false);
@@ -545,13 +514,9 @@ describe('useOptimizedAPI Hooks', () => {
         cached: false,
       });
 
-      const { result } = renderHook(
-        () => useDepartmentSummaryOptimized('SALES'),
-        {
-          wrapper: ({ children }) =>
-            React.createElement(TestWrapper, { store, children }),
-        }
-      );
+      const { result } = renderHook(() => useDepartmentSummaryOptimized('SALES'), {
+        wrapper: ({ children }) => React.createElement(TestWrapper, { store, children }),
+      });
 
       await waitFor(() => {
         expect(result.current.loading).toBe(false);
@@ -570,13 +535,9 @@ describe('useOptimizedAPI Hooks', () => {
         cached: false,
       });
 
-      const { result } = renderHook(
-        () => useDepartmentExportOptimized('SALES', 'csv'),
-        {
-          wrapper: ({ children }) =>
-            React.createElement(TestWrapper, { store, children }),
-        }
-      );
+      const { result } = renderHook(() => useDepartmentExportOptimized('SALES', 'csv'), {
+        wrapper: ({ children }) => React.createElement(TestWrapper, { store, children }),
+      });
 
       await waitFor(() => {
         expect(result.current.loading).toBe(false);
@@ -591,13 +552,9 @@ describe('useOptimizedAPI Hooks', () => {
         cached: false,
       });
 
-      const { result: csvResult } = renderHook(
-        () => useDepartmentExportOptimized('SALES', 'csv'),
-        {
-          wrapper: ({ children }) =>
-            React.createElement(TestWrapper, { store, children }),
-        }
-      );
+      const { result: csvResult } = renderHook(() => useDepartmentExportOptimized('SALES', 'csv'), {
+        wrapper: ({ children }) => React.createElement(TestWrapper, { store, children }),
+      });
 
       await waitFor(() => {
         expect(csvResult.current.loading).toBe(false);
@@ -624,8 +581,7 @@ describe('useOptimizedAPI Hooks', () => {
       });
 
       const { result } = renderHook(() => useDepartmentKPIsOptimized('SALES'), {
-        wrapper: ({ children }) =>
-          React.createElement(TestWrapper, { store, children }),
+        wrapper: ({ children }) => React.createElement(TestWrapper, { store, children }),
       });
 
       await waitFor(() => {
@@ -655,8 +611,7 @@ describe('useOptimizedAPI Hooks', () => {
               endDate: '2025-01-31',
             }),
           {
-            wrapper: ({ children }) =>
-              React.createElement(TestWrapper, { store, children }),
+            wrapper: ({ children }) => React.createElement(TestWrapper, { store, children }),
           }
         ),
         renderHook(
@@ -666,8 +621,7 @@ describe('useOptimizedAPI Hooks', () => {
               endDate: '2025-01-31',
             }),
           {
-            wrapper: ({ children }) =>
-              React.createElement(TestWrapper, { store, children }),
+            wrapper: ({ children }) => React.createElement(TestWrapper, { store, children }),
           }
         ),
       ];

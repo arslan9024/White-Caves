@@ -19,7 +19,7 @@ const ContentContainer = styled.div`
   height: 100%;
   display: flex;
   flex-direction: column;
-  background: ${props => props.theme?.colors?.background || '#f9fafb'};
+  background: ${({ theme }) => String((theme as any)?.colors?.backgroundAlt ?? '#f9fafb')};
   overflow-y: auto;
   overflow-x: hidden;
 
@@ -35,11 +35,11 @@ const ContentContainer = styled.div`
   }
 
   &::-webkit-scrollbar-thumb {
-    background: ${props => props.theme?.colors?.border || '#e5e7eb'};
+    background: ${({ theme }) => String((theme as any)?.colors?.border ?? '#e5e7eb')};
     border-radius: 4px;
 
     &:hover {
-      background: ${props => props.theme?.colors?.textSecondary || '#6b7280'};
+      background: ${({ theme }) => String((theme as any)?.colors?.textSecondary ?? '#6b7280')};
     }
   }
 `;
@@ -56,13 +56,13 @@ const PlaceholderContent = styled.div`
 const PlaceholderTitle = styled.h2`
   font-size: 24px;
   font-weight: 600;
-  color: ${props => props.theme?.colors?.textPrimary || '#1f2937'};
+  color: ${({ theme }) => String((theme as any)?.colors?.textPrimary ?? '#1f2937')};
   margin-bottom: 12px;
 `;
 
 const PlaceholderText = styled.p`
   font-size: 14px;
-  color: ${props => props.theme?.colors?.textSecondary || '#6b7280'};
+  color: ${({ theme }) => String((theme as any)?.colors?.textSecondary ?? '#6b7280')};
 `;
 
 /**
@@ -70,7 +70,7 @@ const PlaceholderText = styled.p`
  * Maps feature IDs to React components
  * Add new features here
  */
-const featureComponentMap = {
+const featureComponentMap: Record<string, React.FC<any>> = {
   // Department features - Real Dashboards
   'dept-sales': () => <SalesDashboard featureId="dept-sales" />,
   'dept-leasing': () => <DepartmentDashboard departmentId="LEASING" />,

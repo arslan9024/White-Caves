@@ -15,6 +15,7 @@ const { mockPrisma } = vi.hoisted(() => {
       },
       nadiaMessage: {
         create: fn(),
+        update: fn(),
         findMany: fn(),
         count: fn(),
       },
@@ -24,6 +25,14 @@ const { mockPrisma } = vi.hoisted(() => {
     },
   };
 });
+
+const { viSendMessageMock } = vi.hoisted(() => ({
+  viSendMessageMock: vi.fn(async () => 'wa-msg-1'),
+}));
+
+const { viRoleHasPermissionMock } = vi.hoisted(() => ({
+  viRoleHasPermissionMock: vi.fn(() => true),
+}));
 
 vi.mock('../database.js', () => ({ prisma: mockPrisma }));
 
@@ -43,6 +52,8 @@ vi.mock('../middleware/errorHandler.js', () => ({
 
 vi.mock('../middleware/rbac', () => ({
   requirePermission: () => (_req: unknown, _res: unknown, next: () => void) => next(),
+  resolveBackendRole: (role: string) => role,
+  roleHasPermission: viRoleHasPermissionMock,
 }));
 
 vi.mock('../services/nadia/messageProcessor.js', () => ({
@@ -84,6 +95,12 @@ vi.mock('../services/nadia/whatsappAssistant.js', () => ({
   })),
 }));
 
+vi.mock('../services/WhatsAppBotService.js', () => ({
+  default: {
+    sendMessage: viSendMessageMock,
+  },
+}));
+
 import nadiaRoutes from './nadia';
 
 function createApp() {
@@ -116,6 +133,8 @@ describe('Nadia Routes — inbox wiring endpoints', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
+    viSendMessageMock.mockResolvedValue('wa-msg-1');
+    viRoleHasPermissionMock.mockReturnValue(true);
 
     mockPrisma.nadiaConversation.findUnique.mockResolvedValue(conversation);
     mockPrisma.nadiaConversation.update.mockResolvedValue({
@@ -132,7 +151,16 @@ describe('Nadia Routes — inbox wiring endpoints', () => {
       direction: 'outbound',
       body: 'Hello',
       messageType: 'text',
-      status: 'delivered',
+      status: 'pending',
+      timestamp: new Date(),
+    });
+    mockPrisma.nadiaMessage.update.mockResolvedValue({
+      id: 'msg-1',
+      conversationId: 'conv-1',
+      direction: 'outbound',
+      body: 'Hello',
+      messageType: 'text',
+      status: 'sent',
       timestamp: new Date(),
     });
     mockPrisma.nadiaMessage.findMany.mockResolvedValue([]);
@@ -167,6 +195,28 @@ describe('Nadia Routes — inbox wiring endpoints', () => {
     expect(res.body.error).toMatch(/agentPhone/i);
   });
 
+  it('rejects generic patch assign status when role lacks assign permission', async () => {
+    viRoleHasPermissionMock.mockReturnValue(false);
+
+    const res = await request(createApp())
+      .patch('/api/nadia/conversations/conv-1')
+      .send({ status: 'assigned_to_agent', agentPhone: '+971511111111' });
+
+    expect(res.status).toBe(403);
+    expect(res.body.error).toMatch(/assign_whatsapp_conversations/i);
+  });
+
+  it('rejects generic patch close status when role lacks close permission', async () => {
+    viRoleHasPermissionMock.mockReturnValue(false);
+
+    const res = await request(createApp())
+      .patch('/api/nadia/conversations/conv-1')
+      .send({ status: 'closed' });
+
+    expect(res.status).toBe(403);
+    expect(res.body.error).toMatch(/close_whatsapp_conversations/i);
+  });
+
   it('closes a conversation using explicit close endpoint', async () => {
     mockPrisma.nadiaConversation.update.mockResolvedValueOnce({
       ...conversation,
@@ -198,7 +248,18 @@ describe('Nadia Routes — inbox wiring endpoints', () => {
         data: expect.objectContaining({
           conversationId: 'conv-1',
           direction: 'outbound',
+          status: 'pending',
         }),
+      })
+    );
+    expect(viSendMessageMock).toHaveBeenCalledWith(
+      '+971500000000',
+      'Thanks, I can help with that.'
+    );
+    expect(mockPrisma.nadiaMessage.update).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: { id: 'msg-1' },
+        data: expect.objectContaining({ status: 'sent', waMessageId: 'wa-msg-1' }),
       })
     );
   });
@@ -210,6 +271,23 @@ describe('Nadia Routes — inbox wiring endpoints', () => {
 
     expect(res.status).toBe(400);
     expect(res.body.error).toMatch(/Invalid status/i);
+  });
+
+  it('returns 502 and marks outbound message failed when WhatsApp adapter send fails', async () => {
+    viSendMessageMock.mockRejectedValueOnce(new Error('meta upstream unavailable'));
+
+    const res = await request(createApp())
+      .post('/api/nadia/conversations/conv-1/reply')
+      .send({ content: 'Please confirm viewing time' });
+
+    expect(res.status).toBe(502);
+    expect(res.body.error).toMatch(/Failed to send WhatsApp reply/i);
+    expect(mockPrisma.nadiaMessage.update).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: { id: 'msg-1' },
+        data: { status: 'failed' },
+      })
+    );
   });
 
   it('rejects message creation with invalid senderType', async () => {

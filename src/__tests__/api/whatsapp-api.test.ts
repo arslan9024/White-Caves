@@ -1,5 +1,7 @@
 import { describe, it, expect, beforeAll, afterAll } from 'vitest';
 
+const RUN_LIVE_WHATSAPP_API = process.env.RUN_LIVE_WHATSAPP_API === 'true';
+
 const BASE_URL = 'http://localhost:3000/api';
 
 const toHeadersRecord = (headers: Headers): Record<string, string> => {
@@ -102,7 +104,7 @@ const client = {
   ) => request('DELETE', path, undefined, config),
 };
 
-describe('WhatsApp API Tests', () => {
+describe.skipIf(!RUN_LIVE_WHATSAPP_API)('WhatsApp API Tests', () => {
   let accountId: string;
   let conversationId: string;
   let messageId: string;

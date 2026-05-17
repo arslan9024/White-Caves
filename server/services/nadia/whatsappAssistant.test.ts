@@ -50,6 +50,21 @@ describe('WhatsApp Assistant (Phase 4D)', () => {
     expect(result.classification.shouldEscalate).toBe(true);
   });
 
+  it('escalates explicit real-person handoff requests', () => {
+    const result = classifyWhatsAppIntent('Please connect me to a real person from support team');
+    expect(result.shouldEscalate).toBe(true);
+    expect(result.escalationReason).toBe('customer_requested_human');
+  });
+
+  it('does not force escalation for urgent but clear property-search intent', () => {
+    const result = classifyWhatsAppIntent(
+      'Need an urgent viewing for a 2 bedroom apartment in Marina tomorrow'
+    );
+    expect(result.intent).toBe('property_search');
+    expect(result.shouldEscalate).toBe(false);
+    expect(result.firstResponseState).toBe('auto_reply');
+  });
+
   it('returns clarification prompt when classification state is clarify', () => {
     const result = generateWhatsAppAutoResponse({
       message: 'Need options',

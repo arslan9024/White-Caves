@@ -474,6 +474,7 @@ function restoreSnapshot(fileName?: string): OrchestrationSnapshotSummary {
       fileName: targetFile,
       createdAt: '',
       taskCount: orchestrationTasks.length,
+      label: null,
     }
   );
 }

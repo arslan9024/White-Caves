@@ -208,12 +208,16 @@ if ($doAppend) {
     $newRow = "| $today | Orchestrator Sync | @Katherine + @Margaret | Done   | $noteText |"
 
     $content = Get-Content $trackerFile -Raw
-    # Find the Orchestrator Sync Log table and append after last row
-    if ($content -match "## .* Orchestrator Sync Log") {
-      # Append the new row at the end of the file (after the existing table)
-      $content = $content.TrimEnd()
-      $content += "`n$newRow`n"
-      [System.IO.File]::WriteAllText($trackerFile, $content, (New-Object System.Text.UTF8Encoding($false)))
+    # Find the Orchestrator Sync Log section and insert the row before the next heading.
+    if ($content -match '(?m)^##\s+Orchestrator Sync Log\s*$') {
+      $sectionStart = $content.IndexOf('## Orchestrator Sync Log')
+      $nextHeading  = [regex]::Matches($content, '(?m)^##\s+') |
+        Where-Object { $_.Index -gt $sectionStart } |
+        Select-Object -First 1
+
+      $insertIndex = if ($null -ne $nextHeading) { $nextHeading.Index } else { $content.Length }
+      $updated = $content.Insert($insertIndex, "`n$newRow`n")
+      [System.IO.File]::WriteAllText($trackerFile, $updated, (New-Object System.Text.UTF8Encoding($false)))
       Write-Host "  [progress-report] Row appended to DAILY_MILESTONE_TRACKER.md" -ForegroundColor Green
     } else {
       Write-Host "  [progress-report] WARNING: Orchestrator Sync Log section not found in tracker." -ForegroundColor Yellow

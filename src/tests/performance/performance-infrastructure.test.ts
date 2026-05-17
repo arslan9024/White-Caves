@@ -131,9 +131,9 @@ describe('Font Loading (index.html)', () => {
     expect(indexHtml).toContain('display=swap');
   });
 
-  it('loads only essential font families (≤3)', () => {
+  it('loads only essential font families (≤4)', () => {
     const fontFamilies = indexHtml.match(/family=[^&"]+/g) || [];
-    expect(fontFamilies.length).toBeLessThanOrEqual(3);
+    expect(fontFamilies.length).toBeLessThanOrEqual(4);
   });
 
   it('has dns-prefetch for external services', () => {

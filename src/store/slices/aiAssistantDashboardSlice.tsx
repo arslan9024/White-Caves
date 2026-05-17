@@ -93,10 +93,6 @@ export {
   selectLeadFunnelMetrics,
   selectComplianceEngine,
   selectComplianceMetrics,
-  selectTasksByLifecycleStage,
-  selectPendingActionsCount,
-  selectCompletedTasksCount,
-  selectInProgressTasksCount,
 } from './aiAssistant/selectors';
 
 // ============================================================================

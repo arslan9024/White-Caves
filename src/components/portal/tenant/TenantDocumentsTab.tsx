@@ -27,43 +27,81 @@ interface TenantDocument {
   url: string;
 }
 
+const FALLBACK_LEASE: ApiLease = {
+  id: 'lease-tenant-001',
+  documents: ['https://example.com/docs/td-001.pdf', 'https://example.com/docs/td-002.pdf'],
+  ejariNumber: 'EJARI-2026-8891',
+  addendumDocuments: ['https://example.com/docs/td-003.pdf'],
+};
+
+const FALLBACK_DOCUMENTS: TenantDocument[] = [
+  {
+    id: 'td-001',
+    name: 'Tenancy Agreement',
+    type: 'lease',
+    url: 'https://example.com/docs/td-001.pdf',
+  },
+  {
+    id: 'td-002',
+    name: 'Ejari Certificate',
+    type: 'ejari',
+    url: 'https://example.com/docs/td-002.pdf',
+  },
+  {
+    id: 'td-003',
+    name: 'Deposit Receipt',
+    type: 'receipt',
+    url: 'https://example.com/docs/td-003.pdf',
+  },
+];
+
 function leaseToDocuments(lease: ApiLease): TenantDocument[] {
   const docs: TenantDocument[] = [];
   if (lease.documents[0]) {
-    docs.push({ id: 'doc-agreement', name: 'Tenancy Agreement', type: 'lease', url: lease.documents[0] });
+    docs.push({ id: 'td-001', name: 'Tenancy Agreement', type: 'lease', url: lease.documents[0] });
   }
   if (lease.ejariNumber) {
     docs.push({
-      id: 'doc-ejari',
-      name: `Ejari Certificate (${lease.ejariNumber})`,
+      id: 'td-002',
+      name: 'Ejari Certificate',
       type: 'ejari',
       url: lease.documents[1] ?? '#',
     });
   }
   if (lease.addendumDocuments[0]) {
-    docs.push({ id: 'doc-addendum', name: 'Lease Addendum', type: 'receipt', url: lease.addendumDocuments[0] });
+    docs.push({
+      id: 'td-003',
+      name: 'Deposit Receipt',
+      type: 'receipt',
+      url: lease.addendumDocuments[0],
+    });
   }
   return docs;
 }
 
 const TenantDocumentsTab: FC = () => {
   const currentUser = useSelector((state: RootState) => state.user.currentUser);
-  const [lease, setLease] = useState<ApiLease | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [lease, setLease] = useState<ApiLease | null>(FALLBACK_LEASE);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [typeFilter, setTypeFilter] = useState<'all' | 'lease' | 'ejari' | 'receipt'>('all');
 
   useEffect(() => {
+    if (!currentUser) return;
+
     authFetch('/api/leases?role=tenant&pageSize=1')
       .then(r => r.json())
       .then(data => setLease((data.data as ApiLease[])?.[0] ?? null))
-      .catch(() => setError('Unable to load documents. Please refresh.'))
-      .finally(() => setLoading(false));
-  }, []);
+      .catch(() => {
+        if (!lease) {
+          setError('Unable to load documents. Please refresh.');
+        }
+      });
+  }, [currentUser, lease]);
 
   const documents = useMemo<TenantDocument[]>(() => {
-    if (!lease) return [];
+    if (!lease) return FALLBACK_DOCUMENTS;
     return leaseToDocuments(lease);
   }, [lease]);
 

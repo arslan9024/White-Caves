@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import styled from 'styled-components';
 import type { GroupMessage, GroupConversation, MediaFile } from '../../../types/phase6.types';
-import { MediaUploadComponent } from './MediaUploadComponent';
+import { MediaUploadComponent } from '../MediaUpload/MediaUploadComponent';
 
 interface GroupMessagingComponentProps {
   conversation: GroupConversation;

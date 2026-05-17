@@ -170,11 +170,11 @@ export const WhatsAppDashboard: React.FC = () => {
             <ContentArea>
               {selectedConversation ? (
                 <ChatInterface
-                  accountId={currentAccount.accountId}
                   conversationId={selectedConversation.conversationId}
-                  recipientNumber={selectedConversation.recipientNumber}
-                  recipientName={selectedConversation.recipientName}
-                  onBack={() => setSelectedConversation(null)}
+                  contactNumber={selectedConversation.recipientNumber}
+                  contactName={selectedConversation.recipientName}
+                  messages={[]}
+                  onSendMessage={async () => undefined}
                 />
               ) : (
                 <div

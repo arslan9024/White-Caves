@@ -1,9 +1,10 @@
 ﻿import React from 'react';
-import { useAppSelector } from '../../../store/store';
+import { ReactReduxContext } from 'react-redux';
 import { selectSearchLeadCount } from '../../../store/slices/searchLeadsSlice';
 import type { OverviewTabProps } from './types';
 import { colors } from '../../../styles/theme/colors';
 import './TabStyles.css';
+import type { RootState } from '../../../store/store';
 
 // Extract brand color constant — avoids security/detect-object-injection warnings
 // that occur when bracket-notation property access appears inside JSX style props.
@@ -11,7 +12,10 @@ const PRIMARY_COLOR: string = colors.primary;
 
 const OverviewTab: React.FC<OverviewTabProps> = ({ data, loading, onQuickAction }) => {
   // TASK-018 / Phase 27: Live count of homepage search leads captured this session
-  const homepageSearchLeads = useAppSelector(selectSearchLeadCount);
+  const reduxContext = React.useContext(ReactReduxContext);
+  const homepageSearchLeads = reduxContext?.store
+    ? selectSearchLeadCount(reduxContext.store.getState() as RootState)
+    : 0;
 
   // Show loading state
   if (loading) {

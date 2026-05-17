@@ -148,4 +148,37 @@ describe('Linda routes — campaign foundation', () => {
     expect(res.body.success).toBe(true);
     expect(res.body.data).toHaveProperty('dispatched');
   });
+
+  it('returns 409 when dispatching campaign from non-dispatchable status', async () => {
+    mockPrisma.lindaBroadcastCampaign.findUnique.mockResolvedValueOnce({
+      id: 'camp-closed',
+      name: 'Closed Campaign',
+      targetList: ['971500000001'],
+      messageTemplate: 'Hello',
+      templateVars: null,
+      status: 'completed',
+      scheduledAt: null,
+    });
+
+    const res = await request(createApp())
+      .post('/api/linda/campaigns/camp-closed/dispatch')
+      .send({});
+
+    expect(res.status).toBe(409);
+    expect(res.body.success).toBe(false);
+    expect(res.body.error).toMatch(/cannot be dispatched from status/i);
+    expect(mockLinda.broadcastMessage).not.toHaveBeenCalled();
+  });
+
+  it('returns 404 when dispatching unknown campaign id', async () => {
+    mockPrisma.lindaBroadcastCampaign.findUnique.mockResolvedValueOnce(null);
+
+    const res = await request(createApp())
+      .post('/api/linda/campaigns/missing-id/dispatch')
+      .send({});
+
+    expect(res.status).toBe(404);
+    expect(res.body.success).toBe(false);
+    expect(res.body.error).toMatch(/Campaign not found/i);
+  });
 });

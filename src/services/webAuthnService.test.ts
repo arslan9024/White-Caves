@@ -9,6 +9,7 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 // Use vi.hoisted to allow referencing in vi.mock factory
 const { mockSafeStorage } = vi.hoisted(() => ({
   mockSafeStorage: {
+    get: vi.fn(),
     getJSON: vi.fn(),
     setJSON: vi.fn(),
     remove: vi.fn(),
@@ -42,8 +43,10 @@ import {
 function setupWebAuthnSupport(supported = true, platformAuthAvailable = true) {
   if (supported) {
     Object.defineProperty(window, 'PublicKeyCredential', {
-      value: Object.assign(function() {}, {
-        isUserVerifyingPlatformAuthenticatorAvailable: vi.fn().mockResolvedValue(platformAuthAvailable),
+      value: Object.assign(function () {}, {
+        isUserVerifyingPlatformAuthenticatorAvailable: vi
+          .fn()
+          .mockResolvedValue(platformAuthAvailable),
       }),
       writable: true,
       configurable: true,
@@ -70,6 +73,7 @@ function removeWebAuthnSupport() {
 describe('webAuthnService', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    mockSafeStorage.get.mockReturnValue(null);
     mockSafeStorage.getJSON.mockReturnValue([]);
   });
 
@@ -109,8 +113,10 @@ describe('webAuthnService', () => {
 
     it('returns false on exception', async () => {
       Object.defineProperty(window, 'PublicKeyCredential', {
-        value: Object.assign(function() {}, {
-          isUserVerifyingPlatformAuthenticatorAvailable: vi.fn().mockRejectedValue(new Error('Fail')),
+        value: Object.assign(function () {}, {
+          isUserVerifyingPlatformAuthenticatorAvailable: vi
+            .fn()
+            .mockRejectedValue(new Error('Fail')),
         }),
         writable: true,
         configurable: true,
@@ -144,7 +150,13 @@ describe('webAuthnService', () => {
     it('returns stored credentials', () => {
       const creds = [
         { id: 'cred1', rawId: 'raw1', userId: 'u1', createdAt: '2026-01-01', lastUsed: null },
-        { id: 'cred2', rawId: 'raw2', userId: 'u2', createdAt: '2026-02-01', lastUsed: '2026-02-15' },
+        {
+          id: 'cred2',
+          rawId: 'raw2',
+          userId: 'u2',
+          createdAt: '2026-02-01',
+          lastUsed: '2026-02-15',
+        },
       ];
       mockSafeStorage.getJSON.mockReturnValue(creds);
       expect(getBiometricCredentials()).toEqual(creds);
@@ -170,10 +182,9 @@ describe('webAuthnService', () => {
       await removeCredential('cred1', 'u1');
 
       // Should save only the remaining credential
-      expect(mockSafeStorage.setJSON).toHaveBeenCalledWith(
-        'webauthn_credentials',
-        [{ id: 'cred2', rawId: 'raw2', userId: 'u1', createdAt: '2026-02-01', lastUsed: null }]
-      );
+      expect(mockSafeStorage.setJSON).toHaveBeenCalledWith('webauthn_credentials', [
+        { id: 'cred2', rawId: 'raw2', userId: 'u1', createdAt: '2026-02-01', lastUsed: null },
+      ]);
 
       // Should call DELETE endpoint
       expect(mockFetch).toHaveBeenCalledWith(
@@ -251,58 +262,75 @@ describe('webAuthnService', () => {
   describe('registerBiometric', () => {
     it('throws when platform authenticator is not available', async () => {
       removeWebAuthnSupport();
-      await expect(registerBiometric('user1', 'user@test.com', 'Test User'))
-        .rejects.toThrow('Biometric authentication is not available on this device');
+      await expect(registerBiometric('user1', 'user@test.com', 'Test User')).rejects.toThrow(
+        'Biometric authentication is not available on this device'
+      );
     });
 
     it('throws on failed options response', async () => {
       setupWebAuthnSupport(true, true);
-      vi.stubGlobal('fetch', vi.fn().mockResolvedValue({
-        ok: false,
-        status: 500,
-      }));
+      vi.stubGlobal(
+        'fetch',
+        vi.fn().mockResolvedValue({
+          ok: false,
+          status: 500,
+        })
+      );
 
-      await expect(registerBiometric('user1', 'user@test.com', 'Test User'))
-        .rejects.toThrow('Registration options request failed (HTTP 500)');
+      await expect(registerBiometric('user1', 'user@test.com', 'Test User')).rejects.toThrow(
+        'Server error (500) — please try again later'
+      );
 
       vi.unstubAllGlobals();
     });
 
     it('throws on invalid JSON response', async () => {
       setupWebAuthnSupport(true, true);
-      vi.stubGlobal('fetch', vi.fn().mockResolvedValue({
-        ok: true,
-        json: vi.fn().mockRejectedValue(new Error('Invalid JSON')),
-      }));
+      vi.stubGlobal(
+        'fetch',
+        vi.fn().mockResolvedValue({
+          ok: true,
+          json: vi.fn().mockRejectedValue(new Error('Invalid JSON')),
+        })
+      );
 
-      await expect(registerBiometric('user1', 'user@test.com', 'Test User'))
-        .rejects.toThrow('Server returned invalid JSON for registration options');
+      await expect(registerBiometric('user1', 'user@test.com', 'Test User')).rejects.toThrow(
+        'Server returned invalid JSON for registration options'
+      );
 
       vi.unstubAllGlobals();
     });
 
     it('throws when server returns success: false', async () => {
       setupWebAuthnSupport(true, true);
-      vi.stubGlobal('fetch', vi.fn().mockResolvedValue({
-        ok: true,
-        json: vi.fn().mockResolvedValue({ success: false, message: 'Server busy' }),
-      }));
+      vi.stubGlobal(
+        'fetch',
+        vi.fn().mockResolvedValue({
+          ok: true,
+          json: vi.fn().mockResolvedValue({ success: false, message: 'Server busy' }),
+        })
+      );
 
-      await expect(registerBiometric('user1', 'user@test.com', 'Test User'))
-        .rejects.toThrow('Server busy');
+      await expect(registerBiometric('user1', 'user@test.com', 'Test User')).rejects.toThrow(
+        'Server busy'
+      );
 
       vi.unstubAllGlobals();
     });
 
     it('throws when server returns no options', async () => {
       setupWebAuthnSupport(true, true);
-      vi.stubGlobal('fetch', vi.fn().mockResolvedValue({
-        ok: true,
-        json: vi.fn().mockResolvedValue({ success: true }),
-      }));
+      vi.stubGlobal(
+        'fetch',
+        vi.fn().mockResolvedValue({
+          ok: true,
+          json: vi.fn().mockResolvedValue({ success: true }),
+        })
+      );
 
-      await expect(registerBiometric('user1', 'user@test.com', 'Test User'))
-        .rejects.toThrow('Server returned no registration options');
+      await expect(registerBiometric('user1', 'user@test.com', 'Test User')).rejects.toThrow(
+        'Server returned no registration options'
+      );
 
       vi.unstubAllGlobals();
     });
@@ -313,16 +341,18 @@ describe('webAuthnService', () => {
   describe('authenticateWithBiometric', () => {
     it('throws when platform authenticator is not available', async () => {
       removeWebAuthnSupport();
-      await expect(authenticateWithBiometric('user1'))
-        .rejects.toThrow('Biometric authentication is not available on this device');
+      await expect(authenticateWithBiometric('user1')).rejects.toThrow(
+        'Biometric authentication is not available on this device'
+      );
     });
 
     it('throws when no credentials are registered', async () => {
       setupWebAuthnSupport(true, true);
       mockSafeStorage.getJSON.mockReturnValue([]);
 
-      await expect(authenticateWithBiometric('user1'))
-        .rejects.toThrow('No biometric credentials registered');
+      await expect(authenticateWithBiometric('user1')).rejects.toThrow(
+        'No biometric credentials registered'
+      );
     });
 
     it('throws on failed authentication options response', async () => {
@@ -331,13 +361,17 @@ describe('webAuthnService', () => {
         { id: 'cred1', rawId: 'raw1', userId: 'u1', createdAt: '2026-01-01', lastUsed: null },
       ]);
 
-      vi.stubGlobal('fetch', vi.fn().mockResolvedValue({
-        ok: false,
-        status: 403,
-      }));
+      vi.stubGlobal(
+        'fetch',
+        vi.fn().mockResolvedValue({
+          ok: false,
+          status: 403,
+        })
+      );
 
-      await expect(authenticateWithBiometric('user1'))
-        .rejects.toThrow('Authentication options request failed (HTTP 403)');
+      await expect(authenticateWithBiometric('user1')).rejects.toThrow(
+        'Access denied — insufficient permissions'
+      );
 
       vi.unstubAllGlobals();
     });
@@ -348,13 +382,17 @@ describe('webAuthnService', () => {
         { id: 'cred1', rawId: 'raw1', userId: 'u1', createdAt: '2026-01-01', lastUsed: null },
       ]);
 
-      vi.stubGlobal('fetch', vi.fn().mockResolvedValue({
-        ok: true,
-        json: vi.fn().mockRejectedValue(new Error('Parse error')),
-      }));
+      vi.stubGlobal(
+        'fetch',
+        vi.fn().mockResolvedValue({
+          ok: true,
+          json: vi.fn().mockRejectedValue(new Error('Parse error')),
+        })
+      );
 
-      await expect(authenticateWithBiometric('user1'))
-        .rejects.toThrow('Server returned invalid JSON for authentication options');
+      await expect(authenticateWithBiometric('user1')).rejects.toThrow(
+        'Server returned invalid JSON for authentication options'
+      );
 
       vi.unstubAllGlobals();
     });
@@ -365,13 +403,15 @@ describe('webAuthnService', () => {
         { id: 'cred1', rawId: 'raw1', userId: 'u1', createdAt: '2026-01-01', lastUsed: null },
       ]);
 
-      vi.stubGlobal('fetch', vi.fn().mockResolvedValue({
-        ok: true,
-        json: vi.fn().mockResolvedValue({ success: false, message: 'Not allowed' }),
-      }));
+      vi.stubGlobal(
+        'fetch',
+        vi.fn().mockResolvedValue({
+          ok: true,
+          json: vi.fn().mockResolvedValue({ success: false, message: 'Not allowed' }),
+        })
+      );
 
-      await expect(authenticateWithBiometric('user1'))
-        .rejects.toThrow('Not allowed');
+      await expect(authenticateWithBiometric('user1')).rejects.toThrow('Not allowed');
 
       vi.unstubAllGlobals();
     });
@@ -382,13 +422,15 @@ describe('webAuthnService', () => {
         { id: 'cred1', rawId: 'raw1', userId: 'u1', createdAt: '2026-01-01', lastUsed: null },
       ]);
 
-      vi.stubGlobal('fetch', vi.fn().mockResolvedValue({
-        ok: true,
-        json: vi.fn().mockResolvedValue({ success: false, message: 'Auth failed' }),
-      }));
+      vi.stubGlobal(
+        'fetch',
+        vi.fn().mockResolvedValue({
+          ok: true,
+          json: vi.fn().mockResolvedValue({ success: false, message: 'Auth failed' }),
+        })
+      );
 
-      await expect(authenticateWithBiometric(null))
-        .rejects.toThrow('Auth failed');
+      await expect(authenticateWithBiometric(null)).rejects.toThrow('Auth failed');
 
       vi.unstubAllGlobals();
     });

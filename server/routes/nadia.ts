@@ -22,11 +22,19 @@ import {
   classifyWhatsAppIntent,
   generateWhatsAppAutoResponse,
 } from '../services/nadia/whatsappAssistant.js';
-import { requirePermission } from '../middleware/rbac';
+import whatsAppBotService from '../services/WhatsAppBotService.js';
+import { requirePermission, resolveBackendRole, roleHasPermission } from '../middleware/rbac';
+import type { AuthRequest } from '../middleware/auth';
 
 const router = Router();
 
 const ALLOWED_CONVERSATION_STATUSES = ['active', 'assigned_to_agent', 'in_bot_flow', 'closed'];
+
+const canPerform = (req: Request, permission: string): boolean => {
+  const role = (req as AuthRequest).user?.role;
+  if (!role) return false;
+  return roleHasPermission(resolveBackendRole(role), permission);
+};
 
 // ============================================================================
 // CONVERSATION ENDPOINTS
@@ -38,7 +46,7 @@ const ALLOWED_CONVERSATION_STATUSES = ['active', 'assigned_to_agent', 'in_bot_fl
  */
 router.post(
   '/conversations',
-  requirePermission('access_whatsapp_business'),
+  requirePermission('reply_whatsapp_conversations'),
   asyncHandler(async (req: Request, res: Response) => {
     const { wabaId, customerPhone, initialMessage } = req.body;
 
@@ -117,7 +125,7 @@ router.post(
  */
 router.get(
   '/conversations/:conversationId',
-  requirePermission('access_whatsapp_business'),
+  requirePermission('view_whatsapp_conversations'),
   asyncHandler(async (req: Request, res: Response) => {
     const { conversationId } = req.params;
 
@@ -148,7 +156,7 @@ router.get(
  */
 router.get(
   '/conversations',
-  requirePermission('access_whatsapp_business'),
+  requirePermission('view_whatsapp_conversations'),
   asyncHandler(async (req: Request, res: Response) => {
     const {
       status,
@@ -213,7 +221,7 @@ router.get(
  */
 router.patch(
   '/conversations/:conversationId',
-  requirePermission('access_whatsapp_business'),
+  requirePermission('assign_whatsapp_conversations', 'close_whatsapp_conversations'),
   asyncHandler(async (req: Request, res: Response) => {
     const { conversationId } = req.params;
     const { status, agentPhone, closedReason } = req.body;
@@ -236,6 +244,31 @@ router.patch(
 
       if (status === 'assigned_to_agent' && (!agentPhone || typeof agentPhone !== 'string')) {
         throw new AppError('agentPhone is required when assigning a conversation', 400);
+      }
+
+      if (status === 'assigned_to_agent' && !canPerform(req, 'assign_whatsapp_conversations')) {
+        throw new AppError(
+          'Access denied — requires permission: assign_whatsapp_conversations',
+          403
+        );
+      }
+
+      if (status === 'closed' && !canPerform(req, 'close_whatsapp_conversations')) {
+        throw new AppError(
+          'Access denied — requires permission: close_whatsapp_conversations',
+          403
+        );
+      }
+
+      if (
+        status !== 'closed' &&
+        status !== 'assigned_to_agent' &&
+        !canPerform(req, 'assign_whatsapp_conversations')
+      ) {
+        throw new AppError(
+          'Access denied — requires permission: assign_whatsapp_conversations',
+          403
+        );
       }
     }
 
@@ -279,7 +312,7 @@ router.patch(
  */
 router.patch(
   '/conversations/:conversationId/assign',
-  requirePermission('access_whatsapp_business'),
+  requirePermission('assign_whatsapp_conversations'),
   asyncHandler(async (req: Request, res: Response) => {
     const { conversationId } = req.params;
     const { agentPhone } = req.body;
@@ -318,7 +351,7 @@ router.patch(
  */
 router.patch(
   '/conversations/:conversationId/close',
-  requirePermission('access_whatsapp_business'),
+  requirePermission('close_whatsapp_conversations'),
   asyncHandler(async (req: Request, res: Response) => {
     const { conversationId } = req.params;
     const { reason } = req.body;
@@ -353,7 +386,7 @@ router.patch(
  */
 router.delete(
   '/conversations/:conversationId',
-  requirePermission('access_whatsapp_business'),
+  requirePermission('close_whatsapp_conversations'),
   asyncHandler(async (req: Request, res: Response) => {
     const { conversationId } = req.params;
     const { reason } = req.body;
@@ -397,7 +430,7 @@ router.delete(
  */
 router.post(
   '/conversations/:conversationId/messages',
-  requirePermission('access_whatsapp_business'),
+  requirePermission('reply_whatsapp_conversations'),
   asyncHandler(async (req: Request, res: Response) => {
     const { conversationId } = req.params;
     const { content, senderType = 'customer' } = req.body;
@@ -471,7 +504,7 @@ router.post(
  */
 router.post(
   '/conversations/:conversationId/reply',
-  requirePermission('access_whatsapp_business'),
+  requirePermission('reply_whatsapp_conversations'),
   asyncHandler(async (req: Request, res: Response) => {
     const { conversationId } = req.params;
     const { content } = req.body;
@@ -487,17 +520,41 @@ router.post(
       throw new AppError('Conversation not found', 404);
     }
 
+    const messageBody = content.trim();
+
     const outbound = await prisma.nadiaMessage.create({
       data: {
         conversationId,
         waMessageId: `local-reply-${Date.now()}`,
         direction: 'outbound',
-        body: content.trim(),
+        body: messageBody,
         messageType: 'text',
-        status: 'delivered',
+        status: 'pending',
         timestamp: new Date(),
       },
     });
+
+    try {
+      const sentMessageId = await whatsAppBotService.sendMessage(
+        conversation.customerPhone,
+        messageBody
+      );
+
+      await prisma.nadiaMessage.update({
+        where: { id: outbound.id },
+        data: {
+          status: sentMessageId ? 'sent' : 'delivered',
+          ...(sentMessageId ? { waMessageId: sentMessageId } : {}),
+        },
+      });
+    } catch {
+      await prisma.nadiaMessage.update({
+        where: { id: outbound.id },
+        data: { status: 'failed' },
+      });
+
+      throw new AppError('Failed to send WhatsApp reply via Meta adapter', 502);
+    }
 
     await prisma.nadiaConversation.update({
       where: { id: conversationId },
@@ -517,7 +574,7 @@ router.post(
  */
 router.get(
   '/conversations/:conversationId/messages',
-  requirePermission('access_whatsapp_business'),
+  requirePermission('view_whatsapp_conversations'),
   asyncHandler(async (req: Request, res: Response) => {
     const { conversationId } = req.params;
     const { limit = 50, offset = 0 } = req.query;
@@ -555,7 +612,7 @@ router.get(
  */
 router.get(
   '/queue',
-  requirePermission('access_whatsapp_business'),
+  requirePermission('view_whatsapp_conversations'),
   asyncHandler(async (req: Request, res: Response) => {
     const { limit = 10 } = req.query;
 
@@ -574,7 +631,7 @@ router.get(
  */
 router.patch(
   '/queue/:queueId/assign',
-  requirePermission('access_whatsapp_business'),
+  requirePermission('assign_whatsapp_conversations'),
   asyncHandler(async (req: Request, res: Response) => {
     const { queueId } = req.params;
     const { agentPhone } = req.body;
@@ -606,7 +663,7 @@ router.patch(
  */
 router.post(
   '/assistant/classify',
-  requirePermission('access_whatsapp_business'),
+  requirePermission('view_whatsapp_conversations'),
   asyncHandler(async (req: Request, res: Response) => {
     const { message } = req.body;
     if (!message || typeof message !== 'string') {
@@ -624,7 +681,7 @@ router.post(
  */
 router.post(
   '/assistant/auto-response',
-  requirePermission('access_whatsapp_business'),
+  requirePermission('view_whatsapp_conversations'),
   asyncHandler(async (req: Request, res: Response) => {
     const { message, customerName } = req.body;
     if (!message || typeof message !== 'string') {
@@ -642,7 +699,7 @@ router.post(
  */
 router.post(
   '/assistant/respond',
-  requirePermission('access_whatsapp_business'),
+  requirePermission('reply_whatsapp_conversations'),
   asyncHandler(async (req: Request, res: Response) => {
     const { conversationId, message, customerName } = req.body;
 
@@ -726,7 +783,7 @@ router.post(
  */
 router.get(
   '/health',
-  requirePermission('access_whatsapp_business'),
+  requirePermission('view_whatsapp_conversations'),
   asyncHandler(async (_req: Request, res: Response) => {
     const conversationCount = await prisma.nadiaConversation.count();
     const messageCount = await prisma.nadiaMessage.count();

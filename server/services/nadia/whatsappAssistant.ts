@@ -36,10 +36,12 @@ export interface AutoResponseResult {
 const ESCALATION_KEYWORDS = [
   'agent',
   'human',
+  'real person',
+  'representative',
   'manager',
   'complaint',
   'lawyer',
-  'urgent',
+  'support team',
   'speak to someone',
 ];
 

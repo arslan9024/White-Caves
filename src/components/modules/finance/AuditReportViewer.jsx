@@ -1,11 +1,21 @@
 import React, { useState, useMemo } from 'react';
 import PropTypes from 'prop-types';
 
+const SummaryCard = ({ icon, label, value, color }) => (
+  <div className="bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 p-4">
+    <div className="flex items-center gap-3 mb-2">
+      <span className="text-2xl">{icon}</span>
+      <span className="text-slate-600 dark:text-slate-400 text-sm font-medium">{label}</span>
+    </div>
+    <p className={`text-2xl font-bold ${color}`}>{value}</p>
+  </div>
+);
+
 /**
  * AuditReportViewer Component
  * Display comprehensive audit reports with findings, actions, and compliance metrics
  * Integrates with Noor (Internal Audit Manager)
- * 
+ *
  * @component
  * @param {Object} props
  * @param {Object} props.report - Audit report data (findings, actions, summary)
@@ -27,7 +37,7 @@ const AuditReportViewer = ({
       totalFindings: 3,
       criticalFindings: 0,
       majorFindings: 1,
-      minorFindings: 2
+      minorFindings: 2,
     },
     findings: [
       {
@@ -37,7 +47,7 @@ const AuditReportViewer = ({
         title: 'Incomplete Reconciliation Process',
         description: 'Monthly bank reconciliations are not completed timely',
         recommendation: 'Implement automated reconciliation process',
-        status: 'open'
+        status: 'open',
       },
       {
         id: 'F002',
@@ -46,7 +56,7 @@ const AuditReportViewer = ({
         title: 'Board Meeting Documentation',
         description: 'Some board meeting minutes lack proper approval signatures',
         recommendation: 'Update documentation procedures',
-        status: 'in-progress'
+        status: 'in-progress',
       },
       {
         id: 'F003',
@@ -55,8 +65,8 @@ const AuditReportViewer = ({
         title: 'Employee Training Records',
         description: 'Compliance training documentation needs centralization',
         recommendation: 'Create centralized training database',
-        status: 'resolved'
-      }
+        status: 'resolved',
+      },
     ],
     actions: [
       {
@@ -66,7 +76,7 @@ const AuditReportViewer = ({
         owner: 'Finance Manager',
         dueDate: '2024-03-31',
         progress: 60,
-        status: 'in-progress'
+        status: 'in-progress',
       },
       {
         id: 'A002',
@@ -75,7 +85,7 @@ const AuditReportViewer = ({
         owner: 'Compliance Officer',
         dueDate: '2024-02-28',
         progress: 100,
-        status: 'completed'
+        status: 'completed',
       },
       {
         id: 'A003',
@@ -84,12 +94,12 @@ const AuditReportViewer = ({
         owner: 'HR Manager',
         dueDate: '2024-01-31',
         progress: 100,
-        status: 'completed'
-      }
-    ]
+        status: 'completed',
+      },
+    ],
   },
   onDownload = () => {},
-  onExport = () => {}
+  onExport = () => {},
 }) => {
   const [activeTab, setActiveTab] = useState('findings');
   const [selectedSeverity, setSelectedSeverity] = useState('all');
@@ -100,7 +110,7 @@ const AuditReportViewer = ({
     return report.findings.filter(f => f.severity === selectedSeverity);
   }, [report.findings, selectedSeverity]);
 
-  const getSeverityColor = (severity) => {
+  const getSeverityColor = severity => {
     switch (severity) {
       case 'critical':
         return 'text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/20';
@@ -113,40 +123,38 @@ const AuditReportViewer = ({
     }
   };
 
-  const getSeverityIcon = (severity) => {
+  const getSeverityIcon = severity => {
     switch (severity) {
-      case 'critical': return '🔴';
-      case 'major': return '🟠';
-      case 'minor': return '🟡';
-      default: return '⚪';
+      case 'critical':
+        return '🔴';
+      case 'major':
+        return '🟠';
+      case 'minor':
+        return '🟡';
+      default:
+        return '⚪';
     }
   };
 
-  const getStatusIcon = (status) => {
+  const getStatusIcon = status => {
     switch (status) {
-      case 'resolved': return '✅';
-      case 'in-progress': return '⏳';
-      case 'open': return '📋';
-      default: return '❓';
+      case 'resolved':
+        return '✅';
+      case 'in-progress':
+        return '⏳';
+      case 'open':
+        return '📋';
+      default:
+        return '❓';
     }
   };
 
-  const getProgressColor = (progress) => {
+  const getProgressColor = progress => {
     if (progress === 100) return 'bg-green-600 dark:bg-green-500';
     if (progress >= 75) return 'bg-blue-600 dark:bg-blue-500';
     if (progress >= 50) return 'bg-yellow-600 dark:bg-yellow-500';
     return 'bg-red-600 dark:bg-red-500';
   };
-
-  const SummaryCard = ({ icon, label, value, color }) => (
-    <div className="bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 p-4">
-      <div className="flex items-center gap-3 mb-2">
-        <span className="text-2xl">{icon}</span>
-        <span className="text-slate-600 dark:text-slate-400 text-sm font-medium">{label}</span>
-      </div>
-      <p className={`text-2xl font-bold ${color}`}>{value}</p>
-    </div>
-  );
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-900 p-4 md:p-8">
@@ -201,7 +209,9 @@ const AuditReportViewer = ({
             <SummaryCard
               icon="📈"
               label="Risk Level"
-              value={report.summary.riskLevel.charAt(0).toUpperCase() + report.summary.riskLevel.slice(1)}
+              value={
+                report.summary.riskLevel.charAt(0).toUpperCase() + report.summary.riskLevel.slice(1)
+              }
               color={`text-${report.summary.riskLevel === 'low' ? 'green' : 'orange'}-600 dark:text-${report.summary.riskLevel === 'low' ? 'green' : 'orange'}-400`}
             />
           </div>
@@ -280,7 +290,9 @@ const AuditReportViewer = ({
                     className="bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 overflow-hidden"
                   >
                     <button
-                      onClick={() => setExpandedFinding(expandedFinding === finding.id ? null : finding.id)}
+                      onClick={() =>
+                        setExpandedFinding(expandedFinding === finding.id ? null : finding.id)
+                      }
                       className="w-full p-4 flex items-start justify-between hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors"
                     >
                       <div className="flex items-start gap-4 flex-1 text-left">
@@ -290,7 +302,9 @@ const AuditReportViewer = ({
                             <h3 className="font-bold text-slate-900 dark:text-white">
                               {finding.title}
                             </h3>
-                            <span className={`px-2 py-1 rounded text-xs font-medium ${getSeverityColor(finding.severity)}`}>
+                            <span
+                              className={`px-2 py-1 rounded text-xs font-medium ${getSeverityColor(finding.severity)}`}
+                            >
                               {finding.severity.toUpperCase()}
                             </span>
                             <span className="text-slate-500 dark:text-slate-400 text-sm">
@@ -302,9 +316,7 @@ const AuditReportViewer = ({
                           </p>
                         </div>
                       </div>
-                      <div className="text-xl">
-                        {expandedFinding === finding.id ? '▼' : '▶'}
-                      </div>
+                      <div className="text-xl">{expandedFinding === finding.id ? '▼' : '▶'}</div>
                     </button>
 
                     {expandedFinding === finding.id && (
@@ -359,12 +371,11 @@ const AuditReportViewer = ({
                       {action.action}
                     </h3>
                     <p className="text-sm text-slate-600 dark:text-slate-400 mb-3">
-                      Owner: <span className="font-medium">{action.owner}</span> • Due: <span className="font-medium">{action.dueDate}</span>
+                      Owner: <span className="font-medium">{action.owner}</span> • Due:{' '}
+                      <span className="font-medium">{action.dueDate}</span>
                     </p>
                   </div>
-                  <div className="text-xl">
-                    {getStatusIcon(action.status)}
-                  </div>
+                  <div className="text-xl">{getStatusIcon(action.status)}</div>
                 </div>
 
                 <div className="space-y-3">
@@ -386,11 +397,13 @@ const AuditReportViewer = ({
                   </div>
 
                   <div className="flex gap-2 pt-2">
-                    <span className={`px-2 py-1 rounded text-xs font-medium ${
-                      action.status === 'completed'
-                        ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400'
-                        : 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400'
-                    }`}>
+                    <span
+                      className={`px-2 py-1 rounded text-xs font-medium ${
+                        action.status === 'completed'
+                          ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400'
+                          : 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400'
+                      }`}
+                    >
                       {action.status.replace('-', ' ').toUpperCase()}
                     </span>
                   </div>
@@ -414,10 +427,10 @@ AuditReportViewer.propTypes = {
     status: PropTypes.string,
     summary: PropTypes.object,
     findings: PropTypes.arrayOf(PropTypes.object),
-    actions: PropTypes.arrayOf(PropTypes.object)
+    actions: PropTypes.arrayOf(PropTypes.object),
   }),
   onDownload: PropTypes.func,
-  onExport: PropTypes.func
+  onExport: PropTypes.func,
 };
 
 export default AuditReportViewer;

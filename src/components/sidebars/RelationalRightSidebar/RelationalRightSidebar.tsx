@@ -1,7 +1,6 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
-// @ts-expect-error -- relationalSidebarSlice types not fully defined yet
 import {
   setSelectedAssistant,
   selectSelectedAssistant,
@@ -10,7 +9,6 @@ import {
   clearNotifications,
   setActiveContext,
 } from '../../../redux/slices/relationalSidebarSlice';
-// @ts-expect-error -- thunk types not fully typed
 import {
   fetchAssistants,
   fetchContextualData,
@@ -86,10 +84,10 @@ const ContextButton = styled.button<{ isActive?: boolean }>`
   padding: 4px 12px;
   margin-right: 4px;
   margin-bottom: 4px;
-  background: ${props =>
-    props.isActive
-      ? props.theme?.colors?.primary || '#007bff'
-      : props.theme?.colors?.sidebarItemBg || '#2a2a2a'};
+  background: ${({ isActive, theme }) =>
+    isActive
+      ? String((theme as any)?.colors?.primary ?? '#007bff')
+      : String((theme as any)?.colors?.sidebarItemBg ?? '#2a2a2a')};
   color: white;
   border: none;
   border-radius: 4px;
@@ -195,14 +193,16 @@ const RelationalRightSidebar: React.FC<RelationalRightSidebarProps> = ({
   selectedService = null,
   userPermissions: _userPermissions = {},
 }): JSX.Element => {
-  const dispatch = useDispatch<(action: { type: string; payload?: unknown }) => void>();
+  const dispatch = useDispatch<any>();
   const selectedAssistant = useSelector(selectSelectedAssistant) as string | null;
-  const filteredAssistants = useSelector(selectFilteredAssistants) as Array<
-    Record<string, unknown>
-  >;
+  const filteredAssistants = useSelector(selectFilteredAssistants) as Array<{
+    id: string;
+    name?: string;
+    icon?: React.ReactNode;
+  }>;
   const assistantNotifications = useSelector(selectAssistantNotifications) as Record<
     string,
-    number
+    { count?: number; messages?: unknown[] }
   >;
 
   // Redux selectors for loading/error states
@@ -228,7 +228,7 @@ const RelationalRightSidebar: React.FC<RelationalRightSidebarProps> = ({
         if (selectedDepartment) filters.department = selectedDepartment;
         if (selectedService) filters.service = selectedService;
 
-        dispatch(fetchAssistants(filters));
+        dispatch(fetchAssistants(filters as any) as any);
       }
     } catch (error) {
       console.error('[RelationalRightSidebar] Error fetching assistants:', error);
@@ -273,7 +273,7 @@ const RelationalRightSidebar: React.FC<RelationalRightSidebarProps> = ({
         );
         dispatch(setActiveContext({ context }));
         // Optionally fetch context-specific data
-        dispatch(fetchContextualData({ assistantId: selectedAssistant, context }));
+        dispatch(fetchContextualData({ assistantId: selectedAssistant, context } as any) as any);
       }
     } catch (error) {
       console.error('Error selecting context:', error);
@@ -296,7 +296,7 @@ const RelationalRightSidebar: React.FC<RelationalRightSidebarProps> = ({
     const filters: Record<string, string> = {};
     if (selectedDepartment) filters.department = selectedDepartment;
     if (selectedService) filters.service = selectedService;
-    dispatch(fetchAssistants(filters));
+    dispatch(fetchAssistants(filters as any) as any);
   };
 
   // Handle assistant action (message, assign, more)

@@ -43,7 +43,7 @@ const ResizeHandle = styled.div<{ $side: 'left' | 'right' }>`
   height: 100%;
   background: transparent;
   cursor: ${props => (props.$side === 'right' ? 'w-resize' : 'e-resize')};
-  transition: ${theme.transitions.create('background', theme.transitions.durations.short)};
+  transition: background ${theme.transitions.durations.short} ease;
 
   &:hover {
     background: ${theme.colors.primary};
@@ -91,7 +91,7 @@ const ResetButton = styled.button`
   border: 1px solid ${theme.colors.border};
   border-radius: ${theme.spacing.xs};
   cursor: pointer;
-  transition: ${theme.transitions.create('all', theme.transitions.durations.standard)};
+  transition: all ${theme.transitions.durations.standard} ease;
 
   &:hover {
     color: ${theme.colors.primary};

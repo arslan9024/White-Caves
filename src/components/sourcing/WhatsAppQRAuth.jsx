@@ -15,10 +15,6 @@ export default function WhatsAppQRAuth({ onSuccess, onClose, isModal = false }) 
   const [connectionAttempts, setConnectionAttempts] = useState(0);
   const [clientInfo, setClientInfo] = useState(null);
 
-  useEffect(() => {
-    initializeWhatsAppConnection();
-  }, []);
-
   const initializeWhatsAppConnection = async () => {
     try {
       setStatus('initializing');
@@ -34,8 +30,12 @@ export default function WhatsAppQRAuth({ onSuccess, onClose, isModal = false }) 
     }
   };
 
+  useEffect(() => {
+    initializeWhatsAppConnection();
+  }, []);
+
   const simulateQRGeneration = () => {
-    return new Promise((resolve) => {
+    return new Promise(resolve => {
       setStatus('waiting');
       setStatusMessage('Waiting for QR code generation...');
 
@@ -66,21 +66,21 @@ export default function WhatsAppQRAuth({ onSuccess, onClose, isModal = false }) 
     }
   };
 
-  const simulateAuthentication = (code) => {
+  const simulateAuthentication = code => {
     setStatus('authenticated');
     setStatusMessage('Device authenticated successfully!');
     setClientInfo({
       id: code.substring(0, 8),
       phone: '+971XXXXXXXXX',
       status: 'ready',
-      linkedAt: new Date().toLocaleString()
+      linkedAt: new Date().toLocaleString(),
     });
 
     setTimeout(() => {
       onSuccess?.({
         authenticated: true,
         clientId: code.substring(0, 8),
-        timestamp: new Date()
+        timestamp: new Date(),
       });
     }, 2000);
   };

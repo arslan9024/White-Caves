@@ -174,10 +174,11 @@
    Session ends with @Gwynne committing + pushing to development branch.
    ```
 
-9. **🔄 NO-IDLE POLICY — Expanded Free Agent Pool (17 Agents Total):**
-   The free agent team has been expanded from 5 to 17 agents. All run in external free tools. All follow the same zero-premium rule. Every agent has a 3-task backlog queue in AGENTS.md. No agent ever idles.
+9. **🔄 NO-IDLE POLICY — Expanded Free Agent Pool (40 Agents Total):**
+   The free agent team has been expanded from 17 to 40 agents (17 core + 23 growth). All run in external free tools. All follow the same zero-premium rule. Every agent has a 3-task backlog queue in AGENTS.md. No agent ever idles.
+   The planning pool is divided into 4 parallel teams so 4 different tasks can move at the same time.
 
-   **Complete Free Agent Roster (17 agents — 60-minute loop):**
+   **Complete Free Agent Roster (40 agents — 60-minute loop inside 4 teams):**
 
    ```
    Slot  Agent      Tool                 Model              Domain
@@ -335,3 +336,24 @@
 - Free planning teams should run in background (MVP) using:
   - `npm run orchestrator:bg:start`
   - `npm run orchestrator:bg:stop`
+
+24. **🤖 AUTONOMOUS CONTINUATION MODE (No Repeated "go" Prompts):**
+
+- Default execution mode for approved implementation sessions is **continuous autonomous progression**.
+- Once user intent is clear (e.g., "start implementation", "continue"), execution should proceed micro-wave by micro-wave without waiting for repeated manual confirmation.
+- Hard-stop only on:
+  - failing tests/lint/build,
+  - policy/gate mismatch,
+  - missing credentials/secrets,
+  - irreversible-risk operation requiring explicit user approval.
+- Operational command surface:
+  - `npm run orchestrator:agent-loop:auto`
+  - `npm run orchestrator:agent-loop:auto:nobrowser`
+
+25. **🧩 ORCHESTRATOR POLICY SOURCE OF TRUTH:**
+
+- Runtime gate thresholds and final approval phrase must be sourced from:
+  - `scripts/orchestrator/policy.json`
+- Scripts must not hardcode legacy thresholds (e.g., 92% / 1000% depth).
+- Mandatory approval phrase value remains exact:
+  - `@Ada — Context Ready (60% Readiness) — Coding Phase Approved`

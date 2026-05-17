@@ -5,11 +5,13 @@
 # Usage:
 #   npm run orchestrator:session             -- full chain
 #   npm run orchestrator:session:compact     -- chain with -NoPrompt on today-sprint
+#   powershell -File session-start.ps1 -WorkspaceRoot . -NonInteractive
 #   powershell -File session-start.ps1 -WorkspaceRoot . [-NoPrompt] [-SkipAutoComplete] [-Lane A]
 
 param(
   [string]$WorkspaceRoot    = ".",
   [switch]$NoPrompt,          # pass -NoPrompt to today-sprint (compact output)
+  [switch]$NonInteractive,    # autonomous mode: no interactive prompts downstream
   [switch]$SkipAutoComplete,  # skip fast-complete step
   [switch]$AutoAdvance,       # Step 6: auto-fast-forward top READY task if gate PASS
   [switch]$SkipAutoAdvance,   # skip Step 6 entirely
@@ -37,6 +39,10 @@ function Invoke-Script($path, $argList) {
     return
   }
   & powershell -ExecutionPolicy Bypass -File $path @argList
+}
+
+if ($NonInteractive -and -not $NoPrompt) {
+  $NoPrompt = $true
 }
 
 # ------------------------------------------------------------------
@@ -409,7 +415,7 @@ if (-not $SkipAutoAdvance) {
           $acFF = Join-Path $scripts "fast-forward.ps1"
           if (Test-Path $acFF) {
             & powershell -ExecutionPolicy Bypass -File "$acFF" `
-              -TaskId $acTop.taskId -Force -WorkspaceRoot $root `
+              -TaskId $acTop.taskId -Force -NonInteractive -WorkspaceRoot $root `
               -EvidenceNote ("Auto-advanced by session-start Step 6: {0}/{1} sections" -f $acGateNow, $acGateMax)
           } else {
             Write-Host "  [SKIP] fast-forward.ps1 not found." -ForegroundColor DarkYellow
@@ -471,7 +477,7 @@ Write-Host "  Quick actions:" -ForegroundColor White
   Write-Host "    npm run orchestrator:health                -- full 9-group queue health" -ForegroundColor DarkGray
   Write-Host "    npm run orchestrator:blockers:brief        -- see what is blocking each task" -ForegroundColor DarkGray
   Write-Host "    npm run orchestrator:cascade:all           -- rank READY tasks by impact" -ForegroundColor DarkGray
-  Write-Host "    npm run orchestrator:milestone:summary     -- 92% readiness check (all modules)" -ForegroundColor DarkGray
+  Write-Host "    npm run orchestrator:milestone:summary     -- 60% readiness check (all modules)" -ForegroundColor DarkGray
   Write-Host "    npm run orchestrator:session:autoadvance   -- session + auto-advance top task" -ForegroundColor DarkGray
 Write-Host ""
 Write-Host "  Free-agent workflow:" -ForegroundColor White

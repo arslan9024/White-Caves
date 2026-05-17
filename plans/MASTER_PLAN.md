@@ -12,6 +12,7 @@
 2. Reduce true blockers by **50%** (**27 → <=13**).
 3. Start implementation on **Gate 1** readiness for low-risk modules.
 4. Run deep-governance evidence weekly, not as daily hard-stop.
+5. Use the multiagent 11-wave program only as a coordinated expansion layer, not as a replacement for the canonical next-5 queue.
 
 ---
 
@@ -61,6 +62,7 @@
 - Queue: [`PENDING_TASKS_ONLY.md`](./PENDING_TASKS_ONLY.md)
 - Daily board: [`DAILY_WAVE_COMMAND_CENTER.md`](./DAILY_WAVE_COMMAND_CENTER.md)
 - Readiness packet: [`waves/WAVE_01_READINESS_PACKET.md`](./waves/WAVE_01_READINESS_PACKET.md)
+- Expanded execution program: [`MULTIAGENT_11_WAVE_EXECUTION_PROGRAM.md`](./MULTIAGENT_11_WAVE_EXECUTION_PROGRAM.md)
 - Historical baseline: [`PHASE_23_24_25_IMPLEMENTATION_PLAN.md`](./PHASE_23_24_25_IMPLEMENTATION_PLAN.md)
 - Full backlog: [`IMPROVEMENTS_BACKLOG.md`](./IMPROVEMENTS_BACKLOG.md)
 
