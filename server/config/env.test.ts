@@ -19,6 +19,9 @@ describe('server/config/env', () => {
   const originalEnv = { ...process.env };
 
   beforeEach(() => {
+    vi.spyOn(console, 'warn').mockImplementation(() => {});
+    vi.spyOn(console, 'error').mockImplementation(() => {});
+
     vi.resetModules();
     // Reset to clean state
     delete process.env.PORT;
@@ -32,6 +35,7 @@ describe('server/config/env', () => {
   afterEach(() => {
     // Restore original env
     process.env = { ...originalEnv };
+    vi.restoreAllMocks();
   });
 
   // ─── PORT ─────────────────────────────────────────────────────────
