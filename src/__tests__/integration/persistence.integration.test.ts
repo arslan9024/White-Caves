@@ -144,15 +144,18 @@ class CommissionPersistenceManager {
 describe('Commission Persistence Integration Tests', () => {
   let storage: StorageService;
   let persistenceManager: CommissionPersistenceManager;
+  let consoleErrorSpy: ReturnType<typeof vi.spyOn>;
 
   beforeEach(() => {
     // Reset storage
     storage = new StorageService();
     persistenceManager = new CommissionPersistenceManager(storage, mockApi);
     vi.clearAllMocks();
+    consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
   });
 
   afterEach(() => {
+    consoleErrorSpy.mockRestore();
     storage.clear();
     vi.clearAllMocks();
   });
