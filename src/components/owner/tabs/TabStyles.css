@@ -1,3 +1,5 @@
+@import '../../../styles/dashboard-tokens.css';
+
 .overview-tab,
 .properties-tab,
 .agents-tab,
@@ -1216,6 +1218,526 @@
   color: rgba(255, 255, 255, 0.7);
   cursor: pointer;
   margin-top: 12px;
+}
+
+/* ===== Dashboard redesign overrides ===== */
+
+.overview-tab,
+.properties-tab,
+.agents-tab,
+.leads-tab,
+.contracts-tab,
+.analytics-tab,
+.chatbot-tab,
+.whatsapp-tab,
+.uaepass-tab,
+.settings-tab {
+  color: var(--dashboard-text);
+}
+
+.tab-header,
+.tab-section-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+
+.tab-header h3,
+.tab-section-heading h3 {
+  margin: 0;
+  color: var(--dashboard-text);
+  font-size: 1.35rem;
+}
+
+.tab-section-heading p {
+  margin: 0;
+  color: var(--dashboard-text-muted);
+  font-size: 0.92rem;
+}
+
+.tab-section-kicker {
+  display: inline-block;
+  margin-bottom: 8px;
+  color: var(--dashboard-brand-strong);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.overview-hero {
+  display: flex;
+  justify-content: space-between;
+  gap: 18px;
+  margin-bottom: 22px;
+  padding: 22px 24px;
+  background: linear-gradient(135deg, rgba(227, 30, 36, 0.07), rgba(255, 255, 255, 0.98));
+  border: 1px solid rgba(227, 30, 36, 0.1);
+  border-radius: var(--dashboard-radius-md);
+}
+
+.overview-hero h2 {
+  margin: 0;
+  color: var(--dashboard-text);
+  font-size: clamp(1.4rem, 2vw, 1.8rem);
+}
+
+.overview-hero p,
+.overview-hero__meta span {
+  margin: 8px 0 0;
+  color: var(--dashboard-text-muted);
+}
+
+.overview-hero__meta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: space-between;
+  min-width: 180px;
+}
+
+.overview-hero__meta strong {
+  color: var(--dashboard-text);
+}
+
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.kpi-tile {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-height: 180px;
+  padding: 20px;
+  background: var(--dashboard-surface);
+  border: 1px solid #f0f0f0;
+  border-radius: 14px;
+  box-shadow: var(--shadow-card);
+  overflow: hidden;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.kpi-tile::before {
+  content: '';
+  position: absolute;
+  inset-inline-start: 0;
+  inset-block: 0;
+  width: 4px;
+  background: var(--accent-color);
+}
+
+.kpi-tile:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-hover);
+}
+
+.kpi-tile__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.kpi-tile__icon {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 14px;
+  background: color-mix(in srgb, var(--accent-color) 12%, white);
+  font-size: 1.2rem;
+}
+
+.kpi-tile__change {
+  display: inline-flex;
+  align-items: center;
+  min-height: 30px;
+  padding: 0 10px;
+  border-radius: 999px;
+  font-size: 0.76rem;
+  font-weight: 700;
+}
+
+.kpi-tile__change.positive {
+  background: rgba(21, 128, 61, 0.1);
+  color: var(--kpi-change-positive);
+}
+
+.kpi-tile__change.neutral {
+  background: rgba(148, 163, 184, 0.12);
+  color: var(--dashboard-text-muted);
+}
+
+.kpi-tile__value {
+  font-size: clamp(1.6rem, 2vw, 2rem);
+  font-weight: 700;
+  line-height: 1.05;
+  color: var(--dashboard-text);
+}
+
+.kpi-tile__title {
+  color: var(--dashboard-text-muted);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.kpi-tile__sparkline {
+  width: 100%;
+  height: 28px;
+  margin-top: auto;
+}
+
+.quick-actions-section,
+.chart-card,
+.activity-section,
+.agent-card,
+.analytics-card,
+.chatbot-card,
+.whatsapp-card,
+.settings-card,
+.metric-card,
+.lead-stat,
+.agent-stat,
+.contract-stat,
+.chatbot-stat,
+.whatsapp-stat,
+.uaepass-stat {
+  background: var(--dashboard-surface);
+  border: 1px solid var(--dashboard-border);
+  box-shadow: var(--shadow-card);
+}
+
+.quick-actions-section,
+.chart-card,
+.activity-section,
+.analytics-card,
+.chatbot-card,
+.whatsapp-card,
+.settings-card {
+  border-radius: var(--dashboard-radius-md);
+}
+
+.quick-actions-section h3,
+.chart-card h3,
+.activity-section h3,
+.analytics-card h4,
+.chatbot-card h4,
+.whatsapp-card h4,
+.settings-card h4,
+.agent-details h4,
+.property-info strong,
+.lead-cell strong,
+.activity-content strong,
+.agent-row .agent-name,
+.emirate-name {
+  color: var(--dashboard-text);
+}
+
+.quick-actions-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 12px;
+}
+
+.quick-action-btn {
+  border-radius: 14px;
+  background: linear-gradient(180deg, #ffffff, #fbfbfc);
+  border: 1px solid var(--dashboard-border);
+  box-shadow: none;
+}
+
+.quick-action-btn:hover {
+  border-color: color-mix(in srgb, var(--action-color) 35%, white);
+  box-shadow: var(--shadow-hover);
+}
+
+.quick-action-btn .action-label,
+.chart-legend,
+.activity-content p,
+.activity-content small,
+.property-info small,
+.contact-cell small,
+.lead-cell small,
+.parties-cell small,
+.date-cell small,
+.agent-contact,
+.rating-value,
+.metric-label,
+.emirate-value,
+.agent-row .agent-deals,
+.table-footer,
+.unassigned {
+  color: var(--dashboard-text-muted);
+}
+
+.activity-item::before {
+  background: rgba(148, 163, 184, 0.22);
+}
+
+.activity-dot {
+  background: var(--dashboard-info);
+}
+
+.filters-bar {
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+  padding: 14px;
+  background: var(--dashboard-surface-alt);
+  border: 1px solid var(--dashboard-border);
+  border-radius: var(--dashboard-radius-md);
+}
+
+.search-input input,
+.filters-bar select,
+.status-select,
+.crud-form-grid input,
+.crud-form-grid select,
+.crud-form-grid textarea {
+  min-height: 44px;
+  border: 1px solid var(--dashboard-border);
+  border-radius: 12px;
+  background: var(--dashboard-surface);
+  color: var(--dashboard-text);
+}
+
+.search-input input::placeholder {
+  color: var(--dashboard-text-soft);
+}
+
+.filters-bar select option {
+  background: #fff;
+  color: var(--dashboard-text);
+}
+
+.search-input .search-icon {
+  color: var(--dashboard-text-soft);
+}
+
+.data-table {
+  background: var(--dashboard-surface);
+  border: 1px solid var(--dashboard-border);
+  border-radius: var(--dashboard-radius-md);
+  box-shadow: var(--shadow-card);
+}
+
+.data-table table {
+  min-width: 100%;
+}
+
+.data-table th,
+.data-table td {
+  border-bottom: 1px solid #eef2f7;
+  color: var(--dashboard-text);
+  vertical-align: middle;
+}
+
+.data-table th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background: #fafbfc;
+  color: var(--dashboard-text-muted);
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+}
+
+.data-table td {
+  min-height: 48px;
+}
+
+.data-table tbody tr:nth-child(even) {
+  background: rgba(248, 250, 252, 0.75);
+}
+
+.data-table tr:hover {
+  background: rgba(227, 30, 36, 0.04);
+}
+
+.property-thumb,
+.agent-rank {
+  background: rgba(227, 30, 36, 0.08);
+}
+
+.type-tag,
+.status-badge,
+.priority-badge,
+.source-badge,
+.role-badge,
+.type-badge,
+.ejari-badge,
+.online-status {
+  border: 1px solid transparent;
+}
+
+.source-badge,
+.type-tag,
+.role-badge,
+.type-badge,
+.ejari-badge,
+.online-status.offline {
+  background: #f8fafc;
+  color: var(--dashboard-text-muted);
+}
+
+.type-tag {
+  color: var(--dashboard-info);
+  background: rgba(29, 78, 216, 0.08);
+}
+
+.online-status.online,
+.lead-stat.qualified,
+.contract-stat.active {
+  background: rgba(21, 128, 61, 0.08);
+}
+
+.price-cell,
+.agent-role,
+.agent-revenue strong,
+.agent-row .agent-revenue {
+  color: var(--dashboard-brand-strong) !important;
+}
+
+.icon-btn,
+.page-btn,
+.range-btn,
+.link-btn {
+  border: 1px solid var(--dashboard-border);
+  background: var(--dashboard-surface);
+  color: var(--dashboard-text);
+}
+
+.icon-btn:hover,
+.page-btn:hover,
+.range-btn:hover,
+.link-btn:hover {
+  border-color: rgba(227, 30, 36, 0.18);
+}
+
+.page-btn.active,
+.range-btn.active,
+.primary-btn {
+  background: linear-gradient(135deg, var(--dashboard-brand), var(--dashboard-brand-strong));
+  border-color: transparent;
+  color: #fff;
+}
+
+.secondary-btn {
+  background: #fff;
+  color: var(--dashboard-text);
+  border: 1px solid var(--dashboard-border);
+}
+
+.secondary-btn:hover {
+  background: #fff;
+  border-color: rgba(227, 30, 36, 0.16);
+}
+
+.primary-btn:hover {
+  box-shadow: var(--shadow-hover);
+}
+
+.lead-stats-row,
+.agent-stats-row,
+.contract-stats-row {
+  margin-bottom: 20px;
+}
+
+.lead-stat,
+.agent-stat,
+.contract-stat {
+  border-radius: 14px;
+}
+
+.stat-number,
+.metric-value {
+  color: var(--dashboard-text);
+}
+
+.stat-label {
+  color: var(--dashboard-text-muted);
+}
+
+.empty-state-text {
+  padding: 2.5rem 1.5rem !important;
+  background: linear-gradient(180deg, #ffffff, #fbfbfd);
+  border: 1px dashed var(--dashboard-border-strong);
+  border-radius: var(--dashboard-radius-md);
+  color: var(--dashboard-text-muted);
+}
+
+.link-btn {
+  padding: 0 12px;
+  border-radius: 999px;
+  font-weight: 600;
+}
+
+.crud-toast {
+  border: 1px solid rgba(21, 128, 61, 0.16);
+  background: rgba(21, 128, 61, 0.08);
+  color: var(--dashboard-success);
+}
+
+.crud-modal-overlay {
+  background: rgba(15, 23, 42, 0.3);
+  backdrop-filter: blur(10px);
+}
+
+.crud-modal {
+  background: rgba(255, 255, 255, 0.98);
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  box-shadow: var(--shadow-modal);
+}
+
+.crud-modal__header,
+.crud-modal__footer {
+  border-color: #eef2f7;
+}
+
+.crud-modal__header h3,
+.crud-modal__close,
+.form-group label {
+  color: var(--dashboard-text);
+}
+
+.loading-spinner {
+  border-top-color: var(--dashboard-brand);
+}
+
+@media (max-width: 900px) {
+  .overview-hero,
+  .tab-header,
+  .tab-section-heading,
+  .table-footer {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .dashboard-row,
+  .analytics-row,
+  .chatbot-row,
+  .whatsapp-row {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .kpi-tile,
+  .primary-btn,
+  .quick-action-btn {
+    transition: none;
+  }
 }
 
 .view-all-btn:hover {
