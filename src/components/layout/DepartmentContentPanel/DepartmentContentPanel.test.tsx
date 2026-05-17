@@ -6,7 +6,7 @@
  * service card clicks, Suspense fallbacks
  */
 
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeAll, beforeEach, afterAll } from 'vitest';
 import { render, screen, fireEvent, within } from '@testing-library/react';
 import React from 'react';
 
@@ -194,10 +194,19 @@ import DepartmentContentPanel from './DepartmentContentPanel';
 // ── Test Suite ───────────────────────────────────────────────────
 
 describe('DepartmentContentPanel', () => {
+  beforeAll(() => {
+    vi.spyOn(console, 'error').mockImplementation(() => {});
+    vi.spyOn(console, 'warn').mockImplementation(() => {});
+  });
+
   beforeEach(() => {
     vi.clearAllMocks();
     mockSelectedDepartment = null;
     mockSelectedService = null;
+  });
+
+  afterAll(() => {
+    vi.restoreAllMocks();
   });
 
   // ────── Empty State ──────
