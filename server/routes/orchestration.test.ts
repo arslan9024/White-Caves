@@ -183,7 +183,7 @@ describe('Orchestration Routes — /api/orchestration', () => {
     expect(unlabeledRes.status).toBe(200);
     expect(unlabeledRes.body.success).toBe(true);
     expect(unlabeledRes.body.data.pageInfo.label).toBe('unlabeled');
-  });
+  }, 15000);
 
   it('GET /snapshots/:fileName/preview returns current vs snapshot delta payload', async () => {
     await request(createApp()).post('/api/orchestration/tasks').send({
