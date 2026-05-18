@@ -363,6 +363,18 @@ router.post(
       JWT_SIGN_OPTIONS
     );
 
+    // Generate, hash, and persist refresh token; encode userId in cookie for efficient lookup
+    const rawRefreshToken = crypto.randomBytes(32).toString('hex');
+    const refreshTokenHash = await bcrypt.hash(rawRefreshToken, BCRYPT_ROUNDS);
+    await prisma.user.update({ where: { id: user.id }, data: { refreshTokenHash } });
+    res.cookie('refresh_token', `${user.id}:${rawRefreshToken}`, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+      path: '/api/auth',
+    });
+
     // Log activity with enriched audit metadata (IP + UA) for forensics.
     const ip = getClientIp(req);
     const userAgent = String(req.headers['user-agent'] || 'unknown').slice(0, 256);
@@ -977,6 +989,21 @@ router.post(
       JWT_SIGN_OPTIONS
     );
 
+    // Generate, hash, and persist refresh token; encode userId in cookie for efficient lookup
+    const rawFbRefreshToken = crypto.randomBytes(32).toString('hex');
+    const fbRefreshTokenHash = await bcrypt.hash(rawFbRefreshToken, BCRYPT_ROUNDS);
+    await prisma.user.update({
+      where: { id: user.id },
+      data: { refreshTokenHash: fbRefreshTokenHash },
+    });
+    res.cookie('refresh_token', `${user.id}:${rawFbRefreshToken}`, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+      path: '/api/auth',
+    });
+
     const ip = getClientIp(req);
     const userAgent = String(req.headers['user-agent'] || 'unknown').slice(0, 256);
     await prisma.activity.create({
@@ -1058,6 +1085,20 @@ router.post(
         userId,
       },
     });
+
+    // Invalidate refresh token in DB and clear the httpOnly cookie
+    const logoutCookieValue = req.cookies?.refresh_token as string | undefined;
+    if (logoutCookieValue && logoutCookieValue.includes(':')) {
+      const cookieUserId = logoutCookieValue.slice(0, logoutCookieValue.indexOf(':'));
+      if (cookieUserId) {
+        await prisma.user
+          .update({ where: { id: cookieUserId }, data: { refreshTokenHash: null } })
+          .catch(() => {
+            /* ignore — user may already be deleted */
+          });
+      }
+    }
+    res.clearCookie('refresh_token', { path: '/api/auth' });
 
     res.status(200).json({ success: true, message: 'Logged out successfully' });
   })
@@ -2030,6 +2071,97 @@ router.post(
           name: user.name,
           role: user.role,
           department: user.department,
+        },
+      },
+    });
+  })
+);
+
+/**
+ * POST /api/auth/refresh
+ * Rotate the refresh token and issue a new short-lived access token.
+ *
+ * Cookie format: "${userId}:${rawToken}"
+ * DB stores:     bcrypt hash of rawToken (refreshTokenHash on User)
+ *
+ * Security properties:
+ *  - Token rotation on every use (old token is immediately invalidated)
+ *  - On hash mismatch → possible theft detected → all sessions wiped
+ *  - httpOnly + sameSite=strict → not accessible to JS
+ */
+router.post(
+  '/refresh',
+  asyncHandler(async (req: Request, res: Response) => {
+    const cookieValue = req.cookies?.refresh_token as string | undefined;
+    if (!cookieValue || !cookieValue.includes(':')) {
+      throw new AppError('No refresh token provided', 401);
+    }
+
+    const colonIdx = cookieValue.indexOf(':');
+    const userId = cookieValue.slice(0, colonIdx);
+    const rawToken = cookieValue.slice(colonIdx + 1);
+    if (!userId || !rawToken) {
+      throw new AppError('Malformed refresh token', 401);
+    }
+
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      select: {
+        id: true,
+        email: true,
+        name: true,
+        role: true,
+        status: true,
+        refreshTokenHash: true,
+      },
+    });
+
+    if (!user || !user.refreshTokenHash || user.status !== 'active') {
+      res.clearCookie('refresh_token', { path: '/api/auth' });
+      throw new AppError('Invalid or expired refresh token', 401);
+    }
+
+    const isValid = await bcrypt.compare(rawToken, user.refreshTokenHash);
+    if (!isValid) {
+      // Possible token theft — invalidate every active session for this user
+      await prisma.user.update({ where: { id: userId }, data: { refreshTokenHash: null } });
+      res.clearCookie('refresh_token', { path: '/api/auth' });
+      throw new AppError('Refresh token reuse detected — all sessions invalidated', 401);
+    }
+
+    // Rotate: mint a new refresh token and persist the hash
+    const newRawToken = crypto.randomBytes(32).toString('hex');
+    const newRefreshTokenHash = await bcrypt.hash(newRawToken, BCRYPT_ROUNDS);
+    await prisma.user.update({
+      where: { id: userId },
+      data: { refreshTokenHash: newRefreshTokenHash },
+    });
+
+    // Issue a new access token using the same payload shape as /login
+    const accessToken = jwt.sign(
+      { id: user.id, email: user.email, role: user.role },
+      JWT_SECRET,
+      JWT_SIGN_OPTIONS
+    );
+
+    // Write the rotated cookie
+    res.cookie('refresh_token', `${user.id}:${newRawToken}`, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+      path: '/api/auth',
+    });
+
+    res.json({
+      success: true,
+      data: {
+        token: accessToken,
+        user: {
+          id: user.id,
+          email: user.email,
+          name: user.name,
+          role: user.role,
         },
       },
     });
