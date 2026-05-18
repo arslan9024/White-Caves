@@ -766,12 +766,10 @@ router.post(
     });
 
     logger.info('TOTP 2FA disabled', { userId });
-    res
-      .status(200)
-      .json({
-        success: true,
-        data: { enabled: false, message: 'Two-factor authentication has been disabled.' },
-      });
+    res.status(200).json({
+      success: true,
+      data: { enabled: false, message: 'Two-factor authentication has been disabled.' },
+    });
   })
 );
 
@@ -1006,6 +1004,38 @@ router.post(
       },
       requiresTwoFactor: false,
     });
+  })
+);
+
+/**
+ * POST /api/auth/refresh
+ * Issue a fresh JWT for an authenticated user.
+ * Accepts the current (non-expired) bearer token and returns a new one,
+ * effectively implementing a sliding expiry window without a separate
+ * refresh-token store.
+ */
+router.post(
+  '/refresh',
+  authMiddleware,
+  asyncHandler(async (req: AuthRequest, res: Response) => {
+    const userId = req.user?.id;
+    if (!userId) throw new AppError('Not authenticated', 401);
+
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      select: { id: true, email: true, role: true, status: true },
+    });
+
+    if (!user) throw new AppError('User not found', 404);
+    if (user.status !== 'active') throw new AppError('Account is inactive', 403);
+
+    const token = jwt.sign(
+      { id: user.id, email: user.email, role: user.role },
+      JWT_SECRET,
+      JWT_SIGN_OPTIONS
+    );
+
+    res.status(200).json({ success: true, data: { token } });
   })
 );
 

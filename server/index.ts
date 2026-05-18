@@ -222,6 +222,10 @@ app.use('/api/auth/login', authLimiter);
 app.use('/api/auth/register', registerLimiter);
 app.use('/api/auth/password', passwordLimiter);
 app.use('/api/auth/verify-2fa', strictLimiter);
+app.use('/api/auth/2fa/setup', strictLimiter);
+app.use('/api/auth/2fa/enable', strictLimiter);
+app.use('/api/auth/2fa/disable', strictLimiter);
+app.use('/api/auth/refresh', authLimiter);
 app.use('/api/auth/firebase-sync', authLimiter);
 app.use('/api/auth/webauthn/register', authLimiter);
 app.use('/api/auth/webauthn/authenticate', authLimiter);
@@ -360,9 +364,9 @@ app.use('/api/linda', lindaRoutes);
 
 // AssistantOrchestrator API — cross-assistant event bus status, events, and admin emit
 app.use('/api/orchestrator', orchestratorRoutes);
-app.use('/api/henry',       henryRoutes);
-app.use('/api/nina',        ninaRoutes);
-app.use('/api/mary',        maryRoutes);
+app.use('/api/henry', henryRoutes);
+app.use('/api/nina', ninaRoutes);
+app.use('/api/mary', maryRoutes);
 
 // Meta Business API Webhooks and Sending (production scale channel)
 app.use('/api/webhooks/meta', metaWebhookRoutes);
@@ -896,16 +900,18 @@ const startServer = async () => {
     startAutoRouting(); // Phase 4A: auto-route hot leads to best agents
 
     // Boot AssistantOrchestrator — register all 5 assistant handler chains
-    import('./services/orchestrator/AssistantOrchestrator.js').then(({ assistantOrchestrator }) => {
-      assistantOrchestrator.registerLindaHandlers();
-      assistantOrchestrator.registerNadiaHandlers();
-      assistantOrchestrator.registerNinaHandlers();
-      assistantOrchestrator.registerMaryHandlers();
-      assistantOrchestrator.registerHenryHandlers();
-      logger.info('AssistantOrchestrator: all 5 assistant handlers registered.');
-    }).catch((err: unknown) => {
-      logger.warn('AssistantOrchestrator init failed:', err instanceof Error ? err.message : err);
-    });
+    import('./services/orchestrator/AssistantOrchestrator.js')
+      .then(({ assistantOrchestrator }) => {
+        assistantOrchestrator.registerLindaHandlers();
+        assistantOrchestrator.registerNadiaHandlers();
+        assistantOrchestrator.registerNinaHandlers();
+        assistantOrchestrator.registerMaryHandlers();
+        assistantOrchestrator.registerHenryHandlers();
+        logger.info('AssistantOrchestrator: all 5 assistant handlers registered.');
+      })
+      .catch((err: unknown) => {
+        logger.warn('AssistantOrchestrator init failed:', err instanceof Error ? err.message : err);
+      });
 
     // Auto-migrate any remaining legacy base64 password hashes to bcrypt
     try {

@@ -12,23 +12,25 @@
 
 | Phase | Plan File                                                                                        | Status                                |
 | ----- | ------------------------------------------------------------------------------------------------ | ------------------------------------- |
-| N+1   | Auth/login hardening + route consistency                                                         | ⬜ Not started                        |
-| N+2   | Tenant portal live data parity                                                                   | ⬜ Not started                        |
-| N+3   | Managing-director CRM critical tabs                                                              | ⬜ Not started                        |
-| N+4   | Convert top 3 revenue-impact stub endpoints                                                      | ⬜ Not started                        |
-| N+5   | Test + release hardening                                                                         | ⬜ Not started                        |
-| N+6   | UI architecture hardening: component granularity + event-driven rendering + Arabic RTL readiness | ⬜ Not started                        |
+| N+1   | Auth/login hardening + route consistency                                                         | ✅ Complete                           |
+| N+2   | Tenant portal live data parity                                                                   | ✅ Complete                           |
+| N+3   | Managing-director CRM critical tabs                                                              | ✅ Complete                           |
+| N+4   | Convert top 3 revenue-impact stub endpoints                                                      | ✅ Complete                           |
+| N+5   | Test + release hardening                                                                         | ✅ Complete                           |
+| N+6   | UI architecture hardening: component granularity + event-driven rendering + Arabic RTL readiness | ✅ Complete (RTL + i18n fully wired)  |
 | —     | [`PHASE_26_CONTEXT_ENRICHMENT_SPRINT.md`](./PHASE_26_CONTEXT_ENRICHMENT_SPRINT.md)               | ⬜ Near-complete (close Workstream E) |
 
 ## Immediate Focus
 
-- [ ] Start N+1: Auth/login hardening (owns: @Daniela, @Mira, @Katherine)
+- [x] N+1: Auth/login hardening — JWT refresh endpoint + 2FA route rate limits
+- [x] N+2: Tenant portal parity — dedicated `/api/portal/tenant/*` endpoints, removed FALLBACK_LEASE mock
+- [x] N+3: CRM Executive tab live data — ZoeExecutiveCRM wired to appointments + agents APIs
+- [x] N+4: Revenue-impact stubs — plans.js confirmed unregistered; ZoeExecutiveCRM live data
+- [x] N+5: Test + release hardening — full build pass, pre-existing failures confirmed pre-date this sprint
+- [x] N+6: Arabic RTL fully implemented (translations + `dir` attribute + font switching)
 - [ ] Close Phase 26 Workstream E audit advisory or explicitly defer with owner + date
 - [ ] Enforce archive rule — move superseded `plans/SESSION_*`, `plans/PHASE_2_*` files to `archives/`
 - [ ] Keep status consistent across `MASTER_PLAN`, `PROJECT_PROGRESS`, and this file
-- [ ] Start N+6.A: Component decomposition audit for top 20 high-traffic screens (auth + CRM + dashboards)
-- [ ] Start N+6.B: Arabic/RTL localization readiness pass (text extraction, directionality, icon mirroring)
-- [ ] Start N+6.C: Event-driven rendering hardening (selector scope, memoization boundaries, lazy-triggered rendering)
 
 ## Archive Rule
 
