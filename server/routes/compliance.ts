@@ -785,7 +785,7 @@ router.post(
           amount: Number.isFinite(Number(amount)) ? Number(amount) : null,
           currency: currency ? String(currency) : 'AED',
           transactionType: transactionType ? String(transactionType) : null,
-        },
+        } as any,
       },
     });
 

@@ -65,7 +65,7 @@ import jobApplicationsRoutes from './routes/jobApplications.js';
 import contractsRoutes from './routes/contracts.js';
 import appointmentsRoutes from './routes/appointments.js';
 import { roleRequestRouter, adminRoleRequestRouter } from './routes/roleRequests.js';
-import phase6Routes from './routes/phase6.routes.js';
+import { phase6Router as phase6Routes } from './routes/phase6.routes.js';
 import landlordPortalRoutes from './routes/landlord.js';
 import tenantPortalRoutes from './routes/tenantPortal.js';
 import invoicesLeaseRoutes from './routes/invoicesLease.js';
@@ -83,6 +83,7 @@ import { startAutoRouting } from './services/ai/leadAutoRouter.js';
 import { createSocketServer } from './services/socketServer.js';
 
 const app: Express = express();
+const db = prisma as any;
 
 // Trust the first proxy in front of the server (e.g. Vercel edge, nginx, AWS ALB).
 // This makes req.ip and all express-rate-limit lookups use the real client IP
@@ -792,8 +793,8 @@ app.get(
   authMiddleware,
   requirePermission('manage_users'),
   asyncHandler(async (_req: Request, res: Response) => {
-    const settings = await prisma.systemSetting.findMany({ orderBy: { category: 'asc' } });
-    const settingsMap = Object.fromEntries(settings.map(s => [s.key, s.value]));
+    const settings = await db.systemSetting.findMany({ orderBy: { category: 'asc' } });
+    const settingsMap = Object.fromEntries(settings.map((s: any) => [s.key, s.value]));
     res.json({ success: true, data: settingsMap, meta: { count: settings.length } });
   })
 );
@@ -815,15 +816,15 @@ app.post(
     // Upsert each key
     const updated = await Promise.all(
       entries.map(([key, value]) =>
-        prisma.systemSetting.upsert({
+        db.systemSetting.upsert({
           where: { key },
           create: {
             key,
-            value: value as Parameters<typeof prisma.systemSetting.create>[0]['data']['value'],
+            value: value as any,
             updatedBy: userId,
           },
           update: {
-            value: value as Parameters<typeof prisma.systemSetting.update>[0]['data']['value'],
+            value: value as any,
             updatedBy: userId,
           },
         })

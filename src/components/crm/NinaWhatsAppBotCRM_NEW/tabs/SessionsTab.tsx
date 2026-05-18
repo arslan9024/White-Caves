@@ -1,27 +1,23 @@
 import React from 'react';
+import type { useBotData } from '../hooks/useBotData';
+import type { Dispatch, SetStateAction } from 'react';
 import { QrCode, Smartphone, Wifi, Check, X, Plus, Zap } from 'lucide-react';
 
 interface Bot {
-  id: string | number;
+  id: string;
   name: string;
   number: string;
   status: string;
-  qrCode?: string;
-  messagesProcessed?: number;
-  responseRate?: number;
-  avgResponseTime?: string;
-  uptime?: string;
-  features?: string[];
+  lastActive: string;
+  qrCode: string | null;
+  messagesProcessed: number;
+  responseRate: number;
+  avgResponseTime: string;
+  uptime: string;
+  features: string[];
 }
 
-interface SessionsData {
-  bots: Bot[];
-  showQRCode: boolean;
-  setShowQRCode: (show: boolean) => void;
-  qrCodeBot: Bot | null;
-  setQRCodeBot: (bot: Bot | null) => void;
-  getStatusColor: (status: string) => string;
-}
+type SessionsData = ReturnType<typeof useBotData>;
 
 interface SessionsTabProps {
   data: SessionsData;
@@ -77,21 +73,23 @@ export const SessionsTab: React.FC<SessionsTabProps> = ({ data }) => {
       <div className="active-sessions">
         <h4>Active Sessions</h4>
         <div className="session-cards">
-          {bots.filter((b: Bot) => b.status === 'connected').map((bot: Bot) => (
-            <div key={bot.id} className="session-card active">
-              <div className="session-info">
-                <Wifi size={24} style={{ color: getStatusColor(bot.status) }} />
-                <div>
-                  <p className="session-name">{bot.name}</p>
-                  <p className="session-number">{bot.number}</p>
-                  <p className="session-uptime">Uptime: {bot.uptime}</p>
+          {bots
+            .filter((b: Bot) => b.status === 'connected')
+            .map((bot: Bot) => (
+              <div key={bot.id} className="session-card active">
+                <div className="session-info">
+                  <Wifi size={24} style={{ color: getStatusColor(bot.status) }} />
+                  <div>
+                    <p className="session-name">{bot.name}</p>
+                    <p className="session-number">{bot.number}</p>
+                    <p className="session-uptime">Uptime: {bot.uptime}</p>
+                  </div>
                 </div>
+                <span className="status-badge active">
+                  <Check size={14} /> Connected
+                </span>
               </div>
-              <span className="status-badge active">
-                <Check size={14} /> Connected
-              </span>
-            </div>
-          ))}
+            ))}
         </div>
       </div>
 
@@ -99,7 +97,14 @@ export const SessionsTab: React.FC<SessionsTabProps> = ({ data }) => {
         <div className="qr-modal">
           <div className="qr-content">
             <h4>Scan QR Code - {qrCodeBot.name}</h4>
-            <img src={qrCodeBot.qrCode} alt="QR Code" className="qr-code-image" loading="lazy" width={200} height={200} />
+            <img
+              src={qrCodeBot.qrCode || undefined}
+              alt="QR Code"
+              className="qr-code-image"
+              loading="lazy"
+              width={200}
+              height={200}
+            />
             <p>Scan this QR code with WhatsApp to connect the bot</p>
             <button onClick={() => setShowQRCode(false)}>Close</button>
           </div>

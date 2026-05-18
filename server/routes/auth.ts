@@ -18,6 +18,7 @@ import logger from '../utils/logger.js';
 import { verifyFirebaseIdToken, FirebaseAdminInitError } from '../config/firebaseAdmin.js';
 
 const router = Router();
+const db = prisma as any;
 
 // ─── TOTP (RFC 6238) helpers — no external dependencies ─────────────────────
 
@@ -546,6 +547,7 @@ router.post(
 router.post(
   '/verify-2fa',
   asyncHandler(async (req: Request, res: Response) => {
+    const db = prisma as any;
     const { email, code } = req.body;
 
     if (!email || !code) {
@@ -558,7 +560,7 @@ router.post(
       process.env.DEV_2FA_BYPASS === 'true' &&
       code === '000000'
     ) {
-      const user = await prisma.user.findUnique({ where: { email } });
+      const user = await db.user.findUnique({ where: { email } });
       if (!user) throw new AppError('User not found', 404);
 
       const token = jwt.sign(
@@ -574,7 +576,7 @@ router.post(
     }
 
     const sanitizedEmail = sanitizeString(email).toLowerCase().trim();
-    const user = await prisma.user.findUnique({ where: { email: sanitizedEmail } });
+    const user = (await db.user.findUnique({ where: { email: sanitizedEmail } })) as any;
     if (!user) throw new AppError('Invalid credentials', 401);
 
     if (!user.totpEnabled || !user.totpSecret) {
@@ -593,9 +595,9 @@ router.post(
       for (const hashed of user.totpBackupCodes) {
         if (await bcrypt.compare(codeStr, hashed)) {
           // Consume the backup code (single-use)
-          await prisma.user.update({
+          await db.user.update({
             where: { id: user.id },
-            data: { totpBackupCodes: user.totpBackupCodes.filter(h => h !== hashed) },
+            data: { totpBackupCodes: user.totpBackupCodes.filter((h: string) => h !== hashed) },
           });
           verified = true;
           break;
@@ -629,12 +631,13 @@ router.post(
   '/2fa/setup',
   authMiddleware,
   asyncHandler(async (req: AuthRequest, res: Response) => {
+    const db = prisma as any;
     const userId = req.user?.id;
     if (!userId) throw new AppError('Authentication required', 401);
 
     const secret = generateTOTPSecret();
     const appName = encodeURIComponent('White Caves CRM');
-    const user = await prisma.user.findUnique({ where: { id: userId }, select: { email: true } });
+    const user = await db.user.findUnique({ where: { id: userId }, select: { email: true } });
     if (!user) throw new AppError('User not found', 404);
 
     const accountLabel = encodeURIComponent(user.email);
@@ -702,7 +705,7 @@ router.post(
     const plainCodes = generateBackupCodes(8);
     const hashedCodes = await Promise.all(plainCodes.map(c => bcrypt.hash(c, BCRYPT_ROUNDS)));
 
-    await prisma.user.update({
+    await db.user.update({
       where: { id: userId },
       data: { totpSecret, totpEnabled: true, totpBackupCodes: hashedCodes },
     });
@@ -729,16 +732,17 @@ router.post(
   '/2fa/disable',
   authMiddleware,
   asyncHandler(async (req: AuthRequest, res: Response) => {
+    const db = prisma as any;
     const userId = req.user?.id;
     if (!userId) throw new AppError('Authentication required', 401);
 
     const { code } = req.body;
     if (!code) throw new AppError('Verification code is required to disable 2FA', 400);
 
-    const user = await prisma.user.findUnique({
+    const user = (await db.user.findUnique({
       where: { id: userId },
       select: { totpSecret: true, totpEnabled: true, totpBackupCodes: true },
-    });
+    })) as any;
     if (!user) throw new AppError('User not found', 404);
     if (!user.totpEnabled || !user.totpSecret) {
       throw new AppError('Two-factor authentication is not enabled', 400);
@@ -760,18 +764,16 @@ router.post(
 
     if (!verified) throw new AppError('Invalid verification code', 401);
 
-    await prisma.user.update({
+    await db.user.update({
       where: { id: userId },
       data: { totpEnabled: false, totpSecret: null, totpBackupCodes: [] },
     });
 
     logger.info('TOTP 2FA disabled', { userId });
-    res
-      .status(200)
-      .json({
-        success: true,
-        data: { enabled: false, message: 'Two-factor authentication has been disabled.' },
-      });
+    res.status(200).json({
+      success: true,
+      data: { enabled: false, message: 'Two-factor authentication has been disabled.' },
+    });
   })
 );
 
@@ -783,13 +785,14 @@ router.get(
   '/2fa/status',
   authMiddleware,
   asyncHandler(async (req: AuthRequest, res: Response) => {
+    const db = prisma as any;
     const userId = req.user?.id;
     if (!userId) throw new AppError('Authentication required', 401);
 
-    const user = await prisma.user.findUnique({
+    const user = (await db.user.findUnique({
       where: { id: userId },
       select: { totpEnabled: true, totpBackupCodes: true },
-    });
+    })) as any;
     if (!user) throw new AppError('User not found', 404);
 
     res.status(200).json({
