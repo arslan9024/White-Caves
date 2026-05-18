@@ -658,108 +658,131 @@ const UnifiedSidebar: React.FC<UnifiedSidebarProps> = ({ onItemClick, isSuperUse
       {/* ─── SECTION 1: Scrollable Departments Area ─────────────── */}
       <SidebarScrollArea>
         {isSearching ? (
-          <SearchResultsContainer
-            id="sidebar-search-results"
-            role="region"
-            aria-label="Search results"
-          >
-            {searchResults.length === 0 ? (
-              <SearchEmptyState>
-                <SearchX aria-hidden="true" />
-                <span>
-                  No results for &quot;<strong>{globalSearch}</strong>&quot;
-                </span>
-              </SearchEmptyState>
-            ) : (
-              <>
-                {/* Departments & Services section */}
-                {deptServiceResults.length > 0 && (
-                  <SearchResultsSection>
-                    <SearchResultsSectionTitle>
-                      Departments &amp; Services ({deptServiceResults.length})
-                    </SearchResultsSectionTitle>
-                    {deptServiceResults.map((result, idx) => {
-                      if (result.type === 'department') {
-                        const Icon = result.icon;
+          <>
+            <SearchResultsContainer
+              id="sidebar-search-results"
+              role="region"
+              aria-label="Search results"
+            >
+              {searchResults.length === 0 ? (
+                <SearchEmptyState>
+                  <SearchX aria-hidden="true" />
+                  <span>
+                    No results for &quot;<strong>{globalSearch}</strong>&quot;
+                  </span>
+                </SearchEmptyState>
+              ) : (
+                <>
+                  {/* Departments & Services section */}
+                  {deptServiceResults.length > 0 && (
+                    <SearchResultsSection>
+                      <SearchResultsSectionTitle>
+                        Departments &amp; Services ({deptServiceResults.length})
+                      </SearchResultsSectionTitle>
+                      {deptServiceResults.map((result, idx) => {
+                        if (result.type === 'department') {
+                          const Icon = result.icon;
+                          return (
+                            <SearchResultItem
+                              key={`dept-${result.deptId}-${idx}`}
+                              $active={selectedDept === result.deptId}
+                              $color={result.color}
+                              onClick={() => handleDeptClick(result.deptId)}
+                              aria-label={`Department: ${result.label}`}
+                            >
+                              <SearchResultIcon $color={result.color}>
+                                <Icon />
+                              </SearchResultIcon>
+                              <SearchResultText>
+                                <SearchResultLabel>{result.label}</SearchResultLabel>
+                              </SearchResultText>
+                              <SearchResultBadge>dept</SearchResultBadge>
+                            </SearchResultItem>
+                          );
+                        }
+                        // service
+                        const DeptIcon = result.deptIcon;
                         return (
                           <SearchResultItem
-                            key={`dept-${result.deptId}-${idx}`}
-                            $active={selectedDept === result.deptId}
-                            $color={result.color}
-                            onClick={() => handleDeptClick(result.deptId)}
-                            aria-label={`Department: ${result.label}`}
+                            key={`svc-${result.deptId}-${result.serviceId}-${idx}`}
+                            $active={
+                              selectedDept === result.deptId && selectedSvc === result.serviceId
+                            }
+                            $color={result.deptColor}
+                            onClick={() => handleServiceClick(result.deptId, result.serviceId)}
+                            aria-label={`${result.label} in ${result.deptLabel}`}
                           >
-                            <SearchResultIcon $color={result.color}>
-                              <Icon />
+                            <SearchResultIcon $color={result.deptColor}>
+                              <DeptIcon />
                             </SearchResultIcon>
                             <SearchResultText>
                               <SearchResultLabel>{result.label}</SearchResultLabel>
+                              <SearchResultSubLabel>{result.deptLabel}</SearchResultSubLabel>
                             </SearchResultText>
-                            <SearchResultBadge>dept</SearchResultBadge>
+                            <SearchResultBadge>service</SearchResultBadge>
                           </SearchResultItem>
                         );
-                      }
-                      // service
-                      const DeptIcon = result.deptIcon;
-                      return (
-                        <SearchResultItem
-                          key={`svc-${result.deptId}-${result.serviceId}-${idx}`}
-                          $active={
-                            selectedDept === result.deptId && selectedSvc === result.serviceId
-                          }
-                          $color={result.deptColor}
-                          onClick={() => handleServiceClick(result.deptId, result.serviceId)}
-                          aria-label={`${result.label} in ${result.deptLabel}`}
-                        >
-                          <SearchResultIcon $color={result.deptColor}>
-                            <DeptIcon />
-                          </SearchResultIcon>
-                          <SearchResultText>
-                            <SearchResultLabel>{result.label}</SearchResultLabel>
-                            <SearchResultSubLabel>{result.deptLabel}</SearchResultSubLabel>
-                          </SearchResultText>
-                          <SearchResultBadge>service</SearchResultBadge>
-                        </SearchResultItem>
-                      );
-                    })}
-                  </SearchResultsSection>
-                )}
+                      })}
+                    </SearchResultsSection>
+                  )}
 
-                {/* AI Assistants section */}
-                {assistantResults.length > 0 && (
-                  <SearchResultsSection>
-                    <SearchResultsSectionTitle>
-                      AI Assistants ({assistantResults.length})
-                    </SearchResultsSectionTitle>
-                    {assistantResults.map((result, idx) => {
-                      const a = result.assistant;
-                      return (
-                        <SearchResultItem
-                          key={`assistant-${a.id}-${idx}`}
-                          $active={selectedAssistantId === a.id}
-                          $color={a.color}
-                          onClick={() => handleAssistantClick(a.id)}
-                          aria-label={`${a.name} AI assistant`}
-                        >
-                          <AIAssistantAvatar
+                  {/* AI Assistants section */}
+                  {assistantResults.length > 0 && (
+                    <SearchResultsSection>
+                      <SearchResultsSectionTitle>
+                        AI Assistants ({assistantResults.length})
+                      </SearchResultsSectionTitle>
+                      {assistantResults.map((result, idx) => {
+                        const a = result.assistant;
+                        return (
+                          <SearchResultItem
+                            key={`assistant-${a.id}-${idx}`}
+                            $active={selectedAssistantId === a.id}
                             $color={a.color}
-                            style={{ width: 24, height: 24, borderRadius: 6, fontSize: 10 }}
+                            onClick={() => handleAssistantClick(a.id)}
+                            aria-label={`${a.name} AI assistant`}
                           >
-                            {a.avatar || a.name[0]}
-                          </AIAssistantAvatar>
-                          <SearchResultText>
-                            <SearchResultLabel>{a.name}</SearchResultLabel>
-                            <SearchResultSubLabel>{a.title}</SearchResultSubLabel>
-                          </SearchResultText>
-                          <SearchResultBadge>AI</SearchResultBadge>
-                        </SearchResultItem>
-                      );
-                    })}
-                  </SearchResultsSection>
-                )}
-              </>
-            )}
-          </SearchResultsContainer>
+                            <AIAssistantAvatar
+                              $color={a.color}
+                              style={{ width: 24, height: 24, borderRadius: 6, fontSize: 10 }}
+                            >
+                              {a.avatar || a.name[0]}
+                            </AIAssistantAvatar>
+                            <SearchResultText>
+                              <SearchResultLabel>{a.name}</SearchResultLabel>
+                              <SearchResultSubLabel>{a.title}</SearchResultSubLabel>
+                            </SearchResultText>
+                            <SearchResultBadge>AI</SearchResultBadge>
+                          </SearchResultItem>
+                        );
+                      })}
+                    </SearchResultsSection>
+                  )}
+                </>
+              )}
+            </SearchResultsContainer>
+            {/* Screen-reader live region: announces search result count */}
+            <div
+              role="status"
+              aria-live="polite"
+              aria-atomic="true"
+              style={{
+                position: 'absolute',
+                width: '1px',
+                height: '1px',
+                padding: 0,
+                margin: '-1px',
+                overflow: 'hidden',
+                clip: 'rect(0,0,0,0)',
+                whiteSpace: 'nowrap',
+                border: 0,
+              }}
+            >
+              {searchResults.length === 0
+                ? `No results for "${globalSearch}"`
+                : `${searchResults.length} result${searchResults.length !== 1 ? 's' : ''} found`}
+            </div>
+          </>
         ) : (
           <>
             {/* ─── Quick Navigation ──────────────────────────────── */}
