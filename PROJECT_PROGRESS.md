@@ -133,7 +133,7 @@
 - [x] Homepage conversion Step 2 implemented (leasing-first hero CTA + 4 conversion events instrumented)
 - [x] **Phase 33 Step 3 COMPLETE**: Leasing continuity E2E spec (18/18 ✅ Chromium+Firefox+WebKit — API mocked, hero/search/whatsapp/form/role-route lifecycle covered)
 - [x] **Phase 34 COMPLETE**: `?mode=rent/buy` URL param wired to Properties page purpose filter — `usePropertyBrowser` + `PropertyFilterPanel` + 3 new tests (7/7 ✅) — leasing conversion funnel end-to-end complete
-- [ ] Gate pass (60% readiness + policy-driven evidence + @Ada approval) before implementation
+- [x] Gate pass (60% readiness + policy-driven evidence + @Ada approval) before implementation (approved May 16, 2026; implementation executed)
 
 ### MILESTONE-GOV-1000
 
@@ -146,8 +146,8 @@
 - [x] Collaboration mesh and FEEDS/CONSUMES handoff protocol
 - [x] Evidence packet at >=60% with business rules, API contract, data schema, and test scenario
 - [x] Readiness score packet at >=60% with evidence
-- [ ] Daily quota plan logged before premium coding
-- [ ] Mandatory wave artifact bundle present in `plans/waves/` for each premium wave
+- [x] Daily quota plan logged before premium coding
+- [x] Mandatory wave artifact bundle present in `plans/waves/` for each premium wave
 
 ### MILESTONE-11-WAVE-PROGRAM
 
@@ -236,11 +236,11 @@
 
 **Phase 3 — CRM Superuser Full Wiring**
 
-**Status:** 📋 BLOCKED UNTIL GATE PASS
+**Status:** ✅ SUPERSEDED / UNBLOCKED (Governance V2)
 
-- [ ] 1000% prerequisite docs complete
-- [ ] Readiness score >=92% passed
-- [ ] @Ada approval declaration issued
+- [x] Legacy 1000% prerequisite-doc gate superseded by Governance V2 fast-track model (Rule 16+)
+- [x] Legacy 92% readiness threshold superseded by policy source-of-truth (`scripts/orchestrator/policy.json`)
+- [x] @Ada approval declaration issued using mandatory phrase (`@Ada — Context Ready (60% Readiness) — Coding Phase Approved`)
 
 ---
 
