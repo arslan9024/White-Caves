@@ -48,6 +48,7 @@
 | May 19, 2026 | @Mira + @Katherine | Wave 04 enforcement automation: added daily property permit scheduler to auto-unpublish non-compliant `available` listings (`off_market`) with audit trail + service tests                       | Done        |
 | May 19, 2026 | @Mira + @Katherine | Wave 04 permit register path delivered: added `GET/PATCH /api/compliance/permits` with manager guardrails and green compliance suite (41/41)                                                     | Done        |
 | May 19, 2026 | @Mira + @Katherine | Wave 04 permit enforcement control delivered: added manager-only `POST /api/compliance/permits/enforcement-run` (dry-run/live) with compliance audit event logging, tests green (49/49 targeted) | Done        |
+| May 19, 2026 | @Mira + @Katherine | Wave 04 permit enforcement observability delivered: added `GET /api/compliance/permits/enforcement-history` for manager/finance audit visibility, compliance suite green (46/46)                 | Done        |
 
 ---
 

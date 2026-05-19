@@ -545,6 +545,54 @@ describe('Compliance Routes — /api/compliance', () => {
 
       expect(res.status).toBe(403);
     });
+
+    it('returns permit enforcement history for finance role', async () => {
+      mockPrisma.activity.findMany.mockResolvedValueOnce([
+        {
+          id: 'act-enf-1',
+          type: 'compliance',
+          action: 'permit_enforcement_dry_run',
+          description: 'Permit enforcement dry-run executed: scanned=3',
+          createdAt: new Date('2026-05-19T11:00:00.000Z'),
+          metadata: {
+            scanned: 3,
+            autoUnpublished: 0,
+            errors: 0,
+            dryRun: true,
+            affectedPropertyIds: ['prop-a'],
+          },
+          user: {
+            id: 'u-1',
+            name: 'Manager One',
+            role: 'manager',
+            email: 'manager@whitecaves.ae',
+          },
+        },
+      ]);
+
+      const res = await request(createApp('finance')).get(
+        '/api/compliance/permits/enforcement-history?limit=10'
+      );
+
+      expect(res.status).toBe(200);
+      expect(res.body.success).toBe(true);
+      expect(res.body.data).toHaveLength(1);
+      expect(res.body.data[0].summary.scanned).toBe(3);
+      expect(res.body.summary.dryRuns).toBe(1);
+      expect(mockPrisma.activity.findMany).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: expect.objectContaining({ type: 'compliance' }),
+          take: 10,
+        })
+      );
+    });
+
+    it('returns 403 for agent on permit enforcement history', async () => {
+      const res = await request(createApp('agent')).get(
+        '/api/compliance/permits/enforcement-history'
+      );
+      expect(res.status).toBe(403);
+    });
   });
 
   // ── W4-003 KYC workflow ─────────────────────────────────────────

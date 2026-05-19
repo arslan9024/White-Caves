@@ -567,6 +567,64 @@ router.post(
   })
 );
 
+// ─── GET /api/compliance/permits/enforcement-history — recent runs ───────
+router.get(
+  '/permits/enforcement-history',
+  requirePermission('view_analytics'),
+  asyncHandler(async (req: Request, res: Response) => {
+    const allowedRoles = ['owner', 'manager', 'admin', 'finance'];
+    if (!allowedRoles.includes(req.user?.role || '')) {
+      throw new AppError('Access denied — permit enforcement history requires manager role', 403);
+    }
+
+    const limit = Math.max(1, Math.min(200, parseInt(String(req.query.limit || '25'), 10) || 25));
+
+    const runs = await prisma.activity.findMany({
+      where: {
+        type: 'compliance',
+        action: {
+          in: ['permit_enforcement_dry_run', 'permit_enforcement_triggered'],
+        },
+      },
+      orderBy: { createdAt: 'desc' },
+      take: limit,
+      include: {
+        user: { select: { id: true, name: true, role: true, email: true } },
+      },
+    });
+
+    const data = runs.map(run => {
+      const metadata = normalizeMetadata(run.metadata);
+      return {
+        id: run.id,
+        action: run.action,
+        description: run.description,
+        createdAt: run.createdAt,
+        user: run.user,
+        summary: {
+          scanned: Number(metadata.scanned || 0),
+          autoUnpublished: Number(metadata.autoUnpublished || 0),
+          errors: Number(metadata.errors || 0),
+          dryRun: metadata.dryRun === true,
+          affectedPropertyIds: Array.isArray(metadata.affectedPropertyIds)
+            ? metadata.affectedPropertyIds
+            : [],
+        },
+      };
+    });
+
+    res.status(200).json({
+      success: true,
+      data,
+      summary: {
+        total: data.length,
+        liveRuns: data.filter(r => r.action === 'permit_enforcement_triggered').length,
+        dryRuns: data.filter(r => r.action === 'permit_enforcement_dry_run').length,
+      },
+    });
+  })
+);
+
 // ─── PATCH /api/compliance/permits/:propertyId — update permit fields ─────
 router.patch(
   '/permits/:propertyId',
