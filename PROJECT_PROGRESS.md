@@ -177,6 +177,7 @@
 - [x] Wave 04 PDPL consent baseline: consent create/revoke/export/delete endpoints with guarded access
 - [x] Wave 04 PDPL hardening baseline: revoke/delete audit events now logged for consent lifecycle actions
 - [x] Wave 04 queue baseline: unified compliance queue feed endpoint for permit/KYC/AML dashboard cards
+- [x] Wave 04 permit monitoring automation: daily `startPermitAlertScheduler()` snapshot logging added and `/api/compliance/permit-alerts` refactored to shared service (`server/services/compliance/permitAlertScheduler.ts`)
 - [ ] Continue Wave 03 and Wave 04 implementation backlog execution
 
 ### MILESTONE-PHASE-27

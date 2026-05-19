@@ -84,6 +84,7 @@ import { startFollowUpScheduler } from './services/automation/followUpScheduler.
 import { startRateRefresh } from './services/currencyService.js';
 import { startViewingReminderScheduler } from './services/schedulingService.js';
 import { startRERAExpiryScheduler } from './services/compliance/reraExpiryScheduler.js';
+import { startPermitAlertScheduler } from './services/compliance/permitAlertScheduler.js';
 import { startAutoRouting } from './services/ai/leadAutoRouter.js';
 import { createSocketServer } from './services/socketServer.js';
 
@@ -939,6 +940,7 @@ const startServer = async () => {
     startRateRefresh(); // Phase 2E: refresh exchange rates every 6h
     startViewingReminderScheduler(); // Phase 3C: viewing reminders every 15 min
     startRERAExpiryScheduler(); // Phase 3D: RERA BRN expiry checks daily
+    startPermitAlertScheduler(); // Wave 04: permit/BRN alert snapshots daily
     startAutoRouting(); // Phase 4A: auto-route hot leads to best agents
 
     // Boot AssistantOrchestrator — register all 5 assistant handler chains

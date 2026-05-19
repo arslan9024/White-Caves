@@ -33,6 +33,7 @@ import {
   getComplianceOverview,
   updateEjariStatus,
 } from '../services/compliance/complianceService.js';
+import { getPermitAlerts } from '../services/compliance/permitAlertScheduler.js';
 import { screenAML } from '../services/compliance/amlAdapter.js';
 import logger from '../utils/logger.js';
 
@@ -419,73 +420,16 @@ router.get(
       throw new AppError('daysAhead must be a number between 1 and 365', 400);
     }
 
-    const now = new Date();
-    const cutoff = new Date(now.getTime() + parsedDaysAhead * 24 * 60 * 60 * 1000);
-
-    // Active listings that fail permit baseline requirements.
-    const missingPermitListings = await prisma.property.findMany({
-      where: {
-        status: 'available',
-        OR: [
-          { municipalityNumber: null },
-          { municipalityNumber: '' },
-          { buildingPermitNumber: null },
-          { buildingPermitNumber: '' },
-        ],
-      },
-      select: {
-        id: true,
-        title: true,
-        status: true,
-        municipalityNumber: true,
-        buildingPermitNumber: true,
-        createdAt: true,
-      },
-      orderBy: { createdAt: 'desc' },
-      take: 200,
-    });
-
-    // BRN is treated as permit/license expiry signal for compliance alerts.
-    const brnExpiringOrExpired = await prisma.user.findMany({
-      where: {
-        role: { in: ['agent', 'owner'] },
-        status: 'active',
-        brnNumber: { not: null },
-        brnExpiry: { not: null, lte: cutoff },
-      },
-      select: {
-        id: true,
-        name: true,
-        email: true,
-        role: true,
-        brnNumber: true,
-        brnExpiry: true,
-      },
-      orderBy: { brnExpiry: 'asc' },
-      take: 200,
-    });
-
-    const brnAlerts = brnExpiringOrExpired.map(agent => {
-      const expiry = agent.brnExpiry as Date;
-      const daysToExpiry = Math.ceil((expiry.getTime() - now.getTime()) / (24 * 60 * 60 * 1000));
-      return {
-        ...agent,
-        status: daysToExpiry < 0 ? 'expired' : 'expiring_soon',
-        daysToExpiry,
-      };
-    });
+    const permitAlerts = await getPermitAlerts(parsedDaysAhead);
 
     res.status(200).json({
       success: true,
       data: {
         summary: {
-          daysAhead: parsedDaysAhead,
-          listingPermitIssues: missingPermitListings.length,
-          brnExpired: brnAlerts.filter(a => a.status === 'expired').length,
-          brnExpiringSoon: brnAlerts.filter(a => a.status === 'expiring_soon').length,
+          ...permitAlerts.summary,
         },
-        listingPermitIssues: missingPermitListings,
-        brnPermitAlerts: brnAlerts,
+        listingPermitIssues: permitAlerts.listingPermitIssues,
+        brnPermitAlerts: permitAlerts.brnPermitAlerts,
       },
     });
   })
