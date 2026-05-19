@@ -435,6 +435,194 @@ router.get(
   })
 );
 
+// ─── GET /api/compliance/permits — permit register view ───────────────────
+router.get(
+  '/permits',
+  requirePermission('view_analytics'),
+  asyncHandler(async (req: Request, res: Response) => {
+    const allowedRoles = ['owner', 'manager', 'admin', 'finance'];
+    if (!allowedRoles.includes(req.user?.role || '')) {
+      throw new AppError('Access denied — permit register requires manager role', 403);
+    }
+
+    const statusFilter = String(req.query.status || 'all').toLowerCase(); // all | missing | complete
+    if (!['all', 'missing', 'complete'].includes(statusFilter)) {
+      throw new AppError('status must be one of: all, missing, complete', 400);
+    }
+
+    const limit = Math.max(1, Math.min(500, parseInt(String(req.query.limit || '100'), 10) || 100));
+
+    const missingWhere = {
+      OR: [
+        { municipalityNumber: null },
+        { municipalityNumber: '' },
+        { buildingPermitNumber: null },
+        { buildingPermitNumber: '' },
+      ],
+    } as const;
+
+    const where =
+      statusFilter === 'missing'
+        ? missingWhere
+        : statusFilter === 'complete'
+          ? { NOT: missingWhere }
+          : {};
+
+    const [properties, totalProperties, missingCount] = await Promise.all([
+      prisma.property.findMany({
+        where,
+        select: {
+          id: true,
+          title: true,
+          status: true,
+          location: true,
+          area: true,
+          municipalityNumber: true,
+          plotNumber: true,
+          buildingPermitNumber: true,
+          updatedAt: true,
+        },
+        orderBy: { updatedAt: 'desc' },
+        take: limit,
+      }),
+      prisma.property.count(),
+      prisma.property.count({ where: missingWhere }),
+    ]);
+
+    const data = properties.map(p => {
+      const permitStatus =
+        !p.municipalityNumber ||
+        !String(p.municipalityNumber).trim() ||
+        !p.buildingPermitNumber ||
+        !String(p.buildingPermitNumber).trim()
+          ? 'missing'
+          : 'complete';
+
+      return {
+        id: p.id,
+        title: p.title,
+        listingStatus: p.status,
+        location: p.location,
+        area: p.area,
+        municipalityNumber: p.municipalityNumber,
+        plotNumber: p.plotNumber,
+        buildingPermitNumber: p.buildingPermitNumber,
+        permitStatus,
+        updatedAt: p.updatedAt,
+      };
+    });
+
+    res.status(200).json({
+      success: true,
+      data,
+      summary: {
+        totalProperties,
+        missingPermits: missingCount,
+        completePermits: Math.max(0, totalProperties - missingCount),
+        filter: statusFilter,
+      },
+    });
+  })
+);
+
+// ─── PATCH /api/compliance/permits/:propertyId — update permit fields ─────
+router.patch(
+  '/permits/:propertyId',
+  requirePermission('view_analytics'),
+  asyncHandler(async (req: Request, res: Response) => {
+    const allowedRoles = ['owner', 'manager', 'admin'];
+    if (!allowedRoles.includes(req.user?.role || '')) {
+      throw new AppError('Access denied — permit updates require manager role', 403);
+    }
+
+    const { propertyId } = req.params;
+    const { municipalityNumber, plotNumber, buildingPermitNumber } = req.body || {};
+
+    if (
+      municipalityNumber === undefined &&
+      plotNumber === undefined &&
+      buildingPermitNumber === undefined
+    ) {
+      throw new AppError(
+        'At least one field is required: municipalityNumber, plotNumber, buildingPermitNumber',
+        400
+      );
+    }
+
+    const existing = await prisma.property.findUnique({
+      where: { id: propertyId },
+      select: {
+        id: true,
+        title: true,
+        status: true,
+        municipalityNumber: true,
+        plotNumber: true,
+        buildingPermitNumber: true,
+      },
+    });
+
+    if (!existing) {
+      throw new AppError('Property not found', 404);
+    }
+
+    const nextMunicipalityNumber =
+      municipalityNumber !== undefined
+        ? sanitizeString(String(municipalityNumber || '').trim()) || null
+        : existing.municipalityNumber;
+    const nextPlotNumber =
+      plotNumber !== undefined
+        ? sanitizeString(String(plotNumber || '').trim()) || null
+        : existing.plotNumber;
+    const nextBuildingPermitNumber =
+      buildingPermitNumber !== undefined
+        ? sanitizeString(String(buildingPermitNumber || '').trim()) || null
+        : existing.buildingPermitNumber;
+
+    if (existing.status === 'available' && (!nextMunicipalityNumber || !nextBuildingPermitNumber)) {
+      throw new AppError(
+        'RERA compliance: available listings require municipalityNumber and buildingPermitNumber',
+        400
+      );
+    }
+
+    const updated = await prisma.property.update({
+      where: { id: propertyId },
+      data: {
+        municipalityNumber: nextMunicipalityNumber,
+        plotNumber: nextPlotNumber,
+        buildingPermitNumber: nextBuildingPermitNumber,
+      },
+      select: {
+        id: true,
+        title: true,
+        status: true,
+        municipalityNumber: true,
+        plotNumber: true,
+        buildingPermitNumber: true,
+        updatedAt: true,
+      },
+    });
+
+    await prisma.activity.create({
+      data: {
+        type: 'compliance',
+        action: 'permit_register_updated',
+        description: `Permit register updated for property ${updated.title || updated.id}`,
+        userId: req.user?.id || null,
+        metadata: {
+          propertyId: updated.id,
+          municipalityNumber: updated.municipalityNumber,
+          plotNumber: updated.plotNumber,
+          buildingPermitNumber: updated.buildingPermitNumber,
+          updatedAt: new Date().toISOString(),
+        },
+      },
+    });
+
+    res.status(200).json({ success: true, data: updated });
+  })
+);
+
 // ─── POST /api/compliance/kyc/:leadId/documents — upload doc metadata ─────
 router.post(
   '/kyc/:leadId/documents',

@@ -179,6 +179,7 @@
 - [x] Wave 04 queue baseline: unified compliance queue feed endpoint for permit/KYC/AML dashboard cards
 - [x] Wave 04 permit monitoring automation: daily `startPermitAlertScheduler()` snapshot logging added and `/api/compliance/permit-alerts` refactored to shared service (`server/services/compliance/permitAlertScheduler.ts`)
 - [x] Wave 04 permit enforcement automation: daily `startPropertyPermitEnforcementScheduler()` now auto-unpublishes `available` listings missing required permit fields (`municipalityNumber`, `buildingPermitNumber`) to `off_market` with compliance activity trail
+- [x] Wave 04 permit register operations path: added `GET /api/compliance/permits` and `PATCH /api/compliance/permits/:propertyId` for manager-level permit review/update with guardrails for `available` listings
 - [ ] Continue Wave 03 and Wave 04 implementation backlog execution
 
 ### MILESTONE-PHASE-27

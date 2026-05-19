@@ -16,6 +16,16 @@ const { mockPrisma } = vi.hoisted(() => {
       property: {
         count: fn().mockResolvedValue(20),
         findMany: fn().mockResolvedValue([]),
+        findUnique: fn().mockResolvedValue(null),
+        update: fn().mockResolvedValue({
+          id: 'prop-1',
+          title: 'Updated Permit Property',
+          status: 'available',
+          municipalityNumber: 'MUN-1',
+          plotNumber: 'PLOT-1',
+          buildingPermitNumber: 'BPN-1',
+          updatedAt: new Date('2026-05-19T10:00:00.000Z'),
+        }),
       },
       lead: {
         findUnique: fn().mockResolvedValue({ id: 'lead-1', tags: [] }),
@@ -98,6 +108,7 @@ describe('Compliance Routes — /api/compliance', () => {
     vi.clearAllMocks();
     mockPrisma.property.count.mockResolvedValue(20);
     mockPrisma.property.findMany.mockResolvedValue([]);
+    mockPrisma.property.findUnique.mockResolvedValue(null);
     mockPrisma.lead.findUnique.mockResolvedValue({ id: 'lead-1', tags: [] });
     mockPrisma.lead.update.mockResolvedValue({ id: 'lead-1', tags: ['kyc_verified'] });
     mockPrisma.user.count.mockResolvedValue(5);
@@ -389,6 +400,84 @@ describe('Compliance Routes — /api/compliance', () => {
       );
       expect(res.status).toBe(400);
       expect(res.body.error).toMatch(/daysAhead/i);
+    });
+  });
+
+  // ── GET/PATCH /permits ──────────────────────────────────────────
+  describe('Permit register endpoints', () => {
+    it('returns permit register list for owner', async () => {
+      mockPrisma.property.findMany.mockResolvedValueOnce([
+        {
+          id: 'prop-1',
+          title: 'Marina Apt',
+          status: 'available',
+          location: 'Dubai Marina',
+          area: 'Marina',
+          municipalityNumber: null,
+          plotNumber: 'P-100',
+          buildingPermitNumber: 'BP-100',
+          updatedAt: new Date('2026-05-19T10:00:00.000Z'),
+        },
+      ]);
+      mockPrisma.property.count.mockResolvedValueOnce(20).mockResolvedValueOnce(3);
+
+      const res = await request(createApp('owner')).get('/api/compliance/permits?status=all');
+
+      expect(res.status).toBe(200);
+      expect(res.body.success).toBe(true);
+      expect(res.body.data).toHaveLength(1);
+      expect(res.body.data[0].permitStatus).toBe('missing');
+      expect(res.body.summary.totalProperties).toBe(20);
+      expect(res.body.summary.missingPermits).toBe(3);
+    });
+
+    it('returns 403 for agent on permit register list', async () => {
+      const res = await request(createApp('agent')).get('/api/compliance/permits');
+      expect(res.status).toBe(403);
+    });
+
+    it('updates permit fields for manager role', async () => {
+      mockPrisma.property.findUnique.mockResolvedValueOnce({
+        id: 'prop-1',
+        title: 'Marina Apt',
+        status: 'off_market',
+        municipalityNumber: null,
+        plotNumber: null,
+        buildingPermitNumber: null,
+      });
+
+      const res = await request(createApp('manager')).patch('/api/compliance/permits/prop-1').send({
+        municipalityNumber: 'MUN-900',
+        plotNumber: 'PLOT-900',
+        buildingPermitNumber: 'BPN-900',
+      });
+
+      expect(res.status).toBe(200);
+      expect(res.body.success).toBe(true);
+      expect(mockPrisma.property.update).toHaveBeenCalled();
+      expect(mockPrisma.activity.create).toHaveBeenCalledWith(
+        expect.objectContaining({
+          data: expect.objectContaining({ action: 'permit_register_updated' }),
+        })
+      );
+    });
+
+    it('blocks removing permit fields for available listings', async () => {
+      mockPrisma.property.findUnique.mockResolvedValueOnce({
+        id: 'prop-2',
+        title: 'JVC Apt',
+        status: 'available',
+        municipalityNumber: 'MUN-100',
+        plotNumber: 'PLOT-100',
+        buildingPermitNumber: 'BPN-100',
+      });
+
+      const res = await request(createApp('manager'))
+        .patch('/api/compliance/permits/prop-2')
+        .send({ municipalityNumber: '' });
+
+      expect(res.status).toBe(400);
+      expect(res.body.error).toMatch(/available listings require municipalityNumber/i);
     });
   });
 
