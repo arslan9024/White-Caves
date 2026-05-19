@@ -60,6 +60,7 @@
 | May 20, 2026 | @Mira + @Katherine | Post-closure verification sweep: reran `npm run quality:quick` (lint ✅, build ✅, ops tests 11/11 ✅); no regressions detected on current branch head                                                               | Done        |
 | May 20, 2026 | @Mira + @Katherine | Notification wave: added webhook-backed optional push transport in `server/notifications/notification.service.ts` with local fallback and 3 focused regression tests                                                 | Done        |
 | May 20, 2026 | @Mira + @Katherine | Contracts signing wave: `POST /api/contracts/:id/request-signature` now sends a branded signing-link email via tracked email service; focused route regression test added                                            | Done        |
+| May 20, 2026 | @Mira + @Katherine | Signature service wave: `SignatureService` now sends branded signing-request and reminder emails via tracked email service; focused service regression test added                                                    | Done        |
 
 ---
 
