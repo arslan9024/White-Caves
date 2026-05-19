@@ -20,6 +20,7 @@ import { parsePagination } from '../config/pagination.js';
 import { requirePermission, requireRole } from '../middleware/rbac.js';
 
 const router = Router();
+const db = prisma as any;
 
 const VALID_CONTRACT_TYPES = ['sale', 'rental', 'mou', 'form_f', 'listing', 'management'] as const;
 const VALID_CONTRACT_STATUSES = [
@@ -69,13 +70,13 @@ router.get(
     }
 
     const [contracts, total] = await Promise.all([
-      prisma.contract.findMany({
+      db.contract.findMany({
         where,
         orderBy: { createdAt: 'desc' },
         skip,
         take: limit,
       }),
-      prisma.contract.count({ where }),
+      db.contract.count({ where }),
     ]);
 
     res.status(200).json({
@@ -92,7 +93,7 @@ router.get(
   requirePermission('view_contracts'),
   asyncHandler(async (req: Request, res: Response) => {
     validateIdParam(req.params.id, 'Contract ID');
-    const contract = await prisma.contract.findUnique({ where: { id: req.params.id } });
+    const contract = await db.contract.findUnique({ where: { id: req.params.id } });
     if (!contract) throw new AppError('Contract not found', 404);
     res.status(200).json({ success: true, data: contract });
   })
@@ -133,7 +134,7 @@ router.post(
       assignedToId: rules.optionalMongoId('Assigned agent ID'),
     });
 
-    const contract = await prisma.contract.create({
+    const contract = await db.contract.create({
       data: {
         contractNumber: generateContractNumber(),
         title: sanitizeString(title.trim()),
@@ -177,7 +178,7 @@ router.patch(
     const { id } = req.params;
     validateIdParam(id, 'Contract ID');
 
-    const existing = await prisma.contract.findUnique({ where: { id } });
+    const existing = await db.contract.findUnique({ where: { id } });
     if (!existing) throw new AppError('Contract not found', 404);
 
     const {
@@ -238,7 +239,7 @@ router.patch(
     if (assignedToId !== undefined) data.assignedToId = assignedToId || null;
     if (metadata !== undefined) data.metadata = metadata;
 
-    const updated = await prisma.contract.update({ where: { id }, data });
+    const updated = await db.contract.update({ where: { id }, data });
 
     const statusChanged = status !== undefined && status !== existing.status;
     await prisma.activity.create({
@@ -265,10 +266,10 @@ router.delete(
     const { id } = req.params;
     validateIdParam(id, 'Contract ID');
 
-    const existing = await prisma.contract.findUnique({ where: { id } });
+    const existing = await db.contract.findUnique({ where: { id } });
     if (!existing) throw new AppError('Contract not found', 404);
 
-    await prisma.contract.delete({ where: { id } });
+    await db.contract.delete({ where: { id } });
 
     await prisma.activity.create({
       data: {

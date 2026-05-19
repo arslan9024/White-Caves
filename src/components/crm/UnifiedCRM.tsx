@@ -6,9 +6,7 @@ import { spacing } from '../../styles/theme/spacing';
 import Skeleton from '../ui/Skeleton/Skeleton';
 import type { DashboardView, UnifiedCRMProps } from './types';
 
-// ============================================================================
 // TYPES & CONSTANTS
-// ============================================================================
 
 // Local dashboard configuration type (used only in this component's DASHBOARD_CONFIGS)
 interface LocalDashboardConfig {
@@ -132,9 +130,7 @@ const LOCAL_DASHBOARD_CONFIGS: Record<DashboardView, LocalDashboardConfig> = {
   },
 };
 
-// ============================================================================
 // STYLED COMPONENTS
-// ============================================================================
 
 const StyledContainer = styled.div`
   min-height: 100vh;
@@ -330,9 +326,7 @@ const LoadingFeaturesCard = styled(Card)`
   gap: ${spacing.sm};
 `;
 
-// ============================================================================
 // COMPONENT
-// ============================================================================
 
 const UnifiedCRM: React.FC<UnifiedCRMProps> = ({
   defaultView = 'company',

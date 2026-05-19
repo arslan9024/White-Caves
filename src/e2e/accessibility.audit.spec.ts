@@ -58,7 +58,7 @@ async function runAxeViolations(page: any, options?: any): Promise<any[]> {
 
   for (let attempt = 1; attempt <= 3; attempt++) {
     try {
-      const violations = await page.evaluate(async axeOptions => {
+      const violations = await page.evaluate(async (axeOptions: any) => {
         const axe = (window as any).axe;
         if (!axe) return [];
         const results = await axe.run(document, axeOptions || undefined);
