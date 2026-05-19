@@ -182,6 +182,7 @@
 - [x] Wave 04 permit register operations path: added `GET /api/compliance/permits` and `PATCH /api/compliance/permits/:propertyId` for manager-level permit review/update with guardrails for `available` listings
 - [x] Wave 04 permit enforcement control path: added manager-only `POST /api/compliance/permits/enforcement-run` to trigger dry-run/live auto-unpublish checks with compliance activity logging
 - [x] Wave 04 permit enforcement observability path: added `GET /api/compliance/permits/enforcement-history` for finance/manager audit visibility of dry/live enforcement runs
+- [x] Wave 04 scheduler reliability hardening: permit enforcement scheduler now uses overlap-safe tick runner (`runPropertyPermitEnforcementTick`) to skip concurrent runs and prevent stacked executions
 - [ ] Continue Wave 03 and Wave 04 implementation backlog execution
 
 ### MILESTONE-PHASE-27

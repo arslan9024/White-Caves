@@ -14,6 +14,13 @@ export interface PropertyPermitEnforcementOptions {
   limit?: number;
 }
 
+let permitEnforcementRunInProgress = false;
+
+export interface PropertyPermitEnforcementTickResult {
+  status: 'ran' | 'skipped';
+  summary?: PropertyPermitEnforcementSummary;
+}
+
 export async function enforcePropertyPermitCompliance(
   options: PropertyPermitEnforcementOptions = {}
 ): Promise<PropertyPermitEnforcementSummary> {
@@ -106,13 +113,30 @@ export async function enforcePropertyPermitCompliance(
   return summary;
 }
 
+export async function runPropertyPermitEnforcementTick(
+  options: PropertyPermitEnforcementOptions = {}
+): Promise<PropertyPermitEnforcementTickResult> {
+  if (permitEnforcementRunInProgress) {
+    logger.info('Property permit enforcement tick skipped (previous run still active)');
+    return { status: 'skipped' };
+  }
+
+  permitEnforcementRunInProgress = true;
+  try {
+    const summary = await enforcePropertyPermitCompliance(options);
+    return { status: 'ran', summary };
+  } finally {
+    permitEnforcementRunInProgress = false;
+  }
+}
+
 export function startPropertyPermitEnforcementScheduler(): NodeJS.Timeout {
   logger.info('Starting property permit enforcement scheduler (daily)');
 
   const interval = setInterval(
     async () => {
       try {
-        await enforcePropertyPermitCompliance();
+        await runPropertyPermitEnforcementTick();
       } catch (error) {
         logger.error('Property permit enforcement scheduler error', { error });
       }
@@ -122,7 +146,7 @@ export function startPropertyPermitEnforcementScheduler(): NodeJS.Timeout {
 
   // Startup run after DB stabilization.
   setTimeout(() => {
-    enforcePropertyPermitCompliance().catch(err =>
+    runPropertyPermitEnforcementTick().catch(err =>
       logger.error('Initial property permit enforcement run failed', { error: err })
     );
   }, 75_000);

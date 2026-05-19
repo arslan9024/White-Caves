@@ -19,6 +19,7 @@ vi.mock('../../../utils/logger.js', () => ({
 import { prisma } from '../../../database.js';
 import {
   enforcePropertyPermitCompliance,
+  runPropertyPermitEnforcementTick,
   startPropertyPermitEnforcementScheduler,
 } from '../propertyPermitEnforcementScheduler';
 
@@ -154,5 +155,25 @@ describe('propertyPermitEnforcementScheduler', () => {
     expect(interval).toBeDefined();
     // Cleanup interval to avoid leaking in test process
     clearInterval(interval);
+  });
+
+  it('skips overlapping tick while previous run is still active', async () => {
+    let resolveFindMany: ((value: unknown) => void) | null = null;
+    const pendingFindMany = new Promise(resolve => {
+      resolveFindMany = resolve;
+    });
+
+    mockPrisma.property.findMany.mockImplementationOnce(() => pendingFindMany);
+
+    const firstRunPromise = runPropertyPermitEnforcementTick();
+    const secondRun = await runPropertyPermitEnforcementTick();
+
+    expect(secondRun.status).toBe('skipped');
+
+    resolveFindMany?.([]);
+    const firstRun = await firstRunPromise;
+
+    expect(firstRun.status).toBe('ran');
+    expect(firstRun.summary?.scanned).toBe(0);
   });
 });
