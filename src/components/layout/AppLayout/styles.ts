@@ -36,10 +36,23 @@ export const AppMain = styled.main<{ $withNav?: boolean }>`
   background: ${colors.background.primary};
   overflow-y: auto;
   transition: margin-left ${standardTransition};
+  padding: 24px;
 
-  /* Add bottom padding for MobileBottomNav on mobile */
+  /* Tablet (768-1279px) */
+  @media (min-width: 768px) and (max-width: 1279px) {
+    padding: 16px;
+  }
+
+  /* Mobile (<768px) */
   @media (max-width: 767px) {
+    padding: 12px;
     padding-bottom: calc(56px + env(safe-area-inset-bottom, 0px));
+  }
+
+  /* Ultra-wide (≥1920px): constrain content width */
+  @media (min-width: 1920px) {
+    max-width: 1400px;
+    margin: 0 auto;
   }
 
   @media (prefers-color-scheme: dark) {

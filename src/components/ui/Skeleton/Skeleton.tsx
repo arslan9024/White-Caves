@@ -64,12 +64,7 @@ const SkeletonBlock = styled.div<{
   $animated: boolean;
 }>`
   display: block;
-  background: linear-gradient(
-    90deg,
-    var(--color-surface-secondary, #e2e8f0) 25%,
-    var(--color-surface-tertiary, #f1f5f9) 50%,
-    var(--color-surface-secondary, #e2e8f0) 75%
-  );
+  background: linear-gradient(90deg, #f5f5f5 25%, #ececec 50%, #f5f5f5 75%);
   background-size: 200% 100%;
   width: ${({ $w }) => $w};
   height: ${({ $h }) => $h};
@@ -77,8 +72,12 @@ const SkeletonBlock = styled.div<{
 
   ${({ $animated }) =>
     $animated
-      ? css`animation: ${shimmer} 1.5s ease-in-out infinite;`
-      : css`animation: none;`}
+      ? css`
+          animation: ${shimmer} 1.5s ease-in-out infinite;
+        `
+      : css`
+          animation: none;
+        `}
 
   @media (prefers-reduced-motion: reduce) {
     animation: none;

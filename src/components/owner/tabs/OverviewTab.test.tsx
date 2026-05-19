@@ -63,10 +63,13 @@ beforeEach(() => {
 describe('OverviewTab', () => {
   // === Loading State ===
   describe('Loading State', () => {
-    it('shows loading spinner when loading', () => {
+    it('shows loading skeleton tiles when loading', () => {
       renderTab({ loading: true });
-      expect(screen.getByRole('status')).toBeInTheDocument();
-      expect(screen.getByText('Loading dashboard overview...')).toBeInTheDocument();
+      // Multiple status elements: kpi-grid container + each skeleton tile
+      const statusEls = screen.getAllByRole('status');
+      expect(statusEls.length).toBeGreaterThan(0);
+      // Container label communicates loading state to screen readers
+      expect(screen.getByLabelText('Loading dashboard overview')).toBeInTheDocument();
     });
 
     it('does not render stats when loading', () => {

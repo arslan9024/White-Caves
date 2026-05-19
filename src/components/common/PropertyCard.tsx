@@ -24,6 +24,7 @@ import {
   PriceSuffix,
   PropertySpecs,
 } from './PropertyCard/PropertyCard.styles';
+import { Skeleton } from '../ui/Skeleton';
 
 export function PropertyStatusBadge({ status }: { status?: string }) {
   return <PropertyStatusBadgeStyled $statusType={status}>{status}</PropertyStatusBadgeStyled>;
@@ -44,6 +45,8 @@ interface PropertyCardProps {
   onClick?: () => void;
   to?: string;
   className?: string;
+  /** Show skeleton loading state instead of content */
+  loading?: boolean;
 }
 
 function PropertyCard({
@@ -61,14 +64,14 @@ function PropertyCard({
   onClick,
   to,
   className = '',
+  loading = false,
 }: PropertyCardProps) {
   const dispatch = useDispatch<AppDispatch>();
   const favorites: FavoriteItem[] = useSelector(selectFavorites) || [];
   const favoriteIds: string[] = useSelector(selectFavoriteIds) || [];
   // Use favoriteIds for lightweight check; fall back to full favorites array
-  const isFavorite = favoriteIds.length > 0
-    ? favoriteIds.includes(id)
-    : favorites.some((f) => f?.id === id);
+  const isFavorite =
+    favoriteIds.length > 0 ? favoriteIds.includes(id) : favorites.some(f => f?.id === id);
 
   const handleFavoriteClick = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -83,6 +86,22 @@ function PropertyCard({
       dispatch(addFavoriteThunk(item));
     }
   };
+
+  // Skeleton loading state — after all hooks to respect Rules of Hooks
+  if (loading) {
+    return (
+      <PropertyCardDiv $clickable={false} className={className}>
+        <PropertyCardImage>
+          <Skeleton variant="rect" height={220} borderRadius="0" />
+        </PropertyCardImage>
+        <PropertyCardContent>
+          <Skeleton variant="text" width="70%" height={16} />
+          <Skeleton variant="text" width="50%" height={14} />
+          <Skeleton variant="text" width="40%" height={14} />
+        </PropertyCardContent>
+      </PropertyCardDiv>
+    );
+  }
 
   const content = (
     <>
@@ -134,7 +153,7 @@ function PropertyCard({
             Curated by White Caves
           </span>
         </div>
-        {(beds != null && beds > 0 || baths != null && baths > 0 || area) && (
+        {((beds != null && beds > 0) || (baths != null && baths > 0) || area) && (
           <PropertySpecs>
             {beds != null && beds > 0 && <span>🛏️ {beds}</span>}
             {baths != null && baths > 0 && <span>🚿 {baths}</span>}
