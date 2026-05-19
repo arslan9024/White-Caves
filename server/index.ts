@@ -70,7 +70,7 @@ import jobApplicationsRoutes from './routes/jobApplications.js';
 import contractsRoutes from './routes/contracts.js';
 import appointmentsRoutes from './routes/appointments.js';
 import { roleRequestRouter, adminRoleRequestRouter } from './routes/roleRequests.js';
-import phase6Routes from './routes/phase6.routes.js';
+import { phase6Router } from './routes/phase6.routes.js';
 import landlordPortalRoutes from './routes/landlord.js';
 import tenantPortalRoutes from './routes/tenantPortal.js';
 import invoicesLeaseRoutes from './routes/invoicesLease.js';
@@ -904,7 +904,7 @@ app.use(
     if (userId) req.headers['x-user-id'] = userId;
     next();
   },
-  phase6Routes
+  phase6Router
 );
 
 // ============================================================================
