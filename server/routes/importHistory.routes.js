@@ -138,8 +138,14 @@ router.get('/inventory/import/session/:sessionId/errors', auth, async (req, res)
     res.json({
       success: true,
       data: {
-        errors: session.errors || [],
-        totalErrors: session.totalErrors || 0,
+        errors: session.importErrors || session.errors || [],
+        totalErrors:
+          session.totalErrors ||
+          (Array.isArray(session.importErrors)
+            ? session.importErrors.length
+            : Array.isArray(session.errors)
+              ? session.errors.length
+              : 0),
       },
     });
   } catch (error) {
@@ -196,7 +202,7 @@ router.get('/inventory/import/session/:sessionId/report', auth, async (req, res)
           totalErrors: session.totalErrors,
           totalWarnings: session.totalWarnings,
         },
-        errors: session.errors?.slice(0, 100) || [],
+        errors: (session.importErrors || session.errors || []).slice(0, 100),
       });
     }
 

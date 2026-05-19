@@ -107,4 +107,60 @@ describe('Import history admin dashboard', () => {
     expect(res.body.data.totalOwners).toBe(7);
     expect(res.body.data.totalRelationships).toBe(19);
   });
+
+  it('returns importErrors from session errors endpoint', async () => {
+    const session = {
+      sessionId: 'session-err-1',
+      userId: 'user-1',
+      importErrors: [{ row: 2, message: 'Missing owner name' }],
+      totalErrors: 1,
+    };
+
+    mockImportSession.findOne = vi.fn().mockReturnValue({
+      lean: vi.fn().mockResolvedValue(session),
+    });
+
+    const res = await request(createApp()).get(
+      '/api/inventory/import/session/session-err-1/errors'
+    );
+
+    expect(res.status).toBe(200);
+    expect(res.body.success).toBe(true);
+    expect(res.body.data.errors).toEqual(session.importErrors);
+    expect(res.body.data.totalErrors).toBe(1);
+  });
+
+  it('returns importErrors in JSON report payload', async () => {
+    const session = {
+      sessionId: 'session-report-1',
+      userId: 'user-1',
+      fileName: 'owners.xlsx',
+      status: 'completed',
+      importedBy: 'admin',
+      createdAt: new Date().toISOString(),
+      completedAt: new Date().toISOString(),
+      totalRows: 10,
+      propertiesCreated: 3,
+      propertiesUpdated: 1,
+      ownersCreated: 2,
+      ownersUpdated: 1,
+      duplicatesFound: 0,
+      successRate: 90,
+      totalErrors: 1,
+      totalWarnings: 0,
+      importErrors: [{ row: 4, message: 'Invalid unit number' }],
+    };
+
+    mockImportSession.findOne = vi.fn().mockReturnValue({
+      lean: vi.fn().mockResolvedValue(session),
+    });
+
+    const res = await request(createApp()).get(
+      '/api/inventory/import/session/session-report-1/report?format=json'
+    );
+
+    expect(res.status).toBe(200);
+    expect(res.body.sessionId).toBe(session.sessionId);
+    expect(res.body.errors).toEqual(session.importErrors);
+  });
 });
