@@ -46,6 +46,7 @@
 | May 19, 2026 | @Mira + @Katherine | N+1→N+6 combined completion verification wave: typecheck + lint + tenant portal parity suite passed (36/36)                                                                | Done        |
 | May 19, 2026 | @Mira + @Katherine | Wave 04 W4-002 implemented: permit/BRN alert scheduler service added, `/api/compliance/permit-alerts` refactored to shared helper, compliance suite green (37/37)          | Done        |
 | May 19, 2026 | @Mira + @Katherine | Wave 04 enforcement automation: added daily property permit scheduler to auto-unpublish non-compliant `available` listings (`off_market`) with audit trail + service tests | Done        |
+| May 19, 2026 | @Mira + @Katherine | Wave 04 permit register path delivered: added `GET/PATCH /api/compliance/permits` with manager guardrails and green compliance suite (41/41)                               | Done        |
 
 ---
 
