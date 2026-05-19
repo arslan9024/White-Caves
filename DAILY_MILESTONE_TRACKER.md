@@ -34,17 +34,18 @@
 
 ## Daily Entry
 
-| Date         | Owner              | Summary                                                                                                                                                           | Status      |
-| ------------ | ------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------- |
-| May 16, 2026 | @Margaret          | Project progress report created and tracker sync initiated; readiness gate still blocked pending 60% evidence                                                     | In progress |
-| May 16, 2026 | @Margaret          | Parallel Implementation War Room launched for Team A/B/C/D priorities with 4-lane simultaneous execution plan                                                     | In progress |
-| May 16, 2026 | @Margaret          | First-wave root implementation completed and acknowledged across all four lanes; downstream queue unlocked from 4 to 8 ready tasks                                | In progress |
-| May 16, 2026 | @Margaret          | Multi-wave autonomous execution advanced queue from 7/51 to 36/51; Lane D reached 6/6 complete                                                                    | In progress |
-| May 16, 2026 | @Ada               | Context Ready (60% Readiness) — Coding Phase Approved (threshold satisfied at 82%)                                                                                | Approved    |
-| May 16, 2026 | @Margaret          | Finalized all remaining waves; queue reached 51/51 done and all lanes completed                                                                                   | Done        |
-| May 19, 2026 | @Margaret + @Mira  | Next execution wave governance closure: superseded SESSION/PHASE_2 plan docs archived; Phase 26 Workstream E explicitly deferred to 2026-05-23                    | Done        |
-| May 19, 2026 | @Mira + @Katherine | N+1→N+6 combined completion verification wave: typecheck + lint + tenant portal parity suite passed (36/36)                                                       | Done        |
-| May 19, 2026 | @Mira + @Katherine | Wave 04 W4-002 implemented: permit/BRN alert scheduler service added, `/api/compliance/permit-alerts` refactored to shared helper, compliance suite green (37/37) | Done        |
+| Date         | Owner              | Summary                                                                                                                                                                    | Status      |
+| ------------ | ------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------- |
+| May 16, 2026 | @Margaret          | Project progress report created and tracker sync initiated; readiness gate still blocked pending 60% evidence                                                              | In progress |
+| May 16, 2026 | @Margaret          | Parallel Implementation War Room launched for Team A/B/C/D priorities with 4-lane simultaneous execution plan                                                              | In progress |
+| May 16, 2026 | @Margaret          | First-wave root implementation completed and acknowledged across all four lanes; downstream queue unlocked from 4 to 8 ready tasks                                         | In progress |
+| May 16, 2026 | @Margaret          | Multi-wave autonomous execution advanced queue from 7/51 to 36/51; Lane D reached 6/6 complete                                                                             | In progress |
+| May 16, 2026 | @Ada               | Context Ready (60% Readiness) — Coding Phase Approved (threshold satisfied at 82%)                                                                                         | Approved    |
+| May 16, 2026 | @Margaret          | Finalized all remaining waves; queue reached 51/51 done and all lanes completed                                                                                            | Done        |
+| May 19, 2026 | @Margaret + @Mira  | Next execution wave governance closure: superseded SESSION/PHASE_2 plan docs archived; Phase 26 Workstream E explicitly deferred to 2026-05-23                             | Done        |
+| May 19, 2026 | @Mira + @Katherine | N+1→N+6 combined completion verification wave: typecheck + lint + tenant portal parity suite passed (36/36)                                                                | Done        |
+| May 19, 2026 | @Mira + @Katherine | Wave 04 W4-002 implemented: permit/BRN alert scheduler service added, `/api/compliance/permit-alerts` refactored to shared helper, compliance suite green (37/37)          | Done        |
+| May 19, 2026 | @Mira + @Katherine | Wave 04 enforcement automation: added daily property permit scheduler to auto-unpublish non-compliant `available` listings (`off_market`) with audit trail + service tests | Done        |
 
 ---
 
