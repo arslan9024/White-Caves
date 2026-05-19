@@ -58,6 +58,7 @@
 | May 20, 2026 | @Mira + @Gwynne    | Deploy-readiness hardening: added `public/robots.txt`, fixed `phase6.routes` import wiring in `server/index.ts`, installed missing runtime deps (`googleapis`) and revalidated lint/build + ops tests                | Done        |
 | May 20, 2026 | @Mira + @Katherine | Active-cluster closure: removed production startup hard-crash for missing WhatsApp creds (degraded mode by default with strict opt-in), fixed Express production SPA fallback, and verified `verify-deploy` 22/22 ✅ | Done        |
 | May 20, 2026 | @Mira + @Katherine | Post-closure verification sweep: reran `npm run quality:quick` (lint ✅, build ✅, ops tests 11/11 ✅); no regressions detected on current branch head                                                               | Done        |
+| May 20, 2026 | @Mira + @Katherine | Notification wave: added webhook-backed optional push transport in `server/notifications/notification.service.ts` with local fallback and 3 focused regression tests                                                 | Done        |
 
 ---
 
