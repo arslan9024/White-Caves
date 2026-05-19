@@ -23,8 +23,8 @@ const ImportSessionSchema = new mongoose.Schema(
       trim: true,
     },
     userId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'User',
+      type: String,
+      trim: true,
       index: true,
     },
     columnMapping: {
