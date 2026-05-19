@@ -1,0 +1,110 @@
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+import express from 'express';
+import request from 'supertest';
+
+const createQueryChain = data => {
+  const chain = {
+    sort: vi.fn(() => chain),
+    limit: vi.fn(() => chain),
+    skip: vi.fn(() => chain),
+    lean: vi.fn().mockResolvedValue(data),
+  };
+  return chain;
+};
+
+const { mockImportSession, mockPropertyInventory, mockOwnerPropertyMapping, mockAuth } = vi.hoisted(
+  () => {
+    const fn = vi.fn;
+    return {
+      mockImportSession: {
+        find: fn(() => createQueryChain([])),
+        countDocuments: fn().mockResolvedValue(0),
+      },
+      mockPropertyInventory: {
+        countDocuments: fn().mockResolvedValue(0),
+      },
+      mockOwnerPropertyMapping: {
+        countDocuments: fn().mockResolvedValue(0),
+        distinct: fn().mockResolvedValue([]),
+      },
+      mockAuth: (req, _res, next) => {
+        req.user = { _id: 'user-1', role: 'admin' };
+        next();
+      },
+    };
+  }
+);
+
+vi.mock('../models/ImportSession.js', () => ({ default: mockImportSession }));
+vi.mock('../models/PropertyInventory.js', () => ({ default: mockPropertyInventory }));
+vi.mock('../models/OwnerPropertyMapping.js', () => ({ default: mockOwnerPropertyMapping }));
+vi.mock('../middleware/auth.ts', () => ({ default: mockAuth }));
+
+import importHistoryRoutes from './importHistory.routes.js';
+
+function createApp() {
+  const app = express();
+  app.use(express.json());
+  app.use('/api', importHistoryRoutes);
+  app.use((err, _req, res, _next) => {
+    res.status(err.statusCode || 500).json({ success: false, error: err.message });
+  });
+  return app;
+}
+
+describe('Import history admin dashboard', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    mockImportSession.find.mockImplementation(() => createQueryChain([]));
+    mockImportSession.countDocuments.mockResolvedValue(0);
+    mockPropertyInventory.countDocuments.mockResolvedValue(12);
+    mockOwnerPropertyMapping.countDocuments.mockResolvedValue(19);
+    mockOwnerPropertyMapping.distinct.mockResolvedValue([
+      'owner-1',
+      'owner-2',
+      'owner-3',
+      'owner-4',
+      'owner-5',
+      'owner-6',
+      'owner-7',
+    ]);
+  });
+
+  it('returns import history for /api/inventory/import/history', async () => {
+    const imports = [
+      {
+        sessionId: 'session-1',
+        fileName: 'owners.xlsx',
+        status: 'completed',
+      },
+    ];
+
+    mockImportSession.find.mockImplementation(() => createQueryChain(imports));
+    mockImportSession.countDocuments.mockResolvedValue(1);
+
+    const res = await request(createApp()).get(
+      '/api/inventory/import/history?status=completed&limit=10&offset=0'
+    );
+
+    expect(res.status).toBe(200);
+    expect(res.body.success).toBe(true);
+    expect(res.body.data.imports).toEqual(imports);
+    expect(res.body.data.total).toBe(1);
+    expect(res.body.data.hasMore).toBe(false);
+  });
+
+  it('returns collection stats for the admin dashboard', async () => {
+    const res = await request(createApp()).get('/api/admin/dashboard');
+
+    expect(res.status).toBe(200);
+    expect(res.body.success).toBe(true);
+    expect(res.body.data.collections).toEqual([
+      { name: 'import_sessions', count: 0 },
+      { name: 'property_inventory', count: 12 },
+      { name: 'owner_property_mappings', count: 19 },
+    ]);
+    expect(res.body.data.totalProperties).toBe(12);
+    expect(res.body.data.totalOwners).toBe(7);
+    expect(res.body.data.totalRelationships).toBe(19);
+  });
+});

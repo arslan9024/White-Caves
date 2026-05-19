@@ -8,13 +8,30 @@
  * GET /api/admin/system-health - System health status
  */
 
-const express = require('express');
+import express from 'express';
+import auth from '../middleware/auth.ts';
+import ImportSession from '../models/ImportSession.js';
+import PropertyInventory from '../models/PropertyInventory.js';
+import OwnerPropertyMapping from '../models/OwnerPropertyMapping.js';
+
 const router = express.Router();
-const ImportSession = require('../models/ImportSession');
-const Property = require('../models/Property');
-const Owner = require('../models/Owner');
-const OwnerPropertyMapping = require('../models/OwnerPropertyMapping');
-const { auth, adminOnly } = require('../middleware/auth');
+
+const adminOnly = (req, res, next) => {
+  if (!req.user || (req.user.role !== 'admin' && req.user.role !== 'superadmin')) {
+    return res.status(403).json({
+      success: false,
+      error: 'Admin access required',
+    });
+  }
+
+  return next();
+};
+
+const ADMIN_COLLECTIONS = [
+  { name: 'import_sessions', model: ImportSession },
+  { name: 'property_inventory', model: PropertyInventory },
+  { name: 'owner_property_mappings', model: OwnerPropertyMapping },
+];
 
 // ============ IMPORT HISTORY ROUTES ============
 
@@ -22,7 +39,7 @@ const { auth, adminOnly } = require('../middleware/auth');
  * GET /api/inventory/import/history
  * Retrieve import history with filtering and sorting
  */
-router.get('/import/history', auth, async (req, res) => {
+router.get('/inventory/import/history', auth, async (req, res) => {
   try {
     const { status, sortBy = 'date', limit = 50, offset = 0 } = req.query;
 
@@ -57,14 +74,14 @@ router.get('/import/history', auth, async (req, res) => {
       data: {
         imports,
         total,
-        hasMore: (parseInt(offset) + parseInt(limit)) < total
-      }
+        hasMore: parseInt(offset) + parseInt(limit) < total,
+      },
     });
   } catch (error) {
     console.error('Error fetching import history:', error);
     res.status(500).json({
       success: false,
-      error: 'Failed to fetch import history'
+      error: 'Failed to fetch import history',
     });
   }
 });
@@ -73,29 +90,29 @@ router.get('/import/history', auth, async (req, res) => {
  * GET /api/inventory/import/session/:sessionId
  * Get detailed session information
  */
-router.get('/import/session/:sessionId', auth, async (req, res) => {
+router.get('/inventory/import/session/:sessionId', auth, async (req, res) => {
   try {
     const session = await ImportSession.findOne({
       sessionId: req.params.sessionId,
-      userId: req.user._id
+      userId: req.user._id,
     }).lean();
 
     if (!session) {
       return res.status(404).json({
         success: false,
-        error: 'Session not found'
+        error: 'Session not found',
       });
     }
 
     res.json({
       success: true,
-      data: { session }
+      data: { session },
     });
   } catch (error) {
     console.error('Error fetching session:', error);
     res.status(500).json({
       success: false,
-      error: 'Failed to fetch session'
+      error: 'Failed to fetch session',
     });
   }
 });
@@ -104,17 +121,17 @@ router.get('/import/session/:sessionId', auth, async (req, res) => {
  * GET /api/inventory/import/session/:sessionId/errors
  * Get errors from a specific import session
  */
-router.get('/import/session/:sessionId/errors', auth, async (req, res) => {
+router.get('/inventory/import/session/:sessionId/errors', auth, async (req, res) => {
   try {
     const session = await ImportSession.findOne({
       sessionId: req.params.sessionId,
-      userId: req.user._id
+      userId: req.user._id,
     }).lean();
 
     if (!session) {
       return res.status(404).json({
         success: false,
-        error: 'Session not found'
+        error: 'Session not found',
       });
     }
 
@@ -122,14 +139,14 @@ router.get('/import/session/:sessionId/errors', auth, async (req, res) => {
       success: true,
       data: {
         errors: session.errors || [],
-        totalErrors: session.totalErrors || 0
-      }
+        totalErrors: session.totalErrors || 0,
+      },
     });
   } catch (error) {
     console.error('Error fetching errors:', error);
     res.status(500).json({
       success: false,
-      error: 'Failed to fetch errors'
+      error: 'Failed to fetch errors',
     });
   }
 });
@@ -138,19 +155,19 @@ router.get('/import/session/:sessionId/errors', auth, async (req, res) => {
  * GET /api/inventory/import/session/:sessionId/report
  * Download import report as PDF or JSON
  */
-router.get('/import/session/:sessionId/report', auth, async (req, res) => {
+router.get('/inventory/import/session/:sessionId/report', auth, async (req, res) => {
   try {
     const { format = 'json' } = req.query;
 
     const session = await ImportSession.findOne({
       sessionId: req.params.sessionId,
-      userId: req.user._id
+      userId: req.user._id,
     }).lean();
 
     if (!session) {
       return res.status(404).json({
         success: false,
-        error: 'Session not found'
+        error: 'Session not found',
       });
     }
 
@@ -177,9 +194,9 @@ router.get('/import/session/:sessionId/report', auth, async (req, res) => {
           duplicatesFound: session.duplicatesFound,
           successRate: session.successRate,
           totalErrors: session.totalErrors,
-          totalWarnings: session.totalWarnings
+          totalWarnings: session.totalWarnings,
         },
-        errors: session.errors?.slice(0, 100) || []
+        errors: session.errors?.slice(0, 100) || [],
       });
     }
 
@@ -202,29 +219,37 @@ router.get('/import/session/:sessionId/report', auth, async (req, res) => {
         y: yPos,
         size,
         font: isBold ? boldFont : font,
-        color: rgb(0, 0, 0)
+        color: rgb(0, 0, 0),
       });
     };
 
-    const drawLine = (yPos) => {
+    const drawLine = yPos => {
       page.drawLine({
         start: { x: margin, y: yPos },
         end: { x: width - margin, y: yPos },
         thickness: 1,
-        color: rgb(0.8, 0.8, 0.8)
+        color: rgb(0.8, 0.8, 0.8),
       });
     };
 
     // Header
     page.drawRectangle({ x: 0, y: height - 80, width, height: 80, color: rgb(0.05, 0.05, 0.15) });
     drawText('White Caves Real Estate', margin, height - 35, 18, true);
-    page.drawText('Import Report', { x: margin, y: height - 58, size: 12, font, color: rgb(0.8, 0.8, 0.8) });
+    page.drawText('Import Report', {
+      x: margin,
+      y: height - 58,
+      size: 12,
+      font,
+      color: rgb(0.8, 0.8, 0.8),
+    });
 
     y = height - 100;
 
     // Session info
-    drawText('IMPORT SESSION DETAILS', margin, y, 12, true); y -= 20;
-    drawLine(y); y -= 15;
+    drawText('IMPORT SESSION DETAILS', margin, y, 12, true);
+    y -= 20;
+    drawLine(y);
+    y -= 15;
 
     const infoRows = [
       ['Session ID:', session.sessionId || 'N/A'],
@@ -232,7 +257,10 @@ router.get('/import/session/:sessionId/report', auth, async (req, res) => {
       ['Status:', session.status || 'N/A'],
       ['Imported By:', session.importedBy || 'N/A'],
       ['Started At:', session.createdAt ? new Date(session.createdAt).toLocaleString() : 'N/A'],
-      ['Completed At:', session.completedAt ? new Date(session.completedAt).toLocaleString() : 'N/A'],
+      [
+        'Completed At:',
+        session.completedAt ? new Date(session.completedAt).toLocaleString() : 'N/A',
+      ],
     ];
 
     for (const [label, value] of infoRows) {
@@ -242,8 +270,10 @@ router.get('/import/session/:sessionId/report', auth, async (req, res) => {
     }
 
     y -= 10;
-    drawText('IMPORT STATISTICS', margin, y, 12, true); y -= 20;
-    drawLine(y); y -= 15;
+    drawText('IMPORT STATISTICS', margin, y, 12, true);
+    y -= 20;
+    drawLine(y);
+    y -= 15;
 
     const stats = [
       ['Total Rows Processed:', session.totalRows ?? 0],
@@ -267,8 +297,10 @@ router.get('/import/session/:sessionId/report', auth, async (req, res) => {
     const errors = session.errors?.slice(0, 20) || [];
     if (errors.length > 0) {
       y -= 10;
-      drawText('ERRORS (first 20)', margin, y, 12, true); y -= 20;
-      drawLine(y); y -= 15;
+      drawText('ERRORS (first 20)', margin, y, 12, true);
+      y -= 20;
+      drawLine(y);
+      y -= 15;
 
       for (const err of errors) {
         if (y < margin + 30) {
@@ -276,7 +308,7 @@ router.get('/import/session/:sessionId/report', auth, async (req, res) => {
           const newPage = pdfDoc.addPage([595, 842]);
           y = 842 - margin;
         }
-        const errText = typeof err === 'string' ? err : (err.message || JSON.stringify(err));
+        const errText = typeof err === 'string' ? err : err.message || JSON.stringify(err);
         drawText(`• ${errText.substring(0, 90)}`, margin, y, 9);
         y -= 14;
       }
@@ -289,7 +321,7 @@ router.get('/import/session/:sessionId/report', auth, async (req, res) => {
       y: 25,
       size: 8,
       font,
-      color: rgb(0.5, 0.5, 0.5)
+      color: rgb(0.5, 0.5, 0.5),
     });
 
     const pdfBytes = await pdfDoc.save();
@@ -306,7 +338,7 @@ router.get('/import/session/:sessionId/report', auth, async (req, res) => {
     console.error('Error generating report:', error);
     res.status(500).json({
       success: false,
-      error: 'Failed to generate report'
+      error: 'Failed to generate report',
     });
   }
 });
@@ -345,14 +377,14 @@ router.get('/admin/dashboard', auth, adminOnly, async (req, res) => {
 
     // Fetch imports for period
     const imports = await ImportSession.find({
-      createdAt: { $gte: startDate }
+      createdAt: { $gte: startDate },
     }).lean();
 
     const previousPeriodImports = await ImportSession.find({
       createdAt: {
         $gte: new Date(startDate.getTime() - (now.getTime() - startDate.getTime())),
-        $lt: startDate
-      }
+        $lt: startDate,
+      },
     }).lean();
 
     // Calculate metrics
@@ -361,40 +393,63 @@ router.get('/admin/dashboard', auth, adminOnly, async (req, res) => {
     const failedImports = imports.filter(i => i.status === 'failed').length;
     const activeImports = imports.filter(i => i.status === 'processing').length;
 
-    const successRate = totalImports > 0
-      ? ((successfulImports / totalImports) * 100).toFixed(1)
-      : 0;
+    const successRate =
+      totalImports > 0 ? ((successfulImports / totalImports) * 100).toFixed(1) : 0;
 
-    const previousSuccessfulImports = previousPeriodImports.filter(i => i.status === 'completed').length;
+    const previousSuccessfulImports = previousPeriodImports.filter(
+      i => i.status === 'completed'
+    ).length;
     const previousTotalImports = previousPeriodImports.length;
 
-    const successRateChange = totalImports > 0
-      ? ((successRate - (previousTotalImports > 0 ? (previousSuccessfulImports / previousTotalImports) * 100 : 0))).toFixed(1)
-      : 0;
+    const successRateChange =
+      totalImports > 0
+        ? (
+            successRate -
+            (previousTotalImports > 0
+              ? (previousSuccessfulImports / previousTotalImports) * 100
+              : 0)
+          ).toFixed(1)
+        : 0;
 
     // Calculate counts
     const propertiesCreated = imports.reduce((sum, i) => sum + (i.propertiesCreated || 0), 0);
     const ownersCreated = imports.reduce((sum, i) => sum + (i.ownersCreated || 0), 0);
 
-    const previousPropertiesCreated = previousPeriodImports.reduce((sum, i) => sum + (i.propertiesCreated || 0), 0);
-    const previousOwnersCreated = previousPeriodImports.reduce((sum, i) => sum + (i.ownersCreated || 0), 0);
+    const previousPropertiesCreated = previousPeriodImports.reduce(
+      (sum, i) => sum + (i.propertiesCreated || 0),
+      0
+    );
+    const previousOwnersCreated = previousPeriodImports.reduce(
+      (sum, i) => sum + (i.ownersCreated || 0),
+      0
+    );
 
-    const propertiesChange = previousPeriodImports.length > 0
-      ? (((propertiesCreated - previousPropertiesCreated) / previousPropertiesCreated) * 100).toFixed(1)
-      : (propertiesCreated > 0 ? 100 : 0);
+    const propertiesChange =
+      previousPeriodImports.length > 0
+        ? (
+            ((propertiesCreated - previousPropertiesCreated) / previousPropertiesCreated) *
+            100
+          ).toFixed(1)
+        : propertiesCreated > 0
+          ? 100
+          : 0;
 
-    const ownersChange = previousPeriodImports.length > 0
-      ? (((ownersCreated - previousOwnersCreated) / previousOwnersCreated) * 100).toFixed(1)
-      : (ownersCreated > 0 ? 100 : 0);
+    const ownersChange =
+      previousPeriodImports.length > 0
+        ? (((ownersCreated - previousOwnersCreated) / previousOwnersCreated) * 100).toFixed(1)
+        : ownersCreated > 0
+          ? 100
+          : 0;
 
     // Calculate average duration
     const durations = imports
       .filter(i => i.completedAt && i.createdAt)
       .map(i => new Date(i.completedAt).getTime() - new Date(i.createdAt).getTime());
 
-    const avgDuration = durations.length > 0
-      ? formatDuration(Math.floor(durations.reduce((a, b) => a + b) / durations.length))
-      : 'N/A';
+    const avgDuration =
+      durations.length > 0
+        ? formatDuration(Math.floor(durations.reduce((a, b) => a + b) / durations.length))
+        : 'N/A';
 
     // Import trend (last 7 days)
     const importTrend = getImportTrend(imports);
@@ -404,7 +459,7 @@ router.get('/admin/dashboard', auth, adminOnly, async (req, res) => {
       completed: imports.filter(i => i.status === 'completed').length,
       failed: imports.filter(i => i.status === 'failed').length,
       partial: imports.filter(i => i.status === 'partial').length,
-      processing: imports.filter(i => i.status === 'processing').length
+      processing: imports.filter(i => i.status === 'processing').length,
     };
 
     // Size distribution
@@ -412,7 +467,7 @@ router.get('/admin/dashboard', auth, adminOnly, async (req, res) => {
       small: imports.filter(i => (i.totalRows || 0) < 100).length,
       medium: imports.filter(i => (i.totalRows || 0) >= 100 && (i.totalRows || 0) < 1000).length,
       large: imports.filter(i => (i.totalRows || 0) >= 1000 && (i.totalRows || 0) < 10000).length,
-      huge: imports.filter(i => (i.totalRows || 0) >= 10000).length
+      huge: imports.filter(i => (i.totalRows || 0) >= 10000).length,
     };
 
     // Hourly activity
@@ -424,19 +479,36 @@ router.get('/admin/dashboard', auth, adminOnly, async (req, res) => {
       .slice(0, 10);
 
     // Fetch DB stats
-    const totalProperties = await Property.countDocuments();
-    const totalOwners = await Owner.countDocuments();
+    const totalProperties = await PropertyInventory.countDocuments();
+    const totalOwners = (await OwnerPropertyMapping.distinct('ownerId')).length;
     const totalRelationships = await OwnerPropertyMapping.countDocuments();
+    const collections = await Promise.all(
+      ADMIN_COLLECTIONS.map(async ({ name, model }) => ({
+        name,
+        count: await model.countDocuments(),
+      }))
+    );
 
     res.json({
       success: true,
       data: {
         totalImports,
-        importsChange: ((totalImports - previousTotalImports) / (previousTotalImports || 1) * 100).toFixed(1),
+        importsChange: (
+          ((totalImports - previousTotalImports) / (previousTotalImports || 1)) *
+          100
+        ).toFixed(1),
         successfulImports,
-        successfulChange: ((successfulImports - previousSuccessfulImports) / (previousSuccessfulImports || 1) * 100).toFixed(1),
+        successfulChange: (
+          ((successfulImports - previousSuccessfulImports) / (previousSuccessfulImports || 1)) *
+          100
+        ).toFixed(1),
         failedImports,
-        failedChange: ((failedImports - (previousPeriodImports.filter(i => i.status === 'failed').length || 0)) / (previousPeriodImports.filter(i => i.status === 'failed').length || 1) * 100).toFixed(1),
+        failedChange: (
+          ((failedImports -
+            (previousPeriodImports.filter(i => i.status === 'failed').length || 0)) /
+            (previousPeriodImports.filter(i => i.status === 'failed').length || 1)) *
+          100
+        ).toFixed(1),
         successRate,
         successRateChange,
         propertiesCreated,
@@ -456,14 +528,14 @@ router.get('/admin/dashboard', auth, adminOnly, async (req, res) => {
         totalOwners,
         totalRelationships,
         databaseSize: 'N/A',
-        collections: [] // TODO: Add collection stats
-      }
+        collections,
+      },
     });
   } catch (error) {
     console.error('Error fetching dashboard data:', error);
     res.status(500).json({
       success: false,
-      error: 'Failed to fetch dashboard data'
+      error: 'Failed to fetch dashboard data',
     });
   }
 });
@@ -486,14 +558,14 @@ router.get('/admin/system-health', auth, adminOnly, async (req, res) => {
         apiPerformance: 98,
         storageUsage: 45,
         memoryUsage: Math.round((memUsage.heapUsed / memUsage.heapTotal) * 100),
-        cpuUsage: 25
-      }
+        cpuUsage: 25,
+      },
     });
   } catch (error) {
     console.error('Error fetching system health:', error);
     res.status(500).json({
       success: false,
-      error: 'Failed to fetch system health'
+      error: 'Failed to fetch system health',
     });
   }
 });
@@ -526,7 +598,7 @@ function getImportTrend(imports) {
 
     trend.push({
       date: date.toLocaleDateString(),
-      count
+      count,
     });
   }
   return trend;
@@ -542,10 +614,10 @@ function getHourlyActivity(imports) {
 
     activity.push({
       hour: `${hour}:00`,
-      count
+      count,
     });
   }
   return activity;
 }
 
-module.exports = router;
+export default router;

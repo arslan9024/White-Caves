@@ -78,6 +78,7 @@ import usersRoutes from './routes/users.js';
 import leasingInventoryRoutes from './routes/leasing-inventory.js';
 import secondarySalesRoutes from './routes/secondary-sales.js';
 import commissionsRoutes from './routes/commissions.js';
+import importHistoryRoutes from './routes/importHistory.routes.js';
 import { requireRole, requirePermission } from './middleware/rbac.js';
 import { startLeadScoringScheduler } from './services/ai/leadScoringScheduler.js';
 import { startFollowUpScheduler } from './services/automation/followUpScheduler.js';
@@ -407,6 +408,7 @@ app.use('/api/secondary-sales', secondarySalesRoutes);
 
 // Commissions API (Phase 35 - Dubai Real Estate Commission Tracker)
 app.use('/api/commissions', commissionsRoutes);
+app.use('/api', importHistoryRoutes);
 
 // WhatsApp Webhook (public endpoint — requires webhook secret for verification)
 app.post(
