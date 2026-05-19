@@ -67,6 +67,14 @@ describe('Smart import ownership guards', () => {
     });
   });
 
+  it('returns 404 for invalid session id without hitting database', async () => {
+    const res = await request(createApp()).get('/api/inventory/import/not-a-valid-objectid');
+
+    expect(res.status).toBe(404);
+    expect(res.body.success).toBe(false);
+    expect(mockImportSession.findOne).not.toHaveBeenCalled();
+  });
+
   it('applies ownership filter on mapping update', async () => {
     const sessionId = '507f1f77bcf86cd799439011';
     mockImportSession.findOneAndUpdate.mockResolvedValue({

@@ -5,6 +5,7 @@
 
 import express from 'express';
 import multer from 'multer';
+import mongoose from 'mongoose';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import * as excelImportService from '../services/excelImportService.js';
@@ -24,8 +25,13 @@ const buildSessionOwnershipQuery = (sessionId, userId) => ({
   $or: [{ userId }, { importedBy: userId }],
 });
 
-const findSessionForUser = (sessionId, userId) =>
-  ImportSession.findOne(buildSessionOwnershipQuery(sessionId, userId));
+const findSessionForUser = (sessionId, userId) => {
+  if (!mongoose.Types.ObjectId.isValid(sessionId)) {
+    return null;
+  }
+
+  return ImportSession.findOne(buildSessionOwnershipQuery(sessionId, userId));
+};
 
 // Multer configuration
 const uploadDir = path.join(__dirname, '../uploads');
