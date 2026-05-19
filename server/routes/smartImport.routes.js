@@ -17,6 +17,16 @@ const router = express.Router();
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+const getAuthenticatedUserId = req => req.user?.id || req.user?._id || null;
+
+const buildSessionOwnershipQuery = (sessionId, userId) => ({
+  _id: sessionId,
+  $or: [{ userId }, { importedBy: userId }],
+});
+
+const findSessionForUser = (sessionId, userId) =>
+  ImportSession.findOne(buildSessionOwnershipQuery(sessionId, userId));
+
 // Multer configuration
 const uploadDir = path.join(__dirname, '../uploads');
 const storage = multer.diskStorage({
@@ -52,6 +62,14 @@ const upload = multer({
  */
 router.post('/upload', upload.single('file'), async (req, res) => {
   try {
+    const userId = getAuthenticatedUserId(req);
+    if (!userId) {
+      return res.status(401).json({
+        success: false,
+        error: 'Authentication required',
+      });
+    }
+
     if (!req.file) {
       return res.status(400).json({
         success: false,
@@ -73,8 +91,8 @@ router.post('/upload', upload.single('file'), async (req, res) => {
       totalRows: parseResult.totalRows,
       status: 'pending',
       columnMapping: parseResult.columnMapping,
-      userId: req.user?.id || undefined,
-      importedBy: req.user?.id || 'anonymous',
+      userId,
+      importedBy: userId,
     });
 
     await session.save();
@@ -108,7 +126,12 @@ router.post('/upload', upload.single('file'), async (req, res) => {
  */
 router.post('/:sessionId/preview', async (req, res) => {
   try {
-    const session = await ImportSession.findById(req.params.sessionId);
+    const userId = getAuthenticatedUserId(req);
+    if (!userId) {
+      return res.status(401).json({ success: false, error: 'Authentication required' });
+    }
+
+    const session = await findSessionForUser(req.params.sessionId, userId);
     if (!session) {
       return res.status(404).json({
         success: false,
@@ -147,11 +170,23 @@ router.post('/:sessionId/preview', async (req, res) => {
  */
 router.post('/:sessionId/mapping', async (req, res) => {
   try {
-    const session = await ImportSession.findByIdAndUpdate(
-      req.params.sessionId,
+    const userId = getAuthenticatedUserId(req);
+    if (!userId) {
+      return res.status(401).json({ success: false, error: 'Authentication required' });
+    }
+
+    const session = await ImportSession.findOneAndUpdate(
+      buildSessionOwnershipQuery(req.params.sessionId, userId),
       { columnMapping: req.body.mapping },
       { new: true }
     );
+
+    if (!session) {
+      return res.status(404).json({
+        success: false,
+        error: 'Import session not found',
+      });
+    }
 
     res.json({
       success: true,
@@ -171,7 +206,12 @@ router.post('/:sessionId/mapping', async (req, res) => {
  */
 router.post('/:sessionId/validate', async (req, res) => {
   try {
-    const session = await ImportSession.findById(req.params.sessionId);
+    const userId = getAuthenticatedUserId(req);
+    if (!userId) {
+      return res.status(401).json({ success: false, error: 'Authentication required' });
+    }
+
+    const session = await findSessionForUser(req.params.sessionId, userId);
     if (!session) {
       return res.status(404).json({
         success: false,
@@ -217,7 +257,12 @@ router.post('/:sessionId/validate', async (req, res) => {
  */
 router.post('/:sessionId/execute', async (req, res) => {
   try {
-    const session = await ImportSession.findById(req.params.sessionId);
+    const userId = getAuthenticatedUserId(req);
+    if (!userId) {
+      return res.status(401).json({ success: false, error: 'Authentication required' });
+    }
+
+    const session = await findSessionForUser(req.params.sessionId, userId);
     if (!session) {
       return res.status(404).json({
         success: false,
@@ -275,7 +320,8 @@ router.post('/:sessionId/execute', async (req, res) => {
   } catch (error) {
     // Update session on error
     try {
-      const session = await ImportSession.findById(req.params.sessionId);
+      const userId = getAuthenticatedUserId(req);
+      const session = userId ? await findSessionForUser(req.params.sessionId, userId) : null;
       if (session) {
         session.status = 'failed';
         session.importErrors = [{ error: error.message }];
@@ -298,7 +344,12 @@ router.post('/:sessionId/execute', async (req, res) => {
  */
 router.get('/:sessionId', async (req, res) => {
   try {
-    const session = await ImportSession.findById(req.params.sessionId);
+    const userId = getAuthenticatedUserId(req);
+    if (!userId) {
+      return res.status(401).json({ success: false, error: 'Authentication required' });
+    }
+
+    const session = await findSessionForUser(req.params.sessionId, userId);
     if (!session) {
       return res.status(404).json({
         success: false,
@@ -326,7 +377,12 @@ router.get('/:sessionId', async (req, res) => {
  */
 router.get('/:sessionId/errors', async (req, res) => {
   try {
-    const session = await ImportSession.findById(req.params.sessionId);
+    const userId = getAuthenticatedUserId(req);
+    if (!userId) {
+      return res.status(401).json({ success: false, error: 'Authentication required' });
+    }
+
+    const session = await findSessionForUser(req.params.sessionId, userId);
     if (!session) {
       return res.status(404).json({
         success: false,

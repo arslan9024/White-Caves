@@ -30,6 +30,10 @@ const adminOnly = (req, res, next) => {
 
 const getAuthenticatedUserId = req => req.user?.id || req.user?._id || null;
 
+const buildOwnershipQuery = userId => ({
+  $or: [{ userId }, { importedBy: userId }],
+});
+
 const buildSessionLookupQuery = (rawSessionId, userId) => {
   const conditions = [{ sessionId: rawSessionId }];
 
@@ -38,8 +42,8 @@ const buildSessionLookupQuery = (rawSessionId, userId) => {
   }
 
   return {
-    userId,
-    $or: conditions,
+    ...buildOwnershipQuery(userId),
+    $and: [{ $or: conditions }],
   };
 };
 
@@ -68,7 +72,7 @@ router.get('/inventory/import/history', auth, async (req, res) => {
     }
 
     // Build query
-    const query = { userId };
+    const query = buildOwnershipQuery(userId);
     if (status && status !== '') {
       query.status = status;
     }

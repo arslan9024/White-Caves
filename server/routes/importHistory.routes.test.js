@@ -98,7 +98,10 @@ describe('Import history admin dashboard', () => {
     expect(res.body.data.total).toBe(1);
     expect(res.body.data.hasMore).toBe(false);
     expect(mockImportSession.find).toHaveBeenCalledWith(
-      expect.objectContaining({ userId: 'user-1', status: 'completed' })
+      expect.objectContaining({
+        status: 'completed',
+        $or: expect.arrayContaining([{ userId: 'user-1' }, { importedBy: 'user-1' }]),
+      })
     );
   });
 
@@ -121,11 +124,15 @@ describe('Import history admin dashboard', () => {
     expect(res.body.success).toBe(true);
     expect(mockImportSession.findOne).toHaveBeenCalledWith(
       expect.objectContaining({
-        userId: 'user-1',
-        $or: expect.arrayContaining([
-          { sessionId: '507f1f77bcf86cd799439011' },
-          { _id: '507f1f77bcf86cd799439011' },
+        $and: expect.arrayContaining([
+          {
+            $or: expect.arrayContaining([
+              { sessionId: '507f1f77bcf86cd799439011' },
+              { _id: '507f1f77bcf86cd799439011' },
+            ]),
+          },
         ]),
+        $or: expect.arrayContaining([{ userId: 'user-1' }, { importedBy: 'user-1' }]),
       })
     );
   });
