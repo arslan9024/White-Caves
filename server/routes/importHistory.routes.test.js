@@ -28,7 +28,7 @@ const { mockImportSession, mockPropertyInventory, mockOwnerPropertyMapping, mock
         distinct: fn().mockResolvedValue([]),
       },
       mockAuth: (req, _res, next) => {
-        req.user = { _id: 'user-1', role: 'admin' };
+        req.user = { id: 'user-1', role: 'admin' };
         next();
       },
     };
@@ -91,6 +91,9 @@ describe('Import history admin dashboard', () => {
     expect(res.body.data.imports).toEqual(imports);
     expect(res.body.data.total).toBe(1);
     expect(res.body.data.hasMore).toBe(false);
+    expect(mockImportSession.find).toHaveBeenCalledWith(
+      expect.objectContaining({ userId: 'user-1', status: 'completed' })
+    );
   });
 
   it('returns collection stats for the admin dashboard', async () => {

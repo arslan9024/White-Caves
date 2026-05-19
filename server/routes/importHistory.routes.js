@@ -27,6 +27,8 @@ const adminOnly = (req, res, next) => {
   return next();
 };
 
+const getAuthenticatedUserId = req => req.user?.id || req.user?._id || null;
+
 const ADMIN_COLLECTIONS = [
   { name: 'import_sessions', model: ImportSession },
   { name: 'property_inventory', model: PropertyInventory },
@@ -42,9 +44,17 @@ const ADMIN_COLLECTIONS = [
 router.get('/inventory/import/history', auth, async (req, res) => {
   try {
     const { status, sortBy = 'date', limit = 50, offset = 0 } = req.query;
+    const userId = getAuthenticatedUserId(req);
+
+    if (!userId) {
+      return res.status(401).json({
+        success: false,
+        error: 'Authentication required',
+      });
+    }
 
     // Build query
-    const query = { userId: req.user._id };
+    const query = { userId };
     if (status && status !== '') {
       query.status = status;
     }
@@ -92,9 +102,18 @@ router.get('/inventory/import/history', auth, async (req, res) => {
  */
 router.get('/inventory/import/session/:sessionId', auth, async (req, res) => {
   try {
+    const userId = getAuthenticatedUserId(req);
+
+    if (!userId) {
+      return res.status(401).json({
+        success: false,
+        error: 'Authentication required',
+      });
+    }
+
     const session = await ImportSession.findOne({
       sessionId: req.params.sessionId,
-      userId: req.user._id,
+      userId,
     }).lean();
 
     if (!session) {
@@ -123,9 +142,18 @@ router.get('/inventory/import/session/:sessionId', auth, async (req, res) => {
  */
 router.get('/inventory/import/session/:sessionId/errors', auth, async (req, res) => {
   try {
+    const userId = getAuthenticatedUserId(req);
+
+    if (!userId) {
+      return res.status(401).json({
+        success: false,
+        error: 'Authentication required',
+      });
+    }
+
     const session = await ImportSession.findOne({
       sessionId: req.params.sessionId,
-      userId: req.user._id,
+      userId,
     }).lean();
 
     if (!session) {
@@ -164,10 +192,18 @@ router.get('/inventory/import/session/:sessionId/errors', auth, async (req, res)
 router.get('/inventory/import/session/:sessionId/report', auth, async (req, res) => {
   try {
     const { format = 'json' } = req.query;
+    const userId = getAuthenticatedUserId(req);
+
+    if (!userId) {
+      return res.status(401).json({
+        success: false,
+        error: 'Authentication required',
+      });
+    }
 
     const session = await ImportSession.findOne({
       sessionId: req.params.sessionId,
-      userId: req.user._id,
+      userId,
     }).lean();
 
     if (!session) {
