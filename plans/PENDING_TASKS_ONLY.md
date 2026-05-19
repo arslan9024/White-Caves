@@ -10,26 +10,22 @@
 
 ## Active Pending Plans
 
-| Phase | Plan File                                                                                        | Status                                               |
-| ----- | ------------------------------------------------------------------------------------------------ | ---------------------------------------------------- |
-| N+1   | Auth/login hardening + route consistency                                                         | ✅ Complete                                           |
-| N+2   | Tenant portal live data parity                                                                   | ✅ Complete (all 5 tabs on live APIs — verified)      |
-| N+3   | Managing-director CRM critical tabs                                                              | ⬜ Not started                                       |
-| N+4   | Convert top 3 revenue-impact stub endpoints                                                      | ✅ Complete                                           |
-| N+5   | Test + release hardening                                                                         | 🔵 In progress                                       |
-| N+6   | UI architecture hardening: component granularity + event-driven rendering + Arabic RTL readiness | ⬜ Not started                                       |
-| —     | [`PHASE_26_CONTEXT_ENRICHMENT_SPRINT.md`](./PHASE_26_CONTEXT_ENRICHMENT_SPRINT.md)               | ⬜ Near-complete (close Workstream E)                |
+| Phase | Plan File                                                                                        | Status                                           |
+| ----- | ------------------------------------------------------------------------------------------------ | ------------------------------------------------ |
+| N+1   | Auth/login hardening + route consistency                                                         | ✅ Complete                                      |
+| N+2   | Tenant portal live data parity                                                                   | ✅ Complete (all 5 tabs on live APIs — verified) |
+| N+3   | Managing-director CRM critical tabs                                                              | ✅ Complete                                      |
+| N+4   | Convert top 3 revenue-impact stub endpoints                                                      | ✅ Complete                                      |
+| N+5   | Test + release hardening                                                                         | ✅ Complete                                      |
+| N+6   | UI architecture hardening: component granularity + event-driven rendering + Arabic RTL readiness | ✅ Complete (RTL + i18n fully wired)             |
+| —     | [`PHASE_26_CONTEXT_ENRICHMENT_SPRINT.md`](./PHASE_26_CONTEXT_ENRICHMENT_SPRINT.md)               | ⬜ Near-complete (close Workstream E)            |
 
 ## Immediate Focus
 
-- [ ] N+3: Managing-director CRM critical tabs (owner: @Mira, @Una, @Katherine)
-- [ ] N+5: Test + release hardening — run full vitest suite, fix pre-existing failures, CI green
 - [ ] Close Phase 26 Workstream E audit advisory or explicitly defer with owner + date
 - [ ] Enforce archive rule — move superseded `plans/SESSION_*`, `plans/PHASE_2_*` files to `archives/`
 - [ ] Keep status consistent across `MASTER_PLAN`, `PROJECT_PROGRESS`, and this file
-- [ ] Start N+6.A: Component decomposition audit for top 20 high-traffic screens (auth + CRM + dashboards)
-- [ ] Start N+6.B: Arabic/RTL localization readiness pass (text extraction, directionality, icon mirroring)
-- [ ] Start N+6.C: Event-driven rendering hardening (selector scope, memoization boundaries, lazy-triggered rendering)
+
 ## N+1 Completion Summary (2026-05-17)
 
 - `refreshTokenHash` field added to Prisma `User` model (nullable String)

@@ -226,6 +226,10 @@ app.use('/api/auth/login', authLimiter);
 app.use('/api/auth/register', registerLimiter);
 app.use('/api/auth/password', passwordLimiter);
 app.use('/api/auth/verify-2fa', strictLimiter);
+app.use('/api/auth/2fa/setup', strictLimiter);
+app.use('/api/auth/2fa/enable', strictLimiter);
+app.use('/api/auth/2fa/disable', strictLimiter);
+app.use('/api/auth/refresh', authLimiter);
 app.use('/api/auth/firebase-sync', authLimiter);
 app.use('/api/auth/refresh', authLimiter);
 app.use('/api/auth/webauthn/register', authLimiter);
@@ -365,9 +369,9 @@ app.use('/api/linda', lindaRoutes);
 
 // AssistantOrchestrator API — cross-assistant event bus status, events, and admin emit
 app.use('/api/orchestrator', orchestratorRoutes);
-app.use('/api/henry',       henryRoutes);
-app.use('/api/nina',        ninaRoutes);
-app.use('/api/mary',        maryRoutes);
+app.use('/api/henry', henryRoutes);
+app.use('/api/nina', ninaRoutes);
+app.use('/api/mary', maryRoutes);
 
 // Meta Business API Webhooks and Sending (production scale channel)
 app.use('/api/webhooks/meta', metaWebhookRoutes);
@@ -499,13 +503,24 @@ app.post(
   asyncHandler(async (req: Request, res: Response) => {
     const { phoneNumber } = req.body ?? {};
     const userId = (req as Request & { user?: { id: string } }).user?.id;
-    if (!phoneNumber) throw new AppError('phoneNumber is required to start a WhatsApp session', 400);
+    if (!phoneNumber)
+      throw new AppError('phoneNumber is required to start a WhatsApp session', 400);
     const sessionId = `wa-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
-    const sessionData = { sessionId, phoneNumber: String(phoneNumber), status: 'pending', startedAt: new Date().toISOString() };
+    const sessionData = {
+      sessionId,
+      phoneNumber: String(phoneNumber),
+      status: 'pending',
+      startedAt: new Date().toISOString(),
+    };
     await prisma.systemSetting.upsert({
       where: { key: 'whatsapp_session' },
       update: { value: sessionData, category: 'whatsapp', updatedBy: userId },
-      create: { key: 'whatsapp_session', value: sessionData, category: 'whatsapp', updatedBy: userId },
+      create: {
+        key: 'whatsapp_session',
+        value: sessionData,
+        category: 'whatsapp',
+        updatedBy: userId,
+      },
     });
     res.status(200).json({ success: true, data: sessionData });
   })
@@ -927,16 +942,18 @@ const startServer = async () => {
     startAutoRouting(); // Phase 4A: auto-route hot leads to best agents
 
     // Boot AssistantOrchestrator — register all 5 assistant handler chains
-    import('./services/orchestrator/AssistantOrchestrator.js').then(({ assistantOrchestrator }) => {
-      assistantOrchestrator.registerLindaHandlers();
-      assistantOrchestrator.registerNadiaHandlers();
-      assistantOrchestrator.registerNinaHandlers();
-      assistantOrchestrator.registerMaryHandlers();
-      assistantOrchestrator.registerHenryHandlers();
-      logger.info('AssistantOrchestrator: all 5 assistant handlers registered.');
-    }).catch((err: unknown) => {
-      logger.warn('AssistantOrchestrator init failed:', err instanceof Error ? err.message : err);
-    });
+    import('./services/orchestrator/AssistantOrchestrator.js')
+      .then(({ assistantOrchestrator }) => {
+        assistantOrchestrator.registerLindaHandlers();
+        assistantOrchestrator.registerNadiaHandlers();
+        assistantOrchestrator.registerNinaHandlers();
+        assistantOrchestrator.registerMaryHandlers();
+        assistantOrchestrator.registerHenryHandlers();
+        logger.info('AssistantOrchestrator: all 5 assistant handlers registered.');
+      })
+      .catch((err: unknown) => {
+        logger.warn('AssistantOrchestrator init failed:', err instanceof Error ? err.message : err);
+      });
 
     // Auto-migrate any remaining legacy base64 password hashes to bcrypt
     try {

@@ -39,6 +39,13 @@ const mockLinda = {
   getConversationHistory: vi.fn(async () => []),
 };
 
+const mockCheckPhoneSavedInGoraha = vi.fn(async () => ({
+  isConfigured: true,
+  isCredentialValid: true,
+  apiAccessValid: true,
+  isSaved: false,
+}));
+
 vi.mock('../database.js', () => ({ prisma: mockPrisma }));
 vi.mock('../config/env.js', () => ({ LINDA_ENABLED: true }));
 vi.mock('../middleware/rbac.js', () => ({
@@ -62,6 +69,9 @@ vi.mock('../services/whatsapp/lindaClient.js', () => ({
     ERROR: 'ERROR',
   },
   getLindaClient: () => mockLinda,
+}));
+vi.mock('../services/whatsapp/gorahaContactCheckService.js', () => ({
+  checkPhoneSavedInGoraha: (...args: unknown[]) => mockCheckPhoneSavedInGoraha(...args),
 }));
 
 import lindaRoutes from './linda';
@@ -115,6 +125,40 @@ describe('Linda routes — campaign foundation', () => {
       .mockResolvedValueOnce({ id: 'camp-1', status: 'completed', sentCount: 2, failedCount: 0 });
 
     mockPrisma.lindaBroadcastCampaign.findMany.mockResolvedValue([{ id: 'camp-1' }]);
+  });
+
+  it('checks whether a phone conversation is saved in Goraha account', async () => {
+    mockLinda.getConversationHistory.mockResolvedValueOnce([
+      { id: 'h-1', from: '971500000001', body: 'hi' },
+    ]);
+    mockCheckPhoneSavedInGoraha.mockResolvedValueOnce({
+      isConfigured: true,
+      isCredentialValid: true,
+      apiAccessValid: true,
+      isSaved: true,
+      matchedContactName: 'Ahmed',
+      matchedPhone: '+971500000001',
+    });
+
+    const res = await request(createApp()).get(
+      '/api/linda/conversations/+971-50-000-0001/goraha-saved'
+    );
+
+    expect(res.status).toBe(200);
+    expect(res.body.success).toBe(true);
+    expect(res.body.data.phoneNumber).toBe('971500000001');
+    expect(res.body.data.hasLindaConversation).toBe(true);
+    expect(res.body.data.isSavedInGoraha).toBe(true);
+    expect(res.body.data.conversationSavedToGoraha).toBe(true);
+    expect(mockCheckPhoneSavedInGoraha).toHaveBeenCalledWith('971500000001');
+  });
+
+  it('returns 400 for invalid phone in goraha-saved check', async () => {
+    const res = await request(createApp()).get('/api/linda/conversations/abc/goraha-saved');
+
+    expect(res.status).toBe(400);
+    expect(res.body.success).toBe(false);
+    expect(mockCheckPhoneSavedInGoraha).not.toHaveBeenCalled();
   });
 
   it('creates a scheduled campaign', async () => {
