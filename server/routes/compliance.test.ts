@@ -77,6 +77,10 @@ vi.mock('../services/compliance/amlAdapter.js', () => ({
     screenedAt: new Date('2026-05-16T10:00:00.000Z').toISOString(),
   })),
 }));
+vi.mock('../services/compliance/reraExpiryScheduler.js', () => ({
+  getBRNExpiryReport: vi.fn(async () => []),
+  checkBRNExpirations: vi.fn(async () => ({ notified: 0, errors: 0, agents: [] })),
+}));
 vi.mock('../services/compliance/propertyPermitEnforcementScheduler.js', () => ({
   enforcePropertyPermitCompliance: vi.fn(async () => ({
     scanned: 2,
@@ -89,6 +93,7 @@ vi.mock('../services/compliance/propertyPermitEnforcementScheduler.js', () => ({
 
 import complianceRoutes from './compliance';
 import { enforcePropertyPermitCompliance } from '../services/compliance/propertyPermitEnforcementScheduler.js';
+import { checkBRNExpirations } from '../services/compliance/reraExpiryScheduler.js';
 
 // ── Test app factory ─────────────────────────────────────────────────
 function createApp(role: string = 'owner') {
@@ -410,6 +415,82 @@ describe('Compliance Routes — /api/compliance', () => {
       );
       expect(res.status).toBe(400);
       expect(res.body.error).toMatch(/daysAhead/i);
+    });
+  });
+
+  // ── POST /brn-check + GET /brn-check/history ───────────────────
+  describe('BRN check operability endpoints', () => {
+    it('runs manual BRN check for owner and logs activity', async () => {
+      const brnCheckMock = checkBRNExpirations as unknown as ReturnType<typeof vi.fn>;
+      brnCheckMock.mockResolvedValueOnce({
+        notified: 2,
+        errors: 1,
+        agents: [
+          { id: 'a-1', name: 'Agent 1', brnNumber: 'BRN-1', daysUntilExpiry: 7, channel: 'email' },
+          {
+            id: 'a-2',
+            name: 'Agent 2',
+            brnNumber: 'BRN-2',
+            daysUntilExpiry: 3,
+            channel: 'whatsapp',
+          },
+        ],
+      });
+
+      const res = await request(createApp('owner')).post('/api/compliance/brn-check').send({});
+
+      expect(res.status).toBe(200);
+      expect(res.body.success).toBe(true);
+      expect(res.body.data.notified).toBe(2);
+      expect(mockPrisma.activity.create).toHaveBeenCalledWith(
+        expect.objectContaining({
+          data: expect.objectContaining({ action: 'brn_manual_check' }),
+        })
+      );
+    });
+
+    it('returns 403 for agent on manual BRN check', async () => {
+      const res = await request(createApp('agent')).post('/api/compliance/brn-check').send({});
+      expect(res.status).toBe(403);
+    });
+
+    it('returns BRN check history for finance role', async () => {
+      mockPrisma.activity.findMany.mockResolvedValueOnce([
+        {
+          id: 'act-brn-1',
+          type: 'compliance',
+          action: 'brn_manual_check',
+          description: 'Manual BRN expiry check executed (notified=1, errors=0)',
+          createdAt: new Date('2026-05-20T08:00:00.000Z'),
+          metadata: {
+            notified: 1,
+            errors: 0,
+            agentCount: 1,
+            agentIds: ['a-1'],
+          },
+          user: {
+            id: 'u-1',
+            name: 'Manager One',
+            role: 'manager',
+            email: 'manager@whitecaves.ae',
+          },
+        },
+      ]);
+
+      const res = await request(createApp('finance')).get(
+        '/api/compliance/brn-check/history?limit=10'
+      );
+
+      expect(res.status).toBe(200);
+      expect(res.body.success).toBe(true);
+      expect(res.body.data).toHaveLength(1);
+      expect(res.body.data[0].summary.notified).toBe(1);
+      expect(res.body.summary.totalNotified).toBe(1);
+    });
+
+    it('returns 403 for agent on BRN check history', async () => {
+      const res = await request(createApp('agent')).get('/api/compliance/brn-check/history');
+      expect(res.status).toBe(403);
     });
   });
 

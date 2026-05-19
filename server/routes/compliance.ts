@@ -11,6 +11,7 @@
  * GET    /api/compliance/brn-expiry     — BRN expiry report for all agents
  * GET    /api/compliance/ejari-export   — Ejari CSV download
  * GET    /api/compliance/vat-summary    — VAT breakdown by property type
+ * GET    /api/compliance/brn-check/history — recent manual BRN check runs
  * GET    /api/compliance/permit-alerts  — permit alert feed (property permits + BRN expiry)
  * GET    /api/compliance/overview       — Full compliance dashboard data
  * PATCH  /api/compliance/ejari/:leaseId — Update Ejari status for a lease
@@ -302,12 +303,80 @@ router.post(
     logger.info('Manual BRN expiry check triggered', { userId: req.user?.id });
     const result = await checkBRNExpirations();
 
+    await prisma.activity.create({
+      data: {
+        type: 'compliance',
+        action: 'brn_manual_check',
+        description: `Manual BRN expiry check executed (notified=${result.notified}, errors=${result.errors})`,
+        userId: req.user?.id || null,
+        metadata: {
+          notified: result.notified,
+          errors: result.errors,
+          agentCount: result.agents.length,
+          agentIds: result.agents.map(agent => agent.id),
+          checkedAt: new Date().toISOString(),
+        },
+      },
+    });
+
     res.json({
       success: true,
       data: {
         notified: result.notified,
         errors: result.errors,
         agents: result.agents,
+      },
+    });
+  })
+);
+
+// ─── GET /api/compliance/brn-check/history — manual BRN check history ───
+router.get(
+  '/brn-check/history',
+  requirePermission('view_analytics'),
+  asyncHandler(async (req: Request, res: Response) => {
+    const allowedRoles = ['owner', 'manager', 'admin', 'finance'];
+    if (!allowedRoles.includes(req.user?.role || '')) {
+      throw new AppError('Access denied — BRN check history requires manager role', 403);
+    }
+
+    const limit = Math.max(1, Math.min(200, parseInt(String(req.query.limit || '25'), 10) || 25));
+
+    const runs = await prisma.activity.findMany({
+      where: {
+        type: 'compliance',
+        action: 'brn_manual_check',
+      },
+      orderBy: { createdAt: 'desc' },
+      take: limit,
+      include: {
+        user: { select: { id: true, name: true, role: true, email: true } },
+      },
+    });
+
+    const data = runs.map(run => {
+      const metadata = normalizeMetadata(run.metadata);
+      return {
+        id: run.id,
+        description: run.description,
+        createdAt: run.createdAt,
+        user: run.user,
+        summary: {
+          notified: Number(metadata.notified || 0),
+          errors: Number(metadata.errors || 0),
+          agentCount: Number(metadata.agentCount || 0),
+          agentIds: Array.isArray(metadata.agentIds) ? metadata.agentIds : [],
+        },
+      };
+    });
+
+    res.status(200).json({
+      success: true,
+      data,
+      summary: {
+        total: data.length,
+        totalNotified: data.reduce((sum, run) => sum + run.summary.notified, 0),
+        totalErrors: data.reduce((sum, run) => sum + run.summary.errors, 0),
       },
     });
   })
