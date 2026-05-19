@@ -53,6 +53,7 @@
 | May 19, 2026 | @Mira + @Katherine | Wave 04 scheduler reliability hardening: overlap-safe `runPermitAlertSchedulerTick` added with dedicated permit alert scheduler tests; related suites green (57/57 targeted)                     | Done        |
 | May 19, 2026 | @Mira + @Katherine | Wave 04 scheduler reliability hardening: overlap-safe `runRERAExpirySchedulerTick` added with dedicated RERA scheduler tests; related suites green (62/62 targeted)                              | Done        |
 | May 20, 2026 | @Mira + @Katherine | Wave 04 BRN operability delivered: manual `POST /api/compliance/brn-check` now logs `brn_manual_check` audit events + new `GET /api/compliance/brn-check/history`, suites green (66/66 targeted) | Done        |
+| May 20, 2026 | @Mira + @Katherine | Regression stabilization wave: hardened `phase33-leasing-continuity.spec.ts` for homepage variant parity; targeted e2e green (4/4) and latest full suite green (52/52)                           | Done        |
 
 ---
 

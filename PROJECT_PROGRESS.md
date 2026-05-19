@@ -186,7 +186,7 @@
 - [x] Wave 04 scheduler reliability hardening: permit alert scheduler now uses overlap-safe tick runner (`runPermitAlertSchedulerTick`) with dedicated unit coverage to prevent stacked executions
 - [x] Wave 04 scheduler reliability hardening: RERA BRN expiry scheduler now uses overlap-safe tick runner (`runRERAExpirySchedulerTick`) with dedicated scheduler unit coverage
 - [x] Wave 04 BRN operability path: manual BRN checks now persist `brn_manual_check` audit events and expose `GET /api/compliance/brn-check/history` for manager/finance visibility
-- [ ] Continue Wave 03 and Wave 04 implementation backlog execution
+- [x] Continue Wave 03 and Wave 04 implementation backlog execution (implementation + regression stabilization completed; latest full suite green 52/52 on May 20, 2026)
 
 ### MILESTONE-PHASE-27
 
