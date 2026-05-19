@@ -184,6 +184,7 @@
 - [x] Wave 04 permit enforcement observability path: added `GET /api/compliance/permits/enforcement-history` for finance/manager audit visibility of dry/live enforcement runs
 - [x] Wave 04 scheduler reliability hardening: permit enforcement scheduler now uses overlap-safe tick runner (`runPropertyPermitEnforcementTick`) to skip concurrent runs and prevent stacked executions
 - [x] Wave 04 scheduler reliability hardening: permit alert scheduler now uses overlap-safe tick runner (`runPermitAlertSchedulerTick`) with dedicated unit coverage to prevent stacked executions
+- [x] Wave 04 scheduler reliability hardening: RERA BRN expiry scheduler now uses overlap-safe tick runner (`runRERAExpirySchedulerTick`) with dedicated scheduler unit coverage
 - [ ] Continue Wave 03 and Wave 04 implementation backlog execution
 
 ### MILESTONE-PHASE-27
