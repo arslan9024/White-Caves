@@ -34,6 +34,7 @@ import {
   updateEjariStatus,
 } from '../services/compliance/complianceService.js';
 import { getPermitAlerts } from '../services/compliance/permitAlertScheduler.js';
+import { enforcePropertyPermitCompliance } from '../services/compliance/propertyPermitEnforcementScheduler.js';
 import { screenAML } from '../services/compliance/amlAdapter.js';
 import logger from '../utils/logger.js';
 
@@ -521,6 +522,47 @@ router.get(
         completePermits: Math.max(0, totalProperties - missingCount),
         filter: statusFilter,
       },
+    });
+  })
+);
+
+// ─── POST /api/compliance/permits/enforcement-run — trigger enforcement ───
+router.post(
+  '/permits/enforcement-run',
+  requirePermission('view_analytics'),
+  asyncHandler(async (req: Request, res: Response) => {
+    const allowedRoles = ['owner', 'manager', 'admin'];
+    if (!allowedRoles.includes(req.user?.role || '')) {
+      throw new AppError('Access denied — permit enforcement requires manager role', 403);
+    }
+
+    const dryRun = req.body?.dryRun === true;
+    const limitRaw = req.body?.limit;
+    const limit =
+      limitRaw === undefined
+        ? undefined
+        : Math.max(1, Math.min(2000, parseInt(String(limitRaw), 10) || 500));
+
+    const result = await enforcePropertyPermitCompliance({ dryRun, limit });
+
+    await prisma.activity.create({
+      data: {
+        type: 'compliance',
+        action: dryRun ? 'permit_enforcement_dry_run' : 'permit_enforcement_triggered',
+        description: dryRun
+          ? `Permit enforcement dry-run executed: scanned=${result.scanned}`
+          : `Permit enforcement executed: autoUnpublished=${result.autoUnpublished}`,
+        userId: req.user?.id || null,
+        metadata: {
+          ...result,
+          requestedAt: new Date().toISOString(),
+        },
+      },
+    });
+
+    res.status(200).json({
+      success: true,
+      data: result,
     });
   })
 );

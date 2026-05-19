@@ -77,8 +77,18 @@ vi.mock('../services/compliance/amlAdapter.js', () => ({
     screenedAt: new Date('2026-05-16T10:00:00.000Z').toISOString(),
   })),
 }));
+vi.mock('../services/compliance/propertyPermitEnforcementScheduler.js', () => ({
+  enforcePropertyPermitCompliance: vi.fn(async () => ({
+    scanned: 2,
+    autoUnpublished: 1,
+    errors: 0,
+    dryRun: false,
+    affectedPropertyIds: ['prop-1'],
+  })),
+}));
 
 import complianceRoutes from './compliance';
+import { enforcePropertyPermitCompliance } from '../services/compliance/propertyPermitEnforcementScheduler.js';
 
 // ── Test app factory ─────────────────────────────────────────────────
 function createApp(role: string = 'owner') {
@@ -478,6 +488,62 @@ describe('Compliance Routes — /api/compliance', () => {
 
       expect(res.status).toBe(400);
       expect(res.body.error).toMatch(/available listings require municipalityNumber/i);
+    });
+
+    it('runs permit enforcement in dry-run mode for manager', async () => {
+      const enforceMock = enforcePropertyPermitCompliance as unknown as ReturnType<typeof vi.fn>;
+      enforceMock.mockResolvedValueOnce({
+        scanned: 3,
+        autoUnpublished: 0,
+        errors: 0,
+        dryRun: true,
+        affectedPropertyIds: ['prop-a', 'prop-b', 'prop-c'],
+      });
+
+      const res = await request(createApp('manager'))
+        .post('/api/compliance/permits/enforcement-run')
+        .send({ dryRun: true, limit: 100 });
+
+      expect(res.status).toBe(200);
+      expect(res.body.success).toBe(true);
+      expect(res.body.data.dryRun).toBe(true);
+      expect(enforceMock).toHaveBeenCalledWith({ dryRun: true, limit: 100 });
+      expect(mockPrisma.activity.create).toHaveBeenCalledWith(
+        expect.objectContaining({
+          data: expect.objectContaining({ action: 'permit_enforcement_dry_run' }),
+        })
+      );
+    });
+
+    it('runs permit enforcement live for owner', async () => {
+      const enforceMock = enforcePropertyPermitCompliance as unknown as ReturnType<typeof vi.fn>;
+      enforceMock.mockResolvedValueOnce({
+        scanned: 4,
+        autoUnpublished: 2,
+        errors: 0,
+        dryRun: false,
+        affectedPropertyIds: ['prop-1', 'prop-2'],
+      });
+
+      const res = await request(createApp('owner'))
+        .post('/api/compliance/permits/enforcement-run')
+        .send({ dryRun: false });
+
+      expect(res.status).toBe(200);
+      expect(res.body.data.autoUnpublished).toBe(2);
+      expect(mockPrisma.activity.create).toHaveBeenCalledWith(
+        expect.objectContaining({
+          data: expect.objectContaining({ action: 'permit_enforcement_triggered' }),
+        })
+      );
+    });
+
+    it('returns 403 for agent on permit enforcement run', async () => {
+      const res = await request(createApp('agent'))
+        .post('/api/compliance/permits/enforcement-run')
+        .send({ dryRun: true });
+
+      expect(res.status).toBe(403);
     });
   });
 
