@@ -30,6 +30,13 @@ export interface PermitAlertResult {
   }>;
 }
 
+let permitAlertRunInProgress = false;
+
+export interface PermitAlertTickResult {
+  status: 'ran' | 'skipped';
+  summary?: PermitAlertSummary;
+}
+
 export async function getPermitAlerts(daysAhead = 30): Promise<PermitAlertResult> {
   const parsedDaysAhead = Math.max(1, Math.min(365, Math.trunc(daysAhead || 30)));
   const now = new Date();
@@ -129,13 +136,28 @@ export async function checkPermitAlertsAndLog(daysAhead = 30): Promise<PermitAle
   return result.summary;
 }
 
+export async function runPermitAlertSchedulerTick(daysAhead = 30): Promise<PermitAlertTickResult> {
+  if (permitAlertRunInProgress) {
+    logger.info('Permit alert scheduler tick skipped (previous run still active)', { daysAhead });
+    return { status: 'skipped' };
+  }
+
+  permitAlertRunInProgress = true;
+  try {
+    const summary = await checkPermitAlertsAndLog(daysAhead);
+    return { status: 'ran', summary };
+  } finally {
+    permitAlertRunInProgress = false;
+  }
+}
+
 export function startPermitAlertScheduler(daysAhead = 30): NodeJS.Timeout {
   logger.info('Starting permit alert scheduler (daily)', { daysAhead });
 
   const interval = setInterval(
     async () => {
       try {
-        await checkPermitAlertsAndLog(daysAhead);
+        await runPermitAlertSchedulerTick(daysAhead);
       } catch (error) {
         logger.error('Permit alert scheduler error', { error });
       }
@@ -144,7 +166,7 @@ export function startPermitAlertScheduler(daysAhead = 30): NodeJS.Timeout {
   );
 
   setTimeout(() => {
-    checkPermitAlertsAndLog(daysAhead).catch(err =>
+    runPermitAlertSchedulerTick(daysAhead).catch(err =>
       logger.error('Initial permit alert check failed', { error: err })
     );
   }, 60_000);

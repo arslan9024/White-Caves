@@ -50,6 +50,7 @@
 | May 19, 2026 | @Mira + @Katherine | Wave 04 permit enforcement control delivered: added manager-only `POST /api/compliance/permits/enforcement-run` (dry-run/live) with compliance audit event logging, tests green (49/49 targeted) | Done        |
 | May 19, 2026 | @Mira + @Katherine | Wave 04 permit enforcement observability delivered: added `GET /api/compliance/permits/enforcement-history` for manager/finance audit visibility, compliance suite green (46/46)                 | Done        |
 | May 19, 2026 | @Mira + @Katherine | Wave 04 scheduler reliability hardening: overlap-safe `runPropertyPermitEnforcementTick` added to skip concurrent runs; compliance+scheduler suite green (52/52 targeted)                        | Done        |
+| May 19, 2026 | @Mira + @Katherine | Wave 04 scheduler reliability hardening: overlap-safe `runPermitAlertSchedulerTick` added with dedicated permit alert scheduler tests; related suites green (57/57 targeted)                     | Done        |
 
 ---
 
