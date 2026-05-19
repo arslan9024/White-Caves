@@ -17,7 +17,9 @@ function generateToken() {
 
 function generateContractNumber() {
   const year = new Date().getFullYear();
-  const random = Math.floor(Math.random() * 10000).toString().padStart(4, '0');
+  const random = Math.floor(Math.random() * 10000)
+    .toString()
+    .padStart(4, '0');
   return `WC-${year}-${random}`;
 }
 
@@ -31,11 +33,15 @@ function normalizeContract(contract) {
 }
 
 function generateContractHtml(data) {
-  const formatDate = (dateString) => {
+  const formatDate = dateString => {
     if (!dateString) return '-';
-    return new Date(dateString).toLocaleDateString('en-AE', { day: 'numeric', month: 'long', year: 'numeric' });
+    return new Date(dateString).toLocaleDateString('en-AE', {
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric',
+    });
   };
-  const formatCurrency = (amount) => {
+  const formatCurrency = amount => {
     if (!amount) return '-';
     return `AED ${Number(amount).toLocaleString()}`;
   };
@@ -185,7 +191,7 @@ router.post('/', async (req, res) => {
         contractNumber,
         status: 'draft',
         signatures: { lessor: null, tenant: null, broker: null },
-        signatureLinks: { lessor: null, tenant: null }
+        signatureLinks: { lessor: null, tenant: null },
       });
       await newContract.save();
       return res.json({ success: true, contract: normalizeContract(newContract) });
@@ -200,7 +206,7 @@ router.post('/', async (req, res) => {
       updatedAt: new Date().toISOString(),
       ...contractData,
       signatures: { lessor: null, tenant: null, broker: null },
-      signatureLinks: { lessor: null, tenant: null }
+      signatureLinks: { lessor: null, tenant: null },
     };
 
     contracts.unshift(newContract);
@@ -244,7 +250,9 @@ router.post('/:id/generate-signature-link', async (req, res) => {
   try {
     const { role } = req.body;
     if (!['lessor', 'tenant'].includes(role)) {
-      return res.status(400).json({ success: false, error: 'Invalid role. Must be lessor or tenant.' });
+      return res
+        .status(400)
+        .json({ success: false, error: 'Invalid role. Must be lessor or tenant.' });
     }
 
     const useDatabase = req.app.locals.useDatabase;
@@ -265,11 +273,16 @@ router.post('/:id/generate-signature-link', async (req, res) => {
         token,
         contractId: contract._id,
         role,
-        expiresAt
+        expiresAt,
       });
       await signatureToken.save();
 
-      contract.signatureLinks[role] = { token, link: signatureLink, expiresAt, createdAt: new Date() };
+      contract.signatureLinks[role] = {
+        token,
+        link: signatureLink,
+        expiresAt,
+        createdAt: new Date(),
+      };
       await contract.save();
 
       return res.json({ success: true, signatureLink, expiresAt, role });
@@ -282,11 +295,22 @@ router.post('/:id/generate-signature-link', async (req, res) => {
     }
 
     const tokens = req.app.locals.loadTokens();
-    tokens[token] = { contractId: contract.id, role, expiresAt: expiresAt.toISOString(), used: false, createdAt: new Date().toISOString() };
+    tokens[token] = {
+      contractId: contract.id,
+      role,
+      expiresAt: expiresAt.toISOString(),
+      used: false,
+      createdAt: new Date().toISOString(),
+    };
     req.app.locals.saveTokens(tokens);
 
     const contractIndex = contracts.findIndex(c => c.id === req.params.id);
-    contracts[contractIndex].signatureLinks[role] = { token, link: signatureLink, expiresAt: expiresAt.toISOString(), createdAt: new Date().toISOString() };
+    contracts[contractIndex].signatureLinks[role] = {
+      token,
+      link: signatureLink,
+      expiresAt: expiresAt.toISOString(),
+      createdAt: new Date().toISOString(),
+    };
     req.app.locals.saveContracts(contracts);
 
     res.json({ success: true, signatureLink, expiresAt, role });
@@ -319,7 +343,11 @@ router.post('/:id/broker-sign', async (req, res) => {
     if (contractIndex === -1) {
       return res.status(404).json({ success: false, error: 'Contract not found' });
     }
-    contracts[contractIndex].signatures.broker = { signature, signerName, signedAt: new Date().toISOString() };
+    contracts[contractIndex].signatures.broker = {
+      signature,
+      signerName,
+      signedAt: new Date().toISOString(),
+    };
     contracts[contractIndex].updatedAt = new Date().toISOString();
     req.app.locals.saveContracts(contracts);
     res.json({ success: true, message: 'Broker signature added successfully' });
@@ -340,14 +368,24 @@ router.post('/:id/upload-to-drive', async (req, res) => {
     if (useDatabase && contractData._id) {
       await Contract.findByIdAndUpdate(contractData._id, {
         driveFileId: result.id,
-        driveWebViewLink: result.webViewLink
+        driveWebViewLink: result.webViewLink,
       });
     }
 
-    res.json({ success: true, fileId: result.id, fileName: result.name, webViewLink: result.webViewLink });
+    res.json({
+      success: true,
+      fileId: result.id,
+      fileName: result.name,
+      webViewLink: result.webViewLink,
+    });
   } catch (error) {
     console.error('Error uploading to Drive:', error);
-    res.status(500).json({ success: false, error: error.message || 'Failed to upload contract to Google Drive' });
+    res
+      .status(500)
+      .json({
+        success: false,
+        error: error.message || 'Failed to upload contract to Google Drive',
+      });
   }
 });
 
@@ -365,28 +403,24 @@ router.post('/from-template', async (req, res) => {
     if (!templateId || !templateData || !partyData) {
       return res.status(400).json({
         success: false,
-        error: 'Missing required fields: templateId, templateData, partyData'
+        error: 'Missing required fields: templateId, templateData, partyData',
       });
     }
 
-    const contract = await ContractService.createFromTemplate(
-      templateId,
-      templateData,
-      partyData
-    );
+    const contract = await ContractService.createFromTemplate(templateId, templateData, partyData);
 
     res.status(201).json({
       success: true,
       contractId: contract._id,
       contractNumber: contract.contractNumber,
       status: contract.status,
-      message: 'Contract created from template'
+      message: 'Contract created from template',
     });
   } catch (error) {
     console.error('Error creating contract from template:', error);
     res.status(500).json({
       success: false,
-      error: error.message || 'Failed to create contract'
+      error: error.message || 'Failed to create contract',
     });
   }
 });
@@ -400,16 +434,13 @@ router.post('/:id/generate-pdf', async (req, res) => {
     const pdfBytes = await ContractService.generatePDF(id);
 
     res.setHeader('Content-Type', 'application/pdf');
-    res.setHeader(
-      'Content-Disposition',
-      `attachment; filename="contract-${id}.pdf"`
-    );
+    res.setHeader('Content-Disposition', `attachment; filename="contract-${id}.pdf"`);
     res.send(Buffer.from(pdfBytes));
   } catch (error) {
     console.error('Error generating PDF:', error);
     res.status(500).json({
       success: false,
-      error: error.message || 'Failed to generate PDF'
+      error: error.message || 'Failed to generate PDF',
     });
   }
 });
@@ -424,7 +455,7 @@ router.post('/:id/request-signature', async (req, res) => {
     if (!signerEmail || !signerName || !signerRole) {
       return res.status(400).json({
         success: false,
-        error: 'Missing required fields: signerEmail, signerName, signerRole'
+        error: 'Missing required fields: signerEmail, signerName, signerRole',
       });
     }
 
@@ -432,24 +463,51 @@ router.post('/:id/request-signature', async (req, res) => {
       email: signerEmail,
       name: signerName,
       role: signerRole,
-      method: method || 'canvas'
+      method: method || 'canvas',
     });
 
-    // TODO: Send email with signing link
-    // await emailService.sendSigningRequest(signerEmail, result.signingLink);
+    try {
+      const { sendEmailTracked, wrapInBrandedTemplate } =
+        await import('../services/emailService.js');
+      const html = wrapInBrandedTemplate(
+        `
+          <h2>Signature Request Ready</h2>
+          <p>Hello ${signerName}, your signature is requested for contract <strong>${id}</strong>.</p>
+          <p>Please open the secure signing link below to review and sign the document.</p>
+          <p><a class="cta" href="${result.signingLink}">Review & Sign Contract</a></p>
+          <p>If the button does not work, copy and paste this URL into your browser:</p>
+          <p><a href="${result.signingLink}">${result.signingLink}</a></p>
+        `,
+        { preheader: `Signature request for contract ${id}` }
+      );
+
+      await sendEmailTracked({
+        to: signerEmail,
+        subject: `Signature Request: Contract ${id}`,
+        html,
+        text: `Hello ${signerName}, your signature is requested for contract ${id}. Review and sign: ${result.signingLink}`,
+        tags: [
+          { name: 'type', value: 'contract_signature_request' },
+          { name: 'contractId', value: String(id) },
+          { name: 'signerRole', value: signerRole },
+        ],
+      });
+    } catch (emailError) {
+      console.error('Failed to send signature request email:', emailError);
+    }
 
     res.json({
       success: true,
       signatureId: result.signatureId,
       signingLink: result.signingLink,
       expiresAt: result.expiresAt,
-      message: 'Signature request created'
+      message: 'Signature request created',
     });
   } catch (error) {
     console.error('Error requesting signature:', error);
     res.status(500).json({
       success: false,
-      error: error.message || 'Failed to request signature'
+      error: error.message || 'Failed to request signature',
     });
   }
 });
@@ -464,27 +522,23 @@ router.post('/:id/sign', async (req, res) => {
     if (!signatureId || !signatureData) {
       return res.status(400).json({
         success: false,
-        error: 'Missing required fields: signatureId, signatureData'
+        error: 'Missing required fields: signatureId, signatureData',
       });
     }
 
-    const contract = await ContractService.recordSignature(
-      id,
-      signatureId,
-      signatureData
-    );
+    const contract = await ContractService.recordSignature(id, signatureId, signatureData);
 
     res.json({
       success: true,
       contractId: contract._id,
       status: contract.status,
-      message: 'Signature recorded successfully'
+      message: 'Signature recorded successfully',
     });
   } catch (error) {
     console.error('Error recording signature:', error);
     res.status(500).json({
       success: false,
-      error: error.message || 'Failed to record signature'
+      error: error.message || 'Failed to record signature',
     });
   }
 });
@@ -499,13 +553,13 @@ router.get('/:id/signature-status', async (req, res) => {
 
     res.json({
       success: true,
-      data: status
+      data: status,
     });
   } catch (error) {
     console.error('Error getting signature status:', error);
     res.status(500).json({
       success: false,
-      error: error.message || 'Failed to get signature status'
+      error: error.message || 'Failed to get signature status',
     });
   }
 });
@@ -523,13 +577,13 @@ router.post('/:id/archive', async (req, res) => {
       contractId: contract._id,
       status: contract.status,
       executionDate: contract.executionDate,
-      message: 'Contract archived and finalized'
+      message: 'Contract archived and finalized',
     });
   } catch (error) {
     console.error('Error archiving contract:', error);
     res.status(500).json({
       success: false,
-      error: error.message || 'Failed to archive contract'
+      error: error.message || 'Failed to archive contract',
     });
   }
 });
@@ -544,13 +598,13 @@ router.get('/:id/details', async (req, res) => {
 
     res.json({
       success: true,
-      data: details
+      data: details,
     });
   } catch (error) {
     console.error('Error getting contract details:', error);
     res.status(500).json({
       success: false,
-      error: error.message || 'Failed to get contract details'
+      error: error.message || 'Failed to get contract details',
     });
   }
 });
@@ -566,13 +620,13 @@ router.get('/:id/versions', async (req, res) => {
     res.json({
       success: true,
       data: versions,
-      count: versions.length
+      count: versions.length,
     });
   } catch (error) {
     console.error('Error getting contract versions:', error);
     res.status(500).json({
       success: false,
-      error: error.message || 'Failed to get versions'
+      error: error.message || 'Failed to get versions',
     });
   }
 });
@@ -586,7 +640,7 @@ router.post('/from-template/validate', async (req, res) => {
     if (!templateId || !data) {
       return res.status(400).json({
         success: false,
-        error: 'Missing required fields: templateId, data'
+        error: 'Missing required fields: templateId, data',
       });
     }
 
@@ -594,13 +648,13 @@ router.post('/from-template/validate', async (req, res) => {
 
     res.json({
       success: true,
-      data: result
+      data: result,
     });
   } catch (error) {
     console.error('Error validating template:', error);
     res.status(400).json({
       success: false,
-      error: error.message || 'Template validation failed'
+      error: error.message || 'Template validation failed',
     });
   }
 });
@@ -614,13 +668,13 @@ router.get('/', async (req, res) => {
     res.json({
       success: true,
       data: templates,
-      count: templates.length
+      count: templates.length,
     });
   } catch (error) {
     console.error('Error getting templates:', error);
     res.status(500).json({
       success: false,
-      error: error.message || 'Failed to get templates'
+      error: error.message || 'Failed to get templates',
     });
   }
 });
