@@ -12,7 +12,7 @@
 
 - Canonical roadmap: **[plans/MASTER_PLAN.md](plans/MASTER_PLAN.md)**
 - Active queue: **[plans/PENDING_TASKS_ONLY.md](plans/PENDING_TASKS_ONLY.md)**
-- Last Updated (ISO): 2026-05-17
+- Last Updated (ISO): 2026-05-19
 
 > Premium usage is allowed **only** for senior coders/designers **after** @Ada declares:
 > `@Ada — Context Ready (60% Readiness) — Coding Phase Approved`
@@ -201,6 +201,16 @@
 - [x] Type safety verification passed (`npm run typecheck`)
 - [x] Lint verification passed (`npm run lint`)
 - [x] Tenant portal parity regression pack passed (5 files, 36 tests)
+
+### MILESTONE-NEXT-WAVE-02
+
+**Tracker Governance Closure (May 19, 2026)**
+
+**Status:** ✅ COMPLETE
+
+- [x] Archive-rule enforcement executed for legacy `plans/SESSION_*` and `plans/PHASE_2_*` docs (moved to `archives/plans/superseded/`)
+- [x] Pending queue reconciled and status drift removed across active trackers
+- [x] Phase 26 Workstream E advisory explicitly deferred with owner/date (`@Margaret`, target `2026-05-23`)
 
 ### MILESTONE-PHASE-2
 
