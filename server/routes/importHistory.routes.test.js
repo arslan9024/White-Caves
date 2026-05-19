@@ -73,7 +73,7 @@ describe('Import history admin dashboard', () => {
   it('returns import history for /api/inventory/import/history', async () => {
     const imports = [
       {
-        sessionId: 'session-1',
+        _id: '507f1f77bcf86cd799439011',
         fileName: 'owners.xlsx',
         status: 'completed',
       },
@@ -88,11 +88,45 @@ describe('Import history admin dashboard', () => {
 
     expect(res.status).toBe(200);
     expect(res.body.success).toBe(true);
-    expect(res.body.data.imports).toEqual(imports);
+    expect(res.body.data.imports).toEqual([
+      expect.objectContaining({
+        _id: '507f1f77bcf86cd799439011',
+        sessionId: '507f1f77bcf86cd799439011',
+        fileName: 'owners.xlsx',
+      }),
+    ]);
     expect(res.body.data.total).toBe(1);
     expect(res.body.data.hasMore).toBe(false);
     expect(mockImportSession.find).toHaveBeenCalledWith(
       expect.objectContaining({ userId: 'user-1', status: 'completed' })
+    );
+  });
+
+  it('resolves session errors endpoint by Mongo _id path param', async () => {
+    const session = {
+      _id: '507f1f77bcf86cd799439011',
+      importErrors: [{ row: 1, message: 'Bad row' }],
+      totalErrors: 1,
+    };
+
+    mockImportSession.findOne = vi.fn().mockReturnValue({
+      lean: vi.fn().mockResolvedValue(session),
+    });
+
+    const res = await request(createApp()).get(
+      '/api/inventory/import/session/507f1f77bcf86cd799439011/errors'
+    );
+
+    expect(res.status).toBe(200);
+    expect(res.body.success).toBe(true);
+    expect(mockImportSession.findOne).toHaveBeenCalledWith(
+      expect.objectContaining({
+        userId: 'user-1',
+        $or: expect.arrayContaining([
+          { sessionId: '507f1f77bcf86cd799439011' },
+          { _id: '507f1f77bcf86cd799439011' },
+        ]),
+      })
     );
   });
 

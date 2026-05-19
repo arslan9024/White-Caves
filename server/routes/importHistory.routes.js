@@ -9,6 +9,7 @@
  */
 
 import express from 'express';
+import mongoose from 'mongoose';
 import auth from '../middleware/auth.ts';
 import ImportSession from '../models/ImportSession.js';
 import PropertyInventory from '../models/PropertyInventory.js';
@@ -28,6 +29,19 @@ const adminOnly = (req, res, next) => {
 };
 
 const getAuthenticatedUserId = req => req.user?.id || req.user?._id || null;
+
+const buildSessionLookupQuery = (rawSessionId, userId) => {
+  const conditions = [{ sessionId: rawSessionId }];
+
+  if (mongoose.Types.ObjectId.isValid(rawSessionId)) {
+    conditions.push({ _id: rawSessionId });
+  }
+
+  return {
+    userId,
+    $or: conditions,
+  };
+};
 
 const ADMIN_COLLECTIONS = [
   { name: 'import_sessions', model: ImportSession },
@@ -70,11 +84,16 @@ router.get('/inventory/import/history', auth, async (req, res) => {
     }
 
     // Fetch imports
-    const imports = await ImportSession.find(query)
+    const importsRaw = await ImportSession.find(query)
       .sort(sortObj)
       .limit(parseInt(limit))
       .skip(parseInt(offset))
       .lean();
+
+    const imports = importsRaw.map(item => ({
+      ...item,
+      sessionId: item.sessionId || String(item._id),
+    }));
 
     // Count total
     const total = await ImportSession.countDocuments(query);
@@ -111,10 +130,9 @@ router.get('/inventory/import/session/:sessionId', auth, async (req, res) => {
       });
     }
 
-    const session = await ImportSession.findOne({
-      sessionId: req.params.sessionId,
-      userId,
-    }).lean();
+    const session = await ImportSession.findOne(
+      buildSessionLookupQuery(req.params.sessionId, userId)
+    ).lean();
 
     if (!session) {
       return res.status(404).json({
@@ -151,10 +169,9 @@ router.get('/inventory/import/session/:sessionId/errors', auth, async (req, res)
       });
     }
 
-    const session = await ImportSession.findOne({
-      sessionId: req.params.sessionId,
-      userId,
-    }).lean();
+    const session = await ImportSession.findOne(
+      buildSessionLookupQuery(req.params.sessionId, userId)
+    ).lean();
 
     if (!session) {
       return res.status(404).json({
@@ -201,10 +218,9 @@ router.get('/inventory/import/session/:sessionId/report', auth, async (req, res)
       });
     }
 
-    const session = await ImportSession.findOne({
-      sessionId: req.params.sessionId,
-      userId,
-    }).lean();
+    const session = await ImportSession.findOne(
+      buildSessionLookupQuery(req.params.sessionId, userId)
+    ).lean();
 
     if (!session) {
       return res.status(404).json({
