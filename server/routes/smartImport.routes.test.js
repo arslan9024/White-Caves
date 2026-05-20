@@ -770,4 +770,45 @@ describe('Smart import ownership guards', () => {
       })
     );
   });
+
+  it('treats normalized session mapping tokens as complete on execute', async () => {
+    const sessionId = '507f1f77bcf86cd799439011';
+    const session = {
+      _id: sessionId,
+      filePath: '/tmp/fake.csv',
+      sheetName: 'Sheet1',
+      columnMapping: {
+        owner_name: 'OWNER NAME',
+        'p-number': 'P-NUMBER',
+        area: 'LISTING AREA',
+      },
+      status: 'pending',
+      save: vi.fn().mockResolvedValue(undefined),
+    };
+
+    mockImportSession.findOne.mockResolvedValueOnce(session).mockResolvedValueOnce(session);
+    excelImportService.parseExcelFile.mockResolvedValue({
+      data: [],
+      sheetName: 'Sheet1',
+      columnMapping: { AA: 'ownerName' },
+    });
+    importExecutionEngine.executeImport.mockResolvedValue({ processedRows: 0, errorsCount: 0 });
+
+    const res = await request(createApp())
+      .post(`/api/inventory/import/${sessionId}/execute`)
+      .send({ strategy: 'balanced' });
+
+    expect(res.status).toBe(200);
+    expect(importExecutionEngine.executeImport).toHaveBeenCalledWith(
+      session._id,
+      [],
+      expect.objectContaining({
+        columnMapping: {
+          owner_name: 'OWNER NAME',
+          'p-number': 'P-NUMBER',
+          area: 'LISTING AREA',
+        },
+      })
+    );
+  });
 });
