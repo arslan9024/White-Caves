@@ -225,6 +225,14 @@ describe('importExecutionEngine status outcomes', () => {
     });
 
     expect(mockInventoryProperty.create).toHaveBeenCalledTimes(1);
+    expect(mockInventoryProperty.create).toHaveBeenCalledWith(
+      expect.objectContaining({
+        versionMetadata: expect.objectContaining({
+          previousId: 'property-dup-version-1',
+          versionNumber: 1,
+        }),
+      })
+    );
     expect(mockInventoryProperty.findOneAndUpdate).not.toHaveBeenCalled();
     expect(result.propertiesCreated).toBe(1);
     expect(result.propertiesUpdated).toBe(0);
