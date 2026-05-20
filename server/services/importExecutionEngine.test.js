@@ -42,7 +42,7 @@ vi.mock('../utils/clusterAutoAssigner.js', () => ({
   assignCluster: vi.fn(() => ({ cluster: 'A', source: 'auto', confidence: 0.9 })),
 }));
 
-import { executeImport } from './importExecutionEngine.js';
+import { executeImport, prepareOwnerData } from './importExecutionEngine.js';
 
 function createSession() {
   return {
@@ -305,5 +305,37 @@ describe('importExecutionEngine status outcomes', () => {
     expect(session.status).toBe('failed');
     expect(session.totalRows).toBe(0);
     expect(session.totalRowsProcessed).toBe(0);
+  });
+
+  it('treats placeholder dot required fields as invalid and skips row', async () => {
+    const session = createSession();
+    mockImportSession.findById.mockResolvedValue(session);
+
+    const rows = [{ pNumber: '.', area: '.', ownerName: '.', status: 'Available' }];
+
+    const result = await executeImport('session-9', rows, {
+      columnMapping,
+      dryRun: false,
+      batchSize: 100,
+    });
+
+    expect(result.processedRows).toBe(0);
+    expect(result.errorsCount).toBe(1);
+    expect(result.skipped).toBe(1);
+    expect(result.errors[0].error).toContain('Missing required fields');
+  });
+
+  it('normalizes invalid owner dateOfBirth to null', () => {
+    const ownerData = prepareOwnerData(
+      {
+        ownerName: 'Nora',
+        dateOfBirth: 'not-a-date',
+        mobile: '+971501234567',
+      },
+      columnMapping
+    );
+
+    expect(ownerData.name).toBe('Nora');
+    expect(ownerData.dateOfBirth).toBeNull();
   });
 });

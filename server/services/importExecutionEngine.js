@@ -33,6 +33,13 @@ function normalizePhone(phone) {
   return cleaned;
 }
 
+function normalizeTextField(value) {
+  if (value === null || value === undefined) return null;
+  const normalized = String(value).trim();
+  if (!normalized || normalized === '.') return null;
+  return normalized;
+}
+
 /**
  * Prepare property data from Excel row
  * Extracts and transforms property-specific fields
@@ -44,22 +51,22 @@ function normalizePhone(phone) {
  */
 export function preparePropertyData(excelRow, columnMapping, statusMap, clusterAssignments = {}) {
   // Extract mapped values
-  const pNumber = excelRow[columnMapping.pNumber] || null;
-  const area = excelRow[columnMapping.area] || null;
-  const project = excelRow[columnMapping.project] || null;
-  const plotNumber = excelRow[columnMapping.plotNumber] || null;
-  const unitNumber = excelRow[columnMapping.unitNumber] || null;
-  const building = excelRow[columnMapping.building] || null;
-  const floor = excelRow[columnMapping.floor] || null;
-  const layout = excelRow[columnMapping.layout] || null;
+  const pNumber = normalizeTextField(excelRow[columnMapping.pNumber]);
+  const area = normalizeTextField(excelRow[columnMapping.area]);
+  const project = normalizeTextField(excelRow[columnMapping.project]);
+  const plotNumber = normalizeTextField(excelRow[columnMapping.plotNumber]);
+  const unitNumber = normalizeTextField(excelRow[columnMapping.unitNumber]);
+  const building = normalizeTextField(excelRow[columnMapping.building]);
+  const floor = normalizeTextField(excelRow[columnMapping.floor]);
+  const layout = normalizeTextField(excelRow[columnMapping.layout]);
   const rooms = parseInt(excelRow[columnMapping.rooms]) || null;
   const actualArea = parseInt(excelRow[columnMapping.actualArea]) || null;
-  const viewType = excelRow[columnMapping.viewType] || null;
+  const viewType = normalizeTextField(excelRow[columnMapping.viewType]);
   const askingPrice = parseInt(excelRow[columnMapping.askingPrice]) || 0;
-  const registration = excelRow[columnMapping.registration] || null;
-  const municipalityNo = excelRow[columnMapping.municipalityNo] || null;
-  const dewaPremiseNumber = excelRow[columnMapping.dewaPremiseNumber] || null;
-  const otpDubaiRest = excelRow[columnMapping.otpDubaiRest] || null;
+  const registration = normalizeTextField(excelRow[columnMapping.registration]);
+  const municipalityNo = normalizeTextField(excelRow[columnMapping.municipalityNo]);
+  const dewaPremiseNumber = normalizeTextField(excelRow[columnMapping.dewaPremiseNumber]);
+  const otpDubaiRest = normalizeTextField(excelRow[columnMapping.otpDubaiRest]);
   const excelStatus = excelRow[columnMapping.status] || 'Available';
 
   // Map status to multi-dimensional system
@@ -137,15 +144,21 @@ export function preparePropertyData(excelRow, columnMapping, statusMap, clusterA
  * @returns {object} - Owner data ready for Owner model
  */
 export function prepareOwnerData(excelRow, columnMapping) {
-  const ownerName = excelRow[columnMapping.ownerName] || null;
-  const nationality = excelRow[columnMapping.nationality] || null;
-  const emiratesId = excelRow[columnMapping.emiratesId] || null;
-  const passportNumber = excelRow[columnMapping.passportNumber] || null;
-  const dateOfBirth = excelRow[columnMapping.dateOfBirth] || null;
-  const mobile = excelRow[columnMapping.mobile] || null;
-  const phone = excelRow[columnMapping.phone] || null;
-  const secondaryMobile = excelRow[columnMapping.secondaryMobile] || null;
-  const email = excelRow[columnMapping.email] || null;
+  const ownerName = normalizeTextField(excelRow[columnMapping.ownerName]);
+  const nationality = normalizeTextField(excelRow[columnMapping.nationality]);
+  const emiratesId = normalizeTextField(excelRow[columnMapping.emiratesId]);
+  const passportNumber = normalizeTextField(excelRow[columnMapping.passportNumber]);
+  const dateOfBirth = normalizeTextField(excelRow[columnMapping.dateOfBirth]);
+  const mobile = normalizeTextField(excelRow[columnMapping.mobile]);
+  const phone = normalizeTextField(excelRow[columnMapping.phone]);
+  const secondaryMobile = normalizeTextField(excelRow[columnMapping.secondaryMobile]);
+  const email = normalizeTextField(excelRow[columnMapping.email]);
+
+  let parsedDateOfBirth = null;
+  if (dateOfBirth) {
+    const parsedDate = new Date(dateOfBirth);
+    parsedDateOfBirth = Number.isNaN(parsedDate.getTime()) ? null : parsedDate;
+  }
 
   // Build contacts array
   const contacts = [];
@@ -195,11 +208,11 @@ export function prepareOwnerData(excelRow, columnMapping) {
 
   // Build owner object
   const ownerData = {
-    name: ownerName ? ownerName.trim() : null,
+    name: ownerName,
     nationality,
-    emiratesId: emiratesId && emiratesId !== '.' ? emiratesId : null,
-    passportNumber: passportNumber && passportNumber !== '.' ? passportNumber : null,
-    dateOfBirth: dateOfBirth ? new Date(dateOfBirth) : null,
+    emiratesId,
+    passportNumber,
+    dateOfBirth: parsedDateOfBirth,
     contacts,
     source: 'excel_import',
     importSessionId: null, // Set by executor
