@@ -52,6 +52,16 @@ const isValidMappingPayload = mapping =>
       value.trim().length > 0
   );
 
+const isValidClusterAssignmentsPayload = clusterAssignments =>
+  isPlainObject(clusterAssignments) &&
+  Object.entries(clusterAssignments).every(
+    ([key, value]) =>
+      typeof key === 'string' &&
+      key.trim().length > 0 &&
+      typeof value === 'string' &&
+      value.trim().length > 0
+  );
+
 const isValidOptionalSheetName = sheetName =>
   sheetName === undefined || sheetName === null || typeof sheetName === 'string';
 
@@ -350,10 +360,11 @@ router.post('/:sessionId/execute', async (req, res) => {
     }
 
     const clusterAssignments = req.body.clusterAssignments || {};
-    if (!isPlainObject(clusterAssignments)) {
+    if (!isValidClusterAssignmentsPayload(clusterAssignments)) {
       return res.status(400).json({
         success: false,
-        error: 'Invalid clusterAssignments payload: expected an object',
+        error:
+          'Invalid clusterAssignments payload: expected an object of string-to-string mappings',
       });
     }
 

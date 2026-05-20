@@ -263,6 +263,26 @@ describe('Smart import ownership guards', () => {
     expect(importExecutionEngine.executeImport).not.toHaveBeenCalled();
   });
 
+  it('rejects clusterAssignments payload with non-string values on execute', async () => {
+    const sessionId = '507f1f77bcf86cd799439011';
+    mockImportSession.findOne.mockResolvedValue({
+      _id: sessionId,
+      filePath: '/tmp/fake.csv',
+      sheetName: 'Sheet1',
+      columnMapping: { A: 'ownerName' },
+      status: 'pending',
+      save: vi.fn().mockResolvedValue(undefined),
+    });
+
+    const res = await request(createApp())
+      .post(`/api/inventory/import/${sessionId}/execute`)
+      .send({ clusterAssignments: { P100: 123 } });
+
+    expect(res.status).toBe(400);
+    expect(res.body.error).toContain('Invalid clusterAssignments payload');
+    expect(importExecutionEngine.executeImport).not.toHaveBeenCalled();
+  });
+
   it('passes valid clusterAssignments object to execution engine', async () => {
     const sessionId = '507f1f77bcf86cd799439011';
     const session = {
