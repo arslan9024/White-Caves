@@ -376,10 +376,6 @@ router.post('/:sessionId/execute', async (req, res) => {
       });
     }
 
-    // Update status
-    session.status = 'processing';
-    await session.save();
-
     // Parse data
     const parseResult = await excelImportService.parseExcelFile(session.filePath, {
       sheetName: req.body.sheetName || session.sheetName,
@@ -400,6 +396,10 @@ router.post('/:sessionId/execute', async (req, res) => {
         },
       });
     }
+
+    // Update status only for real execution
+    session.status = 'processing';
+    await session.save();
 
     // Execute actual import
     const importResult = await importExecutionEngine.executeImport(session._id, parseResult.data, {

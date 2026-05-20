@@ -374,6 +374,7 @@ describe('Smart import ownership guards', () => {
       session._id,
       expect.objectContaining({ strategy: 'strict' })
     );
+    expect(session.save).not.toHaveBeenCalled();
   });
 
   it('rejects invalid execution strategy on non-dry execute', async () => {
