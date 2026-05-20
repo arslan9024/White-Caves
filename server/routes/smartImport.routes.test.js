@@ -213,7 +213,7 @@ describe('Smart import ownership guards', () => {
       _id: sessionId,
       filePath: '/tmp/fake.csv',
       sheetName: 'Sheet1',
-      columnMapping: { A: 'ownerName' },
+      columnMapping: { P: 'pNumber', A: 'area', N: 'ownerName' },
       status: 'pending',
       save: vi.fn().mockResolvedValue(undefined),
     });
@@ -234,7 +234,7 @@ describe('Smart import ownership guards', () => {
       _id: sessionId,
       filePath: '/tmp/fake.csv',
       sheetName: 'Sheet1',
-      columnMapping: { A: 'ownerName' },
+      columnMapping: { P: 'pNumber', A: 'area', N: 'ownerName' },
       status: 'pending',
       save: vi.fn().mockResolvedValue(undefined),
     };
@@ -261,7 +261,7 @@ describe('Smart import ownership guards', () => {
       _id: sessionId,
       filePath: '/tmp/fake.csv',
       sheetName: 'Sheet1',
-      columnMapping: { A: 'ownerName' },
+      columnMapping: { P: 'pNumber', A: 'area', N: 'ownerName' },
       status: 'pending',
       save: vi.fn().mockResolvedValue(undefined),
     });
@@ -281,7 +281,7 @@ describe('Smart import ownership guards', () => {
       _id: sessionId,
       filePath: '/tmp/fake.csv',
       sheetName: 'Sheet1',
-      columnMapping: { A: 'ownerName' },
+      columnMapping: { P: 'pNumber', A: 'area', N: 'ownerName' },
       status: 'pending',
       save: vi.fn().mockResolvedValue(undefined),
     });
@@ -301,7 +301,7 @@ describe('Smart import ownership guards', () => {
       _id: sessionId,
       filePath: '/tmp/fake.csv',
       sheetName: 'Sheet1',
-      columnMapping: { A: 'ownerName' },
+      columnMapping: { P: 'pNumber', A: 'area', N: 'ownerName' },
       status: 'pending',
       save: vi.fn().mockResolvedValue(undefined),
     };
@@ -328,7 +328,7 @@ describe('Smart import ownership guards', () => {
       _id: sessionId,
       filePath: '/tmp/fake.csv',
       sheetName: 'Sheet1',
-      columnMapping: { A: 'ownerName' },
+      columnMapping: { P: 'pNumber', A: 'area', N: 'ownerName' },
       status: 'pending',
     });
 
@@ -346,7 +346,7 @@ describe('Smart import ownership guards', () => {
       _id: sessionId,
       filePath: '/tmp/fake.csv',
       sheetName: 'Sheet1',
-      columnMapping: { A: 'ownerName' },
+      columnMapping: { P: 'pNumber', A: 'area', N: 'ownerName' },
       status: 'pending',
       save: vi.fn().mockResolvedValue(undefined),
     });
@@ -365,7 +365,7 @@ describe('Smart import ownership guards', () => {
       _id: sessionId,
       filePath: '/tmp/fake.csv',
       sheetName: 'Sheet1',
-      columnMapping: { A: 'ownerName' },
+      columnMapping: { P: 'pNumber', A: 'area', N: 'ownerName' },
       status: 'pending',
       save: vi.fn().mockResolvedValue(undefined),
     };
@@ -398,7 +398,7 @@ describe('Smart import ownership guards', () => {
       _id: sessionId,
       filePath: '/tmp/fake.csv',
       sheetName: 'Sheet1',
-      columnMapping: { A: 'ownerName' },
+      columnMapping: { P: 'pNumber', A: 'area', N: 'ownerName' },
       status: 'pending',
     });
     excelImportService.parseExcelFile.mockResolvedValue({
@@ -463,6 +463,72 @@ describe('Smart import ownership guards', () => {
       session._id,
       [],
       expect.objectContaining({ importStrategy: 'lenient' })
+    );
+  });
+
+  it('falls back to parser columnMapping when session mapping is incomplete', async () => {
+    const sessionId = '507f1f77bcf86cd799439011';
+    const session = {
+      _id: sessionId,
+      filePath: '/tmp/fake.csv',
+      sheetName: 'Sheet1',
+      columnMapping: { A: 'ownerName' },
+      status: 'pending',
+      save: vi.fn().mockResolvedValue(undefined),
+    };
+
+    mockImportSession.findOne.mockResolvedValueOnce(session).mockResolvedValueOnce(session);
+    excelImportService.parseExcelFile.mockResolvedValue({
+      data: [],
+      sheetName: 'Sheet1',
+      columnMapping: { P: 'pNumber', A: 'area', N: 'ownerName' },
+    });
+    importExecutionEngine.executeImport.mockResolvedValue({ processedRows: 0, errorsCount: 0 });
+
+    const res = await request(createApp())
+      .post(`/api/inventory/import/${sessionId}/execute`)
+      .send({ strategy: 'balanced' });
+
+    expect(res.status).toBe(200);
+    expect(importExecutionEngine.executeImport).toHaveBeenCalledWith(
+      session._id,
+      [],
+      expect.objectContaining({
+        columnMapping: { P: 'pNumber', A: 'area', N: 'ownerName' },
+      })
+    );
+  });
+
+  it('prefers valid session columnMapping over parser mapping on execute', async () => {
+    const sessionId = '507f1f77bcf86cd799439011';
+    const session = {
+      _id: sessionId,
+      filePath: '/tmp/fake.csv',
+      sheetName: 'Sheet1',
+      columnMapping: { P: 'pNumber', A: 'area', N: 'ownerName' },
+      status: 'pending',
+      save: vi.fn().mockResolvedValue(undefined),
+    };
+
+    mockImportSession.findOne.mockResolvedValueOnce(session).mockResolvedValueOnce(session);
+    excelImportService.parseExcelFile.mockResolvedValue({
+      data: [],
+      sheetName: 'Sheet1',
+      columnMapping: { pNumber: 'pNumber', area: 'area', ownerName: 'ownerName' },
+    });
+    importExecutionEngine.executeImport.mockResolvedValue({ processedRows: 0, errorsCount: 0 });
+
+    const res = await request(createApp())
+      .post(`/api/inventory/import/${sessionId}/execute`)
+      .send({ strategy: 'balanced' });
+
+    expect(res.status).toBe(200);
+    expect(importExecutionEngine.executeImport).toHaveBeenCalledWith(
+      session._id,
+      [],
+      expect.objectContaining({
+        columnMapping: { P: 'pNumber', A: 'area', N: 'ownerName' },
+      })
     );
   });
 });

@@ -69,6 +69,18 @@ const hasRequiredFieldMappings = (mapping, requiredFields = IMPORT_REQUIRED_FIEL
   });
 };
 
+const resolveExecutionColumnMapping = (sessionMapping, parseResultMapping) => {
+  if (hasRequiredFieldMappings(sessionMapping)) {
+    return sessionMapping;
+  }
+
+  if (hasRequiredFieldMappings(parseResultMapping)) {
+    return parseResultMapping;
+  }
+
+  return sessionMapping || parseResultMapping || {};
+};
+
 const isValidClusterAssignmentsPayload = clusterAssignments =>
   isPlainObject(clusterAssignments) &&
   Object.entries(clusterAssignments).every(
@@ -405,6 +417,11 @@ router.post('/:sessionId/execute', async (req, res) => {
       sheetName: req.body.sheetName || session.sheetName,
     });
 
+    const effectiveColumnMapping = resolveExecutionColumnMapping(
+      session.columnMapping,
+      parseResult.columnMapping
+    );
+
     // Optional: dry-run validation
     if (req.body.dryRun) {
       const dryRunResult = await importValidationEngine.dryRun(parseResult.data, session._id, {
@@ -427,7 +444,7 @@ router.post('/:sessionId/execute', async (req, res) => {
 
     // Execute actual import
     const importResult = await importExecutionEngine.executeImport(session._id, parseResult.data, {
-      columnMapping: session.columnMapping,
+      columnMapping: effectiveColumnMapping,
       statusMap: {},
       clusterAssignments,
       deduplicationStrategy,
