@@ -78,6 +78,45 @@ describe('Smart import ownership guards', () => {
     expect(mockImportSession.findOne).not.toHaveBeenCalled();
   });
 
+  it('rejects invalid sheetName payload on preview', async () => {
+    const sessionId = '507f1f77bcf86cd799439011';
+
+    const res = await request(createApp())
+      .post(`/api/inventory/import/${sessionId}/preview`)
+      .send({ sheetName: { invalid: true } });
+
+    expect(res.status).toBe(400);
+    expect(res.body.error).toContain('Invalid sheetName payload');
+    expect(mockImportSession.findOne).not.toHaveBeenCalled();
+    expect(excelImportService.parseExcelFile).not.toHaveBeenCalled();
+  });
+
+  it('rejects invalid sheetName payload on validate', async () => {
+    const sessionId = '507f1f77bcf86cd799439011';
+
+    const res = await request(createApp())
+      .post(`/api/inventory/import/${sessionId}/validate`)
+      .send({ sheetName: 123 });
+
+    expect(res.status).toBe(400);
+    expect(res.body.error).toContain('Invalid sheetName payload');
+    expect(mockImportSession.findOne).not.toHaveBeenCalled();
+    expect(excelImportService.parseExcelFile).not.toHaveBeenCalled();
+  });
+
+  it('rejects invalid sheetName payload on execute', async () => {
+    const sessionId = '507f1f77bcf86cd799439011';
+
+    const res = await request(createApp())
+      .post(`/api/inventory/import/${sessionId}/execute`)
+      .send({ sheetName: ['Sheet1'] });
+
+    expect(res.status).toBe(400);
+    expect(res.body.error).toContain('Invalid sheetName payload');
+    expect(mockImportSession.findOne).not.toHaveBeenCalled();
+    expect(excelImportService.parseExcelFile).not.toHaveBeenCalled();
+  });
+
   it('applies ownership filter on mapping update', async () => {
     const sessionId = '507f1f77bcf86cd799439011';
     mockImportSession.findOneAndUpdate.mockResolvedValue({

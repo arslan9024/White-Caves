@@ -42,6 +42,9 @@ const isPlainObject = value =>
   !Array.isArray(value) &&
   value.constructor === Object;
 
+const isValidOptionalSheetName = sheetName =>
+  sheetName === undefined || sheetName === null || typeof sheetName === 'string';
+
 // Multer configuration
 const uploadDir = path.join(__dirname, '../uploads');
 const storage = multer.diskStorage({
@@ -146,6 +149,13 @@ router.post('/:sessionId/preview', async (req, res) => {
       return res.status(401).json({ success: false, error: 'Authentication required' });
     }
 
+    if (!isValidOptionalSheetName(req.body.sheetName)) {
+      return res.status(400).json({
+        success: false,
+        error: 'Invalid sheetName payload: expected a string',
+      });
+    }
+
     const session = await findSessionForUser(req.params.sessionId, userId);
     if (!session) {
       return res.status(404).json({
@@ -233,6 +243,13 @@ router.post('/:sessionId/validate', async (req, res) => {
       return res.status(401).json({ success: false, error: 'Authentication required' });
     }
 
+    if (!isValidOptionalSheetName(req.body.sheetName)) {
+      return res.status(400).json({
+        success: false,
+        error: 'Invalid sheetName payload: expected a string',
+      });
+    }
+
     const validationStrategy = req.body.strategy || 'balanced';
     if (!ALLOWED_VALIDATION_STRATEGIES.includes(validationStrategy)) {
       return res.status(400).json({
@@ -290,6 +307,13 @@ router.post('/:sessionId/execute', async (req, res) => {
     const userId = getAuthenticatedUserId(req);
     if (!userId) {
       return res.status(401).json({ success: false, error: 'Authentication required' });
+    }
+
+    if (!isValidOptionalSheetName(req.body.sheetName)) {
+      return res.status(400).json({
+        success: false,
+        error: 'Invalid sheetName payload: expected a string',
+      });
     }
 
     const deduplicationStrategy = req.body.deduplicationStrategy || 'keep';
