@@ -6,6 +6,7 @@
 import express from 'express';
 import multer from 'multer';
 import mongoose from 'mongoose';
+import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import * as excelImportService from '../services/excelImportService.js';
@@ -96,6 +97,10 @@ const isValidOptionalSheetName = sheetName =>
 
 // Multer configuration
 const uploadDir = path.join(__dirname, '../uploads');
+if (!fs.existsSync(uploadDir)) {
+  fs.mkdirSync(uploadDir, { recursive: true });
+}
+
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     cb(null, uploadDir);
