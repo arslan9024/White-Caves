@@ -176,4 +176,23 @@ describe('importExecutionEngine status outcomes', () => {
     expect(result.duplicatesFound).toBe(1);
     expect(result.duplicatesResolved).toBe(1);
   });
+
+  it('increments ownersUpdated when owner already exists', async () => {
+    const session = createSession();
+    mockImportSession.findById.mockResolvedValue(session);
+
+    mockOwner.findOne.mockResolvedValue({ _id: 'owner-existing-1', name: 'Alice' });
+    mockOwner.findOneAndUpdate.mockResolvedValue({ _id: 'owner-existing-1' });
+
+    const rows = [{ pNumber: 'P-300', area: 'JVC', ownerName: 'Alice', status: 'Available' }];
+
+    const result = await executeImport('session-4', rows, {
+      columnMapping,
+      dryRun: false,
+      batchSize: 100,
+    });
+
+    expect(result.ownersUpdated).toBe(1);
+    expect(result.ownersCreated).toBe(0);
+  });
 });
