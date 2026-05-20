@@ -299,6 +299,7 @@ export async function executeImport(sessionId, rows, options = {}) {
         });
 
         let propertyHandledByOverwrite = false;
+        let createVersionRecord = false;
         let property = null;
 
         if (existingProperty) {
@@ -337,6 +338,8 @@ export async function executeImport(sessionId, rows, options = {}) {
                   createdAt: new Date(),
                 };
               }
+              createVersionRecord = true;
+              stats.duplicatesResolved++;
               break;
 
             case 'manual':
@@ -377,8 +380,15 @@ export async function executeImport(sessionId, rows, options = {}) {
           }
         }
 
-        // Create or update property (unless already handled by overwrite branch)
-        if (!dryRun && !propertyHandledByOverwrite) {
+        // Create or update property
+        if (!dryRun && createVersionRecord) {
+          propertyData.owners = owner ? [owner._id] : [];
+          propertyData.primaryOwner = owner ? owner._id : null;
+          propertyData.importSessionId = sessionId;
+
+          property = await InventoryProperty.create(propertyData);
+          stats.propertiesCreated++;
+        } else if (!dryRun && !propertyHandledByOverwrite) {
           propertyData.owners = owner ? [owner._id] : [];
           propertyData.primaryOwner = owner ? owner._id : null;
           propertyData.importSessionId = sessionId;

@@ -9,6 +9,7 @@ const { mockInventoryProperty, mockOwner, mockOwnerPropertyMapping, mockImportSe
         findOne: fn(),
         findByIdAndUpdate: fn(),
         findOneAndUpdate: fn(),
+        create: fn(),
       },
       mockOwner: {
         findOne: fn(),
@@ -96,6 +97,7 @@ describe('importExecutionEngine status outcomes', () => {
     vi.clearAllMocks();
     mockInventoryProperty.findOne.mockResolvedValue(null);
     mockInventoryProperty.findOneAndUpdate.mockResolvedValue({ _id: 'property-1' });
+    mockInventoryProperty.create.mockResolvedValue({ _id: 'property-created-1' });
     mockOwner.findOne.mockResolvedValue(null);
     mockOwner.findOneAndUpdate.mockResolvedValue({ _id: 'owner-1' });
     mockOwnerPropertyMapping.findOneAndUpdate.mockResolvedValue({ _id: 'map-1' });
@@ -194,5 +196,39 @@ describe('importExecutionEngine status outcomes', () => {
 
     expect(result.ownersUpdated).toBe(1);
     expect(result.ownersCreated).toBe(0);
+  });
+
+  it('creates a new property record for version deduplication', async () => {
+    const session = createSession();
+    mockImportSession.findById.mockResolvedValue(session);
+
+    const duplicateProperty = {
+      _id: 'property-dup-version-1',
+      pNumber: 'P-400',
+      area: 'Business Bay',
+      plotNumber: 'Plot-12',
+      toObject: () => ({ _id: 'property-dup-version-1' }),
+    };
+
+    mockInventoryProperty.findOne.mockResolvedValue(duplicateProperty);
+    mockInventoryProperty.create.mockResolvedValue({ _id: 'property-version-2' });
+
+    const rows = [
+      { pNumber: 'P-400', area: 'Business Bay', ownerName: 'Nora', status: 'Available' },
+    ];
+
+    const result = await executeImport('session-5', rows, {
+      columnMapping,
+      deduplicationStrategy: 'version',
+      dryRun: false,
+      batchSize: 100,
+    });
+
+    expect(mockInventoryProperty.create).toHaveBeenCalledTimes(1);
+    expect(mockInventoryProperty.findOneAndUpdate).not.toHaveBeenCalled();
+    expect(result.propertiesCreated).toBe(1);
+    expect(result.propertiesUpdated).toBe(0);
+    expect(result.duplicatesFound).toBe(1);
+    expect(result.duplicatesResolved).toBe(1);
   });
 });
