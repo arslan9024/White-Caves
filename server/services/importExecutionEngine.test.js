@@ -42,7 +42,7 @@ vi.mock('../utils/clusterAutoAssigner.js', () => ({
   assignCluster: vi.fn(() => ({ cluster: 'A', source: 'auto', confidence: 0.9 })),
 }));
 
-import { executeImport, prepareOwnerData } from './importExecutionEngine.js';
+import { executeImport, prepareOwnerData, preparePropertyData } from './importExecutionEngine.js';
 
 function createSession() {
   return {
@@ -337,5 +337,70 @@ describe('importExecutionEngine status outcomes', () => {
 
     expect(ownerData.name).toBe('Nora');
     expect(ownerData.dateOfBirth).toBeNull();
+  });
+
+  it('returns error stats when import session cannot be found', async () => {
+    mockImportSession.findById.mockResolvedValue(null);
+
+    const result = await executeImport(
+      'missing-session',
+      [{ pNumber: 'P-700', area: 'JVC', ownerName: 'Nora' }],
+      {
+        columnMapping,
+        dryRun: false,
+        batchSize: 100,
+      }
+    );
+
+    expect(result.processedRows).toBe(0);
+    expect(result.errorsCount).toBe(0);
+    expect(result.errors).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          error: 'Import session not found',
+          sessionId: 'missing-session',
+        }),
+      ])
+    );
+  });
+
+  it('normalizes owner contacts by deduplicating phone values and lowercasing email', () => {
+    const ownerData = prepareOwnerData(
+      {
+        ownerName: 'Leena',
+        mobile: '+971 50 123 4567',
+        phone: '+971501234567',
+        secondaryMobile: '+971 50 123 4567',
+        email: 'LEENA@EXAMPLE.COM',
+      },
+      columnMapping
+    );
+
+    expect(ownerData.contacts).toEqual([
+      expect.objectContaining({ type: 'mobile', value: '+971501234567', isPrimary: true }),
+      expect.objectContaining({ type: 'email', value: 'leena@example.com' }),
+    ]);
+  });
+
+  it('normalizes placeholder legal fields to null in prepared property data', () => {
+    const propertyData = preparePropertyData(
+      {
+        pNumber: 'P-880',
+        area: 'Marina',
+        registration: '.',
+        municipalityNo: '.',
+        dewaPremiseNumber: '.',
+        otpDubaiRest: '.',
+        status: 'Available',
+      },
+      columnMapping,
+      {},
+      {}
+    );
+
+    expect(propertyData.registration).toBeNull();
+    expect(propertyData.municipalityNo).toBeNull();
+    expect(propertyData.dewaPremiseNumber).toBeNull();
+    expect(propertyData.otpDubaiRest).toBeNull();
   });
 });

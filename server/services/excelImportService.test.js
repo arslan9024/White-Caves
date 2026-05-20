@@ -165,4 +165,65 @@ describe('excelImportService', () => {
 
     await expect(getAllSheetData(missingPath)).rejects.toThrow('Import file not found');
   });
+
+  it('caps preview length at 1000 rows when previewLimit is too large', async () => {
+    const csvPath = path.join(os.tmpdir(), `white-caves-import-large-preview-${Date.now()}.csv`);
+    tempFiles.push(csvPath);
+
+    const rows = ['P-NUMBER,AREA,NAME'];
+    for (let i = 1; i <= 1105; i++) {
+      rows.push(`P-${i},JVC,Owner-${i}`);
+    }
+
+    fs.writeFileSync(csvPath, rows.join('\n'), 'utf8');
+
+    const result = await parseExcelFile(csvPath, { previewLimit: 5000 });
+
+    expect(result.totalRows).toBe(1105);
+    expect(result.preview).toHaveLength(1000);
+  });
+
+  it('maps dashed and underscored headers through normalization rules', async () => {
+    const csvPath = path.join(
+      os.tmpdir(),
+      `white-caves-import-normalized-headers-${Date.now()}.csv`
+    );
+    tempFiles.push(csvPath);
+
+    fs.writeFileSync(
+      csvPath,
+      ['P_NUMBER,AREA,OWNER-NAME,STATUS', 'P-777,DIFC,Noura,Vacant'].join('\n'),
+      'utf8'
+    );
+
+    const result = await parseExcelFile(csvPath, { previewLimit: 5 });
+
+    expect(result.data[0]).toEqual(
+      expect.objectContaining({
+        pNumber: 'P-777',
+        area: 'DIFC',
+        ownerName: 'Noura',
+        status: 'available',
+      })
+    );
+  });
+
+  it('getAllSheetData returns parsed rows for csv files', async () => {
+    const csvPath = path.join(os.tmpdir(), `white-caves-all-sheets-${Date.now()}.csv`);
+    tempFiles.push(csvPath);
+
+    fs.writeFileSync(csvPath, ['P-NUMBER,AREA,NAME', 'P-1,JVC,Alice'].join('\n'), 'utf8');
+
+    const sheets = await getAllSheetData(csvPath);
+
+    expect(sheets).toHaveLength(1);
+    expect(sheets[0].sheetName).toBeTruthy();
+    expect(sheets[0].rows).toEqual([
+      {
+        'P-NUMBER': 'P-1',
+        AREA: 'JVC',
+        NAME: 'Alice',
+      },
+    ]);
+  });
 });
