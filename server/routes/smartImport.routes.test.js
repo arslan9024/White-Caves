@@ -117,6 +117,19 @@ describe('Smart import ownership guards', () => {
     expect(excelImportService.parseExcelFile).not.toHaveBeenCalled();
   });
 
+  it('rejects invalid dryRun payload on execute', async () => {
+    const sessionId = '507f1f77bcf86cd799439011';
+
+    const res = await request(createApp())
+      .post(`/api/inventory/import/${sessionId}/execute`)
+      .send({ dryRun: 'true' });
+
+    expect(res.status).toBe(400);
+    expect(res.body.error).toContain('Invalid dryRun payload');
+    expect(mockImportSession.findOne).not.toHaveBeenCalled();
+    expect(excelImportService.parseExcelFile).not.toHaveBeenCalled();
+  });
+
   it('applies ownership filter on mapping update', async () => {
     const sessionId = '507f1f77bcf86cd799439011';
     mockImportSession.findOneAndUpdate.mockResolvedValue({
@@ -191,6 +204,30 @@ describe('Smart import ownership guards', () => {
         $or: [{ userId: 'user-1' }, { importedBy: 'user-1' }],
       },
       { columnMapping: { P: 'pNumber', A: 'area', N: 'ownerName' } },
+      { new: true }
+    );
+  });
+
+  it('normalizes mapping payload keys and values before saving', async () => {
+    const sessionId = '507f1f77bcf86cd799439011';
+    const mappingPayload = { ' pNumber ': ' P-NUMBER ', ' area ': ' AREA ', ownerName: ' NAME ' };
+
+    mockImportSession.findOneAndUpdate.mockResolvedValue({
+      _id: sessionId,
+      columnMapping: { pNumber: 'P-NUMBER', area: 'AREA', ownerName: 'NAME' },
+    });
+
+    const res = await request(createApp())
+      .post(`/api/inventory/import/${sessionId}/mapping`)
+      .send({ mapping: mappingPayload });
+
+    expect(res.status).toBe(200);
+    expect(mockImportSession.findOneAndUpdate).toHaveBeenCalledWith(
+      {
+        _id: sessionId,
+        $or: [{ userId: 'user-1' }, { importedBy: 'user-1' }],
+      },
+      { columnMapping: { pNumber: 'P-NUMBER', area: 'AREA', ownerName: 'NAME' } },
       { new: true }
     );
   });
@@ -364,6 +401,44 @@ describe('Smart import ownership guards', () => {
     expect(res.body.error).toContain('Invalid validation strategy');
   });
 
+  it('rejects preview when parser returns non-array preview payload', async () => {
+    const sessionId = '507f1f77bcf86cd799439011';
+    mockImportSession.findOne.mockResolvedValue({
+      _id: sessionId,
+      filePath: '/tmp/fake.csv',
+      sheetName: 'Sheet1',
+      columnMapping: { P: 'pNumber', A: 'area', N: 'ownerName' },
+      status: 'pending',
+    });
+    excelImportService.parseExcelFile.mockResolvedValue({ preview: null, totalRows: 0 });
+
+    const res = await request(createApp())
+      .post(`/api/inventory/import/${sessionId}/preview`)
+      .send({});
+
+    expect(res.status).toBe(500);
+    expect(res.body.error).toContain('preview must be an array');
+  });
+
+  it('rejects validate when parser returns non-array data payload', async () => {
+    const sessionId = '507f1f77bcf86cd799439011';
+    mockImportSession.findOne.mockResolvedValue({
+      _id: sessionId,
+      filePath: '/tmp/fake.csv',
+      sheetName: 'Sheet1',
+      columnMapping: { P: 'pNumber', A: 'area', N: 'ownerName' },
+      status: 'pending',
+    });
+    excelImportService.parseExcelFile.mockResolvedValue({ data: null });
+
+    const res = await request(createApp())
+      .post(`/api/inventory/import/${sessionId}/validate`)
+      .send({ strategy: 'balanced' });
+
+    expect(res.status).toBe(500);
+    expect(res.body.error).toContain('data must be an array');
+  });
+
   it('rejects invalid validation strategy on dry-run execute', async () => {
     const sessionId = '507f1f77bcf86cd799439011';
     mockImportSession.findOne.mockResolvedValue({
@@ -469,7 +544,7 @@ describe('Smart import ownership guards', () => {
       _id: sessionId,
       filePath: '/tmp/fake.csv',
       sheetName: 'Sheet1',
-      columnMapping: { A: 'ownerName' },
+      columnMapping: { P: 'pNumber', A: 'area', N: 'ownerName' },
       status: 'pending',
       save: vi.fn().mockResolvedValue(undefined),
     };
@@ -521,6 +596,56 @@ describe('Smart import ownership guards', () => {
         columnMapping: { P: 'pNumber', A: 'area', N: 'ownerName' },
       })
     );
+  });
+
+  it('rejects execute when parser returns non-array data payload', async () => {
+    const sessionId = '507f1f77bcf86cd799439011';
+    const session = {
+      _id: sessionId,
+      filePath: '/tmp/fake.csv',
+      sheetName: 'Sheet1',
+      columnMapping: { P: 'pNumber', A: 'area', N: 'ownerName' },
+      status: 'pending',
+      save: vi.fn().mockResolvedValue(undefined),
+    };
+
+    mockImportSession.findOne.mockResolvedValue(session);
+    excelImportService.parseExcelFile.mockResolvedValue({ data: null });
+
+    const res = await request(createApp())
+      .post(`/api/inventory/import/${sessionId}/execute`)
+      .send({ strategy: 'balanced' });
+
+    expect(res.status).toBe(500);
+    expect(res.body.error).toContain('data must be an array');
+    expect(importExecutionEngine.executeImport).not.toHaveBeenCalled();
+  });
+
+  it('rejects execute when required mappings are missing in both session and parser outputs', async () => {
+    const sessionId = '507f1f77bcf86cd799439011';
+    const session = {
+      _id: sessionId,
+      filePath: '/tmp/fake.csv',
+      sheetName: 'Sheet1',
+      columnMapping: { A: 'ownerName' },
+      status: 'pending',
+      save: vi.fn().mockResolvedValue(undefined),
+    };
+
+    mockImportSession.findOne.mockResolvedValue(session);
+    excelImportService.parseExcelFile.mockResolvedValue({
+      data: [],
+      sheetName: 'Sheet1',
+      columnMapping: { AA: 'ownerName', BB: 'listingArea' },
+    });
+
+    const res = await request(createApp())
+      .post(`/api/inventory/import/${sessionId}/execute`)
+      .send({ strategy: 'balanced' });
+
+    expect(res.status).toBe(400);
+    expect(res.body.error).toContain('required column mappings missing');
+    expect(importExecutionEngine.executeImport).not.toHaveBeenCalled();
   });
 
   it('prefers valid session columnMapping over parser mapping on execute', async () => {

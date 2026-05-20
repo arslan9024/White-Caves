@@ -75,4 +75,61 @@ describe('excelImportService', () => {
       })
     );
   });
+
+  it('normalizes status values with mixed casing and extra spaces', async () => {
+    const csvPath = path.join(os.tmpdir(), `white-caves-import-status-${Date.now()}.csv`);
+    tempFiles.push(csvPath);
+
+    fs.writeFileSync(
+      csvPath,
+      ['P-NUMBER,AREA,NAME,STATUS', 'P-200,Business Bay,Nora, occupied '].join('\n'),
+      'utf8'
+    );
+
+    const result = await parseExcelFile(csvPath, { previewLimit: 5 });
+
+    expect(result.data[0]).toEqual(
+      expect.objectContaining({
+        pNumber: 'P-200',
+        area: 'Business Bay',
+        ownerName: 'Nora',
+        status: 'rented',
+      })
+    );
+  });
+
+  it('falls back to default previewLimit when invalid values are provided', async () => {
+    const csvPath = path.join(os.tmpdir(), `white-caves-import-preview-${Date.now()}.csv`);
+    tempFiles.push(csvPath);
+
+    fs.writeFileSync(
+      csvPath,
+      ['P-NUMBER,AREA,NAME', 'P-1,JVC,Alice', 'P-2,JLT,Bob', 'P-3,DIFC,Carla'].join('\n'),
+      'utf8'
+    );
+
+    const result = await parseExcelFile(csvPath, { previewLimit: 0 });
+
+    expect(result.totalRows).toBe(3);
+    expect(result.preview).toHaveLength(3);
+  });
+
+  it('builds columnMapping from headers even when file has no data rows', async () => {
+    const csvPath = path.join(os.tmpdir(), `white-caves-import-headers-${Date.now()}.csv`);
+    tempFiles.push(csvPath);
+
+    fs.writeFileSync(csvPath, 'P-NUMBER,AREA,NAME,STATUS\n', 'utf8');
+
+    const result = await parseExcelFile(csvPath, { previewLimit: 5 });
+
+    expect(result.totalRows).toBe(0);
+    expect(result.columnMapping).toEqual(
+      expect.objectContaining({
+        pNumber: 'pNumber',
+        area: 'area',
+        ownerName: 'ownerName',
+        status: 'status',
+      })
+    );
+  });
 });

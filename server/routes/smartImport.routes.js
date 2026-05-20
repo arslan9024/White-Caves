@@ -95,6 +95,15 @@ const isValidClusterAssignmentsPayload = clusterAssignments =>
 const isValidOptionalSheetName = sheetName =>
   sheetName === undefined || sheetName === null || typeof sheetName === 'string';
 
+const isValidOptionalBoolean = value => value === undefined || typeof value === 'boolean';
+
+const normalizeMappingPayload = mapping =>
+  Object.fromEntries(
+    Object.entries(mapping).map(([key, value]) => [String(key).trim(), String(value).trim()])
+  );
+
+const isValidParseDataArray = value => Array.isArray(value);
+
 // Multer configuration
 const uploadDir = path.join(__dirname, '../uploads');
 if (!fs.existsSync(uploadDir)) {
@@ -223,6 +232,13 @@ router.post('/:sessionId/preview', async (req, res) => {
       previewLimit: 100,
     });
 
+    if (!isValidParseDataArray(parseResult.preview)) {
+      return res.status(500).json({
+        success: false,
+        error: 'Invalid parser payload: preview must be an array',
+      });
+    }
+
     const dropdownOptions = extractDropdownOptions(parseResult.preview);
     const stats = calculateDataStats(parseResult.preview);
 
@@ -268,7 +284,9 @@ router.post('/:sessionId/mapping', async (req, res) => {
       });
     }
 
-    if (!hasRequiredFieldMappings(req.body.mapping)) {
+    const normalizedMapping = normalizeMappingPayload(req.body.mapping);
+
+    if (!hasRequiredFieldMappings(normalizedMapping)) {
       return res.status(400).json({
         success: false,
         error: `Mapping is missing required fields: ${IMPORT_REQUIRED_FIELDS.join(', ')}`,
@@ -277,7 +295,7 @@ router.post('/:sessionId/mapping', async (req, res) => {
 
     const session = await ImportSession.findOneAndUpdate(
       buildSessionOwnershipQuery(req.params.sessionId, userId),
-      { columnMapping: req.body.mapping },
+      { columnMapping: normalizedMapping },
       { new: true }
     );
 
@@ -338,6 +356,13 @@ router.post('/:sessionId/validate', async (req, res) => {
       sheetName: req.body.sheetName || session.sheetName,
     });
 
+    if (!isValidParseDataArray(parseResult.data)) {
+      return res.status(500).json({
+        success: false,
+        error: 'Invalid parser payload: data must be an array',
+      });
+    }
+
     const validation = await importValidationEngine.validateAllRows(
       parseResult.data,
       validationStrategy,
@@ -384,6 +409,13 @@ router.post('/:sessionId/execute', async (req, res) => {
       });
     }
 
+    if (!isValidOptionalBoolean(req.body.dryRun)) {
+      return res.status(400).json({
+        success: false,
+        error: 'Invalid dryRun payload: expected a boolean',
+      });
+    }
+
     const deduplicationStrategy = req.body.deduplicationStrategy || 'keep';
     if (!ALLOWED_DEDUPLICATION_STRATEGIES.includes(deduplicationStrategy)) {
       return res.status(400).json({
@@ -422,10 +454,24 @@ router.post('/:sessionId/execute', async (req, res) => {
       sheetName: req.body.sheetName || session.sheetName,
     });
 
+    if (!isValidParseDataArray(parseResult.data)) {
+      return res.status(500).json({
+        success: false,
+        error: 'Invalid parser payload: data must be an array',
+      });
+    }
+
     const effectiveColumnMapping = resolveExecutionColumnMapping(
       session.columnMapping,
       parseResult.columnMapping
     );
+
+    if (!hasRequiredFieldMappings(effectiveColumnMapping)) {
+      return res.status(400).json({
+        success: false,
+        error: `Unable to execute import: required column mappings missing (${IMPORT_REQUIRED_FIELDS.join(', ')})`,
+      });
+    }
 
     // Optional: dry-run validation
     if (req.body.dryRun) {

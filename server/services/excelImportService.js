@@ -98,15 +98,28 @@ function normalizeRow(rawRow) {
     normalizedRow[mappedField] = value;
   }
 
-  if (normalizedRow.status && STATUS_MAPPING[normalizedRow.status]) {
-    normalizedRow.status = STATUS_MAPPING[normalizedRow.status];
+  const statusRaw = normalizedRow.status;
+  const normalizedStatusKey = statusRaw ? String(statusRaw).trim() : '';
+  const normalizedStatusUpper = normalizedStatusKey.toUpperCase();
+
+  if (normalizedStatusKey && STATUS_MAPPING[normalizedStatusKey]) {
+    normalizedRow.status = STATUS_MAPPING[normalizedStatusKey];
+  } else if (normalizedStatusUpper && STATUS_MAPPING[normalizedStatusUpper]) {
+    normalizedRow.status = STATUS_MAPPING[normalizedStatusUpper];
   }
 
   return normalizedRow;
 }
 
-function buildIdentityColumnMapping(rows) {
+function buildColumnMapping(rows, headers = []) {
   const mapping = {};
+
+  for (const header of headers) {
+    const mappedField = resolveMappedField(header);
+    if (mappedField && !mapping[mappedField]) {
+      mapping[mappedField] = mappedField;
+    }
+  }
 
   for (const row of rows) {
     for (const key of Object.keys(row)) {
@@ -121,6 +134,8 @@ function buildIdentityColumnMapping(rows) {
 
 export async function parseExcelFile(filePath, options = {}) {
   const { sheetName, previewLimit = 20 } = options;
+  const safePreviewLimit =
+    Number.isInteger(previewLimit) && previewLimit > 0 ? Math.min(previewLimit, 1000) : 20;
 
   if (!fs.existsSync(filePath)) {
     throw new Error(`Import file not found: ${filePath}`);
@@ -149,8 +164,8 @@ export async function parseExcelFile(filePath, options = {}) {
   });
 
   const data = rawRows.map(normalizeRow);
-  const preview = data.slice(0, previewLimit);
-  const columnMapping = buildIdentityColumnMapping(data);
+  const preview = data.slice(0, safePreviewLimit);
+  const columnMapping = buildColumnMapping(data, rawHeaders);
 
   return {
     sheets,
