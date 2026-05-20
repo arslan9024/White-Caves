@@ -1,9 +1,9 @@
 # White Caves Daily Milestone Tracker
 
-**Date:** May 17, 2026
+**Date:** May 19, 2026
 **Owner:** @Margaret
 **Status:** Active
-**Last Updated:** 2026-05-17
+**Last Updated:** 2026-05-20
 
 > Roadmap: [plans/MASTER_PLAN.md](plans/MASTER_PLAN.md) · Queue: [plans/PENDING_TASKS_ONLY.md](plans/PENDING_TASKS_ONLY.md)
 
@@ -34,14 +34,34 @@
 
 ## Daily Entry
 
-| Date         | Owner     | Summary                                                                                                                            | Status      |
-| ------------ | --------- | ---------------------------------------------------------------------------------------------------------------------------------- | ----------- |
-| May 16, 2026 | @Margaret | Project progress report created and tracker sync initiated; readiness gate still blocked pending 60% evidence                      | In progress |
-| May 16, 2026 | @Margaret | Parallel Implementation War Room launched for Team A/B/C/D priorities with 4-lane simultaneous execution plan                      | In progress |
-| May 16, 2026 | @Margaret | First-wave root implementation completed and acknowledged across all four lanes; downstream queue unlocked from 4 to 8 ready tasks | In progress |
-| May 16, 2026 | @Margaret | Multi-wave autonomous execution advanced queue from 7/51 to 36/51; Lane D reached 6/6 complete                                     | In progress |
-| May 16, 2026 | @Ada      | Context Ready (60% Readiness) — Coding Phase Approved (threshold satisfied at 82%)                                                 | Approved    |
-| May 16, 2026 | @Margaret | Finalized all remaining waves; queue reached 51/51 done and all lanes completed                                                    | Done        |
+| Date         | Owner              | Summary                                                                                                                                                                                                                                         | Status      |
+| ------------ | ------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------- |
+| May 16, 2026 | @Margaret          | Project progress report created and tracker sync initiated; readiness gate still blocked pending 60% evidence                                                                                                                                   | In progress |
+| May 16, 2026 | @Margaret          | Parallel Implementation War Room launched for Team A/B/C/D priorities with 4-lane simultaneous execution plan                                                                                                                                   | In progress |
+| May 16, 2026 | @Margaret          | First-wave root implementation completed and acknowledged across all four lanes; downstream queue unlocked from 4 to 8 ready tasks                                                                                                              | In progress |
+| May 16, 2026 | @Margaret          | Multi-wave autonomous execution advanced queue from 7/51 to 36/51; Lane D reached 6/6 complete                                                                                                                                                  | In progress |
+| May 16, 2026 | @Ada               | Context Ready (60% Readiness) — Coding Phase Approved (threshold satisfied at 82%)                                                                                                                                                              | Approved    |
+| May 16, 2026 | @Margaret          | Finalized all remaining waves; queue reached 51/51 done and all lanes completed                                                                                                                                                                 | Done        |
+| May 19, 2026 | @Margaret + @Mira  | Next execution wave governance closure: superseded SESSION/PHASE_2 plan docs archived; Phase 26 Workstream E explicitly deferred to 2026-05-23                                                                                                  | Done        |
+| May 19, 2026 | @Mira + @Katherine | N+1→N+6 combined completion verification wave: typecheck + lint + tenant portal parity suite passed (36/36)                                                                                                                                     | Done        |
+| May 19, 2026 | @Mira + @Katherine | Wave 04 W4-002 implemented: permit/BRN alert scheduler service added, `/api/compliance/permit-alerts` refactored to shared helper, compliance suite green (37/37)                                                                               | Done        |
+| May 19, 2026 | @Mira + @Katherine | Wave 04 enforcement automation: added daily property permit scheduler to auto-unpublish non-compliant `available` listings (`off_market`) with audit trail + service tests                                                                      | Done        |
+| May 19, 2026 | @Mira + @Katherine | Wave 04 permit register path delivered: added `GET/PATCH /api/compliance/permits` with manager guardrails and green compliance suite (41/41)                                                                                                    | Done        |
+| May 19, 2026 | @Mira + @Katherine | Wave 04 permit enforcement control delivered: added manager-only `POST /api/compliance/permits/enforcement-run` (dry-run/live) with compliance audit event logging, tests green (49/49 targeted)                                                | Done        |
+| May 19, 2026 | @Mira + @Katherine | Wave 04 permit enforcement observability delivered: added `GET /api/compliance/permits/enforcement-history` for manager/finance audit visibility, compliance suite green (46/46)                                                                | Done        |
+| May 19, 2026 | @Mira + @Katherine | Wave 04 scheduler reliability hardening: overlap-safe `runPropertyPermitEnforcementTick` added to skip concurrent runs; compliance+scheduler suite green (52/52 targeted)                                                                       | Done        |
+| May 19, 2026 | @Mira + @Katherine | Wave 04 scheduler reliability hardening: overlap-safe `runPermitAlertSchedulerTick` added with dedicated permit alert scheduler tests; related suites green (57/57 targeted)                                                                    | Done        |
+| May 19, 2026 | @Mira + @Katherine | Wave 04 scheduler reliability hardening: overlap-safe `runRERAExpirySchedulerTick` added with dedicated RERA scheduler tests; related suites green (62/62 targeted)                                                                             | Done        |
+| May 20, 2026 | @Mira + @Katherine | Wave 04 BRN operability delivered: manual `POST /api/compliance/brn-check` now logs `brn_manual_check` audit events + new `GET /api/compliance/brn-check/history`, suites green (66/66 targeted)                                                | Done        |
+| May 20, 2026 | @Mira + @Katherine | Regression stabilization wave: hardened `phase33-leasing-continuity.spec.ts` for homepage variant parity; targeted e2e green (4/4) and latest full suite green (52/52)                                                                          | Done        |
+| May 20, 2026 | @Margaret + @Mira  | Governance tracker reconciliation: closed stale `PROJECT_PROGRESS.md` gates (Phase 33 gate pass, daily quota, wave artifacts) and marked legacy 1000%/92% gate as superseded by Governance V2                                                   | Done        |
+| May 20, 2026 | @Mira + @Gwynne    | Deploy-readiness hardening: added `public/robots.txt`, fixed `phase6.routes` import wiring in `server/index.ts`, installed missing runtime deps (`googleapis`) and revalidated lint/build + ops tests                                           | Done        |
+| May 20, 2026 | @Mira + @Katherine | Active-cluster closure: removed production startup hard-crash for missing WhatsApp creds (degraded mode by default with strict opt-in), fixed Express production SPA fallback, and verified `verify-deploy` 22/22 ✅                            | Done        |
+| May 20, 2026 | @Mira + @Katherine | Post-closure verification sweep: reran `npm run quality:quick` (lint ✅, build ✅, ops tests 11/11 ✅); no regressions detected on current branch head                                                                                          | Done        |
+| May 20, 2026 | @Mira + @Katherine | Notification wave: added webhook-backed optional push transport in `server/notifications/notification.service.ts` with local fallback and 3 focused regression tests                                                                            | Done        |
+| May 20, 2026 | @Mira + @Katherine | Contracts signing wave: `POST /api/contracts/:id/request-signature` now sends a branded signing-link email via tracked email service; focused route regression test added                                                                       | Done        |
+| May 20, 2026 | @Mira + @Katherine | Signature service wave: `SignatureService` now sends branded signing-request and reminder emails via tracked email service; focused service regression test added                                                                               | Done        |
+| May 20, 2026 | @Mira + @Katherine | Import history dashboard wave: mounted `importHistory` routes in runtime, aligned `/api/inventory/import/history` contract with frontend, and added real collection stats for `GET /api/admin/dashboard` with focused route regression coverage | Done        |
 
 ---
 

@@ -70,7 +70,7 @@ import jobApplicationsRoutes from './routes/jobApplications.js';
 import contractsRoutes from './routes/contracts.js';
 import appointmentsRoutes from './routes/appointments.js';
 import { roleRequestRouter, adminRoleRequestRouter } from './routes/roleRequests.js';
-import { phase6Router as phase6Routes } from './routes/phase6.routes.js';
+import { phase6Router } from './routes/phase6.routes.js';
 import landlordPortalRoutes from './routes/landlord.js';
 import tenantPortalRoutes from './routes/tenantPortal.js';
 import invoicesLeaseRoutes from './routes/invoicesLease.js';
@@ -78,17 +78,20 @@ import usersRoutes from './routes/users.js';
 import leasingInventoryRoutes from './routes/leasing-inventory.js';
 import secondarySalesRoutes from './routes/secondary-sales.js';
 import commissionsRoutes from './routes/commissions.js';
+import importHistoryRoutes from './routes/importHistory.routes.js';
+import smartImportRoutes from './routes/smartImport.routes.js';
 import { requireRole, requirePermission } from './middleware/rbac.js';
 import { startLeadScoringScheduler } from './services/ai/leadScoringScheduler.js';
 import { startFollowUpScheduler } from './services/automation/followUpScheduler.js';
 import { startRateRefresh } from './services/currencyService.js';
 import { startViewingReminderScheduler } from './services/schedulingService.js';
 import { startRERAExpiryScheduler } from './services/compliance/reraExpiryScheduler.js';
+import { startPermitAlertScheduler } from './services/compliance/permitAlertScheduler.js';
+import { startPropertyPermitEnforcementScheduler } from './services/compliance/propertyPermitEnforcementScheduler.js';
 import { startAutoRouting } from './services/ai/leadAutoRouter.js';
 import { createSocketServer } from './services/socketServer.js';
 
 const app: Express = express();
-const db = prisma as any;
 
 // Trust the first proxy in front of the server (e.g. Vercel edge, nginx, AWS ALB).
 // This makes req.ip and all express-rate-limit lookups use the real client IP
@@ -406,6 +409,8 @@ app.use('/api/secondary-sales', secondarySalesRoutes);
 
 // Commissions API (Phase 35 - Dubai Real Estate Commission Tracker)
 app.use('/api/commissions', commissionsRoutes);
+app.use('/api/inventory/import', smartImportRoutes);
+app.use('/api', importHistoryRoutes);
 
 // WhatsApp Webhook (public endpoint — requires webhook secret for verification)
 app.post(
@@ -849,8 +854,8 @@ app.get(
   authMiddleware,
   requirePermission('manage_users'),
   asyncHandler(async (_req: Request, res: Response) => {
-    const settings = await db.systemSetting.findMany({ orderBy: { category: 'asc' } });
-    const settingsMap = Object.fromEntries(settings.map((s: any) => [s.key, s.value]));
+    const settings = await prisma.systemSetting.findMany({ orderBy: { category: 'asc' } });
+    const settingsMap = Object.fromEntries(settings.map(s => [s.key, s.value]));
     res.json({ success: true, data: settingsMap, meta: { count: settings.length } });
   })
 );
@@ -872,15 +877,15 @@ app.post(
     // Upsert each key
     const updated = await Promise.all(
       entries.map(([key, value]) =>
-        db.systemSetting.upsert({
+        prisma.systemSetting.upsert({
           where: { key },
           create: {
             key,
-            value: value as any,
+            value: value as Parameters<typeof prisma.systemSetting.create>[0]['data']['value'],
             updatedBy: userId,
           },
           update: {
-            value: value as any,
+            value: value as Parameters<typeof prisma.systemSetting.update>[0]['data']['value'],
             updatedBy: userId,
           },
         })
@@ -903,8 +908,33 @@ app.use(
     if (userId) req.headers['x-user-id'] = userId;
     next();
   },
-  phase6Routes
+  phase6Router
 );
+
+// ============================================================================
+// PRODUCTION STATIC ASSET + SPA SERVING
+// ============================================================================
+
+if (IS_PRODUCTION) {
+  const publicDir = path.join(process.cwd(), 'public');
+  const distDir = path.join(process.cwd(), 'dist');
+
+  // Serve SEO/PWA/static assets from public first (robots.txt, sitemap.xml, manifest.json, etc.)
+  app.use(express.static(publicDir, { index: false }));
+  // Serve built frontend assets from dist
+  app.use(express.static(distDir, { index: false }));
+
+  // SPA fallback for non-API GET requests
+  app.use((req: Request, res: Response, next: NextFunction) => {
+    if (req.method !== 'GET') return next();
+    if (req.path.startsWith('/api/')) return next();
+    if (req.path.startsWith('/uploads/')) return next();
+
+    res.sendFile(path.join(distDir, 'index.html'), err => {
+      if (err) next();
+    });
+  });
+}
 
 // ============================================================================
 // ERROR HANDLING
@@ -940,6 +970,8 @@ const startServer = async () => {
     startRateRefresh(); // Phase 2E: refresh exchange rates every 6h
     startViewingReminderScheduler(); // Phase 3C: viewing reminders every 15 min
     startRERAExpiryScheduler(); // Phase 3D: RERA BRN expiry checks daily
+    startPermitAlertScheduler(); // Wave 04: permit/BRN alert snapshots daily
+    startPropertyPermitEnforcementScheduler(); // Wave 04: auto-unpublish non-compliant available listings daily
     startAutoRouting(); // Phase 4A: auto-route hot leads to best agents
 
     // Boot AssistantOrchestrator — register all 5 assistant handler chains

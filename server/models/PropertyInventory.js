@@ -131,7 +131,6 @@ const PropertyInventorySchema = new mongoose.Schema(
 );
 
 // Indexes
-PropertyInventorySchema.index({ propertyId: 1 });
 PropertyInventorySchema.index({ status: 1 });
 PropertyInventorySchema.index({ currentOfferId: 1 });
 PropertyInventorySchema.index({ currentContractId: 1 });

@@ -16,6 +16,16 @@ const { mockPrisma } = vi.hoisted(() => {
       property: {
         count: fn().mockResolvedValue(20),
         findMany: fn().mockResolvedValue([]),
+        findUnique: fn().mockResolvedValue(null),
+        update: fn().mockResolvedValue({
+          id: 'prop-1',
+          title: 'Updated Permit Property',
+          status: 'available',
+          municipalityNumber: 'MUN-1',
+          plotNumber: 'PLOT-1',
+          buildingPermitNumber: 'BPN-1',
+          updatedAt: new Date('2026-05-19T10:00:00.000Z'),
+        }),
       },
       lead: {
         findUnique: fn().mockResolvedValue({ id: 'lead-1', tags: [] }),
@@ -67,8 +77,23 @@ vi.mock('../services/compliance/amlAdapter.js', () => ({
     screenedAt: new Date('2026-05-16T10:00:00.000Z').toISOString(),
   })),
 }));
+vi.mock('../services/compliance/reraExpiryScheduler.js', () => ({
+  getBRNExpiryReport: vi.fn(async () => []),
+  checkBRNExpirations: vi.fn(async () => ({ notified: 0, errors: 0, agents: [] })),
+}));
+vi.mock('../services/compliance/propertyPermitEnforcementScheduler.js', () => ({
+  enforcePropertyPermitCompliance: vi.fn(async () => ({
+    scanned: 2,
+    autoUnpublished: 1,
+    errors: 0,
+    dryRun: false,
+    affectedPropertyIds: ['prop-1'],
+  })),
+}));
 
 import complianceRoutes from './compliance';
+import { enforcePropertyPermitCompliance } from '../services/compliance/propertyPermitEnforcementScheduler.js';
+import { checkBRNExpirations } from '../services/compliance/reraExpiryScheduler.js';
 
 // ── Test app factory ─────────────────────────────────────────────────
 function createApp(role: string = 'owner') {
@@ -98,6 +123,7 @@ describe('Compliance Routes — /api/compliance', () => {
     vi.clearAllMocks();
     mockPrisma.property.count.mockResolvedValue(20);
     mockPrisma.property.findMany.mockResolvedValue([]);
+    mockPrisma.property.findUnique.mockResolvedValue(null);
     mockPrisma.lead.findUnique.mockResolvedValue({ id: 'lead-1', tags: [] });
     mockPrisma.lead.update.mockResolvedValue({ id: 'lead-1', tags: ['kyc_verified'] });
     mockPrisma.user.count.mockResolvedValue(5);
@@ -389,6 +415,264 @@ describe('Compliance Routes — /api/compliance', () => {
       );
       expect(res.status).toBe(400);
       expect(res.body.error).toMatch(/daysAhead/i);
+    });
+  });
+
+  // ── POST /brn-check + GET /brn-check/history ───────────────────
+  describe('BRN check operability endpoints', () => {
+    it('runs manual BRN check for owner and logs activity', async () => {
+      const brnCheckMock = checkBRNExpirations as unknown as ReturnType<typeof vi.fn>;
+      brnCheckMock.mockResolvedValueOnce({
+        notified: 2,
+        errors: 1,
+        agents: [
+          { id: 'a-1', name: 'Agent 1', brnNumber: 'BRN-1', daysUntilExpiry: 7, channel: 'email' },
+          {
+            id: 'a-2',
+            name: 'Agent 2',
+            brnNumber: 'BRN-2',
+            daysUntilExpiry: 3,
+            channel: 'whatsapp',
+          },
+        ],
+      });
+
+      const res = await request(createApp('owner')).post('/api/compliance/brn-check').send({});
+
+      expect(res.status).toBe(200);
+      expect(res.body.success).toBe(true);
+      expect(res.body.data.notified).toBe(2);
+      expect(mockPrisma.activity.create).toHaveBeenCalledWith(
+        expect.objectContaining({
+          data: expect.objectContaining({ action: 'brn_manual_check' }),
+        })
+      );
+    });
+
+    it('returns 403 for agent on manual BRN check', async () => {
+      const res = await request(createApp('agent')).post('/api/compliance/brn-check').send({});
+      expect(res.status).toBe(403);
+    });
+
+    it('returns BRN check history for finance role', async () => {
+      mockPrisma.activity.findMany.mockResolvedValueOnce([
+        {
+          id: 'act-brn-1',
+          type: 'compliance',
+          action: 'brn_manual_check',
+          description: 'Manual BRN expiry check executed (notified=1, errors=0)',
+          createdAt: new Date('2026-05-20T08:00:00.000Z'),
+          metadata: {
+            notified: 1,
+            errors: 0,
+            agentCount: 1,
+            agentIds: ['a-1'],
+          },
+          user: {
+            id: 'u-1',
+            name: 'Manager One',
+            role: 'manager',
+            email: 'manager@whitecaves.ae',
+          },
+        },
+      ]);
+
+      const res = await request(createApp('finance')).get(
+        '/api/compliance/brn-check/history?limit=10'
+      );
+
+      expect(res.status).toBe(200);
+      expect(res.body.success).toBe(true);
+      expect(res.body.data).toHaveLength(1);
+      expect(res.body.data[0].summary.notified).toBe(1);
+      expect(res.body.summary.totalNotified).toBe(1);
+    });
+
+    it('returns 403 for agent on BRN check history', async () => {
+      const res = await request(createApp('agent')).get('/api/compliance/brn-check/history');
+      expect(res.status).toBe(403);
+    });
+  });
+
+  // ── GET/PATCH /permits ──────────────────────────────────────────
+  describe('Permit register endpoints', () => {
+    it('returns permit register list for owner', async () => {
+      mockPrisma.property.findMany.mockResolvedValueOnce([
+        {
+          id: 'prop-1',
+          title: 'Marina Apt',
+          status: 'available',
+          location: 'Dubai Marina',
+          area: 'Marina',
+          municipalityNumber: null,
+          plotNumber: 'P-100',
+          buildingPermitNumber: 'BP-100',
+          updatedAt: new Date('2026-05-19T10:00:00.000Z'),
+        },
+      ]);
+      mockPrisma.property.count.mockResolvedValueOnce(20).mockResolvedValueOnce(3);
+
+      const res = await request(createApp('owner')).get('/api/compliance/permits?status=all');
+
+      expect(res.status).toBe(200);
+      expect(res.body.success).toBe(true);
+      expect(res.body.data).toHaveLength(1);
+      expect(res.body.data[0].permitStatus).toBe('missing');
+      expect(res.body.summary.totalProperties).toBe(20);
+      expect(res.body.summary.missingPermits).toBe(3);
+    });
+
+    it('returns 403 for agent on permit register list', async () => {
+      const res = await request(createApp('agent')).get('/api/compliance/permits');
+      expect(res.status).toBe(403);
+    });
+
+    it('updates permit fields for manager role', async () => {
+      mockPrisma.property.findUnique.mockResolvedValueOnce({
+        id: 'prop-1',
+        title: 'Marina Apt',
+        status: 'off_market',
+        municipalityNumber: null,
+        plotNumber: null,
+        buildingPermitNumber: null,
+      });
+
+      const res = await request(createApp('manager')).patch('/api/compliance/permits/prop-1').send({
+        municipalityNumber: 'MUN-900',
+        plotNumber: 'PLOT-900',
+        buildingPermitNumber: 'BPN-900',
+      });
+
+      expect(res.status).toBe(200);
+      expect(res.body.success).toBe(true);
+      expect(mockPrisma.property.update).toHaveBeenCalled();
+      expect(mockPrisma.activity.create).toHaveBeenCalledWith(
+        expect.objectContaining({
+          data: expect.objectContaining({ action: 'permit_register_updated' }),
+        })
+      );
+    });
+
+    it('blocks removing permit fields for available listings', async () => {
+      mockPrisma.property.findUnique.mockResolvedValueOnce({
+        id: 'prop-2',
+        title: 'JVC Apt',
+        status: 'available',
+        municipalityNumber: 'MUN-100',
+        plotNumber: 'PLOT-100',
+        buildingPermitNumber: 'BPN-100',
+      });
+
+      const res = await request(createApp('manager'))
+        .patch('/api/compliance/permits/prop-2')
+        .send({ municipalityNumber: '' });
+
+      expect(res.status).toBe(400);
+      expect(res.body.error).toMatch(/available listings require municipalityNumber/i);
+    });
+
+    it('runs permit enforcement in dry-run mode for manager', async () => {
+      const enforceMock = enforcePropertyPermitCompliance as unknown as ReturnType<typeof vi.fn>;
+      enforceMock.mockResolvedValueOnce({
+        scanned: 3,
+        autoUnpublished: 0,
+        errors: 0,
+        dryRun: true,
+        affectedPropertyIds: ['prop-a', 'prop-b', 'prop-c'],
+      });
+
+      const res = await request(createApp('manager'))
+        .post('/api/compliance/permits/enforcement-run')
+        .send({ dryRun: true, limit: 100 });
+
+      expect(res.status).toBe(200);
+      expect(res.body.success).toBe(true);
+      expect(res.body.data.dryRun).toBe(true);
+      expect(enforceMock).toHaveBeenCalledWith({ dryRun: true, limit: 100 });
+      expect(mockPrisma.activity.create).toHaveBeenCalledWith(
+        expect.objectContaining({
+          data: expect.objectContaining({ action: 'permit_enforcement_dry_run' }),
+        })
+      );
+    });
+
+    it('runs permit enforcement live for owner', async () => {
+      const enforceMock = enforcePropertyPermitCompliance as unknown as ReturnType<typeof vi.fn>;
+      enforceMock.mockResolvedValueOnce({
+        scanned: 4,
+        autoUnpublished: 2,
+        errors: 0,
+        dryRun: false,
+        affectedPropertyIds: ['prop-1', 'prop-2'],
+      });
+
+      const res = await request(createApp('owner'))
+        .post('/api/compliance/permits/enforcement-run')
+        .send({ dryRun: false });
+
+      expect(res.status).toBe(200);
+      expect(res.body.data.autoUnpublished).toBe(2);
+      expect(mockPrisma.activity.create).toHaveBeenCalledWith(
+        expect.objectContaining({
+          data: expect.objectContaining({ action: 'permit_enforcement_triggered' }),
+        })
+      );
+    });
+
+    it('returns 403 for agent on permit enforcement run', async () => {
+      const res = await request(createApp('agent'))
+        .post('/api/compliance/permits/enforcement-run')
+        .send({ dryRun: true });
+
+      expect(res.status).toBe(403);
+    });
+
+    it('returns permit enforcement history for finance role', async () => {
+      mockPrisma.activity.findMany.mockResolvedValueOnce([
+        {
+          id: 'act-enf-1',
+          type: 'compliance',
+          action: 'permit_enforcement_dry_run',
+          description: 'Permit enforcement dry-run executed: scanned=3',
+          createdAt: new Date('2026-05-19T11:00:00.000Z'),
+          metadata: {
+            scanned: 3,
+            autoUnpublished: 0,
+            errors: 0,
+            dryRun: true,
+            affectedPropertyIds: ['prop-a'],
+          },
+          user: {
+            id: 'u-1',
+            name: 'Manager One',
+            role: 'manager',
+            email: 'manager@whitecaves.ae',
+          },
+        },
+      ]);
+
+      const res = await request(createApp('finance')).get(
+        '/api/compliance/permits/enforcement-history?limit=10'
+      );
+
+      expect(res.status).toBe(200);
+      expect(res.body.success).toBe(true);
+      expect(res.body.data).toHaveLength(1);
+      expect(res.body.data[0].summary.scanned).toBe(3);
+      expect(res.body.summary.dryRuns).toBe(1);
+      expect(mockPrisma.activity.findMany).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: expect.objectContaining({ type: 'compliance' }),
+          take: 10,
+        })
+      );
+    });
+
+    it('returns 403 for agent on permit enforcement history', async () => {
+      const res = await request(createApp('agent')).get(
+        '/api/compliance/permits/enforcement-history'
+      );
+      expect(res.status).toBe(403);
     });
   });
 

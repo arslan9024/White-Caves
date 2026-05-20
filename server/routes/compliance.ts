@@ -11,6 +11,7 @@
  * GET    /api/compliance/brn-expiry     — BRN expiry report for all agents
  * GET    /api/compliance/ejari-export   — Ejari CSV download
  * GET    /api/compliance/vat-summary    — VAT breakdown by property type
+ * GET    /api/compliance/brn-check/history — recent manual BRN check runs
  * GET    /api/compliance/permit-alerts  — permit alert feed (property permits + BRN expiry)
  * GET    /api/compliance/overview       — Full compliance dashboard data
  * PATCH  /api/compliance/ejari/:leaseId — Update Ejari status for a lease
@@ -33,6 +34,8 @@ import {
   getComplianceOverview,
   updateEjariStatus,
 } from '../services/compliance/complianceService.js';
+import { getPermitAlerts } from '../services/compliance/permitAlertScheduler.js';
+import { enforcePropertyPermitCompliance } from '../services/compliance/propertyPermitEnforcementScheduler.js';
 import { screenAML } from '../services/compliance/amlAdapter.js';
 import logger from '../utils/logger.js';
 
@@ -300,12 +303,80 @@ router.post(
     logger.info('Manual BRN expiry check triggered', { userId: req.user?.id });
     const result = await checkBRNExpirations();
 
+    await prisma.activity.create({
+      data: {
+        type: 'compliance',
+        action: 'brn_manual_check',
+        description: `Manual BRN expiry check executed (notified=${result.notified}, errors=${result.errors})`,
+        userId: req.user?.id || null,
+        metadata: {
+          notified: result.notified,
+          errors: result.errors,
+          agentCount: result.agents.length,
+          agentIds: result.agents.map(agent => agent.id),
+          checkedAt: new Date().toISOString(),
+        },
+      },
+    });
+
     res.json({
       success: true,
       data: {
         notified: result.notified,
         errors: result.errors,
         agents: result.agents,
+      },
+    });
+  })
+);
+
+// ─── GET /api/compliance/brn-check/history — manual BRN check history ───
+router.get(
+  '/brn-check/history',
+  requirePermission('view_analytics'),
+  asyncHandler(async (req: Request, res: Response) => {
+    const allowedRoles = ['owner', 'manager', 'admin', 'finance'];
+    if (!allowedRoles.includes(req.user?.role || '')) {
+      throw new AppError('Access denied — BRN check history requires manager role', 403);
+    }
+
+    const limit = Math.max(1, Math.min(200, parseInt(String(req.query.limit || '25'), 10) || 25));
+
+    const runs = await prisma.activity.findMany({
+      where: {
+        type: 'compliance',
+        action: 'brn_manual_check',
+      },
+      orderBy: { createdAt: 'desc' },
+      take: limit,
+      include: {
+        user: { select: { id: true, name: true, role: true, email: true } },
+      },
+    });
+
+    const data = runs.map(run => {
+      const metadata = normalizeMetadata(run.metadata);
+      return {
+        id: run.id,
+        description: run.description,
+        createdAt: run.createdAt,
+        user: run.user,
+        summary: {
+          notified: Number(metadata.notified || 0),
+          errors: Number(metadata.errors || 0),
+          agentCount: Number(metadata.agentCount || 0),
+          agentIds: Array.isArray(metadata.agentIds) ? metadata.agentIds : [],
+        },
+      };
+    });
+
+    res.status(200).json({
+      success: true,
+      data,
+      summary: {
+        total: data.length,
+        totalNotified: data.reduce((sum, run) => sum + run.summary.notified, 0),
+        totalErrors: data.reduce((sum, run) => sum + run.summary.errors, 0),
       },
     });
   })
@@ -419,75 +490,305 @@ router.get(
       throw new AppError('daysAhead must be a number between 1 and 365', 400);
     }
 
-    const now = new Date();
-    const cutoff = new Date(now.getTime() + parsedDaysAhead * 24 * 60 * 60 * 1000);
+    const permitAlerts = await getPermitAlerts(parsedDaysAhead);
 
-    // Active listings that fail permit baseline requirements.
-    const missingPermitListings = await prisma.property.findMany({
+    res.status(200).json({
+      success: true,
+      data: {
+        summary: {
+          ...permitAlerts.summary,
+        },
+        listingPermitIssues: permitAlerts.listingPermitIssues,
+        brnPermitAlerts: permitAlerts.brnPermitAlerts,
+      },
+    });
+  })
+);
+
+// ─── GET /api/compliance/permits — permit register view ───────────────────
+router.get(
+  '/permits',
+  requirePermission('view_analytics'),
+  asyncHandler(async (req: Request, res: Response) => {
+    const allowedRoles = ['owner', 'manager', 'admin', 'finance'];
+    if (!allowedRoles.includes(req.user?.role || '')) {
+      throw new AppError('Access denied — permit register requires manager role', 403);
+    }
+
+    const statusFilter = String(req.query.status || 'all').toLowerCase(); // all | missing | complete
+    if (!['all', 'missing', 'complete'].includes(statusFilter)) {
+      throw new AppError('status must be one of: all, missing, complete', 400);
+    }
+
+    const limit = Math.max(1, Math.min(500, parseInt(String(req.query.limit || '100'), 10) || 100));
+
+    const missingWhere = {
+      OR: [
+        { municipalityNumber: null },
+        { municipalityNumber: '' },
+        { buildingPermitNumber: null },
+        { buildingPermitNumber: '' },
+      ],
+    } as const;
+
+    const where =
+      statusFilter === 'missing'
+        ? missingWhere
+        : statusFilter === 'complete'
+          ? { NOT: missingWhere }
+          : {};
+
+    const [properties, totalProperties, missingCount] = await Promise.all([
+      prisma.property.findMany({
+        where,
+        select: {
+          id: true,
+          title: true,
+          status: true,
+          location: true,
+          area: true,
+          municipalityNumber: true,
+          plotNumber: true,
+          buildingPermitNumber: true,
+          updatedAt: true,
+        },
+        orderBy: { updatedAt: 'desc' },
+        take: limit,
+      }),
+      prisma.property.count(),
+      prisma.property.count({ where: missingWhere }),
+    ]);
+
+    const data = properties.map(p => {
+      const permitStatus =
+        !p.municipalityNumber ||
+        !String(p.municipalityNumber).trim() ||
+        !p.buildingPermitNumber ||
+        !String(p.buildingPermitNumber).trim()
+          ? 'missing'
+          : 'complete';
+
+      return {
+        id: p.id,
+        title: p.title,
+        listingStatus: p.status,
+        location: p.location,
+        area: p.area,
+        municipalityNumber: p.municipalityNumber,
+        plotNumber: p.plotNumber,
+        buildingPermitNumber: p.buildingPermitNumber,
+        permitStatus,
+        updatedAt: p.updatedAt,
+      };
+    });
+
+    res.status(200).json({
+      success: true,
+      data,
+      summary: {
+        totalProperties,
+        missingPermits: missingCount,
+        completePermits: Math.max(0, totalProperties - missingCount),
+        filter: statusFilter,
+      },
+    });
+  })
+);
+
+// ─── POST /api/compliance/permits/enforcement-run — trigger enforcement ───
+router.post(
+  '/permits/enforcement-run',
+  requirePermission('view_analytics'),
+  asyncHandler(async (req: Request, res: Response) => {
+    const allowedRoles = ['owner', 'manager', 'admin'];
+    if (!allowedRoles.includes(req.user?.role || '')) {
+      throw new AppError('Access denied — permit enforcement requires manager role', 403);
+    }
+
+    const dryRun = req.body?.dryRun === true;
+    const limitRaw = req.body?.limit;
+    const limit =
+      limitRaw === undefined
+        ? undefined
+        : Math.max(1, Math.min(2000, parseInt(String(limitRaw), 10) || 500));
+
+    const result = await enforcePropertyPermitCompliance({ dryRun, limit });
+
+    await prisma.activity.create({
+      data: {
+        type: 'compliance',
+        action: dryRun ? 'permit_enforcement_dry_run' : 'permit_enforcement_triggered',
+        description: dryRun
+          ? `Permit enforcement dry-run executed: scanned=${result.scanned}`
+          : `Permit enforcement executed: autoUnpublished=${result.autoUnpublished}`,
+        userId: req.user?.id || null,
+        metadata: {
+          ...result,
+          requestedAt: new Date().toISOString(),
+        },
+      },
+    });
+
+    res.status(200).json({
+      success: true,
+      data: result,
+    });
+  })
+);
+
+// ─── GET /api/compliance/permits/enforcement-history — recent runs ───────
+router.get(
+  '/permits/enforcement-history',
+  requirePermission('view_analytics'),
+  asyncHandler(async (req: Request, res: Response) => {
+    const allowedRoles = ['owner', 'manager', 'admin', 'finance'];
+    if (!allowedRoles.includes(req.user?.role || '')) {
+      throw new AppError('Access denied — permit enforcement history requires manager role', 403);
+    }
+
+    const limit = Math.max(1, Math.min(200, parseInt(String(req.query.limit || '25'), 10) || 25));
+
+    const runs = await prisma.activity.findMany({
       where: {
-        status: 'available',
-        OR: [
-          { municipalityNumber: null },
-          { municipalityNumber: '' },
-          { buildingPermitNumber: null },
-          { buildingPermitNumber: '' },
-        ],
+        type: 'compliance',
+        action: {
+          in: ['permit_enforcement_dry_run', 'permit_enforcement_triggered'],
+        },
+      },
+      orderBy: { createdAt: 'desc' },
+      take: limit,
+      include: {
+        user: { select: { id: true, name: true, role: true, email: true } },
+      },
+    });
+
+    const data = runs.map(run => {
+      const metadata = normalizeMetadata(run.metadata);
+      return {
+        id: run.id,
+        action: run.action,
+        description: run.description,
+        createdAt: run.createdAt,
+        user: run.user,
+        summary: {
+          scanned: Number(metadata.scanned || 0),
+          autoUnpublished: Number(metadata.autoUnpublished || 0),
+          errors: Number(metadata.errors || 0),
+          dryRun: metadata.dryRun === true,
+          affectedPropertyIds: Array.isArray(metadata.affectedPropertyIds)
+            ? metadata.affectedPropertyIds
+            : [],
+        },
+      };
+    });
+
+    res.status(200).json({
+      success: true,
+      data,
+      summary: {
+        total: data.length,
+        liveRuns: data.filter(r => r.action === 'permit_enforcement_triggered').length,
+        dryRuns: data.filter(r => r.action === 'permit_enforcement_dry_run').length,
+      },
+    });
+  })
+);
+
+// ─── PATCH /api/compliance/permits/:propertyId — update permit fields ─────
+router.patch(
+  '/permits/:propertyId',
+  requirePermission('view_analytics'),
+  asyncHandler(async (req: Request, res: Response) => {
+    const allowedRoles = ['owner', 'manager', 'admin'];
+    if (!allowedRoles.includes(req.user?.role || '')) {
+      throw new AppError('Access denied — permit updates require manager role', 403);
+    }
+
+    const { propertyId } = req.params;
+    const { municipalityNumber, plotNumber, buildingPermitNumber } = req.body || {};
+
+    if (
+      municipalityNumber === undefined &&
+      plotNumber === undefined &&
+      buildingPermitNumber === undefined
+    ) {
+      throw new AppError(
+        'At least one field is required: municipalityNumber, plotNumber, buildingPermitNumber',
+        400
+      );
+    }
+
+    const existing = await prisma.property.findUnique({
+      where: { id: propertyId },
+      select: {
+        id: true,
+        title: true,
+        status: true,
+        municipalityNumber: true,
+        plotNumber: true,
+        buildingPermitNumber: true,
+      },
+    });
+
+    if (!existing) {
+      throw new AppError('Property not found', 404);
+    }
+
+    const nextMunicipalityNumber =
+      municipalityNumber !== undefined
+        ? sanitizeString(String(municipalityNumber || '').trim()) || null
+        : existing.municipalityNumber;
+    const nextPlotNumber =
+      plotNumber !== undefined
+        ? sanitizeString(String(plotNumber || '').trim()) || null
+        : existing.plotNumber;
+    const nextBuildingPermitNumber =
+      buildingPermitNumber !== undefined
+        ? sanitizeString(String(buildingPermitNumber || '').trim()) || null
+        : existing.buildingPermitNumber;
+
+    if (existing.status === 'available' && (!nextMunicipalityNumber || !nextBuildingPermitNumber)) {
+      throw new AppError(
+        'RERA compliance: available listings require municipalityNumber and buildingPermitNumber',
+        400
+      );
+    }
+
+    const updated = await prisma.property.update({
+      where: { id: propertyId },
+      data: {
+        municipalityNumber: nextMunicipalityNumber,
+        plotNumber: nextPlotNumber,
+        buildingPermitNumber: nextBuildingPermitNumber,
       },
       select: {
         id: true,
         title: true,
         status: true,
         municipalityNumber: true,
+        plotNumber: true,
         buildingPermitNumber: true,
-        createdAt: true,
+        updatedAt: true,
       },
-      orderBy: { createdAt: 'desc' },
-      take: 200,
     });
 
-    // BRN is treated as permit/license expiry signal for compliance alerts.
-    const brnExpiringOrExpired = await prisma.user.findMany({
-      where: {
-        role: { in: ['agent', 'owner'] },
-        status: 'active',
-        brnNumber: { not: null },
-        brnExpiry: { not: null, lte: cutoff },
-      },
-      select: {
-        id: true,
-        name: true,
-        email: true,
-        role: true,
-        brnNumber: true,
-        brnExpiry: true,
-      },
-      orderBy: { brnExpiry: 'asc' },
-      take: 200,
-    });
-
-    const brnAlerts = brnExpiringOrExpired.map(agent => {
-      const expiry = agent.brnExpiry as Date;
-      const daysToExpiry = Math.ceil((expiry.getTime() - now.getTime()) / (24 * 60 * 60 * 1000));
-      return {
-        ...agent,
-        status: daysToExpiry < 0 ? 'expired' : 'expiring_soon',
-        daysToExpiry,
-      };
-    });
-
-    res.status(200).json({
-      success: true,
+    await prisma.activity.create({
       data: {
-        summary: {
-          daysAhead: parsedDaysAhead,
-          listingPermitIssues: missingPermitListings.length,
-          brnExpired: brnAlerts.filter(a => a.status === 'expired').length,
-          brnExpiringSoon: brnAlerts.filter(a => a.status === 'expiring_soon').length,
+        type: 'compliance',
+        action: 'permit_register_updated',
+        description: `Permit register updated for property ${updated.title || updated.id}`,
+        userId: req.user?.id || null,
+        metadata: {
+          propertyId: updated.id,
+          municipalityNumber: updated.municipalityNumber,
+          plotNumber: updated.plotNumber,
+          buildingPermitNumber: updated.buildingPermitNumber,
+          updatedAt: new Date().toISOString(),
         },
-        listingPermitIssues: missingPermitListings,
-        brnPermitAlerts: brnAlerts,
       },
     });
+
+    res.status(200).json({ success: true, data: updated });
   })
 );
 

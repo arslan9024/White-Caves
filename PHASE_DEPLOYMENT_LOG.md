@@ -65,3 +65,9 @@
 - Local runtime ecosystem is stable at the time of this log entry.
 - Future sessions should begin on `develop`, not `main`.
 - Merged release build health is verified at 100/100.
+
+## 2026-05-21 Merge to main (copilot/confirm-ai-assistants-upgrade)
+
+- Modified scope: import routes/services/tests, accessibility e2e stabilization, compliance/notification updates, docs/task trackers.
+- Conflicts resolved: PROJECT_PROGRESS.md, plans/PENDING_TASKS_ONLY.md, server/index.ts, src/components/crm/UnifiedCRM.tsx (accepted feature-branch changes).
+- Build health: focused import/a11y test suites previously green before merge finalization.

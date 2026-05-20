@@ -53,7 +53,7 @@ class SignatureService {
         signingLink,
         expiresAt,
         contractId,
-        signer
+        signer,
       };
     } catch (error) {
       throw new Error(`Failed to generate signature token: ${error.message}`);
@@ -82,10 +82,7 @@ class SignatureService {
       }
 
       // Calculate signature hash
-      const hash = crypto
-        .createHash('sha256')
-        .update(signatureData.imageData)
-        .digest('hex');
+      const hash = crypto.createHash('sha256').update(signatureData.imageData).digest('hex');
 
       // Extract device info
       const userAgent = signatureData.deviceInfo?.userAgent || 'Unknown';
@@ -96,13 +93,13 @@ class SignatureService {
       signature.signatureData = {
         imageData: signatureData.imageData,
         mimeType: signatureData.mimeType || 'image/png',
-        hash
+        hash,
       };
       signature.deviceInfo = {
         ipAddress: signatureData.deviceInfo?.ipAddress,
         userAgent,
         platform,
-        browser
+        browser,
       };
       signature.method = signatureData.method || 'canvas';
       signature.status = 'signed';
@@ -124,13 +121,13 @@ class SignatureService {
   async getSignatureStatus(contractId) {
     try {
       const signatures = await ContractSignature.find({
-        contractId
+        contractId,
       }).lean();
 
       const totalRequired = 2; // Default: tenant + landlord
-      const signed = signatures.filter((s) => s.status === 'signed').length;
-      const pending = signatures.filter((s) => s.status === 'pending').length;
-      const expired = signatures.filter((s) => s.status === 'expired').length;
+      const signed = signatures.filter(s => s.status === 'signed').length;
+      const pending = signatures.filter(s => s.status === 'pending').length;
+      const expired = signatures.filter(s => s.status === 'expired').length;
 
       return {
         contractId,
@@ -139,14 +136,14 @@ class SignatureService {
         pending,
         expired,
         complete: signed >= totalRequired,
-        signatures: signatures.map((s) => ({
+        signatures: signatures.map(s => ({
           id: s._id,
           signer: s.signedBy?.email,
           role: s.signedBy?.role,
           status: s.status,
           signedAt: s.signedAt,
-          expiresAt: s.expiresAt
-        }))
+          expiresAt: s.expiresAt,
+        })),
       };
     } catch (error) {
       throw new Error(`Failed to get signature status: ${error.message}`);
@@ -162,8 +159,7 @@ class SignatureService {
     if (!userAgent) return 'Unknown';
     if (userAgent.includes('Windows')) return 'Windows';
     if (userAgent.includes('Mac')) return 'macOS';
-    if (userAgent.includes('iPhone') || userAgent.includes('iPad'))
-      return 'iOS';
+    if (userAgent.includes('iPhone') || userAgent.includes('iPad')) return 'iOS';
     if (userAgent.includes('Android')) return 'Android';
     if (userAgent.includes('Linux')) return 'Linux';
     return 'Unknown';
@@ -177,8 +173,7 @@ class SignatureService {
   detectBrowser(userAgent) {
     if (!userAgent) return 'Unknown';
     if (userAgent.includes('Chrome')) return 'Chrome';
-    if (userAgent.includes('Safari') && !userAgent.includes('Chrome'))
-      return 'Safari';
+    if (userAgent.includes('Safari') && !userAgent.includes('Chrome')) return 'Safari';
     if (userAgent.includes('Firefox')) return 'Firefox';
     if (userAgent.includes('Edge')) return 'Edge';
     if (userAgent.includes('Opera')) return 'Opera';
@@ -216,7 +211,7 @@ class SignatureService {
     try {
       const signatures = await ContractSignature.find({
         'signedBy.email': userEmail,
-        status: 'pending'
+        status: 'pending',
       })
         .populate('contractId', 'contractNumber status')
         .sort({ expiresAt: 1 });
@@ -234,16 +229,34 @@ class SignatureService {
    */
   async sendSignatureReminder(signatureId) {
     try {
-      const signature = await ContractSignature.findById(signatureId).populate(
-        'contractId'
-      );
+      const signature = await ContractSignature.findById(signatureId).populate('contractId');
       if (!signature) {
         throw new Error('Signature not found');
       }
 
-      // TODO: Integrate with email service
-      // For now, just log
-      console.log(`Reminder: Please sign contract ${signature.contractId._id}`);
+      const { sendEmailTracked, wrapInBrandedTemplate } = await import('./emailService.js');
+      const signingLink = `/sign/${signature.contractId._id}/${signature.token}`;
+      const html = wrapInBrandedTemplate(
+        `
+          <h2>Signature Reminder</h2>
+          <p>Dear ${signature.signedBy.name || 'Valued Client'}, your contract signature is still pending.</p>
+          <p>Please sign contract <strong>${signature.contractId.contractNumber || signature.contractId._id}</strong> using the secure link below.</p>
+          <p><a class="cta" href="${signingLink}">Review & Sign Contract</a></p>
+          <p>This link expires on: ${signature.expiresAt.toLocaleString()}</p>
+        `,
+        { preheader: 'Your White Caves contract signature is still pending' }
+      );
+
+      await sendEmailTracked({
+        to: signature.signedBy.email,
+        subject: `Reminder: Contract signature pending (${signature.contractId.contractNumber || signature.contractId._id})`,
+        html,
+        text: `Dear ${signature.signedBy.name || 'Valued Client'}, your contract signature is still pending. Review and sign: ${signingLink}`,
+        tags: [
+          { name: 'type', value: 'contract_signature_reminder' },
+          { name: 'contractId', value: String(signature.contractId._id) },
+        ],
+      });
 
       return true;
     } catch (error) {
@@ -259,20 +272,20 @@ class SignatureService {
   async getBulkSignatureStatus(contractIds) {
     try {
       const signatures = await ContractSignature.find({
-        contractId: { $in: contractIds }
+        contractId: { $in: contractIds },
       }).lean();
 
       const result = {};
-      contractIds.forEach((id) => {
+      contractIds.forEach(id => {
         result[id] = {
           total: 0,
           signed: 0,
           pending: 0,
-          signatures: []
+          signatures: [],
         };
       });
 
-      signatures.forEach((sig) => {
+      signatures.forEach(sig => {
         const contractId = sig.contractId.toString();
         result[contractId].total++;
         if (sig.status === 'signed') {
@@ -282,7 +295,7 @@ class SignatureService {
         }
         result[contractId].signatures.push({
           email: sig.signedBy.email,
-          status: sig.status
+          status: sig.status,
         });
       });
 
@@ -305,13 +318,13 @@ class SignatureService {
         signerRole,
         signerName,
         signerPhone,
-        signatureType = 'digital'
+        signatureType = 'digital',
       } = signatureData;
 
       // Check if signature already exists
       const existingSignature = await ContractSignature.findOne({
         contractId,
-        'signedBy.email': signerEmail
+        'signedBy.email': signerEmail,
       });
 
       if (existingSignature && existingSignature.status === 'signed') {
@@ -329,12 +342,12 @@ class SignatureService {
           email: signerEmail,
           name: signerName,
           phone: signerPhone,
-          role: signerRole
+          role: signerRole,
         },
         token,
         expiresAt,
         signatureType,
-        status: 'pending'
+        status: 'pending',
       });
 
       await signature.save();
@@ -342,14 +355,14 @@ class SignatureService {
       // Create audit log
       await this.createAuditLog(contractId, signerEmail, 'request_created', {
         signatureId: signature._id,
-        expiresAt
+        expiresAt,
       });
 
       return {
         signatureId: signature._id,
         token,
         signingLink: `/contracts/sign/${contractId}/${token}`,
-        expiresAt
+        expiresAt,
       };
     } catch (error) {
       throw new Error(`Failed to create signature request: ${error.message}`);
@@ -366,7 +379,7 @@ class SignatureService {
     try {
       const signature = await ContractSignature.findOne({
         contractId,
-        token
+        token,
       });
 
       if (!signature) {
@@ -390,9 +403,7 @@ class SignatureService {
       // Check rate limiting (max 10 signature page views per hour)
       const recentViews = signature.pageViews || [];
       const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000);
-      const recentCount = recentViews.filter(
-        (view) => new Date(view) > oneHourAgo
-      ).length;
+      const recentCount = recentViews.filter(view => new Date(view) > oneHourAgo).length;
 
       if (recentCount > 10) {
         throw new Error('Too many signature requests. Please try again later.');
@@ -408,7 +419,7 @@ class SignatureService {
         signerEmail: signature.signedBy.email,
         signerName: signature.signedBy.name,
         signerRole: signature.signedBy.role,
-        expiresAt: signature.expiresAt
+        expiresAt: signature.expiresAt,
       };
     } catch (error) {
       throw new Error(`Token verification failed: ${error.message}`);
@@ -439,10 +450,7 @@ class SignatureService {
       }
 
       // Calculate hash
-      const hash = crypto
-        .createHash('sha256')
-        .update(signatureData.imageData)
-        .digest('hex');
+      const hash = crypto.createHash('sha256').update(signatureData.imageData).digest('hex');
 
       // Extract device info
       const userAgent = signatureData.deviceInfo?.userAgent || 'Unknown';
@@ -454,14 +462,14 @@ class SignatureService {
         imageData: signatureData.imageData,
         mimeType: signatureData.mimeType || 'image/png',
         hash,
-        coordinates: signatureData.coordinates || null
+        coordinates: signatureData.coordinates || null,
       };
       signature.deviceInfo = {
         ipAddress: signatureData.deviceInfo?.ipAddress,
         userAgent,
         platform,
         browser,
-        timestamp: new Date()
+        timestamp: new Date(),
       };
       signature.method = signatureData.method || 'canvas';
       signature.status = 'signed';
@@ -470,17 +478,12 @@ class SignatureService {
       await signature.save();
 
       // Create audit log
-      await this.createAuditLog(
-        signature.contractId,
-        signature.signedBy.email,
-        'signed',
-        {
-          signatureId,
-          method: signature.method,
-          platform,
-          browser
-        }
-      );
+      await this.createAuditLog(signature.contractId, signature.signedBy.email, 'signed', {
+        signatureId,
+        method: signature.method,
+        platform,
+        browser,
+      });
 
       // Check if all signatures collected
       await this.checkContractSignatureCompletion(signature.contractId);
@@ -503,16 +506,14 @@ class SignatureService {
 
       const signatures = await ContractSignature.find({
         contractId,
-        status: 'signed'
+        status: 'signed',
       });
 
       // Check if all required signers have signed
       const requiredRoles = contract.requiredSignatures || ['tenant', 'landlord'];
-      const signedRoles = signatures.map((s) => s.signedBy.role);
+      const signedRoles = signatures.map(s => s.signedBy.role);
 
-      const allSigned = requiredRoles.every((role) =>
-        signedRoles.includes(role)
-      );
+      const allSigned = requiredRoles.every(role => signedRoles.includes(role));
 
       if (allSigned) {
         contract.signatureStatus = 'complete';
@@ -522,7 +523,7 @@ class SignatureService {
 
         // Create audit log
         await this.createAuditLog(contractId, 'system', 'all_signatures_complete', {
-          signedAt: new Date()
+          signedAt: new Date(),
         });
 
         return true;
@@ -550,7 +551,7 @@ class SignatureService {
         actor,
         action,
         details,
-        timestamp: new Date()
+        timestamp: new Date(),
       });
 
       await auditLog.save();
@@ -568,9 +569,7 @@ class SignatureService {
    */
   async getAuditTrail(contractId) {
     try {
-      const auditLogs = await SignatureAudit.find({ contractId })
-        .sort({ timestamp: -1 })
-        .lean();
+      const auditLogs = await SignatureAudit.find({ contractId }).sort({ timestamp: -1 }).lean();
 
       return auditLogs;
     } catch (error) {
@@ -586,38 +585,39 @@ class SignatureService {
    */
   async sendSigningNotification(signatureId, signingLink) {
     try {
-      const signature = await ContractSignature.findById(signatureId).populate(
-        'contractId'
-      );
+      const signature = await ContractSignature.findById(signatureId).populate('contractId');
       if (!signature) {
         throw new Error('Signature not found');
       }
 
-      // TODO: Integrate with email service
-      const emailContent = `
-        Dear ${signature.signedBy.name},
-        
-        Please sign the contract by clicking the link below:
-        ${signingLink}
-        
-        This link expires on: ${signature.expiresAt.toLocaleString()}
-        
-        Best regards,
-        White Caves Real Estate
-      `;
+      const { sendEmailTracked, wrapInBrandedTemplate } = await import('./emailService.js');
+      const contractLabel = signature.contractId.contractNumber || signature.contractId._id;
+      const html = wrapInBrandedTemplate(
+        `
+          <h2>Signature Request Ready</h2>
+          <p>Dear ${signature.signedBy.name || 'Valued Client'}, your signature is requested for contract <strong>${contractLabel}</strong>.</p>
+          <p>Open the secure signing link below to review and sign the document.</p>
+          <p><a class="cta" href="${signingLink}">Review & Sign Contract</a></p>
+          <p>This link expires on: ${signature.expiresAt.toLocaleString()}</p>
+        `,
+        { preheader: 'Your White Caves contract signature request is ready' }
+      );
 
-      console.log(`Sending signing notification to ${signature.signedBy.email}`);
-      console.log(emailContent);
+      await sendEmailTracked({
+        to: signature.signedBy.email,
+        subject: `Signature Request: Contract ${contractLabel}`,
+        html,
+        text: `Dear ${signature.signedBy.name || 'Valued Client'}, please review and sign contract ${contractLabel}: ${signingLink}`,
+        tags: [
+          { name: 'type', value: 'contract_signature_request' },
+          { name: 'contractId', value: String(signature.contractId._id) },
+        ],
+      });
 
       // Create audit log
-      await this.createAuditLog(
-        signature.contractId._id,
-        'system',
-        'notification_sent',
-        {
-          email: signature.signedBy.email
-        }
-      );
+      await this.createAuditLog(signature.contractId._id, 'system', 'notification_sent', {
+        email: signature.signedBy.email,
+      });
 
       return true;
     } catch (error) {
@@ -650,14 +650,14 @@ class SignatureService {
       // Create audit log
       await this.createAuditLog(signature.contractId, 'system', 'request_resent', {
         signatureId,
-        expiresAt: newExpiresAt
+        expiresAt: newExpiresAt,
       });
 
       return {
         signatureId: signature._id,
         token: newToken,
         signingLink: `/contracts/sign/${signature.contractId}/${newToken}`,
-        expiresAt: newExpiresAt
+        expiresAt: newExpiresAt,
       };
     } catch (error) {
       throw new Error(`Failed to resend signing request: ${error.message}`);
@@ -683,7 +683,7 @@ class SignatureService {
 
       // Create audit log
       await this.createAuditLog(signature.contractId, 'system', 'request_cancelled', {
-        signatureId
+        signatureId,
       });
 
       return signature;
@@ -701,19 +701,19 @@ class SignatureService {
     try {
       const signatures = await ContractSignature.find({ contractId });
       const auditLogs = await SignatureAudit.find({ contractId }).sort({
-        timestamp: -1
+        timestamp: -1,
       });
 
       const stats = {
         contractId,
         totalSignatures: signatures.length,
-        signed: signatures.filter((s) => s.status === 'signed').length,
-        pending: signatures.filter((s) => s.status === 'pending').length,
-        expired: signatures.filter((s) => s.status === 'expired').length,
-        cancelled: signatures.filter((s) => s.status === 'cancelled').length,
+        signed: signatures.filter(s => s.status === 'signed').length,
+        pending: signatures.filter(s => s.status === 'pending').length,
+        expired: signatures.filter(s => s.status === 'expired').length,
+        cancelled: signatures.filter(s => s.status === 'cancelled').length,
         averageSigningTime: this.calculateAverageSigningTime(signatures),
         lastActivity: auditLogs[0]?.timestamp || null,
-        auditLogCount: auditLogs.length
+        auditLogCount: auditLogs.length,
       };
 
       return stats;
@@ -728,7 +728,7 @@ class SignatureService {
    * @returns {String} Human-readable average signing time
    */
   calculateAverageSigningTime(signatures) {
-    const signedSignatures = signatures.filter((s) => s.status === 'signed');
+    const signedSignatures = signatures.filter(s => s.status === 'signed');
     if (signedSignatures.length === 0) return 'N/A';
 
     const totalTime = signedSignatures.reduce((sum, sig) => {
@@ -763,14 +763,14 @@ class SignatureService {
           signerEmail: signer.email,
           signerRole: signer.role,
           signerName: signer.name,
-          signerPhone: signer.phone
+          signerPhone: signer.phone,
         });
         requests.push(request);
       }
 
       // Create audit log
       await this.createAuditLog(contractId, 'system', 'batch_requests_created', {
-        count: requests.length
+        count: requests.length,
       });
 
       return requests;
