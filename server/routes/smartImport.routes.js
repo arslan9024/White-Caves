@@ -35,6 +35,7 @@ const findSessionForUser = (sessionId, userId) => {
 
 const ALLOWED_DEDUPLICATION_STRATEGIES = ['keep', 'overwrite', 'version', 'manual'];
 const ALLOWED_VALIDATION_STRATEGIES = ['strict', 'lenient', 'balanced'];
+const IMPORT_REQUIRED_FIELDS = ['ownerName', 'area', 'pNumber'];
 
 const isPlainObject = value =>
   Boolean(value) &&
@@ -301,7 +302,7 @@ router.post('/:sessionId/validate', async (req, res) => {
       parseResult.data,
       validationStrategy,
       {
-        requiredFields: ['ownerName', 'area'],
+        requiredFields: IMPORT_REQUIRED_FIELDS,
         fieldTypes: {},
       }
     );
@@ -385,7 +386,7 @@ router.post('/:sessionId/execute', async (req, res) => {
     if (req.body.dryRun) {
       const dryRunResult = await importValidationEngine.dryRun(parseResult.data, session._id, {
         strategy: executionStrategy,
-        requiredFields: ['ownerName', 'area'],
+        requiredFields: IMPORT_REQUIRED_FIELDS,
       });
 
       return res.json({

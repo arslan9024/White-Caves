@@ -372,9 +372,39 @@ describe('Smart import ownership guards', () => {
     expect(importValidationEngine.dryRun).toHaveBeenCalledWith(
       [{ ownerName: 'Nora', area: 'JVC' }],
       session._id,
-      expect.objectContaining({ strategy: 'strict' })
+      expect.objectContaining({
+        strategy: 'strict',
+        requiredFields: ['ownerName', 'area', 'pNumber'],
+      })
     );
     expect(session.save).not.toHaveBeenCalled();
+  });
+
+  it('passes pNumber in requiredFields during validate preflight', async () => {
+    const sessionId = '507f1f77bcf86cd799439011';
+    mockImportSession.findOne.mockResolvedValue({
+      _id: sessionId,
+      filePath: '/tmp/fake.csv',
+      sheetName: 'Sheet1',
+      columnMapping: { A: 'ownerName' },
+      status: 'pending',
+    });
+    excelImportService.parseExcelFile.mockResolvedValue({
+      data: [{ ownerName: 'Nora', area: 'JVC' }],
+    });
+    importValidationEngine.validateAllRows.mockResolvedValue({ isValid: true });
+    importValidationEngine.detectOrphanedRecords.mockReturnValue([]);
+
+    const res = await request(createApp())
+      .post(`/api/inventory/import/${sessionId}/validate`)
+      .send({ strategy: 'balanced' });
+
+    expect(res.status).toBe(200);
+    expect(importValidationEngine.validateAllRows).toHaveBeenCalledWith(
+      [{ ownerName: 'Nora', area: 'JVC' }],
+      'balanced',
+      expect.objectContaining({ requiredFields: ['ownerName', 'area', 'pNumber'] })
+    );
   });
 
   it('rejects invalid execution strategy on non-dry execute', async () => {
