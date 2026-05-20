@@ -34,6 +34,7 @@ const findSessionForUser = (sessionId, userId) => {
 };
 
 const ALLOWED_DEDUPLICATION_STRATEGIES = ['keep', 'overwrite', 'version', 'manual'];
+const ALLOWED_VALIDATION_STRATEGIES = ['strict', 'lenient', 'balanced'];
 
 // Multer configuration
 const uploadDir = path.join(__dirname, '../uploads');
@@ -219,6 +220,14 @@ router.post('/:sessionId/validate', async (req, res) => {
       return res.status(401).json({ success: false, error: 'Authentication required' });
     }
 
+    const validationStrategy = req.body.strategy || 'balanced';
+    if (!ALLOWED_VALIDATION_STRATEGIES.includes(validationStrategy)) {
+      return res.status(400).json({
+        success: false,
+        error: `Invalid validation strategy: ${validationStrategy}`,
+      });
+    }
+
     const session = await findSessionForUser(req.params.sessionId, userId);
     if (!session) {
       return res.status(404).json({
@@ -233,7 +242,7 @@ router.post('/:sessionId/validate', async (req, res) => {
 
     const validation = await importValidationEngine.validateAllRows(
       parseResult.data,
-      req.body.strategy || 'balanced',
+      validationStrategy,
       {
         requiredFields: ['ownerName', 'area'],
         fieldTypes: {},
@@ -297,8 +306,16 @@ router.post('/:sessionId/execute', async (req, res) => {
 
     // Optional: dry-run validation
     if (req.body.dryRun) {
+      const dryRunStrategy = req.body.strategy || 'balanced';
+      if (!ALLOWED_VALIDATION_STRATEGIES.includes(dryRunStrategy)) {
+        return res.status(400).json({
+          success: false,
+          error: `Invalid validation strategy: ${dryRunStrategy}`,
+        });
+      }
+
       const dryRunResult = await importValidationEngine.dryRun(parseResult.data, session._id, {
-        strategy: req.body.strategy || 'balanced',
+        strategy: dryRunStrategy,
         requiredFields: ['ownerName', 'area'],
       });
 

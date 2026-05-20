@@ -26,6 +26,7 @@ vi.mock('../services/deduplicationService.js', () => ({}));
 import smartImportRoutes from './smartImport.routes.js';
 import * as excelImportService from '../services/excelImportService.js';
 import * as importExecutionEngine from '../services/importExecutionEngine.js';
+import * as importValidationEngine from '../services/importValidationEngine.js';
 
 function createApp(user = { id: 'user-1', role: 'admin' }) {
   const app = express();
@@ -144,6 +145,72 @@ describe('Smart import ownership guards', () => {
       session._id,
       [],
       expect.objectContaining({ deduplicationStrategy: 'version' })
+    );
+  });
+
+  it('rejects invalid validation strategy on validate', async () => {
+    const sessionId = '507f1f77bcf86cd799439011';
+    mockImportSession.findOne.mockResolvedValue({
+      _id: sessionId,
+      filePath: '/tmp/fake.csv',
+      sheetName: 'Sheet1',
+      columnMapping: { A: 'ownerName' },
+      status: 'pending',
+    });
+
+    const res = await request(createApp())
+      .post(`/api/inventory/import/${sessionId}/validate`)
+      .send({ strategy: 'super-strict' });
+
+    expect(res.status).toBe(400);
+    expect(res.body.error).toContain('Invalid validation strategy');
+  });
+
+  it('rejects invalid validation strategy on dry-run execute', async () => {
+    const sessionId = '507f1f77bcf86cd799439011';
+    mockImportSession.findOne.mockResolvedValue({
+      _id: sessionId,
+      filePath: '/tmp/fake.csv',
+      sheetName: 'Sheet1',
+      columnMapping: { A: 'ownerName' },
+      status: 'pending',
+      save: vi.fn().mockResolvedValue(undefined),
+    });
+
+    const res = await request(createApp())
+      .post(`/api/inventory/import/${sessionId}/execute`)
+      .send({ dryRun: true, strategy: 'super-balanced' });
+
+    expect(res.status).toBe(400);
+    expect(res.body.error).toContain('Invalid validation strategy');
+  });
+
+  it('passes valid validation strategy to dry-run validation engine', async () => {
+    const sessionId = '507f1f77bcf86cd799439011';
+    const session = {
+      _id: sessionId,
+      filePath: '/tmp/fake.csv',
+      sheetName: 'Sheet1',
+      columnMapping: { A: 'ownerName' },
+      status: 'pending',
+      save: vi.fn().mockResolvedValue(undefined),
+    };
+
+    mockImportSession.findOne.mockResolvedValueOnce(session).mockResolvedValueOnce(session);
+    excelImportService.parseExcelFile.mockResolvedValue({
+      data: [{ ownerName: 'Nora', area: 'JVC' }],
+    });
+    importValidationEngine.dryRun.mockResolvedValue({ validation: { isValid: true } });
+
+    const res = await request(createApp())
+      .post(`/api/inventory/import/${sessionId}/execute`)
+      .send({ dryRun: true, strategy: 'strict' });
+
+    expect(res.status).toBe(200);
+    expect(importValidationEngine.dryRun).toHaveBeenCalledWith(
+      [{ ownerName: 'Nora', area: 'JVC' }],
+      session._id,
+      expect.objectContaining({ strategy: 'strict' })
     );
   });
 });
