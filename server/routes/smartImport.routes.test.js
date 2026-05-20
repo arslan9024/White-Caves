@@ -417,6 +417,7 @@ describe('Smart import ownership guards', () => {
       .send({ strategy: 'lenient' });
 
     expect(res.status).toBe(200);
+    expect(session.save).toHaveBeenCalledTimes(1);
     expect(importExecutionEngine.executeImport).toHaveBeenCalledWith(
       session._id,
       [],
