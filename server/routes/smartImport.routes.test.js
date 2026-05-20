@@ -86,6 +86,19 @@ describe('Smart import ownership guards', () => {
     expect(excelImportService.parseExcelFile).not.toHaveBeenCalled();
   });
 
+  it('returns 400 when upload file exceeds size limit', async () => {
+    const oversizedBuffer = Buffer.alloc(51 * 1024 * 1024, 'a');
+
+    const res = await request(createApp())
+      .post('/api/inventory/import/upload')
+      .attach('file', oversizedBuffer, 'oversized.csv');
+
+    expect(res.status).toBe(400);
+    expect(res.body.success).toBe(false);
+    expect(res.body.error).toContain('File too large');
+    expect(excelImportService.parseExcelFile).not.toHaveBeenCalled();
+  });
+
   it('filters session details by ownership query', async () => {
     mockImportSession.findOne.mockResolvedValue(null);
 
