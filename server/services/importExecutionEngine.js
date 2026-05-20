@@ -8,7 +8,11 @@ import InventoryProperty from '../models/InventoryProperty.js';
 import Owner from '../models/Owner.js';
 import OwnerPropertyMapping from '../models/OwnerPropertyMapping.js';
 import ImportSession from '../models/ImportSession.js';
-import { mapLegacyStatusToMultiDimensions, extractFurnishingLevel, extractLegalStatus } from '../utils/statusAutoMapper.js';
+import {
+  mapLegacyStatusToMultiDimensions,
+  extractFurnishingLevel,
+  extractLegalStatus,
+} from '../utils/statusAutoMapper.js';
 import { assignCluster } from '../utils/clusterAutoAssigner.js';
 
 /**
@@ -18,14 +22,14 @@ import { assignCluster } from '../utils/clusterAutoAssigner.js';
  */
 function normalizePhone(phone) {
   if (!phone) return null;
-  
+
   const cleaned = phone.toString().replace(/[^\d+]/g, '');
-  
+
   // Require at least 7 digits
   if (cleaned.replace(/\D/g, '').length < 7) {
     return null;
   }
-  
+
   return cleaned;
 }
 
@@ -57,19 +61,19 @@ export function preparePropertyData(excelRow, columnMapping, statusMap, clusterA
   const dewaPremiseNumber = excelRow[columnMapping.dewaPremiseNumber] || null;
   const otpDubaiRest = excelRow[columnMapping.otpDubaiRest] || null;
   const excelStatus = excelRow[columnMapping.status] || 'Available';
-  
+
   // Map status to multi-dimensional system
   const statusMapping = mapLegacyStatusToMultiDimensions(excelStatus, {
     registrationField: registration,
-    offPlanIndicator: false
+    offPlanIndicator: false,
   });
-  
+
   // Extract furnishing level
   const furnishingLevel = extractFurnishingLevel(area, layout);
-  
+
   // Extract legal status
   const legalStatus = extractLegalStatus(registration);
-  
+
   // Assign cluster
   const clusterAssignment = assignCluster(
     plotNumber,
@@ -77,7 +81,7 @@ export function preparePropertyData(excelRow, columnMapping, statusMap, clusterA
     project,
     clusterAssignments[pNumber] || null
   );
-  
+
   // Build property object
   const propertyData = {
     pNumber,
@@ -94,34 +98,34 @@ export function preparePropertyData(excelRow, columnMapping, statusMap, clusterA
     viewType,
     rooms,
     actualArea,
-    
+
     // Multi-dimensional status
     constructionStage: statusMapping.constructionStage || 'handed_over',
     occupancyStatus: statusMapping.occupancyStatus || 'vacant',
     marketAvailability: statusMapping.marketAvailability || 'available_for_both',
     furnishingLevel: furnishingLevel,
     legalStatus: statusMapping.legalStatus || 'clear_title',
-    
+
     // Legacy status for backward compatibility
     status: statusMap[excelStatus] || excelStatus.toLowerCase(),
-    
+
     // Pricing
     askingPrice,
     currency: 'AED',
-    
+
     // Legal/Compliance
     registration: registration && registration !== '.' ? registration : null,
     municipalityNo: municipalityNo && municipalityNo !== '.' ? municipalityNo : null,
     dewaPremiseNumber: dewaPremiseNumber && dewaPremiseNumber !== '.' ? dewaPremiseNumber : null,
     otpDubaiRest: otpDubaiRest && otpDubaiRest !== '.' ? otpDubaiRest : null,
-    
+
     // Tracking
     source: 'excel_import',
     importSessionId: null, // Set by executor
     tags: ['imported', new Date().toISOString().split('T')[0]],
-    notes: `Imported from Excel: ${new Date().toLocaleString()}`
+    notes: `Imported from Excel: ${new Date().toLocaleString()}`,
   };
-  
+
   return propertyData;
 }
 
@@ -142,49 +146,53 @@ export function prepareOwnerData(excelRow, columnMapping) {
   const phone = excelRow[columnMapping.phone] || null;
   const secondaryMobile = excelRow[columnMapping.secondaryMobile] || null;
   const email = excelRow[columnMapping.email] || null;
-  
+
   // Build contacts array
   const contacts = [];
-  
+
   const normalizedMobile = normalizePhone(mobile);
   if (normalizedMobile) {
     contacts.push({
       type: 'mobile',
       value: normalizedMobile,
       isPrimary: true,
-      label: 'Primary Mobile'
+      label: 'Primary Mobile',
     });
   }
-  
+
   const normalizedPhone = normalizePhone(phone);
   if (normalizedPhone && normalizedPhone !== normalizedMobile) {
     contacts.push({
       type: 'phone',
       value: normalizedPhone,
       isPrimary: false,
-      label: 'Landline'
+      label: 'Landline',
     });
   }
-  
+
   const normalizedSecondary = normalizePhone(secondaryMobile);
-  if (normalizedSecondary && normalizedSecondary !== normalizedMobile && normalizedSecondary !== normalizedPhone) {
+  if (
+    normalizedSecondary &&
+    normalizedSecondary !== normalizedMobile &&
+    normalizedSecondary !== normalizedPhone
+  ) {
     contacts.push({
       type: 'mobile',
       value: normalizedSecondary,
       isPrimary: false,
-      label: 'Secondary Mobile'
+      label: 'Secondary Mobile',
     });
   }
-  
+
   if (email && email !== '.' && email !== '') {
     contacts.push({
       type: 'email',
       value: email.toLowerCase().trim(),
       isPrimary: false,
-      label: 'Email'
+      label: 'Email',
     });
   }
-  
+
   // Build owner object
   const ownerData = {
     name: ownerName ? ownerName.trim() : null,
@@ -196,9 +204,9 @@ export function prepareOwnerData(excelRow, columnMapping) {
     source: 'excel_import',
     importSessionId: null, // Set by executor
     tags: ['imported', new Date().toISOString().split('T')[0]],
-    notes: `Imported from Excel: ${new Date().toLocaleString()}`
+    notes: `Imported from Excel: ${new Date().toLocaleString()}`,
   };
-  
+
   return ownerData;
 }
 
@@ -224,9 +232,9 @@ export async function executeImport(sessionId, rows, options = {}) {
     errorsCount: 0,
     errors: [],
     duplicates: [],
-    timestamp: new Date()
+    timestamp: new Date(),
   };
-  
+
   const {
     columnMapping = {},
     statusMap = {},
@@ -234,9 +242,9 @@ export async function executeImport(sessionId, rows, options = {}) {
     deduplicationStrategy = 'keep',
     importStrategy = 'balanced',
     dryRun = false,
-    batchSize = 100
+    batchSize = 100,
   } = options;
-  
+
   // Load session
   let session = null;
   try {
@@ -249,44 +257,50 @@ export async function executeImport(sessionId, rows, options = {}) {
     stats.errors.push({ error: error.message, sessionId });
     return stats;
   }
-  
+
   // Process in batches
   for (let batchStart = 0; batchStart < rows.length; batchStart += batchSize) {
     const batchEnd = Math.min(batchStart + batchSize, rows.length);
     const batch = rows.slice(batchStart, batchEnd);
-    
+
     for (let i = 0; i < batch.length; i++) {
       const rowIndex = batchStart + i;
       const excelRow = batch[i];
-      
+
       try {
         // Prepare data
-        const propertyData = preparePropertyData(excelRow, columnMapping, statusMap, clusterAssignments);
+        const propertyData = preparePropertyData(
+          excelRow,
+          columnMapping,
+          statusMap,
+          clusterAssignments
+        );
         const ownerData = prepareOwnerData(excelRow, columnMapping);
-        
+
         // Validate required fields
         if (!propertyData.pNumber || !propertyData.area || !ownerData.name) {
           stats.errors.push({
             rowIndex,
             error: 'Missing required fields (pNumber, area, or ownerName)',
             pNumber: propertyData.pNumber,
-            ownerName: ownerData.name
+            ownerName: ownerData.name,
           });
+          stats.errorsCount++;
           stats.skipped++;
           continue;
         }
-        
+
         // Check for duplicates
         const existingProperty = await InventoryProperty.findOne({
           $or: [
             { pNumber: propertyData.pNumber },
-            { area: propertyData.area, plotNumber: propertyData.plotNumber }
-          ]
+            { area: propertyData.area, plotNumber: propertyData.plotNumber },
+          ],
         });
-        
+
         if (existingProperty) {
           stats.duplicatesFound++;
-          
+
           switch (deduplicationStrategy) {
             case 'keep':
               stats.skipped++;
@@ -294,10 +308,10 @@ export async function executeImport(sessionId, rows, options = {}) {
                 rowIndex,
                 action: 'skipped',
                 existingId: existingProperty._id,
-                pNumber: propertyData.pNumber
+                pNumber: propertyData.pNumber,
               });
               continue;
-              
+
             case 'overwrite':
               if (!dryRun) {
                 await InventoryProperty.findByIdAndUpdate(
@@ -309,19 +323,19 @@ export async function executeImport(sessionId, rows, options = {}) {
               stats.propertiesUpdated++;
               stats.duplicatesResolved++;
               break;
-              
+
             case 'version':
               // Create new record with version metadata
               if (!dryRun) {
                 propertyData.versionMetadata = {
                   previousId: existingProperty._id,
                   versionNumber: 1,
-                  createdAt: new Date()
+                  createdAt: new Date(),
                 };
               }
               // Falls through to create new
               break;
-              
+
             case 'manual':
               // Flag for review
               stats.duplicates.push({
@@ -330,12 +344,12 @@ export async function executeImport(sessionId, rows, options = {}) {
                 existingId: existingProperty._id,
                 existingData: existingProperty.toObject(),
                 newData: propertyData,
-                suggestedAction: 'manual_review'
+                suggestedAction: 'manual_review',
               });
               continue;
           }
         }
-        
+
         // Create or update owner
         let owner = null;
         if (!dryRun) {
@@ -343,39 +357,39 @@ export async function executeImport(sessionId, rows, options = {}) {
             {
               $or: [
                 { name: ownerData.name },
-                { 'contacts.value': { $in: ownerData.contacts.map(c => c.value) } }
-              ]
+                { 'contacts.value': { $in: ownerData.contacts.map(c => c.value) } },
+              ],
             },
             { $set: { ...ownerData, importSessionId: sessionId } },
             { upsert: true, new: true }
           );
-          
+
           if (owner.isNew) {
             stats.ownersCreated++;
           } else {
             stats.ownersUpdated++;
           }
         }
-        
+
         // Create or update property
         let property = null;
         if (!dryRun) {
           propertyData.owners = owner ? [owner._id] : [];
           propertyData.primaryOwner = owner ? owner._id : null;
           propertyData.importSessionId = sessionId;
-          
+
           property = await InventoryProperty.findOneAndUpdate(
             { pNumber: propertyData.pNumber, area: propertyData.area },
             { $set: propertyData },
             { upsert: true, new: true }
           );
-          
+
           if (property.isNew) {
             stats.propertiesCreated++;
           } else {
             stats.propertiesUpdated++;
           }
-          
+
           // Create owner-property mapping
           if (owner && property) {
             await OwnerPropertyMapping.findOneAndUpdate(
@@ -388,48 +402,57 @@ export async function executeImport(sessionId, rows, options = {}) {
                 relationshipType: 'owner',
                 acquisitionDate: new Date(),
                 isActive: true,
-                importSessionId: sessionId
+                importSessionId: sessionId,
               },
               { upsert: true, new: true }
             );
             stats.relationshipsCreated++;
           }
         }
-        
+
         stats.processedRows++;
-        
       } catch (error) {
         stats.errors.push({
           rowIndex,
           error: error.message,
-          pNumber: excelRow[columnMapping.pNumber]
+          pNumber: excelRow[columnMapping.pNumber],
         });
         stats.errorsCount++;
       }
     }
-    
+
     // Update session progress
     if (!dryRun && session) {
       session.processedRows = stats.processedRows;
       await session.save();
     }
   }
-  
+
   // Update import session with final results
   if (!dryRun && session) {
-    session.status = 'completed';
+    const hasErrors = stats.errors.length > 0 || stats.errorsCount > 0;
+    const hasSuccessfulWork =
+      stats.processedRows > 0 ||
+      stats.propertiesCreated > 0 ||
+      stats.propertiesUpdated > 0 ||
+      stats.ownersCreated > 0 ||
+      stats.ownersUpdated > 0 ||
+      stats.relationshipsCreated > 0;
+
+    session.status = hasErrors && !hasSuccessfulWork ? 'failed' : 'completed';
     session.propertiesCreated = stats.propertiesCreated;
     session.propertiesUpdated = stats.propertiesUpdated;
     session.ownersCreated = stats.ownersCreated;
     session.ownersUpdated = stats.ownersUpdated;
     session.duplicatesFound = stats.duplicatesFound;
     session.errorsCount = stats.errorsCount;
+    session.totalErrors = stats.errors.length;
     session.importErrors = stats.errors;
     session.duplicates = stats.duplicates;
     session.completedAt = new Date();
     await session.save();
   }
-  
+
   return stats;
 }
 
@@ -437,5 +460,5 @@ export default {
   preparePropertyData,
   prepareOwnerData,
   executeImport,
-  normalizePhone
+  normalizePhone,
 };

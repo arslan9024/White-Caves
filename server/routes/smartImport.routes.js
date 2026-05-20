@@ -312,14 +312,13 @@ router.post('/:sessionId/execute', async (req, res) => {
       batchSize: 100,
     });
 
-    // Final session update
-    session.status = 'completed';
-    await session.save();
+    const finalizedSession = await findSessionForUser(req.params.sessionId, userId);
 
     res.json({
       success: true,
       data: {
         sessionId: session._id,
+        status: finalizedSession?.status || session.status,
         ...importResult,
       },
     });
