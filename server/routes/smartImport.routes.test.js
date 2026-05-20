@@ -75,6 +75,17 @@ describe('Smart import ownership guards', () => {
     expect(excelImportService.parseExcelFile).not.toHaveBeenCalled();
   });
 
+  it('returns 400 when upload file extension is not supported', async () => {
+    const res = await request(createApp())
+      .post('/api/inventory/import/upload')
+      .attach('file', Buffer.from('not-an-excel-file'), 'invalid.txt');
+
+    expect(res.status).toBe(400);
+    expect(res.body.success).toBe(false);
+    expect(res.body.error).toContain('Only .xlsx, .xls, and .csv files are supported');
+    expect(excelImportService.parseExcelFile).not.toHaveBeenCalled();
+  });
+
   it('filters session details by ownership query', async () => {
     mockImportSession.findOne.mockResolvedValue(null);
 

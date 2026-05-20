@@ -113,6 +113,7 @@ const getImportErrorStatus = errorMessage => {
     'Worksheet not found',
     'Import file not found',
     'Only .xlsx, .xls, and .csv files are supported',
+    'File too large',
   ];
 
   return badRequestPatterns.some(pattern => message.includes(pattern)) ? 400 : 500;
@@ -151,11 +152,31 @@ const upload = multer({
   limits: { fileSize: 50 * 1024 * 1024 }, // 50MB max
 });
 
+const uploadSingleImportFile = (req, res, next) => {
+  upload.single('file')(req, res, error => {
+    if (!error) {
+      return next();
+    }
+
+    if (error instanceof multer.MulterError && error.code === 'LIMIT_FILE_SIZE') {
+      return res.status(400).json({
+        success: false,
+        error: 'File too large: maximum supported size is 50MB',
+      });
+    }
+
+    return res.status(getImportErrorStatus(error.message)).json({
+      success: false,
+      error: error.message,
+    });
+  });
+};
+
 /**
  * POST /api/inventory/import/upload
  * Upload Excel/CSV file and extract metadata
  */
-router.post('/upload', upload.single('file'), async (req, res) => {
+router.post('/upload', uploadSingleImportFile, async (req, res) => {
   try {
     const userId = getAuthenticatedUserId(req);
     if (!userId) {
