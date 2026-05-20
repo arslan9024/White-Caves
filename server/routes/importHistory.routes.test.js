@@ -258,4 +258,27 @@ describe('Import history admin dashboard', () => {
     expect(res.status).toBe(200);
     expect(res.body.sessionId).toBe('507f1f77bcf86cd799439099');
   });
+
+  it('rejects unsupported report format query param', async () => {
+    const session = {
+      _id: '507f1f77bcf86cd799439101',
+      sessionId: 'session-report-x',
+      userId: 'user-1',
+      fileName: 'owners.xlsx',
+      status: 'completed',
+      importErrors: [],
+    };
+
+    mockImportSession.findOne = vi.fn().mockReturnValue({
+      lean: vi.fn().mockResolvedValue(session),
+    });
+
+    const res = await request(createApp()).get(
+      '/api/inventory/import/session/session-report-x/report?format=xml'
+    );
+
+    expect(res.status).toBe(400);
+    expect(res.body.success).toBe(false);
+    expect(res.body.error).toContain('Invalid format query param');
+  });
 });

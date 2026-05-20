@@ -228,7 +228,8 @@ router.get('/inventory/import/session/:sessionId/errors', auth, async (req, res)
  */
 router.get('/inventory/import/session/:sessionId/report', auth, async (req, res) => {
   try {
-    const { format = 'json' } = req.query;
+    const formatRaw = req.query.format ?? 'json';
+    const format = String(formatRaw).toLowerCase();
     const userId = getAuthenticatedUserId(req);
 
     if (!userId) {
@@ -249,9 +250,16 @@ router.get('/inventory/import/session/:sessionId/report', auth, async (req, res)
       });
     }
 
-    if (format === 'json') {
-      const reportSessionId = session.sessionId || String(session._id || req.params.sessionId);
+    if (!['json', 'pdf'].includes(format)) {
+      return res.status(400).json({
+        success: false,
+        error: 'Invalid format query param: expected json or pdf',
+      });
+    }
 
+    const reportSessionId = session.sessionId || String(session._id || req.params.sessionId);
+
+    if (format === 'json') {
       // Return JSON report
       res.setHeader('Content-Type', 'application/json');
       res.setHeader(
@@ -332,7 +340,7 @@ router.get('/inventory/import/session/:sessionId/report', auth, async (req, res)
     y -= 15;
 
     const infoRows = [
-      ['Session ID:', session.sessionId || 'N/A'],
+      ['Session ID:', reportSessionId],
       ['File Name:', session.fileName || 'N/A'],
       ['Status:', session.status || 'N/A'],
       ['Imported By:', session.importedBy || 'N/A'],
@@ -409,7 +417,6 @@ router.get('/inventory/import/session/:sessionId/report', auth, async (req, res)
 
     res.setHeader('Content-Type', 'application/pdf');
     res.setHeader('Content-Length', buffer.length);
-    const reportSessionId = session.sessionId || String(session._id || req.params.sessionId);
     res.setHeader(
       'Content-Disposition',
       `attachment; filename="import-report-${reportSessionId}.pdf"`
