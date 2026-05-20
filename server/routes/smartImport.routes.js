@@ -53,18 +53,22 @@ const isValidMappingPayload = mapping =>
       value.trim().length > 0
   );
 
+const normalizeMappingToken = value =>
+  String(value || '')
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9]/g, '');
+
 const hasRequiredFieldMappings = (mapping, requiredFields = IMPORT_REQUIRED_FIELDS) => {
   if (!isValidMappingPayload(mapping)) {
     return false;
   }
 
-  const normalizedKeys = new Set(Object.keys(mapping).map(key => key.trim().toLowerCase()));
-  const normalizedValues = new Set(
-    Object.values(mapping).map(value => String(value).trim().toLowerCase())
-  );
+  const normalizedKeys = new Set(Object.keys(mapping).map(normalizeMappingToken));
+  const normalizedValues = new Set(Object.values(mapping).map(normalizeMappingToken));
 
   return requiredFields.every(field => {
-    const normalized = String(field).trim().toLowerCase();
+    const normalized = normalizeMappingToken(field);
     return normalizedKeys.has(normalized) || normalizedValues.has(normalized);
   });
 };

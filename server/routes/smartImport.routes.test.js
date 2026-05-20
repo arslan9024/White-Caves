@@ -256,6 +256,35 @@ describe('Smart import ownership guards', () => {
     );
   });
 
+  it('accepts required mapping tokens with underscores and hyphens', async () => {
+    const sessionId = '507f1f77bcf86cd799439011';
+    const mappingPayload = {
+      owner_name: 'NAME',
+      'p-number': 'P-NUMBER',
+      listing_area: 'AREA',
+      area: 'AREA',
+    };
+
+    mockImportSession.findOneAndUpdate.mockResolvedValue({
+      _id: sessionId,
+      columnMapping: mappingPayload,
+    });
+
+    const res = await request(createApp())
+      .post(`/api/inventory/import/${sessionId}/mapping`)
+      .send({ mapping: mappingPayload });
+
+    expect(res.status).toBe(200);
+    expect(mockImportSession.findOneAndUpdate).toHaveBeenCalledWith(
+      {
+        _id: sessionId,
+        $or: [{ userId: 'user-1' }, { importedBy: 'user-1' }],
+      },
+      { columnMapping: mappingPayload },
+      { new: true }
+    );
+  });
+
   it('rejects mapping payload missing required import fields', async () => {
     const sessionId = '507f1f77bcf86cd799439011';
 
