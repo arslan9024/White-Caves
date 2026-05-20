@@ -13,7 +13,7 @@ const ImportSessionSchema = new mongoose.Schema(
     },
     status: {
       type: String,
-      enum: ['pending', 'processing', 'completed', 'failed', 'cancelled'],
+      enum: ['pending', 'processing', 'completed', 'partial', 'failed', 'cancelled'],
       default: 'pending',
       index: true,
     },

@@ -439,7 +439,14 @@ export async function executeImport(sessionId, rows, options = {}) {
       stats.ownersUpdated > 0 ||
       stats.relationshipsCreated > 0;
 
-    session.status = hasErrors && !hasSuccessfulWork ? 'failed' : 'completed';
+    if (hasErrors && hasSuccessfulWork) {
+      session.status = 'partial';
+    } else if (hasErrors) {
+      session.status = 'failed';
+    } else {
+      session.status = 'completed';
+    }
+    session.totalRowsProcessed = stats.processedRows;
     session.propertiesCreated = stats.propertiesCreated;
     session.propertiesUpdated = stats.propertiesUpdated;
     session.ownersCreated = stats.ownersCreated;
