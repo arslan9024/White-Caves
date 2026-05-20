@@ -118,6 +118,8 @@ describe('importExecutionEngine status outcomes', () => {
     expect(session.status).toBe('failed');
     expect(session.totalErrors).toBe(result.errors.length);
     expect(session.totalRowsProcessed).toBe(0);
+    expect(session.successRate).toBe(0);
+    expect(session.totalRows).toBe(rows.length);
   });
 
   it('marks session as partial when mix of success and failures', async () => {
@@ -139,5 +141,7 @@ describe('importExecutionEngine status outcomes', () => {
     expect(result.errorsCount).toBeGreaterThan(0);
     expect(session.status).toBe('partial');
     expect(session.totalRowsProcessed).toBe(result.processedRows);
+    expect(session.successRate).toBe(50);
+    expect(session.totalRows).toBe(rows.length);
   });
 });

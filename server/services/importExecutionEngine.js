@@ -446,7 +446,13 @@ export async function executeImport(sessionId, rows, options = {}) {
     } else {
       session.status = 'completed';
     }
+
+    const attemptedRows = stats.processedRows + stats.skipped;
+    const successRate = attemptedRows > 0 ? (stats.processedRows / attemptedRows) * 100 : 0;
+
+    session.totalRows = stats.totalRows;
     session.totalRowsProcessed = stats.processedRows;
+    session.successRate = Number(successRate.toFixed(1));
     session.propertiesCreated = stats.propertiesCreated;
     session.propertiesUpdated = stats.propertiesUpdated;
     session.ownersCreated = stats.ownersCreated;

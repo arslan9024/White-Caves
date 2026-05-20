@@ -356,7 +356,7 @@ router.get('/inventory/import/session/:sessionId/report', auth, async (req, res)
     }
 
     // Errors section
-    const errors = session.errors?.slice(0, 20) || [];
+    const errors = (session.importErrors || session.errors || []).slice(0, 20);
     if (errors.length > 0) {
       y -= 10;
       drawText('ERRORS (first 20)', margin, y, 12, true);
