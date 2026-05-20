@@ -36,6 +36,12 @@ const findSessionForUser = (sessionId, userId) => {
 const ALLOWED_DEDUPLICATION_STRATEGIES = ['keep', 'overwrite', 'version', 'manual'];
 const ALLOWED_VALIDATION_STRATEGIES = ['strict', 'lenient', 'balanced'];
 
+const isPlainObject = value =>
+  Boolean(value) &&
+  typeof value === 'object' &&
+  !Array.isArray(value) &&
+  value.constructor === Object;
+
 // Multer configuration
 const uploadDir = path.join(__dirname, '../uploads');
 const storage = multer.diskStorage({
@@ -182,6 +188,13 @@ router.post('/:sessionId/mapping', async (req, res) => {
     const userId = getAuthenticatedUserId(req);
     if (!userId) {
       return res.status(401).json({ success: false, error: 'Authentication required' });
+    }
+
+    if (!isPlainObject(req.body.mapping)) {
+      return res.status(400).json({
+        success: false,
+        error: 'Invalid mapping payload: expected an object',
+      });
     }
 
     const session = await ImportSession.findOneAndUpdate(

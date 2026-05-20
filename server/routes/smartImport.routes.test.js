@@ -100,6 +100,40 @@ describe('Smart import ownership guards', () => {
     );
   });
 
+  it('rejects invalid mapping payload on mapping update', async () => {
+    const sessionId = '507f1f77bcf86cd799439011';
+
+    const res = await request(createApp())
+      .post(`/api/inventory/import/${sessionId}/mapping`)
+      .send({ mapping: ['ownerName', 'area'] });
+
+    expect(res.status).toBe(400);
+    expect(res.body.error).toContain('Invalid mapping payload');
+    expect(mockImportSession.findOneAndUpdate).not.toHaveBeenCalled();
+  });
+
+  it('accepts object mapping payload on mapping update', async () => {
+    const sessionId = '507f1f77bcf86cd799439011';
+    mockImportSession.findOneAndUpdate.mockResolvedValue({
+      _id: sessionId,
+      columnMapping: { A: 'ownerName' },
+    });
+
+    const res = await request(createApp())
+      .post(`/api/inventory/import/${sessionId}/mapping`)
+      .send({ mapping: { A: 'ownerName', B: 'area' } });
+
+    expect(res.status).toBe(200);
+    expect(mockImportSession.findOneAndUpdate).toHaveBeenCalledWith(
+      {
+        _id: sessionId,
+        $or: [{ userId: 'user-1' }, { importedBy: 'user-1' }],
+      },
+      { columnMapping: { A: 'ownerName', B: 'area' } },
+      { new: true }
+    );
+  });
+
   it('rejects invalid deduplication strategy on execute', async () => {
     const sessionId = '507f1f77bcf86cd799439011';
     mockImportSession.findOne.mockResolvedValue({
