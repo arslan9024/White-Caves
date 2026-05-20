@@ -104,6 +104,17 @@ const normalizeMappingPayload = mapping =>
 
 const isValidParseDataArray = value => Array.isArray(value);
 
+const getImportErrorStatus = errorMessage => {
+  const message = String(errorMessage || '');
+  const badRequestPatterns = [
+    'Worksheet not found',
+    'Import file not found',
+    'Only .xlsx, .xls, and .csv files are supported',
+  ];
+
+  return badRequestPatterns.some(pattern => message.includes(pattern)) ? 400 : 500;
+};
+
 // Multer configuration
 const uploadDir = path.join(__dirname, '../uploads');
 if (!fs.existsSync(uploadDir)) {
@@ -194,7 +205,7 @@ router.post('/upload', upload.single('file'), async (req, res) => {
       },
     });
   } catch (error) {
-    res.status(500).json({
+    res.status(getImportErrorStatus(error.message)).json({
       success: false,
       error: error.message,
     });
@@ -252,7 +263,7 @@ router.post('/:sessionId/preview', async (req, res) => {
       },
     });
   } catch (error) {
-    res.status(500).json({
+    res.status(getImportErrorStatus(error.message)).json({
       success: false,
       error: error.message,
     });
@@ -311,7 +322,7 @@ router.post('/:sessionId/mapping', async (req, res) => {
       data: { session },
     });
   } catch (error) {
-    res.status(500).json({
+    res.status(getImportErrorStatus(error.message)).json({
       success: false,
       error: error.message,
     });
@@ -384,7 +395,7 @@ router.post('/:sessionId/validate', async (req, res) => {
       },
     });
   } catch (error) {
-    res.status(500).json({
+    res.status(getImportErrorStatus(error.message)).json({
       success: false,
       error: error.message,
     });
@@ -528,7 +539,7 @@ router.post('/:sessionId/execute', async (req, res) => {
       console.error('Failed to update session on error:', updateError);
     }
 
-    res.status(500).json({
+    res.status(getImportErrorStatus(error.message)).json({
       success: false,
       error: error.message,
     });

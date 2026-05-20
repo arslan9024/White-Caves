@@ -149,7 +149,11 @@ export async function parseExcelFile(filePath, options = {}) {
     throw new Error('Import file does not contain any worksheets');
   }
 
-  const selectedSheet = sheetName && sheets.includes(sheetName) ? sheetName : sheets[0];
+  if (sheetName && !sheets.includes(sheetName)) {
+    throw new Error(`Worksheet not found: ${sheetName}`);
+  }
+
+  const selectedSheet = sheetName || sheets[0];
   const worksheet = workbook.Sheets[selectedSheet];
 
   if (!worksheet) {

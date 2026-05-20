@@ -420,6 +420,25 @@ describe('Smart import ownership guards', () => {
     expect(res.body.error).toContain('preview must be an array');
   });
 
+  it('returns 400 on preview when requested worksheet is missing', async () => {
+    const sessionId = '507f1f77bcf86cd799439011';
+    mockImportSession.findOne.mockResolvedValue({
+      _id: sessionId,
+      filePath: '/tmp/fake.csv',
+      sheetName: 'Sheet1',
+      columnMapping: { P: 'pNumber', A: 'area', N: 'ownerName' },
+      status: 'pending',
+    });
+    excelImportService.parseExcelFile.mockRejectedValue(new Error('Worksheet not found: Missing'));
+
+    const res = await request(createApp())
+      .post(`/api/inventory/import/${sessionId}/preview`)
+      .send({ sheetName: 'Missing' });
+
+    expect(res.status).toBe(400);
+    expect(res.body.error).toContain('Worksheet not found');
+  });
+
   it('rejects validate when parser returns non-array data payload', async () => {
     const sessionId = '507f1f77bcf86cd799439011';
     mockImportSession.findOne.mockResolvedValue({
@@ -437,6 +456,25 @@ describe('Smart import ownership guards', () => {
 
     expect(res.status).toBe(500);
     expect(res.body.error).toContain('data must be an array');
+  });
+
+  it('returns 400 on validate when requested worksheet is missing', async () => {
+    const sessionId = '507f1f77bcf86cd799439011';
+    mockImportSession.findOne.mockResolvedValue({
+      _id: sessionId,
+      filePath: '/tmp/fake.csv',
+      sheetName: 'Sheet1',
+      columnMapping: { P: 'pNumber', A: 'area', N: 'ownerName' },
+      status: 'pending',
+    });
+    excelImportService.parseExcelFile.mockRejectedValue(new Error('Worksheet not found: Missing'));
+
+    const res = await request(createApp())
+      .post(`/api/inventory/import/${sessionId}/validate`)
+      .send({ strategy: 'balanced', sheetName: 'Missing' });
+
+    expect(res.status).toBe(400);
+    expect(res.body.error).toContain('Worksheet not found');
   });
 
   it('rejects invalid validation strategy on dry-run execute', async () => {
@@ -618,6 +656,29 @@ describe('Smart import ownership guards', () => {
 
     expect(res.status).toBe(500);
     expect(res.body.error).toContain('data must be an array');
+    expect(importExecutionEngine.executeImport).not.toHaveBeenCalled();
+  });
+
+  it('returns 400 on execute when requested worksheet is missing', async () => {
+    const sessionId = '507f1f77bcf86cd799439011';
+    const session = {
+      _id: sessionId,
+      filePath: '/tmp/fake.csv',
+      sheetName: 'Sheet1',
+      columnMapping: { P: 'pNumber', A: 'area', N: 'ownerName' },
+      status: 'pending',
+      save: vi.fn().mockResolvedValue(undefined),
+    };
+
+    mockImportSession.findOne.mockResolvedValue(session);
+    excelImportService.parseExcelFile.mockRejectedValue(new Error('Worksheet not found: Missing'));
+
+    const res = await request(createApp())
+      .post(`/api/inventory/import/${sessionId}/execute`)
+      .send({ strategy: 'balanced', sheetName: 'Missing' });
+
+    expect(res.status).toBe(400);
+    expect(res.body.error).toContain('Worksheet not found');
     expect(importExecutionEngine.executeImport).not.toHaveBeenCalled();
   });
 

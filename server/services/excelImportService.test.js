@@ -132,4 +132,15 @@ describe('excelImportService', () => {
       })
     );
   });
+
+  it('throws explicit error when requested sheetName is not present', async () => {
+    const csvPath = path.join(os.tmpdir(), `white-caves-import-sheet-${Date.now()}.csv`);
+    tempFiles.push(csvPath);
+
+    fs.writeFileSync(csvPath, 'P-NUMBER,AREA,NAME\nP-1,JVC,Alice\n', 'utf8');
+
+    await expect(parseExcelFile(csvPath, { sheetName: 'MissingSheet' })).rejects.toThrow(
+      'Worksheet not found: MissingSheet'
+    );
+  });
 });
