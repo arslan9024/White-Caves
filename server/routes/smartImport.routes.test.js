@@ -151,6 +151,18 @@ describe('Smart import ownership guards', () => {
     expect(mockImportSession.findOneAndUpdate).not.toHaveBeenCalled();
   });
 
+  it('rejects mapping payload with non-string mapping values', async () => {
+    const sessionId = '507f1f77bcf86cd799439011';
+
+    const res = await request(createApp())
+      .post(`/api/inventory/import/${sessionId}/mapping`)
+      .send({ mapping: { A: 123, B: 'area' } });
+
+    expect(res.status).toBe(400);
+    expect(res.body.error).toContain('Invalid mapping payload');
+    expect(mockImportSession.findOneAndUpdate).not.toHaveBeenCalled();
+  });
+
   it('accepts object mapping payload on mapping update', async () => {
     const sessionId = '507f1f77bcf86cd799439011';
     mockImportSession.findOneAndUpdate.mockResolvedValue({

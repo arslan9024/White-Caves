@@ -42,6 +42,16 @@ const isPlainObject = value =>
   !Array.isArray(value) &&
   value.constructor === Object;
 
+const isValidMappingPayload = mapping =>
+  isPlainObject(mapping) &&
+  Object.entries(mapping).every(
+    ([key, value]) =>
+      typeof key === 'string' &&
+      key.trim().length > 0 &&
+      typeof value === 'string' &&
+      value.trim().length > 0
+  );
+
 const isValidOptionalSheetName = sheetName =>
   sheetName === undefined || sheetName === null || typeof sheetName === 'string';
 
@@ -200,10 +210,10 @@ router.post('/:sessionId/mapping', async (req, res) => {
       return res.status(401).json({ success: false, error: 'Authentication required' });
     }
 
-    if (!isPlainObject(req.body.mapping)) {
+    if (!isValidMappingPayload(req.body.mapping)) {
       return res.status(400).json({
         success: false,
-        error: 'Invalid mapping payload: expected an object',
+        error: 'Invalid mapping payload: expected an object of string-to-string mappings',
       });
     }
 
