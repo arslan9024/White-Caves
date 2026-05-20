@@ -63,11 +63,27 @@ router.get('/inventory/import/history', auth, async (req, res) => {
   try {
     const { status, sortBy = 'date', limit = 50, offset = 0 } = req.query;
     const userId = getAuthenticatedUserId(req);
+    const parsedLimit = Number.parseInt(limit, 10);
+    const parsedOffset = Number.parseInt(offset, 10);
 
     if (!userId) {
       return res.status(401).json({
         success: false,
         error: 'Authentication required',
+      });
+    }
+
+    if (!Number.isInteger(parsedLimit) || parsedLimit <= 0) {
+      return res.status(400).json({
+        success: false,
+        error: 'Invalid limit query param: expected a positive integer',
+      });
+    }
+
+    if (!Number.isInteger(parsedOffset) || parsedOffset < 0) {
+      return res.status(400).json({
+        success: false,
+        error: 'Invalid offset query param: expected a non-negative integer',
       });
     }
 
@@ -90,8 +106,8 @@ router.get('/inventory/import/history', auth, async (req, res) => {
     // Fetch imports
     const importsRaw = await ImportSession.find(query)
       .sort(sortObj)
-      .limit(parseInt(limit))
-      .skip(parseInt(offset))
+      .limit(parsedLimit)
+      .skip(parsedOffset)
       .lean();
 
     const imports = importsRaw.map(item => ({
@@ -107,7 +123,7 @@ router.get('/inventory/import/history', auth, async (req, res) => {
       data: {
         imports,
         total,
-        hasMore: parseInt(offset) + parseInt(limit) < total,
+        hasMore: parsedOffset + parsedLimit < total,
       },
     });
   } catch (error) {

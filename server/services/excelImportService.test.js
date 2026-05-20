@@ -3,7 +3,12 @@ import os from 'os';
 import path from 'path';
 import { afterEach, describe, expect, it } from 'vitest';
 
-import { COLUMN_MAPPING, STATUS_MAPPING, parseExcelFile } from './excelImportService.js';
+import {
+  COLUMN_MAPPING,
+  STATUS_MAPPING,
+  getAllSheetData,
+  parseExcelFile,
+} from './excelImportService.js';
 
 const tempFiles = [];
 
@@ -142,5 +147,22 @@ describe('excelImportService', () => {
     await expect(parseExcelFile(csvPath, { sheetName: 'MissingSheet' })).rejects.toThrow(
       'Worksheet not found: MissingSheet'
     );
+  });
+
+  it('rejects invalid non-string sheetName option', async () => {
+    const csvPath = path.join(os.tmpdir(), `white-caves-import-sheet-type-${Date.now()}.csv`);
+    tempFiles.push(csvPath);
+
+    fs.writeFileSync(csvPath, 'P-NUMBER,AREA,NAME\nP-1,JVC,Alice\n', 'utf8');
+
+    await expect(parseExcelFile(csvPath, { sheetName: 123 })).rejects.toThrow(
+      'Invalid sheetName option: expected a string'
+    );
+  });
+
+  it('getAllSheetData throws when import file does not exist', async () => {
+    const missingPath = path.join(os.tmpdir(), `white-caves-missing-${Date.now()}.xlsx`);
+
+    await expect(getAllSheetData(missingPath)).rejects.toThrow('Import file not found');
   });
 });

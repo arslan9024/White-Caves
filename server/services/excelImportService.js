@@ -134,6 +134,11 @@ function buildColumnMapping(rows, headers = []) {
 
 export async function parseExcelFile(filePath, options = {}) {
   const { sheetName, previewLimit = 20 } = options;
+
+  if (sheetName !== undefined && sheetName !== null && typeof sheetName !== 'string') {
+    throw new Error('Invalid sheetName option: expected a string');
+  }
+
   const safePreviewLimit =
     Number.isInteger(previewLimit) && previewLimit > 0 ? Math.min(previewLimit, 1000) : 20;
 
@@ -183,8 +188,16 @@ export async function parseExcelFile(filePath, options = {}) {
 }
 
 export async function getAllSheetData(filePath) {
+  if (!fs.existsSync(filePath)) {
+    throw new Error(`Import file not found: ${filePath}`);
+  }
+
   const fileBuffer = fs.readFileSync(filePath);
   const workbook = XLSX.read(fileBuffer, { type: 'buffer', cellDates: true });
+
+  if (!Array.isArray(workbook.SheetNames) || workbook.SheetNames.length === 0) {
+    throw new Error('Import file does not contain any worksheets');
+  }
 
   return workbook.SheetNames.map(name => ({
     sheetName: name,

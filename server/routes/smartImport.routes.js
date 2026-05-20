@@ -12,7 +12,6 @@ import { fileURLToPath } from 'url';
 import * as excelImportService from '../services/excelImportService.js';
 import * as importValidationEngine from '../services/importValidationEngine.js';
 import * as importExecutionEngine from '../services/importExecutionEngine.js';
-import * as deduplicationService from '../services/deduplicationService.js';
 import ImportSession from '../models/ImportSession.js';
 
 const router = express.Router();

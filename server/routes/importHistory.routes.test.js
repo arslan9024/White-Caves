@@ -105,6 +105,24 @@ describe('Import history admin dashboard', () => {
     );
   });
 
+  it('rejects invalid limit query for import history', async () => {
+    const res = await request(createApp()).get('/api/inventory/import/history?limit=0&offset=0');
+
+    expect(res.status).toBe(400);
+    expect(res.body.success).toBe(false);
+    expect(res.body.error).toContain('Invalid limit query param');
+    expect(mockImportSession.find).not.toHaveBeenCalled();
+  });
+
+  it('rejects invalid offset query for import history', async () => {
+    const res = await request(createApp()).get('/api/inventory/import/history?limit=10&offset=-1');
+
+    expect(res.status).toBe(400);
+    expect(res.body.success).toBe(false);
+    expect(res.body.error).toContain('Invalid offset query param');
+    expect(mockImportSession.find).not.toHaveBeenCalled();
+  });
+
   it('resolves session errors endpoint by Mongo _id path param', async () => {
     const session = {
       _id: '507f1f77bcf86cd799439011',
