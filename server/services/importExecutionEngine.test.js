@@ -288,4 +288,22 @@ describe('importExecutionEngine status outcomes', () => {
     expect(result.propertiesCreated).toBe(0);
     expect(result.propertiesUpdated).toBe(0);
   });
+
+  it('fails gracefully when rows payload is not an array', async () => {
+    const session = createSession();
+    mockImportSession.findById.mockResolvedValue(session);
+
+    const result = await executeImport('session-8', null, {
+      columnMapping,
+      dryRun: false,
+      batchSize: 100,
+    });
+
+    expect(result.totalRows).toBe(0);
+    expect(result.errorsCount).toBe(1);
+    expect(result.errors[0].error).toContain('Invalid rows payload');
+    expect(session.status).toBe('failed');
+    expect(session.totalRows).toBe(0);
+    expect(session.totalRowsProcessed).toBe(0);
+  });
 });

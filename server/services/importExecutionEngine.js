@@ -218,8 +218,10 @@ export function prepareOwnerData(excelRow, columnMapping) {
  * @returns {promise<object>} - Import result statistics
  */
 export async function executeImport(sessionId, rows, options = {}) {
+  const normalizedRows = Array.isArray(rows) ? rows : [];
+
   const stats = {
-    totalRows: rows.length,
+    totalRows: normalizedRows.length,
     processedRows: 0,
     propertiesCreated: 0,
     propertiesUpdated: 0,
@@ -265,10 +267,25 @@ export async function executeImport(sessionId, rows, options = {}) {
     return stats;
   }
 
+  if (!Array.isArray(rows)) {
+    stats.errors.push({ error: 'Invalid rows payload: expected an array', sessionId });
+    stats.errorsCount++;
+    if (!dryRun && session) {
+      session.status = 'failed';
+      session.totalErrors = stats.errors.length;
+      session.importErrors = stats.errors;
+      session.totalRows = 0;
+      session.totalRowsProcessed = 0;
+      session.successRate = 0;
+      await session.save();
+    }
+    return stats;
+  }
+
   // Process in batches
-  for (let batchStart = 0; batchStart < rows.length; batchStart += safeBatchSize) {
-    const batchEnd = Math.min(batchStart + safeBatchSize, rows.length);
-    const batch = rows.slice(batchStart, batchEnd);
+  for (let batchStart = 0; batchStart < normalizedRows.length; batchStart += safeBatchSize) {
+    const batchEnd = Math.min(batchStart + safeBatchSize, normalizedRows.length);
+    const batch = normalizedRows.slice(batchStart, batchEnd);
 
     for (let i = 0; i < batch.length; i++) {
       const rowIndex = batchStart + i;

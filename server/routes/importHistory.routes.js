@@ -53,6 +53,16 @@ const ADMIN_COLLECTIONS = [
   { name: 'owner_property_mappings', model: OwnerPropertyMapping },
 ];
 
+const MAX_HISTORY_LIMIT = 500;
+
+const parseStrictInteger = value => {
+  const raw = String(value ?? '').trim();
+  if (!/^\d+$/.test(raw)) {
+    return null;
+  }
+  return Number.parseInt(raw, 10);
+};
+
 // ============ IMPORT HISTORY ROUTES ============
 
 /**
@@ -63,8 +73,8 @@ router.get('/inventory/import/history', auth, async (req, res) => {
   try {
     const { status, sortBy = 'date', limit = 50, offset = 0 } = req.query;
     const userId = getAuthenticatedUserId(req);
-    const parsedLimit = Number.parseInt(limit, 10);
-    const parsedOffset = Number.parseInt(offset, 10);
+    const parsedLimit = parseStrictInteger(limit);
+    const parsedOffset = parseStrictInteger(offset);
 
     if (!userId) {
       return res.status(401).json({
@@ -77,6 +87,13 @@ router.get('/inventory/import/history', auth, async (req, res) => {
       return res.status(400).json({
         success: false,
         error: 'Invalid limit query param: expected a positive integer',
+      });
+    }
+
+    if (parsedLimit > MAX_HISTORY_LIMIT) {
+      return res.status(400).json({
+        success: false,
+        error: `Invalid limit query param: maximum allowed is ${MAX_HISTORY_LIMIT}`,
       });
     }
 

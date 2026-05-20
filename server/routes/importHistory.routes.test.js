@@ -123,6 +123,26 @@ describe('Import history admin dashboard', () => {
     expect(mockImportSession.find).not.toHaveBeenCalled();
   });
 
+  it('rejects non-numeric limit query for import history', async () => {
+    const res = await request(createApp()).get(
+      '/api/inventory/import/history?limit=10abc&offset=0'
+    );
+
+    expect(res.status).toBe(400);
+    expect(res.body.success).toBe(false);
+    expect(res.body.error).toContain('Invalid limit query param');
+    expect(mockImportSession.find).not.toHaveBeenCalled();
+  });
+
+  it('rejects limit above maximum threshold for import history', async () => {
+    const res = await request(createApp()).get('/api/inventory/import/history?limit=9999&offset=0');
+
+    expect(res.status).toBe(400);
+    expect(res.body.success).toBe(false);
+    expect(res.body.error).toContain('maximum allowed is 500');
+    expect(mockImportSession.find).not.toHaveBeenCalled();
+  });
+
   it('resolves session errors endpoint by Mongo _id path param', async () => {
     const session = {
       _id: '507f1f77bcf86cd799439011',
