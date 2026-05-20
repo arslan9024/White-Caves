@@ -298,6 +298,9 @@ export async function executeImport(sessionId, rows, options = {}) {
           ],
         });
 
+        let propertyHandledByOverwrite = false;
+        let property = null;
+
         if (existingProperty) {
           stats.duplicatesFound++;
 
@@ -314,7 +317,7 @@ export async function executeImport(sessionId, rows, options = {}) {
 
             case 'overwrite':
               if (!dryRun) {
-                await InventoryProperty.findByIdAndUpdate(
+                property = await InventoryProperty.findByIdAndUpdate(
                   existingProperty._id,
                   { ...propertyData, importSessionId: sessionId },
                   { new: true }
@@ -322,10 +325,11 @@ export async function executeImport(sessionId, rows, options = {}) {
               }
               stats.propertiesUpdated++;
               stats.duplicatesResolved++;
+              propertyHandledByOverwrite = true;
               break;
 
             case 'version':
-              // Create new record with version metadata
+              // Create a new versioned record below
               if (!dryRun) {
                 propertyData.versionMetadata = {
                   previousId: existingProperty._id,
@@ -333,11 +337,9 @@ export async function executeImport(sessionId, rows, options = {}) {
                   createdAt: new Date(),
                 };
               }
-              // Falls through to create new
               break;
 
             case 'manual':
-              // Flag for review
               stats.duplicates.push({
                 rowIndex,
                 action: 'flagged_for_review',
@@ -353,30 +355,39 @@ export async function executeImport(sessionId, rows, options = {}) {
         // Create or update owner
         let owner = null;
         if (!dryRun) {
+          const ownerMatchQuery = {
+            $or: [
+              { name: ownerData.name },
+              { 'contacts.value': { $in: ownerData.contacts.map(c => c.value) } },
+            ],
+          };
+
+          const existingOwner = await Owner.findOne(ownerMatchQuery);
+
           owner = await Owner.findOneAndUpdate(
-            {
-              $or: [
-                { name: ownerData.name },
-                { 'contacts.value': { $in: ownerData.contacts.map(c => c.value) } },
-              ],
-            },
+            ownerMatchQuery,
             { $set: { ...ownerData, importSessionId: sessionId } },
             { upsert: true, new: true }
           );
 
-          if (owner.isNew) {
-            stats.ownersCreated++;
-          } else {
+          if (existingOwner) {
             stats.ownersUpdated++;
+          } else {
+            stats.ownersCreated++;
           }
         }
 
-        // Create or update property
-        let property = null;
-        if (!dryRun) {
+        // Create or update property (unless already handled by overwrite branch)
+        if (!dryRun && !propertyHandledByOverwrite) {
           propertyData.owners = owner ? [owner._id] : [];
           propertyData.primaryOwner = owner ? owner._id : null;
           propertyData.importSessionId = sessionId;
+
+          const propertyExistsForKey = Boolean(
+            existingProperty &&
+            existingProperty.pNumber === propertyData.pNumber &&
+            existingProperty.area === propertyData.area
+          );
 
           property = await InventoryProperty.findOneAndUpdate(
             { pNumber: propertyData.pNumber, area: propertyData.area },
@@ -384,30 +395,30 @@ export async function executeImport(sessionId, rows, options = {}) {
             { upsert: true, new: true }
           );
 
-          if (property.isNew) {
-            stats.propertiesCreated++;
-          } else {
+          if (propertyExistsForKey) {
             stats.propertiesUpdated++;
+          } else {
+            stats.propertiesCreated++;
           }
+        }
 
-          // Create owner-property mapping
-          if (owner && property) {
-            await OwnerPropertyMapping.findOneAndUpdate(
-              { ownerId: owner._id, propertyId: property._id },
-              {
-                ownerId: owner._id,
-                propertyId: property._id,
-                ownershipType: 'sole',
-                ownershipPercentage: 100,
-                relationshipType: 'owner',
-                acquisitionDate: new Date(),
-                isActive: true,
-                importSessionId: sessionId,
-              },
-              { upsert: true, new: true }
-            );
-            stats.relationshipsCreated++;
-          }
+        // Create owner-property mapping
+        if (!dryRun && owner && property) {
+          await OwnerPropertyMapping.findOneAndUpdate(
+            { ownerId: owner._id, propertyId: property._id },
+            {
+              ownerId: owner._id,
+              propertyId: property._id,
+              ownershipType: 'sole',
+              ownershipPercentage: 100,
+              relationshipType: 'owner',
+              acquisitionDate: new Date(),
+              isActive: true,
+              importSessionId: sessionId,
+            },
+            { upsert: true, new: true }
+          );
+          stats.relationshipsCreated++;
         }
 
         stats.processedRows++;

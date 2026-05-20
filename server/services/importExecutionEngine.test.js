@@ -11,6 +11,7 @@ const { mockInventoryProperty, mockOwner, mockOwnerPropertyMapping, mockImportSe
         findOneAndUpdate: fn(),
       },
       mockOwner: {
+        findOne: fn(),
         findOneAndUpdate: fn(),
       },
       mockOwnerPropertyMapping: {
@@ -95,6 +96,7 @@ describe('importExecutionEngine status outcomes', () => {
     vi.clearAllMocks();
     mockInventoryProperty.findOne.mockResolvedValue(null);
     mockInventoryProperty.findOneAndUpdate.mockResolvedValue({ _id: 'property-1' });
+    mockOwner.findOne.mockResolvedValue(null);
     mockOwner.findOneAndUpdate.mockResolvedValue({ _id: 'owner-1' });
     mockOwnerPropertyMapping.findOneAndUpdate.mockResolvedValue({ _id: 'map-1' });
   });
@@ -143,5 +145,35 @@ describe('importExecutionEngine status outcomes', () => {
     expect(session.totalRowsProcessed).toBe(result.processedRows);
     expect(session.successRate).toBe(50);
     expect(session.totalRows).toBe(rows.length);
+  });
+
+  it('counts overwrite duplicate as single property update', async () => {
+    const session = createSession();
+    mockImportSession.findById.mockResolvedValue(session);
+
+    const duplicateProperty = {
+      _id: 'property-dup-1',
+      pNumber: 'P-200',
+      area: 'Marina',
+      plotNumber: 'Plot-9',
+      toObject: () => ({ _id: 'property-dup-1', pNumber: 'P-200', area: 'Marina' }),
+    };
+
+    mockInventoryProperty.findOne.mockResolvedValue(duplicateProperty);
+    mockInventoryProperty.findByIdAndUpdate.mockResolvedValue({ _id: 'property-dup-1' });
+
+    const rows = [{ pNumber: 'P-200', area: 'Marina', ownerName: 'Bob', status: 'Available' }];
+
+    const result = await executeImport('session-3', rows, {
+      columnMapping,
+      deduplicationStrategy: 'overwrite',
+      dryRun: false,
+      batchSize: 100,
+    });
+
+    expect(result.propertiesUpdated).toBe(1);
+    expect(result.propertiesCreated).toBe(0);
+    expect(result.duplicatesFound).toBe(1);
+    expect(result.duplicatesResolved).toBe(1);
   });
 });
