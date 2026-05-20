@@ -133,6 +133,18 @@ describe('Smart import ownership guards', () => {
     expect(excelImportService.parseExcelFile).not.toHaveBeenCalled();
   });
 
+  it('returns 404 for invalid session id on preview without hitting database', async () => {
+    const res = await request(createApp())
+      .post('/api/inventory/import/not-a-valid-objectid/preview')
+      .send({});
+
+    expect(res.status).toBe(404);
+    expect(res.body.success).toBe(false);
+    expect(res.body.error).toContain('Import session not found');
+    expect(mockImportSession.findOne).not.toHaveBeenCalled();
+    expect(excelImportService.parseExcelFile).not.toHaveBeenCalled();
+  });
+
   it('rejects invalid sheetName payload on validate', async () => {
     const sessionId = '507f1f77bcf86cd799439011';
 
@@ -146,6 +158,18 @@ describe('Smart import ownership guards', () => {
     expect(excelImportService.parseExcelFile).not.toHaveBeenCalled();
   });
 
+  it('returns 404 for invalid session id on validate without hitting database', async () => {
+    const res = await request(createApp())
+      .post('/api/inventory/import/not-a-valid-objectid/validate')
+      .send({ strategy: 'balanced' });
+
+    expect(res.status).toBe(404);
+    expect(res.body.success).toBe(false);
+    expect(res.body.error).toContain('Import session not found');
+    expect(mockImportSession.findOne).not.toHaveBeenCalled();
+    expect(excelImportService.parseExcelFile).not.toHaveBeenCalled();
+  });
+
   it('rejects invalid sheetName payload on execute', async () => {
     const sessionId = '507f1f77bcf86cd799439011';
 
@@ -155,6 +179,18 @@ describe('Smart import ownership guards', () => {
 
     expect(res.status).toBe(400);
     expect(res.body.error).toContain('Invalid sheetName payload');
+    expect(mockImportSession.findOne).not.toHaveBeenCalled();
+    expect(excelImportService.parseExcelFile).not.toHaveBeenCalled();
+  });
+
+  it('returns 404 for invalid session id on execute without hitting database', async () => {
+    const res = await request(createApp())
+      .post('/api/inventory/import/not-a-valid-objectid/execute')
+      .send({ strategy: 'balanced' });
+
+    expect(res.status).toBe(404);
+    expect(res.body.success).toBe(false);
+    expect(res.body.error).toContain('Import session not found');
     expect(mockImportSession.findOne).not.toHaveBeenCalled();
     expect(excelImportService.parseExcelFile).not.toHaveBeenCalled();
   });
@@ -510,6 +546,25 @@ describe('Smart import ownership guards', () => {
     expect(res.body.error).toContain('Worksheet not found');
   });
 
+  it('returns 400 on preview when parser reports missing import file', async () => {
+    const sessionId = '507f1f77bcf86cd799439011';
+    mockImportSession.findOne.mockResolvedValue({
+      _id: sessionId,
+      filePath: '/tmp/missing.csv',
+      sheetName: 'Sheet1',
+      columnMapping: { P: 'pNumber', A: 'area', N: 'ownerName' },
+      status: 'pending',
+    });
+    excelImportService.parseExcelFile.mockRejectedValue(new Error('Import file not found'));
+
+    const res = await request(createApp())
+      .post(`/api/inventory/import/${sessionId}/preview`)
+      .send({});
+
+    expect(res.status).toBe(400);
+    expect(res.body.error).toContain('Import file not found');
+  });
+
   it('rejects validate when parser returns non-array data payload', async () => {
     const sessionId = '507f1f77bcf86cd799439011';
     mockImportSession.findOne.mockResolvedValue({
@@ -546,6 +601,25 @@ describe('Smart import ownership guards', () => {
 
     expect(res.status).toBe(400);
     expect(res.body.error).toContain('Worksheet not found');
+  });
+
+  it('returns 400 on validate when parser reports missing import file', async () => {
+    const sessionId = '507f1f77bcf86cd799439011';
+    mockImportSession.findOne.mockResolvedValue({
+      _id: sessionId,
+      filePath: '/tmp/missing.csv',
+      sheetName: 'Sheet1',
+      columnMapping: { P: 'pNumber', A: 'area', N: 'ownerName' },
+      status: 'pending',
+    });
+    excelImportService.parseExcelFile.mockRejectedValue(new Error('Import file not found'));
+
+    const res = await request(createApp())
+      .post(`/api/inventory/import/${sessionId}/validate`)
+      .send({ strategy: 'balanced' });
+
+    expect(res.status).toBe(400);
+    expect(res.body.error).toContain('Import file not found');
   });
 
   it('rejects invalid validation strategy on dry-run execute', async () => {
@@ -750,6 +824,29 @@ describe('Smart import ownership guards', () => {
 
     expect(res.status).toBe(400);
     expect(res.body.error).toContain('Worksheet not found');
+    expect(importExecutionEngine.executeImport).not.toHaveBeenCalled();
+  });
+
+  it('returns 400 on execute when parser reports missing import file', async () => {
+    const sessionId = '507f1f77bcf86cd799439011';
+    const session = {
+      _id: sessionId,
+      filePath: '/tmp/missing.csv',
+      sheetName: 'Sheet1',
+      columnMapping: { P: 'pNumber', A: 'area', N: 'ownerName' },
+      status: 'pending',
+      save: vi.fn().mockResolvedValue(undefined),
+    };
+
+    mockImportSession.findOne.mockResolvedValue(session);
+    excelImportService.parseExcelFile.mockRejectedValue(new Error('Import file not found'));
+
+    const res = await request(createApp())
+      .post(`/api/inventory/import/${sessionId}/execute`)
+      .send({ strategy: 'balanced' });
+
+    expect(res.status).toBe(400);
+    expect(res.body.error).toContain('Import file not found');
     expect(importExecutionEngine.executeImport).not.toHaveBeenCalled();
   });
 
