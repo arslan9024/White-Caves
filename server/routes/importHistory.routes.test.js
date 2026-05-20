@@ -27,10 +27,10 @@ const { mockImportSession, mockPropertyInventory, mockOwnerPropertyMapping, mock
         countDocuments: fn().mockResolvedValue(0),
         distinct: fn().mockResolvedValue([]),
       },
-      mockAuth: (req, _res, next) => {
+      mockAuth: fn((req, _res, next) => {
         req.user = { id: 'user-1', role: 'admin' };
         next();
-      },
+      }),
     };
   }
 );
@@ -55,6 +55,10 @@ function createApp() {
 describe('Import history admin dashboard', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    mockAuth.mockImplementation((req, _res, next) => {
+      req.user = { id: 'user-1', role: 'admin' };
+      next();
+    });
     mockImportSession.find.mockImplementation(() => createQueryChain([]));
     mockImportSession.countDocuments.mockResolvedValue(0);
     mockPropertyInventory.countDocuments.mockResolvedValue(12);
@@ -188,6 +192,32 @@ describe('Import history admin dashboard', () => {
     expect(res.body.data.totalProperties).toBe(12);
     expect(res.body.data.totalOwners).toBe(7);
     expect(res.body.data.totalRelationships).toBe(19);
+  });
+
+  it('rejects admin dashboard access for non-admin users', async () => {
+    mockAuth.mockImplementation((req, _res, next) => {
+      req.user = { id: 'user-1', role: 'agent' };
+      next();
+    });
+
+    const res = await request(createApp()).get('/api/admin/dashboard');
+
+    expect(res.status).toBe(403);
+    expect(res.body.success).toBe(false);
+    expect(res.body.error).toContain('Admin access required');
+  });
+
+  it('rejects admin dashboard access when auth middleware provides no user', async () => {
+    mockAuth.mockImplementation((req, _res, next) => {
+      req.user = null;
+      next();
+    });
+
+    const res = await request(createApp()).get('/api/admin/dashboard');
+
+    expect(res.status).toBe(403);
+    expect(res.body.success).toBe(false);
+    expect(res.body.error).toContain('Admin access required');
   });
 
   it('returns importErrors from session errors endpoint', async () => {
