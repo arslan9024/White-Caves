@@ -57,6 +57,24 @@ describe('Smart import ownership guards', () => {
     expect(mockImportSession.findOne).not.toHaveBeenCalled();
   });
 
+  it('returns 401 when user is missing for upload endpoint', async () => {
+    const res = await request(createApp(null)).post('/api/inventory/import/upload');
+
+    expect(res.status).toBe(401);
+    expect(res.body.success).toBe(false);
+    expect(res.body.error).toContain('Authentication required');
+    expect(excelImportService.parseExcelFile).not.toHaveBeenCalled();
+  });
+
+  it('returns 400 when upload file is missing', async () => {
+    const res = await request(createApp()).post('/api/inventory/import/upload');
+
+    expect(res.status).toBe(400);
+    expect(res.body.success).toBe(false);
+    expect(res.body.error).toContain('No file provided');
+    expect(excelImportService.parseExcelFile).not.toHaveBeenCalled();
+  });
+
   it('filters session details by ownership query', async () => {
     mockImportSession.findOne.mockResolvedValue(null);
 
