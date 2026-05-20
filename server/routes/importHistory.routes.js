@@ -250,14 +250,16 @@ router.get('/inventory/import/session/:sessionId/report', auth, async (req, res)
     }
 
     if (format === 'json') {
+      const reportSessionId = session.sessionId || String(session._id || req.params.sessionId);
+
       // Return JSON report
       res.setHeader('Content-Type', 'application/json');
       res.setHeader(
         'Content-Disposition',
-        `attachment; filename="import-report-${session.sessionId}.json"`
+        `attachment; filename="import-report-${reportSessionId}.json"`
       );
       return res.json({
-        sessionId: session.sessionId,
+        sessionId: reportSessionId,
         fileName: session.fileName,
         status: session.status,
         importedBy: session.importedBy,
@@ -407,9 +409,10 @@ router.get('/inventory/import/session/:sessionId/report', auth, async (req, res)
 
     res.setHeader('Content-Type', 'application/pdf');
     res.setHeader('Content-Length', buffer.length);
+    const reportSessionId = session.sessionId || String(session._id || req.params.sessionId);
     res.setHeader(
       'Content-Disposition',
-      `attachment; filename="import-report-${session.sessionId}.pdf"`
+      `attachment; filename="import-report-${reportSessionId}.pdf"`
     );
     return res.end(buffer);
   } catch (error) {

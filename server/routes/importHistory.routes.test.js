@@ -225,4 +225,37 @@ describe('Import history admin dashboard', () => {
     expect(res.body.sessionId).toBe(session.sessionId);
     expect(res.body.errors).toEqual(session.importErrors);
   });
+
+  it('falls back to Mongo _id for JSON report sessionId when sessionId is missing', async () => {
+    const session = {
+      _id: '507f1f77bcf86cd799439099',
+      userId: 'user-1',
+      fileName: 'owners.xlsx',
+      status: 'completed',
+      importedBy: 'admin',
+      createdAt: new Date().toISOString(),
+      completedAt: new Date().toISOString(),
+      totalRows: 1,
+      propertiesCreated: 1,
+      propertiesUpdated: 0,
+      ownersCreated: 1,
+      ownersUpdated: 0,
+      duplicatesFound: 0,
+      successRate: 100,
+      totalErrors: 0,
+      totalWarnings: 0,
+      importErrors: [],
+    };
+
+    mockImportSession.findOne = vi.fn().mockReturnValue({
+      lean: vi.fn().mockResolvedValue(session),
+    });
+
+    const res = await request(createApp()).get(
+      '/api/inventory/import/session/507f1f77bcf86cd799439099/report?format=json'
+    );
+
+    expect(res.status).toBe(200);
+    expect(res.body.sessionId).toBe('507f1f77bcf86cd799439099');
+  });
 });
