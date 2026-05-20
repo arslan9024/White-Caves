@@ -151,6 +151,16 @@ describe('Smart import ownership guards', () => {
     expect(mockImportSession.findOneAndUpdate).not.toHaveBeenCalled();
   });
 
+  it('returns 404 for invalid session id on mapping update without hitting database', async () => {
+    const res = await request(createApp())
+      .post('/api/inventory/import/not-a-valid-objectid/mapping')
+      .send({ mapping: { A: 'ownerName' } });
+
+    expect(res.status).toBe(404);
+    expect(res.body.success).toBe(false);
+    expect(mockImportSession.findOneAndUpdate).not.toHaveBeenCalled();
+  });
+
   it('rejects mapping payload with non-string mapping values', async () => {
     const sessionId = '507f1f77bcf86cd799439011';
 

@@ -210,6 +210,13 @@ router.post('/:sessionId/mapping', async (req, res) => {
       return res.status(401).json({ success: false, error: 'Authentication required' });
     }
 
+    if (!mongoose.Types.ObjectId.isValid(req.params.sessionId)) {
+      return res.status(404).json({
+        success: false,
+        error: 'Import session not found',
+      });
+    }
+
     if (!isValidMappingPayload(req.body.mapping)) {
       return res.status(400).json({
         success: false,
