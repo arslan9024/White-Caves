@@ -53,6 +53,22 @@ const isValidMappingPayload = mapping =>
       value.trim().length > 0
   );
 
+const hasRequiredFieldMappings = (mapping, requiredFields = IMPORT_REQUIRED_FIELDS) => {
+  if (!isValidMappingPayload(mapping)) {
+    return false;
+  }
+
+  const normalizedKeys = new Set(Object.keys(mapping).map(key => key.trim().toLowerCase()));
+  const normalizedValues = new Set(
+    Object.values(mapping).map(value => String(value).trim().toLowerCase())
+  );
+
+  return requiredFields.every(field => {
+    const normalized = String(field).trim().toLowerCase();
+    return normalizedKeys.has(normalized) || normalizedValues.has(normalized);
+  });
+};
+
 const isValidClusterAssignmentsPayload = clusterAssignments =>
   isPlainObject(clusterAssignments) &&
   Object.entries(clusterAssignments).every(
@@ -232,6 +248,13 @@ router.post('/:sessionId/mapping', async (req, res) => {
       return res.status(400).json({
         success: false,
         error: 'Invalid mapping payload: expected an object of string-to-string mappings',
+      });
+    }
+
+    if (!hasRequiredFieldMappings(req.body.mapping)) {
+      return res.status(400).json({
+        success: false,
+        error: `Mapping is missing required fields: ${IMPORT_REQUIRED_FIELDS.join(', ')}`,
       });
     }
 

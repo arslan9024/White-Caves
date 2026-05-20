@@ -121,12 +121,12 @@ describe('Smart import ownership guards', () => {
     const sessionId = '507f1f77bcf86cd799439011';
     mockImportSession.findOneAndUpdate.mockResolvedValue({
       _id: sessionId,
-      columnMapping: { A: 'ownerName' },
+      columnMapping: { P: 'pNumber', A: 'area', N: 'ownerName' },
     });
 
     const res = await request(createApp())
       .post(`/api/inventory/import/${sessionId}/mapping`)
-      .send({ mapping: { A: 'ownerName' } });
+      .send({ mapping: { P: 'pNumber', A: 'area', N: 'ownerName' } });
 
     expect(res.status).toBe(200);
     expect(mockImportSession.findOneAndUpdate).toHaveBeenCalledWith(
@@ -134,7 +134,7 @@ describe('Smart import ownership guards', () => {
         _id: sessionId,
         $or: [{ userId: 'user-1' }, { importedBy: 'user-1' }],
       },
-      { columnMapping: { A: 'ownerName' } },
+      { columnMapping: { P: 'pNumber', A: 'area', N: 'ownerName' } },
       { new: true }
     );
   });
@@ -177,12 +177,12 @@ describe('Smart import ownership guards', () => {
     const sessionId = '507f1f77bcf86cd799439011';
     mockImportSession.findOneAndUpdate.mockResolvedValue({
       _id: sessionId,
-      columnMapping: { A: 'ownerName' },
+      columnMapping: { P: 'pNumber', A: 'area', N: 'ownerName' },
     });
 
     const res = await request(createApp())
       .post(`/api/inventory/import/${sessionId}/mapping`)
-      .send({ mapping: { A: 'ownerName', B: 'area' } });
+      .send({ mapping: { P: 'pNumber', A: 'area', N: 'ownerName' } });
 
     expect(res.status).toBe(200);
     expect(mockImportSession.findOneAndUpdate).toHaveBeenCalledWith(
@@ -190,9 +190,21 @@ describe('Smart import ownership guards', () => {
         _id: sessionId,
         $or: [{ userId: 'user-1' }, { importedBy: 'user-1' }],
       },
-      { columnMapping: { A: 'ownerName', B: 'area' } },
+      { columnMapping: { P: 'pNumber', A: 'area', N: 'ownerName' } },
       { new: true }
     );
+  });
+
+  it('rejects mapping payload missing required import fields', async () => {
+    const sessionId = '507f1f77bcf86cd799439011';
+
+    const res = await request(createApp())
+      .post(`/api/inventory/import/${sessionId}/mapping`)
+      .send({ mapping: { A: 'ownerName', B: 'area' } });
+
+    expect(res.status).toBe(400);
+    expect(res.body.error).toContain('Mapping is missing required fields');
+    expect(mockImportSession.findOneAndUpdate).not.toHaveBeenCalled();
   });
 
   it('rejects invalid deduplication strategy on execute', async () => {
