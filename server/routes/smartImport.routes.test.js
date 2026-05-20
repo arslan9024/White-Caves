@@ -24,6 +24,8 @@ vi.mock('../services/importExecutionEngine.js', () => ({ executeImport: vi.fn() 
 vi.mock('../services/deduplicationService.js', () => ({}));
 
 import smartImportRoutes from './smartImport.routes.js';
+import * as excelImportService from '../services/excelImportService.js';
+import * as importExecutionEngine from '../services/importExecutionEngine.js';
 
 function createApp(user = { id: 'user-1', role: 'admin' }) {
   const app = express();
@@ -94,6 +96,54 @@ describe('Smart import ownership guards', () => {
       },
       { columnMapping: { A: 'ownerName' } },
       { new: true }
+    );
+  });
+
+  it('rejects invalid deduplication strategy on execute', async () => {
+    const sessionId = '507f1f77bcf86cd799439011';
+    mockImportSession.findOne.mockResolvedValue({
+      _id: sessionId,
+      filePath: '/tmp/fake.csv',
+      sheetName: 'Sheet1',
+      columnMapping: { A: 'ownerName' },
+      status: 'pending',
+      save: vi.fn().mockResolvedValue(undefined),
+    });
+
+    const res = await request(createApp())
+      .post(`/api/inventory/import/${sessionId}/execute`)
+      .send({ deduplicationStrategy: 'invalid-mode' });
+
+    expect(res.status).toBe(400);
+    expect(res.body.success).toBe(false);
+    expect(res.body.error).toContain('Invalid deduplicationStrategy');
+    expect(importExecutionEngine.executeImport).not.toHaveBeenCalled();
+  });
+
+  it('passes valid deduplication strategy to execution engine', async () => {
+    const sessionId = '507f1f77bcf86cd799439011';
+    const session = {
+      _id: sessionId,
+      filePath: '/tmp/fake.csv',
+      sheetName: 'Sheet1',
+      columnMapping: { A: 'ownerName' },
+      status: 'pending',
+      save: vi.fn().mockResolvedValue(undefined),
+    };
+
+    mockImportSession.findOne.mockResolvedValueOnce(session).mockResolvedValueOnce(session);
+    excelImportService.parseExcelFile.mockResolvedValue({ data: [], sheetName: 'Sheet1' });
+    importExecutionEngine.executeImport.mockResolvedValue({ processedRows: 0, errorsCount: 0 });
+
+    const res = await request(createApp())
+      .post(`/api/inventory/import/${sessionId}/execute`)
+      .send({ deduplicationStrategy: 'version' });
+
+    expect(res.status).toBe(200);
+    expect(importExecutionEngine.executeImport).toHaveBeenCalledWith(
+      session._id,
+      [],
+      expect.objectContaining({ deduplicationStrategy: 'version' })
     );
   });
 });

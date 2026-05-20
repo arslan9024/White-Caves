@@ -33,6 +33,8 @@ const findSessionForUser = (sessionId, userId) => {
   return ImportSession.findOne(buildSessionOwnershipQuery(sessionId, userId));
 };
 
+const ALLOWED_DEDUPLICATION_STRATEGIES = ['keep', 'overwrite', 'version', 'manual'];
+
 // Multer configuration
 const uploadDir = path.join(__dirname, '../uploads');
 const storage = multer.diskStorage({
@@ -268,6 +270,14 @@ router.post('/:sessionId/execute', async (req, res) => {
       return res.status(401).json({ success: false, error: 'Authentication required' });
     }
 
+    const deduplicationStrategy = req.body.deduplicationStrategy || 'keep';
+    if (!ALLOWED_DEDUPLICATION_STRATEGIES.includes(deduplicationStrategy)) {
+      return res.status(400).json({
+        success: false,
+        error: `Invalid deduplicationStrategy: ${deduplicationStrategy}`,
+      });
+    }
+
     const session = await findSessionForUser(req.params.sessionId, userId);
     if (!session) {
       return res.status(404).json({
@@ -306,7 +316,7 @@ router.post('/:sessionId/execute', async (req, res) => {
       columnMapping: session.columnMapping,
       statusMap: {},
       clusterAssignments: req.body.clusterAssignments || {},
-      deduplicationStrategy: req.body.deduplicationStrategy || 'keep',
+      deduplicationStrategy,
       importStrategy: req.body.strategy || 'balanced',
       dryRun: false,
       batchSize: 100,
