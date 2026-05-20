@@ -324,6 +324,14 @@ router.post('/:sessionId/execute', async (req, res) => {
       });
     }
 
+    const executionStrategy = req.body.strategy || 'balanced';
+    if (!ALLOWED_VALIDATION_STRATEGIES.includes(executionStrategy)) {
+      return res.status(400).json({
+        success: false,
+        error: `Invalid execution strategy: ${executionStrategy}`,
+      });
+    }
+
     const clusterAssignments = req.body.clusterAssignments || {};
     if (!isPlainObject(clusterAssignments)) {
       return res.status(400).json({
@@ -351,16 +359,8 @@ router.post('/:sessionId/execute', async (req, res) => {
 
     // Optional: dry-run validation
     if (req.body.dryRun) {
-      const dryRunStrategy = req.body.strategy || 'balanced';
-      if (!ALLOWED_VALIDATION_STRATEGIES.includes(dryRunStrategy)) {
-        return res.status(400).json({
-          success: false,
-          error: `Invalid validation strategy: ${dryRunStrategy}`,
-        });
-      }
-
       const dryRunResult = await importValidationEngine.dryRun(parseResult.data, session._id, {
-        strategy: dryRunStrategy,
+        strategy: executionStrategy,
         requiredFields: ['ownerName', 'area'],
       });
 
@@ -379,7 +379,7 @@ router.post('/:sessionId/execute', async (req, res) => {
       statusMap: {},
       clusterAssignments,
       deduplicationStrategy,
-      importStrategy: req.body.strategy || 'balanced',
+      importStrategy: executionStrategy,
       dryRun: false,
       batchSize: 100,
     });

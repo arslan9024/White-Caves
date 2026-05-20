@@ -302,7 +302,7 @@ describe('Smart import ownership guards', () => {
       .send({ dryRun: true, strategy: 'super-balanced' });
 
     expect(res.status).toBe(400);
-    expect(res.body.error).toContain('Invalid validation strategy');
+    expect(res.body.error).toContain('Invalid execution strategy');
   });
 
   it('passes valid validation strategy to dry-run validation engine', async () => {
@@ -331,6 +331,53 @@ describe('Smart import ownership guards', () => {
       [{ ownerName: 'Nora', area: 'JVC' }],
       session._id,
       expect.objectContaining({ strategy: 'strict' })
+    );
+  });
+
+  it('rejects invalid execution strategy on non-dry execute', async () => {
+    const sessionId = '507f1f77bcf86cd799439011';
+    mockImportSession.findOne.mockResolvedValue({
+      _id: sessionId,
+      filePath: '/tmp/fake.csv',
+      sheetName: 'Sheet1',
+      columnMapping: { A: 'ownerName' },
+      status: 'pending',
+      save: vi.fn().mockResolvedValue(undefined),
+    });
+
+    const res = await request(createApp())
+      .post(`/api/inventory/import/${sessionId}/execute`)
+      .send({ strategy: 'aggressive' });
+
+    expect(res.status).toBe(400);
+    expect(res.body.error).toContain('Invalid execution strategy');
+    expect(importExecutionEngine.executeImport).not.toHaveBeenCalled();
+  });
+
+  it('passes valid execution strategy to execution engine on non-dry execute', async () => {
+    const sessionId = '507f1f77bcf86cd799439011';
+    const session = {
+      _id: sessionId,
+      filePath: '/tmp/fake.csv',
+      sheetName: 'Sheet1',
+      columnMapping: { A: 'ownerName' },
+      status: 'pending',
+      save: vi.fn().mockResolvedValue(undefined),
+    };
+
+    mockImportSession.findOne.mockResolvedValueOnce(session).mockResolvedValueOnce(session);
+    excelImportService.parseExcelFile.mockResolvedValue({ data: [], sheetName: 'Sheet1' });
+    importExecutionEngine.executeImport.mockResolvedValue({ processedRows: 0, errorsCount: 0 });
+
+    const res = await request(createApp())
+      .post(`/api/inventory/import/${sessionId}/execute`)
+      .send({ strategy: 'lenient' });
+
+    expect(res.status).toBe(200);
+    expect(importExecutionEngine.executeImport).toHaveBeenCalledWith(
+      session._id,
+      [],
+      expect.objectContaining({ importStrategy: 'lenient' })
     );
   });
 });
