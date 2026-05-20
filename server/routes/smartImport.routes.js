@@ -300,6 +300,14 @@ router.post('/:sessionId/execute', async (req, res) => {
       });
     }
 
+    const clusterAssignments = req.body.clusterAssignments || {};
+    if (!isPlainObject(clusterAssignments)) {
+      return res.status(400).json({
+        success: false,
+        error: 'Invalid clusterAssignments payload: expected an object',
+      });
+    }
+
     const session = await findSessionForUser(req.params.sessionId, userId);
     if (!session) {
       return res.status(404).json({
@@ -345,7 +353,7 @@ router.post('/:sessionId/execute', async (req, res) => {
     const importResult = await importExecutionEngine.executeImport(session._id, parseResult.data, {
       columnMapping: session.columnMapping,
       statusMap: {},
-      clusterAssignments: req.body.clusterAssignments || {},
+      clusterAssignments,
       deduplicationStrategy,
       importStrategy: req.body.strategy || 'balanced',
       dryRun: false,

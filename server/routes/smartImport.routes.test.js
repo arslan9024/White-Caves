@@ -182,6 +182,53 @@ describe('Smart import ownership guards', () => {
     );
   });
 
+  it('rejects invalid clusterAssignments payload on execute', async () => {
+    const sessionId = '507f1f77bcf86cd799439011';
+    mockImportSession.findOne.mockResolvedValue({
+      _id: sessionId,
+      filePath: '/tmp/fake.csv',
+      sheetName: 'Sheet1',
+      columnMapping: { A: 'ownerName' },
+      status: 'pending',
+      save: vi.fn().mockResolvedValue(undefined),
+    });
+
+    const res = await request(createApp())
+      .post(`/api/inventory/import/${sessionId}/execute`)
+      .send({ clusterAssignments: ['A', 'B'] });
+
+    expect(res.status).toBe(400);
+    expect(res.body.error).toContain('Invalid clusterAssignments payload');
+    expect(importExecutionEngine.executeImport).not.toHaveBeenCalled();
+  });
+
+  it('passes valid clusterAssignments object to execution engine', async () => {
+    const sessionId = '507f1f77bcf86cd799439011';
+    const session = {
+      _id: sessionId,
+      filePath: '/tmp/fake.csv',
+      sheetName: 'Sheet1',
+      columnMapping: { A: 'ownerName' },
+      status: 'pending',
+      save: vi.fn().mockResolvedValue(undefined),
+    };
+
+    mockImportSession.findOne.mockResolvedValueOnce(session).mockResolvedValueOnce(session);
+    excelImportService.parseExcelFile.mockResolvedValue({ data: [], sheetName: 'Sheet1' });
+    importExecutionEngine.executeImport.mockResolvedValue({ processedRows: 0, errorsCount: 0 });
+
+    const res = await request(createApp())
+      .post(`/api/inventory/import/${sessionId}/execute`)
+      .send({ clusterAssignments: { P100: 'Cluster-A' } });
+
+    expect(res.status).toBe(200);
+    expect(importExecutionEngine.executeImport).toHaveBeenCalledWith(
+      session._id,
+      [],
+      expect.objectContaining({ clusterAssignments: { P100: 'Cluster-A' } })
+    );
+  });
+
   it('rejects invalid validation strategy on validate', async () => {
     const sessionId = '507f1f77bcf86cd799439011';
     mockImportSession.findOne.mockResolvedValue({
