@@ -109,6 +109,20 @@ describe('Import history admin dashboard', () => {
     );
   });
 
+  it('returns 401 for import history when auth middleware provides no user', async () => {
+    mockAuth.mockImplementation((req, _res, next) => {
+      req.user = null;
+      next();
+    });
+
+    const res = await request(createApp()).get('/api/inventory/import/history?limit=10&offset=0');
+
+    expect(res.status).toBe(401);
+    expect(res.body.success).toBe(false);
+    expect(res.body.error).toContain('Authentication required');
+    expect(mockImportSession.find).not.toHaveBeenCalled();
+  });
+
   it('rejects invalid limit query for import history', async () => {
     const res = await request(createApp()).get('/api/inventory/import/history?limit=0&offset=0');
 
@@ -177,6 +191,32 @@ describe('Import history admin dashboard', () => {
         $or: expect.arrayContaining([{ userId: 'user-1' }, { importedBy: 'user-1' }]),
       })
     );
+  });
+
+  it('returns 404 when session details endpoint has no matching session', async () => {
+    mockImportSession.findOne = vi.fn().mockReturnValue({
+      lean: vi.fn().mockResolvedValue(null),
+    });
+
+    const res = await request(createApp()).get('/api/inventory/import/session/missing-session');
+
+    expect(res.status).toBe(404);
+    expect(res.body.success).toBe(false);
+    expect(res.body.error).toContain('Session not found');
+  });
+
+  it('returns 401 for session details endpoint when auth middleware provides no user', async () => {
+    mockAuth.mockImplementation((req, _res, next) => {
+      req.user = null;
+      next();
+    });
+
+    const res = await request(createApp()).get('/api/inventory/import/session/some-session');
+
+    expect(res.status).toBe(401);
+    expect(res.body.success).toBe(false);
+    expect(res.body.error).toContain('Authentication required');
+    expect(mockImportSession.findOne).not.toHaveBeenCalled();
   });
 
   it('returns collection stats for the admin dashboard', async () => {
@@ -274,6 +314,39 @@ describe('Import history admin dashboard', () => {
     expect(res.status).toBe(200);
     expect(res.body.sessionId).toBe(session.sessionId);
     expect(res.body.errors).toEqual(session.importErrors);
+  });
+
+  it('accepts case-insensitive format query param for JSON reports', async () => {
+    const session = {
+      sessionId: 'session-report-upper',
+      userId: 'user-1',
+      fileName: 'owners.xlsx',
+      status: 'completed',
+      importedBy: 'admin',
+      createdAt: new Date().toISOString(),
+      completedAt: new Date().toISOString(),
+      totalRows: 2,
+      propertiesCreated: 1,
+      propertiesUpdated: 0,
+      ownersCreated: 1,
+      ownersUpdated: 0,
+      duplicatesFound: 0,
+      successRate: 100,
+      totalErrors: 0,
+      totalWarnings: 0,
+      importErrors: [],
+    };
+
+    mockImportSession.findOne = vi.fn().mockReturnValue({
+      lean: vi.fn().mockResolvedValue(session),
+    });
+
+    const res = await request(createApp()).get(
+      '/api/inventory/import/session/session-report-upper/report?format=JSON'
+    );
+
+    expect(res.status).toBe(200);
+    expect(res.body.sessionId).toBe('session-report-upper');
   });
 
   it('falls back to Mongo _id for JSON report sessionId when sessionId is missing', async () => {
