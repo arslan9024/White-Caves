@@ -245,6 +245,13 @@ export async function executeImport(sessionId, rows, options = {}) {
     batchSize = 100,
   } = options;
 
+  const safeBatchSize = Number.isInteger(batchSize) && batchSize > 0 ? batchSize : 100;
+  const safeDeduplicationStrategy = ['keep', 'overwrite', 'version', 'manual'].includes(
+    deduplicationStrategy
+  )
+    ? deduplicationStrategy
+    : 'keep';
+
   // Load session
   let session = null;
   try {
@@ -259,8 +266,8 @@ export async function executeImport(sessionId, rows, options = {}) {
   }
 
   // Process in batches
-  for (let batchStart = 0; batchStart < rows.length; batchStart += batchSize) {
-    const batchEnd = Math.min(batchStart + batchSize, rows.length);
+  for (let batchStart = 0; batchStart < rows.length; batchStart += safeBatchSize) {
+    const batchEnd = Math.min(batchStart + safeBatchSize, rows.length);
     const batch = rows.slice(batchStart, batchEnd);
 
     for (let i = 0; i < batch.length; i++) {
@@ -305,7 +312,7 @@ export async function executeImport(sessionId, rows, options = {}) {
         if (existingProperty) {
           stats.duplicatesFound++;
 
-          switch (deduplicationStrategy) {
+          switch (safeDeduplicationStrategy) {
             case 'keep':
               stats.skipped++;
               stats.duplicates.push({

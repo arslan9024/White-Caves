@@ -239,4 +239,53 @@ describe('importExecutionEngine status outcomes', () => {
     expect(result.duplicatesFound).toBe(1);
     expect(result.duplicatesResolved).toBe(1);
   });
+
+  it('falls back to default batch size when batchSize is invalid', async () => {
+    const session = createSession();
+    mockImportSession.findById.mockResolvedValue(session);
+
+    const rows = [
+      { pNumber: 'P-501', area: 'JVC', ownerName: 'Ali', status: 'Available' },
+      { pNumber: 'P-502', area: 'Marina', ownerName: 'Basma', status: 'Available' },
+    ];
+
+    const result = await executeImport('session-6', rows, {
+      columnMapping,
+      dryRun: false,
+      batchSize: 0,
+    });
+
+    expect(result.processedRows).toBe(2);
+    expect(result.errorsCount).toBe(0);
+  });
+
+  it('falls back to keep strategy when deduplication strategy is unknown', async () => {
+    const session = createSession();
+    mockImportSession.findById.mockResolvedValue(session);
+
+    const duplicateProperty = {
+      _id: 'property-dup-fallback-1',
+      pNumber: 'P-601',
+      area: 'Downtown',
+      plotNumber: 'Plot-66',
+      toObject: () => ({ _id: 'property-dup-fallback-1' }),
+    };
+
+    mockInventoryProperty.findOne.mockResolvedValue(duplicateProperty);
+
+    const rows = [{ pNumber: 'P-601', area: 'Downtown', ownerName: 'Dana', status: 'Available' }];
+
+    const result = await executeImport('session-7', rows, {
+      columnMapping,
+      deduplicationStrategy: 'unexpected-mode',
+      dryRun: false,
+      batchSize: 100,
+    });
+
+    expect(result.skipped).toBe(1);
+    expect(result.duplicatesFound).toBe(1);
+    expect(result.processedRows).toBe(0);
+    expect(result.propertiesCreated).toBe(0);
+    expect(result.propertiesUpdated).toBe(0);
+  });
 });
