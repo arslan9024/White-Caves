@@ -12,7 +12,7 @@
  * @component
  */
 
-import React, { FC, useCallback, useState } from 'react';
+import React, { FC, useCallback, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import type { RootState } from '../../store/store';
 import { setUser } from '../../store/userSlice';
@@ -29,9 +29,13 @@ const PortalProfileTab: FC = () => {
   const currentUser = useSelector((state: RootState) => state.user.currentUser);
 
   // Profile form state
-  const [name, setName] = useState(currentUser?.name ?? '');
-  const [phone, setPhone] = useState(currentUser?.phone ?? '');
-  const [photoUrl, setPhotoUrl] = useState<string>(currentUser?.photoURL ?? '');
+  const initialName = currentUser?.name ?? '';
+  const initialPhone = currentUser?.phone ?? '';
+  const initialPhotoUrl = currentUser?.photoURL ?? '';
+
+  const [name, setName] = useState(initialName);
+  const [phone, setPhone] = useState(initialPhone);
+  const [photoUrl, setPhotoUrl] = useState<string>(initialPhotoUrl);
   const [isSavingProfile, setIsSavingProfile] = useState(false);
   const [profileSuccess, setProfileSuccess] = useState<string | null>(null);
   const [profileError, setProfileError] = useState<string | null>(null);
@@ -43,6 +47,25 @@ const PortalProfileTab: FC = () => {
   const [isChangingPassword, setIsChangingPassword] = useState(false);
   const [passwordSuccess, setPasswordSuccess] = useState<string | null>(null);
   const [passwordError, setPasswordError] = useState<string | null>(null);
+
+  const profileCompletionChecklist = useMemo(
+    () => [
+      { id: 'name', label: 'Full name', done: Boolean(name.trim()) },
+      { id: 'phone', label: 'Phone number', done: Boolean(phone.trim()) },
+      { id: 'photo', label: 'Profile photo URL', done: Boolean(photoUrl.trim()) },
+    ],
+    [name, phone, photoUrl]
+  );
+
+  const profileCompletionPercent = useMemo(() => {
+    const doneCount = profileCompletionChecklist.filter(item => item.done).length;
+    return Math.round((doneCount / profileCompletionChecklist.length) * 100);
+  }, [profileCompletionChecklist]);
+
+  const hasProfileChanges =
+    name.trim() !== initialName.trim() ||
+    phone.trim() !== initialPhone.trim() ||
+    photoUrl.trim() !== initialPhotoUrl.trim();
 
   const handleSaveProfile = useCallback(async () => {
     const trimmedName = name.trim();
@@ -183,6 +206,21 @@ const PortalProfileTab: FC = () => {
       <div className="profile-section" data-testid="profile-section-info">
         <h4>Personal Information</h4>
 
+        <div className="profile-completion" data-testid="profile-completion-card">
+          <div>
+            <p className="profile-completion__label">Profile completion</p>
+            <strong>{profileCompletionPercent}% complete</strong>
+          </div>
+          <ul>
+            {profileCompletionChecklist.map(item => (
+              <li key={item.id}>
+                <span aria-hidden="true">{item.done ? '✅' : '⬜'}</span>
+                <span>{item.label}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+
         <div className="profile-field">
           <label htmlFor="profile-email">Email address</label>
           <input
@@ -262,11 +300,11 @@ const PortalProfileTab: FC = () => {
           type="button"
           className="profile-save-btn"
           onClick={() => void handleSaveProfile()}
-          disabled={isSavingProfile}
-          aria-disabled={isSavingProfile}
+          disabled={isSavingProfile || !hasProfileChanges}
+          aria-disabled={isSavingProfile || !hasProfileChanges}
           data-testid="profile-save-btn"
         >
-          {isSavingProfile ? 'Saving…' : 'Save Changes'}
+          {isSavingProfile ? 'Saving…' : hasProfileChanges ? 'Save Changes' : 'No Changes Yet'}
         </button>
       </div>
 

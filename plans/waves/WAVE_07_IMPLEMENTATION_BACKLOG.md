@@ -73,6 +73,12 @@ Ship login reliability fix now and prepare strict execution graph for profile/da
 - **Files:** `src/pages/UnifiedDashboardPage.tsx`, `src/pages/UnifiedDashboardPage.css`, `src/pages/UnifiedDashboardPage.test.tsx`
 - **Status:** ✅ Completed (UI card + responsive styles + rendering test)
 
+### PROFILE-08-006 — Portal profile completion + save guard UX
+
+- Add profile completion checklist and prevent no-op profile save submissions.
+- **Files:** `src/components/portal/PortalProfileTab.tsx`, `src/pages/RolePages.css`, `src/components/portal/PortalProfileTab.test.tsx`
+- **Status:** ✅ Completed (completion card + disabled save on unchanged values + focused tests)
+
 ---
 
 ## Dependency Order

@@ -108,6 +108,10 @@ describe('PortalProfileTab', () => {
 
     renderWithStore();
 
+    fireEvent.change(screen.getByTestId('profile-name-input'), {
+      target: { value: 'Portal User Updated' },
+    });
+
     fireEvent.click(screen.getByTestId('profile-save-btn'));
 
     await waitFor(() => {
@@ -122,6 +126,10 @@ describe('PortalProfileTab', () => {
 
     renderWithStore();
 
+    fireEvent.change(screen.getByTestId('profile-phone-input'), {
+      target: { value: '+971500000099' },
+    });
+
     fireEvent.click(screen.getByTestId('profile-save-btn'));
 
     await waitFor(() => {
@@ -129,5 +137,29 @@ describe('PortalProfileTab', () => {
     });
 
     expect(screen.queryByTestId('profile-success')).not.toBeInTheDocument();
+  });
+
+  it('shows profile completion card and disables save when nothing changed', () => {
+    renderWithStore();
+
+    expect(screen.getByTestId('profile-completion-card')).toHaveTextContent('100% complete');
+
+    const saveButton = screen.getByTestId('profile-save-btn') as HTMLButtonElement;
+    expect(saveButton).toBeDisabled();
+    expect(saveButton).toHaveTextContent('No Changes Yet');
+  });
+
+  it('enables save button when profile fields are modified', () => {
+    renderWithStore();
+
+    const saveButton = screen.getByTestId('profile-save-btn') as HTMLButtonElement;
+    expect(saveButton).toBeDisabled();
+
+    fireEvent.change(screen.getByTestId('profile-phone-input'), {
+      target: { value: '+971500000009' },
+    });
+
+    expect(saveButton).toBeEnabled();
+    expect(saveButton).toHaveTextContent('Save Changes');
   });
 });
