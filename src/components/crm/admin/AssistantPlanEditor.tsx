@@ -65,11 +65,13 @@ const AssistantPlanEditor: React.FC = () => {
     setMessage(null);
     try {
       await assistantsService.updatePlan(selectedId, plan);
+      setPlanExists(true);
       setMessage({ type: 'success', text: 'Plan saved successfully.' });
     } catch {
       // Try create if update fails (plan might not exist yet)
       try {
         await assistantsService.createPlan(selectedId, plan);
+        setPlanExists(true);
         setMessage({ type: 'success', text: 'Plan created successfully.' });
       } catch {
         setMessage({ type: 'error', text: 'Failed to save plan.' });
