@@ -534,14 +534,20 @@ describe('SignInPage', () => {
       fireEvent.click(screen.getByRole('button', { name: /Google/i }));
 
       await waitFor(() => {
-        expect(screen.getByRole('button', { name: /Dismiss recovery notice/i })).toBeInTheDocument();
+        expect(
+          screen.getByRole('button', { name: /Dismiss recovery notice/i })
+        ).toBeInTheDocument();
+        expect(screen.getByText(/backend session setup failed/i)).toBeInTheDocument();
       });
 
       fireEvent.click(screen.getByRole('button', { name: /Dismiss recovery notice/i }));
 
       await waitFor(() => {
-        expect(screen.queryByRole('button', { name: /Retry Google sign-in/i })).not.toBeInTheDocument();
+        expect(
+          screen.queryByRole('button', { name: /Retry Google sign-in/i })
+        ).not.toBeInTheDocument();
         expect(screen.queryByText(/sign-in needs one more step/i)).not.toBeInTheDocument();
+        expect(screen.queryByText(/backend session setup failed/i)).not.toBeInTheDocument();
       });
     });
   });

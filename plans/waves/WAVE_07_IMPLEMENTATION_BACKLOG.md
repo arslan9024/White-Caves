@@ -73,6 +73,12 @@ Ship login reliability fix now and prepare strict execution graph for profile/da
 - **Files:** `src/hooks/useSignIn.ts`, `src/pages/auth/SignInPage.tsx`, `src/pages/auth/AuthPages.css`, `src/pages/auth/SignInPage.test.tsx`
 - **Status:** ✅ Completed (dismiss handler + UI action + regression test)
 
+### AUTH-08-008 — Dismiss flow clears backend-sync error banner
+
+- Ensure recovery dismissal removes both retry affordance and stale backend-sync error copy.
+- **Files:** `src/pages/auth/SignInPage.test.tsx`
+- **Status:** ✅ Completed (added regression assertion for error clearing on dismiss)
+
 ### DASH-08-005 — Dashboard profile completion guidance card
 
 - Add post-login profile completeness guidance with direct CTA to `/profile`.
@@ -99,3 +105,4 @@ Ship login reliability fix now and prepare strict execution graph for profile/da
 8. DASH-08-005 ✅
 9. PROFILE-08-006 ✅
 10. AUTH-08-007 ✅
+11. AUTH-08-008 ✅
