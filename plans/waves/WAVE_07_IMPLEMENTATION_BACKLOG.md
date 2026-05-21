@@ -88,4 +88,7 @@ Ship login reliability fix now and prepare strict execution graph for profile/da
 3. QA-07-003
 4. AUTH-08-001 ✅
 5. PROFILE-08-002 ✅
-6. DASH-08-003 (next)
+6. DASH-08-003 ✅
+7. AUTH-08-004 ✅
+8. DASH-08-005 ✅
+9. PROFILE-08-006 ✅
