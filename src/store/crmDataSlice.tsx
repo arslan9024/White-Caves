@@ -3409,7 +3409,6 @@ export const selectActivitiesByUser = (state: RootState, userId: string) =>
 // ---------------------------------------------------------------------------
 export const fetchClientsAPI: any = fetchClientsFromAPI;
 export const fetchCommissionsAPI: any = fetchCommissionsFromAPI;
-export const fetchTransactionsAPI: any = fetchTransactionsFromAPI;
 export const fetchNotificationsAPI: any = fetchActivitiesFromAPI;
 export const markNotificationReadAPI: any = updateActivityAPI;
 export const markAllNotificationsReadAPI: any = updateActivityAPI;
