@@ -16,14 +16,15 @@ The database uses MongoDB with Prisma ORM. All models use MongoDB's ObjectID (24
 ## Core Models
 
 ### User
+
 Represents all system users (agents, managers, admins, owners, landlords, tenants).
 
 ```prisma
 model User {
   id            String   @id @default(auto()) @map("_id") @db.ObjectId
-  name          String
+  name          String?
   email         String   @unique
-  password      String?                    // null for OAuth-only users
+  passwordHash  String?                    // null for OAuth-only users
   firebaseUid   String?  @unique
   role          String                     // owner, admin, manager, agent, finance, etc.
   department    String?                    // sales, leasing, operations, finance, etc.
@@ -33,13 +34,15 @@ model User {
   // Auth
   twoFactorEnabled  Boolean @default(false)
   twoFactorSecret   String?
+  totpEnabled       Boolean @default(false)
+  totpSecret        String?
   // RERA
   reraLicenseNumber String?
-  reraExpiryDate    DateTime?
+  brnNumber         String?  // RERA Broker Registration Number
+  brnExpiry         DateTime? // BRN expiry date
   // Metadata
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
-  lastLoginAt   DateTime?
   // Relations
   leadsAssigned    Lead[]        @relation("AssignedLeads")
   leadsCreated     Lead[]        @relation("CreatedLeads")
@@ -51,6 +54,7 @@ model User {
 ```
 
 ### Lead
+
 Represents a sales/rental prospect.
 
 ```prisma
@@ -87,6 +91,7 @@ model Lead {
 ```
 
 ### Property
+
 Represents a property in the inventory.
 
 ```prisma
@@ -136,6 +141,7 @@ model Property {
 ```
 
 ### Transaction
+
 Represents a sale or lease deal.
 
 ```prisma
@@ -172,6 +178,7 @@ model Transaction {
 ```
 
 ### Commission
+
 Represents an agent commission earned from a transaction.
 
 ```prisma
@@ -207,6 +214,7 @@ model Commission {
 ```
 
 ### Tenant
+
 Represents a rental applicant or active tenant.
 
 ```prisma
@@ -237,7 +245,7 @@ model Tenant {
 }
 ```
 
-### Lease *(Planned — schema migration required)*
+### Lease _(Planned — schema migration required)_
 
 ```prisma
 model Lease {
@@ -273,6 +281,7 @@ model Lease {
 ```
 
 ### Activity
+
 Audit trail of all interactions and system events.
 
 ```prisma
@@ -297,23 +306,24 @@ model Activity {
 
 Key indexes for performance:
 
-| Collection | Index Fields | Type |
-|-----------|-------------|------|
-| Lead | `assignedToId`, `status`, `score`, `createdAt` | Compound |
-| Lead | `phone` | Unique (sparse) |
-| Lead | `name`, `email`, `phone`, `company` | Text (full-text search) |
-| Property | `status`, `type`, `area`, `price` | Compound |
-| Property | `dldReference` | Unique (sparse) |
-| Property | `title`, `location`, `description` | Text |
-| Commission | `agentId`, `status`, `createdAt` | Compound |
-| Activity | `leadId`, `createdAt` | Compound |
-| Transaction | `leadId`, `propertyId`, `status` | Compound |
+| Collection  | Index Fields                                   | Type                    |
+| ----------- | ---------------------------------------------- | ----------------------- |
+| Lead        | `assignedToId`, `status`, `score`, `createdAt` | Compound                |
+| Lead        | `phone`                                        | Unique (sparse)         |
+| Lead        | `name`, `email`, `phone`, `company`            | Text (full-text search) |
+| Property    | `status`, `type`, `area`, `price`              | Compound                |
+| Property    | `dldReference`                                 | Unique (sparse)         |
+| Property    | `title`, `location`, `description`             | Text                    |
+| Commission  | `agentId`, `status`, `createdAt`               | Compound                |
+| Activity    | `leadId`, `createdAt`                          | Compound                |
+| Transaction | `leadId`, `propertyId`, `status`               | Compound                |
 
 ---
 
 ## Migration Notes
 
 **Required migrations not yet applied:**
+
 1. Add `ejariContractNumber`, `ejariRegistrationDate`, `ejariExpiryDate` to Property or Lease model
 2. Create `Lease` model
 3. Create `RentPayment` model
@@ -328,6 +338,7 @@ Key indexes for performance:
 ## New Collections (Migration Required)
 
 ### AuditEvent
+
 Immutable audit trail for all system actions. Append-only — no updates or deletes permitted.
 
 ```prisma
@@ -348,6 +359,7 @@ model AuditEvent {
 ```
 
 **Field Validation:**
+
 - `action` must be one of: `CREATE`, `UPDATE`, `DELETE`, `STATUS_CHANGE`, `LOGIN`, `LOGOUT`, `EXPORT`, `PERMISSION_CHANGE`, `APPROVAL`, `PAYMENT`
 - `entityType` must be one of: `lead`, `property`, `lease`, `user`, `commission`, `ejari`, `dld_transaction`, `tenant`, `activity`
 - `oldValue` and `newValue` are JSON snapshots; PII fields (passport, Emirates ID) are redacted to `"[REDACTED]"` before storage
@@ -362,6 +374,7 @@ model AuditEvent {
 | `action, timestamp` | Compound | Compliance queries |
 
 **Example Document:**
+
 ```json
 {
   "_id": "64aev001",
@@ -380,6 +393,7 @@ model AuditEvent {
 **Relationships:** References `User` (userId), polymorphic entity reference by `entityType + entityId`.
 
 **Migration Notes:**
+
 - Create with `{ w: "majority", j: true }` write concern for durability
 - Apply `{ changeStreamPreAndPostImages: "required" }` on MongoDB 6.0+ for CDC
 - **Never add updateOne or deleteOne operations** — enforce at application service layer
@@ -387,6 +401,7 @@ model AuditEvent {
 ---
 
 ### EjariRecord
+
 Ejari tenancy contract registrations with Dubai Land Department.
 
 ```prisma
@@ -422,6 +437,7 @@ model EjariRecord {
 ```
 
 **Validation Rules:**
+
 - `contractEndDate` must be at least 30 days after `contractStartDate`
 - `noOfCheques` must be in: `[1, 2, 4, 6, 12]`
 - `annualRentAED` must match linked Lease `monthlyRent × 12` ±5%
@@ -437,6 +453,7 @@ model EjariRecord {
 | `contractEndDate` | Single | Expiry alerts (90/60/30 day reminders) |
 
 **Example Document:**
+
 ```json
 {
   "_id": "64eja001",
@@ -462,6 +479,7 @@ model EjariRecord {
 **Relationships:** Linked to `Lease` (leaseId), `Property` (propertyId), `Tenant` (tenantId), `User` (landlordId, agentId).
 
 **Migration Notes:**
+
 - Run after `Lease` model migration is applied
 - Backfill existing `ejariContractNumber` fields from `Tenant` model into this collection
 - PDPL Retention: 7 years (AML/financial records requirement)
@@ -469,6 +487,7 @@ model EjariRecord {
 ---
 
 ### DLDTransaction
+
 Dubai Land Department property transfer records.
 
 ```prisma
@@ -509,6 +528,7 @@ model DLDTransaction {
 ```
 
 **Validation Rules:**
+
 - `dldFeeAED` must equal `salePriceAED × 0.04` ±AED 100 tolerance
 - `adminFeeAED` minimum AED 580 per DLD fee schedule
 - `mortgageFlag = true` requires `bankNOCUrl` and `mortgageBankName`
@@ -524,6 +544,7 @@ model DLDTransaction {
 | `transferDate` | Single | Monthly DLD volume reports |
 
 **Example Document:**
+
 ```json
 {
   "_id": "64dld001",
@@ -549,6 +570,7 @@ model DLDTransaction {
 ---
 
 ### CommissionRule
+
 Reusable commission rate templates applied to transactions.
 
 ```prisma
@@ -573,6 +595,7 @@ model CommissionRule {
 ```
 
 **Validation Rules:**
+
 - `agentSplitPct + brokerSplitPct` must equal `1.0` exactly
 - `rateValue` for `percentage` type: 0.01–0.15; for `fixed` type: min AED 100
 - Only one `isDefault = true` record per `transactionType`
@@ -585,6 +608,7 @@ model CommissionRule {
 | `validFrom, validUntil` | Compound | Active rule date range queries |
 
 **Example Document:**
+
 ```json
 {
   "_id": "64cru001",
@@ -604,6 +628,7 @@ model CommissionRule {
 ---
 
 ### NadiaMessage
+
 WhatsApp conversation messages processed by the Nadia AI routing agent.
 
 ```prisma
@@ -641,6 +666,7 @@ model NadiaMessage {
 ```
 
 **Validation Rules:**
+
 - `fromNumber` and `toNumber` must be valid E.164 format
 - `direction = outbound` with `messageType = template` requires `templateName`
 - `botConfidence` must be between 0.0 and 1.0 when set
@@ -657,6 +683,7 @@ model NadiaMessage {
 | `createdAt` | TTL (1095 days = 3 years) | PDPL retention policy |
 
 **Example Document:**
+
 ```json
 {
   "_id": "64msg001",
@@ -683,6 +710,7 @@ model NadiaMessage {
 **Relationships:** Linked to `Lead` (leadId), `User` (assignedAgentId), groups into conversations via `conversationId`.
 
 **Migration Notes:**
+
 - Migrate existing `Activity` records where `type = whatsapp` into this collection
 - Run `db.activities.aggregate([{$match:{type:"whatsapp"}}])` to identify candidates
 - `conversationId` groups by `fromNumber` — create separate `WhatsAppConversation` collection in next migration wave
@@ -691,33 +719,33 @@ model NadiaMessage {
 
 ## Updated Indexes (Complete Reference)
 
-| Collection | Index Fields | Type | Notes |
-|---|---|---|---|
-| User | `email` | Unique | Login |
-| User | `firebaseUid` | Unique sparse | OAuth |
-| User | `reraLicenseNumber` | Unique sparse | RERA validation |
-| Lead | `assignedToId, status, score, createdAt` | Compound | Dashboard queries |
-| Lead | `phone` | Unique sparse | Deduplication |
-| Lead | `name, email, phone, company` | Text | Full-text search |
-| Lead | `createdAt` | Single | Date filtering |
-| Property | `status, type, area, price` | Compound | Listing search |
-| Property | `dldReference` | Unique sparse | DLD lookup |
-| Property | `permitNumber` | Unique sparse | RERA check |
-| Property | `title, location, description` | Text | Portal search |
-| Property | `latitude, longitude` | 2dsphere | Geo search |
-| Commission | `agentId, status, createdAt` | Compound | Agent statements |
-| Commission | `transactionId, agentId` | Unique | Deduplication |
-| Transaction | `leadId, propertyId, status` | Compound | Deal tracking |
-| AuditEvent | `userId, timestamp` | Compound | Actor audit |
-| AuditEvent | `entityType, entityId, timestamp` | Compound | Entity history |
-| AuditEvent | `timestamp` | TTL (7 years) | Data retention |
-| EjariRecord | `ejariContractNumber` | Unique | Ejari lookup |
-| EjariRecord | `leaseId` | Unique | Per-lease constraint |
-| DLDTransaction | `dldTransactionReference` | Unique | DLD lookup |
-| CommissionRule | `transactionType, isDefault, isActive` | Compound | Rule resolution |
-| NadiaMessage | `wamid` | Unique | WhatsApp dedup |
-| NadiaMessage | `conversationId, createdAt` | Compound | Conversation view |
-| NadiaMessage | `createdAt` | TTL (3 years) | PDPL retention |
+| Collection     | Index Fields                             | Type          | Notes                |
+| -------------- | ---------------------------------------- | ------------- | -------------------- |
+| User           | `email`                                  | Unique        | Login                |
+| User           | `firebaseUid`                            | Unique sparse | OAuth                |
+| User           | `reraLicenseNumber`                      | Unique sparse | RERA validation      |
+| Lead           | `assignedToId, status, score, createdAt` | Compound      | Dashboard queries    |
+| Lead           | `phone`                                  | Unique sparse | Deduplication        |
+| Lead           | `name, email, phone, company`            | Text          | Full-text search     |
+| Lead           | `createdAt`                              | Single        | Date filtering       |
+| Property       | `status, type, area, price`              | Compound      | Listing search       |
+| Property       | `dldReference`                           | Unique sparse | DLD lookup           |
+| Property       | `permitNumber`                           | Unique sparse | RERA check           |
+| Property       | `title, location, description`           | Text          | Portal search        |
+| Property       | `latitude, longitude`                    | 2dsphere      | Geo search           |
+| Commission     | `agentId, status, createdAt`             | Compound      | Agent statements     |
+| Commission     | `transactionId, agentId`                 | Unique        | Deduplication        |
+| Transaction    | `leadId, propertyId, status`             | Compound      | Deal tracking        |
+| AuditEvent     | `userId, timestamp`                      | Compound      | Actor audit          |
+| AuditEvent     | `entityType, entityId, timestamp`        | Compound      | Entity history       |
+| AuditEvent     | `timestamp`                              | TTL (7 years) | Data retention       |
+| EjariRecord    | `ejariContractNumber`                    | Unique        | Ejari lookup         |
+| EjariRecord    | `leaseId`                                | Unique        | Per-lease constraint |
+| DLDTransaction | `dldTransactionReference`                | Unique        | DLD lookup           |
+| CommissionRule | `transactionType, isDefault, isActive`   | Compound      | Rule resolution      |
+| NadiaMessage   | `wamid`                                  | Unique        | WhatsApp dedup       |
+| NadiaMessage   | `conversationId, createdAt`              | Compound      | Conversation view    |
+| NadiaMessage   | `createdAt`                              | TTL (3 years) | PDPL retention       |
 
 ---
 

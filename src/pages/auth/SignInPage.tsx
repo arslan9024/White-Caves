@@ -85,6 +85,7 @@ const SignInPage: FC = () => {
     handleSignInSuccess,
     handleSocialAuth,
     retrySocialAuth,
+    clearSocialRecovery,
     handleEmailSubmit,
     handlePhoneSubmit,
     handleOtpVerify,
@@ -133,6 +134,13 @@ const SignInPage: FC = () => {
                     {loading
                       ? 'Retrying...'
                       : `Retry ${socialSyncRecovery.provider[0].toUpperCase() + socialSyncRecovery.provider.slice(1)} sign-in`}
+                  </button>
+                  <button
+                    type="button"
+                    className="btn btn-link auth-recovery__dismiss"
+                    onClick={clearSocialRecovery}
+                  >
+                    Dismiss recovery notice
                   </button>
                 </div>
               )}

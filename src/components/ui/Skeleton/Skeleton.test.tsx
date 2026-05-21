@@ -8,6 +8,7 @@ import { describe, it, expect } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import React from 'react';
 import { Skeleton } from './Skeleton';
+import { SkeletonKPI, SkeletonTable, SkeletonText } from './SkeletonVariants';
 
 describe('Skeleton', () => {
   // ── Rendering ──────────────────────────────────────────────────
@@ -100,5 +101,22 @@ describe('Skeleton', () => {
     render(<Skeleton className="my-skeleton" />);
     const el = screen.getByTestId('skeleton');
     expect(el).toHaveClass('my-skeleton');
+  });
+
+  it('renders SkeletonText helper with multiple lines', () => {
+    render(<SkeletonText lines={4} />);
+    expect(screen.getByTestId('skeleton')).toBeInTheDocument();
+  });
+
+  it('renders SkeletonKPI helper', () => {
+    render(<SkeletonKPI />);
+    expect(screen.getByTestId('skeleton')).toBeInTheDocument();
+  });
+
+  it('renders SkeletonTable helper with default 5 rows', () => {
+    render(<SkeletonTable />);
+    const table = screen.getByTestId('skeleton-table');
+    expect(table).toBeInTheDocument();
+    expect(table.children.length).toBe(5);
   });
 });

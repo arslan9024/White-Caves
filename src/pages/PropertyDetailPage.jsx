@@ -6,6 +6,7 @@ import AppLayout from '../components/layout/AppLayout';
 import Footer from '../components/Footer';
 import WhatsAppButton from '../components/WhatsAppButton';
 import { authFetch } from '../utils/authFetch';
+import Skeleton from '../components/ui/Skeleton/Skeleton';
 import {
   MapPin,
   Bed,
@@ -166,9 +167,48 @@ const PropertyDetailPage = () => {
   if (loading) {
     return (
       <AppLayout>
-        <div className="property-detail-loading">
-          <div className="loading-spinner"></div>
-          <p>Loading property details...</p>
+        <div className="property-detail-loading" data-testid="property-detail-loading-skeleton">
+          <div style={{ width: 'min(1200px, 100%)', display: 'grid', gap: '1rem' }}>
+            <Skeleton variant="rect" height={420} borderRadius="16px" />
+            <div
+              style={{
+                display: 'grid',
+                gridTemplateColumns: 'minmax(0, 1fr) 320px',
+                gap: '1rem',
+                width: '100%',
+              }}
+            >
+              <div style={{ display: 'grid', gap: '0.75rem' }}>
+                <Skeleton variant="text" width="25%" height={20} />
+                <Skeleton variant="text" width="65%" height={36} />
+                <Skeleton variant="text" width="40%" height={16} />
+                <Skeleton variant="text" width="35%" height={32} />
+                <div
+                  style={{
+                    display: 'grid',
+                    gap: '0.5rem',
+                    gridTemplateColumns: 'repeat(4, minmax(0, 1fr))',
+                  }}
+                >
+                  {Array.from({ length: 4 }, (_, idx) => (
+                    <Skeleton key={`property-spec-skeleton-${idx}`} variant="rect" height={76} />
+                  ))}
+                </div>
+                <Skeleton variant="text" width="20%" height={22} />
+                <Skeleton variant="text" lines={3} />
+                <Skeleton variant="rect" height={300} borderRadius="12px" />
+              </div>
+              <div style={{ display: 'grid', gap: '0.75rem' }}>
+                <Skeleton variant="text" width="55%" height={22} />
+                <Skeleton variant="text" width="80%" height={14} />
+                <Skeleton variant="rect" height={44} borderRadius="10px" />
+                <Skeleton variant="rect" height={44} borderRadius="10px" />
+                <Skeleton variant="rect" height={44} borderRadius="10px" />
+                <Skeleton variant="rect" height={40} borderRadius="10px" />
+                <Skeleton variant="rect" height={40} borderRadius="10px" />
+              </div>
+            </div>
+          </div>
         </div>
       </AppLayout>
     );

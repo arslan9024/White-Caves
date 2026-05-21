@@ -485,7 +485,7 @@ describe('SignInPage', () => {
       });
 
       await waitFor(() => {
-        expect(mockNavigate).toHaveBeenCalledWith('/crm');
+        expect(mockNavigate).toHaveBeenCalledWith('/dashboard');
       });
     });
 
@@ -515,6 +515,34 @@ describe('SignInPage', () => {
         screen.queryByRole('button', { name: /Retry Google sign-in/i })
       ).not.toBeInTheDocument();
       expect(screen.queryByText(/sign-in needs one more step/i)).not.toBeInTheDocument();
+    });
+
+    it('should dismiss social recovery panel when user clicks dismiss action', async () => {
+      mockSignInWithGoogle.mockResolvedValue({
+        user: {
+          uid: 'firebase-user-1',
+          email: 'social@test.com',
+          displayName: 'Social User',
+          photoURL: null,
+        },
+      });
+      mockSyncFirebaseUser.mockRejectedValue(new Error('Backend offline'));
+      mockSignOut.mockResolvedValue(undefined);
+
+      renderPage();
+
+      fireEvent.click(screen.getByRole('button', { name: /Google/i }));
+
+      await waitFor(() => {
+        expect(screen.getByRole('button', { name: /Dismiss recovery notice/i })).toBeInTheDocument();
+      });
+
+      fireEvent.click(screen.getByRole('button', { name: /Dismiss recovery notice/i }));
+
+      await waitFor(() => {
+        expect(screen.queryByRole('button', { name: /Retry Google sign-in/i })).not.toBeInTheDocument();
+        expect(screen.queryByText(/sign-in needs one more step/i)).not.toBeInTheDocument();
+      });
     });
   });
 });

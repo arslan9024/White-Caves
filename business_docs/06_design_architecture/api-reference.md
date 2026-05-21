@@ -10,17 +10,19 @@
 ## Authentication
 
 All API endpoints (except `/api/auth/*`) require:
+
 ```
 Authorization: Bearer <jwt_token>
 ```
 
-Tokens are obtained from POST `/api/auth/login` and expire after 24 hours.
+Tokens are obtained from POST `/api/auth/login` and expire after 7 days.
 
 ---
 
 ## Standard Response Format
 
 **Success:**
+
 ```json
 {
   "success": true,
@@ -30,6 +32,7 @@ Tokens are obtained from POST `/api/auth/login` and expire after 24 hours.
 ```
 
 **Error:**
+
 ```json
 {
   "success": false,
@@ -39,6 +42,7 @@ Tokens are obtained from POST `/api/auth/login` and expire after 24 hours.
 ```
 
 **Paginated:**
+
 ```json
 {
   "success": true,
@@ -56,45 +60,48 @@ Tokens are obtained from POST `/api/auth/login` and expire after 24 hours.
 
 ## HTTP Status Codes
 
-| Code | Meaning |
-|------|---------|
-| 200 | OK — Success |
-| 201 | Created — Resource created |
-| 204 | No Content — Success, no body |
-| 400 | Bad Request — Invalid input |
-| 401 | Unauthorized — Missing or invalid JWT |
-| 403 | Forbidden — Insufficient role |
-| 404 | Not Found — Resource not found |
-| 409 | Conflict — Duplicate record |
-| 415 | Unsupported Media Type — Must use application/json |
-| 429 | Too Many Requests — Rate limited |
-| 500 | Internal Server Error |
+| Code | Meaning                                            |
+| ---- | -------------------------------------------------- |
+| 200  | OK — Success                                       |
+| 201  | Created — Resource created                         |
+| 204  | No Content — Success, no body                      |
+| 400  | Bad Request — Invalid input                        |
+| 401  | Unauthorized — Missing or invalid JWT              |
+| 403  | Forbidden — Insufficient role                      |
+| 404  | Not Found — Resource not found                     |
+| 409  | Conflict — Duplicate record                        |
+| 415  | Unsupported Media Type — Must use application/json |
+| 429  | Too Many Requests — Rate limited                   |
+| 500  | Internal Server Error                              |
 
 ---
 
 ## Rate Limits
 
-| Endpoint Category | Limit |
-|------------------|-------|
-| General API | 100 requests/15 minutes/IP |
-| Auth /login | 5 requests/15 minutes/IP |
-| Auth /register | 3 requests/hour/IP |
-| Auth /password | 3 requests/hour/IP |
-| Auth /verify-2fa | 5 requests/15 minutes/IP |
+| Endpoint Category | Limit                      |
+| ----------------- | -------------------------- |
+| General API       | 100 requests/15 minutes/IP |
+| Auth /login       | 5 requests/15 minutes/IP   |
+| Auth /register    | 3 requests/hour/IP         |
+| Auth /password    | 3 requests/hour/IP         |
+| Auth /verify-2fa  | 5 requests/15 minutes/IP   |
 
 ---
 
 ## Auth Endpoints — `/api/auth`
 
 ### POST /api/auth/login
+
 Login with email and password.
 
 **Request:**
+
 ```json
 { "email": "agent@whitecaves.ae", "password": "SecurePass123!" }
 ```
 
 **Response 200:**
+
 ```json
 {
   "success": true,
@@ -106,26 +113,35 @@ Login with email and password.
 ```
 
 **Response 200 (2FA enabled):**
+
 ```json
-{ "success": true, "data": { "requiresOtp": true } }
+{
+  "success": true,
+  "requiresTwoFactor": true,
+  "data": { "twoFactorToken": "<short-lived-jwt>" }
+}
 ```
 
 ### POST /api/auth/verify-2fa
+
 Verify TOTP code for 2FA.
 
 **Request:** `{ "email": "...", "code": "123456" }`
 
 ### POST /api/auth/register
+
 Register a new user account.
 
 **Request:** `{ "name": "Ahmed Hassan", "email": "...", "password": "...", "role": "agent" }`
 
 ### POST /api/auth/firebase-sync
+
 Exchange Firebase ID token for platform JWT.
 
 **Request:** `{ "idToken": "<firebase-id-token>" }`
 
 ### POST /api/auth/logout
+
 Invalidate current session.
 
 ---
@@ -135,6 +151,7 @@ Invalidate current session.
 **Required Role:** Any authenticated user (agents see own; managers see all)
 
 ### GET /api/leads
+
 List leads with filtering and pagination.
 
 **Query Parameters:**
@@ -152,33 +169,48 @@ List leads with filtering and pagination.
 | `pageSize` | number | Items per page (default: 20, max: 100) |
 
 ### POST /api/leads
+
 Create a new lead.
 
 **Required Fields:** `name`, `phone`, `source`  
 **Optional:** `email`, `company`, `budget`, `propertyType`, `timeline`, `notes`, `assignedToId`
 
 ### GET /api/leads/:id
+
 Get single lead with activity timeline.
 
 ### PATCH /api/leads/:id
+
 Update lead fields. Partial update supported.
 
 ### DELETE /api/leads/:id
+
 Soft-delete lead (manager+ only).
 
 ### GET /api/leads/stats
+
 Lead statistics aggregation.
 
 **Response:**
+
 ```json
 {
-  "total": 150, "new": 23, "contacted": 45, "qualified": 32,
-  "viewing": 18, "offered": 12, "won": 15, "lost": 5,
-  "hotLeads": 28, "conversionRate": 10.0, "avgScore": 72
+  "total": 150,
+  "new": 23,
+  "contacted": 45,
+  "qualified": 32,
+  "viewing": 18,
+  "offered": 12,
+  "won": 15,
+  "lost": 5,
+  "hotLeads": 28,
+  "conversionRate": 10.0,
+  "avgScore": 72
 }
 ```
 
 ### POST /api/leads/:id/activities
+
 Log an activity against a lead.
 
 **Request:** `{ "type": "call", "description": "Discussed villa requirements", "outcome": "Interested", "duration": 15 }`
@@ -188,25 +220,31 @@ Log an activity against a lead.
 ## Properties API — `/api/properties`
 
 ### GET /api/properties
+
 List properties with advanced filtering.
 
 **Query Parameters:** `status`, `type`, `area`, `minPrice`, `maxPrice`, `minBeds`, `minBaths`, `featured`, `search`, `sortBy`, `sortOrder`, `page`, `pageSize`
 
 ### POST /api/properties
+
 Create a new property listing. (Agent / Manager)
 
 **Required:** `title`, `type`, `status`, `price`, `location`, `bedrooms`, `bathrooms`, `sqft`
 
 ### GET /api/properties/:id
+
 Property detail with agent and commission count.
 
 ### PATCH /api/properties/:id
+
 Update property. Status change triggers RERA permit check.
 
 ### DELETE /api/properties/:id
+
 Soft-delete (Admin+).
 
 ### GET /api/properties/stats
+
 Aggregated statistics by type and status.
 
 ---
@@ -216,15 +254,19 @@ Aggregated statistics by type and status.
 **Required Role:** Manager, Finance, Owner
 
 ### GET /api/finance/summary
+
 Overall financial KPIs.
 
 ### GET /api/finance/commissions
+
 List commissions with filters: `status`, `agentId`, `type`, `startDate`, `endDate`.
 
 ### GET /api/finance/commissions/:id
+
 Commission detail.
 
 ### PATCH /api/finance/commissions/:id
+
 Update commission (approve/reject/pay).
 
 **Request:** `{ "status": "approved" }` or `{ "status": "paid", "paidAt": "2026-03-15", "paymentMethod": "bank_transfer", "paymentReference": "TRANS-001" }`
@@ -236,20 +278,25 @@ Update commission (approve/reject/pay).
 **Required Role:** Manager, Admin (PII restricted)
 
 ### GET /api/tenants
+
 List tenants. Filters: `status`, `search`.
 
 ### POST /api/tenants
+
 Create tenant record.
 
 **Required:** `name`, `email`, `phone`, `nationality`
 
 ### GET /api/tenants/:id
+
 Tenant detail.
 
 ### PATCH /api/tenants/:id
+
 Update tenant.
 
 ### GET /api/tenants/stats
+
 Tenant statistics.
 
 ---
@@ -257,17 +304,21 @@ Tenant statistics.
 ## Transactions API — `/api/transactions`
 
 ### GET /api/transactions
+
 List transactions. Filters: `status`, `type`.
 
 ### POST /api/transactions
+
 Create transaction.
 
 **Required:** `type`, `leadId`, `propertyId`, `agentId`, `offerPrice`, `status`
 
 ### GET /api/transactions/:id
+
 Transaction detail.
 
 ### PATCH /api/transactions/:id
+
 Update transaction status.
 
 ---
@@ -277,9 +328,11 @@ Update transaction status.
 **Required Role:** Manager, Finance, Owner
 
 ### GET /api/compliance/status
+
 Overall compliance health score.
 
 ### GET /api/compliance/requirements
+
 List of RERA compliance requirements with pass/fail status.
 
 ---
@@ -289,9 +342,11 @@ List of RERA compliance requirements with pass/fail status.
 **Required Role:** Manager, Admin (performance data)
 
 ### GET /api/agents
+
 List agents with performance snapshot.
 
 ### GET /api/agents/:id
+
 Agent detail with statistics.
 
 ---
@@ -301,9 +356,11 @@ Agent detail with statistics.
 **Required Role:** Manager, Finance, Owner
 
 ### GET /api/dashboard/summary
+
 Executive summary KPIs (leads, properties, agents, commissions, pipeline, recent activity).
 
 ### GET /api/dashboard/analytics
+
 Detailed analytics (leads by source/status, properties by type, commission stats).
 
 ---
@@ -313,12 +370,15 @@ Detailed analytics (leads by source/status, properties by type, commission stats
 **Required Role:** Manager, Admin
 
 ### GET /api/crm/dashboard
+
 CRM overview stats.
 
 ### GET /api/crm/analytics
+
 CRM analytics.
 
 ### GET /api/crm/search
+
 Global search. `?q=<query>` (min 2 chars). Returns leads, properties, agents.
 
 ---
@@ -326,11 +386,13 @@ Global search. `?q=<query>` (min 2 chars). Returns leads, properties, agents.
 ## Communications API — `/api/communications`
 
 ### POST /api/communications/messages/send
+
 Log / send an outbound message.
 
 **Request:** `{ "recipientId": "...", "channel": "whatsapp|email|sms", "content": "..." }`
 
 ### GET /api/communications/conversations
+
 List conversations. Filters: `leadId`, `status`, `channel`.
 
 ---
@@ -338,12 +400,15 @@ List conversations. Filters: `leadId`, `status`, `channel`.
 ## AI Assistants API — `/api/assistants`
 
 ### GET /api/assistants
+
 List all 24 AI assistant metadata entries.
 
 ### GET /api/assistants/:id/plan
+
 Get the plan/documentation for a specific assistant (reads from `business_docs/03_ai_assistants/:id.md`).
 
 ### PUT /api/assistants/:id/plan
+
 Update an assistant plan (Admin only). HTML injection prevented.
 
 ---
@@ -357,9 +422,11 @@ Update an assistant plan (Admin only). HTML injection prevented.
 **Auth:** Bearer JWT required
 
 ### POST /api/ejari/register
+
 Register a tenancy contract in Ejari (Dubai Land Department system).
 
 **Request Body Schema:**
+
 ```json
 {
   "leaseId": "string (ObjectId, required) — linked lease record",
@@ -377,12 +444,14 @@ Register a tenancy contract in Ejari (Dubai Land Department system).
 ```
 
 **Validation Rules:**
+
 - `contractEndDate` must be at least 30 days after `contractStartDate`
 - `annualRentAED` must be consistent with `leaseId` monthly rent ±5% tolerance
 - `noOfCheques` must be one of: 1, 2, 4, 6, 12
 - Property must have RERA permit number before Ejari registration
 
 **Response 201:**
+
 ```json
 {
   "success": true,
@@ -408,6 +477,7 @@ Register a tenancy contract in Ejari (Dubai Land Department system).
 | 500 | `EJARI_API_UNAVAILABLE` | DLD Ejari system unreachable |
 
 **cURL Example:**
+
 ```bash
 curl -X POST https://api.whitecaves.ae/api/ejari/register \
   -H "Authorization: Bearer $TOKEN" \
@@ -427,9 +497,11 @@ curl -X POST https://api.whitecaves.ae/api/ejari/register \
 ```
 
 ### GET /api/ejari/:ejariContractNumber
+
 Retrieve Ejari registration details.
 
 **Response 200:**
+
 ```json
 {
   "success": true,
@@ -453,9 +525,11 @@ Retrieve Ejari registration details.
 | 404 | `EJARI_NOT_FOUND` | Contract number not in system |
 
 ### GET /api/ejari
+
 List all Ejari registrations. Filters: `status`, `propertyId`, `tenantId`, `startDate`, `endDate`, `page`, `pageSize`.
 
 ### PATCH /api/ejari/:ejariContractNumber/cancel
+
 Cancel/terminate an Ejari registration (requires termination reason and supporting documents URL).
 
 **Request:** `{ "reason": "mutual_agreement|breach|early_termination", "documentUrl": "string (URL)" }`
@@ -469,9 +543,11 @@ Cancel/terminate an Ejari registration (requires termination reason and supporti
 **Auth:** Bearer JWT required
 
 ### POST /api/dld/transactions
+
 Record a Dubai Land Department property transfer transaction.
 
 **Request Body Schema:**
+
 ```json
 {
   "transactionId": "string (ObjectId, required) — linked Transaction record",
@@ -490,12 +566,14 @@ Record a Dubai Land Department property transfer transaction.
 ```
 
 **Validation Rules:**
+
 - `dldFeeAED` must equal `salePriceAED × 0.04` ±AED 100 tolerance
 - `adminFeeAED` minimum AED 580 per DLD schedule
 - `titleDeedNumber` must match `propertyId` title deed in system
 - If `mortgageFlag=true`, `bankNOCUrl` is mandatory
 
 **Response 201:**
+
 ```json
 {
   "success": true,
@@ -521,6 +599,7 @@ Record a Dubai Land Department property transfer transaction.
 | 422 | `KYC_INCOMPLETE` | Buyer KYC status ≠ verified |
 
 **cURL Example:**
+
 ```bash
 curl -X POST https://api.whitecaves.ae/api/dld/transactions \
   -H "Authorization: Bearer $TOKEN" \
@@ -540,15 +619,19 @@ curl -X POST https://api.whitecaves.ae/api/dld/transactions \
 ```
 
 ### GET /api/dld/transactions/:dldReference
+
 Retrieve DLD transaction details by reference number.
 
 ### GET /api/dld/transactions
+
 List all DLD transactions. Filters: `status`, `transactionType`, `startDate`, `endDate`, `agentId`, `page`, `pageSize`.
 
 ### GET /api/dld/compliance/status
+
 Check DLD compliance status for all open transactions.
 
 **Response 200:**
+
 ```json
 {
   "success": true,
@@ -573,11 +656,13 @@ Check DLD compliance status for all open transactions.
 **Auth:** Bearer JWT required
 
 ### GET /api/commission
+
 List commissions with filters.
 
 **Query Parameters:** `status`, `agentId`, `type`, `startDate`, `endDate`, `minAmount`, `maxAmount`, `page`, `pageSize`
 
 **Response 200:**
+
 ```json
 {
   "success": true,
@@ -602,9 +687,11 @@ List commissions with filters.
 ```
 
 ### POST /api/commission
+
 Create a commission record manually.
 
 **Request Body Schema:**
+
 ```json
 {
   "agentId": "string (ObjectId, required)",
@@ -620,12 +707,14 @@ Create a commission record manually.
 ```
 
 **Validation Rules:**
+
 - `agentSplitPct` + broker split must equal 1.0
 - `rate` must be between 0.01 and 0.15 (1%–15%)
 - Duplicate check: same `agentId + transactionId` returns 409
 - `vatApplicable = true` triggers auto-calculation: `vatAmountAED = grossAmount × 0.05`
 
 **Response 201:**
+
 ```json
 {
   "success": true,
@@ -650,11 +739,13 @@ Create a commission record manually.
 | 409 | `COMMISSION_EXISTS` | duplicate agentId + transactionId |
 
 ### PATCH /api/commission/:id/approve
+
 Approve a pending commission. Requires Manager, Finance, or Owner role.
 
 **Request:** `{ "approvedById": "string", "notes": "string (optional)" }`
 
 **Response 200:**
+
 ```json
 {
   "success": true,
@@ -663,9 +754,11 @@ Approve a pending commission. Requires Manager, Finance, or Owner role.
 ```
 
 ### PATCH /api/commission/:id/pay
+
 Mark commission as paid.
 
 **Request:**
+
 ```json
 {
   "paidById": "string (ObjectId, required)",
@@ -684,9 +777,11 @@ Mark commission as paid.
 | 422 | `NOT_APPROVED` | commission must be approved before payment |
 
 ### GET /api/commission/agent/:agentId/summary
+
 Agent commission summary by period.
 
 **Response 200:**
+
 ```json
 {
   "success": true,
@@ -705,9 +800,11 @@ Agent commission summary by period.
 ```
 
 ### POST /api/commission/rules
+
 Create a commission rule (commission structure template).
 
 **Request Body Schema:**
+
 ```json
 {
   "name": "string (required) — e.g. Standard Sale 2%",
@@ -732,49 +829,72 @@ Create a commission rule (commission structure template).
 **Auth:** Bearer JWT required
 
 ### GET /api/analytics/overview
+
 KPI tiles for the executive dashboard.
 
 **Query Parameters:** `startDate`, `endDate`, `agentId (optional)`, `area (optional)`
 
 **Response 200:**
+
 ```json
 {
   "success": true,
   "data": {
     "period": { "start": "2026-01-01", "end": "2026-03-31" },
     "leads": {
-      "total": 450, "new": 82, "hot": 34, "won": 28, "lost": 15,
-      "conversionRate": 6.2, "avgScore": 68
+      "total": 450,
+      "new": 82,
+      "hot": 34,
+      "won": 28,
+      "lost": 15,
+      "conversionRate": 6.2,
+      "avgScore": 68
     },
     "properties": {
-      "total": 9378, "available": 4200, "reserved": 310, "sold": 890, "rented": 3978
+      "total": 9378,
+      "available": 4200,
+      "reserved": 310,
+      "sold": 890,
+      "rented": 3978
     },
     "revenue": {
-      "totalAED": 2850000, "salesCommissionAED": 1600000, "rentalCommissionAED": 720000,
-      "managementFeeAED": 530000, "vatCollectedAED": 142500
+      "totalAED": 2850000,
+      "salesCommissionAED": 1600000,
+      "rentalCommissionAED": 720000,
+      "managementFeeAED": 530000,
+      "vatCollectedAED": 142500
     },
     "pipeline": {
-      "activeDealsCount": 23, "totalPipelineValueAED": 18500000
+      "activeDealsCount": 23,
+      "totalPipelineValueAED": 18500000
     },
     "agents": {
-      "totalActive": 47, "avgDealsPerAgent": 2.3, "topAgentId": "64abc...", "topAgentRevenue": 320000
+      "totalActive": 47,
+      "avgDealsPerAgent": 2.3,
+      "topAgentId": "64abc...",
+      "topAgentRevenue": 320000
     }
   }
 }
 ```
 
 ### GET /api/analytics/leads
+
 Lead funnel and source attribution analytics.
 
 **Response 200:**
+
 ```json
 {
   "success": true,
   "data": {
     "funnel": [
-      { "stage": "new", "count": 82 }, { "stage": "contacted", "count": 61 },
-      { "stage": "qualified", "count": 44 }, { "stage": "viewing", "count": 29 },
-      { "stage": "offered", "count": 18 }, { "stage": "won", "count": 12 }
+      { "stage": "new", "count": 82 },
+      { "stage": "contacted", "count": 61 },
+      { "stage": "qualified", "count": 44 },
+      { "stage": "viewing", "count": 29 },
+      { "stage": "offered", "count": 18 },
+      { "stage": "won", "count": 12 }
     ],
     "bySource": [
       { "source": "whatsapp", "count": 180, "conversionRate": 8.2 },
@@ -789,9 +909,11 @@ Lead funnel and source attribution analytics.
 ```
 
 ### GET /api/analytics/revenue
+
 Revenue breakdown with VAT reconciliation.
 
 **Response 200:**
+
 ```json
 {
   "success": true,
@@ -818,9 +940,11 @@ Revenue breakdown with VAT reconciliation.
 ```
 
 ### GET /api/analytics/agents
+
 Agent performance leaderboard and KPIs.
 
 **Response 200:**
+
 ```json
 {
   "success": true,
@@ -843,9 +967,11 @@ Agent performance leaderboard and KPIs.
 ```
 
 ### GET /api/analytics/properties
+
 Property market analytics — price trends, inventory turnover.
 
 **Response 200:**
+
 ```json
 {
   "success": true,
@@ -855,9 +981,7 @@ Property market analytics — price trends, inventory turnover.
       { "type": "villa", "count": 1200, "avgPriceAED": 3500000, "avgDaysOnMarket": 45 },
       { "type": "apartment", "count": 5800, "avgPriceAED": 950000, "avgDaysOnMarket": 28 }
     ],
-    "byArea": [
-      { "area": "DAMAC Hills 2", "count": 4200, "avgPriceAED": 1200000, "yieldPct": 6.8 }
-    ],
+    "byArea": [{ "area": "DAMAC Hills 2", "count": 4200, "avgPriceAED": 1200000, "yieldPct": 6.8 }],
     "priceIndexTrend": [
       { "month": "2026-01", "avgPricePerSqftAED": 820 },
       { "month": "2026-02", "avgPricePerSqftAED": 835 },
@@ -868,9 +992,11 @@ Property market analytics — price trends, inventory turnover.
 ```
 
 ### POST /api/analytics/export
+
 Generate async analytics report export (CSV or PDF).
 
 **Request:**
+
 ```json
 {
   "reportType": "string (required) — leads|revenue|agents|properties|commissions",
@@ -882,6 +1008,7 @@ Generate async analytics report export (CSV or PDF).
 ```
 
 **Response 202:**
+
 ```json
 {
   "success": true,
@@ -890,6 +1017,7 @@ Generate async analytics report export (CSV or PDF).
 ```
 
 ### GET /api/analytics/export/:jobId
+
 Poll export job status; returns download URL when ready.
 
 ---
@@ -902,6 +1030,7 @@ Poll export job status; returns download URL when ready.
 **Rate Limit:** 100 requests/15 min/IP
 
 **Request Body Schema:**
+
 ```json
 {
   "name": "string (required) — 2–100 chars, letters/spaces/hyphens only",
@@ -928,6 +1057,7 @@ Poll export job status; returns download URL when ready.
 | 422 | `INVALID_SOURCE` | source not in enum |
 
 **cURL Example:**
+
 ```bash
 curl -X POST https://api.whitecaves.ae/api/leads \
   -H "Authorization: Bearer $TOKEN" \
@@ -941,6 +1071,7 @@ curl -X POST https://api.whitecaves.ae/api/leads \
 **Rate Limit:** 50 requests/15 min/IP
 
 **Request Body Schema:**
+
 ```json
 {
   "title": "string (required) — 5–200 chars",
@@ -966,6 +1097,7 @@ curl -X POST https://api.whitecaves.ae/api/leads \
 ```
 
 **Validation Rules:**
+
 - `status = available` requires `permitNumber` to be set
 - `permitExpiryDate` must be in the future when setting `status = available`
 - `latitude` and `longitude` must both be present or both absent
@@ -983,6 +1115,7 @@ curl -X POST https://api.whitecaves.ae/api/leads \
 **Auth:** None required
 
 **Request Body:**
+
 ```json
 {
   "email": "string (required) — valid email",
@@ -1005,29 +1138,37 @@ curl -X POST https://api.whitecaves.ae/api/leads \
 ## Webhooks — `/api/webhooks`
 
 ### POST /api/webhooks/meta
+
 WhatsApp Cloud API inbound message webhook.
 
 **Verification (GET):** `?hub.mode=subscribe&hub.verify_token=<secret>&hub.challenge=<num>` — returns challenge number.
 
 **Message Payload (POST):**
+
 ```json
 {
   "object": "whatsapp_business_account",
-  "entry": [{
-    "id": "WABA_ID",
-    "changes": [{
-      "value": {
-        "messaging_product": "whatsapp",
-        "messages": [{
-          "from": "+971501234567",
-          "id": "wamid.xxx",
-          "timestamp": "1709123456",
-          "text": { "body": "I am interested in a villa in DAMAC Hills 2" },
-          "type": "text"
-        }]
-      }
-    }]
-  }]
+  "entry": [
+    {
+      "id": "WABA_ID",
+      "changes": [
+        {
+          "value": {
+            "messaging_product": "whatsapp",
+            "messages": [
+              {
+                "from": "+971501234567",
+                "id": "wamid.xxx",
+                "timestamp": "1709123456",
+                "text": { "body": "I am interested in a villa in DAMAC Hills 2" },
+                "type": "text"
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
 }
 ```
 

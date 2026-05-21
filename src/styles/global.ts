@@ -147,6 +147,15 @@ export const GlobalStyles = createGlobalStyle`
     box-sizing: border-box;
   }
 
+  /* ── Global focus ring (WCAG 2.1 AA — brand Red 2px) ─────── */
+  :focus-visible {
+    outline: 2px solid #E31E24;
+    outline-offset: 2px;
+  }
+  :focus:not(:focus-visible) {
+    outline: none;
+  }
+
   html {
     font-size: 16px;
     scroll-behavior: smooth;
@@ -516,9 +525,9 @@ export const GlobalStyles = createGlobalStyle`
     position: absolute;
     top: -100px;
     left: 16px;
-    background: ${theme.colors.secondary};
+    background: #E31E24;
     color: #FFFFFF;
-    padding: 12px 24px;
+    padding: 8px 16px;
     z-index: var(--z-max, 9999);
     border-radius: 0 0 8px 8px;
     font-size: 14px;

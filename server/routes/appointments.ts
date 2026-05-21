@@ -21,6 +21,7 @@ import { parsePagination } from '../config/pagination.js';
 import { requirePermission, requireRole } from '../middleware/rbac.js';
 
 const router = Router();
+const db = prisma as any;
 
 const VALID_TYPES = ['viewing', 'meeting', 'call', 'inspection', 'signing'] as const;
 const VALID_STATUSES = ['scheduled', 'confirmed', 'completed', 'cancelled', 'no_show'] as const;
@@ -53,13 +54,13 @@ router.get(
     if (Object.keys(dateFilter).length > 0) where.scheduledAt = dateFilter;
 
     const [appointments, total] = await Promise.all([
-      prisma.appointment.findMany({
+      db.appointment.findMany({
         where,
         orderBy: { scheduledAt: 'asc' },
         skip,
         take: limit,
       }),
-      prisma.appointment.count({ where }),
+      db.appointment.count({ where }),
     ]);
 
     res.status(200).json({
@@ -80,7 +81,7 @@ router.get(
     const now = new Date();
     const in30Days = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000);
 
-    const appointments = await prisma.appointment.findMany({
+    const appointments = await db.appointment.findMany({
       where: {
         scheduledAt: { gte: now, lte: in30Days },
         status: { in: ['scheduled', 'confirmed'] },
@@ -99,7 +100,7 @@ router.get(
   requirePermission('view_appointments'),
   asyncHandler(async (req: Request, res: Response) => {
     validateIdParam(req.params.id, 'Appointment ID');
-    const appt = await prisma.appointment.findUnique({ where: { id: req.params.id } });
+    const appt = await db.appointment.findUnique({ where: { id: req.params.id } });
     if (!appt) throw new AppError('Appointment not found', 404);
     res.status(200).json({ success: true, data: appt });
   })
@@ -143,7 +144,7 @@ router.post(
     if (scheduled < new Date())
       throw new AppError('Appointment cannot be scheduled in the past', 400);
 
-    const appt = await prisma.appointment.create({
+    const appt = await db.appointment.create({
       data: {
         title: sanitizeString(title.trim()),
         type: type || 'viewing',
@@ -186,7 +187,7 @@ router.patch(
     const { id } = req.params;
     validateIdParam(id, 'Appointment ID');
 
-    const existing = await prisma.appointment.findUnique({ where: { id } });
+    const existing = await db.appointment.findUnique({ where: { id } });
     if (!existing) throw new AppError('Appointment not found', 404);
 
     const {
@@ -244,7 +245,7 @@ router.patch(
     if (propertyId !== undefined) data.propertyId = propertyId || null;
     if (leadId !== undefined) data.leadId = leadId || null;
 
-    const updated = await prisma.appointment.update({ where: { id }, data });
+    const updated = await db.appointment.update({ where: { id }, data });
 
     const statusChanged = status !== undefined && status !== existing.status;
     if (statusChanged || scheduledAt !== undefined) {
@@ -274,10 +275,10 @@ router.delete(
     const { id } = req.params;
     validateIdParam(id, 'Appointment ID');
 
-    const existing = await prisma.appointment.findUnique({ where: { id } });
+    const existing = await db.appointment.findUnique({ where: { id } });
     if (!existing) throw new AppError('Appointment not found', 404);
 
-    await prisma.appointment.delete({ where: { id } });
+    await db.appointment.delete({ where: { id } });
 
     res.status(200).json({ success: true, message: `Appointment "${existing.title}" deleted` });
   })

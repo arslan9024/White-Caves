@@ -116,6 +116,12 @@ body.dark-mode .auth-card {
   margin-bottom: 0.75rem;
 }
 
+.auth-recovery__dismiss {
+  margin-top: 0.35rem;
+  font-size: 0.8rem;
+  padding: 0.35rem 0;
+}
+
 .auth-tabs {
   display: flex;
   gap: 0.5rem;

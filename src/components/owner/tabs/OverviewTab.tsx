@@ -5,6 +5,7 @@ import type { OverviewTabProps } from './types';
 import { colors } from '../../../styles/theme/colors';
 import './TabStyles.css';
 import type { RootState } from '../../../store/store';
+import { SkeletonKPI } from '../../ui/Skeleton';
 
 const PRIMARY_COLOR: string = colors.primary;
 
@@ -83,9 +84,10 @@ const OverviewTab: React.FC<OverviewTabProps> = ({ data, loading, onQuickAction 
   if (loading) {
     return (
       <div className="overview-tab">
-        <div className="tab-loading-state" role="status" aria-label="Loading overview">
-          <div className="loading-spinner" />
-          <p>Loading dashboard overview...</p>
+        <div className="kpi-grid" role="status" aria-label="Loading dashboard overview">
+          {Array.from({ length: 4 }, (_, i) => (
+            <SkeletonKPI key={i} height={100} />
+          ))}
         </div>
       </div>
     );

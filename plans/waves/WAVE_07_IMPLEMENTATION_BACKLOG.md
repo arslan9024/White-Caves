@@ -67,6 +67,12 @@ Ship login reliability fix now and prepare strict execution graph for profile/da
 - **Files:** `src/hooks/useSignIn.ts`, `src/pages/auth/SignInPage.tsx`, `src/pages/auth/AuthPages.css`, `src/hooks/useSignIn.test.ts`
 - **Status:** ✅ Completed (recovery metadata + retry CTA + hook/UI focused tests)
 
+### AUTH-08-007 — Social recovery dismiss control
+
+- Add explicit dismiss action for social recovery prompt to reduce UI friction after transient failures.
+- **Files:** `src/hooks/useSignIn.ts`, `src/pages/auth/SignInPage.tsx`, `src/pages/auth/AuthPages.css`, `src/pages/auth/SignInPage.test.tsx`
+- **Status:** ✅ Completed (dismiss handler + UI action + regression test)
+
 ### DASH-08-005 — Dashboard profile completion guidance card
 
 - Add post-login profile completeness guidance with direct CTA to `/profile`.
@@ -92,3 +98,4 @@ Ship login reliability fix now and prepare strict execution graph for profile/da
 7. AUTH-08-004 ✅
 8. DASH-08-005 ✅
 9. PROFILE-08-006 ✅
+10. AUTH-08-007 ✅

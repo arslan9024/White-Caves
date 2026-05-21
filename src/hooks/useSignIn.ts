@@ -23,6 +23,7 @@ import {
   loginWithEmail as backendLogin,
   registerWithEmail as backendRegister,
   syncFirebaseUser,
+  completeSocialRegistration,
 } from '../services/authService';
 import { safeStorage } from '../utils/safeStorage';
 
@@ -181,13 +182,7 @@ export function useSignIn() {
         })
       );
       setSuccess('Sign in successful!');
-      const destination =
-        user.role === 'landlord'
-          ? '/landlord-portal'
-          : user.role === 'tenant'
-            ? '/tenant-portal'
-            : '/crm';
-      navTimerRef.current = setTimeout(() => navigate(destination), TIMING.NAVIGATION_DELAY);
+      navTimerRef.current = setTimeout(() => navigate('/dashboard'), TIMING.NAVIGATION_DELAY);
     },
     [dispatch, navigate]
   );
@@ -235,33 +230,38 @@ export function useSignIn() {
     setError('');
 
     const status = selectedCategory === 'staff' ? 'pending' : 'active';
+    const isSocialRegistration = Boolean(pendingUser?.fromSocialProvider);
 
     try {
-      const response = await backendRegister(
-        email,
-        password,
-        fullName || undefined,
-        undefined,
-        undefined,
-        selectedCategory,
-        selectedRole
-      );
+      const response = isSocialRegistration
+        ? await completeSocialRegistration(selectedCategory, selectedRole)
+        : await backendRegister(
+            email,
+            password,
+            fullName || undefined,
+            undefined,
+            undefined,
+            selectedCategory,
+            selectedRole
+          );
 
       if (!response?.data?.user) {
         throw new Error('Invalid response: missing user data');
       }
 
       const backendUser = response.data.user;
+      const resolvedRole =
+        selectedCategory === 'staff' && !isSocialRegistration ? selectedRole : backendUser.role;
       dispatch(
         setUser({
           id: backendUser.id,
           email: backendUser.email,
           name: backendUser.name || undefined,
-          role: selectedCategory === 'staff' ? selectedRole : backendUser.role,
+          role: resolvedRole,
           status,
         })
       );
-      saveUserData(selectedCategory, selectedRole, status);
+      saveUserData(selectedCategory, resolvedRole, status);
 
       if (selectedCategory === 'staff') {
         setSuccess('Registration submitted! Your account is pending approval.');
@@ -271,13 +271,7 @@ export function useSignIn() {
         );
       } else {
         setSuccess('Account created successfully!');
-        const destination =
-          selectedRole === 'landlord'
-            ? '/landlord-portal'
-            : selectedRole === 'tenant'
-              ? '/tenant-portal'
-              : '/crm';
-        navTimerRef.current = setTimeout(() => navigate(destination), TIMING.NAVIGATION_DELAY);
+        navTimerRef.current = setTimeout(() => navigate('/dashboard'), TIMING.NAVIGATION_DELAY);
       }
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : 'Registration failed';
@@ -285,7 +279,17 @@ export function useSignIn() {
     } finally {
       setLoading(false);
     }
-  }, [selectedRole, selectedCategory, email, password, fullName, dispatch, navigate, saveUserData]);
+  }, [
+    selectedRole,
+    selectedCategory,
+    email,
+    password,
+    fullName,
+    dispatch,
+    navigate,
+    saveUserData,
+    pendingUser,
+  ]);
 
   // ── Social auth ────────────────────────────────────────────────
 
@@ -354,6 +358,11 @@ export function useSignIn() {
 
     await handleSocialAuth(socialSyncRecovery.provider);
   }, [handleSocialAuth, socialSyncRecovery]);
+
+  const clearSocialRecovery = useCallback((): void => {
+    setSocialSyncRecovery(null);
+    setError('');
+  }, []);
 
   // ── Email auth ─────────────────────────────────────────────────
 
@@ -543,6 +552,7 @@ export function useSignIn() {
     handleSignInSuccess,
     handleSocialAuth,
     retrySocialAuth,
+    clearSocialRecovery,
     handleEmailSubmit,
     handlePhoneSubmit,
     handleOtpVerify,
