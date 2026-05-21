@@ -11,6 +11,7 @@ import React, {
   useState,
 } from 'react';
 import { useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import SuspenseLoader from '../components/common/SuspenseLoader';
 import RouteErrorBoundary from '../components/RouteErrorBoundary';
@@ -165,6 +166,7 @@ const formatCurrency = (value: number): string =>
   }).format(value);
 
 const UnifiedDashboardPage: FC = () => {
+  const navigate = useNavigate();
   const {
     currentRole,
     currentModule,
@@ -303,6 +305,22 @@ const UnifiedDashboardPage: FC = () => {
     ],
     [agentsCount, contractsCount, hotLeadsCount, leadsCount, monthlyRevenue, propertiesCount]
   );
+
+  const profileCompletionItems = useMemo(
+    () => [
+      { id: 'name', label: 'Full name', complete: Boolean(user?.name?.trim()) },
+      { id: 'phone', label: 'Phone number', complete: Boolean(user?.phone?.trim()) },
+      { id: 'photo', label: 'Profile photo', complete: Boolean(user?.photoURL?.trim()) },
+    ],
+    [user?.name, user?.phone, user?.photoURL]
+  );
+
+  const profileCompletionPercent = useMemo(() => {
+    const completed = profileCompletionItems.filter(item => item.complete).length;
+    return Math.round((completed / profileCompletionItems.length) * 100);
+  }, [profileCompletionItems]);
+
+  const hasProfileCompletionGaps = profileCompletionPercent < 100;
 
   const commandItems = useMemo<SearchItem[]>(() => {
     const query = commandQuery.trim().toLowerCase();
@@ -776,6 +794,36 @@ const UnifiedDashboardPage: FC = () => {
               </div>
             </div>
           </section>
+
+          {hasProfileCompletionGaps && (
+            <section className="dashboard-profile-completion" aria-label="Profile setup status">
+              <div className="dashboard-profile-completion__copy">
+                <p className="dashboard-profile-completion__eyebrow">Post-login setup</p>
+                <h2>Complete your profile</h2>
+                <p>
+                  Your profile is {profileCompletionPercent}% complete. Finishing setup improves
+                  lead assignment accuracy and team coordination.
+                </p>
+              </div>
+              <div className="dashboard-profile-completion__actions">
+                <ul>
+                  {profileCompletionItems.map(item => (
+                    <li key={item.id}>
+                      <span aria-hidden="true">{item.complete ? '✅' : '⬜'}</span>
+                      <span>{item.label}</span>
+                    </li>
+                  ))}
+                </ul>
+                <button
+                  type="button"
+                  className="dashboard-profile-completion__cta"
+                  onClick={() => navigate('/profile')}
+                >
+                  Finish profile setup
+                </button>
+              </div>
+            </section>
+          )}
 
           {!selectedDepartment && !selectedCRMModule && (
             <section className="dashboard-kpi-strip" aria-label="Dashboard highlights">

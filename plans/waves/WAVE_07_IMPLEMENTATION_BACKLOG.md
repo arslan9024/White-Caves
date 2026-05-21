@@ -67,6 +67,12 @@ Ship login reliability fix now and prepare strict execution graph for profile/da
 - **Files:** `src/hooks/useSignIn.ts`, `src/pages/auth/SignInPage.tsx`, `src/pages/auth/AuthPages.css`, `src/hooks/useSignIn.test.ts`
 - **Status:** ✅ Completed (recovery metadata + retry CTA + focused tests)
 
+### DASH-08-005 — Dashboard profile completion guidance card
+
+- Add post-login profile completeness guidance with direct CTA to `/profile`.
+- **Files:** `src/pages/UnifiedDashboardPage.tsx`, `src/pages/UnifiedDashboardPage.css`, `src/pages/UnifiedDashboardPage.test.tsx`
+- **Status:** ✅ Completed (UI card + responsive styles + rendering test)
+
 ---
 
 ## Dependency Order

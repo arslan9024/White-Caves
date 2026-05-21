@@ -237,6 +237,14 @@ describe('UnifiedDashboardPage', () => {
         expect(within(highlights).getByText('Leads')).toBeInTheDocument();
       });
     });
+
+    it('should render profile completion guidance when profile fields are incomplete', async () => {
+      renderPage();
+      await waitFor(() => {
+        expect(screen.getByRole('heading', { name: /Complete your profile/i })).toBeInTheDocument();
+        expect(screen.getByRole('button', { name: /Finish profile setup/i })).toBeInTheDocument();
+      });
+    });
   });
 
   // ── Tab Rendering ────────────────────────────────────────────
