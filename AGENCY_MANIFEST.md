@@ -81,7 +81,7 @@
 
 ## 🔧 Subagent Upgrade Baseline (May 2026)
 
-- **Canonical Policy:** `/home/runner/work/White-Caves/White-Caves/plans/CUSTOM_AGENTS_PLAN.md`
+- **Canonical Policy:** `plans/CUSTOM_AGENTS_PLAN.md`
 - **Premium Coding Gate Phrase (Exact):** `@Ada — Context Ready (60% Readiness) — Coding Phase Approved`
 - **Invocation Protocol (Exact):** `@[AgentName] — [ACTION]: [TARGET FILE or TOPIC]`
 - **Action Set:** `EXPAND`, `DRAFT`, `REVIEW`, `AUDIT`, `SYNC`
