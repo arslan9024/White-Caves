@@ -426,7 +426,7 @@ function App(): React.JSX.Element {
                   path="/signin"
                   element={
                     user ? (
-                      <Navigate to="/crm" replace />
+                      <Navigate to="/dashboard" replace />
                     ) : (
                       <RouteErrorBoundary section="Sign In">
                         <Suspense fallback={<SuspenseLoader />}>
@@ -441,7 +441,7 @@ function App(): React.JSX.Element {
                   path="/signup"
                   element={
                     user ? (
-                      <Navigate to="/crm" replace />
+                      <Navigate to="/dashboard" replace />
                     ) : (
                       <RouteErrorBoundary section="Sign Up">
                         <Suspense fallback={<SuspenseLoader />}>

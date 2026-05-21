@@ -1,6 +1,6 @@
 # Pending Tasks Only
 
-**Last Updated:** 2026-05-19
+**Last Updated:** 2026-05-21
 
 ## Canonical Sources
 
@@ -19,6 +19,7 @@
 | N+5   | Test + release hardening                                                                         | ✅ Complete                                                             |
 | N+6   | UI architecture hardening: component granularity + event-driven rendering + Arabic RTL readiness | ✅ Complete (RTL + i18n fully wired)                                    |
 | N+7   | Subagent next-level upgrade: 90% readiness + full-team collaboration mesh                        | ✅ Completed (May 18, 2026)                                             |
+| N+8   | Google social auth production hardening + role-based dashboard redirect consistency              | 🚧 In progress (May 21, 2026)                                           |
 | —     | [`PHASE_26_CONTEXT_ENRICHMENT_SPRINT.md`](./PHASE_26_CONTEXT_ENRICHMENT_SPRINT.md)               | 🕒 Deferred (Workstream E advisory; owner @Margaret, target 2026-05-23) |
 | —     | [`PHASE_27_SUBAGENT_NEXT_LEVEL_90_READINESS.md`](./PHASE_27_SUBAGENT_NEXT_LEVEL_90_READINESS.md) | ⬜ Planned                                                              |
 
@@ -29,6 +30,7 @@
 - [x] Close Phase 26 Workstream E audit advisory — deferred with owner/date (owner: @Margaret, revisit: 2026-05-23)
 - [x] Enforce archive rule — moved superseded `plans/SESSION_*`, `plans/PHASE_2_*` files to `archives/plans/superseded/`
 - [x] Keep status consistent across `MASTER_PLAN`, `PROJECT_PROGRESS`, and this file
+- [ ] Complete N+8 Google social auth build fix + dashboard redirect consistency validation
 
 ## N+1 Completion Summary (2026-05-17)
 
