@@ -982,7 +982,7 @@ A task is not complete until it has:
 
 ## 🔧 Subagent Upgrade Baseline (May 2026)
 
-- **Canonical Policy:** `/home/runner/work/White-Caves/White-Caves/plans/CUSTOM_AGENTS_PLAN.md` is the source of truth for subagent governance.
+- **Canonical Policy:** `plans/CUSTOM_AGENTS_PLAN.md` is the source of truth for subagent governance.
 - **Premium Coding Gate Phrase (Exact):** `@Ada — Context Ready (60% Readiness) — Coding Phase Approved`
 - **Invocation Protocol (Exact):** `@[AgentName] — [ACTION]: [TARGET FILE or TOPIC]`
 - **Allowed Actions:** `EXPAND`, `DRAFT`, `REVIEW`, `AUDIT`, `SYNC`

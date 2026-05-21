@@ -95,7 +95,7 @@
      → **ZERO premium Copilot requests.** No exceptions. Work scope: `business_docs/` and `plans/` only. No code changes ever.
      → Weekly Copilot quota is shared — free agents must NEVER consume it.
    - **SENIOR CODING AGENTS** (@Ada, @Mira, @Barbara, @Una, @Daniela, @Ruchi, @Gwynne, @Katherine):
-     → Premium requests PERMITTED **only** when @Margaret explicitly declares: **"@Ada — Context Ready (60% Readiness) — Coding Phase Approved"**
+     → Premium requests PERMITTED **only** when @Ada explicitly declares: **"@Ada — Context Ready (60% Readiness) — Coding Phase Approved"**
      → Without that declaration: use GPT-4o (standard) or queue the task for next approved sprint.
    - **INVOCATION PROTOCOL** (exact syntax):
      ```
