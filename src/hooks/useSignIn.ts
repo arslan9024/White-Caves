@@ -16,6 +16,7 @@ import {
   signInWithApple,
   signInWithPhone,
   createRecaptchaVerifier,
+  signOut as signOutFirebase,
 } from '../config/firebase';
 import { TIMING } from '../constants';
 import {
@@ -45,6 +46,11 @@ interface ConfirmationResult {
       photoURL: string | null;
     };
   }>;
+}
+
+interface SocialSyncRecovery {
+  provider: 'google' | 'facebook' | 'apple';
+  reason: string;
 }
 
 export interface UserCategory {
@@ -131,6 +137,7 @@ export function useSignIn() {
 
   // ── Post-auth pending user ─────────────────────────────────────
   const [pendingUser, setPendingUser] = useState<PendingUser | null>(null);
+  const [socialSyncRecovery, setSocialSyncRecovery] = useState<SocialSyncRecovery | null>(null);
 
   // Ref for navigation timers
   const navTimerRef = useRef<ReturnType<typeof setTimeout>>();
@@ -290,6 +297,7 @@ export function useSignIn() {
     async (provider: string): Promise<void> => {
       setLoading(true);
       setError('');
+      setSocialSyncRecovery(null);
       try {
         let result;
         switch (provider) {
@@ -318,19 +326,21 @@ export function useSignIn() {
           } else {
             handleSignInSuccess(backendUser);
           }
-        } catch {
-          const firebaseUser = result.user;
-          const fallbackUser = {
-            id: firebaseUser.uid,
-            email: firebaseUser.email,
-            name: firebaseUser.displayName,
-          };
-          if (mode === 'signup') {
-            handleSignUpSuccess(fallbackUser, { fromSocialProvider: provider });
-          } else {
-            setSuccess('Signed in with Firebase session. Backend sync will retry automatically.');
-            handleSignInSuccess(fallbackUser);
+        } catch (syncError: unknown) {
+          await signOutFirebase().catch(() => {
+            // noop: firebase session cleanup is best effort here
+          });
+          const syncMessage =
+            syncError instanceof Error
+              ? syncError.message
+              : 'Unable to complete authentication sync';
+          if (provider === 'google' || provider === 'facebook' || provider === 'apple') {
+            setSocialSyncRecovery({ provider, reason: syncMessage });
           }
+          setError(
+            `Authentication succeeded with ${provider}, but backend session setup failed: ${syncMessage}. Please try again.`
+          );
+          setSuccess('');
         }
       } catch (err: unknown) {
         setError(err instanceof Error ? err.message : 'Authentication failed');
@@ -340,6 +350,14 @@ export function useSignIn() {
     },
     [mode, handleSignInSuccess, handleSignUpSuccess]
   );
+
+  const retrySocialAuth = useCallback(async (): Promise<void> => {
+    if (!socialSyncRecovery) {
+      return;
+    }
+
+    await handleSocialAuth(socialSyncRecovery.provider);
+  }, [handleSocialAuth, socialSyncRecovery]);
 
   // ── Email auth ─────────────────────────────────────────────────
 
@@ -435,18 +453,18 @@ export function useSignIn() {
           } else {
             handleSignInSuccess(backendUser);
           }
-        } catch {
-          const firebaseUser = result.user;
-          const fallbackUser = {
-            id: firebaseUser.uid,
-            email: firebaseUser.email,
-            name: firebaseUser.displayName,
-          };
-          if (mode === 'signup') {
-            handleSignUpSuccess(fallbackUser);
-          } else {
-            handleSignInSuccess(fallbackUser);
-          }
+        } catch (syncError: unknown) {
+          await signOutFirebase().catch(() => {
+            // noop: firebase session cleanup is best effort here
+          });
+          const syncMessage =
+            syncError instanceof Error
+              ? syncError.message
+              : 'Unable to complete authentication sync';
+          setError(
+            `Phone verification succeeded but backend session setup failed: ${syncMessage}.`
+          );
+          setSuccess('');
         }
       } catch (err: unknown) {
         setError(err instanceof Error ? err.message : 'Invalid OTP');
@@ -466,6 +484,7 @@ export function useSignIn() {
     setSelectedRole('');
     setError('');
     setSuccess('');
+    setSocialSyncRecovery(null);
   }, []);
 
   const getRolesForCategory = useCallback((): UserRole[] => {
@@ -493,6 +512,7 @@ export function useSignIn() {
     error,
     setError,
     success,
+    socialSyncRecovery,
     switchMode,
     goBackToStep,
 
@@ -526,6 +546,7 @@ export function useSignIn() {
     // Handlers
     handleSignInSuccess,
     handleSocialAuth,
+    retrySocialAuth,
     handleEmailSubmit,
     handlePhoneSubmit,
     handleOtpVerify,

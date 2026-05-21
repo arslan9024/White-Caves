@@ -21,8 +21,10 @@ import { useEffect, useState, useCallback } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import type { RootState, AppDispatch } from '../store/store';
 import { addNotification } from '../store/slices/notificationSlice';
+import { selectSessionToken } from '../store/selectors/sessionSelectors';
 import socketService, { SocketStatus } from '../services/socketService';
 import { createLogger } from '../utils/logger';
+import { safeStorage } from '../utils/safeStorage';
 
 const log = createLogger('useSocket');
 
@@ -37,7 +39,8 @@ export interface UseSocketReturn {
 
 export function useSocket(): UseSocketReturn {
   const dispatch = useDispatch<AppDispatch>();
-  const token = useSelector((state: RootState) => state.auth?.token ?? null);
+  const token = useSelector((state: RootState) => selectSessionToken(state));
+  const effectiveToken = token ?? safeStorage.get('token');
   const [status, setStatus] = useState<SocketStatus>(socketService.getStatus());
 
   // Keep status in sync with the service
@@ -48,15 +51,15 @@ export function useSocket(): UseSocketReturn {
 
   // Connect / reconnect when the JWT token changes
   useEffect(() => {
-    if (!token) {
+    if (!effectiveToken) {
       socketService.disconnect();
       return;
     }
 
-    socketService.connect(token);
+    socketService.connect(effectiveToken);
 
     // ── Meta API channel (Nadia / Nina pipeline) ──────────────────────────
-    const offMetaMsg = socketService.onMetaMessage((payload) => {
+    const offMetaMsg = socketService.onMetaMessage(payload => {
       log.debug('Meta WhatsApp message received', { from: payload.from });
       dispatch(
         addNotification({
@@ -68,7 +71,7 @@ export function useSocket(): UseSocketReturn {
       );
     });
 
-    const offMetaStatus = socketService.onMetaStatus((payload) => {
+    const offMetaStatus = socketService.onMetaStatus(payload => {
       if (payload.status === 'failed') {
         log.warn('Meta message delivery failed', { messageId: payload.messageId });
         dispatch(
@@ -83,7 +86,7 @@ export function useSocket(): UseSocketReturn {
     });
 
     // ── Linda channel (whatsapp-web.js LocalAuth) ─────────────────────────
-    const offLindaMsg = socketService.onLindaMessage((payload) => {
+    const offLindaMsg = socketService.onLindaMessage(payload => {
       log.debug('Linda WhatsApp message received', { from: payload.from });
       dispatch(
         addNotification({
@@ -96,7 +99,7 @@ export function useSocket(): UseSocketReturn {
     });
 
     // ── CRM notifications ─────────────────────────────────────────────────
-    const offNotification = socketService.onNotification((payload) => {
+    const offNotification = socketService.onNotification(payload => {
       log.debug('CRM notification received', { type: payload.type, title: payload.title });
       dispatch(
         addNotification({
@@ -109,7 +112,7 @@ export function useSocket(): UseSocketReturn {
     });
 
     // ── Lead updates ──────────────────────────────────────────────────────
-    const offLead = socketService.onLeadUpdated((payload) => {
+    const offLead = socketService.onLeadUpdated(payload => {
       log.debug('Lead updated', { leadId: payload.leadId, status: payload.status });
       dispatch(
         addNotification({
@@ -122,12 +125,12 @@ export function useSocket(): UseSocketReturn {
     });
 
     // ── Conversation updates (Nadia) ──────────────────────────────────────
-    const offConversation = socketService.onConversationUpdated((payload) => {
+    const offConversation = socketService.onConversationUpdated(payload => {
       log.debug('Nadia conversation updated', { conversationId: payload.conversationId });
     });
 
     // ── Agent presence ────────────────────────────────────────────────────
-    const offPresence = socketService.onAgentPresence((payload) => {
+    const offPresence = socketService.onAgentPresence(payload => {
       log.debug(`Agent ${payload.email} is now ${payload.online ? 'online' : 'offline'}`);
     });
 
@@ -140,7 +143,7 @@ export function useSocket(): UseSocketReturn {
       offConversation();
       offPresence();
     };
-  }, [token, dispatch]);
+  }, [effectiveToken, dispatch]);
 
   // Graceful disconnect on unmount (app-level — component unmounts on logout)
   useEffect(() => {
@@ -151,11 +154,11 @@ export function useSocket(): UseSocketReturn {
   }, []);
 
   const reconnect = useCallback(() => {
-    if (token) {
+    if (effectiveToken) {
       socketService.disconnect();
-      socketService.connect(token);
+      socketService.connect(effectiveToken);
     }
-  }, [token]);
+  }, [effectiveToken]);
 
   return {
     status,

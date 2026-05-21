@@ -88,6 +88,34 @@ body.dark-mode .auth-card {
   font-size: 0.875rem;
 }
 
+.auth-recovery {
+  background: rgba(59, 130, 246, 0.12);
+  border: 1px solid rgba(59, 130, 246, 0.32);
+  border-radius: 10px;
+  padding: 0.875rem 1rem;
+  margin-bottom: 1rem;
+}
+
+.auth-recovery__title {
+  margin: 0;
+  color: var(--text-primary);
+  font-weight: 600;
+  font-size: 0.9375rem;
+}
+
+.auth-recovery__hint,
+.auth-recovery__reason {
+  margin: 0.5rem 0 0;
+  color: var(--text-secondary);
+  font-size: 0.8125rem;
+  line-height: 1.4;
+}
+
+.auth-recovery__reason {
+  color: var(--text-muted);
+  margin-bottom: 0.75rem;
+}
+
 .auth-tabs {
   display: flex;
   gap: 0.5rem;

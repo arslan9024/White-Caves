@@ -9,6 +9,7 @@ import { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import type { RootState } from '../store/store';
+import { selectSessionUser } from '../store/selectors/sessionSelectors';
 import { setUser } from '../store/userSlice';
 import { auth } from '../config/firebase';
 import { createLogger } from '../utils/logger';
@@ -38,7 +39,9 @@ interface ProfilePageUser {
 export function useUserProfile() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const user = useSelector((state: RootState) => state.user.currentUser) as ProfilePageUser | null;
+  const user = useSelector((state: RootState) =>
+    selectSessionUser(state)
+  ) as ProfilePageUser | null;
   const toast = useToast();
 
   const [activeTab, setActiveTab] = useState<string>('overview');

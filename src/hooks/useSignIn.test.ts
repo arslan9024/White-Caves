@@ -35,6 +35,7 @@ vi.mock('../config/firebase', () => ({
   signInWithGoogle: (...args: unknown[]) => mockSignInWithGoogle(...args),
   signInWithFacebook: (...args: unknown[]) => mockSignInWithFacebook(...args),
   signInWithApple: (...args: unknown[]) => mockSignInWithApple(...args),
+  signOut: vi.fn().mockResolvedValue(undefined),
   signInWithPhone: vi.fn(),
   createRecaptchaVerifier: vi.fn(),
 }));
@@ -297,15 +298,27 @@ describe('useSignIn — handleSocialAuth (integration)', () => {
   // ── Backend sync error (signin mode) ──────────────────────────────────────
 
   describe('backend sync error in signin mode', () => {
-    it('falls back to Firebase user and still logs in', async () => {
+    it('shows backend sync error and does not navigate', async () => {
       mockSignInWithGoogle.mockResolvedValue({ user: firebaseUser });
       mockSyncFirebaseUser.mockRejectedValue(new Error('Backend unreachable'));
-      vi.useFakeTimers();
       const { result } = renderHook(() => useSignIn(), { wrapper: createWrapper(store) });
 
       await act(async () => {
         await result.current.handleSocialAuth('google');
       });
+
+      expect(result.current.error).toContain('backend session setup failed');
+      expect(result.current.error).toContain('Backend unreachable');
+      expect(mockNavigate).not.toHaveBeenCalled();
+
+      const currentUser = store.getState().user.currentUser;
+      expect(currentUser).toBeNull();
+    });
+
+    it('stores recovery metadata so UI can offer a retry CTA', async () => {
+      mockSignInWithGoogle.mockResolvedValue({ user: firebaseUser });
+      mockSyncFirebaseUser.mockRejectedValue(new Error('Backend unreachable'));
+      const { result } = renderHook(() => useSignIn(), { wrapper: createWrapper(store) });
 
       act(() => vi.runAllTimers());
       expect(result.current.error).toBe('');
@@ -329,6 +342,29 @@ describe('useSignIn — handleSocialAuth (integration)', () => {
         await result.current.handleSocialAuth('google');
       });
 
+      expect(result.current.socialSyncRecovery).toEqual({
+        provider: 'google',
+        reason: 'Backend unreachable',
+      });
+    });
+
+    it('retries the same social provider via retrySocialAuth', async () => {
+      mockSignInWithGoogle.mockResolvedValue({ user: firebaseUser });
+      mockSyncFirebaseUser
+        .mockRejectedValueOnce(new Error('Backend unreachable'))
+        .mockResolvedValueOnce(successResponse());
+      const { result } = renderHook(() => useSignIn(), { wrapper: createWrapper(store) });
+
+      await act(async () => {
+        await result.current.handleSocialAuth('google');
+      });
+
+      await act(async () => {
+        await result.current.retrySocialAuth();
+      });
+
+      expect(mockSignInWithGoogle).toHaveBeenCalledTimes(2);
+      expect(mockSyncFirebaseUser).toHaveBeenCalledTimes(2);
       act(() => {
         result.current.setSelectedCategory('client');
       });
@@ -354,7 +390,7 @@ describe('useSignIn — handleSocialAuth (integration)', () => {
   // ── Backend sync error (signup mode — fallback) ────────────────────────────
 
   describe('backend sync error in signup mode', () => {
-    it('falls back to Firebase user data and advances to step 2', async () => {
+    it('does not advance signup and surfaces sync error', async () => {
       mockSignInWithGoogle.mockResolvedValue({ user: firebaseUser });
       mockSyncFirebaseUser.mockRejectedValue(new Error('Backend unreachable'));
       const { result } = renderHook(() => useSignIn(), { wrapper: createWrapper(store) });
@@ -365,9 +401,10 @@ describe('useSignIn — handleSocialAuth (integration)', () => {
         await result.current.handleSocialAuth('google');
       });
 
-      // Falls back to Firebase user, still advances to step 2
-      expect(result.current.step).toBe(2);
-      expect(result.current.pendingUser?.id).toBe(firebaseUser.uid);
+      expect(result.current.step).toBe(1);
+      expect(result.current.pendingUser).toBeNull();
+      expect(result.current.error).toContain('backend session setup failed');
+      expect(mockNavigate).not.toHaveBeenCalled();
     });
   });
 

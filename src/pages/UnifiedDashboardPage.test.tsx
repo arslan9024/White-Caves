@@ -5,11 +5,21 @@
  */
 
 import { describe, it, expect, vi, beforeAll, beforeEach, afterAll } from 'vitest';
-import { render, screen, waitFor, within } from '@testing-library/react';
+import { render, screen, waitFor, within, fireEvent } from '@testing-library/react';
 import React from 'react';
 import { Provider } from 'react-redux';
 import { configureStore } from '@reduxjs/toolkit';
 import { MemoryRouter, useLocation } from 'react-router-dom';
+
+const mockNavigate = vi.fn();
+
+vi.mock('react-router-dom', async () => {
+  const actual = await vi.importActual('react-router-dom');
+  return {
+    ...(actual as object),
+    useNavigate: () => mockNavigate,
+  };
+});
 
 // ── Mocks ────────────────────────────────────────────────────────
 
@@ -236,6 +246,52 @@ describe('UnifiedDashboardPage', () => {
         expect(within(highlights).getByText('Agents')).toBeInTheDocument();
         expect(within(highlights).getByText('Leads')).toBeInTheDocument();
       });
+    });
+
+    it('should render profile completion guidance when profile fields are incomplete', async () => {
+      renderPage();
+      await waitFor(() => {
+        expect(screen.getByRole('heading', { name: /Complete your profile/i })).toBeInTheDocument();
+        expect(screen.getByRole('button', { name: /Finish profile setup/i })).toBeInTheDocument();
+      });
+    });
+
+    it('should navigate to /profile when profile completion CTA is clicked', async () => {
+      renderPage();
+
+      await waitFor(() => {
+        expect(screen.getByRole('button', { name: /Finish profile setup/i })).toBeInTheDocument();
+      });
+
+      fireEvent.click(screen.getByRole('button', { name: /Finish profile setup/i }));
+
+      expect(mockNavigate).toHaveBeenCalledWith('/profile');
+    });
+
+    it('should hide profile completion guidance when profile fields are complete', async () => {
+      renderPage('overview', {
+        user: {
+          currentUser: {
+            id: 'u1',
+            name: 'Admin',
+            email: 'admin@wc.ae',
+            role: 'owner',
+            phone: '+971500000001',
+            photoURL: 'https://example.com/avatar.jpg',
+          },
+        },
+      });
+
+      await waitFor(() => {
+        expect(screen.getByTestId('overview-tab')).toBeInTheDocument();
+      });
+
+      expect(
+        screen.queryByRole('heading', { name: /Complete your profile/i })
+      ).not.toBeInTheDocument();
+      expect(
+        screen.queryByRole('button', { name: /Finish profile setup/i })
+      ).not.toBeInTheDocument();
     });
   });
 
