@@ -97,6 +97,12 @@ Ship login reliability fix now and prepare strict execution graph for profile/da
 - **Files:** `src/hooks/useSignIn.ts`, `src/pages/auth/SignInPage.test.tsx`
 - **Status:** ✅ Completed (retry-specific hook behavior + UI regression coverage)
 
+### AUTH-08-012 — Retry CTA loading-state guard coverage
+
+- Ensure social recovery retry CTA becomes disabled and switches to loading copy (`Retrying...`) while retry is in flight.
+- **Files:** `src/pages/auth/SignInPage.test.tsx`
+- **Status:** ✅ Completed (loading-state retry CTA regression test)
+
 ### DASH-08-005 — Dashboard profile completion guidance card
 
 - Add post-login profile completeness guidance with direct CTA to `/profile`.
@@ -127,3 +133,4 @@ Ship login reliability fix now and prepare strict execution graph for profile/da
 12. AUTH-08-009 ✅
 13. AUTH-08-010 ✅
 14. AUTH-08-011 ✅
+15. AUTH-08-012 ✅
