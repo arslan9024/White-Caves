@@ -46,14 +46,19 @@ Ship login reliability fix now and prepare strict execution graph for profile/da
 ### AUTH-08-001 — Session selector facade
 
 - Introduce canonical selectors used by App bootstrap + route guards + socket.
+- **Files:** `src/store/selectors/sessionSelectors.ts`, `src/App.tsx`, `src/hooks/useSocket.ts`
+- **Status:** ✅ Completed
 
 ### PROFILE-08-002 — Canonical profile API path unification
 
 - Migrate active runtime profile writes to one endpoint contract.
+- **Files:** `src/components/portal/PortalProfileTab.tsx`, `src/components/portal/PortalProfileTab.test.tsx`
+- **Status:** ✅ Completed
 
 ### DASH-08-003 — Authenticated shell DSv2 scaffold
 
 - Introduce shared post-login shell primitives and migration adapters.
+- **Status:** ⏳ Not Started
 
 ---
 
@@ -62,5 +67,6 @@ Ship login reliability fix now and prepare strict execution graph for profile/da
 1. AUTH-07-001
 2. AUTH-07-002
 3. QA-07-003
-4. AUTH-08-001
-5. PROFILE-08-002 / DASH-08-003 (parallel)
+4. AUTH-08-001 ✅
+5. PROFILE-08-002 ✅
+6. DASH-08-003 (next)

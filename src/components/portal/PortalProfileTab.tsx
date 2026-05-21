@@ -56,30 +56,64 @@ const PortalProfileTab: FC = () => {
     setIsSavingProfile(true);
 
     try {
-      // PATCH profile via API (best-effort — portal also updates Redux)
-      await authFetch('/api/users/profile', {
+      const response = await authFetch('/api/auth/profile', {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name: trimmedName, phone: phone.trim(), photoURL: photoUrl.trim() }),
-      });
-    } catch (err) {
-      log.error('Profile API error (non-blocking):', err);
-    }
-
-    // Update Redux state immediately so navbar reflects new name
-    if (currentUser) {
-      dispatch(
-        setUser({
-          ...currentUser,
+        body: JSON.stringify({
           name: trimmedName,
-          phone: phone.trim() || currentUser.phone,
-          photoURL: photoUrl.trim() || currentUser.photoURL,
-        })
-      );
-    }
+          phone: phone.trim() || null,
+          photoUrl: photoUrl.trim() || null,
+        }),
+      });
 
-    setProfileSuccess('Profile updated successfully.');
-    setIsSavingProfile(false);
+      if (!response.ok) {
+        const errorData = await response.json().catch(error => {
+          log.debug('Non-JSON profile save error response:', error);
+          return {};
+        });
+        throw new Error(
+          (errorData as { error?: string; message?: string }).error ||
+            (errorData as { error?: string; message?: string }).message ||
+            'Failed to update profile.'
+        );
+      }
+
+      const payload = (await response.json().catch(() => null)) as {
+        data?: {
+          id: string;
+          email: string;
+          name?: string | null;
+          role?: string;
+          phone?: string | null;
+          photoUrl?: string | null;
+        };
+      } | null;
+
+      const updatedUser = payload?.data;
+
+      // Update Redux state from canonical backend response (fallback to local values)
+      if (currentUser) {
+        dispatch(
+          setUser({
+            ...currentUser,
+            id: updatedUser?.id || currentUser.id,
+            email: updatedUser?.email || currentUser.email,
+            role: updatedUser?.role || currentUser.role,
+            name: updatedUser?.name ?? trimmedName,
+            phone: updatedUser?.phone ?? (phone.trim() || undefined),
+            photoURL: updatedUser?.photoUrl ?? (photoUrl.trim() || undefined),
+          })
+        );
+      }
+
+      setProfileSuccess('Profile updated successfully.');
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Failed to update profile.';
+      setProfileError(message);
+      log.error('Profile API error:', err);
+    } finally {
+      setIsSavingProfile(false);
+    }
   }, [name, phone, photoUrl, currentUser, dispatch]);
 
   const handleChangePassword = useCallback(async () => {
