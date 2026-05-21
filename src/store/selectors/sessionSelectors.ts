@@ -6,16 +6,16 @@ import type { AppUser } from '../userSlice';
  * Prefers user slice (route guard source), falls back to auth slice.
  */
 export const selectSessionUser = (state: RootState): AppUser | null => {
-  const userFromUserSlice = state.user.currentUser;
+  const userFromUserSlice = state.user?.currentUser ?? null;
   if (userFromUserSlice) {
     return userFromUserSlice;
   }
 
-  return state.auth.user;
+  return state.auth?.user ?? null;
 };
 
 /** Canonical in-memory access token selector. */
-export const selectSessionToken = (state: RootState): string | null => state.auth.token;
+export const selectSessionToken = (state: RootState): string | null => state.auth?.token ?? null;
 
 /**
  * Canonical authenticated state selector.
