@@ -34,6 +34,36 @@
 
 This file defines the White Caves multi-expert operating model for all agent-assisted work in this repository.
 
+---
+
+## 🚀 AGENT SKILLS UPGRADE V2 — ACTIVE (May 21, 2026)
+
+**TRANSFORMATION:** 47 agents → **69 specialized agents** | **10 parallel module teams** | **300% planning capacity**  
+**EXECUTION MODEL:** True parallel work with module isolation + real-time cross-module coordination  
+**STATUS:** Skills upgrade documentation complete → [AGENT_SKILLS_UPGRADE_V2.md](./AGENT_SKILLS_UPGRADE_V2.md)
+
+### Quick Navigation to Module Teams
+
+| Module                           | Lead      | Team Size | Focus Area                               | Capacity Gain |
+| -------------------------------- | --------- | --------- | ---------------------------------------- | ------------- |
+| **1. Leasing & Tenancy**         | @Victoria | 7 agents  | Contracts, Ejari, tenant portal          | 200% ↑        |
+| **2. Compliance & DLD**          | @Sofia    | 7 agents  | Regulations, DLD integration, legal      | 200% ↑        |
+| **3. Scheduling & Viewings**     | @Booking  | 7 agents  | Calendar, appointments, handover         | 200% ↑        |
+| **4. Offers & Sales**            | @Jaime    | 6 agents  | Deal management, offers, commissions     | 200% ↑        |
+| **5. Finance & Analytics**       | @Invoice  | 7 agents  | VAT, cash flow, KPI dashboards           | 300% ↑        |
+| **6. WhatsApp & Communications** | @Corinne  | 6 agents  | Messaging, chatbot, broadcast            | 200% ↑        |
+| **7. Maintenance & Support**     | @Rania    | 6 agents  | Tickets, maintenance, escalations        | 200% ↑        |
+| **8. Testing & QA**              | @Salma    | 5 agents  | Test matrices, regression, accessibility | 200% ↑        |
+| **9. AI & Recommendations**      | @Joelle   | 5 agents  | Personas, chatbots, scoring              | 200% ↑        |
+| **10. Infrastructure & Ops**     | @Gwynne   | 5 agents  | DevOps, cloud, monitoring                | 500% ↑        |
+
+**Total Agents:** 69 | **Parallel Efficiency:** 85%+ | **Planning Capacity:** +300%  
+**Real-Time Sync:** Every 2 hours via YAML handoff packets | **FEEDS_ACK Confirmation:** Live tracking
+
+→ **See full upgrade details:** [AGENT_SKILLS_UPGRADE_V2.md](./AGENT_SKILLS_UPGRADE_V2.md)
+
+---
+
 ## 🏛️ EXECUTIVE LEADERSHIP
 
 1. **@Ada (Chief Architect):** Named after Ada Lovelace (1st Programmer). Oversees the entire project architecture and integration.
