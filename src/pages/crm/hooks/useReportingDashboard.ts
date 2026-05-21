@@ -150,12 +150,16 @@ export function useReportingDashboard() {
         const rows = Array.isArray(data) ? data : [data];
         if (rows.length === 0) return;
         const headers = Object.keys(rows[0] as Record<string, unknown>);
+        const escapeCsvValue = (val: unknown): string => {
+          const str = String(val ?? '');
+          if (str.includes(',') || str.includes('"') || str.includes('\n') || str.includes('\r')) {
+            return `"${str.replace(/"/g, '""')}"`;
+          }
+          return str;
+        };
         const csvContent = [
-          headers.join(','),
-          ...rows.map(row => headers.map(h => {
-            const val = (row as Record<string, unknown>)[h];
-            return typeof val === 'string' && val.includes(',') ? `"${val}"` : String(val ?? '');
-          }).join(',')),
+          headers.map(escapeCsvValue).join(','),
+          ...rows.map(row => headers.map(h => escapeCsvValue((row as Record<string, unknown>)[h])).join(',')),
         ].join('\n');
         const blob = new Blob([csvContent], { type: 'text/csv' });
         const url = URL.createObjectURL(blob);

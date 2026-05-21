@@ -83,6 +83,7 @@ import usersRoutes from './routes/users.js';
 import leasingInventoryRoutes from './routes/leasing-inventory.js';
 import secondarySalesRoutes from './routes/secondary-sales.js';
 import commissionsRoutes from './routes/commissions.js';
+import notificationsRoutes from './routes/notifications.js';
 // @ts-expect-error JS route module has no TypeScript declarations yet
 import importHistoryRoutes from './routes/importHistory.routes.js';
 // @ts-expect-error JS route module has no TypeScript declarations yet
@@ -420,6 +421,9 @@ app.use('/api/secondary-sales', secondarySalesRoutes);
 
 // Commissions API (Phase 35 - Dubai Real Estate Commission Tracker)
 app.use('/api/commissions', commissionsRoutes);
+
+// Notifications API (in-app notification management)
+app.use('/api/notifications', notificationsRoutes);
 app.use('/api/inventory/import', smartImportRoutes);
 app.use('/api', importHistoryRoutes);
 
