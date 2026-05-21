@@ -116,6 +116,9 @@ export function usePropertyBrowser() {
     const area = params.get('area');
     const locationParam = params.get('location');
     const resolvedLocation = locationParam || normalizeAreaParam(area);
+    // Phase 34: ?mode=rent|buy from hero leasing CTA → purpose filter
+    const modeParam = params.get('mode')?.toLowerCase();
+    const mode = modeParam === 'rent' || modeParam === 'buy' ? modeParam : undefined;
 
     return {
       search: params.get('search') || undefined,
@@ -124,6 +127,7 @@ export function usePropertyBrowser() {
       beds: params.get('beds') ? Number(params.get('beds')) : undefined,
       minPrice: params.get('minPrice') ? Number(params.get('minPrice')) : undefined,
       maxPrice: params.get('maxPrice') ? Number(params.get('maxPrice')) : undefined,
+      mode,
     };
   }, [location.search]);
 
@@ -207,6 +211,13 @@ export function usePropertyBrowser() {
       result = result.filter(p => p.sqft <= filters.maxSqft);
     }
 
+    // Phase 34: Purpose filter from ?mode param (rent/buy leasing conversion funnel)
+    if (queryFilters.mode === 'rent') {
+      result = result.filter(p => p.purpose === 'rent');
+    } else if (queryFilters.mode === 'buy') {
+      result = result.filter(p => p.purpose === 'buy');
+    }
+
     // Amenities
     if (filters.amenities.length > 0) {
       result = result.filter(p => filters.amenities.every(a => p.amenities.includes(a)));
@@ -216,7 +227,7 @@ export function usePropertyBrowser() {
     result = sortProperties(result, filters.sortBy);
 
     return result;
-  }, [properties, searchTerm, filters]);
+  }, [properties, searchTerm, filters, queryFilters.mode]);
 
   const handleFavoriteToggle = useCallback(
     (property: PropertyType) => {

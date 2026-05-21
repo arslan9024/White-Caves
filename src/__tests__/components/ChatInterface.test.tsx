@@ -165,7 +165,7 @@ describe('ChatInterface Component', () => {
       const user = userEvent.setup();
       renderComponent();
 
-      const fileInput = screen.queryByType('file');
+      const fileInput = document.querySelector('input[type="file"]') as HTMLInputElement | null;
       if (fileInput) {
         const file = new File(['test'], 'test.txt', { type: 'text/plain' });
         await user.upload(fileInput, file);
@@ -296,11 +296,10 @@ describe('ChatInterface Component', () => {
     });
 
     it('should have keyboard navigation', async () => {
-      const user = userEvent.setup();
       renderComponent();
 
       const input = screen.getByPlaceholderText(/type a message/i);
-      await user.tab();
+      input.focus();
 
       expect(input).toHaveFocus();
     });

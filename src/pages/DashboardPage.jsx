@@ -1,13 +1,12 @@
 /**
- * DashboardPage - Main Dashboard with Dual Sidebar Architecture
- * 
- * This page serves as the main hub for all company operations
- * Left Sidebar: Company Departments
- * Center: Dynamic Content Area
- * Right Sidebar: AI Assistants
+ * DashboardPage - Legacy Entry Wrapper (Canonical CRM Shell)
+ *
+ * NOTE:
+ * The canonical dashboard experience is now AppLayout + UnifiedDashboardPage.
+ * This page intentionally keeps a compatibility wrapper for older imports.
  */
 
-import React, { useMemo } from 'react';
+import React from 'react';
 import styled from 'styled-components';
 import { DualSidebarLayout } from '../components/layout/DashboardLayout/DualSidebarLayout';
 
@@ -21,11 +20,11 @@ const PageContainer = styled.div`
 `;
 
 /**
- * Main Dashboard Page Component
- * Renders the professional dual-sidebar layout
- * 
+ * Main Dashboard Page Component (compat mode)
+ * Renders the canonical CRM shell through DualSidebarLayout compatibility wrapper.
+ *
  * @component
- * @returns {React.ReactElement} Dashboard page with dual sidebars
+ * @returns {React.ReactElement} Dashboard page using canonical CRM shell
  */
 const DashboardPage = () => {
   return (

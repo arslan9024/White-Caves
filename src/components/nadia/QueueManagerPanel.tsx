@@ -6,6 +6,7 @@ import React, { useCallback, useState } from 'react';
 import { useAppDispatch } from '@/store/store';
 import { assignAgent } from '@/store/slices/nadiaSlice';
 import { QueuedConversation, QueueStats } from '@/types/nadia';
+import NadiaMetaPoliciesPanel from './NadiaMetaPoliciesPanel';
 import {
   QueueManagerContainer,
   QueueManagerHeader,
@@ -30,11 +31,7 @@ interface QueueManagerPanelProps {
   loading?: boolean;
 }
 
-const QueueManagerPanel: React.FC<QueueManagerPanelProps> = ({
-  queue,
-  stats,
-  loading = false,
-}) => {
+const QueueManagerPanel: React.FC<QueueManagerPanelProps> = ({ queue, stats, loading = false }) => {
   const dispatch = useAppDispatch();
   const [assigningId, setAssigningId] = useState<string | null>(null);
   const [agentPhones, setAgentPhones] = useState<Record<string, string>>({});
@@ -67,7 +64,7 @@ const QueueManagerPanel: React.FC<QueueManagerPanelProps> = ({
             agentPhone: agentPhone.trim(),
           })
         ).unwrap();
-        setAgentPhones((prev) => {
+        setAgentPhones(prev => {
           const next = { ...prev };
           delete next[queueId];
           return next;
@@ -85,7 +82,7 @@ const QueueManagerPanel: React.FC<QueueManagerPanelProps> = ({
    * Update agent phone for a queue item
    */
   const handlePhoneChange = (queueId: string, phone: string) => {
-    setAgentPhones((prev) => ({
+    setAgentPhones(prev => ({
       ...prev,
       [queueId]: phone,
     }));
@@ -174,9 +171,7 @@ const QueueManagerPanel: React.FC<QueueManagerPanelProps> = ({
                   </QueueItemName>
                   <QueueItemMeta>{queueItem.customerPhone}</QueueItemMeta>
                 </div>
-                <PriorityBadge priority={queueItem.priority}>
-                  {queueItem.priority}
-                </PriorityBadge>
+                <PriorityBadge priority={queueItem.priority}>{queueItem.priority}</PriorityBadge>
               </QueueItemHeader>
 
               {/* Meta info */}
@@ -195,7 +190,7 @@ const QueueManagerPanel: React.FC<QueueManagerPanelProps> = ({
                   type="tel"
                   placeholder="+971501234567"
                   value={agentPhones[queueItem.queueId] || ''}
-                  onChange={(e) => handlePhoneChange(queueItem.queueId, e.target.value)}
+                  onChange={e => handlePhoneChange(queueItem.queueId, e.target.value)}
                   disabled={assigningQueue}
                   aria-label="Agent phone number"
                 />
@@ -211,6 +206,7 @@ const QueueManagerPanel: React.FC<QueueManagerPanelProps> = ({
             </QueueItemContainer>
           ))
         )}
+        <NadiaMetaPoliciesPanel />
       </QueueManagerScroll>
     </QueueManagerContainer>
   );

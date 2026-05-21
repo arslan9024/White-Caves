@@ -6,7 +6,17 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
+import { vi, beforeEach, afterEach } from 'vitest';
 import { BarChart, LineChart, PieChart, ProgressRing } from '../DataVisualization';
+
+beforeEach(() => {
+  vi.spyOn(console, 'error').mockImplementation(() => {});
+  vi.spyOn(console, 'warn').mockImplementation(() => {});
+});
+
+afterEach(() => {
+  vi.restoreAllMocks();
+});
 
 describe('BarChart Component', () => {
   const mockData = [
@@ -29,9 +39,7 @@ describe('BarChart Component', () => {
   });
 
   test('calculates correct bar heights with custom maxValue', () => {
-    const { container } = render(
-      <BarChart data={mockData} maxValue={200} />
-    );
+    const { container } = render(<BarChart data={mockData} maxValue={200} />);
     // Bars should be properly sized
     expect(container.querySelector('div')).toBeInTheDocument();
   });
@@ -121,9 +129,7 @@ describe('LineChart Component', () => {
   });
 
   test('applies custom color to line', () => {
-    const { container } = render(
-      <LineChart data={mockData} color="#ff0000" />
-    );
+    const { container } = render(<LineChart data={mockData} color="#ff0000" />);
     const path = container.querySelector('path');
     expect(path).toHaveAttribute('stroke', '#ff0000');
   });
@@ -140,9 +146,7 @@ describe('LineChart Component', () => {
   });
 
   test('handles custom maxValue', () => {
-    const { container } = render(
-      <LineChart data={mockData} maxValue={3000} />
-    );
+    const { container } = render(<LineChart data={mockData} maxValue={3000} />);
     expect(container.querySelector('svg')).toBeInTheDocument();
   });
 
@@ -203,9 +207,7 @@ describe('PieChart Component', () => {
   });
 
   test('handles single data point', () => {
-    const { container } = render(
-      <PieChart data={[{ label: 'All', value: 100 }]} />
-    );
+    const { container } = render(<PieChart data={[{ label: 'All', value: 100 }]} />);
     const paths = container.querySelectorAll('path');
     expect(paths.length).toBeGreaterThan(0);
   });
@@ -225,92 +227,68 @@ describe('PieChart Component', () => {
 
 describe('ProgressRing Component', () => {
   test('renders SVG element', () => {
-    const { container } = render(
-      <ProgressRing value={75} max={100} />
-    );
+    const { container } = render(<ProgressRing value={75} max={100} />);
     expect(container.querySelector('svg')).toBeInTheDocument();
   });
 
   test('displays percentage label', () => {
-    render(
-      <ProgressRing value={75} max={100} showLabel={true} />
-    );
+    render(<ProgressRing value={75} max={100} showLabel={true} />);
     expect(screen.getByText('75%')).toBeInTheDocument();
   });
 
   test('calculates correct percentage', () => {
-    render(
-      <ProgressRing value={50} max={100} showLabel={true} />
-    );
+    render(<ProgressRing value={50} max={100} showLabel={true} />);
     expect(screen.getByText('50%')).toBeInTheDocument();
   });
 
   test('handles custom max value', () => {
-    render(
-      <ProgressRing value={75} max={200} showLabel={true} />
-    );
+    render(<ProgressRing value={75} max={200} showLabel={true} />);
     expect(screen.getByText('38%')).toBeInTheDocument();
   });
 
   test('hides label when showLabel is false', () => {
-    render(
-      <ProgressRing value={75} max={100} showLabel={false} />
-    );
+    render(<ProgressRing value={75} max={100} showLabel={false} />);
     expect(screen.queryByText('75%')).not.toBeInTheDocument();
   });
 
   test('applies custom color', () => {
-    const { container } = render(
-      <ProgressRing value={75} color="#ff0000" />
-    );
+    const { container } = render(<ProgressRing value={75} color="#ff0000" />);
     const circle = container.querySelector('circle:last-of-type');
     expect(circle).toHaveAttribute('stroke', '#ff0000');
   });
 
   test('handles custom size', () => {
-    const { container } = render(
-      <ProgressRing value={75} size={200} />
-    );
+    const { container } = render(<ProgressRing value={75} size={200} />);
     const svg = container.querySelector('svg');
     expect(svg).toHaveAttribute('width', '200');
     expect(svg).toHaveAttribute('height', '200');
   });
 
   test('handles zero value', () => {
-    render(
-      <ProgressRing value={0} max={100} showLabel={true} />
-    );
+    render(<ProgressRing value={0} max={100} showLabel={true} />);
     expect(screen.getByText('0%')).toBeInTheDocument();
   });
 
   test('handles 100% progress', () => {
-    render(
-      <ProgressRing value={100} max={100} showLabel={true} />
-    );
+    render(<ProgressRing value={100} max={100} showLabel={true} />);
     expect(screen.getByText('100%')).toBeInTheDocument();
   });
 
   test('handles value exceeding max', () => {
-    render(
-      <ProgressRing value={150} max={100} showLabel={true} />
-    );
+    render(<ProgressRing value={150} max={100} showLabel={true} />);
     // Should show 150% or cap at 100%
     expect(screen.getByText(/\d+%/)).toBeInTheDocument();
   });
 
   test('renders background and progress circles', () => {
-    const { container } = render(
-      <ProgressRing value={75} max={100} />
-    );
+    const { container } = render(<ProgressRing value={75} max={100} />);
     const circles = container.querySelectorAll('circle');
     // Should have background circle and progress circle
     expect(circles.length).toBeGreaterThanOrEqual(2);
   });
 
   test('handles custom stroke width', () => {
-    const { container } = render(
-      <ProgressRing value={75} strokeWidth={4} />
-    );
+    const { container } = render(<ProgressRing value={75} strokeWidth={4} />);
     const circles = container.querySelectorAll('circle');
     expect(circles[0]).toHaveAttribute('stroke-width', '4');
   });
@@ -356,9 +334,7 @@ describe('Chart Integration', () => {
       value: Math.random() * 1000,
     }));
 
-    const { container } = render(
-      <BarChart data={largeData} />
-    );
+    const { container } = render(<BarChart data={largeData} />);
 
     expect(container.querySelector('svg') || container.querySelector('div')).toBeInTheDocument();
   });

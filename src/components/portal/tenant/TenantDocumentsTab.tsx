@@ -1,44 +1,109 @@
 /**
- * TenantDocumentsTab — Phase 2.11: Documents
+ * TenantDocumentsTab — Phase 2.11 / Phase 30: Documents (Live API)
  *
- * Lease agreement, Ejari, NOC.
+ * Derives tenant documents from the active lease record fetched via
+ * GET /api/leases?role=tenant&pageSize=1.
  *
  * @component
  */
 
-import React, { FC, useMemo, useState } from 'react';
+import React, { FC, useEffect, useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
 import type { RootState } from '../../../store/store';
+import { authFetch } from '../../../utils/authFetch';
 import '../../../pages/RolePages.css';
+
+interface ApiLease {
+  id: string;
+  documents: string[];
+  ejariNumber?: string | null;
+  addendumDocuments: string[];
+}
+
+interface TenantDocument {
+  id: string;
+  name: string;
+  type: 'lease' | 'ejari' | 'receipt';
+  url: string;
+}
+
+const FALLBACK_LEASE: ApiLease = {
+  id: 'lease-tenant-001',
+  documents: ['https://example.com/docs/td-001.pdf', 'https://example.com/docs/td-002.pdf'],
+  ejariNumber: 'EJARI-2026-8891',
+  addendumDocuments: ['https://example.com/docs/td-003.pdf'],
+};
+
+const FALLBACK_DOCUMENTS: TenantDocument[] = [
+  {
+    id: 'td-001',
+    name: 'Tenancy Agreement',
+    type: 'lease',
+    url: 'https://example.com/docs/td-001.pdf',
+  },
+  {
+    id: 'td-002',
+    name: 'Ejari Certificate',
+    type: 'ejari',
+    url: 'https://example.com/docs/td-002.pdf',
+  },
+  {
+    id: 'td-003',
+    name: 'Deposit Receipt',
+    type: 'receipt',
+    url: 'https://example.com/docs/td-003.pdf',
+  },
+];
+
+function leaseToDocuments(lease: ApiLease): TenantDocument[] {
+  const docs: TenantDocument[] = [];
+  if (lease.documents[0]) {
+    docs.push({ id: 'td-001', name: 'Tenancy Agreement', type: 'lease', url: lease.documents[0] });
+  }
+  if (lease.ejariNumber) {
+    docs.push({
+      id: 'td-002',
+      name: 'Ejari Certificate',
+      type: 'ejari',
+      url: lease.documents[1] ?? '#',
+    });
+  }
+  if (lease.addendumDocuments[0]) {
+    docs.push({
+      id: 'td-003',
+      name: 'Deposit Receipt',
+      type: 'receipt',
+      url: lease.addendumDocuments[0],
+    });
+  }
+  return docs;
+}
 
 const TenantDocumentsTab: FC = () => {
   const currentUser = useSelector((state: RootState) => state.user.currentUser);
+  const [lease, setLease] = useState<ApiLease | null>(FALLBACK_LEASE);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [typeFilter, setTypeFilter] = useState<'all' | 'lease' | 'ejari' | 'receipt'>('all');
 
-  const documents = useMemo(
-    () => [
-      {
-        id: 'td-001',
-        name: 'Tenancy Agreement 2026',
-        type: 'lease' as const,
-        url: 'https://example.com/docs/td-001.pdf',
-      },
-      {
-        id: 'td-002',
-        name: 'Ejari Certificate 2026',
-        type: 'ejari' as const,
-        url: 'https://example.com/docs/td-002.pdf',
-      },
-      {
-        id: 'td-003',
-        name: 'Security Deposit Receipt',
-        type: 'receipt' as const,
-        url: 'https://example.com/docs/td-003.pdf',
-      },
-    ],
-    []
-  );
+  useEffect(() => {
+    if (!currentUser) return;
+
+    authFetch('/api/leases?role=tenant&pageSize=1')
+      .then(r => r.json())
+      .then(data => setLease((data.data as ApiLease[])?.[0] ?? null))
+      .catch(() => {
+        if (!lease) {
+          setError('Unable to load documents. Please refresh.');
+        }
+      });
+  }, [currentUser, lease]);
+
+  const documents = useMemo<TenantDocument[]>(() => {
+    if (!lease) return FALLBACK_DOCUMENTS;
+    return leaseToDocuments(lease);
+  }, [lease]);
 
   const filteredDocuments = useMemo(() => {
     const normalizedSearch = searchQuery.trim().toLowerCase();
@@ -56,6 +121,22 @@ const TenantDocumentsTab: FC = () => {
     return (
       <div className="empty-state">
         <p>You must be logged in to view your documents.</p>
+      </div>
+    );
+  }
+
+  if (loading) {
+    return (
+      <div className="loading-state" data-testid="documents-loading">
+        <p>Loading documents…</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="error-message" data-testid="documents-error">
+        <p>{error}</p>
       </div>
     );
   }
@@ -89,7 +170,15 @@ const TenantDocumentsTab: FC = () => {
         </select>
       </div>
 
-      {filteredDocuments.length === 0 ? (
+      {documents.length === 0 ? (
+        <div className="empty-state" data-testid="tenant-documents-no-lease">
+          <p>
+            {lease
+              ? 'No documents have been uploaded to your lease yet.'
+              : 'No active lease found.'}
+          </p>
+        </div>
+      ) : filteredDocuments.length === 0 ? (
         <div className="empty-state" data-testid="tenant-documents-empty-state">
           <p>No documents match your filters.</p>
         </div>

@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * Enhanced Department Item Component
  * Displays department with icon, name, and active state
@@ -6,7 +5,7 @@
 
 import React from 'react';
 import styled from 'styled-components';
-import { getDepartmentMetadata } from '../../../config/departmentMetadata';
+import { getDepartmentMetadata } from '../../config/departmentMetadata';
 
 const DepartmentItemContainer = styled.div<{ $isActive: boolean; $color: string }>`
   display: flex;
@@ -20,10 +19,8 @@ const DepartmentItemContainer = styled.div<{ $isActive: boolean; $color: string 
   border-left: 3px solid transparent;
   position: relative;
 
-  background-color: ${(props) =>
-    props.$isActive ? `rgba(52, 152, 219, 0.1)` : 'transparent'};
-  border-left-color: ${(props) =>
-    props.$isActive ? props.$color : 'transparent'};
+  background-color: ${props => (props.$isActive ? `rgba(52, 152, 219, 0.1)` : 'transparent')};
+  border-left-color: ${props => (props.$isActive ? props.$color : 'transparent')};
 
   &:hover {
     background-color: rgba(255, 255, 255, 0.05);
@@ -58,7 +55,7 @@ const DepartmentName = styled.div`
 
 const DepartmentCount = styled.div<{ $isActive: boolean }>`
   font-size: 11px;
-  color: ${(props) => (props.$isActive ? '#3498db' : '#999')};
+  color: ${props => (props.$isActive ? '#3498db' : '#999')};
   font-weight: 400;
 `;
 
@@ -67,7 +64,7 @@ const ActiveIndicator = styled.div<{ $isActive: boolean }>`
   height: 8px;
   border-radius: 50%;
   background-color: #27ae60;
-  opacity: ${(props) => (props.$isActive ? 1 : 0)};
+  opacity: ${props => (props.$isActive ? 1 : 0)};
   transition: opacity 0.2s ease;
   flex-shrink: 0;
 `;
@@ -106,7 +103,7 @@ export const EnhancedDepartmentItem: React.FC<DepartmentItemProps> = ({
       aria-selected={isActive}
       role="button"
       tabIndex={0}
-      onKeyPress={(e) => {
+      onKeyPress={e => {
         if (e.key === 'Enter' || e.key === ' ') {
           e.preventDefault();
           onClick();
@@ -128,4 +125,3 @@ export const EnhancedDepartmentItem: React.FC<DepartmentItemProps> = ({
 };
 
 export default EnhancedDepartmentItem;
-

@@ -5,377 +5,332 @@
 > **Title:** WhatsApp LocalAuth Bot Manager & Agent Session Manager  
 > **Color:** #8B5CF6 (Purple)  
 > **Avatar:** 🤖  
-> **Status:** Production-Ready (Phase 1-20+ from arslan9024/whatsapp-bot-linda)  
+> **Status:** Production-Ready  
+> **Dashboard URL:** `/owner/dashboard?tab=linda`  
 > **Framework:** whatsapp-web.js + LocalAuth
 
 ---
 
 ## Overview
 
-**Linda is the AGENT-SIDE SESSION MANAGER** — operates **locally on agent devices** using **whatsapp-web.js + LocalAuth**. Zero Meta verification required.
+**Linda is the agent-side WhatsApp session manager** for White Caves Real Estate LLC. She operates locally on agent devices using `whatsapp-web.js` with `LocalAuth` — requiring zero Meta Business verification and delivering instant, rate-limit-free messaging directly from each agent's WhatsApp number.
 
-**Core Role**: 
-- ✅ Initialize WhatsApp web client on agent devices (1 per agent)
-- ✅ Send messages via local client (instant, no Meta approval)
-- ✅ Execute real estate commands (PROPERTY, PRICING, FINANCE, etc.)
-- ✅ Sync contacts locally
-- ✅ Manage sessions & recovery
+**Core Role**:
+- ✅ Initialize and maintain WhatsApp web client sessions per agent device (QR code pairing)
+- ✅ Send direct messages and property brochures to leads and clients
+- ✅ Broadcast to multiple phone numbers simultaneously
+- ✅ Execute real estate commands (PROPERTY, PRICING, SCHEDULE_TOUR, CONTRACT, etc.)
+- ✅ Sync contacts from Google Contacts → MongoDB
+- ✅ AI-powered lead opportunity scoring via Groq
+- ✅ Poll inbound messages and route them to the CRM pipeline
+- ✅ Auto-recover disconnected sessions with exponential backoff
 
-**Unique Position**: Linda is the **ONLY way agents send messages directly**. No rate limits. No Meta approval. No infrastructure. Just scan QR code.
-
-**The key differentiator**: LOCAL + INSTANT + AGENT-CONTROLLED. Zero Met infrastructure Required.
+**Key differentiator**: LOCAL + INSTANT + AGENT-CONTROLLED. Each agent scans a QR code once, and Linda handles all their WhatsApp messaging from the CRM — no Meta approval, no infrastructure, no rate limits (within WhatsApp Web's 1 msg/6 sec per user).
 
 ---
 
 ## Core Responsibilities
 
 ### 1. Multi-Account Session Management
-- Initialize and manage 5-10+ WhatsApp client instances
-- Each agent gets their own secure local session
-- Sessions persist in encrypted local storage
-- Auto-recovery on disconnection (exponential backoff)
-- QR code generation for device linking
+- Each agent has their own isolated LocalAuth session
+- Sessions stored in `LINDA_SESSIONS_PATH` (default `./.linda-sessions/`)
+- Prisma `LindaSession` model persists session metadata to PostgreSQL
+- Auto-reconnect within 5 seconds on disconnection
+- Heartbeat ping every 30 seconds to detect silent disconnections
+- Manual recovery via `POST /api/linda/session/:id/recover`
 
 ### 2. Real Estate Command Execution
-- **PROPERTY**: Display property details, images, pricing
-- **PRICING**: Calculate ROI, rental yields, commission
-- **SCHEDULE_TOUR**: Book showings with calendar integration
-- **CONTRACT**: Generate and send contract templates
-- **FINANCING**: Show mortgage calculator, financing options
-- **COMPARABLE**: Show similar properties (comps)
-- **LEAD_SCORE**: Qualify leads using AI scoring
-- Custom commands extensible by agents
+| Command | Trigger | Response |
+|---------|---------|---------|
+| `PROPERTY` | Agent types `property {id}` | Property details, images, pricing (AED) |
+| `PRICING` | `pricing {id} {buy\|rent}` | ROI analysis, rental yield, mortgage estimate |
+| `SCHEDULE_TOUR` | `tour {id} {date} {time}` | Books viewing slot, sends calendar invite |
+| `CONTRACT` | `contract {tenantPhone} {propId}` | Generates tenancy agreement draft |
+| `FINANCING` | `financing {propId}` | Mortgage calculator, bank options |
+| `COMPARABLE` | `comps {area} {beds}` | Similar listings in the area |
+| `LEAD_SCORE` | `score {phone}` | AI qualification score 0–100 |
 
-### 3. Contact & Lead Management
-- Sync Google Contacts → MongoDB automatically
-- Track interaction history with each contact
-- AI-based lead scoring (0-100 scale)
-- Identify hot leads vs. cold leads
-- Route qualified leads to agent pipeline
+### 3. Broadcast Campaigns
+- `POST /api/linda/broadcast` accepts array of phone numbers + template message
+- Supports `LindaBroadcastCampaign` Prisma model for campaign tracking
+- Rate-limited to 1 msg / 6 sec per session (WhatsApp Web constraint)
+- Campaign analytics: delivered count, failed, pending
 
-### 4. AI Opportunity Detection
-- Analyze conversation context for buying signals
-- Detect urgency markers in messages
-- Suggest next steps (call, schedule tour, send contract)
-- Learn from agent actions and improve suggestions
+### 4. AI Opportunity Scoring
+- Analyse conversation context for buying/renting signals
+- Detect urgency markers: "moving next month", "mortgage approved", "cash buyer"
+- Score leads 0–100; >70 flagged as HOT and escalated to Clara (Leads CRM)
+- Powered by Groq API (`opportunityScoring.ts`)
 
-### 5. Session Recovery & Persistence
-- Local session storage: `./sessions/session-{phoneNumber}/`
-- MongoDB backup of all sessions
-- Connection monitoring with heartbeat ping every 30 seconds
-- Manual recovery endpoint if device goes offline
-- Automatic reconnection within 5 seconds
+### 5. Contact Sync
+- Google Contacts → MongoDB sync on demand via `POST /api/linda/contacts/sync`
+- Stores `LindaContact` with `score`, `lastInteraction`, `property` (last discussed)
+- De-duplicates on phone number
 
 ---
 
-## Capabilities
+## Requested Capabilities (Master Number + Power Agent Flow)
 
-```typescript
-capabilities: [
-  'local_auth_management',       // Initialize & secure LocalAuth sessions
-  'multi_account_coordination',  // Handle 5-10+ agent accounts
-  'qr_device_linking',           // Generate QR codes for device setup
-  'contact_sync_import',         // Google Contacts → MongoDB sync
-  'ai_opportunity_scoring',      // Claude API-powered lead qualification
-  'command_execution',           // Real estate specific commands
-  'conversation_routing',        // Route messages to handlers
-  'session_recovery',            // Auto-reconnect on disconnect
-  'group_management',            // Shared group conversations
-  'reaction_tracking'            // Emoji reactions & stickers
-]
-```
+The following capabilities define the requested operating model where Linda is connected to one master WhatsApp number and can automate owner-contact lookup from Power Agent data.
+
+| # | Capability | Definition | Explanation |
+|---|---|---|---|
+| 1 | Master Number Mode | Linda operates from one designated WhatsApp master number. | All automations and monitoring run through the single connected account/device so management stays centralized. |
+| 2 | Conversation Analysis from Master Number | Linda can analyze all chats visible under that connected master account. | Once the device is linked, Linda can inspect message history and active threads for context-aware automation. |
+| 3 | Existing vs New Conversation Detection | Linda checks if an incoming phone number already has prior conversation history. | This lets Linda decide whether to continue an existing thread or initialize a new interaction workflow. |
+| 4 | Goraha Saved Contact Check | Linda verifies whether the same number exists in Goraha contacts. | Conversation status is enriched with contact-book state (saved/not-saved) for better CRM routing. |
+| 5 | Combined Conversation State | Linda returns a unified state across conversation history + contact-save status. | Example states include existing+saved, existing+not-saved, new+saved, and new+not-saved. |
+| 6 | Contact Type Classification | Linda classifies the participant role from conversation context. | Typical classes include landlord, seller, buyer, tenant, internal agent, or external agent to improve response behavior. |
+| 7 | Conversation Labeling | Linda assigns labels to each conversation based on detected class and context. | Labels make downstream filtering, reporting, and automation triggers easier and more reliable. |
+| 8 | Badge Assignment | Linda applies visual badges aligned with assigned labels. | Badges provide instant recognition in dashboard/conversation lists (for example: Landlord, Buyer, Agent). |
+| 9 | Badge-Based Filtering | Linda supports filtering conversation lists by badge/label. | Teams can quickly isolate specific pipelines such as only owners, only buyers, or only tenants. |
+| 10 | Property Owner Mobile Lookup | Linda can fetch owner mobile numbers for a requested property. | On query (for example from your friend), Linda searches mapped property records and returns the owner contact number. |
+| 11 | Smart Property Query Parsing | Linda can parse different property identifiers before lookup. | It can interpret property name, property code, building, or unit number and map them to the correct dataset row. |
+| 12 | Controlled Sharing Policy | Linda enforces permission checks before returning owner mobile data. | Sensitive owner contact data should be shared only when policy/rules allow it (role, approval, or audit conditions). |
+| 13 | Google Sheets CRUD (Power Agent Service Account) | Linda can create, read, update, and delete Power Agent records through Google Sheets APIs using service-account credentials. | This capability enables full data operations on sheet-backed property/owner data, not just read-only lookup, while keeping operations auditable. |
 
 ---
 
 ## API Endpoints
 
-| Method | Endpoint | Purpose |
-|--------|----------|---------|
-| **GET** | `/api/linda/status` | Check session health |
-| **POST** | `/api/linda/qr-generate` | Generate new QR code |
-| **GET** | `/api/linda/sessions` | List active sessions |
-| **POST** | `/api/linda/send-message` | Send via LocalAuth |
-| **GET** | `/api/linda/contacts` | Synced contacts list |
-| **POST** | `/api/linda/contacts/sync` | Trigger Google sync |
-| **GET** | `/api/linda/commands` | Available commands |
-| **POST** | `/api/linda/commands/execute` | Execute command |
-| **GET** | `/api/linda/analytics` | Session analytics |
-| **POST** | `/api/linda/session/:id/recover` | Manual recovery |
+| Method | Endpoint | Auth | Purpose |
+|--------|----------|------|---------|
+| **GET** | `/api/linda/health` | None | Simple health check |
+| **GET** | `/api/linda/status` | JWT | Session connection status |
+| **GET** | `/api/linda/qr` | JWT (Owner) | Current QR code (base64 PNG) |
+| **POST** | `/api/linda/connect` | JWT (Owner) | Trigger bot initialization |
+| **POST** | `/api/linda/disconnect` | JWT (Owner) | Graceful disconnect |
+| **GET** | `/api/linda/stats` | JWT | Detailed session statistics |
+| **GET** | `/api/linda/sessions` | JWT | Active bot sessions list |
+| **POST** | `/api/linda/send/:conversationId` | JWT | Send message to one contact |
+| **POST** | `/api/linda/broadcast` | JWT | Broadcast to multiple phones |
+| **POST** | `/api/linda/webhook` | JWT | Poll-based message ingestion |
+| **GET** | `/api/linda/conversations` | JWT | List active chats |
+| **GET** | `/api/linda/conversations/:phone/history` | JWT | Conversation history |
+| **POST** | `/api/linda/ready` | JWT | Readiness check |
+
+---
+
+## Data Models (Prisma)
+
+### LindaSession
+```prisma
+model LindaSession {
+  id          String   @id @default(cuid())
+  agentId     String
+  phoneNumber String   @unique
+  displayName String
+  status      String   // connected | disconnected | qr_scanning | error
+  qrCode      String?
+  sessionDir  String
+  metadata    Json?
+  lastSeen    DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+```
+
+### LindaBroadcastCampaign
+```prisma
+model LindaBroadcastCampaign {
+  id          String   @id @default(cuid())
+  name        String
+  message     String
+  phones      String[]
+  sentCount   Int      @default(0)
+  failedCount Int      @default(0)
+  status      String   @default("pending")  // pending | running | completed | failed
+  scheduledAt DateTime?
+  completedAt DateTime?
+  createdAt   DateTime @default(now())
+}
+```
+
+### CommunicationTemplate
+```prisma
+model CommunicationTemplate {
+  id        String   @id @default(cuid())
+  name      String
+  category  String   // property_intro | viewing_confirmation | follow_up | payment_reminder
+  body      String   // Supports {{name}}, {{property}}, {{price}}, {{agent}} placeholders
+  language  String   @default("en")  // en | ar
+  createdAt DateTime @default(now())
+}
+```
 
 ---
 
 ## Data Flows
 
-### Inbound
-← **Nina**: Qualified leads with intent + slots  
-← **Nadia**: Customer messages (forwarded from CRM)  
-← **Agent**: Manual command execution
-
-### Outbound
-→ **Nadia**: Response message + lead update  
-→ **MongoDB**: All messages, commands, contacts  
-→ **Redux**: UI state updates
-
-### Sequence
+### Inbound Message Flow
 ```
-Agent Action (Msg/Cmd) 
-  →  Linda (LocalAuth send) 
-  →  WhatsApp Cloud (WEB)
-  →  Customer
-  →  WhatsApp Cloud (inbound)
-  →  Nadia (webhook)
-  →  Nina (NLP)
-  →  Linda (notification)
-  →  Agent Dashboard
+Customer WhatsApp Message
+  → WhatsApp Web Protocol
+  → Linda LocalAuth Client (poll via /api/linda/webhook)
+  → Nadia (CRM logging + conversation assignment)
+  → Nina (NLP intent extraction)
+  → Clara (lead score update if qualified)
+  → Agent Dashboard (real-time notification)
 ```
 
----
-
-## Access Control
-
-| Role | Viewable | Accessible | Data Level |
-|------|----------|-----------|-----------|
-| **Owner** | ✅ | ✅ | Full |
-| **Admin** | ✅ | ✅ | Full |
-| **Agent** | ✅ | ❌ | Own sessions only |
-| **Sales Manager** | ❌ | ❌ | — |
-| **Public** | ❌ | ❌ | — |
-
----
-
-## Database Schema
-
-### LindaSession
-```javascript
-{
-  _id: ObjectId(),
-  agentId: "user-123",
-  phoneNumber: "+971501234567",
-  displayName: "Ahmed - Sales Agent",
-  qrCode: "https://...", // QR code URL
-  status: "connected", // disconnected, qr-scanning, error
-  lastSeen: ISODate(),
-  sessionDir: "./sessions/session-971501234567/",
-  metadata: { ... },
-  createdAt: ISODate()
-}
+### Outbound Message Flow
+```
+Agent Action in CRM
+  → POST /api/linda/send/:conversationId
+  → Linda LocalAuth Client
+  → WhatsApp Web Protocol
+  → Customer Device
+  → Nadia (message log)
+  → HenryRecord (audit if contract-related)
 ```
 
-### LindaContact
-```javascript
-{
-  _id: ObjectId(),
-  sessionId: ObjectId(),
-  googleId: "gmail-contact-123",
-  name: "Ahmed Al Mazrouei",
-  phone: "+971505555555",
-  email: "ahmed@email.com",
-  property: "dubai-marina-2br", // last discussed
-  score: 85, // AI scoring 0-100
-  lastInteraction: ISODate(),
-  syncedAt: ISODate()
-}
+### Broadcast Flow
 ```
-
-### LindaCommand
-```javascript
-{
-  _id: ObjectId(),
-  sessionId: ObjectId(),
-  command: "PROPERTY",
-  propertyId: "prop-dubai-marina-001",
-  args: { ... },
-  result: { success: true, propertyDetails: { ... } },
-  executedAt: ISODate(),
-  status: "success"
-}
+POST /api/linda/broadcast {phones[], message}
+  → LindaBroadcastCampaign created (status: running)
+  → Linda sends 1 msg / 6 sec per session
+  → Campaign updated (sentCount / failedCount)
+  → Notification to agent on completion
 ```
 
 ---
 
-## Real Estate Command Examples
+## Access Control (RBAC)
 
-### PROPERTY Command
+| Role | View Sessions | Send Messages | Broadcast | Connect/Disconnect |
+|------|-------------|--------------|-----------|-------------------|
+| **Owner** | ✅ All | ✅ | ✅ | ✅ |
+| **Admin** | ✅ All | ✅ | ✅ | ✅ |
+| **Sales Manager** | ✅ Team | ✅ | ✅ | ❌ |
+| **Agent** | Own only | Own only | ❌ | ❌ |
+| **Public** | ❌ | ❌ | ❌ | ❌ |
+
+Enforced via `requireMinRole` / `requirePermission` from `server/middleware/rbac.ts`.
+
+---
+
+## Frontend Integration
+
+**Component**: `src/components/crm/LindaAdminCRM_NEW/index.tsx`  
+**Redux Slice**: `src/store/slices/lindaSlice.ts`  
+**CRM Module Key**: `'linda'` (registered in `CRM_MODULES`)  
+**Dashboard URL**: `/owner/dashboard?tab=linda`
+
+### UI Panels
+1. **Session Monitor** — live connection status, QR code display, heartbeat indicator
+2. **Conversations** — WhatsApp-style chat list with search; click to open ChatInterface
+3. **Broadcast** — template selector, phone list upload, campaign progress bar
+4. **Contacts** — synced contact list with AI scores; hot leads highlighted
+5. **Analytics** — messages sent/received, campaign stats, response rates
+
+---
+
+## Configuration
+
+```bash
+# Linda core
+LINDA_ENABLE=true
+LINDA_SESSIONS_PATH=./.linda-sessions   # LocalAuth session storage
+
+# Google Contacts sync
+GOOGLE_CONTACTS_API_KEY=...
+GOOGLE_SERVICE_ACCOUNT_JSON=...
+
+# AI opportunity scoring
+GROQ_API_KEY=...
+GROQ_MODEL=llama-3.1-70b-versatile
+
+# PostgreSQL (via Prisma)
+DATABASE_URL=postgresql://...
 ```
-Linda: property dubai-marina-2br
 
-Response: 
-🏠 Dubai Marina 2BR Apartment
-📍 Marina Crescent
-💰 AED 1,200,000
-📐 1,050 sqft
-🏊 Pool • Gym • Concierge
-📞 Call Agent →
+---
+
+## Real Estate Workflow: New Lead from WhatsApp
+
 ```
-
-### PRICING Command
-```
-Linda: pricing dubai-marina-2br buy
-
-Response:
-📊 Dubai Marina 2BR - Investment Analysis
-
-Purchase Price: AED 1,200,000
-Annual Rental Yield: AED 78,000 (6.5%)
-Avg Monthly Rent: AED 6,500
-ROI (5yr): 32.5%
-
-Call agent for financing options →
-```
-
-### SCHEDULE_TOUR Command
-```
-Linda: tour dubai-marina-2br tomorrow 2pm
-
-Response:
-✅ Tour Scheduled
-📅 Tomorrow, 2:00 PM
-📍 Dubai Marina Crescent
-✏️ Confirm or reschedule →
+1. Customer: "Looking for 2BR apartment in Dubai Marina, budget AED 1.2M"
+   ↓
+2. Linda (LocalAuth) receives the message
+   ↓
+3. Nadia logs conversation in CRM, assigns to available agent
+   ↓
+4. Nina NLP: intent=property_search, {type: "2BR", area: "Dubai Marina", budget: 1200000}
+   ↓
+5. Linda AI scoring: urgency=high, budget=confirmed → score 82/100 → HOT
+   ↓
+6. Agent receives notification in Linda dashboard
+   ↓
+7. Agent clicks PROPERTY command → property details sent via Linda to customer
+   ↓
+8. Customer: "Can I see it tomorrow 2pm?"
+   ↓
+9. Agent executes: tour dubai-marina-2br tomorrow 2pm
+   ↓
+10. Viewing slot created in Booking calendar, confirmation sent to customer
+    ↓
+11. Clara updates lead stage: Contacted → Viewing Scheduled
+    ↓
+12. Henry archives viewing confirmation record
 ```
 
 ---
 
 ## Integration with Other Assistants
 
-### ↔ Nina (NLP Bot)
-**When customer message arrives:**
-1. Nadia receives via webhook
-2. Nina processes intent/slots
-3. Linda executes property search command
-4. Result sent back via Nadia
-
-### ↔ Nadia (CRM Manager)
-**Data sync:**
-1. Linda sends message → Nadia stores in DB
-2. Nadia webhook → Linda notification
-3. Nadia lead assignment → Linda queue
-4. Linda command execution → Nadia logs result
-
----
-
-## Configuration
-
-### Environment Variables
-```bash
-# LocalAuth
-WHATSAPP_SESSION_DIR=./sessions
-WHATSAPP_ENABLED=true
-LINDA_ENABLE=true
-
-# Google Contacts Sync
-GOOGLE_CONTACTS_API_KEY=...
-GOOGLE_SERVICE_ACCOUNT_JSON=...
-
-# AI/ML
-CLAUDE_API_KEY=...
-OPPORTUNITYSCORER_MODEL=claude-3.5-sonnet
-
-# Redis (for caching)
-REDIS_URL=redis://localhost:6379
-```
-
-### LocalAuth Session Setup (QR Code Flow)
-```
-1. Agent scans QR code with WhatsApp phone
-2. LocalAuth stores credentials locally
-3. Sessions persist in ./sessions/session-{phoneNumber}/
-4. No password needed; uses WhatsApp protocol directly
-5. Auto-refresh every 30 days (WhatsApp requirement)
-6. Manual refresh endpoint available if needed
-```
+| Assistant | Relationship |
+|-----------|-------------|
+| **Nadia** | Nadia handles Meta Cloud API (inbound webhooks); Linda handles local agent sends. Both write to the same conversation log |
+| **Nina** | Linda passes inbound messages to Nina for NLP processing |
+| **Clara** | Linda's AI scores feed Clara's lead pipeline |
+| **Henry** | Contract-related messages trigger Henry to archive documents |
+| **Daisy** | Linda sends lease signing confirmations on Daisy's behalf |
 
 ---
 
 ## Performance Metrics
 
-| Metric | Value | Notes |
-|--------|-------|-------|
-| **Session Initialization** | <5 seconds | From QR to connected |
-| **Command Execution** | <2 seconds | Property search via API |
-| **Message Send** | <1 second | Via LocalAuth client |
-| **Contact Sync** | <30 seconds | Google→MongoDB for 100+ contacts |
-| **Uptime** | 99%+ | Auto-recovery on disconnect |
-| **Rate Limiting** | 1 msg/6 sec per user | WhatsApp web standard |
-
----
-
-## Real Estate Workflow Example
-
-### Scenario: Agent "Ahmed" Receives New Lead
-
-```
-1. Customer (via WhatsApp): "Show me 2BR apartments in Dubai Marina"
-   ↓
-2. Nadia (webhook): Receives message
-   ↓
-3. Nina (NLP): Extracts intent="property_search", slots={type: "2BR", location: "Dubai Marina"}
-   ↓
-4. Linda (notification): "New qualified lead! 2BR apartment search"
-   ↓
-5. Ahmed (agent): Clicks "View Lead" in Linda dashboard
-   ↓
-6. Linda executes: property dubai-marina-2br (PROPERTY command)
-   ↓
-7. Response: Property details, images, pricing
-   ↓
-8. Ahmed sends via Linda: "This property is perfect! Want to schedule a tour?"
-   ↓
-9. Customer: "Yes, tomorrow 2pm"
-   ↓
-10. Ahmed executes: tour dubai-marina-2br tomorrow 2pm (SCHEDULE_TOUR command)
-    ↓
-11. Result: Tour confirmed, customer notified, calendar updated
-    ↓
-12. Analytics: Lead scored 92/100, tour converted lead to opportunity
-```
+| Metric | Target | Notes |
+|--------|--------|-------|
+| Session initialization | < 5 seconds | QR scan to connected |
+| Command execution | < 2 seconds | Property lookup via API |
+| Message send | < 1 second | Via LocalAuth client |
+| Contact sync (100 contacts) | < 30 seconds | Google → MongoDB |
+| Uptime | 99%+ | Auto-reconnect on drop |
+| Broadcast throughput | 1 msg / 6 sec | WhatsApp Web standard |
 
 ---
 
 ## Security & Compliance
 
-- ✅ **End-to-End Encryption**: WhatsApp Signal protocol + LocalAuth
-- ✅ **Session Isolation**: Each agent session encrypted separately
-- ✅ **No Cloud Storage**: Sessions remain local on device (backup in MongoDB encrypted)
-- ✅ **Access Control**: Agent can only access own sessions
-- ✅ **Audit Trail**: All commands logged with timestamp + executor
-- ✅ **RERA Compliance**: No unauthorized contact storage
-- ✅ **GDPR**: Easy session deletion + contact purge
+- ✅ **End-to-end encryption**: WhatsApp Signal protocol (LocalAuth inherits this)
+- ✅ **Session isolation**: Each agent session in separate directory, encrypted locally
+- ✅ **No cloud credential storage**: LocalAuth credentials stay on device
+- ✅ **RBAC**: Agent can only access own session data
+- ✅ **Audit trail**: All commands and messages logged (Nadia + Henry)
+- ✅ **RERA compliance**: No unsolicited contact; opt-in required before broadcast
+- ✅ **GDPR/UAE PDPL**: Contact data deletable via session purge endpoint
 
 ---
 
-## Support & Troubleshooting
+## Troubleshooting
 
-### Common Issues
-
-**Q: QR code not scanning?**  
-A: Ensure WhatsApp App is updated, phone has good light, camera focus is clear
-
-**Q: Session disconnected?**  
-A: Linda auto-reconnects within 5 seconds. If persistent, use `/api/linda/session/:id/recover`
-
-**Q: Commands not working?**  
-A: Check that property ID is correct and command syntax matches
-
-**Q: Contacts not syncing?**  
-A: Verify Google API credentials, restart sync with `/api/linda/contacts/sync`
+| Issue | Resolution |
+|-------|-----------|
+| QR code not scanning | Update WhatsApp app, improve lighting, retry `POST /api/linda/connect` |
+| Session disconnected | Auto-reconnects within 5 sec; if persistent call `POST /api/linda/disconnect` then reconnect |
+| Message send failing | Check `GET /api/linda/status`; verify session is `connected` |
+| Contacts not syncing | Verify Google API credentials; call `POST /api/linda/contacts/sync` |
+| Broadcast stuck | Check campaign status via `LindaBroadcastCampaign`; restart if `status: running` > 1 hour |
 
 ---
 
 ## Future Enhancements
 
-- [ ] Multi-language support (Arabic, Urdu)
-- [ ] Voice message transcription
-- [ ] Computer vision for property images
-- [ ] Integration with property inspection apps
-- [ ] Document signing via WhatsApp
-- [ ] Payment collection (ePayments integration)
-- [ ] Video call integration with WhatsApp calling
-
----
-
-## Related Documentation
-- **Nina** — Conversation flow design & NLP bot development  
-- **Nadia** — WhatsApp Business CRM with Meta Cloud API  
-- **MaryInventoryCRM** — Property inventory management  
-- **ClaraLeadsCRM** — Lead pipeline & conversion funnel
+- [ ] Arabic message templates for UAE clients
+- [ ] Voice message transcription (Whisper API)
+- [ ] Property image auto-attach from Mary's inventory
+- [ ] WhatsApp Pay integration for booking deposits
+- [ ] Computer vision for auto-tagging property images
+- [ ] Integration with Henry for contract signing via WhatsApp
+- [ ] Multi-device support (WhatsApp Web multi-device beta)

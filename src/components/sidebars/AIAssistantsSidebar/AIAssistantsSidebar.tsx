@@ -1,9 +1,11 @@
-﻿// @ts-nocheck
 // src/components/sidebars/AIAssistantsSidebar/AIAssistantsSidebar.tsx
 /**
  * Right Sidebar: AI Assistants
  * Displays all available AI assistants with their status and capabilities
  * Provides quick access to AI tools and WhatsApp integrations
+ *
+ * @deprecated Canonical CRM sidebar is `src/components/layout/UnifiedSidebar/UnifiedSidebar.tsx`.
+ * Keep this file for compatibility until all legacy imports are retired.
  */
 
 import React, { useMemo } from 'react';
@@ -12,16 +14,16 @@ import { BaseSidebar, SidebarSection, SidebarItem } from '../../shared/sidebars'
 import { useSidebarState } from '../../../hooks/useSidebarState';
 import {
   AI_ASSISTANTS,
-  getAssistantsByDepartment,
   getAssistantsByRole,
+  type AIAssistant,
 } from '../../../config/aiAssistantsRegistry';
 
 const SidebarContainer = styled.div`
   height: 100%;
   display: flex;
   flex-direction: column;
-  background: ${props => props.theme.colors.sidebarBg};
-  border-left: 1px solid ${props => props.theme.colors.border};
+  background: ${({ theme }) => String((theme as any)?.colors?.sidebarBg ?? '#1a1a1a')};
+  border-left: 1px solid ${({ theme }) => String((theme as any)?.colors?.border ?? '#333')};
 `;
 
 const StatusBadge = styled.span<{ status: 'active' | 'inactive' | 'training' }>`
@@ -53,7 +55,7 @@ const AILabel = styled.div`
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  color: ${props => props.theme.colors.textSecondary};
+  color: ${({ theme }) => String((theme as any)?.colors?.textSecondary ?? '#999')};
   margin-top: 16px;
   margin-bottom: 8px;
 
@@ -69,7 +71,10 @@ const AIItemContainer = styled.div`
 `;
 
 export interface AIAssistantsSidebarProps {
-  onAssistantSelect?: (assistantId: string, context?: { role?: string; department?: string }) => void;
+  onAssistantSelect?: (
+    assistantId: string,
+    context?: { role?: string; department?: string }
+  ) => void;
   activeAssistant?: string;
   className?: string;
 }
@@ -79,16 +84,29 @@ export const AIAssistantsSidebar: React.FC<AIAssistantsSidebarProps> = ({
   activeAssistant,
   className,
 }) => {
-  const { setActiveFeature, expandedSections, toggleSection } = useSidebarState();
+  const { setActive, isExpanded, toggleExpanded } = useSidebarState('ai-assistants');
 
   // Get assistants grouped by role
   const whatsappAgents = useMemo(() => getAssistantsByRole('WhatsApp Agent'), []);
   const crmAgents = useMemo(() => getAssistantsByRole('CRM Agent'), []);
   const dataAgents = useMemo(() => getAssistantsByRole('Data Management'), []);
   const analyticAgents = useMemo(() => getAssistantsByRole('Analytics & Reporting'), []);
+  const allAssistants = useMemo(() => Object.values(AI_ASSISTANTS), []);
+  const groupedAssistantIds = useMemo(() => {
+    return new Set([
+      ...whatsappAgents.map(a => a.id),
+      ...crmAgents.map(a => a.id),
+      ...dataAgents.map(a => a.id),
+      ...analyticAgents.map(a => a.id),
+    ]);
+  }, [analyticAgents, crmAgents, dataAgents, whatsappAgents]);
+  const ungroupedAssistants = useMemo(
+    () => allAssistants.filter(assistant => !groupedAssistantIds.has(assistant.id)),
+    [allAssistants, groupedAssistantIds]
+  );
 
-  const handleAssistantClick = (assistantId: string, assistant: any) => {
-    setActiveFeature(`ai-${assistantId}`);
+  const handleAssistantClick = (assistantId: string, assistant: AIAssistant) => {
+    setActive(`ai-${assistantId}`);
     if (onAssistantSelect) {
       onAssistantSelect(assistantId, {
         role: assistant.role,
@@ -97,69 +115,70 @@ export const AIAssistantsSidebar: React.FC<AIAssistantsSidebarProps> = ({
     }
   };
 
-  const renderAssistantItem = (assistant: any) => (
+  const renderAssistantItem = (assistant: AIAssistant) => (
     <SidebarItem
       key={assistant.id}
-      itemId={`ai-${assistant.id}`}
+      id={`ai-${assistant.id}`}
       label={assistant.name}
-      icon={assistant.icon}
-      isActive={activeAssistant === assistant.id}
+      icon={assistant.avatar || assistant.icon}
+      isSelected={activeAssistant === assistant.id}
       onClick={() => handleAssistantClick(assistant.id, assistant)}
-      description={
-        <AIItemContainer>
-          <StatusBadge status={assistant.status || 'active'} />
-          <span style={{ fontSize: '12px', color: 'inherit' }}>{assistant.role}</span>
-        </AIItemContainer>
+      sidebarName="ai-assistants"
+      badge={
+        assistant.role ? { text: assistant.role, variant: 'secondary', size: 'sm' } : undefined
       }
     />
   );
 
   return (
     <SidebarContainer className={className}>
-      <BaseSidebar title="AI Assistants" icon="🤖" subtitle="Smart Helpers">
+      <BaseSidebar name="ai-assistants" title="AI Assistants" icon="🤖" hasSearch={false}>
         {/* WHATSAPP AGENTS - PRIMARY */}
         {whatsappAgents.length > 0 && (
           <AISection>
             <AILabel>📱 WhatsApp Agents</AILabel>
             <SidebarSection
-              sectionId="whatsapp-agents"
+              id="whatsapp-agents"
               title="WhatsApp Integration"
-              isExpanded={expandedSections.has('whatsapp-agents')}
-              onToggleExpand={() => toggleSection('whatsapp-agents')}
-              iconColor="#25D366"
+              sidebarName="ai-assistants"
+              defaultExpanded={isExpanded('whatsapp-agents')}
+              onToggle={() => toggleExpanded('whatsapp-agents')}
             >
               {whatsappAgents.map(assistant => renderAssistantItem(assistant))}
 
               {/* WhatsApp Management Options */}
               <SidebarItem
-                itemId="whatsapp-accounts"
+                id="whatsapp-accounts"
                 label="Manage Accounts"
                 icon="⚙️"
-                isActive={activeAssistant === 'whatsapp-accounts'}
+                isSelected={activeAssistant === 'whatsapp-accounts'}
+                sidebarName="ai-assistants"
                 onClick={() => {
-                  setActiveFeature('whatsapp-accounts');
+                  setActive('whatsapp-accounts');
                   onAssistantSelect?.('whatsapp-accounts', { role: 'Administration' });
                 }}
               />
 
               <SidebarItem
-                itemId="whatsapp-analytics"
+                id="whatsapp-analytics"
                 label="WhatsApp Analytics"
                 icon="📊"
-                isActive={activeAssistant === 'whatsapp-analytics'}
+                isSelected={activeAssistant === 'whatsapp-analytics'}
+                sidebarName="ai-assistants"
                 onClick={() => {
-                  setActiveFeature('whatsapp-analytics');
+                  setActive('whatsapp-analytics');
                   onAssistantSelect?.('whatsapp-analytics', { role: 'Analytics' });
                 }}
               />
 
               <SidebarItem
-                itemId="conversation-history"
+                id="conversation-history"
                 label="Conversation History"
                 icon="💬"
-                isActive={activeAssistant === 'conversation-history'}
+                isSelected={activeAssistant === 'conversation-history'}
+                sidebarName="ai-assistants"
                 onClick={() => {
-                  setActiveFeature('conversation-history');
+                  setActive('conversation-history');
                   onAssistantSelect?.('conversation-history', { role: 'Tracking' });
                 }}
               />
@@ -180,32 +199,34 @@ export const AIAssistantsSidebar: React.FC<AIAssistantsSidebarProps> = ({
           <AISection>
             <AILabel>📁 Data Management</AILabel>
             <SidebarSection
-              sectionId="data-agents"
+              id="data-agents"
               title="Data Tools"
-              isExpanded={expandedSections.has('data-agents')}
-              onToggleExpand={() => toggleSection('data-agents')}
-              iconColor="#3b82f6"
+              sidebarName="ai-assistants"
+              defaultExpanded={isExpanded('data-agents')}
+              onToggle={() => toggleExpanded('data-agents')}
             >
               {dataAgents.map(assistant => renderAssistantItem(assistant))}
 
               <SidebarItem
-                itemId="import-wizard"
+                id="import-wizard"
                 label="Data Import"
                 icon="📥"
-                isActive={activeAssistant === 'import-wizard'}
+                isSelected={activeAssistant === 'import-wizard'}
+                sidebarName="ai-assistants"
                 onClick={() => {
-                  setActiveFeature('import-wizard');
+                  setActive('import-wizard');
                   onAssistantSelect?.('import-wizard', { role: 'Data Management' });
                 }}
               />
 
               <SidebarItem
-                itemId="data-quality"
+                id="data-quality"
                 label="Quality Check"
                 icon="✓"
-                isActive={activeAssistant === 'data-quality'}
+                isSelected={activeAssistant === 'data-quality'}
+                sidebarName="ai-assistants"
                 onClick={() => {
-                  setActiveFeature('data-quality');
+                  setActive('data-quality');
                   onAssistantSelect?.('data-quality', { role: 'Data Management' });
                 }}
               />
@@ -221,39 +242,50 @@ export const AIAssistantsSidebar: React.FC<AIAssistantsSidebarProps> = ({
           </AISection>
         )}
 
+        {/* OTHER ASSISTANTS */}
+        {ungroupedAssistants.length > 0 && (
+          <AISection>
+            <AILabel>🧠 Other Assistants</AILabel>
+            {ungroupedAssistants.map(assistant => renderAssistantItem(assistant))}
+          </AISection>
+        )}
+
         {/* QUICK ACTIONS */}
         <AISection>
           <AILabel>🔧 Quick Actions</AILabel>
 
           <SidebarItem
-            itemId="ai-settings"
+            id="ai-settings"
             label="AI Settings"
             icon="⚙️"
-            isActive={activeAssistant === 'ai-settings'}
+            isSelected={activeAssistant === 'ai-settings'}
+            sidebarName="ai-assistants"
             onClick={() => {
-              setActiveFeature('ai-settings');
+              setActive('ai-settings');
               onAssistantSelect?.('ai-settings', { role: 'Administration' });
             }}
           />
 
           <SidebarItem
-            itemId="ai-performance"
+            id="ai-performance"
             label="Performance"
             icon="📊"
-            isActive={activeAssistant === 'ai-performance'}
+            isSelected={activeAssistant === 'ai-performance'}
+            sidebarName="ai-assistants"
             onClick={() => {
-              setActiveFeature('ai-performance');
+              setActive('ai-performance');
               onAssistantSelect?.('ai-performance', { role: 'Analytics' });
             }}
           />
 
           <SidebarItem
-            itemId="ai-training"
+            id="ai-training"
             label="Training Mode"
             icon="🎓"
-            isActive={activeAssistant === 'ai-training'}
+            isSelected={activeAssistant === 'ai-training'}
+            sidebarName="ai-assistants"
             onClick={() => {
-              setActiveFeature('ai-training');
+              setActive('ai-training');
               onAssistantSelect?.('ai-training', { role: 'Administration' });
             }}
           />
@@ -264,4 +296,3 @@ export const AIAssistantsSidebar: React.FC<AIAssistantsSidebarProps> = ({
 };
 
 export default AIAssistantsSidebar;
-

@@ -1,4 +1,5 @@
 # System Architecture Diagram
+
 # White Caves Real Estate Platform
 
 > **Document ID:** WC-ARCH-DIA-001
@@ -201,34 +202,33 @@ Internet
 
 ## 6. Data Flow Summary
 
-| Flow | Source | Destination | Protocol |
-|------|--------|-------------|---------|
-| Lead capture (website) | React form | Express POST /api/leads | HTTPS/JSON |
-| Lead capture (WhatsApp) | Meta webhook | POST /api/whatsapp/webhook | HTTPS |
-| Lead capture (portal) | Bayut/PF webhook | POST /api/leads | HTTPS |
-| Property search | React SPA | GET /api/properties | HTTPS/JSON |
-| Auth token flow | Login form | POST /api/auth/login → JWT | HTTPS |
-| AI assistant plan | Right sidebar | GET /api/assistants/:id/plan | HTTPS |
-| Rent payment | Tenant portal | POST /api/payments → Stripe | HTTPS |
-| Ejari download | Landlord portal | GET /api/documents/ejari/:id | HTTPS |
-| WhatsApp send | Agent CRM | POST /api/whatsapp/send → Meta | HTTPS |
+| Flow                    | Source           | Destination                    | Protocol   |
+| ----------------------- | ---------------- | ------------------------------ | ---------- |
+| Lead capture (website)  | React form       | Express POST /api/leads        | HTTPS/JSON |
+| Lead capture (WhatsApp) | Meta webhook     | POST /api/whatsapp/webhook     | HTTPS      |
+| Lead capture (portal)   | Bayut/PF webhook | POST /api/leads                | HTTPS      |
+| Property search         | React SPA        | GET /api/properties            | HTTPS/JSON |
+| Auth token flow         | Login form       | POST /api/auth/login → JWT     | HTTPS      |
+| AI assistant plan       | Right sidebar    | GET /api/assistants/:id/plan   | HTTPS      |
+| Rent payment            | Tenant portal    | POST /api/payments → Stripe    | HTTPS      |
+| Ejari download          | Landlord portal  | GET /api/documents/ejari/:id   | HTTPS      |
+| WhatsApp send           | Agent CRM        | POST /api/whatsapp/send → Meta | HTTPS      |
 
 ---
 
 ## 7. Deployment Environments
 
-| Environment | Frontend | API | Database |
-|-------------|---------|-----|----------|
-| Dev | localhost:5173 | localhost:5000 | Atlas Dev / local Mongo |
-| Staging | staging.whitecaves.ae | staging-api.whitecaves.ae | Atlas Staging |
-| Production | whitecaves.ae | api.whitecaves.ae | Atlas UAE Production |
+| Environment | Frontend              | API                       | Database                |
+| ----------- | --------------------- | ------------------------- | ----------------------- |
+| Dev         | localhost:5173        | localhost:5000            | Atlas Dev / local Mongo |
+| Staging     | staging.whitecaves.ae | staging-api.whitecaves.ae | Atlas Staging           |
+| Production  | whitecaves.ae         | api.whitecaves.ae         | Atlas UAE Production    |
 
 ---
 
 **Document Owner:** Technology Department (Atlas — Infrastructure Engineer)
 **Last Updated:** April 2026
 **Related:** `business_docs/06_design_architecture/system-architecture.md`
-
 
 ---
 
@@ -337,6 +337,7 @@ When the system grows beyond a single Express application, a lightweight API gat
 ```
 
 **Gateway responsibilities:**
+
 - Authentication verification (verify Firebase JWT before forwarding)
 - Rate limiting (single point of enforcement)
 - Request logging (all requests logged at gateway)
@@ -351,23 +352,23 @@ When the system grows beyond a single Express application, a lightweight API gat
 
 ### 9.1 Recovery Objectives
 
-| Tier | RTO (Recovery Time) | RPO (Data Loss) | Examples |
-|------|-------------------|----------------|---------|
-| Critical | < 2 hours | < 1 hour | MongoDB data, authentication |
-| High | < 4 hours | < 4 hours | API service, WhatsApp |
-| Medium | < 24 hours | < 24 hours | Email notifications, analytics |
-| Low | < 72 hours | < 72 hours | Virtual tours, static content |
+| Tier     | RTO (Recovery Time) | RPO (Data Loss) | Examples                       |
+| -------- | ------------------- | --------------- | ------------------------------ |
+| Critical | < 2 hours           | < 1 hour        | MongoDB data, authentication   |
+| High     | < 4 hours           | < 4 hours       | API service, WhatsApp          |
+| Medium   | < 24 hours          | < 24 hours      | Email notifications, analytics |
+| Low      | < 72 hours          | < 72 hours      | Virtual tours, static content  |
 
 ### 9.2 Backup Schedule
 
-| Component | Backup Method | Frequency | Retention | Location |
-|---------|-------------|---------|---------|---------|
-| MongoDB Atlas | PITR (point-in-time restore) | Continuous | 7 days | Atlas managed (UAE region) |
-| MongoDB Atlas | Scheduled snapshot | Daily | 30 days | Atlas managed |
-| MongoDB Atlas | Manual snapshot | Before every migration | 90 days | Atlas managed |
-| S3 (files) | S3 versioning + cross-region replication | Real-time | 30 days | AWS S3 (UAE + EU) |
-| Code | GitHub | Every commit | Permanent | GitHub |
-| Secrets | HashiCorp Vault | Vault enterprise replication | Permanent | Multi-AZ |
+| Component     | Backup Method                            | Frequency                    | Retention | Location                   |
+| ------------- | ---------------------------------------- | ---------------------------- | --------- | -------------------------- |
+| MongoDB Atlas | PITR (point-in-time restore)             | Continuous                   | 7 days    | Atlas managed (UAE region) |
+| MongoDB Atlas | Scheduled snapshot                       | Daily                        | 30 days   | Atlas managed              |
+| MongoDB Atlas | Manual snapshot                          | Before every migration       | 90 days   | Atlas managed              |
+| S3 (files)    | S3 versioning + cross-region replication | Real-time                    | 30 days   | AWS S3 (UAE + EU)          |
+| Code          | GitHub                                   | Every commit                 | Permanent | GitHub                     |
+| Secrets       | HashiCorp Vault                          | Vault enterprise replication | Permanent | Multi-AZ                   |
 
 ### 9.3 DR Runbook — MongoDB Failure
 

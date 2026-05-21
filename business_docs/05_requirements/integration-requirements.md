@@ -287,3 +287,69 @@ White Caves CRM Platform
 ---
 
 **Version:** 1.0 | **Last Updated:** March 2026 | **Maintained By:** Technical Team
+
+---
+
+## 12. Integration Acceptance Criteria & Resilience Requirements
+
+### INT-WA-ACC-001: WhatsApp Integration — Acceptance Criteria (Given/When/Then)
+- **Given** a valid outbound text message is sent via `POST .../messages`, **When** the Meta API responds with HTTP 200, **Then** the CRM stores `{ waMessageId, status: "sent", sentAt }` against the conversation within 1 second
+- **Given** the Meta WhatsApp API is unreachable (network timeout), **When** an outbound message is attempted, **Then** the message is added to a retry queue with status "pending_retry", the agent sees "Message queued — will retry shortly" in the UI, and the system retries with exponential backoff (1 min, 2 min, 4 min, 8 min)
+- **Given** an inbound message arrives at the webhook, **When** the server processes it, **Then** HTTP 200 is returned to Meta within 5 seconds (regardless of internal processing state), the message is persisted to DB, and the agent inbox is updated via WebSocket within 2 seconds
+- **Given** a webhook request arrives with an invalid or missing `X-Hub-Signature-256` HMAC header, **When** the webhook handler processes it, **Then** it returns HTTP 401 and discards the payload with an error log entry
+- **Test Reference:** TC-INT-WA-001
+
+### INT-PF-ACC-001: PropertyFinder Sync — Acceptance Criteria
+- **Given** a property status changes from "Available" to "Sold", **When** the status change is saved, **Then** a sync job is enqueued and PropertyFinder receives the status update within 60 seconds via the partner API
+- **Given** PropertyFinder API returns an error code (non-200) for a listing sync, **When** the error is received, **Then** the sync status for that property is set to "Sync Error" with the portal's error message stored, and the listing agent receives an in-app notification
+- **Given** the nightly full sync runs at 02:00 UAE time, **When** completed, **Then** a sync report is written to the admin dashboard: total listings synced, errors count, listings blocked (e.g., no permit)
+- **Given** a property has no valid Trakheesi permit, **When** the sync job runs, **Then** the property is excluded from syndication and the sync log records "Blocked: Missing RERA permit"
+- **Test Reference:** TC-INT-PF-001
+
+### INT-STRIPE-ACC-001: Payment Integration — Acceptance Criteria
+- **Given** a payment intent is created for AED 50,000 (booking fee), **When** the client completes payment via Stripe Elements, **Then** the `payment_intent.succeeded` webhook fires, the CRM marks the payment as "Paid", and an automated receipt is emailed to the client within 5 minutes
+- **Given** a Stripe webhook event arrives, **When** processed, **Then** the server validates the `Stripe-Signature` header against `STRIPE_WEBHOOK_SECRET` before any processing; invalid signatures return HTTP 400 and are logged as security events
+- **Given** a payment fails (`payment_intent.payment_failed`), **When** the webhook is received, **Then** the CRM marks the payment attempt as "Failed", the agent is notified, and the transaction status reverts to "Awaiting Payment"
+- **Test Reference:** TC-INT-STRIPE-001
+
+### INT-FX-ACC-001: Exchange Rate — Acceptance Criteria
+- **Given** a property listing page is displayed in the CRM with AED price, **When** USD conversion is requested, **Then** the converted price displays using rates no older than 4 hours; if rates are stale (> 24 hours), the UI shows "⚠️ Rates may be outdated — last updated: [timestamp]"
+- **Given** the exchange rate API is down, **When** a conversion is requested, **Then** the last cached rates are used with a disclaimer "Approximate — rates last updated [date]"; no 500 error is thrown to the user
+- **Test Reference:** TC-INT-FX-001
+
+### INT-SEC-001: Integration Security Requirements
+All external integrations must satisfy the following security requirements:
+
+| Requirement | Standard |
+|-------------|---------|
+| All API credentials stored in environment variables | Never committed to version control; rotated every 90 days |
+| Webhook signature validation | All webhooks (Meta, Stripe, PF, Bayut) must verify HMAC/signature before processing payload |
+| TLS version | All outbound API calls use TLS 1.2+; TLS 1.0/1.1 disabled |
+| Credential rotation | Integration credentials reviewed and rotated on API key compromise or every 180 days |
+| Error message sanitisation | No API credentials, internal paths, or stack traces returned to client in error responses |
+| Timeout handling | All outbound API calls have a maximum timeout: 10 s (standard), 30 s (PDF/document), 60 s (bulk import) |
+
+**Acceptance Criteria:**
+- **Given** an integration credential is committed to version control accidentally, **When** detected (via pre-commit hook or CI scan), **Then** the CI pipeline fails and the secret is reported as compromised
+- **Given** an external API call times out, **When** the timeout fires, **Then** the calling function returns a structured error `{ "error": "upstream_timeout", "integration": "meta_wa" }` — never hangs the user request
+- **Test Reference:** TC-INT-SEC-001
+
+### INT-PDPL-001: Data Processing Agreements
+- All integrations that process UAE personal data must have a signed Data Processing Agreement (DPA) on file before going live in production
+- DPA status tracked in the Integration Registry (see Section 10 Integration Architecture)
+- Integrations without a DPA are flagged with a 🔴 badge in the admin integration settings page
+
+| Integration | Processes UAE PII? | DPA Required? | DPA Status |
+|-------------|:------------------:|:-------------:|-----------|
+| WhatsApp Cloud API (Meta) | Yes | Yes | Pending |
+| PropertyFinder API | Yes (lead data) | Yes | Pending |
+| Bayut API | Yes (lead data) | Yes | Pending |
+| Stripe | Yes (payment payer) | Yes | Pending |
+| SendGrid | Yes (email recipients) | Yes | Pending |
+| ExchangeRate-API | No | No | N/A |
+| Firebase Auth | Yes (user identity) | Yes | Pending |
+
+---
+
+**Version:** 1.1 | **Last Updated:** June 2026 | **Maintained By:** Technical Team  
+**Change Log:** v1.0 — Initial integration specs (March 2026); v1.1 — Added Section 12: acceptance criteria, resilience requirements, security standards, and PDPL DPA tracking (June 2026)

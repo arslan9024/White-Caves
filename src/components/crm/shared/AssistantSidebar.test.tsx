@@ -19,26 +19,34 @@ vi.mock('lucide-react', () => ({
 
 // Mock styles
 vi.mock('./AssistantSidebar.styles', () => ({
-  AssistantSidebarContainer: ({ children, ...p }: any) => <div data-testid="sidebar-container" {...p}>{children}</div>,
+  AssistantSidebarContainer: ({ children }: any) => (
+    <div data-testid="sidebar-container">{children}</div>
+  ),
   SidebarHeader: ({ children }: any) => <div data-testid="sidebar-header">{children}</div>,
   AssistantAvatar: ({ children }: any) => <div data-testid="avatar">{children}</div>,
   AssistantInfo: ({ children }: any) => <div data-testid="assistant-info">{children}</div>,
   AssistantTitle: ({ children }: any) => <span data-testid="assistant-title">{children}</span>,
-  FavoriteButton: ({ children, onClick, title, ...p }: any) => (
-    <button data-testid="fav-btn" onClick={onClick} title={title}>{children}</button>
+  FavoriteButton: ({ children, onClick, title }: any) => (
+    <button data-testid="fav-btn" onClick={onClick} title={title}>
+      {children}
+    </button>
   ),
   SidebarNav: ({ children }: any) => <nav data-testid="sidebar-nav">{children}</nav>,
   SidebarDivider: () => <hr data-testid="divider" />,
   SidebarSection: ({ children }: any) => <div data-testid="sidebar-section">{children}</div>,
-  SidebarItem: ({ children, onClick, ...p }: any) => (
-    <div data-testid="sidebar-item" onClick={onClick} role="button">{children}</div>
+  SidebarItem: ({ children, onClick }: any) => (
+    <div data-testid="sidebar-item" onClick={onClick} role="button">
+      {children}
+    </div>
   ),
   ItemLabel: ({ children }: any) => <span data-testid="item-label">{children}</span>,
   ItemBadge: ({ children }: any) => <span data-testid="item-badge">{children}</span>,
   ItemArrow: ({ children }: any) => <span data-testid="item-arrow">{children}</span>,
   SidebarFooter: ({ children }: any) => <div data-testid="sidebar-footer">{children}</div>,
-  QuickActionButton: ({ children, title, ...p }: any) => (
-    <button data-testid={`qa-${title?.toLowerCase()}`} title={title}>{children}</button>
+  QuickActionButton: ({ children, title }: any) => (
+    <button data-testid={`qa-${title?.toLowerCase()}`} title={title}>
+      {children}
+    </button>
   ),
 }));
 
@@ -71,7 +79,9 @@ vi.mock('react-redux', () => ({
 // Mock the slice
 vi.mock('../../../store/slices/aiAssistantDashboardSlice', () => ({
   selectCurrentAssistant: (state: any) =>
-    state.aiAssistantDashboard?.assistants?.byId?.[state.aiAssistantDashboard?.currentAssistantId] ?? null,
+    state.aiAssistantDashboard?.assistants?.byId?.[
+      state.aiAssistantDashboard?.currentAssistantId
+    ] ?? null,
   selectFavorites: (state: any) => state.aiAssistantDashboard?.favorites ?? [],
   toggleFavorite: (id: string) => ({ type: 'aiAssistantDashboard/toggleFavorite', payload: id }),
 }));
@@ -88,9 +98,7 @@ const sampleItems = [
 ];
 
 const DummyIcon = (props: any) => <svg data-testid="dummy-icon" {...props} />;
-const itemsWithIcons = sampleItems.map((item) =>
-  item.label ? { ...item, icon: DummyIcon } : item,
-);
+const itemsWithIcons = sampleItems.map(item => (item.label ? { ...item, icon: DummyIcon } : item));
 
 /* ── Tests ──────────────────────────────────────────────── */
 describe('AssistantSidebar', () => {

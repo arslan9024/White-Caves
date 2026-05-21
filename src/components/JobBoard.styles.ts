@@ -1,8 +1,7 @@
-﻿// @ts-nocheck
 import styled from 'styled-components';
 import { theme } from '../styles/theme';
 
-const { colors, shadows, transitions, radius, spacing, typography } = theme;
+const { colors, shadows, transitions, radius, typography } = theme;
 
 export const JobBoardContainer = styled.div`
   padding: 2rem;
@@ -43,13 +42,13 @@ export const JobCard = styled.div`
   background: ${colors.background.secondary};
   padding: 1.5rem;
   border-radius: ${radius.lg};
-  box-shadow: ${shadows.card};
-  transition: all ${transitions.durations.standard} ${transitions.easing.easeOut};
+  box-shadow: ${shadows.sm};
+  transition: all ${transitions.durations.standard} ${transitions.easing.out};
   display: flex;
   flex-direction: column;
 
   &:hover {
-    box-shadow: ${shadows.luxuryHover};
+    box-shadow: ${shadows.elevated};
     transform: translateY(-4px);
   }
 
@@ -141,7 +140,7 @@ export const FormSelect = styled.select`
   &:focus {
     outline: none;
     border-color: ${colors.primary};
-    box-shadow: ${shadows.luxuryFocus};
+    box-shadow: ${shadows.focus};
   }
 
   option {
@@ -161,16 +160,16 @@ export const FormInput = styled.input`
   &:focus {
     outline: none;
     border-color: ${colors.primary};
-    box-shadow: ${shadows.luxuryFocus};
+    box-shadow: ${shadows.focus};
   }
 
-  &[type="file"] {
+  &[type='file'] {
     border: none;
     padding: 0.5rem 0;
     cursor: pointer;
   }
 
-  &[type="file"]::file-selector-button {
+  &[type='file']::file-selector-button {
     background: ${colors.primary};
     color: ${colors.background.secondary};
     border: none;
@@ -200,7 +199,7 @@ export const FormTextarea = styled.textarea`
   &:focus {
     outline: none;
     border-color: ${colors.primary};
-    box-shadow: ${shadows.luxuryFocus};
+    box-shadow: ${shadows.focus};
   }
 `;
 
@@ -252,7 +251,7 @@ export const ErrorMessage = styled.span`
 `;
 
 export const SuccessMessage = styled.div`
-  background: #E8F5E9;
+  background: #e8f5e9;
   color: ${colors.success};
   padding: 1rem;
   border-radius: ${radius.sm};
@@ -296,9 +295,9 @@ export const FilterBar = styled.div`
 
 export const FilterButton = styled.button<{ $isActive?: boolean }>`
   padding: 0.6rem 1.2rem;
-  background: ${props => props.$isActive ? colors.primary : colors.background.tertiary};
-  color: ${props => props.$isActive ? colors.background.secondary : 'var(--text-primary)'};
-  border: ${props => props.$isActive ? 'none' : `1px solid ${colors.border}`};
+  background: ${props => (props.$isActive ? colors.primary : colors.background.tertiary)};
+  color: ${props => (props.$isActive ? colors.background.secondary : 'var(--text-primary)')};
+  border: ${props => (props.$isActive ? 'none' : `1px solid ${colors.border}`)};
   border-radius: 20px;
   cursor: pointer;
   font-weight: ${typography.weights.medium};
@@ -306,10 +305,10 @@ export const FilterButton = styled.button<{ $isActive?: boolean }>`
   white-space: nowrap;
 
   &:hover {
-    ${props => props.$isActive 
-      ? `background: ${colors.primaryDark};` 
-      : `background: ${colors.borderLight}; border-color: ${colors.borderDark};`
-    }
+    ${props =>
+      props.$isActive
+        ? `background: ${colors.primaryDark};`
+        : `background: ${colors.borderLight}; border-color: ${colors.borderDark};`}
   }
 
   @media (max-width: 768px) {
@@ -340,4 +339,3 @@ export const JobCount = styled.span`
   color: var(--text-secondary);
   font-size: 0.9rem;
 `;
-

@@ -1,8 +1,7 @@
-﻿// @ts-nocheck
 // src/components/examples/DashboardExamples.tsx
 /**
  * Complete Examples for Dashboard & Sidebar Architecture
- * 
+ *
  * This file contains real-world examples of how to use the new
  * dashboard, sidebar, and feature registry systems.
  */
@@ -14,11 +13,7 @@ import styled from 'styled-components';
 // EXAMPLE 1: Basic Sidebar with Items
 // ============================================================================
 
-import {
-  BaseSidebar,
-  SidebarItem,
-  SidebarSection,
-} from '../shared/sidebars';
+import { BaseSidebar, SidebarItem, SidebarSection } from '../shared/sidebars';
 import { useSidebarState } from '../../hooks/useSidebarState';
 
 const BasicSidebarExample = () => {
@@ -31,18 +26,8 @@ const BasicSidebarExample = () => {
   ];
 
   return (
-    <BaseSidebar
-      name="left"
-      title="Navigation"
-      position="left"
-      hasSearch={true}
-    >
-      <SidebarSection
-        id="main"
-        title="Main"
-        sidebarName="left"
-        itemCount={items.length}
-      >
+    <BaseSidebar name="left" title="Navigation" position="left" hasSearch={true}>
+      <SidebarSection id="main" title="Main" sidebarName="left" itemCount={items.length}>
         {items.map(item => (
           <SidebarItem
             key={item.id}
@@ -72,7 +57,7 @@ const AdvancedSidebarExample = () => {
     activeSidebarItem,
     favorites,
     isFavorited,
-    toggleFav,
+    toggleFav: _toggleFav,
     setActive,
     searchQuery,
   } = useSidebarState('left');
@@ -104,12 +89,7 @@ const AdvancedSidebarExample = () => {
   );
 
   return (
-    <BaseSidebar
-      name="left"
-      title="Properties"
-      position="left"
-      hasSearch={true}
-    >
+    <BaseSidebar name="left" title="Properties" position="left" hasSearch={true}>
       <SidebarSection
         id="active"
         title="Active Properties"
@@ -168,10 +148,10 @@ const AdvancedSidebarExample = () => {
 // EXAMPLE 3: Feature Registration
 // ============================================================================
 
-import { featureRegistry } from '../../components/layout/DashboardWorkspace';
+import { featureRegistry } from '../../components/layout/DashboardWorkspace/FeatureRegistry';
 
 // Create feature components
-const PropertiesFeatureComponent: React.FC<any> = ({ featureId }) => (
+const PropertiesFeatureComponent: React.FC<{ featureId: string }> = ({ featureId }) => (
   <div style={{ padding: '2rem' }}>
     <h1>Properties Inventory</h1>
     <p>Feature ID: {featureId}</p>
@@ -194,7 +174,7 @@ const PropertiesFeatureComponent: React.FC<any> = ({ featureId }) => (
   </div>
 );
 
-const AgentsFeatureComponent: React.FC<any> = ({ featureId }) => (
+const AgentsFeatureComponent: React.FC<{ featureId: string }> = ({ featureId }) => (
   <div style={{ padding: '2rem' }}>
     <h1>Agents</h1>
     <p>Feature ID: {featureId}</p>
@@ -278,10 +258,7 @@ const DashboardExample = () => {
 // EXAMPLE 5: Using Hooks for Filtering and Pagination
 // ============================================================================
 
-import {
-  useSidebarFiltering,
-  useSidebarPagination,
-} from '../../hooks/useSidebarState';
+import { useSidebarFiltering, useSidebarPagination } from '../../hooks/useSidebarState';
 
 const PropertyListWithPagination = () => {
   const allProperties = [
@@ -294,26 +271,16 @@ const PropertyListWithPagination = () => {
   ];
 
   // Filter by search query
-  const filtered = useSidebarFiltering(
-    allProperties,
-    'left',
-    (item, filters, search) => {
-      return (
-        item.name.toLowerCase().includes(search.toLowerCase()) &&
-        (!filters.type || item.type === filters.type)
-      );
-    }
-  );
+  const filtered = useSidebarFiltering(allProperties, 'left', (item, filters, search) => {
+    return (
+      item.name.toLowerCase().includes(search.toLowerCase()) &&
+      (!filters.type || item.type === filters.type)
+    );
+  });
 
   // Paginate filtered results
-  const {
-    paginatedItems,
-    currentPage,
-    totalPages,
-    setPage,
-    hasNextPage,
-    hasPrevPage,
-  } = useSidebarPagination(filtered, 'left');
+  const { paginatedItems, currentPage, totalPages, setPage, hasNextPage, hasPrevPage } =
+    useSidebarPagination(filtered, 'left');
 
   return (
     <div>
@@ -335,19 +302,13 @@ const PropertyListWithPagination = () => {
       </table>
 
       <div style={{ marginTop: '1rem' }}>
-        <button
-          disabled={!hasPrevPage}
-          onClick={() => setPage(currentPage - 1)}
-        >
+        <button disabled={!hasPrevPage} onClick={() => setPage(currentPage - 1)}>
           Previous
         </button>
         <span>
           Page {currentPage} of {totalPages}
         </span>
-        <button
-          disabled={!hasNextPage}
-          onClick={() => setPage(currentPage + 1)}
-        >
+        <button disabled={!hasNextPage} onClick={() => setPage(currentPage + 1)}>
           Next
         </button>
       </div>
@@ -393,7 +354,7 @@ const SidebarWithContextMenu = () => {
     x: number;
     y: number;
   } | null>(null);
-  const [selectedId, setSelectedId] = React.useState<string | null>(null);
+  const [_selectedId, setSelectedId] = React.useState<string | null>(null);
 
   const items = [
     { id: '1', label: 'Item 1' },
@@ -457,4 +418,3 @@ export {
   SidebarWithContextMenu,
   useFeatureRegistration,
 };
-

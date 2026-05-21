@@ -42,32 +42,96 @@ vi.mock('../../../store/crmDataSlice', () => ({
   selectPropertiesLoading: 'selectPropertiesLoading',
   selectPropertiesError: 'selectPropertiesError',
   fetchPropertiesFromAPI: vi.fn(() => ({ type: 'properties/fetch', abort: vi.fn() })),
-  createPropertyAPI: Object.assign(vi.fn((data: unknown) => ({ type: 'properties/create', payload: data })), {
-    fulfilled: { match: (r: { type: string }) => r.type?.includes('fulfilled') },
-    rejected: { match: (r: { type: string }) => r.type?.includes('rejected') },
-  }),
-  updatePropertyAPI: Object.assign(vi.fn((data: unknown) => ({ type: 'properties/update', payload: data })), {
-    fulfilled: { match: (r: { type: string }) => r.type?.includes('fulfilled') },
-    rejected: { match: (r: { type: string }) => r.type?.includes('rejected') },
-  }),
-  deletePropertyAPI: Object.assign(vi.fn((id: unknown) => ({ type: 'properties/delete', payload: id })), {
-    fulfilled: { match: (r: { type: string }) => r.type?.includes('fulfilled') },
-    rejected: { match: (r: { type: string }) => r.type?.includes('rejected') },
-  }),
+  createPropertyAPI: Object.assign(
+    vi.fn((data: unknown) => ({ type: 'properties/create', payload: data })),
+    {
+      fulfilled: { match: (r: { type: string }) => r.type?.includes('fulfilled') },
+      rejected: { match: (r: { type: string }) => r.type?.includes('rejected') },
+    }
+  ),
+  updatePropertyAPI: Object.assign(
+    vi.fn((data: unknown) => ({ type: 'properties/update', payload: data })),
+    {
+      fulfilled: { match: (r: { type: string }) => r.type?.includes('fulfilled') },
+      rejected: { match: (r: { type: string }) => r.type?.includes('rejected') },
+    }
+  ),
+  deletePropertyAPI: Object.assign(
+    vi.fn((id: unknown) => ({ type: 'properties/delete', payload: id })),
+    {
+      fulfilled: { match: (r: { type: string }) => r.type?.includes('fulfilled') },
+      rejected: { match: (r: { type: string }) => r.type?.includes('rejected') },
+    }
+  ),
   addActivity: vi.fn((data: unknown) => ({ type: 'activity/add', payload: data })),
 }));
 
 // ─── Test data ──────────────────────────────────────────────────────────
 
 const MOCK_PROPERTIES: Property[] = [
-  { id: '1', title: 'Luxury Villa', type: 'villa', status: 'available', location: 'Palm Jumeirah', price: 5000000, bedrooms: 5, bathrooms: 6, sqft: 8000, featured: true },
-  { id: '2', title: 'Downtown Apartment', type: 'apartment', status: 'reserved', location: 'Downtown Dubai', price: 1500000, bedrooms: 2, bathrooms: 2, sqft: 1200 },
-  { id: '3', title: 'Beach Penthouse', type: 'penthouse', status: 'sold', location: 'JBR', price: 8000000, bedrooms: 4, bathrooms: 4, sqft: 5000 },
-  { id: '4', title: 'Office Space', type: 'commercial', status: 'available', location: 'Business Bay', price: 3000000, bedrooms: 0, bathrooms: 2, sqft: 3000 },
-  { id: '5', title: 'Garden Townhouse', type: 'townhouse', status: 'rented', location: 'Arabian Ranches', price: 2000000, bedrooms: 3, bathrooms: 3, sqft: 2500 },
+  {
+    id: '1',
+    title: 'Luxury Villa',
+    type: 'villa',
+    status: 'available',
+    location: 'Palm Jumeirah',
+    price: 5000000,
+    bedrooms: 5,
+    bathrooms: 6,
+    sqft: 8000,
+    featured: true,
+  },
+  {
+    id: '2',
+    title: 'Downtown Apartment',
+    type: 'apartment',
+    status: 'reserved',
+    location: 'Downtown Dubai',
+    price: 1500000,
+    bedrooms: 2,
+    bathrooms: 2,
+    sqft: 1200,
+  },
+  {
+    id: '3',
+    title: 'Beach Penthouse',
+    type: 'penthouse',
+    status: 'sold',
+    location: 'JBR',
+    price: 8000000,
+    bedrooms: 4,
+    bathrooms: 4,
+    sqft: 5000,
+  },
+  {
+    id: '4',
+    title: 'Office Space',
+    type: 'commercial',
+    status: 'available',
+    location: 'Business Bay',
+    price: 3000000,
+    bedrooms: 0,
+    bathrooms: 2,
+    sqft: 3000,
+  },
+  {
+    id: '5',
+    title: 'Garden Townhouse',
+    type: 'townhouse',
+    status: 'rented',
+    location: 'Arabian Ranches',
+    price: 2000000,
+    bedrooms: 3,
+    bathrooms: 3,
+    sqft: 2500,
+  },
 ];
 
-function setupSelector(props: Property[] = MOCK_PROPERTIES, loading = false, error: string | null = null) {
+function setupSelector(
+  props: Property[] = MOCK_PROPERTIES,
+  loading = false,
+  error: string | null = null
+) {
   mockSelector.mockImplementation((selector: unknown) => {
     if (selector === 'selectAllProperties') return props;
     if (selector === 'selectPropertiesLoading') return loading;
@@ -347,43 +411,50 @@ describe('usePropertyManagement', () => {
   // ═══ CRUD OPERATIONS ════════════════════════════════════════════════
 
   describe('handleCreate', () => {
-    it('dispatches createPropertyAPI on valid data', () => {
+    it('dispatches createPropertyAPI on valid data', async () => {
       mockDispatch.mockReturnValue(Promise.resolve({ type: 'properties/create/fulfilled' }));
       const { result } = renderHook(() => usePropertyManagement());
       act(() => result.current.openCreateModal());
-      act(() => result.current.setFormData({
-        title: 'New Villa',
-        type: 'villa',
-        status: 'available',
-        location: 'Dubai Hills',
-        price: '3000000',
-        bedrooms: '4',
-        bathrooms: '3',
-        sqft: '4000',
-        description: 'Beautiful villa',
-        agent_name: 'Agent Smith',
-        featured: false,
-      }));
-      act(() => result.current.handleCreate());
+      act(() =>
+        result.current.setFormData({
+          title: 'New Villa',
+          type: 'villa',
+          status: 'available',
+          location: 'Dubai Hills',
+          price: '3000000',
+          bedrooms: '4',
+          bathrooms: '3',
+          sqft: '4000',
+          description: 'Beautiful villa',
+          agent_name: 'Agent Smith',
+          featured: false,
+        })
+      );
+      await act(async () => {
+        result.current.handleCreate();
+        await Promise.resolve();
+      });
       expect(mockDispatch).toHaveBeenCalled();
     });
 
     it('does not dispatch when title is empty', () => {
       const { result } = renderHook(() => usePropertyManagement());
       act(() => result.current.openCreateModal());
-      act(() => result.current.setFormData({
-        title: '',
-        type: 'villa',
-        status: 'available',
-        location: 'Dubai Hills',
-        price: '3000000',
-        bedrooms: '4',
-        bathrooms: '3',
-        sqft: '4000',
-        description: '',
-        agent_name: '',
-        featured: false,
-      }));
+      act(() =>
+        result.current.setFormData({
+          title: '',
+          type: 'villa',
+          status: 'available',
+          location: 'Dubai Hills',
+          price: '3000000',
+          bedrooms: '4',
+          bathrooms: '3',
+          sqft: '4000',
+          description: '',
+          agent_name: '',
+          featured: false,
+        })
+      );
       const callsBefore = mockDispatch.mock.calls.length;
       act(() => result.current.handleCreate());
       // No additional dispatch (only mount fetches)
@@ -392,19 +463,21 @@ describe('usePropertyManagement', () => {
     it('does not dispatch when location is empty', () => {
       const { result } = renderHook(() => usePropertyManagement());
       act(() => result.current.openCreateModal());
-      act(() => result.current.setFormData({
-        title: 'Test',
-        type: 'villa',
-        status: 'available',
-        location: '',
-        price: '3000000',
-        bedrooms: '4',
-        bathrooms: '3',
-        sqft: '4000',
-        description: '',
-        agent_name: '',
-        featured: false,
-      }));
+      act(() =>
+        result.current.setFormData({
+          title: 'Test',
+          type: 'villa',
+          status: 'available',
+          location: '',
+          price: '3000000',
+          bedrooms: '4',
+          bathrooms: '3',
+          sqft: '4000',
+          description: '',
+          agent_name: '',
+          featured: false,
+        })
+      );
       act(() => result.current.handleCreate());
       // Does not dispatch createPropertyAPI
     });
@@ -412,44 +485,53 @@ describe('usePropertyManagement', () => {
     it('does not dispatch when price is zero or negative', () => {
       const { result } = renderHook(() => usePropertyManagement());
       act(() => result.current.openCreateModal());
-      act(() => result.current.setFormData({
-        title: 'Test',
-        type: 'villa',
-        status: 'available',
-        location: 'Dubai',
-        price: '0',
-        bedrooms: '4',
-        bathrooms: '3',
-        sqft: '4000',
-        description: '',
-        agent_name: '',
-        featured: false,
-      }));
+      act(() =>
+        result.current.setFormData({
+          title: 'Test',
+          type: 'villa',
+          status: 'available',
+          location: 'Dubai',
+          price: '0',
+          bedrooms: '4',
+          bathrooms: '3',
+          sqft: '4000',
+          description: '',
+          agent_name: '',
+          featured: false,
+        })
+      );
       act(() => result.current.handleCreate());
       // Silently returns
     });
   });
 
   describe('handleSaveEdit', () => {
-    it('dispatches updatePropertyAPI when editing', () => {
+    it('dispatches updatePropertyAPI when editing', async () => {
       mockDispatch.mockReturnValue(Promise.resolve({ type: 'properties/update/fulfilled' }));
       const { result } = renderHook(() => usePropertyManagement());
       act(() => result.current.handleEdit(MOCK_PROPERTIES[0]));
-      act(() => result.current.setFormData({
-        ...result.current.formData,
-        title: 'Updated Villa',
-      }));
-      act(() => result.current.handleSaveEdit());
+      act(() =>
+        result.current.setFormData({
+          ...result.current.formData,
+          title: 'Updated Villa',
+        })
+      );
+      await act(async () => {
+        result.current.handleSaveEdit();
+        await Promise.resolve();
+      });
       expect(mockDispatch).toHaveBeenCalled();
     });
 
     it('sets error when title is empty on edit', () => {
       const { result } = renderHook(() => usePropertyManagement());
       act(() => result.current.handleEdit(MOCK_PROPERTIES[0]));
-      act(() => result.current.setFormData({
-        ...result.current.formData,
-        title: '   ',
-      }));
+      act(() =>
+        result.current.setFormData({
+          ...result.current.formData,
+          title: '   ',
+        })
+      );
       act(() => result.current.handleSaveEdit());
       expect(result.current.errorMessage).toBe('Title and location are required.');
     });
@@ -457,21 +539,26 @@ describe('usePropertyManagement', () => {
     it('sets error when location is empty on edit', () => {
       const { result } = renderHook(() => usePropertyManagement());
       act(() => result.current.handleEdit(MOCK_PROPERTIES[0]));
-      act(() => result.current.setFormData({
-        ...result.current.formData,
-        location: '',
-      }));
+      act(() =>
+        result.current.setFormData({
+          ...result.current.formData,
+          location: '',
+        })
+      );
       act(() => result.current.handleSaveEdit());
       expect(result.current.errorMessage).toBe('Title and location are required.');
     });
   });
 
   describe('handleDelete', () => {
-    it('dispatches deletePropertyAPI when property is selected', () => {
+    it('dispatches deletePropertyAPI when property is selected', async () => {
       mockDispatch.mockReturnValue(Promise.resolve({ type: 'properties/delete/fulfilled' }));
       const { result } = renderHook(() => usePropertyManagement());
       act(() => result.current.confirmDelete(MOCK_PROPERTIES[1]));
-      act(() => result.current.handleDelete());
+      await act(async () => {
+        result.current.handleDelete();
+        await Promise.resolve();
+      });
       expect(mockDispatch).toHaveBeenCalled();
     });
 

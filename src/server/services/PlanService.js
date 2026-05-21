@@ -1,8 +1,12 @@
+/* eslint-disable security/detect-non-literal-fs-filename, security/detect-object-injection */
 import fs from 'fs-extra';
 import path from 'path';
 import matter from 'gray-matter';
 import { v4 as uuidv4 } from 'uuid';
 import logger from '../lib/logger.js';
+
+const SAFE_PLAN_FILENAME_REGEX = /^[a-zA-Z0-9._-]+\.md$/;
+const SAFE_PLAN_ID_REGEX = /^[a-zA-Z0-9_-]{1,128}$/;
 
 /**
  * PlanService - Handles CRUD operations for markdown plan files
@@ -10,9 +14,46 @@ import logger from '../lib/logger.js';
  */
 class PlanService {
   constructor(plansFolder = './plans') {
-    this.plansFolder = plansFolder;
+    this.plansFolder = path.resolve(plansFolder);
     this.plansIndex = new Map();
-    this.initializePlansFolder();
+  }
+
+  validateFilename(filename) {
+    if (!SAFE_PLAN_FILENAME_REGEX.test(filename)) {
+      throw new Error(`Invalid plan filename: ${filename}`);
+    }
+    return filename;
+  }
+
+  validateIdentifier(identifier) {
+    if (identifier.includes('.md')) {
+      this.validateFilename(identifier);
+      return identifier;
+    }
+
+    if (!SAFE_PLAN_ID_REGEX.test(identifier)) {
+      throw new Error(`Invalid plan identifier: ${identifier}`);
+    }
+
+    return identifier;
+  }
+
+  resolvePlanPath(filename) {
+    const safeFilename = this.validateFilename(filename);
+    const resolvedPath = path.resolve(this.plansFolder, safeFilename);
+
+    const plansRootWithSep = `${this.plansFolder}${path.sep}`;
+    if (!(resolvedPath === this.plansFolder || resolvedPath.startsWith(plansRootWithSep))) {
+      throw new Error('Invalid plan path: outside plans directory');
+    }
+
+    return resolvedPath;
+  }
+
+  async getParsedPlanFile(filepath) {
+    const fileContent = await fs.readFile(filepath, 'utf8');
+    const { data: metadata, content } = matter(fileContent);
+    return { metadata, content, fileContent };
   }
 
   /**
@@ -22,10 +63,11 @@ class PlanService {
     try {
       // Ensure plans folder exists
       await fs.ensureDir(this.plansFolder);
-      
+
       // Index existing plans
+      this.plansIndex.clear();
       await this.indexPlans();
-      
+
       logger.info(`PlanService initialized with ${this.plansIndex.size} plans`);
     } catch (error) {
       logger.error('PlanService initialization failed', { error: error.message });
@@ -43,12 +85,11 @@ class PlanService {
 
       for (const file of mdFiles) {
         try {
-          const filepath = path.join(this.plansFolder, file);
-          const content = await fs.readFile(filepath, 'utf8');
-          const { data: metadata } = matter(content);
+          const filepath = this.resolvePlanPath(file);
+          const { metadata, content } = await this.getParsedPlanFile(filepath);
 
           const planId = metadata.id || uuidv4();
-          
+
           this.plansIndex.set(planId, {
             id: planId,
             filename: file,
@@ -57,9 +98,10 @@ class PlanService {
               ...metadata,
               id: planId,
               created: metadata.created || new Date().toISOString(),
-              updated: metadata.updated || new Date().toISOString()
+              updated: metadata.updated || new Date().toISOString(),
             },
-            preview: content.substring(0, 200)
+            preview: content.substring(0, 200),
+            wordCount: content.split(/\s+/).filter(Boolean).length,
           });
         } catch (error) {
           logger.warn(`Failed to index plan: ${file}`, { error: error.message });
@@ -77,19 +119,19 @@ class PlanService {
   async createPlan(filename, content, metadata = {}) {
     try {
       const planId = metadata.id || uuidv4();
-      const filepath = path.join(this.plansFolder, filename);
+      const filepath = this.resolvePlanPath(filename);
+      const safeFilename = path.basename(filepath);
 
       // Prepare frontmatter
       const frontmatter = {
         id: planId,
-        title: metadata.title || filename.replace('.md', ''),
+        title: metadata.title || safeFilename.replace('.md', ''),
         created: new Date().toISOString(),
         updated: new Date().toISOString(),
         tags: metadata.tags || [],
         status: metadata.status || 'draft',
         aiImproved: false,
         ...metadata,
-        id: planId // Ensure ID is set
       };
 
       // Write file with frontmatter
@@ -99,19 +141,20 @@ class PlanService {
       // Update index
       this.plansIndex.set(planId, {
         id: planId,
-        filename,
+        filename: safeFilename,
         filepath,
         metadata: frontmatter,
-        preview: content.substring(0, 200)
+        preview: content.substring(0, 200),
+        wordCount: content.split(/\s+/).filter(Boolean).length,
       });
 
-      logger.info(`Plan created: ${filename}`, { planId });
-      
+      logger.info(`Plan created: ${safeFilename}`, { planId });
+
       return {
         success: true,
         id: planId,
-        filename,
-        message: 'Plan created successfully'
+        filename: safeFilename,
+        message: 'Plan created successfully',
       };
     } catch (error) {
       logger.error('Failed to create plan', { error: error.message });
@@ -126,10 +169,11 @@ class PlanService {
     try {
       let filepath;
       let planId;
+      this.validateIdentifier(identifier);
 
       // Determine if identifier is filename or ID
       if (identifier.includes('.md')) {
-        filepath = path.join(this.plansFolder, identifier);
+        filepath = this.resolvePlanPath(identifier);
         const entry = Array.from(this.plansIndex.values()).find(p => p.filename === identifier);
         planId = entry?.id || identifier.replace('.md', '');
       } else {
@@ -142,8 +186,7 @@ class PlanService {
       }
 
       // Read file
-      const fileContent = await fs.readFile(filepath, 'utf8');
-      const { data: metadata, content } = matter(fileContent);
+      const { metadata, content, fileContent } = await this.getParsedPlanFile(filepath);
 
       logger.info(`Plan read: ${planId}`);
 
@@ -152,7 +195,7 @@ class PlanService {
         metadata: { ...metadata, id: planId },
         content,
         raw: fileContent,
-        filepath
+        filepath,
       };
     } catch (error) {
       logger.error('Failed to read plan', { error: error.message });
@@ -171,7 +214,7 @@ class PlanService {
         ...plan.metadata,
         ...updates.metadata,
         updated: new Date().toISOString(),
-        id: plan.id
+        id: plan.id,
       };
 
       const updatedContent = updates.content || plan.content;
@@ -186,7 +229,7 @@ class PlanService {
         filename: path.basename(plan.filepath),
         filepath: plan.filepath,
         metadata: updatedMetadata,
-        preview: updatedContent.substring(0, 200)
+        preview: updatedContent.substring(0, 200),
       });
 
       logger.info(`Plan updated: ${plan.id}`);
@@ -194,7 +237,7 @@ class PlanService {
       return {
         success: true,
         id: plan.id,
-        message: 'Plan updated successfully'
+        message: 'Plan updated successfully',
       };
     } catch (error) {
       logger.error('Failed to update plan', { error: error.message });
@@ -220,7 +263,7 @@ class PlanService {
       return {
         success: true,
         id: plan.id,
-        message: 'Plan deleted successfully'
+        message: 'Plan deleted successfully',
       };
     } catch (error) {
       logger.error('Failed to delete plan', { error: error.message });
@@ -253,20 +296,33 @@ class PlanService {
       // Filter by search text
       if (filter.search) {
         const searchLower = filter.search.toLowerCase();
-        filtered = filtered.filter(p => {
-          const searchable = [
-            p.metadata.title || '',
-            p.metadata.tags?.join(' ') || '',
-            p.preview
-          ].join(' ').toLowerCase();
-          return searchable.includes(searchLower);
-        });
+        const withSearchMatches = await Promise.all(
+          filtered.map(async p => {
+            let content = '';
+            try {
+              const parsed = await this.getParsedPlanFile(p.filepath);
+              content = parsed.content;
+            } catch {
+              // Best-effort only; keep empty content fallback
+            }
+
+            const searchable = [
+              p.metadata.title || '',
+              p.metadata.tags?.join(' ') || '',
+              p.preview,
+              content,
+            ]
+              .join(' ')
+              .toLowerCase();
+            return { plan: p, matches: searchable.includes(searchLower) };
+          })
+        );
+
+        filtered = withSearchMatches.filter(entry => entry.matches).map(entry => entry.plan);
       }
 
       // Sort by updated date (newest first)
-      filtered.sort((a, b) => 
-        new Date(b.metadata.updated) - new Date(a.metadata.updated)
-      );
+      filtered.sort((a, b) => new Date(b.metadata.updated) - new Date(a.metadata.updated));
 
       logger.info(`Listed ${filtered.length} plans`);
 
@@ -279,7 +335,7 @@ class PlanService {
         created: p.metadata.created,
         updated: p.metadata.updated,
         aiImproved: p.metadata.aiImproved || false,
-        preview: p.preview
+        preview: p.preview,
       }));
     } catch (error) {
       logger.error('Failed to list plans', { error: error.message });
@@ -296,9 +352,17 @@ class PlanService {
       const results = [];
 
       const queryLower = query.toLowerCase();
+      const queryTerms = queryLower.split(/\s+/).filter(Boolean);
 
       for (const plan of plans) {
         let score = 0;
+        let content = '';
+        try {
+          const parsed = await this.getParsedPlanFile(plan.filepath);
+          content = parsed.content.toLowerCase();
+        } catch {
+          content = '';
+        }
 
         // Title match (highest weight)
         if (plan.metadata.title?.toLowerCase().includes(queryLower)) {
@@ -315,6 +379,15 @@ class PlanService {
           score += 2;
         }
 
+        // Full content match
+        if (content.includes(queryLower)) {
+          score += 4;
+        }
+
+        // Partial term matches
+        const termMatches = queryTerms.filter(term => content.includes(term)).length;
+        score += termMatches;
+
         if (score > 0) {
           results.push({
             id: plan.id,
@@ -322,7 +395,7 @@ class PlanService {
             title: plan.metadata.title,
             score,
             preview: plan.preview,
-            status: plan.metadata.status
+            status: plan.metadata.status,
           });
         }
       }
@@ -347,7 +420,7 @@ class PlanService {
       let mergedContent = `# Merged Plans\n\nGenerated: ${new Date().toLocaleString()}\n\n`;
       const sourceMetadata = {
         merged_from: [],
-        merged_date: new Date().toISOString()
+        merged_date: new Date().toISOString(),
       };
 
       // Collect content from each plan
@@ -356,10 +429,10 @@ class PlanService {
           const plan = await this.readPlan(planId);
           mergedContent += `## ${plan.metadata.title || planId}\n\n`;
           mergedContent += plan.content + '\n\n---\n\n';
-          
+
           sourceMetadata.merged_from.push({
             id: planId,
-            title: plan.metadata.title
+            title: plan.metadata.title,
           });
         } catch (error) {
           logger.warn(`Failed to merge plan ${planId}`, { error: error.message });
@@ -370,7 +443,7 @@ class PlanService {
       return await this.createPlan(outputFilename, mergedContent, {
         ...metadata,
         ...sourceMetadata,
-        tags: ['merged', ...(metadata.tags || [])]
+        tags: ['merged', ...(metadata.tags || [])],
       });
     } catch (error) {
       logger.error('Plan merge failed', { error: error.message });
@@ -384,13 +457,13 @@ class PlanService {
   async getPlanStats() {
     try {
       const plans = Array.from(this.plansIndex.values());
-      
+
       const stats = {
         totalPlans: plans.length,
         byStatus: {},
         byTag: {},
         totalWords: 0,
-        averageWords: 0
+        averageWords: 0,
       };
 
       for (const plan of plans) {
@@ -405,8 +478,16 @@ class PlanService {
           });
         }
 
-        // Count words
-        const wordCount = plan.preview.split(/\s+/).length;
+        // Count words from full content
+        let wordCount = plan.wordCount || 0;
+        if (!wordCount) {
+          try {
+            const parsed = await this.getParsedPlanFile(plan.filepath);
+            wordCount = parsed.content.split(/\s+/).filter(Boolean).length;
+          } catch {
+            wordCount = plan.preview.split(/\s+/).filter(Boolean).length;
+          }
+        }
         stats.totalWords += wordCount;
       }
 

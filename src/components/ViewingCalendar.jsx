@@ -1,8 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { ChevronLeft, ChevronRight, Clock, MapPin, User, CheckCircle, XCircle } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Clock, User, CheckCircle, XCircle } from 'lucide-react';
+import { authFetch } from '../utils/authFetch';
 import './ViewingCalendar.css';
 
-const ViewingCalendar = ({ agentId, propertyId, onSelectSlot, selectedDate = null }) => {
+const ViewingCalendar = ({
+  agentId,
+  propertyId: _propertyId,
+  onSelectSlot,
+  selectedDate = null,
+}) => {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [viewings, setViewings] = useState([]);
   const [availableSlots, setAvailableSlots] = useState([]);
@@ -12,6 +18,7 @@ const ViewingCalendar = ({ agentId, propertyId, onSelectSlot, selectedDate = nul
   useEffect(() => {
     fetchViewings();
     fetchAvailableSlots();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentDate, agentId]);
 
   const fetchViewings = async () => {
@@ -20,7 +27,7 @@ const ViewingCalendar = ({ agentId, propertyId, onSelectSlot, selectedDate = nul
       const startDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
       const endDate = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
 
-      const response = await fetch(
+      const response = await authFetch(
         `/api/viewings?agentId=${agentId}&startDate=${startDate.toISOString().split('T')[0]}&endDate=${endDate.toISOString().split('T')[0]}`
       );
 
@@ -38,7 +45,7 @@ const ViewingCalendar = ({ agentId, propertyId, onSelectSlot, selectedDate = nul
       const startDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
       const endDate = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
 
-      const response = await fetch(
+      const response = await authFetch(
         `/api/viewings/agent/${agentId}/availability?start=${startDate.toISOString().split('T')[0]}&end=${endDate.toISOString().split('T')[0]}`
       );
 
@@ -49,11 +56,11 @@ const ViewingCalendar = ({ agentId, propertyId, onSelectSlot, selectedDate = nul
     }
   };
 
-  const getDaysInMonth = (date) => {
+  const getDaysInMonth = date => {
     return new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate();
   };
 
-  const getFirstDayOfMonth = (date) => {
+  const getFirstDayOfMonth = date => {
     return new Date(date.getFullYear(), date.getMonth(), 1).getDay();
   };
 
@@ -65,28 +72,28 @@ const ViewingCalendar = ({ agentId, propertyId, onSelectSlot, selectedDate = nul
     setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() + 1));
   };
 
-  const handleSelectDate = (day) => {
+  const handleSelectDate = day => {
     const selected = new Date(currentDate.getFullYear(), currentDate.getMonth(), day);
     setSelectedSlot(selected);
     onSelectSlot?.(selected);
   };
 
-  const isDateBooked = (day) => {
+  const isDateBooked = day => {
     const date = new Date(currentDate.getFullYear(), currentDate.getMonth(), day);
-    return viewings.some((v) => {
+    return viewings.some(v => {
       const vDate = new Date(v.scheduledDate);
       return vDate.toDateString() === date.toDateString() && v.status !== 'cancelled';
     });
   };
 
-  const isDateSelected = (day) => {
+  const isDateSelected = day => {
     const date = new Date(currentDate.getFullYear(), currentDate.getMonth(), day);
     return selectedSlot && selectedSlot.toDateString() === date.toDateString();
   };
 
   const getTodayViewings = () => {
     const today = new Date().toDateString();
-    return viewings.filter((v) => new Date(v.scheduledDate).toDateString() === today);
+    return viewings.filter(v => new Date(v.scheduledDate).toDateString() === today);
   };
 
   const renderCalendar = () => {
@@ -101,7 +108,9 @@ const ViewingCalendar = ({ agentId, propertyId, onSelectSlot, selectedDate = nul
 
     // Days of month
     for (let day = 1; day <= daysInMonth; day++) {
-      const isToday = new Date().toDateString() === new Date(currentDate.getFullYear(), currentDate.getMonth(), day).toDateString();
+      const isToday =
+        new Date().toDateString() ===
+        new Date(currentDate.getFullYear(), currentDate.getMonth(), day).toDateString();
       const isBooked = isDateBooked(day);
       const isSelected = isDateSelected(day);
 
@@ -123,14 +132,12 @@ const ViewingCalendar = ({ agentId, propertyId, onSelectSlot, selectedDate = nul
   const getTimeSlots = () => {
     if (!selectedSlot) return [];
 
-    const daySlots = availableSlots.filter((slot) => {
+    const daySlots = availableSlots.filter(slot => {
       const slotDate = new Date(slot.time);
       return slotDate.toDateString() === selectedSlot.toDateString();
     });
 
-    return daySlots.sort(
-      (a, b) => new Date(a.time).getTime() - new Date(b.time).getTime()
-    );
+    return daySlots.sort((a, b) => new Date(a.time).getTime() - new Date(b.time).getTime());
   };
 
   const monthName = currentDate.toLocaleString('default', { month: 'long', year: 'numeric' });
@@ -164,7 +171,9 @@ const ViewingCalendar = ({ agentId, propertyId, onSelectSlot, selectedDate = nul
       </div>
 
       {/* Calendar Grid */}
-      <div className="calendar-grid">{loading ? <div className="loading">Loading...</div> : renderCalendar()}</div>
+      <div className="calendar-grid">
+        {loading ? <div className="loading">Loading...</div> : renderCalendar()}
+      </div>
 
       {/* Time Slots for Selected Date */}
       {selectedSlot && (
@@ -200,9 +209,9 @@ const ViewingCalendar = ({ agentId, propertyId, onSelectSlot, selectedDate = nul
       {/* Today's Viewings */}
       {todayViewings.length > 0 && (
         <div className="todays-viewings">
-          <h4>Today's Viewings</h4>
+          <h4>Today&apos;s Viewings</h4>
           <div className="viewings-list">
-            {todayViewings.map((viewing) => (
+            {todayViewings.map(viewing => (
               <div key={viewing._id} className={`viewing-item viewing-${viewing.status}`}>
                 <div className="viewing-time">
                   <Clock size={16} />
@@ -212,9 +221,7 @@ const ViewingCalendar = ({ agentId, propertyId, onSelectSlot, selectedDate = nul
                   })}
                 </div>
                 <div className="viewing-info">
-                  <p className="viewing-property">
-                    {viewing.propertyId?.title || 'Property'}
-                  </p>
+                  <p className="viewing-property">{viewing.propertyId?.title || 'Property'}</p>
                   {viewing.userId && (
                     <p className="viewing-user">
                       <User size={14} />

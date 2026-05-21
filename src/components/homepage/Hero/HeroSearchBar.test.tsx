@@ -59,6 +59,23 @@ vi.mock('../../../store/propertySlice', () => ({
   clearFilters: vi.fn(() => ({ type: 'properties/clearFilters' })),
 }));
 
+const mockToastSuccess = vi.fn();
+vi.mock('../../Toast', () => ({
+  useToast: () => ({
+    success: mockToastSuccess,
+    error: vi.fn(),
+    info: vi.fn(),
+    warning: vi.fn(),
+  }),
+}));
+
+vi.mock('../../../store/slices/searchLeadsSlice', () => ({
+  createSearchLead: vi.fn((payload: unknown) => ({
+    type: 'searchLeads/createSearchLead/fulfilled',
+    payload,
+  })),
+}));
+
 // Import after mocks
 import HeroSearchBar, {
   DUBAI_LOCATIONS,
@@ -71,6 +88,10 @@ import { setFilters, clearFilters } from '../../../store/propertySlice';
 beforeEach(() => {
   mockNavigate.mockClear();
   mockDispatch.mockClear();
+  mockDispatch.mockImplementation(() => ({
+    unwrap: () => Promise.resolve({ id: 'lead-1' }),
+  }));
+  mockToastSuccess.mockClear();
   (setFilters as unknown as ReturnType<typeof vi.fn>).mockClear();
   (clearFilters as unknown as ReturnType<typeof vi.fn>).mockClear();
 });
@@ -191,11 +212,11 @@ describe('HeroSearchBar', () => {
   });
 
   describe('Search navigation', () => {
-    it('navigates to /properties with mode=buy when defaults are kept', () => {
+    it('navigates to /properties with mode=rent when defaults are kept', () => {
       render(<HeroSearchBar />);
       fireEvent.click(screen.getByLabelText('Search properties'));
       expect(mockDispatch).toHaveBeenCalled();
-      expect(mockNavigate).toHaveBeenCalledWith('/properties?mode=buy');
+      expect(mockNavigate).toHaveBeenCalledWith('/properties?mode=rent');
     });
 
     it('dispatches clearFilters before every search', () => {

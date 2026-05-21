@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /**
  * HR Department View - Fully Optimized with Caching and Performance Monitoring
  * Uses optimized API hooks with automatic caching, deduplication, and monitoring
@@ -9,7 +8,11 @@ import styled from 'styled-components';
 import BaseDepartmentView from '../../../components/departmentViews/BaseDepartmentView';
 import { HRKPIRenderer } from '../../../utils/departmentKPIRenderer';
 import { BarChart, LineChart, ProgressRing } from '../../../components/charts/DataVisualization';
-import { useDepartmentDataOptimized, useDepartmentKPIsOptimized, useDepartmentTrendsOptimized } from '../../../hooks/useOptimizedAPI';
+import {
+  useDepartmentDataOptimized,
+  useDepartmentKPIsOptimized,
+  useDepartmentTrendsOptimized,
+} from '../../../hooks/useOptimizedAPI';
 import { ErrorState, LoadingState } from '../../../components/shared';
 
 const HRContentWrapper = styled.div`
@@ -56,39 +59,45 @@ export const HRDepartmentView: React.FC<HRDepartmentViewProps> = ({
 }) => {
   // Fetch department data from real API
   const { data: hrData, loading: dataLoading, error: dataError } = useDepartmentDataOptimized('HR');
-  const { kpis: hrKPIs, loading: kpiLoading, error: kpiError } = useDepartmentKPIsOptimized('HR');
-  const { trends: hrTrends, loading: trendLoading } = useDepartmentTrendsOptimized('HR', 'monthly');
+  const { kpis: _hrKPIs, loading: kpiLoading, error: kpiError } = useDepartmentKPIsOptimized('HR');
+  const { trends: _hrTrends, loading: trendLoading } = useDepartmentTrendsOptimized(
+    'HR',
+    'monthly'
+  );
 
   // Mock HR data for demo
-  const mockHRData = useMemo(() => ({
-    totalEmployees: 450,
-    activePositions: 12,
-    attendanceRate: 94.5,
-    turnoverRate: 2.3,
-    employeesByDepartment: [
-      { label: 'Sales', value: 120, color: '#3498db' },
-      { label: 'Engineering', value: 150, color: '#2ecc71' },
-      { label: 'Finance', value: 45, color: '#e74c3c' },
-      { label: 'HR', value: 35, color: '#f39c12' },
-      { label: 'Operations', value: 100, color: '#9b59b6' },
-    ],
-    attendanceTrend: [
-      { label: 'Jan', value: 92.5 },
-      { label: 'Feb', value: 93.2 },
-      { label: 'Mar', value: 94.1 },
-      { label: 'Apr', value: 93.8 },
-      { label: 'May', value: 94.5 },
-      { label: 'Jun', value: 94.7 },
-    ],
-    hiresLastQuarter: [
-      { label: 'Q1', value: 45, color: '#3498db' },
-      { label: 'Q2', value: 38, color: '#2ecc71' },
-      { label: 'Q3', value: 52, color: '#e74c3c' },
-    ],
-  }), []);
+  const mockHRData = useMemo(
+    () => ({
+      totalEmployees: 450,
+      activePositions: 12,
+      attendanceRate: 94.5,
+      turnoverRate: 2.3,
+      employeesByDepartment: [
+        { label: 'Sales', value: 120, color: '#3498db' },
+        { label: 'Engineering', value: 150, color: '#2ecc71' },
+        { label: 'Finance', value: 45, color: '#e74c3c' },
+        { label: 'HR', value: 35, color: '#f39c12' },
+        { label: 'Operations', value: 100, color: '#9b59b6' },
+      ],
+      attendanceTrend: [
+        { label: 'Jan', value: 92.5 },
+        { label: 'Feb', value: 93.2 },
+        { label: 'Mar', value: 94.1 },
+        { label: 'Apr', value: 93.8 },
+        { label: 'May', value: 94.5 },
+        { label: 'Jun', value: 94.7 },
+      ],
+      hiresLastQuarter: [
+        { label: 'Q1', value: 45, color: '#3498db' },
+        { label: 'Q2', value: 38, color: '#2ecc71' },
+        { label: 'Q3', value: 52, color: '#e74c3c' },
+      ],
+    }),
+    []
+  );
 
   // Use API data if available, fallback to mock data
-  const displayData = hrData || mockHRData;
+  const displayData = (hrData || mockHRData) as typeof mockHRData;
 
   // Handle loading state
   if (dataLoading || kpiLoading) {
@@ -98,15 +107,14 @@ export const HRDepartmentView: React.FC<HRDepartmentViewProps> = ({
   // Handle error state
   if (dataError || kpiError) {
     return (
-      <ErrorState 
-        title="Failed to Load HR Data"
-        message={dataError?.message || kpiError?.message || 'Unable to fetch HR data. Using fallback data.'}
+      <ErrorState
+        error={dataError || kpiError || 'Unable to fetch HR data. Using fallback data.'}
         onRetry={() => window.location.reload()}
       />
     );
   }
 
-  const contentRenderer = (data: any) => (
+  const contentRenderer = (_data: unknown) => (
     <HRContentWrapper>
       <ChartCard>
         <h3>Employees by Department</h3>
@@ -171,4 +179,3 @@ export const HRDepartmentView: React.FC<HRDepartmentViewProps> = ({
 };
 
 export default HRDepartmentView;
-

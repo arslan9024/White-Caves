@@ -11,7 +11,7 @@ describe('Tooltip Component', () => {
           <button>Hover me</button>
         </Tooltip>
       );
-      
+
       expect(screen.getByText('Hover me')).toBeInTheDocument();
     });
 
@@ -22,28 +22,32 @@ describe('Tooltip Component', () => {
           <button>Trigger</button>
         </Tooltip>
       );
-      
+
       const trigger = screen.getByText('Trigger');
       await user.hover(trigger);
-      
+
       const tooltip = await screen.findByText('Helpful text');
       expect(tooltip).toBeInTheDocument();
     });
 
     it('should hide tooltip on unhover', async () => {
       const user = userEvent.setup();
-      const { container } = render(
+      render(
         <Tooltip content="Helpful text">
           <button>Trigger</button>
         </Tooltip>
       );
-      
+
       const trigger = screen.getByText('Trigger');
       await user.hover(trigger);
       await user.unhover(trigger);
-      
-      const tooltip = container.querySelector('[role="tooltip"]');
-      expect(tooltip).not.toBeVisible();
+
+      const tooltip = screen.queryByRole('tooltip');
+      if (tooltip) {
+        expect(tooltip).not.toBeVisible();
+      } else {
+        expect(tooltip).toBeNull();
+      }
     });
   });
 
@@ -54,15 +58,15 @@ describe('Tooltip Component', () => {
           <button>Trigger</button>
         </Tooltip>
       );
-      
+
       expect(screen.getByText('Trigger')).toBeInTheDocument();
-      
+
       rerender(
         <Tooltip content="Text" placement="bottom">
           <button>Trigger</button>
         </Tooltip>
       );
-      
+
       expect(screen.getByText('Trigger')).toBeInTheDocument();
     });
   });
@@ -70,16 +74,16 @@ describe('Tooltip Component', () => {
   describe('Accessibility', () => {
     it('should have proper ARIA attributes', async () => {
       const user = userEvent.setup();
-      const { container } = render(
+      render(
         <Tooltip content="Tooltip text">
           <button>Trigger</button>
         </Tooltip>
       );
-      
+
       const trigger = screen.getByText('Trigger');
       await user.hover(trigger);
-      
-      const tooltip = container.querySelector('[role="tooltip"]');
+
+      const tooltip = await screen.findByRole('tooltip');
       expect(tooltip).toBeInTheDocument();
     });
   });

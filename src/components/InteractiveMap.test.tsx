@@ -11,10 +11,54 @@ import React from 'react';
 // ── Mocks ────────────────────────────────────────────────────────
 
 const mockProperties = [
-  { id: '1', title: 'Palm Villa A', location: 'Palm Jumeirah', type: 'villa', price: 15000000, beds: 5, baths: 4, sqft: 8000, amenities: ['pool'], images: ['img1.jpg'] },
-  { id: '2', title: 'Palm Villa B', location: 'Palm Jumeirah', type: 'villa', price: 20000000, beds: 6, baths: 5, sqft: 10000, amenities: ['pool'], images: ['img2.jpg'] },
-  { id: '3', title: 'Downtown Apt', location: 'Downtown Dubai', type: 'apartment', price: 3500000, beds: 2, baths: 2, sqft: 1500, amenities: ['gym'], images: ['img3.jpg'] },
-  { id: '4', title: 'Marina Studio', location: 'Dubai Marina', type: 'apartment', price: 1200000, beds: 1, baths: 1, sqft: 800, amenities: [], images: ['img4.jpg'] },
+  {
+    id: '1',
+    title: 'Palm Villa A',
+    location: 'Palm Jumeirah',
+    type: 'villa',
+    price: 15000000,
+    beds: 5,
+    baths: 4,
+    sqft: 8000,
+    amenities: ['pool'],
+    images: ['img1.jpg'],
+  },
+  {
+    id: '2',
+    title: 'Palm Villa B',
+    location: 'Palm Jumeirah',
+    type: 'villa',
+    price: 20000000,
+    beds: 6,
+    baths: 5,
+    sqft: 10000,
+    amenities: ['pool'],
+    images: ['img2.jpg'],
+  },
+  {
+    id: '3',
+    title: 'Downtown Apt',
+    location: 'Downtown Dubai',
+    type: 'apartment',
+    price: 3500000,
+    beds: 2,
+    baths: 2,
+    sqft: 1500,
+    amenities: ['gym'],
+    images: ['img3.jpg'],
+  },
+  {
+    id: '4',
+    title: 'Marina Studio',
+    location: 'Dubai Marina',
+    type: 'apartment',
+    price: 1200000,
+    beds: 1,
+    baths: 1,
+    sqft: 800,
+    amenities: [],
+    images: ['img4.jpg'],
+  },
 ];
 
 let mockFilteredProperties = [...mockProperties];
@@ -29,33 +73,69 @@ vi.mock('../utils', () => ({
 }));
 
 vi.mock('./InteractiveMap.styles', () => ({
-  InteractiveMapContainer: ({ children }: React.PropsWithChildren) => <div data-testid="map-container">{children}</div>,
+  InteractiveMapContainer: ({ children }: React.PropsWithChildren) => (
+    <div data-testid="map-container">{children}</div>
+  ),
   MapHeader: ({ children }: React.PropsWithChildren) => <div>{children}</div>,
   MapTitle: ({ children }: React.PropsWithChildren) => <h2>{children}</h2>,
-  MapSubtitle: ({ children }: React.PropsWithChildren) => <p data-testid="map-subtitle">{children}</p>,
+  MapSubtitle: ({ children }: React.PropsWithChildren) => (
+    <p data-testid="map-subtitle">{children}</p>
+  ),
   MapVisualContainer: ({ children }: React.PropsWithChildren) => <div>{children}</div>,
   DubaiMapVisual: ({ children }: React.PropsWithChildren) => <div>{children}</div>,
   MapBackground: ({ children }: React.PropsWithChildren) => <div>{children}</div>,
-  DubaiOutlineSVG: ({ children, ...props }: React.PropsWithChildren<Record<string, unknown>>) => <svg {...props}>{children}</svg>,
-  LocationMarkers: ({ children }: React.PropsWithChildren) => <div data-testid="markers">{children}</div>,
-  LocationMarker: ({ children, onClick, ...props }: React.PropsWithChildren<{ onClick?: () => void; [key: string]: unknown }>) => (
-    <button data-testid="location-marker" onClick={onClick} {...props}>{children}</button>
+  DubaiOutlineSVG: ({ children }: React.PropsWithChildren<Record<string, unknown>>) => (
+    <svg>{children}</svg>
   ),
-  MarkerCount: ({ children }: React.PropsWithChildren) => <span data-testid="marker-count">{children}</span>,
-  SidePanel: ({ children }: React.PropsWithChildren) => <div data-testid="side-panel">{children}</div>,
+  LocationMarkers: ({ children }: React.PropsWithChildren) => (
+    <div data-testid="markers">{children}</div>
+  ),
+  LocationMarker: ({
+    children,
+    onClick,
+  }: React.PropsWithChildren<{ onClick?: () => void; [key: string]: unknown }>) => (
+    <button data-testid="location-marker" onClick={onClick}>
+      {children}
+    </button>
+  ),
+  MarkerCount: ({ children }: React.PropsWithChildren) => (
+    <span data-testid="marker-count">{children}</span>
+  ),
+  SidePanel: ({ children }: React.PropsWithChildren) => (
+    <div data-testid="side-panel">{children}</div>
+  ),
+  SectionTitleSmall: ({ children }: React.PropsWithChildren) => <h4>{children}</h4>,
+  ResultsSection: ({ children }: React.PropsWithChildren) => <section>{children}</section>,
+  ResultsHeader: ({ children }: React.PropsWithChildren) => <div>{children}</div>,
+  ResultsTitle: ({ children }: React.PropsWithChildren) => <h3>{children}</h3>,
+  ResultsMeta: ({ children }: React.PropsWithChildren) => <span>{children}</span>,
+  PropertyLocation: ({ children }: React.PropsWithChildren) => <span>{children}</span>,
   LocationList: ({ children }: React.PropsWithChildren) => <div>{children}</div>,
-  LocationItem: ({ children, onClick, ...props }: React.PropsWithChildren<{ onClick?: () => void; [key: string]: unknown }>) => (
-    <div data-testid="location-item" onClick={onClick} {...props}>{children}</div>
+  LocationItem: ({
+    children,
+    onClick,
+  }: React.PropsWithChildren<{ onClick?: () => void; [key: string]: unknown }>) => (
+    <div data-testid="location-item" onClick={onClick}>
+      {children}
+    </div>
   ),
-  LocationName: ({ children }: React.PropsWithChildren) => <span data-testid="location-name">{children}</span>,
+  LocationName: ({ children }: React.PropsWithChildren) => (
+    <span data-testid="location-name">{children}</span>
+  ),
   PropertyCount: ({ children }: React.PropsWithChildren) => <span>{children}</span>,
-  PropertiesGrid: ({ children }: React.PropsWithChildren) => <div data-testid="properties-grid">{children}</div>,
+  PropertiesGrid: ({ children }: React.PropsWithChildren) => (
+    <div data-testid="properties-grid">{children}</div>
+  ),
   PropertyCard: ({ children, onClick }: React.PropsWithChildren<{ onClick?: () => void }>) => (
-    <div data-testid="property-card" onClick={onClick}>{children}</div>
+    <div data-testid="property-card" onClick={onClick}>
+      {children}
+    </div>
   ),
   PropertyImage: (props: { src: string; alt: string }) => <img {...props} />,
   PropertyInfo: ({ children }: React.PropsWithChildren) => <div>{children}</div>,
-  PropertyTitle: ({ children }: React.PropsWithChildren) => <span data-testid="property-title">{children}</span>,
+  PropertyTitle: ({ children }: React.PropsWithChildren) => (
+    <span data-testid="property-title">{children}</span>
+  ),
   PropertyPrice: ({ children }: React.PropsWithChildren) => <span>{children}</span>,
   PropertyDetails: ({ children }: React.PropsWithChildren) => <div>{children}</div>,
   DetailBadge: ({ children }: React.PropsWithChildren) => <span>{children}</span>,
@@ -133,9 +213,7 @@ describe('InteractiveMap', () => {
     render(<InteractiveMap />);
     const locationItems = screen.getAllByTestId('location-item');
     // Click Palm Jumeirah
-    const palmItem = locationItems.find(item =>
-      item.textContent?.includes('Palm Jumeirah')
-    );
+    const palmItem = locationItems.find(item => item.textContent?.includes('Palm Jumeirah'));
     fireEvent.click(palmItem!);
 
     expect(screen.getByText(/Properties in Palm Jumeirah/)).toBeInTheDocument();
@@ -145,9 +223,7 @@ describe('InteractiveMap', () => {
   it('deselects location when clicking same location again', () => {
     render(<InteractiveMap />);
     const locationItems = screen.getAllByTestId('location-item');
-    const palmItem = locationItems.find(item =>
-      item.textContent?.includes('Palm Jumeirah')
-    );
+    const palmItem = locationItems.find(item => item.textContent?.includes('Palm Jumeirah'));
 
     // Select
     fireEvent.click(palmItem!);

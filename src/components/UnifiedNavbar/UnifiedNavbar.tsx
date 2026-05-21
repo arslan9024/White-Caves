@@ -1,6 +1,9 @@
 ﻿/**
  * Unified Navbar Component
  * Single source of truth for top-level navigation
+ *
+ * @deprecated Use `src/components/layout/TopBar/TopBar.tsx` for CRM runtime.
+ * This component is retained for backwards compatibility/testing only.
  */
 
 import React from 'react';
@@ -183,4 +186,3 @@ export const UnifiedNavbar: React.FC<UnifiedNavbarProps> = ({
 UnifiedNavbar.displayName = 'UnifiedNavbar';
 
 export default UnifiedNavbar;
-

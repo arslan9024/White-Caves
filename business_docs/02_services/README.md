@@ -137,5 +137,86 @@ All services are powered by the White Caves CRM platform:
 
 ---
 
+## Service Acceptance Criteria
+
+### Acceptance Criteria — Property Management
+
+| ID | Criterion | Testable Condition |
+|----|-----------|-------------------|
+| PM-AC-001 | Onboarding within 5 business days | Signed management agreement → property on system within 5 days |
+| PM-AC-002 | Rent collected and disbursed on schedule | 100% of rents collected by due date; disbursed to landlord within 3 business days |
+| PM-AC-003 | Maintenance response within SLA | P1: 4h acknowledge; P2: 24h; P3: 72h; verified by ticket timestamp |
+| PM-AC-004 | RERA-compliant tenancy contract | Ejari filed within 30 days of contract signing; verified in DLD system |
+| PM-AC-005 | Monthly owner report by 5th of month | Report delivered by 5th; includes income, expenses, occupancy rate |
+| PM-AC-006 | Tenant satisfaction NPS ≥ 40 | Monthly tenant survey; NPS tracked in analytics dashboard |
+
+### Acceptance Criteria — Sales Brokerage
+
+| ID | Criterion | Testable Condition |
+|----|-----------|-------------------|
+| SB-AC-001 | Lead response < 5 minutes (WhatsApp) | Nina bot responds within 60 seconds; human agent within 5 minutes during business hours |
+| SB-AC-002 | RERA Form A before marketing | Property cannot be listed without Form A upload — system enforced |
+| SB-AC-003 | Form B before offer submission | Offer cannot be submitted without Form B — system enforced |
+| SB-AC-004 | DLD transfer within 30 days of acceptance | Deal tracker flags if DLD transfer not submitted within 30 days of offer acceptance |
+| SB-AC-005 | KYC complete before contract | KYC gate enforced; deal blocked at "Offer Accepted" without complete KYC |
+| SB-AC-006 | Commission disbursed within 7 days of DLD transfer | Finance system tracks DLD transfer date; commission payment auto-scheduled |
+
+### Acceptance Criteria — Leasing Services
+
+| ID | Criterion | Testable Condition |
+|----|-----------|-------------------|
+| LS-AC-001 | Tenant sourced within 30 days | Leasing tracker monitors days-to-tenant; SLA breach flagged at 30 days |
+| LS-AC-002 | Ejari filed within 30 days | Ejari submission timestamp recorded; alert at day 25 |
+| LS-AC-003 | Rental index compliance | System calculates max allowed increase per RERA rental index per area; blocks non-compliant increases |
+| LS-AC-004 | Tenant screening completed | KYC/AML completed for all tenants before lease signing |
+| LS-AC-005 | Renewal offer 90 days before expiry | Automated renewal workflow triggers 90 days before lease end |
+
+### Acceptance Criteria — Valuation Services
+
+| ID | Criterion | Testable Condition |
+|----|-----------|-------------------|
+| VS-AC-001 | Standard valuation report within 48 hours | Timestamp from instruction to report delivery ≤ 48 hours |
+| VS-AC-002 | Express valuation within 24 hours | Express instruction flagged; delivery ≤ 24 hours |
+| VS-AC-003 | RERA-certified valuer signs all reports | Valuer's RERA certificate number included in every report |
+| VS-AC-004 | Comparable transactions: minimum 3 | Report must include ≥ 3 comparable DLD transactions; system rejects report without them |
+| VS-AC-005 | Confidence score displayed | AVM reports include confidence score %; manual reports include data quality rating |
+
+---
+
+## RERA-Required Service Standards
+
+### Mandatory RERA/DLD Compliance per Service Line
+
+| Service | RERA/DLD Requirement | Regulatory Basis | White Caves Process |
+|---------|---------------------|------------------|--------------------|
+| **Property Management** | Written management agreement; RERA-licensed manager; RERA Standard Management Agreement template mandatory | RERA Circular 2019 | Management agreement generated via system; PM license verified before onboarding |
+| **Sales Brokerage** | Form A (seller mandate) before listing; Form B (buyer mandate) before offer; DLD transfer within 30 days of acceptance; 4% DLD transfer fee collected | Dubai Law 85/2006; DLD Fee Schedule | System enforces form gates; DLD transfer tracker; commission splits comply with RERA dual-agency rules |
+| **Leasing** | Ejari registration ≤ 30 days; RERA rental index compliance; no undisclosed fees beyond RERA standard commission (5%) | Dubai Law 26/2007; RERA Rental Index | Ejari auto-filed via DLD API; rental increase algorithm per RERA published index |
+| **Off-Plan Sales** | Oqood DLD registration before handover; developer RERA-registered; escrow Law No. 8 of 2007 compliance | Dubai Law 8/2007; RERA Res. 6/2010 | Oqood tracker; escrow account field mandatory; developer RERA status verified |
+| **Valuation** | RERA-certified valuer; RICS or UAE-approved methodology; report must follow RERA valuation standards | RERA Valuation Guidelines; RICS Red Book | Valuer credentials stored in system; report template RERA-compliant |
+| **KYC/AML across all services** | CDD mandatory before transaction > AED 55,000; EDD for PEPs and high-risk; SAR via goAML | UAE AML Law 20/2019; Min. Resolution 45/2022 | Automated KYC workflow; PEP API screening; SAR draft auto-generated on flag |
+| **Advertising** | RERA permit number on all listings; agent BRN on all marketing materials; accurate pricing (no bait-and-switch) | RERA Advertising Circular 2023 | System validates permit number + BRN before listing goes live |
+
+---
+
+## Dubai Market Positioning
+
+### Service Portfolio vs Competitor Offerings
+
+| Service Capability | White Caves | Betterhomes | Allsopp & Allsopp | Haus & Haus | Hamptons Dubai |
+|-------------------|:-----------:|:-----------:|:-----------------:|:-----------:|:--------------:|
+| AI-powered lead scoring | ✅ | ❌ | ❌ | ❌ | ❌ |
+| WhatsApp-native CRM | ✅ | Partial | ❌ | ❌ | ❌ |
+| DAMAC Hills 2 specialist | ✅ (9,378+ units) | ❌ | ❌ | ❌ | ❌ |
+| Integrated Ejari filing | ✅ | Manual | Manual | Manual | Manual |
+| Investor ROI calculator | ✅ | Basic | Basic | ❌ | ❌ |
+| Tenant portal | ✅ | ❌ | ❌ | ❌ | ❌ |
+| Property management + leasing | ✅ | ✅ | ❌ | ❌ | Limited |
+| AML/KYC automated workflow | ✅ | Manual | Manual | Manual | Manual |
+| 24/7 bot (Arabic + English) | ✅ | ❌ | ❌ | ❌ | ❌ |
+| Off-plan Oqood tracking | ✅ | Manual | Manual | ❌ | ❌ |
+
+---
+
 *For SLA commitments, see [service-level-agreements.md](service-level-agreements.md).*
 *For detailed service specifications, see [core-services.md](core-services.md).*

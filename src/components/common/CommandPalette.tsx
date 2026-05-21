@@ -13,12 +13,29 @@ import React, { useState, useRef, useEffect, useMemo, useCallback } from 'react'
 import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import {
-  Search, X, Building2, DollarSign, TrendingUp, Megaphone,
-  MessageSquare, Globe, Lock, Code, Scale, Settings, Users2,
-  BarChart3, Home, ArrowRight, Command
+  Search,
+  Building2,
+  DollarSign,
+  TrendingUp,
+  Megaphone,
+  MessageSquare,
+  Globe,
+  Lock,
+  Code,
+  Scale,
+  Settings,
+  Users2,
+  BarChart3,
+  Home,
+  ArrowRight,
+  Command,
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
-import { selectCommandPaletteOpen, closeCommandPalette, selectDepartment } from '../../store/slices/sidebarSlice';
+import {
+  selectCommandPaletteOpen,
+  closeCommandPalette,
+  selectDepartment,
+} from '../../store/slices/sidebarSlice';
 import styled, { keyframes } from 'styled-components';
 import { spacing } from '../../styles/theme/spacing';
 
@@ -62,7 +79,7 @@ const PaletteContainer = styled.div`
   width: 560px;
   max-width: 90vw;
   max-height: 70vh;
-  background: #FFFFFF;
+  background: #ffffff;
   border-radius: 16px;
   box-shadow: 0 24px 80px rgba(0, 0, 0, 0.2);
   display: flex;
@@ -71,7 +88,7 @@ const PaletteContainer = styled.div`
   animation: ${slideUp} 0.2s ease;
 
   @media (prefers-color-scheme: dark) {
-    background: #1E293B;
+    background: #1e293b;
     box-shadow: 0 24px 80px rgba(0, 0, 0, 0.5);
   }
 `;
@@ -81,7 +98,7 @@ const SearchRow = styled.div`
   align-items: center;
   gap: 12px;
   padding: 16px 20px;
-  border-bottom: 1px solid #E5E7EB;
+  border-bottom: 1px solid #e5e7eb;
 
   @media (prefers-color-scheme: dark) {
     border-bottom-color: #334155;
@@ -89,7 +106,7 @@ const SearchRow = styled.div`
 `;
 
 const SearchIcon = styled.div`
-  color: #9CA3AF;
+  color: #9ca3af;
   flex-shrink: 0;
 `;
 
@@ -103,12 +120,14 @@ const SearchInput = styled.input`
   font-family: inherit;
 
   &::placeholder {
-    color: #9CA3AF;
+    color: #9ca3af;
   }
 
   @media (prefers-color-scheme: dark) {
-    color: #F8FAFC;
-    &::placeholder { color: #64748B; }
+    color: #f8fafc;
+    &::placeholder {
+      color: #64748b;
+    }
   }
 `;
 
@@ -116,16 +135,16 @@ const CloseHint = styled.kbd`
   font-size: 11px;
   padding: 3px 7px;
   border-radius: 4px;
-  background: #F3F4F6;
-  border: 1px solid #E5E7EB;
-  color: #9CA3AF;
+  background: #f3f4f6;
+  border: 1px solid #e5e7eb;
+  color: #9ca3af;
   font-family: inherit;
   flex-shrink: 0;
 
   @media (prefers-color-scheme: dark) {
     background: #334155;
     border-color: #475569;
-    color: #64748B;
+    color: #64748b;
   }
 `;
 
@@ -139,12 +158,12 @@ const CategoryLabel = styled.div`
   padding: 8px 12px 4px;
   font-size: 11px;
   font-weight: 600;
-  color: #9CA3AF;
+  color: #9ca3af;
   text-transform: uppercase;
   letter-spacing: 0.5px;
 
   @media (prefers-color-scheme: dark) {
-    color: #64748B;
+    color: #64748b;
   }
 `;
 
@@ -154,7 +173,7 @@ const ResultItem = styled.button<{ $active?: boolean }>`
   align-items: center;
   gap: 12px;
   padding: 10px 12px;
-  background: ${p => p.$active ? '#F3F4F6' : 'transparent'};
+  background: ${p => (p.$active ? '#F3F4F6' : 'transparent')};
   border: none;
   border-radius: 10px;
   cursor: pointer;
@@ -164,13 +183,15 @@ const ResultItem = styled.button<{ $active?: boolean }>`
   text-align: left;
 
   &:hover {
-    background: #F3F4F6;
+    background: #f3f4f6;
   }
 
   @media (prefers-color-scheme: dark) {
-    color: #E2E8F0;
-    background: ${p => p.$active ? '#334155' : 'transparent'};
-    &:hover { background: #334155; }
+    color: #e2e8f0;
+    background: ${p => (p.$active ? '#334155' : 'transparent')};
+    &:hover {
+      background: #334155;
+    }
   }
 `;
 
@@ -178,7 +199,7 @@ const ResultIcon = styled.div<{ $color?: string }>`
   width: 32px;
   height: 32px;
   border-radius: 8px;
-  background: ${p => p.$color ? `${p.$color}15` : '#F3F4F6'};
+  background: ${p => (p.$color ? `${p.$color}15` : '#F3F4F6')};
   color: ${p => p.$color || '#6B7280'};
   display: flex;
   align-items: center;
@@ -192,7 +213,7 @@ const ResultLabel = styled.span`
 `;
 
 const ResultArrow = styled.div`
-  color: #D1D5DB;
+  color: #d1d5db;
   flex-shrink: 0;
 `;
 
@@ -201,14 +222,14 @@ const Footer = styled.div`
   align-items: center;
   justify-content: space-between;
   padding: 10px 20px;
-  border-top: 1px solid #E5E7EB;
+  border-top: 1px solid #e5e7eb;
   font-size: 12px;
-  color: #9CA3AF;
+  color: #9ca3af;
   gap: ${spacing.md};
 
   @media (prefers-color-scheme: dark) {
     border-top-color: #334155;
-    color: #64748B;
+    color: #64748b;
   }
 `;
 
@@ -221,8 +242,8 @@ const FooterHint = styled.div`
     font-size: 10px;
     padding: 2px 5px;
     border-radius: 3px;
-    background: #F3F4F6;
-    border: 1px solid #E5E7EB;
+    background: #f3f4f6;
+    border: 1px solid #e5e7eb;
     font-family: inherit;
 
     @media (prefers-color-scheme: dark) {
@@ -235,7 +256,7 @@ const FooterHint = styled.div`
 const EmptyState = styled.div`
   text-align: center;
   padding: 32px 16px;
-  color: #9CA3AF;
+  color: #9ca3af;
   font-size: 14px;
 `;
 
@@ -281,10 +302,38 @@ const CommandPalette: React.FC = React.memo(function CommandPalette() {
 
     // Navigation
     list.push(
-      { id: 'nav-dashboard', label: 'Dashboard', category: 'Navigation', icon: Home, action: () => navigate('/dashboard'), keywords: ['home', 'overview'] },
-      { id: 'nav-analytics', label: 'Analytics', category: 'Navigation', icon: BarChart3, action: () => navigate('/dashboard'), keywords: ['charts', 'reports', 'stats'] },
-      { id: 'nav-clients', label: 'Clients', category: 'Navigation', icon: Users2, action: () => navigate('/dashboard'), keywords: ['customers', 'contacts'] },
-      { id: 'nav-settings', label: 'Settings', category: 'Navigation', icon: Settings, action: () => navigate('/settings'), keywords: ['preferences', 'configuration'] },
+      {
+        id: 'nav-dashboard',
+        label: 'Dashboard',
+        category: 'Navigation',
+        icon: Home,
+        action: () => navigate('/dashboard'),
+        keywords: ['home', 'overview'],
+      },
+      {
+        id: 'nav-analytics',
+        label: 'Analytics',
+        category: 'Navigation',
+        icon: BarChart3,
+        action: () => navigate('/dashboard'),
+        keywords: ['charts', 'reports', 'stats'],
+      },
+      {
+        id: 'nav-clients',
+        label: 'Clients',
+        category: 'Navigation',
+        icon: Users2,
+        action: () => navigate('/dashboard'),
+        keywords: ['customers', 'contacts'],
+      },
+      {
+        id: 'nav-settings',
+        label: 'Settings',
+        category: 'Navigation',
+        icon: Settings,
+        action: () => navigate('/settings'),
+        keywords: ['preferences', 'configuration'],
+      }
     );
 
     // Departments
@@ -307,10 +356,11 @@ const CommandPalette: React.FC = React.memo(function CommandPalette() {
   const filteredItems = useMemo(() => {
     if (!query.trim()) return items;
     const q = query.toLowerCase();
-    return items.filter(item =>
-      item.label.toLowerCase().includes(q) ||
-      item.category.toLowerCase().includes(q) ||
-      item.keywords?.some(k => k.includes(q))
+    return items.filter(
+      item =>
+        item.label.toLowerCase().includes(q) ||
+        item.category.toLowerCase().includes(q) ||
+        item.keywords?.some(k => k.includes(q))
     );
   }, [items, query]);
 
@@ -334,35 +384,52 @@ const CommandPalette: React.FC = React.memo(function CommandPalette() {
   }, [isOpen]);
 
   // Keyboard navigation
-  const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
-    if (e.key === 'Escape') {
-      dispatch(closeCommandPalette());
-    } else if (e.key === 'ArrowDown') {
-      e.preventDefault();
-      setActiveIndex(prev => Math.min(prev + 1, filteredItems.length - 1));
-    } else if (e.key === 'ArrowUp') {
-      e.preventDefault();
-      setActiveIndex(prev => Math.max(prev - 1, 0));
-    } else if (e.key === 'Enter' && filteredItems[activeIndex]) {
-      e.preventDefault();
-      filteredItems[activeIndex].action();
-      dispatch(closeCommandPalette());
-    }
-  }, [dispatch, filteredItems, activeIndex]);
+  const handleKeyDown = useCallback(
+    (e: React.KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        dispatch(closeCommandPalette());
+      } else if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        setActiveIndex(prev => Math.min(prev + 1, filteredItems.length - 1));
+      } else if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        setActiveIndex(prev => Math.max(prev - 1, 0));
+      } else if (
+        e.key === 'Enter' &&
+        // eslint-disable-next-line security/detect-object-injection
+        filteredItems[activeIndex]
+      ) {
+        e.preventDefault();
+        // eslint-disable-next-line security/detect-object-injection
+        filteredItems[activeIndex].action();
+        dispatch(closeCommandPalette());
+      }
+    },
+    [dispatch, filteredItems, activeIndex]
+  );
 
   if (!isOpen) return null;
 
   let flatIndex = -1;
 
   return (
-    <Overlay onClick={(e) => { if (e.target === e.currentTarget) dispatch(closeCommandPalette()); }}>
+    <Overlay
+      onClick={e => {
+        if (e.target === e.currentTarget) dispatch(closeCommandPalette());
+      }}
+    >
       <PaletteContainer onKeyDown={handleKeyDown}>
         <SearchRow>
-          <SearchIcon><Search size={20} /></SearchIcon>
+          <SearchIcon>
+            <Search size={20} />
+          </SearchIcon>
           <SearchInput
             ref={inputRef}
             value={query}
-            onChange={e => { setQuery(e.target.value); setActiveIndex(0); }}
+            onChange={e => {
+              setQuery(e.target.value);
+              setActiveIndex(0);
+            }}
             placeholder="Search departments, services, properties..."
             autoComplete="off"
             spellCheck={false}
@@ -372,9 +439,7 @@ const CommandPalette: React.FC = React.memo(function CommandPalette() {
 
         <ResultsList>
           {filteredItems.length === 0 ? (
-            <EmptyState>
-              No results for "{query}"
-            </EmptyState>
+            <EmptyState>No results for &quot;{query}&quot;</EmptyState>
           ) : (
             Object.entries(grouped).map(([category, categoryItems]) => (
               <div key={category}>
@@ -397,7 +462,9 @@ const CommandPalette: React.FC = React.memo(function CommandPalette() {
                         <Icon size={16} />
                       </ResultIcon>
                       <ResultLabel>{item.label}</ResultLabel>
-                      <ResultArrow><ArrowRight size={14} /></ResultArrow>
+                      <ResultArrow>
+                        <ArrowRight size={14} />
+                      </ResultArrow>
                     </ResultItem>
                   );
                 })}

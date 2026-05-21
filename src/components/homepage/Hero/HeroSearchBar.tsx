@@ -11,6 +11,7 @@ import { Search, MapPin, Home, BedDouble, DollarSign, ChevronDown } from 'lucide
 import { setFilters, clearFilters } from '../../../store/propertySlice';
 import { selectLocationTrends } from '../../../store/slices/homepageSlice';
 import { createSearchLead } from '../../../store/slices/searchLeadsSlice';
+import { trackHomepageEvent } from '../../../utils/homepageTracking';
 import { useToast } from '../../Toast';
 import type { AppDispatch } from '../../../store/store';
 import '../../../styles/dubaiLuxuryTheme.css';
@@ -114,7 +115,7 @@ const HeroSearchBar = memo(function HeroSearchBar() {
   // Live trending locations from Redux (populated by fetchHomepageData)
   const locationTrends = useSelector(selectLocationTrends);
 
-  const [mode, setMode] = useState<'buy' | 'rent'>('buy');
+  const [mode, setMode] = useState<'buy' | 'rent'>('rent');
   const [location, setLocation] = useState('All Locations');
   const [propertyType, setPropertyType] = useState('All Types');
   const [beds, setBeds] = useState('0');
@@ -188,6 +189,16 @@ const HeroSearchBar = memo(function HeroSearchBar() {
 
     const queryString = params.toString();
 
+    trackHomepageEvent('homepage_leasing_search_submit', {
+      mode,
+      location: location !== 'All Locations' ? location : null,
+      propertyType: propertyType !== 'All Types' ? propertyType : null,
+      beds: typeof bedCount === 'number' ? bedCount : null,
+      minPrice: minPrice ?? null,
+      maxPrice: maxPrice ?? null,
+      source: 'homepage_hero_search_bar',
+    });
+
     // TASK-012 / Phase 27: Capture anonymous search lead for CRM
     // Fire-and-forget — navigation proceeds immediately; toast shows on success
     void dispatch(
@@ -201,10 +212,15 @@ const HeroSearchBar = memo(function HeroSearchBar() {
         sessionId: sessionStorage.getItem('wc_session_id') ?? undefined,
         searchedAt: new Date().toISOString(),
       })
-    ).then(() => {
-      // TASK-013: Gold toast — only appears after confirmed lead creation
-      toast.success('Your search has been saved — our team will be in touch! 🏡', 4000);
-    });
+    )
+      .unwrap()
+      .then(() => {
+        // TASK-013: Gold toast — only appears after confirmed lead creation
+        toast.success('Your search has been saved — our team will be in touch! 🏡', 4000);
+      })
+      .catch(() => {
+        toast.error('We saved your search locally, but CRM sync is retrying in the background.');
+      });
 
     navigate(queryString ? `/properties?${queryString}` : '/properties');
   }, [dispatch, navigate, toast, mode, location, propertyType, beds, priceRange]);

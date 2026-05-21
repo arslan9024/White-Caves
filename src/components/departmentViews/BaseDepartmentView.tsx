@@ -1,6 +1,5 @@
-﻿// @ts-nocheck
+﻿/* eslint-disable @typescript-eslint/no-unused-vars, @typescript-eslint/no-explicit-any */
 import React, { useEffect, useState, ReactNode } from 'react';
-import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { DashboardShell, DataCardGrid } from '../shared/dashboard';
 import { LoadingState } from '../shared/LoadingState';
@@ -92,22 +91,77 @@ export const BaseDepartmentView: React.FC<BaseDepartmentViewProps> = ({
     }
   }, [externalError]);
 
+  useEffect(() => {
+    if (departmentData || isLoading === true) {
+      return;
+    }
+
+    let isMounted = true;
+
+    const loadDepartmentData = async () => {
+      setLoading(true);
+      setError(null);
+
+      try {
+        const response = await fetch(`${config.apiBasePath}/${serviceName}`);
+
+        if (!response.ok) {
+          throw new Error(`Failed to load ${config.departmentName} data`);
+        }
+
+        const payload = await response.json();
+
+        if (!isMounted) {
+          return;
+        }
+
+        setData(payload);
+        onDataLoaded?.(payload);
+      } catch (err) {
+        if (!isMounted) {
+          return;
+        }
+
+        setError(
+          err instanceof Error ? err.message : `Failed to load ${config.departmentName} data`
+        );
+      } finally {
+        if (isMounted) {
+          setLoading(false);
+        }
+      }
+    };
+
+    loadDepartmentData();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [
+    config.apiBasePath,
+    config.departmentName,
+    departmentData,
+    isLoading,
+    onDataLoaded,
+    serviceName,
+  ]);
+
   // Determine title and subtitle
   const title = subitemId
     ? `${config.departmentName} - Details`
     : serviceName
         .split('-')
-        .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+        .map(word => word.charAt(0).toUpperCase() + word.slice(1))
         .join(' ');
 
   return (
     <ViewContainer>
       <DashboardShell
         title={title}
-        subtitle={`Department: ${config.departmentName}`}
+        icon={config.icon}
         loading={loading}
-        error={error}
-        showBreadcrumb
+        onFilterChange={() => {}}
+        onBreadcrumbClick={() => {}}
       >
         <ViewContent>
           {error && <ErrorState error={error} onRetry={() => window.location.reload()} />}
@@ -145,4 +199,3 @@ export const BaseDepartmentView: React.FC<BaseDepartmentViewProps> = ({
 };
 
 export default BaseDepartmentView;
-

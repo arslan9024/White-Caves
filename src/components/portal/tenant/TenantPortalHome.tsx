@@ -1,15 +1,35 @@
 /**
- * TenantPortalHome — Phase 2.13: Tenant Portal Home Dashboard
+ * TenantPortalHome — Phase 2.13 / Phase 30: Tenant Portal Home Dashboard
  *
- * Landing page summary for tenants with key metrics and quick links.
+ * Landing page summary for tenants with key metrics fetched from live APIs.
  *
  * @component
  */
 
-import React, { FC } from 'react';
+import React, { FC, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import type { RootState } from '../../../store/store';
+import { authFetch } from '../../../utils/authFetch';
 import '../../../pages/RolePages.css';
+
+interface LeaseData {
+  id: string;
+  startDate: string;
+  endDate: string;
+  monthlyRent: number;
+  status: string;
+  nextPaymentDue?: string;
+  property?: { title: string; location: string };
+}
+
+interface DashboardData {
+  hasActiveLease: boolean;
+  monthlyRent: number | null;
+  currency: string;
+  daysRemainingOnLease: number | null;
+  openMaintenanceRequests: number;
+  totalMaintenanceRequests: number;
+}
 
 interface QuickLink {
   label: string;
@@ -31,6 +51,43 @@ interface TenantPortalHomeProps {
 
 const TenantPortalHome: FC<TenantPortalHomeProps> = ({ onNavigate }) => {
   const currentUser = useSelector((state: RootState) => state.user.currentUser);
+  const [dashboard, setDashboard] = useState<DashboardData | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    Promise.all([
+      authFetch('/api/leases').then(r => r.json()),
+      authFetch('/api/maintenance')
+        .then(r => r.json())
+        .catch(() => ({ data: [], pagination: { total: 0 } })),
+    ])
+      .then(([leasesRes, maintenanceRes]) => {
+        const leases: LeaseData[] = Array.isArray(leasesRes.data) ? leasesRes.data : [];
+        const activeLease = leases.find(l => l.status === 'active') ?? null;
+        const openCount =
+          maintenanceRes?.pagination?.total ??
+          (Array.isArray(maintenanceRes.data) ? maintenanceRes.data.length : 0);
+        const totalCount = openCount;
+
+        let daysRemaining: number | null = null;
+        if (activeLease?.endDate) {
+          const diff = new Date(activeLease.endDate).getTime() - Date.now();
+          daysRemaining = Math.max(0, Math.ceil(diff / (1000 * 60 * 60 * 24)));
+        }
+
+        setDashboard({
+          hasActiveLease: !!activeLease,
+          monthlyRent: activeLease?.monthlyRent ?? null,
+          currency: 'AED',
+          daysRemainingOnLease: daysRemaining,
+          openMaintenanceRequests: openCount,
+          totalMaintenanceRequests: totalCount,
+        });
+      })
+      .catch(() => setError('Unable to load dashboard data. Please refresh.'))
+      .finally(() => setLoading(false));
+  }, []);
 
   if (!currentUser) {
     return (
@@ -40,13 +97,8 @@ const TenantPortalHome: FC<TenantPortalHomeProps> = ({ onNavigate }) => {
     );
   }
 
-  // Static demo data — will be replaced by API calls in Phase 5
-  const nextPayment = { month: 'May 2026', amount: 8000, daysUntilDue: 15 };
-  const leaseEndDate = '2026-12-31';
-  const leaseEndDays = Math.ceil(
-    (new Date(leaseEndDate).getTime() - Date.now()) / (1000 * 60 * 60 * 24)
-  );
-  const openRequests = 2;
+  const daysRemaining = dashboard?.daysRemainingOnLease ?? null;
+  const openCount = dashboard?.openMaintenanceRequests ?? 0;
 
   return (
     <div className="tab-content-section tenant-portal-home" data-testid="tenant-portal-home">
@@ -56,37 +108,64 @@ const TenantPortalHome: FC<TenantPortalHomeProps> = ({ onNavigate }) => {
         <p className="portal-welcome-subtitle">Here is a summary of your tenancy today.</p>
       </div>
 
-      {/* Key metrics */}
-      <div className="summary-grid" data-testid="tenant-metrics-grid">
-        <div className="summary-card next-payment-card" data-testid="tenant-metric-next-payment">
-          <span className="metric-icon">💳</span>
-          <h4>Next Payment</h4>
-          <p className="metric-value next-payment-amount" data-testid="tenant-metric-payment-value">
-            AED {nextPayment.amount.toLocaleString()}
-          </p>
-          <span className="metric-label">
-            {nextPayment.month} · Due in {nextPayment.daysUntilDue} days
-          </span>
+      {error && (
+        <div className="error-message" data-testid="tenant-home-error">
+          <p>{error}</p>
         </div>
+      )}
 
-        <div className="summary-card" data-testid="tenant-metric-lease">
-          <span className="metric-icon">📋</span>
-          <h4>Lease Ends</h4>
-          <p className="metric-value" data-testid="tenant-metric-lease-value">
-            {leaseEndDays > 0 ? `${leaseEndDays} days` : 'Expired'}
-          </p>
-          <span className="metric-label">{leaseEndDate}</span>
+      {loading ? (
+        <div className="loading-state" data-testid="tenant-home-loading">
+          <p>Loading dashboard…</p>
         </div>
+      ) : (
+        /* Key metrics */
+        <div className="summary-grid" data-testid="tenant-metrics-grid">
+          <div className="summary-card next-payment-card" data-testid="tenant-metric-next-payment">
+            <span className="metric-icon">💳</span>
+            <h4>Monthly Rent</h4>
+            {dashboard?.hasActiveLease && dashboard.monthlyRent !== null ? (
+              <>
+                <p
+                  className="metric-value next-payment-amount"
+                  data-testid="tenant-metric-payment-value"
+                >
+                  {dashboard.currency} {dashboard.monthlyRent.toLocaleString()}
+                </p>
+                <span className="metric-label">Active lease</span>
+              </>
+            ) : (
+              <p className="metric-value" data-testid="tenant-metric-payment-value">
+                —
+              </p>
+            )}
+          </div>
 
-        <div className="summary-card" data-testid="tenant-metric-maintenance">
-          <span className="metric-icon">🔧</span>
-          <h4>Open Requests</h4>
-          <p className="metric-value" data-testid="tenant-metric-maintenance-value">
-            {openRequests}
-          </p>
-          <span className="metric-label">Maintenance issues</span>
+          <div className="summary-card" data-testid="tenant-metric-lease">
+            <span className="metric-icon">📋</span>
+            <h4>Lease Ends</h4>
+            <p className="metric-value" data-testid="tenant-metric-lease-value">
+              {daysRemaining !== null
+                ? daysRemaining > 0
+                  ? `${daysRemaining} days`
+                  : 'Expired'
+                : '—'}
+            </p>
+            {daysRemaining !== null && daysRemaining > 0 && (
+              <span className="metric-label">Remaining</span>
+            )}
+          </div>
+
+          <div className="summary-card" data-testid="tenant-metric-maintenance">
+            <span className="metric-icon">🔧</span>
+            <h4>Open Requests</h4>
+            <p className="metric-value" data-testid="tenant-metric-maintenance-value">
+              {openCount}
+            </p>
+            <span className="metric-label">Maintenance issues</span>
+          </div>
         </div>
-      </div>
+      )}
 
       {/* Quick links */}
       <div className="portal-quick-links" data-testid="tenant-quick-links">

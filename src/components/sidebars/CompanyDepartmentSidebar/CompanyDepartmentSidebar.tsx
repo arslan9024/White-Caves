@@ -1,23 +1,25 @@
-﻿// @ts-nocheck
 // src/components/sidebars/CompanyDepartmentSidebar/CompanyDepartmentSidebar.tsx
 /**
  * Left Sidebar: Company Departments & Management
  * Organizes all 10+ departments hierarchically
  * Provides navigation to department-specific features
+ *
+ * @deprecated Canonical CRM sidebar is `src/components/layout/UnifiedSidebar/UnifiedSidebar.tsx`.
+ * Keep this file for compatibility until all legacy imports are retired.
  */
 
 import React, { useMemo } from 'react';
 import styled from 'styled-components';
 import { BaseSidebar, SidebarSection, SidebarItem } from '../../shared/sidebars';
 import { useSidebarState } from '../../../hooks/useSidebarState';
-import { DEPARTMENTS, getDepartmentsByHierarchy } from '../../../config/departmentsRegistry';
+import { getDepartmentsByHierarchy } from '../../../config/departmentsRegistry';
 
 const SidebarContainer = styled.div`
   height: 100%;
   display: flex;
   flex-direction: column;
-  background: ${props => props.theme.colors.sidebarBg};
-  border-right: 1px solid ${props => props.theme.colors.border};
+  background: ${({ theme }) => String((theme as any)?.colors?.sidebarBg ?? '#1a1a1a')};
+  border-right: 1px solid ${({ theme }) => String((theme as any)?.colors?.border ?? '#333')};
 `;
 
 const DeptSection = styled.div`
@@ -30,7 +32,7 @@ const DeptLabel = styled.div`
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  color: ${props => props.theme.colors.textSecondary};
+  color: ${({ theme }) => String((theme as any)?.colors?.textSecondary ?? '#999')};
   margin-top: 16px;
   margin-bottom: 8px;
 
@@ -75,7 +77,7 @@ export const CompanyDepartmentSidebar: React.FC<CompanyDepartmentSidebarProps> =
 
   return (
     <SidebarContainer className={className}>
-      <BaseSidebar title="White Caves" icon="🏢">
+      <BaseSidebar name="company-dept" title="White Caves" icon="🏢" hasSearch={false}>
         {/* C-SUITE SECTION */}
         {cSuite.length > 0 && (
           <DeptSection>
@@ -257,4 +259,3 @@ export const CompanyDepartmentSidebar: React.FC<CompanyDepartmentSidebarProps> =
 };
 
 export default CompanyDepartmentSidebar;
-

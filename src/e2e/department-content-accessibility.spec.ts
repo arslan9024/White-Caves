@@ -1,12 +1,14 @@
-import { test, expect } from '@playwright/test';
+﻿import { test, expect } from '@playwright/test';
 
 test.describe('Department Content Accessibility & Responsive', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto('/modern-dashboard');
-    await page.waitForLoadState('networkidle');
+    await page.waitForLoadState('domcontentloaded');
   });
 
-  test('shows center breadcrumb and region semantics after selecting a department', async ({ page }) => {
+  test('shows center breadcrumb and region semantics after selecting a department', async ({
+    page,
+  }) => {
     const departmentItems = page.locator('[role="treeitem"]');
     const hasDepartments = await departmentItems.count();
     test.skip(!hasDepartments, 'No department items available to select');

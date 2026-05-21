@@ -211,4 +211,129 @@ describe('usePropertyBrowser', () => {
 
     expect(abortMock).toHaveBeenCalled();
   });
+
+  // ─── Phase 34: ?mode=rent/buy purpose filter ─────────────────────────────────
+
+  it('filters to rental properties when mode=rent is in the URL', () => {
+    const rentProp = {
+      id: '1',
+      title: 'Rent Unit',
+      purpose: 'rent' as const,
+      price: 100_000,
+      location: 'Dubai Marina',
+      type: 'Apartment',
+      beds: 2,
+      baths: 1,
+      sqft: 900,
+      status: 'available',
+      amenities: [],
+    };
+    const buyProp = {
+      id: '2',
+      title: 'Buy Unit',
+      purpose: 'buy' as const,
+      price: 2_000_000,
+      location: 'Dubai Marina',
+      type: 'Villa',
+      beds: 3,
+      baths: 2,
+      sqft: 1800,
+      status: 'available',
+      amenities: [],
+    };
+
+    const state = makeState();
+    (state.crmData.properties.items as unknown[]).push(rentProp, buyProp);
+
+    useSelectorMock.mockImplementation((selector: (s: MockState) => unknown) => selector(state));
+    setMockLocation('?mode=rent', 'k-mode-rent');
+
+    const { result } = renderHook(() => usePropertyBrowser());
+
+    const ids = result.current.filteredProperties.map((p: { id: string }) => p.id);
+    expect(ids).toContain('1');
+    expect(ids).not.toContain('2');
+  });
+
+  it('filters to sale properties when mode=buy is in the URL', () => {
+    const rentProp = {
+      id: '1',
+      title: 'Rent Unit',
+      purpose: 'rent' as const,
+      price: 100_000,
+      location: 'Downtown',
+      type: 'Apartment',
+      beds: 1,
+      baths: 1,
+      sqft: 700,
+      status: 'available',
+      amenities: [],
+    };
+    const buyProp = {
+      id: '2',
+      title: 'Buy Unit',
+      purpose: 'buy' as const,
+      price: 3_000_000,
+      location: 'Downtown',
+      type: 'Villa',
+      beds: 4,
+      baths: 3,
+      sqft: 2200,
+      status: 'available',
+      amenities: [],
+    };
+
+    const state = makeState();
+    (state.crmData.properties.items as unknown[]).push(rentProp, buyProp);
+
+    useSelectorMock.mockImplementation((selector: (s: MockState) => unknown) => selector(state));
+    setMockLocation('?mode=buy', 'k-mode-buy');
+
+    const { result } = renderHook(() => usePropertyBrowser());
+
+    const ids = result.current.filteredProperties.map((p: { id: string }) => p.id);
+    expect(ids).toContain('2');
+    expect(ids).not.toContain('1');
+  });
+
+  it('returns all properties when no mode param is present (existing behaviour preserved)', () => {
+    const rentProp = {
+      id: '1',
+      title: 'Rent Unit',
+      purpose: 'rent' as const,
+      price: 100_000,
+      location: 'JVC',
+      type: 'Apartment',
+      beds: 1,
+      baths: 1,
+      sqft: 600,
+      status: 'available',
+      amenities: [],
+    };
+    const buyProp = {
+      id: '2',
+      title: 'Buy Unit',
+      purpose: 'buy' as const,
+      price: 1_500_000,
+      location: 'JVC',
+      type: 'Apartment',
+      beds: 2,
+      baths: 1,
+      sqft: 1000,
+      status: 'available',
+      amenities: [],
+    };
+
+    const state = makeState();
+    (state.crmData.properties.items as unknown[]).push(rentProp, buyProp);
+
+    useSelectorMock.mockImplementation((selector: (s: MockState) => unknown) => selector(state));
+    setMockLocation('', 'k-no-mode');
+
+    const { result } = renderHook(() => usePropertyBrowser());
+
+    const ids = result.current.filteredProperties.map((p: { id: string }) => p.id);
+    expect(ids).toContain('1');
+    expect(ids).toContain('2');
+  });
 });

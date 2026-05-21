@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 import React from 'react';
 import BaseDepartmentView from './BaseDepartmentView';
 import { getDepartmentConfig } from '../../config/departmentViewConfigs';
@@ -13,33 +12,33 @@ import { DataCard } from '../shared/dashboard';
 interface SalesViewProps {
   serviceName?: string;
   subitemId?: string;
-  departmentData?: any;
+  departmentData?: Record<string, unknown>;
 }
 
-const SalesView: React.FC<SalesViewProps> = ({ serviceName = 'lead-pipeline', subitemId, departmentData }) => {
+const SalesView: React.FC<SalesViewProps> = ({
+  serviceName = 'lead-pipeline',
+  subitemId,
+  departmentData,
+}) => {
   const config = getDepartmentConfig('SALES')!;
 
   // Render main content based on serviceName and subitemId
-  const renderContent = (data: any) => {
+  const renderContent = (data: Record<string, unknown>) => {
+    const getCount = (value: unknown): number => (Array.isArray(value) ? value.length : 0);
+
     if (!subitemId && serviceName === 'lead-pipeline') {
       return (
         <>
           {/* Pipeline Board */}
-          <DataCard 
-            title="Sales Pipeline Board"
-            subtitle="Kanban view of all leads and deals"
-          >
+          <DataCard title="Sales Pipeline Board" subtitle="Kanban view of all leads and deals">
             {/* TODO: Implement pipeline board content */}
-            Pipeline: {JSON.stringify(data?.pipelineBoard?.length || 0)} items
+            Pipeline: {JSON.stringify(getCount(data?.pipelineBoard))} items
           </DataCard>
 
           {/* Active Deals */}
-          <DataCard 
-            title="Active Deals"
-            subtitle="In-progress deals and negotiations"
-          >
+          <DataCard title="Active Deals" subtitle="In-progress deals and negotiations">
             {/* TODO: Implement active deals content */}
-            Deals: {JSON.stringify(data?.activeDeals?.length || 0)} items
+            Deals: {JSON.stringify(getCount(data?.activeDeals))} items
           </DataCard>
         </>
       );
@@ -92,4 +91,3 @@ const SalesView: React.FC<SalesViewProps> = ({ serviceName = 'lead-pipeline', su
 };
 
 export default SalesView;
-

@@ -1,28 +1,16 @@
 import React, { useMemo, useState, useCallback, useRef, useEffect } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+import { useSelector } from 'react-redux';
 import styled from 'styled-components';
-import { RootState, AppDispatch } from '../../store/store';
+import { RootState } from '../../store/store';
 import { spacing } from '../../styles/theme/spacing';
+import type { DashboardView, UnifiedCRMProps } from './types';
 
 // ============================================================================
 // TYPES & CONSTANTS
 // ============================================================================
 
-export type DashboardView =
-  | 'company'
-  | 'department'
-  | 'sales'
-  | 'property'
-  | 'commission'
-  | 'leads'
-  | 'office'
-  | 'agent'
-  | 'financial'
-  | 'performance'
-  | 'inventory'
-  | 'client';
-
-interface DashboardConfig {
+// Local dashboard configuration type (used only in this component's DASHBOARD_CONFIGS)
+interface LocalDashboardConfig {
   id: DashboardView;
   label: string;
   icon: string;
@@ -32,7 +20,7 @@ interface DashboardConfig {
   features: string[];
 }
 
-const DASHBOARD_CONFIGS: Record<DashboardView, DashboardConfig> = {
+const DASHBOARD_CONFIGS: Record<DashboardView, LocalDashboardConfig> = {
   company: {
     id: 'company',
     label: 'Company Overview',
@@ -220,20 +208,20 @@ const ViewSelectorContainer = styled.div`
 
 const ViewButton = styled.button<{ $isActive: boolean; $isDisabled: boolean }>`
   padding: 10px 14px;
-  border: 2px solid ${(props) => (props.$isActive ? '#1976d2' : '#ddd')};
-  background: ${(props) => (props.$isActive ? '#1976d2' : 'white')};
-  color: ${(props) => (props.$isActive ? 'white' : '#333')};
+  border: 2px solid ${props => (props.$isActive ? '#1976d2' : '#ddd')};
+  background: ${props => (props.$isActive ? '#1976d2' : 'white')};
+  color: ${props => (props.$isActive ? 'white' : '#333')};
   border-radius: 6px;
-  cursor: ${(props) => (props.$isDisabled ? 'not-allowed' : 'pointer')};
+  cursor: ${props => (props.$isDisabled ? 'not-allowed' : 'pointer')};
   font-weight: 500;
   font-size: 13px;
   white-space: nowrap;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  opacity: ${(props) => (props.$isDisabled ? 0.5 : 1)};
+  opacity: ${props => (props.$isDisabled ? 0.5 : 1)};
 
   &:hover:not(:disabled) {
     border-color: #1976d2;
-    background: ${(props) => (props.$isActive ? '#1565c0' : '#f0f8ff')};
+    background: ${props => (props.$isActive ? '#1565c0' : '#f0f8ff')};
     transform: translateY(-2px);
     box-shadow: 0 2px 8px rgba(25, 118, 210, 0.2);
   }
@@ -354,13 +342,15 @@ const LoadingSpinner = styled.div`
 // COMPONENT
 // ============================================================================
 
-export interface UnifiedCRMProps {
-  defaultView?: DashboardView;
-  onViewChange?: (view: DashboardView) => void;
-}
-
-const UnifiedCRM: React.FC<UnifiedCRMProps> = ({ defaultView = 'company', onViewChange }) => {
-  const dispatch = useDispatch<AppDispatch>();
+const UnifiedCRM: React.FC<UnifiedCRMProps> = ({
+  defaultView = 'company',
+  onViewChange,
+  // Additional props from UnifiedCRMProps interface (reserved for future use)
+  refreshInterval: _refreshInterval,
+  enableExport: _enableExport,
+  enableCustomization: _enableCustomization,
+  onMetricsUpdate: _onMetricsUpdate,
+}) => {
   const [currentView, setCurrentView] = useState<DashboardView>(defaultView);
   const [loading, setLoading] = useState(false);
 
@@ -369,9 +359,7 @@ const UnifiedCRM: React.FC<UnifiedCRMProps> = ({ defaultView = 'company', onView
 
   // Get available dashboards based on user role
   const availableDashboards = useMemo(() => {
-    return Object.values(DASHBOARD_CONFIGS).filter((config) =>
-      config.roles.includes(userRole)
-    );
+    return Object.values(DASHBOARD_CONFIGS).filter(config => config.roles.includes(userRole));
   }, [userRole]);
 
   // Get current dashboard configuration
@@ -439,7 +427,7 @@ const UnifiedCRM: React.FC<UnifiedCRMProps> = ({ defaultView = 'company', onView
           </Subtitle>
         </HeaderContent>
         <ViewSelectorContainer>
-          {availableDashboards.map((config) => (
+          {availableDashboards.map(config => (
             <ViewButton
               key={config.id}
               $isActive={currentView === config.id}
@@ -459,12 +447,17 @@ const UnifiedCRM: React.FC<UnifiedCRMProps> = ({ defaultView = 'company', onView
       ) : (
         <ContentArea>
           {/* Metrics Section */}
-          {currentConfig.metrics.map((metric) => (
+          {currentConfig.metrics.map(metric => (
             <MetricCard key={metric}>
               <div className="metric-label">{metric.replace(/_/g, ' ').toUpperCase()}</div>
               <div className="metric-value">
                 {metric.includes('revenue') || metric.includes('commission') ? '$' : ''}
-                {(metric.includes('revenue') ? 250000 : metric.includes('commission') ? 45000 : 1250).toLocaleString()}
+                {(metric.includes('revenue')
+                  ? 250000
+                  : metric.includes('commission')
+                    ? 45000
+                    : 1250
+                ).toLocaleString()}
               </div>
             </MetricCard>
           ))}
@@ -473,13 +466,13 @@ const UnifiedCRM: React.FC<UnifiedCRMProps> = ({ defaultView = 'company', onView
           <Card>
             <h3 style={{ marginTop: 0, marginBottom: 12, color: '#333' }}>Available Features</h3>
             <FeatureList>
-              {currentConfig.features.map((feature) => (
+              {currentConfig.features.map(feature => (
                 <li key={feature}>{feature.replace(/_/g, ' ').toUpperCase()}</li>
               ))}
             </FeatureList>
             <RoleIndicator>
               <strong style={{ marginRight: 'auto' }}>Accessible by:</strong>
-              {currentConfig.roles.map((role) => (
+              {currentConfig.roles.map(role => (
                 <div key={role} className="role-badge">
                   {role.toUpperCase()}
                 </div>

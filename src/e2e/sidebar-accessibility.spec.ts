@@ -1,9 +1,9 @@
-import { test, expect } from '@playwright/test';
+﻿import { test, expect } from '@playwright/test';
 
 test.describe('Enhanced Sidebar Accessibility', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto('/modern-dashboard');
-    await page.waitForLoadState('networkidle');
+    await page.waitForLoadState('domcontentloaded');
   });
 
   test('exposes sidebar navigation and tree semantics', async ({ page }) => {
@@ -12,7 +12,9 @@ test.describe('Enhanced Sidebar Accessibility', () => {
     test.skip(!hasSidebar, 'Sidebar not available in current route/session');
 
     await expect(sidebar.first()).toBeVisible();
-    await expect(page.locator('[role="tree"][aria-label="Company departments tree"]')).toBeVisible();
+    await expect(
+      page.locator('[role="tree"][aria-label="Company departments tree"]')
+    ).toBeVisible();
 
     const treeItems = page.locator('[role="treeitem"]');
     expect(await treeItems.count()).toBeGreaterThan(0);

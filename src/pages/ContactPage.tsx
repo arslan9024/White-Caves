@@ -12,6 +12,7 @@ import {
 import { TIMING } from '../constants';
 import PublicLayout from '../components/layout/PublicLayout';
 import PageHeroBanner from '../components/layout/PageHeroBanner';
+import { authFetch } from '../utils/authFetch';
 import './ContactPage.css';
 
 const fadeUp: Variants = {
@@ -113,7 +114,7 @@ const ContactPage: FC = () => {
     setSubmitError(null);
 
     try {
-      const response = await fetch('/api/contact', {
+      const response = await authFetch('/api/contact', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

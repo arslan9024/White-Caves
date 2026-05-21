@@ -1,8 +1,7 @@
-﻿// @ts-nocheck
 import React, { useState, useRef, useEffect } from 'react';
 import styled from 'styled-components';
 import type { GroupMessage, GroupConversation, MediaFile } from '../../../types/phase6.types';
-import { MediaUploadComponent } from './MediaUploadComponent';
+import { MediaUploadComponent } from '../MediaUpload/MediaUploadComponent';
 
 interface GroupMessagingComponentProps {
   conversation: GroupConversation;
@@ -70,7 +69,7 @@ const MessageContainer = styled.div`
 const MessageGroup = styled.div<{ isCurrentUser: boolean }>`
   display: flex;
   flex-direction: column;
-  align-items: ${(props) => (props.isCurrentUser ? 'flex-end' : 'flex-start')};
+  align-items: ${props => (props.isCurrentUser ? 'flex-end' : 'flex-start')};
   gap: 4px;
 `;
 
@@ -85,8 +84,8 @@ const MessageBubble = styled.div<{ isCurrentUser: boolean }>`
   max-width: 60%;
   padding: 12px 16px;
   border-radius: 12px;
-  background-color: ${(props) => (props.isCurrentUser ? '#4CAF50' : '#e0e0e0')};
-  color: ${(props) => (props.isCurrentUser ? '#fff' : '#333')};
+  background-color: ${props => (props.isCurrentUser ? '#4CAF50' : '#e0e0e0')};
+  color: ${props => (props.isCurrentUser ? '#fff' : '#333')};
   word-break: break-word;
   font-size: 14px;
   line-height: 1.4;
@@ -211,7 +210,7 @@ export const GroupMessagingComponent: React.FC<GroupMessagingComponentProps> = (
   messages,
   currentUserId,
   onSendMessage,
-  onMention,
+  onMention: _onMention,
   isLoading = false,
 }) => {
   const [messageText, setMessageText] = useState('');
@@ -276,16 +275,14 @@ export const GroupMessagingComponent: React.FC<GroupMessagingComponentProps> = (
             <p>No messages yet. Start the conversation!</p>
           </EmptyState>
         ) : (
-          messages.map((msg) => (
+          messages.map(msg => (
             <MessageGroup key={msg.id} isCurrentUser={msg.senderId === currentUserId}>
-              {msg.senderId !== currentUserId && (
-                <SenderName>{msg.senderName}</SenderName>
-              )}
+              {msg.senderId !== currentUserId && <SenderName>{msg.senderName}</SenderName>}
               <MessageBubble isCurrentUser={msg.senderId === currentUserId}>
                 {msg.content}
                 {msg.mediaAttachments && msg.mediaAttachments.length > 0 && (
                   <MediaGrid>
-                    {msg.mediaAttachments.map((media) =>
+                    {msg.mediaAttachments.map(media =>
                       media.type === 'image' ? (
                         <MediaThumbnail
                           key={media.id}
@@ -320,9 +317,7 @@ export const GroupMessagingComponent: React.FC<GroupMessagingComponentProps> = (
           <MediaGrid>
             {attachments.map((file, index) => (
               <div key={file.id} style={{ position: 'relative' }}>
-                {file.type === 'image' && (
-                  <MediaThumbnail src={file.url} alt={file.name} />
-                )}
+                {file.type === 'image' && <MediaThumbnail src={file.url} alt={file.name} />}
                 <button
                   onClick={() => removeAttachment(index)}
                   style={{
@@ -348,7 +343,7 @@ export const GroupMessagingComponent: React.FC<GroupMessagingComponentProps> = (
         <MessageInputWrapper>
           <TextInput
             value={messageText}
-            onChange={(e) => setMessageText(e.target.value)}
+            onChange={e => setMessageText(e.target.value)}
             onKeyDown={handleKeyDown}
             placeholder="Type your message... (Ctrl+Enter to send)"
             disabled={isLoading || isSending}
@@ -374,4 +369,3 @@ export const GroupMessagingComponent: React.FC<GroupMessagingComponentProps> = (
 };
 
 export default GroupMessagingComponent;
-

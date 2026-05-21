@@ -32,8 +32,8 @@ export const FEATURE_STATUS = {
 // Derived Types from const assertions
 // ---------------------------------------------------------------------------
 
-type FeatureCategory = typeof FEATURE_CATEGORIES[keyof typeof FEATURE_CATEGORIES];
-type FeatureStatus = typeof FEATURE_STATUS[keyof typeof FEATURE_STATUS];
+type FeatureCategory = (typeof FEATURE_CATEGORIES)[keyof typeof FEATURE_CATEGORIES];
+type FeatureStatus = (typeof FEATURE_STATUS)[keyof typeof FEATURE_STATUS];
 
 // ---------------------------------------------------------------------------
 // Interfaces
@@ -384,12 +384,7 @@ export const PLATFORM_FEATURES: readonly PlatformFeature[] = [
     status: FEATURE_STATUS.ACTIVE,
     icon: '🧭',
     description: 'Consistent navigation across all pages',
-    details: [
-      'Role-based menu items',
-      'Profile dropdown',
-      'Theme toggle',
-      'Mobile responsive',
-    ],
+    details: ['Role-based menu items', 'Profile dropdown', 'Theme toggle', 'Mobile responsive'],
     implementedDate: '2024-01-25',
     files: ['src/components/common/UniversalNav.tsx'],
   },
@@ -449,12 +444,7 @@ export const PLATFORM_FEATURES: readonly PlatformFeature[] = [
     status: FEATURE_STATUS.ACTIVE,
     icon: '🔄',
     description: 'Arabic right-to-left layout support',
-    details: [
-      'RTL CSS styles',
-      'Arabic translations',
-      'Bilingual content',
-      'Direction switching',
-    ],
+    details: ['RTL CSS styles', 'Arabic translations', 'Bilingual content', 'Direction switching'],
     implementedDate: '2024-02-15',
     files: ['src/styles/rtl.css', 'src/context/LanguageContext.tsx'],
   },
@@ -481,11 +471,7 @@ export const PLATFORM_FEATURES: readonly PlatformFeature[] = [
     status: FEATURE_STATUS.ACTIVE,
     icon: '📋',
     description: 'Dubai Land Department fee estimation',
-    details: [
-      'Transfer fee calculation',
-      'Registration fees',
-      'Total cost breakdown',
-    ],
+    details: ['Transfer fee calculation', 'Registration fees', 'Total cost breakdown'],
     implementedDate: '2024-02-10',
     files: ['src/pages/buyer/DLDFeesPage.tsx'],
   },

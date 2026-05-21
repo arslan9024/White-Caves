@@ -1,7 +1,9 @@
+import type { useHRData } from '../hooks/useHRData';
+import type { Dispatch, SetStateAction } from 'react';
 import { Search, Plus, Edit, Trash2, Eye, Download, ChevronDown } from 'lucide-react';
 
 interface Employee {
-  id: string | number;
+  id: string;
   name: string;
   avatar: string;
   email?: string;
@@ -13,20 +15,7 @@ interface Employee {
   leaveBalance: number;
 }
 
-interface EmployeesState {
-  filteredEmployees: Employee[];
-  departments: string[];
-  searchQuery: string;
-  setSearchQuery: (query: string) => void;
-  filterDepartment: string;
-  setFilterDepartment: (dept: string) => void;
-  selectedEmployee: Employee | null;
-  setSelectedEmployee: (emp: Employee | null) => void;
-  showEmployeeModal: boolean;
-  setShowEmployeeModal: (show: boolean) => void;
-  getStatusColor: (status: string) => string;
-  deleteEmployee: (id: string | number) => void;
-}
+type EmployeesState = ReturnType<typeof useHRData>;
 
 interface EmployeesTabProps {
   state: EmployeesState;
@@ -45,10 +34,10 @@ export default function EmployeesTab({ state }: EmployeesTabProps) {
     showEmployeeModal,
     setShowEmployeeModal,
     getStatusColor,
-    deleteEmployee
+    deleteEmployee,
   } = state;
 
-  const handleDelete = (id: string | number) => {
+  const handleDelete = (id: string) => {
     if (window.confirm('Are you sure you want to delete this employee?')) {
       deleteEmployee(id);
     }
@@ -64,12 +53,12 @@ export default function EmployeesTab({ state }: EmployeesTabProps) {
               type="text"
               placeholder="Search employees..."
               value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
+              onChange={e => setSearchQuery(e.target.value)}
             />
           </div>
           <select
             value={filterDepartment}
-            onChange={(e) => setFilterDepartment(e.target.value)}
+            onChange={e => setFilterDepartment(e.target.value)}
             className="filter-select"
           >
             <option value="all">All Departments</option>
@@ -103,11 +92,18 @@ export default function EmployeesTab({ state }: EmployeesTabProps) {
             </tr>
           </thead>
           <tbody>
-            {filteredEmployees.map((emp) => (
+            {filteredEmployees.map(emp => (
               <tr key={emp.id}>
                 <td>
                   <div className="employee-cell">
-                    <img src={emp.avatar} alt={emp.name} className="employee-avatar" loading="lazy" width={40} height={40} />
+                    <img
+                      src={emp.avatar}
+                      alt={emp.name}
+                      className="employee-avatar"
+                      loading="lazy"
+                      width={40}
+                      height={40}
+                    />
                     <div className="employee-info">
                       <span className="employee-name">{emp.name}</span>
                       <span className="employee-email">{emp.email}</span>
@@ -123,7 +119,7 @@ export default function EmployeesTab({ state }: EmployeesTabProps) {
                     className="status-badge"
                     style={{
                       backgroundColor: `${getStatusColor(emp.status)}20`,
-                      color: getStatusColor(emp.status)
+                      color: getStatusColor(emp.status),
                     }}
                   >
                     {emp.status.replace('_', ' ')}
@@ -140,8 +136,8 @@ export default function EmployeesTab({ state }: EmployeesTabProps) {
                             emp.performance >= 90
                               ? '#10b981'
                               : emp.performance >= 70
-                              ? '#f59e0b'
-                              : '#ef4444'
+                                ? '#f59e0b'
+                                : '#ef4444',
                         }}
                       />
                     </div>

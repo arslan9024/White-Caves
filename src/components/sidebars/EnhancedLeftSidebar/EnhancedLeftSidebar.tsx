@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
@@ -14,16 +13,22 @@ import {
   selectSelectionHistory,
 } from '../../../redux/slices/relationalSidebarSlice';
 import {
-  getDepartmentById,
-  getServicesByDepartment,
-} from '../../../config/departmentContentMap';
-import {
   getDefaultDepartment,
-  getDefaultService,
-  getTopServices,
   getAvailableDepartments,
   getAvailableServices,
+  getTopServices,
 } from '../../../utils/sidebarUtils';
+
+interface DepartmentItem {
+  id: string;
+  label: string;
+}
+
+interface ServiceItem {
+  id: string;
+  label: string;
+  description?: string;
+}
 
 /**
  * Enhanced Left Sidebar with Department Dropdown
@@ -177,21 +182,21 @@ const SectionTitle = styled.h3`
   }
 `;
 
-const ServiceButton = styled.button`
+const ServiceButton = styled.button<{ $selected: boolean }>`
   display: flex;
   flex-direction: column;
   gap: 0.25rem;
   padding: 0.75rem 0.875rem;
-  border: 1px solid ${(props) => (props.selected ? '#6366f1' : '#e5e7eb')};
+  border: 1px solid ${props => (props.$selected ? '#6366f1' : '#e5e7eb')};
   border-radius: 6px;
-  background-color: ${(props) => (props.selected ? '#eef2ff' : '#ffffff')};
+  background-color: ${props => (props.$selected ? '#eef2ff' : '#ffffff')};
   cursor: pointer;
   transition: all 0.2s;
   text-align: left;
 
   &:hover {
     border-color: #6366f1;
-    background-color: ${(props) => (props.selected ? '#eef2ff' : '#f9fafb')};
+    background-color: ${props => (props.$selected ? '#eef2ff' : '#f9fafb')};
   }
 
   &:active {
@@ -199,10 +204,10 @@ const ServiceButton = styled.button`
   }
 `;
 
-const ServiceName = styled.span`
+const ServiceName = styled.span<{ $selected: boolean }>`
   font-size: 0.875rem;
   font-weight: 600;
-  color: ${(props) => (props.selected ? '#6366f1' : '#1f2937')};
+  color: ${props => (props.$selected ? '#6366f1' : '#1f2937')};
 `;
 
 const ServiceDescription = styled.span`
@@ -252,30 +257,25 @@ const LoadingSkeleton = styled.div`
 /**
  * Enhanced RelationalLeftSidebar Component
  */
-const EnhancedLeftSidebar = ({ userPermissions = [] }) => {
-  const dispatch = useDispatch();
+const EnhancedLeftSidebar = ({ userPermissions = [] }: { userPermissions?: string[] }) => {
+  const dispatch = useDispatch<any>();
 
   // Redux state
   const selectedDept = useSelector(selectSelectedDepartment);
   const selectedService = useSelector(selectSelectedService);
-  const filteredServices = useSelector(selectFilteredServices);
-  const selectionHistory = useSelector(selectSelectionHistory);
+  const filteredServices = useSelector(selectFilteredServices) as ServiceItem[];
+  const selectionHistory = useSelector(selectSelectionHistory) as Array<Record<string, unknown>>;
 
   // Local state
   const [loading, setLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
-  const [allDepts, setAllDepts] = useState([]);
-
-  // Initialize on mount
-  useEffect(() => {
-    initializeSidebar();
-  }, [userPermissions]);
+  const [allDepts, setAllDepts] = useState<DepartmentItem[]>([]);
 
   const initializeSidebar = () => {
     setLoading(true);
 
     // Get available departments for user
-    const availableDepts = getAvailableDepartments(userPermissions);
+    const availableDepts = getAvailableDepartments(userPermissions) as DepartmentItem[];
     setAllDepts(availableDepts);
 
     // Get default department
@@ -283,7 +283,7 @@ const EnhancedLeftSidebar = ({ userPermissions = [] }) => {
     const defaultDept = getDefaultDepartment(userRole, selectionHistory);
 
     // Set default department
-    if (defaultDept && availableDepts.some((d) => d.id === defaultDept)) {
+    if (defaultDept && availableDepts.some((d: DepartmentItem) => d.id === defaultDept)) {
       handleDepartmentChange(defaultDept);
     } else if (availableDepts.length > 0) {
       handleDepartmentChange(availableDepts[0].id);
@@ -292,11 +292,17 @@ const EnhancedLeftSidebar = ({ userPermissions = [] }) => {
     setLoading(false);
   };
 
-  const handleDepartmentChange = (deptId) => {
+  // Initialize on mount (after declaration — Rules of Hooks)
+  useEffect(() => {
+    initializeSidebar();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [userPermissions]);
+
+  const handleDepartmentChange = (deptId: string) => {
     dispatch(setSelectedDepartment(deptId));
 
     // Get available services for this department
-    const availableServices = getAvailableServices(deptId, userPermissions);
+    const availableServices = getAvailableServices(deptId, userPermissions) as ServiceItem[];
     dispatch(setFilteredServices(availableServices));
 
     // Auto-select first service (optional)
@@ -309,7 +315,7 @@ const EnhancedLeftSidebar = ({ userPermissions = [] }) => {
     setSearchQuery('');
   };
 
-  const handleServiceSelect = (serviceId) => {
+  const handleServiceSelect = (serviceId: string) => {
     if (!selectedDept) return;
 
     dispatch(setSelectedService(serviceId));
@@ -332,15 +338,13 @@ const EnhancedLeftSidebar = ({ userPermissions = [] }) => {
 
   // Filter services based on search query
   const displayedServices = filteredServices.filter(
-    (service) =>
+    (service: ServiceItem) =>
       service.label.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      service.description.toLowerCase().includes(searchQuery.toLowerCase())
+      (service.description || '').toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   // Get top services for quick access
-  const topServices = selectedDept
-    ? getTopServices(selectedDept, selectionHistory, 3)
-    : [];
+  const topServices = selectedDept ? getTopServices(selectedDept, selectionHistory, 3) : [];
 
   return (
     <SidebarContainer>
@@ -350,11 +354,11 @@ const EnhancedLeftSidebar = ({ userPermissions = [] }) => {
           <SelectorLabel>Department</SelectorLabel>
           <DepartmentDropdown
             value={selectedDept || ''}
-            onChange={(e) => handleDepartmentChange(e.target.value)}
+            onChange={e => handleDepartmentChange(e.target.value)}
             disabled={loading}
           >
             <option value="">Select Department...</option>
-            {allDepts.map((dept) => (
+            {allDepts.map((dept: DepartmentItem) => (
               <option key={dept.id} value={dept.id}>
                 {dept.label}
               </option>
@@ -376,13 +380,13 @@ const EnhancedLeftSidebar = ({ userPermissions = [] }) => {
             {topServices.length > 0 && (
               <ServicesSection>
                 <SectionTitle>Quick Access</SectionTitle>
-                {topServices.map((service) => (
+                {(topServices as ServiceItem[]).map((service: ServiceItem) => (
                   <ServiceButton
                     key={service.id}
-                    selected={selectedService === service.id}
+                    $selected={selectedService === service.id}
                     onClick={() => handleServiceSelect(service.id)}
                   >
-                    <ServiceName selected={selectedService === service.id}>
+                    <ServiceName $selected={selectedService === service.id}>
                       {service.label}
                     </ServiceName>
                     <ServiceDescription>{service.description}</ServiceDescription>
@@ -399,7 +403,7 @@ const EnhancedLeftSidebar = ({ userPermissions = [] }) => {
                   type="text"
                   placeholder="Search services..."
                   value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
+                  onChange={e => setSearchQuery(e.target.value)}
                 />
               </SearchContainer>
             </ServicesSection>
@@ -407,16 +411,14 @@ const EnhancedLeftSidebar = ({ userPermissions = [] }) => {
             {/* All Services Section */}
             {displayedServices.length > 0 && (
               <ServicesSection>
-                <SectionTitle>
-                  {searchQuery ? 'Search Results' : 'All Services'}
-                </SectionTitle>
-                {displayedServices.map((service) => (
+                <SectionTitle>{searchQuery ? 'Search Results' : 'All Services'}</SectionTitle>
+                {displayedServices.map((service: ServiceItem) => (
                   <ServiceButton
                     key={service.id}
-                    selected={selectedService === service.id}
+                    $selected={selectedService === service.id}
                     onClick={() => handleServiceSelect(service.id)}
                   >
-                    <ServiceName selected={selectedService === service.id}>
+                    <ServiceName $selected={selectedService === service.id}>
                       {service.label}
                     </ServiceName>
                     <ServiceDescription>{service.description}</ServiceDescription>
@@ -428,7 +430,7 @@ const EnhancedLeftSidebar = ({ userPermissions = [] }) => {
             {displayedServices.length === 0 && searchQuery && (
               <EmptyState>
                 <EmptyStateIcon>🔍</EmptyStateIcon>
-                <EmptyStateText>No services match "{searchQuery}"</EmptyStateText>
+                <EmptyStateText>No services match &quot;{searchQuery}&quot;</EmptyStateText>
               </EmptyState>
             )}
 
@@ -453,4 +455,3 @@ const EnhancedLeftSidebar = ({ userPermissions = [] }) => {
 };
 
 export default EnhancedLeftSidebar;
-

@@ -1,52 +1,63 @@
-﻿# Pending Tasks Only
+# Pending Tasks Only
 
-## Canonical Source
+**Last Updated:** 2026-05-21
 
-- [`MASTER_PLAN.md`](./MASTER_PLAN.md) — official project source of truth
+## Canonical Sources
 
-- [ ] [`IMPROVEMENTS_BACKLOG.md`](./IMPROVEMENTS_BACKLOG.md) — 38-item improvement backlog (all phases)
+- Roadmap: [`MASTER_PLAN.md`](./MASTER_PLAN.md)
+- Operational dashboard: [`../PROJECT_PROGRESS.md`](../PROJECT_PROGRESS.md)
+- Governance policy: [`PLANNING_GOVERNANCE.md`](./PLANNING_GOVERNANCE.md)
 
 ## Active Pending Plans
 
-- [ ] [`PHASE_26_CONTEXT_ENRICHMENT_SPRINT.md`](./PHASE_26_CONTEXT_ENRICHMENT_SPRINT.md) 🆕 _(active: free-agent documentation completion gates)_
-- [ ] [`PHASE_23_24_25_IMPLEMENTATION_PLAN.md`](./PHASE_23_24_25_IMPLEMENTATION_PLAN.md) _(current active canonical plan)_
-- [x] [`PHASE_24_MODULE_TRACEABILITY_MATRIX.md`](./PHASE_24_MODULE_TRACEABILITY_MATRIX.md) ✅ **COMPLETE** — detailed role matrices + cross-module dependency chain
-- [x] [`PHASE_24_ACCEPTANCE_TEST_PLAN.md`](./PHASE_24_ACCEPTANCE_TEST_PLAN.md) ✅ **NEW: 144 audit-testable scenarios**
-- [x] [`PHASE_25_OPERATIONAL_VERIFICATION_LOG.md`](./PHASE_25_OPERATIONAL_VERIFICATION_LOG.md) ✅ **COMPLETE** — runtime/build verification evidence logged
-- [x] [`PHASE_25_EXECUTION_GUIDE.md`](./PHASE_25_EXECUTION_GUIDE.md) ✅ **COMPLETE** — planned items implemented and pushed
-- [ ] [`PHASE_1_HOMEPAGE.md`](./PHASE_1_HOMEPAGE.md)
-- [ ] [`PHASE_2_LANDLORD_TENANT.md`](./PHASE_2_LANDLORD_TENANT.md)
-- [ ] [`PHASE_3_CRM_SUPERUSER.md`](./PHASE_3_CRM_SUPERUSER.md)
-- [ ] [`PHASE_3_AND_BEYOND.md`](./PHASE_3_AND_BEYOND.md)
-- [ ] [`PHASE_19_NEXT_PHASE_EXECUTION_CHECKLIST_APR27.md`](./PHASE_19_NEXT_PHASE_EXECUTION_CHECKLIST_APR27.md)
-- [ ] [`MASTER_PLAN_CRM_EXCELLENCE.md`](./MASTER_PLAN_CRM_EXCELLENCE.md)
+| Phase | Plan File                                                                                        | Status                                                                  |
+| ----- | ------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------- |
+| N+1   | Auth/login hardening + route consistency                                                         | ✅ Complete                                                             |
+| N+2   | Tenant portal live data parity                                                                   | ✅ Complete                                                             |
+| N+3   | Managing-director CRM critical tabs                                                              | ✅ Complete                                                             |
+| N+4   | Convert top 3 revenue-impact stub endpoints                                                      | ✅ Complete                                                             |
+| N+5   | Test + release hardening                                                                         | ✅ Complete                                                             |
+| N+6   | UI architecture hardening: component granularity + event-driven rendering + Arabic RTL readiness | ✅ Complete (RTL + i18n fully wired)                                    |
+| N+7   | Subagent next-level upgrade: 90% readiness + full-team collaboration mesh                        | ✅ Completed (May 18, 2026)                                             |
+| N+8   | Google social auth production hardening + role-based dashboard redirect consistency              | ✅ Complete (May 21, 2026)                                              |
+| N+9   | UX loading-state hardening: reusable skeleton variants + key-page adoption                       | ✅ Complete (May 21, 2026)                                              |
+| —     | [`PHASE_26_CONTEXT_ENRICHMENT_SPRINT.md`](./PHASE_26_CONTEXT_ENRICHMENT_SPRINT.md)               | 🕒 Deferred (Workstream E advisory; owner @Margaret, target 2026-05-23) |
+| —     | [`PHASE_27_SUBAGENT_NEXT_LEVEL_90_READINESS.md`](./PHASE_27_SUBAGENT_NEXT_LEVEL_90_READINESS.md) | ⬜ Planned                                                              |
 
-## Active Audit Work
+## Immediate Focus
 
-- [ ] [`audit-round-66.md`](./audit-round-66.md)
-- [ ] [`audit-round-69.md`](./audit-round-69.md)
-- [ ] [`audit-round-70.md`](./audit-round-70.md)
+- [x] Start N+1: Auth/login hardening (owns: @Daniela, @Mira, @Katherine)
+- [x] Complete N+1→N+6 bundle (validated together: typecheck ✅, lint ✅, tenant portal tests 36/36 ✅)
+- [x] Close Phase 26 Workstream E audit advisory — deferred with owner/date (owner: @Margaret, revisit: 2026-05-23)
+- [x] Enforce archive rule — moved superseded `plans/SESSION_*`, `plans/PHASE_2_*` files to `archives/plans/superseded/`
+- [x] Keep status consistent across `MASTER_PLAN`, `PROJECT_PROGRESS`, and this file
+- [x] Complete N+8 Google social auth build fix + dashboard redirect consistency validation
+- [x] Complete N+9 loading-state UX hardening across Property Card, Lead Management table, and Overview KPI surfaces
 
-## Immediate Pending Focus
+## N+1 Completion Summary (2026-05-17)
 
-- [ ] Phase 26: free-agent context enrichment completion (landlord-portal, revenue-model, analytics-dashboard, AI personas 25-40)
-- [ ] Phase 23: business docs + module business-logic alignment (Leads, Inventory, Sales, Finance, Leasing, WhatsApp)
-- [ ] Branch governance unification: development daily commits, main monthly release-only merges
+- `refreshTokenHash` field added to Prisma `User` model (nullable String)
+- Login + firebase-sync now issue a 7-day httpOnly `refresh_token` cookie (`{userId}:{rawToken}` format)
+- `POST /api/auth/refresh` — verifies cookie, bcrypt-compares token hash, rotates token, returns new JWT
+- `POST /api/auth/logout` — clears `refreshTokenHash` in DB + clears cookie
+- `authLimiter` applied to `/refresh` endpoint
+- 6 new refresh tests + 2 updated logout tests all pass (80 total, 11 pre-existing failures unchanged)
 
-- [x] Phase 25: homepage improvement task ownership + operational dev/build verification log
-- [x] Homepage polish: featured properties visibility, image integrity, mobile audit, contact success state, lighthouse target
-- [ ] Portals: wire maintenance/payment persistence, add portal subroutes + mobile verification
-- [ ] CRM: managing director sign-in flow, dashboard landing, core tab integration, assistant dashboard render validation
-- [ ] Phase 19 week-4 hardening: baseline capture, OWASP gap closure, DR rehearsal, monitoring accuracy
+## N+4 Completion Summary (2026-05-17)
 
-## Newly Completed Progress (April 29, 2026)
-
-- [x] Landlord portal UI MVP complete: Properties, Tenants, Payments, Maintenance, Documents
-- [x] Tenant portal UI MVP complete: Lease, Payment History, Maintenance, Documents
-- [x] Portal route protection present for `/landlord-portal` and `/tenant-portal`
-- [x] Focused portal regression suite passing: 139 tests
-- [x] Portal production builds verified during implementation sessions
+- `GET /api/whatsapp/settings` — now reads from `SystemSetting` table (key: `whatsapp_settings`)
+- `PUT /api/whatsapp/settings` — now persists phoneNumber/autoReply/businessHours to `SystemSetting`
+- `POST /api/whatsapp/session` — generates real sessionId, persists to `SystemSetting` (key: `whatsapp_session`); returns 400 if phoneNumber missing
+- `POST /api/payments/create-payment-intent` — returns **402** (Payment Required) instead of 503; adds `code: 'PAYMENT_NOT_CONFIGURED'` for client handling
 
 ## Archive Rule
 
-When a phase-plan file is completed or superseded, move it to `../archives/plans/completed/` so this folder stays focused on unfinished work.
+When a phase plan is completed or superseded, move it to `../archives/plans/completed/` or `../archives/plans/superseded/`.
+
+## Completed (Archived)
+
+- [x] [`PHASE_24_MODULE_TRACEABILITY_MATRIX.md`](./PHASE_24_MODULE_TRACEABILITY_MATRIX.md)
+- [x] [`PHASE_24_ACCEPTANCE_TEST_PLAN.md`](./PHASE_24_ACCEPTANCE_TEST_PLAN.md)
+- [x] [`PHASE_25_OPERATIONAL_VERIFICATION_LOG.md`](./PHASE_25_OPERATIONAL_VERIFICATION_LOG.md)
+- [x] [`PHASE_25_EXECUTION_GUIDE.md`](./PHASE_25_EXECUTION_GUIDE.md)
+- [x] [`PHASE_23_24_25_IMPLEMENTATION_PLAN.md`](./PHASE_23_24_25_IMPLEMENTATION_PLAN.md)

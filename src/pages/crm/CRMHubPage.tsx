@@ -4,11 +4,11 @@
  * Routes: /owner/crm, /lion/crm
  */
 
-import React, { FC, useState, useEffect, lazy, Suspense } from 'react';
+import React, { FC, memo, useState, useEffect, lazy, Suspense, useCallback } from 'react';
 import ErrorBoundary from '../../components/ErrorBoundary';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import styled from 'styled-components';
-import { Badge, Tabs } from '../../components/ui';
+import { Badge } from '../../components/ui';
 import SuspenseLoader from '../../components/common/SuspenseLoader';
 import { useCRMHubData } from '../../hooks/crm/useCRMHubData';
 
@@ -96,13 +96,6 @@ const StatValue = styled.div<{ $color: string }>`
   color: ${props => props.$color};
 `;
 
-const StatChange = styled.span<{ $positive: boolean }>`
-  font-size: 0.75rem;
-  font-weight: 500;
-  color: ${props => props.$positive ? '#10B981' : '#EF4444'};
-  margin-left: 0.5rem;
-`;
-
 const ModulesGrid = styled.div`
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
@@ -111,10 +104,10 @@ const ModulesGrid = styled.div`
 `;
 
 const ModuleCard = styled.div<{ $color: string; $active: boolean }>`
-  background: ${props => props.$active ? `${props.$color}08` : 'white'};
+  background: ${props => (props.$active ? `${props.$color}08` : 'white')};
   border-radius: 12px;
   padding: 1.25rem;
-  border: 2px solid ${props => props.$active ? props.$color : '#e8e8e8'};
+  border: 2px solid ${props => (props.$active ? props.$color : '#e8e8e8')};
   cursor: pointer;
   transition: all 0.2s ease;
 
@@ -256,6 +249,84 @@ const QuickAction = styled.button<{ $color: string }>`
   }
 `;
 
+interface CRMQuickActionsProps {
+  leadManagementLabel: string;
+  propertyPortfolioLabel: string;
+  agentPerformanceLabel: string;
+  whatsappLabel: string;
+  financeLabel: string;
+  executiveLabel: string;
+  onOpenLeads: () => void;
+  onOpenProperties: () => void;
+  onOpenAgents: () => void;
+  onOpenNadia: () => void;
+  onOpenTheodora: () => void;
+  onOpenZoe: () => void;
+}
+
+const CRMQuickActions = memo(function CRMQuickActions({
+  leadManagementLabel,
+  propertyPortfolioLabel,
+  agentPerformanceLabel,
+  whatsappLabel,
+  financeLabel,
+  executiveLabel,
+  onOpenLeads,
+  onOpenProperties,
+  onOpenAgents,
+  onOpenNadia,
+  onOpenTheodora,
+  onOpenZoe,
+}: CRMQuickActionsProps) {
+  return (
+    <QuickActions>
+      <QuickAction $color="#3B82F6" onClick={onOpenLeads}>
+        🎯 {leadManagementLabel}
+      </QuickAction>
+      <QuickAction $color="#10B981" onClick={onOpenProperties}>
+        🏠 {propertyPortfolioLabel}
+      </QuickAction>
+      <QuickAction $color="#F59E0B" onClick={onOpenAgents}>
+        👥 {agentPerformanceLabel}
+      </QuickAction>
+      <QuickAction $color="#25D366" onClick={onOpenNadia}>
+        💬 {whatsappLabel}
+      </QuickAction>
+      <QuickAction $color="#8B5CF6" onClick={onOpenTheodora}>
+        💰 {financeLabel}
+      </QuickAction>
+      <QuickAction $color="#E31E24" onClick={onOpenZoe}>
+        👑 {executiveLabel}
+      </QuickAction>
+    </QuickActions>
+  );
+});
+
+const CRM_HUB_COPY = {
+  en: {
+    leadManagementLabel: 'Lead Management',
+    propertyPortfolioLabel: 'Property Portfolio',
+    agentPerformanceLabel: 'Agent Performance',
+    whatsappLabel: 'WhatsApp CRM',
+    financeLabel: 'Finance & Commissions',
+    executiveLabel: 'Executive View',
+  },
+  ar: {
+    leadManagementLabel: 'إدارة العملاء المحتملين',
+    propertyPortfolioLabel: 'محفظة العقارات',
+    agentPerformanceLabel: 'أداء الوكلاء',
+    whatsappLabel: 'واتساب CRM',
+    financeLabel: 'المالية والعمولات',
+    executiveLabel: 'الرؤية التنفيذية',
+  },
+} as const;
+
+const getCRMHubLocale = (): keyof typeof CRM_HUB_COPY => {
+  if (typeof document === 'undefined') return 'en';
+  const lang = (document.documentElement.getAttribute('lang') || 'en').toLowerCase();
+  return lang.startsWith('ar') ? 'ar' : 'en';
+};
+
 // ─── Module Definitions ─────────────────────────────────────────────────
 
 const CRM_MODULES: CRMModuleDef[] = [
@@ -317,9 +388,20 @@ const CRM_MODULES: CRMModuleDef[] = [
   },
 ];
 
+const formatTimeAgo = (timestamp: string) => {
+  if (!timestamp) return 'Recently';
+  const diff = Date.now() - new Date(timestamp).getTime();
+  const mins = Math.floor(diff / 60000);
+  if (mins < 60) return `${mins}m ago`;
+  const hours = Math.floor(mins / 60);
+  if (hours < 24) return `${hours}h ago`;
+  return `${Math.floor(hours / 24)}d ago`;
+};
+
 // ─── CRM Hub Component ─────────────────────────────────────────────────
 
 const CRMHubPage: FC = () => {
+  const copy = CRM_HUB_COPY[getCRMHubLocale()];
   const {
     user,
     recentActivities,
@@ -355,6 +437,13 @@ const CRMHubPage: FC = () => {
     setActiveModule(null);
   };
 
+  const handleOpenLeads = useCallback(() => navigate('/owner/crm/leads'), [navigate]);
+  const handleOpenProperties = useCallback(() => navigate('/owner/crm/properties'), [navigate]);
+  const handleOpenAgents = useCallback(() => navigate('/owner/crm/agents'), [navigate]);
+  const handleOpenNadia = useCallback(() => handleModuleSelect('nadia'), []);
+  const handleOpenTheodora = useCallback(() => handleModuleSelect('theodora'), []);
+  const handleOpenZoe = useCallback(() => handleModuleSelect('zoe'), []);
+
   // If a module is selected, show it full-screen
   if (activeModule) {
     const moduleDef = CRM_MODULES.find(m => m.id === activeModule);
@@ -364,14 +453,14 @@ const CRMHubPage: FC = () => {
         <HubContainer>
           <ContentArea>
             <ContentHeader>
-              <BackButton onClick={handleBackToHub}>
-                ← Back to CRM Hub
-              </BackButton>
+              <BackButton onClick={handleBackToHub}>← Back to CRM Hub</BackButton>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
                 <span style={{ fontSize: '1.25rem' }}>{moduleDef.icon}</span>
                 <span style={{ fontWeight: 600, color: '#1a1a2e' }}>{moduleDef.label}</span>
               </div>
-              <Badge variant="success" size="small">Active</Badge>
+              <Badge variant="success" size="small">
+                Active
+              </Badge>
             </ContentHeader>
             <div style={{ padding: '0' }}>
               <ErrorBoundary>
@@ -395,16 +484,6 @@ const CRMHubPage: FC = () => {
     system: '#6B7280',
   };
 
-  const formatTimeAgo = (timestamp: string) => {
-    if (!timestamp) return 'Recently';
-    const diff = Date.now() - new Date(timestamp).getTime();
-    const mins = Math.floor(diff / 60000);
-    if (mins < 60) return `${mins}m ago`;
-    const hours = Math.floor(mins / 60);
-    if (hours < 24) return `${hours}h ago`;
-    return `${Math.floor(hours / 24)}d ago`;
-  };
-
   return (
     <HubContainer>
       {/* Header */}
@@ -416,48 +495,36 @@ const CRMHubPage: FC = () => {
       </HubHeader>
 
       {/* Quick Actions */}
-      <QuickActions>
-        <QuickAction $color="#3B82F6" onClick={() => navigate('/owner/crm/leads')}>
-          🎯 Lead Management
-        </QuickAction>
-        <QuickAction $color="#10B981" onClick={() => navigate('/owner/crm/properties')}>
-          🏠 Property Portfolio
-        </QuickAction>
-        <QuickAction $color="#F59E0B" onClick={() => navigate('/owner/crm/agents')}>
-          👥 Agent Performance
-        </QuickAction>
-        <QuickAction $color="#25D366" onClick={() => handleModuleSelect('nadia')}>
-          💬 WhatsApp CRM
-        </QuickAction>
-        <QuickAction $color="#8B5CF6" onClick={() => handleModuleSelect('theodora')}>
-          💰 Finance & Commissions
-        </QuickAction>
-        <QuickAction $color="#E31E24" onClick={() => handleModuleSelect('zoe')}>
-          👑 Executive View
-        </QuickAction>
-      </QuickActions>
+      <CRMQuickActions
+        leadManagementLabel={copy.leadManagementLabel}
+        propertyPortfolioLabel={copy.propertyPortfolioLabel}
+        agentPerformanceLabel={copy.agentPerformanceLabel}
+        whatsappLabel={copy.whatsappLabel}
+        financeLabel={copy.financeLabel}
+        executiveLabel={copy.executiveLabel}
+        onOpenLeads={handleOpenLeads}
+        onOpenProperties={handleOpenProperties}
+        onOpenAgents={handleOpenAgents}
+        onOpenNadia={handleOpenNadia}
+        onOpenTheodora={handleOpenTheodora}
+        onOpenZoe={handleOpenZoe}
+      />
 
       {/* Stats Overview */}
       <StatsGrid>
         <StatCard $color="#3B82F6" onClick={() => navigate('/owner/crm/leads')}>
           <StatLabel>Total Leads</StatLabel>
-          <StatValue $color="#3B82F6">
-            {totalLeads}
-          </StatValue>
+          <StatValue $color="#3B82F6">{totalLeads}</StatValue>
         </StatCard>
 
         <StatCard $color="#EF4444" onClick={() => navigate('/owner/crm/leads')}>
           <StatLabel>Hot Leads</StatLabel>
-          <StatValue $color="#EF4444">
-            {hotLeadCount}
-          </StatValue>
+          <StatValue $color="#EF4444">{hotLeadCount}</StatValue>
         </StatCard>
 
         <StatCard $color="#10B981" onClick={() => navigate('/owner/crm/properties')}>
           <StatLabel>Active Clients</StatLabel>
-          <StatValue $color="#10B981">
-            {totalClients}
-          </StatValue>
+          <StatValue $color="#10B981">{totalClients}</StatValue>
         </StatCard>
 
         <StatCard $color="#8B5CF6" onClick={() => handleModuleSelect('sophia')}>

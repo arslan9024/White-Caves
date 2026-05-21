@@ -1,4 +1,5 @@
 # CI/CD Pipeline Flow
+
 # White Caves Real Estate Platform
 
 > **Document ID:** WC-FLOW-CICD-001
@@ -65,7 +66,7 @@ PR opened / push to main
           │
           ▼
   .github/workflows/ci.yml triggers:
-  
+
   ┌─────────────────────────────────────────────────────────────┐
   │  JOB 1: lint-and-type-check                                │
   │  ─────────────────────────────────────────────────────────  │
@@ -119,7 +120,7 @@ Code merged to main
           │
           ▼
   .github/workflows/deploy-staging.yml triggers:
-  
+
   Frontend:
   ├── Vercel auto-deploy (connected to main branch)
   ├── Build: npm run build (Vite)
@@ -173,7 +174,7 @@ Staging validated
           │
           ▼
   Production deployment:
-  
+
   Frontend:
   ├── Vercel production build triggered
   ├── Build: npm run build
@@ -232,15 +233,15 @@ Production issue detected
           │
           ▼
   ROLLBACK STEPS:
-  
+
   Frontend:
   ├── Vercel dashboard: Instant Rollback to previous deployment
   └── Time to rollback: < 2 minutes
-  
+
   Backend:
   ├── Trigger previous Railway deployment
   └── Time to rollback: < 5 minutes
-  
+
   Database:
   ├── Non-destructive (additive migration): no DB rollback needed
   ├── Destructive migration: restore from Atlas backup
@@ -285,16 +286,17 @@ Critical bug found in production (not requiring rollback)
 
 ## 8. Environment Variables Management
 
-| Variable Category | Dev | Staging | Production |
-|-----------------|-----|---------|-----------|
-| Database | `.env.local` | Railway secrets | Railway secrets (prod) |
-| JWT secret | `.env.local` | GitHub Secrets | GitHub Secrets (prod) |
-| Firebase | `.env.local` | GitHub Secrets | GitHub Secrets (prod) |
-| Stripe | `.env.local` (test key) | Test key | Live key |
-| WhatsApp | Not set (stub) | Test WABA | Live WABA |
-| Sentry | Not set | DSN in secrets | DSN in secrets |
+| Variable Category | Dev                     | Staging         | Production             |
+| ----------------- | ----------------------- | --------------- | ---------------------- |
+| Database          | `.env.local`            | Railway secrets | Railway secrets (prod) |
+| JWT secret        | `.env.local`            | GitHub Secrets  | GitHub Secrets (prod)  |
+| Firebase          | `.env.local`            | GitHub Secrets  | GitHub Secrets (prod)  |
+| Stripe            | `.env.local` (test key) | Test key        | Live key               |
+| WhatsApp          | Not set (stub)          | Test WABA       | Live WABA              |
+| Sentry            | Not set                 | DSN in secrets  | DSN in secrets         |
 
 **Rules:**
+
 1. NEVER commit `.env` files (`.gitignore` enforced)
 2. NEVER log environment variables
 3. Use GitHub Secrets for CI/CD (not hardcoded)
@@ -305,23 +307,22 @@ Critical bug found in production (not requiring rollback)
 
 ## 9. Pipeline Status
 
-| Stage | Status | Notes |
-|-------|--------|-------|
-| Pre-commit (Husky) | ✅ Active | ESLint + Prettier |
-| GitHub Actions CI | ⏳ Phase 2 | Workflow files needed |
-| Vercel auto-deploy (frontend) | ✅ Active | Connected to main |
-| Railway deploy (backend) | Manual | Automated in Phase 2 |
-| Staging environment | ✅ Active | staging.whitecaves.ae |
-| Production environment | ✅ Active | whitecaves.ae |
-| Blue-green deployment | ⏳ Phase 7 | After scale requirement |
-| Prometheus monitoring | ⏳ Phase 2 | prom-client needed |
-| Sentry error tracking | ⏳ Phase 2 | SDK integration needed |
+| Stage                         | Status     | Notes                   |
+| ----------------------------- | ---------- | ----------------------- |
+| Pre-commit (Husky)            | ✅ Active  | ESLint + Prettier       |
+| GitHub Actions CI             | ⏳ Phase 2 | Workflow files needed   |
+| Vercel auto-deploy (frontend) | ✅ Active  | Connected to main       |
+| Railway deploy (backend)      | Manual     | Automated in Phase 2    |
+| Staging environment           | ✅ Active  | staging.whitecaves.ae   |
+| Production environment        | ✅ Active  | whitecaves.ae           |
+| Blue-green deployment         | ⏳ Phase 7 | After scale requirement |
+| Prometheus monitoring         | ⏳ Phase 2 | prom-client needed      |
+| Sentry error tracking         | ⏳ Phase 2 | SDK integration needed  |
 
 ---
 
 **Document Owner:** DevOps Department (Gwynne + Lisa)
 **Related:** `business_docs/14_devops/deployment-runbook.md`, `business_docs/14_devops/incident-response.md`
-
 
 ---
 
@@ -331,14 +332,14 @@ White Caves uses trunk-based development with short-lived feature branches:
 
 ### 9.1 Branch Naming Convention
 
-| Branch Type | Pattern | Example |
-|------------|---------|---------|
-| Feature | `feat/[ticket]-[short-description]` | `feat/WC-145-ejari-tracking` |
-| Bug fix | `fix/[ticket]-[short-description]` | `fix/WC-203-lead-score-null-crash` |
-| Hotfix (production) | `hotfix/[ticket]-[short-description]` | `hotfix/WC-211-auth-bypass` |
-| Release candidate | `release/v[major].[minor].[patch]` | `release/v1.2.0` |
-| Docs only | `docs/[short-description]` | `docs/expand-rera-checklist` |
-| Chore | `chore/[short-description]` | `chore/update-dependencies` |
+| Branch Type         | Pattern                               | Example                            |
+| ------------------- | ------------------------------------- | ---------------------------------- |
+| Feature             | `feat/[ticket]-[short-description]`   | `feat/WC-145-ejari-tracking`       |
+| Bug fix             | `fix/[ticket]-[short-description]`    | `fix/WC-203-lead-score-null-crash` |
+| Hotfix (production) | `hotfix/[ticket]-[short-description]` | `hotfix/WC-211-auth-bypass`        |
+| Release candidate   | `release/v[major].[minor].[patch]`    | `release/v1.2.0`                   |
+| Docs only           | `docs/[short-description]`            | `docs/expand-rera-checklist`       |
+| Chore               | `chore/[short-description]`           | `chore/update-dependencies`        |
 
 **Protected branches:** `main` (production), `staging` (staging environment). Direct push to either is blocked — PRs required.
 
@@ -440,22 +441,23 @@ RPO target: 1 hour (maximum data loss in worst case)
 
 ### 11.1 Environment Variables by Environment
 
-| Variable | Development | Staging | Production |
-|---------|------------|---------|-----------|
-| `NODE_ENV` | `development` | `staging` | `production` |
-| `MONGODB_URI` | `mongodb://localhost:27017/wc-dev` | Atlas dev cluster | Atlas production cluster |
-| `JWT_SECRET` | Dev secret (in .env.local) | Staging secret (Railway secrets) | Production secret (Railway secrets) |
-| `FIREBASE_PROJECT_ID` | `wc-development` | `wc-staging` | `wc-production` |
-| `WHATSAPP_ACCESS_TOKEN` | Mock token | Sandbox Meta token | Production Meta token |
-| `STRIPE_SECRET_KEY` | `sk_test_...` | `sk_test_...` | `sk_live_...` |
-| `SENTRY_DSN` | Disabled | Staging Sentry project | Production Sentry project |
-| `LOG_LEVEL` | `debug` | `info` | `warn` |
-| `CORS_ORIGINS` | `http://localhost:5173` | `https://staging.whitecaves.ae` | `https://whitecaves.ae` |
+| Variable                | Development                        | Staging                          | Production                          |
+| ----------------------- | ---------------------------------- | -------------------------------- | ----------------------------------- |
+| `NODE_ENV`              | `development`                      | `staging`                        | `production`                        |
+| `MONGODB_URI`           | `mongodb://localhost:27017/wc-dev` | Atlas dev cluster                | Atlas production cluster            |
+| `JWT_SECRET`            | Dev secret (in .env.local)         | Staging secret (Railway secrets) | Production secret (Railway secrets) |
+| `FIREBASE_PROJECT_ID`   | `wc-development`                   | `wc-staging`                     | `wc-production`                     |
+| `WHATSAPP_ACCESS_TOKEN` | Mock token                         | Sandbox Meta token               | Production Meta token               |
+| `STRIPE_SECRET_KEY`     | `sk_test_...`                      | `sk_test_...`                    | `sk_live_...`                       |
+| `SENTRY_DSN`            | Disabled                           | Staging Sentry project           | Production Sentry project           |
+| `LOG_LEVEL`             | `debug`                            | `info`                           | `warn`                              |
+| `CORS_ORIGINS`          | `http://localhost:5173`            | `https://staging.whitecaves.ae`  | `https://whitecaves.ae`             |
 
 ### 11.2 Secrets Management
 
 **Current:** Railway/Vercel environment variables dashboard (per-environment)
 **Phase 5 target:** HashiCorp Vault (self-hosted or HCP Vault) for:
+
 - Automatic secret rotation
 - Audit log of all secret accesses
 - Fine-grained access: Railway can only read its required secrets

@@ -24,14 +24,13 @@ export const fetchAllDepartments = createAsyncThunk(
   'departments/fetchAll',
   async (forceRefresh: boolean = false, { rejectWithValue }) => {
     try {
-      console.log('[Redux] Fetching all departments (optimized)...');
+      console.warn('[Redux] Fetching all departments (optimized)...');
       const departments = await apiIntegration.getDepartments(forceRefresh);
       return departments;
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('[Redux] Error fetching departments:', error);
-      return rejectWithValue(
-        error.error || error.message || 'Failed to fetch departments'
-      );
+      const e = error as { error?: string; message?: string };
+      return rejectWithValue(e.error || e.message || 'Failed to fetch departments');
     }
   }
 );
@@ -41,19 +40,15 @@ export const fetchAllDepartments = createAsyncThunk(
  */
 export const fetchDepartmentData = createAsyncThunk(
   'departments/fetchData',
-  async (
-    { code, forceRefresh }: { code: string; forceRefresh?: boolean },
-    { rejectWithValue }
-  ) => {
+  async ({ code, forceRefresh }: { code: string; forceRefresh?: boolean }, { rejectWithValue }) => {
     try {
-      console.log(`[Redux] Fetching data for department: ${code} (optimized)...`);
+      console.warn(`[Redux] Fetching data for department: ${code} (optimized)...`);
       const data = await apiIntegration.getDepartmentData(code, forceRefresh);
       return { [code]: data };
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('[Redux] Error fetching department data:', error);
-      return rejectWithValue(
-        error.error || error.message || 'Failed to fetch department data'
-      );
+      const e = error as { error?: string; message?: string };
+      return rejectWithValue(e.error || e.message || 'Failed to fetch department data');
     }
   }
 );
@@ -66,10 +61,10 @@ export const fetchDepartmentKPIs = createAsyncThunk(
   async (
     {
       code,
-      dateRange,
+      dateRange: _dateRange,
       page = 1,
       pageSize = 20,
-      forceRefresh,
+      forceRefresh: _forceRefresh,
     }: {
       code: string;
       dateRange?: DateRange;
@@ -80,19 +75,16 @@ export const fetchDepartmentKPIs = createAsyncThunk(
     { rejectWithValue }
   ) => {
     try {
-      console.log(
-        `[Redux] Fetching KPIs for department: ${code} (optimized, page ${page})...`
-      );
+      console.warn(`[Redux] Fetching KPIs for department: ${code} (optimized, page ${page})...`);
       const response = await apiIntegration.getDepartmentKPIs(code, {
         page,
         pageSize,
       });
       return { code, kpis: response.data, pagination: response.pagination };
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('[Redux] Error fetching KPIs:', error);
-      return rejectWithValue(
-        error.error || error.message || 'Failed to fetch KPIs'
-      );
+      const e = error as { error?: string; message?: string };
+      return rejectWithValue(e.error || e.message || 'Failed to fetch KPIs');
     }
   }
 );
@@ -108,7 +100,7 @@ export const fetchDepartmentTrends = createAsyncThunk(
       timeframe = 'monthly',
       page = 1,
       pageSize = 50,
-      forceRefresh,
+      forceRefresh: _forceRefresh,
     }: {
       code: string;
       timeframe?: 'daily' | 'weekly' | 'monthly' | 'yearly';
@@ -119,7 +111,7 @@ export const fetchDepartmentTrends = createAsyncThunk(
     { rejectWithValue }
   ) => {
     try {
-      console.log(
+      console.warn(
         `[Redux] Fetching trends for department: ${code}, timeframe: ${timeframe} (optimized)...`
       );
       const response = await apiIntegration.getDepartmentTrends(code, timeframe, {
@@ -132,10 +124,12 @@ export const fetchDepartmentTrends = createAsyncThunk(
         timeframe,
         pagination: response.pagination,
       };
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('[Redux] Error fetching trends:', error);
       return rejectWithValue(
-        error.error || error.message || 'Failed to fetch trends'
+        (error as { error?: string; message?: string }).error ||
+          (error as { error?: string; message?: string }).message ||
+          'Failed to fetch trends'
       );
     }
   }
@@ -148,15 +142,15 @@ export const fetchDepartmentSummary = createAsyncThunk(
   'departments/fetchSummary',
   async (code: string, { rejectWithValue }) => {
     try {
-      console.log(`[Redux] Fetching summary for department: ${code} (optimized)...`);
-      const summary = await apiIntegration
-        .getDepartmentData(code)
-        .then((data) => data?.summary);
+      console.warn(`[Redux] Fetching summary for department: ${code} (optimized)...`);
+      const summary = await apiIntegration.getDepartmentData(code).then(data => data?.summary);
       return { code, summary };
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('[Redux] Error fetching summary:', error);
       return rejectWithValue(
-        error.error || error.message || 'Failed to fetch summary'
+        (error as { error?: string; message?: string }).error ||
+          (error as { error?: string; message?: string }).message ||
+          'Failed to fetch summary'
       );
     }
   }
@@ -256,7 +250,7 @@ const departmentSlice = createSlice({
     },
 
     // Clear all errors
-    clearAllErrors: (state) => {
+    clearAllErrors: state => {
       state.error = {
         departments: null,
         data: null,
@@ -267,7 +261,7 @@ const departmentSlice = createSlice({
     },
 
     // Clear all department data
-    clearDepartmentData: (state) => {
+    clearDepartmentData: state => {
       state.departmentData = {};
       state.kpis = {};
       state.trends = {};
@@ -285,10 +279,10 @@ const departmentSlice = createSlice({
     },
   },
 
-  extraReducers: (builder) => {
+  extraReducers: builder => {
     // Fetch all departments
     builder
-      .addCase(fetchAllDepartments.pending, (state) => {
+      .addCase(fetchAllDepartments.pending, state => {
         state.loading.departments = true;
         state.error.departments = null;
       })
@@ -304,7 +298,7 @@ const departmentSlice = createSlice({
 
     // Fetch department data
     builder
-      .addCase(fetchDepartmentData.pending, (state) => {
+      .addCase(fetchDepartmentData.pending, state => {
         state.loading.data = true;
         state.error.data = null;
       })
@@ -312,6 +306,7 @@ const departmentSlice = createSlice({
         state.loading.data = false;
         state.departmentData = { ...state.departmentData, ...action.payload };
         const code = Object.keys(action.payload)[0];
+        // eslint-disable-next-line security/detect-object-injection
         state.lastUpdated.data[code] = Date.now();
       })
       .addCase(fetchDepartmentData.rejected, (state, action) => {
@@ -321,7 +316,7 @@ const departmentSlice = createSlice({
 
     // Fetch KPIs
     builder
-      .addCase(fetchDepartmentKPIs.pending, (state) => {
+      .addCase(fetchDepartmentKPIs.pending, state => {
         state.loading.kpis = true;
         state.error.kpis = null;
       })
@@ -337,7 +332,7 @@ const departmentSlice = createSlice({
 
     // Fetch trends
     builder
-      .addCase(fetchDepartmentTrends.pending, (state) => {
+      .addCase(fetchDepartmentTrends.pending, state => {
         state.loading.trends = true;
         state.error.trends = null;
       })
@@ -353,7 +348,7 @@ const departmentSlice = createSlice({
 
     // Fetch summary
     builder
-      .addCase(fetchDepartmentSummary.pending, (state) => {
+      .addCase(fetchDepartmentSummary.pending, state => {
         state.loading.summary = true;
         state.error.summary = null;
       })
@@ -382,14 +377,46 @@ export const {
 /**
  * Selectors
  */
-export const selectDepartments = (state: any) => state.departments.departments;
-export const selectDepartmentData = (state: any) => state.departments.departmentData;
-export const selectDepartmentKPIs = (state: any) => state.departments.kpis;
-export const selectDepartmentTrends = (state: any) => state.departments.trends;
-export const selectDepartmentSummaries = (state: any) => state.departments.summaries;
-export const selectDepartmentLoading = (state: any) => state.departments.loading;
-export const selectDepartmentError = (state: any) => state.departments.error;
-export const selectSelectedDepartment = (state: any) =>
-  state.departments.selectedDepartment;
+export const selectDepartments = (state: { departments: { departments: unknown[] } }) =>
+  state.departments.departments;
+export const selectDepartmentData = (state: {
+  departments: { departmentData: Record<string, unknown> };
+}) => state.departments.departmentData;
+export const selectDepartmentKPIs = (state: { departments: { kpis: Record<string, unknown[]> } }) =>
+  state.departments.kpis;
+export const selectDepartmentTrends = (state: {
+  departments: { trends: Record<string, unknown[]> };
+}) => state.departments.trends;
+export const selectDepartmentSummaries = (state: {
+  departments: { summaries: Record<string, unknown> };
+}) => state.departments.summaries;
+
+// NOTE: loading/error are keyed maps, not primitive values.
+export const selectDepartmentLoading = (state: {
+  departments: {
+    loading: {
+      departments: boolean;
+      data: boolean;
+      kpis: boolean;
+      trends: boolean;
+      summary: boolean;
+    };
+  };
+}) => state.departments.loading;
+
+export const selectDepartmentError = (state: {
+  departments: {
+    error: {
+      departments: string | null;
+      data: string | null;
+      kpis: string | null;
+      trends: string | null;
+      summary: string | null;
+    };
+  };
+}) => state.departments.error;
+export const selectSelectedDepartment = (state: {
+  departments: { selectedDepartment: string | null };
+}) => state.departments.selectedDepartment;
 
 export default departmentSlice.reducer;

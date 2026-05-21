@@ -8,26 +8,26 @@
 
 ## Today's Summary
 
-| Metric | Count |
-|---|---|
-| Total Properties | — |
-| 🟢 Verified / Active | — |
-| 🟡 Under Offer (Locked) | — |
-| 🔵 Leased / Sold | — |
-| ⚪ Draft / Collected | — |
-| ⚠️ Missing Documents | — |
+| Metric                  | Count |
+| ----------------------- | ----- |
+| Total Properties        | —     |
+| 🟢 Verified / Active    | —     |
+| 🟡 Under Offer (Locked) | —     |
+| 🔵 Leased / Sold        | —     |
+| ⚪ Draft / Collected    | —     |
+| ⚠️ Missing Documents    | —     |
 
 ---
 
 ## Inventory Pipeline Stages
 
-| Stage | Code | Description |
-|---|---|---|
-| 1 | `draft_collected` | Newly collected from landlord — pending review |
-| 2 | `verified_active` | Verified by @Mary — live on market |
-| 3 | `under_offer` | Offer received — property **locked** to prevent double-booking |
-| 4 | `leased_sold` | Deal completed — lease/sale signed |
-| 5 | `handed_over` | Keys handed to tenant or buyer |
+| Stage | Code              | Description                                                    |
+| ----- | ----------------- | -------------------------------------------------------------- |
+| 1     | `draft_collected` | Newly collected from landlord — pending review                 |
+| 2     | `verified_active` | Verified by @Mary — live on market                             |
+| 3     | `under_offer`     | Offer received — property **locked** to prevent double-booking |
+| 4     | `leased_sold`     | Deal completed — lease/sale signed                             |
+| 5     | `handed_over`     | Keys handed to tenant or buyer                                 |
 
 ---
 
@@ -36,8 +36,8 @@
 Properties with missing documents are automatically flagged. The following must be
 on file before a property can move from **Draft** → **Verified/Active**:
 
-- [ ] Title Deed  
-- [ ] Landlord Passport / Emirates ID  
+- [ ] Title Deed
+- [ ] Landlord Passport / Emirates ID
 - [ ] Ejari (where applicable)
 
 ---
@@ -59,8 +59,8 @@ returns it to `verified_active` stage.
 _To be updated daily by @Mary after morning scan._
 
 | Date | Property Title | Unit | Area | Stage | Doc Status |
-|---|---|---|---|---|---|
-| — | — | — | — | — | — |
+| ---- | -------------- | ---- | ---- | ----- | ---------- |
+| —    | —              | —    | —    | —     | —          |
 
 ---
 
@@ -69,8 +69,8 @@ _To be updated daily by @Mary after morning scan._
 _To be updated daily by @Mary._
 
 | Date | Property Title | Type | Agent | Stage |
-|---|---|---|---|---|
-| — | — | — | — | — |
+| ---- | -------------- | ---- | ----- | ----- |
+| —    | —              | —    | —     | —     |
 
 ---
 
@@ -80,9 +80,9 @@ Properties active for **>30 days without a viewing** are escalated to the Projec
 Manager for marketing strategy review.
 
 | Property | Days Active | Last Viewing | Action |
-|---|---|---|---|
-| — | — | — | — |
+| -------- | ----------- | ------------ | ------ |
+| —        | —           | —            | —      |
 
 ---
 
-*This file is maintained by the @Mary AI agent and should be committed daily.*
+_This file is maintained by the @Mary AI agent and should be committed daily._

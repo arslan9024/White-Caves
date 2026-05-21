@@ -18,38 +18,38 @@ Oracle is an AI-powered market analysis assistant that provides real-time Dubai 
 
 ### 2.1 Market Data Aggregation
 
-| Data Source | Type | Frequency |
-|-------------|------|-----------|
-| **DLD Transaction Data** | Sales volumes, prices, areas | Daily |
-| **RERA Reports** | Regulatory updates, market circulars | Weekly |
-| **Portal Listings** | Active inventory, price trends, days on market | Daily |
-| **Economic Indicators** | GDP, population growth, tourism, FDI | Monthly |
-| **Currency Rates** | AED/USD/GBP/EUR exchange rates | Real-time |
-| **Mortgage Rates** | UAE bank mortgage rate tracking | Weekly |
-| **Construction Activity** | Off-plan launches, completion dates | Monthly |
+| Data Source               | Type                                           | Frequency |
+| ------------------------- | ---------------------------------------------- | --------- |
+| **DLD Transaction Data**  | Sales volumes, prices, areas                   | Daily     |
+| **RERA Reports**          | Regulatory updates, market circulars           | Weekly    |
+| **Portal Listings**       | Active inventory, price trends, days on market | Daily     |
+| **Economic Indicators**   | GDP, population growth, tourism, FDI           | Monthly   |
+| **Currency Rates**        | AED/USD/GBP/EUR exchange rates                 | Real-time |
+| **Mortgage Rates**        | UAE bank mortgage rate tracking                | Weekly    |
+| **Construction Activity** | Off-plan launches, completion dates            | Monthly   |
 
 ### 2.2 Analysis Capabilities
 
-| Analysis Type | Description | Output |
-|--------------|-------------|--------|
-| **Comparative Market Analysis (CMA)** | Price comparison for similar properties in area | PDF report + JSON data |
-| **Price Trend Forecasting** | ML-based price predictions (3/6/12 month) | Charts + confidence intervals |
-| **Area Heatmaps** | Transaction density and price per sqft by area | Interactive map overlay |
-| **Investment ROI Calculator** | Rental yield, capital appreciation, total ROI | Financial model |
-| **Supply/Demand Analysis** | Inventory levels vs. transaction velocity | Dashboard widgets |
-| **Developer Performance** | Developer track record, delivery history | Scorecards |
-| **Market Sentiment** | News + social media sentiment analysis | Sentiment index |
+| Analysis Type                         | Description                                     | Output                        |
+| ------------------------------------- | ----------------------------------------------- | ----------------------------- |
+| **Comparative Market Analysis (CMA)** | Price comparison for similar properties in area | PDF report + JSON data        |
+| **Price Trend Forecasting**           | ML-based price predictions (3/6/12 month)       | Charts + confidence intervals |
+| **Area Heatmaps**                     | Transaction density and price per sqft by area  | Interactive map overlay       |
+| **Investment ROI Calculator**         | Rental yield, capital appreciation, total ROI   | Financial model               |
+| **Supply/Demand Analysis**            | Inventory levels vs. transaction velocity       | Dashboard widgets             |
+| **Developer Performance**             | Developer track record, delivery history        | Scorecards                    |
+| **Market Sentiment**                  | News + social media sentiment analysis          | Sentiment index               |
 
 ### 2.3 Automated Reports
 
-| Report | Audience | Frequency | Format |
-|--------|----------|-----------|--------|
-| **Weekly Market Pulse** | All agents | Weekly (Monday) | Email + Dashboard |
-| **Monthly Area Report** | Branch managers | Monthly | PDF + Dashboard |
-| **Quarterly Market Review** | Executives | Quarterly | PDF presentation |
-| **Property Valuation** | On-demand | Per request | PDF + API response |
-| **Investor Briefing** | VIP clients | Monthly | WhatsApp (Nadia) + Email |
-| **Competitor Pricing Alert** | Listing agents | Real-time | Push notification |
+| Report                       | Audience        | Frequency       | Format                   |
+| ---------------------------- | --------------- | --------------- | ------------------------ |
+| **Weekly Market Pulse**      | All agents      | Weekly (Monday) | Email + Dashboard        |
+| **Monthly Area Report**      | Branch managers | Monthly         | PDF + Dashboard          |
+| **Quarterly Market Review**  | Executives      | Quarterly       | PDF presentation         |
+| **Property Valuation**       | On-demand       | Per request     | PDF + API response       |
+| **Investor Briefing**        | VIP clients     | Monthly         | WhatsApp (Nadia) + Email |
+| **Competitor Pricing Alert** | Listing agents  | Real-time       | Push notification        |
 
 ---
 
@@ -59,75 +59,75 @@ For each external data source, the following table defines the endpoint, update 
 
 ### 3.1 DLD Transaction Feed
 
-| Attribute | Details |
-|-----------|---------|
-| **Endpoint / URL** | `https://dubailand.gov.ae/en/open-data/real-estate-data/` (CSV bulk download) + DLD REST API (partner access) |
-| **Update Frequency** | Daily at 02:00 GST (batch); real-time via DLD partner webhook (Phase 2) |
-| **Data Format** | CSV (bulk) / JSON (API) |
-| **Fields Ingested** | `transactionDate`, `area`, `propertyType`, `transactionType` (sale/mortgage/gift), `price`, `pricePsf`, `size`, `rooms`, `building`, `project`, `seller`, `buyer`, `registrationNumber` |
+| Attribute                | Details                                                                                                                                                                                                                 |
+| ------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Endpoint / URL**       | `https://dubailand.gov.ae/en/open-data/real-estate-data/` (CSV bulk download) + DLD REST API (partner access)                                                                                                           |
+| **Update Frequency**     | Daily at 02:00 GST (batch); real-time via DLD partner webhook (Phase 2)                                                                                                                                                 |
+| **Data Format**          | CSV (bulk) / JSON (API)                                                                                                                                                                                                 |
+| **Fields Ingested**      | `transactionDate`, `area`, `propertyType`, `transactionType` (sale/mortgage/gift), `price`, `pricePsf`, `size`, `rooms`, `building`, `project`, `seller`, `buyer`, `registrationNumber`                                 |
 | **Transformation Steps** | 1. Parse CSV → JSON; 2. Normalize `area` names to canonical list (e.g., "DUBAI MARINA" → "Dubai Marina"); 3. Convert dates to ISO 8601; 4. Filter out non-freehold transactions; 5. Deduplicate by `registrationNumber` |
-| **Storage Collection** | `MarketData` WHERE `source = 'dld'` AND `dataType = 'transaction'` |
-| **Data Quality Checks** | Price > 0; `pricePsf` = price / size (±5% tolerance); `area` in canonical area list; `transactionDate` not in future; duplicate registration number check |
+| **Storage Collection**   | `MarketData` WHERE `source = 'dld'` AND `dataType = 'transaction'`                                                                                                                                                      |
+| **Data Quality Checks**  | Price > 0; `pricePsf` = price / size (±5% tolerance); `area` in canonical area list; `transactionDate` not in future; duplicate registration number check                                                               |
 
 ### 3.2 Bayut API
 
-| Attribute | Details |
-|-----------|---------|
-| **Endpoint / URL** | `https://api.bayut.com/v2/listings` (commercial partner API) |
-| **Update Frequency** | Every 6 hours via cron job |
-| **Data Format** | JSON (REST API with pagination, 200 records/page) |
-| **Fields Ingested** | `listingId`, `title`, `area`, `propertyType`, `bedrooms`, `bathrooms`, `size`, `price`, `pricePerSqft`, `furnishing`, `developer`, `project`, `createdAt`, `updatedAt`, `status`, `agencyName`, `daysOnMarket`, `viewCount` |
-| **Transformation Steps** | 1. Paginate through all active listings; 2. Normalize area names; 3. Map `propertyType` to internal enum; 4. Calculate `daysOnMarket = (now - createdAt) / 86400000`; 5. Flag listings with price changes |
-| **Storage Collection** | `MarketData` WHERE `source = 'bayut'` AND `dataType = 'listing'` |
-| **Data Quality Checks** | Price > 10,000 AED; size > 100 sqft; area in canonical list; no duplicate `listingId`; `pricePerSqft` consistency check |
+| Attribute                | Details                                                                                                                                                                                                                     |
+| ------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Endpoint / URL**       | `https://api.bayut.com/v2/listings` (commercial partner API)                                                                                                                                                                |
+| **Update Frequency**     | Every 6 hours via cron job                                                                                                                                                                                                  |
+| **Data Format**          | JSON (REST API with pagination, 200 records/page)                                                                                                                                                                           |
+| **Fields Ingested**      | `listingId`, `title`, `area`, `propertyType`, `bedrooms`, `bathrooms`, `size`, `price`, `pricePerSqft`, `furnishing`, `developer`, `project`, `createdAt`, `updatedAt`, `status`, `agencyName`, `daysOnMarket`, `viewCount` |
+| **Transformation Steps** | 1. Paginate through all active listings; 2. Normalize area names; 3. Map `propertyType` to internal enum; 4. Calculate `daysOnMarket = (now - createdAt) / 86400000`; 5. Flag listings with price changes                   |
+| **Storage Collection**   | `MarketData` WHERE `source = 'bayut'` AND `dataType = 'listing'`                                                                                                                                                            |
+| **Data Quality Checks**  | Price > 10,000 AED; size > 100 sqft; area in canonical list; no duplicate `listingId`; `pricePerSqft` consistency check                                                                                                     |
 
 ### 3.3 PropertyFinder API
 
-| Attribute | Details |
-|-----------|---------|
-| **Endpoint / URL** | `https://api.propertyfinder.ae/v1/listings` (commercial partner API) |
-| **Update Frequency** | Every 6 hours via cron job (offset 3h from Bayut to avoid overlap) |
-| **Data Format** | JSON (REST API with cursor-based pagination) |
-| **Fields Ingested** | `id`, `referenceNumber`, `category`, `propertyType`, `area`, `community`, `beds`, `baths`, `area_sqft`, `price`, `price_per_sqft`, `title`, `description`, `amenities`, `completion_status`, `developer`, `publishedAt`, `updatedAt`, `agencyId`, `viewsCount`, `leadCount` |
-| **Transformation Steps** | 1. Cursor-based pagination until no `nextCursor`; 2. Normalize area + community to canonical names; 3. Merge `beds` enum to integer; 4. Strip HTML from `description`; 5. Cross-reference with Bayut to identify duplicate listings |
-| **Storage Collection** | `MarketData` WHERE `source = 'propertyfinder'` AND `dataType = 'listing'` |
-| **Data Quality Checks** | Same as Bayut; additionally: cross-portal duplicate detection using `(area, beds, size, price)` fingerprint |
+| Attribute                | Details                                                                                                                                                                                                                                                                     |
+| ------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Endpoint / URL**       | `https://api.propertyfinder.ae/v1/listings` (commercial partner API)                                                                                                                                                                                                        |
+| **Update Frequency**     | Every 6 hours via cron job (offset 3h from Bayut to avoid overlap)                                                                                                                                                                                                          |
+| **Data Format**          | JSON (REST API with cursor-based pagination)                                                                                                                                                                                                                                |
+| **Fields Ingested**      | `id`, `referenceNumber`, `category`, `propertyType`, `area`, `community`, `beds`, `baths`, `area_sqft`, `price`, `price_per_sqft`, `title`, `description`, `amenities`, `completion_status`, `developer`, `publishedAt`, `updatedAt`, `agencyId`, `viewsCount`, `leadCount` |
+| **Transformation Steps** | 1. Cursor-based pagination until no `nextCursor`; 2. Normalize area + community to canonical names; 3. Merge `beds` enum to integer; 4. Strip HTML from `description`; 5. Cross-reference with Bayut to identify duplicate listings                                         |
+| **Storage Collection**   | `MarketData` WHERE `source = 'propertyfinder'` AND `dataType = 'listing'`                                                                                                                                                                                                   |
+| **Data Quality Checks**  | Same as Bayut; additionally: cross-portal duplicate detection using `(area, beds, size, price)` fingerprint                                                                                                                                                                 |
 
 ### 3.4 RERA Permit Database
 
-| Attribute | Details |
-|-----------|---------|
-| **Endpoint / URL** | `https://trakheesi.rera.gov.ae/api/permits` (Trakheesi REST API — RERA partner access) |
-| **Update Frequency** | Daily at 04:00 GST |
-| **Data Format** | JSON |
-| **Fields Ingested** | `permitNumber`, `permitType`, `issueDate`, `expiryDate`, `propertyType`, `area`, `developerName`, `brokerName`, `brokerBRN`, `status` (active/expired/suspended) |
+| Attribute                | Details                                                                                                                                                                                        |
+| ------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Endpoint / URL**       | `https://trakheesi.rera.gov.ae/api/permits` (Trakheesi REST API — RERA partner access)                                                                                                         |
+| **Update Frequency**     | Daily at 04:00 GST                                                                                                                                                                             |
+| **Data Format**          | JSON                                                                                                                                                                                           |
+| **Fields Ingested**      | `permitNumber`, `permitType`, `issueDate`, `expiryDate`, `propertyType`, `area`, `developerName`, `brokerName`, `brokerBRN`, `status` (active/expired/suspended)                               |
 | **Transformation Steps** | 1. Filter for `status = 'active'`; 2. Cross-reference with `Property.permitNumber` in CRM; 3. Flag expired permits on active listings; 4. Alert Laila (Compliance) on suspended broker permits |
-| **Storage Collection** | `MarketData` WHERE `source = 'rera'` AND `dataType = 'permit'`; also updates `Property.permitStatus` in CRM |
-| **Data Quality Checks** | `expiryDate` > today for active permits; `issueDate` < today; `brokerBRN` format validation |
+| **Storage Collection**   | `MarketData` WHERE `source = 'rera'` AND `dataType = 'permit'`; also updates `Property.permitStatus` in CRM                                                                                    |
+| **Data Quality Checks**  | `expiryDate` > today for active permits; `issueDate` < today; `brokerBRN` format validation                                                                                                    |
 
 ### 3.5 UAE Statistics Centre (DSC)
 
-| Attribute | Details |
-|-----------|---------|
-| **Endpoint / URL** | `https://www.dsc.gov.ae/api/statistics` (open data portal) + manual quarterly CSV download |
-| **Update Frequency** | Monthly (population, GDP); Quarterly (tourism, FDI); Annual (census data) |
-| **Data Format** | CSV / Excel (manual download); JSON API (beta) |
-| **Fields Ingested** | `period`, `dubaiPopulation`, `gdpGrowthRate`, `tourismArrivals`, `fdiInflows`, `constructionPermits`, `buildingCompletions`, `unemploymentRate`, `inflationRate` |
+| Attribute                | Details                                                                                                                                                                      |
+| ------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Endpoint / URL**       | `https://www.dsc.gov.ae/api/statistics` (open data portal) + manual quarterly CSV download                                                                                   |
+| **Update Frequency**     | Monthly (population, GDP); Quarterly (tourism, FDI); Annual (census data)                                                                                                    |
+| **Data Format**          | CSV / Excel (manual download); JSON API (beta)                                                                                                                               |
+| **Fields Ingested**      | `period`, `dubaiPopulation`, `gdpGrowthRate`, `tourismArrivals`, `fdiInflows`, `constructionPermits`, `buildingCompletions`, `unemploymentRate`, `inflationRate`             |
 | **Transformation Steps** | 1. Parse CSV/Excel; 2. Normalize period format to ISO quarter (e.g., "Q1 2026" → "2026-Q1"); 3. Calculate YoY change percentages; 4. Store as economic indicator time series |
-| **Storage Collection** | `MarketData` WHERE `source = 'dsc'` AND `dataType = 'economic_indicator'` |
-| **Data Quality Checks** | Values are numeric; no gaps in time series; YoY change < 50% (flag anomalies >50% for manual review) |
+| **Storage Collection**   | `MarketData` WHERE `source = 'dsc'` AND `dataType = 'economic_indicator'`                                                                                                    |
+| **Data Quality Checks**  | Values are numeric; no gaps in time series; YoY change < 50% (flag anomalies >50% for manual review)                                                                         |
 
 ### 3.6 Global Macro Indicators
 
-| Attribute | Details |
-|-----------|---------|
-| **Endpoint / URL** | Open Exchange Rates API (`https://openexchangerates.org/api/latest.json`); World Bank API (`https://api.worldbank.org/v2/indicator`); Federal Reserve FRED API |
-| **Update Frequency** | Currency rates: every 1 hour; Interest rates: daily; Global GDP/inflation: monthly |
-| **Data Format** | JSON |
-| **Fields Ingested** | `aedToUsd`, `aedToGbp`, `aedToEur`, `aedToInr`, `aedToCny`, `usFedRate`, `uaeInterestRate`, `globalInflation`, `oilPriceWTI`, `goldPriceUSD` |
-| **Transformation Steps** | 1. Fetch rates; 2. Calculate AED cross-rates; 3. Compute 30-day moving average; 4. Flag significant rate movements (>1% in 24h) |
-| **Storage Collection** | `MarketData` WHERE `source = 'macro'` AND `dataType = 'rate'` |
-| **Data Quality Checks** | Rates are positive; AED/USD within expected bounds (3.64–3.68 for pegged rate); timestamp freshness check (alert if data > 2h old) |
+| Attribute                | Details                                                                                                                                                        |
+| ------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Endpoint / URL**       | Open Exchange Rates API (`https://openexchangerates.org/api/latest.json`); World Bank API (`https://api.worldbank.org/v2/indicator`); Federal Reserve FRED API |
+| **Update Frequency**     | Currency rates: every 1 hour; Interest rates: daily; Global GDP/inflation: monthly                                                                             |
+| **Data Format**          | JSON                                                                                                                                                           |
+| **Fields Ingested**      | `aedToUsd`, `aedToGbp`, `aedToEur`, `aedToInr`, `aedToCny`, `usFedRate`, `uaeInterestRate`, `globalInflation`, `oilPriceWTI`, `goldPriceUSD`                   |
+| **Transformation Steps** | 1. Fetch rates; 2. Calculate AED cross-rates; 3. Compute 30-day moving average; 4. Flag significant rate movements (>1% in 24h)                                |
+| **Storage Collection**   | `MarketData` WHERE `source = 'macro'` AND `dataType = 'rate'`                                                                                                  |
+| **Data Quality Checks**  | Rates are positive; AED/USD within expected bounds (3.64–3.68 for pegged rate); timestamp freshness check (alert if data > 2h old)                             |
 
 ### 3.7 Pipeline Monitoring
 
@@ -162,17 +162,17 @@ Report Generation → Distribution (Email, Dashboard, WhatsApp, API)
 
 ### 4.2 API Endpoints
 
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| `GET` | `/api/market/overview` | Current market snapshot |
-| `GET` | `/api/market/trends/:area` | Price trends for specific area |
-| `GET` | `/api/market/cma/:propertyId` | CMA report for a property |
-| `GET` | `/api/market/forecast/:area` | Price forecast (3/6/12 month) |
-| `GET` | `/api/market/heatmap` | Transaction heatmap data |
-| `GET` | `/api/market/roi-calculator` | Investment ROI calculation |
-| `GET` | `/api/market/reports` | List generated reports |
-| `POST` | `/api/market/reports/generate` | Generate custom report |
-| `GET` | `/api/market/sentiment` | Market sentiment index |
+| Method | Endpoint                       | Description                    |
+| ------ | ------------------------------ | ------------------------------ |
+| `GET`  | `/api/market/overview`         | Current market snapshot        |
+| `GET`  | `/api/market/trends/:area`     | Price trends for specific area |
+| `GET`  | `/api/market/cma/:propertyId`  | CMA report for a property      |
+| `GET`  | `/api/market/forecast/:area`   | Price forecast (3/6/12 month)  |
+| `GET`  | `/api/market/heatmap`          | Transaction heatmap data       |
+| `GET`  | `/api/market/roi-calculator`   | Investment ROI calculation     |
+| `GET`  | `/api/market/reports`          | List generated reports         |
+| `POST` | `/api/market/reports/generate` | Generate custom report         |
+| `GET`  | `/api/market/sentiment`        | Market sentiment index         |
 
 ### 4.3 Database Schema Addition
 
@@ -356,24 +356,24 @@ Oracle continuously monitors market conditions and triggers alerts to agents whe
 
 ### 6.1 Alert Trigger Definitions
 
-| Alert Type | Trigger Condition | Detection Method | Severity |
-|-----------|------------------|-----------------|---------|
-| **Price Movement Alert** | Average price per sqft in an area changes by >5% week-over-week | Compare 7-day rolling avg vs. prior 7-day avg; DLD + portal data | ⚠️ WARN |
-| **Inventory Flood** | >50 new listings appear in a single area within 7 days | Count new `listingCreatedAt` in area per week; compare to 4-week rolling avg | ⚠️ WARN |
-| **Demand Spike** | Weekly enquiry volume for an area doubles vs. 4-week rolling average | Portal enquiry API + internal lead source data | ℹ️ INFO |
-| **Distressed Sale Pattern** | ≥3 transactions in same building/project at >15% below market avg in 30 days | DLD transaction analysis: price vs. area avg | 🚨 CRITICAL |
-| **Off-Plan Launch Nearby** | New project launch registered in RERA permit database within 1km of tracked area | RERA permit ingestion; geo-distance calculation | ℹ️ INFO |
-| **Competitor Price Cut** | Any competing listing in agent's portfolio area drops price by >3% | PropertyFinder/Bayut price change tracking | ℹ️ INFO |
-| **Rental Yield Shift** | Gross rental yield for property type in area changes by >0.5% vs. last month | Computed from DLD sales + Bayut/PF rental listings | ⚠️ WARN |
-| **Market Correction Signal** | Transaction volume drops >20% month-over-month for 2+ consecutive months | DLD monthly transaction count trend | 🚨 CRITICAL |
+| Alert Type                   | Trigger Condition                                                                | Detection Method                                                             | Severity    |
+| ---------------------------- | -------------------------------------------------------------------------------- | ---------------------------------------------------------------------------- | ----------- |
+| **Price Movement Alert**     | Average price per sqft in an area changes by >5% week-over-week                  | Compare 7-day rolling avg vs. prior 7-day avg; DLD + portal data             | ⚠️ WARN     |
+| **Inventory Flood**          | >50 new listings appear in a single area within 7 days                           | Count new `listingCreatedAt` in area per week; compare to 4-week rolling avg | ⚠️ WARN     |
+| **Demand Spike**             | Weekly enquiry volume for an area doubles vs. 4-week rolling average             | Portal enquiry API + internal lead source data                               | ℹ️ INFO     |
+| **Distressed Sale Pattern**  | ≥3 transactions in same building/project at >15% below market avg in 30 days     | DLD transaction analysis: price vs. area avg                                 | 🚨 CRITICAL |
+| **Off-Plan Launch Nearby**   | New project launch registered in RERA permit database within 1km of tracked area | RERA permit ingestion; geo-distance calculation                              | ℹ️ INFO     |
+| **Competitor Price Cut**     | Any competing listing in agent's portfolio area drops price by >3%               | PropertyFinder/Bayut price change tracking                                   | ℹ️ INFO     |
+| **Rental Yield Shift**       | Gross rental yield for property type in area changes by >0.5% vs. last month     | Computed from DLD sales + Bayut/PF rental listings                           | ⚠️ WARN     |
+| **Market Correction Signal** | Transaction volume drops >20% month-over-month for 2+ consecutive months         | DLD monthly transaction count trend                                          | 🚨 CRITICAL |
 
 ### 6.2 Alert Severity Definitions
 
-| Severity | Symbol | Meaning | Response Time |
-|----------|--------|---------|--------------|
-| **CRITICAL** | 🚨 | Requires immediate agent/manager action; may affect active transactions | Within 1 hour |
-| **WARN** | ⚠️ | Noteworthy market movement; agents should adjust strategy | Within 24 hours |
-| **INFO** | ℹ️ | General market intelligence; no immediate action required | Within 1 week |
+| Severity     | Symbol | Meaning                                                                 | Response Time   |
+| ------------ | ------ | ----------------------------------------------------------------------- | --------------- |
+| **CRITICAL** | 🚨     | Requires immediate agent/manager action; may affect active transactions | Within 1 hour   |
+| **WARN**     | ⚠️     | Noteworthy market movement; agents should adjust strategy               | Within 24 hours |
+| **INFO**     | ℹ️     | General market intelligence; no immediate action required               | Within 1 week   |
 
 ### 6.3 Auto-Assignment Logic
 
@@ -409,11 +409,11 @@ function resolveAlertRecipients(alert: MarketAlert): Agent[] {
 
 ### 6.4 Notification Channels by Severity
 
-| Severity | Channels |
-|----------|---------|
+| Severity    | Channels                                                            |
+| ----------- | ------------------------------------------------------------------- |
 | 🚨 CRITICAL | Push notification + WhatsApp (Nadia) + Email + Slack #market-alerts |
-| ⚠️ WARN | Push notification + Email + Slack #market-alerts |
-| ℹ️ INFO | CRM dashboard notification + Weekly digest email |
+| ⚠️ WARN     | Push notification + Email + Slack #market-alerts                    |
+| ℹ️ INFO     | CRM dashboard notification + Weekly digest email                    |
 
 ### 6.5 Alert Database Schema
 
@@ -522,16 +522,16 @@ SECTION 7: APPENDIX
 
 ### 7.2 Generation & Delivery
 
-| Attribute | Details |
-|-----------|---------|
-| **Trigger** | Auto-generated on 1st of each month for Quarterly packs; additionally on-demand |
-| **Generation time** | < 3 minutes (PDF, 15–20 pages) |
-| **File format** | PDF (Quill integration), max 5 MB |
-| **File naming** | `WC_InvestorBriefing_{clientId}_{YYYY}Q{Q}.pdf` |
-| **Primary delivery** | WhatsApp via Nadia: "📊 Your Q1 2026 Investor Briefing is ready. Tap to view." + PDF attachment |
-| **Secondary delivery** | Email to investor's registered address with PDF attachment |
-| **CRM record** | Stored in `GeneratedDocument` collection; linked to investor's `Lead` record |
-| **Access control** | Only the investor's assigned agent and branch manager can view the report |
+| Attribute              | Details                                                                                         |
+| ---------------------- | ----------------------------------------------------------------------------------------------- |
+| **Trigger**            | Auto-generated on 1st of each month for Quarterly packs; additionally on-demand                 |
+| **Generation time**    | < 3 minutes (PDF, 15–20 pages)                                                                  |
+| **File format**        | PDF (Quill integration), max 5 MB                                                               |
+| **File naming**        | `WC_InvestorBriefing_{clientId}_{YYYY}Q{Q}.pdf`                                                 |
+| **Primary delivery**   | WhatsApp via Nadia: "📊 Your Q1 2026 Investor Briefing is ready. Tap to view." + PDF attachment |
+| **Secondary delivery** | Email to investor's registered address with PDF attachment                                      |
+| **CRM record**         | Stored in `GeneratedDocument` collection; linked to investor's `Lead` record                    |
+| **Access control**     | Only the investor's assigned agent and branch manager can view the report                       |
 
 ### 7.3 Investor Eligibility Criteria
 
@@ -579,70 +579,70 @@ model InvestorBriefing {
 
 ### 8.1 Price Prediction Model
 
-| Component | Details |
-|-----------|---------|
-| **Algorithm** | Gradient Boosting (XGBoost) → LSTM for time series |
-| **Features** | Area, property type, size, floor, view, age, season, economic indicators |
-| **Training Data** | 5+ years of DLD transaction data |
-| **Output** | Predicted price + confidence interval |
-| **Retraining** | Monthly with latest transaction data |
-| **Accuracy Target** | MAPE < 10% |
+| Component           | Details                                                                  |
+| ------------------- | ------------------------------------------------------------------------ |
+| **Algorithm**       | Gradient Boosting (XGBoost) → LSTM for time series                       |
+| **Features**        | Area, property type, size, floor, view, age, season, economic indicators |
+| **Training Data**   | 5+ years of DLD transaction data                                         |
+| **Output**          | Predicted price + confidence interval                                    |
+| **Retraining**      | Monthly with latest transaction data                                     |
+| **Accuracy Target** | MAPE < 10%                                                               |
 
 ### 8.2 Demand Forecasting
 
-| Component | Details |
-|-----------|---------|
-| **Algorithm** | Prophet (Facebook) for seasonality + external regressors |
-| **Features** | Historical transactions, population growth, tourism data, Expo effects |
-| **Output** | Predicted demand by area and property type (next 3 months) |
+| Component     | Details                                                                |
+| ------------- | ---------------------------------------------------------------------- |
+| **Algorithm** | Prophet (Facebook) for seasonality + external regressors               |
+| **Features**  | Historical transactions, population growth, tourism data, Expo effects |
+| **Output**    | Predicted demand by area and property type (next 3 months)             |
 
 ### 8.3 Sentiment Analysis
 
-| Component | Details |
-|-----------|---------|
+| Component     | Details                                      |
+| ------------- | -------------------------------------------- |
 | **Algorithm** | Fine-tuned BERT model for real estate domain |
-| **Sources** | News articles, social media, forum posts |
-| **Output** | Sentiment score (-1 to +1) + key themes |
-| **Languages** | English and Arabic |
+| **Sources**   | News articles, social media, forum posts     |
+| **Output**    | Sentiment score (-1 to +1) + key themes      |
+| **Languages** | English and Arabic                           |
 
 ---
 
 ## 9. Integration Points
 
-| System | Integration | Direction |
-|--------|-------------|-----------|
-| **Zoe (Executive)** | Market overview on executive dashboard | Read |
-| **Sophia (Sales)** | CMA for property pricing guidance | Read |
-| **Vesta (Valuation)** | Price prediction for valuation reports | Bidirectional |
+| System                    | Integration                                  | Direction     |
+| ------------------------- | -------------------------------------------- | ------------- |
+| **Zoe (Executive)**       | Market overview on executive dashboard       | Read          |
+| **Sophia (Sales)**        | CMA for property pricing guidance            | Read          |
+| **Vesta (Valuation)**     | Price prediction for valuation reports       | Bidirectional |
 | **Kairos (Intelligence)** | Shared data pipeline, complementary analysis | Bidirectional |
-| **Olivia (Marketing)** | Market insights for content marketing | Read |
-| **Nadia (WhatsApp)** | Investor briefing distribution | Output |
-| **Maven (Data Science)** | ML model development and maintenance | Bidirectional |
+| **Olivia (Marketing)**    | Market insights for content marketing        | Read          |
+| **Nadia (WhatsApp)**      | Investor briefing distribution               | Output        |
+| **Maven (Data Science)**  | ML model development and maintenance         | Bidirectional |
 
 ---
 
 ## 10. Dashboard Widgets
 
-| Widget | Type | Description |
-|--------|------|-------------|
-| Market Pulse | KPI cards | Price index, transactions, inventory, yield |
-| Price Trend | Line chart | Area price trends over time |
-| Transaction Heatmap | Map | Geographic distribution of transactions |
-| Supply/Demand | Bar chart | Inventory vs. absorption by area |
-| Sentiment Gauge | Gauge | Overall market sentiment |
-| Top Performing Areas | Table | Ranked by appreciation, yield, volume |
+| Widget               | Type       | Description                                 |
+| -------------------- | ---------- | ------------------------------------------- |
+| Market Pulse         | KPI cards  | Price index, transactions, inventory, yield |
+| Price Trend          | Line chart | Area price trends over time                 |
+| Transaction Heatmap  | Map        | Geographic distribution of transactions     |
+| Supply/Demand        | Bar chart  | Inventory vs. absorption by area            |
+| Sentiment Gauge      | Gauge      | Overall market sentiment                    |
+| Top Performing Areas | Table      | Ranked by appreciation, yield, volume       |
 
 ---
 
 ## 11. Success Metrics
 
-| Metric | Target | Measurement |
-|--------|--------|-------------|
-| CMA generation time | <60 seconds | From request to report |
-| Price prediction accuracy | MAPE < 10% | Against actual transaction prices |
-| Report distribution | 100% on-time delivery | Scheduled vs. delivered |
-| Agent usage | >80% weekly active | Unique agent logins to market section |
-| Client satisfaction | >4.5/5 rating | On investor briefings |
+| Metric                    | Target                | Measurement                           |
+| ------------------------- | --------------------- | ------------------------------------- |
+| CMA generation time       | <60 seconds           | From request to report                |
+| Price prediction accuracy | MAPE < 10%            | Against actual transaction prices     |
+| Report distribution       | 100% on-time delivery | Scheduled vs. delivered               |
+| Agent usage               | >80% weekly active    | Unique agent logins to market section |
+| Client satisfaction       | >4.5/5 rating         | On investor briefings                 |
 
 ---
 

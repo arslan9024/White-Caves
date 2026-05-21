@@ -11,6 +11,8 @@
  * GET    /api/compliance/brn-expiry     — BRN expiry report for all agents
  * GET    /api/compliance/ejari-export   — Ejari CSV download
  * GET    /api/compliance/vat-summary    — VAT breakdown by property type
+ * GET    /api/compliance/brn-check/history — recent manual BRN check runs
+ * GET    /api/compliance/permit-alerts  — permit alert feed (property permits + BRN expiry)
  * GET    /api/compliance/overview       — Full compliance dashboard data
  * PATCH  /api/compliance/ejari/:leaseId — Update Ejari status for a lease
  * POST   /api/compliance/brn-check      — Trigger manual BRN expiry check
@@ -19,19 +21,33 @@
 import { Router, Request, Response } from 'express';
 import { asyncHandler, AppError } from '../middleware/errorHandler';
 import type { AuthRequest } from '../middleware/auth';
+import { Prisma } from '@prisma/client';
 import { prisma } from '../database.js';
 import { sanitizeString } from '../utils/sanitize';
 import { requirePermission, requireMinRole } from '../middleware/rbac';
-import { getBRNExpiryReport, checkBRNExpirations } from '../services/compliance/reraExpiryScheduler.js';
+import {
+  getBRNExpiryReport,
+  checkBRNExpirations,
+} from '../services/compliance/reraExpiryScheduler.js';
 import {
   generateEjariExport,
   calculateVATSummary,
   getComplianceOverview,
   updateEjariStatus,
 } from '../services/compliance/complianceService.js';
+import { getPermitAlerts } from '../services/compliance/permitAlertScheduler.js';
+import { enforcePropertyPermitCompliance } from '../services/compliance/propertyPermitEnforcementScheduler.js';
+import { screenAML } from '../services/compliance/amlAdapter.js';
 import logger from '../utils/logger.js';
 
 const router = Router();
+
+function normalizeMetadata(metadata: unknown): Record<string, unknown> {
+  if (metadata && typeof metadata === 'object' && !Array.isArray(metadata)) {
+    return metadata as Record<string, unknown>;
+  }
+  return {};
+}
 
 // ─── GET /api/compliance/status ─────────────────────────────────────────
 // Overall compliance health check
@@ -53,7 +69,8 @@ router.get(
       prisma.user.count({ where: { role: { in: ['agent', 'owner'] }, status: 'active' } }),
     ]);
 
-    const docCompliance = totalProperties > 0 ? Math.round((propertiesWithDocs / totalProperties) * 100) : 100;
+    const docCompliance =
+      totalProperties > 0 ? Math.round((propertiesWithDocs / totalProperties) * 100) : 100;
     const agentCompliance = totalAgents > 0 ? Math.round((activeAgents / totalAgents) * 100) : 100;
     const overallScore = Math.round((docCompliance + agentCompliance) / 2);
 
@@ -87,14 +104,62 @@ router.get(
     }
 
     const requirements = [
-      { id: 'rera-license', name: 'RERA Broker License', category: 'licensing', status: 'compliant', dueDate: '2027-01-01' },
-      { id: 'dld-registration', name: 'DLD Registration', category: 'licensing', status: 'compliant', dueDate: '2027-01-01' },
-      { id: 'agent-cards', name: 'Agent Broker Cards', category: 'agents', status: 'pending_review', dueDate: '2026-06-30' },
-      { id: 'aml-kyc', name: 'AML/KYC Procedures', category: 'compliance', status: 'compliant', dueDate: null },
-      { id: 'data-protection', name: 'Data Protection (PDPL)', category: 'privacy', status: 'compliant', dueDate: null },
-      { id: 'escrow-accounts', name: 'Escrow Account Management', category: 'finance', status: 'compliant', dueDate: null },
-      { id: 'property-ads', name: 'Property Advertisement Compliance', category: 'marketing', status: 'compliant', dueDate: null },
-      { id: 'contract-templates', name: 'Contract Templates (SPA/MOU)', category: 'legal', status: 'pending_review', dueDate: '2026-04-30' },
+      {
+        id: 'rera-license',
+        name: 'RERA Broker License',
+        category: 'licensing',
+        status: 'compliant',
+        dueDate: '2027-01-01',
+      },
+      {
+        id: 'dld-registration',
+        name: 'DLD Registration',
+        category: 'licensing',
+        status: 'compliant',
+        dueDate: '2027-01-01',
+      },
+      {
+        id: 'agent-cards',
+        name: 'Agent Broker Cards',
+        category: 'agents',
+        status: 'pending_review',
+        dueDate: '2026-06-30',
+      },
+      {
+        id: 'aml-kyc',
+        name: 'AML/KYC Procedures',
+        category: 'compliance',
+        status: 'compliant',
+        dueDate: null,
+      },
+      {
+        id: 'data-protection',
+        name: 'Data Protection (PDPL)',
+        category: 'privacy',
+        status: 'compliant',
+        dueDate: null,
+      },
+      {
+        id: 'escrow-accounts',
+        name: 'Escrow Account Management',
+        category: 'finance',
+        status: 'compliant',
+        dueDate: null,
+      },
+      {
+        id: 'property-ads',
+        name: 'Property Advertisement Compliance',
+        category: 'marketing',
+        status: 'compliant',
+        dueDate: null,
+      },
+      {
+        id: 'contract-templates',
+        name: 'Contract Templates (SPA/MOU)',
+        category: 'legal',
+        status: 'pending_review',
+        dueDate: '2026-04-30',
+      },
     ];
 
     res.status(200).json({ success: true, data: requirements });
@@ -136,7 +201,7 @@ router.get(
 
     res.status(200).json({
       success: true,
-      data: logs.map((l) => ({
+      data: logs.map(l => ({
         id: l.id,
         type: l.type,
         action: l.action,
@@ -171,7 +236,9 @@ router.post(
 
     const sanitizedTitle = sanitizeString(title.trim());
     const sanitizedFindings = findings ? sanitizeString(String(findings).substring(0, 10000)) : '';
-    const sanitizedRecommendations = recommendations ? sanitizeString(String(recommendations).substring(0, 10000)) : '';
+    const sanitizedRecommendations = recommendations
+      ? sanitizeString(String(recommendations).substring(0, 10000))
+      : '';
 
     const activity = await prisma.activity.create({
       data: {
@@ -214,14 +281,14 @@ router.get(
 
     const summary = {
       total: report.length,
-      valid: report.filter((a) => a.status === 'valid').length,
-      expiringSoon: report.filter((a) => a.status === 'expiring_soon').length,
-      expired: report.filter((a) => a.status === 'expired').length,
-      notSet: report.filter((a) => a.status === 'not_set').length,
+      valid: report.filter(a => a.status === 'valid').length,
+      expiringSoon: report.filter(a => a.status === 'expiring_soon').length,
+      expired: report.filter(a => a.status === 'expired').length,
+      notSet: report.filter(a => a.status === 'not_set').length,
     };
 
     res.json({ success: true, data: { agents: report, summary } });
-  }),
+  })
 );
 
 // ─── POST /api/compliance/brn-check — Manual BRN expiry check ───────────
@@ -237,6 +304,22 @@ router.post(
     logger.info('Manual BRN expiry check triggered', { userId: req.user?.id });
     const result = await checkBRNExpirations();
 
+    await prisma.activity.create({
+      data: {
+        type: 'compliance',
+        action: 'brn_manual_check',
+        description: `Manual BRN expiry check executed (notified=${result.notified}, errors=${result.errors})`,
+        userId: req.user?.id || null,
+        metadata: {
+          notified: result.notified,
+          errors: result.errors,
+          agentCount: result.agents.length,
+          agentIds: result.agents.map(agent => agent.id),
+          checkedAt: new Date().toISOString(),
+        },
+      },
+    });
+
     res.json({
       success: true,
       data: {
@@ -245,7 +328,59 @@ router.post(
         agents: result.agents,
       },
     });
-  }),
+  })
+);
+
+// ─── GET /api/compliance/brn-check/history — manual BRN check history ───
+router.get(
+  '/brn-check/history',
+  requirePermission('view_analytics'),
+  asyncHandler(async (req: Request, res: Response) => {
+    const allowedRoles = ['owner', 'manager', 'admin', 'finance'];
+    if (!allowedRoles.includes(req.user?.role || '')) {
+      throw new AppError('Access denied — BRN check history requires manager role', 403);
+    }
+
+    const limit = Math.max(1, Math.min(200, parseInt(String(req.query.limit || '25'), 10) || 25));
+
+    const runs = await prisma.activity.findMany({
+      where: {
+        type: 'compliance',
+        action: 'brn_manual_check',
+      },
+      orderBy: { createdAt: 'desc' },
+      take: limit,
+      include: {
+        user: { select: { id: true, name: true, role: true, email: true } },
+      },
+    });
+
+    const data = runs.map(run => {
+      const metadata = normalizeMetadata(run.metadata);
+      return {
+        id: run.id,
+        description: run.description,
+        createdAt: run.createdAt,
+        user: run.user,
+        summary: {
+          notified: Number(metadata.notified || 0),
+          errors: Number(metadata.errors || 0),
+          agentCount: Number(metadata.agentCount || 0),
+          agentIds: Array.isArray(metadata.agentIds) ? metadata.agentIds : [],
+        },
+      };
+    });
+
+    res.status(200).json({
+      success: true,
+      data,
+      summary: {
+        total: data.length,
+        totalNotified: data.reduce((sum, run) => sum + run.summary.notified, 0),
+        totalErrors: data.reduce((sum, run) => sum + run.summary.errors, 0),
+      },
+    });
+  })
 );
 
 // ─── GET /api/compliance/ejari-export — Ejari CSV export ─────────────────
@@ -272,9 +407,12 @@ router.get(
 
     // CSV download
     res.setHeader('Content-Type', 'text/csv; charset=utf-8');
-    res.setHeader('Content-Disposition', `attachment; filename="ejari-export-${new Date().toISOString().split('T')[0]}.csv"`);
+    res.setHeader(
+      'Content-Disposition',
+      `attachment; filename="ejari-export-${new Date().toISOString().split('T')[0]}.csv"`
+    );
     res.send(result.csv);
-  }),
+  })
 );
 
 // ─── PATCH /api/compliance/ejari/:leaseId — Update Ejari status ──────────
@@ -291,7 +429,10 @@ router.patch(
     const { ejariNumber, ejariStatus, ejariRegistrationDate, ejariExpiryDate } = req.body;
 
     if (ejariStatus && !['pending', 'registered', 'expired', 'cancelled'].includes(ejariStatus)) {
-      throw new AppError('Invalid ejariStatus. Must be: pending, registered, expired, cancelled', 400);
+      throw new AppError(
+        'Invalid ejariStatus. Must be: pending, registered, expired, cancelled',
+        400
+      );
     }
 
     const updated = await updateEjariStatus(leaseId, {
@@ -313,7 +454,7 @@ router.patch(
     });
 
     res.json({ success: true, data: updated });
-  }),
+  })
 );
 
 // ─── GET /api/compliance/vat-summary — VAT breakdown ─────────────────────
@@ -332,7 +473,1072 @@ router.get(
     const summary = await calculateVATSummary(fromDate, toDate);
 
     res.json({ success: true, data: summary });
-  }),
+  })
+);
+
+// ─── GET /api/compliance/permit-alerts — permit monitoring alerts ─────────
+router.get(
+  '/permit-alerts',
+  requirePermission('view_analytics'),
+  asyncHandler(async (req: Request, res: Response) => {
+    const allowedRoles = ['owner', 'manager', 'admin', 'finance'];
+    if (!allowedRoles.includes(req.user?.role || '')) {
+      throw new AppError('Access denied — permit alerts require manager role', 403);
+    }
+
+    const parsedDaysAhead = parseInt(String(req.query.daysAhead || '30'), 10);
+    if (!Number.isFinite(parsedDaysAhead) || parsedDaysAhead < 1 || parsedDaysAhead > 365) {
+      throw new AppError('daysAhead must be a number between 1 and 365', 400);
+    }
+
+    const permitAlerts = await getPermitAlerts(parsedDaysAhead);
+
+    res.status(200).json({
+      success: true,
+      data: {
+        summary: {
+          ...permitAlerts.summary,
+        },
+        listingPermitIssues: permitAlerts.listingPermitIssues,
+        brnPermitAlerts: permitAlerts.brnPermitAlerts,
+      },
+    });
+  })
+);
+
+// ─── GET /api/compliance/permits — permit register view ───────────────────
+router.get(
+  '/permits',
+  requirePermission('view_analytics'),
+  asyncHandler(async (req: Request, res: Response) => {
+    const allowedRoles = ['owner', 'manager', 'admin', 'finance'];
+    if (!allowedRoles.includes(req.user?.role || '')) {
+      throw new AppError('Access denied — permit register requires manager role', 403);
+    }
+
+    const statusFilter = String(req.query.status || 'all').toLowerCase(); // all | missing | complete
+    if (!['all', 'missing', 'complete'].includes(statusFilter)) {
+      throw new AppError('status must be one of: all, missing, complete', 400);
+    }
+
+    const limit = Math.max(1, Math.min(500, parseInt(String(req.query.limit || '100'), 10) || 100));
+
+    const missingWhere: Prisma.PropertyWhereInput = {
+      OR: [
+        { municipalityNumber: null },
+        { municipalityNumber: '' },
+        { buildingPermitNumber: null },
+        { buildingPermitNumber: '' },
+      ],
+    };
+
+    const where: Prisma.PropertyWhereInput =
+      statusFilter === 'missing'
+        ? missingWhere
+        : statusFilter === 'complete'
+          ? { NOT: missingWhere }
+          : {};
+
+    const [properties, totalProperties, missingCount] = await Promise.all([
+      prisma.property.findMany({
+        where,
+        select: {
+          id: true,
+          title: true,
+          status: true,
+          location: true,
+          area: true,
+          municipalityNumber: true,
+          plotNumber: true,
+          buildingPermitNumber: true,
+          updatedAt: true,
+        },
+        orderBy: { updatedAt: 'desc' },
+        take: limit,
+      }),
+      prisma.property.count(),
+      prisma.property.count({ where: missingWhere }),
+    ]);
+
+    const data = properties.map(p => {
+      const permitStatus =
+        !p.municipalityNumber ||
+        !String(p.municipalityNumber).trim() ||
+        !p.buildingPermitNumber ||
+        !String(p.buildingPermitNumber).trim()
+          ? 'missing'
+          : 'complete';
+
+      return {
+        id: p.id,
+        title: p.title,
+        listingStatus: p.status,
+        location: p.location,
+        area: p.area,
+        municipalityNumber: p.municipalityNumber,
+        plotNumber: p.plotNumber,
+        buildingPermitNumber: p.buildingPermitNumber,
+        permitStatus,
+        updatedAt: p.updatedAt,
+      };
+    });
+
+    res.status(200).json({
+      success: true,
+      data,
+      summary: {
+        totalProperties,
+        missingPermits: missingCount,
+        completePermits: Math.max(0, totalProperties - missingCount),
+        filter: statusFilter,
+      },
+    });
+  })
+);
+
+// ─── POST /api/compliance/permits/enforcement-run — trigger enforcement ───
+router.post(
+  '/permits/enforcement-run',
+  requirePermission('view_analytics'),
+  asyncHandler(async (req: Request, res: Response) => {
+    const allowedRoles = ['owner', 'manager', 'admin'];
+    if (!allowedRoles.includes(req.user?.role || '')) {
+      throw new AppError('Access denied — permit enforcement requires manager role', 403);
+    }
+
+    const dryRun = req.body?.dryRun === true;
+    const limitRaw = req.body?.limit;
+    const limit =
+      limitRaw === undefined
+        ? undefined
+        : Math.max(1, Math.min(2000, parseInt(String(limitRaw), 10) || 500));
+
+    const result = await enforcePropertyPermitCompliance({ dryRun, limit });
+
+    await prisma.activity.create({
+      data: {
+        type: 'compliance',
+        action: dryRun ? 'permit_enforcement_dry_run' : 'permit_enforcement_triggered',
+        description: dryRun
+          ? `Permit enforcement dry-run executed: scanned=${result.scanned}`
+          : `Permit enforcement executed: autoUnpublished=${result.autoUnpublished}`,
+        userId: req.user?.id || null,
+        metadata: {
+          ...result,
+          requestedAt: new Date().toISOString(),
+        },
+      },
+    });
+
+    res.status(200).json({
+      success: true,
+      data: result,
+    });
+  })
+);
+
+// ─── GET /api/compliance/permits/enforcement-history — recent runs ───────
+router.get(
+  '/permits/enforcement-history',
+  requirePermission('view_analytics'),
+  asyncHandler(async (req: Request, res: Response) => {
+    const allowedRoles = ['owner', 'manager', 'admin', 'finance'];
+    if (!allowedRoles.includes(req.user?.role || '')) {
+      throw new AppError('Access denied — permit enforcement history requires manager role', 403);
+    }
+
+    const limit = Math.max(1, Math.min(200, parseInt(String(req.query.limit || '25'), 10) || 25));
+
+    const runs = await prisma.activity.findMany({
+      where: {
+        type: 'compliance',
+        action: {
+          in: ['permit_enforcement_dry_run', 'permit_enforcement_triggered'],
+        },
+      },
+      orderBy: { createdAt: 'desc' },
+      take: limit,
+      include: {
+        user: { select: { id: true, name: true, role: true, email: true } },
+      },
+    });
+
+    const data = runs.map(run => {
+      const metadata = normalizeMetadata(run.metadata);
+      return {
+        id: run.id,
+        action: run.action,
+        description: run.description,
+        createdAt: run.createdAt,
+        user: run.user,
+        summary: {
+          scanned: Number(metadata.scanned || 0),
+          autoUnpublished: Number(metadata.autoUnpublished || 0),
+          errors: Number(metadata.errors || 0),
+          dryRun: metadata.dryRun === true,
+          affectedPropertyIds: Array.isArray(metadata.affectedPropertyIds)
+            ? metadata.affectedPropertyIds
+            : [],
+        },
+      };
+    });
+
+    res.status(200).json({
+      success: true,
+      data,
+      summary: {
+        total: data.length,
+        liveRuns: data.filter(r => r.action === 'permit_enforcement_triggered').length,
+        dryRuns: data.filter(r => r.action === 'permit_enforcement_dry_run').length,
+      },
+    });
+  })
+);
+
+// ─── PATCH /api/compliance/permits/:propertyId — update permit fields ─────
+router.patch(
+  '/permits/:propertyId',
+  requirePermission('view_analytics'),
+  asyncHandler(async (req: Request, res: Response) => {
+    const allowedRoles = ['owner', 'manager', 'admin'];
+    if (!allowedRoles.includes(req.user?.role || '')) {
+      throw new AppError('Access denied — permit updates require manager role', 403);
+    }
+
+    const { propertyId } = req.params;
+    const { municipalityNumber, plotNumber, buildingPermitNumber } = req.body || {};
+
+    if (
+      municipalityNumber === undefined &&
+      plotNumber === undefined &&
+      buildingPermitNumber === undefined
+    ) {
+      throw new AppError(
+        'At least one field is required: municipalityNumber, plotNumber, buildingPermitNumber',
+        400
+      );
+    }
+
+    const existing = await prisma.property.findUnique({
+      where: { id: propertyId },
+      select: {
+        id: true,
+        title: true,
+        status: true,
+        municipalityNumber: true,
+        plotNumber: true,
+        buildingPermitNumber: true,
+      },
+    });
+
+    if (!existing) {
+      throw new AppError('Property not found', 404);
+    }
+
+    const nextMunicipalityNumber =
+      municipalityNumber !== undefined
+        ? sanitizeString(String(municipalityNumber || '').trim()) || null
+        : existing.municipalityNumber;
+    const nextPlotNumber =
+      plotNumber !== undefined
+        ? sanitizeString(String(plotNumber || '').trim()) || null
+        : existing.plotNumber;
+    const nextBuildingPermitNumber =
+      buildingPermitNumber !== undefined
+        ? sanitizeString(String(buildingPermitNumber || '').trim()) || null
+        : existing.buildingPermitNumber;
+
+    if (existing.status === 'available' && (!nextMunicipalityNumber || !nextBuildingPermitNumber)) {
+      throw new AppError(
+        'RERA compliance: available listings require municipalityNumber and buildingPermitNumber',
+        400
+      );
+    }
+
+    const updated = await prisma.property.update({
+      where: { id: propertyId },
+      data: {
+        municipalityNumber: nextMunicipalityNumber,
+        plotNumber: nextPlotNumber,
+        buildingPermitNumber: nextBuildingPermitNumber,
+      },
+      select: {
+        id: true,
+        title: true,
+        status: true,
+        municipalityNumber: true,
+        plotNumber: true,
+        buildingPermitNumber: true,
+        updatedAt: true,
+      },
+    });
+
+    await prisma.activity.create({
+      data: {
+        type: 'compliance',
+        action: 'permit_register_updated',
+        description: `Permit register updated for property ${updated.title || updated.id}`,
+        userId: req.user?.id || null,
+        metadata: {
+          propertyId: updated.id,
+          municipalityNumber: updated.municipalityNumber,
+          plotNumber: updated.plotNumber,
+          buildingPermitNumber: updated.buildingPermitNumber,
+          updatedAt: new Date().toISOString(),
+        },
+      },
+    });
+
+    res.status(200).json({ success: true, data: updated });
+  })
+);
+
+// ─── POST /api/compliance/kyc/:leadId/documents — upload doc metadata ─────
+router.post(
+  '/kyc/:leadId/documents',
+  requireMinRole('agent'),
+  asyncHandler(async (req: Request, res: Response) => {
+    const allowedRoles = ['owner', 'manager', 'admin', 'agent'];
+    if (!allowedRoles.includes(req.user?.role || '')) {
+      throw new AppError('Access denied — KYC upload requires agent role or above', 403);
+    }
+
+    const { leadId } = req.params;
+    const { documentType, documentUrl, fileName, mimeType, fileSize, notes } = req.body;
+
+    if (!documentType || !documentUrl) {
+      throw new AppError('documentType and documentUrl are required', 400);
+    }
+
+    const lead = await prisma.lead.findUnique({ where: { id: leadId }, select: { id: true } });
+    if (!lead) {
+      throw new AppError('Lead not found', 404);
+    }
+
+    const created = await prisma.activity.create({
+      data: {
+        type: 'compliance',
+        action: 'kyc_document_uploaded',
+        description: `KYC document uploaded (${sanitizeString(String(documentType)).substring(0, 80)})`,
+        userId: req.user?.id || null,
+        leadId,
+        metadata: {
+          documentType: sanitizeString(String(documentType)).substring(0, 80),
+          documentUrl: sanitizeString(String(documentUrl)).substring(0, 1000),
+          fileName: fileName ? sanitizeString(String(fileName)).substring(0, 200) : null,
+          mimeType: mimeType ? sanitizeString(String(mimeType)).substring(0, 120) : null,
+          fileSize: Number.isFinite(Number(fileSize)) ? Number(fileSize) : null,
+          notes: notes ? sanitizeString(String(notes)).substring(0, 2000) : null,
+          reviewStatus: 'pending',
+          uploadedAt: new Date().toISOString(),
+        },
+      },
+    });
+
+    res.status(201).json({
+      success: true,
+      data: {
+        id: created.id,
+        leadId,
+        reviewStatus: 'pending',
+        createdAt: created.createdAt,
+      },
+    });
+  })
+);
+
+// ─── GET /api/compliance/kyc/:leadId/documents — list docs by lead ───────
+router.get(
+  '/kyc/:leadId/documents',
+  requireMinRole('agent'),
+  asyncHandler(async (req: Request, res: Response) => {
+    const allowedRoles = ['owner', 'manager', 'admin', 'finance', 'agent'];
+    if (!allowedRoles.includes(req.user?.role || '')) {
+      throw new AppError('Access denied — KYC documents require agent role or above', 403);
+    }
+
+    const { leadId } = req.params;
+    const docs = await prisma.activity.findMany({
+      where: {
+        type: 'compliance',
+        action: 'kyc_document_uploaded',
+        leadId,
+      },
+      orderBy: { createdAt: 'desc' },
+      take: 200,
+    });
+
+    const mapped = docs.map(d => {
+      const metadata = normalizeMetadata(d.metadata);
+      return {
+        id: d.id,
+        leadId: d.leadId,
+        documentType: metadata.documentType || null,
+        documentUrl: metadata.documentUrl || null,
+        fileName: metadata.fileName || null,
+        reviewStatus: metadata.reviewStatus || 'pending',
+        reviewDecision: metadata.reviewDecision || null,
+        reviewComments: metadata.reviewComments || null,
+        reviewedBy: metadata.reviewedBy || null,
+        reviewedAt: metadata.reviewedAt || null,
+        uploadedAt: metadata.uploadedAt || d.createdAt.toISOString(),
+      };
+    });
+
+    res.json({ success: true, data: mapped });
+  })
+);
+
+// ─── GET /api/compliance/kyc/review-queue — pending review docs ──────────
+router.get(
+  '/kyc/review-queue',
+  requirePermission('view_analytics'),
+  asyncHandler(async (req: Request, res: Response) => {
+    const allowedRoles = ['owner', 'manager', 'admin', 'finance'];
+    if (!allowedRoles.includes(req.user?.role || '')) {
+      throw new AppError('Access denied — KYC review queue requires manager role', 403);
+    }
+
+    const take = Math.min(parseInt(String(req.query.limit || '100'), 10) || 100, 300);
+    const docs = await prisma.activity.findMany({
+      where: {
+        type: 'compliance',
+        action: 'kyc_document_uploaded',
+      },
+      orderBy: { createdAt: 'desc' },
+      take,
+      include: {
+        lead: { select: { id: true, name: true, email: true, phone: true, status: true } },
+        user: { select: { id: true, name: true, email: true, role: true } },
+      },
+    });
+
+    const pending = docs.filter(d => {
+      const metadata = normalizeMetadata(d.metadata);
+      return (metadata.reviewStatus || 'pending') === 'pending';
+    });
+
+    res.json({
+      success: true,
+      data: pending.map(d => {
+        const metadata = normalizeMetadata(d.metadata);
+        return {
+          id: d.id,
+          leadId: d.leadId,
+          lead: d.lead,
+          uploadedBy: d.user,
+          documentType: metadata.documentType || null,
+          documentUrl: metadata.documentUrl || null,
+          uploadedAt: metadata.uploadedAt || d.createdAt.toISOString(),
+          reviewStatus: metadata.reviewStatus || 'pending',
+        };
+      }),
+      summary: {
+        totalFetched: docs.length,
+        pending: pending.length,
+      },
+    });
+  })
+);
+
+// ─── PATCH /api/compliance/kyc/documents/:documentId/review ──────────────
+router.patch(
+  '/kyc/documents/:documentId/review',
+  requirePermission('view_analytics'),
+  asyncHandler(async (req: Request, res: Response) => {
+    const allowedRoles = ['owner', 'manager', 'admin', 'finance'];
+    if (!allowedRoles.includes(req.user?.role || '')) {
+      throw new AppError('Access denied — KYC review requires manager role', 403);
+    }
+
+    const { documentId } = req.params;
+    const { decision, comments } = req.body;
+    if (!['approved', 'rejected'].includes(String(decision))) {
+      throw new AppError('decision must be one of: approved, rejected', 400);
+    }
+
+    const docActivity = await prisma.activity.findUnique({ where: { id: documentId } });
+    if (
+      !docActivity ||
+      docActivity.type !== 'compliance' ||
+      docActivity.action !== 'kyc_document_uploaded'
+    ) {
+      throw new AppError('KYC document record not found', 404);
+    }
+
+    const currentMetadata = normalizeMetadata(docActivity.metadata);
+    const nextMetadata = {
+      ...currentMetadata,
+      reviewStatus: 'reviewed',
+      reviewDecision: decision,
+      reviewComments: comments ? sanitizeString(String(comments)).substring(0, 2000) : null,
+      reviewedBy: req.user?.id || null,
+      reviewedAt: new Date().toISOString(),
+    };
+
+    const updated = await prisma.activity.update({
+      where: { id: documentId },
+      data: { metadata: nextMetadata },
+    });
+
+    if (docActivity.leadId) {
+      const lead = await prisma.lead.findUnique({
+        where: { id: docActivity.leadId },
+        select: { id: true, tags: true },
+      });
+
+      if (lead) {
+        const normalizedTags = (lead.tags || []).map(t => String(t).toLowerCase());
+        const hasVerified = normalizedTags.includes('kyc_verified');
+        const hasRejected = normalizedTags.includes('kyc_rejected');
+
+        let nextTags = [...(lead.tags || [])];
+        if (decision === 'approved') {
+          if (!hasVerified) nextTags.push('kyc_verified');
+          nextTags = nextTags.filter(t => String(t).toLowerCase() !== 'kyc_rejected');
+        } else {
+          nextTags = nextTags.filter(t => String(t).toLowerCase() !== 'kyc_verified');
+          if (!hasRejected) nextTags.push('kyc_rejected');
+        }
+
+        await prisma.lead.update({
+          where: { id: lead.id },
+          data: { tags: nextTags },
+        });
+      }
+    }
+
+    await prisma.activity.create({
+      data: {
+        type: 'compliance',
+        action: 'kyc_document_reviewed',
+        description: `KYC document ${decision}`,
+        userId: req.user?.id || null,
+        leadId: docActivity.leadId || null,
+        metadata: {
+          documentActivityId: documentId,
+          decision,
+          comments: comments ? sanitizeString(String(comments)).substring(0, 2000) : null,
+        },
+      },
+    });
+
+    res.json({
+      success: true,
+      data: {
+        id: updated.id,
+        decision,
+        metadata: nextMetadata,
+      },
+    });
+  })
+);
+
+// ─── POST /api/compliance/aml/screen — AML screening adapter flow ───────
+router.post(
+  '/aml/screen',
+  requireMinRole('agent'),
+  asyncHandler(async (req: Request, res: Response) => {
+    const allowedRoles = ['owner', 'manager', 'admin', 'finance', 'agent'];
+    if (!allowedRoles.includes(req.user?.role || '')) {
+      throw new AppError('Access denied — AML screening requires agent role or above', 403);
+    }
+
+    const { leadId, amount, currency, transactionType, nationality, sourceOfFunds } = req.body;
+    if (!leadId) {
+      throw new AppError('leadId is required', 400);
+    }
+
+    const lead = await prisma.lead.findUnique({
+      where: { id: String(leadId) },
+      select: { id: true, name: true, tags: true, email: true, phone: true },
+    });
+
+    if (!lead) {
+      throw new AppError('Lead not found for AML screening', 404);
+    }
+
+    const screening = await screenAML({
+      leadId: lead.id,
+      leadName: lead.name,
+      amount: Number.isFinite(Number(amount)) ? Number(amount) : null,
+      currency: currency ? String(currency) : null,
+      transactionType: transactionType ? String(transactionType) : null,
+      nationality: nationality ? String(nationality) : null,
+      sourceOfFunds: sourceOfFunds ? String(sourceOfFunds) : null,
+    });
+
+    const isFlagged = screening.riskLevel === 'high' || screening.flags.length > 0;
+
+    const activity = await prisma.activity.create({
+      data: {
+        type: 'compliance',
+        action: isFlagged ? 'aml_alert_created' : 'aml_screened',
+        description: isFlagged
+          ? `AML alert created for lead ${lead.name || lead.id}`
+          : `AML screening completed for lead ${lead.name || lead.id}`,
+        userId: req.user?.id || null,
+        leadId: lead.id,
+        metadata: {
+          screening,
+          status: isFlagged ? 'open' : 'cleared',
+          severity: screening.riskLevel,
+          flags: screening.flags,
+          amount: Number.isFinite(Number(amount)) ? Number(amount) : null,
+          currency: currency ? String(currency) : 'AED',
+          transactionType: transactionType ? String(transactionType) : null,
+        } as unknown as Prisma.InputJsonValue,
+      },
+    });
+
+    if (isFlagged) {
+      const normalizedTags = (lead.tags || []).map(t => String(t).toLowerCase());
+      const hasAmlFlagged = normalizedTags.includes('aml_flagged');
+      if (!hasAmlFlagged) {
+        await prisma.lead.update({
+          where: { id: lead.id },
+          data: { tags: [...(lead.tags || []), 'aml_flagged'] },
+        });
+      }
+    }
+
+    res.status(201).json({
+      success: true,
+      data: {
+        alertId: isFlagged ? activity.id : null,
+        screening,
+        status: isFlagged ? 'open' : 'cleared',
+      },
+    });
+  })
+);
+
+// ─── GET /api/compliance/aml/alerts — list AML alerts ───────────────────
+router.get(
+  '/aml/alerts',
+  requirePermission('view_analytics'),
+  asyncHandler(async (req: Request, res: Response) => {
+    const allowedRoles = ['owner', 'manager', 'admin', 'finance'];
+    if (!allowedRoles.includes(req.user?.role || '')) {
+      throw new AppError('Access denied — AML alerts require manager role', 403);
+    }
+
+    const status = String(req.query.status || 'open');
+    const take = Math.min(parseInt(String(req.query.limit || '100'), 10) || 100, 300);
+
+    const alerts = await prisma.activity.findMany({
+      where: {
+        type: 'compliance',
+        action: 'aml_alert_created',
+      },
+      include: {
+        lead: { select: { id: true, name: true, email: true, phone: true, status: true } },
+        user: { select: { id: true, name: true, email: true, role: true } },
+      },
+      orderBy: { createdAt: 'desc' },
+      take,
+    });
+
+    const filtered = alerts.filter(a => {
+      const metadata = normalizeMetadata(a.metadata);
+      const alertStatus = String(metadata.status || 'open');
+      return status === 'all' ? true : alertStatus === status;
+    });
+
+    res.json({
+      success: true,
+      data: filtered.map(a => {
+        const metadata = normalizeMetadata(a.metadata);
+        return {
+          id: a.id,
+          leadId: a.leadId,
+          lead: a.lead,
+          createdBy: a.user,
+          status: metadata.status || 'open',
+          severity: metadata.severity || 'medium',
+          flags: metadata.flags || [],
+          screening: metadata.screening || null,
+          resolvedAt: metadata.resolvedAt || null,
+          resolvedBy: metadata.resolvedBy || null,
+          createdAt: a.createdAt,
+        };
+      }),
+      summary: {
+        totalFetched: alerts.length,
+        returned: filtered.length,
+      },
+    });
+  })
+);
+
+// ─── PATCH /api/compliance/aml/alerts/:alertId/resolve ───────────────────
+router.patch(
+  '/aml/alerts/:alertId/resolve',
+  requirePermission('view_analytics'),
+  asyncHandler(async (req: Request, res: Response) => {
+    const allowedRoles = ['owner', 'manager', 'admin', 'finance'];
+    if (!allowedRoles.includes(req.user?.role || '')) {
+      throw new AppError('Access denied — AML alert resolution requires manager role', 403);
+    }
+
+    const { alertId } = req.params;
+    const { resolution, notes } = req.body;
+
+    const alert = await prisma.activity.findUnique({ where: { id: alertId } });
+    if (!alert || alert.type !== 'compliance' || alert.action !== 'aml_alert_created') {
+      throw new AppError('AML alert not found', 404);
+    }
+
+    const metadata = normalizeMetadata(alert.metadata);
+    const nextMetadata = {
+      ...metadata,
+      status: 'resolved',
+      resolution: resolution ? sanitizeString(String(resolution)).substring(0, 500) : 'resolved',
+      notes: notes ? sanitizeString(String(notes)).substring(0, 2000) : null,
+      resolvedAt: new Date().toISOString(),
+      resolvedBy: req.user?.id || null,
+    };
+
+    const updated = await prisma.activity.update({
+      where: { id: alertId },
+      data: { metadata: nextMetadata },
+    });
+
+    await prisma.activity.create({
+      data: {
+        type: 'compliance',
+        action: 'aml_alert_resolved',
+        description: `AML alert resolved: ${alertId}`,
+        userId: req.user?.id || null,
+        leadId: alert.leadId || null,
+        metadata: {
+          alertId,
+          resolution: nextMetadata.resolution,
+        },
+      },
+    });
+
+    res.json({
+      success: true,
+      data: { id: updated.id, status: 'resolved', metadata: nextMetadata },
+    });
+  })
+);
+
+// ─── POST /api/compliance/consent — create PDPL consent record ───────────
+router.post(
+  '/consent',
+  requireMinRole('agent'),
+  asyncHandler(async (req: Request, res: Response) => {
+    const allowedRoles = ['owner', 'manager', 'admin', 'finance', 'agent'];
+    if (!allowedRoles.includes(req.user?.role || '')) {
+      throw new AppError('Access denied — consent creation requires agent role or above', 403);
+    }
+
+    const { entityType = 'lead', entityId, purpose, channel, consentTextVersion } = req.body;
+    if (!entityId || !purpose) {
+      throw new AppError('entityId and purpose are required', 400);
+    }
+
+    if (String(entityType) === 'lead') {
+      const lead = await prisma.lead.findUnique({
+        where: { id: String(entityId) },
+        select: { id: true },
+      });
+      if (!lead) throw new AppError('Lead not found for consent record', 404);
+    }
+
+    const consent = await prisma.activity.create({
+      data: {
+        type: 'compliance',
+        action: 'pdpl_consent_created',
+        description: `PDPL consent captured for ${String(entityType)}:${String(entityId)}`,
+        userId: req.user?.id || null,
+        leadId: String(entityType) === 'lead' ? String(entityId) : null,
+        metadata: {
+          entityType: sanitizeString(String(entityType)).substring(0, 50),
+          entityId: sanitizeString(String(entityId)).substring(0, 120),
+          purpose: sanitizeString(String(purpose)).substring(0, 500),
+          channel: channel ? sanitizeString(String(channel)).substring(0, 100) : 'crm_form',
+          consentTextVersion: consentTextVersion
+            ? sanitizeString(String(consentTextVersion)).substring(0, 50)
+            : 'v1',
+          status: 'active',
+          consentedAt: new Date().toISOString(),
+          consentedBy: req.user?.id || null,
+        },
+      },
+    });
+
+    res.status(201).json({
+      success: true,
+      data: { id: consent.id, status: 'active', metadata: consent.metadata },
+    });
+  })
+);
+
+// ─── PATCH /api/compliance/consent/:consentId/revoke ─────────────────────
+router.patch(
+  '/consent/:consentId/revoke',
+  requirePermission('view_analytics'),
+  asyncHandler(async (req: Request, res: Response) => {
+    const allowedRoles = ['owner', 'manager', 'admin', 'finance'];
+    if (!allowedRoles.includes(req.user?.role || '')) {
+      throw new AppError('Access denied — consent revoke requires manager role', 403);
+    }
+
+    const { consentId } = req.params;
+    const { reason } = req.body;
+
+    const consent = await prisma.activity.findUnique({ where: { id: consentId } });
+    if (!consent || consent.type !== 'compliance' || consent.action !== 'pdpl_consent_created') {
+      throw new AppError('Consent record not found', 404);
+    }
+
+    const metadata = normalizeMetadata(consent.metadata);
+    const updatedMetadata = {
+      ...metadata,
+      status: 'revoked',
+      revokedAt: new Date().toISOString(),
+      revokedBy: req.user?.id || null,
+      revokeReason: reason ? sanitizeString(String(reason)).substring(0, 1000) : null,
+    };
+
+    const updated = await prisma.activity.update({
+      where: { id: consentId },
+      data: { metadata: updatedMetadata },
+    });
+
+    await prisma.activity.create({
+      data: {
+        type: 'compliance',
+        action: 'pdpl_consent_revoked',
+        description: `PDPL consent revoked: ${consentId}`,
+        userId: req.user?.id || null,
+        leadId: consent.leadId || null,
+        metadata: {
+          consentId,
+          reason: updatedMetadata.revokeReason,
+        },
+      },
+    });
+
+    res.json({
+      success: true,
+      data: { id: updated.id, status: 'revoked', metadata: updatedMetadata },
+    });
+  })
+);
+
+// ─── GET /api/compliance/consent/export — export consent records ─────────
+router.get(
+  '/consent/export',
+  requirePermission('view_analytics'),
+  asyncHandler(async (req: Request, res: Response) => {
+    const allowedRoles = ['owner', 'manager', 'admin', 'finance'];
+    if (!allowedRoles.includes(req.user?.role || '')) {
+      throw new AppError('Access denied — consent export requires manager role', 403);
+    }
+
+    const status = String(req.query.status || 'all');
+    const entityType = req.query.entityType ? String(req.query.entityType) : undefined;
+    const entityId = req.query.entityId ? String(req.query.entityId) : undefined;
+    const take = Math.min(parseInt(String(req.query.limit || '300'), 10) || 300, 1000);
+
+    const records = await prisma.activity.findMany({
+      where: {
+        type: 'compliance',
+        action: 'pdpl_consent_created',
+      },
+      include: {
+        user: { select: { id: true, name: true, email: true, role: true } },
+        lead: { select: { id: true, name: true, email: true, phone: true } },
+      },
+      orderBy: { createdAt: 'desc' },
+      take,
+    });
+
+    const mapped = records.map(r => {
+      const metadata = normalizeMetadata(r.metadata);
+      return {
+        id: r.id,
+        entityType: metadata.entityType || 'lead',
+        entityId: metadata.entityId || r.leadId,
+        purpose: metadata.purpose || null,
+        channel: metadata.channel || null,
+        status: metadata.status || 'active',
+        consentedAt: metadata.consentedAt || r.createdAt.toISOString(),
+        revokedAt: metadata.revokedAt || null,
+        createdBy: r.user,
+        lead: r.lead,
+      };
+    });
+
+    const filtered = mapped.filter(row => {
+      if (status !== 'all' && String(row.status) !== status) return false;
+      if (entityType && String(row.entityType) !== entityType) return false;
+      if (entityId && String(row.entityId) !== entityId) return false;
+      return true;
+    });
+
+    res.json({
+      success: true,
+      data: filtered,
+      summary: {
+        totalFetched: mapped.length,
+        returned: filtered.length,
+      },
+    });
+  })
+);
+
+// ─── DELETE /api/compliance/consent/:consentId — delete/anonymize baseline ─
+router.delete(
+  '/consent/:consentId',
+  requirePermission('view_analytics'),
+  asyncHandler(async (req: Request, res: Response) => {
+    const allowedRoles = ['owner', 'manager', 'admin'];
+    if (!allowedRoles.includes(req.user?.role || '')) {
+      throw new AppError('Access denied — consent delete requires admin role', 403);
+    }
+
+    const { consentId } = req.params;
+    const consent = await prisma.activity.findUnique({ where: { id: consentId } });
+    if (!consent || consent.type !== 'compliance' || consent.action !== 'pdpl_consent_created') {
+      throw new AppError('Consent record not found', 404);
+    }
+
+    const metadata = normalizeMetadata(consent.metadata);
+    const updatedMetadata = {
+      ...metadata,
+      status: 'deleted',
+      deletedAt: new Date().toISOString(),
+      deletedBy: req.user?.id || null,
+      purpose: '[deleted]',
+      channel: '[deleted]',
+    };
+
+    await prisma.activity.update({
+      where: { id: consentId },
+      data: { metadata: updatedMetadata },
+    });
+
+    await prisma.activity.create({
+      data: {
+        type: 'compliance',
+        action: 'pdpl_consent_deleted',
+        description: `PDPL consent deleted/anonymized: ${consentId}`,
+        userId: req.user?.id || null,
+        leadId: consent.leadId || null,
+        metadata: {
+          consentId,
+          status: 'deleted',
+        },
+      },
+    });
+
+    res.json({ success: true, data: { id: consentId, status: 'deleted' } });
+  })
+);
+
+// ─── GET /api/compliance/queues — unified compliance queue feed ──────────
+router.get(
+  '/queues',
+  requirePermission('view_analytics'),
+  asyncHandler(async (req: Request, res: Response) => {
+    const allowedRoles = ['owner', 'manager', 'admin', 'finance'];
+    if (!allowedRoles.includes(req.user?.role || '')) {
+      throw new AppError('Access denied — compliance queues require manager role', 403);
+    }
+
+    const [permitIssues, kycDocs, amlAlerts] = await Promise.all([
+      prisma.property.findMany({
+        where: {
+          status: 'available',
+          OR: [
+            { municipalityNumber: null },
+            { municipalityNumber: '' },
+            { buildingPermitNumber: null },
+            { buildingPermitNumber: '' },
+          ],
+        },
+        select: {
+          id: true,
+          title: true,
+          municipalityNumber: true,
+          buildingPermitNumber: true,
+          createdAt: true,
+        },
+        orderBy: { createdAt: 'desc' },
+        take: 50,
+      }),
+      prisma.activity.findMany({
+        where: {
+          type: 'compliance',
+          action: 'kyc_document_uploaded',
+        },
+        include: {
+          lead: { select: { id: true, name: true, email: true, phone: true, status: true } },
+        },
+        orderBy: { createdAt: 'desc' },
+        take: 200,
+      }),
+      prisma.activity.findMany({
+        where: {
+          type: 'compliance',
+          action: 'aml_alert_created',
+        },
+        include: {
+          lead: { select: { id: true, name: true, email: true, phone: true, status: true } },
+        },
+        orderBy: { createdAt: 'desc' },
+        take: 200,
+      }),
+    ]);
+
+    const pendingKyc = kycDocs.filter(d => {
+      const metadata = normalizeMetadata(d.metadata);
+      return (metadata.reviewStatus || 'pending') === 'pending';
+    });
+
+    const openAml = amlAlerts.filter(a => {
+      const metadata = normalizeMetadata(a.metadata);
+      return String(metadata.status || 'open') === 'open';
+    });
+
+    res.json({
+      success: true,
+      data: {
+        summary: {
+          permitIssues: permitIssues.length,
+          kycPendingReview: pendingKyc.length,
+          amlOpenAlerts: openAml.length,
+        },
+        permitIssues: permitIssues.slice(0, 20),
+        kycPendingReview: pendingKyc.slice(0, 20).map(d => {
+          const metadata = normalizeMetadata(d.metadata);
+          return {
+            id: d.id,
+            leadId: d.leadId,
+            lead: d.lead,
+            documentType: metadata.documentType || null,
+            uploadedAt: metadata.uploadedAt || d.createdAt.toISOString(),
+          };
+        }),
+        amlOpenAlerts: openAml.slice(0, 20).map(a => {
+          const metadata = normalizeMetadata(a.metadata);
+          return {
+            id: a.id,
+            leadId: a.leadId,
+            lead: a.lead,
+            severity: metadata.severity || 'medium',
+            flags: metadata.flags || [],
+            createdAt: a.createdAt,
+          };
+        }),
+      },
+    });
+  })
 );
 
 // ─── GET /api/compliance/overview — Full dashboard data ──────────────────
@@ -348,7 +1554,7 @@ router.get(
     const overview = await getComplianceOverview();
 
     res.json({ success: true, data: overview });
-  }),
+  })
 );
 
 export default router;

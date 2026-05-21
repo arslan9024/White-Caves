@@ -1,6 +1,37 @@
-﻿// @ts-nocheck
 import React from 'react';
 import styled from 'styled-components';
+
+interface Breadcrumb {
+  label: string;
+  active?: boolean;
+}
+
+interface FilterOption {
+  label: string;
+  value: string;
+}
+
+interface FilterConfig {
+  key: string;
+  label: string;
+  type: 'text' | 'select';
+  placeholder?: string;
+  options?: FilterOption[];
+}
+
+interface DashboardShellProps {
+  title: string;
+  subtitle?: string;
+  icon?: React.ReactNode;
+  breadcrumbs?: Breadcrumb[];
+  filters?: FilterConfig[];
+  actions?: React.ReactNode[];
+  loading?: boolean;
+  error?: string | null;
+  children: React.ReactNode;
+  onFilterChange?: (key: string, value: string) => void;
+  onBreadcrumbClick?: (index: number) => void;
+}
 
 /**
  * DashboardShell.tsx
@@ -53,6 +84,22 @@ const Title = styled.h1`
   }
 `;
 
+const Subtitle = styled.p`
+  font-size: 0.95rem;
+  color: #6b7280;
+  margin: 0.25rem 0 0 0;
+`;
+
+const ErrorBanner = styled.div`
+  margin: 0 1.5rem;
+  padding: 0.875rem 1rem;
+  border-radius: 8px;
+  border: 1px solid #fecaca;
+  background-color: #fef2f2;
+  color: #b91c1c;
+  font-size: 0.875rem;
+`;
+
 const ActionsRow = styled.div`
   display: flex;
   gap: 0.75rem;
@@ -67,13 +114,13 @@ const BreadcrumbNav = styled.nav`
   color: #6b7280;
 `;
 
-const BreadcrumbItem = styled.button`
+const BreadcrumbItem = styled.button<{ $active?: boolean }>`
   background: none;
   border: none;
   padding: 0.25rem 0.5rem;
   cursor: pointer;
-  color: ${(props) => (props.active ? '#1f2937' : '#6b7280')};
-  font-weight: ${(props) => (props.active ? '600' : '400')};
+  color: ${props => (props.$active ? '#1f2937' : '#6b7280')};
+  font-weight: ${props => (props.$active ? '600' : '400')};
   transition: color 0.2s;
   border-radius: 4px;
 
@@ -209,25 +256,30 @@ const Spinner = styled.div`
   }
 `;
 
-const DashboardShell = ({
+const DashboardShell: React.FC<DashboardShellProps> = ({
   title,
+  subtitle,
   icon,
   breadcrumbs = [],
   filters = [],
   actions = [],
   loading = false,
+  error,
   children,
   onFilterChange,
   onBreadcrumbClick,
 }) => {
   return (
-    <ShellContainer>
+    <ShellContainer role="region" aria-label={title}>
       <HeaderSection>
         <TitleRow>
-          <Title>
-            {icon}
-            {title}
-          </Title>
+          <div>
+            <Title>
+              {icon}
+              {title}
+            </Title>
+            {subtitle ? <Subtitle>{subtitle}</Subtitle> : null}
+          </div>
           {actions.length > 0 && <ActionsRow>{actions}</ActionsRow>}
         </TitleRow>
 
@@ -237,7 +289,7 @@ const DashboardShell = ({
               <React.Fragment key={idx}>
                 {idx > 0 && <BreadcrumbSeparator>/</BreadcrumbSeparator>}
                 <BreadcrumbItem
-                  active={crumb.active}
+                  $active={crumb.active}
                   disabled={crumb.active}
                   onClick={() => onBreadcrumbClick?.(idx)}
                 >
@@ -257,13 +309,13 @@ const DashboardShell = ({
                   <FilterInput
                     type="text"
                     placeholder={filter.placeholder}
-                    onChange={(e) => onFilterChange?.(filter.key, e.target.value)}
+                    onChange={e => onFilterChange?.(filter.key, e.target.value)}
                   />
                 )}
                 {filter.type === 'select' && (
-                  <FilterSelect onChange={(e) => onFilterChange?.(filter.key, e.target.value)}>
+                  <FilterSelect onChange={e => onFilterChange?.(filter.key, e.target.value)}>
                     <option value="">All {filter.label}</option>
-                    {filter.options?.map((opt) => (
+                    {filter.options?.map((opt: FilterOption) => (
                       <option key={opt.value} value={opt.value}>
                         {opt.label}
                       </option>
@@ -276,10 +328,12 @@ const DashboardShell = ({
         )}
       </HeaderSection>
 
+      {error ? <ErrorBanner>{error}</ErrorBanner> : null}
+
       <ContentArea>
         {loading && (
           <LoadingOverlay>
-            <Spinner />
+            <Spinner role="presentation" aria-hidden="true" />
           </LoadingOverlay>
         )}
         {children}
@@ -289,4 +343,3 @@ const DashboardShell = ({
 };
 
 export default DashboardShell;
-

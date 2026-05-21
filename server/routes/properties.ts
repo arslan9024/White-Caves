@@ -260,6 +260,9 @@ router.post(
       titleDeedMissing,
       landlordPassportMissing,
       ejariMissing,
+      municipalityNumber,
+      plotNumber,
+      buildingPermitNumber,
     } = req.body;
 
     validate(req.body, {
@@ -283,7 +286,25 @@ router.post(
       amenities: rules.optionalArray('Amenities'),
       images: rules.optionalArray('Images'),
       description: rules.optionalStringWithMax('Description', 5000),
+      municipalityNumber: rules.optionalStringWithMax('Municipality number', 100),
+      plotNumber: rules.optionalStringWithMax('Plot number', 100),
+      buildingPermitNumber: rules.optionalStringWithMax('Building permit number', 100),
     });
+
+    const targetStatus = status || 'available';
+    if (targetStatus === 'available') {
+      const hasMunicipalityNumber =
+        typeof municipalityNumber === 'string' && municipalityNumber.trim().length > 0;
+      const hasBuildingPermitNumber =
+        typeof buildingPermitNumber === 'string' && buildingPermitNumber.trim().length > 0;
+
+      if (!hasMunicipalityNumber || !hasBuildingPermitNumber) {
+        throw new AppError(
+          'RERA compliance: municipalityNumber and buildingPermitNumber are required for available listings',
+          400
+        );
+      }
+    }
 
     const VALID_STAGES = [
       'draft_collected',
@@ -332,6 +353,22 @@ router.post(
         landlordPassportMissing:
           landlordPassportMissing === true || landlordPassportMissing === 'true',
         ejariMissing: ejariMissing === true || ejariMissing === 'true',
+        municipalityNumber:
+          municipalityNumber !== undefined &&
+          municipalityNumber !== null &&
+          municipalityNumber !== ''
+            ? sanitizeString(String(municipalityNumber).trim())
+            : null,
+        plotNumber:
+          plotNumber !== undefined && plotNumber !== null && plotNumber !== ''
+            ? sanitizeString(String(plotNumber).trim())
+            : null,
+        buildingPermitNumber:
+          buildingPermitNumber !== undefined &&
+          buildingPermitNumber !== null &&
+          buildingPermitNumber !== ''
+            ? sanitizeString(String(buildingPermitNumber).trim())
+            : null,
         userId: req.user?.id || 'system',
       },
     });
@@ -380,6 +417,9 @@ router.patch(
       titleDeedMissing,
       landlordPassportMissing,
       ejariMissing,
+      municipalityNumber,
+      plotNumber,
+      buildingPermitNumber,
     } = req.body;
 
     validate(req.body, {
@@ -401,6 +441,9 @@ router.patch(
       status: rules.oneOf('Status', ['available', 'reserved', 'sold', 'rented', 'off_market']),
       amenities: rules.optionalArray('Amenities'),
       images: rules.optionalArray('Images'),
+      municipalityNumber: rules.optionalStringWithMax('Municipality number', 100),
+      plotNumber: rules.optionalStringWithMax('Plot number', 100),
+      buildingPermitNumber: rules.optionalStringWithMax('Building permit number', 100),
     });
 
     const existing = await prisma.property.findUnique({ where: { id } });
@@ -508,6 +551,41 @@ router.patch(
         landlordPassportMissing === true || landlordPassportMissing === 'true';
     if (ejariMissing !== undefined)
       data.ejariMissing = ejariMissing === true || ejariMissing === 'true';
+    if (municipalityNumber !== undefined)
+      data.municipalityNumber = municipalityNumber
+        ? sanitizeString(String(municipalityNumber).trim())
+        : null;
+    if (plotNumber !== undefined)
+      data.plotNumber = plotNumber ? sanitizeString(String(plotNumber).trim()) : null;
+    if (buildingPermitNumber !== undefined)
+      data.buildingPermitNumber = buildingPermitNumber
+        ? sanitizeString(String(buildingPermitNumber).trim())
+        : null;
+
+    // Wave 04 compliance baseline: block transitions into active listing state without key permit fields.
+    const movingToAvailable =
+      status !== undefined &&
+      status !== null &&
+      status === 'available' &&
+      existing.status !== 'available';
+
+    if (movingToAvailable) {
+      const nextMunicipalityNumber =
+        municipalityNumber !== undefined
+          ? String(municipalityNumber || '').trim()
+          : existing.municipalityNumber || '';
+      const nextBuildingPermitNumber =
+        buildingPermitNumber !== undefined
+          ? String(buildingPermitNumber || '').trim()
+          : existing.buildingPermitNumber || '';
+
+      if (!nextMunicipalityNumber || !nextBuildingPermitNumber) {
+        throw new AppError(
+          'RERA compliance: municipalityNumber and buildingPermitNumber are required before setting status to available',
+          400
+        );
+      }
+    }
 
     const statusChanged = status !== undefined && status !== null && status !== existing.status;
 

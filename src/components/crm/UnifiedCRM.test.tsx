@@ -88,9 +88,9 @@ describe('UnifiedCRM', () => {
   // ── View Switching ──────────────────────────────────────────────
   it('switches view when clicking a view button', async () => {
     renderWithStore(<UnifiedCRM />);
-    
+
     fireEvent.click(screen.getByText(/Sales Pipeline/));
-    
+
     // Should show loading
     await act(async () => {
       vi.advanceTimersByTime(600);
@@ -102,21 +102,20 @@ describe('UnifiedCRM', () => {
     expect(screen.getByText('CONVERSION RATE')).toBeDefined();
   });
 
-  it('shows loading spinner during view transition', () => {
+  it('shows loading skeleton during view transition', () => {
     renderWithStore(<UnifiedCRM />);
     fireEvent.click(screen.getByText(/Sales Pipeline/));
-    // Loading state should be active (spinner rendered)
-    // The content cards should not be visible
+    expect(screen.getByTestId('unified-crm-loading-skeleton')).toBeInTheDocument();
     expect(screen.queryByText('Available Features')).toBeNull();
   });
 
   it('calls onViewChange callback when view changes', async () => {
     const onViewChange = vi.fn();
     renderWithStore(<UnifiedCRM onViewChange={onViewChange} />);
-    
+
     fireEvent.click(screen.getByText(/Leads Management/));
     expect(onViewChange).toHaveBeenCalledWith('leads');
-    
+
     await act(async () => {
       vi.advanceTimersByTime(600);
     });
@@ -199,10 +198,10 @@ describe('UnifiedCRM', () => {
   // ── Multiple View Switches ──────────────────────────────────────
   it('handles multiple rapid view switches', async () => {
     renderWithStore(<UnifiedCRM />);
-    
+
     fireEvent.click(screen.getByText(/Sales Pipeline/));
     fireEvent.click(screen.getByText(/Leads Management/));
-    
+
     await act(async () => {
       vi.advanceTimersByTime(600);
     });

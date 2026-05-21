@@ -13,7 +13,7 @@ const SidebarContainer = styled.div`
   height: 100%;
   display: flex;
   flex-direction: column;
-  background: ${props => props.theme.colors.sidebarBg};
+  background: ${({ theme }) => String((theme as any)?.colors?.sidebarBg ?? '#1a1a1a')};
 `;
 
 export interface MaryInventorySidebarProps {

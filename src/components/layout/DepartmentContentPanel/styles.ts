@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 import styled from 'styled-components';
 import { theme } from '../../../styles/theme';
 
@@ -20,7 +19,7 @@ export const DepartmentPanel = styled.div`
   background: ${colors.background.secondary};
   border-radius: ${radius.xl};
   overflow-y: auto;
-  box-shadow: ${shadows.card};
+  box-shadow: ${shadows.sm};
 
   /* Scrollbar Styling */
   &::-webkit-scrollbar {
@@ -268,7 +267,7 @@ export const StatCard = styled.div`
 
   &:hover {
     border-color: ${colors.primary};
-    box-shadow: ${shadows.luxuryCard};
+    box-shadow: ${shadows.elevated};
   }
 
   ${reducedMotion} {
@@ -277,7 +276,7 @@ export const StatCard = styled.div`
 
   /* Dark Mode */
   [data-theme='dark'] & {
-    background: ${colors.background.darkSecondary};
+    background: ${colors.background.dark};
     border-color: #333333;
   }
 `;
@@ -371,7 +370,7 @@ export const MetricCard = styled.div`
   &:hover {
     transform: translateY(-4px);
     border-color: ${colors.primary};
-    box-shadow: ${shadows.luxuryCard};
+    box-shadow: ${shadows.elevated};
   }
 
   ${reducedMotion} {
@@ -383,11 +382,7 @@ export const MetricCard = styled.div`
 
   /* Dark Mode */
   [data-theme='dark'] & {
-    background: linear-gradient(
-      135deg,
-      ${colors.background.darkSecondary} 0%,
-      rgba(227, 30, 36, 0.04) 100%
-    );
+    background: linear-gradient(135deg, ${colors.background.dark} 0%, rgba(227, 30, 36, 0.04) 100%);
     border-color: #333333;
   }
 `;
@@ -420,7 +415,7 @@ export const MetricChange = styled.div<{ $trend?: 'up' | 'down' | 'stable' }>`
   color: ${props => {
     switch (props.$trend) {
       case 'up':
-        return colors.status.active;
+        return colors.success;
       case 'down':
         return colors.error;
       case 'stable':
@@ -483,13 +478,13 @@ export const ServiceCard = styled.div`
 
   &:hover {
     border-color: ${colors.primary};
-    box-shadow: ${shadows.luxuryCard};
+    box-shadow: ${shadows.elevated};
     transform: translateY(-4px);
   }
 
   &:focus-visible {
     border-color: ${colors.primary};
-    box-shadow: ${shadows.luxuryFocus};
+    box-shadow: ${shadows.focus};
   }
 
   ${reducedMotion} {
@@ -501,7 +496,7 @@ export const ServiceCard = styled.div`
 
   /* Dark Mode */
   [data-theme='dark'] & {
-    background: ${colors.background.darkSecondary};
+    background: ${colors.background.dark};
     border-color: #333333;
   }
 `;
@@ -534,7 +529,7 @@ export const ServiceCardAction = styled.button`
   min-height: 44px;
   padding: ${spacing.xs} 0;
   margin-top: ${spacing.xs};
-  transition: ${transitions.active};
+  transition: ${transitions.standard};
   text-align: left;
   outline: none;
 
@@ -609,12 +604,12 @@ export const ActionButton = styled.button`
     color: ${colors.text.inverse};
     border-color: ${colors.primary};
     transform: translateY(-2px);
-    box-shadow: ${shadows.luxuryCard};
+    box-shadow: ${shadows.elevated};
   }
 
   &:active {
     transform: translateY(0);
-    box-shadow: ${shadows.active};
+    box-shadow: ${shadows.focus};
   }
 
   &:focus-visible {
@@ -631,8 +626,7 @@ export const ActionButton = styled.button`
 
   /* Dark Mode */
   [data-theme='dark'] & {
-    background: ${colors.background.darkSecondary};
+    background: ${colors.background.dark};
     border-color: #333333;
   }
 `;
-

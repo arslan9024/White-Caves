@@ -4,7 +4,7 @@
  * click handlers, price formatting, responsive behavior
  */
 
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import React from 'react';
 import { Provider } from 'react-redux';
@@ -25,9 +25,7 @@ vi.mock('react-leaflet', () => ({
       {children as React.ReactNode}
     </div>
   ),
-  TileLayer: ({ url }: { url: string }) => (
-    <div data-testid="tile-layer" data-url={url} />
-  ),
+  TileLayer: ({ url }: { url: string }) => <div data-testid="tile-layer" data-url={url} />,
   Marker: ({ children, position, eventHandlers }: Record<string, unknown>) => (
     <div
       data-testid="map-marker"
@@ -80,9 +78,45 @@ import DubaiMap, { type MapProperty } from './DubaiMap';
 // ── Helpers ──────────────────────────────────────────────────────
 
 const MOCK_PROPERTIES: MapProperty[] = [
-  { id: 'p1', title: 'Palm Villa', location: 'Palm Jumeirah', type: 'Villa', purpose: 'buy', price: 8_000_000, beds: 4, baths: 3, sqft: 5000, image: 'img1.jpg', featured: true },
-  { id: 'p2', title: 'Marina Apartment', location: 'Dubai Marina', type: 'Apartment', purpose: 'rent', price: 150_000, beds: 2, baths: 2, sqft: 1200, image: 'img2.jpg', featured: false },
-  { id: 'p3', title: 'Downtown Penthouse', location: 'Downtown Dubai', type: 'Penthouse', purpose: 'buy', price: 12_000_000, beds: 3, baths: 3, sqft: 3500, image: 'img3.jpg', featured: true },
+  {
+    id: 'p1',
+    title: 'Palm Villa',
+    location: 'Palm Jumeirah',
+    type: 'Villa',
+    purpose: 'buy',
+    price: 8_000_000,
+    beds: 4,
+    baths: 3,
+    sqft: 5000,
+    image: 'img1.jpg',
+    featured: true,
+  },
+  {
+    id: 'p2',
+    title: 'Marina Apartment',
+    location: 'Dubai Marina',
+    type: 'Apartment',
+    purpose: 'rent',
+    price: 150_000,
+    beds: 2,
+    baths: 2,
+    sqft: 1200,
+    image: 'img2.jpg',
+    featured: false,
+  },
+  {
+    id: 'p3',
+    title: 'Downtown Penthouse',
+    location: 'Downtown Dubai',
+    type: 'Penthouse',
+    purpose: 'buy',
+    price: 12_000_000,
+    beds: 3,
+    baths: 3,
+    sqft: 3500,
+    image: 'img3.jpg',
+    featured: true,
+  },
 ];
 
 const createStore = () =>
@@ -107,6 +141,12 @@ const renderMap = (props: Partial<React.ComponentProps<typeof DubaiMap>> = {}) =
 describe('DubaiMap', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    vi.spyOn(console, 'error').mockImplementation(() => {});
+    vi.spyOn(console, 'warn').mockImplementation(() => {});
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
   });
 
   // ── Rendering ──────────────────────────────────────────────────
@@ -264,9 +304,7 @@ describe('DubaiMap', () => {
     it('should apply active class to active property popup', () => {
       renderMap({ activePropertyId: 'p1' });
       const popupCards = document.querySelectorAll('.property-popup-card');
-      const activeCard = Array.from(popupCards).find((c) =>
-        c.classList.contains('active')
-      );
+      const activeCard = Array.from(popupCards).find(c => c.classList.contains('active'));
       expect(activeCard).toBeTruthy();
     });
 

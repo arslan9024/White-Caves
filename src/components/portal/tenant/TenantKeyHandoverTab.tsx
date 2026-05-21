@@ -47,11 +47,11 @@ const TenantKeyHandoverTab: FC = () => {
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
 
-  const allChecked = checklist.every((item) => item.checked);
+  const allChecked = checklist.every(item => item.checked);
 
   const toggleItem = (key: string) => {
-    setChecklist((prev) =>
-      prev.map((item) => (item.key === key ? { ...item, checked: !item.checked } : item))
+    setChecklist(prev =>
+      prev.map(item => (item.key === key ? { ...item, checked: !item.checked } : item))
     );
   };
 
@@ -81,7 +81,9 @@ const TenantKeyHandoverTab: FC = () => {
         </div>
         <div className="success-message" data-testid="key-handover-success">
           <p>✅ Key handover acknowledged. Welcome to your new home!</p>
-          <p>Your agent and landlord have been notified. Keep your handover form for your records.</p>
+          <p>
+            Your agent and landlord have been notified. Keep your handover form for your records.
+          </p>
         </div>
       </div>
     );
@@ -91,12 +93,15 @@ const TenantKeyHandoverTab: FC = () => {
     <div className="tab-content-section tenant-key-handover-tab">
       <div className="tab-header">
         <h3>Key Handover Checklist</h3>
-        <p>Please confirm each item below and record meter readings before signing the digital acknowledgement.</p>
+        <p>
+          Please confirm each item below and record meter readings before signing the digital
+          acknowledgement.
+        </p>
       </div>
 
       <div className="checklist-section" data-testid="key-handover-checklist">
         <h4>Move-In Checklist</h4>
-        {checklist.map((item) => (
+        {checklist.map(item => (
           <label
             key={item.key}
             className="checklist-item"
@@ -123,7 +128,7 @@ const TenantKeyHandoverTab: FC = () => {
               type="text"
               placeholder="e.g. 00123456"
               value={meterReadings.dewa}
-              onChange={(e) => setMeterReadings((prev) => ({ ...prev, dewa: e.target.value }))}
+              onChange={e => setMeterReadings(prev => ({ ...prev, dewa: e.target.value }))}
               data-testid="dewa-reading-input"
             />
           </div>
@@ -134,7 +139,7 @@ const TenantKeyHandoverTab: FC = () => {
               type="text"
               placeholder="e.g. 00098765 (if applicable)"
               value={meterReadings.gas}
-              onChange={(e) => setMeterReadings((prev) => ({ ...prev, gas: e.target.value }))}
+              onChange={e => setMeterReadings(prev => ({ ...prev, gas: e.target.value }))}
               data-testid="gas-reading-input"
             />
           </div>
@@ -145,7 +150,7 @@ const TenantKeyHandoverTab: FC = () => {
               type="text"
               placeholder="e.g. AC-001, AC-002"
               value={meterReadings.accessCards}
-              onChange={(e) => setMeterReadings((prev) => ({ ...prev, accessCards: e.target.value }))}
+              onChange={e => setMeterReadings(prev => ({ ...prev, accessCards: e.target.value }))}
               data-testid="access-cards-input"
             />
           </div>
@@ -156,8 +161,8 @@ const TenantKeyHandoverTab: FC = () => {
               type="text"
               placeholder="e.g. P-4521"
               value={meterReadings.parkingSticker}
-              onChange={(e) =>
-                setMeterReadings((prev) => ({ ...prev, parkingSticker: e.target.value }))
+              onChange={e =>
+                setMeterReadings(prev => ({ ...prev, parkingSticker: e.target.value }))
               }
               data-testid="parking-sticker-input"
             />
@@ -170,7 +175,7 @@ const TenantKeyHandoverTab: FC = () => {
           <input
             type="checkbox"
             checked={acknowledged}
-            onChange={() => setAcknowledged((prev) => !prev)}
+            onChange={() => setAcknowledged(prev => !prev)}
             data-testid="acknowledgement-checkbox"
             aria-label="I confirm I have received all items listed above"
           />

@@ -19,7 +19,7 @@ describe('Mock API Handler', () => {
   describe('fetchDepartmentDataFromApi', () => {
     it('should fetch data for valid department code', async () => {
       const response = await fetchDepartmentDataFromApi('SALES');
-      
+
       expect(response.success).toBe(true);
       expect(response.data).toBeDefined();
       expect(response.data?.departmentCode).toBe('SALES');
@@ -28,7 +28,7 @@ describe('Mock API Handler', () => {
 
     it('should return error for invalid department code', async () => {
       const response = await fetchDepartmentDataFromApi('INVALID');
-      
+
       expect(response.success).toBe(false);
       expect(response.error).toBeDefined();
       expect(response.data).toBeUndefined();
@@ -36,7 +36,7 @@ describe('Mock API Handler', () => {
 
     it('should include KPIs in response', async () => {
       const response = await fetchDepartmentDataFromApi('SALES');
-      
+
       expect(response.success).toBe(true);
       expect(Array.isArray(response.data?.kpis)).toBe(true);
       expect(response.data?.kpis!.length).toBeGreaterThan(0);
@@ -44,7 +44,7 @@ describe('Mock API Handler', () => {
 
     it('should include summary in response', async () => {
       const response = await fetchDepartmentDataFromApi('FINANCE');
-      
+
       expect(response.success).toBe(true);
       expect(response.data?.summary).toBeDefined();
       expect(response.data?.summary?.totalItems).toBeGreaterThan(0);
@@ -54,7 +54,7 @@ describe('Mock API Handler', () => {
   describe('fetchAllDepartmentsDataFromApi', () => {
     it('should fetch all departments', async () => {
       const response = await fetchAllDepartmentsDataFromApi();
-      
+
       expect(response.success).toBe(true);
       expect(response.data).toBeDefined();
       expect(Object.keys(response.data || {}).length).toBeGreaterThan(0);
@@ -63,7 +63,7 @@ describe('Mock API Handler', () => {
     it('should contain all department codes', async () => {
       const response = await fetchAllDepartmentsDataFromApi();
       const availableCodes = getAvailableDepartments();
-      
+
       if (response.success && response.data) {
         availableCodes.forEach((code: string) => {
           expect(response.data).toHaveProperty(code);
@@ -75,7 +75,7 @@ describe('Mock API Handler', () => {
   describe('fetchDepartmentKPIs', () => {
     it('should fetch KPIs for valid department', async () => {
       const response = await fetchDepartmentKPIs('SALES');
-      
+
       expect(response.success).toBe(true);
       expect(Array.isArray(response.data)).toBe(true);
       expect(response.data!.length).toBeGreaterThan(0);
@@ -83,7 +83,7 @@ describe('Mock API Handler', () => {
 
     it('should include label and value in KPIs', async () => {
       const response = await fetchDepartmentKPIs('FINANCE');
-      
+
       if (response.success && Array.isArray(response.data)) {
         response.data.forEach((kpi: any) => {
           expect(kpi.label).toBeDefined();
@@ -94,7 +94,7 @@ describe('Mock API Handler', () => {
 
     it('should return error for invalid department', async () => {
       const response = await fetchDepartmentKPIs('INVALID_DEPT');
-      
+
       expect(response.success).toBe(false);
       expect(response.error).toBeDefined();
     });
@@ -103,7 +103,7 @@ describe('Mock API Handler', () => {
   describe('fetchDepartmentSummary', () => {
     it('should fetch summary for valid department', async () => {
       const response = await fetchDepartmentSummary('OPERATIONS');
-      
+
       expect(response.success).toBe(true);
       expect(response.data).toBeDefined();
       expect(response.data?.totalItems).toBeGreaterThan(0);
@@ -111,7 +111,7 @@ describe('Mock API Handler', () => {
 
     it('should include required summary fields', async () => {
       const response = await fetchDepartmentSummary('HR');
-      
+
       if (response.success && response.data) {
         expect(response.data.totalItems).toBeDefined();
         expect(response.data.activeItems).toBeDefined();
@@ -124,7 +124,7 @@ describe('Mock API Handler', () => {
   describe('fetchDepartmentTrends', () => {
     it('should fetch trends for valid department', async () => {
       const response = await fetchDepartmentTrends('SALES');
-      
+
       expect(response.success).toBe(true);
       expect(response.data).toBeDefined();
       expect(response.data?.trend).toBeDefined();
@@ -132,7 +132,7 @@ describe('Mock API Handler', () => {
 
     it('should include current and last month data', async () => {
       const response = await fetchDepartmentTrends('FINANCE');
-      
+
       if (response.success && response.data) {
         expect(response.data.currentMonth).toBeDefined();
         expect(response.data.lastMonth).toBeDefined();
@@ -143,14 +143,14 @@ describe('Mock API Handler', () => {
   describe('searchDepartmentData', () => {
     it('should search for KPIs by label', async () => {
       const response = await searchDepartmentData('SALES', 'leads');
-      
+
       expect(response.success).toBe(true);
       expect(response.data).toBeDefined();
     });
 
     it('should return empty results for non-matching search', async () => {
       const response = await searchDepartmentData('SALES', 'xyz123nonsense');
-      
+
       expect(response.success).toBe(true);
       expect(Array.isArray(response.data?.kpis)).toBe(true);
     });
@@ -159,7 +159,7 @@ describe('Mock API Handler', () => {
   describe('exportDepartmentData', () => {
     it('should export data with filename', async () => {
       const response = await exportDepartmentData('FINANCE');
-      
+
       expect(response.success).toBe(true);
       expect(response.data?.fileName).toBeDefined();
       expect(response.data?.content).toBeDefined();
@@ -167,7 +167,7 @@ describe('Mock API Handler', () => {
 
     it('should include department code in filename', async () => {
       const response = await exportDepartmentData('COMPLIANCE');
-      
+
       if (response.success && response.data) {
         expect(response.data.fileName).toContain('COMPLIANCE');
       }
@@ -177,7 +177,7 @@ describe('Mock API Handler', () => {
   describe('Data Consistency', () => {
     it('should have consistent data across all departments', async () => {
       const response = await fetchAllDepartmentsDataFromApi();
-      
+
       if (response.success && response.data) {
         Object.entries(response.data).forEach(([code, dept]: [string, any]) => {
           expect(dept.departmentCode).toBe(code);
@@ -190,7 +190,7 @@ describe('Mock API Handler', () => {
 
     it('should have valid KPI structure in all departments', async () => {
       const response = await fetchAllDepartmentsDataFromApi();
-      
+
       if (response.success && response.data) {
         Object.values(response.data).forEach((dept: any) => {
           dept.kpis.forEach((kpi: any) => {
@@ -207,16 +207,15 @@ describe('Mock API Handler', () => {
       const start = performance.now();
       await fetchDepartmentDataFromApi('SALES');
       const duration = performance.now() - start;
-      
+
       // Response should be within 1 second
       expect(duration).toBeLessThan(1000);
     });
 
     it('should handle multiple concurrent requests', async () => {
-      const requests = ['SALES', 'FINANCE', 'HR', 'OPERATIONS'].map((dept) =>
-        fetchDepartmentDataFromApi(dept)
-      );
-      
+      const validDepartments = getAvailableDepartments().slice(0, 4);
+      const requests = validDepartments.map(dept => fetchDepartmentDataFromApi(dept));
+
       const responses = await Promise.all(requests);
       responses.forEach((response: any) => {
         expect(response.success).toBe(true);
@@ -247,7 +246,7 @@ describe('Mock Department Data', () => {
   describe('Department Data Completeness', () => {
     it('should have required fields for Sales department', () => {
       const data = getMockDepartmentData('SALES');
-      
+
       expect(data?.departmentCode).toBe('SALES');
       expect(data?.departmentName).toBeDefined();
       expect(data?.summary).toBeDefined();
@@ -257,10 +256,10 @@ describe('Mock Department Data', () => {
     it('should have department-specific data', () => {
       const salesData = getMockDepartmentData('SALES');
       const financeData = getMockDepartmentData('FINANCE');
-      
+
       // Sales should have sales-specific fields
       expect(salesData?.activeDeals).toBeDefined();
-      
+
       // Finance should have finance-specific fields
       expect(financeData?.financialSummary).toBeDefined();
     });

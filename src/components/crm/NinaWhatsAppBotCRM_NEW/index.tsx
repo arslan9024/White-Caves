@@ -7,6 +7,7 @@ import { SessionsTab } from './tabs/SessionsTab';
 import { AnalyticsTab } from './tabs/AnalyticsTab';
 import { NinaSettingsTab } from './tabs/SettingsTab';
 import { NinaFeaturesTab } from './tabs/FeaturesTab';
+import AssistantLifecycleTab from '../shared/AssistantLifecycleTab';
 import './NinaWhatsAppBotCRM.css';
 
 const NinaWhatsAppBotCRM = () => {
@@ -19,25 +20,28 @@ const NinaWhatsAppBotCRM = () => {
     { id: 'sessions', label: 'QR & Connections', icon: '📲' },
     { id: 'analytics', label: 'Analytics', icon: '📊' },
     { id: 'settings', label: 'Settings', icon: '⚙️' },
-    { id: 'features', label: 'Features', icon: '✨' }
+    { id: 'features', label: 'Features', icon: '✨' },
+    { id: 'lifecycle', label: 'Lifecycle', icon: '🔄' }
   ];
 
   const renderTab = () => {
     switch (activeTab) {
       case 'bots':
-        return <BotsTab data={data as never} />;
+        return <BotsTab data={data} />;
       case 'code':
         return <CodeModulesTab data={data} />;
       case 'sessions':
-        return <SessionsTab data={data as never} />;
+        return <SessionsTab data={data} />;
       case 'analytics':
-        return <AnalyticsTab data={data as never} />;
+        return <AnalyticsTab data={data} />;
       case 'settings':
         return <NinaSettingsTab data={data} />;
       case 'features':
         return <NinaFeaturesTab data={data} />;
+      case 'lifecycle':
+        return <AssistantLifecycleTab assistantId="nina" color="#F59E0B" assistantName="Nina" />;
       default:
-        return <BotsTab data={data as never} />;
+        return <BotsTab data={data} />;
     }
   };
 

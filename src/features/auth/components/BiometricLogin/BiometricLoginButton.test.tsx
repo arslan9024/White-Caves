@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import React from 'react';
 
@@ -61,6 +61,8 @@ import { safeStorage } from '../../../../utils/safeStorage';
 describe('BiometricLoginButton', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    vi.spyOn(console, 'error').mockImplementation(() => {});
+    vi.spyOn(console, 'warn').mockImplementation(() => {});
     mockIsPlatformAuthenticatorAvailable.mockResolvedValue(true);
     mockHasBiometricCredentials.mockReturnValue(true);
     mockAuthenticateWithBiometric.mockResolvedValue({
@@ -68,6 +70,10 @@ describe('BiometricLoginButton', () => {
       user: { id: 'u1', email: 'test@test.com', name: 'Test User' },
       token: 'jwt-token-123',
     });
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
   });
 
   describe('availability', () => {
@@ -118,7 +124,9 @@ describe('BiometricLoginButton', () => {
         expect(screen.getByLabelText('Sign in with Face ID or Touch ID')).toBeInTheDocument();
       });
       fireEvent.click(screen.getByLabelText('Sign in with Face ID or Touch ID'));
-      expect(mockDispatch).toHaveBeenCalledWith({ type: 'auth/loginStart' });
+      await waitFor(() => {
+        expect(mockDispatch).toHaveBeenCalledWith({ type: 'auth/loginStart' });
+      });
     });
 
     it('dispatches setUser and loginSuccess on successful auth', async () => {

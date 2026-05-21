@@ -1,4 +1,5 @@
 # API Versioning & Deprecation Policy
+
 # White Caves Real Estate Platform
 
 > **Document ID:** WC-API-POL-001
@@ -20,10 +21,10 @@ This policy defines how the White Caves API is versioned, how breaking changes a
 
 All current endpoints use **v1 (implicit)** — `/api/*` without a version prefix. Formal versioning must be adopted **before** Phase 8 (portal syndication / external API consumers launch).
 
-| Milestone | Required Action |
-|-----------|----------------|
-| Phase 3 completion | Tag all current routes as `/api/v1/*` |
-| Phase 4 start | Add versioned prefix to new WhatsApp endpoints |
+| Milestone             | Required Action                                      |
+| --------------------- | ---------------------------------------------------- |
+| Phase 3 completion    | Tag all current routes as `/api/v1/*`                |
+| Phase 4 start         | Add versioned prefix to new WhatsApp endpoints       |
 | Phase 8 (partner API) | Enforce versioning; publish per-version OpenAPI spec |
 
 ---
@@ -45,11 +46,11 @@ White Caves uses **URL path versioning** as the primary strategy:
 
 ### 3.2 Version Lifecycle States
 
-| State | Description | Support |
-|-------|------------|---------|
-| **Current** | Latest stable | Full support + bug fixes |
-| **Deprecated** | Older but functional | Security patches only |
-| **Sunset** | Removed | No support; returns 410 Gone |
+| State          | Description          | Support                      |
+| -------------- | -------------------- | ---------------------------- |
+| **Current**    | Latest stable        | Full support + bug fixes     |
+| **Deprecated** | Older but functional | Security patches only        |
+| **Sunset**     | Removed              | No support; returns 410 Gone |
 
 ### 3.3 What Triggers a New Major Version
 
@@ -121,39 +122,39 @@ Warning: 299 - "This endpoint is deprecated. Migrate to /api/v2/leads by Nov 202
 
 ### 5.1 Production Endpoints (v1 — All Active)
 
-| Endpoint | Method | Auth | Status |
-|----------|--------|------|--------|
-| `/api/auth/login` | POST | None | ✅ |
-| `/api/auth/register` | POST | None | ✅ |
-| `/api/auth/logout` | POST | JWT | ✅ |
-| `/api/auth/profile` | GET/PATCH | JWT | ✅ |
-| `/api/leads` | GET/POST | JWT + role | ✅ |
-| `/api/leads/:id` | GET/PATCH/DELETE | JWT + role | ✅ |
-| `/api/properties` | GET/POST | JWT + role | ✅ |
-| `/api/properties/:id` | GET/PATCH/DELETE | JWT + role | ✅ |
-| `/api/clients` | GET/POST | JWT + role | ✅ |
-| `/api/clients/:id` | GET/PATCH/DELETE | JWT + role | ✅ |
-| `/api/users` | GET/PATCH | JWT + role | ✅ |
-| `/api/transactions` | GET/POST | JWT + role | ✅ |
-| `/api/compliance` | GET/POST | JWT + role | ✅ |
-| `/api/assistants` | GET | None | ✅ |
-| `/api/assistants` | POST/PUT/DELETE | JWT + managing_director | ✅ |
-| `/api/notifications` | GET/PATCH | JWT | ✅ |
-| `/api/favorites` | GET/POST/DELETE | JWT | ✅ |
-| `/api/job-applications` | POST | None | ✅ |
-| `/api/job-applications` | GET/PATCH | JWT + role | ✅ |
+| Endpoint                | Method           | Auth                    | Status |
+| ----------------------- | ---------------- | ----------------------- | ------ |
+| `/api/auth/login`       | POST             | None                    | ✅     |
+| `/api/auth/register`    | POST             | None                    | ✅     |
+| `/api/auth/logout`      | POST             | JWT                     | ✅     |
+| `/api/auth/profile`     | GET/PATCH        | JWT                     | ✅     |
+| `/api/leads`            | GET/POST         | JWT + role              | ✅     |
+| `/api/leads/:id`        | GET/PATCH/DELETE | JWT + role              | ✅     |
+| `/api/properties`       | GET/POST         | JWT + role              | ✅     |
+| `/api/properties/:id`   | GET/PATCH/DELETE | JWT + role              | ✅     |
+| `/api/clients`          | GET/POST         | JWT + role              | ✅     |
+| `/api/clients/:id`      | GET/PATCH/DELETE | JWT + role              | ✅     |
+| `/api/users`            | GET/PATCH        | JWT + role              | ✅     |
+| `/api/transactions`     | GET/POST         | JWT + role              | ✅     |
+| `/api/compliance`       | GET/POST         | JWT + role              | ✅     |
+| `/api/assistants`       | GET              | None                    | ✅     |
+| `/api/assistants`       | POST/PUT/DELETE  | JWT + managing_director | ✅     |
+| `/api/notifications`    | GET/PATCH        | JWT                     | ✅     |
+| `/api/favorites`        | GET/POST/DELETE  | JWT                     | ✅     |
+| `/api/job-applications` | POST             | None                    | ✅     |
+| `/api/job-applications` | GET/PATCH        | JWT + role              | ✅     |
 
 ### 5.2 Stub Endpoints (Phase 2 Implementation)
 
-| Endpoint | Current | Phase | Notes |
-|----------|---------|-------|-------|
-| `/api/contracts` | 501 Not Implemented | 2 | Prisma model needed |
-| `/api/appointments` | 501 Not Implemented | 2 | Prisma model needed |
-| `/api/payments` | 503 Service Unavailable | 2 | Stripe integration |
-| `/api/valuation` | 501 Not Implemented | 2 | ML model needed |
-| `/api/tenancy-agreements` | 501 Not Implemented | 2 | Lease model needed |
-| `/api/whatsapp` | Stub (logs only) | 4 | Meta API approval needed |
-| `/api/2fa` | 501 Not Implemented | 9 | TOTP/Twilio |
+| Endpoint                  | Current                 | Phase | Notes                    |
+| ------------------------- | ----------------------- | ----- | ------------------------ |
+| `/api/contracts`          | 501 Not Implemented     | 2     | Prisma model needed      |
+| `/api/appointments`       | 501 Not Implemented     | 2     | Prisma model needed      |
+| `/api/payments`           | 503 Service Unavailable | 2     | Stripe integration       |
+| `/api/valuation`          | 501 Not Implemented     | 2     | ML model needed          |
+| `/api/tenancy-agreements` | 501 Not Implemented     | 2     | Lease model needed       |
+| `/api/whatsapp`           | Stub (logs only)        | 4     | Meta API approval needed |
+| `/api/2fa`                | 501 Not Implemented     | 9     | TOTP/Twilio              |
 
 ---
 
@@ -161,11 +162,11 @@ Warning: 299 - "This endpoint is deprecated. Migrate to /api/v2/leads by Nov 202
 
 ### 6.1 Current State
 
-| Item | Value |
-|------|-------|
-| Location | `/openapi.json` (root), `/openapi/` directory |
-| Documented paths | ~10 (target: 30+) |
-| Swagger UI | Planned at `/api-docs` (Phase 2) |
+| Item             | Value                                         |
+| ---------------- | --------------------------------------------- |
+| Location         | `/openapi.json` (root), `/openapi/` directory |
+| Documented paths | ~10 (target: 30+)                             |
+| Swagger UI       | Planned at `/api-docs` (Phase 2)              |
 
 ### 6.2 OpenAPI Rules
 
@@ -189,7 +190,7 @@ New paths to add:
   /api/v1/landlord-portal/*
   /api/v1/tenant-portal/*
   /api/v1/reporting/*
-  
+
 Phase 4:
   /api/v1/whatsapp/webhook
   /api/v1/whatsapp/send
@@ -238,22 +239,21 @@ Phase 4:
 
 ## 8. API Security Policy
 
-| Control | Implementation |
-|---------|---------------|
-| Authentication | JWT middleware on all `/api/*` (except login/register) |
-| Rate limiting | 5 tiers: api(100/15min), auth(5/15min), register(3/hr), password(3/hr), strict(10/15min) |
-| Input sanitization | XSS strip on all POST/PATCH |
-| Response filtering | Prisma `select` — passwords/sensitive fields never returned |
-| CORS | Whitelist: whitecaves.ae, staging.whitecaves.ae, localhost:5173 |
-| Body limit | 1MB (Express body-parser) |
-| Partner API keys | Phase 8: HMAC-signed keys for syndication partners |
+| Control            | Implementation                                                                           |
+| ------------------ | ---------------------------------------------------------------------------------------- |
+| Authentication     | JWT middleware on all `/api/*` (except login/register)                                   |
+| Rate limiting      | 5 tiers: api(100/15min), auth(5/15min), register(3/hr), password(3/hr), strict(10/15min) |
+| Input sanitization | XSS strip on all POST/PATCH                                                              |
+| Response filtering | Prisma `select` — passwords/sensitive fields never returned                              |
+| CORS               | Whitelist: whitecaves.ae, staging.whitecaves.ae, localhost:5173                          |
+| Body limit         | 1MB (Express body-parser)                                                                |
+| Partner API keys   | Phase 8: HMAC-signed keys for syndication partners                                       |
 
 ---
 
 **Document Owner:** Technology Department (Aurora)
 **Review Trigger:** Before any breaking API change
 **Related:** `business_docs/06_design_architecture/api-reference.md`, `/openapi.json`
-
 
 ---
 
@@ -263,30 +263,30 @@ Phase 4:
 
 White Caves API follows strict RESTful conventions:
 
-| Rule | Good ✅ | Bad ❌ |
-|------|---------|------|
-| Use nouns (not verbs) for resources | `/api/v1/leads` | `/api/v1/getLeads` |
-| Plural nouns | `/api/v1/properties` | `/api/v1/property` |
-| Lowercase + hyphens | `/api/v1/job-applications` | `/api/v1/JobApplications` |
-| Nested resources for relationships | `/api/v1/leads/:id/activities` | `/api/v1/getLeadActivities?leadId=...` |
-| HTTP method for action | `DELETE /api/v1/leads/:id` | `POST /api/v1/leads/delete/:id` |
-| Status in body, not URL | `{ "status": "qualified" }` | `/api/v1/leads/qualify/:id` |
+| Rule                                | Good ✅                        | Bad ❌                                 |
+| ----------------------------------- | ------------------------------ | -------------------------------------- |
+| Use nouns (not verbs) for resources | `/api/v1/leads`                | `/api/v1/getLeads`                     |
+| Plural nouns                        | `/api/v1/properties`           | `/api/v1/property`                     |
+| Lowercase + hyphens                 | `/api/v1/job-applications`     | `/api/v1/JobApplications`              |
+| Nested resources for relationships  | `/api/v1/leads/:id/activities` | `/api/v1/getLeadActivities?leadId=...` |
+| HTTP method for action              | `DELETE /api/v1/leads/:id`     | `POST /api/v1/leads/delete/:id`        |
+| Status in body, not URL             | `{ "status": "qualified" }`    | `/api/v1/leads/qualify/:id`            |
 
 ### 9.2 HTTP Status Code Policy
 
-| Scenario | Code | Body |
-|---------|------|------|
-| Success — resource created | `201 Created` | `{ data: {...}, message: "Resource created" }` |
-| Success — data returned | `200 OK` | `{ data: [...], meta: { total, page } }` |
-| Success — no content (DELETE) | `204 No Content` | (empty) |
-| Validation error | `400 Bad Request` | `{ error: "validation", fields: [{field, message}] }` |
-| Unauthenticated | `401 Unauthorized` | `{ error: "authentication_required" }` |
-| Insufficient permissions | `403 Forbidden` | `{ error: "insufficient_permissions", required: "sales_manager" }` |
-| Resource not found | `404 Not Found` | `{ error: "not_found", resource: "lead", id: "..." }` |
-| Conflict (duplicate) | `409 Conflict` | `{ error: "conflict", message: "Email already registered" }` |
-| Rate limit exceeded | `429 Too Many Requests` | `{ error: "rate_limit", retryAfter: 60 }` |
-| Server error | `500 Internal Server Error` | `{ error: "internal_error", reference: "sentry-xxxx" }` |
-| Service unavailable | `503 Service Unavailable` | `{ error: "service_unavailable", retryAfter: 30 }` |
+| Scenario                      | Code                        | Body                                                               |
+| ----------------------------- | --------------------------- | ------------------------------------------------------------------ |
+| Success — resource created    | `201 Created`               | `{ data: {...}, message: "Resource created" }`                     |
+| Success — data returned       | `200 OK`                    | `{ data: [...], meta: { total, page } }`                           |
+| Success — no content (DELETE) | `204 No Content`            | (empty)                                                            |
+| Validation error              | `400 Bad Request`           | `{ error: "validation", fields: [{field, message}] }`              |
+| Unauthenticated               | `401 Unauthorized`          | `{ error: "authentication_required" }`                             |
+| Insufficient permissions      | `403 Forbidden`             | `{ error: "insufficient_permissions", required: "sales_manager" }` |
+| Resource not found            | `404 Not Found`             | `{ error: "not_found", resource: "lead", id: "..." }`              |
+| Conflict (duplicate)          | `409 Conflict`              | `{ error: "conflict", message: "Email already registered" }`       |
+| Rate limit exceeded           | `429 Too Many Requests`     | `{ error: "rate_limit", retryAfter: 60 }`                          |
+| Server error                  | `500 Internal Server Error` | `{ error: "internal_error", reference: "sentry-xxxx" }`            |
+| Service unavailable           | `503 Service Unavailable`   | `{ error: "service_unavailable", retryAfter: 30 }`                 |
 
 ### 9.3 Pagination Standard
 
@@ -319,15 +319,16 @@ GET /api/v1/leads?page=2&perPage=20&sortBy=createdAt&sortDir=desc
 ```typescript
 // All error responses follow this schema
 interface APIError {
-  error: string;           // Machine-readable error code
-  message: string;         // Human-readable description
-  fields?: {               // Validation errors only
+  error: string; // Machine-readable error code
+  message: string; // Human-readable description
+  fields?: {
+    // Validation errors only
     field: string;
     message: string;
     value?: unknown;
   }[];
-  reference?: string;      // Sentry error ID for support
-  documentation?: string;  // Link to API docs for this endpoint
+  reference?: string; // Sentry error ID for support
+  documentation?: string; // Link to API docs for this endpoint
 }
 ```
 
@@ -342,17 +343,16 @@ const createLeadSchema = z.object({
   firstName: z.string().min(1).max(100),
   lastName: z.string().min(1).max(100),
   email: z.string().email().optional(),
-  phone: z.string().regex(/^\+971[0-9]{8,9}$/).optional(),
+  phone: z
+    .string()
+    .regex(/^\+971[0-9]{8,9}$/)
+    .optional(),
   budget: z.number().positive().optional(),
   propertyType: z.enum(['VILLA', 'APARTMENT', 'TOWNHOUSE', 'PENTHOUSE']).optional(),
   source: z.enum(['WEBSITE', 'WHATSAPP', 'REFERRAL', 'PROPERTYFINDER', 'BAYUT']),
 });
 
-router.post('/leads', 
-  authMiddleware, 
-  validateRequest(createLeadSchema), 
-  LeadController.create
-);
+router.post('/leads', authMiddleware, validateRequest(createLeadSchema), LeadController.create);
 ```
 
 **Why Zod?** TypeScript-first; runtime validation + type inference from one schema; better DX than Joi; smaller bundle than class-validator.
@@ -363,30 +363,30 @@ router.post('/leads',
 
 ### 10.1 Response Time Targets
 
-| Endpoint Category | p50 Target | p95 Target | p99 Target |
-|-----------------|-----------|-----------|-----------|
-| Auth (login/register) | < 150ms | < 500ms | < 1s |
-| Simple CRUD (GET by ID) | < 50ms | < 200ms | < 500ms |
-| List with pagination | < 100ms | < 300ms | < 800ms |
-| Complex aggregations | < 200ms | < 800ms | < 2s |
-| Search (Elasticsearch — Phase 7) | < 50ms | < 150ms | < 300ms |
-| AI inference (lead scoring) | < 200ms | < 800ms | < 2s |
-| File upload | < 500ms processing | < 2s | < 5s |
-| Document generation (PDF) | < 2s | < 5s | < 10s |
-| WhatsApp send | < 1s | < 3s | < 10s |
+| Endpoint Category                | p50 Target         | p95 Target | p99 Target |
+| -------------------------------- | ------------------ | ---------- | ---------- |
+| Auth (login/register)            | < 150ms            | < 500ms    | < 1s       |
+| Simple CRUD (GET by ID)          | < 50ms             | < 200ms    | < 500ms    |
+| List with pagination             | < 100ms            | < 300ms    | < 800ms    |
+| Complex aggregations             | < 200ms            | < 800ms    | < 2s       |
+| Search (Elasticsearch — Phase 7) | < 50ms             | < 150ms    | < 300ms    |
+| AI inference (lead scoring)      | < 200ms            | < 800ms    | < 2s       |
+| File upload                      | < 500ms processing | < 2s       | < 5s       |
+| Document generation (PDF)        | < 2s               | < 5s       | < 10s      |
+| WhatsApp send                    | < 1s               | < 3s       | < 10s      |
 
 ### 10.2 Caching Strategy by Endpoint
 
-| Endpoint | Cache Layer | TTL | Invalidation |
-|---------|-----------|-----|-------------|
-| `GET /api/v1/properties` (public) | CDN (Vercel Edge) + Redis | 5 min | On any property update |
-| `GET /api/v1/properties/:id` (public) | Redis | 15 min | On property update |
-| `GET /api/v1/properties/search` | Redis (query hash as key) | 2 min | On property updates in area |
-| `GET /api/v1/analytics/kpis` | Redis | 1 hour | On deal status change |
-| `GET /api/v1/market/price-trends` | Redis | 24 hours | Manual invalidation |
-| Lead CRUD | No cache | — | Always fresh |
-| Auth endpoints | No cache | — | Never cache |
-| Document generation | No cache | — | Always generate fresh |
+| Endpoint                              | Cache Layer               | TTL      | Invalidation                |
+| ------------------------------------- | ------------------------- | -------- | --------------------------- |
+| `GET /api/v1/properties` (public)     | CDN (Vercel Edge) + Redis | 5 min    | On any property update      |
+| `GET /api/v1/properties/:id` (public) | Redis                     | 15 min   | On property update          |
+| `GET /api/v1/properties/search`       | Redis (query hash as key) | 2 min    | On property updates in area |
+| `GET /api/v1/analytics/kpis`          | Redis                     | 1 hour   | On deal status change       |
+| `GET /api/v1/market/price-trends`     | Redis                     | 24 hours | Manual invalidation         |
+| Lead CRUD                             | No cache                  | —        | Always fresh                |
+| Auth endpoints                        | No cache                  | —        | Never cache                 |
+| Document generation                   | No cache                  | —        | Always generate fresh       |
 
 ### 10.3 MongoDB Index Requirements
 
@@ -503,6 +503,7 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerJsDoc(swaggerOption
 ### 11.3 API Testing with Thunder Client / Postman
 
 A shared collection is maintained at `docs/api/white-caves-api.postman_collection.json`:
+
 - All endpoints documented with example requests
 - Environment variables: `{{baseUrl}}`, `{{authToken}}`, `{{testLeadId}}`
 - Pre-request script: auto-refresh JWT token on expiry
@@ -514,6 +515,7 @@ A shared collection is maintained at `docs/api/white-caves-api.postman_collectio
 **Version History:** v1.0 March 2026; v1.1 April 2026 (security hardening); v2.0 April 2026 (principles + performance)
 **Review Trigger:** Before any breaking API change; quarterly for performance targets
 **Related Documents:**
+
 - `business_docs/06_design_architecture/api-reference.md`
 - `business/05_srs_and_engineering/srs-v2-2026.md`
 - OpenAPI specification: `/openapi.json`

@@ -95,16 +95,14 @@ Commission {
 
 > **Compatibility Note:** Some legacy routes may still proxy through finance namespace. Canonical path for all new implementation and tests is `/api/commissions`.
 
-| Method | Path                                  | Access                        | Description                       |
-| ------ | ------------------------------------- | ----------------------------- | --------------------------------- |
-| GET    | `/api/commissions`                    | Manager, Finance, Owner       | List all commissions (filterable) |
-| GET    | `/api/commissions/my`                 | Agent                         | Own commissions only              |
-| GET    | `/api/commissions/:id`                | Agent (own), Manager, Finance | Single commission detail          |
-| PATCH  | `/api/commissions/:id/approve`        | Manager, Owner                | Approve a commission              |
-| PATCH  | `/api/commissions/:id/reject`         | Manager, Owner                | Reject with reason                |
-| PATCH  | `/api/commissions/:id/pay`            | Finance, Owner                | Mark as paid                      |
-| GET    | `/api/commissions/summary`            | Finance, Owner                | Aggregate summary                 |
-| GET    | `/api/commissions/statement/:agentId` | Agent (own), Manager, Finance | Agent commission statement        |
+| Method | Path                                  | Access                        | Description                                                                               |
+| ------ | ------------------------------------- | ----------------------------- | ----------------------------------------------------------------------------------------- |
+| GET    | `/api/commissions`                    | Manager, Finance, Owner       | List all commissions (filterable)                                                         |
+| GET    | `/api/commissions/my`                 | Agent                         | Own commissions only                                                                      |
+| GET    | `/api/commissions/:id`                | Agent (own), Manager, Finance | Single commission detail                                                                  |
+| PATCH  | `/api/commissions/:id`                | Manager, Finance, Owner       | Update commission (including status: PENDING/APPROVED/REJECTED/PAID and payment metadata) |
+| GET    | `/api/commissions/summary`            | Finance, Owner                | Aggregate summary                                                                         |
+| GET    | `/api/commissions/statement/:agentId` | Agent (own), Manager, Finance | Agent commission statement                                                                |
 
 ---
 

@@ -36,7 +36,7 @@
 }
 
 .progress-step.active .step-number {
-  background: #E31E24;
+  background: #e31e24;
   color: #1a1a2e;
   box-shadow: 0 4px 12px rgba(227, 30, 36, 0.3);
 }
@@ -60,7 +60,7 @@
 }
 
 .progress-step.active .step-label {
-  color: #E31E24;
+  color: #e31e24;
   font-weight: 700;
 }
 
@@ -216,7 +216,7 @@
 /* Acknowledgment Box */
 .acknowledgment-box {
   background: #fffef5;
-  border: 2px dashed #E31E24;
+  border: 2px dashed #e31e24;
   border-radius: 10px;
   padding: 20px;
   margin-bottom: 30px;
@@ -232,13 +232,13 @@
   line-height: 1.6;
 }
 
-.checkbox-label input[type="checkbox"] {
+.checkbox-label input[type='checkbox'] {
   margin-top: 3px;
   cursor: pointer;
   width: 18px;
   height: 18px;
   flex-shrink: 0;
-  accent-color: #E31E24;
+  accent-color: #e31e24;
 }
 
 /* Sign Section */
@@ -254,7 +254,7 @@
 
 .signer-info {
   background: #f8f9fa;
-  border-left: 4px solid #E31E24;
+  border-left: 4px solid #e31e24;
   padding: 15px 20px;
   border-radius: 6px;
   margin-bottom: 30px;
@@ -297,7 +297,7 @@
 
 .signature-display {
   background: white;
-  border: 2px solid #E31E24;
+  border: 2px solid #e31e24;
   border-radius: 8px;
   padding: 20px;
   text-align: center;
@@ -363,7 +363,7 @@
 }
 
 .btn-primary {
-  background-color: #E31E24;
+  background-color: #e31e24;
   color: #1a1a2e;
 }
 

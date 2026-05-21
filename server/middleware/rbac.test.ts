@@ -12,22 +12,27 @@ import {
   requirePermission,
   requireAllPermissions,
   requireMinRole,
+  requireMinRank,
   scopeToOwn,
   roleHasPermission,
   ROLE_HIERARCHY,
   ROLE_PERMISSIONS,
+  ROLE_RANK,
 } from './rbac';
 import type { AuthRequest } from './auth';
 
 // ─── Helper: create mock request/response/next ──────────────────────────────
 function createMocks(userOverrides?: { id?: string; email?: string; role?: string } | null) {
   const req = {
-    user: userOverrides === null ? undefined : {
-      id: 'user-123',
-      email: 'test@whitecaves.ae',
-      role: 'agent',
-      ...userOverrides,
-    },
+    user:
+      userOverrides === null
+        ? undefined
+        : {
+            id: 'user-123',
+            email: 'test@whitecaves.ae',
+            role: 'agent',
+            ...userOverrides,
+          },
   } as AuthRequest;
 
   const res = {} as Response;
@@ -79,10 +84,26 @@ describe('ROLE_HIERARCHY', () => {
 
 // ─── ROLE_PERMISSIONS completeness ──────────────────────────────────────────
 describe('ROLE_PERMISSIONS', () => {
-  it('defines permissions for all 12 roles', () => {
+  it('defines permissions for all canonical roles', () => {
     const expectedRoles = [
-      'owner', 'manager', 'admin', 'agent', 'finance', 'viewer',
-      'buyer', 'seller', 'landlord', 'tenant', 'leasing-agent', 'secondary-sales-agent',
+      'owner',
+      'manager',
+      'admin',
+      'hr_staff',
+      'accounts_staff',
+      'agent',
+      'leasing_agent',
+      'sales_agent',
+      'leasing-agent',
+      'secondary-sales-agent',
+      'finance',
+      'viewer',
+      'buyer',
+      'seller',
+      'landlord',
+      'tenant',
+      'property_owner',
+      'user',
     ];
     for (const role of expectedRoles) {
       expect(ROLE_PERMISSIONS[role]).toBeDefined();
@@ -119,18 +140,22 @@ describe('requireRole', () => {
   it('rejects when user role is NOT in the allowed list', () => {
     const { req, res, next } = createMocks({ role: 'buyer' });
     requireRole('owner', 'manager')(req, res, next);
-    expect(next).toHaveBeenCalledWith(expect.objectContaining({
-      statusCode: 403,
-      message: expect.stringContaining('requires role'),
-    }));
+    expect(next).toHaveBeenCalledWith(
+      expect.objectContaining({
+        statusCode: 403,
+        message: expect.stringContaining('requires role'),
+      })
+    );
   });
 
   it('rejects with 401 when no user is attached', () => {
     const { req, res, next } = createMocks(null);
     requireRole('owner')(req, res, next);
-    expect(next).toHaveBeenCalledWith(expect.objectContaining({
-      statusCode: 401,
-    }));
+    expect(next).toHaveBeenCalledWith(
+      expect.objectContaining({
+        statusCode: 401,
+      })
+    );
   });
 
   it('works with a single role', () => {
@@ -157,18 +182,22 @@ describe('requirePermission', () => {
   it('rejects when user role has NONE of the permissions', () => {
     const { req, res, next } = createMocks({ role: 'buyer' });
     requirePermission('manage_leads', 'delete_property')(req, res, next);
-    expect(next).toHaveBeenCalledWith(expect.objectContaining({
-      statusCode: 403,
-      message: expect.stringContaining('requires permission'),
-    }));
+    expect(next).toHaveBeenCalledWith(
+      expect.objectContaining({
+        statusCode: 403,
+        message: expect.stringContaining('requires permission'),
+      })
+    );
   });
 
   it('rejects with 401 when no user is attached', () => {
     const { req, res, next } = createMocks(null);
     requirePermission('view_dashboard')(req, res, next);
-    expect(next).toHaveBeenCalledWith(expect.objectContaining({
-      statusCode: 401,
-    }));
+    expect(next).toHaveBeenCalledWith(
+      expect.objectContaining({
+        statusCode: 401,
+      })
+    );
   });
 });
 
@@ -176,16 +205,22 @@ describe('requirePermission', () => {
 describe('requireAllPermissions', () => {
   it('passes when user role has ALL listed permissions', () => {
     const { req, res, next } = createMocks({ role: 'owner' });
-    requireAllPermissions('manage_users', 'delete_property', 'access_whatsapp_business')(req, res, next);
+    requireAllPermissions('manage_users', 'delete_property', 'access_whatsapp_business')(
+      req,
+      res,
+      next
+    );
     expect(next).toHaveBeenCalledWith();
   });
 
   it('rejects when user role has only SOME of the required permissions', () => {
     const { req, res, next } = createMocks({ role: 'admin' });
-    requireAllPermissions('manage_users', 'access_whatsapp_business')(req, res, next);
-    expect(next).toHaveBeenCalledWith(expect.objectContaining({
-      statusCode: 403,
-    })); // admin has manage_users but NOT access_whatsapp_business
+    requireAllPermissions('manage_users', 'configure_chatbot')(req, res, next);
+    expect(next).toHaveBeenCalledWith(
+      expect.objectContaining({
+        statusCode: 403,
+      })
+    ); // admin has manage_users but NOT configure_chatbot
   });
 });
 
@@ -206,18 +241,22 @@ describe('requireMinRole', () => {
   it('rejects when user role is below the minimum', () => {
     const { req, res, next } = createMocks({ role: 'buyer' });
     requireMinRole('agent')(req, res, next); // buyer(10) < agent(50)
-    expect(next).toHaveBeenCalledWith(expect.objectContaining({
-      statusCode: 403,
-      message: expect.stringContaining('minimum role required'),
-    }));
+    expect(next).toHaveBeenCalledWith(
+      expect.objectContaining({
+        statusCode: 403,
+        message: expect.stringContaining('minimum role required'),
+      })
+    );
   });
 
   it('rejects with 401 when no user', () => {
     const { req, res, next } = createMocks(null);
     requireMinRole('viewer')(req, res, next);
-    expect(next).toHaveBeenCalledWith(expect.objectContaining({
-      statusCode: 401,
-    }));
+    expect(next).toHaveBeenCalledWith(
+      expect.objectContaining({
+        statusCode: 401,
+      })
+    );
   });
 });
 
@@ -253,9 +292,11 @@ describe('scopeToOwn', () => {
   it('rejects with 401 when no user', () => {
     const { req, res, next } = createMocks(null);
     scopeToOwn()(req, res, next);
-    expect(next).toHaveBeenCalledWith(expect.objectContaining({
-      statusCode: 401,
-    }));
+    expect(next).toHaveBeenCalledWith(
+      expect.objectContaining({
+        statusCode: 401,
+      })
+    );
   });
 });
 
@@ -271,6 +312,39 @@ describe('Real-world RBAC scenarios', () => {
     const { req, res, next } = createMocks({ role: 'agent' });
     requirePermission('access_whatsapp_business')(req, res, next);
     expect(next).toHaveBeenCalledWith(expect.objectContaining({ statusCode: 403 }));
+  });
+
+  it('agent can view/reply WhatsApp but cannot assign/close conversations', () => {
+    const { req: viewReq, res: viewRes, next: viewNext } = createMocks({ role: 'agent' });
+    requirePermission('view_whatsapp_conversations')(viewReq, viewRes, viewNext);
+    expect(viewNext).toHaveBeenCalledWith();
+
+    const { req: replyReq, res: replyRes, next: replyNext } = createMocks({ role: 'agent' });
+    requirePermission('reply_whatsapp_conversations')(replyReq, replyRes, replyNext);
+    expect(replyNext).toHaveBeenCalledWith();
+
+    const { req: assignReq, res: assignRes, next: assignNext } = createMocks({ role: 'agent' });
+    requirePermission('assign_whatsapp_conversations')(assignReq, assignRes, assignNext);
+    expect(assignNext).toHaveBeenCalledWith(expect.objectContaining({ statusCode: 403 }));
+
+    const { req: closeReq, res: closeRes, next: closeNext } = createMocks({ role: 'agent' });
+    requirePermission('close_whatsapp_conversations')(closeReq, closeRes, closeNext);
+    expect(closeNext).toHaveBeenCalledWith(expect.objectContaining({ statusCode: 403 }));
+  });
+
+  it('manager can fully operate WhatsApp conversations', () => {
+    const perms = [
+      'view_whatsapp_conversations',
+      'reply_whatsapp_conversations',
+      'assign_whatsapp_conversations',
+      'close_whatsapp_conversations',
+    ];
+
+    for (const perm of perms) {
+      const { req, res, next } = createMocks({ role: 'manager' });
+      requirePermission(perm)(req, res, next);
+      expect(next).toHaveBeenCalledWith();
+    }
   });
 
   it('buyer can view properties but cannot create', () => {
@@ -294,14 +368,27 @@ describe('Real-world RBAC scenarios', () => {
   });
 
   it('viewer can see everything but cannot modify anything', () => {
-    const viewPerms = ['view_dashboard', 'view_properties', 'view_leads', 'view_contracts', 'view_payments', 'view_analytics'];
+    const viewPerms = [
+      'view_dashboard',
+      'view_properties',
+      'view_leads',
+      'view_contracts',
+      'view_payments',
+      'view_analytics',
+    ];
     for (const perm of viewPerms) {
       const { req, res, next } = createMocks({ role: 'viewer' });
       requirePermission(perm)(req, res, next);
       expect(next).toHaveBeenCalledWith();
     }
 
-    const writePerms = ['create_property', 'manage_leads', 'create_contracts', 'process_payments', 'delete_property'];
+    const writePerms = [
+      'create_property',
+      'manage_leads',
+      'create_contracts',
+      'process_payments',
+      'delete_property',
+    ];
     for (const perm of writePerms) {
       const { req, res, next } = createMocks({ role: 'viewer' });
       requirePermission(perm)(req, res, next);
@@ -325,5 +412,114 @@ describe('Real-world RBAC scenarios', () => {
       requirePermission('delete_property')(req, res, next);
       expect(next).toHaveBeenCalledWith(expect.objectContaining({ statusCode: 403 }));
     }
+  });
+});
+
+// ─── requireMinRank ──────────────────────────────────────────────────────────
+describe('requireMinRank', () => {
+  it('ROLE_RANK defines rank for all canonical roles', () => {
+    const rank2Roles = [
+      'owner',
+      'admin',
+      'manager',
+      'hr_staff',
+      'accounts_staff',
+      'agent',
+      'leasing_agent',
+      'sales_agent',
+      'finance',
+      'viewer',
+    ];
+    const rank3Roles = ['landlord', 'tenant', 'buyer', 'seller', 'property_owner'];
+
+    for (const role of rank2Roles) {
+      expect(ROLE_RANK[role]).toBe(2);
+    }
+    for (const role of rank3Roles) {
+      expect(ROLE_RANK[role]).toBe(3);
+    }
+    expect(ROLE_RANK['user']).toBe(1);
+  });
+
+  it('passes when user rank meets minimum (owner = rank 2)', () => {
+    const { req, res, next } = createMocks({ role: 'owner' });
+    requireMinRank(2)(req, res, next);
+    expect(next).toHaveBeenCalledWith();
+  });
+
+  it('passes when user rank exceeds minimum (staff accessing rank 1 route)', () => {
+    const { req, res, next } = createMocks({ role: 'admin' });
+    requireMinRank(1)(req, res, next);
+    expect(next).toHaveBeenCalledWith();
+  });
+
+  it('rejects when user rank is below minimum (user accessing staff route)', () => {
+    const { req, res, next } = createMocks({ role: 'user' });
+    requireMinRank(2)(req, res, next);
+    expect(next).toHaveBeenCalledWith(
+      expect.objectContaining({ statusCode: 403, message: expect.stringContaining('rank') })
+    );
+  });
+
+  it('rejects unauthenticated requests with 401', () => {
+    const { req, res, next } = createMocks(null);
+    requireMinRank(1)(req, res, next);
+    expect(next).toHaveBeenCalledWith(expect.objectContaining({ statusCode: 401 }));
+  });
+
+  it('hr_staff and accounts_staff pass rank 2 gate', () => {
+    for (const role of ['hr_staff', 'accounts_staff']) {
+      const { req, res, next } = createMocks({ role });
+      requireMinRank(2)(req, res, next);
+      expect(next).toHaveBeenCalledWith();
+    }
+  });
+});
+
+// ─── New role permissions ─────────────────────────────────────────────────────
+describe('New role permissions (v2.0)', () => {
+  it('hr_staff can manage HR but cannot manage leads', () => {
+    const { req, res, next } = createMocks({ role: 'hr_staff' });
+    requirePermission('manage_hr')(req, res, next);
+    expect(next).toHaveBeenCalledWith();
+
+    const { req: r2, res: r2res, next: n2 } = createMocks({ role: 'hr_staff' });
+    requirePermission('manage_leads')(r2, r2res, n2);
+    expect(n2).toHaveBeenCalledWith(expect.objectContaining({ statusCode: 403 }));
+  });
+
+  it('accounts_staff can approve commissions but cannot manage leads', () => {
+    const { req, res, next } = createMocks({ role: 'accounts_staff' });
+    requirePermission('approve_commission')(req, res, next);
+    expect(next).toHaveBeenCalledWith();
+
+    const { req: r2, res: r2res, next: n2 } = createMocks({ role: 'accounts_staff' });
+    requirePermission('manage_leads')(r2, r2res, n2);
+    expect(n2).toHaveBeenCalledWith(expect.objectContaining({ statusCode: 403 }));
+  });
+
+  it('property_owner can manage maintenance but cannot manage HR', () => {
+    const { req, res, next } = createMocks({ role: 'property_owner' });
+    requirePermission('manage_maintenance')(req, res, next);
+    expect(next).toHaveBeenCalledWith();
+
+    const { req: r2, res: r2res, next: n2 } = createMocks({ role: 'property_owner' });
+    requirePermission('manage_hr')(r2, r2res, n2);
+    expect(n2).toHaveBeenCalledWith(expect.objectContaining({ statusCode: 403 }));
+  });
+
+  it('tenant can submit maintenance and pay rent', () => {
+    for (const perm of ['submit_maintenance', 'pay_rent_online', 'view_own_lease']) {
+      const { req, res, next } = createMocks({ role: 'tenant' });
+      requirePermission(perm)(req, res, next);
+      expect(next).toHaveBeenCalledWith();
+    }
+  });
+
+  it('leasing_agent (underscore) has same permissions as leasing-agent (hyphen)', () => {
+    const hyphenPerms = ROLE_PERMISSIONS['leasing-agent'];
+    const underscorePerms = ROLE_PERMISSIONS['leasing_agent'];
+    expect(underscorePerms).toBeDefined();
+    expect(underscorePerms).toEqual(hyphenPerms);
   });
 });

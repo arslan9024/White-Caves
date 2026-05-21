@@ -1,7 +1,9 @@
+import type { useHRData } from '../hooks/useHRData';
+import type { Dispatch, SetStateAction } from 'react';
 import { Search, Edit, Trash2, Eye, Download, Mail } from 'lucide-react';
 
 interface Applicant {
-  id: string | number;
+  id: string;
   name: string;
   avatar: string;
   email: string;
@@ -18,20 +20,7 @@ interface StatusBadgeStyle {
   color: string;
 }
 
-interface ApplicantsState {
-  filteredApplicants: Applicant[];
-  searchQuery: string;
-  setSearchQuery: (query: string) => void;
-  filterApplicantStatus: string;
-  setFilterApplicantStatus: (status: string) => void;
-  selectedApplicant: Applicant | null;
-  setSelectedApplicant: (applicant: Applicant | null) => void;
-  showApplicantModal: boolean;
-  setShowApplicantModal: (show: boolean) => void;
-  getApplicantStatusBadge: (status: string) => StatusBadgeStyle;
-  updateApplicant: (id: string | number, data: Partial<Applicant>) => void;
-  deleteApplicant: (id: string | number) => void;
-}
+type ApplicantsState = ReturnType<typeof useHRData>;
 
 interface ApplicantsTabProps {
   state: ApplicantsState;
@@ -50,16 +39,16 @@ export default function ApplicantsTab({ state }: ApplicantsTabProps) {
     setShowApplicantModal,
     getApplicantStatusBadge,
     updateApplicant,
-    deleteApplicant
+    deleteApplicant,
   } = state;
 
-  const handleDelete = (id: string | number) => {
+  const handleDelete = (id: string) => {
     if (window.confirm('Are you sure you want to delete this applicant?')) {
       deleteApplicant(id);
     }
   };
 
-  const handleStatusChange = (id: string | number, newStatus: string) => {
+  const handleStatusChange = (id: string, newStatus: string) => {
     updateApplicant(id, { status: newStatus });
   };
 
@@ -73,12 +62,12 @@ export default function ApplicantsTab({ state }: ApplicantsTabProps) {
               type="text"
               placeholder="Search applicants..."
               value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
+              onChange={e => setSearchQuery(e.target.value)}
             />
           </div>
           <select
             value={filterApplicantStatus}
-            onChange={(e) => setFilterApplicantStatus(e.target.value)}
+            onChange={e => setFilterApplicantStatus(e.target.value)}
             className="filter-select"
           >
             <option value="all">All Status</option>
@@ -97,12 +86,19 @@ export default function ApplicantsTab({ state }: ApplicantsTabProps) {
       </div>
 
       <div className="applicants-grid">
-        {filteredApplicants.map((applicant) => {
+        {filteredApplicants.map(applicant => {
           const statusStyle = getApplicantStatusBadge(applicant.status);
           return (
             <div key={applicant.id} className="applicant-card">
               <div className="applicant-header">
-                <img src={applicant.avatar} alt={applicant.name} className="applicant-avatar" loading="lazy" width={40} height={40} />
+                <img
+                  src={applicant.avatar}
+                  alt={applicant.name}
+                  className="applicant-avatar"
+                  loading="lazy"
+                  width={40}
+                  height={40}
+                />
                 <div className="applicant-info">
                   <h4>{applicant.name}</h4>
                   <p className="applicant-job">{applicant.job}</p>
@@ -124,12 +120,26 @@ export default function ApplicantsTab({ state }: ApplicantsTabProps) {
                 </div>
                 <div className="detail-row">
                   <span className="label">Applied:</span>
-                  <span>{applicant.appliedDate ? new Date(applicant.appliedDate).toLocaleDateString() : 'N/A'}</span>
+                  <span>
+                    {applicant.appliedDate
+                      ? new Date(applicant.appliedDate).toLocaleDateString()
+                      : 'N/A'}
+                  </span>
                 </div>
               </div>
 
               <div className="applicant-score">
-                <div className="score-badge" style={{ color: (applicant.score ?? 0) >= 80 ? '#10b981' : (applicant.score ?? 0) >= 60 ? '#f59e0b' : '#ef4444' }}>
+                <div
+                  className="score-badge"
+                  style={{
+                    color:
+                      (applicant.score ?? 0) >= 80
+                        ? '#10b981'
+                        : (applicant.score ?? 0) >= 60
+                          ? '#f59e0b'
+                          : '#ef4444',
+                  }}
+                >
                   Score: {applicant.score ?? 'N/A'}%
                 </div>
               </div>
@@ -137,11 +147,11 @@ export default function ApplicantsTab({ state }: ApplicantsTabProps) {
               <div className="status-selector">
                 <select
                   value={applicant.status}
-                  onChange={(e) => handleStatusChange(applicant.id, e.target.value)}
+                  onChange={e => handleStatusChange(applicant.id, e.target.value)}
                   style={{
                     backgroundColor: statusStyle.bg,
                     color: statusStyle.color,
-                    border: `1px solid ${statusStyle.color}`
+                    border: `1px solid ${statusStyle.color}`,
                   }}
                   className="status-select"
                 >
@@ -154,7 +164,11 @@ export default function ApplicantsTab({ state }: ApplicantsTabProps) {
               </div>
 
               <div className="applicant-actions">
-                <button className="action-btn secondary" title="Send Email" aria-label="Send email to applicant">
+                <button
+                  className="action-btn secondary"
+                  title="Send Email"
+                  aria-label="Send email to applicant"
+                >
                   <Mail size={16} />
                 </button>
                 <button

@@ -7,7 +7,7 @@ import React from 'react';
 import styled from 'styled-components';
 
 const CardContainer = styled.div<{ $bgColor?: string }>`
-  background: ${(props) => props.$bgColor || 'rgba(255, 255, 255, 0.05)'};
+  background: ${props => props.$bgColor || 'rgba(255, 255, 255, 0.05)'};
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 12px;
   padding: 20px;
@@ -16,7 +16,7 @@ const CardContainer = styled.div<{ $bgColor?: string }>`
   overflow: hidden;
 
   &:hover {
-    background: ${(props) => props.$bgColor || 'rgba(255, 255, 255, 0.08)'};
+    background: ${props => props.$bgColor || 'rgba(255, 255, 255, 0.08)'};
     border-color: rgba(255, 255, 255, 0.2);
     transform: translateY(-4px);
     box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2);
@@ -78,7 +78,7 @@ const CardChange = styled.div<{ $positive?: boolean }>`
   gap: 4px;
   font-size: 12px;
   font-weight: 600;
-  color: ${(props) => (props.$positive ? '#27ae60' : '#e74c3c')};
+  color: ${props => (props.$positive ? '#27ae60' : '#e74c3c')};
 
   &::before {
     content: '';
@@ -86,11 +86,8 @@ const CardChange = styled.div<{ $positive?: boolean }>`
     height: 0;
     border-left: 4px solid transparent;
     border-right: 4px solid transparent;
-    border-bottom: ${(props) =>
-      props.$positive
-        ? '6px solid #27ae60'
-        : '6px solid #e74c3c'};
-    transform: ${(props) => (props.$positive ? 'none' : 'rotate(180deg)')};
+    border-bottom: ${props => (props.$positive ? '6px solid #27ae60' : '6px solid #e74c3c')};
+    transform: ${props => (props.$positive ? 'none' : 'rotate(180deg)')};
   }
 `;
 
@@ -103,9 +100,9 @@ const ProgressBar = styled.div`
 `;
 
 const ProgressFill = styled.div<{ $percentage: number; $color?: string }>`
-  width: ${(props) => Math.min(props.$percentage, 100)}%;
+  width: ${props => Math.min(props.$percentage, 100)}%;
   height: 100%;
-  background: ${(props) => props.$color || '#3498db'};
+  background: ${props => props.$color || '#3498db'};
   transition: width 0.3s ease;
 `;
 
@@ -143,9 +140,7 @@ export const KPICard: React.FC<KPICardProps> = ({
   const isPositive = trend === 'up';
   const isNeutral = trend === 'neutral';
   const progressPercentage =
-    showProgress && typeof value === 'number' && progressMax > 0
-      ? (value / progressMax) * 100
-      : 0;
+    showProgress && typeof value === 'number' && progressMax > 0 ? (value / progressMax) * 100 : 0;
 
   return (
     <CardContainer
@@ -163,16 +158,15 @@ export const KPICard: React.FC<KPICardProps> = ({
 
         <div>
           <CardValue>{value}</CardValue>
-          {unit && (
-            <CardLabel style={{ marginTop: 4 }}>
-              {unit}
-            </CardLabel>
-          )}
+          {unit && <CardLabel style={{ marginTop: 4 }}>{unit}</CardLabel>}
         </div>
 
         {change !== undefined && !isNeutral && (
           <CardChange $positive={isPositive}>
-            {isPositive ? '+' : ''}{change}%
+            <span>
+              {isPositive ? '+' : '-'}
+              {Math.abs(change)}%
+            </span>
           </CardChange>
         )}
 
@@ -181,6 +175,10 @@ export const KPICard: React.FC<KPICardProps> = ({
             <ProgressFill
               $percentage={progressPercentage}
               $color={accentColor}
+              style={{
+                width: `${Math.min(progressPercentage, 100)}%`,
+                background: accentColor,
+              }}
             />
           </ProgressBar>
         )}

@@ -12,22 +12,29 @@ vi.mock('../../services/whatsapp/whatsapp.service');
 describe('useWhatsAppIntegration', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    // Default: listAccounts returns empty list so the mount effect doesn't set error
+    vi.mocked(whatsappService.listAccounts).mockResolvedValue({
+      success: true,
+      data: { accounts: [], count: 0 },
+    });
   });
 
   describe('initialization', () => {
-    it('should initialize with empty state', () => {
+    it('should initialize with empty state', async () => {
       const { result } = renderHook(() => useWhatsAppIntegration());
+
+      // Wait for the mount-time loadAccounts() effect to settle
+      await waitFor(() => {
+        expect(result.current.isLoading).toBe(false);
+      });
 
       expect(result.current.accounts).toEqual([]);
       expect(result.current.currentAccount).toBeNull();
-      expect(result.current.isLoading).toBe(false);
       expect(result.current.error).toBeNull();
     });
 
     it('should load accounts on mount', async () => {
-      const mockAccounts = [
-        { accountId: '1', name: 'Account 1', isConnected: true },
-      ];
+      const mockAccounts = [{ accountId: '1', name: 'Account 1', isConnected: true }];
 
       (whatsappService.listAccounts as vi.Mock).mockResolvedValue({
         data: { accounts: mockAccounts },
@@ -63,9 +70,7 @@ describe('useWhatsAppIntegration', () => {
       const { result } = renderHook(() => useWhatsAppIntegration());
 
       const error = new Error('Link failed');
-      (whatsappService.initiateDeviceLink as vi.Mock).mockRejectedValue(
-        error
-      );
+      (whatsappService.initiateDeviceLink as vi.Mock).mockRejectedValue(error);
 
       await act(async () => {
         try {
@@ -165,10 +170,12 @@ describe('useWhatsAppIntegration', () => {
     it('should clear errors', async () => {
       const { result } = renderHook(() => useWhatsAppIntegration());
 
+      await waitFor(() => {
+        expect(result.current.isLoading).toBe(false);
+      });
+
       // Trigger an error
-      (whatsappService.listAccounts as vi.Mock).mockRejectedValue(
-        new Error('Load failed')
-      );
+      (whatsappService.listAccounts as vi.Mock).mockRejectedValue(new Error('Load failed'));
 
       // Clear the error
       act(() => {

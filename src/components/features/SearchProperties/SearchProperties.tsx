@@ -1,9 +1,8 @@
-﻿// @ts-nocheck
-// src/components/features/SearchProperties/SearchProperties.tsx
+﻿// src/components/features/SearchProperties/SearchProperties.tsx
 /**
  * Property Search Feature Component
  * Example of a second feature to demonstrate the pattern
- * 
+ *
  * This component shows how to:
  * - Use theme colors
  * - Handle user input
@@ -13,11 +12,12 @@
 
 import React, { useState } from 'react';
 import styled from 'styled-components';
+import { authFetch } from '../../../utils/authFetch';
 
 const Container = styled.div`
   padding: 24px;
-  background: ${props => props.theme.colors.background};
-  color: ${props => props.theme.colors.text};
+  background: ${({ theme }) => String((theme as any)?.colors?.backgroundAlt ?? '#f9fafb')};
+  color: ${({ theme }) => String((theme as any)?.colors?.textPrimary ?? '#1f2937')};
   overflow-y: auto;
   height: 100%;
 `;
@@ -29,12 +29,12 @@ const Header = styled.div`
     margin: 0 0 8px 0;
     font-size: 28px;
     font-weight: 600;
-    color: ${props => props.theme.colors.text};
+    color: ${({ theme }) => String((theme as any)?.colors?.textPrimary ?? '#1f2937')};
   }
 
   p {
     margin: 0;
-    color: ${props => props.theme.colors.textSecondary};
+    color: ${({ theme }) => String((theme as any)?.colors?.textSecondary ?? '#6b7280')};
     font-size: 14px;
   }
 `;
@@ -48,11 +48,11 @@ const SearchForm = styled.form`
 
 const SearchInput = styled.input`
   padding: 10px 14px;
-  border: 1px solid ${props => props.theme.colors.border};
+  border: 1px solid ${({ theme }) => String((theme as any)?.colors?.border ?? '#e5e7eb')};
   border-radius: 6px;
-  background: ${props => props.theme.colors.cardBg};
-  color: ${props => props.theme.colors.text};
-  font-family: ${props => props.theme.fonts.family};
+  background: ${({ theme }) => String((theme as any)?.colors?.cardBg ?? '#ffffff')};
+  color: ${({ theme }) => String((theme as any)?.colors?.textPrimary ?? '#1f2937')};
+  font-family: ${props => props.theme.fonts?.family ?? 'inherit'};
   font-size: 14px;
 
   &:focus {
@@ -86,8 +86,8 @@ const SearchButton = styled.button`
 `;
 
 const FilterSection = styled.div`
-  background: ${props => props.theme.colors.cardBg};
-  border: 1px solid ${props => props.theme.colors.border};
+  background: ${({ theme }) => String((theme as any)?.colors?.cardBg ?? '#ffffff')};
+  border: 1px solid ${({ theme }) => String((theme as any)?.colors?.border ?? '#e5e7eb')};
   border-radius: 8px;
   padding: 16px;
   margin-bottom: 24px;
@@ -113,7 +113,7 @@ const FilterCheckbox = styled.label`
   align-items: center;
   gap: 8px;
   cursor: pointer;
-  color: ${props => props.theme.colors.text};
+  color: ${({ theme }) => String((theme as any)?.colors?.textPrimary ?? '#1f2937')};
   font-size: 14px;
 
   input {
@@ -133,7 +133,7 @@ const ResultsHeader = styled.h2`
   margin: 0 0 16px 0;
   font-size: 16px;
   font-weight: 600;
-  color: ${props => props.theme.colors.text};
+  color: ${({ theme }) => String((theme as any)?.colors?.textPrimary ?? '#1f2937')};
 `;
 
 const ResultsList = styled.div`
@@ -142,8 +142,8 @@ const ResultsList = styled.div`
 `;
 
 const ResultCard = styled.div`
-  background: ${props => props.theme.colors.cardBg};
-  border: 1px solid ${props => props.theme.colors.border};
+  background: ${({ theme }) => String((theme as any)?.colors?.cardBg ?? '#ffffff')};
+  border: 1px solid ${({ theme }) => String((theme as any)?.colors?.border ?? '#e5e7eb')};
   border-radius: 8px;
   padding: 16px;
   cursor: pointer;
@@ -156,13 +156,13 @@ const ResultCard = styled.div`
 
   .property-name {
     font-weight: 600;
-    color: ${props => props.theme.colors.text};
+    color: ${({ theme }) => String((theme as any)?.colors?.textPrimary ?? '#1f2937')};
     margin-bottom: 4px;
   }
 
   .property-location {
     font-size: 13px;
-    color: ${props => props.theme.colors.textSecondary};
+    color: ${({ theme }) => String((theme as any)?.colors?.textSecondary ?? '#6b7280')};
     margin-bottom: 8px;
   }
 
@@ -193,7 +193,7 @@ const ResultCard = styled.div`
 const EmptyState = styled.div`
   text-align: center;
   padding: 40px 20px;
-  color: ${props => props.theme.colors.textSecondary};
+  color: ${({ theme }) => String((theme as any)?.colors?.textSecondary ?? '#6b7280')};
 
   .icon {
     font-size: 48px;
@@ -202,7 +202,7 @@ const EmptyState = styled.div`
 
   h3 {
     margin: 0 0 8px 0;
-    color: ${props => props.theme.colors.text};
+    color: ${({ theme }) => String((theme as any)?.colors?.textPrimary ?? '#1f2937')};
   }
 
   p {
@@ -241,52 +241,48 @@ export const SearchProperties: React.FC = () => {
   });
   const [results, setResults] = useState<PropertyResult[]>([]);
   const [hasSearched, setHasSearched] = useState(false);
+  const [loading, setLoading] = useState(false);
 
-  // Mock data
-  const mockProperties: PropertyResult[] = [
-    {
-      id: '1',
-      name: 'Palm Jumeirah Villa',
-      location: 'Palm Jumeirah, Dubai',
-      price: 'AED 2.5M',
-      bedrooms: 4,
-      bathrooms: 5,
-      area: '450 sqm',
-      status: 'Available',
-    },
-    {
-      id: '2',
-      name: 'Downtown Apartment',
-      location: 'Downtown Dubai',
-      price: 'AED 850K',
-      bedrooms: 2,
-      bathrooms: 2,
-      area: '120 sqm',
-      status: 'Available',
-    },
-    {
-      id: '3',
-      name: 'Marina Penthouse',
-      location: 'Dubai Marina',
-      price: 'AED 3.2M',
-      bedrooms: 3,
-      bathrooms: 3,
-      area: '280 sqm',
-      status: 'Pending',
-    },
-  ];
-
-  const handleSearch = (e: React.FormEvent) => {
+  const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault();
     setHasSearched(true);
+    setLoading(true);
+    try {
+      const params = new URLSearchParams();
+      if (searchTerm.trim()) params.set('search', searchTerm.trim());
+      if (filters.status.length === 1) params.set('status', filters.status[0]);
+      if (filters.bedrooms !== 'all' && filters.bedrooms !== '4+') {
+        params.set('minBeds', filters.bedrooms);
+      } else if (filters.bedrooms === '4+') {
+        params.set('minBeds', '4');
+      }
+      params.set('pageSize', '20');
 
-    // Filter properties based on search term
-    const filtered = mockProperties.filter(prop =>
-      prop.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      prop.location.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-
-    setResults(filtered);
+      const resp = await authFetch(`/api/properties?${params.toString()}`);
+      const data = (await resp.json()) as { data: Record<string, unknown>[] };
+      const mapped: PropertyResult[] = (data.data || []).map(prop => ({
+        id: String(prop.id ?? ''),
+        name: String(prop.title || 'Unnamed Property'),
+        location: String(prop.location || prop.area || 'Dubai, UAE'),
+        price: prop.price ? `AED ${Number(prop.price).toLocaleString()}` : 'Price on Request',
+        bedrooms: Number(prop.bedrooms ?? 0),
+        bathrooms: Number(prop.bathrooms ?? 0),
+        area: prop.sqft ? `${String(prop.sqft)} sqft` : String(prop.area || 'N/A'),
+        status:
+          prop.status === 'available'
+            ? 'Available'
+            : prop.status === 'sold'
+              ? 'Sold'
+              : prop.status === 'rented'
+                ? 'Rented'
+                : 'Pending',
+      }));
+      setResults(mapped);
+    } catch {
+      setResults([]);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleFilterChange = (filterType: keyof SearchFilters, value: string | string[]) => {
@@ -353,7 +349,13 @@ export const SearchProperties: React.FC = () => {
 
       {/* Results */}
       <ResultsSection>
-        {hasSearched && results.length === 0 ? (
+        {loading ? (
+          <EmptyState>
+            <div className="icon">⏳</div>
+            <h3>Searching…</h3>
+            <p>Loading properties from the database</p>
+          </EmptyState>
+        ) : hasSearched && results.length === 0 ? (
           <EmptyState>
             <div className="icon">🏘️</div>
             <h3>No Properties Found</h3>
@@ -400,4 +402,3 @@ export const SearchProperties: React.FC = () => {
 };
 
 export default SearchProperties;
-

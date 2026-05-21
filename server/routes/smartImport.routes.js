@@ -5,20 +5,126 @@
 
 import express from 'express';
 import multer from 'multer';
+import mongoose from 'mongoose';
+import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import * as excelImportService from '../services/excelImportService.js';
 import * as importValidationEngine from '../services/importValidationEngine.js';
 import * as importExecutionEngine from '../services/importExecutionEngine.js';
-import * as deduplicationService from '../services/deduplicationService.js';
 import ImportSession from '../models/ImportSession.js';
 
 const router = express.Router();
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+const getAuthenticatedUserId = req => req.user?.id || req.user?._id || null;
+
+const buildSessionOwnershipQuery = (sessionId, userId) => ({
+  _id: sessionId,
+  $or: [{ userId }, { importedBy: userId }],
+});
+
+const findSessionForUser = (sessionId, userId) => {
+  if (!mongoose.Types.ObjectId.isValid(sessionId)) {
+    return null;
+  }
+
+  return ImportSession.findOne(buildSessionOwnershipQuery(sessionId, userId));
+};
+
+const ALLOWED_DEDUPLICATION_STRATEGIES = ['keep', 'overwrite', 'version', 'manual'];
+const ALLOWED_VALIDATION_STRATEGIES = ['strict', 'lenient', 'balanced'];
+const IMPORT_REQUIRED_FIELDS = ['ownerName', 'area', 'pNumber'];
+
+const isPlainObject = value =>
+  Boolean(value) &&
+  typeof value === 'object' &&
+  !Array.isArray(value) &&
+  value.constructor === Object;
+
+const isValidMappingPayload = mapping =>
+  isPlainObject(mapping) &&
+  Object.entries(mapping).every(
+    ([key, value]) =>
+      typeof key === 'string' &&
+      key.trim().length > 0 &&
+      typeof value === 'string' &&
+      value.trim().length > 0
+  );
+
+const normalizeMappingToken = value =>
+  String(value || '')
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9]/g, '');
+
+const hasRequiredFieldMappings = (mapping, requiredFields = IMPORT_REQUIRED_FIELDS) => {
+  if (!isValidMappingPayload(mapping)) {
+    return false;
+  }
+
+  const normalizedKeys = new Set(Object.keys(mapping).map(normalizeMappingToken));
+  const normalizedValues = new Set(Object.values(mapping).map(normalizeMappingToken));
+
+  return requiredFields.every(field => {
+    const normalized = normalizeMappingToken(field);
+    return normalizedKeys.has(normalized) || normalizedValues.has(normalized);
+  });
+};
+
+const resolveExecutionColumnMapping = (sessionMapping, parseResultMapping) => {
+  if (hasRequiredFieldMappings(sessionMapping)) {
+    return sessionMapping;
+  }
+
+  if (hasRequiredFieldMappings(parseResultMapping)) {
+    return parseResultMapping;
+  }
+
+  return sessionMapping || parseResultMapping || {};
+};
+
+const isValidClusterAssignmentsPayload = clusterAssignments =>
+  isPlainObject(clusterAssignments) &&
+  Object.entries(clusterAssignments).every(
+    ([key, value]) =>
+      typeof key === 'string' &&
+      key.trim().length > 0 &&
+      typeof value === 'string' &&
+      value.trim().length > 0
+  );
+
+const isValidOptionalSheetName = sheetName =>
+  sheetName === undefined || sheetName === null || typeof sheetName === 'string';
+
+const isValidOptionalBoolean = value => value === undefined || typeof value === 'boolean';
+
+const normalizeMappingPayload = mapping =>
+  Object.fromEntries(
+    Object.entries(mapping).map(([key, value]) => [String(key).trim(), String(value).trim()])
+  );
+
+const isValidParseDataArray = value => Array.isArray(value);
+
+const getImportErrorStatus = errorMessage => {
+  const message = String(errorMessage || '');
+  const badRequestPatterns = [
+    'Worksheet not found',
+    'Import file not found',
+    'Only .xlsx, .xls, and .csv files are supported',
+    'File too large',
+  ];
+
+  return badRequestPatterns.some(pattern => message.includes(pattern)) ? 400 : 500;
+};
+
 // Multer configuration
 const uploadDir = path.join(__dirname, '../uploads');
+if (!fs.existsSync(uploadDir)) {
+  fs.mkdirSync(uploadDir, { recursive: true });
+}
+
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     cb(null, uploadDir);
@@ -26,13 +132,13 @@ const storage = multer.diskStorage({
   filename: (req, file, cb) => {
     const timestamp = Date.now();
     cb(null, `import_${timestamp}_${file.originalname}`);
-  }
+  },
 });
 
 const fileFilter = (req, file, cb) => {
   const allowedExtensions = ['.xlsx', '.xls', '.csv'];
   const ext = path.extname(file.originalname).toLowerCase();
-  
+
   if (allowedExtensions.includes(ext)) {
     cb(null, true);
   } else {
@@ -43,25 +149,53 @@ const fileFilter = (req, file, cb) => {
 const upload = multer({
   storage,
   fileFilter,
-  limits: { fileSize: 50 * 1024 * 1024 } // 50MB max
+  limits: { fileSize: 50 * 1024 * 1024 }, // 50MB max
 });
+
+const uploadSingleImportFile = (req, res, next) => {
+  upload.single('file')(req, res, error => {
+    if (!error) {
+      return next();
+    }
+
+    if (error instanceof multer.MulterError && error.code === 'LIMIT_FILE_SIZE') {
+      return res.status(400).json({
+        success: false,
+        error: 'File too large: maximum supported size is 50MB',
+      });
+    }
+
+    return res.status(getImportErrorStatus(error.message)).json({
+      success: false,
+      error: error.message,
+    });
+  });
+};
 
 /**
  * POST /api/inventory/import/upload
  * Upload Excel/CSV file and extract metadata
  */
-router.post('/upload', upload.single('file'), async (req, res) => {
+router.post('/upload', uploadSingleImportFile, async (req, res) => {
   try {
+    const userId = getAuthenticatedUserId(req);
+    if (!userId) {
+      return res.status(401).json({
+        success: false,
+        error: 'Authentication required',
+      });
+    }
+
     if (!req.file) {
       return res.status(400).json({
         success: false,
-        error: 'No file provided'
+        error: 'No file provided',
       });
     }
 
     // Parse Excel file
     const parseResult = await excelImportService.parseExcelFile(req.file.path, {
-      previewLimit: 20
+      previewLimit: 20,
     });
 
     // Create import session
@@ -73,7 +207,8 @@ router.post('/upload', upload.single('file'), async (req, res) => {
       totalRows: parseResult.totalRows,
       status: 'pending',
       columnMapping: parseResult.columnMapping,
-      importedBy: req.user?.id || 'anonymous'
+      userId,
+      importedBy: userId,
     });
 
     await session.save();
@@ -90,13 +225,13 @@ router.post('/upload', upload.single('file'), async (req, res) => {
         preview: parseResult.preview,
         totalRows: parseResult.totalRows,
         columnMapping: parseResult.columnMapping,
-        dropdownOptions
-      }
+        dropdownOptions,
+      },
     });
   } catch (error) {
-    res.status(500).json({
+    res.status(getImportErrorStatus(error.message)).json({
       success: false,
-      error: error.message
+      error: error.message,
     });
   }
 });
@@ -107,21 +242,37 @@ router.post('/upload', upload.single('file'), async (req, res) => {
  */
 router.post('/:sessionId/preview', async (req, res) => {
   try {
-    const session = await ImportSession.findById(req.params.sessionId);
-    if (!session) {
-      return res.status(404).json({
+    const userId = getAuthenticatedUserId(req);
+    if (!userId) {
+      return res.status(401).json({ success: false, error: 'Authentication required' });
+    }
+
+    if (!isValidOptionalSheetName(req.body.sheetName)) {
+      return res.status(400).json({
         success: false,
-        error: 'Import session not found'
+        error: 'Invalid sheetName payload: expected a string',
       });
     }
 
-    const parseResult = await excelImportService.parseExcelFile(
-      session.filePath,
-      {
-        sheetName: req.body.sheetName || session.sheetName,
-        previewLimit: 100
-      }
-    );
+    const session = await findSessionForUser(req.params.sessionId, userId);
+    if (!session) {
+      return res.status(404).json({
+        success: false,
+        error: 'Import session not found',
+      });
+    }
+
+    const parseResult = await excelImportService.parseExcelFile(session.filePath, {
+      sheetName: req.body.sheetName || session.sheetName,
+      previewLimit: 100,
+    });
+
+    if (!isValidParseDataArray(parseResult.preview)) {
+      return res.status(500).json({
+        success: false,
+        error: 'Invalid parser payload: preview must be an array',
+      });
+    }
 
     const dropdownOptions = extractDropdownOptions(parseResult.preview);
     const stats = calculateDataStats(parseResult.preview);
@@ -132,13 +283,13 @@ router.post('/:sessionId/preview', async (req, res) => {
         preview: parseResult.preview,
         dropdownOptions,
         stats,
-        totalRows: parseResult.totalRows
-      }
+        totalRows: parseResult.totalRows,
+      },
     });
   } catch (error) {
-    res.status(500).json({
+    res.status(getImportErrorStatus(error.message)).json({
       success: false,
-      error: error.message
+      error: error.message,
     });
   }
 });
@@ -149,20 +300,55 @@ router.post('/:sessionId/preview', async (req, res) => {
  */
 router.post('/:sessionId/mapping', async (req, res) => {
   try {
-    const session = await ImportSession.findByIdAndUpdate(
-      req.params.sessionId,
-      { columnMapping: req.body.mapping },
+    const userId = getAuthenticatedUserId(req);
+    if (!userId) {
+      return res.status(401).json({ success: false, error: 'Authentication required' });
+    }
+
+    if (!mongoose.Types.ObjectId.isValid(req.params.sessionId)) {
+      return res.status(404).json({
+        success: false,
+        error: 'Import session not found',
+      });
+    }
+
+    if (!isValidMappingPayload(req.body.mapping)) {
+      return res.status(400).json({
+        success: false,
+        error: 'Invalid mapping payload: expected an object of string-to-string mappings',
+      });
+    }
+
+    const normalizedMapping = normalizeMappingPayload(req.body.mapping);
+
+    if (!hasRequiredFieldMappings(normalizedMapping)) {
+      return res.status(400).json({
+        success: false,
+        error: `Mapping is missing required fields: ${IMPORT_REQUIRED_FIELDS.join(', ')}`,
+      });
+    }
+
+    const session = await ImportSession.findOneAndUpdate(
+      buildSessionOwnershipQuery(req.params.sessionId, userId),
+      { columnMapping: normalizedMapping },
       { new: true }
     );
 
+    if (!session) {
+      return res.status(404).json({
+        success: false,
+        error: 'Import session not found',
+      });
+    }
+
     res.json({
       success: true,
-      data: { session }
+      data: { session },
     });
   } catch (error) {
-    res.status(500).json({
+    res.status(getImportErrorStatus(error.message)).json({
       success: false,
-      error: error.message
+      error: error.message,
     });
   }
 });
@@ -173,45 +359,69 @@ router.post('/:sessionId/mapping', async (req, res) => {
  */
 router.post('/:sessionId/validate', async (req, res) => {
   try {
-    const session = await ImportSession.findById(req.params.sessionId);
-    if (!session) {
-      return res.status(404).json({
+    const userId = getAuthenticatedUserId(req);
+    if (!userId) {
+      return res.status(401).json({ success: false, error: 'Authentication required' });
+    }
+
+    if (!isValidOptionalSheetName(req.body.sheetName)) {
+      return res.status(400).json({
         success: false,
-        error: 'Import session not found'
+        error: 'Invalid sheetName payload: expected a string',
       });
     }
 
-    const parseResult = await excelImportService.parseExcelFile(
-      session.filePath,
-      { sheetName: req.body.sheetName || session.sheetName }
-    );
+    const validationStrategy = req.body.strategy || 'balanced';
+    if (!ALLOWED_VALIDATION_STRATEGIES.includes(validationStrategy)) {
+      return res.status(400).json({
+        success: false,
+        error: `Invalid validation strategy: ${validationStrategy}`,
+      });
+    }
+
+    const session = await findSessionForUser(req.params.sessionId, userId);
+    if (!session) {
+      return res.status(404).json({
+        success: false,
+        error: 'Import session not found',
+      });
+    }
+
+    const parseResult = await excelImportService.parseExcelFile(session.filePath, {
+      sheetName: req.body.sheetName || session.sheetName,
+    });
+
+    if (!isValidParseDataArray(parseResult.data)) {
+      return res.status(500).json({
+        success: false,
+        error: 'Invalid parser payload: data must be an array',
+      });
+    }
 
     const validation = await importValidationEngine.validateAllRows(
       parseResult.data,
-      req.body.strategy || 'balanced',
+      validationStrategy,
       {
-        requiredFields: ['ownerName', 'area'],
-        fieldTypes: {}
+        requiredFields: IMPORT_REQUIRED_FIELDS,
+        fieldTypes: {},
       }
     );
 
     // Check for orphaned records
-    const orphaned = importValidationEngine.detectOrphanedRecords(
-      parseResult.data
-    );
+    const orphaned = importValidationEngine.detectOrphanedRecords(parseResult.data);
 
     res.json({
       success: true,
       data: {
         validation,
         orphanedRecords: orphaned,
-        isReady: validation.isValid && orphaned.length === 0
-      }
+        isReady: validation.isValid && orphaned.length === 0,
+      },
     });
   } catch (error) {
-    res.status(500).json({
+    res.status(getImportErrorStatus(error.message)).json({
       success: false,
-      error: error.message
+      error: error.message,
     });
   }
 });
@@ -222,74 +432,128 @@ router.post('/:sessionId/validate', async (req, res) => {
  */
 router.post('/:sessionId/execute', async (req, res) => {
   try {
-    const session = await ImportSession.findById(req.params.sessionId);
-    if (!session) {
-      return res.status(404).json({
+    const userId = getAuthenticatedUserId(req);
+    if (!userId) {
+      return res.status(401).json({ success: false, error: 'Authentication required' });
+    }
+
+    if (!isValidOptionalSheetName(req.body.sheetName)) {
+      return res.status(400).json({
         success: false,
-        error: 'Import session not found'
+        error: 'Invalid sheetName payload: expected a string',
       });
     }
 
-    // Update status
-    session.status = 'processing';
-    await session.save();
+    if (!isValidOptionalBoolean(req.body.dryRun)) {
+      return res.status(400).json({
+        success: false,
+        error: 'Invalid dryRun payload: expected a boolean',
+      });
+    }
+
+    const deduplicationStrategy = req.body.deduplicationStrategy || 'keep';
+    if (!ALLOWED_DEDUPLICATION_STRATEGIES.includes(deduplicationStrategy)) {
+      return res.status(400).json({
+        success: false,
+        error: `Invalid deduplicationStrategy: ${deduplicationStrategy}`,
+      });
+    }
+
+    const executionStrategy = req.body.strategy || 'balanced';
+    if (!ALLOWED_VALIDATION_STRATEGIES.includes(executionStrategy)) {
+      return res.status(400).json({
+        success: false,
+        error: `Invalid execution strategy: ${executionStrategy}`,
+      });
+    }
+
+    const clusterAssignments = req.body.clusterAssignments || {};
+    if (!isValidClusterAssignmentsPayload(clusterAssignments)) {
+      return res.status(400).json({
+        success: false,
+        error:
+          'Invalid clusterAssignments payload: expected an object of string-to-string mappings',
+      });
+    }
+
+    const session = await findSessionForUser(req.params.sessionId, userId);
+    if (!session) {
+      return res.status(404).json({
+        success: false,
+        error: 'Import session not found',
+      });
+    }
 
     // Parse data
-    const parseResult = await excelImportService.parseExcelFile(
-      session.filePath,
-      { sheetName: req.body.sheetName || session.sheetName }
+    const parseResult = await excelImportService.parseExcelFile(session.filePath, {
+      sheetName: req.body.sheetName || session.sheetName,
+    });
+
+    if (!isValidParseDataArray(parseResult.data)) {
+      return res.status(500).json({
+        success: false,
+        error: 'Invalid parser payload: data must be an array',
+      });
+    }
+
+    const effectiveColumnMapping = resolveExecutionColumnMapping(
+      session.columnMapping,
+      parseResult.columnMapping
     );
+
+    if (!hasRequiredFieldMappings(effectiveColumnMapping)) {
+      return res.status(400).json({
+        success: false,
+        error: `Unable to execute import: required column mappings missing (${IMPORT_REQUIRED_FIELDS.join(', ')})`,
+      });
+    }
 
     // Optional: dry-run validation
     if (req.body.dryRun) {
-      const dryRunResult = await importValidationEngine.dryRun(
-        parseResult.data,
-        session._id,
-        {
-          strategy: req.body.strategy || 'balanced',
-          requiredFields: ['ownerName', 'area']
-        }
-      );
+      const dryRunResult = await importValidationEngine.dryRun(parseResult.data, session._id, {
+        strategy: executionStrategy,
+        requiredFields: IMPORT_REQUIRED_FIELDS,
+      });
 
       return res.json({
         success: true,
         data: {
           dryRun: true,
-          ...dryRunResult
-        }
+          ...dryRunResult,
+        },
       });
     }
 
-    // Execute actual import
-    const importResult = await importExecutionEngine.executeImport(
-      session._id,
-      parseResult.data,
-      {
-        columnMapping: session.columnMapping,
-        statusMap: {},
-        clusterAssignments: req.body.clusterAssignments || {},
-        deduplicationStrategy: req.body.deduplicationStrategy || 'keep',
-        importStrategy: req.body.strategy || 'balanced',
-        dryRun: false,
-        batchSize: 100
-      }
-    );
-
-    // Final session update
-    session.status = 'completed';
+    // Update status only for real execution
+    session.status = 'processing';
     await session.save();
+
+    // Execute actual import
+    const importResult = await importExecutionEngine.executeImport(session._id, parseResult.data, {
+      columnMapping: effectiveColumnMapping,
+      statusMap: {},
+      clusterAssignments,
+      deduplicationStrategy,
+      importStrategy: executionStrategy,
+      dryRun: false,
+      batchSize: 100,
+    });
+
+    const finalizedSession = await findSessionForUser(req.params.sessionId, userId);
 
     res.json({
       success: true,
       data: {
         sessionId: session._id,
-        ...importResult
-      }
+        status: finalizedSession?.status || session.status,
+        ...importResult,
+      },
     });
   } catch (error) {
     // Update session on error
     try {
-      const session = await ImportSession.findById(req.params.sessionId);
+      const userId = getAuthenticatedUserId(req);
+      const session = userId ? await findSessionForUser(req.params.sessionId, userId) : null;
       if (session) {
         session.status = 'failed';
         session.importErrors = [{ error: error.message }];
@@ -299,9 +563,9 @@ router.post('/:sessionId/execute', async (req, res) => {
       console.error('Failed to update session on error:', updateError);
     }
 
-    res.status(500).json({
+    res.status(getImportErrorStatus(error.message)).json({
       success: false,
-      error: error.message
+      error: error.message,
     });
   }
 });
@@ -312,24 +576,29 @@ router.post('/:sessionId/execute', async (req, res) => {
  */
 router.get('/:sessionId', async (req, res) => {
   try {
-    const session = await ImportSession.findById(req.params.sessionId);
+    const userId = getAuthenticatedUserId(req);
+    if (!userId) {
+      return res.status(401).json({ success: false, error: 'Authentication required' });
+    }
+
+    const session = await findSessionForUser(req.params.sessionId, userId);
     if (!session) {
       return res.status(404).json({
         success: false,
-        error: 'Import session not found'
+        error: 'Import session not found',
       });
     }
 
     res.json({
       success: true,
       data: {
-        session
-      }
+        session,
+      },
     });
   } catch (error) {
     res.status(500).json({
       success: false,
-      error: error.message
+      error: error.message,
     });
   }
 });
@@ -340,11 +609,16 @@ router.get('/:sessionId', async (req, res) => {
  */
 router.get('/:sessionId/errors', async (req, res) => {
   try {
-    const session = await ImportSession.findById(req.params.sessionId);
+    const userId = getAuthenticatedUserId(req);
+    if (!userId) {
+      return res.status(401).json({ success: false, error: 'Authentication required' });
+    }
+
+    const session = await findSessionForUser(req.params.sessionId, userId);
     if (!session) {
       return res.status(404).json({
         success: false,
-        error: 'Import session not found'
+        error: 'Import session not found',
       });
     }
 
@@ -354,13 +628,13 @@ router.get('/:sessionId/errors', async (req, res) => {
         errors: session.importErrors || [],
         duplicates: session.duplicates || [],
         totalErrors: (session.importErrors || []).length,
-        totalDuplicates: (session.duplicates || []).length
-      }
+        totalDuplicates: (session.duplicates || []).length,
+      },
     });
   } catch (error) {
     res.status(500).json({
       success: false,
-      error: error.message
+      error: error.message,
     });
   }
 });
@@ -374,7 +648,7 @@ function extractDropdownOptions(preview) {
     areas: new Set(),
     clusters: new Set(),
     rooms: new Set(),
-    layouts: new Set()
+    layouts: new Set(),
   };
 
   for (const row of preview) {
@@ -390,7 +664,7 @@ function extractDropdownOptions(preview) {
     areas: Array.from(options.areas),
     clusters: Array.from(options.clusters),
     rooms: Array.from(options.rooms),
-    layouts: Array.from(options.layouts)
+    layouts: Array.from(options.layouts),
   };
 }
 
@@ -424,7 +698,7 @@ function calculateDataStats(preview) {
     uniqueAreas: uniqueAreas.size,
     completenessPercentage: Math.round(
       (100 * (totalRows - missingOwnerNames - missingAreas)) / (totalRows * 2)
-    )
+    ),
   };
 }
 

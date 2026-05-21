@@ -5,70 +5,84 @@ import { createMockModels } from '../../../test/utils/mockDatabase';
 describe('PropertySourcingService', () => {
   let service;
   let mockModels;
-  
+  let consoleErrorSpy;
+  let consoleLogSpy;
+
   // Mock data matching ACTUAL ConversationAnalyzer output format
   const mockAnalysisResult = {
-    properties: [{
-      type: 'villa',
-      confidence: 85,
-      extractedData: {
+    properties: [
+      {
         type: 'villa',
-        location: 'Dubai Marina',
-        availability: 'for_rent',
-        size: {
-          rooms: 4,
-          sqft: 4000
+        confidence: 85,
+        extractedData: {
+          type: 'villa',
+          location: 'Dubai Marina',
+          availability: 'for_rent',
+          size: {
+            rooms: 4,
+            sqft: 4000,
+          },
+          price: {
+            monthlyRent: 5000,
+            currency: 'AED',
+          },
+          furnishing: 'unfurnished',
+          features: ['swimming pool', 'garden', 'parking'],
+          owner: {
+            name: 'Ahmed Al-Mazrouei',
+            whatsappNumber: '+971501234567',
+            ownershipType: 'direct_owner',
+          },
         },
-        price: {
-          monthlyRent: 5000,
-          currency: 'AED'
-        },
-        furnishing: 'unfurnished',
-        features: ['swimming pool', 'garden', 'parking'],
-        owner: {
-          name: 'Ahmed Al-Mazrouei',
-          whatsappNumber: '+971501234567',
-          ownershipType: 'direct_owner'
-        }
-      }
-    }],
+      },
+    ],
     overallConfidence: 85,
     ownerIdentification: {
       name: 'Ahmed Al-Mazrouei',
       whatsappNumber: '+971501234567',
-      ownershipType: 'direct_owner'
+      ownershipType: 'direct_owner',
     },
-    extractedEntities: [
-      { type: 'phone', value: '+971501234567' }
-    ]
+    extractedEntities: [{ type: 'phone', value: '+971501234567' }],
   };
 
   const mockConversationData = {
     chatId: 'test-chat-123',
     messages: [
-      { content: 'Hi, I have a villa available', senderName: 'Ahmed', senderPhone: '+971501234567' },
+      {
+        content: 'Hi, I have a villa available',
+        senderName: 'Ahmed',
+        senderPhone: '+971501234567',
+      },
       { content: '4 bedrooms in Dubai Marina' },
-      { content: 'AED 5000 per month' }
+      { content: 'AED 5000 per month' },
     ],
     timestamp: new Date(),
-    source: 'whatsapp'
+    source: 'whatsapp',
   };
 
   beforeEach(() => {
+    // Suppress expected runtime noise from fallback-mode service paths.
+    // Assertions in this suite validate behavior directly; console output is non-actionable.
+    consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+    consoleLogSpy = vi.spyOn(console, 'log').mockImplementation(() => {});
+
     // Create fresh mock models for each test
     mockModels = createMockModels();
-    
+
     // Inject mock models into service
     setPropertySourcingModels(mockModels);
-    
+
     // Create new service instance
     service = new PropertySourcingService();
-    
+
     // Clear all mocks
     vi.clearAllMocks();
   });
 
   afterEach(() => {
+    consoleErrorSpy?.mockRestore();
+    consoleLogSpy?.mockRestore();
+
     // Clear mock data after each test
     if (mockModels) {
       Object.values(mockModels).forEach(model => {
@@ -185,8 +199,12 @@ describe('PropertySourcingService', () => {
       const afterCreation = new Date();
 
       expect(opportunity.createdAt).toBeDefined();
-      expect(new Date(opportunity.createdAt).getTime()).toBeGreaterThanOrEqual(beforeCreation.getTime());
-      expect(new Date(opportunity.createdAt).getTime()).toBeLessThanOrEqual(afterCreation.getTime());
+      expect(new Date(opportunity.createdAt).getTime()).toBeGreaterThanOrEqual(
+        beforeCreation.getTime()
+      );
+      expect(new Date(opportunity.createdAt).getTime()).toBeLessThanOrEqual(
+        afterCreation.getTime()
+      );
     });
   });
 
@@ -257,11 +275,7 @@ describe('PropertySourcingService', () => {
     it('should mark as listed when converted to property', async () => {
       await service.updateVerificationStatus(opportunityId, 'waiting_for_photos', 'agent-001');
       await service.updateVerificationStatus(opportunityId, 'fully_verified', 'agent-001');
-      const updated = await service.updateVerificationStatus(
-        opportunityId,
-        'listed',
-        'agent-001'
-      );
+      const updated = await service.updateVerificationStatus(opportunityId, 'listed', 'agent-001');
 
       expect(updated.verificationStatus).toBe('listed');
     });
@@ -286,13 +300,15 @@ describe('PropertySourcingService', () => {
       const afterUpdate = new Date();
 
       expect(updated.lastStatusUpdate).toBeDefined();
-      expect(new Date(updated.lastStatusUpdate).getTime()).toBeGreaterThanOrEqual(beforeUpdate.getTime());
+      expect(new Date(updated.lastStatusUpdate).getTime()).toBeGreaterThanOrEqual(
+        beforeUpdate.getTime()
+      );
     });
 
     it('should track status history', async () => {
       await service.updateVerificationStatus(opportunityId, 'waiting_for_photos', 'agent-001');
       await service.updateVerificationStatus(opportunityId, 'partially_verified', 'agent-001');
-      
+
       const opportunity = await service.getOpportunity(opportunityId);
       expect(Array.isArray(opportunity.statusHistory)).toBe(true);
       expect(opportunity.statusHistory.length).toBeGreaterThan(0);
@@ -328,21 +344,13 @@ describe('PropertySourcingService', () => {
     });
 
     it('should link property to original opportunity', async () => {
-      const property = await service.convertOpportunityToProperty(
-        opportunityId,
-        {},
-        'agent-001'
-      );
+      const property = await service.convertOpportunityToProperty(opportunityId, {}, 'agent-001');
 
       expect(property.opportunityId).toBe(opportunityId);
     });
 
     it('should copy property details from opportunity', async () => {
-      const property = await service.convertOpportunityToProperty(
-        opportunityId,
-        {},
-        'agent-001'
-      );
+      const property = await service.convertOpportunityToProperty(opportunityId, {}, 'agent-001');
 
       expect(property.type).toBe('villa');
       expect(property.location).toBe('Dubai Marina');
@@ -352,11 +360,7 @@ describe('PropertySourcingService', () => {
     });
 
     it('should set property status to active', async () => {
-      const property = await service.convertOpportunityToProperty(
-        opportunityId,
-        {},
-        'agent-001'
-      );
+      const property = await service.convertOpportunityToProperty(opportunityId, {}, 'agent-001');
 
       expect(property.status).toBe('active');
     });
@@ -364,7 +368,7 @@ describe('PropertySourcingService', () => {
     it('should merge additional data with extracted data', async () => {
       const additionalData = {
         description: 'Luxury villa with premium finishes',
-        title: 'Dubai Marina Villa'
+        title: 'Dubai Marina Villa',
       };
 
       const property = await service.convertOpportunityToProperty(
@@ -378,11 +382,7 @@ describe('PropertySourcingService', () => {
     });
 
     it('should preserve owner contact information', async () => {
-      const property = await service.convertOpportunityToProperty(
-        opportunityId,
-        {},
-        'agent-001'
-      );
+      const property = await service.convertOpportunityToProperty(opportunityId, {}, 'agent-001');
 
       expect(property.ownerContact.whatsappNumber).toBe('+971501234567');
       expect(property.ownerContact.ownerName).toBe('Ahmed Al-Mazrouei');
@@ -396,11 +396,7 @@ describe('PropertySourcingService', () => {
     });
 
     it('should create sourcing metadata', async () => {
-      const property = await service.convertOpportunityToProperty(
-        opportunityId,
-        {},
-        'agent-001'
-      );
+      const property = await service.convertOpportunityToProperty(opportunityId, {}, 'agent-001');
 
       expect(property.sourcingMetadata).toBeDefined();
       expect(property.sourcingMetadata.opportunityId).toBe(opportunityId);
@@ -530,7 +526,7 @@ describe('PropertySourcingService', () => {
 
     it('should handle errors in analysis cycle', async () => {
       vi.spyOn(service, 'runConversationAnalysis').mockRejectedValue(new Error('Analysis failed'));
-      
+
       try {
         await service.runConversationAnalysis();
       } catch (error) {
@@ -549,7 +545,7 @@ describe('PropertySourcingService', () => {
         propertyType: 'villa',
         location: 'Dubai Marina',
         bedrooms: 4,
-        price: 5000
+        price: 5000,
       };
 
       const completeness = service.calculateCompleteness(entities);
@@ -652,9 +648,21 @@ describe('PropertySourcingService', () => {
 
     it('should handle multiple concurrent opportunities', async () => {
       const results = await Promise.all([
-        service.createOpportunityFromConversation(mockConversationData, mockAnalysisResult, 'agent-001'),
-        service.createOpportunityFromConversation(mockConversationData, mockAnalysisResult, 'agent-002'),
-        service.createOpportunityFromConversation(mockConversationData, mockAnalysisResult, 'agent-003')
+        service.createOpportunityFromConversation(
+          mockConversationData,
+          mockAnalysisResult,
+          'agent-001'
+        ),
+        service.createOpportunityFromConversation(
+          mockConversationData,
+          mockAnalysisResult,
+          'agent-002'
+        ),
+        service.createOpportunityFromConversation(
+          mockConversationData,
+          mockAnalysisResult,
+          'agent-003'
+        ),
       ]);
 
       expect(results.length).toBe(3);

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, lazy, Suspense, type ReactNode } from 'react';
+import React, { useState, useEffect, useRef, lazy, Suspense, type ReactNode } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { SpeedInsights } from '@vercel/speed-insights/react';
@@ -10,6 +10,7 @@ import AppLayout from './components/layout/AppLayout';
 import PortalLayout from './components/portal/PortalLayout';
 import SuspenseLoader from './components/common/SuspenseLoader';
 import RouteErrorBoundary from './components/RouteErrorBoundary';
+const SignInPage = lazy(() => import('./pages/auth/SignInPage'));
 import type { RootState, AppDispatch } from './store/store';
 import { safeStorage } from './utils/safeStorage';
 import { authFetch } from './utils/authFetch';
@@ -19,7 +20,6 @@ const UniversalComponents = lazy(() => import('./components/layout/UniversalComp
 const RoleGateway = lazy(() => import('./components/RoleGateway'));
 
 // All pages lazy-loaded for optimal bundle splitting
-const SignInPage = lazy(() => import('./pages/auth/SignInPage'));
 const ProfilePage = lazy(() => import('./pages/auth/ProfilePage'));
 const PendingApprovalPage = lazy(() => import('./pages/auth/PendingApprovalPage'));
 const HomePage = lazy(() => import('./pages/HomePage'));
@@ -38,18 +38,34 @@ interface ProtectedRouteProps {
   allowedRoles?: string[];
 }
 
+/** Creator email — always receives super_admin elevation regardless of server-stored role. */
+const CREATOR_EMAIL = 'arslanmalikgoraha@gmail.com';
+
 function resolveEffectiveRole(
-  user: { role?: string } | null,
+  user: { role?: string; email?: string } | null,
   storedRoleData: UserRoleData | null
 ): string | null {
-  const serverRole = user?.role;
+  // Creator always gets super_admin regardless of server role
+  if (user?.email === CREATOR_EMAIL) return 'super_admin';
+
+  const normalizeRole = (role?: string): string | null => {
+    if (!role) return null;
+    if (role === 'lion' || role === 'managing_director') return 'owner';
+    return role;
+  };
+
+  const serverRole = normalizeRole(user?.role);
+  const storedRole = normalizeRole(storedRoleData?.role);
 
   if (storedRoleData && typeof storedRoleData.role === 'string') {
     const isPrivileged =
-      serverRole === 'owner' || serverRole === 'admin' || serverRole === 'super_user' ||
-      serverRole === 'super_admin' || serverRole === 'managing_director';
+      serverRole === 'owner' ||
+      serverRole === 'admin' ||
+      serverRole === 'super_user' ||
+      serverRole === 'super_admin';
 
-    return isPrivileged ? storedRoleData.role : (serverRole ?? storedRoleData.role);
+    // Deterministic executive path: privileged server roles should not be overridden by local sub-role state.
+    return isPrivileged ? serverRole : (serverRole ?? storedRole);
   }
 
   return serverRole ?? null;
@@ -112,10 +128,32 @@ function ProtectedRoute({ children, allowedRoles }: ProtectedRouteProps) {
 
 function DashboardEntryRoute() {
   const user = useSelector((state: RootState) => state.user.currentUser);
+  const isAuthLoading = useSelector((state: RootState) => state.user.isLoading);
+  const { info } = useStatus();
+  const hasShownSigninNotice = useRef(false);
   const storedRoleData = safeStorage.getJSON<UserRoleData>('userRole');
   const effectiveRole = resolveEffectiveRole(user, storedRoleData);
 
-  if (effectiveRole === 'landlord') {
+  useEffect(() => {
+    if (!isAuthLoading && !user && !hasShownSigninNotice.current) {
+      info('Please sign in to access CRM', {
+        title: 'Authentication Required',
+        duration: 4500,
+      });
+      hasShownSigninNotice.current = true;
+    }
+  }, [isAuthLoading, user, info]);
+
+  if (isAuthLoading) {
+    return <SuspenseLoader />;
+  }
+
+  // Unauthenticated access: redirect home
+  if (!user) {
+    return <Navigate to="/signin" replace />;
+  }
+
+  if (effectiveRole === 'landlord' || effectiveRole === 'property-owner') {
     return <Navigate to="/landlord-portal" replace />;
   }
 
@@ -220,7 +258,7 @@ const BiometricPrompt = lazy(() =>
     })
 );
 const WebVitalsTracker = lazy(() => import('./components/analytics/WebVitalsTracker'));
-import { StatusProvider } from './components/common/StatusNotification';
+import { StatusProvider, useStatus } from './components/common/StatusNotification';
 import { createLogger } from './utils/logger';
 import { useSocket } from './hooks/useSocket';
 
@@ -257,7 +295,11 @@ function App(): React.JSX.Element {
           dispatch(setLoading(false));
         }
       } catch (err) {
-        if (err instanceof DOMException && err.name === 'AbortError') return;
+        if (err instanceof DOMException && err.name === 'AbortError') {
+          // Avoid indefinite loading states during navigation/StrictMode aborts in development
+          dispatch(setLoading(false));
+          return;
+        }
         // Auth check failed — user stays logged out
         log.warn('Auth check failed:', err instanceof Error ? err.message : 'Unknown error');
         safeStorage.remove('token');
@@ -394,6 +436,7 @@ function App(): React.JSX.Element {
                     )
                   }
                 />
+                <Route path="/login" element={<Navigate to="/signin" replace />} />
                 <Route
                   path="/signup"
                   element={
@@ -514,13 +557,14 @@ function App(): React.JSX.Element {
 
                 {/* ==================== UNIFIED DASHBOARD ==================== */}
                 <Route
-                  path="/dashboard"
+                  path="/crm"
                   element={
                     <ProtectedRoute>
                       <DashboardEntryRoute />
                     </ProtectedRoute>
                   }
                 />
+                <Route path="/dashboard" element={<Navigate to="/crm" replace />} />
 
                 {/* ==================== ROLE-SPECIFIC SUB-PAGES ==================== */}
                 <Route

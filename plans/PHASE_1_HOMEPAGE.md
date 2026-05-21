@@ -3,7 +3,10 @@
 > **Priority**: #1 — Highest  
 > **Goal**: A complete, polished, publicly visible homepage that showcases White Caves  
 > **Approach**: All content uses static/dummy data — no backend dependency  
+> **Last Updated**: 2026-05-11  
 > **Status**: 🚧 In Progress — shell exists, sections need polishing
+
+> **Priority Module Alignment (May 2026):** Homepage must be optimized for **Dubai leasing conversion** and feed the unified leasing end-to-end journey defined in `plans/PHASE_33_PRIORITY_MODULE_HOMEPAGE_SUPERUSER_LEASING.md`.
 
 ---
 
@@ -18,29 +21,30 @@ swap in real data later without changing any component code.
 
 ## What Already Exists ✅
 
-| Component | Location | Status |
-|-----------|----------|--------|
-| `HomePage.tsx` | `src/pages/HomePage.tsx` | ✅ Exists — renders all sections via lazy Suspense |
-| `HOME_PROPERTIES` dummy data | `src/data/homeProperties.ts` | ✅ 10 Dubai luxury properties |
-| `Hero` section | `src/components/homepage/Hero/` | ✅ Animated counter, typewriter, parallax scroll |
-| `Features` section | `src/components/homepage/Features/` | ✅ Platform feature cards |
-| `Locations` section | `src/components/homepage/Locations/` | ✅ Dubai area cards |
-| `Team` section | `src/components/homepage/Team/` | ✅ 3+ team members with dummy data |
-| `Testimonials` section | `src/components/homepage/Testimonials/` | ✅ Client quotes |
-| `ContactCTA` section | `src/components/homepage/Contact/` | ✅ Call-to-action with contact form |
-| `DubaiMap` | `src/components/DubaiMap.tsx` | ✅ Interactive property map |
-| `PropertyComparison` | `src/components/PropertyComparison.tsx` | ✅ Side-by-side compare tool |
-| `BlogSection` | `src/components/BlogSection.tsx` | ✅ Dummy blog articles |
-| `NewsletterSubscription` | `src/components/NewsletterSubscription.tsx` | ✅ Email capture form |
-| `Footer` | `src/components/Footer.tsx` | ✅ Links, socials, legal |
-| AppLayout + Navbar | `src/components/layout/AppLayout.tsx` | ✅ Unified top bar + nav |
-| SEO meta tags | `HomePage.tsx` + `useDocumentTitle` | ✅ Title, OG, JSON-LD |
+| Component                    | Location                                    | Status                                             |
+| ---------------------------- | ------------------------------------------- | -------------------------------------------------- |
+| `HomePage.tsx`               | `src/pages/HomePage.tsx`                    | ✅ Exists — renders all sections via lazy Suspense |
+| `HOME_PROPERTIES` dummy data | `src/data/homeProperties.ts`                | ✅ 10 Dubai luxury properties                      |
+| `Hero` section               | `src/components/homepage/Hero/`             | ✅ Animated counter, typewriter, parallax scroll   |
+| `Features` section           | `src/components/homepage/Features/`         | ✅ Platform feature cards                          |
+| `Locations` section          | `src/components/homepage/Locations/`        | ✅ Dubai area cards                                |
+| `Team` section               | `src/components/homepage/Team/`             | ✅ 3+ team members with dummy data                 |
+| `Testimonials` section       | `src/components/homepage/Testimonials/`     | ✅ Client quotes                                   |
+| `ContactCTA` section         | `src/components/homepage/Contact/`          | ✅ Call-to-action with contact form                |
+| `DubaiMap`                   | `src/components/DubaiMap.tsx`               | ✅ Interactive property map                        |
+| `PropertyComparison`         | `src/components/PropertyComparison.tsx`     | ✅ Side-by-side compare tool                       |
+| `BlogSection`                | `src/components/BlogSection.tsx`            | ✅ Dummy blog articles                             |
+| `NewsletterSubscription`     | `src/components/NewsletterSubscription.tsx` | ✅ Email capture form                              |
+| `Footer`                     | `src/components/Footer.tsx`                 | ✅ Links, socials, legal                           |
+| AppLayout + Navbar           | `src/components/layout/AppLayout.tsx`       | ✅ Unified top bar + nav                           |
+| SEO meta tags                | `HomePage.tsx` + `useDocumentTitle`         | ✅ Title, OG, JSON-LD                              |
 
 ---
 
 ## What Needs To Be Done 🚧
 
 ### 1.1 — Hero Section Polish
+
 **Goal**: Hero is the most important above-the-fold section. It must instantly communicate luxury Dubai real estate.
 
 - [ ] Verify Hero background image/video is high quality (currently CSS gradient — add a real hero image from Unsplash/local assets)
@@ -49,8 +53,10 @@ swap in real data later without changing any component code.
 - [ ] Search bar in Hero (area, property type, min/max price) — if hidden, surface it prominently
 - [ ] Mobile responsiveness: hero must look polished on 375px iPhone and 768px iPad
 - [ ] Lighthouse performance score on hero load: aim for > 90 (hero image should be WebP + lazy-loaded below fold)
+- [ ] **Leasing-first hero intent**: primary CTA hierarchy emphasizes rent/leasing journey (not only generic browse)
 
 **Dummy data to add** (if not present):
+
 ```ts
 // src/data/heroStats.ts
 export const HERO_STATS = [
@@ -64,6 +70,7 @@ export const HERO_STATS = [
 ---
 
 ### 1.2 — Featured Properties Section
+
 **Goal**: Showcase the best listings with real-looking card UI.
 
 - [ ] Add a `FeaturedProperties` section to `HomePage.tsx` if not already visible (render 3–6 cards from `HOME_PROPERTIES`)
@@ -77,6 +84,7 @@ export const HERO_STATS = [
 ---
 
 ### 1.3 — Locations / Areas Section
+
 **Goal**: Highlight top Dubai areas with a visual grid.
 
 - [ ] Confirm `Locations` component renders: Palm Jumeirah, Downtown Dubai, Dubai Marina, JBR, Business Bay, Dubai Hills
@@ -85,6 +93,7 @@ export const HERO_STATS = [
 - [ ] Section is responsive: 3 columns desktop → 2 columns tablet → 1 column mobile
 
 **Dummy location data**:
+
 ```ts
 export const DUBAI_AREAS = [
   { name: 'Palm Jumeirah', image: '…unsplash url…', avgPricePerSqft: 3200, listings: 142 },
@@ -99,6 +108,7 @@ export const DUBAI_AREAS = [
 ---
 
 ### 1.4 — Why White Caves / Features Section
+
 **Goal**: Communicate USPs clearly.
 
 - [ ] Confirm `Features` section renders 6 feature cards
@@ -109,6 +119,7 @@ export const DUBAI_AREAS = [
 ---
 
 ### 1.5 — Team Section
+
 **Goal**: Build trust by showing real faces.
 
 - [ ] Confirm `Team` component renders with at least 4 team members
@@ -119,6 +130,7 @@ export const DUBAI_AREAS = [
 ---
 
 ### 1.6 — Testimonials Section
+
 **Goal**: Social proof from real (dummy) clients.
 
 - [ ] Confirm `Testimonials` renders at least 4 reviews
@@ -129,6 +141,7 @@ export const DUBAI_AREAS = [
 ---
 
 ### 1.7 — Contact / CTA Section
+
 **Goal**: Capture leads from the homepage.
 
 - [ ] `ContactCTA` section is visible above the footer
@@ -136,10 +149,12 @@ export const DUBAI_AREAS = [
 - [ ] On submit: show success message (no backend needed — just UI confirmation for now)
 - [ ] WhatsApp "Chat with us" button: opens `wa.me/971XXXXXXXX` in new tab
 - [ ] Phone number prominently displayed
+- [ ] Lead source tagging includes homepage leasing channels (`homepage_cta`, `homepage_search`, `homepage_whatsapp`)
 
 ---
 
 ### 1.8 — Navigation & Routing
+
 **Goal**: All nav links work and feel polished.
 
 - [ ] Top navbar: Logo | Properties | About | Services | Careers | Contact | **[Sign In]** button
@@ -151,6 +166,7 @@ export const DUBAI_AREAS = [
 ---
 
 ### 1.9 — Footer
+
 **Goal**: Professional, complete footer.
 
 - [ ] Columns: Company (About, Careers, Blog), Services (Buy, Sell, Rent, Invest), Areas, Contact info
@@ -162,6 +178,7 @@ export const DUBAI_AREAS = [
 ---
 
 ### 1.10 — Mobile Responsiveness Audit
+
 **Goal**: Perfect display at 375px, 768px, 1024px, 1440px.
 
 - [ ] Run through all homepage sections at each breakpoint
@@ -173,6 +190,7 @@ export const DUBAI_AREAS = [
 ---
 
 ### 1.11 — Performance & SEO
+
 **Goal**: Lighthouse scores all > 90.
 
 - [ ] Hero image uses `<img loading="lazy">` below fold, `loading="eager"` for above-fold
@@ -184,18 +202,30 @@ export const DUBAI_AREAS = [
 
 ---
 
+### 1.12 — Leasing Conversion Analytics (P0 Add-on)
+
+**Goal**: Make homepage performance measurable for the leasing business journey.
+
+- [ ] Track `homepage_hero_cta_click`
+- [ ] Track `homepage_leasing_search_submit`
+- [ ] Track `homepage_whatsapp_start`
+- [ ] Track `homepage_viewing_request_submit`
+- [ ] Weekly dashboard view for homepage→lead conversion rate
+
+---
+
 ## Dummy Data Strategy
 
 All data on the homepage uses static files — **no API calls needed**:
 
-| Data | File | 
-|------|------|
+| Data                | File                         |
+| ------------------- | ---------------------------- |
 | Featured properties | `src/data/homeProperties.ts` |
-| Team members | Inline in `Team.tsx` |
-| Testimonials | Inline in `Testimonials.tsx` |
-| Dubai areas | Inline in `Locations.tsx` |
-| Blog posts | Inline in `BlogSection.tsx` |
-| Hero stats | Inline in `Hero.tsx` |
+| Team members        | Inline in `Team.tsx`         |
+| Testimonials        | Inline in `Testimonials.tsx` |
+| Dubai areas         | Inline in `Locations.tsx`    |
+| Blog posts          | Inline in `BlogSection.tsx`  |
+| Hero stats          | Inline in `Hero.tsx`         |
 
 When real data is available (Phase 3+), these files can be swapped for API calls without changing any component code.
 

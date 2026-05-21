@@ -53,6 +53,16 @@ vi.mock('./context/LanguageContext', () => ({
 // Mock StatusProvider
 vi.mock('./components/common/StatusNotification', () => ({
   StatusProvider: ({ children }: any) => <div data-testid="status-provider">{children}</div>,
+  useStatus: () => ({
+    notifications: [],
+    addNotification: vi.fn(),
+    removeNotification: vi.fn(),
+    success: vi.fn(),
+    error: vi.fn(),
+    warning: vi.fn(),
+    info: vi.fn(),
+    clear: vi.fn(),
+  }),
 }));
 
 // Mock AppLayout
@@ -418,7 +428,7 @@ describe('App', () => {
     });
   });
 
-  it('redirects /signin to /dashboard when logged in', async () => {
+  it('redirects /signin to /crm when logged in', async () => {
     mockReduxState.currentUser = { id: '1', role: 'buyer', email: 'test@test.com' };
     await act(async () => {
       renderAtRoute('/signin');
@@ -428,7 +438,7 @@ describe('App', () => {
     });
   });
 
-  it('redirects /signup to /dashboard when logged in', async () => {
+  it('redirects /signup to /crm when logged in', async () => {
     mockReduxState.currentUser = { id: '1', role: 'buyer', email: 'test@test.com' };
     await act(async () => {
       renderAtRoute('/signup');
@@ -441,6 +451,15 @@ describe('App', () => {
   it('redirects /auth/signin to /signin', async () => {
     await act(async () => {
       renderAtRoute('/auth/signin');
+    });
+    await waitFor(() => {
+      expect(screen.getByTestId('signin-page')).toBeInTheDocument();
+    });
+  });
+
+  it('redirects /login to /signin', async () => {
+    await act(async () => {
+      renderAtRoute('/login');
     });
     await waitFor(() => {
       expect(screen.getByTestId('signin-page')).toBeInTheDocument();
@@ -530,6 +549,17 @@ describe('App', () => {
     mockSafeStorage.getJSON.mockReturnValue({ role: 'owner', selectedAt: '', locked: true } as any);
     await act(async () => {
       renderAtRoute('/modern-dashboard');
+    });
+    await waitFor(() => {
+      expect(screen.getByTestId('dashboard-page')).toBeInTheDocument();
+    });
+  });
+
+  it('loads protected CRM entry at /crm', async () => {
+    mockReduxState.currentUser = { id: '1', role: 'owner', email: 'test@test.com' };
+    mockSafeStorage.getJSON.mockReturnValue({ role: 'owner', selectedAt: '', locked: true } as any);
+    await act(async () => {
+      renderAtRoute('/crm');
     });
     await waitFor(() => {
       expect(screen.getByTestId('dashboard-page')).toBeInTheDocument();

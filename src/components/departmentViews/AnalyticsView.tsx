@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 import React from 'react';
 import BaseDepartmentView from './BaseDepartmentView';
 import { getDepartmentConfig } from '../../config/departmentViewConfigs';
@@ -12,27 +11,27 @@ import { DataCard } from '../shared/dashboard';
 interface AnalyticsViewProps {
   serviceName?: string;
   subitemId?: string;
-  departmentData?: any;
+  departmentData?: Record<string, unknown>;
 }
 
-const AnalyticsView: React.FC<AnalyticsViewProps> = ({ serviceName = 'business-intelligence', subitemId, departmentData }) => {
+const AnalyticsView: React.FC<AnalyticsViewProps> = ({
+  serviceName = 'business-intelligence',
+  subitemId,
+  departmentData,
+}) => {
   const config = getDepartmentConfig('ANALYTICS')!;
 
-  const renderContent = (data: any) => {
+  const renderContent = (data: Record<string, unknown>) => {
+    const getCount = (value: unknown): number => (Array.isArray(value) ? value.length : 0);
+
     if (!subitemId && serviceName === 'business-intelligence') {
       return (
         <>
-          <DataCard 
-            title="Key Metrics"
-            subtitle="Business performance metrics"
-          >
-            Metrics: {JSON.stringify(data?.metrics?.length || 0)} items
+          <DataCard title="Key Metrics" subtitle="Business performance metrics">
+            Metrics: {JSON.stringify(getCount(data?.metrics))} items
           </DataCard>
-          <DataCard 
-            title="Available Reports"
-            subtitle="Scheduled and ad-hoc reports"
-          >
-            Reports: {JSON.stringify(data?.reports?.length || 0)} items
+          <DataCard title="Available Reports" subtitle="Scheduled and ad-hoc reports">
+            Reports: {JSON.stringify(getCount(data?.reports))} items
           </DataCard>
         </>
       );
@@ -41,7 +40,7 @@ const AnalyticsView: React.FC<AnalyticsViewProps> = ({ serviceName = 'business-i
     if (subitemId === 'customer-analytics') {
       return (
         <DataCard title="Customer Analytics" subtitle="Customer behavior and trends">
-          Segments: {JSON.stringify(data?.customerAnalytics?.length || 0)} items
+          Segments: {JSON.stringify(getCount(data?.customerAnalytics))} items
         </DataCard>
       );
     }
@@ -49,7 +48,7 @@ const AnalyticsView: React.FC<AnalyticsViewProps> = ({ serviceName = 'business-i
     if (subitemId === 'sales-analytics') {
       return (
         <DataCard title="Sales Analytics" subtitle="Sales performance and trends">
-          Data: {JSON.stringify(data?.salesAnalytics?.length || 0)} items
+          Data: {JSON.stringify(getCount(data?.salesAnalytics))} items
         </DataCard>
       );
     }
@@ -57,7 +56,7 @@ const AnalyticsView: React.FC<AnalyticsViewProps> = ({ serviceName = 'business-i
     if (subitemId === 'usage-analytics') {
       return (
         <DataCard title="Usage Analytics" subtitle="Platform usage and engagement">
-          Usage: {JSON.stringify(data?.usageAnalytics?.length || 0)} items
+          Usage: {JSON.stringify(getCount(data?.usageAnalytics))} items
         </DataCard>
       );
     }
@@ -65,7 +64,7 @@ const AnalyticsView: React.FC<AnalyticsViewProps> = ({ serviceName = 'business-i
     if (subitemId === 'custom-reports') {
       return (
         <DataCard title="Custom Reports" subtitle="User-defined reports and dashboards">
-          Reports: {JSON.stringify(data?.customReports?.length || 0)} items
+          Reports: {JSON.stringify(getCount(data?.customReports))} items
         </DataCard>
       );
     }
@@ -85,4 +84,3 @@ const AnalyticsView: React.FC<AnalyticsViewProps> = ({ serviceName = 'business-i
 };
 
 export default AnalyticsView;
-

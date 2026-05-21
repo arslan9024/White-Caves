@@ -5,6 +5,7 @@ import AssistantsTab from './AssistantsTab';
 import ArchitectureTab from './ArchitectureTab';
 import ApplicationsTab from './ApplicationsTab';
 import APIPerformanceTab from './APIPerformanceTab';
+import AssistantLifecycleTab from '../../shared/AssistantLifecycleTab';
 import '../AuroraCTODashboard.css';
 
 const AuroraCTODashboard = () => {
@@ -27,7 +28,8 @@ const AuroraCTODashboard = () => {
     { id: 'assistants', label: 'Assistants', icon: '🤖' },
     { id: 'architecture', label: 'Architecture', icon: '🏗️' },
     { id: 'applications', label: 'Applications', icon: '🚀' },
-    { id: 'api-performance', label: 'API Performance', icon: '⚡' }
+    { id: 'api-performance', label: 'API Performance', icon: '⚡' },
+    { id: 'lifecycle', label: 'Lifecycle', icon: '🔄' }
   ];
 
   const renderContent = () => {
@@ -42,6 +44,8 @@ const AuroraCTODashboard = () => {
         return <ApplicationsTab systemComponents={systemComponents} />;
       case 'api-performance':
         return <APIPerformanceTab systemComponents={systemComponents} />;
+      case 'lifecycle':
+        return <AssistantLifecycleTab assistantId="aurora" color="#A78BFA" assistantName="Aurora" />;
       default:
         return <OverviewTab stats={stats} systemStatus={systemStatus} />;
     }

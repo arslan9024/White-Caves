@@ -5,10 +5,29 @@ import { addToFavorites, removeFromFavorites, selectFavorites } from '../store/d
 import AppLayout from '../components/layout/AppLayout';
 import Footer from '../components/Footer';
 import WhatsAppButton from '../components/WhatsAppButton';
-import { 
-  MapPin, Bed, Bath, Maximize, Heart, Share2, Phone, Mail, MessageCircle,
-  ChevronLeft, ChevronRight, X, Calendar, Home, Building2, Check, Star,
-  Printer, Download, ExternalLink, Clock, Shield, Award
+import { authFetch } from '../utils/authFetch';
+import Skeleton from '../components/ui/Skeleton/Skeleton';
+import {
+  MapPin,
+  Bed,
+  Bath,
+  Maximize,
+  Heart,
+  Share2,
+  Phone,
+  Mail,
+  MessageCircle,
+  ChevronLeft,
+  ChevronRight,
+  X,
+  Calendar,
+  Building2,
+  Check,
+  Printer,
+  Download,
+  Clock,
+  Shield,
+  Award,
 } from 'lucide-react';
 import './PropertyDetailPage.css';
 
@@ -17,7 +36,7 @@ const PropertyDetailPage = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const favorites = useSelector(selectFavorites);
-  
+
   const [property, setProperty] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -28,26 +47,27 @@ const PropertyDetailPage = () => {
     name: '',
     email: '',
     phone: '',
-    message: ''
+    message: '',
   });
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
-  
+  const [statusMessage, setStatusMessage] = useState(null);
+
   const isFavorite = property && favorites.includes(property._id || property.id);
 
   useEffect(() => {
     const fetchProperty = async () => {
       try {
         setLoading(true);
-        const response = await fetch(`/api/crud/properties/${id}`);
+        const response = await authFetch(`/api/crud/properties/${id}`);
         if (!response.ok) {
           throw new Error('Property not found');
         }
         const data = await response.json();
         setProperty(data.data);
       } catch (err) {
-        
-        setError(err.message);
+        const message = err instanceof Error ? err.message : 'Property not found';
+        setError(message);
       } finally {
         setLoading(false);
       }
@@ -71,23 +91,23 @@ const PropertyDetailPage = () => {
         await navigator.share({
           title: property.title,
           text: `Check out this property: ${property.title} in ${property.location}`,
-          url: window.location.href
+          url: window.location.href,
         });
-      } catch (err) {
-        
+      } catch {
+        setStatusMessage({ type: 'error', text: 'Unable to share this property right now.' });
       }
     } else {
       navigator.clipboard.writeText(window.location.href);
-      alert('Link copied to clipboard!');
+      setStatusMessage({ type: 'success', text: 'Link copied to clipboard!' });
     }
   };
 
-  const handleContactSubmit = async (e) => {
+  const handleContactSubmit = async e => {
     e.preventDefault();
     setSubmitting(true);
-    
+
     try {
-      const response = await fetch('/api/crud/leads', {
+      const response = await authFetch('/api/crud/leads', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -98,10 +118,10 @@ const PropertyDetailPage = () => {
           propertyInterest: property.title,
           status: 'new',
           notes: contactForm.message,
-          interestedIn: property.purpose === 'rent' ? 'rent' : 'buy'
-        })
+          interestedIn: property.purpose === 'rent' ? 'rent' : 'buy',
+        }),
       });
-      
+
       if (response.ok) {
         setSubmitted(true);
         setTimeout(() => {
@@ -110,8 +130,8 @@ const PropertyDetailPage = () => {
           setContactForm({ name: '', email: '', phone: '', message: '' });
         }, 2000);
       }
-    } catch (err) {
-      
+    } catch {
+      setStatusMessage({ type: 'error', text: 'Unable to submit your request right now.' });
     } finally {
       setSubmitting(false);
     }
@@ -119,13 +139,13 @@ const PropertyDetailPage = () => {
 
   const nextImage = () => {
     if (property?.images?.length) {
-      setCurrentImageIndex((prev) => (prev + 1) % property.images.length);
+      setCurrentImageIndex(prev => (prev + 1) % property.images.length);
     }
   };
 
   const prevImage = () => {
     if (property?.images?.length) {
-      setCurrentImageIndex((prev) => (prev - 1 + property.images.length) % property.images.length);
+      setCurrentImageIndex(prev => (prev - 1 + property.images.length) % property.images.length);
     }
   };
 
@@ -133,7 +153,7 @@ const PropertyDetailPage = () => {
     if (!price) return 'Price on request';
     const formatted = new Intl.NumberFormat('en-AE', {
       style: 'decimal',
-      maximumFractionDigits: 0
+      maximumFractionDigits: 0,
     }).format(price);
     return `AED ${formatted}${purpose === 'rent' ? '/yr' : ''}`;
   };
@@ -147,9 +167,48 @@ const PropertyDetailPage = () => {
   if (loading) {
     return (
       <AppLayout>
-        <div className="property-detail-loading">
-          <div className="loading-spinner"></div>
-          <p>Loading property details...</p>
+        <div className="property-detail-loading" data-testid="property-detail-loading-skeleton">
+          <div style={{ width: 'min(1200px, 100%)', display: 'grid', gap: '1rem' }}>
+            <Skeleton variant="rect" height={420} borderRadius="16px" />
+            <div
+              style={{
+                display: 'grid',
+                gridTemplateColumns: 'minmax(0, 1fr) 320px',
+                gap: '1rem',
+                width: '100%',
+              }}
+            >
+              <div style={{ display: 'grid', gap: '0.75rem' }}>
+                <Skeleton variant="text" width="25%" height={20} />
+                <Skeleton variant="text" width="65%" height={36} />
+                <Skeleton variant="text" width="40%" height={16} />
+                <Skeleton variant="text" width="35%" height={32} />
+                <div
+                  style={{
+                    display: 'grid',
+                    gap: '0.5rem',
+                    gridTemplateColumns: 'repeat(4, minmax(0, 1fr))',
+                  }}
+                >
+                  {Array.from({ length: 4 }, (_, idx) => (
+                    <Skeleton key={`property-spec-skeleton-${idx}`} variant="rect" height={76} />
+                  ))}
+                </div>
+                <Skeleton variant="text" width="20%" height={22} />
+                <Skeleton variant="text" lines={3} />
+                <Skeleton variant="rect" height={300} borderRadius="12px" />
+              </div>
+              <div style={{ display: 'grid', gap: '0.75rem' }}>
+                <Skeleton variant="text" width="55%" height={22} />
+                <Skeleton variant="text" width="80%" height={14} />
+                <Skeleton variant="rect" height={44} borderRadius="10px" />
+                <Skeleton variant="rect" height={44} borderRadius="10px" />
+                <Skeleton variant="rect" height={44} borderRadius="10px" />
+                <Skeleton variant="rect" height={40} borderRadius="10px" />
+                <Skeleton variant="rect" height={40} borderRadius="10px" />
+              </div>
+            </div>
+          </div>
         </div>
       </AppLayout>
     );
@@ -160,7 +219,7 @@ const PropertyDetailPage = () => {
       <AppLayout>
         <div className="property-detail-error">
           <h2>Property Not Found</h2>
-          <p>Sorry, we couldn't find the property you're looking for.</p>
+          <p>Sorry, we couldn&apos;t find the property you&apos;re looking for.</p>
           <button onClick={() => navigate('/properties')} className="back-btn">
             <ChevronLeft size={20} />
             Back to Properties
@@ -170,12 +229,32 @@ const PropertyDetailPage = () => {
     );
   }
 
-  const images = property.images?.length ? property.images : 
-    [property.image || 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=800'];
+  const images = property.images?.length
+    ? property.images
+    : [property.image || 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=800'];
 
   return (
     <AppLayout>
       <div className="property-detail-page">
+        {statusMessage && (
+          <div
+            role={statusMessage.type === 'error' ? 'alert' : 'status'}
+            data-testid="property-detail-status-banner"
+            style={{
+              marginBottom: '12px',
+              padding: '10px 14px',
+              borderRadius: '8px',
+              fontSize: '14px',
+              fontWeight: 600,
+              borderLeft: `4px solid ${statusMessage.type === 'error' ? '#F04438' : '#12B76A'}`,
+              background: statusMessage.type === 'error' ? '#FEF3F2' : '#ECFDF3',
+              color: statusMessage.type === 'error' ? '#B42318' : '#027A48',
+            }}
+          >
+            {statusMessage.type === 'error' ? '⚠️' : '✅'} {statusMessage.text}
+          </div>
+        )}
+
         <nav className="breadcrumb-nav">
           <Link to="/">Home</Link>
           <span>/</span>
@@ -186,8 +265,8 @@ const PropertyDetailPage = () => {
 
         <div className="property-gallery-section">
           <div className="main-image-container">
-            <img 
-              src={images[currentImageIndex]} 
+            <img
+              src={images[currentImageIndex]} // eslint-disable-line security/detect-object-injection
               alt={property.title}
               onClick={() => setShowGalleryModal(true)}
             />
@@ -205,7 +284,10 @@ const PropertyDetailPage = () => {
               </>
             )}
             <div className="gallery-actions">
-              <button onClick={handleToggleFavorite} className={`action-btn ${isFavorite ? 'active' : ''}`}>
+              <button
+                onClick={handleToggleFavorite}
+                className={`action-btn ${isFavorite ? 'active' : ''}`}
+              >
                 <Heart size={20} fill={isFavorite ? '#B03737' : 'none'} />
               </button>
               <button onClick={handleShare} className="action-btn">
@@ -213,7 +295,7 @@ const PropertyDetailPage = () => {
               </button>
             </div>
           </div>
-          
+
           {images.length > 1 && (
             <div className="thumbnail-row">
               {images.slice(0, 5).map((img, idx) => (
@@ -250,9 +332,7 @@ const PropertyDetailPage = () => {
             </div>
 
             <div className="property-price-section">
-              <div className="price">
-                {formatPrice(property.price, property.purpose)}
-              </div>
+              <div className="price">{formatPrice(property.price, property.purpose)}</div>
               {property.purpose === 'rent' && (
                 <div className="price-breakdown">
                   Approx. AED {Math.round(property.price / 12).toLocaleString()}/month
@@ -286,7 +366,8 @@ const PropertyDetailPage = () => {
             <div className="property-section">
               <h2>Description</h2>
               <p className="property-description">
-                {property.description || `Experience luxury living in this stunning ${property.type?.toLowerCase() || 'property'} located in the prestigious ${property.location} area of Dubai. This exceptional property offers ${property.beds || property.bedrooms || 'multiple'} bedrooms and ${property.baths || property.bathrooms || 'multiple'} bathrooms across ${(property.sqft || property.size || 0).toLocaleString()} sq.ft of living space. Perfect for those seeking an upscale lifestyle in one of Dubai's most sought-after communities.`}
+                {property.description ||
+                  `Experience luxury living in this stunning ${property.type?.toLowerCase() || 'property'} located in the prestigious ${property.location} area of Dubai. This exceptional property offers ${property.beds || property.bedrooms || 'multiple'} bedrooms and ${property.baths || property.bathrooms || 'multiple'} bathrooms across ${(property.sqft || property.size || 0).toLocaleString()} sq.ft of living space. Perfect for those seeking an upscale lifestyle in one of Dubai's most sought-after communities.`}
               </p>
             </div>
 
@@ -373,7 +454,7 @@ const PropertyDetailPage = () => {
             <div className="contact-card">
               <h3>Interested in this property?</h3>
               <p>Contact our luxury property specialists for a private viewing</p>
-              
+
               <div className="contact-buttons">
                 <button className="contact-btn primary" onClick={() => setShowContactModal(true)}>
                   <Mail size={18} />
@@ -383,7 +464,7 @@ const PropertyDetailPage = () => {
                   <Phone size={18} />
                   Call Now
                 </a>
-                <a 
+                <a
                   href={`https://wa.me/97142880889?text=Hi, I'm interested in ${property.title} (${window.location.href})`}
                   target="_blank"
                   rel="noopener noreferrer"
@@ -396,14 +477,21 @@ const PropertyDetailPage = () => {
 
               <div className="agent-info">
                 <div className="agent-avatar">
-                  <img src="https://ui-avatars.com/api/?name=White+Caves&background=B03737&color=fff" alt="Agent" />
+                  <img
+                    src="https://ui-avatars.com/api/?name=White+Caves&background=B03737&color=fff"
+                    alt="Agent"
+                  />
                 </div>
                 <div className="agent-details">
                   <h4>White Caves Real Estate</h4>
                   <p>Luxury Property Specialists</p>
                   <div className="agent-badges">
-                    <span><Shield size={14} /> Verified</span>
-                    <span><Award size={14} /> Top Agent</span>
+                    <span>
+                      <Shield size={14} /> Verified
+                    </span>
+                    <span>
+                      <Award size={14} /> Top Agent
+                    </span>
                   </div>
                 </div>
               </div>
@@ -449,7 +537,8 @@ const PropertyDetailPage = () => {
           <button className="close-modal" onClick={() => setShowGalleryModal(false)}>
             <X size={24} />
           </button>
-          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+          <div className="modal-content" onClick={e => e.stopPropagation()}>
+            {/* eslint-disable-next-line security/detect-object-injection */}
             <img src={images[currentImageIndex]} alt={property.title} />
             {images.length > 1 && (
               <>
@@ -470,18 +559,18 @@ const PropertyDetailPage = () => {
 
       {showContactModal && (
         <div className="contact-modal-overlay" onClick={() => setShowContactModal(false)}>
-          <div className="contact-modal" onClick={(e) => e.stopPropagation()}>
+          <div className="contact-modal" onClick={e => e.stopPropagation()}>
             <button className="close-modal" onClick={() => setShowContactModal(false)}>
               <X size={20} />
             </button>
             <h3>Request Property Information</h3>
             <p className="modal-property">{property.title}</p>
-            
+
             {submitted ? (
               <div className="success-message">
                 <Check size={48} />
                 <h4>Thank you!</h4>
-                <p>We'll be in touch shortly.</p>
+                <p>We&apos;ll be in touch shortly.</p>
               </div>
             ) : (
               <form onSubmit={handleContactSubmit}>
@@ -490,7 +579,7 @@ const PropertyDetailPage = () => {
                     type="text"
                     placeholder="Your Name *"
                     value={contactForm.name}
-                    onChange={(e) => setContactForm({ ...contactForm, name: e.target.value })}
+                    onChange={e => setContactForm({ ...contactForm, name: e.target.value })}
                     required
                   />
                 </div>
@@ -499,7 +588,7 @@ const PropertyDetailPage = () => {
                     type="email"
                     placeholder="Email Address *"
                     value={contactForm.email}
-                    onChange={(e) => setContactForm({ ...contactForm, email: e.target.value })}
+                    onChange={e => setContactForm({ ...contactForm, email: e.target.value })}
                     required
                   />
                 </div>
@@ -508,7 +597,7 @@ const PropertyDetailPage = () => {
                     type="tel"
                     placeholder="Phone Number *"
                     value={contactForm.phone}
-                    onChange={(e) => setContactForm({ ...contactForm, phone: e.target.value })}
+                    onChange={e => setContactForm({ ...contactForm, phone: e.target.value })}
                     required
                   />
                 </div>
@@ -516,7 +605,7 @@ const PropertyDetailPage = () => {
                   <textarea
                     placeholder="Message (optional)"
                     value={contactForm.message}
-                    onChange={(e) => setContactForm({ ...contactForm, message: e.target.value })}
+                    onChange={e => setContactForm({ ...contactForm, message: e.target.value })}
                     rows={4}
                   />
                 </div>

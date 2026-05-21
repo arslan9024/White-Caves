@@ -1,4 +1,5 @@
 # Data Privacy Flow
+
 # White Caves Real Estate Platform
 
 > **Document ID:** WC-FLOW-PRIV-001
@@ -13,16 +14,16 @@
 
 ## 1. UAE PDPL Overview
 
-| Principle | Requirement |
-|-----------|------------|
-| Lawfulness | Processing must have a valid legal basis |
-| Purpose limitation | Data collected only for stated purposes |
-| Data minimisation | Collect only what is necessary |
-| Accuracy | Data must be kept accurate and up to date |
-| Storage limitation | Retain only as long as necessary |
-| Security | Appropriate technical and organisational measures |
-| Accountability | Controller responsible for compliance |
-| Data subject rights | Access, correction, deletion, portability |
+| Principle           | Requirement                                       |
+| ------------------- | ------------------------------------------------- |
+| Lawfulness          | Processing must have a valid legal basis          |
+| Purpose limitation  | Data collected only for stated purposes           |
+| Data minimisation   | Collect only what is necessary                    |
+| Accuracy            | Data must be kept accurate and up to date         |
+| Storage limitation  | Retain only as long as necessary                  |
+| Security            | Appropriate technical and organisational measures |
+| Accountability      | Controller responsible for compliance             |
+| Data subject rights | Access, correction, deletion, portability         |
 
 **White Caves role:** Data Controller for all customer/client personal data
 
@@ -62,9 +63,9 @@ User submits contact / property enquiry form
           ▼
   Privacy notice displayed before/on form:
   "By submitting this form, you agree to our Privacy Policy.
-   Your data will be used to respond to your enquiry and 
+   Your data will be used to respond to your enquiry and
    send relevant property updates. You can unsubscribe anytime."
-  
+
   Link to: whitecaves.ae/privacy-policy
           │
           ▼
@@ -140,17 +141,17 @@ Personal data stored in:
 
 ## 4. Data Retention Policy
 
-| Data Category | Retention Period | Legal Basis |
-|--------------|-----------------|-------------|
-| Lead records (no transaction) | 3 years | Legitimate interest |
-| Client records (transaction completed) | 7 years | UAE AML Law + Tax |
-| KYC documents | 5 years minimum | UAE AML Law No. 20 of 2018 |
-| Financial transaction records | 7 years | UAE Commercial Companies Law |
-| Employment records | Duration + 2 years | UAE Labour Law |
-| Website analytics | 2 years | Consent |
-| Audit logs (access logs) | 3 years | Security + compliance |
-| Marketing consent records | Duration of relationship | PDPL |
-| System logs | 90 days | Security monitoring |
+| Data Category                          | Retention Period         | Legal Basis                  |
+| -------------------------------------- | ------------------------ | ---------------------------- |
+| Lead records (no transaction)          | 3 years                  | Legitimate interest          |
+| Client records (transaction completed) | 7 years                  | UAE AML Law + Tax            |
+| KYC documents                          | 5 years minimum          | UAE AML Law No. 20 of 2018   |
+| Financial transaction records          | 7 years                  | UAE Commercial Companies Law |
+| Employment records                     | Duration + 2 years       | UAE Labour Law               |
+| Website analytics                      | 2 years                  | Consent                      |
+| Audit logs (access logs)               | 3 years                  | Security + compliance        |
+| Marketing consent records              | Duration of relationship | PDPL                         |
+| System logs                            | 90 days                  | Security monitoring          |
 
 ```
 Data deletion schedule:
@@ -281,7 +282,7 @@ Potential data breach detected:
           │
           ▼
   NOTIFICATION (within 72 hours if high risk):
-  
+
   ├── UAE PDPL: Report to UAE Data Office if breach likely to harm subjects
   │   [Phase 2 — regulatory reporting procedure to document]
   │
@@ -300,39 +301,38 @@ Potential data breach detected:
 
 ## 7. Third-Party Data Sharing Register
 
-| Third Party | Data Shared | Purpose | Legal Basis | Location |
-|------------|------------|---------|-------------|---------|
-| Firebase (Google) | Email, name | OAuth authentication | Consent | US (SCCs) |
-| Stripe | Payment card data | Rent payment processing | Contract | US (SCCs) |
-| SendGrid (Twilio) | Email, name | Transactional email | Contract | US (SCCs) |
-| Meta (WhatsApp) | Phone, messages | CRM communication | Consent | US (SCCs) |
-| MongoDB Atlas | All personal data | Data storage | Contract | UAE (primary) |
-| Vercel | IP address (logs) | Hosting | Legitimate interest | Global |
-| DLD / RERA | KYC documents | Property registration | Legal obligation | UAE |
-| UAE FIU | AML records | Regulatory compliance | Legal obligation | UAE |
+| Third Party       | Data Shared       | Purpose                 | Legal Basis         | Location      |
+| ----------------- | ----------------- | ----------------------- | ------------------- | ------------- |
+| Firebase (Google) | Email, name       | OAuth authentication    | Consent             | US (SCCs)     |
+| Stripe            | Payment card data | Rent payment processing | Contract            | US (SCCs)     |
+| SendGrid (Twilio) | Email, name       | Transactional email     | Contract            | US (SCCs)     |
+| Meta (WhatsApp)   | Phone, messages   | CRM communication       | Consent             | US (SCCs)     |
+| MongoDB Atlas     | All personal data | Data storage            | Contract            | UAE (primary) |
+| Vercel            | IP address (logs) | Hosting                 | Legitimate interest | Global        |
+| DLD / RERA        | KYC documents     | Property registration   | Legal obligation    | UAE           |
+| UAE FIU           | AML records       | Regulatory compliance   | Legal obligation    | UAE           |
 
 ---
 
 ## 8. PDPL Compliance Checklist
 
-| Requirement | Status |
-|------------|--------|
-| Privacy policy published | ⏳ Phase 2 |
-| Cookie consent banner | ⏳ Phase 2 |
-| Data processing register | ✅ This document |
-| Data retention schedule | ✅ Section 4 |
-| Subject access request procedure | ✅ Section 5 |
-| Data breach procedure | ✅ Section 6 |
-| Third-party data sharing register | ✅ Section 7 |
-| Staff PDPL training | ⏳ Phase 5 |
-| DPIA (formal assessment) | ✅ `business/08_compliance/data-privacy-impact-assessment.md` |
-| Data Protection Officer | ⏳ Phase 9 (MD acts as DPO currently) |
+| Requirement                       | Status                                                        |
+| --------------------------------- | ------------------------------------------------------------- |
+| Privacy policy published          | ⏳ Phase 2                                                    |
+| Cookie consent banner             | ⏳ Phase 2                                                    |
+| Data processing register          | ✅ This document                                              |
+| Data retention schedule           | ✅ Section 4                                                  |
+| Subject access request procedure  | ✅ Section 5                                                  |
+| Data breach procedure             | ✅ Section 6                                                  |
+| Third-party data sharing register | ✅ Section 7                                                  |
+| Staff PDPL training               | ⏳ Phase 5                                                    |
+| DPIA (formal assessment)          | ✅ `business/08_compliance/data-privacy-impact-assessment.md` |
+| Data Protection Officer           | ⏳ Phase 9 (MD acts as DPO currently)                         |
 
 ---
 
 **Document Owner:** Compliance Department (Laila) + Technology (Radia)
 **Related:** `business/08_compliance/data-privacy-impact-assessment.md`, `business_docs/10_security/uae-pdpl-compliance.md`
-
 
 ---
 
@@ -356,20 +356,24 @@ const getLeadForRole = (lead: FullLead, requestingRole: UserRole): PartialLead =
   };
 
   // Compliance officer can see KYC data
-  const kycFields = isComplianceRole(requestingRole) ? {
-    passportNumber: lead.passportNumber,
-    emiratesIdNumber: lead.emiratesIdNumber,
-    sourceOfFunds: lead.sourceOfFunds,
-    amlStatus: lead.amlStatus,
-  } : {};
+  const kycFields = isComplianceRole(requestingRole)
+    ? {
+        passportNumber: lead.passportNumber,
+        emiratesIdNumber: lead.emiratesIdNumber,
+        sourceOfFunds: lead.sourceOfFunds,
+        amlStatus: lead.amlStatus,
+      }
+    : {};
 
   // Managers can see agent assignment and score
-  const managerFields = isManagerRole(requestingRole) ? {
-    agentId: lead.agentId,
-    agentName: lead.agentName,
-    leadScore: lead.leadScore,
-    internalNotes: lead.internalNotes,
-  } : {};
+  const managerFields = isManagerRole(requestingRole)
+    ? {
+        agentId: lead.agentId,
+        agentName: lead.agentName,
+        leadScore: lead.leadScore,
+        internalNotes: lead.internalNotes,
+      }
+    : {};
 
   return { ...baseFields, ...kycFields, ...managerFields };
 };
@@ -411,20 +415,21 @@ const encryptField = async (plaintext: string): Promise<EncryptedField> => {
 interface AuditLogEntry {
   id: string;
   timestamp: Date;
-  actorId: string;         // who performed the action
+  actorId: string; // who performed the action
   actorRole: UserRole;
   action: 'READ' | 'CREATE' | 'UPDATE' | 'DELETE' | 'EXPORT';
-  resource: string;        // e.g., 'Lead', 'Client', 'KYCDocument'
+  resource: string; // e.g., 'Lead', 'Client', 'KYCDocument'
   resourceId: string;
-  fieldsAccessed?: string[];  // for READ: which sensitive fields were accessed
-  fieldsModified?: {          // for UPDATE: what changed
+  fieldsAccessed?: string[]; // for READ: which sensitive fields were accessed
+  fieldsModified?: {
+    // for UPDATE: what changed
     field: string;
-    oldHash?: string;        // hash of old value (not stored plain)
+    oldHash?: string; // hash of old value (not stored plain)
     newHash?: string;
   }[];
   ipAddress: string;
   userAgent: string;
-  requestId: string;       // correlates with API request log
+  requestId: string; // correlates with API request log
   retentionExpiresAt: Date; // 7 years for compliance audit logs
 }
 ```
@@ -441,7 +446,7 @@ interface SARRequest {
   requestType: 'access' | 'erasure' | 'portability' | 'restriction' | 'correction';
   scope: 'all_data' | 'specific_data';
   specificDataTypes?: string[]; // e.g., ['contact_details', 'property_preferences']
-  reason?: string;              // optional explanation
+  reason?: string; // optional explanation
 }
 
 // System action for 'access' request:
@@ -459,7 +464,7 @@ interface SARRequest {
 // This preserves referential integrity and audit logs
 const anonymiseLead = async (leadId: string): Promise<void> => {
   const anonymisedId = `ERASED-${randomUUID().substring(0, 8)}`;
-  
+
   await prisma.lead.update({
     where: { id: leadId },
     data: {
@@ -470,15 +475,15 @@ const anonymiseLead = async (leadId: string): Promise<void> => {
       passportNumber: null,
       emiratesIdNumber: null,
       // Preserve for audit:
-      status: lead.status,  // Keep for business reporting
-      source: lead.source,  // Keep for analytics (anonymised)
-      budget: null,         // Remove financial data
+      status: lead.status, // Keep for business reporting
+      source: lead.source, // Keep for analytics (anonymised)
+      budget: null, // Remove financial data
       isErased: true,
       erasedAt: new Date(),
       erasureRequestId: requestId,
     },
   });
-  
+
   // Audit log: erasure event
   await auditLog.create({ action: 'DELETE', resource: 'Lead', resourceId: leadId });
 };
@@ -493,11 +498,11 @@ const anonymiseLead = async (leadId: string): Promise<void> => {
 ```typescript
 // Cookie consent state
 interface CookieConsentState {
-  necessary: true;          // always true — cannot opt out
-  analytics: boolean;       // Google Analytics, Hotjar
-  marketing: boolean;       // Meta Pixel, Google Ads
-  functional: boolean;      // language, currency preferences
-  consentVersion: string;   // '2026-04-15' — triggers re-consent when updated
+  necessary: true; // always true — cannot opt out
+  analytics: boolean; // Google Analytics, Hotjar
+  marketing: boolean; // Meta Pixel, Google Ads
+  functional: boolean; // language, currency preferences
+  consentVersion: string; // '2026-04-15' — triggers re-consent when updated
   consentTimestamp: Date;
   consentIp: string;
 }

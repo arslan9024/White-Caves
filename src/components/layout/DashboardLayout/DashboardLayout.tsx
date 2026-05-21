@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 // src/components/layout/DashboardLayout/DashboardLayout.tsx
 /**
  * Main Dashboard Layout Component
@@ -13,21 +12,21 @@ import { MaryInventorySidebar } from '../../sidebars/MaryInventorySidebar/MaryIn
 import { DynamicContentRouter } from '../DashboardWorkspace/DynamicContentRouter';
 import { featureRegistry } from '../../layout/DashboardWorkspace/FeatureRegistry';
 import allFeatures from '../../../config/featureRegistration';
-import { RootState } from '../../../store';
+import type { RootState } from '../../../store/store';
 
 const LayoutContainer = styled.div`
   display: flex;
   height: 100vh;
-  background: ${props => props.theme.colors.background};
-  color: ${props => props.theme.colors.text};
-  font-family: ${props => props.theme.fonts.family};
+  background: ${({ theme }) => String((theme as any)?.colors?.backgroundAlt ?? '#f9fafb')};
+  color: ${({ theme }) => String((theme as any)?.colors?.textPrimary ?? '#1f2937')};
+  font-family: ${({ theme }) => String((theme as any)?.fonts?.family ?? 'Inter, sans-serif')};
 `;
 
 const SidebarWrapper = styled.div`
   width: 280px;
   height: 100%;
-  border-right: 1px solid ${props => props.theme.colors.border};
-  background: ${props => props.theme.colors.sidebarBg};
+  border-right: 1px solid ${({ theme }) => String((theme as any)?.colors?.border ?? '#e5e7eb')};
+  background: ${({ theme }) => String((theme as any)?.colors?.sidebarBg ?? '#ffffff')};
   overflow-y: auto;
 
   &::-webkit-scrollbar {
@@ -39,11 +38,11 @@ const SidebarWrapper = styled.div`
   }
 
   &::-webkit-scrollbar-thumb {
-    background: ${props => props.theme.colors.scrollbar};
+    background: ${({ theme }) => String((theme as any)?.colors?.borderDark ?? '#d1d5db')};
     border-radius: 3px;
 
     &:hover {
-      background: ${props => props.theme.colors.scrollbarHover};
+      background: ${({ theme }) => String((theme as any)?.colors?.textSecondary ?? '#6b7280')};
     }
   }
 `;
@@ -58,7 +57,7 @@ const ContentWrapper = styled.div`
 const ContentArea = styled.div`
   flex: 1;
   overflow-y: auto;
-  background: ${props => props.theme.colors.background};
+  background: ${({ theme }) => String((theme as any)?.colors?.backgroundAlt ?? '#f9fafb')};
 
   &::-webkit-scrollbar {
     width: 8px;
@@ -69,11 +68,11 @@ const ContentArea = styled.div`
   }
 
   &::-webkit-scrollbar-thumb {
-    background: ${props => props.theme.colors.scrollbar};
+    background: ${({ theme }) => String((theme as any)?.colors?.borderDark ?? '#d1d5db')};
     border-radius: 4px;
 
     &:hover {
-      background: ${props => props.theme.colors.scrollbarHover};
+      background: ${({ theme }) => String((theme as any)?.colors?.textSecondary ?? '#6b7280')};
     }
   }
 `;
@@ -83,11 +82,11 @@ export interface DashboardLayoutProps {
   showMobileMenu?: boolean;
 }
 
-export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
-  sidebarWidth = 280,
-}) => {
+export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ sidebarWidth = 280 }) => {
   const dispatch = useDispatch();
-  const activeFeature = useSelector((state: RootState) => state.sidebarUI.activeFeature);
+  const activeFeature = useSelector(
+    (state: RootState) => (state as any).sidebarUI?.activeFeature ?? null
+  );
 
   // Initialize features on mount
   useEffect(() => {
@@ -101,6 +100,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
         payload: 'inventory-dashboard',
       });
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleFeatureSelect = (featureId: string) => {
@@ -113,15 +113,12 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
   return (
     <LayoutContainer>
       <SidebarWrapper style={{ width: `${sidebarWidth}px` }}>
-        <MaryInventorySidebar
-          activeFeature={activeFeature}
-          onFeatureSelect={handleFeatureSelect}
-        />
+        <MaryInventorySidebar activeFeature={activeFeature} onFeatureSelect={handleFeatureSelect} />
       </SidebarWrapper>
 
       <ContentWrapper>
         <ContentArea>
-          <DynamicContentRouter featureId={activeFeature} />
+          <DynamicContentRouter activeFeatureId={activeFeature} />
         </ContentArea>
       </ContentWrapper>
     </LayoutContainer>
@@ -129,4 +126,3 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
 };
 
 export default DashboardLayout;
-

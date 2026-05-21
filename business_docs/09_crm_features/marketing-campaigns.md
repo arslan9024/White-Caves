@@ -24,14 +24,14 @@ The Marketing Campaigns module allows the marketing team to plan, execute, and a
 
 ## Campaign Types
 
-| Type | Channel | Audience | Template Required |
-|------|---------|----------|-------------------|
-| Property Announcement | WhatsApp | Filtered leads | Yes (Meta-approved) |
-| Market Update | WhatsApp + Email | All active leads | Yes |
-| Follow-up Campaign | WhatsApp | Dormant leads | Yes |
-| Open Day Invitation | WhatsApp | Qualified leads | Yes |
-| Email Newsletter | Email | All subscribed leads | No |
-| Portal Boost | PropertyFinder / Bayut | N/A (listing promotion) | N/A |
+| Type                  | Channel                | Audience                | Template Required   |
+| --------------------- | ---------------------- | ----------------------- | ------------------- |
+| Property Announcement | WhatsApp               | Filtered leads          | Yes (Meta-approved) |
+| Market Update         | WhatsApp + Email       | All active leads        | Yes                 |
+| Follow-up Campaign    | WhatsApp               | Dormant leads           | Yes                 |
+| Open Day Invitation   | WhatsApp               | Qualified leads         | Yes                 |
+| Email Newsletter      | Email                  | All subscribed leads    | No                  |
+| Portal Boost          | PropertyFinder / Bayut | N/A (listing promotion) | N/A                 |
 
 ---
 
@@ -79,6 +79,7 @@ The Marketing Campaigns module allows the marketing team to plan, execute, and a
 ## Lead Source Attribution
 
 The system tracks lead source throughout the lifecycle:
+
 - Source captured at lead creation: WhatsApp, Website, PropertyFinder, Bayut, Referral, Cold Call
 - Campaign ID stamped on leads generated from a campaign broadcast
 - Attribution report shows: leads per source, conversion rate per source, commission value per source
@@ -87,15 +88,15 @@ The system tracks lead source throughout the lifecycle:
 
 ## API Endpoints
 
-| Method | Path | Access | Description |
-|--------|------|--------|-------------|
-| GET | `/api/campaigns` | Marketing, Manager, Owner | List campaigns |
-| POST | `/api/campaigns` | Marketing | Create campaign |
-| GET | `/api/campaigns/:id` | Marketing, Manager | Campaign detail + analytics |
-| PATCH | `/api/campaigns/:id/send` | Marketing | Execute / schedule send |
-| PATCH | `/api/campaigns/:id/pause` | Marketing | Pause active campaign |
-| GET | `/api/campaigns/:id/analytics` | Marketing, Manager | Delivery + conversion analytics |
-| GET | `/api/leads/attribution` | Marketing, Manager | Lead source attribution report |
+| Method | Path                           | Access                    | Description                     |
+| ------ | ------------------------------ | ------------------------- | ------------------------------- |
+| GET    | `/api/campaigns`               | Marketing, Manager, Owner | List campaigns                  |
+| POST   | `/api/campaigns`               | Marketing                 | Create campaign                 |
+| GET    | `/api/campaigns/:id`           | Marketing, Manager        | Campaign detail + analytics     |
+| PATCH  | `/api/campaigns/:id/send`      | Marketing                 | Execute / schedule send         |
+| PATCH  | `/api/campaigns/:id/pause`     | Marketing                 | Pause active campaign           |
+| GET    | `/api/campaigns/:id/analytics` | Marketing, Manager        | Delivery + conversion analytics |
+| GET    | `/api/leads/attribution`       | Marketing, Manager        | Lead source attribution report  |
 
 ---
 
@@ -108,6 +109,38 @@ The system tracks lead source throughout the lifecycle:
 - [ ] Attribution correctly links leads to campaign source
 - [ ] Campaign cannot use unapproved WhatsApp templates
 - [ ] Marketing report exportable with campaign performance summary
+
+---
+
+## A/B Testing Framework
+
+- Headline vs description variants.
+- Audience split rules and confidence thresholds.
+- Auto-promote winning variant option.
+
+## Budget and Spend Controls
+
+- Daily/monthly caps by channel.
+- Planned vs actual spend tracking.
+- Overspend alerts for managers.
+
+## Compliance and Consent Controls
+
+- Enforce opt-in for promotional outreach.
+- Consent proof stored with timestamp/source.
+- Audit logs for campaign execution.
+
+## KPI Dashboard and Reporting Cadence
+
+- Delivery, open, reply, and conversion funnels.
+- Weekly and monthly executive reports.
+- Campaign ROI attribution.
+
+## Test Plan
+
+- Audience filter correctness tests.
+- Template approval gating tests.
+- Attribution and reporting consistency tests.
 
 ---
 

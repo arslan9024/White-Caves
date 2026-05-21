@@ -78,7 +78,9 @@ describe('Footer', () => {
 
     it('renders the tagline', () => {
       renderFooter();
-      expect(screen.getByText(/Your trusted partner in Dubai luxury real estate since 2010/)).toBeInTheDocument();
+      expect(
+        screen.getByText(/Your trusted partner in Dubai luxury real estate since 2010/)
+      ).toBeInTheDocument();
     });
   });
 
@@ -224,7 +226,7 @@ describe('Footer', () => {
   describe('badges', () => {
     it('renders RERA Licensed badge', () => {
       renderFooter();
-      expect(screen.getByText('RERA Licensed')).toBeInTheDocument();
+      expect(screen.getByText(/RERA Licensed/i)).toBeInTheDocument();
     });
 
     it('renders DLD Registered badge', () => {

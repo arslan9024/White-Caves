@@ -6,7 +6,7 @@ const contractSignatureSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Contract',
       required: true,
-      index: true
+      index: true,
     },
     signedBy: {
       userId: mongoose.Schema.Types.ObjectId,
@@ -15,42 +15,42 @@ const contractSignatureSchema = new mongoose.Schema(
       role: {
         type: String,
         enum: ['buyer', 'seller', 'tenant', 'landlord', 'agent', 'witness'],
-        required: true
-      }
+        required: true,
+      },
     },
     signerType: {
       type: String,
       enum: ['landlord', 'tenant', 'agent', 'witness'],
-      default: null
+      default: null,
     },
     signatureData: {
       imageData: String, // base64 encoded signature
       mimeType: String, // 'image/png', 'image/jpeg'
-      hash: String // SHA-256 of signature for verification
+      hash: String, // SHA-256 of signature for verification
     },
     signedAt: {
       type: Date,
-      default: null
+      default: null,
     },
     // Device & security info
     deviceInfo: {
       ipAddress: String,
       userAgent: String,
       platform: String, // 'Windows', 'macOS', 'iOS', 'Android'
-      browser: String
+      browser: String,
     },
     // Signing method
     method: {
       type: String,
       enum: ['canvas', 'biometric', 'digital_certificate', 'typed', 'uploaded'],
-      default: 'canvas'
+      default: 'canvas',
     },
     // Status
     status: {
       type: String,
       enum: ['pending', 'sent', 'opened', 'signed', 'rejected', 'expired'],
       default: 'pending',
-      index: true
+      index: true,
     },
     // Expiration for pending signatures
     expiresAt: Date,
@@ -59,13 +59,13 @@ const contractSignatureSchema = new mongoose.Schema(
     // Signature token (for email links)
     tokenId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'SignatureToken'
+      ref: 'SignatureToken',
     },
     token: {
       type: String,
       default: null,
       unique: true,
-      sparse: true
+      sparse: true,
     },
     // Email tracking
     emailHistory: [
@@ -73,7 +73,7 @@ const contractSignatureSchema = new mongoose.Schema(
         type: {
           type: String,
           enum: ['initial_request', 'reminder', 'escalation', 'confirmation'],
-          default: 'initial_request'
+          default: 'initial_request',
         },
         sentAt: Date,
         openedAt: Date,
@@ -81,9 +81,9 @@ const contractSignatureSchema = new mongoose.Schema(
         status: {
           type: String,
           enum: ['sent', 'bounced', 'opened', 'clicked'],
-          default: 'sent'
-        }
-      }
+          default: 'sent',
+        },
+      },
     ],
     // Reminders sent
     reminders: [
@@ -92,15 +92,15 @@ const contractSignatureSchema = new mongoose.Schema(
         type: {
           type: String,
           enum: ['day3', 'day5', 'day7_before_expiry'],
-          default: 'day3'
-        }
-      }
+          default: 'day3',
+        },
+      },
     ],
     // Verification details
     validatedAt: Date,
     validatedBy: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'User'
+      ref: 'User',
     },
     // Rejection details
     rejectionReason: String,
@@ -111,52 +111,49 @@ const contractSignatureSchema = new mongoose.Schema(
     metadata: {
       timezone: String,
       locale: String,
-      browserInfo: String
+      browserInfo: String,
     },
     // Notes
-    notes: String
+    notes: String,
   },
   { timestamps: true }
 );
 
 // Indexes
-contractSignatureSchema.index({ contractId: 1 });
 contractSignatureSchema.index({ 'signedBy.userId': 1 });
-contractSignatureSchema.index({ status: 1 });
 contractSignatureSchema.index({ createdAt: 1 });
 contractSignatureSchema.index({ contractId: 1, status: 1 });
-contractSignatureSchema.index({ token: 1 });
 
 // Methods
-contractSignatureSchema.methods.isExpired = function() {
+contractSignatureSchema.methods.isExpired = function () {
   if (!this.expiresAt) return false;
   return new Date() > this.expiresAt;
 };
 
-contractSignatureSchema.methods.isSigned = function() {
+contractSignatureSchema.methods.isSigned = function () {
   return this.status === 'signed' && this.signedAt;
 };
 
-contractSignatureSchema.methods.isPending = function() {
+contractSignatureSchema.methods.isPending = function () {
   return ['pending', 'sent', 'opened'].includes(this.status);
 };
 
-contractSignatureSchema.methods.addEmailEvent = async function(eventType, eventStatus = 'sent') {
+contractSignatureSchema.methods.addEmailEvent = async function (eventType, eventStatus = 'sent') {
   if (!this.emailHistory) {
     this.emailHistory = [];
   }
-  
+
   this.emailHistory.push({
     type: eventType,
     sentAt: new Date(),
-    status: eventStatus
+    status: eventStatus,
   });
-  
+
   this.status = 'sent';
   return this.save();
 };
 
-contractSignatureSchema.methods.markAsOpened = async function() {
+contractSignatureSchema.methods.markAsOpened = async function () {
   if (this.emailHistory && this.emailHistory.length > 0) {
     this.emailHistory[this.emailHistory.length - 1].openedAt = new Date();
     this.emailHistory[this.emailHistory.length - 1].status = 'opened';
@@ -165,38 +162,38 @@ contractSignatureSchema.methods.markAsOpened = async function() {
   return this.save();
 };
 
-contractSignatureSchema.methods.addReminder = async function(reminderType) {
+contractSignatureSchema.methods.addReminder = async function (reminderType) {
   if (!this.reminders) {
     this.reminders = [];
   }
-  
+
   this.reminders.push({
     sentAt: new Date(),
-    type: reminderType
+    type: reminderType,
   });
-  
+
   return this.save();
 };
 
 // Statics
-contractSignatureSchema.statics.getSignatureStatus = async function(contractId) {
+contractSignatureSchema.statics.getSignatureStatus = async function (contractId) {
   const signatures = await this.find({ contractId }).populate('signedBy.userId', 'name email');
-  
+
   if (signatures.length === 0) {
     return { status: 'no_signatures', count: 0, signatures: [] };
   }
-  
+
   const signedCount = signatures.filter(s => s.isSigned()).length;
   const totalCount = signatures.length;
   const pendingCount = signatures.filter(s => s.isPending()).length;
-  
+
   let overallStatus = 'pending';
   if (signedCount === totalCount) {
     overallStatus = 'fully_signed';
   } else if (signedCount > 0) {
     overallStatus = 'partially_signed';
   }
-  
+
   return {
     status: overallStatus,
     signed: signedCount,
@@ -208,26 +205,26 @@ contractSignatureSchema.statics.getSignatureStatus = async function(contractId) 
       email: s.signedBy.email,
       status: s.status,
       signedAt: s.signedAt,
-      expiresAt: s.expiresAt
-    }))
+      expiresAt: s.expiresAt,
+    })),
   };
 };
 
-contractSignatureSchema.statics.getPendingSignatures = async function(contractId) {
+contractSignatureSchema.statics.getPendingSignatures = async function (contractId) {
   return this.find({
     contractId,
-    status: { $in: ['pending', 'sent', 'opened'] }
+    status: { $in: ['pending', 'sent', 'opened'] },
   }).populate('signedBy.userId', 'name email');
 };
 
-contractSignatureSchema.statics.getSignedSignatures = async function(contractId) {
+contractSignatureSchema.statics.getSignedSignatures = async function (contractId) {
   return this.find({
     contractId,
-    status: 'signed'
+    status: 'signed',
   }).populate('signedBy.userId', 'name email');
 };
 
-contractSignatureSchema.statics.findByToken = async function(token) {
+contractSignatureSchema.statics.findByToken = async function (token) {
   return this.findOne({ token });
 };
 

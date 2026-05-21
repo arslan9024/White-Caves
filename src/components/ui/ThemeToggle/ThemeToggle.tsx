@@ -72,9 +72,7 @@ export const ThemeToggle: React.FC<ThemeToggleProps> = ({
           type="button"
         >
           {icon}
-          {showLabels && (
-            <span className="theme-toggle__label">{label}</span>
-          )}
+          {showLabels && <span className="theme-toggle__label">{label}</span>}
         </button>
       ))}
     </div>

@@ -5,6 +5,7 @@ import {
   ArrowUp, ArrowDown, Filter, Search, BarChart3, PieChart
 } from 'lucide-react';
 import AssistantDocsTab from './shared/AssistantDocsTab';
+import AssistantLifecycleTab from './shared/AssistantLifecycleTab';
 import './AssistantDashboard.css';
 
 const MARKET_TRENDS = [
@@ -100,7 +101,7 @@ const CipherMarketCRM = () => {
       </div>
 
       <div className="assistant-tabs">
-        {['trends', 'predictions', 'competitors', 'indicators', 'docs'].map(tab => (
+        {['trends', 'predictions', 'competitors', 'indicators', 'lifecycle', 'docs'].map(tab => (
           <button
             key={tab}
             className={`tab-btn ${activeTab === tab ? 'active' : ''}`}
@@ -236,6 +237,10 @@ const CipherMarketCRM = () => {
               ))}
             </div>
           </div>
+        )}
+
+        {activeTab === 'lifecycle' && (
+          <AssistantLifecycleTab assistantId="cipher" color="#0D9488" assistantName="Cipher" />
         )}
 
         {activeTab === 'docs' && (

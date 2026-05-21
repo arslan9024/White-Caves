@@ -24,8 +24,7 @@ import type { RootState } from '../store';
 
 // ─── Test Helpers ─────────────────────────────────────────────────────────────
 
-const makeStore = () =>
-  configureStore({ reducer: { homepage: homepageReducer } });
+const makeStore = () => configureStore({ reducer: { homepage: homepageReducer } });
 
 type TestStore = ReturnType<typeof makeStore>;
 
@@ -246,13 +245,16 @@ describe('fetchHomepageData.rejected', () => {
 
 describe('fetchHomepageData thunk — fetch integration', () => {
   let store: TestStore;
+  let consoleErrorSpy: ReturnType<typeof vi.spyOn>;
 
   beforeEach(() => {
     store = makeStore();
     vi.clearAllMocks();
+    consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
   });
 
   afterEach(() => {
+    consoleErrorSpy.mockRestore();
     vi.restoreAllMocks();
   });
 
@@ -278,7 +280,7 @@ describe('fetchHomepageData thunk — fetch integration', () => {
 
     await store.dispatch(fetchHomepageData());
     const state = store.getState().homepage;
-    expect(state.error).toBe('Service Unavailable');
+    expect(state.error).toBe('Server error (503) — please try again later');
     expect(state.isLoading).toBe(false);
   });
 
@@ -291,19 +293,21 @@ describe('fetchHomepageData thunk — fetch integration', () => {
 
     await store.dispatch(fetchHomepageData());
     const state = store.getState().homepage;
-    expect(state.error).toBe('HTTP 500');
+    expect(state.error).toBe('Server error (500) — please try again later');
   });
 
   it('dispatches rejected when json() throws on error response', async () => {
     vi.spyOn(globalThis, 'fetch').mockResolvedValueOnce({
       ok: false,
       status: 502,
-      json: async () => { throw new Error('not JSON'); },
+      json: async () => {
+        throw new Error('not JSON');
+      },
     } as unknown as Response);
 
     await store.dispatch(fetchHomepageData());
     const state = store.getState().homepage;
-    expect(state.error).toBe('HTTP 502');
+    expect(state.error).toBe('Server error (502) — please try again later');
   });
 
   it('dispatches rejected on network error', async () => {
@@ -324,7 +328,9 @@ describe('fetchHomepageData thunk — fetch integration', () => {
 
   it('sets isLoading true while pending', async () => {
     let resolveResponse!: (val: Response) => void;
-    const pendingPromise = new Promise<Response>((res) => { resolveResponse = res; });
+    const pendingPromise = new Promise<Response>(res => {
+      resolveResponse = res;
+    });
     vi.spyOn(globalThis, 'fetch').mockReturnValueOnce(pendingPromise);
 
     const dispatch = store.dispatch(fetchHomepageData());
@@ -400,7 +406,9 @@ describe('homepageSlice — selectors', () => {
   it('selectIsHomepageLoading is true during pending', async () => {
     let resolve!: (val: Response) => void;
     vi.spyOn(globalThis, 'fetch').mockReturnValueOnce(
-      new Promise<Response>((r) => { resolve = r; })
+      new Promise<Response>(r => {
+        resolve = r;
+      })
     );
 
     const thunk = store.dispatch(fetchHomepageData());

@@ -49,19 +49,21 @@
 ## 2. Frontend Architecture
 
 ### Technology Stack
-| Component | Technology | Version |
-|-----------|------------|---------|
-| Framework | React | 18.x |
-| Language | TypeScript | 5.x (strict mode) |
-| State Management | Redux Toolkit | 2.x |
-| Build Tool | Vite | 5.x |
-| Styling | Styled Components + CSS Modules | 6.x |
-| Routing | React Router DOM | 6.x |
-| HTTP Client | Axios | 1.x |
-| Forms | React Hook Form | 7.x |
-| Testing | Vitest + React Testing Library | Latest |
+
+| Component        | Technology                      | Version           |
+| ---------------- | ------------------------------- | ----------------- |
+| Framework        | React                           | 18.x              |
+| Language         | TypeScript                      | 5.x (strict mode) |
+| State Management | Redux Toolkit                   | 2.x               |
+| Build Tool       | Vite                            | 5.x               |
+| Styling          | Styled Components + CSS Modules | 6.x               |
+| Routing          | React Router DOM                | 6.x               |
+| HTTP Client      | Axios                           | 1.x               |
+| Forms            | React Hook Form                 | 7.x               |
+| Testing          | Vitest + React Testing Library  | Latest            |
 
 ### Application Structure
+
 ```
 src/
 ├── App.tsx                   # Root component + router setup
@@ -101,40 +103,43 @@ src/
 ```
 
 ### State Management Slices
-| Slice | Purpose |
-|-------|---------|
-| `authSlice` | User auth state, JWT token, login/logout |
-| `crmDataSlice` | Leads, clients, transactions |
-| `propertySlice` | Property listings + filters |
-| `roleSlice` | Current user role + permissions |
-| `dashboardSlice` | Dashboard KPIs and metrics |
-| `analyticsSlice` | Analytics/reporting data |
-| `whatsappSlice` | WhatsApp conversations + messages |
-| `inventorySlice` | Property inventory management |
-| `aiAssistantDashboardSlice` | AI assistant state |
-| `notificationSlice` | In-app notifications |
-| `sidebarSlice` | Sidebar open/closed state |
-| `navigationSlice` | Active route and breadcrumbs |
+
+| Slice                       | Purpose                                  |
+| --------------------------- | ---------------------------------------- |
+| `authSlice`                 | User auth state, JWT token, login/logout |
+| `crmDataSlice`              | Leads, clients, transactions             |
+| `propertySlice`             | Property listings + filters              |
+| `roleSlice`                 | Current user role + permissions          |
+| `dashboardSlice`            | Dashboard KPIs and metrics               |
+| `analyticsSlice`            | Analytics/reporting data                 |
+| `whatsappSlice`             | WhatsApp conversations + messages        |
+| `inventorySlice`            | Property inventory management            |
+| `aiAssistantDashboardSlice` | AI assistant state                       |
+| `notificationSlice`         | In-app notifications                     |
+| `sidebarSlice`              | Sidebar open/closed state                |
+| `navigationSlice`           | Active route and breadcrumbs             |
 
 ---
 
 ## 3. Backend Architecture
 
 ### Technology Stack
-| Component | Technology | Version |
-|-----------|------------|---------|
-| Runtime | Node.js | 20.x LTS |
-| Framework | Express.js | 4.x |
-| Language | TypeScript | 5.x |
-| ORM | Prisma | 5.x |
-| Database | MongoDB | 7.x (via Atlas) |
-| Authentication | JWT (jsonwebtoken) | 9.x |
-| Password Hashing | bcrypt | 5.x |
-| Validation | Custom + Zod | — |
-| Logging | Winston | 3.x |
-| Testing | Jest | 29.x |
+
+| Component        | Technology         | Version         |
+| ---------------- | ------------------ | --------------- |
+| Runtime          | Node.js            | 20.x LTS        |
+| Framework        | Express.js         | 4.x             |
+| Language         | TypeScript         | 5.x             |
+| ORM              | Prisma             | 5.x             |
+| Database         | MongoDB            | 7.x (via Atlas) |
+| Authentication   | JWT (jsonwebtoken) | 9.x             |
+| Password Hashing | bcrypt             | 5.x             |
+| Validation       | Custom + Zod       | —               |
+| Logging          | Winston            | 3.x             |
+| Testing          | Jest               | 29.x            |
 
 ### API Route Structure
+
 ```
 server/
 ├── index.ts                  # Express app + server startup
@@ -172,6 +177,7 @@ server/
 ```
 
 ### Authentication Flow
+
 ```
 Client                     Server                    Database
   │                           │                          │
@@ -200,6 +206,7 @@ Client                     Server                    Database
 ## 4. Database Schema Overview
 
 ### Core Collections (MongoDB via Prisma)
+
 ```
 Users ──────────────── one-to-many ──▶ Leads (assigned)
   │                                     │
@@ -230,6 +237,7 @@ Audit trail: Activities table records all system events
 ## 5. Security Architecture
 
 ### Request Security Layers
+
 ```
 Internet
   │
@@ -257,13 +265,15 @@ Internet
 ## 6. Deployment Architecture
 
 ### Environments
-| Environment | Purpose | Database | Branch |
-|-------------|---------|----------|--------|
-| Development | Local dev | MongoDB local / Atlas Dev | feature/* |
-| Staging | Pre-production testing | Atlas Staging cluster | main |
-| Production | Live platform | Atlas Production cluster | release/* |
+
+| Environment | Purpose                | Database                  | Branch     |
+| ----------- | ---------------------- | ------------------------- | ---------- |
+| Development | Local dev              | MongoDB local / Atlas Dev | feature/\* |
+| Staging     | Pre-production testing | Atlas Staging cluster     | main       |
+| Production  | Live platform          | Atlas Production cluster  | release/\* |
 
 ### Infrastructure
+
 - **Frontend Hosting:** Vercel (static site deployment with preview URLs per PR)
 - **API Hosting:** Railway / Render / AWS ECS (containerised Node.js)
 - **Database:** MongoDB Atlas (UAE North region — data residency)
@@ -272,6 +282,7 @@ Internet
 - **Monitoring:** UptimeRobot + Sentry (error tracking) + Datadog (metrics)
 
 ### CI/CD Pipeline
+
 ```
 Developer pushes code
         │
@@ -296,14 +307,84 @@ Developer pushes code
 
 ## 7. Architecture Decision Records (ADRs)
 
-| ADR | Decision | Date | Status |
-|-----|---------|------|--------|
-| ADR-001 | Design system rebrand to gold/dark theme | Feb 2026 | Accepted |
+| ADR     | Decision                                                         | Date     | Status   |
+| ------- | ---------------------------------------------------------------- | -------- | -------- |
+| ADR-001 | Design system rebrand to gold/dark theme                         | Feb 2026 | Accepted |
 | ADR-002 | AI assistant plans served via REST API, stored as Markdown files | Feb 2026 | Accepted |
-| ADR-003 | MongoDB over PostgreSQL for flexible document schema | Jan 2026 | Accepted |
-| ADR-004 | WhatsApp Cloud API over on-premise WABA | Planned | Proposed |
-| ADR-005 | Cloud object storage for media (not local disk) | Planned | Proposed |
-| ADR-006 | Prisma ORM for type-safe MongoDB access | Jan 2026 | Accepted |
+| ADR-003 | MongoDB over PostgreSQL for flexible document schema             | Jan 2026 | Accepted |
+| ADR-004 | WhatsApp Cloud API over on-premise WABA                          | Planned  | Proposed |
+| ADR-005 | Cloud object storage for media (not local disk)                  | Planned  | Proposed |
+| ADR-006 | Prisma ORM for type-safe MongoDB access                          | Jan 2026 | Accepted |
+
+---
+
+## 8. Frontend Rendering & Event Architecture Standard
+
+### 8.1 Objective
+
+Establish a scalable frontend standard that improves:
+
+- Arabic/RTL localization maintainability
+- UI responsiveness and perceived performance
+- Rendering efficiency under high dashboard complexity
+
+### 8.2 Component Granularity Policy
+
+The platform adopts **small, cohesive React functional components**.
+
+- Components should represent a stable UI/domain concern (card header, KPI tile body, row actions).
+- Avoid excessive micro-fragmentation that increases prop drilling and maintenance overhead.
+- Keep business orchestration in container-level components/hooks; keep view components presentational.
+
+### 8.3 Event-Driven Rendering Model
+
+All major UI flows follow event-driven architecture:
+
+```
+UI Trigger
+  -> Redux/Domain Action
+  -> Async Side Effect (API/service) [optional]
+  -> Store Mutation
+  -> Selector-based Targeted Re-render
+  -> User Feedback (loading/success/error)
+```
+
+### 8.4 Mandatory Technical Practices
+
+1. **Selector-first subscriptions**
+
+- components read only the slice they need.
+
+2. **Memoization boundaries**
+
+- `React.memo`, `useMemo`, and `useCallback` where rerender pressure is measurable.
+
+3. **Lazy-triggered module rendering**
+
+- render heavy modules only when route/tab/feature trigger is active.
+
+4. **Action-based interaction contracts**
+
+- avoid implicit state coupling across unrelated UI sections.
+
+5. **State locality discipline**
+
+- local UI state stays local; shared domain state lives in store.
+
+### 8.5 Localization and RTL Architecture Hooks
+
+- Translation dictionaries must be consumable at leaf render nodes.
+- Direction-aware layout tokens must support runtime RTL switch.
+- Component APIs must avoid hardcoded alignment/ordering assumptions.
+
+### 8.6 Verification Requirements
+
+Before marking a migration wave complete:
+
+1. React Profiler evidence for reduced unnecessary rerenders on critical flows.
+2. Unit/integration tests unchanged or improved.
+3. Arabic RTL visual parity checklist passed for auth + CRM shell + top dashboard tabs.
+4. No regression in route-level code splitting and lazy loading behavior.
 
 ---
 

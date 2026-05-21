@@ -4,7 +4,7 @@
  * quick actions, activity feed, back-to-hub, URL sync
  */
 
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import React from 'react';
 import { Provider } from 'react-redux';
@@ -22,7 +22,7 @@ vi.mock('react-router-dom', async () => {
     ...actual,
     useNavigate: () => mockNavigate,
     useSearchParams: () => [
-      { get: (key: string) => key === 'module' ? mockSearchParamsModule : null },
+      { get: (key: string) => (key === 'module' ? mockSearchParamsModule : null) },
       mockSetSearchParams,
     ],
   };
@@ -53,8 +53,18 @@ vi.mock('../../components/crm/NadiaWhatsAppCRM', () => ({
 
 // Mock UI components
 vi.mock('../../components/ui', () => ({
-  Badge: ({ children, variant, size }: { children: React.ReactNode; variant?: string; size?: string }) => (
-    <span data-testid="badge" data-variant={variant} data-size={size}>{children}</span>
+  Badge: ({
+    children,
+    variant,
+    size,
+  }: {
+    children: React.ReactNode;
+    variant?: string;
+    size?: string;
+  }) => (
+    <span data-testid="badge" data-variant={variant} data-size={size}>
+      {children}
+    </span>
   ),
   Tabs: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
 }));
@@ -124,8 +134,18 @@ const createMockStore = (crmOverrides: Record<string, unknown> = {}) => {
         },
         activities: {
           items: [
-            { id: 'act1', type: 'lead', description: 'New lead added', timestamp: new Date().toISOString() },
-            { id: 'act2', type: 'deal', action: 'Deal closed', timestamp: new Date(Date.now() - 3600000).toISOString() },
+            {
+              id: 'act1',
+              type: 'lead',
+              description: 'New lead added',
+              timestamp: new Date().toISOString(),
+            },
+            {
+              id: 'act2',
+              type: 'deal',
+              action: 'Deal closed',
+              timestamp: new Date(Date.now() - 3600000).toISOString(),
+            },
           ],
           loading: false,
           error: null,
@@ -143,7 +163,13 @@ const createMockStore = (crmOverrides: Record<string, unknown> = {}) => {
         user: { id: 'u1', displayName: 'Owner', email: 'owner@wc.ae', role: 'owner' },
         token: 'tok',
         refreshToken: null,
-        session: { isLoggedIn: true, lastActive: null, sessions: [], expiresAt: null, activeSessionId: null },
+        session: {
+          isLoggedIn: true,
+          lastActive: null,
+          sessions: [],
+          expiresAt: null,
+          activeSessionId: null,
+        },
         loginMethods: { social: false, email: false, mobile: false },
         loginProvider: null,
         rememberMe: false,
@@ -162,7 +188,7 @@ const renderPage = (crmOverrides: Record<string, unknown> = {}) => {
       <MemoryRouter>
         <CRMHubPage />
       </MemoryRouter>
-    </Provider>,
+    </Provider>
   );
 };
 
@@ -170,8 +196,14 @@ const renderPage = (crmOverrides: Record<string, unknown> = {}) => {
 
 describe('CRMHubPage', () => {
   beforeEach(() => {
+    vi.spyOn(console, 'error').mockImplementation(() => {});
+    vi.spyOn(console, 'warn').mockImplementation(() => {});
     vi.clearAllMocks();
     mockSearchParamsModule = '';
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
   });
 
   // ── Rendering ────────────────────────────────────────────────
@@ -181,7 +213,7 @@ describe('CRMHubPage', () => {
       renderPage();
       expect(screen.getByText('CRM Command Center')).toBeInTheDocument();
       expect(
-        screen.getByText(/Manage leads, properties, deals, and team performance/),
+        screen.getByText(/Manage leads, properties, deals, and team performance/)
       ).toBeInTheDocument();
     });
 
@@ -189,11 +221,15 @@ describe('CRMHubPage', () => {
       renderPage();
       // Lead Management appears in both quick actions and module cards
       expect(screen.getAllByText(/Lead Management/).length).toBeGreaterThanOrEqual(1);
-      expect(screen.getAllByText(/Property Portfolio|Property Inventory/).length).toBeGreaterThanOrEqual(1);
+      expect(
+        screen.getAllByText(/Property Portfolio|Property Inventory/).length
+      ).toBeGreaterThanOrEqual(1);
       expect(screen.getAllByText(/Agent Performance/).length).toBeGreaterThanOrEqual(1);
       expect(screen.getAllByText(/WhatsApp CRM/).length).toBeGreaterThanOrEqual(1);
       expect(screen.getAllByText(/Finance & Commissions/).length).toBeGreaterThanOrEqual(1);
-      expect(screen.getAllByText(/Executive View|Executive Dashboard/).length).toBeGreaterThanOrEqual(1);
+      expect(
+        screen.getAllByText(/Executive View|Executive Dashboard/).length
+      ).toBeGreaterThanOrEqual(1);
     });
 
     it('should render Recent Activity section', () => {
@@ -272,7 +308,9 @@ describe('CRMHubPage', () => {
     it('should render module descriptions', () => {
       renderPage();
       expect(screen.getByText('Track prospects, score leads, manage pipeline')).toBeInTheDocument();
-      expect(screen.getByText('Property listings, availability, owner tracking')).toBeInTheDocument();
+      expect(
+        screen.getByText('Property listings, availability, owner tracking')
+      ).toBeInTheDocument();
     });
   });
 
@@ -310,7 +348,7 @@ describe('CRMHubPage', () => {
       // Click on Lead Management module card (the one in the modules grid)
       const cards = screen.getAllByText('Track prospects, score leads, manage pipeline');
       fireEvent.click(cards[0].closest('[class]')!);
-      
+
       // Should show back button and active module
       await waitFor(() => {
         expect(screen.getByText(/Back to CRM Hub/)).toBeInTheDocument();
@@ -322,7 +360,7 @@ describe('CRMHubPage', () => {
       // Click WhatsApp CRM quick action
       const btn = screen.getByText(/💬 WhatsApp CRM/);
       fireEvent.click(btn);
-      
+
       await waitFor(() => {
         expect(screen.getByText(/Back to CRM Hub/)).toBeInTheDocument();
       });
@@ -376,7 +414,7 @@ describe('CRMHubPage', () => {
         activities: { items: [], loading: false, error: null },
       });
       expect(
-        screen.getByText('System initialized — CRM modules loaded successfully'),
+        screen.getByText('System initialized — CRM modules loaded successfully')
       ).toBeInTheDocument();
     });
   });

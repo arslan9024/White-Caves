@@ -6,13 +6,15 @@ import { configureStore } from '@reduxjs/toolkit';
 
 // Mock styled-components
 vi.mock('./SubNavBar/SubNavBar.styles', () => {
-  const c = (tag: string) => ({ children, ...props }: any) => {
-    const filtered: any = {};
-    for (const [k, v] of Object.entries(props)) {
-      if (!k.startsWith('$')) filtered[k] = v;
-    }
-    return React.createElement(tag, filtered, children);
-  };
+  const c =
+    (tag: string) =>
+    ({ children, ...props }: any) => {
+      const filtered: any = {};
+      for (const [k, v] of Object.entries(props)) {
+        if (!k.startsWith('$')) filtered[k] = v;
+      }
+      return React.createElement(tag, filtered, children);
+    };
   return {
     SubNavBarWrapper: c('nav'),
     SubNavBarContainer: c('div'),
@@ -54,20 +56,25 @@ vi.mock('../../features/featureRegistry', () => ({
 
 // Mock navigationSlice
 vi.mock('../../store/navigationSlice', () => ({
-  setCurrentSubModule: vi.fn((id: string) => ({ type: 'navigation/setCurrentSubModule', payload: id })),
+  setCurrentSubModule: vi.fn((id: string) => ({
+    type: 'navigation/setCurrentSubModule',
+    payload: id,
+  })),
 }));
 
 import SubNavBar from './SubNavBar';
 import { setCurrentSubModule } from '../../store/navigationSlice';
 
 function createStore(overrides: any = {}) {
+  const navigationState = {
+    currentSubModule: 'dashboard',
+    activeRole: 'agent',
+    ...overrides,
+  };
+
   return configureStore({
     reducer: {
-      navigation: () => ({
-        currentSubModule: 'dashboard',
-        activeRole: 'agent',
-        ...overrides,
-      }),
+      navigation: (state = navigationState) => state,
     },
   });
 }

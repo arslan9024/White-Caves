@@ -71,7 +71,7 @@ const defaultWhatsAppState: WhatsAppState = {
 
 const createStore = (
   userOverrides: Record<string, unknown> = {},
-  whatsappOverrides: Partial<WhatsAppState> = {},
+  whatsappOverrides: Partial<WhatsAppState> = {}
 ) =>
   configureStore({
     reducer: { user: userReducer, whatsapp: whatsappReducer },
@@ -88,7 +88,7 @@ const createStore = (
 
 const renderPage = (
   userOverrides: Record<string, unknown> = {},
-  waOverrides: Partial<WhatsAppState> = {},
+  waOverrides: Partial<WhatsAppState> = {}
 ) => {
   const store = createStore(userOverrides, waOverrides);
   return render(
@@ -96,12 +96,14 @@ const renderPage = (
       <MemoryRouter>
         <WhatsAppSettingsPage />
       </MemoryRouter>
-    </Provider>,
+    </Provider>
   );
 };
 
 // ─── Setup ──────────────────────────────────────────────────────
 beforeEach(() => {
+  vi.spyOn(console, 'error').mockImplementation(() => {});
+  vi.spyOn(console, 'warn').mockImplementation(() => {});
   vi.clearAllMocks();
   mockAuthFetch.mockResolvedValue({ ok: true, json: async () => ({}) });
   vi.stubGlobal('WebSocket', MockWebSocket);
@@ -149,7 +151,9 @@ describe('WhatsAppSettingsPage', () => {
 
     it('renders all navigation tabs', () => {
       renderPage();
-      const tabs = screen.getAllByRole('button').filter(btn => btn.classList.contains('settings-tab'));
+      const tabs = screen
+        .getAllByRole('button')
+        .filter(btn => btn.classList.contains('settings-tab'));
       expect(tabs.length).toBe(5);
       expect(screen.getAllByText(/Status/).length).toBeGreaterThanOrEqual(1);
       expect(screen.getByText(/QR Code/)).toBeInTheDocument();
@@ -173,29 +177,39 @@ describe('WhatsAppSettingsPage', () => {
     });
 
     it('shows Disconnect button when connected', () => {
-      renderPage({}, {
-        session: {
-          sessionId: 's1',
-          ownerEmail: 'o@wc.ae',
-          phoneNumber: '+971561234567',
-          businessName: 'WC',
-          connectionStatus: 'authenticated',
-          messageCount: 5,
-          autoReplyEnabled: false,
-          chatbotEnabled: false,
-        },
-      });
+      renderPage(
+        {},
+        {
+          session: {
+            sessionId: 's1',
+            ownerEmail: 'o@wc.ae',
+            phoneNumber: '+971561234567',
+            businessName: 'WC',
+            connectionStatus: 'authenticated',
+            messageCount: 5,
+            autoReplyEnabled: false,
+            chatbotEnabled: false,
+          },
+        }
+      );
       expect(screen.getByRole('button', { name: /Disconnect/i })).toBeInTheDocument();
     });
 
     it('shows phone number when connected', () => {
-      renderPage({}, {
-        session: {
-          sessionId: 's1', ownerEmail: 'o@wc.ae', phoneNumber: '+971561234567',
-          connectionStatus: 'authenticated', messageCount: 0,
-          autoReplyEnabled: false, chatbotEnabled: false,
-        },
-      });
+      renderPage(
+        {},
+        {
+          session: {
+            sessionId: 's1',
+            ownerEmail: 'o@wc.ae',
+            phoneNumber: '+971561234567',
+            connectionStatus: 'authenticated',
+            messageCount: 0,
+            autoReplyEnabled: false,
+            chatbotEnabled: false,
+          },
+        }
+      );
       expect(screen.getByText('+971561234567')).toBeInTheDocument();
     });
 
@@ -217,7 +231,17 @@ describe('WhatsAppSettingsPage', () => {
     });
 
     it('disables Initialize button while connecting', () => {
-      renderPage({}, { loading: { connecting: true, disconnecting: false, sending: false, fetchingHistory: false } });
+      renderPage(
+        {},
+        {
+          loading: {
+            connecting: true,
+            disconnecting: false,
+            sending: false,
+            fetchingHistory: false,
+          },
+        }
+      );
       const btn = screen.getByRole('button', { name: /Initializing/i });
       expect(btn).toBeDisabled();
     });
@@ -227,21 +251,27 @@ describe('WhatsAppSettingsPage', () => {
   describe('Tab Navigation', () => {
     it('switches to QR Code tab', () => {
       renderPage();
-      const tabs = screen.getAllByRole('button').filter(btn => btn.classList.contains('settings-tab'));
+      const tabs = screen
+        .getAllByRole('button')
+        .filter(btn => btn.classList.contains('settings-tab'));
       fireEvent.click(tabs[1]); // QR Code is second tab
       expect(screen.getByText('QR Code Scanner')).toBeInTheDocument();
     });
 
     it('switches to Messages tab', () => {
       renderPage();
-      const tabs = screen.getAllByRole('button').filter(btn => btn.classList.contains('settings-tab'));
+      const tabs = screen
+        .getAllByRole('button')
+        .filter(btn => btn.classList.contains('settings-tab'));
       fireEvent.click(tabs[2]); // Messages is third tab
       expect(screen.getByText('Test Message')).toBeInTheDocument();
     });
 
     it('switches to Queue tab', () => {
       renderPage();
-      const tabs = screen.getAllByRole('button').filter(btn => btn.classList.contains('settings-tab'));
+      const tabs = screen
+        .getAllByRole('button')
+        .filter(btn => btn.classList.contains('settings-tab'));
       fireEvent.click(tabs[3]); // Queue is fourth tab
       expect(screen.getByText('Message Queue')).toBeInTheDocument();
     });
@@ -257,14 +287,18 @@ describe('WhatsAppSettingsPage', () => {
   describe('QR Code Tab', () => {
     it('shows placeholder when no QR code', () => {
       renderPage();
-      const tabs = screen.getAllByRole('button').filter(btn => btn.classList.contains('settings-tab'));
+      const tabs = screen
+        .getAllByRole('button')
+        .filter(btn => btn.classList.contains('settings-tab'));
       fireEvent.click(tabs[1]); // QR Code tab
       expect(screen.getByText(/No QR code available/i)).toBeInTheDocument();
     });
 
     it('shows QR image when available', () => {
       renderPage({}, { qrCode: 'data:image/png;base64,abc123' });
-      const tabs = screen.getAllByRole('button').filter(btn => btn.classList.contains('settings-tab'));
+      const tabs = screen
+        .getAllByRole('button')
+        .filter(btn => btn.classList.contains('settings-tab'));
       fireEvent.click(tabs[1]); // QR Code tab
       const img = screen.getByAltText('WhatsApp QR Code');
       expect(img).toBeInTheDocument();
@@ -275,13 +309,19 @@ describe('WhatsAppSettingsPage', () => {
   // === Messages Tab ===
   describe('Messages Tab', () => {
     const authedSession = {
-      sessionId: 's1', ownerEmail: 'o@wc.ae', phoneNumber: '+971561234567',
-      connectionStatus: 'authenticated' as const, messageCount: 0,
-      autoReplyEnabled: false, chatbotEnabled: false,
+      sessionId: 's1',
+      ownerEmail: 'o@wc.ae',
+      phoneNumber: '+971561234567',
+      connectionStatus: 'authenticated' as const,
+      messageCount: 0,
+      autoReplyEnabled: false,
+      chatbotEnabled: false,
     };
 
     const clickMessagesTab = () => {
-      const tabs = screen.getAllByRole('button').filter(btn => btn.classList.contains('settings-tab'));
+      const tabs = screen
+        .getAllByRole('button')
+        .filter(btn => btn.classList.contains('settings-tab'));
       fireEvent.click(tabs[2]); // Messages tab
     };
 
@@ -306,10 +346,17 @@ describe('WhatsAppSettingsPage', () => {
     });
 
     it('shows recent messages when available', () => {
-      const msgs = [{
-        id: 'm1', phoneNumber: '+971500000000', body: 'Hello', type: 'text' as const,
-        direction: 'sent' as const, timestamp: new Date(), status: 'sent' as const,
-      }];
+      const msgs = [
+        {
+          id: 'm1',
+          phoneNumber: '+971500000000',
+          body: 'Hello',
+          type: 'text' as const,
+          direction: 'sent' as const,
+          timestamp: new Date(),
+          status: 'sent' as const,
+        },
+      ];
       renderPage({}, { session: authedSession, messages: msgs });
       clickMessagesTab();
       expect(screen.getByText('Recent Messages')).toBeInTheDocument();
@@ -320,7 +367,9 @@ describe('WhatsAppSettingsPage', () => {
   // === Queue Tab ===
   describe('Queue Tab', () => {
     const clickQueueTab = () => {
-      const tabs = screen.getAllByRole('button').filter(btn => btn.classList.contains('settings-tab'));
+      const tabs = screen
+        .getAllByRole('button')
+        .filter(btn => btn.classList.contains('settings-tab'));
       fireEvent.click(tabs[3]); // Queue tab
     };
 
@@ -331,15 +380,38 @@ describe('WhatsAppSettingsPage', () => {
     });
 
     it('shows queue stats', () => {
-      renderPage({}, {
-        queue: {
-          size: 3, maxSize: 100, processing: 1,
-          messages: [
-            { id: 'q1', phoneNumber: '+971500000001', body: 'Msg one', type: 'text', direction: 'sent', timestamp: new Date(), status: 'pending', priority: 'high' },
-            { id: 'q2', phoneNumber: '+971500000002', body: 'Msg two', type: 'text', direction: 'sent', timestamp: new Date(), status: 'pending', priority: 'normal' },
-          ],
-        },
-      });
+      renderPage(
+        {},
+        {
+          queue: {
+            size: 3,
+            maxSize: 100,
+            processing: 1,
+            messages: [
+              {
+                id: 'q1',
+                phoneNumber: '+971500000001',
+                body: 'Msg one',
+                type: 'text',
+                direction: 'sent',
+                timestamp: new Date(),
+                status: 'pending',
+                priority: 'high',
+              },
+              {
+                id: 'q2',
+                phoneNumber: '+971500000002',
+                body: 'Msg two',
+                type: 'text',
+                direction: 'sent',
+                timestamp: new Date(),
+                status: 'pending',
+                priority: 'normal',
+              },
+            ],
+          },
+        }
+      );
       clickQueueTab();
       expect(screen.getByText('Pending Messages')).toBeInTheDocument();
       expect(screen.getByText('+971500000001')).toBeInTheDocument();
@@ -376,7 +448,7 @@ describe('WhatsAppSettingsPage', () => {
       await waitFor(() => {
         expect(mockAuthFetch).toHaveBeenCalledWith(
           '/api/whatsapp/settings',
-          expect.objectContaining({ method: 'PUT' }),
+          expect.objectContaining({ method: 'PUT' })
         );
       });
     });
@@ -421,7 +493,7 @@ describe('WhatsAppSettingsPage', () => {
       await waitFor(() => {
         expect(mockAuthFetch).toHaveBeenCalledWith(
           '/api/whatsapp/settings',
-          expect.objectContaining({ signal: expect.any(AbortSignal) }),
+          expect.objectContaining({ signal: expect.any(AbortSignal) })
         );
       });
     });
@@ -433,25 +505,31 @@ describe('WhatsAppSettingsPage', () => {
       await waitFor(() => {
         expect(mockAuthFetch).toHaveBeenCalledWith(
           '/api/whatsapp/init',
-          expect.objectContaining({ method: 'POST' }),
+          expect.objectContaining({ method: 'POST' })
         );
       });
     });
 
     it('calls disconnect API', async () => {
       mockAuthFetch.mockResolvedValue({ ok: true, json: async () => ({}) });
-      renderPage({}, {
-        session: {
-          sessionId: 's1', ownerEmail: 'o@wc.ae',
-          connectionStatus: 'authenticated', messageCount: 0,
-          autoReplyEnabled: false, chatbotEnabled: false,
-        },
-      });
+      renderPage(
+        {},
+        {
+          session: {
+            sessionId: 's1',
+            ownerEmail: 'o@wc.ae',
+            connectionStatus: 'authenticated',
+            messageCount: 0,
+            autoReplyEnabled: false,
+            chatbotEnabled: false,
+          },
+        }
+      );
       fireEvent.click(screen.getByRole('button', { name: /Disconnect/i }));
       await waitFor(() => {
         expect(mockAuthFetch).toHaveBeenCalledWith(
           '/api/whatsapp/disconnect',
-          expect.objectContaining({ method: 'POST' }),
+          expect.objectContaining({ method: 'POST' })
         );
       });
     });

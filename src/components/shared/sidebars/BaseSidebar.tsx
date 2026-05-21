@@ -48,14 +48,8 @@ export const BaseSidebar: React.FC<BaseSidebarProps> = ({
   className,
   testId,
 }) => {
-  const {
-    isCollapsed,
-    searchQuery,
-    setSearch,
-    clearSearch,
-    isMobileOpen,
-    setMobileOpen,
-  } = useSidebarState(name);
+  const { isCollapsed, searchQuery, setSearch, clearSearch, isMobileOpen, setMobileOpen } =
+    useSidebarState(name);
 
   const [localSearchQuery, setLocalSearchQuery] = useState(searchQuery);
 
@@ -75,7 +69,7 @@ export const BaseSidebar: React.FC<BaseSidebarProps> = ({
     [setSearch, onSearch]
   );
 
-  const handleSearchClear = useCallback(() => {
+  const _handleSearchClear = useCallback(() => {
     setLocalSearchQuery('');
     clearSearch();
     onSearch?.('');
@@ -149,4 +143,3 @@ export const BaseSidebar: React.FC<BaseSidebarProps> = ({
 };
 
 export default BaseSidebar;
-

@@ -12,7 +12,10 @@ import helmet from 'helmet';
 import path from 'path';
 import compression from 'compression';
 import morgan from 'morgan';
+import cookieParser from 'cookie-parser';
+import { Prisma } from '@prisma/client';
 import { connectDatabase, prisma } from './database.js';
+import { Prisma } from '@prisma/client';
 import { errorHandler, asyncHandler, AppError } from './middleware/errorHandler.js';
 import authMiddleware from './middleware/auth.js';
 import { requestIdMiddleware } from './middleware/requestId.js';
@@ -44,6 +47,11 @@ import nadiaRoutes from './routes/nadia.js';
 import lindaRoutes from './routes/linda.js';
 import metaWebhookRoutes from './routes/meta-webhook.js';
 import favoritesRoutes from './routes/favorites.js';
+import orchestratorRoutes from './routes/orchestrator.js';
+import henryRoutes from './routes/henry.js';
+// @ts-expect-error JS route module has no TypeScript declarations yet
+import ninaRoutes from './routes/nina.js';
+import maryRoutes from './routes/mary.js';
 import savedSearchesRoutes from './routes/saved-searches.js';
 import viewingsRoutes from './routes/viewings.js';
 import offersRoutes from './routes/offers.js';
@@ -57,20 +65,34 @@ import currencyRoutes from './routes/currency.js';
 import emailRoutes from './routes/email.js';
 import agentAvailabilityRoutes from './routes/agentAvailability.js';
 import analyticsRoutes from './routes/analytics.js';
+import departmentsRoutes from './routes/departments.js';
 import homepageRoutes from './routes/homepage.js';
 import contactRoutes from './routes/contact.js';
 import aiChatRoutes from './routes/aiChat.js';
 import jobApplicationsRoutes from './routes/jobApplications.js';
+import contractsRoutes from './routes/contracts.js';
+import appointmentsRoutes from './routes/appointments.js';
+import { roleRequestRouter, adminRoleRequestRouter } from './routes/roleRequests.js';
+import { phase6Router } from './routes/phase6.routes.js';
+import landlordPortalRoutes from './routes/landlord.js';
+import tenantPortalRoutes from './routes/tenantPortal.js';
 import invoicesLeaseRoutes from './routes/invoicesLease.js';
 import usersRoutes from './routes/users.js';
 import leasingInventoryRoutes from './routes/leasing-inventory.js';
 import secondarySalesRoutes from './routes/secondary-sales.js';
+import commissionsRoutes from './routes/commissions.js';
+// @ts-expect-error JS route module has no TypeScript declarations yet
+import importHistoryRoutes from './routes/importHistory.routes.js';
+// @ts-expect-error JS route module has no TypeScript declarations yet
+import smartImportRoutes from './routes/smartImport.routes.js';
 import { requireRole, requirePermission } from './middleware/rbac.js';
 import { startLeadScoringScheduler } from './services/ai/leadScoringScheduler.js';
 import { startFollowUpScheduler } from './services/automation/followUpScheduler.js';
 import { startRateRefresh } from './services/currencyService.js';
 import { startViewingReminderScheduler } from './services/schedulingService.js';
 import { startRERAExpiryScheduler } from './services/compliance/reraExpiryScheduler.js';
+import { startPermitAlertScheduler } from './services/compliance/permitAlertScheduler.js';
+import { startPropertyPermitEnforcementScheduler } from './services/compliance/propertyPermitEnforcementScheduler.js';
 import { startAutoRouting } from './services/ai/leadAutoRouter.js';
 import { createSocketServer } from './services/socketServer.js';
 
@@ -187,9 +209,12 @@ app.use(morgan(process.env.NODE_ENV === 'production' ? 'combined' : 'dev'));
 app.use(express.json({ limit: '1mb' }));
 app.use(express.urlencoded({ limit: '1mb', extended: true }));
 
+// Cookie parsing — required for httpOnly refresh-token cookie on /api/auth/refresh
+app.use(cookieParser());
+
 // Content-Type validation for mutation endpoints
-// Exempt paths that accept non-JSON bodies (file uploads, webhooks).
-const NON_JSON_PATHS = new Set(['/api/whatsapp/webhook']);
+// Exempt paths that accept non-JSON bodies (file uploads, webhooks, cookie-only endpoints).
+const NON_JSON_PATHS = new Set(['/api/whatsapp/webhook', '/api/auth/refresh']);
 app.use('/api', (req: Request, res: Response, next) => {
   if (
     ['POST', 'PUT', 'PATCH'].includes(req.method) &&
@@ -210,7 +235,12 @@ app.use('/api/auth/login', authLimiter);
 app.use('/api/auth/register', registerLimiter);
 app.use('/api/auth/password', passwordLimiter);
 app.use('/api/auth/verify-2fa', strictLimiter);
+app.use('/api/auth/2fa/setup', strictLimiter);
+app.use('/api/auth/2fa/enable', strictLimiter);
+app.use('/api/auth/2fa/disable', strictLimiter);
+app.use('/api/auth/refresh', authLimiter);
 app.use('/api/auth/firebase-sync', authLimiter);
+app.use('/api/auth/refresh', authLimiter);
 app.use('/api/auth/webauthn/register', authLimiter);
 app.use('/api/auth/webauthn/authenticate', authLimiter);
 app.use('/api/contact', contactLimiter); // Public unauthenticated — stricter: 10/hour/IP
@@ -326,6 +356,7 @@ app.use('/api/contact', contactRoutes);
 
 // Market Analytics API (Phase 4C - Market Analyst Bot)
 app.use('/api/analytics', analyticsRoutes);
+app.use('/api/departments', departmentsRoutes);
 
 // Currency API (Phase 2E - Multi-Currency Support)
 app.use('/api/currency', currencyRoutes);
@@ -344,6 +375,12 @@ app.use('/api/nadia', nadiaRoutes);
 
 // Linda LocalAuth WhatsApp Integration (alternative channel)
 app.use('/api/linda', lindaRoutes);
+
+// AssistantOrchestrator API — cross-assistant event bus status, events, and admin emit
+app.use('/api/orchestrator', orchestratorRoutes);
+app.use('/api/henry', henryRoutes);
+app.use('/api/nina', ninaRoutes);
+app.use('/api/mary', maryRoutes);
 
 // Meta Business API Webhooks and Sending (production scale channel)
 app.use('/api/webhooks/meta', metaWebhookRoutes);
@@ -374,6 +411,11 @@ app.use('/api/leasing-inventory', leasingInventoryRoutes);
 
 // Secondary Sales API
 app.use('/api/secondary-sales', secondarySalesRoutes);
+
+// Commissions API (Phase 35 - Dubai Real Estate Commission Tracker)
+app.use('/api/commissions', commissionsRoutes);
+app.use('/api/inventory/import', smartImportRoutes);
+app.use('/api', importHistoryRoutes);
 
 // WhatsApp Webhook (public endpoint — requires webhook secret for verification)
 app.post(
@@ -436,26 +478,67 @@ app.get(
   authMiddleware,
   requirePermission('access_whatsapp_business'),
   asyncHandler(async (_req: Request, res: Response) => {
-    res.status(200).json({
-      success: true,
-      data: { phoneNumber: '', connected: false, autoReply: false, businessHours: null },
-    });
+    const row = await prisma.systemSetting.findUnique({ where: { key: 'whatsapp_settings' } });
+    const defaults = { phoneNumber: '', connected: false, autoReply: false, businessHours: null };
+    const data = row ? { ...defaults, ...(row.value as object) } : defaults;
+    res.status(200).json({ success: true, data });
   })
 );
 app.put(
   '/api/whatsapp/settings',
   authMiddleware,
   requireRole('owner'),
-  asyncHandler(async (_req: Request, res: Response) => {
-    res.status(200).json({ success: true, message: 'Settings updated (stub)' });
+  asyncHandler(async (req: Request, res: Response) => {
+    const { phoneNumber, autoReply, businessHours } = req.body ?? {};
+    const userId = (req as Request & { user?: { id: string } }).user?.id;
+    const current = await prisma.systemSetting.findUnique({ where: { key: 'whatsapp_settings' } });
+    const existing = (current?.value ?? {}) as Record<string, unknown>;
+    const updated: Prisma.InputJsonValue = {
+      ...existing,
+      ...(phoneNumber !== undefined && { phoneNumber: String(phoneNumber) }),
+      ...(autoReply !== undefined && { autoReply: Boolean(autoReply) }),
+      ...(businessHours !== undefined && { businessHours }),
+    } as Prisma.InputJsonValue;
+    await prisma.systemSetting.upsert({
+      where: { key: 'whatsapp_settings' },
+      update: { value: updated as Prisma.InputJsonValue, category: 'whatsapp', updatedBy: userId },
+      create: {
+        key: 'whatsapp_settings',
+        value: updated as Prisma.InputJsonValue,
+        category: 'whatsapp',
+        updatedBy: userId,
+      },
+    });
+    res.status(200).json({ success: true, data: updated });
   })
 );
 app.post(
   '/api/whatsapp/session',
   authMiddleware,
   requireRole('owner'),
-  asyncHandler(async (_req: Request, res: Response) => {
-    res.status(200).json({ success: true, data: { sessionId: 'stub-session', status: 'pending' } });
+  asyncHandler(async (req: Request, res: Response) => {
+    const { phoneNumber } = req.body ?? {};
+    const userId = (req as Request & { user?: { id: string } }).user?.id;
+    if (!phoneNumber)
+      throw new AppError('phoneNumber is required to start a WhatsApp session', 400);
+    const sessionId = `wa-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+    const sessionData = {
+      sessionId,
+      phoneNumber: String(phoneNumber),
+      status: 'pending',
+      startedAt: new Date().toISOString(),
+    };
+    await prisma.systemSetting.upsert({
+      where: { key: 'whatsapp_session' },
+      update: { value: sessionData, category: 'whatsapp', updatedBy: userId },
+      create: {
+        key: 'whatsapp_session',
+        value: sessionData,
+        category: 'whatsapp',
+        updatedBy: userId,
+      },
+    });
+    res.status(200).json({ success: true, data: sessionData });
   })
 );
 app.post(
@@ -489,137 +572,87 @@ app.get(
   '/api/whatsapp/chatbot/messages',
   authMiddleware,
   requirePermission('access_whatsapp_business'),
-  asyncHandler(async (_req: Request, res: Response) => {
-    res.status(200).json({ success: true, data: [] });
+  asyncHandler(async (req: Request, res: Response) => {
+    const conversationId = req.query.conversationId as string | undefined;
+    const limit = Math.min(100, Math.max(1, parseInt(req.query.limit as string) || 50));
+
+    const where = conversationId ? { conversationId } : {};
+    const messages = await prisma.nadiaMessage.findMany({
+      where,
+      orderBy: { timestamp: 'desc' },
+      take: limit,
+      include: { conversation: { select: { id: true, customerPhone: true, status: true } } },
+    });
+
+    res.status(200).json({ success: true, data: messages.reverse() });
   })
 );
 app.post(
   '/api/whatsapp/chatbot/messages',
   authMiddleware,
   requirePermission('access_whatsapp_business'),
-  asyncHandler(async (_req: Request, res: Response) => {
-    res.status(200).json({
-      success: true,
-      data: { id: Date.now().toString(), role: 'user', createdAt: new Date() },
+  asyncHandler(async (req: Request, res: Response) => {
+    const { conversationId, body, messageType = 'text', direction = 'outbound' } = req.body;
+    if (!conversationId || !body) {
+      throw new AppError('conversationId and body are required', 400);
+    }
+
+    const conversation = await prisma.nadiaConversation.findUnique({
+      where: { id: conversationId },
     });
+    if (!conversation) throw new AppError('Conversation not found', 404);
+
+    const message = await prisma.nadiaMessage.create({
+      data: {
+        conversationId,
+        waMessageId: `manual-${Date.now()}`,
+        direction: ['inbound', 'outbound'].includes(direction) ? direction : 'outbound',
+        body: String(body).slice(0, 4096),
+        messageType: ['text', 'image', 'document', 'audio', 'video'].includes(messageType)
+          ? messageType
+          : 'text',
+        status: 'sent',
+        timestamp: new Date(),
+      },
+    });
+
+    res.status(201).json({ success: true, data: message });
   })
 );
 app.delete(
   '/api/whatsapp/chatbot/messages/:id',
   authMiddleware,
   requirePermission('access_whatsapp_business'),
-  asyncHandler(async (_req: Request, res: Response) => {
+  asyncHandler(async (req: Request, res: Response) => {
+    const { id } = req.params;
+    const message = await prisma.nadiaMessage.findUnique({ where: { id } });
+    if (!message) throw new AppError('Message not found', 404);
+    await prisma.nadiaMessage.delete({ where: { id } });
     res.status(200).json({ success: true });
   })
 );
 
-// Contracts API stubs (ContractManagementPage)
-app.get(
-  '/api/contracts',
-  authMiddleware,
-  requirePermission('view_contracts'),
-  asyncHandler(async (_req: Request, res: Response) => {
-    res.status(200).json({
-      success: true,
-      data: [],
-      pagination: { page: 1, pageSize: 20, total: 0, totalPages: 0 },
-    });
-  })
-);
-app.post(
-  '/api/contracts',
-  authMiddleware,
-  requirePermission('create_contracts'),
-  asyncHandler(async (_req: Request, res: Response) => {
-    res
-      .status(501)
-      .json({ success: false, error: 'Feature not yet implemented', code: 'NOT_IMPLEMENTED' });
-  })
-);
+// Contracts API — full CRUD via contracts router
+app.use('/api/contracts', authMiddleware, contractsRoutes);
 
 // Job Applications API
 app.use('/api/job-applications', jobApplicationsRoutes);
 
-// Appointments API stubs (AppointmentScheduler)
-// TODO: Add Prisma model and full CRUD when scheduling module is prioritised
-app.post(
-  '/api/appointments',
-  authMiddleware,
-  asyncHandler(async (req: Request, res: Response) => {
-    logger.info('Appointment created (stub)', {
-      propertyId: req.body?.propertyId,
-      agentId: req.body?.agentId,
-    });
-    res
-      .status(501)
-      .json({ success: false, error: 'Feature not yet implemented', code: 'NOT_IMPLEMENTED' });
-  })
-);
-app.get(
-  '/api/appointments',
-  authMiddleware,
-  asyncHandler(async (_req: Request, res: Response) => {
-    res.status(200).json({
-      success: true,
-      data: [],
-      pagination: { page: 1, pageSize: 20, total: 0, totalPages: 0 },
-    });
-  })
-);
-app.patch(
-  '/api/appointments/:id',
-  authMiddleware,
-  asyncHandler(async (_req: Request, res: Response) => {
-    res
-      .status(501)
-      .json({ success: false, error: 'Feature not yet implemented', code: 'NOT_IMPLEMENTED' });
-  })
-);
-app.delete(
-  '/api/appointments/:id',
-  authMiddleware,
-  asyncHandler(async (_req: Request, res: Response) => {
-    res
-      .status(501)
-      .json({ success: false, error: 'Feature not yet implemented', code: 'NOT_IMPLEMENTED' });
-  })
-);
+// Appointments API — full CRUD via appointments router
+app.use('/api/appointments', authMiddleware, appointmentsRoutes);
 
-// Tenancy Agreements API stubs (CreateTenancyAgreement)
-// TODO: Add Prisma model and full CRUD when lease management module is prioritised
-app.get(
-  '/api/tenancy-agreements',
-  authMiddleware,
-  asyncHandler(async (_req: Request, res: Response) => {
-    res.status(200).json({
-      success: true,
-      data: [],
-      pagination: { page: 1, pageSize: 20, total: 0, totalPages: 0 },
-    });
-  })
-);
-app.post(
-  '/api/tenancy-agreements',
-  authMiddleware,
-  asyncHandler(async (req: Request, res: Response) => {
-    logger.info('Tenancy agreement created (stub)', { propertyId: req.body?.propertyId });
-    res
-      .status(501)
-      .json({ success: false, error: 'Feature not yet implemented', code: 'NOT_IMPLEMENTED' });
-  })
-);
-app.patch(
-  '/api/tenancy-agreements/:id',
-  authMiddleware,
-  asyncHandler(async (_req: Request, res: Response) => {
-    res
-      .status(501)
-      .json({ success: false, error: 'Feature not yet implemented', code: 'NOT_IMPLEMENTED' });
-  })
-);
+// Tenancy Agreements API — fully delegated to the leases router.
+// /api/tenancy-agreements is an alias for /api/leases: same model, different UI label.
+app.use('/api/tenancy-agreements', authMiddleware, leasesRoutes);
 
-// Payments API stub (Checkout — Stripe integration pending)
-// TODO: Integrate Stripe SDK when payment processing is prioritised
+// Landlord Portal API — stats, properties, maintenance, finances for the portal
+app.use('/api/landlord', authMiddleware, landlordPortalRoutes);
+
+// Tenant Portal API — lease, payments, documents, maintenance for the tenant portal
+app.use('/api/portal/tenant', authMiddleware, tenantPortalRoutes);
+
+// Payments API — Stripe integration pending; return 402 Payment Required so
+// clients can distinguish "service down" (503) from "payment not configured" (402).
 app.post(
   '/api/payments/create-payment-intent',
   authMiddleware,
@@ -628,25 +661,130 @@ app.post(
       amount: req.body?.amount,
       propertyId: req.body?.propertyId,
     });
-    res.status(503).json({
+    res.status(402).json({
       success: false,
       error: 'Payment processing is not yet configured. Please contact support.',
+      code: 'PAYMENT_NOT_CONFIGURED',
     });
   })
 );
 
-// Valuation API stub (PropertyValuationModule — ML engine pending)
-// TODO: Integrate property valuation ML model when available
+// Valuation API — heuristic estimator based on Dubai area price-per-sqft benchmarks
 app.post(
   '/api/valuation/estimate',
   authMiddleware,
   asyncHandler(async (req: Request, res: Response) => {
-    logger.info('Valuation estimate requested (stub)', {
-      location: req.body?.location,
-      area: req.body?.area,
+    const { location, area, propertyType, bedrooms, bathrooms, sqft, yearBuilt, amenities } =
+      req.body;
+
+    if (!location && !area) {
+      throw new AppError('location or area is required for valuation', 400);
+    }
+
+    // Dubai area price-per-sqft benchmarks (AED, 2025/2026 market data)
+    const areaBenchmarks: Record<string, { sale: number; rent: number }> = {
+      'palm jumeirah': { sale: 3800, rent: 260 },
+      'downtown dubai': { sale: 3200, rent: 220 },
+      'dubai marina': { sale: 2600, rent: 175 },
+      'business bay': { sale: 2200, rent: 150 },
+      jumeirah: { sale: 2800, rent: 190 },
+      'arabian ranches': { sale: 1800, rent: 110 },
+      'dubai hills': { sale: 2100, rent: 135 },
+      jvc: { sale: 1200, rent: 80 },
+      'jumeirah village circle': { sale: 1200, rent: 80 },
+      mirdif: { sale: 1100, rent: 75 },
+      deira: { sale: 900, rent: 60 },
+      'bur dubai': { sale: 950, rent: 65 },
+      'al barsha': { sale: 1300, rent: 90 },
+      'sport city': { sale: 1000, rent: 70 },
+      'motor city': { sale: 1050, rent: 72 },
+      jlt: { sale: 1500, rent: 100 },
+      'jumeirah lake towers': { sale: 1500, rent: 100 },
+      'emaar beachfront': { sale: 3500, rent: 240 },
+      'creek harbour': { sale: 2900, rent: 195 },
+      'sobha hartland': { sale: 2400, rent: 160 },
+    };
+
+    const key = (location || area || '').toLowerCase().trim();
+    const matchKey = Object.keys(areaBenchmarks).find(k => key.includes(k) || k.includes(key));
+    // eslint-disable-next-line security/detect-object-injection
+    const benchmark = matchKey ? areaBenchmarks[matchKey] : { sale: 1500, rent: 100 };
+
+    const sqftNum = sqft ? parseFloat(sqft) : 1000;
+    const bedsNum = bedrooms ? parseInt(String(bedrooms), 10) : 1;
+    const bathsNum = bathrooms ? parseInt(String(bathrooms), 10) : 1;
+    const typeMultiplier = propertyType === 'villa' || propertyType === 'townhouse' ? 1.15 : 1.0;
+
+    // Age discount: -1% per year over 10 years old, max -20%
+    const ageDiscount = yearBuilt
+      ? Math.min(
+          0.2,
+          Math.max(0, (new Date().getFullYear() - parseInt(String(yearBuilt), 10) - 10) * 0.01)
+        )
+      : 0;
+
+    // Amenity premium: +3% per luxury amenity up to 15%
+    const luxuryAmenities = [
+      'pool',
+      'gym',
+      'concierge',
+      'sea view',
+      'marina view',
+      'private pool',
+      'smart home',
+    ];
+    const amenityList: string[] = Array.isArray(amenities) ? amenities : [];
+    const amenityPremium = Math.min(
+      0.15,
+      amenityList.filter(a => luxuryAmenities.some(l => String(a).toLowerCase().includes(l)))
+        .length * 0.03
+    );
+
+    const saleEstimate = Math.round(
+      sqftNum * benchmark.sale * typeMultiplier * (1 - ageDiscount) * (1 + amenityPremium)
+    );
+    const rentEstimate = Math.round(
+      sqftNum * benchmark.rent * typeMultiplier * (1 - ageDiscount) * (1 + amenityPremium)
+    );
+
+    // ±15% confidence range
+    const margin = 0.15;
+    const result = {
+      estimatedSalePrice: saleEstimate,
+      estimatedAnnualRent: rentEstimate,
+      estimatedMonthlyRent: Math.round(rentEstimate / 12),
+      priceRange: {
+        sale: {
+          low: Math.round(saleEstimate * (1 - margin)),
+          high: Math.round(saleEstimate * (1 + margin)),
+        },
+        rent: {
+          lowAnnual: Math.round(rentEstimate * (1 - margin)),
+          highAnnual: Math.round(rentEstimate * (1 + margin)),
+        },
+      },
+      inputs: {
+        location: location || area,
+        sqft: sqftNum,
+        propertyType: propertyType || 'apartment',
+        bedrooms: bedsNum,
+        bathrooms: bathsNum,
+        yearBuilt: yearBuilt || null,
+      },
+      methodology: 'Dubai area price-per-sqft heuristic (2025/2026 benchmarks)',
+      confidenceLevel: matchKey ? 'medium' : 'low',
+      disclaimer:
+        'This is an indicative estimate only and does not constitute a formal valuation. Actual market prices may differ significantly.',
+      generatedAt: new Date().toISOString(),
+    };
+
+    logger.info('Valuation estimate generated', {
+      location: location || area,
+      sqft: sqftNum,
+      saleEstimate,
     });
-    // Return 501 so frontend falls back to local estimation
-    res.status(501).json({ success: false, error: 'Valuation engine not yet available' });
+
+    res.status(200).json({ success: true, data: result });
   })
 );
 
@@ -717,53 +855,96 @@ app.post(
     res.status(200).json({ success: true, data: updated });
   })
 );
-app.post(
-  '/api/users/role-request',
-  authMiddleware,
-  asyncHandler(async (req: Request, res: Response) => {
-    const { requestedRole } = req.body;
-    if (!requestedRole) throw new AppError('requestedRole is required', 400);
-    logger.info('Role request submitted (stub)', { userId: req.user?.id, requestedRole });
-    res
-      .status(501)
-      .json({ success: false, error: 'Feature not yet implemented', code: 'NOT_IMPLEMENTED' });
-  })
-);
+app.use('/api/users/role-request', authMiddleware, roleRequestRouter);
+app.use('/api/admin/role-requests', authMiddleware, adminRoleRequestRouter);
+
+// Admin Settings — read and write system-wide configuration
 app.get(
-  '/api/admin/role-requests',
+  '/api/admin/settings',
   authMiddleware,
   requirePermission('manage_users'),
   asyncHandler(async (_req: Request, res: Response) => {
-    res.status(200).json({ success: true, data: { requests: [] } });
+    const settings = await prisma.systemSetting.findMany({ orderBy: { category: 'asc' } });
+    const settingsMap = Object.fromEntries(settings.map(s => [s.key, s.value]));
+    res.json({ success: true, data: settingsMap, meta: { count: settings.length } });
   })
 );
 app.post(
-  '/api/admin/role-requests/:id/approve',
+  '/api/admin/settings',
   authMiddleware,
   requirePermission('manage_users'),
   asyncHandler(async (req: Request, res: Response) => {
-    res.status(200).json({
-      success: true,
-      data: { id: req.params.id, status: 'approved', reviewedBy: req.user?.id },
-    });
+    const { settings } = req.body;
+    if (!settings || typeof settings !== 'object' || Array.isArray(settings)) {
+      throw new AppError('Request body must contain a "settings" object', 400);
+    }
+
+    const userId = (req as Request & { user?: { id: string } }).user?.id;
+    const entries = Object.entries(settings as Record<string, unknown>);
+    if (entries.length === 0) throw new AppError('No settings provided', 400);
+    if (entries.length > 50) throw new AppError('Cannot update more than 50 settings at once', 400);
+
+    // Upsert each key
+    const updated = await Promise.all(
+      entries.map(([key, value]) =>
+        prisma.systemSetting.upsert({
+          where: { key },
+          create: {
+            key,
+            value: value as Parameters<typeof prisma.systemSetting.create>[0]['data']['value'],
+            updatedBy: userId,
+          },
+          update: {
+            value: value as Parameters<typeof prisma.systemSetting.update>[0]['data']['value'],
+            updatedBy: userId,
+          },
+        })
+      )
+    );
+
+    logger.info('Admin settings updated', { keys: entries.map(([k]) => k), userId });
+    res.json({ success: true, data: { updatedCount: updated.length } });
   })
 );
-app.post(
-  '/api/admin/role-requests/:id/reject',
+
+// Phase 6 — queue, analytics, notifications, encryption, presence
+// The phase6 router uses x-user-id header auth; bridge it from the JWT-authenticated user.
+app.use(
+  '/api/platform',
   authMiddleware,
-  requirePermission('manage_users'),
-  asyncHandler(async (req: Request, res: Response) => {
-    res.status(200).json({
-      success: true,
-      data: {
-        id: req.params.id,
-        status: 'rejected',
-        reviewedBy: req.user?.id,
-        reason: req.body?.reason,
-      },
-    });
-  })
+  (req: Request, _res: Response, next: NextFunction) => {
+    // Bridge JWT identity into the x-user-id header expected by phase6 routes
+    const userId = (req as Request & { user?: { id: string } }).user?.id;
+    if (userId) req.headers['x-user-id'] = userId;
+    next();
+  },
+  phase6Router
 );
+
+// ============================================================================
+// PRODUCTION STATIC ASSET + SPA SERVING
+// ============================================================================
+
+if (IS_PRODUCTION) {
+  const publicDir = path.join(process.cwd(), 'public');
+  const distDir = path.join(process.cwd(), 'dist');
+
+  // Serve SEO/PWA/static assets from public first (robots.txt, sitemap.xml, manifest.json, etc.)
+  app.use(express.static(publicDir, { index: false }));
+  // Serve built frontend assets from dist
+  app.use(express.static(distDir, { index: false }));
+
+  // SPA fallback for non-API GET requests
+  app.use((req: Request, res: Response, next: NextFunction) => {
+    if (req.method !== 'GET') return next();
+    if (req.path.startsWith('/api/')) return next();
+    if (req.path.startsWith('/uploads/')) return next();
+
+    res.sendFile(path.join(distDir, 'index.html'), err => {
+      if (err) next();
+    });
+  });
+}
 
 // ============================================================================
 // ERROR HANDLING
@@ -799,7 +980,23 @@ const startServer = async () => {
     startRateRefresh(); // Phase 2E: refresh exchange rates every 6h
     startViewingReminderScheduler(); // Phase 3C: viewing reminders every 15 min
     startRERAExpiryScheduler(); // Phase 3D: RERA BRN expiry checks daily
+    startPermitAlertScheduler(); // Wave 04: permit/BRN alert snapshots daily
+    startPropertyPermitEnforcementScheduler(); // Wave 04: auto-unpublish non-compliant available listings daily
     startAutoRouting(); // Phase 4A: auto-route hot leads to best agents
+
+    // Boot AssistantOrchestrator — register all 5 assistant handler chains
+    import('./services/orchestrator/AssistantOrchestrator.js')
+      .then(({ assistantOrchestrator }) => {
+        assistantOrchestrator.registerLindaHandlers();
+        assistantOrchestrator.registerNadiaHandlers();
+        assistantOrchestrator.registerNinaHandlers();
+        assistantOrchestrator.registerMaryHandlers();
+        assistantOrchestrator.registerHenryHandlers();
+        logger.info('AssistantOrchestrator: all 5 assistant handlers registered.');
+      })
+      .catch((err: unknown) => {
+        logger.warn('AssistantOrchestrator init failed:', err instanceof Error ? err.message : err);
+      });
 
     // Auto-migrate any remaining legacy base64 password hashes to bcrypt
     try {

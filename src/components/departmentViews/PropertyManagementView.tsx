@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 import React from 'react';
 import BaseDepartmentView from './BaseDepartmentView';
 import { getDepartmentConfig } from '../../config/departmentViewConfigs';
@@ -12,31 +11,27 @@ import { DataCard } from '../shared/dashboard';
 interface PropertyManagementViewProps {
   serviceName?: string;
   subitemId?: string;
-  departmentData?: any;
+  departmentData?: Record<string, unknown>;
 }
 
-const PropertyManagementView: React.FC<PropertyManagementViewProps> = ({ 
-  serviceName = 'property-portfolio', 
+const PropertyManagementView: React.FC<PropertyManagementViewProps> = ({
+  serviceName = 'property-portfolio',
   subitemId,
-  departmentData 
+  departmentData,
 }) => {
   const config = getDepartmentConfig('PROPERTY_MANAGEMENT')!;
 
-  const renderContent = (data: any) => {
+  const renderContent = (data: Record<string, unknown>) => {
+    const getCount = (value: unknown): number => (Array.isArray(value) ? value.length : 0);
+
     if (!subitemId && serviceName === 'property-portfolio') {
       return (
         <>
-          <DataCard 
-            title="Property Portfolio"
-            subtitle="All managed properties"
-          >
-            Properties: {JSON.stringify(data?.properties?.length || 0)} items
+          <DataCard title="Property Portfolio" subtitle="All managed properties">
+            Properties: {JSON.stringify(getCount(data?.properties))} items
           </DataCard>
-          <DataCard 
-            title="Maintenance Schedule"
-            subtitle="Upcoming and in-progress maintenance"
-          >
-            Maintenance: {JSON.stringify(data?.maintenance?.length || 0)} items
+          <DataCard title="Maintenance Schedule" subtitle="Upcoming and in-progress maintenance">
+            Maintenance: {JSON.stringify(getCount(data?.maintenance))} items
           </DataCard>
         </>
       );
@@ -45,7 +40,7 @@ const PropertyManagementView: React.FC<PropertyManagementViewProps> = ({
     if (subitemId === 'property-list') {
       return (
         <DataCard title="Property List" subtitle="All managed properties">
-          Properties: {JSON.stringify(data?.properties?.length || 0)} items
+          Properties: {JSON.stringify(getCount(data?.properties))} items
         </DataCard>
       );
     }
@@ -53,7 +48,7 @@ const PropertyManagementView: React.FC<PropertyManagementViewProps> = ({
     if (subitemId === 'tenancy-management') {
       return (
         <DataCard title="Tenancy Management" subtitle="Active tenancies">
-          Tenancies: {JSON.stringify(data?.tenancies?.length || 0)} items
+          Tenancies: {JSON.stringify(getCount(data?.tenancies))} items
         </DataCard>
       );
     }
@@ -61,7 +56,7 @@ const PropertyManagementView: React.FC<PropertyManagementViewProps> = ({
     if (subitemId === 'maintenance') {
       return (
         <DataCard title="Maintenance" subtitle="Maintenance tracking and scheduling">
-          Maintenance: {JSON.stringify(data?.maintenance?.length || 0)} items
+          Maintenance: {JSON.stringify(getCount(data?.maintenance))} items
         </DataCard>
       );
     }
@@ -69,7 +64,7 @@ const PropertyManagementView: React.FC<PropertyManagementViewProps> = ({
     if (subitemId === 'rent-collection') {
       return (
         <DataCard title="Rent Collection" subtitle="Rental payments tracking">
-          Collections: {JSON.stringify(data?.rentCollection?.length || 0)} items
+          Collections: {JSON.stringify(getCount(data?.rentCollection))} items
         </DataCard>
       );
     }
@@ -89,4 +84,3 @@ const PropertyManagementView: React.FC<PropertyManagementViewProps> = ({
 };
 
 export default PropertyManagementView;
-

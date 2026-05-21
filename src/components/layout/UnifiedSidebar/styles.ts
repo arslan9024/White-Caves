@@ -21,12 +21,13 @@ export const SidebarWrapper = styled.aside<{ $collapsed?: boolean }>`
   flex-direction: column;
   width: ${props => (props.$collapsed ? '64px' : '280px')};
   height: 100%;
-  background: ${colors.background.secondary};
-  border-right: 1px solid ${colors.borderLight};
-  overflow-y: ${props => (props.$collapsed ? 'hidden' : 'auto')};
+  background: #fafafa;
+  border-right: 1px solid #f0f0f0;
+  overflow-y: hidden;
   overflow-x: hidden;
   box-shadow: 2px 0 8px rgba(0, 0, 0, 0.06);
   transition: width 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+  will-change: width;
   flex-shrink: 0;
   position: relative;
 
@@ -549,4 +550,104 @@ export const SidebarFooter = styled.div`
   border-top: 1px solid ${colors.borderLight};
   background: ${colors.background.secondary};
   flex-shrink: 0;
+`;
+
+// ─── Two-Section Layout ──────────────────────────────────────────────────
+
+/** Top scrollable area — contains Quick Nav + Company Departments */
+export const SidebarScrollArea = styled.div`
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+
+  scrollbar-width: thin;
+  scrollbar-color: ${colors.border} transparent;
+
+  &::-webkit-scrollbar {
+    width: 4px;
+  }
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  &::-webkit-scrollbar-thumb {
+    background: ${colors.border};
+    border-radius: 4px;
+  }
+`;
+
+/** Gold gradient divider between Departments and AI Command Center */
+export const SectionDivider = styled.div`
+  height: 1px;
+  background: linear-gradient(90deg, transparent 0%, #c9a84c 40%, #c9a84c 60%, transparent 100%);
+  opacity: 0.55;
+  flex-shrink: 0;
+  margin: 0;
+`;
+
+/** Fixed-height AI Command Center at the bottom of the sidebar */
+export const AICommandCenterWrapper = styled.div`
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  max-height: 280px;
+  overflow-y: auto;
+  background: ${colors.background.secondary};
+  border-top: 1px solid #c9a84c33;
+
+  scrollbar-width: thin;
+  scrollbar-color: #c9a84c40 transparent;
+
+  &::-webkit-scrollbar {
+    width: 3px;
+  }
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  &::-webkit-scrollbar-thumb {
+    background: #c9a84c50;
+    border-radius: 3px;
+  }
+`;
+
+/** Header row inside the AI Command Center bottom section */
+export const AICommandHeader = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 7px 14px 4px;
+  flex-shrink: 0;
+
+  span {
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: #c9a84c;
+  }
+`;
+
+/** Pulsing status dot for active AI assistants */
+export const AssistantStatusDot = styled.span<{ $active?: boolean }>`
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: ${props => (props.$active ? '#22C55E' : colors.text.tertiary)};
+  flex-shrink: 0;
+  ${props =>
+    props.$active &&
+    `
+    box-shadow: 0 0 0 2px #22C55E30;
+    `}
+`;
+
+/** Section label for nav groups — uppercase caps with letter-spacing */
+export const SidebarSectionLabel = styled.div`
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+  color: #9ca3af;
+  padding: 16px 12px 4px;
+  user-select: none;
 `;

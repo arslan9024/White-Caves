@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { authFetch } from '../../utils/authFetch';
 import './ImportHistoryPage.css';
 
 /**
@@ -18,6 +19,7 @@ const ImportHistoryPage = () => {
   // Fetch imports on mount
   useEffect(() => {
     fetchImports();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filterStatus, sortBy]);
 
   const fetchImports = async () => {
@@ -26,10 +28,10 @@ const ImportHistoryPage = () => {
       const params = new URLSearchParams({
         status: filterStatus === 'all' ? '' : filterStatus,
         sortBy,
-        limit: 100
+        limit: 100,
       });
 
-      const response = await fetch(`/api/inventory/import/history?${params}`);
+      const response = await authFetch(`/api/inventory/import/history?${params}`);
       const result = await response.json();
 
       if (result.success) {
@@ -55,38 +57,50 @@ const ImportHistoryPage = () => {
   const totalPages = Math.ceil(filteredImports.length / itemsPerPage);
 
   // Get status badge color
-  const getStatusColor = (status) => {
-    const colors = {
-      completed: 'success',
-      failed: 'error',
-      partial: 'warning',
-      processing: 'info',
-      cancelled: 'secondary'
-    };
-    return colors[status] || 'secondary';
+  const getStatusColor = status => {
+    switch (status) {
+      case 'completed':
+        return 'success';
+      case 'failed':
+        return 'error';
+      case 'partial':
+        return 'warning';
+      case 'processing':
+        return 'info';
+      case 'cancelled':
+        return 'secondary';
+      default:
+        return 'secondary';
+    }
   };
 
   // Get status icon
-  const getStatusIcon = (status) => {
-    const icons = {
-      completed: '✅',
-      failed: '❌',
-      partial: '⚠️',
-      processing: '⏳',
-      cancelled: '⛔'
-    };
-    return icons[status] || '❓';
+  const getStatusIcon = status => {
+    switch (status) {
+      case 'completed':
+        return '✅';
+      case 'failed':
+        return '❌';
+      case 'partial':
+        return '⚠️';
+      case 'processing':
+        return '⏳';
+      case 'cancelled':
+        return '⛔';
+      default:
+        return '❓';
+    }
   };
 
   // Format date
-  const formatDate = (dateString) => {
+  const formatDate = dateString => {
     const date = new Date(dateString);
     return date.toLocaleDateString('en-US', {
       year: 'numeric',
       month: 'short',
       day: 'numeric',
       hour: '2-digit',
-      minute: '2-digit'
+      minute: '2-digit',
     });
   };
 
@@ -115,7 +129,7 @@ const ImportHistoryPage = () => {
             type="text"
             placeholder="Search by file name..."
             value={searchQuery}
-            onChange={(e) => {
+            onChange={e => {
               setSearchQuery(e.target.value);
               setCurrentPage(1);
             }}
@@ -124,7 +138,7 @@ const ImportHistoryPage = () => {
 
         <div className="filter-group">
           <label>Status:</label>
-          <select value={filterStatus} onChange={(e) => setFilterStatus(e.target.value)}>
+          <select value={filterStatus} onChange={e => setFilterStatus(e.target.value)}>
             <option value="all">All Statuses</option>
             <option value="completed">✅ Completed</option>
             <option value="processing">⏳ Processing</option>
@@ -136,7 +150,7 @@ const ImportHistoryPage = () => {
 
         <div className="sort-group">
           <label>Sort By:</label>
-          <select value={sortBy} onChange={(e) => setSortBy(e.target.value)}>
+          <select value={sortBy} onChange={e => setSortBy(e.target.value)}>
             <option value="date">Newest First</option>
             <option value="date-asc">Oldest First</option>
             <option value="size">File Size (Large First)</option>
@@ -144,10 +158,7 @@ const ImportHistoryPage = () => {
           </select>
         </div>
 
-        <button 
-          className="btn btn-primary"
-          onClick={() => window.location.href = '/import'}
-        >
+        <button className="btn btn-primary" onClick={() => (window.location.href = '/import')}>
           + New Import
         </button>
       </div>
@@ -193,10 +204,7 @@ const ImportHistoryPage = () => {
         ) : displayedImports.length === 0 ? (
           <div className="empty-state">
             <p>No imports found</p>
-            <button 
-              className="btn btn-primary"
-              onClick={() => window.location.href = '/import'}
-            >
+            <button className="btn btn-primary" onClick={() => (window.location.href = '/import')}>
               Start Your First Import
             </button>
           </div>
@@ -217,41 +225,31 @@ const ImportHistoryPage = () => {
                 </tr>
               </thead>
               <tbody>
-                {displayedImports.map((imp) => (
+                {displayedImports.map(imp => (
                   <tr key={imp.sessionId} className={`import-row ${imp.status}`}>
                     <td className="file-name">
                       <span className="icon">📄</span>
                       {imp.fileName}
                     </td>
-                    <td className="date">
-                      {formatDate(imp.createdAt)}
-                    </td>
+                    <td className="date">{formatDate(imp.createdAt)}</td>
                     <td className="status">
                       <span className={`badge ${getStatusColor(imp.status)}`}>
                         {getStatusIcon(imp.status)} {imp.status}
                       </span>
                     </td>
-                    <td className="rows">
-                      {imp.totalRows || 0}
-                    </td>
-                    <td className="created">
-                      {imp.propertiesCreated || 0}
-                    </td>
-                    <td className="updated">
-                      {imp.propertiesUpdated || 0}
-                    </td>
+                    <td className="rows">{imp.totalRows || 0}</td>
+                    <td className="created">{imp.propertiesCreated || 0}</td>
+                    <td className="updated">{imp.propertiesUpdated || 0}</td>
                     <td className="success-rate">
                       <div className="rate-bar">
-                        <div 
+                        <div
                           className="rate-fill"
                           style={{ width: `${parseFloat(imp.successRate) || 0}%` }}
                         />
                       </div>
                       <span>{imp.successRate || 'N/A'}</span>
                     </td>
-                    <td className="duration">
-                      {formatDuration(imp.createdAt, imp.completedAt)}
-                    </td>
+                    <td className="duration">{formatDuration(imp.createdAt, imp.completedAt)}</td>
                     <td className="actions">
                       <button
                         className="btn-icon"
@@ -303,10 +301,7 @@ const ImportHistoryPage = () => {
 
       {/* Detail Modal */}
       {selectedImport && (
-        <ImportDetailModal
-          import={selectedImport}
-          onClose={() => setSelectedImport(null)}
-        />
+        <ImportDetailModal import={selectedImport} onClose={() => setSelectedImport(null)} />
       )}
     </div>
   );
@@ -320,15 +315,11 @@ const ImportDetailModal = ({ import: importData, onClose }) => {
   const [errors, setErrors] = useState([]);
   const [activeTab, setActiveTab] = useState('summary');
 
-  useEffect(() => {
-    if (importData.sessionId && activeTab === 'errors') {
-      fetchImportErrors();
-    }
-  }, [activeTab, importData.sessionId]);
-
   const fetchImportErrors = async () => {
     try {
-      const response = await fetch(`/api/inventory/import/session/${importData.sessionId}/errors`);
+      const response = await authFetch(
+        `/api/inventory/import/session/${importData.sessionId}/errors`
+      );
       const result = await response.json();
       if (result.success) {
         setErrors(result.data.errors || []);
@@ -338,12 +329,21 @@ const ImportDetailModal = ({ import: importData, onClose }) => {
     }
   };
 
+  useEffect(() => {
+    if (importData.sessionId && activeTab === 'errors') {
+      fetchImportErrors();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeTab, importData.sessionId]);
+
   return (
     <div className="modal-overlay" onClick={onClose}>
-      <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+      <div className="modal-content" onClick={e => e.stopPropagation()}>
         <div className="modal-header">
           <h2>Import Details: {importData.fileName}</h2>
-          <button className="btn-close" onClick={onClose}>✕</button>
+          <button className="btn-close" onClick={onClose}>
+            ✕
+          </button>
         </div>
 
         <div className="modal-tabs">
@@ -396,7 +396,7 @@ const ImportDetailModal = ({ import: importData, onClose }) => {
                 <div className="info-item">
                   <label>Duration</label>
                   <p>
-                    {importData.completedAt 
+                    {importData.completedAt
                       ? formatDuration(importData.createdAt, importData.completedAt)
                       : 'In progress...'}
                   </p>
@@ -464,7 +464,9 @@ const ImportDetailModal = ({ import: importData, onClose }) => {
                         <td>{error.rowIndex}</td>
                         <td>{error.field}</td>
                         <td>{error.message}</td>
-                        <td><code>{String(error.value).substring(0, 30)}</code></td>
+                        <td>
+                          <code>{String(error.value).substring(0, 30)}</code>
+                        </td>
                       </tr>
                     ))}
                   </tbody>
@@ -478,10 +480,7 @@ const ImportDetailModal = ({ import: importData, onClose }) => {
           <button className="btn btn-secondary" onClick={onClose}>
             Close
           </button>
-          <button 
-            className="btn btn-primary"
-            onClick={() => downloadReport(importData.sessionId)}
-          >
+          <button className="btn btn-primary" onClick={() => downloadReport(importData.sessionId)}>
             📥 Download Report
           </button>
         </div>

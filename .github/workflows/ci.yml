@@ -41,6 +41,9 @@ jobs:
 
       - name: Run SEO quality gate
         run: npm run quality:seo
+
+      - name: Run assistant endpoint contract gate
+        run: npm run test:assistant-contract
       
       - name: Run unit tests
         run: npm test -- --run --reporter=verbose --coverage --coverage.reporter=lcov
@@ -117,6 +120,25 @@ jobs:
           name: accessibility-report
           path: playwright-report/
           retention-days: 30
+
+  orchestrator-health:
+    name: Orchestrator Queue Health
+    runs-on: windows-latest
+    timeout-minutes: 5
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check queue integrity (9-group health check)
+        run: powershell -ExecutionPolicy Bypass -File scripts/orchestrator/queue-health.ps1 -CI
+
+      - name: Upload queue health report on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: queue-health-failure-report
+          path: logs/orchestrator/task-queue.json
+          retention-days: 7
 
   performance:
     runs-on: ubuntu-latest

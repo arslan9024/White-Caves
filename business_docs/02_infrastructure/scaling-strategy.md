@@ -390,3 +390,265 @@ whatsapp-web.js maintains a persistent WebSocket connection to WhatsApp servers.
 ---
 
 *This document is reviewed quarterly and updated when architecture changes are implemented or planned. Cost projections are estimates and should be validated against current cloud provider pricing.*
+
+---
+
+## 12. Load Testing Benchmarks
+
+### 12.1 Target Performance Profile
+
+White Caves CRM must support **500 simultaneous authenticated agents** at peak (e.g., 09:00–11:00 GST morning shift start) without degradation.
+
+| Scenario | Concurrent Users | Target p95 Latency | Target p99 Latency | Error Rate Target |
+|----------|-----------------|-------------------|--------------------|------------------|
+| Browse property listing (`GET /api/properties`) | 500 | < 200 ms | < 500 ms | < 0.1% |
+| View lead list (`GET /api/leads`) | 500 | < 300 ms | < 750 ms | < 0.1% |
+| Create lead (`POST /api/leads`) | 100 | < 400 ms | < 1,000 ms | < 0.5% |
+| WhatsApp webhook ingest | 1,000 msg/min | < 100 ms | < 200 ms | < 0.01% |
+| Analytics dashboard load | 50 | < 1,000 ms | < 2,500 ms | < 1.0% |
+| File upload (property images) | 20 | < 2,000 ms | < 5,000 ms | < 1.0% |
+
+### 12.2 k6 Load Test Plan
+
+```javascript
+// load-tests/500-agents-scenario.js
+import http from 'k6/http';
+import { check, sleep } from 'k6';
+
+export const options = {
+  scenarios: {
+    morning_rush: {
+      executor: 'ramping-vus',
+      startVUs: 0,
+      stages: [
+        { duration: '2m', target: 100 },   // Ramp-up
+        { duration: '3m', target: 300 },   // Accelerate
+        { duration: '5m', target: 500 },   // Peak — hold 500 concurrent
+        { duration: '3m', target: 500 },   // Sustain
+        { duration: '2m', target: 0 },     // Ramp-down
+      ],
+    },
+  },
+  thresholds: {
+    http_req_duration: ['p(95)<500', 'p(99)<1000'],
+    http_req_failed: ['rate<0.001'],
+  },
+};
+
+const BASE_URL = __ENV.API_BASE_URL || 'https://api.whitecaves.ae';
+
+export default function () {
+  const headers = {
+    'Authorization': `Bearer ${__ENV.TEST_JWT_TOKEN}`,
+    'Content-Type': 'application/json',
+  };
+
+  // Simulate: load property list
+  const propertiesRes = http.get(`${BASE_URL}/api/properties?page=1&limit=20`, { headers });
+  check(propertiesRes, { 'properties 200': (r) => r.status === 200 });
+
+  sleep(1);
+
+  // Simulate: load leads
+  const leadsRes = http.get(`${BASE_URL}/api/leads?status=active&limit=10`, { headers });
+  check(leadsRes, { 'leads 200': (r) => r.status === 200 });
+
+  sleep(2);
+
+  // Simulate: create activity log
+  http.post(`${BASE_URL}/api/activities`,
+    JSON.stringify({ type: 'page_view', entityType: 'property', entityId: 'test-property-id' }),
+    { headers }
+  );
+
+  sleep(1);
+}
+```
+
+**Run command:**
+```bash
+k6 run --env API_BASE_URL=https://api.whitecaves.ae \
+       --env TEST_JWT_TOKEN=$TEST_JWT \
+       load-tests/500-agents-scenario.js \
+       --out influxdb=http://influxdb:8086/k6
+```
+
+**Pass criteria:** `p(95) < 500ms`, `p(99) < 1000ms`, error rate < 0.1% across all 500 VU scenario.
+
+---
+
+## 13. Auto-Scaling Triggers (Detailed)
+
+### 13.1 Kubernetes Horizontal Pod Autoscaler (HPA) Configuration
+
+```yaml
+# k8s/hpa/api-deployment-hpa.yaml
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: whitecaves-api-hpa
+  namespace: whitecaves-prod
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: whitecaves-api
+  minReplicas: 2
+  maxReplicas: 12
+  behavior:
+    scaleUp:
+      stabilizationWindowSeconds: 60
+      policies:
+        - type: Pods
+          value: 2
+          periodSeconds: 60
+    scaleDown:
+      stabilizationWindowSeconds: 300
+      policies:
+        - type: Pods
+          value: 1
+          periodSeconds: 120
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 70        # Scale up when CPU > 70%
+    - type: Resource
+      resource:
+        name: memory
+        target:
+          type: Utilization
+          averageUtilization: 80        # Scale up when memory > 80%
+    - type: External
+      external:
+        metric:
+          name: redis_queue_depth
+          selector:
+            matchLabels:
+              queue: whatsapp_inbound
+        target:
+          type: Value
+          value: "1000"
+```
+
+### 13.2 Auto-Scaling Trigger Matrix
+
+| Resource | Scale-Up Trigger | Scale-Down Trigger | Min Pods | Max Pods | Cooldown |
+|---------|-----------------|-------------------|---------|---------|---------|
+| API pods | CPU > 70% for 60s | CPU < 40% for 300s | 2 | 12 | 5 min |
+| WhatsApp worker (Linda) | Queue depth > 500 msg | Queue depth < 50 msg | 1 | 4 | 10 min |
+| NLP processor (Nina) | CPU > 65% for 60s | CPU < 30% for 300s | 1 | 6 | 5 min |
+| MongoDB Atlas | Storage > 75% OR CPU > 70% | Manual downscale | M20 | M80 | 30 min |
+| Redis | Memory > 80% | Manual (planned maintenance) | 1 primary | Cluster | N/A |
+
+### 13.3 MongoDB Atlas Auto-Scaling Configuration
+
+```json
+{
+  "autoScaling": {
+    "diskGB": { "enabled": true },
+    "compute": {
+      "enabled": true,
+      "scaleDownEnabled": false,
+      "minInstanceSize": "M20",
+      "maxInstanceSize": "M80"
+    }
+  }
+}
+```
+
+---
+
+## 14. Dubai CDN Strategy — Latency < 100 ms
+
+### 14.1 Cloudflare Dubai PoP Configuration
+
+White Caves uses **Cloudflare Pro** with Dubai PoP (`DXB01`) for all public-facing traffic.
+
+**Request path:**
+```
+User Browser (Dubai)
+      │
+      ▼
+Cloudflare PoP — DXB01 (Dubai)  ← p50 latency: ~5ms
+      │
+      ├── Cache HIT → Serve from edge                ← p99: < 20ms
+      └── Cache MISS → Origin: Vercel (UAE/EU)       ← p99: < 100ms
+```
+
+### 14.2 Cache Rules
+
+| URL Pattern | Cache TTL | Notes |
+|------------|----------|-------|
+| `/api/*` | **No cache** | All API responses dynamic |
+| `/_next/static/*` | **1 year** | Content-hashed Next.js assets |
+| `/images/properties/*` | **7 days** | Property images |
+| `/sitemap.xml` | **1 day** | SEO sitemap |
+| `/*` (default) | **4 hours** | HTML pages (ISR-revalidated) |
+
+### 14.3 Latency Targets
+
+| Connection Type | Target p50 | Target p95 |
+|---------------|-----------|-----------|
+| Static assets (Dubai) | < 5 ms | < 20 ms |
+| API responses (Dubai direct) | < 50 ms | < 100 ms |
+| Page TTFB (Dubai) | < 100 ms | < 200 ms |
+| LCP (Core Web Vitals) | < 1.5 s | < 2.5 s |
+
+**Acceptance Criteria:**
+- [ ] API p95 latency < 100 ms from Dubai (measured weekly via synthetic monitoring)
+- [ ] Static assets served with `immutable` cache header
+- [ ] Cloudflare HIT ratio > 80% for static assets
+- [ ] WebP images served when `Accept` header supports it
+
+---
+
+## 15. Vercel Edge Function Limits
+
+### 15.1 Vercel Pro Plan Limits Reference
+
+| Limit | Value | Impact | Mitigation |
+|-------|-------|--------|-----------|
+| Function memory | **1,024 MB** max | Analytics aggregations | Use Atlas aggregation pipeline |
+| Function duration | **30 seconds** max | Bulk exports | Async job pattern |
+| Request body size | **4.5 MB** | Image uploads | S3 pre-signed URLs (bypass API) |
+| Response size | **4.5 MB** | Data exports | Paginate; async export |
+| Concurrent executions | **1,000** (Pro) | Sufficient for 500 agents | Monitor Vercel dashboard |
+| Invocations/month | **1,000,000** (Pro) | ~33k/day average budget | Migrate to Enterprise at 900k/mo |
+| Cron frequency | **Every 1 minute** | Payment reminders, follow-ups | Sufficient |
+
+### 15.2 Function Duration Best Practice
+
+```typescript
+// api route — stay within 30s with 5s safety buffer
+export const config = { maxDuration: 25 };
+```
+
+---
+
+## 16. Cost Projections — 100 / 500 / 1,000 Agent Scale
+
+All costs in **AED** at USD 1 = AED 3.67.
+
+| Service | 100 Agents | 500 Agents | 1,000 Agents |
+|---------|-----------|-----------|-------------|
+| MongoDB Atlas | AED 550/mo (M20) | AED 2,900/mo (M50) | AED 7,300/mo (M80) |
+| Vercel | AED 367/mo (Pro) | AED 367/mo (Pro) | AED 1,835/mo (Enterprise) |
+| Redis (Upstash) | AED 37/mo | AED 184/mo | AED 550/mo |
+| Firebase Auth | ~Free | AED 110/mo | AED 367/mo |
+| Meta WhatsApp API | AED 735/mo | AED 3,670/mo | AED 7,340/mo |
+| Cloudflare Pro | AED 183/mo | AED 183/mo | AED 735/mo (Business) |
+| Resend (Email) | AED 18/mo | AED 110/mo | AED 367/mo |
+| Monitoring (Grafana) | AED 275/mo | AED 735/mo | AED 1,835/mo |
+| Backup storage (UAE S3) | AED 37/mo | AED 110/mo | AED 275/mo |
+| Other (CI, domain, SSL) | AED 366/mo | AED 550/mo | AED 1,102/mo |
+| **TOTAL ESTIMATE** | **AED 2,568/mo** | **AED 8,919/mo** | **AED 21,706/mo** |
+| **Cost per agent** | AED 25.68 | AED 17.84 | AED 21.71 |
+
+**Budget alert thresholds:**
+- Atlas M50 → M80 auto-upgrade: Flag for finance approval (AED 4,400/mo delta)
+- Vercel → Enterprise upgrade: Migrate proactively at 900k invocations/month
+- WhatsApp > 15,000 conversations/month: Alert finance team
+- Total monthly cloud spend > AED 15,000: CTO approval required

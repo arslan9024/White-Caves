@@ -78,9 +78,16 @@ vi.mock('../utils/sanitize', () => ({
 }));
 vi.mock('../config/firebaseAdmin.js', () => ({
   verifyFirebaseIdToken: mockVerifyFirebaseIdToken,
+  FirebaseAdminInitError: class FirebaseAdminInitError extends Error {
+    constructor(message: string) {
+      super(message);
+      this.name = 'FirebaseAdminInitError';
+    }
+  },
 }));
 vi.mock('../utils/logger.js', () => ({
-  default: { info: vi.fn(), warn: vi.fn(), error: vi.fn() },
+  default: { info: vi.fn(), warn: vi.fn(), error: vi.fn(), debug: vi.fn() },
+  logger: { info: vi.fn(), warn: vi.fn(), error: vi.fn(), debug: vi.fn() },
 }));
 vi.mock('../middleware/errorHandler', () => ({
   AppError: class extends Error {
@@ -106,6 +113,21 @@ import authRoutes from './auth';
 function createApp(role: string = 'owner', userId = 'user-1') {
   const app = express();
   app.use(express.json());
+  // Minimal inline cookie parser for tests (avoids importing cookie-parser in test env)
+  app.use((req: any, _res: any, next: any) => {
+    const cookieHeader = req.headers.cookie as string | undefined;
+    const cookies: Record<string, string> = {};
+    if (cookieHeader) {
+      cookieHeader.split(';').forEach((part: string) => {
+        const eqIdx = part.indexOf('=');
+        if (eqIdx > 0) {
+          cookies[part.slice(0, eqIdx).trim()] = decodeURIComponent(part.slice(eqIdx + 1).trim());
+        }
+      });
+    }
+    req.cookies = cookies;
+    next();
+  });
   app.use((req, _res, next) => {
     (req as any).user = { id: userId, email: 'test@whitecaves.ae', role };
     next();
@@ -199,6 +221,28 @@ describe('Auth Routes — /api/auth', () => {
       expect(res.body.data.token).toBe('mock-jwt-token');
       expect(res.body.data.user.email).toBe('test@whitecaves.ae');
       expect(res.body.requiresTwoFactor).toBe(false);
+    });
+
+    it('returns a 2FA challenge when the account has two-factor enabled', async () => {
+      mockPrisma.user.findUnique.mockResolvedValueOnce({
+        id: 'user-1',
+        email: 'test@whitecaves.ae',
+        name: 'Test User',
+        role: 'owner',
+        department: 'management',
+        photoUrl: null,
+        passwordHash: '$2a$10$validhash',
+        twoFactorEnabled: true,
+        twoFactorSecret: 'secret',
+      });
+      mockBcrypt.compare.mockResolvedValueOnce(true);
+      const res = await request(createApp())
+        .post('/api/auth/login')
+        .send({ email: 'test@whitecaves.ae', password: 'Test1234' });
+      expect(res.status).toBe(200);
+      expect(res.body.requiresTwoFactor).toBe(true);
+      expect(res.body.data.twoFactorToken).toBeDefined();
+      expect(res.body.data.token).toBeUndefined();
     });
 
     it('auto-migrates legacy wc$ password hash on login', async () => {
@@ -580,13 +624,32 @@ describe('Auth Routes — /api/auth', () => {
       expect(res.status).toBe(400);
     });
 
-    it('returns 501 when not in development mode', async () => {
-      // NODE_ENV is 'test', not 'development', so 2FA should fail
+    it('verifies a code in development bypass mode', async () => {
+      const originalEnv = process.env.NODE_ENV;
+      const originalBypass = process.env.DEV_2FA_BYPASS;
+      process.env.NODE_ENV = 'development';
+      process.env.DEV_2FA_BYPASS = 'true';
+
+      mockPrisma.user.findUnique.mockResolvedValueOnce({
+        id: 'user-1',
+        email: 'test@whitecaves.ae',
+        name: 'Test User',
+        role: 'owner',
+        passwordHash: '$2a$10$validhash',
+        twoFactorEnabled: true,
+        twoFactorSecret: 'encrypted-secret',
+      });
+
       const res = await request(createApp())
         .post('/api/auth/verify-2fa')
         .send({ email: 'test@whitecaves.ae', code: '000000' });
-      expect(res.status).toBe(501);
-      expect(res.body.error).toMatch(/not yet configured/i);
+
+      process.env.NODE_ENV = originalEnv;
+      process.env.DEV_2FA_BYPASS = originalBypass;
+
+      expect(res.status).toBe(200);
+      expect(res.body.success).toBe(true);
+      expect(res.body.data.token).toBe('mock-jwt-token');
     });
 
     it('returns 400 if code is missing', async () => {
@@ -595,6 +658,60 @@ describe('Auth Routes — /api/auth', () => {
         .send({ email: 'test@whitecaves.ae' });
       expect(res.status).toBe(400);
       expect(res.body.error).toMatch(/verification code.*required/i);
+    });
+  });
+
+  // ── POST /2fa/setup ─────────────────────────────────────────────
+  describe('POST /api/auth/2fa/setup', () => {
+    it('returns a QR auth URI and stores the encrypted secret', async () => {
+      mockPrisma.user.findUnique.mockResolvedValueOnce({
+        id: 'user-1',
+        email: 'test@whitecaves.ae',
+        name: 'Test User',
+        role: 'owner',
+        passwordHash: '$2a$10$validhash',
+      });
+
+      const res = await request(createApp('owner')).post('/api/auth/2fa/setup').send({});
+
+      expect(res.status).toBe(200);
+      expect(res.body.success).toBe(true);
+      expect(res.body.data.otpAuthUrl).toMatch(/^otpauth:\/\//i);
+      expect(mockPrisma.user.update).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: { id: 'user-1' },
+          data: expect.objectContaining({ twoFactorEnabled: false }),
+        })
+      );
+    });
+  });
+
+  // ── POST /2fa/disable ───────────────────────────────────────────
+  describe('POST /api/auth/2fa/disable', () => {
+    it('disables 2FA after password confirmation', async () => {
+      mockPrisma.user.findUnique.mockResolvedValueOnce({
+        id: 'user-1',
+        email: 'test@whitecaves.ae',
+        name: 'Test User',
+        role: 'owner',
+        passwordHash: '$2a$10$validhash',
+        twoFactorEnabled: true,
+        twoFactorSecret: 'encrypted-secret',
+      });
+
+      const res = await request(createApp('owner'))
+        .post('/api/auth/2fa/disable')
+        .send({ currentPassword: 'Test1234' });
+
+      expect(res.status).toBe(200);
+      expect(res.body.success).toBe(true);
+      expect(res.body.data.disabled).toBe(true);
+      expect(mockPrisma.user.update).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: { id: 'user-1' },
+          data: expect.objectContaining({ twoFactorEnabled: false, twoFactorSecret: null }),
+        })
+      );
     });
   });
 
@@ -734,6 +851,38 @@ describe('Auth Routes — /api/auth', () => {
       expect(res.body.success).toBe(true);
       expect(res.body.data.token).toBe('mock-jwt-token');
       expect(mockVerifyFirebaseIdToken).toHaveBeenCalledWith('valid-token');
+    });
+
+    it('uses development fallback when Firebase Admin is unavailable', async () => {
+      process.env.NODE_ENV = 'development';
+      process.env.ALLOW_FIREBASE_SYNC_DEV_FALLBACK = 'true';
+
+      const adminInitError = new Error('Firebase Admin SDK has not been initialized');
+      adminInitError.name = 'FirebaseAdminInitError';
+      mockVerifyFirebaseIdToken.mockRejectedValueOnce(adminInitError);
+
+      mockPrisma.user.findUnique.mockResolvedValueOnce(null);
+      mockPrisma.user.create.mockResolvedValueOnce({
+        id: 'user-dev-1',
+        email: 'devuser@whitecaves.ae',
+        name: 'Dev User',
+        role: 'agent',
+        department: null,
+        photoUrl: null,
+        status: 'active',
+      });
+
+      const res = await request(createApp()).post('/api/auth/firebase-sync').send({
+        firebaseUid: 'firebase-dev-123',
+        firebaseToken: 'dev-token',
+        email: 'devuser@whitecaves.ae',
+        name: 'Dev User',
+      });
+
+      expect(res.status).toBe(200);
+      expect(res.body.success).toBe(true);
+      expect(res.body.data.token).toBe('mock-jwt-token');
+      expect(res.body.data.user.email).toBe('devuser@whitecaves.ae');
     });
   });
 
@@ -1143,6 +1292,120 @@ describe('Auth Routes — /api/auth', () => {
       );
       expect(res.status).toBe(200);
       expect(res.body.data.windowMinutes).toBe(60 * 24 * 30);
+    });
+  });
+
+  // ── POST /refresh ─────────────────────────────────────────────────
+  describe('POST /api/auth/refresh', () => {
+    // vi.clearAllMocks() (outer beforeEach) clears .mock.calls but NOT the
+    // onceImplementations queue. Stale once-values from earlier failing tests
+    // can bleed into these tests. Reset findUnique fully before every refresh
+    // test so we always start from a clean slate.
+    beforeEach(() => {
+      mockPrisma.user.findUnique.mockReset();
+      mockPrisma.user.findUnique.mockResolvedValue(null);
+      // compare also accumulates stale once-values from login test failures
+      mockBcrypt.compare.mockReset();
+      mockBcrypt.compare.mockResolvedValue(true);
+    });
+    it('returns 401 when no cookie is provided', async () => {
+      const res = await request(createApp()).post('/api/auth/refresh');
+      expect(res.status).toBe(401);
+      expect(res.body.error).toMatch(/no refresh token provided/i);
+    });
+
+    it('returns 401 when cookie value has no colon separator', async () => {
+      const res = await request(createApp())
+        .post('/api/auth/refresh')
+        .set('Cookie', 'refresh_token=MALFORMEDTOKEN');
+      expect(res.status).toBe(401);
+      expect(res.body.error).toMatch(/no refresh token provided/i);
+    });
+
+    it('returns 401 when the userId from the cookie is not found in DB', async () => {
+      mockPrisma.user.findUnique.mockResolvedValueOnce(null);
+      const res = await request(createApp())
+        .post('/api/auth/refresh')
+        .set('Cookie', 'refresh_token=ghost-user-id:somerawtoken');
+      expect(res.status).toBe(401);
+      expect(res.body.error).toMatch(/invalid or expired/i);
+    });
+
+    it('returns 401 and nulls refreshTokenHash when token hash does not match (reuse detected)', async () => {
+      mockPrisma.user.findUnique.mockResolvedValueOnce({
+        id: 'user-1',
+        email: 'test@whitecaves.ae',
+        name: 'Test User',
+        role: 'agent',
+        status: 'active',
+        refreshTokenHash: '$2a$10$realhashedvalue',
+      });
+      mockBcrypt.compare.mockResolvedValueOnce(false);
+
+      const res = await request(createApp())
+        .post('/api/auth/refresh')
+        .set('Cookie', 'refresh_token=user-1:stale-or-stolen-token');
+
+      expect(res.status).toBe(401);
+      expect(res.body.error).toMatch(/reuse detected/i);
+      expect(mockPrisma.user.update).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: { id: 'user-1' },
+          data: { refreshTokenHash: null },
+        })
+      );
+    });
+
+    it('returns 401 when the user account is inactive', async () => {
+      mockPrisma.user.findUnique.mockResolvedValueOnce({
+        id: 'user-1',
+        email: 'test@whitecaves.ae',
+        name: 'Suspended User',
+        role: 'agent',
+        status: 'suspended',
+        refreshTokenHash: '$2a$10$somevalue',
+      });
+      const res = await request(createApp())
+        .post('/api/auth/refresh')
+        .set('Cookie', 'refresh_token=user-1:sometoken');
+      expect(res.status).toBe(401);
+      expect(res.body.error).toMatch(/invalid or expired/i);
+      expect(mockBcrypt.compare).not.toHaveBeenCalled();
+    });
+
+    it('returns 200 with new access token and rotates the cookie on valid token', async () => {
+      mockPrisma.user.findUnique.mockResolvedValueOnce({
+        id: 'user-1',
+        email: 'test@whitecaves.ae',
+        name: 'Test User',
+        role: 'agent',
+        status: 'active',
+        refreshTokenHash: '$2a$10$currenthash',
+      });
+      mockBcrypt.compare.mockResolvedValueOnce(true);
+      mockBcrypt.hash.mockResolvedValueOnce('$2a$10$rotatedhash');
+      mockPrisma.user.update.mockResolvedValueOnce({ id: 'user-1' });
+
+      const res = await request(createApp())
+        .post('/api/auth/refresh')
+        .set('Cookie', 'refresh_token=user-1:validrawtoken');
+
+      expect(res.status).toBe(200);
+      expect(res.body.success).toBe(true);
+      expect(res.body.data.token).toBe('mock-jwt-token');
+      expect(res.body.data.user.id).toBe('user-1');
+
+      expect(mockPrisma.user.update).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: { id: 'user-1' },
+          data: expect.objectContaining({ refreshTokenHash: '$2a$10$rotatedhash' }),
+        })
+      );
+
+      const setCookie = res.headers['set-cookie'] as string[] | string | undefined;
+      const cookieStr = Array.isArray(setCookie) ? setCookie.join('; ') : String(setCookie ?? '');
+      expect(cookieStr).toContain('refresh_token=');
+      expect(cookieStr.toLowerCase()).toContain('httponly');
     });
   });
 });

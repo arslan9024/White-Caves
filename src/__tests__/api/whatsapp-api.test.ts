@@ -1,14 +1,110 @@
 import { describe, it, expect, beforeAll, afterAll } from 'vitest';
-import axios from 'axios';
+
+const RUN_LIVE_WHATSAPP_API = process.env.RUN_LIVE_WHATSAPP_API === 'true';
 
 const BASE_URL = 'http://localhost:3000/api';
 
-const client = axios.create({
-  baseURL: BASE_URL,
-  validateStatus: () => true, // Don't throw on any status
-});
+const toHeadersRecord = (headers: Headers): Record<string, string> => {
+  return Object.fromEntries(headers.entries()) as Record<string, string>;
+};
 
-describe('WhatsApp API Tests', () => {
+const buildUrl = (path: string, params?: Record<string, string | number>) => {
+  const url = new URL(path.startsWith('http') ? path : `${BASE_URL}${path}`);
+  if (params) {
+    Object.entries(params).forEach(([key, value]) => {
+      if (value !== undefined && value !== null) {
+        url.searchParams.set(key, String(value));
+      }
+    });
+  }
+  return url.toString();
+};
+
+const request = async (
+  method: string,
+  path: string,
+  data?: unknown,
+  config: {
+    headers?: Record<string, string>;
+    params?: Record<string, string | number>;
+    responseType?: 'blob';
+  } = {}
+) => {
+  const response = await fetch(buildUrl(path, config.params), {
+    method,
+    headers: {
+      ...(data instanceof FormData ? {} : { 'Content-Type': 'application/json' }),
+      ...(config.headers || {}),
+    },
+    body: data === undefined ? undefined : data instanceof FormData ? data : JSON.stringify(data),
+  });
+
+  let parsed: unknown;
+  if (config.responseType === 'blob') {
+    parsed = await response.blob();
+  } else {
+    const contentType = response.headers.get('content-type') || '';
+    if (contentType.includes('application/json')) {
+      parsed = await response.json().catch(() => ({}));
+    } else {
+      parsed = await response.text().catch(() => '');
+    }
+  }
+
+  return {
+    status: response.status,
+    data: parsed,
+    headers: toHeadersRecord(response.headers),
+  };
+};
+
+const client = {
+  get: (
+    path: string,
+    config?: {
+      headers?: Record<string, string>;
+      params?: Record<string, string | number>;
+      responseType?: 'blob';
+    }
+  ) => request('GET', path, undefined, config),
+  post: (
+    path: string,
+    data?: unknown,
+    config?: {
+      headers?: Record<string, string>;
+      params?: Record<string, string | number>;
+      responseType?: 'blob';
+    }
+  ) => request('POST', path, data, config),
+  put: (
+    path: string,
+    data?: unknown,
+    config?: {
+      headers?: Record<string, string>;
+      params?: Record<string, string | number>;
+      responseType?: 'blob';
+    }
+  ) => request('PUT', path, data, config),
+  patch: (
+    path: string,
+    data?: unknown,
+    config?: {
+      headers?: Record<string, string>;
+      params?: Record<string, string | number>;
+      responseType?: 'blob';
+    }
+  ) => request('PATCH', path, data, config),
+  delete: (
+    path: string,
+    config?: {
+      headers?: Record<string, string>;
+      params?: Record<string, string | number>;
+      responseType?: 'blob';
+    }
+  ) => request('DELETE', path, undefined, config),
+};
+
+describe.skipIf(!RUN_LIVE_WHATSAPP_API)('WhatsApp API Tests', () => {
   let accountId: string;
   let conversationId: string;
   let messageId: string;
@@ -23,7 +119,7 @@ describe('WhatsApp API Tests', () => {
 
   describe('Authentication & Authorization', () => {
     it('should return 401 for unauthorized requests', async () => {
-      const response = await axios.get(`${BASE_URL}/accounts`);
+      const response = await request('GET', '/accounts');
       expect(response.status).toBe(401);
     });
 
@@ -111,9 +207,7 @@ describe('WhatsApp API Tests', () => {
     it('GET /conversations/:id/messages - should get conversation messages', async () => {
       if (!conversationId) return;
 
-      const response = await client.get(
-        `/conversations/${conversationId}/messages`
-      );
+      const response = await client.get(`/conversations/${conversationId}/messages`);
 
       expect(response.status).toBe(200);
       expect(Array.isArray(response.data)).toBe(true);
@@ -122,9 +216,7 @@ describe('WhatsApp API Tests', () => {
     it('PATCH /conversations/:id/archive - should archive conversation', async () => {
       if (!conversationId) return;
 
-      const response = await client.patch(
-        `/conversations/${conversationId}/archive`
-      );
+      const response = await client.patch(`/conversations/${conversationId}/archive`);
 
       expect(response.status).toBe(200);
     });
@@ -132,10 +224,9 @@ describe('WhatsApp API Tests', () => {
     it('PATCH /conversations/:id/mute - should mute conversation', async () => {
       if (!conversationId) return;
 
-      const response = await client.patch(
-        `/conversations/${conversationId}/mute`,
-        { duration: 3600 }
-      );
+      const response = await client.patch(`/conversations/${conversationId}/mute`, {
+        duration: 3600,
+      });
 
       expect(response.status).toBe(200);
     });
@@ -258,9 +349,7 @@ describe('WhatsApp API Tests', () => {
     it('GET /analytics/conversations/:id/stats - should get conversation stats', async () => {
       if (!conversationId) return;
 
-      const response = await client.get(
-        `/analytics/conversations/${conversationId}/stats`
-      );
+      const response = await client.get(`/analytics/conversations/${conversationId}/stats`);
 
       expect(response.status).toBe(200);
       expect(response.data).toHaveProperty('messageCount');
@@ -392,9 +481,7 @@ describe('WhatsApp API Tests', () => {
           .map(() => client.get('/conversations'))
       );
 
-      const rateLimitedResponse = responses.find(
-        (r) => r.status === 429 || r.headers['retry-after']
-      );
+      const rateLimitedResponse = responses.find(r => r.status === 429 || r.headers['retry-after']);
       // Depending on rate limiting implementation
       expect(rateLimitedResponse).toBeDefined();
     });

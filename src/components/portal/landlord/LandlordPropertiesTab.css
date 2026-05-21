@@ -27,7 +27,7 @@
 .property-card:hover {
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
   transform: translateY(-2px);
-  border-color: #E31E24;
+  border-color: #e31e24;
 }
 
 .property-card.occupied {
@@ -95,7 +95,7 @@
 }
 
 .tenant {
-  color: #E31E24;
+  color: #e31e24;
   font-weight: 500;
 }
 
@@ -268,7 +268,7 @@
 .btn-primary {
   flex: 1;
   padding: 0.75rem 1.5rem;
-  background: #E31E24;
+  background: #e31e24;
   color: #000;
   border: none;
   border-radius: 4px;

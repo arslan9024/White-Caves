@@ -1,0 +1,213 @@
+/* LifecycleNotificationFeed.css */
+
+.lifecycle-notification-feed {
+  display: flex;
+  flex-direction: column;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+/* ── Header ──────────────────────────────────────────────────────────── */
+.lnf-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.lnf-header-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.lnf-bell {
+  color: #475569;
+}
+.lnf-bell.active {
+  color: var(--lnf-accent, #0EA5E9);
+}
+
+.lnf-title {
+  font-size: 12px;
+  font-weight: 600;
+  color: #94A3B8;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.lnf-badge {
+  padding: 1px 7px;
+  background: var(--lnf-accent, #0EA5E9);
+  color: #fff;
+  border-radius: 10px;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.lnf-mark-all-btn {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  background: none;
+  border: none;
+  color: #64748B;
+  font-size: 11px;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 6px;
+  transition: all 0.2s;
+}
+.lnf-mark-all-btn:hover {
+  background: rgba(255, 255, 255, 0.06);
+  color: #94A3B8;
+}
+
+/* ── Feed ────────────────────────────────────────────────────────────── */
+.lnf-feed {
+  flex: 1;
+  overflow-y: auto;
+  max-height: 480px;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.lnf-feed::-webkit-scrollbar { width: 4px; }
+.lnf-feed::-webkit-scrollbar-track { background: transparent; }
+.lnf-feed::-webkit-scrollbar-thumb {
+  background: rgba(255,255,255,0.1);
+  border-radius: 2px;
+}
+
+.lnf-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 40px 20px;
+  color: #475569;
+  font-size: 13px;
+}
+.lnf-empty svg { opacity: 0.4; }
+.lnf-empty p { margin: 0; }
+
+/* ── Notification item ───────────────────────────────────────────────── */
+.lnf-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  cursor: pointer;
+  transition: background 0.15s;
+  position: relative;
+}
+
+.lnf-item:last-child {
+  border-bottom: none;
+}
+
+.lnf-item.unread {
+  background: rgba(255, 255, 255, 0.025);
+}
+
+.lnf-item:hover {
+  background: rgba(255, 255, 255, 0.04);
+}
+
+/* Severity left border */
+.lnf-item.sev-critical { border-left: 3px solid #EF4444; }
+.lnf-item.sev-warning  { border-left: 3px solid #F59E0B; }
+.lnf-item.sev-info     { border-left: 3px solid #0EA5E9; }
+
+/* Severity icons */
+.sev-critical { color: #EF4444; }
+.sev-warning  { color: #F59E0B; }
+.sev-info     { color: #0EA5E9; }
+.sev-success  { color: #10B981; }
+
+.lnf-item-icon {
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.lnf-item-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.lnf-item-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 4px;
+  flex-wrap: wrap;
+}
+
+.lnf-type-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  padding: 1px 7px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.07);
+  color: #94A3B8;
+}
+
+.type-icon { color: inherit; }
+.type-icon.lifecycle { color: #0EA5E9; }
+.type-icon.action    { color: #A78BFA; }
+.type-icon.result    { color: #34D399; }
+
+.lnf-time {
+  font-size: 10px;
+  color: #475569;
+  margin-left: auto;
+  white-space: nowrap;
+}
+
+.lnf-message {
+  font-size: 12px;
+  color: #94A3B8;
+  margin: 0;
+  line-height: 1.5;
+  word-break: break-word;
+}
+
+.lnf-item.unread .lnf-message {
+  color: #CBD5E1;
+}
+
+.lnf-unread-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--lnf-accent, #0EA5E9);
+  flex-shrink: 0;
+  margin-top: 6px;
+}
+
+/* ── Footer ──────────────────────────────────────────────────────────── */
+.lnf-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 16px;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  font-size: 11px;
+  color: #475569;
+}
+
+.lnf-footer-unread {
+  color: var(--lnf-accent, #0EA5E9);
+  font-weight: 600;
+}

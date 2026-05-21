@@ -1,3 +1,4 @@
+/* eslint-disable no-console, @typescript-eslint/no-explicit-any */
 /**
  * Meta Business API Webhook Routes
  * Endpoints for receiving production WhatsApp messages from Meta
@@ -9,8 +10,13 @@
  */
 
 import { Router, Request, Response } from 'express';
+import crypto from 'crypto';
 import { createMetaAPIClient, MetaAPIClient, WebhookEvent } from '../services/whatsapp/metaAPI.js';
-import { verifyWebhookSignature, normalizePhone, rateLimiter } from '../services/whatsapp/whatsappUtils.js';
+import {
+  verifyWebhookSignature,
+  normalizePhone,
+  rateLimiter,
+} from '../services/whatsapp/whatsappUtils.js';
 import { requireRole } from '../middleware/rbac.js';
 import { prisma } from '../database.js';
 import { detectIntent, calculateLeadScore } from '../services/nadia/messageProcessor.js';
@@ -90,7 +96,19 @@ router.post('/', async (req: Request, res: Response) => {
     const appSecret = process.env.META_APP_SECRET;
     if (appSecret) {
       const signature = req.headers['x-hub-signature-256'] as string | undefined;
-      const rawBody = JSON.stringify(req.body);
+      if (!signature) {
+        console.warn('[Meta Webhook] Missing x-hub-signature-256 header — rejecting');
+        res.status(401).json({ success: false, error: 'Missing signature header' });
+        return;
+      }
+
+      const rawBody = (req as Request & { rawBody?: string }).rawBody;
+      if (!rawBody) {
+        console.warn('[Meta Webhook] Missing rawBody for signature verification — rejecting');
+        res.status(500).json({ success: false, error: 'Webhook raw body unavailable' });
+        return;
+      }
+
       if (!verifyWebhookSignature(rawBody, signature, appSecret)) {
         console.warn('[Meta Webhook] Invalid signature — rejecting');
         res.status(401).json({ success: false, error: 'Invalid signature' });
@@ -152,11 +170,36 @@ router.post('/', async (req: Request, res: Response) => {
 async function handleIncomingMessage(message: any, phoneNumberId: string): Promise<void> {
   try {
     const customerPhone = normalizePhone(message.from) || message.from;
+    if (!customerPhone) {
+      console.warn('[Meta Webhook] Ignoring inbound message with missing sender phone');
+      return;
+    }
+
     const content = message.text?.body || '';
     const messageType = message.type || 'text';
-    const timestamp = new Date(parseInt(message.timestamp) * 1000);
+    const timestampEpoch = Number.parseInt(String(message.timestamp || ''), 10);
+    const timestamp = Number.isFinite(timestampEpoch)
+      ? new Date(timestampEpoch * 1000)
+      : new Date();
+
+    const contentHash = crypto.createHash('sha256').update(content).digest('hex').slice(0, 16);
+    const waMessageId =
+      (message.id as string | undefined) ||
+      `meta-${customerPhone}-${messageType}-${String(message.timestamp || 'na')}-${contentHash}`;
 
     console.log(`[Meta Webhook] Message from ${customerPhone}: ${content.substring(0, 80)}`);
+
+    // Idempotency guard: Meta can deliver duplicate webhook events.
+    // If we have already persisted this WA message ID, skip re-processing.
+    const existingMessage = await prisma.nadiaMessage.findFirst({
+      where: { waMessageId },
+      select: { id: true, conversationId: true },
+    });
+
+    if (existingMessage) {
+      console.log(`[Meta Webhook] Duplicate message ignored: ${waMessageId}`);
+      return;
+    }
 
     // 1. Find or create conversation
     let conversation = await prisma.nadiaConversation.findFirst({
@@ -175,11 +218,47 @@ async function handleIncomingMessage(message: any, phoneNumberId: string): Promi
       console.log(`[Meta Webhook] New conversation created: ${conversation.id}`);
     }
 
+    // 1.5. Link or create CRM lead for inbound WhatsApp contact (W3-006)
+    const existingLead = await prisma.lead.findFirst({
+      where: {
+        OR: [{ phone: customerPhone }, { phone: message.from }],
+      },
+      select: { id: true, status: true, source: true },
+    });
+
+    let leadId: string | null = existingLead?.id || null;
+    if (!existingLead) {
+      const createdLead = await prisma.lead.create({
+        data: {
+          name: `WhatsApp Lead ${customerPhone}`,
+          phone: customerPhone,
+          source: 'whatsapp',
+          status: 'new',
+          notes: `Auto-created from inbound WhatsApp message (${conversation.id})`,
+        },
+        select: { id: true },
+      });
+      leadId = createdLead.id;
+
+      await prisma.activity.create({
+        data: {
+          type: 'lead',
+          action: 'created',
+          description: `Lead auto-created from WhatsApp inbound: ${customerPhone}`,
+          leadId,
+          metadata: {
+            channel: 'META_API',
+            conversationId: conversation.id,
+          },
+        },
+      });
+    }
+
     // 2. Store message
     const storedMessage = await prisma.nadiaMessage.create({
       data: {
         conversationId: conversation.id,
-        waMessageId: message.id,
+        waMessageId,
         direction: 'inbound',
         body: content,
         messageType,
@@ -196,10 +275,15 @@ async function handleIncomingMessage(message: any, phoneNumberId: string): Promi
         messageCount: 1,
         responseTime: 0,
         intentClarity: intent !== 'general_inquiry' ? 1 : 0.3,
-        budgetMentioned: content.toLowerCase().includes('budget') || content.toLowerCase().includes('aed'),
-        timelineMentioned: content.toLowerCase().includes('asap') || content.toLowerCase().includes('urgent'),
-        propertyInterest: content.toLowerCase().includes('property') || content.toLowerCase().includes('villa') ? 1 : 0,
-      });
+        budgetMentioned:
+          content.toLowerCase().includes('budget') || content.toLowerCase().includes('aed'),
+        timelineMentioned:
+          content.toLowerCase().includes('asap') || content.toLowerCase().includes('urgent'),
+        propertyInterest:
+          content.toLowerCase().includes('property') || content.toLowerCase().includes('villa')
+            ? 1
+            : 0,
+      } as any);
       nlpResult = { intent, score };
     } catch (nlpErr) {
       console.warn('[Meta Webhook] NLP processing failed:', nlpErr);
@@ -221,12 +305,13 @@ async function handleIncomingMessage(message: any, phoneNumberId: string): Promi
     getSocketServer()?.emitMetaMessage({
       id: storedMessage.id,
       conversationId: conversation.id,
+      leadId: leadId ?? undefined,
       from: customerPhone,
       content,
       type: messageType,
       timestamp,
       nlp: nlpResult,
-    });
+    } as any);
   } catch (error) {
     console.error('[Meta Webhook] Error handling message:', error);
   }
@@ -241,6 +326,11 @@ async function handleStatusUpdate(status: any): Promise<void> {
     const waMessageId = status.id;
     const newStatus = status.status; // sent, delivered, read, failed
 
+    if (!waMessageId || !newStatus) {
+      console.warn('[Meta Webhook] Ignoring malformed status payload');
+      return;
+    }
+
     console.log(`[Meta Webhook] Status update: ${waMessageId} → ${newStatus}`);
 
     // Find and update the message in DB
@@ -249,6 +339,11 @@ async function handleStatusUpdate(status: any): Promise<void> {
     });
 
     if (existing) {
+      if (existing.status === newStatus) {
+        console.log(`[Meta Webhook] Duplicate status ignored: ${waMessageId} already ${newStatus}`);
+        return;
+      }
+
       await prisma.nadiaMessage.update({
         where: { id: existing.id },
         data: { status: newStatus },
@@ -290,6 +385,15 @@ router.post('/send', requireRole('owner'), async (req: Request, res: Response) =
       });
     }
 
+    const sendAllowance = rateLimiter.canSend(to);
+    if (!sendAllowance.allowed) {
+      return res.status(429).json({
+        success: false,
+        error: 'Rate limit exceeded for WhatsApp sends',
+        retryAfterMs: sendAllowance.retryAfterMs,
+      });
+    }
+
     const meta = getMetaClient();
     const messageId = await meta.sendMessage(to, message);
 
@@ -326,6 +430,15 @@ router.post('/template', requireRole('owner'), async (req: Request, res: Respons
       return res.status(400).json({
         success: false,
         error: 'Missing required fields: to, template',
+      });
+    }
+
+    const sendAllowance = rateLimiter.canSend(to);
+    if (!sendAllowance.allowed) {
+      return res.status(429).json({
+        success: false,
+        error: 'Rate limit exceeded for WhatsApp template sends',
+        retryAfterMs: sendAllowance.retryAfterMs,
       });
     }
 
@@ -371,7 +484,9 @@ router.get('/status', requireRole('owner'), async (req: Request, res: Response) 
       data: {
         configured: !!isConfigured,
         apiVersion: stats.apiVersion,
-        phoneNumberId: stats.phoneNumberId ? stats.phoneNumberId.substring(0, 5) + '***' : 'NOT_SET',
+        phoneNumberId: stats.phoneNumberId
+          ? stats.phoneNumberId.substring(0, 5) + '***'
+          : 'NOT_SET',
         timestamp: new Date(),
       },
     });

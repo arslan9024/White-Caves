@@ -73,3 +73,22 @@ if (!_whatsappSecret && IS_PRODUCTION) {
   );
 }
 export const WHATSAPP_WEBHOOK_SECRET = _whatsappSecret || '';
+
+// ─── Linda LocalAuth WhatsApp ─────────────────────────────────────────────
+export const LINDA_ENABLED = process.env.LINDA_ENABLED !== 'false'; // opt-out flag
+export const LINDA_SESSIONS_PATH = process.env.LINDA_SESSIONS_PATH || './.linda-sessions';
+export const LINDA_BOT_MASTER_NUMBER = process.env.LINDA_BOT_MASTER_NUMBER || '';
+export const LINDA_HEADLESS = process.env.LINDA_HEADLESS !== 'false';
+export const LINDA_RECONNECT_DELAY = parseInt(process.env.LINDA_RECONNECT_DELAY || '5000', 10);
+export const LINDA_MAX_RECONNECT_ATTEMPTS = parseInt(
+  process.env.LINDA_MAX_RECONNECT_ATTEMPTS || '999',
+  10
+);
+export const LINDA_GOOGLE_SHEET_ID = process.env.LINDA_GOOGLE_SHEET_ID || '';
+export const LINDA_GOOGLE_KEYS_BASE64 = process.env.LINDA_GOOGLE_KEYS_BASE64 || '';
+export const LINDA_CORE_MODE = process.env.LINDA_CORE_MODE || 'legacy';
+
+// ─── Henry Document Hub ───────────────────────────────────────────────────
+export const HENRY_UPLOADS_PATH = process.env.HENRY_UPLOADS_PATH || './uploads/henry';
+export const GROQ_API_KEY = process.env.GROQ_API_KEY || '';
+export const OLLAMA_HOST = process.env.OLLAMA_HOST || 'http://localhost:11434';

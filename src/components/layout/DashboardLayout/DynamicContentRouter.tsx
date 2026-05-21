@@ -1,12 +1,11 @@
-﻿// @ts-nocheck
 /**
  * DynamicContentRouter Component
- * 
+ *
  * Routes feature IDs to appropriate components
  * Based on sidebar selection (departments or AI assistants)
  */
 
-import React, { useMemo } from 'react';
+import React from 'react';
 import styled from 'styled-components';
 
 // Import all feature components
@@ -20,7 +19,7 @@ const ContentContainer = styled.div`
   height: 100%;
   display: flex;
   flex-direction: column;
-  background: ${props => props.theme?.colors?.background || '#f9fafb'};
+  background: ${({ theme }) => String((theme as any)?.colors?.backgroundAlt ?? '#f9fafb')};
   overflow-y: auto;
   overflow-x: hidden;
 
@@ -36,11 +35,11 @@ const ContentContainer = styled.div`
   }
 
   &::-webkit-scrollbar-thumb {
-    background: ${props => props.theme?.colors?.border || '#e5e7eb'};
+    background: ${({ theme }) => String((theme as any)?.colors?.border ?? '#e5e7eb')};
     border-radius: 4px;
 
     &:hover {
-      background: ${props => props.theme?.colors?.textSecondary || '#6b7280'};
+      background: ${({ theme }) => String((theme as any)?.colors?.textSecondary ?? '#6b7280')};
     }
   }
 `;
@@ -57,13 +56,13 @@ const PlaceholderContent = styled.div`
 const PlaceholderTitle = styled.h2`
   font-size: 24px;
   font-weight: 600;
-  color: ${props => props.theme?.colors?.textPrimary || '#1f2937'};
+  color: ${({ theme }) => String((theme as any)?.colors?.textPrimary ?? '#1f2937')};
   margin-bottom: 12px;
 `;
 
 const PlaceholderText = styled.p`
   font-size: 14px;
-  color: ${props => props.theme?.colors?.textSecondary || '#6b7280'};
+  color: ${({ theme }) => String((theme as any)?.colors?.textSecondary ?? '#6b7280')};
 `;
 
 /**
@@ -71,7 +70,7 @@ const PlaceholderText = styled.p`
  * Maps feature IDs to React components
  * Add new features here
  */
-const featureComponentMap = {
+const featureComponentMap: Record<string, React.FC<any>> = {
   // Department features - Real Dashboards
   'dept-sales': () => <SalesDashboard featureId="dept-sales" />,
   'dept-leasing': () => <DepartmentDashboard departmentId="LEASING" />,
@@ -177,41 +176,61 @@ const featureComponentMap = {
 /**
  * DynamicContentRouter Component
  * Routes to the appropriate feature based on featureId
- * 
+ *
  * @component
  * @param {string} featureId - ID of the feature to display
  * @param {Object} context - Additional context data for the feature
  * @returns {React.ReactElement}
  */
-const DynamicContentRouter = ({ featureId = 'dashboard', context = {} }) => {
-  // Get the component for this feature
-  const Component = useMemo(() => {
-    if (!featureId) {
-      return () => (
-        <PlaceholderContent>
-          <div>
-            <PlaceholderTitle>🏢 Welcome to White Caves</PlaceholderTitle>
-            <PlaceholderText>Select a department or AI assistant from the sidebars to get started</PlaceholderText>
-          </div>
-        </PlaceholderContent>
-      );
-    }
+const WelcomePlaceholder: React.FC = () => (
+  <PlaceholderContent>
+    <div>
+      <PlaceholderTitle>🏢 Welcome to White Caves</PlaceholderTitle>
+      <PlaceholderText>
+        Select a department or AI assistant from the sidebars to get started
+      </PlaceholderText>
+    </div>
+  </PlaceholderContent>
+);
+WelcomePlaceholder.displayName = 'WelcomePlaceholder';
 
-    const componentFactory = featureComponentMap[featureId];
-    
-    if (!componentFactory) {
-      return () => (
-        <PlaceholderContent>
-          <div>
-            <PlaceholderTitle>🔍 Feature Not Found</PlaceholderTitle>
-            <PlaceholderText>The feature "{featureId}" hasn't been implemented yet.</PlaceholderText>
-          </div>
-        </PlaceholderContent>
-      );
-    }
+const NotFoundPlaceholder: React.FC<{ featureId: string }> = ({ featureId }) => (
+  <PlaceholderContent>
+    <div>
+      <PlaceholderTitle>🔍 Feature Not Found</PlaceholderTitle>
+      <PlaceholderText>
+        The feature &quot;{featureId}&quot; hasn&apos;t been implemented yet.
+      </PlaceholderText>
+    </div>
+  </PlaceholderContent>
+);
+NotFoundPlaceholder.displayName = 'NotFoundPlaceholder';
 
-    return componentFactory;
-  }, [featureId]);
+const DynamicContentRouter = ({
+  featureId = 'dashboard',
+  context = {},
+}: {
+  featureId?: string;
+  context?: Record<string, unknown>;
+}) => {
+  if (!featureId) {
+    return (
+      <ContentContainer>
+        <WelcomePlaceholder />
+      </ContentContainer>
+    );
+  }
+
+  // eslint-disable-next-line security/detect-object-injection
+  const Component = featureComponentMap[featureId];
+
+  if (!Component) {
+    return (
+      <ContentContainer>
+        <NotFoundPlaceholder featureId={featureId} />
+      </ContentContainer>
+    );
+  }
 
   return (
     <ContentContainer>
@@ -221,4 +240,3 @@ const DynamicContentRouter = ({ featureId = 'dashboard', context = {} }) => {
 };
 
 export default DynamicContentRouter;
-

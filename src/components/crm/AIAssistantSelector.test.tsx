@@ -4,7 +4,7 @@
  * favorites, assistant selection, outside click, compact mode
  */
 
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeAll, beforeEach, afterAll } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import React from 'react';
 import { Provider } from 'react-redux';
@@ -12,43 +12,58 @@ import { configureStore } from '@reduxjs/toolkit';
 
 // ── vi.hoisted helpers (available in vi.mock factories) ──────────
 
-const { makeDiv, makeBtn, makeInput, mkIcon } = vi.hoisted(() => {
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
-  const R = require('react');
-  function makeDiv(name: string) {
-    const C = ({ children, ...props }: React.PropsWithChildren<Record<string, unknown>>) => {
-      const clean: Record<string, unknown> = {};
-      for (const [k, v] of Object.entries(props)) { if (!k.startsWith('$')) clean[k] = v; }
-      return R.createElement('div', { 'data-testid': name, ...clean }, children);
+const { makeDiv, makeBtn, makeInput, mkIcon, allAssistantsCache, filteredAssistantsCache } =
+  vi.hoisted(() => {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const R = require('react');
+    function makeDiv(name: string) {
+      const C = ({ children, ...props }: React.PropsWithChildren<Record<string, unknown>>) => {
+        const clean: Record<string, unknown> = {};
+        for (const [k, v] of Object.entries(props)) {
+          if (!k.startsWith('$')) clean[k] = v;
+        }
+        return R.createElement('div', { 'data-testid': name, ...clean }, children);
+      };
+      C.displayName = name;
+      return C;
+    }
+    function makeBtn(name: string) {
+      const C = ({ children, ...props }: React.PropsWithChildren<Record<string, unknown>>) => {
+        const clean: Record<string, unknown> = {};
+        for (const [k, v] of Object.entries(props)) {
+          if (!k.startsWith('$')) clean[k] = v;
+        }
+        return R.createElement('button', { 'data-testid': name, ...clean }, children);
+      };
+      C.displayName = name;
+      return C;
+    }
+    function makeInput(name: string) {
+      const C = (props: Record<string, unknown>) => {
+        const clean: Record<string, unknown> = {};
+        for (const [k, v] of Object.entries(props)) {
+          if (!k.startsWith('$')) clean[k] = v;
+        }
+        return R.createElement('input', { 'data-testid': name, ...clean });
+      };
+      C.displayName = name;
+      return C;
+    }
+    function mkIcon(name: string) {
+      const I = (props: Record<string, unknown>) =>
+        R.createElement('span', { 'data-icon': name, ...props });
+      I.displayName = name;
+      return I;
+    }
+    return {
+      makeDiv,
+      makeBtn,
+      makeInput,
+      mkIcon,
+      allAssistantsCache: new WeakMap<object, unknown[]>(),
+      filteredAssistantsCache: new WeakMap<object, Map<string, unknown[]>>(),
     };
-    C.displayName = name;
-    return C;
-  }
-  function makeBtn(name: string) {
-    const C = ({ children, ...props }: React.PropsWithChildren<Record<string, unknown>>) => {
-      const clean: Record<string, unknown> = {};
-      for (const [k, v] of Object.entries(props)) { if (!k.startsWith('$')) clean[k] = v; }
-      return R.createElement('button', { 'data-testid': name, ...clean }, children);
-    };
-    C.displayName = name;
-    return C;
-  }
-  function makeInput(name: string) {
-    const C = (props: Record<string, unknown>) => {
-      const clean: Record<string, unknown> = {};
-      for (const [k, v] of Object.entries(props)) { if (!k.startsWith('$')) clean[k] = v; }
-      return R.createElement('input', { 'data-testid': name, ...clean });
-    };
-    C.displayName = name;
-    return C;
-  }
-  function mkIcon(name: string) {
-    const I = (props: Record<string, unknown>) => R.createElement('span', { 'data-icon': name, ...props });
-    I.displayName = name;
-    return I;
-  }
-  return { makeDiv, makeBtn, makeInput, mkIcon };
-});
+  });
 
 // ── Mock styled-components styles ────────────────────────────────
 
@@ -89,36 +104,62 @@ vi.mock('./AIAssistantSelector.styles', () => ({
 // ── Mock lucide-react icons (explicit, no Proxy) ─────────────────
 
 vi.mock('lucide-react', () => ({
-  Search: mkIcon('Search'), Star: mkIcon('Star'), Activity: mkIcon('Activity'),
-  TrendingUp: mkIcon('TrendingUp'), Users: mkIcon('Users'), AlertCircle: mkIcon('AlertCircle'),
-  Shield: mkIcon('Shield'), DollarSign: mkIcon('DollarSign'), Megaphone: mkIcon('Megaphone'),
-  MessageSquare: mkIcon('MessageSquare'), Briefcase: mkIcon('Briefcase'),
-  FileText: mkIcon('FileText'), Home: mkIcon('Home'), Target: mkIcon('Target'),
-  Bot: mkIcon('Bot'), Users2: mkIcon('Users2'), ChevronDown: mkIcon('ChevronDown'),
-  ChevronUp: mkIcon('ChevronUp'), X: mkIcon('X'), Server: mkIcon('Server'),
+  Search: mkIcon('Search'),
+  Star: mkIcon('Star'),
+  Activity: mkIcon('Activity'),
+  TrendingUp: mkIcon('TrendingUp'),
+  Users: mkIcon('Users'),
+  AlertCircle: mkIcon('AlertCircle'),
+  Shield: mkIcon('Shield'),
+  DollarSign: mkIcon('DollarSign'),
+  Megaphone: mkIcon('Megaphone'),
+  MessageSquare: mkIcon('MessageSquare'),
+  Briefcase: mkIcon('Briefcase'),
+  FileText: mkIcon('FileText'),
+  Home: mkIcon('Home'),
+  Target: mkIcon('Target'),
+  Bot: mkIcon('Bot'),
+  Users2: mkIcon('Users2'),
+  ChevronDown: mkIcon('ChevronDown'),
+  ChevronUp: mkIcon('ChevronUp'),
+  X: mkIcon('X'),
+  Server: mkIcon('Server'),
 }));
 
 // ── Mock Redux slice selectors + action creators ─────────────────
 
 vi.mock('../../store/slices/aiAssistantDashboardSlice', () => ({
   selectAllAssistantsArray: (state: any) => {
+    const cached = allAssistantsCache.get(state);
+    if (cached) return cached;
     const s = state.aiAssistantDashboard;
-    return s.assistants.allIds.map((id: string) => s.assistants.byId[id]);
+    const out = s.assistants.allIds.map((id: string) => s.assistants.byId[id]);
+    allAssistantsCache.set(state, out);
+    return out;
   },
   selectUI: (state: any) => state.aiAssistantDashboard.ui,
   selectFavorites: (state: any) => state.aiAssistantDashboard.favorites,
   selectRecent: (state: any) => state.aiAssistantDashboard.recent,
   selectPerformance: (state: any) => state.aiAssistantDashboard.performance,
   selectFilteredAssistants: (state: any) => {
+    const byDept = filteredAssistantsCache.get(state) ?? new Map<string, unknown[]>();
     const s = state.aiAssistantDashboard;
-    const all = s.assistants.allIds.map((id: string) => s.assistants.byId[id]);
     const dept = s.ui.filters.department;
-    return dept === 'all' ? all : all.filter((a: any) => a.department === dept);
+    const cached = byDept.get(dept);
+    if (cached) return cached;
+    const all = s.assistants.allIds.map((id: string) => s.assistants.byId[id]);
+    const out = dept === 'all' ? all : all.filter((a: any) => a.department === dept);
+    byDept.set(dept, out);
+    filteredAssistantsCache.set(state, byDept);
+    return out;
   },
   selectAssistant: (id: string) => ({ type: 'aiAssistantDashboard/selectAssistant', payload: id }),
   toggleFavorite: (id: string) => ({ type: 'aiAssistantDashboard/toggleFavorite', payload: id }),
   setSearchQuery: (q: string) => ({ type: 'aiAssistantDashboard/setSearchQuery', payload: q }),
-  setDepartmentFilter: (d: string) => ({ type: 'aiAssistantDashboard/setDepartmentFilter', payload: d }),
+  setDepartmentFilter: (d: string) => ({
+    type: 'aiAssistantDashboard/setDepartmentFilter',
+    payload: d,
+  }),
   closeDropdown: () => ({ type: 'aiAssistantDashboard/closeDropdown' }),
   toggleDropdown: () => ({ type: 'aiAssistantDashboard/toggleDropdown' }),
 }));
@@ -148,9 +189,24 @@ function createAIAssistant(overrides: Record<string, unknown> = {}) {
 
 const assistantsList = [
   createAIAssistant(),
-  createAIAssistant({ id: 'theodora', name: 'Theodora AI', title: 'Finance Manager', department: 'finance' }),
-  createAIAssistant({ id: 'olivia', name: 'Olivia AI', title: 'Marketing Lead', department: 'marketing' }),
-  createAIAssistant({ id: 'zoe', name: 'Zoe AI', title: 'HR Specialist', department: 'operations' }),
+  createAIAssistant({
+    id: 'theodora',
+    name: 'Theodora AI',
+    title: 'Finance Manager',
+    department: 'finance',
+  }),
+  createAIAssistant({
+    id: 'olivia',
+    name: 'Olivia AI',
+    title: 'Marketing Lead',
+    department: 'marketing',
+  }),
+  createAIAssistant({
+    id: 'zoe',
+    name: 'Zoe AI',
+    title: 'HR Specialist',
+    department: 'operations',
+  }),
 ];
 
 function createTestStore(overrides: Record<string, unknown> = {}) {
@@ -175,11 +231,17 @@ function createTestStore(overrides: Record<string, unknown> = {}) {
       aiAssistantDashboard: (state = defaultState, action: { type: string; payload?: unknown }) => {
         switch (action.type) {
           case 'aiAssistantDashboard/toggleDropdown':
-            return { ...state, ui: { ...(state as any).ui, dropdownOpen: !(state as any).ui.dropdownOpen } };
+            return {
+              ...state,
+              ui: { ...(state as any).ui, dropdownOpen: !(state as any).ui.dropdownOpen },
+            };
           case 'aiAssistantDashboard/closeDropdown':
             return { ...state, ui: { ...(state as any).ui, dropdownOpen: false } };
           case 'aiAssistantDashboard/selectAssistant':
-            return { ...state, ui: { ...(state as any).ui, selectedAssistant: action.payload, dropdownOpen: false } };
+            return {
+              ...state,
+              ui: { ...(state as any).ui, selectedAssistant: action.payload, dropdownOpen: false },
+            };
           case 'aiAssistantDashboard/toggleFavorite': {
             const id = action.payload as string;
             const favs = (state as any).favorites.includes(id)
@@ -188,9 +250,21 @@ function createTestStore(overrides: Record<string, unknown> = {}) {
             return { ...state, favorites: favs };
           }
           case 'aiAssistantDashboard/setSearchQuery':
-            return { ...state, ui: { ...(state as any).ui, filters: { ...(state as any).ui.filters, search: action.payload } } };
+            return {
+              ...state,
+              ui: {
+                ...(state as any).ui,
+                filters: { ...(state as any).ui.filters, search: action.payload },
+              },
+            };
           case 'aiAssistantDashboard/setDepartmentFilter':
-            return { ...state, ui: { ...(state as any).ui, filters: { ...(state as any).ui.filters, department: action.payload } } };
+            return {
+              ...state,
+              ui: {
+                ...(state as any).ui,
+                filters: { ...(state as any).ui.filters, department: action.payload },
+              },
+            };
           default:
             return state;
         }
@@ -203,7 +277,7 @@ function createTestStore(overrides: Record<string, unknown> = {}) {
 
 function renderSelector(
   props: Partial<React.ComponentProps<typeof AIAssistantSelector>> = {},
-  storeOverrides: Record<string, unknown> = {},
+  storeOverrides: Record<string, unknown> = {}
 ) {
   const store = createTestStore(storeOverrides);
   return {
@@ -219,8 +293,17 @@ function renderSelector(
 // ── Tests ────────────────────────────────────────────────────────
 
 describe('AIAssistantSelector', () => {
+  beforeAll(() => {
+    vi.spyOn(console, 'error').mockImplementation(() => {});
+    vi.spyOn(console, 'warn').mockImplementation(() => {});
+  });
+
   beforeEach(() => {
     vi.clearAllMocks();
+  });
+
+  afterAll(() => {
+    vi.restoreAllMocks();
   });
 
   describe('Rendering', () => {
@@ -231,9 +314,16 @@ describe('AIAssistantSelector', () => {
     });
 
     it('returns null when no current assistant is selected', () => {
-      const { container } = renderSelector({}, {
-        ui: { selectedAssistant: 'nonexistent', dropdownOpen: false, filters: { department: 'all', search: '' } },
-      });
+      const { container } = renderSelector(
+        {},
+        {
+          ui: {
+            selectedAssistant: 'nonexistent',
+            dropdownOpen: false,
+            filters: { department: 'all', search: '' },
+          },
+        }
+      );
       expect(container.innerHTML).toBe('');
     });
   });
@@ -297,7 +387,9 @@ describe('AIAssistantSelector', () => {
     it('hides Favorites section when searching', () => {
       renderSelector();
       fireEvent.click(screen.getByTestId('CurrentAssistantDisplay'));
-      fireEvent.change(screen.getByPlaceholderText('Search AI assistants...'), { target: { value: 'test' } });
+      fireEvent.change(screen.getByPlaceholderText('Search AI assistants...'), {
+        target: { value: 'test' },
+      });
       expect(screen.queryByText('Favorites')).not.toBeInTheDocument();
     });
   });
@@ -312,7 +404,9 @@ describe('AIAssistantSelector', () => {
     it('hides Recently Used section when searching', () => {
       renderSelector();
       fireEvent.click(screen.getByTestId('CurrentAssistantDisplay'));
-      fireEvent.change(screen.getByPlaceholderText('Search AI assistants...'), { target: { value: 'xyz' } });
+      fireEvent.change(screen.getByPlaceholderText('Search AI assistants...'), {
+        target: { value: 'xyz' },
+      });
       expect(screen.queryByText('Recently Used')).not.toBeInTheDocument();
     });
   });

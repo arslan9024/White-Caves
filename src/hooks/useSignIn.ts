@@ -22,6 +22,7 @@ import {
   loginWithEmail as backendLogin,
   registerWithEmail as backendRegister,
   syncFirebaseUser,
+  completeSocialRegistration,
 } from '../services/authService';
 import { safeStorage } from '../utils/safeStorage';
 
@@ -32,6 +33,7 @@ interface PendingUser {
   email: string;
   name: string;
   photo?: string;
+  fromSocialProvider?: string;
 }
 
 interface ConfirmationResult {
@@ -173,29 +175,27 @@ export function useSignIn() {
         })
       );
       setSuccess('Sign in successful!');
-      const destination =
-        user.role === 'landlord'
-          ? '/landlord-portal'
-          : user.role === 'tenant'
-            ? '/tenant-portal'
-            : '/dashboard';
-      navTimerRef.current = setTimeout(() => navigate(destination), TIMING.NAVIGATION_DELAY);
+      navTimerRef.current = setTimeout(() => navigate('/dashboard'), TIMING.NAVIGATION_DELAY);
     },
     [dispatch, navigate]
   );
 
   const handleSignUpSuccess = useCallback(
-    (user: {
-      id: string;
-      email: string | null;
-      name: string | null;
-      photoUrl?: string | null;
-    }): void => {
+    (
+      user: {
+        id: string;
+        email: string | null;
+        name: string | null;
+        photoUrl?: string | null;
+      },
+      options?: { fromSocialProvider?: string }
+    ): void => {
       setPendingUser({
         id: user.id,
         email: user.email || '',
         name: user.name || fullName,
         photo: user.photoUrl || undefined,
+        fromSocialProvider: options?.fromSocialProvider,
       });
       setStep(2);
     },
@@ -223,33 +223,38 @@ export function useSignIn() {
     setError('');
 
     const status = selectedCategory === 'staff' ? 'pending' : 'active';
+    const isSocialRegistration = Boolean(pendingUser?.fromSocialProvider);
 
     try {
-      const response = await backendRegister(
-        email,
-        password,
-        fullName || undefined,
-        undefined,
-        undefined,
-        selectedCategory,
-        selectedRole
-      );
+      const response = isSocialRegistration
+        ? await completeSocialRegistration(selectedCategory, selectedRole)
+        : await backendRegister(
+            email,
+            password,
+            fullName || undefined,
+            undefined,
+            undefined,
+            selectedCategory,
+            selectedRole
+          );
 
       if (!response?.data?.user) {
         throw new Error('Invalid response: missing user data');
       }
 
       const backendUser = response.data.user;
+      const resolvedRole =
+        selectedCategory === 'staff' && !isSocialRegistration ? selectedRole : backendUser.role;
       dispatch(
         setUser({
           id: backendUser.id,
           email: backendUser.email,
           name: backendUser.name || undefined,
-          role: selectedCategory === 'staff' ? selectedRole : backendUser.role,
+          role: resolvedRole,
           status,
         })
       );
-      saveUserData(selectedCategory, selectedRole, status);
+      saveUserData(selectedCategory, resolvedRole, status);
 
       if (selectedCategory === 'staff') {
         setSuccess('Registration submitted! Your account is pending approval.');
@@ -259,10 +264,7 @@ export function useSignIn() {
         );
       } else {
         setSuccess('Account created successfully!');
-        navTimerRef.current = setTimeout(
-          () => navigate(`/${selectedRole}/dashboard`),
-          TIMING.NAVIGATION_DELAY
-        );
+        navTimerRef.current = setTimeout(() => navigate('/dashboard'), TIMING.NAVIGATION_DELAY);
       }
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : 'Registration failed';
@@ -270,7 +272,17 @@ export function useSignIn() {
     } finally {
       setLoading(false);
     }
-  }, [selectedRole, selectedCategory, email, password, fullName, dispatch, navigate, saveUserData]);
+  }, [
+    selectedRole,
+    selectedCategory,
+    email,
+    password,
+    fullName,
+    dispatch,
+    navigate,
+    saveUserData,
+    pendingUser,
+  ]);
 
   // ── Social auth ────────────────────────────────────────────────
 
@@ -302,14 +314,11 @@ export function useSignIn() {
           const backendUser = backendResponse.data.user;
 
           if (mode === 'signup') {
-            handleSignUpSuccess(backendUser);
+            handleSignUpSuccess(backendUser, { fromSocialProvider: provider });
           } else {
             handleSignInSuccess(backendUser);
           }
-        } catch (syncError: unknown) {
-          if (mode === 'signin') {
-            throw syncError;
-          }
+        } catch {
           const firebaseUser = result.user;
           const fallbackUser = {
             id: firebaseUser.uid,
@@ -317,8 +326,9 @@ export function useSignIn() {
             name: firebaseUser.displayName,
           };
           if (mode === 'signup') {
-            handleSignUpSuccess(fallbackUser);
+            handleSignUpSuccess(fallbackUser, { fromSocialProvider: provider });
           } else {
+            setSuccess('Signed in with Firebase session. Backend sync will retry automatically.');
             handleSignInSuccess(fallbackUser);
           }
         }
@@ -338,6 +348,8 @@ export function useSignIn() {
       e.preventDefault();
       setLoading(true);
       setError('');
+
+      const normalizedEmail = email.trim().toLowerCase();
 
       if (mode === 'signup' && password !== confirmPassword) {
         setError('Passwords do not match');
@@ -362,11 +374,11 @@ export function useSignIn() {
         if (mode === 'signup') {
           handleSignUpSuccess({
             id: 'pending-signup',
-            email,
-            name: fullName || email,
+            email: normalizedEmail,
+            name: fullName || normalizedEmail,
           });
         } else {
-          const response = await backendLogin(email, password);
+          const response = await backendLogin(normalizedEmail, password);
           if (!response?.data?.user) throw new Error('Invalid response: missing user data');
           handleSignInSuccess(response.data.user);
         }

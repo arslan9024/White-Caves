@@ -23,6 +23,7 @@ import PublicLayout from '../components/layout/PublicLayout';
 import PageHeroBanner from '../components/layout/PageHeroBanner';
 import WhatsAppButton from '../components/WhatsAppButton';
 import { useToast } from '../components/Toast';
+import { authFetch } from '../utils/authFetch';
 import './ServicesPage.css';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -186,7 +187,7 @@ const ServicesPage: FC = () => {
 
     setIsSubmitting(true);
     try {
-      const response = await fetch('/api/contact', {
+      const response = await authFetch('/api/contact', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

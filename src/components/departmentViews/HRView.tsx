@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 import React from 'react';
 import BaseDepartmentView from './BaseDepartmentView';
 import { getDepartmentConfig } from '../../config/departmentViewConfigs';
@@ -12,27 +11,27 @@ import { DataCard } from '../shared/dashboard';
 interface HRViewProps {
   serviceName?: string;
   subitemId?: string;
-  departmentData?: any;
+  departmentData?: Record<string, unknown>;
 }
 
-const HRView: React.FC<HRViewProps> = ({ serviceName = 'employee-management', subitemId, departmentData }) => {
+const HRView: React.FC<HRViewProps> = ({
+  serviceName = 'employee-management',
+  subitemId,
+  departmentData,
+}) => {
   const config = getDepartmentConfig('HR')!;
 
-  const renderContent = (data: any) => {
+  const renderContent = (data: Record<string, unknown>) => {
+    const getCount = (value: unknown): number => (Array.isArray(value) ? value.length : 0);
+
     if (!subitemId && serviceName === 'employee-management') {
       return (
         <>
-          <DataCard 
-            title="Employee Directory"
-            subtitle="All employees and their information"
-          >
-            Employees: {JSON.stringify(data?.employees?.length || 0)} items
+          <DataCard title="Employee Directory" subtitle="All employees and their information">
+            Employees: {JSON.stringify(getCount(data?.employees))} items
           </DataCard>
-          <DataCard 
-            title="Open Positions"
-            subtitle="Active job openings and applications"
-          >
-            Positions: {JSON.stringify(data?.openPositions?.length || 0)} items
+          <DataCard title="Open Positions" subtitle="Active job openings and applications">
+            Positions: {JSON.stringify(getCount(data?.openPositions))} items
           </DataCard>
         </>
       );
@@ -41,7 +40,7 @@ const HRView: React.FC<HRViewProps> = ({ serviceName = 'employee-management', su
     if (subitemId === 'employee-directory') {
       return (
         <DataCard title="Employee Directory" subtitle="All employees">
-          Employees: {JSON.stringify(data?.employees?.length || 0)} items
+          Employees: {JSON.stringify(getCount(data?.employees))} items
         </DataCard>
       );
     }
@@ -49,7 +48,7 @@ const HRView: React.FC<HRViewProps> = ({ serviceName = 'employee-management', su
     if (subitemId === 'recruitment') {
       return (
         <DataCard title="Recruitment" subtitle="Job openings and candidates">
-          Positions: {JSON.stringify(data?.openPositions?.length || 0)} items
+          Positions: {JSON.stringify(getCount(data?.openPositions))} items
         </DataCard>
       );
     }
@@ -57,7 +56,7 @@ const HRView: React.FC<HRViewProps> = ({ serviceName = 'employee-management', su
     if (subitemId === 'payroll') {
       return (
         <DataCard title="Payroll" subtitle="Salary and compensation management">
-          Payroll: {JSON.stringify(data?.payroll?.length || 0)} items
+          Payroll: {JSON.stringify(getCount(data?.payroll))} items
         </DataCard>
       );
     }
@@ -65,7 +64,7 @@ const HRView: React.FC<HRViewProps> = ({ serviceName = 'employee-management', su
     if (subitemId === 'performance-reviews') {
       return (
         <DataCard title="Performance Reviews" subtitle="Employee evaluations and feedback">
-          Reviews: {JSON.stringify(data?.performanceReviews?.length || 0)} items
+          Reviews: {JSON.stringify(getCount(data?.performanceReviews))} items
         </DataCard>
       );
     }
@@ -85,4 +84,3 @@ const HRView: React.FC<HRViewProps> = ({ serviceName = 'employee-management', su
 };
 
 export default HRView;
-

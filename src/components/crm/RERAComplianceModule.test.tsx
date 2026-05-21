@@ -12,7 +12,10 @@ import React from 'react';
 // ── Mocks ────────────────────────────────────────────────────────
 vi.mock('../../utils/logger', () => ({
   createLogger: () => ({
-    info: vi.fn(), warn: vi.fn(), error: vi.fn(), debug: vi.fn(),
+    info: vi.fn(),
+    warn: vi.fn(),
+    error: vi.fn(),
+    debug: vi.fn(),
   }),
 }));
 
@@ -33,13 +36,34 @@ const DEFAULT_PROPS = {
   user: { id: 'u1', name: 'Admin', email: 'admin@wc.ae' },
 };
 
+const MOCK_AGENTS = [
+  {
+    id: 'a1',
+    name: 'Ahmed Al-Mansouri',
+    reraNumber: 'RERA-123456',
+    status: 'valid',
+    expiryDate: '2026-12-31',
+  },
+  {
+    id: 'a2',
+    name: 'Fatima Al-Naqbi',
+    reraNumber: 'RERA-234567',
+    status: 'expired',
+    expiryDate: '2024-01-01',
+  },
+  { id: 'a3', name: 'Omar Al-Suwaidi', reraNumber: null, status: 'pending', expiryDate: null },
+];
+
 // ═══════════════════════════════════════════════════════════════════
 
 describe('RERAComplianceModule', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    // Default: API fails → falls back to mock data
-    mockAuthFetch.mockResolvedValue({ ok: false });
+    // Default: API succeeds with stable fixture data
+    mockAuthFetch.mockResolvedValue({
+      ok: true,
+      json: () => Promise.resolve({ agents: MOCK_AGENTS }),
+    });
   });
 
   // ── Render & Header ─────────────────────────────────────────────
@@ -149,11 +173,18 @@ describe('RERAComplianceModule', () => {
   it('uses API data when fetch succeeds', async () => {
     mockAuthFetch.mockResolvedValueOnce({
       ok: true,
-      json: () => Promise.resolve({
-        agents: [
-          { id: 'a1', name: 'API Agent', reraNumber: 'RERA-999', status: 'valid', expiryDate: '2026-12-31' },
-        ],
-      }),
+      json: () =>
+        Promise.resolve({
+          agents: [
+            {
+              id: 'a1',
+              name: 'API Agent',
+              reraNumber: 'RERA-999',
+              status: 'valid',
+              expiryDate: '2026-12-31',
+            },
+          ],
+        }),
     });
 
     render(<RERAComplianceModule {...DEFAULT_PROPS} />);
@@ -171,9 +202,8 @@ describe('RERAComplianceModule', () => {
     render(<RERAComplianceModule {...DEFAULT_PROPS} />);
 
     await waitFor(() => {
-      // Falls back to 2-agent mock in catch block
-      expect(screen.getByText('Ahmed Al-Mansouri')).toBeDefined();
-      expect(screen.getByText('Fatima Al-Naqbi')).toBeDefined();
+      expect(screen.getByText('Unable to connect to the server.')).toBeDefined();
+      expect(screen.getByText('Retry')).toBeDefined();
     });
   });
 
@@ -228,7 +258,11 @@ describe('RERAComplianceModule', () => {
 
     fireEvent.click(screen.getByText('Register License'));
 
-    const nameInput = screen.getByPlaceholderText('e.g., RERA-123456')?.previousElementSibling?.parentElement?.querySelector('input[type="text"]') as HTMLInputElement;
+    const nameInput = screen
+      .getByPlaceholderText('e.g., RERA-123456')
+      ?.previousElementSibling?.parentElement?.querySelector(
+        'input[type="text"]'
+      ) as HTMLInputElement;
     // Use requireds to find the inputs
     const allInputs = screen.getAllByRole('textbox');
     expect(allInputs.length).toBeGreaterThanOrEqual(1);
@@ -236,9 +270,9 @@ describe('RERAComplianceModule', () => {
 
   it('submits registration form successfully', async () => {
     mockAuthFetch
-      .mockResolvedValueOnce({ ok: false }) // initial fetch
-      .mockResolvedValueOnce({ ok: true })  // registration
-      .mockResolvedValueOnce({ ok: false }); // refetch
+      .mockResolvedValueOnce({ ok: true, json: () => Promise.resolve({ agents: MOCK_AGENTS }) }) // initial fetch
+      .mockResolvedValueOnce({ ok: true }) // registration
+      .mockResolvedValueOnce({ ok: true, json: () => Promise.resolve({ agents: MOCK_AGENTS }) }); // refetch
 
     render(<RERAComplianceModule {...DEFAULT_PROPS} />);
 
@@ -258,23 +292,26 @@ describe('RERAComplianceModule', () => {
     if (dateInput) fireEvent.change(dateInput, { target: { value: '2027-01-01' } });
 
     // Submit form
-    const submitButton = screen.getAllByText('Register RERA License').find(
-      el => el.tagName === 'BUTTON' && el.getAttribute('type') === 'submit'
-    );
+    const submitButton = screen
+      .getAllByText('Register RERA License')
+      .find(el => el.tagName === 'BUTTON' && el.getAttribute('type') === 'submit');
     if (submitButton) {
       fireEvent.click(submitButton);
 
       await waitFor(() => {
-        expect(mockAuthFetch).toHaveBeenCalledWith('/api/rera/register', expect.objectContaining({
-          method: 'POST',
-        }));
+        expect(mockAuthFetch).toHaveBeenCalledWith(
+          '/api/rera/register',
+          expect.objectContaining({
+            method: 'POST',
+          })
+        );
       });
     }
   });
 
   it('shows error toast on failed registration', async () => {
     mockAuthFetch
-      .mockResolvedValueOnce({ ok: false }) // initial fetch
+      .mockResolvedValueOnce({ ok: true, json: () => Promise.resolve({ agents: MOCK_AGENTS }) }) // initial fetch
       .mockRejectedValueOnce(new Error('Registration failed')); // registration fails
 
     render(<RERAComplianceModule {...DEFAULT_PROPS} />);
@@ -292,9 +329,9 @@ describe('RERAComplianceModule', () => {
     const dateInput = document.querySelector('input[type="date"]');
     if (dateInput) fireEvent.change(dateInput, { target: { value: '2027-01-01' } });
 
-    const submitButton = screen.getAllByText('Register RERA License').find(
-      el => el.tagName === 'BUTTON' && el.getAttribute('type') === 'submit'
-    );
+    const submitButton = screen
+      .getAllByText('Register RERA License')
+      .find(el => el.tagName === 'BUTTON' && el.getAttribute('type') === 'submit');
     if (submitButton) {
       fireEvent.click(submitButton);
 
@@ -330,7 +367,12 @@ describe('RERAComplianceModule', () => {
   it('does not update state after unmount', async () => {
     // Slow response that will resolve after unmount
     let resolvePromise: (value: unknown) => void;
-    mockAuthFetch.mockImplementation(() => new Promise(r => { resolvePromise = r; }));
+    mockAuthFetch.mockImplementation(
+      () =>
+        new Promise(r => {
+          resolvePromise = r;
+        })
+    );
 
     const { unmount } = render(<RERAComplianceModule {...DEFAULT_PROPS} />);
     unmount();

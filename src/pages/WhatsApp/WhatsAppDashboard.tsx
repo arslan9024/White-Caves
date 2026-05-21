@@ -1,6 +1,6 @@
 /**
  * WhatsApp Dashboard Page
- * 
+ *
  * Main page for WhatsApp integration
  * Integrates AccountLink, ChatInterface, ConversationList, and Analytics
  */
@@ -82,8 +82,12 @@ const LoadingSpinner = styled.div`
   animation: spin 1s linear infinite;
 
   @keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
+    0% {
+      transform: rotate(0deg);
+    }
+    100% {
+      transform: rotate(360deg);
+    }
   }
 `;
 
@@ -98,7 +102,9 @@ interface SelectedConversation {
 export const WhatsAppDashboard: React.FC = () => {
   const { accounts, currentAccount, isLoading } = useWhatsAppIntegration();
   const [currentView, setCurrentView] = useState<ViewType>('chat');
-  const [selectedConversation, setSelectedConversation] = useState<SelectedConversation | null>(null);
+  const [selectedConversation, setSelectedConversation] = useState<SelectedConversation | null>(
+    null
+  );
   const [showAccountLink, setShowAccountLink] = useState(accounts.length === 0);
 
   if (isLoading && !currentAccount) {
@@ -164,11 +170,11 @@ export const WhatsAppDashboard: React.FC = () => {
             <ContentArea>
               {selectedConversation ? (
                 <ChatInterface
-                  accountId={currentAccount.accountId}
                   conversationId={selectedConversation.conversationId}
-                  recipientNumber={selectedConversation.recipientNumber}
-                  recipientName={selectedConversation.recipientName}
-                  onBack={() => setSelectedConversation(null)}
+                  contactNumber={selectedConversation.recipientNumber}
+                  contactName={selectedConversation.recipientName}
+                  messages={[]}
+                  onSendMessage={async () => undefined}
                 />
               ) : (
                 <div
@@ -224,7 +230,8 @@ export const WhatsAppDashboard: React.FC = () => {
                 }}
               >
                 <p>
-                  <strong>Name:</strong> {currentAccount.accountId || currentAccount.phoneNumber || 'Unnamed'}
+                  <strong>Name:</strong>{' '}
+                  {currentAccount.accountId || currentAccount.phoneNumber || 'Unnamed'}
                 </p>
                 <p>
                   <strong>Business Name:</strong> {'N/A'}

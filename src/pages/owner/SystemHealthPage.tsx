@@ -20,8 +20,10 @@ const SystemHealthPage: FC = () => {
   const user = useSelector((state: RootState) => state.user.currentUser);
   const [healthStatus, setHealthStatus] = useState<HealthStatus[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
-  const [overallStatus, setOverallStatus] = useState<'operational' | 'degraded' | 'down'>('operational');
-  const [fetchError, setFetchError] = useState<string | null>(null);
+  const [overallStatus, setOverallStatus] = useState<'operational' | 'degraded' | 'down'>(
+    'operational'
+  );
+  const [_fetchError, setFetchError] = useState<string | null>(null);
 
   useEffect(() => {
     if (!user || (user.role !== 'owner' && user.role !== 'admin')) {
@@ -34,7 +36,10 @@ const SystemHealthPage: FC = () => {
     const doFetch = () => fetchSystemHealth(controller.signal);
     doFetch();
     const interval = setInterval(doFetch, 60000);
-    return () => { clearInterval(interval); controller.abort(); };
+    return () => {
+      clearInterval(interval);
+      controller.abort();
+    };
   }, []);
 
   const fetchSystemHealth = async (signal?: AbortSignal): Promise<void> => {
@@ -62,7 +67,7 @@ const SystemHealthPage: FC = () => {
   };
 
   const getStatusColor = (status: string): string => {
-    switch(status) {
+    switch (status) {
       case 'healthy':
         return '#4CAF50';
       case 'degraded':
@@ -75,7 +80,7 @@ const SystemHealthPage: FC = () => {
   };
 
   const getStatusIcon = (status: string): string => {
-    switch(status) {
+    switch (status) {
       case 'healthy':
         return '✓';
       case 'degraded':
@@ -112,7 +117,7 @@ const SystemHealthPage: FC = () => {
         ) : (
           <div className="sh-services-grid">
             {healthStatus.length > 0 ? (
-              healthStatus.map((service) => (
+              healthStatus.map(service => (
                 <div
                   key={service.service}
                   className={`sh-service-card sh-service-${service.status}`}
