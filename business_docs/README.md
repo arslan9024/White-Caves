@@ -44,6 +44,8 @@ business_docs/
 ├── 07_business_model/        # Revenue model + projections + Business Model Canvas
 ├── 08_market_research/       # Dubai market analysis, portals, regulatory framework
 ├── 09_crm_features/          # Feature specs (CRM, AI CRUD, UI components)
+├── 09_user_roles_permissions/ # User roles, permissions, RBAC policies
+├── 10_design_system/         # Design tokens, component library, brand guidelines
 ├── 10_security/              # Security policy, KYC/AML, PDPL compliance
 ├── 11_seo/                   # SEO strategy, keywords, content calendar
 ├── 12_srs/                   # Software Requirements Specification + Design Document

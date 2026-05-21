@@ -9,14 +9,14 @@
 
 ## Prerequisites
 
-| Tool | Required Version | Install |
-|------|-----------------|---------|
-| Node.js | 20.x LTS | https://nodejs.org |
-| npm | 9.x+ (bundled with Node 20) | Bundled with Node.js |
-| Git | Any recent | https://git-scm.com |
-| VS Code | Latest | https://code.visualstudio.com |
-| MongoDB Compass | Latest (optional) | https://mongodb.com/compass |
-| Postman / Insomnia | Latest (optional) | For API testing |
+| Tool               | Required Version             | Install                       |
+| ------------------ | ---------------------------- | ----------------------------- |
+| Node.js            | 20.x LTS                     | https://nodejs.org            |
+| npm                | 10.x+ (bundled with Node 20) | Bundled with Node.js          |
+| Git                | Any recent                   | https://git-scm.com           |
+| VS Code            | Latest                       | https://code.visualstudio.com |
+| MongoDB Compass    | Latest (optional)            | https://mongodb.com/compass   |
+| Postman / Insomnia | Latest (optional)            | For API testing               |
 
 ---
 
@@ -78,7 +78,7 @@ STRIPE_SECRET_KEY=
 EXCHANGE_RATE_API_KEY=
 ```
 
-> **Note:** Ask the lead developer to share the `.env.example` file and development credential values.
+> **Note:** `.env.example` is already in the repository root — use it as a template with `cp .env.example .env`. Contact the lead developer to obtain the actual **secret values** (API keys, Firebase credentials, JWT secret, etc.) via your team's password manager or secrets vault.
 
 ---
 
@@ -109,12 +109,15 @@ This runs `prisma/seed.ts` which creates sample users, properties, and leads.
 The project uses two concurrent dev servers: Vite (frontend) and tsx (backend).
 
 ```bash
-npm run dev
+npm run dev:all
 ```
 
-This command starts:
+This command starts both servers concurrently:
+
 - **Frontend (Vite):** http://localhost:5173 — hot module replacement enabled
 - **Backend (tsx watch):** http://localhost:3001 — auto-restarts on file changes
+
+> **Note:** `npm run dev` starts the **frontend only** (Vite). To start only the backend, use `npm run server`. Use `npm run dev:all` to run both servers together.
 
 ---
 
@@ -220,6 +223,7 @@ hotfix/<version>  → Emergency fixes. Branched from release tag.
 ```
 
 **Workflow:**
+
 1. Create feature branch from `main`
 2. Make changes + write/update tests
 3. Run `npm test` and `npm run lint` locally (must pass)
