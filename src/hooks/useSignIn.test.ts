@@ -347,6 +347,29 @@ describe('useSignIn — handleSocialAuth (integration)', () => {
       expect(mockSignInWithGoogle).toHaveBeenCalledTimes(2);
       expect(mockSyncFirebaseUser).toHaveBeenCalledTimes(2);
     });
+
+    it('clearSocialRecovery clears recovery metadata and sync error', async () => {
+      mockSignInWithGoogle.mockResolvedValue({ user: firebaseUser });
+      mockSyncFirebaseUser.mockRejectedValue(new Error('Backend unreachable'));
+      const { result } = renderHook(() => useSignIn(), { wrapper: createWrapper(store) });
+
+      await act(async () => {
+        await result.current.handleSocialAuth('google');
+      });
+
+      expect(result.current.socialSyncRecovery).toEqual({
+        provider: 'google',
+        reason: 'Backend unreachable',
+      });
+      expect(result.current.error).toContain('backend session setup failed');
+
+      act(() => {
+        result.current.clearSocialRecovery();
+      });
+
+      expect(result.current.socialSyncRecovery).toBeNull();
+      expect(result.current.error).toBe('');
+    });
   });
 
   describe('social signup completion', () => {

@@ -79,6 +79,12 @@ Ship login reliability fix now and prepare strict execution graph for profile/da
 - **Files:** `src/pages/auth/SignInPage.test.tsx`
 - **Status:** ✅ Completed (added regression assertion for error clearing on dismiss)
 
+### AUTH-08-009 — Hook contract: clearSocialRecovery resets state
+
+- Add hook-level regression coverage that `clearSocialRecovery()` clears both recovery metadata and sync error state.
+- **Files:** `src/hooks/useSignIn.test.ts`
+- **Status:** ✅ Completed (clearSocialRecovery contract assertion)
+
 ### DASH-08-005 — Dashboard profile completion guidance card
 
 - Add post-login profile completeness guidance with direct CTA to `/profile`.
@@ -106,3 +112,4 @@ Ship login reliability fix now and prepare strict execution graph for profile/da
 9. PROFILE-08-006 ✅
 10. AUTH-08-007 ✅
 11. AUTH-08-008 ✅
+12. AUTH-08-009 ✅
