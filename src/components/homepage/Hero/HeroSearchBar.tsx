@@ -212,10 +212,15 @@ const HeroSearchBar = memo(function HeroSearchBar() {
         sessionId: sessionStorage.getItem('wc_session_id') ?? undefined,
         searchedAt: new Date().toISOString(),
       })
-    ).then(() => {
-      // TASK-013: Gold toast — only appears after confirmed lead creation
-      toast.success('Your search has been saved — our team will be in touch! 🏡', 4000);
-    });
+    )
+      .unwrap()
+      .then(() => {
+        // TASK-013: Gold toast — only appears after confirmed lead creation
+        toast.success('Your search has been saved — our team will be in touch! 🏡', 4000);
+      })
+      .catch(() => {
+        toast.error('We saved your search locally, but CRM sync is retrying in the background.');
+      });
 
     navigate(queryString ? `/properties?${queryString}` : '/properties');
   }, [dispatch, navigate, toast, mode, location, propertyType, beds, priceRange]);

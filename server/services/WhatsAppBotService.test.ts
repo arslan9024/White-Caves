@@ -77,10 +77,27 @@ describe('WhatsAppBotService', () => {
 
   // ─── Constructor — production mode (no credentials) ───────────────
   describe('Constructor — production', () => {
-    it('throws when credentials are missing in production', async () => {
+    it('does NOT throw when credentials are missing in production by default', async () => {
       delete process.env.WHATSAPP_BOT_TOKEN;
+      delete process.env.WHATSAPP_ACCESS_TOKEN;
       delete process.env.WHATSAPP_PHONE_NUMBER_ID;
       process.env.NODE_ENV = 'production';
+      delete process.env.WHATSAPP_STRICT_REQUIRED;
+
+      const service = await importFresh();
+      expect(service).toBeDefined();
+      expect(service.getStats()).toMatchObject({
+        configured: false,
+        clientReady: false,
+      });
+    });
+
+    it('throws when strict runtime enforcement is enabled', async () => {
+      delete process.env.WHATSAPP_BOT_TOKEN;
+      delete process.env.WHATSAPP_ACCESS_TOKEN;
+      delete process.env.WHATSAPP_PHONE_NUMBER_ID;
+      process.env.NODE_ENV = 'production';
+      process.env.WHATSAPP_STRICT_REQUIRED = 'true';
 
       await expect(importFresh()).rejects.toThrow('CRITICAL');
     });

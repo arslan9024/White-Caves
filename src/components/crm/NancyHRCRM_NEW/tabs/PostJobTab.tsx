@@ -1,8 +1,10 @@
+import type { useHRData } from '../hooks/useHRData';
 import { JobPostComposer } from '../../shared';
 import { useToast } from '../../../Toast';
+import type { Job as HRJob } from '../data/jobs';
 
-// P1-8: Remove index signature so JobData is assignable to Partial<Job>
-interface JobData {
+// P1-8: Keep composer payload narrow and convert to the HR job model locally.
+interface ComposerJobData {
   title?: string;
   department?: string;
   location?: string;
@@ -10,7 +12,7 @@ interface JobData {
   status?: string;
   type?: string;
   salary?: string;
-  requirements?: string[];
+  requirements?: string;
 }
 
 interface PostedJob {
@@ -18,9 +20,7 @@ interface PostedJob {
   [key: string]: unknown;
 }
 
-interface PostJobState {
-  addJob: (jobData: JobData) => PostedJob;
-}
+type PostJobState = ReturnType<typeof useHRData>;
 
 interface PostJobTabProps {
   state: PostJobState;
@@ -30,8 +30,16 @@ export default function PostJobTab({ state }: PostJobTabProps) {
   const { addJob } = state;
   const toast = useToast();
 
-  const handlePostJob = (jobData: JobData) => {
-    const newJob = addJob(jobData);
+  const handlePostJob = (jobData: ComposerJobData) => {
+    const newJob = addJob({
+      ...jobData,
+      requirements: jobData.requirements
+        ? jobData.requirements
+            .split('\n')
+            .map(item => item.trim())
+            .filter(Boolean)
+        : [],
+    });
     toast.success(`Job posted successfully: ${newJob.title || 'Untitled job'}`);
   };
 
@@ -43,7 +51,7 @@ export default function PostJobTab({ state }: PostJobTabProps) {
       </div>
 
       <div className="post-job-form-container">
-        <JobPostComposer onPublish={(data: JobData, _platforms: string[]) => handlePostJob(data)} />
+        <JobPostComposer onPublish={(data, _platforms) => handlePostJob(data)} />
       </div>
     </div>
   );

@@ -12,6 +12,7 @@ import { rateLimiter } from './whatsappUtils.js';
 import { LINDA_ENABLED } from '../../config/env.js';
 import { logger } from '../../utils/logger.js';
 
+const db = prisma as any;
 const DISPATCHABLE_STATUSES = new Set(['draft', 'scheduled']);
 
 function applyTemplate(
@@ -52,7 +53,7 @@ async function getOrInitLindaForCampaigns() {
 }
 
 export async function dispatchLindaCampaign(campaignId: string) {
-  const campaign = await prisma.lindaBroadcastCampaign.findUnique({ where: { id: campaignId } });
+  const campaign = await db.lindaBroadcastCampaign.findUnique({ where: { id: campaignId } });
   if (!campaign) throw new Error('Campaign not found');
 
   if (!DISPATCHABLE_STATUSES.has(campaign.status)) {
@@ -69,7 +70,7 @@ export async function dispatchLindaCampaign(campaignId: string) {
     campaign.templateVars as Record<string, unknown> | null
   );
 
-  await prisma.lindaBroadcastCampaign.update({
+  await db.lindaBroadcastCampaign.update({
     where: { id: campaign.id },
     data: {
       status: 'running',
@@ -78,11 +79,11 @@ export async function dispatchLindaCampaign(campaignId: string) {
   });
 
   const recipients = (campaign.targetList || [])
-    .map(p => String(p).replace(/\D/g, ''))
+    .map((p: any) => String(p).replace(/\D/g, ''))
     .filter(Boolean);
 
   if (recipients.length === 0) {
-    await prisma.lindaBroadcastCampaign.update({
+    await db.lindaBroadcastCampaign.update({
       where: { id: campaign.id },
       data: {
         status: 'failed',
@@ -121,7 +122,7 @@ export async function dispatchLindaCampaign(campaignId: string) {
     `[LindaCampaignService] Dispatch complete campaign=${campaign.id} status=${status} sent=${sentCount} failed=${failedCount}`
   );
 
-  return prisma.lindaBroadcastCampaign.update({
+  return db.lindaBroadcastCampaign.update({
     where: { id: campaign.id },
     data: {
       status,
@@ -135,7 +136,7 @@ export async function dispatchLindaCampaign(campaignId: string) {
 
 export async function dispatchDueLindaCampaigns(limit = 20) {
   const now = new Date();
-  const dueCampaigns = await prisma.lindaBroadcastCampaign.findMany({
+  const dueCampaigns = await db.lindaBroadcastCampaign.findMany({
     where: {
       status: 'scheduled',
       scheduledAt: { lte: now },

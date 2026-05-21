@@ -69,9 +69,7 @@ export function useFavorites() {
   const filteredFavorites = useMemo(() => {
     if (!search) return allFavorites;
     return allFavorites.filter((f: FavoriteProperty) =>
-      [f.title, f.location].some(
-        field => field?.toLowerCase().includes(search.toLowerCase())
-      )
+      [f.title, f.location].some(field => field?.toLowerCase().includes(search.toLowerCase()))
     );
   }, [allFavorites, search]);
 
@@ -79,27 +77,40 @@ export function useFavorites() {
 
   const paginatedFavorites = filteredFavorites.slice(
     (currentPage - 1) * ITEMS_PER_PAGE,
-    currentPage * ITEMS_PER_PAGE,
+    currentPage * ITEMS_PER_PAGE
   );
 
   // ─── Actions ────────────────────────────────────────────────────
 
-  const handleRemoveFavorite = useCallback((propertyId: string | number) => {
-    dispatch(removeFavoriteAPI(String(propertyId))).then((result) => {
-      if (removeFavoriteAPI.fulfilled.match(result)) {
-        dispatch(addActivity({
-          id: Date.now(),
-          type: 'favorite',
-          description: 'Property removed from favorites',
-          timestamp: new Date().toISOString(),
-        }));
-      }
-    }).catch((error: unknown) => {
-      log.error('Failed to remove favorite:', error instanceof Error ? error.message : String(error));
-    });
-  }, [dispatch]);
+  const handleRemoveFavorite = useCallback(
+    (propertyId: string | number) => {
+      dispatch(removeFavoriteAPI(String(propertyId)))
+        .then((result: any) => {
+          if (removeFavoriteAPI.fulfilled.match(result)) {
+            dispatch(
+              addActivity({
+                id: Date.now(),
+                type: 'favorite',
+                description: 'Property removed from favorites',
+                timestamp: new Date().toISOString(),
+              })
+            );
+          }
+        })
+        .catch((error: unknown) => {
+          log.error(
+            'Failed to remove favorite:',
+            error instanceof Error ? error.message : String(error)
+          );
+        });
+    },
+    [dispatch]
+  );
 
-  const formatCurrency = useCallback((amount: number | undefined) => formatCurrencyUtil(amount), []);
+  const formatCurrency = useCallback(
+    (amount: number | undefined) => formatCurrencyUtil(amount),
+    []
+  );
 
   const handleSearchChange = useCallback((value: string) => {
     setSearch(value);
@@ -116,16 +127,23 @@ export function useFavorites() {
 
   return {
     // Data
-    allFavorites, filteredFavorites, paginatedFavorites, totalPages,
-    loading, error,
+    allFavorites,
+    filteredFavorites,
+    paginatedFavorites,
+    totalPages,
+    loading,
+    error,
     // State
-    search, currentPage,
+    search,
+    currentPage,
     // Page constants
     ITEMS_PER_PAGE,
     // Actions
     handleRemoveFavorite,
     handleSearchChange,
-    setCurrentPage, retryFetch, goBack,
+    setCurrentPage,
+    retryFetch,
+    goBack,
     // Formatters
     formatCurrency,
   };

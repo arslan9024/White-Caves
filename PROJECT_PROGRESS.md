@@ -2,8 +2,8 @@
 
 > **Agency:** White Caves Global Agency
 > **Orchestrator:** @Ada (Chief Architect)
-> **Last Updated:** 2026-05-17
-> **Policy Mode:** 60% Readiness Threshold + policy-driven gating (Governance V2 active)
+> **Last Updated:** May 20, 2026
+> **Policy Mode:** Dual-threshold readiness (60% unlock, 90% target) + policy-driven gating (Governance V2 active)
 > **Daily Report:** `PROJECT_PROGRESS_REPORT.md`
 
 ---
@@ -12,9 +12,7 @@
 
 - Canonical roadmap: **[plans/MASTER_PLAN.md](plans/MASTER_PLAN.md)**
 - Active queue: **[plans/PENDING_TASKS_ONLY.md](plans/PENDING_TASKS_ONLY.md)**
-- Last Updated (ISO): 2026-05-17
-
-
+- Last Updated (ISO): 2026-05-20
 
 > Premium usage is allowed **only** for senior coders/designers **after** @Ada declares:
 > `@Ada — Context Ready (60% Readiness) — Coding Phase Approved`
@@ -76,6 +74,12 @@
 | May 16, 2026 | @Mira + @Lea + @Katherine           | Wave 04 W4-007 baseline delivered: unified compliance queue feed endpoint added (`GET /api/compliance/queues`) aggregating permit issues + pending KYC docs + open AML alerts for dashboard consumption, with focused queue tests and access guard checks green (37/37 ✅) and build pass ✅                                                                                        | 1             |
 | May 16, 2026 | @Mira + @Timnit + @Katherine        | Wave 04 W4-005 hardening: added dedicated AML adapter unit suite (`server/services/compliance/__tests__/amlAdapter.test.ts`) covering low/high-risk scoring, flag generation, and 100-score cap; focused verification green (41/41 targeted tests ✅) with lint/build pass ✅                                                                                                       | 1             |
 | May 16, 2026 | @Mira + @Sofia + @Katherine         | Wave 04 W4-006 hardening: consent governance audit trail expanded with explicit revoke/delete compliance events (`pdpl_consent_revoked`, `pdpl_consent_deleted`) and verified assertions in route tests; focused verification green (41/41 targeted tests ✅) with lint/build pass ✅                                                                                               | 1             |
+| May 20, 2026 | @Mira + @Katherine                  | Post-closure stability verification: `npm run quality:quick` revalidated on latest runtime/deploy baseline (lint ✅, build ✅, ops tests 11/11 ✅) with no new regressions                                                                                                                                                                                                          | 0             |
+| May 20, 2026 | @Mira + @Katherine                  | Notification transport wave: added webhook-backed optional push dispatch in `server/notifications/notification.service.ts` with local fallback and focused regression tests                                                                                                                                                                                                         | 0             |
+| May 20, 2026 | @Mira + @Katherine                  | Contracts signing wave: `POST /api/contracts/:id/request-signature` now sends a branded signing-link email via tracked email service; focused route regression test added                                                                                                                                                                                                           | 0             |
+| May 20, 2026 | @Mira + @Katherine                  | Signature service wave: `SignatureService` now sends branded signing-request and reminder emails via tracked email service; focused service regression test added                                                                                                                                                                                                                   | 0             |
+| May 20, 2026 | @Mira + @Katherine                  | Import history dashboard wave: mounted `importHistory` runtime routes, aligned `/api/inventory/import/history` path contract used by frontend, and exposed real `GET /api/admin/dashboard` collection stats with focused route regression tests                                                                                                                                     | 0             |
+| May 20, 2026 | @Mira + @Katherine                  | Import history resilience wave: standardized `/api/inventory/import/session/:sessionId/errors` and JSON report payload to source `importErrors` with legacy fallback, backed by focused route tests (4/4 ✅)                                                                                                                                                                        | 0             |
 
 ---
 
@@ -135,7 +139,7 @@
 - [x] Homepage conversion Step 2 implemented (leasing-first hero CTA + 4 conversion events instrumented)
 - [x] **Phase 33 Step 3 COMPLETE**: Leasing continuity E2E spec (18/18 ✅ Chromium+Firefox+WebKit — API mocked, hero/search/whatsapp/form/role-route lifecycle covered)
 - [x] **Phase 34 COMPLETE**: `?mode=rent/buy` URL param wired to Properties page purpose filter — `usePropertyBrowser` + `PropertyFilterPanel` + 3 new tests (7/7 ✅) — leasing conversion funnel end-to-end complete
-- [ ] Gate pass (60% readiness + policy-driven evidence + @Ada approval) before implementation
+- [x] Gate pass (60% readiness + policy-driven evidence + @Ada approval) before implementation (approved May 16, 2026; implementation executed)
 
 ### MILESTONE-GOV-1000
 
@@ -148,8 +152,8 @@
 - [x] Collaboration mesh and FEEDS/CONSUMES handoff protocol
 - [x] Evidence packet at >=60% with business rules, API contract, data schema, and test scenario
 - [x] Readiness score packet at >=60% with evidence
-- [ ] Daily quota plan logged before premium coding
-- [ ] Mandatory wave artifact bundle present in `plans/waves/` for each premium wave
+- [x] Daily quota plan logged before premium coding
+- [x] Mandatory wave artifact bundle present in `plans/waves/` for each premium wave
 
 ### MILESTONE-11-WAVE-PROGRAM
 
@@ -179,7 +183,49 @@
 - [x] Wave 04 PDPL consent baseline: consent create/revoke/export/delete endpoints with guarded access
 - [x] Wave 04 PDPL hardening baseline: revoke/delete audit events now logged for consent lifecycle actions
 - [x] Wave 04 queue baseline: unified compliance queue feed endpoint for permit/KYC/AML dashboard cards
-- [ ] Continue Wave 03 and Wave 04 implementation backlog execution
+- [x] Wave 04 permit monitoring automation: daily `startPermitAlertScheduler()` snapshot logging added and `/api/compliance/permit-alerts` refactored to shared service (`server/services/compliance/permitAlertScheduler.ts`)
+- [x] Wave 04 permit enforcement automation: daily `startPropertyPermitEnforcementScheduler()` now auto-unpublishes `available` listings missing required permit fields (`municipalityNumber`, `buildingPermitNumber`) to `off_market` with compliance activity trail
+- [x] Wave 04 permit register operations path: added `GET /api/compliance/permits` and `PATCH /api/compliance/permits/:propertyId` for manager-level permit review/update with guardrails for `available` listings
+- [x] Wave 04 permit enforcement control path: added manager-only `POST /api/compliance/permits/enforcement-run` to trigger dry-run/live auto-unpublish checks with compliance activity logging
+- [x] Wave 04 permit enforcement observability path: added `GET /api/compliance/permits/enforcement-history` for finance/manager audit visibility of dry/live enforcement runs
+- [x] Wave 04 scheduler reliability hardening: permit enforcement scheduler now uses overlap-safe tick runner (`runPropertyPermitEnforcementTick`) to skip concurrent runs and prevent stacked executions
+- [x] Wave 04 scheduler reliability hardening: permit alert scheduler now uses overlap-safe tick runner (`runPermitAlertSchedulerTick`) with dedicated unit coverage to prevent stacked executions
+- [x] Wave 04 scheduler reliability hardening: RERA BRN expiry scheduler now uses overlap-safe tick runner (`runRERAExpirySchedulerTick`) with dedicated scheduler unit coverage
+- [x] Wave 04 BRN operability path: manual BRN checks now persist `brn_manual_check` audit events and expose `GET /api/compliance/brn-check/history` for manager/finance visibility
+- [x] Continue Wave 03 and Wave 04 implementation backlog execution (implementation + regression stabilization completed; latest full suite green 52/52 on May 20, 2026)
+
+### MILESTONE-PHASE-27
+
+**Subagent Next-Level Upgrade — 90% Readiness + Full-Team Collaboration**
+
+**Status:** 🔨 PLANNED (May 18, 2026)
+
+- [x] Phase 27 execution plan created (`plans/PHASE_27_SUBAGENT_NEXT_LEVEL_90_READINESS.md`)
+- [x] Pending tracker linked to Phase 27 (`plans/PENDING_TASKS_ONLY.md`)
+- [x] Policy metadata extended for dual-threshold model (`scripts/orchestrator/policy.json`)
+- [x] Run tracker sync pass across `AGENTS.md`, `PROJECT_PROGRESS.md`, `DAILY_MILESTONE_TRACKER.md`, and `plans/PENDING_TASKS_ONLY.md`
+- [x] Introduce FEEDS_ACK audit command and daily target90 readiness check command
+
+### MILESTONE-NPLUS1-6-CLOSURE
+
+**N+1 to N+6 Combined Completion Verification (May 19, 2026)**
+
+**Status:** ✅ VERIFIED COMPLETE
+
+- [x] Canonical tracker reconciliation completed (`plans/PENDING_TASKS_ONLY.md`)
+- [x] Type safety verification passed (`npm run typecheck`)
+- [x] Lint verification passed (`npm run lint`)
+- [x] Tenant portal parity regression pack passed (5 files, 36 tests)
+
+### MILESTONE-NEXT-WAVE-02
+
+**Tracker Governance Closure (May 19, 2026)**
+
+**Status:** ✅ COMPLETE
+
+- [x] Archive-rule enforcement executed for legacy `plans/SESSION_*` and `plans/PHASE_2_*` docs (moved to `archives/plans/superseded/`)
+- [x] Pending queue reconciled and status drift removed across active trackers
+- [x] Phase 26 Workstream E advisory explicitly deferred with owner/date (`@Margaret`, target `2026-05-23`)
 
 ### MILESTONE-PHASE-2
 
@@ -196,11 +242,11 @@
 
 **Phase 3 — CRM Superuser Full Wiring**
 
-**Status:** 📋 BLOCKED UNTIL GATE PASS
+**Status:** ✅ SUPERSEDED / UNBLOCKED (Governance V2)
 
-- [ ] 1000% prerequisite docs complete
-- [ ] Readiness score >=92% passed
-- [ ] @Ada approval declaration issued
+- [x] Legacy 1000% prerequisite-doc gate superseded by Governance V2 fast-track model (Rule 16+)
+- [x] Legacy 92% readiness threshold superseded by policy source-of-truth (`scripts/orchestrator/policy.json`)
+- [x] @Ada approval declaration issued using mandatory phrase (`@Ada — Context Ready (60% Readiness) — Coding Phase Approved`)
 
 ---
 

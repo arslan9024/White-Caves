@@ -3,7 +3,6 @@ import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { RootState } from '../../store/store';
 import { spacing } from '../../styles/theme/spacing';
-import Skeleton from '../ui/Skeleton/Skeleton';
 import type { DashboardView, UnifiedCRMProps } from './types';
 
 // ============================================================================
@@ -21,7 +20,7 @@ interface LocalDashboardConfig {
   features: string[];
 }
 
-const LOCAL_DASHBOARD_CONFIGS: Record<DashboardView, LocalDashboardConfig> = {
+const DASHBOARD_CONFIGS: Record<DashboardView, LocalDashboardConfig> = {
   company: {
     id: 'company',
     label: 'Company Overview',
@@ -311,23 +310,32 @@ const RoleIndicator = styled.div`
 `;
 
 const LoadingSpinner = styled.div`
-  min-height: 320px;
-`;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 400px;
+  font-size: 16px;
+  color: #666;
 
-const LoadingGrid = styled.div`
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: ${spacing.lg};
-`;
+  &:after {
+    content: '';
+    display: inline-block;
+    width: 40px;
+    height: 40px;
+    border: 4px solid #f0f0f0;
+    border-top: 4px solid #1976d2;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+  }
 
-const LoadingMetricCard = styled(Card)`
-  display: grid;
-  gap: ${spacing.sm};
-`;
-
-const LoadingFeaturesCard = styled(Card)`
-  display: grid;
-  gap: ${spacing.sm};
+  @keyframes spin {
+    0% {
+      transform: rotate(0deg);
+    }
+    100% {
+      transform: rotate(360deg);
+    }
+  }
 `;
 
 // ============================================================================
@@ -351,12 +359,12 @@ const UnifiedCRM: React.FC<UnifiedCRMProps> = ({
 
   // Get available dashboards based on user role
   const availableDashboards = useMemo(() => {
-    return Object.values(LOCAL_DASHBOARD_CONFIGS).filter(config => config.roles.includes(userRole));
+    return Object.values(DASHBOARD_CONFIGS).filter(config => config.roles.includes(userRole));
   }, [userRole]);
 
   // Get current dashboard configuration
   const currentConfig = useMemo(() => {
-    return LOCAL_DASHBOARD_CONFIGS[currentView];
+    return DASHBOARD_CONFIGS[currentView];
   }, [currentView]);
 
   // Handle view change
@@ -435,22 +443,7 @@ const UnifiedCRM: React.FC<UnifiedCRMProps> = ({
 
       {/* Content Area */}
       {loading ? (
-        <LoadingSpinner data-testid="unified-crm-loading-skeleton">
-          <LoadingGrid>
-            {currentConfig.metrics.map(metric => (
-              <LoadingMetricCard key={`loading-${metric}`}>
-                <Skeleton variant="text" width="65%" height={14} />
-                <Skeleton variant="text" width="50%" height={30} />
-              </LoadingMetricCard>
-            ))}
-            <LoadingFeaturesCard>
-              <Skeleton variant="text" width="45%" height={18} />
-              <Skeleton variant="text" lines={3} />
-              <Skeleton variant="text" width="30%" height={14} />
-              <Skeleton variant="text" width="100%" height={24} />
-            </LoadingFeaturesCard>
-          </LoadingGrid>
-        </LoadingSpinner>
+        <LoadingSpinner />
       ) : (
         <ContentArea>
           {/* Metrics Section */}

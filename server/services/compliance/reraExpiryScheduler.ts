@@ -27,6 +27,13 @@ interface ExpiryCheckResult {
   }>;
 }
 
+export interface RERAExpiryTickResult {
+  status: 'ran' | 'skipped';
+  result?: ExpiryCheckResult;
+}
+
+let reraExpiryRunInProgress = false;
+
 // ─── Alert Thresholds ────────────────────────────────────────────────────
 
 const ALERT_THRESHOLDS = [30, 15, 7, 3, 1]; // Days before expiry
@@ -188,6 +195,21 @@ export async function checkBRNExpirations(): Promise<ExpiryCheckResult> {
   return result;
 }
 
+export async function runRERAExpirySchedulerTick(): Promise<RERAExpiryTickResult> {
+  if (reraExpiryRunInProgress) {
+    logger.info('RERA BRN expiry scheduler tick skipped (previous run still active)');
+    return { status: 'skipped' };
+  }
+
+  reraExpiryRunInProgress = true;
+  try {
+    const result = await checkBRNExpirations();
+    return { status: 'ran', result };
+  } finally {
+    reraExpiryRunInProgress = false;
+  }
+}
+
 /**
  * Get all agents with their BRN expiry status.
  * Used by the compliance dashboard.
@@ -249,7 +271,7 @@ export function startRERAExpiryScheduler(): NodeJS.Timeout {
   const interval = setInterval(
     async () => {
       try {
-        await checkBRNExpirations();
+        await runRERAExpirySchedulerTick();
       } catch (error) {
         logger.error('RERA BRN expiry scheduler error', { error });
       }
@@ -259,7 +281,7 @@ export function startRERAExpiryScheduler(): NodeJS.Timeout {
 
   // Run once on startup (after 60s delay to allow DB connection)
   setTimeout(() => {
-    checkBRNExpirations().catch(err =>
+    runRERAExpirySchedulerTick().catch(err =>
       logger.error('Initial BRN expiry check failed', { error: err })
     );
   }, 60_000);

@@ -1,3 +1,5 @@
+import type { useHRData } from '../hooks/useHRData';
+import type { Dispatch, SetStateAction } from 'react';
 import { Plus, Edit, Trash2, Users, Eye } from 'lucide-react';
 
 interface Job {
@@ -18,17 +20,7 @@ interface StatusBadgeStyle {
   color: string;
 }
 
-interface JobBoardState {
-  filteredJobs: Job[];
-  filterJobStatus: string;
-  setFilterJobStatus: (status: string) => void;
-  selectedJob: Job | null;
-  setSelectedJob: (job: Job | null) => void;
-  showJobModal: boolean;
-  setShowJobModal: (show: boolean) => void;
-  getJobStatusBadge: (status: string) => StatusBadgeStyle;
-  deleteJob: (id: string) => void;
-}
+type JobBoardState = ReturnType<typeof useHRData>;
 
 interface JobBoardTabProps {
   state: JobBoardState;
@@ -44,7 +36,7 @@ export default function JobBoardTab({ state }: JobBoardTabProps) {
     showJobModal,
     setShowJobModal,
     getJobStatusBadge,
-    deleteJob
+    deleteJob,
   } = state;
 
   const handleDelete = (id: string) => {
@@ -62,7 +54,7 @@ export default function JobBoardTab({ state }: JobBoardTabProps) {
           <h3>Open Positions</h3>
           <select
             value={filterJobStatus}
-            onChange={(e) => setFilterJobStatus(e.target.value)}
+            onChange={e => setFilterJobStatus(e.target.value)}
             className="filter-select"
           >
             <option value="all">All Positions</option>
@@ -77,7 +69,7 @@ export default function JobBoardTab({ state }: JobBoardTabProps) {
       </div>
 
       <div className="jobs-grid">
-        {filteredJobs.map((job) => {
+        {filteredJobs.map(job => {
           const statusStyle = getJobStatusBadge(job.status);
           return (
             <div key={job.id} className="job-card">
@@ -116,7 +108,7 @@ export default function JobBoardTab({ state }: JobBoardTabProps) {
               <div className="job-requirements">
                 <h5>Requirements:</h5>
                 <ul>
-                  {(job.requirements ?? []).map((req) => (
+                  {(job.requirements ?? []).map(req => (
                     <li key={req}>{req}</li>
                   ))}
                 </ul>
@@ -133,7 +125,13 @@ export default function JobBoardTab({ state }: JobBoardTabProps) {
               </div>
 
               <div className="job-actions">
-                <button className="icon-btn" onClick={() => { setSelectedJob(job); setShowJobModal(true); }}>
+                <button
+                  className="icon-btn"
+                  onClick={() => {
+                    setSelectedJob(job);
+                    setShowJobModal(true);
+                  }}
+                >
                   <Eye size={16} />
                 </button>
                 <button className="icon-btn">
