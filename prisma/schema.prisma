@@ -1176,6 +1176,27 @@ model NotificationSchedule {
   @@index([createdAt])
 }
 
+// ─── NOTIFICATION ──────────────────────────────────────────────────────
+
+model Notification {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId      String   @db.ObjectId
+  type        String   @default("info")     // info, success, warning, error, lead, property, commission, system
+  channel     String   @default("in_app")   // in_app, email, whatsapp
+  title       String
+  message     String
+  metadata    Json?
+  read        Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([userId])
+  @@index([read])
+  @@index([createdAt])
+  @@index([type])
+  @@index([channel])
+}
+
 // ─── HENRY: DOCUMENT RECORD ─────────────────────────────────────────────
 
 model HenryRecord {

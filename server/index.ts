@@ -14,6 +14,7 @@ import compression from 'compression';
 import morgan from 'morgan';
 import cookieParser from 'cookie-parser';
 import { connectDatabase, prisma } from './database.js';
+import { Prisma } from '@prisma/client';
 import { errorHandler, asyncHandler, AppError } from './middleware/errorHandler.js';
 import authMiddleware from './middleware/auth.js';
 import { requestIdMiddleware } from './middleware/requestId.js';
@@ -488,12 +489,12 @@ app.put(
     const userId = (req as Request & { user?: { id: string } }).user?.id;
     const current = await prisma.systemSetting.findUnique({ where: { key: 'whatsapp_settings' } });
     const existing = (current?.value ?? {}) as Record<string, unknown>;
-    const updated: Record<string, unknown> = {
+    const updated: Prisma.InputJsonValue = {
       ...existing,
       ...(phoneNumber !== undefined && { phoneNumber: String(phoneNumber) }),
       ...(autoReply !== undefined && { autoReply: Boolean(autoReply) }),
       ...(businessHours !== undefined && { businessHours }),
-    };
+    } as Prisma.InputJsonValue;
     await prisma.systemSetting.upsert({
       where: { key: 'whatsapp_settings' },
       update: { value: updated, category: 'whatsapp', updatedBy: userId },
