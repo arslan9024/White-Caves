@@ -44,6 +44,10 @@ class WhatsAppBotService {
       5000
     );
 
+    const strictWhatsAppRequired =
+      process.env.WHATSAPP_STRICT_REQUIRED === 'true' ||
+      process.env.WHATSAPP_STRICT_REQUIRED === '1';
+
     if (accessToken && phoneNumberId) {
       try {
         this.client = new MetaAPIClient({ accessToken, businessAccountId, phoneNumberId });
@@ -54,9 +58,14 @@ class WhatsAppBotService {
     } else {
       if (process.env.NODE_ENV === 'production') {
         const message =
-          'CRITICAL: WHATSAPP_ACCESS_TOKEN (or WHATSAPP_BOT_TOKEN) and WHATSAPP_PHONE_NUMBER_ID must be set in production';
-        log.error(message);
-        throw new Error(message);
+          'WHATSAPP_ACCESS_TOKEN (or WHATSAPP_BOT_TOKEN) and WHATSAPP_PHONE_NUMBER_ID are not configured; WhatsApp sending is disabled';
+
+        if (strictWhatsAppRequired) {
+          log.error(`CRITICAL: ${message} (WHATSAPP_STRICT_REQUIRED=true)`);
+          throw new Error(`CRITICAL: ${message}`);
+        }
+
+        log.error(`${message} (continuing startup in degraded mode)`);
       } else {
         log.warn('WhatsApp credentials not configured — message sending disabled');
       }

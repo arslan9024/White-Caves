@@ -28,33 +28,9 @@ interface ApiLease {
   landlord: { id: string; name: string; email: string };
 }
 
-const FALLBACK_LEASE: ApiLease = {
-  id: 'lease-tenant-001',
-  leaseNumber: 'TL-2026-001',
-  startDate: '2026-01-01T00:00:00.000Z',
-  endDate: '2026-12-31T00:00:00.000Z',
-  monthlyRent: 8000,
-  depositAmount: 16000,
-  status: 'active',
-  ejariNumber: 'EJARI-2026-8891',
-  ejariStatus: 'registered',
-  documents: [
-    'https://example.com/docs/tenant-agreement.pdf',
-    'https://example.com/docs/tenant-ejari.pdf',
-  ],
-  property: {
-    id: 'prop-1205',
-    title: 'Marina View 2BR Apartment',
-    location: 'Dubai Marina, Tower A, Unit 1205',
-    type: 'Apartment',
-  },
-  tenant: { id: 'tenant-1', name: 'Fatima Al-Mansoori', email: 'tenant@test.ae' },
-  landlord: { id: 'landlord-1', name: 'Khalid Al-Sayegh', email: 'landlord@test.ae' },
-};
-
 const TenantLeaseTab: FC = () => {
   const currentUser = useSelector((state: RootState) => state.user.currentUser);
-  const [lease, setLease] = useState<ApiLease | null>(FALLBACK_LEASE);
+  const [lease, setLease] = useState<ApiLease | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showDetails, setShowDetails] = useState(false);
@@ -62,15 +38,14 @@ const TenantLeaseTab: FC = () => {
   useEffect(() => {
     if (!currentUser) return;
 
-    authFetch('/api/leases?role=tenant&pageSize=1')
+    setLoading(true);
+    setError(null);
+    authFetch('/api/portal/tenant/lease')
       .then(r => r.json())
-      .then(data => setLease((data.data as ApiLease[])?.[0] ?? null))
-      .catch(() => {
-        if (!lease) {
-          setError('Unable to load lease details. Please refresh.');
-        }
-      });
-  }, [currentUser, lease]);
+      .then(data => setLease((data.data as ApiLease) ?? null))
+      .catch(() => setError('Unable to load lease details. Please refresh.'))
+      .finally(() => setLoading(false));
+  }, [currentUser]);
 
   const leaseMetrics = useMemo(() => {
     if (!lease) return null;

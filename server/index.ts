@@ -12,7 +12,10 @@ import helmet from 'helmet';
 import path from 'path';
 import compression from 'compression';
 import morgan from 'morgan';
+import cookieParser from 'cookie-parser';
+import { Prisma } from '@prisma/client';
 import { connectDatabase, prisma } from './database.js';
+import { Prisma } from '@prisma/client';
 import { errorHandler, asyncHandler, AppError } from './middleware/errorHandler.js';
 import authMiddleware from './middleware/auth.js';
 import { requestIdMiddleware } from './middleware/requestId.js';
@@ -44,6 +47,11 @@ import nadiaRoutes from './routes/nadia.js';
 import lindaRoutes from './routes/linda.js';
 import metaWebhookRoutes from './routes/meta-webhook.js';
 import favoritesRoutes from './routes/favorites.js';
+import orchestratorRoutes from './routes/orchestrator.js';
+import henryRoutes from './routes/henry.js';
+// @ts-expect-error JS route module has no TypeScript declarations yet
+import ninaRoutes from './routes/nina.js';
+import maryRoutes from './routes/mary.js';
 import savedSearchesRoutes from './routes/saved-searches.js';
 import viewingsRoutes from './routes/viewings.js';
 import offersRoutes from './routes/offers.js';
@@ -65,7 +73,7 @@ import jobApplicationsRoutes from './routes/jobApplications.js';
 import contractsRoutes from './routes/contracts.js';
 import appointmentsRoutes from './routes/appointments.js';
 import { roleRequestRouter, adminRoleRequestRouter } from './routes/roleRequests.js';
-import { phase6Router as phase6Routes } from './routes/phase6.routes.js';
+import { phase6Router } from './routes/phase6.routes.js';
 import landlordPortalRoutes from './routes/landlord.js';
 import tenantPortalRoutes from './routes/tenantPortal.js';
 import invoicesLeaseRoutes from './routes/invoicesLease.js';
@@ -73,17 +81,22 @@ import usersRoutes from './routes/users.js';
 import leasingInventoryRoutes from './routes/leasing-inventory.js';
 import secondarySalesRoutes from './routes/secondary-sales.js';
 import commissionsRoutes from './routes/commissions.js';
+// @ts-expect-error JS route module has no TypeScript declarations yet
+import importHistoryRoutes from './routes/importHistory.routes.js';
+// @ts-expect-error JS route module has no TypeScript declarations yet
+import smartImportRoutes from './routes/smartImport.routes.js';
 import { requireRole, requirePermission } from './middleware/rbac.js';
 import { startLeadScoringScheduler } from './services/ai/leadScoringScheduler.js';
 import { startFollowUpScheduler } from './services/automation/followUpScheduler.js';
 import { startRateRefresh } from './services/currencyService.js';
 import { startViewingReminderScheduler } from './services/schedulingService.js';
 import { startRERAExpiryScheduler } from './services/compliance/reraExpiryScheduler.js';
+import { startPermitAlertScheduler } from './services/compliance/permitAlertScheduler.js';
+import { startPropertyPermitEnforcementScheduler } from './services/compliance/propertyPermitEnforcementScheduler.js';
 import { startAutoRouting } from './services/ai/leadAutoRouter.js';
 import { createSocketServer } from './services/socketServer.js';
 
 const app: Express = express();
-const db = prisma as any;
 
 // Trust the first proxy in front of the server (e.g. Vercel edge, nginx, AWS ALB).
 // This makes req.ip and all express-rate-limit lookups use the real client IP
@@ -196,9 +209,12 @@ app.use(morgan(process.env.NODE_ENV === 'production' ? 'combined' : 'dev'));
 app.use(express.json({ limit: '1mb' }));
 app.use(express.urlencoded({ limit: '1mb', extended: true }));
 
+// Cookie parsing — required for httpOnly refresh-token cookie on /api/auth/refresh
+app.use(cookieParser());
+
 // Content-Type validation for mutation endpoints
-// Exempt paths that accept non-JSON bodies (file uploads, webhooks).
-const NON_JSON_PATHS = new Set(['/api/whatsapp/webhook']);
+// Exempt paths that accept non-JSON bodies (file uploads, webhooks, cookie-only endpoints).
+const NON_JSON_PATHS = new Set(['/api/whatsapp/webhook', '/api/auth/refresh']);
 app.use('/api', (req: Request, res: Response, next) => {
   if (
     ['POST', 'PUT', 'PATCH'].includes(req.method) &&
@@ -219,7 +235,12 @@ app.use('/api/auth/login', authLimiter);
 app.use('/api/auth/register', registerLimiter);
 app.use('/api/auth/password', passwordLimiter);
 app.use('/api/auth/verify-2fa', strictLimiter);
+app.use('/api/auth/2fa/setup', strictLimiter);
+app.use('/api/auth/2fa/enable', strictLimiter);
+app.use('/api/auth/2fa/disable', strictLimiter);
+app.use('/api/auth/refresh', authLimiter);
 app.use('/api/auth/firebase-sync', authLimiter);
+app.use('/api/auth/refresh', authLimiter);
 app.use('/api/auth/webauthn/register', authLimiter);
 app.use('/api/auth/webauthn/authenticate', authLimiter);
 app.use('/api/contact', contactLimiter); // Public unauthenticated — stricter: 10/hour/IP
@@ -355,6 +376,12 @@ app.use('/api/nadia', nadiaRoutes);
 // Linda LocalAuth WhatsApp Integration (alternative channel)
 app.use('/api/linda', lindaRoutes);
 
+// AssistantOrchestrator API — cross-assistant event bus status, events, and admin emit
+app.use('/api/orchestrator', orchestratorRoutes);
+app.use('/api/henry', henryRoutes);
+app.use('/api/nina', ninaRoutes);
+app.use('/api/mary', maryRoutes);
+
 // Meta Business API Webhooks and Sending (production scale channel)
 app.use('/api/webhooks/meta', metaWebhookRoutes);
 
@@ -387,6 +414,8 @@ app.use('/api/secondary-sales', secondarySalesRoutes);
 
 // Commissions API (Phase 35 - Dubai Real Estate Commission Tracker)
 app.use('/api/commissions', commissionsRoutes);
+app.use('/api/inventory/import', smartImportRoutes);
+app.use('/api', importHistoryRoutes);
 
 // WhatsApp Webhook (public endpoint — requires webhook secret for verification)
 app.post(
@@ -449,26 +478,67 @@ app.get(
   authMiddleware,
   requirePermission('access_whatsapp_business'),
   asyncHandler(async (_req: Request, res: Response) => {
-    res.status(200).json({
-      success: true,
-      data: { phoneNumber: '', connected: false, autoReply: false, businessHours: null },
-    });
+    const row = await prisma.systemSetting.findUnique({ where: { key: 'whatsapp_settings' } });
+    const defaults = { phoneNumber: '', connected: false, autoReply: false, businessHours: null };
+    const data = row ? { ...defaults, ...(row.value as object) } : defaults;
+    res.status(200).json({ success: true, data });
   })
 );
 app.put(
   '/api/whatsapp/settings',
   authMiddleware,
   requireRole('owner'),
-  asyncHandler(async (_req: Request, res: Response) => {
-    res.status(200).json({ success: true, message: 'Settings updated (stub)' });
+  asyncHandler(async (req: Request, res: Response) => {
+    const { phoneNumber, autoReply, businessHours } = req.body ?? {};
+    const userId = (req as Request & { user?: { id: string } }).user?.id;
+    const current = await prisma.systemSetting.findUnique({ where: { key: 'whatsapp_settings' } });
+    const existing = (current?.value ?? {}) as Record<string, unknown>;
+    const updated: Prisma.InputJsonValue = {
+      ...existing,
+      ...(phoneNumber !== undefined && { phoneNumber: String(phoneNumber) }),
+      ...(autoReply !== undefined && { autoReply: Boolean(autoReply) }),
+      ...(businessHours !== undefined && { businessHours }),
+    } as Prisma.InputJsonValue;
+    await prisma.systemSetting.upsert({
+      where: { key: 'whatsapp_settings' },
+      update: { value: updated as Prisma.InputJsonValue, category: 'whatsapp', updatedBy: userId },
+      create: {
+        key: 'whatsapp_settings',
+        value: updated as Prisma.InputJsonValue,
+        category: 'whatsapp',
+        updatedBy: userId,
+      },
+    });
+    res.status(200).json({ success: true, data: updated });
   })
 );
 app.post(
   '/api/whatsapp/session',
   authMiddleware,
   requireRole('owner'),
-  asyncHandler(async (_req: Request, res: Response) => {
-    res.status(200).json({ success: true, data: { sessionId: 'stub-session', status: 'pending' } });
+  asyncHandler(async (req: Request, res: Response) => {
+    const { phoneNumber } = req.body ?? {};
+    const userId = (req as Request & { user?: { id: string } }).user?.id;
+    if (!phoneNumber)
+      throw new AppError('phoneNumber is required to start a WhatsApp session', 400);
+    const sessionId = `wa-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+    const sessionData = {
+      sessionId,
+      phoneNumber: String(phoneNumber),
+      status: 'pending',
+      startedAt: new Date().toISOString(),
+    };
+    await prisma.systemSetting.upsert({
+      where: { key: 'whatsapp_session' },
+      update: { value: sessionData, category: 'whatsapp', updatedBy: userId },
+      create: {
+        key: 'whatsapp_session',
+        value: sessionData,
+        category: 'whatsapp',
+        updatedBy: userId,
+      },
+    });
+    res.status(200).json({ success: true, data: sessionData });
   })
 );
 app.post(
@@ -581,8 +651,8 @@ app.use('/api/landlord', authMiddleware, landlordPortalRoutes);
 // Tenant Portal API — lease, payments, documents, maintenance for the tenant portal
 app.use('/api/portal/tenant', authMiddleware, tenantPortalRoutes);
 
-// Payments API stub (Checkout — Stripe integration pending)
-// TODO: Integrate Stripe SDK when payment processing is prioritised
+// Payments API — Stripe integration pending; return 402 Payment Required so
+// clients can distinguish "service down" (503) from "payment not configured" (402).
 app.post(
   '/api/payments/create-payment-intent',
   authMiddleware,
@@ -591,9 +661,10 @@ app.post(
       amount: req.body?.amount,
       propertyId: req.body?.propertyId,
     });
-    res.status(503).json({
+    res.status(402).json({
       success: false,
       error: 'Payment processing is not yet configured. Please contact support.',
+      code: 'PAYMENT_NOT_CONFIGURED',
     });
   })
 );
@@ -793,8 +864,8 @@ app.get(
   authMiddleware,
   requirePermission('manage_users'),
   asyncHandler(async (_req: Request, res: Response) => {
-    const settings = await db.systemSetting.findMany({ orderBy: { category: 'asc' } });
-    const settingsMap = Object.fromEntries(settings.map((s: any) => [s.key, s.value]));
+    const settings = await prisma.systemSetting.findMany({ orderBy: { category: 'asc' } });
+    const settingsMap = Object.fromEntries(settings.map(s => [s.key, s.value]));
     res.json({ success: true, data: settingsMap, meta: { count: settings.length } });
   })
 );
@@ -816,15 +887,15 @@ app.post(
     // Upsert each key
     const updated = await Promise.all(
       entries.map(([key, value]) =>
-        db.systemSetting.upsert({
+        prisma.systemSetting.upsert({
           where: { key },
           create: {
             key,
-            value: value as any,
+            value: value as Parameters<typeof prisma.systemSetting.create>[0]['data']['value'],
             updatedBy: userId,
           },
           update: {
-            value: value as any,
+            value: value as Parameters<typeof prisma.systemSetting.update>[0]['data']['value'],
             updatedBy: userId,
           },
         })
@@ -847,8 +918,33 @@ app.use(
     if (userId) req.headers['x-user-id'] = userId;
     next();
   },
-  phase6Routes
+  phase6Router
 );
+
+// ============================================================================
+// PRODUCTION STATIC ASSET + SPA SERVING
+// ============================================================================
+
+if (IS_PRODUCTION) {
+  const publicDir = path.join(process.cwd(), 'public');
+  const distDir = path.join(process.cwd(), 'dist');
+
+  // Serve SEO/PWA/static assets from public first (robots.txt, sitemap.xml, manifest.json, etc.)
+  app.use(express.static(publicDir, { index: false }));
+  // Serve built frontend assets from dist
+  app.use(express.static(distDir, { index: false }));
+
+  // SPA fallback for non-API GET requests
+  app.use((req: Request, res: Response, next: NextFunction) => {
+    if (req.method !== 'GET') return next();
+    if (req.path.startsWith('/api/')) return next();
+    if (req.path.startsWith('/uploads/')) return next();
+
+    res.sendFile(path.join(distDir, 'index.html'), err => {
+      if (err) next();
+    });
+  });
+}
 
 // ============================================================================
 // ERROR HANDLING
@@ -884,7 +980,23 @@ const startServer = async () => {
     startRateRefresh(); // Phase 2E: refresh exchange rates every 6h
     startViewingReminderScheduler(); // Phase 3C: viewing reminders every 15 min
     startRERAExpiryScheduler(); // Phase 3D: RERA BRN expiry checks daily
+    startPermitAlertScheduler(); // Wave 04: permit/BRN alert snapshots daily
+    startPropertyPermitEnforcementScheduler(); // Wave 04: auto-unpublish non-compliant available listings daily
     startAutoRouting(); // Phase 4A: auto-route hot leads to best agents
+
+    // Boot AssistantOrchestrator — register all 5 assistant handler chains
+    import('./services/orchestrator/AssistantOrchestrator.js')
+      .then(({ assistantOrchestrator }) => {
+        assistantOrchestrator.registerLindaHandlers();
+        assistantOrchestrator.registerNadiaHandlers();
+        assistantOrchestrator.registerNinaHandlers();
+        assistantOrchestrator.registerMaryHandlers();
+        assistantOrchestrator.registerHenryHandlers();
+        logger.info('AssistantOrchestrator: all 5 assistant handlers registered.');
+      })
+      .catch((err: unknown) => {
+        logger.warn('AssistantOrchestrator init failed:', err instanceof Error ? err.message : err);
+      });
 
     // Auto-migrate any remaining legacy base64 password hashes to bcrypt
     try {

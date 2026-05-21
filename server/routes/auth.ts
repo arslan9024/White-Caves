@@ -357,12 +357,39 @@ router.post(
       throw new AppError('Account not configured. Contact administrator.', 401);
     }
 
+    // If the account has 2FA enabled, return a challenge token instead of a full JWT
+    if ((user as any).twoFactorEnabled) {
+      const twoFactorToken = jwt.sign(
+        { id: user.id, email: user.email, role: user.role, requires2FA: true },
+        JWT_SECRET,
+        { expiresIn: 300 }
+      );
+      res.status(200).json({
+        success: true,
+        requiresTwoFactor: true,
+        data: { twoFactorToken },
+      });
+      return;
+    }
+
     // Generate JWT token
     const token = jwt.sign(
       { id: user.id, email: user.email, role: user.role },
       JWT_SECRET,
       JWT_SIGN_OPTIONS
     );
+
+    // Generate, hash, and persist refresh token; encode userId in cookie for efficient lookup
+    const rawRefreshToken = crypto.randomBytes(32).toString('hex');
+    const refreshTokenHash = await bcrypt.hash(rawRefreshToken, BCRYPT_ROUNDS);
+    await prisma.user.update({ where: { id: user.id }, data: { refreshTokenHash } });
+    res.cookie('refresh_token', `${user.id}:${rawRefreshToken}`, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+      path: '/api/auth',
+    });
 
     // Log activity with enriched audit metadata (IP + UA) for forensics.
     const ip = getClientIp(req);
@@ -380,6 +407,7 @@ router.post(
 
     res.status(200).json({
       success: true,
+      requiresTwoFactor: false,
       data: {
         token,
         user: {
@@ -391,7 +419,6 @@ router.post(
           photoUrl: user.photoUrl,
         },
       },
-      requiresTwoFactor: false, // 2FA can be enabled later
     });
   })
 );
@@ -647,11 +674,17 @@ router.post(
     // Store as pending in a short-lived signed token so the secret never sits idle in the DB
     const pendingToken = jwt.sign({ userId, totpSecret: secret }, JWT_SECRET, { expiresIn: 600 });
 
+    // Mark twoFactorEnabled as false to indicate setup is in progress
+    await (prisma as any).user.update({
+      where: { id: userId },
+      data: { twoFactorEnabled: false },
+    });
+
     res.status(200).json({
       success: true,
       data: {
         secret,
-        otpauthUri,
+        otpAuthUrl: otpauthUri,
         pendingToken,
         instructions: [
           '1. Scan the QR code (or enter the secret) in your authenticator app (Google Authenticator, Authy, etc.)',
@@ -736,9 +769,48 @@ router.post(
     const userId = req.user?.id;
     if (!userId) throw new AppError('Authentication required', 401);
 
-    const { code } = req.body;
-    if (!code) throw new AppError('Verification code is required to disable 2FA', 400);
+    const { code, currentPassword } = req.body;
+    if (!code && !currentPassword) {
+      throw new AppError('Verification code or current password required to disable 2FA', 400);
+    }
 
+    // Password-based disable path
+    if (currentPassword) {
+      const user = await db.user.findUnique({
+        where: { id: userId },
+        select: {
+          twoFactorEnabled: true,
+          twoFactorSecret: true,
+          totpEnabled: true,
+          totpSecret: true,
+          passwordHash: true,
+        },
+      });
+      if (!user) throw new AppError('User not found', 404);
+
+      if (!user.twoFactorEnabled && !user.totpEnabled) {
+        throw new AppError('Two-factor authentication is not enabled', 400);
+      }
+
+      const valid = await verifyPassword(currentPassword, user.passwordHash || '');
+      if (!valid) throw new AppError('Current password is incorrect', 401);
+
+      await db.user.update({
+        where: { id: userId },
+        data: {
+          twoFactorEnabled: false,
+          twoFactorSecret: null,
+          totpEnabled: false,
+          totpSecret: null,
+        },
+      });
+
+      logger.info('2FA disabled via password', { userId });
+      res.status(200).json({ success: true, data: { disabled: true } });
+      return;
+    }
+
+    // TOTP code-based disable path
     const user = (await db.user.findUnique({
       where: { id: userId },
       select: { totpSecret: true, totpEnabled: true, totpBackupCodes: true },
@@ -766,13 +838,19 @@ router.post(
 
     await db.user.update({
       where: { id: userId },
-      data: { totpEnabled: false, totpSecret: null, totpBackupCodes: [] },
+      data: {
+        totpEnabled: false,
+        totpSecret: null,
+        totpBackupCodes: [],
+        twoFactorEnabled: false,
+        twoFactorSecret: null,
+      },
     });
 
     logger.info('TOTP 2FA disabled', { userId });
     res.status(200).json({
       success: true,
-      data: { enabled: false, message: 'Two-factor authentication has been disabled.' },
+      data: { disabled: true, message: 'Two-factor authentication has been disabled.' },
     });
   })
 );
@@ -913,17 +991,34 @@ router.post(
       throw new AppError('Firebase token is required', 400);
     }
 
-    let decodedToken;
+    let decodedToken: Awaited<ReturnType<typeof verifyFirebaseIdToken>>;
     try {
       decodedToken = await verifyFirebaseIdToken(firebaseToken);
     } catch (error: unknown) {
-      if (error instanceof FirebaseAdminInitError) {
-        throw new AppError(
-          'Firebase Admin is not configured on the server. Set FIREBASE_SERVICE_ACCOUNT or FIREBASE_PROJECT_ID/FIREBASE_CLIENT_EMAIL/FIREBASE_PRIVATE_KEY.',
-          503
-        );
+      if (
+        error instanceof FirebaseAdminInitError ||
+        (error instanceof Error && error.name === 'FirebaseAdminInitError')
+      ) {
+        if (
+          process.env.NODE_ENV === 'development' &&
+          process.env.ALLOW_FIREBASE_SYNC_DEV_FALLBACK === 'true'
+        ) {
+          // Dev-only fallback: skip token verification and trust the request body
+          decodedToken = {
+            uid: firebaseUid,
+            email: typeof email === 'string' ? email : undefined,
+            name: typeof name === 'string' ? name : undefined,
+            picture: typeof photoUrl === 'string' ? photoUrl : undefined,
+          } as unknown as Awaited<ReturnType<typeof verifyFirebaseIdToken>>;
+        } else {
+          throw new AppError(
+            'Firebase Admin is not configured on the server. Set FIREBASE_SERVICE_ACCOUNT or FIREBASE_PROJECT_ID/FIREBASE_CLIENT_EMAIL/FIREBASE_PRIVATE_KEY.',
+            503
+          );
+        }
+      } else {
+        throw new AppError('Invalid Firebase token', 401);
       }
-      throw new AppError('Invalid Firebase token', 401);
     }
 
     if (decodedToken.uid !== firebaseUid) {
@@ -982,6 +1077,21 @@ router.post(
       JWT_SIGN_OPTIONS
     );
 
+    // Generate, hash, and persist refresh token; encode userId in cookie for efficient lookup
+    const rawFbRefreshToken = crypto.randomBytes(32).toString('hex');
+    const fbRefreshTokenHash = await bcrypt.hash(rawFbRefreshToken, BCRYPT_ROUNDS);
+    await prisma.user.update({
+      where: { id: user.id },
+      data: { refreshTokenHash: fbRefreshTokenHash },
+    });
+    res.cookie('refresh_token', `${user.id}:${rawFbRefreshToken}`, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+      path: '/api/auth',
+    });
+
     const ip = getClientIp(req);
     const userAgent = String(req.headers['user-agent'] || 'unknown').slice(0, 256);
     await prisma.activity.create({
@@ -1031,6 +1141,20 @@ router.post(
         userId,
       },
     });
+
+    // Invalidate refresh token in DB and clear the httpOnly cookie
+    const logoutCookieValue = req.cookies?.refresh_token as string | undefined;
+    if (logoutCookieValue && logoutCookieValue.includes(':')) {
+      const cookieUserId = logoutCookieValue.slice(0, logoutCookieValue.indexOf(':'));
+      if (cookieUserId) {
+        await prisma.user
+          .update({ where: { id: cookieUserId }, data: { refreshTokenHash: null } })
+          .catch(() => {
+            /* ignore — user may already be deleted */
+          });
+      }
+    }
+    res.clearCookie('refresh_token', { path: '/api/auth' });
 
     res.status(200).json({ success: true, message: 'Logged out successfully' });
   })
@@ -2003,6 +2127,97 @@ router.post(
           name: user.name,
           role: user.role,
           department: user.department,
+        },
+      },
+    });
+  })
+);
+
+/**
+ * POST /api/auth/refresh
+ * Rotate the refresh token and issue a new short-lived access token.
+ *
+ * Cookie format: "${userId}:${rawToken}"
+ * DB stores:     bcrypt hash of rawToken (refreshTokenHash on User)
+ *
+ * Security properties:
+ *  - Token rotation on every use (old token is immediately invalidated)
+ *  - On hash mismatch → possible theft detected → all sessions wiped
+ *  - httpOnly + sameSite=strict → not accessible to JS
+ */
+router.post(
+  '/refresh',
+  asyncHandler(async (req: Request, res: Response) => {
+    const cookieValue = req.cookies?.refresh_token as string | undefined;
+    if (!cookieValue || !cookieValue.includes(':')) {
+      throw new AppError('No refresh token provided', 401);
+    }
+
+    const colonIdx = cookieValue.indexOf(':');
+    const userId = cookieValue.slice(0, colonIdx);
+    const rawToken = cookieValue.slice(colonIdx + 1);
+    if (!userId || !rawToken) {
+      throw new AppError('Malformed refresh token', 401);
+    }
+
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      select: {
+        id: true,
+        email: true,
+        name: true,
+        role: true,
+        status: true,
+        refreshTokenHash: true,
+      },
+    });
+
+    if (!user || !user.refreshTokenHash || user.status !== 'active') {
+      res.clearCookie('refresh_token', { path: '/api/auth' });
+      throw new AppError('Invalid or expired refresh token', 401);
+    }
+
+    const isValid = await bcrypt.compare(rawToken, user.refreshTokenHash);
+    if (!isValid) {
+      // Possible token theft — invalidate every active session for this user
+      await prisma.user.update({ where: { id: userId }, data: { refreshTokenHash: null } });
+      res.clearCookie('refresh_token', { path: '/api/auth' });
+      throw new AppError('Refresh token reuse detected — all sessions invalidated', 401);
+    }
+
+    // Rotate: mint a new refresh token and persist the hash
+    const newRawToken = crypto.randomBytes(32).toString('hex');
+    const newRefreshTokenHash = await bcrypt.hash(newRawToken, BCRYPT_ROUNDS);
+    await prisma.user.update({
+      where: { id: userId },
+      data: { refreshTokenHash: newRefreshTokenHash },
+    });
+
+    // Issue a new access token using the same payload shape as /login
+    const accessToken = jwt.sign(
+      { id: user.id, email: user.email, role: user.role },
+      JWT_SECRET,
+      JWT_SIGN_OPTIONS
+    );
+
+    // Write the rotated cookie
+    res.cookie('refresh_token', `${user.id}:${newRawToken}`, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+      path: '/api/auth',
+    });
+
+    res.json({
+      success: true,
+      data: {
+        token: accessToken,
+        user: {
+          id: user.id,
+          email: user.email,
+          name: user.name,
+          role: user.role,
         },
       },
     });

@@ -8,19 +8,18 @@ import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { formatCurrency as formatCurrencyUtil, formatDate as formatDateUtil } from '../../../utils';
 import { createLogger } from '../../../utils/logger';
-
-const log = createLogger('useCommissionTracking');
 import type { AppDispatch } from '../../../store/store';
 import {
   selectAllCommissions,
   selectCommissionsLoading,
   selectCommissionsError,
-  fetchCommissionsAPI,
+  fetchCommissionsFromAPI,
   createCommissionAPI,
   updateCommissionAPI,
   addActivity,
 } from '../../../store/crmDataSlice';
 
+const log = createLogger('useCommissionTracking');
 // ─── Types ──────────────────────────────────────────────────────────────
 
 export interface Commission {
@@ -93,7 +92,7 @@ export function useCommissionTracking() {
 
   // Fetch on mount
   useEffect(() => {
-    dispatch(fetchCommissionsAPI(undefined));
+    dispatch(fetchCommissionsFromAPI(undefined));
   }, [dispatch]);
 
   // ─── Local state ────────────────────────────────────────────────
@@ -176,11 +175,14 @@ export function useCommissionTracking() {
     if (!formData.amount || Number(formData.amount) <= 0) return;
 
     const commissionData = {
-      agentId: formData.agent_name.trim(),
+      agent_name: formData.agent_name.trim(),
       amount: Number(formData.amount),
       percentage: formData.percentage ? Number(formData.percentage) : undefined,
       type: formData.type,
+      status: formData.status,
+      property_title: formData.property_title.trim(),
       notes: formData.notes.trim(),
+      created_at: new Date().toISOString(),
     };
 
     dispatch(createCommissionAPI(commissionData))
@@ -235,9 +237,14 @@ export function useCommissionTracking() {
       dispatch(
         updateCommissionAPI({
           id: String(selectedCommission.id),
+          agent_name: formData.agent_name.trim(),
           amount: Number(formData.amount) || 0,
+          percentage: formData.percentage ? Number(formData.percentage) : undefined,
+          type: formData.type,
           status: formData.status,
+          property_title: formData.property_title.trim(),
           notes: formData.notes.trim(),
+          updated_at: new Date().toISOString(),
         })
       )
         .then(result => {
@@ -295,7 +302,7 @@ export function useCommissionTracking() {
   }, []);
 
   const retryFetch = useCallback(() => {
-    dispatch(fetchCommissionsAPI(undefined));
+    dispatch(fetchCommissionsFromAPI(undefined));
   }, [dispatch]);
 
   const goBack = useCallback(() => {

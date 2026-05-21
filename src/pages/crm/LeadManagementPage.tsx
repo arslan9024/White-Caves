@@ -9,6 +9,7 @@
 import React, { FC } from 'react';
 import styled from 'styled-components';
 import { Badge, Pagination } from '../../components/ui';
+import { SkeletonTable } from '../../components/ui/Skeleton';
 import { Modal } from '../../shared/components/ui/Modal';
 import { useDocumentTitle } from '../../hooks/useDocumentTitle';
 import {
@@ -232,7 +233,11 @@ const LeadManagementPage: FC = () => {
       </PageHeader>
 
       {/* Loading & Error States */}
-      {loading && <LoadingBanner>⏳ Loading leads from server...</LoadingBanner>}
+      {loading && (
+        <div style={{ marginTop: '1rem' }}>
+          <SkeletonTable rows={5} />
+        </div>
+      )}
       {error && (
         <ErrorBanner>
           <span>⚠️ {error} — showing cached data</span>

@@ -549,4 +549,222 @@ router.post('/ai/extract', requireMinRole('agent'), async (req: Request, res: Re
   }
 });
 
+// ─── In-memory Henry cross-trigger event log ──────────────────────────────────
+
+/** Shape of a single Henry cross-trigger log entry */
+interface HenryEventLogEntry {
+  id: string;
+  timestamp: string;
+  triggerSource: 'nadia' | 'linda' | 'mary' | 'nina';
+  event: string;
+  payload: Record<string, unknown>;
+  complianceResult?: {
+    passed: boolean;
+    errorCount: number;
+    warningCount: number;
+    templateKey: string;
+  };
+}
+
+const henryEventLog: HenryEventLogEntry[] = [];
+const MAX_HENRY_EVENT_LOG = 20;
+
+// ─── POST /api/henry/orchestrator-trigger ─────────────────────────────────────
+
+/**
+ * Handle a cross-assistant trigger arriving from Nadia, Linda, Mary, or Nina.
+ *
+ * - Logs the trigger to the in-memory Henry event log
+ * - Runs a compliance check when payload contains a valid templateKey
+ * - Emits the appropriate orchestrator event
+ * - Returns { processed: true, complianceResult? }
+ *
+ * Body: {
+ *   triggerSource: 'nadia' | 'linda' | 'mary' | 'nina',
+ *   event:         string,
+ *   payload:       object
+ * }
+ */
+router.post('/orchestrator-trigger', requireMinRole('agent'), async (req: Request, res: Response) => {
+  try {
+    const { triggerSource, event, payload } = req.body as {
+      triggerSource?: unknown;
+      event?: unknown;
+      payload?: unknown;
+    };
+
+    const VALID_SOURCES = ['nadia', 'linda', 'mary', 'nina'] as const;
+    type TriggerSource = (typeof VALID_SOURCES)[number];
+
+    if (!triggerSource || !VALID_SOURCES.includes(triggerSource as TriggerSource)) {
+      return res.status(400).json({
+        success: false,
+        error: `triggerSource must be one of: ${VALID_SOURCES.join(', ')}`,
+      });
+    }
+    if (!event || typeof event !== 'string') {
+      return res.status(400).json({ success: false, error: 'event is required' });
+    }
+    if (!payload || typeof payload !== 'object' || Array.isArray(payload)) {
+      return res
+        .status(400)
+        .json({ success: false, error: 'payload must be a non-null object' });
+    }
+
+    const safeSource  = triggerSource as TriggerSource;
+    const safePayload = payload as Record<string, unknown>;
+
+    console.info(`[Henry] Cross-trigger from ${safeSource}: event="${event}"`);
+
+    // Optional compliance check when a recognised templateKey is present in payload
+    let complianceResult: HenryEventLogEntry['complianceResult'];
+    const validTemplateKeys: TemplateKey[] = [
+      'tenancy_contract', 'booking_form', 'addendum', 'viewing_agreement',
+      'key_handover', 'offer_letter', 'invoice', 'salary_certificate', 'gov_employee_booking',
+    ];
+    if (
+      typeof safePayload.templateKey === 'string' &&
+      validTemplateKeys.includes(safePayload.templateKey as TemplateKey)
+    ) {
+      const report = evaluateCompliance(
+        safePayload.templateKey as TemplateKey,
+        safePayload
+      );
+      complianceResult = {
+        passed:      report.isCompliant,
+        errorCount:  report.errorCount,
+        warningCount: report.warningCount,
+        templateKey: safePayload.templateKey,
+      };
+    }
+
+    // Append to in-memory ring buffer
+    const logEntry: HenryEventLogEntry = {
+      id:            `hlog-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 5)}`,
+      timestamp:     new Date().toISOString(),
+      triggerSource: safeSource,
+      event,
+      payload:       safePayload,
+      complianceResult,
+    };
+    henryEventLog.push(logEntry);
+    if (henryEventLog.length > MAX_HENRY_EVENT_LOG) henryEventLog.shift();
+
+    // Emit the appropriate orchestrator event
+    const { assistantOrchestrator } = await import(
+      '../services/orchestrator/AssistantOrchestrator.js'
+    );
+
+    if (event === 'cross:viewing_booked') {
+      assistantOrchestrator.emitEvent('cross:viewing_booked', {
+        propertyId:   String(safePayload.propertyId ?? 'unknown'),
+        contactPhone: String(safePayload.contactPhone ?? ''),
+        scheduledAt:  String(safePayload.scheduledAt ?? new Date().toISOString()),
+        documentData: safePayload,
+      });
+    } else if (event === 'cross:offer_accepted') {
+      assistantOrchestrator.emitEvent('cross:offer_accepted', {
+        propertyId:  String(safePayload.propertyId ?? 'unknown'),
+        buyerPhone:  String(safePayload.buyerPhone ?? ''),
+        agentPhone:  typeof safePayload.agentPhone === 'string' ? safePayload.agentPhone : undefined,
+        offerAmount: Number(safePayload.offerAmount ?? 0),
+        documentData: safePayload,
+      });
+    } else if (complianceResult && !complianceResult.passed) {
+      assistantOrchestrator.emitEvent('henry:compliance_failed', {
+        templateKey: String(safePayload.templateKey ?? event),
+        violations:  [`${complianceResult.errorCount} compliance error(s) in "${complianceResult.templateKey}"`],
+        severity:    'error',
+      });
+    } else {
+      assistantOrchestrator.emitEvent('henry:document_generated', {
+        documentId:  logEntry.id,
+        templateKey: String(safePayload.templateKey ?? event),
+        fileName:    `${String(safePayload.templateKey ?? event)}_${Date.now()}.pdf`,
+      });
+    }
+
+    res.json({
+      success: true,
+      data: { processed: true, complianceResult: complianceResult ?? null },
+    });
+  } catch (err) {
+    res
+      .status(500)
+      .json({ success: false, error: err instanceof Error ? err.message : 'Unknown error' });
+  }
+});
+
+// ─── GET /api/henry/event-log ─────────────────────────────────────────────────
+
+/**
+ * Returns the last 20 document/compliance cross-trigger events received by Henry,
+ * newest first.
+ */
+router.get('/event-log', requireMinRole('agent'), (_req: Request, res: Response) => {
+  try {
+    const events = [...henryEventLog].reverse().slice(0, MAX_HENRY_EVENT_LOG);
+    res.json({ success: true, data: { events, count: events.length } });
+  } catch (err) {
+    res
+      .status(500)
+      .json({ success: false, error: err instanceof Error ? err.message : 'Unknown error' });
+  }
+});
+
+// ─── POST /api/henry/ai-draft ─────────────────────────────────────────────────
+
+/**
+ * Generate an AI first-draft for a legal document using Groq.
+ * Falls back to a handlebars template when GROQ_API_KEY is absent.
+ *
+ * Body: DocumentDraftInput (see server/services/henry/aiDocumentDrafter.ts)
+ */
+router.post('/ai-draft', requireMinRole('agent'), async (req: Request, res: Response) => {
+  try {
+    const { generateDocumentDraft } = await import('../services/henry/aiDocumentDrafter.js');
+    const result = await generateDocumentDraft(req.body);
+    res.json({ success: true, data: result });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err instanceof Error ? err.message : 'Unknown error' });
+  }
+});
+
+// ─── POST /api/henry/ejari-submit ────────────────────────────────────────────
+
+/**
+ * Submit a tenancy contract to Ejari / DLD.
+ * Returns mock response when DLD_API_KEY is not configured.
+ *
+ * Body: EjariPayload (see server/services/henry/ejariService.ts)
+ */
+router.post('/ejari-submit', requireMinRole('agent'), async (req: Request, res: Response) => {
+  try {
+    const { submitToEjari } = await import('../services/henry/ejariService.js');
+    const result = await submitToEjari(req.body);
+    const status = result.success ? 200 : 422;
+    res.status(status).json({ success: result.success, data: result });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err instanceof Error ? err.message : 'Unknown error' });
+  }
+});
+
+// ─── POST /api/henry/translate ────────────────────────────────────────────────
+
+/**
+ * Translate or produce a bilingual (AR/EN) version of a legal document.
+ * Uses OpenAI when OPENAI_API_KEY is set, otherwise falls back to clause bank.
+ *
+ * Body: TranslationInput (see server/services/henry/multiLangContract.ts)
+ */
+router.post('/translate', requireMinRole('agent'), async (req: Request, res: Response) => {
+  try {
+    const { generateMultiLangContract } = await import('../services/henry/multiLangContract.js');
+    const result = await generateMultiLangContract(req.body);
+    res.json({ success: true, data: result });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err instanceof Error ? err.message : 'Unknown error' });
+  }
+});
+
 export default router;

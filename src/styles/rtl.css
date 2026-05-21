@@ -227,3 +227,13 @@
   text-align: right;
   direction: rtl;
 }
+
+/* ── Directional chevron icon flips for RTL ─────────────────── */
+[dir='rtl'] .icon-chevron-left,
+[dir='rtl'] [data-icon='chevron-left'] {
+  transform: scaleX(-1);
+}
+[dir='rtl'] .icon-chevron-right,
+[dir='rtl'] [data-icon='chevron-right'] {
+  transform: scaleX(-1);
+}
