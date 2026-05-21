@@ -319,7 +319,6 @@ describe('useSignIn — handleSocialAuth (integration)', () => {
       mockSignInWithGoogle.mockResolvedValue({ user: firebaseUser });
       mockSyncFirebaseUser.mockRejectedValue(new Error('Backend unreachable'));
       const { result } = renderHook(() => useSignIn(), { wrapper: createWrapper(store) });
-
       await act(async () => {
         await result.current.handleSocialAuth('google');
       });
@@ -347,6 +346,43 @@ describe('useSignIn — handleSocialAuth (integration)', () => {
 
       expect(mockSignInWithGoogle).toHaveBeenCalledTimes(2);
       expect(mockSyncFirebaseUser).toHaveBeenCalledTimes(2);
+    });
+  });
+
+  describe('social signup completion', () => {
+    it('uses completeSocialRegistration after role selection', async () => {
+      mockSignInWithGoogle.mockResolvedValue({ user: firebaseUser });
+      mockSyncFirebaseUser.mockResolvedValue(successResponse(backendBuyerUser));
+      mockCompleteSocialRegistration.mockResolvedValue(successResponse(backendTenantUser));
+      vi.useFakeTimers();
+
+      const { result } = renderHook(() => useSignIn(), { wrapper: createWrapper(store) });
+
+      act(() => result.current.switchMode());
+
+      await act(async () => {
+        await result.current.handleSocialAuth('google');
+      });
+
+      act(() => {
+        result.current.setSelectedCategory('client');
+      });
+      act(() => {
+        result.current.proceedToRoleSelection();
+      });
+      act(() => {
+        result.current.setSelectedRole('tenant');
+      });
+
+      await act(async () => {
+        await result.current.completeSignUp();
+      });
+
+      act(() => vi.runAllTimers());
+
+      expect(mockCompleteSocialRegistration).toHaveBeenCalledWith('client', 'tenant');
+      expect(mockNavigate).toHaveBeenCalledWith('/dashboard');
+      vi.useRealTimers();
     });
   });
 
