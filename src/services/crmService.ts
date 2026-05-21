@@ -204,7 +204,7 @@ export async function fetchUser(id: string) {
 }
 
 export async function updateUserRole(id: string, role: string) {
-  const res = await authFetch(`${API}/users/${id}/role`, {
+  const res = await authFetch(`${API}/users/${id}`, {
     method: 'PATCH',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ role }),

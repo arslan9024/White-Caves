@@ -15,7 +15,6 @@ import morgan from 'morgan';
 import cookieParser from 'cookie-parser';
 import { Prisma } from '@prisma/client';
 import { connectDatabase, prisma } from './database.js';
-import { Prisma } from '@prisma/client';
 import { errorHandler, asyncHandler, AppError } from './middleware/errorHandler.js';
 import authMiddleware from './middleware/auth.js';
 import { requestIdMiddleware } from './middleware/requestId.js';
@@ -394,6 +393,9 @@ app.use('/api/webhooks/meta', metaWebhookRoutes);
 
 // Favorites API (any authenticated user can manage their own favorites)
 app.use('/api/favorites', favoritesRoutes);
+
+// Notifications API (any authenticated user can manage their own notifications)
+app.use('/api/notifications', notificationsRoutes);
 
 // Saved Searches API (any authenticated user can manage their own saved searches)
 app.use('/api/saved-searches', savedSearchesRoutes);
