@@ -1,8 +1,18 @@
 # White Caves — Custom Agents Execution Plan
 
-> **Updated:** May 1, 2026 | **Model Constraint:** Free-tier models only for sub-agent dispatches  
+> **Updated:** May 21, 2026 | **Model Constraint:** Free-tier models only for sub-agent dispatches  
 > **Phase:** Milestone 06–10 Deep Integration  
 > **Build Status:** ✅ PASSING | **Dev Server:** http://localhost:5002/
+
+---
+
+## 🔧 Subagent Upgrade v2 (Active Baseline)
+
+- **Canonical source of truth:** `plans/CUSTOM_AGENTS_PLAN.md`
+- **Mirror docs that must stay synchronized:** `AGENTS.md`, `AGENCY_MANIFEST.md`, `.github/copilot-instructions.md`
+- **Premium coding gate phrase (exact):** `@Ada — Context Ready (60% Readiness) — Coding Phase Approved`
+- **Dispatch contract (exact syntax):** `@[AgentName] — [ACTION]: [TARGET FILE or TOPIC]`
+- **Allowed action set:** `EXPAND`, `DRAFT`, `REVIEW`, `AUDIT`, `SYNC`
 
 ---
 

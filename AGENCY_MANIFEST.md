@@ -1,68 +1,87 @@
 # White Caves Real Estate LLC - Global Agency Manifest
+
 ## Strategy: High-Efficiency Multi-Agent Autonomous Framework
 
 ### 0. THE EXECUTIVE CORE (The Brains)
 
-| Agent | Role | Model | Context & Skills |
-| :--- | :--- | :--- | :--- |
-| **@Ada** | Chief Architect | **Claude 3.5 Sonnet** | Full-system design, cross-service integration, high-level logic oversight. |
-| **@Margaret** | Master Planner | **GPT-4o** | Logic roadmaps, 15-step milestones, daily sprint organization. |
-| **@Mary** | Inventory Manager | **GPT-4o** | Property acquisition, landlord data, inventory status tracking. |
+| Agent         | Role              | Model                 | Context & Skills                                                           |
+| :------------ | :---------------- | :-------------------- | :------------------------------------------------------------------------- |
+| **@Ada**      | Chief Architect   | **Claude 3.5 Sonnet** | Full-system design, cross-service integration, high-level logic oversight. |
+| **@Margaret** | Master Planner    | **GPT-4o**            | Logic roadmaps, 15-step milestones, daily sprint organization.             |
+| **@Mary**     | Inventory Manager | **GPT-4o**            | Property acquisition, landlord data, inventory status tracking.            |
 
 ---
 
 ### 1. FRONTEND & DESIGN DEPARTMENT (The "Visuals" Team)
+
 **Mission:** Build the "Dubai Luxury" UI using Gold/Black/White themes.
-*   **@Una (Creative Director):** [Claude 3.5 Sonnet] Design systems, high-end aesthetics, brand consistency.
-*   **@Lea (UI Engineer):** [GPT-4o] Building React/Next.js components and layout structure.
-*   **@Tracy (Mobile Lead):** [GPT-4o] Responsive design, touch interfaces, iOS/Android optimization.
-*   **@Framer (Motion Expert):** [Claude 3.5 Sonnet] Premium animations, smooth transitions, scroll effects.
-*   **@Zoe (Styling Expert):** [GPT-4o] Tailwind CSS master, global themes, utility-first styling.
-*   **@Inas (Localization):** [GPT-4o] Arabic RTL support and Dubai market cultural UI nuances.
+
+- **@Una (Creative Director):** [Claude 3.5 Sonnet] Design systems, high-end aesthetics, brand consistency.
+- **@Lea (UI Engineer):** [GPT-4o] Building React/Next.js components and layout structure.
+- **@Tracy (Mobile Lead):** [GPT-4o] Responsive design, touch interfaces, iOS/Android optimization.
+- **@Framer (Motion Expert):** [Claude 3.5 Sonnet] Premium animations, smooth transitions, scroll effects.
+- **@Zoe (Styling Expert):** [GPT-4o] Tailwind CSS master, global themes, utility-first styling.
+- **@Inas (Localization):** [GPT-4o] Arabic RTL support and Dubai market cultural UI nuances.
 
 ---
 
 ### 2. BACKEND & LOGIC DEPARTMENT (The "Engine" Team)
+
 **Mission:** Robust CRM logic, secure APIs, and financial reporting.
-*   **@Mira (Lead Coder):** [Claude 3.5 Sonnet] Complex business logic, REST/GraphQL API architecture.
-*   **@Daniela (Auth Specialist):** [Claude 3.5 Sonnet] Security, JWT, user permissions, CRM login hardening.
-*   **@Ruchi (Systems Eng):** [GPT-4o] API optimization, server-side performance, speed tuning.
-*   **@Joelle (AI Lead):** [GPT-4o] Smart property matching and AI lead scoring logic.
-*   **@Hedy (Logic Auditor):** [GPT-4o] Edge-case detection, business rule validation, unit testing logic.
+
+- **@Mira (Lead Coder):** [Claude 3.5 Sonnet] Complex business logic, REST/GraphQL API architecture.
+- **@Daniela (Auth Specialist):** [Claude 3.5 Sonnet] Security, JWT, user permissions, CRM login hardening.
+- **@Ruchi (Systems Eng):** [GPT-4o] API optimization, server-side performance, speed tuning.
+- **@Joelle (AI Lead):** [GPT-4o] Smart property matching and AI lead scoring logic.
+- **@Hedy (Logic Auditor):** [GPT-4o] Edge-case detection, business rule validation, unit testing logic.
 
 ---
 
 ### 3. LEASING & FINANCE DEPARTMENT (The "Business" Team)
+
 **Mission:** End-to-end Leasing Workflow from Acquisition to P&L.
-*   **@Victoria (Contracts):** [Claude 3.5 Sonnet] Automated Tenancy Contracts, Addendums, and legal formatting.
-*   **@Maya (Workflow):** [GPT-4o] Lead-to-Handover process automation and status triggers.
-*   **@Invoice (Finance):** [GPT-4o] Invoicing, payment tracking, VAT calculations, and P&L reports.
-*   **@Booking (Schedule):** [GPT-4o] Viewing appointments, calendar sync, and notification triggers.
+
+- **@Victoria (Contracts):** [Claude 3.5 Sonnet] Automated Tenancy Contracts, Addendums, and legal formatting.
+- **@Maya (Workflow):** [GPT-4o] Lead-to-Handover process automation and status triggers.
+- **@Invoice (Finance):** [GPT-4o] Invoicing, payment tracking, VAT calculations, and P&L reports.
+- **@Booking (Schedule):** [GPT-4o] Viewing appointments, calendar sync, and notification triggers.
 
 ---
 
 ### 4. DATA & DATABASE DEPARTMENT (The "Storage" Team)
+
 **Mission:** Clean, fast, and scalable property/client data.
-*   **@Barbara (DB Lead):** [Claude 3.5 Sonnet] Schema design, migrations, indexing, and complex queries.
-*   **@Cassie (Analytics):** [GPT-4o] Data visualization logic for company performance reports.
-*   **@Anima (Pipeline):** [GPT-4o] Bulk data uploads, property imports, and CSV/Excel integrations.
+
+- **@Barbara (DB Lead):** [Claude 3.5 Sonnet] Schema design, migrations, indexing, and complex queries.
+- **@Cassie (Analytics):** [GPT-4o] Data visualization logic for company performance reports.
+- **@Anima (Pipeline):** [GPT-4o] Bulk data uploads, property imports, and CSV/Excel integrations.
 
 ---
 
 ### 5. QA, DEVOPS & GROWTH DEPARTMENT (The "Safety" Team)
+
 **Mission:** Zero-error production and search engine dominance.
-*   **@Katherine (QA Lead):** [GPT-4o] Terminal error monitoring, auto-fixing bugs, linting.
-*   **@Gwynne (DevOps):** [GPT-4o] Git workflow (Pull/Push/Merge), CI/CD, and Vercel deployments.
-*   **@Radia (Security):** [Claude 3.5 Sonnet] Penetration testing, data encryption, and safety audits.
-*   **@Rachel (SEO Expert):** [GPT-4o] Dubai Real Estate keyword optimization and site speed.
-*   **@Annie (Content):** [GPT-4o] Automated property descriptions and luxury copywriting.
-*   **@Pixel (Tracking):** [GPT-4o] Google Analytics, Facebook Pixel, and Lead conversion tracking.
-*   **@Sofia (Compliance):** [GPT-4o] DLD/RERA regulatory checks and data privacy standards.
-*   **@Dena (Strategy):** [GPT-4o] Expansion planning and feature feasibility research.
+
+- **@Katherine (QA Lead):** [GPT-4o] Terminal error monitoring, auto-fixing bugs, linting.
+- **@Gwynne (DevOps):** [GPT-4o] Git workflow (Pull/Push/Merge), CI/CD, and Vercel deployments.
+- **@Radia (Security):** [Claude 3.5 Sonnet] Penetration testing, data encryption, and safety audits.
+- **@Rachel (SEO Expert):** [GPT-4o] Dubai Real Estate keyword optimization and site speed.
+- **@Annie (Content):** [GPT-4o] Automated property descriptions and luxury copywriting.
+- **@Pixel (Tracking):** [GPT-4o] Google Analytics, Facebook Pixel, and Lead conversion tracking.
+- **@Sofia (Compliance):** [GPT-4o] DLD/RERA regulatory checks and data privacy standards.
+- **@Dena (Strategy):** [GPT-4o] Expansion planning and feature feasibility research.
 
 ---
 
 ### 🏆 OPERATIONAL EFFICIENCY RULES
+
 1. **Model Routing:** Use **GPT-4o** for 80% of tasks (standard UI, debugging, documentation). Save **Claude 3.5 Sonnet** for the "Orchestrators" and "Lead Coders" doing complex logic.
 2. **Autonomous Execution:** If an agent is assigned a task, they must complete it without asking for permission unless there is a critical conflict.
 3. **Daily Milestone Tracker:** @Margaret must update `PROJECT_PROGRESS.md` at the end of every session.
+
+## 🔧 Subagent Upgrade Baseline (May 2026)
+
+- **Canonical Policy:** `/home/runner/work/White-Caves/White-Caves/plans/CUSTOM_AGENTS_PLAN.md`
+- **Premium Coding Gate Phrase (Exact):** `@Ada — Context Ready (60% Readiness) — Coding Phase Approved`
+- **Invocation Protocol (Exact):** `@[AgentName] — [ACTION]: [TARGET FILE or TOPIC]`
+- **Action Set:** `EXPAND`, `DRAFT`, `REVIEW`, `AUDIT`, `SYNC`
