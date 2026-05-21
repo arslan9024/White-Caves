@@ -8,20 +8,19 @@ import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { formatCurrency as formatCurrencyUtil, formatDate as formatDateUtil } from '../../../utils';
 import { createLogger } from '../../../utils/logger';
-
-const log = createLogger('useTransactionManagement');
 import type { AppDispatch } from '../../../store/store';
 import {
   selectAllTransactions,
   selectTransactionsLoading,
   selectTransactionsError,
-  fetchTransactionsAPI,
+  fetchTransactionsFromAPI,
   createTransactionAPI,
   updateTransactionAPI,
   deleteTransactionAPI,
   addActivity,
 } from '../../../store/crmDataSlice';
 
+const log = createLogger('useTransactionManagement');
 // ─── Types ──────────────────────────────────────────────────────────────
 
 export interface Transaction {
@@ -98,7 +97,7 @@ export function useTransactionManagement() {
 
   // Fetch on mount
   useEffect(() => {
-    dispatch(fetchTransactionsAPI(undefined));
+    dispatch(fetchTransactionsFromAPI(undefined));
   }, [dispatch]);
 
   // ─── Local state ────────────────────────────────────────────────
@@ -192,7 +191,12 @@ export function useTransactionManagement() {
       type: formData.type,
       status: formData.status,
       amount: Number(formData.amount),
+      property_title: formData.property_title.trim(),
+      client_name: formData.client_name.trim(),
+      agent_name: formData.agent_name.trim(),
+      closing_date: formData.closing_date || undefined,
       notes: formData.notes.trim(),
+      created_at: new Date().toISOString(),
     };
 
     dispatch(createTransactionAPI(transactionData))
@@ -251,7 +255,12 @@ export function useTransactionManagement() {
           type: formData.type,
           status: formData.status,
           amount: Number(formData.amount) || 0,
+          property_title: formData.property_title.trim(),
+          client_name: formData.client_name.trim(),
+          agent_name: formData.agent_name.trim(),
+          closing_date: formData.closing_date || undefined,
           notes: formData.notes.trim(),
+          updated_at: new Date().toISOString(),
         })
       )
         .then(result => {
@@ -345,7 +354,7 @@ export function useTransactionManagement() {
   }, []);
 
   const retryFetch = useCallback(() => {
-    dispatch(fetchTransactionsAPI(undefined));
+    dispatch(fetchTransactionsFromAPI(undefined));
   }, [dispatch]);
 
   const goBack = useCallback(() => {

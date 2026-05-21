@@ -3,23 +3,12 @@
  * Handles fetch, mark read, mark all read, delete, and filtering.
  */
 import { useState, useMemo, useCallback, useEffect } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { formatDate as formatDateUtil } from '../../../utils';
 import { createLogger } from '../../../utils/logger';
 import * as crmService from '../../../services/crmService';
 
 const log = createLogger('useNotifications');
-import type { AppDispatch } from '../../../store/store';
-import {
-  selectAllNotifications,
-  selectUnreadCount,
-  selectNotificationsLoading,
-  selectNotificationsError,
-  fetchNotificationsAPI,
-  markNotificationReadAPI,
-  markAllNotificationsReadAPI,
-} from '../../../store/crmDataSlice';
 
 // ─── Types ──────────────────────────────────────────────────────────────
 
@@ -37,7 +26,10 @@ type NotificationBadgeVariant = 'primary' | 'secondary' | 'success' | 'warning' 
 
 // ─── Constants ──────────────────────────────────────────────────────────
 
-export const TYPE_CONFIG: Record<string, { label: string; icon: string; badgeVariant: NotificationBadgeVariant }> = {
+export const TYPE_CONFIG: Record<
+  string,
+  { label: string; icon: string; badgeVariant: NotificationBadgeVariant }
+> = {
   info: { label: 'Info', icon: 'ℹ️', badgeVariant: 'info' },
   lead: { label: 'Lead', icon: '🎯', badgeVariant: 'primary' },
   property: { label: 'Property', icon: '🏠', badgeVariant: 'success' },
@@ -50,17 +42,39 @@ const ITEMS_PER_PAGE = 10;
 // ─── Hook ───────────────────────────────────────────────────────────────
 
 export function useNotifications() {
-  const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
-  const allNotifications = useSelector(selectAllNotifications) as Notification[];
-  const unreadCount = useSelector(selectUnreadCount);
-  const loading = useSelector(selectNotificationsLoading);
-  const error = useSelector(selectNotificationsError);
+  const [allNotifications, setAllNotifications] = useState<Notification[]>([]);
+  const [unreadCount, setUnreadCount] = useState(0);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const fetchNotifications = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const items = await crmService.fetchNotifications();
+      const normalized = ((Array.isArray(items) ? items : []) as Notification[]).map(item => ({
+        ...item,
+        created_at:
+          (item.created_at as string | undefined) || (item.createdAt as string | undefined),
+      }));
+      setAllNotifications(normalized);
+
+      const unread = await crmService.fetchUnreadCount();
+      setUnreadCount(Number(unread?.unreadCount || 0));
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : String(err);
+      setError(message);
+      log.error('Failed to fetch notifications:', message);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
 
   // Fetch on mount
   useEffect(() => {
-    dispatch(fetchNotificationsAPI(undefined));
-  }, [dispatch]);
+    fetchNotifications();
+  }, [fetchNotifications]);
 
   // ─── Local state ────────────────────────────────────────────────
 
@@ -78,7 +92,8 @@ export function useNotifications() {
   const filteredNotifications = useMemo(() => {
     return allNotifications.filter((n: Notification) => {
       const matchesType = typeFilter === 'all' || n.type === typeFilter;
-      const matchesRead = readFilter === 'all' ||
+      const matchesRead =
+        readFilter === 'all' ||
         (readFilter === 'unread' && !n.read) ||
         (readFilter === 'read' && n.read);
       return matchesType && matchesRead;
@@ -89,32 +104,49 @@ export function useNotifications() {
 
   const paginatedNotifications = filteredNotifications.slice(
     (currentPage - 1) * ITEMS_PER_PAGE,
-    currentPage * ITEMS_PER_PAGE,
+    currentPage * ITEMS_PER_PAGE
   );
 
   // ─── Actions ────────────────────────────────────────────────────
 
-  const handleMarkAsRead = useCallback((id: string | number) => {
-    dispatch(markNotificationReadAPI(String(id))).catch((error: unknown) => {
-      log.error('Failed to mark notification as read:', error instanceof Error ? error.message : String(error));
-    });
-  }, [dispatch]);
+  const handleMarkAsRead = useCallback(async (id: string | number) => {
+    try {
+      await crmService.markNotificationRead(String(id));
+      setAllNotifications(prev =>
+        prev.map(n => (String(n.id) === String(id) ? { ...n, read: true } : n))
+      );
+      setUnreadCount(prev => Math.max(0, prev - 1));
+    } catch (err: unknown) {
+      log.error(
+        'Failed to mark notification as read:',
+        err instanceof Error ? err.message : String(err)
+      );
+    }
+  }, []);
 
-  const handleMarkAllAsRead = useCallback(() => {
-    dispatch(markAllNotificationsReadAPI()).catch((error: unknown) => {
-      log.error('Failed to mark all notifications as read:', error instanceof Error ? error.message : String(error));
-    });
-  }, [dispatch]);
+  const handleMarkAllAsRead = useCallback(async () => {
+    try {
+      await crmService.markAllNotificationsRead();
+      setAllNotifications(prev => prev.map(n => ({ ...n, read: true })));
+      setUnreadCount(0);
+    } catch (err: unknown) {
+      log.error(
+        'Failed to mark all notifications as read:',
+        err instanceof Error ? err.message : String(err)
+      );
+    }
+  }, []);
 
   const handleDelete = useCallback(async (id: string | number) => {
     try {
       await crmService.deleteNotification(String(id));
-      // Re-fetch notifications after deletion
-      dispatch(fetchNotificationsAPI(undefined));
+      setAllNotifications(prev => prev.filter(n => String(n.id) !== String(id)));
+      const unread = await crmService.fetchUnreadCount();
+      setUnreadCount(Number(unread?.unreadCount || 0));
     } catch (err: unknown) {
       log.error('Failed to delete notification:', err instanceof Error ? err.message : String(err));
     }
-  }, [dispatch]);
+  }, []);
 
   const getTimeAgo = useCallback((dateStr: string | undefined): string => {
     if (!dateStr) return '';
@@ -143,8 +175,8 @@ export function useNotifications() {
   }, []);
 
   const retryFetch = useCallback(() => {
-    dispatch(fetchNotificationsAPI(undefined));
-  }, [dispatch]);
+    fetchNotifications();
+  }, [fetchNotifications]);
 
   const goBack = useCallback(() => {
     navigate('/owner/crm');
@@ -152,17 +184,28 @@ export function useNotifications() {
 
   return {
     // Data
-    allNotifications, filteredNotifications, paginatedNotifications,
-    unreadCount, totalPages,
-    loading, error,
+    allNotifications,
+    filteredNotifications,
+    paginatedNotifications,
+    unreadCount,
+    totalPages,
+    loading,
+    error,
     // State
-    typeFilter, readFilter, currentPage,
+    typeFilter,
+    readFilter,
+    currentPage,
     // Page constants
     ITEMS_PER_PAGE,
     // Actions
-    handleMarkAsRead, handleMarkAllAsRead, handleDelete,
-    handleTypeFilterChange, handleReadFilterChange,
-    setCurrentPage, retryFetch, goBack,
+    handleMarkAsRead,
+    handleMarkAllAsRead,
+    handleDelete,
+    handleTypeFilterChange,
+    handleReadFilterChange,
+    setCurrentPage,
+    retryFetch,
+    goBack,
     // Formatters
     getTimeAgo,
   };

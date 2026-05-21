@@ -32,6 +32,7 @@ const log = createLogger('SocketServer');
 export interface MetaMessagePayload {
   id: string;
   conversationId: string;
+  leadId?: string;
   from: string;
   content: string;
   type: string;

@@ -3,21 +3,12 @@
  * Fetches favorite properties from Redux and provides add/remove functionality.
  */
 import { useState, useMemo, useCallback, useEffect } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { formatCurrency as formatCurrencyUtil } from '../../../utils';
 import { createLogger } from '../../../utils/logger';
+import * as crmService from '../../../services/crmService';
 
 const log = createLogger('useFavorites');
-import type { AppDispatch } from '../../../store/store';
-import {
-  selectAllFavorites,
-  selectFavoritesLoading,
-  selectFavoritesError,
-  fetchFavoritesAPI,
-  removeFavoriteAPI,
-  addActivity,
-} from '../../../store/crmDataSlice';
 
 // ─── Types ──────────────────────────────────────────────────────────────
 
@@ -43,16 +34,30 @@ const ITEMS_PER_PAGE = 12;
 // ─── Hook ───────────────────────────────────────────────────────────────
 
 export function useFavorites() {
-  const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
-  const allFavorites = useSelector(selectAllFavorites) as FavoriteProperty[];
-  const loading = useSelector(selectFavoritesLoading);
-  const error = useSelector(selectFavoritesError);
+  const [allFavorites, setAllFavorites] = useState<FavoriteProperty[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const fetchFavorites = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const items = await crmService.fetchFavorites();
+      setAllFavorites((Array.isArray(items) ? items : []) as FavoriteProperty[]);
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : String(err);
+      setError(message);
+      log.error('Failed to fetch favorites:', message);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
 
   // Fetch on mount
   useEffect(() => {
-    dispatch(fetchFavoritesAPI());
-  }, [dispatch]);
+    fetchFavorites();
+  }, [fetchFavorites]);
 
   // ─── Local state ────────────────────────────────────────────────
 
@@ -82,30 +87,16 @@ export function useFavorites() {
 
   // ─── Actions ────────────────────────────────────────────────────
 
-  const handleRemoveFavorite = useCallback(
-    (propertyId: string | number) => {
-      dispatch(removeFavoriteAPI(String(propertyId)))
-        .then((result: any) => {
-          if (removeFavoriteAPI.fulfilled.match(result)) {
-            dispatch(
-              addActivity({
-                id: Date.now(),
-                type: 'favorite',
-                description: 'Property removed from favorites',
-                timestamp: new Date().toISOString(),
-              })
-            );
-          }
-        })
-        .catch((error: unknown) => {
-          log.error(
-            'Failed to remove favorite:',
-            error instanceof Error ? error.message : String(error)
-          );
-        });
-    },
-    [dispatch]
-  );
+  const handleRemoveFavorite = useCallback(async (propertyId: string | number) => {
+    try {
+      await crmService.removeFavorite(String(propertyId));
+      setAllFavorites(prev =>
+        prev.filter(fav => String(fav.property_id ?? fav.id) !== String(propertyId))
+      );
+    } catch (err: unknown) {
+      log.error('Failed to remove favorite:', err instanceof Error ? err.message : String(err));
+    }
+  }, []);
 
   const formatCurrency = useCallback(
     (amount: number | undefined) => formatCurrencyUtil(amount),
@@ -118,8 +109,8 @@ export function useFavorites() {
   }, []);
 
   const retryFetch = useCallback(() => {
-    dispatch(fetchFavoritesAPI());
-  }, [dispatch]);
+    fetchFavorites();
+  }, [fetchFavorites]);
 
   const goBack = useCallback(() => {
     navigate('/owner/crm');

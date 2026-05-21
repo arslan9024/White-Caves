@@ -144,6 +144,16 @@ Complete specifications for White Caves unified real estate CRM platform serving
 - [ ] CSV import for partner integrations
 - [ ] Data reconciliation reports
 
+**Implementation Progress Snapshot (May 2026):**
+
+- [x] Smart import route validation hardening in place (sheetName/dryRun/strategy/mapping/cluster payload guards)
+- [x] Required mapping coverage enforcement (`ownerName`, `area`, `pNumber`) with token normalization support
+- [x] Error contract normalization for missing worksheet/file and unsupported upload formats (400-class responses)
+- [x] Upload safeguards validated (missing file, unsupported extension, oversize file)
+- [x] Import execution resilience expanded (invalid rows handling, dedup strategy fallback, placeholder normalization)
+- [x] Import history/report routes standardized with ownership checks and strict pagination/format validation
+- [x] Focused backend regression coverage expanded and stabilized for import routes/services
+
 ---
 
 ### FR-4: SALES COMMISSION MANAGEMENT (Theodora)

@@ -9,19 +9,19 @@ import { useNavigate } from 'react-router-dom';
 import { formatDate as formatDateUtil } from '../../../utils';
 import { isValidEmail, isValidPhone } from '../../../utils/validation';
 import { createLogger } from '../../../utils/logger';
-
-const log = createLogger('useClientManagement');
 import type { AppDispatch } from '../../../store/store';
 import {
   selectAllClients,
   selectClientsLoading,
   selectClientsError,
-  fetchClientsAPI,
+  fetchClientsFromAPI,
   createClientAPI,
   updateClientAPI,
   deleteClientAPI,
   addActivity,
 } from '../../../store/crmDataSlice';
+
+const log = createLogger('useClientManagement');
 
 // ─── Types ──────────────────────────────────────────────────────────────
 
@@ -55,14 +55,20 @@ type ClientBadgeVariant = 'primary' | 'secondary' | 'success' | 'warning' | 'err
 
 // ─── Constants ──────────────────────────────────────────────────────────
 
-export const TYPE_CONFIG: Record<string, { label: string; icon: string; badgeVariant: ClientBadgeVariant }> = {
+export const TYPE_CONFIG: Record<
+  string,
+  { label: string; icon: string; badgeVariant: ClientBadgeVariant }
+> = {
   buyer: { label: 'Buyer', icon: '🏠', badgeVariant: 'info' },
   seller: { label: 'Seller', icon: '💼', badgeVariant: 'primary' },
   owner: { label: 'Owner', icon: '🔑', badgeVariant: 'success' },
   investor: { label: 'Investor', icon: '📈', badgeVariant: 'warning' },
 };
 
-export const STATUS_CONFIG: Record<string, { label: string; color: string; badgeVariant: ClientBadgeVariant }> = {
+export const STATUS_CONFIG: Record<
+  string,
+  { label: string; color: string; badgeVariant: ClientBadgeVariant }
+> = {
   active: { label: 'Active', color: '#10B981', badgeVariant: 'success' },
   inactive: { label: 'Inactive', color: '#6B7280', badgeVariant: 'secondary' },
   vip: { label: 'VIP', color: '#F59E0B', badgeVariant: 'warning' },
@@ -92,7 +98,7 @@ export function useClientManagement() {
 
   // Fetch on mount
   useEffect(() => {
-    dispatch(fetchClientsAPI(undefined));
+    dispatch(fetchClientsFromAPI(undefined));
   }, [dispatch]);
 
   // ─── Local state ────────────────────────────────────────────────
@@ -118,9 +124,11 @@ export function useClientManagement() {
 
   const filteredClients = useMemo(() => {
     return allClients.filter((c: Client) => {
-      const matchesSearch = !search || [
-        c.name, c.email, c.phone, c.company,
-      ].some(field => field?.toLowerCase().includes(search.toLowerCase()));
+      const matchesSearch =
+        !search ||
+        [c.name, c.email, c.phone, c.company].some(field =>
+          field?.toLowerCase().includes(search.toLowerCase())
+        );
       const matchesType = typeFilter === 'all' || c.type === typeFilter;
       const matchesStatus = statusFilter === 'all' || c.status === statusFilter;
       return matchesSearch && matchesType && matchesStatus;
@@ -131,7 +139,7 @@ export function useClientManagement() {
 
   const paginatedClients = filteredClients.slice(
     (currentPage - 1) * ITEMS_PER_PAGE,
-    currentPage * ITEMS_PER_PAGE,
+    currentPage * ITEMS_PER_PAGE
   );
 
   const typeCounts = useMemo(() => {
@@ -182,29 +190,41 @@ export function useClientManagement() {
       type: formData.type,
       company: formData.company.trim(),
       status: formData.status,
-      tags: formData.tags ? formData.tags.split(',').map(t => t.trim()).filter(Boolean) : [],
+      tags: formData.tags
+        ? formData.tags
+            .split(',')
+            .map(t => t.trim())
+            .filter(Boolean)
+        : [],
       notes: formData.notes.trim(),
       created_at: new Date().toISOString(),
     };
 
-    dispatch(createClientAPI(clientData)).then((result) => {
-      if (createClientAPI.fulfilled.match(result)) {
-        dispatch(addActivity({
-          id: Date.now(),
-          type: 'client',
-          description: `New client added: ${formData.name}`,
-          timestamp: new Date().toISOString(),
-        }));
-        setShowCreateModal(false);
-        resetForm();
-      } else if (createClientAPI.rejected.match(result)) {
-        const msg = (result.payload as string) || 'Failed to create client. Please try again.';
-        setErrorMessage(msg);
-      }
-    }).catch((error: unknown) => {
-      log.error('Failed to create client:', error instanceof Error ? error.message : String(error));
-      setErrorMessage('An unexpected error occurred. Please try again.');
-    });
+    dispatch(createClientAPI(clientData))
+      .then(result => {
+        if (createClientAPI.fulfilled.match(result)) {
+          dispatch(
+            addActivity({
+              id: Date.now(),
+              type: 'client',
+              description: `New client added: ${formData.name}`,
+              timestamp: new Date().toISOString(),
+            })
+          );
+          setShowCreateModal(false);
+          resetForm();
+        } else if (createClientAPI.rejected.match(result)) {
+          const msg = (result.payload as string) || 'Failed to create client. Please try again.';
+          setErrorMessage(msg);
+        }
+      })
+      .catch((error: unknown) => {
+        log.error(
+          'Failed to create client:',
+          error instanceof Error ? error.message : String(error)
+        );
+        setErrorMessage('An unexpected error occurred. Please try again.');
+      });
   }, [dispatch, formData, resetForm]);
 
   const handleEdit = useCallback((client: Client) => {
@@ -233,59 +253,80 @@ export function useClientManagement() {
     }
     if (selectedClient) {
       const nameSnapshot = formData.name;
-      dispatch(updateClientAPI({
-        id: String(selectedClient.id),
-        name: formData.name.trim(),
-        email: formData.email.trim(),
-        phone: formData.phone.trim(),
-        type: formData.type,
-        company: formData.company.trim(),
-        status: formData.status,
-        tags: formData.tags ? formData.tags.split(',').map(t => t.trim()).filter(Boolean) : [],
-        notes: formData.notes.trim(),
-        updated_at: new Date().toISOString(),
-      })).then((result) => {
-        if (updateClientAPI.fulfilled.match(result)) {
-          dispatch(addActivity({
-            id: Date.now(),
-            type: 'client',
-            description: `Client updated: ${nameSnapshot}`,
-            timestamp: new Date().toISOString(),
-          }));
-          setShowEditModal(false);
-          setSelectedClient(null);
-          resetForm();
-        } else if (updateClientAPI.rejected.match(result)) {
-          const msg = (result.payload as string) || 'Failed to update client. Please try again.';
-          setErrorMessage(msg);
-        }
-      }).catch((error: unknown) => {
-        log.error('Failed to update client:', error instanceof Error ? error.message : String(error));
-        setErrorMessage('An unexpected error occurred. Please try again.');
-      });
+      dispatch(
+        updateClientAPI({
+          id: String(selectedClient.id),
+          name: formData.name.trim(),
+          email: formData.email.trim(),
+          phone: formData.phone.trim(),
+          type: formData.type,
+          company: formData.company.trim(),
+          status: formData.status,
+          tags: formData.tags
+            ? formData.tags
+                .split(',')
+                .map(t => t.trim())
+                .filter(Boolean)
+            : [],
+          notes: formData.notes.trim(),
+          updated_at: new Date().toISOString(),
+        })
+      )
+        .then(result => {
+          if (updateClientAPI.fulfilled.match(result)) {
+            dispatch(
+              addActivity({
+                id: Date.now(),
+                type: 'client',
+                description: `Client updated: ${nameSnapshot}`,
+                timestamp: new Date().toISOString(),
+              })
+            );
+            setShowEditModal(false);
+            setSelectedClient(null);
+            resetForm();
+          } else if (updateClientAPI.rejected.match(result)) {
+            const msg = (result.payload as string) || 'Failed to update client. Please try again.';
+            setErrorMessage(msg);
+          }
+        })
+        .catch((error: unknown) => {
+          log.error(
+            'Failed to update client:',
+            error instanceof Error ? error.message : String(error)
+          );
+          setErrorMessage('An unexpected error occurred. Please try again.');
+        });
     }
   }, [dispatch, selectedClient, formData, resetForm]);
 
   const handleDelete = useCallback(() => {
     if (selectedClient) {
-      dispatch(deleteClientAPI(String(selectedClient.id))).then((result) => {
-        if (deleteClientAPI.fulfilled.match(result)) {
-          dispatch(addActivity({
-            id: Date.now(),
-            type: 'client',
-            description: `Client deleted: ${selectedClient.name}`,
-            timestamp: new Date().toISOString(),
-          }));
-          setShowDeleteConfirm(false);
-          setSelectedClient(null);
-        } else if (deleteClientAPI.rejected.match(result)) {
-          const msg = (result.payload as string) || 'Failed to delete client. Please try again.';
-          setErrorMessage(msg);
-        }
-      }).catch((error: unknown) => {
-        log.error('Failed to delete client:', error instanceof Error ? error.message : String(error));
-        setErrorMessage('An unexpected error occurred. Please try again.');
-      });
+      dispatch(deleteClientAPI(String(selectedClient.id)))
+        .then(result => {
+          if (deleteClientAPI.fulfilled.match(result)) {
+            dispatch(
+              addActivity({
+                id: Date.now(),
+                type: 'client',
+                description: `Client deleted: ${selectedClient.name}`,
+                timestamp: new Date().toISOString(),
+              })
+            );
+            setShowDeleteConfirm(false);
+            setSelectedClient(null);
+          } else if (deleteClientAPI.rejected.match(result)) {
+            const msg = (result.payload as string) || 'Failed to delete client. Please try again.';
+            setErrorMessage(msg);
+          }
+        })
+        .catch((error: unknown) => {
+          log.error(
+            'Failed to delete client:',
+            error instanceof Error ? error.message : String(error)
+          );
+          setErrorMessage('An unexpected error occurred. Please try again.');
+        });
     }
   }, [dispatch, selectedClient]);
 
@@ -320,7 +361,7 @@ export function useClientManagement() {
   }, []);
 
   const retryFetch = useCallback(() => {
-    dispatch(fetchClientsAPI(undefined));
+    dispatch(fetchClientsFromAPI(undefined));
   }, [dispatch]);
 
   const goBack = useCallback(() => {
@@ -329,21 +370,47 @@ export function useClientManagement() {
 
   return {
     // Data
-    allClients, filteredClients, paginatedClients, typeCounts, totalPages,
-    loading, error,
+    allClients,
+    filteredClients,
+    paginatedClients,
+    typeCounts,
+    totalPages,
+    loading,
+    error,
     // State
-    search, typeFilter, statusFilter, currentPage,
-    showCreateModal, showEditModal, showDeleteConfirm, selectedClient,
-    formData, setFormData,
-    errorMessage, setErrorMessage,
+    search,
+    typeFilter,
+    statusFilter,
+    currentPage,
+    showCreateModal,
+    showEditModal,
+    showDeleteConfirm,
+    selectedClient,
+    formData,
+    setFormData,
+    errorMessage,
+    setErrorMessage,
     // Page constants
     ITEMS_PER_PAGE,
     // Actions
-    openCreateModal, closeCreateModal, closeEditModal, closeDeleteModal,
-    handleCreate, handleEdit, handleSaveEdit, handleDelete, confirmDelete,
-    handleSearchChange, handleTypeFilterChange, handleStatusFilterChange,
-    setCurrentPage, retryFetch, goBack,
+    openCreateModal,
+    closeCreateModal,
+    closeEditModal,
+    closeDeleteModal,
+    handleCreate,
+    handleEdit,
+    handleSaveEdit,
+    handleDelete,
+    confirmDelete,
+    handleSearchChange,
+    handleTypeFilterChange,
+    handleStatusFilterChange,
+    setCurrentPage,
+    retryFetch,
+    goBack,
     // Formatters
-    getTypeBadgeVariant, getStatusBadgeVariant, formatDate,
+    getTypeBadgeVariant,
+    getStatusBadgeVariant,
+    formatDate,
   };
 }

@@ -19,9 +19,9 @@
  */
 
 import { Router, Request, Response } from 'express';
-import type { Prisma } from '@prisma/client';
 import { asyncHandler, AppError } from '../middleware/errorHandler';
 import type { AuthRequest } from '../middleware/auth';
+import { Prisma } from '@prisma/client';
 import { prisma } from '../database.js';
 import { sanitizeString } from '../utils/sanitize';
 import { requirePermission, requireMinRole } from '../middleware/rbac';
@@ -532,7 +532,7 @@ router.get(
       ],
     };
 
-    const where =
+    const where: Prisma.PropertyWhereInput =
       statusFilter === 'missing'
         ? missingWhere
         : statusFilter === 'complete'
@@ -1087,7 +1087,7 @@ router.post(
           amount: Number.isFinite(Number(amount)) ? Number(amount) : null,
           currency: currency ? String(currency) : 'AED',
           transactionType: transactionType ? String(transactionType) : null,
-        } as any,
+        } as unknown as Prisma.InputJsonValue,
       },
     });
 
