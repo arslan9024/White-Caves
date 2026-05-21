@@ -103,6 +103,12 @@ Ship login reliability fix now and prepare strict execution graph for profile/da
 - **Files:** `src/pages/auth/SignInPage.test.tsx`
 - **Status:** ✅ Completed (loading-state retry CTA regression test)
 
+### AUTH-08-013 — Recovery panel busy-state accessibility coverage
+
+- Surface retry-in-progress state to assistive tech by exposing `aria-busy` on recovery panel and covering it in regression tests.
+- **Files:** `src/pages/auth/SignInPage.tsx`, `src/pages/auth/SignInPage.test.tsx`
+- **Status:** ✅ Completed (aria-busy wiring + busy-state regression test)
+
 ### DASH-08-005 — Dashboard profile completion guidance card
 
 - Add post-login profile completeness guidance with direct CTA to `/profile`.
@@ -134,3 +140,4 @@ Ship login reliability fix now and prepare strict execution graph for profile/da
 13. AUTH-08-010 ✅
 14. AUTH-08-011 ✅
 15. AUTH-08-012 ✅
+16. AUTH-08-013 ✅

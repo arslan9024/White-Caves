@@ -112,7 +112,7 @@ const SignInPage: FC = () => {
 
               {error && <div className="auth-error">{error}</div>}
               {socialSyncRecovery && (
-                <div className="auth-recovery" role="status" aria-live="polite">
+                <div className="auth-recovery" role="status" aria-live="polite" aria-busy={loading}>
                   <p className="auth-recovery__title">
                     {socialSyncRecovery.provider[0].toUpperCase() +
                       socialSyncRecovery.provider.slice(1)}{' '}
