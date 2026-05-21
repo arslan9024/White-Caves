@@ -980,6 +980,13 @@ A task is not complete until it has:
 - Prioritize production-safe decisions, automated validation, and clear delivery checkpoints.
 - Default to autonomous execution unless blocked by missing credentials, external approvals, or irreversible-risk operations.
 
+## 🔧 Subagent Upgrade Baseline (May 2026)
+
+- **Canonical Policy:** `plans/CUSTOM_AGENTS_PLAN.md` is the source of truth for subagent governance.
+- **Premium Coding Gate Phrase (Exact):** `@Ada — Context Ready (60% Readiness) — Coding Phase Approved`
+- **Invocation Protocol (Exact):** `@[AgentName] — [ACTION]: [TARGET FILE or TOPIC]`
+- **Allowed Actions:** `EXPAND`, `DRAFT`, `REVIEW`, `AUDIT`, `SYNC`
+
 ## Branch & Deployment Protocol
 
 - Start every implementation session on the local `develop` branch.

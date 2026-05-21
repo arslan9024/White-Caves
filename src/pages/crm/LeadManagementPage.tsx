@@ -268,6 +268,7 @@ const LeadManagementPage: FC = () => {
             $color={cfg.color}
             onClick={() => handleStatusFilterChange(key)}
           >
+            {/* eslint-disable-next-line security/detect-object-injection */}
             {cfg.label} ({statusCounts[key] || 0})
           </PipelineStage>
         ))}
