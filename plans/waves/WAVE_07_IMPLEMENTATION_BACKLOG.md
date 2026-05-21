@@ -61,6 +61,12 @@ Ship login reliability fix now and prepare strict execution graph for profile/da
 - **Files:** `src/components/layout/authenticated/AuthenticatedPageShell.tsx`, `src/pages/UnifiedDashboardPage.tsx`
 - **Status:** ✅ Baseline scaffold completed (behavior-neutral wrapper + migration entry point)
 
+### AUTH-08-004 — Social login recovery UX after backend sync failures
+
+- Preserve strict backend-sync gate while guiding users with actionable retry flow.
+- **Files:** `src/hooks/useSignIn.ts`, `src/pages/auth/SignInPage.tsx`, `src/pages/auth/AuthPages.css`, `src/hooks/useSignIn.test.ts`
+- **Status:** ✅ Completed (recovery metadata + retry CTA + focused tests)
+
 ---
 
 ## Dependency Order

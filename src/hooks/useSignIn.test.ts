@@ -313,6 +313,40 @@ describe('useSignIn — handleSocialAuth (integration)', () => {
       const currentUser = store.getState().user.currentUser;
       expect(currentUser).toBeNull();
     });
+
+    it('stores recovery metadata so UI can offer a retry CTA', async () => {
+      mockSignInWithGoogle.mockResolvedValue({ user: firebaseUser });
+      mockSyncFirebaseUser.mockRejectedValue(new Error('Backend unreachable'));
+      const { result } = renderHook(() => useSignIn(), { wrapper: createWrapper(store) });
+
+      await act(async () => {
+        await result.current.handleSocialAuth('google');
+      });
+
+      expect(result.current.socialSyncRecovery).toEqual({
+        provider: 'google',
+        reason: 'Backend unreachable',
+      });
+    });
+
+    it('retries the same social provider via retrySocialAuth', async () => {
+      mockSignInWithGoogle.mockResolvedValue({ user: firebaseUser });
+      mockSyncFirebaseUser
+        .mockRejectedValueOnce(new Error('Backend unreachable'))
+        .mockResolvedValueOnce(successResponse());
+      const { result } = renderHook(() => useSignIn(), { wrapper: createWrapper(store) });
+
+      await act(async () => {
+        await result.current.handleSocialAuth('google');
+      });
+
+      await act(async () => {
+        await result.current.retrySocialAuth();
+      });
+
+      expect(mockSignInWithGoogle).toHaveBeenCalledTimes(2);
+      expect(mockSyncFirebaseUser).toHaveBeenCalledTimes(2);
+    });
   });
 
   // ── Backend sync error (signup mode — fallback) ────────────────────────────

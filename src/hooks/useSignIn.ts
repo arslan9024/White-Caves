@@ -47,6 +47,11 @@ interface ConfirmationResult {
   }>;
 }
 
+interface SocialSyncRecovery {
+  provider: 'google' | 'facebook' | 'apple';
+  reason: string;
+}
+
 export interface UserCategory {
   id: string;
   label: string;
@@ -131,6 +136,7 @@ export function useSignIn() {
 
   // ── Post-auth pending user ─────────────────────────────────────
   const [pendingUser, setPendingUser] = useState<PendingUser | null>(null);
+  const [socialSyncRecovery, setSocialSyncRecovery] = useState<SocialSyncRecovery | null>(null);
 
   // Ref for navigation timers
   const navTimerRef = useRef<ReturnType<typeof setTimeout>>();
@@ -287,6 +293,7 @@ export function useSignIn() {
     async (provider: string): Promise<void> => {
       setLoading(true);
       setError('');
+      setSocialSyncRecovery(null);
       try {
         let result;
         switch (provider) {
@@ -323,6 +330,9 @@ export function useSignIn() {
             syncError instanceof Error
               ? syncError.message
               : 'Unable to complete authentication sync';
+          if (provider === 'google' || provider === 'facebook' || provider === 'apple') {
+            setSocialSyncRecovery({ provider, reason: syncMessage });
+          }
           setError(
             `Authentication succeeded with ${provider}, but backend session setup failed: ${syncMessage}. Please try again.`
           );
@@ -336,6 +346,14 @@ export function useSignIn() {
     },
     [mode, handleSignInSuccess, handleSignUpSuccess]
   );
+
+  const retrySocialAuth = useCallback(async (): Promise<void> => {
+    if (!socialSyncRecovery) {
+      return;
+    }
+
+    await handleSocialAuth(socialSyncRecovery.provider);
+  }, [handleSocialAuth, socialSyncRecovery]);
 
   // ── Email auth ─────────────────────────────────────────────────
 
@@ -462,6 +480,7 @@ export function useSignIn() {
     setSelectedRole('');
     setError('');
     setSuccess('');
+    setSocialSyncRecovery(null);
   }, []);
 
   const getRolesForCategory = useCallback((): UserRole[] => {
@@ -489,6 +508,7 @@ export function useSignIn() {
     error,
     setError,
     success,
+    socialSyncRecovery,
     switchMode,
     goBackToStep,
 
@@ -522,6 +542,7 @@ export function useSignIn() {
     // Handlers
     handleSignInSuccess,
     handleSocialAuth,
+    retrySocialAuth,
     handleEmailSubmit,
     handlePhoneSubmit,
     handleOtpVerify,

@@ -59,6 +59,7 @@ const SignInPage: FC = () => {
     error,
     setError,
     success,
+    socialSyncRecovery,
     switchMode,
     goBackToStep,
     email,
@@ -83,6 +84,7 @@ const SignInPage: FC = () => {
     resetOtp,
     handleSignInSuccess,
     handleSocialAuth,
+    retrySocialAuth,
     handleEmailSubmit,
     handlePhoneSubmit,
     handleOtpVerify,
@@ -108,6 +110,32 @@ const SignInPage: FC = () => {
               </p>
 
               {error && <div className="auth-error">{error}</div>}
+              {socialSyncRecovery && (
+                <div className="auth-recovery" role="status" aria-live="polite">
+                  <p className="auth-recovery__title">
+                    {socialSyncRecovery.provider[0].toUpperCase() +
+                      socialSyncRecovery.provider.slice(1)}{' '}
+                    sign-in needs one more step
+                  </p>
+                  <p className="auth-recovery__hint">
+                    We secured your authentication, but CRM session activation failed. Please retry
+                    once to finish sign-in.
+                  </p>
+                  <p className="auth-recovery__reason">Reason: {socialSyncRecovery.reason}</p>
+                  <button
+                    type="button"
+                    className="btn btn-secondary btn-full"
+                    disabled={loading}
+                    onClick={() => {
+                      void retrySocialAuth();
+                    }}
+                  >
+                    {loading
+                      ? 'Retrying...'
+                      : `Retry ${socialSyncRecovery.provider[0].toUpperCase() + socialSyncRecovery.provider.slice(1)} sign-in`}
+                  </button>
+                </div>
+              )}
               {success && <div className="auth-success">{success}</div>}
 
               {mode === 'signin' && (
