@@ -20,6 +20,7 @@
  */
 
 import { Router, Request, Response } from 'express';
+import type { AuthRequest } from '../middleware/auth.js';
 import {
   getLindaClientForMode,
   getLindaCoreMode,

@@ -12,6 +12,16 @@ import type { RootState } from '../../../store/store';
 import { authFetch } from '../../../utils/authFetch';
 import '../../../pages/RolePages.css';
 
+interface LeaseData {
+  id: string;
+  startDate: string;
+  endDate: string;
+  monthlyRent: number;
+  status: string;
+  nextPaymentDue?: string;
+  property?: { title: string; location: string };
+}
+
 interface DashboardData {
   hasActiveLease: boolean;
   monthlyRent: number | null;
@@ -46,9 +56,35 @@ const TenantPortalHome: FC<TenantPortalHomeProps> = ({ onNavigate }) => {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    authFetch('/api/portal/tenant/dashboard')
-      .then(r => r.json())
-      .then(res => setDashboard((res.data as DashboardData) ?? null))
+    Promise.all([
+      authFetch('/api/leases').then(r => r.json()),
+      authFetch('/api/maintenance')
+        .then(r => r.json())
+        .catch(() => ({ data: [], pagination: { total: 0 } })),
+    ])
+      .then(([leasesRes, maintenanceRes]) => {
+        const leases: LeaseData[] = Array.isArray(leasesRes.data) ? leasesRes.data : [];
+        const activeLease = leases.find(l => l.status === 'active') ?? null;
+        const openCount =
+          maintenanceRes?.pagination?.total ??
+          (Array.isArray(maintenanceRes.data) ? maintenanceRes.data.length : 0);
+        const totalCount = openCount;
+
+        let daysRemaining: number | null = null;
+        if (activeLease?.endDate) {
+          const diff = new Date(activeLease.endDate).getTime() - Date.now();
+          daysRemaining = Math.max(0, Math.ceil(diff / (1000 * 60 * 60 * 24)));
+        }
+
+        setDashboard({
+          hasActiveLease: !!activeLease,
+          monthlyRent: activeLease?.monthlyRent ?? null,
+          currency: 'AED',
+          daysRemainingOnLease: daysRemaining,
+          openMaintenanceRequests: openCount,
+          totalMaintenanceRequests: totalCount,
+        });
+      })
       .catch(() => setError('Unable to load dashboard data. Please refresh.'))
       .finally(() => setLoading(false));
   }, []);

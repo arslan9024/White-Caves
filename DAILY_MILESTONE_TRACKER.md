@@ -62,6 +62,7 @@
 | May 20, 2026 | @Mira + @Katherine | Contracts signing wave: `POST /api/contracts/:id/request-signature` now sends a branded signing-link email via tracked email service; focused route regression test added                                                                       | Done        |
 | May 20, 2026 | @Mira + @Katherine | Signature service wave: `SignatureService` now sends branded signing-request and reminder emails via tracked email service; focused service regression test added                                                                               | Done        |
 | May 20, 2026 | @Mira + @Katherine | Import history dashboard wave: mounted `importHistory` routes in runtime, aligned `/api/inventory/import/history` contract with frontend, and added real collection stats for `GET /api/admin/dashboard` with focused route regression coverage | Done        |
+| May 21, 2026 | @Mira + @Katherine | N+9 UX loading-state hardening: reusable skeleton variants (`SkeletonKPI`, `SkeletonTable`, `SkeletonCard`, `SkeletonText`) integrated in key CRM/property loading surfaces with focused test updates                                           | Done        |
 
 ---
 

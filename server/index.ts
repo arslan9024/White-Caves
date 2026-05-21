@@ -13,6 +13,7 @@ import path from 'path';
 import compression from 'compression';
 import morgan from 'morgan';
 import cookieParser from 'cookie-parser';
+import { Prisma } from '@prisma/client';
 import { connectDatabase, prisma } from './database.js';
 import { errorHandler, asyncHandler, AppError } from './middleware/errorHandler.js';
 import authMiddleware from './middleware/auth.js';
@@ -47,6 +48,7 @@ import metaWebhookRoutes from './routes/meta-webhook.js';
 import favoritesRoutes from './routes/favorites.js';
 import orchestratorRoutes from './routes/orchestrator.js';
 import henryRoutes from './routes/henry.js';
+// @ts-expect-error JS route module has no TypeScript declarations yet
 import ninaRoutes from './routes/nina.js';
 import maryRoutes from './routes/mary.js';
 import savedSearchesRoutes from './routes/saved-searches.js';
@@ -78,7 +80,9 @@ import usersRoutes from './routes/users.js';
 import leasingInventoryRoutes from './routes/leasing-inventory.js';
 import secondarySalesRoutes from './routes/secondary-sales.js';
 import commissionsRoutes from './routes/commissions.js';
+// @ts-expect-error JS route module has no TypeScript declarations yet
 import importHistoryRoutes from './routes/importHistory.routes.js';
+// @ts-expect-error JS route module has no TypeScript declarations yet
 import smartImportRoutes from './routes/smartImport.routes.js';
 import { requireRole, requirePermission } from './middleware/rbac.js';
 import { startLeadScoringScheduler } from './services/ai/leadScoringScheduler.js';
@@ -496,8 +500,13 @@ app.put(
     };
     await prisma.systemSetting.upsert({
       where: { key: 'whatsapp_settings' },
-      update: { value: updated, category: 'whatsapp', updatedBy: userId },
-      create: { key: 'whatsapp_settings', value: updated, category: 'whatsapp', updatedBy: userId },
+      update: { value: updated as Prisma.InputJsonValue, category: 'whatsapp', updatedBy: userId },
+      create: {
+        key: 'whatsapp_settings',
+        value: updated as Prisma.InputJsonValue,
+        category: 'whatsapp',
+        updatedBy: userId,
+      },
     });
     res.status(200).json({ success: true, data: updated });
   })

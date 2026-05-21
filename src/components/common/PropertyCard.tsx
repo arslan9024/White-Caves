@@ -24,7 +24,7 @@ import {
   PriceSuffix,
   PropertySpecs,
 } from './PropertyCard/PropertyCard.styles';
-import { Skeleton } from '../ui/Skeleton';
+import { SkeletonCard } from '../ui/Skeleton';
 
 export function PropertyStatusBadge({ status }: { status?: string }) {
   return <PropertyStatusBadgeStyled $statusType={status}>{status}</PropertyStatusBadgeStyled>;
@@ -91,14 +91,7 @@ function PropertyCard({
   if (loading) {
     return (
       <PropertyCardDiv $clickable={false} className={className}>
-        <PropertyCardImage>
-          <Skeleton variant="rect" height={220} borderRadius="0" />
-        </PropertyCardImage>
-        <PropertyCardContent>
-          <Skeleton variant="text" width="70%" height={16} />
-          <Skeleton variant="text" width="50%" height={14} />
-          <Skeleton variant="text" width="40%" height={14} />
-        </PropertyCardContent>
+        <SkeletonCard imageHeight={220} />
       </PropertyCardDiv>
     );
   }

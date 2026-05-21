@@ -2,7 +2,7 @@
 
 > **Agency:** White Caves Global Agency
 > **Orchestrator:** @Ada (Chief Architect)
-> **Last Updated:** May 20, 2026
+> **Last Updated:** 2026-05-21
 > **Policy Mode:** Dual-threshold readiness (60% unlock, 90% target) + policy-driven gating (Governance V2 active)
 > **Daily Report:** `PROJECT_PROGRESS_REPORT.md`
 
@@ -12,7 +12,7 @@
 
 - Canonical roadmap: **[plans/MASTER_PLAN.md](plans/MASTER_PLAN.md)**
 - Active queue: **[plans/PENDING_TASKS_ONLY.md](plans/PENDING_TASKS_ONLY.md)**
-- Last Updated (ISO): 2026-05-20
+- Last Updated (ISO): 2026-05-21
 
 > Premium usage is allowed **only** for senior coders/designers **after** @Ada declares:
 > `@Ada — Context Ready (60% Readiness) — Coding Phase Approved`
@@ -252,12 +252,13 @@
 
 ## ✅ Completed Milestones (Recent)
 
-| Date        | Milestone            | Result                                                        |
-| ----------- | -------------------- | ------------------------------------------------------------- |
-| May 5, 2026 | Phase 33 Step 2      | Homepage leasing conversion events + hero CTA leasing-first   |
-| May 5, 2026 | Phase 31             | LandlordIncomeTab + LandlordOfferReviewTab live API completed |
-| May 5, 2026 | Phase 32             | LandlordPayments date-range + mobile responsive CSS completed |
-| May 3, 2026 | Phase 26 docs sprint | revenue-model, analytics-dashboard, AI personas expansion     |
+| Date         | Milestone            | Result                                                                     |
+| ------------ | -------------------- | -------------------------------------------------------------------------- |
+| May 21, 2026 | N+9                  | UX loading-state hardening: reusable skeleton variants + key-page adoption |
+| May 5, 2026  | Phase 33 Step 2      | Homepage leasing conversion events + hero CTA leasing-first                |
+| May 5, 2026  | Phase 31             | LandlordIncomeTab + LandlordOfferReviewTab live API completed              |
+| May 5, 2026  | Phase 32             | LandlordPayments date-range + mobile responsive CSS completed              |
+| May 3, 2026  | Phase 26 docs sprint | revenue-model, analytics-dashboard, AI personas expansion                  |
 
 ---
 
