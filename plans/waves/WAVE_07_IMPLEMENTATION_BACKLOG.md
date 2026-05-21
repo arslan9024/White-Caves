@@ -65,7 +65,7 @@ Ship login reliability fix now and prepare strict execution graph for profile/da
 
 - Preserve strict backend-sync gate while guiding users with actionable retry flow.
 - **Files:** `src/hooks/useSignIn.ts`, `src/pages/auth/SignInPage.tsx`, `src/pages/auth/AuthPages.css`, `src/hooks/useSignIn.test.ts`
-- **Status:** ✅ Completed (recovery metadata + retry CTA + focused tests)
+- **Status:** ✅ Completed (recovery metadata + retry CTA + hook/UI focused tests)
 
 ### DASH-08-005 — Dashboard profile completion guidance card
 
