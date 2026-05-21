@@ -194,17 +194,17 @@ export async function checkFavorite(propertyId: string) {
 // ─── Users (Management) ────────────────────────────────────────────────
 
 export async function fetchUsers(params?: Record<string, string>) {
-  const res = await authFetch(`${API}/user-management${buildQuery(params)}`);
+  const res = await authFetch(`${API}/users${buildQuery(params)}`);
   return parseResponse<unknown[]>(res);
 }
 
 export async function fetchUser(id: string) {
-  const res = await authFetch(`${API}/user-management/${id}`);
+  const res = await authFetch(`${API}/users/${id}`);
   return parseResponse<Record<string, unknown>>(res);
 }
 
 export async function updateUserRole(id: string, role: string) {
-  const res = await authFetch(`${API}/user-management/${id}/role`, {
+  const res = await authFetch(`${API}/users/${id}/role`, {
     method: 'PATCH',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ role }),
@@ -213,7 +213,7 @@ export async function updateUserRole(id: string, role: string) {
 }
 
 export async function updateUserStatus(id: string, status: string) {
-  const res = await authFetch(`${API}/user-management/${id}/status`, {
+  const res = await authFetch(`${API}/users/${id}/status`, {
     method: 'PATCH',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ status }),
