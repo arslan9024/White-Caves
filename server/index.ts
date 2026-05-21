@@ -456,6 +456,10 @@ app.use('/api/auth', authRoutes);
 // Public AI chat route — no auth required
 app.use('/api/ai/chat', aiChatRoutes);
 
+// AI Assistants list is public (GET /api/assistants) — mount before global auth middleware.
+// Write endpoints (POST/PUT/DELETE) within the router enforce their own authMiddleware.
+app.use('/api/assistants', assistantsRoutes);
+
 // Protected routes (require authentication in production, optional in development)
 if (process.env.NODE_ENV === 'production') {
   app.use('/api', authMiddleware);
@@ -624,9 +628,6 @@ app.use('/api/compliance', complianceRoutes);
 // CRM General API (Search, Analytics, Dashboard, Export)
 app.use('/api/crm/export', strictLimiter); // Strict rate limit on data export
 app.use('/api/crm', crmRoutes);
-
-// AI Assistants API (Phase 0.8 — plan management)
-app.use('/api/assistants', assistantsRoutes);
 
 // External module gateway (Linda + Henry separate repos)
 app.use('/api/integrations', integrationsRoutes);
