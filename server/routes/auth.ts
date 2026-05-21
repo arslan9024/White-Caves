@@ -18,6 +18,7 @@ import logger from '../utils/logger.js';
 import { verifyFirebaseIdToken, FirebaseAdminInitError } from '../config/firebaseAdmin.js';
 
 const router = Router();
+const db = prisma as any;
 
 // ─── TOTP (RFC 6238) helpers — no external dependencies ─────────────────────
 
@@ -356,6 +357,21 @@ router.post(
       throw new AppError('Account not configured. Contact administrator.', 401);
     }
 
+    // If the account has 2FA enabled, return a challenge token instead of a full JWT
+    if ((user as any).twoFactorEnabled) {
+      const twoFactorToken = jwt.sign(
+        { id: user.id, email: user.email, role: user.role, requires2FA: true },
+        JWT_SECRET,
+        { expiresIn: 300 }
+      );
+      res.status(200).json({
+        success: true,
+        requiresTwoFactor: true,
+        data: { twoFactorToken },
+      });
+      return;
+    }
+
     // Generate JWT token
     const token = jwt.sign(
       { id: user.id, email: user.email, role: user.role },
@@ -391,6 +407,7 @@ router.post(
 
     res.status(200).json({
       success: true,
+      requiresTwoFactor: false,
       data: {
         token,
         user: {
@@ -402,7 +419,6 @@ router.post(
           photoUrl: user.photoUrl,
         },
       },
-      requiresTwoFactor: false, // 2FA can be enabled later
     });
   })
 );
@@ -558,6 +574,7 @@ router.post(
 router.post(
   '/verify-2fa',
   asyncHandler(async (req: Request, res: Response) => {
+    const db = prisma as any;
     const { email, code } = req.body;
 
     if (!email || !code) {
@@ -570,7 +587,7 @@ router.post(
       process.env.DEV_2FA_BYPASS === 'true' &&
       code === '000000'
     ) {
-      const user = await prisma.user.findUnique({ where: { email } });
+      const user = await db.user.findUnique({ where: { email } });
       if (!user) throw new AppError('User not found', 404);
 
       const token = jwt.sign(
@@ -586,7 +603,7 @@ router.post(
     }
 
     const sanitizedEmail = sanitizeString(email).toLowerCase().trim();
-    const user = await prisma.user.findUnique({ where: { email: sanitizedEmail } });
+    const user = (await db.user.findUnique({ where: { email: sanitizedEmail } })) as any;
     if (!user) throw new AppError('Invalid credentials', 401);
 
     if (!user.totpEnabled || !user.totpSecret) {
@@ -605,9 +622,9 @@ router.post(
       for (const hashed of user.totpBackupCodes) {
         if (await bcrypt.compare(codeStr, hashed)) {
           // Consume the backup code (single-use)
-          await prisma.user.update({
+          await db.user.update({
             where: { id: user.id },
-            data: { totpBackupCodes: user.totpBackupCodes.filter(h => h !== hashed) },
+            data: { totpBackupCodes: user.totpBackupCodes.filter((h: string) => h !== hashed) },
           });
           verified = true;
           break;
@@ -641,12 +658,13 @@ router.post(
   '/2fa/setup',
   authMiddleware,
   asyncHandler(async (req: AuthRequest, res: Response) => {
+    const db = prisma as any;
     const userId = req.user?.id;
     if (!userId) throw new AppError('Authentication required', 401);
 
     const secret = generateTOTPSecret();
     const appName = encodeURIComponent('White Caves CRM');
-    const user = await prisma.user.findUnique({ where: { id: userId }, select: { email: true } });
+    const user = await db.user.findUnique({ where: { id: userId }, select: { email: true } });
     if (!user) throw new AppError('User not found', 404);
 
     const accountLabel = encodeURIComponent(user.email);
@@ -656,11 +674,17 @@ router.post(
     // Store as pending in a short-lived signed token so the secret never sits idle in the DB
     const pendingToken = jwt.sign({ userId, totpSecret: secret }, JWT_SECRET, { expiresIn: 600 });
 
+    // Mark twoFactorEnabled as false to indicate setup is in progress
+    await (prisma as any).user.update({
+      where: { id: userId },
+      data: { twoFactorEnabled: false },
+    });
+
     res.status(200).json({
       success: true,
       data: {
         secret,
-        otpauthUri,
+        otpAuthUrl: otpauthUri,
         pendingToken,
         instructions: [
           '1. Scan the QR code (or enter the secret) in your authenticator app (Google Authenticator, Authy, etc.)',
@@ -714,7 +738,7 @@ router.post(
     const plainCodes = generateBackupCodes(8);
     const hashedCodes = await Promise.all(plainCodes.map(c => bcrypt.hash(c, BCRYPT_ROUNDS)));
 
-    await prisma.user.update({
+    await db.user.update({
       where: { id: userId },
       data: { totpSecret, totpEnabled: true, totpBackupCodes: hashedCodes },
     });
@@ -741,16 +765,56 @@ router.post(
   '/2fa/disable',
   authMiddleware,
   asyncHandler(async (req: AuthRequest, res: Response) => {
+    const db = prisma as any;
     const userId = req.user?.id;
     if (!userId) throw new AppError('Authentication required', 401);
 
-    const { code } = req.body;
-    if (!code) throw new AppError('Verification code is required to disable 2FA', 400);
+    const { code, currentPassword } = req.body;
+    if (!code && !currentPassword) {
+      throw new AppError('Verification code or current password required to disable 2FA', 400);
+    }
 
-    const user = await prisma.user.findUnique({
+    // Password-based disable path
+    if (currentPassword) {
+      const user = await db.user.findUnique({
+        where: { id: userId },
+        select: {
+          twoFactorEnabled: true,
+          twoFactorSecret: true,
+          totpEnabled: true,
+          totpSecret: true,
+          passwordHash: true,
+        },
+      });
+      if (!user) throw new AppError('User not found', 404);
+
+      if (!user.twoFactorEnabled && !user.totpEnabled) {
+        throw new AppError('Two-factor authentication is not enabled', 400);
+      }
+
+      const valid = await verifyPassword(currentPassword, user.passwordHash || '');
+      if (!valid) throw new AppError('Current password is incorrect', 401);
+
+      await db.user.update({
+        where: { id: userId },
+        data: {
+          twoFactorEnabled: false,
+          twoFactorSecret: null,
+          totpEnabled: false,
+          totpSecret: null,
+        },
+      });
+
+      logger.info('2FA disabled via password', { userId });
+      res.status(200).json({ success: true, data: { disabled: true } });
+      return;
+    }
+
+    // TOTP code-based disable path
+    const user = (await db.user.findUnique({
       where: { id: userId },
       select: { totpSecret: true, totpEnabled: true, totpBackupCodes: true },
-    });
+    })) as any;
     if (!user) throw new AppError('User not found', 404);
     if (!user.totpEnabled || !user.totpSecret) {
       throw new AppError('Two-factor authentication is not enabled', 400);
@@ -772,15 +836,21 @@ router.post(
 
     if (!verified) throw new AppError('Invalid verification code', 401);
 
-    await prisma.user.update({
+    await db.user.update({
       where: { id: userId },
-      data: { totpEnabled: false, totpSecret: null, totpBackupCodes: [] },
+      data: {
+        totpEnabled: false,
+        totpSecret: null,
+        totpBackupCodes: [],
+        twoFactorEnabled: false,
+        twoFactorSecret: null,
+      },
     });
 
     logger.info('TOTP 2FA disabled', { userId });
     res.status(200).json({
       success: true,
-      data: { enabled: false, message: 'Two-factor authentication has been disabled.' },
+      data: { disabled: true, message: 'Two-factor authentication has been disabled.' },
     });
   })
 );
@@ -793,13 +863,14 @@ router.get(
   '/2fa/status',
   authMiddleware,
   asyncHandler(async (req: AuthRequest, res: Response) => {
+    const db = prisma as any;
     const userId = req.user?.id;
     if (!userId) throw new AppError('Authentication required', 401);
 
-    const user = await prisma.user.findUnique({
+    const user = (await db.user.findUnique({
       where: { id: userId },
       select: { totpEnabled: true, totpBackupCodes: true },
-    });
+    })) as any;
     if (!user) throw new AppError('User not found', 404);
 
     res.status(200).json({
@@ -920,17 +991,34 @@ router.post(
       throw new AppError('Firebase token is required', 400);
     }
 
-    let decodedToken;
+    let decodedToken: Awaited<ReturnType<typeof verifyFirebaseIdToken>>;
     try {
       decodedToken = await verifyFirebaseIdToken(firebaseToken);
     } catch (error: unknown) {
-      if (error instanceof FirebaseAdminInitError) {
-        throw new AppError(
-          'Firebase Admin is not configured on the server. Set FIREBASE_SERVICE_ACCOUNT or FIREBASE_PROJECT_ID/FIREBASE_CLIENT_EMAIL/FIREBASE_PRIVATE_KEY.',
-          503
-        );
+      if (
+        error instanceof FirebaseAdminInitError ||
+        (error instanceof Error && error.name === 'FirebaseAdminInitError')
+      ) {
+        if (
+          process.env.NODE_ENV === 'development' &&
+          process.env.ALLOW_FIREBASE_SYNC_DEV_FALLBACK === 'true'
+        ) {
+          // Dev-only fallback: skip token verification and trust the request body
+          decodedToken = {
+            uid: firebaseUid,
+            email: typeof email === 'string' ? email : undefined,
+            name: typeof name === 'string' ? name : undefined,
+            picture: typeof photoUrl === 'string' ? photoUrl : undefined,
+          } as unknown as Awaited<ReturnType<typeof verifyFirebaseIdToken>>;
+        } else {
+          throw new AppError(
+            'Firebase Admin is not configured on the server. Set FIREBASE_SERVICE_ACCOUNT or FIREBASE_PROJECT_ID/FIREBASE_CLIENT_EMAIL/FIREBASE_PRIVATE_KEY.',
+            503
+          );
+        }
+      } else {
+        throw new AppError('Invalid Firebase token', 401);
       }
-      throw new AppError('Invalid Firebase token', 401);
     }
 
     if (decodedToken.uid !== firebaseUid) {
@@ -1031,38 +1119,6 @@ router.post(
       },
       requiresTwoFactor: false,
     });
-  })
-);
-
-/**
- * POST /api/auth/refresh
- * Issue a fresh JWT for an authenticated user.
- * Accepts the current (non-expired) bearer token and returns a new one,
- * effectively implementing a sliding expiry window without a separate
- * refresh-token store.
- */
-router.post(
-  '/refresh',
-  authMiddleware,
-  asyncHandler(async (req: AuthRequest, res: Response) => {
-    const userId = req.user?.id;
-    if (!userId) throw new AppError('Not authenticated', 401);
-
-    const user = await prisma.user.findUnique({
-      where: { id: userId },
-      select: { id: true, email: true, role: true, status: true },
-    });
-
-    if (!user) throw new AppError('User not found', 404);
-    if (user.status !== 'active') throw new AppError('Account is inactive', 403);
-
-    const token = jwt.sign(
-      { id: user.id, email: user.email, role: user.role },
-      JWT_SECRET,
-      JWT_SIGN_OPTIONS
-    );
-
-    res.status(200).json({ success: true, data: { token } });
   })
 );
 

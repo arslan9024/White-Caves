@@ -13,17 +13,18 @@ This runbook covers all deployment procedures for the White Caves CRM Platform: 
 
 **Environments:**
 
-| Environment | URL | Database | Deploy Trigger |
-|-------------|-----|---------|----------------|
-| Development | localhost | MongoDB local / Atlas Dev | Manual (`npm run dev`) |
-| Staging | staging.whitecaves.ae | Atlas Staging cluster | Auto on PR merge to `main` |
-| Production | whitecaves.ae | Atlas Production cluster | Manual (release tag push) |
+| Environment | URL                   | Database                  | Deploy Trigger             |
+| ----------- | --------------------- | ------------------------- | -------------------------- |
+| Development | localhost             | MongoDB local / Atlas Dev | Manual (`npm run dev`)     |
+| Staging     | staging.whitecaves.ae | Atlas Staging cluster     | Auto on PR merge to `main` |
+| Production  | whitecaves.ae         | Atlas Production cluster  | Manual (release tag push)  |
 
 ---
 
 ## 2. Prerequisites
 
 ### Required Access
+
 - GitHub repository access (write)
 - Vercel account (frontend deployment)
 - Railway/Render/AWS ECS access (API deployment)
@@ -31,9 +32,10 @@ This runbook covers all deployment procedures for the White Caves CRM Platform: 
 - Environment variables for all three environments
 
 ### Required Tools
+
 ```bash
 node --version   # Must be 20.x LTS
-npm --version    # Must be 9.x+
+npm --version    # Must be 10.x+
 git --version    # Any recent version
 vercel --version # Vercel CLI: npm install -g vercel
 ```
@@ -45,6 +47,7 @@ vercel --version # Vercel CLI: npm install -g vercel
 All deployments require the following environment variables set in the hosting platform (never in code).
 
 ### Backend (API Server)
+
 ```env
 # Database
 DATABASE_URL=mongodb+srv://<user>:<pass>@cluster.mongodb.net/<dbname>
@@ -84,6 +87,7 @@ LOG_LEVEL=info
 ```
 
 ### Frontend (Vite build-time variables)
+
 ```env
 VITE_API_URL=https://api.whitecaves.ae
 VITE_FIREBASE_API_KEY=<firebase-web-api-key>
@@ -99,12 +103,14 @@ VITE_STRIPE_PUBLISHABLE_KEY=<pk_live_...>
 ### 4.1 Frontend Deployment (Vercel)
 
 **Automatic (recommended):**
+
 1. Merge feature branch PR to `main`
 2. Vercel auto-deploys to staging (preview URL per PR)
 3. For production: push a release tag (`git tag v1.x.x && git push --tags`)
 4. Vercel auto-promotes staging to production on tag
 
 **Manual (if needed):**
+
 ```bash
 cd /path/to/repo
 git pull origin main
@@ -116,11 +122,13 @@ vercel deploy --prod   # Requires Vercel CLI + auth
 ### 4.2 Backend API Deployment (Railway/Render)
 
 **Railway (recommended):**
+
 1. Railway auto-deploys when `main` branch is updated
 2. For production: use Railway's promote-to-production feature from staging
 3. Monitor deployment logs in Railway dashboard
 
 **Manual Docker deployment:**
+
 ```bash
 # Build image
 docker build -t whitecaves-api:latest .
@@ -133,22 +141,22 @@ docker push registry.example.com/whitecaves-api:v1.x.x
 aws ecs update-service --cluster whitecaves-prod --service api --force-new-deployment
 ```
 
-### 4.3 Database Migration
+### 4.3 Database Schema Sync
 
-Run Prisma migrations **before** deploying new application code that requires them:
+This project uses MongoDB with Prisma. MongoDB does not use SQL migrations — schema changes are applied via `prisma db push` (development) or propagated at application startup (production via Prisma's built-in schema sync).
 
 ```bash
-# On local/staging — preview migration
-npx prisma migrate dev --name <migration-name>
+# Sync schema to development database (non-destructive)
+npx prisma db push
 
-# On production (CI pipeline or admin console)
-npx prisma migrate deploy
+# Regenerate the Prisma client after schema changes
+npx prisma generate
 
-# Verify migration applied
-npx prisma migrate status
+# Verify connectivity and schema state
+npx prisma db pull   # Optional: pull current DB state to compare
 ```
 
-⚠️ **IMPORTANT:** Always run migrations in a maintenance window if they involve column renames, drops, or large data transformations.
+⚠️ **IMPORTANT:** For destructive schema changes (e.g., removing or renaming fields), back up production data before pushing. MongoDB does not roll back schema changes automatically.
 
 ---
 
@@ -173,8 +181,9 @@ npm test
 # 5. Create pull request to main AND merge to staging for smoke test
 # ... create PR ...
 
-# 6. After staging smoke test passes, tag and push
-git tag v1.x.x+1
+# 6. After staging smoke test passes, bump the version and tag
+npm version patch   # auto-bumps package.json version (e.g. 1.2.3 → 1.2.4)
+git tag "v$(node -p \"require('./package.json').version\")"
 git push origin hotfix/v1.x.x-description --tags
 
 # 7. Production auto-deploys from new tag
@@ -187,6 +196,7 @@ git push origin hotfix/v1.x.x-description --tags
 ## 6. Rollback Procedure
 
 ### Frontend Rollback (Vercel)
+
 ```bash
 # Option 1: Vercel dashboard → Deployments → select previous → Promote to Production
 # Option 2: CLI
@@ -194,6 +204,7 @@ vercel rollback   # Reverts to previous deployment
 ```
 
 ### Backend API Rollback
+
 ```bash
 # Option 1: Railway/Render dashboard → previous deployment → Redeploy
 
@@ -206,6 +217,7 @@ curl https://api.whitecaves.ae/health
 ```
 
 ### Database Rollback
+
 ⚠️ Database rollbacks are high-risk. Prefer forward-fix when possible.
 
 ```bash
@@ -226,7 +238,7 @@ After every production deployment:
 ```bash
 # 1. Health check
 curl -f https://api.whitecaves.ae/health
-# Expected: {"status":"ok","db":"connected"}
+# Expected: {"status":"OK","timestamp":"<ISO-date>","environment":"production","version":"<semver>"}
 
 # 2. Authentication check
 curl -X POST https://api.whitecaves.ae/api/auth/login \
@@ -259,14 +271,14 @@ curl -f https://whitecaves.ae
 
 ## 9. Contacts and Escalation
 
-| Role | Contact | When to Call |
-|------|---------|-------------|
-| Lead Developer | [Name] | All deployments, technical issues |
-| DevOps / Hosting | [Name/Provider support] | Infrastructure failures |
-| MongoDB Atlas Support | support@mongodb.com | Database cluster issues |
-| Vercel Support | vercel.com/support | Frontend deployment issues |
-| Meta (WhatsApp) | developers.facebook.com | WhatsApp API outages |
-| Managing Director | [Name] | P1 business impact |
+| Role                  | Contact                 | When to Call                      |
+| --------------------- | ----------------------- | --------------------------------- |
+| Lead Developer        | [Name]                  | All deployments, technical issues |
+| DevOps / Hosting      | [Name/Provider support] | Infrastructure failures           |
+| MongoDB Atlas Support | support@mongodb.com     | Database cluster issues           |
+| Vercel Support        | vercel.com/support      | Frontend deployment issues        |
+| Meta (WhatsApp)       | developers.facebook.com | WhatsApp API outages              |
+| Managing Director     | [Name]                  | P1 business impact                |
 
 ---
 

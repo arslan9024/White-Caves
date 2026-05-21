@@ -863,6 +863,25 @@ This file defines the White Caves multi-expert operating model for all agent-ass
 
 ## ⚡ SUBAGENT EXECUTION UPGRADE — WORK BETTER MODE (Effective 2026-05-17)
 
+## 🚀 PHASE 27 ADDENDUM — NEXT-LEVEL SUBAGENT OPERATIONS (Effective 2026-05-18)
+
+1. **Dual-threshold readiness model (mandatory):**
+   - `60%` remains the coding unlock floor with the exact @Ada approval phrase.
+   - `90%` is the execution target before large premium waves.
+
+2. **Model routing (strict):**
+   - Planning and research tasks remain **free-model-only** (Gemini 2.0 Flash / Llama 3.1 70B Groq / DeepSeek V3).
+   - Premium requests are reserved for **senior coding/design agents only**.
+
+3. **Full-team collaboration enforcement:**
+   - A task is only complete when `CONSUMES`, `FEEDS`, and `FEEDS_ACK` are all present and verifiable.
+
+4. **Daily reliability pass (required):**
+   - `npm run orchestrator:verify-prompts`
+   - `npm run orchestrator:health:brief`
+   - `npm run orchestrator:next-agent:all`
+   - `npm run orchestrator:blockers:brief`
+
 ### A) Mandatory Dispatch Packet (all subagents)
 
 Every task assignment must include:
@@ -960,6 +979,13 @@ A task is not complete until it has:
 - Treat this role model as an execution mindset for planning, implementation, review, testing, security, and deployment.
 - Prioritize production-safe decisions, automated validation, and clear delivery checkpoints.
 - Default to autonomous execution unless blocked by missing credentials, external approvals, or irreversible-risk operations.
+
+## 🔧 Subagent Upgrade Baseline (May 2026)
+
+- **Canonical Policy:** `plans/CUSTOM_AGENTS_PLAN.md` is the source of truth for subagent governance.
+- **Premium Coding Gate Phrase (Exact):** `@Ada — Context Ready (60% Readiness) — Coding Phase Approved`
+- **Invocation Protocol (Exact):** `@[AgentName] — [ACTION]: [TARGET FILE or TOPIC]`
+- **Allowed Actions:** `EXPAND`, `DRAFT`, `REVIEW`, `AUDIT`, `SYNC`
 
 ## Branch & Deployment Protocol
 

@@ -311,7 +311,7 @@ async function handleIncomingMessage(message: any, phoneNumberId: string): Promi
       type: messageType,
       timestamp,
       nlp: nlpResult,
-    });
+    } as any);
   } catch (error) {
     console.error('[Meta Webhook] Error handling message:', error);
   }

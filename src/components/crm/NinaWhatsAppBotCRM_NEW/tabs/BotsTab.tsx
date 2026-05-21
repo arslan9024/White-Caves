@@ -1,11 +1,23 @@
 import React from 'react';
-import { Plus, Trash2, Power, Activity, MoreVertical, CheckCircle, AlertCircle, Clock } from 'lucide-react';
+import type { useBotData } from '../hooks/useBotData';
+import type { Dispatch, SetStateAction } from 'react';
+import {
+  Plus,
+  Trash2,
+  Power,
+  Activity,
+  MoreVertical,
+  CheckCircle,
+  AlertCircle,
+  Clock,
+} from 'lucide-react';
 
 interface Bot {
-  id: string | number;
+  id: string;
   name: string;
   number: string;
   status: string;
+  lastActive: string;
   messagesProcessed: number;
   responseRate: number;
   avgResponseTime: string;
@@ -13,22 +25,22 @@ interface Bot {
   features: string[];
 }
 
-interface BotsData {
-  filteredBots: Bot[];
-  selectedBot: Bot | null;
-  setSelectedBot: (bot: Bot | null) => void;
-  handleAddBot: () => void;
-  handleDeleteBot: (id: string) => void;
-  handleToggleBotStatus: (id: string) => void;
-  getStatusColor: (status: string) => string;
-}
+type BotsData = ReturnType<typeof useBotData>;
 
 interface BotsTabProps {
   data: BotsData;
 }
 
 export const BotsTab: React.FC<BotsTabProps> = ({ data }) => {
-  const { filteredBots, selectedBot, setSelectedBot, handleAddBot, handleDeleteBot, handleToggleBotStatus, getStatusColor } = data;
+  const {
+    filteredBots,
+    selectedBot,
+    setSelectedBot,
+    handleAddBot,
+    handleDeleteBot,
+    handleToggleBotStatus,
+    getStatusColor,
+  } = data;
 
   return (
     <div className="bots-tab">
@@ -52,7 +64,10 @@ export const BotsTab: React.FC<BotsTabProps> = ({ data }) => {
             </div>
 
             <div className="bot-status">
-              <span className="status-badge" style={{ backgroundColor: getStatusColor(bot.status) }}>
+              <span
+                className="status-badge"
+                style={{ backgroundColor: getStatusColor(bot.status) }}
+              >
                 <span className="dot"></span>
                 {bot.status.charAt(0).toUpperCase() + bot.status.slice(1)}
               </span>
@@ -80,7 +95,9 @@ export const BotsTab: React.FC<BotsTabProps> = ({ data }) => {
 
             <div className="bot-features">
               {bot.features.map((feature: string) => (
-                <span key={feature} className="feature-tag">{feature}</span>
+                <span key={feature} className="feature-tag">
+                  {feature}
+                </span>
               ))}
             </div>
 

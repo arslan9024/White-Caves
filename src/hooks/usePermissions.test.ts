@@ -93,11 +93,11 @@ describe('usePermissions', () => {
       expect(result.current.role).toBe('owner');
     });
 
-    it('has all 21 permissions', () => {
+    it('has all 27 permissions', () => {
       const { result } = renderHook(() => usePermissions(), {
         wrapper: createWrapper('owner'),
       });
-      expect(result.current.permissions).toHaveLength(21);
+      expect(result.current.permissions).toHaveLength(27);
     });
 
     it('all boolean permission flags are true', () => {
@@ -240,30 +240,30 @@ describe('usePermissions', () => {
       const { result } = renderHook(() => usePermissions(), {
         wrapper: createWrapper('viewer'),
       });
-      expect(
-        result.current.canAny([PERMISSIONS.MANAGE_USERS, PERMISSIONS.VIEW_DASHBOARD])
-      ).toBe(true);
-      expect(
-        result.current.canAny([PERMISSIONS.MANAGE_USERS, PERMISSIONS.MODIFY_SETTINGS])
-      ).toBe(false);
+      expect(result.current.canAny([PERMISSIONS.MANAGE_USERS, PERMISSIONS.VIEW_DASHBOARD])).toBe(
+        true
+      );
+      expect(result.current.canAny([PERMISSIONS.MANAGE_USERS, PERMISSIONS.MODIFY_SETTINGS])).toBe(
+        false
+      );
     });
 
     it('canAll() checks if all permissions match', () => {
       const { result } = renderHook(() => usePermissions(), {
         wrapper: createWrapper('owner'),
       });
-      expect(
-        result.current.canAll([PERMISSIONS.MANAGE_USERS, PERMISSIONS.VIEW_DASHBOARD])
-      ).toBe(true);
+      expect(result.current.canAll([PERMISSIONS.MANAGE_USERS, PERMISSIONS.VIEW_DASHBOARD])).toBe(
+        true
+      );
     });
 
     it('canAll() returns false when any permission is missing', () => {
       const { result } = renderHook(() => usePermissions(), {
         wrapper: createWrapper('viewer'),
       });
-      expect(
-        result.current.canAll([PERMISSIONS.VIEW_DASHBOARD, PERMISSIONS.MANAGE_USERS])
-      ).toBe(false);
+      expect(result.current.canAll([PERMISSIONS.VIEW_DASHBOARD, PERMISSIONS.MANAGE_USERS])).toBe(
+        false
+      );
     });
 
     it('canAccess() checks owner-exclusive features', () => {
@@ -286,26 +286,23 @@ describe('usePermissions', () => {
 
 describe('useCanAccess', () => {
   it('returns true when role has the permission', () => {
-    const { result } = renderHook(
-      () => useCanAccess(PERMISSIONS.VIEW_DASHBOARD),
-      { wrapper: createWrapper('owner') },
-    );
+    const { result } = renderHook(() => useCanAccess(PERMISSIONS.VIEW_DASHBOARD), {
+      wrapper: createWrapper('owner'),
+    });
     expect(result.current).toBe(true);
   });
 
   it('returns false when role does not have the permission', () => {
-    const { result } = renderHook(
-      () => useCanAccess(PERMISSIONS.MANAGE_USERS),
-      { wrapper: createWrapper('viewer') },
-    );
+    const { result } = renderHook(() => useCanAccess(PERMISSIONS.MANAGE_USERS), {
+      wrapper: createWrapper('viewer'),
+    });
     expect(result.current).toBe(false);
   });
 
   it('returns false for null role', () => {
-    const { result } = renderHook(
-      () => useCanAccess(PERMISSIONS.VIEW_DASHBOARD),
-      { wrapper: createWrapper(null) },
-    );
+    const { result } = renderHook(() => useCanAccess(PERMISSIONS.VIEW_DASHBOARD), {
+      wrapper: createWrapper(null),
+    });
     expect(result.current).toBe(false);
   });
 });

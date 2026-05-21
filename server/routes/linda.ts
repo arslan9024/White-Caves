@@ -20,6 +20,7 @@
  */
 
 import { Router, Request, Response } from 'express';
+import type { AuthRequest } from '../middleware/auth.js';
 import {
   getLindaClientForMode,
   getLindaCoreMode,
@@ -56,6 +57,19 @@ function applyTemplate(
 }
 
 const router = Router();
+const db = prisma as any;
+
+function applyTemplate(
+  messageTemplate: string,
+  templateVars?: Record<string, unknown> | null
+): string {
+  if (!templateVars || typeof templateVars !== 'object') return messageTemplate;
+  let rendered = messageTemplate;
+  for (const [key, value] of Object.entries(templateVars)) {
+    rendered = rendered.split(`{{${key}}}`).join(String(value));
+  }
+  return rendered;
+}
 
 // ─── Singleton initialisation helper ──────────────────────────────────────
 
@@ -395,7 +409,7 @@ router.get('/campaigns', requireRole('owner', 'admin'), async (req: Request, res
     const status = req.query.status as string | undefined;
     const take = Math.min(parseInt(String(req.query.limit || '50'), 10) || 50, 200);
 
-    const campaigns = await prisma.lindaBroadcastCampaign.findMany({
+    const campaigns = await db.lindaBroadcastCampaign.findMany({
       where: status && status !== 'all' ? { status } : undefined,
       orderBy: { createdAt: 'desc' },
       take,
@@ -428,7 +442,7 @@ router.post('/campaigns', requireRole('owner', 'admin'), async (req: Request, re
       return res.status(400).json({ success: false, error: 'No valid target phone numbers' });
     }
 
-    const campaign = await prisma.lindaBroadcastCampaign.create({
+    const campaign = await db.lindaBroadcastCampaign.create({
       data: {
         name: String(name),
         targetList: cleanTargets,

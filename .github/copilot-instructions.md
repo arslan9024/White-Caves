@@ -87,13 +87,15 @@
 2. **Autonomous Execution:** If an agent is assigned a task, they must complete it without asking for permission unless there is a critical conflict.
 3. **Daily Milestone Tracker:** @Margaret must update `PROJECT_PROGRESS.md` at the end of every session.
 
+   > **Governance Source of Truth:** `plans/CUSTOM_AGENTS_PLAN.md` is canonical; `AGENTS.md` and `AGENCY_MANIFEST.md` must stay synchronized with it.
+
 4. **🔒 TOKEN POLICY (STRICT — Zero Exceptions):**
    - **FREE PLANNING AGENTS** (@Victoria, @Invoice, @Sofia, @Cassie, @Joelle):
      → Use ONLY free/unlimited models: **Gemini 2.0 Flash** (Google AI Studio), **Llama 3.1 70B via Groq** (free tier), **DeepSeek V3** (~$0/1M tokens)
      → **ZERO premium Copilot requests.** No exceptions. Work scope: `business_docs/` and `plans/` only. No code changes ever.
      → Weekly Copilot quota is shared — free agents must NEVER consume it.
    - **SENIOR CODING AGENTS** (@Ada, @Mira, @Barbara, @Una, @Daniela, @Ruchi, @Gwynne, @Katherine):
-     → Premium requests PERMITTED **only** when @Margaret explicitly declares: **"Context Ready — Coding Phase Approved"**
+     → Premium requests PERMITTED **only** when @Ada explicitly declares: **"@Ada — Context Ready (60% Readiness) — Coding Phase Approved"**
      → Without that declaration: use GPT-4o (standard) or queue the task for next approved sprint.
    - **INVOCATION PROTOCOL** (exact syntax):
      ```

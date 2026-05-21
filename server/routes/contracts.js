@@ -380,12 +380,10 @@ router.post('/:id/upload-to-drive', async (req, res) => {
     });
   } catch (error) {
     console.error('Error uploading to Drive:', error);
-    res
-      .status(500)
-      .json({
-        success: false,
-        error: error.message || 'Failed to upload contract to Google Drive',
-      });
+    res.status(500).json({
+      success: false,
+      error: error.message || 'Failed to upload contract to Google Drive',
+    });
   }
 });
 

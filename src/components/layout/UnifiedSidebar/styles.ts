@@ -21,12 +21,13 @@ export const SidebarWrapper = styled.aside<{ $collapsed?: boolean }>`
   flex-direction: column;
   width: ${props => (props.$collapsed ? '64px' : '280px')};
   height: 100%;
-  background: ${colors.background.secondary};
-  border-right: 1px solid ${colors.borderLight};
+  background: #fafafa;
+  border-right: 1px solid #f0f0f0;
   overflow-y: hidden;
   overflow-x: hidden;
   box-shadow: 2px 0 8px rgba(0, 0, 0, 0.06);
   transition: width 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+  will-change: width;
   flex-shrink: 0;
   position: relative;
 
@@ -638,4 +639,15 @@ export const AssistantStatusDot = styled.span<{ $active?: boolean }>`
     `
     box-shadow: 0 0 0 2px #22C55E30;
     `}
+`;
+
+/** Section label for nav groups — uppercase caps with letter-spacing */
+export const SidebarSectionLabel = styled.div`
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+  color: #9ca3af;
+  padding: 16px 12px 4px;
+  user-select: none;
 `;

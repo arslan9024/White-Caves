@@ -10,7 +10,7 @@ import AppLayout from './components/layout/AppLayout';
 import PortalLayout from './components/portal/PortalLayout';
 import SuspenseLoader from './components/common/SuspenseLoader';
 import RouteErrorBoundary from './components/RouteErrorBoundary';
-import SignInPage from './pages/auth/SignInPage';
+const SignInPage = lazy(() => import('./pages/auth/SignInPage'));
 import type { RootState, AppDispatch } from './store/store';
 import { selectSessionUser } from './store/selectors/sessionSelectors';
 import { safeStorage } from './utils/safeStorage';
@@ -427,7 +427,7 @@ function App(): React.JSX.Element {
                   path="/signin"
                   element={
                     user ? (
-                      <Navigate to="/crm" replace />
+                      <Navigate to="/dashboard" replace />
                     ) : (
                       <RouteErrorBoundary section="Sign In">
                         <Suspense fallback={<SuspenseLoader />}>
@@ -442,7 +442,7 @@ function App(): React.JSX.Element {
                   path="/signup"
                   element={
                     user ? (
-                      <Navigate to="/crm" replace />
+                      <Navigate to="/dashboard" replace />
                     ) : (
                       <RouteErrorBoundary section="Sign Up">
                         <Suspense fallback={<SuspenseLoader />}>

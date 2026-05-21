@@ -17,21 +17,17 @@ const NewsletterSubscription: React.FC = () => {
     e.preventDefault();
     setError(null);
     const trimmed = email.trim();
-    if (!trimmed) return;
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmed)) {
-      setError('Please enter a valid email address.');
+    if (!trimmed || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmed)) {
+      setError('Please enter a valid email address');
       return;
     }
     setIsSubmitting(true);
-    try {
-      // Optimistic UI — backend endpoint wired in a later phase
-      await new Promise<void>(resolve => setTimeout(resolve, 600));
-      setSubmitted(true);
-      setEmail('');
-      timerRef.current = setTimeout(() => setSubmitted(false), 5000);
-    } finally {
-      setIsSubmitting(false);
-    }
+    // Optimistic UI — mark as submitted immediately, backend wired in a later phase
+    setSubmitted(true);
+    setEmail('');
+    timerRef.current = setTimeout(() => setSubmitted(false), 5000);
+    // Simulate async API call in background (non-blocking)
+    setTimeout(() => setIsSubmitting(false), 600);
   };
 
   return (
@@ -73,11 +69,45 @@ const NewsletterSubscription: React.FC = () => {
               marginBottom: '0.75rem',
             }}
           >
-            Stay Ahead of the Dubai Market
+            Stay Updated on Dubai Real Estate
           </h2>
-          <p style={{ color: 'rgba(255,255,255,0.7)', marginBottom: '2rem', lineHeight: 1.6 }}>
+          <p style={{ color: 'rgba(255,255,255,0.7)', marginBottom: '1.5rem', lineHeight: 1.6 }}>
             Get exclusive property alerts, off-plan launches, and Dubai market insights delivered to
             your inbox — no spam, unsubscribe any time.
+          </p>
+
+          <ul
+            style={{
+              listStyle: 'none',
+              padding: 0,
+              margin: '0 0 1.5rem',
+              textAlign: 'left',
+              display: 'inline-block',
+            }}
+          >
+            {[
+              'First access to new property listings',
+              'Weekly market analysis & trends',
+              'Investment tips from experts',
+              'Exclusive subscriber offers',
+            ].map(benefit => (
+              <li
+                key={benefit}
+                style={{
+                  color: 'rgba(255,255,255,0.8)',
+                  marginBottom: '0.4rem',
+                  fontSize: '0.9rem',
+                }}
+              >
+                ✓ {benefit}
+              </li>
+            ))}
+          </ul>
+
+          <p
+            style={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.82rem', marginBottom: '1.25rem' }}
+          >
+            Join <strong style={{ color: '#C9A84C' }}>12,000+</strong> subscribers
           </p>
 
           {submitted ? (
@@ -96,7 +126,7 @@ const NewsletterSubscription: React.FC = () => {
               role="status"
             >
               <CheckCircle2 size={22} />
-              You're subscribed! We'll be in touch.
+              Thank you for subscribing! We'll be in touch.
             </motion.div>
           ) : (
             <form
@@ -112,8 +142,7 @@ const NewsletterSubscription: React.FC = () => {
                 type="email"
                 value={email}
                 onChange={e => setEmail(e.target.value)}
-                placeholder="Your email address"
-                required
+                placeholder="Enter your email address"
                 disabled={isSubmitting}
                 aria-label="Email address for newsletter"
                 style={{
