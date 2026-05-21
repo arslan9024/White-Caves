@@ -294,10 +294,12 @@ export function useSignIn() {
   // ── Social auth ────────────────────────────────────────────────
 
   const handleSocialAuth = useCallback(
-    async (provider: string): Promise<void> => {
+    async (provider: string, options?: { isRetry?: boolean }): Promise<void> => {
       setLoading(true);
       setError('');
-      setSocialSyncRecovery(null);
+      if (!options?.isRetry) {
+        setSocialSyncRecovery(null);
+      }
       try {
         let result;
         switch (provider) {
@@ -356,7 +358,7 @@ export function useSignIn() {
       return;
     }
 
-    await handleSocialAuth(socialSyncRecovery.provider);
+    await handleSocialAuth(socialSyncRecovery.provider, { isRetry: true });
   }, [handleSocialAuth, socialSyncRecovery]);
 
   const clearSocialRecovery = useCallback((): void => {

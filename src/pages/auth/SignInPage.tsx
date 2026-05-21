@@ -138,6 +138,7 @@ const SignInPage: FC = () => {
                   <button
                     type="button"
                     className="btn btn-link auth-recovery__dismiss"
+                    disabled={loading}
                     onClick={clearSocialRecovery}
                   >
                     Dismiss recovery notice

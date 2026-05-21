@@ -85,6 +85,18 @@ Ship login reliability fix now and prepare strict execution graph for profile/da
 - **Files:** `src/hooks/useSignIn.test.ts`
 - **Status:** ✅ Completed (clearSocialRecovery contract assertion)
 
+### AUTH-08-010 — Disable recovery dismiss during retry loading
+
+- Prevent recovery-dismiss race conditions while social retry is in flight by disabling dismiss action when `loading` is true.
+- **Files:** `src/pages/auth/SignInPage.tsx`, `src/pages/auth/SignInPage.test.tsx`
+- **Status:** ✅ Completed (UI loading guard + regression test)
+
+### AUTH-08-011 — Preserve recovery panel during retry attempt
+
+- Keep social recovery UI mounted during retry so users get consistent loading state and action affordances.
+- **Files:** `src/hooks/useSignIn.ts`, `src/pages/auth/SignInPage.test.tsx`
+- **Status:** ✅ Completed (retry-specific hook behavior + UI regression coverage)
+
 ### DASH-08-005 — Dashboard profile completion guidance card
 
 - Add post-login profile completeness guidance with direct CTA to `/profile`.
@@ -113,3 +125,5 @@ Ship login reliability fix now and prepare strict execution graph for profile/da
 10. AUTH-08-007 ✅
 11. AUTH-08-008 ✅
 12. AUTH-08-009 ✅
+13. AUTH-08-010 ✅
+14. AUTH-08-011 ✅
