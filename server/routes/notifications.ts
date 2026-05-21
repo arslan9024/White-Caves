@@ -25,7 +25,6 @@ const VALID_NOTIFICATION_TYPES = [
 const VALID_CHANNELS = ['in_app', 'email', 'whatsapp'] as const;
 
 const router = Router();
-const db = prisma as any;
 
 // ─── GET /api/notifications ─────────────────────────────────────────────
 router.get(
@@ -50,13 +49,13 @@ router.get(
     if (read === 'false') where.read = false;
 
     const [notifications, total] = await Promise.all([
-      db.notification.findMany({
+      prisma.notification.findMany({
         where,
         orderBy: { createdAt: 'desc' },
         skip,
         take: limit,
       }),
-      db.notification.count({ where }),
+      prisma.notification.count({ where }),
     ]);
 
     res.status(200).json({
@@ -79,7 +78,7 @@ router.get(
     const userId = (req as AuthRequest).user?.id;
     if (!userId) throw new AppError('Authentication required', 401);
 
-    const count = await db.notification.count({
+    const count = await prisma.notification.count({
       where: { userId, read: false },
     });
 
@@ -94,7 +93,7 @@ router.patch(
     const userId = (req as AuthRequest).user?.id;
     if (!userId) throw new AppError('Authentication required', 401);
 
-    const result = await db.notification.updateMany({
+    const result = await prisma.notification.updateMany({
       where: { userId, read: false },
       data: { read: true },
     });
@@ -116,13 +115,13 @@ router.patch(
     const userId = (req as AuthRequest).user?.id;
     if (!userId) throw new AppError('Authentication required', 401);
 
-    const notification = await db.notification.findUnique({ where: { id } });
+    const notification = await prisma.notification.findUnique({ where: { id } });
     if (!notification) throw new AppError('Notification not found', 404);
     if (notification.userId !== userId) {
       throw new AppError('Access denied — you can only read your own notifications', 403);
     }
 
-    const updated = await db.notification.update({
+    const updated = await prisma.notification.update({
       where: { id },
       data: { read: true },
     });
@@ -140,13 +139,13 @@ router.delete(
     const userId = (req as AuthRequest).user?.id;
     if (!userId) throw new AppError('Authentication required', 401);
 
-    const notification = await db.notification.findUnique({ where: { id } });
+    const notification = await prisma.notification.findUnique({ where: { id } });
     if (!notification) throw new AppError('Notification not found', 404);
     if (notification.userId !== userId) {
       throw new AppError('Access denied — you can only delete your own notifications', 403);
     }
 
-    await db.notification.delete({ where: { id } });
+    await prisma.notification.delete({ where: { id } });
 
     res.status(200).json({ success: true, message: 'Notification deleted' });
   })
@@ -172,7 +171,7 @@ router.post(
       channel: rules.oneOf('Channel', [...VALID_CHANNELS]),
     });
 
-    const notification = await db.notification.create({
+    const notification = await prisma.notification.create({
       data: {
         userId,
         type: type || 'info',

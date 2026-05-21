@@ -250,8 +250,8 @@ export const selectComplianceMetrics = (state: RootState) =>
 
 export const selectAssistantPlan =
   (id: string) =>
-  (state: RootState): string | null =>
-    state.aiAssistantDashboard?.plans?.[id] ?? null;
+  (state: RootState): string | null | undefined =>
+    state.aiAssistantDashboard?.plans?.[id];
 
 export const selectAssistantPlanLoading =
   (id: string) =>

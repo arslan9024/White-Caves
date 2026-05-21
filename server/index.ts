@@ -15,7 +15,6 @@ import morgan from 'morgan';
 import cookieParser from 'cookie-parser';
 import { Prisma } from '@prisma/client';
 import { connectDatabase, prisma } from './database.js';
-import { Prisma } from '@prisma/client';
 import { errorHandler, asyncHandler, AppError } from './middleware/errorHandler.js';
 import authMiddleware from './middleware/auth.js';
 import { requestIdMiddleware } from './middleware/requestId.js';
@@ -48,6 +47,8 @@ import lindaRoutes from './routes/linda.js';
 import metaWebhookRoutes from './routes/meta-webhook.js';
 import favoritesRoutes from './routes/favorites.js';
 import orchestratorRoutes from './routes/orchestrator.js';
+import integrationsRoutes from './routes/integrations.js';
+import orchestrationRoutes from './routes/orchestration.js';
 import henryRoutes from './routes/henry.js';
 // @ts-expect-error JS route module has no TypeScript declarations yet
 import ninaRoutes from './routes/nina.js';
@@ -81,6 +82,7 @@ import usersRoutes from './routes/users.js';
 import leasingInventoryRoutes from './routes/leasing-inventory.js';
 import secondarySalesRoutes from './routes/secondary-sales.js';
 import commissionsRoutes from './routes/commissions.js';
+import notificationsRoutes from './routes/notifications.js';
 // @ts-expect-error JS route module has no TypeScript declarations yet
 import importHistoryRoutes from './routes/importHistory.routes.js';
 // @ts-expect-error JS route module has no TypeScript declarations yet
@@ -278,6 +280,10 @@ app.use('/api/auth', authRoutes);
 // Public AI chat route — no auth required
 app.use('/api/ai/chat', aiChatRoutes);
 
+// AI Assistants list is public (GET /api/assistants) — mount before global auth middleware.
+// Write endpoints (POST/PUT/DELETE) within the router enforce their own authMiddleware.
+app.use('/api/assistants', assistantsRoutes);
+
 // Protected routes (require authentication in production, optional in development)
 if (process.env.NODE_ENV === 'production') {
   app.use('/api', authMiddleware);
@@ -388,6 +394,9 @@ app.use('/api/webhooks/meta', metaWebhookRoutes);
 // Favorites API (any authenticated user can manage their own favorites)
 app.use('/api/favorites', favoritesRoutes);
 
+// Notifications API (any authenticated user can manage their own notifications)
+app.use('/api/notifications', notificationsRoutes);
+
 // Saved Searches API (any authenticated user can manage their own saved searches)
 app.use('/api/saved-searches', savedSearchesRoutes);
 
@@ -414,6 +423,9 @@ app.use('/api/secondary-sales', secondarySalesRoutes);
 
 // Commissions API (Phase 35 - Dubai Real Estate Commission Tracker)
 app.use('/api/commissions', commissionsRoutes);
+
+// Notifications API (in-app notification management)
+app.use('/api/notifications', notificationsRoutes);
 app.use('/api/inventory/import', smartImportRoutes);
 app.use('/api', importHistoryRoutes);
 
@@ -455,6 +467,10 @@ app.use('/api/crm', crmRoutes);
 
 // AI Assistants API (Phase 0.8 — plan management)
 app.use('/api/assistants', assistantsRoutes);
+
+// External module gateway (Linda + Henry separate repos)
+app.use('/api/integrations', integrationsRoutes);
+app.use('/api/orchestration', orchestrationRoutes);
 
 // ============================================================================
 // STUB ROUTES — Placeholder APIs for frontend pages not yet backed by full CRUD
