@@ -10,7 +10,7 @@ import AppLayout from './components/layout/AppLayout';
 import PortalLayout from './components/portal/PortalLayout';
 import SuspenseLoader from './components/common/SuspenseLoader';
 import RouteErrorBoundary from './components/RouteErrorBoundary';
-import SignInPage from './pages/auth/SignInPage';
+const SignInPage = lazy(() => import('./pages/auth/SignInPage'));
 import type { RootState, AppDispatch } from './store/store';
 import { safeStorage } from './utils/safeStorage';
 import { authFetch } from './utils/authFetch';
