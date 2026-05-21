@@ -1009,7 +1009,7 @@ router.post(
             email: typeof email === 'string' ? email : undefined,
             name: typeof name === 'string' ? name : undefined,
             picture: typeof photoUrl === 'string' ? photoUrl : undefined,
-          } as Awaited<ReturnType<typeof verifyFirebaseIdToken>>;
+          } as unknown as Awaited<ReturnType<typeof verifyFirebaseIdToken>>;
         } else {
           throw new AppError(
             'Firebase Admin is not configured on the server. Set FIREBASE_SERVICE_ACCOUNT or FIREBASE_PROJECT_ID/FIREBASE_CLIENT_EMAIL/FIREBASE_PRIVATE_KEY.',

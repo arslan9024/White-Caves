@@ -19,6 +19,7 @@
  */
 
 import { Router, Request, Response } from 'express';
+import type { Prisma } from '@prisma/client';
 import { asyncHandler, AppError } from '../middleware/errorHandler';
 import type { AuthRequest } from '../middleware/auth';
 import { prisma } from '../database.js';
@@ -522,14 +523,14 @@ router.get(
 
     const limit = Math.max(1, Math.min(500, parseInt(String(req.query.limit || '100'), 10) || 100));
 
-    const missingWhere = {
+    const missingWhere: Prisma.PropertyWhereInput = {
       OR: [
         { municipalityNumber: null },
         { municipalityNumber: '' },
         { buildingPermitNumber: null },
         { buildingPermitNumber: '' },
       ],
-    } as const;
+    };
 
     const where =
       statusFilter === 'missing'
