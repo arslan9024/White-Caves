@@ -165,6 +165,23 @@ export function useUnifiedDashboard() {
   const selectedDepartment = useSelector(selectSelectedDepartmentSelector);
   const leftCollapsed = !flyoutOpen;
 
+  // Keep latest sidebar values in refs so keyboard listener can stay stable.
+  const flyoutOpenRef = useRef(flyoutOpen);
+  const flyoutDepartmentRef = useRef(flyoutDepartment);
+  const selectedDepartmentRef = useRef(selectedDepartment);
+
+  useEffect(() => {
+    flyoutOpenRef.current = flyoutOpen;
+  }, [flyoutOpen]);
+
+  useEffect(() => {
+    flyoutDepartmentRef.current = flyoutDepartment;
+  }, [flyoutDepartment]);
+
+  useEffect(() => {
+    selectedDepartmentRef.current = selectedDepartment;
+  }, [selectedDepartment]);
+
   // ─── Sidebar Handlers ─────────────────────────────────────
   const handleToggleLeftSidebar = useCallback(() => {
     if (flyoutOpen) {
@@ -361,27 +378,29 @@ export function useUnifiedDashboard() {
     const handleKeyDown = (e: KeyboardEvent): void => {
       if ((e.ctrlKey || e.metaKey) && e.code === 'KeyB') {
         e.preventDefault();
-        if (flyoutOpen) {
+        if (flyoutOpenRef.current) {
           dispatch(closeFlyout());
         } else {
-          dispatch(openFlyout(flyoutDepartment || selectedDepartment || 'general'));
+          dispatch(
+            openFlyout(flyoutDepartmentRef.current || selectedDepartmentRef.current || 'general')
+          );
         }
       }
     };
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [dispatch, flyoutOpen, flyoutDepartment, selectedDepartment]);
+  }, [dispatch]);
 
   // ─── CRM Module Handlers ──────────────────────────────────
   const handleCRMModuleSelect = useCallback((moduleId: string): void => {
-    setSelectedCRMModule(moduleId);
-    setActiveTab('');
+    setSelectedCRMModule(prev => (prev === moduleId ? prev : moduleId));
+    setActiveTab(prev => (prev === '' ? prev : ''));
   }, []);
 
   const handleBackFromCRM = useCallback((): void => {
-    setSelectedCRMModule(null);
-    setActiveTab('overview');
+    setSelectedCRMModule(prev => (prev === null ? prev : null));
+    setActiveTab(prev => (prev === 'overview' ? prev : 'overview'));
   }, []);
 
   // ─── Return ───────────────────────────────────────────────

@@ -4,7 +4,7 @@
  * Routes: /owner/crm, /lion/crm
  */
 
-import React, { FC, useState, useEffect, lazy, Suspense } from 'react';
+import React, { FC, memo, useState, useEffect, lazy, Suspense, useCallback } from 'react';
 import ErrorBoundary from '../../components/ErrorBoundary';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import styled from 'styled-components';
@@ -249,6 +249,84 @@ const QuickAction = styled.button<{ $color: string }>`
   }
 `;
 
+interface CRMQuickActionsProps {
+  leadManagementLabel: string;
+  propertyPortfolioLabel: string;
+  agentPerformanceLabel: string;
+  whatsappLabel: string;
+  financeLabel: string;
+  executiveLabel: string;
+  onOpenLeads: () => void;
+  onOpenProperties: () => void;
+  onOpenAgents: () => void;
+  onOpenNadia: () => void;
+  onOpenTheodora: () => void;
+  onOpenZoe: () => void;
+}
+
+const CRMQuickActions = memo(function CRMQuickActions({
+  leadManagementLabel,
+  propertyPortfolioLabel,
+  agentPerformanceLabel,
+  whatsappLabel,
+  financeLabel,
+  executiveLabel,
+  onOpenLeads,
+  onOpenProperties,
+  onOpenAgents,
+  onOpenNadia,
+  onOpenTheodora,
+  onOpenZoe,
+}: CRMQuickActionsProps) {
+  return (
+    <QuickActions>
+      <QuickAction $color="#3B82F6" onClick={onOpenLeads}>
+        🎯 {leadManagementLabel}
+      </QuickAction>
+      <QuickAction $color="#10B981" onClick={onOpenProperties}>
+        🏠 {propertyPortfolioLabel}
+      </QuickAction>
+      <QuickAction $color="#F59E0B" onClick={onOpenAgents}>
+        👥 {agentPerformanceLabel}
+      </QuickAction>
+      <QuickAction $color="#25D366" onClick={onOpenNadia}>
+        💬 {whatsappLabel}
+      </QuickAction>
+      <QuickAction $color="#8B5CF6" onClick={onOpenTheodora}>
+        💰 {financeLabel}
+      </QuickAction>
+      <QuickAction $color="#E31E24" onClick={onOpenZoe}>
+        👑 {executiveLabel}
+      </QuickAction>
+    </QuickActions>
+  );
+});
+
+const CRM_HUB_COPY = {
+  en: {
+    leadManagementLabel: 'Lead Management',
+    propertyPortfolioLabel: 'Property Portfolio',
+    agentPerformanceLabel: 'Agent Performance',
+    whatsappLabel: 'WhatsApp CRM',
+    financeLabel: 'Finance & Commissions',
+    executiveLabel: 'Executive View',
+  },
+  ar: {
+    leadManagementLabel: 'إدارة العملاء المحتملين',
+    propertyPortfolioLabel: 'محفظة العقارات',
+    agentPerformanceLabel: 'أداء الوكلاء',
+    whatsappLabel: 'واتساب CRM',
+    financeLabel: 'المالية والعمولات',
+    executiveLabel: 'الرؤية التنفيذية',
+  },
+} as const;
+
+const getCRMHubLocale = (): keyof typeof CRM_HUB_COPY => {
+  if (typeof document === 'undefined') return 'en';
+  const lang = (document.documentElement.getAttribute('lang') || 'en').toLowerCase();
+  return lang.startsWith('ar') ? 'ar' : 'en';
+};
+
 // ─── Module Definitions ─────────────────────────────────────────────────
 
 const CRM_MODULES: CRMModuleDef[] = [
@@ -323,6 +401,7 @@ const formatTimeAgo = (timestamp: string) => {
 // ─── CRM Hub Component ─────────────────────────────────────────────────
 
 const CRMHubPage: FC = () => {
+  const copy = CRM_HUB_COPY[getCRMHubLocale()];
   const {
     user,
     recentActivities,
@@ -357,6 +436,13 @@ const CRMHubPage: FC = () => {
   const handleBackToHub = () => {
     setActiveModule(null);
   };
+
+  const handleOpenLeads = useCallback(() => navigate('/owner/crm/leads'), [navigate]);
+  const handleOpenProperties = useCallback(() => navigate('/owner/crm/properties'), [navigate]);
+  const handleOpenAgents = useCallback(() => navigate('/owner/crm/agents'), [navigate]);
+  const handleOpenNadia = useCallback(() => handleModuleSelect('nadia'), []);
+  const handleOpenTheodora = useCallback(() => handleModuleSelect('theodora'), []);
+  const handleOpenZoe = useCallback(() => handleModuleSelect('zoe'), []);
 
   // If a module is selected, show it full-screen
   if (activeModule) {
@@ -409,26 +495,20 @@ const CRMHubPage: FC = () => {
       </HubHeader>
 
       {/* Quick Actions */}
-      <QuickActions>
-        <QuickAction $color="#3B82F6" onClick={() => navigate('/owner/crm/leads')}>
-          🎯 Lead Management
-        </QuickAction>
-        <QuickAction $color="#10B981" onClick={() => navigate('/owner/crm/properties')}>
-          🏠 Property Portfolio
-        </QuickAction>
-        <QuickAction $color="#F59E0B" onClick={() => navigate('/owner/crm/agents')}>
-          👥 Agent Performance
-        </QuickAction>
-        <QuickAction $color="#25D366" onClick={() => handleModuleSelect('nadia')}>
-          💬 WhatsApp CRM
-        </QuickAction>
-        <QuickAction $color="#8B5CF6" onClick={() => handleModuleSelect('theodora')}>
-          💰 Finance & Commissions
-        </QuickAction>
-        <QuickAction $color="#E31E24" onClick={() => handleModuleSelect('zoe')}>
-          👑 Executive View
-        </QuickAction>
-      </QuickActions>
+      <CRMQuickActions
+        leadManagementLabel={copy.leadManagementLabel}
+        propertyPortfolioLabel={copy.propertyPortfolioLabel}
+        agentPerformanceLabel={copy.agentPerformanceLabel}
+        whatsappLabel={copy.whatsappLabel}
+        financeLabel={copy.financeLabel}
+        executiveLabel={copy.executiveLabel}
+        onOpenLeads={handleOpenLeads}
+        onOpenProperties={handleOpenProperties}
+        onOpenAgents={handleOpenAgents}
+        onOpenNadia={handleOpenNadia}
+        onOpenTheodora={handleOpenTheodora}
+        onOpenZoe={handleOpenZoe}
+      />
 
       {/* Stats Overview */}
       <StatsGrid>

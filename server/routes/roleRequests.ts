@@ -13,7 +13,6 @@
 
 import { Router, Response } from 'express';
 import type { Request } from 'express';
-import { randomUUID } from 'crypto';
 import { asyncHandler, AppError } from '../middleware/errorHandler.js';
 import { prisma } from '../database.js';
 import { sanitizeString } from '../utils/sanitize.js';
@@ -22,6 +21,7 @@ import { requirePermission } from '../middleware/rbac.js';
 
 export const roleRequestRouter = Router();
 export const adminRoleRequestRouter = Router();
+const db = prisma as any;
 
 // Allowed roles a user can request elevation to
 const REQUESTABLE_ROLES = [
@@ -37,68 +37,10 @@ const REQUESTABLE_ROLES = [
   'it_admin',
 ] as const;
 
-const mockRoleRequests: Array<Record<string, any>> = [];
-
-const normalizeId = () => randomUUID().replace(/-/g, '').slice(0, 24);
-
-const matchWhere = (item: Record<string, any>, where?: Record<string, any>) => {
-  if (!where) return true;
-  return Object.entries(where).every(([key, value]) => item[key] === value);
-};
-
-const createMockRoleRequestModel = () => ({
-  findFirst: async ({ where }: any) => mockRoleRequests.find(r => matchWhere(r, where)) ?? null,
-
-  findMany: async ({ where, orderBy }: any = {}) => {
-    const rows = mockRoleRequests.filter(r => matchWhere(r, where));
-    if (orderBy?.createdAt) {
-      return rows.sort((a, b) => {
-        const av = new Date(a.createdAt).getTime();
-        const bv = new Date(b.createdAt).getTime();
-        return orderBy.createdAt === 'asc' ? av - bv : bv - av;
-      });
-    }
-    return rows;
-  },
-
-  findUnique: async ({ where }: any) => mockRoleRequests.find(r => r.id === where.id) ?? null,
-
-  create: async ({ data }: any) => {
-    const created = {
-      id: normalizeId(),
-      createdAt: new Date(),
-      updatedAt: new Date(),
-      ...data,
-    };
-    mockRoleRequests.push(created);
-    return created;
-  },
-
-  update: async ({ where, data }: any) => {
-    const idx = mockRoleRequests.findIndex(r => r.id === where.id);
-    if (idx < 0) throw new AppError('Role request not found', 404);
-    mockRoleRequests[idx] = {
-      ...mockRoleRequests[idx],
-      ...data,
-      updatedAt: new Date(),
-    };
-    return mockRoleRequests[idx];
-  },
-});
-
-const getRoleRequestModel = () => {
-  const roleRequestModel = (prisma as unknown as { roleRequest?: any }).roleRequest;
-  if (!roleRequestModel) {
-    return createMockRoleRequestModel();
-  }
-  return roleRequestModel;
-};
-
 // ─── POST /api/users/role-request ────────────────────────────────────────
 roleRequestRouter.post(
   '/',
   asyncHandler(async (req: Request, res: Response) => {
-    const roleRequestModel = getRoleRequestModel();
     const { requestedRole, reason } = req.body;
 
     if (!requestedRole) throw new AppError('requestedRole is required', 400);
@@ -116,7 +58,7 @@ roleRequestRouter.post(
     }
 
     // Check for an already-pending request for the same role
-    const existing = await roleRequestModel.findFirst({
+    const existing = await db.roleRequest.findFirst({
       where: {
         userId: req.user?.id as string,
         requestedRole,
@@ -127,7 +69,7 @@ roleRequestRouter.post(
       throw new AppError('You already have a pending request for this role', 409);
     }
 
-    const roleRequest = await roleRequestModel.create({
+    const roleRequest = await db.roleRequest.create({
       data: {
         userId: req.user?.id as string,
         currentRole,
@@ -149,8 +91,7 @@ roleRequestRouter.post(
 adminRoleRequestRouter.get(
   '/mine',
   asyncHandler(async (req: Request, res: Response) => {
-    const roleRequestModel = getRoleRequestModel();
-    const requests = await roleRequestModel.findMany({
+    const requests = await db.roleRequest.findMany({
       where: { userId: req.user?.id as string },
       orderBy: { createdAt: 'desc' },
     });
@@ -163,33 +104,26 @@ adminRoleRequestRouter.get(
   '/',
   requirePermission('manage_users'),
   asyncHandler(async (req: Request, res: Response) => {
-    const roleRequestModel = getRoleRequestModel();
     const { status } = req.query as Record<string, string>;
     const where: Record<string, unknown> = {};
     if (status && ['pending', 'approved', 'rejected'].includes(status)) {
       where.status = status;
     }
 
-    const requests = await roleRequestModel.findMany({
+    const requests = await db.roleRequest.findMany({
       where,
       orderBy: { createdAt: 'desc' },
     });
 
     // Enrich with requester info
-    const userIds = Array.from(
-      new Set(
-        requests
-          .map((r: { userId?: string | null }) => r.userId)
-          .filter((id: string | null | undefined): id is string => Boolean(id))
-      )
-    ) as string[];
-    const users = await prisma.user.findMany({
+    const userIds = [...new Set(requests.map((r: any) => r.userId))] as string[];
+    const users = await db.user.findMany({
       where: { id: { in: userIds } },
       select: { id: true, name: true, email: true, role: true },
     });
-    const userMap = new Map(users.map(u => [u.id, u]));
+    const userMap = new Map(users.map((u: any) => [u.id, u]));
 
-    const enriched = requests.map((r: { userId: string }) => ({
+    const enriched = requests.map((r: any) => ({
       ...r,
       user: userMap.get(r.userId) || null,
     }));
@@ -203,11 +137,10 @@ adminRoleRequestRouter.post(
   '/:id/approve',
   requirePermission('manage_users'),
   asyncHandler(async (req: Request, res: Response) => {
-    const roleRequestModel = getRoleRequestModel();
     const { id } = req.params;
     validateIdParam(id, 'Role request ID');
 
-    const roleReq = await roleRequestModel.findUnique({ where: { id } });
+    const roleReq = await db.roleRequest.findUnique({ where: { id } });
     if (!roleReq) throw new AppError('Role request not found', 404);
     if (roleReq.status !== 'pending') {
       throw new AppError(`Cannot approve a request with status "${roleReq.status}"`, 400);
@@ -216,12 +149,12 @@ adminRoleRequestRouter.post(
     const { reviewNote } = req.body;
 
     // Apply the role to the user
-    await prisma.user.update({
+    await db.user.update({
       where: { id: roleReq.userId },
       data: { role: roleReq.requestedRole },
     });
 
-    const updated = await roleRequestModel.update({
+    const updated = await db.roleRequest.update({
       where: { id },
       data: {
         status: 'approved',
@@ -231,7 +164,7 @@ adminRoleRequestRouter.post(
       },
     });
 
-    await prisma.activity.create({
+    await db.activity.create({
       data: {
         type: 'user',
         action: 'role_approved',
@@ -253,11 +186,10 @@ adminRoleRequestRouter.post(
   '/:id/reject',
   requirePermission('manage_users'),
   asyncHandler(async (req: Request, res: Response) => {
-    const roleRequestModel = getRoleRequestModel();
     const { id } = req.params;
     validateIdParam(id, 'Role request ID');
 
-    const roleReq = await roleRequestModel.findUnique({ where: { id } });
+    const roleReq = await db.roleRequest.findUnique({ where: { id } });
     if (!roleReq) throw new AppError('Role request not found', 404);
     if (roleReq.status !== 'pending') {
       throw new AppError(`Cannot reject a request with status "${roleReq.status}"`, 400);
@@ -269,7 +201,7 @@ adminRoleRequestRouter.post(
       reviewNote: rules.optionalStringWithMax('Review note', 1000),
     });
 
-    const updated = await roleRequestModel.update({
+    const updated = await db.roleRequest.update({
       where: { id },
       data: {
         status: 'rejected',

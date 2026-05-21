@@ -8,19 +8,18 @@ import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { formatCurrency as formatCurrencyUtil, formatDate as formatDateUtil } from '../../../utils';
 import { createLogger } from '../../../utils/logger';
-
-const log = createLogger('useCommissionTracking');
 import type { AppDispatch } from '../../../store/store';
 import {
   selectAllCommissions,
   selectCommissionsLoading,
   selectCommissionsError,
-  fetchCommissionsAPI,
+  fetchCommissionsFromAPI,
   createCommissionAPI,
   updateCommissionAPI,
   addActivity,
 } from '../../../store/crmDataSlice';
 
+const log = createLogger('useCommissionTracking');
 // ─── Types ──────────────────────────────────────────────────────────────
 
 export interface Commission {
@@ -54,7 +53,10 @@ type CommissionBadgeVariant = 'primary' | 'secondary' | 'success' | 'warning' | 
 
 // ─── Constants ──────────────────────────────────────────────────────────
 
-export const STATUS_CONFIG: Record<string, { label: string; color: string; badgeVariant: CommissionBadgeVariant }> = {
+export const STATUS_CONFIG: Record<
+  string,
+  { label: string; color: string; badgeVariant: CommissionBadgeVariant }
+> = {
   pending: { label: 'Pending', color: '#F59E0B', badgeVariant: 'warning' },
   approved: { label: 'Approved', color: '#3B82F6', badgeVariant: 'info' },
   paid: { label: 'Paid', color: '#10B981', badgeVariant: 'success' },
@@ -90,7 +92,7 @@ export function useCommissionTracking() {
 
   // Fetch on mount
   useEffect(() => {
-    dispatch(fetchCommissionsAPI(undefined));
+    dispatch(fetchCommissionsFromAPI(undefined));
   }, [dispatch]);
 
   // ─── Local state ────────────────────────────────────────────────
@@ -115,9 +117,11 @@ export function useCommissionTracking() {
 
   const filteredCommissions = useMemo(() => {
     return allCommissions.filter((c: Commission) => {
-      const matchesSearch = !search || [
-        c.agent_name, c.property_title, c.notes,
-      ].some(field => field?.toLowerCase().includes(search.toLowerCase()));
+      const matchesSearch =
+        !search ||
+        [c.agent_name, c.property_title, c.notes].some(field =>
+          field?.toLowerCase().includes(search.toLowerCase())
+        );
       const matchesStatus = statusFilter === 'all' || c.status === statusFilter;
       const matchesType = typeFilter === 'all' || c.type === typeFilter;
       return matchesSearch && matchesStatus && matchesType;
@@ -128,7 +132,7 @@ export function useCommissionTracking() {
 
   const paginatedCommissions = filteredCommissions.slice(
     (currentPage - 1) * ITEMS_PER_PAGE,
-    currentPage * ITEMS_PER_PAGE,
+    currentPage * ITEMS_PER_PAGE
   );
 
   const summaryStats = useMemo(() => {
@@ -181,24 +185,32 @@ export function useCommissionTracking() {
       created_at: new Date().toISOString(),
     };
 
-    dispatch(createCommissionAPI(commissionData)).then((result) => {
-      if (createCommissionAPI.fulfilled.match(result)) {
-        dispatch(addActivity({
-          id: Date.now(),
-          type: 'commission',
-          description: `New commission created for ${formData.agent_name}`,
-          timestamp: new Date().toISOString(),
-        }));
-        setShowCreateModal(false);
-        resetForm();
-      } else if (createCommissionAPI.rejected.match(result)) {
-        const msg = (result.payload as string) || 'Failed to create commission. Please try again.';
-        setErrorMessage(msg);
-      }
-    }).catch((error: unknown) => {
-      log.error('Failed to create commission:', error instanceof Error ? error.message : String(error));
-      setErrorMessage('An unexpected error occurred. Please try again.');
-    });
+    dispatch(createCommissionAPI(commissionData))
+      .then(result => {
+        if (createCommissionAPI.fulfilled.match(result)) {
+          dispatch(
+            addActivity({
+              id: Date.now(),
+              type: 'commission',
+              description: `New commission created for ${formData.agent_name}`,
+              timestamp: new Date().toISOString(),
+            })
+          );
+          setShowCreateModal(false);
+          resetForm();
+        } else if (createCommissionAPI.rejected.match(result)) {
+          const msg =
+            (result.payload as string) || 'Failed to create commission. Please try again.';
+          setErrorMessage(msg);
+        }
+      })
+      .catch((error: unknown) => {
+        log.error(
+          'Failed to create commission:',
+          error instanceof Error ? error.message : String(error)
+        );
+        setErrorMessage('An unexpected error occurred. Please try again.');
+      });
   }, [dispatch, formData, resetForm]);
 
   const handleEdit = useCallback((commission: Commission) => {
@@ -222,35 +234,45 @@ export function useCommissionTracking() {
     }
     if (selectedCommission) {
       const agentSnapshot = formData.agent_name;
-      dispatch(updateCommissionAPI({
-        id: String(selectedCommission.id),
-        agent_name: formData.agent_name.trim(),
-        amount: Number(formData.amount) || 0,
-        percentage: formData.percentage ? Number(formData.percentage) : undefined,
-        type: formData.type,
-        status: formData.status,
-        property_title: formData.property_title.trim(),
-        notes: formData.notes.trim(),
-        updated_at: new Date().toISOString(),
-      })).then((result) => {
-        if (updateCommissionAPI.fulfilled.match(result)) {
-          dispatch(addActivity({
-            id: Date.now(),
-            type: 'commission',
-            description: `Commission updated for ${agentSnapshot}`,
-            timestamp: new Date().toISOString(),
-          }));
-          setShowEditModal(false);
-          setSelectedCommission(null);
-          resetForm();
-        } else if (updateCommissionAPI.rejected.match(result)) {
-          const msg = (result.payload as string) || 'Failed to update commission. Please try again.';
-          setErrorMessage(msg);
-        }
-      }).catch((error: unknown) => {
-        log.error('Failed to update commission:', error instanceof Error ? error.message : String(error));
-        setErrorMessage('An unexpected error occurred. Please try again.');
-      });
+      dispatch(
+        updateCommissionAPI({
+          id: String(selectedCommission.id),
+          agent_name: formData.agent_name.trim(),
+          amount: Number(formData.amount) || 0,
+          percentage: formData.percentage ? Number(formData.percentage) : undefined,
+          type: formData.type,
+          status: formData.status,
+          property_title: formData.property_title.trim(),
+          notes: formData.notes.trim(),
+          updated_at: new Date().toISOString(),
+        })
+      )
+        .then(result => {
+          if (updateCommissionAPI.fulfilled.match(result)) {
+            dispatch(
+              addActivity({
+                id: Date.now(),
+                type: 'commission',
+                description: `Commission updated for ${agentSnapshot}`,
+                timestamp: new Date().toISOString(),
+              })
+            );
+            setShowEditModal(false);
+            setSelectedCommission(null);
+            resetForm();
+          } else if (updateCommissionAPI.rejected.match(result)) {
+            const msg =
+              (result.payload as string) || 'Failed to update commission. Please try again.';
+            setErrorMessage(msg);
+          }
+        })
+        .catch((error: unknown) => {
+          log.error(
+            'Failed to update commission:',
+            error instanceof Error ? error.message : String(error)
+          );
+          setErrorMessage('An unexpected error occurred. Please try again.');
+        });
     }
   }, [dispatch, selectedCommission, formData, resetForm]);
 
@@ -258,7 +280,10 @@ export function useCommissionTracking() {
     return STATUS_CONFIG[status]?.badgeVariant || 'secondary';
   }, []);
 
-  const formatCurrency = useCallback((amount: number | undefined) => formatCurrencyUtil(amount), []);
+  const formatCurrency = useCallback(
+    (amount: number | undefined) => formatCurrencyUtil(amount),
+    []
+  );
   const formatDate = useCallback((dateStr: string | undefined) => formatDateUtil(dateStr), []);
 
   const handleSearchChange = useCallback((value: string) => {
@@ -277,7 +302,7 @@ export function useCommissionTracking() {
   }, []);
 
   const retryFetch = useCallback(() => {
-    dispatch(fetchCommissionsAPI(undefined));
+    dispatch(fetchCommissionsFromAPI(undefined));
   }, [dispatch]);
 
   const goBack = useCallback(() => {
@@ -286,21 +311,43 @@ export function useCommissionTracking() {
 
   return {
     // Data
-    allCommissions, filteredCommissions, paginatedCommissions, summaryStats, totalPages,
-    loading, error,
+    allCommissions,
+    filteredCommissions,
+    paginatedCommissions,
+    summaryStats,
+    totalPages,
+    loading,
+    error,
     // State
-    search, statusFilter, typeFilter, currentPage,
-    showCreateModal, showEditModal, selectedCommission,
-    formData, setFormData,
-    errorMessage, setErrorMessage,
+    search,
+    statusFilter,
+    typeFilter,
+    currentPage,
+    showCreateModal,
+    showEditModal,
+    selectedCommission,
+    formData,
+    setFormData,
+    errorMessage,
+    setErrorMessage,
     // Page constants
     ITEMS_PER_PAGE,
     // Actions
-    openCreateModal, closeCreateModal, closeEditModal,
-    handleCreate, handleEdit, handleSaveEdit,
-    handleSearchChange, handleStatusFilterChange, handleTypeFilterChange,
-    setCurrentPage, retryFetch, goBack,
+    openCreateModal,
+    closeCreateModal,
+    closeEditModal,
+    handleCreate,
+    handleEdit,
+    handleSaveEdit,
+    handleSearchChange,
+    handleStatusFilterChange,
+    handleTypeFilterChange,
+    setCurrentPage,
+    retryFetch,
+    goBack,
     // Formatters
-    getStatusBadgeVariant, formatCurrency, formatDate,
+    getStatusBadgeVariant,
+    formatCurrency,
+    formatDate,
   };
 }

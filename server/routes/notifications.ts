@@ -12,7 +12,16 @@ import { sanitizeString } from '../utils/sanitize';
 import { validate, rules, validateIdParam } from '../utils/validate';
 import { parsePagination } from '../config/pagination';
 
-const VALID_NOTIFICATION_TYPES = ['info', 'success', 'warning', 'error', 'lead', 'property', 'commission', 'system'] as const;
+const VALID_NOTIFICATION_TYPES = [
+  'info',
+  'success',
+  'warning',
+  'error',
+  'lead',
+  'property',
+  'commission',
+  'system',
+] as const;
 const VALID_CHANNELS = ['in_app', 'email', 'whatsapp'] as const;
 
 const router = Router();
@@ -26,7 +35,11 @@ router.get(
 
     const { read } = req.query;
 
-    const { page: pageNum, limit, skip } = parsePagination({
+    const {
+      page: pageNum,
+      limit,
+      skip,
+    } = parsePagination({
       page: req.query.page as string,
       limit: req.query.pageSize as string,
     });
@@ -151,10 +164,10 @@ router.post(
     const { userId, type, channel, title, message, metadata } = req.body;
 
     validate(req.body, {
-      userId:  rules.requiredMongoId('User ID'),
-      title:   rules.requiredStringWithMax('Title', 255),
+      userId: rules.requiredMongoId('User ID'),
+      title: rules.requiredStringWithMax('Title', 255),
       message: rules.requiredStringWithMax('Message', 2000),
-      type:    rules.oneOf('Type', [...VALID_NOTIFICATION_TYPES]),
+      type: rules.oneOf('Type', [...VALID_NOTIFICATION_TYPES]),
       channel: rules.oneOf('Channel', [...VALID_CHANNELS]),
     });
 

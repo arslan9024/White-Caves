@@ -5,14 +5,14 @@ import 'styled-components';
 declare module 'styled-components' {
   export interface DefaultTheme {
     [key: string]: any;
-    colors: Record<string, any>;
-    spacing: Record<string, any>;
-    typography: Record<string, any>;
-    transitions: Record<string, any>;
-    shadows: Record<string, any>;
-    breakpoints: Record<string, any>;
-    zIndex: Record<string, any>;
-    radius?: Record<string, any>;
-    fonts?: Record<string, any>;
+    colors?: any;
+    spacing?: any;
+    typography?: any;
+    transitions?: any;
+    shadows?: any;
+    breakpoints?: any;
+    zIndex?: any;
+    radius?: any;
+    fonts?: any;
   }
 }

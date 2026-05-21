@@ -15,7 +15,10 @@ import { configureStore } from '@reduxjs/toolkit';
 // Mock logger
 vi.mock('../../utils/logger', () => ({
   createLogger: () => ({
-    info: vi.fn(), warn: vi.fn(), error: vi.fn(), debug: vi.fn(),
+    info: vi.fn(),
+    warn: vi.fn(),
+    error: vi.fn(),
+    debug: vi.fn(),
   }),
 }));
 
@@ -161,7 +164,20 @@ describe('CRM Dashboard Hooks', () => {
       const { result } = renderHook(() => useDashboardAccess(), {
         wrapper: wrapper('admin'),
       });
-      const allViews = ['company', 'department', 'sales', 'property', 'commission', 'leads', 'office', 'agent', 'financial', 'performance', 'inventory', 'client'];
+      const allViews = [
+        'company',
+        'department',
+        'sales',
+        'property',
+        'commission',
+        'leads',
+        'office',
+        'agent',
+        'financial',
+        'performance',
+        'inventory',
+        'client',
+      ];
       const accessible = result.current.getAccessibleDashboards(allViews as any);
       expect(accessible).toEqual(allViews);
     });
@@ -170,9 +186,30 @@ describe('CRM Dashboard Hooks', () => {
       const { result } = renderHook(() => useDashboardAccess(), {
         wrapper: wrapper('agent'),
       });
-      const allViews = ['company', 'department', 'sales', 'property', 'commission', 'leads', 'office', 'agent', 'financial', 'performance', 'inventory', 'client'];
+      const allViews = [
+        'company',
+        'department',
+        'sales',
+        'property',
+        'commission',
+        'leads',
+        'office',
+        'agent',
+        'financial',
+        'performance',
+        'inventory',
+        'client',
+      ];
       const accessible = result.current.getAccessibleDashboards(allViews as any);
-      expect(accessible).toEqual(['sales', 'commission', 'leads', 'agent', 'client']);
+      expect(accessible).toEqual([
+        'sales',
+        'property',
+        'commission',
+        'leads',
+        'agent',
+        'performance',
+        'client',
+      ]);
     });
 
     it('returns accessible dashboards for finance role', () => {
@@ -280,12 +317,14 @@ describe('CRM Dashboard Hooks', () => {
       global.URL.revokeObjectURL = mockRevokeObjectURL;
       // Only intercept anchor element creation — leave other element types untouched
       const originalCreateElement = document.createElement.bind(document);
-      createElementSpy = vi.spyOn(document, 'createElement').mockImplementation((tag: string, options?: any) => {
-        if (tag === 'a') {
-          return { href: '', download: '', click: clickSpy } as any;
-        }
-        return originalCreateElement(tag, options);
-      }) as any;
+      createElementSpy = vi
+        .spyOn(document, 'createElement')
+        .mockImplementation((tag: string, options?: any) => {
+          if (tag === 'a') {
+            return { href: '', download: '', click: clickSpy } as any;
+          }
+          return originalCreateElement(tag, options);
+        }) as any;
     });
 
     afterEach(() => {
@@ -326,9 +365,7 @@ describe('CRM Dashboard Hooks', () => {
 
     it('handles CSV special characters (commas, quotes, newlines)', async () => {
       const { result } = renderHook(() => useDashboardExport());
-      const data = [
-        { name: 'Tower "A", Dubai', desc: 'Line1\nLine2' },
-      ];
+      const data = [{ name: 'Tower "A", Dubai', desc: 'Line1\nLine2' }];
 
       await act(async () => {
         await result.current.exportAsCSV(data);

@@ -1,0 +1,33 @@
+{
+  "generatedAt": "2026-05-21T00:22:52.797Z",
+  "items": [
+    {
+      "id": "dld-home",
+      "url": "https://dubailand.gov.ae/en/",
+      "output": "data/dubai-real-estate/dld/source-dld-home.html",
+      "status": "downloaded",
+      "bytes": 163008
+    },
+    {
+      "id": "dld-rental-index",
+      "url": "https://dubailand.gov.ae/en/eservices/rental-index/rental-index/",
+      "output": "data/dubai-real-estate/rera/source-rental-index.html",
+      "status": "downloaded",
+      "bytes": 238163
+    },
+    {
+      "id": "bayut-market-trends",
+      "url": "https://www.bayut.com/mybayut/market-trends/",
+      "output": "data/dubai-real-estate/market-intel/source-bayut-market-trends.html",
+      "status": "downloaded",
+      "bytes": 135065
+    },
+    {
+      "id": "bayut-rules-regulations",
+      "url": "https://www.bayut.com/mybayut/rules-regulations/",
+      "output": "data/dubai-real-estate/market-intel/source-bayut-rules-regulations.html",
+      "status": "downloaded",
+      "bytes": 137425
+    }
+  ]
+}

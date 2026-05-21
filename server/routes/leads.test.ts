@@ -351,6 +351,56 @@ describe('Leads Routes — /api/leads', () => {
     });
   });
 
+  // ── POST /from-search ───────────────────────────────────────────
+  describe('POST /api/leads/from-search', () => {
+    it('returns 201 and persists a homepage search lead', async () => {
+      mockPrisma.lead.create.mockResolvedValueOnce({
+        id: 'lead-search-1',
+        name: '[Homepage] BUY search - Downtown Dubai - Apartment - 2BR',
+        source: 'homepage_search',
+        status: 'new',
+        score: 10,
+        tags: ['homepage_search', 'buy', 'downtown_dubai', 'apartment'],
+        createdAt: '2026-05-18T00:00:00.000Z',
+      });
+
+      const res = await request(createApp('agent')).post('/api/leads/from-search').send({
+        mode: 'buy',
+        location: 'Downtown Dubai',
+        propertyType: 'Apartment',
+        beds: 2,
+        minPrice: 1000000,
+        maxPrice: 3000000,
+        sessionId: 'sess_123',
+        searchedAt: '2026-05-18T00:00:00.000Z',
+      });
+
+      expect(res.status).toBe(201);
+      expect(res.body.success).toBe(true);
+      expect(res.body.data.source).toBe('homepage_search');
+      expect(res.body.data.status).toBe('new');
+      expect(mockPrisma.lead.create).toHaveBeenCalledWith(
+        expect.objectContaining({
+          data: expect.objectContaining({
+            source: 'homepage_search',
+            status: 'new',
+            stage: 'awareness',
+          }),
+        })
+      );
+    });
+
+    it('returns 400 for invalid mode', async () => {
+      const res = await request(createApp('agent'))
+        .post('/api/leads/from-search')
+        .send({ mode: 'lease' });
+
+      expect(res.status).toBe(400);
+      expect(res.body.success).toBe(false);
+      expect(res.body.error).toMatch(/mode/i);
+    });
+  });
+
   // ── PATCH /:id ───────────────────────────────────────────────────
   describe('PATCH /api/leads/:id', () => {
     it('returns 200 on successful update by admin', async () => {

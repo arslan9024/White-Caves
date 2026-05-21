@@ -1,9 +1,20 @@
-import React, { FC, lazy, Suspense, ReactNode, ComponentType, useEffect } from 'react';
+import React, {
+  FC,
+  KeyboardEvent,
+  ReactNode,
+  ComponentType,
+  lazy,
+  Suspense,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import { useSelector } from 'react-redux';
+import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import SuspenseLoader from '../components/common/SuspenseLoader';
 import RouteErrorBoundary from '../components/RouteErrorBoundary';
 import DepartmentContentPanel from '../components/layout/DepartmentContentPanel/DepartmentContentPanel';
-import { Badge } from '../components/ui';
 import SubNavBar from '../components/common/SubNavBar';
 import { DashboardSubTabRenderer } from '../components/dashboard/DashboardRenderer';
 import { useUnifiedDashboard } from '../hooks/useUnifiedDashboard';
@@ -11,9 +22,9 @@ import type { DashboardData, CRMModuleProps } from '../hooks/useUnifiedDashboard
 import { AI_ASSISTANTS_REGISTRY } from '../store/slices/aiAssistant/registry';
 import { selectSelectedAssistant } from '../store/slices/sidebarSlice';
 import type { RootState } from '../store/store';
+import type { RoleTab } from '../config/ROLE_TAB_MAPPING';
 import './UnifiedDashboardPage.css';
 
-// Import tab components (non-lazy for critical paths)
 import OverviewTab from '../components/owner/tabs/OverviewTab';
 import PropertiesTab from '../components/owner/tabs/PropertiesTab';
 import AgentsTab from '../components/owner/tabs/AgentsTab';
@@ -34,11 +45,8 @@ import type {
 } from '../components/owner/tabs/types';
 import AdminDashboard from '../components/admin/AdminDashboard';
 
-// Lazy-load AI modules
 const AIAssistantHub = lazy(() => import('../components/crm/AIAssistantHub'));
 const AICommandCenter = lazy(() => import('../components/crm/AICommandCenter'));
-
-// Lazy CRM modules
 const NadiaWhatsAppCRM = lazy(() => import('../components/crm/NadiaWhatsAppCRM'));
 const MaryInventoryCRM = lazy(() => import('../components/crm/MaryInventoryCRM_NEW'));
 const ClaraLeadsCRM = lazy(() => import('../components/crm/ClaraLeadsCRM_NEW'));
@@ -54,28 +62,30 @@ const AuroraCTODashboard = lazy(() => import('../components/crm/AuroraCTODashboa
 const HazelFrontendCRM = lazy(() => import('../components/crm/HazelFrontendCRM_NEW'));
 const WillowBackendCRM = lazy(() => import('../components/crm/WillowBackendCRM_NEW'));
 const UnifiedCRM = lazy(() => import('../components/crm/UnifiedCRM'));
-
-// Dubai CRM Modules
 const RERAComplianceModule = lazy(() => import('../components/crm/RERAComplianceModule'));
 const DLDIntegrationModule = lazy(() => import('../components/crm/DLDIntegrationModule'));
 const LeadScoringModule = lazy(() => import('../components/crm/LeadScoringModule'));
 const PropertyValuationModule = lazy(() => import('../components/crm/PropertyValuationModule'));
 const MarketAnalyticsModule = lazy(() => import('../components/crm/MarketAnalyticsModule'));
 
-// ─── Static helpers & constants (kept in page — rendering-only) ────────
-
 interface CRMModule {
   Component: ComponentType<CRMModuleProps>;
   label: string;
 }
 
-/** Adapter: UnifiedCRM has its own props, not the standard CRM module contract */
+type GenericEntity = Record<string, unknown>;
+
+interface SearchItem {
+  id: string;
+  icon: string;
+  label: string;
+  meta: string;
+  type: 'tab' | 'module' | 'record';
+  target: string;
+}
+
 const UnifiedCRMAdapter: FC<CRMModuleProps> = () => <UnifiedCRM />;
 
-/**
- * Type bridge for dashboard tabs.
- * Tabs receive the shared DashboardData bundle but expect specific sub-shapes.
- */
 function tabData<T>(data: DashboardData | null | undefined): T {
   return (data ?? {}) as unknown as T;
 }
@@ -87,10 +97,7 @@ const TabLoadingFallback: FC = () => (
 );
 
 const CRM_MODULES: Record<string, CRMModule> = {
-  // Unified CRM Dashboard
   unified: { Component: UnifiedCRMAdapter, label: 'Unified CRM Dashboard' },
-
-  // AI-Powered CRM Modules
   nadia: { Component: NadiaWhatsAppCRM, label: 'WhatsApp CRM' },
   mary: { Component: MaryInventoryCRM, label: 'Inventory CRM' },
   clara: { Component: ClaraLeadsCRM, label: 'Leads CRM' },
@@ -105,8 +112,6 @@ const CRM_MODULES: Record<string, CRMModule> = {
   aurora: { Component: AuroraCTODashboard, label: 'CTO Dashboard' },
   hazel: { Component: HazelFrontendCRM, label: 'Frontend CRM' },
   willow: { Component: WillowBackendCRM, label: 'Backend CRM' },
-
-  // Dubai CRM Modules
   rera: { Component: RERAComplianceModule, label: 'RERA Compliance' },
   dld: { Component: DLDIntegrationModule, label: 'DLD Integration' },
   leads: { Component: LeadScoringModule, label: 'Lead Scoring' },
@@ -114,7 +119,49 @@ const CRM_MODULES: Record<string, CRMModule> = {
   analytics: { Component: MarketAnalyticsModule, label: 'Market Analytics' },
 };
 
-// ─── Page Component ───────────────────────────────────────────
+const moduleEntries = Object.entries(CRM_MODULES);
+
+const getTimeGreeting = (date: Date): string => {
+  const hour = date.getHours();
+  if (hour < 12) return 'Good morning';
+  if (hour < 18) return 'Good afternoon';
+  return 'Good evening';
+};
+
+const toNumber = (value: unknown): number => {
+  if (typeof value === 'number' && Number.isFinite(value)) return value;
+  if (typeof value === 'string') {
+    const parsed = Number(value.replace(/[^0-9.-]/g, ''));
+    return Number.isFinite(parsed) ? parsed : 0;
+  }
+  return 0;
+};
+
+const getEntityLabel = (entity: GenericEntity, keys: string[], fallback: string): string => {
+  for (const key of keys) {
+    const value = entity[key];
+    if (typeof value === 'string' && value.trim()) return value.trim();
+  }
+  return fallback;
+};
+
+const getEntityMeta = (entity: GenericEntity, keys: string[]): string => {
+  for (const key of keys) {
+    const value = entity[key];
+    if (typeof value === 'string' && value.trim()) return value.trim();
+  }
+  return 'Open workspace';
+};
+
+const formatCompactNumber = (value: number): string =>
+  new Intl.NumberFormat('en', { notation: value >= 1000 ? 'compact' : 'standard' }).format(value);
+
+const formatCurrency = (value: number): string =>
+  new Intl.NumberFormat('en-AE', {
+    style: 'currency',
+    currency: 'AED',
+    maximumFractionDigits: 0,
+  }).format(value);
 
 const UnifiedDashboardPage: FC = () => {
   const {
@@ -139,26 +186,236 @@ const UnifiedDashboardPage: FC = () => {
     handleBackFromCRM,
   } = useUnifiedDashboard();
 
-  // ─── Phase 5: Auto-load CRM module when an AI assistant is selected ──────
   const selectedAssistant = useSelector((state: RootState) => selectSelectedAssistant(state));
+  const prefersReducedMotion = useReducedMotion();
+  const [isCommandPaletteOpen, setIsCommandPaletteOpen] = useState(false);
+  const [commandQuery, setCommandQuery] = useState('');
+  const [globalSearchQuery, setGlobalSearchQuery] = useState('');
+  const [isGlobalSearchOpen, setIsGlobalSearchOpen] = useState(false);
+  const [modulesExpanded, setModulesExpanded] = useState(true);
+  const globalSearchRef = useRef<HTMLDivElement | null>(null);
+  const tabButtonRefs = useRef<Array<HTMLButtonElement | null>>([]);
 
   useEffect(() => {
     if (!selectedAssistant) return;
-    // Only auto-switch if a matching CRM module exists for this assistant
     if (selectedAssistant in CRM_MODULES) {
       handleCRMModuleSelect(selectedAssistant);
     }
   }, [selectedAssistant, handleCRMModuleSelect]);
 
-  // eslint-disable-next-line security/detect-object-injection
-  const selectedCRMModuleConfig = selectedCRMModule ? CRM_MODULES[selectedCRMModule] : null;
+  useEffect(() => {
+    const onKeyDown = (event: KeyboardEvent | globalThis.KeyboardEvent) => {
+      if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === 'k') {
+        event.preventDefault();
+        setIsCommandPaletteOpen(true);
+      }
 
-  // Helper: Render tab content based on activeTab
+      if (event.key === 'Escape') {
+        setIsCommandPaletteOpen(false);
+        setIsGlobalSearchOpen(false);
+      }
+    };
+
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+  }, []);
+
+  useEffect(() => {
+    const handleOutsideClick = (event: MouseEvent) => {
+      if (!globalSearchRef.current?.contains(event.target as Node)) {
+        setIsGlobalSearchOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleOutsideClick);
+    return () => document.removeEventListener('mousedown', handleOutsideClick);
+  }, []);
+
+  const selectedCRMModuleConfig = selectedCRMModule ? CRM_MODULES[selectedCRMModule] : null;
+  const currentTab = availableTabs.find(tab => tab.id === activeTab);
+
+  const overview = (dashboardData?.overview ?? {}) as GenericEntity;
+  const propertiesCount = dashboardData?.properties?.length ?? 0;
+  const agentsCount = dashboardData?.agents?.length ?? 0;
+  const leadsCount = dashboardData?.leads?.length ?? 0;
+  const contractsCount = dashboardData?.contracts?.length ?? 0;
+  const hotLeadsCount = dashboardData?.hotLeads?.length ?? 0;
+  const monthlyRevenue = toNumber(
+    overview.monthlyRevenue ?? overview.totalRevenue ?? overview.revenue ?? 0
+  );
+
+  const greetingName = user?.name?.trim() || user?.email.split('@')[0] || 'team';
+  const todayLabel = new Intl.DateTimeFormat('en-US', {
+    weekday: 'long',
+    day: 'numeric',
+    month: 'long',
+  }).format(new Date());
+  const greetingLine = `${getTimeGreeting(new Date())}, ${greetingName} · ${todayLabel} · ${hotLeadsCount} active leads need follow-up`;
+
+  const kpiCards = useMemo(
+    () => [
+      {
+        id: 'properties',
+        icon: '🏙️',
+        label: 'Properties',
+        value: formatCompactNumber(propertiesCount),
+        subtext: 'Live portfolio',
+        trend: `${Math.max(propertiesCount - hotLeadsCount, 0)} ready`,
+        positive: true,
+      },
+      {
+        id: 'leads',
+        icon: '📱',
+        label: 'Leads',
+        value: formatCompactNumber(leadsCount),
+        subtext: 'Pipeline volume',
+        trend: `${hotLeadsCount} hot`,
+        positive: hotLeadsCount > 0,
+      },
+      {
+        id: 'revenue',
+        icon: '💼',
+        label: 'Revenue',
+        value: formatCurrency(monthlyRevenue),
+        subtext: 'This month',
+        trend: monthlyRevenue > 0 ? 'On track' : 'No revenue yet',
+        positive: monthlyRevenue > 0,
+      },
+      {
+        id: 'agents',
+        icon: '👥',
+        label: 'Agents',
+        value: formatCompactNumber(agentsCount),
+        subtext: 'Active operators',
+        trend: agentsCount > 0 ? 'Team online' : 'Awaiting assignments',
+        positive: agentsCount > 0,
+      },
+      {
+        id: 'contracts',
+        icon: '📋',
+        label: 'Contracts',
+        value: formatCompactNumber(contractsCount),
+        subtext: 'Tracked documents',
+        trend: contractsCount > 0 ? 'Execution moving' : 'No active contracts',
+        positive: contractsCount > 0,
+      },
+    ],
+    [agentsCount, contractsCount, hotLeadsCount, leadsCount, monthlyRevenue, propertiesCount]
+  );
+
+  const commandItems = useMemo<SearchItem[]>(() => {
+    const query = commandQuery.trim().toLowerCase();
+    const tabs = availableTabs.map(tab => ({
+      id: `tab-${tab.id}`,
+      icon: tab.icon,
+      label: tab.label,
+      meta: 'Open workspace',
+      type: 'tab' as const,
+      target: tab.id,
+    }));
+    const modules = isSuperUser
+      ? moduleEntries.map(([key, module]) => ({
+          id: `module-${key}`,
+          icon: '🤖',
+          label: module.label,
+          meta: 'Launch CRM module',
+          type: 'module' as const,
+          target: key,
+        }))
+      : [];
+
+    return [...tabs, ...modules].filter(item => {
+      if (!query) return true;
+      return `${item.label} ${item.meta}`.toLowerCase().includes(query);
+    });
+  }, [availableTabs, commandQuery, isSuperUser]);
+
+  const globalSearchResults = useMemo<SearchItem[]>(() => {
+    const query = globalSearchQuery.trim().toLowerCase();
+    if (!query) return [];
+
+    const recordMatches = (
+      records: GenericEntity[],
+      target: string,
+      icon: string,
+      typeLabel: string
+    ) =>
+      records
+        .filter(record => {
+          const haystack = JSON.stringify(record).toLowerCase();
+          return haystack.includes(query);
+        })
+        .slice(0, 2)
+        .map((record, index) => ({
+          id: `${target}-${index}`,
+          icon,
+          label: getEntityLabel(
+            record,
+            ['title', 'name', 'code', 'email', 'phone', 'interest'],
+            `${typeLabel} match`
+          ),
+          meta: getEntityMeta(record, ['location', 'email', 'agent', 'status', 'interest']),
+          type: 'record' as const,
+          target,
+        }));
+
+    const structuralMatches: SearchItem[] = [
+      ...availableTabs
+        .filter(tab => `${tab.label} ${tab.id}`.toLowerCase().includes(query))
+        .map(tab => ({
+          id: `tab-search-${tab.id}`,
+          icon: tab.icon,
+          label: tab.label,
+          meta: 'Jump to workspace',
+          type: 'tab' as const,
+          target: tab.id,
+        })),
+      ...(isSuperUser
+        ? moduleEntries
+            .filter(([, module]) => module.label.toLowerCase().includes(query))
+            .map(([key, module]) => ({
+              id: `module-search-${key}`,
+              icon: '🤖',
+              label: module.label,
+              meta: 'Launch CRM module',
+              type: 'module' as const,
+              target: key,
+            }))
+        : []),
+    ];
+
+    return [
+      ...structuralMatches,
+      ...recordMatches(dashboardData?.properties ?? [], 'properties', '🏙️', 'Property'),
+      ...recordMatches(dashboardData?.leads ?? [], 'leads', '📱', 'Lead'),
+      ...recordMatches(dashboardData?.agents ?? [], 'agents', '👥', 'Agent'),
+    ].slice(0, 8);
+  }, [
+    availableTabs,
+    dashboardData?.agents,
+    dashboardData?.leads,
+    dashboardData?.properties,
+    globalSearchQuery,
+    isSuperUser,
+  ]);
+
+  const executeSearchItem = (item: SearchItem) => {
+    if (item.type === 'module') {
+      handleCRMModuleSelect(item.target);
+    } else {
+      handleBackFromCRM();
+      setActiveTab(item.target);
+    }
+
+    setCommandQuery('');
+    setGlobalSearchQuery('');
+    setIsCommandPaletteOpen(false);
+    setIsGlobalSearchOpen(false);
+  };
+
   const renderTabContent = (): ReactNode => {
-    // Use the memoized role-filtered data
     const dataToRender = filteredData || dashboardData;
 
-    // Check if user selected a CRM module
     if (selectedCRMModuleConfig) {
       const Module = selectedCRMModuleConfig.Component;
       const label = selectedCRMModuleConfig.label;
@@ -171,11 +428,8 @@ const UnifiedDashboardPage: FC = () => {
       );
     }
 
-    // ─── Feature-registry sub-module rendering ────────────────────────
-    // When a sub-module is active (via SubNavBar click), resolve the
-    // component name from featureRegistry and render via DashboardSubTabRenderer.
     if (currentSubModule && roleSubNavItems.length > 0) {
-      const subItem = roleSubNavItems.find(s => s.id === currentSubModule);
+      const subItem = roleSubNavItems.find(item => item.id === currentSubModule);
       if (subItem) {
         return (
           <RouteErrorBoundary section={subItem.label}>
@@ -188,7 +442,6 @@ const UnifiedDashboardPage: FC = () => {
       }
     }
 
-    // Render standard tabs
     if (activeTab && activeTab in AI_ASSISTANTS_REGISTRY) {
       return (
         <RouteErrorBoundary section="AI Command Center">
@@ -285,41 +538,31 @@ const UnifiedDashboardPage: FC = () => {
     }
   };
 
-  // Helper: Render dashboard stats with badges
-  const renderDashboardStats = (): ReactNode => {
-    const propertiesCount = dashboardData?.properties?.length || 0;
-    const agentsCount = dashboardData?.agents?.length || 0;
-    const leadsCount = dashboardData?.leads?.length || 0;
-    const contractsCount = dashboardData?.contracts?.length || 0;
+  const handleTabKeyDown = (event: KeyboardEvent<HTMLButtonElement>, index: number) => {
+    const lastIndex = availableTabs.length - 1;
 
-    return (
-      <div className="dashboard-stats-container">
-        <div className="stat-item">
-          <span className="stat-label">Properties:</span>
-          <Badge variant="success" size="medium">
-            {String(propertiesCount)}
-          </Badge>
-        </div>
-        <div className="stat-item">
-          <span className="stat-label">Agents:</span>
-          <Badge variant="info" size="medium">
-            {String(agentsCount)}
-          </Badge>
-        </div>
-        <div className="stat-item">
-          <span className="stat-label">Leads:</span>
-          <Badge variant="secondary" size="medium">
-            {String(leadsCount)}
-          </Badge>
-        </div>
-        <div className="stat-item">
-          <span className="stat-label">Contracts:</span>
-          <Badge variant="warning" size="medium">
-            {String(contractsCount)}
-          </Badge>
-        </div>
-      </div>
-    );
+    switch (event.key) {
+      case 'ArrowDown':
+      case 'ArrowRight':
+        event.preventDefault();
+        tabButtonRefs.current[index === lastIndex ? 0 : index + 1]?.focus();
+        break;
+      case 'ArrowUp':
+      case 'ArrowLeft':
+        event.preventDefault();
+        tabButtonRefs.current[index === 0 ? lastIndex : index - 1]?.focus();
+        break;
+      case 'Home':
+        event.preventDefault();
+        tabButtonRefs.current[0]?.focus();
+        break;
+      case 'End':
+        event.preventDefault();
+        tabButtonRefs.current[lastIndex]?.focus();
+        break;
+      default:
+        break;
+    }
   };
 
   if (!user) {
@@ -330,22 +573,107 @@ const UnifiedDashboardPage: FC = () => {
     );
   }
 
+  const activeContentKey =
+    selectedCRMModule || currentSubModule || selectedDepartment || activeTab || 'overview';
+
   return (
     <div className="unified-dashboard">
-      {/* Dashboard Header */}
-      <div className="unified-dashboard-header">
-        <div className="dashboard-title">
-          <h1>{roleInfo.label} Dashboard</h1>
-          <p className="dashboard-subtitle">{roleInfo.description}</p>
-        </div>
-        <div className="dashboard-info">
-          <span className="user-email">{user.email}</span>
-        </div>
-        {/* Dashboard Stats with Badges */}
-        {!selectedDepartment && !selectedCRMModule && renderDashboardStats()}
-      </div>
+      <a className="dashboard-skip-link" href="#dashboard-main">
+        Skip to dashboard content
+      </a>
 
-      {/* Error Message */}
+      <header className="dashboard-topbar">
+        <div className="dashboard-topbar__brand">
+          <div className="dashboard-topbar__logo" aria-hidden="true">
+            WC
+          </div>
+          <div>
+            <p className="dashboard-topbar__eyebrow">White Caves CRM</p>
+            <strong>Internal command center</strong>
+          </div>
+        </div>
+
+        <div className="dashboard-topbar__search" ref={globalSearchRef}>
+          <span className="dashboard-topbar__search-icon" aria-hidden="true">
+            🔎
+          </span>
+          <input
+            type="search"
+            value={globalSearchQuery}
+            onChange={event => {
+              setGlobalSearchQuery(event.target.value);
+              setIsGlobalSearchOpen(true);
+            }}
+            onFocus={() => setIsGlobalSearchOpen(true)}
+            onKeyDown={event => {
+              if (event.key === 'Enter' && globalSearchResults[0]) {
+                event.preventDefault();
+                executeSearchItem(globalSearchResults[0]);
+              }
+            }}
+            placeholder="Search leads, properties, agents, tabs, or modules"
+            aria-label="Search dashboard records"
+          />
+
+          {isGlobalSearchOpen && globalSearchResults.length > 0 && (
+            <div className="dashboard-search-results" role="listbox" aria-label="Search results">
+              {globalSearchResults.map(item => (
+                <button
+                  key={item.id}
+                  className="dashboard-search-result"
+                  onMouseDown={event => {
+                    event.preventDefault();
+                    executeSearchItem(item);
+                  }}
+                >
+                  <span className="dashboard-search-result__icon" aria-hidden="true">
+                    {item.icon}
+                  </span>
+                  <span className="dashboard-search-result__copy">
+                    <strong>{item.label}</strong>
+                    <small>{item.meta}</small>
+                  </span>
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+
+        <div className="dashboard-topbar__actions">
+          <button
+            type="button"
+            className="dashboard-icon-button"
+            aria-label={`${hotLeadsCount} notifications`}
+          >
+            🔔
+            {hotLeadsCount > 0 && <span className="dashboard-icon-badge">{hotLeadsCount}</span>}
+          </button>
+          <button
+            type="button"
+            className="dashboard-command-button"
+            onClick={() => setIsCommandPaletteOpen(true)}
+          >
+            ⌘K <span>Command palette</span>
+          </button>
+          <button
+            type="button"
+            className="dashboard-quick-action"
+            onClick={() => setIsCommandPaletteOpen(true)}
+          >
+            + Quick action
+          </button>
+          <div className="dashboard-user-chip" aria-label={`Signed in as ${user.email}`}>
+            <div className="dashboard-user-chip__avatar" aria-hidden="true">
+              {greetingName.slice(0, 2).toUpperCase()}
+            </div>
+            <div className="dashboard-user-chip__copy">
+              <strong>{greetingName}</strong>
+              <small>{user.email}</small>
+            </div>
+          </div>
+        </div>
+      </header>
+
       {error && (
         <div className="unified-dashboard-error-banner" role="alert" aria-live="assertive">
           <span className="error-icon" aria-hidden="true">
@@ -358,95 +686,238 @@ const UnifiedDashboardPage: FC = () => {
         </div>
       )}
 
-      {/* CRM Module View */}
-      {selectedCRMModuleConfig && isSuperUser && (
-        <div className="crm-module-view">
-          <button className="crm-back-button" onClick={handleBackFromCRM}>
-            Back to Dashboard
-          </button>
-          <div className="crm-module-container">
-            <Suspense fallback={<TabLoadingFallback />}>
-              {React.createElement(selectedCRMModuleConfig.Component, {
-                role: currentRole,
-                user,
-                data: dashboardData,
-              })}
-            </Suspense>
-          </div>
-        </div>
-      )}
+      <div className="dashboard-workspace-shell">
+        {!selectedDepartment && (
+          <aside className="dashboard-side-rail" aria-label="Dashboard tabs">
+            <div className="dashboard-side-rail__section">
+              <span className="dashboard-side-rail__label">Workspaces</span>
+              <div className="dashboard-tab-rail" role="tablist" aria-orientation="vertical">
+                {availableTabs.map((tab: RoleTab, index: number) => (
+                  <button
+                    key={tab.id}
+                    ref={element => {
+                      tabButtonRefs.current[index] = element;
+                    }}
+                    className={`dashboard-rail-tab ${activeTab === tab.id && !selectedCRMModule ? 'active' : ''}`}
+                    type="button"
+                    role="tab"
+                    aria-selected={activeTab === tab.id && !selectedCRMModule}
+                    aria-controls="dashboard-main"
+                    onClick={() => {
+                      handleBackFromCRM();
+                      setActiveTab(tab.id);
+                    }}
+                    onKeyDown={event => handleTabKeyDown(event, index)}
+                  >
+                    <span className="dashboard-rail-tab__icon" aria-hidden="true">
+                      {tab.icon}
+                    </span>
+                    <span className="dashboard-rail-tab__label">{tab.label}</span>
+                    {tab.badge !== undefined && tab.badge > 0 && (
+                      <span className="dashboard-rail-tab__badge">{tab.badge}</span>
+                    )}
+                  </button>
+                ))}
+              </div>
+            </div>
 
-      {/* Standard Tab View */}
-      {!selectedCRMModule && (
-        <>
-          {/* Show Department Content if Department is Selected */}
+            {isSuperUser && (
+              <div className="dashboard-side-rail__section dashboard-side-rail__section--modules">
+                <button
+                  type="button"
+                  className="dashboard-modules-toggle"
+                  onClick={() => setModulesExpanded(current => !current)}
+                  aria-expanded={modulesExpanded}
+                >
+                  <span>AI CRM Modules</span>
+                  <span aria-hidden="true">{modulesExpanded ? '−' : '+'}</span>
+                </button>
+                {modulesExpanded && (
+                  <div className="dashboard-module-list">
+                    {moduleEntries.map(([key, module]) => (
+                      <button
+                        key={key}
+                        type="button"
+                        className={`dashboard-module-option ${selectedCRMModule === key ? 'active' : ''}`}
+                        onClick={() => handleCRMModuleSelect(key)}
+                      >
+                        <span aria-hidden="true">🤖</span>
+                        <span>{module.label}</span>
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+          </aside>
+        )}
+
+        <main id="dashboard-main" className="dashboard-main-panel">
+          <section className="dashboard-page-header">
+            <div className="dashboard-page-header__copy">
+              <span className="dashboard-page-header__eyebrow">
+                {currentModule ?? currentRole} /{' '}
+                {currentTab?.label ?? selectedCRMModuleConfig?.label ?? 'Overview'}
+              </span>
+              <h1>{roleInfo.label} Dashboard</h1>
+              <p className="dashboard-page-header__subtitle">{roleInfo.description}</p>
+              <p className="dashboard-page-header__greeting">{greetingLine}</p>
+            </div>
+            <div className="dashboard-page-header__meta">
+              <div className="dashboard-breadcrumbs" aria-label="Breadcrumb">
+                <span>CRM</span>
+                <span aria-hidden="true">/</span>
+                <span>{roleInfo.label}</span>
+                <span aria-hidden="true">/</span>
+                <span>{selectedCRMModuleConfig?.label ?? currentTab?.label ?? 'Overview'}</span>
+              </div>
+              <div className="dashboard-page-header__status">
+                <span className="dashboard-status-pill">Live workspace</span>
+                <span className="dashboard-status-pill dashboard-status-pill--muted">
+                  {user.email}
+                </span>
+              </div>
+            </div>
+          </section>
+
+          {!selectedDepartment && !selectedCRMModule && (
+            <section className="dashboard-kpi-strip" aria-label="Dashboard highlights">
+              {kpiCards.map(card => (
+                <article key={card.id} className="dashboard-kpi-card">
+                  <div className="dashboard-kpi-card__icon" aria-hidden="true">
+                    {card.icon}
+                  </div>
+                  <div className="dashboard-kpi-card__body">
+                    <p>{card.label}</p>
+                    <strong>{card.value}</strong>
+                    <span>{card.subtext}</span>
+                  </div>
+                  <div
+                    className={`dashboard-kpi-card__trend ${card.positive ? 'positive' : 'negative'}`}
+                  >
+                    {card.trend}
+                  </div>
+                </article>
+              ))}
+            </section>
+          )}
+
           {selectedDepartment ? (
-            <div className="unified-dashboard-content">
+            <div className="dashboard-surface-panel">
               <DepartmentContentPanel />
             </div>
           ) : (
             <>
-              {/* Role-specific Sub-Navigation (from featureRegistry) */}
-              {roleSubNavItems.length > 0 && <SubNavBar moduleId={currentModule ?? currentRole} />}
-
-              {/* Tab Navigation */}
-              <div className="unified-dashboard-tabs">
-                <div className="tabs-scroll">
-                  {availableTabs.map(tab => (
-                    <button
-                      key={tab.id}
-                      className={`tab-button ${activeTab === tab.id ? 'active' : ''}`}
-                      onClick={() => setActiveTab(tab.id)}
-                    >
-                      <span className="tab-icon-wrap">
-                        <span className="tab-icon">{tab.icon}</span>
-                        {tab.badge !== undefined && tab.badge > 0 && (
-                          <span className="tab-badge">{tab.badge}</span>
-                        )}
-                      </span>
-                      <span className="tab-label">{tab.label}</span>
-                    </button>
-                  ))}
-
-                  {/* CRM Modules - Super User Only */}
-                  {isSuperUser && (
-                    <>
-                      <div className="tab-divider"></div>
-                      <div className="crm-modules-dropdown">
-                        <button className="crm-modules-button">
-                          <span className="tab-icon">🤖</span>
-                          <span className="tab-label">AI CRM Modules</span>
-                          <span className="dropdown-arrow">▼</span>
-                        </button>
-                        <div className="crm-modules-menu">
-                          {Object.entries(CRM_MODULES).map(([key, module]) => (
-                            <button
-                              key={key}
-                              className="crm-module-option"
-                              onClick={() => handleCRMModuleSelect(key)}
-                            >
-                              {module.label}
-                            </button>
-                          ))}
-                        </div>
-                      </div>
-                    </>
-                  )}
+              {roleSubNavItems.length > 0 && (
+                <div className="dashboard-subnav-panel">
+                  <SubNavBar moduleId={currentModule ?? currentRole} />
                 </div>
-              </div>
+              )}
 
-              {/* Tab Content */}
-              <div className="unified-dashboard-content">
-                {isLoading ? (
-                  <TabLoadingFallback />
-                ) : (
-                  <Suspense fallback={<TabLoadingFallback />}>{renderTabContent()}</Suspense>
+              <div className="dashboard-content-frame">
+                {selectedCRMModuleConfig && isSuperUser && (
+                  <div className="dashboard-module-toolbar">
+                    <button className="crm-back-button" onClick={handleBackFromCRM}>
+                      ← Back to dashboard
+                    </button>
+                    <span className="dashboard-module-toolbar__label">
+                      {selectedCRMModuleConfig.label}
+                    </span>
+                  </div>
                 )}
+
+                <AnimatePresence mode="wait" initial={false}>
+                  <motion.section
+                    key={activeContentKey}
+                    className="unified-dashboard-content"
+                    initial={
+                      prefersReducedMotion
+                        ? false
+                        : {
+                            opacity: 0,
+                            x: selectedCRMModule ? 24 : 0,
+                            y: selectedCRMModule ? 0 : 12,
+                          }
+                    }
+                    animate={prefersReducedMotion ? {} : { opacity: 1, x: 0, y: 0 }}
+                    exit={prefersReducedMotion ? {} : { opacity: 0, y: -8 }}
+                    transition={{ duration: prefersReducedMotion ? 0 : 0.22, ease: 'easeOut' }}
+                  >
+                    {isLoading ? (
+                      <TabLoadingFallback />
+                    ) : (
+                      <Suspense fallback={<TabLoadingFallback />}>{renderTabContent()}</Suspense>
+                    )}
+                  </motion.section>
+                </AnimatePresence>
               </div>
             </>
           )}
-        </>
-      )}
+        </main>
+      </div>
+
+      <AnimatePresence>
+        {isCommandPaletteOpen && (
+          <motion.div
+            className="dashboard-command-palette-backdrop"
+            initial={prefersReducedMotion ? false : { opacity: 0 }}
+            animate={prefersReducedMotion ? {} : { opacity: 1 }}
+            exit={prefersReducedMotion ? {} : { opacity: 0 }}
+            onClick={() => setIsCommandPaletteOpen(false)}
+          >
+            <motion.div
+              className="dashboard-command-palette"
+              initial={prefersReducedMotion ? false : { opacity: 0, y: 16 }}
+              animate={prefersReducedMotion ? {} : { opacity: 1, y: 0 }}
+              exit={prefersReducedMotion ? {} : { opacity: 0, y: 12 }}
+              transition={{ duration: prefersReducedMotion ? 0 : 0.18, ease: 'easeOut' }}
+              onClick={event => event.stopPropagation()}
+            >
+              <div className="dashboard-command-palette__header">
+                <strong>Command palette</strong>
+                <button type="button" onClick={() => setIsCommandPaletteOpen(false)}>
+                  Esc
+                </button>
+              </div>
+              <input
+                autoFocus
+                type="search"
+                value={commandQuery}
+                onChange={event => setCommandQuery(event.target.value)}
+                onKeyDown={event => {
+                  if (event.key === 'Enter' && commandItems[0]) {
+                    event.preventDefault();
+                    executeSearchItem(commandItems[0]);
+                  }
+                }}
+                placeholder="Search tabs or AI CRM modules"
+                aria-label="Search command palette"
+              />
+              <div className="dashboard-command-palette__results">
+                {commandItems.map(item => (
+                  <button
+                    key={item.id}
+                    type="button"
+                    className="dashboard-command-palette__item"
+                    onClick={() => executeSearchItem(item)}
+                  >
+                    <span aria-hidden="true">{item.icon}</span>
+                    <span className="dashboard-command-palette__copy">
+                      <strong>{item.label}</strong>
+                      <small>{item.meta}</small>
+                    </span>
+                  </button>
+                ))}
+                {commandItems.length === 0 && (
+                  <div className="dashboard-command-palette__empty">
+                    No matching tabs or modules.
+                  </div>
+                )}
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };

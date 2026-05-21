@@ -69,6 +69,28 @@
 
 ---
 
+## Requested Capabilities (Master Number + Power Agent Flow)
+
+The following capabilities define the requested operating model where Linda is connected to one master WhatsApp number and can automate owner-contact lookup from Power Agent data.
+
+| # | Capability | Definition | Explanation |
+|---|---|---|---|
+| 1 | Master Number Mode | Linda operates from one designated WhatsApp master number. | All automations and monitoring run through the single connected account/device so management stays centralized. |
+| 2 | Conversation Analysis from Master Number | Linda can analyze all chats visible under that connected master account. | Once the device is linked, Linda can inspect message history and active threads for context-aware automation. |
+| 3 | Existing vs New Conversation Detection | Linda checks if an incoming phone number already has prior conversation history. | This lets Linda decide whether to continue an existing thread or initialize a new interaction workflow. |
+| 4 | Goraha Saved Contact Check | Linda verifies whether the same number exists in Goraha contacts. | Conversation status is enriched with contact-book state (saved/not-saved) for better CRM routing. |
+| 5 | Combined Conversation State | Linda returns a unified state across conversation history + contact-save status. | Example states include existing+saved, existing+not-saved, new+saved, and new+not-saved. |
+| 6 | Contact Type Classification | Linda classifies the participant role from conversation context. | Typical classes include landlord, seller, buyer, tenant, internal agent, or external agent to improve response behavior. |
+| 7 | Conversation Labeling | Linda assigns labels to each conversation based on detected class and context. | Labels make downstream filtering, reporting, and automation triggers easier and more reliable. |
+| 8 | Badge Assignment | Linda applies visual badges aligned with assigned labels. | Badges provide instant recognition in dashboard/conversation lists (for example: Landlord, Buyer, Agent). |
+| 9 | Badge-Based Filtering | Linda supports filtering conversation lists by badge/label. | Teams can quickly isolate specific pipelines such as only owners, only buyers, or only tenants. |
+| 10 | Property Owner Mobile Lookup | Linda can fetch owner mobile numbers for a requested property. | On query (for example from your friend), Linda searches mapped property records and returns the owner contact number. |
+| 11 | Smart Property Query Parsing | Linda can parse different property identifiers before lookup. | It can interpret property name, property code, building, or unit number and map them to the correct dataset row. |
+| 12 | Controlled Sharing Policy | Linda enforces permission checks before returning owner mobile data. | Sensitive owner contact data should be shared only when policy/rules allow it (role, approval, or audit conditions). |
+| 13 | Google Sheets CRUD (Power Agent Service Account) | Linda can create, read, update, and delete Power Agent records through Google Sheets APIs using service-account credentials. | This capability enables full data operations on sheet-backed property/owner data, not just read-only lookup, while keeping operations auditable. |
+
+---
+
 ## API Endpoints
 
 | Method | Endpoint | Auth | Purpose |

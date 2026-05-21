@@ -305,13 +305,13 @@ async function handleIncomingMessage(message: any, phoneNumberId: string): Promi
     getSocketServer()?.emitMetaMessage({
       id: storedMessage.id,
       conversationId: conversation.id,
-      leadId,
+      leadId: leadId ?? undefined,
       from: customerPhone,
       content,
       type: messageType,
       timestamp,
       nlp: nlpResult,
-    });
+    } as any);
   } catch (error) {
     console.error('[Meta Webhook] Error handling message:', error);
   }

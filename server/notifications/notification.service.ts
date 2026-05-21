@@ -110,9 +110,7 @@ export class NotificationService {
    * Get user notification preferences
    */
   public getPreferences(userId: string): NotificationPreferences {
-    return (
-      this.userPreferences.get(userId) || this.getDefaultPreferences(userId)
-    );
+    return this.userPreferences.get(userId) || this.getDefaultPreferences(userId);
   }
 
   /**
@@ -132,16 +130,10 @@ export class NotificationService {
     }
 
     // Check notification type preferences
-    if (
-      type === 'message_received' &&
-      !preferences.notificationTypes.messageReceived
-    ) {
+    if (type === 'message_received' && !preferences.notificationTypes.messageReceived) {
       return false;
     }
-    if (
-      type === 'conversation_invite' &&
-      !preferences.notificationTypes.conversationInvite
-    ) {
+    if (type === 'conversation_invite' && !preferences.notificationTypes.conversationInvite) {
       return false;
     }
 
@@ -238,7 +230,7 @@ export class NotificationService {
     conversationId: string
   ): Promise<boolean> {
     const payload: PushNotificationPayload = {
-      title: 'You\'ve been added to a conversation',
+      title: "You've been added to a conversation",
       body: `${inviterName} added you to a conversation`,
       badge: '1',
       data: {
@@ -340,7 +332,12 @@ export class NotificationService {
   }
 
   /**
-   * Send to device (stub - implement with actual push service)
+   * Send to device via optional webhook transport.
+   *
+   * Production deployments can point PUSH_NOTIFICATION_WEBHOOK_URL (or
+   * PUSH_NOTIFICATION_ENDPOINT) at an internal push relay. If no transport is
+   * configured, we preserve the existing degraded-mode behavior and treat the
+   * notification as delivered after logging it locally.
    */
   private async sendToDevice(
     userId: string,
@@ -362,8 +359,44 @@ export class NotificationService {
     this.notificationLogs.set(notificationId, log);
 
     try {
-      // TODO: Implement actual push notification service
-      // This would use a service like Firebase Cloud Messaging, OneSignal, etc.
+      const transportEndpoint =
+        process.env.PUSH_NOTIFICATION_WEBHOOK_URL || process.env.PUSH_NOTIFICATION_ENDPOINT;
+
+      if (transportEndpoint) {
+        const abortController = new AbortController();
+        const timeoutId = setTimeout(() => abortController.abort(), 5000);
+
+        try {
+          const response = await fetch(transportEndpoint, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              notificationId,
+              userId,
+              type,
+              subscription,
+              payload,
+              sentAt: log.sentAt.toISOString(),
+            }),
+            signal: abortController.signal,
+          });
+
+          if (!response.ok) {
+            throw new Error(
+              `Push webhook responded with ${response.status} ${response.statusText}`
+            );
+          }
+        } finally {
+          clearTimeout(timeoutId);
+        }
+      } else {
+        logger.debug(
+          `No push transport configured for user ${userId}; using local delivery log only`
+        );
+      }
+
       log.status = 'sent';
       logger.info(`Notification sent to user ${userId}`);
     } catch (error) {
@@ -425,21 +458,24 @@ export class NotificationService {
    * Setup cleanup for old logs
    */
   private setupCleanup(): void {
-    setInterval(() => {
-      const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
-      let deleted = 0;
+    setInterval(
+      () => {
+        const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+        let deleted = 0;
 
-      for (const [id, log] of this.notificationLogs.entries()) {
-        if (log.sentAt < thirtyDaysAgo) {
-          this.notificationLogs.delete(id);
-          deleted++;
+        for (const [id, log] of this.notificationLogs.entries()) {
+          if (log.sentAt < thirtyDaysAgo) {
+            this.notificationLogs.delete(id);
+            deleted++;
+          }
         }
-      }
 
-      if (deleted > 0) {
-        logger.info(`Notification cleanup: Removed ${deleted} old logs`);
-      }
-    }, 24 * 60 * 60 * 1000); // Every 24 hours
+        if (deleted > 0) {
+          logger.info(`Notification cleanup: Removed ${deleted} old logs`);
+        }
+      },
+      24 * 60 * 60 * 1000
+    ); // Every 24 hours
   }
 }
 

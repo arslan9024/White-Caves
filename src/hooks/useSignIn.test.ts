@@ -16,6 +16,7 @@ import { MemoryRouter } from 'react-router-dom';
 
 const mockNavigate = vi.fn();
 const mockSyncFirebaseUser = vi.fn();
+const mockCompleteSocialRegistration = vi.fn();
 const mockSignInWithGoogle = vi.fn();
 const mockSignInWithFacebook = vi.fn();
 const mockSignInWithApple = vi.fn();
@@ -42,7 +43,7 @@ vi.mock('../services/authService', () => ({
   loginWithEmail: vi.fn(),
   registerWithEmail: vi.fn(),
   syncFirebaseUser: (...args: unknown[]) => mockSyncFirebaseUser(...args),
-  completeSocialRegistration: vi.fn(),
+  completeSocialRegistration: (...args: unknown[]) => mockCompleteSocialRegistration(...args),
 }));
 
 vi.mock('../utils/safeStorage', () => ({
@@ -167,7 +168,7 @@ describe('useSignIn — handleSocialAuth (integration)', () => {
       expect(currentUser?.email).toBe(backendBuyerUser.email);
     });
 
-    it('navigates to /crm for a buyer role', async () => {
+    it('navigates to /dashboard for a buyer role', async () => {
       vi.useFakeTimers();
       const { result } = renderHook(() => useSignIn(), { wrapper: createWrapper(store) });
 
@@ -176,11 +177,11 @@ describe('useSignIn — handleSocialAuth (integration)', () => {
       });
       act(() => vi.runAllTimers());
 
-      expect(mockNavigate).toHaveBeenCalledWith('/crm');
+      expect(mockNavigate).toHaveBeenCalledWith('/dashboard');
       vi.useRealTimers();
     });
 
-    it('navigates to /tenant-portal for a tenant role', async () => {
+    it('navigates to /dashboard for a tenant role', async () => {
       vi.useFakeTimers();
       mockSyncFirebaseUser.mockResolvedValue(successResponse(backendTenantUser));
       const { result } = renderHook(() => useSignIn(), { wrapper: createWrapper(store) });
@@ -190,11 +191,11 @@ describe('useSignIn — handleSocialAuth (integration)', () => {
       });
       act(() => vi.runAllTimers());
 
-      expect(mockNavigate).toHaveBeenCalledWith('/tenant-portal');
+      expect(mockNavigate).toHaveBeenCalledWith('/dashboard');
       vi.useRealTimers();
     });
 
-    it('navigates to /landlord-portal for a landlord role', async () => {
+    it('navigates to /dashboard for a landlord role', async () => {
       vi.useFakeTimers();
       mockSyncFirebaseUser.mockResolvedValue(successResponse(backendLandlordUser));
       const { result } = renderHook(() => useSignIn(), { wrapper: createWrapper(store) });
@@ -204,7 +205,7 @@ describe('useSignIn — handleSocialAuth (integration)', () => {
       });
       act(() => vi.runAllTimers());
 
-      expect(mockNavigate).toHaveBeenCalledWith('/landlord-portal');
+      expect(mockNavigate).toHaveBeenCalledWith('/dashboard');
       vi.useRealTimers();
     });
   });
@@ -308,7 +309,44 @@ describe('useSignIn — handleSocialAuth (integration)', () => {
 
       act(() => vi.runAllTimers());
       expect(result.current.error).toBe('');
-      expect(mockNavigate).toHaveBeenCalledWith('/crm');
+      expect(mockNavigate).toHaveBeenCalledWith('/dashboard');
+      vi.useRealTimers();
+    });
+  });
+
+  describe('social signup completion', () => {
+    it('uses completeSocialRegistration after role selection', async () => {
+      mockSignInWithGoogle.mockResolvedValue({ user: firebaseUser });
+      mockSyncFirebaseUser.mockResolvedValue(successResponse(backendBuyerUser));
+      mockCompleteSocialRegistration.mockResolvedValue(successResponse(backendTenantUser));
+      vi.useFakeTimers();
+
+      const { result } = renderHook(() => useSignIn(), { wrapper: createWrapper(store) });
+
+      act(() => result.current.switchMode());
+
+      await act(async () => {
+        await result.current.handleSocialAuth('google');
+      });
+
+      act(() => {
+        result.current.setSelectedCategory('client');
+      });
+      act(() => {
+        result.current.proceedToRoleSelection();
+      });
+      act(() => {
+        result.current.setSelectedRole('tenant');
+      });
+
+      await act(async () => {
+        await result.current.completeSignUp();
+      });
+
+      act(() => vi.runAllTimers());
+
+      expect(mockCompleteSocialRegistration).toHaveBeenCalledWith('client', 'tenant');
+      expect(mockNavigate).toHaveBeenCalledWith('/dashboard');
       vi.useRealTimers();
     });
   });

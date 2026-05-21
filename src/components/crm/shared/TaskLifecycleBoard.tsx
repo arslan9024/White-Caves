@@ -14,6 +14,9 @@ import {
 } from 'lucide-react';
 import {
   selectTasksByAssistant,
+  selectPendingActionsCount,
+  selectInProgressTasksCount,
+  selectCompletedTasksCount,
   selectNotificationsByAssistant,
   advanceTaskLifecycle,
   markAllNotificationsRead,
@@ -103,7 +106,7 @@ const TaskCard = memo(
         if (!nextStage) return;
         dispatch(advanceTaskLifecycle({ assistantId, taskId: task.id, stage: nextStage }));
       },
-      [dispatch, assistantId, task.id, nextStage]
+      [dispatch, assistantId, task.id, nextStage],
     );
 
     const priorityColor = PRIORITY_COLOR[task.priority] ?? '#94A3B8';
@@ -123,11 +126,7 @@ const TaskCard = memo(
               title={`${task.priority} priority`}
             />
             <span className="tlb-card-title">{task.title}</span>
-            {isExpanded ? (
-              <ChevronDown size={13} className="tlb-chevron" />
-            ) : (
-              <ChevronRight size={13} className="tlb-chevron" />
-            )}
+            {isExpanded ? <ChevronDown size={13} className="tlb-chevron" /> : <ChevronRight size={13} className="tlb-chevron" />}
           </div>
           <div className="tlb-card-meta">
             <span className="tlb-priority-badge" style={{ color: priorityColor }}>
@@ -138,7 +137,9 @@ const TaskCard = memo(
                 {task.actions!.length} action{task.actions!.length !== 1 ? 's' : ''}
               </span>
             )}
-            {task.assignedTo && <span className="tlb-assignee">→ {task.assignedTo}</span>}
+            {task.assignedTo && (
+              <span className="tlb-assignee">→ {task.assignedTo}</span>
+            )}
           </div>
         </button>
 
@@ -152,11 +153,7 @@ const TaskCard = memo(
         {/* Advance button */}
         {nextStage && nextLabel && (
           <div className="tlb-card-footer">
-            <button
-              className="tlb-advance-btn"
-              onClick={handleAdvance}
-              style={{ '--btn-color': color } as React.CSSProperties}
-            >
+            <button className="tlb-advance-btn" onClick={handleAdvance} style={{ '--btn-color': color } as React.CSSProperties}>
               <ArrowRight size={12} />
               {nextLabel}
             </button>
@@ -164,7 +161,7 @@ const TaskCard = memo(
         )}
       </div>
     );
-  }
+  },
 );
 TaskCard.displayName = 'TaskCard';
 
@@ -193,7 +190,7 @@ const BoardColumn = memo(
             <p>No tasks</p>
           </div>
         ) : (
-          tasks.map(task => (
+          tasks.map((task) => (
             <TaskCard
               key={task.id}
               task={task}
@@ -208,7 +205,7 @@ const BoardColumn = memo(
         )}
       </div>
     </div>
-  )
+  ),
 );
 BoardColumn.displayName = 'BoardColumn';
 
@@ -229,25 +226,16 @@ const TaskLifecycleBoard = memo(
     const [feedOpen, setFeedOpen] = useState(showNotificationFeed);
 
     const tasks = useSelector((state: RootState) => selectTasksByAssistant(assistantId)(state));
-    const pendingCount = tasks.filter(t => {
-      const stage = t.lifecycleStage ?? (t.status === 'in_progress' ? 'in_progress' : 'queued');
-      return stage === 'created' || stage === 'queued';
-    }).length;
-    const inProgressCount = tasks.filter(t => {
-      const stage = t.lifecycleStage ?? (t.status === 'in_progress' ? 'in_progress' : 'queued');
-      return stage === 'in_progress';
-    }).length;
-    const completedCount = tasks.filter(t => {
-      const stage = t.lifecycleStage ?? (t.status === 'in_progress' ? 'in_progress' : 'queued');
-      return stage === 'completed';
-    }).length;
+    const pendingCount = useSelector((state: RootState) => selectPendingActionsCount(assistantId)(state));
+    const inProgressCount = useSelector((state: RootState) => selectInProgressTasksCount(assistantId)(state));
+    const completedCount = useSelector((state: RootState) => selectCompletedTasksCount(assistantId)(state));
     const notifications = useSelector((state: RootState) =>
-      selectNotificationsByAssistant(assistantId)(state)
+      selectNotificationsByAssistant(assistantId)(state),
     );
-    const unreadCount = notifications.filter(n => !n.isRead).length;
+    const unreadCount = notifications.filter((n) => !n.isRead).length;
 
     const handleToggleTask = useCallback((id: string) => {
-      setExpandedTaskId(prev => (prev === id ? null : id));
+      setExpandedTaskId((prev) => (prev === id ? null : id));
     }, []);
 
     const handleMarkAllRead = useCallback(() => {
@@ -255,11 +243,11 @@ const TaskLifecycleBoard = memo(
     }, [dispatch, assistantId]);
 
     // Sort tasks into columns
-    const columnTasks = COLUMNS.map(col =>
-      tasks.filter(t => {
+    const columnTasks = COLUMNS.map((col) =>
+      tasks.filter((t) => {
         const stage = t.lifecycleStage ?? (t.status === 'in_progress' ? 'in_progress' : 'queued');
         return col.stages.includes(stage as TaskLifecycleStage);
-      })
+      }),
     );
 
     return (
@@ -286,13 +274,18 @@ const TaskLifecycleBoard = memo(
           <div className="tlb-header-actions">
             <button
               className={`tlb-notif-toggle ${feedOpen ? 'active' : ''}`}
-              onClick={() => setFeedOpen(v => !v)}
+              onClick={() => setFeedOpen((v) => !v)}
               aria-label="Toggle notification feed"
               style={{ '--btn-color': color } as React.CSSProperties}
             >
               <Bell size={15} />
               {unreadCount > 0 && (
-                <NotificationBadge count={unreadCount} severity="critical" size="small" pulse />
+                <NotificationBadge
+                  count={unreadCount}
+                  severity="critical"
+                  size="small"
+                  pulse
+                />
               )}
             </button>
             {unreadCount > 0 && (
@@ -333,7 +326,7 @@ const TaskLifecycleBoard = memo(
         </div>
       </div>
     );
-  }
+  },
 );
 
 TaskLifecycleBoard.displayName = 'TaskLifecycleBoard';
