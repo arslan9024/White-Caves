@@ -58,7 +58,8 @@ Ship login reliability fix now and prepare strict execution graph for profile/da
 ### DASH-08-003 — Authenticated shell DSv2 scaffold
 
 - Introduce shared post-login shell primitives and migration adapters.
-- **Status:** ⏳ Not Started
+- **Files:** `src/components/layout/authenticated/AuthenticatedPageShell.tsx`, `src/pages/UnifiedDashboardPage.tsx`
+- **Status:** ✅ Baseline scaffold completed (behavior-neutral wrapper + migration entry point)
 
 ---
 

@@ -15,6 +15,7 @@ import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import SuspenseLoader from '../components/common/SuspenseLoader';
 import RouteErrorBoundary from '../components/RouteErrorBoundary';
 import DepartmentContentPanel from '../components/layout/DepartmentContentPanel/DepartmentContentPanel';
+import AuthenticatedPageShell from '../components/layout/authenticated/AuthenticatedPageShell';
 import SubNavBar from '../components/common/SubNavBar';
 import { DashboardSubTabRenderer } from '../components/dashboard/DashboardRenderer';
 import { useUnifiedDashboard } from '../hooks/useUnifiedDashboard';
@@ -577,11 +578,7 @@ const UnifiedDashboardPage: FC = () => {
     selectedCRMModule || currentSubModule || selectedDepartment || activeTab || 'overview';
 
   return (
-    <div className="unified-dashboard">
-      <a className="dashboard-skip-link" href="#dashboard-main">
-        Skip to dashboard content
-      </a>
-
+    <AuthenticatedPageShell>
       <header className="dashboard-topbar">
         <div className="dashboard-topbar__brand">
           <div className="dashboard-topbar__logo" aria-hidden="true">
@@ -918,7 +915,7 @@ const UnifiedDashboardPage: FC = () => {
           </motion.div>
         )}
       </AnimatePresence>
-    </div>
+    </AuthenticatedPageShell>
   );
 };
 
