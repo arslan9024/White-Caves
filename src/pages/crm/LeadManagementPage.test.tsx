@@ -11,13 +11,43 @@ import React from 'react';
 
 // ── Mock hook return value ──────────────────────────────────────
 const MOCK_LEADS = [
-  { id: '1', name: 'Ahmed Al-Rashid', company: 'Global LLC', email: 'ahmed@co.ae', phone: '+971501234567', status: 'hot', source: 'website', budget: 2000000, value: 2000000, created_at: '2025-01-15T10:00:00Z', notes: '' },
-  { id: '2', name: 'Sarah Khan', company: 'Star Corp', email: 'sarah@co.ae', phone: '+971502345678', status: 'warm', source: 'referral', budget: 1500000, value: 1500000, created_at: '2025-01-10T10:00:00Z', notes: '' },
+  {
+    id: '1',
+    name: 'Ahmed Al-Rashid',
+    company: 'Global LLC',
+    email: 'ahmed@co.ae',
+    phone: '+971501234567',
+    status: 'hot',
+    source: 'website',
+    budget: 2000000,
+    value: 2000000,
+    created_at: '2025-01-15T10:00:00Z',
+    notes: '',
+  },
+  {
+    id: '2',
+    name: 'Sarah Khan',
+    company: 'Star Corp',
+    email: 'sarah@co.ae',
+    phone: '+971502345678',
+    status: 'warm',
+    source: 'referral',
+    budget: 1500000,
+    value: 1500000,
+    created_at: '2025-01-10T10:00:00Z',
+    notes: '',
+  },
 ];
 
 const defaultFormData = {
-  name: '', company: '', email: '', phone: '',
-  status: 'new', source: 'direct', budget: '', notes: '',
+  name: '',
+  company: '',
+  email: '',
+  phone: '',
+  status: 'new',
+  source: 'direct',
+  budget: '',
+  notes: '',
 };
 
 const mockSetFormData = vi.fn();
@@ -75,9 +105,9 @@ vi.mock('./hooks/useLeadManagement', () => ({
     setCurrentPage: mockSetCurrentPage,
     retryFetch: mockRetryFetch,
     goBack: mockGoBack,
-    getStatusBadgeVariant: (status: string) => status === 'hot' ? 'error' : 'warning',
-    formatCurrency: (val: number | undefined) => val ? `AED ${val.toLocaleString()}` : '—',
-    formatDate: (val: string | undefined) => val ? new Date(val).toLocaleDateString() : 'N/A',
+    getStatusBadgeVariant: (status: string) => (status === 'hot' ? 'error' : 'warning'),
+    formatCurrency: (val: number | undefined) => (val ? `AED ${val.toLocaleString()}` : '—'),
+    formatDate: (val: string | undefined) => (val ? new Date(val).toLocaleDateString() : 'N/A'),
     ...hookOverrides,
   }),
   STATUS_CONFIG: {
@@ -106,8 +136,18 @@ vi.mock('../../hooks/useDocumentTitle', () => ({
 
 // Mock UI components to avoid styled-components complexity
 vi.mock('../../components/ui', () => ({
-  Badge: ({ children, variant, size }: { children: React.ReactNode; variant?: string; size?: string }) => (
-    <span data-testid="badge" data-variant={variant}>{children}</span>
+  Badge: ({
+    children,
+    variant,
+    size,
+  }: {
+    children: React.ReactNode;
+    variant?: string;
+    size?: string;
+  }) => (
+    <span data-testid="badge" data-variant={variant}>
+      {children}
+    </span>
   ),
   Pagination: ({ currentPage, totalItems, itemsPerPage, onPageChange }: any) => (
     <div data-testid="pagination">
@@ -118,13 +158,16 @@ vi.mock('../../components/ui', () => ({
 }));
 
 vi.mock('../../shared/components/ui/Modal', () => ({
-  Modal: ({ children, title, isOpen, onClose }: any) => isOpen ? (
-    <div data-testid="modal" role="dialog">
-      <h2>{title}</h2>
-      <button onClick={onClose} data-testid="modal-close">Close</button>
-      {children}
-    </div>
-  ) : null,
+  Modal: ({ children, title, isOpen, onClose }: any) =>
+    isOpen ? (
+      <div data-testid="modal" role="dialog">
+        <h2>{title}</h2>
+        <button onClick={onClose} data-testid="modal-close">
+          Close
+        </button>
+        {children}
+      </div>
+    ) : null,
 }));
 
 import LeadManagementPage from './LeadManagementPage';
@@ -275,10 +318,11 @@ describe('LeadManagementPage', () => {
 
   // ── Loading & Error States ─────────────────────────────────────
   it('renders without crashing when loading is true on hook', () => {
-    // The hook mock always returns loading: false by default
+    hookOverrides = { loading: true, paginatedLeads: [], filteredLeads: [] };
     render(<LeadManagementPage />);
-    // No loading banner since mock loading=false
-    expect(screen.queryByText(/Loading leads/)).toBeNull();
+    const skeletonTable = screen.getByTestId('skeleton-table');
+    expect(skeletonTable).toBeInTheDocument();
+    expect(skeletonTable.children.length).toBe(5);
   });
 
   // ── Aria Labels ────────────────────────────────────────────────

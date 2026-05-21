@@ -20,6 +20,7 @@
 | N+6   | UI architecture hardening: component granularity + event-driven rendering + Arabic RTL readiness | ✅ Complete (RTL + i18n fully wired)                                    |
 | N+7   | Subagent next-level upgrade: 90% readiness + full-team collaboration mesh                        | ✅ Completed (May 18, 2026)                                             |
 | N+8   | Google social auth production hardening + role-based dashboard redirect consistency              | ✅ Complete (May 21, 2026)                                              |
+| N+9   | UX loading-state hardening: reusable skeleton variants + key-page adoption                       | ✅ Complete (May 21, 2026)                                              |
 | —     | [`PHASE_26_CONTEXT_ENRICHMENT_SPRINT.md`](./PHASE_26_CONTEXT_ENRICHMENT_SPRINT.md)               | 🕒 Deferred (Workstream E advisory; owner @Margaret, target 2026-05-23) |
 | —     | [`PHASE_27_SUBAGENT_NEXT_LEVEL_90_READINESS.md`](./PHASE_27_SUBAGENT_NEXT_LEVEL_90_READINESS.md) | ⬜ Planned                                                              |
 
@@ -31,6 +32,7 @@
 - [x] Enforce archive rule — moved superseded `plans/SESSION_*`, `plans/PHASE_2_*` files to `archives/plans/superseded/`
 - [x] Keep status consistent across `MASTER_PLAN`, `PROJECT_PROGRESS`, and this file
 - [x] Complete N+8 Google social auth build fix + dashboard redirect consistency validation
+- [x] Complete N+9 loading-state UX hardening across Property Card, Lead Management table, and Overview KPI surfaces
 
 ## N+1 Completion Summary (2026-05-17)
 

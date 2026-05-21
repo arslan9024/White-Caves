@@ -252,12 +252,13 @@
 
 ## ✅ Completed Milestones (Recent)
 
-| Date        | Milestone            | Result                                                        |
-| ----------- | -------------------- | ------------------------------------------------------------- |
-| May 5, 2026 | Phase 33 Step 2      | Homepage leasing conversion events + hero CTA leasing-first   |
-| May 5, 2026 | Phase 31             | LandlordIncomeTab + LandlordOfferReviewTab live API completed |
-| May 5, 2026 | Phase 32             | LandlordPayments date-range + mobile responsive CSS completed |
-| May 3, 2026 | Phase 26 docs sprint | revenue-model, analytics-dashboard, AI personas expansion     |
+| Date         | Milestone            | Result                                                                     |
+| ------------ | -------------------- | -------------------------------------------------------------------------- |
+| May 21, 2026 | N+9                  | UX loading-state hardening: reusable skeleton variants + key-page adoption |
+| May 5, 2026  | Phase 33 Step 2      | Homepage leasing conversion events + hero CTA leasing-first                |
+| May 5, 2026  | Phase 31             | LandlordIncomeTab + LandlordOfferReviewTab live API completed              |
+| May 5, 2026  | Phase 32             | LandlordPayments date-range + mobile responsive CSS completed              |
+| May 3, 2026  | Phase 26 docs sprint | revenue-model, analytics-dashboard, AI personas expansion                  |
 
 ---
 
