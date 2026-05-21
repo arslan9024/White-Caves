@@ -15,7 +15,6 @@ import morgan from 'morgan';
 import cookieParser from 'cookie-parser';
 import { Prisma } from '@prisma/client';
 import { connectDatabase, prisma } from './database.js';
-import { Prisma } from '@prisma/client';
 import { errorHandler, asyncHandler, AppError } from './middleware/errorHandler.js';
 import authMiddleware from './middleware/auth.js';
 import { requestIdMiddleware } from './middleware/requestId.js';
