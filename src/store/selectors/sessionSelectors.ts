@@ -1,0 +1,25 @@
+import type { RootState } from '../store';
+import type { AppUser } from '../userSlice';
+
+/**
+ * Canonical session user selector during auth/user slice convergence.
+ * Prefers user slice (route guard source), falls back to auth slice.
+ */
+export const selectSessionUser = (state: RootState): AppUser | null => {
+  const userFromUserSlice = state.user.currentUser;
+  if (userFromUserSlice) {
+    return userFromUserSlice;
+  }
+
+  return state.auth.user;
+};
+
+/** Canonical in-memory access token selector. */
+export const selectSessionToken = (state: RootState): string | null => state.auth.token;
+
+/**
+ * Canonical authenticated state selector.
+ * Uses session user because app route guards rely on user availability.
+ */
+export const selectIsSessionAuthenticated = (state: RootState): boolean =>
+  Boolean(selectSessionUser(state));

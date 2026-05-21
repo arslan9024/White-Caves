@@ -16,6 +16,7 @@ import {
   signInWithApple,
   signInWithPhone,
   createRecaptchaVerifier,
+  signOut as signOutFirebase,
 } from '../config/firebase';
 import { TIMING } from '../constants';
 import {
@@ -314,19 +315,18 @@ export function useSignIn() {
           } else {
             handleSignInSuccess(backendUser);
           }
-        } catch {
-          const firebaseUser = result.user;
-          const fallbackUser = {
-            id: firebaseUser.uid,
-            email: firebaseUser.email,
-            name: firebaseUser.displayName,
-          };
-          if (mode === 'signup') {
-            handleSignUpSuccess(fallbackUser, { fromSocialProvider: provider });
-          } else {
-            setSuccess('Signed in with Firebase session. Backend sync will retry automatically.');
-            handleSignInSuccess(fallbackUser);
-          }
+        } catch (syncError: unknown) {
+          await signOutFirebase().catch(() => {
+            // noop: firebase session cleanup is best effort here
+          });
+          const syncMessage =
+            syncError instanceof Error
+              ? syncError.message
+              : 'Unable to complete authentication sync';
+          setError(
+            `Authentication succeeded with ${provider}, but backend session setup failed: ${syncMessage}. Please try again.`
+          );
+          setSuccess('');
         }
       } catch (err: unknown) {
         setError(err instanceof Error ? err.message : 'Authentication failed');
@@ -431,18 +431,18 @@ export function useSignIn() {
           } else {
             handleSignInSuccess(backendUser);
           }
-        } catch {
-          const firebaseUser = result.user;
-          const fallbackUser = {
-            id: firebaseUser.uid,
-            email: firebaseUser.email,
-            name: firebaseUser.displayName,
-          };
-          if (mode === 'signup') {
-            handleSignUpSuccess(fallbackUser);
-          } else {
-            handleSignInSuccess(fallbackUser);
-          }
+        } catch (syncError: unknown) {
+          await signOutFirebase().catch(() => {
+            // noop: firebase session cleanup is best effort here
+          });
+          const syncMessage =
+            syncError instanceof Error
+              ? syncError.message
+              : 'Unable to complete authentication sync';
+          setError(
+            `Phone verification succeeded but backend session setup failed: ${syncMessage}.`
+          );
+          setSuccess('');
         }
       } catch (err: unknown) {
         setError(err instanceof Error ? err.message : 'Invalid OTP');
