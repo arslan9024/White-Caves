@@ -71,7 +71,7 @@ Ship login reliability fix now and prepare strict execution graph for profile/da
 
 - Add post-login profile completeness guidance with direct CTA to `/profile`.
 - **Files:** `src/pages/UnifiedDashboardPage.tsx`, `src/pages/UnifiedDashboardPage.css`, `src/pages/UnifiedDashboardPage.test.tsx`
-- **Status:** ✅ Completed (UI card + responsive styles + rendering test)
+- **Status:** ✅ Completed (UI card + responsive styles + rendering + CTA navigation/visibility tests)
 
 ### PROFILE-08-006 — Portal profile completion + save guard UX
 
