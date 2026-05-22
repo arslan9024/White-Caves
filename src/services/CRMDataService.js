@@ -138,6 +138,33 @@ class CRMDataService {
     return data;
   }
 
+  async getManagerShortlist(jobId, options = {}) {
+    const { minScore = 70, limit = 20, role = 'hiring_manager' } = options;
+    const query = new URLSearchParams({
+      min_score: String(minScore),
+      limit: String(limit)
+    });
+
+    return this.fetchWithAuth(`/recruitment/jobs/${jobId}/manager-shortlist?${query.toString()}`, {
+      headers: {
+        'x-user-role': role
+      }
+    });
+  }
+
+  async submitManagerReview(applicationId, decision, reviewNote = '', role = 'hiring_manager') {
+    return this.fetchWithAuth(`/recruitment/applications/${applicationId}/manager-review`, {
+      method: 'POST',
+      headers: {
+        'x-user-role': role
+      },
+      body: JSON.stringify({
+        decision,
+        review_note: reviewNote
+      })
+    });
+  }
+
   async getOliviaFeaturedProperties() {
     return this.fetchWithAuth('/olivia');
   }
