@@ -421,5 +421,35 @@ describe('UnifiedDashboardPage', () => {
         expect(screen.getByTestId('overview-tab')).toBeInTheDocument();
       });
     });
+
+    it('shows superuser control strip for owner role', async () => {
+      renderPage('overview', {
+        navigation: { activeRole: 'owner' },
+        user: {
+          currentUser: { id: 'u1', name: 'Admin', email: 'admin@wc.ae', role: 'owner' },
+        },
+      });
+
+      await waitFor(() => {
+        expect(screen.getByLabelText('Superuser controls')).toBeInTheDocument();
+        expect(screen.getByRole('button', { name: /Refresh live data/i })).toBeInTheDocument();
+        expect(screen.getByRole('button', { name: /Open command palette/i })).toBeInTheDocument();
+      });
+    });
+
+    it('hides superuser control strip for buyer role', async () => {
+      renderPage('overview', {
+        navigation: { activeRole: 'buyer' },
+        user: {
+          currentUser: { id: 'u2', name: 'Buyer', email: 'buyer@wc.ae', role: 'buyer' },
+        },
+      });
+
+      await waitFor(() => {
+        expect(screen.getByTestId('overview-tab')).toBeInTheDocument();
+      });
+
+      expect(screen.queryByLabelText('Superuser controls')).not.toBeInTheDocument();
+    });
   });
 });
