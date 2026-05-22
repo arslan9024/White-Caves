@@ -109,6 +109,12 @@ Ship login reliability fix now and prepare strict execution graph for profile/da
 - **Files:** `src/pages/auth/SignInPage.tsx`, `src/pages/auth/SignInPage.test.tsx`
 - **Status:** ✅ Completed (aria-busy wiring + busy-state regression test)
 
+### AUTH-08-014 — Recovery reason refresh on repeated retry failures
+
+- Ensure social recovery reason text updates to the latest backend-sync failure reason after retry attempts.
+- **Files:** `src/pages/auth/SignInPage.test.tsx`
+- **Status:** ✅ Completed (reason-refresh regression coverage)
+
 ### DASH-08-005 — Dashboard profile completion guidance card
 
 - Add post-login profile completeness guidance with direct CTA to `/profile`.
@@ -141,3 +147,4 @@ Ship login reliability fix now and prepare strict execution graph for profile/da
 14. AUTH-08-011 ✅
 15. AUTH-08-012 ✅
 16. AUTH-08-013 ✅
+17. AUTH-08-014 ✅

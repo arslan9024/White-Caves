@@ -716,5 +716,36 @@ describe('SignInPage', () => {
         expect(screen.getByRole('button', { name: /Retry Google sign-in/i })).not.toBeDisabled();
       });
     });
+
+    it('should update recovery reason text when retry fails with a new backend error', async () => {
+      mockSignInWithGoogle.mockResolvedValue({
+        user: {
+          uid: 'firebase-user-1',
+          email: 'social@test.com',
+          displayName: 'Social User',
+          photoURL: null,
+        },
+      });
+      mockSyncFirebaseUser
+        .mockRejectedValueOnce(new Error('Backend offline'))
+        .mockRejectedValueOnce(new Error('Sync timeout'));
+      mockSignOut.mockResolvedValue(undefined);
+
+      renderPage();
+
+      fireEvent.click(screen.getByRole('button', { name: /Google/i }));
+
+      await waitFor(() => {
+        expect(screen.getByText(/Reason:\s*Backend offline/i)).toBeInTheDocument();
+      });
+
+      fireEvent.click(screen.getByRole('button', { name: /Retry Google sign-in/i }));
+
+      await waitFor(() => {
+        expect(screen.getByText(/Reason:\s*Sync timeout/i)).toBeInTheDocument();
+      });
+
+      expect(mockSyncFirebaseUser).toHaveBeenCalledTimes(2);
+    });
   });
 });
