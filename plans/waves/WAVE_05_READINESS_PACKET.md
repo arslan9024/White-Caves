@@ -5,7 +5,7 @@
 - **Wave ID:** WAVE_05
 - **Date:** May 16, 2026
 - **Target modules:** Linda lane sync, Nadia WABA hardening, Nina supervisor upgrade
-- **Scope mode:** Fast-track (1-2 modules/day micro-wave execution)
+- **Scope mode:** Fast-track (3-6 modules/day macro/huge-wave execution)
 
 ## 2. Preconditions Checklist
 

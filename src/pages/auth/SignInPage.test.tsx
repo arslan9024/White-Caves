@@ -5,7 +5,7 @@
  */
 
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor, act } from '@testing-library/react';
 import React from 'react';
 import { Provider } from 'react-redux';
 import { configureStore } from '@reduxjs/toolkit';
@@ -19,10 +19,16 @@ vi.mock('react-router-dom', async () => {
   return { ...actual, useNavigate: () => mockNavigate };
 });
 
+const mockSignInWithGoogle = vi.fn();
+const mockSignInWithFacebook = vi.fn();
+const mockSignInWithApple = vi.fn();
+const mockSignOut = vi.fn();
+
 vi.mock('../../config/firebase', () => ({
-  signInWithGoogle: vi.fn(),
-  signInWithFacebook: vi.fn(),
-  signInWithApple: vi.fn(),
+  signInWithGoogle: (...args: unknown[]) => mockSignInWithGoogle(...args),
+  signInWithFacebook: (...args: unknown[]) => mockSignInWithFacebook(...args),
+  signInWithApple: (...args: unknown[]) => mockSignInWithApple(...args),
+  signOut: (...args: unknown[]) => mockSignOut(...args),
   signInWithPhone: vi.fn(),
   createRecaptchaVerifier: vi.fn(),
 }));
@@ -38,7 +44,12 @@ vi.mock('../../services/authService', () => ({
 
 vi.mock('../../features/auth/components/BiometricLogin', () => ({
   BiometricLoginButton: ({ onSuccess, onError }: Record<string, unknown>) => (
-    <button data-testid="biometric-btn" onClick={() => (onSuccess as Function)?.({ uid: 'bio1', email: 'bio@test.com', displayName: 'Bio User' })}>
+    <button
+      data-testid="biometric-btn"
+      onClick={() =>
+        (onSuccess as Function)?.({ uid: 'bio1', email: 'bio@test.com', displayName: 'Bio User' })
+      }
+    >
       Biometric
     </button>
   ),
@@ -61,7 +72,9 @@ const createStore = () =>
   configureStore({
     reducer: { user: userReducer },
     preloadedState: {
-      user: { currentUser: null, loading: false, error: null } as unknown as ReturnType<typeof userReducer>,
+      user: { currentUser: null, loading: false, error: null } as unknown as ReturnType<
+        typeof userReducer
+      >,
     },
   });
 
@@ -74,7 +87,7 @@ const renderPage = () => {
         <MemoryRouter>
           <SignInPage />
         </MemoryRouter>
-      </Provider>,
+      </Provider>
     ),
   };
 };
@@ -141,7 +154,9 @@ describe('SignInPage', () => {
       renderPage();
       const switchBtn = screen.getByText(/Don't have an account\? Sign Up/i);
       fireEvent.click(switchBtn);
-      expect(screen.getByText('Join White Caves to explore luxury properties in Dubai')).toBeInTheDocument();
+      expect(
+        screen.getByText('Join White Caves to explore luxury properties in Dubai')
+      ).toBeInTheDocument();
     });
 
     it('should switch back to signin mode', () => {
@@ -186,9 +201,13 @@ describe('SignInPage', () => {
         data: { user: { id: 'u1', email: 'test@test.com', name: 'Test', role: 'agent' } },
       });
       renderPage();
-      fireEvent.change(screen.getByPlaceholderText('Enter your email'), { target: { value: 'test@test.com' } });
-      fireEvent.change(screen.getByPlaceholderText('Enter your password'), { target: { value: 'pass1234' } });
-      
+      fireEvent.change(screen.getByPlaceholderText('Enter your email'), {
+        target: { value: 'test@test.com' },
+      });
+      fireEvent.change(screen.getByPlaceholderText('Enter your password'), {
+        target: { value: 'pass1234' },
+      });
+
       const form = screen.getByPlaceholderText('Enter your email').closest('form')!;
       fireEvent.submit(form);
 
@@ -202,9 +221,13 @@ describe('SignInPage', () => {
         data: { user: { id: 'u1', email: 'test@test.com', name: 'Test', role: 'agent' } },
       });
       renderPage();
-      fireEvent.change(screen.getByPlaceholderText('Enter your email'), { target: { value: 'test@test.com' } });
-      fireEvent.change(screen.getByPlaceholderText('Enter your password'), { target: { value: 'pass1234' } });
-      
+      fireEvent.change(screen.getByPlaceholderText('Enter your email'), {
+        target: { value: 'test@test.com' },
+      });
+      fireEvent.change(screen.getByPlaceholderText('Enter your password'), {
+        target: { value: 'pass1234' },
+      });
+
       const form = screen.getByPlaceholderText('Enter your email').closest('form')!;
       fireEvent.submit(form);
 
@@ -216,9 +239,13 @@ describe('SignInPage', () => {
     it('should show error on failed login', async () => {
       mockBackendLogin.mockRejectedValue(new Error('Invalid credentials'));
       renderPage();
-      fireEvent.change(screen.getByPlaceholderText('Enter your email'), { target: { value: 'bad@test.com' } });
-      fireEvent.change(screen.getByPlaceholderText('Enter your password'), { target: { value: 'wrong' } });
-      
+      fireEvent.change(screen.getByPlaceholderText('Enter your email'), {
+        target: { value: 'bad@test.com' },
+      });
+      fireEvent.change(screen.getByPlaceholderText('Enter your password'), {
+        target: { value: 'wrong' },
+      });
+
       const form = screen.getByPlaceholderText('Enter your email').closest('form')!;
       fireEvent.submit(form);
 
@@ -241,7 +268,9 @@ describe('SignInPage', () => {
       switchToSignup();
 
       // Fill form
-      fireEvent.change(screen.getByPlaceholderText('Enter your email'), { target: { value: 'new@test.com' } });
+      fireEvent.change(screen.getByPlaceholderText('Enter your email'), {
+        target: { value: 'new@test.com' },
+      });
       const passwordInputs = screen.getAllByPlaceholderText(/password/i);
       fireEvent.change(passwordInputs[0], { target: { value: 'pass1234' } });
       fireEvent.change(passwordInputs[1], { target: { value: 'different' } });
@@ -258,7 +287,9 @@ describe('SignInPage', () => {
       renderPage();
       switchToSignup();
 
-      fireEvent.change(screen.getByPlaceholderText('Enter your email'), { target: { value: 'new@test.com' } });
+      fireEvent.change(screen.getByPlaceholderText('Enter your email'), {
+        target: { value: 'new@test.com' },
+      });
       const passwordInputs = screen.getAllByPlaceholderText(/password/i);
       fireEvent.change(passwordInputs[0], { target: { value: 'abc' } });
       fireEvent.change(passwordInputs[1], { target: { value: 'abc' } });
@@ -275,7 +306,9 @@ describe('SignInPage', () => {
       renderPage();
       switchToSignup();
 
-      fireEvent.change(screen.getByPlaceholderText('Enter your email'), { target: { value: 'new@test.com' } });
+      fireEvent.change(screen.getByPlaceholderText('Enter your email'), {
+        target: { value: 'new@test.com' },
+      });
       const passwordInputs = screen.getAllByPlaceholderText(/password/i);
       fireEvent.change(passwordInputs[0], { target: { value: '12345678' } });
       fireEvent.change(passwordInputs[1], { target: { value: '12345678' } });
@@ -284,7 +317,9 @@ describe('SignInPage', () => {
       fireEvent.submit(form);
 
       await waitFor(() => {
-        expect(screen.getByText('Password must contain at least one letter and one number')).toBeInTheDocument();
+        expect(
+          screen.getByText('Password must contain at least one letter and one number')
+        ).toBeInTheDocument();
       });
     });
   });
@@ -321,7 +356,9 @@ describe('SignInPage', () => {
       fireEvent.click(switchBtn);
 
       // Fill and submit
-      fireEvent.change(screen.getByPlaceholderText('Enter your email'), { target: { value: 'new@test.com' } });
+      fireEvent.change(screen.getByPlaceholderText('Enter your email'), {
+        target: { value: 'new@test.com' },
+      });
       const passwordInputs = screen.getAllByPlaceholderText(/password/i);
       fireEvent.change(passwordInputs[0], { target: { value: 'password1' } });
       fireEvent.change(passwordInputs[1], { target: { value: 'password1' } });
@@ -344,7 +381,9 @@ describe('SignInPage', () => {
       const switchBtn = screen.getByText(/Don't have an account\? Sign Up/i);
       fireEvent.click(switchBtn);
 
-      fireEvent.change(screen.getByPlaceholderText('Enter your email'), { target: { value: 'new@test.com' } });
+      fireEvent.change(screen.getByPlaceholderText('Enter your email'), {
+        target: { value: 'new@test.com' },
+      });
       const passwordInputs = screen.getAllByPlaceholderText(/password/i);
       fireEvent.change(passwordInputs[0], { target: { value: 'password1' } });
       fireEvent.change(passwordInputs[1], { target: { value: 'password1' } });
@@ -368,9 +407,13 @@ describe('SignInPage', () => {
     it('should show auth error class when error exists', async () => {
       mockBackendLogin.mockRejectedValue(new Error('Server error'));
       renderPage();
-      fireEvent.change(screen.getByPlaceholderText('Enter your email'), { target: { value: 'test@test.com' } });
-      fireEvent.change(screen.getByPlaceholderText('Enter your password'), { target: { value: 'pass1234' } });
-      
+      fireEvent.change(screen.getByPlaceholderText('Enter your email'), {
+        target: { value: 'test@test.com' },
+      });
+      fireEvent.change(screen.getByPlaceholderText('Enter your password'), {
+        target: { value: 'pass1234' },
+      });
+
       const form = screen.getByPlaceholderText('Enter your email').closest('form')!;
       fireEvent.submit(form);
 
@@ -378,6 +421,407 @@ describe('SignInPage', () => {
         const errorDiv = document.querySelector('.auth-error');
         expect(errorDiv).toBeTruthy();
         expect(errorDiv?.textContent).toBe('Server error');
+      });
+    });
+
+    it('should show social recovery panel when Google backend sync fails', async () => {
+      mockSignInWithGoogle.mockResolvedValue({
+        user: {
+          uid: 'firebase-user-1',
+          email: 'social@test.com',
+          displayName: 'Social User',
+          photoURL: null,
+        },
+      });
+      mockSyncFirebaseUser.mockRejectedValue(new Error('Backend offline'));
+      mockSignOut.mockResolvedValue(undefined);
+
+      renderPage();
+
+      fireEvent.click(screen.getByRole('button', { name: /Google/i }));
+
+      await waitFor(() => {
+        expect(screen.getByText(/sign-in needs one more step/i)).toBeInTheDocument();
+        expect(screen.getByRole('button', { name: /Retry Google sign-in/i })).toBeInTheDocument();
+      });
+    });
+
+    it('should retry Google sign-in from recovery panel and navigate on success', async () => {
+      mockSignInWithGoogle.mockResolvedValue({
+        user: {
+          uid: 'firebase-user-1',
+          email: 'social@test.com',
+          displayName: 'Social User',
+          photoURL: null,
+        },
+      });
+      mockSyncFirebaseUser
+        .mockRejectedValueOnce(new Error('Backend offline'))
+        .mockResolvedValueOnce({
+          data: {
+            user: {
+              id: 'backend-1',
+              email: 'social@test.com',
+              name: 'Social User',
+              role: 'buyer',
+            },
+          },
+        });
+      mockSignOut.mockResolvedValue(undefined);
+
+      renderPage();
+
+      fireEvent.click(screen.getByRole('button', { name: /Google/i }));
+
+      const retryButton = await screen.findByRole('button', { name: /Retry Google sign-in/i });
+      fireEvent.click(retryButton);
+
+      await waitFor(() => {
+        expect(mockSyncFirebaseUser).toHaveBeenCalledTimes(2);
+      });
+
+      act(() => {
+        vi.runAllTimers();
+      });
+
+      await waitFor(() => {
+        expect(mockNavigate).toHaveBeenCalledWith('/dashboard');
+        expect(mockNavigate).toHaveBeenCalledWith('/crm');
+      });
+    });
+
+    it('should clear social recovery panel when switching auth mode', async () => {
+      mockSignInWithGoogle.mockResolvedValue({
+        user: {
+          uid: 'firebase-user-1',
+          email: 'social@test.com',
+          displayName: 'Social User',
+          photoURL: null,
+        },
+      });
+      mockSyncFirebaseUser.mockRejectedValue(new Error('Backend offline'));
+      mockSignOut.mockResolvedValue(undefined);
+
+      renderPage();
+
+      fireEvent.click(screen.getByRole('button', { name: /Google/i }));
+
+      await waitFor(() => {
+        expect(screen.getByRole('button', { name: /Retry Google sign-in/i })).toBeInTheDocument();
+      });
+
+      fireEvent.click(screen.getByText(/Don't have an account\? Sign Up/i));
+
+      expect(
+        screen.queryByRole('button', { name: /Retry Google sign-in/i })
+      ).not.toBeInTheDocument();
+      expect(screen.queryByText(/sign-in needs one more step/i)).not.toBeInTheDocument();
+    });
+
+    it('should dismiss social recovery panel when user clicks dismiss action', async () => {
+      mockSignInWithGoogle.mockResolvedValue({
+        user: {
+          uid: 'firebase-user-1',
+          email: 'social@test.com',
+          displayName: 'Social User',
+          photoURL: null,
+        },
+      });
+      mockSyncFirebaseUser.mockRejectedValue(new Error('Backend offline'));
+      mockSignOut.mockResolvedValue(undefined);
+
+      renderPage();
+
+      fireEvent.click(screen.getByRole('button', { name: /Google/i }));
+
+      await waitFor(() => {
+        expect(
+          screen.getByRole('button', { name: /Dismiss recovery notice/i })
+        ).toBeInTheDocument();
+        expect(screen.getByText(/backend session setup failed/i)).toBeInTheDocument();
+      });
+
+      fireEvent.click(screen.getByRole('button', { name: /Dismiss recovery notice/i }));
+
+      await waitFor(() => {
+        expect(
+          screen.queryByRole('button', { name: /Retry Google sign-in/i })
+        ).not.toBeInTheDocument();
+        expect(screen.queryByText(/sign-in needs one more step/i)).not.toBeInTheDocument();
+        expect(screen.queryByText(/backend session setup failed/i)).not.toBeInTheDocument();
+      });
+    });
+
+    it('should disable dismiss action while social retry is in progress', async () => {
+      mockSignInWithGoogle.mockResolvedValue({
+        user: {
+          uid: 'firebase-user-1',
+          email: 'social@test.com',
+          displayName: 'Social User',
+          photoURL: null,
+        },
+      });
+
+      let resolveRetrySync:
+        | ((value: {
+            data: { user: { id: string; email: string; name: string; role: string } };
+          }) => void)
+        | undefined;
+
+      mockSyncFirebaseUser
+        .mockRejectedValueOnce(new Error('Backend offline'))
+        .mockImplementationOnce(
+          () =>
+            new Promise(resolve => {
+              resolveRetrySync = resolve;
+            })
+        );
+      mockSignOut.mockResolvedValue(undefined);
+
+      renderPage();
+
+      fireEvent.click(screen.getByRole('button', { name: /Google/i }));
+
+      const retryButton = await screen.findByRole('button', { name: /Retry Google sign-in/i });
+      fireEvent.click(retryButton);
+
+      await waitFor(() => {
+        expect(screen.getByRole('button', { name: /Dismiss recovery notice/i })).toBeDisabled();
+      });
+
+      if (resolveRetrySync) {
+        resolveRetrySync({
+          data: {
+            user: {
+              id: 'backend-1',
+              email: 'social@test.com',
+              name: 'Social User',
+              role: 'buyer',
+            },
+          },
+        });
+      }
+
+      await waitFor(() => {
+        expect(mockSyncFirebaseUser).toHaveBeenCalledTimes(2);
+      });
+    });
+
+    it('should disable retry action and show loading copy while retry is in progress', async () => {
+      mockSignInWithGoogle.mockResolvedValue({
+        user: {
+          uid: 'firebase-user-1',
+          email: 'social@test.com',
+          displayName: 'Social User',
+          photoURL: null,
+        },
+      });
+
+      let resolveRetrySync:
+        | ((value: {
+            data: { user: { id: string; email: string; name: string; role: string } };
+          }) => void)
+        | undefined;
+
+      mockSyncFirebaseUser
+        .mockRejectedValueOnce(new Error('Backend offline'))
+        .mockImplementationOnce(
+          () =>
+            new Promise(resolve => {
+              resolveRetrySync = resolve;
+            })
+        );
+      mockSignOut.mockResolvedValue(undefined);
+
+      renderPage();
+
+      fireEvent.click(screen.getByRole('button', { name: /Google/i }));
+
+      const retryButton = await screen.findByRole('button', { name: /Retry Google sign-in/i });
+      fireEvent.click(retryButton);
+
+      await waitFor(() => {
+        expect(screen.getByRole('button', { name: /Retrying.../i })).toBeDisabled();
+      });
+
+      if (resolveRetrySync) {
+        resolveRetrySync({
+          data: {
+            user: {
+              id: 'backend-1',
+              email: 'social@test.com',
+              name: 'Social User',
+              role: 'buyer',
+            },
+          },
+        });
+      }
+
+      await waitFor(() => {
+        expect(mockSyncFirebaseUser).toHaveBeenCalledTimes(2);
+      });
+    });
+
+    it('should mark recovery panel as busy while retry is in progress', async () => {
+      mockSignInWithGoogle.mockResolvedValue({
+        user: {
+          uid: 'firebase-user-1',
+          email: 'social@test.com',
+          displayName: 'Social User',
+          photoURL: null,
+        },
+      });
+
+      let resolveRetrySync:
+        | ((value: {
+            data: { user: { id: string; email: string; name: string; role: string } };
+          }) => void)
+        | undefined;
+
+      mockSyncFirebaseUser
+        .mockRejectedValueOnce(new Error('Backend offline'))
+        .mockImplementationOnce(
+          () =>
+            new Promise(resolve => {
+              resolveRetrySync = resolve;
+            })
+        );
+      mockSignOut.mockResolvedValue(undefined);
+
+      renderPage();
+
+      fireEvent.click(screen.getByRole('button', { name: /Google/i }));
+
+      const retryButton = await screen.findByRole('button', { name: /Retry Google sign-in/i });
+      fireEvent.click(retryButton);
+
+      await waitFor(() => {
+        expect(screen.getByRole('status')).toHaveAttribute('aria-busy', 'true');
+      });
+
+      if (resolveRetrySync) {
+        resolveRetrySync({
+          data: {
+            user: {
+              id: 'backend-1',
+              email: 'social@test.com',
+              name: 'Social User',
+              role: 'buyer',
+            },
+          },
+        });
+      }
+
+      await waitFor(() => {
+        expect(screen.getByRole('status')).toHaveAttribute('aria-busy', 'false');
+        expect(screen.getByRole('button', { name: /Retry Google sign-in/i })).not.toBeDisabled();
+      });
+    });
+
+    it('should update recovery reason text when retry fails with a new backend error', async () => {
+      mockSignInWithGoogle.mockResolvedValue({
+        user: {
+          uid: 'firebase-user-1',
+          email: 'social@test.com',
+          displayName: 'Social User',
+          photoURL: null,
+        },
+      });
+      mockSyncFirebaseUser
+        .mockRejectedValueOnce(new Error('Backend offline'))
+        .mockRejectedValueOnce(new Error('Sync timeout'));
+      mockSignOut.mockResolvedValue(undefined);
+
+      renderPage();
+
+      fireEvent.click(screen.getByRole('button', { name: /Google/i }));
+
+      await waitFor(() => {
+        expect(screen.getByText(/Reason:\s*Backend offline/i)).toBeInTheDocument();
+      });
+
+      fireEvent.click(screen.getByRole('button', { name: /Retry Google sign-in/i }));
+
+      await waitFor(() => {
+        expect(screen.getByText(/Reason:\s*Sync timeout/i)).toBeInTheDocument();
+      });
+
+      expect(mockSyncFirebaseUser).toHaveBeenCalledTimes(2);
+    });
+
+    it('should stop retrying and show limit guidance after repeated retry failures', async () => {
+      mockSignInWithGoogle.mockResolvedValue({
+        user: {
+          uid: 'firebase-user-1',
+          email: 'social@test.com',
+          displayName: 'Social User',
+          photoURL: null,
+        },
+      });
+      mockSyncFirebaseUser.mockRejectedValue(new Error('Backend offline'));
+      mockSignOut.mockResolvedValue(undefined);
+
+      renderPage();
+
+      fireEvent.click(screen.getByRole('button', { name: /Google/i }));
+
+      const retry = await screen.findByRole('button', { name: /Retry Google sign-in/i });
+      fireEvent.click(retry);
+      await waitFor(() => expect(mockSyncFirebaseUser).toHaveBeenCalledTimes(2));
+
+      fireEvent.click(screen.getByRole('button', { name: /Retry Google sign-in/i }));
+      await waitFor(() => expect(mockSyncFirebaseUser).toHaveBeenCalledTimes(3));
+
+      fireEvent.click(screen.getByRole('button', { name: /Retry Google sign-in/i }));
+      await waitFor(() => expect(mockSyncFirebaseUser).toHaveBeenCalledTimes(4));
+
+      await waitFor(() => {
+        expect(screen.getByRole('button', { name: /Retry limit reached/i })).toBeDisabled();
+        expect(screen.getByText(/Too many retry attempts/i)).toBeInTheDocument();
+      });
+
+      fireEvent.click(screen.getByRole('button', { name: /Retry limit reached/i }));
+
+      expect(mockSyncFirebaseUser).toHaveBeenCalledTimes(4);
+      expect(screen.getByText(/Too many retry attempts/i)).toBeInTheDocument();
+    });
+
+    it('should show retries remaining and decrement it after each failed retry', async () => {
+      mockSignInWithGoogle.mockResolvedValue({
+        user: {
+          uid: 'firebase-user-1',
+          email: 'social@test.com',
+          displayName: 'Social User',
+          photoURL: null,
+        },
+      });
+      mockSyncFirebaseUser.mockRejectedValue(new Error('Backend offline'));
+      mockSignOut.mockResolvedValue(undefined);
+
+      renderPage();
+
+      fireEvent.click(screen.getByRole('button', { name: /Google/i }));
+
+      await waitFor(() => {
+        expect(screen.getByText(/Retries remaining:\s*3/i)).toBeInTheDocument();
+      });
+
+      fireEvent.click(screen.getByRole('button', { name: /Retry Google sign-in/i }));
+      await waitFor(() => {
+        expect(mockSyncFirebaseUser).toHaveBeenCalledTimes(2);
+        expect(screen.getByText(/Retries remaining:\s*2/i)).toBeInTheDocument();
+      });
+
+      fireEvent.click(screen.getByRole('button', { name: /Retry Google sign-in/i }));
+      await waitFor(() => {
+        expect(mockSyncFirebaseUser).toHaveBeenCalledTimes(3);
+        expect(screen.getByText(/Retries remaining:\s*1/i)).toBeInTheDocument();
+      });
+
+      fireEvent.click(screen.getByRole('button', { name: /Retry Google sign-in/i }));
+      await waitFor(() => {
+        expect(mockSyncFirebaseUser).toHaveBeenCalledTimes(4);
+        expect(screen.getByText(/Retries remaining:\s*0/i)).toBeInTheDocument();
       });
     });
   });

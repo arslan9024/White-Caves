@@ -91,7 +91,7 @@
 
 - `.github/instructions/agentic-workflow.instructions.md`
 - `.github/instructions/typescript.instructions.md`
-- `.github/prompts/micro-wave-implementation.prompt.md`
+- `.github/prompts/macro-huge-wave-implementation.prompt.md`
 - `.github/skills/pr-review-checklist/SKILL.md`
 - `.github/skills/release-readiness/SKILL.md`
 - `.github/skills/security-audit/SKILL.md`

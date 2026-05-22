@@ -12,6 +12,7 @@ import SuspenseLoader from './components/common/SuspenseLoader';
 import RouteErrorBoundary from './components/RouteErrorBoundary';
 const SignInPage = lazy(() => import('./pages/auth/SignInPage'));
 import type { RootState, AppDispatch } from './store/store';
+import { selectSessionUser } from './store/selectors/sessionSelectors';
 import { safeStorage } from './utils/safeStorage';
 import { authFetch } from './utils/authFetch';
 
@@ -74,7 +75,7 @@ function resolveEffectiveRole(
 // ─── Protected Route ────────────────────────────────────────────────────
 
 function ProtectedRoute({ children, allowedRoles }: ProtectedRouteProps) {
-  const user = useSelector((state: RootState) => state.user.currentUser);
+  const user = useSelector((state: RootState) => selectSessionUser(state));
   const isAuthLoading = useSelector((state: RootState) => state.user.isLoading);
   const [userData, setUserData] = useState<UserRoleData | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -127,7 +128,7 @@ function ProtectedRoute({ children, allowedRoles }: ProtectedRouteProps) {
 }
 
 function DashboardEntryRoute() {
-  const user = useSelector((state: RootState) => state.user.currentUser);
+  const user = useSelector((state: RootState) => selectSessionUser(state));
   const isAuthLoading = useSelector((state: RootState) => state.user.isLoading);
   const { info } = useStatus();
   const hasShownSigninNotice = useRef(false);
@@ -268,7 +269,7 @@ const log = createLogger('App');
 
 function App(): React.JSX.Element {
   const dispatch = useDispatch<AppDispatch>();
-  const user = useSelector((state: RootState) => state.user.currentUser);
+  const user = useSelector((state: RootState) => selectSessionUser(state));
 
   // Initialise real-time Socket.io connection — connects when auth token is
   // present, disconnects on logout, and pushes server events into Redux.
