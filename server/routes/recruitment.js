@@ -17,6 +17,9 @@ let prisma = new PrismaClient();
 let scoringService = CandidateScoringService;
 let templateService = MessageTemplateService;
 
+const RECRUITMENT_READ_ROLES = ['hr', 'hiring_manager', 'executive', 'admin'];
+const RECRUITMENT_WRITE_ROLES = ['hr', 'admin'];
+
 export function __setRecruitmentTestDeps({ prismaClient, candidateScoringService, messageTemplateService } = {}) {
   if (prismaClient) prisma = prismaClient;
   if (candidateScoringService) scoringService = candidateScoringService;
@@ -27,6 +30,34 @@ export function __resetRecruitmentTestDeps() {
   prisma = new PrismaClient();
   scoringService = CandidateScoringService;
   templateService = MessageTemplateService;
+}
+
+export function requireRecruitmentAccess(level = 'read') {
+  return (req, res, next) => {
+    // Keep backward compatibility in environments where auth is not wired yet.
+    if (process.env.RECRUITMENT_AUTH_MODE !== 'enforced') {
+      return next();
+    }
+
+    const headerRole = req.headers['x-user-role'];
+    const userRole = (headerRole || req.user?.role || '').toString().trim().toLowerCase();
+
+    if (!userRole) {
+      return res.status(401).json({
+        error: 'Authentication required for recruitment routes'
+      });
+    }
+
+    const allowedRoles = level === 'write' ? RECRUITMENT_WRITE_ROLES : RECRUITMENT_READ_ROLES;
+    if (!allowedRoles.includes(userRole)) {
+      return res.status(403).json({
+        error: `Recruitment ${level} access denied for role: ${userRole}`
+      });
+    }
+
+    req.recruitmentAccess = { role: userRole, level };
+    return next();
+  };
 }
 
 export function computeScreeningMetrics(scores = []) {
@@ -813,7 +844,7 @@ router.post('/candidates/:candidate_id/upload-resume', upload.single('resume'), 
 // ============= BATCH SCREENING ENDPOINTS (Phase 1B) =============
 
 // Score a single candidate for a job
-router.post('/jobs/:job_id/score-candidate', async (req, res) => {
+router.post('/jobs/:job_id/score-candidate', requireRecruitmentAccess('write'), async (req, res) => {
   try {
     const { job_id } = req.params;
     const { candidate_id, weights } = req.body;
@@ -886,7 +917,7 @@ router.post('/jobs/:job_id/batch-score', async (req, res) => {
 });
 
 // Get top candidates for a job
-router.get('/jobs/:job_id/top-candidates', async (req, res) => {
+router.get('/jobs/:job_id/top-candidates', requireRecruitmentAccess('read'), async (req, res) => {
   try {
     const { job_id } = req.params;
     const { threshold = 75, limit = 10 } = req.query;
@@ -1061,7 +1092,7 @@ router.post('/candidates/:candidate_id/extract-resume', async (req, res) => {
 });
 
 // Get screening metrics and insights
-router.get('/jobs/:job_id/screening-metrics', async (req, res) => {
+router.get('/jobs/:job_id/screening-metrics', requireRecruitmentAccess('read'), async (req, res) => {
   try {
     const { job_id } = req.params;
 
@@ -1093,7 +1124,7 @@ router.get('/jobs/:job_id/screening-metrics', async (req, res) => {
 });
 
 // Recruitment overview for Zoe analytics
-router.get('/overview', async (req, res) => {
+router.get('/overview', requireRecruitmentAccess('read'), async (req, res) => {
   try {
     const [jobs, applications, scores] = await Promise.all([
       prisma.job.findMany({
@@ -1316,7 +1347,7 @@ router.get('/whatsapp/templates/:templateId/preview', async (req, res) => {
 });
 
 // Send offer letter and move application to offer stage
-router.post('/applications/:application_id/send-offer', async (req, res) => {
+router.post('/applications/:application_id/send-offer', requireRecruitmentAccess('write'), async (req, res) => {
   try {
     const { application_id } = req.params;
     const { salary, start_date, department, company_name = 'White Caves Real Estate' } = req.body;
@@ -1382,7 +1413,7 @@ router.post('/applications/:application_id/send-offer', async (req, res) => {
 });
 
 // Start onboarding after offer acceptance
-router.post('/applications/:application_id/start-onboarding', async (req, res) => {
+router.post('/applications/:application_id/start-onboarding', requireRecruitmentAccess('write'), async (req, res) => {
   try {
     const { application_id } = req.params;
     const { start_date } = req.body;

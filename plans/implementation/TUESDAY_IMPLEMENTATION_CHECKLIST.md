@@ -29,7 +29,7 @@
 ## Pending
 
 - [ ] Add manager self-service review and shortlist flow
-- [ ] Add security-focused route tests for recruitment access control
+- [x] Add security-focused route tests for recruitment access control
 - [ ] Remove legacy metric aliases after all consumers migrate
 
 ## Exit Criteria

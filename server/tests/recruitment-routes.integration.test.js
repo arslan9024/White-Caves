@@ -52,6 +52,8 @@ async function withServer(run) {
 
 console.log('\n🧪 Recruitment Routes Integration Tests\n');
 
+const originalRecruitmentAuthMode = process.env.RECRUITMENT_AUTH_MODE;
+
 await test('GET /jobs/:job_id/screening-metrics returns canonical + alias keys', async () => {
   const prismaMock = {
     candidateScore: {
@@ -92,6 +94,101 @@ await test('GET /jobs/:job_id/screening-metrics returns canonical + alias keys',
     assert(body.metrics.no_match === 1, 'Expected alias no_match count');
   });
 
+  __resetRecruitmentTestDeps();
+});
+
+await test('GET /jobs/:job_id/screening-metrics rejects unauthenticated request when enforcement is enabled', async () => {
+  process.env.RECRUITMENT_AUTH_MODE = 'enforced';
+
+  const prismaMock = {
+    candidateScore: {
+      findMany: async () => []
+    }
+  };
+
+  __setRecruitmentTestDeps({ prismaClient: prismaMock });
+
+  await withServer(async (baseUrl) => {
+    const response = await fetch(`${baseUrl}/api/recruitment/jobs/job-auth/screening-metrics`);
+    const body = await response.json();
+
+    assert(response.status === 401, 'Expected HTTP 401 for missing role');
+    assert(body.error === 'Authentication required for recruitment routes', 'Expected auth required error');
+  });
+
+  process.env.RECRUITMENT_AUTH_MODE = originalRecruitmentAuthMode;
+  __resetRecruitmentTestDeps();
+});
+
+await test('POST /jobs/:job_id/score-candidate blocks executive role for write access', async () => {
+  process.env.RECRUITMENT_AUTH_MODE = 'enforced';
+
+  __setRecruitmentTestDeps({
+    candidateScoringService: {
+      scoreCandidateForJob: async () => ({
+        candidate_id: 'cand-x',
+        job_id: 'job-x',
+        screening_status: 'moderate_match'
+      })
+    }
+  });
+
+  await withServer(async (baseUrl) => {
+    const response = await fetch(`${baseUrl}/api/recruitment/jobs/job-x/score-candidate`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-user-role': 'executive'
+      },
+      body: JSON.stringify({ candidate_id: 'cand-x' })
+    });
+
+    const body = await response.json();
+    assert(response.status === 403, 'Expected HTTP 403 for write role violation');
+    assert(body.error.includes('Recruitment write access denied'), 'Expected write access denied message');
+  });
+
+  process.env.RECRUITMENT_AUTH_MODE = originalRecruitmentAuthMode;
+  __resetRecruitmentTestDeps();
+});
+
+await test('POST /jobs/:job_id/score-candidate allows hr role when enforcement is enabled', async () => {
+  process.env.RECRUITMENT_AUTH_MODE = 'enforced';
+
+  __setRecruitmentTestDeps({
+    candidateScoringService: {
+      scoreCandidateForJob: async (candidateId, jobId) => ({
+        id: 'score-auth-ok',
+        candidate_id: candidateId,
+        job_id: jobId,
+        overall_score: 78,
+        screening_status: 'moderate_match',
+        skills_score: 80,
+        experience_score: 77,
+        education_score: 75,
+        cultural_fit_score: 79,
+        location_match_score: 81
+      })
+    }
+  });
+
+  await withServer(async (baseUrl) => {
+    const response = await fetch(`${baseUrl}/api/recruitment/jobs/job-auth-ok/score-candidate`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-user-role': 'hr'
+      },
+      body: JSON.stringify({ candidate_id: 'cand-auth-ok' })
+    });
+
+    const body = await response.json();
+    assert(response.status === 201, 'Expected HTTP 201 for authorized HR request');
+    assert(body.success === true, 'Expected success for authorized request');
+    assert(body.score.screening_status === 'moderate_match', 'Expected canonical status in authorized response');
+  });
+
+  process.env.RECRUITMENT_AUTH_MODE = originalRecruitmentAuthMode;
   __resetRecruitmentTestDeps();
 });
 
@@ -155,4 +252,5 @@ await test('POST /jobs/:job_id/score-candidate returns canonical moderate_match'
 });
 
 console.log(`\n✅ ${passedTests}/${totalTests} recruitment route integration tests passed\n`);
+process.env.RECRUITMENT_AUTH_MODE = originalRecruitmentAuthMode;
 process.exit(passedTests === totalTests ? 0 : 1);
