@@ -88,6 +88,25 @@ const reraRows = [
   },
 ];
 
+const competitorPricingRows = [
+  {
+    area: 'Downtown Dubai',
+    portal: 'bayut',
+    avgPricePerSqft: 2410,
+    deltaVsWhiteCavesPct: 4.12,
+    updatedAt: '2026-05-16T10:15:00.000Z',
+    source: 'derived-benchmark',
+  },
+  {
+    area: 'Palm Jumeirah',
+    portal: 'propertyfinder',
+    avgPricePerSqft: 3650,
+    deltaVsWhiteCavesPct: -1.2,
+    updatedAt: '2026-05-16T10:15:00.000Z',
+    source: 'derived-benchmark',
+  },
+];
+
 test.describe('Wave 13 - Valuation and Market workflow coverage', () => {
   test('valuation page loads, recalculates, overrides, and computes yield', async ({ page }) => {
     await page.route('**/api/valuations/**', async route => {
@@ -221,6 +240,24 @@ test.describe('Wave 13 - Valuation and Market workflow coverage', () => {
         return;
       }
 
+      if (url.pathname.endsWith('/competitor-pricing')) {
+        const area = url.searchParams.get('area')?.toLowerCase() ?? '';
+        const portal = url.searchParams.get('portal')?.toLowerCase() ?? '';
+
+        const data = competitorPricingRows.filter(row => {
+          const areaMatch = area ? row.area.toLowerCase().includes(area) : true;
+          const portalMatch = portal ? row.portal === portal : true;
+          return areaMatch && portalMatch;
+        });
+
+        await route.fulfill({
+          status: 200,
+          contentType: 'application/json',
+          body: JSON.stringify({ success: true, data }),
+        });
+        return;
+      }
+
       await route.continue();
     });
 
@@ -244,5 +281,13 @@ test.describe('Wave 13 - Valuation and Market workflow coverage', () => {
     await expect(page.getByText(/Based on RERA Rental Index 2024/i)).toBeVisible();
     await expect(page.getByText('Downtown Dubai')).toBeVisible();
     await expect(page.getByText('90,000')).toBeVisible();
+
+    await page.getByRole('button', { name: 'Competitor Pricing' }).click();
+    await expect(page.getByText('Downtown Dubai')).toBeVisible();
+    await expect(page.getByRole('cell', { name: 'Bayut' })).toBeVisible();
+    await expect(page.getByText('+4.12%')).toBeVisible();
+
+    await page.getByPlaceholder('Filter by area').fill('Palm');
+    await expect(page.getByText('Palm Jumeirah')).toBeVisible();
   });
 });
