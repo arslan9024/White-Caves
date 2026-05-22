@@ -195,8 +195,8 @@
     "orchestrator:phase-bundle:report:json": "powershell -ExecutionPolicy Bypass -File scripts/orchestrator/phase-bundle-report.ps1 -Json",
     "orchestrator:phase99": "powershell -ExecutionPolicy Bypass -File scripts/orchestrator/phase99-signoff.ps1",
     "orchestrator:phase99:quick": "powershell -ExecutionPolicy Bypass -File scripts/orchestrator/phase99-signoff.ps1 -SkipTests",
-    "approval": "npm run orchestrator:agent-loop:approval",
-    "autopilot": "npm run orchestrator:agent-loop:autopilot"
+    "approval": "npm run orchestrator:agent-loop:approval --",
+    "autopilot": "npm run orchestrator:agent-loop:autopilot --"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"
