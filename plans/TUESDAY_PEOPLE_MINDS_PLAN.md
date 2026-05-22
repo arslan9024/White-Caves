@@ -138,11 +138,11 @@ Budget model:
 - [x] Offer dispatch workflow added for applications in offer stage.
 - [x] Onboarding start workflow added for accepted candidates.
 - [x] Recruitment helper tests added for metrics aliases, overview totals, and onboarding payloads.
+- [x] Live Express-level recruitment route tests added for `score-candidate` and `screening-metrics` canonical status coverage.
 
 ## Pending Tasks
 
 - [ ] Expand the Zoe recruitment KPI UI from the first slice into the full framework.
-- [ ] Add deeper route-level tests that exercise live Express responses.
 - [ ] Add access-control tests for recruitment routes.
 - [ ] Migrate all consumers away from legacy metric aliases.
 - [ ] Add recruiter-facing shortlist and review UI.
@@ -168,6 +168,6 @@ Budget model:
 ## Immediate Next Actions
 
 1. Expand the Zoe recruitment KPI UI from the first live analytics slice.
-2. Add live Express-level route tests for `moderate_match` and `rejected` coverage.
+2. Add access-control tests for recruitment endpoints and verify unauthorized/role-scoped behavior.
 3. Extend offer and onboarding automation into approval and acceptance workflows.
-4. Review recruitment route access and audit logging before broader rollout.
+4. Review recruitment route audit logging before broader rollout.

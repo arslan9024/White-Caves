@@ -18,6 +18,7 @@
 - [x] Onboarding start endpoint added for accepted candidates
 - [x] Zoe recruitment analytics slice added to the executive CRM
 - [x] Recruitment route helper tests added for metrics and onboarding contracts
+- [x] Live Express recruitment route tests added for score-candidate and screening-metrics (moderate_match/rejected)
 
 ## In Progress
 

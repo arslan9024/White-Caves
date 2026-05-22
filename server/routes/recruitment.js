@@ -13,7 +13,21 @@ import { ConversationBatchProcessor } from '../services/ConversationBatchProcess
 import { LeadScoringIntegration } from '../utils/LeadScoringIntegration.js';
 
 const router = express.Router();
-const prisma = new PrismaClient();
+let prisma = new PrismaClient();
+let scoringService = CandidateScoringService;
+let templateService = MessageTemplateService;
+
+export function __setRecruitmentTestDeps({ prismaClient, candidateScoringService, messageTemplateService } = {}) {
+  if (prismaClient) prisma = prismaClient;
+  if (candidateScoringService) scoringService = candidateScoringService;
+  if (messageTemplateService) templateService = messageTemplateService;
+}
+
+export function __resetRecruitmentTestDeps() {
+  prisma = new PrismaClient();
+  scoringService = CandidateScoringService;
+  templateService = MessageTemplateService;
+}
 
 export function computeScreeningMetrics(scores = []) {
   if (!scores.length) {
@@ -812,7 +826,7 @@ router.post('/jobs/:job_id/score-candidate', async (req, res) => {
     }
 
     // Score the candidate
-    const score = await CandidateScoringService.scoreCandidateForJob(
+    const score = await scoringService.scoreCandidateForJob(
       candidate_id,
       job_id,
       weights
@@ -839,7 +853,7 @@ router.post('/jobs/:job_id/batch-score', async (req, res) => {
     const { weights } = req.body;
 
     // Batch score all candidates
-    const scores = await CandidateScoringService.batchScoreCandidatesForJob(
+    const scores = await scoringService.batchScoreCandidatesForJob(
       job_id,
       weights
     );
@@ -877,7 +891,7 @@ router.get('/jobs/:job_id/top-candidates', async (req, res) => {
     const { job_id } = req.params;
     const { threshold = 75, limit = 10 } = req.query;
 
-    const topCandidates = await CandidateScoringService.getTopCandidatesForJob(
+    const topCandidates = await scoringService.getTopCandidatesForJob(
       job_id,
       parseInt(threshold),
       parseInt(limit)
@@ -1145,7 +1159,7 @@ router.post('/jobs/:jobId/send-whatsapp-results', async (req, res) => {
 
     for (const scoreRecord of scoredCandidates) {
       try {
-        await CandidateScoringService.sendScoringResultViaMeta(
+        await scoringService.sendScoringResultViaMeta(
           scoreRecord.candidate,
           job,
           scoreRecord
@@ -1209,7 +1223,7 @@ router.post('/jobs/:jobId/batch-score-and-notify', async (req, res) => {
     for (const candidateId of candidate_ids) {
       try {
         // Score the candidate
-        const scoreRecord = await CandidateScoringService.scoreCandidateForJob(
+        const scoreRecord = await scoringService.scoreCandidateForJob(
           candidateId,
           jobId
         );
@@ -1224,7 +1238,7 @@ router.post('/jobs/:jobId/batch-score-and-notify', async (req, res) => {
         // Send WhatsApp message
         if (candidate?.whatsapp_phone || candidate?.phone_number) {
           try {
-            await CandidateScoringService.sendScoringResultViaMeta(
+            await scoringService.sendScoringResultViaMeta(
               candidate,
               job,
               scoreRecord
@@ -1268,7 +1282,7 @@ router.post('/jobs/:jobId/batch-score-and-notify', async (req, res) => {
 // Get WhatsApp message templates
 router.get('/whatsapp/templates', async (req, res) => {
   try {
-    const templates = MessageTemplateService.getAll();
+    const templates = templateService.getAll();
     res.json({
       success: true,
       templates: templates.map(t => ({
@@ -1287,7 +1301,7 @@ router.get('/whatsapp/templates', async (req, res) => {
 // Get preview of a message template
 router.get('/whatsapp/templates/:templateId/preview', async (req, res) => {
   try {
-    const preview = MessageTemplateService.getPreview(req.params.templateId);
+    const preview = templateService.getPreview(req.params.templateId);
     res.json({
       success: true,
       template_id: req.params.templateId,
@@ -1331,7 +1345,7 @@ router.post('/applications/:application_id/send-offer', async (req, res) => {
       salary
     };
 
-    const message = await CandidateScoringService.sendTemplateMessageViaMeta(
+    const message = await scoringService.sendTemplateMessageViaMeta(
       application.candidate,
       'offer_letter',
       variables,
@@ -1390,7 +1404,7 @@ router.post('/applications/:application_id/start-onboarding', async (req, res) =
 
     const onboarding = buildOnboardingChecklist(application.candidate, application.job, start_date);
 
-    const message = await CandidateScoringService.sendTemplateMessageViaMeta(
+    const message = await scoringService.sendTemplateMessageViaMeta(
       application.candidate,
       'onboarding_welcome',
       {
