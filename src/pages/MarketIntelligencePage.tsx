@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useLanguage, LANGUAGES } from '../context/LanguageContext';
+import 'leaflet/dist/leaflet.css';
+import MarketChoroplethMap from '../components/maps/MarketChoroplethMap';
 
 interface PriceIndexRow {
   area: string;
@@ -72,7 +74,7 @@ const propertyTypeLabel = (propertyType: string, isArabic: boolean) => {
   return isArabic ? label.ar : label.en;
 };
 
-type Tab = 'price-index' | 'indicators' | 'rera-index';
+type Tab = 'price-index' | 'indicators' | 'rera-index' | 'heatmap';
 
 export default function MarketIntelligencePage() {
   const { language, isRTL, formatCurrency, formatNumber } = useLanguage();
@@ -151,7 +153,7 @@ export default function MarketIntelligencePage() {
   };
 
   useEffect(() => {
-    if (activeTab === 'price-index') loadPriceIndex();
+    if (activeTab === 'price-index' || activeTab === 'heatmap') loadPriceIndex();
     if (activeTab === 'indicators') loadIndicators();
     if (activeTab === 'rera-index') loadReraIndex();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -172,6 +174,7 @@ export default function MarketIntelligencePage() {
           priceIndex: 'مؤشر الأسعار',
           indicators: 'المؤشرات',
           reraIndex: 'مؤشر ريرا',
+          heatmap: 'الخريطة الحرارية',
         },
         errors: {
           priceIndex: 'تعذر تحميل مؤشر الأسعار.',
@@ -227,6 +230,7 @@ export default function MarketIntelligencePage() {
           priceIndex: 'Price Index',
           indicators: 'Indicators',
           reraIndex: 'RERA Index',
+          heatmap: 'Heatmap',
         },
         errors: {
           priceIndex: 'Failed to load price index.',
@@ -290,7 +294,7 @@ export default function MarketIntelligencePage() {
 
         {/* Tabs */}
         <div className="flex gap-1 mb-6 bg-gray-800 p-1 rounded-xl w-fit">
-          {(['price-index', 'indicators', 'rera-index'] as Tab[]).map(tab => (
+          {(['price-index', 'indicators', 'rera-index', 'heatmap'] as Tab[]).map(tab => (
             <button
               key={tab}
               onClick={() => setActiveTab(tab)}
@@ -304,7 +308,9 @@ export default function MarketIntelligencePage() {
                 ? content.tabs.priceIndex
                 : tab === 'indicators'
                   ? content.tabs.indicators
-                  : content.tabs.reraIndex}
+                  : tab === 'rera-index'
+                    ? content.tabs.reraIndex
+                    : content.tabs.heatmap}
             </button>
           ))}
         </div>
@@ -518,6 +524,24 @@ export default function MarketIntelligencePage() {
                     </tbody>
                   </table>
                 </div>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Heatmap Tab */}
+        {activeTab === 'heatmap' && (
+          <div>
+            {loading ? (
+              <div className="text-center py-12 text-gray-500">{content.loading}</div>
+            ) : (
+              <div className="space-y-4">
+                <div className="p-3 bg-blue-900/30 border border-blue-700 rounded-lg text-blue-300 text-sm">
+                  {isArabic
+                    ? 'خريطة حرارية تقريبية تعتمد على متوسط السعر لكل قدم مربعة بحسب المنطقة.'
+                    : 'Approximate choropleth heatmap based on average price per sqft by area.'}
+                </div>
+                <MarketChoroplethMap rows={sortedIndex} />
               </div>
             )}
           </div>

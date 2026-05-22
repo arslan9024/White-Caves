@@ -1,6 +1,6 @@
 import React from 'react';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen, waitFor, fireEvent } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import MarketIntelligencePage from './MarketIntelligencePage';
 
@@ -14,6 +14,14 @@ vi.mock('../hooks/useDocumentTitle', () => ({
 vi.mock('../context/LanguageContext', () => ({
   LANGUAGES: { EN: 'en', AR: 'ar' },
   useLanguage: () => mockUseLanguage(),
+}));
+
+vi.mock('leaflet/dist/leaflet.css', () => ({}));
+
+vi.mock('../components/maps/MarketChoroplethMap', () => ({
+  default: ({ rows }: { rows: Array<{ area: string }> }) => (
+    <div data-testid="market-choropleth-map-mock">Rows: {rows.length}</div>
+  ),
 }));
 
 const priceIndexRows = [
@@ -151,5 +159,23 @@ describe('MarketIntelligencePage', () => {
       )
     ).toBeInTheDocument();
     expect(document.querySelector('[dir="rtl"]')).toBeTruthy();
+  });
+
+  it('renders heatmap tab and choropleth container', async () => {
+    renderPage();
+
+    await waitFor(() => {
+      expect(screen.getByText('Palm Jumeirah')).toBeInTheDocument();
+    });
+
+    fireEvent.click(screen.getByRole('button', { name: 'Heatmap' }));
+
+    await waitFor(() => {
+      expect(screen.getByTestId('market-choropleth-map-mock')).toBeInTheDocument();
+    });
+
+    expect(
+      screen.getByText('Approximate choropleth heatmap based on average price per sqft by area.')
+    ).toBeInTheDocument();
   });
 });
