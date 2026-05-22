@@ -50,7 +50,6 @@ import orchestratorRoutes from './routes/orchestrator.js';
 import integrationsRoutes from './routes/integrations.js';
 import orchestrationRoutes from './routes/orchestration.js';
 import henryRoutes from './routes/henry.js';
-// @ts-expect-error JS route module has no TypeScript declarations yet
 import ninaRoutes from './routes/nina.js';
 import maryRoutes from './routes/mary.js';
 import savedSearchesRoutes from './routes/saved-searches.js';
@@ -83,9 +82,7 @@ import leasingInventoryRoutes from './routes/leasing-inventory.js';
 import secondarySalesRoutes from './routes/secondary-sales.js';
 import commissionsRoutes from './routes/commissions.js';
 import notificationsRoutes from './routes/notifications.js';
-// @ts-expect-error JS route module has no TypeScript declarations yet
 import importHistoryRoutes from './routes/importHistory.routes.js';
-// @ts-expect-error JS route module has no TypeScript declarations yet
 import smartImportRoutes from './routes/smartImport.routes.js';
 import { requireRole, requirePermission } from './middleware/rbac.js';
 import { startLeadScoringScheduler } from './services/ai/leadScoringScheduler.js';

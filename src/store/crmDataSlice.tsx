@@ -401,13 +401,17 @@ export const fetchFinanceSummary = createAsyncThunk<
 export const createCommissionAPI = createAsyncThunk<
   CRMItem,
   {
-    agentId: string;
+    agentId?: string;
+    agent_name?: string;
     amount: number;
     percentage?: number;
     type?: string;
+    status?: string;
     notes?: string;
+    property_title?: string;
     leadId?: string;
     propertyId?: string;
+    created_at?: string;
   },
   { rejectValue: string }
 >('crmData/createCommission', async (commissionData, { rejectWithValue }) => {

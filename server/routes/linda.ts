@@ -42,7 +42,6 @@ import {
   dispatchDueLindaCampaigns,
 } from '../services/whatsapp/lindaCampaignService.js';
 import { checkPhoneSavedInGoraha } from '../services/whatsapp/gorahaContactCheckService.js';
-import type { AuthRequest } from '../middleware/auth.js';
 
 function applyTemplate(
   messageTemplate: string,
@@ -58,18 +57,6 @@ function applyTemplate(
 
 const router = Router();
 const db = prisma as any;
-
-function applyTemplate(
-  messageTemplate: string,
-  templateVars?: Record<string, unknown> | null
-): string {
-  if (!templateVars || typeof templateVars !== 'object') return messageTemplate;
-  let rendered = messageTemplate;
-  for (const [key, value] of Object.entries(templateVars)) {
-    rendered = rendered.split(`{{${key}}}`).join(String(value));
-  }
-  return rendered;
-}
 
 // ─── Singleton initialisation helper ──────────────────────────────────────
 

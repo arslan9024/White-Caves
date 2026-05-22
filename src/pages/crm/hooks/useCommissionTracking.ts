@@ -92,7 +92,7 @@ export function useCommissionTracking() {
 
   // Fetch on mount
   useEffect(() => {
-    dispatch(fetchCommissionsFromAPI(undefined));
+    dispatch(fetchCommissionsFromAPI({}));
   }, [dispatch]);
 
   // ─── Local state ────────────────────────────────────────────────
@@ -237,14 +237,9 @@ export function useCommissionTracking() {
       dispatch(
         updateCommissionAPI({
           id: String(selectedCommission.id),
-          agent_name: formData.agent_name.trim(),
-          amount: Number(formData.amount) || 0,
-          percentage: formData.percentage ? Number(formData.percentage) : undefined,
-          type: formData.type,
           status: formData.status,
-          property_title: formData.property_title.trim(),
+          amount: Number(formData.amount) || 0,
           notes: formData.notes.trim(),
-          updated_at: new Date().toISOString(),
         })
       )
         .then(result => {
@@ -302,7 +297,7 @@ export function useCommissionTracking() {
   }, []);
 
   const retryFetch = useCallback(() => {
-    dispatch(fetchCommissionsFromAPI(undefined));
+    dispatch(fetchCommissionsFromAPI({}));
   }, [dispatch]);
 
   const goBack = useCallback(() => {
