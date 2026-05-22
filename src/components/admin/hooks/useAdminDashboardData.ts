@@ -161,7 +161,9 @@ export const useAdminDashboardData = () => {
   const [currentActivityPage, setCurrentActivityPage] = useState(1);
   const [currentUsersPage, setCurrentUsersPage] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
+  const [isRefreshing, setIsRefreshing] = useState(false);
   const [loadError, setLoadError] = useState<string | null>(null);
+  const [lastRefreshedAt, setLastRefreshedAt] = useState<string | null>(null);
   const [systemMetrics, setSystemMetrics] = useState<SystemMetrics>(FALLBACK_SYSTEM_METRICS);
   const [recentActivities, setRecentActivities] = useState<DashboardActivity[]>(
     FALLBACK_RECENT_ACTIVITIES
@@ -171,6 +173,7 @@ export const useAdminDashboardData = () => {
   const refreshData = useCallback(async (options?: { silent?: boolean }) => {
     const silent = options?.silent ?? false;
     if (!silent) {
+      setIsRefreshing(true);
       setIsLoading(true);
     }
 
@@ -247,6 +250,8 @@ export const useAdminDashboardData = () => {
           }))
         );
       }
+
+      setLastRefreshedAt(new Date().toLocaleString('en-AE'));
     } catch (error: unknown) {
       const message =
         error instanceof Error ? error.message : 'Failed to load admin dashboard data';
@@ -255,6 +260,7 @@ export const useAdminDashboardData = () => {
     } finally {
       if (!silent) {
         setIsLoading(false);
+        setIsRefreshing(false);
       }
     }
   }, []);
@@ -331,7 +337,9 @@ export const useAdminDashboardData = () => {
     currentUsersPage,
     setCurrentUsersPage,
     isLoading,
+    isRefreshing,
     loadError,
+    lastRefreshedAt,
     systemMetrics,
     totalActivities: recentActivities.length,
     paginatedActivities,

@@ -2,7 +2,7 @@ import React, { KeyboardEvent, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { createLogger } from '../../utils/logger';
 import type { RootState } from '../../store/store';
-import { Users, Settings, Activity, BarChart3 } from 'lucide-react';
+import { Users, Settings, Activity, BarChart3, RefreshCw } from 'lucide-react';
 import { Alert } from '../../components/ui';
 import {
   AdminAnalyticsPanel,
@@ -48,7 +48,9 @@ const AdminDashboard = () => {
     currentUsersPage,
     setCurrentUsersPage,
     isLoading,
+    isRefreshing,
     systemMetrics,
+    lastRefreshedAt,
     totalActivities,
     paginatedActivities,
     activitiesTotalPages,
@@ -113,10 +115,11 @@ const AdminDashboard = () => {
         <S.AdminUserInfo>
           <S.UserName>{user?.displayName || 'Admin'}</S.UserName>
           <S.UserRole>Super User</S.UserRole>
-          <S.BtnSecondary type="button" onClick={() => void refreshData()}>
-            <Activity size={16} />
-            Refresh Data
+          <S.BtnSecondary type="button" onClick={() => void refreshData()} disabled={isRefreshing}>
+            <RefreshCw size={16} />
+            {isRefreshing ? 'Refreshing…' : 'Refresh Data'}
           </S.BtnSecondary>
+          <S.HeaderMeta>Last updated: {lastRefreshedAt ?? '—'}</S.HeaderMeta>
         </S.AdminUserInfo>
       </S.AdminHeader>
 

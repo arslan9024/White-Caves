@@ -73,6 +73,16 @@ export const AdminUserInfo = styled.div`
   }
 `;
 
+export const HeaderMeta = styled.span`
+  font-size: ${typeSizes.xs};
+  color: ${colors.text.tertiary};
+  text-align: right;
+
+  ${mediaQueries.tablet} {
+    text-align: left;
+  }
+`;
+
 export const UserName = styled.span`
   font-size: ${typeSizes.base};
   font-weight: ${typeWeights.semibold};
@@ -694,9 +704,15 @@ export const BtnSecondary = styled.button`
   align-items: center;
   gap: ${spacing.sm};
   transition: ${transitions.hover};
+  white-space: nowrap;
 
   &:hover {
     background: ${colors.border};
+  }
+
+  &:disabled {
+    cursor: wait;
+    opacity: 0.8;
   }
 
   ${mediaQueries.mobile} {
