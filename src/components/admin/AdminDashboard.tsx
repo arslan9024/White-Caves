@@ -1,7 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
 import { createLogger } from '../../utils/logger';
-import { authFetch } from '../../utils/authFetch';
 import type { RootState } from '../../store/store';
 import {
   Users,
@@ -15,76 +14,16 @@ import {
   Download,
 } from 'lucide-react';
 import { Alert, Pagination } from '../../components/ui';
+import { type AdminTabId, useAdminDashboardData } from './hooks/useAdminDashboardData';
 import * as S from './AdminDashboard.styles';
 
 const logger = createLogger('AdminDashboard');
 
-const FALLBACK_SYSTEM_METRICS = {
-  totalUsers: 1243,
-  activeUsers: 567,
-  totalProperties: 3421,
-  activeListings: 1987,
-  totalTransactions: 856,
-  completedTransactions: 742,
-  systemHealth: 'excellent' as const,
-  uptime: 99.98,
-  responseTime: 142,
-  errorRate: 0.02,
-};
-
-const FALLBACK_RECENT_ACTIVITIES = [
-  {
-    id: 'activity-1',
-    user: 'John Doe',
-    action: 'Created new property listing',
-    time: '2 hours ago',
-    type: 'create' as const,
-  },
-  {
-    id: 'activity-2',
-    user: 'Jane Smith',
-    action: 'Updated contract terms',
-    time: '1 day ago',
-    type: 'update' as const,
-  },
-  {
-    id: 'activity-3',
-    user: 'Ahmed Hassan',
-    action: 'Downloaded monthly report',
-    time: '3 days ago',
-    type: 'download' as const,
-  },
-  {
-    id: 'activity-4',
-    user: 'System',
-    action: 'Database backup completed',
-    time: '5 days ago',
-    type: 'system' as const,
-  },
-];
-
-const FALLBACK_USERS = [
-  {
-    id: 'user-1',
-    name: 'John Doe',
-    role: 'admin',
-    status: 'active',
-    lastActive: '2 hours ago',
-  },
-  {
-    id: 'user-2',
-    name: 'Jane Smith',
-    role: 'manager',
-    status: 'active',
-    lastActive: '1 day ago',
-  },
-  {
-    id: 'user-3',
-    name: 'Ahmed Hassan',
-    role: 'agent',
-    status: 'inactive',
-    lastActive: '3 days ago',
-  },
+const ADMIN_TABS: ReadonlyArray<{ id: AdminTabId; label: string; Icon: typeof Activity }> = [
+  { id: 'overview', label: 'Overview', Icon: Activity },
+  { id: 'users', label: 'Users', Icon: Users },
+  { id: 'analytics', label: 'Analytics', Icon: BarChart3 },
+  { id: 'settings', label: 'Settings', Icon: Settings },
 ];
 
 /**
@@ -99,219 +38,25 @@ const FALLBACK_USERS = [
  * - System settings
  */
 const AdminDashboard = () => {
-  const [activeTab, setActiveTab] = useState('overview');
-  const [filterPeriod, setFilterPeriod] = useState('7d');
-  const [currentActivityPage, setCurrentActivityPage] = useState(1);
-  const [currentUsersPage, setCurrentUsersPage] = useState(1);
-  const [activitiesPerPage] = useState(5);
-  const [usersPerPage] = useState(10);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [loadError, setLoadError] = useState<string | null>(null);
+  const [activeTab, setActiveTab] = useState<AdminTabId>('overview');
 
   // Get user info from Redux
   const user = useSelector((state: RootState) => state.auth?.user);
-
-  type ActivityType = 'create' | 'update' | 'download' | 'system';
-  interface DashboardActivity {
-    id: string | number;
-    user: string;
-    action: string;
-    time: string;
-    type: ActivityType;
-  }
-
-  interface DashboardUser {
-    id: string | number;
-    name: string;
-    role: string;
-    status: string;
-    lastActive: string;
-  }
-
-  interface SystemMetrics {
-    totalUsers: number;
-    activeUsers: number;
-    totalProperties: number;
-    activeListings: number;
-    totalTransactions: number;
-    completedTransactions: number;
-    systemHealth: 'excellent' | 'good' | 'warning';
-    uptime: number;
-    responseTime: number;
-    errorRate: number;
-  }
-
-  interface DashboardSummaryResponse {
-    success?: boolean;
-    data?: {
-      metrics?: {
-        totalLeads?: number;
-        hotLeads?: number;
-        wonLeads?: number;
-        totalProperties?: number;
-        availableProperties?: number;
-        totalAgents?: number;
-        totalCommissions?: number;
-        totalCommissionValue?: number;
-        paidCommissionValue?: number;
-      };
-      recentActivities?: Array<{
-        id?: string | number;
-        type?: string;
-        action?: string;
-        description?: string;
-        timestamp?: string;
-        user?: string;
-      }>;
-    };
-  }
-
-  interface DashboardActivitiesResponse {
-    success?: boolean;
-    data?: Array<{
-      id?: string | number;
-      type?: string;
-      action?: string;
-      description?: string;
-      timestamp?: string;
-      user?: string;
-    }>;
-  }
-
-  interface UsersResponse {
-    success?: boolean;
-    data?: Array<{
-      id?: string;
-      name?: string;
-      role?: string;
-      status?: string;
-      updatedAt?: string;
-      createdAt?: string;
-    }>;
-  }
-
-  const [systemMetrics, setSystemMetrics] = useState<SystemMetrics>(FALLBACK_SYSTEM_METRICS);
-  const [recentActivities, setRecentActivities] = useState<DashboardActivity[]>(
-    FALLBACK_RECENT_ACTIVITIES
-  );
-  const [users, setUsers] = useState<DashboardUser[]>(FALLBACK_USERS);
-
-  useEffect(() => {
-    Promise.allSettled([
-      authFetch('/api/dashboard/summary').then(
-        (r: Response) => r.json() as Promise<DashboardSummaryResponse>
-      ),
-      authFetch('/api/dashboard/activities?pageSize=20').then(
-        (r: Response) => r.json() as Promise<DashboardActivitiesResponse>
-      ),
-      authFetch('/api/users?pageSize=100').then(
-        (r: Response) => r.json() as Promise<UsersResponse>
-      ),
-    ])
-      .then(([summaryResult, activitiesResult, usersResult]) => {
-        const summary = summaryResult.status === 'fulfilled' ? summaryResult.value.data : undefined;
-        const metrics = summary?.metrics;
-        const activityFeed =
-          activitiesResult.status === 'fulfilled'
-            ? activitiesResult.value.data
-            : summary?.recentActivities;
-        const usersData =
-          usersResult.status === 'fulfilled' ? (usersResult.value.data ?? []) : null;
-
-        const totalCommissions = metrics?.totalCommissions ?? 0;
-        const totalCommissionValue = metrics?.totalCommissionValue ?? 0;
-        const paidCommissionValue = metrics?.paidCommissionValue ?? 0;
-        const paidRatio = totalCommissionValue > 0 ? paidCommissionValue / totalCommissionValue : 0;
-
-        setSystemMetrics({
-          totalUsers: usersData?.length ?? FALLBACK_SYSTEM_METRICS.totalUsers,
-          activeUsers:
-            usersData?.filter(u => u.status === 'active').length ??
-            FALLBACK_SYSTEM_METRICS.activeUsers,
-          totalProperties: metrics?.totalProperties ?? 0,
-          activeListings: metrics?.availableProperties ?? 0,
-          totalTransactions: totalCommissions,
-          completedTransactions: Math.round(totalCommissions * paidRatio),
-          systemHealth: paidRatio >= 0.8 ? 'excellent' : paidRatio >= 0.5 ? 'good' : 'warning',
-          uptime: 99.9,
-          responseTime: 142,
-          errorRate: Math.max(0, parseFloat(((1 - paidRatio) * 0.1).toFixed(2))),
-        });
-
-        if (activityFeed && activityFeed.length > 0) {
-          setRecentActivities(
-            activityFeed.map((a, index) => {
-              const rawType = (a.type ?? '').toLowerCase();
-              const mappedType: ActivityType = rawType.includes('create')
-                ? 'create'
-                : rawType.includes('download')
-                  ? 'download'
-                  : rawType.includes('system')
-                    ? 'system'
-                    : 'update';
-              return {
-                id: a.id ?? `activity-${index}`,
-                user: a.user ?? 'System',
-                action: a.description || a.action || 'Activity update',
-                time: a.timestamp ? new Date(a.timestamp).toLocaleString('en-AE') : '—',
-                type: mappedType,
-              };
-            })
-          );
-        }
-
-        if (usersData && usersData.length > 0) {
-          setUsers(
-            usersData.map((u, index) => ({
-              id: u.id ?? `user-${index}`,
-              name: u.name ?? 'Unknown',
-              role: u.role ?? 'user',
-              status: u.status ?? 'inactive',
-              lastActive: u.updatedAt
-                ? new Date(u.updatedAt).toLocaleString('en-AE')
-                : u.createdAt
-                  ? new Date(u.createdAt).toLocaleString('en-AE')
-                  : '—',
-            }))
-          );
-        }
-      })
-      .catch((error: unknown) => {
-        const message =
-          error instanceof Error ? error.message : 'Failed to load admin dashboard data';
-        setLoadError(message);
-        logger.warn('Admin dashboard load failed', error);
-      })
-      .finally(() => {
-        setIsLoading(false);
-      });
-  }, []);
-
-  const alerts = [
-    ...(loadError ? [{ id: 1, severity: 'error', message: loadError, status: 'active' }] : []),
-    ...(systemMetrics.responseTime > 250
-      ? [{ id: 2, severity: 'warning', message: 'High response time detected', status: 'active' }]
-      : [{ id: 2, severity: 'info', message: 'System performance is stable', status: 'active' }]),
-    { id: 3, severity: 'warning', message: 'High CPU usage detected', status: 'active' },
-    {
-      id: 4,
-      severity: 'info',
-      message: 'Database backup completed successfully',
-      status: 'active',
-    },
-  ];
-
-  // Pagination logic for activities (MUST be after data declarations)
-  const activitiesStartIdx = (currentActivityPage - 1) * activitiesPerPage;
-  const activitiesEndIdx = activitiesStartIdx + activitiesPerPage;
-  const paginatedActivities = recentActivities.slice(activitiesStartIdx, activitiesEndIdx);
-  const activitiesTotalPages = Math.ceil(recentActivities.length / activitiesPerPage);
-
-  // Pagination logic for users (MUST be after data declarations)
-  const usersStartIdx = (currentUsersPage - 1) * usersPerPage;
-  const usersEndIdx = usersStartIdx + usersPerPage;
-  const paginatedUsers = users.slice(usersStartIdx, usersEndIdx);
-  const usersTotalPages = Math.ceil(users.length / usersPerPage);
+  const {
+    filterPeriod,
+    setFilterPeriod,
+    currentActivityPage,
+    setCurrentActivityPage,
+    currentUsersPage,
+    setCurrentUsersPage,
+    isLoading,
+    systemMetrics,
+    paginatedActivities,
+    activitiesTotalPages,
+    paginatedUsers,
+    usersTotalPages,
+    alerts,
+  } = useAdminDashboardData();
 
   if (isLoading) {
     return (
@@ -340,22 +85,12 @@ const AdminDashboard = () => {
       </S.AdminHeader>
 
       <S.AdminTabs>
-        <S.Tab $active={activeTab === 'overview'} onClick={() => setActiveTab('overview')}>
-          <Activity size={20} />
-          Overview
-        </S.Tab>
-        <S.Tab $active={activeTab === 'users'} onClick={() => setActiveTab('users')}>
-          <Users size={20} />
-          Users
-        </S.Tab>
-        <S.Tab $active={activeTab === 'analytics'} onClick={() => setActiveTab('analytics')}>
-          <BarChart3 size={20} />
-          Analytics
-        </S.Tab>
-        <S.Tab $active={activeTab === 'settings'} onClick={() => setActiveTab('settings')}>
-          <Settings size={20} />
-          Settings
-        </S.Tab>
+        {ADMIN_TABS.map(tab => (
+          <S.Tab key={tab.id} $active={activeTab === tab.id} onClick={() => setActiveTab(tab.id)}>
+            <tab.Icon size={20} />
+            {tab.label}
+          </S.Tab>
+        ))}
       </S.AdminTabs>
 
       <S.AdminContent>
