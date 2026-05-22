@@ -87,7 +87,7 @@
 
 - Free-planning agents MUST use only: Gemini 2.0 Flash, Llama 3.1 70B (Groq), DeepSeek V3.
 - Senior coding/design agents use GPT-4o by default for coding and verification.
-- Claude 3.5 Sonnet is reserved for explicit complex architecture/design reviews by @Ada or named senior leads.
+- Claude 3.5 Sonnet is reserved for explicit complex architecture/design reviews by: @Ada, @Mira, @Barbara, @Una, @Daniela, @Framer, @Radia.
 
 2. **Execution Mode Contract:**
 
@@ -109,22 +109,15 @@
      → Premium requests PERMITTED **only** when @Ada explicitly declares: **"@Ada — Context Ready (60% Readiness) — Coding Phase Approved"**
      → Without that declaration: use GPT-4o (standard) or queue the task for next approved sprint.
    - **INVOCATION PROTOCOL** (exact syntax):
+
      ```
      @[AgentName] — [ACTION]: [TARGET FILE or TOPIC]
      ```
+
      ACTION types: `EXPAND` (add sections) | `DRAFT` (write from scratch) | `REVIEW` (check consistency) | `AUDIT` (report gaps) | `SYNC` (align with dependency)
      Example: `@Victoria — EXPAND: tenancy-ejari.md → add PDC tracking section`
 
-4.1 **Canonical Model & Eligibility Matrix (Authoritative):**
-
-- Use this matrix as the single lookup for model eligibility and premium access decisions.
-- If any role-table model text conflicts, this matrix and Rule 4/Rule 13 control.
-
-| Agent Group                                                                                                                                                                     | Allowed Models                                                 | Premium Eligible     | Notes                                            |
-| ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------- | -------------------- | ------------------------------------------------ |
-| Free Planning Agents (17): @Victoria, @Invoice, @Sofia, @Cassie, @Joelle, @Annie, @Rachel, @Marissa, @Timnit, @Hedy, @Maya, @Booking, @Jaime, @Fei-Fei, @Anima, @Mary, @Corinne | Gemini 2.0 Flash, Llama 3.1 70B (Groq), DeepSeek V3            | No                   | Docs/plans only; never code edits                |
-| Senior Coders: @Ada, @Mira, @Barbara, @Una, @Daniela, @Ruchi, @Gwynne, @Katherine                                                                                               | GPT-4o default, Claude 3.5 Sonnet for explicit complex reviews | Yes (post-gate only) | Requires Rule 7 + Rule 11 + @Ada approval phrase |
-| Senior Designers: @Una, @Lea, @Tracy, @Framer, @Zoe, @Inas                                                                                                                      | GPT-4o default, Claude 3.5 Sonnet for explicit complex reviews | Yes (post-gate only) | Requires Rule 7 + Rule 11 + @Ada approval phrase |
+   - **Authoritative interpretation note:** For model and premium-eligibility decisions, Rule 4 and Rule 13 are the canonical source for agent restrictions.
 
 5. **🚦 CONTEXT ENRICHMENT GATE (Before Any Coding Sprint):**
    Before any senior coding agent begins a feature, ALL gates must be checked:
@@ -174,16 +167,7 @@
    ❌ ANY UNCHECKED? → Route back to free planning agents. Do NOT code.
    ```
 
-7.1 **Execution Decision Order (Deterministic):**
-
-When deciding whether to proceed, evaluate in this order:
-
-1. Rule 7 session-start checklist (must fully pass)
-2. Rule 11 readiness gate (>=60% with required evidence)
-3. Rule 24 execution mode (Approval vs Autopilot behavior)
-4. Rule 25 runtime policy values (`scripts/orchestrator/policy.json`)
-
-If any step fails, stop and route to planning/escalation path.
+Decision order note: evaluate Rule 7 checklist first, then Rule 11 readiness requirements, then Rule 24 mode behavior, and finally Rule 25 runtime policy values.
 
 8. **📅 DAILY AGENT RHYTHM (Planning-First Workflow):**
    This rhythm governs every working day. Coding NEVER starts before planning agents complete their morning run.
