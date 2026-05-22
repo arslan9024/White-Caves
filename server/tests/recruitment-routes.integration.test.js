@@ -251,6 +251,121 @@ await test('POST /jobs/:job_id/score-candidate returns canonical moderate_match'
   __resetRecruitmentTestDeps();
 });
 
+await test('POST /applications/:application_id/approve-offer updates status to offer_approved', async () => {
+  const updatedStatuses = [];
+
+  const prismaMock = {
+    application: {
+      findUnique: async () => ({
+        id: 'app-approve-1',
+        status: 'offer',
+        notes: 'Offer sent',
+        candidate_id: 'cand-approve-1',
+        candidate: { id: 'cand-approve-1', first_name: 'Lina', email: 'lina@example.com' },
+        job: { id: 'job-approve-1', title: 'HR Specialist', department: 'HR' }
+      }),
+      update: async ({ data }) => {
+        updatedStatuses.push(data.status);
+        return { status: data.status };
+      }
+    }
+  };
+
+  __setRecruitmentTestDeps({ prismaClient: prismaMock });
+
+  await withServer(async (baseUrl) => {
+    const response = await fetch(`${baseUrl}/api/recruitment/applications/app-approve-1/approve-offer`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ approved_by: 'HR Director', approval_note: 'Comp band confirmed.' })
+    });
+    const body = await response.json();
+
+    assert(response.status === 200, 'Expected HTTP 200 for offer approval');
+    assert(body.status === 'offer_approved', 'Expected offer_approved status');
+    assert(updatedStatuses[0] === 'offer_approved', 'Expected database update to offer_approved');
+  });
+
+  __resetRecruitmentTestDeps();
+});
+
+await test('POST /applications/:application_id/respond-offer accept records accepted state', async () => {
+  const updates = [];
+  const candidateUpdates = [];
+
+  const prismaMock = {
+    application: {
+      findUnique: async () => ({
+        id: 'app-respond-1',
+        status: 'offer_approved',
+        notes: 'Offer approved',
+        candidate_id: 'cand-respond-1',
+        candidate: { id: 'cand-respond-1', first_name: 'Omar', email: 'omar@example.com' },
+        job: { id: 'job-respond-1', title: 'Sales Manager', department: 'Sales' }
+      }),
+      update: async ({ data }) => {
+        updates.push(data.status);
+        return { status: data.status };
+      }
+    },
+    candidate: {
+      update: async ({ data }) => {
+        candidateUpdates.push(data.status);
+        return { status: data.status };
+      }
+    }
+  };
+
+  __setRecruitmentTestDeps({ prismaClient: prismaMock });
+
+  await withServer(async (baseUrl) => {
+    const response = await fetch(`${baseUrl}/api/recruitment/applications/app-respond-1/respond-offer`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ decision: 'accept', response_note: 'Excited to join.' })
+    });
+    const body = await response.json();
+
+    assert(response.status === 200, 'Expected HTTP 200 for accepted offer');
+    assert(body.status === 'offer_accepted', 'Expected offer_accepted application state');
+    assert(body.candidate_status === 'selected', 'Expected candidate to remain selected before onboarding');
+    assert(updates[0] === 'offer_accepted', 'Expected persisted offer_accepted status');
+    assert(candidateUpdates[0] === 'selected', 'Expected persisted candidate selected status');
+  });
+
+  __resetRecruitmentTestDeps();
+});
+
+await test('POST /applications/:application_id/start-onboarding rejects non-accepted offer status', async () => {
+  const prismaMock = {
+    application: {
+      findUnique: async () => ({
+        id: 'app-onboarding-1',
+        status: 'offer',
+        candidate_id: 'cand-onboarding-1',
+        candidate: { id: 'cand-onboarding-1', first_name: 'Maya', email: 'maya@example.com' },
+        job: { id: 'job-onboarding-1', title: 'Recruiter', department: 'HR' }
+      })
+    }
+  };
+
+  __setRecruitmentTestDeps({ prismaClient: prismaMock });
+
+  await withServer(async (baseUrl) => {
+    const response = await fetch(`${baseUrl}/api/recruitment/applications/app-onboarding-1/start-onboarding`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ start_date: '2026-06-15' })
+    });
+    const body = await response.json();
+
+    assert(response.status === 409, 'Expected HTTP 409 when onboarding starts before acceptance');
+    assert(body.error.includes('Onboarding can only start after offer approval/acceptance'), 'Expected onboarding precondition error');
+  });
+
+  __resetRecruitmentTestDeps();
+});
+
 console.log(`\n✅ ${passedTests}/${totalTests} recruitment route integration tests passed\n`);
 process.env.RECRUITMENT_AUTH_MODE = originalRecruitmentAuthMode;
 process.exit(passedTests === totalTests ? 0 : 1);

@@ -19,6 +19,7 @@ let templateService = MessageTemplateService;
 
 const RECRUITMENT_READ_ROLES = ['hr', 'hiring_manager', 'executive', 'admin'];
 const RECRUITMENT_WRITE_ROLES = ['hr', 'admin'];
+const OFFER_PIPELINE_STATUSES = ['offer', 'offer_approved', 'offer_accepted'];
 
 export function __setRecruitmentTestDeps({ prismaClient, candidateScoringService, messageTemplateService } = {}) {
   if (prismaClient) prisma = prismaClient;
@@ -151,7 +152,7 @@ export function buildRecruitmentOverview(jobs = [], applications = [], scores = 
       open_jobs: openJobs.length,
       active_applications: applications.filter(app => !['hired', 'rejected'].includes(app.status)).length,
       interview_pipeline: applications.filter(app => app.status === 'interview').length,
-      offer_pipeline: applications.filter(app => app.status === 'offer').length,
+      offer_pipeline: applications.filter(app => OFFER_PIPELINE_STATUSES.includes(app.status)).length,
       hired: applications.filter(app => app.status === 'hired').length
     },
     screening: metrics,
@@ -1412,6 +1413,121 @@ router.post('/applications/:application_id/send-offer', requireRecruitmentAccess
   }
 });
 
+// Approve a sent offer before candidate acceptance
+router.post('/applications/:application_id/approve-offer', requireRecruitmentAccess('write'), async (req, res) => {
+  try {
+    const { application_id } = req.params;
+    const { approved_by = 'HR', approval_note } = req.body;
+
+    const application = await prisma.application.findUnique({
+      where: { id: application_id },
+      include: { candidate: true, job: true }
+    });
+
+    if (!application) {
+      return res.status(404).json({ error: 'Application not found' });
+    }
+
+    if (!['offer', 'offer_approved'].includes(application.status)) {
+      return res.status(409).json({
+        error: `Offer can only be approved from offer stage. Current status: ${application.status}`
+      });
+    }
+
+    const noteParts = [
+      `Offer approved on ${new Date().toISOString()} by ${approved_by}`,
+      approval_note ? `Note: ${approval_note}` : null
+    ].filter(Boolean);
+
+    const updated = await prisma.application.update({
+      where: { id: application_id },
+      data: {
+        status: 'offer_approved',
+        notes: [application.notes, ...noteParts].filter(Boolean).join(' | ')
+      }
+    });
+
+    res.status(200).json({
+      success: true,
+      message: 'Offer approved successfully',
+      application_id,
+      status: updated.status
+    });
+  } catch (error) {
+    console.error('Error approving offer:', error);
+    res.status(500).json({
+      error: 'Failed to approve offer',
+      details: error.message
+    });
+  }
+});
+
+// Record candidate response to an offer
+router.post('/applications/:application_id/respond-offer', requireRecruitmentAccess('write'), async (req, res) => {
+  try {
+    const { application_id } = req.params;
+    const { decision, response_note, confirmed_start_date } = req.body;
+
+    if (!decision || !['accept', 'decline'].includes(decision)) {
+      return res.status(400).json({
+        error: 'decision is required and must be one of: accept, decline'
+      });
+    }
+
+    const application = await prisma.application.findUnique({
+      where: { id: application_id },
+      include: { candidate: true, job: true }
+    });
+
+    if (!application) {
+      return res.status(404).json({ error: 'Application not found' });
+    }
+
+    if (!['offer', 'offer_approved', 'offer_accepted', 'offer_declined'].includes(application.status)) {
+      return res.status(409).json({
+        error: `Offer response can only be recorded from offer stages. Current status: ${application.status}`
+      });
+    }
+
+    const accepted = decision === 'accept';
+    const nextStatus = accepted ? 'offer_accepted' : 'offer_declined';
+    const candidateStatus = accepted ? 'selected' : 'rejected';
+    const decisionTimestamp = new Date().toISOString();
+    const noteParts = [
+      `Offer ${accepted ? 'accepted' : 'declined'} on ${decisionTimestamp}`,
+      confirmed_start_date ? `Confirmed start: ${confirmed_start_date}` : null,
+      response_note ? `Response note: ${response_note}` : null
+    ].filter(Boolean);
+
+    await prisma.application.update({
+      where: { id: application_id },
+      data: {
+        status: nextStatus,
+        notes: [application.notes, ...noteParts].filter(Boolean).join(' | ')
+      }
+    });
+
+    await prisma.candidate.update({
+      where: { id: application.candidate_id },
+      data: { status: candidateStatus }
+    });
+
+    res.status(200).json({
+      success: true,
+      message: `Offer ${accepted ? 'accepted' : 'declined'} successfully`,
+      application_id,
+      status: nextStatus,
+      candidate_status: candidateStatus
+    });
+  } catch (error) {
+    console.error('Error recording offer response:', error);
+    res.status(500).json({
+      error: 'Failed to record offer response',
+      details: error.message
+    });
+  }
+});
+
 // Start onboarding after offer acceptance
 router.post('/applications/:application_id/start-onboarding', requireRecruitmentAccess('write'), async (req, res) => {
   try {
@@ -1431,6 +1547,12 @@ router.post('/applications/:application_id/start-onboarding', requireRecruitment
 
     if (!application) {
       return res.status(404).json({ error: 'Application not found' });
+    }
+
+    if (!['offer_accepted', 'offer_approved'].includes(application.status)) {
+      return res.status(409).json({
+        error: `Onboarding can only start after offer approval/acceptance. Current status: ${application.status}`
+      });
     }
 
     const onboarding = buildOnboardingChecklist(application.candidate, application.job, start_date);
