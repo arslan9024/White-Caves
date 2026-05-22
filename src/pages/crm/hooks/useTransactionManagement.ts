@@ -97,7 +97,7 @@ export function useTransactionManagement() {
 
   // Fetch on mount
   useEffect(() => {
-    dispatch(fetchTransactionsFromAPI(undefined));
+    dispatch(fetchTransactionsFromAPI({}));
   }, [dispatch]);
 
   // ─── Local state ────────────────────────────────────────────────
@@ -255,12 +255,8 @@ export function useTransactionManagement() {
           type: formData.type,
           status: formData.status,
           amount: Number(formData.amount) || 0,
-          property_title: formData.property_title.trim(),
-          client_name: formData.client_name.trim(),
-          agent_name: formData.agent_name.trim(),
-          closing_date: formData.closing_date || undefined,
+          closingDate: formData.closing_date || undefined,
           notes: formData.notes.trim(),
-          updated_at: new Date().toISOString(),
         })
       )
         .then(result => {
@@ -354,7 +350,7 @@ export function useTransactionManagement() {
   }, []);
 
   const retryFetch = useCallback(() => {
-    dispatch(fetchTransactionsFromAPI(undefined));
+    dispatch(fetchTransactionsFromAPI({}));
   }, [dispatch]);
 
   const goBack = useCallback(() => {

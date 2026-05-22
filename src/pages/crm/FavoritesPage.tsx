@@ -99,7 +99,7 @@ const PropertyActions = styled.div`
 
 const FavCount = styled.span`
   font-size: 0.8rem;
-  color: '#888';
+  color: #888;
   margin-left: auto;
 `;
 

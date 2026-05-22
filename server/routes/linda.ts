@@ -43,9 +43,6 @@ import {
 } from '../services/whatsapp/lindaCampaignService.js';
 import { checkPhoneSavedInGoraha } from '../services/whatsapp/gorahaContactCheckService.js';
 
-const router = Router();
-const db = prisma as any;
-
 function applyTemplate(
   messageTemplate: string,
   templateVars?: Record<string, unknown> | null
@@ -57,6 +54,9 @@ function applyTemplate(
   }
   return rendered;
 }
+
+const router = Router();
+const db = prisma as any;
 
 // ─── Singleton initialisation helper ──────────────────────────────────────
 

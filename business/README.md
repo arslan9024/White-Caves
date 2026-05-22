@@ -1,9 +1,11 @@
 # /business — White Caves Real Estate LLC
 
-**Canonical business documentation for White Caves Real Estate LLC (Dubai).**
+**Index & overview of business documentation for White Caves Real Estate LLC (Dubai).**
 
-> This directory is the canonical home for all strategic, engineering, compliance, and operational documentation.  
-> Full legacy content also lives in `/business_docs/` (120+ documents across 15 sections).  
+> This directory follows the structure defined in the MASTER PLAN Phase 0.2  
+> and provides curated summary documents mapped to that structure.  
+> The full, canonical content lives in `/business_docs/`, which uses the naming convention  
+> defined in the problem statement and serves as the single source of truth.  
 > Last major expansion: April 2026 — 29 new documents added + comprehensive expansion pass (every document now 370–1068 lines).
 
 ---

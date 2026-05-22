@@ -368,6 +368,8 @@ describe('useSignIn — handleSocialAuth (integration)', () => {
       });
 
       expect(result.current.socialSyncRecovery).toBeNull();
+
+      act(() => vi.runAllTimers());
       expect(result.current.error).toBe('');
     });
 
@@ -443,6 +445,29 @@ describe('useSignIn — handleSocialAuth (integration)', () => {
         await result.current.handleSocialAuth('google');
       });
 
+      expect(result.current.socialSyncRecovery).toEqual({
+        provider: 'google',
+        reason: 'Backend unreachable',
+      });
+    });
+
+    it('retries the same social provider via retrySocialAuth', async () => {
+      mockSignInWithGoogle.mockResolvedValue({ user: firebaseUser });
+      mockSyncFirebaseUser
+        .mockRejectedValueOnce(new Error('Backend unreachable'))
+        .mockResolvedValueOnce(successResponse());
+      const { result } = renderHook(() => useSignIn(), { wrapper: createWrapper(store) });
+
+      await act(async () => {
+        await result.current.handleSocialAuth('google');
+      });
+
+      await act(async () => {
+        await result.current.retrySocialAuth();
+      });
+
+      expect(mockSignInWithGoogle).toHaveBeenCalledTimes(2);
+      expect(mockSyncFirebaseUser).toHaveBeenCalledTimes(2);
       act(() => {
         result.current.setSelectedCategory('client');
       });
