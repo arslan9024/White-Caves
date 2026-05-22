@@ -37,6 +37,15 @@ interface ReraRow {
   allowedIncreaseAbove40Pct: string;
 }
 
+interface CompetitorPricingRow {
+  area: string;
+  portal: 'bayut' | 'propertyfinder';
+  avgPricePerSqft: number;
+  deltaVsWhiteCavesPct: number;
+  updatedAt: string;
+  source: string;
+}
+
 const zoneBadge = (z: string) => {
   const map: Record<string, string> = {
     premium: 'bg-yellow-100 text-yellow-800',
@@ -74,7 +83,7 @@ const propertyTypeLabel = (propertyType: string, isArabic: boolean) => {
   return isArabic ? label.ar : label.en;
 };
 
-type Tab = 'price-index' | 'indicators' | 'rera-index' | 'heatmap';
+type Tab = 'price-index' | 'indicators' | 'rera-index' | 'heatmap' | 'competitor-pricing';
 
 export default function MarketIntelligencePage() {
   const { language, isRTL, formatCurrency, formatNumber } = useLanguage();
@@ -83,9 +92,12 @@ export default function MarketIntelligencePage() {
   const [priceIndex, setPriceIndex] = useState<PriceIndexRow[]>([]);
   const [indicators, setIndicators] = useState<IndicatorData | null>(null);
   const [reraIndex, setReraIndex] = useState<ReraRow[]>([]);
+  const [competitorPricing, setCompetitorPricing] = useState<CompetitorPricingRow[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [zoneFilter, setZoneFilter] = useState('');
+  const [areaFilter, setAreaFilter] = useState('');
+  const [portalFilter, setPortalFilter] = useState('');
   const [sortBy, setSortBy] = useState<'avgPricePerSqft' | 'grossYield'>('grossYield');
 
   const token = localStorage.getItem('token') ?? '';
@@ -152,12 +164,42 @@ export default function MarketIntelligencePage() {
     }
   };
 
+  const loadCompetitorPricing = async () => {
+    setLoading(true);
+    setError('');
+    try {
+      const query = new URLSearchParams();
+      if (areaFilter) query.set('area', areaFilter);
+      if (portalFilter) query.set('portal', portalFilter);
+      const qs = query.toString();
+
+      const res = await authFetch(`/api/market/competitor-pricing${qs ? `?${qs}` : ''}`);
+      const json = await res.json();
+
+      if (json.success) setCompetitorPricing(json.data);
+      else
+        setError(
+          json.message ??
+            (isArabic ? 'تعذر تحميل أسعار المنافسين.' : 'Failed to load competitor pricing.')
+        );
+    } catch {
+      setError(
+        isArabic
+          ? 'خطأ في الشبكة أثناء تحميل أسعار المنافسين.'
+          : 'Network error loading competitor pricing.'
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
     if (activeTab === 'price-index' || activeTab === 'heatmap') loadPriceIndex();
     if (activeTab === 'indicators') loadIndicators();
     if (activeTab === 'rera-index') loadReraIndex();
+    if (activeTab === 'competitor-pricing') loadCompetitorPricing();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activeTab, zoneFilter]);
+  }, [activeTab, zoneFilter, areaFilter, portalFilter]);
 
   const sortedIndex = [...priceIndex].sort((a, b) => b[sortBy] - a[sortBy]);
   const formatPercent = (value: number, decimals = 1) =>
@@ -175,6 +217,7 @@ export default function MarketIntelligencePage() {
           indicators: 'المؤشرات',
           reraIndex: 'مؤشر ريرا',
           heatmap: 'الخريطة الحرارية',
+          competitorPricing: 'أسعار المنافسين',
         },
         errors: {
           priceIndex: 'تعذر تحميل مؤشر الأسعار.',
@@ -183,6 +226,8 @@ export default function MarketIntelligencePage() {
           networkPrice: 'خطأ في الشبكة أثناء تحميل مؤشر الأسعار.',
           networkIndicators: 'خطأ في الشبكة أثناء تحميل المؤشرات.',
           networkRera: 'خطأ في الشبكة أثناء تحميل مؤشر ريرا.',
+          competitorPricing: 'تعذر تحميل أسعار المنافسين.',
+          networkCompetitorPricing: 'خطأ في الشبكة أثناء تحميل أسعار المنافسين.',
         },
         filters: {
           allZones: 'كل المناطق',
@@ -193,6 +238,9 @@ export default function MarketIntelligencePage() {
           sortYield: 'ترتيب: العائد الإجمالي',
           sortPrice: 'ترتيب: السعر/قدم²',
           areas: 'مناطق',
+          allPortals: 'كل المنصات',
+          portal: 'المنصة',
+          areaPlaceholder: 'بحث حسب المنطقة',
         },
         table: {
           area: 'المنطقة',
@@ -205,6 +253,9 @@ export default function MarketIntelligencePage() {
           beds: 'غرف النوم',
           avgRent: 'متوسط الإيجار (درهم/سنوياً)',
           maxIncrease: 'الحد الأقصى للزيادة المسموحة',
+          competitorPortal: 'منصة المنافس',
+          deltaVsWhiteCaves: 'الفارق مقابل وايت كايفز',
+          updatedAt: 'آخر تحديث',
         },
         loading: 'جارٍ التحميل…',
         indicators: {
@@ -231,6 +282,7 @@ export default function MarketIntelligencePage() {
           indicators: 'Indicators',
           reraIndex: 'RERA Index',
           heatmap: 'Heatmap',
+          competitorPricing: 'Competitor Pricing',
         },
         errors: {
           priceIndex: 'Failed to load price index.',
@@ -239,6 +291,8 @@ export default function MarketIntelligencePage() {
           networkPrice: 'Network error loading price index.',
           networkIndicators: 'Network error loading indicators.',
           networkRera: 'Network error loading RERA index.',
+          competitorPricing: 'Failed to load competitor pricing.',
+          networkCompetitorPricing: 'Network error loading competitor pricing.',
         },
         filters: {
           allZones: 'All Zones',
@@ -249,6 +303,9 @@ export default function MarketIntelligencePage() {
           sortYield: 'Sort: Gross Yield',
           sortPrice: 'Sort: Price/sqft',
           areas: 'areas',
+          allPortals: 'All Portals',
+          portal: 'Portal',
+          areaPlaceholder: 'Filter by area',
         },
         table: {
           area: 'Area',
@@ -261,6 +318,9 @@ export default function MarketIntelligencePage() {
           beds: 'Beds',
           avgRent: 'Avg Rent (AED/yr)',
           maxIncrease: 'Max Allowed Increase',
+          competitorPortal: 'Competitor Portal',
+          deltaVsWhiteCaves: 'Delta vs White Caves',
+          updatedAt: 'Updated',
         },
         loading: 'Loading…',
         indicators: {
@@ -294,7 +354,9 @@ export default function MarketIntelligencePage() {
 
         {/* Tabs */}
         <div className="flex gap-1 mb-6 bg-gray-800 p-1 rounded-xl w-fit">
-          {(['price-index', 'indicators', 'rera-index', 'heatmap'] as Tab[]).map(tab => (
+          {(
+            ['price-index', 'indicators', 'rera-index', 'heatmap', 'competitor-pricing'] as Tab[]
+          ).map(tab => (
             <button
               key={tab}
               onClick={() => setActiveTab(tab)}
@@ -310,7 +372,9 @@ export default function MarketIntelligencePage() {
                   ? content.tabs.indicators
                   : tab === 'rera-index'
                     ? content.tabs.reraIndex
-                    : content.tabs.heatmap}
+                    : tab === 'heatmap'
+                      ? content.tabs.heatmap
+                      : content.tabs.competitorPricing}
             </button>
           ))}
         </div>
@@ -542,6 +606,81 @@ export default function MarketIntelligencePage() {
                     : 'Approximate choropleth heatmap based on average price per sqft by area.'}
                 </div>
                 <MarketChoroplethMap rows={sortedIndex} />
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Competitor Pricing Tab */}
+        {activeTab === 'competitor-pricing' && (
+          <div>
+            <div className="flex flex-wrap gap-3 mb-4 items-center">
+              <input
+                type="text"
+                value={areaFilter}
+                onChange={e => setAreaFilter(e.target.value)}
+                placeholder={content.filters.areaPlaceholder}
+                className="bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-gray-100 text-sm"
+                aria-label={content.table.area}
+              />
+              <select
+                value={portalFilter}
+                onChange={e => setPortalFilter(e.target.value)}
+                className="bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-gray-100 text-sm"
+                aria-label={content.filters.portal}
+              >
+                <option value="">{content.filters.allPortals}</option>
+                <option value="bayut">Bayut</option>
+                <option value="propertyfinder">Property Finder</option>
+              </select>
+            </div>
+
+            {loading ? (
+              <div className="text-center py-12 text-gray-500">{content.loading}</div>
+            ) : (
+              <div className="bg-gray-800 border border-gray-700 rounded-xl overflow-hidden">
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="bg-gray-900 text-gray-400 text-xs">
+                      <th className="px-4 py-3 text-left">{content.table.area}</th>
+                      <th className="px-4 py-3 text-left">{content.table.competitorPortal}</th>
+                      <th className="px-4 py-3 text-right">{content.table.priceSqft}</th>
+                      <th className="px-4 py-3 text-right">{content.table.deltaVsWhiteCaves}</th>
+                      <th className="px-4 py-3 text-right">{content.table.updatedAt}</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-gray-700">
+                    {competitorPricing.map((row, index) => (
+                      <tr
+                        key={`${row.portal}-${row.area}-${index}`}
+                        className="hover:bg-gray-700/40 transition"
+                      >
+                        <td className="px-4 py-3 font-medium">{row.area}</td>
+                        <td className="px-4 py-3 text-gray-300">
+                          {row.portal === 'propertyfinder' ? 'Property Finder' : 'Bayut'}
+                        </td>
+                        <td className="px-4 py-3 text-right text-yellow-400 font-semibold">
+                          {formatNumber(row.avgPricePerSqft)}
+                        </td>
+                        <td
+                          className={`px-4 py-3 text-right font-semibold ${
+                            row.deltaVsWhiteCavesPct >= 0 ? 'text-green-400' : 'text-red-400'
+                          }`}
+                        >
+                          {row.deltaVsWhiteCavesPct > 0 ? '+' : ''}
+                          {formatPercent(row.deltaVsWhiteCavesPct, 2)}
+                        </td>
+                        <td className="px-4 py-3 text-right text-gray-400">
+                          {new Intl.DateTimeFormat(isArabic ? 'ar-AE' : 'en-AE', {
+                            day: '2-digit',
+                            month: 'short',
+                            year: 'numeric',
+                          }).format(new Date(row.updatedAt))}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
               </div>
             )}
           </div>

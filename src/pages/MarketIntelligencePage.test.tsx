@@ -105,6 +105,24 @@ describe('MarketIntelligencePage', () => {
         };
       }
 
+      if (url.includes('/api/market/competitor-pricing')) {
+        return {
+          json: async () => ({
+            success: true,
+            data: [
+              {
+                area: 'Downtown Dubai',
+                portal: 'bayut',
+                avgPricePerSqft: 2410,
+                deltaVsWhiteCavesPct: 4.12,
+                updatedAt: '2026-05-16T10:15:00.000Z',
+                source: 'derived-benchmark',
+              },
+            ],
+          }),
+        };
+      }
+
       throw new Error(`Unhandled fetch URL: ${url}`);
     });
 
@@ -177,5 +195,22 @@ describe('MarketIntelligencePage', () => {
     expect(
       screen.getByText('Approximate choropleth heatmap based on average price per sqft by area.')
     ).toBeInTheDocument();
+  });
+
+  it('renders competitor pricing tab and rows', async () => {
+    renderPage();
+
+    await waitFor(() => {
+      expect(screen.getByText('Palm Jumeirah')).toBeInTheDocument();
+    });
+
+    fireEvent.click(screen.getByRole('button', { name: 'Competitor Pricing' }));
+
+    await waitFor(() => {
+      expect(screen.getByText('Downtown Dubai')).toBeInTheDocument();
+    });
+
+    expect(screen.getAllByText('Bayut').length).toBeGreaterThan(0);
+    expect(screen.getByText('+4.12%')).toBeInTheDocument();
   });
 });
