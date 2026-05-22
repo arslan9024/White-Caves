@@ -2,7 +2,7 @@
 
 > **Agency:** White Caves Global Agency
 > **Orchestrator:** @Ada (Chief Architect)
-> **Last Updated:** May 22, 2026
+> **Last Updated:** 2026-05-22
 > **Policy Mode:** Dual-threshold readiness (60% unlock, 90% target) + policy-driven gating (Governance V2 active)
 > **Daily Report:** `PROJECT_PROGRESS_REPORT.md`
 
