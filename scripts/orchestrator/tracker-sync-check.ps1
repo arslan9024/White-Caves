@@ -56,7 +56,7 @@ if ($progress -match 'MILESTONE-PHASE-27') { $passes.Add('PROJECT_PROGRESS has P
 if ($agents -match 'PHASE 27 ADDENDUM') { $passes.Add('AGENTS includes Phase 27 addendum') } else { $warnings.Add('AGENTS missing Phase 27 addendum') }
 
 # Approval phrase check in daily tracker
-if ($daily -match '@Ada\s+—\s+Context Ready \(60% Readiness\)\s+—\s+Coding Phase Approved') {
+if ($daily -match '@Ada\s+—\s+Context Ready \(100% Planning Readiness\)\s+—\s+Coding Phase Approved') {
   $passes.Add('DAILY tracker contains mandatory approval phrase')
 } else {
   $warnings.Add('DAILY tracker missing mandatory approval phrase entry')

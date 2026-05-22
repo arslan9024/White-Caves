@@ -1,7 +1,7 @@
 ﻿# gate-check.ps1 -- Fast-track readiness/depth evidence gate validator
 # Scans business_docs/ files and counts H2/H3 sections.
 # Reports whether each file has reached target section depth and whether
-# fast-track readiness threshold is satisfied.
+# planning readiness threshold is satisfied.
 param(
   [string]$WorkspaceRoot = ".",
   [switch]$FailedOnly,   # only show files that have not met target
@@ -9,8 +9,8 @@ param(
 )
 
 $policyFile = Join-Path $WorkspaceRoot "scripts\orchestrator\policy.json"
-$readinessThreshold = 60
-$approvalPhrase = "@Ada - Context Ready (60% Readiness) - Coding Phase Approved"
+$readinessThreshold = 100
+$approvalPhrase = "@Ada - Context Ready (100% Planning Readiness) - Coding Phase Approved"
 if (Test-Path $policyFile) {
   try {
     $policy = Get-Content $policyFile -Raw | ConvertFrom-Json

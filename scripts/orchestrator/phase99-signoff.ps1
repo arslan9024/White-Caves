@@ -84,7 +84,7 @@ try {
 
   if (-not $PrintOnly) {
     Write-Host ""
-    Write-Host '@Ada - Context Ready (60% Readiness) - Coding Phase Approved' -ForegroundColor Magenta
+    Write-Host '@Ada - Context Ready (100% Planning Readiness) - Coding Phase Approved' -ForegroundColor Magenta
     Write-Host "Phase 99 signoff pipeline completed." -ForegroundColor Magenta
   }
 

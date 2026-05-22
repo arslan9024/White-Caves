@@ -477,7 +477,7 @@ Write-Host "  Quick actions:" -ForegroundColor White
   Write-Host "    npm run orchestrator:health                -- full 9-group queue health" -ForegroundColor DarkGray
   Write-Host "    npm run orchestrator:blockers:brief        -- see what is blocking each task" -ForegroundColor DarkGray
   Write-Host "    npm run orchestrator:cascade:all           -- rank READY tasks by impact" -ForegroundColor DarkGray
-  Write-Host "    npm run orchestrator:milestone:summary     -- 60% readiness check (all modules)" -ForegroundColor DarkGray
+  Write-Host "    npm run orchestrator:milestone:summary     -- 100% planning readiness check (all modules)" -ForegroundColor DarkGray
   Write-Host "    npm run orchestrator:session:autoadvance   -- session + auto-advance top task" -ForegroundColor DarkGray
 Write-Host ""
 Write-Host "  Free-agent workflow:" -ForegroundColor White
