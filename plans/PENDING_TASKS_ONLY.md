@@ -1,6 +1,7 @@
 # Pending Tasks Only
 
 **Last Updated:** 2026-05-22
+**Acceleration Update:** Wave 09 promoted to Ready (S1 baseline green). Waves 10/11 bundles created.
 
 ## Canonical Sources
 
@@ -11,12 +12,12 @@
 
 ## Stream Status Board
 
-| Stream | Wave | Objective                                            | Status     | Owners                    | Validation Gate                                      |
-| ------ | ---- | ---------------------------------------------------- | ---------- | ------------------------- | ---------------------------------------------------- |
-| S1     | 08   | TypeScript/errors stabilization (fast/medium/deep)   | 🔨 Active  | @Mira + @Katherine        | `npm run typecheck && npm run lint && npm run build` |
-| S2     | 09   | UX hardening — loading states, error boundaries, RTL | 📋 Planned | @Una + @Lea + @Katherine  | S1 green + readiness >=60% + @Ada approval phrase    |
-| S3     | 10   | Performance + SEO + security uplift                  | 📋 Planned | @Ruchi + @Rachel + @Radia | S2 green + readiness >=60% + @Ada approval phrase    |
-| S4     | 11   | Incomplete features + architecture refactor          | 🔮 Backlog | @Ada + @Mira              | S3 green + readiness >=60% + @Ada approval phrase    |
+| Stream | Wave | Objective                                            | Status     | Owners                                 | Validation Gate                                                                                 |
+| ------ | ---- | ---------------------------------------------------- | ---------- | -------------------------------------- | ----------------------------------------------------------------------------------------------- |
+| S1     | 08   | TypeScript/errors stabilization (fast/medium/deep)   | ✅ Green   | @Mira + @Katherine                     | TypeScript 0 errors (client + server) ✅ May 22                                                 |
+| S2     | 09   | UX hardening — loading states, error boundaries, RTL | 🟢 Ready   | @Una + @Lea + @Tracy + @Inas           | S1 green ✅ + readiness 72% ✅ + `@Ada — Context Ready (60% Readiness) — Coding Phase Approved` |
+| S3     | 10   | Performance + SEO + security uplift                  | 📋 Planned | @Ruchi + @Rachel + @Radia + @Katherine | S2 green + readiness 65% ✅ bundle ready + @Ada approval phrase                                 |
+| S4     | 11   | Incomplete features + architecture refactor          | 📋 Planned | @Ada + @Mira + @Barbara                | S3 green + readiness 60% ✅ bundle ready + @Ada approval phrase                                 |
 
 ## Completed Stream History
 
@@ -32,6 +33,7 @@
 | N+8   | Google social auth hardening + dashboard redirect consistency | ✅ Complete (May 21, 2026) |
 | N+9   | UX loading-state hardening                                    | ✅ Complete (May 21, 2026) |
 | Repo  | Archive 293 completed docs; clean root; new wave roadmap      | ✅ Complete (May 22, 2026) |
+| S1    | Wave 08: TypeScript baseline — 0 errors (client + server)     | ✅ Complete (May 22, 2026) |
 
 ## S1 — Wave 08: Errors Stabilization Lane (Active)
 
@@ -46,23 +48,28 @@
 **Wave 08 Artifacts:**
 [`WAVE_08_SDD.md`](./waves/WAVE_08_SDD.md) | [`WAVE_08_READINESS_PACKET.md`](./waves/WAVE_08_READINESS_PACKET.md) | [`WAVE_08_IMPLEMENTATION_BACKLOG.md`](./waves/WAVE_08_IMPLEMENTATION_BACKLOG.md) | [`WAVE_08_TEST_ROLLOUT.md`](./waves/WAVE_08_TEST_ROLLOUT.md)
 
-## S2 — Wave 09: UX Hardening (Planned — unlocks when S1 green)
+## S2 — Wave 09: UX Hardening (🟢 Ready — S1 green, execute now)
 
-**Source:** [`IMPROVEMENTS_UX.md`](./IMPROVEMENTS_UX.md) items 30–33
+**Source:** [`IMPROVEMENTS_UX.md`](./IMPROVEMENTS_UX.md) items 30–33  
+**Wave Bundle:** [`WAVE_09_SDD.md`](./waves/WAVE_09_SDD.md) | [`WAVE_09_READINESS_PACKET.md`](./waves/WAVE_09_READINESS_PACKET.md) | [`WAVE_09_IMPLEMENTATION_BACKLOG.md`](./waves/WAVE_09_IMPLEMENTATION_BACKLOG.md) | [`WAVE_09_TEST_ROLLOUT.md`](./waves/WAVE_09_TEST_ROLLOUT.md)
 
-| Task | Scope                                                         | Priority | Owner       | Validation                                |
-| ---- | ------------------------------------------------------------- | -------- | ----------- | ----------------------------------------- |
-| 9-1  | Loading skeleton + Suspense error boundaries in CRM modules   | P0       | @Lea        | `npm run build` + visual regression check |
-| 9-2  | RTL (Arabic) layout consistency pass across all portal pages  | P1       | @Inas       | RTL toggle screenshot check + lint        |
-| 9-3  | Mobile 375px / 768px viewport layout fixes (critical paths)   | P1       | @Tracy      | Playwright viewport tests                 |
-| 9-4  | Empty/error/loading states for all data-bound dashboard tiles | P2       | @Una + @Lea | `npm run quality:quick`                   |
+| Task | Scope                                                                 | Priority | Owner                | Validation                         |
+| ---- | --------------------------------------------------------------------- | -------- | -------------------- | ---------------------------------- |
+| 9-1  | Skeleton component library (SkeletonCard, SkeletonTable, SkeletonKPI) | P0       | @Lea                 | `npm run build` + component tests  |
+| 9-2  | Apply skeletons to PropertyCard, LeadManagementPage, OverviewTab KPIs | P0       | @Lea + @Una          | `npm run build` + visual check     |
+| 9-3  | EmptyState + ErrorBoundary components wired to all CRM modules        | P0       | @Una + @Lea          | `npm run build`                    |
+| 9-4  | Axe a11y audit + fix Critical/Serious violations                      | P1       | @Africa + @Katherine | `npx @axe-core/cli` → 0 violations |
+| 9-5  | Mobile CRM drawer (MobileCRMDrawer.tsx) for < 768px                   | P1       | @Tracy               | Playwright 375px viewport test     |
+| 9-6  | RTL layout corrections (`[dir=rtl]` scoped overrides)                 | P2       | @Inas                | RTL screenshot check + lint        |
+| 9-7  | Axe scan wired into CI Playwright job                                 | P2       | @Katherine           | CI green + 0 axe violations        |
 
-**Wave 09 Bundle:** Create `plans/waves/WAVE_09_*` before starting execution.  
-**Entry gate:** S1 all-green + `npm run plans:validate` pass + `@Ada — Context Ready (100% Planning Readiness) — Coding Phase Approved`
+**Entry gate:** S1 TypeScript baseline green ✅ (0 errors confirmed May 22, 2026)  
+**@Ada approval phrase:** `@Ada — Context Ready (60% Readiness) — Coding Phase Approved`
 
-## S3 — Wave 10: Performance + SEO + Security (Planned — unlocks when S2 green)
+## S3 — Wave 10: Performance + SEO + Security (📋 Planned — unlocks when Wave 09 green)
 
-**Sources:** [`IMPROVEMENTS_PERFORMANCE.md`](./IMPROVEMENTS_PERFORMANCE.md) | [`IMPROVEMENTS_SEO.md`](./IMPROVEMENTS_SEO.md) | [`IMPROVEMENTS_SECURITY.md`](./IMPROVEMENTS_SECURITY.md)
+**Sources:** [`IMPROVEMENTS_PERFORMANCE.md`](./IMPROVEMENTS_PERFORMANCE.md) | [`IMPROVEMENTS_SEO.md`](./IMPROVEMENTS_SEO.md) | [`IMPROVEMENTS_SECURITY.md`](./IMPROVEMENTS_SECURITY.md)  
+**Wave Bundle:** [`WAVE_10_SDD.md`](./waves/WAVE_10_SDD.md) | [`WAVE_10_READINESS_PACKET.md`](./waves/WAVE_10_READINESS_PACKET.md) | [`WAVE_10_IMPLEMENTATION_BACKLOG.md`](./waves/WAVE_10_IMPLEMENTATION_BACKLOG.md) | [`WAVE_10_TEST_ROLLOUT.md`](./waves/WAVE_10_TEST_ROLLOUT.md)
 
 | Task | Scope                                                       | Priority | Owner          | Validation                                  |
 | ---- | ----------------------------------------------------------- | -------- | -------------- | ------------------------------------------- |
@@ -74,11 +81,17 @@
 **Wave 10 Bundle:** Create `plans/waves/WAVE_10_*` before starting execution.  
 **Entry gate:** S2 all-green + readiness >=60% + @Ada approval phrase
 
-## S4 — Wave 11: Incomplete Features + Architecture (Backlog)
+## S4 — Wave 11: Incomplete Features + Architecture (📋 Planned — unlocks when Wave 10 green)
 
-**Sources:** [`IMPROVEMENTS_INCOMPLETE_FEATURES.md`](./IMPROVEMENTS_INCOMPLETE_FEATURES.md) | [`IMPROVEMENTS_ARCHITECTURE.md`](./IMPROVEMENTS_ARCHITECTURE.md)
+**Sources:** [`IMPROVEMENTS_INCOMPLETE_FEATURES.md`](./IMPROVEMENTS_INCOMPLETE_FEATURES.md) | [`IMPROVEMENTS_ARCHITECTURE.md`](./IMPROVEMENTS_ARCHITECTURE.md)  
+**Wave Bundle:** [`WAVE_11_SDD.md`](./waves/WAVE_11_SDD.md) | [`WAVE_11_READINESS_PACKET.md`](./waves/WAVE_11_READINESS_PACKET.md) | [`WAVE_11_IMPLEMENTATION_BACKLOG.md`](./waves/WAVE_11_IMPLEMENTATION_BACKLOG.md)
 
-Decompose into tasks once S3 is in flight. Create `plans/waves/WAVE_11_*` bundle at that time.
+Key items:
+
+- **Cron/Scheduler** (Item 6): `node-cron` + `SchedulerService.ts` + rent reminders + lead rescore
+- **PDF Engine** (Item 7): `puppeteer` + `exceljs` + contract PDF + Excel exports
+- **Email Wiring** (Item 8): wire all orphaned email trigger points
+- **Architecture refactors**: `AppError` standardization, service layer extraction, DB index audit
 
 ## Completion Criteria (Hard Rule)
 
