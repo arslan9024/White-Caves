@@ -1,10 +1,16 @@
 # White Caves — Phase 23–25 Implementation Plan
 
-**Date:** May 2, 2026  
-**Status:** Baseline Reference (Canonical)  
+**Date:** 2026-05-02  
+**Status:** 📚 Superseded Baseline Reference (non-canonical for active queue)  
+**Last Updated:** 2026-05-22  
 **Owner:** @Ada + @Margaret  
 **Update cadence:** Reference only (do not duplicate into active daily plans)  
 **Priority Order:** 1) Business docs + module logic alignment, 2) homepage improvement planning, 3) dev/build operational verification, 4) git governance hardening
+
+**Active status authority moved to:**
+
+- [`MASTER_PLAN.md`](./MASTER_PLAN.md)
+- [`PENDING_TASKS_ONLY.md`](./PENDING_TASKS_ONLY.md)
 
 ---
 
