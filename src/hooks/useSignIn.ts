@@ -326,7 +326,9 @@ export function useSignIn() {
             throw new Error('Invalid backend response: missing user data');
           }
           const backendUser = backendResponse.data.user;
+          setSocialSyncRecovery(null);
           setSocialRetryAttempts(0);
+          setError('');
 
           if (mode === 'signup') {
             handleSignUpSuccess(backendUser, { fromSocialProvider: provider });
@@ -337,10 +339,23 @@ export function useSignIn() {
           await signOutFirebase().catch(() => {
             // noop: firebase session cleanup is best effort here
           });
-          const syncMessage =
-            syncError instanceof Error
-              ? syncError.message
-              : 'Unable to complete authentication sync';
+          const syncMessage = (() => {
+            if (syncError instanceof Error && syncError.message.trim()) {
+              return syncError.message.trim();
+            }
+            if (
+              typeof syncError === 'object' &&
+              syncError !== null &&
+              'message' in syncError &&
+              typeof (syncError as { message?: unknown }).message === 'string'
+            ) {
+              const rawMessage = (syncError as { message: string }).message.trim();
+              if (rawMessage) {
+                return rawMessage;
+              }
+            }
+            return 'Unable to complete authentication sync';
+          })();
           if (provider === 'google' || provider === 'facebook' || provider === 'apple') {
             setSocialSyncRecovery({ provider, reason: syncMessage });
             if (options?.isRetry) {

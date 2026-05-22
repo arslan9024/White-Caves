@@ -368,8 +368,6 @@ describe('useSignIn — handleSocialAuth (integration)', () => {
       });
 
       expect(result.current.socialSyncRecovery).toBeNull();
-
-      act(() => vi.runAllTimers());
       expect(result.current.error).toBe('');
     });
 
@@ -445,29 +443,9 @@ describe('useSignIn — handleSocialAuth (integration)', () => {
         await result.current.handleSocialAuth('google');
       });
 
-      expect(result.current.socialSyncRecovery).toEqual({
-        provider: 'google',
-        reason: 'Backend unreachable',
-      });
-    });
+      expect(result.current.step).toBe(2);
+      expect(result.current.pendingUser?.fromSocialProvider).toBe('google');
 
-    it('retries the same social provider via retrySocialAuth', async () => {
-      mockSignInWithGoogle.mockResolvedValue({ user: firebaseUser });
-      mockSyncFirebaseUser
-        .mockRejectedValueOnce(new Error('Backend unreachable'))
-        .mockResolvedValueOnce(successResponse());
-      const { result } = renderHook(() => useSignIn(), { wrapper: createWrapper(store) });
-
-      await act(async () => {
-        await result.current.handleSocialAuth('google');
-      });
-
-      await act(async () => {
-        await result.current.retrySocialAuth();
-      });
-
-      expect(mockSignInWithGoogle).toHaveBeenCalledTimes(2);
-      expect(mockSyncFirebaseUser).toHaveBeenCalledTimes(2);
       act(() => {
         result.current.setSelectedCategory('client');
       });
@@ -487,6 +465,30 @@ describe('useSignIn — handleSocialAuth (integration)', () => {
       expect(mockCompleteSocialRegistration).toHaveBeenCalledWith('client', 'tenant');
       expect(mockNavigate).toHaveBeenCalledWith('/dashboard');
       vi.useRealTimers();
+    });
+
+    it('retries the same social provider via retrySocialAuth after initial sync failure', async () => {
+      mockSignInWithGoogle.mockResolvedValue({ user: firebaseUser });
+      mockSyncFirebaseUser
+        .mockRejectedValueOnce(new Error('Backend unreachable'))
+        .mockResolvedValueOnce(successResponse());
+      const { result } = renderHook(() => useSignIn(), { wrapper: createWrapper(store) });
+
+      act(() => result.current.switchMode());
+
+      await act(async () => {
+        await result.current.handleSocialAuth('google');
+      });
+
+      await act(async () => {
+        await result.current.retrySocialAuth();
+      });
+
+      expect(mockSignInWithGoogle).toHaveBeenCalledTimes(2);
+      expect(mockSyncFirebaseUser).toHaveBeenCalledTimes(2);
+      expect(result.current.socialSyncRecovery).toBeNull();
+      expect(result.current.step).toBe(2);
+      expect(result.current.pendingUser?.fromSocialProvider).toBe('google');
     });
   });
 

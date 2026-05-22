@@ -68,18 +68,6 @@ async function getOrInitLindaRuntime() {
     autoRestart: true,
   });
 
-  // Auto-initialize if enabled and not yet started
-  if (LINDA_ENABLED && linda.getStatus() === LindaStatus.DISCONNECTED) {
-    try {
-      await linda.initialize();
-    } catch (err) {
-      console.warn(
-        '[Linda Routes] Auto-init failed (Chrome may not be available):',
-        err instanceof Error ? err.message : err
-      );
-    }
-  }
-
   const sessionBridge = new LindaSessionBridge(linda, mode);
   const messageBridge = new LindaMessageBridge(linda, mode);
 
