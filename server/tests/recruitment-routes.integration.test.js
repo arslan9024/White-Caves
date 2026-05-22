@@ -435,6 +435,154 @@ await test('Offer workflow emits recruitment audit events', async () => {
   __resetRecruitmentTestDeps();
 });
 
+await test('GET /jobs/:job_id/manager-shortlist returns scored shortlist for hiring manager role', async () => {
+  process.env.RECRUITMENT_AUTH_MODE = 'enforced';
+
+  const prismaMock = {
+    candidateScore: {
+      findMany: async () => ([
+        {
+          candidate_id: 'cand-mgr-1',
+          overall_score: 88,
+          screening_status: 'strong_match',
+          feedback: 'Great fit',
+          candidate: {
+            id: 'cand-mgr-1',
+            first_name: 'Nour',
+            last_name: 'Ali',
+            email: 'nour@example.com',
+            phone: '+971500000001',
+            location: 'Dubai',
+            status: 'under_review'
+          }
+        }
+      ])
+    },
+    application: {
+      findMany: async () => ([
+        {
+          id: 'app-mgr-1',
+          candidate_id: 'cand-mgr-1',
+          status: 'screening',
+          applied_at: '2026-05-20T00:00:00.000Z',
+          notes: 'Initial screening'
+        }
+      ])
+    }
+  };
+
+  __setRecruitmentTestDeps({ prismaClient: prismaMock });
+
+  await withServer(async (baseUrl) => {
+    const response = await fetch(`${baseUrl}/api/recruitment/jobs/job-mgr-1/manager-shortlist?min_score=75`, {
+      headers: { 'x-user-role': 'hiring_manager' }
+    });
+    const body = await response.json();
+
+    assert(response.status === 200, 'Expected HTTP 200 for manager shortlist');
+    assert(body.total === 1, 'Expected one shortlisted candidate');
+    assert(body.shortlist[0].recommendation === 'priority_shortlist', 'Expected strong match recommendation');
+    assert(body.shortlist[0].application.id === 'app-mgr-1', 'Expected application mapping in shortlist');
+  });
+
+  process.env.RECRUITMENT_AUTH_MODE = originalRecruitmentAuthMode;
+  __resetRecruitmentTestDeps();
+});
+
+await test('POST /applications/:application_id/manager-review blocks executive role', async () => {
+  process.env.RECRUITMENT_AUTH_MODE = 'enforced';
+
+  __setRecruitmentTestDeps({
+    prismaClient: {
+      application: {
+        findUnique: async () => null
+      }
+    }
+  });
+
+  await withServer(async (baseUrl) => {
+    const response = await fetch(`${baseUrl}/api/recruitment/applications/app-mgr-block/manager-review`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-user-role': 'executive'
+      },
+      body: JSON.stringify({ decision: 'shortlist' })
+    });
+
+    const body = await response.json();
+    assert(response.status === 403, 'Expected HTTP 403 for executive manager-review write');
+    assert(body.error.includes('Manager review access denied'), 'Expected manager review access denied message');
+  });
+
+  process.env.RECRUITMENT_AUTH_MODE = originalRecruitmentAuthMode;
+  __resetRecruitmentTestDeps();
+});
+
+await test('POST /applications/:application_id/manager-review shortlist updates status and emits audit', async () => {
+  process.env.RECRUITMENT_AUTH_MODE = 'enforced';
+
+  const updatedStatuses = [];
+  const candidateStatuses = [];
+  const auditEvents = [];
+
+  const prismaMock = {
+    application: {
+      findUnique: async () => ({
+        id: 'app-mgr-decision-1',
+        job_id: 'job-mgr-decision-1',
+        candidate_id: 'cand-mgr-decision-1',
+        notes: 'Screened',
+        candidate: { id: 'cand-mgr-decision-1', status: 'under_review' },
+        job: { id: 'job-mgr-decision-1', title: 'Sales Agent' }
+      }),
+      update: async ({ data }) => {
+        updatedStatuses.push(data.status);
+        return { status: data.status };
+      }
+    },
+    candidate: {
+      update: async ({ data }) => {
+        candidateStatuses.push(data.status);
+        return { status: data.status };
+      }
+    }
+  };
+
+  __setRecruitmentTestDeps({
+    prismaClient: prismaMock,
+    auditLogger: (eventType, payload) => auditEvents.push({ eventType, payload })
+  });
+
+  await withServer(async (baseUrl) => {
+    const response = await fetch(`${baseUrl}/api/recruitment/applications/app-mgr-decision-1/manager-review`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-user-role': 'hiring_manager',
+        'x-user-id': 'mgr-001'
+      },
+      body: JSON.stringify({ decision: 'shortlist', review_note: 'Proceed to interview panel.' })
+    });
+
+    const body = await response.json();
+    assert(response.status === 200, 'Expected HTTP 200 for manager shortlist decision');
+    assert(body.status === 'shortlisted', 'Expected shortlisted application status');
+    assert(body.candidate_status === 'under_review', 'Expected candidate under_review status');
+  });
+
+  assert(updatedStatuses[0] === 'shortlisted', 'Expected application status update');
+  assert(candidateStatuses[0] === 'under_review', 'Expected candidate status update');
+  assert(auditEvents.some(e => e.eventType === 'manager_review_submitted'), 'Expected manager review audit event');
+
+  const auditEvent = auditEvents.find(e => e.eventType === 'manager_review_submitted');
+  assert(auditEvent.payload.actor_role === 'hiring_manager', 'Expected hiring_manager actor in audit payload');
+  assert(auditEvent.payload.actor_id === 'mgr-001', 'Expected manager actor id in audit payload');
+
+  process.env.RECRUITMENT_AUTH_MODE = originalRecruitmentAuthMode;
+  __resetRecruitmentTestDeps();
+});
+
 console.log(`\n✅ ${passedTests}/${totalTests} recruitment route integration tests passed\n`);
 process.env.RECRUITMENT_AUTH_MODE = originalRecruitmentAuthMode;
 process.exit(passedTests === totalTests ? 0 : 1);
