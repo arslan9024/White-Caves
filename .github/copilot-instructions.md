@@ -170,7 +170,7 @@
                Task: EXPAND next item in her owned files queue
    → Output: paste expanded content into the relevant business_docs/ file and commit.
 
-   🕛 MIDDAY — @Margaret Gate Review (Standard GPT-4o, minimal tokens)
+   🕛 MIDDAY — @Margaret Gate Review (Free model only: Gemini 2.0 Flash / DeepSeek V3 / Llama 3.1 70B)
    ─────────────────────────────────────────────────────────────────────
    @Margaret checks AGENTS.md "CURRENT SPRINT STATUS" table.
    Updates section counts, sets gate status to READY or BLOCKED.
@@ -186,9 +186,9 @@
 
 9. **🔄 NO-IDLE POLICY — Expanded Free Agent Pool (40 Agents Total):**
    The free agent team has been expanded from 17 to 40 agents (17 core + 23 growth). All run in external free tools. All follow the same zero-premium rule. Every agent has a 3-task backlog queue in AGENTS.md. No agent ever idles.
-   The planning pool is divided into 4 parallel teams so 4 different tasks can move at the same time.
+   The planning pool is divided into 5 parallel teams so 5 different tasks can move at the same time.
 
-   **Complete Free Agent Roster (40 agents — 60-minute loop inside 4 teams):**
+   **Complete Free Agent Roster (40 agents — 60-minute loop inside 5 teams):**
 
    ```
    Slot  Agent      Tool                 Model              Domain
@@ -249,7 +249,25 @@
     - **QA** (unit/integration/E2E scenarios, non-functional checks, regression scope)
     - **Compliance/Sign-off** (RERA/DLD/PDPL checks + @Margaret/@Sofia/@Katherine sign-off)
   - Final approval phrase is exact and mandatory:
-    - `@Ada — Context Ready (60% Readiness) — Coding Phase Approved`
+    - `@Ada — Context Ready (100% Planning Readiness) — Coding Phase Approved`
+
+26. **⚡ GOVERNANCE UPGRADE V3 (Mandatory Collaboration + 100% Planning Gate):**
+
+- Rule 26 supersedes legacy 60% planning-gate references for premium implementation unlock.
+- Planner and researcher agents are **free-model-only** with no premium exceptions.
+- Every subagent prompt must follow the exact custom instruction packet contract:
+  - `Task ID`, `Owner`, `Objective`, `Input Artifacts`, `Output Artifact`, `Acceptance Criteria`, `Validation`, `Handoff`
+  - `CONSUMES`, `FEEDS`, and `FEEDS_ACK` are mandatory in every planning output.
+- Premium coding starts only after a **100% planning-complete packet** is present for the module:
+  - business rules complete,
+  - API contracts complete,
+  - data schema/migration complete,
+  - UI states complete (loading/empty/error/responsive/RTL),
+  - QA matrix complete (unit/integration/E2E + rollback).
+- Exact unlock phrase (mandatory):
+  - `@Ada — Context Ready (100% Planning Readiness) — Coding Phase Approved`
+- Execution acceleration rule:
+  - once unlocked, implementation runs in parallel micro-waves with continuous autonomous progression and strict safety checks (build/lint/test/security gates stay mandatory).
 
 12. **🧠 PREMIUM ACCESS (STRICT — SENIORS ONLY, POST-GATE ONLY):**
     - Premium Copilot requests are allowed only for:

@@ -167,7 +167,7 @@ foreach ($l in @("A","B","C","D")) {
 }
 $nReady = @($tasks | Where-Object { $_.status -eq "queued" } | Select-Object -ExpandProperty agent -Unique).Count
 $nDone  = @($tasks | Where-Object { $_.status -eq "done" }).Count
-$signOff += "`nOverall: $nDone/51 tasks done. $nReady agents with work queued. Coding phase: PENDING (awaiting 60% fast-track readiness gate).`n"
+$signOff += "`nOverall: $nDone/51 tasks done. $nReady agents with work queued. Coding phase: PENDING (awaiting 100% planning readiness gate).`n"
 $signOff += "`n---`n"
 
 if ($DryRun) {

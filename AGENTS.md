@@ -38,24 +38,25 @@ This file defines the White Caves multi-expert operating model for all agent-ass
 
 ## 🚀 AGENT SKILLS UPGRADE V2 — ACTIVE (May 21, 2026)
 
-**TRANSFORMATION:** 47 agents → **69 specialized agents** | **10 parallel module teams** | **300% planning capacity**  
+**TRANSFORMATION:** 47 agents → **69 specialized agents** | **11 parallel module teams** | **300% planning capacity**  
 **EXECUTION MODEL:** True parallel work with module isolation + real-time cross-module coordination  
 **STATUS:** Skills upgrade documentation complete → [AGENT_SKILLS_UPGRADE_V2.md](./AGENT_SKILLS_UPGRADE_V2.md)
 
 ### Quick Navigation to Module Teams
 
-| Module                           | Lead      | Team Size | Focus Area                               | Capacity Gain |
-| -------------------------------- | --------- | --------- | ---------------------------------------- | ------------- |
-| **1. Leasing & Tenancy**         | @Victoria | 7 agents  | Contracts, Ejari, tenant portal          | 200% ↑        |
-| **2. Compliance & DLD**          | @Sofia    | 7 agents  | Regulations, DLD integration, legal      | 200% ↑        |
-| **3. Scheduling & Viewings**     | @Booking  | 7 agents  | Calendar, appointments, handover         | 200% ↑        |
-| **4. Offers & Sales**            | @Jaime    | 6 agents  | Deal management, offers, commissions     | 200% ↑        |
-| **5. Finance & Analytics**       | @Invoice  | 7 agents  | VAT, cash flow, KPI dashboards           | 300% ↑        |
-| **6. WhatsApp & Communications** | @Corinne  | 6 agents  | Messaging, chatbot, broadcast            | 200% ↑        |
-| **7. Maintenance & Support**     | @Rania    | 6 agents  | Tickets, maintenance, escalations        | 200% ↑        |
-| **8. Testing & QA**              | @Salma    | 5 agents  | Test matrices, regression, accessibility | 200% ↑        |
-| **9. AI & Recommendations**      | @Joelle   | 5 agents  | Personas, chatbots, scoring              | 200% ↑        |
-| **10. Infrastructure & Ops**     | @Gwynne   | 5 agents  | DevOps, cloud, monitoring                | 500% ↑        |
+| Module                                   | Lead      | Team Size | Focus Area                                                            | Capacity Gain |
+| ---------------------------------------- | --------- | --------- | --------------------------------------------------------------------- | ------------- |
+| **1. Leasing & Tenancy**                 | @Victoria | 7 agents  | Contracts, Ejari, tenant portal                                       | 200% ↑        |
+| **2. Compliance & DLD**                  | @Sofia    | 7 agents  | Regulations, DLD integration, legal                                   | 200% ↑        |
+| **3. Scheduling & Viewings**             | @Booking  | 7 agents  | Calendar, appointments, handover                                      | 200% ↑        |
+| **4. Offers & Sales**                    | @Jaime    | 6 agents  | Deal management, offers, commissions                                  | 200% ↑        |
+| **5. Finance & Analytics**               | @Invoice  | 7 agents  | VAT, cash flow, KPI dashboards                                        | 300% ↑        |
+| **6. WhatsApp & Communications**         | @Corinne  | 6 agents  | Messaging, chatbot, broadcast                                         | 200% ↑        |
+| **7. Maintenance & Support**             | @Rania    | 6 agents  | Tickets, maintenance, escalations                                     | 200% ↑        |
+| **8. Testing & QA**                      | @Salma    | 5 agents  | Test matrices, regression, accessibility                              | 200% ↑        |
+| **9. AI & Recommendations**              | @Joelle   | 5 agents  | Personas, chatbots, scoring                                           | 200% ↑        |
+| **10. Infrastructure & Ops**             | @Gwynne   | 5 agents  | DevOps, cloud, monitoring                                             | 500% ↑        |
+| **11. Prompt Governance & Acceleration** | @Margaret | 5 agents  | Prompt standards, planning completeness, rapid implementation handoff | 250% ↑        |
 
 **Total Agents:** 69 | **Parallel Efficiency:** 85%+ | **Planning Capacity:** +300%  
 **Real-Time Sync:** Every 2 hours via YAML handoff packets | **FEEDS_ACK Confirmation:** Live tracking
@@ -505,18 +506,19 @@ This file defines the White Caves multi-expert operating model for all agent-ass
 
 ## 🔄 EXPANDED FREE AGENT POOL — Continuous 60-Minute Loop
 
-> **40 total free agents** (17 core + 23 growth). All run in external free tools — zero Copilot premium tokens ever. The pool is divided into **4 parallel teams of 10** so the planning layer can work on **4 different tasks simultaneously**. Each agent has a **60-minute hourly slot** inside a team rotation: user pastes the agent's current prompt into the free tool, pastes output into the owned file, commits. Loop restarts automatically. **No agent ever idles** — if backlog is empty, @Margaret assigns a REVIEW task. Run `scripts/free-agents-loop.ps1` to see which agent is active right now.
+> **40 total free agents** (17 core + 23 growth). All run in external free tools — zero Copilot premium tokens ever. The pool is divided into **5 parallel teams** so the planning layer can work on **5 different tasks simultaneously**. Each agent has a **60-minute hourly slot** inside a team rotation: user pastes the agent's current prompt into the free tool, pastes output into the owned file, commits. Loop restarts automatically. **No agent ever idles** — if backlog is empty, @Margaret assigns a REVIEW task. Run `scripts/free-agents-loop.ps1` to see which agent is active right now.
 
-### 4-Team Parallel Planning Model
+### 5-Team Parallel Planning Model
 
-| Team       | Focus Area                   | Members                                                                          | Simultaneous Task Lane                         |
-| ---------- | ---------------------------- | -------------------------------------------------------------------------------- | ---------------------------------------------- |
-| **Team A** | Leasing, Legal, Compliance   | @Victoria, @Sofia, @Timnit, @Annie, @Hedy, @Amina, @Samira, @Hala, @Rania, @Noor | Tenancy, landlord, compliance, legal docs      |
-| **Team B** | Finance, Data, Analytics     | @Invoice, @Cassie, @Fei-Fei, @Anima, @Mary, @Amal, @Yasmin, @Lina, @Iman, @Basma | Finance, market data, KPI, privacy             |
-| **Team C** | Sales, Workflow, Growth      | @Maya, @Booking, @Jaime, @Corinne, @Marissa, @Dina, @Layla, @Maha, @Reem, @Sanaa | Offers, viewings, WhatsApp, SEO, UX copy       |
-| **Team D** | UX, Media, Integrations, Ops | @Rachel, @Joelle, @Noura, @Farah, @Huda, @Zainab, @Salma, @Manal, @Ghada, @Rehab | Design tokens, media, maps, testing, reporting |
+| Team       | Focus Area                        | Members                                                                          | Simultaneous Task Lane                                                    |
+| ---------- | --------------------------------- | -------------------------------------------------------------------------------- | ------------------------------------------------------------------------- |
+| **Team A** | Leasing, Legal, Compliance        | @Victoria, @Sofia, @Timnit, @Annie, @Hedy, @Amina, @Samira, @Hala, @Rania, @Noor | Tenancy, landlord, compliance, legal docs                                 |
+| **Team B** | Finance, Data, Analytics          | @Invoice, @Cassie, @Fei-Fei, @Anima, @Mary, @Amal, @Yasmin, @Lina, @Iman, @Basma | Finance, market data, KPI, privacy                                        |
+| **Team C** | Sales, Workflow, Growth           | @Maya, @Booking, @Jaime, @Corinne, @Marissa, @Dina, @Layla, @Maha, @Reem, @Sanaa | Offers, viewings, WhatsApp, SEO, UX copy                                  |
+| **Team D** | UX, Media, Integrations, Ops      | @Rachel, @Joelle, @Noura, @Farah, @Huda, @Zainab, @Salma, @Manal, @Ghada, @Rehab | Design tokens, media, maps, testing, reporting                            |
+| **Team E** | Planning Completeness & Prompt QA | Rotating reviewers from Teams A-D + @Noor coordination pod                       | prompt compliance, 100% planning packet audits, implementation handoff QA |
 
-**Parallel execution rule:** each team may own one active task at a time, allowing four independent planning tasks to move forward simultaneously.
+**Parallel execution rule:** each team may own one active task at a time, allowing five independent planning tasks to move forward simultaneously.
 
 ### ⏰ Hourly Rotation Schedule
 
@@ -983,9 +985,19 @@ A task is not complete until it has:
 ## 🔧 Subagent Upgrade Baseline (May 2026)
 
 - **Canonical Policy:** `plans/CUSTOM_AGENTS_PLAN.md` is the source of truth for subagent governance.
-- **Premium Coding Gate Phrase (Exact):** `@Ada — Context Ready (60% Readiness) — Coding Phase Approved`
+- **Premium Coding Gate Phrase (Exact):** `@Ada — Context Ready (100% Planning Readiness) — Coding Phase Approved`
 - **Invocation Protocol (Exact):** `@[AgentName] — [ACTION]: [TARGET FILE or TOPIC]`
 - **Allowed Actions:** `EXPAND`, `DRAFT`, `REVIEW`, `AUDIT`, `SYNC`
+
+## 🔥 Subagent Upgrade V3 (Fast Implementation via 100% Planning)
+
+- This V3 block supersedes legacy 60% planning unlock references.
+- Planner/research agents must use free models only (Gemini 2.0 Flash, Llama 3.1 70B Groq, DeepSeek V3).
+- Every planning prompt must follow the full custom dispatch packet and include `CONSUMES`, `FEEDS`, and `FEEDS_ACK`.
+- Coding may start only after a **100% planning-complete packet** exists per module (business, API, data, UX states, QA matrix, rollback).
+- The mandatory unlock phrase is exact:
+  - `@Ada — Context Ready (100% Planning Readiness) — Coding Phase Approved`
+- After unlock, execution must run in rapid parallel micro-waves with autonomous continuation while retaining mandatory safety gates.
 
 ## Branch & Deployment Protocol
 
