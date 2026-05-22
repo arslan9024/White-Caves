@@ -747,5 +747,42 @@ describe('SignInPage', () => {
 
       expect(mockSyncFirebaseUser).toHaveBeenCalledTimes(2);
     });
+
+    it('should stop retrying and show limit guidance after repeated retry failures', async () => {
+      mockSignInWithGoogle.mockResolvedValue({
+        user: {
+          uid: 'firebase-user-1',
+          email: 'social@test.com',
+          displayName: 'Social User',
+          photoURL: null,
+        },
+      });
+      mockSyncFirebaseUser.mockRejectedValue(new Error('Backend offline'));
+      mockSignOut.mockResolvedValue(undefined);
+
+      renderPage();
+
+      fireEvent.click(screen.getByRole('button', { name: /Google/i }));
+
+      const retry = await screen.findByRole('button', { name: /Retry Google sign-in/i });
+      fireEvent.click(retry);
+      await waitFor(() => expect(mockSyncFirebaseUser).toHaveBeenCalledTimes(2));
+
+      fireEvent.click(screen.getByRole('button', { name: /Retry Google sign-in/i }));
+      await waitFor(() => expect(mockSyncFirebaseUser).toHaveBeenCalledTimes(3));
+
+      fireEvent.click(screen.getByRole('button', { name: /Retry Google sign-in/i }));
+      await waitFor(() => expect(mockSyncFirebaseUser).toHaveBeenCalledTimes(4));
+
+      await waitFor(() => {
+        expect(screen.getByRole('button', { name: /Retry limit reached/i })).toBeDisabled();
+        expect(screen.getByText(/Too many retry attempts/i)).toBeInTheDocument();
+      });
+
+      fireEvent.click(screen.getByRole('button', { name: /Retry limit reached/i }));
+
+      expect(mockSyncFirebaseUser).toHaveBeenCalledTimes(4);
+      expect(screen.getByText(/Too many retry attempts/i)).toBeInTheDocument();
+    });
   });
 });

@@ -115,6 +115,12 @@ Ship login reliability fix now and prepare strict execution graph for profile/da
 - **Files:** `src/pages/auth/SignInPage.test.tsx`
 - **Status:** ✅ Completed (reason-refresh regression coverage)
 
+### AUTH-08-015 — Social retry limit enforcement (macro auth resilience bundle)
+
+- Enforce max social retry attempts with explicit user guidance and stop additional backend-sync calls beyond limit.
+- **Files:** `src/hooks/useSignIn.ts`, `src/pages/auth/SignInPage.tsx`, `src/hooks/useSignIn.test.ts`, `src/pages/auth/SignInPage.test.tsx`
+- **Status:** ✅ Completed (hook guard + UI behavior + hook/UI regression tests)
+
 ### DASH-08-005 — Dashboard profile completion guidance card
 
 - Add post-login profile completeness guidance with direct CTA to `/profile`.
@@ -148,3 +154,4 @@ Ship login reliability fix now and prepare strict execution graph for profile/da
 15. AUTH-08-012 ✅
 16. AUTH-08-013 ✅
 17. AUTH-08-014 ✅
+18. AUTH-08-015 ✅

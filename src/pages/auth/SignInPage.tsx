@@ -60,6 +60,7 @@ const SignInPage: FC = () => {
     setError,
     success,
     socialSyncRecovery,
+    socialRetryAttempts,
     switchMode,
     goBackToStep,
     email,
@@ -94,6 +95,8 @@ const SignInPage: FC = () => {
     getRolesForCategory,
   } = useSignIn();
 
+  const retryLimitReached = socialRetryAttempts >= 3;
+
   return (
     <div className="auth-page">
       <div className="auth-container">
@@ -126,15 +129,23 @@ const SignInPage: FC = () => {
                   <button
                     type="button"
                     className="btn btn-secondary btn-full"
-                    disabled={loading}
+                    disabled={loading || retryLimitReached}
                     onClick={() => {
                       void retrySocialAuth();
                     }}
                   >
-                    {loading
-                      ? 'Retrying...'
-                      : `Retry ${socialSyncRecovery.provider[0].toUpperCase() + socialSyncRecovery.provider.slice(1)} sign-in`}
+                    {retryLimitReached
+                      ? 'Retry limit reached'
+                      : loading
+                        ? 'Retrying...'
+                        : `Retry ${socialSyncRecovery.provider[0].toUpperCase() + socialSyncRecovery.provider.slice(1)} sign-in`}
                   </button>
+                  {retryLimitReached && (
+                    <p className="auth-recovery__hint">
+                      Too many retry attempts. Please continue with email sign-in or try again
+                      later.
+                    </p>
+                  )}
                   <button
                     type="button"
                     className="btn btn-link auth-recovery__dismiss"
