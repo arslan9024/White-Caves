@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { KeyboardEvent, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { createLogger } from '../../utils/logger';
 import type { RootState } from '../../store/store';
@@ -42,6 +42,7 @@ const getPanelId = (tabId: AdminTabId): string => `admin-panel-${tabId}`;
  */
 const AdminDashboard = () => {
   const [activeTab, setActiveTab] = useState<AdminTabId>('overview');
+  const tabButtonRefs = useRef<Array<HTMLButtonElement | null>>([]);
 
   // Get user info from Redux
   const user = useSelector((state: RootState) => state.auth?.user);
@@ -60,6 +61,37 @@ const AdminDashboard = () => {
     usersTotalPages,
     alerts,
   } = useAdminDashboardData();
+
+  const handleTabKeyDown = (event: KeyboardEvent<HTMLButtonElement>, index: number) => {
+    const lastIndex = ADMIN_TABS.length - 1;
+
+    switch (event.key) {
+      case 'ArrowRight':
+      case 'ArrowDown': {
+        event.preventDefault();
+        const nextIndex = index === lastIndex ? 0 : index + 1;
+        tabButtonRefs.current[nextIndex]?.focus();
+        break;
+      }
+      case 'ArrowLeft':
+      case 'ArrowUp': {
+        event.preventDefault();
+        const previousIndex = index === 0 ? lastIndex : index - 1;
+        tabButtonRefs.current[previousIndex]?.focus();
+        break;
+      }
+      case 'Home':
+        event.preventDefault();
+        tabButtonRefs.current[0]?.focus();
+        break;
+      case 'End':
+        event.preventDefault();
+        tabButtonRefs.current[lastIndex]?.focus();
+        break;
+      default:
+        break;
+    }
+  };
 
   if (isLoading) {
     return (
@@ -88,9 +120,12 @@ const AdminDashboard = () => {
       </S.AdminHeader>
 
       <S.AdminTabs role="tablist" aria-label="Admin dashboard tabs">
-        {ADMIN_TABS.map(tab => (
+        {ADMIN_TABS.map((tab, index) => (
           <S.Tab
             key={tab.id}
+            ref={element => {
+              tabButtonRefs.current[index] = element;
+            }}
             id={getTabId(tab.id)}
             role="tab"
             type="button"
@@ -99,6 +134,7 @@ const AdminDashboard = () => {
             tabIndex={activeTab === tab.id ? 0 : -1}
             $active={activeTab === tab.id}
             onClick={() => setActiveTab(tab.id)}
+            onKeyDown={event => handleTabKeyDown(event, index)}
           >
             <tab.Icon size={20} />
             {tab.label}

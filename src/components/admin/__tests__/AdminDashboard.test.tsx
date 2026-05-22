@@ -334,6 +334,9 @@ describe('AdminDashboard Integration', () => {
       const firstTab = screen.getByText('Overview');
       firstTab.focus();
       expect(firstTab).toHaveFocus();
+
+      await user.keyboard('{ArrowRight}');
+      expect(screen.getByText('Users')).toHaveFocus();
     });
   });
 
