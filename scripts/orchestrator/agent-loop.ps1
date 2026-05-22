@@ -156,6 +156,32 @@ function Get-NextSlotAgent {
   return $slotList[0].Agent  # wrap to :00 of next hour
 }
 
+function Get-NextReadyInRotation {
+  param([string]$preferredAgent)
+
+  $slotAgents = @($slotList | ForEach-Object { $_.Agent })
+  if ($slotAgents.Count -eq 0) { return $null }
+
+  $startIdx = [Array]::IndexOf($slotAgents, $preferredAgent)
+  if ($startIdx -lt 0) { $startIdx = 0 }
+
+  $ordered = @()
+  for ($i = $startIdx; $i -lt $slotAgents.Count; $i++) { $ordered += $slotAgents[$i] }
+  for ($i = 0; $i -lt $startIdx; $i++) { $ordered += $slotAgents[$i] }
+  foreach ($aa in $anyAgents) {
+    if ($ordered -notcontains $aa) { $ordered += $aa }
+  }
+
+  foreach ($ag in $ordered) {
+    $candidate = Get-AgentNextReadyTask -agentName $ag
+    if ($null -ne $candidate) {
+      return @{ Agent = $ag; Task = $candidate }
+    }
+  }
+
+  return $null
+}
+
 function Get-AgentNextReadyTask {
   param([string]$agentName)
   if (-not (Test-Path $qFile)) { return $null }
@@ -282,20 +308,37 @@ $loopCount = 0
   if ($Agent -ne "") {
     $activeAgent = $Agent
     $slotLabel   = "manual"
+    $task = Get-AgentNextReadyTask -agentName $activeAgent
+  } elseif ($effectiveNonInteractive) {
+    $preferred = Get-CurrentSlotAgent
+    $nextReady = Get-NextReadyInRotation -preferredAgent $preferred
+    if ($null -ne $nextReady) {
+      $activeAgent = [string]$nextReady.Agent
+      $task        = $nextReady.Task
+      $slotLabel   = "auto"
+    } else {
+      $activeAgent = $preferred
+      $task        = $null
+      $slotLabel   = "auto"
+    }
   } else {
     $activeAgent = Get-CurrentSlotAgent
     $min         = (Get-Date).Minute
     $slotLabel   = ":{0}" -f "$min".PadLeft(2,"0")
+    $task = Get-AgentNextReadyTask -agentName $activeAgent
   }
 
   # 2. FIND NEXT READY TASK
-  $task = Get-AgentNextReadyTask -agentName $activeAgent
   if ($null -eq $task) {
     Write-Host ("  [{0}] {1} -- no READY task found (all done or blocked)" -f $slotLabel, $activeAgent) -ForegroundColor DarkYellow
     Write-Host ""
     if ($Agent -ne "") {
       Write-Host "  All tasks done or blocked for $activeAgent." -ForegroundColor DarkGray
       Write-Host "  Tip: npm run orchestrator:blockers -- to see what is blocking" -ForegroundColor DarkGray
+      break
+    }
+    if ($effectiveNonInteractive) {
+      Write-Host "  No READY tasks found across rotation. Autopilot exiting cleanly." -ForegroundColor DarkGray
       break
     }
     # Auto-mode: skip to next slot
