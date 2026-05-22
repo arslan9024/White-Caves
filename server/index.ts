@@ -19,6 +19,7 @@ import { errorHandler, asyncHandler, AppError } from './middleware/errorHandler.
 import authMiddleware from './middleware/auth.js';
 import { requestIdMiddleware } from './middleware/requestId.js';
 import { CORS_ORIGINS, WHATSAPP_WEBHOOK_SECRET, IS_PRODUCTION } from './config/env.js';
+import { buildAllowedCorsOrigins, inferRequestOrigin, isCorsOriginAllowed } from './config/cors.js';
 import {
   apiLimiter,
   authLimiter,
@@ -96,6 +97,7 @@ import { startAutoRouting } from './services/ai/leadAutoRouter.js';
 import { createSocketServer } from './services/socketServer.js';
 
 const app: Express = express();
+const allowedCorsOrigins = buildAllowedCorsOrigins(CORS_ORIGINS, process.env.NODE_ENV);
 
 // Trust the first proxy in front of the server (e.g. Vercel edge, nginx, AWS ALB).
 // This makes req.ip and all express-rate-limit lookups use the real client IP
@@ -182,16 +184,17 @@ app.use((_req: Request, res: Response, next: NextFunction) => {
   next();
 });
 app.use(
-  cors({
-    origin: (origin, callback) => {
-      // Allow requests with no origin (server-to-server, curl, mobile apps)
-      if (!origin || CORS_ORIGINS.includes(origin)) {
-        callback(null, true);
-      } else {
-        callback(new Error('Not allowed by CORS'));
-      }
-    },
-    credentials: true,
+  cors((req, callback) => {
+    const requestOrigin = inferRequestOrigin(req);
+    const origin = req.header('Origin');
+    const isAllowed = isCorsOriginAllowed(origin, allowedCorsOrigins, requestOrigin);
+
+    if (isAllowed) {
+      callback(null, { origin: true, credentials: true });
+      return;
+    }
+
+    callback(new Error('Not allowed by CORS'));
   })
 );
 
