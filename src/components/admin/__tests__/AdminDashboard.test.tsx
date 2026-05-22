@@ -323,7 +323,7 @@ describe('AdminDashboard Integration', () => {
     it('should have accessible tab buttons', () => {
       renderWithRedux(<AdminDashboard />);
 
-      const tabs = screen.getAllByRole('button', { name: /Overview|Users|Analytics|Settings/i });
+      const tabs = screen.getAllByRole('tab', { name: /Overview|Users|Analytics|Settings/i });
       expect(tabs.length).toBeGreaterThan(0);
     });
 

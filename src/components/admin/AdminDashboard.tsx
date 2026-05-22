@@ -26,6 +26,9 @@ const ADMIN_TABS: ReadonlyArray<{ id: AdminTabId; label: string; Icon: typeof Ac
   { id: 'settings', label: 'Settings', Icon: Settings },
 ];
 
+const getTabId = (tabId: AdminTabId): string => `admin-tab-${tabId}`;
+const getPanelId = (tabId: AdminTabId): string => `admin-panel-${tabId}`;
+
 /**
  * AdminDashboard Component
  *
@@ -84,9 +87,19 @@ const AdminDashboard = () => {
         </S.AdminUserInfo>
       </S.AdminHeader>
 
-      <S.AdminTabs>
+      <S.AdminTabs role="tablist" aria-label="Admin dashboard tabs">
         {ADMIN_TABS.map(tab => (
-          <S.Tab key={tab.id} $active={activeTab === tab.id} onClick={() => setActiveTab(tab.id)}>
+          <S.Tab
+            key={tab.id}
+            id={getTabId(tab.id)}
+            role="tab"
+            type="button"
+            aria-selected={activeTab === tab.id}
+            aria-controls={getPanelId(tab.id)}
+            tabIndex={activeTab === tab.id ? 0 : -1}
+            $active={activeTab === tab.id}
+            onClick={() => setActiveTab(tab.id)}
+          >
             <tab.Icon size={20} />
             {tab.label}
           </S.Tab>
@@ -96,7 +109,11 @@ const AdminDashboard = () => {
       <S.AdminContent>
         {/* OVERVIEW TAB */}
         {activeTab === 'overview' && (
-          <S.AdminOverview>
+          <S.AdminOverview
+            id={getPanelId('overview')}
+            role="tabpanel"
+            aria-labelledby={getTabId('overview')}
+          >
             <S.MetricsGrid>
               {/* Users Metrics */}
               <S.MetricCard>
@@ -235,7 +252,11 @@ const AdminDashboard = () => {
 
         {/* USERS TAB */}
         {activeTab === 'users' && (
-          <S.AdminUsers>
+          <S.AdminUsers
+            id={getPanelId('users')}
+            role="tabpanel"
+            aria-labelledby={getTabId('users')}
+          >
             <S.SectionHeader>
               <Users size={20} />
               <h3>User Management</h3>
@@ -286,7 +307,11 @@ const AdminDashboard = () => {
 
         {/* ANALYTICS TAB */}
         {activeTab === 'analytics' && (
-          <S.AdminAnalytics>
+          <S.AdminAnalytics
+            id={getPanelId('analytics')}
+            role="tabpanel"
+            aria-labelledby={getTabId('analytics')}
+          >
             <S.SectionHeader>
               <BarChart3 size={20} />
               <h3>Analytics & Reports</h3>
@@ -341,7 +366,11 @@ const AdminDashboard = () => {
 
         {/* SETTINGS TAB */}
         {activeTab === 'settings' && (
-          <S.AdminSettings>
+          <S.AdminSettings
+            id={getPanelId('settings')}
+            role="tabpanel"
+            aria-labelledby={getTabId('settings')}
+          >
             <S.SectionHeader>
               <Settings size={20} />
               <h3>System Settings</h3>
