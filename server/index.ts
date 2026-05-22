@@ -421,8 +421,6 @@ app.use('/api/secondary-sales', secondarySalesRoutes);
 // Commissions API (Phase 35 - Dubai Real Estate Commission Tracker)
 app.use('/api/commissions', commissionsRoutes);
 
-// Notifications API (in-app notification management)
-app.use('/api/notifications', notificationsRoutes);
 app.use('/api/inventory/import', smartImportRoutes);
 app.use('/api', importHistoryRoutes);
 
