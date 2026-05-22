@@ -77,7 +77,7 @@ Required invariants:
 
 For all waves, apply merge policy from the 11-wave execution program:
 
-- micro-wave merges,
+- macro/huge-wave bundles with internal checkpoints,
 - build/type/lint gate,
 - targeted unit/integration/e2e validation,
 - rollback note required.

@@ -41,6 +41,7 @@ Stabilize Google/Firebase login first (no backend-sync bypass), then establish t
 
 ### A3 — Refactor Delivery Mode
 
+- Full refactor objective, shipped in macro/huge-waves.
 - Full refactor objective, shipped in micro-waves.
 - Keep route hosts stable while replacing internals incrementally.
 
@@ -51,6 +52,7 @@ Stabilize Google/Firebase login first (no backend-sync bypass), then establish t
 ### Instruction Layer
 
 - `.github/instructions/agentic-workflow.instructions.md`
+  - Handoff packet required per macro/huge-wave.
   - Handoff packet required per micro-wave.
 - `.github/instructions/typescript.instructions.md`
   - strict-safe DTO contracts, no silent async failures.
@@ -64,6 +66,8 @@ Stabilize Google/Firebase login first (no backend-sync bypass), then establish t
 
 ### Prompt Layer
 
+- `.github/prompts/macro-huge-wave-implementation.prompt.md`
+  - reused as the macro/huge-wave execution prompt for auth/profile/dashboard bundles with acceptance criteria.
 - `.github/prompts/micro-wave-implementation.prompt.md`
   - reused to run auth/profile/dashboard waves with acceptance criteria.
 

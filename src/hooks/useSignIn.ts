@@ -53,6 +53,8 @@ interface SocialSyncRecovery {
   reason: string;
 }
 
+const MAX_SOCIAL_RETRY_ATTEMPTS = 3;
+
 export interface UserCategory {
   id: string;
   label: string;
@@ -138,6 +140,7 @@ export function useSignIn() {
   // ── Post-auth pending user ─────────────────────────────────────
   const [pendingUser, setPendingUser] = useState<PendingUser | null>(null);
   const [socialSyncRecovery, setSocialSyncRecovery] = useState<SocialSyncRecovery | null>(null);
+  const [socialRetryAttempts, setSocialRetryAttempts] = useState(0);
 
   // Ref for navigation timers
   const navTimerRef = useRef<ReturnType<typeof setTimeout>>();
@@ -294,9 +297,13 @@ export function useSignIn() {
   // ── Social auth ────────────────────────────────────────────────
 
   const handleSocialAuth = useCallback(
-    async (provider: string): Promise<void> => {
+    async (provider: string, options?: { isRetry?: boolean }): Promise<void> => {
       setLoading(true);
       setError('');
+      if (!options?.isRetry) {
+        setSocialSyncRecovery(null);
+        setSocialRetryAttempts(0);
+      }
       setSocialSyncRecovery(null);
       try {
         let result;
@@ -320,6 +327,7 @@ export function useSignIn() {
             throw new Error('Invalid backend response: missing user data');
           }
           const backendUser = backendResponse.data.user;
+          setSocialRetryAttempts(0);
 
           if (mode === 'signup') {
             handleSignUpSuccess(backendUser, { fromSocialProvider: provider });
@@ -336,6 +344,9 @@ export function useSignIn() {
               : 'Unable to complete authentication sync';
           if (provider === 'google' || provider === 'facebook' || provider === 'apple') {
             setSocialSyncRecovery({ provider, reason: syncMessage });
+            if (options?.isRetry) {
+              setSocialRetryAttempts(prev => prev + 1);
+            }
           }
           setError(
             `Authentication succeeded with ${provider}, but backend session setup failed: ${syncMessage}. Please try again.`
@@ -356,6 +367,21 @@ export function useSignIn() {
       return;
     }
 
+    if (socialRetryAttempts >= MAX_SOCIAL_RETRY_ATTEMPTS) {
+      setError('Retry limit reached. Please switch to email login or try again later.');
+      return;
+    }
+
+    await handleSocialAuth(socialSyncRecovery.provider, { isRetry: true });
+  }, [handleSocialAuth, socialSyncRecovery, socialRetryAttempts]);
+
+  const clearSocialRecovery = useCallback((): void => {
+    setSocialSyncRecovery(null);
+    setSocialRetryAttempts(0);
+    setError('');
+  }, []);
+
+  const remainingSocialRetries = Math.max(0, MAX_SOCIAL_RETRY_ATTEMPTS - socialRetryAttempts);
     await handleSocialAuth(socialSyncRecovery.provider);
   }, [handleSocialAuth, socialSyncRecovery]);
 
@@ -485,6 +511,7 @@ export function useSignIn() {
     setError('');
     setSuccess('');
     setSocialSyncRecovery(null);
+    setSocialRetryAttempts(0);
   }, []);
 
   const getRolesForCategory = useCallback((): UserRole[] => {
@@ -513,6 +540,8 @@ export function useSignIn() {
     setError,
     success,
     socialSyncRecovery,
+    socialRetryAttempts,
+    remainingSocialRetries,
     switchMode,
     goBackToStep,
 
@@ -547,6 +576,7 @@ export function useSignIn() {
     handleSignInSuccess,
     handleSocialAuth,
     retrySocialAuth,
+    clearSocialRecovery,
     handleEmailSubmit,
     handlePhoneSubmit,
     handleOtpVerify,

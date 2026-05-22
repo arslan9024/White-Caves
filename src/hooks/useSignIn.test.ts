@@ -319,11 +319,114 @@ describe('useSignIn — handleSocialAuth (integration)', () => {
       mockSignInWithGoogle.mockResolvedValue({ user: firebaseUser });
       mockSyncFirebaseUser.mockRejectedValue(new Error('Backend unreachable'));
       const { result } = renderHook(() => useSignIn(), { wrapper: createWrapper(store) });
+      await act(async () => {
+        await result.current.handleSocialAuth('google');
+      });
+
+      expect(result.current.socialSyncRecovery).toEqual({
+        provider: 'google',
+        reason: 'Backend unreachable',
+      });
+    });
+
+    it('retries the same social provider via retrySocialAuth', async () => {
+      mockSignInWithGoogle.mockResolvedValue({ user: firebaseUser });
+      mockSyncFirebaseUser
+        .mockRejectedValueOnce(new Error('Backend unreachable'))
+        .mockResolvedValueOnce(successResponse());
+      const { result } = renderHook(() => useSignIn(), { wrapper: createWrapper(store) });
+
+      await act(async () => {
+        await result.current.handleSocialAuth('google');
+      });
+
+      await act(async () => {
+        await result.current.retrySocialAuth();
+      });
+
+      expect(mockSignInWithGoogle).toHaveBeenCalledTimes(2);
+      expect(mockSyncFirebaseUser).toHaveBeenCalledTimes(2);
+    });
+
+    it('clearSocialRecovery clears recovery metadata and sync error', async () => {
+      mockSignInWithGoogle.mockResolvedValue({ user: firebaseUser });
+      mockSyncFirebaseUser.mockRejectedValue(new Error('Backend unreachable'));
+      const { result } = renderHook(() => useSignIn(), { wrapper: createWrapper(store) });
+
+      await act(async () => {
+        await result.current.handleSocialAuth('google');
+      });
+
+      expect(result.current.socialSyncRecovery).toEqual({
+        provider: 'google',
+        reason: 'Backend unreachable',
+      });
+      expect(result.current.error).toContain('backend session setup failed');
+
+      act(() => {
+        result.current.clearSocialRecovery();
+      });
+
+      expect(result.current.socialSyncRecovery).toBeNull();
 
       act(() => vi.runAllTimers());
       expect(result.current.error).toBe('');
-      expect(mockNavigate).toHaveBeenCalledWith('/dashboard');
-      vi.useRealTimers();
+    });
+
+    it('enforces a retry limit and stops additional sync calls after max retries', async () => {
+      mockSignInWithGoogle.mockResolvedValue({ user: firebaseUser });
+      mockSyncFirebaseUser.mockRejectedValue(new Error('Backend unreachable'));
+      const { result } = renderHook(() => useSignIn(), { wrapper: createWrapper(store) });
+
+      await act(async () => {
+        await result.current.handleSocialAuth('google');
+      });
+
+      await act(async () => {
+        await result.current.retrySocialAuth();
+      });
+      await act(async () => {
+        await result.current.retrySocialAuth();
+      });
+      await act(async () => {
+        await result.current.retrySocialAuth();
+      });
+
+      expect(mockSyncFirebaseUser).toHaveBeenCalledTimes(4);
+
+      await act(async () => {
+        await result.current.retrySocialAuth();
+      });
+
+      expect(mockSyncFirebaseUser).toHaveBeenCalledTimes(4);
+      expect(result.current.error).toContain('Retry limit reached');
+    });
+
+    it('updates remainingSocialRetries after each failed retry attempt', async () => {
+      mockSignInWithGoogle.mockResolvedValue({ user: firebaseUser });
+      mockSyncFirebaseUser.mockRejectedValue(new Error('Backend unreachable'));
+      const { result } = renderHook(() => useSignIn(), { wrapper: createWrapper(store) });
+
+      await act(async () => {
+        await result.current.handleSocialAuth('google');
+      });
+
+      expect(result.current.remainingSocialRetries).toBe(3);
+
+      await act(async () => {
+        await result.current.retrySocialAuth();
+      });
+      expect(result.current.remainingSocialRetries).toBe(2);
+
+      await act(async () => {
+        await result.current.retrySocialAuth();
+      });
+      expect(result.current.remainingSocialRetries).toBe(1);
+
+      await act(async () => {
+        await result.current.retrySocialAuth();
+      });
+      expect(result.current.remainingSocialRetries).toBe(0);
     });
   });
 

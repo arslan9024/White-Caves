@@ -10,7 +10,7 @@ Provide a controlled landing area for imported Linda modules while preserving Wh
 
 ## Rules
 
-1. Copy only modules required for the active micro-wave.
+1. Copy only modules required for the active macro/huge-wave bundle.
 2. Keep upstream file names and folder relationships where practical.
 3. Do not wire imports directly into routes.
 4. Route integration must happen via:
