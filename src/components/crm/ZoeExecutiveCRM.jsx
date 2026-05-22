@@ -87,6 +87,13 @@ const ZoeExecutiveCRM = ({ activeFeature }) => {
   const [recruitmentOverview, setRecruitmentOverview] = useState(null);
   const [recruitmentLoading, setRecruitmentLoading] = useState(false);
   const [recruitmentError, setRecruitmentError] = useState('');
+  const [selectedShortlistJobId, setSelectedShortlistJobId] = useState('');
+  const [managerShortlist, setManagerShortlist] = useState([]);
+  const [shortlistLoading, setShortlistLoading] = useState(false);
+  const [shortlistError, setShortlistError] = useState('');
+  const [reviewActionMessage, setReviewActionMessage] = useState('');
+  const [reviewActionError, setReviewActionError] = useState('');
+  const [activeReviewApplicationId, setActiveReviewApplicationId] = useState('');
 
   const {
     departments: apiDepartments,
@@ -197,9 +204,67 @@ const ZoeExecutiveCRM = ({ activeFeature }) => {
     }
   }, []);
 
+  const fetchManagerShortlist = useCallback(async (jobId) => {
+    if (!jobId) {
+      setManagerShortlist([]);
+      return;
+    }
+
+    try {
+      setShortlistLoading(true);
+      setShortlistError('');
+      const data = await crmDataService.getManagerShortlist(jobId, {
+        minScore: 70,
+        limit: 20,
+        role: 'hiring_manager'
+      });
+      setManagerShortlist(data.shortlist || []);
+    } catch (error) {
+      setShortlistError(error.message || 'Failed to load manager shortlist');
+    } finally {
+      setShortlistLoading(false);
+    }
+  }, []);
+
+  const handleManagerDecision = useCallback(async (applicationId, decision) => {
+    if (!applicationId) {
+      return;
+    }
+
+    try {
+      setActiveReviewApplicationId(applicationId);
+      setReviewActionError('');
+      setReviewActionMessage('');
+      await crmDataService.submitManagerReview(
+        applicationId,
+        decision,
+        `Decision from Zoe dashboard: ${decision}`,
+        'hiring_manager'
+      );
+
+      setReviewActionMessage(`Review decision recorded: ${decision}`);
+      await fetchManagerShortlist(selectedShortlistJobId);
+      await fetchRecruitmentOverview();
+    } catch (error) {
+      setReviewActionError(error.message || 'Failed to submit manager review decision');
+    } finally {
+      setActiveReviewApplicationId('');
+    }
+  }, [fetchManagerShortlist, fetchRecruitmentOverview, selectedShortlistJobId]);
+
   useEffect(() => {
     fetchRecruitmentOverview();
   }, [fetchRecruitmentOverview]);
+
+  useEffect(() => {
+    if (!selectedShortlistJobId && recruitmentOverview?.recent_jobs?.length) {
+      setSelectedShortlistJobId(recruitmentOverview.recent_jobs[0].id);
+    }
+  }, [recruitmentOverview, selectedShortlistJobId]);
+
+  useEffect(() => {
+    fetchManagerShortlist(selectedShortlistJobId);
+  }, [fetchManagerShortlist, selectedShortlistJobId]);
 
   const formatTimeAgo = (timestamp) => {
     if (!timestamp) return 'Unknown';
@@ -503,6 +568,78 @@ const ZoeExecutiveCRM = ({ activeFeature }) => {
                     <div className="job-pill empty">No recruitment jobs yet</div>
                   )}
                 </div>
+              </div>
+            </div>
+
+            <div className="manager-shortlist-panel">
+              <div className="manager-shortlist-header">
+                <div>
+                  <h4><Users size={18} /> Manager Shortlist Workflow</h4>
+                  <p>Hiring managers can shortlist, hold, or reject from the live score pipeline.</p>
+                </div>
+                <div className="shortlist-job-selector">
+                  <label htmlFor="shortlist-job">Open role</label>
+                  <select
+                    id="shortlist-job"
+                    value={selectedShortlistJobId}
+                    onChange={(e) => setSelectedShortlistJobId(e.target.value)}
+                  >
+                    {(recruitmentOverview?.recent_jobs || []).map(job => (
+                      <option key={job.id} value={job.id}>{job.title}</option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
+              {reviewActionMessage && <div className="analytics-success"><CheckCircle size={14} /> {reviewActionMessage}</div>}
+              {reviewActionError && <div className="analytics-error"><AlertCircle size={14} /> {reviewActionError}</div>}
+              {shortlistError && <div className="analytics-error"><AlertCircle size={14} /> {shortlistError}</div>}
+
+              <div className="shortlist-candidate-list">
+                {shortlistLoading && (
+                  <div className="shortlist-empty"><Loader2 size={16} className="spin" /> Loading manager shortlist...</div>
+                )}
+
+                {!shortlistLoading && managerShortlist.map(entry => (
+                  <div key={entry.candidate.id} className="shortlist-candidate-item">
+                    <div className="candidate-main">
+                      <strong>{entry.candidate.name}</strong>
+                      <span>{entry.candidate.email}</span>
+                    </div>
+                    <div className="candidate-metrics">
+                      <span className="score-chip">{Math.round(entry.score.overall)} / 100</span>
+                      <span className="status-chip">{entry.score.screening_status}</span>
+                      <span className="recommendation-chip">{entry.recommendation.replace('_', ' ')}</span>
+                    </div>
+                    <div className="candidate-actions">
+                      <button
+                        className="action-btn secondary"
+                        disabled={!entry.application?.id || activeReviewApplicationId === entry.application?.id}
+                        onClick={() => handleManagerDecision(entry.application?.id, 'shortlist')}
+                      >
+                        Shortlist
+                      </button>
+                      <button
+                        className="action-btn secondary"
+                        disabled={!entry.application?.id || activeReviewApplicationId === entry.application?.id}
+                        onClick={() => handleManagerDecision(entry.application?.id, 'hold')}
+                      >
+                        Hold
+                      </button>
+                      <button
+                        className="action-btn secondary danger"
+                        disabled={!entry.application?.id || activeReviewApplicationId === entry.application?.id}
+                        onClick={() => handleManagerDecision(entry.application?.id, 'reject')}
+                      >
+                        Reject
+                      </button>
+                    </div>
+                  </div>
+                ))}
+
+                {!shortlistLoading && managerShortlist.length === 0 && (
+                  <div className="shortlist-empty">No candidates met the shortlist threshold for this role.</div>
+                )}
               </div>
             </div>
           </div>

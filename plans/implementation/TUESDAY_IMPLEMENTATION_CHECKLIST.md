@@ -21,6 +21,7 @@
 - [x] Live Express recruitment route tests added for score-candidate and screening-metrics (moderate_match/rejected)
 - [x] Offer workflow expanded with approval and acceptance response endpoints
 - [x] Recruitment audit logging added for scoring, offer, and onboarding transitions
+- [x] Zoe analytics wired to manager shortlist and manager review workflow endpoints
 
 ## In Progress
 

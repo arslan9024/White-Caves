@@ -147,7 +147,6 @@ Budget model:
 ## Pending Tasks
 
 - [ ] Expand the Zoe recruitment KPI UI from the first slice into the full framework.
-- [ ] Add recruiter-facing shortlist and review UI.
 
 ## Future Improvements
 
@@ -170,6 +169,6 @@ Budget model:
 ## Immediate Next Actions
 
 1. Expand the Zoe recruitment KPI UI from the first live analytics slice.
-2. Wire recruiter-facing shortlist and review UI to the new manager endpoints.
-3. Verify Linda WhatsApp templates against production constraints in staging.
-4. Finalize production signoff for disabling alias compatibility mode.
+2. Verify Linda WhatsApp templates against production constraints in staging.
+3. Finalize production signoff for disabling alias compatibility mode.
+4. Add richer recruitment KPI trend views (time-to-hire and cost-per-hire).
