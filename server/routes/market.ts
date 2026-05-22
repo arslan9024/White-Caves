@@ -11,12 +11,14 @@ import logger from '../utils/logger.js';
 const router = Router();
 
 // ─── Dubai Area Price Benchmarks ─────────────────────────────────────────────
-const areaBenchmarks: Array<{
+interface AreaBenchmarkRow {
   area: string;
   avgPricePerSqft: number;
   avgAnnualRent: number;
   zone: string;
-}> = [
+}
+
+const areaBenchmarks: AreaBenchmarkRow[] = [
   { area: 'Palm Jumeirah', avgPricePerSqft: 3800, avgAnnualRent: 260 * 12, zone: 'premium' },
   { area: 'Downtown Dubai', avgPricePerSqft: 3200, avgAnnualRent: 220 * 12, zone: 'premium' },
   { area: 'Emaar Beachfront', avgPricePerSqft: 3500, avgAnnualRent: 240 * 12, zone: 'premium' },
@@ -43,6 +45,79 @@ const areaBenchmarks: Array<{
   { area: 'Bur Dubai', avgPricePerSqft: 950, avgAnnualRent: 65 * 12, zone: 'affordable' },
   { area: 'Deira', avgPricePerSqft: 900, avgAnnualRent: 60 * 12, zone: 'affordable' },
 ];
+
+const MARKET_BENCHMARKS_CACHE_TTL_MS = 10 * 60 * 1000;
+let marketBenchmarksLiveCache: { fetchedAt: number; rows: AreaBenchmarkRow[] } | null = null;
+
+const normalizeBenchmarkRow = (raw: unknown): AreaBenchmarkRow | null => {
+  if (!raw || typeof raw !== 'object') return null;
+
+  const row = raw as Record<string, unknown>;
+  const area = toStringField(row.area);
+  const zone = toStringField(row.zone);
+  const avgPricePerSqft = toNumberField(row.avgPricePerSqft);
+  const avgAnnualRent = toNumberField(row.avgAnnualRent);
+
+  if (!area || !zone || avgPricePerSqft === null || avgAnnualRent === null) {
+    return null;
+  }
+
+  return { area, zone, avgPricePerSqft, avgAnnualRent };
+};
+
+const parseBenchmarkPayload = (payload: unknown): AreaBenchmarkRow[] => {
+  let sourceRows: unknown[] = [];
+
+  if (Array.isArray(payload)) {
+    sourceRows = payload;
+  } else if (payload && typeof payload === 'object') {
+    const maybeData = (payload as { data?: unknown }).data;
+    if (Array.isArray(maybeData)) sourceRows = maybeData;
+  }
+
+  return sourceRows
+    .map(normalizeBenchmarkRow)
+    .filter((row): row is AreaBenchmarkRow => row !== null);
+};
+
+const getAreaBenchmarks = async (): Promise<AreaBenchmarkRow[]> => {
+  const feedUrl = process.env.MARKET_BENCHMARKS_URL;
+  if (!feedUrl) return areaBenchmarks;
+
+  const now = Date.now();
+  if (
+    marketBenchmarksLiveCache &&
+    now - marketBenchmarksLiveCache.fetchedAt < MARKET_BENCHMARKS_CACHE_TTL_MS
+  ) {
+    return marketBenchmarksLiveCache.rows;
+  }
+
+  try {
+    const headers: Record<string, string> = { Accept: 'application/json' };
+    const apiKey = process.env.MARKET_BENCHMARKS_API_KEY;
+    if (apiKey) headers.Authorization = `Bearer ${apiKey}`;
+
+    const response = await fetch(feedUrl, { headers });
+    if (!response.ok) {
+      throw new Error(`Benchmark feed request failed: HTTP ${response.status}`);
+    }
+
+    const payload = (await response.json()) as unknown;
+    const rows = parseBenchmarkPayload(payload);
+    if (rows.length === 0) {
+      throw new Error('Benchmark feed returned no valid rows');
+    }
+
+    marketBenchmarksLiveCache = { fetchedAt: now, rows };
+    return rows;
+  } catch (error) {
+    logger.warn('Market benchmark live feed unavailable — falling back to static benchmarks', {
+      error: error instanceof Error ? error.message : String(error),
+    });
+
+    return areaBenchmarks;
+  }
+};
 
 interface ReraRentalIndexRow {
   area: string;
@@ -242,7 +317,8 @@ router.get(
     });
     const snapshotMap = new Map(latestSnapshots.map(s => [s.area.toLowerCase(), s]));
 
-    let result = areaBenchmarks;
+    const benchmarks = await getAreaBenchmarks();
+    let result = benchmarks;
     if (zone) {
       result = result.filter(b => b.zone === zone);
     }
