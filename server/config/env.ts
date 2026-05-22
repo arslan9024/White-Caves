@@ -61,7 +61,17 @@ export const DATABASE_URL = _resolvedDatabaseUrl;
 if (!process.env.CORS_ORIGIN && IS_PRODUCTION) {
   throw new Error('CRITICAL: CORS_ORIGIN environment variable must be set in production');
 }
-export const CORS_ORIGINS = (process.env.CORS_ORIGIN || 'http://localhost:5000')
+export const CORS_ORIGINS = (
+  process.env.CORS_ORIGIN ||
+  [
+    'http://localhost:5000',
+    'http://localhost:5001',
+    'http://localhost:5173',
+    'http://127.0.0.1:5000',
+    'http://127.0.0.1:5001',
+    'http://127.0.0.1:5173',
+  ].join(',')
+)
   .split(',')
   .map(s => s.trim());
 

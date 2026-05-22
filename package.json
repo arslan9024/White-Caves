@@ -9,7 +9,7 @@
     "npm": ">=10.0.0"
   },
   "scripts": {
-    "dev": "vite",
+    "dev": "concurrently --names \"CLIENT,SERVER\" --prefix-colors \"cyan,green\" \"npm run dev:client\" \"npm run dev:server\"",
     "dev:linda": "cd modules/linda && npm run dev",
     "dev:henry": "cd modules/henry && cross-env HENRY_PORT=5100 npm run dev",
     "dev:ai-modules": "concurrently \"npm run dev:linda\" \"npm run dev:henry\"",
@@ -18,7 +18,9 @@
     "install:ai-modules": "npm run install:linda && npm run install:henry",
     "server": "tsx server/index.ts",
     "client": "vite",
-    "dev:all": "concurrently \"npm run server\" \"npm run client\"",
+    "dev:client": "vite",
+    "dev:server": "nodemon",
+    "dev:all": "npm run dev",
     "build": "vite build",
     "build:vercel": "vite build",
     "preview": "vite preview",
@@ -168,6 +170,8 @@
     "orchestrator:cascade:all": "powershell -ExecutionPolicy Bypass -File scripts/orchestrator/cascade-preview.ps1 -ShowAll",
     "orchestrator:cascade:brief": "powershell -ExecutionPolicy Bypass -File scripts/orchestrator/cascade-preview.ps1 -Brief",
     "orchestrator:agent-loop": "powershell -ExecutionPolicy Bypass -File scripts/orchestrator/agent-loop.ps1",
+    "orchestrator:agent-loop:approval": "powershell -ExecutionPolicy Bypass -File scripts/orchestrator/agent-loop.ps1 -Approval",
+    "orchestrator:agent-loop:autopilot": "powershell -ExecutionPolicy Bypass -File scripts/orchestrator/agent-loop.ps1 -Autopilot",
     "orchestrator:agent-loop:schedule": "powershell -ExecutionPolicy Bypass -File scripts/orchestrator/agent-loop.ps1 -ShowSchedule",
     "orchestrator:agent-loop:once": "powershell -ExecutionPolicy Bypass -File scripts/orchestrator/agent-loop.ps1 -Once",
     "orchestrator:agent-loop:nobrowser": "powershell -ExecutionPolicy Bypass -File scripts/orchestrator/agent-loop.ps1 -NoBrowser",
@@ -190,7 +194,9 @@
     "orchestrator:phase-bundle:report": "powershell -ExecutionPolicy Bypass -File scripts/orchestrator/phase-bundle-report.ps1",
     "orchestrator:phase-bundle:report:json": "powershell -ExecutionPolicy Bypass -File scripts/orchestrator/phase-bundle-report.ps1 -Json",
     "orchestrator:phase99": "powershell -ExecutionPolicy Bypass -File scripts/orchestrator/phase99-signoff.ps1",
-    "orchestrator:phase99:quick": "powershell -ExecutionPolicy Bypass -File scripts/orchestrator/phase99-signoff.ps1 -SkipTests"
+    "orchestrator:phase99:quick": "powershell -ExecutionPolicy Bypass -File scripts/orchestrator/phase99-signoff.ps1 -SkipTests",
+    "approval": "npm run orchestrator:agent-loop:approval --",
+    "autopilot": "npm run orchestrator:agent-loop:autopilot --"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"
@@ -248,6 +254,7 @@
     "jsdom": "^26.1.0",
     "lint-staged": "^16.4.0",
     "msw": "^2.14.2",
+    "nodemon": "^3.1.14",
     "playwright": "^1.58.2",
     "prettier": "^3.8.1",
     "supertest": "^7.2.2",

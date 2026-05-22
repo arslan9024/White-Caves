@@ -4,7 +4,35 @@
  * Uses express-rate-limit with configurable windows per route type
  */
 
-import rateLimit from 'express-rate-limit';
+import rateLimit, { ipKeyGenerator, type RateLimitRequestHandler } from 'express-rate-limit';
+
+interface FirebaseSyncBody {
+  firebaseUid?: unknown;
+  email?: unknown;
+}
+
+const resolveFirebaseIdentity = (body: unknown): string => {
+  if (!body || typeof body !== 'object') {
+    return 'anonymous';
+  }
+
+  const payload = body as FirebaseSyncBody;
+  const firebaseUid =
+    typeof payload.firebaseUid === 'string' && payload.firebaseUid.trim().length > 0
+      ? payload.firebaseUid.trim()
+      : '';
+
+  if (firebaseUid) {
+    return `uid:${firebaseUid}`;
+  }
+
+  const email =
+    typeof payload.email === 'string' && payload.email.trim().length > 0
+      ? payload.email.trim().toLowerCase()
+      : '';
+
+  return email ? `email:${email}` : 'anonymous';
+};
 
 // ============================================================================
 // AUTH RATE LIMITER — Strict limits for login/register/password
@@ -23,6 +51,28 @@ export const authLimiter = rateLimit({
   standardHeaders: true, // Return rate limit info in `RateLimit-*` headers
   legacyHeaders: false, // Disable `X-RateLimit-*` headers
   skipSuccessfulRequests: false,
+});
+
+/** Firebase sync: allow more attempts for social auth handshake retries (shared IP safe) */
+export const firebaseSyncLimiter: RateLimitRequestHandler = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 120,
+  message: {
+    success: false,
+    error: 'Too many Firebase sync attempts',
+    message:
+      'Too many Firebase session sync attempts from this IP. Please wait a few minutes and try again.',
+    statusCode: 429,
+  },
+  keyGenerator: req => {
+    const baseIp = ipKeyGenerator(req.ip || req.socket.remoteAddress || 'unknown-ip');
+    const identity = resolveFirebaseIdentity(req.body);
+    return `${baseIp}:${identity}`;
+  },
+  standardHeaders: true,
+  legacyHeaders: false,
+  // Successful auth sync should not consume quota.
+  skipSuccessfulRequests: true,
 });
 
 /** Registration: 3 attempts per hour per IP */
@@ -117,6 +167,7 @@ export const contactLimiter = rateLimit({
 
 export default {
   authLimiter,
+  firebaseSyncLimiter,
   registerLimiter,
   passwordLimiter,
   apiLimiter,

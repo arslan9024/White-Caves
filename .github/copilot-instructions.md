@@ -16,7 +16,7 @@
 | :------------ | :---------------- | :-------------------- | :------------------------------------------------------------------------- |
 | **@Ada**      | Chief Architect   | **Claude 3.5 Sonnet** | Full-system design, cross-service integration, high-level logic oversight. |
 | **@Margaret** | Master Planner    | **GPT-4o**            | Logic roadmaps, 15-step milestones, daily sprint organization.             |
-| **@Mary**     | Inventory Manager | **GPT-4o**            | Property acquisition, landlord data, inventory status tracking.            |
+| **@Mary**     | Inventory Manager | **DeepSeek V3**       | Property acquisition, landlord data, inventory status tracking.            |
 
 ---
 
@@ -40,8 +40,8 @@
 - **@Mira (Lead Coder):** [Claude 3.5 Sonnet] Complex business logic, REST/GraphQL API architecture.
 - **@Daniela (Auth Specialist):** [Claude 3.5 Sonnet] Security, JWT, user permissions, CRM login hardening.
 - **@Ruchi (Systems Eng):** [GPT-4o] API optimization, server-side performance, speed tuning.
-- **@Joelle (AI Lead):** [GPT-4o] Smart property matching and AI lead scoring logic.
-- **@Hedy (Logic Auditor):** [GPT-4o] Edge-case detection, business rule validation, unit testing logic.
+- **@Joelle (AI Lead):** [Llama 3.1 70B via Groq] Smart property matching and AI lead scoring logic.
+- **@Hedy (Logic Auditor):** [Llama 3.1 70B via Groq] Edge-case detection, business rule validation, unit testing logic.
 
 ---
 
@@ -49,10 +49,10 @@
 
 **Mission:** End-to-end Leasing Workflow from Acquisition to P&L.
 
-- **@Victoria (Contracts):** [Claude 3.5 Sonnet] Automated Tenancy Contracts, Addendums, and legal formatting.
-- **@Maya (Workflow):** [GPT-4o] Lead-to-Handover process automation and status triggers.
-- **@Invoice (Finance):** [GPT-4o] Invoicing, payment tracking, VAT calculations, and P&L reports.
-- **@Booking (Schedule):** [GPT-4o] Viewing appointments, calendar sync, and notification triggers.
+- **@Victoria (Contracts):** [Gemini 2.0 Flash] Automated Tenancy Contracts, Addendums, and legal formatting.
+- **@Maya (Workflow):** [Llama 3.1 70B via Groq] Lead-to-Handover process automation and status triggers.
+- **@Invoice (Finance):** [Llama 3.1 70B via Groq] Invoicing, payment tracking, VAT calculations, and P&L reports.
+- **@Booking (Schedule):** [Llama 3.1 70B via Groq] Viewing appointments, calendar sync, and notification triggers.
 
 ---
 
@@ -61,8 +61,8 @@
 **Mission:** Clean, fast, and scalable property/client data.
 
 - **@Barbara (DB Lead):** [Claude 3.5 Sonnet] Schema design, migrations, indexing, and complex queries.
-- **@Cassie (Analytics):** [GPT-4o] Data visualization logic for company performance reports.
-- **@Anima (Pipeline):** [GPT-4o] Bulk data uploads, property imports, and CSV/Excel integrations.
+- **@Cassie (Analytics):** [DeepSeek V3] Data visualization logic for company performance reports.
+- **@Anima (Pipeline):** [DeepSeek V3] Bulk data uploads, property imports, and CSV/Excel integrations.
 
 ---
 
@@ -73,27 +73,38 @@
 - **@Katherine (QA Lead):** [GPT-4o] Terminal error monitoring, auto-fixing bugs, linting.
 - **@Gwynne (DevOps):** [GPT-4o] Git workflow (Pull/Push/Merge), CI/CD, and Vercel deployments.
 - **@Radia (Security):** [Claude 3.5 Sonnet] Penetration testing, data encryption, and safety audits.
-- **@Rachel (SEO Expert):** [GPT-4o] Dubai Real Estate keyword optimization and site speed.
-- **@Annie (Content):** [GPT-4o] Automated property descriptions and luxury copywriting.
+- **@Rachel (SEO Expert):** [Gemini 2.0 Flash] Dubai Real Estate keyword optimization and site speed.
+- **@Annie (Content):** [Gemini 2.0 Flash] Automated property descriptions and luxury copywriting.
 - **@Pixel (Tracking):** [GPT-4o] Google Analytics, Facebook Pixel, and Lead conversion tracking.
-- **@Sofia (Compliance):** [GPT-4o] DLD/RERA regulatory checks and data privacy standards.
+- **@Sofia (Compliance):** [Gemini 2.0 Flash] DLD/RERA regulatory checks and data privacy standards.
 - **@Dena (Strategy):** [GPT-4o] Expansion planning and feature feasibility research.
 
 ---
 
 ### 🏆 OPERATIONAL EFFICIENCY RULES
 
-1. **Model Routing:** Use **GPT-4o** for 80% of tasks (standard UI, debugging, documentation). Save **Claude 3.5 Sonnet** for the "Orchestrators" and "Lead Coders" doing complex logic.
-2. **Autonomous Execution:** If an agent is assigned a task, they must complete it without asking for permission unless there is a critical conflict.
+1. **Model Routing (Deterministic):**
+
+- Free-planning agents MUST use only: Gemini 2.0 Flash, Llama 3.1 70B (Groq), DeepSeek V3.
+- Senior coding/design agents use GPT-4o by default for coding and verification.
+- Claude 3.5 Sonnet is reserved for explicit complex architecture/design reviews by @Ada or named senior leads.
+
+2. **Execution Mode Contract:**
+
+- Default mode is **Approval Mode**: complete one task, then stop and ask before advancing.
+- **Autopilot Mode** (explicitly enabled) runs continuously and only hard-stops on failures/policy blockers.
+
 3. **Daily Milestone Tracker:** @Margaret must update `PROJECT_PROGRESS.md` at the end of every session.
 
-   > **Governance Source of Truth:** `plans/CUSTOM_AGENTS_PLAN.md` is canonical; `AGENTS.md` and `AGENCY_MANIFEST.md` must stay synchronized with it.
+> **Governance Source of Truth (precedence):** `scripts/orchestrator/policy.json` (runtime values) > `plans/CUSTOM_AGENTS_PLAN.md` (governance model) > `AGENTS.md`/`AGENCY_MANIFEST.md` (descriptive mirrors).
 
 4. **🔒 TOKEN POLICY (STRICT — Zero Exceptions):**
    - **FREE PLANNING AGENTS** (@Victoria, @Invoice, @Sofia, @Cassie, @Joelle):
      → Use ONLY free/unlimited models: **Gemini 2.0 Flash** (Google AI Studio), **Llama 3.1 70B via Groq** (free tier), **DeepSeek V3** (~$0/1M tokens)
      → **ZERO premium Copilot requests.** No exceptions. Work scope: `business_docs/` and `plans/` only. No code changes ever.
      → Weekly Copilot quota is shared — free agents must NEVER consume it.
+     → If a free model is down/rate-limited: retry next slot and log outage in `DAILY_MILESTONE_TRACKER.md` (premium fallback forbidden).
+     → If a free agent detects a code defect: open/escalate to @Mira/@Katherine with repro notes; free agents must not edit code.
    - **SENIOR CODING AGENTS** (@Ada, @Mira, @Barbara, @Una, @Daniela, @Ruchi, @Gwynne, @Katherine):
      → Premium requests PERMITTED **only** when @Ada explicitly declares: **"@Ada — Context Ready (60% Readiness) — Coding Phase Approved"**
      → Without that declaration: use GPT-4o (standard) or queue the task for next approved sprint.
@@ -103,6 +114,17 @@
      ```
      ACTION types: `EXPAND` (add sections) | `DRAFT` (write from scratch) | `REVIEW` (check consistency) | `AUDIT` (report gaps) | `SYNC` (align with dependency)
      Example: `@Victoria — EXPAND: tenancy-ejari.md → add PDC tracking section`
+
+4.1 **Canonical Model & Eligibility Matrix (Authoritative):**
+
+- Use this matrix as the single lookup for model eligibility and premium access decisions.
+- If any role-table model text conflicts, this matrix and Rule 4/Rule 13 control.
+
+| Agent Group                                                                                                                                                                     | Allowed Models                                                 | Premium Eligible     | Notes                                            |
+| ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------- | -------------------- | ------------------------------------------------ |
+| Free Planning Agents (17): @Victoria, @Invoice, @Sofia, @Cassie, @Joelle, @Annie, @Rachel, @Marissa, @Timnit, @Hedy, @Maya, @Booking, @Jaime, @Fei-Fei, @Anima, @Mary, @Corinne | Gemini 2.0 Flash, Llama 3.1 70B (Groq), DeepSeek V3            | No                   | Docs/plans only; never code edits                |
+| Senior Coders: @Ada, @Mira, @Barbara, @Una, @Daniela, @Ruchi, @Gwynne, @Katherine                                                                                               | GPT-4o default, Claude 3.5 Sonnet for explicit complex reviews | Yes (post-gate only) | Requires Rule 7 + Rule 11 + @Ada approval phrase |
+| Senior Designers: @Una, @Lea, @Tracy, @Framer, @Zoe, @Inas                                                                                                                      | GPT-4o default, Claude 3.5 Sonnet for explicit complex reviews | Yes (post-gate only) | Requires Rule 7 + Rule 11 + @Ada approval phrase |
 
 5. **🚦 CONTEXT ENRICHMENT GATE (Before Any Coding Sprint):**
    Before any senior coding agent begins a feature, ALL gates must be checked:
@@ -142,15 +164,26 @@
           → Check PENDING_TASKS_ONLY.md and DAILY_MILESTONE_TRACKER.md
    [ ] 4. MARGARET SIGNED OFF: Has @Margaret reviewed the plan and confirmed scope?
           → Signal: @Margaret entry in DAILY_MILESTONE_TRACKER.md for today.
-   [ ] 5. ADA AUTHORIZED: Has @Ada declared "@Ada — Context Ready (60% Readiness) — Coding Phase Approved"?
+   [ ] 5. ADA AUTHORIZED: Has @Ada declared "Context Ready — Coding Phase Approved"?
           → This declaration MUST appear in the session before any senior agent codes.
    [ ] 6. QUOTA AVAILABLE: Check WEEKLY PREMIUM QUOTA in PROJECT_PROGRESS.md.
           → If 0 requests remaining → queue work, do NOT start premium coding.
    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
    [ ] 7. READINESS GATE MET: Is readiness score >=60% with evidence?
-   ✅ ALL 7 CHECKED? → @Ada declares: "@Ada — Context Ready (60% Readiness) — Coding Phase Approved"
+   ✅ ALL 7 CHECKED? → @Ada declares: "Context Ready (60% Readiness) — Coding Phase Approved"
    ❌ ANY UNCHECKED? → Route back to free planning agents. Do NOT code.
    ```
+
+7.1 **Execution Decision Order (Deterministic):**
+
+When deciding whether to proceed, evaluate in this order:
+
+1. Rule 7 session-start checklist (must fully pass)
+2. Rule 11 readiness gate (>=60% with required evidence)
+3. Rule 24 execution mode (Approval vs Autopilot behavior)
+4. Rule 25 runtime policy values (`scripts/orchestrator/policy.json`)
+
+If any step fails, stop and route to planning/escalation path.
 
 8. **📅 DAILY AGENT RHYTHM (Planning-First Workflow):**
    This rhythm governs every working day. Coding NEVER starts before planning agents complete their morning run.
@@ -170,7 +203,7 @@
                Task: EXPAND next item in her owned files queue
    → Output: paste expanded content into the relevant business_docs/ file and commit.
 
-   🕛 MIDDAY — @Margaret Gate Review (Free model only: Gemini 2.0 Flash / DeepSeek V3 / Llama 3.1 70B)
+   🕛 MIDDAY — @Margaret Gate Review (Standard GPT-4o, minimal tokens)
    ─────────────────────────────────────────────────────────────────────
    @Margaret checks AGENTS.md "CURRENT SPRINT STATUS" table.
    Updates section counts, sets gate status to READY or BLOCKED.
@@ -184,11 +217,11 @@
    Session ends with @Gwynne committing + pushing to development branch.
    ```
 
-9. **🔄 NO-IDLE POLICY — Expanded Free Agent Pool (40 Agents Total):**
-   The free agent team has been expanded from 17 to 40 agents (17 core + 23 growth). All run in external free tools. All follow the same zero-premium rule. Every agent has a 3-task backlog queue in AGENTS.md. No agent ever idles.
-   The planning pool is divided into 5 parallel teams so 5 different tasks can move at the same time.
+9. **🔄 NO-IDLE POLICY — Free Agent Pool (17 Agents):**
+   The free agent team includes 17 core agents listed below. All run in external free tools. All follow the same zero-premium rule. Every agent has a 3-task backlog queue in AGENTS.md. No agent ever idles.
+   The planning pool runs in parallel lanes so multiple tasks can move at the same time.
 
-   **Complete Free Agent Roster (40 agents — 60-minute loop inside 5 teams):**
+   **Complete Free Agent Roster (17 agents — 60-minute loop):**
 
    ```
    Slot  Agent      Tool                 Model              Domain
@@ -233,10 +266,12 @@
    ```
 
 10. **🎯 READINESS ENFORCEMENT (Fast-Track Mode):**
-    - Implementation starts when readiness score reaches **>=60%** with documented evidence.
-    - Evidence includes: business rules defined, API contract drafted, data schema available, 1+ test scenario listed.
-    - Deep documentation is encouraged but NOT a coding blocker.
-    - Missing deep detail is acceptable for low-risk modules when pattern exists and rollback is clear.
+
+- Reaching **>=60% readiness is necessary but not sufficient**.
+- Coding starts only after the full Session Start Checklist (Rule 7) and @Ada approval phrase are satisfied.
+- Minimum blocking evidence: business rule + API contract + data schema + 1+ test scenario + rollback note.
+- Deep documentation is encouraged; it is non-blocking only for low-risk modules.
+- Low-risk module definition: no auth, no payments, no DLD/RERA compliance fields, no migrations, and fewer than 5 changed files.
 
 11. **🎯 READINESS GATE (Fast-Track Checklist):**
 
@@ -249,29 +284,11 @@
     - **QA** (unit/integration/E2E scenarios, non-functional checks, regression scope)
     - **Compliance/Sign-off** (RERA/DLD/PDPL checks + @Margaret/@Sofia/@Katherine sign-off)
   - Final approval phrase is exact and mandatory:
-    - `@Ada — Context Ready (100% Planning Readiness) — Coding Phase Approved`
-
-26. **⚡ GOVERNANCE UPGRADE V3 (Mandatory Collaboration + 100% Planning Gate):**
-
-- Rule 26 supersedes legacy 60% planning-gate references for premium implementation unlock.
-- Planner and researcher agents are **free-model-only** with no premium exceptions.
-- Every subagent prompt must follow the exact custom instruction packet contract:
-  - `Task ID`, `Owner`, `Objective`, `Input Artifacts`, `Output Artifact`, `Acceptance Criteria`, `Validation`, `Handoff`
-  - `CONSUMES`, `FEEDS`, and `FEEDS_ACK` are mandatory in every planning output.
-- Premium coding starts only after a **100% planning-complete packet** is present for the module:
-  - business rules complete,
-  - API contracts complete,
-  - data schema/migration complete,
-  - UI states complete (loading/empty/error/responsive/RTL),
-  - QA matrix complete (unit/integration/E2E + rollback).
-- Exact unlock phrase (mandatory):
-  - `@Ada — Context Ready (100% Planning Readiness) — Coding Phase Approved`
-- Execution acceleration rule:
-  - once unlocked, implementation runs in parallel micro-waves with continuous autonomous progression and strict safety checks (build/lint/test/security gates stay mandatory).
+    - `@Ada — Context Ready (60% Readiness) — Coding Phase Approved`
 
 12. **🧠 PREMIUM ACCESS (STRICT — SENIORS ONLY, POST-GATE ONLY):**
     - Premium Copilot requests are allowed only for:
-      - **Senior Coders:** @Ada, @Mira, @Barbara, @Grace, @Daniela, @Ruchi, @Gwynne
+      - **Senior Coders:** @Ada, @Mira, @Barbara, @Una, @Daniela, @Ruchi, @Gwynne, @Katherine
       - **Senior Designers:** @Una, @Lea, @Tracy, @Framer, @Zoe, @Inas
     - Even these seniors are blocked unless Rule 11 is passed.
 
@@ -300,13 +317,16 @@
       - Pre-coding gate validation by @Ada
 
 15. **🚪 SESSION START GATE ADDENDUM (7 checks total):**
-    - Existing 6 checks remain mandatory.
-    - Add one required check before any coding:
-      - [ ] 7. **READINESS >=60% MET:** readiness packet with key evidence documented.
 
-16. **🧭 GOVERNANCE UPGRADE V2 (Supersedes conflicting older thresholds):**
+- This addendum does not introduce new checks.
+- Canonical session-start gate remains Rule 7 (all 7 checks required).
+- If any wording in this addendum differs from Rule 7, Rule 7 controls.
 
-- If any older rule conflicts with Rule 16–22, **Rule 16–22 wins**.
+16. **🧭 GOVERNANCE UPGRADE V2 (Interpretation Note):**
+
+- Rules 16–22 define fast-track execution details.
+- On any conflict, apply the precedence order in Rule 3 and runtime values in Rule 25.
+- Rules 16–22 do not remove or weaken Rule 7/Rule 11 safety gates.
 - Research-first execution is mandatory; implementation is blocked until upgraded gates pass.
 
 17. **🔎 RESEARCHER PREFLIGHT (Mandatory every premium coding day):**
@@ -334,8 +354,9 @@
 
 20. **📈 READINESS THRESHOLD UPDATE (Fast-Track Gate):**
 
-- Premium unlock requires **minimum 60% readiness score** with evidence.
-- Final approval phrase is now mandatory and exact:
+- This rule restates (does not override) Rule 11 readiness requirements.
+- Premium unlock requires **minimum 60% readiness score** with evidence, plus full Rule 7 completion.
+- Final approval phrase is mandatory and exact:
   - `@Ada — Context Ready (60% Readiness) — Coding Phase Approved`
 
 21. **💳 DAILY PREMIUM QUOTA MODEL (Derived from weekly):**
@@ -348,7 +369,7 @@
 22. **🚀 MACRO/HUGE-WAVE PREMIUM EXECUTION (Fast Implementation):**
 
 - Default premium coding batch size is **3–6 modules per day** when dependency-safe.
-- Use macro-wave bundles with internal validation checkpoints after each module group.
+- Use macro-wave bundles with internal validation checkpoints after every 2 modules (checkpoint = build + lint + unit tests).
 - Time-to-implementation is the priority; execute larger coherent batches while preserving safety gates.
 
 23. **🛡️ POST-PREMIUM COMMIT RUNTIME GUARD (Mandatory):**
@@ -356,7 +377,7 @@
 - After each big premium implementation commit, runtime guard checks must run automatically.
 - Trigger condition (both required):
   - Commit message includes `[premium-wave]`
-  - Commit qualifies as big diff (threshold or critical path touch).
+  - Commit qualifies as big diff (`>200` changed lines) or touches critical paths (`server/routes/auth.ts`, `server/routes/*payment*`, `src/pages/auth/**`, `server/config/env.ts`).
 - Guard owner: **@Katherine (QA Lead)**.
 - Guard command chain:
   - `node scripts/orchestrator/post-commit-premium-guard.js`
@@ -367,7 +388,8 @@
 
 24. **🤖 AUTONOMOUS CONTINUATION MODE (No Repeated "go" Prompts):**
 
-- Default execution mode for approved implementation sessions is **continuous autonomous progression**.
+- Default execution mode is **Approval Mode**: complete one task, then stop and ask before advancing.
+- If **Autopilot Mode** is explicitly enabled, execution becomes **continuous autonomous progression**.
 - Once user intent is clear (e.g., "start implementation", "continue"), execution should proceed macro-wave by macro-wave without waiting for repeated manual confirmation.
 - Hard-stop only on:
   - failing tests/lint/build,
@@ -375,6 +397,8 @@
   - missing credentials/secrets,
   - irreversible-risk operation requiring explicit user approval.
 - Operational command surface:
+  - `npm run orchestrator:agent-loop:approval`
+  - `npm run orchestrator:agent-loop:autopilot`
   - `npm run orchestrator:agent-loop:auto`
   - `npm run orchestrator:agent-loop:auto:nobrowser`
 

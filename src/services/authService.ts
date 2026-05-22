@@ -7,6 +7,8 @@
 
 import { apiClient } from '../utils/apiClient';
 import { safeStorage } from '../utils/safeStorage';
+import { auth as firebaseAuth } from '../config/firebase';
+import { HttpError } from '../utils/HttpError';
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -55,6 +57,63 @@ function persistToken(token: string): void {
 function clearToken(): void {
   safeStorage.remove(TOKEN_KEY);
   apiClient.setAuthToken(null);
+}
+
+function resolveFirebaseSyncErrorMessage(error: unknown): string {
+  if (error instanceof HttpError) {
+    const data = error.data;
+
+    if (typeof data === 'object' && data !== null) {
+      const asRecord = data as Record<string, unknown>;
+      const payloadMessage =
+        (typeof asRecord.message === 'string' && asRecord.message.trim()) ||
+        (typeof asRecord.error === 'string' && asRecord.error.trim()) ||
+        (typeof asRecord.details === 'string' && asRecord.details.trim()) ||
+        '';
+
+      if (payloadMessage) {
+        if (/too many login attempts from this ip/i.test(payloadMessage)) {
+          return 'Backend session activation is temporarily rate-limited. Please retry Google sign-in in a few seconds.';
+        }
+        if (/too many firebase session sync attempts/i.test(payloadMessage)) {
+          return 'Backend session activation is temporarily rate-limited. Please retry Google sign-in in a few seconds.';
+        }
+        return payloadMessage;
+      }
+    }
+
+    if (error.message?.trim()) {
+      return error.message.trim();
+    }
+
+    if (error.status === 401) {
+      return 'Firebase token verification failed. Please sign in with Google again.';
+    }
+
+    if (error.status === 503) {
+      return 'Authentication service is temporarily unavailable on the server. Please try again shortly.';
+    }
+
+    if (error.status === 429) {
+      return 'Backend session activation is temporarily rate-limited. Please retry Google sign-in in a few seconds.';
+    }
+  }
+
+  if (error instanceof Error && error.message.trim()) {
+    return error.message.trim();
+  }
+
+  if (
+    typeof error === 'object' &&
+    error !== null &&
+    'message' in error &&
+    typeof (error as { message?: unknown }).message === 'string' &&
+    (error as { message: string }).message.trim()
+  ) {
+    return (error as { message: string }).message.trim();
+  }
+
+  return 'Unable to complete authentication sync';
 }
 
 /** Restore token from storage on app init */
@@ -130,16 +189,34 @@ export async function syncFirebaseUser(firebaseUser: {
   photoURL: string | null;
   getIdToken?: () => Promise<string>;
 }): Promise<LoginResponse> {
-  const firebaseToken =
-    typeof firebaseUser.getIdToken === 'function' ? await firebaseUser.getIdToken() : null;
+  let firebaseToken: string | null = null;
 
-  const response = (await apiClient.post('/auth/firebase-sync', {
-    firebaseUid: firebaseUser.uid,
-    email: firebaseUser.email,
-    name: firebaseUser.displayName,
-    photoUrl: firebaseUser.photoURL,
-    firebaseToken,
-  })) as LoginResponse;
+  if (typeof firebaseUser.getIdToken === 'function') {
+    firebaseToken = await firebaseUser.getIdToken();
+  }
+
+  if (!firebaseToken && firebaseAuth?.currentUser?.uid === firebaseUser.uid) {
+    firebaseToken = await firebaseAuth.currentUser.getIdToken();
+  }
+
+  if (!firebaseToken) {
+    throw new Error(
+      'Firebase authentication token is missing. Please retry Google sign-in to establish a secure backend session.'
+    );
+  }
+
+  let response: LoginResponse;
+  try {
+    response = (await apiClient.post('/auth/firebase-sync', {
+      firebaseUid: firebaseUser.uid,
+      email: firebaseUser.email,
+      name: firebaseUser.displayName,
+      photoUrl: firebaseUser.photoURL,
+      firebaseToken,
+    })) as LoginResponse;
+  } catch (error: unknown) {
+    throw new Error(resolveFirebaseSyncErrorMessage(error));
+  }
 
   if (response.success) {
     if (!response.data?.token) {

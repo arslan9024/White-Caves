@@ -1,17 +1,32 @@
 {
-  "version": "2026.05.16-autonomous-v1",
-  "readinessThresholdPct": 100,
-  "readinessTargetPct": 100,
-  "largeWaveMinReadinessPct": 100,
-  "microWaveMinReadinessPct": 100,
+  "version": "2026.05.22-execution-mode-v2",
+  "readinessThresholdPct": 60,
+  "readinessTargetPct": 90,
+  "largeWaveMinReadinessPct": 90,
+  "microWaveMinReadinessPct": 60,
   "readinessChecksTotal": 30,
-  "approvalPhrase": "@Ada — Context Ready (100% Planning Readiness) — Coding Phase Approved",
+  "approvalPhrase": "@Ada — Context Ready (60% Readiness) — Coding Phase Approved",
   "depthGateLabel": "depth evidence",
   "modelRouting": {
     "planningAgents": "free-unlimited-only",
     "premiumAllowedFor": ["senior-coding", "senior-design"]
   },
-  "autonomousDefault": true,
+  "executionMode": {
+    "default": "approval",
+    "autopilot": {
+      "continuous": true,
+      "useSubagents": true,
+      "askBetweenTasks": false,
+      "hardStopOnly": true
+    },
+    "approval": {
+      "continuous": false,
+      "useSubagents": true,
+      "askBetweenTasks": true,
+      "hardStopOnly": false
+    }
+  },
+  "autonomousDefault": false,
   "hardStops": {
     "stopOnTestFailure": true,
     "stopOnLintFailure": true,
