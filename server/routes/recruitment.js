@@ -16,21 +16,43 @@ const router = express.Router();
 let prisma = new PrismaClient();
 let scoringService = CandidateScoringService;
 let templateService = MessageTemplateService;
+let recruitmentAuditLogger = (eventType, payload) => {
+  console.log(`[RecruitmentAudit] ${eventType}`, payload);
+};
 
 const RECRUITMENT_READ_ROLES = ['hr', 'hiring_manager', 'executive', 'admin'];
 const RECRUITMENT_WRITE_ROLES = ['hr', 'admin'];
 const OFFER_PIPELINE_STATUSES = ['offer', 'offer_approved', 'offer_accepted'];
 
-export function __setRecruitmentTestDeps({ prismaClient, candidateScoringService, messageTemplateService } = {}) {
+export function __setRecruitmentTestDeps({ prismaClient, candidateScoringService, messageTemplateService, auditLogger } = {}) {
   if (prismaClient) prisma = prismaClient;
   if (candidateScoringService) scoringService = candidateScoringService;
   if (messageTemplateService) templateService = messageTemplateService;
+  if (auditLogger) recruitmentAuditLogger = auditLogger;
 }
 
 export function __resetRecruitmentTestDeps() {
   prisma = new PrismaClient();
   scoringService = CandidateScoringService;
   templateService = MessageTemplateService;
+  recruitmentAuditLogger = (eventType, payload) => {
+    console.log(`[RecruitmentAudit] ${eventType}`, payload);
+  };
+}
+
+function logRecruitmentAudit(req, eventType, payload = {}) {
+  try {
+    recruitmentAuditLogger(eventType, {
+      at: new Date().toISOString(),
+      actor_role: req.recruitmentAccess?.role || req.headers['x-user-role'] || req.user?.role || 'unknown',
+      actor_id: req.user?.id || req.headers['x-user-id'] || null,
+      route: req.originalUrl,
+      method: req.method,
+      ...payload
+    });
+  } catch (auditError) {
+    console.warn('Recruitment audit logging failed:', auditError.message);
+  }
 }
 
 export function requireRecruitmentAccess(level = 'read') {
@@ -864,6 +886,13 @@ router.post('/jobs/:job_id/score-candidate', requireRecruitmentAccess('write'), 
       weights
     );
 
+    logRecruitmentAudit(req, 'candidate_scored', {
+      job_id,
+      candidate_id,
+      screening_status: score.screening_status,
+      overall_score: score.overall_score
+    });
+
     res.status(201).json({
       success: true,
       message: 'Candidate scored successfully',
@@ -1397,6 +1426,15 @@ router.post('/applications/:application_id/send-offer', requireRecruitmentAccess
       data: { status: 'selected' }
     });
 
+    logRecruitmentAudit(req, 'offer_sent', {
+      application_id,
+      candidate_id: application.candidate_id,
+      job_id: application.job_id,
+      salary,
+      start_date,
+      template_id: 'offer_letter'
+    });
+
     res.status(200).json({
       success: true,
       message: 'Offer sent successfully',
@@ -1445,6 +1483,14 @@ router.post('/applications/:application_id/approve-offer', requireRecruitmentAcc
         status: 'offer_approved',
         notes: [application.notes, ...noteParts].filter(Boolean).join(' | ')
       }
+    });
+
+    logRecruitmentAudit(req, 'offer_approved', {
+      application_id,
+      candidate_id: application.candidate_id,
+      job_id: application.job_id,
+      approved_by,
+      status: updated.status
     });
 
     res.status(200).json({
@@ -1510,6 +1556,15 @@ router.post('/applications/:application_id/respond-offer', requireRecruitmentAcc
     await prisma.candidate.update({
       where: { id: application.candidate_id },
       data: { status: candidateStatus }
+    });
+
+    logRecruitmentAudit(req, 'offer_response_recorded', {
+      application_id,
+      candidate_id: application.candidate_id,
+      job_id: application.job_id,
+      decision,
+      application_status: nextStatus,
+      candidate_status: candidateStatus
     });
 
     res.status(200).json({
@@ -1579,6 +1634,14 @@ router.post('/applications/:application_id/start-onboarding', requireRecruitment
     await prisma.candidate.update({
       where: { id: application.candidate_id },
       data: { status: 'hired' }
+    });
+
+    logRecruitmentAudit(req, 'onboarding_started', {
+      application_id,
+      candidate_id: application.candidate_id,
+      job_id: application.job_id,
+      start_date,
+      template_id: 'onboarding_welcome'
     });
 
     res.status(200).json({

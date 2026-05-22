@@ -141,6 +141,7 @@ Budget model:
 - [x] Live Express-level recruitment route tests added for `score-candidate` and `screening-metrics` canonical status coverage.
 - [x] Recruitment route access-control tests added for unauthorized and role-scoped request handling.
 - [x] Offer workflow now includes explicit offer approval and candidate acceptance/decline response routes.
+- [x] Recruitment workflow actions now emit structured audit logs for scoring, offer, and onboarding transitions.
 
 ## Pending Tasks
 
@@ -169,6 +170,6 @@ Budget model:
 ## Immediate Next Actions
 
 1. Expand the Zoe recruitment KPI UI from the first live analytics slice.
-2. Review recruitment route audit logging before broader rollout.
-3. Expand recruiter-facing shortlist and review workflow.
-4. Migrate remaining consumers off legacy recruitment metric aliases.
+2. Expand recruiter-facing shortlist and review workflow.
+3. Migrate remaining consumers off legacy recruitment metric aliases.
+4. Verify Linda WhatsApp templates against production constraints in staging.

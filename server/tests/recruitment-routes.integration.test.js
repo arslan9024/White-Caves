@@ -366,6 +366,75 @@ await test('POST /applications/:application_id/start-onboarding rejects non-acce
   __resetRecruitmentTestDeps();
 });
 
+await test('Offer workflow emits recruitment audit events', async () => {
+  const auditEvents = [];
+
+  const prismaMock = {
+    application: {
+      findUnique: async ({ where }) => {
+        if (where.id === 'app-audit-approve') {
+          return {
+            id: 'app-audit-approve',
+            status: 'offer',
+            notes: 'Offer sent',
+            candidate_id: 'cand-audit-1',
+            job_id: 'job-audit-1',
+            candidate: { id: 'cand-audit-1', first_name: 'Huda', email: 'huda@example.com' },
+            job: { id: 'job-audit-1', title: 'HR Analyst', department: 'HR' }
+          };
+        }
+
+        return {
+          id: 'app-audit-respond',
+          status: 'offer_approved',
+          notes: 'Offer approved',
+          candidate_id: 'cand-audit-1',
+          job_id: 'job-audit-1',
+          candidate: { id: 'cand-audit-1', first_name: 'Huda', email: 'huda@example.com' },
+          job: { id: 'job-audit-1', title: 'HR Analyst', department: 'HR' }
+        };
+      },
+      update: async ({ data }) => ({ status: data.status })
+    },
+    candidate: {
+      update: async ({ data }) => ({ status: data.status })
+    }
+  };
+
+  __setRecruitmentTestDeps({
+    prismaClient: prismaMock,
+    auditLogger: (eventType, payload) => {
+      auditEvents.push({ eventType, payload });
+    }
+  });
+
+  await withServer(async (baseUrl) => {
+    const approveResponse = await fetch(`${baseUrl}/api/recruitment/applications/app-audit-approve/approve-offer`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'x-user-role': 'hr', 'x-user-id': 'user-hr-1' },
+      body: JSON.stringify({ approved_by: 'HR Manager' })
+    });
+    assert(approveResponse.status === 200, 'Expected HTTP 200 for audit approval request');
+
+    const respondResponse = await fetch(`${baseUrl}/api/recruitment/applications/app-audit-respond/respond-offer`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'x-user-role': 'hr', 'x-user-id': 'user-hr-1' },
+      body: JSON.stringify({ decision: 'accept' })
+    });
+    assert(respondResponse.status === 200, 'Expected HTTP 200 for audit respond request');
+  });
+
+  const eventNames = auditEvents.map(e => e.eventType);
+  assert(eventNames.includes('offer_approved'), 'Expected offer_approved audit event');
+  assert(eventNames.includes('offer_response_recorded'), 'Expected offer_response_recorded audit event');
+
+  const approvalEvent = auditEvents.find(e => e.eventType === 'offer_approved');
+  assert(approvalEvent.payload.actor_role === 'hr', 'Expected actor role in audit payload');
+  assert(approvalEvent.payload.actor_id === 'user-hr-1', 'Expected actor id in audit payload');
+
+  __resetRecruitmentTestDeps();
+});
+
 console.log(`\n✅ ${passedTests}/${totalTests} recruitment route integration tests passed\n`);
 process.env.RECRUITMENT_AUTH_MODE = originalRecruitmentAuthMode;
 process.exit(passedTests === totalTests ? 0 : 1);
