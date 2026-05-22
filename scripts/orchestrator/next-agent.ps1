@@ -81,7 +81,7 @@ function Get-Prompt([string]$id) {
   $keys = @($prompts | Get-Member -MemberType NoteProperty | Select-Object -ExpandProperty Name)
   if ($keys -contains $id) { return $prompts.$id }
   $t = @($tasks | Where-Object { $_.taskId -eq $id })[0]
-  return if ($null -ne $t) { $t.title } else { "(no prompt)" }
+  if ($null -ne $t) { return $t.title } else { return "(no prompt)" }
 }
 
 function Test-AllDepsDone([array]$deps) {
