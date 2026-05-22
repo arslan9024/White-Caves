@@ -144,6 +144,7 @@ Budget model:
 - [x] Recruitment workflow actions now emit structured audit logs for scoring, offer, and onboarding transitions.
 - [x] Manager self-service shortlist and review workflow endpoints added with role-scoped access and audit trails.
 - [x] Linda WhatsApp templates now have production-readiness validation checks and API reporting.
+- [x] Zoe recruitment analytics now includes KPI trend views for time-to-hire and cost-per-hire.
 
 ## Pending Tasks
 
@@ -169,7 +170,7 @@ Budget model:
 
 ## Immediate Next Actions
 
-1. Expand the Zoe recruitment KPI UI from the first live analytics slice.
-2. Verify Linda WhatsApp templates against production constraints in staging.
-3. Finalize production signoff for disabling alias compatibility mode.
-4. Add richer recruitment KPI trend views (time-to-hire and cost-per-hire).
+1. Finalize production signoff for disabling alias compatibility mode.
+2. Add KPI trend-history export for executive reporting.
+3. Add staging runbook for Linda WhatsApp template validation endpoint.
+4. Extend KPI trend views with department-level breakdowns.

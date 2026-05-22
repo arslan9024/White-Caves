@@ -138,6 +138,48 @@ await test('GET /jobs/:job_id/screening-metrics includes legacy aliases when exp
   __resetRecruitmentTestDeps();
 });
 
+await test('GET /overview includes KPI trend metrics', async () => {
+  const prismaMock = {
+    job: {
+      findMany: async () => ([
+        { id: 'job-overview-1', title: 'HR Manager', department: 'HR', status: 'open', _count: { applications: 3 } }
+      ])
+    },
+    application: {
+      findMany: async () => ([
+        { status: 'interview' },
+        { status: 'offer_accepted' },
+        { status: 'hired' }
+      ])
+    },
+    candidateScore: {
+      findMany: async () => ([
+        { overall_score: 86, screening_status: 'strong_match', skills_score: 80, experience_score: 88, education_score: 78, cultural_fit_score: 84, location_match_score: 90 }
+      ])
+    },
+    recruitmentMetric: {
+      findMany: async () => ([
+        { metric_date: '2026-05-10T00:00:00.000Z', avg_time_to_hire: 24, avg_cost_per_hire: 12000, automation_percentage: 72 },
+        { metric_date: '2026-05-20T00:00:00.000Z', avg_time_to_hire: 22, avg_cost_per_hire: 11100, automation_percentage: 76 }
+      ])
+    }
+  };
+
+  __setRecruitmentTestDeps({ prismaClient: prismaMock });
+
+  await withServer(async (baseUrl) => {
+    const response = await fetch(`${baseUrl}/api/recruitment/overview`);
+    const body = await response.json();
+
+    assert(response.status === 200, 'Expected HTTP 200 for overview');
+    assert(body.success === true, 'Expected success flag');
+    assert(body.overview.kpi_trends.latest.avg_time_to_hire === 22, 'Expected latest time-to-hire in overview trends');
+    assert(body.overview.kpi_trends.deltas.cost_per_hire === -900, 'Expected cost-per-hire delta in overview trends');
+  });
+
+  __resetRecruitmentTestDeps();
+});
+
 await test('GET /jobs/:job_id/screening-metrics rejects unauthenticated request when enforcement is enabled', async () => {
   process.env.RECRUITMENT_AUTH_MODE = 'enforced';
 

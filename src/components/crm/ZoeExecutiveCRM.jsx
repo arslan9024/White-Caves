@@ -276,6 +276,11 @@ const ZoeExecutiveCRM = ({ activeFeature }) => {
     return 'Just now';
   };
 
+  const formatCurrency = (value) => {
+    const numeric = Number(value || 0);
+    return `AED ${numeric.toLocaleString()}`;
+  };
+
   const getPriorityClass = (priority) => {
     switch (priority) {
       case 'critical': return 'priority-critical';
@@ -568,6 +573,20 @@ const ZoeExecutiveCRM = ({ activeFeature }) => {
                     <div className="job-pill empty">No recruitment jobs yet</div>
                   )}
                 </div>
+              </div>
+              <div className="report-card">
+                <Clock size={24} />
+                <h4>KPI Trends</h4>
+                <p>Latest hiring efficiency trends from recruitment history</p>
+                <div className="metric-pair"><span className="metric-label">Time to hire</span><span>{recruitmentOverview?.kpi_trends?.latest?.avg_time_to_hire ?? 0} days</span></div>
+                <div className="metric-pair">
+                  <span className="metric-label">Time delta</span>
+                  <span>
+                    {(recruitmentOverview?.kpi_trends?.deltas?.time_to_hire_days ?? 0) <= 0 ? <ArrowDown size={12} /> : <ArrowUp size={12} />} {recruitmentOverview?.kpi_trends?.deltas?.time_to_hire_days ?? 0} days
+                  </span>
+                </div>
+                <div className="metric-pair"><span className="metric-label">Cost per hire</span><span>{formatCurrency(recruitmentOverview?.kpi_trends?.latest?.avg_cost_per_hire ?? 0)}</span></div>
+                <div className="metric-pair"><span className="metric-label">Automation</span><span>{recruitmentOverview?.kpi_trends?.latest?.automation_percentage ?? 0}%</span></div>
               </div>
             </div>
 

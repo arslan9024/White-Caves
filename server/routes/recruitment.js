@@ -224,6 +224,50 @@ export function buildRecruitmentOverview(jobs = [], applications = [], scores = 
   };
 }
 
+export function buildKpiTrends(recruitmentMetrics = []) {
+  if (!recruitmentMetrics.length) {
+    return {
+      latest: {
+        avg_time_to_hire: 0,
+        avg_cost_per_hire: 0,
+        automation_percentage: 0
+      },
+      deltas: {
+        time_to_hire_days: 0,
+        cost_per_hire: 0,
+        automation_percentage: 0
+      },
+      points: []
+    };
+  }
+
+  const sorted = [...recruitmentMetrics]
+    .sort((a, b) => new Date(a.metric_date || a.createdAt || 0) - new Date(b.metric_date || b.createdAt || 0));
+
+  const latest = sorted[sorted.length - 1];
+  const previous = sorted.length > 1 ? sorted[sorted.length - 2] : null;
+  const toNumber = (value) => Number.isFinite(Number(value)) ? Number(value) : 0;
+
+  return {
+    latest: {
+      avg_time_to_hire: toNumber(latest.avg_time_to_hire),
+      avg_cost_per_hire: toNumber(latest.avg_cost_per_hire),
+      automation_percentage: toNumber(latest.automation_percentage)
+    },
+    deltas: {
+      time_to_hire_days: previous ? toNumber(latest.avg_time_to_hire) - toNumber(previous.avg_time_to_hire) : 0,
+      cost_per_hire: previous ? toNumber(latest.avg_cost_per_hire) - toNumber(previous.avg_cost_per_hire) : 0,
+      automation_percentage: previous ? toNumber(latest.automation_percentage) - toNumber(previous.automation_percentage) : 0
+    },
+    points: sorted.slice(-6).map(metric => ({
+      date: metric.metric_date || metric.createdAt,
+      avg_time_to_hire: toNumber(metric.avg_time_to_hire),
+      avg_cost_per_hire: toNumber(metric.avg_cost_per_hire),
+      automation_percentage: toNumber(metric.automation_percentage)
+    }))
+  };
+}
+
 export function buildOnboardingChecklist(candidate, job, startDate) {
   const fullName = [candidate.first_name, candidate.last_name].filter(Boolean).join(' ') || candidate.email || 'Candidate';
   return {
@@ -1352,18 +1396,22 @@ router.get('/jobs/:job_id/screening-metrics', requireRecruitmentAccess('read'), 
 // Recruitment overview for Zoe analytics
 router.get('/overview', requireRecruitmentAccess('read'), async (req, res) => {
   try {
-    const [jobs, applications, scores] = await Promise.all([
+    const [jobs, applications, scores, recruitmentMetrics] = await Promise.all([
       prisma.job.findMany({
         orderBy: { createdAt: 'desc' },
         include: { _count: { select: { applications: true } } }
       }),
       prisma.application.findMany({ orderBy: { applied_at: 'desc' } }),
-      prisma.candidateScore.findMany({ orderBy: { created_at: 'desc' } })
+      prisma.candidateScore.findMany({ orderBy: { created_at: 'desc' } }),
+      prisma.recruitmentMetric.findMany({ orderBy: { metric_date: 'asc' }, take: 12 })
     ]);
+
+    const overview = buildRecruitmentOverview(jobs, applications, scores);
+    overview.kpi_trends = buildKpiTrends(recruitmentMetrics);
 
     res.status(200).json({
       success: true,
-      overview: buildRecruitmentOverview(jobs, applications, scores)
+      overview
     });
   } catch (error) {
     console.error('Error fetching recruitment overview:', error);

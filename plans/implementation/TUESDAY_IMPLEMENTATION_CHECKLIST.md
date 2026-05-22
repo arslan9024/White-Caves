@@ -23,11 +23,12 @@
 - [x] Recruitment audit logging added for scoring, offer, and onboarding transitions
 - [x] Zoe analytics wired to manager shortlist and manager review workflow endpoints
 - [x] Linda template production-readiness validation endpoint and tests added
+- [x] Recruitment overview and Zoe analytics now include time-to-hire and cost-per-hire trend views
 
 ## In Progress
 
 - [x] Migrate all recruitment consumers to canonical status labels
-- [ ] Expand Zoe recruitment analytics beyond the first executive slice
+- [x] Expand Zoe recruitment analytics beyond the first executive slice
 - [x] Verify Linda workflows against production WhatsApp Business constraints
 
 ## Pending

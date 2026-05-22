@@ -101,6 +101,19 @@ Query params:
 
 Returns only candidates above the requested score threshold.
 
+### `GET /api/recruitment/overview`
+
+Returns aggregate recruitment dashboard payload with KPI trend metrics.
+
+Trend payload fields:
+
+- `overview.kpi_trends.latest.avg_time_to_hire`
+- `overview.kpi_trends.latest.avg_cost_per_hire`
+- `overview.kpi_trends.latest.automation_percentage`
+- `overview.kpi_trends.deltas.time_to_hire_days`
+- `overview.kpi_trends.deltas.cost_per_hire`
+- `overview.kpi_trends.points` (up to 6 recent trend points)
+
 ### `GET /api/recruitment/jobs/:job_id/screening-metrics`
 
 Returns canonical metric keys by default.

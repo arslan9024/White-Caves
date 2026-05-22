@@ -1,4 +1,4 @@
-import { computeScreeningMetrics, buildRecruitmentOverview, buildOnboardingChecklist } from '../routes/recruitment.js';
+import { computeScreeningMetrics, buildRecruitmentOverview, buildOnboardingChecklist, buildKpiTrends } from '../routes/recruitment.js';
 import MessageTemplateService from '../services/MessageTemplateService.js';
 
 let totalTests = 0;
@@ -77,6 +77,20 @@ test('buildRecruitmentOverview aggregates pipeline totals', () => {
   assert(overview.totals.interview_pipeline === 1, 'Should count interview stage');
   assert(overview.totals.offer_pipeline === 1, 'Should count offer stage');
   assert(overview.totals.hired === 1, 'Should count hired stage');
+});
+
+test('buildKpiTrends returns latest values and deltas', () => {
+  const trends = buildKpiTrends([
+    { metric_date: '2026-05-01T00:00:00.000Z', avg_time_to_hire: 26, avg_cost_per_hire: 13200, automation_percentage: 68 },
+    { metric_date: '2026-05-10T00:00:00.000Z', avg_time_to_hire: 24, avg_cost_per_hire: 12000, automation_percentage: 72 },
+    { metric_date: '2026-05-20T00:00:00.000Z', avg_time_to_hire: 22, avg_cost_per_hire: 11100, automation_percentage: 76 }
+  ]);
+
+  assert(trends.latest.avg_time_to_hire === 22, 'Should pick latest time-to-hire');
+  assert(trends.latest.avg_cost_per_hire === 11100, 'Should pick latest cost-per-hire');
+  assert(trends.deltas.time_to_hire_days === -2, 'Should compute delta from previous point');
+  assert(trends.deltas.cost_per_hire === -900, 'Should compute cost delta from previous point');
+  assert(trends.points.length === 3, 'Should keep trend points history');
 });
 
 test('buildOnboardingChecklist returns onboarding payload ready for Linda', () => {
