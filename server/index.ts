@@ -22,6 +22,7 @@ import { CORS_ORIGINS, WHATSAPP_WEBHOOK_SECRET, IS_PRODUCTION } from './config/e
 import {
   apiLimiter,
   authLimiter,
+  firebaseSyncLimiter,
   registerLimiter,
   passwordLimiter,
   strictLimiter,
@@ -96,6 +97,20 @@ import { startAutoRouting } from './services/ai/leadAutoRouter.js';
 import { createSocketServer } from './services/socketServer.js';
 
 const app: Express = express();
+
+const normalizeOrigin = (value: string): string => value.replace(/\/$/, '').toLowerCase();
+const configuredCorsOrigins = new Set(CORS_ORIGINS.map(origin => normalizeOrigin(origin)));
+const isLocalDevOrigin = (origin: string): boolean => {
+  try {
+    const parsed = new URL(origin);
+    return (
+      (parsed.hostname === 'localhost' || parsed.hostname === '127.0.0.1') &&
+      (parsed.protocol === 'http:' || parsed.protocol === 'https:')
+    );
+  } catch {
+    return false;
+  }
+};
 
 // Trust the first proxy in front of the server (e.g. Vercel edge, nginx, AWS ALB).
 // This makes req.ip and all express-rate-limit lookups use the real client IP
@@ -185,7 +200,19 @@ app.use(
   cors({
     origin: (origin, callback) => {
       // Allow requests with no origin (server-to-server, curl, mobile apps)
-      if (!origin || CORS_ORIGINS.includes(origin)) {
+      if (!origin) {
+        callback(null, true);
+        return;
+      }
+
+      const normalizedOrigin = normalizeOrigin(origin);
+      if (configuredCorsOrigins.has(normalizedOrigin)) {
+        callback(null, true);
+        return;
+      }
+
+      // In local development, allow localhost/127.0.0.1 origins on dynamic Vite ports.
+      if (!IS_PRODUCTION && isLocalDevOrigin(origin)) {
         callback(null, true);
       } else {
         callback(new Error('Not allowed by CORS'));
@@ -238,7 +265,7 @@ app.use('/api/auth/2fa/setup', strictLimiter);
 app.use('/api/auth/2fa/enable', strictLimiter);
 app.use('/api/auth/2fa/disable', strictLimiter);
 app.use('/api/auth/refresh', authLimiter);
-app.use('/api/auth/firebase-sync', authLimiter);
+app.use('/api/auth/firebase-sync', firebaseSyncLimiter);
 app.use('/api/auth/refresh', authLimiter);
 app.use('/api/auth/webauthn/register', authLimiter);
 app.use('/api/auth/webauthn/authenticate', authLimiter);

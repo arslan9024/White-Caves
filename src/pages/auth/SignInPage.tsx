@@ -117,7 +117,6 @@ const SignInPage: FC = () => {
               {error && <div className="auth-error">{error}</div>}
               {socialSyncRecovery && (
                 <div className="auth-recovery" role="status" aria-live="polite" aria-busy={loading}>
-                <div className="auth-recovery" role="status" aria-live="polite">
                   <p className="auth-recovery__title">
                     {socialSyncRecovery.provider[0].toUpperCase() +
                       socialSyncRecovery.provider.slice(1)}{' '}
@@ -133,10 +132,6 @@ const SignInPage: FC = () => {
                     type="button"
                     className="btn btn-secondary btn-full"
                     disabled={loading || retryLimitReached}
-                  <button
-                    type="button"
-                    className="btn btn-secondary btn-full"
-                    disabled={loading}
                     onClick={() => {
                       void retrySocialAuth();
                     }}
@@ -160,9 +155,6 @@ const SignInPage: FC = () => {
                     onClick={clearSocialRecovery}
                   >
                     Dismiss recovery notice
-                    {loading
-                      ? 'Retrying...'
-                      : `Retry ${socialSyncRecovery.provider[0].toUpperCase() + socialSyncRecovery.provider.slice(1)} sign-in`}
                   </button>
                 </div>
               )}
