@@ -1,6 +1,6 @@
 # /plans — Planning Workspace
 
-**Last Updated:** 2026-05-11  
+**Last Updated:** 2026-05-22  
 **Canonical Roadmap:** [`MASTER_PLAN.md`](./MASTER_PLAN.md)
 
 This directory is for active planning and reference documentation only.
@@ -23,9 +23,15 @@ This directory is for active planning and reference documentation only.
 
 ---
 
-## Active Pending Plans
+## Active Streams (Canonical Queue)
 
-- [`PHASE_26_CONTEXT_ENRICHMENT_SPRINT.md`](./PHASE_26_CONTEXT_ENRICHMENT_SPRINT.md)
+- Stream S1: Errors Stabilization lane (source of truth: [`PENDING_TASKS_ONLY.md`](./PENDING_TASKS_ONLY.md))
+- Stream S2: Deferred closeout ([`PHASE_26_CONTEXT_ENRICHMENT_SPRINT.md`](./PHASE_26_CONTEXT_ENRICHMENT_SPRINT.md))
+- Stream S3: Planned micro-wave execution ([`PHASE_27_SUBAGENT_NEXT_LEVEL_90_READINESS.md`](./PHASE_27_SUBAGENT_NEXT_LEVEL_90_READINESS.md))
+- Active wave artifacts: `./waves/WAVE_08_*`
+
+## Legacy Plan References (Non-Canonical)
+
 - [`PHASE_23_24_25_IMPLEMENTATION_PLAN.md`](./PHASE_23_24_25_IMPLEMENTATION_PLAN.md)
 - [`PHASE_24_MODULE_TRACEABILITY_MATRIX.md`](./PHASE_24_MODULE_TRACEABILITY_MATRIX.md)
 - [`PHASE_24_ACCEPTANCE_TEST_PLAN.md`](./PHASE_24_ACCEPTANCE_TEST_PLAN.md)
@@ -47,3 +53,4 @@ This directory is for active planning and reference documentation only.
 Run:
 
 - `npm run plans:validate`
+- after every planning update

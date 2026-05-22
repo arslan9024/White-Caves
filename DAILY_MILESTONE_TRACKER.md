@@ -26,9 +26,9 @@
 
 ## Today's Sign-Off
 
-> @Margaret reviewed the current sprint context. The current implementation baseline is now explicit: client TypeScript has 125 errors, server TypeScript has been reduced to 17 errors, and the next top blocker is `server/routes/notifications.ts`.
+> @Margaret reviewed the current sprint context. Canonical planning authority is now consolidated to `plans/MASTER_PLAN.md`, `plans/PENDING_TASKS_ONLY.md`, `plans/INDEX.md`, `plans/PLANNING_GOVERNANCE.md`, `PROJECT_PROGRESS.md`, and this tracker.
 
-> Final session state: resource automation is live, Prisma client regeneration completed successfully, and the current planning trackers have been refreshed to match the implementation baseline.
+> Final session state: TypeScript baseline remains clean (client/server 0), error stabilization is now tracked as Stream S1 with verification-gated buckets, and Wave 08 artifact bundle is linked in the canonical queue.
 
 ---
 
@@ -63,6 +63,7 @@
 | May 20, 2026 | @Mira + @Katherine | Signature service wave: `SignatureService` now sends branded signing-request and reminder emails via tracked email service; focused service regression test added                                                                               | Done        |
 | May 20, 2026 | @Mira + @Katherine | Import history dashboard wave: mounted `importHistory` routes in runtime, aligned `/api/inventory/import/history` contract with frontend, and added real collection stats for `GET /api/admin/dashboard` with focused route regression coverage | Done        |
 | May 22, 2026 | @Mira + @Katherine | Planning sync: updated sprint/status trackers, captured the current TypeScript blocker baseline, regenerated Prisma client, and identified `server/routes/notifications.ts` as the next implementation hotspot                                  | Done        |
+| May 22, 2026 | @Margaret + @Mira  | Planning cleanup pass implemented: canonical tracker authority normalized, legacy docs marked reference-only, Stream S1 error-burn-down lane added, and Wave 08 micro-wave bundle queued with verification gates                                | Done        |
 
 ---
 

@@ -1,6 +1,6 @@
 # Plans Index
 
-**Last Updated:** 2026-05-16
+**Last Updated:** 2026-05-22
 
 ## Start Here (Canonical)
 
@@ -10,8 +10,10 @@
 
 ## Current Active Stream
 
-- [`PHASE_26_CONTEXT_ENRICHMENT_SPRINT.md`](./PHASE_26_CONTEXT_ENRICHMENT_SPRINT.md)
-- N+1 to N+5 execution queue (tracked in [`MASTER_PLAN.md`](./MASTER_PLAN.md) and [`PENDING_TASKS_ONLY.md`](./PENDING_TASKS_ONLY.md))
+- S1 Errors Stabilization lane (tracked in [`MASTER_PLAN.md`](./MASTER_PLAN.md) and [`PENDING_TASKS_ONLY.md`](./PENDING_TASKS_ONLY.md))
+- S2 Deferred closeout: [`PHASE_26_CONTEXT_ENRICHMENT_SPRINT.md`](./PHASE_26_CONTEXT_ENRICHMENT_SPRINT.md)
+- S3 Planned micro-wave execution: [`PHASE_27_SUBAGENT_NEXT_LEVEL_90_READINESS.md`](./PHASE_27_SUBAGENT_NEXT_LEVEL_90_READINESS.md)
+- Wave artifact bundle (active): [`waves/WAVE_08_SDD.md`](./waves/WAVE_08_SDD.md), [`waves/WAVE_08_READINESS_PACKET.md`](./waves/WAVE_08_READINESS_PACKET.md), [`waves/WAVE_08_IMPLEMENTATION_BACKLOG.md`](./waves/WAVE_08_IMPLEMENTATION_BACKLOG.md), [`waves/WAVE_08_TEST_ROLLOUT.md`](./waves/WAVE_08_TEST_ROLLOUT.md)
 
 ## Governance and Quality
 
@@ -25,6 +27,8 @@
 - [`PHASE_24_ACCEPTANCE_TEST_PLAN.md`](./PHASE_24_ACCEPTANCE_TEST_PLAN.md)
 - [`PHASE_25_OPERATIONAL_VERIFICATION_LOG.md`](./PHASE_25_OPERATIONAL_VERIFICATION_LOG.md)
 - [`PHASE_25_EXECUTION_GUIDE.md`](./PHASE_25_EXECUTION_GUIDE.md)
+
+> Legacy files above are reference-only and must not be used as active status authority.
 
 ## Agent and Subagent Planning
 

@@ -12,7 +12,7 @@
 
 - Canonical roadmap: **[plans/MASTER_PLAN.md](plans/MASTER_PLAN.md)**
 - Active queue: **[plans/PENDING_TASKS_ONLY.md](plans/PENDING_TASKS_ONLY.md)**
-- Last Updated (ISO): 2026-05-20
+- Last Updated (ISO): 2026-05-22
 
 > Premium usage is allowed **only** for senior coders/designers **after** @Ada declares:
 > `@Ada — Context Ready (60% Readiness) — Coding Phase Approved`
@@ -229,17 +229,15 @@
 
 ### Latest Planning / Implementation Sync (May 22, 2026)
 
-**Focus:** Update stale plans, capture the current TypeScript blocker baseline, and prepare the next implementation wave
+**Focus:** Consolidate planning to canonical trackers, normalize cross-tracker status, and activate Stream S1 error-burn-down with verification gates
 
-| Task                           | Status   | Progress                   | Impact |
-| ------------------------------ | -------- | -------------------------- | ------ |
-| Resource automation scripts    | COMPLETE | 100%                       | Medium |
-| Free resource scaffold/docs    | COMPLETE | 100%                       | Medium |
-| Client TypeScript baseline     | COMPLETE | 0 diagnostics in workspace | High   |
-| Server TypeScript baseline     | COMPLETE | 0 errors                   | High   |
-| Prisma client regeneration     | COMPLETE | 100%                       | High   |
-| Server route declaration gap   | COMPLETE | 100%                       | Medium |
-| Notifications route schema gap | COMPLETE | 0 errors                   | High   |
+| Task                             | Status   | Progress                    | Impact |
+| -------------------------------- | -------- | --------------------------- | ------ |
+| Canonical planning consolidation | COMPLETE | 6/6 authority files aligned | High   |
+| Legacy plan de-activation        | COMPLETE | Active lists cleaned        | Medium |
+| Stream S1 error lane setup       | COMPLETE | 3 bucket queue defined      | High   |
+| Wave 08 artifact bundle          | COMPLETE | 4/4 docs linked in queue    | High   |
+| Governance hard gate             | COMPLETE | `plans:validate` enforced   | High   |
 
 ### MILESTONE-PHASE-2
 
@@ -275,18 +273,17 @@
 
 ---
 
-## 📅 Next 7 Days (May 5–11, 2026)
+## 📅 Next 7 Days (May 22–29, 2026)
 
-| Day    | Focus                                                          | Owner                           | Priority |
-| ------ | -------------------------------------------------------------- | ------------------------------- | -------- |
-| May 5  | Governance rollout in AGENTS + plans + tracking                | @Margaret + @Ada                | P0       |
-| May 5  | P0 module planning update (homepage + superuser + leasing E2E) | @Margaret + @Ada                | P0       |
-| May 6  | Wave A 1000% docs (Sofia/Timnit/Victoria)                      | Free agents                     | P0       |
-| May 7  | Wave B 1000% docs (Fei-Fei/Anima/Mary/Invoice)                 | Free agents                     | P0       |
-| May 8  | Wave C 1000% docs (Booking/Maya/Hedy/Cassie/Jaime/Corinne)     | Free agents                     | P0       |
-| May 9  | Wave D 1000% docs (Annie/Marissa/Rachel/Joelle)                | Free agents                     | P0       |
-| May 10 | Readiness (>=92%) validation + sign-offs                       | @Margaret + @Katherine + @Sofia | P0       |
-| May 11 | @Ada gate decision for Phase 3 start (V2 phrase mandatory)     | @Ada                            | P0       |
+| Day    | Focus                                                                                   | Owner                  | Priority |
+| ------ | --------------------------------------------------------------------------------------- | ---------------------- | -------- |
+| May 22 | Run Stream S1 fast-fix bucket and capture evidence in canonical trackers                | @Mira + @Katherine     | P0       |
+| May 23 | Re-evaluate deferred S2 (`PHASE_26_CONTEXT_ENRICHMENT_SPRINT.md`) and decide keep/close | @Margaret              | P0       |
+| May 24 | Execute Stream S1 medium-fix bucket and validate targeted route/build checks            | @Mira + @Katherine     | P1       |
+| May 25 | Execute Stream S1 deep-refactor bucket only if P0/P1 pass                               | @Mira + @Gwynne        | P2       |
+| May 26 | Run Wave 08 readiness review + approval gate check                                      | @Margaret + @Ada       | P0       |
+| May 27 | Apply weekly planning hygiene: prune/supersede stale docs + re-rank blockers            | @Margaret              | P0       |
+| May 28 | Publish tracker sync audit (MASTER/PENDING/PROGRESS/DAILY consistency)                  | @Margaret + @Katherine | P0       |
 
 ---
 

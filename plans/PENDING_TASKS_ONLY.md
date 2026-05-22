@@ -1,63 +1,62 @@
 # Pending Tasks Only
 
-**Last Updated:** 2026-05-21
+**Last Updated:** 2026-05-22
 
 ## Canonical Sources
 
 - Roadmap: [`MASTER_PLAN.md`](./MASTER_PLAN.md)
 - Operational dashboard: [`../PROJECT_PROGRESS.md`](../PROJECT_PROGRESS.md)
 - Governance policy: [`PLANNING_GOVERNANCE.md`](./PLANNING_GOVERNANCE.md)
+- Daily tracker: [`../DAILY_MILESTONE_TRACKER.md`](../DAILY_MILESTONE_TRACKER.md)
 
-## Active Pending Plans
+## Stream Status Board
 
-| Phase | Plan File                                                                                        | Status                                                                  |
-| ----- | ------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------- |
-| N+1   | Auth/login hardening + route consistency                                                         | ✅ Complete                                                             |
-| N+2   | Tenant portal live data parity                                                                   | ✅ Complete                                                             |
-| N+3   | Managing-director CRM critical tabs                                                              | ✅ Complete                                                             |
-| N+4   | Convert top 3 revenue-impact stub endpoints                                                      | ✅ Complete                                                             |
-| N+5   | Test + release hardening                                                                         | ✅ Complete                                                             |
-| N+6   | UI architecture hardening: component granularity + event-driven rendering + Arabic RTL readiness | ✅ Complete (RTL + i18n fully wired)                                    |
-| N+7   | Subagent next-level upgrade: 90% readiness + full-team collaboration mesh                        | ✅ Completed (May 18, 2026)                                             |
-| N+8   | Google social auth production hardening + role-based dashboard redirect consistency              | ✅ Complete (May 21, 2026)                                              |
-| N+9   | UX loading-state hardening: reusable skeleton variants + key-page adoption                       | ✅ Complete (May 21, 2026)                                              |
-| —     | [`PHASE_26_CONTEXT_ENRICHMENT_SPRINT.md`](./PHASE_26_CONTEXT_ENRICHMENT_SPRINT.md)               | 🕒 Deferred (Workstream E advisory; owner @Margaret, target 2026-05-23) |
-| —     | [`PHASE_27_SUBAGENT_NEXT_LEVEL_90_READINESS.md`](./PHASE_27_SUBAGENT_NEXT_LEVEL_90_READINESS.md) | ⬜ Planned                                                              |
+| Stream | Objective                                                                                                             | Status      | Owners                    | Validation Gate                                                      |
+| ------ | --------------------------------------------------------------------------------------------------------------------- | ----------- | ------------------------- | -------------------------------------------------------------------- |
+| S1     | Errors stabilization lane (fast/medium/deep buckets)                                                                  | 🔨 Active   | @Mira + @Katherine        | `npm run typecheck && npm run lint && npm run build`                 |
+| S2     | [`PHASE_26_CONTEXT_ENRICHMENT_SPRINT.md`](./PHASE_26_CONTEXT_ENRICHMENT_SPRINT.md) deferred workstream closeout       | 🕒 Deferred | @Margaret                 | Deferred owner/date remains explicit + revisit date reached          |
+| S3     | [`PHASE_27_SUBAGENT_NEXT_LEVEL_90_READINESS.md`](./PHASE_27_SUBAGENT_NEXT_LEVEL_90_READINESS.md) micro-wave execution | ⬜ Planned  | @Ada + @Margaret + squads | Readiness >=60% + approval phrase + wave bundle linked and validated |
 
-## Immediate Focus
+## Completed Stream History
 
-- [x] Start N+1: Auth/login hardening (owns: @Daniela, @Mira, @Katherine)
-- [x] Complete N+1→N+6 bundle (validated together: typecheck ✅, lint ✅, tenant portal tests 36/36 ✅)
-- [x] Close Phase 26 Workstream E audit advisory — deferred with owner/date (owner: @Margaret, revisit: 2026-05-23)
-- [x] Enforce archive rule — moved superseded `plans/SESSION_*`, `plans/PHASE_2_*` files to `archives/plans/superseded/`
-- [x] Keep status consistent across `MASTER_PLAN`, `PROJECT_PROGRESS`, and this file
-- [x] Complete N+8 Google social auth build fix + dashboard redirect consistency validation
-- [x] Complete N+9 loading-state UX hardening across Property Card, Lead Management table, and Overview KPI surfaces
+| Phase | Objective                                                     | Status                     |
+| ----- | ------------------------------------------------------------- | -------------------------- |
+| N+1   | Auth/login hardening + route consistency                      | ✅ Complete                |
+| N+2   | Tenant portal live data parity                                | ✅ Complete                |
+| N+3   | Managing-director CRM critical tabs                           | ✅ Complete                |
+| N+4   | Convert top 3 revenue-impact stub endpoints                   | ✅ Complete                |
+| N+5   | Test + release hardening                                      | ✅ Complete                |
+| N+6   | UI architecture hardening + Arabic RTL readiness              | ✅ Complete                |
+| N+7   | Subagent upgrade: readiness + collaboration mesh              | ✅ Complete (May 18, 2026) |
+| N+8   | Google social auth hardening + dashboard redirect consistency | ✅ Complete (May 21, 2026) |
+| N+9   | UX loading-state hardening                                    | ✅ Complete (May 21, 2026) |
 
-## N+1 Completion Summary (2026-05-17)
+## S1 — Errors Stabilization Lane (Active)
 
-- `refreshTokenHash` field added to Prisma `User` model (nullable String)
-- Login + firebase-sync now issue a 7-day httpOnly `refresh_token` cookie (`{userId}:{rawToken}` format)
-- `POST /api/auth/refresh` — verifies cookie, bcrypt-compares token hash, rotates token, returns new JWT
-- `POST /api/auth/logout` — clears `refreshTokenHash` in DB + clears cookie
-- `authLimiter` applied to `/refresh` endpoint
-- 6 new refresh tests + 2 updated logout tests all pass (80 total, 11 pre-existing failures unchanged)
+### Bucketed Backlog
 
-## N+4 Completion Summary (2026-05-17)
+| Bucket        | Priority | Scope / Blockers                                                                    | Owners             | Validation Commands                                                                                                                                    | Pass Condition                                    |
+| ------------- | -------- | ----------------------------------------------------------------------------------- | ------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------- |
+| Fast-fix      | P0       | Route-level typing/import drift and strict-mode diagnostics in active touched files | @Mira + @Katherine | `npm run typecheck && npm run test:run -- server/routes/linda.routes.test.ts server/routes/nadia.routes.test.ts server/routes/nadia.assistant.test.ts` | Typecheck clean + targeted assistant tests pass   |
+| Medium-fix    | P1       | Notifications + compliance route cohesion and regression-safe refactors             | @Mira + @Katherine | `npm run test:run -- server/routes/henry.routes.test.ts && npm run build`                                                                              | Focused suites pass + build pass                  |
+| Deep-refactor | P2       | Cross-module consistency cleanup only after fast/medium queues are green            | @Mira + @Gwynne    | `npm run quality:quick`                                                                                                                                | Lint + build + ops tests pass without regressions |
 
-- `GET /api/whatsapp/settings` — now reads from `SystemSetting` table (key: `whatsapp_settings`)
-- `PUT /api/whatsapp/settings` — now persists phoneNumber/autoReply/businessHours to `SystemSetting`
-- `POST /api/whatsapp/session` — generates real sessionId, persists to `SystemSetting` (key: `whatsapp_session`); returns 400 if phoneNumber missing
-- `POST /api/payments/create-payment-intent` — returns **402** (Payment Required) instead of 503; adds `code: 'PAYMENT_NOT_CONFIGURED'` for client handling
+## S3 — Micro-Wave Queue (Next Phase)
 
-## Archive Rule
+| Wave | Scope                                           | Artifacts                                                                                                                                                                                                                                                        |
+| ---- | ----------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 08   | Error stabilization + governance hard-gate pass | [`WAVE_08_SDD.md`](./waves/WAVE_08_SDD.md), [`WAVE_08_READINESS_PACKET.md`](./waves/WAVE_08_READINESS_PACKET.md), [`WAVE_08_IMPLEMENTATION_BACKLOG.md`](./waves/WAVE_08_IMPLEMENTATION_BACKLOG.md), [`WAVE_08_TEST_ROLLOUT.md`](./waves/WAVE_08_TEST_ROLLOUT.md) |
 
-When a phase plan is completed or superseded, move it to `../archives/plans/completed/` or `../archives/plans/superseded/`.
+## Completion Criteria (Hard Rule)
 
-## Completed (Archived)
+Mark an item complete only when:
 
-- [x] [`PHASE_24_MODULE_TRACEABILITY_MATRIX.md`](./PHASE_24_MODULE_TRACEABILITY_MATRIX.md)
-- [x] [`PHASE_24_ACCEPTANCE_TEST_PLAN.md`](./PHASE_24_ACCEPTANCE_TEST_PLAN.md)
-- [x] [`PHASE_25_OPERATIONAL_VERIFICATION_LOG.md`](./PHASE_25_OPERATIONAL_VERIFICATION_LOG.md)
-- [x] [`PHASE_25_EXECUTION_GUIDE.md`](./PHASE_25_EXECUTION_GUIDE.md)
-- [x] [`PHASE_23_24_25_IMPLEMENTATION_PLAN.md`](./PHASE_23_24_25_IMPLEMENTATION_PLAN.md)
+- [ ] Validation command(s) defined in this queue pass
+- [ ] Evidence is recorded in `PROJECT_PROGRESS.md` and `DAILY_MILESTONE_TRACKER.md`
+- [ ] `npm run plans:validate` passes after tracker update
+
+## Weekly Planning Hygiene Cycle
+
+- Weekly: prune stale queue items, re-rank blockers by impact, and supersede/archive duplicates.
+- Daily: update only canonical trackers (`MASTER_PLAN`, `PENDING_TASKS_ONLY`, `PROJECT_PROGRESS`, `DAILY_MILESTONE_TRACKER`).
+- Do not treat downstream legacy phase docs as active status sources.

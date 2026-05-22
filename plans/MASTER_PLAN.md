@@ -1,62 +1,46 @@
-# White Caves Real Estate — Master Plan (Compact)
+# White Caves Real Estate — Master Plan (Canonical)
 
 **Purpose:** Canonical roadmap for execution decisions.  
 **Owners:** @Ada + @Margaret  
-**Last Updated:** 2026-05-16  
+**Last Updated:** 2026-05-22  
 **Update cadence:** Weekly roadmap refresh (daily progress in `PROJECT_PROGRESS.md`)
 
 ---
 
-## Current Strategy
+## Status Snapshot
 
-1. Keep planning surface small (see `INDEX.md`).
-2. Reduce true blockers by **50%** (**27 → <=13**).
-3. Start implementation on **Gate 1** readiness for low-risk modules.
-4. Run deep-governance evidence weekly, not as daily hard-stop.
-5. Use the multiagent 11-wave program only as a coordinated expansion layer, not as a replacement for the canonical next-5 queue.
+- N+1 through N+9 implementation stream: **✅ Completed**
+- Active planning focus: **S1 Errors Stabilization**, **S2 Phase 26 deferred closeout**, **S3 Phase 27 micro-wave prep**
+- Planning authority remains centralized in `MASTER_PLAN.md` + `PENDING_TASKS_ONLY.md`
 
 ---
 
-## Next 5 Phases (Execution-First)
+## Active Streams (Now)
 
-| Phase | Objective                                | Primary Owners              | Entry Gate | Exit KPI                             |
-| ----- | ---------------------------------------- | --------------------------- | ---------- | ------------------------------------ |
-| N+1   | Auth/login hardening + route consistency | @Daniela, @Mira, @Katherine | Gate 1     | Auth suite + build pass              |
-| N+2   | Tenant portal live data parity           | @Mira, @Barbara, @Katherine | Gate 1     | 5 tenant tabs on live APIs           |
-| N+3   | Managing-director CRM critical tabs      | @Mira, @Una, @Katherine     | Gate 1     | Critical flow smoke E2E pass         |
-| N+4   | Convert top 3 revenue-impact stubs       | @Mira, @Ruchi, @Barbara     | Gate 1     | 3 priority 501/503 endpoints removed |
-| N+5   | Test + release hardening                 | @Katherine, @Gwynne, @Radia | Gate 2     | Stable release gate                  |
+| Stream | Objective                                                                 | Owners                    | Status      | Entry Gate                                                              | Exit Criteria                                                               |
+| ------ | ------------------------------------------------------------------------- | ------------------------- | ----------- | ----------------------------------------------------------------------- | --------------------------------------------------------------------------- |
+| S1     | Errors stabilization lane (fast/medium/deep buckets)                      | @Mira + @Katherine        | 🔨 Active   | `npm run plans:validate` + baseline validation clean                    | Typecheck/lint/build + targeted suites pass and evidence logged in trackers |
+| S2     | Close Phase 26 deferred workstream with explicit owner/date + clear scope | @Margaret                 | 🕒 Deferred | Deferred item remains explicit in queue with owner/date                 | Either reactivated as wave or moved to superseded archive record            |
+| S3     | Execute next phase in short micro-waves with artifact bundle              | @Ada + @Margaret + squads | 📋 Planned  | Readiness >=60% + exact approval phrase + wave bundle linked from queue | Wave backlog complete with validation evidence and rollback notes recorded  |
 
 ---
 
-## Priority Queue
+## Micro-Wave Execution Target
 
-### Now
-
-- N+1 Auth/login hardening
-- N+2 Tenant portal parity
-- N+3 CRM critical tabs
-
-### Next
-
-- N+4 Stub conversion
-- N+5 Release hardening
-
-### Later
-
-- Broader items tracked in `IMPROVEMENTS_BACKLOG.md`
+| Wave | Focus                                             | Bundle                                                                                                                                                                                                                                                           |
+| ---- | ------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 08   | Errors stabilization + planning hard-gate rollout | [`WAVE_08_SDD.md`](./waves/WAVE_08_SDD.md), [`WAVE_08_READINESS_PACKET.md`](./waves/WAVE_08_READINESS_PACKET.md), [`WAVE_08_IMPLEMENTATION_BACKLOG.md`](./waves/WAVE_08_IMPLEMENTATION_BACKLOG.md), [`WAVE_08_TEST_ROLLOUT.md`](./waves/WAVE_08_TEST_ROLLOUT.md) |
 
 ---
 
-## Active Metrics
+## Governance Hard Gate
 
-- Historical baseline: Phases 1–33 complete, Phases 28–30 integration delivered
-- Phases 33–47 execution stream: complete
-- Current blockers count: track in `PROJECT_PROGRESS.md`
-- Blocker target: <=5 before release hardening (N+5)
-- Daily progress: `PROJECT_PROGRESS.md`
-- Readiness baseline: `waves/WAVE_01_READINESS_PACKET.md`
-- AI speed KPI: cycle-time reduction, blocker lead time, test-pass lead time
+1. Every planning update must run `npm run plans:validate`.
+2. Active queue changes must be mirrored in:
+   - `plans/PENDING_TASKS_ONLY.md`
+   - `PROJECT_PROGRESS.md`
+   - `DAILY_MILESTONE_TRACKER.md`
+3. Completion claims require verification command evidence.
 
 ---
 
@@ -64,14 +48,13 @@
 
 - Queue: [`PENDING_TASKS_ONLY.md`](./PENDING_TASKS_ONLY.md)
 - Operational dashboard: [`../PROJECT_PROGRESS.md`](../PROJECT_PROGRESS.md)
-- Readiness packet: [`waves/WAVE_01_READINESS_PACKET.md`](./waves/WAVE_01_READINESS_PACKET.md)
-- Expanded execution program: [`MULTIAGENT_11_WAVE_EXECUTION_PROGRAM.md`](./MULTIAGENT_11_WAVE_EXECUTION_PROGRAM.md)
-- Historical baseline: [`PHASE_23_24_25_IMPLEMENTATION_PLAN.md`](./PHASE_23_24_25_IMPLEMENTATION_PLAN.md)
-- Full backlog: [`IMPROVEMENTS_BACKLOG.md`](./IMPROVEMENTS_BACKLOG.md)
+- Governance policy: [`PLANNING_GOVERNANCE.md`](./PLANNING_GOVERNANCE.md)
+- Active index: [`INDEX.md`](./INDEX.md)
+- Backlog reference: [`IMPROVEMENTS_BACKLOG.md`](./IMPROVEMENTS_BACKLOG.md)
 
 ---
 
 ## Archive Policy
 
 Historical/superseded plan documents remain in `archives/`.  
-New active planning docs require merging or archiving an existing active doc (no plan bloat).
+New active planning docs require merging or superseding an existing active doc (no plan bloat).
