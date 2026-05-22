@@ -624,6 +624,24 @@ await test('POST /applications/:application_id/manager-review shortlist updates 
   __resetRecruitmentTestDeps();
 });
 
+await test('GET /whatsapp/templates/production-validation returns summary', async () => {
+  process.env.RECRUITMENT_AUTH_MODE = 'enforced';
+
+  await withServer(async (baseUrl) => {
+    const response = await fetch(`${baseUrl}/api/recruitment/whatsapp/templates/production-validation`, {
+      headers: { 'x-user-role': 'hr' }
+    });
+    const body = await response.json();
+
+    assert(response.status === 200, 'Expected HTTP 200 for template production validation');
+    assert(body.success === true, 'Expected success flag for template validation response');
+    assert(body.summary.total_templates >= 7, 'Expected default templates in validation summary');
+  });
+
+  process.env.RECRUITMENT_AUTH_MODE = originalRecruitmentAuthMode;
+  __resetRecruitmentTestDeps();
+});
+
 console.log(`\n✅ ${passedTests}/${totalTests} recruitment route integration tests passed\n`);
 process.env.RECRUITMENT_AUTH_MODE = originalRecruitmentAuthMode;
 process.exit(passedTests === totalTests ? 0 : 1);

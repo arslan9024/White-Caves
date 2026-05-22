@@ -1572,6 +1572,35 @@ router.get('/whatsapp/templates/:templateId/preview', async (req, res) => {
   }
 });
 
+// Validate WhatsApp templates against production readiness checks
+router.get('/whatsapp/templates/production-validation', requireRecruitmentAccess('read'), async (req, res) => {
+  try {
+    const { template_id } = req.query;
+    const maxBodyLength = req.query.max_body_length ? parseInt(req.query.max_body_length, 10) : undefined;
+    const options = Number.isFinite(maxBodyLength) ? { maxBodyLength } : {};
+
+    if (template_id) {
+      const result = templateService.validateTemplateForProduction(template_id, options);
+      return res.status(200).json({
+        success: true,
+        validation: result
+      });
+    }
+
+    const result = templateService.validateAllTemplatesForProduction(options);
+    return res.status(200).json({
+      success: true,
+      ...result
+    });
+  } catch (error) {
+    const statusCode = error.message?.includes('Template not found') ? 404 : 500;
+    return res.status(statusCode).json({
+      error: 'Failed to validate templates for production',
+      details: error.message
+    });
+  }
+});
+
 // Send offer letter and move application to offer stage
 router.post('/applications/:application_id/send-offer', requireRecruitmentAccess('write'), async (req, res) => {
   try {

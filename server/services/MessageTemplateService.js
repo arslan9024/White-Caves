@@ -431,6 +431,91 @@ In the meantime, feel free to reach out if you have any questions!
 
     return this.render(templateId, sampleData);
   }
+
+  /**
+   * Validate one template against production-readiness rules.
+   */
+  validateTemplateForProduction(templateId, options = {}) {
+    const template = this.getTemplate(templateId);
+    const issues = [];
+    const warnings = [];
+    const maxBodyLength = options.maxBodyLength || 3500;
+
+    const body = template.body || '';
+    const bodyLength = body.length;
+    const declaredVariables = Array.isArray(template.variables) ? template.variables : [];
+    const bodyVariables = [...new Set((body.match(/{{\s*([a-zA-Z0-9_]+)\s*}}/g) || []).map(token => token.replace(/[{}\s]/g, '')))];
+
+    if (!template.enabled) {
+      warnings.push('Template is disabled and will not be used in production sends.');
+    }
+
+    if (!body.trim()) {
+      issues.push('Template body is empty.');
+    }
+
+    if (bodyLength > maxBodyLength) {
+      issues.push(`Template body exceeds ${maxBodyLength} characters (found ${bodyLength}).`);
+    }
+
+    const duplicateVariables = declaredVariables.filter((variable, index) => declaredVariables.indexOf(variable) !== index);
+    if (duplicateVariables.length > 0) {
+      issues.push(`Duplicate declared variables: ${[...new Set(duplicateVariables)].join(', ')}`);
+    }
+
+    const undeclaredBodyVariables = bodyVariables.filter(variable => !declaredVariables.includes(variable));
+    if (undeclaredBodyVariables.length > 0) {
+      issues.push(`Variables used in body but not declared: ${undeclaredBodyVariables.join(', ')}`);
+    }
+
+    const declaredButUnused = declaredVariables.filter(variable => !bodyVariables.includes(variable));
+    if (declaredButUnused.length > 0) {
+      warnings.push(`Declared variables not used in template body: ${declaredButUnused.join(', ')}`);
+    }
+
+    const sampleVariables = declaredVariables.reduce((accumulator, variable) => {
+      accumulator[variable] = `[${variable}]`;
+      return accumulator;
+    }, {});
+
+    const renderedPreview = this.render(templateId, sampleVariables);
+    if (/{{\s*[^}]+\s*}}/.test(renderedPreview)) {
+      issues.push('Rendered preview still contains unreplaced placeholders.');
+    }
+
+    return {
+      template_id: template.id,
+      name: template.name,
+      category: template.category,
+      enabled: template.enabled,
+      valid: issues.length === 0,
+      issues,
+      warnings,
+      metrics: {
+        body_length: bodyLength,
+        declared_variables: declaredVariables.length,
+        body_variables: bodyVariables.length
+      }
+    };
+  }
+
+  /**
+   * Validate all templates and return production readiness summary.
+   */
+  validateAllTemplatesForProduction(options = {}) {
+    const validations = this.getAll().map(template => this.validateTemplateForProduction(template.id, options));
+    const invalidTemplates = validations.filter(item => !item.valid).length;
+
+    return {
+      summary: {
+        total_templates: validations.length,
+        valid_templates: validations.length - invalidTemplates,
+        invalid_templates: invalidTemplates,
+        checked_at: new Date().toISOString()
+      },
+      templates: validations
+    };
+  }
 }
 
 // Export singleton instance

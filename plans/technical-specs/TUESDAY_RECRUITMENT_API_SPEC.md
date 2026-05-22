@@ -160,6 +160,54 @@ Response contract:
 
 Runs scoring then immediately sends Linda messages to contactable candidates.
 
+### `GET /api/recruitment/whatsapp/templates/production-validation`
+
+Runs Linda template production-readiness checks.
+
+Query params:
+
+- `template_id` optional single-template validation
+- `max_body_length` optional character cap override (default `3500`)
+
+Response shape:
+
+```json
+{
+  "success": true,
+  "summary": {
+    "total_templates": 7,
+    "valid_templates": 7,
+    "invalid_templates": 0,
+    "checked_at": "2026-05-22T00:00:00.000Z"
+  },
+  "templates": []
+}
+```
+
+### `GET /api/recruitment/jobs/:job_id/manager-shortlist`
+
+Returns manager shortlist recommendations derived from candidate scores.
+
+Query params:
+
+- `min_score` default `70`
+- `limit` default `20`
+
+### `POST /api/recruitment/applications/:application_id/manager-review`
+
+Records manager review decisions.
+
+Request body:
+
+```json
+{
+  "decision": "shortlist",
+  "review_note": "Proceed to interview panel"
+}
+```
+
+Allowed decisions: `shortlist`, `hold`, `reject`.
+
 ## Integration Expectations
 
 ### Nancy

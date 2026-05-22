@@ -143,6 +143,7 @@ Budget model:
 - [x] Offer workflow now includes explicit offer approval and candidate acceptance/decline response routes.
 - [x] Recruitment workflow actions now emit structured audit logs for scoring, offer, and onboarding transitions.
 - [x] Manager self-service shortlist and review workflow endpoints added with role-scoped access and audit trails.
+- [x] Linda WhatsApp templates now have production-readiness validation checks and API reporting.
 
 ## Pending Tasks
 

@@ -40,6 +40,7 @@ Run after changes to scoring, templates, or recruitment metrics:
 
 ```powershell
 node server/tests/phase1c-scoring-whatsapp.test.js
+node server/tests/message-template-production-validation.test.js
 ```
 
 Recommended follow-up once route tests exist:
