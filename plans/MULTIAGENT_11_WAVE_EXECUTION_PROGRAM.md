@@ -2,7 +2,7 @@
 
 **Date:** May 15, 2026  
 **Status:** Drafted for coordinated execution  
-**Mode:** Multi-agent, micro-wave delivery (do together operationally, merge separately)  
+**Mode:** Multi-agent, macro/huge-wave delivery (do together operationally, merge separately)  
 **Inputs consolidated from:** `plans/PHASE_6_COMPLIANCE.md`, `plans/PHASE_7_ANALYTICS.md`, `plans/PHASE_8_ARABIC.md`, `plans/PHASE_9_RBAC.md`, `plans/PHASE_10_PWA.md`, `plans/MASTER_PLAN.md`, `PROJECT_PROGRESS.md`, archived Phase 16–19 planning, and subagent synthesis from @Ada, @Margaret, guardian, and @Dena.
 
 ---
@@ -11,7 +11,7 @@
 
 **Yes — the next 11 implementation phases can be completed together with all subagents working together.**
 
-However, they must be executed as **11 coordinated micro-waves** with shared planning, clear ownership, and strict validation gates.  
+However, they must be executed as **11 coordinated macro/huge-waves** with shared planning, clear ownership, and strict validation gates.  
 **Do not merge them as one mega-change.**
 
 ### Delivery Rule
@@ -187,9 +187,9 @@ After Wave 1 gate passes:
 - start **Wave 2 — WhatsApp CRM Revenue Capture**
 - prepare **Wave 3 — Compliance Baseline** in parallel
 
-### Step 3 — maintain micro-wave discipline
+### Step 3 — maintain macro/huge-wave discipline
 
-Keep execution in 1–2 module bursts per day, not a giant blended change set.
+Keep execution in 3–6 module dependency-safe bundles per day with internal validation checkpoints.
 
 ---
 

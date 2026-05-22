@@ -327,11 +327,11 @@
 - Daily cap must be logged in `PROJECT_PROGRESS.md` before coding.
 - If daily cap is exhausted, remaining work is queued to next day unless emergency exception approved by @Ada.
 
-22. **🚀 MICRO-WAVE PREMIUM EXECUTION (Fast Implementation):**
+22. **🚀 MACRO/HUGE-WAVE PREMIUM EXECUTION (Fast Implementation):**
 
-- Default premium coding batch size is **1–2 modules per day**.
-- Small isolated premium tasks are allowed when risk is low and Gate 1 is passed.
-- Time-to-implementation is the priority; keep waves short and focused.
+- Default premium coding batch size is **3–6 modules per day** when dependency-safe.
+- Use macro-wave bundles with internal validation checkpoints after each module group.
+- Time-to-implementation is the priority; execute larger coherent batches while preserving safety gates.
 
 23. **🛡️ POST-PREMIUM COMMIT RUNTIME GUARD (Mandatory):**
 
@@ -350,7 +350,7 @@
 24. **🤖 AUTONOMOUS CONTINUATION MODE (No Repeated "go" Prompts):**
 
 - Default execution mode for approved implementation sessions is **continuous autonomous progression**.
-- Once user intent is clear (e.g., "start implementation", "continue"), execution should proceed micro-wave by micro-wave without waiting for repeated manual confirmation.
+- Once user intent is clear (e.g., "start implementation", "continue"), execution should proceed macro-wave by macro-wave without waiting for repeated manual confirmation.
 - Hard-stop only on:
   - failing tests/lint/build,
   - policy/gate mismatch,

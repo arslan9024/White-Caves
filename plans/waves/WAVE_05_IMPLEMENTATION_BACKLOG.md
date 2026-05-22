@@ -80,7 +80,7 @@
 - **Task:** Produce operator SOPs for Linda sessions, Nadia policies, Nina overrides.
 - **Exit:** Team can run daily operations without engineering intervention.
 
-## Suggested Execution Order (Micro-Waves)
+## Suggested Execution Order (Macro/Huge-Waves)
 
 1. W5-001, W5-002
 2. W5-003, W5-004, W5-005
