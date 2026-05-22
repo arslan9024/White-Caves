@@ -18,6 +18,15 @@ interface AreaBenchmarkRow {
   zone: string;
 }
 
+interface CompetitorPricingRow {
+  area: string;
+  portal: 'bayut' | 'propertyfinder';
+  avgPricePerSqft: number;
+  deltaVsWhiteCavesPct: number;
+  updatedAt: string;
+  source: string;
+}
+
 const areaBenchmarks: AreaBenchmarkRow[] = [
   { area: 'Palm Jumeirah', avgPricePerSqft: 3800, avgAnnualRent: 260 * 12, zone: 'premium' },
   { area: 'Downtown Dubai', avgPricePerSqft: 3200, avgAnnualRent: 220 * 12, zone: 'premium' },
@@ -78,6 +87,138 @@ const parseBenchmarkPayload = (payload: unknown): AreaBenchmarkRow[] => {
   return sourceRows
     .map(normalizeBenchmarkRow)
     .filter((row): row is AreaBenchmarkRow => row !== null);
+};
+
+const COMPETITOR_CACHE_TTL_MS = 10 * 60 * 1000;
+let competitorPricingCache: { fetchedAt: number; rows: CompetitorPricingRow[] } | null = null;
+
+const staticCompetitorPricing = (benchmarks: AreaBenchmarkRow[]): CompetitorPricingRow[] => {
+  const nowIso = new Date().toISOString();
+
+  return benchmarks.flatMap(benchmark => {
+    const bayutPrice = Math.round(benchmark.avgPricePerSqft * 1.04);
+    const propertyFinderPrice = Math.round(benchmark.avgPricePerSqft * 0.97);
+
+    const bayutDelta =
+      benchmark.avgPricePerSqft > 0
+        ? Number(
+            (((bayutPrice - benchmark.avgPricePerSqft) / benchmark.avgPricePerSqft) * 100).toFixed(
+              2
+            )
+          )
+        : 0;
+
+    const propertyFinderDelta =
+      benchmark.avgPricePerSqft > 0
+        ? Number(
+            (
+              ((propertyFinderPrice - benchmark.avgPricePerSqft) / benchmark.avgPricePerSqft) *
+              100
+            ).toFixed(2)
+          )
+        : 0;
+
+    return [
+      {
+        area: benchmark.area,
+        portal: 'bayut' as const,
+        avgPricePerSqft: bayutPrice,
+        deltaVsWhiteCavesPct: bayutDelta,
+        updatedAt: nowIso,
+        source: 'derived-benchmark',
+      },
+      {
+        area: benchmark.area,
+        portal: 'propertyfinder' as const,
+        avgPricePerSqft: propertyFinderPrice,
+        deltaVsWhiteCavesPct: propertyFinderDelta,
+        updatedAt: nowIso,
+        source: 'derived-benchmark',
+      },
+    ];
+  });
+};
+
+const normalizeCompetitorRow = (raw: unknown): CompetitorPricingRow | null => {
+  if (!raw || typeof raw !== 'object') return null;
+
+  const row = raw as Record<string, unknown>;
+  const area = toStringField(row.area);
+  const portalRaw = toStringField(row.portal)?.toLowerCase();
+  const avgPricePerSqft = toNumberField(row.avgPricePerSqft);
+  const deltaVsWhiteCavesPct = toNumberField(row.deltaVsWhiteCavesPct);
+  const updatedAt = toStringField(row.updatedAt) ?? new Date().toISOString();
+  const source = toStringField(row.source) ?? 'live-feed';
+
+  if (!area || !portalRaw || avgPricePerSqft === null || deltaVsWhiteCavesPct === null) {
+    return null;
+  }
+
+  if (portalRaw !== 'bayut' && portalRaw !== 'propertyfinder') {
+    return null;
+  }
+
+  return {
+    area,
+    portal: portalRaw,
+    avgPricePerSqft,
+    deltaVsWhiteCavesPct,
+    updatedAt,
+    source,
+  };
+};
+
+const parseCompetitorPayload = (payload: unknown): CompetitorPricingRow[] => {
+  let sourceRows: unknown[] = [];
+
+  if (Array.isArray(payload)) {
+    sourceRows = payload;
+  } else if (payload && typeof payload === 'object') {
+    const maybeData = (payload as { data?: unknown }).data;
+    if (Array.isArray(maybeData)) sourceRows = maybeData;
+  }
+
+  return sourceRows
+    .map(normalizeCompetitorRow)
+    .filter((row): row is CompetitorPricingRow => row !== null);
+};
+
+const getCompetitorPricingData = async (
+  benchmarks: AreaBenchmarkRow[]
+): Promise<CompetitorPricingRow[]> => {
+  const feedUrl = process.env.COMPETITOR_PRICING_URL;
+  if (!feedUrl) return staticCompetitorPricing(benchmarks);
+
+  const now = Date.now();
+  if (competitorPricingCache && now - competitorPricingCache.fetchedAt < COMPETITOR_CACHE_TTL_MS) {
+    return competitorPricingCache.rows;
+  }
+
+  try {
+    const headers: Record<string, string> = { Accept: 'application/json' };
+    const apiKey = process.env.COMPETITOR_PRICING_API_KEY;
+    if (apiKey) headers.Authorization = `Bearer ${apiKey}`;
+
+    const response = await fetch(feedUrl, { headers });
+    if (!response.ok) {
+      throw new Error(`Competitor feed request failed: HTTP ${response.status}`);
+    }
+
+    const payload = (await response.json()) as unknown;
+    const rows = parseCompetitorPayload(payload);
+    if (rows.length === 0) {
+      throw new Error('Competitor feed returned no valid rows');
+    }
+
+    competitorPricingCache = { fetchedAt: now, rows };
+    return rows;
+  } catch (error) {
+    logger.warn('Competitor pricing feed unavailable — falling back to derived benchmark data', {
+      error: error instanceof Error ? error.message : String(error),
+    });
+
+    return staticCompetitorPricing(benchmarks);
+  }
 };
 
 const getAreaBenchmarks = async (): Promise<AreaBenchmarkRow[]> => {
@@ -471,6 +612,37 @@ router.get(
       total: data.length,
       source: baseData.source,
       note: baseData.note,
+    });
+  })
+);
+
+// ─── GET /api/market/competitor-pricing ─────────────────────────────────────
+router.get(
+  '/competitor-pricing',
+  asyncHandler(async (req: AuthRequest, res: Response) => {
+    const userId = req.user?.id;
+    if (!userId) throw new AppError('Authentication required', 401);
+
+    const { area, portal } = req.query as { area?: string; portal?: string };
+
+    const benchmarks = await getAreaBenchmarks();
+    let data = await getCompetitorPricingData(benchmarks);
+
+    if (area) {
+      data = data.filter(row => row.area.toLowerCase().includes(area.toLowerCase()));
+    }
+
+    if (portal) {
+      const normalized = portal.toLowerCase();
+      data = data.filter(row => row.portal === normalized);
+    }
+
+    res.json({
+      success: true,
+      data,
+      total: data.length,
+      portals: ['bayut', 'propertyfinder'],
+      note: 'Competitor pricing is advisory and should be validated against portal snapshots.',
     });
   })
 );
