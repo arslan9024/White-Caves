@@ -115,6 +115,17 @@
      ACTION types: `EXPAND` (add sections) | `DRAFT` (write from scratch) | `REVIEW` (check consistency) | `AUDIT` (report gaps) | `SYNC` (align with dependency)
      Example: `@Victoria — EXPAND: tenancy-ejari.md → add PDC tracking section`
 
+4.1 **Canonical Model & Eligibility Matrix (Authoritative):**
+
+- Use this matrix as the single lookup for model eligibility and premium access decisions.
+- If any role-table model text conflicts, this matrix and Rule 4/Rule 13 control.
+
+| Agent Group                                                                                                                                                                     | Allowed Models                                                 | Premium Eligible     | Notes                                            |
+| ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------- | -------------------- | ------------------------------------------------ |
+| Free Planning Agents (17): @Victoria, @Invoice, @Sofia, @Cassie, @Joelle, @Annie, @Rachel, @Marissa, @Timnit, @Hedy, @Maya, @Booking, @Jaime, @Fei-Fei, @Anima, @Mary, @Corinne | Gemini 2.0 Flash, Llama 3.1 70B (Groq), DeepSeek V3            | No                   | Docs/plans only; never code edits                |
+| Senior Coders: @Ada, @Mira, @Barbara, @Una, @Daniela, @Ruchi, @Gwynne, @Katherine                                                                                               | GPT-4o default, Claude 3.5 Sonnet for explicit complex reviews | Yes (post-gate only) | Requires Rule 7 + Rule 11 + @Ada approval phrase |
+| Senior Designers: @Una, @Lea, @Tracy, @Framer, @Zoe, @Inas                                                                                                                      | GPT-4o default, Claude 3.5 Sonnet for explicit complex reviews | Yes (post-gate only) | Requires Rule 7 + Rule 11 + @Ada approval phrase |
+
 5. **🚦 CONTEXT ENRICHMENT GATE (Before Any Coding Sprint):**
    Before any senior coding agent begins a feature, ALL gates must be checked:
    - [ ] Target module business rules documented in `business_docs/` (by free planning agents)
@@ -162,6 +173,17 @@
    ✅ ALL 7 CHECKED? → @Ada declares: "Context Ready (60% Readiness) — Coding Phase Approved"
    ❌ ANY UNCHECKED? → Route back to free planning agents. Do NOT code.
    ```
+
+7.1 **Execution Decision Order (Deterministic):**
+
+When deciding whether to proceed, evaluate in this order:
+
+1. Rule 7 session-start checklist (must fully pass)
+2. Rule 11 readiness gate (>=60% with required evidence)
+3. Rule 24 execution mode (Approval vs Autopilot behavior)
+4. Rule 25 runtime policy values (`scripts/orchestrator/policy.json`)
+
+If any step fails, stop and route to planning/escalation path.
 
 8. **📅 DAILY AGENT RHYTHM (Planning-First Workflow):**
    This rhythm governs every working day. Coding NEVER starts before planning agents complete their morning run.
