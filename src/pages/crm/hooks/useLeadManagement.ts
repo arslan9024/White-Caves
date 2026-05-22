@@ -151,11 +151,10 @@ export function useLeadManagement() {
   );
 
   const statusCounts = useMemo(() => {
-    const counts: Record<string, number> = { all: allLeads.length };
+    const counts = new Map<string, number>([['all', allLeads.length]]);
     allLeads.forEach((lead: Lead) => {
       const status = lead.status || 'unknown';
-      // eslint-disable-next-line security/detect-object-injection
-      counts[status] = (counts[status] || 0) + 1;
+      counts.set(status, (counts.get(status) ?? 0) + 1);
     });
     return counts;
   }, [allLeads]);

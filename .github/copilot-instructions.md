@@ -142,13 +142,13 @@
           → Check PENDING_TASKS_ONLY.md and DAILY_MILESTONE_TRACKER.md
    [ ] 4. MARGARET SIGNED OFF: Has @Margaret reviewed the plan and confirmed scope?
           → Signal: @Margaret entry in DAILY_MILESTONE_TRACKER.md for today.
-   [ ] 5. ADA AUTHORIZED: Has @Ada declared "Context Ready — Coding Phase Approved"?
+   [ ] 5. ADA AUTHORIZED: Has @Ada declared "@Ada — Context Ready (60% Readiness) — Coding Phase Approved"?
           → This declaration MUST appear in the session before any senior agent codes.
    [ ] 6. QUOTA AVAILABLE: Check WEEKLY PREMIUM QUOTA in PROJECT_PROGRESS.md.
           → If 0 requests remaining → queue work, do NOT start premium coding.
    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
    [ ] 7. READINESS GATE MET: Is readiness score >=60% with evidence?
-   ✅ ALL 7 CHECKED? → @Ada declares: "Context Ready (60% Readiness) — Coding Phase Approved"
+   ✅ ALL 7 CHECKED? → @Ada declares: "@Ada — Context Ready (60% Readiness) — Coding Phase Approved"
    ❌ ANY UNCHECKED? → Route back to free planning agents. Do NOT code.
    ```
 
