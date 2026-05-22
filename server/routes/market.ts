@@ -44,8 +44,7 @@ const areaBenchmarks: Array<{
   { area: 'Deira', avgPricePerSqft: 900, avgAnnualRent: 60 * 12, zone: 'affordable' },
 ];
 
-// RERA Rental Index (2024 data — static, updated quarterly in production)
-const reraRentalIndex: Array<{
+interface ReraRentalIndexRow {
   area: string;
   propertyType: string;
   bedrooms: string;
@@ -55,7 +54,10 @@ const reraRentalIndex: Array<{
   allowedIncrease20to30Pct: string;
   allowedIncrease30to40Pct: string;
   allowedIncreaseAbove40Pct: string;
-}> = [
+}
+
+// RERA Rental Index (2024 data — static, updated quarterly in production)
+const reraRentalIndex: ReraRentalIndexRow[] = [
   {
     area: 'Downtown Dubai',
     propertyType: 'apartment',
@@ -90,6 +92,138 @@ const reraRentalIndex: Array<{
     allowedIncreaseAbove40Pct: '20%',
   },
 ];
+
+const RERA_CACHE_TTL_MS = 10 * 60 * 1000;
+let reraLiveCache: { fetchedAt: number; rows: ReraRentalIndexRow[] } | null = null;
+
+const toStringField = (value: unknown): string | null => {
+  if (typeof value === 'string' && value.trim().length > 0) return value.trim();
+  return null;
+};
+
+const toNumberField = (value: unknown): number | null => {
+  if (typeof value === 'number' && Number.isFinite(value)) return value;
+  if (typeof value === 'string' && value.trim().length > 0) {
+    const parsed = Number(value);
+    if (Number.isFinite(parsed)) return parsed;
+  }
+  return null;
+};
+
+const normalizeReraRow = (raw: unknown): ReraRentalIndexRow | null => {
+  if (!raw || typeof raw !== 'object') return null;
+
+  const row = raw as Record<string, unknown>;
+  const area = toStringField(row.area);
+  const propertyType = toStringField(row.propertyType);
+  const bedrooms = toStringField(row.bedrooms);
+  const avgRentAed = toNumberField(row.avgRentAed);
+  const allowedIncreaseBelow10Pct = toStringField(row.allowedIncreaseBelow10Pct);
+  const allowedIncrease10to20Pct = toStringField(row.allowedIncrease10to20Pct);
+  const allowedIncrease20to30Pct = toStringField(row.allowedIncrease20to30Pct);
+  const allowedIncrease30to40Pct = toStringField(row.allowedIncrease30to40Pct);
+  const allowedIncreaseAbove40Pct = toStringField(row.allowedIncreaseAbove40Pct);
+
+  if (
+    !area ||
+    !propertyType ||
+    !bedrooms ||
+    avgRentAed === null ||
+    !allowedIncreaseBelow10Pct ||
+    !allowedIncrease10to20Pct ||
+    !allowedIncrease20to30Pct ||
+    !allowedIncrease30to40Pct ||
+    !allowedIncreaseAbove40Pct
+  ) {
+    return null;
+  }
+
+  return {
+    area,
+    propertyType,
+    bedrooms,
+    avgRentAed,
+    allowedIncreaseBelow10Pct,
+    allowedIncrease10to20Pct,
+    allowedIncrease20to30Pct,
+    allowedIncrease30to40Pct,
+    allowedIncreaseAbove40Pct,
+  };
+};
+
+const parseReraPayload = (payload: unknown): ReraRentalIndexRow[] => {
+  let sourceRows: unknown[] = [];
+
+  if (Array.isArray(payload)) {
+    sourceRows = payload;
+  } else if (payload && typeof payload === 'object') {
+    const maybeData = (payload as { data?: unknown }).data;
+    if (Array.isArray(maybeData)) sourceRows = maybeData;
+  }
+
+  return sourceRows.map(normalizeReraRow).filter((row): row is ReraRentalIndexRow => row !== null);
+};
+
+const getReraRentalIndexData = async (): Promise<{
+  rows: ReraRentalIndexRow[];
+  source: string;
+  note: string;
+}> => {
+  const feedUrl = process.env.RERA_RENTAL_INDEX_URL;
+
+  if (!feedUrl) {
+    return {
+      rows: reraRentalIndex,
+      source: 'rera-2024',
+      note: 'Based on RERA Rental Index 2024. Always verify with official RERA portal before issuing Form 7.',
+    };
+  }
+
+  const now = Date.now();
+  if (reraLiveCache && now - reraLiveCache.fetchedAt < RERA_CACHE_TTL_MS) {
+    return {
+      rows: reraLiveCache.rows,
+      source: 'rera-live-cache',
+      note: 'Live RERA feed (cached). Always verify with official RERA portal before issuing Form 7.',
+    };
+  }
+
+  try {
+    const headers: Record<string, string> = { Accept: 'application/json' };
+    const apiKey = process.env.RERA_RENTAL_INDEX_API_KEY;
+    if (apiKey) headers.Authorization = `Bearer ${apiKey}`;
+
+    const response = await fetch(feedUrl, { headers });
+    if (!response.ok) {
+      throw new Error(`Live feed request failed: HTTP ${response.status}`);
+    }
+
+    const payload = (await response.json()) as unknown;
+    const rows = parseReraPayload(payload);
+
+    if (rows.length === 0) {
+      throw new Error('Live feed returned no valid rows');
+    }
+
+    reraLiveCache = { fetchedAt: now, rows };
+
+    return {
+      rows,
+      source: 'rera-live',
+      note: 'Live RERA feed. Always verify with official RERA portal before issuing Form 7.',
+    };
+  } catch (error) {
+    logger.warn('RERA live feed unavailable — falling back to static index', {
+      error: error instanceof Error ? error.message : String(error),
+    });
+
+    return {
+      rows: reraRentalIndex,
+      source: 'rera-2024-fallback',
+      note: 'Live RERA feed unavailable, fallback to RERA 2024 static index. Verify with official portal before Form 7.',
+    };
+  }
+};
 
 // ─── GET /api/market/price-index ─────────────────────────────────────────────
 router.get(
@@ -249,7 +383,8 @@ router.get(
       bedrooms?: string;
     };
 
-    let data = reraRentalIndex;
+    const baseData = await getReraRentalIndexData();
+    let data = baseData.rows;
     if (area) data = data.filter(r => r.area.toLowerCase().includes(area.toLowerCase()));
     if (propertyType) data = data.filter(r => r.propertyType === propertyType);
     if (bedrooms) data = data.filter(r => r.bedrooms === bedrooms);
@@ -258,8 +393,8 @@ router.get(
       success: true,
       data,
       total: data.length,
-      source: 'rera-2024',
-      note: 'Based on RERA Rental Index 2024. Always verify with official RERA portal before issuing Form 7.',
+      source: baseData.source,
+      note: baseData.note,
     });
   })
 );
