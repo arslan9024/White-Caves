@@ -51,6 +51,8 @@ model User {
   leasesAsLandlord Lease[]   @relation("LeaseLandlord")
   maintenanceRequests Maintenance[] @relation("MaintenanceRequester")
   pdcCheques    PDCSchedule[] @relation("PDCTenant")
+  valuationsCreated  PropertyValuation[] @relation("ValuationCreator")
+  valuationsOverridden PropertyValuation[] @relation("ValuationOverrider")
 
   @@index([role])
   @@index([status])
@@ -117,6 +119,7 @@ model Property {
   offers       Offer[]
   leases       Lease[]
   maintenanceRequests Maintenance[]
+  valuations   PropertyValuation[] @relation("PropertyValuations")
 
   @@index([status])
   @@index([type])
@@ -1223,3 +1226,61 @@ model HenryRecord {
   @@index([createdBy])
   @@index([createdAt])
 }
+
+  // ─── Wave 12: Property Valuation ─────────────────────────────────────────────
+  model PropertyValuation {
+    id                String    @id @default(auto()) @map("_id") @db.ObjectId
+    propertyId        String    @db.ObjectId
+    estimatedValueAed Float
+    rentAnnualAed     Float
+    grossYieldPct     Float
+    netYieldPct       Float
+    confidence        String    // high | medium | low
+    method            String    // avm | manual_override | bank
+    comparables       Json      @default("[]")
+    ageDiscount       Float     @default(0)
+    amenityPremium    Float     @default(0)
+    priceRangeLow     Float?
+    priceRangeHigh    Float?
+    overrideReason    String?
+    overriddenById    String?   @db.ObjectId
+    bankRequestStatus String?   // pending | submitted | received
+    bankResponseAed   Float?
+    bankRequestedAt   DateTime?
+    bankRespondedAt   DateTime?
+    createdById       String    @db.ObjectId
+    createdAt         DateTime  @default(now())
+    updatedAt         DateTime  @updatedAt
+
+    property     Property @relation("PropertyValuations", fields: [propertyId], references: [id], onDelete: Cascade)
+    createdBy    User     @relation("ValuationCreator", fields: [createdById], references: [id])
+    overriddenBy User?    @relation("ValuationOverrider", fields: [overriddenById], references: [id])
+
+    @@index([propertyId])
+    @@index([createdAt])
+    @@index([method])
+  }
+
+  // ─── Wave 12: Market Snapshot ─────────────────────────────────────────────────
+  model MarketSnapshot {
+    id               String   @id @default(auto()) @map("_id") @db.ObjectId
+    snapshotDate     DateTime @default(now())
+    area             String
+    propertyType     String   // apartment | villa | townhouse | penthouse | all
+    avgPricePerSqft  Float
+    avgSalePrice     Float
+    avgAnnualRent    Float
+    grossYield       Float
+    transactionVol   Int      @default(0)
+    daysOnMarket     Float    @default(0)
+    absorptionRate   Float    @default(0)
+    newListings      Int      @default(0)
+    activeListings   Int      @default(0)
+    source           String   @default("dld")
+    notes            String?
+    createdAt        DateTime @default(now())
+
+    @@index([area, snapshotDate])
+    @@index([snapshotDate])
+    @@index([area])
+  }

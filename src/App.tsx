@@ -245,6 +245,8 @@ const PWAInstallPrompt = lazy(() =>
 const UAEPassSuccessPage = lazy(() => import('./pages/auth/UAEPassSuccessPage'));
 const SignContractPage = lazy(() => import('./pages/SignContractPage'));
 const DesignSystemTest = lazy(() => import('./pages/DesignSystemTest'));
+const ValuationPage = lazy(() => import('./pages/ValuationPage'));
+const MarketIntelligencePage = lazy(() => import('./pages/MarketIntelligencePage'));
 
 // Analytics & utilities - lazy-loaded to reduce initial bundle
 const BiometricPrompt = lazy(() =>
@@ -503,6 +505,26 @@ function App(): React.JSX.Element {
                   }
                 />
                 <Route path="/auth/signin" element={<Navigate to="/signin" replace />} />
+                <Route
+                  path="/valuation"
+                  element={
+                    <RouteErrorBoundary section="Property Valuation">
+                      <Suspense fallback={<SuspenseLoader />}>
+                        <ValuationPage />
+                      </Suspense>
+                    </RouteErrorBoundary>
+                  }
+                />
+                <Route
+                  path="/market"
+                  element={
+                    <RouteErrorBoundary section="Market Intelligence">
+                      <Suspense fallback={<SuspenseLoader />}>
+                        <MarketIntelligencePage />
+                      </Suspense>
+                    </RouteErrorBoundary>
+                  }
+                />
                 <Route
                   path="/auth/uaepass-success"
                   element={
