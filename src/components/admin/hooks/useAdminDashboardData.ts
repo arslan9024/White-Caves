@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { authFetch } from '../../../utils/authFetch';
 import { createLogger } from '../../../utils/logger';
 
@@ -168,91 +168,100 @@ export const useAdminDashboardData = () => {
   );
   const [users, setUsers] = useState<DashboardUser[]>(FALLBACK_USERS);
 
-  useEffect(() => {
-    Promise.allSettled([
-      authFetch('/api/dashboard/summary').then(
-        (response: Response) => response.json() as Promise<DashboardSummaryResponse>
-      ),
-      authFetch('/api/dashboard/activities?pageSize=20').then(
-        (response: Response) => response.json() as Promise<DashboardActivitiesResponse>
-      ),
-      authFetch('/api/users?pageSize=100').then(
-        (response: Response) => response.json() as Promise<UsersResponse>
-      ),
-    ])
-      .then(([summaryResult, activitiesResult, usersResult]) => {
-        const summary = summaryResult.status === 'fulfilled' ? summaryResult.value.data : undefined;
-        const metrics = summary?.metrics;
-        const activityFeed =
-          activitiesResult.status === 'fulfilled'
-            ? activitiesResult.value.data
-            : summary?.recentActivities;
-        const usersData =
-          usersResult.status === 'fulfilled' ? (usersResult.value.data ?? []) : null;
+  const refreshData = useCallback(async (options?: { silent?: boolean }) => {
+    const silent = options?.silent ?? false;
+    if (!silent) {
+      setIsLoading(true);
+    }
 
-        const totalCommissions = metrics?.totalCommissions ?? 0;
-        const totalCommissionValue = metrics?.totalCommissionValue ?? 0;
-        const paidCommissionValue = metrics?.paidCommissionValue ?? 0;
-        const paidRatio = totalCommissionValue > 0 ? paidCommissionValue / totalCommissionValue : 0;
+    setLoadError(null);
 
-        setSystemMetrics({
-          totalUsers: usersData?.length ?? FALLBACK_SYSTEM_METRICS.totalUsers,
-          activeUsers:
-            usersData?.filter(userRow => userRow.status === 'active').length ??
-            FALLBACK_SYSTEM_METRICS.activeUsers,
-          totalProperties: metrics?.totalProperties ?? 0,
-          activeListings: metrics?.availableProperties ?? 0,
-          totalTransactions: totalCommissions,
-          completedTransactions: Math.round(totalCommissions * paidRatio),
-          systemHealth: paidRatio >= 0.8 ? 'excellent' : paidRatio >= 0.5 ? 'good' : 'warning',
-          uptime: 99.9,
-          responseTime: 142,
-          errorRate: Math.max(0, parseFloat(((1 - paidRatio) * 0.1).toFixed(2))),
-        });
+    try {
+      const [summaryResult, activitiesResult, usersResult] = await Promise.allSettled([
+        authFetch('/api/dashboard/summary').then(
+          (response: Response) => response.json() as Promise<DashboardSummaryResponse>
+        ),
+        authFetch('/api/dashboard/activities?pageSize=20').then(
+          (response: Response) => response.json() as Promise<DashboardActivitiesResponse>
+        ),
+        authFetch('/api/users?pageSize=100').then(
+          (response: Response) => response.json() as Promise<UsersResponse>
+        ),
+      ]);
 
-        if (activityFeed && activityFeed.length > 0) {
-          setRecentActivities(
-            activityFeed.map((activity, index) => {
-              const rawType = (activity.type ?? '').toLowerCase();
-              return {
-                id: activity.id ?? `activity-${index}`,
-                user: activity.user ?? 'System',
-                action: activity.description || activity.action || 'Activity update',
-                time: activity.timestamp
-                  ? new Date(activity.timestamp).toLocaleString('en-AE')
-                  : '—',
-                type: mapActivityType(rawType),
-              };
-            })
-          );
-        }
+      const summary = summaryResult.status === 'fulfilled' ? summaryResult.value.data : undefined;
+      const metrics = summary?.metrics;
+      const activityFeed =
+        activitiesResult.status === 'fulfilled'
+          ? activitiesResult.value.data
+          : summary?.recentActivities;
+      const usersData = usersResult.status === 'fulfilled' ? (usersResult.value.data ?? []) : null;
 
-        if (usersData && usersData.length > 0) {
-          setUsers(
-            usersData.map((row, index) => ({
-              id: row.id ?? `user-${index}`,
-              name: row.name ?? 'Unknown',
-              role: row.role ?? 'user',
-              status: row.status ?? 'inactive',
-              lastActive: row.updatedAt
-                ? new Date(row.updatedAt).toLocaleString('en-AE')
-                : row.createdAt
-                  ? new Date(row.createdAt).toLocaleString('en-AE')
-                  : '—',
-            }))
-          );
-        }
-      })
-      .catch((error: unknown) => {
-        const message =
-          error instanceof Error ? error.message : 'Failed to load admin dashboard data';
-        setLoadError(message);
-        logger.warn('Admin dashboard load failed', error);
-      })
-      .finally(() => {
-        setIsLoading(false);
+      const totalCommissions = metrics?.totalCommissions ?? 0;
+      const totalCommissionValue = metrics?.totalCommissionValue ?? 0;
+      const paidCommissionValue = metrics?.paidCommissionValue ?? 0;
+      const paidRatio = totalCommissionValue > 0 ? paidCommissionValue / totalCommissionValue : 0;
+
+      setSystemMetrics({
+        totalUsers: usersData?.length ?? FALLBACK_SYSTEM_METRICS.totalUsers,
+        activeUsers:
+          usersData?.filter(userRow => userRow.status === 'active').length ??
+          FALLBACK_SYSTEM_METRICS.activeUsers,
+        totalProperties: metrics?.totalProperties ?? 0,
+        activeListings: metrics?.availableProperties ?? 0,
+        totalTransactions: totalCommissions,
+        completedTransactions: Math.round(totalCommissions * paidRatio),
+        systemHealth: paidRatio >= 0.8 ? 'excellent' : paidRatio >= 0.5 ? 'good' : 'warning',
+        uptime: 99.9,
+        responseTime: 142,
+        errorRate: Math.max(0, parseFloat(((1 - paidRatio) * 0.1).toFixed(2))),
       });
+
+      if (activityFeed && activityFeed.length > 0) {
+        setRecentActivities(
+          activityFeed.map((activity, index) => {
+            const rawType = (activity.type ?? '').toLowerCase();
+            return {
+              id: activity.id ?? `activity-${index}`,
+              user: activity.user ?? 'System',
+              action: activity.description || activity.action || 'Activity update',
+              time: activity.timestamp ? new Date(activity.timestamp).toLocaleString('en-AE') : '—',
+              type: mapActivityType(rawType),
+            };
+          })
+        );
+      }
+
+      if (usersData && usersData.length > 0) {
+        setUsers(
+          usersData.map((row, index) => ({
+            id: row.id ?? `user-${index}`,
+            name: row.name ?? 'Unknown',
+            role: row.role ?? 'user',
+            status: row.status ?? 'inactive',
+            lastActive: row.updatedAt
+              ? new Date(row.updatedAt).toLocaleString('en-AE')
+              : row.createdAt
+                ? new Date(row.createdAt).toLocaleString('en-AE')
+                : '—',
+          }))
+        );
+      }
+    } catch (error: unknown) {
+      const message =
+        error instanceof Error ? error.message : 'Failed to load admin dashboard data';
+      setLoadError(message);
+      logger.warn('Admin dashboard load failed', error);
+    } finally {
+      if (!silent) {
+        setIsLoading(false);
+      }
+    }
   }, []);
+
+  useEffect(() => {
+    void refreshData({ silent: true });
+  }, [refreshData]);
 
   const alerts = useMemo(
     () => [
@@ -324,10 +333,13 @@ export const useAdminDashboardData = () => {
     isLoading,
     loadError,
     systemMetrics,
+    totalActivities: recentActivities.length,
     paginatedActivities,
     activitiesTotalPages,
+    totalUsers: users.length,
     paginatedUsers,
     usersTotalPages,
     alerts,
+    refreshData,
   };
 };

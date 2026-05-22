@@ -89,6 +89,21 @@ describe('AdminDashboard Integration', () => {
       expect(screen.getByText('John Admin')).toBeInTheDocument();
       expect(screen.getByText('Super User')).toBeInTheDocument();
     });
+
+    it('should render refresh data action in header', () => {
+      renderWithRedux(<AdminDashboard />);
+
+      expect(screen.getByRole('button', { name: /Refresh Data/i })).toBeInTheDocument();
+    });
+
+    it('should allow triggering refresh data action', async () => {
+      const user = userEvent.setup();
+      renderWithRedux(<AdminDashboard />);
+
+      await user.click(screen.getByRole('button', { name: /Refresh Data/i }));
+
+      expect(screen.getByText('Admin Dashboard')).toBeInTheDocument();
+    });
   });
 
   describe('Tab Navigation', () => {

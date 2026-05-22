@@ -55,11 +55,14 @@ const AdminDashboard = () => {
     setCurrentUsersPage,
     isLoading,
     systemMetrics,
+    totalActivities,
     paginatedActivities,
     activitiesTotalPages,
+    totalUsers,
     paginatedUsers,
     usersTotalPages,
     alerts,
+    refreshData,
   } = useAdminDashboardData();
 
   const handleTabKeyDown = (event: KeyboardEvent<HTMLButtonElement>, index: number) => {
@@ -116,6 +119,10 @@ const AdminDashboard = () => {
         <S.AdminUserInfo>
           <S.UserName>{user?.displayName || 'Admin'}</S.UserName>
           <S.UserRole>Super User</S.UserRole>
+          <S.BtnSecondary type="button" onClick={() => void refreshData()}>
+            <Activity size={16} />
+            Refresh Data
+          </S.BtnSecondary>
         </S.AdminUserInfo>
       </S.AdminHeader>
 
@@ -276,8 +283,8 @@ const AdminDashboard = () => {
                 <S.PaginationContainer>
                   <Pagination
                     currentPage={currentActivityPage}
-                    totalItems={activitiesTotalPages * 10}
-                    itemsPerPage={10}
+                    totalItems={totalActivities}
+                    itemsPerPage={5}
                     onPageChange={setCurrentActivityPage}
                   />
                 </S.PaginationContainer>
@@ -332,7 +339,7 @@ const AdminDashboard = () => {
               <S.PaginationContainer>
                 <Pagination
                   currentPage={currentUsersPage}
-                  totalItems={usersTotalPages * 10}
+                  totalItems={totalUsers}
                   itemsPerPage={10}
                   onPageChange={setCurrentUsersPage}
                 />
