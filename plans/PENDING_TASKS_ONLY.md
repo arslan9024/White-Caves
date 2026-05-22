@@ -11,11 +11,12 @@
 
 ## Stream Status Board
 
-| Stream | Objective                                                                                                             | Status      | Owners                    | Validation Gate                                                      |
-| ------ | --------------------------------------------------------------------------------------------------------------------- | ----------- | ------------------------- | -------------------------------------------------------------------- |
-| S1     | Errors stabilization lane (fast/medium/deep buckets)                                                                  | 🔨 Active   | @Mira + @Katherine        | `npm run typecheck && npm run lint && npm run build`                 |
-| S2     | [`PHASE_26_CONTEXT_ENRICHMENT_SPRINT.md`](./PHASE_26_CONTEXT_ENRICHMENT_SPRINT.md) deferred workstream closeout       | 🕒 Deferred | @Margaret                 | Deferred owner/date remains explicit + revisit date reached          |
-| S3     | [`PHASE_27_SUBAGENT_NEXT_LEVEL_90_READINESS.md`](./PHASE_27_SUBAGENT_NEXT_LEVEL_90_READINESS.md) micro-wave execution | ⬜ Planned  | @Ada + @Margaret + squads | Readiness >=60% + approval phrase + wave bundle linked and validated |
+| Stream | Wave | Objective                                            | Status     | Owners                    | Validation Gate                                      |
+| ------ | ---- | ---------------------------------------------------- | ---------- | ------------------------- | ---------------------------------------------------- |
+| S1     | 08   | TypeScript/errors stabilization (fast/medium/deep)   | 🔨 Active  | @Mira + @Katherine        | `npm run typecheck && npm run lint && npm run build` |
+| S2     | 09   | UX hardening — loading states, error boundaries, RTL | 📋 Planned | @Una + @Lea + @Katherine  | S1 green + readiness >=60% + @Ada approval phrase    |
+| S3     | 10   | Performance + SEO + security uplift                  | 📋 Planned | @Ruchi + @Rachel + @Radia | S2 green + readiness >=60% + @Ada approval phrase    |
+| S4     | 11   | Incomplete features + architecture refactor          | 🔮 Backlog | @Ada + @Mira              | S3 green + readiness >=60% + @Ada approval phrase    |
 
 ## Completed Stream History
 
@@ -30,8 +31,9 @@
 | N+7   | Subagent upgrade: readiness + collaboration mesh              | ✅ Complete (May 18, 2026) |
 | N+8   | Google social auth hardening + dashboard redirect consistency | ✅ Complete (May 21, 2026) |
 | N+9   | UX loading-state hardening                                    | ✅ Complete (May 21, 2026) |
+| Repo  | Archive 293 completed docs; clean root; new wave roadmap      | ✅ Complete (May 22, 2026) |
 
-## S1 — Errors Stabilization Lane (Active)
+## S1 — Wave 08: Errors Stabilization Lane (Active)
 
 ### Bucketed Backlog
 
@@ -41,11 +43,42 @@
 | Medium-fix    | P1       | Notifications + compliance route cohesion and regression-safe refactors             | @Mira + @Katherine | `npm run test:run -- server/routes/henry.routes.test.ts && npm run build`                                                                              | Focused suites pass + build pass                  |
 | Deep-refactor | P2       | Cross-module consistency cleanup only after fast/medium queues are green            | @Mira + @Gwynne    | `npm run quality:quick`                                                                                                                                | Lint + build + ops tests pass without regressions |
 
-## S3 — Micro-Wave Queue (Next Phase)
+**Wave 08 Artifacts:**
+[`WAVE_08_SDD.md`](./waves/WAVE_08_SDD.md) | [`WAVE_08_READINESS_PACKET.md`](./waves/WAVE_08_READINESS_PACKET.md) | [`WAVE_08_IMPLEMENTATION_BACKLOG.md`](./waves/WAVE_08_IMPLEMENTATION_BACKLOG.md) | [`WAVE_08_TEST_ROLLOUT.md`](./waves/WAVE_08_TEST_ROLLOUT.md)
 
-| Wave | Scope                                           | Artifacts                                                                                                                                                                                                                                                        |
-| ---- | ----------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 08   | Error stabilization + governance hard-gate pass | [`WAVE_08_SDD.md`](./waves/WAVE_08_SDD.md), [`WAVE_08_READINESS_PACKET.md`](./waves/WAVE_08_READINESS_PACKET.md), [`WAVE_08_IMPLEMENTATION_BACKLOG.md`](./waves/WAVE_08_IMPLEMENTATION_BACKLOG.md), [`WAVE_08_TEST_ROLLOUT.md`](./waves/WAVE_08_TEST_ROLLOUT.md) |
+## S2 — Wave 09: UX Hardening (Planned — unlocks when S1 green)
+
+**Source:** [`IMPROVEMENTS_UX.md`](./IMPROVEMENTS_UX.md) items 30–33
+
+| Task | Scope                                                         | Priority | Owner       | Validation                                |
+| ---- | ------------------------------------------------------------- | -------- | ----------- | ----------------------------------------- |
+| 9-1  | Loading skeleton + Suspense error boundaries in CRM modules   | P0       | @Lea        | `npm run build` + visual regression check |
+| 9-2  | RTL (Arabic) layout consistency pass across all portal pages  | P1       | @Inas       | RTL toggle screenshot check + lint        |
+| 9-3  | Mobile 375px / 768px viewport layout fixes (critical paths)   | P1       | @Tracy      | Playwright viewport tests                 |
+| 9-4  | Empty/error/loading states for all data-bound dashboard tiles | P2       | @Una + @Lea | `npm run quality:quick`                   |
+
+**Wave 09 Bundle:** Create `plans/waves/WAVE_09_*` before starting execution.  
+**Entry gate:** S1 all-green + `npm run plans:validate` pass + `@Ada — Context Ready (100% Planning Readiness) — Coding Phase Approved`
+
+## S3 — Wave 10: Performance + SEO + Security (Planned — unlocks when S2 green)
+
+**Sources:** [`IMPROVEMENTS_PERFORMANCE.md`](./IMPROVEMENTS_PERFORMANCE.md) | [`IMPROVEMENTS_SEO.md`](./IMPROVEMENTS_SEO.md) | [`IMPROVEMENTS_SECURITY.md`](./IMPROVEMENTS_SECURITY.md)
+
+| Task | Scope                                                       | Priority | Owner          | Validation                                  |
+| ---- | ----------------------------------------------------------- | -------- | -------------- | ------------------------------------------- |
+| 10-1 | Lighthouse performance audit + lazy-load critical paths     | P0       | @Ruchi         | Lighthouse score >= 85 on prod build        |
+| 10-2 | SEO metadata + structured data (JSON-LD) for property pages | P0       | @Rachel        | `npm run build` + meta tag validation       |
+| 10-3 | CSP headers + dependency audit + input sanitization sweep   | P1       | @Radia         | `npm audit --audit-level high` + lint clean |
+| 10-4 | Redis-backed rate limiting for all public API routes        | P2       | @Mira + @Radia | `npm run quality:quick` + route tests pass  |
+
+**Wave 10 Bundle:** Create `plans/waves/WAVE_10_*` before starting execution.  
+**Entry gate:** S2 all-green + readiness >=60% + @Ada approval phrase
+
+## S4 — Wave 11: Incomplete Features + Architecture (Backlog)
+
+**Sources:** [`IMPROVEMENTS_INCOMPLETE_FEATURES.md`](./IMPROVEMENTS_INCOMPLETE_FEATURES.md) | [`IMPROVEMENTS_ARCHITECTURE.md`](./IMPROVEMENTS_ARCHITECTURE.md)
+
+Decompose into tasks once S3 is in flight. Create `plans/waves/WAVE_11_*` bundle at that time.
 
 ## Completion Criteria (Hard Rule)
 
@@ -59,4 +92,4 @@ Mark an item complete only when:
 
 - Weekly: prune stale queue items, re-rank blockers by impact, and supersede/archive duplicates.
 - Daily: update only canonical trackers (`MASTER_PLAN`, `PENDING_TASKS_ONLY`, `PROJECT_PROGRESS`, `DAILY_MILESTONE_TRACKER`).
-- Do not treat downstream legacy phase docs as active status sources.
+- Do not treat legacy phase docs as active status sources — all historical docs are in `plans/archives/`.

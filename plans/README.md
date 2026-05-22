@@ -3,7 +3,8 @@
 **Last Updated:** 2026-05-22  
 **Canonical Roadmap:** [`MASTER_PLAN.md`](./MASTER_PLAN.md)
 
-This directory is for active planning and reference documentation only.
+This directory contains **active planning and governance documents only**.  
+293 completed/legacy docs are in `plans/archives/`.
 
 ---
 
@@ -25,26 +26,18 @@ This directory is for active planning and reference documentation only.
 
 ## Active Streams (Canonical Queue)
 
-- Stream S1: Errors Stabilization lane (source of truth: [`PENDING_TASKS_ONLY.md`](./PENDING_TASKS_ONLY.md))
-- Stream S2: Deferred closeout ([`PHASE_26_CONTEXT_ENRICHMENT_SPRINT.md`](./PHASE_26_CONTEXT_ENRICHMENT_SPRINT.md))
-- Stream S3: Planned micro-wave execution ([`PHASE_27_SUBAGENT_NEXT_LEVEL_90_READINESS.md`](./PHASE_27_SUBAGENT_NEXT_LEVEL_90_READINESS.md))
+- Stream S1: Wave 08 — TypeScript/errors stabilization (source: [`PENDING_TASKS_ONLY.md`](./PENDING_TASKS_ONLY.md))
+- Stream S2: Wave 09 — UX hardening (planned; source: [`IMPROVEMENTS_UX.md`](./IMPROVEMENTS_UX.md))
+- Stream S3: Wave 10 — Performance + SEO + security (planned; source: [`IMPROVEMENTS_PERFORMANCE.md`](./IMPROVEMENTS_PERFORMANCE.md))
 - Active wave artifacts: `./waves/WAVE_08_*`
-
-## Legacy Plan References (Non-Canonical)
-
-- [`PHASE_23_24_25_IMPLEMENTATION_PLAN.md`](./PHASE_23_24_25_IMPLEMENTATION_PLAN.md)
-- [`PHASE_24_MODULE_TRACEABILITY_MATRIX.md`](./PHASE_24_MODULE_TRACEABILITY_MATRIX.md)
-- [`PHASE_24_ACCEPTANCE_TEST_PLAN.md`](./PHASE_24_ACCEPTANCE_TEST_PLAN.md)
-- [`PHASE_25_OPERATIONAL_VERIFICATION_LOG.md`](./PHASE_25_OPERATIONAL_VERIFICATION_LOG.md)
-- [`PHASE_25_EXECUTION_GUIDE.md`](./PHASE_25_EXECUTION_GUIDE.md)
 
 ---
 
 ## Archive Policy
 
-- Completed plans: `../archives/plans/completed/`
-- Superseded/ad-hoc plans: `../archives/plans/superseded/`
-- `plans/` should not retain `Pasted-*` files.
+- All completed/legacy docs: `plans/archives/`
+- `plans/` should not retain ad-hoc delivery reports, session summaries, or `Pasted-*` files.
+- New planning docs must update an existing file or be created as a `waves/WAVE_##_*` bundle.
 
 ---
 
