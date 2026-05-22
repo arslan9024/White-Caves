@@ -399,6 +399,33 @@ describe('useSignIn — handleSocialAuth (integration)', () => {
       expect(mockSyncFirebaseUser).toHaveBeenCalledTimes(4);
       expect(result.current.error).toContain('Retry limit reached');
     });
+
+    it('updates remainingSocialRetries after each failed retry attempt', async () => {
+      mockSignInWithGoogle.mockResolvedValue({ user: firebaseUser });
+      mockSyncFirebaseUser.mockRejectedValue(new Error('Backend unreachable'));
+      const { result } = renderHook(() => useSignIn(), { wrapper: createWrapper(store) });
+
+      await act(async () => {
+        await result.current.handleSocialAuth('google');
+      });
+
+      expect(result.current.remainingSocialRetries).toBe(3);
+
+      await act(async () => {
+        await result.current.retrySocialAuth();
+      });
+      expect(result.current.remainingSocialRetries).toBe(2);
+
+      await act(async () => {
+        await result.current.retrySocialAuth();
+      });
+      expect(result.current.remainingSocialRetries).toBe(1);
+
+      await act(async () => {
+        await result.current.retrySocialAuth();
+      });
+      expect(result.current.remainingSocialRetries).toBe(0);
+    });
   });
 
   describe('social signup completion', () => {

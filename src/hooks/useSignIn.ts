@@ -380,6 +380,8 @@ export function useSignIn() {
     setError('');
   }, []);
 
+  const remainingSocialRetries = Math.max(0, MAX_SOCIAL_RETRY_ATTEMPTS - socialRetryAttempts);
+
   // ── Email auth ─────────────────────────────────────────────────
 
   const handleEmailSubmit = useCallback(
@@ -536,6 +538,7 @@ export function useSignIn() {
     success,
     socialSyncRecovery,
     socialRetryAttempts,
+    remainingSocialRetries,
     switchMode,
     goBackToStep,
 

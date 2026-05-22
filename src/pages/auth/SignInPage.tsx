@@ -61,6 +61,7 @@ const SignInPage: FC = () => {
     success,
     socialSyncRecovery,
     socialRetryAttempts,
+    remainingSocialRetries,
     switchMode,
     goBackToStep,
     email,
@@ -126,6 +127,7 @@ const SignInPage: FC = () => {
                     once to finish sign-in.
                   </p>
                   <p className="auth-recovery__reason">Reason: {socialSyncRecovery.reason}</p>
+                  <p className="auth-recovery__hint">Retries remaining: {remainingSocialRetries}</p>
                   <button
                     type="button"
                     className="btn btn-secondary btn-full"

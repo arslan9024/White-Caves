@@ -121,6 +121,12 @@ Ship login reliability fix now and prepare strict execution graph for profile/da
 - **Files:** `src/hooks/useSignIn.ts`, `src/pages/auth/SignInPage.tsx`, `src/hooks/useSignIn.test.ts`, `src/pages/auth/SignInPage.test.tsx`
 - **Status:** ✅ Completed (hook guard + UI behavior + hook/UI regression tests)
 
+### AUTH-08-016 — Retries-remaining recovery visibility (macro auth resilience bundle)
+
+- Expose retries-remaining counter from auth hook and render it in recovery UI so users see deterministic retry budget.
+- **Files:** `src/hooks/useSignIn.ts`, `src/pages/auth/SignInPage.tsx`, `src/hooks/useSignIn.test.ts`, `src/pages/auth/SignInPage.test.tsx`
+- **Status:** ✅ Completed (hook surface + UI hint + decrement regression coverage)
+
 ### DASH-08-005 — Dashboard profile completion guidance card
 
 - Add post-login profile completeness guidance with direct CTA to `/profile`.
@@ -155,3 +161,4 @@ Ship login reliability fix now and prepare strict execution graph for profile/da
 16. AUTH-08-013 ✅
 17. AUTH-08-014 ✅
 18. AUTH-08-015 ✅
+19. AUTH-08-016 ✅
