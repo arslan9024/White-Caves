@@ -130,6 +130,20 @@ function assertCrossTrackerConsistency() {
   }
 }
 
+function getActivePhasePlanLinksFromPending() {
+  const pendingPath = path.join(plansDir, 'PENDING_TASKS_ONLY.md');
+  const content = readFileSafe(pendingPath);
+  const linkRegex = /\[[^\]]+\]\(\.\/(PHASE_[^)]+\.md)\)/g;
+  const phaseLinks = new Set();
+  let match;
+
+  while ((match = linkRegex.exec(content)) !== null) {
+    phaseLinks.add(`plans/${match[1]}`);
+  }
+
+  return [...phaseLinks];
+}
+
 // Required governance files
 [
   'plans/MASTER_PLAN.md',
@@ -151,14 +165,12 @@ const requiredPointers = ['plans/MASTER_PLAN.md', 'plans/PENDING_TASKS_ONLY.md']
 assertStatusPointers('PROJECT_PROGRESS.md', requiredPointers);
 assertStatusPointers('DAILY_MILESTONE_TRACKER.md', requiredPointers);
 
-[
-  'plans/PHASE_23_24_25_IMPLEMENTATION_PLAN.md',
-  'plans/PHASE_26_CONTEXT_ENRICHMENT_SPRINT.md',
-  'plans/PHASE_1_HOMEPAGE.md',
-  'plans/PHASE_2_LANDLORD_TENANT.md',
-  'plans/PHASE_3_CRM_SUPERUSER.md',
-  'plans/PHASE_3_AND_BEYOND.md',
-].forEach(assertMetadata);
+const activePhasePlans = getActivePhasePlanLinksFromPending();
+for (const phasePlan of activePhasePlans) {
+  assertExists(phasePlan);
+  assertMetadata(phasePlan);
+  assertStatusPointers(phasePlan, ['MASTER_PLAN.md', 'PENDING_TASKS_ONLY.md']);
+}
 
 [
   'PROJECT_PROGRESS.md',

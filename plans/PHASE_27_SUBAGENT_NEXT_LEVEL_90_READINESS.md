@@ -1,9 +1,16 @@
 # PHASE 27 — Subagent Next-Level Upgrade (90% Readiness)
 
 **Date:** 2026-05-18  
+**Status:** ⬜ Planned micro-wave execution stream  
+**Last Updated:** 2026-05-22  
 **Owner:** @Ada + @Margaret + guardian  
 **Execution Mode:** Fast-track with strict policy routing  
 **Objective:** Raise operational readiness from the current coding unlock floor (60%) to a managed target of **90%** before major premium waves.
+
+**Canonical Status Sources:**
+
+- [`MASTER_PLAN.md`](./MASTER_PLAN.md)
+- [`PENDING_TASKS_ONLY.md`](./PENDING_TASKS_ONLY.md)
 
 ---
 
