@@ -180,6 +180,14 @@ function Get-QueueDoneCount {
   return @($q.tasks | Where-Object { $_.status -eq "done" }).Count
 }
 
+function Get-TaskById {
+  param([string]$taskId)
+  if (-not (Test-Path $qFile)) { return $null }
+  $q = Get-Content $qFile -Raw | ConvertFrom-Json
+  $all = @($q.tasks)
+  return ($all | Where-Object { $_.taskId -eq $taskId } | Select-Object -First 1)
+}
+
 function Get-ReadyCount {
   if (-not (Test-Path $qFile)) { return 0 }
   $q = Get-Content $qFile -Raw | ConvertFrom-Json
@@ -387,6 +395,24 @@ $loopCount = 0
       -AgentName $activeAgent `
       -EvidenceNote $evNote `
       -WorkspaceRoot $root 2>&1 | Out-String | Write-Host
+
+    if ($effectiveNonInteractive) {
+      $postTask = Get-TaskById -taskId $taskId
+      if (
+        $null -ne $postTask -and
+        $postTask.status -eq "waiting_ack" -and
+        -not [string]::IsNullOrWhiteSpace([string]$postTask.feedsAckBy)
+      ) {
+        $ackBy = [string]$postTask.feedsAckBy
+        $ackScript = Join-Path $scripts "ack-task.ps1"
+        if (Test-Path $ackScript) {
+          Write-Host ("  [AUTO-ACK] Autopilot acknowledging {0} by {1}" -f $taskId, $ackBy) -ForegroundColor Cyan
+          & powershell -ExecutionPolicy Bypass -File "$ackScript" `
+            -TaskId $taskId `
+            -AckBy $ackBy 2>&1 | Out-String | Write-Host
+        }
+      }
+    }
   } else {
     Write-Host "  [WARN] complete-and-advance.ps1 not found. Queue not updated." -ForegroundColor Yellow
   }
