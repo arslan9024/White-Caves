@@ -11,11 +11,18 @@ import styled from 'styled-components';
 import { Pagination } from '../../components/ui';
 import { useDocumentTitle } from '../../hooks/useDocumentTitle';
 import {
-  PageContainer, PageHeader, PageTitle, BackLink,
-  ActionBar, SearchInput,
-  DangerButton, SecondaryButton,
+  PageContainer,
+  PageHeader,
+  PageTitle,
+  BackLink,
+  ActionBar,
+  SearchInput,
+  DangerButton,
+  SecondaryButton,
   EmptyState,
-  PaginationWrapper, LoadingBanner, ErrorBanner,
+  PaginationWrapper,
+  LoadingBanner,
+  ErrorBanner,
 } from './styles/CrmPageStyles';
 import { useFavorites } from './hooks/useFavorites';
 import type { FavoriteProperty } from './hooks/useFavorites';
@@ -36,7 +43,7 @@ const PropertyCard = styled.div`
   transition: all 0.2s;
 
   &:hover {
-    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
     transform: translateY(-2px);
   }
 `;
@@ -45,11 +52,16 @@ const PropertyImage = styled.div<{ $type?: string }>`
   height: 180px;
   background: ${props => {
     switch (props.$type) {
-      case 'villa': return 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
-      case 'apartment': return 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)';
-      case 'penthouse': return 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)';
-      case 'commercial': return 'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)';
-      default: return 'linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)';
+      case 'villa':
+        return 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
+      case 'apartment':
+        return 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)';
+      case 'penthouse':
+        return 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)';
+      case 'commercial':
+        return 'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)';
+      default:
+        return 'linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)';
     }
   }};
   display: flex;
@@ -78,7 +90,7 @@ const PropertyLocation = styled.div`
 const PropertyPrice = styled.div`
   font-size: 1.15rem;
   font-weight: 700;
-  color: #10B981;
+  color: #10b981;
   margin-bottom: 0.75rem;
 `;
 
@@ -108,12 +120,18 @@ const FavCount = styled.span`
 const FavoritesPage: FC = () => {
   useDocumentTitle('Favorites');
   const {
-    filteredFavorites, paginatedFavorites,
-    loading, error,
-    search, currentPage, ITEMS_PER_PAGE,
+    filteredFavorites,
+    paginatedFavorites,
+    loading,
+    error,
+    search,
+    currentPage,
+    ITEMS_PER_PAGE,
     handleRemoveFavorite,
     handleSearchChange,
-    setCurrentPage, retryFetch, goBack,
+    setCurrentPage,
+    retryFetch,
+    goBack,
     formatCurrency,
   } = useFavorites();
 
@@ -155,19 +173,22 @@ const FavoritesPage: FC = () => {
           {paginatedFavorites.map((fav: FavoriteProperty) => (
             <PropertyCard key={fav.id}>
               <PropertyImage $type={fav.type}>
-                {fav.type === 'villa' ? '🏡' :
-                  fav.type === 'apartment' ? '🏢' :
-                  fav.type === 'penthouse' ? '🏙️' :
-                  fav.type === 'commercial' ? '🏗️' : '🏠'}
+                {fav.type === 'villa'
+                  ? '🏡'
+                  : fav.type === 'apartment'
+                    ? '🏢'
+                    : fav.type === 'penthouse'
+                      ? '🏙️'
+                      : fav.type === 'commercial'
+                        ? '🏗️'
+                        : '🏠'}
               </PropertyImage>
               <PropertyBody>
                 <PropertyTitle>{fav.title || 'Untitled Property'}</PropertyTitle>
                 <PropertyLocation>📍 {fav.location || 'Location not specified'}</PropertyLocation>
                 <PropertyPrice>{formatCurrency(fav.price)}</PropertyPrice>
                 <PropertyMeta>
-                  {fav.bedrooms != null && fav.bedrooms > 0 && (
-                    <span>🛏️ {fav.bedrooms} Bed</span>
-                  )}
+                  {fav.bedrooms != null && fav.bedrooms > 0 && <span>🛏️ {fav.bedrooms} Bed</span>}
                   {fav.bathrooms != null && fav.bathrooms > 0 && (
                     <span>🚿 {fav.bathrooms} Bath</span>
                   )}

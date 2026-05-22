@@ -1,6 +1,6 @@
 # White Caves — Custom Agents & Subagents Plan
 
-> **Updated:** 2026-05-16  
+> **Updated:** 2026-05-22  
 > **Status:** Active governance guide (supersedes Phase 6–10 tactical snapshot)
 
 ---
@@ -24,14 +24,16 @@ This file defines how custom agents/subagents are dispatched **today** and how t
 
 ## Dispatch Policy (Current)
 
-1. **Free planning agents (17) remain docs-only** and use free-tier models only.
+1. **Free planning/research agents remain docs-only** and use free-tier models only.
 2. **Premium coding/design requests** are blocked until the exact approval phrase exists:  
-   `@Ada — Context Ready (60% Readiness) — Coding Phase Approved`
+   `@Ada — Context Ready (100% Planning Readiness) — Coding Phase Approved`
 3. Every planning handoff must include:
    - `CONSUMES←@Agent: file#section`
    - `FEEDS→@Agent: file#section`
    - `FEEDS_ACK←@DownstreamAgent: accepted|revise + file#section`
-4. Free-agent outputs are synchronized through `AGENTS.md` sprint table and reflected in `PROJECT_PROGRESS.md` / `DAILY_MILESTONE_TRACKER.md`.
+4. Every planning prompt must follow the custom dispatch packet fields (`Task ID`, `Owner`, `Objective`, `Input Artifacts`, `Output Artifact`, `Acceptance Criteria`, `Validation`, `Handoff`).
+5. Free-agent outputs are synchronized through `AGENTS.md` sprint table and reflected in `PROJECT_PROGRESS.md` / `DAILY_MILESTONE_TRACKER.md`.
+6. Planning must be **100% implementation-ready** before premium coding (business + API + data + UX states + QA matrix + rollback all complete).
 
 ---
 
@@ -39,9 +41,9 @@ This file defines how custom agents/subagents are dispatched **today** and how t
 
 | Work Type                                    | Primary Agent(s)                                                | Output Location                                               | Promotion Rule                                               |
 | -------------------------------------------- | --------------------------------------------------------------- | ------------------------------------------------------------- | ------------------------------------------------------------ |
-| Business rules, legal, compliance, KPI specs | @Victoria, @Invoice, @Sofia, @Cassie, @Joelle (+ expanded pool) | `business_docs/`                                              | Must reach 60% readiness evidence before coding              |
+| Business rules, legal, compliance, KPI specs | @Victoria, @Invoice, @Sofia, @Cassie, @Joelle (+ expanded pool) | `business_docs/`                                              | Must reach 100% planning-complete evidence before coding     |
 | Sprint decomposition and queue maintenance   | @Margaret                                                       | `plans/`, `PROJECT_PROGRESS.md`, `DAILY_MILESTONE_TRACKER.md` | Must align with `MASTER_PLAN.md` and `PENDING_TASKS_ONLY.md` |
-| Architecture and premium gate decision       | @Ada                                                            | policy declaration in tracker/session                         | Must use exact 60% readiness approval phrase                 |
+| Architecture and premium gate decision       | @Ada                                                            | policy declaration in tracker/session                         | Must use exact 100% planning-readiness approval phrase       |
 | Coding implementation                        | Senior coding/design agents                                     | codebase + tests                                              | Allowed only after Gate approval                             |
 | QA/runtime guard                             | @Katherine (+ @Gwynne for deployment)                           | tests, runtime guard logs                                     | Required after big premium wave commits                      |
 
@@ -50,12 +52,13 @@ This file defines how custom agents/subagents are dispatched **today** and how t
 ## Session Start Checklist for Subagent-Orchestrated Work
 
 - [ ] Target feature/module identified
-- [ ] Business docs exist with 60% evidence
+- [ ] Business docs exist with 100% planning-complete evidence
 - [ ] Plan exists in canonical queue
 - [ ] @Margaret sign-off present
 - [ ] @Ada exact approval phrase present
 - [ ] Daily premium cap logged
 - [ ] FEEDS/CONSUMES/FEEDS_ACK chain complete for upstream planning outputs
+- [ ] Parallel team topology includes the additional team lane (5-team planning model)
 
 If any box is unchecked, route back to planning agents (no premium coding).
 

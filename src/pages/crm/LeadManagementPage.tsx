@@ -1,4 +1,3 @@
-/* eslint-disable security/detect-object-injection */
 /**
  * CRM Lead Management Page (Refactored)
  * Full CRUD lead management with filtering, search, and status pipeline.
@@ -259,7 +258,7 @@ const LeadManagementPage: FC = () => {
           $color="#1a1a2e"
           onClick={() => handleStatusFilterChange('all')}
         >
-          All ({statusCounts.all || 0})
+          All ({statusCounts.get('all') ?? 0})
         </PipelineStage>
         {Object.entries(STATUS_CONFIG).map(([key, cfg]) => (
           <PipelineStage
@@ -268,8 +267,7 @@ const LeadManagementPage: FC = () => {
             $color={cfg.color}
             onClick={() => handleStatusFilterChange(key)}
           >
-            {/* eslint-disable-next-line security/detect-object-injection */}
-            {cfg.label} ({statusCounts[key] || 0})
+            {cfg.label} ({statusCounts.get(key) ?? 0})
           </PipelineStage>
         ))}
       </PipelineBar>

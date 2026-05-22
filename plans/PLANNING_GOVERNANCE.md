@@ -1,7 +1,7 @@
 # Planning Governance — Single Source of Truth
 
-**Version:** 1.1  
-**Last Updated:** 2026-05-16  
+**Version:** 1.2  
+**Last Updated:** 2026-05-22  
 **Owner:** Product + Technical Planning
 
 ---
@@ -84,7 +84,14 @@ Run:
 
 - `npm run plans:validate`
 
+Hard gate:
+
+- Every planning/tracker update must pass `npm run plans:validate` before being considered complete.
+- If validation fails, treat status updates as invalid until corrected and revalidated.
+
 Schedule:
 
 - Weekly active-file metadata/link review
 - Monthly archive sweep for superseded files
+- Weekly planning hygiene cycle: prune stale queue items, re-rank blockers by impact, and de-activate legacy docs from active status paths
+- Daily rule: update canonical trackers only (`MASTER_PLAN`, `PENDING_TASKS_ONLY`, `PROJECT_PROGRESS`, `DAILY_MILESTONE_TRACKER`)
