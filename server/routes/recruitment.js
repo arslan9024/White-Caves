@@ -110,17 +110,29 @@ export function requireManagerReviewAccess() {
   };
 }
 
-export function computeScreeningMetrics(scores = []) {
-  if (!scores.length) {
+export function computeScreeningMetrics(scores = [], options = {}) {
+  const includeLegacyAliases = options.includeLegacyAliases === true;
+
+  const withOptionalLegacyAliases = (metrics) => {
+    if (!includeLegacyAliases) {
+      return metrics;
+    }
+
     return {
+      ...metrics,
+      good_matches: metrics.moderate_matches,
+      potential_matches: metrics.weak_matches,
+      no_match: metrics.rejected_matches
+    };
+  };
+
+  if (!scores.length) {
+    return withOptionalLegacyAliases({
       total_candidates: 0,
       strong_matches: 0,
       moderate_matches: 0,
       weak_matches: 0,
       rejected_matches: 0,
-      good_matches: 0,
-      potential_matches: 0,
-      no_match: 0,
       average_score: 0,
       median_score: 0,
       factor_averages: {
@@ -137,7 +149,7 @@ export function computeScreeningMetrics(scores = []) {
         low: 0,
         very_low: 0
       }
-    };
+    });
   }
 
   const statusCounts = {
@@ -163,15 +175,12 @@ export function computeScreeningMetrics(scores = []) {
     ? (sortedScores[sortedScores.length / 2 - 1] + sortedScores[sortedScores.length / 2]) / 2
     : sortedScores[Math.floor(sortedScores.length / 2)];
 
-  return {
+  return withOptionalLegacyAliases({
     total_candidates: scores.length,
     strong_matches: statusCounts.strong_match,
     moderate_matches: statusCounts.moderate_match,
     weak_matches: statusCounts.weak_match,
     rejected_matches: statusCounts.rejected,
-    good_matches: statusCounts.moderate_match,
-    potential_matches: statusCounts.weak_match,
-    no_match: statusCounts.rejected,
     average_score: Math.round(totalScore / scores.length),
     median_score: Math.round(medianScore),
     factor_averages: {
@@ -188,7 +197,7 @@ export function computeScreeningMetrics(scores = []) {
       low: scores.filter(s => (s.overall_score || 0) >= 25 && (s.overall_score || 0) < 50).length,
       very_low: scores.filter(s => (s.overall_score || 0) < 25).length
     }
-  };
+  });
 }
 
 export function buildRecruitmentOverview(jobs = [], applications = [], scores = []) {
@@ -1311,6 +1320,7 @@ router.post('/candidates/:candidate_id/extract-resume', async (req, res) => {
 router.get('/jobs/:job_id/screening-metrics', requireRecruitmentAccess('read'), async (req, res) => {
   try {
     const { job_id } = req.params;
+    const includeLegacyAliases = req.query.include_legacy_aliases === 'true';
 
     const scores = await prisma.candidateScore.findMany({
       where: { job_id }
@@ -1321,14 +1331,14 @@ router.get('/jobs/:job_id/screening-metrics', requireRecruitmentAccess('read'), 
         success: true,
         job_id,
         message: 'No candidates screened yet for this job',
-        metrics: computeScreeningMetrics([])
+        metrics: computeScreeningMetrics([], { includeLegacyAliases })
       });
     }
 
     res.status(200).json({
       success: true,
       job_id,
-      metrics: computeScreeningMetrics(scores)
+      metrics: computeScreeningMetrics(scores, { includeLegacyAliases })
     });
   } catch (error) {
     console.error('Error fetching screening metrics:', error);

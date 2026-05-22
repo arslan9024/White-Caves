@@ -24,7 +24,7 @@
 
 ## In Progress
 
-- [ ] Migrate all recruitment consumers to canonical status labels
+- [x] Migrate all recruitment consumers to canonical status labels
 - [ ] Expand Zoe recruitment analytics beyond the first executive slice
 - [ ] Verify Linda workflows against production WhatsApp Business constraints
 
@@ -32,7 +32,7 @@
 
 - [x] Add manager self-service review and shortlist flow
 - [x] Add security-focused route tests for recruitment access control
-- [ ] Remove legacy metric aliases after all consumers migrate
+- [x] Remove legacy metric aliases after all consumers migrate
 
 ## Exit Criteria
 

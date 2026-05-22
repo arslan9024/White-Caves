@@ -147,12 +147,11 @@ Budget model:
 ## Pending Tasks
 
 - [ ] Expand the Zoe recruitment KPI UI from the first slice into the full framework.
-- [ ] Migrate all consumers away from legacy metric aliases.
 - [ ] Add recruiter-facing shortlist and review UI.
 
 ## Future Improvements
 
-- [ ] Remove compatibility aliases after all consumers migrate.
+- [ ] Remove temporary `include_legacy_aliases` compatibility mode after final integration signoff.
 - [ ] Add richer Linda templates for offer acceptance and onboarding reminders.
 - [ ] Add model version tracking for future scoring upgrades.
 - [ ] Add retention and quality-of-hire analytics into Zoe reporting.
@@ -172,5 +171,5 @@ Budget model:
 
 1. Expand the Zoe recruitment KPI UI from the first live analytics slice.
 2. Wire recruiter-facing shortlist and review UI to the new manager endpoints.
-3. Migrate remaining consumers off legacy recruitment metric aliases.
-4. Verify Linda WhatsApp templates against production constraints in staging.
+3. Verify Linda WhatsApp templates against production constraints in staging.
+4. Finalize production signoff for disabling alias compatibility mode.

@@ -54,7 +54,7 @@ console.log('\n🧪 Recruitment Routes Integration Tests\n');
 
 const originalRecruitmentAuthMode = process.env.RECRUITMENT_AUTH_MODE;
 
-await test('GET /jobs/:job_id/screening-metrics returns canonical + alias keys', async () => {
+await test('GET /jobs/:job_id/screening-metrics returns canonical keys by default', async () => {
   const prismaMock = {
     candidateScore: {
       findMany: async () => ([
@@ -90,8 +90,49 @@ await test('GET /jobs/:job_id/screening-metrics returns canonical + alias keys',
     assert(body.success === true, 'Expected success flag');
     assert(body.metrics.moderate_matches === 1, 'Expected moderate_matches count');
     assert(body.metrics.rejected_matches === 1, 'Expected rejected_matches count');
-    assert(body.metrics.good_matches === 1, 'Expected alias good_matches count');
-    assert(body.metrics.no_match === 1, 'Expected alias no_match count');
+    assert(body.metrics.good_matches === undefined, 'Expected legacy alias to be absent by default');
+    assert(body.metrics.no_match === undefined, 'Expected legacy alias to be absent by default');
+  });
+
+  __resetRecruitmentTestDeps();
+});
+
+await test('GET /jobs/:job_id/screening-metrics includes legacy aliases when explicitly requested', async () => {
+  const prismaMock = {
+    candidateScore: {
+      findMany: async () => ([
+        {
+          overall_score: 81,
+          screening_status: 'moderate_match',
+          skills_score: 84,
+          experience_score: 79,
+          education_score: 75,
+          cultural_fit_score: 78,
+          location_match_score: 83
+        },
+        {
+          overall_score: 35,
+          screening_status: 'rejected',
+          skills_score: 32,
+          experience_score: 37,
+          education_score: 41,
+          cultural_fit_score: 30,
+          location_match_score: 34
+        }
+      ])
+    }
+  };
+
+  __setRecruitmentTestDeps({ prismaClient: prismaMock });
+
+  await withServer(async (baseUrl) => {
+    const response = await fetch(`${baseUrl}/api/recruitment/jobs/job-123/screening-metrics?include_legacy_aliases=true`);
+    const body = await response.json();
+
+    assert(response.status === 200, 'Expected HTTP 200');
+    assert(body.success === true, 'Expected success flag');
+    assert(body.metrics.good_matches === 1, 'Expected alias good_matches count in compatibility mode');
+    assert(body.metrics.no_match === 1, 'Expected alias no_match count in compatibility mode');
   });
 
   __resetRecruitmentTestDeps();

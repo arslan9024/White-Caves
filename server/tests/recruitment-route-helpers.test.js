@@ -24,7 +24,7 @@ function test(name, fn) {
 
 console.log('\n📦 Recruitment Route Helper Tests\n');
 
-test('computeScreeningMetrics returns canonical and legacy keys', () => {
+test('computeScreeningMetrics returns canonical keys by default', () => {
   const metrics = computeScreeningMetrics([
     { overall_score: 91, screening_status: 'strong_match', skills_score: 90, experience_score: 88, education_score: 80, cultural_fit_score: 84, location_match_score: 92 },
     { overall_score: 77, screening_status: 'moderate_match', skills_score: 78, experience_score: 79, education_score: 75, cultural_fit_score: 74, location_match_score: 80 },
@@ -36,6 +36,18 @@ test('computeScreeningMetrics returns canonical and legacy keys', () => {
   assert(metrics.moderate_matches === 1, 'Should count moderate matches');
   assert(metrics.weak_matches === 1, 'Should count weak matches');
   assert(metrics.rejected_matches === 1, 'Should count rejected matches');
+  assert(metrics.good_matches === undefined, 'Legacy alias should be absent by default');
+  assert(metrics.potential_matches === undefined, 'Legacy alias should be absent by default');
+  assert(metrics.no_match === undefined, 'Legacy alias should be absent by default');
+});
+
+test('computeScreeningMetrics includes legacy aliases when requested', () => {
+  const metrics = computeScreeningMetrics([
+    { overall_score: 77, screening_status: 'moderate_match', skills_score: 78, experience_score: 79, education_score: 75, cultural_fit_score: 74, location_match_score: 80 },
+    { overall_score: 62, screening_status: 'weak_match', skills_score: 63, experience_score: 61, education_score: 58, cultural_fit_score: 66, location_match_score: 70 },
+    { overall_score: 22, screening_status: 'rejected', skills_score: 20, experience_score: 22, education_score: 30, cultural_fit_score: 26, location_match_score: 12 }
+  ], { includeLegacyAliases: true });
+
   assert(metrics.good_matches === 1, 'Legacy alias should map to moderate matches');
   assert(metrics.potential_matches === 1, 'Legacy alias should map to weak matches');
   assert(metrics.no_match === 1, 'Legacy alias should map to rejected matches');

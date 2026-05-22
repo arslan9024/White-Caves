@@ -19,7 +19,7 @@ The system now treats these values as canonical:
 - `rejected`
 - `declined_interview`
 
-Backward-compatible aliases may still appear in analytics responses:
+Backward-compatible aliases are disabled by default and can be requested temporarily:
 
 - `good_matches` maps to `moderate_matches`
 - `potential_matches` maps to `weak_matches`
@@ -103,7 +103,11 @@ Returns only candidates above the requested score threshold.
 
 ### `GET /api/recruitment/jobs/:job_id/screening-metrics`
 
-Returns canonical and compatibility metric keys.
+Returns canonical metric keys by default.
+
+Optional query params:
+
+- `include_legacy_aliases` default `false`
 
 Response shape:
 
@@ -117,9 +121,6 @@ Response shape:
     "moderate_matches": 6,
     "weak_matches": 9,
     "rejected_matches": 5,
-    "good_matches": 6,
-    "potential_matches": 9,
-    "no_match": 5,
     "average_score": 68,
     "median_score": 70,
     "factor_averages": {
@@ -180,8 +181,8 @@ Runs scoring then immediately sends Linda messages to contactable candidates.
 
 ## Deprecation Plan
 
-Legacy keys should remain supported until all dashboard consumers migrate:
+Legacy keys are now opt-in compatibility fields only:
 
 1. Use canonical keys in all new UI work.
-2. Keep alias keys during Phase 2 rollout.
-3. Remove alias keys only after dashboard/API tests are updated.
+2. Use `include_legacy_aliases=true` only for temporary bridge integrations.
+3. Remove alias compatibility mode after all integrations confirm canonical usage.
