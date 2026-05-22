@@ -1,5 +1,5 @@
 {
-  "version": "2026.05.16-autonomous-v1",
+  "version": "2026.05.22-execution-mode-v2",
   "readinessThresholdPct": 60,
   "readinessTargetPct": 90,
   "largeWaveMinReadinessPct": 90,
@@ -11,7 +11,22 @@
     "planningAgents": "free-unlimited-only",
     "premiumAllowedFor": ["senior-coding", "senior-design"]
   },
-  "autonomousDefault": true,
+  "executionMode": {
+    "default": "approval",
+    "autopilot": {
+      "continuous": true,
+      "useSubagents": true,
+      "askBetweenTasks": false,
+      "hardStopOnly": true
+    },
+    "approval": {
+      "continuous": false,
+      "useSubagents": true,
+      "askBetweenTasks": true,
+      "hardStopOnly": false
+    }
+  },
+  "autonomousDefault": false,
   "hardStops": {
     "stopOnTestFailure": true,
     "stopOnLintFailure": true,

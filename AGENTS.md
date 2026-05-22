@@ -816,8 +816,11 @@ This file defines the White Caves multi-expert operating model for all agent-ass
 - **Coding Gate:** No senior coding agent begins a feature without passing the Context Enrichment Gate (copilot-instructions.md Rule 5). Free agents must complete their docs first.
 - **Loop Script:** Run `scripts/free-agents-loop.ps1` at any time to see which agent is active right now and get the exact copy-paste prompt.
 - **Background Mode (MVP):** Start free-agent planning workers in background with `npm run orchestrator:bg:start` and stop with `npm run orchestrator:bg:stop`.
-- **Autonomous Continuation Default:** After an approved "start/continue" instruction, execution continues in macro/huge-waves without requiring repeated "go" prompts; stop only on hard blockers (tests/lint/build/policy/security/credentials).
-- **Autonomous Loop Commands:** `npm run orchestrator:agent-loop:auto` (or `:auto:nobrowser` in terminal-only mode).
+- **Execution Mode Default (Approval):** After each completed task, stop and ask for confirmation before advancing to the next task.
+- **Autopilot Mode (Continuous):** When explicitly enabled, execution continues automatically across tasks without repeated "go" prompts; stop only on hard blockers (tests/lint/build/policy/security/credentials).
+- **Mode Commands:**
+  - Approval mode: `npm run orchestrator:agent-loop:approval`
+  - Autopilot mode: `npm run orchestrator:agent-loop:autopilot` (or `npm run orchestrator:agent-loop:auto` / `:auto:nobrowser`)
 - **Policy Source of Truth:** Gate thresholds + approval phrase are read from `scripts/orchestrator/policy.json` (no hardcoded legacy thresholds).
 - **Post-Premium QA Watchdog (Mandatory):** **@Katherine** owns runtime verification after each big premium wave commit via `node scripts/orchestrator/post-commit-premium-guard.js`.
 - **Big Premium Commit Trigger:** Runtime watchdog checks execute only when commit contains `[premium-wave]` and qualifies as a big diff (threshold/critical paths).

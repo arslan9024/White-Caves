@@ -349,7 +349,8 @@
 
 24. **🤖 AUTONOMOUS CONTINUATION MODE (No Repeated "go" Prompts):**
 
-- Default execution mode for approved implementation sessions is **continuous autonomous progression**.
+- Default execution mode is **Approval Mode**: complete one task, then stop and ask before advancing.
+- If **Autopilot Mode** is explicitly enabled, execution becomes **continuous autonomous progression**.
 - Once user intent is clear (e.g., "start implementation", "continue"), execution should proceed macro-wave by macro-wave without waiting for repeated manual confirmation.
 - Hard-stop only on:
   - failing tests/lint/build,
@@ -357,6 +358,8 @@
   - missing credentials/secrets,
   - irreversible-risk operation requiring explicit user approval.
 - Operational command surface:
+  - `npm run orchestrator:agent-loop:approval`
+  - `npm run orchestrator:agent-loop:autopilot`
   - `npm run orchestrator:agent-loop:auto`
   - `npm run orchestrator:agent-loop:auto:nobrowser`
 

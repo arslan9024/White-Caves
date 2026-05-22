@@ -11,6 +11,8 @@
 #   npm run orchestrator:agent-loop -- -NoBrowser       -- skip browser launch
 #   npm run orchestrator:agent-loop -- -ShowSchedule    -- print schedule, exit
 #   npm run orchestrator:agent-loop -- -NonInteractive   -- auto-confirm and continue
+#   npm run orchestrator:agent-loop -- -Autopilot        -- continuous mode (no asks)
+#   npm run orchestrator:agent-loop -- -Approval         -- ask before each advance
 #   npm run orchestrator:agent-loop -- -Agent @Sofia -Once -NoBrowser
 
 param(
@@ -19,7 +21,9 @@ param(
   [switch]$Once,
   [switch]$NoBrowser,
   [switch]$ShowSchedule,
-  [switch]$NonInteractive
+  [switch]$NonInteractive,
+  [switch]$Autopilot,
+  [switch]$Approval
 )
 
 $w       = 72
@@ -27,6 +31,40 @@ $root    = Resolve-Path $WorkspaceRoot
 $scripts = Join-Path $root "scripts\orchestrator"
 $qFile   = Join-Path $root "logs\orchestrator\task-queue.json"
 $pFile   = Join-Path $root "scripts\orchestrator\prompts.json"
+$policyFile = Join-Path $root "scripts\orchestrator\policy.json"
+
+# ------------------------------------------------------------------
+# EXECUTION MODE (policy + switches)
+# Default: approval mode (ask between tasks)
+# ------------------------------------------------------------------
+$policyDefaultMode = "approval"
+if (Test-Path $policyFile) {
+  try {
+    $policy = Get-Content $policyFile -Raw | ConvertFrom-Json
+    if (
+      $null -ne $policy.executionMode -and
+      $null -ne $policy.executionMode.default -and
+      -not [string]::IsNullOrWhiteSpace([string]$policy.executionMode.default)
+    ) {
+      $policyDefaultMode = ([string]$policy.executionMode.default).ToLower()
+    } elseif ($null -ne $policy.autonomousDefault -and [bool]$policy.autonomousDefault) {
+      $policyDefaultMode = "autopilot"
+    }
+  } catch {
+    $policyDefaultMode = "approval"
+  }
+}
+
+$effectiveNonInteractive = $false
+if ($Autopilot) {
+  $effectiveNonInteractive = $true
+} elseif ($Approval) {
+  $effectiveNonInteractive = $false
+} elseif ($NonInteractive) {
+  $effectiveNonInteractive = $true
+} else {
+  $effectiveNonInteractive = ($policyDefaultMode -eq "autopilot")
+}
 
 # ------------------------------------------------------------------
 # SLOT SCHEDULE  (minute-of-hour -> agent)
@@ -308,7 +346,7 @@ $loopCount = 0
   Write-Host "   2. Paste AI output into the target .md file" -ForegroundColor DarkGray
   Write-Host "   3. Press Enter below to mark task done" -ForegroundColor DarkGray
   Write-Host ""
-  if (-not $NonInteractive) {
+  if (-not $effectiveNonInteractive) {
     Write-Host "  [Press Enter when paste is done, or type 'skip' to skip this task]" -ForegroundColor Yellow
     $confirm = Read-Host "  > "
     if ($confirm.Trim().ToLower() -eq "skip") {
@@ -318,19 +356,19 @@ $loopCount = 0
       continue
     }
   } else {
-    Write-Host "  [AUTO] Non-interactive mode enabled -- auto-confirming task step." -ForegroundColor DarkGray
+    Write-Host "  [AUTO] Autopilot mode enabled -- auto-confirming task step." -ForegroundColor DarkGray
   }
 
   # 7. COLLECT EVIDENCE NOTE
   Write-Host ""
   Write-Host "  Evidence note (describe what was expanded, or press Enter to use default):" -ForegroundColor White
-  if (-not $NonInteractive) {
+  if (-not $effectiveNonInteractive) {
     $evNote = Read-Host "  > "
   } else {
     $evNote = ""
   }
   if ([string]::IsNullOrWhiteSpace($evNote)) {
-    $evNote = if ($NonInteractive) {
+    $evNote = if ($effectiveNonInteractive) {
       "Auto-advanced via agent-loop non-interactive mode -- $taskId"
     } else {
       "Expanded via agent-loop paste session -- $taskId"
@@ -393,7 +431,7 @@ $loopCount = 0
     $nextSlotMin = Get-MinutesUntilNextSlot
     $nextSlotAg  = Get-NextSlotAgent
     Write-Host ("  Next slot: {0} ({1}) in ~{2} min" -f $nextSlotAg, ($toolName[$nextSlotAg]), $nextSlotMin) -ForegroundColor DarkGray
-    if (-not $NonInteractive) {
+    if (-not $effectiveNonInteractive) {
       Write-Host "  [Press Enter to continue to the next agent, or Ctrl+C to exit]" -ForegroundColor DarkGray
       $null = Read-Host "  > "
     } else {
