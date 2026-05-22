@@ -22,7 +22,7 @@ Validate that the 11-wave program has a safe execution entry point before any pr
 
 - [ ] One canonical readiness source identified for future coding approval
 - [ ] Daily premium quota process defined for future coding waves
-- [ ] Wave merge policy explicitly states “micro-wave merges, not mega-merge”
+- [ ] Wave merge policy explicitly states “macro/huge-wave bundles with mandatory internal gates”
 
 ### 3. Downstream Readiness Checks
 

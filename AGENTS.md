@@ -816,7 +816,7 @@ This file defines the White Caves multi-expert operating model for all agent-ass
 - **Coding Gate:** No senior coding agent begins a feature without passing the Context Enrichment Gate (copilot-instructions.md Rule 5). Free agents must complete their docs first.
 - **Loop Script:** Run `scripts/free-agents-loop.ps1` at any time to see which agent is active right now and get the exact copy-paste prompt.
 - **Background Mode (MVP):** Start free-agent planning workers in background with `npm run orchestrator:bg:start` and stop with `npm run orchestrator:bg:stop`.
-- **Autonomous Continuation Default:** After an approved "start/continue" instruction, execution continues in micro-waves without requiring repeated "go" prompts; stop only on hard blockers (tests/lint/build/policy/security/credentials).
+- **Autonomous Continuation Default:** After an approved "start/continue" instruction, execution continues in macro/huge-waves without requiring repeated "go" prompts; stop only on hard blockers (tests/lint/build/policy/security/credentials).
 - **Autonomous Loop Commands:** `npm run orchestrator:agent-loop:auto` (or `:auto:nobrowser` in terminal-only mode).
 - **Policy Source of Truth:** Gate thresholds + approval phrase are read from `scripts/orchestrator/policy.json` (no hardcoded legacy thresholds).
 - **Post-Premium QA Watchdog (Mandatory):** **@Katherine** owns runtime verification after each big premium wave commit via `node scripts/orchestrator/post-commit-premium-guard.js`.
@@ -850,8 +850,8 @@ This file defines the White Caves multi-expert operating model for all agent-ass
    - Premium work stops when daily cap is reached unless @Ada grants emergency exception.
 
 5. **Large-Wave Premium Coding Standard:**
-   - Premium coding executes in **1–2 module micro-waves**.
-   - Micro-phase premium requests are allowed when low-risk and Gate 1 is passed.
+   - Premium coding executes in **3–6 module macro/huge-wave bundles** when dependencies are clear.
+   - Each macro/huge-wave must include internal validation checkpoints after each module group.
 
 6. **Researcher Preflight Requirement:**
    - Before any premium coding day, researcher chain must publish context preflight:

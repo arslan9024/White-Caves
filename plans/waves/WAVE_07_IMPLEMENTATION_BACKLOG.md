@@ -67,6 +67,66 @@ Ship login reliability fix now and prepare strict execution graph for profile/da
 - **Files:** `src/hooks/useSignIn.ts`, `src/pages/auth/SignInPage.tsx`, `src/pages/auth/AuthPages.css`, `src/hooks/useSignIn.test.ts`
 - **Status:** ✅ Completed (recovery metadata + retry CTA + hook/UI focused tests)
 
+### AUTH-08-007 — Social recovery dismiss control
+
+- Add explicit dismiss action for social recovery prompt to reduce UI friction after transient failures.
+- **Files:** `src/hooks/useSignIn.ts`, `src/pages/auth/SignInPage.tsx`, `src/pages/auth/AuthPages.css`, `src/pages/auth/SignInPage.test.tsx`
+- **Status:** ✅ Completed (dismiss handler + UI action + regression test)
+
+### AUTH-08-008 — Dismiss flow clears backend-sync error banner
+
+- Ensure recovery dismissal removes both retry affordance and stale backend-sync error copy.
+- **Files:** `src/pages/auth/SignInPage.test.tsx`
+- **Status:** ✅ Completed (added regression assertion for error clearing on dismiss)
+
+### AUTH-08-009 — Hook contract: clearSocialRecovery resets state
+
+- Add hook-level regression coverage that `clearSocialRecovery()` clears both recovery metadata and sync error state.
+- **Files:** `src/hooks/useSignIn.test.ts`
+- **Status:** ✅ Completed (clearSocialRecovery contract assertion)
+
+### AUTH-08-010 — Disable recovery dismiss during retry loading
+
+- Prevent recovery-dismiss race conditions while social retry is in flight by disabling dismiss action when `loading` is true.
+- **Files:** `src/pages/auth/SignInPage.tsx`, `src/pages/auth/SignInPage.test.tsx`
+- **Status:** ✅ Completed (UI loading guard + regression test)
+
+### AUTH-08-011 — Preserve recovery panel during retry attempt
+
+- Keep social recovery UI mounted during retry so users get consistent loading state and action affordances.
+- **Files:** `src/hooks/useSignIn.ts`, `src/pages/auth/SignInPage.test.tsx`
+- **Status:** ✅ Completed (retry-specific hook behavior + UI regression coverage)
+
+### AUTH-08-012 — Retry CTA loading-state guard coverage
+
+- Ensure social recovery retry CTA becomes disabled and switches to loading copy (`Retrying...`) while retry is in flight.
+- **Files:** `src/pages/auth/SignInPage.test.tsx`
+- **Status:** ✅ Completed (loading-state retry CTA regression test)
+
+### AUTH-08-013 — Recovery panel busy-state accessibility coverage
+
+- Surface retry-in-progress state to assistive tech by exposing `aria-busy` on recovery panel and covering it in regression tests.
+- **Files:** `src/pages/auth/SignInPage.tsx`, `src/pages/auth/SignInPage.test.tsx`
+- **Status:** ✅ Completed (aria-busy wiring + busy-state regression test)
+
+### AUTH-08-014 — Recovery reason refresh on repeated retry failures
+
+- Ensure social recovery reason text updates to the latest backend-sync failure reason after retry attempts.
+- **Files:** `src/pages/auth/SignInPage.test.tsx`
+- **Status:** ✅ Completed (reason-refresh regression coverage)
+
+### AUTH-08-015 — Social retry limit enforcement (macro auth resilience bundle)
+
+- Enforce max social retry attempts with explicit user guidance and stop additional backend-sync calls beyond limit.
+- **Files:** `src/hooks/useSignIn.ts`, `src/pages/auth/SignInPage.tsx`, `src/hooks/useSignIn.test.ts`, `src/pages/auth/SignInPage.test.tsx`
+- **Status:** ✅ Completed (hook guard + UI behavior + hook/UI regression tests)
+
+### AUTH-08-016 — Retries-remaining recovery visibility (macro auth resilience bundle)
+
+- Expose retries-remaining counter from auth hook and render it in recovery UI so users see deterministic retry budget.
+- **Files:** `src/hooks/useSignIn.ts`, `src/pages/auth/SignInPage.tsx`, `src/hooks/useSignIn.test.ts`, `src/pages/auth/SignInPage.test.tsx`
+- **Status:** ✅ Completed (hook surface + UI hint + decrement regression coverage)
+
 ### DASH-08-005 — Dashboard profile completion guidance card
 
 - Add post-login profile completeness guidance with direct CTA to `/profile`.
@@ -92,3 +152,13 @@ Ship login reliability fix now and prepare strict execution graph for profile/da
 7. AUTH-08-004 ✅
 8. DASH-08-005 ✅
 9. PROFILE-08-006 ✅
+10. AUTH-08-007 ✅
+11. AUTH-08-008 ✅
+12. AUTH-08-009 ✅
+13. AUTH-08-010 ✅
+14. AUTH-08-011 ✅
+15. AUTH-08-012 ✅
+16. AUTH-08-013 ✅
+17. AUTH-08-014 ✅
+18. AUTH-08-015 ✅
+19. AUTH-08-016 ✅

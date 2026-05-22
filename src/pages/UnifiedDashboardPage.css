@@ -868,6 +868,12 @@
     padding: 12px;
   }
 
+  .dashboard-page-header .dashboard-profile-completion,
+  .unified-dashboard-content .dashboard-profile-completion,
+  .dashboard-surface-panel .dashboard-profile-completion {
+    grid-template-columns: 1fr;
+  }
+
   .dashboard-page-header,
   .unified-dashboard-content,
   .dashboard-surface-panel {

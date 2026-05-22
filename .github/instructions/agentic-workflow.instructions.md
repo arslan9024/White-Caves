@@ -23,7 +23,7 @@ Every meaningful task handoff should include:
 
 ## Change Strategy
 
-- Prefer small, testable micro-waves.
+- Prefer dependency-safe macro-wave bundles with internal test checkpoints.
 - Resolve compile/lint/test blockers before widening scope.
 - Update trackers only after validation results are known.
 

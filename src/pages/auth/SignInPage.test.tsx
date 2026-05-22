@@ -485,6 +485,7 @@ describe('SignInPage', () => {
       });
 
       await waitFor(() => {
+        expect(mockNavigate).toHaveBeenCalledWith('/dashboard');
         expect(mockNavigate).toHaveBeenCalledWith('/crm');
       });
     });
@@ -515,6 +516,313 @@ describe('SignInPage', () => {
         screen.queryByRole('button', { name: /Retry Google sign-in/i })
       ).not.toBeInTheDocument();
       expect(screen.queryByText(/sign-in needs one more step/i)).not.toBeInTheDocument();
+    });
+
+    it('should dismiss social recovery panel when user clicks dismiss action', async () => {
+      mockSignInWithGoogle.mockResolvedValue({
+        user: {
+          uid: 'firebase-user-1',
+          email: 'social@test.com',
+          displayName: 'Social User',
+          photoURL: null,
+        },
+      });
+      mockSyncFirebaseUser.mockRejectedValue(new Error('Backend offline'));
+      mockSignOut.mockResolvedValue(undefined);
+
+      renderPage();
+
+      fireEvent.click(screen.getByRole('button', { name: /Google/i }));
+
+      await waitFor(() => {
+        expect(
+          screen.getByRole('button', { name: /Dismiss recovery notice/i })
+        ).toBeInTheDocument();
+        expect(screen.getByText(/backend session setup failed/i)).toBeInTheDocument();
+      });
+
+      fireEvent.click(screen.getByRole('button', { name: /Dismiss recovery notice/i }));
+
+      await waitFor(() => {
+        expect(
+          screen.queryByRole('button', { name: /Retry Google sign-in/i })
+        ).not.toBeInTheDocument();
+        expect(screen.queryByText(/sign-in needs one more step/i)).not.toBeInTheDocument();
+        expect(screen.queryByText(/backend session setup failed/i)).not.toBeInTheDocument();
+      });
+    });
+
+    it('should disable dismiss action while social retry is in progress', async () => {
+      mockSignInWithGoogle.mockResolvedValue({
+        user: {
+          uid: 'firebase-user-1',
+          email: 'social@test.com',
+          displayName: 'Social User',
+          photoURL: null,
+        },
+      });
+
+      let resolveRetrySync:
+        | ((value: {
+            data: { user: { id: string; email: string; name: string; role: string } };
+          }) => void)
+        | undefined;
+
+      mockSyncFirebaseUser
+        .mockRejectedValueOnce(new Error('Backend offline'))
+        .mockImplementationOnce(
+          () =>
+            new Promise(resolve => {
+              resolveRetrySync = resolve;
+            })
+        );
+      mockSignOut.mockResolvedValue(undefined);
+
+      renderPage();
+
+      fireEvent.click(screen.getByRole('button', { name: /Google/i }));
+
+      const retryButton = await screen.findByRole('button', { name: /Retry Google sign-in/i });
+      fireEvent.click(retryButton);
+
+      await waitFor(() => {
+        expect(screen.getByRole('button', { name: /Dismiss recovery notice/i })).toBeDisabled();
+      });
+
+      if (resolveRetrySync) {
+        resolveRetrySync({
+          data: {
+            user: {
+              id: 'backend-1',
+              email: 'social@test.com',
+              name: 'Social User',
+              role: 'buyer',
+            },
+          },
+        });
+      }
+
+      await waitFor(() => {
+        expect(mockSyncFirebaseUser).toHaveBeenCalledTimes(2);
+      });
+    });
+
+    it('should disable retry action and show loading copy while retry is in progress', async () => {
+      mockSignInWithGoogle.mockResolvedValue({
+        user: {
+          uid: 'firebase-user-1',
+          email: 'social@test.com',
+          displayName: 'Social User',
+          photoURL: null,
+        },
+      });
+
+      let resolveRetrySync:
+        | ((value: {
+            data: { user: { id: string; email: string; name: string; role: string } };
+          }) => void)
+        | undefined;
+
+      mockSyncFirebaseUser
+        .mockRejectedValueOnce(new Error('Backend offline'))
+        .mockImplementationOnce(
+          () =>
+            new Promise(resolve => {
+              resolveRetrySync = resolve;
+            })
+        );
+      mockSignOut.mockResolvedValue(undefined);
+
+      renderPage();
+
+      fireEvent.click(screen.getByRole('button', { name: /Google/i }));
+
+      const retryButton = await screen.findByRole('button', { name: /Retry Google sign-in/i });
+      fireEvent.click(retryButton);
+
+      await waitFor(() => {
+        expect(screen.getByRole('button', { name: /Retrying.../i })).toBeDisabled();
+      });
+
+      if (resolveRetrySync) {
+        resolveRetrySync({
+          data: {
+            user: {
+              id: 'backend-1',
+              email: 'social@test.com',
+              name: 'Social User',
+              role: 'buyer',
+            },
+          },
+        });
+      }
+
+      await waitFor(() => {
+        expect(mockSyncFirebaseUser).toHaveBeenCalledTimes(2);
+      });
+    });
+
+    it('should mark recovery panel as busy while retry is in progress', async () => {
+      mockSignInWithGoogle.mockResolvedValue({
+        user: {
+          uid: 'firebase-user-1',
+          email: 'social@test.com',
+          displayName: 'Social User',
+          photoURL: null,
+        },
+      });
+
+      let resolveRetrySync:
+        | ((value: {
+            data: { user: { id: string; email: string; name: string; role: string } };
+          }) => void)
+        | undefined;
+
+      mockSyncFirebaseUser
+        .mockRejectedValueOnce(new Error('Backend offline'))
+        .mockImplementationOnce(
+          () =>
+            new Promise(resolve => {
+              resolveRetrySync = resolve;
+            })
+        );
+      mockSignOut.mockResolvedValue(undefined);
+
+      renderPage();
+
+      fireEvent.click(screen.getByRole('button', { name: /Google/i }));
+
+      const retryButton = await screen.findByRole('button', { name: /Retry Google sign-in/i });
+      fireEvent.click(retryButton);
+
+      await waitFor(() => {
+        expect(screen.getByRole('status')).toHaveAttribute('aria-busy', 'true');
+      });
+
+      if (resolveRetrySync) {
+        resolveRetrySync({
+          data: {
+            user: {
+              id: 'backend-1',
+              email: 'social@test.com',
+              name: 'Social User',
+              role: 'buyer',
+            },
+          },
+        });
+      }
+
+      await waitFor(() => {
+        expect(screen.getByRole('status')).toHaveAttribute('aria-busy', 'false');
+        expect(screen.getByRole('button', { name: /Retry Google sign-in/i })).not.toBeDisabled();
+      });
+    });
+
+    it('should update recovery reason text when retry fails with a new backend error', async () => {
+      mockSignInWithGoogle.mockResolvedValue({
+        user: {
+          uid: 'firebase-user-1',
+          email: 'social@test.com',
+          displayName: 'Social User',
+          photoURL: null,
+        },
+      });
+      mockSyncFirebaseUser
+        .mockRejectedValueOnce(new Error('Backend offline'))
+        .mockRejectedValueOnce(new Error('Sync timeout'));
+      mockSignOut.mockResolvedValue(undefined);
+
+      renderPage();
+
+      fireEvent.click(screen.getByRole('button', { name: /Google/i }));
+
+      await waitFor(() => {
+        expect(screen.getByText(/Reason:\s*Backend offline/i)).toBeInTheDocument();
+      });
+
+      fireEvent.click(screen.getByRole('button', { name: /Retry Google sign-in/i }));
+
+      await waitFor(() => {
+        expect(screen.getByText(/Reason:\s*Sync timeout/i)).toBeInTheDocument();
+      });
+
+      expect(mockSyncFirebaseUser).toHaveBeenCalledTimes(2);
+    });
+
+    it('should stop retrying and show limit guidance after repeated retry failures', async () => {
+      mockSignInWithGoogle.mockResolvedValue({
+        user: {
+          uid: 'firebase-user-1',
+          email: 'social@test.com',
+          displayName: 'Social User',
+          photoURL: null,
+        },
+      });
+      mockSyncFirebaseUser.mockRejectedValue(new Error('Backend offline'));
+      mockSignOut.mockResolvedValue(undefined);
+
+      renderPage();
+
+      fireEvent.click(screen.getByRole('button', { name: /Google/i }));
+
+      const retry = await screen.findByRole('button', { name: /Retry Google sign-in/i });
+      fireEvent.click(retry);
+      await waitFor(() => expect(mockSyncFirebaseUser).toHaveBeenCalledTimes(2));
+
+      fireEvent.click(screen.getByRole('button', { name: /Retry Google sign-in/i }));
+      await waitFor(() => expect(mockSyncFirebaseUser).toHaveBeenCalledTimes(3));
+
+      fireEvent.click(screen.getByRole('button', { name: /Retry Google sign-in/i }));
+      await waitFor(() => expect(mockSyncFirebaseUser).toHaveBeenCalledTimes(4));
+
+      await waitFor(() => {
+        expect(screen.getByRole('button', { name: /Retry limit reached/i })).toBeDisabled();
+        expect(screen.getByText(/Too many retry attempts/i)).toBeInTheDocument();
+      });
+
+      fireEvent.click(screen.getByRole('button', { name: /Retry limit reached/i }));
+
+      expect(mockSyncFirebaseUser).toHaveBeenCalledTimes(4);
+      expect(screen.getByText(/Too many retry attempts/i)).toBeInTheDocument();
+    });
+
+    it('should show retries remaining and decrement it after each failed retry', async () => {
+      mockSignInWithGoogle.mockResolvedValue({
+        user: {
+          uid: 'firebase-user-1',
+          email: 'social@test.com',
+          displayName: 'Social User',
+          photoURL: null,
+        },
+      });
+      mockSyncFirebaseUser.mockRejectedValue(new Error('Backend offline'));
+      mockSignOut.mockResolvedValue(undefined);
+
+      renderPage();
+
+      fireEvent.click(screen.getByRole('button', { name: /Google/i }));
+
+      await waitFor(() => {
+        expect(screen.getByText(/Retries remaining:\s*3/i)).toBeInTheDocument();
+      });
+
+      fireEvent.click(screen.getByRole('button', { name: /Retry Google sign-in/i }));
+      await waitFor(() => {
+        expect(mockSyncFirebaseUser).toHaveBeenCalledTimes(2);
+        expect(screen.getByText(/Retries remaining:\s*2/i)).toBeInTheDocument();
+      });
+
+      fireEvent.click(screen.getByRole('button', { name: /Retry Google sign-in/i }));
+      await waitFor(() => {
+        expect(mockSyncFirebaseUser).toHaveBeenCalledTimes(3);
+        expect(screen.getByText(/Retries remaining:\s*1/i)).toBeInTheDocument();
+      });
+
+      fireEvent.click(screen.getByRole('button', { name: /Retry Google sign-in/i }));
+      await waitFor(() => {
+        expect(mockSyncFirebaseUser).toHaveBeenCalledTimes(4);
+        expect(screen.getByText(/Retries remaining:\s*0/i)).toBeInTheDocument();
+      });
     });
   });
 });

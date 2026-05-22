@@ -60,6 +60,8 @@ const SignInPage: FC = () => {
     setError,
     success,
     socialSyncRecovery,
+    socialRetryAttempts,
+    remainingSocialRetries,
     switchMode,
     goBackToStep,
     email,
@@ -85,6 +87,7 @@ const SignInPage: FC = () => {
     handleSignInSuccess,
     handleSocialAuth,
     retrySocialAuth,
+    clearSocialRecovery,
     handleEmailSubmit,
     handlePhoneSubmit,
     handleOtpVerify,
@@ -92,6 +95,8 @@ const SignInPage: FC = () => {
     completeSignUp,
     getRolesForCategory,
   } = useSignIn();
+
+  const retryLimitReached = socialRetryAttempts >= 3;
 
   return (
     <div className="auth-page">
@@ -111,7 +116,7 @@ const SignInPage: FC = () => {
 
               {error && <div className="auth-error">{error}</div>}
               {socialSyncRecovery && (
-                <div className="auth-recovery" role="status" aria-live="polite">
+                <div className="auth-recovery" role="status" aria-live="polite" aria-busy={loading}>
                   <p className="auth-recovery__title">
                     {socialSyncRecovery.provider[0].toUpperCase() +
                       socialSyncRecovery.provider.slice(1)}{' '}
@@ -122,17 +127,34 @@ const SignInPage: FC = () => {
                     once to finish sign-in.
                   </p>
                   <p className="auth-recovery__reason">Reason: {socialSyncRecovery.reason}</p>
+                  <p className="auth-recovery__hint">Retries remaining: {remainingSocialRetries}</p>
                   <button
                     type="button"
                     className="btn btn-secondary btn-full"
-                    disabled={loading}
+                    disabled={loading || retryLimitReached}
                     onClick={() => {
                       void retrySocialAuth();
                     }}
                   >
-                    {loading
-                      ? 'Retrying...'
-                      : `Retry ${socialSyncRecovery.provider[0].toUpperCase() + socialSyncRecovery.provider.slice(1)} sign-in`}
+                    {retryLimitReached
+                      ? 'Retry limit reached'
+                      : loading
+                        ? 'Retrying...'
+                        : `Retry ${socialSyncRecovery.provider[0].toUpperCase() + socialSyncRecovery.provider.slice(1)} sign-in`}
+                  </button>
+                  {retryLimitReached && (
+                    <p className="auth-recovery__hint">
+                      Too many retry attempts. Please continue with email sign-in or try again
+                      later.
+                    </p>
+                  )}
+                  <button
+                    type="button"
+                    className="btn btn-link auth-recovery__dismiss"
+                    disabled={loading}
+                    onClick={clearSocialRecovery}
+                  >
+                    Dismiss recovery notice
                   </button>
                 </div>
               )}

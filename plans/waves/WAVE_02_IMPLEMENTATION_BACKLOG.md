@@ -39,7 +39,7 @@ Convert the new 11-wave execution program from a planning concept into a valid i
 
 ### W2-005 — Define merge policy for 11-wave program
 
-- Convert “together” into micro-wave merge policy with strict gates
+- Convert “together” into macro/huge-wave merge policy with strict gates
 - Owner: guardian + @Katherine + @Gwynne
 - Priority: P0
 - Exit condition: documented merge/validation rule for all future waves
