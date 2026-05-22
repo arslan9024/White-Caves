@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useMemo } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { 
   Briefcase, Calendar, Clock, CheckCircle, Users,
@@ -28,6 +28,7 @@ import {
   selectComplianceMetrics,
   selectConfidentialVault
 } from '../../store/slices/aiAssistantDashboardSlice';
+import { crmDataService } from '../../services/crmDataService';
 import './AssistantDashboard.css';
 import './ZoeExecutiveCRM.css';
 
@@ -83,6 +84,9 @@ const ZoeExecutiveCRM = ({ activeFeature }) => {
   const dispatch = useDispatch();
   const [internalTab, setInternalTab] = useState('console');
   const [selectedSuggestion, setSelectedSuggestion] = useState(null);
+  const [recruitmentOverview, setRecruitmentOverview] = useState(null);
+  const [recruitmentLoading, setRecruitmentLoading] = useState(false);
+  const [recruitmentError, setRecruitmentError] = useState('');
 
   const {
     departments: apiDepartments,
@@ -179,6 +183,23 @@ const ZoeExecutiveCRM = ({ activeFeature }) => {
   const handleFilterChange = useCallback((filterType, value) => {
     dispatch(setSuggestionFilters({ [filterType]: value }));
   }, [dispatch]);
+
+  const fetchRecruitmentOverview = useCallback(async () => {
+    try {
+      setRecruitmentLoading(true);
+      setRecruitmentError('');
+      const data = await crmDataService.getRecruitmentOverview();
+      setRecruitmentOverview(data.overview || null);
+    } catch (error) {
+      setRecruitmentError(error.message || 'Failed to load recruitment overview');
+    } finally {
+      setRecruitmentLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchRecruitmentOverview();
+  }, [fetchRecruitmentOverview]);
 
   const formatTimeAgo = (timestamp) => {
     if (!timestamp) return 'Unknown';
@@ -346,13 +367,14 @@ const ZoeExecutiveCRM = ({ activeFeature }) => {
       </div>
 
       <div className="assistant-tabs">
-        {['console', 'suggestions', 'assistants', 'organization', 'departments', 'employees', 'services', 'demo', 'docs'].map(tab => (
+        {['console', 'analytics', 'suggestions', 'assistants', 'organization', 'departments', 'employees', 'services', 'demo', 'docs'].map(tab => (
           <button
             key={tab}
             className={`tab-btn ${activeTab === tab ? 'active' : ''}`}
             onClick={() => setActiveTab(tab)}
           >
             {tab === 'console' && <MessageSquare size={14} />}
+            {tab === 'analytics' && <TrendingUp size={14} />}
             {tab === 'suggestions' && <Inbox size={14} />}
             {tab === 'suggestions' && unreviewedCount > 0 && (
               <span className="tab-badge">{unreviewedCount}</span>
@@ -365,6 +387,7 @@ const ZoeExecutiveCRM = ({ activeFeature }) => {
             {tab === 'demo' && <Play size={14} />}
             {tab === 'docs' && <FileText size={14} />}
             {tab === 'console' ? 'AI Console' : 
+             tab === 'analytics' ? 'Recruitment Analytics' :
              tab === 'assistants' ? 'AI Registry' : 
              tab === 'employees' ? `Employees (${apiEmployees.length || orgStats?.employees || 132})` :
              tab.charAt(0).toUpperCase() + tab.slice(1)}
@@ -376,6 +399,112 @@ const ZoeExecutiveCRM = ({ activeFeature }) => {
         {activeTab === 'console' && (
           <div className="console-tab-wrapper">
             <ZoeConsole />
+          </div>
+        )}
+
+        {activeTab === 'analytics' && (
+          <div className="recruitment-analytics-view">
+            <div className="view-header recruitment-header">
+              <div>
+                <h3><TrendingUp size={18} /> Recruitment Intelligence</h3>
+                <p className="view-subtitle">Live hiring KPIs for Nancy, Linda, and Zoe coordination</p>
+              </div>
+              <div className="analytics-actions">
+                <button className="action-btn secondary" onClick={fetchRecruitmentOverview} disabled={recruitmentLoading}>
+                  {recruitmentLoading ? <Loader2 size={14} className="spin" /> : <RefreshCw size={14} />}
+                  Refresh
+                </button>
+              </div>
+            </div>
+
+            {recruitmentError && (
+              <div className="analytics-error">
+                <AlertCircle size={16} /> {recruitmentError}
+              </div>
+            )}
+
+            <div className="quick-stats recruitment-overview-grid">
+              <div className="stat-card highlight">
+                <div className="stat-icon" style={{ background: 'rgba(16, 185, 129, 0.2)', color: '#10B981' }}>
+                  <Briefcase size={20} />
+                </div>
+                <div className="stat-content">
+                  <span className="stat-value">{recruitmentOverview?.totals?.open_jobs ?? 0}</span>
+                  <span className="stat-label">Open Jobs</span>
+                </div>
+                <span className="stat-change positive">{recruitmentOverview?.totals?.jobs ?? 0} total</span>
+              </div>
+              <div className="stat-card">
+                <div className="stat-icon" style={{ background: 'rgba(6, 182, 212, 0.2)', color: '#06B6D4' }}>
+                  <Users size={20} />
+                </div>
+                <div className="stat-content">
+                  <span className="stat-value">{recruitmentOverview?.totals?.active_applications ?? 0}</span>
+                  <span className="stat-label">Active Applications</span>
+                </div>
+                <span className="stat-change">Pipeline live</span>
+              </div>
+              <div className="stat-card">
+                <div className="stat-icon" style={{ background: 'rgba(245, 158, 11, 0.2)', color: '#F59E0B' }}>
+                  <Calendar size={20} />
+                </div>
+                <div className="stat-content">
+                  <span className="stat-value">{recruitmentOverview?.totals?.interview_pipeline ?? 0}</span>
+                  <span className="stat-label">Interview Stage</span>
+                </div>
+                <span className="stat-change">Ready to schedule</span>
+              </div>
+              <div className="stat-card">
+                <div className="stat-icon" style={{ background: 'rgba(139, 92, 246, 0.2)', color: '#8B5CF6' }}>
+                  <FileText size={20} />
+                </div>
+                <div className="stat-content">
+                  <span className="stat-value">{recruitmentOverview?.totals?.offer_pipeline ?? 0}</span>
+                  <span className="stat-label">Offer Stage</span>
+                </div>
+                <span className="stat-change positive">{recruitmentOverview?.totals?.hired ?? 0} hired</span>
+              </div>
+            </div>
+
+            <div className="reports-grid recruitment-screening-grid">
+              <div className="report-card">
+                <TrendingUp size={24} />
+                <h4>Score Quality</h4>
+                <p>Average score: {recruitmentOverview?.screening?.average_score ?? 0}/100</p>
+                <div className="metric-pair"><span className="metric-label">Strong</span><span>{recruitmentOverview?.screening?.strong_matches ?? 0}</span></div>
+                <div className="metric-pair"><span className="metric-label">Moderate</span><span>{recruitmentOverview?.screening?.moderate_matches ?? 0}</span></div>
+                <div className="metric-pair"><span className="metric-label">Weak</span><span>{recruitmentOverview?.screening?.weak_matches ?? 0}</span></div>
+                <div className="metric-pair"><span className="metric-label">Rejected</span><span>{recruitmentOverview?.screening?.rejected_matches ?? 0}</span></div>
+              </div>
+              <div className="report-card">
+                <Workflow size={24} />
+                <h4>Pipeline Distribution</h4>
+                <p>Median score: {recruitmentOverview?.screening?.median_score ?? 0}</p>
+                <div className="metric-pair"><span className="metric-label">Very high</span><span>{recruitmentOverview?.screening?.score_distribution?.very_high ?? 0}</span></div>
+                <div className="metric-pair"><span className="metric-label">High</span><span>{recruitmentOverview?.screening?.score_distribution?.high ?? 0}</span></div>
+                <div className="metric-pair"><span className="metric-label">Medium</span><span>{recruitmentOverview?.screening?.score_distribution?.medium ?? 0}</span></div>
+                <div className="metric-pair"><span className="metric-label">Low + very low</span><span>{(recruitmentOverview?.screening?.score_distribution?.low ?? 0) + (recruitmentOverview?.screening?.score_distribution?.very_low ?? 0)}</span></div>
+              </div>
+              <div className="report-card">
+                <Building2 size={24} />
+                <h4>Recent Open Roles</h4>
+                <p>Current recruitment workload by job opening</p>
+                <div className="job-pill-list">
+                  {(recruitmentOverview?.recent_jobs || []).map(job => (
+                    <div key={job.id} className="job-pill">
+                      <div>
+                        <strong>{job.title}</strong>
+                        <span>{job.department || 'General'}</span>
+                      </div>
+                      <span>{job.applications} apps</span>
+                    </div>
+                  ))}
+                  {(!recruitmentOverview?.recent_jobs || recruitmentOverview.recent_jobs.length === 0) && (
+                    <div className="job-pill empty">No recruitment jobs yet</div>
+                  )}
+                </div>
+              </div>
+            </div>
           </div>
         )}
 

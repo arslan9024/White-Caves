@@ -243,9 +243,9 @@ console.log('=================================\n');
 
 const scores = [
   { score: 95, status: 'strong_match' },
-  { score: 82, status: 'good_match' },
+  { score: 82, status: 'moderate_match' },
   { score: 68, status: 'weak_match' },
-  { score: 45, status: 'poor_match' }
+  { score: 45, status: 'rejected' }
 ];
 
 scores.forEach(({ score, status }) => {

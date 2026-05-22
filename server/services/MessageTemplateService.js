@@ -4,6 +4,8 @@
  * Used for screening results, interview invitations, reminders, etc.
  */
 
+import { SCREENING_STATUS } from '../constants/ScoreLevels.js';
+
 class MessageTemplateService {
   constructor() {
     // Default templates - can be stored in DB later
@@ -140,6 +142,38 @@ Congratulations! 🎉
         enabled: true
       },
 
+      onboarding_welcome: {
+        id: 'onboarding_welcome',
+        name: 'Onboarding Welcome',
+        category: 'onboarding',
+        body: `Welcome to {{company_name}}, {{candidate_name}}! 🎉
+
+Your onboarding for the *{{job_title}}* role starts on *{{start_date}}*.
+
+📋 *Your First-Day Checklist:*
+{{checklist_items}}
+
+🤝 *Buddy Support:*
+{{buddy_name}}
+
+📚 *Training Modules:*
+{{training_modules}}
+
+If you need any help before day one, reply to this message.
+
+— Recruitment Team`,
+        variables: [
+          'candidate_name',
+          'company_name',
+          'job_title',
+          'start_date',
+          'checklist_items',
+          'buddy_name',
+          'training_modules'
+        ],
+        enabled: true
+      },
+
       rejection_notification: {
         id: 'rejection_notification',
         name: 'Rejection Notification',
@@ -249,13 +283,13 @@ In the meantime, feel free to reach out if you have any questions!
   renderScreeningResult(candidate, job, score) {
     let nextAction = '';
 
-    if (score.screening_status === 'strong_match') {
+    if (score.screening_status === SCREENING_STATUS.STRONG_MATCH) {
       nextAction = 'Reply "SCHEDULE" to book an interview or "INFO" for more details.';
-    } else if (score.screening_status === 'good_match') {
+    } else if (score.screening_status === SCREENING_STATUS.MODERATE_MATCH) {
       nextAction = 'We\'ll contact you soon with next steps. Reply with any questions!';
-    } else if (score.screening_status === 'weak_match') {
+    } else if (score.screening_status === SCREENING_STATUS.WEAK_MATCH) {
       nextAction = 'Feel free to apply to other positions that might be a better fit.';
-    } else if (score.screening_status === 'poor_match') {
+    } else if (score.screening_status === SCREENING_STATUS.REJECTED) {
       nextAction = 'We encourage you to apply in the future as your skills develop.';
     } else {
       nextAction = 'We\'ll review your application and get back to you soon.';
@@ -289,11 +323,14 @@ In the meantime, feel free to reach out if you have any questions!
    */
   formatStatus(status) {
     const statusMap = {
-      'strong_match': 'Strong Match ⭐⭐⭐⭐⭐',
-      'good_match': 'Good Match ⭐⭐⭐⭐',
-      'weak_match': 'Weak Match ⭐⭐',
-      'poor_match': 'Poor Match ⭐',
-      'rejected': 'Not a Match'
+      [SCREENING_STATUS.STRONG_MATCH]: 'Strong Match ⭐⭐⭐⭐⭐',
+      [SCREENING_STATUS.MODERATE_MATCH]: 'Moderate Match ⭐⭐⭐⭐',
+      [SCREENING_STATUS.WEAK_MATCH]: 'Weak Match ⭐⭐',
+      [SCREENING_STATUS.REJECTED]: 'Not a Match',
+      good_match: 'Moderate Match ⭐⭐⭐⭐',
+      potential_match: 'Weak Match ⭐⭐',
+      poor_match: 'Not a Match',
+      does_not_match: 'Not a Match'
     };
     return statusMap[status] || status;
   }
@@ -337,6 +374,7 @@ In the meantime, feel free to reach out if you have any questions!
       'interview_invitation',
       'interview_reminder',
       'offer_letter',
+      'onboarding_welcome',
       'rejection_notification',
       'follow_up'
     ];
@@ -385,6 +423,9 @@ In the meantime, feel free to reach out if you have any questions!
       department: 'Engineering',
       start_date: '2026-02-01',
       salary: 'AED 15,000 - 20,000 per month',
+      checklist_items: '• Bring Emirates ID\n• Sign HR documents\n• Collect laptop from IT',
+      buddy_name: 'Sarah Johnson',
+      training_modules: '• HR Orientation\n• CRM Access Setup\n• Role-Specific Enablement',
       expected_date: '2026-01-25'
     };
 

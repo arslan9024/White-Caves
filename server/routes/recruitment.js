@@ -4,6 +4,7 @@ import multer from 'multer';
 import path from 'path';
 import fs from 'fs';
 import { CandidateScoringService } from '../services/CandidateScoringService.js';
+import MessageTemplateService from '../services/MessageTemplateService.js';
 import { ResumeParserService } from '../services/ResumeParserService.js';
 import { ConversationMetricsAnalyzer } from '../services/ConversationMetricsAnalyzer.js';
 import { EnhancedIntentDetectionService } from '../services/EnhancedIntentDetectionService.js';
@@ -13,6 +14,133 @@ import { LeadScoringIntegration } from '../utils/LeadScoringIntegration.js';
 
 const router = express.Router();
 const prisma = new PrismaClient();
+
+export function computeScreeningMetrics(scores = []) {
+  if (!scores.length) {
+    return {
+      total_candidates: 0,
+      strong_matches: 0,
+      moderate_matches: 0,
+      weak_matches: 0,
+      rejected_matches: 0,
+      good_matches: 0,
+      potential_matches: 0,
+      no_match: 0,
+      average_score: 0,
+      median_score: 0,
+      factor_averages: {
+        skills: 0,
+        experience: 0,
+        education: 0,
+        cultural_fit: 0,
+        location_match: 0
+      },
+      score_distribution: {
+        very_high: 0,
+        high: 0,
+        medium: 0,
+        low: 0,
+        very_low: 0
+      }
+    };
+  }
+
+  const statusCounts = {
+    strong_match: 0,
+    moderate_match: 0,
+    weak_match: 0,
+    rejected: 0
+  };
+
+  let totalScore = 0;
+  const sortedScores = [];
+
+  scores.forEach(score => {
+    if (statusCounts[score.screening_status] !== undefined) {
+      statusCounts[score.screening_status]++;
+    }
+    totalScore += score.overall_score || 0;
+    sortedScores.push(score.overall_score || 0);
+  });
+
+  sortedScores.sort((a, b) => a - b);
+  const medianScore = sortedScores.length % 2 === 0
+    ? (sortedScores[sortedScores.length / 2 - 1] + sortedScores[sortedScores.length / 2]) / 2
+    : sortedScores[Math.floor(sortedScores.length / 2)];
+
+  return {
+    total_candidates: scores.length,
+    strong_matches: statusCounts.strong_match,
+    moderate_matches: statusCounts.moderate_match,
+    weak_matches: statusCounts.weak_match,
+    rejected_matches: statusCounts.rejected,
+    good_matches: statusCounts.moderate_match,
+    potential_matches: statusCounts.weak_match,
+    no_match: statusCounts.rejected,
+    average_score: Math.round(totalScore / scores.length),
+    median_score: Math.round(medianScore),
+    factor_averages: {
+      skills: Math.round(scores.reduce((sum, s) => sum + (s.skills_score || 0), 0) / scores.length),
+      experience: Math.round(scores.reduce((sum, s) => sum + (s.experience_score || 0), 0) / scores.length),
+      education: Math.round(scores.reduce((sum, s) => sum + (s.education_score || 0), 0) / scores.length),
+      cultural_fit: Math.round(scores.reduce((sum, s) => sum + (s.cultural_fit_score || 0), 0) / scores.length),
+      location_match: Math.round(scores.reduce((sum, s) => sum + (s.location_match_score || 0), 0) / scores.length)
+    },
+    score_distribution: {
+      very_high: scores.filter(s => (s.overall_score || 0) >= 85).length,
+      high: scores.filter(s => (s.overall_score || 0) >= 75 && (s.overall_score || 0) < 85).length,
+      medium: scores.filter(s => (s.overall_score || 0) >= 50 && (s.overall_score || 0) < 75).length,
+      low: scores.filter(s => (s.overall_score || 0) >= 25 && (s.overall_score || 0) < 50).length,
+      very_low: scores.filter(s => (s.overall_score || 0) < 25).length
+    }
+  };
+}
+
+export function buildRecruitmentOverview(jobs = [], applications = [], scores = []) {
+  const metrics = computeScreeningMetrics(scores);
+  const openJobs = jobs.filter(job => job.status === 'open');
+
+  return {
+    totals: {
+      jobs: jobs.length,
+      open_jobs: openJobs.length,
+      active_applications: applications.filter(app => !['hired', 'rejected'].includes(app.status)).length,
+      interview_pipeline: applications.filter(app => app.status === 'interview').length,
+      offer_pipeline: applications.filter(app => app.status === 'offer').length,
+      hired: applications.filter(app => app.status === 'hired').length
+    },
+    screening: metrics,
+    recent_jobs: jobs.slice(0, 5).map(job => ({
+      id: job.id,
+      title: job.title,
+      department: job.department,
+      status: job.status,
+      applications: job._count?.applications || 0
+    }))
+  };
+}
+
+export function buildOnboardingChecklist(candidate, job, startDate) {
+  const fullName = [candidate.first_name, candidate.last_name].filter(Boolean).join(' ') || candidate.email || 'Candidate';
+  return {
+    candidate_name: fullName,
+    company_name: 'White Caves Real Estate',
+    job_title: job.title,
+    start_date: startDate,
+    buddy_name: 'Sarah Johnson',
+    training_modules: [
+      'HR Orientation',
+      'CRM Access Setup',
+      `${job.department || 'Department'} Workflow Training`
+    ],
+    checklist_items: [
+      'Bring Emirates ID and work authorization documents',
+      'Sign HR and payroll documents',
+      'Collect laptop and access credentials from IT',
+      'Attend manager introduction and workflow briefing'
+    ]
+  };
+}
 
 // Setup multer for file uploads
 const uploadsDir = 'server/uploads/resumes';
@@ -932,79 +1060,44 @@ router.get('/jobs/:job_id/screening-metrics', async (req, res) => {
         success: true,
         job_id,
         message: 'No candidates screened yet for this job',
-        metrics: {
-          total_candidates: 0,
-          strong_matches: 0,
-          good_matches: 0,
-          potential_matches: 0,
-          weak_matches: 0,
-          no_match: 0,
-          average_score: 0,
-          median_score: 0
-        }
+        metrics: computeScreeningMetrics([])
       });
     }
-
-    // Calculate metrics
-    const statusCounts = {
-      strong_match: 0,
-      good_match: 0,
-      potential_match: 0,
-      weak_match: 0,
-      does_not_match: 0
-    };
-
-    let totalScore = 0;
-    const sortedScores = [];
-
-    scores.forEach(score => {
-      statusCounts[score.screening_status]++;
-      totalScore += score.overall_score;
-      sortedScores.push(score.overall_score);
-    });
-
-    sortedScores.sort((a, b) => a - b);
-    const medianScore = sortedScores.length % 2 === 0
-      ? (sortedScores[sortedScores.length / 2 - 1] + sortedScores[sortedScores.length / 2]) / 2
-      : sortedScores[Math.floor(sortedScores.length / 2)];
-
-    const averageScore = Math.round(totalScore / scores.length);
-
-    // Average factor scores
-    const factorAverages = {
-      skills: Math.round(scores.reduce((sum, s) => sum + s.skills_score, 0) / scores.length),
-      experience: Math.round(scores.reduce((sum, s) => sum + s.experience_score, 0) / scores.length),
-      education: Math.round(scores.reduce((sum, s) => sum + s.education_score, 0) / scores.length),
-      cultural_fit: Math.round(scores.reduce((sum, s) => sum + s.cultural_fit_score, 0) / scores.length),
-      location_match: Math.round(scores.reduce((sum, s) => sum + s.location_match_score, 0) / scores.length)
-    };
 
     res.status(200).json({
       success: true,
       job_id,
-      metrics: {
-        total_candidates: scores.length,
-        strong_matches: statusCounts.strong_match,
-        good_matches: statusCounts.good_match,
-        potential_matches: statusCounts.potential_match,
-        weak_matches: statusCounts.weak_match,
-        no_match: statusCounts.does_not_match,
-        average_score: averageScore,
-        median_score: Math.round(medianScore),
-        factor_averages: factorAverages,
-        score_distribution: {
-          very_high: scores.filter(s => s.overall_score >= 85).length,
-          high: scores.filter(s => s.overall_score >= 75 && s.overall_score < 85).length,
-          medium: scores.filter(s => s.overall_score >= 65 && s.overall_score < 75).length,
-          low: scores.filter(s => s.overall_score >= 50 && s.overall_score < 65).length,
-          very_low: scores.filter(s => s.overall_score < 50).length
-        }
-      }
+      metrics: computeScreeningMetrics(scores)
     });
   } catch (error) {
     console.error('Error fetching screening metrics:', error);
     res.status(500).json({
       error: 'Failed to fetch screening metrics',
+      details: error.message
+    });
+  }
+});
+
+// Recruitment overview for Zoe analytics
+router.get('/overview', async (req, res) => {
+  try {
+    const [jobs, applications, scores] = await Promise.all([
+      prisma.job.findMany({
+        orderBy: { createdAt: 'desc' },
+        include: { _count: { select: { applications: true } } }
+      }),
+      prisma.application.findMany({ orderBy: { applied_at: 'desc' } }),
+      prisma.candidateScore.findMany({ orderBy: { created_at: 'desc' } })
+    ]);
+
+    res.status(200).json({
+      success: true,
+      overview: buildRecruitmentOverview(jobs, applications, scores)
+    });
+  } catch (error) {
+    console.error('Error fetching recruitment overview:', error);
+    res.status(500).json({
+      error: 'Failed to fetch recruitment overview',
       details: error.message
     });
   }
@@ -1175,7 +1268,6 @@ router.post('/jobs/:jobId/batch-score-and-notify', async (req, res) => {
 // Get WhatsApp message templates
 router.get('/whatsapp/templates', async (req, res) => {
   try {
-    const { MessageTemplateService } = await import('../services/MessageTemplateService.js');
     const templates = MessageTemplateService.getAll();
     res.json({
       success: true,
@@ -1195,7 +1287,6 @@ router.get('/whatsapp/templates', async (req, res) => {
 // Get preview of a message template
 router.get('/whatsapp/templates/:templateId/preview', async (req, res) => {
   try {
-    const { MessageTemplateService } = await import('../services/MessageTemplateService.js');
     const preview = MessageTemplateService.getPreview(req.params.templateId);
     res.json({
       success: true,
@@ -1205,6 +1296,135 @@ router.get('/whatsapp/templates/:templateId/preview', async (req, res) => {
   } catch (error) {
     res.status(404).json({
       error: 'Template not found',
+      details: error.message
+    });
+  }
+});
+
+// Send offer letter and move application to offer stage
+router.post('/applications/:application_id/send-offer', async (req, res) => {
+  try {
+    const { application_id } = req.params;
+    const { salary, start_date, department, company_name = 'White Caves Real Estate' } = req.body;
+
+    if (!salary || !start_date) {
+      return res.status(400).json({
+        error: 'salary and start_date are required'
+      });
+    }
+
+    const application = await prisma.application.findUnique({
+      where: { id: application_id },
+      include: { candidate: true, job: true }
+    });
+
+    if (!application) {
+      return res.status(404).json({ error: 'Application not found' });
+    }
+
+    const variables = {
+      candidate_name: application.candidate.first_name || application.candidate.email || 'Candidate',
+      job_title: application.job.title,
+      company_name,
+      department: department || application.job.department || 'General',
+      start_date,
+      salary
+    };
+
+    const message = await CandidateScoringService.sendTemplateMessageViaMeta(
+      application.candidate,
+      'offer_letter',
+      variables,
+      'offer_letter'
+    );
+
+    await prisma.application.update({
+      where: { id: application_id },
+      data: {
+        status: 'offer',
+        notes: `Offer sent on ${new Date().toISOString()} | Salary: ${salary} | Start: ${start_date}`
+      }
+    });
+
+    await prisma.candidate.update({
+      where: { id: application.candidate_id },
+      data: { status: 'selected' }
+    });
+
+    res.status(200).json({
+      success: true,
+      message: 'Offer sent successfully',
+      application_id,
+      whatsapp_message_id: message?._id,
+      offer: variables
+    });
+  } catch (error) {
+    console.error('Error sending offer:', error);
+    res.status(500).json({
+      error: 'Failed to send offer',
+      details: error.message
+    });
+  }
+});
+
+// Start onboarding after offer acceptance
+router.post('/applications/:application_id/start-onboarding', async (req, res) => {
+  try {
+    const { application_id } = req.params;
+    const { start_date } = req.body;
+
+    if (!start_date) {
+      return res.status(400).json({
+        error: 'start_date is required'
+      });
+    }
+
+    const application = await prisma.application.findUnique({
+      where: { id: application_id },
+      include: { candidate: true, job: true }
+    });
+
+    if (!application) {
+      return res.status(404).json({ error: 'Application not found' });
+    }
+
+    const onboarding = buildOnboardingChecklist(application.candidate, application.job, start_date);
+
+    const message = await CandidateScoringService.sendTemplateMessageViaMeta(
+      application.candidate,
+      'onboarding_welcome',
+      {
+        ...onboarding,
+        checklist_items: onboarding.checklist_items.map(item => `• ${item}`).join('\n'),
+        training_modules: onboarding.training_modules.map(item => `• ${item}`).join('\n')
+      },
+      'onboarding_welcome'
+    );
+
+    await prisma.application.update({
+      where: { id: application_id },
+      data: {
+        status: 'hired',
+        notes: `Onboarding started on ${new Date().toISOString()} | Start: ${start_date}`
+      }
+    });
+
+    await prisma.candidate.update({
+      where: { id: application.candidate_id },
+      data: { status: 'hired' }
+    });
+
+    res.status(200).json({
+      success: true,
+      message: 'Onboarding started successfully',
+      application_id,
+      whatsapp_message_id: message?._id,
+      onboarding
+    });
+  } catch (error) {
+    console.error('Error starting onboarding:', error);
+    res.status(500).json({
+      error: 'Failed to start onboarding',
       details: error.message
     });
   }

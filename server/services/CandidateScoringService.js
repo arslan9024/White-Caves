@@ -2,6 +2,7 @@ import { PrismaClient } from '@prisma/client';
 import { ResumeParserService } from './ResumeParserService.js';
 import MessageTemplateService from './MessageTemplateService.js';
 import { WhatsAppMessage, WhatsAppContact } from '../lib/database.js';
+import { SCORE_THRESHOLDS, SCREENING_STATUS } from '../constants/ScoreLevels.js';
 
 const prisma = new PrismaClient();
 
@@ -120,33 +121,20 @@ export class CandidateScoringService {
   }
 
   /**
-   * Send screening result via WhatsApp
-   * Uses the MessageTemplateService to render personalized messages
+   * Send any recruitment template via WhatsApp
    */
-  static async sendScoringResultViaMeta(candidate, job, scoreRecord) {
+  static async sendTemplateMessageViaMeta(candidate, templateId, variables, messageType = 'text') {
     try {
-      // Get candidate phone number
       const phone = candidate.whatsapp_phone || candidate.phone_number;
-      if (!phone) return; // Skip if no phone
+      if (!phone) return null;
 
-      // Format phone to WhatsApp format (E.164)
       const formattedPhone = this.formatPhoneForWhatsApp(phone);
-
-      // Render message using template
-      const messageBody = MessageTemplateService.renderScreeningResult(
-        candidate,
-        job,
-        scoreRecord
-      );
-
-      // Get or create contact in WhatsApp system
       const waId = formattedPhone.replace('+', '') + '@c.us';
-      
-      // Check if contact exists
+      const messageBody = MessageTemplateService.render(templateId, variables);
+
       let contact = await WhatsAppContact.findOne({ waId });
-      
+
       if (!contact) {
-        // Create new contact
         contact = await WhatsAppContact.create({
           waId,
           phoneNumber: formattedPhone,
@@ -156,24 +144,62 @@ export class CandidateScoringService {
           conversationStatus: 'active'
         });
       } else {
-        // Update contact
         contact.lastMessageAt = new Date();
         await contact.save();
       }
 
-      // Store message in database
       const message = await WhatsAppMessage.create({
         waId,
         phoneNumber: formattedPhone,
         contactName: candidate.first_name || 'Candidate',
         direction: 'outgoing',
-        messageType: 'text',
+        messageType,
         content: messageBody,
         status: 'sent',
         createdAt: new Date()
       });
 
-      console.log(`✅ Screening result sent to ${formattedPhone} (Message ID: ${message._id})`);
+      return message;
+    } catch (error) {
+      console.error('Error sending WhatsApp template message:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Send screening result via WhatsApp
+   * Uses the MessageTemplateService to render personalized messages
+   */
+  static async sendScoringResultViaMeta(candidate, job, scoreRecord) {
+    try {
+      const variables = {
+        candidate_name: candidate.first_name || candidate.email || 'Candidate',
+        job_title: job.title || 'the position',
+        overall_score: Math.round(scoreRecord.overall_score),
+        screening_status: MessageTemplateService.formatStatus(scoreRecord.screening_status),
+        skills_score: Math.round(scoreRecord.skills_score),
+        experience_score: Math.round(scoreRecord.experience_score),
+        education_score: Math.round(scoreRecord.education_score),
+        cultural_fit_score: Math.round(scoreRecord.cultural_fit_score),
+        location_match_score: Math.round(scoreRecord.location_match_score),
+        feedback: scoreRecord.feedback || 'Great potential!',
+        next_action: MessageTemplateService.renderScreeningResult(
+          candidate,
+          job,
+          scoreRecord
+        ).split('🎯 *Next Steps:*\n')[1]?.split('\n\nIf you have any questions')[0] || 'We will contact you soon.'
+      };
+
+      const message = await this.sendTemplateMessageViaMeta(
+        candidate,
+        'screening_result',
+        variables,
+        'text'
+      );
+
+      const phone = candidate.whatsapp_phone || candidate.phone_number;
+      const formattedPhone = this.formatPhoneForWhatsApp(phone);
+      console.log(`✅ Screening result sent to ${formattedPhone} (Message ID: ${message?._id})`);
 
       return message;
     } catch (error) {
@@ -472,11 +498,10 @@ export class CandidateScoringService {
    * Determine screening status based on overall score
    */
   static determineScreeningStatus(score) {
-    if (score >= 85) return 'strong_match';
-    if (score >= 75) return 'good_match';
-    if (score >= 65) return 'potential_match';
-    if (score >= 50) return 'weak_match';
-    return 'does_not_match';
+    if (score >= SCORE_THRESHOLDS.EXCELLENT) return SCREENING_STATUS.STRONG_MATCH;
+    if (score >= SCORE_THRESHOLDS.STRONG) return SCREENING_STATUS.MODERATE_MATCH;
+    if (score >= SCORE_THRESHOLDS.FAIR) return SCREENING_STATUS.WEAK_MATCH;
+    return SCREENING_STATUS.REJECTED;
   }
 
   /**

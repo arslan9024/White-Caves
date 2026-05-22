@@ -6,7 +6,7 @@
  * - Triggers auto-actions based on thresholds
  */
 
-import LeadQualificationService from './LeadQualificationService.js';
+import LeadQualificationService from '../services/LeadQualificationService.js';
 
 export class LeadScoringIntegration {
   // Integration thresholds - what triggers auto-actions vs advisory

@@ -128,6 +128,16 @@ class CRMDataService {
     return this.fetchWithAuth('/zoe/services');
   }
 
+  async getRecruitmentOverview() {
+    const cacheKey = 'recruitment-overview';
+    const cached = this.getCached(cacheKey);
+    if (cached) return cached;
+
+    const data = await this.fetchWithAuth('/recruitment/overview');
+    this.setCache(cacheKey, data);
+    return data;
+  }
+
   async getOliviaFeaturedProperties() {
     return this.fetchWithAuth('/olivia');
   }
