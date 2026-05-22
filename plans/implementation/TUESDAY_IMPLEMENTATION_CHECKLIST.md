@@ -24,6 +24,7 @@
 - [x] Zoe analytics wired to manager shortlist and manager review workflow endpoints
 - [x] Linda template production-readiness validation endpoint and tests added
 - [x] Recruitment overview and Zoe analytics now include time-to-hire and cost-per-hire trend views
+- [x] Executive KPI trend-history CSV export added for recruitment overview
 
 ## In Progress
 

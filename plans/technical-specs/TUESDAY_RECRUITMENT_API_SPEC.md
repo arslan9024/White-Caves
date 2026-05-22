@@ -114,6 +114,15 @@ Trend payload fields:
 - `overview.kpi_trends.deltas.cost_per_hire`
 - `overview.kpi_trends.points` (up to 6 recent trend points)
 
+### `GET /api/recruitment/overview/export`
+
+Exports recruitment KPI trend history as CSV for executive reporting.
+
+Response:
+
+- `Content-Type: text/csv`
+- `Content-Disposition: attachment; filename=recruitment-kpi-trends-YYYY-MM-DD.csv`
+
 ### `GET /api/recruitment/jobs/:job_id/screening-metrics`
 
 Returns canonical metric keys by default.

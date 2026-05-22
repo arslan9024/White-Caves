@@ -7,7 +7,7 @@ import {
   Filter, Inbox, TrendingUp, AlertTriangle, Lightbulb,
   DollarSign, Shield, Archive, Eye, ChevronRight, Zap,
   Building2, Network, Workflow, Bot, ChevronDown, Play,
-  MessageSquare, RefreshCw, Database, Loader2
+  MessageSquare, RefreshCw, Database, Loader2, Download
 } from 'lucide-react';
 import { AssistantDocsTab } from './shared';
 import { FlowchartViewer, ServiceDemoMode, ZoeConsole } from './index';
@@ -94,6 +94,7 @@ const ZoeExecutiveCRM = ({ activeFeature }) => {
   const [reviewActionMessage, setReviewActionMessage] = useState('');
   const [reviewActionError, setReviewActionError] = useState('');
   const [activeReviewApplicationId, setActiveReviewApplicationId] = useState('');
+  const [exportLoading, setExportLoading] = useState(false);
 
   const {
     departments: apiDepartments,
@@ -251,6 +252,27 @@ const ZoeExecutiveCRM = ({ activeFeature }) => {
       setActiveReviewApplicationId('');
     }
   }, [fetchManagerShortlist, fetchRecruitmentOverview, selectedShortlistJobId]);
+
+  const handleExportKpiTrends = useCallback(async () => {
+    try {
+      setExportLoading(true);
+      setRecruitmentError('');
+      const { blob, filename } = await crmDataService.exportRecruitmentKpiTrends('executive');
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      const parsedName = /filename=([^;]+)/i.exec(filename || '');
+      link.href = url;
+      link.download = parsedName?.[1]?.replace(/"/g, '') || 'recruitment-kpi-trends.csv';
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      setRecruitmentError(error.message || 'Failed to export KPI trends');
+    } finally {
+      setExportLoading(false);
+    }
+  }, []);
 
   useEffect(() => {
     fetchRecruitmentOverview();
@@ -480,6 +502,10 @@ const ZoeExecutiveCRM = ({ activeFeature }) => {
                 <p className="view-subtitle">Live hiring KPIs for Nancy, Linda, and Zoe coordination</p>
               </div>
               <div className="analytics-actions">
+                <button className="action-btn secondary" onClick={handleExportKpiTrends} disabled={exportLoading}>
+                  {exportLoading ? <Loader2 size={14} className="spin" /> : <Download size={14} />}
+                  Export Trends
+                </button>
                 <button className="action-btn secondary" onClick={fetchRecruitmentOverview} disabled={recruitmentLoading}>
                   {recruitmentLoading ? <Loader2 size={14} className="spin" /> : <RefreshCw size={14} />}
                   Refresh

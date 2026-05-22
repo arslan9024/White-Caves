@@ -268,6 +268,27 @@ export function buildKpiTrends(recruitmentMetrics = []) {
   };
 }
 
+export function buildKpiTrendExportRows(kpiTrends = {}) {
+  const points = Array.isArray(kpiTrends.points) ? kpiTrends.points : [];
+  return points.map(point => ({
+    date: point.date,
+    avg_time_to_hire: point.avg_time_to_hire,
+    avg_cost_per_hire: point.avg_cost_per_hire,
+    automation_percentage: point.automation_percentage
+  }));
+}
+
+export function toCsv(rows = []) {
+  if (!rows.length) {
+    return 'date,avg_time_to_hire,avg_cost_per_hire,automation_percentage\n';
+  }
+
+  const headers = Object.keys(rows[0]);
+  const escapeCell = (value) => `"${String(value ?? '').replace(/"/g, '""')}"`;
+  const lines = rows.map(row => headers.map(header => escapeCell(row[header])).join(','));
+  return `${headers.join(',')}\n${lines.join('\n')}\n`;
+}
+
 export function buildOnboardingChecklist(candidate, job, startDate) {
   const fullName = [candidate.first_name, candidate.last_name].filter(Boolean).join(' ') || candidate.email || 'Candidate';
   return {
@@ -1417,6 +1438,31 @@ router.get('/overview', requireRecruitmentAccess('read'), async (req, res) => {
     console.error('Error fetching recruitment overview:', error);
     res.status(500).json({
       error: 'Failed to fetch recruitment overview',
+      details: error.message
+    });
+  }
+});
+
+// Export recruitment KPI trend history for executive reporting
+router.get('/overview/export', requireRecruitmentAccess('read'), async (req, res) => {
+  try {
+    const recruitmentMetrics = await prisma.recruitmentMetric.findMany({
+      orderBy: { metric_date: 'asc' },
+      take: 12
+    });
+
+    const kpiTrends = buildKpiTrends(recruitmentMetrics);
+    const rows = buildKpiTrendExportRows(kpiTrends);
+    const csv = toCsv(rows);
+    const dateStamp = new Date().toISOString().split('T')[0];
+
+    res.setHeader('Content-Type', 'text/csv; charset=utf-8');
+    res.setHeader('Content-Disposition', `attachment; filename=recruitment-kpi-trends-${dateStamp}.csv`);
+    return res.status(200).send(csv);
+  } catch (error) {
+    console.error('Error exporting recruitment KPI trends:', error);
+    return res.status(500).json({
+      error: 'Failed to export recruitment KPI trends',
       details: error.message
     });
   }

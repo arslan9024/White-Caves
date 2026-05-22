@@ -1,4 +1,4 @@
-import { computeScreeningMetrics, buildRecruitmentOverview, buildOnboardingChecklist, buildKpiTrends } from '../routes/recruitment.js';
+import { computeScreeningMetrics, buildRecruitmentOverview, buildOnboardingChecklist, buildKpiTrends, buildKpiTrendExportRows, toCsv } from '../routes/recruitment.js';
 import MessageTemplateService from '../services/MessageTemplateService.js';
 
 let totalTests = 0;
@@ -91,6 +91,20 @@ test('buildKpiTrends returns latest values and deltas', () => {
   assert(trends.deltas.time_to_hire_days === -2, 'Should compute delta from previous point');
   assert(trends.deltas.cost_per_hire === -900, 'Should compute cost delta from previous point');
   assert(trends.points.length === 3, 'Should keep trend points history');
+});
+
+test('buildKpiTrendExportRows and toCsv serialize trend history', () => {
+  const rows = buildKpiTrendExportRows({
+    points: [
+      { date: '2026-05-10', avg_time_to_hire: 24, avg_cost_per_hire: 12000, automation_percentage: 72 },
+      { date: '2026-05-20', avg_time_to_hire: 22, avg_cost_per_hire: 11100, automation_percentage: 76 }
+    ]
+  });
+
+  const csv = toCsv(rows);
+  assert(rows.length === 2, 'Should build export rows from trend points');
+  assert(csv.includes('avg_time_to_hire'), 'CSV should include headers');
+  assert(csv.includes('"2026-05-20"'), 'CSV should include row values');
 });
 
 test('buildOnboardingChecklist returns onboarding payload ready for Linda', () => {

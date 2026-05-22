@@ -138,6 +138,23 @@ class CRMDataService {
     return data;
   }
 
+  async exportRecruitmentKpiTrends(role = 'executive') {
+    const response = await fetch(`${API_BASE}/recruitment/overview/export`, {
+      headers: {
+        'x-user-role': role
+      }
+    });
+
+    if (!response.ok) {
+      throw new Error(`API Error: ${response.status} ${response.statusText}`);
+    }
+
+    return {
+      blob: await response.blob(),
+      filename: response.headers.get('content-disposition') || 'recruitment-kpi-trends.csv'
+    };
+  }
+
   async getManagerShortlist(jobId, options = {}) {
     const { minScore = 70, limit = 20, role = 'hiring_manager' } = options;
     const query = new URLSearchParams({

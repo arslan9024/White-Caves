@@ -145,6 +145,7 @@ Budget model:
 - [x] Manager self-service shortlist and review workflow endpoints added with role-scoped access and audit trails.
 - [x] Linda WhatsApp templates now have production-readiness validation checks and API reporting.
 - [x] Zoe recruitment analytics now includes KPI trend views for time-to-hire and cost-per-hire.
+- [x] Executive reporting can now export recruitment KPI trend history as CSV.
 
 ## Pending Tasks
 
@@ -171,6 +172,6 @@ Budget model:
 ## Immediate Next Actions
 
 1. Finalize production signoff for disabling alias compatibility mode.
-2. Add KPI trend-history export for executive reporting.
-3. Add staging runbook for Linda WhatsApp template validation endpoint.
-4. Extend KPI trend views with department-level breakdowns.
+2. Add staging runbook for Linda WhatsApp template validation endpoint.
+3. Extend KPI trend views with department-level breakdowns.
+4. Add department-scoped export filters for executive reporting.

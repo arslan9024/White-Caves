@@ -180,6 +180,31 @@ await test('GET /overview includes KPI trend metrics', async () => {
   __resetRecruitmentTestDeps();
 });
 
+await test('GET /overview/export returns KPI trend CSV', async () => {
+  const prismaMock = {
+    recruitmentMetric: {
+      findMany: async () => ([
+        { metric_date: '2026-05-10T00:00:00.000Z', avg_time_to_hire: 24, avg_cost_per_hire: 12000, automation_percentage: 72 },
+        { metric_date: '2026-05-20T00:00:00.000Z', avg_time_to_hire: 22, avg_cost_per_hire: 11100, automation_percentage: 76 }
+      ])
+    }
+  };
+
+  __setRecruitmentTestDeps({ prismaClient: prismaMock });
+
+  await withServer(async (baseUrl) => {
+    const response = await fetch(`${baseUrl}/api/recruitment/overview/export`);
+    const body = await response.text();
+
+    assert(response.status === 200, 'Expected HTTP 200 for export');
+    assert((response.headers.get('content-type') || '').includes('text/csv'), 'Expected CSV content type');
+    assert(body.includes('avg_time_to_hire'), 'Expected CSV header content');
+    assert(body.includes('2026-05-20T00:00:00.000Z'), 'Expected latest trend row in CSV');
+  });
+
+  __resetRecruitmentTestDeps();
+});
+
 await test('GET /jobs/:job_id/screening-metrics rejects unauthenticated request when enforcement is enabled', async () => {
   process.env.RECRUITMENT_AUTH_MODE = 'enforced';
 
