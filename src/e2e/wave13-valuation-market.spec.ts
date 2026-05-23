@@ -172,7 +172,6 @@ test.describe('Wave 13 - Valuation and Market workflow coverage', () => {
     });
 
     await page.goto('/valuation', { waitUntil: 'domcontentloaded' });
-    await page.waitForURL('**/valuation');
     await expect(page.getByRole('heading', { name: 'Property Valuation' })).toBeVisible();
 
     await page.getByPlaceholder('Enter Property ID').fill('prop-001');

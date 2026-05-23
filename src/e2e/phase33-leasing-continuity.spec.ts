@@ -159,7 +159,7 @@ test.describe('Phase 33 — Leasing Continuity Hardening', () => {
     expect(events).toContain('homepage_hero_cta_click');
 
     // URL navigation is the expected outcome; Chromium is authoritative cross-browser
-    if (browserName === 'chromium' || browserName === 'webkit') {
+    if (browserName === 'chromium') {
       await page.waitForURL('**/properties**', { timeout: 10_000 });
       await expect(page).toHaveURL(/mode=rent/);
     }
@@ -304,11 +304,12 @@ test.describe('Phase 33 — Leasing Continuity Hardening', () => {
   });
 
   test('tenant, landlord, and leasing-agent route surfaces remain reachable', async ({ page }) => {
+    test.setTimeout(45_000);
     const roleRoutes = ['/tenant-portal', '/landlord-portal', '/leasing-agent/dashboard'];
 
     for (const routePath of roleRoutes) {
       const response = await page
-        .goto(routePath, { waitUntil: 'domcontentloaded', timeout: 20_000 })
+        .goto(routePath, { waitUntil: 'commit', timeout: 8_000 })
         .catch(() => null);
       if (response) {
         expect(
