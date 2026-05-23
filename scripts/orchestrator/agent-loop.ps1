@@ -161,6 +161,10 @@ function Get-NextReadyInRotation {
 
   $slotAgents = @($slotList | ForEach-Object { $_.Agent })
   if ($slotAgents.Count -eq 0) { return $null }
+  if (-not (Test-Path $qFile)) { return $null }
+
+  $q = Get-Content $qFile -Raw | ConvertFrom-Json
+  $allTasks = @($q.tasks)
 
   $startIdx = [Array]::IndexOf($slotAgents, $preferredAgent)
   if ($startIdx -lt 0) { $startIdx = 0 }
@@ -173,7 +177,7 @@ function Get-NextReadyInRotation {
   }
 
   foreach ($ag in $ordered) {
-    $candidate = Get-AgentNextReadyTask -agentName $ag
+    $candidate = Get-AgentNextReadyTask -agentName $ag -allTasks $allTasks
     if ($null -ne $candidate) {
       return @{ Agent = $ag; Task = $candidate }
     }
@@ -183,10 +187,18 @@ function Get-NextReadyInRotation {
 }
 
 function Get-AgentNextReadyTask {
-  param([string]$agentName)
-  if (-not (Test-Path $qFile)) { return $null }
-  $q = Get-Content $qFile -Raw | ConvertFrom-Json
-  $all = @($q.tasks)
+  param(
+    [string]$agentName,
+    [array]$allTasks = $null
+  )
+
+  $all = $allTasks
+  if ($null -eq $all) {
+    if (-not (Test-Path $qFile)) { return $null }
+    $q = Get-Content $qFile -Raw | ConvertFrom-Json
+    $all = @($q.tasks)
+  }
+
   $agentTasks = @($all | Where-Object { $_.agent -eq $agentName })
   foreach ($t in ($agentTasks | Sort-Object taskId)) {
     if ($t.status -notin @("queued","retrying")) { continue }
