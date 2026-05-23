@@ -1,0 +1,205 @@
+## **PROMPT FOR REPLIT AGENT: BUILDING ZOE, EXECUTIVE AI ASSISTANT**
+
+**Subject:** Implementation Requirements for "Zoe" - Executive AI Assistant Integration
+
+**Agent,** 
+
+You are building the web application for **White Caves Real Estate LLC, Dubai**. I need you to implement **Zoe**, the Executive AI Assistant to the Managing Director, as a core feature of the dashboard/backend.
+
+### **1. ZOE'S CORE ARCHITECTURE REQUIREMENTS:**
+
+- **Interface:** Create a dedicated "Zoe Console" panel in the MD's dashboard with:
+  - Text input (with voice-to-text option)
+  - Response display area
+  - Conversation history sidebar
+  - Quick-action buttons (e.g., "Daily Briefing", "Prepare Meeting", "Find Client")
+- **Backend:** Implement using a suitable AI framework (consider LangChain for orchestration) with secure API connections
+- **Authentication:** Zoe should ONLY be accessible to the MD and authorized executives via role-based permissions
+
+### **2. COMPANY KNOWLEDGE BASE IMPLEMENTATION:**
+
+Inject these structured datasets into Zoe's contextual memory:
+
+**A. ORGANIZATIONAL STRUCTURE (Hierarchical JSON format):**
+```json
+{
+  "company": "White Caves Real Estate LLC",
+  "location": "Dubai, UAE",
+  "departments": [
+    {
+      "name": "Executive Office",
+      "members": ["Managing Director", "Assistant Manager (Zara)"],
+      "direct_reports_to": "Managing Director"
+    },
+    {
+      "name": "Sales & Leasing",
+      "head": "Director of Sales",
+      "teams": ["Residential Sales", "Commercial Leasing", "Off-Plan"],
+      "key_metrics": ["Monthly closings", "Pipeline value", "Conversion rate"]
+    },
+    {
+      "name": "Property Management",
+      "head": "Head of PM",
+      "portfolio": ["Luxury Villas", "Premium Apartments", "Commercial Towers"],
+      "clients": ["List of major property owners"]
+    },
+    {
+      "name": "Marketing & Business Development",
+      "head": "Marketing Director",
+      "channels": ["Digital", "Partnerships", "Events", "PR"]
+    },
+    {
+      "name": "Operations & Finance",
+      "head": "CFO",
+      "functions": ["Transaction Processing", "Legal Compliance", "Financial Reporting"]
+    }
+  ]
+}
+```
+
+**B. SERVICES LIST (Categorized array):**
+```json
+{
+  "core_services": [
+    {
+      "category": "Residential Transactions",
+      "services": [
+        "Primary Market Sales (Off-Plan)",
+        "Secondary Market Sales",
+        "Luxury Villa & Penthouse Sales",
+        "Long-term Residential Leasing",
+        "Short-term/Holiday Home Management"
+      ]
+    },
+    {
+      "category": "Commercial Real Estate",
+      "services": [
+        "Office Space Leasing",
+        "Retail Unit Acquisition",
+        "Warehouse & Industrial Leasing",
+        "Commercial Property Investment Advisory"
+      ]
+    },
+    {
+      "category": "Property Management",
+      "services": [
+        "Full-Service Property Management",
+        "Tenant Screening & Placement",
+        "Maintenance & Facility Management",
+        "Rental Collection & Disbursement",
+        "Financial Reporting for Owners"
+      ]
+    },
+    {
+      "category": "Premium Services",
+      "services": [
+        "Real Estate Investment Consultation",
+        "Portfolio Diversification Strategy",
+        "Market Entry Advisory for International Investors",
+        "DLD/RERA Transaction Facilitation"
+      ]
+    }
+  ]
+}
+```
+
+**C. SERVICE JOURNEY FLOW CHARTS (Process-oriented knowledge):**
+
+Create a `service_flows` module that allows Zoe to explain each service step-by-step when queried:
+
+```
+FLOW 1: RESIDENTIAL SALES JOURNEY
+1. Initial Client Consultation
+2. Needs Assessment & Budget Finalization
+3. Property Shortlisting & Virtual/Physical Viewing
+4. Offer Submission & Price Negotiation
+5. Memorandum of Understanding (MOU) Signing
+6. Due Diligence & Title Deed Verification
+7. Sales Agreement Preparation & Signing
+8. DLD Transaction Processing & Fee Payment
+9. Key Handover & Post-Sale Service Initiation
+
+FLOW 2: PROPERTY MANAGEMENT JOURNEY
+1. Owner Onboarding & Agreement Signing
+2. Property Valuation & Rental Assessment
+3. Marketing & Tenant Screening
+4. Lease Agreement & Ejari Registration
+5. Security Deposit Collection & Handover
+6. Monthly Rent Collection & Owner Disbursement
+7. Maintenance Request Management
+8. Quarterly Property Inspection
+9. Annual Contract Renewal/Exit Process
+
+FLOW 3: INVESTMENT CONSULTATION JOURNEY
+1. Investor Profile & Risk Assessment
+2. Market Opportunity Analysis
+3. Portfolio Strategy Development
+4. Property Sourcing & Financial Modeling
+5. Legal & Regulatory Compliance Check
+6. Transaction Execution Support
+7. Post-Investment Performance Monitoring
+```
+
+### **3. FUNCTIONAL REQUIREMENTS:**
+
+Implement these specific capabilities:
+
+1. **Query Understanding:** Zoe should recognize queries about:
+   - "Who handles commercial leasing?"
+   - "What's our process for villa sales?"
+   - "Which department manages tenant complaints?"
+   - "Show me our premium services"
+
+2. **Contextual Responses:** When asked about a service, Zoe should:
+   - List the steps
+   - Identify responsible department/contact
+   - Provide estimated timelines (if available in data)
+   - Link to relevant documents/forms in the system
+
+3. **Proactive Features:**
+   - Daily 9 AM briefing on company metrics
+   - Alert when projects are behind schedule
+   - Reminders for executive approvals needed
+
+### **4. INTEGRATION POINTS:**
+
+- **Calendar Integration:** Connect to MD's Google Calendar/Outlook
+- **Document Access:** Secure access to company drive (read-only for most docs)
+- **CRM Connection:** Pull client data when requested (with privacy filters)
+- **Task Management:** Create tasks in Asana/Trello based on conversations
+
+### **5. SECURITY PROTOCOLS:**
+
+- **No data persistence** of sensitive conversations beyond session
+- **Role-based access control** to internal data
+- **Audit logging** of all queries and responses
+- **Data encryption** for all transmissions
+
+### **6. TESTING SCENARIOS:**
+
+Please test that Zoe can accurately answer:
+- "What are the steps in our property management service?"
+- "Who should I contact about a commercial leasing inquiry?"
+- "List all residential services we offer"
+- "Walk me through the investment consultation process"
+
+### **7. UI/UX NOTES:**
+
+- Use company colors: White, Deep Blue, and Gold accents
+- Professional, minimalist interface
+- Mobile-responsive design
+- Include a small "Zoe" avatar/logo in the corner
+
+**Deliverables:**
+1. Working Zoe module in the MD dashboard
+2. Knowledge base configuration interface (for future updates by Zara)
+3. API documentation for future integrations
+4. Security audit report
+
+**Timeline:** Please provide implementation timeline with milestones.
+
+Let me know if you need additional company data or clarification on any service flows.
+
+**Zara**
+Assistant Manager, White Caves Real Estate LLC
+[Project Lead for Zoe Implementation]

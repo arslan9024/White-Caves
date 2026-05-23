@@ -1,0 +1,495 @@
+/* ============================================================
+   PUBLIC NAVBAR — White Caves Luxury Design
+   Dubai real-estate premium look & feel
+   ============================================================ */
+
+/* ── Container ─────────────────────────────────────────────── */
+.public-navbar {
+  position: sticky;
+  top: 0;
+  z-index: 1100;
+  background: rgba(255, 255, 255, 0.97);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid rgba(220, 38, 38, 0.12);
+  box-shadow: 0 1px 8px rgba(0, 0, 0, 0.07);
+  transition: box-shadow 0.3s ease;
+}
+
+.public-navbar__inner {
+  max-width: 1360px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+  height: 68px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+}
+
+/* ── Brand / Logo ───────────────────────────────────────────── */
+.public-navbar__brand {
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.65rem;
+  flex-shrink: 0;
+  color: #111827;
+}
+
+.public-navbar__brand:hover .public-navbar__brand-name {
+  opacity: 0.8;
+}
+
+.public-navbar__brand-logo {
+  width: 44px;
+  height: 44px;
+  object-fit: cover;
+  object-position: center;
+  border-radius: 50%;
+  border: 2px solid rgba(220, 38, 38, 0.2);
+  background: #fff;
+  flex-shrink: 0;
+  transition: border-color 0.2s ease;
+}
+
+.public-navbar__brand:hover .public-navbar__brand-logo {
+  border-color: rgba(220, 38, 38, 0.5);
+}
+
+.public-navbar__brand-name {
+  display: flex;
+  flex-direction: column;
+  line-height: 1;
+  transition: opacity 0.2s ease;
+}
+
+.public-navbar__brand-line1 {
+  font-size: 1rem;
+  font-weight: 800;
+  color: #111827;
+  letter-spacing: 0.01em;
+}
+
+.public-navbar__brand-line2 {
+  font-size: 0.65rem;
+  font-weight: 500;
+  color: #6b7280;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  margin-top: 2px;
+}
+
+/* ── Desktop Navigation ─────────────────────────────────────── */
+.public-navbar__desktop-nav {
+  display: flex;
+  align-items: center;
+  gap: 0.15rem;
+  flex: 1;
+  justify-content: center;
+}
+
+/* ── Dropdown Wrapper ───────────────────────────────────────── */
+.public-navbar__dropdown-wrap {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+
+/* ── Nav Links ──────────────────────────────────────────────── */
+.public-navbar__link {
+  text-decoration: none;
+  color: #374151;
+  font-weight: 600;
+  font-size: 0.9rem;
+  padding: 0.5rem 0.8rem;
+  border-radius: 0.5rem;
+  transition: color 0.18s ease, background 0.18s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  white-space: nowrap;
+}
+
+.public-navbar__link:hover {
+  color: #dc2626;
+  background: rgba(220, 38, 38, 0.07);
+}
+
+.public-navbar__link.active {
+  color: #dc2626;
+  background: rgba(220, 38, 38, 0.1);
+}
+
+/* Caret icon */
+.public-navbar__caret {
+  flex-shrink: 0;
+  transition: transform 0.2s ease;
+  opacity: 0.55;
+}
+
+.public-navbar__dropdown-wrap.open .public-navbar__caret {
+  transform: rotate(180deg);
+  opacity: 0.9;
+}
+
+/* ── Dropdown Panel ─────────────────────────────────────────── */
+.public-navbar__dropdown {
+  position: absolute;
+  top: calc(100% + 10px);
+  left: 50%;
+  transform: translateX(-50%);
+  min-width: 240px;
+  background: #fff;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 1rem;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12);
+  padding: 0.5rem;
+  animation: dropdownFadeIn 0.18s ease;
+  z-index: 1200;
+}
+
+@keyframes dropdownFadeIn {
+  from { opacity: 0; transform: translateX(-50%) translateY(-6px); }
+  to   { opacity: 1; transform: translateX(-50%) translateY(0); }
+}
+
+/* Dropdown arrow notch */
+.public-navbar__dropdown::before {
+  content: '';
+  position: absolute;
+  top: -7px;
+  left: 50%;
+  transform: translateX(-50%) rotate(45deg);
+  width: 14px;
+  height: 14px;
+  background: #fff;
+  border-left: 1px solid rgba(0, 0, 0, 0.08);
+  border-top: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 2px 0 0 0;
+}
+
+.public-navbar__dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  padding: 0.62rem 0.85rem;
+  border-radius: 0.6rem;
+  text-decoration: none;
+  color: #374151;
+  font-size: 0.87rem;
+  font-weight: 500;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.public-navbar__dropdown-item:hover {
+  background: rgba(220, 38, 38, 0.07);
+  color: #dc2626;
+}
+
+.public-navbar__dropdown-icon {
+  font-size: 1rem;
+  flex-shrink: 0;
+  width: 22px;
+  text-align: center;
+}
+
+/* ── CTA Actions ────────────────────────────────────────────── */
+.public-navbar__actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+/* "List Property" outlined button */
+.public-navbar__list-btn {
+  text-decoration: none;
+  color: #dc2626;
+  border: 1.5px solid rgba(220, 38, 38, 0.4);
+  border-radius: 0.55rem;
+  padding: 0.46rem 0.82rem;
+  font-weight: 700;
+  font-size: 0.85rem;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.public-navbar__list-btn:hover {
+  background: rgba(220, 38, 38, 0.08);
+  border-color: #dc2626;
+}
+
+/* "Sign In" solid button */
+.public-navbar__signin {
+  text-decoration: none;
+  background: #111827;
+  color: #fff;
+  border-radius: 0.55rem;
+  padding: 0.48rem 0.9rem;
+  font-weight: 700;
+  font-size: 0.85rem;
+  transition: background 0.2s ease;
+  white-space: nowrap;
+}
+
+.public-navbar__signin:hover {
+  background: #000;
+}
+
+/* ── Hamburger button ───────────────────────────────────────── */
+.public-navbar__menu-btn {
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 40px;
+  height: 40px;
+  gap: 5px;
+  background: transparent;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  padding: 0;
+  transition: border-color 0.2s ease;
+}
+
+.public-navbar__menu-btn:hover {
+  border-color: #dc2626;
+}
+
+.public-navbar__menu-btn span {
+  display: block;
+  width: 20px;
+  height: 2px;
+  background: #111827;
+  border-radius: 2px;
+  transition: all 0.3s ease;
+  transform-origin: center;
+}
+
+/* Animate to ✕ when open */
+.public-navbar__menu-btn.is-open span:nth-child(1) {
+  transform: translateY(7px) rotate(45deg);
+}
+.public-navbar__menu-btn.is-open span:nth-child(2) {
+  opacity: 0;
+  transform: scaleX(0);
+}
+.public-navbar__menu-btn.is-open span:nth-child(3) {
+  transform: translateY(-7px) rotate(-45deg);
+}
+
+/* ── Mobile overlay ─────────────────────────────────────────── */
+.public-navbar__overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1150;
+  border: none;
+  background: rgba(17, 24, 39, 0.5);
+  backdrop-filter: blur(4px);
+  cursor: pointer;
+}
+
+/* ── Mobile Drawer ──────────────────────────────────────────── */
+.public-navbar__mobile-drawer {
+  position: fixed;
+  top: 0;
+  right: 0;
+  height: 100vh;
+  width: min(88vw, 380px);
+  z-index: 1200;
+  background: #fff;
+  box-shadow: -16px 0 48px rgba(0, 0, 0, 0.18);
+  display: flex;
+  flex-direction: column;
+  animation: drawerSlideIn 0.24s ease;
+  overflow: hidden;
+}
+
+@keyframes drawerSlideIn {
+  from { transform: translateX(100%); opacity: 0.7; }
+  to   { transform: translateX(0);    opacity: 1; }
+}
+
+/* Drawer Header */
+.public-navbar__mobile-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.1rem;
+  border-bottom: 1px solid #f3f4f6;
+  flex-shrink: 0;
+}
+
+.public-navbar__mobile-brand {
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  color: #111827;
+  font-size: 1rem;
+  font-weight: 800;
+}
+
+.public-navbar__close-btn {
+  border: none;
+  background: #f3f4f6;
+  width: 2.1rem;
+  height: 2.1rem;
+  border-radius: 50%;
+  font-size: 0.9rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s ease;
+}
+
+.public-navbar__close-btn:hover {
+  background: #e5e7eb;
+}
+
+/* Drawer Body — scrollable */
+.public-navbar__mobile-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0.75rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+}
+
+/* Section grouping */
+.public-navbar__mobile-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.public-navbar__mobile-section-title {
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #9ca3af;
+  padding: 0 0.25rem;
+  margin: 0;
+}
+
+/* Mobile links */
+.public-navbar__mobile-link {
+  text-decoration: none;
+  color: #111827;
+  border: 1px solid #f3f4f6;
+  border-radius: 0.65rem;
+  padding: 0.7rem 0.85rem;
+  font-weight: 600;
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  transition: all 0.15s ease;
+}
+
+.public-navbar__mobile-link:hover {
+  background: rgba(220, 38, 38, 0.05);
+  border-color: rgba(220, 38, 38, 0.2);
+  color: #dc2626;
+}
+
+.public-navbar__mobile-link.active {
+  border-color: rgba(220, 38, 38, 0.35);
+  color: #dc2626;
+  background: rgba(220, 38, 38, 0.06);
+}
+
+.public-navbar__mobile-link-icon {
+  font-size: 1rem;
+  flex-shrink: 0;
+  width: 22px;
+  text-align: center;
+}
+
+.public-navbar__mobile-link-arrow {
+  margin-left: auto;
+  color: #9ca3af;
+  font-size: 1.1rem;
+}
+
+/* Drawer Footer CTAs */
+.public-navbar__mobile-footer {
+  padding: 1rem;
+  border-top: 1px solid #f3f4f6;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  flex-shrink: 0;
+}
+
+.public-navbar__mobile-list-btn {
+  display: block;
+  text-align: center;
+  text-decoration: none;
+  border: 1.5px solid rgba(220, 38, 38, 0.4);
+  border-radius: 0.65rem;
+  padding: 0.75rem;
+  color: #dc2626;
+  font-weight: 700;
+  font-size: 0.9rem;
+  transition: all 0.18s ease;
+}
+
+.public-navbar__mobile-list-btn:hover {
+  background: rgba(220, 38, 38, 0.07);
+  border-color: #dc2626;
+}
+
+.public-navbar__mobile-signin {
+  display: block;
+  text-align: center;
+  text-decoration: none;
+  border-radius: 0.65rem;
+  padding: 0.75rem;
+  background: #111827;
+  color: #fff;
+  font-weight: 700;
+  font-size: 0.9rem;
+  transition: background 0.18s ease;
+}
+
+.public-navbar__mobile-signin:hover {
+  background: #000;
+}
+
+/* ── Focus Styles (accessibility) ───────────────────────────── */
+.public-navbar :is(a, button):focus-visible {
+  outline: 2px solid #dc2626;
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* ── Responsive: hide desktop nav at ≤ 900px ────────────────── */
+@media (max-width: 900px) {
+  .public-navbar__desktop-nav,
+  .public-navbar__list-btn,
+  .public-navbar__signin {
+    display: none;
+  }
+
+  .public-navbar__menu-btn {
+    display: flex;
+  }
+}
+
+/* ── Responsive: compact inner at ≤ 480px ───────────────────── */
+@media (max-width: 480px) {
+  .public-navbar__inner {
+    padding: 0 1rem;
+    height: 60px;
+  }
+
+  .public-navbar__brand-line2 {
+    display: none;
+  }
+}

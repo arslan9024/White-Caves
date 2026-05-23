@@ -1,0 +1,200 @@
+name: Continuous Integration
+
+on:
+  push:
+    branches: [main, development]
+  pull_request:
+    branches: [main, development]
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    
+    strategy:
+      matrix:
+        node-version: [20.x]
+    
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      
+      - name: Setup Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+      
+      - name: Install dependencies
+        run: npm ci
+      
+      - name: Run linter
+        run: npm run lint --if-present
+      
+      - name: Build application
+        run: npm run build
+
+      - name: Run SEO quality gate
+        run: npm run quality:seo
+
+      - name: Run assistant endpoint contract gate
+        run: npm run test:assistant-contract
+      
+      - name: Run unit tests
+        run: npm test -- --run --reporter=verbose --coverage --coverage.reporter=lcov
+      
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v5
+        with:
+          files: ./coverage/lcov.info
+          flags: unittests
+          fail_ci_if_error: false
+
+  e2e:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+          cache: 'npm'
+      
+      - name: Install dependencies
+        run: npm ci
+      
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps
+      
+      - name: Build application
+        run: npm run build
+      
+      - name: Run E2E tests
+        run: npm run test:e2e
+      
+      - name: Upload E2E test report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: e2e-test-report
+          path: playwright-report/
+          retention-days: 30
+
+  accessibility:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+          cache: 'npm'
+      
+      - name: Install dependencies
+        run: npm ci
+      
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps
+      
+      - name: Build application
+        run: npm run build
+      
+      - name: Run accessibility audit tests
+        run: npm run test:e2e:accessibility
+      
+      - name: Upload accessibility report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: accessibility-report
+          path: playwright-report/
+          retention-days: 30
+
+  orchestrator-health:
+    name: Orchestrator Queue Health
+    runs-on: windows-latest
+    timeout-minutes: 5
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check queue integrity (9-group health check)
+        run: powershell -ExecutionPolicy Bypass -File scripts/orchestrator/queue-health.ps1 -CI
+
+      - name: Upload queue health report on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: queue-health-failure-report
+          path: logs/orchestrator/task-queue.json
+          retention-days: 7
+
+  performance:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+          cache: 'npm'
+      
+      - name: Install dependencies
+        run: npm ci
+      
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps
+      
+      - name: Build application
+        run: npm run build
+      
+      - name: Run performance baseline tests
+        run: npm run test:e2e:performance
+      
+      - name: Upload performance report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: performance-report
+          path: playwright-report/
+          retention-days: 30
+
+  build-check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+          cache: 'npm'
+      
+      - name: Install dependencies
+        run: npm ci
+      
+      - name: Type check
+        run: npx tsc --noEmit
+      
+      - name: Build check
+        run: npm run build
+      
+      - name: Check bundle size
+        run: npm run build -- --outDir dist-check
+        continue-on-error: true

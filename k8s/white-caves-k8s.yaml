@@ -1,0 +1,549 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: white-caves
+  labels:
+    name: white-caves
+    environment: production
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: white-caves-config
+  namespace: white-caves
+data:
+  NODE_ENV: "production"
+  PORT: "5000"
+  LOG_LEVEL: "info"
+  CORS_ORIGIN: "https://white-caves.com"
+  CACHE_TTL_SECONDS: "3600"
+  SESSION_TTL_SECONDS: "86400"
+  COMPRESSION_ENABLED: "true"
+  COMPRESSION_LEVEL: "6"
+  ENABLE_WHATSAPP_INTEGRATION: "true"
+  ENABLE_ANALYTICS: "true"
+  ENABLE_ERROR_TRACKING: "true"
+
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: white-caves-secrets
+  namespace: white-caves
+type: Opaque
+stringData:
+  JWT_SECRET: "CHANGE_THIS_TO_SECURE_RANDOM_STRING_MIN_32_CHARS"
+  REFRESH_TOKEN_SECRET: "CHANGE_THIS_ANOTHER_SECURE_RANDOM_STRING"
+  DATABASE_URL: "mongodb://mongo:27017/white_caves"
+  MONGO_URI: "mongodb://mongo:27017/white_caves"
+  MONGO_USER: "white_caves_admin"
+  MONGO_PASSWORD: "CHANGE_THIS_SECURE_PASSWORD"
+  REDIS_URL: "redis://redis:6379"
+  REDIS_PASSWORD: "CHANGE_THIS_SECURE_PASSWORD"
+  FIREBASE_API_KEY: "CHANGE_THIS"
+  FIREBASE_AUTH_DOMAIN: "CHANGE_THIS"
+  FIREBASE_PROJECT_ID: "CHANGE_THIS"
+  SMTP_HOST: "smtp.gmail.com"
+  SMTP_PORT: "587"
+  SMTP_USER: "CHANGE_THIS"
+  SMTP_PASSWORD: "CHANGE_THIS_APP_PASSWORD"
+
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: white-caves
+  namespace: white-caves
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: white-caves-role
+rules:
+- apiGroups: [""]
+  resources: ["pods", "services"]
+  verbs: ["get", "list", "watch"]
+- apiGroups: [""]
+  resources: ["configmaps", "secrets"]
+  verbs: ["get", "list"]
+- apiGroups: ["apps"]
+  resources: ["deployments", "statefulsets"]
+  verbs: ["get", "list", "watch"]
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: white-caves-binding
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: white-caves-role
+subjects:
+- kind: ServiceAccount
+  name: white-caves
+  namespace: white-caves
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mongodb-pvc
+  namespace: white-caves
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi
+  storageClassName: standard
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: redis-pvc
+  namespace: white-caves
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi
+  storageClassName: standard
+
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: mongodb
+  namespace: white-caves
+spec:
+  serviceName: mongodb
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mongodb
+  template:
+    metadata:
+      labels:
+        app: mongodb
+    spec:
+      containers:
+      - name: mongodb
+        image: mongo:7.0
+        ports:
+        - containerPort: 27017
+        volumeMounts:
+        - name: mongodb-storage
+          mountPath: /data/db
+        env:
+        - name: MONGO_INITDB_ROOT_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: white-caves-secrets
+              key: MONGO_USER
+        - name: MONGO_INITDB_ROOT_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: white-caves-secrets
+              key: MONGO_PASSWORD
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "250m"
+          limits:
+            memory: "2Gi"
+            cpu: "1000m"
+        livenessProbe:
+          exec:
+            command:
+              - mongosh
+              - --eval
+              - "db.adminCommand('ping')"
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          exec:
+            command:
+              - mongosh
+              - --eval
+              - "db.adminCommand('ping')"
+          initialDelaySeconds: 5
+          periodSeconds: 5
+      volumes:
+      - name: mongodb-storage
+        persistentVolumeClaim:
+          claimName: mongodb-pvc
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mongodb
+  namespace: white-caves
+spec:
+  clusterIP: None
+  selector:
+    app: mongodb
+  ports:
+  - port: 27017
+    targetPort: 27017
+
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: redis
+  namespace: white-caves
+spec:
+  serviceName: redis
+  replicas: 1
+  selector:
+    matchLabels:
+      app: redis
+  template:
+    metadata:
+      labels:
+        app: redis
+    spec:
+      containers:
+      - name: redis
+        image: redis:7.0-alpine
+        command:
+          - redis-server
+          - "--appendonly"
+          - "yes"
+          - "--requirepass"
+          - "$(REDIS_PASSWORD)"
+        ports:
+        - containerPort: 6379
+        volumeMounts:
+        - name: redis-storage
+          mountPath: /data
+        env:
+        - name: REDIS_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: white-caves-secrets
+              key: REDIS_PASSWORD
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "100m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+        livenessProbe:
+          exec:
+            command:
+              - redis-cli
+              - ping
+          initialDelaySeconds: 10
+          periodSeconds: 5
+        readinessProbe:
+          exec:
+            command:
+              - redis-cli
+              - ping
+          initialDelaySeconds: 5
+          periodSeconds: 5
+      volumes:
+      - name: redis-storage
+        persistentVolumeClaim:
+          claimName: redis-pvc
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis
+  namespace: white-caves
+spec:
+  clusterIP: None
+  selector:
+    app: redis
+  ports:
+  - port: 6379
+    targetPort: 6379
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: white-caves-app
+  namespace: white-caves
+  labels:
+    app: white-caves
+    version: v1
+spec:
+  replicas: 3
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  selector:
+    matchLabels:
+      app: white-caves
+  template:
+    metadata:
+      labels:
+        app: white-caves
+        version: v1
+    spec:
+      serviceAccountName: white-caves
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: app
+                  operator: In
+                  values:
+                  - white-caves
+              topologyKey: kubernetes.io/hostname
+      containers:
+      - name: white-caves
+        image: white-caves-backend:1.0.0
+        imagePullPolicy: Always
+        ports:
+        - name: http
+          containerPort: 5000
+        envFrom:
+        - configMapRef:
+            name: white-caves-config
+        - secretRef:
+            name: white-caves-secrets
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "250m"
+          limits:
+            memory: "1Gi"
+            cpu: "1000m"
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 5000
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 5000
+          initialDelaySeconds: 10
+          periodSeconds: 5
+          timeoutSeconds: 3
+          failureThreshold: 2
+        lifecycle:
+          preStop:
+            exec:
+              command: ["/bin/sh", "-c", "sleep 15"]
+      terminationGracePeriodSeconds: 30
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: white-caves
+  namespace: white-caves
+  labels:
+    app: white-caves
+spec:
+  type: LoadBalancer
+  selector:
+    app: white-caves
+  ports:
+  - name: http
+    port: 80
+    targetPort: 5000
+    protocol: TCP
+  - name: https
+    port: 443
+    targetPort: 5000
+    protocol: TCP
+
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: white-caves-app
+  namespace: white-caves
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: white-caves-app
+  minReplicas: 3
+  maxReplicas: 10
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 70
+  - type: Resource
+    resource:
+      name: memory
+      target:
+        type: Utilization
+        averageUtilization: 80
+  behavior:
+    scaleDown:
+      stabilizationWindowSeconds: 300
+      policies:
+      - type: Percent
+        value: 50
+        periodSeconds: 60
+    scaleUp:
+      stabilizationWindowSeconds: 0
+      policies:
+      - type: Percent
+        value: 100
+        periodSeconds: 15
+      - type: Pods
+        value: 2
+        periodSeconds: 60
+
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: white-caves-pdb
+  namespace: white-caves
+spec:
+  minAvailable: 2
+  selector:
+    matchLabels:
+      app: white-caves
+
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: white-caves-network-policy
+  namespace: white-caves
+spec:
+  podSelector:
+    matchLabels:
+      app: white-caves
+  policyTypes:
+  - Ingress
+  - Egress
+  ingress:
+  - from:
+    - namespaceSelector:
+        matchLabels:
+          name: ingress-nginx
+    ports:
+    - protocol: TCP
+      port: 5000
+  egress:
+  - to:
+    - podSelector:
+        matchLabels:
+          app: mongodb
+    ports:
+    - protocol: TCP
+      port: 27017
+  - to:
+    - podSelector:
+        matchLabels:
+          app: redis
+    ports:
+    - protocol: TCP
+      port: 6379
+  - to:
+    - namespaceSelector: {}
+    ports:
+    - protocol: TCP
+      port: 53
+    - protocol: UDP
+      port: 53
+
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: white-caves-ingress
+  namespace: white-caves
+  annotations:
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/ssl-protocols: "TLSv1.2 TLSv1.3"
+    nginx.ingress.kubernetes.io/rate-limit: "100"
+spec:
+  ingressClassName: nginx
+  tls:
+  - hosts:
+    - white-caves.com
+    - www.white-caves.com
+    secretName: white-caves-tls
+  rules:
+  - host: white-caves.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: white-caves
+            port:
+              number: 80
+  - host: www.white-caves.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: white-caves
+            port:
+              number: 80
+
+---
+apiVersion: v1
+kind: ResourceQuota
+metadata:
+  name: white-caves-quota
+  namespace: white-caves
+spec:
+  hard:
+    requests.cpu: "10"
+    requests.memory: "20Gi"
+    limits.cpu: "20"
+    limits.memory: "40Gi"
+    pods: "20"
+    services: "5"
+    persistentvolumeclaims: "5"
+
+---
+apiVersion: v1
+kind: LimitRange
+metadata:
+  name: white-caves-limits
+  namespace: white-caves
+spec:
+  limits:
+  - max:
+      cpu: "2"
+      memory: "4Gi"
+    min:
+      cpu: "100m"
+      memory: "128Mi"
+    type: Container
+  - max:
+      cpu: "4"
+      memory: "8Gi"
+    min:
+      cpu: "100m"
+      memory: "128Mi"
+    type: Pod

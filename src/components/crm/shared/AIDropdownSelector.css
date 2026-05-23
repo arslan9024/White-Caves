@@ -6,7 +6,7 @@
 }
 
 .ai-dropdown-selector.open {
-  z-index: 1000;
+  z-index: 100; /* dropdown tier */
 }
 
 /* Trigger Button */

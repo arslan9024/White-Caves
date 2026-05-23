@@ -1,0 +1,1173 @@
+# **COMPREHENSIVE UI/UX DESIGN PLAN & FLOW CHARTS**
+**For White Caves Real Estate AI Platform**
+
+---
+
+## **1. OVERALL LAYOUT ARCHITECTURE**
+
+### **1.1 Four-Panel Dashboard Layout**
+
+```
+┌─────────────────────────────────────────────────────────────────────────────────────┐
+│                            TOP NAVIGATION BAR                                        │
+├─────────────┬───────────────────────────────────────────────┬───────────────────────┤
+│ LEFT        │             CENTRAL FLUID VIEW PANE           │ RIGHT AI              │
+│ SIDEBAR     │                                               │ SIDEBAR               │
+│ (OOP        │ • Dynamic content based on selection          │ (AI Assistants)       │
+│ Objects)    │ • Dashboard views, forms, analytics           │ • Active AI assistants│
+│             │ • Property previews, virtual tours            │ • Quick access        │
+│             │ • Data visualizations                         │ • Chat interface      │
+│             │                                               │                       │
+│ • User      │                                               │ • Zoe (Executive)     │
+│ Management  │ ┌─────────────────────────────────────────┐   │ • Clara (Sales)       │
+│ • Property  │ │                                         │   │ • Sage (Intelligence) │
+│ • AI        │ │          CONTENT AREA                   │   │ • Theodora (Finance)  │
+│ • Services  │ │                                         │   │ • Mary (Inventory)    │
+│ • Portfolio │ │  Dynamic, context-sensitive content     │   │ • Daisy (Property)    │
+│ • Analytics │ │  based on selected OOP object           │   │ • Aurora (Tech)       │
+│ • Compliance│ │                                         │   │ • Henry (Compliance)  │
+│ • Documents │ │                                         │   │ • Sophia (Legal)      │
+│ • Settings  │ └─────────────────────────────────────────┘   │ • Oliver (Negotiation)│
+│             │                                               │                       │
+└─────────────┴───────────────────────────────────────────────┴───────────────────────┘
+```
+
+### **1.2 Responsive Breakpoints**
+- **Desktop (1440px+):** All three panels visible
+- **Tablet (1024px-1439px):** Right AI sidebar collapses to icons
+- **Mobile (768px-1023px):** Left sidebar becomes hamburger menu
+- **Small Mobile (<768px):** Single-column view with bottom navigation
+
+---
+
+## **2. TOP NAVIGATION BAR - FINAL DESIGN**
+
+### **2.1 Navigation Structure**
+
+```
+┌─────┬────────────────┬────────────────┬────────────────┬────────────────┬────────────────┬─────┐
+│ LOGO│ DASHBOARD      │ PROPERTIES     │ TRANSACTIONS   │ PORTFOLIO      │ SERVICES       │ [User]│
+│     │ • Home         │ • All Listings │ • Sales        │ • My Portfolio │ • All Services │     │
+│     │ • My Overview  │ • Add New      │ • Rentals      │ • Analytics    │ • Book Service │     │
+│     │ • AI Assistant │ • Inventory    │ • Offers       │ • Performance  │ • My Requests  │     │
+│     │ Hub           │ • Communities  │ • Milestones   │ • Reports      │ • Marketplace  │     │
+│     │               │ • Developers   │ • Calendar     │ • Recommend... │               │     │
+├─────┼────────────────┼────────────────┼────────────────┼────────────────┼────────────────┼─────┤
+│     │ AI ASSISTANTS  │ COMPLIANCE     │ REPORTS        │ DOCUMENTS      │ SETTINGS       │ 🔔   │
+│     │ • All Assistants│ • RERA Updates│ • Market       │ • Templates    │ • Profile      │ 👤   │
+│     │ • By Department│ • DLD Check    │ • Performance  │ • Contracts    │ • Preferences  │ ⚙️   │
+│     │ • Conversations│ • Requirements │ • Financial    │ • Agreements   │ • Billing      │ 🌐   │
+│     │ • Training     │ • Alerts       │ • Custom       │ • Archives     │ • Team         │ (EN/AR)│
+└─────┴────────────────┴────────────────┴────────────────┴────────────────┴────────────────┴─────┘
+```
+
+### **2.2 Top Bar Components**
+1. **Logo:** White Caves with dynamic color based on user tier
+2. **Main Navigation:** 8 primary categories with dropdowns
+3. **User Area:** 
+   - Notifications bell with AI-prioritized alerts
+   - User avatar with tier badge (Basic, Premium, Ultra, Corporate)
+   - Quick settings dropdown
+   - Language toggle (EN/AR with RTL support)
+
+### **2.3 Contextual Navigation**
+- **Color Coding:** 
+  - Blue: User actions
+  - Green: Properties
+  - Purple: Transactions
+  - Gold: Premium features
+  - Red: Urgent/important
+
+---
+
+## **3. LEFT SIDEBAR - OOP OBJECT HIERARCHY**
+
+### **3.1 Complete Object Navigation Tree**
+
+```yaml
+# LEFT SIDEBAR STRUCTURE (Collapsible Sections)
+White Caves Platform
+│
+├── 🏢 USER MANAGEMENT (Section)
+│   ├── 👤 Users (Abstract)
+│   │   ├── 👔 Internal Staff
+│   │   │   ├── 🔍 Search Staff
+│   │   │   ├── ➕ Add New Staff
+│   │   │   ├── 📊 Performance
+│   │   │   └── 🏢 Departments
+│   │   │
+│   │   ├── 👥 Clients (Abstract)
+│   │   │   ├── 💰 Client Buyer
+│   │   │   │   ├── 📋 Buyer Profiles
+│   │   │   │   ├── 🎯 Wishlists
+│   │   │   │   ├── 📈 Investment History
+│   │   │   │   └── 🤝 Matchmaking
+│   │   │   │
+│   │   │   ├── 🏠 Client Seller
+│   │   │   │   ├── 📋 Seller Profiles
+│   │   │   │   ├── 🏘️ Properties Listed
+│   │   │   │   ├── 💸 Commission History
+│   │   │   │   └── 📊 Selling Performance
+│   │   │   │
+│   │   │   ├── 🏡 Client Tenant
+│   │   │   │   ├── 📋 Tenant Profiles
+│   │   │   │   ├── 📅 Lease History
+│   │   │   │   ├── ⭐ Reviews
+│   │   │   │   └── 🔄 Renewal Status
+│   │   │   │
+│   │   │   └── 👑 Client Landlord
+│   │   │       ├── 📋 Landlord Profiles
+│   │   │       ├── 🏘️ Property Portfolio
+│   │   │       ├── 💰 Income Reports
+│   │   │       └── 🛠️ Management Preferences
+│   │   │
+│   │   ├── 📄 Job Candidate
+│   │   ├── 🤝 External Partner
+│   │   ├️ 👮 Government Regulator
+│   │   └── 👁️ Public Viewer
+│   │
+│   ├── 📱 UAE PASS Identity
+│   │   ├── 🔐 Verification Status
+│   │   ├️ 📄 Digital Signatures
+│   │   └── 📊 Authentication Logs
+│   │
+│   └── 🏢 Companies
+│       ├── 📋 Company Profiles
+│       ├── 📄 Corporate Documents
+│       ├── 👥 Department Structure
+│       └── 💼 Corporate Accounts
+│
+├── 🏘️ PROPERTY & INVENTORY (Section)
+│   ├── 🏠 Property (Abstract)
+│   │   ├── 🏰 Luxury Villa
+│   │   │   ├── 📋 Villa Inventory
+│   │   │   ├️ ➕ Add New Villa
+│   │   │   ├── 📊 Villa Analytics
+│   │   │   └️ 🎯 Villa Recommendations
+│   │   │
+│   │   ├️ 🏢 Premium Apartment
+│   │   ├️ 🏪 Commercial Property
+│   │   ├️ 🚧 Off-Plan Project
+│   │   └️ 🏡 Rental Listing
+│   │
+│   ├️ 🖼️ Property Media
+│   │   ├── 📸 Image Gallery
+│   │   ├── 🎥 Video Library
+│   │   ├── 🏗️ 3D/Virtual Tours
+│   │   └── 📐 Floor Plans
+│   │
+│   ├️ ⭐ Property Features
+│   │   ├── 🏊 Amenities
+│   │   ├️ 🏎️ Smart Home Features
+│   │   ├️ 🌿 Sustainability
+│   │   └️ 🛡️ Security Systems
+│   │
+│   ├️ 🏙️ Communities
+│   ├️ 🏗️ Developers
+│   └️ 📍 Locations
+│
+├️ 🤖 AI ASSISTANTS (Section)
+│   ├️ 👑 Zoe (Executive)
+│   ├️ 💼 Clara (Sales)
+│   ├️ 📞 Linda (Communications)
+│   ├️ 📦 Mary (Operations)
+│   ├️ 🏠 Daisy (Property Coordinator)
+│   ├️ 💻 Aurora (Technology)
+│   ├️ 💰 Theodora (Finance)
+│   ├️ ⚖️ Henry (Compliance)
+│   ├️ 📜 Sophia (Legal)
+│   ├️ 🤝 Oliver (Negotiation)
+│   └️ 🎯 AI Coordinator
+│
+├️ 💼 TRANSACTION & SERVICE (Section)
+│   ├️ 🎯 Lead
+│   ├️ 💰 Sale Transaction
+│   ├️ 🏡 Rental Transaction
+│   ├️ 🛠️ Service Request
+│   ├️ 📅 Appointment
+│   └️ 💸 Commission
+│
+├️ 🌐 INTEGRATION & EXTERNAL (Section)
+│   ├️ 📱 UAE PASS Gateway
+│   ├️ 🏛️ DLD API Handler
+│   ├️ 💬 WhatsApp Service
+│   ├️ 💳 Payment Processor
+│   └️ 📅 Google Workspace Sync
+│
+├️ ⚙️ BUSINESS LOGIC & WORKFLOW (Section)
+│   ├️ 👥 Agent Assignment Engine
+│   ├️ 💰 Property Valuator
+│   ├️ 📈 Rental Yield Calculator
+│   ├️ ⚖️ Compliance Validator
+│   └️ 🔔 Notification Orchestrator
+│
+├️ 📊 DATA & KNOWLEDGE (Section)
+│   ├️ 🏢 Company Knowledge Base
+│   ├️ 📈 Market Analytics
+│   ├️ 📜 Audit Log
+│   └️ 🔐 Permission Matrix
+│
+├️ 🎨 UI & PRESENTATION (Section)
+│   ├️ 📊 Dashboard Factory
+│   ├️ 🏠 Property Card Component
+│   ├️ 📝 Contract Signing View
+│   ├️ 💬 AI Chat Interface
+│   └️ 🌐 Bilingual Formatter
+│
+└️ 🛠️ UTILITY & SUPPORT (Section)
+    ├️ 📍 Address
+    ├️ 💱 Currency Converter
+    ├️ 📄 Document Generator
+    ├️ 🔍 Search Filter
+    └️ ⭐ Rating System
+```
+
+### **3.2 Left Sidebar UX Features**
+1. **Smart Collapsing:** Sections remember state per user
+2. **Quick Search:** Search across all OOP objects
+3. **Recent Items:** Last 5 accessed objects
+4. **Favorites:** Star items for quick access
+5. **Contextual Highlighting:** Current object path highlighted
+6. **Permission Filtering:** Only show accessible items
+7. **Tier-Based Visibility:** Premium features for higher tiers
+
+---
+
+## **4. CENTRAL FLUID VIEW PANE - DYNAMIC CONTENT SYSTEM**
+
+### **4.1 Content Display Framework**
+
+```javascript
+// Central Pane State Management
+const CentralPane = {
+  currentView: 'dashboard' | 'list' | 'detail' | 'form' | 'analytics' | 'media',
+  currentObject: 'User' | 'Property' | 'Transaction' | etc.,
+  objectId: 'UUID',
+  viewMode: 'read' | 'edit' | 'create',
+  context: {}, // Additional context data
+  
+  // View Renderer
+  renderContent() {
+    switch(this.currentView) {
+      case 'dashboard':
+        return this.renderDashboard();
+      case 'list':
+        return this.renderObjectList();
+      case 'detail':
+        return this.renderObjectDetail();
+      case 'form':
+        return this.renderObjectForm();
+      case 'analytics':
+        return this.renderAnalytics();
+      case 'media':
+        return this.renderMediaGallery();
+    }
+  }
+}
+```
+
+### **4.2 View Templates by Object Type**
+
+#### **4.2.1 Dashboard View**
+```html
+<!-- Dynamic Dashboard Template -->
+<div class="dashboard-view">
+  <!-- Header with context -->
+  <div class="dashboard-header">
+    <h1>{{objectName}} Dashboard</h1>
+    <div class="dashboard-actions">
+      <button class="btn-add">+ Add New</button>
+      <button class="btn-filter">🔍 Filter</button>
+      <button class="btn-export">📊 Export</button>
+    </div>
+  </div>
+  
+  <!-- Key Metrics -->
+  <div class="metrics-grid">
+    <metric-card title="Total" value="{{totalCount}}" trend="+12%" />
+    <metric-card title="Active" value="{{activeCount}}" icon="✅" />
+    <metric-card title="Value" value="{{totalValue}}" currency="AED" />
+    <metric-card title="Growth" value="{{growthRate}}" chart="📈" />
+  </div>
+  
+  <!-- Main Content Area -->
+  <div class="dashboard-content">
+    <!-- Left: List/Table -->
+    <div class="content-list">
+      <data-table :columns="tableColumns" :data="objectData" />
+    </div>
+    
+    <!-- Right: Preview/Detail -->
+    <div class="content-preview">
+      <object-preview :object="selectedObject" />
+    </div>
+  </div>
+  
+  <!-- Bottom: Analytics -->
+  <div class="dashboard-analytics">
+    <chart-container type="line" :data="trendData" />
+    <chart-container type="bar" :data="comparisonData" />
+    <chart-container type="pie" :data="distributionData" />
+  </div>
+</div>
+```
+
+#### **4.2.2 Property Detail View**
+```html
+<!-- Property Detail Template -->
+<div class="property-detail-view">
+  <!-- Property Header -->
+  <div class="property-header">
+    <div class="property-badge {{priceTier}}">{{priceTier}}</div>
+    <h1>{{propertyTitle}} - {{referenceNumber}}</h1>
+    <div class="property-actions">
+      <button class="btn-edit">✏️ Edit</button>
+      <button class="btn-share">📤 Share</button>
+      <button class="btn-ai">🤖 AI Insights</button>
+    </div>
+  </div>
+  
+  <!-- Tab Navigation -->
+  <div class="detail-tabs">
+    <tab name="Overview" active />
+    <tab name="Media" />
+    <tab name="Specifications" />
+    <tab name="Pricing" />
+    <tab name="Transactions" />
+    <tab name="Analytics" />
+    <tab name="Documents" />
+  </div>
+  
+  <!-- Tab Content -->
+  <div class="tab-content">
+    <!-- Overview Tab -->
+    <div class="tab-overview">
+      <div class="overview-left">
+        <!-- Hero Image -->
+        <property-image-gallery :images="property.media.images" />
+        
+        <!-- Quick Facts -->
+        <quick-facts-panel :facts="[
+          {label: 'Price', value: property.pricing.salePrice, currency: 'AED'},
+          {label: 'Bedrooms', value: property.specifications.rooms.bedrooms},
+          {label: 'Area', value: property.specifications.size.builtUpArea, unit: 'sqft'},
+          {label: 'Community', value: property.location.community}
+        ]" />
+      </div>
+      
+      <div class="overview-right">
+        <!-- AI Valuation -->
+        <ai-valuation-card :property="property" />
+        
+        <!-- Similar Properties -->
+        <similar-properties :properties="similarProperties" />
+        
+        <!-- Action Cards -->
+        <action-card title="Schedule Viewing" icon="📅" />
+        <action-card title="Make Offer" icon="💰" />
+        <action-card title="Virtual Tour" icon="🏗️" />
+      </div>
+    </div>
+    
+    <!-- Media Tab -->
+    <div class="tab-media">
+      <media-gallery :images="property.media.images" 
+                     :videos="property.media.videos"
+                     :virtualTours="property.media.virtualTours"
+                     :floorPlans="property.media.floorPlans" />
+    </div>
+    
+    <!-- Specifications Tab -->
+    <div class="tab-specifications">
+      <specs-grid :specifications="property.specifications" />
+      <amenities-list :amenities="property.specifications.amenities" />
+      <features-list :features="property.specifications.features" />
+    </div>
+  </div>
+</div>
+```
+
+#### **4.2.3 Transaction Flow View**
+```html
+<!-- Transaction Flow Template -->
+<div class="transaction-flow-view">
+  <!-- Transaction Timeline -->
+  <div class="transaction-timeline">
+    <timeline-step step="1" title="Offer Made" status="complete" />
+    <timeline-step step="2" title="Offer Accepted" status="complete" />
+    <timeline-step step="3" title="Contracts Signed" status="current" />
+    <timeline-step step="4" title="DLD Registration" status="pending" />
+    <timeline-step step="5" title="Funds Transfer" status="pending" />
+    <timeline-step step="6" title="Completion" status="pending" />
+  </div>
+  
+  <!-- Transaction Details -->
+  <div class="transaction-details">
+    <div class="details-left">
+      <party-card type="Buyer" :party="transaction.buyer" />
+      <party-card type="Seller" :party="transaction.seller" />
+      <party-card type="Agent" :party="transaction.agent" />
+    </div>
+    
+    <div class="details-right">
+      <financial-summary :transaction="transaction" />
+      <documents-list :documents="transaction.documents" />
+      <milestones-list :milestones="transaction.milestones" />
+    </div>
+  </div>
+  
+  <!-- AI Assistant Panel -->
+  <div class="transaction-ai-panel">
+    <ai-assistant-card assistant="Sophia" 
+                       :suggestions="legalSuggestions" 
+                       context="transaction" />
+    <ai-assistant-card assistant="Oliver"
+                       :suggestions="negotiationTips"
+                       context="transaction" />
+  </div>
+</div>
+```
+
+### **4.3 Dynamic Component Loading**
+
+```javascript
+// Component Registry
+const ComponentRegistry = {
+  // Property Components
+  'PropertyList': PropertyListView,
+  'PropertyDetail': PropertyDetailView,
+  'PropertyForm': PropertyFormView,
+  'PropertyAnalytics': PropertyAnalyticsView,
+  
+  // User Components
+  'UserProfile': UserProfileView,
+  'UserList': UserListView,
+  'UserForm': UserFormView,
+  
+  // Transaction Components
+  'TransactionFlow': TransactionFlowView,
+  'TransactionForm': TransactionFormView,
+  
+  // Dashboard Components
+  'ExecutiveDashboard': ExecutiveDashboard,
+  'AgentDashboard': AgentDashboard,
+  'InvestorDashboard': InvestorDashboard,
+  
+  // AI Components
+  'AIChat': AIChatInterface,
+  'AIDashboard': AIDashboardView,
+  
+  // Utility Components
+  'MediaGallery': MediaGallery,
+  'DocumentViewer': DocumentViewer,
+  'AnalyticsChart': AnalyticsChart,
+  
+  // Method to load component dynamically
+  loadComponent(objectType, viewType) {
+    const componentKey = `${objectType}${viewType}`;
+    return this.components[componentKey] || this.getFallbackComponent(viewType);
+  }
+};
+```
+
+---
+
+## **5. RIGHT SIDEBAR - AI ASSISTANT HUB**
+
+### **5.1 AI Sidebar Design**
+
+```
+┌─────────────────────────────────┐
+│        AI ASSISTANT HUB         │
+├─────────────────────────────────┤
+│ 🔍 Search AI Assistants...      │
+├─────────────────────────────────┤
+│ 👑 ZOE (Executive)              │
+│   • Strategic insights          │
+│   • Portfolio overview          │
+│   • Executive reporting         │
+│                                │
+│ 💼 CLARA (Sales)                │
+│   • Lead scoring               │
+│   • Property matching          │
+│   • Client follow-up           │
+│                                │
+│ 📦 MARY (Inventory)             │
+│   • Availability tracking      │
+│   • Listing coordination       │
+│   • Developer feed sync        │
+│                                │
+│ 💰 THEODORA (Finance)           │
+│   • ROI analysis               │
+│   • Portfolio optimization     │
+│   • Financial modeling         │
+│                                │
+│ ⚖️ HENRY (Compliance)           │
+│   • RERA updates              │
+│   • DLD requirements           │
+│   • Compliance checks          │
+│                                │
+│ 📜 SOPHIA (Legal)              │
+│   • Contract generation        │
+│   • Title verification         │
+│   • Legal compliance           │
+│                                │
+│ 🏠 DAISY (Property Coordinator) │
+│   • Viewing scheduling         │
+│   • Maintenance coordination   │
+│   • Tenant management          │
+│                                │
+│ 💻 AURORA (Technology)          │
+│   • Virtual tours              │
+│   • Smart home integration     │
+│   • Digital marketing          │
+│                                │
+│ 📞 LINDA (Communications)       │
+│   • Client communications      │
+│   • WhatsApp automation        │
+│   • Email campaigns            │
+│                                │
+│ 🤝 OLIVER (Negotiation)         │
+│   • Offer analysis             │
+│   • Negotiation strategy       │
+│   • Deal optimization          │
+│                                │
+│ 🎯 AI COORDINATOR               │
+│   • Assistant routing          │
+│   • Context management         │
+│   • Performance monitoring     │
+└─────────────────────────────────┘
+```
+
+### **5.2 AI Chat Interface**
+
+```html
+<!-- AI Chat Component -->
+<div class="ai-chat-interface">
+  <!-- Chat Header -->
+  <div class="chat-header">
+    <div class="assistant-avatar {{assistant.codename}}">
+      <img :src="assistant.avatar" />
+      <div class="assistant-status {{assistant.status}}"></div>
+    </div>
+    <div class="assistant-info">
+      <h3>{{assistant.name}}</h3>
+      <p>{{assistant.role}} • {{assistant.department}}</p>
+    </div>
+    <div class="chat-actions">
+      <button class="btn-minimize">─</button>
+      <button class="btn-close">×</button>
+    </div>
+  </div>
+  
+  <!-- Chat Messages -->
+  <div class="chat-messages">
+    <div class="message assistant">
+      <div class="message-content">
+        <p>Hello! I'm {{assistant.name}}, your {{assistant.role}} assistant. How can I help you today?</p>
+        <div class="message-time">10:00 AM</div>
+      </div>
+    </div>
+    
+    <div class="message user">
+      <div class="message-content">
+        <p>Show me investment properties in Downtown Dubai with rental yield over 6%</p>
+        <div class="message-time">10:02 AM</div>
+      </div>
+    </div>
+    
+    <div class="message assistant">
+      <div class="message-content">
+        <p>I've found 8 properties matching your criteria. Here are the top 3:</p>
+        <div class="property-cards">
+          <property-card-mini v-for="property in matchingProperties" :property="property" />
+        </div>
+        <div class="message-actions">
+          <button class="btn-action">📊 Show All 8</button>
+          <button class="btn-action">📈 Compare Yields</button>
+          <button class="btn-action">🤝 Connect with Agent</button>
+        </div>
+        <div class="message-time">10:03 AM</div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Chat Input -->
+  <div class="chat-input">
+    <div class="input-actions">
+      <button class="btn-attach">📎</button>
+      <button class="btn-template">📋 Templates</button>
+      <button class="btn-ai-suggest">💡 AI Suggestions</button>
+    </div>
+    <textarea placeholder="Type your message or use AI suggestions..." 
+              v-model="message"
+              @keyup.enter="sendMessage"></textarea>
+    <div class="input-suggestions">
+      <suggestion-chip text="Find similar properties" />
+      <suggestion-chip text="Calculate ROI" />
+      <suggestion-chip text="Schedule viewing" />
+      <suggestion-chip text="Generate contract" />
+    </div>
+  </div>
+</div>
+```
+
+---
+
+## **6. USER FLOW CHARTS**
+
+### **6.1 User Registration & Onboarding Flow**
+
+```mermaid
+graph TD
+    A[Landing Page] --> B{User Type?};
+    B --> C[Public Visitor];
+    B --> D[Client];
+    B --> E[Agent/Broker];
+    B --> F[Corporate];
+    
+    C --> C1[Browse Properties];
+    C1 --> C2[Save Properties];
+    C2 --> C3[Request Viewing];
+    C3 --> C4[Create Account];
+    
+    D --> D1[Select Client Type];
+    D1 --> D2{Which Client?};
+    D2 --> D3[Buyer];
+    D2 --> D4[Seller];
+    D2 --> D5[Tenant];
+    D2 --> D6[Landlord];
+    
+    D3 --> D3A[Budget & Preferences];
+    D3A --> D3B[UAE PASS Verification];
+    D3B --> D3C[AI Property Matching];
+    
+    E --> E1[License Verification];
+    E1 --> E2[Select Tier];
+    E2 --> E3[AI Tools Access];
+    
+    F --> F1[Company Details];
+    F1 --> F2[Admin Setup];
+    F2 --> F3[Team Invites];
+    
+    C4 --> G[Main Dashboard];
+    D3C --> G;
+    E3 --> G;
+    F3 --> G;
+```
+
+### **6.2 Property Listing Flow**
+
+```mermaid
+graph TD
+    A[Dashboard] --> B[Add New Property];
+    B --> C{Property Type?};
+    
+    C --> D[Luxury Villa];
+    C --> E[Premium Apartment];
+    C --> F[Commercial];
+    C --> G[Off-Plan];
+    C --> H[Land/Plot];
+    
+    D --> I[Basic Details];
+    E --> I;
+    F --> I;
+    G --> I;
+    H --> I;
+    
+    I --> J[Location Details];
+    J --> K[Specifications];
+    K --> L[Pricing & Commission];
+    L --> M[Media Upload];
+    
+    M --> N{Marketing Package?};
+    N --> O[Basic - AED 5K];
+    N --> P[Premium - AED 15K];
+    N --> Q[Luxury - AED 50K];
+    N --> R[Platinum - AED 150K];
+    
+    O --> S[Listing Created];
+    P --> S;
+    Q --> S;
+    R --> S;
+    
+    S --> T[AI Optimization];
+    T --> U[Multi-Channel Syndication];
+    U --> V[Lead Generation];
+```
+
+### **6.3 Transaction Processing Flow**
+
+```mermaid
+graph TD
+    A[Property Viewing] --> B[Client Interested];
+    B --> C[Make Offer];
+    
+    C --> D{Offer Type?};
+    D --> E[Full Price];
+    D --> F[Below Asking];
+    D --> G[Conditional];
+    
+    E --> H[AI Analysis];
+    F --> H;
+    G --> H;
+    
+    H --> I{Recommendation?};
+    I --> J[Accept];
+    I --> K[Counter];
+    I --> L[Reject];
+    
+    J --> M[Generate MOU];
+    K --> N[Negotiation with Oliver AI];
+    N --> O[Revised Offer];
+    O --> H;
+    
+    M --> P[UAE PASS Signing];
+    P --> Q[Deposit Payment];
+    Q --> R[DLD Registration];
+    
+    R --> S[Final Payment];
+    S --> T[Title Transfer];
+    T --> U[Key Handover];
+    
+    U --> V[Post-Sale Services];
+    V --> W{Next Step?};
+    W --> X[Property Management];
+    W --> Y[Portfolio Addition];
+    W --> Z[Resale Planning];
+```
+
+### **6.4 AI Assistant Interaction Flow**
+
+```mermaid
+graph TD
+    A[User Action] --> B[Context Analysis];
+    B --> C{Which AI Assistant?};
+    
+    C --> D[Zoe - Executive];
+    C --> E[Clara - Sales];
+    C --> F[Mary - Inventory];
+    C --> G[Theodora - Finance];
+    C --> H[Henry - Compliance];
+    C --> I[Sophia - Legal];
+    C --> J[Daisy - Property];
+    C --> K[Aurora - Technology];
+    C --> L[Linda - Communications];
+    C --> M[Oliver - Negotiation];
+    
+    D --> N[Strategic Insights];
+    E --> O[Lead Management];
+    F --> P[Inventory Updates];
+    G --> Q[Financial Analysis];
+    H --> R[Compliance Check];
+    I --> S[Document Generation];
+    J --> T[Property Coordination];
+    K --> U[Tech Solutions];
+    L --> V[Communication Automation];
+    M --> W[Negotiation Support];
+    
+    N --> X[Executive Dashboard];
+    O --> X;
+    P --> X;
+    Q --> X;
+    R --> X;
+    S --> X;
+    T --> X;
+    U --> X;
+    V --> X;
+    W --> X;
+    
+    X --> Y[User Action Complete];
+```
+
+---
+
+## **7. DASHBOARD VIEWS BY USER TYPE**
+
+### **7.1 UHNWI Investor Dashboard**
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│ UHNWI INVESTOR DASHBOARD - Welcome, Mr. Al Maktoum             │
+├─────────────────────────────────────────────────────────────────┤
+│ 💰 Portfolio Value: AED 850M   📈 YTD Return: 12.5%            │
+│ 🏘️ Properties: 8               📊 Diversification Score: 87/100│
+├─────────────────┬───────────────────────────────────────────────┤
+│ PORTFOLIO       │ AI RECOMMENDATIONS                           │
+│ OVERVIEW        │ ┌─────────────────────────────────────────┐  │
+│                 │ │ 🟢 BUY: Palm Jumeirah Villa             │  │
+│ ┌─────────────┐ │ │    Price: AED 120M                     │  │
+│ │ 🏠 35% Villas│ │ │    Expected ROI: 8.2%                 │  │  │
+│ │ 🏢 45% Apts  │ │ │    Recommendation: Strong             │  │
+│ │ 🏪 20% Comm  │ │ └─────────────────────────────────────────┘  │
+│ └─────────────┘ │                                               │
+│                 │ ┌─────────────────────────────────────────┐  │
+│ Recent Activity │ │ 🔴 SELL: Downtown Apartment            │  │
+│ • Viewing ✅    │ │    Current Value: AED 45M              │  │
+│ • Offer Sent 📤 │ │    Peak Value: AED 48M                 │  │
+│ • Contract 📝   │ │    Recommendation: Sell before Q2      │  │
+│                 │ └─────────────────────────────────────────┘  │
+├─────────────────┼───────────────────────────────────────────────┤
+│ MARKET ALERTS   │ UPCOMING ACTIVITIES                          │
+│ • 📈 Dubai index +2.3%                                        │
+│ • 🏗️ New development in MBR City                             │
+│ • 💰 Interest rates stable                                     │
+│ • 📜 RERA regulation update                                   │
+│                                                               │
+└─────────────────┴───────────────────────────────────────────────┘
+```
+
+### **7.2 AI-Assisted Agent Dashboard**
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│ AGENT DASHBOARD - Ahmed (Pod A: Ultra-Prime)                   │
+├─────────────────────────────────────────────────────────────────┤
+│ 🎯 Monthly Target: AED 10M   ✅ Achieved: AED 8.2M (82%)        │
+│ 👥 Active Leads: 12          📅 Viewings Today: 4              │
+├─────────────────┬───────────────────────────────────────────────┤
+│ PRIORITY LEADS  │ AI ASSISTANT - CLARA                         │
+│ (Clara AI Ranked)│ ┌─────────────────────────────────────────┐  │
+│ 1. 🇨🇭 Swiss UHNWI│ │ Lead Score: 92/100                      │  │
+│    Budget: AED  │ │ Match Properties: 8                      │  │
+│    200M+        │ │ Next Action: Schedule viewing            │  │
+│    Status: Hot  │ │ Timeline: This week                      │  │
+│                 │ └─────────────────────────────────────────┘  │
+│ 2. 🇬🇧 CEO       │                                               │
+│    Budget: AED  │ PROPERTY INVENTORY (Mary AI)                │
+│    80M          │ • 🏠 Palm Villa - AED 120M                  │
+│    Status: Warm │ • 🏢 Downtown Apt - AED 45M                 │
+│                 │ • 🏪 DIFC Office - AED 85M                  │
+│ 3. 🇷🇺 Investor  │                                               │
+│    Budget: AED  │ QUICK ACTIONS                               │
+│    150M         │ • 📞 Call Priority Lead                     │
+│    Status: Warm │ • 📅 Schedule Viewing                       │
+│                 │ • 📤 Send Property Pack                     │
+├─────────────────┼───────────────────────────────────────────────┤
+│ TRANSACTION     │ PERFORMANCE METRICS                         │
+│ PIPELINE        │ ┌─────────────────────────────────────────┐  │
+│ • Offer Stage: 2│ │ Conversion Rate: 15%                    │  │
+│ • Contract: 3   │ │ Avg Deal Size: AED 25M                  │  │
+│ • Completion: 1 │ │ Client Satisfaction: 4.8⭐              │  │
+│                 │ │ Commission Earned: AED 2.1M             │  │
+│                 │ └─────────────────────────────────────────┘  │
+└─────────────────┴───────────────────────────────────────────────┘
+```
+
+### **7.3 Property Owner Dashboard**
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│ PROPERTY OWNER DASHBOARD - Sarah Johnson                       │
+├─────────────────────────────────────────────────────────────────┤
+│ 🏘️ Managed Properties: 3   💰 Monthly Income: AED 55,833      │
+│ 📈 Occupancy Rate: 100%     ⭐ Tenant Satisfaction: 4.7/5      │
+├─────────────────┬───────────────────────────────────────────────┤
+│ PROPERTY        │ MAINTENANCE & REQUESTS                       │
+│ PERFORMANCE     │ ┌─────────────────────────────────────────┐  │
+│                 │ │ 🟢 All systems operational              │  │
+│ 🏠 Burj Vista   │ │                                         │  │
+│ • Value: AED 25M│ │ 📅 Upcoming:                           │  │
+│ • Rent: AED 1.2M│ │ • AC Service - Mar 15                  │  │
+│ • Occupied: Yes │ │ • Deep Clean - Apr 1                   │  │
+│                 │ │                                         │  │
+│ 🏠 Marina Gate  │ │ 🔔 Active Requests:                    │  │
+│ • Value: AED 18M│ │ • Light bulb - Common area             │  │
+│ • Rent: AED 916K│ │ • Balcony door - Sticking              │  │
+│ • Occupied: Yes │ └─────────────────────────────────────────┘  │
+│                 │                                               │
+│ 🏠 Marina Quays │ FINANCIAL SUMMARY                           │
+│ • Value: AED 32M│ • Income This Month: AED 183,333            │
+│ • Rent: AED 1.4M│ • Expenses: AED 12,500                      │
+│ • Occupied: Yes │ • Net: AED 170,833                          │
+│                 │ • Management Fee: AED 11,000 (6%)           │
+├─────────────────┼───────────────────────────────────────────────┤
+│ MARKET          │ DOCUMENTS & COMPLIANCE                      │
+│ INTELLIGENCE    │ ✅ All Ejari current                        │
+│ • Similar units │ ✅ DEWA payments up to date                 │
+│   renting 5%    │ ✅ Insurance valid until Dec 2024           │
+│   higher        │ ✅ RERA certificate current                 │
+│ • Recommend     │                                               │
+│   rent increase │ QUICK ACTIONS                               │
+│   in Q3         │ • 📊 View Detailed Reports                  │
+│                 │ • 📝 Generate Owner Statement               │
+│                 │ • 🏠 Add Another Property                   │
+└─────────────────┴───────────────────────────────────────────────┘
+```
+
+---
+
+## **8. COMPONENT DESIGN SYSTEM**
+
+### **8.1 Color Palette**
+```css
+:root {
+  /* Primary Colors */
+  --primary-blue: #0A2463;    /* Trust, Professionalism */
+  --primary-gold: #D4AF37;    /* Luxury, Wealth */
+  --primary-white: #FFFFFF;    /* Clean, Modern */
+  
+  /* Secondary Colors */
+  --secondary-green: #00A86B;  /* Growth, Success */
+  --secondary-purple: #6A0DAD; /* Royalty, Luxury */
+  --secondary-teal: #008080;   /* Trust, Stability */
+  
+  /* Status Colors */
+  --success: #00C853;
+  --warning: #FF9800;
+  --error: #F44336;
+  --info: #2196F3;
+  
+  /* Tier Colors */
+  --tier-basic: #607D8B;
+  --tier-premium: #4CAF50;
+  --tier-ultra: #9C27B0;
+  --tier-corporate: #0A2463;
+}
+```
+
+### **8.2 Typography Scale**
+```css
+:root {
+  /* Font Families */
+  --font-primary: 'Inter', -apple-system, sans-serif;
+  --font-arabic: 'Almarai', 'Tahoma', sans-serif;
+  --font-display: 'Playfair Display', serif;
+  
+  /* Scale */
+  --text-xs: 0.75rem;    /* 12px */
+  --text-sm: 0.875rem;   /* 14px */
+  --text-base: 1rem;     /* 16px */
+  --text-lg: 1.125rem;   /* 18px */
+  --text-xl: 1.25rem;    /* 20px */
+  --text-2xl: 1.5rem;    /* 24px */
+  --text-3xl: 1.875rem;  /* 30px */
+  --text-4xl: 2.25rem;   /* 36px */
+}
+```
+
+### **8.3 Component Library**
+```html
+<!-- Card Components -->
+<div class="card">
+  <div class="card-header">
+    <h3 class="card-title">Property Details</h3>
+    <div class="card-actions">
+      <button class="btn-icon">⋮</button>
+    </div>
+  </div>
+  <div class="card-content">
+    <!-- Content -->
+  </div>
+  <div class="card-footer">
+    <!-- Actions -->
+  </div>
+</div>
+
+<!-- Data Table Component -->
+<table class="data-table">
+  <thead>
+    <tr>
+      <th>Property</th>
+      <th>Type</th>
+      <th>Price</th>
+      <th>Status</th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr v-for="property in properties">
+      <td>{{property.title}}</td>
+      <td><span class="badge {{property.type}}">{{property.type}}</span></td>
+      <td class="price">{{formatPrice(property.price)}}</td>
+      <td><status-badge :status="property.status" /></td>
+      <td>
+        <button class="btn-icon" @click="view(property)">👁️</button>
+        <button class="btn-icon" @click="edit(property)">✏️</button>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<!-- Form Components -->
+<div class="form-group">
+  <label class="form-label">Property Price (AED)</label>
+  <div class="input-with-prefix">
+    <span class="input-prefix">AED</span>
+    <input type="number" class="form-input" v-model="price" />
+    <span class="input-suffix">.00</span>
+  </div>
+  <div class="form-help">Enter the asking price in AED</div>
+</div>
+
+<!-- AI Assistant Card -->
+<div class="ai-card" :class="assistant.codename">
+  <div class="ai-avatar">
+    <img :src="assistant.avatar" />
+    <div class="ai-status" :class="assistant.status"></div>
+  </div>
+  <div class="ai-info">
+    <h4>{{assistant.name}}</h4>
+    <p class="ai-role">{{assistant.role}}</p>
+    <p class="ai-department">{{assistant.department}}</p>
+  </div>
+  <div class="ai-actions">
+    <button class="btn-ai-chat" @click="chatWith(assistant)">💬 Chat</button>
+    <button class="btn-ai-help" @click="getHelp(assistant)">❓ Help</button>
+  </div>
+</div>
+```
+
+---
+
+## **9. INTERACTION DESIGN PATTERNS**
+
+### **9.1 Property Browsing Patterns**
+1. **Grid View:** Traditional property cards
+2. **Map View:** Interactive map with property pins
+3. **List View:** Detailed rows for comparison
+4. **Gallery View:** Immersive full-screen experience
+5. **VR View:** 3D virtual tours
+
+### **9.2 AI Interaction Patterns**
+1. **Contextual Suggestions:** AI suggests actions based on current context
+2. **Proactive Alerts:** AI alerts about opportunities or risks
+3. **Conversational UI:** Natural language interaction
+4. **Visual AI:** AI-generated insights as charts/graphs
+5. **Automated Workflows:** AI completes multi-step processes
+
+### **9.3 Data Visualization Patterns**
+1. **Property Valuation Chart:** Historical prices + predictions
+2. **Portfolio Allocation Pie:** Investment diversification
+3. **Market Trend Line:** Price trends over time
+4. **Heat Maps:** Geographic demand/supply
+5. **Comparison Charts:** Property vs. market benchmarks
+
+---
+
+## **10. MOBILE ADAPTATION**
+
+### **10.1 Mobile Navigation**
+```html
+<!-- Bottom Navigation Bar (Mobile) -->
+<nav class="mobile-nav">
+  <a href="/dashboard" class="nav-item active">
+    <i class="icon-home"></i>
+    <span>Home</span>
+  </a>
+  <a href="/properties" class="nav-item">
+    <i class="icon-property"></i>
+    <span>Properties</span>
+  </a>
+  <a href="/ai" class="nav-item">
+    <i class="icon-ai"></i>
+    <span>AI Assistants</span>
+  </a>
+  <a href="/messages" class="nav-item">
+    <i class="icon-message"></i>
+    <span>Messages</span>
+    <span class="badge">3</span>
+  </a>
+  <a href="/profile" class="nav-item">
+    <i class="icon-profile"></i>
+    <span>Profile</span>
+  </a>
+</nav>
+
+<!-- Floating Action Button -->
+<button class="fab">
+  <i class="icon-plus"></i>
+</button>
+```
+
+### **10.2 Mobile Property View**
+```html
+<!-- Mobile Property Card -->
+<div class="mobile-property-card">
+  <div class="property-image">
+    <img :src="property.primaryImage" />
+    <div class="property-badge">{{property.priceTier}}</div>
+    <button class="btn-favorite">❤️</button>
+  </div>
+  
+  <div class="property-details">
+    <h3>{{property.title}}</h3>
+    <p class="property-location">{{property.community}}</p>
+    
+    <div class="property-specs">
+      <span>🏠 {{property.bedrooms}} BR</span>
+      <span>🛁 {{property.bathrooms}} BA</span>
+      <span>📏 {{property.area}} sqft</span>
+    </div>
+    
+    <div class="property-price">
+      <strong>AED {{formatPrice(property.price)}}</strong>
+      <span class="price-per-sqft">(AED {{property.pricePerSqft}}/sqft)</span>
+    </div>
+    
+    <div class="property-actions">
+      <button class="btn-primary" @click="viewDetails">View Details</button>
+      <button class="btn-secondary" @click="chatWithAI">🤖 AI Insights</button>
+    </div>
+  </div>
+</div>
+```
+
+---
+
+## **11. IMPLEMENTATION PHASING**
+
+### **Phase 1: Foundation (Weeks 1-4)**
+1. **Week 1:** Layout framework with three-panel design
+2. **Week 2:** Top navigation with dropdowns
+3. **Week 3:** Left sidebar with OOP object structure
+4. **Week 4:** Right sidebar AI assistant hub
+
+### **Phase 2: Core Views (Weeks 5-8)**
+1. **Week 5:** Dashboard views for 4 primary user types
+2. **Week 6:** Property listing and detail views
+3. **Week 7:** Transaction flow views
+4. **Week 8:** User management views
+
+### **Phase 3: AI Integration (Weeks 9-12)**
+1. **Week 9:** AI chat interface
+2. **Week 10:** Contextual AI suggestions
+3. **Week 11:** AI-powered workflows
+4. **Week 12:** Multi-assistant coordination
+
+### **Phase 4: Polish & Optimization (Weeks 13-16)**
+1. **Week 13:** Mobile responsive design
+2. **Week 14:** Performance optimization
+3. **Week 15:** Accessibility enhancements
+4. **Week 16:** User testing and refinement
+
+---
+
+## **12. KEY UX PRINCIPLES**
+
+### **12.1 Guiding Principles**
+1. **AI-First Design:** Every interaction has AI enhancement options
+2. **Progressive Disclosure:** Show complexity only when needed
+3. **Contextual Intelligence:** UI adapts to user role and task
+4. **Multi-Modal Interaction:** Support for touch, voice, mouse
+5. **Real-Time Collaboration:** Multiple users can collaborate
+
+### **12.2 Success Metrics**
+1. **Time to Complete Tasks:** Reduce by 60% with AI assistance
+2. **User Satisfaction:** Target 4.8/5 average rating
+3. **Adoption Rate:** 90% of users using AI features weekly
+4. **Error Reduction:** 75% fewer data entry errors
+5. **Cross-Selling:** 40% of users adopt additional services
+
+---
+
+This comprehensive UI/UX design plan provides a complete blueprint for building the White Caves Real Estate AI Platform. The three-panel layout with dynamic central content, organized OOP navigation, and integrated AI assistant system creates a powerful, intuitive interface that supports all 35 services and 15 user types defined in your business model.
+
+The design is:
+1. **Scalable:** Accommodates all OOP objects and future additions
+2. **Flexible:** Dynamic content system adapts to any object type
+3. **AI-Integrated:** Seamless AI assistant interaction throughout
+4. **User-Centric:** Different views for different user types
+5. **Business-Aligned:** Directly supports all revenue streams
+
+Would you like me to create detailed wireframes for any specific user flow or dashboard view?

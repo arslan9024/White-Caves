@@ -20,7 +20,7 @@
 .cta-shape-1 {
   width: 500px;
   height: 500px;
-  background: rgba(211, 47, 47, 0.08);
+  background: rgba(227, 30, 36, 0.06);
   top: -200px;
   right: -100px;
 }
@@ -28,7 +28,7 @@
 .cta-shape-2 {
   width: 400px;
   height: 400px;
-  background: rgba(255, 179, 0, 0.05);
+  background: rgba(227, 30, 36, 0.05);
   bottom: -150px;
   left: -100px;
 }
@@ -187,7 +187,7 @@
 .form-input:focus {
   outline: none;
   border-color: var(--primary-color);
-  box-shadow: 0 0 0 3px rgba(211, 47, 47, 0.1);
+  box-shadow: 0 0 0 3px rgba(227, 30, 36, 0.15);
 }
 
 .form-input::placeholder {
@@ -205,7 +205,8 @@
   justify-content: center;
   gap: 0.5rem;
   padding: 1rem 2rem;
-  background: var(--primary-color);
+  /* Uses luxury gradient when inside .dubai-luxury-theme scope */
+  background: var(--luxury-cta-bg, var(--primary-color));
   color: white;
   font-family: var(--font-heading);
   font-size: 1rem;
@@ -214,12 +215,12 @@
   border-radius: var(--radius-lg);
   cursor: pointer;
   transition: all var(--transition-normal);
-  box-shadow: 0 4px 14px rgba(211, 47, 47, 0.35);
+  box-shadow: 0 4px 14px rgba(227, 30, 36, 0.3);
 }
 
 .submit-btn:hover:not(:disabled) {
-  background: var(--primary-dark);
-  box-shadow: 0 6px 20px rgba(211, 47, 47, 0.45);
+  background: var(--luxury-cta-bg-hover, var(--primary-dark));
+  box-shadow: 0 6px 20px rgba(227, 30, 36, 0.4);
 }
 
 .submit-btn:disabled {
@@ -237,7 +238,9 @@
 }
 
 @keyframes spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .success-message {
@@ -249,7 +252,7 @@
   width: 60px;
   height: 60px;
   margin: 0 auto 1rem;
-  background: linear-gradient(135deg, #10B981, #059669);
+  background: linear-gradient(135deg, #10b981, #059669);
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -275,7 +278,7 @@
     grid-template-columns: 1fr;
     gap: 3rem;
   }
-  
+
   .cta-title {
     font-size: 2rem;
   }
@@ -285,17 +288,128 @@
   .contact-cta-section {
     padding: 4rem 0;
   }
-  
+
   .form-row {
     grid-template-columns: 1fr;
   }
-  
+
   .contact-form-wrapper {
     padding: 1.5rem;
   }
-  
+
   .quick-links {
     flex-direction: column;
     gap: 0.75rem;
+  }
+}
+
+/* ── Inquiry type select ──────────────────────────────────────────── */
+.form-select {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23D4AF37' stroke-width='2' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 1rem center;
+  padding-right: 2.5rem;
+  cursor: pointer;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+/* ── Form actions row (send + whatsapp) ──────────────────────────── */
+.form-actions {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+/* ── Primary submit button (alias of .submit-btn) ────────────────── */
+.form-submit {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  flex: 1;
+  padding: 1rem 1.5rem;
+  background: linear-gradient(135deg, #e31e24, #b71c1c);
+  color: #fff;
+  font-family: var(--font-heading);
+  font-size: 1rem;
+  font-weight: 600;
+  border: none;
+  border-radius: var(--radius-lg);
+  cursor: pointer;
+  transition: all var(--transition-normal);
+  box-shadow: 0 4px 14px rgba(227, 30, 36, 0.3);
+}
+
+.form-submit:hover:not(:disabled) {
+  background: linear-gradient(135deg, #e0be4a, #c9a020);
+  box-shadow: 0 6px 20px rgba(227, 30, 36, 0.45);
+}
+
+.form-submit:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+/* ── Loading spinner inside submit ───────────────────────────────── */
+.form-spinner {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255, 255, 255, 0.4);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: formSpin 0.7s linear infinite;
+}
+
+@keyframes formSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ── WhatsApp CTA button ──────────────────────────────────────────── */
+.form-whatsapp {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  padding: 1rem 1.25rem;
+  background: rgba(37, 211, 102, 0.1);
+  border: 2px solid rgba(37, 211, 102, 0.4);
+  color: #25d366;
+  font-family: var(--font-heading);
+  font-size: 0.875rem;
+  font-weight: 600;
+  border-radius: var(--radius-lg);
+  text-decoration: none;
+  transition: all var(--transition-fast);
+  white-space: nowrap;
+}
+
+.form-whatsapp:hover {
+  background: rgba(37, 211, 102, 0.18);
+  border-color: #25d366;
+  box-shadow: 0 4px 14px rgba(37, 211, 102, 0.25);
+}
+
+/* ── Form error alert ────────────────────────────────────────────── */
+.form-error {
+  margin: 0 0 0.75rem;
+  padding: 0.75rem 1rem;
+  border-radius: var(--radius-md);
+  background: rgba(239, 68, 68, 0.08);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  color: #ef4444;
+  font-size: 0.875rem;
+}
+
+@media (max-width: 480px) {
+  .form-actions {
+    flex-direction: column;
+  }
+  .form-whatsapp {
+    width: 100%;
   }
 }

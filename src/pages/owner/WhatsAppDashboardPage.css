@@ -41,13 +41,18 @@
   width: 10px;
   height: 10px;
   border-radius: 50%;
-  background: #25D366;
+  background: #25d366;
   animation: pulse 2s infinite;
 }
 
 @keyframes pulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.5; }
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
 }
 
 .header-actions {
@@ -71,9 +76,9 @@
 }
 
 .header-btn:hover {
-  background: var(--primary-color, #DC2626);
+  background: var(--primary-color, #e31e24);
   color: white;
-  border-color: var(--primary-color, #DC2626);
+  border-color: var(--primary-color, #e31e24);
 }
 
 .stats-grid {
@@ -95,8 +100,8 @@
 }
 
 .stat-card.highlight {
-  border-color: #25D366;
-  background: linear-gradient(135deg, #25D36608, #128C7E05);
+  border-color: #25d366;
+  background: linear-gradient(135deg, #25d36608, #128c7e05);
 }
 
 .stat-icon {
@@ -154,7 +159,7 @@
   width: 32px;
   height: 32px;
   border-radius: 50%;
-  background: #25D366;
+  background: #25d366;
   color: white;
   border: none;
   font-size: 1.25rem;
@@ -202,8 +207,8 @@
 }
 
 .contact-item.active {
-  background: #E8F5E9;
-  border-left-color: #25D366;
+  background: #e8f5e9;
+  border-left-color: #25d366;
 }
 
 .contact-item.unread {
@@ -214,7 +219,7 @@
   width: 48px;
   height: 48px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #25D366, #128C7E);
+  background: linear-gradient(135deg, #25d366, #128c7e);
   color: white;
   display: flex;
   align-items: center;
@@ -263,7 +268,7 @@
 }
 
 .unread-badge {
-  background: #25D366;
+  background: #25d366;
   color: white;
   font-size: 0.7rem;
   font-weight: 600;
@@ -276,7 +281,7 @@
 .chat-panel {
   display: flex;
   flex-direction: column;
-  background: #ECE5DD;
+  background: #ece5dd;
 }
 
 .chat-header {
@@ -331,7 +336,7 @@
 
 .action-btn:hover {
   background: var(--bg-secondary, #f5f5f5);
-  color: #25D366;
+  color: #25d366;
 }
 
 .messages-container {
@@ -370,7 +375,7 @@
 }
 
 .message.outgoing .message-content {
-  background: #DCF8C6;
+  background: #dcf8c6;
   border-top-right-radius: 2px;
 }
 
@@ -413,7 +418,8 @@
   outline: none;
 }
 
-.input-btn, .send-btn {
+.input-btn,
+.send-btn {
   width: 40px;
   height: 40px;
   border-radius: 50%;
@@ -427,7 +433,7 @@
 }
 
 .send-btn {
-  background: #25D366;
+  background: #25d366;
   color: white;
 }
 
@@ -442,7 +448,7 @@
 }
 
 .no-chat-selected svg {
-  color: #25D366;
+  color: #25d366;
   margin-bottom: 1rem;
   opacity: 0.5;
 }
@@ -489,7 +495,7 @@
 }
 
 .quick-action:hover {
-  background: #E8F5E9;
+  background: #e8f5e9;
 }
 
 .qa-icon {
@@ -504,18 +510,18 @@
 
 .quick-reply {
   padding: 0.5rem 0.75rem;
-  background: #E8F5E9;
-  border: 1px solid #C8E6C9;
+  background: #e8f5e9;
+  border: 1px solid #c8e6c9;
   border-radius: 16px;
   cursor: pointer;
   font-size: 0.75rem;
-  color: #2E7D32;
+  color: #2e7d32;
   transition: all 0.2s;
   text-align: left;
 }
 
 .quick-reply:hover {
-  background: #C8E6C9;
+  background: #c8e6c9;
 }
 
 .whatsapp-setup-wizard {
@@ -572,7 +578,7 @@
 .setup-steps .step span {
   width: 28px;
   height: 28px;
-  background: #25D366;
+  background: #25d366;
   color: white;
   border-radius: 50%;
   display: flex;
@@ -583,7 +589,7 @@
 }
 
 .setup-btn {
-  background: #25D366;
+  background: #25d366;
   color: white;
   border: none;
   padding: 1rem 2rem;
@@ -595,7 +601,7 @@
 }
 
 .setup-btn:hover {
-  background: #128C7E;
+  background: #128c7e;
 }
 
 .setup-note {
@@ -612,8 +618,8 @@
 
 .badge-exclusive {
   font-size: 0.65rem;
-  background: #FFD700;
-  color: #000;
+  background: #e31e24;
+  color: #fff;
   padding: 2px 6px;
   border-radius: 10px;
   font-weight: 600;
@@ -624,7 +630,7 @@
   .chat-container {
     grid-template-columns: 280px 1fr;
   }
-  
+
   .quick-actions-panel {
     display: none;
   }
@@ -635,28 +641,28 @@
     margin-left: 0;
     padding: 1rem;
   }
-  
+
   .whatsapp-setup-wizard {
     margin-left: 0;
   }
-  
+
   .stats-grid {
     grid-template-columns: repeat(2, 1fr);
   }
-  
+
   .chat-container {
     grid-template-columns: 1fr;
     height: auto;
   }
-  
+
   .contacts-panel {
     max-height: 300px;
   }
-  
+
   .chat-panel {
     min-height: 400px;
   }
-  
+
   .header-actions {
     display: none;
   }

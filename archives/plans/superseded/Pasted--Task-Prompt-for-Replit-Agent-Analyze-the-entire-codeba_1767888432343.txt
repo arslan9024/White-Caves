@@ -1,0 +1,100 @@
+**Task Prompt for Replit Agent:**  
+
+Analyze the entire codebase for design flaws, inconsistencies, and undocumented features. Update Aurora documentation to comprehensively cover all features, modules, and workflows.  
+
+Identify all AI assistant modules in the project, including their dashboards, navigation structures, and sub-navigation flows. Evaluate the feasibility of creating reusable components from existing UI/UX patterns, ensuring they can be efficiently integrated across modules.  
+
+Verify that React and Redx are correctly implemented to manage and update both data states and UI states across all AI assistant modules. Check for state synchronization issues, redundant renders, or improper state updates.  
+
+Locate and fix any runtime errors, logic errors, or performance bottlenecks. Model potential new features and functions based on the existing architecture, proposing modular enhancements that align with the project's goals.  
+
+Focus on:  
+- Clear documentation in Aurora  
+- AI assistant dashboard navigation flows  
+- Reusable component extraction opportunities  
+- React/Redx state consistency and performance  
+- Error resolution and feature modeling  
+
+**Prompt for Replit Agent:**
+
+Update Aurora to serve as the central documentation hub containing:
+1. Complete AI assistant inventory (all 12 with dashboards)
+2. Project scope and software stack details
+3. Module-by-module technical specifications
+
+Fix design inconsistencies:
+- Consolidate Redux slices (merge aiAssistantsSlice into aiAssistantDashboardSlice)
+- Add missing navigation routes for all 7 assistants without dashboards
+- Connect Aurora dashboard to main navigation
+
+Upgrade AI assistant dashboards by:
+1. Extracting reusable components from existing patterns (StatCard, ActivityTimeline, TabPanel)
+2. Ensuring React/Redux state consistency across all modules
+3. Implementing memoization for performance optimization
+4. Adding error boundaries to all CRM dashboards
+
+Follow the phased implementation plan from the analysis report. Focus first on critical fixes, then component extraction, then Aurora expansion, then performance optimization.
+**Prompt for Replit Agent:**
+
+Transform the AI Hub into a unified AI Command Center with this architecture:
+
+1. **Single Dropdown Control**: Replace current buttons with a single dropdown selector that lists all 12 AI assistants from Redux store. Selection triggers assistant dashboard display.
+
+2. **Dashboard Container Pattern**: 
+   - Left: Assistant-specific sidebar (25% width) with feature navigation unique to each assistant
+   - Right: Main content area (75% width) with data view container
+   - Use React functional components with minimal props
+
+3. **Redux State Structure**:
+```
+aiCommandCenter: {
+  selectedAssistant: 'assistant_id',
+  assistantData: {
+    'assistant_id': {
+      features: [],
+      sidebarItems: [],
+      dashboardComponents: []
+    }
+  }
+}
+```
+
+4. **Component Requirements**:
+   - `AIDropdownSelector.jsx`: Maps all assistants from Redux, handles selection
+   - `AssistantSidebar.jsx`: Dynamic sidebar rendering based on selected assistant
+   - `AssistantDashboardContainer.jsx`: Main container with responsive grid
+   - `BigTileCard.jsx`: Reusable card component (uniform design across all assistants)
+   - `DataGridView.jsx`: Organized grid with sorting/filtering for all data tables
+
+5. **Design Consistency**:
+   - Extract all duplicate UI patterns into shared components
+   - Use consistent spacing, colors, and typography
+   - Ensure all 12 assistants follow same layout pattern
+   - Implement proper loading/error states
+
+6. **Data Flow**:
+   - Dropdown selection → Redux updates selectedAssistant
+   - Redux change → DashboardContainer re-renders with new assistant
+   - Each assistant fetches own data via Redux thunks
+   - Cache assistant data in Redux to avoid re-fetching
+
+7. **Sidebar Implementation**:
+   - Each assistant defines own sidebar config in Redux
+   - Sidebar items trigger feature display in main container
+   - Active state management for sidebar navigation
+
+8. **Upgrade All Assistants**:
+   - Update Linda, Mary, Clara, Nina, Nancy to new pattern
+   - Create Sophia, Daisy, Theodora, Olivia, Zoe, Laila, Aurora dashboards
+   - Each assistant gets: sidebar config, feature definitions, data endpoints
+
+9. **Performance Optimization**:
+   - Memoize all selector functions
+   - Lazy load assistant dashboards
+   - Virtualize large data grids
+
+10. **Documentation**: Update Aurora with new Command Center architecture, component specs, and assistant integration guide.
+
+Implement using React 18 functional components, Redux Toolkit for state management, and Material-UI for consistent styling. Prioritize clean separation of concerns and reusable patterns.
+
+

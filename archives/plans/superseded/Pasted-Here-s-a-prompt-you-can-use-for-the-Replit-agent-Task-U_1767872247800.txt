@@ -1,0 +1,145 @@
+Here's a prompt you can use for the Replit agent:
+
+---
+
+**Task: Update AI Assistant System and Add New Assistants**
+
+**Objective:** 
+1. Update the existing AI assistants for their respective departments (ensuring they're functioning with current best practices)
+2. Create and integrate two new AI assistants: **Nina** and **Nancy**
+
+---
+
+**Instructions:**
+
+### **Part 1: Update Existing AI Assistants**
+- Review all current AI assistants in the system
+- Update their codebase to ensure optimal performance and compatibility
+- Maintain their existing core functionalities while implementing any necessary improvements
+- Ensure all assistants follow consistent coding patterns and error handling
+
+### **Part 2: Create New Assistant - NINA**
+
+**Role:** JavaScript Programming & WhatsApp Bot Development Assistant
+
+**Responsibilities:**
+1. **Code Arrangement & Development:**
+   - Organize and structure JavaScript code for web terminal execution
+   - Analyze existing WhatsApp bot code from provided folders (will upload reference files)
+   - Implement modular, maintainable code architecture
+
+2. **WhatsApp Bot Features:**
+   - Build upon existing WhatsApp bot functionality
+   - Implement web terminal execution capabilities
+   - Ensure compatibility with messaging APIs
+   - Create proper error handling and logging systems
+
+3. **Technical Requirements:**
+   - Primary language: JavaScript/Node.js
+   - Web terminal integration
+   - Session management
+   - Message queuing system
+   - Response optimization
+
+### **Part 3: Create New Assistant - NANCY**
+
+**Role:** Human Resources Management Assistant
+
+**Responsibilities:**
+1. **HR Data Management:**
+   - Maintain employee records with dummy/test data
+   - Track attendance, leave, and performance metrics
+   - Generate HR analytics and reports
+
+2. **Careers Component:**
+   - Manage job postings and applications
+   - Track recruitment pipeline
+   - Handle interview scheduling and feedback
+
+3. **Component Structure:**
+   ```
+   HR Component:
+   - Employee Directory
+   - Attendance Tracker
+   - Performance Reviews
+   - Leave Management
+   
+   Careers Component:
+   - Job Board
+   - Application Portal
+   - Candidate Tracker
+   - Onboarding System
+   ```
+
+4. **Data Requirements:**
+   - Implement secure dummy data storage
+   - Create sample datasets for testing
+   - Ensure GDPR-compliant data structure
+   - Include data export/import capabilities
+
+---
+
+**Implementation Guidelines:**
+
+1. **Integration:**
+   - Ensure all assistants work within the existing system architecture
+   - Maintain consistent API patterns
+   - Implement proper authentication and authorization
+
+2. **Code Quality:**
+   - Follow DRY principles
+   - Include comprehensive documentation
+   - Add unit tests for new features
+   - Implement proper logging
+
+3. **File Structure:**
+   ```
+   /ai-assistants/
+     ├── existing/ (updated)
+     ├── nina/
+     │   ├── whatsapp-bot/
+     │   ├── web-terminal/
+     │   └── core-modules/
+     └── nancy/
+         ├── hr-components/
+         └── careers-components/
+   ```
+
+4. **Dependencies:**
+   - List required packages for each assistant
+   - Ensure no version conflicts
+   - Include environment configuration
+
+---
+
+**Testing Requirements:**
+- Each assistant should have isolated test suites
+- Integration tests for inter-assistant communication
+- Performance benchmarking
+- Security vulnerability scanning
+
+**Deliverables:**
+1. Updated existing AI assistants
+2. Fully functional Nina assistant with WhatsApp bot capabilities
+3. Fully functional Nancy assistant with HR and Careers components
+4. Documentation for all new features
+5. Migration guide if breaking changes exist
+
+---
+
+**Additional Notes:**
+- I will provide reference folders for existing WhatsApp bot code
+- Use modern JavaScript practices (ES6+, async/await, modular imports)
+- Prioritize security in data handling (especially for HR data)
+- Include API rate limiting where applicable
+- Ensure graceful degradation for failed services
+
+**Confirmation Questions Before Starting:**
+1. Do you understand the complete scope?
+2. Are there any existing system constraints I should know?
+3. What deployment considerations should be made?
+4. Should I proceed with implementation?
+
+---
+
+This prompt provides clear direction while allowing flexibility for the agent to apply its expertise. It's structured to ensure all requirements are addressed systematically.

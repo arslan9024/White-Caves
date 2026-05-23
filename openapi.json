@@ -1,0 +1,720 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "White Caves Real Estate API",
+    "description": "Complete REST API for White Caves real estate platform. AI-powered chatbot, intelligent agent matching, real-time notifications, and comprehensive analytics.",
+    "version": "1.0.0",
+    "contact": {
+      "name": "White Caves Support",
+      "email": "support@whitecaves.com",
+      "url": "https://whitecaves.com"
+    },
+    "license": {
+      "name": "Proprietary",
+      "url": "https://whitecaves.com/license"
+    }
+  },
+  "servers": [
+    {
+      "url": "http://localhost:5000/api",
+      "description": "Local Development Server"
+    },
+    {
+      "url": "https://staging.whitecaves.com/api",
+      "description": "Staging Environment"
+    },
+    {
+      "url": "https://api.whitecaves.com",
+      "description": "Production Environment"
+    }
+  ],
+  "paths": {
+    "/chatbot/message": {
+      "post": {
+        "summary": "Process User Message",
+        "description": "Send a user message to the AI chatbot and receive an intelligent response with property recommendations",
+        "tags": ["Chatbot"],
+        "operationId": "processMessage",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ConversationMessage"
+              },
+              "example": {
+                "conversationId": "conv-2024-001",
+                "userMessage": "I'm looking for a 2-bedroom apartment in Dubai Marina with a budget of 1.5 million AED",
+                "language": "en"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful response from chatbot",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConversationResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request parameters",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - Invalid or missing authentication token"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        },
+        "security": [
+          {
+            "Bearer": []
+          }
+        ]
+      }
+    },
+    "/chatbot/conversations/{conversationId}/history": {
+      "get": {
+        "summary": "Get Conversation History",
+        "description": "Retrieve the complete history of a conversation including all messages and bot responses",
+        "tags": ["Chatbot"],
+        "operationId": "getConversationHistory",
+        "parameters": [
+          {
+            "name": "conversationId",
+            "in": "path",
+            "required": true,
+            "description": "Unique identifier for the conversation",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "Maximum number of messages to retrieve",
+            "schema": {
+              "type": "integer",
+              "default": 50
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "description": "Number of messages to skip",
+            "schema": {
+              "type": "integer",
+              "default": 0
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Conversation history retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ConversationMessage"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Conversation not found"
+          }
+        },
+        "security": [
+          {
+            "Bearer": []
+          }
+        ]
+      }
+    },
+    "/chatbot/conversations/{conversationId}/score-lead": {
+      "post": {
+        "summary": "Score Lead Quality",
+        "description": "Calculate a lead quality score based on conversation engagement and property interest indicators",
+        "tags": ["Chatbot"],
+        "operationId": "scoreLeadQuality",
+        "parameters": [
+          {
+            "name": "conversationId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Lead score calculated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LeadScore"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/agents/assign": {
+      "post": {
+        "summary": "Assign Best Agent for Lead",
+        "description": "Find and assign the best-matching agent for a given lead based on expertise, capacity, and performance",
+        "tags": ["Agent Assignment"],
+        "operationId": "assignAgent",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "lead": {
+                    "type": "object",
+                    "description": "Lead information"
+                  },
+                  "preferences": {
+                    "type": "object",
+                    "description": "Assignment preferences"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Agent assigned successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AgentAssignment"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No suitable agents found"
+          }
+        }
+      }
+    },
+    "/agents/{agentId}": {
+      "get": {
+        "summary": "Get Agent Details",
+        "description": "Retrieve detailed information about a specific agent",
+        "tags": ["Agent Management"],
+        "operationId": "getAgent",
+        "parameters": [
+          {
+            "name": "agentId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Agent details retrieved",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Agent"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Agent not found"
+          }
+        }
+      }
+    },
+    "/notifications/send": {
+      "post": {
+        "summary": "Send Notification",
+        "description": "Send a notification to a user via email, SMS, or push notification",
+        "tags": ["Notifications"],
+        "operationId": "sendNotification",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/NotificationRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Notification queued successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Notification"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid notification parameters"
+          }
+        }
+      }
+    },
+    "/notifications/user/{userId}": {
+      "get": {
+        "summary": "Get User Notifications",
+        "description": "Retrieve notification history for a specific user",
+        "tags": ["Notifications"],
+        "operationId": "getUserNotifications",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "default": 50
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User notifications retrieved",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Notification"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/dashboard/data": {
+      "get": {
+        "summary": "Get Dashboard Data",
+        "description": "Retrieve comprehensive dashboard metrics and analytics",
+        "tags": ["Dashboard"],
+        "operationId": "getDashboardData",
+        "responses": {
+          "200": {
+            "description": "Dashboard data retrieved",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DashboardData"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/dashboard/analytics": {
+      "get": {
+        "summary": "Get Market Analytics",
+        "description": "Retrieve market trends, pricing analytics, and property statistics",
+        "tags": ["Dashboard"],
+        "operationId": "getMarketAnalytics",
+        "parameters": [
+          {
+            "name": "period",
+            "in": "query",
+            "description": "Time period for analytics (week, month, quarter, year)",
+            "schema": {
+              "type": "string",
+              "enum": ["week", "month", "quarter", "year"],
+              "default": "month"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Market analytics retrieved",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "period": { "type": "string" },
+                    "averagePrices": { "type": "object" },
+                    "trends": { "type": "object" },
+                    "topLocations": { "type": "array" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/health": {
+      "get": {
+        "summary": "Health Check",
+        "description": "Check API server health status",
+        "tags": ["System"],
+        "operationId": "healthCheck",
+        "responses": {
+          "200": {
+            "description": "Server is healthy",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "string" },
+                    "timestamp": { "type": "string", "format": "date-time" },
+                    "version": { "type": "string" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "ConversationMessage": {
+        "type": "object",
+        "properties": {
+          "conversationId": {
+            "type": "string",
+            "description": "Unique conversation identifier"
+          },
+          "userMessage": {
+            "type": "string",
+            "description": "User's message or query"
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Message timestamp"
+          },
+          "language": {
+            "type": "string",
+            "enum": ["en", "ar"],
+            "description": "Message language code"
+          }
+        },
+        "required": ["conversationId", "userMessage", "language"]
+      },
+      "ConversationResponse": {
+        "type": "object",
+        "properties": {
+          "conversationId": {
+            "type": "string"
+          },
+          "botResponse": {
+            "type": "string"
+          },
+          "confidence": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          },
+          "intent": {
+            "type": "string",
+            "description": "Detected user intent"
+          },
+          "entities": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Entity"
+            }
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "Entity": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "description": "Entity type (location, price, bedroom, etc.)"
+          },
+          "value": {
+            "type": "string",
+            "description": "Entity value"
+          },
+          "confidence": {
+            "type": "number",
+            "description": "Confidence score for entity extraction"
+          }
+        }
+      },
+      "LeadScore": {
+        "type": "object",
+        "properties": {
+          "conversationId": {
+            "type": "string"
+          },
+          "score": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 100,
+            "description": "Lead quality score (0-100)"
+          },
+          "reasoning": {
+            "type": "string"
+          },
+          "nextAction": {
+            "type": "string"
+          }
+        }
+      },
+      "Agent": {
+        "type": "object",
+        "properties": {
+          "_id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string",
+            "format": "email"
+          },
+          "phone": {
+            "type": "string"
+          },
+          "expertise": {
+            "type": "object",
+            "properties": {
+              "propertyTypes": {
+                "type": "array",
+                "items": { "type": "string" }
+              },
+              "locations": {
+                "type": "array",
+                "items": { "type": "string" }
+              }
+            }
+          },
+          "activeDeals": {
+            "type": "integer"
+          },
+          "maxCapacity": {
+            "type": "integer"
+          },
+          "performance": {
+            "type": "object",
+            "properties": {
+              "closingRate": {
+                "type": "number"
+              }
+            }
+          }
+        }
+      },
+      "AgentAssignment": {
+        "type": "object",
+        "properties": {
+          "agentId": {
+            "type": "string"
+          },
+          "agent": {
+            "$ref": "#/components/schemas/Agent"
+          },
+          "matchScore": {
+            "type": "number"
+          },
+          "reason": {
+            "type": "string"
+          }
+        }
+      },
+      "NotificationRequest": {
+        "type": "object",
+        "properties": {
+          "userId": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string",
+            "enum": ["email", "sms", "push"]
+          },
+          "title": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          }
+        },
+        "required": ["userId", "type", "message"]
+      },
+      "Notification": {
+        "type": "object",
+        "properties": {
+          "_id": {
+            "type": "string"
+          },
+          "userId": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string",
+            "enum": ["email", "sms", "push"]
+          },
+          "title": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string",
+            "enum": ["pending", "sent", "failed"]
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "sentAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "DashboardData": {
+        "type": "object",
+        "properties": {
+          "totalLeads": {
+            "type": "integer"
+          },
+          "activeConversations": {
+            "type": "integer"
+          },
+          "closedDeals": {
+            "type": "integer"
+          },
+          "revenue": {
+            "type": "number"
+          },
+          "topAgents": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Agent"
+            }
+          },
+          "recentProperties": {
+            "type": "array"
+          },
+          "marketTrends": {
+            "type": "object"
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "ErrorResponse": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "object",
+            "properties": {
+              "code": {
+                "type": "string"
+              },
+              "message": {
+                "type": "string"
+              },
+              "timestamp": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "path": {
+                "type": "string"
+              },
+              "traceId": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "Bearer": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "description": "JWT Bearer token authentication"
+      },
+      "ApiKey": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "X-API-Key",
+        "description": "API Key authentication"
+      }
+    }
+  },
+  "tags": [
+    {
+      "name": "Chatbot",
+      "description": "AI-powered chatbot endpoints for property search and customer interaction"
+    },
+    {
+      "name": "Agent Assignment",
+      "description": "Intelligent agent matching and assignment"
+    },
+    {
+      "name": "Agent Management",
+      "description": "Agent profile and performance management"
+    },
+    {
+      "name": "Notifications",
+      "description": "User notification delivery via email, SMS, and push"
+    },
+    {
+      "name": "Dashboard",
+      "description": "Analytics and dashboard metrics"
+    },
+    {
+      "name": "System",
+      "description": "System health and status endpoints"
+    }
+  ]
+}

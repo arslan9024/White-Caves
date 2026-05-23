@@ -1,0 +1,232 @@
+import styled from 'styled-components';
+import { Link } from 'react-router-dom';
+import { transitions } from '../../../styles/theme/transitions';
+import { typography } from '../../../styles/theme/typography';
+import { radius } from '../../../styles/theme/radius';
+
+export const PropertyCardGrid = styled.div<{ $columns?: number }>`
+  display: grid;
+  grid-template-columns: repeat(${props => props.$columns || 3}, 1fr);
+  gap: 1.5rem;
+
+  @media (max-width: 992px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  @media (max-width: 600px) {
+    grid-template-columns: 1fr;
+  }
+`;
+
+export const PropertyCardContainer = styled(Link)`
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: ${radius.xl};
+  overflow: hidden;
+  text-decoration: none;
+  display: block;
+  transition: ${transitions.hover};
+  cursor: pointer;
+  position: relative;
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: ${radius.xl};
+    border: 1px solid rgba(227, 30, 36, 0);
+    pointer-events: none;
+    transition: ${transitions.hover};
+  }
+
+  &:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 16px 38px rgba(0, 0, 0, 0.18);
+    border-color: var(--color-primary);
+
+    &::before {
+      border-color: rgba(227, 30, 36, 0.42);
+    }
+  }
+`;
+
+export const PropertyCardDiv = styled.div<{ $clickable?: boolean }>`
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: ${radius.xl};
+  overflow: hidden;
+  display: block;
+  transition: ${transitions.hover};
+  cursor: ${props => (props.$clickable ? 'pointer' : 'default')};
+  position: relative;
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: ${radius.xl};
+    border: 1px solid rgba(227, 30, 36, 0);
+    pointer-events: none;
+    transition: ${transitions.hover};
+  }
+
+  &:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 16px 38px rgba(0, 0, 0, 0.18);
+    border-color: var(--color-primary);
+
+    &::before {
+      border-color: rgba(227, 30, 36, 0.42);
+    }
+  }
+`;
+
+export const PropertyCardImage = styled.div`
+  position: relative;
+  height: 180px;
+  background: linear-gradient(140deg, var(--bg-tertiary) 0%, var(--bg-secondary) 100%);
+  overflow: hidden;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.45s ease;
+  }
+
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.28), transparent 48%);
+    pointer-events: none;
+  }
+
+  ${PropertyCardContainer}:hover &, ${PropertyCardDiv}:hover & {
+    img {
+      transform: scale(1.04);
+    }
+  }
+`;
+
+export const PropertyPlaceholder = styled.div`
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 3rem;
+  background: linear-gradient(135deg, var(--bg-tertiary) 0%, var(--bg-secondary) 100%);
+`;
+
+export const PropertyStatusBadgeStyled = styled.span<{ $statusType?: string }>`
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.7rem;
+  font-weight: ${typography.weights.semibold};
+  text-transform: capitalize;
+  z-index: 2;
+
+  ${props => {
+    const status = props.$statusType?.toLowerCase().replace(/\s+/g, '-') || 'available';
+    switch (status) {
+      case 'available':
+        return `background: rgba(16, 185, 129, 0.9); color: white;`;
+      case 'new':
+        return `background: rgba(59, 130, 246, 0.9); color: white;`;
+      case 'hot-deal':
+      case 'hot':
+        return `background: rgba(239, 68, 68, 0.9); color: white;`;
+      case 'price-drop':
+        return `background: rgba(245, 158, 11, 0.9); color: white;`;
+      case 'sold':
+        return `background: rgba(107, 114, 128, 0.9); color: white;`;
+      case 'rented':
+        return `background: rgba(139, 92, 246, 0.9); color: white;`;
+      default:
+        return `background: rgba(16, 185, 129, 0.9); color: white;`;
+    }
+  }}
+`;
+
+export const FavoriteButton = styled.button<{ $isActive?: boolean }>`
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 36px;
+  height: 36px;
+  background: rgba(255, 255, 255, 0.9);
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+  z-index: 3;
+  transition: ${transitions.hover};
+
+  &:hover {
+    transform: scale(1.1);
+  }
+
+  ${props =>
+    props.$isActive &&
+    `
+    background: rgba(239, 68, 68, 0.1);
+  `}
+`;
+
+export const PropertyCardContent = styled.div`
+  padding: 1.25rem;
+  background:
+    radial-gradient(circle at top right, rgba(227, 30, 36, 0.06), transparent 45%), var(--bg-card);
+`;
+
+export const PropertyTitle = styled.h4`
+  font-size: 1rem;
+  font-weight: ${typography.weights.semibold};
+  color: var(--text-primary);
+  margin: 0 0 0.5rem 0;
+  line-height: 1.4;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+`;
+
+export const PropertyLocation = styled.p`
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  margin: 0 0 0.5rem 0;
+`;
+
+export const PropertyPrice = styled.p`
+  font-size: 1.25rem;
+  font-weight: ${typography.weights.bold};
+  color: var(--color-primary);
+  margin: 0 0 0.75rem 0;
+  letter-spacing: 0.01em;
+`;
+
+export const PriceSuffix = styled.span`
+  font-size: 0.8rem;
+  font-weight: ${typography.weights.regular};
+  color: var(--text-muted);
+`;
+
+export const PropertySpecs = styled.div`
+  display: flex;
+  gap: 1rem;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+
+  span {
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+  }
+`;

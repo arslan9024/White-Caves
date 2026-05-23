@@ -1,0 +1,202 @@
+# **PROJECT PROMPT: Dashboard Design Overhaul & Firebase Security Integration**
+
+## **📋 OBJECTIVE**
+Execute a **comprehensive visual redesign** of the main Owner Dashboard while **preserving 100% of existing functionality**. Transform the current 14-item AI assistants array into a modern **left-side navigation sidebar** with complete responsive design. Simultaneously **resolve the Firebase authentication domain error** to ensure system security and accessibility.
+
+## **👥 TEAM ROLES & RESPONSIBILITIES**
+
+### **AURORA (System Architect & Project Lead)**
+- **Primary:** Oversee entire redesign, ensure zero functionality regression
+- **Firebase Lead:** Diagnose and resolve `auth/unauthorized-domain` error
+- **Integration:** Ensure new sidebar maintains all existing state management logic
+- **Quality Gate:** Approve all technical implementation before deployment
+
+### **HAZEL (Lead Frontend Designer/Developer)**
+- **Primary:** Execute complete visual redesign of dashboard components
+- **Design Audit:** Identify and fix all existing design inconsistencies
+- **Sidebar Creation:** Build new `AssistantNavSidebar.jsx` with modern UX patterns
+- **Responsive Design:** Implement fluid containers and auto-sizing for all device views
+
+### **WILLOW (Backend & Security Specialist)**
+- **Primary:** Configure and secure Firebase authentication domains
+- **Performance:** Optimize sidebar state management for 14+ assistant items
+- **API Integrity:** Ensure all existing data flows remain unchanged
+- **Security Audit:** Verify Firebase configuration meets production standards
+
+### **ZOE (Executive Stakeholder & UX Approver)**
+- **Primary:** Define new design standards and professional aesthetics
+- **User Testing:** Validate redesigned workflows maintain efficiency
+- **Final Approval:** Sign off on visual redesign before deployment
+- **Priority Setting:** Balance design improvements with functional requirements
+
+## **🎨 CORE DESIGN TRANSFORMATIONS**
+
+### **1. SIDEBAR REDESIGN (CRITICAL)**
+**Current Problem:** Array of 14 AI assistants creates visual clutter and poor navigation
+**New Solution:** Modern vertical navigation sidebar with hierarchical organization
+
+**Technical Specifications:**
+```javascript
+// New Sidebar Structure
+<AssistantNavSidebar>
+  <CompanyLogo />
+  <NavSection title="AI Command Center">
+    <AssistantNavItem 
+      icon={AssistantIcon} 
+      name="Clara" 
+      department="Sales"
+      badge={notificationCount}
+      isActive={true}
+    />
+    // ... 13 more assistants with consistent styling
+  </NavSection>
+  <NavSection title="System">
+    <NavItem icon={SettingsIcon} name="Dashboard Settings" />
+    <NavItem icon={AnalyticsIcon} name="Performance Analytics" />
+  </NavSection>
+</AssistantNavSidebar>
+```
+
+**Visual Requirements:**
+- **Position:** Fixed left sidebar, 240px width (collapsible to 64px)
+- **Hierarchy:** Clear visual distinction between assistant groups/departments
+- **States:** Hover effects, active selection indicators, notification badges
+- **Animation:** Smooth collapse/expand transitions (300ms ease-in-out)
+- **Icons:** Consistent icon set with department-based color coding
+
+### **2. RESPONSIVE CONTAINER SYSTEM**
+**Implementation:**
+```jsx
+// Main dashboard structure
+<Container fluid className="dashboard-root">
+  <Row className="g-0">
+    <Col xs={12} md={3} lg={2} className="sidebar-column">
+      <AssistantNavSidebar />
+    </Col>
+    <Col xs={12} md={9} lg={10} className="content-column">
+      <DashboardHeader />
+      <Container fluid className="main-content-area">
+        {/* Dynamic assistant content loads here */}
+      </Container>
+    </Col>
+  </Row>
+</Container>
+```
+
+**Breakpoint Strategy:**
+- **Mobile (<768px):** Sidebar becomes bottom navigation or hamburger menu
+- **Tablet (768px-992px):** Sidebar compact mode with icons only
+- **Desktop (>992px):** Full sidebar with icons and text labels
+
+### **3. DESIGN SYSTEM ENHANCEMENTS**
+- **Typography:** Implement consistent scale (h1: 2rem, h2: 1.5rem, body: 1rem)
+- **Spacing:** 8px base unit throughout all components
+- **Color Palette:** Refined professional palette with semantic colors
+- **Component Library:** Update all existing components to match new design standards
+
+## **🔧 FIREBASE DOMAIN ERROR RESOLUTION (PHASE 0)**
+
+### **IMMEDIATE FIX REQUIRED:**
+```javascript
+// Firebase Configuration Check
+const firebaseConfig = {
+  apiKey: "your-api-key",
+  authDomain: "your-domain.firebaseapp.com", // CRITICAL: Must match domain
+  projectId: "your-project-id",
+  // ... other config
+};
+
+// Step-by-Step Resolution:
+1. **Identify Current Domain:** Check the exact domain serving the application
+2. **Firebase Console Update:**
+   - Go to Firebase Console → Authentication → Settings
+   - Under "Authorized domains" add:
+     - `localhost` (for development)
+     - `your-domain.com` (production)
+     - Any subdomains in use
+3. **Environment Configuration:**
+   - Update `.env` files for different environments
+   - Verify `authDomain` matches deployment domain exactly
+4. **Testing:**
+   - Clear browser cache and localStorage
+   - Test authentication flow on all environments
+```
+
+**Willow's Responsibility:** 
+1. Audit current Firebase configuration
+2. Add all required domains to authorized list
+3. Implement environment-based configuration
+4. Document resolution for future deployments
+
+## **📊 IMPLEMENTATION PHASES**
+
+### **PHASE 0: FIREBASE HOTFIX (Day 1)**
+- **Willow:** Resolve unauthorized-domain error
+- **Aurora:** Verify fix doesn't break existing auth flows
+- **Outcome:** Dashboard accessible on all required domains
+
+### **PHASE 1: DESIGN AUDIT & SYSTEM SETUP (Days 2-3)**
+- **Hazel:** Audit current design inconsistencies (deliver report)
+- **Aurora:** Set up design system foundation in Storybook
+- **Zoe:** Review and approve design direction
+- **Willow:** Optimize state management for new sidebar
+
+### **PHASE 2: SIDEBAR IMPLEMENTATION (Days 4-6)**
+- **Hazel:** Build `AssistantNavSidebar` component
+- **Willow:** Implement responsive state management
+- **Aurora:** Integrate sidebar into main dashboard layout
+- **Zoe:** Test navigation flow and provide feedback
+
+### **PHASE 3: RESPONSIVE REFACTORING (Days 7-9)**
+- **Hazel:** Implement fluid containers and responsive behavior
+- **Aurora:** Ensure all assistant dashboards adapt to new layout
+- **Willow:** Optimize performance for mobile devices
+- **Zoe:** Validate UX across all device sizes
+
+### **PHASE 4: POLISH & DEPLOYMENT (Days 10-12)**
+- **Hazel:** Final design polish and animation refinement
+- **Willow:** Complete Firebase security verification
+- **Aurora:** Final integration testing and bug fixes
+- **Zoe:** User acceptance testing and final approval
+
+## **✅ SUCCESS CRITERIA**
+
+### **FUNCTIONAL (MUST MAINTAIN):**
+- All 14 AI assistants fully accessible with existing features
+- Current Redux state management and data flows unchanged
+- Authentication and authorization working on all domains
+- Performance equal to or better than current dashboard
+
+### **DESIGN (MUST ACHIEVE):**
+- Modern, professional aesthetic meeting new standards
+- Intuitive left-side navigation for all 14 assistants
+- Flawless responsive behavior on all device sizes
+- Consistent component styling across entire dashboard
+- Improved accessibility (WCAG 2.1 AA compliance)
+
+### **TECHNICAL (MUST IMPLEMENT):**
+- Firebase domain error completely resolved
+- Zero breaking changes to existing functionality
+- Clean, maintainable component architecture
+- Comprehensive documentation of new design system
+
+## **🚨 GOVERNANCE RULES**
+
+1. **NO Functional Changes:** Only visual/UX improvements permitted
+2. **Backward Compatibility:** All existing URLs and state patterns must work
+3. **Performance Budget:** No increase in bundle size >10%
+4. **Progressive Enhancement:** New design must degrade gracefully
+5. **Documentation:** All changes must be recorded in Aurora's docs
+
+## **📞 ESCALATION PROTOCOL**
+
+1. **Design Conflicts:** Hazel → Aurora → Zoe
+2. **Technical Blockers:** Willow → Aurora
+3. **UX Decisions:** Zoe → Aurora (final arbitration)
+4. **Firebase Issues:** Willow → Aurora (immediate priority)
+
+---
+
+**IMMEDIATE ACTION REQUIRED:** Begin with **Phase 0** to resolve Firebase error, then proceed sequentially through design phases. Hazel should start design audit while Willow fixes authentication. Aurora will coordinate parallel workstreams.
+
+Ready to execute this comprehensive dashboard transformation?

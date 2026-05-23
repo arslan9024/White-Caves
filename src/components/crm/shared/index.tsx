@@ -1,0 +1,32 @@
+﻿// Shared Components for AI Command Center
+export { default as StatCard } from './StatCard';
+export { default as TabPanel, TabContent } from './TabPanel';
+export { default as ActivityTimeline } from './ActivityTimeline';
+export { default as BigTileCard } from './BigTileCard';
+export { default as DataGridView } from './DataGridView';
+export { default as AssistantSidebar } from './AssistantSidebar';
+export { default as UniversalAssistantLayout } from './UniversalAssistantLayout';
+export { default as AIDropdownSelector } from './AIDropdownSelector';
+export { default as AssistantFeatureMatrix } from './AssistantFeatureMatrix';
+export { default as NotificationBadge } from './NotificationBadge';
+export { default as StatusIndicator } from './StatusIndicator';
+export {
+  default as PaymentInstructionDeck,
+  PaymentMethodSelector,
+  BankTransferDetails,
+} from './PaymentInstructionDeck';
+export { default as DualCategoryTabStrip } from './DualCategoryTabStrip';
+export { default as AssignmentDropdown } from './AssignmentDropdown';
+export {
+  default as PropertyMediaGallery,
+  PropertySpecsGrid,
+  PropertyDetailContainer,
+} from './PropertyMediaGallery';
+export { default as BotSessionManager } from './BotSessionManager';
+export { default as PlatformPublisherForm } from './PlatformPublisherForm';
+export { default as JobPostComposer } from './JobPostComposer';
+export { default as WeeklyResearchModule } from './WeeklyResearchModule';
+export { default as AssistantDocsTab } from './AssistantDocsTab';
+export { default as DealJourneyTimeline } from './DealJourneyTimeline';
+export { default as DemoDataPanel } from './DemoDataPanel';
+export { default as MarketingSEOTools } from './MarketingSEOTools';

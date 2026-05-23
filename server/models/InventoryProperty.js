@@ -279,13 +279,21 @@ InventoryPropertySchema.statics.getAreaStats = async function() {
         sold: { $sum: { $cond: [{ $eq: ['$status', 'sold'] }, 1, 0] } }
       }
     },
-    { $sort: { total: -1 } }
-  ]);
-};
+    isActive: { type: Boolean, default: true, index: true },
+    featured: { type: Boolean, default: false },
+    views: { type: Number, default: 0 },
+    updatedBy: { type: String, trim: true },
+  },
+  {
+    timestamps: true,
+    strict: false,
+  }
+);
 
-InventoryPropertySchema.statics.getDistinctAreas = async function() {
-  return this.distinct('area', { isActive: true });
-};
+InventoryPropertySchema.index({ pNumber: 1, area: 1, plotNumber: 1 }, { unique: false });
+InventoryPropertySchema.index({ primaryOwner: 1 });
+InventoryPropertySchema.index({ owners: 1 });
+InventoryPropertySchema.index({ importSessionId: 1, createdAt: -1 });
 
 // ADVANCED QUERY METHOD - Used by Linda/Nina for real-time property matching
 InventoryPropertySchema.statics.queryProperties = async function(filters = {}) {

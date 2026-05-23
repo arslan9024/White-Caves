@@ -1,142 +1,126 @@
+/**
+ * Vercel Serverless API — White Caves Real Estate
+ * Uses Prisma (MongoDB) — unified with /server backend
+ * Routes: health, properties, chatbot/test
+ */
 import express from 'express';
 import cors from 'cors';
-import mongoose from 'mongoose';
+import { PrismaClient } from '@prisma/client';
 
 const app = express();
+let prisma = null;
+
+function getPrismaClient() {
+  if (!prisma) {
+    prisma = new PrismaClient();
+  }
+  return prisma;
+}
+
+// CORS: restrict origins in production
+const ALLOWED_ORIGINS = (process.env.CORS_ORIGIN || 'http://localhost:5000,http://localhost:3000')
+  .split(',')
+  .map(s => s.trim());
 
 app.use(cors({
-  origin: true,
+  origin: (origin, callback) => {
+    // Allow requests with no origin (server-to-server, health checks)
+    if (!origin || ALLOWED_ORIGINS.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error(`CORS: origin ${origin} not allowed`));
+    }
+  },
   credentials: true
 }));
 app.use(express.json());
 
-let dbConnected = false;
-
-async function connectDB() {
-  if (dbConnected || mongoose.connection.readyState === 1) {
-    return true;
-  }
-  
-  const mongoUri = process.env.MONGODB_URI;
-  if (!mongoUri) {
-    console.log('MongoDB URI not configured - running without database');
-    return false;
-  }
-  
-  try {
-    await mongoose.connect(mongoUri, {
-      serverSelectionTimeoutMS: 5000,
-      maxPoolSize: 10
-    });
-    dbConnected = true;
-    console.log('Connected to MongoDB');
-    return true;
-  } catch (error) {
-    console.error('MongoDB connection error:', error.message);
-    dbConnected = false;
-    return false;
-  }
-}
-
-const PropertySchema = new mongoose.Schema({
-  propertyCode: String,
-  title: { type: String, required: true },
-  description: String,
-  price: Number,
-  currency: { type: String, default: 'AED' },
-  type: String,
-  status: { type: String, default: 'available' },
-  bedrooms: Number,
-  bathrooms: Number,
-  area: Number,
-  location: {
-    emirate: String,
-    community: String,
-    address: String,
-    coordinates: { lat: Number, lng: Number }
-  },
-  images: [String],
-  features: [String],
-  agent: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
-  createdAt: { type: Date, default: Date.now }
-}, { timestamps: true });
-
-const Property = mongoose.models.Property || mongoose.model('Property', PropertySchema);
-
-app.get('/api/health', (req, res) => {
+// ─── Health ──────────────────────────────────────────────────────────────
+app.get('/api/health', (_req, res) => {
   res.json({
     status: 'healthy',
     environment: 'production',
+    platform: 'vercel',
+    database: 'prisma-mongodb',
     timestamp: new Date().toISOString(),
-    mongodb: dbConnected ? 'connected' : 'not_connected'
   });
 });
 
-app.get('/api/system/health', async (req, res) => {
-  await connectDB();
-  
+app.get('/api/system/health', async (_req, res) => {
+  let dbConnected = false;
+  try {
+    await getPrismaClient().$runCommandRaw({ ping: 1 });
+    dbConnected = true;
+  } catch { /* db unreachable */ }
+
   res.json({
-    server: {
-      status: 'healthy',
-      environment: 'production',
-      platform: 'vercel'
-    },
-    mongodb: {
+    server: { status: 'healthy', environment: 'production', platform: 'vercel' },
+    database: {
       status: dbConnected ? 'connected' : 'not_connected',
-      storageMode: dbConnected ? 'mongodb' : 'none'
+      engine: 'prisma-mongodb',
     },
     firebase: {
-      status: process.env.FIREBASE_SERVICE_ACCOUNT ? 'configured' : 'not_configured'
+      status: process.env.FIREBASE_SERVICE_ACCOUNT ? 'configured' : 'not_configured',
     },
     stripe: {
       status: process.env.STRIPE_SECRET_KEY ? 'configured' : 'not_configured',
-      mode: process.env.STRIPE_SECRET_KEY?.includes('_test_') ? 'Test' : 'Live'
     },
-    productionReadiness: {
-      score: 100,
-      isDeployable: true,
-      platform: 'Vercel'
-    }
   });
 });
 
+// ─── Properties ──────────────────────────────────────────────────────────
 app.get('/api/properties', async (req, res) => {
   try {
-    await connectDB();
-    
-    const { type, emirate, minPrice, maxPrice, bedrooms, status, limit = 20 } = req.query;
-    const filter = {};
-    
-    if (type) filter.type = type;
-    if (emirate) filter['location.emirate'] = emirate;
-    if (status) filter.status = status;
-    if (bedrooms) filter.bedrooms = parseInt(bedrooms);
+    const {
+      type, status, area, minPrice, maxPrice,
+      search, page = '1', pageSize = '20',
+      sortBy = 'createdAt', sortOrder = 'desc',
+    } = req.query;
+
+    const limit = Math.min(100, Math.max(1, parseInt(pageSize) || 20));
+    const skip = (Math.max(1, parseInt(page) || 1) - 1) * limit;
+
+    const where = {};
+    if (type && type !== 'all') where.type = type;
+    if (status && status !== 'all') where.status = status;
+    if (area) where.area = area;
     if (minPrice || maxPrice) {
-      filter.price = {};
-      if (minPrice) filter.price.$gte = parseInt(minPrice);
-      if (maxPrice) filter.price.$lte = parseInt(maxPrice);
+      where.price = {};
+      if (minPrice) where.price.gte = parseFloat(minPrice);
+      if (maxPrice) where.price.lte = parseFloat(maxPrice);
     }
-    
-    const properties = await Property.find(filter)
-      .sort({ createdAt: -1 })
-      .limit(parseInt(limit));
-    
-    res.json({ success: true, properties });
+    if (search) {
+      where.OR = [
+        { title: { contains: search, mode: 'insensitive' } },
+        { location: { contains: search, mode: 'insensitive' } },
+        { description: { contains: search, mode: 'insensitive' } },
+      ];
+    }
+
+    const [properties, total] = await Promise.all([
+      getPrismaClient().property.findMany({ where, skip, take: limit, orderBy: { [sortBy]: sortOrder } }),
+      getPrismaClient().property.count({ where }),
+    ]);
+
+    res.json({
+      success: true,
+      properties,
+      pagination: { page: parseInt(page) || 1, pageSize: limit, total, totalPages: Math.ceil(total / limit) },
+    });
   } catch (error) {
-    res.status(500).json({ success: false, error: error.message });
+    console.error('Properties API error:', error);
+    res.status(500).json({ success: false, error: 'Internal server error' });
   }
 });
 
 app.get('/api/properties/:id', async (req, res) => {
   try {
-    await connectDB();
-    const property = await Property.findById(req.params.id);
-    if (!property) {
-      return res.status(404).json({ success: false, error: 'Property not found' });
-    }
+    const property = await getPrismaClient().property.findUnique({ where: { id: req.params.id } });
+    if (!property) return res.status(404).json({ success: false, error: 'Property not found' });
     res.json({ success: true, property });
   } catch (error) {
-    res.status(500).json({ success: false, error: error.message });
+    console.error('Property detail API error:', error);
+    res.status(500).json({ success: false, error: 'Internal server error' });
   }
 });
 
@@ -723,60 +707,32 @@ app.post('/api/chatbot/test', async (req, res) => {
     viewing_request: ['view', 'visit', 'see', 'tour', 'معاينة', 'زيارة'],
     price_inquiry: ['price', 'cost', 'how much', 'سعر', 'كم'],
     agent_request: ['agent', 'contact', 'call', 'وكيل', 'اتصل'],
-    greeting: ['hello', 'hi', 'مرحبا', 'السلام']
+    greeting: ['hello', 'hi', 'مرحبا', 'السلام'],
   };
-  
-  let detectedIntent = 'general_inquiry';
+
+  let detected = 'general_inquiry';
   let confidence = 60;
-  
-  const lowerMessage = message.toLowerCase();
-  for (const [intent, keywords] of Object.entries(intents)) {
-    if (keywords.some(kw => lowerMessage.includes(kw))) {
-      detectedIntent = intent;
-      confidence = 85;
-      break;
-    }
+  for (const [intent, kws] of Object.entries(intents)) {
+    if (kws.some(k => lower.includes(k))) { detected = intent; confidence = 85; break; }
   }
-  
-  const responses = {
-    property_inquiry: {
-      en: "I'd be happy to help you find the perfect property. What type are you looking for and in which area?",
-      ar: "يسعدني مساعدتك في العثور على العقار المثالي. ما نوع العقار الذي تبحث عنه وفي أي منطقة؟"
-    },
-    viewing_request: {
-      en: "Great! I can schedule a viewing for you. When would be a convenient time?",
-      ar: "رائع! يمكنني تحديد موعد للمعاينة. ما هو الوقت المناسب لك؟"
-    },
-    price_inquiry: {
-      en: "Our properties range from affordable to luxury. Could you share your budget range?",
-      ar: "تتراوح عقاراتنا من الميزانية المعقولة إلى الفاخرة. هل يمكنك مشاركة نطاق ميزانيتك؟"
-    },
-    agent_request: {
-      en: "I'll connect you with one of our experienced agents right away. Please hold.",
-      ar: "سأقوم بتوصيلك بأحد وكلائنا ذوي الخبرة فوراً. يرجى الانتظار."
-    },
-    greeting: {
-      en: "Hello! Welcome to White Caves Real Estate. How can I assist you today?",
-      ar: "مرحباً! أهلاً بك في وايت كيفز العقارية. كيف يمكنني مساعدتك اليوم؟"
-    },
-    general_inquiry: {
-      en: "Thank you for your message. How can I help you with your real estate needs?",
-      ar: "شكراً لرسالتك. كيف يمكنني مساعدتك في احتياجاتك العقارية؟"
-    }
-  };
-  
-  const leadScore = Math.min(100, 30 + (confidence - 60) + (context?.messageCount || 0) * 5);
-  
+
+  const responses = new Map([
+    ['property_inquiry', { en: "I'd be happy to help you find the perfect property. What type are you looking for?", ar: "يسعدني مساعدتك في العثور على العقار المثالي. ما نوع العقار؟" }],
+    ['viewing_request', { en: "I can schedule a viewing for you. When would be convenient?", ar: "يمكنني تحديد موعد للمعاينة. ما هو الوقت المناسب؟" }],
+    ['price_inquiry', { en: "Our properties range from affordable to luxury. What's your budget?", ar: "تتراوح عقاراتنا من الميزانية المعقولة إلى الفاخرة. ما ميزانيتك؟" }],
+    ['agent_request', { en: "I'll connect you with an experienced agent right away.", ar: "سأقوم بتوصيلك بأحد وكلائنا فوراً." }],
+    ['greeting', { en: "Hello! Welcome to White Caves Real Estate. How can I assist you?", ar: "مرحباً! أهلاً بك في وايت كيفز العقارية. كيف يمكنني مساعدتك؟" }],
+    ['general_inquiry', { en: "Thank you for your message. How can I help with your real estate needs?", ar: "شكراً لرسالتك. كيف يمكنني مساعدتك؟" }],
+  ]);
+  const entry = responses.get(detected);
+  const responseText = entry ? (lang === 'ar' ? entry.ar : entry.en) : '';
+
   res.json({
     success: true,
-    response: responses[detectedIntent][language],
-    intent: detectedIntent,
+    response: responseText,
+    intent: detected,
     confidence,
-    language,
-    leadScore,
-    suggestedActions: detectedIntent === 'viewing_request' 
-      ? ['Schedule Viewing', 'Send Property Details']
-      : ['Show Properties', 'Connect to Agent']
+    language: lang,
   });
 });
 

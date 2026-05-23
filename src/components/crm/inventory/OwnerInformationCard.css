@@ -1,0 +1,449 @@
+.owner-information-card {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  padding: 24px;
+  margin-bottom: 20px;
+  border: 1px solid #e5e7eb;
+}
+
+.owner-information-card.empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 300px;
+}
+
+.owner-information-card .empty-state {
+  text-align: center;
+  color: #9ca3af;
+}
+
+.owner-information-card .empty-state svg {
+  margin-bottom: 12px;
+  opacity: 0.5;
+}
+
+.owner-information-card .empty-state p {
+  font-size: 14px;
+  font-weight: 500;
+}
+
+/* Header */
+.owner-information-card .card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 2px solid #f3f4f6;
+}
+
+.owner-information-card .header-title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+}
+
+.owner-information-card .header-title h2 {
+  font-size: 20px;
+  font-weight: 600;
+  color: #1f2937;
+  margin: 0 0 4px 0;
+}
+
+.owner-information-card .header-title svg {
+  color: #10b981;
+  flex-shrink: 0;
+}
+
+.owner-information-card .verification-badge {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: #10b981;
+  font-weight: 500;
+}
+
+.owner-information-card .verification-badge svg {
+  flex-shrink: 0;
+}
+
+.owner-information-card .btn-edit {
+  background: none;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 8px 12px;
+  cursor: pointer;
+  color: #6b7280;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.owner-information-card .btn-edit:hover {
+  background: #f3f4f6;
+  border-color: #d1d5db;
+  color: #10b981;
+}
+
+/* Alert Messages */
+.owner-information-card .alert {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  border-radius: 8px;
+  margin-bottom: 16px;
+  font-size: 14px;
+}
+
+.owner-information-card .alert-error {
+  background: #fee2e2;
+  color: #991b1b;
+  border: 1px solid #fca5a5;
+}
+
+.owner-information-card .alert svg {
+  flex-shrink: 0;
+}
+
+/* Form Section */
+.owner-information-card .form-section {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.owner-information-card .form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.owner-information-card .form-group label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #374151;
+}
+
+.owner-information-card .form-group label svg {
+  color: #10b981;
+  flex-shrink: 0;
+}
+
+.owner-information-card .error-text {
+  color: #dc2626;
+  font-size: 12px;
+  margin-left: auto;
+  font-weight: normal;
+}
+
+.owner-information-card input,
+.owner-information-card select,
+.owner-information-card textarea {
+  padding: 10px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 14px;
+  font-family: inherit;
+  transition: all 0.2s ease;
+}
+
+.owner-information-card input:focus,
+.owner-information-card select:focus,
+.owner-information-card textarea:focus {
+  outline: none;
+  border-color: #10b981;
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+}
+
+.owner-information-card input.input-error,
+.owner-information-card select.input-error,
+.owner-information-card textarea.input-error {
+  border-color: #dc2626;
+  background: #fef2f2;
+}
+
+.owner-information-card input.input-error:focus,
+.owner-information-card select.input-error:focus,
+.owner-information-card textarea.input-error:focus {
+  box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
+}
+
+.owner-information-card textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+/* Form Row */
+.owner-information-card .form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+/* Contact Input Group */
+.owner-information-card .contact-input-group {
+  display: flex;
+  gap: 8px;
+}
+
+.owner-information-card .contact-input-group input {
+  flex: 1;
+}
+
+.owner-information-card .btn-add {
+  background: #10b981;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 12px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.owner-information-card .btn-add:hover {
+  background: #059669;
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+}
+
+/* Contact List */
+.owner-information-card .contact-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.owner-information-card .contact-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  font-size: 14px;
+  color: #4b5563;
+}
+
+.owner-information-card .contact-item svg {
+  color: #10b981;
+  flex-shrink: 0;
+}
+
+.owner-information-card .contact-item span {
+  flex: 1;
+  word-break: break-all;
+}
+
+.owner-information-card .btn-remove {
+  background: none;
+  border: none;
+  color: #dc2626;
+  cursor: pointer;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.owner-information-card .btn-remove:hover {
+  background: #fee2e2;
+  border-radius: 4px;
+}
+
+/* Contact Links (in view mode) */
+.owner-information-card .contact-link {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  font-size: 14px;
+  color: #10b981;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.owner-information-card .contact-link:hover {
+  background: #ecfdf5;
+  border-color: #10b981;
+}
+
+.owner-information-card .contact-link svg {
+  flex-shrink: 0;
+}
+
+/* Form Actions */
+.owner-information-card .form-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.owner-information-card .btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  flex: 1;
+}
+
+.owner-information-card .btn-primary {
+  background: #10b981;
+  color: white;
+}
+
+.owner-information-card .btn-primary:hover:not(:disabled) {
+  background: #059669;
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+}
+
+.owner-information-card .btn-secondary {
+  background: #f3f4f6;
+  color: #374151;
+  border: 1px solid #d1d5db;
+}
+
+.owner-information-card .btn-secondary:hover:not(:disabled) {
+  background: #e5e7eb;
+  border-color: #9ca3af;
+}
+
+.owner-information-card .btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Info Section */
+.owner-information-card .info-section {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.owner-information-card .info-item {
+  display: flex;
+  align-items: baseline;
+  gap: 16px;
+  padding: 12px 0;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.owner-information-card .info-item:last-child {
+  border-bottom: none;
+}
+
+.owner-information-card .info-item.full-width {
+  flex-direction: column;
+  gap: 12px;
+}
+
+.owner-information-card .info-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  min-width: 120px;
+  flex-shrink: 0;
+}
+
+.owner-information-card .info-label svg {
+  color: #10b981;
+}
+
+.owner-information-card .info-value {
+  font-size: 14px;
+  font-weight: 500;
+  color: #1f2937;
+}
+
+.owner-information-card .info-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+}
+
+.owner-information-card .info-row .info-item {
+  border-bottom: none;
+  padding: 0;
+}
+
+.owner-information-card .info-description {
+  font-size: 14px;
+  color: #4b5563;
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .owner-information-card {
+    padding: 16px;
+  }
+
+  .owner-information-card .form-row,
+  .owner-information-card .info-row {
+    grid-template-columns: 1fr;
+  }
+
+  .owner-information-card .contact-input-group {
+    flex-direction: column;
+  }
+
+  .owner-information-card .contact-input-group input,
+  .owner-information-card .btn-add {
+    width: 100%;
+  }
+
+  .owner-information-card .info-item {
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .owner-information-card .info-label {
+    min-width: auto;
+  }
+
+  .owner-information-card .header-title h2 {
+    font-size: 18px;
+  }
+
+  .owner-information-card .card-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .owner-information-card .btn-edit {
+    width: 100%;
+    justify-content: center;
+  }
+}

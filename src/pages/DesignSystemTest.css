@@ -1,8 +1,8 @@
 .design-system-test {
   min-height: 100vh;
-  background: var(--color-background, #0F172A);
+  background: var(--color-background, #0f172a);
   padding: 40px;
-  color: var(--color-text-primary, #F1F5F9);
+  color: var(--color-text-primary, #f1f5f9);
 }
 
 .dst-header {
@@ -16,7 +16,7 @@
   font-size: 2.5rem;
   font-weight: 700;
   margin-bottom: 8px;
-  background: linear-gradient(135deg, #DC2626 0%, #F59E0B 100%);
+  background: linear-gradient(135deg, #e31e24 0%, #f59e0b 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -24,7 +24,7 @@
 
 .dst-header p {
   font-size: 1.125rem;
-  color: var(--color-text-secondary, #94A3B8);
+  color: var(--color-text-secondary, #94a3b8);
 }
 
 .dst-section {
@@ -36,7 +36,7 @@
   font-weight: 700;
   margin-bottom: 24px;
   padding-bottom: 12px;
-  border-bottom: 2px solid #DC2626;
+  border-bottom: 2px solid #e31e24;
   display: inline-block;
 }
 
@@ -47,7 +47,7 @@
 .dst-group h3 {
   font-size: 1rem;
   font-weight: 600;
-  color: var(--color-text-secondary, #94A3B8);
+  color: var(--color-text-secondary, #94a3b8);
   margin-bottom: 16px;
 }
 

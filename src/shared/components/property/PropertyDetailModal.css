@@ -12,8 +12,12 @@
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 .property-detail-modal {
@@ -28,8 +32,14 @@
 }
 
 @keyframes slideUp {
-  from { opacity: 0; transform: translateY(30px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .modal-close-btn {
@@ -389,7 +399,7 @@
 }
 
 .contact-btn.whatsapp {
-  background: #25D366;
+  background: #25d366;
   color: white;
 }
 

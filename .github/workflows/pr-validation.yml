@@ -1,0 +1,338 @@
+name: Pull Request Validation
+
+on:
+  pull_request:
+    branches: [main, development]
+    types: [opened, reopened, synchronize, ready_for_review]
+
+concurrency:
+  group: pr-validation-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  pull-requests: write
+  issues: write
+
+jobs:
+  validate-pr:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+          cache: 'npm'
+      
+      - name: Check PR title
+        continue-on-error: true
+        run: |
+          if [[ ! "${{ github.event.pull_request.title }}" =~ ^(feat|fix|docs|style|refactor|perf|test|chore)(\([a-z0-9 ]+\))?!?: ]]; then
+            echo "⚠️  PR title does not follow conventional commits format (non-blocking)"
+            echo "Format: type(scope)!: description"
+            echo "Types: feat, fix, docs, style, refactor, perf, test, chore"
+          else
+            echo "✅ PR title follows conventional commits format"
+          fi
+      
+      - name: Install dependencies
+        run: npm ci
+      
+      - name: Run linter
+        run: npm run lint --if-present
+      
+      - name: Type check
+        run: npx tsc --noEmit
+      
+      - name: Build check
+        run: npm run build
+
+      - name: Run SEO quality gate
+        run: npm run quality:seo
+
+      - name: Run assistant endpoint contract gate
+        run: npm run test:assistant-contract
+      
+      - name: Run unit tests
+        run: npm test -- --run --coverage
+      
+      - name: Comment PR with build status
+        if: always()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const status = '${{ job.status }}' === 'success' ? '✅ Build passed' : '❌ Build failed';
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: `${status}\n\nWorkflow: ${context.workflow}`
+            });
+
+  e2e-on-pr:
+    runs-on: ubuntu-latest
+    if: github.event.pull_request.draft == false
+    timeout-minutes: 45
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+          cache: 'npm'
+      
+      - name: Install dependencies
+        run: npm ci
+      
+      - name: Install Playwright
+        run: npx playwright install --with-deps
+      
+      - name: Build application
+        run: npm run build
+      
+      - name: Run E2E tests
+        run: npm run test:e2e
+      
+      - name: Upload E2E results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: e2e-results-pr-${{ github.event.number }}
+          path: playwright-report/
+          retention-days: 7
+      
+      - name: Comment PR with E2E results link
+        if: always()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const e2eStatus = '${{ job.status }}' === 'success' ? '✅ Passed' : '❌ Failed';
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: `📊 E2E tests completed (${e2eStatus}). Check the "Artifacts" section for detailed reports.`
+            });
+
+  coverage-report:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+          cache: 'npm'
+      
+      - name: Install dependencies
+        run: npm ci
+      
+      - name: Generate coverage report
+        run: npm test -- --run --coverage
+      
+      - name: Upload to Codecov
+        uses: codecov/codecov-action@v5
+        with:
+          files: ./coverage/lcov.info
+          fail_ci_if_error: false
+      
+      - name: Comment PR with coverage
+        uses: romeovs/lcov-reporter-action@dda1c9b1fa1622b225e9acd87a248751dbcc6ada
+        if: always()
+        with:
+          lcov-file: ./coverage/lcov.info
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+  security-check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+          cache: 'npm'
+      
+      - name: Install dependencies
+        run: npm ci
+      
+      - name: Run npm audit
+        run: npm audit --audit-level=critical
+        continue-on-error: true
+      
+      - name: Dependency scanning
+        run: npm audit fix --audit-level=critical --dry-run
+        continue-on-error: true
+
+  code-quality:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+          cache: 'npm'
+      
+      - name: Install dependencies
+        run: npm ci
+      
+      - name: Run ESLint with reports
+        run: npm run lint -- --format=json --output-file=eslint-report.json
+        continue-on-error: true
+      
+      - name: Detect unused files
+        run: npm run lint --if-present
+        continue-on-error: true
+      
+      - name: Upload quality reports
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: code-quality-reports
+          path: |
+            eslint-report.json
+          retention-days: 7
+
+  documentation-check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Check for documentation updates
+        run: |
+          if [[ ${{ github.event.pull_request.title }} == *"docs"* ]] || \
+             git diff --name-only HEAD~1 | grep -E '\.md$|docs/'; then
+            echo "✅ Documentation found in PR"
+          else
+            echo "⚠️  No documentation updates in this PR"
+          fi
+        continue-on-error: true
+      
+      - name: Validate markdown files
+        run: |
+          if command -v markdownlint &> /dev/null; then
+            markdownlint '**/*.md' || true
+          else
+            echo "markdownlint not installed, skipping validation"
+          fi
+        continue-on-error: true
+
+  size-check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+          cache: 'npm'
+      
+      - name: Install dependencies
+        run: npm ci
+      
+      - name: Build and check size
+        run: npm run build
+      
+      - name: Analyze bundle
+        run: |
+          echo "Build artifacts:"
+          du -sh dist/
+          find dist/ -type f -exec ls -lh {} \; | head -20
+        continue-on-error: true
+      
+      - name: Comment with size info
+        if: always()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: `📦 Build size check completed. See workflow logs for details.`
+            });
+
+  premium-wave-runtime-guard:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Detect premium wave commit
+        id: detect
+        run: |
+          node scripts/orchestrator/detect-big-premium-commit.js > premium-detect.json
+          cat premium-detect.json
+          node -e "const fs=require('fs');const d=JSON.parse(fs.readFileSync('premium-detect.json','utf8'));fs.appendFileSync(process.env.GITHUB_OUTPUT, `shouldRun=${d.shouldRun}\n`);"
+
+      - name: Run premium runtime guard checks
+        if: steps.detect.outputs.shouldRun == 'true'
+        run: node scripts/orchestrator/post-premium-runtime-check.js
+
+      - name: Skip notice
+        if: steps.detect.outputs.shouldRun != 'true'
+        run: echo "No qualifying [premium-wave] big commit found; runtime guard skipped."
+
+      - name: Upload premium guard artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: premium-guard-artifacts
+          path: |
+            premium-detect.json
+            logs/premium-commit-checks/
+          retention-days: 14
+
+  orchestrator-health:
+    name: Orchestrator Queue Health Gate
+    runs-on: windows-latest
+    timeout-minutes: 5
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check queue integrity (9-group health check)
+        run: powershell -ExecutionPolicy Bypass -File scripts/orchestrator/queue-health.ps1 -CI
+
+      - name: Upload queue file on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: queue-health-failure-pr-${{ github.event.number }}
+          path: logs/orchestrator/task-queue.json
+          retention-days: 7

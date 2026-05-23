@@ -1,0 +1,322 @@
+/* ═══════════════════════════════════════════════════════════════════════
+   HeroSearchBar — Luxury Glassmorphism search bar
+   Gold (#E31E24) primary, Dark Green (#2E5A4F) secondary
+   ═══════════════════════════════════════════════════════════════════════ */
+
+.hero-search-container {
+  width: 100%;
+  max-width: 920px;
+  margin: 0 auto 2.5rem;
+}
+
+/* ─── Main Bar ──────────────────────────────────────────────────────── */
+.hero-search-bar {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  padding: 0.5rem;
+  background: var(--luxury-glass-bg, rgba(255, 255, 255, 0.12));
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid var(--luxury-glass-border, rgba(255, 255, 255, 0.2));
+  border-radius: 1rem;
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.25),
+    inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.hero-search-bar::before {
+  content: '';
+  position: absolute;
+  inset: 1px;
+  border-radius: calc(1rem - 1px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  pointer-events: none;
+}
+
+.hero-search-bar:focus-within {
+  border-color: rgba(227, 30, 36, 0.5);
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.25),
+    0 0 0 3px rgba(227, 30, 36, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.15);
+}
+
+/* ─── Search Field (each dropdown group) ────────────────────────────── */
+.hero-search-field {
+  position: relative;
+  display: flex;
+  align-items: center;
+  flex: 1;
+  min-width: 0;
+  padding: 0.75rem 0.75rem 0.75rem 0.5rem;
+}
+
+.hero-search-field-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: var(--primary-color, #e31e24);
+  margin-right: 0.5rem;
+}
+
+.hero-search-select {
+  width: 100%;
+  appearance: none;
+  -webkit-appearance: none;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: white;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  padding-right: 1.25rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+  font-family: inherit;
+}
+
+.hero-search-select option {
+  background: #1a1a2e;
+  color: white;
+  padding: 0.5rem;
+}
+
+.hero-search-chevron {
+  position: absolute;
+  right: 0.5rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: rgba(255, 255, 255, 0.5);
+  pointer-events: none;
+  flex-shrink: 0;
+}
+
+/* ─── Divider ───────────────────────────────────────────────────────── */
+.hero-search-divider {
+  width: 1px;
+  height: 28px;
+  background: rgba(255, 255, 255, 0.15);
+  flex-shrink: 0;
+}
+
+/* ─── Search Button ─────────────────────────────────────────────────── */
+.hero-search-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.875rem 1.75rem;
+  background: var(--luxury-cta-bg, linear-gradient(135deg, #e31e24 0%, #b71c1c 100%));
+  color: var(--luxury-text-dark, #1a1a2e);
+  font-size: 0.95rem;
+  font-weight: 700;
+  border: none;
+  border-radius: 0.75rem;
+  cursor: pointer;
+  flex-shrink: 0;
+  white-space: nowrap;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 16px rgba(227, 30, 36, 0.3);
+  letter-spacing: 0.01em;
+  min-height: 46px;
+}
+
+.hero-search-btn:hover {
+  background: var(--luxury-cta-bg-hover, linear-gradient(135deg, #ef5350 0%, #e31e24 100%));
+  box-shadow: 0 6px 24px rgba(227, 30, 36, 0.45);
+  transform: translateY(-1px);
+}
+
+.hero-search-btn:focus-visible {
+  outline: 3px solid rgba(227, 30, 36, 0.5);
+  outline-offset: 2px;
+}
+
+/* ─── Popular Tags ──────────────────────────────────────────────────── */
+.hero-search-tags {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  margin-top: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.hero-search-tag-label {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.8rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.hero-search-tag {
+  padding: 0.375rem 0.875rem;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 2rem;
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 0.8rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  white-space: nowrap;
+  min-height: 32px;
+}
+
+.hero-search-tag:hover {
+  background: var(--dubai-luxury-gold-soft, rgba(227, 30, 36, 0.2));
+  border-color: rgba(227, 30, 36, 0.45);
+  color: #e31e24;
+}
+
+.hero-search-tag:focus-visible {
+  outline: 2px solid rgba(227, 30, 36, 0.5);
+  outline-offset: 2px;
+}
+
+/* ─── Extra fields (Beds + Price) — hidden on mobile until expanded ─── */
+.hero-search-extra-fields {
+  display: contents; /* Desktop: inline as if no wrapper */
+}
+
+/* ─── More Filters toggle — mobile only ────────────────────────────── */
+.hero-search-more-filters {
+  display: none; /* Hidden on desktop */
+}
+
+/* ─── Desktop-only dividers (after Location/Type) ──────────────────── */
+/* All .hero-search-divider elements are visible on desktop */
+
+/* ════════════════════════════════════════════════════════════════════
+   Responsive Breakpoints
+   ════════════════════════════════════════════════════════════════════ */
+
+/* Tablet — stack into 2x2 grid + full-width button */
+@media (max-width: 900px) {
+  .hero-search-bar {
+    flex-wrap: wrap;
+    gap: 0;
+    padding: 0.625rem;
+  }
+
+  .hero-search-field {
+    flex: 1 1 calc(50% - 0.5rem);
+    min-width: 140px;
+  }
+
+  .hero-search-divider {
+    display: none;
+  }
+
+  .hero-search-btn {
+    width: 100%;
+    justify-content: center;
+    margin-top: 0.375rem;
+  }
+}
+
+/* Mobile — show only Location + Type; collapse Beds + Price behind toggle */
+@media (max-width: 600px) {
+  .hero-search-container {
+    margin: 0 auto 2rem;
+    padding: 0 0.5rem;
+  }
+
+  .hero-search-bar {
+    flex-direction: column;
+    padding: 0.75rem;
+    border-radius: 0.875rem;
+  }
+
+  /* All fields full-width */
+  .hero-search-field {
+    flex: 1 1 100%;
+    width: 100%;
+    padding: 0.625rem 0.5rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .hero-search-field:last-of-type {
+    border-bottom: none;
+  }
+
+  .hero-search-select {
+    font-size: 0.875rem;
+  }
+
+  /* Extra fields (Beds + Price): collapsed by default on mobile */
+  .hero-search-extra-fields {
+    display: none;
+    width: 100%;
+    flex-direction: column;
+  }
+
+  .hero-search-extra-fields--open {
+    display: flex;
+  }
+
+  /* Inside the expanded container each field needs full width */
+  .hero-search-extra-fields--open .hero-search-field {
+    width: 100%;
+  }
+
+  /* Show the "More Filters" toggle on mobile */
+  .hero-search-more-filters {
+    display: block;
+    width: 100%;
+    padding: 0.5rem;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 0.5rem;
+    color: rgba(255, 255, 255, 0.75);
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    text-align: center;
+    margin: 0.25rem 0;
+    transition: all 0.2s;
+  }
+
+  .hero-search-more-filters:hover {
+    background: rgba(255, 255, 255, 0.14);
+  }
+
+  .hero-search-btn {
+    width: 100%;
+    justify-content: center;
+    padding: 0.875rem;
+    margin-top: 0.5rem;
+    border-radius: 0.625rem;
+  }
+
+  .hero-search-tags {
+    gap: 0.5rem;
+  }
+
+  .hero-search-tag {
+    font-size: 0.75rem;
+    padding: 0.3125rem 0.75rem;
+  }
+}
+
+/* Small mobile */
+@media (max-width: 400px) {
+  .hero-search-container {
+    margin: 0 auto 1.5rem;
+  }
+
+  .hero-search-btn span {
+    display: none; /* Icon only on very small screens */
+  }
+
+  .hero-search-btn {
+    padding: 0.875rem;
+    justify-content: center;
+  }
+}

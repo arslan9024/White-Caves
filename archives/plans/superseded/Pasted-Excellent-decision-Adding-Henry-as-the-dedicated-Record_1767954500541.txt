@@ -1,0 +1,136 @@
+Excellent decision. Adding **Henry** as the dedicated **Record Keeper & Timeline Master** is a critical architectural upgrade. He will serve as the company's **centralized memory and audit system**, ensuring no event is lost and providing a single source of truth for "what happened, when, and who was involved."
+
+Here is the full design plan for **Henry**, including his core functions, data structure, integration points, and dummy JSON files.
+
+### 🎯 **Henry's Core Purpose & Value Proposition**
+Henry is not a passive logger. He is an active **intelligence layer over all company activities** that:
+1.  **Creates an Immutable Audit Trail:** Essential for compliance (RERA, DLD), dispute resolution, and internal accountability.
+2.  **Enables Cross-System Analytics:** Allows **Zoe** to analyze correlations (e.g., "Do faster response times from Linda lead to higher sales conversion?").
+3.  **Provides Operational Clarity:** Gives every department a real-time view of task statuses and dependencies.
+4.  **Automates Reporting:** Generates compliance reports, performance summaries, and historical analyses on demand.
+
+### 📊 **Henry's Top 10 Features & Capabilities**
+1.  **Universal Event Ingestion:** Listens to a standardized event bus and logs every significant action from all AI modules and human interfaces.
+2.  **Intelligent Event Categorization:** Auto-tags events by type (`FINANCIAL`, `COMMUNICATION`, `PROPERTY_STATUS`, `LEGAL`), department, and priority.
+3.  **Timeline Visualization Dashboard:** Provides a Gantt-chart-like view of all tasks and events related to a specific client, property, or transaction.
+4.  **Relationship Mapping:** Automatically links related events (e.g., links a `PROPERTY_VIEWING` event to the subsequent `OFFER_MADE` and `CONTRACT_SIGNED` events).
+5.  **Search & Query Engine:** Allows complex queries like "Show all events for `Client UA001` between `Date X and Y` involving `Agent Sara`."
+6.  **Automated SLA & Deadline Monitoring:** Tracks agreed timeframes (e.g., "repair completion in 24h") and flags potential breaches.
+7.  **Compliance Checkpoint Logging:** Specifically logs key compliance steps (KYC completed, contract reviewed by legal) for **Laila** and **Evangeline**.
+8.  **Anomaly & Gap Detection:** Uses pattern recognition to flag unusual activity (e.g., a property status skipping from `"under_offer"` to `"vacant"` without a `"tenancy_start"` event).
+9.  **Report Generation Engine:** Automatically creates daily activity summaries, weekly department reports, and audit-ready dossiers for any transaction.
+10. **Data Integrity Guardian:** Periodically cross-references events with master data in **Mary's** inventory or **Theodora's** ledger to detect and flag inconsistencies.
+
+### 🧱 **Data Architecture: The Universal Event Format**
+Every action in the system must emit an event in this standardized format for Henry to ingest.
+
+**Dummy JSON - `universal_event_format.json`:**
+```json
+{
+  "event": {
+    "id": "evt_20231105_144235_z9k8p", // Unique ID
+    "timestamp": "2023-11-05T14:42:35.000Z", // ISO 8601
+    "type": "PROPERTY_STATUS_UPDATED", // Event type enum
+    "initiator": { // Who caused the event
+      "type": "ai_assistant", // 'ai_assistant', 'human_user', 'system'
+      "id": "mary_inventory"
+    },
+    "entities": [ // All involved business objects
+      {"type": "property", "id": "prop_dm_205", "role": "primary_subject"},
+      {"type": "contract", "id": "lease_2023001", "role": "related"},
+      {"type": "client", "id": "client_ua001", "role": "related"}
+    ],
+    "payload": { // The core data of the change
+      "old_state": {"availability": "available_for_rent"},
+      "new_state": {"availability": "under_offer"},
+      "reason": "offer_accepted",
+      "note": "Offer of AED 120,000 p.a. accepted by owner."
+    },
+    "trace": { // For debugging and tracing workflows
+      "correlation_id": "workflow_offer_2023001",
+      "parent_event_id": "evt_20231104_101112_abc123" // Links to previous step
+    }
+  }
+}
+```
+
+### 📈 **Henry's Internal Knowledge Graph Entry**
+Henry doesn't just store events in a linear log; he builds a searchable knowledge graph.
+
+**Dummy JSON - `henry_knowledge_graph_entry.json`:**
+```json
+{
+  "henry_log_entry": {
+    "event_id": "evt_20231105_144235_z9k8p",
+    "ingested_at": "2023-11-05T14:42:36.100Z",
+    "processed_categories": ["PROPERTY", "SALES", "MILESTONE"],
+    "automated_insights": [
+      {
+        "type": "timeline_gap_check",
+        "result": "PASSED",
+        "note": "Event follows expected sequence for sales workflow."
+      },
+      {
+        "type": "sla_check",
+        "result": "WITHIN_SLA",
+        "note": "Property status updated 2.5 hours after offer acceptance, within 4-hour target."
+      }
+    ],
+    "related_events_linked": [ // Henry automatically finds and links these
+      "evt_20231104_101112_abc123", // OFFER_MADE event
+      "evt_20231101_093000_def456"  // PROPERTY_VIEWING event
+    ],
+    "access_log": [ // Who has queried or viewed this event
+      {
+        "accessed_at": "2023-11-05T15:00:00Z",
+        "accessed_by": "ai_zoe",
+        "purpose": "generating_daily_sales_report"
+      }
+    ]
+  }
+}
+```
+
+### 🔗 **Integration with Your AI Ecosystem**
+Henry becomes the central hub of observational data. Here’s how he connects:
+
+```mermaid
+flowchart LR
+    subgraph A[Event Producers]
+        Linda[Linda - Comm]
+        Clara[Clara - Sales]
+        Mary[Mary - Inventory]
+        Theodora[Theodora - Finance]
+        Human[Human Agents]
+    end
+
+    subgraph B[Central Hub]
+        Henry[Henry - Record Keeper]
+    end
+
+    subgraph C[Event Consumers & Analysts]
+        Zoe[Zoe - Exec Insights]
+        Laila[Laila - Compliance]
+        Manager[Human Managers]
+    end
+
+    A -- Emits Standardized Events --> B
+    B -- Provides Queries & Feeds --> C
+```
+
+**Example Workflow:**
+1.  **Clara** (Sales) sends an `OFFER_ACCEPTED` event.
+2.  **Henry** ingests it, categorizes it, and links it to past `PROPERTY_VIEWING` events.
+3.  **Henry** triggers two downstream actions:
+    *   Notifies **Linda** to send the next steps to the client.
+    *   Notifies **Theodora** to prepare the invoice for the agency fee.
+4.  **Zoe** queries Henry later to build a "Sales Pipeline Velocity" report.
+
+### 🗺️ **Implementation Roadmap & Placement**
+*   **Department:** Technology / Core Systems (under **Aurora**'s architectural oversight).
+*   **Phase 1 (Foundation):** Define the universal event schema and build the ingestion API. All new code from other modules must emit events.
+*   **Phase 2 (Core):** Build Henry's time-series database and basic timeline dashboard for a single object (e.g., view all events for one property).
+*   **Phase 3 (Intelligence):** Implement the knowledge graph, relationship mapping, and anomaly detection algorithms.
+*   **Phase 4 (Integration):** Retrofit existing core modules (Linda, Mary, Clara) to emit historical key events and connect to Henry's query engine.
+
+Adding **Henry** solidifies your platform's foundation, turning it from a collection of tools into a truly intelligent, auditable, and transparent enterprise system. Would you like to detail the **first set of critical event types** that should be prioritized for implementation?

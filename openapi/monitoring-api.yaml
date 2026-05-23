@@ -1,0 +1,689 @@
+openapi: 3.0.0
+info:
+  title: White Caves Aurora Monitoring API
+  description: Real-time monitoring, health checks, and performance metrics for White Caves real estate platform
+  version: 1.0.0
+  contact:
+    name: Engineering Team
+    email: engineering@whitecaves.com
+  license:
+    name: Proprietary
+
+servers:
+  - url: https://white-caves.vercel.app/api
+    description: Production
+  - url: http://localhost:5000/api
+    description: Development
+
+tags:
+  - name: Health & Status
+    description: System health and availability endpoints
+  - name: Performance
+    description: Performance metrics and latency tracking
+  - name: Infrastructure
+    description: Infrastructure component monitoring
+  - name: Configuration
+    description: Configuration and threshold management
+  - name: Planning
+    description: Test plan and execution tracking
+
+paths:
+  /aurora/monitoring/health:
+    get:
+      tags:
+        - Health & Status
+      summary: System health overview
+      description: Get current system health status with service counts and uptime percentage
+      operationId: getSystemHealth
+      responses:
+        '200':
+          description: Health status retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  overallStatus:
+                    type: string
+                    enum: [healthy, degraded]
+                    description: Overall system health status
+                    example: healthy
+                  timestamp:
+                    type: string
+                    format: date-time
+                    example: "2025-01-22T08:00:00Z"
+                  uptime:
+                    type: string
+                    pattern: '^\d+\.\d+%$'
+                    example: "99.98%"
+                  activeAlerts:
+                    type: integer
+                    minimum: 0
+                    example: 2
+                  services:
+                    type: object
+                    properties:
+                      healthy:
+                        type: integer
+                        example: 10
+                      total:
+                        type: integer
+                        example: 11
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /aurora/monitoring/vercel:
+    get:
+      tags:
+        - Infrastructure
+      summary: Vercel deployment metrics
+      description: Get deployment status, build metrics, and performance scores
+      operationId: getVercelMetrics
+      responses:
+        '200':
+          description: Vercel metrics retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  deployment:
+                    type: object
+                    properties:
+                      status:
+                        type: string
+                        enum: [live, building, failed]
+                        example: live
+                      buildTime:
+                        type: number
+                        description: Build time in seconds
+                        example: 10.01
+                      bundleSize:
+                        type: number
+                        description: Bundle size in MB
+                        example: 2.8
+                      deploymentSuccess:
+                        type: number
+                        description: Deployment success percentage
+                        minimum: 0
+                        maximum: 100
+                        example: 98.5
+                      lastDeploy:
+                        type: string
+                        format: date-time
+                      performance:
+                        type: object
+                        properties:
+                          fcp:
+                            type: number
+                            description: First Contentful Paint (ms)
+                            example: 1234
+                          lcp:
+                            type: number
+                            description: Largest Contentful Paint (ms)
+                            example: 2456
+                          cls:
+                            type: number
+                            description: Cumulative Layout Shift
+                            example: 0.05
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+  /aurora/monitoring/mongodb:
+    get:
+      tags:
+        - Infrastructure
+      summary: MongoDB Atlas database metrics
+      description: Get database connection status, query latency, and collection statistics
+      operationId: getMongoDBMetrics
+      responses:
+        '200':
+          description: MongoDB metrics retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  database:
+                    type: object
+                    properties:
+                      status:
+                        type: string
+                        enum: [connected, disconnected]
+                        example: connected
+                      queryLatency:
+                        type: object
+                        properties:
+                          avg:
+                            type: number
+                            description: Average latency (ms)
+                            example: 42
+                          p95:
+                            type: number
+                            description: 95th percentile latency (ms)
+                            example: 85
+                          p99:
+                            type: number
+                            description: 99th percentile latency (ms)
+                            example: 120
+                      connectionPool:
+                        type: object
+                        properties:
+                          active:
+                            type: integer
+                            example: 24
+                          available:
+                            type: integer
+                            example: 6
+                      collections:
+                        type: object
+                        properties:
+                          User:
+                            $ref: '#/components/schemas/CollectionStats'
+                          Property:
+                            $ref: '#/components/schemas/CollectionStats'
+                          Lead:
+                            $ref: '#/components/schemas/CollectionStats'
+                          Viewing:
+                            $ref: '#/components/schemas/CollectionStats'
+                          Negotiation:
+                            $ref: '#/components/schemas/CollectionStats'
+                          Document:
+                            $ref: '#/components/schemas/CollectionStats'
+                      replicationLag:
+                        type: integer
+                        description: Replication lag in ms
+                        minimum: 0
+                        example: 0
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+  /aurora/monitoring/services:
+    get:
+      tags:
+        - Performance
+      summary: Services health status
+      description: Get health and latency for all 11 monitored services
+      operationId: getServicesHealth
+      responses:
+        '200':
+          description: Services health retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  services:
+                    type: object
+                    additionalProperties:
+                      $ref: '#/components/schemas/ServiceHealth'
+                    example:
+                      userService:
+                        status: healthy
+                        latency: 42
+                      propertyService:
+                        status: healthy
+                        latency: 58
+                  summary:
+                    type: object
+                    properties:
+                      healthyCount:
+                        type: integer
+                        example: 10
+                      totalServices:
+                        type: integer
+                        example: 11
+                      avgLatency:
+                        type: number
+                        example: 52.3
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+  /aurora/monitoring/apis:
+    get:
+      tags:
+        - Performance
+      summary: API endpoint performance
+      description: Get performance metrics for 10 monitored API endpoints
+      operationId: getAPIMetrics
+      responses:
+        '200':
+          description: API metrics retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  endpoints:
+                    type: object
+                    additionalProperties:
+                      $ref: '#/components/schemas/EndpointMetrics'
+                    example:
+                      'POST /properties':
+                        p50: 125
+                        p95: 342
+                        p99: 512
+                        errorRate: 0.2
+                      'GET /leads':
+                        p50: 98
+                        p95: 245
+                        p99: 425
+                        errorRate: 0.1
+                  alertsTriggered:
+                    type: array
+                    items:
+                      type: string
+                    example:
+                      - "POST /properties latency exceeds threshold"
+                  summary:
+                    type: object
+                    properties:
+                      totalEndpoints:
+                        type: integer
+                        example: 10
+                      avgP95:
+                        type: number
+                        example: 298
+                      avgErrorRate:
+                        type: number
+                        minimum: 0
+                        maximum: 100
+                        example: 0.15
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+  /aurora/monitoring/metrics:
+    get:
+      tags:
+        - Performance
+      summary: Historical performance metrics
+      description: Get time-series data for multiple performance metrics
+      operationId: getHistoricalMetrics
+      parameters:
+        - name: timeRange
+          in: query
+          description: Time range for metrics (last 1h, 6h, 24h)
+          schema:
+            type: string
+            enum: [1h, 6h, 24h]
+            default: 1h
+      responses:
+        '200':
+          description: Historical metrics retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  metrics:
+                    type: object
+                    properties:
+                      apiLatency:
+                        type: array
+                        items:
+                          type: number
+                        description: API latency time series (ms)
+                        example: [125, 132, 128, 135, 130]
+                      dbLatency:
+                        type: array
+                        items:
+                          type: number
+                        description: Database latency time series (ms)
+                      errorRate:
+                        type: array
+                        items:
+                          type: number
+                        description: Error rate time series (%)
+                      concurrentUsers:
+                        type: array
+                        items:
+                          type: number
+                        description: Concurrent users time series
+                  trend:
+                    type: string
+                    enum: [improving, degrading, stable]
+                    description: Overall trend direction
+                  collectedAt:
+                    type: string
+                    format: date-time
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+  /aurora/monitoring/alerts:
+    get:
+      tags:
+        - Health & Status
+      summary: Alert history and status
+      description: Get active alerts and historical alert data
+      operationId: getAlerts
+      responses:
+        '200':
+          description: Alerts retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  activeAlerts:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Alert'
+                  alertHistory:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Alert'
+                  summary:
+                    type: object
+                    properties:
+                      total:
+                        type: integer
+                        example: 15
+                      active:
+                        type: integer
+                        example: 2
+                      resolved:
+                        type: integer
+                        example: 13
+                      critical:
+                        type: integer
+                        example: 0
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+  /aurora/monitoring/alert-config:
+    post:
+      tags:
+        - Configuration
+      summary: Update alert thresholds
+      description: Configure threshold values for various metrics
+      operationId: updateAlertConfig
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AlertConfig'
+      responses:
+        '200':
+          description: Alert configuration updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+                    example: "Alert configuration updated"
+                  thresholds:
+                    $ref: '#/components/schemas/AlertConfig'
+        '400':
+          description: Invalid threshold values
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+  /wednesday/plan:
+    get:
+      tags:
+        - Planning
+      summary: Wednesday test plan
+      description: Get Wednesday January 22 test plan with timeline, teams, and metrics
+      operationId: getWednesdayPlan
+      responses:
+        '200':
+          description: Wednesday plan retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  plan:
+                    type: object
+                    properties:
+                      date:
+                        type: string
+                        format: date
+                        example: "2025-01-22"
+                      status:
+                        type: string
+                        enum: [scheduled, in-progress, completed]
+                      duration:
+                        type: string
+                        example: "10:00 - 18:00"
+                      phases:
+                        type: object
+                        properties:
+                          biometricTesting:
+                            type: object
+                            properties:
+                              time:
+                                type: string
+                              duration:
+                                type: string
+                              lead:
+                                type: string
+                          userJourney1_2:
+                            type: object
+                          lunch:
+                            type: object
+                          userJourney3_4:
+                            type: object
+                      teams:
+                        type: object
+                        properties:
+                          zoe:
+                            type: string
+                            description: Business requirements owner
+                          aurora:
+                            type: string
+                            description: Technical operations lead
+                          hazel:
+                            type: string
+                            description: Documentation lead
+                          willow:
+                            type: string
+                            description: User testing lead
+                      metrics:
+                        type: object
+                        properties:
+                          biometricSuccessTarget:
+                            type: integer
+                            description: Biometric success target %
+                            example: 95
+                          apiLatencyTarget:
+                            type: integer
+                            description: API latency target ms
+                            example: 500
+                          dbLatencyTarget:
+                            type: integer
+                            description: Database latency target ms
+                            example: 100
+                          errorRateTarget:
+                            type: number
+                            description: Error rate target %
+                            example: 0.5
+                          uptimeTarget:
+                            type: number
+                            description: Uptime target %
+                            example: 99.9
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+components:
+  schemas:
+    ServiceHealth:
+      type: object
+      properties:
+        status:
+          type: string
+          enum: [healthy, degraded]
+        latency:
+          type: number
+          description: Service latency in milliseconds
+        lastChecked:
+          type: string
+          format: date-time
+      required:
+        - status
+        - latency
+
+    EndpointMetrics:
+      type: object
+      properties:
+        p50:
+          type: number
+          description: 50th percentile latency (ms)
+        p95:
+          type: number
+          description: 95th percentile latency (ms)
+        p99:
+          type: number
+          description: 99th percentile latency (ms)
+        errorRate:
+          type: number
+          description: Error rate (%)
+          minimum: 0
+          maximum: 100
+      required:
+        - p50
+        - p95
+        - p99
+        - errorRate
+
+    CollectionStats:
+      type: object
+      properties:
+        count:
+          type: integer
+          description: Number of documents
+        avgDocSize:
+          type: number
+          description: Average document size (bytes)
+        indexCount:
+          type: integer
+          description: Number of indexes
+      required:
+        - count
+        - avgDocSize
+        - indexCount
+
+    Alert:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        type:
+          type: string
+          enum: [latency, errorRate, downtime, availability]
+        severity:
+          type: string
+          enum: [info, warning, critical]
+        message:
+          type: string
+        triggeredAt:
+          type: string
+          format: date-time
+        resolvedAt:
+          type: string
+          format: date-time
+          nullable: true
+      required:
+        - id
+        - type
+        - severity
+        - message
+        - triggeredAt
+
+    AlertConfig:
+      type: object
+      properties:
+        apiLatency:
+          type: number
+          description: API latency threshold (ms)
+          minimum: 100
+          example: 500
+        dbLatency:
+          type: number
+          description: Database latency threshold (ms)
+          minimum: 10
+          example: 100
+        errorRate:
+          type: number
+          description: Error rate threshold (%)
+          minimum: 0
+          maximum: 100
+          example: 0.5
+        uptime:
+          type: number
+          description: Uptime threshold (%)
+          minimum: 0
+          maximum: 100
+          example: 99.9
+        concurrentUsers:
+          type: number
+          description: Concurrent users threshold
+          minimum: 10
+          example: 80
+
+    Error:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: false
+        error:
+          type: string
+          example: "Internal server error"
+        code:
+          type: string
+          example: "INTERNAL_ERROR"
+
+  responses:
+    InternalError:
+      description: Internal server error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: Bearer token for API authentication
+
+security:
+  - bearerAuth: []
+
+x-custom-metadata:
+  version: "1.0"
+  environment: production
+  lastUpdated: "2025-01-22T00:00:00Z"

@@ -1,0 +1,262 @@
+/* ============================================================
+   PAGE HERO BANNER — White Caves Luxury Inner-Page Hero
+   Used by: ServicesPage, AboutPage, CareersPage, ContactPage,
+            PropertiesPage
+   ============================================================ */
+
+.phb {
+  position: relative;
+  min-height: 380px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  overflow: hidden;
+}
+
+/* ── Background image ───────────────────────────────────────── */
+.phb__bg {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  transform: scale(1.04);
+  transition: transform 8s ease;
+}
+
+.phb:hover .phb__bg {
+  transform: scale(1);
+}
+
+/* ── Colour overlays ────────────────────────────────────────── */
+.phb__overlay {
+  position: absolute;
+  inset: 0;
+}
+
+.phb__overlay--dark {
+  background: linear-gradient(
+    135deg,
+    rgba(17, 24, 39, 0.85) 0%,
+    rgba(17, 24, 39, 0.7) 60%,
+    rgba(220, 38, 38, 0.15) 100%
+  );
+}
+
+.phb__overlay--navy {
+  background: linear-gradient(
+    135deg,
+    rgba(10, 36, 99, 0.9) 0%,
+    rgba(10, 36, 99, 0.7) 60%,
+    rgba(220, 38, 38, 0.12) 100%
+  );
+}
+
+.phb__overlay--charcoal {
+  background: linear-gradient(
+    135deg,
+    rgba(31, 41, 55, 0.88) 0%,
+    rgba(31, 41, 55, 0.72) 60%,
+    rgba(217, 119, 6, 0.14) 100%
+  );
+}
+
+/* ── Decorative blurred shapes ──────────────────────────────── */
+.phb__shapes {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.phb__shape {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(60px);
+}
+
+.phb__shape--1 {
+  width: 320px;
+  height: 320px;
+  top: -80px;
+  right: 10%;
+  background: radial-gradient(circle, rgba(220, 38, 38, 0.2), transparent 70%);
+}
+
+.phb__shape--2 {
+  width: 200px;
+  height: 200px;
+  bottom: 0;
+  left: 5%;
+  background: radial-gradient(circle, rgba(217, 119, 6, 0.15), transparent 70%);
+}
+
+/* ── Inner container ────────────────────────────────────────── */
+.phb__inner {
+  position: relative;
+  z-index: 2;
+  max-width: 1360px;
+  margin: 0 auto;
+  width: 100%;
+  padding: 3.5rem 2rem 5rem;
+}
+
+/* ── Breadcrumb ─────────────────────────────────────────────── */
+.phb__breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+  margin-bottom: 1.5rem;
+}
+
+.phb__breadcrumb-link {
+  color: rgba(255, 255, 255, 0.6);
+  text-decoration: none;
+  font-size: 0.8rem;
+  font-weight: 500;
+  transition: color 0.18s ease;
+}
+
+.phb__breadcrumb-link:hover {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.phb__breadcrumb-sep {
+  color: rgba(220, 38, 38, 0.7);
+  font-size: 0.9rem;
+  line-height: 1;
+}
+
+.phb__breadcrumb-current {
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+/* ── Main content row ───────────────────────────────────────── */
+.phb__content {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 2rem;
+  flex-wrap: wrap;
+}
+
+/* ── Text block ─────────────────────────────────────────────── */
+.phb__text {
+  flex: 1;
+  min-width: 0;
+}
+
+.phb__badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.4rem 1rem;
+  background: rgba(220, 38, 38, 0.2);
+  border: 1px solid rgba(220, 38, 38, 0.4);
+  border-radius: 999px;
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 1rem;
+  backdrop-filter: blur(6px);
+}
+
+.phb__title {
+  font-size: clamp(2rem, 5vw, 3.5rem);
+  font-weight: 800;
+  color: #ffffff;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  margin: 0 0 1rem;
+  text-shadow: 0 2px 16px rgba(0, 0, 0, 0.3);
+}
+
+.phb__subtitle {
+  font-size: clamp(0.95rem, 2vw, 1.15rem);
+  color: rgba(255, 255, 255, 0.8);
+  line-height: 1.65;
+  margin: 0;
+  max-width: 640px;
+}
+
+/* ── Optional stat card ─────────────────────────────────────── */
+.phb__stat {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+  background: rgba(255, 255, 255, 0.07);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 1rem;
+  padding: 1.25rem 2rem;
+  backdrop-filter: blur(12px);
+  text-align: center;
+  min-width: 140px;
+}
+
+.phb__stat-value {
+  font-size: 2rem;
+  font-weight: 800;
+  color: #ffffff;
+  line-height: 1;
+}
+
+.phb__stat-label {
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.7);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+/* ── Wave divider ───────────────────────────────────────────── */
+.phb__wave {
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  right: 0;
+  line-height: 0;
+  z-index: 3;
+}
+
+.phb__wave svg {
+  width: 100%;
+  height: 56px;
+  display: block;
+}
+
+/* ── Responsive ─────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .phb {
+    min-height: 300px;
+  }
+
+  .phb__inner {
+    padding: 3rem 1.25rem 4.5rem;
+  }
+
+  .phb__content {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .phb__stat {
+    align-self: flex-start;
+  }
+}
+
+@media (max-width: 480px) {
+  .phb {
+    min-height: 260px;
+  }
+
+  .phb__inner {
+    padding: 2.5rem 1rem 4rem;
+  }
+}

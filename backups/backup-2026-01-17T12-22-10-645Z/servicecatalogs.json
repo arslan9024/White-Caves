@@ -1,0 +1,895 @@
+[
+  {
+    "_id": "6966e9062d77f9119677db85",
+    "serviceId": "SVC-001",
+    "serviceName": "Ultra-Prime Property Sales (AED 50M+)",
+    "category": "transaction_agency",
+    "subcategory": "Sales",
+    "description": "White-glove sales service for ultra-prime properties",
+    "department": "Sales",
+    "pricing": {
+      "type": "percentage",
+      "percentageRate": 2,
+      "minimumFee": 750000,
+      "currency": "AED"
+    },
+    "duration": {
+      "minDays": 60,
+      "maxDays": 90,
+      "averageDays": 75
+    },
+    "eligibility": {
+      "userTypes": [
+        "UT-001",
+        "UT-002"
+      ],
+      "minimumTier": "uhnwi",
+      "propertyValueMin": 50000000,
+      "requiresVerification": true
+    },
+    "aiAssistants": [
+      {
+        "assistantId": "zoe",
+        "assistantName": "Zoe",
+        "role": "primary",
+        "_id": "6966e9062d77f9119677db86"
+      },
+      {
+        "assistantId": "clara",
+        "assistantName": "Clara",
+        "role": "secondary",
+        "_id": "6966e9062d77f9119677db87"
+      }
+    ],
+    "dubaiCompliance": {
+      "reraRequired": true,
+      "dldIntegration": true,
+      "amlCheckRequired": true,
+      "uaePassRequired": true
+    },
+    "deliverables": [],
+    "sla": {
+      "escalationPath": []
+    },
+    "isActive": true,
+    "displayOrder": 1,
+    "workflow": [],
+    "requiredDocuments": [],
+    "__v": 0,
+    "createdAt": "2026-01-14T00:53:26.407Z",
+    "updatedAt": "2026-01-14T00:53:26.407Z"
+  },
+  {
+    "_id": "6966e9062d77f9119677db88",
+    "serviceId": "SVC-002",
+    "serviceName": "Luxury Property Sales (AED 10-50M)",
+    "category": "transaction_agency",
+    "subcategory": "Sales",
+    "description": "Premium sales service for luxury properties",
+    "pricing": {
+      "type": "percentage",
+      "percentageRate": 2,
+      "minimumFee": 200000,
+      "currency": "AED"
+    },
+    "duration": {
+      "minDays": 45,
+      "maxDays": 75,
+      "averageDays": 60
+    },
+    "eligibility": {
+      "minimumTier": "hnwi",
+      "propertyValueMin": 10000000,
+      "userTypes": [],
+      "requiresVerification": true
+    },
+    "dubaiCompliance": {
+      "reraRequired": true,
+      "dldIntegration": true,
+      "amlCheckRequired": true
+    },
+    "deliverables": [],
+    "sla": {
+      "escalationPath": []
+    },
+    "isActive": true,
+    "displayOrder": 2,
+    "aiAssistants": [],
+    "workflow": [],
+    "requiredDocuments": [],
+    "__v": 0,
+    "createdAt": "2026-01-14T00:53:26.407Z",
+    "updatedAt": "2026-01-14T00:53:26.407Z"
+  },
+  {
+    "_id": "6966e9062d77f9119677db89",
+    "serviceId": "SVC-003",
+    "serviceName": "Standard Property Sales (AED 1-10M)",
+    "category": "transaction_agency",
+    "subcategory": "Sales",
+    "description": "Full-service sales for standard luxury properties",
+    "pricing": {
+      "type": "percentage",
+      "percentageRate": 2,
+      "minimumFee": 20000,
+      "currency": "AED"
+    },
+    "duration": {
+      "minDays": 30,
+      "maxDays": 60,
+      "averageDays": 45
+    },
+    "eligibility": {
+      "minimumTier": "premium",
+      "propertyValueMin": 1000000,
+      "userTypes": [],
+      "requiresVerification": true
+    },
+    "dubaiCompliance": {
+      "reraRequired": true,
+      "dldIntegration": true,
+      "amlCheckRequired": true
+    },
+    "deliverables": [],
+    "sla": {
+      "escalationPath": []
+    },
+    "isActive": true,
+    "displayOrder": 3,
+    "aiAssistants": [],
+    "workflow": [],
+    "requiredDocuments": [],
+    "__v": 0,
+    "createdAt": "2026-01-14T00:53:26.407Z",
+    "updatedAt": "2026-01-14T00:53:26.407Z"
+  },
+  {
+    "_id": "6966e9062d77f9119677db8a",
+    "serviceId": "SVC-004",
+    "serviceName": "Off-Plan Property Sales",
+    "category": "transaction_agency",
+    "subcategory": "Off-Plan",
+    "description": "Off-plan property sales with developer coordination",
+    "pricing": {
+      "type": "percentage",
+      "percentageRate": 3,
+      "currency": "AED"
+    },
+    "duration": {
+      "minDays": 14,
+      "maxDays": 30,
+      "averageDays": 21
+    },
+    "eligibility": {
+      "userTypes": [],
+      "requiresVerification": true
+    },
+    "dubaiCompliance": {
+      "reraRequired": true,
+      "amlCheckRequired": true
+    },
+    "deliverables": [],
+    "sla": {
+      "escalationPath": []
+    },
+    "isActive": true,
+    "displayOrder": 4,
+    "aiAssistants": [],
+    "workflow": [],
+    "requiredDocuments": [],
+    "__v": 0,
+    "createdAt": "2026-01-14T00:53:26.407Z",
+    "updatedAt": "2026-01-14T00:53:26.407Z"
+  },
+  {
+    "_id": "6966e9062d77f9119677db8b",
+    "serviceId": "SVC-005",
+    "serviceName": "Property Acquisition Advisory",
+    "category": "transaction_agency",
+    "subcategory": "Buying",
+    "description": "Buyer representation and acquisition services",
+    "pricing": {
+      "type": "percentage",
+      "percentageRate": 2,
+      "currency": "AED"
+    },
+    "duration": {
+      "minDays": 30,
+      "maxDays": 90,
+      "averageDays": 60
+    },
+    "eligibility": {
+      "userTypes": [],
+      "requiresVerification": true
+    },
+    "dubaiCompliance": {
+      "reraRequired": true,
+      "amlCheckRequired": true
+    },
+    "deliverables": [],
+    "sla": {
+      "escalationPath": []
+    },
+    "isActive": true,
+    "displayOrder": 5,
+    "aiAssistants": [],
+    "workflow": [],
+    "requiredDocuments": [],
+    "__v": 0,
+    "createdAt": "2026-01-14T00:53:26.407Z",
+    "updatedAt": "2026-01-14T00:53:26.407Z"
+  },
+  {
+    "_id": "6966e9062d77f9119677db8c",
+    "serviceId": "SVC-010",
+    "serviceName": "Premium Residential Leasing",
+    "category": "transaction_agency",
+    "subcategory": "Leasing",
+    "description": "Full-service residential leasing with tenant screening",
+    "pricing": {
+      "type": "percentage",
+      "percentageRate": 5,
+      "currency": "AED"
+    },
+    "duration": {
+      "minDays": 7,
+      "maxDays": 30,
+      "averageDays": 14
+    },
+    "eligibility": {
+      "userTypes": [],
+      "requiresVerification": true
+    },
+    "aiAssistants": [
+      {
+        "assistantId": "daisy",
+        "assistantName": "Daisy",
+        "role": "primary",
+        "_id": "6966e9062d77f9119677db8d"
+      }
+    ],
+    "dubaiCompliance": {
+      "reraRequired": true,
+      "ejariRequired": true
+    },
+    "deliverables": [],
+    "sla": {
+      "escalationPath": []
+    },
+    "isActive": true,
+    "displayOrder": 10,
+    "workflow": [],
+    "requiredDocuments": [],
+    "__v": 0,
+    "createdAt": "2026-01-14T00:53:26.407Z",
+    "updatedAt": "2026-01-14T00:53:26.407Z"
+  },
+  {
+    "_id": "6966e9062d77f9119677db8e",
+    "serviceId": "SVC-011",
+    "serviceName": "Commercial Leasing",
+    "category": "transaction_agency",
+    "subcategory": "Leasing",
+    "description": "Commercial property leasing services",
+    "pricing": {
+      "type": "percentage",
+      "percentageRate": 5,
+      "currency": "AED"
+    },
+    "duration": {
+      "minDays": 14,
+      "maxDays": 60,
+      "averageDays": 30
+    },
+    "eligibility": {
+      "userTypes": [],
+      "requiresVerification": true
+    },
+    "dubaiCompliance": {
+      "reraRequired": true
+    },
+    "deliverables": [],
+    "sla": {
+      "escalationPath": []
+    },
+    "isActive": true,
+    "displayOrder": 11,
+    "aiAssistants": [],
+    "workflow": [],
+    "requiredDocuments": [],
+    "__v": 0,
+    "createdAt": "2026-01-14T00:53:26.407Z",
+    "updatedAt": "2026-01-14T00:53:26.407Z"
+  },
+  {
+    "_id": "6966e9062d77f9119677db8f",
+    "serviceId": "SVC-020",
+    "serviceName": "Full Property Management",
+    "category": "property_management",
+    "description": "Complete property management including tenant relations, maintenance, and accounting",
+    "pricing": {
+      "type": "percentage",
+      "percentageRate": 8,
+      "currency": "AED"
+    },
+    "duration": {
+      "minDays": 365,
+      "averageDays": 365
+    },
+    "eligibility": {
+      "userTypes": [],
+      "requiresVerification": true
+    },
+    "aiAssistants": [
+      {
+        "assistantId": "nancy",
+        "assistantName": "Nancy",
+        "role": "primary",
+        "_id": "6966e9062d77f9119677db90"
+      }
+    ],
+    "deliverables": [],
+    "sla": {
+      "escalationPath": []
+    },
+    "isActive": true,
+    "displayOrder": 20,
+    "workflow": [],
+    "requiredDocuments": [],
+    "__v": 0,
+    "createdAt": "2026-01-14T00:53:26.408Z",
+    "updatedAt": "2026-01-14T00:53:26.408Z"
+  },
+  {
+    "_id": "6966e9062d77f9119677db91",
+    "serviceId": "SVC-021",
+    "serviceName": "Rent Collection Service",
+    "category": "property_management",
+    "description": "Automated rent collection and payment tracking",
+    "pricing": {
+      "type": "percentage",
+      "percentageRate": 3,
+      "currency": "AED"
+    },
+    "eligibility": {
+      "userTypes": [],
+      "requiresVerification": true
+    },
+    "deliverables": [],
+    "sla": {
+      "escalationPath": []
+    },
+    "isActive": true,
+    "displayOrder": 21,
+    "aiAssistants": [],
+    "workflow": [],
+    "requiredDocuments": [],
+    "__v": 0,
+    "createdAt": "2026-01-14T00:53:26.408Z",
+    "updatedAt": "2026-01-14T00:53:26.408Z"
+  },
+  {
+    "_id": "6966e9062d77f9119677db92",
+    "serviceId": "SVC-022",
+    "serviceName": "Maintenance Coordination",
+    "category": "property_management",
+    "description": "24/7 maintenance request handling and vendor management",
+    "pricing": {
+      "type": "fixed",
+      "amount": 5000,
+      "currency": "AED"
+    },
+    "eligibility": {
+      "userTypes": [],
+      "requiresVerification": true
+    },
+    "deliverables": [],
+    "sla": {
+      "escalationPath": []
+    },
+    "isActive": true,
+    "displayOrder": 22,
+    "aiAssistants": [],
+    "workflow": [],
+    "requiredDocuments": [],
+    "__v": 0,
+    "createdAt": "2026-01-14T00:53:26.408Z",
+    "updatedAt": "2026-01-14T00:53:26.408Z"
+  },
+  {
+    "_id": "6966e9062d77f9119677db93",
+    "serviceId": "SVC-030",
+    "serviceName": "RERA Title Deed Transfer",
+    "category": "legal_compliance",
+    "description": "Complete title deed transfer with DLD coordination",
+    "pricing": {
+      "type": "fixed",
+      "amount": 8500,
+      "currency": "AED"
+    },
+    "duration": {
+      "minDays": 10,
+      "maxDays": 21,
+      "averageDays": 14
+    },
+    "eligibility": {
+      "userTypes": [],
+      "requiresVerification": true
+    },
+    "aiAssistants": [
+      {
+        "assistantId": "sophia",
+        "assistantName": "Sophia",
+        "role": "primary",
+        "_id": "6966e9062d77f9119677db94"
+      }
+    ],
+    "dubaiCompliance": {
+      "reraRequired": true,
+      "dldIntegration": true,
+      "amlCheckRequired": true
+    },
+    "deliverables": [],
+    "sla": {
+      "escalationPath": []
+    },
+    "isActive": true,
+    "displayOrder": 30,
+    "workflow": [],
+    "requiredDocuments": [],
+    "__v": 0,
+    "createdAt": "2026-01-14T00:53:26.408Z",
+    "updatedAt": "2026-01-14T00:53:26.408Z"
+  },
+  {
+    "_id": "6966e9062d77f9119677db95",
+    "serviceId": "SVC-031",
+    "serviceName": "Ejari Registration",
+    "category": "legal_compliance",
+    "description": "Ejari tenancy contract registration",
+    "pricing": {
+      "type": "fixed",
+      "amount": 500,
+      "currency": "AED"
+    },
+    "duration": {
+      "minDays": 1,
+      "maxDays": 3,
+      "averageDays": 1
+    },
+    "eligibility": {
+      "userTypes": [],
+      "requiresVerification": true
+    },
+    "dubaiCompliance": {
+      "ejariRequired": true
+    },
+    "deliverables": [],
+    "sla": {
+      "escalationPath": []
+    },
+    "isActive": true,
+    "displayOrder": 31,
+    "aiAssistants": [],
+    "workflow": [],
+    "requiredDocuments": [],
+    "__v": 0,
+    "createdAt": "2026-01-14T00:53:26.408Z",
+    "updatedAt": "2026-01-14T00:53:26.408Z"
+  },
+  {
+    "_id": "6966e9062d77f9119677db96",
+    "serviceId": "SVC-032",
+    "serviceName": "NOC Processing",
+    "category": "legal_compliance",
+    "description": "No Objection Certificate processing from developers",
+    "pricing": {
+      "type": "fixed",
+      "amount": 2500,
+      "currency": "AED"
+    },
+    "duration": {
+      "minDays": 3,
+      "maxDays": 14,
+      "averageDays": 7
+    },
+    "eligibility": {
+      "userTypes": [],
+      "requiresVerification": true
+    },
+    "deliverables": [],
+    "sla": {
+      "escalationPath": []
+    },
+    "isActive": true,
+    "displayOrder": 32,
+    "aiAssistants": [],
+    "workflow": [],
+    "requiredDocuments": [],
+    "__v": 0,
+    "createdAt": "2026-01-14T00:53:26.408Z",
+    "updatedAt": "2026-01-14T00:53:26.408Z"
+  },
+  {
+    "_id": "6966e9062d77f9119677db97",
+    "serviceId": "SVC-033",
+    "serviceName": "AML/KYC Verification",
+    "category": "legal_compliance",
+    "description": "Full anti-money laundering and know your customer verification",
+    "pricing": {
+      "type": "fixed",
+      "amount": 3000,
+      "currency": "AED"
+    },
+    "duration": {
+      "minDays": 2,
+      "maxDays": 7,
+      "averageDays": 3
+    },
+    "eligibility": {
+      "userTypes": [],
+      "requiresVerification": true
+    },
+    "aiAssistants": [
+      {
+        "assistantId": "henry",
+        "assistantName": "Henry",
+        "role": "primary",
+        "_id": "6966e9062d77f9119677db98"
+      }
+    ],
+    "dubaiCompliance": {
+      "amlCheckRequired": true
+    },
+    "deliverables": [],
+    "sla": {
+      "escalationPath": []
+    },
+    "isActive": true,
+    "displayOrder": 33,
+    "workflow": [],
+    "requiredDocuments": [],
+    "__v": 0,
+    "createdAt": "2026-01-14T00:53:26.408Z",
+    "updatedAt": "2026-01-14T00:53:26.408Z"
+  },
+  {
+    "_id": "6966e9062d77f9119677db99",
+    "serviceId": "SVC-040",
+    "serviceName": "Mortgage Pre-Approval Coordination",
+    "category": "financial_services",
+    "description": "Coordination with 8+ UAE banks for mortgage pre-approval",
+    "pricing": {
+      "type": "on_request",
+      "currency": "AED"
+    },
+    "duration": {
+      "minDays": 7,
+      "maxDays": 21,
+      "averageDays": 10
+    },
+    "eligibility": {
+      "userTypes": [],
+      "requiresVerification": true
+    },
+    "aiAssistants": [
+      {
+        "assistantId": "theodora",
+        "assistantName": "Theodora",
+        "role": "primary",
+        "_id": "6966e9062d77f9119677db9a"
+      }
+    ],
+    "deliverables": [],
+    "sla": {
+      "escalationPath": []
+    },
+    "isActive": true,
+    "displayOrder": 40,
+    "workflow": [],
+    "requiredDocuments": [],
+    "__v": 0,
+    "createdAt": "2026-01-14T00:53:26.408Z",
+    "updatedAt": "2026-01-14T00:53:26.408Z"
+  },
+  {
+    "_id": "6966e9062d77f9119677db9b",
+    "serviceId": "SVC-041",
+    "serviceName": "Property Valuation",
+    "category": "financial_services",
+    "description": "Professional property valuation with market analysis",
+    "pricing": {
+      "type": "fixed",
+      "amount": 3500,
+      "currency": "AED"
+    },
+    "duration": {
+      "minDays": 3,
+      "maxDays": 7,
+      "averageDays": 5
+    },
+    "eligibility": {
+      "userTypes": [],
+      "requiresVerification": true
+    },
+    "deliverables": [],
+    "sla": {
+      "escalationPath": []
+    },
+    "isActive": true,
+    "displayOrder": 41,
+    "aiAssistants": [],
+    "workflow": [],
+    "requiredDocuments": [],
+    "__v": 0,
+    "createdAt": "2026-01-14T00:53:26.408Z",
+    "updatedAt": "2026-01-14T00:53:26.408Z"
+  },
+  {
+    "_id": "6966e9062d77f9119677db9c",
+    "serviceId": "SVC-042",
+    "serviceName": "Investment Analysis Report",
+    "category": "financial_services",
+    "description": "Comprehensive investment analysis with ROI projections",
+    "pricing": {
+      "type": "fixed",
+      "amount": 5000,
+      "currency": "AED"
+    },
+    "duration": {
+      "minDays": 5,
+      "maxDays": 10,
+      "averageDays": 7
+    },
+    "eligibility": {
+      "userTypes": [],
+      "requiresVerification": true
+    },
+    "aiAssistants": [
+      {
+        "assistantId": "sage",
+        "assistantName": "Sage",
+        "role": "primary",
+        "_id": "6966e9062d77f9119677db9d"
+      }
+    ],
+    "deliverables": [],
+    "sla": {
+      "escalationPath": []
+    },
+    "isActive": true,
+    "displayOrder": 42,
+    "workflow": [],
+    "requiredDocuments": [],
+    "__v": 0,
+    "createdAt": "2026-01-14T00:53:26.408Z",
+    "updatedAt": "2026-01-14T00:53:26.408Z"
+  },
+  {
+    "_id": "6966e9062d77f9119677db9e",
+    "serviceId": "SVC-050",
+    "serviceName": "Professional Photography Package",
+    "category": "marketing_media",
+    "description": "Professional real estate photography (30+ images)",
+    "pricing": {
+      "type": "fixed",
+      "amount": 2500,
+      "currency": "AED"
+    },
+    "duration": {
+      "minDays": 2,
+      "maxDays": 5,
+      "averageDays": 3
+    },
+    "eligibility": {
+      "userTypes": [],
+      "requiresVerification": true
+    },
+    "deliverables": [],
+    "sla": {
+      "escalationPath": []
+    },
+    "isActive": true,
+    "displayOrder": 50,
+    "aiAssistants": [],
+    "workflow": [],
+    "requiredDocuments": [],
+    "__v": 0,
+    "createdAt": "2026-01-14T00:53:26.409Z",
+    "updatedAt": "2026-01-14T00:53:26.409Z"
+  },
+  {
+    "_id": "6966e9062d77f9119677db9f",
+    "serviceId": "SVC-051",
+    "serviceName": "Drone Videography",
+    "category": "marketing_media",
+    "description": "Aerial drone footage with professional editing",
+    "pricing": {
+      "type": "fixed",
+      "amount": 4000,
+      "currency": "AED"
+    },
+    "duration": {
+      "minDays": 3,
+      "maxDays": 7,
+      "averageDays": 5
+    },
+    "eligibility": {
+      "userTypes": [],
+      "requiresVerification": true
+    },
+    "deliverables": [],
+    "sla": {
+      "escalationPath": []
+    },
+    "isActive": true,
+    "displayOrder": 51,
+    "aiAssistants": [],
+    "workflow": [],
+    "requiredDocuments": [],
+    "__v": 0,
+    "createdAt": "2026-01-14T00:53:26.409Z",
+    "updatedAt": "2026-01-14T00:53:26.409Z"
+  },
+  {
+    "_id": "6966e9062d77f9119677dba0",
+    "serviceId": "SVC-052",
+    "serviceName": "3D Virtual Tour (Matterport)",
+    "category": "marketing_media",
+    "description": "Interactive 3D virtual tour with Matterport technology",
+    "pricing": {
+      "type": "fixed",
+      "amount": 3000,
+      "currency": "AED"
+    },
+    "duration": {
+      "minDays": 3,
+      "maxDays": 7,
+      "averageDays": 4
+    },
+    "eligibility": {
+      "userTypes": [],
+      "requiresVerification": true
+    },
+    "deliverables": [],
+    "sla": {
+      "escalationPath": []
+    },
+    "isActive": true,
+    "displayOrder": 52,
+    "aiAssistants": [],
+    "workflow": [],
+    "requiredDocuments": [],
+    "__v": 0,
+    "createdAt": "2026-01-14T00:53:26.409Z",
+    "updatedAt": "2026-01-14T00:53:26.409Z"
+  },
+  {
+    "_id": "6966e9062d77f9119677dba1",
+    "serviceId": "SVC-053",
+    "serviceName": "Digital Marketing Campaign",
+    "category": "marketing_media",
+    "description": "Targeted digital marketing across platforms",
+    "pricing": {
+      "type": "fixed",
+      "currency": "AED",
+      "priceRange": {
+        "min": 5000,
+        "max": 50000
+      }
+    },
+    "eligibility": {
+      "userTypes": [],
+      "requiresVerification": true
+    },
+    "aiAssistants": [
+      {
+        "assistantId": "oscar",
+        "assistantName": "Oscar",
+        "role": "primary",
+        "_id": "6966e9062d77f9119677dba2"
+      }
+    ],
+    "deliverables": [],
+    "sla": {
+      "escalationPath": []
+    },
+    "isActive": true,
+    "displayOrder": 53,
+    "workflow": [],
+    "requiredDocuments": [],
+    "__v": 0,
+    "createdAt": "2026-01-14T00:53:26.409Z",
+    "updatedAt": "2026-01-14T00:53:26.409Z"
+  },
+  {
+    "_id": "6966e9062d77f9119677dba3",
+    "serviceId": "SVC-060",
+    "serviceName": "VIP Property Tours",
+    "category": "concierge_lifestyle",
+    "description": "Luxury vehicle tours with refreshments and dedicated agent",
+    "pricing": {
+      "type": "fixed",
+      "amount": 1500,
+      "currency": "AED"
+    },
+    "eligibility": {
+      "minimumTier": "hnwi",
+      "userTypes": [],
+      "requiresVerification": true
+    },
+    "aiAssistants": [
+      {
+        "assistantId": "zoe",
+        "assistantName": "Zoe",
+        "role": "primary",
+        "_id": "6966e9062d77f9119677dba4"
+      }
+    ],
+    "deliverables": [],
+    "sla": {
+      "escalationPath": []
+    },
+    "isActive": true,
+    "displayOrder": 60,
+    "workflow": [],
+    "requiredDocuments": [],
+    "__v": 0,
+    "createdAt": "2026-01-14T00:53:26.409Z",
+    "updatedAt": "2026-01-14T00:53:26.409Z"
+  },
+  {
+    "_id": "6966e9062d77f9119677dba5",
+    "serviceId": "SVC-061",
+    "serviceName": "Relocation Assistance",
+    "category": "concierge_lifestyle",
+    "description": "Full relocation support including moving and setup",
+    "pricing": {
+      "type": "on_request",
+      "currency": "AED"
+    },
+    "eligibility": {
+      "userTypes": [],
+      "requiresVerification": true
+    },
+    "deliverables": [],
+    "sla": {
+      "escalationPath": []
+    },
+    "isActive": true,
+    "displayOrder": 61,
+    "aiAssistants": [],
+    "workflow": [],
+    "requiredDocuments": [],
+    "__v": 0,
+    "createdAt": "2026-01-14T00:53:26.409Z",
+    "updatedAt": "2026-01-14T00:53:26.409Z"
+  },
+  {
+    "_id": "6966e9062d77f9119677dba6",
+    "serviceId": "SVC-062",
+    "serviceName": "Interior Design Consultation",
+    "category": "concierge_lifestyle",
+    "description": "Premium interior design consultation and coordination",
+    "pricing": {
+      "type": "on_request",
+      "currency": "AED"
+    },
+    "eligibility": {
+      "userTypes": [],
+      "requiresVerification": true
+    },
+    "deliverables": [],
+    "sla": {
+      "escalationPath": []
+    },
+    "isActive": true,
+    "displayOrder": 62,
+    "aiAssistants": [],
+    "workflow": [],
+    "requiredDocuments": [],
+    "__v": 0,
+    "createdAt": "2026-01-14T00:53:26.409Z",
+    "updatedAt": "2026-01-14T00:53:26.409Z"
+  }
+]

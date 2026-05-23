@@ -1,55 +1,101 @@
 import mongoose from 'mongoose';
 
-const ImportSessionSchema = new mongoose.Schema({
-  fileName: {
-    type: String,
-    required: true
-  },
-  filePath: String,
-  fileHash: String,
-  sheetName: String,
-  totalRows: Number,
-  processedRows: Number,
-  propertiesCreated: Number,
-  propertiesUpdated: Number,
-  ownersCreated: Number,
-  ownersUpdated: Number,
-  duplicatesFound: Number,
-  errorsCount: Number,
-  status: {
-    type: String,
-    enum: ['pending', 'processing', 'completed', 'failed', 'cancelled'],
-    default: 'pending'
-  },
-  importErrors: [{
-    row: Number,
-    field: String,
-    message: String,
-    data: mongoose.Schema.Types.Mixed
-  }],
-  duplicates: [{
-    row: Number,
-    existingId: String,
-    field: String,
-    existingValue: String,
-    newValue: String,
-    resolution: {
+const ImportSessionSchema = new mongoose.Schema(
+  {
+    fileName: {
       type: String,
-      enum: ['skip', 'replace', 'merge', 'pending'],
-      default: 'pending'
-    }
-  }],
-  columnMapping: mongoose.Schema.Types.Mixed,
-  importedBy: String,
-  startedAt: Date,
-  completedAt: Date,
-  notes: String
-}, {
-  timestamps: true
-});
+      required: true,
+      trim: true,
+    },
+    filePath: {
+      type: String,
+      trim: true,
+    },
+    status: {
+      type: String,
+      enum: ['pending', 'processing', 'completed', 'partial', 'failed', 'cancelled'],
+      default: 'pending',
+      index: true,
+    },
+    importedBy: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+    userId: {
+      type: String,
+      trim: true,
+      index: true,
+    },
+    columnMapping: {
+      type: mongoose.Schema.Types.Mixed,
+      default: {},
+    },
+    totalRows: {
+      type: Number,
+      default: 0,
+      min: 0,
+    },
+    totalRowsProcessed: {
+      type: Number,
+      default: 0,
+      min: 0,
+    },
+    propertiesCreated: {
+      type: Number,
+      default: 0,
+      min: 0,
+    },
+    propertiesUpdated: {
+      type: Number,
+      default: 0,
+      min: 0,
+    },
+    ownersCreated: {
+      type: Number,
+      default: 0,
+      min: 0,
+    },
+    ownersUpdated: {
+      type: Number,
+      default: 0,
+      min: 0,
+    },
+    duplicatesFound: {
+      type: Number,
+      default: 0,
+      min: 0,
+    },
+    successRate: {
+      type: Number,
+      default: 0,
+      min: 0,
+      max: 100,
+    },
+    totalErrors: {
+      type: Number,
+      default: 0,
+      min: 0,
+    },
+    totalWarnings: {
+      type: Number,
+      default: 0,
+      min: 0,
+    },
+    importErrors: {
+      type: [mongoose.Schema.Types.Mixed],
+      default: [],
+    },
+    duplicates: {
+      type: [mongoose.Schema.Types.Mixed],
+      default: [],
+    },
+  },
+  { timestamps: true }
+);
 
-ImportSessionSchema.index({ status: 1 });
-ImportSessionSchema.index({ createdAt: -1 });
+ImportSessionSchema.index({ userId: 1, createdAt: -1 });
+ImportSessionSchema.index({ status: 1, createdAt: -1 });
+ImportSessionSchema.index({ fileName: 1 });
 
-const ImportSession = mongoose.model('ImportSession', ImportSessionSchema);
-export default ImportSession;
+export default mongoose.model('ImportSession', ImportSessionSchema);

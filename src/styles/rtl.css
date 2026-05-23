@@ -1,246 +1,239 @@
-[dir="rtl"] {
-  text-align: right;
-}
+/* ============================================================
+   RTL (Right-to-Left) Global Utility Styles
+   Applied automatically when dir="rtl" is set on <html>
+   by LanguageContext when Arabic language is selected.
+   ============================================================ */
 
-[dir="rtl"] body {
+/* ── Arabic Typography ───────────────────────────────────────── */
+[dir='rtl'] body {
   font-family: 'Cairo', 'Noto Sans Arabic', sans-serif;
-}
-
-[dir="rtl"] .flex-row {
-  flex-direction: row-reverse;
-}
-
-[dir="rtl"] .text-left {
   text-align: right;
+  line-height: 1.7;
 }
 
-[dir="rtl"] .text-right {
-  text-align: left;
-}
-
-[dir="rtl"] .ml-auto {
-  margin-left: 0;
-  margin-right: auto;
-}
-
-[dir="rtl"] .mr-auto {
-  margin-right: 0;
-  margin-left: auto;
-}
-
-[dir="rtl"] .pl-4 {
-  padding-left: 0;
-  padding-right: 1rem;
-}
-
-[dir="rtl"] .pr-4 {
-  padding-right: 0;
-  padding-left: 1rem;
-}
-
-[dir="rtl"] .border-l {
-  border-left: none;
-  border-right: 1px solid;
-}
-
-[dir="rtl"] .border-r {
-  border-right: none;
-  border-left: 1px solid;
-}
-
-[dir="rtl"] .left-0 {
-  left: auto;
-  right: 0;
-}
-
-[dir="rtl"] .right-0 {
-  right: auto;
-  left: 0;
-}
-
-[dir="rtl"] input[type="text"],
-[dir="rtl"] input[type="email"],
-[dir="rtl"] input[type="tel"],
-[dir="rtl"] input[type="password"],
-[dir="rtl"] input[type="number"],
-[dir="rtl"] textarea,
-[dir="rtl"] select {
+[dir='rtl'] input,
+[dir='rtl'] textarea,
+[dir='rtl'] select {
   text-align: right;
   direction: rtl;
 }
 
-[dir="rtl"] input[type="tel"],
-[dir="rtl"] input[type="number"] {
-  direction: ltr;
-  text-align: left;
-}
-
-[dir="rtl"] .icon-left {
-  margin-left: 0.5rem;
-  margin-right: 0;
-}
-
-[dir="rtl"] .icon-right {
-  margin-right: 0.5rem;
-  margin-left: 0;
-}
-
-[dir="rtl"] .nav-menu {
-  right: auto;
-  left: 0;
-}
-
-[dir="rtl"] .sidebar {
-  right: 0;
-  left: auto;
-  border-left: 1px solid var(--border-color);
-  border-right: none;
-}
-
-[dir="rtl"] .main-content-with-sidebar {
-  margin-left: 0;
-  margin-right: 260px;
-}
-
-[dir="rtl"] .dropdown-menu {
-  left: 0;
-  right: auto;
-}
-
-[dir="rtl"] .card-actions {
-  margin-left: 0;
-  margin-right: auto;
-}
-
-[dir="rtl"] .breadcrumb-separator {
-  transform: scaleX(-1);
-}
-
-[dir="rtl"] .arrow-icon {
-  transform: scaleX(-1);
-}
-
-[dir="rtl"] .chevron-right {
-  transform: rotate(180deg);
-}
-
-[dir="rtl"] .chevron-left {
-  transform: rotate(180deg);
-}
-
-[dir="rtl"] .progress-bar {
-  direction: ltr;
-}
-
-[dir="rtl"] .slider {
-  direction: ltr;
-}
-
-[dir="rtl"] .table th,
-[dir="rtl"] .table td {
-  text-align: right;
-}
-
-[dir="rtl"] .table th:first-child,
-[dir="rtl"] .table td:first-child {
-  border-left: none;
-  border-right: 1px solid var(--border-color);
-}
-
-[dir="rtl"] .list-item::before {
-  margin-right: 0;
-  margin-left: 0.5rem;
-}
-
-[dir="rtl"] .checkbox-label,
-[dir="rtl"] .radio-label {
-  padding-left: 0;
-  padding-right: 1.75rem;
-}
-
-[dir="rtl"] .checkbox-input,
-[dir="rtl"] .radio-input {
-  left: auto;
-  right: 0;
-}
-
-[dir="rtl"] .notification-badge {
-  right: auto;
-  left: -0.5rem;
-}
-
-[dir="rtl"] .tooltip-arrow-left {
-  left: auto;
-  right: 100%;
-  transform: scaleX(-1);
-}
-
-[dir="rtl"] .tooltip-arrow-right {
-  right: auto;
-  left: 100%;
-  transform: scaleX(-1);
-}
-
-[dir="rtl"] .stat-card .stat-icon {
-  margin-right: 0;
-  margin-left: 1rem;
-}
-
-[dir="rtl"] .property-card .property-info {
-  text-align: right;
-}
-
-[dir="rtl"] .message-bubble.outgoing {
-  margin-left: 0;
-  margin-right: auto;
-  border-radius: 18px 18px 4px 18px;
-}
-
-[dir="rtl"] .message-bubble.incoming {
-  margin-right: 0;
-  margin-left: auto;
-  border-radius: 18px 18px 18px 4px;
-}
-
-[dir="rtl"] .chat-input-container {
+/* ── Flex Row Alignment ──────────────────────────────────────── */
+/* Most flex rows reverse automatically with dir="rtl".
+   Only override where explicit direction is set. */
+[dir='rtl'] .flex-row {
   flex-direction: row-reverse;
 }
 
-[dir="rtl"] .role-navigation {
-  left: auto;
+/* ── Margin / Padding Directional Flips ──────────────────────── */
+/* Utility classes that components may apply */
+[dir='rtl'] .ml-auto {
+  margin-left: unset;
+  margin-right: auto;
+}
+[dir='rtl'] .mr-auto {
+  margin-right: unset;
+  margin-left: auto;
+}
+[dir='rtl'] .pl-4 {
+  padding-left: unset;
+  padding-right: 1rem;
+}
+[dir='rtl'] .pr-4 {
+  padding-right: unset;
+  padding-left: 1rem;
+}
+
+/* ── Icon placement helpers ──────────────────────────────────── */
+/* Icons that sit to the left in LTR should appear right in RTL */
+[dir='rtl'] .icon-left {
+  margin-left: unset;
+  margin-right: 0.5rem;
+}
+[dir='rtl'] .icon-right {
+  margin-right: unset;
+  margin-left: 0.5rem;
+}
+
+/* ── Text alignment ──────────────────────────────────────────── */
+[dir='rtl'] .text-left {
+  text-align: right;
+}
+[dir='rtl'] .text-right {
+  text-align: left;
+}
+
+/* ── PublicNavbar RTL overrides ──────────────────────────────── */
+[dir='rtl'] .public-navbar__inner {
+  flex-direction: row-reverse;
+}
+[dir='rtl'] .public-navbar__brand {
+  flex-direction: row-reverse;
+}
+[dir='rtl'] .public-navbar__brand-name {
+  text-align: right;
+}
+[dir='rtl'] .public-navbar__dropdown {
+  left: unset;
   right: 0;
-  border-left: 1px solid var(--sidebar-border);
-  border-right: none;
+  text-align: right;
+}
+[dir='rtl'] .public-navbar__dropdown-item {
+  flex-direction: row-reverse;
+}
+[dir='rtl'] .public-navbar__mobile-link {
+  flex-direction: row-reverse;
+}
+[dir='rtl'] .public-navbar__mobile-link-arrow {
+  transform: rotate(180deg);
+}
+[dir='rtl'] .public-navbar__caret {
+  margin-left: unset;
+  margin-right: 4px;
 }
 
-[dir="rtl"] .role-content {
-  margin-left: 0;
-  margin-right: 260px;
+/* ── Hero section RTL ────────────────────────────────────────── */
+[dir='rtl'] .hero-content {
+  text-align: right;
+}
+[dir='rtl'] .hero-cta-group {
+  justify-content: flex-start;
+  flex-direction: row-reverse;
+}
+[dir='rtl'] .hero-stats-grid {
+  direction: rtl;
+}
+[dir='rtl'] .hero-trust-badges {
+  justify-content: flex-end;
+  flex-direction: row-reverse;
+}
+[dir='rtl'] .hero-badge {
+  flex-direction: row-reverse;
 }
 
-@font-face {
-  font-family: 'Cairo';
-  font-style: normal;
-  font-weight: 400;
-  font-display: swap;
-  src: url('https://fonts.gstatic.com/s/cairo/v28/SLXgc1nY6HkvangtZmpcWmhzfH5lWWgcSIV-FA.woff2') format('woff2');
-  unicode-range: U+0600-06FF, U+200C-200D, U+FB50-FDFF, U+FE70-FEFF;
+/* ── Card / Section RTL ──────────────────────────────────────── */
+[dir='rtl'] .card {
+  text-align: right;
 }
 
-@font-face {
-  font-family: 'Cairo';
-  font-style: normal;
-  font-weight: 600;
-  font-display: swap;
-  src: url('https://fonts.gstatic.com/s/cairo/v28/SLXgc1nY6HkvangtZmpca2hzfH5lWWgcSIV-FA.woff2') format('woff2');
-  unicode-range: U+0600-06FF, U+200C-200D, U+FB50-FDFF, U+FE70-FEFF;
+/* ── Form RTL ────────────────────────────────────────────────── */
+[dir='rtl'] .form-group label {
+  text-align: right;
+  display: block;
+}
+[dir='rtl'] .form-group .input-prefix {
+  left: unset;
+  right: 0.75rem;
+}
+[dir='rtl'] .form-group .input-suffix {
+  right: unset;
+  left: 0.75rem;
 }
 
-@font-face {
-  font-family: 'Cairo';
-  font-style: normal;
-  font-weight: 700;
-  font-display: swap;
-  src: url('https://fonts.gstatic.com/s/cairo/v28/SLXgc1nY6HkvangtZmpcUGhzfH5lWWgcSIV-FA.woff2') format('woff2');
-  unicode-range: U+0600-06FF, U+200C-200D, U+FB50-FDFF, U+FE70-FEFF;
+/* ── Footer RTL ──────────────────────────────────────────────── */
+[dir='rtl'] .footer {
+  text-align: right;
+}
+[dir='rtl'] .footer-links {
+  flex-direction: row-reverse;
+}
+
+/* ── Scrollbar direction ─────────────────────────────────────── */
+[dir='rtl'] .overflow-y-auto,
+[dir='rtl'] .overflow-auto {
+  direction: rtl;
+}
+
+/* ── Dashboard / Sidebar RTL ─────────────────────────────────── */
+[dir='rtl'] [class*='TabList'],
+[dir='rtl'] [role='tablist'] {
+  flex-direction: row-reverse;
+}
+
+[dir='rtl'] [class*='Pagination'] {
+  flex-direction: row-reverse;
+}
+
+[dir='rtl'] [class*='Modal'],
+[dir='rtl'] [role='dialog'] {
+  direction: rtl;
+  text-align: right;
+}
+
+[dir='rtl'] [class*='Toast'],
+[dir='rtl'] [class*='Alert'] {
+  direction: rtl;
+  text-align: right;
+}
+
+[dir='rtl'] table,
+[dir='rtl'] th,
+[dir='rtl'] td {
+  text-align: right;
+}
+
+/* ── Numbers/prices stay LTR even in RTL context ─────────────── */
+[dir='rtl'] [data-numeric='true'],
+[dir='rtl'] [class*='price'],
+[dir='rtl'] [class*='Price'],
+[dir='rtl'] [class*='StatValue'],
+[dir='rtl'] [class*='stat-value'],
+[dir='rtl'] [class*='currency'],
+[dir='rtl'] [class*='Amount'],
+[dir='rtl'] [class*='amount'] {
+  direction: ltr;
+  display: inline-block;
+}
+
+/* ── Dropdown menus ──────────────────────────────────────────── */
+[dir='rtl'] [class*='DropdownMenu'],
+[dir='rtl'] [class*='dropdown-menu'] {
+  right: 0;
+  left: auto;
+  text-align: right;
+}
+
+/* ── Button groups ───────────────────────────────────────────── */
+[dir='rtl'] [class*='ButtonGroup'],
+[dir='rtl'] [class*='button-group'] {
+  flex-direction: row-reverse;
+}
+
+/* ── Search bar ──────────────────────────────────────────────── */
+[dir='rtl'] [class*='SearchBar'] input,
+[dir='rtl'] [class*='search-bar'] input {
+  padding-right: 2.5rem;
+  padding-left: 0.75rem;
+  text-align: right;
+}
+
+/* ── Stat cards (AI / Analytics) ─────────────────────────────── */
+[dir='rtl'] [class*='StatCard'],
+[dir='rtl'] [class*='stat-card'],
+[dir='rtl'] [class*='KpiCard'] {
+  text-align: right;
+  direction: rtl;
+}
+
+/* ── Off-Plan portal ─────────────────────────────────────────── */
+[dir='rtl'] [class*='DeveloperCard'],
+[dir='rtl'] [class*='ProjectCard'] {
+  text-align: right;
+}
+
+/* ── AI Intelligence Hub ─────────────────────────────────────── */
+[dir='rtl'] [class*='AICard'],
+[dir='rtl'] [class*='InsightTile'] {
+  text-align: right;
+  direction: rtl;
+}
+
+/* ── Directional chevron icon flips for RTL ─────────────────── */
+[dir='rtl'] .icon-chevron-left,
+[dir='rtl'] [data-icon='chevron-left'] {
+  transform: scaleX(-1);
+}
+[dir='rtl'] .icon-chevron-right,
+[dir='rtl'] [data-icon='chevron-right'] {
+  transform: scaleX(-1);
 }
