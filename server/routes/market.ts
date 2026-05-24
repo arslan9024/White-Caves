@@ -635,8 +635,14 @@ router.get(
     if (normalizedArea) {
       data = data.filter(r => r.area.toLowerCase().includes(normalizedArea.toLowerCase()));
     }
-    if (normalizedPropertyType) data = data.filter(r => r.propertyType === normalizedPropertyType);
-    if (normalizedBedrooms) data = data.filter(r => r.bedrooms === normalizedBedrooms);
+    if (normalizedPropertyType) {
+      const propertyTypeFilter = normalizedPropertyType.toLowerCase();
+      data = data.filter(r => r.propertyType.toLowerCase() === propertyTypeFilter);
+    }
+    if (normalizedBedrooms) {
+      const bedroomsFilter = normalizedBedrooms.toLowerCase();
+      data = data.filter(r => r.bedrooms.toLowerCase() === bedroomsFilter);
+    }
 
     res.json({
       success: true,
