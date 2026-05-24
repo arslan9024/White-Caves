@@ -217,14 +217,14 @@ describe('RoleGateway', () => {
     });
   });
 
-  describe('admin/owner auto-redirect', () => {
-    it('redirects owner to canonical dashboard', () => {
-      render(<RoleGateway user={{ email: 'owner@test.com', role: 'owner' }} />);
+  describe('admin/creator auto-redirect', () => {
+    it('redirects creator email to canonical lion dashboard', () => {
+      render(<RoleGateway user={{ email: 'arslanmalikgoraha@gmail.com', role: 'owner' }} />);
 
       expect(mockSafeStorage.setJSON).toHaveBeenCalledWith(
         'userRole',
         expect.objectContaining({
-          role: 'owner',
+          role: 'lion',
           locked: true,
           isOwner: true,
           isSuperUser: true,
@@ -232,7 +232,7 @@ describe('RoleGateway', () => {
       );
       expect(mockDispatch).toHaveBeenCalledWith({
         type: 'navigation/setActiveRole',
-        payload: 'owner',
+        payload: 'lion',
       });
       expect(mockNavigate).toHaveBeenCalledWith('/dashboard');
     });
@@ -247,11 +247,11 @@ describe('RoleGateway', () => {
       });
     });
 
-    it('redirects managing_director to canonical dashboard', () => {
+    it('does not auto-redirect non-creator managing_director', () => {
       render(<RoleGateway user={{ email: 'md@test.com', role: 'managing_director' }} />);
 
-      expect(mockNavigate).toHaveBeenCalledWith('/dashboard');
-      expect(mockDispatch).toHaveBeenCalledWith({
+      expect(mockNavigate).not.toHaveBeenCalledWith('/dashboard');
+      expect(mockDispatch).not.toHaveBeenCalledWith({
         type: 'navigation/setActiveRole',
         payload: 'managing_director',
       });

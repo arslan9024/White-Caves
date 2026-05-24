@@ -53,6 +53,7 @@ import {
 } from '../store/crmDataSlice';
 import { selectAssistant as selectAIAssistant } from '../store/slices/aiAssistantDashboardSlice';
 import { AI_ASSISTANTS_REGISTRY } from '../store/slices/aiAssistant/registry';
+import { isCreatorSuperUserEmail } from '../utils/superUserAccess';
 
 // ─── Types ────────────────────────────────────────────────────
 
@@ -212,18 +213,11 @@ export function useUnifiedDashboard() {
   const roleInfo = getRoleInfo(currentRole);
   useDocumentTitle(`${roleInfo.label} Dashboard`);
 
-  const isSuperUser =
-    user?.role === 'owner' ||
-    user?.role === 'admin' ||
-    user?.role === 'managing_director' ||
-    currentRole === 'lion' ||
-    currentRole === 'managing_director' ||
-    currentRole === 'super_admin' ||
-    (user as { email?: string } | null)?.email === 'arslanmalikgoraha@gmail.com';
+  const isSuperUser = isCreatorSuperUserEmail((user as { email?: string } | null)?.email);
 
   // ─── Role-Based Data Filtering ────────────────────────────
   const filteredData = useMemo<DashboardData>(() => {
-    if (isSuperUser || currentRole === 'lion') {
+    if (isSuperUser) {
       return dashboardData;
     }
 

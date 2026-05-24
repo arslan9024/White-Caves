@@ -5,6 +5,11 @@ import { setActiveRole } from '../store/navigationSlice';
 import * as S from './RoleGateway.styles';
 import { safeStorage } from '../utils/safeStorage';
 import type { AppDispatch } from '../store/store';
+import {
+  CANONICAL_SUPERUSER_ROLE,
+  isCreatorSuperUserEmail,
+  normalizeRoleForUserContext,
+} from '../utils/superUserAccess';
 
 interface RoleOption {
   id: string;
@@ -70,23 +75,20 @@ export default function RoleGateway({ user, onRoleSelect }: RoleGatewayProps) {
   const dispatch = useDispatch<AppDispatch>();
 
   useEffect(() => {
-    // Auto-route privileged roles (and creator email) straight to dashboard
-    if (
-      user?.email === 'arslanmalikgoraha@gmail.com' ||
-      user?.role === 'owner' ||
-      user?.role === 'admin' ||
-      user?.role === 'managing_director' ||
-      user?.role === 'super_admin' ||
-      user?.role === 'lion'
-    ) {
-      const privilegedRole =
-        user?.email === 'arslanmalikgoraha@gmail.com' ? 'lion' : (user?.role ?? 'owner');
+    const isCreatorAccount = isCreatorSuperUserEmail(user?.email);
+    const normalizedUserRole = normalizeRoleForUserContext(user?.role, user?.email);
+    const shouldAutoRoute = isCreatorAccount || normalizedUserRole === 'admin';
+
+    if (shouldAutoRoute) {
+      const privilegedRole = isCreatorAccount
+        ? CANONICAL_SUPERUSER_ROLE
+        : (normalizedUserRole ?? 'admin');
       const ownerRole = {
         role: privilegedRole,
         selectedAt: new Date().toISOString(),
         locked: true,
-        isOwner: true,
-        isSuperUser: true,
+        isOwner: isCreatorAccount,
+        isSuperUser: isCreatorAccount,
       };
       safeStorage.setJSON('userRole', ownerRole);
       dispatch(setActiveRole(privilegedRole));

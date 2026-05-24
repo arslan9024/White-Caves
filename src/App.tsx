@@ -15,6 +15,11 @@ import type { RootState, AppDispatch } from './store/store';
 import { selectSessionUser } from './store/selectors/sessionSelectors';
 import { safeStorage } from './utils/safeStorage';
 import { authFetch } from './utils/authFetch';
+import {
+  CANONICAL_SUPERUSER_ROLE,
+  isCreatorSuperUserEmail,
+  normalizeRoleForUserContext,
+} from './utils/superUserAccess';
 
 // Lazy-load components not needed for initial render (performance optimization)
 const UniversalComponents = lazy(() => import('./components/layout/UniversalComponents'));
@@ -39,37 +44,20 @@ interface ProtectedRouteProps {
   allowedRoles?: string[];
 }
 
-/** Creator email — always receives full 'lion' (superuser) role regardless of server-stored role. */
-const CREATOR_EMAIL = 'arslanmalikgoraha@gmail.com';
-
 function resolveEffectiveRole(
   user: { role?: string; email?: string } | null,
   storedRoleData: UserRoleData | null
 ): string | null {
-  // Creator always gets the full 'lion' superuser role regardless of server role
-  if (user?.email === CREATOR_EMAIL) return 'lion';
+  if (isCreatorSuperUserEmail(user?.email)) return CANONICAL_SUPERUSER_ROLE;
 
-  const normalizeRole = (role?: string): string | null => {
-    if (!role) return null;
-    if (role === 'lion' || role === 'managing_director') return 'owner';
-    return role;
-  };
-
-  const serverRole = normalizeRole(user?.role);
-  const storedRole = normalizeRole(storedRoleData?.role);
+  const serverRole = normalizeRoleForUserContext(user?.role, user?.email);
+  const storedRole = normalizeRoleForUserContext(storedRoleData?.role, user?.email);
 
   if (storedRoleData && typeof storedRoleData.role === 'string') {
-    const isPrivileged =
-      serverRole === 'owner' ||
-      serverRole === 'admin' ||
-      serverRole === 'super_user' ||
-      serverRole === 'super_admin';
-
-    // Deterministic executive path: privileged server roles should not be overridden by local sub-role state.
-    return isPrivileged ? serverRole : (serverRole ?? storedRole);
+    return serverRole ?? storedRole;
   }
 
-  return serverRole ?? null;
+  return serverRole;
 }
 
 // ─── Protected Route ────────────────────────────────────────────────────
@@ -120,8 +108,17 @@ function ProtectedRoute({ children, allowedRoles }: ProtectedRouteProps) {
     return <Navigate to="/pending-approval" replace />;
   }
 
-  if (allowedRoles && !allowedRoles.includes(userData.role)) {
-    return <Navigate to={`/${userData.role}/dashboard`} replace />;
+  if (allowedRoles) {
+    const normalizedUserRole = normalizeRoleForUserContext(userData.role, user?.email);
+    const normalizedAllowedRoles = new Set(
+      allowedRoles
+        .map(role => normalizeRoleForUserContext(role, user?.email))
+        .filter((role): role is string => Boolean(role))
+    );
+
+    if (!normalizedUserRole || !normalizedAllowedRoles.has(normalizedUserRole)) {
+      return <Navigate to={`/${userData.role}/dashboard`} replace />;
+    }
   }
 
   return <>{children}</>;
