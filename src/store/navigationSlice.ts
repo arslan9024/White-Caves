@@ -2,34 +2,12 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { safeStorage } from '../utils/safeStorage';
 import { logout } from './authSlice';
 
-interface NavNotification {
-  id?: string;
-  type: string;
-  title?: string;
-  message: string;
-  timestamp?: string;
-  duration?: number;
-  read?: boolean;
-}
+const getInitialSidebarWidth = () => {
+  const stored = localStorage.getItem('sidebarWidth');
+  return stored ? parseInt(stored, 10) : 40;
+};
 
-interface NavigationState {
-  isOnline: boolean;
-  currentTime: string;
-  profileMenuOpen: boolean;
-  roleMenuOpen: boolean;
-  whatsappMenuOpen: boolean;
-  mobileMenuOpen: boolean;
-  activeRole: string | null;
-  theme: string;
-  language: string;
-  notifications: NavNotification[];
-  unreadNotifications: number;
-  currentModule: string | null;
-  currentSubModule: string | null;
-  sidebarCollapsed: boolean;
-}
-
-const initialState: NavigationState = {
+const initialState = {
   isOnline: navigator.onLine,
   currentTime: new Date().toISOString(),
   profileMenuOpen: false,
@@ -44,6 +22,9 @@ const initialState: NavigationState = {
   currentModule: null,
   currentSubModule: null,
   sidebarCollapsed: false,
+  sidebarWidth: getInitialSidebarWidth(),
+  activeNavItem: 'overview',
+  implementationUpdates: [],
 };
 
 const navigationSlice = createSlice({
@@ -132,6 +113,23 @@ const navigationSlice = createSlice({
     setSidebarCollapsed: (state, action) => {
       state.sidebarCollapsed = action.payload;
     },
+    setSidebarWidth: (state, action) => {
+      const width = Math.min(Math.max(action.payload, 25), 50);
+      state.sidebarWidth = width;
+      localStorage.setItem('sidebarWidth', width.toString());
+    },
+    setActiveNavItem: (state, action) => {
+      state.activeNavItem = action.payload;
+    },
+    addImplementationUpdate: (state, action) => {
+      state.implementationUpdates.unshift(action.payload);
+      if (state.implementationUpdates.length > 50) {
+        state.implementationUpdates = state.implementationUpdates.slice(0, 50);
+      }
+    },
+    setImplementationUpdates: (state, action) => {
+      state.implementationUpdates = action.payload;
+    },
   },
   extraReducers: (builder) => {
     builder.addCase(logout, () => initialState);
@@ -160,6 +158,10 @@ export const {
   setCurrentSubModule,
   toggleSidebar,
   setSidebarCollapsed,
+  setSidebarWidth,
+  setActiveNavItem,
+  addImplementationUpdate,
+  setImplementationUpdates,
 } = navigationSlice.actions;
 
 export default navigationSlice.reducer;

@@ -1,0 +1,319 @@
+I understand completely. When the entire design and architecture are broken, incremental fixes won't work. Here's a comprehensive prompt for a **complete ground-up refactor** of your UI/UX architecture, navigation, and data flow integration.
+
+## **Prompt: Complete UI/UX Architecture Refactor & Dashboard Integration Overhaul**
+
+**Core Instruction:** You are now the **Lead UI/UX Architect and Senior Full-Stack Developer**. You must COMPLETELY REFACTOR the entire frontend architecture of White Caves Real Estate from the ground up. The current system is fundamentally broken: inconsistent navigation, non-functional dashboards, disconnected components, and poor data flow. You will rebuild with a **unified, consistent, data-driven architecture** that works seamlessly across all AI assistant dashboards.
+
+---
+
+### **PHASE 1: ARCHITECTURAL FOUNDATION - THE LAYOUT SYSTEM**
+
+**Step 1.1: Create the Master Root Layout**
+```
+CREATE: /src/layouts/RootLayout.jsx
+
+This is the SINGLE SOURCE OF TRUTH for the entire app's structure:
+
+TOP NAVIGATION BAR (Fixed position, always visible):
+┌─────────────────────────────────────────────────────────────────────┐
+│ [Logo]  [Search Bar]  [Theme Toggle]  [Notifications]  [User Profile]
+└─────────────────────────────────────────────────────────────────────┘
+
+SIDEBAR (Collapsible, 280px/72px):
+Dashboard Categories → AI Assistants → Settings
+
+MAIN CONTENT AREA:
+• Dashboard-specific content
+• Dynamic based on selected AI assistant
+• Consistent padding and spacing
+```
+
+**Requirements for Top Navigation:**
+1. **Search Bar**: Global search across properties, leads, conversations
+2. **Theme Toggle**: Instantly switches between light/dark mode (system preference detection)
+3. **Notifications**: Real-time bell icon with badge count, dropdown with notifications
+4. **User Profile**: Avatar, name, role, dropdown with: Profile, Settings, Logout
+5. **Consistent styling**: Use brand red (#DC2626) for active states
+
+**Step 1.2: Create Unified Dashboard Layout Framework**
+```
+CREATE: /src/layouts/DashboardLayout.jsx
+
+This is the CONTAINER for ALL AI assistant dashboards:
+
+PROPERTIES:
+• Receives `assistantId` (e.g., 'zoe', 'aurora', 'linda')
+• Dynamically loads the correct dashboard component
+• Provides consistent: Header, Tabs, Action Bar, Data Container
+• Manages dashboard-specific state and data fetching
+```
+
+---
+
+### **PHASE 2: DASHBOARD ARCHITECTURE - UNIFIED PATTERN**
+
+**Step 2.1: Define the Dashboard Contract**
+```
+CREATE: /src/components/dashboards/DashboardContract.js
+
+Every dashboard MUST implement:
+1. Standardized Tab Structure (max 5-6 relevant tabs per dashboard)
+2. Consistent Data Loading Pattern (Loading → Empty → Data → Error states)
+3. Unified Event Handling System
+4. Standardized API Integration Pattern
+```
+
+**Step 2.2: Refactor ALL Existing Dashboards**
+For EACH AI Assistant (Zoe, Aurora, Linda, Hazel, Olivia, Henry, etc.):
+```
+1. MOVE to: /src/components/dashboards/{assistant-name}/
+2. RENAME to: {AssistantName}Dashboard.jsx
+3. REFACTOR to use DashboardLayout
+4. SIMPLIFY Tabs to ONLY relevant features:
+   
+   EXAMPLE - Zoe Dashboard:
+   Tab 1: Executive Summary (KPIs, Metrics)
+   Tab 2: AI Suggestions (From all assistants)
+   Tab 3: Calendar & Meetings
+   Tab 4: Task Manager
+   Tab 5: Reports (Remove everything else)
+   
+   EXAMPLE - Linda Dashboard (WhatsApp):
+   Tab 1: Active Conversations
+   Tab 2: Agent Assignment Queue
+   Tab 3: Message Templates
+   Tab 4: Analytics
+   Tab 5: Settings (Remove everything else)
+```
+
+**Step 2.3: Create Dashboard Registry & Router**
+```
+CREATE: /src/config/dashboards.js
+
+EXPORT: DASHBOARD_REGISTRY = [
+  {
+    id: 'zoe',
+    name: 'Zoe',
+    title: 'Executive Assistant',
+    component: lazy(() => import('./dashboards/ZoeDashboard')),
+    icon: 'Briefcase',
+    tabs: ['Summary', 'Suggestions', 'Calendar', 'Tasks', 'Reports'],
+    requiredPermissions: ['executive']
+  },
+  {
+    id: 'aurora',
+    name: 'Aurora',
+    title: 'CTO Dashboard',
+    component: lazy(() => import('./dashboards/AuroraDashboard')),
+    icon: 'Server',
+    tabs: ['System Health', 'API Monitor', 'Deployments', 'Documentation'],
+    requiredPermissions: ['admin', 'cto']
+  },
+  // ... ALL 14+ assistants
+]
+
+UPDATE: App Router to use this registry
+```
+
+---
+
+### **PHASE 3: DATA FLOW INTEGRATION - REAL-TIME UPDATES**
+
+**Step 3.1: Create Central Data Service**
+```
+CREATE: /src/services/DashboardDataService.js
+
+This is the SINGLE POINT for ALL dashboard data:
+• Fetches data from backend APIs
+• Caches responses
+• Manages real-time updates via WebSocket
+• Provides data to ALL dashboards
+• Handles error states consistently
+```
+
+**Step 3.2: Implement Real-time UI Updates**
+```
+CREATE: /src/hooks/useDashboardData.js
+
+Custom hook for ALL dashboards:
+• Automatically fetches data when tab changes
+• Shows loading states
+• Handles errors gracefully
+• Provides refresh capability
+• Manages polling for real-time data
+```
+
+**Step 3.3: Connect ALL Buttons & Actions**
+```
+For EVERY button in EVERY dashboard:
+1. Add loading state visual feedback
+2. Add success/error toast notifications
+3. Ensure data refreshes after action
+4. Log actions to analytics
+5. Update UI immediately
+
+USE: /src/components/ui/AsyncButton.jsx
+- Standardized button with loading, success, error states
+- Used across ALL dashboards
+```
+
+---
+
+### **PHASE 4: VISUAL CONSISTENCY - DESIGN SYSTEM**
+
+**Step 4.1: Create Design Token System**
+```
+CREATE: /src/styles/design-tokens.css
+
+CSS Variables for EVERYTHING:
+--color-primary: #DC2626;
+--color-primary-dark: #B91C1C;
+--spacing-unit: 0.5rem;
+--border-radius: 0.375rem;
+--sidebar-width: 280px;
+--sidebar-width-collapsed: 72px;
+--topnav-height: 64px;
+```
+
+**Step 4.2: Standardize ALL Components**
+```
+REFACTOR ALL COMPONENTS to use:
+1. /src/components/ui/Button.jsx (with variants: primary, secondary, ghost)
+2. /src/components/ui/Card.jsx (consistent shadows, borders)
+3. /src/components/ui/Table.jsx (standardized data tables)
+4. /src/components/ui/Form elements (consistent forms)
+5. /src/components/ui/Modal.jsx (standard modals)
+```
+
+**Step 4.3: Implement Responsive Breakpoints**
+```
+Mobile (< 768px): 
+- Topnav: compact icons only
+- Sidebar: hidden (hamburger menu)
+- Dashboard: single column
+
+Tablet (768px - 1024px):
+- Sidebar: collapsed (icons only)
+- Dashboard: optimized layout
+
+Desktop (> 1024px):
+- Full sidebar visible
+- Multi-column dashboards
+```
+
+---
+
+### **PHASE 5: INTEGRATION & TESTING**
+
+**Step 5.1: Create Integration Test Suite**
+```
+CREATE: /src/__tests__/dashboard-integration.test.jsx
+
+Tests for:
+1. Navigation: Topnav → Sidebar → Dashboard flow
+2. Data Flow: Click button → API call → UI update
+3. Tab Switching: Data persists/changes correctly
+4. Real-time: Updates propagate across components
+5. Mobile/Desktop: Responsive behavior
+```
+
+**Step 5.2: Create Live Dashboard Status Monitor**
+```
+CREATE: /src/components/SystemStatus.jsx
+
+Real-time monitor showing:
+• Which dashboards are loaded
+• API connection status
+• Data update timestamps
+• Error counts
+• Performance metrics
+```
+
+**Step 5.3: Implement Progressive Enhancement**
+```
+For EACH dashboard:
+1. Basic view works without JavaScript
+2. Enhanced view with real-time updates
+3. Offline capability with cached data
+4. Accessibility compliance (ARIA labels, keyboard nav)
+```
+
+---
+
+### **PHASE 6: MIGRATION & DEPLOYMENT**
+
+**Step 6.1: Create Migration Script**
+```
+CREATE: /scripts/migrate-dashboards.js
+
+Automatically:
+1. Moves old dashboard components to new structure
+2. Updates imports across the codebase
+3. Converts old Redux patterns to new hooks
+4. Generates compatibility layer for any breaking changes
+```
+
+**Step 6.2: Create Rollback Plan**
+```
+1. Backup current dashboard components
+2. Feature flag system for gradual rollout
+3. A/B testing capability
+4. Instant rollback if issues detected
+```
+
+**Step 6.3: Create User Transition Guide**
+```
+/documentation/DASHBOARD_MIGRATION.md
+
+Guide for:
+• Where to find features in new layout
+• How to use new navigation
+• What's changed and why
+• Tips for power users
+```
+
+---
+
+## **DELIVERABLES - COMPLETE SYSTEM**
+
+**You MUST deliver:**
+
+1. **✅ RootLayout.jsx** - Complete topnav + sidebar system
+2. **✅ DashboardLayout.jsx** - Unified dashboard container
+3. **✅ ALL 14+ dashboards refactored** to new structure
+4. **✅ DashboardDataService.js** - Central data management
+5. **✅ Design token system** with CSS variables
+6. **✅ UI component library** (Button, Card, Table, Form)
+7. **✅ Dashboard registry** with routing
+8. **✅ Integration tests** proving everything works
+9. **✅ Migration script** for seamless transition
+10. **✅ Documentation** for developers and users
+
+**VERIFICATION CRITERIA:**
+1. Top navigation works consistently across ALL pages
+2. Every dashboard tab shows REAL data (no hardcoded/mock data)
+3. Every button click produces IMMEDIATE visual feedback
+4. Theme toggle instantly changes ENTIRE application
+5. Sidebar navigation correctly loads ALL dashboards
+6. Search works globally across properties/leads/conversations
+7. Notifications show real-time updates
+8. Mobile responsiveness works perfectly
+9. Data flows correctly: UI → API → Database → UI
+10. Zero console errors in development tools
+
+---
+
+## **EXECUTION PLAN:**
+
+**Start IMMEDIATELY with:** `RootLayout.jsx` and `DashboardLayout.jsx`
+**Then refactor:** Zoe Dashboard (as the template)
+**Then batch-refactor:** All other dashboards using the same pattern
+**Finally:** Integrate, test, and deploy
+
+**Every step must be demonstrable:** Show working navigation, show data loading, show button responses, show theme switching.
+
+---
+
+**This is not a patch job. This is a COMPLETE ARCHITECTURAL REBUILD. Start from the foundation (RootLayout) and build up systematically. Every component must follow the new pattern. No exceptions.**
+
+**Begin the refactor NOW. Show progress after each dashboard is converted. Deliver a COMPLETELY WORKING, INTEGRATED, CONSISTENT UI/UX system.**

@@ -175,14 +175,17 @@ export function useCommissionTracking() {
     if (!formData.amount || Number(formData.amount) <= 0) return;
 
     const commissionData = {
-      agent_name: formData.agent_name.trim(),
+      agentId: formData.agent_name.trim(),
       amount: Number(formData.amount),
       percentage: formData.percentage ? Number(formData.percentage) : undefined,
       type: formData.type,
-      status: formData.status,
-      property_title: formData.property_title.trim(),
-      notes: formData.notes.trim(),
-      created_at: new Date().toISOString(),
+      notes: [
+        formData.notes.trim(),
+        formData.property_title.trim() ? `property: ${formData.property_title.trim()}` : '',
+        formData.status ? `status: ${formData.status}` : '',
+      ]
+        .filter(Boolean)
+        .join(' | '),
     };
 
     dispatch(createCommissionAPI(commissionData))
@@ -239,7 +242,14 @@ export function useCommissionTracking() {
           id: String(selectedCommission.id),
           status: formData.status,
           amount: Number(formData.amount) || 0,
-          notes: formData.notes.trim(),
+          notes: [
+            formData.notes.trim(),
+            formData.agent_name.trim() ? `agent: ${formData.agent_name.trim()}` : '',
+            formData.property_title.trim() ? `property: ${formData.property_title.trim()}` : '',
+            formData.type ? `type: ${formData.type}` : '',
+          ]
+            .filter(Boolean)
+            .join(' | '),
         })
       )
         .then(result => {

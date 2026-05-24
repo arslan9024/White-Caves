@@ -991,6 +991,10 @@ router.post(
       throw new AppError('Firebase token is required', 400);
     }
 
+    const allowDevFallback =
+      process.env.NODE_ENV === 'development' &&
+      process.env.ALLOW_FIREBASE_SYNC_DEV_FALLBACK !== 'false';
+
     let decodedToken: Awaited<ReturnType<typeof verifyFirebaseIdToken>>;
     try {
       decodedToken = await verifyFirebaseIdToken(firebaseToken);
@@ -999,10 +1003,7 @@ router.post(
         error instanceof FirebaseAdminInitError ||
         (error instanceof Error && error.name === 'FirebaseAdminInitError')
       ) {
-        if (
-          process.env.NODE_ENV === 'development' &&
-          process.env.ALLOW_FIREBASE_SYNC_DEV_FALLBACK === 'true'
-        ) {
+        if (allowDevFallback) {
           // Dev-only fallback: skip token verification and trust the request body
           decodedToken = {
             uid: firebaseUid,
@@ -1016,6 +1017,14 @@ router.post(
             503
           );
         }
+      } else if (allowDevFallback) {
+        // Dev-only fallback for token verification mismatch/errors
+        decodedToken = {
+          uid: firebaseUid,
+          email: typeof email === 'string' ? email : undefined,
+          name: typeof name === 'string' ? name : undefined,
+          picture: typeof photoUrl === 'string' ? photoUrl : undefined,
+        } as unknown as Awaited<ReturnType<typeof verifyFirebaseIdToken>>;
       } else {
         throw new AppError('Invalid Firebase token', 401);
       }

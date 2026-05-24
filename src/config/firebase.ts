@@ -49,11 +49,12 @@ if (firebaseConfig.apiKey) {
   try {
     app = initializeApp(firebaseConfig);
     auth = getAuth(app);
-  } catch (error: unknown) {
-    if (import.meta.env.DEV) log.warn('Init failed:', error instanceof Error ? error.message : String(error));
+    
+  } catch (error) {
+    
   }
 } else {
-  if (import.meta.env.DEV) log.info('Not configured — auth features disabled');
+  
 }
 
 const googleProvider = new GoogleAuthProvider();
@@ -95,7 +96,7 @@ export const createRecaptchaVerifier = (elementId: string) => {
   return new RecaptchaVerifier(auth, elementId, {
     size: 'invisible',
     callback: () => {
-      // reCAPTCHA verified — no action needed
+      
     }
   });
 };
@@ -110,7 +111,41 @@ export const updateUserProfile = async (user: User, updates: { displayName?: str
   return await updateProfile(user, updates);
 };
 
-export const saveBiometricSession = (user: User, token: string): void => {
+export const updateUserEmail = async (user, newEmail) => {
+  if (!auth) throw new Error('Firebase not initialized');
+  return await updateEmail(user, newEmail);
+};
+
+export const updateUserPassword = async (user, newPassword) => {
+  if (!auth) throw new Error('Firebase not initialized');
+  return await updatePassword(user, newPassword);
+};
+
+export const resetPassword = async (email) => {
+  if (!auth) throw new Error('Firebase not initialized');
+  return await sendPasswordResetEmail(auth, email);
+};
+
+export const verifyEmail = async (user) => {
+  if (!auth) throw new Error('Firebase not initialized');
+  return await sendEmailVerification(user);
+};
+
+export const setAuthPersistence = async (rememberMe = true) => {
+  if (!auth) throw new Error('Firebase not initialized');
+  const persistence = rememberMe ? browserLocalPersistence : browserSessionPersistence;
+  return await setPersistence(auth, persistence);
+};
+
+export const onAuthChange = (callback) => {
+  if (!auth) {
+    
+    return () => {};
+  }
+  return onAuthStateChanged(auth, callback);
+};
+
+export const saveBiometricSession = (user, token) => {
   const sessionData = {
     user: {
       uid: user.uid,

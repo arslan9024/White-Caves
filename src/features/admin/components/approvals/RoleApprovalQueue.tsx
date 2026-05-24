@@ -31,9 +31,9 @@ const RoleApprovalQueue = () => {
       apiClient.setAuthToken(token);
       const data = await apiClient.get('/admin/role-requests') as { requests?: RoleRequest[] };
       dispatch(setPendingRequests(data.requests || []));
-    } catch (error: unknown) {
-      log.error('Failed to fetch role requests:', error);
-      setFetchError(error instanceof Error ? error.message : 'Failed to load role requests');
+    } catch (error) {
+      
+      setFetchError(error.message || 'Failed to load role requests');
     } finally {
       setInitialLoading(false);
     }
@@ -61,10 +61,9 @@ const RoleApprovalQueue = () => {
         requestId: request.id,
         reviewedBy: user?.id ?? '',
       }));
-      toast.success(`Role request for ${request.displayName || request.userName || 'user'} approved successfully`);
-    } catch (error: unknown) {
-      log.error('Approval error:', error);
-      toast.error(error instanceof Error ? error.message : 'Failed to approve request');
+    } catch (error) {
+      
+      alert(error.message || 'Failed to approve request');
     } finally {
       setLoading(false);
     }
@@ -94,9 +93,9 @@ const RoleApprovalQueue = () => {
 
       setSelectedRequest(null);
       setRejectionReason('');
-    } catch (error: unknown) {
-      log.error('Rejection error:', error);
-      toast.error(error instanceof Error ? error.message : 'Failed to reject request');
+    } catch (error) {
+      
+      alert(error.message || 'Failed to reject request');
     } finally {
       setLoading(false);
     }

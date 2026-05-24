@@ -8,28 +8,22 @@ export default function MobileAppBanner() {
       <div className="mobile-app-container">
         <div className="app-content">
           <div className="app-text">
-            <h2 className="app-title">Download White Caves App</h2>
+            <h2 className="app-title">
+              Download White Caves App
+            </h2>
             <p className="app-subtitle">
               Search properties, schedule viewings, and manage your real estate journey on the go
             </p>
             <div className="app-buttons">
-              <button
-                className="app-store-btn"
-                aria-label="Download White Caves on the App Store (coming soon)"
-                disabled
-              >
-                <Apple size={24} aria-hidden="true" />
+              <button className="app-store-btn">
+                <Apple size={24} />
                 <div className="btn-text">
                   <span className="btn-label">Download on the</span>
                   <span className="btn-store">App Store</span>
                 </div>
               </button>
-              <button
-                className="play-store-btn"
-                aria-label="Get White Caves on Google Play (coming soon)"
-                disabled
-              >
-                <Download size={24} aria-hidden="true" />
+              <button className="play-store-btn">
+                <Download size={24} />
                 <div className="btn-text">
                   <span className="btn-label">Get it on</span>
                   <span className="btn-store">Google Play</span>

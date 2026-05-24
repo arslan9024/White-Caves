@@ -7,14 +7,14 @@
 export const SPACING_TOKENS = {
   // 8px Grid System
   space: {
-    xs: '4px', // 0.25rem - Micro spacing
-    sm: '8px', // 0.5rem - Small spacing
-    md: '16px', // 1rem - Standard spacing
-    lg: '24px', // 1.5rem - Large spacing
-    xl: '32px', // 2rem - Extra large
-    '2xl': '48px', // 3rem - 2x extra large
-    '3xl': '64px', // 4rem - 3x extra large
-    '4xl': '80px', // 5rem - 4x extra large
+    xs: '4px',      // 0.25rem - Micro spacing
+    sm: '8px',      // 0.5rem - Small spacing
+    md: '16px',     // 1rem - Standard spacing
+    lg: '24px',     // 1.5rem - Large spacing
+    xl: '32px',     // 2rem - Extra large
+    '2xl': '48px',  // 3rem - 2x extra large
+    '3xl': '64px',  // 4rem - 3x extra large
+    '4xl': '80px',  // 5rem - 4x extra large
   },
 
   // Padding Presets
@@ -24,11 +24,11 @@ export const SPACING_TOKENS = {
     md: '16px',
     lg: '24px',
     xl: '32px',
-    button: '12px 24px', // Button padding
-    card: '24px', // Card padding
-    section: '32px', // Section padding
-    page: '40px', // Page padding
-    modal: '24px', // Modal padding
+    button: '12px 24px',      // Button padding
+    card: '24px',             // Card padding
+    section: '32px',          // Section padding
+    page: '40px',             // Page padding
+    modal: '24px',            // Modal padding
   },
 
   // Margin Presets
@@ -38,8 +38,8 @@ export const SPACING_TOKENS = {
     md: '16px',
     lg: '24px',
     xl: '32px',
-    section: '48px', // Section gap
-    component: '16px', // Component gap
+    section: '48px',          // Section gap
+    component: '16px',        // Component gap
   },
 
   // Gap (for flex/grid)
@@ -74,22 +74,22 @@ export const SHADOW_TOKENS = {
   shadow: {
     // Subtle shadows for cards and light elevation
     sm: '0 1px 2px rgba(196, 30, 58, 0.08)',
-
+    
     // Standard shadow for medium elevation
     md: '0 4px 6px rgba(196, 30, 58, 0.1), 0 2px 4px rgba(26, 26, 26, 0.06)',
-
+    
     // Strong shadow for card elevation
     lg: '0 10px 25px rgba(196, 30, 58, 0.12), 0 5px 10px rgba(26, 26, 26, 0.08)',
-
+    
     // Very strong shadow for modals and overlays
     xl: '0 20px 40px rgba(196, 30, 58, 0.15), 0 10px 20px rgba(26, 26, 26, 0.1)',
-
+    
     // Extra large shadow for floating elements
     '2xl': '0 25px 50px rgba(196, 30, 58, 0.2), 0 15px 30px rgba(26, 26, 26, 0.12)',
-
+    
     // No shadow
     none: 'none',
-
+    
     // Inner shadow for depth
     inner: 'inset 0 2px 4px rgba(0, 0, 0, 0.06)',
   },
@@ -128,7 +128,7 @@ export const SHADOW_TOKENS = {
   luxury: {
     subtle: '0 1px 3px rgba(196, 30, 58, 0.05)',
     prominent: '0 15px 35px rgba(196, 30, 58, 0.15), 0 5px 15px rgba(26, 26, 26, 0.1)',
-    brand: '0 10px 30px rgba(227, 30, 36, 0.15)',
+    gold: '0 10px 30px rgba(212, 175, 55, 0.15)',
   },
 };
 
@@ -136,11 +136,11 @@ export const SHADOW_TOKENS = {
 export const TRANSITION_TOKENS = {
   // Animation Durations
   duration: {
-    fast: '150ms', // Quick interactions
-    base: '200ms', // Standard animations
-    slow: '300ms', // Smooth transitions
-    slower: '400ms', // Deliberate animations
-    slowest: '500ms', // Page transitions
+    fast: '150ms',      // Quick interactions
+    base: '200ms',      // Standard animations
+    slow: '300ms',      // Smooth transitions
+    slower: '400ms',    // Deliberate animations
+    slowest: '500ms',   // Page transitions
   },
 
   // Easing Functions (Cubic Bezier)

@@ -1,0 +1,4509 @@
+Here's the enhanced Daily Campaign Manager with randomized contact selection and strict 1-month restriction:
+
+## 🎯 **Daily Random Campaign Manager**
+
+### **`daily-campaign-manager.js`**
+```javascript
+const GoogleSheetsService = require('./google-sheets-service');
+const moment = require('moment');
+const { shuffle } = require('lodash');
+
+class DailyCampaignManager {
+    constructor(whatsappClient) {
+        this.client = whatsappClient;
+        this.sheetsService = new GoogleSheetsService();
+        
+        // Ultra-strict daily limits
+        this.limits = {
+            daily: parseInt(process.env.MAX_DAILY_MESSAGES) || 50, // Very conservative
+            minBetweenMessagesMs: 5000, // 5 seconds minimum
+            maxBetweenMessagesMs: 15000, // 15 seconds maximum
+            randomizationFactor: 0.7, // Only use 70% of daily limit for randomization
+            minDaysBetweenMessages: 30 // Don't message same person within 30 days
+        };
+        
+        // Tracking
+        this.dailyStats = {
+            date: moment().format('YYYY-MM-DD'),
+            sent: 0,
+            failed: 0,
+            skippedDueToRecency: 0,
+            contactsMessaged: [],
+            lastReset: Date.now()
+        };
+        
+        this.resetDailyStats();
+    }
+    
+    /**
+     * Main function to run daily random campaign
+     */
+    async runDailyRandomCampaign(campaignConfig) {
+        const {
+            spreadsheetId = process.env.GOOGLE_SHEETS_SPREADSHEET_ID,
+            range = process.env.GOOGLE_SHEETS_RANGE,
+            messageTemplate,
+            campaignName = `daily-${moment().format('YYYY-MM-DD')}`,
+            excludeRecentlyContacted = true
+        } = campaignConfig;
+        
+        console.log(`🚀 Starting Daily Campaign: ${campaignName}`);
+        
+        // 1. Check if we've already reached daily limit
+        if (this.dailyStats.sent >= this.limits.daily) {
+            return {
+                success: false,
+                error: `Daily limit already reached (${this.limits.daily} messages)`,
+                stats: this.dailyStats
+            };
+        }
+        
+        // 2. Load and validate contacts from Google Sheets
+        let contactsData;
+        try {
+            contactsData = await this.sheetsService.getValidatedContacts(spreadsheetId, range);
+        } catch (error) {
+            return {
+                success: false,
+                error: `Failed to load contacts: ${error.message}`
+            };
+        }
+        
+        // 3. Apply 30-day restriction filter
+        const eligibleContacts = this.filterByLastContactDate(
+            contactsData.validContacts, 
+            excludeRecentlyContacted
+        );
+        
+        console.log(`📊 After 30-day filter: ${eligibleContacts.length} eligible contacts`);
+        
+        // 4. Randomly select contacts (limited by daily remaining quota)
+        const selectedContacts = this.selectRandomContacts(
+            eligibleContacts,
+            this.getAvailableDailyQuota()
+        );
+        
+        if (selectedContacts.length === 0) {
+            return {
+                success: false,
+                error: 'No eligible contacts found after filtering',
+                stats: {
+                    totalContacts: contactsData.validContacts.length,
+                    eligibleAfterFilter: eligibleContacts.length,
+                    dailyStats: this.dailyStats
+                }
+            };
+        }
+        
+        console.log(`🎯 Randomly selected ${selectedContacts.length} contacts for today's campaign`);
+        
+        // 5. Execute campaign with ultra-conservative pacing
+        const results = await this.executeWithConservativePacing(
+            selectedContacts,
+            messageTemplate,
+            campaignName
+        );
+        
+        // 6. Update campaign stats
+        this.updateDailyStats(results);
+        
+        // 7. Update Google Sheets with last contacted dates
+        await this.updateContactHistory(selectedContacts, spreadsheetId, range);
+        
+        return {
+            success: true,
+            campaignName,
+            summary: {
+                totalContacts: contactsData.validContacts.length,
+                eligibleAfter30Days: eligibleContacts.length,
+                randomlySelected: selectedContacts.length,
+                successfullySent: results.sent,
+                failed: results.failed,
+                skippedDueToRecency: this.dailyStats.skippedDueToRecency,
+                dailyRemaining: this.limits.daily - this.dailyStats.sent,
+                nextAvailableDate: this.getNextAvailableDate(),
+                estimatedNextCampaign: this.getNextCampaignTime()
+            },
+            details: results.details,
+            dailyStats: this.dailyStats
+        };
+    }
+    
+    /**
+     * Filter contacts by last contacted date (30-day restriction)
+     */
+    filterByLastContactDate(contacts, enforceRestriction = true) {
+        if (!enforceRestriction) {
+            return contacts;
+        }
+        
+        const thirtyDaysAgo = moment().subtract(this.limits.minDaysBetweenMessages, 'days');
+        
+        return contacts.filter(contact => {
+            // If no last contacted date, assume never contacted
+            if (!contact.lastContacted) {
+                return true;
+            }
+            
+            const lastContactDate = moment(contact.lastContacted);
+            const daysSinceLastContact = moment().diff(lastContactDate, 'days');
+            
+            // Strict: Must be at least 30 days
+            if (daysSinceLastContact < this.limits.minDaysBetweenMessages) {
+                // Log skipped contact for debugging
+                console.log(`⏸️ Skipping ${contact.name || contact.validatedNumber}: Contacted ${daysSinceLastContact} days ago`);
+                this.dailyStats.skippedDueToRecency++;
+                return false;
+            }
+            
+            // Extra safety: Also check if we've messaged them today
+            const contactedToday = this.dailyStats.contactsMessaged.includes(contact.validatedNumber);
+            if (contactedToday) {
+                console.log(`⚠️ Skipping ${contact.validatedNumber}: Already messaged today`);
+                return false;
+            }
+            
+            return true;
+        });
+    }
+    
+    /**
+     * Randomly select contacts with distribution control
+     */
+    selectRandomContacts(contacts, maxToSelect) {
+        if (contacts.length <= maxToSelect) {
+            // If we have fewer contacts than quota, use all
+            return shuffle(contacts);
+        }
+        
+        // Use weighted random selection for better distribution
+        return this.weightedRandomSelection(contacts, maxToSelect);
+    }
+    
+    /**
+     * Weighted random selection to avoid patterns
+     */
+    weightedRandomSelection(contacts, n) {
+        const shuffled = shuffle([...contacts]);
+        
+        // Assign weights based on last contacted (older contacts get higher weight)
+        const weightedContacts = shuffled.map(contact => {
+            let weight = 1;
+            
+            // Higher weight for contacts never contacted
+            if (!contact.lastContacted) {
+                weight = 5;
+            } else {
+                const daysSince = moment().diff(moment(contact.lastContacted), 'days');
+                if (daysSince > 90) weight = 4; // > 3 months
+                else if (daysSince > 60) weight = 3; // 2-3 months
+                else if (daysSince > 30) weight = 2; // 1-2 months
+            }
+            
+            return { contact, weight };
+        });
+        
+        // Normalize weights and select
+        const totalWeight = weightedContacts.reduce((sum, wc) => sum + wc.weight, 0);
+        const selected = [];
+        
+        while (selected.length < n && weightedContacts.length > 0) {
+            const random = Math.random() * totalWeight;
+            let cumulative = 0;
+            
+            for (let i = 0; i < weightedContacts.length; i++) {
+                cumulative += weightedContacts[i].weight;
+                if (random <= cumulative) {
+                    selected.push(weightedContacts[i].contact);
+                    totalWeight -= weightedContacts[i].weight;
+                    weightedContacts.splice(i, 1);
+                    break;
+                }
+            }
+        }
+        
+        return selected;
+    }
+    
+    /**
+     * Get available daily quota (with randomization factor)
+     */
+    getAvailableDailyQuota() {
+        const remaining = this.limits.daily - this.dailyStats.sent;
+        
+        // Apply randomization factor (only use 70% of remaining to avoid patterns)
+        const randomizedQuota = Math.floor(remaining * this.limits.randomizationFactor);
+        
+        // Ensure minimum of 1 if we have quota remaining
+        return Math.max(1, randomizedQuota);
+    }
+    
+    /**
+     * Execute with ultra-conservative pacing
+     */
+    async executeWithConservativePacing(contacts, messageTemplate, campaignName) {
+        const results = {
+            sent: 0,
+            failed: 0,
+            details: []
+        };
+        
+        let consecutiveSuccesses = 0;
+        let consecutiveFailures = 0;
+        
+        for (let i = 0; i < contacts.length; i++) {
+            const contact = contacts[i];
+            const contactId = contact.validatedNumber;
+            
+            // Check real-time quota
+            if (this.dailyStats.sent >= this.limits.daily) {
+                console.log(`⏹️ Daily limit reached. Stopping campaign.`);
+                break;
+            }
+            
+            // Dynamic delay calculation
+            const delay = this.calculateDynamicDelay(i, consecutiveSuccesses, consecutiveFailures);
+            
+            console.log(`⏳ Waiting ${delay/1000}s before next message...`);
+            await this.delay(delay);
+            
+            // Personalize message
+            const personalizedMessage = this.personalizeMessage(messageTemplate, contact);
+            
+            try {
+                // Send message with timeout
+                const sendResult = await this.sendMessageWithTimeout(
+                    contactId,
+                    personalizedMessage,
+                    15000 // 15 second timeout
+                );
+                
+                if (sendResult.success) {
+                    results.sent++;
+                    this.dailyStats.sent++;
+                    this.dailyStats.contactsMessaged.push(contactId);
+                    consecutiveSuccesses++;
+                    consecutiveFailures = 0;
+                    
+                    // Update contact success rate for future weighting
+                    contact.successRate = (contact.successRate || 0) * 0.9 + 0.1;
+                    
+                    console.log(`✅ Sent to ${contact.name || contactId} (${results.sent}/${contacts.length})`);
+                } else {
+                    results.failed++;
+                    consecutiveFailures++;
+                    consecutiveSuccesses = 0;
+                    
+                    console.log(`❌ Failed to send to ${contact.name || contactId}: ${sendResult.error}`);
+                }
+                
+                results.details.push({
+                    contact: contact.name || contactId,
+                    number: contact.validatedNumber,
+                    success: sendResult.success,
+                    timestamp: new Date().toISOString(),
+                    messageId: sendResult.messageId,
+                    error: sendResult.error,
+                    delayUsed: delay,
+                    campaignName
+                });
+                
+                // Adaptive throttling based on failures
+                if (consecutiveFailures >= 3) {
+                    console.warn('⚠️ Multiple consecutive failures. Pausing for 30 seconds...');
+                    await this.delay(30000);
+                    consecutiveFailures = 0;
+                }
+                
+                // Success-based pacing (slow down after successes to appear human)
+                if (consecutiveSuccesses >= 5) {
+                    console.log('🔄 5 consecutive successes. Taking a short break...');
+                    await this.delay(10000);
+                    consecutiveSuccesses = 0;
+                }
+                
+            } catch (error) {
+                results.failed++;
+                results.details.push({
+                    contact: contact.name || contactId,
+                    success: false,
+                    error: error.message,
+                    timestamp: new Date().toISOString()
+                });
+                
+                console.error(`💥 Error sending to ${contactId}:`, error.message);
+                
+                // Exponential backoff on critical errors
+                if (error.message.includes('blocked') || error.message.includes('banned')) {
+                    console.error('🚨 CRITICAL: Potential detection. Stopping campaign immediately.');
+                    break;
+                }
+            }
+        }
+        
+        return results;
+    }
+    
+    /**
+     * Calculate dynamic delay that avoids patterns
+     */
+    calculateDynamicDelay(messageIndex, consecutiveSuccesses, consecutiveFailures) {
+        // Base delay increases throughout the day
+        const timeOfDay = new Date().getHours();
+        let baseDelay;
+        
+        if (timeOfDay >= 22 || timeOfDay < 8) {
+            baseDelay = 20000; // Slower at night
+        } else if (timeOfDay >= 8 && timeOfDay < 12) {
+            baseDelay = 8000; // Morning pace
+        } else if (timeOfDay >= 12 && timeOfDay < 14) {
+            baseDelay = 12000; // Slower during lunch
+        } else if (timeOfDay >= 14 && timeOfDay < 18) {
+            baseDelay = 6000; // Afternoon pace
+        } else {
+            baseDelay = 10000; // Evening
+        }
+        
+        // Add randomness (30-50% variation)
+        const randomFactor = 0.3 + Math.random() * 0.2;
+        const randomDelay = baseDelay * randomFactor;
+        
+        // Increase delay as we send more messages (simulating fatigue)
+        const fatigueFactor = Math.log(messageIndex + 1) * 1000;
+        
+        // Adjust based on recent performance
+        let performanceAdjustment = 0;
+        if (consecutiveFailures > 0) {
+            performanceAdjustment = consecutiveFailures * 2000; // Slow down on failures
+        } else if (consecutiveSuccesses > 3) {
+            performanceAdjustment = -1000; // Speed up a bit on success streak
+        }
+        
+        // Final delay calculation
+        let finalDelay = baseDelay + randomDelay + fatigueFactor + performanceAdjustment;
+        
+        // Apply limits
+        finalDelay = Math.max(this.limits.minBetweenMessagesMs, 
+                            Math.min(this.limits.maxBetweenMessagesMs, finalDelay));
+        
+        // Add occasional long pause (simulating human breaks)
+        if (Math.random() < 0.02) { // 2% chance
+            const longPause = 45000 + Math.random() * 90000; // 45-135 seconds
+            console.log(`🧘 Taking human-like break: ${Math.round(longPause/1000)}s`);
+            finalDelay += longPause;
+        }
+        
+        return Math.round(finalDelay);
+    }
+    
+    /**
+     * Send message with timeout protection
+     */
+    async sendMessageWithTimeout(chatId, message, timeoutMs) {
+        return new Promise(async (resolve) => {
+            const timeoutId = setTimeout(() => {
+                resolve({
+                    success: false,
+                    error: 'Send timeout',
+                    messageId: null
+                });
+            }, timeoutMs);
+            
+            try {
+                const result = await this.client.sendMessage(chatId, message);
+                clearTimeout(timeoutId);
+                resolve({
+                    success: true,
+                    messageId: result.id?.id,
+                    timestamp: result.timestamp
+                });
+            } catch (error) {
+                clearTimeout(timeoutId);
+                resolve({
+                    success: false,
+                    error: error.message,
+                    messageId: null
+                });
+            }
+        });
+    }
+    
+    /**
+     * Personalize message with contact data
+     */
+    personalizeMessage(template, contact) {
+        const variables = {
+            name: contact.name || 'there',
+            firstName: contact.name?.split(' ')[0] || 'there',
+            day: moment().format('dddd'),
+            date: moment().format('MMMM Do'),
+            time: moment().format('h:mm a'),
+            company: contact.tags?.find(t => t.includes('company')) || '',
+            lastContacted: contact.lastContacted ? 
+                moment(contact.lastContacted).fromNow() : 'never'
+        };
+        
+        let personalized = template;
+        Object.entries(variables).forEach(([key, value]) => {
+            personalized = personalized.replace(new RegExp(`{${key}}`, 'gi'), value);
+        });
+        
+        return personalized;
+    }
+    
+    /**
+     * Update contact history in Google Sheets
+     */
+    async updateContactHistory(contacts, spreadsheetId, range) {
+        const batchUpdates = [];
+        const today = new Date().toISOString().split('T')[0];
+        
+        for (const contact of contacts) {
+            if (contact.sheetRow) {
+                batchUpdates.push({
+                    range: `${range.split('!')[0]}!D${contact.sheetRow}`,
+                    values: [[today]]
+                });
+            }
+        }
+        
+        // Update in batches of 10
+        for (let i = 0; i < batchUpdates.length; i += 10) {
+            const batch = batchUpdates.slice(i, i + 10);
+            
+            try {
+                await this.sheetsService.batchUpdateContactStatus(spreadsheetId, batch);
+                console.log(`📝 Updated ${batch.length} contacts in sheet`);
+                await this.delay(2000); // Delay between batch updates
+            } catch (error) {
+                console.error('Failed to update sheet batch:', error.message);
+            }
+        }
+    }
+    
+    /**
+     * Update daily statistics
+     */
+    updateDailyStats(results) {
+        this.dailyStats.failed += results.failed;
+        
+        // Log to file for tracking
+        this.logCampaignStats(results);
+        
+        // Check if we need to reset (after 24 hours)
+        if (Date.now() - this.dailyStats.lastReset > 24 * 60 * 60 * 1000) {
+            this.resetDailyStats();
+        }
+    }
+    
+    /**
+     * Reset daily statistics
+     */
+    resetDailyStats() {
+        const today = moment().format('YYYY-MM-DD');
+        
+        if (this.dailyStats.date !== today) {
+            this.dailyStats = {
+                date: today,
+                sent: 0,
+                failed: 0,
+                skippedDueToRecency: 0,
+                contactsMessaged: [],
+                lastReset: Date.now()
+            };
+            
+            console.log(`🔄 Daily stats reset for ${today}`);
+        }
+    }
+    
+    /**
+     * Get next available campaign date
+     */
+    getNextAvailableDate() {
+        const today = moment();
+        const messagesSent = this.dailyStats.sent;
+        
+        if (messagesSent < this.limits.daily) {
+            return 'Today (quota available)';
+        }
+        
+        // If we've used our quota, next available is tomorrow
+        return today.add(1, 'day').format('YYYY-MM-DD');
+    }
+    
+    /**
+     * Get next campaign execution time
+     */
+    getNextCampaignTime() {
+        const now = moment();
+        const hour = now.hour();
+        
+        // Optimal times for sending (based on WhatsApp usage patterns)
+        const optimalTimes = [
+            { start: 9, end: 11, weight: 0.3 },  // Morning
+            { start: 14, end: 16, weight: 0.4 }, // Afternoon
+            { start: 18, end: 20, weight: 0.3 }  // Evening
+        ];
+        
+        // Find next optimal time window
+        for (const window of optimalTimes) {
+            if (hour < window.start) {
+                return moment().set({ hour: window.start, minute: 0, second: 0 }).format();
+            }
+        }
+        
+        // Default to tomorrow morning
+        return moment().add(1, 'day').set({ hour: 9, minute: 0, second: 0 }).format();
+    }
+    
+    /**
+     * Log campaign statistics for analysis
+     */
+    logCampaignStats(results) {
+        const logEntry = {
+            date: moment().format('YYYY-MM-DD HH:mm:ss'),
+            campaign: 'daily-random',
+            stats: {
+                sent: results.sent,
+                failed: results.failed,
+                dailyTotal: this.dailyStats.sent,
+                dailyLimit: this.limits.daily,
+                remainingQuota: this.limits.daily - this.dailyStats.sent
+            },
+            performance: {
+                successRate: results.sent / (results.sent + results.failed) || 0,
+                averageDelay: this.limits.minBetweenMessagesMs,
+                skippedDueToRecency: this.dailyStats.skippedDueToRecency
+            }
+        };
+        
+        // In production, write to file or send to monitoring service
+        console.log('📈 Campaign Stats:', JSON.stringify(logEntry, null, 2));
+    }
+    
+    delay(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms));
+    }
+}
+
+// Add batch update method to GoogleSheetsService
+GoogleSheetsService.prototype.batchUpdateContactStatus = async function(spreadsheetId, updates) {
+    try {
+        await this.sheets.spreadsheets.values.batchUpdate({
+            spreadsheetId,
+            resource: {
+                valueInputOption: 'RAW',
+                data: updates
+            }
+        });
+        return { success: true };
+    } catch (error) {
+        console.error('Batch update failed:', error);
+        return { success: false, error: error.message };
+    }
+};
+
+module.exports = DailyCampaignManager;
+```
+
+## 📋 **Daily Campaign Configuration**
+
+### **`.env` additions**
+```env
+# Daily Campaign Configuration
+MAX_DAILY_MESSAGES=50
+DAILY_CAMPAIGN_ENABLED=true
+DAILY_CAMPAIGN_TIME=09:00
+DAILY_MIN_DELAY_MS=5000
+DAILY_MAX_DELAY_MS=15000
+RANDOMIZATION_FACTOR=0.7
+MIN_DAYS_BETWEEN_MESSAGES=30
+
+# Google Sheets for Daily Campaign
+DAILY_SHEET_ID=your_daily_campaign_sheet_id
+DAILY_SHEET_RANGE=DailyContacts!A2:E
+```
+
+## 🚀 **Scheduled Daily Campaign Runner**
+
+### **`daily-scheduler.js`**
+```javascript
+const cron = require('node-cron');
+const DailyCampaignManager = require('./daily-campaign-manager');
+const moment = require('moment');
+const fs = require('fs').promises;
+const path = require('path');
+
+class DailyCampaignScheduler {
+    constructor(whatsappClient) {
+        this.client = whatsappClient;
+        this.campaignManager = new DailyCampaignManager(whatsappClient);
+        this.campaigns = [];
+        this.logFile = path.join(__dirname, 'logs', 'daily-campaigns.log');
+        this.initializeLogs();
+    }
+    
+    async initializeLogs() {
+        const logDir = path.join(__dirname, 'logs');
+        try {
+            await fs.mkdir(logDir, { recursive: true });
+        } catch (error) {
+            // Directory already exists
+        }
+    }
+    
+    /**
+     * Schedule daily random campaign
+     */
+    scheduleDailyCampaign(config) {
+        const {
+            name = 'Daily Random Campaign',
+            schedule = '0 9 * * 1-5', // Weekdays at 9 AM
+            spreadsheetId,
+            range,
+            messageTemplates = [] // Multiple templates for variation
+        } = config;
+        
+        console.log(`📅 Scheduling daily campaign: ${name} (${schedule})`);
+        
+        const job = cron.schedule(schedule, async () => {
+            console.log(`⏰ ${moment().format('YYYY-MM-DD HH:mm:ss')} - Running ${name}`);
+            
+            try {
+                // Randomly select a message template
+                const randomTemplate = messageTemplates[
+                    Math.floor(Math.random() * messageTemplates.length)
+                ] || "Hello {firstName}! Hope you're having a great {day}.";
+                
+                const result = await this.campaignManager.runDailyRandomCampaign({
+                    spreadsheetId,
+                    range,
+                    messageTemplate: randomTemplate,
+                    campaignName: name,
+                    excludeRecentlyContacted: true
+                });
+                
+                await this.logCampaignResult(name, result);
+                
+                if (result.success) {
+                    console.log(`✅ ${name} completed successfully:`, result.summary);
+                } else {
+                    console.error(`❌ ${name} failed:`, result.error);
+                }
+                
+            } catch (error) {
+                console.error(`💥 Error in ${name}:`, error);
+                await this.logCampaignError(name, error);
+            }
+        }, {
+            scheduled: true,
+            timezone: "Asia/Kolkata" // Adjust to your timezone
+        });
+        
+        this.campaigns.push({ name, job, config });
+        return job;
+    }
+    
+    /**
+     * Schedule multiple time slots for better randomization
+     */
+    scheduleMultipleDailySlots(config) {
+        const timeSlots = [
+            '0 9 * * 1-5',   // 9:00 AM on weekdays
+            '0 14 * * 1-5',  // 2:00 PM on weekdays
+            '0 17 * * 1-5',  // 5:00 PM on weekdays
+        ];
+        
+        timeSlots.forEach((schedule, index) => {
+            this.scheduleDailyCampaign({
+                ...config,
+                name: `${config.name} - Slot ${index + 1}`,
+                schedule
+            });
+        });
+    }
+    
+    /**
+     * Manual trigger for daily campaign
+     */
+    async triggerDailyCampaignNow(config) {
+        console.log('🚀 Manually triggering daily campaign...');
+        
+        try {
+            const result = await this.campaignManager.runDailyRandomCampaign({
+                ...config,
+                campaignName: 'Manual-Daily-' + moment().format('YYYY-MM-DD-HHmm')
+            });
+            
+            await this.logCampaignResult('Manual Trigger', result);
+            return result;
+            
+        } catch (error) {
+            console.error('Manual trigger failed:', error);
+            await this.logCampaignError('Manual Trigger', error);
+            throw error;
+        }
+    }
+    
+    /**
+     * Log campaign results
+     */
+    async logCampaignResult(campaignName, result) {
+        const logEntry = {
+            timestamp: moment().format('YYYY-MM-DD HH:mm:ss'),
+            campaign: campaignName,
+            result: result.success ? 'SUCCESS' : 'FAILED',
+            details: {
+                sent: result.summary?.successfullySent || 0,
+                failed: result.summary?.failed || 0,
+                dailyRemaining: result.summary?.dailyRemaining || 0,
+                skippedDueToRecency: result.summary?.skippedDueToRecency || 0
+            },
+            error: result.error,
+            nextAvailable: result.summary?.nextAvailableDate
+        };
+        
+        try {
+            await fs.appendFile(
+                this.logFile, 
+                JSON.stringify(logEntry) + '\n'
+            );
+        } catch (error) {
+            console.error('Failed to write log:', error);
+        }
+    }
+    
+    async logCampaignError(campaignName, error) {
+        const logEntry = {
+            timestamp: moment().format('YYYY-MM-DD HH:mm:ss'),
+            campaign: campaignName,
+            result: 'ERROR',
+            error: error.message,
+            stack: error.stack
+        };
+        
+        try {
+            await fs.appendFile(
+                this.logFile, 
+                JSON.stringify(logEntry) + '\n'
+            );
+        } catch (error) {
+            console.error('Failed to write error log:', error);
+        }
+    }
+    
+    /**
+     * Get campaign statistics
+     */
+    async getCampaignStats(days = 7) {
+        try {
+            const logs = await fs.readFile(this.logFile, 'utf-8');
+            const entries = logs.split('\n')
+                .filter(line => line.trim())
+                .map(line => JSON.parse(line));
+            
+            const recentEntries = entries.filter(entry => 
+                moment(entry.timestamp).isAfter(moment().subtract(days, 'days'))
+            );
+            
+            const stats = {
+                totalCampaigns: recentEntries.length,
+                successful: recentEntries.filter(e => e.result === 'SUCCESS').length,
+                failed: recentEntries.filter(e => e.result === 'FAILED').length,
+                errors: recentEntries.filter(e => e.result === 'ERROR').length,
+                totalMessages: recentEntries.reduce((sum, e) => sum + (e.details?.sent || 0), 0),
+                averagePerDay: {},
+                recentActivities: recentEntries.slice(-5)
+            };
+            
+            // Calculate daily averages
+            for (let i = 0; i < days; i++) {
+                const date = moment().subtract(i, 'days').format('YYYY-MM-DD');
+                const dayEntries = recentEntries.filter(e => 
+                    e.timestamp.startsWith(date)
+                );
+                
+                stats.averagePerDay[date] = {
+                    campaigns: dayEntries.length,
+                    messages: dayEntries.reduce((sum, e) => sum + (e.details?.sent || 0), 0)
+                };
+            }
+            
+            return stats;
+        } catch (error) {
+            console.error('Failed to read stats:', error);
+            return { error: 'No stats available' };
+        }
+    }
+    
+    /**
+     * Stop all scheduled campaigns
+     */
+    stopAllCampaigns() {
+        this.campaigns.forEach(campaign => {
+            campaign.job.stop();
+            console.log(`🛑 Stopped campaign: ${campaign.name}`);
+        });
+        
+        this.campaigns = [];
+    }
+    
+    /**
+     * List all scheduled campaigns
+     */
+    listScheduledCampaigns() {
+        return this.campaigns.map(c => ({
+            name: c.name,
+            schedule: c.config.schedule,
+            nextRun: this.getNextRunTime(c.job),
+            status: 'ACTIVE'
+        }));
+    }
+    
+    getNextRunTime(job) {
+        const nextDates = job.nextDates(1);
+        return nextDates && nextDates.length > 0 
+            ? moment(nextDates[0]).format('YYYY-MM-DD HH:mm:ss')
+            : 'Not scheduled';
+    }
+}
+
+module.exports = DailyCampaignScheduler;
+```
+
+## 🎯 **Usage Example**
+
+```javascript
+const WhatsAppClient = require('./your-whatsapp-client');
+const DailyCampaignScheduler = require('./daily-scheduler');
+
+async function setupDailyCampaigns() {
+    // Initialize WhatsApp client
+    const client = new WhatsAppClient();
+    await client.initialize();
+    
+    // Create scheduler
+    const scheduler = new DailyCampaignScheduler(client);
+    
+    // Configure daily campaign
+    const campaignConfig = {
+        name: 'Daily Engagement Campaign',
+        spreadsheetId: process.env.DAILY_SHEET_ID,
+        range: process.env.DAILY_SHEET_RANGE,
+        messageTemplates: [
+            "Good morning {firstName}! Hope you have a wonderful {day} ahead. 😊",
+            "Hello {firstName}! Just checking in. Hope everything's going well! 👍",
+            "Hi {firstName}! Quick thought for your {day}... Have a great one! ✨",
+            "Hey {firstName}! Wishing you a productive {day}. Let me know if you need anything! 🤝"
+        ]
+    };
+    
+    // Schedule multiple time slots
+    scheduler.scheduleMultipleDailySlots(campaignConfig);
+    
+    // Or schedule single daily run
+    scheduler.scheduleDailyCampaign({
+        ...campaignConfig,
+        schedule: '0 10 * * 1-5' // 10 AM on weekdays
+    });
+    
+    console.log('✅ Daily campaigns scheduled successfully');
+    
+    // Get statistics
+    const stats = await scheduler.getCampaignStats(7);
+    console.log('📊 Weekly Stats:', stats);
+    
+    // Manual trigger example
+    // await scheduler.triggerDailyCampaignNow(campaignConfig);
+}
+
+// Run setup
+setupDailyCampaigns().catch(console.error);
+```
+
+## 📊 **Campaign Monitoring Dashboard**
+
+```javascript
+// campaign-monitor.js
+class CampaignMonitor {
+    constructor() {
+        this.metrics = {
+            dailySent: 0,
+            monthlySent: 0,
+            successRate: 0,
+            avgDelay: 0,
+            uniqueContacts: new Set(),
+            last30Days: new Map()
+        };
+    }
+    
+    async generateDashboard() {
+        const stats = await this.collectMetrics();
+        
+        return `
+📊 DAILY CAMPAIGN DASHBOARD
+==========================
+Date: ${new Date().toDateString()}
+
+📈 PERFORMANCE METRICS:
+• Daily Messages: ${stats.dailySent}/${process.env.MAX_DAILY_MESSAGES}
+• Monthly Unique Contacts: ${stats.uniqueContacts}
+• Success Rate: ${(stats.successRate * 100).toFixed(1)}%
+• Average Delay: ${stats.avgDelay.toFixed(0)}ms
+
+⏰ SCHEDULE STATUS:
+• Next Campaign: ${stats.nextCampaign}
+• Last Run: ${stats.lastRun || 'Never'}
+• 30-Day Restriction: Active ✅
+
+🔒 SAFETY METRICS:
+• Detection Risk: ${this.calculateRiskLevel(stats)}
+• Pattern Randomization: ${stats.randomizationScore}/100
+• Compliance Score: ${stats.complianceScore}/100
+
+📋 RECOMMENDATIONS:
+${this.generateRecommendations(stats)}
+        `;
+    }
+    
+    calculateRiskLevel(stats) {
+        const riskFactors = [];
+        
+        if (stats.dailySent > 40) riskFactors.push('High volume');
+        if (stats.successRate < 0.8) riskFactors.push('High failure rate');
+        if (stats.avgDelay < 3000) riskFactors.push('Fast pacing');
+        
+        if (riskFactors.length === 0) return 'Low 🟢';
+        if (riskFactors.length === 1) return 'Medium 🟡';
+        if (riskFactors.length === 2) return 'High 🟠';
+        return 'Critical 🔴';
+    }
+}
+
+module.exports = CampaignMonitor;
+```
+
+## ⚠️ **Critical Protection Features**
+
+| Feature | Protection Level | Description |
+|---------|-----------------|-------------|
+| **30-Day Restriction** | 🔴 **Critical** | Prevents messaging same contact within 30 days |
+| **Randomized Selection** | 🟡 **High** | Weighted random selection avoids patterns |
+| **Dynamic Delays** | 🟡 **High** | Human-like pacing with fatigue simulation |
+| **Quota Management** | 🟢 **Medium** | Only uses 70% of daily limit for safety |
+| **Multiple Time Slots** | 🟡 **High** | Avoids fixed timing patterns |
+| **Contact History** | 🟢 **Medium** | Tracks all contacts to prevent duplicates |
+| **Adaptive Throttling** | 🟡 **High** | Slows down on failures, speeds up on success |
+
+## 📋 **Daily Checklist**
+
+1. ✅ Check daily quota availability
+2. ✅ Load contacts from Google Sheets
+3. ✅ Apply 30-day filter
+4. ✅ Randomly select contacts
+5. ✅ Execute with dynamic delays
+6. ✅ Update contact history
+7. ✅ Log all activities
+8. ✅ Monitor for anomalies
+
+This system provides a **safe, randomized daily campaign** that respects WhatsApp's limits and contact preferences while minimizing detection risk through unpredictable patterns and strict time-based restrictions.
+Based on your requirements, here is an enhanced system that integrates Google Sheets for contact management and adds multiple layers of protection to better evade WhatsApp's automated behavior detection.
+
+## 🔐 1. Google Sheets Service (Contact Manager)
+
+This service securely fetches and validates contact numbers from your Google Sheets.
+
+### **`google-sheets-service.js`**
+```javascript
+const { google } = require('googleapis');
+const { authenticate } = require('@google-cloud/local-auth');
+const path = require('path');
+require('dotenv').config();
+
+class GoogleSheetsService {
+    constructor() {
+        this.SCOPES = ['https://www.googleapis.com/auth/spreadsheets.readonly'];
+        this.CREDENTIALS_PATH = path.join(process.cwd(), 'credentials.json');
+        this.sheets = null;
+        this.initialize();
+    }
+
+    async initialize() {
+        try {
+            const auth = await authenticate({
+                scopes: this.SCOPES,
+                keyfilePath: this.CREDENTIALS_PATH,
+            });
+            this.sheets = google.sheets({ version: 'v4', auth });
+            console.log('Google Sheets service initialized');
+        } catch (error) {
+            console.error('Failed to initialize Google Sheets:', error);
+            throw error;
+        }
+    }
+
+    /**
+     * Reads and validates contact numbers from a Google Sheet
+     * @param {string} spreadsheetId - ID of the Google Sheet
+     * @param {string} range - A1 notation range (e.g., 'Contacts!A2:B')
+     * @returns {Promise<Array>} - Array of validated contact objects
+     */
+    async getValidatedContacts(spreadsheetId, range) {
+        if (!this.sheets) {
+            await this.initialize();
+        }
+
+        try {
+            // Fetch data from Google Sheets[reference:0]
+            const result = await this.sheets.spreadsheets.values.get({
+                spreadsheetId,
+                range,
+            });
+
+            const rows = result.data.values;
+            if (!rows || rows.length === 0) {
+                console.log('No data found in sheet');
+                return [];
+            }
+
+            // Process and validate each row
+            const validatedContacts = rows.map((row, index) => {
+                const [name, rawNumber, tags, lastContacted] = row;
+                const validation = this.validateAndFormatNumber(rawNumber);
+                
+                return {
+                    id: `contact-${index + 1}`,
+                    name: name || `Contact ${index + 1}`,
+                    rawNumber,
+                    validatedNumber: validation.correctedNumber,
+                    isValid: validation.isValid,
+                    countryCode: validation.countryCode,
+                    tags: tags ? tags.split(',').map(t => t.trim()) : [],
+                    lastContacted: lastContacted || null,
+                    sheetRow: index + 2, // For reference back to sheet
+                    validationErrors: validation.errors || []
+                };
+            });
+
+            // Separate valid and invalid contacts
+            const validContacts = validatedContacts.filter(c => c.isValid);
+            const invalidContacts = validatedContacts.filter(c => !c.isValid);
+
+            console.log(`Loaded ${validContacts.length} valid, ${invalidContacts.length} invalid contacts`);
+            
+            return {
+                validContacts,
+                invalidContacts,
+                total: validatedContacts.length,
+                timestamp: new Date().toISOString()
+            };
+
+        } catch (error) {
+            console.error('Error reading Google Sheet:', error);
+            throw new Error(`Failed to read contacts: ${error.message}`);
+        }
+    }
+
+    /**
+     * Validates and formats phone numbers for WhatsApp
+     */
+    validateAndFormatNumber(rawNumber) {
+        // Remove all non-digit characters
+        let cleaned = rawNumber.toString().replace(/\D/g, '');
+        const errors = [];
+        
+        // Check minimum length
+        if (cleaned.length < 10) {
+            errors.push('Number too short');
+            return { isValid: false, correctedNumber: null, errors };
+        }
+        
+        // Country code detection and formatting
+        let correctedNumber;
+        let countryCode = '';
+        
+        // Handle common country codes
+        if (cleaned.startsWith('1') && cleaned.length === 11) {
+            countryCode = '1';
+            correctedNumber = cleaned + '@c.us';
+        } else if (cleaned.startsWith('91') && cleaned.length === 12) {
+            countryCode = '91';
+            correctedNumber = cleaned + '@c.us';
+        } else if (cleaned.startsWith('44') && cleaned.length === 12) {
+            countryCode = '44';
+            correctedNumber = cleaned + '@c.us';
+        } else if (cleaned.length === 10) {
+            // Assume Indian number if 10 digits
+            countryCode = '91';
+            correctedNumber = '91' + cleaned + '@c.us';
+        } else if (cleaned.length >= 11 && cleaned.length <= 15) {
+            // Generic international format
+            correctedNumber = cleaned + '@c.us';
+        } else {
+            errors.push('Unrecognized number format');
+            return { isValid: false, correctedNumber: null, errors };
+        }
+        
+        return {
+            isValid: true,
+            correctedNumber,
+            countryCode,
+            original: rawNumber,
+            errors
+        };
+    }
+
+    /**
+     * Updates contact status in the sheet (e.g., last contacted)
+     */
+    async updateContactStatus(spreadsheetId, range, rowIndex, status) {
+        try {
+            await this.sheets.spreadsheets.values.update({
+                spreadsheetId,
+                range: `${range.split('!')[0]}!D${rowIndex}`, // Update column D
+                valueInputOption: 'RAW',
+                resource: {
+                    values: [[status]]
+                }
+            });
+            console.log(`Updated contact status for row ${rowIndex}`);
+        } catch (error) {
+            console.error('Failed to update sheet:', error);
+        }
+    }
+}
+
+module.exports = GoogleSheetsService;
+```
+
+## 🛡️ 2. Enhanced Campaign Manager with Strict Limits
+
+This manager enforces multi-level limits and behavioral patterns.
+
+### **`enhanced-campaign-manager.js`**
+```javascript
+const CircuitBreaker = require('opossum');
+const GoogleSheetsService = require('./google-sheets-service');
+
+class EnhancedCampaignManager {
+    constructor(whatsappClient) {
+        this.client = whatsappClient;
+        this.sheetsService = new GoogleSheetsService();
+        
+        // Strict multi-level limits
+        this.limits = {
+            daily: parseInt(process.env.MAX_DAILY_CAMPAIGN_MESSAGES) || 80,
+            hourly: 12,
+            perContactDaily: 2,
+            perCampaign: 50,
+            minDelayBetweenMessages: 3000, // 3 seconds minimum
+            maxDelayBetweenMessages: 10000, // 10 seconds maximum
+            campaignCooldownHours: 6
+        };
+        
+        // Trackers
+        this.counters = {
+            daily: 0,
+            hourly: {},
+            contactDaily: {},
+            campaignHistory: []
+        };
+        
+        // Circuit breaker for sending messages[reference:1]
+        this.breaker = new CircuitBreaker(async (chatId, message) => {
+            return await this.client.sendMessage(chatId, message);
+        }, {
+            timeout: 10000,
+            errorThresholdPercentage: 40, // Trip if 40% of sends fail
+            resetTimeout: 30000,
+            rollingCountTimeout: 60000,
+            rollingCountBuckets: 10
+        });
+        
+        this.setupBreakerEvents();
+        this.resetCounters();
+    }
+    
+    setupBreakerEvents() {
+        this.breaker.on('open', () => {
+            console.warn('🚨 CIRCUIT BREAKER OPEN: Message sending suspended');
+            this.logAnomaly('circuit_breaker_opened', {
+                timestamp: new Date().toISOString(),
+                failureRate: this.breaker.stats.failures / this.breaker.stats.requests * 100
+            });
+        });
+        
+        this.breaker.on('halfOpen', () => {
+            console.log('🔶 Circuit breaker half-open: Testing recovery');
+        });
+        
+        this.breaker.on('close', () => {
+            console.log('✅ Circuit breaker closed: Service recovered');
+        });
+        
+        this.breaker.fallback(async (chatId, message) => {
+            return {
+                success: false,
+                error: 'Service temporarily unavailable due to high failure rate',
+                fallback: true,
+                timestamp: new Date().toISOString()
+            };
+        });
+    }
+    
+    /**
+     * Main campaign execution with enhanced protections
+     */
+    async executeCampaign(campaignConfig) {
+        const {
+            spreadsheetId,
+            range,
+            messageTemplate,
+            campaignId = `campaign-${Date.now()}`
+        } = campaignConfig;
+        
+        // 1. Validate campaign schedule
+        const scheduleCheck = this.checkCampaignSchedule();
+        if (!scheduleCheck.allowed) {
+            return {
+                success: false,
+                error: `Schedule restriction: ${scheduleCheck.reason}`,
+                waitMinutes: scheduleCheck.waitMinutes
+            };
+        }
+        
+        // 2. Load contacts from Google Sheets
+        let contacts;
+        try {
+            contacts = await this.sheetsService.getValidatedContacts(spreadsheetId, range);
+        } catch (error) {
+            return {
+                success: false,
+                error: `Failed to load contacts: ${error.message}`
+            };
+        }
+        
+        // 3. Apply contact filters
+        const filteredContacts = this.filterContacts(contacts.validContacts, campaignConfig);
+        
+        // 4. Check campaign limits
+        const limitCheck = this.checkCampaignLimits(filteredContacts.length, campaignId);
+        if (!limitCheck.allowed) {
+            return {
+                success: false,
+                error: `Campaign limit exceeded: ${limitCheck.reason}`,
+                details: limitCheck.details
+            };
+        }
+        
+        // 5. Execute with strict pacing
+        const results = await this.executeWithPacing(filteredContacts, messageTemplate, campaignId);
+        
+        // 6. Record campaign completion
+        this.recordCampaignCompletion(campaignId, results);
+        
+        return {
+            success: true,
+            campaignId,
+            summary: {
+                totalContacts: filteredContacts.length,
+                sent: results.sent,
+                failed: results.failed,
+                dailyRemaining: this.limits.daily - this.counters.daily,
+                estimatedCompletion: new Date(Date.now() + (filteredContacts.length * this.limits.minDelayBetweenMessages))
+            },
+            details: results.details
+        };
+    }
+    
+    /**
+     * Check if campaign can run based on schedule
+     */
+    checkCampaignSchedule() {
+        const now = new Date();
+        const hour = now.getHours();
+        const day = now.getDay();
+        
+        // Night off (10 PM to 8 AM)
+        if (hour >= 22 || hour < 8) {
+            const waitHours = hour >= 22 ? (32 - hour) : (8 - hour);
+            return {
+                allowed: false,
+                reason: 'Night off period',
+                waitMinutes: waitHours * 60
+            };
+        }
+        
+        // Lunch break (12 PM to 1:30 PM)
+        if (hour === 12 || (hour === 13 && now.getMinutes() < 30)) {
+            const waitMinutes = hour === 12 ? 90 : (30 - now.getMinutes());
+            return {
+                allowed: false,
+                reason: 'Lunch break',
+                waitMinutes
+            };
+        }
+        
+        // Dinner break (6 PM to 7:30 PM)
+        if (hour === 18 || (hour === 19 && now.getMinutes() < 30)) {
+            const waitMinutes = hour === 18 ? 90 : (30 - now.getMinutes());
+            return {
+                allowed: false,
+                reason: 'Dinner break',
+                waitMinutes
+            };
+        }
+        
+        // Weekend restriction
+        if (day === 0 || day === 6) { // Sunday or Saturday
+            const waitDays = day === 6 ? 2 : 1; // Wait until Monday
+            return {
+                allowed: false,
+                reason: 'Weekend restriction',
+                waitMinutes: waitDays * 24 * 60
+            };
+        }
+        
+        return { allowed: true };
+    }
+    
+    /**
+     * Filter contacts based on campaign rules
+     */
+    filterContacts(contacts, campaignConfig) {
+        const { excludeRecentlyContacted = true, minDaysBetweenMessages = 7 } = campaignConfig;
+        
+        return contacts.filter(contact => {
+            // Check daily contact limit
+            const contactKey = contact.validatedNumber;
+            const today = new Date().toDateString();
+            const contactDailyCount = this.counters.contactDaily[contactKey] || 0;
+            
+            if (contactDailyCount >= this.limits.perContactDaily) {
+                return false;
+            }
+            
+            // Check if recently contacted
+            if (excludeRecentlyContacted && contact.lastContacted) {
+                const lastContact = new Date(contact.lastContacted);
+                const daysSince = (new Date() - lastContact) / (1000 * 60 * 60 * 24);
+                if (daysSince < minDaysBetweenMessages) {
+                    return false;
+                }
+            }
+            
+            return true;
+        });
+    }
+    
+    /**
+     * Execute campaign with human-like pacing
+     */
+    async executeWithPacing(contacts, messageTemplate, campaignId) {
+        const results = {
+            sent: 0,
+            failed: 0,
+            details: []
+        };
+        
+        for (const contact of contacts) {
+            // Check real-time limits before each message
+            const realTimeCheck = this.checkRealTimeLimits();
+            if (!realTimeCheck.allowed) {
+                results.details.push({
+                    contact: contact.validatedNumber,
+                    success: false,
+                    error: realTimeCheck.reason,
+                    skipped: true
+                });
+                results.failed++;
+                continue;
+            }
+            
+            // Personalize message
+            const personalizedMessage = this.personalizeMessage(messageTemplate, contact);
+            
+            // Calculate dynamic delay
+            const delay = this.calculateDynamicDelay(results.sent);
+            await this.delay(delay);
+            
+            // Send message through circuit breaker
+            try {
+                const sendResult = await this.breaker.fire(contact.validatedNumber, personalizedMessage);
+                
+                if (sendResult.success !== false) {
+                    results.sent++;
+                    this.incrementCounters(contact.validatedNumber);
+                    
+                    // Update contact status in sheet
+                    await this.sheetsService.updateContactStatus(
+                        process.env.SPREADSHEET_ID,
+                        process.env.RANGE,
+                        contact.sheetRow,
+                        new Date().toISOString()
+                    );
+                } else {
+                    results.failed++;
+                }
+                
+                results.details.push({
+                    contact: contact.validatedNumber,
+                    success: sendResult.success !== false,
+                    messageId: sendResult.id?.id,
+                    timestamp: new Date().toISOString(),
+                    error: sendResult.error
+                });
+                
+            } catch (error) {
+                results.failed++;
+                results.details.push({
+                    contact: contact.validatedNumber,
+                    success: false,
+                    error: error.message,
+                    timestamp: new Date().toISOString()
+                });
+                
+                // Log anomaly for ML detection
+                this.logAnomaly('send_message_failed', {
+                    contact: contact.validatedNumber,
+                    error: error.message,
+                    campaignId
+                });
+            }
+            
+            // Check if circuit breaker is open
+            if (this.breaker.opened) {
+                console.warn('Campaign paused: Circuit breaker is open');
+                break;
+            }
+        }
+        
+        return results;
+    }
+    
+    /**
+     * Calculate dynamic delay that mimics human behavior
+     */
+    calculateDynamicDelay(messageCount) {
+        // Base delay increases as we send more messages
+        const baseDelay = this.limits.minDelayBetweenMessages + 
+                         (Math.log(messageCount + 1) * 1000);
+        
+        // Add random variation (30-70% of base delay)
+        const randomFactor = 0.3 + Math.random() * 0.4;
+        const randomDelay = baseDelay * randomFactor;
+        
+        // Occasional longer pauses (simulating human breaks)
+        const pauseChance = 0.05;
+        const pause = Math.random() < pauseChance ? 
+                      (30000 + Math.random() * 60000) : 0; // 30-90 second pause
+        
+        return Math.min(
+            this.limits.maxDelayBetweenMessages,
+            baseDelay + randomDelay + pause
+        );
+    }
+    
+    /**
+     * Personalize message with contact data
+     */
+    personalizeMessage(template, contact) {
+        return template
+            .replace(/{name}/g, contact.name)
+            .replace(/{number}/g, contact.rawNumber)
+            .replace(/{tags}/g, contact.tags.join(', '))
+            .replace(/{time}/g, new Date().toLocaleTimeString());
+    }
+    
+    /**
+     * Check real-time limits
+     */
+    checkRealTimeLimits() {
+        const now = new Date();
+        const hour = now.getHours();
+        const today = now.toDateString();
+        
+        // Daily limit
+        if (this.counters.daily >= this.limits.daily) {
+            return {
+                allowed: false,
+                reason: `Daily limit reached (${this.limits.daily})`,
+                resetTime: 'Tomorrow 00:00'
+            };
+        }
+        
+        // Hourly limit
+        const hourCount = this.counters.hourly[hour] || 0;
+        if (hourCount >= this.limits.hourly) {
+            const nextHour = hour === 23 ? 0 : hour + 1;
+            return {
+                allowed: false,
+                reason: `Hourly limit reached (${this.limits.hourly})`,
+                waitMinutes: 60 - now.getMinutes()
+            };
+        }
+        
+        return { allowed: true };
+    }
+    
+    /**
+     * Increment counters after successful send
+     */
+    incrementCounters(contactNumber) {
+        const now = new Date();
+        const hour = now.getHours();
+        const today = now.toDateString();
+        
+        // Daily counter
+        this.counters.daily++;
+        
+        // Hourly counter
+        if (!this.counters.hourly[hour]) {
+            this.counters.hourly[hour] = 0;
+        }
+        this.counters.hourly[hour]++;
+        
+        // Contact daily counter
+        if (!this.counters.contactDaily[contactNumber]) {
+            this.counters.contactDaily[contactNumber] = 0;
+        }
+        this.counters.contactDaily[contactNumber]++;
+    }
+    
+    /**
+     * Log anomalies for ML detection analysis
+     */
+    logAnomaly(type, data) {
+        const anomalyLog = {
+            type,
+            timestamp: new Date().toISOString(),
+            data,
+            counters: {
+                daily: this.counters.daily,
+                hourly: this.counters.hourly[new Date().getHours()] || 0
+            },
+            breakerStatus: this.breaker.stats
+        };
+        
+        // In production, send to monitoring service
+        console.warn('ANOMALY DETECTED:', JSON.stringify(anomalyLog, null, 2));
+        
+        // Auto-adjust limits if anomalies are frequent
+        if (type === 'circuit_breaker_opened') {
+            this.adjustLimits('reduce');
+        }
+    }
+    
+    /**
+     * Dynamically adjust limits based on anomalies
+     */
+    adjustLimits(direction) {
+        if (direction === 'reduce') {
+            this.limits.daily = Math.max(20, Math.floor(this.limits.daily * 0.7));
+            this.limits.hourly = Math.max(3, Math.floor(this.limits.hourly * 0.7));
+            console.warn(`Limits reduced due to anomalies: ${this.limits.daily} daily, ${this.limits.hourly} hourly`);
+        }
+    }
+    
+    /**
+     * Reset counters daily
+     */
+    resetCounters() {
+        // Reset at midnight
+        const now = new Date();
+        const night = new Date(now);
+        night.setHours(24, 0, 0, 0);
+        const msUntilMidnight = night - now;
+        
+        setTimeout(() => {
+            this.counters.daily = 0;
+            this.counters.hourly = {};
+            this.counters.contactDaily = {};
+            console.log('Daily counters reset');
+            
+            // Schedule next reset
+            this.resetCounters();
+        }, msUntilMidnight);
+    }
+    
+    delay(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms));
+    }
+}
+
+module.exports = EnhancedCampaignManager;
+```
+
+## 📋 3. Environment Variables (.env)
+
+```env
+# Google Sheets Configuration
+GOOGLE_SHEETS_SPREADSHEET_ID=your_spreadsheet_id_here
+GOOGLE_SHEETS_RANGE=Contacts!A2:D
+GOOGLE_CREDENTIALS_PATH=./credentials.json
+
+# Campaign Limits
+MAX_DAILY_CAMPAIGN_MESSAGES=80
+MAX_HOURLY_CAMPAIGN_MESSAGES=12
+MAX_CONTACT_DAILY_MESSAGES=2
+MIN_DELAY_BETWEEN_MESSAGES=3000
+MAX_DELAY_BETWEEN_MESSAGES=10000
+
+# Schedule Restrictions
+ENABLE_NIGHT_OFF=true
+NIGHT_OFF_START=22
+NIGHT_OFF_END=8
+LUNCH_BREAK_START=12
+LUNCH_BREAK_END=13
+DINNER_BREAK_START=18
+DINNER_BREAK_END=19
+DISABLE_WEEKENDS=true
+
+# Circuit Breaker
+CIRCUIT_BREAKER_ERROR_THRESHOLD=40
+CIRCUIT_BREAKER_RESET_TIMEOUT=30000
+```
+
+## 🚀 4. Usage Example
+
+```javascript
+const EnhancedCampaignManager = require('./enhanced-campaign-manager');
+const WhatsAppClient = require('./your-whatsapp-client');
+
+async function runSecureCampaign() {
+    // Initialize client
+    const client = new WhatsAppClient();
+    await client.initialize();
+    
+    // Create campaign manager
+    const campaignManager = new EnhancedCampaignManager(client);
+    
+    // Campaign configuration
+    const campaignConfig = {
+        spreadsheetId: process.env.GOOGLE_SHEETS_SPREADSHEET_ID,
+        range: process.env.GOOGLE_SHEETS_RANGE,
+        messageTemplate: "Hello {name}! This is a personalized message for you.",
+        campaignId: 'welcome-campaign-2025',
+        excludeRecentlyContacted: true,
+        minDaysBetweenMessages: 7
+    };
+    
+    try {
+        // Execute campaign
+        const result = await campaignManager.executeCampaign(campaignConfig);
+        
+        console.log('Campaign Result:', {
+            success: result.success,
+            sent: result.summary?.sent,
+            failed: result.summary?.failed,
+            dailyRemaining: result.summary?.dailyRemaining,
+            details: result.details?.slice(0, 5) // First 5 results
+        });
+        
+        // Check circuit breaker status
+        console.log('Circuit Breaker Status:', campaignManager.breaker.stats);
+        
+    } catch (error) {
+        console.error('Campaign failed:', error);
+    }
+}
+
+runSecureCampaign();
+```
+
+## ⚠️ 5. Critical Protection Layers Summary
+
+| Layer | Protection | Implementation |
+|-------|------------|----------------|
+| **Schedule Enforcement** | Avoids sending during off-hours | Time-based blocking with configurable breaks |
+| **Multi-Level Rate Limiting** | Prevents pattern detection | Daily, hourly, per-contact limits with dynamic adjustment |
+| **Circuit Breaker** | Stops sending when failures increase | Opossum circuit breaker with automatic recovery[reference:2] |
+| **Behavioral Pacing** | Mimics human typing patterns | Dynamic delays with random variation and occasional pauses |
+| **Anomaly Detection** | Logs suspicious patterns | Automatic limit reduction when anomalies detected |
+| **Contact Validation** | Ensures valid numbers | Google Sheets integration with strict validation |
+| **ML Evasion** | Reduces detection risk | Irregular timing, personalized messages, limited volumes |
+
+## 🔧 6. Installation
+
+```bash
+# Install required packages
+npm install googleapis @google-cloud/local-auth opossum express-rate-limit
+
+# Set up Google Sheets API
+# 1. Enable Google Sheets API in Google Cloud Console
+# 2. Create OAuth 2.0 credentials
+# 3. Download credentials.json to your project root
+```
+
+## 📊 7. Monitoring Recommendations
+
+1. **Log Analysis**: Monitor anomaly logs for detection patterns
+2. **Performance Metrics**: Track message success/failure rates
+3. **Limit Usage**: Monitor daily/hourly limit utilization
+4. **Circuit Breaker Status**: Alert when breaker opens frequently
+5. **Google Sheets API Quotas**: Monitor API usage limits
+
+## ⚠️ **Final Warning**
+
+Even with these advanced protections, using `whatsapp-web.js` remains high-risk:
+
+1. **WhatsApp's ML systems** continuously evolve to detect automation
+2. **Phone number bans are permanent** and cannot be appealed
+3. **Legal risks** exist for violating WhatsApp's Terms of Service
+4. **No official support** from Meta for unofficial integrations
+
+**For business or production use, the official WhatsApp Business API is the only safe, reliable, and legal option.**
+
+This enhanced system should only be used for **personal, low-volume testing** with full awareness of the risks. Always start with extremely conservative limits (e.g., 10-20 messages per day) and monitor closely for any signs of detection.
+# 🛡️ Advanced Anti-Detection System for WhatsApp Automation
+
+Here's a comprehensive implementation adding strict time-based scheduling, behavioral masking, and enhanced anti-detection measures:
+
+## 🕒 **1. Strict Time-Based Scheduling System**
+
+```javascript
+// schedule-manager.js
+class StrictScheduleManager {
+    constructor() {
+        this.schedules = {
+            // Configure your off-hours (24-hour format)
+            offHours: [
+                { start: '22:00', end: '08:00', label: 'Night Off' },
+                { start: '12:00', end: '13:30', label: 'Lunch Break' },
+                { start: '18:00', end: '19:30', label: 'Dinner Break' }
+            ],
+            // Weekday-specific schedules
+            weekends: {
+                saturday: { start: '00:00', end: '23:59', enabled: false },
+                sunday: { start: '00:00', end: '23:59', enabled: false }
+            },
+            // Rate limits by time of day
+            timeBasedLimits: [
+                { time: '08:00-12:00', maxPerHour: 20, label: 'Morning' },
+                { time: '12:00-14:00', maxPerHour: 10, label: 'Midday' },
+                { time: '14:00-18:00', maxPerHour: 25, label: 'Afternoon' },
+                { time: '18:00-22:00', maxPerHour: 15, label: 'Evening' }
+            ]
+        };
+        
+        this.hourlyCounts = {};
+        this.dailyCounts = {};
+        this.resetCounters();
+    }
+    
+    isWithinSchedule(start, end) {
+        const now = new Date();
+        const currentTime = now.getHours() * 100 + now.getMinutes();
+        const startTime = parseInt(start.replace(':', ''));
+        const endTime = parseInt(end.replace(':',''));
+        
+        if (startTime <= endTime) {
+            return currentTime >= startTime && currentTime <= endTime;
+        } else {
+            //跨越午夜的时间段
+            return currentTime >= startTime || currentTime <= endTime;
+        }
+    }
+    
+    isOffHour() {
+        const now = new Date();
+        const dayOfWeek = now.getDay();
+        
+        // 检查周末
+        if ((dayOfWeek === 6 && this.schedules.weekends.saturday.enabled === false) ||
+            (dayOfWeek === 0 && this.schedules.weekends.sunday.enabled === false)) {
+            return { isOff: true, reason: 'Weekend' };
+        }
+        
+        // 检查休息时间
+        for (const period of this.schedules.offHours) {
+            if (this.isWithinSchedule(period.start, period.end)) {
+                return { 
+                    isOff: true, 
+                    reason: period.label,
+                    nextAvailable: this.getNextAvailableTime(period.end)
+                };
+            }
+        }
+        
+        return { isOff: false };
+    }
+    
+    canSendMessage() {
+        const offCheck = this.isOffHour();
+        if (offCheck.isOff) {
+            return {
+                allowed: false,
+                reason: `Schedule restriction: ${offCheck.reason}`,
+                waitMinutes: offCheck.nextAvailable || 0
+            };
+        }
+        
+        // 检查小时限制
+        const hour = new Date().getHours();
+        const currentLimit = this.getCurrentTimeLimit();
+        
+        if (!this.hourlyCounts[hour]) this.hourlyCounts[hour] = 0;
+        if (this.hourlyCounts[hour] >= currentLimit.maxPerHour) {
+            const nextHour = hour === 23 ? 0 : hour + 1;
+            const waitMinutes = 60 - new Date().getMinutes();
+            return {
+                allowed: false,
+                reason: `Hourly limit reached (${currentLimit.maxPerHour}/hour)`,
+                waitMinutes: waitMinutes
+            };
+        }
+        
+        // 检查每日限制
+        const today = new Date().toDateString();
+        if (!this.dailyCounts[today]) this.dailyCounts[today] = 0;
+        
+        const dailyLimit = parseInt(process.env.MAX_DAILY_MESSAGES || 150);
+        if (this.dailyCounts[today] >= dailyLimit) {
+            return {
+                allowed: false,
+                reason: `Daily limit reached (${dailyLimit}/day)`,
+                waitMinutes: 1440 // 24小时
+            };
+        }
+        
+        return { allowed: true };
+    }
+    
+    recordMessageSent() {
+        const hour = new Date().getHours();
+        const today = new Date().toDateString();
+        
+        this.hourlyCounts[hour] = (this.hourlyCounts[hour] || 0) + 1;
+        this.dailyCounts[today] = (this.dailyCounts[today] || 0) + 1;
+    }
+    
+    getCurrentTimeLimit() {
+        const now = new Date();
+        const currentTime = now.getHours() * 100 + now.getMinutes();
+        
+        for (const limit of this.schedules.timeBasedLimits) {
+            const [start, end] = limit.time.split('-');
+            const startTime = parseInt(start.replace(':', ''));
+            const endTime = parseInt(end.replace(':',''));
+            
+            if (currentTime >= startTime && currentTime <= endTime) {
+                return limit;
+            }
+        }
+        
+        return { maxPerHour: 15, label: 'Default' };
+    }
+    
+    getNextAvailableTime(endTime) {
+        const now = new Date();
+        const [endHour, endMinute] = endTime.split(':').map(Number);
+        const endDate = new Date(now);
+        endDate.setHours(endHour, endMinute, 0, 0);
+        
+        if (endDate <= now) {
+            endDate.setDate(endDate.getDate() + 1);
+        }
+        
+        return Math.ceil((endDate - now) / (1000 * 60));
+    }
+    
+    resetCounters() {
+        // 每小时重置小时计数器
+        setInterval(() => {
+            const currentHour = new Date().getHours();
+            Object.keys(this.hourlyCounts).forEach(hour => {
+                if (parseInt(hour) < currentHour) {
+                    delete this.hourlyCounts[hour];
+                }
+            });
+        }, 60 * 60 * 1000);
+        
+        // 每天午夜重置每日计数器
+        const now = new Date();
+        const night = new Date(now);
+        night.setHours(24, 0, 0, 0);
+        setTimeout(() => {
+            this.dailyCounts = {};
+            setInterval(() => {
+                this.dailyCounts = {};
+            }, 24 * 60 * 60 * 1000);
+        }, night - now);
+    }
+}
+```
+
+## 🧠 **2. Behavioral Pattern Simulator**
+
+```javascript
+// behavioral-simulator.js
+class BehavioralSimulator {
+    constructor() {
+        this.humanPatterns = {
+            typingSpeed: {
+                slow: { min: 50, max: 150 }, // 每个字符的毫秒数
+                medium: { min: 30, max: 80 },
+                fast: { min: 20, max: 50 }
+            },
+            messageLength: {
+                short: { min: 1, max: 20 },
+                medium: { min: 21, max: 100 },
+                long: { min: 101, max: 500 }
+            },
+            responseTime: {
+                immediate: { min: 1000, max: 3000 },
+                normal: { min: 5000, max: 30000 },
+                slow: { min: 30000, max: 120000 }
+            },
+            activityPatterns: {
+                morning: { start: '08:00', end: '12:00', intensity: 0.8 },
+                afternoon: { start: '14:00', end: '18:00', intensity: 0.9 },
+                evening: { start: '19:00', end: '22:00', intensity: 0.7 },
+                night: { start: '22:00', end: '08:00', intensity: 0.1 }
+            }
+        };
+        
+        this.sessionHistory = [];
+        this.maxHistorySize = 1000;
+    }
+    
+    simulateTypingDelay(message) {
+        const length = message.length;
+        let typingPattern;
+        
+        if (length <= 20) typingPattern = this.humanPatterns.typingSpeed.fast;
+        else if (length <= 100) typingPattern = this.humanPatterns.typingSpeed.medium;
+        else typingPattern = this.humanPatterns.typingSpeed.slow;
+        
+        // 基于消息长度计算输入时间
+        const charsPerMinute = 200 + Math.random() * 100; // 200-300 CPM
+        const typingTime = (length / charsPerMinute) * 60000;
+        
+        // 添加随机变化
+        const variedTime = typingTime * (0.8 + Math.random() * 0.4);
+        
+        // 模拟人类输入模式（不是匀速）
+        const chunks = this.splitIntoChunks(message);
+        let totalDelay = 0;
+        
+        for (const chunk of chunks) {
+            const chunkDelay = (chunk.length / charsPerMinute) * 60000 * (0.9 + Math.random() * 0.2);
+            totalDelay += chunkDelay;
+            
+            // 模拟思考暂停
+            if (Math.random() > 0.7 && chunk.length > 3) {
+                const pause = 500 + Math.random() * 2000;
+                totalDelay += pause;
+            }
+        }
+        
+        return Math.max(1000, Math.min(totalDelay, 30000)); // 限制在1-30秒
+    }
+    
+    splitIntoChunks(text) {
+        const chunks = [];
+        const sentences = text.split(/[.!?]+/).filter(s => s.trim());
+        
+        for (const sentence of sentences) {
+            const words = sentence.trim().split(' ');
+            let currentChunk = [];
+            
+            for (const word of words) {
+                currentChunk.push(word);
+                if (currentChunk.join(' ').length > 15 || Math.random() > 0.8) {
+                    chunks.push(currentChunk.join(' '));
+                    currentChunk = [];
+                }
+            }
+            
+            if (currentChunk.length > 0) {
+                chunks.push(currentChunk.join(' '));
+            }
+        }
+        
+        return chunks.length > 0 ? chunks : [text];
+    }
+    
+    getNaturalResponseTime() {
+        const hour = new Date().getHours();
+        let basePattern;
+        
+        if (hour >= 8 && hour < 12) {
+            basePattern = this.humanPatterns.responseTime.normal;
+        } else if (hour >= 14 && hour < 18) {
+            basePattern = this.humanPatterns.responseTime.fast;
+        } else if (hour >= 19 && hour < 22) {
+            basePattern = this.humanPatterns.responseTime.slow;
+        } else {
+            basePattern = this.humanPatterns.responseTime.slow;
+        }
+        
+        // 添加随机性
+        const baseTime = basePattern.min + Math.random() * (basePattern.max - basePattern.min);
+        
+        // 基于活动强度调整
+        const intensity = this.getCurrentActivityIntensity();
+        const adjustedTime = baseTime * (0.5 + intensity * 0.5);
+        
+        return Math.round(adjustedTime);
+    }
+    
+    getCurrentActivityIntensity() {
+        const now = new Date();
+        const currentTime = now.getHours() * 100 + now.getMinutes();
+        
+        for (const [period, data] of Object.entries(this.humanPatterns.activityPatterns)) {
+            const startTime = parseInt(data.start.replace(':', ''));
+            const endTime = parseInt(data.end.replace(':', ''));
+            
+            if (this.isWithinTime(startTime, endTime, currentTime)) {
+                return data.intensity;
+            }
+        }
+        
+        return 0.3; // 默认强度
+    }
+    
+    isWithinTime(start, end, current) {
+        if (start <= end) {
+            return current >= start && current <= end;
+        } else {
+            return current >= start || current <= end;
+        }
+    }
+    
+    simulateHumanActivity(client) {
+        // 随机滚动页面
+        setInterval(async () => {
+            if (Math.random() > 0.7) {
+                try {
+                    const page = await client.getPage();
+                    await page.evaluate(() => {
+                        window.scrollBy(0, (Math.random() > 0.5 ? 1 : -1) * (100 + Math.random() * 300));
+                    });
+                } catch (error) {
+                    console.log('Activity simulation skipped');
+                }
+            }
+        }, 30000 + Math.random() * 60000); // 30-90秒
+        
+        // 随机点击（安全区域）
+        setInterval(async () => {
+            if (Math.random() > 0.8) {
+                try {
+                    const page = await client.getPage();
+                    await page.mouse.move(
+                        100 + Math.random() * 800,
+                        100 + Math.random() * 500
+                    );
+                } catch (error) {
+                    // 忽略错误
+                }
+            }
+        }, 60000 + Math.random() * 120000); // 60-180秒
+    }
+}
+```
+
+## 🌐 **3. Browser Fingerprinting Protection**
+
+```javascript
+// fingerprint-protection.js
+class FingerprintProtector {
+    constructor() {
+        this.userAgents = [
+            'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+            'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:121.0) Gecko/20100101 Firefox/121.0',
+            'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+            'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.2 Safari/605.1.15',
+            'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+        ];
+        
+        this.viewports = [
+            { width: 1920, height: 1080 },
+            { width: 1366, height: 768 },
+            { width: 1536, height: 864 },
+            { width: 1440, height: 900 },
+            { width: 1280, height: 720 },
+            { width: 2560, height: 1440 }
+        ];
+        
+        this.fingerprintConfig = {
+            // 时间随机化
+            timezoneOffset: () => Math.floor(Math.random() * 24) - 12,
+            locale: () => ['en-US', 'en-GB', 'fr-FR', 'de-DE', 'es-ES'][Math.floor(Math.random() * 5)],
+            
+            // 屏幕设置
+            colorDepth: () => [24, 30, 32][Math.floor(Math.random() * 3)],
+            pixelRatio: () => 1 + Math.random() * 2,
+            
+            // 硬件随机化
+            hardwareConcurrency: () => [2, 4, 6, 8, 12][Math.floor(Math.random() * 5)],
+            deviceMemory: () => [4, 8, 16][Math.floor(Math.random() * 3)],
+            
+            // WebGL指纹随机化
+            webglVendor: () => ['Google Inc.', 'Intel Inc.', 'NVIDIA Corporation'][Math.floor(Math.random() * 3)],
+            webglRenderer: () => ['ANGLE (Intel, Intel(R) UHD Graphics Direct3D11 vs_5_0 ps_5_0)', 
+                                 'ANGLE (NVIDIA, NVIDIA GeForce RTX 3060 Direct3D11 vs_5_0 ps_5_0)'][Math.floor(Math.random() * 2)]
+        };
+        
+        this.currentConfig = null;
+        this.rotationInterval = 6 * 60 * 60 * 1000; // 每6小时更换一次指纹
+    }
+    
+    getRandomFingerprint() {
+        const viewport = this.viewports[Math.floor(Math.random() * this.viewports.length)];
+        const userAgent = this.userAgents[Math.floor(Math.random() * this.userAgents.length)];
+        
+        this.currentConfig = {
+            userAgent,
+            viewport,
+            timezoneOffset: this.fingerprintConfig.timezoneOffset(),
+            locale: this.fingerprintConfig.locale(),
+            colorDepth: this.fingerprintConfig.colorDepth(),
+            pixelRatio: this.fingerprintConfig.pixelRatio(),
+            hardwareConcurrency: this.fingerprintConfig.hardwareConcurrency(),
+            deviceMemory: this.fingerprintConfig.deviceMemory(),
+            webglVendor: this.fingerprintConfig.webglVendor(),
+            webglRenderer: this.fingerprintConfig.webglRenderer(),
+            acceptLanguage: 'en-US,en;q=0.9',
+            platform: userAgent.includes('Windows') ? 'Win32' : 
+                     userAgent.includes('Mac') ? 'MacIntel' : 'Linux x86_64'
+        };
+        
+        return this.currentConfig;
+    }
+    
+    async applyFingerprint(page) {
+        const fingerprint = this.getRandomFingerprint();
+        
+        // 设置User Agent
+        await page.setUserAgent(fingerprint.userAgent);
+        
+        // 设置视口
+        await page.setViewport(fingerprint.viewport);
+        
+        // 注入脚本以覆盖navigator属性
+        await page.evaluateOnNewDocument((fp) => {
+            // 覆盖navigator属性
+            Object.defineProperty(navigator, 'userAgent', {
+                get: () => fp.userAgent
+            });
+            
+            Object.defineProperty(navigator, 'platform', {
+                get: () => fp.platform
+            });
+            
+            Object.defineProperty(navigator, 'language', {
+                get: () => fp.locale.split(',')[0]
+            });
+            
+            Object.defineProperty(navigator, 'languages', {
+                get: () => [fp.locale, 'en-US', 'en']
+            });
+            
+            Object.defineProperty(navigator, 'hardwareConcurrency', {
+                get: () => fp.hardwareConcurrency
+            });
+            
+            Object.defineProperty(navigator, 'deviceMemory', {
+                get: () => fp.deviceMemory
+            });
+            
+            // 覆盖screen属性
+            Object.defineProperty(screen, 'colorDepth', {
+                get: () => fp.colorDepth
+            });
+            
+            // 覆盖WebGL属性
+            const getParameter = WebGLRenderingContext.prototype.getParameter;
+            WebGLRenderingContext.prototype.getParameter = function(parameter) {
+                if (parameter === 37445) return fp.webglVendor;
+                if (parameter === 37446) return fp.webglRenderer;
+                return getParameter.call(this, parameter);
+            };
+            
+            // 覆盖时区
+            const getTimezoneOffset = Date.prototype.getTimezoneOffset;
+            Date.prototype.getTimezoneOffset = function() {
+                return fp.timezoneOffset * 60;
+            };
+            
+            // 覆盖插件列表
+            Object.defineProperty(navigator, 'plugins', {
+                get: () => {
+                    return [
+                        { name: 'Chrome PDF Plugin', filename: 'internal-pdf-viewer' },
+                        { name: 'Chrome PDF Viewer', filename: 'mhjfbmdgcfjbbpaeojofohoefgiehjai' },
+                        { name: 'Native Client', filename: 'internal-nacl-plugin' }
+                    ];
+                }
+            });
+            
+        }, fingerprint);
+        
+        console.log(`Applied fingerprint: ${fingerprint.userAgent.substring(0, 50)}...`);
+        return fingerprint;
+    }
+    
+    startRotation(client) {
+        setInterval(async () => {
+            try {
+                console.log('Rotating browser fingerprint...');
+                await client.destroy();
+                await client.initialize();
+                const page = await client.getPage();
+                await this.applyFingerprint(page);
+            } catch (error) {
+                console.error('Failed to rotate fingerprint:', error);
+            }
+        }, this.rotationInterval);
+    }
+}
+```
+
+## 📊 **4. Network Traffic Analysis Protection**
+
+```javascript
+// network-obfuscator.js
+class NetworkObfuscator {
+    constructor() {
+        this.trafficPatterns = {
+            normal: {
+                requestIntervals: { min: 1000, max: 5000 },
+                dataSizes: { min: 100, max: 5000 },
+                requestTypes: ['GET', 'POST', 'PUT', 'DELETE']
+            },
+            idle: {
+                requestIntervals: { min: 30000, max: 120000 },
+                dataSizes: { min: 50, max: 500 },
+                requestTypes: ['GET']
+            }
+        };
+        
+        this.dummyEndpoints = [
+            '/api/health',
+            '/api/metrics',
+            '/api/status',
+            '/api/config',
+            '/api/ping'
+        ];
+        
+        this.activeMode = 'normal';
+    }
+    
+    async generateDummyTraffic(app) {
+        // 创建虚拟端点
+        this.dummyEndpoints.forEach(endpoint => {
+            app.get(endpoint, (req, res) => {
+                const size = this.getRandomSize();
+                const data = this.generateDummyData(size);
+                res.json(data);
+            });
+        });
+        
+        // 随机请求生成器
+        setInterval(() => {
+            this.makeDummyRequest();
+        }, this.getNextInterval());
+        
+        // 模式切换（模拟人类使用模式）
+        setInterval(() => {
+            this.activeMode = Math.random() > 0.7 ? 'idle' : 'normal';
+            console.log(`Switched traffic mode to: ${this.activeMode}`);
+        }, 30 * 60 * 1000); // 每30分钟切换
+    }
+    
+    getNextInterval() {
+        const pattern = this.trafficPatterns[this.activeMode];
+        return pattern.requestIntervals.min + 
+               Math.random() * (pattern.requestIntervals.max - pattern.requestIntervals.min);
+    }
+    
+    getRandomSize() {
+        const pattern = this.trafficPatterns[this.activeMode];
+        return Math.floor(pattern.dataSizes.min + 
+               Math.random() * (pattern.dataSizes.max - pattern.dataSizes.min));
+    }
+    
+    generateDummyData(size) {
+        const templates = [
+            { status: 'ok', timestamp: Date.now(), data: Array(size).fill('x').join('') },
+            { success: true, count: Math.floor(Math.random() * 100), items: [] },
+            { version: '1.0.' + Math.floor(Math.random() * 100), build: Date.now() },
+            { users: { active: Math.floor(Math.random() * 1000), total: 10000 } }
+        ];
+        
+        return templates[Math.floor(Math.random() * templates.length)];
+    }
+    
+    async makeDummyRequest() {
+        try {
+            const endpoint = this.dummyEndpoints[Math.floor(Math.random() * this.dummyEndpoints.length)];
+            const url = `http://localhost:${process.env.PORT || 3000}${endpoint}`;
+            
+            await fetch(url, {
+                method: 'GET',
+                headers: {
+                    'User-Agent': this.getRandomUserAgent(),
+                    'Accept': 'application/json',
+                    'Cache-Control': 'no-cache'
+                }
+            });
+        } catch (error) {
+            // 静默失败
+        }
+    }
+    
+    getRandomUserAgent() {
+        const agents = [
+            'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+            'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15',
+            'Mozilla/5.0 (X11; Linux x86_64; rv:109.0) Gecko/20100101 Firefox/115.0'
+        ];
+        return agents[Math.floor(Math.random() * agents.length)];
+    }
+    
+    obfuscateTiming(messageCount) {
+        // 添加随机延迟以打破模式
+        const baseDelay = 1000 + Math.random() * 2000;
+        const messageFactor = Math.log(messageCount + 1) * 500;
+        const randomFactor = Math.random() > 0.5 ? 1 : -1;
+        const jitter = Math.random() * 1000;
+        
+        return baseDelay + messageFactor + (randomFactor * jitter);
+    }
+}
+```
+
+## ⏱️ **5. Session Duration & Anomaly Protection**
+
+```javascript
+// session-manager.js
+class SessionAnomalyProtector {
+    constructor() {
+        this.sessionPatterns = {
+            normal: {
+                duration: { min: 30, max: 480 }, // 分钟
+                breaks: { min: 5, max: 60 }, // 分钟
+                messagesPerSession: { min: 5, max: 50 }
+            },
+            powerUser: {
+                duration: { min: 60, max: 720 },
+                breaks: { min: 10, max: 120 },
+                messagesPerSession: { min: 20, max: 100 }
+            },
+            casual: {
+                duration: { min: 5, max: 60 },
+                breaks: { min: 30, max: 240 },
+                messagesPerSession: { min: 1, max: 10 }
+            }
+        };
+        
+        this.currentSession = {
+            startTime: null,
+            messageCount: 0,
+            pattern: 'normal',
+            plannedDuration: 0,
+            nextBreak: 0
+        };
+        
+        this.sessionHistory = [];
+    }
+    
+    startNewSession() {
+        // 随机选择模式
+        const patterns = ['normal', 'casual', 'powerUser'];
+        const weights = [0.6, 0.3, 0.1]; // 60% normal, 30% casual, 10% power
+        const random = Math.random();
+        let cumulative = 0;
+        let selectedPattern = 'normal';
+        
+        for (let i = 0; i < patterns.length; i++) {
+            cumulative += weights[i];
+            if (random <= cumulative) {
+                selectedPattern = patterns[i];
+                break;
+            }
+        }
+        
+        const pattern = this.sessionPatterns[selectedPattern];
+        
+        this.currentSession = {
+            startTime: Date.now(),
+            messageCount: 0,
+            pattern: selectedPattern,
+            plannedDuration: pattern.duration.min + 
+                           Math.random() * (pattern.duration.max - pattern.duration.min),
+            nextBreak: Date.now() + (
+                pattern.breaks.min + 
+                Math.random() * (pattern.breaks.max - pattern.breaks.min)
+            ) * 60 * 1000,
+            maxMessages: pattern.messagesPerSession.min + 
+                        Math.random() * (pattern.messagesPerSession.max - pattern.messagesPerSession.min)
+        };
+        
+        console.log(`Started new ${selectedPattern} session. Planned duration: ${Math.round(this.currentSession.plannedDuration)}min`);
+        
+        // 安排会话结束
+        this.scheduleSessionEnd();
+        
+        return this.currentSession;
+    }
+    
+    scheduleSessionEnd() {
+        const durationMs = this.currentSession.plannedDuration * 60 * 1000;
+        
+        setTimeout(() => {
+            console.log('Session time limit reached. Preparing to disconnect...');
+            this.endSession('time_limit');
+        }, durationMs);
+    }
+    
+    recordMessage() {
+        this.currentSession.messageCount++;
+        
+        // 检查是否达到消息限制
+        if (this.currentSession.messageCount >= this.currentSession.maxMessages) {
+            console.log('Message limit reached for this session');
+            this.endSession('message_limit');
+            return false;
+        }
+        
+        // 检查是否需要休息
+        if (Date.now() >= this.currentSession.nextBreak) {
+            console.log('Break time reached');
+            this.takeBreak();
+            return false;
+        }
+        
+        return true;
+    }
+    
+    async takeBreak() {
+        const breakDuration = 5 + Math.random() * 15; // 5-20分钟
+        
+        console.log(`Taking a break for ${Math.round(breakDuration)} minutes`);
+        
+        // 模拟离开
+        await this.simulateAwayTime(breakDuration * 60 * 1000);
+        
+        // 恢复会话
+        this.currentSession.nextBreak = Date.now() + (
+            this.sessionPatterns[this.currentSession.pattern].breaks.min + 
+            Math.random() * (this.sessionPatterns[this.currentSession.pattern].breaks.max - 
+            this.sessionPatterns[this.currentSession.pattern].breaks.min)
+        ) * 60 * 1000;
+        
+        console.log('Break ended, resuming session');
+    }
+    
+    async simulateAwayTime(duration) {
+        // 这里可以添加实际的不活动模拟
+        // 例如：最小化浏览器、减少活动等
+        
+        return new Promise(resolve => setTimeout(resolve, duration));
+    }
+    
+    endSession(reason = 'normal') {
+        const sessionData = {
+            ...this.currentSession,
+            endTime: Date.now(),
+            duration: (Date.now() - this.currentSession.startTime) / (1000 * 60),
+            reason
+        };
+        
+        this.sessionHistory.push(sessionData);
+        
+        // 保留最近100个会话
+        if (this.sessionHistory.length > 100) {
+            this.sessionHistory.shift();
+        }
+        
+        console.log(`Session ended. Reason: ${reason}, Duration: ${Math.round(sessionData.duration)}min, Messages: ${sessionData.messageCount}`);
+        
+        // 开始新会话前等待
+        const waitTime = this.getInterSessionWaitTime();
+        console.log(`Waiting ${Math.round(waitTime / (1000 * 60))} minutes before next session`);
+        
+        setTimeout(() => {
+            this.startNewSession();
+        }, waitTime);
+    }
+    
+    getInterSessionWaitTime() {
+        // 基于一天中的时间计算等待时间
+        const hour = new Date().getHours();
+        let baseWait;
+        
+        if (hour >= 22 || hour < 6) {
+            baseWait = 4 * 60 * 60 * 1000; // 夜间等待4小时
+        } else if (hour >= 6 && hour < 9) {
+            baseWait = 30 * 60 * 1000; // 早晨等待30分钟
+        } else if (hour >= 9 && hour < 18) {
+            baseWait = (60 + Math.random() * 120) * 60 * 1000; // 工作时间等待1-3小时
+        } else {
+            baseWait = 2 * 60 * 60 * 1000; // 晚上等待2小时
+        }
+        
+        // 添加随机变化
+        const variation = baseWait * 0.3;
+        return baseWait + (Math.random() * variation * 2) - variation;
+    }
+    
+    getAnomalyScore() {
+        // 计算当前会话是否异常
+        if (this.sessionHistory.length < 3) return 0;
+        
+        const recentSessions = this.sessionHistory.slice(-3);
+        const avgDuration = recentSessions.reduce((sum, s) => sum + s.duration, 0) / recentSessions.length;
+        const avgMessages = recentSessions.reduce((sum, s) => sum + s.messageCount, 0) / recentSessions.length;
+        
+        const currentDuration = (Date.now() - this.currentSession.startTime) / (1000 * 60);
+        const durationDiff = Math.abs(currentDuration - avgDuration) / avgDuration;
+        const messageDiff = Math.abs(this.currentSession.messageCount - avgMessages) / avgMessages;
+        
+        return Math.max(durationDiff, messageDiff);
+    }
+}
+```
+
+## 🚀 **6. Complete Integrated Secure System**
+
+```javascript
+// secure-whatsapp-system.js
+require('dotenv').config();
+const { Client, LocalAuth } = require('whatsapp-web.js');
+const express = require('express');
+const helmet = require('helmet');
+const rateLimit = require('express-rate-limit');
+
+// 导入我们的安全模块
+const StrictScheduleManager = require('./schedule-manager');
+const BehavioralSimulator = require('./behavioral-simulator');
+const FingerprintProtector = require('./fingerprint-protection');
+const NetworkObfuscator = require('./network-obfuscator');
+const SessionAnomalyProtector = require('./session-manager');
+
+class SecureWhatsAppSystem {
+    constructor() {
+        this.app = express();
+        this.setupSecurity();
+        
+        // 初始化所有管理器
+        this.scheduleManager = new StrictScheduleManager();
+        this.behaviorSimulator = new BehavioralSimulator();
+        this.fingerprintProtector = new FingerprintProtector();
+        this.networkObfuscator = new NetworkObfuscator();
+        this.sessionProtector = new SessionAnomalyProtector();
+        
+        // 超严格的消息限制
+        this.messageLimits = {
+            daily: parseInt(process.env.MAX_DAILY_MESSAGES || 100),
+            hourly: 15,
+            perMinute: 2,
+            perConversation: 5,
+            perContactDaily: 3
+        };
+        
+        this.contactMessageCounts = {};
+        this.conversationMessageCounts = {};
+        
+        this.initializeClient();
+    }
+    
+    setupSecurity() {
+        this.app.use(helmet());
+        
+        // 严格的速率限制
+        const strictLimiter = rateLimit({
+            windowMs: 60 * 1000, // 1分钟
+            max: 5, // 每分钟最多5个请求
+            message: 'Too many requests'
+        });
+        
+        this.app.use('/api/', strictLimiter);
+        
+        // 双重认证中间件
+        this.app.use('/api/*', this.dualAuthMiddleware.bind(this));
+    }
+    
+    async dualAuthMiddleware(req, res, next) {
+        const apiKey = req.headers['x-api-key'];
+        const sessionToken = req.headers['x-session-token'];
+        
+        if (!apiKey || apiKey !== process.env.API_KEY) {
+            return res.status(401).json({ error: 'Invalid API key' });
+        }
+        
+        if (!sessionToken || !this.validateSessionToken(sessionToken)) {
+            return res.status(401).json({ error: 'Invalid session token' });
+        }
+        
+        // 检查IP限制
+        const clientIp = req.ip;
+        if (!this.isIpAllowed(clientIp)) {
+            return res.status(403).json({ error: 'IP not allowed' });
+        }
+        
+        next();
+    }
+    
+    async initializeClient() {
+        this.client = new Client({
+            authStrategy: new LocalAuth({
+                dataPath: process.env.SESSION_PATH || '.secure_sessions',
+                clientId: this.generateClientId()
+            }),
+            puppeteer: {
+                headless: process.env.NODE_ENV === 'production' ? 'new' : false,
+                args: [
+                    '--no-sandbox',
+                    '--disable-setuid-sandbox',
+                    '--disable-dev-shm-usage',
+                    '--disable-accelerated-2d-canvas',
+                    '--disable-web-security',
+                    '--disable-features=IsolateOrigins,site-per-process',
+                    '--disable-blink-features=AutomationControlled',
+                    '--disable-infobars',
+                    '--window-position=0,0',
+                    '--ignore-certifcate-errors',
+                    '--ignore-certifcate-errors-spki-list',
+                    `--user-agent=${this.fingerprintProtector.getRandomFingerprint().userAgent}`
+                ].filter(arg => arg),
+                defaultViewport: null
+            },
+            webVersionCache: {
+                type: 'remote',
+                remotePath: 'https://raw.githubusercontent.com/wppconnect-team/wa-version/main/html/2.2412.54.html'
+            }
+        });
+        
+        // 应用浏览器指纹保护
+        this.client.on('authenticated', async () => {
+            const page = await this.client.getPage();
+            await this.fingerprintProtector.applyFingerprint(page);
+            this.fingerprintProtector.startRotation(this.client);
+        });
+        
+        // 开始新会话
+        this.sessionProtector.startNewSession();
+        
+        // 设置行为模拟
+        this.behaviorSimulator.simulateHumanActivity(this.client);
+        
+        // 设置网络混淆
+        this.networkObfuscator.generateDummyTraffic(this.app);
+        
+        this.setupEventHandlers();
+        this.setupAPI();
+        
+        this.client.initialize();
+    }
+    
+    setupEventHandlers() {
+        this.client.on('ready', () => {
+            console.log('Secure client is ready');
+            this.isReady = true;
+        });
+        
+        this.client.on('message', async (msg) => {
+            // 检查是否可以回复
+            const canReply = this.checkCanReply(msg.from);
+            if (!canReply.allowed) {
+                console.log(`Cannot reply to ${msg.from}: ${canReply.reason}`);
+                return;
+            }
+            
+            // 模拟人类响应时间
+            const responseDelay = this.behaviorSimulator.getNaturalResponseTime();
+            await this.delay(responseDelay);
+            
+            // 发送响应（如果有自动回复逻辑）
+            await this.sendResponse(msg);
+        });
+    }
+    
+    async sendMessage(chatId, message) {
+        // 1. 检查日程限制
+        const scheduleCheck = this.scheduleManager.canSendMessage();
+        if (!scheduleCheck.allowed) {
+            throw new Error(`Schedule restriction: ${scheduleCheck.reason}`);
+        }
+        
+        // 2. 检查消息限制
+        const limitCheck = this.checkMessageLimits(chatId);
+        if (!limitCheck.allowed) {
+            throw new Error(`Message limit: ${limitCheck.reason}`);
+        }
+        
+        // 3. 检查会话异常
+        const anomalyScore = this.sessionProtector.getAnomalyScore();
+        if (anomalyScore > 0.5) {
+            throw new Error('Anomaly detected in session pattern');
+        }
+        
+        // 4. 记录消息发送
+        this.scheduleManager.recordMessageSent();
+        this.sessionProtector.recordMessage();
+        this.incrementMessageCounts(chatId);
+        
+        // 5. 模拟输入延迟
+        const typingDelay = this.behaviorSimulator.simulateTypingDelay(message);
+        await this.delay(typingDelay);
+        
+        // 6. 发送消息
+        const result = await this.client.sendMessage(chatId, message);
+        
+        // 7. 添加网络混淆延迟
+        const networkDelay = this.networkObfuscator.obfuscateTiming(
+            this.scheduleManager.dailyCounts[new Date().toDateString()] || 0
+        );
+        await this.delay(networkDelay);
+        
+        return result;
+    }
+    
+    checkCanReply(chatId) {
+        const checks = [
+            this.scheduleManager.canSendMessage(),
+            this.checkMessageLimits(chatId),
+            this.checkContactLimits(chatId),
+            this.checkConversationLimits(chatId)
+        ];
+        
+        for (const check of checks) {
+            if (!check.allowed) {
+                return check;
+            }
+        }
+        
+        return { allowed: true };
+    }
+    
+    checkMessageLimits(chatId) {
+        const today = new Date().toDateString();
+        const hour = new Date().getHours();
+        const minute = new Date().getMinutes();
+        
+        // 每日限制检查
+        const dailyCount = this.scheduleManager.dailyCounts[today] || 0;
+        if (dailyCount >= this.messageLimits.daily) {
+            return {
+                allowed: false,
+                reason: `Daily limit reached (${this.messageLimits.daily})`
+            };
+        }
+        
+        // 每小时限制检查
+        const hourlyCount = this.scheduleManager.hourlyCounts[hour] || 0;
+        if (hourlyCount >= this.messageLimits.hourly) {
+            return {
+                allowed: false,
+                reason: `Hourly limit reached (${this.messageLimits.hourly})`
+            };
+        }
+        
+        return { allowed: true };
+    }
+    
+    setupAPI() {
+        // 安全消息发送端点
+        this.app.post('/api/v1/secure/send', async (req, res) => {
+            try {
+                const { chatId, message } = req.body;
+                
+                if (!chatId || !message) {
+                    return res.status(400).json({ error: 'chatId and message required' });
+                }
+                
+                const result = await this.sendMessage(chatId, message);
+                res.json({
+                    success: true,
+                    messageId: result.id.id,
+                    limits: {
+                        dailyRemaining: this.messageLimits.daily - 
+                                      (this.scheduleManager.dailyCounts[new Date().toDateString()] || 0),
+                        hourlyRemaining: this.messageLimits.hourly - 
+                                       (this.scheduleManager.hourlyCounts[new Date().getHours()] || 0)
+                    }
+                });
+            } catch (error) {
+                res.status(429).json({ error: error.message });
+            }
+        });
+        
+        // 系统状态端点
+        this.app.get('/api/v1/secure/status', (req, res) => {
+            res.json({
+                status: this.isReady ? 'ready' : 'initializing',
+                schedule: this.scheduleManager.isOffHour(),
+                limits: {
+                    daily: this.messageLimits.daily,
+                    usedToday: this.scheduleManager.dailyCounts[new Date().toDateString()] || 0,
+                    remaining: this.messageLimits.daily - 
+                              (this.scheduleManager.dailyCounts[new Date().toDateString()] || 0)
+                },
+                session: {
+                    pattern: this.sessionProtector.currentSession.pattern,
+                    messagesSent: this.sessionProtector.currentSession.messageCount,
+                    duration: this.sessionProtector.currentSession.plannedDuration,
+                    anomalyScore: this.sessionProtector.getAnomalyScore()
+                }
+            });
+        });
+    }
+    
+    delay(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms));
+    }
+    
+    generateClientId() {
+        return 'client-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
+    }
+}
+
+// 启动系统
+const system = new SecureWhatsAppSystem();
+const PORT = process.env.PORT || 3001;
+
+system.app.listen(PORT, '127.0.0.1', () => {
+    console.log(`✅ Secure WhatsApp System running on http://127.0.0.1:${PORT}`);
+    console.log('⚠️  WARNING: This system should NEVER be exposed to the internet');
+    console.log('🔒 All communications must go through a reverse proxy with authentication');
+});
+```
+
+## 📋 **Configuration File (.env)**
+
+```env
+# ==================== SECURITY ====================
+NODE_ENV=production
+PORT=3001
+
+# API Security
+API_KEY=your_secure_api_key_here_change_this
+JWT_SECRET=your_jwt_secret_here_change_this
+SESSION_SECRET=your_session_secret_here_change_this
+
+# ==================== MESSAGE LIMITS ====================
+MAX_DAILY_MESSAGES=100
+MAX_HOURLY_MESSAGES=15
+MAX_MINUTE_MESSAGES=2
+MAX_CONTACT_DAILY=3
+MAX_CONVERSATION_MESSAGES=5
+
+# ==================== SCHEDULE ====================
+NIGHT_OFF_START=22:00
+NIGHT_OFF_END=08:00
+LUNCH_BREAK_START=12:00
+LUNCH_BREAK_END=13:30
+DINNER_BREAK_START=18:00
+DINNER_BREAK_END=19:30
+WEEKENDS_DISABLED=true
+
+# ==================== SESSION MANAGEMENT ====================
+SESSION_PATH=.secure_sessions
+SESSION_ROTATION_HOURS=6
+MAX_SESSION_DURATION_MINUTES=480
+MIN_BREAK_DURATION_MINUTES=5
+
+# ==================== NETWORK ====================
+USE_PROXY=false
+PROXY_SERVER=
+PROXY_USERNAME=
+PROXY_PASSWORD=
+USER_AGENT_ROTATION=true
+
+# ==================== BEHAVIOR ====================
+SIMULATE_TYPING=true
+RANDOM_RESPONSE_DELAY=true
+HUMAN_ACTIVITY_SIMULATION=true
+NETWORK_OBFUSCATION=true
+
+# ==================== MONITORING ====================
+LOG_LEVEL=info
+ANOMALY_DETECTION=true
+AUTO_DISCONNECT_ON_ANOMALY=true
+```
+
+## 🎯 **Implementation Checklist**
+
+Before running this system:
+
+1. **✅ Install all dependencies:**
+   ```bash
+   npm install whatsapp-web.js express helmet express-rate-limit jsonwebtoken
+   npm install puppeteer-extra puppeteer-extra-plugin-stealth
+   ```
+
+2. **✅ Set up reverse proxy (NGINX):**
+   ```nginx
+   server {
+       listen 443 ssl;
+       server_name yourdomain.com;
+       
+       ssl_certificate /path/to/cert.pem;
+       ssl_certificate_key /path/to/key.pem;
+       
+       location / {
+           proxy_pass http://127.0.0.1:3001;
+           proxy_set_header Host $host;
+           proxy_set_header X-Real-IP $remote_addr;
+           proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+           
+           # Add authentication
+           auth_basic "WhatsApp Admin";
+           auth_basic_user_file /etc/nginx/.htpasswd;
+       }
+   }
+   ```
+
+3. **✅ Create systemd service:**
+   ```bash
+   sudo nano /etc/systemd/system/whatsapp-secure.service
+   ```
+
+4. **✅ Monitoring setup:**
+   ```bash
+   # Install monitoring tools
+   sudo apt-get install fail2ban logwatch
+   
+   # Configure log rotation
+   sudo nano /etc/logrotate.d/whatsapp-secure
+   ```
+
+## ⚠️ **Final Warnings**
+
+Even with all these protections:
+1. **WhatsApp can still detect** automated behavior through advanced ML
+2. **Phone number bans are permanent** and cannot be appealed
+3. **Legal risks exist** for violating Terms of Service
+4. **No support** from Meta for unofficial integrations
+
+**For business use, the WhatsApp Business API remains the only safe, legal, and reliable option.**
+
+This implementation is for **educational purposes only** and should be used with extreme caution, understanding all risks involved.
+Excellent concerns! These security practices are **crucial** when using `whatsapp-web.js`, as the library is easily detectable by WhatsApp's servers. Here’s how to implement each security measure properly:
+
+## 🔒 **1. Authentication Middleware (Never expose publicly)**
+
+Add authentication to your Express server before the WhatsApp functions:
+
+```javascript
+// Add to server.js after middleware setup
+const basicAuth = require('express-basic-auth');
+
+// Simple username/password protection
+app.use(basicAuth({
+    users: {
+        [process.env.ADMIN_USER || 'admin']: process.env.ADMIN_PASSWORD || 'securepassword123'
+    },
+    challenge: true,
+    realm: 'WhatsApp Web Dashboard'
+}));
+
+// OR JWT authentication for more control
+const jwt = require('jsonwebtoken');
+const rateLimit = require('express-rate-limit');
+
+// JWT middleware
+function authenticateToken(req, res, next) {
+    const authHeader = req.headers['authorization'];
+    const token = authHeader && authHeader.split(' ')[1];
+    
+    if (!token) return res.status(401).json({ error: 'Access token required' });
+    
+    jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
+        if (err) return res.status(403).json({ error: 'Invalid token' });
+        req.user = user;
+        next();
+    });
+}
+
+// Apply to all WhatsApp API routes
+app.use('/api/*', authenticateToken);
+```
+
+## 🌍 **2. Environment Variables (.env file)**
+
+Create a `.env` file:
+```env
+# Authentication
+ADMIN_USER=admin
+ADMIN_PASSWORD=your_strong_password_here
+JWT_SECRET=your_jwt_secret_key_here_change_this
+SESSION_SECRET=your_session_secret_here
+
+# Server Configuration
+PORT=3000
+NODE_ENV=development
+WHATSAPP_SESSION_DIR=.wwebjs_auth
+
+# Rate Limiting
+RATE_LIMIT_WINDOW=15
+RATE_LIMIT_MAX=100
+
+# Proxy Configuration (if using)
+PROXY_ENABLED=false
+PROXY_SERVER=http://your-proxy:8080
+PROXY_USERNAME=proxy_user
+PROXY_PASSWORD=proxy_pass
+```
+
+Load in server.js:
+```javascript
+require('dotenv').config();
+
+// Use environment variables
+const PORT = process.env.PORT || 3000;
+const SESSION_DIR = process.env.WHATSAPP_SESSION_DIR || '.wwebjs_auth';
+```
+
+## ⏱️ **3. Rate Limiting Implementation**
+
+```javascript
+const rateLimit = require('express-rate-limit');
+const RedisStore = require('rate-limit-redis');
+const Redis = require('ioredis');
+
+// Create Redis client for distributed rate limiting
+const redisClient = new Redis(process.env.REDIS_URL || 'redis://localhost:6379');
+
+// Different rate limits for different endpoints
+const generalLimiter = rateLimit({
+    store: new RedisStore({
+        client: redisClient,
+        prefix: 'rl:'
+    }),
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: 100, // 100 requests per window
+    message: 'Too many requests, please try again later',
+    standardHeaders: true,
+    legacyHeaders: false
+});
+
+// Stricter limits for message sending (critical to avoid bans)
+const messageLimiter = rateLimit({
+    store: new RedisStore({
+        client: redisClient,
+        prefix: 'rl:msg:'
+    }),
+    windowMs: 5 * 60 * 1000, // 5 minutes
+    max: 30, // Only 30 messages every 5 minutes
+    message: 'Message sending limit exceeded. Slow down to avoid detection.',
+    skipSuccessfulRequests: false
+});
+
+// Apply rate limiting
+app.use('/api', generalLimiter);
+app.use('/api/send-message', messageLimiter);
+app.use('/api/run-campaign', messageLimiter);
+
+// WhatsApp-specific message queuing system
+class MessageQueue {
+    constructor() {
+        this.queue = [];
+        this.processing = false;
+        this.delayBetweenMessages = 2000; // Minimum 2 seconds between messages
+        this.dailyLimit = 250; // WhatsApp's unofficial daily limit
+        this.sentToday = 0;
+        this.resetInterval = setInterval(() => {
+            this.sentToday = 0;
+            console.log('Daily counter reset');
+        }, 24 * 60 * 60 * 1000);
+    }
+
+    async add(message) {
+        if (this.sentToday >= this.dailyLimit) {
+            throw new Error('Daily message limit reached');
+        }
+        
+        return new Promise((resolve) => {
+            this.queue.push({ message, resolve });
+            this.processQueue();
+        });
+    }
+
+    async processQueue() {
+        if (this.processing || this.queue.length === 0) return;
+        
+        this.processing = true;
+        const item = this.queue.shift();
+        
+        try {
+            const result = await sendMessage(item.message.number, item.message.content);
+            this.sentToday++;
+            item.resolve(result);
+        } catch (error) {
+            console.error('Queue processing error:', error);
+            item.resolve({ success: false, error: error.message });
+        }
+
+        // Wait before processing next message
+        setTimeout(() => {
+            this.processing = false;
+            this.processQueue();
+        }, this.delayBetweenMessages + Math.random() * 1000); // Random delay
+    }
+}
+
+const messageQueue = new MessageQueue();
+
+// Modified sendMessage endpoint to use queue
+app.post('/api/send-message-safe', authenticateToken, async (req, res) => {
+    try {
+        const { number, message } = req.body;
+        
+        const queueResult = await messageQueue.add({
+            number,
+            content: message,
+            timestamp: Date.now()
+        });
+        
+        res.json(queueResult);
+    } catch (error) {
+        res.status(429).json({ error: error.message });
+    }
+});
+```
+
+## 🔄 **4. Proxy Configuration**
+
+```javascript
+const { Client, LocalAuth } = require('whatsapp-web.js');
+const { HttpsProxyAgent } = require('https-proxy-agent');
+
+// Proxy configuration function
+function getProxyConfig() {
+    if (process.env.PROXY_ENABLED === 'true') {
+        const proxyUrl = process.env.PROXY_SERVER;
+        const proxyAgent = new HttpsProxyAgent(proxyUrl);
+        
+        console.log(`Using proxy: ${proxyUrl}`);
+        return {
+            agent: proxyAgent,
+            // Optional proxy authentication
+            ...(process.env.PROXY_USERNAME && {
+                auth: {
+                    username: process.env.PROXY_USERNAME,
+                    password: process.env.PROXY_PASSWORD
+                }
+            })
+        };
+    }
+    return null;
+}
+
+// Updated WhatsApp client with proxy support
+const client = new Client({
+    authStrategy: new LocalAuth({
+        dataPath: process.env.WHATSAPP_SESSION_DIR || '.wwebjs_auth',
+        clientId: process.env.CLIENT_ID || 'default-client'
+    }),
+    puppeteer: {
+        headless: process.env.NODE_ENV === 'production' ? 'new' : false,
+        args: [
+            '--no-sandbox',
+            '--disable-setuid-sandbox',
+            '--disable-dev-shm-usage',
+            '--disable-accelerated-2d-canvas',
+            '--no-first-run',
+            '--no-zygote',
+            '--disable-gpu',
+            '--disable-web-security',
+            '--disable-features=IsolateOrigins,site-per-process',
+            '--proxy-server=' + (process.env.PROXY_SERVER || ''),
+            ...(process.env.USER_AGENT ? [`--user-agent=${process.env.USER_AGENT}`] : [])
+        ],
+        // Random viewport to mimic real users
+        defaultViewport: {
+            width: 1280 + Math.floor(Math.random() * 200),
+            height: 800 + Math.floor(Math.random() * 200)
+        }
+    },
+    // Randomize user agent
+    userAgent: process.env.USER_AGENT || 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+    
+    // Web version cache with proxy support
+    webVersionCache: {
+        type: 'remote',
+        remotePath: 'https://raw.githubusercontent.com/wppconnect-team/wa-version/main/html/2.2412.54.html',
+        options: {
+            agent: getProxyConfig()?.agent
+        }
+    }
+});
+
+// Rotating proxy function (for multiple proxies)
+class ProxyRotator {
+    constructor() {
+        this.proxies = process.env.PROXY_LIST ? 
+            process.env.PROXY_LIST.split(',') : [];
+        this.currentIndex = 0;
+    }
+
+    getNextProxy() {
+        if (this.proxies.length === 0) return null;
+        
+        const proxy = this.proxies[this.currentIndex];
+        this.currentIndex = (this.currentIndex + 1) % this.proxies.length;
+        
+        return new HttpsProxyAgent(proxy);
+    }
+}
+
+const proxyRotator = new ProxyRotator();
+```
+
+## 🛡️ **5. Complete Secure Server Implementation**
+
+Here's a consolidated secure version of your server.js:
+
+```javascript
+// server-secure.js - Complete secure implementation
+require('dotenv').config();
+const { Client, LocalAuth, MessageMedia } = require('whatsapp-web.js');
+const qrcode = require('qrcode-terminal');
+const express = require('express');
+const http = require('http');
+const socketIo = require('socket.io');
+const bodyParser = require('body-parser');
+const rateLimit = require('express-rate-limit');
+const helmet = require('helmet');
+const compression = require('compression');
+const winston = require('winston');
+const { HttpsProxyAgent } = require('https-proxy-agent');
+
+// Initialize Express with security middleware
+const app = express();
+const server = http.createServer(app);
+const io = socketIo(server);
+
+// Security middleware
+app.use(helmet({
+    contentSecurityPolicy: {
+        directives: {
+            defaultSrc: ["'self'"],
+            styleSrc: ["'self'", "'unsafe-inline'", "https://cdn.jsdelivr.net"],
+            scriptSrc: ["'self'", "'unsafe-inline'", "https://cdn.jsdelivr.net", "https://cdnjs.cloudflare.com"],
+            connectSrc: ["'self'", "ws://localhost:3000", "wss://localhost:3000"]
+        }
+    }
+}));
+app.use(compression());
+app.use(bodyParser.json({ limit: '10mb' }));
+
+// Rate limiting
+const apiLimiter = rateLimit({
+    windowMs: parseInt(process.env.RATE_LIMIT_WINDOW || 15) * 60 * 1000,
+    max: parseInt(process.env.RATE_LIMIT_MAX || 100),
+    message: 'Too many requests from this IP'
+});
+app.use('/api', apiLimiter);
+
+// Basic authentication for dashboard
+if (process.env.REQUIRE_AUTH === 'true') {
+    const basicAuth = require('express-basic-auth');
+    app.use(basicAuth({
+        users: { 
+            [process.env.ADMIN_USER]: process.env.ADMIN_PASSWORD 
+        },
+        challenge: true
+    }));
+}
+
+// Logging
+const logger = winston.createLogger({
+    level: process.env.LOG_LEVEL || 'info',
+    format: winston.format.combine(
+        winston.format.timestamp(),
+        winston.format.json()
+    ),
+    transports: [
+        new winston.transports.File({ filename: 'error.log', level: 'error' }),
+        new winston.transports.File({ filename: 'combined.log' }),
+        new winston.transports.Console({
+            format: winston.format.simple()
+        })
+    ]
+});
+
+// Proxy configuration
+function configureProxy() {
+    if (process.env.PROXY_ENABLED === 'true' && process.env.PROXY_SERVER) {
+        logger.info(`Using proxy: ${process.env.PROXY_SERVER}`);
+        const agent = new HttpsProxyAgent(process.env.PROXY_SERVER);
+        
+        if (process.env.PROXY_USERNAME) {
+            return {
+                agent,
+                auth: {
+                    username: process.env.PROXY_USERNAME,
+                    password: process.env.PROXY_PASSWORD || ''
+                }
+            };
+        }
+        return { agent };
+    }
+    return null;
+}
+
+// WhatsApp client with enhanced security
+const client = new Client({
+    authStrategy: new LocalAuth({
+        dataPath: process.env.SESSION_DIR || '.wwebjs_auth',
+        clientId: 'secure-client-' + Math.random().toString(36).substr(2, 9)
+    }),
+    puppeteer: {
+        headless: process.env.NODE_ENV === 'production' ? 'new' : false,
+        args: [
+            '--no-sandbox',
+            '--disable-setuid-sandbox',
+            '--disable-dev-shm-usage',
+            '--disable-accelerated-2d-canvas',
+            '--disable-web-security',
+            `--proxy-server=${process.env.PROXY_SERVER || ''}`,
+            '--disable-features=IsolateOrigins,site-per-process',
+            '--disable-blink-features=AutomationControlled'
+        ].filter(arg => arg),
+        defaultViewport: null
+    },
+    webVersionCache: {
+        type: 'remote',
+        remotePath: 'https://raw.githubusercontent.com/wppconnect-team/wa-version/main/html/2.2412.54.html',
+        options: configureProxy()
+    }
+});
+
+// Safe message sending with delays and limits
+class SecureMessageSender {
+    constructor() {
+        this.messageQueue = [];
+        this.isSending = false;
+        this.dailySent = 0;
+        this.maxDaily = parseInt(process.env.MAX_DAILY_MESSAGES || 250);
+        
+        // Reset counter daily
+        setInterval(() => {
+            this.dailySent = 0;
+            logger.info('Daily message counter reset');
+        }, 24 * 60 * 60 * 1000);
+    }
+    
+    async send(number, message) {
+        return new Promise((resolve, reject) => {
+            if (this.dailySent >= this.maxDaily) {
+                return reject(new Error(`Daily limit of ${this.maxDaily} messages reached`));
+            }
+            
+            this.messageQueue.push({ number, message, resolve, reject });
+            this.processQueue();
+        });
+    }
+    
+    async processQueue() {
+        if (this.isSending || this.messageQueue.length === 0) return;
+        
+        this.isSending = true;
+        const { number, message, resolve, reject } = this.messageQueue.shift();
+        
+        try {
+            // Random delay between 2-5 seconds
+            const delay = 2000 + Math.random() * 3000;
+            await new Promise(res => setTimeout(res, delay));
+            
+            const chatId = number.endsWith('@c.us') ? number : `${number}@c.us`;
+            const result = await client.sendMessage(chatId, message);
+            
+            this.dailySent++;
+            logger.info(`Message sent to ${number}. Daily count: ${this.dailySent}/${this.maxDaily}`);
+            
+            resolve({
+                success: true,
+                messageId: result.id.id,
+                to: number,
+                dailyRemaining: this.maxDaily - this.dailySent
+            });
+        } catch (error) {
+            logger.error(`Failed to send to ${number}:`, error.message);
+            reject(error);
+        } finally {
+            this.isSending = false;
+            this.processQueue();
+        }
+    }
+}
+
+const messageSender = new SecureMessageSender();
+
+// API endpoints with security
+app.post('/api/v1/messages', async (req, res) => {
+    try {
+        const { number, message } = req.body;
+        
+        if (!number || !message) {
+            return res.status(400).json({ error: 'Number and message required' });
+        }
+        
+        const result = await messageSender.send(number, message);
+        res.json(result);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// Health check endpoint (no authentication needed)
+app.get('/health', (req, res) => {
+    res.json({
+        status: 'ok',
+        timestamp: new Date().toISOString(),
+        dailyMessages: {
+            sent: messageSender.dailySent,
+            limit: messageSender.maxDaily,
+            remaining: messageSender.maxDaily - messageSender.dailySent
+        },
+        queueLength: messageSender.messageQueue.length
+    });
+});
+
+// WebSocket connection with authentication
+io.use((socket, next) => {
+    const token = socket.handshake.auth.token;
+    if (process.env.REQUIRE_AUTH === 'true' && token !== process.env.WS_TOKEN) {
+        return next(new Error('Authentication error'));
+    }
+    next();
+});
+
+// Standard event handlers
+client.on('qr', (qr) => {
+    logger.info('QR code received');
+    qrcode.generate(qr, { small: true });
+    io.emit('qr', qr);
+});
+
+client.on('ready', () => {
+    logger.info('Client is ready and secure');
+    io.emit('status', 'ready');
+});
+
+client.on('disconnected', (reason) => {
+    logger.warn(`Client disconnected: ${reason}`);
+    io.emit('status', 'disconnected');
+    
+    // Auto-restart after delay
+    setTimeout(() => {
+        logger.info('Attempting to restart client...');
+        client.initialize();
+    }, 5000);
+});
+
+// Error handling
+process.on('uncaughtException', (error) => {
+    logger.error('Uncaught exception:', error);
+    // Don't exit in production, try to recover
+    if (process.env.NODE_ENV !== 'production') {
+        process.exit(1);
+    }
+});
+
+// Start server
+const PORT = process.env.PORT || 3000;
+client.initialize();
+
+server.listen(PORT, '127.0.0.1', () => {
+    logger.info(`Secure WhatsApp server running on http://127.0.0.1:${PORT}`);
+    logger.info(`Dashboard: http://127.0.0.1:${PORT}/dashboard`);
+    logger.warn('WARNING: This server should NOT be exposed to the internet');
+});
+```
+
+## 🚀 **Production Deployment Checklist**
+
+1. **Network Security:**
+   ```bash
+   # Use nginx as reverse proxy with SSL
+   sudo apt install nginx certbot python3-certbot-nginx
+   sudo certbot --nginx -d yourdomain.com
+   
+   # Configure firewall
+   sudo ufw allow 22
+   sudo ufw allow 80
+   sudo ufw allow 443
+   sudo ufw enable
+   ```
+
+2. **Docker Setup (recommended):**
+   ```dockerfile
+   # Dockerfile
+   FROM node:18-alpine
+   WORKDIR /app
+   COPY package*.json ./
+   RUN npm ci --only=production
+   COPY . .
+   RUN chown -R node:node /app
+   USER node
+   EXPOSE 3000
+   CMD ["node", "server-secure.js"]
+   ```
+
+3. **Monitoring:**
+   ```javascript
+   // Add to package.json
+   "scripts": {
+     "start": "node server-secure.js",
+     "start:prod": "pm2 start server-secure.js --name whatsapp-client",
+     "monitor": "pm2 monit",
+     "logs": "pm2 logs whatsapp-client"
+   }
+   ```
+
+4. **Regular Maintenance:**
+   - Rotate session files weekly
+   - Monitor WhatsApp web version updates
+   - Check for library updates
+   - Review logs for detection patterns
+
+## ⚠️ **Critical Warning**
+
+Even with all these precautions, **`whatsapp-web.js` remains detectable**. WhatsApp's machine learning systems can identify non-official clients through:
+- Behavioral patterns (typing speed, message timing)
+- Browser fingerprinting
+- Network traffic analysis
+- Session duration anomalies
+
+For any business or production use, the **WhatsApp Business API** remains the only safe, reliable, and legal option. This implementation should only be used for personal, low-volume testing with full awareness of the risks involved.
+
+Would you like me to elaborate on any of these security measures or provide additional monitoring tools?
+I'll provide you with enhanced code for sending messages, creating campaigns, and validating phone numbers. **Please remember that using `whatsapp-web.js` is highly risky and violates WhatsApp's Terms of Service**, which can lead to permanent account bans.
+
+## Enhanced Backend Code with Advanced Features
+
+Here's an enhanced `server.js` with comprehensive message handling, campaign functionality, and utility features:
+
+```javascript
+// server.js - Enhanced Version
+const { Client, LocalAuth, MessageMedia } = require('whatsapp-web.js');
+const qrcode = require('qrcode-terminal');
+const express = require('express');
+const http = require('http');
+const socketIo = require('socket.io');
+const bodyParser = require('body-parser');
+
+const app = express();
+const server = http.createServer(app);
+const io = socketIo(server);
+
+// Middleware
+app.use(bodyParser.json());
+app.use(express.static('public'));
+
+// WhatsApp client setup
+const client = new Client({
+    authStrategy: new LocalAuth({
+        dataPath: '.wwebjs_auth',
+        clientId: 'client-1' // Useful for multiple sessions
+    }),
+    puppeteer: {
+        headless: true,
+        args: [
+            '--no-sandbox',
+            '--disable-setuid-sandbox',
+            '--disable-dev-shm-usage',
+            '--disable-accelerated-2d-canvas'
+        ]
+    },
+    webVersionCache: {
+        type: 'remote',
+        remotePath: 'https://raw.githubusercontent.com/wppconnect-team/wa-version/main/html/2.2412.54.html'
+    }
+});
+
+// ==================== UTILITY FUNCTIONS ====================
+
+/**
+ * Validate and correct phone number format
+ * @param {string} number - Phone number to validate
+ * @returns {object} {isValid: boolean, correctedNumber: string, countryCode: string}
+ */
+function validateAndCorrectNumber(number) {
+    // Remove all non-digit characters
+    let cleaned = number.replace(/\D/g, '');
+    
+    // Common country codes for validation
+    const countryCodes = {
+        '1': 'US/Canada',
+        '44': 'UK',
+        '91': 'India',
+        '86': 'China',
+        '33': 'France',
+        '49': 'Germany',
+        '81': 'Japan',
+        '55': 'Brazil',
+        '7': 'Russia',
+        '61': 'Australia'
+    };
+    
+    // Check if number already has country code
+    let countryCode = '';
+    let correctedNumber = '';
+    let isValid = false;
+    
+    // Check for known country codes
+    for (const [code, country] of Object.entries(countryCodes)) {
+        if (cleaned.startsWith(code)) {
+            countryCode = code;
+            correctedNumber = cleaned;
+            isValid = true;
+            break;
+        }
+    }
+    
+    // If no country code found, try to detect
+    if (!isValid) {
+        // For demonstration, assuming Indian numbers if 10 digits
+        if (cleaned.length === 10) {
+            countryCode = '91';
+            correctedNumber = '91' + cleaned;
+            isValid = true;
+        } else if (cleaned.length >= 10 && cleaned.length <= 15) {
+            // Generic formatting
+            correctedNumber = cleaned;
+            isValid = true;
+        }
+    }
+    
+    // Format for WhatsApp (add @c.us for non-group chats)
+    if (isValid && !correctedNumber.includes('@')) {
+        correctedNumber = correctedNumber + '@c.us';
+    }
+    
+    return {
+        isValid,
+        correctedNumber,
+        countryCode,
+        original: number
+    };
+}
+
+/**
+ * Send message to a single number
+ * @param {string} number - WhatsApp number
+ * @param {string} message - Message content
+ * @param {object} options - Additional options
+ */
+async function sendMessage(number, message, options = {}) {
+    try {
+        const validation = validateAndCorrectNumber(number);
+        
+        if (!validation.isValid) {
+            throw new Error(`Invalid number format: ${number}`);
+        }
+        
+        const chatId = validation.correctedNumber;
+        
+        // Send the message
+        const response = await client.sendMessage(chatId, message, options);
+        
+        return {
+            success: true,
+            messageId: response.id.id,
+            timestamp: response.timestamp,
+            to: chatId,
+            validation: validation
+        };
+    } catch (error) {
+        console.error('Error sending message:', error);
+        return {
+            success: false,
+            error: error.message,
+            number: number
+        };
+    }
+}
+
+/**
+ * Send media message
+ * @param {string} number - WhatsApp number
+ * @param {string} filePath - Path to media file
+ * @param {string} caption - Optional caption
+ */
+async function sendMediaMessage(number, filePath, caption = '') {
+    try {
+        const validation = validateAndCorrectNumber(number);
+        
+        if (!validation.isValid) {
+            throw new Error(`Invalid number format: ${number}`);
+        }
+        
+        const media = await MessageMedia.fromFilePath(filePath);
+        const chatId = validation.correctedNumber;
+        const response = await client.sendMessage(chatId, media, { caption });
+        
+        return {
+            success: true,
+            messageId: response.id.id,
+            mediaType: media.mimetype,
+            to: chatId
+        };
+    } catch (error) {
+        return {
+            success: false,
+            error: error.message
+        };
+    }
+}
+
+/**
+ * Run a messaging campaign to multiple numbers
+ * @param {Array} numbers - Array of phone numbers
+ * @param {string} message - Message to send
+ * @param {object} options - Campaign options
+ */
+async function runCampaign(numbers, message, options = {}) {
+    const results = {
+        total: numbers.length,
+        successful: 0,
+        failed: 0,
+        details: []
+    };
+    
+    const {
+        delayBetweenMessages = 2000, // 2 seconds delay
+        batchSize = 10,
+        maxRetries = 3
+    } = options;
+    
+    // Process in batches to avoid rate limiting
+    for (let i = 0; i < numbers.length; i += batchSize) {
+        const batch = numbers.slice(i, i + batchSize);
+        
+        // Process each number in the batch
+        for (const number of batch) {
+            let retries = 0;
+            let sent = false;
+            
+            while (retries < maxRetries && !sent) {
+                try {
+                    const result = await sendMessage(number, message);
+                    
+                    results.details.push({
+                        number,
+                        success: result.success,
+                        timestamp: new Date().toISOString(),
+                        retries: retries,
+                        error: result.error || null
+                    });
+                    
+                    if (result.success) {
+                        results.successful++;
+                    } else {
+                        results.failed++;
+                    }
+                    
+                    sent = true;
+                } catch (error) {
+                    retries++;
+                    if (retries === maxRetries) {
+                        results.details.push({
+                            number,
+                            success: false,
+                            timestamp: new Date().toISOString(),
+                            retries: retries,
+                            error: `Failed after ${maxRetries} retries: ${error.message}`
+                        });
+                        results.failed++;
+                    }
+                }
+            }
+            
+            // Delay between messages in the same batch
+            if (delayBetweenMessages > 0) {
+                await new Promise(resolve => setTimeout(resolve, delayBetweenMessages));
+            }
+        }
+        
+        // Optional delay between batches
+        if (options.delayBetweenBatches && i + batchSize < numbers.length) {
+            await new Promise(resolve => setTimeout(resolve, options.delayBetweenBatches));
+        }
+    }
+    
+    return results;
+}
+
+// ==================== API ENDPOINTS ====================
+
+// API to send single message
+app.post('/api/send-message', async (req, res) => {
+    try {
+        const { number, message } = req.body;
+        
+        if (!number || !message) {
+            return res.status(400).json({ error: 'Number and message are required' });
+        }
+        
+        const result = await sendMessage(number, message);
+        res.json(result);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// API to send media
+app.post('/api/send-media', async (req, res) => {
+    try {
+        const { number, filePath, caption } = req.body;
+        
+        if (!number || !filePath) {
+            return res.status(400).json({ error: 'Number and filePath are required' });
+        }
+        
+        const result = await sendMediaMessage(number, filePath, caption);
+        res.json(result);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// API to run campaign
+app.post('/api/run-campaign', async (req, res) => {
+    try {
+        const { numbers, message, options } = req.body;
+        
+        if (!numbers || !Array.isArray(numbers) || !message) {
+            return res.status(400).json({ 
+                error: 'Numbers array and message are required' 
+            });
+        }
+        
+        // Validate all numbers first
+        const invalidNumbers = [];
+        const validNumbers = [];
+        
+        numbers.forEach(num => {
+            const validation = validateAndCorrectNumber(num);
+            if (validation.isValid) {
+                validNumbers.push(validation.correctedNumber);
+            } else {
+                invalidNumbers.push(num);
+            }
+        });
+        
+        if (invalidNumbers.length > 0 && !options?.allowInvalid) {
+            return res.status(400).json({
+                error: 'Some numbers are invalid',
+                invalidNumbers,
+                validCount: validNumbers.length
+            });
+        }
+        
+        // Run campaign with valid numbers
+        const campaignResults = await runCampaign(validNumbers, message, options || {});
+        
+        res.json({
+            campaignResults,
+            validationSummary: {
+                totalSubmitted: numbers.length,
+                valid: validNumbers.length,
+                invalid: invalidNumbers.length,
+                invalidNumbers: invalidNumbers
+            }
+        });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// API to validate numbers
+app.post('/api/validate-numbers', (req, res) => {
+    try {
+        const { numbers } = req.body;
+        
+        if (!numbers || !Array.isArray(numbers)) {
+            return res.status(400).json({ error: 'Numbers array is required' });
+        }
+        
+        const validationResults = numbers.map(num => validateAndCorrectNumber(num));
+        
+        const summary = {
+            total: validationResults.length,
+            valid: validationResults.filter(r => r.isValid).length,
+            invalid: validationResults.filter(r => !r.isValid).length
+        };
+        
+        res.json({
+            summary,
+            details: validationResults
+        });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// API to get chat information
+app.get('/api/chats', async (req, res) => {
+    try {
+        const chats = await client.getChats();
+        const simplifiedChats = chats.map(chat => ({
+            id: chat.id._serialized,
+            name: chat.name,
+            isGroup: chat.isGroup,
+            participants: chat.isGroup ? chat.participants.length : 1,
+            unreadCount: chat.unreadCount,
+            timestamp: chat.timestamp
+        }));
+        
+        res.json({
+            total: chats.length,
+            chats: simplifiedChats
+        });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// ==================== EVENT HANDLERS ====================
+
+client.on('qr', (qr) => {
+    console.log('QR received');
+    qrcode.generate(qr, { small: true });
+    io.emit('qr', qr);
+});
+
+client.on('authenticated', () => {
+    console.log('Authentication successful!');
+    io.emit('status', 'Authenticated!');
+});
+
+client.on('ready', () => {
+    console.log('Client is ready!');
+    io.emit('status', 'Connected and ready!');
+    io.emit('client-ready', true);
+});
+
+client.on('message', msg => {
+    console.log('New message:', msg.body);
+    io.emit('message', {
+        from: msg.from,
+        body: msg.body,
+        timestamp: msg.timestamp,
+        hasMedia: msg.hasMedia,
+        id: msg.id.id
+    });
+    
+    // Auto-reply example (customize as needed)
+    if (msg.body.toLowerCase().includes('hello') || msg.body.toLowerCase().includes('hi')) {
+        setTimeout(async () => {
+            try {
+                await msg.reply('Hello! This is an automated response. How can I help you?');
+            } catch (error) {
+                console.error('Auto-reply failed:', error);
+            }
+        }, 1000);
+    }
+});
+
+client.on('disconnected', (reason) => {
+    console.log('Client disconnected:', reason);
+    io.emit('status', 'Disconnected: ' + reason);
+    io.emit('client-ready', false);
+});
+
+client.on('message_create', (msg) => {
+    // Triggered when a message is created by the client
+    if (msg.fromMe) {
+        console.log('Message sent:', msg.body);
+        io.emit('message_sent', {
+            to: msg.to,
+            body: msg.body,
+            timestamp: msg.timestamp,
+            id: msg.id.id
+        });
+    }
+});
+
+// ==================== SERVER INITIALIZATION ====================
+
+client.initialize();
+
+server.listen(3000, () => {
+    console.log('Server running at http://localhost:3000');
+    console.log('API endpoints available:');
+    console.log('  POST /api/send-message');
+    console.log('  POST /api/send-media');
+    console.log('  POST /api/run-campaign');
+    console.log('  POST /api/validate-numbers');
+    console.log('  GET  /api/chats');
+});
+```
+
+## Enhanced Frontend Interface
+
+Here's an enhanced `public/index.html` with a control panel:
+
+```html
+<!DOCTYPE html>
+<html>
+<head>
+    <title>WhatsApp Web Dashboard</title>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <style>
+        * { box-sizing: border-box; }
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            margin: 0; 
+            padding: 20px; 
+            background: #f5f5f5; 
+        }
+        .container { 
+            max-width: 1200px; 
+            margin: 0 auto; 
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        .panel { 
+            background: white; 
+            border-radius: 10px; 
+            padding: 20px; 
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1); 
+        }
+        .status-panel { grid-column: 1 / -1; }
+        h2 { color: #333; margin-top: 0; }
+        .status { 
+            padding: 15px; 
+            border-radius: 5px; 
+            margin: 10px 0; 
+            font-weight: bold; 
+        }
+        .connected { background: #d4edda; color: #155724; }
+        .disconnected { background: #f8d7da; color: #721c24; }
+        .authenticating { background: #fff3cd; color: #856404; }
+        .btn { 
+            background: #25D366; 
+            color: white; 
+            border: none; 
+            padding: 10px 20px; 
+            border-radius: 5px; 
+            cursor: pointer; 
+            margin: 5px; 
+            font-size: 14px; 
+        }
+        .btn:hover { background: #1da851; }
+        .btn-danger { background: #dc3545; }
+        .btn-danger:hover { background: #c82333; }
+        textarea, input { 
+            width: 100%; 
+            padding: 10px; 
+            margin: 10px 0; 
+            border: 1px solid #ddd; 
+            border-radius: 5px; 
+        }
+        .campaign-input { 
+            height: 150px; 
+            font-family: monospace; 
+        }
+        .result { 
+            margin: 10px 0; 
+            padding: 10px; 
+            background: #f8f9fa; 
+            border-radius: 5px; 
+            font-size: 14px; 
+        }
+        .success { color: #28a745; }
+        .error { color: #dc3545; }
+        .message-log { 
+            max-height: 400px; 
+            overflow-y: auto; 
+            border: 1px solid #ddd; 
+            padding: 10px; 
+            margin-top: 10px; 
+        }
+        .message { 
+            padding: 8px; 
+            margin: 5px 0; 
+            border-radius: 5px; 
+        }
+        .incoming { background: #e3f2fd; }
+        .outgoing { background: #e8f5e9; }
+        .tab-container { margin-top: 20px; }
+        .tabs { display: flex; border-bottom: 2px solid #ddd; }
+        .tab { 
+            padding: 10px 20px; 
+            cursor: pointer; 
+            background: #f8f9fa; 
+            margin-right: 2px; 
+        }
+        .tab.active { 
+            background: #25D366; 
+            color: white; 
+            font-weight: bold; 
+        }
+        .tab-content { 
+            padding: 20px 0; 
+            display: none; 
+        }
+        .tab-content.active { display: block; }
+        #qrcode { margin: 20px auto; text-align: center; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Status Panel -->
+        <div class="panel status-panel">
+            <h2>WhatsApp Web Dashboard</h2>
+            <div id="status" class="status">Connecting to server...</div>
+            <div id="qrcode"></div>
+            <div>
+                <button class="btn" onclick="sendTestMessage()">Send Test Message</button>
+                <button class="btn" onclick="getChats()">Load Chats</button>
+                <button class="btn btn-danger" onclick="logout()">Logout</button>
+            </div>
+        </div>
+
+        <!-- Tab Container -->
+        <div class="tab-container" style="grid-column: 1 / -1;">
+            <div class="tabs">
+                <div class="tab active" onclick="switchTab('single')">Single Message</div>
+                <div class="tab" onclick="switchTab('campaign')">Campaign</div>
+                <div class="tab" onclick="switchTab('validate')">Validate Numbers</div>
+                <div class="tab" onclick="switchTab('messages')">Message Log</div>
+            </div>
+
+            <!-- Single Message Tab -->
+            <div id="tab-single" class="tab-content active">
+                <h3>Send Single Message</h3>
+                <input type="text" id="single-number" placeholder="Phone number (e.g., 919876543210)" />
+                <textarea id="single-message" placeholder="Your message here..." rows="4"></textarea>
+                <button class="btn" onclick="sendSingleMessage()">Send Message</button>
+                <div id="single-result" class="result"></div>
+            </div>
+
+            <!-- Campaign Tab -->
+            <div id="tab-campaign" class="tab-content">
+                <h3>Run Campaign</h3>
+                <textarea id="campaign-numbers" class="campaign-input" 
+                    placeholder="Enter phone numbers (one per line):
+919876543210
+918765432109
+917654321098"></textarea>
+                <textarea id="campaign-message" placeholder="Campaign message..." rows="4"></textarea>
+                <div>
+                    <label>Delay between messages (ms):</label>
+                    <input type="number" id="campaign-delay" value="2000" min="1000" />
+                </div>
+                <button class="btn" onclick="runCampaign()">Start Campaign</button>
+                <div id="campaign-result" class="result"></div>
+                <div id="campaign-progress"></div>
+            </div>
+
+            <!-- Validate Numbers Tab -->
+            <div id="tab-validate" class="tab-content">
+                <h3>Validate Phone Numbers</h3>
+                <textarea id="validate-numbers" class="campaign-input" 
+                    placeholder="Enter phone numbers to validate (one per line)"></textarea>
+                <button class="btn" onclick="validateNumbers()">Validate</button>
+                <div id="validate-result" class="result"></div>
+            </div>
+
+            <!-- Message Log Tab -->
+            <div id="tab-messages" class="tab-content">
+                <h3>Recent Messages</h3>
+                <div id="messageLog" class="message-log"></div>
+            </div>
+        </div>
+
+        <!-- Chats Panel -->
+        <div class="panel">
+            <h3>Recent Chats</h3>
+            <div id="chats-list"></div>
+        </div>
+    </div>
+
+    <script>
+        const socket = io();
+        let isClientReady = false;
+
+        // Socket event handlers
+        socket.on('qr', (qrData) => {
+            document.getElementById('status').textContent = 'Scan QR Code with WhatsApp';
+            document.getElementById('status').className = 'status authenticating';
+            document.getElementById('qrcode').innerHTML = '';
+            QRCode.toCanvas(document.getElementById('qrcode'), qrData, { width: 200 });
+        });
+
+        socket.on('status', (newStatus) => {
+            const statusEl = document.getElementById('status');
+            statusEl.textContent = newStatus;
+            
+            if (newStatus.includes('ready')) {
+                statusEl.className = 'status connected';
+                document.getElementById('qrcode').innerHTML = '';
+                isClientReady = true;
+            } else if (newStatus.includes('Authenticated')) {
+                statusEl.className = 'status authenticating';
+            } else if (newStatus.includes('Disconnected')) {
+                statusEl.className = 'status disconnected';
+                isClientReady = false;
+            }
+        });
+
+        socket.on('client-ready', (ready) => {
+            isClientReady = ready;
+        });
+
+        socket.on('message', (msg) => {
+            addMessageToLog(msg, 'incoming');
+        });
+
+        socket.on('message_sent', (msg) => {
+            addMessageToLog({
+                from: 'You → ' + msg.to,
+                body: msg.body,
+                timestamp: msg.timestamp
+            }, 'outgoing');
+        });
+
+        // Tab switching
+        function switchTab(tabName) {
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Show selected tab
+            document.getElementById(`tab-${tabName}`).classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        // Add message to log
+        function addMessageToLog(msg, type) {
+            const log = document.getElementById('messageLog');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${type}`;
+            
+            const time = new Date(msg.timestamp * 1000).toLocaleTimeString();
+            messageDiv.innerHTML = `
+                <strong>${msg.from}</strong> <small>${time}</small><br>
+                ${msg.body}
+            `;
+            
+            log.prepend(messageDiv);
+        }
+
+        // API Functions
+        async function sendSingleMessage() {
+            if (!isClientReady) {
+                showResult('single-result', 'Client not ready. Please authenticate first.', 'error');
+                return;
+            }
+
+            const number = document.getElementById('single-number').value;
+            const message = document.getElementById('single-message').value;
+
+            if (!number || !message) {
+                showResult('single-result', 'Please enter both number and message', 'error');
+                return;
+            }
+
+            try {
+                const response = await axios.post('/api/send-message', { number, message });
+                showResult('single-result', 
+                    response.data.success 
+                        ? `✓ Message sent to ${response.data.to}`
+                        : `✗ Failed: ${response.data.error}`, 
+                    response.data.success ? 'success' : 'error'
+                );
+            } catch (error) {
+                showResult('single-result', `Error: ${error.message}`, 'error');
+            }
+        }
+
+        async function runCampaign() {
+            if (!isClientReady) {
+                showResult('campaign-result', 'Client not ready. Please authenticate first.', 'error');
+                return;
+            }
+
+            const numbersText = document.getElementById('campaign-numbers').value;
+            const message = document.getElementById('campaign-message').value;
+            const delay = parseInt(document.getElementById('campaign-delay').value);
+
+            if (!numbersText || !message) {
+                showResult('campaign-result', 'Please enter numbers and message', 'error');
+                return;
+            }
+
+            const numbers = numbersText.split('\n').filter(n => n.trim());
+            
+            try {
+                const response = await axios.post('/api/run-campaign', {
+                    numbers,
+                    message,
+                    options: { delayBetweenMessages: delay }
+                });
+
+                const result = response.data.campaignResults;
+                showResult('campaign-result', 
+                    `Campaign completed: ${result.successful} successful, ${result.failed} failed`,
+                    result.failed === 0 ? 'success' : 'error'
+                );
+
+                // Show detailed results
+                const progressDiv = document.getElementById('campaign-progress');
+                progressDiv.innerHTML = `
+                    <h4>Detailed Results:</h4>
+                    <ul>
+                        ${result.details.map(d => 
+                            `<li>${d.number}: ${d.success ? '✓' : '✗'} ${d.error || ''}</li>`
+                        ).join('')}
+                    </ul>
+                `;
+            } catch (error) {
+                showResult('campaign-result', `Error: ${error.message}`, 'error');
+            }
+        }
+
+        async function validateNumbers() {
+            const numbersText = document.getElementById('validate-numbers').value;
+            if (!numbersText.trim()) {
+                showResult('validate-result', 'Please enter numbers to validate', 'error');
+                return;
+            }
+
+            const numbers = numbersText.split('\n').filter(n => n.trim());
+            
+            try {
+                const response = await axios.post('/api/validate-numbers', { numbers });
+                const data = response.data;
+                
+                let html = `<strong>Validation Summary:</strong><br>`;
+                html += `Total: ${data.summary.total} | Valid: ${data.summary.valid} | Invalid: ${data.summary.invalid}<br><br>`;
+                
+                html += `<strong>Details:</strong><br>`;
+                data.details.forEach(d => {
+                    html += `${d.original}: ${d.isValid ? '✓' : '✗'} `;
+                    if (d.isValid) {
+                        html += `→ ${d.correctedNumber} (${d.countryCode})`;
+                    } else {
+                        html += `Invalid format`;
+                    }
+                    html += `<br>`;
+                });
+                
+                document.getElementById('validate-result').innerHTML = html;
+            } catch (error) {
+                showResult('validate-result', `Error: ${error.message}`, 'error');
+            }
+        }
+
+        async function getChats() {
+            try {
+                const response = await axios.get('/api/chats');
+                const chats = response.data.chats.slice(0, 10); // Show first 10 chats
+                
+                const chatsList = document.getElementById('chats-list');
+                chatsList.innerHTML = chats.map(chat => `
+                    <div style="padding: 10px; border-bottom: 1px solid #eee;">
+                        <strong>${chat.name || 'Unknown'}</strong>
+                        <small>${chat.isGroup ? '👥 Group' : '👤 Individual'}</small>
+                        <div style="font-size: 12px; color: #666;">
+                            ${chat.participants} participants
+                        </div>
+                    </div>
+                `).join('');
+            } catch (error) {
+                console.error('Error loading chats:', error);
+            }
+        }
+
+        function sendTestMessage() {
+            document.getElementById('single-number').value = '919876543210'; // Test number
+            document.getElementById('single-message').value = 'Hello from WhatsApp Web Dashboard!';
+            sendSingleMessage();
+        }
+
+        function logout() {
+            if (confirm('Are you sure you want to logout? This will disconnect your WhatsApp session.')) {
+                // In a real implementation, you would call an API to logout
+                alert('Logout functionality would be implemented here. For now, restart the server to logout.');
+            }
+        }
+
+        function showResult(elementId, message, type) {
+            const element = document.getElementById(elementId);
+            element.textContent = message;
+            element.className = `result ${type}`;
+            setTimeout(() => element.textContent = '', 5000);
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('Dashboard loaded');
+        });
+    </script>
+</body>
+</html>
+```
+
+## Installation & Setup Instructions
+
+1. **Update package.json dependencies:**
+```json
+{
+  "dependencies": {
+    "whatsapp-web.js": "^1.23.0",
+    "qrcode-terminal": "^0.12.0",
+    "express": "^4.18.2",
+    "socket.io": "^4.7.2",
+    "axios": "^1.6.2",
+    "body-parser": "^1.20.2"
+  }
+}
+```
+
+2. **Install dependencies:**
+```bash
+npm install
+```
+
+3. **Folder structure:**
+```
+whatsapp-web-client/
+├── server.js
+├── package.json
+├── public/
+│   └── index.html
+└── .wwebjs_auth/ (auto-generated)
+```
+
+4. **Run the application:**
+```bash
+node server.js
+```
+
+## Key Features Explained
+
+1. **Number Validation & Correction**: Automatically detects country codes and formats numbers correctly
+2. **Campaign System**: Send messages to multiple numbers with configurable delays
+3. **Media Support**: Send images and documents with captions
+4. **Real-time Dashboard**: Monitor messages, send status, and campaign progress
+5. **API Endpoints**: RESTful API for integration with other systems
+6. **Error Handling**: Comprehensive error handling with retry logic
+
+## Important Security Notes
+
+- **Never expose this server to the public internet** without proper authentication
+- **Use environment variables** for sensitive configuration
+- **Implement rate limiting** to avoid detection
+- **Consider using a proxy** if sending large volumes of messages
+
+Remember that this solution is for **educational purposes only**. For production business use, you must use the **official WhatsApp Business API** through a verified Business Solution Provider.
+

@@ -19,6 +19,7 @@ import DepartmentContentPanel from '../components/layout/DepartmentContentPanel/
 import AuthenticatedPageShell from '../components/layout/authenticated/AuthenticatedPageShell';
 import SubNavBar from '../components/common/SubNavBar';
 import { DashboardSubTabRenderer } from '../components/dashboard/DashboardRenderer';
+import SuperuserControlCenter from '../components/dashboard/SuperuserControlCenter';
 import { useUnifiedDashboard } from '../hooks/useUnifiedDashboard';
 import type { DashboardData, CRMModuleProps } from '../hooks/useUnifiedDashboard';
 import { AI_ASSISTANTS_REGISTRY } from '../store/slices/aiAssistant/registry';
@@ -290,6 +291,8 @@ const UnifiedDashboardPage: FC = () => {
   }, [profileCompletionItems]);
 
   const hasProfileCompletionGaps = profileCompletionPercent < 100;
+  const superuserModuleCount = moduleEntries.length;
+  const availableTabIds = useMemo(() => new Set(availableTabs.map(tab => tab.id)), [availableTabs]);
 
   const commandItems = useMemo<SearchItem[]>(() => {
     const query = commandQuery.trim().toLowerCase();
@@ -399,6 +402,22 @@ const UnifiedDashboardPage: FC = () => {
     setGlobalSearchQuery('');
     setIsCommandPaletteOpen(false);
     setIsGlobalSearchOpen(false);
+  };
+
+  const openWorkspaceTab = (tabId: string, fallbackModule?: string) => {
+    if (availableTabIds.has(tabId)) {
+      handleBackFromCRM();
+      setActiveTab(tabId);
+      return;
+    }
+
+    if (fallbackModule) {
+      handleCRMModuleSelect(fallbackModule);
+      return;
+    }
+
+    handleBackFromCRM();
+    setActiveTab('overview');
   };
 
   const renderTabContent = (): ReactNode => {
@@ -763,6 +782,24 @@ const UnifiedDashboardPage: FC = () => {
               </div>
             </div>
           </section>
+
+          {isSuperUser && !selectedDepartment && (
+            <SuperuserControlCenter
+              hotLeadsCount={hotLeadsCount}
+              superuserModuleCount={superuserModuleCount}
+              monthlyRevenueLabel={formatCurrency(monthlyRevenue)}
+              profileCompletionPercent={profileCompletionPercent}
+              onRefreshData={handleRetryAll}
+              onOpenCommandPalette={() => {
+                setModulesExpanded(true);
+                setIsCommandPaletteOpen(true);
+              }}
+              onOpenAdminWorkspace={() => openWorkspaceTab('admin', 'unified')}
+              onOpenAnalyticsWorkspace={() => openWorkspaceTab('analytics', 'analytics')}
+              onOpenUsersWorkspace={() => openWorkspaceTab('users', 'unified')}
+              onLaunchUnifiedCRM={() => handleCRMModuleSelect('unified')}
+            />
+          )}
 
           {hasProfileCompletionGaps && (
             <section className="dashboard-profile-completion" aria-label="Profile setup status">

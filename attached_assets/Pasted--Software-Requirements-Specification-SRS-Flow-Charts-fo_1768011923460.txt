@@ -1,0 +1,678 @@
+# **Software Requirements Specification (SRS) & Flow Charts for White Caves Real Estate Platform**
+
+## **Part 1: UI/FRONTEND SRS & FLOW CHARTS**
+
+### **1.1 UI Software Requirements Specification**
+
+#### **1.1.1 Purpose & Scope**
+This document specifies requirements for the **User Interface** of White Caves Real Estate Platform. The UI must present all implemented backend features through intuitive, responsive interfaces for 5 user roles.
+
+#### **1.1.2 User Roles & Access Matrix**
+| Role | Dashboard Access | Key Features | Permissions |
+|------|-----------------|--------------|-------------|
+| **Company Owner** | Full CRM + All Dashboards | All analytics, financials, team management | CRUD all data, system configuration |
+| **Real Estate Agent** | Agent Dashboard + Leads CRM | Lead management, property views, client comms | CRUD assigned leads, view properties |
+| **Property Buyer** | Buyer Portal | Property search, favorites, inquiries | Read properties, create inquiries |
+| **Property Seller** | Seller Portal | Listing management, analytics | CRUD own properties |
+| **Tenant** | Tenant Portal | Rental applications, contract viewing | Apply for rentals, view contracts |
+
+#### **1.1.3 Core UI Components Specification**
+
+**A. Navigation System Requirements**
+```
+COMPONENT: Unified Navigation Framework
+REQUIREMENTS:
+1. Top Navigation Bar (Fixed)
+   • Logo + Quick Search (global property/lead search)
+   • Theme Toggle (light/dark with system detection)
+   • Notifications Bell (real-time with badges)
+   • User Profile Dropdown (role-based options)
+
+2. Sidebar Navigation (Collapsible: 280px/72px)
+   • Hierarchical: Sections → Subsections → Features
+   • Role-based visibility
+   • Active state highlighting
+   • Keyboard navigation support
+
+3. Dashboard Navigation Tabs
+   • Max 6 tabs per dashboard
+   • Consistent tab design across all dashboards
+   • Tab-specific action buttons
+```
+
+**B. Dashboard Layout Requirements**
+```
+COMPONENT: Dashboard Container
+REQUIREMENTS:
+1. Responsive Grid System
+   • Desktop: 4-column (1440px+)
+   • Tablet: 2-column (768px-1440px)  
+   • Mobile: 1-column (<768px)
+   • Consistent 16px gutter
+
+2. Data Display Standards
+   • ALL data displays must show source/timestamp
+   • Loading states (skeleton screens)
+   • Empty states with action prompts
+   • Error states with recovery options
+
+3. Action Feedback Requirements
+   • Button: Hover → Active → Loading → Success/Error
+   • Form: Validation → Submission → Result
+   • Data changes: Visual update indicators
+```
+
+#### **1.1.4 AI Assistant Dashboard Specifications**
+
+**Zoe Executive Dashboard UI Requirements:**
+```
+TAB STRUCTURE (5 tabs max):
+1. Executive Summary
+   • Real-time KPI cards (8 max)
+   • Trend charts (last 30 days)
+   • Priority alerts feed
+
+2. AI Suggestions
+   • Inbox-style list with filters
+   • Priority color coding (red=critical)
+   • One-click actions: Acknowledge/Escalate/Archive
+
+3. Calendar
+   • Day/Week/Month views
+   • Color-coded meeting types
+   • Quick scheduling form
+
+4. Team Overview
+   • Agent performance grid
+   • Availability indicators
+   • Quick contact buttons
+
+5. Reports
+   • Pre-built report templates
+   • Date range selectors
+   • Export options (PDF, Excel)
+```
+
+**Aurora CTO Dashboard UI Requirements:**
+```
+TAB STRUCTURE:
+1. System Health
+   • Service status cards (color-coded)
+   • Real-time metrics (CPU, Memory, Response Time)
+   • Uptime indicators
+
+2. API Monitor
+   • Endpoint performance table
+   • Success rate graphs
+   • Error rate alerts
+
+3. Documentation
+   • Searchable feature catalog
+   • Component library browser
+   • Integration guides
+
+4. Deployments
+   • Timeline of recent deployments
+   • Success/failure indicators
+   • Rollback controls
+```
+
+#### **1.1.5 Data Flow UI Requirements**
+```
+REQUIREMENT: All UI components must:
+1. Show data source and freshness
+2. Provide refresh controls
+3. Handle offline states gracefully
+4. Sync automatically when reconnected
+5. Display data relationships visually
+```
+
+### **1.2 UI Flow Charts**
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                    UI INTERACTION FLOWCHART                  │
+└─────────────────────────────────────────────────────────────┘
+
+USER ACTION FLOW:
+┌─────────┐     ┌─────────────┐     ┌──────────────┐     ┌─────────────┐
+│  User   │────▶│   UI Event  │────▶│   Redux      │────▶│   API Call  │
+│ Action  │     │  (Click/    │     │   Dispatch   │     │   Trigger   │
+└─────────┘     │   Form/etc) │     └──────────────┘     └─────────────┘
+                       │                                          │
+                       │                                          ▼
+                ┌──────────────┐                          ┌─────────────┐
+                │   Visual     │                          │   Backend   │
+                │   Feedback   │◀─────────────────────────│   Response  │
+                │  (Loading)   │                          └─────────────┘
+                └──────────────┘                                  │
+                       │                                          │
+                       ▼                                          ▼
+                ┌──────────────┐                          ┌─────────────┐
+                │   UI Update  │◀─────────────────────────│   State     │
+                │  (Success/   │                          │   Update    │
+                │   Error)     │                          └─────────────┘
+                └──────────────┘
+
+```
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                DASHBOARD DATA LOADING FLOW                  │
+└─────────────────────────────────────────────────────────────┘
+
+Dashboard Mount/Refresh Flow:
+┌─────────────────┐     ┌──────────────────┐     ┌────────────────────┐
+│   Component     │────▶│   useEffect()    │────▶│   Fetch Dashboard  │
+│    Mounts       │     │   Hook Fires     │     │      Data          │
+└─────────────────┘     └──────────────────┘     └────────────────────┘
+         │                                                 │
+         │                                                 ▼
+         │                                        ┌────────────────────┐
+         │                                        │   API: GET         │
+         │                                        │   /api/dashboard/  │
+         │                                        │   :dashboardId     │
+         │                                        └────────────────────┘
+         │                                                 │
+         ▼                                                 ▼
+┌─────────────────┐     ┌──────────────────┐     ┌────────────────────┐
+│   Show Loading  │◀────│   Set Loading    │◀────│   Wait for         │
+│    State        │     │     State        │     │   Response         │
+└─────────────────┘     └──────────────────┘     └────────────────────┘
+         │                                                 │
+         │                                                 ▼
+         │                                        ┌────────────────────┐
+         │                                        │   Process &        │
+         │                                        │   Transform Data   │
+         │                                        └────────────────────┘
+         │                                                 │
+         ▼                                                 ▼
+┌─────────────────┐     ┌──────────────────┐     ┌────────────────────┐
+│   Render Data   │◀────│   Update         │◀────│   Update Redux/    │
+│   Visualizations│     │   Component      │     │   Component State  │
+│                 │     │   State          │     │                    │
+└─────────────────┘     └──────────────────┘     └────────────────────┘
+```
+
+## **Part 2: BACKEND SRS & FLOW CHARTS**
+
+### **2.1 Backend Software Requirements Specification**
+
+#### **2.1.1 Architecture Overview**
+```
+TECH STACK REQUIREMENTS:
+• Runtime: Node.js 18+
+• Framework: Express.js 4.x
+• Database: MongoDB with Mongoose ODM
+• Authentication: JWT + Firebase Admin SDK
+• File Storage: AWS S3/Google Drive Integration
+• Real-time: Socket.io for notifications
+```
+
+#### **2.1.2 Service Layer Specifications**
+
+**A. Core Business Services**
+```
+SERVICE: AgentAssignmentEngine (/server/services/AgentAssignmentEngine.js)
+REQUIREMENTS:
+• Input: Property data, Client data, Agents array
+• Algorithm: Weighted scoring (5 factors)
+• Output: Ranked agents with scores
+• Methods:
+  1. assignAgent(property, client, agents) → ranked agents
+  2. getBestAgent() → single agent recommendation
+  3. updateWeights(weights) → validation + update
+• Database Models Used: Agent, Lead, Property
+
+SERVICE: ChatbotService (/server/services/ChatbotService.js)
+REQUIREMENTS:
+• Bilingual: English/Arabic support
+• Intent Recognition: 10+ predefined intents
+• Entity Extraction: Property type, location, budget, bedrooms
+• Context Management: Conversation memory
+• Lead Scoring: Automatic based on conversation
+• Integration: WhatsApp Business API
+```
+
+**B. Data Services**
+```
+SERVICE: DashboardService (/server/services/DashboardService.js)
+REQUIREMENTS:
+• Aggregate data from ALL models
+• Real-time calculations
+• Role-based data filtering
+• Methods:
+  1. getExecutiveSummary(ownerId) → KPIs
+  2. getAgentPerformance(limit) → top agents
+  3. getMarketAnalytics() → trends
+  4. getRecentActivity(limit) → timeline
+
+SERVICE: WhatsAppService (/server/services/WhatsAppService.js)  
+REQUIREMENTS:
+• Webhook handling (Meta verification)
+• Message queuing and delivery
+• Template message management
+• Conversation state management
+• Integration with: Lead model, AgentAssignmentEngine
+```
+
+#### **2.1.3 API Endpoint Specifications**
+
+**REST API Structure:**
+```
+BASE: /api/v1/
+
+AUTHENTICATION ENDPOINTS:
+• POST   /auth/register     → User registration
+• POST   /auth/login        → JWT issuance
+• POST   /auth/refresh      → Token refresh
+• GET    /auth/profile      → User profile
+
+PROTECTED DASHBOARD ENDPOINTS:
+• GET    /dashboard/executive    → Zoe dashboard data
+• GET    /dashboard/cto          → Aurora dashboard data  
+• GET    /dashboard/whatsapp     → Linda dashboard data
+• GET    /dashboard/leads        → Clara dashboard data
+• GET    /dashboard/hr           → Nancy dashboard data
+
+BUSINESS ENDPOINTS:
+• CRUD   /api/properties    → Property management
+• CRUD   /api/leads         → Lead management
+• CRUD   /api/agents        → Agent management
+• CRUD   /api/owners        → Property owner management
+• POST   /api/assign-agent  → Trigger assignment engine
+
+INTEGRATION ENDPOINTS:
+• POST   /webhook/whatsapp  → WhatsApp incoming messages
+• POST   /webhook/stripe    → Payment notifications
+• GET    /api/system/health → System monitoring
+```
+
+#### **2.1.4 Data Model Specifications**
+
+**Lead Model Schema:**
+```javascript
+{
+  _id: ObjectId,
+  name: { type: String, required: true },
+  email: { type: String, required: true, unique: true },
+  phone: { type: String, required: true },
+  source: { 
+    type: String, 
+    enum: ['whatsapp', 'website', 'portal', 'referral', 'walkin']
+  },
+  status: {
+    type: String,
+    enum: ['new', 'contacted', 'qualified', 'proposal', 'negotiation', 'won', 'lost'],
+    default: 'new'
+  },
+  score: { type: Number, min: 0, max: 100, default: 0 },
+  budget: {
+    min: { type: Number },
+    max: { type: Number },
+    currency: { type: String, default: 'AED' }
+  },
+  assignedTo: { type: ObjectId, ref: 'Agent' },
+  propertyInterest: [{ type: ObjectId, ref: 'Property' }],
+  activities: [{
+    type: { 
+      type: String, 
+      enum: ['call', 'email', 'whatsapp', 'viewing', 'meeting'] 
+    },
+    description: String,
+    createdAt: { type: Date, default: Date.now }
+  }],
+  metadata: {
+    lastActive: Date,
+    conversationCount: Number,
+    documents: [String] // IDs of uploaded documents
+  }
+}
+```
+
+**Property Model Schema:**
+```javascript
+{
+  _id: ObjectId,
+  title: { type: String, required: true },
+  description: { type: String, required: true },
+  type: {
+    type: String,
+    enum: ['villa', 'apartment', 'townhouse', 'penthouse', 'office', 'land'],
+    required: true
+  },
+  price: {
+    amount: { type: Number, required: true },
+    currency: { type: String, default: 'AED' },
+    type: { type: String, enum: ['sale', 'rent'], required: true }
+  },
+  location: {
+    emirate: { 
+      type: String, 
+      enum: ['Dubai', 'Abu Dhabi', 'Sharjah', 'Ajman', 'RAK', 'Fujairah', 'Umm Al Quwain'],
+      required: true 
+    },
+    community: { type: String, required: true },
+    exactLocation: String,
+    coordinates: {
+      lat: Number,
+      lng: Number
+    }
+  },
+  specifications: {
+    bedrooms: { type: Number, min: 0 },
+    bathrooms: { type: Number, min: 1 },
+    area: { type: Number }, // in sqft
+    yearBuilt: { type: Number }
+  },
+  uaeSpecific: {
+    reraNumber: { type: String },
+    dldPermit: { type: String },
+    dewaNumber: { type: String },
+    ejariStatus: { type: Boolean, default: false }
+  },
+  media: {
+    images: [{ url: String, caption: String }],
+    videos: [{ url: String, type: String }],
+    virtualTour: { url: String, type: String }
+  },
+  status: {
+    type: String,
+    enum: ['draft', 'active', 'under_offer', 'sold', 'rented', 'inactive'],
+    default: 'draft'
+  },
+  owner: { type: ObjectId, ref: 'Owner', required: true },
+  assignedAgent: { type: ObjectId, ref: 'Agent' }
+}
+```
+
+#### **2.1.5 Integration Specifications**
+```
+WHATSAPP BUSINESS API INTEGRATION:
+• Webhook URL: https://api.whitecaves.com/webhook/whatsapp
+• Supported message types: Text, Image, Document, Template
+• Required headers: X-Hub-Signature verification
+• Rate limiting: 80 messages/second
+• Error handling: Retry queue for failed messages
+
+STRIPE PAYMENT INTEGRATION:
+• Webhook for: payment_intent.succeeded, payment_intent.failed
+• Save transaction records in Transaction model
+• Update lead/property status on successful payment
+• Handle refunds and disputes
+
+GOOGLE WORKSPACE INTEGRATION:
+• Calendar: Create events for property viewings
+• Drive: Store documents (contracts, images)
+• Authentication: Single Sign-On option
+```
+
+### **2.2 Backend Flow Charts**
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│               BACKEND REQUEST PROCESSING FLOW               │
+└─────────────────────────────────────────────────────────────┘
+
+API Request Flow:
+┌──────────────┐     ┌──────────────┐     ┌──────────────────┐
+│   HTTP       │────▶│   Express    │────▶│   Auth           │
+│   Request    │     │   Router     │     │   Middleware     │
+└──────────────┘     └──────────────┘     └──────────────────┘
+                                                    │
+                                                    ▼
+                                           ┌──────────────────┐
+                                           │   Validation     │
+                                           │   Middleware     │
+                                           │   (Joi/Zod)      │
+                                           └──────────────────┘
+                                                    │
+                                                    ▼
+                                           ┌──────────────────┐
+                                           │   Controller     │
+                                           │   (Route Handler)│
+                                           └──────────────────┘
+                                                    │
+                                                    ▼
+┌──────────────┐     ┌──────────────┐     ┌──────────────────┐
+│   HTTP       │◀────│   Response   │◀────│   Service Layer  │
+│   Response   │     │   Formatter  │     │   (Business      │
+│              │     │              │     │    Logic)        │
+└──────────────┘     └──────────────┘     └──────────────────┘
+                                                    │
+                                                    ▼
+                                           ┌──────────────────┐
+                                           │   Data Access    │
+                                           │   Layer (Models) │
+                                           └──────────────────┘
+                                                    │
+                                                    ▼
+                                           ┌──────────────────┐
+                                           │   Database       │
+                                           │   (MongoDB)      │
+                                           └──────────────────┘
+```
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│             AGENT ASSIGNMENT ENGINE FLOW                    │
+└─────────────────────────────────────────────────────────────┘
+
+Lead Assignment Process:
+┌─────────────────┐     ┌──────────────────┐     ┌────────────────────┐
+│   New Lead      │────▶│   Extract Lead   │────▶│   Fetch All Active │
+│   Created or    │     │   Details        │     │   Agents with      │
+│   Qualified     │     │   (Budget,       │     │   Availability     │
+│                 │     │    Location,     │     │                    │
+│                 │     │    Preferences)  │     │                    │
+└─────────────────┘     └──────────────────┘     └────────────────────┘
+                                                                 │
+                                                                 ▼
+                                                        ┌────────────────────┐
+                                                        │   Calculate        │
+                                                        │   Score for Each   │
+                                                        │   Agent (5 factors)│
+                                                        └────────────────────┘
+                                                                 │
+                                                                 ▼
+                                                        ┌────────────────────┐
+                                                        │   Sort Agents by   │
+                                                        │   Score (Highest   │
+                                                        │   First)           │
+                                                        └────────────────────┘
+                                                                 │
+                                                                 ▼
+                                                        ┌────────────────────┐
+                                                        │   Assign to Top    │
+                                                        │   Available Agent  │
+                                                        │   or Queue if      │
+                                                        │   All Busy         │
+                                                        └────────────────────┘
+                                                                 │
+                                                                 ▼
+                                                        ┌────────────────────┐
+                                                        │   Notify Agent     │
+                                                        │   & Update Lead    │
+                                                        │   Record           │
+                                                        └────────────────────┘
+                                                                 │
+                                                                 ▼
+                                                        ┌────────────────────┐
+                                                        │   Log Assignment   │
+                                                        │   for Analytics    │
+                                                        └────────────────────┘
+```
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│               WHATSAPP MESSAGE PROCESSING FLOW              │
+└─────────────────────────────────────────────────────────────┘
+
+Message Handling:
+┌─────────────────┐     ┌──────────────────┐     ┌────────────────────┐
+│   WhatsApp      │────▶│   Verify Webhook │────▶│   Parse Message    │
+│   Webhook       │     │   Signature      │     │   (Text, Media,    │
+│   Received      │     │                  │     │    Context)        │
+└─────────────────┘     └──────────────────┘     └────────────────────┘
+                                                                    │
+                                                                    ▼
+                                                           ┌────────────────────┐
+                                                           │   Identify or      │
+                                                           │   Create Contact   │
+                                                           │   in Database      │
+                                                           └────────────────────┘
+                                                                    │
+                                                                    ▼
+                                                           ┌────────────────────┐
+                                                           │   Process with     │
+                                                           │   ChatbotService   │
+                                                           │   (Intent, Entity) │
+                                                           └────────────────────┘
+                                                                    │
+                                                                    ▼
+                                                           ┌────────────────────┐
+                                                           │   Generate         │
+                                                           │   Response         │
+                                                           │   (Template or     │
+                                                           │    Dynamic)        │
+                                                           └────────────────────┘
+                                                                    │
+                                                                    ▼
+┌─────────────────┐     ┌──────────────────┐     ┌────────────────────┐
+│   Log           │◀────│   Store in       │◀────│   Send Response    │
+│   Conversation  │     │   Conversation   │     │   via WhatsApp     │
+│   & Update      │     │   History        │     │   Business API     │
+│   Lead Score    │     │                  │     │                    │
+└─────────────────┘     └──────────────────┘     └────────────────────┘
+                                                                    │
+                                                                    ▼
+                                                           ┌────────────────────┐
+                                                           │   If Qualified,    │
+                                                           │   Create Lead &    │
+                                                           │   Trigger Agent    │
+                                                           │   Assignment       │
+                                                           └────────────────────┘
+```
+
+## **Part 3: INTEGRATION FLOW CHARTS**
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│           FULL SYSTEM INTEGRATION FLOW (EXAMPLE)            │
+└─────────────────────────────────────────────────────────────┘
+
+Client Inquires About Property:
+┌─────────────────┐     ┌──────────────────┐     ┌────────────────────┐
+│   User Clicks   │────▶│   Frontend Sends │────▶│   API: POST        │
+│   "Interested"  │     │   Lead Inquiry   │     │   /api/leads       │
+│   on Property   │     │   Form Data      │     │                    │
+│   Page          │     │                  │     │                    │
+└─────────────────┘     └──────────────────┘     └────────────────────┘
+         │                                                    │
+         │                                                    ▼
+         │                                           ┌────────────────────┐
+         │                                           │   Backend Creates  │
+         │                                           │   Lead Record in   │
+         │                                           │   MongoDB          │
+         │                                           └────────────────────┘
+         │                                                    │
+         │                                                    ▼
+         │                                           ┌────────────────────┐
+         │                                           │   Trigger Agent    │
+         │                                           │   Assignment Engine│
+         │                                           └────────────────────┘
+         │                                                    │
+         │                                                    ▼
+         │                                           ┌────────────────────┐
+         │                                           │   Agent Gets       │
+         │                                           │   Assigned &       │
+         │                                           │   Notified         │
+         │                                           └────────────────────┘
+         │                                                    │
+         │                                                    ▼
+         │                                           ┌────────────────────┐
+         │                                           │   Lead Appears in  │
+         │                                           │   Multiple Views:  │
+         │                                           │   1. Agent's Dashboard│
+         │                                           │   2. Clara's Leads CRM│
+         │                                           │   3. Zoe's Executive│
+         │                                           │   4. Aurora's Monitor│
+         │                                           └────────────────────┘
+         │                                                    │
+         ▼                                                    ▼
+┌─────────────────┐                                 ┌────────────────────┐
+│   User Sees     │                                 │   Agent Contacts   │
+│   Confirmation  │                                 │   Lead & Updates   │
+│   & Gets SMS/   │                                 │   Status           │
+│   WhatsApp Msg  │                                 └────────────────────┘
+└─────────────────┘                                           │
+                                                              ▼
+                                                     ┌────────────────────┐
+                                                     │   Status Change    │
+                                                     │   Triggers UI      │
+                                                     │   Updates Across   │
+                                                     │   All Dashboards   │
+                                                     └────────────────────┘
+```
+
+## **Part 4: IMPLEMENTATION PRIORITY MATRIX**
+
+| Priority | UI Component | Backend Service | Integration Required | Status |
+|----------|--------------|-----------------|---------------------|--------|
+| **P0 - Critical** | Main Dashboard Layout | DashboardService | Redux State Management | ⚠️ Needs Work |
+| **P0 - Critical** | Navigation System | Auth Middleware | JWT Token Flow | ⚠️ Needs Work |
+| **P1 - High** | Zoe Executive Dashboard | DashboardService + Aggregation | Real-time Data Fetch | ⚠️ Needs Work |
+| **P1 - High** | Agent Assignment UI | AgentAssignmentEngine | Lead-Agent Connection | ⚠️ Needs Work |
+| **P2 - Medium** | All Other Dashboards | Respective Services | Individual API Connections | ⚠️ Needs Work |
+| **P3 - Low** | Advanced Analytics | Analytics Services | Data Visualization | ⚠️ Needs Work |
+
+---
+
+## **SUMMARY OF CRITICAL GAPS TO ADDRESS:**
+
+### **UI/FRONTEND GAPS:**
+1. **Navigation Integration** - Top nav, sidebar, and dashboard tabs not connected
+2. **Data Binding** - Components showing static data instead of live API data
+3. **Event Handling** - Buttons not connected to backend services
+4. **Role-Based Views** - Single UI instead of customized per role
+5. **Real-time Updates** - No WebSocket/Socket.io integration
+
+### **BACKEND GAPS:**
+1. **Service Connectivity** - Services exist but not called from controllers
+2. **API Completeness** - Endpoints defined but not fully implemented
+3. **Data Relationships** - Models defined but relationships not utilized
+4. **Integration Points** - External services (WhatsApp, Stripe) not fully connected
+5. **Error Handling** - Inconsistent error responses and logging
+
+### **INTEGRATION GAPS:**
+1. **Redux-API Connection** - Actions not dispatching API calls
+2. **Component-Service Mapping** - UI components not linked to backend services
+3. **Real-time Sync** - No mechanism for live updates across dashboards
+4. **Authentication Flow** - Role-based data filtering not implemented
+5. **Data Freshness** - No cache invalidation or refresh mechanisms
+
+---
+
+## **RECOMMENDED EXECUTION ORDER:**
+
+### **WEEK 1: Foundation**
+1. Fix navigation system (top nav + sidebar)
+2. Connect Redux to API services
+3. Implement role-based authentication
+
+### **WEEK 2: Core Dashboards**
+1. Make Zoe dashboard show real data
+2. Connect AgentAssignmentEngine to UI
+3. Implement real-time notifications
+
+### **WEEK 3: Feature Integration**
+1. Connect all existing services to UI
+2. Implement WebSocket for live updates
+3. Fix all form submissions and data flows
+
+### **WEEK 4: Polish & Optimization**
+1. Performance optimizations
+2. Mobile responsiveness
+3. Error handling and user feedback
+
+This SRS and flow chart documentation provides a clear roadmap for connecting your existing implementations. The key insight is that you have the pieces built - they just need to be properly connected and surfaced in the UI.

@@ -89,6 +89,21 @@ describe('AdminDashboard Integration', () => {
       expect(screen.getByText('John Admin')).toBeInTheDocument();
       expect(screen.getByText('Super User')).toBeInTheDocument();
     });
+
+    it('should render refresh data action in header', () => {
+      renderWithRedux(<AdminDashboard />);
+
+      expect(screen.getByRole('button', { name: /Refresh Data/i })).toBeInTheDocument();
+    });
+
+    it('should allow triggering refresh data action', async () => {
+      const user = userEvent.setup();
+      renderWithRedux(<AdminDashboard />);
+
+      await user.click(screen.getByRole('button', { name: /Refresh Data/i }));
+
+      expect(screen.getByText('Admin Dashboard')).toBeInTheDocument();
+    });
   });
 
   describe('Tab Navigation', () => {
@@ -323,7 +338,7 @@ describe('AdminDashboard Integration', () => {
     it('should have accessible tab buttons', () => {
       renderWithRedux(<AdminDashboard />);
 
-      const tabs = screen.getAllByRole('button', { name: /Overview|Users|Analytics|Settings/i });
+      const tabs = screen.getAllByRole('tab', { name: /Overview|Users|Analytics|Settings/i });
       expect(tabs.length).toBeGreaterThan(0);
     });
 
@@ -334,6 +349,9 @@ describe('AdminDashboard Integration', () => {
       const firstTab = screen.getByText('Overview');
       firstTab.focus();
       expect(firstTab).toHaveFocus();
+
+      await user.keyboard('{ArrowRight}');
+      expect(screen.getByText('Users')).toHaveFocus();
     });
   });
 

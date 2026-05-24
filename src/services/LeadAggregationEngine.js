@@ -253,7 +253,7 @@ export class LeadAggregationEngine {
             duplicateMap.set(key, merged);
           }
 
-          console.log(`Duplicate found: ${key}`);
+          : ${key}`);
           break;
         }
       }
@@ -412,7 +412,7 @@ export class LeadAggregationEngine {
 
     this.autoAggregationInterval = setInterval(() => {
       this.aggregateLeads().catch(err =>
-        console.error('Auto-aggregation error:', err)
+        
       );
     }, interval);
 

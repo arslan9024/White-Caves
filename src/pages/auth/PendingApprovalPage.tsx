@@ -60,7 +60,7 @@ const PendingApprovalPage: FC = () => {
       dispatch(setUser(null));
       navigate('/');
     } catch (error) {
-      log.error('Logout error:', error);
+      
     }
   };
 

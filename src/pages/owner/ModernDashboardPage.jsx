@@ -7,7 +7,6 @@ import { selectActiveAssistant } from '../../store/slices/dashboardViewSlice';
 import { setUserInfo, setActiveRole } from '../../store/slices/accessControlSlice';
 import { getCRMModule } from '../../config/crmModuleRegistry';
 import './ModernDashboardPage.css';
-
 const OWNER_EMAIL = 'arslanmalikgoraha@gmail.com';
 
 const isOwnerAuthorized = user => {

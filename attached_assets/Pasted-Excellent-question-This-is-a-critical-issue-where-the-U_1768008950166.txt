@@ -1,0 +1,79 @@
+Excellent question. This is a critical issue where the UI is likely disconnected from your backend data layer. Here's a structured prompt to diagnose and fix this problem.
+
+### **Prompt: Diagnose and Fix Dashboard Data Display Issues**
+
+**Core Instruction:** You are a senior full-stack developer and application architect. Your task is to perform a **comprehensive audit** of the White Caves Real Estate platform's dashboard system to diagnose why dashboards (MainGridView, Zoe, Aurora, Linda, etc.) are not displaying dynamic data despite extensive backend implementation. The symptoms are: 1) MainGridView shows only static/placeholder content, 2) Clicking tabs within dashboards doesn't load data, 3) UI appears disconnected from backend services. Your goal is to find the root cause and implement a systematic fix.
+
+**Context:** The platform has 14+ AI assistants with complex dashboards, a MongoDB backend with models (`Property`, `Lead`, `User`), and services (`DashboardService`, `AgentAssignmentEngine`). The frontend uses Redux for state management.
+
+---
+
+**Phase 1: Systematic Audit & Root Cause Analysis**
+
+First, investigate the entire data flow. Provide a step-by-step analysis:
+
+1.  **Audit the MainGridView Component:**
+    *   Locate and display the code for `MainGridView.jsx`.
+    *   **Key Question:** Is it mapping over a dynamic list (like `AI_ASSISTANTS_REGISTRY`), or is it hardcoded to show a single static card/screenshot?
+    *   Check its data source: Is it using a Redux selector (e.g., `useSelector`), fetching from an API, or importing static JSON?
+
+2.  **Audit a Sample Dashboard's Data Flow (Start with Zoe):**
+    *   Examine `ZoeExecutiveCRM.jsx`. Trace the data flow for one key metric, like `unreviewedCount`.
+    *   **Step 1: UI Layer:** It uses `useSelector(selectUnreviewedSuggestionsCount)`.
+    *   **Step 2: Redux Layer:** Find the `aiAssistantDashboardSlice`. Does `selectUnreviewedSuggestionsCount` read from a state that is populated with **real data** or **initial mock state**?
+    *   **Step 3: Action Layer:** Is there a Redux Thunk/Action (e.g., `fetchDashboardData`) that dispatches an API call to populate the slice? Find it.
+    *   **Step 4: API Layer:** Does that action call a backend endpoint (e.g., `GET /api/dashboard/suggestions`)?
+    *   **Step 5: Service Layer:** Does that endpoint use the `DashboardService` to query the **MongoDB database**, or does it return hardcoded data?
+
+3.  **Check for "Data Bridge" Existence:**
+    *   The core hypothesis is a missing "bridge." Are the beautiful UI components (`ZoeExecutiveCRM`, `AuroraCTODashboard`) connected to the live `DashboardService`?
+    *   Verify if the `DashboardService` methods (`getDashboardData`, `getMarketAnalytics`) have been refactored to query the database (as per the previous refactor task) or if they still return the original dummy objects.
+
+4.  **Identify All Breakpoints:**
+    Create a summary table of findings:
+    | Component | Data Source (Found) | Data Source (Expected) | Status (Live/Static) |
+    |---|---|---|---|
+    | `MainGridView` | ? | `AI_ASSISTANTS_REGISTRY` + API | ? |
+    | `ZoeExecutiveCRM` | `aiAssistantDashboardSlice` | `DashboardService` -> MongoDB | ? |
+    | `AuroraCTODashboard` | Static `SYSTEM_COMPONENTS` | Health Check API | ? |
+
+---
+
+**Phase 2: Develop the Fix Strategy**
+
+Based on your audit, create a targeted plan. The most likely scenario is that **Redux state is initialized with empty or mock data and never updated by real API calls.**
+
+1.  **Priority 1: Connect Redux Slices to Live APIs**
+    *   **Action:** For each dashboard slice (e.g., `aiAssistantDashboardSlice`), identify or create asynchronous **Thunk actions** (using `createAsyncThunk` from Redux Toolkit) that call the relevant backend endpoints.
+    *   **Example:** Create a `fetchDashboardSummary` thunk that dispatches `GET /api/dashboard/summary` and, upon success, updates the Redux state with the payload.
+
+2.  **Priority 2: Trigger Data Fetching on Dashboard Load**
+    *   **Action:** In each dashboard component (e.g., `ZoeExecutiveCRM`), add a `useEffect` hook that dispatches the new data-fetching thunk actions when the component mounts or the active tab changes.
+    ```javascript
+    // Example for Zoe component
+    useEffect(() => {
+      dispatch(fetchDashboardSummary());
+      dispatch(fetchSuggestions());
+    }, [dispatch]);
+    ```
+
+3.  **Priority 3: Make MainGridView Dynamic**
+    *   **Action:** Refactor `MainGridView` to fetch the list of assistants from an API (or the registry) and render a card for each. Each card should link to the assistant's specific dashboard route.
+
+4.  **Priority 4: Verify Backend Service is Live**
+    *   **Action:** Double-check that the `DashboardService` and other services are performing real database queries. If they were not refactored earlier, this is the **blocking issue**.
+
+---
+
+**Phase 3: Implementation Plan**
+
+Provide the specific code changes needed:
+
+1.  **Create/Update Thunks:** Generate code for a new file, `/store/thunks/dashboardThunks.js`, containing thunks like `fetchDashboardSummary`, `fetchSuggestions`, `fetchAgentPerformance`.
+2.  **Update the Redux Slice:** Show how to modify `aiAssistantDashboardSlice.js` to handle the `pending/fulfilled/rejected` states of these thunks and update its state with live data.
+3.  **Update Dashboard Components:** Modify `ZoeExecutiveCRM.jsx` and `AuroraCTODashboard.jsx` to include the `useEffect` hooks that dispatch the thunks.
+4.  **Refactor MainGridView:** Provide the corrected code for `MainGridView.jsx` that dynamically renders assistant cards.
+5.  **Final Verification Step:** Create a simple test script or instruction to verify the fix: *"Add a new test lead directly to the MongoDB `leads` collection. Refresh Zoe's dashboard. The `unreviewedCount` should increase, and the new lead should appear in the suggestions list."*
+
+**Final Deliverable:**
+Please proceed step-by-step. First, perform the audit from **Phase 1** and present your findings in the table format. Then, based on the root cause you identify, execute the fixes from **Phase 3**, providing all necessary code files and changes. Conclude with the verification step to confirm the dashboards are now live.

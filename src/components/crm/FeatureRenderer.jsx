@@ -6,7 +6,6 @@ import { getFeatureById } from '../../config/assistantFeatures';
 import { getCRMModule } from '../../config/crmModuleRegistry';
 import GenericFeatureView from './ui/GenericFeatureView';
 import './FeatureRenderer.css';
-
 const LoadingFallback = () => (
   <div className="feature-loading">
     <div className="loading-spinner" />

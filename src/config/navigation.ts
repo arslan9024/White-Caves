@@ -1,56 +1,21 @@
-// ============================================================================
-// Navigation Configuration - TypeScript
-// Converted from navigation.js with full type safety
-// ============================================================================
+export const DASHBOARD_TABS = [
+  { id: 'overview', label: 'Dashboard', icon: 'LayoutDashboard' },
+  { id: 'ai-command', label: 'AI Command', icon: 'Command' },
+  { id: 'ai-hub', label: 'AI Hub', icon: 'Layers' }
+];
 
-// ---------------------------------------------------------------------------
-// Interfaces
-// ---------------------------------------------------------------------------
+export const SIDEBAR_CONFIG = {
+  defaultWidthPercent: 40,
+  minWidthPercent: 25,
+  maxWidthPercent: 50
+};
 
-export interface NavItem {
-  readonly label: string;
-  readonly path: string;
-  readonly icon: string;
-}
-
-export interface NavItemWithDescription extends NavItem {
-  readonly description: string;
-}
-
-export interface QuickAction extends NavItem {
-  readonly primary?: boolean;
-}
-
-export interface BrowseAsConfig {
-  readonly clients: readonly NavItemWithDescription[];
-  readonly employees: readonly NavItemWithDescription[];
-}
-
-export interface RoleNavConfig {
-  readonly label: string;
-  readonly icon: string;
-  readonly dashboard: string;
-  readonly links: readonly NavItem[];
-  readonly browseAs?: BrowseAsConfig;
-}
-
-export type RoleCategory = 'visitor' | 'client' | 'staff' | 'admin';
-
-export type ClientRole = 'buyer' | 'seller' | 'landlord' | 'tenant';
-export type StaffRole = 'leasing-agent' | 'secondary-sales-agent' | 'team-leader';
-export type AdminRole = 'owner' | 'admin';
-export type UserRole = ClientRole | StaffRole | AdminRole;
-
-// ---------------------------------------------------------------------------
-// Public Navigation
-// ---------------------------------------------------------------------------
-
-export const PUBLIC_NAV: Record<string, readonly NavItem[]> = {
+export const PUBLIC_NAV = {
   main: [
     { label: 'Home', path: '/', icon: '🏠' },
     { label: 'Properties', path: '/properties', icon: '🏢' },
     { label: 'Services', path: '/services', icon: '⚙️' },
-    { label: 'Careers', path: '/careers', icon: '💼' },
+    { label: 'About', path: '/about', icon: 'ℹ️' },
     { label: 'Contact', path: '/contact', icon: '📞' }
   ],
   buy: [

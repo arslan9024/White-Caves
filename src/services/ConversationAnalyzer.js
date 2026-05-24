@@ -4,8 +4,6 @@
  * Extracts entities, calculates confidence scores, and identifies property owners
  */
 
-import { normalizePhoneNumber, extractAndNormalizePhones } from '../utils/phoneNumberNormalizer.js';
-
 class ConversationAnalyzer {
   constructor() {
     // Property-related keywords organized by category
@@ -19,192 +17,53 @@ class ConversationAnalyzer {
         studio: ['studio', 'studio apartment'],
         plot: ['plot', 'land', 'plot of land'],
         chalet: ['chalet', 'chalet compound'],
-        other: ['property', 'house', 'building', 'unit', 'residence', 'home'],
+        other: ['property', 'house', 'building', 'unit', 'residence', 'home']
       },
 
       availability: {
-        forRent: [
-          'for rent',
-          'for rental',
-          'rent',
-          'rent out',
-          'renting',
-          'available',
-          'available now',
-          'available immediately',
-          'available for rent',
-          'lease',
-          'leasing',
-          'to rent',
-          'rent this',
-          'tenant wanted',
-        ],
-        forSale: [
-          'for sale',
-          'selling',
-          'available for sale',
-          'for sell',
-          'sell this',
-          'buyer needed',
-          'sale',
-          'to sell',
-          'available to buy',
-        ],
-        bothOptions: ['for rent or sale', 'rent or sale', 'rent and sale', 'both rent and sale'],
+        forRent: ['for rent', 'for rental', 'rent out', 'renting', 'available for rent', 'lease', 'leasing', 'to rent', 'rent this', 'tenant wanted'],
+        forSale: ['for sale', 'selling', 'available for sale', 'for sell', 'sell this', 'buyer needed', 'sale', 'to sell', 'available to buy'],
+        bothOptions: ['for rent or sale', 'rent or sale', 'rent and sale', 'both rent and sale']
       },
 
       locationKeywords: [
-        'dubai marina',
-        'downtown dubai',
-        'arabian ranches',
-        'downtown',
-        'marina',
-        'jlt',
-        'jumeirah',
-        'dubai hills',
-        'creek harbour',
-        'motor city',
-        'Dubai Sports City',
-        'deira',
-        'bur dubai',
-        'sheikh zayed road',
-        'palm jumeirah',
-        'the palm',
-        'business bay',
-        'difc',
-        'dubai investment park',
-        'al barsha',
-        'tecom',
-        'damac',
-        'jbr',
-        'beach front',
-        'dubai silicon oasis',
-        'dso',
-        'meadows',
-        'springs',
-        'emirates living',
-        'greens',
-        'dubai land',
-        'ghaf',
-        'al khail',
-        'al tayer',
-        'remraam',
-        'damac hills',
-        'arjan',
-        'jebel ali',
-        'hatta',
+        'arabian ranches', 'downtown', 'marina', 'jlt', 'jumeirah',
+        'dubai hills', 'creek harbour', 'motor city', 'Dubai Sports City',
+        'deira', 'bur dubai', 'sheikh zayed road', 'palm jumeirah',
+        'the palm', 'business bay', 'difc', 'dubai investment park',
+        'al barsha', 'tecom', 'damac', 'jbr', 'beach front',
+        'dubai silicon oasis', 'dso', 'meadows', 'springs',
+        'emirates living', 'greens', 'dubai land', 'ghaf',
+        'al khail', 'al tayer', 'remraam', 'damac hills',
+        'arjan', 'jebel ali', 'hatta'
       ],
 
       ownershipIndicators: {
-        owner: [
-          'owner',
-          'landlord',
-          'landlady',
-          'proprietor',
-          'i own',
-          'my property',
-          'my villa',
-          'my apartment',
-          'my place',
-        ],
-        propertyManager: [
-          'property manager',
-          'managing',
-          'manage',
-          'on behalf of',
-          'representative',
-        ],
+        owner: ['owner', 'landlord', 'landlady', 'proprietor', 'i own', 'my property', 'my villa', 'my apartment', 'my place'],
+        propertyManager: ['property manager', 'managing', 'manage', 'on behalf of', 'representative'],
         broker: ['broker', 'agent', 'real estate', 'brokerage', 'dealing'],
-        uncertain: [
-          'family property',
-          'inherited',
-          'thinking of',
-          'considering',
-          'might sell',
-          'might rent',
-        ],
+        uncertain: ['family property', 'inherited', 'thinking of', 'considering', 'might sell', 'might rent']
       },
 
-      priceIndicators: [
-        'price',
-        'aed',
-        'cost',
-        'monthly',
-        'annual',
-        'yearly',
-        'rent',
-        'asking',
-        'price per',
-        'per month',
-        'per year',
-        'per sqft',
-        'per sqm',
-      ],
+      priceIndicators: ['price', 'aed', 'cost', 'monthly', 'annual', 'yearly', 'rent', 'asking', 'price per', 'per month', 'per year', 'per sqft', 'per sqm'],
 
-      sizeIndicators: [
-        'rooms',
-        'bedroom',
-        'bedrooms',
-        'br',
-        'bed',
-        'sqft',
-        'sqm',
-        'square',
-        'area',
-        'plot size',
-        'land area',
-      ],
+      sizeIndicators: ['rooms', 'bedroom', 'bedrooms', 'br', 'bed', 'sqft', 'sqm', 'square', 'area', 'plot size', 'land area'],
 
       furnishingIndicators: {
         furnished: ['furnished', 'fully furnished', 'complete furniture', 'with furniture'],
-        semiFurnished: [
-          'semi-furnished',
-          'semi furnished',
-          'partly furnished',
-          'partial furniture',
-          'basic furniture',
-        ],
-        unfurnished: ['unfurnished', 'bare', 'empty', 'shell', 'bare walls', 'no furniture'],
+        semiFurnished: ['semi-furnished', 'semi furnished', 'partly furnished', 'partial furniture', 'basic furniture'],
+        unfurnished: ['unfurnished', 'bare', 'empty', 'shell', 'bare walls', 'no furniture']
       },
 
       featureKeywords: [
-        'pool',
-        'swimming',
-        'gym',
-        'parking',
-        'maid room',
-        'maids room',
-        'garden',
-        'balcony',
-        'terrace',
-        'roof',
-        'workspace',
-        'office',
-        'laundry',
-        'storage',
-        'ac',
-        'air condition',
-        'central ac',
-        'furnished kitchen',
-        'equipped kitchen',
-        'built-in',
-        'open plan',
-        'master bedroom',
-        'ensuite',
-        'walk-in',
-        'views',
-        'sea view',
-        'marina view',
-        'golf view',
-        'golf course',
-        'gated',
-        'security',
-        'playground',
-        'school',
-        'mall nearby',
-        'metro',
-        'beach',
-      ],
+        'pool', 'swimming', 'gym', 'parking', 'maid room', 'maids room',
+        'garden', 'balcony', 'terrace', 'roof', 'workspace', 'office',
+        'laundry', 'storage', 'ac', 'air condition', 'central ac',
+        'furnished kitchen', 'equipped kitchen', 'built-in', 'open plan',
+        'master bedroom', 'ensuite', 'walk-in', 'views', 'sea view',
+        'marina view', 'golf view', 'golf course', 'gated', 'security',
+        'playground', 'school', 'mall nearby', 'metro', 'beach'
+      ]
     };
 
     this.confidenceWeights = {
@@ -215,7 +74,7 @@ class ConversationAnalyzer {
       priceMentioned: 15,
       ownerIdentified: 10,
       furnishingMentioned: 3,
-      featuresListedCount: 2,
+      featuresListedCount: 2
     };
   }
 
@@ -223,35 +82,16 @@ class ConversationAnalyzer {
    * Analyze conversation for property opportunities
    */
   analyzeConversation(messages) {
-    // Handle both string and array inputs
-    let messagesArray = messages;
-    if (typeof messages === 'string') {
-      messagesArray = [{ content: messages, text: messages }];
-    }
-
-    if (!Array.isArray(messagesArray) || messagesArray.length === 0) {
-      return {
-        propertyDetected: false,
-        properties: [],
-        overallConfidence: 0,
-        confidenceScore: 0,
-        reasoning: 'No messages provided',
-        matchedKeywords: [],
-        extractedData: {},
-        ownerInfo: { type: 'uncertain', name: null, phone: null, whatsappNumber: null },
-      };
+    if (!Array.isArray(messages) || messages.length === 0) {
+      return { properties: [], overallConfidence: 0, reasoning: 'No messages provided' };
     }
 
     const analysis = {
       properties: [],
       overallConfidence: 0,
-      confidenceScore: 0,
       ownerIdentification: null,
       extractedEntities: [],
-      reasoning: '',
-      matchedKeywords: [],
-      extractedData: {},
-      propertyDetected: false,
+      reasoning: ''
     };
 
     let currentProperty = null;
@@ -263,11 +103,10 @@ class ConversationAnalyzer {
       priceMentioned: false,
       ownerIdentified: false,
       furnishingMentioned: false,
-      featuresCount: 0,
+      featuresCount: 0
     };
 
-    const rawConversation = messagesArray.map(m => m.content || m.text || m).join(' ');
-    const fullConversation = rawConversation.toLowerCase();
+    const fullConversation = messages.map(m => m.content || m.text).join(' ').toLowerCase();
 
     // Step 1: Identify property type
     for (const [type, keywords] of Object.entries(this.keywords.propertyTypes)) {
@@ -279,7 +118,11 @@ class ConversationAnalyzer {
     }
 
     if (!currentProperty) {
-      currentProperty = { type: null, confidence: 0, extractedData: {} };
+      return {
+        properties: [],
+        overallConfidence: 0,
+        reasoning: 'No property type keywords detected'
+      };
     }
 
     // Step 2: Check availability
@@ -319,10 +162,10 @@ class ConversationAnalyzer {
     }
 
     // Step 6: Identify owner
-    const ownerData = this.identifyOwner(messagesArray, rawConversation);
-    currentProperty.extractedData.owner = ownerData;
-    analysis.ownerIdentification = ownerData;
-    if (ownerData?.type && ownerData.type !== 'uncertain') {
+    const ownerData = this.identifyOwner(messages, fullConversation);
+    if (ownerData) {
+      currentProperty.extractedData.owner = ownerData;
+      analysis.ownerIdentification = ownerData;
       confidenceComponents.ownerIdentified = true;
     }
 
@@ -340,126 +183,13 @@ class ConversationAnalyzer {
       confidenceComponents.featuresCount = features.length;
     }
 
-    // Property should be detected when there is a strong keyword signal
-    const hasPropertySignals = Boolean(
-      confidenceComponents.propertyTypeMentioned ||
-      confidenceComponents.availabilityMentioned ||
-      confidenceComponents.locationMentioned ||
-      confidenceComponents.sizeOrRoomsMentioned ||
-      confidenceComponents.priceMentioned ||
-      confidenceComponents.ownerIdentified ||
-      confidenceComponents.furnishingMentioned ||
-      confidenceComponents.featuresCount > 0 ||
-      fullConversation.includes('property')
-    );
-
-    if (!hasPropertySignals) {
-      return {
-        propertyDetected: false,
-        properties: [],
-        overallConfidence: 0,
-        confidenceScore: 0,
-        reasoning: 'No property signals detected',
-        matchedKeywords: [],
-        extractedData: {},
-        ownerInfo: ownerData,
-      };
-    }
-
     // Calculate confidence score
     currentProperty.confidence = this.calculateConfidence(confidenceComponents);
     currentProperty.confidenceComponents = confidenceComponents;
 
-    if (!currentProperty.type) {
-      if (currentProperty.extractedData.availability === 'for_sale')
-        currentProperty.type = 'property_for_sale';
-      else if (currentProperty.extractedData.availability === 'for_rent')
-        currentProperty.type = 'property_for_rent';
-      else currentProperty.type = 'property';
-    }
-
     analysis.properties.push(currentProperty);
     analysis.overallConfidence = currentProperty.confidence;
-    analysis.confidenceScore = currentProperty.confidence;
-    analysis.propertyDetected = true;
     analysis.extractedEntities = this.extractEntities(messages);
-
-    // Copy extracted data to top level for backward compatibility
-    const extractedData = {
-      ...currentProperty.extractedData,
-      propertyType: currentProperty.type === 'property' ? undefined : currentProperty.type,
-      bedrooms: sizeData?.bedrooms ?? sizeData?.rooms,
-      bathrooms: sizeData?.bathrooms,
-      sqft: sizeData?.sqft,
-      monthlyPrice: priceData?.monthlyRent,
-      annualPrice: priceData?.annualRent,
-      price: priceData?.monthlyRent || priceData?.annualRent,
-    };
-
-    const completenessFields = [
-      extractedData.propertyType,
-      extractedData.location,
-      extractedData.bedrooms,
-      extractedData.price,
-      extractedData.availability,
-      extractedData.furnishing,
-    ];
-    extractedData.completenessPercentage = Math.round(
-      (completenessFields.filter(v => v !== undefined && v !== null && v !== '').length /
-        completenessFields.length) *
-        100
-    );
-
-    analysis.extractedData = extractedData;
-
-    // Extract matched keywords from property types, locations, and availability
-    const fullTextLower = fullConversation;
-
-    // Add property type keywords
-    for (const [type, keywords] of Object.entries(this.keywords.propertyTypes)) {
-      keywords.forEach(kw => {
-        if (fullTextLower.includes(kw.toLowerCase()) && !analysis.matchedKeywords.includes(kw)) {
-          analysis.matchedKeywords.push(kw);
-        }
-      });
-    }
-
-    // Add location keywords
-    for (const location of this.keywords.locationKeywords) {
-      if (fullTextLower.includes(location.toLowerCase())) {
-        const formattedLocation = location
-          .split(' ')
-          .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-          .join(' ');
-        if (!analysis.matchedKeywords.includes(formattedLocation)) {
-          analysis.matchedKeywords.push(formattedLocation);
-        }
-      }
-    }
-
-    // Add availability keywords
-    for (const [type, keywords] of Object.entries(this.keywords.availability)) {
-      keywords.forEach(kw => {
-        if (fullTextLower.includes(kw.toLowerCase()) && !analysis.matchedKeywords.includes(kw)) {
-          analysis.matchedKeywords.push(kw);
-        }
-      });
-    }
-
-    analysis.ownerInfo = {
-      type: ownerData?.ownershipType || ownerData?.type || 'uncertain',
-      name: ownerData?.name || null,
-      phone: ownerData?.phone || null,
-      whatsappNumber: ownerData?.whatsappNumber || null,
-    };
-
-    const autoReplyResult = this.generateAutoReply(analysis);
-    analysis.autoReply = autoReplyResult?.shouldAutoReply ? autoReplyResult.message : undefined;
-
-    const quickReplies = this.generateQuickReplies(analysis)
-      .map(reply => reply.text)
-      .slice(0, 5);
-    analysis.suggestedQuickReplies = quickReplies;
 
     return analysis;
   }
@@ -495,10 +225,7 @@ class ConversationAnalyzer {
   extractLocation(text) {
     for (const location of this.keywords.locationKeywords) {
       if (text.includes(location.toLowerCase())) {
-        return location
-          .split(' ')
-          .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-          .join(' ');
+        return location.charAt(0).toUpperCase() + location.slice(1);
       }
     }
     return null;
@@ -510,19 +237,10 @@ class ConversationAnalyzer {
   extractSize(text) {
     const sizeData = {};
 
-    // Extract bedrooms/beds
-    const bedroomsPattern = /(\d+)\s*(?:br|bed|bedroom|bedrooms|beds)/gi;
-    const bedroomsMatch = bedroomsPattern.exec(text);
-    if (bedroomsMatch) {
-      sizeData.rooms = parseInt(bedroomsMatch[1]);
-      sizeData.bedrooms = parseInt(bedroomsMatch[1]);
-    }
-
-    // Extract bathrooms/baths
-    const bathroomsPattern = /(\d+)\s*(?:full\s*)?(?:ba|bath|bathroom|bathrooms|baths)/gi;
-    const bathroomsMatch = bathroomsPattern.exec(text);
-    if (bathroomsMatch) {
-      sizeData.bathrooms = parseInt(bathroomsMatch[1]);
+    const roomsPattern = /(\d+)\s*(?:br|bedroom|bedrooms|room|rooms)/gi;
+    const roomsMatch = roomsPattern.exec(text);
+    if (roomsMatch) {
+      sizeData.rooms = parseInt(roomsMatch[1]);
     }
 
     const sqftPattern = /(\d+(?:,\d+)*)\s*(?:sqft|sq\.ft|square feet)/gi;
@@ -546,33 +264,18 @@ class ConversationAnalyzer {
   extractPrice(text) {
     const priceData = {};
 
-    const monthlyPattern =
-      /(?:aed\s*(\d+(?:,\d+)*)|(\d+(?:,\d+)*)\s*aed)\s*(?:per\s*month|\/month|monthly|\/m|pm)?/gi;
+    const monthlyPattern = /aed\s*(\d+(?:,\d+)*)\s*(?:per\s*month|\/month|monthly|\/m|pm)/gi;
     const monthlyMatch = monthlyPattern.exec(text);
-    if (monthlyMatch && /per\s*month|\/month|monthly|\/m|pm/.test(text)) {
-      const monthlyRaw = monthlyMatch[1] || monthlyMatch[2];
-      priceData.monthlyRent = parseInt(monthlyRaw.replace(/,/g, ''));
+    if (monthlyMatch) {
+      priceData.monthlyRent = parseInt(monthlyMatch[1].replace(/,/g, ''));
       priceData.currency = 'AED';
     }
 
-    const annualPattern =
-      /(?:aed\s*(\d+(?:,\d+)*)|(\d+(?:,\d+)*)\s*aed)\s*(?:per\s*year|\/year|annually|pa)?/gi;
+    const annualPattern = /aed\s*(\d+(?:,\d+)*)\s*(?:per\s*year|\/year|annually|pa)/gi;
     const annualMatch = annualPattern.exec(text);
-    if (annualMatch && /per\s*year|\/year|annually|pa/.test(text)) {
-      const annualRaw = annualMatch[1] || annualMatch[2];
-      priceData.annualRent = parseInt(annualRaw.replace(/,/g, ''));
+    if (annualMatch) {
+      priceData.annualRent = parseInt(annualMatch[1].replace(/,/g, ''));
       priceData.currency = 'AED';
-    }
-
-    // Fallback: generic AED amount
-    if (!priceData.monthlyRent && !priceData.annualRent) {
-      const genericAed = text.match(/(\d+(?:,\d+)*)\s*aed|aed\s*(\d+(?:,\d+)*)/i);
-      if (genericAed) {
-        const value = parseInt((genericAed[1] || genericAed[2]).replace(/,/g, ''));
-        if (/per\s*year|\/year|annually|pa/.test(text)) priceData.annualRent = value;
-        else priceData.monthlyRent = value;
-        priceData.currency = 'AED';
-      }
     }
 
     return Object.keys(priceData).length > 0 ? priceData : null;
@@ -582,22 +285,15 @@ class ConversationAnalyzer {
    * Identify property owner
    */
   identifyOwner(messages, text) {
-    const sourceMessages = Array.isArray(messages)
-      ? messages
-      : typeof messages === 'string'
-        ? [{ content: messages, text: messages }]
-        : [];
-
     let ownerData = {
       name: null,
       phone: null,
       whatsappNumber: null,
-      ownershipType: 'uncertain',
-      type: 'uncertain',
+      ownershipType: 'uncertain'
     };
 
-    if (sourceMessages.length > 0) {
-      const firstMessage = sourceMessages[0];
+    if (messages && messages.length > 0) {
+      const firstMessage = messages[0];
       if (firstMessage.senderName) {
         ownerData.name = firstMessage.senderName;
       }
@@ -609,18 +305,7 @@ class ConversationAnalyzer {
     const phonePattern = /(\+?971\d{9}|0\d{9})/g;
     const phoneMatch = phonePattern.exec(text);
     if (phoneMatch && !ownerData.phone) {
-      ownerData.phone = phoneMatch[1];
       ownerData.whatsappNumber = phoneMatch[1];
-    }
-
-    const nameMatch = text.match(
-      /\b(?:i am|i'm|my name is)\s+([a-z][a-z\-']+(?:\s+[a-z][a-z\-']+){0,3})/i
-    );
-    if (nameMatch && !ownerData.name) {
-      ownerData.name = nameMatch[1]
-        .split(' ')
-        .map(part => part.charAt(0).toUpperCase() + part.slice(1).toLowerCase())
-        .join(' ');
     }
 
     if (this.hasKeywords(text, this.keywords.ownershipIndicators.owner)) {
@@ -631,23 +316,21 @@ class ConversationAnalyzer {
       ownerData.ownershipType = 'broker';
     }
 
-    ownerData.type = ownerData.ownershipType;
-
-    return ownerData;
+    return ownerData.name || ownerData.phone ? ownerData : null;
   }
 
   /**
    * Extract furnishing level
    */
   extractFurnishing(text) {
-    if (this.hasKeywords(text, this.keywords.furnishingIndicators.unfurnished)) {
-      return 'unfurnished';
+    if (this.hasKeywords(text, this.keywords.furnishingIndicators.furnished)) {
+      return 'furnished';
     }
     if (this.hasKeywords(text, this.keywords.furnishingIndicators.semiFurnished)) {
       return 'semi_furnished';
     }
-    if (this.hasKeywords(text, this.keywords.furnishingIndicators.furnished)) {
-      return 'furnished';
+    if (this.hasKeywords(text, this.keywords.furnishingIndicators.unfurnished)) {
+      return 'unfurnished';
     }
     return null;
   }
@@ -675,9 +358,7 @@ class ConversationAnalyzer {
     const emailPattern = /([a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9_-]+)/g;
 
     for (const message of messages) {
-      const content = (message.content || message.text || '').toString();
-
-      if (!content) continue; // Skip if no content
+      const content = message.content || message.text;
 
       const phones = content.match(phonePattern);
       if (phones) {
@@ -705,47 +386,35 @@ class ConversationAnalyzer {
    * Generate auto-reply suggestions
    */
   generateAutoReply(analysis) {
-    if (analysis.overallConfidence < 60 && analysis.propertyDetected) {
-      const type = String(analysis.extractedData?.propertyType || 'property').toLowerCase();
+    if (analysis.overallConfidence < 60) {
       return {
         shouldAutoReply: true,
         replyType: 'clarification',
         template: 'clarification_needed',
-        message: `Thanks for sharing your ${type}. We're interested and need a few more details: exact location, monthly/annual price, bedrooms, and furnishing status.`,
+        message: 'Thanks for reaching out! To help you better, could you please share:\n1. Exact location of the property\n2. Monthly rent or asking price\n3. Number of bedrooms\n4. Furnishing level'
       };
     }
 
     if (analysis.overallConfidence >= 80 && analysis.properties.length > 0) {
       const prop = analysis.properties[0];
-      let message = `Thanks for sharing! I'm interested in your ${String(prop.type || 'property').toLowerCase()}`;
+      let message = `Thanks for sharing! I'm interested in your ${prop.type}`;
       if (prop.extractedData.location) {
         message += ` in ${prop.extractedData.location}`;
       }
-      message +=
-        '. Could you please send us:\n1. Photos of the property\n2. Available from date\n3. Lease terms';
+      message += '. Could you please send us:\n1. Photos of the property\n2. Available from date\n3. Lease terms';
 
       return {
         shouldAutoReply: true,
         replyType: 'confirmation',
         template: 'details_request',
-        message,
-      };
-    }
-
-    if (analysis.propertyDetected) {
-      const type = String(analysis.extractedData?.propertyType || 'property').toLowerCase();
-      return {
-        shouldAutoReply: true,
-        replyType: 'interest',
-        template: 'interest_reply',
-        message: `Thank you for sharing your ${type}. We're interested and would love more details such as price, availability, and viewing slots.`,
+        message
       };
     }
 
     return {
       shouldAutoReply: false,
       replyType: null,
-      message: null,
+      message: null
     };
   }
 
@@ -757,12 +426,12 @@ class ConversationAnalyzer {
 
     quickReplies.push({
       text: 'Can you send photos?',
-      priority: 'high',
+      priority: 'high'
     });
 
     quickReplies.push({
-      text: "What's the asking price?",
-      priority: 'high',
+      text: 'What\'s the asking price?',
+      priority: 'high'
     });
 
     if (analysis.properties.length > 0) {
@@ -771,107 +440,31 @@ class ConversationAnalyzer {
       if (!prop.extractedData.price) {
         quickReplies.push({
           text: 'Monthly rent: _____ AED',
-          priority: 'high',
+          priority: 'high'
         });
       }
 
       if (!prop.extractedData.size) {
         quickReplies.push({
           text: 'How many bedrooms?',
-          priority: 'medium',
+          priority: 'medium'
         });
       }
 
       if (!prop.extractedData.furnishing) {
         quickReplies.push({
           text: 'Is it furnished?',
-          priority: 'medium',
+          priority: 'medium'
         });
       }
     }
 
     quickReplies.push({
-      text: "Great! Let's schedule a viewing",
-      priority: 'medium',
+      text: 'Great! Let\'s schedule a viewing',
+      priority: 'medium'
     });
 
     return quickReplies;
-  }
-  /**
-   * Extract phone numbers from text
-   * Supports UAE and international formats
-   */
-  extractPhoneNumbers(text) {
-    if (!text) return [];
-
-    const textLower = String(text).toLowerCase();
-
-    // Use the phone number normalizer utility
-    return extractAndNormalizePhones(textLower);
-  }
-
-  /**
-   * Extract email addresses from text
-   */
-  extractEmails(text) {
-    if (!text) return [];
-
-    const textLower = String(text).toLowerCase();
-    const emailPattern = /[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}/g;
-    const matches = textLower.match(emailPattern);
-
-    return matches ? Array.from(new Set(matches)) : [];
-  }
-
-  /**
-   * Extract location keywords from text
-   */
-  extractLocations(text) {
-    if (!text) return [];
-
-    const textLower = String(text).toLowerCase();
-    const foundLocations = [];
-
-    for (const location of this.keywords.locationKeywords) {
-      if (textLower.includes(location.toLowerCase())) {
-        foundLocations.push(location);
-      }
-    }
-
-    return foundLocations;
-  }
-
-  /**
-   * Calculate weighted confidence score from components
-   * @param {Object} components - Confidence components object
-   * @returns {number} Confidence score 0-100
-   */
-  calculateConfidenceScore(components) {
-    if (!components || typeof components !== 'object') {
-      return 0;
-    }
-
-    let totalScore = 0;
-
-    // Calculate weighted score
-    for (const [key, weight] of Object.entries(this.confidenceWeights)) {
-      if (key === 'featuresListedCount') {
-        // For features, multiply count by weight
-        const count = Math.min(components.featuresCount || 0, 10);
-        totalScore += count * weight;
-      } else {
-        // For boolean flags, add weight if true
-        if (components[key] === true) {
-          totalScore += weight;
-        }
-      }
-    }
-
-    // Normalize to 0-100 scale
-    const maxPossibleScore = Object.values(this.confidenceWeights).reduce((a, b) => a + b, 0) + 50;
-    const confidence = Math.min((totalScore / maxPossibleScore) * 100, 100);
-
-    return Math.round(confidence);
   }
 }
 

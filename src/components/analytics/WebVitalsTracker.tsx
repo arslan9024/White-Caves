@@ -40,10 +40,7 @@ const WebVitalsTracker = () => {
         onTTFB(reportWebVital);
         onINP(reportWebVital);
       } catch (error) {
-        // Web vitals may not be available in all environments (e.g., test, SSR)
-        if (import.meta.env.DEV) {
-          log.debug('Web vitals unavailable:', error);
-        }
+        
       }
     };
 

@@ -2,7 +2,7 @@ import { WhatsAppFloatingBtn, WhatsAppIcon } from './WhatsAppButton.styles';
 import { Config } from '../config/constants';
 
 export default function WhatsAppButton() {
-  const phoneNumber = Config.COMPANY.WHATSAPP;
+  const phoneNumber = '+971505110636';
   const message = encodeURIComponent('Hello! I would like to inquire about White Caves Real Estate services.');
   
   const handleWhatsAppClick = () => {
