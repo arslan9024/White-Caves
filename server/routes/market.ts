@@ -10,6 +10,20 @@ import logger from '../utils/logger.js';
 
 const router = Router();
 
+const parsePositiveInt = (value: unknown, fallback: number, max: number): number => {
+  const parsed = Number.parseInt(String(value ?? ''), 10);
+  if (!Number.isFinite(parsed) || parsed <= 0) return fallback;
+  return Math.min(max, parsed);
+};
+
+const normalizeOptionalText = (value: unknown, maxLength = 100): string | undefined => {
+  if (typeof value !== 'string') return undefined;
+  const normalized = value.trim().slice(0, maxLength);
+  return normalized.length > 0 ? normalized : undefined;
+};
+
+const VALID_COMPETITOR_PORTALS = ['bayut', 'propertyfinder'] as const;
+
 // ─── Dubai Area Price Benchmarks ─────────────────────────────────────────────
 interface AreaBenchmarkRow {
   area: string;
@@ -449,19 +463,27 @@ router.get(
     if (!userId) throw new AppError('Authentication required', 401);
 
     const { zone, propertyType } = req.query as { zone?: string; propertyType?: string };
+    const normalizedPropertyType = normalizeOptionalText(propertyType);
+
+    const benchmarks = await getAreaBenchmarks();
+    const validZones = new Set(benchmarks.map(b => b.zone.toLowerCase()));
+
+    const normalizedZone = zone?.trim().toLowerCase();
+    if (normalizedZone && !validZones.has(normalizedZone)) {
+      throw new AppError(`Invalid zone. Allowed values: ${Array.from(validZones).join(', ')}`, 400);
+    }
 
     // Fetch latest DB snapshots for each area to enrich hardcoded benchmarks
     const latestSnapshots = await prisma.marketSnapshot.findMany({
-      where: propertyType ? { propertyType } : undefined,
+      where: normalizedPropertyType ? { propertyType: normalizedPropertyType } : undefined,
       orderBy: { snapshotDate: 'desc' },
       distinct: ['area'],
     });
     const snapshotMap = new Map(latestSnapshots.map(s => [s.area.toLowerCase(), s]));
 
-    const benchmarks = await getAreaBenchmarks();
     let result = benchmarks;
-    if (zone) {
-      result = result.filter(b => b.zone === zone);
+    if (normalizedZone) {
+      result = result.filter(b => b.zone.toLowerCase() === normalizedZone);
     }
 
     const enriched = result.map(b => {
@@ -495,11 +517,15 @@ router.get(
     if (!userId) throw new AppError('Authentication required', 401);
 
     const { area, months = '12' } = req.query as { area?: string; months?: string };
-    const lookback = Math.min(36, parseInt(months));
+    const normalizedArea = normalizeOptionalText(area);
+    const lookback = parsePositiveInt(months, 12, 36);
     const since = new Date();
     since.setMonth(since.getMonth() - lookback);
 
-    const where = { snapshotDate: { gte: since }, ...(area ? { area } : {}) };
+    const where = {
+      snapshotDate: { gte: since },
+      ...(normalizedArea ? { area: normalizedArea } : {}),
+    };
 
     const snapshots = await prisma.marketSnapshot.findMany({
       where,
@@ -544,9 +570,10 @@ router.get(
     if (!userId) throw new AppError('Authentication required', 401);
 
     const { area } = req.query as { area?: string };
+    const normalizedArea = normalizeOptionalText(area);
 
     const latest = await prisma.marketSnapshot.findMany({
-      where: area ? { area } : {},
+      where: normalizedArea ? { area: normalizedArea } : {},
       orderBy: { snapshotDate: 'desc' },
       distinct: ['area'],
       take: 20,
@@ -599,12 +626,23 @@ router.get(
       propertyType?: string;
       bedrooms?: string;
     };
+    const normalizedArea = normalizeOptionalText(area);
+    const normalizedPropertyType = normalizeOptionalText(propertyType);
+    const normalizedBedrooms = normalizeOptionalText(bedrooms);
 
     const baseData = await getReraRentalIndexData();
     let data = baseData.rows;
-    if (area) data = data.filter(r => r.area.toLowerCase().includes(area.toLowerCase()));
-    if (propertyType) data = data.filter(r => r.propertyType === propertyType);
-    if (bedrooms) data = data.filter(r => r.bedrooms === bedrooms);
+    if (normalizedArea) {
+      data = data.filter(r => r.area.toLowerCase().includes(normalizedArea.toLowerCase()));
+    }
+    if (normalizedPropertyType) {
+      const propertyTypeFilter = normalizedPropertyType.toLowerCase();
+      data = data.filter(r => r.propertyType.toLowerCase() === propertyTypeFilter);
+    }
+    if (normalizedBedrooms) {
+      const bedroomsFilter = normalizedBedrooms.toLowerCase();
+      data = data.filter(r => r.bedrooms.toLowerCase() === bedroomsFilter);
+    }
 
     res.json({
       success: true,
@@ -624,17 +662,28 @@ router.get(
     if (!userId) throw new AppError('Authentication required', 401);
 
     const { area, portal } = req.query as { area?: string; portal?: string };
+    const normalizedArea = normalizeOptionalText(area);
 
     const benchmarks = await getAreaBenchmarks();
     let data = await getCompetitorPricingData(benchmarks);
 
-    if (area) {
-      data = data.filter(row => row.area.toLowerCase().includes(area.toLowerCase()));
+    if (normalizedArea) {
+      data = data.filter(row => row.area.toLowerCase().includes(normalizedArea.toLowerCase()));
     }
 
-    if (portal) {
-      const normalized = portal.toLowerCase();
-      data = data.filter(row => row.portal === normalized);
+    const normalizedPortal = normalizeOptionalText(portal)?.toLowerCase();
+    if (normalizedPortal) {
+      if (
+        !VALID_COMPETITOR_PORTALS.includes(
+          normalizedPortal as (typeof VALID_COMPETITOR_PORTALS)[number]
+        )
+      ) {
+        throw new AppError(
+          `Invalid portal. Allowed values: ${VALID_COMPETITOR_PORTALS.join(', ')}`,
+          400
+        );
+      }
+      data = data.filter(row => row.portal === normalizedPortal);
     }
 
     res.json({
@@ -730,12 +779,13 @@ router.get(
       page = '1',
       pageSize = '20',
     } = req.query as { area?: string; page?: string; pageSize?: string };
+    const normalizedArea = normalizeOptionalText(area);
 
-    const p = Math.max(1, parseInt(page));
-    const size = Math.min(100, parseInt(pageSize));
+    const p = parsePositiveInt(page, 1, 1000);
+    const size = parsePositiveInt(pageSize, 20, 100);
     const skip = (p - 1) * size;
 
-    const where = area ? { area } : {};
+    const where = normalizedArea ? { area: normalizedArea } : {};
     const [records, total] = await Promise.all([
       prisma.marketSnapshot.findMany({
         where,
