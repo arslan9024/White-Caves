@@ -16,9 +16,9 @@ const parsePositiveInt = (value: unknown, fallback: number, max: number): number
   return Math.min(max, parsed);
 };
 
-const normalizeOptionalText = (value: unknown): string | undefined => {
+const normalizeOptionalText = (value: unknown, maxLength = 100): string | undefined => {
   if (typeof value !== 'string') return undefined;
-  const normalized = value.trim();
+  const normalized = value.trim().slice(0, maxLength);
   return normalized.length > 0 ? normalized : undefined;
 };
 
