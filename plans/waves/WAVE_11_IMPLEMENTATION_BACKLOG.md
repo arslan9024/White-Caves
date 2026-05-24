@@ -45,7 +45,7 @@
 
 | ID      | Priority | Task                                                                                                | Owner        | Files Affected                                                     | Validation                           | Status  |
 | ------- | -------- | --------------------------------------------------------------------------------------------------- | ------------ | ------------------------------------------------------------------ | ------------------------------------ | ------- |
-| W11-018 | P1       | Standardize error handling: `AppError` class + centralized `errorHandler` middleware for all routes | @Mira + @Ada | `server/middleware/errorHandler.ts`, all route files               | `npm run quality:quick`              | Planned |
+| W11-018 | P1       | Standardize error handling: `AppError` class + centralized `errorHandler` middleware for all routes | @Mira + @Ada | `server/middleware/errorHandler.ts`, all route files               | `npm run typecheck && npm run lint && npm run build`              | Planned |
 | W11-019 | P1       | Extract business logic from route files > 300 lines into dedicated service files                    | @Mira        | `server/routes/properties.ts`, `server/routes/leads.ts` (priority) | `npm run build` + route tests        | Planned |
 | W11-020 | P2       | MongoDB compound index audit: add missing indexes on Lead, Property, Lease collections              | @Barbara     | `server/models/*.ts`                                               | Query explain plan + `npm run build` | Planned |
 

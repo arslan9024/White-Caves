@@ -84,6 +84,7 @@
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
     "lint:fix": "eslint . --ext .js,.jsx,.ts,.tsx --fix",
     "typecheck": "node --max-old-space-size=4096 ./node_modules/typescript/bin/tsc --noEmit -p tsconfig.json && node --max-old-space-size=4096 ./node_modules/typescript/bin/tsc --noEmit -p tsconfig.server.json",
+    "quality:quick": "npm run typecheck && npm run lint && npm run build",
     "format": "prettier --write \"src/**/*.{js,jsx,ts,tsx,json,css,scss}\"",
     "format:check": "prettier --check \"src/**/*.{js,jsx,ts,tsx,json,css,scss}\"",
     "audit": "npm audit",
@@ -175,7 +176,8 @@
     "orchestrator:phase99": "powershell -ExecutionPolicy Bypass -File scripts/orchestrator/phase99-signoff.ps1",
     "orchestrator:phase99:quick": "powershell -ExecutionPolicy Bypass -File scripts/orchestrator/phase99-signoff.ps1 -SkipTests",
     "approval": "npm run orchestrator:agent-loop:approval --",
-    "autopilot": "npm run orchestrator:agent-loop:autopilot --"
+    "autopilot": "npm run orchestrator:agent-loop:autopilot --",
+    "plans:validate": "node scripts/validate-plans-governance.js"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"

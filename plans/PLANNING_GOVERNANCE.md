@@ -1,7 +1,7 @@
 # Planning Governance — Single Source of Truth
 
-**Version:** 1.2  
-**Last Updated:** 2026-05-22  
+**Version:** 1.3  
+**Last Updated:** 2026-05-24  
 **Owner:** Product + Technical Planning
 
 ---
@@ -11,19 +11,32 @@
 This governance applies to:
 
 - `plans/*`
-- `business_docs/*` (planning-linked strategic docs)
-- `server/routes/plans.js` and `src/server/services/PlanService.js`
+- `plans/waves/*`
+- planning-linked trackers: `PROJECT_PROGRESS.md`, `DAILY_MILESTONE_TRACKER.md`
+
+---
+
+## Folder Layout
+
+| Location | Role |
+| --- | --- |
+| `plans/MASTER_PLAN.md` | Canonical roadmap and execution order |
+| `plans/PENDING_TASKS_ONLY.md` | Canonical live queue |
+| `plans/waves/` | Active implementation bundles |
+| `plans/INDEX.md`, `plans/README.md` | Navigation only |
+| `plans/archives/` | Superseded/completed docs |
+| other `plans/*` folders | Reference-only context unless promoted by canonical trackers |
 
 ---
 
 ## Authority Hierarchy (Canonical Sources)
 
-1. **Portfolio Roadmap (canonical):** `plans/MASTER_PLAN.md`
-2. **Active sprint/phase execution (canonical):** latest active `plans/PHASE_*.md`
-3. **Pending queue (canonical):** `plans/PENDING_TASKS_ONLY.md`
-4. **Operational dashboard (canonical):** `PROJECT_PROGRESS.md`
+1. **Portfolio roadmap:** `plans/MASTER_PLAN.md`
+2. **Active implementation queue:** `plans/PENDING_TASKS_ONLY.md`
+3. **Active wave bundle:** linked `plans/waves/WAVE_##_*` files for the current wave
+4. **Operational dashboard:** `PROJECT_PROGRESS.md`
 5. **Daily execution log:** `DAILY_MILESTONE_TRACKER.md`
-6. **Historical records:** `archives/plans/completed/` and `archives/plans/superseded/`
+6. **Reference docs:** phase docs, improvement deep-dives, and archived material
 
 If two files disagree, the higher file in this hierarchy wins.
 
@@ -31,50 +44,52 @@ If two files disagree, the higher file in this hierarchy wins.
 
 ## Ownership and Update Cadence
 
-| File                          | Primary Owner          | Update Trigger                 | Cadence                       |
-| ----------------------------- | ---------------------- | ------------------------------ | ----------------------------- |
-| `plans/MASTER_PLAN.md`        | Architecture + Product | Priority/order/status change   | Weekly or on phase transition |
-| `plans/PENDING_TASKS_ONLY.md` | Planning               | Task completion or new blocker | Daily                         |
-| `PROJECT_PROGRESS.md`         | Planning               | Milestone state change         | Daily                         |
-| `DAILY_MILESTONE_TRACKER.md`  | Execution lead         | End-of-day execution log       | Daily                         |
-| `plans/INDEX.md`              | Planning               | Active/superseded list changes | Per change                    |
+| File | Primary Owner | Update Trigger | Cadence |
+| --- | --- | --- | --- |
+| `plans/MASTER_PLAN.md` | Architecture + Product | sequence/order/status changes | Weekly or on wave transition |
+| `plans/PENDING_TASKS_ONLY.md` | Planning | task completion, gate changes, blockers | Daily |
+| `plans/waves/README.md` | Planning | bundle added/removed/renamed | Per change |
+| `PROJECT_PROGRESS.md` | Planning | milestone state change | Daily |
+| `DAILY_MILESTONE_TRACKER.md` | Execution lead | execution log updates | Daily |
+| `plans/INDEX.md` / `plans/README.md` | Planning | navigation changes | Per change |
 
 ---
 
 ## Active vs Archived Rules
 
-- Active execution docs remain in `plans/`.
-- Completed phase plans move to `archives/plans/completed/`.
-- Superseded/duplicate/ad-hoc artifacts move to `archives/plans/superseded/`.
-- `plans/` must not contain `Pasted-*` files.
+- Active execution bundles live in `plans/waves/`.
+- Canonical status lives only in `MASTER_PLAN.md`, `PENDING_TASKS_ONLY.md`, `PROJECT_PROGRESS.md`, and `DAILY_MILESTONE_TRACKER.md`.
+- Completed, superseded, or renamed planning docs move to `plans/archives/`.
+- Reference docs may remain in `plans/` root for context, but they are not live status sources unless explicitly linked from the canonical stack.
+- `plans/` must not contain ad-hoc `Pasted-*` files.
 
 ---
 
-## Required Metadata for Active Phase Files
+## Required Metadata for Active Wave Files
 
-Every active `PHASE_*.md` must contain:
+Every active wave document should contain:
 
-- Date or Last Updated
-- Status
-- Objective
-- Deliverables
-- Exit Criteria
-- Dependencies
-- Owners
-- Validation Gates
-
-Use `plans/PHASE_PLAN_TEMPLATE.md` for new phase files.
+- `Wave`
+- `Date` or `Last Updated`
+- `Status`
+- `Focus` or `Objective`
+- `Owners`
+- entry gate or dependencies
+- validation or closeout rules
 
 ---
 
 ## Status Source Pointers (Mandatory)
 
-All tracker files must include a `Status Source Pointers` section linking:
+Canonical tracker files must link back to:
 
 - `plans/MASTER_PLAN.md`
 - `plans/PENDING_TASKS_ONLY.md`
-- `PROJECT_PROGRESS.md` (operational dashboard)
-- active `plans/PHASE_*.md` (current execution stream)
+
+Wave bundles should be reachable from:
+
+- `plans/PENDING_TASKS_ONLY.md`
+- `plans/waves/README.md`
 
 ---
 
@@ -86,12 +101,13 @@ Run:
 
 Hard gate:
 
-- Every planning/tracker update must pass `npm run plans:validate` before being considered complete.
-- If validation fails, treat status updates as invalid until corrected and revalidated.
+- Every planning/tracker update must pass `npm run plans:validate` before it is considered complete.
+- Queue or roadmap changes should be mirrored in `PROJECT_PROGRESS.md` and `DAILY_MILESTONE_TRACKER.md` when execution status changes.
+- Broken links, stale dates, and duplicate active wave names are planning defects and must be fixed before further implementation.
 
 Schedule:
 
-- Weekly active-file metadata/link review
-- Monthly archive sweep for superseded files
-- Weekly planning hygiene cycle: prune stale queue items, re-rank blockers by impact, and de-activate legacy docs from active status paths
-- Daily rule: update canonical trackers only (`MASTER_PLAN`, `PENDING_TASKS_ONLY`, `PROJECT_PROGRESS`, `DAILY_MILESTONE_TRACKER`)
+- Weekly: roadmap and queue hygiene review
+- Weekly: archive sweep for superseded bundles or duplicate active names
+- Daily: canonical tracker sync (`MASTER_PLAN`, `PENDING_TASKS_ONLY`, `PROJECT_PROGRESS`, `DAILY_MILESTONE_TRACKER`)
+
