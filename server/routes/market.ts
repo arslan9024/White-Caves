@@ -16,6 +16,12 @@ const parsePositiveInt = (value: unknown, fallback: number, max: number): number
   return Math.min(max, parsed);
 };
 
+const normalizeOptionalText = (value: unknown): string | undefined => {
+  if (typeof value !== 'string') return undefined;
+  const normalized = value.trim();
+  return normalized.length > 0 ? normalized : undefined;
+};
+
 const VALID_COMPETITOR_PORTALS = ['bayut', 'propertyfinder'] as const;
 
 // ─── Dubai Area Price Benchmarks ─────────────────────────────────────────────
@@ -457,6 +463,7 @@ router.get(
     if (!userId) throw new AppError('Authentication required', 401);
 
     const { zone, propertyType } = req.query as { zone?: string; propertyType?: string };
+    const normalizedPropertyType = normalizeOptionalText(propertyType);
 
     const benchmarks = await getAreaBenchmarks();
     const validZones = new Set(benchmarks.map(b => b.zone.toLowerCase()));
@@ -468,7 +475,7 @@ router.get(
 
     // Fetch latest DB snapshots for each area to enrich hardcoded benchmarks
     const latestSnapshots = await prisma.marketSnapshot.findMany({
-      where: propertyType ? { propertyType } : undefined,
+      where: normalizedPropertyType ? { propertyType: normalizedPropertyType } : undefined,
       orderBy: { snapshotDate: 'desc' },
       distinct: ['area'],
     });
@@ -510,11 +517,15 @@ router.get(
     if (!userId) throw new AppError('Authentication required', 401);
 
     const { area, months = '12' } = req.query as { area?: string; months?: string };
+    const normalizedArea = normalizeOptionalText(area);
     const lookback = parsePositiveInt(months, 12, 36);
     const since = new Date();
     since.setMonth(since.getMonth() - lookback);
 
-    const where = { snapshotDate: { gte: since }, ...(area ? { area } : {}) };
+    const where = {
+      snapshotDate: { gte: since },
+      ...(normalizedArea ? { area: normalizedArea } : {}),
+    };
 
     const snapshots = await prisma.marketSnapshot.findMany({
       where,
@@ -559,9 +570,10 @@ router.get(
     if (!userId) throw new AppError('Authentication required', 401);
 
     const { area } = req.query as { area?: string };
+    const normalizedArea = normalizeOptionalText(area);
 
     const latest = await prisma.marketSnapshot.findMany({
-      where: area ? { area } : {},
+      where: normalizedArea ? { area: normalizedArea } : {},
       orderBy: { snapshotDate: 'desc' },
       distinct: ['area'],
       take: 20,
@@ -614,12 +626,17 @@ router.get(
       propertyType?: string;
       bedrooms?: string;
     };
+    const normalizedArea = normalizeOptionalText(area);
+    const normalizedPropertyType = normalizeOptionalText(propertyType);
+    const normalizedBedrooms = normalizeOptionalText(bedrooms);
 
     const baseData = await getReraRentalIndexData();
     let data = baseData.rows;
-    if (area) data = data.filter(r => r.area.toLowerCase().includes(area.toLowerCase()));
-    if (propertyType) data = data.filter(r => r.propertyType === propertyType);
-    if (bedrooms) data = data.filter(r => r.bedrooms === bedrooms);
+    if (normalizedArea) {
+      data = data.filter(r => r.area.toLowerCase().includes(normalizedArea.toLowerCase()));
+    }
+    if (normalizedPropertyType) data = data.filter(r => r.propertyType === normalizedPropertyType);
+    if (normalizedBedrooms) data = data.filter(r => r.bedrooms === normalizedBedrooms);
 
     res.json({
       success: true,
@@ -639,15 +656,16 @@ router.get(
     if (!userId) throw new AppError('Authentication required', 401);
 
     const { area, portal } = req.query as { area?: string; portal?: string };
+    const normalizedArea = normalizeOptionalText(area);
 
     const benchmarks = await getAreaBenchmarks();
     let data = await getCompetitorPricingData(benchmarks);
 
-    if (area) {
-      data = data.filter(row => row.area.toLowerCase().includes(area.toLowerCase()));
+    if (normalizedArea) {
+      data = data.filter(row => row.area.toLowerCase().includes(normalizedArea.toLowerCase()));
     }
 
-    const normalizedPortal = portal?.trim().toLowerCase();
+    const normalizedPortal = normalizeOptionalText(portal)?.toLowerCase();
     if (normalizedPortal) {
       if (
         !VALID_COMPETITOR_PORTALS.includes(
@@ -755,12 +773,13 @@ router.get(
       page = '1',
       pageSize = '20',
     } = req.query as { area?: string; page?: string; pageSize?: string };
+    const normalizedArea = normalizeOptionalText(area);
 
     const p = parsePositiveInt(page, 1, 10000);
     const size = parsePositiveInt(pageSize, 20, 100);
     const skip = (p - 1) * size;
 
-    const where = area ? { area } : {};
+    const where = normalizedArea ? { area: normalizedArea } : {};
     const [records, total] = await Promise.all([
       prisma.marketSnapshot.findMany({
         where,
