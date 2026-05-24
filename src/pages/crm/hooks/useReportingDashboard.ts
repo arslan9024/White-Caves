@@ -58,7 +58,7 @@ export function useReportingDashboard() {
     start: '',
     end: '',
   });
-  const [exportFormat, setExportFormat] = useState<'csv' | 'json'>('csv');
+  const [exportFormat, setExportFormat] = useState<'csv' | 'json' | 'excel'>('csv');
 
   // ─── Fetch data on mount ───────────────────────────────────────
 
@@ -146,7 +146,15 @@ export function useReportingDashboard() {
 
       const data = await crmService.exportCrmData(params);
 
-      if (exportFormat === 'json') {
+      if (exportFormat === 'excel') {
+        const blob = await crmService.exportDashboardExcel('leads');
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `crm-report-${new Date().toISOString().split('T')[0]}.xlsx`;
+        a.click();
+        URL.revokeObjectURL(url);
+      } else if (exportFormat === 'json') {
         const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');

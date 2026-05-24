@@ -1,0 +1,234 @@
+import ExcelJS from 'exceljs';
+import { PDFDocument, StandardFonts, rgb } from 'pdf-lib';
+import { prisma } from '../database.js';
+import logger from '../utils/logger.js';
+
+export interface GeneratedFile {
+  buffer: Buffer;
+  mimeType: string;
+  filename: string;
+}
+
+const PDF_MIME = 'application/pdf';
+const XLSX_MIME = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
+
+function safeDate(value: Date | null | undefined): string {
+  if (!value) return '—';
+  return value.toISOString().slice(0, 10);
+}
+
+export class DocumentService {
+  async generateContractPdf(contractId: string): Promise<GeneratedFile> {
+    const contract = await prisma.contract.findUnique({
+      where: { id: contractId },
+      select: {
+        id: true,
+        contractNumber: true,
+        title: true,
+        type: true,
+        status: true,
+        value: true,
+        currency: true,
+        startDate: true,
+        endDate: true,
+        createdAt: true,
+      },
+    });
+
+    if (!contract) {
+      throw new Error('Contract not found');
+    }
+
+    const lines = [
+      `Contract Number: ${contract.contractNumber}`,
+      `Title: ${contract.title}`,
+      `Type: ${contract.type}`,
+      `Status: ${contract.status}`,
+      `Value: ${(contract.currency || 'AED')} ${contract.value ?? 0}`,
+      `Start Date: ${safeDate(contract.startDate)}`,
+      `End Date: ${safeDate(contract.endDate)}`,
+      `Created At: ${safeDate(contract.createdAt)}`,
+    ];
+
+    const buffer = await this.renderSimplePdf('Contract Summary', lines);
+    return {
+      buffer,
+      mimeType: PDF_MIME,
+      filename: `contract-${contract.contractNumber || contract.id}.pdf`,
+    };
+  }
+
+  async generateCommissionPdf(agentId: string): Promise<GeneratedFile> {
+    const [agent, commissions] = await Promise.all([
+      prisma.user.findUnique({
+        where: { id: agentId },
+        select: { id: true, name: true, email: true },
+      }),
+      prisma.commission.findMany({
+        where: { agentId },
+        orderBy: { createdAt: 'desc' },
+        take: 100,
+        select: {
+          id: true,
+          amount: true,
+          currency: true,
+          status: true,
+          type: true,
+          createdAt: true,
+        },
+      }),
+    ]);
+
+    if (!agent) {
+      throw new Error('Agent not found');
+    }
+
+    const totalAmount = commissions.reduce((acc, item) => acc + (item.amount || 0), 0);
+    const lines = [
+      `Agent: ${agent.name || '—'} (${agent.email || '—'})`,
+      `Records: ${commissions.length}`,
+      `Total: AED ${totalAmount.toFixed(2)}`,
+      '',
+      ...commissions.map(
+        c =>
+          `${safeDate(c.createdAt)} | ${(c.type || '').toUpperCase()} | ${(c.status || '').toUpperCase()} | AED ${(c.amount || 0).toFixed(2)}`
+      ),
+    ];
+
+    const buffer = await this.renderSimplePdf('Commission Summary', lines);
+    return {
+      buffer,
+      mimeType: PDF_MIME,
+      filename: `commission-${agent.id}.pdf`,
+    };
+  }
+
+  async generateLeadsExcel(): Promise<GeneratedFile> {
+    const leads = await prisma.lead.findMany({
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        phone: true,
+        status: true,
+        source: true,
+        budget: true,
+        score: true,
+        createdAt: true,
+      },
+      orderBy: { createdAt: 'desc' },
+      take: 5000,
+    });
+
+    const workbook = new ExcelJS.Workbook();
+    const sheet = workbook.addWorksheet('Leads');
+    sheet.columns = [
+      { header: 'ID', key: 'id', width: 26 },
+      { header: 'Name', key: 'name', width: 24 },
+      { header: 'Email', key: 'email', width: 28 },
+      { header: 'Phone', key: 'phone', width: 18 },
+      { header: 'Status', key: 'status', width: 14 },
+      { header: 'Source', key: 'source', width: 14 },
+      { header: 'Budget', key: 'budget', width: 14 },
+      { header: 'Score', key: 'score', width: 10 },
+      { header: 'Created At', key: 'createdAt', width: 16 },
+    ];
+
+    leads.forEach(lead =>
+      sheet.addRow({
+        ...lead,
+        createdAt: safeDate(lead.createdAt),
+      })
+    );
+
+    const arrayBuffer = await workbook.xlsx.writeBuffer();
+    return {
+      buffer: Buffer.from(arrayBuffer),
+      mimeType: XLSX_MIME,
+      filename: `leads-report-${new Date().toISOString().slice(0, 10)}.xlsx`,
+    };
+  }
+
+  async generatePropertiesExcel(): Promise<GeneratedFile> {
+    const properties = await prisma.property.findMany({
+      select: {
+        id: true,
+        title: true,
+        type: true,
+        status: true,
+        price: true,
+        location: true,
+        bedrooms: true,
+        bathrooms: true,
+        sqft: true,
+        createdAt: true,
+      },
+      orderBy: { createdAt: 'desc' },
+      take: 5000,
+    });
+
+    const workbook = new ExcelJS.Workbook();
+    const sheet = workbook.addWorksheet('Properties');
+    sheet.columns = [
+      { header: 'ID', key: 'id', width: 26 },
+      { header: 'Title', key: 'title', width: 28 },
+      { header: 'Type', key: 'type', width: 14 },
+      { header: 'Status', key: 'status', width: 14 },
+      { header: 'Price', key: 'price', width: 14 },
+      { header: 'Location', key: 'location', width: 26 },
+      { header: 'Bedrooms', key: 'bedrooms', width: 10 },
+      { header: 'Bathrooms', key: 'bathrooms', width: 10 },
+      { header: 'Sqft', key: 'sqft', width: 10 },
+      { header: 'Created At', key: 'createdAt', width: 16 },
+    ];
+
+    properties.forEach(property =>
+      sheet.addRow({
+        ...property,
+        createdAt: safeDate(property.createdAt),
+      })
+    );
+
+    const arrayBuffer = await workbook.xlsx.writeBuffer();
+    return {
+      buffer: Buffer.from(arrayBuffer),
+      mimeType: XLSX_MIME,
+      filename: `properties-report-${new Date().toISOString().slice(0, 10)}.xlsx`,
+    };
+  }
+
+  private async renderSimplePdf(title: string, lines: string[]): Promise<Buffer> {
+    const pdf = await PDFDocument.create();
+    const page = pdf.addPage([595, 842]);
+    const font = await pdf.embedFont(StandardFonts.Helvetica);
+    const titleFont = await pdf.embedFont(StandardFonts.HelveticaBold);
+
+    page.drawText(title, {
+      x: 50,
+      y: 800,
+      size: 20,
+      font: titleFont,
+      color: rgb(0.1, 0.1, 0.1),
+    });
+
+    let y = 770;
+    for (const line of lines) {
+      if (y < 60) break;
+      page.drawText(line, {
+        x: 50,
+        y,
+        size: 11,
+        font,
+        color: rgb(0.2, 0.2, 0.2),
+      });
+      y -= 18;
+    }
+
+    const bytes = await pdf.save();
+    logger.info('[DocumentService] generated PDF', { title, lines: lines.length });
+    return Buffer.from(bytes);
+  }
+}
+
+export const documentService = new DocumentService();
+

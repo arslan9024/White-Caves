@@ -17,6 +17,7 @@ import {
   getEmailStats,
   wrapInBrandedTemplate,
 } from '../services/emailService.js';
+import { getEmailTriggerRegistry, sendTriggeredEmail } from '../services/emailTriggers.js';
 
 const router = Router();
 
@@ -188,6 +189,40 @@ router.get('/templates', requirePermission('view_leads'), (_req: Request, res: R
  */
 router.get('/stats', requirePermission('view_analytics'), (_req: Request, res: Response) => {
   res.json({ success: true, data: getEmailStats() });
+});
+
+router.get('/triggers', requirePermission('view_leads'), (_req: Request, res: Response) => {
+  res.json({ success: true, data: getEmailTriggerRegistry() });
+});
+
+router.post('/trigger', requirePermission('manage_leads'), async (req: Request, res: Response) => {
+  try {
+    const { event, to, variables = {} } = req.body ?? {};
+    if (!event || !to) {
+      res.status(400).json({ success: false, error: 'Missing required fields: event, to' });
+      return;
+    }
+    const triggerRegistry = getEmailTriggerRegistry();
+    if (!(event in triggerRegistry)) {
+      res.status(400).json({
+        success: false,
+        error: `Unknown trigger event: ${event}`,
+      });
+      return;
+    }
+
+    const result = await sendTriggeredEmail({
+      event: event as keyof typeof triggerRegistry,
+      to,
+      variables,
+    });
+    res.json({ success: result.success, data: result });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: error instanceof Error ? error.message : 'Failed to send triggered email',
+    });
+  }
 });
 
 function getTemplateDescription(key: string): string {
