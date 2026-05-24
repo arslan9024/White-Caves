@@ -45,6 +45,32 @@ vi.mock('../../config/internalModuleArchitecture', () => ({
   getInternalModuleArchitecture: () => mockArchitecture,
 }));
 
+vi.mock('../../config/crmModuleRegistry', () => {
+  const MockDashboard = () => <div data-testid="mock-crm-dashboard">Mock CRM Dashboard</div>;
+  const knownAssistants = new Set([
+    'nadia',
+    'mary',
+    'clara',
+    'nina',
+    'nancy',
+    'sophia',
+    'daisy',
+    'theodora',
+    'olivia',
+    'zoe',
+    'laila',
+    'aurora',
+    'linda',
+    'henry',
+  ]);
+  return {
+    getCRMModule: (assistantId: string | undefined) =>
+      assistantId && knownAssistants.has(assistantId)
+        ? { id: assistantId, label: assistantId, Component: MockDashboard }
+        : null,
+  };
+});
+
 vi.mock('lucide-react', () => {
   const stub = (name: string) => {
     const IconStub = (_props: Record<string, unknown>) => (
@@ -114,6 +140,15 @@ vi.mock('lucide-react', () => {
     Info: stub('Info'),
     Building: stub('Building'),
     Building2: stub('Building2'),
+    MessageSquare: stub('MessageSquare'),
+    Briefcase: stub('Briefcase'),
+    Server: stub('Server'),
+    Scale: stub('Scale'),
+    Brain: stub('Brain'),
+    Heart: stub('Heart'),
+    Cpu: stub('Cpu'),
+    Wallet: stub('Wallet'),
+    Smartphone: stub('Smartphone'),
     MapPin: stub('MapPin'),
     Wifi: stub('Wifi'),
     WifiOff: stub('WifiOff'),
@@ -381,7 +416,7 @@ describe('AICommandCenter', () => {
     it('renders lazy-loaded CRM for selected assistant', async () => {
       mockCurrentAssistant = { id: 'nadia', name: 'Nadia', colorScheme: '#10B981' };
       render(<AICommandCenter />);
-      const dashboard = await screen.findByTestId('crm-nadia');
+      const dashboard = await screen.findByTestId('mock-crm-dashboard');
       expect(dashboard).toBeInTheDocument();
     });
 

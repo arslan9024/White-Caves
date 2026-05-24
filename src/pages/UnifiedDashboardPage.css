@@ -1126,9 +1126,6 @@
   .dashboard-page-header,
   .unified-dashboard-content,
   .dashboard-surface-panel {
-    .dashboard-profile-completion {
-      grid-template-columns: 1fr;
-    }
     padding: 18px;
   }
 
