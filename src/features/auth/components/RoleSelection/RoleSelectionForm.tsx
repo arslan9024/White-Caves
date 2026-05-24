@@ -126,8 +126,9 @@ const RoleSelectionForm = ({ userId, onComplete, onSkip }: RoleSelectionFormProp
 
       onComplete?.(selectedRole, roleData.autoApprove);
     } catch (err) {
+      const roleError = err as { message?: string };
       
-      setError(err.message || 'Failed to set role. Please try again.');
+      setError(roleError.message || 'Failed to set role. Please try again.');
     } finally {
       setLoading(false);
     }

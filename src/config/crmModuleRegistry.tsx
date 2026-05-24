@@ -15,7 +15,7 @@ export interface CRMModuleDefinition {
   description: string;
   color: string;
   zone: CRMZone;
-  Component: LazyExoticComponent<ComponentType<Record<string, unknown>>>;
+  Component: LazyExoticComponent<ComponentType<any>>;
 }
 
 const UnifiedCRM = lazy(() => import('../components/crm/UnifiedCRM'));

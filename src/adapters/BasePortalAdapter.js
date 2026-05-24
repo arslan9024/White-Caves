@@ -332,9 +332,9 @@ export class BasePortalAdapter {
     }
 
     this.autoSyncInterval = setInterval(() => {
-      this.sync().catch(err => 
-        
-      );
+      this.sync().catch(err => {
+        console.error(`[${this.portalName}] Auto-sync failed:`, err?.message || err);
+      });
     }, interval);
 
     // Initial sync

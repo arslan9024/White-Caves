@@ -112,6 +112,7 @@ const EmailLoginForm: React.FC<EmailLoginFormProps> = ({ mode = 'login', onSucce
       
       onSuccess?.(userData);
     } catch (error) {
+      const authError = error as { code?: string; message?: string };
       
       let errorMessage = 'Authentication failed';
       

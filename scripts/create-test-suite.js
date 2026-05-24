@@ -159,30 +159,6 @@ try {
   console.log('✨ Test suite created successfully!\n');
   process.exit(0);
 } catch (error) {
-  console.log(\`❌ Failed: \${error.message}\\n\`);
-  process.exit(1);
-}\`;
-
-const filePath = 'server/tests/upgrades-comprehensive.test.js';
-const fullPath = path.join(projectRoot, filePath);
-const dir = path.dirname(fullPath);
-
-console.log('\n' + '='.repeat(60));
-console.log('🚀 PRIORITY 7: Creating Test Suite');
-console.log('='.repeat(60) + '\n');
-
-try {
-  if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
-  if (fs.existsSync(fullPath)) {
-    console.log(`⏭️  ${filePath} (exists)\n`);
-    process.exit(0);
-  }
-  fs.writeFileSync(fullPath, testContent, 'utf-8');
-  console.log(`✅ Created: ${filePath}\n`);
-  console.log('='.repeat(60));
-  console.log('✨ Test suite created successfully!\n');
-  process.exit(0);
-} catch (error) {
   console.log(`❌ Failed: ${error.message}\n`);
   process.exit(1);
 }
