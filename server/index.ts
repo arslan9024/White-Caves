@@ -19,6 +19,7 @@ import { errorHandler, asyncHandler, AppError } from './middleware/errorHandler.
 import authMiddleware from './middleware/auth.js';
 import { requestIdMiddleware } from './middleware/requestId.js';
 import { CORS_ORIGINS, WHATSAPP_WEBHOOK_SECRET, IS_PRODUCTION } from './config/env.js';
+import { buildAllowedCorsOrigins, inferRequestOrigin, isCorsOriginAllowed } from './config/cors.js';
 import {
   apiLimiter,
   authLimiter,
@@ -99,20 +100,7 @@ import { startAutoRouting } from './services/ai/leadAutoRouter.js';
 import { createSocketServer } from './services/socketServer.js';
 
 const app: Express = express();
-
-const normalizeOrigin = (value: string): string => value.replace(/\/$/, '').toLowerCase();
-const configuredCorsOrigins = new Set(CORS_ORIGINS.map(origin => normalizeOrigin(origin)));
-const isLocalDevOrigin = (origin: string): boolean => {
-  try {
-    const parsed = new URL(origin);
-    return (
-      (parsed.hostname === 'localhost' || parsed.hostname === '127.0.0.1') &&
-      (parsed.protocol === 'http:' || parsed.protocol === 'https:')
-    );
-  } catch {
-    return false;
-  }
-};
+const allowedCorsOrigins = buildAllowedCorsOrigins(CORS_ORIGINS, process.env.NODE_ENV);
 
 // Trust the first proxy in front of the server (e.g. Vercel edge, nginx, AWS ALB).
 // This makes req.ip and all express-rate-limit lookups use the real client IP
@@ -199,28 +187,22 @@ app.use((_req: Request, res: Response, next: NextFunction) => {
   next();
 });
 app.use(
-  cors({
-    origin: (origin, callback) => {
-      // Allow requests with no origin (server-to-server, curl, mobile apps)
-      if (!origin) {
-        callback(null, true);
-        return;
-      }
+  cors((req, callback) => {
+    const requestOrigin = inferRequestOrigin(req);
+    const origin = req.header('Origin');
+    const isAllowed = isCorsOriginAllowed(
+      origin,
+      allowedCorsOrigins,
+      requestOrigin,
+      process.env.NODE_ENV
+    );
 
-      const normalizedOrigin = normalizeOrigin(origin);
-      if (configuredCorsOrigins.has(normalizedOrigin)) {
-        callback(null, true);
-        return;
-      }
+    if (isAllowed) {
+      callback(null, { origin: true, credentials: true });
+      return;
+    }
 
-      // In local development, allow localhost/127.0.0.1 origins on dynamic Vite ports.
-      if (!IS_PRODUCTION && isLocalDevOrigin(origin)) {
-        callback(null, true);
-      } else {
-        callback(new Error('Not allowed by CORS'));
-      }
-    },
-    credentials: true,
+    callback(new Error('Not allowed by CORS'));
   })
 );
 

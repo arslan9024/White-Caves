@@ -45,6 +45,7 @@ class ApiClient {
     const config: RequestInit = {
       ...restOptions,
       signal: controller.signal,
+      credentials: options.credentials ?? 'include',
       headers: {
         ...this.defaultHeaders,
         ...options.headers,
