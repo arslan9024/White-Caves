@@ -4,7 +4,7 @@ import {
   selectActiveCategory, 
   selectActiveSubItem,
   selectSelectedAssistantForChat,
-  makeSelectAiAssistantById,
+  selectAiAssistantById,
   selectDocumentViewMode,
   selectActiveDocument
 } from '../../store/slices/crmViewSlice';
@@ -161,7 +161,7 @@ export default function ContextualDashboardRenderer() {
   const activeSubItem = useSelector(selectActiveSubItem);
   const selectedAssistantId = useSelector(selectSelectedAssistantForChat);
   const selectedAssistant = useSelector(state => 
-    selectedAssistantId ? makeSelectAiAssistantById(selectedAssistantId)(state) : null
+    selectedAssistantId ? selectAiAssistantById(selectedAssistantId)(state) : null
   );
   const documentViewMode = useSelector(selectDocumentViewMode);
   const activeDocument = useSelector(selectActiveDocument);
@@ -186,7 +186,6 @@ export default function ContextualDashboardRenderer() {
   const useMixedDashboard = assistantContext?.isRelevant || activeCategory === 'executive';
   
   if (useMixedDashboard) {
-    // eslint-disable-next-line security/detect-object-injection
     const MixedComponent = MIXED_DASHBOARD_COMPONENTS[activeCategory];
     if (MixedComponent) {
       return (
@@ -201,9 +200,7 @@ export default function ContextualDashboardRenderer() {
     }
   }
 
-  // eslint-disable-next-line security/detect-object-injection
   const ViewComponent = VIEW_COMPONENTS[activeCategory] || ExecutiveOverview;
-  // eslint-disable-next-line security/detect-object-injection
   const subItemConfig = SUB_ITEM_CONFIGS[activeSubItem] || {};
 
   return (

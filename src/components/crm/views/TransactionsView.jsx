@@ -1,48 +1,24 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import {
-  Receipt,
-  Search,
-  Filter,
-  Upload,
-  Plus,
-  Edit2,
-  Trash2,
-  Eye,
-  ChevronLeft,
-  ChevronRight,
-  X,
-  Building,
-  MapPin,
-  DollarSign,
-  ArrowUpDown,
-  RefreshCw,
-  FileSpreadsheet,
+import { 
+  Receipt, Search, Filter, Download, Upload, Plus, Edit2, Trash2, Eye, 
+  ChevronLeft, ChevronRight, X, Building, MapPin, Home, DollarSign,
+  Calendar, ArrowUpDown, RefreshCw, FileSpreadsheet
 } from 'lucide-react';
-import { authFetch } from '../../../utils/authFetch';
+import axios from 'axios';
 
-const PROPERTY_TYPES = [
-  'Flat',
-  'Villa',
-  'Townhouse',
-  'Penthouse',
-  'Studio',
-  'Office',
-  'Hotel Rooms',
-];
+const PROPERTY_TYPES = ['Flat', 'Villa', 'Townhouse', 'Penthouse', 'Studio', 'Office', 'Hotel Rooms'];
 const ROOM_OPTIONS = ['Studio', '1 B/R', '2 B/R', '3 B/R', '4 B/R', '5 B/R', '6+ B/R'];
 
-const formatCurrency = value => {
+const formatCurrency = (value) => {
   if (!value) return 'AED 0';
   return `AED ${Number(value).toLocaleString()}`;
 };
 
-const formatDate = date => {
+const formatDate = (date) => {
   if (!date) return '-';
-  return new Date(date).toLocaleDateString('en-GB', {
-    day: '2-digit',
-    month: 'short',
-    year: 'numeric',
+  return new Date(date).toLocaleDateString('en-GB', { 
+    day: '2-digit', month: 'short', year: 'numeric' 
   });
 };
 
@@ -58,7 +34,7 @@ export default function TransactionsView() {
     rooms: '',
     minValue: '',
     maxValue: '',
-    isOffplan: '',
+    isOffplan: ''
   });
   const [showFilters, setShowFilters] = useState(false);
   const [sortConfig, setSortConfig] = useState({ sortBy: 'instanceDate', sortOrder: 'desc' });
@@ -67,11 +43,6 @@ export default function TransactionsView() {
   const [modalMode, setModalMode] = useState('view');
   const [editForm, setEditForm] = useState({});
   const [importing, setImporting] = useState(false);
-  const [statusMessage, setStatusMessage] = useState(null);
-
-  const showStatus = (type, text) => {
-    setStatusMessage({ type, text });
-  };
 
   const fetchTransactions = useCallback(async () => {
     setLoading(true);
@@ -81,18 +52,16 @@ export default function TransactionsView() {
         limit: pagination.limit,
         sortBy: sortConfig.sortBy,
         sortOrder: sortConfig.sortOrder,
-        ...Object.fromEntries(Object.entries(filters).filter(([_, v]) => v)),
+        ...Object.fromEntries(Object.entries(filters).filter(([_, v]) => v))
       });
-
-      const response = await authFetch(`/api/transactions?${params}`);
-      if (!response.ok) return;
-      const payload = await response.json();
-      if (payload.success) {
-        setTransactions(payload.data);
-        setPagination(prev => ({ ...prev, ...payload.pagination }));
+      
+      const response = await axios.get(`/api/transactions?${params}`);
+      if (response.data.success) {
+        setTransactions(response.data.data);
+        setPagination(prev => ({ ...prev, ...response.data.pagination }));
       }
-    } catch {
-      // handled silently
+    } catch (error) {
+      
     } finally {
       setLoading(false);
     }
@@ -100,14 +69,12 @@ export default function TransactionsView() {
 
   const fetchStats = async () => {
     try {
-      const response = await authFetch('/api/transactions/stats');
-      if (!response.ok) return;
-      const payload = await response.json();
-      if (payload.success) {
-        setStats(payload.stats);
+      const response = await axios.get('/api/transactions/stats');
+      if (response.data.success) {
+        setStats(response.data.stats);
       }
-    } catch {
-      // handled silently
+    } catch (error) {
+      
     }
   };
 
@@ -119,10 +86,10 @@ export default function TransactionsView() {
     fetchStats();
   }, []);
 
-  const handleSort = field => {
+  const handleSort = (field) => {
     setSortConfig(prev => ({
       sortBy: field,
-      sortOrder: prev.sortBy === field && prev.sortOrder === 'asc' ? 'desc' : 'asc',
+      sortOrder: prev.sortBy === field && prev.sortOrder === 'asc' ? 'desc' : 'asc'
     }));
   };
 
@@ -139,17 +106,17 @@ export default function TransactionsView() {
       rooms: '',
       minValue: '',
       maxValue: '',
-      isOffplan: '',
+      isOffplan: ''
     });
   };
 
-  const handleView = transaction => {
+  const handleView = (transaction) => {
     setSelectedTransaction(transaction);
     setModalMode('view');
     setShowModal(true);
   };
 
-  const handleEdit = transaction => {
+  const handleEdit = (transaction) => {
     setSelectedTransaction(transaction);
     setEditForm({ ...transaction });
     setModalMode('edit');
@@ -173,7 +140,7 @@ export default function TransactionsView() {
       actualArea: 0,
       rooms: '1 B/R',
       parking: '1',
-      project: '',
+      project: ''
     });
     setModalMode('create');
     setShowModal(true);
@@ -182,61 +149,50 @@ export default function TransactionsView() {
   const handleSave = async () => {
     try {
       if (modalMode === 'create') {
-        await authFetch('/api/transactions', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(editForm),
-        });
+        await axios.post('/api/transactions', editForm);
       } else {
-        await authFetch(`/api/transactions/${selectedTransaction._id}`, {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(editForm),
-        });
+        await axios.put(`/api/transactions/${selectedTransaction._id}`, editForm);
       }
       setShowModal(false);
       fetchTransactions();
       fetchStats();
-    } catch {
-      showStatus('error', 'Failed to save transaction');
+    } catch (error) {
+      
+      alert('Failed to save transaction');
     }
   };
 
-  const handleDelete = async id => {
+  const handleDelete = async (id) => {
     if (!window.confirm('Are you sure you want to delete this transaction?')) return;
     try {
-      await authFetch(`/api/transactions/${id}`, { method: 'DELETE' });
+      await axios.delete(`/api/transactions/${id}`);
       fetchTransactions();
       fetchStats();
-    } catch {
-      // handled silently
+    } catch (error) {
+      
     }
   };
 
-  const handleImport = async e => {
+  const handleImport = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
-
+    
     setImporting(true);
     const formData = new FormData();
     formData.append('file', file);
-
+    
     try {
-      const response = await authFetch('/api/transactions/import', {
-        method: 'POST',
-        body: formData,
+      const response = await axios.post('/api/transactions/import', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' }
       });
-      if (!response.ok) {
-        throw new Error('Import failed');
-      }
-      const payload = await response.json();
-      if (payload.success) {
-        showStatus('success', `Successfully imported ${payload.imported} transactions`);
+      if (response.data.success) {
+        alert(`Successfully imported ${response.data.imported} transactions`);
         fetchTransactions();
         fetchStats();
       }
-    } catch {
-      showStatus('error', 'Failed to import file');
+    } catch (error) {
+      
+      alert('Failed to import file');
     } finally {
       setImporting(false);
       e.target.value = '';
@@ -247,9 +203,7 @@ export default function TransactionsView() {
     <div className="transactions-view">
       <div className="transactions-header">
         <div className="header-left">
-          <h2>
-            <Receipt size={24} /> DLD Transactions
-          </h2>
+          <h2><Receipt size={24} /> DLD Transactions</h2>
           <p className="subtitle">Dubai Land Department property transactions</p>
         </div>
         <div className="header-actions">
@@ -265,25 +219,6 @@ export default function TransactionsView() {
           </button>
         </div>
       </div>
-
-      {statusMessage && (
-        <div
-          role={statusMessage.type === 'error' ? 'alert' : 'status'}
-          data-testid="transactions-status-banner"
-          style={{
-            marginBottom: '16px',
-            padding: '12px 16px',
-            borderRadius: '8px',
-            fontSize: '14px',
-            fontWeight: 600,
-            borderLeft: `4px solid ${statusMessage.type === 'error' ? '#F04438' : '#12B76A'}`,
-            background: statusMessage.type === 'error' ? '#FEF3F2' : '#ECFDF3',
-            color: statusMessage.type === 'error' ? '#B42318' : '#027A48',
-          }}
-        >
-          {statusMessage.type === 'error' ? '⚠️' : '✅'} {statusMessage.text}
-        </div>
-      )}
 
       {stats && (
         <div className="stats-grid">
@@ -320,7 +255,7 @@ export default function TransactionsView() {
 
       <AnimatePresence>
         {showFilters && (
-          <motion.div
+          <motion.div 
             className="filters-panel"
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: 'auto', opacity: 1 }}
@@ -331,75 +266,58 @@ export default function TransactionsView() {
                 <label>Search</label>
                 <div className="search-input">
                   <Search size={16} />
-                  <input
-                    type="text"
+                  <input 
+                    type="text" 
                     placeholder="Transaction #, Project, Area..."
                     value={filters.search}
-                    onChange={e => handleFilterChange('search', e.target.value)}
+                    onChange={(e) => handleFilterChange('search', e.target.value)}
                   />
                 </div>
               </div>
               <div className="filter-group">
                 <label>Area</label>
-                <input
-                  type="text"
+                <input 
+                  type="text" 
                   placeholder="e.g., Palm Jumeirah"
                   value={filters.area}
-                  onChange={e => handleFilterChange('area', e.target.value)}
+                  onChange={(e) => handleFilterChange('area', e.target.value)}
                 />
               </div>
               <div className="filter-group">
                 <label>Property Type</label>
-                <select
-                  value={filters.propSubType}
-                  onChange={e => handleFilterChange('propSubType', e.target.value)}
-                >
+                <select value={filters.propSubType} onChange={(e) => handleFilterChange('propSubType', e.target.value)}>
                   <option value="">All Types</option>
-                  {PROPERTY_TYPES.map(type => (
-                    <option key={type} value={type}>
-                      {type}
-                    </option>
-                  ))}
+                  {PROPERTY_TYPES.map(type => <option key={type} value={type}>{type}</option>)}
                 </select>
               </div>
               <div className="filter-group">
                 <label>Bedrooms</label>
-                <select
-                  value={filters.rooms}
-                  onChange={e => handleFilterChange('rooms', e.target.value)}
-                >
+                <select value={filters.rooms} onChange={(e) => handleFilterChange('rooms', e.target.value)}>
                   <option value="">All</option>
-                  {ROOM_OPTIONS.map(room => (
-                    <option key={room} value={room}>
-                      {room}
-                    </option>
-                  ))}
+                  {ROOM_OPTIONS.map(room => <option key={room} value={room}>{room}</option>)}
                 </select>
               </div>
               <div className="filter-group">
                 <label>Min Value (AED)</label>
-                <input
-                  type="number"
+                <input 
+                  type="number" 
                   placeholder="0"
                   value={filters.minValue}
-                  onChange={e => handleFilterChange('minValue', e.target.value)}
+                  onChange={(e) => handleFilterChange('minValue', e.target.value)}
                 />
               </div>
               <div className="filter-group">
                 <label>Max Value (AED)</label>
-                <input
-                  type="number"
+                <input 
+                  type="number" 
                   placeholder="100,000,000"
                   value={filters.maxValue}
-                  onChange={e => handleFilterChange('maxValue', e.target.value)}
+                  onChange={(e) => handleFilterChange('maxValue', e.target.value)}
                 />
               </div>
               <div className="filter-group">
                 <label>Status</label>
-                <select
-                  value={filters.isOffplan}
-                  onChange={e => handleFilterChange('isOffplan', e.target.value)}
-                >
+                <select value={filters.isOffplan} onChange={(e) => handleFilterChange('isOffplan', e.target.value)}>
                   <option value="">All</option>
                   <option value="Off-Plan">Off-Plan</option>
                   <option value="Ready">Ready</option>
@@ -450,7 +368,7 @@ export default function TransactionsView() {
             </thead>
             <tbody>
               {transactions.map((tx, idx) => (
-                <motion.tr
+                <motion.tr 
                   key={tx._id}
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -458,32 +376,20 @@ export default function TransactionsView() {
                 >
                   <td className="tx-number">{tx.transactionNumber}</td>
                   <td className="tx-date">{formatDate(tx.instanceDate)}</td>
-                  <td className="tx-project" title={tx.project}>
-                    {tx.project || '-'}
-                  </td>
+                  <td className="tx-project" title={tx.project}>{tx.project || '-'}</td>
                   <td className="tx-area">{tx.area}</td>
-                  <td>
-                    <span className="type-badge">{tx.propSubType}</span>
-                  </td>
+                  <td><span className="type-badge">{tx.propSubType}</span></td>
                   <td>{tx.rooms || '-'}</td>
                   <td className="tx-value">{formatCurrency(tx.transValue)}</td>
                   <td>
-                    <span
-                      className={`status-badge ${tx.isOffplan === 'Off-Plan' ? 'offplan' : 'ready'}`}
-                    >
+                    <span className={`status-badge ${tx.isOffplan === 'Off-Plan' ? 'offplan' : 'ready'}`}>
                       {tx.isOffplan}
                     </span>
                   </td>
                   <td className="actions-cell">
-                    <button onClick={() => handleView(tx)} title="View">
-                      <Eye size={14} />
-                    </button>
-                    <button onClick={() => handleEdit(tx)} title="Edit">
-                      <Edit2 size={14} />
-                    </button>
-                    <button onClick={() => handleDelete(tx._id)} title="Delete" className="delete">
-                      <Trash2 size={14} />
-                    </button>
+                    <button onClick={() => handleView(tx)} title="View"><Eye size={14} /></button>
+                    <button onClick={() => handleEdit(tx)} title="Edit"><Edit2 size={14} /></button>
+                    <button onClick={() => handleDelete(tx._id)} title="Delete" className="delete"><Trash2 size={14} /></button>
                   </td>
                 </motion.tr>
               ))}
@@ -494,17 +400,16 @@ export default function TransactionsView() {
 
       {pagination.pages > 1 && (
         <div className="pagination">
-          <button
+          <button 
             disabled={pagination.page === 1}
             onClick={() => setPagination(prev => ({ ...prev, page: prev.page - 1 }))}
           >
             <ChevronLeft size={16} /> Previous
           </button>
           <span className="page-info">
-            Page {pagination.page} of {pagination.pages} ({pagination.total.toLocaleString()}{' '}
-            records)
+            Page {pagination.page} of {pagination.pages} ({pagination.total.toLocaleString()} records)
           </span>
-          <button
+          <button 
             disabled={pagination.page === pagination.pages}
             onClick={() => setPagination(prev => ({ ...prev, page: prev.page + 1 }))}
           >
@@ -515,19 +420,19 @@ export default function TransactionsView() {
 
       <AnimatePresence>
         {showModal && (
-          <motion.div
+          <motion.div 
             className="modal-overlay"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={() => setShowModal(false)}
           >
-            <motion.div
+            <motion.div 
               className="modal-content"
               initial={{ scale: 0.9, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.9, opacity: 0 }}
-              onClick={e => e.stopPropagation()}
+              onClick={(e) => e.stopPropagation()}
             >
               <div className="modal-header">
                 <h3>
@@ -535,11 +440,9 @@ export default function TransactionsView() {
                   {modalMode === 'edit' && 'Edit Transaction'}
                   {modalMode === 'create' && 'New Transaction'}
                 </h3>
-                <button onClick={() => setShowModal(false)}>
-                  <X size={20} />
-                </button>
+                <button onClick={() => setShowModal(false)}><X size={20} /></button>
               </div>
-
+              
               <div className="modal-body">
                 {modalMode === 'view' && selectedTransaction && (
                   <div className="detail-grid">
@@ -577,9 +480,7 @@ export default function TransactionsView() {
                     </div>
                     <div className="detail-item">
                       <label>Status</label>
-                      <span
-                        className={`status-badge ${selectedTransaction.isOffplan === 'Off-Plan' ? 'offplan' : 'ready'}`}
-                      >
+                      <span className={`status-badge ${selectedTransaction.isOffplan === 'Off-Plan' ? 'offplan' : 'ready'}`}>
                         {selectedTransaction.isOffplan}
                       </span>
                     </div>
@@ -603,83 +504,65 @@ export default function TransactionsView() {
                     <div className="form-row">
                       <div className="form-group">
                         <label>Project Name</label>
-                        <input
-                          type="text"
+                        <input 
+                          type="text" 
                           value={editForm.project || ''}
-                          onChange={e =>
-                            setEditForm(prev => ({ ...prev, project: e.target.value }))
-                          }
+                          onChange={(e) => setEditForm(prev => ({ ...prev, project: e.target.value }))}
                         />
                       </div>
                       <div className="form-group">
                         <label>Area</label>
-                        <input
-                          type="text"
+                        <input 
+                          type="text" 
                           value={editForm.area || ''}
-                          onChange={e => setEditForm(prev => ({ ...prev, area: e.target.value }))}
+                          onChange={(e) => setEditForm(prev => ({ ...prev, area: e.target.value }))}
                         />
                       </div>
                     </div>
                     <div className="form-row">
                       <div className="form-group">
                         <label>Property Type</label>
-                        <select
+                        <select 
                           value={editForm.propSubType || 'Flat'}
-                          onChange={e =>
-                            setEditForm(prev => ({ ...prev, propSubType: e.target.value }))
-                          }
+                          onChange={(e) => setEditForm(prev => ({ ...prev, propSubType: e.target.value }))}
                         >
-                          {PROPERTY_TYPES.map(type => (
-                            <option key={type} value={type}>
-                              {type}
-                            </option>
-                          ))}
+                          {PROPERTY_TYPES.map(type => <option key={type} value={type}>{type}</option>)}
                         </select>
                       </div>
                       <div className="form-group">
                         <label>Rooms</label>
-                        <select
+                        <select 
                           value={editForm.rooms || ''}
-                          onChange={e => setEditForm(prev => ({ ...prev, rooms: e.target.value }))}
+                          onChange={(e) => setEditForm(prev => ({ ...prev, rooms: e.target.value }))}
                         >
-                          {ROOM_OPTIONS.map(room => (
-                            <option key={room} value={room}>
-                              {room}
-                            </option>
-                          ))}
+                          {ROOM_OPTIONS.map(room => <option key={room} value={room}>{room}</option>)}
                         </select>
                       </div>
                     </div>
                     <div className="form-row">
                       <div className="form-group">
                         <label>Transaction Value (AED)</label>
-                        <input
-                          type="number"
+                        <input 
+                          type="number" 
                           value={editForm.transValue || 0}
-                          onChange={e =>
-                            setEditForm(prev => ({ ...prev, transValue: Number(e.target.value) }))
-                          }
+                          onChange={(e) => setEditForm(prev => ({ ...prev, transValue: Number(e.target.value) }))}
                         />
                       </div>
                       <div className="form-group">
                         <label>Area (sqft)</label>
-                        <input
-                          type="number"
+                        <input 
+                          type="number" 
                           value={editForm.actualArea || 0}
-                          onChange={e =>
-                            setEditForm(prev => ({ ...prev, actualArea: Number(e.target.value) }))
-                          }
+                          onChange={(e) => setEditForm(prev => ({ ...prev, actualArea: Number(e.target.value) }))}
                         />
                       </div>
                     </div>
                     <div className="form-row">
                       <div className="form-group">
                         <label>Status</label>
-                        <select
+                        <select 
                           value={editForm.isOffplan || 'Off-Plan'}
-                          onChange={e =>
-                            setEditForm(prev => ({ ...prev, isOffplan: e.target.value }))
-                          }
+                          onChange={(e) => setEditForm(prev => ({ ...prev, isOffplan: e.target.value }))}
                         >
                           <option value="Off-Plan">Off-Plan</option>
                           <option value="Ready">Ready</option>
@@ -687,11 +570,9 @@ export default function TransactionsView() {
                       </div>
                       <div className="form-group">
                         <label>Ownership</label>
-                        <select
+                        <select 
                           value={editForm.isFreehold || 'Free Hold'}
-                          onChange={e =>
-                            setEditForm(prev => ({ ...prev, isFreehold: e.target.value }))
-                          }
+                          onChange={(e) => setEditForm(prev => ({ ...prev, isFreehold: e.target.value }))}
                         >
                           <option value="Free Hold">Freehold</option>
                           <option value="Leasehold">Leasehold</option>
@@ -701,22 +582,18 @@ export default function TransactionsView() {
                     <div className="form-row">
                       <div className="form-group">
                         <label>Parking</label>
-                        <input
-                          type="text"
+                        <input 
+                          type="text" 
                           value={editForm.parking || ''}
-                          onChange={e =>
-                            setEditForm(prev => ({ ...prev, parking: e.target.value }))
-                          }
+                          onChange={(e) => setEditForm(prev => ({ ...prev, parking: e.target.value }))}
                         />
                       </div>
                       <div className="form-group">
                         <label>Nearest Metro</label>
-                        <input
-                          type="text"
+                        <input 
+                          type="text" 
                           value={editForm.nearestMetro || ''}
-                          onChange={e =>
-                            setEditForm(prev => ({ ...prev, nearestMetro: e.target.value }))
-                          }
+                          onChange={(e) => setEditForm(prev => ({ ...prev, nearestMetro: e.target.value }))}
                         />
                       </div>
                     </div>
@@ -831,8 +708,8 @@ export default function TransactionsView() {
         }
         
         .stat-card.highlight {
-          background: linear-gradient(135deg, rgba(227, 30, 36, 0.1), rgba(227, 30, 36, 0.05));
-          border-color: rgba(227, 30, 36, 0.3);
+          background: linear-gradient(135deg, rgba(212, 175, 55, 0.1), rgba(212, 175, 55, 0.05));
+          border-color: rgba(212, 175, 55, 0.3);
         }
         
         .stat-icon {
@@ -991,7 +868,7 @@ export default function TransactionsView() {
         }
         
         .transactions-table tr:hover {
-          background: rgba(227, 30, 36, 0.03);
+          background: rgba(212, 175, 55, 0.03);
         }
         
         .tx-number {
@@ -1162,7 +1039,7 @@ export default function TransactionsView() {
         }
         
         .detail-item.highlight {
-          background: linear-gradient(135deg, rgba(227, 30, 36, 0.1), rgba(227, 30, 36, 0.05));
+          background: linear-gradient(135deg, rgba(212, 175, 55, 0.1), rgba(212, 175, 55, 0.05));
         }
         
         .detail-item label {

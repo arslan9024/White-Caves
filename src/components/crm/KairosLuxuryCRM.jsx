@@ -5,7 +5,6 @@ import {
   ArrowUp, ArrowDown, Filter, Search, Plus, Eye
 } from 'lucide-react';
 import AssistantDocsTab from './shared/AssistantDocsTab';
-import AssistantLifecycleTab from './shared/AssistantLifecycleTab';
 import './AssistantDashboard.css';
 
 const VIP_CLIENTS = [
@@ -119,22 +118,18 @@ const KairosLuxuryCRM = () => {
       </div>
 
       <div className="assistant-tabs">
-        {['vip', 'concierge', 'exclusive', 'partners', 'lifecycle', 'docs'].map(tab => (
+        {['vip', 'concierge', 'exclusive', 'partners', 'docs'].map(tab => (
           <button
             key={tab}
             className={`tab-btn ${activeTab === tab ? 'active' : ''}`}
             onClick={() => setActiveTab(tab)}
           >
-            {tab === 'docs' ? 'Documentation' : tab === 'vip' ? 'VIP Clients' : tab === 'lifecycle' ? 'Lifecycle' : tab.charAt(0).toUpperCase() + tab.slice(1)}
+            {tab === 'docs' ? 'Documentation' : tab === 'vip' ? 'VIP Clients' : tab.charAt(0).toUpperCase() + tab.slice(1)}
           </button>
         ))}
       </div>
 
       <div className="tab-content">
-        {activeTab === 'lifecycle' && (
-          <AssistantLifecycleTab assistantId="kairos" color="#D97706" assistantName="Kairos" />
-        )}
-
         {activeTab === 'vip' && (
           <div className="vip-view">
             <div className="view-header">

@@ -100,11 +100,10 @@ const MobileLoginForm: React.FC<MobileLoginFormProps> = ({ onSuccess, onError })
       setConfirmationResult(result);
       setStep('otp');
     } catch (error) {
-      const authError = error as FirebaseAuthError;
-      log.error('Send OTP error:', authError);
-      setError(authError.message || 'Failed to send OTP');
-      dispatch(loginFailure(authError.message || 'Failed to send OTP'));
-      onError?.(authError);
+      
+      setError(error.message || 'Failed to send OTP');
+      dispatch(loginFailure(error.message));
+      onError?.(error);
       
       if (window.recaptchaVerifier) {
         window.recaptchaVerifier.clear();
@@ -147,8 +146,7 @@ const MobileLoginForm: React.FC<MobileLoginFormProps> = ({ onSuccess, onError })
       
       onSuccess?.(userData);
     } catch (error) {
-      const authError = error as FirebaseAuthError;
-      log.error('Verify OTP error:', authError);
+      
       setError('Invalid OTP. Please try again.');
       dispatch(loginFailure(authError.message || 'OTP verification failed'));
       onError?.(authError);

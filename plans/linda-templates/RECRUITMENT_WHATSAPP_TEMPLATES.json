@@ -1,0 +1,102 @@
+{
+  "version": "2026-05-22",
+  "owner": "Linda",
+  "templates": [
+    {
+      "id": "screening_result",
+      "category": "screening",
+      "trigger": "candidate_scored",
+      "allowedStatuses": ["strong_match", "moderate_match", "weak_match", "rejected"],
+      "variables": [
+        "candidate_name",
+        "job_title",
+        "overall_score",
+        "screening_status",
+        "skills_score",
+        "experience_score",
+        "education_score",
+        "cultural_fit_score",
+        "location_match_score",
+        "feedback",
+        "next_action"
+      ]
+    },
+    {
+      "id": "interview_invitation",
+      "category": "interview",
+      "trigger": "candidate_shortlisted",
+      "allowedStatuses": ["strong_match", "moderate_match"],
+      "variables": [
+        "candidate_name",
+        "job_title",
+        "interview_type",
+        "interview_duration",
+        "available_times",
+        "meeting_link"
+      ]
+    },
+    {
+      "id": "interview_reminder",
+      "category": "reminder",
+      "trigger": "interview_scheduled",
+      "allowedStatuses": ["scheduled"],
+      "variables": [
+        "candidate_name",
+        "interview_date",
+        "interview_time",
+        "meeting_link",
+        "interview_duration"
+      ]
+    },
+    {
+      "id": "offer_letter",
+      "category": "offer",
+      "trigger": "candidate_selected",
+      "allowedStatuses": ["offer_ready"],
+      "variables": [
+        "candidate_name",
+        "job_title",
+        "company_name",
+        "department",
+        "start_date",
+        "salary"
+      ]
+    },
+    {
+      "id": "onboarding_welcome",
+      "category": "onboarding",
+      "trigger": "offer_accepted",
+      "allowedStatuses": ["hired", "onboarding_started"],
+      "variables": [
+        "candidate_name",
+        "company_name",
+        "job_title",
+        "start_date",
+        "checklist_items",
+        "buddy_name",
+        "training_modules"
+      ]
+    },
+    {
+      "id": "rejection_notification",
+      "category": "screening",
+      "trigger": "candidate_rejected",
+      "allowedStatuses": ["rejected"],
+      "variables": [
+        "candidate_name",
+        "job_title"
+      ]
+    },
+    {
+      "id": "follow_up",
+      "category": "follow_up",
+      "trigger": "review_pending",
+      "allowedStatuses": ["moderate_match", "weak_match"],
+      "variables": [
+        "candidate_name",
+        "job_title",
+        "expected_date"
+      ]
+    }
+  ]
+}

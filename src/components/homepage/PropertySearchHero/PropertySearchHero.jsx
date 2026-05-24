@@ -1,17 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import {
-  Search,
-  MapPin,
-  Home,
-  Building2,
-  Castle,
-  Hotel,
-  Warehouse,
-  LandPlot,
-  ChevronDown,
-  X,
-} from 'lucide-react';
+import { Search, MapPin, Home, Building2, Castle, Hotel, Warehouse, LandPlot, ChevronDown, X } from 'lucide-react';
 import './PropertySearchHero.css';
 
 const DUBAI_COMMUNITIES = [
@@ -75,19 +64,19 @@ export default function PropertySearchHero() {
   const [propertyType, setPropertyType] = useState('');
   const [bedrooms, setBedrooms] = useState('');
   const [priceRange, setPriceRange] = useState('any');
-
+  
   const [showLocationDropdown, setShowLocationDropdown] = useState(false);
   const [showPropertyTypeDropdown, setShowPropertyTypeDropdown] = useState(false);
   const [showBedroomDropdown, setShowBedroomDropdown] = useState(false);
   const [showPriceDropdown, setShowPriceDropdown] = useState(false);
-
+  
   const locationRef = useRef(null);
   const propertyTypeRef = useRef(null);
   const bedroomRef = useRef(null);
   const priceRef = useRef(null);
 
   useEffect(() => {
-    const handleClickOutside = event => {
+    const handleClickOutside = (event) => {
       if (locationRef.current && !locationRef.current.contains(event.target)) {
         setShowLocationDropdown(false);
       }
@@ -134,10 +123,10 @@ export default function PropertySearchHero() {
     <div className="property-search-hero">
       <div className="search-hero-content">
         <h1 className="search-hero-title">
-          Find Your Perfect <span className="red-text">Property</span> in Dubai
+          Find Your Perfect <span className="gold-text">Luxury Property</span> in Dubai
         </h1>
         <p className="search-hero-subtitle">
-          Explore exclusive properties in Dubai&apos;s most prestigious communities
+          Explore exclusive properties in Dubai's most prestigious communities
         </p>
 
         <div className="search-box-container">
@@ -164,7 +153,7 @@ export default function PropertySearchHero() {
               New Projects
             </button>
           </div>
-
+          
           <div className="property-status-tabs">
             <button
               className={`status-tab ${propertyStatus === 'all' ? 'active' : ''}`}
@@ -188,13 +177,16 @@ export default function PropertySearchHero() {
 
           <div className="search-filters-row">
             <div className="search-filter-group location-filter" ref={locationRef}>
-              <div className="filter-input-wrapper" onClick={() => setShowLocationDropdown(true)}>
+              <div 
+                className="filter-input-wrapper"
+                onClick={() => setShowLocationDropdown(true)}
+              >
                 <MapPin size={20} className="filter-icon" />
                 <input
                   type="text"
                   placeholder="Enter location..."
                   value={locationQuery || selectedLocation?.name || ''}
-                  onChange={e => {
+                  onChange={(e) => {
                     setLocationQuery(e.target.value);
                     setLocation('');
                     setShowLocationDropdown(true);
@@ -207,49 +199,45 @@ export default function PropertySearchHero() {
                   </button>
                 )}
               </div>
-
+              
               {showLocationDropdown && (
                 <div className="filter-dropdown location-dropdown">
                   {filteredCommunities.filter(c => c.popular).length > 0 && (
                     <>
                       <div className="dropdown-section-title">Popular Communities</div>
-                      {filteredCommunities
-                        .filter(c => c.popular)
-                        .map(community => (
-                          <button
-                            key={community.id}
-                            className={`dropdown-item ${location === community.id ? 'selected' : ''}`}
-                            onClick={() => {
-                              setLocation(community.id);
-                              setLocationQuery('');
-                              setShowLocationDropdown(false);
-                            }}
-                          >
-                            <MapPin size={16} />
-                            {community.name}
-                          </button>
-                        ))}
+                      {filteredCommunities.filter(c => c.popular).map(community => (
+                        <button
+                          key={community.id}
+                          className={`dropdown-item ${location === community.id ? 'selected' : ''}`}
+                          onClick={() => {
+                            setLocation(community.id);
+                            setLocationQuery('');
+                            setShowLocationDropdown(false);
+                          }}
+                        >
+                          <MapPin size={16} />
+                          {community.name}
+                        </button>
+                      ))}
                     </>
                   )}
                   {filteredCommunities.filter(c => !c.popular).length > 0 && (
                     <>
                       <div className="dropdown-section-title">All Communities</div>
-                      {filteredCommunities
-                        .filter(c => !c.popular)
-                        .map(community => (
-                          <button
-                            key={community.id}
-                            className={`dropdown-item ${location === community.id ? 'selected' : ''}`}
-                            onClick={() => {
-                              setLocation(community.id);
-                              setLocationQuery('');
-                              setShowLocationDropdown(false);
-                            }}
-                          >
-                            <MapPin size={16} />
-                            {community.name}
-                          </button>
-                        ))}
+                      {filteredCommunities.filter(c => !c.popular).map(community => (
+                        <button
+                          key={community.id}
+                          className={`dropdown-item ${location === community.id ? 'selected' : ''}`}
+                          onClick={() => {
+                            setLocation(community.id);
+                            setLocationQuery('');
+                            setShowLocationDropdown(false);
+                          }}
+                        >
+                          <MapPin size={16} />
+                          {community.name}
+                        </button>
+                      ))}
                     </>
                   )}
                 </div>
@@ -257,7 +245,7 @@ export default function PropertySearchHero() {
             </div>
 
             <div className="search-filter-group" ref={propertyTypeRef}>
-              <button
+              <button 
                 className="filter-select-btn"
                 onClick={() => setShowPropertyTypeDropdown(!showPropertyTypeDropdown)}
               >
@@ -274,7 +262,7 @@ export default function PropertySearchHero() {
                 )}
                 <ChevronDown size={16} className="chevron" />
               </button>
-
+              
               {showPropertyTypeDropdown && (
                 <div className="filter-dropdown">
                   <button
@@ -304,14 +292,14 @@ export default function PropertySearchHero() {
             </div>
 
             <div className="search-filter-group" ref={bedroomRef}>
-              <button
+              <button 
                 className="filter-select-btn"
                 onClick={() => setShowBedroomDropdown(!showBedroomDropdown)}
               >
                 {bedrooms ? `${bedrooms} ${bedrooms === 'Studio' ? '' : 'Beds'}` : 'Bedrooms'}
                 <ChevronDown size={16} className="chevron" />
               </button>
-
+              
               {showBedroomDropdown && (
                 <div className="filter-dropdown bedroom-dropdown">
                   <button
@@ -340,14 +328,14 @@ export default function PropertySearchHero() {
             </div>
 
             <div className="search-filter-group" ref={priceRef}>
-              <button
+              <button 
                 className="filter-select-btn"
                 onClick={() => setShowPriceDropdown(!showPriceDropdown)}
               >
                 {selectedPriceLabel}
                 <ChevronDown size={16} className="chevron" />
               </button>
-
+              
               {showPriceDropdown && (
                 <div className="filter-dropdown price-dropdown">
                   {priceRanges.map(range => (
@@ -375,21 +363,22 @@ export default function PropertySearchHero() {
 
         <div className="quick-links">
           <span>Popular:</span>
-          {DUBAI_COMMUNITIES.filter(c => c.popular)
-            .slice(0, 4)
-            .map(community => (
-              <button
-                key={community.id}
-                className="quick-link"
-                onClick={() => {
-                  setLocation(community.id);
-                  handleSearch();
-                }}
-              >
-                {community.name}
-              </button>
-            ))}
-          <button className="quick-link aurora-link" onClick={() => navigate('/dashboard')}>
+          {DUBAI_COMMUNITIES.filter(c => c.popular).slice(0, 4).map(community => (
+            <button 
+              key={community.id}
+              className="quick-link"
+              onClick={() => {
+                setLocation(community.id);
+                handleSearch();
+              }}
+            >
+              {community.name}
+            </button>
+          ))}
+          <button 
+            className="quick-link aurora-link"
+            onClick={() => navigate('/dashboard')}
+          >
             Ask Aurora AI
           </button>
         </div>

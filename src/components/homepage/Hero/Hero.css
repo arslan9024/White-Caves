@@ -2,100 +2,22 @@
   position: relative;
   min-height: 100vh;
   display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
   overflow: hidden;
-  padding: 120px 0 80px;
+  padding: 0;
 }
 
-.hero-background {
-  position: absolute;
-  inset: 0;
-  z-index: 0;
+.hero-section-search {
+  min-height: auto;
 }
 
-.hero-bg-image {
-  position: absolute;
-  inset: 0;
-  background-color: #1a1a2e; /* fallback if image fails to load */
-  background-image: url('https://images.unsplash.com/photo-1582268611958-ebfd161ef9cf?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80');
-  background-size: cover;
-  background-position: center;
-  background-attachment: fixed;
-}
-
-/* iOS Safari does not support background-attachment: fixed — fall back to scroll */
-@media (max-width: 768px) {
-  .hero-bg-image {
-    background-attachment: scroll;
-  }
-}
-
-.hero-overlay {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(
-    135deg,
-    rgba(0, 0, 0, 0.7) 0%,
-    rgba(0, 0, 0, 0.5) 50%,
-    rgba(0, 0, 0, 0.7) 100%
-  );
-}
-
-.hero-gradient-overlay {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(
-    180deg,
-    transparent 0%,
-    rgba(227, 30, 36, 0.12) 50%,
-    transparent 100%
-  );
-}
-
-.floating-shapes {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  z-index: 1;
-}
-
-.shape {
-  position: absolute;
-  border-radius: 50%;
-  background: linear-gradient(135deg, rgba(227, 30, 36, 0.25), rgba(227, 30, 36, 0.08));
-  filter: blur(40px);
-}
-
-.shape-1 {
-  width: 400px;
-  height: 400px;
-  top: 10%;
-  left: -10%;
-}
-
-.shape-2 {
-  width: 300px;
-  height: 300px;
-  top: 60%;
-  right: -5%;
-  background: linear-gradient(135deg, rgba(227, 30, 36, 0.18), rgba(227, 30, 36, 0.05));
-}
-
-.shape-3 {
-  width: 200px;
-  height: 200px;
-  top: 30%;
-  right: 20%;
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
-}
-
-.shape-4 {
-  width: 150px;
-  height: 150px;
-  bottom: 20%;
-  left: 15%;
-  background: linear-gradient(135deg, rgba(46, 90, 79, 0.2), rgba(46, 90, 79, 0.08));
+.hero-stats-section {
+  width: 100%;
+  padding: 40px 0;
+  background: #FFFFFF;
+  border-top: 1px solid #E5E7EB;
 }
 
 .hero-content {
@@ -171,7 +93,7 @@
 }
 
 .hero-title .gradient-text {
-  background: linear-gradient(135deg, var(--primary-color), #ef5350);
+  background: linear-gradient(135deg, #B03737, #D35050);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -279,9 +201,8 @@
   display: block;
   font-family: 'Cormorant Garamond', var(--font-heading), serif;
   font-size: 2.5rem;
-  font-weight: 700;
-  color: #C41E3A;
-  text-shadow: 0 0 20px rgba(196, 30, 58, 0.35);
+  font-weight: 800;
+  color: #B03737;
   line-height: 1;
   margin-bottom: 0.5rem;
 }
@@ -348,10 +269,8 @@
 }
 
 .scroll-indicator {
-  position: absolute;
-  bottom: 2rem;
-  left: 50%;
-  transform: translateX(-50%);
+  position: relative;
+  margin-top: 20px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -360,6 +279,7 @@
   cursor: pointer;
   z-index: 3;
   transition: color var(--transition-fast);
+  padding-bottom: 24px;
 }
 
 .scroll-indicator:hover {

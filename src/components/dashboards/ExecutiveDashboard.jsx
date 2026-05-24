@@ -8,7 +8,6 @@ import {
   TrendingUp, AlertCircle, Users, DollarSign, Building2,
   Activity, Calendar, Clock, CheckCircle2, Phone, Mail, MessageSquare
 } from 'lucide-react';
-import PlanManager from '../plans/PlanManager';
 import './ExecutiveDashboard.css';
 
 /**
@@ -264,13 +263,13 @@ export default function ExecutiveDashboard() {
 
       {/* Tabs */}
       <div className="dashboard-tabs">
-        {['overview', 'analytics', 'team', 'alerts', 'plans'].map(tab => (
+        {['overview', 'analytics', 'team', 'alerts'].map(tab => (
           <button
             key={tab}
             className={`tab-btn ${activeTab === tab ? 'active' : ''}`}
             onClick={() => setActiveTab(tab)}
           >
-            {tab === 'plans' ? '📋 Strategic Plans' : tab.charAt(0).toUpperCase() + tab.slice(1)}
+            {tab.charAt(0).toUpperCase() + tab.slice(1)}
           </button>
         ))}
       </div>
@@ -455,13 +454,6 @@ export default function ExecutiveDashboard() {
               ))}
             </div>
           </div>
-        </div>
-      )}
-
-      {/* Plans Tab */}
-      {activeTab === 'plans' && (
-        <div className="plans-section">
-          <PlanManager />
         </div>
       )}
     </div>

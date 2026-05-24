@@ -15,9 +15,9 @@
   background: var(--bg-primary);
 }
 
-.btn-primary-red {
-  background: linear-gradient(135deg, #e31e24 0%, #c0001d 100%);
-  color: white;
+.btn-primary-gold {
+  background: linear-gradient(135deg, #B03737, #C5A028);
+  color: #0A2463;
   border: none;
   padding: 0.9rem 2.4rem;
   font-size: 1.05rem;
@@ -35,11 +35,11 @@
 
 .btn-secondary-outline {
   background: transparent;
-  color: var(--text-primary);
-  border: 2px solid #e31e24;
-  padding: 0.9rem 2.4rem;
-  font-size: 1.05rem;
-  font-weight: 700;
+  color: white;
+  border: 2px solid #B03737;
+  padding: 1rem 2.5rem;
+  font-size: 1.1rem;
+  font-weight: 600;
   border-radius: 50px;
   cursor: pointer;
   letter-spacing: 0.02em;
@@ -161,9 +161,8 @@
 }
 
 .service-subtitle {
-  color: #e31e24;
-  font-weight: 600;
-  font-size: 0.9rem;
+  color: #B03737;
+  font-weight: 500;
   margin-bottom: 1.5rem;
   text-transform: uppercase;
   letter-spacing: 0.04em;
@@ -184,9 +183,9 @@
   font-weight: 700;
 }
 
-[data-theme='dark'] .service-list h4,
-[data-theme='dark'] .service-features h4 {
-  color: #e31e24;
+[data-theme="dark"] .service-list h4,
+[data-theme="dark"] .service-features h4 {
+  color: #B03737;
 }
 
 .service-list ul,
@@ -236,9 +235,8 @@
 }
 
 .btn-learn-more:hover {
-  background: #c0001d;
-  color: white;
-  transform: translateX(4px);
+  background: #B03737;
+  color: #0A2463;
 }
 
 /* ── Detailed Services ───────────────────────────────────────────────────── */
@@ -281,8 +279,7 @@
 }
 
 .tab-btn:hover {
-  color: var(--text-primary);
-  background: rgba(227, 30, 36, 0.04);
+  border-color: #B03737;
 }
 
 .tab-btn.active {
@@ -334,8 +331,8 @@
   text-align: center;
 }
 
-[data-theme='dark'] .process-flowchart h4 {
-  color: #e31e24;
+[data-theme="dark"] .process-flowchart h4 {
+  color: #B03737;
 }
 
 .flowchart-steps {
@@ -368,9 +365,8 @@
 }
 
 .flow-arrow {
-  font-size: 1.3rem;
-  color: #e31e24;
-  font-weight: 700;
+  font-size: 1.5rem;
+  color: #B03737;
 }
 
 /* Benefits grid */
@@ -426,8 +422,8 @@
   margin-bottom: 1rem;
 }
 
-[data-theme='dark'] .comparison-table h4 {
-  color: #e31e24;
+[data-theme="dark"] .comparison-table h4 {
+  color: #B03737;
 }
 
 .comparison-table table {
@@ -472,10 +468,10 @@
 }
 
 .metric {
-  background: linear-gradient(135deg, #e31e24 0%, #c0001d 100%);
-  color: white;
-  padding: 1.75rem;
-  border-radius: 16px;
+  background: linear-gradient(135deg, #B03737, #C5A028);
+  color: #0A2463;
+  padding: 2rem;
+  border-radius: 12px;
   text-align: center;
   box-shadow: 0 4px 16px rgba(227, 30, 36, 0.3);
 }
@@ -546,8 +542,8 @@
   margin-bottom: 1.25rem;
 }
 
-[data-theme='dark'] .faq-section h4 {
-  color: #e31e24;
+[data-theme="dark"] .faq-section h4 {
+  color: #B03737;
 }
 
 .faq-item {
@@ -627,17 +623,7 @@
 }
 
 .area-card h4 {
-  color: #e31e24;
-  margin-bottom: 0.75rem;
-  font-size: 1.05rem;
-  font-weight: 700;
-}
-
-/* Yield progress bar */
-.area-yield-bar {
-  height: 4px;
-  background: rgba(255, 255, 255, 0.15);
-  border-radius: 4px;
+  color: #B03737;
   margin-bottom: 1rem;
   overflow: hidden;
 }
@@ -714,10 +700,10 @@
   top: -14px;
   left: 50%;
   transform: translateX(-50%);
-  background: linear-gradient(135deg, #e31e24 0%, #c0001d 100%);
-  color: white;
-  width: 28px;
-  height: 28px;
+  background: linear-gradient(135deg, #B03737, #C5A028);
+  color: #0A2463;
+  width: 30px;
+  height: 30px;
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -786,45 +772,10 @@
   transition: all 0.28s ease;
 }
 
-.stat-card::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 3px;
-  background: linear-gradient(90deg, #e31e24, #c0001d);
-  transform: scaleX(0);
-  transform-origin: left;
-  transition: transform 0.3s ease;
-}
-
-.stat-card:hover::before {
-  transform: scaleX(1);
-}
-
-.stat-icon-wrapper {
-  width: 52px;
-  height: 52px;
-  border-radius: 14px;
-  background: linear-gradient(135deg, rgba(227, 30, 36, 0.08) 0%, rgba(192, 0, 29, 0.06) 100%);
-  color: #e31e24;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin: 0 auto 1rem;
-}
-
-[data-theme='dark'] .stat-icon-wrapper {
-  background: rgba(227, 30, 36, 0.1);
-  color: #e31e24;
-}
-
-.stat-value {
-  display: block;
-  font-size: 2.3rem;
-  font-weight: 800;
-  background: linear-gradient(135deg, #e31e24, #c0001d);
+.trust-indicators .stat-value {
+  font-size: 2.5rem;
+  font-weight: 700;
+  background: linear-gradient(135deg, #0A2463, #B03737);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -968,15 +919,13 @@
 .cta-form select:focus,
 .cta-form textarea:focus {
   outline: none;
-  border-color: #e31e24;
-  box-shadow: 0 0 0 3px rgba(227, 30, 36, 0.15);
-  background: white;
+  border-color: #B03737;
 }
 
 .btn-submit {
   width: 100%;
-  background: linear-gradient(135deg, #e31e24 0%, #c0001d 100%);
-  color: white;
+  background: linear-gradient(135deg, #B03737, #C5A028);
+  color: #0A2463;
   border: none;
   padding: 1rem;
   font-size: 1.05rem;
@@ -996,9 +945,31 @@
 .btn-submit:disabled {
   opacity: 0.7;
   cursor: not-allowed;
+  transform: none;
 }
 
-/* ── Responsive ──────────────────────────────────────────────────────────── */
+.submit-success {
+  background: #dcfce7;
+  color: #166534;
+  padding: 1rem;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  text-align: center;
+  font-weight: 500;
+  border: 1px solid #86efac;
+}
+
+.submit-error {
+  background: #fee2e2;
+  color: #991b1b;
+  padding: 1rem;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  text-align: center;
+  font-weight: 500;
+  border: 1px solid #fca5a5;
+}
+
 @media (max-width: 1024px) {
   .services-cards,
   .benefits-grid,

@@ -67,7 +67,7 @@ const BiometricPrompt = ({ onClose }: BiometricPromptProps) => {
       const userId = user.id || user.uid || user.email;
       const userEmail = user.email;
       const userName = user.name || user.displayName || user.email;
-      
+
       const result = await registerBiometric(userId, userEmail, userName);
 
       if (result.success) {
@@ -84,9 +84,9 @@ const BiometricPrompt = ({ onClose }: BiometricPromptProps) => {
           onClose?.();
         }, 1500);
       }
-    } catch (error: unknown) {
-      log.error('BiometricPrompt setup error:', error);
-      setMessage({ type: 'error', text: error instanceof Error ? error.message : 'Failed to enable biometric login' });
+    } catch (error) {
+      
+      setMessage({ type: 'error', text: error.message || 'Failed to enable biometric login' });
     } finally {
       setLoading(false);
     }

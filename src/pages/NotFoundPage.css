@@ -48,7 +48,7 @@
 .not-found-content h1 {
   font-size: 100px;
   font-weight: 800;
-  color: #e31e24;
+  color: #B03737;
   margin: 0;
   line-height: 1;
   text-shadow: 0 0 40px rgba(227, 30, 36, 0.3);
@@ -76,7 +76,7 @@
 
 .not-found-content .countdown {
   display: inline-block;
-  background: linear-gradient(135deg, #e31e24, #b71c1c);
+  background: linear-gradient(135deg, #B03737, #B8860B);
   color: #0a0a0f;
   width: 28px;
   height: 28px;
@@ -89,7 +89,7 @@
 .home-btn {
   margin-top: 25px;
   padding: 14px 32px;
-  background: linear-gradient(135deg, #e31e24, #b71c1c);
+  background: linear-gradient(135deg, #B03737, #B8860B);
   color: #0a0a0f;
   border: none;
   border-radius: 12px;

@@ -9,7 +9,12 @@ This project is organized into clear, logical sections for easy navigation:
 - **QUICK_ACCESS_GUIDE.md** - Start here for common tasks and shortcuts
 - **EMERGENCY_RESPONSE_PROCEDURES.md** - Critical incident response procedures
 
-### 📋 Strategic Planning & Operations
+**White Caves Real Estate LLC**
+- **Landline Phone**: +971 4 335 0592
+- **Contact**: +971 56 361 6136
+- **Email**: admin@whitecaves.com
+- **Website**: www.whitecave.com
+- **Location**: Dubai, United Arab Emirates
 
 All strategic documents are in `/plans/`:
 
@@ -45,26 +50,63 @@ Business requirements, features, and guidelines in `/business_docs/`:
 
 The source code is organized as follows:
 
+## Technology Stack
+
+### Frontend
+- React 18 with Vite
+- Redux Toolkit for state management
+- Framer Motion for animations
+- Custom CSS with dark/light themes
+
+### Backend
+- Node.js with Express
+- MongoDB with Mongoose ODM
+- Firebase Admin SDK
+
+### Design
+- Red (#DC2626) and White brand colors
+- Montserrat/Open Sans typography
+- Mobile-responsive design
+- RTL support for Arabic
+
+---
+
+## Deployment
+
+### Production Requirements
+- Node.js 24.x
+- MongoDB database
+- Firebase project with service account
+- Required environment variables configured
+
+
+### Build Commands
+```bash
+# On Windows PowerShell, use npm.cmd instead of npm if you see script execution errors:
+npm.cmd install
+npm.cmd run build
+npm.cmd start
+# Or use Node directly for package binaries:
+node node_modules/vite/bin/vite.js
+node node_modules/vitest/vitest.mjs run
 ```
-/src
-  ├── /components       - React components
-  ├── /pages           - Page components
-  ├── /services        - Backend services
-  ├── /hooks           - Custom React hooks
-  ├── /types           - TypeScript types
-  ├── /utils           - Utility functions
-  ├── /store           - Redux store configuration
-  └── /styles          - Styled components and themes
+
+If you see an error like:
+> File C:\Program Files\nodejs\npm.ps1 cannot be loaded because running scripts is disabled on this system.
+
+This is a PowerShell security policy. Either use npm.cmd as above, or run:
+```powershell
+Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned
 ```
+to allow script execution for npm.ps1 (not recommended for most users).
 
-### 🗂️ Archive & Historical Records
-
-All completed work and historical documents are in `/archives/`:
-
-- Session summaries and completion reports
-- Old deployment guides (for reference)
-- Historical status documents
-- Phase completion reports
+### Environment Variables
+- `MONGODB_URI`: MongoDB connection string
+- `FIREBASE_SERVICE_ACCOUNT`: Firebase admin credentials
+- `STRIPE_SECRET_KEY`: Stripe API key
+- `GOOGLE_CLIENT_ID`: Google OAuth client ID
+- `GOOGLE_CLIENT_SECRET`: Google OAuth secret
+- `WHATSAPP_ACCESS_TOKEN`: WhatsApp Business API token (optional)
 
 ---
 

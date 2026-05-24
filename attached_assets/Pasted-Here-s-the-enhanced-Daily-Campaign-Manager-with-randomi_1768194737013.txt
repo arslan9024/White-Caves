@@ -1,0 +1,1009 @@
+Here's the enhanced Daily Campaign Manager with randomized contact selection and strict 1-month restriction:
+
+## 🎯 **Daily Random Campaign Manager**
+
+### **`daily-campaign-manager.js`**
+```javascript
+const GoogleSheetsService = require('./google-sheets-service');
+const moment = require('moment');
+const { shuffle } = require('lodash');
+
+class DailyCampaignManager {
+    constructor(whatsappClient) {
+        this.client = whatsappClient;
+        this.sheetsService = new GoogleSheetsService();
+        
+        // Ultra-strict daily limits
+        this.limits = {
+            daily: parseInt(process.env.MAX_DAILY_MESSAGES) || 50, // Very conservative
+            minBetweenMessagesMs: 5000, // 5 seconds minimum
+            maxBetweenMessagesMs: 15000, // 15 seconds maximum
+            randomizationFactor: 0.7, // Only use 70% of daily limit for randomization
+            minDaysBetweenMessages: 30 // Don't message same person within 30 days
+        };
+        
+        // Tracking
+        this.dailyStats = {
+            date: moment().format('YYYY-MM-DD'),
+            sent: 0,
+            failed: 0,
+            skippedDueToRecency: 0,
+            contactsMessaged: [],
+            lastReset: Date.now()
+        };
+        
+        this.resetDailyStats();
+    }
+    
+    /**
+     * Main function to run daily random campaign
+     */
+    async runDailyRandomCampaign(campaignConfig) {
+        const {
+            spreadsheetId = process.env.GOOGLE_SHEETS_SPREADSHEET_ID,
+            range = process.env.GOOGLE_SHEETS_RANGE,
+            messageTemplate,
+            campaignName = `daily-${moment().format('YYYY-MM-DD')}`,
+            excludeRecentlyContacted = true
+        } = campaignConfig;
+        
+        console.log(`🚀 Starting Daily Campaign: ${campaignName}`);
+        
+        // 1. Check if we've already reached daily limit
+        if (this.dailyStats.sent >= this.limits.daily) {
+            return {
+                success: false,
+                error: `Daily limit already reached (${this.limits.daily} messages)`,
+                stats: this.dailyStats
+            };
+        }
+        
+        // 2. Load and validate contacts from Google Sheets
+        let contactsData;
+        try {
+            contactsData = await this.sheetsService.getValidatedContacts(spreadsheetId, range);
+        } catch (error) {
+            return {
+                success: false,
+                error: `Failed to load contacts: ${error.message}`
+            };
+        }
+        
+        // 3. Apply 30-day restriction filter
+        const eligibleContacts = this.filterByLastContactDate(
+            contactsData.validContacts, 
+            excludeRecentlyContacted
+        );
+        
+        console.log(`📊 After 30-day filter: ${eligibleContacts.length} eligible contacts`);
+        
+        // 4. Randomly select contacts (limited by daily remaining quota)
+        const selectedContacts = this.selectRandomContacts(
+            eligibleContacts,
+            this.getAvailableDailyQuota()
+        );
+        
+        if (selectedContacts.length === 0) {
+            return {
+                success: false,
+                error: 'No eligible contacts found after filtering',
+                stats: {
+                    totalContacts: contactsData.validContacts.length,
+                    eligibleAfterFilter: eligibleContacts.length,
+                    dailyStats: this.dailyStats
+                }
+            };
+        }
+        
+        console.log(`🎯 Randomly selected ${selectedContacts.length} contacts for today's campaign`);
+        
+        // 5. Execute campaign with ultra-conservative pacing
+        const results = await this.executeWithConservativePacing(
+            selectedContacts,
+            messageTemplate,
+            campaignName
+        );
+        
+        // 6. Update campaign stats
+        this.updateDailyStats(results);
+        
+        // 7. Update Google Sheets with last contacted dates
+        await this.updateContactHistory(selectedContacts, spreadsheetId, range);
+        
+        return {
+            success: true,
+            campaignName,
+            summary: {
+                totalContacts: contactsData.validContacts.length,
+                eligibleAfter30Days: eligibleContacts.length,
+                randomlySelected: selectedContacts.length,
+                successfullySent: results.sent,
+                failed: results.failed,
+                skippedDueToRecency: this.dailyStats.skippedDueToRecency,
+                dailyRemaining: this.limits.daily - this.dailyStats.sent,
+                nextAvailableDate: this.getNextAvailableDate(),
+                estimatedNextCampaign: this.getNextCampaignTime()
+            },
+            details: results.details,
+            dailyStats: this.dailyStats
+        };
+    }
+    
+    /**
+     * Filter contacts by last contacted date (30-day restriction)
+     */
+    filterByLastContactDate(contacts, enforceRestriction = true) {
+        if (!enforceRestriction) {
+            return contacts;
+        }
+        
+        const thirtyDaysAgo = moment().subtract(this.limits.minDaysBetweenMessages, 'days');
+        
+        return contacts.filter(contact => {
+            // If no last contacted date, assume never contacted
+            if (!contact.lastContacted) {
+                return true;
+            }
+            
+            const lastContactDate = moment(contact.lastContacted);
+            const daysSinceLastContact = moment().diff(lastContactDate, 'days');
+            
+            // Strict: Must be at least 30 days
+            if (daysSinceLastContact < this.limits.minDaysBetweenMessages) {
+                // Log skipped contact for debugging
+                console.log(`⏸️ Skipping ${contact.name || contact.validatedNumber}: Contacted ${daysSinceLastContact} days ago`);
+                this.dailyStats.skippedDueToRecency++;
+                return false;
+            }
+            
+            // Extra safety: Also check if we've messaged them today
+            const contactedToday = this.dailyStats.contactsMessaged.includes(contact.validatedNumber);
+            if (contactedToday) {
+                console.log(`⚠️ Skipping ${contact.validatedNumber}: Already messaged today`);
+                return false;
+            }
+            
+            return true;
+        });
+    }
+    
+    /**
+     * Randomly select contacts with distribution control
+     */
+    selectRandomContacts(contacts, maxToSelect) {
+        if (contacts.length <= maxToSelect) {
+            // If we have fewer contacts than quota, use all
+            return shuffle(contacts);
+        }
+        
+        // Use weighted random selection for better distribution
+        return this.weightedRandomSelection(contacts, maxToSelect);
+    }
+    
+    /**
+     * Weighted random selection to avoid patterns
+     */
+    weightedRandomSelection(contacts, n) {
+        const shuffled = shuffle([...contacts]);
+        
+        // Assign weights based on last contacted (older contacts get higher weight)
+        const weightedContacts = shuffled.map(contact => {
+            let weight = 1;
+            
+            // Higher weight for contacts never contacted
+            if (!contact.lastContacted) {
+                weight = 5;
+            } else {
+                const daysSince = moment().diff(moment(contact.lastContacted), 'days');
+                if (daysSince > 90) weight = 4; // > 3 months
+                else if (daysSince > 60) weight = 3; // 2-3 months
+                else if (daysSince > 30) weight = 2; // 1-2 months
+            }
+            
+            return { contact, weight };
+        });
+        
+        // Normalize weights and select
+        const totalWeight = weightedContacts.reduce((sum, wc) => sum + wc.weight, 0);
+        const selected = [];
+        
+        while (selected.length < n && weightedContacts.length > 0) {
+            const random = Math.random() * totalWeight;
+            let cumulative = 0;
+            
+            for (let i = 0; i < weightedContacts.length; i++) {
+                cumulative += weightedContacts[i].weight;
+                if (random <= cumulative) {
+                    selected.push(weightedContacts[i].contact);
+                    totalWeight -= weightedContacts[i].weight;
+                    weightedContacts.splice(i, 1);
+                    break;
+                }
+            }
+        }
+        
+        return selected;
+    }
+    
+    /**
+     * Get available daily quota (with randomization factor)
+     */
+    getAvailableDailyQuota() {
+        const remaining = this.limits.daily - this.dailyStats.sent;
+        
+        // Apply randomization factor (only use 70% of remaining to avoid patterns)
+        const randomizedQuota = Math.floor(remaining * this.limits.randomizationFactor);
+        
+        // Ensure minimum of 1 if we have quota remaining
+        return Math.max(1, randomizedQuota);
+    }
+    
+    /**
+     * Execute with ultra-conservative pacing
+     */
+    async executeWithConservativePacing(contacts, messageTemplate, campaignName) {
+        const results = {
+            sent: 0,
+            failed: 0,
+            details: []
+        };
+        
+        let consecutiveSuccesses = 0;
+        let consecutiveFailures = 0;
+        
+        for (let i = 0; i < contacts.length; i++) {
+            const contact = contacts[i];
+            const contactId = contact.validatedNumber;
+            
+            // Check real-time quota
+            if (this.dailyStats.sent >= this.limits.daily) {
+                console.log(`⏹️ Daily limit reached. Stopping campaign.`);
+                break;
+            }
+            
+            // Dynamic delay calculation
+            const delay = this.calculateDynamicDelay(i, consecutiveSuccesses, consecutiveFailures);
+            
+            console.log(`⏳ Waiting ${delay/1000}s before next message...`);
+            await this.delay(delay);
+            
+            // Personalize message
+            const personalizedMessage = this.personalizeMessage(messageTemplate, contact);
+            
+            try {
+                // Send message with timeout
+                const sendResult = await this.sendMessageWithTimeout(
+                    contactId,
+                    personalizedMessage,
+                    15000 // 15 second timeout
+                );
+                
+                if (sendResult.success) {
+                    results.sent++;
+                    this.dailyStats.sent++;
+                    this.dailyStats.contactsMessaged.push(contactId);
+                    consecutiveSuccesses++;
+                    consecutiveFailures = 0;
+                    
+                    // Update contact success rate for future weighting
+                    contact.successRate = (contact.successRate || 0) * 0.9 + 0.1;
+                    
+                    console.log(`✅ Sent to ${contact.name || contactId} (${results.sent}/${contacts.length})`);
+                } else {
+                    results.failed++;
+                    consecutiveFailures++;
+                    consecutiveSuccesses = 0;
+                    
+                    console.log(`❌ Failed to send to ${contact.name || contactId}: ${sendResult.error}`);
+                }
+                
+                results.details.push({
+                    contact: contact.name || contactId,
+                    number: contact.validatedNumber,
+                    success: sendResult.success,
+                    timestamp: new Date().toISOString(),
+                    messageId: sendResult.messageId,
+                    error: sendResult.error,
+                    delayUsed: delay,
+                    campaignName
+                });
+                
+                // Adaptive throttling based on failures
+                if (consecutiveFailures >= 3) {
+                    console.warn('⚠️ Multiple consecutive failures. Pausing for 30 seconds...');
+                    await this.delay(30000);
+                    consecutiveFailures = 0;
+                }
+                
+                // Success-based pacing (slow down after successes to appear human)
+                if (consecutiveSuccesses >= 5) {
+                    console.log('🔄 5 consecutive successes. Taking a short break...');
+                    await this.delay(10000);
+                    consecutiveSuccesses = 0;
+                }
+                
+            } catch (error) {
+                results.failed++;
+                results.details.push({
+                    contact: contact.name || contactId,
+                    success: false,
+                    error: error.message,
+                    timestamp: new Date().toISOString()
+                });
+                
+                console.error(`💥 Error sending to ${contactId}:`, error.message);
+                
+                // Exponential backoff on critical errors
+                if (error.message.includes('blocked') || error.message.includes('banned')) {
+                    console.error('🚨 CRITICAL: Potential detection. Stopping campaign immediately.');
+                    break;
+                }
+            }
+        }
+        
+        return results;
+    }
+    
+    /**
+     * Calculate dynamic delay that avoids patterns
+     */
+    calculateDynamicDelay(messageIndex, consecutiveSuccesses, consecutiveFailures) {
+        // Base delay increases throughout the day
+        const timeOfDay = new Date().getHours();
+        let baseDelay;
+        
+        if (timeOfDay >= 22 || timeOfDay < 8) {
+            baseDelay = 20000; // Slower at night
+        } else if (timeOfDay >= 8 && timeOfDay < 12) {
+            baseDelay = 8000; // Morning pace
+        } else if (timeOfDay >= 12 && timeOfDay < 14) {
+            baseDelay = 12000; // Slower during lunch
+        } else if (timeOfDay >= 14 && timeOfDay < 18) {
+            baseDelay = 6000; // Afternoon pace
+        } else {
+            baseDelay = 10000; // Evening
+        }
+        
+        // Add randomness (30-50% variation)
+        const randomFactor = 0.3 + Math.random() * 0.2;
+        const randomDelay = baseDelay * randomFactor;
+        
+        // Increase delay as we send more messages (simulating fatigue)
+        const fatigueFactor = Math.log(messageIndex + 1) * 1000;
+        
+        // Adjust based on recent performance
+        let performanceAdjustment = 0;
+        if (consecutiveFailures > 0) {
+            performanceAdjustment = consecutiveFailures * 2000; // Slow down on failures
+        } else if (consecutiveSuccesses > 3) {
+            performanceAdjustment = -1000; // Speed up a bit on success streak
+        }
+        
+        // Final delay calculation
+        let finalDelay = baseDelay + randomDelay + fatigueFactor + performanceAdjustment;
+        
+        // Apply limits
+        finalDelay = Math.max(this.limits.minBetweenMessagesMs, 
+                            Math.min(this.limits.maxBetweenMessagesMs, finalDelay));
+        
+        // Add occasional long pause (simulating human breaks)
+        if (Math.random() < 0.02) { // 2% chance
+            const longPause = 45000 + Math.random() * 90000; // 45-135 seconds
+            console.log(`🧘 Taking human-like break: ${Math.round(longPause/1000)}s`);
+            finalDelay += longPause;
+        }
+        
+        return Math.round(finalDelay);
+    }
+    
+    /**
+     * Send message with timeout protection
+     */
+    async sendMessageWithTimeout(chatId, message, timeoutMs) {
+        return new Promise(async (resolve) => {
+            const timeoutId = setTimeout(() => {
+                resolve({
+                    success: false,
+                    error: 'Send timeout',
+                    messageId: null
+                });
+            }, timeoutMs);
+            
+            try {
+                const result = await this.client.sendMessage(chatId, message);
+                clearTimeout(timeoutId);
+                resolve({
+                    success: true,
+                    messageId: result.id?.id,
+                    timestamp: result.timestamp
+                });
+            } catch (error) {
+                clearTimeout(timeoutId);
+                resolve({
+                    success: false,
+                    error: error.message,
+                    messageId: null
+                });
+            }
+        });
+    }
+    
+    /**
+     * Personalize message with contact data
+     */
+    personalizeMessage(template, contact) {
+        const variables = {
+            name: contact.name || 'there',
+            firstName: contact.name?.split(' ')[0] || 'there',
+            day: moment().format('dddd'),
+            date: moment().format('MMMM Do'),
+            time: moment().format('h:mm a'),
+            company: contact.tags?.find(t => t.includes('company')) || '',
+            lastContacted: contact.lastContacted ? 
+                moment(contact.lastContacted).fromNow() : 'never'
+        };
+        
+        let personalized = template;
+        Object.entries(variables).forEach(([key, value]) => {
+            personalized = personalized.replace(new RegExp(`{${key}}`, 'gi'), value);
+        });
+        
+        return personalized;
+    }
+    
+    /**
+     * Update contact history in Google Sheets
+     */
+    async updateContactHistory(contacts, spreadsheetId, range) {
+        const batchUpdates = [];
+        const today = new Date().toISOString().split('T')[0];
+        
+        for (const contact of contacts) {
+            if (contact.sheetRow) {
+                batchUpdates.push({
+                    range: `${range.split('!')[0]}!D${contact.sheetRow}`,
+                    values: [[today]]
+                });
+            }
+        }
+        
+        // Update in batches of 10
+        for (let i = 0; i < batchUpdates.length; i += 10) {
+            const batch = batchUpdates.slice(i, i + 10);
+            
+            try {
+                await this.sheetsService.batchUpdateContactStatus(spreadsheetId, batch);
+                console.log(`📝 Updated ${batch.length} contacts in sheet`);
+                await this.delay(2000); // Delay between batch updates
+            } catch (error) {
+                console.error('Failed to update sheet batch:', error.message);
+            }
+        }
+    }
+    
+    /**
+     * Update daily statistics
+     */
+    updateDailyStats(results) {
+        this.dailyStats.failed += results.failed;
+        
+        // Log to file for tracking
+        this.logCampaignStats(results);
+        
+        // Check if we need to reset (after 24 hours)
+        if (Date.now() - this.dailyStats.lastReset > 24 * 60 * 60 * 1000) {
+            this.resetDailyStats();
+        }
+    }
+    
+    /**
+     * Reset daily statistics
+     */
+    resetDailyStats() {
+        const today = moment().format('YYYY-MM-DD');
+        
+        if (this.dailyStats.date !== today) {
+            this.dailyStats = {
+                date: today,
+                sent: 0,
+                failed: 0,
+                skippedDueToRecency: 0,
+                contactsMessaged: [],
+                lastReset: Date.now()
+            };
+            
+            console.log(`🔄 Daily stats reset for ${today}`);
+        }
+    }
+    
+    /**
+     * Get next available campaign date
+     */
+    getNextAvailableDate() {
+        const today = moment();
+        const messagesSent = this.dailyStats.sent;
+        
+        if (messagesSent < this.limits.daily) {
+            return 'Today (quota available)';
+        }
+        
+        // If we've used our quota, next available is tomorrow
+        return today.add(1, 'day').format('YYYY-MM-DD');
+    }
+    
+    /**
+     * Get next campaign execution time
+     */
+    getNextCampaignTime() {
+        const now = moment();
+        const hour = now.hour();
+        
+        // Optimal times for sending (based on WhatsApp usage patterns)
+        const optimalTimes = [
+            { start: 9, end: 11, weight: 0.3 },  // Morning
+            { start: 14, end: 16, weight: 0.4 }, // Afternoon
+            { start: 18, end: 20, weight: 0.3 }  // Evening
+        ];
+        
+        // Find next optimal time window
+        for (const window of optimalTimes) {
+            if (hour < window.start) {
+                return moment().set({ hour: window.start, minute: 0, second: 0 }).format();
+            }
+        }
+        
+        // Default to tomorrow morning
+        return moment().add(1, 'day').set({ hour: 9, minute: 0, second: 0 }).format();
+    }
+    
+    /**
+     * Log campaign statistics for analysis
+     */
+    logCampaignStats(results) {
+        const logEntry = {
+            date: moment().format('YYYY-MM-DD HH:mm:ss'),
+            campaign: 'daily-random',
+            stats: {
+                sent: results.sent,
+                failed: results.failed,
+                dailyTotal: this.dailyStats.sent,
+                dailyLimit: this.limits.daily,
+                remainingQuota: this.limits.daily - this.dailyStats.sent
+            },
+            performance: {
+                successRate: results.sent / (results.sent + results.failed) || 0,
+                averageDelay: this.limits.minBetweenMessagesMs,
+                skippedDueToRecency: this.dailyStats.skippedDueToRecency
+            }
+        };
+        
+        // In production, write to file or send to monitoring service
+        console.log('📈 Campaign Stats:', JSON.stringify(logEntry, null, 2));
+    }
+    
+    delay(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms));
+    }
+}
+
+// Add batch update method to GoogleSheetsService
+GoogleSheetsService.prototype.batchUpdateContactStatus = async function(spreadsheetId, updates) {
+    try {
+        await this.sheets.spreadsheets.values.batchUpdate({
+            spreadsheetId,
+            resource: {
+                valueInputOption: 'RAW',
+                data: updates
+            }
+        });
+        return { success: true };
+    } catch (error) {
+        console.error('Batch update failed:', error);
+        return { success: false, error: error.message };
+    }
+};
+
+module.exports = DailyCampaignManager;
+```
+
+## 📋 **Daily Campaign Configuration**
+
+### **`.env` additions**
+```env
+# Daily Campaign Configuration
+MAX_DAILY_MESSAGES=50
+DAILY_CAMPAIGN_ENABLED=true
+DAILY_CAMPAIGN_TIME=09:00
+DAILY_MIN_DELAY_MS=5000
+DAILY_MAX_DELAY_MS=15000
+RANDOMIZATION_FACTOR=0.7
+MIN_DAYS_BETWEEN_MESSAGES=30
+
+# Google Sheets for Daily Campaign
+DAILY_SHEET_ID=your_daily_campaign_sheet_id
+DAILY_SHEET_RANGE=DailyContacts!A2:E
+```
+
+## 🚀 **Scheduled Daily Campaign Runner**
+
+### **`daily-scheduler.js`**
+```javascript
+const cron = require('node-cron');
+const DailyCampaignManager = require('./daily-campaign-manager');
+const moment = require('moment');
+const fs = require('fs').promises;
+const path = require('path');
+
+class DailyCampaignScheduler {
+    constructor(whatsappClient) {
+        this.client = whatsappClient;
+        this.campaignManager = new DailyCampaignManager(whatsappClient);
+        this.campaigns = [];
+        this.logFile = path.join(__dirname, 'logs', 'daily-campaigns.log');
+        this.initializeLogs();
+    }
+    
+    async initializeLogs() {
+        const logDir = path.join(__dirname, 'logs');
+        try {
+            await fs.mkdir(logDir, { recursive: true });
+        } catch (error) {
+            // Directory already exists
+        }
+    }
+    
+    /**
+     * Schedule daily random campaign
+     */
+    scheduleDailyCampaign(config) {
+        const {
+            name = 'Daily Random Campaign',
+            schedule = '0 9 * * 1-5', // Weekdays at 9 AM
+            spreadsheetId,
+            range,
+            messageTemplates = [] // Multiple templates for variation
+        } = config;
+        
+        console.log(`📅 Scheduling daily campaign: ${name} (${schedule})`);
+        
+        const job = cron.schedule(schedule, async () => {
+            console.log(`⏰ ${moment().format('YYYY-MM-DD HH:mm:ss')} - Running ${name}`);
+            
+            try {
+                // Randomly select a message template
+                const randomTemplate = messageTemplates[
+                    Math.floor(Math.random() * messageTemplates.length)
+                ] || "Hello {firstName}! Hope you're having a great {day}.";
+                
+                const result = await this.campaignManager.runDailyRandomCampaign({
+                    spreadsheetId,
+                    range,
+                    messageTemplate: randomTemplate,
+                    campaignName: name,
+                    excludeRecentlyContacted: true
+                });
+                
+                await this.logCampaignResult(name, result);
+                
+                if (result.success) {
+                    console.log(`✅ ${name} completed successfully:`, result.summary);
+                } else {
+                    console.error(`❌ ${name} failed:`, result.error);
+                }
+                
+            } catch (error) {
+                console.error(`💥 Error in ${name}:`, error);
+                await this.logCampaignError(name, error);
+            }
+        }, {
+            scheduled: true,
+            timezone: "Asia/Kolkata" // Adjust to your timezone
+        });
+        
+        this.campaigns.push({ name, job, config });
+        return job;
+    }
+    
+    /**
+     * Schedule multiple time slots for better randomization
+     */
+    scheduleMultipleDailySlots(config) {
+        const timeSlots = [
+            '0 9 * * 1-5',   // 9:00 AM on weekdays
+            '0 14 * * 1-5',  // 2:00 PM on weekdays
+            '0 17 * * 1-5',  // 5:00 PM on weekdays
+        ];
+        
+        timeSlots.forEach((schedule, index) => {
+            this.scheduleDailyCampaign({
+                ...config,
+                name: `${config.name} - Slot ${index + 1}`,
+                schedule
+            });
+        });
+    }
+    
+    /**
+     * Manual trigger for daily campaign
+     */
+    async triggerDailyCampaignNow(config) {
+        console.log('🚀 Manually triggering daily campaign...');
+        
+        try {
+            const result = await this.campaignManager.runDailyRandomCampaign({
+                ...config,
+                campaignName: 'Manual-Daily-' + moment().format('YYYY-MM-DD-HHmm')
+            });
+            
+            await this.logCampaignResult('Manual Trigger', result);
+            return result;
+            
+        } catch (error) {
+            console.error('Manual trigger failed:', error);
+            await this.logCampaignError('Manual Trigger', error);
+            throw error;
+        }
+    }
+    
+    /**
+     * Log campaign results
+     */
+    async logCampaignResult(campaignName, result) {
+        const logEntry = {
+            timestamp: moment().format('YYYY-MM-DD HH:mm:ss'),
+            campaign: campaignName,
+            result: result.success ? 'SUCCESS' : 'FAILED',
+            details: {
+                sent: result.summary?.successfullySent || 0,
+                failed: result.summary?.failed || 0,
+                dailyRemaining: result.summary?.dailyRemaining || 0,
+                skippedDueToRecency: result.summary?.skippedDueToRecency || 0
+            },
+            error: result.error,
+            nextAvailable: result.summary?.nextAvailableDate
+        };
+        
+        try {
+            await fs.appendFile(
+                this.logFile, 
+                JSON.stringify(logEntry) + '\n'
+            );
+        } catch (error) {
+            console.error('Failed to write log:', error);
+        }
+    }
+    
+    async logCampaignError(campaignName, error) {
+        const logEntry = {
+            timestamp: moment().format('YYYY-MM-DD HH:mm:ss'),
+            campaign: campaignName,
+            result: 'ERROR',
+            error: error.message,
+            stack: error.stack
+        };
+        
+        try {
+            await fs.appendFile(
+                this.logFile, 
+                JSON.stringify(logEntry) + '\n'
+            );
+        } catch (error) {
+            console.error('Failed to write error log:', error);
+        }
+    }
+    
+    /**
+     * Get campaign statistics
+     */
+    async getCampaignStats(days = 7) {
+        try {
+            const logs = await fs.readFile(this.logFile, 'utf-8');
+            const entries = logs.split('\n')
+                .filter(line => line.trim())
+                .map(line => JSON.parse(line));
+            
+            const recentEntries = entries.filter(entry => 
+                moment(entry.timestamp).isAfter(moment().subtract(days, 'days'))
+            );
+            
+            const stats = {
+                totalCampaigns: recentEntries.length,
+                successful: recentEntries.filter(e => e.result === 'SUCCESS').length,
+                failed: recentEntries.filter(e => e.result === 'FAILED').length,
+                errors: recentEntries.filter(e => e.result === 'ERROR').length,
+                totalMessages: recentEntries.reduce((sum, e) => sum + (e.details?.sent || 0), 0),
+                averagePerDay: {},
+                recentActivities: recentEntries.slice(-5)
+            };
+            
+            // Calculate daily averages
+            for (let i = 0; i < days; i++) {
+                const date = moment().subtract(i, 'days').format('YYYY-MM-DD');
+                const dayEntries = recentEntries.filter(e => 
+                    e.timestamp.startsWith(date)
+                );
+                
+                stats.averagePerDay[date] = {
+                    campaigns: dayEntries.length,
+                    messages: dayEntries.reduce((sum, e) => sum + (e.details?.sent || 0), 0)
+                };
+            }
+            
+            return stats;
+        } catch (error) {
+            console.error('Failed to read stats:', error);
+            return { error: 'No stats available' };
+        }
+    }
+    
+    /**
+     * Stop all scheduled campaigns
+     */
+    stopAllCampaigns() {
+        this.campaigns.forEach(campaign => {
+            campaign.job.stop();
+            console.log(`🛑 Stopped campaign: ${campaign.name}`);
+        });
+        
+        this.campaigns = [];
+    }
+    
+    /**
+     * List all scheduled campaigns
+     */
+    listScheduledCampaigns() {
+        return this.campaigns.map(c => ({
+            name: c.name,
+            schedule: c.config.schedule,
+            nextRun: this.getNextRunTime(c.job),
+            status: 'ACTIVE'
+        }));
+    }
+    
+    getNextRunTime(job) {
+        const nextDates = job.nextDates(1);
+        return nextDates && nextDates.length > 0 
+            ? moment(nextDates[0]).format('YYYY-MM-DD HH:mm:ss')
+            : 'Not scheduled';
+    }
+}
+
+module.exports = DailyCampaignScheduler;
+```
+
+## 🎯 **Usage Example**
+
+```javascript
+const WhatsAppClient = require('./your-whatsapp-client');
+const DailyCampaignScheduler = require('./daily-scheduler');
+
+async function setupDailyCampaigns() {
+    // Initialize WhatsApp client
+    const client = new WhatsAppClient();
+    await client.initialize();
+    
+    // Create scheduler
+    const scheduler = new DailyCampaignScheduler(client);
+    
+    // Configure daily campaign
+    const campaignConfig = {
+        name: 'Daily Engagement Campaign',
+        spreadsheetId: process.env.DAILY_SHEET_ID,
+        range: process.env.DAILY_SHEET_RANGE,
+        messageTemplates: [
+            "Good morning {firstName}! Hope you have a wonderful {day} ahead. 😊",
+            "Hello {firstName}! Just checking in. Hope everything's going well! 👍",
+            "Hi {firstName}! Quick thought for your {day}... Have a great one! ✨",
+            "Hey {firstName}! Wishing you a productive {day}. Let me know if you need anything! 🤝"
+        ]
+    };
+    
+    // Schedule multiple time slots
+    scheduler.scheduleMultipleDailySlots(campaignConfig);
+    
+    // Or schedule single daily run
+    scheduler.scheduleDailyCampaign({
+        ...campaignConfig,
+        schedule: '0 10 * * 1-5' // 10 AM on weekdays
+    });
+    
+    console.log('✅ Daily campaigns scheduled successfully');
+    
+    // Get statistics
+    const stats = await scheduler.getCampaignStats(7);
+    console.log('📊 Weekly Stats:', stats);
+    
+    // Manual trigger example
+    // await scheduler.triggerDailyCampaignNow(campaignConfig);
+}
+
+// Run setup
+setupDailyCampaigns().catch(console.error);
+```
+
+## 📊 **Campaign Monitoring Dashboard**
+
+```javascript
+// campaign-monitor.js
+class CampaignMonitor {
+    constructor() {
+        this.metrics = {
+            dailySent: 0,
+            monthlySent: 0,
+            successRate: 0,
+            avgDelay: 0,
+            uniqueContacts: new Set(),
+            last30Days: new Map()
+        };
+    }
+    
+    async generateDashboard() {
+        const stats = await this.collectMetrics();
+        
+        return `
+📊 DAILY CAMPAIGN DASHBOARD
+==========================
+Date: ${new Date().toDateString()}
+
+📈 PERFORMANCE METRICS:
+• Daily Messages: ${stats.dailySent}/${process.env.MAX_DAILY_MESSAGES}
+• Monthly Unique Contacts: ${stats.uniqueContacts}
+• Success Rate: ${(stats.successRate * 100).toFixed(1)}%
+• Average Delay: ${stats.avgDelay.toFixed(0)}ms
+
+⏰ SCHEDULE STATUS:
+• Next Campaign: ${stats.nextCampaign}
+• Last Run: ${stats.lastRun || 'Never'}
+• 30-Day Restriction: Active ✅
+
+🔒 SAFETY METRICS:
+• Detection Risk: ${this.calculateRiskLevel(stats)}
+• Pattern Randomization: ${stats.randomizationScore}/100
+• Compliance Score: ${stats.complianceScore}/100
+
+📋 RECOMMENDATIONS:
+${this.generateRecommendations(stats)}
+        `;
+    }
+    
+    calculateRiskLevel(stats) {
+        const riskFactors = [];
+        
+        if (stats.dailySent > 40) riskFactors.push('High volume');
+        if (stats.successRate < 0.8) riskFactors.push('High failure rate');
+        if (stats.avgDelay < 3000) riskFactors.push('Fast pacing');
+        
+        if (riskFactors.length === 0) return 'Low 🟢';
+        if (riskFactors.length === 1) return 'Medium 🟡';
+        if (riskFactors.length === 2) return 'High 🟠';
+        return 'Critical 🔴';
+    }
+}
+
+module.exports = CampaignMonitor;
+```
+
+## ⚠️ **Critical Protection Features**
+
+| Feature | Protection Level | Description |
+|---------|-----------------|-------------|
+| **30-Day Restriction** | 🔴 **Critical** | Prevents messaging same contact within 30 days |
+| **Randomized Selection** | 🟡 **High** | Weighted random selection avoids patterns |
+| **Dynamic Delays** | 🟡 **High** | Human-like pacing with fatigue simulation |
+| **Quota Management** | 🟢 **Medium** | Only uses 70% of daily limit for safety |
+| **Multiple Time Slots** | 🟡 **High** | Avoids fixed timing patterns |
+| **Contact History** | 🟢 **Medium** | Tracks all contacts to prevent duplicates |
+| **Adaptive Throttling** | 🟡 **High** | Slows down on failures, speeds up on success |
+
+## 📋 **Daily Checklist**
+
+1. ✅ Check daily quota availability
+2. ✅ Load contacts from Google Sheets
+3. ✅ Apply 30-day filter
+4. ✅ Randomly select contacts
+5. ✅ Execute with dynamic delays
+6. ✅ Update contact history
+7. ✅ Log all activities
+8. ✅ Monitor for anomalies
+
+This system provides a **safe, randomized daily campaign** that respects WhatsApp's limits and contact preferences while minimizing detection risk through unpredictable patterns and strict time-based restrictions.

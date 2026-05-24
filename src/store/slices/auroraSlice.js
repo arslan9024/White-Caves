@@ -4,7 +4,6 @@
  */
 
 import { createSlice, createAsyncThunk, createSelector } from '@reduxjs/toolkit';
-import { authFetch } from '../../utils/authFetch';
 
 const API_BASE = '/api/aurora';
 
@@ -12,7 +11,7 @@ export const fetchProviders = createAsyncThunk(
   'aurora/fetchProviders',
   async (_, { rejectWithValue }) => {
     try {
-      const response = await authFetch(`${API_BASE}/providers`);
+      const response = await fetch(`${API_BASE}/providers`);
       const data = await response.json();
       if (!data.success) throw new Error(data.error);
       return data;
@@ -26,7 +25,7 @@ export const fetchAnalysis = createAsyncThunk(
   'aurora/fetchAnalysis',
   async ({ refresh = false } = {}, { rejectWithValue }) => {
     try {
-      const response = await authFetch(`${API_BASE}/analyze?refresh=${refresh}`);
+      const response = await fetch(`${API_BASE}/analyze?refresh=${refresh}`);
       const data = await response.json();
       if (!data.success) throw new Error(data.error);
       return data.analysis;
@@ -40,7 +39,7 @@ export const fetchAnalysisSummary = createAsyncThunk(
   'aurora/fetchAnalysisSummary',
   async (_, { rejectWithValue }) => {
     try {
-      const response = await authFetch(`${API_BASE}/analyze/summary`);
+      const response = await fetch(`${API_BASE}/analyze/summary`);
       const data = await response.json();
       if (!data.success) throw new Error(data.error);
       return data.summary;
@@ -54,7 +53,7 @@ export const scanComponents = createAsyncThunk(
   'aurora/scanComponents',
   async (_, { rejectWithValue }) => {
     try {
-      const response = await authFetch(`${API_BASE}/scan-components`, { method: 'POST' });
+      const response = await fetch(`${API_BASE}/scan-components`, { method: 'POST' });
       const data = await response.json();
       if (!data.success) throw new Error(data.error);
       return data;
@@ -68,7 +67,7 @@ export const fetchComponentCompletion = createAsyncThunk(
   'aurora/fetchComponentCompletion',
   async (_, { rejectWithValue }) => {
     try {
-      const response = await authFetch(`${API_BASE}/components/completion`);
+      const response = await fetch(`${API_BASE}/components/completion`);
       const data = await response.json();
       if (!data.success) throw new Error(data.error);
       return data;
@@ -82,10 +81,10 @@ export const generateSRS = createAsyncThunk(
   'aurora/generateSRS',
   async (config = {}, { rejectWithValue }) => {
     try {
-      const response = await authFetch(`${API_BASE}/generate-srs`, {
+      const response = await fetch(`${API_BASE}/generate-srs`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(config),
+        body: JSON.stringify(config)
       });
       const data = await response.json();
       if (!data.success) throw new Error(data.error);
@@ -103,8 +102,8 @@ export const fetchSRSDocuments = createAsyncThunk(
       const params = new URLSearchParams();
       if (status) params.append('status', status);
       params.append('limit', limit);
-
-      const response = await authFetch(`${API_BASE}/srs?${params}`);
+      
+      const response = await fetch(`${API_BASE}/srs?${params}`);
       const data = await response.json();
       if (!data.success) throw new Error(data.error);
       return data.documents;
@@ -118,7 +117,7 @@ export const fetchSRSDocument = createAsyncThunk(
   'aurora/fetchSRSDocument',
   async (documentId, { rejectWithValue }) => {
     try {
-      const response = await authFetch(`${API_BASE}/srs/${documentId}`);
+      const response = await fetch(`${API_BASE}/srs/${documentId}`);
       const data = await response.json();
       if (!data.success) throw new Error(data.error);
       return data.document;
@@ -132,7 +131,7 @@ export const fetchLatestSRS = createAsyncThunk(
   'aurora/fetchLatestSRS',
   async (_, { rejectWithValue }) => {
     try {
-      const response = await authFetch(`${API_BASE}/srs-latest`);
+      const response = await fetch(`${API_BASE}/srs-latest`);
       const data = await response.json();
       if (!data.success) throw new Error(data.error);
       return data.document;
@@ -146,7 +145,7 @@ export const generateAudit = createAsyncThunk(
   'aurora/generateAudit',
   async (_, { rejectWithValue }) => {
     try {
-      const response = await authFetch(`${API_BASE}/audit`, { method: 'POST' });
+      const response = await fetch(`${API_BASE}/audit`, { method: 'POST' });
       const data = await response.json();
       if (!data.success) throw new Error(data.error);
       return data;
@@ -160,7 +159,7 @@ export const fetchActionCatalog = createAsyncThunk(
   'aurora/fetchActionCatalog',
   async (_, { rejectWithValue }) => {
     try {
-      const response = await authFetch(`${API_BASE}/scan-actions`);
+      const response = await fetch(`${API_BASE}/scan-actions`);
       const data = await response.json();
       if (!data.success) throw new Error(data.error);
       return data;
@@ -175,25 +174,25 @@ const initialState = {
     list: [],
     available: [],
     loading: false,
-    error: null,
+    error: null
   },
-
+  
   analysis: {
     data: null,
     summary: null,
     loading: false,
     error: null,
-    lastUpdated: null,
+    lastUpdated: null
   },
-
+  
   components: {
     list: [],
     summary: {},
     analysisRunId: null,
     loading: false,
-    error: null,
+    error: null
   },
-
+  
   srs: {
     documents: [],
     currentDocument: null,
@@ -201,24 +200,24 @@ const initialState = {
     generating: false,
     loading: false,
     error: null,
-    generationProgress: 0,
+    generationProgress: 0
   },
-
+  
   audit: {
     report: null,
     analysisData: null,
     provider: null,
     generating: false,
-    error: null,
+    error: null
   },
-
+  
   actions: {
     catalog: [],
     summary: {},
     loading: false,
-    error: null,
+    error: null
   },
-
+  
   ui: {
     activeTab: 'overview',
     selectedComponent: null,
@@ -229,40 +228,9 @@ const initialState = {
       includeDiagrams: true,
       includeCompliance: true,
       includeArabic: false,
-      preferredProvider: null,
-    },
-  },
-
-  // Aurora monitoring extensions for Wednesday plan
-  monitoring: {
-    realtime: {
-      enabled: false,
-      interval: 30000, // 30 seconds
-      lastUpdate: null,
-    },
-    vercel: {
-      connected: false,
-      buildTime: null,
-      errorRate: null,
-      uptime: null,
-      lastCheck: null,
-    },
-    mongodb: {
-      connected: false,
-      queryPerformance: null,
-      connections: null,
-      lastCheck: null,
-    },
-    alertThresholds: {
-      apiResponseTime: 500, // ms
-      databaseQueryTime: 100, // ms
-      errorRate: 0.005, // 0.5%
-      uptime: 0.999, // 99.9%
-      concurrentUsers: 80, // out of 100
-    },
-    alertHistory: [],
-    alertsSuppressed: false,
-  },
+      preferredProvider: null
+    }
+  }
 };
 
 const auroraSlice = createSlice({
@@ -286,73 +254,17 @@ const auroraSlice = createSlice({
     },
     clearError: (state, action) => {
       const section = action.payload;
-      // eslint-disable-next-line security/detect-object-injection
       if (state[section]) {
-        // eslint-disable-next-line security/detect-object-injection
         state[section].error = null;
       }
     },
-    resetAudit: state => {
+    resetAudit: (state) => {
       state.audit = initialState.audit;
-    },
-    // Monitoring actions
-    enableRealtimeMonitoring: (state, action) => {
-      state.monitoring.realtime.enabled = true;
-      state.monitoring.realtime.interval = action.payload?.interval || 30000;
-    },
-    disableRealtimeMonitoring: state => {
-      state.monitoring.realtime.enabled = false;
-    },
-    updateVercelMonitoring: (state, action) => {
-      const { buildTime, errorRate, uptime } = action.payload;
-      state.monitoring.vercel = {
-        ...state.monitoring.vercel,
-        connected: true,
-        buildTime,
-        errorRate,
-        uptime,
-        lastCheck: new Date().toISOString(),
-      };
-    },
-    updateMongoDBMonitoring: (state, action) => {
-      const { queryPerformance, connections } = action.payload;
-      state.monitoring.mongodb = {
-        ...state.monitoring.mongodb,
-        connected: true,
-        queryPerformance,
-        connections,
-        lastCheck: new Date().toISOString(),
-      };
-    },
-    updateAlertThresholds: (state, action) => {
-      state.monitoring.alertThresholds = {
-        ...state.monitoring.alertThresholds,
-        ...action.payload,
-      };
-    },
-    recordAlert: (state, action) => {
-      const { type, severity, message, metric, value, threshold } = action.payload;
-      state.monitoring.alertHistory.push({
-        id: `alert-${Date.now()}`,
-        type,
-        severity,
-        message,
-        metric,
-        value,
-        threshold,
-        recordedAt: new Date().toISOString(),
-      });
-    },
-    suppressAlerts: state => {
-      state.monitoring.alertsSuppressed = true;
-    },
-    unsuppressAlerts: state => {
-      state.monitoring.alertsSuppressed = false;
-    },
+    }
   },
-  extraReducers: builder => {
+  extraReducers: (builder) => {
     builder
-      .addCase(fetchProviders.pending, state => {
+      .addCase(fetchProviders.pending, (state) => {
         state.providers.loading = true;
         state.providers.error = null;
       })
@@ -365,8 +277,8 @@ const auroraSlice = createSlice({
         state.providers.loading = false;
         state.providers.error = action.payload;
       })
-
-      .addCase(fetchAnalysis.pending, state => {
+      
+      .addCase(fetchAnalysis.pending, (state) => {
         state.analysis.loading = true;
         state.analysis.error = null;
       })
@@ -379,8 +291,8 @@ const auroraSlice = createSlice({
         state.analysis.loading = false;
         state.analysis.error = action.payload;
       })
-
-      .addCase(fetchAnalysisSummary.pending, state => {
+      
+      .addCase(fetchAnalysisSummary.pending, (state) => {
         state.analysis.loading = true;
       })
       .addCase(fetchAnalysisSummary.fulfilled, (state, action) => {
@@ -391,8 +303,8 @@ const auroraSlice = createSlice({
         state.analysis.loading = false;
         state.analysis.error = action.payload;
       })
-
-      .addCase(scanComponents.pending, state => {
+      
+      .addCase(scanComponents.pending, (state) => {
         state.components.loading = true;
         state.components.error = null;
       })
@@ -405,8 +317,8 @@ const auroraSlice = createSlice({
         state.components.loading = false;
         state.components.error = action.payload;
       })
-
-      .addCase(fetchComponentCompletion.pending, state => {
+      
+      .addCase(fetchComponentCompletion.pending, (state) => {
         state.components.loading = true;
       })
       .addCase(fetchComponentCompletion.fulfilled, (state, action) => {
@@ -419,8 +331,8 @@ const auroraSlice = createSlice({
         state.components.loading = false;
         state.components.error = action.payload;
       })
-
-      .addCase(generateSRS.pending, state => {
+      
+      .addCase(generateSRS.pending, (state) => {
         state.srs.generating = true;
         state.srs.error = null;
         state.srs.generationProgress = 10;
@@ -430,7 +342,7 @@ const auroraSlice = createSlice({
         state.srs.generationProgress = 100;
         state.srs.currentDocument = {
           ...action.payload.document,
-          content: action.payload.content,
+          content: action.payload.content
         };
         state.srs.latestDocument = action.payload.document;
         state.srs.documents = [action.payload.document, ...state.srs.documents];
@@ -440,8 +352,8 @@ const auroraSlice = createSlice({
         state.srs.generationProgress = 0;
         state.srs.error = action.payload;
       })
-
-      .addCase(fetchSRSDocuments.pending, state => {
+      
+      .addCase(fetchSRSDocuments.pending, (state) => {
         state.srs.loading = true;
       })
       .addCase(fetchSRSDocuments.fulfilled, (state, action) => {
@@ -452,8 +364,8 @@ const auroraSlice = createSlice({
         state.srs.loading = false;
         state.srs.error = action.payload;
       })
-
-      .addCase(fetchSRSDocument.pending, state => {
+      
+      .addCase(fetchSRSDocument.pending, (state) => {
         state.srs.loading = true;
       })
       .addCase(fetchSRSDocument.fulfilled, (state, action) => {
@@ -464,12 +376,12 @@ const auroraSlice = createSlice({
         state.srs.loading = false;
         state.srs.error = action.payload;
       })
-
+      
       .addCase(fetchLatestSRS.fulfilled, (state, action) => {
         state.srs.latestDocument = action.payload;
       })
-
-      .addCase(generateAudit.pending, state => {
+      
+      .addCase(generateAudit.pending, (state) => {
         state.audit.generating = true;
         state.audit.error = null;
       })
@@ -483,8 +395,8 @@ const auroraSlice = createSlice({
         state.audit.generating = false;
         state.audit.error = action.payload;
       })
-
-      .addCase(fetchActionCatalog.pending, state => {
+      
+      .addCase(fetchActionCatalog.pending, (state) => {
         state.actions.loading = true;
       })
       .addCase(fetchActionCatalog.fulfilled, (state, action) => {
@@ -496,7 +408,7 @@ const auroraSlice = createSlice({
         state.actions.loading = false;
         state.actions.error = action.payload;
       });
-  },
+  }
 });
 
 export const {
@@ -506,62 +418,59 @@ export const {
   setSRSConfig,
   setGenerationProgress,
   clearError,
-  resetAudit,
-  enableRealtimeMonitoring,
-  disableRealtimeMonitoring,
-  updateVercelMonitoring,
-  updateMongoDBMonitoring,
-  updateAlertThresholds,
-  recordAlert,
-  suppressAlerts,
-  unsuppressAlerts,
+  resetAudit
 } = auroraSlice.actions;
 
-const selectAurora = state => state.aurora;
+const selectAurora = (state) => state.aurora;
 
 export const selectProviders = createSelector(
   [selectAurora],
-  aurora => aurora?.providers || initialState.providers
+  (aurora) => aurora?.providers || initialState.providers
 );
 
 export const selectAnalysis = createSelector(
   [selectAurora],
-  aurora => aurora?.analysis || initialState.analysis
+  (aurora) => aurora?.analysis || initialState.analysis
 );
 
 export const selectComponents = createSelector(
   [selectAurora],
-  aurora => aurora?.components || initialState.components
+  (aurora) => aurora?.components || initialState.components
 );
 
-export const selectSRS = createSelector([selectAurora], aurora => aurora?.srs || initialState.srs);
+export const selectSRS = createSelector(
+  [selectAurora],
+  (aurora) => aurora?.srs || initialState.srs
+);
 
 export const selectAudit = createSelector(
   [selectAurora],
-  aurora => aurora?.audit || initialState.audit
+  (aurora) => aurora?.audit || initialState.audit
 );
 
 export const selectActions = createSelector(
   [selectAurora],
-  aurora => aurora?.actions || initialState.actions
+  (aurora) => aurora?.actions || initialState.actions
 );
 
-export const selectUI = createSelector([selectAurora], aurora => aurora?.ui || initialState.ui);
+export const selectUI = createSelector(
+  [selectAurora],
+  (aurora) => aurora?.ui || initialState.ui
+);
 
 export const selectCompletionScore = createSelector(
   [selectAnalysis],
-  analysis =>
-    analysis?.summary?.completionScore || analysis?.data?.codeQuality?.completionScore || 0
+  (analysis) => analysis?.summary?.completionScore || analysis?.data?.codeQuality?.completionScore || 0
 );
 
 export const selectTotalFiles = createSelector(
   [selectAnalysis],
-  analysis => analysis?.summary?.totalFiles || analysis?.data?.summary?.totalFiles || 0
+  (analysis) => analysis?.summary?.totalFiles || analysis?.data?.summary?.totalFiles || 0
 );
 
 export const selectTotalComponents = createSelector(
   [selectAnalysis],
-  analysis => analysis?.summary?.components || analysis?.data?.components?.total || 0
+  (analysis) => analysis?.summary?.components || analysis?.data?.components?.total || 0
 );
 
 export default auroraSlice.reducer;

@@ -112,8 +112,7 @@ const EmailLoginForm: React.FC<EmailLoginFormProps> = ({ mode = 'login', onSucce
       
       onSuccess?.(userData);
     } catch (error) {
-      const authError = error as FirebaseAuthError;
-      log.error('Email auth error:', authError);
+      
       let errorMessage = 'Authentication failed';
       
       switch (authError.code) {
