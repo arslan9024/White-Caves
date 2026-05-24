@@ -278,13 +278,13 @@ describe('CRMHubPage', () => {
     it('should render all 7 CRM module cards', () => {
       renderPage();
       const moduleNames = [
-        'Lead Management',
-        'Property Inventory',
-        'Sales Pipeline',
-        'Finance & Commissions',
-        'Leasing Management',
+        'Leads CRM',
+        'Inventory CRM',
+        'Sales CRM',
+        'Finance CRM',
+        'Leasing CRM',
         'WhatsApp CRM',
-        'Executive Dashboard',
+        'Executive CRM',
       ];
       // Module cards are in the grid, quick actions also have similar text
       // So just check they exist
@@ -298,8 +298,8 @@ describe('CRMHubPage', () => {
       renderPage();
       expect(screen.getByText('🎯')).toBeInTheDocument();
       expect(screen.getByText('🏠')).toBeInTheDocument();
-      expect(screen.getByText('💰')).toBeInTheDocument();
-      expect(screen.getByText('📊')).toBeInTheDocument();
+      expect(screen.getByText('📈')).toBeInTheDocument();
+      expect(screen.getByText('💳')).toBeInTheDocument();
       expect(screen.getByText('📋')).toBeInTheDocument();
       expect(screen.getByText('💬')).toBeInTheDocument();
       expect(screen.getByText('👑')).toBeInTheDocument();
@@ -307,10 +307,8 @@ describe('CRMHubPage', () => {
 
     it('should render module descriptions', () => {
       renderPage();
-      expect(screen.getByText('Track prospects, score leads, manage pipeline')).toBeInTheDocument();
-      expect(
-        screen.getByText('Property listings, availability, owner tracking')
-      ).toBeInTheDocument();
+      expect(screen.getByText('Lead qualification and pipeline management')).toBeInTheDocument();
+      expect(screen.getByText('Portfolio, owners, inventory data quality')).toBeInTheDocument();
     });
   });
 
@@ -346,7 +344,7 @@ describe('CRMHubPage', () => {
     it('should activate a module when module card is clicked', async () => {
       renderPage();
       // Click on Lead Management module card (the one in the modules grid)
-      const cards = screen.getAllByText('Track prospects, score leads, manage pipeline');
+      const cards = screen.getAllByText('Lead qualification and pipeline management');
       fireEvent.click(cards[0].closest('[class]')!);
 
       // Should show back button and active module
