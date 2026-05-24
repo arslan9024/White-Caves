@@ -3,7 +3,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { SpeedInsights } from '@vercel/speed-insights/react';
 import { setUser, setLoading } from './store/userSlice';
-import { setTheme } from './store/navigationSlice';
+import { setTheme, setActiveRole } from './store/navigationSlice';
 import { LanguageProvider } from './context/LanguageContext';
 import { ThemeProvider } from './styles/ThemeProvider';
 import AppLayout from './components/layout/AppLayout';
@@ -15,6 +15,11 @@ import type { RootState, AppDispatch } from './store/store';
 import { selectSessionUser } from './store/selectors/sessionSelectors';
 import { safeStorage } from './utils/safeStorage';
 import { authFetch } from './utils/authFetch';
+import {
+  CANONICAL_SUPERUSER_ROLE,
+  isCreatorSuperUserEmail,
+  normalizeRoleForUserContext,
+} from './utils/superUserAccess';
 
 // Lazy-load components not needed for initial render (performance optimization)
 const UniversalComponents = lazy(() => import('./components/layout/UniversalComponents'));
@@ -39,37 +44,20 @@ interface ProtectedRouteProps {
   allowedRoles?: string[];
 }
 
-/** Creator email — always receives super_admin elevation regardless of server-stored role. */
-const CREATOR_EMAIL = 'arslanmalikgoraha@gmail.com';
-
 function resolveEffectiveRole(
   user: { role?: string; email?: string } | null,
   storedRoleData: UserRoleData | null
 ): string | null {
-  // Creator always gets super_admin regardless of server role
-  if (user?.email === CREATOR_EMAIL) return 'super_admin';
+  if (isCreatorSuperUserEmail(user?.email)) return CANONICAL_SUPERUSER_ROLE;
 
-  const normalizeRole = (role?: string): string | null => {
-    if (!role) return null;
-    if (role === 'lion' || role === 'managing_director') return 'owner';
-    return role;
-  };
-
-  const serverRole = normalizeRole(user?.role);
-  const storedRole = normalizeRole(storedRoleData?.role);
+  const serverRole = normalizeRoleForUserContext(user?.role, user?.email);
+  const storedRole = normalizeRoleForUserContext(storedRoleData?.role, user?.email);
 
   if (storedRoleData && typeof storedRoleData.role === 'string') {
-    const isPrivileged =
-      serverRole === 'owner' ||
-      serverRole === 'admin' ||
-      serverRole === 'super_user' ||
-      serverRole === 'super_admin';
-
-    // Deterministic executive path: privileged server roles should not be overridden by local sub-role state.
-    return isPrivileged ? serverRole : (serverRole ?? storedRole);
+    return serverRole ?? storedRole;
   }
 
-  return serverRole ?? null;
+  return serverRole;
 }
 
 // ─── Protected Route ────────────────────────────────────────────────────
@@ -120,16 +108,27 @@ function ProtectedRoute({ children, allowedRoles }: ProtectedRouteProps) {
     return <Navigate to="/pending-approval" replace />;
   }
 
-  if (allowedRoles && !allowedRoles.includes(userData.role)) {
-    return <Navigate to={`/${userData.role}/dashboard`} replace />;
+  if (allowedRoles) {
+    const normalizedUserRole = normalizeRoleForUserContext(userData.role, user?.email);
+    const normalizedAllowedRoles = new Set(
+      allowedRoles
+        .map(role => normalizeRoleForUserContext(role, user?.email))
+        .filter((role): role is string => Boolean(role))
+    );
+
+    if (!normalizedUserRole || !normalizedAllowedRoles.has(normalizedUserRole)) {
+      return <Navigate to={`/${userData.role}/dashboard`} replace />;
+    }
   }
 
   return <>{children}</>;
 }
 
 function DashboardEntryRoute() {
+  const dispatch = useDispatch<AppDispatch>();
   const user = useSelector((state: RootState) => selectSessionUser(state));
   const isAuthLoading = useSelector((state: RootState) => state.user.isLoading);
+  const currentActiveRole = useSelector((state: RootState) => state.navigation?.activeRole);
   const { info } = useStatus();
   const hasShownSigninNotice = useRef(false);
   const storedRoleData = safeStorage.getJSON<UserRoleData>('userRole');
@@ -144,6 +143,19 @@ function DashboardEntryRoute() {
       hasShownSigninNotice.current = true;
     }
   }, [isAuthLoading, user, info]);
+
+  // Sync the effective role into the navigation slice so the dashboard always
+  // renders with the correct tab set (especially on first login with no localStorage).
+  useEffect(() => {
+    if (effectiveRole && effectiveRole !== currentActiveRole) {
+      dispatch(setActiveRole(effectiveRole));
+      safeStorage.setJSON('userRole', {
+        role: effectiveRole,
+        selectedAt: new Date().toISOString(),
+        locked: true,
+      });
+    }
+  }, [effectiveRole, currentActiveRole, dispatch]);
 
   if (isAuthLoading) {
     return <SuspenseLoader />;
@@ -245,6 +257,8 @@ const PWAInstallPrompt = lazy(() =>
 const UAEPassSuccessPage = lazy(() => import('./pages/auth/UAEPassSuccessPage'));
 const SignContractPage = lazy(() => import('./pages/SignContractPage'));
 const DesignSystemTest = lazy(() => import('./pages/DesignSystemTest'));
+const ValuationPage = lazy(() => import('./pages/ValuationPage'));
+const MarketIntelligencePage = lazy(() => import('./pages/MarketIntelligencePage'));
 
 // Analytics & utilities - lazy-loaded to reduce initial bundle
 const BiometricPrompt = lazy(() =>
@@ -503,6 +517,26 @@ function App(): React.JSX.Element {
                   }
                 />
                 <Route path="/auth/signin" element={<Navigate to="/signin" replace />} />
+                <Route
+                  path="/valuation"
+                  element={
+                    <RouteErrorBoundary section="Property Valuation">
+                      <Suspense fallback={<SuspenseLoader />}>
+                        <ValuationPage />
+                      </Suspense>
+                    </RouteErrorBoundary>
+                  }
+                />
+                <Route
+                  path="/market"
+                  element={
+                    <RouteErrorBoundary section="Market Intelligence">
+                      <Suspense fallback={<SuspenseLoader />}>
+                        <MarketIntelligencePage />
+                      </Suspense>
+                    </RouteErrorBoundary>
+                  }
+                />
                 <Route
                   path="/auth/uaepass-success"
                   element={

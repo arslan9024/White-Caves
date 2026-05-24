@@ -4,6 +4,8 @@ param(
   [string]$WorkspaceRoot = ".",
   [string]$EvidenceNote = "",
   [string]$ProducedRef = "",
+  # Worker mode: write evidence and pause for review without completing task.
+  [switch]$MarkEvidencePending,
   # Manual mode: auto-start queued tasks so free-agent completions work without
   # a background worker first calling start-task.
   [switch]$AllowQueued
@@ -41,8 +43,11 @@ try {
     exit 1
   }
 
-  # Accept "running" (worker mode) or "queued" with -AllowQueued flag (manual free-agent mode)
-  $validStart = ($task.status -eq "running") -or ($AllowQueued -and $task.status -eq "queued")
+  # Accept "running"/"evidence_pending" (worker/review modes) or "queued" with -AllowQueued flag (manual mode)
+  $validStart =
+    ($task.status -eq "running") -or
+    ($task.status -eq "evidence_pending") -or
+    ($AllowQueued -and $task.status -eq "queued")
   if (-not $validStart) {
     Write-Output (@{ ok = $false; reason = "invalid_status_for_complete"; taskId = $TaskId; status = $task.status; hint = "Task must be 'running', or use -AllowQueued if task is still 'queued'." } | ConvertTo-Json -Depth 6)
     exit 1
@@ -68,12 +73,18 @@ try {
     $task.evidence.feedsAck = $existingFeedsAck
   }
 
-  $task.finishedAt = (Get-Date).ToString("o")
-  if ([bool]$task.requiresFeedsAck) {
-    $task.status = "waiting_ack"
+  if ($MarkEvidencePending) {
+    $task.status = "evidence_pending"
+    $task | Add-Member -NotePropertyName "updatedAt" -NotePropertyValue ((Get-Date).ToString("o")) -Force
   }
   else {
-    $task.status = "done"
+    $task.finishedAt = (Get-Date).ToString("o")
+    if ([bool]$task.requiresFeedsAck) {
+      $task.status = "waiting_ack"
+    }
+    else {
+      $task.status = "done"
+    }
   }
 
   Save-Queue -Queue $queue -Path $queueFile

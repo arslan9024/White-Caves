@@ -39,8 +39,8 @@ try {
     exit 1
   }
 
-  if ($task.status -ne "waiting_ack") {
-    Write-Output (@{ ok = $false; reason = "task_not_waiting_ack"; taskId = $TaskId; status = $task.status } | ConvertTo-Json -Depth 6)
+  if ($task.status -ne "waiting_ack" -and $task.status -ne "evidence_pending") {
+    Write-Output (@{ ok = $false; reason = "task_not_ackable"; taskId = $TaskId; status = $task.status } | ConvertTo-Json -Depth 6)
     exit 1
   }
 

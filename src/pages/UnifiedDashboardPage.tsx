@@ -19,6 +19,7 @@ import DepartmentContentPanel from '../components/layout/DepartmentContentPanel/
 import AuthenticatedPageShell from '../components/layout/authenticated/AuthenticatedPageShell';
 import SubNavBar from '../components/common/SubNavBar';
 import { DashboardSubTabRenderer } from '../components/dashboard/DashboardRenderer';
+import SuperuserControlCenter from '../components/dashboard/SuperuserControlCenter';
 import { useUnifiedDashboard } from '../hooks/useUnifiedDashboard';
 import type { DashboardData, CRMModuleProps } from '../hooks/useUnifiedDashboard';
 import { AI_ASSISTANTS_REGISTRY } from '../store/slices/aiAssistant/registry';
@@ -322,6 +323,7 @@ const UnifiedDashboardPage: FC = () => {
 
   const hasProfileCompletionGaps = profileCompletionPercent < 100;
   const superuserModuleCount = moduleEntries.length;
+  const availableTabIds = useMemo(() => new Set(availableTabs.map(tab => tab.id)), [availableTabs]);
 
   const commandItems = useMemo<SearchItem[]>(() => {
     const query = commandQuery.trim().toLowerCase();
@@ -431,6 +433,22 @@ const UnifiedDashboardPage: FC = () => {
     setGlobalSearchQuery('');
     setIsCommandPaletteOpen(false);
     setIsGlobalSearchOpen(false);
+  };
+
+  const openWorkspaceTab = (tabId: string, fallbackModule?: string) => {
+    if (availableTabIds.has(tabId)) {
+      handleBackFromCRM();
+      setActiveTab(tabId);
+      return;
+    }
+
+    if (fallbackModule) {
+      handleCRMModuleSelect(fallbackModule);
+      return;
+    }
+
+    handleBackFromCRM();
+    setActiveTab('overview');
   };
 
   const renderTabContent = (): ReactNode => {
@@ -797,41 +815,21 @@ const UnifiedDashboardPage: FC = () => {
           </section>
 
           {isSuperUser && !selectedDepartment && (
-            <section className="dashboard-superuser-strip" aria-label="Superuser controls">
-              <div className="dashboard-superuser-strip__copy">
-                <p className="dashboard-superuser-strip__eyebrow">Superuser command strip</p>
-                <h2>Executive control center is live</h2>
-                <p>
-                  {hotLeadsCount} priority leads, {superuserModuleCount} AI modules, and live CRM
-                  telemetry are ready for action.
-                </p>
-              </div>
-              <div
-                className="dashboard-superuser-strip__metrics"
-                aria-label="Superuser quick metrics"
-              >
-                <span className="dashboard-superuser-pill">Hot leads: {hotLeadsCount}</span>
-                <span className="dashboard-superuser-pill">AI modules: {superuserModuleCount}</span>
-                <span className="dashboard-superuser-pill">
-                  Revenue: {formatCurrency(monthlyRevenue)}
-                </span>
-              </div>
-              <div className="dashboard-superuser-strip__actions">
-                <button type="button" className="dashboard-superuser-btn" onClick={handleRetryAll}>
-                  Refresh live data
-                </button>
-                <button
-                  type="button"
-                  className="dashboard-superuser-btn dashboard-superuser-btn--primary"
-                  onClick={() => {
-                    setModulesExpanded(true);
-                    setIsCommandPaletteOpen(true);
-                  }}
-                >
-                  Open command palette
-                </button>
-              </div>
-            </section>
+            <SuperuserControlCenter
+              hotLeadsCount={hotLeadsCount}
+              superuserModuleCount={superuserModuleCount}
+              monthlyRevenueLabel={formatCurrency(monthlyRevenue)}
+              profileCompletionPercent={profileCompletionPercent}
+              onRefreshData={handleRetryAll}
+              onOpenCommandPalette={() => {
+                setModulesExpanded(true);
+                setIsCommandPaletteOpen(true);
+              }}
+              onOpenAdminWorkspace={() => openWorkspaceTab('admin', 'unified')}
+              onOpenAnalyticsWorkspace={() => openWorkspaceTab('analytics', 'analytics')}
+              onOpenUsersWorkspace={() => openWorkspaceTab('users', 'unified')}
+              onLaunchUnifiedCRM={() => handleCRMModuleSelect('unified')}
+            />
           )}
 
           {hasProfileCompletionGaps && (

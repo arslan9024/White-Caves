@@ -7,6 +7,30 @@ param(
 $stateDir = Join-Path $WorkspaceRoot "logs\orchestrator"
 $queueFile = Join-Path $stateDir "task-queue.json"
 $mutex = New-Object System.Threading.Mutex($false, "Global\WhiteCaves_Orchestrator_Queue")
+$policyUtilsPath = Join-Path $PSScriptRoot "policy-utils.ps1"
+
+if (-not (Test-Path $policyUtilsPath)) {
+  $out = @{ claimed = $false; reason = "policy_utils_missing" } | ConvertTo-Json -Depth 4
+  Write-Output $out
+  exit 1
+}
+
+. $policyUtilsPath
+
+try {
+  $policy = Get-OrchestratorPolicy -WorkspaceRoot $WorkspaceRoot
+}
+catch {
+  $out = @{ claimed = $false; reason = "policy_invalid"; detail = $_.Exception.Message } | ConvertTo-Json -Depth 6
+  Write-Output $out
+  exit 1
+}
+
+if ([bool]$policy.modelRouting.freeModelOnlyMode -and (-not (Test-IsFreePlanningAgent -Policy $policy -AgentName $AgentName))) {
+  $out = @{ claimed = $false; reason = "agent_not_allowed_by_free_model_policy"; agent = $AgentName } | ConvertTo-Json -Depth 6
+  Write-Output $out
+  exit 0
+}
 
 function Get-Queue {
   param([string]$Path)
