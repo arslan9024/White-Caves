@@ -246,7 +246,7 @@ export async function exportCrmData(params: Record<string, string>) {
 export async function exportDashboardExcel(entity: 'leads' | 'properties' = 'leads') {
   const res = await authFetch(`${API}/dashboard/${entity}/excel`);
   if (!res.ok) {
-    throw new Error(await extractApiError(res));
+    throw new Error(await extractApiError(res, 'Failed to export Excel report'));
   }
   return res.blob();
 }
