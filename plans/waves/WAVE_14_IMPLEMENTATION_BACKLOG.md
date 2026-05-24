@@ -14,4 +14,4 @@
 | W14-003 | P1 | Implement backend mortgage calculation endpoint and frontend wiring | @Mira + @Mortgage | focused route + component tests | Planned |
 | W14-004 | P1 | Integrate calendar sync (Google OAuth2 baseline) | @Mira | integration test | Planned |
 | W14-005 | P1 | Add live FX rate source and conversion handling | @Mira + @Mortgage | route tests + fallback checks | Planned |
-| W14-006 | P0 | Final wave validation | @Katherine | `npm run quality:quick && npm run plans:validate` | Planned |
+| W14-006 | P0 | Final wave validation | @Katherine | `npm run typecheck && npm run lint && npm run build && npm run plans:validate` | Planned |
