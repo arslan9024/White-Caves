@@ -93,15 +93,13 @@ import notificationsRoutes from './routes/notifications.js';
 import importHistoryRoutes from './routes/importHistory.routes.js';
 import smartImportRoutes from './routes/smartImport.routes.js';
 import { requireRole, requirePermission } from './middleware/rbac.js';
-import { startLeadScoringScheduler } from './services/ai/leadScoringScheduler.js';
 import { startFollowUpScheduler } from './services/automation/followUpScheduler.js';
 import { startRateRefresh } from './services/currencyService.js';
 import { startViewingReminderScheduler } from './services/schedulingService.js';
 import { startRERAExpiryScheduler } from './services/compliance/reraExpiryScheduler.js';
-import { startPermitAlertScheduler } from './services/compliance/permitAlertScheduler.js';
-import { startPropertyPermitEnforcementScheduler } from './services/compliance/propertyPermitEnforcementScheduler.js';
 import { startAutoRouting } from './services/ai/leadAutoRouter.js';
 import { createSocketServer } from './services/socketServer.js';
+import { schedulerService } from './services/SchedulerService.js';
 
 const app: Express = express();
 const allowedCorsOrigins = buildAllowedCorsOrigins(CORS_ORIGINS, process.env.NODE_ENV);
@@ -461,6 +459,7 @@ app.post(
 
 // Reporting API (Zoe - Executive Dashboard)
 app.use('/api/dashboard', reportingRoutes);
+app.use('/api/reports', reportingRoutes);
 
 // Compliance API (Laila - Compliance Officer)
 app.use('/api/compliance', complianceRoutes);
@@ -995,14 +994,12 @@ const startServer = async () => {
     logger.info('MongoDB connected successfully');
 
     // Start background services
-    startLeadScoringScheduler();
     startFollowUpScheduler();
     startRateRefresh(); // Phase 2E: refresh exchange rates every 6h
     startViewingReminderScheduler(); // Phase 3C: viewing reminders every 15 min
     startRERAExpiryScheduler(); // Phase 3D: RERA BRN expiry checks daily
-    startPermitAlertScheduler(); // Wave 04: permit/BRN alert snapshots daily
-    startPropertyPermitEnforcementScheduler(); // Wave 04: auto-unpublish non-compliant available listings daily
     startAutoRouting(); // Phase 4A: auto-route hot leads to best agents
+    schedulerService.start(); // Wave 12: cron automation engine
 
     // Boot AssistantOrchestrator — register all 5 assistant handler chains
     import('./services/orchestrator/AssistantOrchestrator.js')

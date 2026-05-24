@@ -9,6 +9,7 @@ import { asyncHandler, AppError } from '../middleware/errorHandler';
 
 import { prisma } from '../database.js';
 import { requirePermission } from '../middleware/rbac';
+import { documentService } from '../services/DocumentService.js';
 
 const router = Router();
 
@@ -593,6 +594,28 @@ router.get(
         },
       },
     });
+  })
+);
+
+router.get(
+  '/leads/excel',
+  requirePermission('view_all_reports'),
+  asyncHandler(async (_req: Request, res: Response) => {
+    const file = await documentService.generateLeadsExcel();
+    res.setHeader('Content-Type', file.mimeType);
+    res.setHeader('Content-Disposition', `attachment; filename="${file.filename}"`);
+    res.status(200).send(file.buffer);
+  })
+);
+
+router.get(
+  '/properties/excel',
+  requirePermission('view_all_reports'),
+  asyncHandler(async (_req: Request, res: Response) => {
+    const file = await documentService.generatePropertiesExcel();
+    res.setHeader('Content-Type', file.mimeType);
+    res.setHeader('Content-Disposition', `attachment; filename="${file.filename}"`);
+    res.status(200).send(file.buffer);
   })
 );
 

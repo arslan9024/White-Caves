@@ -20,6 +20,7 @@ import {
   updateDocumentStatus,
   getAvailableDocumentTypes,
 } from '../services/documents/documentGenerator.js';
+import { documentService } from '../services/DocumentService.js';
 import {
   autoFillVariables,
   getAutoFillableEntities,
@@ -167,6 +168,32 @@ router.post('/generate-auto', requirePermission('view_leads'), asyncHandler(asyn
     message: `${document.title} auto-generated successfully`,
   });
 }));
+
+// ── Download contract PDF summary ────────────────────────────────────────
+
+router.get(
+  '/contract/:id/pdf',
+  requirePermission('view_leads'),
+  asyncHandler(async (req: Request, res: Response) => {
+    const file = await documentService.generateContractPdf(req.params.id);
+    res.setHeader('Content-Type', file.mimeType);
+    res.setHeader('Content-Disposition', `attachment; filename="${file.filename}"`);
+    res.status(200).send(file.buffer);
+  })
+);
+
+// ── Download commission PDF summary by agent ─────────────────────────────
+
+router.get(
+  '/commission/:agentId/pdf',
+  requirePermission('view_all_reports'),
+  asyncHandler(async (req: Request, res: Response) => {
+    const file = await documentService.generateCommissionPdf(req.params.agentId);
+    res.setHeader('Content-Type', file.mimeType);
+    res.setHeader('Content-Disposition', `attachment; filename="${file.filename}"`);
+    res.status(200).send(file.buffer);
+  })
+);
 
 // ── Get single document ─────────────────────────────────────────────────
 
