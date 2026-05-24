@@ -3,7 +3,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { SpeedInsights } from '@vercel/speed-insights/react';
 import { setUser, setLoading } from './store/userSlice';
-import { setTheme } from './store/navigationSlice';
+import { setTheme, setActiveRole } from './store/navigationSlice';
 import { LanguageProvider } from './context/LanguageContext';
 import { ThemeProvider } from './styles/ThemeProvider';
 import AppLayout from './components/layout/AppLayout';
@@ -39,15 +39,15 @@ interface ProtectedRouteProps {
   allowedRoles?: string[];
 }
 
-/** Creator email — always receives super_admin elevation regardless of server-stored role. */
+/** Creator email — always receives full 'lion' (superuser) role regardless of server-stored role. */
 const CREATOR_EMAIL = 'arslanmalikgoraha@gmail.com';
 
 function resolveEffectiveRole(
   user: { role?: string; email?: string } | null,
   storedRoleData: UserRoleData | null
 ): string | null {
-  // Creator always gets super_admin regardless of server role
-  if (user?.email === CREATOR_EMAIL) return 'super_admin';
+  // Creator always gets the full 'lion' superuser role regardless of server role
+  if (user?.email === CREATOR_EMAIL) return 'lion';
 
   const normalizeRole = (role?: string): string | null => {
     if (!role) return null;
@@ -128,8 +128,10 @@ function ProtectedRoute({ children, allowedRoles }: ProtectedRouteProps) {
 }
 
 function DashboardEntryRoute() {
+  const dispatch = useDispatch<AppDispatch>();
   const user = useSelector((state: RootState) => selectSessionUser(state));
   const isAuthLoading = useSelector((state: RootState) => state.user.isLoading);
+  const currentActiveRole = useSelector((state: RootState) => state.navigation?.activeRole);
   const { info } = useStatus();
   const hasShownSigninNotice = useRef(false);
   const storedRoleData = safeStorage.getJSON<UserRoleData>('userRole');
@@ -144,6 +146,19 @@ function DashboardEntryRoute() {
       hasShownSigninNotice.current = true;
     }
   }, [isAuthLoading, user, info]);
+
+  // Sync the effective role into the navigation slice so the dashboard always
+  // renders with the correct tab set (especially on first login with no localStorage).
+  useEffect(() => {
+    if (effectiveRole && effectiveRole !== currentActiveRole) {
+      dispatch(setActiveRole(effectiveRole));
+      safeStorage.setJSON('userRole', {
+        role: effectiveRole,
+        selectedAt: new Date().toISOString(),
+        locked: true,
+      });
+    }
+  }, [effectiveRole, currentActiveRole, dispatch]);
 
   if (isAuthLoading) {
     return <SuspenseLoader />;

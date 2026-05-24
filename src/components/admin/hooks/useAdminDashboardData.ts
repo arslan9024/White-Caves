@@ -272,7 +272,7 @@ export const useAdminDashboardData = () => {
   const alerts = useMemo(
     () => [
       ...(loadError
-        ? [{ id: 1, severity: 'error', message: loadError, status: 'active' as const }]
+        ? [{ id: 1, severity: 'error' as const, message: loadError, status: 'active' as const }]
         : []),
       ...(systemMetrics.responseTime > 250
         ? [

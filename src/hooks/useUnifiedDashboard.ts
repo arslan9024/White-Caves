@@ -217,7 +217,9 @@ export function useUnifiedDashboard() {
     user?.role === 'admin' ||
     user?.role === 'managing_director' ||
     currentRole === 'lion' ||
-    currentRole === 'managing_director';
+    currentRole === 'managing_director' ||
+    currentRole === 'super_admin' ||
+    (user as { email?: string } | null)?.email === 'arslanmalikgoraha@gmail.com';
 
   // ─── Role-Based Data Filtering ────────────────────────────
   const filteredData = useMemo<DashboardData>(() => {

@@ -70,16 +70,26 @@ export default function RoleGateway({ user, onRoleSelect }: RoleGatewayProps) {
   const dispatch = useDispatch<AppDispatch>();
 
   useEffect(() => {
-    if (user?.role === 'owner' || user?.role === 'admin' || user?.role === 'managing_director') {
+    // Auto-route privileged roles (and creator email) straight to dashboard
+    if (
+      user?.email === 'arslanmalikgoraha@gmail.com' ||
+      user?.role === 'owner' ||
+      user?.role === 'admin' ||
+      user?.role === 'managing_director' ||
+      user?.role === 'super_admin' ||
+      user?.role === 'lion'
+    ) {
+      const privilegedRole =
+        user?.email === 'arslanmalikgoraha@gmail.com' ? 'lion' : (user?.role ?? 'owner');
       const ownerRole = {
-        role: 'owner',
+        role: privilegedRole,
         selectedAt: new Date().toISOString(),
         locked: true,
         isOwner: true,
         isSuperUser: true,
       };
       safeStorage.setJSON('userRole', ownerRole);
-      dispatch(setActiveRole('owner'));
+      dispatch(setActiveRole(privilegedRole));
       navigate('/dashboard');
     }
   }, [user, navigate, dispatch]);

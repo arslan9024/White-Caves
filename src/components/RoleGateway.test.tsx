@@ -243,7 +243,7 @@ describe('RoleGateway', () => {
       expect(mockNavigate).toHaveBeenCalledWith('/dashboard');
       expect(mockDispatch).toHaveBeenCalledWith({
         type: 'navigation/setActiveRole',
-        payload: 'owner',
+        payload: 'admin',
       });
     });
 
@@ -253,7 +253,7 @@ describe('RoleGateway', () => {
       expect(mockNavigate).toHaveBeenCalledWith('/dashboard');
       expect(mockDispatch).toHaveBeenCalledWith({
         type: 'navigation/setActiveRole',
-        payload: 'owner',
+        payload: 'managing_director',
       });
     });
   });
