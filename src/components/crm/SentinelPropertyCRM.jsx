@@ -5,7 +5,6 @@ import {
   TrendingUp, ArrowUp, ArrowDown, Search, Plus, Users, MapPin
 } from 'lucide-react';
 import AssistantDocsTab from './shared/AssistantDocsTab';
-import AssistantLifecycleTab from './shared/AssistantLifecycleTab';
 import './AssistantDashboard.css';
 
 const PROPERTY_STATUS = [
@@ -112,7 +111,7 @@ const SentinelPropertyCRM = () => {
       </div>
 
       <div className="assistant-tabs">
-        {['monitoring', 'work_orders', 'vendors', 'inspections', 'lifecycle', 'docs'].map(tab => (
+        {['monitoring', 'work_orders', 'vendors', 'inspections', 'docs'].map(tab => (
           <button
             key={tab}
             className={`tab-btn ${activeTab === tab ? 'active' : ''}`}
@@ -229,10 +228,6 @@ const SentinelPropertyCRM = () => {
               <button className="add-btn"><Plus size={16} /> Schedule Inspection</button>
             </div>
           </div>
-        )}
-
-        {activeTab === 'lifecycle' && (
-          <AssistantLifecycleTab assistantId="sentinel" color="#F97316" assistantName="Sentinel" />
         )}
 
         {activeTab === 'docs' && (

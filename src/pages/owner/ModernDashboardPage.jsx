@@ -7,14 +7,14 @@ import { selectActiveAssistant } from '../../store/slices/dashboardViewSlice';
 import { setUserInfo, setActiveRole } from '../../store/slices/accessControlSlice';
 import './ModernDashboardPage.css';
 
-const ClaraLeadsCRM = lazy(() => import('../../components/crm/ClaraLeadsCRM_NEW'));
-const MaryInventoryCRM = lazy(() => import('../../components/crm/MaryInventoryCRM_NEW'));
+const ClaraLeadsCRM = lazy(() => import('../../components/crm/ClaraLeadsCRM'));
+const MaryInventoryCRM = lazy(() => import('../../components/crm/MaryInventoryCRM'));
 const LindaWhatsAppCRM = lazy(() => import('../../components/crm/LindaWhatsAppCRM'));
-const NancyHRCRM = lazy(() => import('../../components/crm/NancyHRCRM_NEW'));
-const TheodoraFinanceCRM = lazy(() => import('../../components/crm/TheodoraFinanceCRM_NEW'));
-const OliviaMarketingCRM = lazy(() => import('../../components/crm/OliviaMarketingCRM_NEW'));
-const ZoeExecutiveCRM = lazy(() => import('../../components/crm/ZoeExecutiveCRM_NEW'));
-const AuroraCTODashboard = lazy(() => import('../../components/crm/AuroraCTODashboard_NEW'));
+const NancyHRCRM = lazy(() => import('../../components/crm/NancyHRCRM'));
+const TheodoraFinanceCRM = lazy(() => import('../../components/crm/TheodoraFinanceCRM'));
+const OliviaMarketingCRM = lazy(() => import('../../components/crm/OliviaMarketingCRM'));
+const ZoeExecutiveCRM = lazy(() => import('../../components/crm/ZoeExecutiveCRM'));
+const AuroraCTODashboard = lazy(() => import('../../components/crm/AuroraCTODashboard'));
 
 const OWNER_EMAIL = 'arslanmalikgoraha@gmail.com';
 

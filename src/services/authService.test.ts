@@ -8,6 +8,7 @@ import {
   changePassword,
   logout,
 } from './authService';
+import { HttpError } from '../utils/HttpError';
 
 // ── Mocks ───────────────────────────────────────────────────────────────
 vi.mock('../utils/apiClient', () => ({
@@ -187,7 +188,12 @@ describe('authService', () => {
       email: 'fb@x.com',
       displayName: 'FB User',
       photoURL: 'http://pic.com/a.jpg',
+      getIdToken: vi.fn().mockResolvedValue('firebase-id-token-1'),
     };
+
+    beforeEach(() => {
+      fbUser.getIdToken.mockResolvedValue('firebase-id-token-1');
+    });
 
     it('maps firebase fields to API fields', async () => {
       mApiPost.mockResolvedValue({
@@ -200,7 +206,7 @@ describe('authService', () => {
         email: 'fb@x.com',
         name: 'FB User',
         photoUrl: 'http://pic.com/a.jpg',
-        firebaseToken: null,
+        firebaseToken: 'firebase-id-token-1',
       });
     });
 
@@ -216,6 +222,34 @@ describe('authService', () => {
     it('throws when success=true but no token', async () => {
       mApiPost.mockResolvedValue({ success: true, data: {} });
       await expect(syncFirebaseUser(fbUser)).rejects.toThrow(/no authentication token/i);
+    });
+
+    it('surfaces backend sync payload error when provided', async () => {
+      mApiPost.mockRejectedValue(
+        new HttpError('', 503, 'Service Unavailable', {
+          error: 'Firebase Admin is not configured on the server.',
+        })
+      );
+
+      await expect(syncFirebaseUser(fbUser)).rejects.toThrow(
+        /Firebase Admin is not configured on the server/i
+      );
+    });
+
+    it('normalizes legacy login-lock payload message for firebase sync', async () => {
+      mApiPost.mockRejectedValue(
+        new HttpError('', 429, 'Too Many Requests', {
+          message: 'Too many login attempts from this IP. Please try again after 15 minutes.',
+        })
+      );
+
+      await expect(syncFirebaseUser(fbUser)).rejects.toThrow(/temporarily rate-limited/i);
+    });
+
+    it('normalizes generic 429 firebase sync throttling errors', async () => {
+      mApiPost.mockRejectedValue(new HttpError('', 429, 'Too Many Requests', null));
+
+      await expect(syncFirebaseUser(fbUser)).rejects.toThrow(/temporarily rate-limited/i);
     });
   });
 

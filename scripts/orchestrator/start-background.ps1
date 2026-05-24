@@ -1,7 +1,7 @@
 # Starts background worker pool for free-agent orchestration (Phase 4)
 # Spawns: 4 lane workers (A/B/C/D), N legacy agent-locked workers, 1 watchdog scheduler
 param(
-  [int]$WorkerCount        = 4,   # legacy agent-locked workers
+  [int]$WorkerCount        = 0,   # legacy agent-locked workers (set > 0 only when explicitly needed)
   [int]$PollSeconds        = 30,
   [int]$WatchdogIntervalMin = 5,  # watchdog + escalation cycle frequency
   [int]$StaleMinutes       = 10,
@@ -13,10 +13,23 @@ $stateDir = Join-Path $root "logs\orchestrator"
 New-Item -ItemType Directory -Force -Path $stateDir | Out-Null
 $pidFile   = Join-Path $stateDir "worker-processes.json"
 $queueFile = Join-Path $stateDir "task-queue.json"
+$policyUtilsPath = Join-Path $PSScriptRoot "policy-utils.ps1"
+
+if (-not (Test-Path $policyUtilsPath)) {
+  throw "Missing required policy utility script: $policyUtilsPath"
+}
+
+. $policyUtilsPath
+
+$policy = Get-OrchestratorPolicy -WorkspaceRoot $root
 
 if (-not (Test-Path $queueFile)) {
   $initScript = Join-Path $PSScriptRoot "init-queue.ps1"
   & $initScript -WorkspaceRoot $root | Out-Null
+}
+
+if (-not [bool]$policy.modelRouting.freeModelOnlyMode) {
+  throw "Background orchestration requires freeModelOnlyMode=true in scripts/orchestrator/policy.json"
 }
 
 # Lane-root agents: first agent in each dependency chain per lane
@@ -24,7 +37,7 @@ $laneRootAgents = @{
   A = "@Sofia"
   B = "@Fei-Fei"
   C = "@Booking"
-  D = "@Annie"
+  D = "@Jaime"
 }
 
 # Legacy agent-locked workers (covers overflow agents beyond the 4 lanes)
@@ -104,6 +117,7 @@ $legacyCount = $WorkerCount
 $totalCount  = $processes.Count
 
 Write-Host "Orchestration pool started: $laneCount lane-workers + $legacyCount legacy-workers + 1 watchdog-scheduler = $totalCount processes." -ForegroundColor Green
+Write-Host "Policy     : freeModelOnlyMode=$($policy.modelRouting.freeModelOnlyMode) | free agents=$(@($policy.modelRouting.freePlanningAgents).Count)" -ForegroundColor Cyan
 Write-Host "State file : $pidFile"
 Write-Host "Watchdog   : every ${WatchdogIntervalMin}m (stale=${StaleMinutes}m, ack-stale=${AckStaleMinutes}m)"
 Write-Host "Stop all   : npm run orchestrator:bg:stop"

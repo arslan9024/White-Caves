@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const PropertyInventorySchema = new mongoose.Schema(
   {
@@ -136,4 +136,7 @@ PropertyInventorySchema.index({ currentOfferId: 1 });
 PropertyInventorySchema.index({ currentContractId: 1 });
 PropertyInventorySchema.index({ 'assignedAgents.agentId': 1 });
 
-module.exports = mongoose.model('PropertyInventory', PropertyInventorySchema);
+const PropertyInventory =
+  mongoose.models.PropertyInventory || mongoose.model('PropertyInventory', PropertyInventorySchema);
+
+export default PropertyInventory;

@@ -1,0 +1,80 @@
+{
+  "version": "2026-05-22",
+  "dashboard": "Tuesday Recruitment KPI Framework",
+  "widgets": [
+    {
+      "id": "cost_per_hire",
+      "title": "Cost per Hire",
+      "visualization": "line",
+      "target": 7200,
+      "baseline": 15500,
+      "unit": "AED",
+      "refreshIntervalSeconds": 3600,
+      "source": "/api/recruitment/jobs/:job_id/screening-metrics"
+    },
+    {
+      "id": "time_to_hire",
+      "title": "Time to Hire",
+      "visualization": "bar",
+      "target": 20,
+      "baseline": 40,
+      "unit": "days",
+      "refreshIntervalSeconds": 3600,
+      "source": "derived_from_recruitment_pipeline"
+    },
+    {
+      "id": "pipeline_funnel",
+      "title": "Application Funnel",
+      "visualization": "funnel",
+      "unit": "candidates",
+      "refreshIntervalSeconds": 900,
+      "source": "/api/recruitment/jobs/:job_id/screening-metrics"
+    },
+    {
+      "id": "screening_status_distribution",
+      "title": "Screening Status Distribution",
+      "visualization": "stacked_bar",
+      "unit": "candidates",
+      "refreshIntervalSeconds": 900,
+      "source": "/api/recruitment/jobs/:job_id/screening-metrics"
+    },
+    {
+      "id": "monthly_savings",
+      "title": "Monthly Savings Tracker",
+      "visualization": "area",
+      "target": 240000,
+      "baseline": 50000,
+      "unit": "AED",
+      "refreshIntervalSeconds": 86400,
+      "source": "finance_projection_model"
+    },
+    {
+      "id": "retention_rate",
+      "title": "90-Day Retention",
+      "visualization": "gauge",
+      "target": 95,
+      "baseline": 85,
+      "unit": "percent",
+      "refreshIntervalSeconds": 86400,
+      "source": "hr_retention_dataset"
+    },
+    {
+      "id": "department_comparison",
+      "title": "Department Hiring Comparison",
+      "visualization": "grouped_bar",
+      "unit": "mixed",
+      "refreshIntervalSeconds": 3600,
+      "source": "department_recruitment_aggregates"
+    },
+    {
+      "id": "roi_tracker",
+      "title": "Recruitment ROI",
+      "visualization": "kpi",
+      "target": 1785000,
+      "baseline": 2260000,
+      "unit": "AED",
+      "refreshIntervalSeconds": 86400,
+      "source": "program_financial_summary"
+    }
+  ]
+}

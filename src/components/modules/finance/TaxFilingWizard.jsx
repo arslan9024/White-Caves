@@ -1,92 +1,22 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 
-const TaxFilingStepIndicator = ({ steps, step }) => (
-  <div className="flex items-center justify-between mb-8">
-    {steps.map((s, idx) => (
-      <React.Fragment key={s.number}>
-        <div className="flex flex-col items-center flex-1">
-          <div
-            className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm transition-all ${
-              step > s.number
-                ? 'bg-green-600 dark:bg-green-500 text-white'
-                : step === s.number
-                  ? 'bg-red-600 dark:bg-red-500 text-white'
-                  : 'bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-400'
-            }`}
-          >
-            {step > s.number ? 'Γ£ô' : s.number}
-          </div>
-          <p
-            className={`text-xs mt-2 text-center ${
-              step >= s.number
-                ? 'text-slate-900 dark:text-white font-medium'
-                : 'text-slate-500 dark:text-slate-400'
-            }`}
-          >
-            {s.title}
-          </p>
-        </div>
-        {idx < steps.length - 1 && (
-          <div
-            className={`h-1 flex-1 mx-1 mb-6 ${
-              step > s.number ? 'bg-green-600 dark:bg-green-500' : 'bg-slate-200 dark:bg-slate-700'
-            }`}
-          />
-        )}
-      </React.Fragment>
-    ))}
-  </div>
-);
-
-const TaxFilingInputField = ({
-  label,
-  name,
-  value,
-  onChange,
-  error,
-  type = 'text',
-  placeholder,
-  required = false,
-}) => (
-  <div className="mb-6">
-    <label className="block text-sm font-medium text-slate-900 dark:text-white mb-2">
-      {label}
-      {required && <span className="text-red-600 dark:text-red-400">*</span>}
-    </label>
-    <input
-      type={type}
-      name={name}
-      value={value}
-      onChange={onChange}
-      placeholder={placeholder}
-      className={`w-full px-4 py-2 border rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 transition-colors ${
-        error
-          ? 'border-red-600 dark:border-red-400'
-          : 'border-slate-300 dark:border-slate-600 focus:border-red-600 dark:focus:border-red-400'
-      } focus:outline-none`}
-    />
-    {error && (
-      <p className="text-red-600 dark:text-red-400 text-xs mt-1 flex items-center gap-1">
-        ΓÜá∩╕Å {error}
-      </p>
-    )}
-  </div>
-);
-
 /**
  * TaxFilingWizard Component
  * 5-step form wizard for filing taxes
  * Step 1: Basic Info, Step 2: Revenue/Expenses, Step 3: Review
  * Step 4: Documents, Step 5: Submit
  * Integrates with Aisha (Corporate Tax Manager) and Noor (Internal Audit Manager)
- *
+ * 
  * @component
  * @param {Object} props
  * @param {Function} props.onSubmit - Form submission callback
  * @param {Function} props.onCancel - Cancel callback
  */
-const TaxFilingWizard = ({ onSubmit = () => {}, onCancel = () => {} }) => {
+const TaxFilingWizard = ({
+  onSubmit = () => {},
+  onCancel = () => {}
+}) => {
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState({
     firstName: '',
@@ -98,7 +28,7 @@ const TaxFilingWizard = ({ onSubmit = () => {}, onCancel = () => {} }) => {
     totalExpenses: '',
     deductibleExpenses: '',
     documents: [],
-    agreement: false,
+    agreement: false
   });
   const [errors, setErrors] = useState({});
 
@@ -107,10 +37,10 @@ const TaxFilingWizard = ({ onSubmit = () => {}, onCancel = () => {} }) => {
     { number: 2, title: 'Revenue & Expenses', icon: '💰' },
     { number: 3, title: 'Review', icon: '✓' },
     { number: 4, title: 'Documents', icon: '📄' },
-    { number: 5, title: 'Submit', icon: '✈️' },
+    { number: 5, title: 'Submit', icon: '✈️' }
   ];
 
-  const validateStep = currentStep => {
+  const validateStep = (currentStep) => {
     const newErrors = {};
     if (currentStep === 1) {
       if (!formData.firstName.trim()) newErrors.firstName = 'Required';
@@ -134,29 +64,29 @@ const TaxFilingWizard = ({ onSubmit = () => {}, onCancel = () => {} }) => {
     setStep(Math.max(step - 1, 1));
   };
 
-  const handleInputChange = e => {
+  const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
     setFormData(prev => ({
       ...prev,
-      [name]: type === 'checkbox' ? checked : value,
+      [name]: type === 'checkbox' ? checked : value
     }));
     if (errors[name]) {
       setErrors(prev => ({ ...prev, [name]: '' }));
     }
   };
 
-  const handleFileUpload = e => {
+  const handleFileUpload = (e) => {
     const files = Array.from(e.target.files);
     setFormData(prev => ({
       ...prev,
-      documents: [...prev.documents, ...files],
+      documents: [...prev.documents, ...files]
     }));
   };
 
-  const removeDocument = index => {
+  const removeDocument = (index) => {
     setFormData(prev => ({
       ...prev,
-      documents: prev.documents.filter((_, i) => i !== index),
+      documents: prev.documents.filter((_, i) => i !== index)
     }));
   };
 
@@ -167,6 +97,66 @@ const TaxFilingWizard = ({ onSubmit = () => {}, onCancel = () => {} }) => {
       setErrors(prev => ({ ...prev, agreement: 'You must agree to continue' }));
     }
   };
+
+  const StepIndicator = () => (
+    <div className="flex items-center justify-between mb-8">
+      {steps.map((s, idx) => (
+        <React.Fragment key={s.number}>
+          <div className="flex flex-col items-center flex-1">
+            <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm transition-all ${
+              step > s.number
+                ? 'bg-green-600 dark:bg-green-500 text-white'
+                : step === s.number
+                ? 'bg-red-600 dark:bg-red-500 text-white'
+                : 'bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-400'
+            }`}>
+              {step > s.number ? '✓' : s.number}
+            </div>
+            <p className={`text-xs mt-2 text-center ${
+              step >= s.number
+                ? 'text-slate-900 dark:text-white font-medium'
+                : 'text-slate-500 dark:text-slate-400'
+            }`}>
+              {s.title}
+            </p>
+          </div>
+          {idx < steps.length - 1 && (
+            <div className={`h-1 flex-1 mx-1 mb-6 ${
+              step > s.number
+                ? 'bg-green-600 dark:bg-green-500'
+                : 'bg-slate-200 dark:bg-slate-700'
+            }`} />
+          )}
+        </React.Fragment>
+      ))}
+    </div>
+  );
+
+  const InputField = ({ label, name, type = 'text', placeholder, required = false }) => (
+    <div className="mb-6">
+      <label className="block text-sm font-medium text-slate-900 dark:text-white mb-2">
+        {label}
+        {required && <span className="text-red-600 dark:text-red-400">*</span>}
+      </label>
+      <input
+        type={type}
+        name={name}
+        value={formData[name]}
+        onChange={handleInputChange}
+        placeholder={placeholder}
+        className={`w-full px-4 py-2 border rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 transition-colors ${
+          errors[name]
+            ? 'border-red-600 dark:border-red-400'
+            : 'border-slate-300 dark:border-slate-600 focus:border-red-600 dark:focus:border-red-400'
+        } focus:outline-none`}
+      />
+      {errors[name] && (
+        <p className="text-red-600 dark:text-red-400 text-xs mt-1 flex items-center gap-1">
+          ⚠️ {errors[name]}
+        </p>
+      )}
+    </div>
+  );
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-900 p-4 md:p-8">
@@ -182,7 +172,7 @@ const TaxFilingWizard = ({ onSubmit = () => {}, onCancel = () => {} }) => {
         </div>
 
         {/* Step Indicator */}
-        <TaxFilingStepIndicator steps={steps} step={step} />
+        <StepIndicator />
 
         {/* Form Content */}
         <div className="bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 p-6 md:p-8">
@@ -191,41 +181,10 @@ const TaxFilingWizard = ({ onSubmit = () => {}, onCancel = () => {} }) => {
               <h2 className="text-xl font-bold text-slate-900 dark:text-white mb-6">
                 Basic Information
               </h2>
-              <TaxFilingInputField
-                label="First Name"
-                name="firstName"
-                value={formData.firstName}
-                onChange={handleInputChange}
-                error={errors.firstName}
-                placeholder="John"
-                required
-              />
-              <TaxFilingInputField
-                label="Last Name"
-                name="lastName"
-                value={formData.lastName}
-                onChange={handleInputChange}
-                error={errors.lastName}
-                placeholder="Doe"
-                required
-              />
-              <TaxFilingInputField
-                label="Tax ID / SSN"
-                name="taxId"
-                value={formData.taxId}
-                onChange={handleInputChange}
-                error={errors.taxId}
-                placeholder="XX-XXXXXXX"
-                required
-              />
-              <TaxFilingInputField
-                label="Business Name"
-                name="businessName"
-                value={formData.businessName}
-                onChange={handleInputChange}
-                error={errors.businessName}
-                placeholder="Your Business"
-              />
+              <InputField label="First Name" name="firstName" placeholder="John" required />
+              <InputField label="Last Name" name="lastName" placeholder="Doe" required />
+              <InputField label="Tax ID / SSN" name="taxId" placeholder="XX-XXXXXXX" required />
+              <InputField label="Business Name" name="businessName" placeholder="Your Business" />
             </div>
           )}
 
@@ -234,41 +193,29 @@ const TaxFilingWizard = ({ onSubmit = () => {}, onCancel = () => {} }) => {
               <h2 className="text-xl font-bold text-slate-900 dark:text-white mb-6">
                 Revenue & Expenses
               </h2>
-              <TaxFilingInputField
+              <InputField
                 label="Total Revenue"
                 name="totalRevenue"
-                value={formData.totalRevenue}
-                onChange={handleInputChange}
-                error={errors.totalRevenue}
                 type="number"
                 placeholder="0.00"
                 required
               />
-              <TaxFilingInputField
+              <InputField
                 label="Gross Profit"
                 name="grossProfit"
-                value={formData.grossProfit}
-                onChange={handleInputChange}
-                error={errors.grossProfit}
                 type="number"
                 placeholder="0.00"
               />
-              <TaxFilingInputField
+              <InputField
                 label="Total Expenses"
                 name="totalExpenses"
-                value={formData.totalExpenses}
-                onChange={handleInputChange}
-                error={errors.totalExpenses}
                 type="number"
                 placeholder="0.00"
                 required
               />
-              <TaxFilingInputField
+              <InputField
                 label="Deductible Expenses"
                 name="deductibleExpenses"
-                value={formData.deductibleExpenses}
-                onChange={handleInputChange}
-                error={errors.deductibleExpenses}
                 type="number"
                 placeholder="0.00"
               />
@@ -331,8 +278,12 @@ const TaxFilingWizard = ({ onSubmit = () => {}, onCancel = () => {} }) => {
                   />
                   <label htmlFor="file-upload" className="cursor-pointer">
                     <div className="text-2xl mb-2">📤</div>
-                    <p className="text-slate-900 dark:text-white font-medium">Click to upload</p>
-                    <p className="text-slate-500 dark:text-slate-400 text-sm">or drag and drop</p>
+                    <p className="text-slate-900 dark:text-white font-medium">
+                      Click to upload
+                    </p>
+                    <p className="text-slate-500 dark:text-slate-400 text-sm">
+                      or drag and drop
+                    </p>
                   </label>
                 </div>
               </div>
@@ -349,7 +300,9 @@ const TaxFilingWizard = ({ onSubmit = () => {}, onCancel = () => {} }) => {
                     >
                       <div className="flex items-center gap-3">
                         <span>📄</span>
-                        <span className="text-sm text-slate-900 dark:text-white">{file.name}</span>
+                        <span className="text-sm text-slate-900 dark:text-white">
+                          {file.name}
+                        </span>
                       </div>
                       <button
                         onClick={() => removeDocument(idx)}
@@ -371,8 +324,7 @@ const TaxFilingWizard = ({ onSubmit = () => {}, onCancel = () => {} }) => {
               </h2>
               <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4 mb-6">
                 <p className="text-sm text-blue-900 dark:text-blue-200">
-                  Review all information before submitting. Once submitted, you cannot edit these
-                  details.
+                  Review all information before submitting. Once submitted, you cannot edit these details.
                 </p>
               </div>
 
@@ -440,23 +392,7 @@ const TaxFilingWizard = ({ onSubmit = () => {}, onCancel = () => {} }) => {
 
 TaxFilingWizard.propTypes = {
   onSubmit: PropTypes.func,
-  onCancel: PropTypes.func,
-};
-
-TaxFilingStepIndicator.propTypes = {
-  steps: PropTypes.array.isRequired,
-  step: PropTypes.number.isRequired,
-};
-
-TaxFilingInputField.propTypes = {
-  label: PropTypes.string.isRequired,
-  name: PropTypes.string.isRequired,
-  value: PropTypes.any,
-  onChange: PropTypes.func.isRequired,
-  error: PropTypes.string,
-  type: PropTypes.string,
-  placeholder: PropTypes.string,
-  required: PropTypes.bool,
+  onCancel: PropTypes.func
 };
 
 export default TaxFilingWizard;

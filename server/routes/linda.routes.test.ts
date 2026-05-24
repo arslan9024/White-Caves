@@ -161,6 +161,15 @@ describe('Linda routes — campaign foundation', () => {
     expect(mockCheckPhoneSavedInGoraha).not.toHaveBeenCalled();
   });
 
+  it('does not auto-initialize Linda runtime when checking status', async () => {
+    const res = await request(createApp()).get('/api/linda/status');
+
+    expect(res.status).toBe(200);
+    expect(res.body.success).toBe(true);
+    expect(mockLinda.getStats).toHaveBeenCalledTimes(1);
+    expect(mockLinda.initialize).not.toHaveBeenCalled();
+  });
+
   it('creates a scheduled campaign', async () => {
     const res = await request(createApp())
       .post('/api/linda/campaigns')

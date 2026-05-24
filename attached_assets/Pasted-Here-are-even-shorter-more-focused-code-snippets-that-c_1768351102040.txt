@@ -1,0 +1,129 @@
+Here are even shorter, more focused code snippets that cover the most essential pieces for a Dubai luxury real estate platform (2026 style, practical & minimal):1. Core Property Typets
+
+type DubaiProperty = {
+  id: string
+  type: 'villa' | 'apartment' | 'penthouse' | 'townhouse'
+  community: string          // Palm Jumeirah, Downtown, etc.
+  bedrooms: number
+  priceAED: number
+  sizeSqFt: number
+  status: 'available' | 'reserved' | 'sold' | 'rented'
+  reraPermit?: string
+}
+
+2. Fast Property Search (Prisma-like)ts
+
+async function findProperties(f: {
+  maxPrice?: number
+  minBeds?: number
+  community?: string
+}) {
+  return prisma.property.findMany({
+    where: {
+      priceAED: { lte: f.maxPrice },
+      bedrooms: { gte: f.minBeds },
+      community: f.community,
+      status: 'available'
+    },
+    orderBy: { priceAED: 'asc' },
+    take: 20
+  })
+}
+
+3. Very Simple AML Risk Scorets
+
+function quickAMLRisk(tx: {
+  amount: number
+  isCash: boolean
+  isPEP: boolean
+  priceDeviation: number // %
+}) {
+  let score = 0
+  if (tx.amount > 2e6)      score += 30
+  if (tx.isCash)            score += 40
+  if (tx.isPEP)             score += 25
+  if (Math.abs(tx.priceDeviation) > 25) score += 20
+  return Math.min(100, score)
+}
+
+4. UAE PASS Guard (Express middleware)ts
+
+const requireVerified = (req, res, next) => {
+  const token = req.headers['x-uaepass-token']
+  if (!token) return res.status(401).json({ error: 'UAE PASS required' })
+
+  // In real app: verify JWT signature + claims
+  const user = verifyToken(token) // your impl
+  if (user.tier !== 'verified') return res.status(403).json({ error: 'Verified client only' })
+
+  req.user = user
+  next()
+}
+
+5. Minimal Service Recordts
+
+type Service = {
+  id: string
+  name: string
+  priceAED: number | 'on-request'
+  days: number
+  tier: 'basic' | 'premium' | 'elite'
+  amlRequired: boolean
+}
+
+const titleDeedTransfer: Service = {
+  id: 'S-TD-01',
+  name: 'RERA Title Deed Transfer',
+  priceAED: 8500,
+  days: 14,
+  tier: 'premium',
+  amlRequired: true
+}
+
+6. Quick Lead Hotness Scorets
+
+function leadScore(lead: {
+  budget: number
+  urgency: 'now' | 'soon' | 'later'
+  views: number
+}) {
+  let score = 0
+  if (lead.budget > 15e6) score += 40
+  if (lead.urgency === 'now') score += 35
+  if (lead.views > 12) score += 25
+  return Math.min(100, score)
+}
+
+7. Status Change (atomic)ts
+
+async function changeStatus(id: string, status: string) {
+  await prisma.property.update({
+    where: { id },
+    data: {
+      status,
+      updatedAt: new Date(),
+      ...(status === 'sold' && { soldAt: new Date() })
+    }
+  })
+}
+
+8. Basic Commission Calc (very common)ts
+
+function calculateCommission(
+  salePriceAED: number,
+  agentSharePercent: number = 50
+) {
+  const companyCommission = salePriceAED * 0.02 // typical 2%
+  const agentCommission = companyCommission * (agentSharePercent / 100)
+  return { company: companyCommission, agent: agentCommission }
+}
+
+Pick any of these patterns you like most and want to see expanded (or combined) — just tell me which direction feels most useful right now:Property → media / virtual tours
+Client → 360 view / history
+Transaction → escrow / payment flow
+AML → more realistic checks
+Commission → splits & tiers
+Notifications (WhatsApp/SMS/Email)
+
+What would help you most next? 
+

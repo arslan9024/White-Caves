@@ -47,59 +47,21 @@
     }
   ],
   "sessions": [
-    {
-      "id": "sess-1",
-      "bot": "bot-1",
-      "user": "+971501234567",
-      "status": "active",
-      "startTime": "10:30 AM",
-      "messages": 8
-    },
-    {
-      "id": "sess-2",
-      "bot": "bot-2",
-      "user": "+971502345678",
-      "status": "completed",
-      "startTime": "09:45 AM",
-      "messages": 12
-    },
-    {
-      "id": "sess-3",
-      "bot": "bot-1",
-      "user": "+971503456789",
-      "status": "active",
-      "startTime": "10:45 AM",
-      "messages": 3
-    }
+    { "id": "sess-1", "bot": "bot-1", "user": "+971501234567", "status": "active", "startTime": "10:30 AM", "messages": 8 },
+    { "id": "sess-2", "bot": "bot-2", "user": "+971502345678", "status": "completed", "startTime": "09:45 AM", "messages": 12 },
+    { "id": "sess-3", "bot": "bot-1", "user": "+971503456789", "status": "active", "startTime": "10:45 AM", "messages": 3 }
   ],
   "analytics": {
     "totalSessions": 4523,
     "avgDuration": "3.2m",
     "handoffRate": 15,
     "satisfactionScore": 4.5,
-    "topIntents": [
-      "property_inquiry",
-      "schedule_viewing",
-      "price_check",
-      "location_info"
-    ]
+    "topIntents": ["property_inquiry", "schedule_viewing", "price_check", "location_info"]
   },
   "stats": {
     "activeBots": 2,
     "totalConversations": 2185,
     "automationRate": 85,
     "costSavings": 125000
-  },
-  "enhancements": {
-    "maryIntegration": "Intent classifications trigger real-time Mary inventory search",
-    "nadiaIntegration": "All Nadia inbound messages processed through Nina before routing",
-    "henryIntegration": "Legal/contract intents flagged to Henry for compliance pre-check",
-    "futureFeatures": [
-      "Fine-tuned Dubai real estate NLP model (GPT-4o fine-tune)",
-      "Arabic language intent detection",
-      "Conversation context memory (30-message window)",
-      "Lead nurture sequence automation",
-      "Competitor property mention detection"
-    ]
   }
 }

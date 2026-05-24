@@ -5,7 +5,7 @@
 .flowchart-title {
   font-size: 1rem;
   font-weight: 600;
-  color: var(--text-primary, #1a1a1a);
+  color: var(--text-primary, #1A1A1A);
   margin: 0 0 20px 0;
 }
 
@@ -45,7 +45,7 @@
   width: 48px;
   height: 48px;
   border-radius: 50%;
-  background: rgba(227, 30, 36, 0.3);
+  background: rgba(212, 175, 55, 0.3);
 }
 
 .stage-icon {
@@ -60,14 +60,14 @@
 }
 
 .stage-node.completed .stage-icon {
-  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  background: linear-gradient(135deg, #10B981 0%, #059669 100%);
   color: white;
 }
 
 .stage-node.active .stage-icon {
-  background: linear-gradient(135deg, #b03737 0%, #c5a030 100%);
-  color: #1a1a1a;
-  box-shadow: 0 0 0 4px rgba(227, 30, 36, 0.2);
+  background: linear-gradient(135deg, #B03737 0%, #c5a030 100%);
+  color: #1A1A1A;
+  box-shadow: 0 0 0 4px rgba(212, 175, 55, 0.2);
 }
 
 .stage-node.pending .stage-icon {
@@ -96,8 +96,8 @@
 .stage-count {
   font-size: 0.7rem;
   font-weight: 700;
-  color: #b03737;
-  background: rgba(227, 30, 36, 0.1);
+  color: #B03737;
+  background: rgba(212, 175, 55, 0.1);
   padding: 2px 8px;
   border-radius: 10px;
 }
@@ -106,18 +106,13 @@
   position: absolute;
   top: 4px;
   right: 4px;
-  color: #ef4444;
+  color: #EF4444;
   animation: bounce 1s infinite;
 }
 
 @keyframes bounce {
-  0%,
-  100% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(-3px);
-  }
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-3px); }
 }
 
 .stage-connector {
@@ -135,7 +130,7 @@
 }
 
 .stage-connector.completed .connector-line {
-  background: #10b981;
+  background: #10B981;
 }
 
 .connector-arrow {
@@ -143,7 +138,7 @@
 }
 
 .stage-connector.completed .connector-arrow {
-  color: #10b981;
+  color: #10B981;
 }
 
 .stage-legend {
@@ -170,11 +165,11 @@
 }
 
 .legend-dot.completed {
-  background: #10b981;
+  background: #10B981;
 }
 
 .legend-dot.active {
-  background: #b03737;
+  background: #B03737;
 }
 
 .legend-dot.pending {
@@ -226,12 +221,12 @@
 }
 
 .connector-dot.completed {
-  background: #10b981;
+  background: #10B981;
 }
 
 .connector-dot.active {
-  background: #b03737;
-  box-shadow: 0 0 0 4px rgba(227, 30, 36, 0.2);
+  background: #B03737;
+  box-shadow: 0 0 0 4px rgba(212, 175, 55, 0.2);
 }
 
 .connector-dot.pending {
@@ -247,7 +242,7 @@
 }
 
 .vertical-connector .connector-line.completed {
-  background: #10b981;
+  background: #10B981;
 }
 
 .vertical-content {
@@ -278,8 +273,8 @@
   width: fit-content;
   font-size: 0.7rem;
   font-weight: 600;
-  color: #b03737;
-  background: rgba(227, 30, 36, 0.1);
+  color: #B03737;
+  background: rgba(212, 175, 55, 0.1);
   padding: 2px 8px;
   border-radius: 10px;
 }
@@ -289,44 +284,44 @@
     flex-direction: column;
     align-items: stretch;
   }
-
+  
   .stage-node {
     flex-direction: row;
     justify-content: flex-start;
     gap: 16px;
   }
-
+  
   .stage-info {
     align-items: flex-start;
   }
-
+  
   .stage-connector {
     transform: rotate(90deg);
     margin: 4px 0 4px 20px;
   }
 }
 
-[data-theme='dark'] .flowchart-title {
+[data-theme="dark"] .flowchart-title {
   color: var(--text-primary, #f8fafc);
 }
 
-[data-theme='dark'] .stage-node:hover {
+[data-theme="dark"] .stage-node:hover {
   background: var(--surface-secondary, #1e293b);
 }
 
-[data-theme='dark'] .stage-name {
+[data-theme="dark"] .stage-name {
   color: var(--text-primary, #f8fafc);
 }
 
-[data-theme='dark'] .stage-node.pending .stage-icon {
+[data-theme="dark"] .stage-node.pending .stage-icon {
   background: var(--surface-secondary, #334155);
 }
 
-[data-theme='dark'] .connector-line {
+[data-theme="dark"] .connector-line {
   background: var(--border-color, #475569);
 }
 
-[data-theme='dark'] .connector-dot.pending {
+[data-theme="dark"] .connector-dot.pending {
   background: #475569;
   border-color: #64748b;
 }

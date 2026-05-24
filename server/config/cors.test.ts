@@ -8,6 +8,7 @@ describe('cors config helpers', () => {
         'http://localhost:3000',
         'http://localhost:5000',
         'http://localhost:5173',
+        'http://127.0.0.1:3000',
       ])
     );
   });
@@ -42,5 +43,16 @@ describe('cors config helpers', () => {
         'https://whitecaves.com'
       )
     ).toBe(false);
+  });
+
+  it('allows localhost origins on dynamic ports outside production', () => {
+    expect(
+      isCorsOriginAllowed(
+        'http://127.0.0.1:4173',
+        ['https://white-caves.com'],
+        'https://whitecaves.com',
+        'development'
+      )
+    ).toBe(true);
   });
 });

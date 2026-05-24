@@ -13,9 +13,9 @@ const serviceProgressSchema = new mongoose.Schema({
       'COMPLIANCE',
       'COMPLETED',
       'FAILED',
-      'CANCELLED',
+      'CANCELLED'
     ],
-    default: 'INITIATED',
+    default: 'INITIATED'
   },
   stageNumber: { type: Number, default: 1 }, // Current stage number
   totalStages: { type: Number, default: 1 }, // Total stages in workflow
@@ -34,8 +34,8 @@ const serviceProgressSchema = new mongoose.Schema({
       completedDate: Date,
       isCompleted: { type: Boolean, default: false },
       priority: { type: String, enum: ['HIGH', 'MEDIUM', 'LOW'], default: 'MEDIUM' },
-      dependsOn: [String], // milestone IDs this depends on
-    },
+      dependsOn: [String] // milestone IDs this depends on
+    }
   ],
   blockers: [
     {
@@ -43,17 +43,17 @@ const serviceProgressSchema = new mongoose.Schema({
       severity: { type: String, enum: ['CRITICAL', 'HIGH', 'MEDIUM', 'LOW'] },
       reportedAt: { type: Date, default: Date.now },
       resolvedAt: Date,
-      resolution: String,
-    },
+      resolution: String
+    }
   ],
   notes: [
     {
       text: String,
       addedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
       timestamp: { type: Date, default: Date.now },
-      type: { type: String, enum: ['INTERNAL', 'CLIENT_FACING'], default: 'INTERNAL' },
-    },
-  ],
+      type: { type: String, enum: ['INTERNAL', 'CLIENT_FACING'], default: 'INTERNAL' }
+    }
+  ]
 });
 
 const serviceBookingSchema = new mongoose.Schema({
@@ -72,9 +72,9 @@ const serviceBookingSchema = new mongoose.Schema({
       'MARKETING_MEDIA',
       'TECHNOLOGY_AI',
       'CONCIERGE_LIFESTYLE',
-      'INVESTMENT_ADVISORY',
+      'INVESTMENT_ADVISORY'
     ],
-    required: true,
+    required: true
   },
 
   // Pricing & Cost
@@ -82,7 +82,7 @@ const serviceBookingSchema = new mongoose.Schema({
     type: {
       type: String,
       enum: ['FIXED', 'PERCENTAGE', 'HOURLY', 'ON_REQUEST'],
-      required: true,
+      required: true
     },
     baseAmount: Number, // For fixed pricing
     percentage: Number, // For percentage-based pricing (e.g., 2.5%)
@@ -92,17 +92,17 @@ const serviceBookingSchema = new mongoose.Schema({
       type: Number,
       default: 0, // Percentage discount applied (e.g., 10 = 10% off)
       min: 0,
-      max: 100,
+      max: 100
     },
     appliedTierBonus: {
       type: Number,
       default: 0, // Tier-based discount/bonus in percentage
       min: -50,
-      max: 50,
+      max: 50
     },
     totalAmount: Number, // Final calculated amount
     calculatedAt: Date, // When pricing was last calculated
-    priceAdjustmentReason: String, // e.g., "Volume discount", "Loyalty bonus", "Premium rate - ultra-rare property"
+    priceAdjustmentReason: String // e.g., "Volume discount", "Loyalty bonus", "Premium rate - ultra-rare property"
   },
 
   // Property context (if applicable)
@@ -113,20 +113,20 @@ const serviceBookingSchema = new mongoose.Schema({
   propertyRarity: {
     type: String,
     enum: ['STANDARD', 'PREMIUM', 'ULTRA_PREMIUM', 'ULTRA_RARE'],
-    default: 'STANDARD',
+    default: 'STANDARD'
   }, // Affects pricing
 
   // Client context
   clientTier: {
     type: String,
     enum: ['BASIC', 'ESSENTIAL', 'PREMIUM', 'ULTRA_PREMIUM', 'CORPORATE'],
-    default: 'BASIC',
+    default: 'BASIC'
   },
   clientHistory: {
     totalTransactions: { type: Number, default: 0 },
     totalValue: { type: Number, default: 0 },
     isReturningClient: { type: Boolean, default: false },
-    loyaltyScore: { type: Number, default: 0, min: 0, max: 100 }, // Affects pricing
+    loyaltyScore: { type: Number, default: 0, min: 0, max: 100 } // Affects pricing
   },
 
   // Assignment
@@ -148,19 +148,15 @@ const serviceBookingSchema = new mongoose.Schema({
       stepName: String,
       description: String,
       automationLevel: { type: String, enum: ['FULL', 'PARTIAL', 'MANUAL'], default: 'MANUAL' },
-      status: {
-        type: String,
-        enum: ['PENDING', 'IN_PROGRESS', 'COMPLETED', 'FAILED'],
-        default: 'PENDING',
-      },
+      status: { type: String, enum: ['PENDING', 'IN_PROGRESS', 'COMPLETED', 'FAILED'], default: 'PENDING' },
       assignedTo: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
       startedAt: Date,
       completedAt: Date,
       estimatedDuration: Number, // In hours
       actualDuration: Number, // In hours
       output: String, // What was produced/generated
-      dependencies: [Number], // Step numbers this depends on
-    },
+      dependencies: [Number] // Step numbers this depends on
+    }
   ],
 
   // Service details
@@ -173,8 +169,8 @@ const serviceBookingSchema = new mongoose.Schema({
       url: String,
       uploadedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
       uploadedAt: { type: Date, default: Date.now },
-      type: { type: String, enum: ['CONTRACT', 'DOCUMENT', 'EVIDENCE', 'COMMUNICATION', 'OTHER'] },
-    },
+      type: { type: String, enum: ['CONTRACT', 'DOCUMENT', 'EVIDENCE', 'COMMUNICATION', 'OTHER'] }
+    }
   ],
 
   // Compliance & Regulatory
@@ -182,41 +178,30 @@ const serviceBookingSchema = new mongoose.Schema({
     {
       requirement: {
         type: String,
-        enum: [
-          'RERA_REGISTRATION',
-          'DLD_APPROVAL',
-          'EJARI_REGISTRATION',
-          'DEWA_SETUP',
-          'AML_CHECK',
-          'UAE_PASS',
-        ],
-        required: true,
+        enum: ['RERA_REGISTRATION', 'DLD_APPROVAL', 'EJARI_REGISTRATION', 'DEWA_SETUP', 'AML_CHECK', 'UAE_PASS'],
+        required: true
       },
       isRequired: { type: Boolean, default: false },
-      status: {
-        type: String,
-        enum: ['NOT_STARTED', 'IN_PROGRESS', 'COMPLETED', 'FAILED'],
-        default: 'NOT_STARTED',
-      },
+      status: { type: String, enum: ['NOT_STARTED', 'IN_PROGRESS', 'COMPLETED', 'FAILED'], default: 'NOT_STARTED' },
       completedAt: Date,
       certificationNumber: String,
       expiryDate: Date,
-      verificationUrl: String,
-    },
+      verificationUrl: String
+    }
   ],
 
   // Timeline & SLA
   sla: {
     responseTimeHours: Number,
     resolutionTimeDays: Number,
-    escalationPath: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
+    escalationPath: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }]
   },
   timeline: {
     requestedAt: { type: Date, default: Date.now },
     acceptedAt: Date,
     startedAt: Date,
     completedAt: Date,
-    deliveredAt: Date,
+    deliveredAt: Date
   },
 
   // Quality & Feedback
@@ -225,7 +210,7 @@ const serviceBookingSchema = new mongoose.Schema({
     feedback: String,
     reviewedAt: Date,
     improvedPoints: [String], // What improved from feedback
-    issuesFound: [String], // Issues or defects
+    issuesFound: [String] // Issues or defects
   },
 
   // Outcomes & Results
@@ -237,11 +222,11 @@ const serviceBookingSchema = new mongoose.Schema({
         name: String,
         description: String,
         url: String,
-        deliveredAt: Date,
-      },
+        deliveredAt: Date
+      }
     ],
     failureReason: String,
-    retryCount: { type: Number, default: 0 },
+    retryCount: { type: Number, default: 0 }
   },
 
   // Financial tracking
@@ -252,8 +237,8 @@ const serviceBookingSchema = new mongoose.Schema({
       method: { type: String, enum: ['CARD', 'BANK_TRANSFER', 'CHEQUE', 'INVOICE'] },
       paidAt: Date,
       invoiceNumber: String,
-      status: { type: String, enum: ['PENDING', 'PAID', 'OVERDUE', 'REFUNDED'] },
-    },
+      status: { type: String, enum: ['PENDING', 'PAID', 'OVERDUE', 'REFUNDED'] }
+    }
   ],
   totalPaid: { type: Number, default: 0 },
   balanceRemaining: Number,
@@ -268,8 +253,8 @@ const serviceBookingSchema = new mongoose.Schema({
       sentTo: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
       sentAt: { type: Date, default: Date.now },
       readAt: Date,
-      attachments: [String],
-    },
+      attachments: [String]
+    }
   ],
 
   // Audit trail
@@ -279,8 +264,8 @@ const serviceBookingSchema = new mongoose.Schema({
       newStatus: String,
       changedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
       changedAt: { type: Date, default: Date.now },
-      reason: String,
-    },
+      reason: String
+    }
   ],
 
   // Metadata
@@ -288,11 +273,12 @@ const serviceBookingSchema = new mongoose.Schema({
   isArchived: { type: Boolean, default: false },
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now },
-  deletedAt: { type: Date },
+  deletedAt: { type: Date }
 });
 
 // Create indexes for fast querying
 serviceBookingSchema.index({ clientId: 1, createdAt: -1 });
+serviceBookingSchema.index({ serviceBookingId: 1 });
 serviceBookingSchema.index({ assignedAgentId: 1, 'progress.stage': 1 });
 serviceBookingSchema.index({ 'progress.stage': 1, 'progress.isOverdue': 1 });
 serviceBookingSchema.index({ clientTier: 1 });
@@ -346,7 +332,7 @@ serviceBookingSchema.methods.addNote = function (text, userId, isClientFacing = 
     text,
     addedBy: userId,
     timestamp: new Date(),
-    type: isClientFacing ? 'CLIENT_FACING' : 'INTERNAL',
+    type: isClientFacing ? 'CLIENT_FACING' : 'INTERNAL'
   });
   return this.save();
 };
@@ -354,7 +340,7 @@ serviceBookingSchema.methods.addNote = function (text, userId, isClientFacing = 
 serviceBookingSchema.methods.recordCommunication = function (commData) {
   this.communications.push({
     ...commData,
-    sentAt: new Date(),
+    sentAt: new Date()
   });
   return this.save();
 };

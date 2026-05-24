@@ -23,6 +23,7 @@ import { buildAllowedCorsOrigins, inferRequestOrigin, isCorsOriginAllowed } from
 import {
   apiLimiter,
   authLimiter,
+  firebaseSyncLimiter,
   registerLimiter,
   passwordLimiter,
   strictLimiter,
@@ -66,6 +67,8 @@ import currencyRoutes from './routes/currency.js';
 import emailRoutes from './routes/email.js';
 import agentAvailabilityRoutes from './routes/agentAvailability.js';
 import analyticsRoutes from './routes/analytics.js';
+import valuationRoutes from './routes/valuation.js';
+import marketRoutes from './routes/market.js';
 import departmentsRoutes from './routes/departments.js';
 import homepageRoutes from './routes/homepage.js';
 import contactRoutes from './routes/contact.js';
@@ -187,7 +190,12 @@ app.use(
   cors((req, callback) => {
     const requestOrigin = inferRequestOrigin(req);
     const origin = req.header('Origin');
-    const isAllowed = isCorsOriginAllowed(origin, allowedCorsOrigins, requestOrigin);
+    const isAllowed = isCorsOriginAllowed(
+      origin,
+      allowedCorsOrigins,
+      requestOrigin,
+      process.env.NODE_ENV
+    );
 
     if (isAllowed) {
       callback(null, { origin: true, credentials: true });
@@ -241,7 +249,7 @@ app.use('/api/auth/2fa/setup', strictLimiter);
 app.use('/api/auth/2fa/enable', strictLimiter);
 app.use('/api/auth/2fa/disable', strictLimiter);
 app.use('/api/auth/refresh', authLimiter);
-app.use('/api/auth/firebase-sync', authLimiter);
+app.use('/api/auth/firebase-sync', firebaseSyncLimiter);
 app.use('/api/auth/refresh', authLimiter);
 app.use('/api/auth/webauthn/register', authLimiter);
 app.use('/api/auth/webauthn/authenticate', authLimiter);
@@ -414,6 +422,12 @@ app.use('/api/invoices/lease', invoicesLeaseRoutes);
 
 // Maintenance API (maintenance requests for landlords and tenants)
 app.use('/api/maintenance', maintenanceRoutes);
+
+// Valuation API — Wave 12 (AVM + manual override + bank request)
+app.use('/api/valuations', authMiddleware, valuationRoutes);
+
+// Market Intelligence API — Wave 12 (price index, transactions, RERA index)
+app.use('/api/market', authMiddleware, marketRoutes);
 
 // Leasing Inventory API (Mary - Inventory Manager)
 app.use('/api/leasing-inventory', leasingInventoryRoutes);

@@ -4,6 +4,9 @@ const COMMON_DEV_CORS_ORIGINS = [
   'http://localhost:3000',
   'http://localhost:5000',
   'http://localhost:5173',
+  'http://127.0.0.1:3000',
+  'http://127.0.0.1:5000',
+  'http://127.0.0.1:5173',
 ];
 
 function normalizeOrigin(origin: string | null | undefined): string | null {
@@ -60,10 +63,23 @@ export function inferRequestOrigin(req: Request): string | null {
   return normalizeOrigin(`${protocol}://${hostHeader}`);
 }
 
+function isLocalDevOrigin(origin: string): boolean {
+  try {
+    const parsed = new URL(origin);
+    return (
+      (parsed.hostname === 'localhost' || parsed.hostname === '127.0.0.1') &&
+      (parsed.protocol === 'http:' || parsed.protocol === 'https:')
+    );
+  } catch {
+    return false;
+  }
+}
+
 export function isCorsOriginAllowed(
   origin: string | undefined,
   allowedOrigins: readonly string[],
-  requestOrigin?: string | null
+  requestOrigin?: string | null,
+  nodeEnv?: string
 ): boolean {
   if (!origin) {
     return true;
@@ -75,6 +91,10 @@ export function isCorsOriginAllowed(
   }
 
   if (requestOrigin && normalizedOrigin === requestOrigin) {
+    return true;
+  }
+
+  if ((nodeEnv || 'development') !== 'production' && isLocalDevOrigin(normalizedOrigin)) {
     return true;
   }
 

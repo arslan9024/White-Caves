@@ -11,6 +11,8 @@
 #   npm run orchestrator:agent-loop -- -NoBrowser       -- skip browser launch
 #   npm run orchestrator:agent-loop -- -ShowSchedule    -- print schedule, exit
 #   npm run orchestrator:agent-loop -- -NonInteractive   -- auto-confirm and continue
+#   npm run orchestrator:agent-loop -- -Autopilot        -- continuous mode (no asks)
+#   npm run orchestrator:agent-loop -- -Approval         -- ask before each advance
 #   npm run orchestrator:agent-loop -- -Agent @Sofia -Once -NoBrowser
 
 param(
@@ -19,7 +21,9 @@ param(
   [switch]$Once,
   [switch]$NoBrowser,
   [switch]$ShowSchedule,
-  [switch]$NonInteractive
+  [switch]$NonInteractive,
+  [switch]$Autopilot,
+  [switch]$Approval
 )
 
 $w       = 72
@@ -27,6 +31,40 @@ $root    = Resolve-Path $WorkspaceRoot
 $scripts = Join-Path $root "scripts\orchestrator"
 $qFile   = Join-Path $root "logs\orchestrator\task-queue.json"
 $pFile   = Join-Path $root "scripts\orchestrator\prompts.json"
+$policyFile = Join-Path $root "scripts\orchestrator\policy.json"
+
+# ------------------------------------------------------------------
+# EXECUTION MODE (policy + switches)
+# Default: approval mode (ask between tasks)
+# ------------------------------------------------------------------
+$policyDefaultMode = "approval"
+if (Test-Path $policyFile) {
+  try {
+    $policy = Get-Content $policyFile -Raw | ConvertFrom-Json
+    if (
+      $null -ne $policy.executionMode -and
+      $null -ne $policy.executionMode.default -and
+      -not [string]::IsNullOrWhiteSpace([string]$policy.executionMode.default)
+    ) {
+      $policyDefaultMode = ([string]$policy.executionMode.default).ToLower()
+    } elseif ($null -ne $policy.autonomousDefault -and [bool]$policy.autonomousDefault) {
+      $policyDefaultMode = "autopilot"
+    }
+  } catch {
+    $policyDefaultMode = "approval"
+  }
+}
+
+$effectiveNonInteractive = $false
+if ($Autopilot) {
+  $effectiveNonInteractive = $true
+} elseif ($Approval) {
+  $effectiveNonInteractive = $false
+} elseif ($NonInteractive) {
+  $effectiveNonInteractive = $true
+} else {
+  $effectiveNonInteractive = ($policyDefaultMode -eq "autopilot")
+}
 
 # ------------------------------------------------------------------
 # SLOT SCHEDULE  (minute-of-hour -> agent)
@@ -118,11 +156,49 @@ function Get-NextSlotAgent {
   return $slotList[0].Agent  # wrap to :00 of next hour
 }
 
-function Get-AgentNextReadyTask {
-  param([string]$agentName)
+function Get-NextReadyInRotation {
+  param([string]$preferredAgent)
+
+  $slotAgents = @($slotList | ForEach-Object { $_.Agent })
+  if ($slotAgents.Count -eq 0) { return $null }
   if (-not (Test-Path $qFile)) { return $null }
+
   $q = Get-Content $qFile -Raw | ConvertFrom-Json
-  $all = @($q.tasks)
+  $allTasks = @($q.tasks)
+
+  $startIdx = [Array]::IndexOf($slotAgents, $preferredAgent)
+  if ($startIdx -lt 0) { $startIdx = 0 }
+
+  $ordered = @()
+  for ($i = $startIdx; $i -lt $slotAgents.Count; $i++) { $ordered += $slotAgents[$i] }
+  for ($i = 0; $i -lt $startIdx; $i++) { $ordered += $slotAgents[$i] }
+  foreach ($aa in $anyAgents) {
+    if ($ordered -notcontains $aa) { $ordered += $aa }
+  }
+
+  foreach ($ag in $ordered) {
+    $candidate = Get-AgentNextReadyTask -agentName $ag -allTasks $allTasks
+    if ($null -ne $candidate) {
+      return @{ Agent = $ag; Task = $candidate }
+    }
+  }
+
+  return $null
+}
+
+function Get-AgentNextReadyTask {
+  param(
+    [string]$agentName,
+    [array]$allTasks = $null
+  )
+
+  $all = $allTasks
+  if ($null -eq $all) {
+    if (-not (Test-Path $qFile)) { return $null }
+    $q = Get-Content $qFile -Raw | ConvertFrom-Json
+    $all = @($q.tasks)
+  }
+
   $agentTasks = @($all | Where-Object { $_.agent -eq $agentName })
   foreach ($t in ($agentTasks | Sort-Object taskId)) {
     if ($t.status -notin @("queued","retrying")) { continue }
@@ -140,6 +216,14 @@ function Get-QueueDoneCount {
   if (-not (Test-Path $qFile)) { return 0 }
   $q = Get-Content $qFile -Raw | ConvertFrom-Json
   return @($q.tasks | Where-Object { $_.status -eq "done" }).Count
+}
+
+function Get-TaskById {
+  param([string]$taskId)
+  if (-not (Test-Path $qFile)) { return $null }
+  $q = Get-Content $qFile -Raw | ConvertFrom-Json
+  $all = @($q.tasks)
+  return ($all | Where-Object { $_.taskId -eq $taskId } | Select-Object -First 1)
 }
 
 function Get-ReadyCount {
@@ -236,20 +320,37 @@ $loopCount = 0
   if ($Agent -ne "") {
     $activeAgent = $Agent
     $slotLabel   = "manual"
+    $task = Get-AgentNextReadyTask -agentName $activeAgent
+  } elseif ($effectiveNonInteractive) {
+    $preferred = Get-CurrentSlotAgent
+    $nextReady = Get-NextReadyInRotation -preferredAgent $preferred
+    if ($null -ne $nextReady) {
+      $activeAgent = [string]$nextReady.Agent
+      $task        = $nextReady.Task
+      $slotLabel   = "auto"
+    } else {
+      $activeAgent = $preferred
+      $task        = $null
+      $slotLabel   = "auto"
+    }
   } else {
     $activeAgent = Get-CurrentSlotAgent
     $min         = (Get-Date).Minute
     $slotLabel   = ":{0}" -f "$min".PadLeft(2,"0")
+    $task = Get-AgentNextReadyTask -agentName $activeAgent
   }
 
   # 2. FIND NEXT READY TASK
-  $task = Get-AgentNextReadyTask -agentName $activeAgent
   if ($null -eq $task) {
     Write-Host ("  [{0}] {1} -- no READY task found (all done or blocked)" -f $slotLabel, $activeAgent) -ForegroundColor DarkYellow
     Write-Host ""
     if ($Agent -ne "") {
       Write-Host "  All tasks done or blocked for $activeAgent." -ForegroundColor DarkGray
       Write-Host "  Tip: npm run orchestrator:blockers -- to see what is blocking" -ForegroundColor DarkGray
+      break
+    }
+    if ($effectiveNonInteractive) {
+      Write-Host "  No READY tasks found across rotation. Autopilot exiting cleanly." -ForegroundColor DarkGray
       break
     }
     # Auto-mode: skip to next slot
@@ -308,7 +409,7 @@ $loopCount = 0
   Write-Host "   2. Paste AI output into the target .md file" -ForegroundColor DarkGray
   Write-Host "   3. Press Enter below to mark task done" -ForegroundColor DarkGray
   Write-Host ""
-  if (-not $NonInteractive) {
+  if (-not $effectiveNonInteractive) {
     Write-Host "  [Press Enter when paste is done, or type 'skip' to skip this task]" -ForegroundColor Yellow
     $confirm = Read-Host "  > "
     if ($confirm.Trim().ToLower() -eq "skip") {
@@ -318,19 +419,19 @@ $loopCount = 0
       continue
     }
   } else {
-    Write-Host "  [AUTO] Non-interactive mode enabled -- auto-confirming task step." -ForegroundColor DarkGray
+    Write-Host "  [AUTO] Autopilot mode enabled -- auto-confirming task step." -ForegroundColor DarkGray
   }
 
   # 7. COLLECT EVIDENCE NOTE
   Write-Host ""
   Write-Host "  Evidence note (describe what was expanded, or press Enter to use default):" -ForegroundColor White
-  if (-not $NonInteractive) {
+  if (-not $effectiveNonInteractive) {
     $evNote = Read-Host "  > "
   } else {
     $evNote = ""
   }
   if ([string]::IsNullOrWhiteSpace($evNote)) {
-    $evNote = if ($NonInteractive) {
+    $evNote = if ($effectiveNonInteractive) {
       "Auto-advanced via agent-loop non-interactive mode -- $taskId"
     } else {
       "Expanded via agent-loop paste session -- $taskId"
@@ -349,6 +450,24 @@ $loopCount = 0
       -AgentName $activeAgent `
       -EvidenceNote $evNote `
       -WorkspaceRoot $root 2>&1 | Out-String | Write-Host
+
+    if ($effectiveNonInteractive) {
+      $postTask = Get-TaskById -taskId $taskId
+      if (
+        $null -ne $postTask -and
+        $postTask.status -eq "waiting_ack" -and
+        -not [string]::IsNullOrWhiteSpace([string]$postTask.feedsAckBy)
+      ) {
+        $ackBy = [string]$postTask.feedsAckBy
+        $ackScript = Join-Path $scripts "ack-task.ps1"
+        if (Test-Path $ackScript) {
+          Write-Host ("  [AUTO-ACK] Autopilot acknowledging {0} by {1}" -f $taskId, $ackBy) -ForegroundColor Cyan
+          & powershell -ExecutionPolicy Bypass -File "$ackScript" `
+            -TaskId $taskId `
+            -AckBy $ackBy 2>&1 | Out-String | Write-Host
+        }
+      }
+    }
   } else {
     Write-Host "  [WARN] complete-and-advance.ps1 not found. Queue not updated." -ForegroundColor Yellow
   }
@@ -393,7 +512,7 @@ $loopCount = 0
     $nextSlotMin = Get-MinutesUntilNextSlot
     $nextSlotAg  = Get-NextSlotAgent
     Write-Host ("  Next slot: {0} ({1}) in ~{2} min" -f $nextSlotAg, ($toolName[$nextSlotAg]), $nextSlotMin) -ForegroundColor DarkGray
-    if (-not $NonInteractive) {
+    if (-not $effectiveNonInteractive) {
       Write-Host "  [Press Enter to continue to the next agent, or Ctrl+C to exit]" -ForegroundColor DarkGray
       $null = Read-Host "  > "
     } else {

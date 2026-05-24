@@ -5,33 +5,17 @@ export const AI_ASSISTANTS_REGISTRY = [
     department: 'Executive',
     departmentId: 'executive',
     role: 'MD Executive Assistant',
-    description:
-      'Strategic intelligence hub providing executive oversight and AI-powered suggestions from all departments',
-    capabilities: [
-      'Strategic Planning',
-      'KPI Monitoring',
-      'Executive Reporting',
-      'AI Suggestion Aggregation',
-      'Calendar Management',
-    ],
+    description: 'Strategic intelligence hub providing executive oversight and AI-powered suggestions from all departments',
+    capabilities: ['Strategic Planning', 'KPI Monitoring', 'Executive Reporting', 'AI Suggestion Aggregation', 'Calendar Management'],
     accessLevel: 'P0 - Maximum',
     dashboardPath: '/md/dashboard',
     status: 'active',
     color: '#10B981',
     icon: 'Briefcase',
-    features: [
-      'Dashboard',
-      'Suggestion Inbox',
-      'Organization',
-      'Departments',
-      'Services',
-      'Demo',
-      'Calendar',
-      'Tasks',
-    ],
+    features: ['Dashboard', 'Suggestion Inbox', 'Organization', 'Departments', 'Services', 'Demo', 'Calendar', 'Tasks'],
     dataFlows: ['All AI Assistants', 'External Market Data', 'Internal KPIs'],
     reportsTo: 'Arslan Malik (MD)',
-    priority: 1,
+    priority: 1
   },
   {
     id: 'mary',
@@ -39,15 +23,8 @@ export const AI_ASSISTANTS_REGISTRY = [
     department: 'Operations',
     departmentId: 'operations',
     role: 'Inventory Manager',
-    description:
-      'Manages 9,378+ DAMAC Hills 2 properties with data acquisition, OCR extraction, and property tracking',
-    capabilities: [
-      'Property Database',
-      'Data Tools Suite',
-      'DAMAC Asset Fetcher',
-      'Image OCR',
-      'Excel Import',
-    ],
+    description: 'Manages 9,378+ DAMAC Hills 2 properties with data acquisition, OCR extraction, and property tracking',
+    capabilities: ['Property Database', 'Data Tools Suite', 'DAMAC Asset Fetcher', 'Image OCR', 'Excel Import'],
     accessLevel: 'P1 - High',
     dashboardPath: '/md/dashboard',
     status: 'active',
@@ -56,7 +33,7 @@ export const AI_ASSISTANTS_REGISTRY = [
     features: ['Dashboard', 'Inventory', 'Data Tools', 'Asset Fetcher', 'Import', 'OCR'],
     dataFlows: ['Property Database', 'DAMAC API', 'Web Scraping'],
     reportsTo: 'Omar Siddiqui (Dir. Operations)',
-    priority: 2,
+    priority: 2
   },
   {
     id: 'daisy',
@@ -64,14 +41,8 @@ export const AI_ASSISTANTS_REGISTRY = [
     department: 'Operations',
     departmentId: 'operations',
     role: 'Property Coordinator',
-    description:
-      'Handles lease management, tenant relations, maintenance coordination, and rental analytics',
-    capabilities: [
-      'Lease Management',
-      'Tenant Database',
-      'Maintenance Tracking',
-      'Rental Analytics',
-    ],
+    description: 'Handles lease management, tenant relations, maintenance coordination, and rental analytics',
+    capabilities: ['Lease Management', 'Tenant Database', 'Maintenance Tracking', 'Rental Analytics'],
     accessLevel: 'P1 - High',
     dashboardPath: '/md/dashboard',
     status: 'active',
@@ -80,7 +51,7 @@ export const AI_ASSISTANTS_REGISTRY = [
     features: ['Dashboard', 'Leases', 'Tenants', 'Maintenance', 'Analytics'],
     dataFlows: ['Tenant Database', 'Lease Records', 'Maintenance Logs'],
     reportsTo: 'Omar Siddiqui (Dir. Operations)',
-    priority: 3,
+    priority: 3
   },
   {
     id: 'sentinel',
@@ -88,14 +59,8 @@ export const AI_ASSISTANTS_REGISTRY = [
     department: 'Operations',
     departmentId: 'operations',
     role: 'Quality Control',
-    description:
-      'Property monitoring, predictive maintenance, inspections, and emergency response coordination',
-    capabilities: [
-      'Property Monitoring',
-      'Predictive Maintenance',
-      'Inspection Scheduling',
-      'Emergency Response',
-    ],
+    description: 'Property monitoring, predictive maintenance, inspections, and emergency response coordination',
+    capabilities: ['Property Monitoring', 'Predictive Maintenance', 'Inspection Scheduling', 'Emergency Response'],
     accessLevel: 'P1 - High',
     dashboardPath: '/md/dashboard',
     status: 'active',
@@ -104,7 +69,7 @@ export const AI_ASSISTANTS_REGISTRY = [
     features: ['Dashboard', 'Monitoring', 'Maintenance', 'Inspections', 'Emergency'],
     dataFlows: ['IoT Sensors', 'Maintenance Records', 'Inspection Reports'],
     reportsTo: 'Omar Siddiqui (Dir. Operations)',
-    priority: 4,
+    priority: 4
   },
   {
     id: 'clara',
@@ -113,13 +78,7 @@ export const AI_ASSISTANTS_REGISTRY = [
     departmentId: 'sales',
     role: 'Lead Manager',
     description: 'Manages 7-stage lead pipeline with AI-powered scoring and nurturing workflows',
-    capabilities: [
-      'Lead Pipeline',
-      'Lead Scoring',
-      'Nurturing Workflows',
-      'Activity Timeline',
-      'Assignment Engine',
-    ],
+    capabilities: ['Lead Pipeline', 'Lead Scoring', 'Nurturing Workflows', 'Activity Timeline', 'Assignment Engine'],
     accessLevel: 'P1 - High',
     dashboardPath: '/md/dashboard',
     status: 'active',
@@ -128,7 +87,7 @@ export const AI_ASSISTANTS_REGISTRY = [
     features: ['Dashboard', 'Pipeline', 'Leads', 'Scoring', 'Nurturing', 'Timeline'],
     dataFlows: ['CRM Database', 'WhatsApp Leads', 'Website Inquiries'],
     reportsTo: 'Rashid Al Futtaim (Dir. Sales)',
-    priority: 5,
+    priority: 5
   },
   {
     id: 'hunter',
@@ -136,14 +95,8 @@ export const AI_ASSISTANTS_REGISTRY = [
     department: 'Sales',
     departmentId: 'sales',
     role: 'Lead Hunter',
-    description:
-      'Prospecting engine for lead generation, outreach campaigns, and pattern detection',
-    capabilities: [
-      'Lead Prospecting',
-      'Outreach Campaigns',
-      'Pattern Detection',
-      'Lead Enrichment',
-    ],
+    description: 'Prospecting engine for lead generation, outreach campaigns, and pattern detection',
+    capabilities: ['Lead Prospecting', 'Outreach Campaigns', 'Pattern Detection', 'Lead Enrichment'],
     accessLevel: 'P1 - High',
     dashboardPath: '/md/dashboard',
     status: 'active',
@@ -152,7 +105,7 @@ export const AI_ASSISTANTS_REGISTRY = [
     features: ['Dashboard', 'Prospects', 'Outreach', 'Patterns', 'Enrichment'],
     dataFlows: ['External Data Sources', 'Social Media', 'Property Portals'],
     reportsTo: 'Rashid Al Futtaim (Dir. Sales)',
-    priority: 6,
+    priority: 6
   },
   {
     id: 'sophia',
@@ -170,7 +123,7 @@ export const AI_ASSISTANTS_REGISTRY = [
     features: ['Dashboard', 'Deals', 'Pipeline', 'Forecast', 'Commission'],
     dataFlows: ['Sales Records', 'Contract Database', 'Commission Logs'],
     reportsTo: 'Rashid Al Futtaim (Dir. Sales)',
-    priority: 7,
+    priority: 7
   },
   {
     id: 'kairos',
@@ -178,23 +131,17 @@ export const AI_ASSISTANTS_REGISTRY = [
     department: 'Sales',
     departmentId: 'sales',
     role: 'VIP Services',
-    description:
-      'Exclusive VIP client management, concierge services, and luxury lifestyle coordination',
-    capabilities: [
-      'VIP Client Management',
-      'Concierge Services',
-      'Lifestyle Coordination',
-      'Partner Network',
-    ],
+    description: 'Exclusive VIP client management, concierge services, and luxury lifestyle coordination',
+    capabilities: ['VIP Client Management', 'Concierge Services', 'Lifestyle Coordination', 'Partner Network'],
     accessLevel: 'P1 - High',
     dashboardPath: '/md/dashboard',
     status: 'active',
-    color: '#E31E24',
+    color: '#FFD700',
     icon: 'Crown',
     features: ['Dashboard', 'VIP', 'Concierge', 'Lifestyle', 'Partners'],
     dataFlows: ['VIP Database', 'Partner Services', 'Luxury Vendors'],
     reportsTo: 'Rashid Al Futtaim (Dir. Sales)',
-    priority: 8,
+    priority: 8
   },
   {
     id: 'nancy',
@@ -202,14 +149,8 @@ export const AI_ASSISTANTS_REGISTRY = [
     department: 'Operations',
     departmentId: 'operations',
     role: 'HR & Performance',
-    description:
-      'Human resources management, recruitment, attendance tracking, and performance reviews',
-    capabilities: [
-      'Employee Database',
-      'Recruitment',
-      'Attendance Tracking',
-      'Performance Reviews',
-    ],
+    description: 'Human resources management, recruitment, attendance tracking, and performance reviews',
+    capabilities: ['Employee Database', 'Recruitment', 'Attendance Tracking', 'Performance Reviews'],
     accessLevel: 'P1 - High',
     dashboardPath: '/md/dashboard',
     status: 'active',
@@ -218,7 +159,7 @@ export const AI_ASSISTANTS_REGISTRY = [
     features: ['Dashboard', 'Employees', 'Recruitment', 'Attendance', 'Performance'],
     dataFlows: ['HR Database', 'Payroll System', 'Attendance Logs'],
     reportsTo: 'Mariam Al Nahyan (Dir. HR)',
-    priority: 9,
+    priority: 9
   },
   {
     id: 'linda',
@@ -227,12 +168,7 @@ export const AI_ASSISTANTS_REGISTRY = [
     departmentId: 'communications',
     role: 'WhatsApp Manager',
     description: 'WhatsApp Business operations with 23+ agent network, templates, and broadcasts',
-    capabilities: [
-      'Conversation Management',
-      'Agent Status',
-      'Message Templates',
-      'Broadcast Campaigns',
-    ],
+    capabilities: ['Conversation Management', 'Agent Status', 'Message Templates', 'Broadcast Campaigns'],
     accessLevel: 'P1 - High',
     dashboardPath: '/md/dashboard',
     status: 'active',
@@ -241,7 +177,7 @@ export const AI_ASSISTANTS_REGISTRY = [
     features: ['Dashboard', 'Conversations', 'Agents', 'Templates', 'Broadcasts', 'Scoring'],
     dataFlows: ['WhatsApp API', 'Agent Database', 'Message Logs'],
     reportsTo: 'Khalid Al Mansoori (Dir. Communications)',
-    priority: 10,
+    priority: 10
   },
   {
     id: 'nina',
@@ -259,7 +195,7 @@ export const AI_ASSISTANTS_REGISTRY = [
     features: ['Dashboard', 'Bot Builder', 'Flows', 'Sessions', 'Analytics'],
     dataFlows: ['Chatbot Engine', 'Session Logs', 'Intent Database'],
     reportsTo: 'Khalid Al Mansoori (Dir. Communications)',
-    priority: 11,
+    priority: 11
   },
   {
     id: 'theodora',
@@ -268,13 +204,7 @@ export const AI_ASSISTANTS_REGISTRY = [
     departmentId: 'finance',
     role: 'CFO Intelligence',
     description: 'Financial management with invoicing, payments, reporting, and escrow management',
-    capabilities: [
-      'Invoice Management',
-      'Payment Processing',
-      'Financial Reports',
-      'Escrow Management',
-      'Budget Analysis',
-    ],
+    capabilities: ['Invoice Management', 'Payment Processing', 'Financial Reports', 'Escrow Management', 'Budget Analysis'],
     accessLevel: 'P0 - Maximum',
     dashboardPath: '/md/dashboard',
     status: 'active',
@@ -283,7 +213,7 @@ export const AI_ASSISTANTS_REGISTRY = [
     features: ['Dashboard', 'Invoices', 'Payments', 'Reports', 'Escrow', 'Budget'],
     dataFlows: ['Accounting System', 'Bank APIs', 'Payment Gateway'],
     reportsTo: 'Hana Al Zaabi (Dir. Finance)',
-    priority: 12,
+    priority: 12
   },
   {
     id: 'penny',
@@ -292,12 +222,7 @@ export const AI_ASSISTANTS_REGISTRY = [
     departmentId: 'finance',
     role: 'Commission Tracker',
     description: 'Agent commission calculations, payout schedules, and earnings tracking',
-    capabilities: [
-      'Commission Calculations',
-      'Payout Scheduling',
-      'Agent Earnings',
-      'Performance Bonuses',
-    ],
+    capabilities: ['Commission Calculations', 'Payout Scheduling', 'Agent Earnings', 'Performance Bonuses'],
     accessLevel: 'P1 - High',
     dashboardPath: '/md/dashboard',
     status: 'active',
@@ -306,7 +231,7 @@ export const AI_ASSISTANTS_REGISTRY = [
     features: ['Dashboard', 'Commissions', 'Payouts', 'Earnings', 'Bonuses'],
     dataFlows: ['Sales Records', 'Agent Database', 'Payroll System'],
     reportsTo: 'Hana Al Zaabi (Dir. Finance)',
-    priority: 13,
+    priority: 13
   },
   {
     id: 'quinn',
@@ -315,12 +240,7 @@ export const AI_ASSISTANTS_REGISTRY = [
     departmentId: 'finance',
     role: 'Payment Processor',
     description: 'Payment gateway management, transaction tracking, and refund processing',
-    capabilities: [
-      'Payment Gateway',
-      'Transaction Tracking',
-      'Refund Processing',
-      'Payment Reconciliation',
-    ],
+    capabilities: ['Payment Gateway', 'Transaction Tracking', 'Refund Processing', 'Payment Reconciliation'],
     accessLevel: 'P1 - High',
     dashboardPath: '/md/dashboard',
     status: 'active',
@@ -329,7 +249,7 @@ export const AI_ASSISTANTS_REGISTRY = [
     features: ['Dashboard', 'Payments', 'Transactions', 'Refunds', 'Reconciliation'],
     dataFlows: ['Stripe API', 'Bank Accounts', 'Transaction Logs'],
     reportsTo: 'Hana Al Zaabi (Dir. Finance)',
-    priority: 14,
+    priority: 14
   },
   {
     id: 'maven',
@@ -347,7 +267,7 @@ export const AI_ASSISTANTS_REGISTRY = [
     features: ['Dashboard', 'Portfolio', 'Yields', 'Tax', 'Advice'],
     dataFlows: ['Investment Database', 'Market Data', 'Tax Records'],
     reportsTo: 'Ahmed Al Rashid (CFO)',
-    priority: 15,
+    priority: 15
   },
   {
     id: 'olivia',
@@ -356,12 +276,7 @@ export const AI_ASSISTANTS_REGISTRY = [
     departmentId: 'marketing',
     role: 'Research Lead',
     description: 'Marketing campaigns, social media, automation, and market intelligence gathering',
-    capabilities: [
-      'Campaign Management',
-      'Social Media',
-      'Marketing Automation',
-      'Market Intelligence',
-    ],
+    capabilities: ['Campaign Management', 'Social Media', 'Marketing Automation', 'Market Intelligence'],
     accessLevel: 'P1 - High',
     dashboardPath: '/md/dashboard',
     status: 'active',
@@ -370,7 +285,7 @@ export const AI_ASSISTANTS_REGISTRY = [
     features: ['Dashboard', 'Campaigns', 'Social', 'Automation', 'Intelligence'],
     dataFlows: ['Marketing Platforms', 'Social APIs', 'Portal Analytics'],
     reportsTo: 'Layla Al Suwaidi (Dir. Marketing)',
-    priority: 16,
+    priority: 16
   },
   {
     id: 'marcus',
@@ -378,8 +293,7 @@ export const AI_ASSISTANTS_REGISTRY = [
     department: 'Marketing',
     departmentId: 'marketing',
     role: 'Campaign Manager',
-    description:
-      'Campaign creation, A/B testing, and performance tracking for marketing initiatives',
+    description: 'Campaign creation, A/B testing, and performance tracking for marketing initiatives',
     capabilities: ['Campaign Creation', 'A/B Testing', 'Performance Tracking', 'Budget Allocation'],
     accessLevel: 'P1 - High',
     dashboardPath: '/md/dashboard',
@@ -389,7 +303,7 @@ export const AI_ASSISTANTS_REGISTRY = [
     features: ['Dashboard', 'Campaigns', 'Testing', 'Performance', 'Budget'],
     dataFlows: ['Ad Platforms', 'Analytics', 'Campaign Logs'],
     reportsTo: 'Layla Al Suwaidi (Dir. Marketing)',
-    priority: 17,
+    priority: 17
   },
   {
     id: 'stella',
@@ -407,7 +321,7 @@ export const AI_ASSISTANTS_REGISTRY = [
     features: ['Dashboard', 'Calendar', 'Assets', 'Copy', 'Guidelines'],
     dataFlows: ['Content Repository', 'Asset Library', 'Brand Database'],
     reportsTo: 'Layla Al Suwaidi (Dir. Marketing)',
-    priority: 18,
+    priority: 18
   },
   {
     id: 'laila',
@@ -425,7 +339,7 @@ export const AI_ASSISTANTS_REGISTRY = [
     features: ['Dashboard', 'KYC', 'AML', 'Contracts', 'Audit'],
     dataFlows: ['KYC Database', 'AML Watchlists', 'Contract Repository'],
     reportsTo: 'Nadia Ibrahim (Dir. Compliance)',
-    priority: 19,
+    priority: 19
   },
   {
     id: 'henry',
@@ -443,7 +357,7 @@ export const AI_ASSISTANTS_REGISTRY = [
     features: ['Dashboard', 'Events', 'Audit', 'Timeline', 'Reports'],
     dataFlows: ['Event Bus', 'System Logs', 'Audit Database'],
     reportsTo: 'Nadia Ibrahim (Dir. Compliance)',
-    priority: 20,
+    priority: 20
   },
   {
     id: 'vera',
@@ -451,14 +365,8 @@ export const AI_ASSISTANTS_REGISTRY = [
     department: 'Compliance',
     departmentId: 'compliance',
     role: 'KYC Specialist',
-    description:
-      'Identity verification, document validation, and risk scoring for client onboarding',
-    capabilities: [
-      'Identity Verification',
-      'Document Validation',
-      'Risk Scoring',
-      'Client Onboarding',
-    ],
+    description: 'Identity verification, document validation, and risk scoring for client onboarding',
+    capabilities: ['Identity Verification', 'Document Validation', 'Risk Scoring', 'Client Onboarding'],
     accessLevel: 'P1 - High',
     dashboardPath: '/md/dashboard',
     status: 'active',
@@ -467,7 +375,7 @@ export const AI_ASSISTANTS_REGISTRY = [
     features: ['Dashboard', 'Verification', 'Documents', 'Risk', 'Onboarding'],
     dataFlows: ['Emirates ID API', 'Document OCR', 'Risk Database'],
     reportsTo: 'Nadia Ibrahim (Dir. Compliance)',
-    priority: 21,
+    priority: 21
   },
   {
     id: 'aurora',
@@ -485,7 +393,7 @@ export const AI_ASSISTANTS_REGISTRY = [
     features: ['Dashboard', 'Systems', 'Deployments', 'Documentation', 'Governance'],
     dataFlows: ['System Metrics', 'CI/CD Pipeline', 'AI Models'],
     reportsTo: 'Tariq Al Qasimi (Dir. Technology)',
-    priority: 22,
+    priority: 22
   },
   {
     id: 'hazel',
@@ -503,7 +411,7 @@ export const AI_ASSISTANTS_REGISTRY = [
     features: ['Dashboard', 'Components', 'Design System', 'Accessibility', 'Themes'],
     dataFlows: ['Component Registry', 'Design Tokens', 'A11y Audit'],
     reportsTo: 'Tariq Al Qasimi (Dir. Technology)',
-    priority: 23,
+    priority: 23
   },
   {
     id: 'willow',
@@ -521,7 +429,7 @@ export const AI_ASSISTANTS_REGISTRY = [
     features: ['Dashboard', 'APIs', 'Database', 'Performance', 'Security'],
     dataFlows: ['API Gateway', 'Database Clusters', 'Security Logs'],
     reportsTo: 'Tariq Al Qasimi (Dir. Technology)',
-    priority: 24,
+    priority: 24
   },
   {
     id: 'atlas',
@@ -530,12 +438,7 @@ export const AI_ASSISTANTS_REGISTRY = [
     departmentId: 'intelligence',
     role: 'API Monitor',
     description: 'Off-plan project tracking, feasibility analysis, and developer monitoring',
-    capabilities: [
-      'Project Tracking',
-      'Feasibility Analysis',
-      'Developer Tracking',
-      'Zoning Analysis',
-    ],
+    capabilities: ['Project Tracking', 'Feasibility Analysis', 'Developer Tracking', 'Zoning Analysis'],
     accessLevel: 'P1 - High',
     dashboardPath: '/md/dashboard',
     status: 'active',
@@ -544,7 +447,7 @@ export const AI_ASSISTANTS_REGISTRY = [
     features: ['Dashboard', 'Projects', 'Feasibility', 'Developers', 'Zoning'],
     dataFlows: ['Developer Database', 'DLD Records', 'Zoning Maps'],
     reportsTo: 'Yusuf Al Ghurair (Dir. Intelligence)',
-    priority: 25,
+    priority: 25
   },
   {
     id: 'cipher',
@@ -552,14 +455,8 @@ export const AI_ASSISTANTS_REGISTRY = [
     department: 'Intelligence',
     departmentId: 'intelligence',
     role: 'Market Intel',
-    description:
-      'Market trends analysis, price predictions, competitor tracking, and economic indicators',
-    capabilities: [
-      'Market Trends',
-      'Price Predictions',
-      'Competitor Tracking',
-      'Economic Indicators',
-    ],
+    description: 'Market trends analysis, price predictions, competitor tracking, and economic indicators',
+    capabilities: ['Market Trends', 'Price Predictions', 'Competitor Tracking', 'Economic Indicators'],
     accessLevel: 'P1 - High',
     dashboardPath: '/md/dashboard',
     status: 'active',
@@ -568,7 +465,7 @@ export const AI_ASSISTANTS_REGISTRY = [
     features: ['Dashboard', 'Trends', 'Predictions', 'Competitors', 'Indicators'],
     dataFlows: ['Market Data', 'Competitor APIs', 'Economic APIs'],
     reportsTo: 'Yusuf Al Ghurair (Dir. Intelligence)',
-    priority: 26,
+    priority: 26
   },
   {
     id: 'sage',
@@ -577,12 +474,7 @@ export const AI_ASSISTANTS_REGISTRY = [
     departmentId: 'intelligence',
     role: 'Market Analyst',
     description: 'Advanced market analysis, pricing strategies, and competitive intelligence',
-    capabilities: [
-      'Market Analysis',
-      'Pricing Strategy',
-      'Competitive Intelligence',
-      'Trend Forecasting',
-    ],
+    capabilities: ['Market Analysis', 'Pricing Strategy', 'Competitive Intelligence', 'Trend Forecasting'],
     accessLevel: 'P1 - High',
     dashboardPath: '/md/dashboard',
     status: 'active',
@@ -591,7 +483,7 @@ export const AI_ASSISTANTS_REGISTRY = [
     features: ['Dashboard', 'Analysis', 'Pricing', 'Competitors', 'Forecasts'],
     dataFlows: ['Market Database', 'Pricing Models', 'Competitor Data'],
     reportsTo: 'Yusuf Al Ghurair (Dir. Intelligence)',
-    priority: 27,
+    priority: 27
   },
   {
     id: 'evangeline',
@@ -609,7 +501,7 @@ export const AI_ASSISTANTS_REGISTRY = [
     features: ['Dashboard', 'Risks', 'Contracts', 'Regulations', 'Library'],
     dataFlows: ['Legal Database', 'Regulatory Updates', 'Case Law'],
     reportsTo: 'Aisha Al Ketbi (Dir. Legal)',
-    priority: 28,
+    priority: 28
   },
   {
     id: 'ivy',
@@ -618,12 +510,7 @@ export const AI_ASSISTANTS_REGISTRY = [
     departmentId: 'legal',
     role: 'Ejari Specialist',
     description: 'Ejari registration, contract compliance, and tenancy renewals management',
-    capabilities: [
-      'Ejari Registration',
-      'Contract Compliance',
-      'Renewals Management',
-      'RERA Compliance',
-    ],
+    capabilities: ['Ejari Registration', 'Contract Compliance', 'Renewals Management', 'RERA Compliance'],
     accessLevel: 'P1 - High',
     dashboardPath: '/md/dashboard',
     status: 'active',
@@ -632,7 +519,7 @@ export const AI_ASSISTANTS_REGISTRY = [
     features: ['Dashboard', 'Ejari', 'Compliance', 'Renewals', 'RERA'],
     dataFlows: ['Ejari Portal', 'Contract Database', 'RERA Records'],
     reportsTo: 'Aisha Al Ketbi (Dir. Legal)',
-    priority: 29,
+    priority: 29
   },
   {
     id: 'max',
@@ -641,12 +528,7 @@ export const AI_ASSISTANTS_REGISTRY = [
     departmentId: 'legal',
     role: 'Document Processor',
     description: 'Document generation, OCR processing, and archival management',
-    capabilities: [
-      'Document Generation',
-      'OCR Processing',
-      'Archival Management',
-      'Template Library',
-    ],
+    capabilities: ['Document Generation', 'OCR Processing', 'Archival Management', 'Template Library'],
     accessLevel: 'P1 - High',
     dashboardPath: '/md/dashboard',
     status: 'active',
@@ -655,7 +537,7 @@ export const AI_ASSISTANTS_REGISTRY = [
     features: ['Dashboard', 'Documents', 'OCR', 'Archive', 'Templates'],
     dataFlows: ['Document Repository', 'OCR Engine', 'Archive Storage'],
     reportsTo: 'Aisha Al Ketbi (Dir. Legal)',
-    priority: 30,
+    priority: 30
   },
   {
     id: 'vesta',
@@ -664,12 +546,7 @@ export const AI_ASSISTANTS_REGISTRY = [
     departmentId: 'operations',
     role: 'Project Handover',
     description: 'Project milestones, snagging lists, handover coordination, and defect tracking',
-    capabilities: [
-      'Milestone Tracking',
-      'Snagging Lists',
-      'Handover Coordination',
-      'Defect Reports',
-    ],
+    capabilities: ['Milestone Tracking', 'Snagging Lists', 'Handover Coordination', 'Defect Reports'],
     accessLevel: 'P1 - High',
     dashboardPath: '/md/dashboard',
     status: 'active',
@@ -678,7 +555,7 @@ export const AI_ASSISTANTS_REGISTRY = [
     features: ['Dashboard', 'Milestones', 'Snagging', 'Handover', 'Defects'],
     dataFlows: ['Project Database', 'Snagging System', 'Developer APIs'],
     reportsTo: 'Omar Siddiqui (Dir. Operations)',
-    priority: 31,
+    priority: 31
   },
   {
     id: 'juno',
@@ -687,12 +564,7 @@ export const AI_ASSISTANTS_REGISTRY = [
     departmentId: 'operations',
     role: 'Community Mgmt',
     description: 'Facilities management, IoT devices, community events, and energy optimization',
-    capabilities: [
-      'Facilities Management',
-      'IoT Integration',
-      'Event Management',
-      'Energy Optimization',
-    ],
+    capabilities: ['Facilities Management', 'IoT Integration', 'Event Management', 'Energy Optimization'],
     accessLevel: 'P1 - High',
     dashboardPath: '/md/dashboard',
     status: 'active',
@@ -701,16 +573,17 @@ export const AI_ASSISTANTS_REGISTRY = [
     features: ['Dashboard', 'Facilities', 'IoT', 'Events', 'Energy'],
     dataFlows: ['IoT Sensors', 'Facility Database', 'Energy Meters'],
     reportsTo: 'Omar Siddiqui (Dir. Operations)',
-    priority: 32,
-  },
+    priority: 32
+  }
 ];
 
-export const getAssistantById = id => AI_ASSISTANTS_REGISTRY.find(a => a.id === id);
+export const getAssistantById = (id) => AI_ASSISTANTS_REGISTRY.find(a => a.id === id);
 
-export const getAssistantsByDepartment = departmentId =>
+export const getAssistantsByDepartment = (departmentId) => 
   AI_ASSISTANTS_REGISTRY.filter(a => a.departmentId === departmentId);
 
-export const getActiveAssistants = () => AI_ASSISTANTS_REGISTRY.filter(a => a.status === 'active');
+export const getActiveAssistants = () => 
+  AI_ASSISTANTS_REGISTRY.filter(a => a.status === 'active');
 
 export const getDepartmentGroups = () => {
   const groups = {};
@@ -723,14 +596,13 @@ export const getDepartmentGroups = () => {
   return groups;
 };
 
-export const searchAssistants = query => {
+export const searchAssistants = (query) => {
   const q = query.toLowerCase();
-  return AI_ASSISTANTS_REGISTRY.filter(
-    a =>
-      a.name.toLowerCase().includes(q) ||
-      a.role.toLowerCase().includes(q) ||
-      a.department.toLowerCase().includes(q) ||
-      a.capabilities.some(c => c.toLowerCase().includes(q))
+  return AI_ASSISTANTS_REGISTRY.filter(a => 
+    a.name.toLowerCase().includes(q) ||
+    a.role.toLowerCase().includes(q) ||
+    a.department.toLowerCase().includes(q) ||
+    a.capabilities.some(c => c.toLowerCase().includes(q))
   );
 };
 
