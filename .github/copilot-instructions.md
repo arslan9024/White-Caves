@@ -119,8 +119,10 @@ If full matrix is too expensive, run focused scope checks first and clearly repo
 - Respect existing rate-limit and CORS/security middleware setup.
 - Keep responses consistent with existing API envelope conventions.
 - Never bypass security checks for convenience.
-
 ---
+- Free-planning agents MUST use only: Gemini 2.0 Flash, Llama 3.1 70B (Groq), DeepSeek V3.
+- Senior coding/design agents use GPT-4o by default for coding and verification.
+- Claude 3.5 Sonnet is reserved for explicit complex architecture/design reviews by: @Ada, @Mira, @Barbara, @Una, @Daniela, @Framer, @Radia.
 
 ## 8) Frontend UX/Resilience Expectations
 
@@ -133,7 +135,6 @@ For any new UI surface:
 - avoid brittle selectors and flaky timing assumptions in tests
 
 ---
-
 ## 9) Editing Behavior for Copilot/Agents
 
 When generating or modifying code in this repo:
@@ -175,6 +176,8 @@ Use these as defaults unless task scope requires something narrower.
 ## 12) Governance Bridge (Read Before Multi-Agent Execution)
 
 This file governs **engineering quality and implementation behavior**.
+
+Decision order note: evaluate Rule 7 checklist first, then Rule 11 readiness requirements, then Rule 24 mode behavior, and finally Rule 25 runtime policy values.
 
 For orchestration/governance rules (handoff contracts, readiness gates, approval phrases, FEEDS/CONSUMES/FEEDS_ACK, and agent routing), use:
 
