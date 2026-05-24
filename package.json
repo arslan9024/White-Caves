@@ -175,7 +175,25 @@
     "orchestrator:phase99": "powershell -ExecutionPolicy Bypass -File scripts/orchestrator/phase99-signoff.ps1",
     "orchestrator:phase99:quick": "powershell -ExecutionPolicy Bypass -File scripts/orchestrator/phase99-signoff.ps1 -SkipTests",
     "approval": "npm run orchestrator:agent-loop:approval --",
-    "autopilot": "npm run orchestrator:agent-loop:autopilot --"
+    "autopilot": "npm run orchestrator:agent-loop:autopilot --",
+    "autopilot:scan": "node scripts/orchestrator/codebase-scan.js",
+    "autopilot:scan:brief": "node scripts/orchestrator/codebase-scan.js --brief",
+    "autopilot:scan:json": "node scripts/orchestrator/codebase-scan.js --json",
+    "autopilot:reprioritize": "node scripts/orchestrator/reprioritize.js",
+    "autopilot:reprioritize:dry": "node scripts/orchestrator/reprioritize.js --dry",
+    "autopilot:reprioritize:top5": "node scripts/orchestrator/reprioritize.js --top 5",
+    "autopilot:session": "node scripts/orchestrator/autopilot-session.js",
+    "autopilot:session:skip-scan": "node scripts/orchestrator/autopilot-session.js --skip-scan",
+    "autopilot:session:json": "node scripts/orchestrator/autopilot-session.js --json",
+    "autopilot:session:end": "powershell -ExecutionPolicy Bypass -File scripts/orchestrator/session-end.ps1",
+    "autopilot:unlimited": "powershell -ExecutionPolicy Bypass -File scripts/orchestrator/autopilot-unlimited.ps1",
+    "autopilot:unlimited:dry": "powershell -ExecutionPolicy Bypass -File scripts/orchestrator/autopilot-unlimited.ps1 -DryRun",
+    "autopilot:unlimited:nobuild": "powershell -ExecutionPolicy Bypass -File scripts/orchestrator/autopilot-unlimited.ps1 -SkipBuild",
+    "autopilot:unlimited:3": "powershell -ExecutionPolicy Bypass -File scripts/orchestrator/autopilot-unlimited.ps1 -MaxSessions 3",
+    "autopilot:pause": "node -e \"require('fs').mkdirSync('logs/orchestrator',{recursive:true});require('fs').writeFileSync('logs/orchestrator/PAUSE','');console.log('PAUSE file created — autopilot will stop after current session')\"",
+    "autopilot:resume": "node -e \"try{require('fs').unlinkSync('logs/orchestrator/PAUSE');console.log('PAUSE file removed — autopilot will resume');}catch{console.log('No PAUSE file found');}\"",
+    "subagents": "node -e \"const r=require('./scripts/orchestrator/subagents-registry.json');console.log('Total agents:',r.agents.length);r.agents.forEach(a=>console.log(' #'+a.id,a.name,'—',a.title,'|',a.unit,'|',a.model))\"",
+    "subagents:team": "node -e \"const r=require('./scripts/orchestrator/subagents-registry.json');const t=process.argv[2];const m=r.agents.filter(a=>a.unit&&a.unit.toLowerCase().includes(t?t.toLowerCase():''));console.log('Agents in unit matching:',t,'\\n');m.forEach(a=>console.log('#'+a.id,a.name,'-',a.title))\" --"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"
