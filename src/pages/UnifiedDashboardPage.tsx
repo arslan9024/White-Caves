@@ -23,6 +23,7 @@ import { useUnifiedDashboard } from '../hooks/useUnifiedDashboard';
 import type { DashboardData, CRMModuleProps } from '../hooks/useUnifiedDashboard';
 import { AI_ASSISTANTS_REGISTRY } from '../store/slices/aiAssistant/registry';
 import { selectSelectedAssistant } from '../store/slices/sidebarSlice';
+import { SUPERUSER_CRM_MODULE_ORDER, getCRMModule } from '../config/crmModuleRegistry';
 import type { RootState } from '../store/store';
 import type { RoleTab } from '../config/ROLE_TAB_MAPPING';
 import './UnifiedDashboardPage.css';
@@ -49,26 +50,6 @@ import AdminDashboard from '../components/admin/AdminDashboard';
 
 const AIAssistantHub = lazy(() => import('../components/crm/AIAssistantHub'));
 const AICommandCenter = lazy(() => import('../components/crm/AICommandCenter'));
-const NadiaWhatsAppCRM = lazy(() => import('../components/crm/NadiaWhatsAppCRM'));
-const MaryInventoryCRM = lazy(() => import('../components/crm/MaryInventoryCRM_NEW'));
-const ClaraLeadsCRM = lazy(() => import('../components/crm/ClaraLeadsCRM_NEW'));
-const NinaWhatsAppBotCRM = lazy(() => import('../components/crm/NinaWhatsAppBotCRM_NEW'));
-const NancyHRCRM = lazy(() => import('../components/crm/NancyHRCRM_NEW'));
-const SophiaSalesCRM = lazy(() => import('../components/crm/SophiaSalesCRM_NEW'));
-const DaisyLeasingCRM = lazy(() => import('../components/crm/DaisyLeasingCRM_NEW'));
-const TheodoraFinanceCRM = lazy(() => import('../components/crm/TheodoraFinanceCRM_NEW'));
-const OliviaMarketingCRM = lazy(() => import('../components/crm/OliviaMarketingCRM_NEW'));
-const ZoeExecutiveCRM = lazy(() => import('../components/crm/ZoeExecutiveCRM_NEW'));
-const LailaComplianceCRM = lazy(() => import('../components/crm/LailaComplianceCRM_NEW'));
-const AuroraCTODashboard = lazy(() => import('../components/crm/AuroraCTODashboard_NEW'));
-const HazelFrontendCRM = lazy(() => import('../components/crm/HazelFrontendCRM_NEW'));
-const WillowBackendCRM = lazy(() => import('../components/crm/WillowBackendCRM_NEW'));
-const UnifiedCRM = lazy(() => import('../components/crm/UnifiedCRM'));
-const RERAComplianceModule = lazy(() => import('../components/crm/RERAComplianceModule'));
-const DLDIntegrationModule = lazy(() => import('../components/crm/DLDIntegrationModule'));
-const LeadScoringModule = lazy(() => import('../components/crm/LeadScoringModule'));
-const PropertyValuationModule = lazy(() => import('../components/crm/PropertyValuationModule'));
-const MarketAnalyticsModule = lazy(() => import('../components/crm/MarketAnalyticsModule'));
 
 interface CRMModule {
   Component: ComponentType<CRMModuleProps>;
@@ -86,8 +67,6 @@ interface SearchItem {
   target: string;
 }
 
-const UnifiedCRMAdapter: FC<CRMModuleProps> = () => <UnifiedCRM />;
-
 function tabData<T>(data: DashboardData | null | undefined): T {
   return (data ?? {}) as unknown as T;
 }
@@ -98,28 +77,18 @@ const TabLoadingFallback: FC = () => (
   </div>
 );
 
-const CRM_MODULES: Record<string, CRMModule> = {
-  unified: { Component: UnifiedCRMAdapter, label: 'Unified CRM Dashboard' },
-  nadia: { Component: NadiaWhatsAppCRM, label: 'WhatsApp CRM' },
-  mary: { Component: MaryInventoryCRM, label: 'Inventory CRM' },
-  clara: { Component: ClaraLeadsCRM, label: 'Leads CRM' },
-  nina: { Component: NinaWhatsAppBotCRM, label: 'WhatsApp Bot CRM' },
-  nancy: { Component: NancyHRCRM, label: 'HR CRM' },
-  sophia: { Component: SophiaSalesCRM, label: 'Sales CRM' },
-  daisy: { Component: DaisyLeasingCRM, label: 'Leasing CRM' },
-  theodora: { Component: TheodoraFinanceCRM, label: 'Finance CRM' },
-  olivia: { Component: OliviaMarketingCRM, label: 'Marketing CRM' },
-  zoe: { Component: ZoeExecutiveCRM, label: 'Executive CRM' },
-  laila: { Component: LailaComplianceCRM, label: 'Compliance CRM' },
-  aurora: { Component: AuroraCTODashboard, label: 'CTO Dashboard' },
-  hazel: { Component: HazelFrontendCRM, label: 'Frontend CRM' },
-  willow: { Component: WillowBackendCRM, label: 'Backend CRM' },
-  rera: { Component: RERAComplianceModule, label: 'RERA Compliance' },
-  dld: { Component: DLDIntegrationModule, label: 'DLD Integration' },
-  leads: { Component: LeadScoringModule, label: 'Lead Scoring' },
-  valuation: { Component: PropertyValuationModule, label: 'Property Valuation' },
-  analytics: { Component: MarketAnalyticsModule, label: 'Market Analytics' },
-};
+const CRM_MODULES: Record<string, CRMModule> = SUPERUSER_CRM_MODULE_ORDER.reduce(
+  (accumulator, moduleId) => {
+    const moduleDef = getCRMModule(moduleId);
+    if (!moduleDef) return accumulator;
+    accumulator[moduleId] = {
+      Component: moduleDef.Component as ComponentType<CRMModuleProps>,
+      label: moduleDef.label,
+    };
+    return accumulator;
+  },
+  {} as Record<string, CRMModule>
+);
 
 const moduleEntries = Object.entries(CRM_MODULES);
 

@@ -1,4 +1,4 @@
-import React, { memo, lazy, Suspense, useCallback, useEffect, useMemo, useState } from 'react';
+import React, { memo, Suspense, useCallback, useEffect, useMemo, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { RefreshCw, Settings, Bell, LayoutGrid, List } from 'lucide-react';
 import type { AssistantPerformance } from '../../store/slices/aiAssistant/types';
@@ -14,55 +14,13 @@ import {
 } from '../../store/slices/aiAssistantDashboardSlice';
 import { getInternalModuleMountConfig } from '../../config/internalModuleMounts';
 import { getInternalModuleArchitecture } from '../../config/internalModuleArchitecture';
-
-const NadiaWhatsAppCRM = lazy(() => import('./NadiaWhatsAppCRM'));
-const MaryInventoryCRM = lazy(() => import('./MaryInventoryCRM_NEW'));
-const ClaraLeadsCRM = lazy(() => import('./ClaraLeadsCRM_NEW'));
-const NinaWhatsAppBotCRM = lazy(() => import('./NinaWhatsAppBotCRM_NEW'));
-const NancyHRCRM = lazy(() => import('./NancyHRCRM_NEW'));
-const SophiaSalesCRM = lazy(() => import('./SophiaSalesCRM_NEW'));
-const DaisyLeasingCRM = lazy(() => import('./DaisyLeasingCRM_NEW'));
-const TheodoraFinanceCRM = lazy(() => import('./TheodoraFinanceCRM_NEW'));
-const OliviaMarketingCRM = lazy(() => import('./OliviaMarketingCRM_NEW'));
-const ZoeExecutiveCRM = lazy(() => import('./ZoeExecutiveCRM_NEW'));
-const LailaComplianceCRM = lazy(() => import('./LailaComplianceCRM_NEW'));
-const AuroraCTODashboard = lazy(() => import('./AuroraCTODashboard_NEW'));
-const LindaWhatsAppCRM = lazy(() => import('./LindaWhatsAppCRM'));
-const HenryRecordsCRM = lazy(() => import('./HenryRecordsCRM'));
+import { getCRMModule } from '../../config/crmModuleRegistry';
 
 const renderAssistantDashboard = (assistantId?: string) => {
-  switch (assistantId) {
-    case 'nadia':
-      return <NadiaWhatsAppCRM />;
-    case 'mary':
-      return <MaryInventoryCRM />;
-    case 'clara':
-      return <ClaraLeadsCRM />;
-    case 'nina':
-      return <NinaWhatsAppBotCRM />;
-    case 'nancy':
-      return <NancyHRCRM />;
-    case 'sophia':
-      return <SophiaSalesCRM />;
-    case 'daisy':
-      return <DaisyLeasingCRM />;
-    case 'theodora':
-      return <TheodoraFinanceCRM />;
-    case 'olivia':
-      return <OliviaMarketingCRM />;
-    case 'zoe':
-      return <ZoeExecutiveCRM />;
-    case 'laila':
-      return <LailaComplianceCRM />;
-    case 'aurora':
-      return <AuroraCTODashboard />;
-    case 'linda':
-      return <LindaWhatsAppCRM />;
-    case 'henry':
-      return <HenryRecordsCRM />;
-    default:
-      return null;
-  }
+  const moduleDef = getCRMModule(assistantId);
+  if (!moduleDef) return null;
+  const DashboardComponent = moduleDef.Component;
+  return <DashboardComponent />;
 };
 
 const LoadingSpinner = memo(() => (
