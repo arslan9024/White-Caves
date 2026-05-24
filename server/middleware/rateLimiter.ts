@@ -24,7 +24,7 @@ if (redisUrl) {
   });
   redisClient.connect().catch(error => {
     console.warn(
-      'Failed to connect Redis rate-limit store; falling back to in-memory limiter:',
+      'Failed to connect Redis rate-limit store; rate limiter will continue attempting Redis on each request (requests may fail if Redis remains unavailable):',
       error instanceof Error ? error.message : error
     );
   });
