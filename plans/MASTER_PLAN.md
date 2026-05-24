@@ -2,7 +2,7 @@
 
 **Purpose:** Canonical roadmap for execution decisions.  
 **Owners:** @Ada + @Margaret  
-**Last Updated:** 2026-05-22  
+**Last Updated:** 2026-05-24  
 **Update cadence:** Weekly roadmap refresh (daily progress in `PROJECT_PROGRESS.md`)
 
 ---
@@ -12,7 +12,7 @@
 - N+1 through N+9 implementation stream: **✅ Completed**
 - Repo cleanup: **✅ Completed** — 293 legacy docs archived to `plans/archives/` and root cleaned
 - Wave 08 (S1): **✅ Completed** — TypeScript baseline 0 errors (client + server, confirmed May 22, 2026)
-- Active execution focus: **Wave 09** (UX hardening) → **Wave 10** (performance/SEO/security) → **Wave 11** (incomplete features)
+- Active execution focus: **Wave 09** (UX hardening) → **Wave 10** (performance/SEO/security) → **Wave 11** (incomplete features) → **Wave 12** (automation) → **Wave 13** (real-time/media) → **Wave 14** (product features) → **Wave 15** (performance/PWA) → **Wave 16** (security hardening)
 - Planning authority centralized in `MASTER_PLAN.md` + `PENDING_TASKS_ONLY.md`
 - All wave bundles (09–11) authored and ready
 
@@ -26,6 +26,10 @@
 | S2     | Wave 09 — UX loading-state & interaction hardening           | @Una + @Lea + @Tracy + @Inas | 🟢 Ready    | S1 green ✅ + readiness 72% ✅ + @Ada approval phrase           | IMPROVEMENTS_UX.md items 30–33 delivered; `quality:quick` pass                     |
 | S3     | Wave 10 — Performance, SEO & security uplift                 | @Ruchi + @Rachel + @Radia    | 📋 Planned  | S2 green + readiness 65% ✅ bundle ready + @Ada approval phrase | IMPROVEMENTS_PERFORMANCE + IMPROVEMENTS_SEO + IMPROVEMENTS_SECURITY items closed   |
 | S4     | Wave 11 — Incomplete features + architecture refactor        | @Ada + @Mira + @Barbara      | 📋 Planned  | S3 green + readiness 60% ✅ bundle ready + @Ada approval phrase | All Items 6/7/8 in IMPROVEMENTS_INCOMPLETE_FEATURES.md closed; arch refactors done |
+| S5     | Wave 12 — Automation engine (cron + documents + email)      | @Cron + @Puppeteer + @Handlebars + @Mira | 📋 Planned  | S4 green + readiness 60% + @Ada approval phrase                 | Scheduler/Document/Email wiring tasks complete + wave validation green |
+| S6     | Wave 13 — Real-time + media pipeline                         | @Socket + @Cloudinary + @Pannellum + @Mira | 📋 Planned  | S5 green + readiness 60% + @Ada approval phrase                 | Notifications/media/virtual tour tasks complete + wave validation green |
+| S7     | Wave 14 — Product features closure                           | @LeadScore + @Mortgage + @Zod + @Mira | 📋 Planned  | S6 green + readiness 60% + @Ada approval phrase                 | Lead scoring/audit log/mortgage/calendar/currency tasks complete |
+| S8     | Wave 15 + 16 — Performance/PWA + Security hardening          | @Redis + @PWA + @S5 + @Ruchi + @Radia | 📋 Planned  | S7 green + readiness 60% + @Ada approval phrase                 | Cache/PWA/versioning/CSRF/error-envelope hardening complete |
 
 ---
 
@@ -37,6 +41,11 @@
 | 09   | UX hardening — skeleton screens, a11y, mobile, RTL   | 🟢 Ready    | [`WAVE_09_SDD.md`](./waves/WAVE_09_SDD.md), [`WAVE_09_READINESS_PACKET.md`](./waves/WAVE_09_READINESS_PACKET.md), [`WAVE_09_IMPLEMENTATION_BACKLOG.md`](./waves/WAVE_09_IMPLEMENTATION_BACKLOG.md), [`WAVE_09_TEST_ROLLOUT.md`](./waves/WAVE_09_TEST_ROLLOUT.md) |
 | 10   | Performance + SEO + security uplift                  | 📋 Planned  | [`WAVE_10_SDD.md`](./waves/WAVE_10_SDD.md), [`WAVE_10_READINESS_PACKET.md`](./waves/WAVE_10_READINESS_PACKET.md), [`WAVE_10_IMPLEMENTATION_BACKLOG.md`](./waves/WAVE_10_IMPLEMENTATION_BACKLOG.md), [`WAVE_10_TEST_ROLLOUT.md`](./waves/WAVE_10_TEST_ROLLOUT.md) |
 | 11   | Incomplete features closure + architecture refactor  | 📋 Planned  | [`WAVE_11_SDD.md`](./waves/WAVE_11_SDD.md), [`WAVE_11_READINESS_PACKET.md`](./waves/WAVE_11_READINESS_PACKET.md), [`WAVE_11_IMPLEMENTATION_BACKLOG.md`](./waves/WAVE_11_IMPLEMENTATION_BACKLOG.md)                                                               |
+| 12   | Automation engine — cron, documents, email wiring    | 📋 Planned  | [`WAVE_12_SDD.md`](./waves/WAVE_12_SDD.md), [`WAVE_12_READINESS_PACKET.md`](./waves/WAVE_12_READINESS_PACKET.md), [`WAVE_12_IMPLEMENTATION_BACKLOG.md`](./waves/WAVE_12_IMPLEMENTATION_BACKLOG.md), [`WAVE_12_TEST_ROLLOUT.md`](./waves/WAVE_12_TEST_ROLLOUT.md) |
+| 13   | Real-time + media pipeline                            | 📋 Planned  | [`WAVE_13_SDD.md`](./waves/WAVE_13_SDD.md), [`WAVE_13_READINESS_PACKET.md`](./waves/WAVE_13_READINESS_PACKET.md), [`WAVE_13_IMPLEMENTATION_BACKLOG.md`](./waves/WAVE_13_IMPLEMENTATION_BACKLOG.md), [`WAVE_13_TEST_ROLLOUT.md`](./waves/WAVE_13_TEST_ROLLOUT.md) |
+| 14   | Product features closure                              | 📋 Planned  | [`WAVE_14_SDD.md`](./waves/WAVE_14_SDD.md), [`WAVE_14_READINESS_PACKET.md`](./waves/WAVE_14_READINESS_PACKET.md), [`WAVE_14_IMPLEMENTATION_BACKLOG.md`](./waves/WAVE_14_IMPLEMENTATION_BACKLOG.md), [`WAVE_14_TEST_ROLLOUT.md`](./waves/WAVE_14_TEST_ROLLOUT.md) |
+| 15   | Performance + PWA uplift                              | 📋 Planned  | [`WAVE_15_SDD.md`](./waves/WAVE_15_SDD.md), [`WAVE_15_READINESS_PACKET.md`](./waves/WAVE_15_READINESS_PACKET.md), [`WAVE_15_IMPLEMENTATION_BACKLOG.md`](./waves/WAVE_15_IMPLEMENTATION_BACKLOG.md), [`WAVE_15_TEST_ROLLOUT.md`](./waves/WAVE_15_TEST_ROLLOUT.md) |
+| 16   | Security hardening + API versioning                   | 📋 Planned  | [`WAVE_16_SDD.md`](./waves/WAVE_16_SDD.md), [`WAVE_16_READINESS_PACKET.md`](./waves/WAVE_16_READINESS_PACKET.md), [`WAVE_16_IMPLEMENTATION_BACKLOG.md`](./waves/WAVE_16_IMPLEMENTATION_BACKLOG.md), [`WAVE_16_TEST_ROLLOUT.md`](./waves/WAVE_16_TEST_ROLLOUT.md) |
 
 ---
 

@@ -191,3 +191,42 @@ For orchestration/governance rules (handoff contracts, readiness gates, approval
 2. Workflow/orchestration rules → `AGENTS.md` + agentic workflow instructions
 
 When rules overlap, follow both; when they conflict, apply precedence above and document the decision in task notes.
+
+
+---
+
+## 13) Autopilot Mode V3 (Wave Execution)
+
+Use this mode when coding is approved for a wave by the exact phrase:
+`@Ada — Context Ready (60% Readiness) — Coding Phase Approved`
+
+### Execution Contract
+
+1. Execute wave tasks strictly in the order listed in that wave's `IMPLEMENTATION_BACKLOG.md`.
+2. After each task, run the inline validation command before continuing.
+3. On validation failure, self-correct up to 2 retries.
+4. If unresolved, mark task `BLOCKED` and escalate to `@Ada` + `@Katherine` with blocker details.
+5. After finishing all tasks, run:
+   - `npm run quality:quick`
+   - `npm run plans:validate`
+6. Publish completion via `report_progress`.
+
+### Allowed Triggers
+
+- `npm run orchestrator:agent-loop:autopilot`
+- `npm run orchestrator:agent-loop:auto`
+- `npm run orchestrator:agent-loop:auto:nobrowser`
+- explicit command: `@Wave[N] — AUTOPILOT: execute all tasks`
+
+### Mandatory Pause Conditions
+
+- Hard build failure (`npm run build` non-zero)
+- TypeScript failure (`npm run typecheck` non-zero)
+- Security policy violation risk (credentials, XSS, injection, CSRF)
+- Explicit human `PAUSE` instruction
+
+### Prohibited During Autopilot
+
+- Destructive DB actions (`DROP`, destructive/irreversible migration)
+- Production secret/env rewrites
+- Introducing a dependency not already approved in the active wave backlog

@@ -3,7 +3,6 @@ import propertyReducer from './propertySlice';
 import userReducer from './userSlice';
 import navigationReducer from './navigationSlice';
 import dashboardReducer from './dashboardSlice';
-import contentReducer from './contentSlice';
 import authReducer from './authSlice';
 import analyticsReducer from './analyticsSlice';
 import featuresReducer from './featuresSlice';
@@ -28,7 +27,6 @@ export const store = configureStore({
     user: userReducer,
     navigation: navigationReducer,
     dashboard: dashboardReducer,
-    content: contentReducer,
     auth: authReducer,
     analytics: analyticsReducer,
     features: featuresReducer,
