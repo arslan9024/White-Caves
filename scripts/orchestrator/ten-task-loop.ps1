@@ -154,6 +154,24 @@ function Normalize-TaskMetadata {
   return @($normalized)
 }
 
+function Ensure-TaskCollection {
+  param([object]$Tasks)
+
+  if ($null -eq $Tasks) {
+    return @()
+  }
+
+  if ($Tasks -is [System.Collections.IDictionary]) {
+    return ,([pscustomobject]$Tasks)
+  }
+
+  if (($Tasks -is [pscustomobject]) -and ($Tasks.PSObject.Properties.Name -contains 'id')) {
+    return ,$Tasks
+  }
+
+  return @($Tasks)
+}
+
 function Parse-PendingTasksFromMarkdown {
   param([string]$Path)
 
@@ -700,9 +718,9 @@ if ($sourceTasks.Count -eq 0) {
 }
 
 $state = Load-OrInitState -SourceTasks $sourceTasks
-$state.pendingTasks = Normalize-TaskMetadata -Tasks $state.pendingTasks
-$state.completedTasks = Normalize-TaskMetadata -Tasks $state.completedTasks
-$state.blockedTasks = Normalize-TaskMetadata -Tasks $state.blockedTasks
+$state.pendingTasks = Normalize-TaskMetadata -Tasks @(Ensure-TaskCollection -Tasks $state.pendingTasks)
+$state.completedTasks = Normalize-TaskMetadata -Tasks @(Ensure-TaskCollection -Tasks $state.completedTasks)
+$state.blockedTasks = Normalize-TaskMetadata -Tasks @(Ensure-TaskCollection -Tasks $state.blockedTasks)
 
 $ranTurns = 0
 while ($true) {
@@ -884,13 +902,15 @@ while ($true) {
   if ($executionStatus -eq "completed") {
     $selected.status = "done"
     $selected.updatedAt = (Get-Date).ToString("o")
-    $state.completedTasks += $selected
+    $state.completedTasks = @(Ensure-TaskCollection -Tasks $state.completedTasks)
+    $state.completedTasks = @($state.completedTasks + @($selected))
     $state.pendingTasks = @($state.pendingTasks | Where-Object { $_.id -ne $selected.id })
   }
   elseif ($executionStatus -eq "failed" -or $executionStatus -eq "blocked") {
     $selected.status = "blocked"
     $selected.notes = $executionNote
-    $state.blockedTasks += $selected
+    $state.blockedTasks = @(Ensure-TaskCollection -Tasks $state.blockedTasks)
+    $state.blockedTasks = @($state.blockedTasks + @($selected))
     $state.pendingTasks = @($state.pendingTasks | Where-Object { $_.id -ne $selected.id })
   }
   else {
