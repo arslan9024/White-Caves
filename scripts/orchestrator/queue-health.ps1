@@ -36,7 +36,7 @@ $KNOWN_AGENTS       = @(
   "@Invoice","@Joelle","@Hedy","@Maya","@Booking","@Jaime",
   "@Fei-Fei","@Anima","@Mary","@Cassie","@Corinne"
 )
-$VALID_STATUSES     = @("queued","running","waiting_ack","done","retrying","failed","escalated")
+$VALID_STATUSES     = @("queued","running","evidence_pending","waiting_ack","done","retrying","failed","escalated")
 
 # Lane -> expected agent assignments (for lane mismatch detection)
 $LANE_AGENTS = @{
