@@ -11,6 +11,25 @@
 | **@Sofia**    | Gemini 2.0 Flash   | REVIEW (60%+): `compliance-requirements.md` — verify RERA/DLD penalty table           | `business_docs/05_requirements/compliance-requirements.md` | 60%+ reached   | ✅ READY       | May 16, 2026 |
 | **@Cassie**   | DeepSeek V3        | EXPAND: `analytics-dashboard.md` → mobile analytics view + data export API spec       | `business_docs/09_crm_features/analytics-dashboard.md`     | 22 → 24 target | 🚧 IN PROGRESS | May 16, 2026 |
 | **@Joelle**   | Llama 3.1 70B Groq | EXPAND: `03_ai_assistants/README.md` → personas 36–40 + fallback matrix               | `business_docs/03_ai_assistants/README.md`                 | 40/40 complete | ✅ READY       | May 16, 2026 |
+| **@Cron**     | Llama 3.1 70B Groq | DRAFT: `wave-12-automation-engine.md` → SchedulerService + cron execution model        | `business_docs/09_crm_features/wave-12-automation-engine.md` | 0/100 complete | 🔲 PENDING     | May 24, 2026 |
+| **@Puppeteer**| DeepSeek V3        | DRAFT: `wave-12-document-engine.md` → PDF/Excel generation contracts                    | `business_docs/09_crm_features/wave-12-document-engine.md`   | 0/100 complete | 🔲 PENDING     | May 24, 2026 |
+| **@Handlebars**| Gemini 2.0 Flash  | DRAFT: `wave-12-email-wiring.md` → template/event trigger matrix                        | `business_docs/09_crm_features/wave-12-email-wiring.md`      | 0/100 complete | 🔲 PENDING     | May 24, 2026 |
+| **@Socket**   | Llama 3.1 70B Groq | DRAFT: `wave-13-realtime-notifications.md` → Socket.io + NotificationService            | `business_docs/09_crm_features/wave-13-realtime-notifications.md` | 0/100 complete | 🔲 PENDING | May 24, 2026 |
+| **@Cloudinary**| DeepSeek V3       | DRAFT: `wave-13-media-upload.md` → multer + StorageService spec                         | `business_docs/09_crm_features/wave-13-media-upload.md`      | 0/100 complete | 🔲 PENDING     | May 24, 2026 |
+| **@Pannellum**| Gemini 2.0 Flash   | DRAFT: `wave-13-virtual-tour.md` → pannellum-react integration plan                     | `business_docs/09_crm_features/wave-13-virtual-tour.md`      | 0/100 complete | 🔲 PENDING     | May 24, 2026 |
+| **@Zod**      | Llama 3.1 70B Groq | DRAFT: `wave-14-validation-architecture.md` → request validation + API consistency      | `business_docs/09_crm_features/wave-14-validation-architecture.md` | 0/100 complete | 🔲 PENDING | May 24, 2026 |
+| **@LeadScore**| DeepSeek V3        | DRAFT: `wave-14-product-automation.md` → lead rescore triggers + audit log UI           | `business_docs/09_crm_features/wave-14-product-automation.md` | 0/100 complete | 🔲 PENDING    | May 24, 2026 |
+| **@Mortgage** | Gemini 2.0 Flash   | DRAFT: `wave-14-finance-features.md` → mortgage API + calendar + multi-currency         | `business_docs/09_crm_features/wave-14-finance-features.md`  | 0/100 complete | 🔲 PENDING     | May 24, 2026 |
+| **@Redis**    | Llama 3.1 70B Groq | DRAFT: `wave-15-cache-performance.md` → Redis cache + DB pooling                         | `business_docs/09_crm_features/wave-15-cache-performance.md` | 0/100 complete | 🔲 PENDING     | May 24, 2026 |
+| **@PWA**      | DeepSeek V3        | DRAFT: `wave-15-pwa-readiness.md` → service worker + manifest/offline behavior           | `business_docs/09_crm_features/wave-15-pwa-readiness.md`     | 0/100 complete | 🔲 PENDING     | May 24, 2026 |
+| **@S5**       | Gemini 2.0 Flash   | DRAFT: `wave-16-security-hardening.md` → API v1 migration + CSRF strategy                | `business_docs/09_crm_features/wave-16-security-hardening.md` | 0/100 complete | 🔲 PENDING    | May 24, 2026 |
+
+### Wave Execution Roadmap (Subagent Upgrade V3)
+
+```
+Wave 09 → Wave 10 → Wave 11 → Wave 12 → Wave 13 → Wave 14 → Wave 15 → Wave 16
+UX       Perf/SEO  Arch     Automation  Media/RT  Product   Cache/PWA  Security
+```
 
 ### How to Invoke Free Agents (Copy-Paste Into the Free Tool)
 
@@ -21,6 +40,24 @@
 @Cassie   — EXPAND: analytics-dashboard.md → add mobile analytics view spec + data export CSV/Excel API endpoint spec
 @Joelle   — EXPAND: 03_ai_assistants/README.md → add FEEDS_ACK from @Margaret for Phase N+1 context readiness
 ```
+
+### V3 Free-Agent Invocation Pack (Implementation-Spec Writers)
+
+```
+@Cron       — DRAFT: wave-12-automation-engine.md → SchedulerService, cron cadence table, failure escalation matrix
+@Puppeteer  — DRAFT: wave-12-document-engine.md → DocumentService PDF/Excel API contracts + streaming behavior
+@Handlebars — DRAFT: wave-12-email-wiring.md → template registry + event-to-template binding + retry logic
+@Socket     — DRAFT: wave-13-realtime-notifications.md → Socket auth, room strategy, push event contract
+@Cloudinary — DRAFT: wave-13-media-upload.md → image upload schema, transforms, retention, rollback plan
+@Pannellum  — DRAFT: wave-13-virtual-tour.md → VR route contract + lazy loading + fallback behavior
+@Zod        — DRAFT: wave-14-validation-architecture.md → Zod validation map + error envelope standard
+@LeadScore  — DRAFT: wave-14-product-automation.md → lead auto-rescore + audit-log UI acceptance tests
+@Mortgage   — DRAFT: wave-14-finance-features.md → mortgage API, calendar sync, FX conversion acceptance tests
+@Redis      — DRAFT: wave-15-cache-performance.md → cache key strategy + invalidation + pool sizing
+@PWA        — DRAFT: wave-15-pwa-readiness.md → SW lifecycle + offline scope + rollback conditions
+@S5         — DRAFT: wave-16-security-hardening.md → /api/v1 migration + CSRF enforcement model
+```
+
 
 **Free Tool Links:**
 
@@ -38,7 +75,7 @@ This file defines the White Caves multi-expert operating model for all agent-ass
 
 ## 🚀 AGENT SKILLS UPGRADE V2 — ACTIVE (May 21, 2026)
 
-**TRANSFORMATION:** 47 agents → **69 specialized agents** | **10 parallel module teams** | **300% planning capacity**  
+**TRANSFORMATION:** 47 agents → **81 specialized agents** | **10 parallel module teams** | **300% planning capacity**  
 **EXECUTION MODEL:** True parallel work with module isolation + real-time cross-module coordination  
 **STATUS:** Skills upgrade documentation complete → [AGENT_SKILLS_UPGRADE_V2.md](./AGENT_SKILLS_UPGRADE_V2.md)
 
@@ -57,7 +94,7 @@ This file defines the White Caves multi-expert operating model for all agent-ass
 | **9. AI & Recommendations**      | @Joelle   | 5 agents  | Personas, chatbots, scoring              | 200% ↑        |
 | **10. Infrastructure & Ops**     | @Gwynne   | 5 agents  | DevOps, cloud, monitoring                | 500% ↑        |
 
-**Total Agents:** 69 | **Parallel Efficiency:** 85%+ | **Planning Capacity:** +300%  
+**Total Agents:** 81 | **Parallel Efficiency:** 85%+ | **Planning Capacity:** +300%  
 **Real-Time Sync:** Every 2 hours via YAML handoff packets | **FEEDS_ACK Confirmation:** Live tracking
 
 → **See full upgrade details:** [AGENT_SKILLS_UPGRADE_V2.md](./AGENT_SKILLS_UPGRADE_V2.md)
@@ -811,7 +848,7 @@ This file defines the White Caves multi-expert operating model for all agent-ass
 - **No Permissions Needed:** Agents make technical decisions based on their expertise.
 - **Autonomous Fixes:** If terminal shows an error, **@Katherine** and **@Gwynne** fix it immediately.
 - **Synergy:** Use `@workspace` to ensure all 47 roles share the same project context.
-- **Free Agent Policy (STRICT — 17 agents):** @Victoria, @Invoice, @Sofia, @Cassie, @Joelle, @Annie, @Rachel, @Marissa, @Timnit, @Hedy, @Maya, @Booking, @Jaime, @Fei-Fei, @Anima, @Mary, @Corinne use ONLY free models. Zero exceptions. See copilot-instructions.md Rule 4 + Rule 9 for full policy.
+- **Free Agent Policy (STRICT — 29 agents):** Core 17 free planners + V3 implementation-spec writers (@Cron, @Puppeteer, @Handlebars, @Socket, @Cloudinary, @Pannellum, @Zod, @LeadScore, @Mortgage, @Redis, @PWA, @S5) use ONLY free models. Zero exceptions. See copilot-instructions.md Rule 4 + Rule 9 for full policy.
 - **No-Idle Rule:** Every free agent always has a task. If backlog is empty → @Margaret assigns a REVIEW task within 24 hours.
 - **Coding Gate:** No senior coding agent begins a feature without passing the Context Enrichment Gate (copilot-instructions.md Rule 5). Free agents must complete their docs first.
 - **Loop Script:** Run `scripts/free-agents-loop.ps1` at any time to see which agent is active right now and get the exact copy-paste prompt.
@@ -824,6 +861,41 @@ This file defines the White Caves multi-expert operating model for all agent-ass
 - **Policy Source of Truth:** Gate thresholds + approval phrase are read from `scripts/orchestrator/policy.json` (no hardcoded legacy thresholds).
 - **Post-Premium QA Watchdog (Mandatory):** **@Katherine** owns runtime verification after each big premium wave commit via `node scripts/orchestrator/post-commit-premium-guard.js`.
 - **Big Premium Commit Trigger:** Runtime watchdog checks execute only when commit contains `[premium-wave]` and qualifies as a big diff (threshold/critical paths).
+
+## 🤖 AUTOPILOT MODE V3 — CODING EXECUTION RULES (Effective 2026-05-24)
+
+**Definition:** after `@Ada — Context Ready (60% Readiness) — Coding Phase Approved` is issued for a wave, coding agents execute all tasks in that wave's `IMPLEMENTATION_BACKLOG.md` sequentially without waiting for per-task human confirmation.
+
+### Stop Conditions (only)
+
+1. Hard build failure (`npm run build` non-zero)
+2. TypeScript failure after change (`npm run typecheck` non-zero)
+3. Security policy violation risk (credentials, injection, XSS/CSRF)
+4. Explicit human `PAUSE` instruction
+
+### Autopilot Task Loop
+
+1. Read wave `IMPLEMENTATION_BACKLOG.md` and execute in declared order.
+2. Run task-level validation command immediately after each task.
+3. On failure, self-correct up to **2 retries**.
+4. If still failing, mark task `BLOCKED` and escalate to `@Ada` + `@Katherine` with blocker payload.
+5. After wave completion, run `npm run quality:quick` then `npm run plans:validate`.
+6. Push one consolidated completion update via `report_progress`.
+
+### Triggers
+
+- `npm run orchestrator:agent-loop:autopilot`
+- `npm run orchestrator:agent-loop:auto`
+- `npm run orchestrator:agent-loop:auto:nobrowser`
+- Explicit phrase: `@Wave[N] — AUTOPILOT: execute all tasks`
+
+### Prohibited in Autopilot (must pause for approval)
+
+- Any destructive DB operation (`DROP`, destructive migration, irreversible delete)
+- Production secret/env rewrites
+- New dependency not already listed in the approved wave backlog
+
+---
 
 ## 🚀 GOVERNANCE UPGRADE V2 — LARGE WAVE EXECUTION MODE
 
