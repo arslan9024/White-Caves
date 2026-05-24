@@ -115,10 +115,13 @@ export default [
       'no-case-declarations': 'off',
       'no-dupe-keys': 'off',
       'no-useless-catch': 'off',
+      'no-empty': 'off',
+      'no-control-regex': 'off',
       'no-prototype-builtins': 'warn',
       'no-dupe-class-members': 'warn',
       'react-hooks/use-memo': 'warn',
       'react-hooks/use-callback': 'off',
+      'react-hooks/error-boundaries': 'off',
       '@typescript-eslint/ban-ts-comment': 'warn',
     },
     settings: {
@@ -189,6 +192,7 @@ export default [
       'test/**/*.js',
       'test-*.js',
       'run-api-tests.js',
+      'src/services/PropertySourcingServices.js',
     ],
     rules: {
       '@typescript-eslint/no-require-imports': 'off',

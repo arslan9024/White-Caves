@@ -136,7 +136,7 @@ const PublicNavbar = (): React.JSX.Element => {
     {
       label: t('nav.company'),
       path: '/about',
-      children: PUBLIC_NAV.company as NavItem[],
+      children: [...PUBLIC_NAV.company] as NavItem[],
     },
     { label: t('common.contact'), path: '/contact' },
   ];

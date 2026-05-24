@@ -85,8 +85,9 @@ const BiometricPrompt = ({ onClose }: BiometricPromptProps) => {
         }, 1500);
       }
     } catch (error) {
+      const setupError = error as { message?: string };
       
-      setMessage({ type: 'error', text: error.message || 'Failed to enable biometric login' });
+      setMessage({ type: 'error', text: setupError.message || 'Failed to enable biometric login' });
     } finally {
       setLoading(false);
     }

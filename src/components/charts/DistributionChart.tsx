@@ -82,7 +82,7 @@ const DistributionChart: React.FC<DistributionChartProps> = ({
             cx="30%"
             cy="50%"
             labelLine={false}
-            label={(entry) => `${entry.value}`}
+            label={(entry: { value?: number }) => `${entry.value ?? 0}`}
             outerRadius={100}
             innerRadius={innerRadius}
             fill="#8884d8"
@@ -103,7 +103,7 @@ const DistributionChart: React.FC<DistributionChartProps> = ({
             layout="vertical"
             align="right"
             verticalAlign="middle"
-            formatter={(value, entry) => {
+            formatter={(value: string | number, entry: any) => {
               const total = chartData.reduce((sum, item) => sum + item.value, 0);
               const payload = entry.payload as { value?: number } | undefined;
               const percentage = total > 0 ? (((payload?.value ?? 0) / total) * 100).toFixed(1) : '0.0';
