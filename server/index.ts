@@ -18,6 +18,7 @@ import { connectDatabase, prisma } from './database.js';
 import { errorHandler, asyncHandler, AppError } from './middleware/errorHandler.js';
 import authMiddleware from './middleware/auth.js';
 import { requestIdMiddleware } from './middleware/requestId.js';
+import cspMiddleware from './middleware/csp.js';
 import { CORS_ORIGINS, WHATSAPP_WEBHOOK_SECRET, IS_PRODUCTION } from './config/env.js';
 import { buildAllowedCorsOrigins, inferRequestOrigin, isCorsOriginAllowed } from './config/cors.js';
 import {
@@ -29,6 +30,7 @@ import {
   strictLimiter,
   contactLimiter,
 } from './middleware/rateLimiter.js';
+import { sanitizeDeep } from './utils/sanitize.js';
 import logger from './utils/logger.js';
 
 // Route imports (ESM-compatible)
@@ -74,6 +76,7 @@ import homepageRoutes from './routes/homepage.js';
 import contactRoutes from './routes/contact.js';
 import aiChatRoutes from './routes/aiChat.js';
 import jobApplicationsRoutes from './routes/jobApplications.js';
+import sitemapRoutes from './routes/sitemap.js';
 import contractsRoutes from './routes/contracts.js';
 import appointmentsRoutes from './routes/appointments.js';
 import { roleRequestRouter, adminRoleRequestRouter } from './routes/roleRequests.js';
@@ -125,45 +128,13 @@ app.use(requestIdMiddleware);
 // Security middleware
 app.use(
   helmet({
-    contentSecurityPolicy: {
-      directives: {
-        defaultSrc: ["'self'"],
-        scriptSrc: [
-          "'self'",
-          "'unsafe-inline'", // Required by React hydration and Firebase/Stripe SDKs
-          'https://*.firebaseapp.com',
-          'https://*.googleapis.com',
-        ],
-        styleSrc: ["'self'", "'unsafe-inline'", 'https://fonts.googleapis.com'],
-        fontSrc: ["'self'", 'https://fonts.gstatic.com'],
-        imgSrc: [
-          "'self'",
-          'data:',
-          'blob:',
-          'https://*.unsplash.com',
-          'https://*.googleapis.com',
-          'https://*.gstatic.com',
-        ],
-        connectSrc: [
-          "'self'",
-          'https://*.firebaseio.com',
-          'https://*.googleapis.com',
-          'https://*.firebase.com',
-          'wss://*.firebaseio.com',
-          'https://api.stripe.com',
-        ],
-        frameSrc: ['https://*.firebaseapp.com', 'https://js.stripe.com'],
-        objectSrc: ["'none'"],
-        baseUri: ["'self'"],
-        // Force browser to upgrade all HTTP sub-resource requests to HTTPS in production
-        ...(IS_PRODUCTION ? { upgradeInsecureRequests: [] } : {}),
-      },
-    },
+    contentSecurityPolicy: false,
     // Explicit referrer policy: send origin only on same-origin requests; omit on cross-origin
     referrerPolicy: { policy: 'strict-origin-when-cross-origin' },
     crossOriginEmbedderPolicy: false, // Required for Firebase/Stripe iframes
   })
 );
+app.use(cspMiddleware);
 
 // Permissions-Policy: restrict access to browser features.
 // Helmet v8 does not bundle permissionsPolicy, so we set it as a custom header.
@@ -222,6 +193,20 @@ app.use(express.urlencoded({ limit: '1mb', extended: true }));
 // Cookie parsing — required for httpOnly refresh-token cookie on /api/auth/refresh
 app.use(cookieParser());
 
+// Sanitize inbound JSON payloads for mutation routes to reduce XSS storage risk.
+const NON_SANITIZED_PATHS = new Set(['/api/whatsapp/webhook', '/api/auth/refresh']);
+app.use('/api', (req: Request, _res: Response, next: NextFunction) => {
+  if (
+    ['POST', 'PUT', 'PATCH'].includes(req.method) &&
+    !NON_SANITIZED_PATHS.has(req.path) &&
+    req.body &&
+    typeof req.body === 'object'
+  ) {
+    req.body = sanitizeDeep(req.body) as Request['body'];
+  }
+  next();
+});
+
 // Content-Type validation for mutation endpoints
 // Exempt paths that accept non-JSON bodies (file uploads, webhooks, cookie-only endpoints).
 const NON_JSON_PATHS = new Set(['/api/whatsapp/webhook', '/api/auth/refresh']);
@@ -276,6 +261,9 @@ app.get('/api/health', (req: Request, res: Response) => {
     environment: process.env.NODE_ENV,
     version: process.env.APP_VERSION || '1.0.0',
   });
+
+  // Dynamic sitemap.xml (SEO)
+  app.use('/', sitemapRoutes);
 });
 
 // ============================================================================

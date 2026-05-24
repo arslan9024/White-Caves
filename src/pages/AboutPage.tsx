@@ -15,6 +15,7 @@ import {
 import { useDocumentTitle } from '../hooks/useDocumentTitle';
 import PublicLayout from '../components/layout/PublicLayout';
 import PageHeroBanner from '../components/layout/PageHeroBanner';
+import PageMeta from '../components/seo/PageMeta';
 import WhatsAppButton from '../components/WhatsAppButton';
 import './AboutPage.css';
 
@@ -118,6 +119,13 @@ const AboutPage: FC = () => {
   return (
     <PublicLayout>
       <div className="about-page">
+        <PageMeta
+          title="About White Caves | Dubai Luxury Real Estate"
+          description="Learn about White Caves Real Estate LLC, our Dubai market expertise, and our luxury property mission."
+          canonicalPath="/about"
+          ogType="website"
+        />
+
         <PageHeroBanner
           badge="About Us"
           title="About White Caves"
