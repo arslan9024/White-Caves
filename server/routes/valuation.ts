@@ -176,7 +176,7 @@ router.get(
     if (!userId) throw new AppError('Authentication required', 401);
 
     const { propertyId } = req.params;
-    const page = parsePositiveInt(req.query.page, 1, 10000);
+    const page = parsePositiveInt(req.query.page, 1, 1000);
     const pageSize = parsePositiveInt(req.query.pageSize, 20, 50);
     const skip = (page - 1) * pageSize;
 

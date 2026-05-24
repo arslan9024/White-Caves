@@ -781,7 +781,7 @@ router.get(
     } = req.query as { area?: string; page?: string; pageSize?: string };
     const normalizedArea = normalizeOptionalText(area);
 
-    const p = parsePositiveInt(page, 1, 10000);
+    const p = parsePositiveInt(page, 1, 1000);
     const size = parsePositiveInt(pageSize, 20, 100);
     const skip = (p - 1) * size;
 
