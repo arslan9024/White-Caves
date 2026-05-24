@@ -1,4 +1,4 @@
-import React, { FC, useEffect } from 'react';
+import React, { FC, useEffect, useRef } from 'react';
 import type { RoleTab } from '../../config/ROLE_TAB_MAPPING';
 
 interface CRMModuleEntry {
@@ -28,6 +28,9 @@ const MobileCRMDrawer: FC<MobileCRMDrawerProps> = ({
   onSelectTab,
   onSelectModule,
 }) => {
+  const touchStartXRef = useRef<number | null>(null);
+  const touchCurrentXRef = useRef<number | null>(null);
+
   useEffect(() => {
     if (!isOpen) return;
 
@@ -48,6 +51,34 @@ const MobileCRMDrawer: FC<MobileCRMDrawerProps> = ({
 
   if (!isOpen) return null;
 
+  const handleTouchStart: React.TouchEventHandler<HTMLElement> = event => {
+    touchStartXRef.current = event.changedTouches[0]?.clientX ?? null;
+    touchCurrentXRef.current = touchStartXRef.current;
+  };
+
+  const handleTouchMove: React.TouchEventHandler<HTMLElement> = event => {
+    touchCurrentXRef.current = event.changedTouches[0]?.clientX ?? null;
+  };
+
+  const handleTouchEnd: React.TouchEventHandler<HTMLElement> = () => {
+    if (touchStartXRef.current == null || touchCurrentXRef.current == null) {
+      touchStartXRef.current = null;
+      touchCurrentXRef.current = null;
+      return;
+    }
+
+    const swipeDelta = touchCurrentXRef.current - touchStartXRef.current;
+    const isRtl = document.documentElement.getAttribute('dir') === 'rtl';
+    const shouldClose = isRtl ? swipeDelta > 60 : swipeDelta < -60;
+
+    if (shouldClose) {
+      onClose();
+    }
+
+    touchStartXRef.current = null;
+    touchCurrentXRef.current = null;
+  };
+
   return (
     <div className="mobile-crm-drawer-backdrop" onClick={onClose} role="presentation">
       <aside
@@ -55,6 +86,9 @@ const MobileCRMDrawer: FC<MobileCRMDrawerProps> = ({
         role="dialog"
         aria-modal="true"
         aria-label="CRM navigation drawer"
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
         onClick={event => event.stopPropagation()}
       >
         <div className="mobile-crm-drawer__header">

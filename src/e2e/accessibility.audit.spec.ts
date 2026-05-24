@@ -100,6 +100,10 @@ async function runAxeViolations(page: any, options?: any): Promise<any[]> {
   return [];
 }
 
+function criticalOrSeriousViolations(violations: any[]): any[] {
+  return violations.filter(v => v?.impact === 'critical' || v?.impact === 'serious');
+}
+
 // Set test timeout
 test.setTimeout(60000);
 
@@ -127,8 +131,7 @@ test.describe('WCAG 2.1 Level AA Compliance', () => {
 
       const violations = await runAxeViolations(page);
 
-      // Keep strict direction while reducing false negatives from transient non-dashboard loads
-      expect(violations.length).toBeLessThanOrEqual(10);
+      expect(criticalOrSeriousViolations(violations)).toHaveLength(0);
     });
   });
 });
@@ -265,7 +268,7 @@ test.describe('Color Contrast (WCAG AA)', () => {
       runOnly: { type: 'rule', values: ['color-contrast'] },
     });
 
-    expect(contrastViolations.length).toBeLessThanOrEqual(10);
+    expect(criticalOrSeriousViolations(contrastViolations)).toHaveLength(0);
   });
 });
 
@@ -325,7 +328,7 @@ test.describe('Page Load Accessibility', () => {
     ensureExpectedPathOrSkip(page, '/md/dashboard');
 
     const violations = await runAxeViolations(page);
-    expect(violations.length).toBeLessThanOrEqual(10);
+    expect(criticalOrSeriousViolations(violations)).toHaveLength(0);
   });
 
   test('All Dashboard Pages - Load with minimal violations', async ({ page }) => {
@@ -374,7 +377,7 @@ test.describe('Responsive Accessibility', () => {
     ensureExpectedPathOrSkip(page, '/md/dashboard');
 
     const violations = await runAxeViolations(page);
-    expect(violations.length).toBeLessThanOrEqual(10);
+    expect(criticalOrSeriousViolations(violations)).toHaveLength(0);
   });
 
   test('Owner Dashboard - Tablet accessibility', async ({ page }) => {
@@ -385,7 +388,7 @@ test.describe('Responsive Accessibility', () => {
     ensureExpectedPathOrSkip(page, '/md/dashboard');
 
     const violations = await runAxeViolations(page);
-    expect(violations.length).toBeLessThanOrEqual(10);
+    expect(criticalOrSeriousViolations(violations)).toHaveLength(0);
   });
 });
 
