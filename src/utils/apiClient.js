@@ -1,4 +1,4 @@
-import { getErrorMessage, ERROR_MESSAGES } from './errorMessages';
+import { getErrorMessage, ERROR_MESSAGES } from '@/constants';
 
 const API_BASE_URL = '/api';
 const REQUEST_TIMEOUT = 15000; // 15 seconds

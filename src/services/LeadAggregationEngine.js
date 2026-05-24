@@ -253,7 +253,7 @@ export class LeadAggregationEngine {
             duplicateMap.set(key, merged);
           }
 
-          : ${key}`);
+          console.info(`[LeadAggregationEngine] Duplicate lead detected by ${rule.name}: ${key}`);
           break;
         }
       }

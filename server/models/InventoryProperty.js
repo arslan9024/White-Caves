@@ -270,24 +270,15 @@ InventoryPropertySchema.statics.findByPNumber = function(pNumber) {
 InventoryPropertySchema.statics.getAreaStats = async function() {
   return this.aggregate([
     { $match: { isActive: true } },
-    {
-      $group: {
-        _id: '$area',
-        total: { $sum: 1 },
-        available: { $sum: { $cond: [{ $eq: ['$status', 'available'] }, 1, 0] } },
-        rented: { $sum: { $cond: [{ $eq: ['$status', 'rented'] }, 1, 0] } },
-        sold: { $sum: { $cond: [{ $eq: ['$status', 'sold'] }, 1, 0] } }
-      }
-    },
-    isActive: { type: Boolean, default: true, index: true },
-    featured: { type: Boolean, default: false },
-    views: { type: Number, default: 0 },
-    updatedBy: { type: String, trim: true },
-  },
   {
-    timestamps: true,
-    strict: false,
-  }
+    $group: {
+      _id: '$area',
+      total: { $sum: 1 },
+      available: { $sum: { $cond: [{ $eq: ['$status', 'available'] }, 1, 0] } },
+      rented: { $sum: { $cond: [{ $eq: ['$status', 'rented'] }, 1, 0] } },
+      sold: { $sum: { $cond: [{ $eq: ['$status', 'sold'] }, 1, 0] } }
+    }
+  },
 );
 
 InventoryPropertySchema.index({ pNumber: 1, area: 1, plotNumber: 1 }, { unique: false });
