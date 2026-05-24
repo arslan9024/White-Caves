@@ -10,6 +10,12 @@ import logger from '../utils/logger.js';
 
 const router = Router();
 
+const parsePositiveInt = (value: unknown, fallback: number, max: number): number => {
+  const parsed = Number.parseInt(String(value ?? ''), 10);
+  if (!Number.isFinite(parsed) || parsed <= 0) return fallback;
+  return Math.min(max, parsed);
+};
+
 // ─── Dubai Area Price Benchmarks ─────────────────────────────────────────────
 interface AreaBenchmarkRow {
   area: string;
@@ -495,7 +501,7 @@ router.get(
     if (!userId) throw new AppError('Authentication required', 401);
 
     const { area, months = '12' } = req.query as { area?: string; months?: string };
-    const lookback = Math.min(36, parseInt(months));
+    const lookback = parsePositiveInt(months, 12, 36);
     const since = new Date();
     since.setMonth(since.getMonth() - lookback);
 
@@ -731,8 +737,8 @@ router.get(
       pageSize = '20',
     } = req.query as { area?: string; page?: string; pageSize?: string };
 
-    const p = Math.max(1, parseInt(page));
-    const size = Math.min(100, parseInt(pageSize));
+    const p = parsePositiveInt(page, 1, 10000);
+    const size = parsePositiveInt(pageSize, 20, 100);
     const skip = (p - 1) * size;
 
     const where = area ? { area } : {};
