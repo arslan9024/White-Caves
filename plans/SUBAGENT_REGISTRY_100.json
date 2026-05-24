@@ -1,0 +1,711 @@
+﻿{
+  "version": "1.0",
+  "generatedAt": "2026-05-24T16:41:40.6270937+04:00",
+  "totalAgents": 100,
+  "freeAgents": [
+    "@Marissa",
+    "@Fei-Fei",
+    "@Cassie",
+    "@Anima",
+    "@Timnit",
+    "@Annie",
+    "@Corinne",
+    "@Victoria",
+    "@Invoice",
+    "@Sofia",
+    "@Hedy",
+    "@Maya",
+    "@Booking",
+    "@Mary",
+    "@Amina",
+    "@Samira",
+    "@Hala",
+    "@Rania",
+    "@Noor",
+    "@Amal",
+    "@Yasmin",
+    "@Lina",
+    "@Iman",
+    "@Basma",
+    "@Dina",
+    "@Layla",
+    "@Maha",
+    "@Reem",
+    "@Sanaa",
+    "@Noura",
+    "@Farah",
+    "@Huda",
+    "@Zainab",
+    "@Salma",
+    "@Manal",
+    "@Ghada",
+    "@Rehab",
+    "@Nadia",
+    "@Explore",
+    "@Nova",
+    "@Lumen",
+    "@Atlas",
+    "@Cipher",
+    "@Oracle",
+    "@Flux",
+    "@Quill",
+    "@Crest",
+    "@Juno",
+    "@Vesta",
+    "@Kairos",
+    "@Aster",
+    "@Selene",
+    "@Iris",
+    "@Lyra",
+    "@Orla",
+    "@Piper",
+    "@Rhea",
+    "@Tala",
+    "@Vera",
+    "@Wren",
+    "@Xena",
+    "@Yara",
+    "@Zara"
+  ],
+  "premiumAgents": [
+    "@Ada",
+    "@Margaret",
+    "@Grace",
+    "@Una",
+    "@Lea",
+    "@Tracy",
+    "@Africa",
+    "@Mira",
+    "@Ruchi",
+    "@Joelle",
+    "@Daniela",
+    "@Jaime",
+    "@Barbara",
+    "@Radia",
+    "@Joy",
+    "@Ecem",
+    "@Katherine",
+    "@Lila",
+    "@Lisa",
+    "@Gwynne",
+    "@Rachel",
+    "@Mala",
+    "@Dena",
+    "@guardian",
+    "@Helia",
+    "@Orion",
+    "@Violet",
+    "@Bianca",
+    "@Priya",
+    "@Elena",
+    "@Carmen",
+    "@Mina",
+    "@Nora",
+    "@Sera",
+    "@Talya",
+    "@Uma",
+    "@Val"
+  ],
+  "agents": [
+    {
+      "handle": "@Ada",
+      "tier": "premium",
+      "role": "Chief Architect",
+      "skills": ["architecture", "integration", "technical-governance"]
+    },
+    {
+      "handle": "@Margaret",
+      "tier": "premium",
+      "role": "Strategic Planner",
+      "skills": ["roadmapping", "milestones", "dependency-planning"]
+    },
+    {
+      "handle": "@Grace",
+      "tier": "premium",
+      "role": "Lead Engineer",
+      "skills": ["engineering-standards", "review-quality", "best-practices"]
+    },
+    {
+      "handle": "@Marissa",
+      "tier": "free",
+      "role": "UX Researcher",
+      "skills": ["user-journey", "usability", "luxury-ux"]
+    },
+    {
+      "handle": "@Una",
+      "tier": "premium",
+      "role": "Design Specialist",
+      "skills": ["visual-design", "animation", "brand-system"]
+    },
+    {
+      "handle": "@Lea",
+      "tier": "premium",
+      "role": "UI Engineer",
+      "skills": ["component-library", "web-standards", "ui-architecture"]
+    },
+    {
+      "handle": "@Tracy",
+      "tier": "premium",
+      "role": "Responsive Expert",
+      "skills": ["mobile-first", "breakpoints", "cross-device-layouts"]
+    },
+    {
+      "handle": "@Africa",
+      "tier": "premium",
+      "role": "Accessibility Lead",
+      "skills": ["wcag-aa", "aria", "keyboard-navigation"]
+    },
+    {
+      "handle": "@Mira",
+      "tier": "premium",
+      "role": "Full-Stack Lead",
+      "skills": ["typescript", "react", "express"]
+    },
+    {
+      "handle": "@Ruchi",
+      "tier": "premium",
+      "role": "Systems Engineer",
+      "skills": ["scalability", "performance", "backend-infra"]
+    },
+    {
+      "handle": "@Joelle",
+      "tier": "premium",
+      "role": "ML Lead",
+      "skills": ["recommendations", "scoring-models", "nlp"]
+    },
+    {
+      "handle": "@Daniela",
+      "tier": "premium",
+      "role": "Auth Specialist",
+      "skills": ["authentication", "rbac", "session-security"]
+    },
+    {
+      "handle": "@Jaime",
+      "tier": "premium",
+      "role": "Productivity Lead",
+      "skills": ["workflow-automation", "crm-productivity", "task-routing"]
+    },
+    {
+      "handle": "@Barbara",
+      "tier": "premium",
+      "role": "Database Architect",
+      "skills": ["schema-design", "indexing", "query-optimization"]
+    },
+    {
+      "handle": "@Fei-Fei",
+      "tier": "free",
+      "role": "Vision Specialist",
+      "skills": ["image-pipelines", "media-tagging", "optimization"]
+    },
+    {
+      "handle": "@Cassie",
+      "tier": "free",
+      "role": "Decision Scientist",
+      "skills": ["kpi-modeling", "analytics", "lead-scoring"]
+    },
+    {
+      "handle": "@Anima",
+      "tier": "free",
+      "role": "Data Engineer",
+      "skills": ["etl", "data-pipelines", "aggregation"]
+    },
+    {
+      "handle": "@Radia",
+      "tier": "premium",
+      "role": "Security Analyst",
+      "skills": ["api-security", "hardening", "owasp-controls"]
+    },
+    {
+      "handle": "@Joy",
+      "tier": "premium",
+      "role": "Ethics Auditor",
+      "skills": ["bias-audit", "fairness", "transparency"]
+    },
+    {
+      "handle": "@Ecem",
+      "tier": "premium",
+      "role": "Security Lead",
+      "skills": ["threat-modeling", "vuln-management", "incident-readiness"]
+    },
+    {
+      "handle": "@Katherine",
+      "tier": "premium",
+      "role": "QA Lead",
+      "skills": ["testing", "regression", "verification"]
+    },
+    {
+      "handle": "@Lila",
+      "tier": "premium",
+      "role": "Ops Director",
+      "skills": ["sre", "monitoring", "reliability"]
+    },
+    {
+      "handle": "@Lisa",
+      "tier": "premium",
+      "role": "Cloud Specialist",
+      "skills": ["cloud-hosting", "cdn", "deployment-topology"]
+    },
+    {
+      "handle": "@Gwynne",
+      "tier": "premium",
+      "role": "DevOps Lead",
+      "skills": ["ci-cd", "release-pipelines", "deploy-automation"]
+    },
+    {
+      "handle": "@Timnit",
+      "tier": "free",
+      "role": "Policy Lead",
+      "skills": ["privacy-compliance", "pdpl", "governance"]
+    },
+    {
+      "handle": "@Annie",
+      "tier": "free",
+      "role": "Compute Specialist",
+      "skills": ["compute-optimization", "cost-control", "runtime-efficiency"]
+    },
+    {
+      "handle": "@Corinne",
+      "tier": "free",
+      "role": "Scale Lead",
+      "skills": ["maps-scaling", "geo-performance", "search-speed"]
+    },
+    {
+      "handle": "@Rachel",
+      "tier": "premium",
+      "role": "SEO Lead",
+      "skills": ["seo-strategy", "structured-data", "content-optimization"]
+    },
+    {
+      "handle": "@Mala",
+      "tier": "premium",
+      "role": "Technical Lead",
+      "skills": ["refactoring", "code-health", "type-safety"]
+    },
+    {
+      "handle": "@Dena",
+      "tier": "premium",
+      "role": "Strategy Lead",
+      "skills": ["market-alignment", "prioritization", "roi-analysis"]
+    },
+    {
+      "handle": "@Victoria",
+      "tier": "free",
+      "role": "Contracts Specialist",
+      "skills": ["tenancy-clauses", "leasing-rules", "legal-workflows"]
+    },
+    {
+      "handle": "@Invoice",
+      "tier": "free",
+      "role": "Finance Specialist",
+      "skills": ["vat", "cash-flow", "financial-reporting"]
+    },
+    {
+      "handle": "@Sofia",
+      "tier": "free",
+      "role": "Compliance Specialist",
+      "skills": ["rera-dld-compliance", "regulatory-audit", "risk-rules"]
+    },
+    {
+      "handle": "@Hedy",
+      "tier": "free",
+      "role": "Audit Logic Specialist",
+      "skills": ["audit-trail", "activity-feed", "automation-logic"]
+    },
+    {
+      "handle": "@Maya",
+      "tier": "free",
+      "role": "Off-Plan Specialist",
+      "skills": ["offplan-workflows", "handover", "milestones"]
+    },
+    {
+      "handle": "@Booking",
+      "tier": "free",
+      "role": "Scheduling Specialist",
+      "skills": ["calendar", "viewings", "availability-management"]
+    },
+    {
+      "handle": "@Mary",
+      "tier": "free",
+      "role": "Inventory Specialist",
+      "skills": ["property-lifecycle", "inventory-quality", "prospecting"]
+    },
+    {
+      "handle": "@Amina",
+      "tier": "free",
+      "role": "Leasing Intake Specialist",
+      "skills": ["kyc-intake", "onboarding", "tenancy-intake"]
+    },
+    {
+      "handle": "@Samira",
+      "tier": "free",
+      "role": "Document Ops Specialist",
+      "skills": ["document-validation", "filing", "attachments"]
+    },
+    {
+      "handle": "@Hala",
+      "tier": "free",
+      "role": "Bilingual Contracts Specialist",
+      "skills": ["arabic-english-contracts", "clause-parity", "legal-copy"]
+    },
+    {
+      "handle": "@Rania",
+      "tier": "free",
+      "role": "Tenant Support Specialist",
+      "skills": ["support-triage", "sla", "escalation"]
+    },
+    {
+      "handle": "@Noor",
+      "tier": "free",
+      "role": "Requirements Synthesist",
+      "skills": ["acceptance-criteria", "requirement-distillation", "scope-clarity"]
+    },
+    {
+      "handle": "@Amal",
+      "tier": "free",
+      "role": "Reconciliation Specialist",
+      "skills": ["payment-matching", "variance-analysis", "payout-control"]
+    },
+    {
+      "handle": "@Yasmin",
+      "tier": "free",
+      "role": "Market Comps Specialist",
+      "skills": ["comparables", "benchmarking", "pricing-intelligence"]
+    },
+    {
+      "handle": "@Lina",
+      "tier": "free",
+      "role": "Analytics Polish Specialist",
+      "skills": ["dashboard-clarity", "metrics-labeling", "chart-readability"]
+    },
+    {
+      "handle": "@Iman",
+      "tier": "free",
+      "role": "Data Governance Specialist",
+      "skills": ["retention", "archival", "data-policy"]
+    },
+    {
+      "handle": "@Basma",
+      "tier": "free",
+      "role": "Security Privacy Specialist",
+      "skills": ["consent-safeguards", "privacy-copy", "data-protection"]
+    },
+    {
+      "handle": "@Dina",
+      "tier": "free",
+      "role": "Workflow Automation Specialist",
+      "skills": ["state-machines", "trigger-rules", "handoff-automation"]
+    },
+    {
+      "handle": "@Layla",
+      "tier": "free",
+      "role": "Lead Routing Specialist",
+      "skills": ["assignment-logic", "queue-balancing", "routing-policies"]
+    },
+    {
+      "handle": "@Maha",
+      "tier": "free",
+      "role": "Resident Comms Specialist",
+      "skills": ["announcements", "resident-updates", "engagement-templates"]
+    },
+    {
+      "handle": "@Reem",
+      "tier": "free",
+      "role": "SEO Metadata Specialist",
+      "skills": ["meta-tags", "hreflang", "snippet-optimization"]
+    },
+    {
+      "handle": "@Sanaa",
+      "tier": "free",
+      "role": "Accessibility Specialist",
+      "skills": ["contrast-audit", "focus-flow", "a11y-qa"]
+    },
+    {
+      "handle": "@Noura",
+      "tier": "free",
+      "role": "Design Tokens Specialist",
+      "skills": ["token-system", "theme-consistency", "ui-governance"]
+    },
+    {
+      "handle": "@Farah",
+      "tier": "free",
+      "role": "Media Optimization Specialist",
+      "skills": ["asset-optimization", "lazy-loading", "image-delivery"]
+    },
+    {
+      "handle": "@Huda",
+      "tier": "free",
+      "role": "Geo Data Specialist",
+      "skills": ["boundaries", "map-data-qa", "geospatial-labeling"]
+    },
+    {
+      "handle": "@Zainab",
+      "tier": "free",
+      "role": "Integration Docs Specialist",
+      "skills": ["webhooks", "api-handoffs", "integration-maps"]
+    },
+    {
+      "handle": "@Salma",
+      "tier": "free",
+      "role": "Testing Criteria Specialist",
+      "skills": ["test-matrices", "acceptance-gates", "edge-cases"]
+    },
+    {
+      "handle": "@Manal",
+      "tier": "free",
+      "role": "Ops Playbook Specialist",
+      "skills": ["runbooks", "incident-checklists", "handoff-sequencing"]
+    },
+    {
+      "handle": "@Ghada",
+      "tier": "free",
+      "role": "Executive Reporting Specialist",
+      "skills": ["leadership-summaries", "risk-reporting", "kpi-snapshots"]
+    },
+    {
+      "handle": "@Rehab",
+      "tier": "free",
+      "role": "Queue Management Specialist",
+      "skills": ["backlog-priority", "queue-health", "readiness-ordering"]
+    },
+    {
+      "handle": "@Nadia",
+      "tier": "free",
+      "role": "WhatsApp CRM Specialist",
+      "skills": ["waba-templates", "chatbot-flows", "message-automation"]
+    },
+    {
+      "handle": "@Explore",
+      "tier": "free",
+      "role": "Codebase Explorer",
+      "skills": ["semantic-search", "code-mapping", "read-only-analysis"]
+    },
+    {
+      "handle": "@guardian",
+      "tier": "premium",
+      "role": "Quality Gatekeeper",
+      "skills": ["policy-enforcement", "merge-readiness", "release-gates"]
+    },
+    {
+      "handle": "@Nova",
+      "tier": "free",
+      "role": "AI Persona Specialist",
+      "skills": ["assistant-personas", "fallback-rules", "intent-mapping"]
+    },
+    {
+      "handle": "@Lumen",
+      "tier": "free",
+      "role": "Prompt Quality Specialist",
+      "skills": ["prompt-templates", "context-packets", "prompt-governance"]
+    },
+    {
+      "handle": "@Atlas",
+      "tier": "free",
+      "role": "Knowledge Graph Specialist",
+      "skills": ["entity-linking", "cross-doc-mapping", "knowledge-indexing"]
+    },
+    {
+      "handle": "@Cipher",
+      "tier": "free",
+      "role": "Market Intelligence Analyst",
+      "skills": ["market-signals", "trend-detection", "comparative-analysis"]
+    },
+    {
+      "handle": "@Oracle",
+      "tier": "free",
+      "role": "Forecast Specialist",
+      "skills": ["demand-forecasting", "risk-forecast", "scenario-planning"]
+    },
+    {
+      "handle": "@Flux",
+      "tier": "free",
+      "role": "Experiment Analyst",
+      "skills": ["ab-testing", "experiment-design", "outcome-analysis"]
+    },
+    {
+      "handle": "@Quill",
+      "tier": "free",
+      "role": "Content Systems Specialist",
+      "skills": ["content-ops", "template-design", "copy-systems"]
+    },
+    {
+      "handle": "@Crest",
+      "tier": "free",
+      "role": "Brand Consistency Specialist",
+      "skills": ["tone-governance", "brand-copy", "style-enforcement"]
+    },
+    {
+      "handle": "@Juno",
+      "tier": "free",
+      "role": "Community Ops Specialist",
+      "skills": ["community-workflows", "facility-bookings", "resident-events"]
+    },
+    {
+      "handle": "@Vesta",
+      "tier": "free",
+      "role": "Handover QA Specialist",
+      "skills": ["handover-checklists", "snagging", "completion-audits"]
+    },
+    {
+      "handle": "@Kairos",
+      "tier": "free",
+      "role": "Luxury Segment Specialist",
+      "skills": ["hnwi-workflows", "vip-experience", "luxury-conversion"]
+    },
+    {
+      "handle": "@Aster",
+      "tier": "free",
+      "role": "Data Cleanup Specialist",
+      "skills": ["deduplication", "data-quality", "record-normalization"]
+    },
+    {
+      "handle": "@Selene",
+      "tier": "free",
+      "role": "Narrative Insights Specialist",
+      "skills": ["insight-storytelling", "executive-briefing", "trend-narratives"]
+    },
+    {
+      "handle": "@Iris",
+      "tier": "free",
+      "role": "Dashboard Narration Specialist",
+      "skills": ["kpi-annotation", "metric-context", "dashboard-guidance"]
+    },
+    {
+      "handle": "@Lyra",
+      "tier": "free",
+      "role": "Localization Specialist",
+      "skills": ["rtl-localization", "arabic-content", "locale-qa"]
+    },
+    {
+      "handle": "@Orla",
+      "tier": "free",
+      "role": "Consent Experience Specialist",
+      "skills": ["consent-ux", "privacy-notices", "opt-flow-design"]
+    },
+    {
+      "handle": "@Piper",
+      "tier": "free",
+      "role": "Pipeline Reliability Specialist",
+      "skills": ["job-retries", "queue-resilience", "processing-observability"]
+    },
+    {
+      "handle": "@Rhea",
+      "tier": "free",
+      "role": "Release Notes Specialist",
+      "skills": ["release-summaries", "change-logs", "deployment-communication"]
+    },
+    {
+      "handle": "@Tala",
+      "tier": "free",
+      "role": "Tenant Journey Specialist",
+      "skills": ["tenant-lifecycle", "portal-flows", "service-experience"]
+    },
+    {
+      "handle": "@Vera",
+      "tier": "free",
+      "role": "Verification Specialist",
+      "skills": ["checklist-validation", "evidence-capture", "audit-proofing"]
+    },
+    {
+      "handle": "@Wren",
+      "tier": "free",
+      "role": "Workflow Mapper",
+      "skills": ["process-mapping", "dependency-chains", "handoff-graphs"]
+    },
+    {
+      "handle": "@Xena",
+      "tier": "free",
+      "role": "Exception Handling Specialist",
+      "skills": ["edge-paths", "failure-modes", "fallback-design"]
+    },
+    {
+      "handle": "@Yara",
+      "tier": "free",
+      "role": "Yield Analysis Specialist",
+      "skills": ["rental-yield", "investment-return", "pricing-health"]
+    },
+    {
+      "handle": "@Zara",
+      "tier": "free",
+      "role": "Conversion Strategy Specialist",
+      "skills": ["funnel-optimization", "lead-conversion", "cta-performance"]
+    },
+    {
+      "handle": "@Helia",
+      "tier": "premium",
+      "role": "Frontend Performance Engineer",
+      "skills": ["bundle-optimization", "render-performance", "core-web-vitals"]
+    },
+    {
+      "handle": "@Orion",
+      "tier": "premium",
+      "role": "Backend Reliability Engineer",
+      "skills": ["api-resilience", "timeouts", "retry-strategies"]
+    },
+    {
+      "handle": "@Violet",
+      "tier": "premium",
+      "role": "Security Testing Engineer",
+      "skills": ["penetration-testing", "dependency-scans", "security-regression"]
+    },
+    {
+      "handle": "@Bianca",
+      "tier": "premium",
+      "role": "Data Platform Engineer",
+      "skills": ["warehouse-modeling", "etl-performance", "data-observability"]
+    },
+    {
+      "handle": "@Priya",
+      "tier": "premium",
+      "role": "Integration Engineer",
+      "skills": ["external-apis", "webhook-hardening", "contract-testing"]
+    },
+    {
+      "handle": "@Elena",
+      "tier": "premium",
+      "role": "Release Engineer",
+      "skills": ["release-orchestration", "rollback-plans", "deploy-validation"]
+    },
+    {
+      "handle": "@Carmen",
+      "tier": "premium",
+      "role": "Platform Engineer",
+      "skills": ["dev-experience", "tooling", "platform-automation"]
+    },
+    {
+      "handle": "@Mina",
+      "tier": "premium",
+      "role": "Test Automation Engineer",
+      "skills": ["playwright", "vitest", "ci-test-optimization"]
+    },
+    {
+      "handle": "@Nora",
+      "tier": "premium",
+      "role": "API Contract Engineer",
+      "skills": ["openapi-governance", "schema-validation", "versioning"]
+    },
+    {
+      "handle": "@Sera",
+      "tier": "premium",
+      "role": "Compliance Engineer",
+      "skills": ["policy-controls", "audit-automation", "regulatory-checks"]
+    },
+    {
+      "handle": "@Talya",
+      "tier": "premium",
+      "role": "Observability Engineer",
+      "skills": ["metrics", "tracing", "alerting"]
+    },
+    {
+      "handle": "@Uma",
+      "tier": "premium",
+      "role": "Runtime Performance Engineer",
+      "skills": ["profiling", "latency-reduction", "resource-optimization"]
+    },
+    {
+      "handle": "@Val",
+      "tier": "premium",
+      "role": "Identity Engineer",
+      "skills": ["oauth", "mfa", "token-lifecycle"]
+    }
+  ]
+}
