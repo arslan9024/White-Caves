@@ -18,8 +18,12 @@ import { Router, Request, Response } from 'express';
 import { asyncHandler } from '../middleware/errorHandler.js';
 import { prisma } from '../database.js';
 import logger from '../utils/logger.js';
+import { cacheService } from '../services/CacheService.js';
 
 const router = Router();
+
+const CACHE_KEY_HOMEPAGE = 'homepage:data';
+const CACHE_TTL_HOMEPAGE = 3600; // 1 hour
 
 // ─── Location areas to track for trends ──────────────────────────────────────
 const TRACKED_LOCATIONS = [
@@ -34,6 +38,14 @@ router.get(
   '/data',
   asyncHandler(async (_req: Request, res: Response) => {
     const startTime = Date.now();
+
+    // Serve from Redis cache when available
+    const cached = await cacheService.get(CACHE_KEY_HOMEPAGE);
+    if (cached !== null) {
+      res.setHeader('X-Cache', 'HIT');
+      res.setHeader('Cache-Control', 'public, max-age=60, stale-while-revalidate=300');
+      return res.status(200).json(cached);
+    }
 
     try {
       // ── Run all DB queries in parallel ──────────────────────────────────────
@@ -178,7 +190,7 @@ router.get(
       // 60s browser cache + CDN stale-while-revalidate
       res.setHeader('Cache-Control', 'public, max-age=60, stale-while-revalidate=300');
 
-      res.status(200).json({
+      const payload = {
         success: true,
         data: {
           featuredProperties,
@@ -187,7 +199,13 @@ router.get(
           locationTrends,
         },
         meta: { duration, fetchedAt: new Date().toISOString() },
-      });
+      };
+
+      // Store in Redis for subsequent requests
+      await cacheService.set(CACHE_KEY_HOMEPAGE, payload, CACHE_TTL_HOMEPAGE);
+
+      res.setHeader('X-Cache', 'MISS');
+      res.status(200).json(payload);
     } catch (err) {
       logger.error('Homepage data fetch error:', err);
       // Return static fallback so the homepage never shows a hard error

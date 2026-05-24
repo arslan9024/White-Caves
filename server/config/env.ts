@@ -102,3 +102,8 @@ export const LINDA_CORE_MODE = process.env.LINDA_CORE_MODE || 'legacy';
 export const HENRY_UPLOADS_PATH = process.env.HENRY_UPLOADS_PATH || './uploads/henry';
 export const GROQ_API_KEY = process.env.GROQ_API_KEY || '';
 export const OLLAMA_HOST = process.env.OLLAMA_HOST || 'http://localhost:11434';
+
+// ─── Redis (Wave 15 — Response Cache) ────────────────────────────────────
+// Optional: set REDIS_URL to enable response caching. If absent, the server
+// falls through to MongoDB for every request (safe but slower at scale).
+export const REDIS_URL = process.env.REDIS_URL || '';

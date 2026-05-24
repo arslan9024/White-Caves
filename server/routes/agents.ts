@@ -9,8 +9,11 @@ import { asyncHandler, AppError } from '../middleware/errorHandler';
 import { prisma } from '../database.js';
 import { validateIdParam } from '../utils/validate';
 import { requirePermission } from '../middleware/rbac';
+import { cacheService } from '../services/CacheService.js';
 
 const router = Router();
+
+const CACHE_TTL_AGENTS = 300; // 5 minutes
 
 // ─── GET /api/agents ────────────────────────────────────────────────────
 router.get(
@@ -18,6 +21,15 @@ router.get(
   requirePermission('manage_agents'),
   asyncHandler(async (req: Request, res: Response) => {
     const { status, department, search, page = '1', pageSize = '50' } = req.query;
+
+    // Build cache key from stable query params
+    const queryKey = Object.keys(req.query).sort().map(k => `${k}=${req.query[k]}`).join('&');
+    const cacheKey = `agents:list:${queryKey}`;
+    const cached = await cacheService.get(cacheKey);
+    if (cached !== null) {
+      res.setHeader('X-Cache', 'HIT');
+      return res.status(200).json(cached);
+    }
 
     const pageNum = Math.max(1, parseInt(page as string) || 1);
     const limit = Math.min(100, Math.max(1, parseInt(pageSize as string) || 50));
@@ -122,11 +134,15 @@ router.get(
       };
     });
 
-    res.status(200).json({
+    const payload = {
       success: true,
       data: enriched,
       pagination: { page: pageNum, pageSize: limit, total, totalPages: Math.ceil(total / limit) },
-    });
+    };
+
+    await cacheService.set(cacheKey, payload, CACHE_TTL_AGENTS);
+    res.setHeader('X-Cache', 'MISS');
+    res.status(200).json(payload);
   })
 );
 

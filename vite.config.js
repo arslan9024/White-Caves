@@ -1,9 +1,111 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import path from 'path';
+import { VitePWA } from 'vite-plugin-pwa';
 
 export default defineConfig({
-  plugins: [react()],
+  plugins: [
+    react(),
+    VitePWA({
+      // Don't auto-inject registration script — registerServiceWorker.ts handles it
+      injectRegister: null,
+      // Auto-update: the new SW takes over without a prompt on next navigation
+      registerType: 'autoUpdate',
+      // Let the plugin generate the SW using Workbox (generateSW strategy)
+      strategies: 'generateSW',
+      workbox: {
+        // Precache all static assets produced by the Vite build
+        globPatterns: ['**/*.{js,css,html,ico,png,svg,woff,woff2}'],
+        // Navigation fallback: serve offline.html when network is unreachable
+        navigateFallback: '/offline.html',
+        // Don't apply the navigation fallback for API and asset requests
+        navigateFallbackDenylist: [/^\/api\//, /^\/favicon/, /^\/manifest/],
+        // Runtime cache strategies for high-traffic routes
+        runtimeCaching: [
+          {
+            // Cache API property listing (stale-while-revalidate, 60s networkTimeout)
+            urlPattern: /^https?:\/\/[^/]+\/api\/properties(\?.*)?$/,
+            handler: 'StaleWhileRevalidate',
+            options: {
+              cacheName: 'api-properties',
+              expiration: { maxEntries: 50, maxAgeSeconds: 300 },
+              cacheableResponse: { statuses: [0, 200] },
+            },
+          },
+          {
+            // Cache property detail pages (cache first, 5min)
+            urlPattern: /^https?:\/\/[^/]+\/api\/properties\/[^/?]+$/,
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'api-property-detail',
+              expiration: { maxEntries: 100, maxAgeSeconds: 300 },
+              cacheableResponse: { statuses: [0, 200] },
+            },
+          },
+          {
+            // Cache homepage data (cache first, 1h)
+            urlPattern: /^https?:\/\/[^/]+\/api\/homepage\/data/,
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'api-homepage',
+              expiration: { maxEntries: 5, maxAgeSeconds: 3600 },
+              cacheableResponse: { statuses: [0, 200] },
+            },
+          },
+          {
+            // Cache images (cache first, 7 days)
+            urlPattern: /\.(?:png|jpg|jpeg|svg|gif|webp)$/,
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'images',
+              expiration: { maxEntries: 200, maxAgeSeconds: 604800 },
+              cacheableResponse: { statuses: [0, 200] },
+            },
+          },
+        ],
+        // Ignore dev service workers and vendor source maps
+        ignoreURLParametersMatching: [/^utm_/, /^fbclid$/],
+      },
+      manifest: {
+        name: 'White Caves Real Estate',
+        short_name: 'White Caves',
+        description: "Dubai's premier luxury real estate platform",
+        start_url: '/',
+        scope: '/',
+        display: 'standalone',
+        background_color: '#0a0a0f',
+        theme_color: '#C9A84C',
+        orientation: 'portrait-primary',
+        categories: ['real estate', 'property', 'lifestyle'],
+        icons: [
+          {
+            src: '/favicon.svg',
+            sizes: 'any',
+            type: 'image/svg+xml',
+            purpose: 'any maskable',
+          },
+          {
+            src: '/generated-icon.png',
+            sizes: '512x512',
+            type: 'image/png',
+            purpose: 'any',
+          },
+        ],
+        shortcuts: [
+          {
+            name: 'Browse Properties',
+            url: '/properties',
+            description: 'View all available properties',
+          },
+          {
+            name: 'Contact Us',
+            url: '/contact',
+            description: 'Get in touch with our team',
+          },
+        ],
+      },
+    }),
+  ],
   base: '/',
   test: {
     globals: true,

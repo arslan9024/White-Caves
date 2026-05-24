@@ -12,8 +12,13 @@ import { sanitizeString } from '../utils/sanitize';
 import { validate, rules, validateIdParam } from '../utils/validate';
 import { parsePagination } from '../config/pagination';
 import { requirePermission, scopeToOwn, requireMinRole } from '../middleware/rbac';
+import { cacheService } from '../services/CacheService.js';
 
 const router = Router();
+
+// Cache TTLs (seconds)
+const CACHE_TTL_LIST   = 60;   // property list: 1 minute
+const CACHE_TTL_DETAIL = 300;  // property detail: 5 minutes
 
 // ─── GET /api/properties ────────────────────────────────────────────────
 router.get(
@@ -21,6 +26,20 @@ router.get(
   requirePermission('view_properties'),
   scopeToOwn('userId'),
   asyncHandler(async (req: Request, res: Response) => {
+    // Build a stable cache key from sorted query params + user id (for scoping)
+    const userId = req.user?.id ?? 'anon';
+    const queryKey = Object.keys(req.query)
+      .sort()
+      .map(k => `${k}=${req.query[k]}`)
+      .join('&');
+    const cacheKey = `properties:list:${userId}:${queryKey}`;
+
+    const cached = await cacheService.get(cacheKey);
+    if (cached !== null) {
+      res.setHeader('X-Cache', 'HIT');
+      return res.status(200).json(cached);
+    }
+
     const {
       status,
       type,
@@ -114,11 +133,17 @@ router.get(
       prisma.property.count({ where }),
     ]);
 
-    res.status(200).json({
+    const payload = {
       success: true,
       data: properties,
       pagination: { page: pageNum, pageSize: limit, total, totalPages: Math.ceil(total / limit) },
-    });
+    };
+
+    // Cache scoped list results (per-user ownership filter included in key)
+    await cacheService.set(cacheKey, payload, CACHE_TTL_LIST);
+
+    res.setHeader('X-Cache', 'MISS');
+    res.status(200).json(payload);
   })
 );
 
@@ -206,6 +231,14 @@ router.get(
   requirePermission('view_properties'),
   asyncHandler(async (req: Request, res: Response) => {
     validateIdParam(req.params.id, 'Property ID');
+
+    const cacheKey = `properties:detail:${req.params.id}`;
+    const cached = await cacheService.get(cacheKey);
+    if (cached !== null) {
+      res.setHeader('X-Cache', 'HIT');
+      return res.status(200).json(cached);
+    }
+
     const property = await prisma.property.findUnique({
       where: { id: req.params.id },
       include: {
@@ -221,7 +254,11 @@ router.get(
 
     if (!property) throw new AppError('Property not found', 404);
 
-    res.status(200).json({ success: true, data: property });
+    const payload = { success: true, data: property };
+    await cacheService.set(cacheKey, payload, CACHE_TTL_DETAIL);
+
+    res.setHeader('X-Cache', 'MISS');
+    res.status(200).json(payload);
   })
 );
 
@@ -381,6 +418,9 @@ router.post(
         userId: req.user?.id || null,
       },
     });
+
+    // Invalidate all cached property lists (new listing should appear immediately)
+    await cacheService.invalidate('properties:list:*');
 
     res.status(201).json({ success: true, data: property });
   })
@@ -602,6 +642,12 @@ router.patch(
       },
     });
 
+    // Invalidate cached list + this specific property detail
+    await Promise.all([
+      cacheService.invalidate('properties:list:*'),
+      cacheService.invalidate(`properties:detail:${id}`),
+    ]);
+
     res.status(200).json({ success: true, data: property });
   })
 );
@@ -640,6 +686,12 @@ router.delete(
         },
       });
     });
+
+    // Invalidate cached list + this specific property detail
+    await Promise.all([
+      cacheService.invalidate('properties:list:*'),
+      cacheService.invalidate(`properties:detail:${id}`),
+    ]);
 
     res.status(200).json({ success: true, message: `Property "${existing.title}" deleted` });
   })

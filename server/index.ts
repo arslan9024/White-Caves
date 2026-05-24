@@ -100,6 +100,7 @@ import { startRERAExpiryScheduler } from './services/compliance/reraExpirySchedu
 import { startAutoRouting } from './services/ai/leadAutoRouter.js';
 import { createSocketServer } from './services/socketServer.js';
 import { schedulerService } from './services/SchedulerService.js';
+import { cacheService } from './services/CacheService.js';
 
 const app: Express = express();
 const allowedCorsOrigins = buildAllowedCorsOrigins(CORS_ORIGINS, process.env.NODE_ENV);
@@ -265,6 +266,30 @@ app.get('/api/health', (req: Request, res: Response) => {
     version: process.env.APP_VERSION || '1.0.0',
   });
 });
+
+// Database health check — Wave 15 (W15-002)
+app.get('/api/health/db', asyncHandler(async (_req: Request, res: Response) => {
+  const start = Date.now();
+  try {
+    await prisma.$runCommandRaw({ ping: 1 });
+    const latencyMs = Date.now() - start;
+    const cacheHealth = await cacheService.ping();
+    res.status(200).json({
+      status: 'healthy',
+      latencyMs,
+      cache: cacheHealth,
+      timestamp: new Date(),
+    });
+  } catch (err) {
+    const latencyMs = Date.now() - start;
+    res.status(503).json({
+      status: 'unhealthy',
+      latencyMs,
+      error: err instanceof Error ? err.message : 'Database unreachable',
+      timestamp: new Date(),
+    });
+  }
+}));
 
 // Dynamic sitemap.xml (SEO)
 app.use('/', sitemapRoutes);
