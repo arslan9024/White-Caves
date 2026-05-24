@@ -458,8 +458,10 @@ router.get(
 
     const { zone, propertyType } = req.query as { zone?: string; propertyType?: string };
 
+    const benchmarks = await getAreaBenchmarks();
+    const validZones = new Set(benchmarks.map(b => b.zone.toLowerCase()));
+
     const normalizedZone = zone?.trim().toLowerCase();
-    const validZones = new Set(areaBenchmarks.map(b => b.zone.toLowerCase()));
     if (normalizedZone && !validZones.has(normalizedZone)) {
       throw new AppError(`Invalid zone. Allowed values: ${Array.from(validZones).join(', ')}`, 400);
     }
@@ -472,7 +474,6 @@ router.get(
     });
     const snapshotMap = new Map(latestSnapshots.map(s => [s.area.toLowerCase(), s]));
 
-    const benchmarks = await getAreaBenchmarks();
     let result = benchmarks;
     if (normalizedZone) {
       result = result.filter(b => b.zone.toLowerCase() === normalizedZone);
@@ -646,17 +647,19 @@ router.get(
       data = data.filter(row => row.area.toLowerCase().includes(area.toLowerCase()));
     }
 
-    if (portal) {
-      const normalized = portal.trim().toLowerCase();
+    const normalizedPortal = portal?.trim().toLowerCase();
+    if (normalizedPortal) {
       if (
-        !VALID_COMPETITOR_PORTALS.includes(normalized as (typeof VALID_COMPETITOR_PORTALS)[number])
+        !VALID_COMPETITOR_PORTALS.includes(
+          normalizedPortal as (typeof VALID_COMPETITOR_PORTALS)[number]
+        )
       ) {
         throw new AppError(
           `Invalid portal. Allowed values: ${VALID_COMPETITOR_PORTALS.join(', ')}`,
           400
         );
       }
-      data = data.filter(row => row.portal === normalized);
+      data = data.filter(row => row.portal === normalizedPortal);
     }
 
     res.json({
