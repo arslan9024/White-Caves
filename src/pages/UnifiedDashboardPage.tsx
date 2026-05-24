@@ -16,6 +16,7 @@ import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import SuspenseLoader from '../components/common/SuspenseLoader';
 import RouteErrorBoundary from '../components/RouteErrorBoundary';
 import DepartmentContentPanel from '../components/layout/DepartmentContentPanel/DepartmentContentPanel';
+import MobileCRMDrawer from '../components/layout/MobileCRMDrawer';
 import AuthenticatedPageShell from '../components/layout/authenticated/AuthenticatedPageShell';
 import SubNavBar from '../components/common/SubNavBar';
 import { DashboardSubTabRenderer } from '../components/dashboard/DashboardRenderer';
@@ -196,6 +197,7 @@ const UnifiedDashboardPage: FC = () => {
   const [globalSearchQuery, setGlobalSearchQuery] = useState('');
   const [isGlobalSearchOpen, setIsGlobalSearchOpen] = useState(false);
   const [modulesExpanded, setModulesExpanded] = useState(true);
+  const [isMobileDrawerOpen, setIsMobileDrawerOpen] = useState(false);
   const globalSearchRef = useRef<HTMLDivElement | null>(null);
   const tabButtonRefs = useRef<Array<HTMLButtonElement | null>>([]);
 
@@ -233,6 +235,19 @@ const UnifiedDashboardPage: FC = () => {
     document.addEventListener('mousedown', handleOutsideClick);
     return () => document.removeEventListener('mousedown', handleOutsideClick);
   }, []);
+
+  useEffect(() => {
+    if (!isMobileDrawerOpen) return;
+
+    const onResize = () => {
+      if (window.innerWidth > 768) {
+        setIsMobileDrawerOpen(false);
+      }
+    };
+
+    window.addEventListener('resize', onResize);
+    return () => window.removeEventListener('resize', onResize);
+  }, [isMobileDrawerOpen]);
 
   const selectedCRMModuleConfig = selectedCRMModule ? CRM_MODULES[selectedCRMModule] : null;
   const currentTab = availableTabs.find(tab => tab.id === activeTab);
@@ -657,6 +672,14 @@ const UnifiedDashboardPage: FC = () => {
         <div className="dashboard-topbar__actions">
           <button
             type="button"
+            className="dashboard-mobile-menu-button"
+            aria-label="Open CRM navigation menu"
+            onClick={() => setIsMobileDrawerOpen(true)}
+          >
+            ☰
+          </button>
+          <button
+            type="button"
             className="dashboard-icon-button"
             aria-label={`${hotLeadsCount} notifications`}
           >
@@ -900,6 +923,21 @@ const UnifiedDashboardPage: FC = () => {
           )}
         </main>
       </div>
+
+      <MobileCRMDrawer
+        isOpen={isMobileDrawerOpen}
+        tabs={availableTabs}
+        activeTab={activeTab}
+        selectedCRMModule={selectedCRMModule}
+        isSuperUser={isSuperUser}
+        moduleEntries={moduleEntries}
+        onClose={() => setIsMobileDrawerOpen(false)}
+        onSelectTab={tabId => {
+          handleBackFromCRM();
+          setActiveTab(tabId);
+        }}
+        onSelectModule={moduleId => handleCRMModuleSelect(moduleId)}
+      />
 
       <AnimatePresence>
         {isCommandPaletteOpen && (
