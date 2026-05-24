@@ -231,6 +231,7 @@ const CRMHubPage = lazy(() => import('./pages/crm/CRMHubPage'));
 const LeadManagementPage = lazy(() => import('./pages/crm/LeadManagementPage'));
 const PropertyManagementPage = lazy(() => import('./pages/crm/PropertyManagementPage'));
 const AgentPerformancePage = lazy(() => import('./pages/crm/AgentPerformancePage'));
+const AuditLogPage = lazy(() => import('./pages/crm/AuditLogPage'));
 
 // Public Pages
 const PropertiesPage = lazy(() => import('./pages/PropertiesPage'));
@@ -961,6 +962,20 @@ function App(): React.JSX.Element {
                         <RouteErrorBoundary section="Agent Performance">
                           <Suspense fallback={<SuspenseLoader />}>
                             <AgentPerformancePage />
+                          </Suspense>
+                        </RouteErrorBoundary>
+                      </AppLayout>
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/owner/crm/audit-log"
+                  element={
+                    <ProtectedRoute allowedRoles={['owner']}>
+                      <AppLayout>
+                        <RouteErrorBoundary section="Audit Log">
+                          <Suspense fallback={<SuspenseLoader />}>
+                            <AuditLogPage />
                           </Suspense>
                         </RouteErrorBoundary>
                       </AppLayout>

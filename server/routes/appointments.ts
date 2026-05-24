@@ -19,12 +19,121 @@ import { sanitizeString } from '../utils/sanitize.js';
 import { validate, rules, validateIdParam } from '../utils/validate.js';
 import { parsePagination } from '../config/pagination.js';
 import { requirePermission, requireRole } from '../middleware/rbac.js';
+import {
+  createGoogleCalendarEvent,
+  exchangeGoogleCalendarCode,
+  getGoogleCalendarAuthUrl,
+  type GoogleCalendarTokenSet,
+} from '../services/calendar/googleCalendarService.js';
+import { triggerLeadRescore } from '../services/ai/leadAutoRescore.js';
 
 const router = Router();
 const db = prisma as any;
 
 const VALID_TYPES = ['viewing', 'meeting', 'call', 'inspection', 'signing'] as const;
 const VALID_STATUSES = ['scheduled', 'confirmed', 'completed', 'cancelled', 'no_show'] as const;
+
+const GOOGLE_CALENDAR_SETTING_KEY = 'google_calendar_tokens';
+
+const getStoredGoogleCalendarTokens = async (): Promise<GoogleCalendarTokenSet | null> => {
+  const setting = await prisma.systemSetting.findUnique({
+    where: { key: GOOGLE_CALENDAR_SETTING_KEY },
+  });
+  if (!setting || typeof setting.value !== 'object' || setting.value === null) return null;
+  return setting.value as unknown as GoogleCalendarTokenSet;
+};
+
+const appendGoogleEventMetaToNotes = (currentNotes: string | null, eventId?: string | null): string => {
+  if (!eventId) return currentNotes ?? '';
+  const marker = `[GoogleEvent:${eventId}]`;
+  if (!currentNotes) return marker;
+  return currentNotes.includes(marker) ? currentNotes : `${currentNotes}\n${marker}`;
+};
+
+// ─── GET /api/appointments/calendar/google/auth-url ───────────────────────
+router.get(
+  '/calendar/google/auth-url',
+  requirePermission('manage_appointments'),
+  asyncHandler(async (_req: Request, res: Response) => {
+    const authUrl = getGoogleCalendarAuthUrl();
+    res.status(200).json({ success: true, data: { authUrl } });
+  })
+);
+
+// ─── GET /api/appointments/calendar/google/callback ───────────────────────
+router.get(
+  '/calendar/google/callback',
+  requirePermission('manage_appointments'),
+  asyncHandler(async (req: Request, res: Response) => {
+    const code = req.query.code as string | undefined;
+    if (!code) throw new AppError('Missing OAuth code', 400);
+
+    const tokens = await exchangeGoogleCalendarCode(code);
+    await prisma.systemSetting.upsert({
+      where: { key: GOOGLE_CALENDAR_SETTING_KEY },
+      update: {
+        value: tokens as unknown as Prisma.InputJsonValue,
+        category: 'integrations',
+        updatedBy: req.user?.id || null,
+      },
+      create: {
+        key: GOOGLE_CALENDAR_SETTING_KEY,
+        value: tokens as unknown as Prisma.InputJsonValue,
+        category: 'integrations',
+        updatedBy: req.user?.id || null,
+      },
+    });
+
+    res.status(200).json({
+      success: true,
+      data: { connected: true, scope: tokens.scope ?? null, expiry: tokens.expiry_date ?? null },
+    });
+  })
+);
+
+// ─── POST /api/appointments/:id/calendar-sync/google ──────────────────────
+router.post(
+  '/:id/calendar-sync/google',
+  requirePermission('manage_appointments'),
+  asyncHandler(async (req: Request, res: Response) => {
+    const { id } = req.params;
+    validateIdParam(id, 'Appointment ID');
+
+    const appointment = await db.appointment.findUnique({ where: { id } });
+    if (!appointment) throw new AppError('Appointment not found', 404);
+
+    const tokens = await getStoredGoogleCalendarTokens();
+    if (!tokens?.access_token) {
+      throw new AppError('Google Calendar is not connected. Complete OAuth setup first.', 400);
+    }
+
+    const start = new Date(appointment.scheduledAt);
+    const end = new Date(start.getTime() + appointment.durationMins * 60 * 1000);
+    const googleEvent = await createGoogleCalendarEvent(tokens, {
+      summary: appointment.title,
+      description: appointment.notes || `White Caves appointment (${appointment.type})`,
+      location: appointment.location || undefined,
+      startISO: start.toISOString(),
+      endISO: end.toISOString(),
+    });
+
+    await db.appointment.update({
+      where: { id },
+      data: {
+        notes: appendGoogleEventMetaToNotes(appointment.notes, googleEvent.id),
+      },
+    });
+
+    res.status(200).json({
+      success: true,
+      data: {
+        appointmentId: id,
+        googleEventId: googleEvent.id ?? null,
+        googleEventUrl: googleEvent.htmlLink ?? null,
+      },
+    });
+  })
+);
 
 // ─── GET /api/appointments ───────────────────────────────────────────────
 router.get(
@@ -174,6 +283,7 @@ router.post(
         leadId: leadId || null,
       },
     });
+    triggerLeadRescore(appt.leadId, 'appointment_created');
 
     res.status(201).json({ success: true, data: appt });
   })
@@ -262,6 +372,7 @@ router.patch(
         },
       });
     }
+    triggerLeadRescore(updated.leadId, statusChanged ? 'appointment_status_changed' : 'appointment_updated');
 
     res.status(200).json({ success: true, data: updated });
   })

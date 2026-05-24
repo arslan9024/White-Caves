@@ -12,6 +12,8 @@ import { useDocumentTitle } from '../hooks/useDocumentTitle';
 import { usePropertyBrowser, type PropertyType } from '../hooks/usePropertyBrowser';
 import { usePublicFavorites } from '../hooks/usePublicFavorites';
 import PublicLayout from '../components/layout/PublicLayout';
+import PageMeta from '../components/seo/PageMeta';
+import StructuredData from '../components/seo/StructuredData';
 import { PropertyImageSlider } from '../shared/components/property';
 import Skeleton from '../components/ui/Skeleton/Skeleton';
 import {
@@ -102,6 +104,42 @@ const PropertyDetailPage: FC = () => {
       .slice(0, 4);
   }, [properties, property]);
 
+  const propertySeoImage = useMemo(() => {
+    const firstImage = property?.images?.[0] || property?.image;
+    if (!firstImage) return undefined;
+    return firstImage.includes('fm=') ? firstImage : `${firstImage}${firstImage.includes('?') ? '&' : '?'}fm=webp`;
+  }, [property]);
+
+  const propertyJsonLd = useMemo(() => {
+    if (!property) return null;
+
+    return {
+      '@context': 'https://schema.org',
+      '@type': 'RealEstateListing',
+      name: property.title,
+      description: `${property.type} in ${property.location}`,
+      url: `${window.location.origin}/property/${property.id}`,
+      image: property.images?.[0] || property.image,
+      numberOfRooms: property.beds,
+      floorSize: {
+        '@type': 'QuantitativeValue',
+        value: property.sqft,
+        unitCode: 'FTK',
+      },
+      address: {
+        '@type': 'PostalAddress',
+        addressLocality: property.location,
+        addressCountry: 'AE',
+      },
+      offers: {
+        '@type': 'Offer',
+        price: property.price,
+        priceCurrency: 'AED',
+        availability: 'https://schema.org/InStock',
+      },
+    };
+  }, [property]);
+
   const favoriteItem = property
     ? {
         id: property.id,
@@ -191,6 +229,19 @@ const PropertyDetailPage: FC = () => {
   return (
     <PublicLayout>
       <div className="property-detail-page dubai-luxury-theme" data-testid="property-detail-page">
+        <PageMeta
+          title={property ? `${property.title} | White Caves` : 'Property Details | White Caves'}
+          description={
+            property
+              ? `Explore ${property.title} in ${property.location}. ${property.beds} beds, ${property.baths} baths, ${property.sqft.toLocaleString()} sqft.`
+              : 'Explore luxury property details in Dubai with White Caves.'
+          }
+          canonicalPath={property ? `/property/${property.id}` : '/properties'}
+          ogType="article"
+          ogImage={propertySeoImage}
+        />
+        {propertyJsonLd && <StructuredData id="wc-property-detail-jsonld" data={propertyJsonLd} />}
+
         {/* ─── Breadcrumb ───────────────────────────────────── */}
         <nav className="detail-breadcrumb" aria-label="Breadcrumb">
           <Link to="/properties">Properties</Link>

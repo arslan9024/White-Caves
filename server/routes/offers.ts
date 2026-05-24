@@ -16,6 +16,7 @@ import { asyncHandler, AppError } from '../middleware/errorHandler.js';
 import { AuthRequest } from '../middleware/auth.js';
 import { prisma } from '../database.js';
 import logger from '../utils/logger.js';
+import { triggerLeadRescore } from '../services/ai/leadAutoRescore.js';
 
 const router = Router();
 
@@ -114,6 +115,7 @@ router.post(
     });
 
     logger.info('Offer submitted', { userId, offerId: offer.id, propertyId, amount });
+    triggerLeadRescore(offer.leadId, 'offer_submitted');
     res.status(201).json({ success: true, data: offer });
   })
 );
@@ -211,6 +213,7 @@ router.patch(
     }
 
     logger.info('Offer updated', { userId, offerId: id, status: updated.status });
+    triggerLeadRescore(updated.leadId, 'offer_updated');
     res.json({ success: true, data: updated });
   })
 );
@@ -319,6 +322,7 @@ router.patch(
     }
 
     logger.info('Offer decision recorded', { userId, offerId: id, decision });
+    triggerLeadRescore(existing.leadId, `offer_decision_${decision}`);
     res.json({ success: true, data: updated, message: `Offer ${decision}` });
   })
 );

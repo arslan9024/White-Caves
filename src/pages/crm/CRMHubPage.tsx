@@ -245,12 +245,14 @@ interface CRMQuickActionsProps {
   leadManagementLabel: string;
   propertyPortfolioLabel: string;
   agentPerformanceLabel: string;
+  auditLogLabel: string;
   whatsappLabel: string;
   financeLabel: string;
   executiveLabel: string;
   onOpenLeads: () => void;
   onOpenProperties: () => void;
   onOpenAgents: () => void;
+  onOpenAuditLog: () => void;
   onOpenNadia: () => void;
   onOpenTheodora: () => void;
   onOpenZoe: () => void;
@@ -260,12 +262,14 @@ const CRMQuickActions = memo(function CRMQuickActions({
   leadManagementLabel,
   propertyPortfolioLabel,
   agentPerformanceLabel,
+  auditLogLabel,
   whatsappLabel,
   financeLabel,
   executiveLabel,
   onOpenLeads,
   onOpenProperties,
   onOpenAgents,
+  onOpenAuditLog,
   onOpenNadia,
   onOpenTheodora,
   onOpenZoe,
@@ -280,6 +284,9 @@ const CRMQuickActions = memo(function CRMQuickActions({
       </QuickAction>
       <QuickAction $color="#F59E0B" onClick={onOpenAgents}>
         👥 {agentPerformanceLabel}
+      </QuickAction>
+      <QuickAction $color="#0EA5E9" onClick={onOpenAuditLog}>
+        🧾 {auditLogLabel}
       </QuickAction>
       <QuickAction $color="#25D366" onClick={onOpenNadia}>
         💬 {whatsappLabel}
@@ -299,6 +306,7 @@ const CRM_HUB_COPY = {
     leadManagementLabel: 'Lead Management',
     propertyPortfolioLabel: 'Property Portfolio',
     agentPerformanceLabel: 'Agent Performance',
+    auditLogLabel: 'Audit Log',
     whatsappLabel: 'WhatsApp CRM',
     financeLabel: 'Finance & Commissions',
     executiveLabel: 'Executive View',
@@ -307,6 +315,7 @@ const CRM_HUB_COPY = {
     leadManagementLabel: 'إدارة العملاء المحتملين',
     propertyPortfolioLabel: 'محفظة العقارات',
     agentPerformanceLabel: 'أداء الوكلاء',
+    auditLogLabel: 'سجل التدقيق',
     whatsappLabel: 'واتساب CRM',
     financeLabel: 'المالية والعمولات',
     executiveLabel: 'الرؤية التنفيذية',
@@ -382,6 +391,7 @@ const CRMHubPage: FC = () => {
   const handleOpenLeads = useCallback(() => navigate('/owner/crm/leads'), [navigate]);
   const handleOpenProperties = useCallback(() => navigate('/owner/crm/properties'), [navigate]);
   const handleOpenAgents = useCallback(() => navigate('/owner/crm/agents'), [navigate]);
+  const handleOpenAuditLog = useCallback(() => navigate('/owner/crm/audit-log'), [navigate]);
   const handleOpenNadia = useCallback(() => handleModuleSelect('nadia'), []);
   const handleOpenTheodora = useCallback(() => handleModuleSelect('theodora'), []);
   const handleOpenZoe = useCallback(() => handleModuleSelect('zoe'), []);
@@ -441,12 +451,14 @@ const CRMHubPage: FC = () => {
         leadManagementLabel={copy.leadManagementLabel}
         propertyPortfolioLabel={copy.propertyPortfolioLabel}
         agentPerformanceLabel={copy.agentPerformanceLabel}
+        auditLogLabel={copy.auditLogLabel}
         whatsappLabel={copy.whatsappLabel}
         financeLabel={copy.financeLabel}
         executiveLabel={copy.executiveLabel}
         onOpenLeads={handleOpenLeads}
         onOpenProperties={handleOpenProperties}
         onOpenAgents={handleOpenAgents}
+        onOpenAuditLog={handleOpenAuditLog}
         onOpenNadia={handleOpenNadia}
         onOpenTheodora={handleOpenTheodora}
         onOpenZoe={handleOpenZoe}
