@@ -1,7 +1,7 @@
 # Pending Tasks Only
 
 **Last Updated:** 2026-05-24
-**Current Focus:** Wave 09 is ready to execute; Waves 10–16 are sequenced and bundle-backed.
+**Current Focus:** Wave 10 is next in queue; Waves 11–16 remain sequenced and bundle-backed.
 
 ## Canonical Sources
 
@@ -22,8 +22,8 @@ Advance only when the prior wave is green, the readiness gate is satisfied, and 
 | Stream | Wave | Objective | Status | Owners | Validation Gate |
 | --- | --- | --- | --- | --- | --- |
 | S1 | 08 | TypeScript/errors stabilization | ✅ Green | @Mira + @Katherine | TypeScript baseline confirmed green |
-| S2 | 09 | UX hardening — loading states, error boundaries, mobile, RTL | 🟢 Ready | @Una + @Lea + @Tracy + @Inas | S1 green + readiness 72% + @Ada approval phrase |
-| S3 | 10 | Performance + SEO + security uplift | 📋 Planned | @Ruchi + @Rachel + @Radia + @Katherine | S2 green + readiness 65% + @Ada approval phrase |
+| S2 | 09 | UX hardening — loading states, error boundaries, mobile, RTL | ✅ Green | @Una + @Lea + @Tracy + @Inas | Build + lint + targeted tests + tracker sync complete |
+| S3 | 10 | Performance + SEO + security uplift | 🟢 Ready | @Ruchi + @Rachel + @Radia + @Katherine | S2 green + readiness 65% + @Ada approval phrase |
 | S4 | 11 | Incomplete features + architecture refactor | 📋 Planned | @Ada + @Mira + @Barbara | S3 green + readiness 60% + @Ada approval phrase |
 | S5 | 12 | Automation engine (cron + docs + email) | 📋 Planned | @Cron + @Puppeteer + @Handlebars + @Mira | S4 green + readiness 60% + @Ada approval phrase |
 | S6 | 13 | Real-time notifications + media + virtual tour | 📋 Planned | @Socket + @Cloudinary + @Pannellum + @Mira | S5 green + readiness 60% + @Ada approval phrase |
@@ -46,8 +46,9 @@ Advance only when the prior wave is green, the readiness gate is satisfied, and 
 | N+9 | UX loading-state hardening | ✅ Complete |
 | Repo | Archive/cleanup pass + canonical planning reset | ✅ Complete |
 | S1 | Wave 08 stabilization + governance baseline | ✅ Complete |
+| S2 | Wave 09 UX hardening + accessibility/mobile/RTL closeout | ✅ Complete |
 
-## S2 — Wave 09: UX Hardening (Ready)
+## S2 — Wave 09: UX Hardening (Complete)
 
 **Source:** [`IMPROVEMENTS_UX.md`](./IMPROVEMENTS_UX.md) items 30–33  
 **Bundle:** [`WAVE_09_SDD.md`](./waves/WAVE_09_SDD.md) | [`WAVE_09_READINESS_PACKET.md`](./waves/WAVE_09_READINESS_PACKET.md) | [`WAVE_09_IMPLEMENTATION_BACKLOG.md`](./waves/WAVE_09_IMPLEMENTATION_BACKLOG.md) | [`WAVE_09_TEST_ROLLOUT.md`](./waves/WAVE_09_TEST_ROLLOUT.md)
@@ -157,4 +158,3 @@ Mark an item complete only when:
 - Weekly: prune stale queue items, re-rank blockers by impact, and archive/supersede duplicates.
 - Daily: update only canonical trackers (`MASTER_PLAN`, `PENDING_TASKS_ONLY`, `PROJECT_PROGRESS`, `DAILY_MILESTONE_TRACKER`).
 - Reference-only docs may support context, but they must not override canonical queue or roadmap decisions.
-

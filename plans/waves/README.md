@@ -10,7 +10,7 @@ Each wave should be executed only in roadmap order.
 | Wave | Focus | Status | SDD | Readiness | Backlog | Test Rollout |
 | --- | --- | --- | --- | --- | --- | --- |
 | 08 | Stabilization + governance | ✅ Complete | [`SDD`](./WAVE_08_SDD.md) | [`Readiness`](./WAVE_08_READINESS_PACKET.md) | [`Backlog`](./WAVE_08_IMPLEMENTATION_BACKLOG.md) | [`Tests`](./WAVE_08_TEST_ROLLOUT.md) |
-| 09 | UX hardening | 🟢 Ready | [`SDD`](./WAVE_09_SDD.md) | [`Readiness`](./WAVE_09_READINESS_PACKET.md) | [`Backlog`](./WAVE_09_IMPLEMENTATION_BACKLOG.md) | [`Tests`](./WAVE_09_TEST_ROLLOUT.md) |
+| 09 | UX hardening | ✅ Complete | [`SDD`](./WAVE_09_SDD.md) | [`Readiness`](./WAVE_09_READINESS_PACKET.md) | [`Backlog`](./WAVE_09_IMPLEMENTATION_BACKLOG.md) | [`Tests`](./WAVE_09_TEST_ROLLOUT.md) |
 | 10 | Performance + SEO + security | 📋 Planned | [`SDD`](./WAVE_10_SDD.md) | [`Readiness`](./WAVE_10_READINESS_PACKET.md) | [`Backlog`](./WAVE_10_IMPLEMENTATION_BACKLOG.md) | [`Tests`](./WAVE_10_TEST_ROLLOUT.md) |
 | 11 | Incomplete features + architecture refactor | 📋 Planned | [`SDD`](./WAVE_11_SDD.md) | [`Readiness`](./WAVE_11_READINESS_PACKET.md) | [`Backlog`](./WAVE_11_IMPLEMENTATION_BACKLOG.md) | [`Tests`](./WAVE_11_TEST_ROLLOUT.md) |
 | 12 | Automation engine | 📋 Planned | [`SDD`](./WAVE_12_SDD.md) | [`Readiness`](./WAVE_12_READINESS_PACKET.md) | [`Backlog`](./WAVE_12_IMPLEMENTATION_BACKLOG.md) | [`Tests`](./WAVE_12_TEST_ROLLOUT.md) |
@@ -21,7 +21,6 @@ Each wave should be executed only in roadmap order.
 
 ## Notes
 
-- Wave 09 is the current execution-ready bundle.
+- Wave 09 is complete and validated for handoff.
 - Wave 11 now includes an explicit test rollout so every active planned wave uses the same four-artifact pattern.
 - Superseded root-level Wave 12 market-intelligence docs were archived to `../archives/` to avoid naming collisions with the active Wave 12 automation bundle.
-
