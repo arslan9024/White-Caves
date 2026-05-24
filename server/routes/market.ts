@@ -647,7 +647,7 @@ router.get(
     }
 
     if (portal) {
-      const normalized = portal.toLowerCase();
+      const normalized = portal.trim().toLowerCase();
       if (
         !VALID_COMPETITOR_PORTALS.includes(normalized as (typeof VALID_COMPETITOR_PORTALS)[number])
       ) {
