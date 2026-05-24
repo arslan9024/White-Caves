@@ -8,8 +8,29 @@
   "approvalPhrase": "@Ada — Context Ready (60% Readiness) — Coding Phase Approved",
   "depthGateLabel": "depth evidence",
   "modelRouting": {
+    "freeModelOnlyMode": true,
     "planningAgents": "free-unlimited-only",
-    "premiumAllowedFor": ["senior-coding", "senior-design"]
+    "premiumAllowedFor": ["senior-coding", "senior-design"],
+    "freePlanningAgents": [
+      "@Victoria",
+      "@Invoice",
+      "@Sofia",
+      "@Cassie",
+      "@Joelle",
+      "@Annie",
+      "@Rachel",
+      "@Marissa",
+      "@Timnit",
+      "@Hedy",
+      "@Maya",
+      "@Booking",
+      "@Jaime",
+      "@Fei-Fei",
+      "@Anima",
+      "@Mary",
+      "@Corinne"
+    ],
+    "freeModelProviders": ["google-ai-studio", "groq", "deepseek"]
   },
   "executionMode": {
     "default": "approval",
