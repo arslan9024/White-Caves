@@ -18,6 +18,22 @@ param(
 $stateDir  = Join-Path $WorkspaceRoot "logs\orchestrator"
 $queueFile = Join-Path $stateDir "task-queue.json"
 $mutex     = New-Object System.Threading.Mutex($false, "Global\WhiteCaves_Orchestrator_Queue")
+$policyUtilsPath = Join-Path $PSScriptRoot "policy-utils.ps1"
+
+if (-not (Test-Path $policyUtilsPath)) {
+  Write-Output (@{ claimed = $false; reason = "policy_utils_missing" } | ConvertTo-Json -Depth 4)
+  exit 1
+}
+
+. $policyUtilsPath
+
+try {
+  $policy = Get-OrchestratorPolicy -WorkspaceRoot $WorkspaceRoot
+}
+catch {
+  Write-Output (@{ claimed = $false; reason = "policy_invalid"; detail = $_.Exception.Message } | ConvertTo-Json -Depth 6)
+  exit 1
+}
 
 function Get-Queue {
   param([string]$Path)
@@ -39,11 +55,15 @@ function Test-DependencyDone {
 }
 
 function Select-Candidate {
-  param($tasks, [string]$lane, [string]$preferAgent)
+  param($tasks, [string]$lane, [string]$preferAgent, $policy)
 
   $eligible = $tasks | Where-Object {
     ($_.status -eq "queued" -or $_.status -eq "retrying") -and
-    ($lane -eq "any" -or $_.lane -eq $lane)
+    ($lane -eq "any" -or $_.lane -eq $lane) -and
+    (
+      (-not [bool]$policy.modelRouting.freeModelOnlyMode) -or
+      (Test-IsFreePlanningAgent -Policy $policy -AgentName $_.agent)
+    )
   } | Sort-Object createdAt | Where-Object {
     $deps = @($_.dependsOn)
     if ($deps.Count -eq 0) { return $true }
@@ -78,7 +98,7 @@ try {
   }
 
   $tasks     = @($queue.tasks)
-  $candidate = Select-Candidate -tasks $tasks -lane $Lane -preferAgent $PreferAgent
+  $candidate = Select-Candidate -tasks $tasks -lane $Lane -preferAgent $PreferAgent -policy $policy
 
   if ($null -eq $candidate) {
     Write-Output (@{ claimed = $false; reason = "no_ready_task_in_lane_$Lane" } | ConvertTo-Json -Depth 4)

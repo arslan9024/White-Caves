@@ -66,6 +66,8 @@ import currencyRoutes from './routes/currency.js';
 import emailRoutes from './routes/email.js';
 import agentAvailabilityRoutes from './routes/agentAvailability.js';
 import analyticsRoutes from './routes/analytics.js';
+import valuationRoutes from './routes/valuation.js';
+import marketRoutes from './routes/market.js';
 import departmentsRoutes from './routes/departments.js';
 import homepageRoutes from './routes/homepage.js';
 import contactRoutes from './routes/contact.js';
@@ -438,6 +440,12 @@ app.use('/api/invoices/lease', invoicesLeaseRoutes);
 
 // Maintenance API (maintenance requests for landlords and tenants)
 app.use('/api/maintenance', maintenanceRoutes);
+
+// Valuation API — Wave 12 (AVM + manual override + bank request)
+app.use('/api/valuations', authMiddleware, valuationRoutes);
+
+// Market Intelligence API — Wave 12 (price index, transactions, RERA index)
+app.use('/api/market', authMiddleware, marketRoutes);
 
 // Leasing Inventory API (Mary - Inventory Manager)
 app.use('/api/leasing-inventory', leasingInventoryRoutes);

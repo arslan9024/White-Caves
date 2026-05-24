@@ -58,14 +58,16 @@ while ($true) {
   $agent  = $parsed.agent
   Write-Log "Claimed task $taskId ('$title') for agent $agent"
 
-  # --- Simulate execution (human/AI agent does real work externally) ---
-  # In production the worker signals the real agent and awaits its completion.
-  # Here we record a placeholder output and mark the task done / waiting_ack.
-  $placeholderOutput = "Task '$title' claimed by $workerLabel for agent $agent at $(Get-Date)"
+  # --- Evidence capture ---
+  # Worker records evidence and moves task to evidence_pending for guarded completion.
+  $evidenceNote = "Task '$title' claimed by $workerLabel for agent $agent at $(Get-Date). Awaiting review."
+  $producedRef  = "logs/orchestrator/worker-lane-$Lane.log"
 
   $completeResult = & $completeScript `
     -TaskId $taskId `
-    -OutputSummary $placeholderOutput `
+    -EvidenceNote $evidenceNote `
+    -ProducedRef $producedRef `
+    -MarkEvidencePending `
     -WorkspaceRoot $WorkspaceRoot 2>&1
 
   $completeStr = ($completeResult | Out-String).Trim()
