@@ -62,10 +62,11 @@ const RoleApprovalQueue = () => {
         requestId: request.id,
         reviewedBy: user?.id ?? '',
       }));
+      toast.success('Role request approved successfully');
     } catch (error) {
       const err = error as { message?: string };
       
-      alert(err.message || 'Failed to approve request');
+      toast.error(err.message || 'Failed to approve request');
     } finally {
       setLoading(false);
     }
@@ -95,10 +96,11 @@ const RoleApprovalQueue = () => {
 
       setSelectedRequest(null);
       setRejectionReason('');
+      toast.success('Role request rejected');
     } catch (error) {
       const err = error as { message?: string };
       
-      alert(err.message || 'Failed to reject request');
+      toast.error(err.message || 'Failed to reject request');
     } finally {
       setLoading(false);
     }

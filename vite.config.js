@@ -37,7 +37,7 @@ export default defineConfig({
     },
   },
   resolve: {
-    extensions: ['.mjs', '.js', '.ts', '.tsx', '.jsx', '.json'],
+    extensions: ['.mjs', '.ts', '.tsx', '.js', '.jsx', '.json'],
     alias: {
       '@': path.resolve(__dirname, 'src'),
       '@assets': path.resolve(__dirname, 'attached_assets'),
