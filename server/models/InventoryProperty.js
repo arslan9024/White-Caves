@@ -278,17 +278,9 @@ InventoryPropertySchema.statics.getAreaStats = async function() {
         rented: { $sum: { $cond: [{ $eq: ['$status', 'rented'] }, 1, 0] } },
         sold: { $sum: { $cond: [{ $eq: ['$status', 'sold'] }, 1, 0] } }
       }
-    },
-    isActive: { type: Boolean, default: true, index: true },
-    featured: { type: Boolean, default: false },
-    views: { type: Number, default: 0 },
-    updatedBy: { type: String, trim: true },
-  },
-  {
-    timestamps: true,
-    strict: false,
-  }
-);
+    }
+  ]);
+};
 
 InventoryPropertySchema.index({ pNumber: 1, area: 1, plotNumber: 1 }, { unique: false });
 InventoryPropertySchema.index({ primaryOwner: 1 });

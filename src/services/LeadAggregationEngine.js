@@ -253,7 +253,7 @@ export class LeadAggregationEngine {
             duplicateMap.set(key, merged);
           }
 
-          : ${key}`);
+          console.info(`[LeadAggregationEngine] Duplicate lead detected by ${rule.name}: ${key}`);
           break;
         }
       }
@@ -411,9 +411,9 @@ export class LeadAggregationEngine {
     }
 
     this.autoAggregationInterval = setInterval(() => {
-      this.aggregateLeads().catch(err =>
-        
-      );
+      this.aggregateLeads().catch(err => {
+        console.error('[LeadAggregationEngine] Auto-aggregation failed:', err?.message || err);
+      });
     }, interval);
 
     // Initial aggregation

@@ -42,6 +42,30 @@ export const PUBLIC_NAV = {
   ]
 } as const;
 
+export interface NavItem {
+  label: string;
+  path: string;
+  icon: string;
+  description?: string;
+}
+
+export interface RoleNavConfig {
+  label: string;
+  icon: string;
+  dashboard: string;
+  links: NavItem[];
+  browseAs?: {
+    clients: NavItem[];
+    employees: NavItem[];
+  };
+}
+
+export interface QuickAction extends NavItem {
+  primary?: boolean;
+}
+
+export type RoleCategory = 'visitor' | 'client' | 'staff' | 'admin';
+
 // ---------------------------------------------------------------------------
 // Role-Based Navigation
 // ---------------------------------------------------------------------------

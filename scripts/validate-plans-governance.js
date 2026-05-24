@@ -75,6 +75,7 @@ function assertRecentUpdatedDate(fileRelativePath, maxAgeDays = 45) {
 function assertIndexLinksExist(indexRelativePath) {
   const absolutePath = path.join(repoRoot, indexRelativePath);
   const content = readFileSafe(absolutePath);
+  const baseDir = path.dirname(absolutePath);
   const linkRegex = /\[[^\]]+\]\(\.\/([^)]+)\)/g;
   const seen = new Set();
   let match;
@@ -84,7 +85,7 @@ function assertIndexLinksExist(indexRelativePath) {
     if (seen.has(target)) continue;
     seen.add(target);
 
-    const targetAbsolute = path.join(plansDir, target);
+    const targetAbsolute = path.join(baseDir, target);
     if (!fs.existsSync(targetAbsolute)) {
       errors.push(`${indexRelativePath} contains broken link: ./${target}`);
     }
@@ -130,18 +131,17 @@ function assertCrossTrackerConsistency() {
   }
 }
 
-function getActivePhasePlanLinksFromPending() {
+function getLinkedPlanFilesFromPending(pattern) {
   const pendingPath = path.join(plansDir, 'PENDING_TASKS_ONLY.md');
   const content = readFileSafe(pendingPath);
-  const linkRegex = /\[[^\]]+\]\(\.\/(PHASE_[^)]+\.md)\)/g;
-  const phaseLinks = new Set();
+  const links = new Set();
   let match;
 
-  while ((match = linkRegex.exec(content)) !== null) {
-    phaseLinks.add(`plans/${match[1]}`);
+  while ((match = pattern.exec(content)) !== null) {
+    links.add(`plans/${match[1]}`);
   }
 
-  return [...phaseLinks];
+  return [...links];
 }
 
 // Required governance files
@@ -152,6 +152,8 @@ function getActivePhasePlanLinksFromPending() {
   'plans/PLANNING_GOVERNANCE.md',
   'plans/PHASE_PLAN_TEMPLATE.md',
   'plans/PLANNING_DOC_DEFINITION_OF_DONE.md',
+  'plans/README.md',
+  'plans/waves/README.md',
   'PROJECT_PROGRESS.md',
   'DAILY_MILESTONE_TRACKER.md',
 ].forEach(assertExists);
@@ -159,25 +161,33 @@ function getActivePhasePlanLinksFromPending() {
 assertNoPastedArtifacts();
 assertIndexLinksExist('plans/INDEX.md');
 assertIndexLinksExist('plans/README.md');
+assertIndexLinksExist('plans/waves/README.md');
 assertCrossTrackerConsistency();
 
 const requiredPointers = ['plans/MASTER_PLAN.md', 'plans/PENDING_TASKS_ONLY.md'];
 assertStatusPointers('PROJECT_PROGRESS.md', requiredPointers);
 assertStatusPointers('DAILY_MILESTONE_TRACKER.md', requiredPointers);
 
-const activePhasePlans = getActivePhasePlanLinksFromPending();
+const activePhasePlans = getLinkedPlanFilesFromPending(/\[[^\]]+\]\(\.\/(PHASE_[^)]+\.md)\)/g);
 for (const phasePlan of activePhasePlans) {
   assertExists(phasePlan);
   assertMetadata(phasePlan);
   assertStatusPointers(phasePlan, ['MASTER_PLAN.md', 'PENDING_TASKS_ONLY.md']);
 }
 
+const linkedWavePlans = getLinkedPlanFilesFromPending(/\[[^\]]+\]\(\.\/(waves\/[^)]+\.md)\)/g);
+for (const wavePlan of linkedWavePlans) {
+  assertExists(wavePlan);
+}
+
 [
   'PROJECT_PROGRESS.md',
   'DAILY_MILESTONE_TRACKER.md',
+  'plans/README.md',
   'plans/INDEX.md',
   'plans/PENDING_TASKS_ONLY.md',
   'plans/PLANNING_GOVERNANCE.md',
+  'plans/waves/README.md',
 ].forEach(file => assertRecentUpdatedDate(file, 45));
 
 if (warnings.length > 0) {

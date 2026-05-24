@@ -18,7 +18,7 @@
 | W12-005 | P0 | Create `DocumentService.ts` PDF/Excel generation + streaming endpoints | @Barbara | service + routes | `npm run build` | Planned |
 | W12-006 | P1 | Add `server/templates/email/` and event trigger registry wiring | @Mira + @Handlebars | templates + trigger service + routes | focused route tests | Planned |
 | W12-007 | P1 | Wire CRM export buttons to new document endpoints | @Una + @Mira | frontend export surfaces | `npm run build` | Planned |
-| W12-008 | P0 | Wave-level final validation | @Katherine | — | `npm run quality:quick && npm run plans:validate` | Planned |
+| W12-008 | P0 | Wave-level final validation | @Katherine | — | `npm run typecheck && npm run lint && npm run build && npm run plans:validate` | Planned |
 
 ---
 

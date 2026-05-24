@@ -1,9 +1,9 @@
 # White Caves Daily Milestone Tracker
 
-**Date:** May 22, 2026
+**Date:** May 24, 2026
 **Owner:** @Margaret
 **Status:** Active
-**Last Updated:** 2026-05-22
+**Last Updated:** 2026-05-24
 
 > Roadmap: [plans/MASTER_PLAN.md](plans/MASTER_PLAN.md) · Queue: [plans/PENDING_TASKS_ONLY.md](plans/PENDING_TASKS_ONLY.md)
 
@@ -65,6 +65,7 @@
 | May 22, 2026 | @Mira + @Katherine | Planning sync: updated sprint/status trackers, captured the current TypeScript blocker baseline, regenerated Prisma client, and identified `server/routes/notifications.ts` as the next implementation hotspot                                                                                                                                                        | Done        |
 | May 22, 2026 | @Margaret + @Mira  | Planning cleanup pass implemented: canonical tracker authority normalized, legacy docs marked reference-only, Stream S1 error-burn-down lane added, and Wave 08 micro-wave bundle queued with verification gates                                                                                                                                                      | Done        |
 | May 22, 2026 | @Margaret + @Ada   | **Acceleration pass:** merge conflicts resolved (clean auto-merge from origin/main); TypeScript baseline confirmed 0 errors; Wave 08 S1 declared ✅ Complete; Wave 09 promoted to 🟢 Ready; Wave 09/10/11 full artifact bundles created (SDD + Readiness + Backlog + Test Rollout); MASTER_PLAN and PENDING_TASKS_ONLY upgraded to reflect accelerated execution path | Done        |
+| May 24, 2026 | @Margaret + @Copilot | Planning workspace cleanup: added `plans/waves/README.md`, split Waves 15 and 16 in canonical trackers, archived duplicate root Wave 12 market-intelligence docs, restored `npm run plans:validate`, and added Wave 11 test rollout coverage | Done        |
 
 ---
 

@@ -98,8 +98,9 @@ class AppError extends Error {
 ## Validation Commands
 
 ```bash
-npm run build
+npm run typecheck
 npm run lint
-npm run quality:quick
+npm run build
+npm run plans:validate
 npm run test:run -- server/services
 ```
