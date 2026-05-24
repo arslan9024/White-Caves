@@ -120,7 +120,7 @@ If full matrix is too expensive, run focused scope checks first and clearly repo
 - Keep responses consistent with existing API envelope conventions.
 - Never bypass security checks for convenience.
 ---
-- Free-planning agents MUST use only: Gemini 2.0 Flash, Llama 3.1 70B (Groq), DeepSeek V3.
+- Free-planning agents MUST use only approved free models: Gemini 2.0 Flash / 1.5 Flash (Google AI Studio), Llama 3.1 70B / 3.3 70B (Groq), DeepSeek V3 / R1 (DeepSeek Chat), Mistral Small (Mistral Le Chat), Qwen2.5 72B (HuggingFace / Together.ai). See `plans/AGENT_SKILLS_UPGRADE_V3.md` for the full model assignment matrix by role type.
 - Senior coding/design agents use GPT-4o by default for coding and verification.
 - Claude 3.5 Sonnet is reserved for explicit complex architecture/design reviews by: @Ada, @Mira, @Barbara, @Una, @Daniela, @Framer, @Radia.
 

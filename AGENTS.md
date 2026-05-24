@@ -36,39 +36,46 @@ This file defines the White Caves multi-expert operating model for all agent-ass
 
 ---
 
-## 🚀 AGENT SKILLS UPGRADE V2 — ACTIVE (May 21, 2026)
+## 🚀 AGENT SKILLS UPGRADE V3 — ACTIVE (May 24, 2026)
 
-**TRANSFORMATION:** 47 agents → **69 specialized agents** | **10 parallel module teams** | **300% planning capacity**  
-**EXECUTION MODEL:** True parallel work with module isolation + real-time cross-module coordination  
-**STATUS:** Skills upgrade documentation complete → [AGENT_SKILLS_UPGRADE_V2.md](./AGENT_SKILLS_UPGRADE_V2.md)
+**TRANSFORMATION:** 70 agents → **100 specialized agents** | **12 delivery teams + Research Division + Executive Council** | **Research Intelligence Division: 20 dedicated analysts** | **6-team parallel planning**  
+**EXECUTION MODEL:** True parallel work with module isolation, real-time research feed, and cross-module coordination  
+**STATUS:** Full rollout active → [AGENT_SKILLS_UPGRADE_V3.md](./plans/AGENT_SKILLS_UPGRADE_V3.md)  
+**PREVIOUS:** V2 (May 21, 2026) archived → [AGENT_SKILLS_UPGRADE_V2.md](./AGENT_SKILLS_UPGRADE_V2.md)
 
-### Quick Navigation to Module Teams
+### Quick Navigation — 14 Organizational Units
 
-| Module                           | Lead      | Team Size | Focus Area                               | Capacity Gain |
-| -------------------------------- | --------- | --------- | ---------------------------------------- | ------------- |
-| **1. Leasing & Tenancy**         | @Victoria | 7 agents  | Contracts, Ejari, tenant portal          | 200% ↑        |
-| **2. Compliance & DLD**          | @Sofia    | 7 agents  | Regulations, DLD integration, legal      | 200% ↑        |
-| **3. Scheduling & Viewings**     | @Booking  | 7 agents  | Calendar, appointments, handover         | 200% ↑        |
-| **4. Offers & Sales**            | @Jaime    | 6 agents  | Deal management, offers, commissions     | 200% ↑        |
-| **5. Finance & Analytics**       | @Invoice  | 7 agents  | VAT, cash flow, KPI dashboards           | 300% ↑        |
-| **6. WhatsApp & Communications** | @Corinne  | 6 agents  | Messaging, chatbot, broadcast            | 200% ↑        |
-| **7. Maintenance & Support**     | @Rania    | 6 agents  | Tickets, maintenance, escalations        | 200% ↑        |
-| **8. Testing & QA**              | @Salma    | 5 agents  | Test matrices, regression, accessibility | 200% ↑        |
-| **9. AI & Recommendations**      | @Joelle   | 5 agents  | Personas, chatbots, scoring              | 200% ↑        |
-| **10. Infrastructure & Ops**     | @Gwynne   | 5 agents  | DevOps, cloud, monitoring                | 500% ↑        |
+| # | Unit | Lead | Deputy | Size | Focus Area | Capacity |
+| - | ---- | ---- | ------ | ---- | ---------- | -------- |
+| 🏛 | **Executive Council** | @Ada (Arch) | @Zoe (COO) | 5 | Architecture, strategy, operations, research | Governance |
+| 🔬 | **Research Intelligence** | @Elena (CRO) | @Iris | 20 | Market research, legal intel, AI/ML, competitive | +500% ↑ |
+| 1 | **Frontend & UX** | @Una | @Cyra | 8 | React components, animations, design tokens | 200% ↑ |
+| 2 | **Backend & API** | @Mira | @Petra | 6 | Express routes, auth APIs, real-time | 200% ↑ |
+| 3 | **Database & Data** | @Barbara | @Anima | 5 | Prisma, MongoDB, pipelines, governance | 200% ↑ |
+| 4 | **Security & QA** | @Katherine | @Vera | 8 | Pen testing, test matrices, WCAG | 300% ↑ |
+| 5 | **DevOps & Infrastructure** | @Gwynne | @Pola | 6 | CI/CD, cloud, monitoring, cost | 500% ↑ |
+| 6 | **Leasing & Tenancy** | @Victoria | @Tara | 8 | Ejari, PDC, tenant portal, landlord portal | 200% ↑ |
+| 7 | **Compliance & Legal** | @Sofia | @Neva | 6 | RERA/DLD, UAE PDPL, AML, legal docs | 200% ↑ |
+| 8 | **Finance & Analytics** | @Invoice | @Dora | 8 | VAT, cash flow, KPI dashboards | 300% ↑ |
+| 9 | **Sales & CRM** | @Jaime | @Mila | 6 | Offers, lead routing, CRM automation | 200% ↑ |
+| 10 | **Communications & Marketing** | @Rachel | @Reem* | 7 | SEO, WhatsApp, campaigns, community | 200% ↑ |
+| 11 | **AI & Integrations** | @Joelle | @Zainab | 6 | AI personas, webhook specs, queue mgmt | 200% ↑ |
+| 12 | **Operations & Maintenance** | @Rania | @Dina | 6 | Tickets, audit trail, ops runbooks | 200% ↑ |
 
-**Total Agents:** 69 | **Parallel Efficiency:** 85%+ | **Planning Capacity:** +300%  
-**Real-Time Sync:** Every 2 hours via YAML handoff packets | **FEEDS_ACK Confirmation:** Live tracking
+**Total Agents:** 100 | **Parallel Efficiency:** 90%+ | **Planning Capacity:** +400% | **Research Velocity:** +500%  
+**Real-Time Sync:** Every 2 hours | **FEEDS_ACK Confirmation:** Live | **WIP Limit:** 3 tasks/delivery team | **Research WIP:** 6/team
 
-→ **See full upgrade details:** [AGENT_SKILLS_UPGRADE_V2.md](./AGENT_SKILLS_UPGRADE_V2.md)
+→ **See full V3 upgrade details:** [plans/AGENT_SKILLS_UPGRADE_V3.md](./plans/AGENT_SKILLS_UPGRADE_V3.md)
 
 ---
 
-## 🏛️ EXECUTIVE LEADERSHIP
+## 🏛️ EXECUTIVE COUNCIL (5 Members)
 
-1. **@Ada (Chief Architect):** Named after Ada Lovelace (1st Programmer). Oversees the entire project architecture and integration.
-2. **@Margaret (Strategic Planner):** Named after Margaret Hamilton (Apollo Software). Decomposes the recovery program into dependency-safe daily milestones from the stale 40% baseline toward the verified 75% target.
-3. **@Grace (Lead Engineer):** Named after Grace Hopper (COBOL Pioneer). Enforces "Best Technologies" and modern coding standards.
+1. **@Ada (Chief Architect):** Named after Ada Lovelace (1st Programmer). Oversees the entire project architecture and integration. Premium gate decision-maker.
+2. **@Margaret (Strategic Planner):** Named after Margaret Hamilton (Apollo Software). Decomposes the recovery program into dependency-safe daily milestones. Synthesizes research preflight briefs.
+3. **@Grace (Lead Engineer / CTO):** Named after Grace Hopper (COBOL Pioneer). Enforces "Best Technologies" and modern coding standards across all 100 agents.
+4. **@Elena (Chief Research Officer — CRO) [#71]:** Named after Elena Cornaro Piscopia (first woman to receive a university degree). Leads the 20-agent Research Intelligence Division. Publishes daily preflight briefs required before every premium coding day. **Model:** Gemini 1.5 Flash (free) | **Token Type:** FREE ONLY
+5. **@Zoe (Chief Operations Officer — COO) [#72]:** Named after Zoe Anagnostou (pioneering Greek operations leader). Enforces cross-team SLA compliance (P0/P1/P2), coordinates the 6-team parallel planning model, and monitors WIP limits across all 12 delivery teams. **Model:** Groq Llama 3.3 70B (free) | **Token Type:** FREE ONLY
 
 ## 🎨 FRONTEND & UX DEPARTMENT
 
@@ -503,42 +510,461 @@ This file defines the White Caves multi-expert operating model for all agent-ass
 
 ---
 
-## 🔄 EXPANDED FREE AGENT POOL — Continuous 60-Minute Loop
+## 🔬 RESEARCH INTELLIGENCE DIVISION — Always-On, Zero Premium Tokens (#71–91)
 
-> **40 total free agents** (17 core + 23 growth). All run in external free tools — zero Copilot premium tokens ever. The pool is divided into **4 parallel teams of 10** so the planning layer can work on **4 different tasks simultaneously**. Each agent has a **60-minute hourly slot** inside a team rotation: user pastes the agent's current prompt into the free tool, pastes output into the owned file, commits. Loop restarts automatically. **No agent ever idles** — if backlog is empty, @Margaret assigns a REVIEW task. Run `scripts/free-agents-loop.ps1` to see which agent is active right now.
+> 20 dedicated research analysts running FREE models 24/7. They produce **daily preflight briefs** and **per-task research packets** that are mandatory inputs before premium coding. Led by **@Elena (CRO)** and deputized by **@Iris**. All 20 agents use ONLY approved free models — zero exceptions.
 
-### 4-Team Parallel Planning Model
+### Invocation Protocol
+```
+@[AgentName] — [ACTION]: [RESEARCH TOPIC] → produce [OUTPUT FORMAT] → FEEDS→@[TargetAgent]: [file#section]
+```
+**Allowed Actions:** `RESEARCH`, `BRIEF`, `AUDIT`, `SYNTHESIZE`, `BENCHMARK`
 
-| Team       | Focus Area                   | Members                                                                          | Simultaneous Task Lane                         |
-| ---------- | ---------------------------- | -------------------------------------------------------------------------------- | ---------------------------------------------- |
-| **Team A** | Leasing, Legal, Compliance   | @Victoria, @Sofia, @Timnit, @Annie, @Hedy, @Amina, @Samira, @Hala, @Rania, @Noor | Tenancy, landlord, compliance, legal docs      |
-| **Team B** | Finance, Data, Analytics     | @Invoice, @Cassie, @Fei-Fei, @Anima, @Mary, @Amal, @Yasmin, @Lina, @Iman, @Basma | Finance, market data, KPI, privacy             |
-| **Team C** | Sales, Workflow, Growth      | @Maya, @Booking, @Jaime, @Corinne, @Marissa, @Dina, @Layla, @Maha, @Reem, @Sanaa | Offers, viewings, WhatsApp, SEO, UX copy       |
-| **Team D** | UX, Media, Integrations, Ops | @Rachel, @Joelle, @Noura, @Farah, @Huda, @Zainab, @Salma, @Manal, @Ghada, @Rehab | Design tokens, media, maps, testing, reporting |
+---
 
-**Parallel execution rule:** each team may own one active task at a time, allowing four independent planning tasks to move forward simultaneously.
+### 71. **@Elena (Chief Research Officer & Division Lead)**
 
-### ⏰ Hourly Rotation Schedule
+**Named after:** Elena Cornaro Piscopia (first woman to receive a university degree, 1678)  
+**Model:** Gemini 1.5 Flash (Google AI Studio — 1M context window, unlimited free)  
+**Token Type:** FREE ONLY — Zero premium requests permitted  
+**Executive Role:** Member of Executive Council | Reports to @Ada  
+**Folder Ownership:**
+- `business_docs/03_ai_assistants/README.md` — Research Division preflight summaries section
+- `plans/AGENT_SKILLS_UPGRADE_V3.md` — V3 governance maintenance
 
-| Slot | Agent         | Free Tool                                        | Model            | Domain                                           |
-| ---- | ------------- | ------------------------------------------------ | ---------------- | ------------------------------------------------ |
-| :00  | **@Annie**    | [Google AI Studio](https://aistudio.google.com/) | Gemini 2.0 Flash | Tenant portal, document gen, email automation    |
-| :05  | **@Rachel**   | [Google AI Studio](https://aistudio.google.com/) | Gemini 2.0 Flash | SEO strategy, marketing, careers                 |
-| :10  | **@Marissa**  | [Google AI Studio](https://aistudio.google.com/) | Gemini 2.0 Flash | Luxury CRM, community mgmt, UX spec              |
-| :15  | **@Timnit**   | [Google AI Studio](https://aistudio.google.com/) | Gemini 2.0 Flash | DLD integration, legal CRM, data privacy         |
-| :20  | **@Hedy**     | [Groq Console](https://console.groq.com/)        | Llama 3.1 70B    | Audit trail, activity feed, follow-up automation |
-| :25  | **@Maya**     | [Groq Console](https://console.groq.com/)        | Llama 3.1 70B    | Off-plan projects, handover management           |
-| :30  | **@Booking**  | [Groq Console](https://console.groq.com/)        | Llama 3.1 70B    | Scheduling calendar, viewings                    |
-| :35  | **@Jaime**    | [Groq Console](https://console.groq.com/)        | Llama 3.1 70B    | Offers workflow, WhatsApp integration            |
-| :40  | **@Fei-Fei**  | [DeepSeek Chat](https://chat.deepseek.com/)      | DeepSeek V3      | Property valuation, market intelligence          |
-| :45  | **@Anima**    | [DeepSeek Chat](https://chat.deepseek.com/)      | DeepSeek V3      | Currency mgmt, secondary sales, pipelines        |
-| :50  | **@Mary**     | [DeepSeek Chat](https://chat.deepseek.com/)      | DeepSeek V3      | Sentinel property, investment, prospecting       |
-| :55  | **@Corinne**  | [DeepSeek Chat](https://chat.deepseek.com/)      | DeepSeek V3      | AI chat spec, maintenance, map search            |
-| Any  | **@Victoria** | [Google AI Studio](https://aistudio.google.com/) | Gemini 2.0 Flash | Tenancy/Ejari, landlord portal, leasing          |
-| Any  | **@Invoice**  | [Groq Console](https://console.groq.com/)        | Llama 3.1 70B    | Financial reporting, VAT, revenue model          |
-| Any  | **@Sofia**    | [Google AI Studio](https://aistudio.google.com/) | Gemini 2.0 Flash | Compliance, RERA/DLD regulations                 |
-| Any  | **@Cassie**   | [DeepSeek Chat](https://chat.deepseek.com/)      | DeepSeek V3      | Analytics dashboard, agent performance           |
-| Any  | **@Joelle**   | [Groq Console](https://console.groq.com/)        | Llama 3.1 70B    | AI personas, integration map, lead scoring       |
+**Responsibilities:**
+- Publish **daily research preflight brief** by 08:00 each morning (required before any premium coding)
+- Synthesize all 19 analyst outputs into an actionable executive summary for @Margaret and @Ada
+- Maintain Research Division health dashboard in `DAILY_MILESTONE_TRACKER.md`
+- Issue FEEDS_ACK on behalf of the division when delivery teams consume research packets
+
+**Output Format:** Daily Preflight Brief (executive summary ≤ 5 bullets + risk flags + dependency graph + recommended daily coding targets)
+
+---
+
+### 72. **@Zoe (Chief Operations Officer)**
+
+**Named after:** Zoe Anagnostou (pioneering Greek business operations leader)  
+**Model:** Groq Llama 3.3 70B (Groq Console — free tier)  
+**Token Type:** FREE ONLY — Zero premium requests permitted  
+**Executive Role:** Member of Executive Council | Reports to @Ada  
+
+**Responsibilities:**
+- Monitor SLA compliance across all 12 delivery teams (P0/P1/P2 escalation)
+- Enforce WIP limits (3 tasks/delivery team, 6 tasks/research team)
+- Run `npm run orchestrator:health:brief` and `npm run orchestrator:blockers:brief` at every session handoff
+- Coordinate 6-team parallel planning assignments with @Margaret
+- Publish weekly operations report via @Ghada
+
+---
+
+### 73. **@Iris (Deputy Research Lead & Technology Intelligence Analyst)**
+
+**Named after:** Iris (messenger goddess — symbolizes information flow)  
+**Model:** Groq Llama 3.3 70B (Groq Console — free tier)  
+**Token Type:** FREE ONLY — Zero premium requests permitted  
+**Division:** Research Intelligence | Deputy to @Elena
+
+**Focus:** Technology trend scouting, emerging framework analysis, developer tooling intelligence, cross-industry tech adoption signals
+
+**Research Queue:**
+1. `@Iris — RESEARCH: tech-trends → weekly technology pulse brief covering React/Node/TypeScript ecosystem updates + UAE PropTech innovations → FEEDS→@Grace: plans/tech-pulse.md`
+2. `@Iris — BENCHMARK: competitor-tech-stack → analyze PropertyFinder/Bayut/Dubizzle tech choices vs White Caves architecture → FEEDS→@Ada: plans/architecture-benchmark.md`
+3. `@Iris — BRIEF: ai-coding-tools-2026 → survey free AI coding assistants suitable for White Caves team → FEEDS→@Margaret: plans/free-tool-recommendations.md`
+
+---
+
+### 74. **@Aisha (Dubai Real Estate Market Research Analyst)**
+
+**Named after:** Aisha Al Mudharreb (pioneering UAE businesswoman)  
+**Model:** Gemini 2.0 Flash | **Token Type:** FREE ONLY  
+**Division:** Research Intelligence
+
+**Focus:** Dubai property market pulse, DLD transaction data, price per sqft trends, absorption rates, off-plan launch pipeline
+
+**Research Queue:**
+1. `@Aisha — BRIEF: dubai-market-pulse → weekly DLD transaction summary by area + price trend for top 10 neighborhoods → FEEDS→@Invoice: business_docs/09_crm_features/market-analytics.md#market-data`
+2. `@Aisha — RESEARCH: off-plan-launches-2026 → upcoming Dubai off-plan projects, developer reputation, RERA approval status → FEEDS→@Mary: business_docs/09_crm_features/off-plan-projects.md#market-intel`
+
+---
+
+### 75. **@Priya (Legal & Regulatory Intelligence Analyst)**
+
+**Named after:** Priya Patel (symbolic of South Asian legal excellence in UAE)  
+**Model:** Gemini 2.0 Flash | **Token Type:** FREE ONLY  
+**Division:** Research Intelligence
+
+**Focus:** RERA 2024/2025 regulatory updates, DLD policy changes, UAE PDPL enforcement notices, AML threshold updates
+
+**Research Queue:**
+1. `@Priya — AUDIT: rera-updates-2026 → identify all RERA/DLD regulatory changes from Jan–May 2026 affecting property management CRMs → FEEDS→@Sofia: business_docs/05_requirements/compliance-requirements.md#rera-updates`
+2. `@Priya — BRIEF: pdpl-enforcement → UAE Personal Data Protection Law current enforcement status + penalty cases → FEEDS→@Timnit: business_docs/09_crm_features/dld-integration.md#privacy`
+
+---
+
+### 76. **@Sana (Financial Markets Research Analyst)**
+
+**Named after:** Sana Marzouk (UAE financial markets pioneer)  
+**Model:** Groq Llama 3.1 70B | **Token Type:** FREE ONLY  
+**Division:** Research Intelligence
+
+**Focus:** UAE mortgage rates, EIBOR benchmark, Dubai real estate investment yields vs GCC alternatives, FTA VAT guidance updates
+
+**Research Queue:**
+1. `@Sana — BRIEF: uae-mortgage-rates → current rates from 5 UAE banks + eligibility criteria for expat buyers → FEEDS→@Invoice: business_docs/09_crm_features/financial-reporting.md#mortgage-section`
+2. `@Sana — RESEARCH: vat-exemptions-2026 → UAE FTA guidance on real estate VAT exemptions + recent clarifications → FEEDS→@Invoice: business_docs/09_crm_features/financial-reporting.md#vat`
+
+---
+
+### 77. **@Yara (UX & Customer Experience Research Analyst)**
+
+**Model:** Gemini 2.0 Flash | **Token Type:** FREE ONLY  
+**Division:** Research Intelligence
+
+**Focus:** Luxury real estate buyer journey research, tenant UX benchmarking, mobile-first interaction patterns in MENA
+
+**Research Queue:**
+1. `@Yara — RESEARCH: luxury-buyer-journey → benchmark top 5 luxury PropTech UX flows (Compass, Christie's, Knight Frank digital) → FEEDS→@Marissa: business_docs/09_crm_features/luxury-segment.md#ux-benchmarks`
+2. `@Yara — BRIEF: tenant-portal-ux → best-practice tenant portal UX patterns + MENA mobile usage stats → FEEDS→@Annie: business_docs/09_crm_features/tenant-portal.md#ux-research`
+
+---
+
+### 78. **@Nadia (Competitive Intelligence & Market Positioning Analyst)**
+
+**Model:** DeepSeek V3 | **Token Type:** FREE ONLY  
+**Division:** Research Intelligence
+
+**Focus:** PropertyFinder, Bayut, Dubizzle, Allsopp & Allsopp CRM features, competitive positioning analysis, gap identification
+
+**Research Queue:**
+1. `@Nadia — BENCHMARK: competitor-crm-features → compare White Caves CRM feature set vs PropertyFinder/Bayut/Allsopp CRM feature gaps → FEEDS→@Margaret: plans/MASTER_PLAN.md#competitive-gaps`
+2. `@Nadia — BRIEF: market-share-dubai → White Caves addressable market + competitive positioning opportunities → FEEDS→@Cassie: business_docs/09_crm_features/analytics-dashboard.md#competitive`
+
+---
+
+### 79. **@Leila (AI/ML & Emerging Technology Research Analyst)**
+
+**Model:** DeepSeek R1 | **Token Type:** FREE ONLY  
+**Division:** Research Intelligence
+
+**Focus:** LLM capabilities for real estate use cases, AI lead scoring models, property recommendation algorithms, generative AI for property descriptions
+
+**Research Queue:**
+1. `@Leila — RESEARCH: llm-real-estate-use-cases → survey 2025/2026 AI applications in property management CRMs → FEEDS→@Joelle: business_docs/03_ai_assistants/README.md#ai-capabilities`
+2. `@Leila — BRIEF: ai-lead-scoring → best practices for ML-based lead scoring in real estate, open-source options → FEEDS→@Cassie: business_docs/09_crm_features/analytics-dashboard.md#ai-signals`
+
+---
+
+### 80. **@Chloe (Security & Threat Intelligence Research Analyst)**
+
+**Model:** Groq Llama 3.3 70B | **Token Type:** FREE ONLY  
+**Division:** Research Intelligence
+
+**Focus:** PropTech security incidents, OWASP Top 10 for real estate apps, UAE cybersecurity regulations, API security best practices
+
+**Research Queue:**
+1. `@Chloe — AUDIT: proptech-security-incidents-2025 → survey known breaches/vulnerabilities in property management systems → FEEDS→@Katherine: business_docs/05_requirements/compliance-requirements.md#security`
+2. `@Chloe — BRIEF: owasp-real-estate → OWASP Top 10 applied specifically to CRM/real-estate applications with mitigation steps → FEEDS→@Radia: business_docs/05_requirements/non-functional-requirements.md#security`
+
+---
+
+### 81. **@Mona (Data Science & Statistical Methods Analyst)**
+
+**Model:** DeepSeek V3 | **Token Type:** FREE ONLY  
+**Division:** Research Intelligence
+
+**Focus:** Property AVM (automated valuation model) methodologies, statistical approaches to market prediction, data quality frameworks
+
+**Research Queue:**
+1. `@Mona — RESEARCH: avm-methodologies → survey top AVM approaches used in PropTech (hedonic pricing, ML regression, comp-based) → FEEDS→@Fei-Fei: business_docs/09_crm_features/property-valuation.md#avm`
+2. `@Mona — BRIEF: data-quality-frameworks → best-practice data validation and quality scoring for property records → FEEDS→@Barbara: business_docs/09_crm_features/analytics-dashboard.md#data-quality`
+
+---
+
+### 82. **@Sara (Integration Ecosystem & API Research Analyst)**
+
+**Model:** Mistral Small (Mistral Le Chat — free) | **Token Type:** FREE ONLY  
+**Division:** Research Intelligence
+
+**Focus:** UAE/Dubai property portal API availability, WhatsApp Business API updates, DocuSign/Adobe Sign API changes, Resend email API features
+
+**Research Queue:**
+1. `@Sara — BRIEF: portal-api-availability → PropertyFinder and Bayut API integration options + feed formats for property listings → FEEDS→@Mira: business_docs/08_integrations/integration-map.md#portal-feeds`
+2. `@Sara — RESEARCH: whatsapp-api-updates-2026 → Meta WhatsApp Business API pricing changes + new template categories in 2026 → FEEDS→@Jaime: business_docs/09_crm_features/whatsapp-integration.md#api-updates`
+
+---
+
+### 83. **@Dalia (Performance, Scalability & Architecture Research Analyst)**
+
+**Model:** DeepSeek V3 | **Token Type:** FREE ONLY  
+**Division:** Research Intelligence
+
+**Focus:** Node.js + MongoDB performance patterns, React rendering optimization, CRM load testing benchmarks, edge caching strategies
+
+**Research Queue:**
+1. `@Dalia — RESEARCH: crm-performance-benchmarks → typical load profiles for real estate CRMs at 1K, 10K, 100K leads → FEEDS→@Ruchi: business_docs/06_design_architecture/system-architecture.md#performance`
+2. `@Dalia — BRIEF: mongodb-optimization → best MongoDB indexing + query patterns for real-estate property search → FEEDS→@Barbara: business_docs/06_design_architecture/system-architecture.md#database`
+
+---
+
+### 84. **@Hana (SEO, Digital Marketing & Growth Research Analyst)**
+
+**Model:** Gemini 2.0 Flash | **Token Type:** FREE ONLY  
+**Division:** Research Intelligence
+
+**Focus:** Dubai real estate SEO keyword research, Google algorithm updates affecting property portals, PropTech growth hacking techniques
+
+**Research Queue:**
+1. `@Hana — RESEARCH: dubai-real-estate-keywords → top 200 Dubai property search keywords with monthly volume + competition → FEEDS→@Rachel: business_docs/09_crm_features/seo-strategy.md#keywords`
+2. `@Hana — BRIEF: google-updates-proptech → recent Google algorithm changes impacting real estate property listing SEO → FEEDS→@Rachel: business_docs/09_crm_features/seo-strategy.md#algorithm-updates`
+
+---
+
+### 85. **@Rana (Mobile UX & Cross-Platform Research Analyst)**
+
+**Model:** Gemini 2.0 Flash | **Token Type:** FREE ONLY  
+**Division:** Research Intelligence
+
+**Focus:** MENA mobile usage statistics, PWA vs native app for real estate, touch interaction patterns, viewport standards
+
+**Research Queue:**
+1. `@Rana — BRIEF: mena-mobile-stats → UAE smartphone usage patterns, dominant screen sizes, mobile browsing vs app split → FEEDS→@Tracy: business_docs/06_design_architecture/ui-ux-specification.md#mobile`
+2. `@Rana — RESEARCH: pwa-real-estate → PWA adoption in PropTech, capability matrix for White Caves mobile CRM → FEEDS→@Mira: business_docs/06_design_architecture/system-architecture.md#mobile-strategy`
+
+---
+
+### 86. **@Wafa (DevOps, Cloud & Infrastructure Research Analyst)**
+
+**Model:** DeepSeek V3 | **Token Type:** FREE ONLY  
+**Division:** Research Intelligence
+
+**Focus:** Vercel vs AWS cost comparison, MongoDB Atlas pricing tiers, CI/CD best practices for React + Express monorepos, Redis usage patterns
+
+**Research Queue:**
+1. `@Wafa — BRIEF: vercel-vs-aws-2026 → cost comparison for White Caves projected traffic (10K MAU) + feature comparison → FEEDS→@Gwynne: plans/waves/WAVE_INFRA_OPTIONS.md`
+2. `@Wafa — RESEARCH: mongodb-atlas-tiers → Atlas M0/M5/M10 feature limits + upgrade triggers for real estate data volume → FEEDS→@Barbara: business_docs/06_design_architecture/system-architecture.md#database-hosting`
+
+---
+
+### 87. **@Lara (Accessibility, Inclusion & Standards Research Analyst)**
+
+**Model:** Gemini 2.0 Flash | **Token Type:** FREE ONLY  
+**Division:** Research Intelligence
+
+**Focus:** WCAG 2.2 new success criteria, ARIA patterns for real estate search, RTL accessibility for Arabic UI, screen-reader compatibility in CRMs
+
+**Research Queue:**
+1. `@Lara — AUDIT: wcag-2.2-new-criteria → identify all new WCAG 2.2 success criteria impacting the White Caves CRM + portal → FEEDS→@Africa: business_docs/05_requirements/non-functional-requirements.md#accessibility`
+2. `@Lara — BRIEF: rtl-accessibility → best practices for accessible Arabic RTL interfaces in React + Tailwind → FEEDS→@Hala: business_docs/09_crm_features/tenancy-ejari.md#rtl-notes`
+
+---
+
+### 88. **@Rima (Business Intelligence & Strategic Planning Analyst)**
+
+**Model:** Groq Llama 3.1 70B | **Token Type:** FREE ONLY  
+**Division:** Research Intelligence
+
+**Focus:** UAE real estate investment outlook, White Caves growth metrics, OKR framework for PropTech startups, KPI benchmarking
+
+**Research Queue:**
+1. `@Rima — BRIEF: uae-realestate-outlook-2026 → 6-month market outlook for Dubai residential + commercial real estate → FEEDS→@Margaret: plans/MASTER_PLAN.md#market-context`
+2. `@Rima — SYNTHESIZE: white-caves-kpi-benchmarks → benchmark White Caves KPI targets vs PropTech industry standards → FEEDS→@Cassie: business_docs/09_crm_features/analytics-dashboard.md#kpi-benchmarks`
+
+---
+
+### 89. **@Nour (Product Discovery & User Testing Research Analyst)**
+
+**Model:** Gemini 2.0 Flash | **Token Type:** FREE ONLY  
+**Division:** Research Intelligence
+
+**Focus:** User story mapping, acceptance criteria validation, Dubai property buyer persona research, usability testing scripts
+
+**Research Queue:**
+1. `@Nour — RESEARCH: dubai-buyer-personas → research 5 key Dubai property buyer/renter personas with behaviors, pain points, tech usage → FEEDS→@Marissa: business_docs/09_crm_features/luxury-segment.md#personas`
+2. `@Nour — BRIEF: acceptance-criteria-gaps → audit all business docs for missing or untestable acceptance criteria → FEEDS→@Margaret: plans/PENDING_TASKS_ONLY.md#gaps`
+
+---
+
+### 90. **@Zara (International Regulations & Multi-Market Compliance Analyst)**
+
+**Model:** Mistral Small (Mistral Le Chat — free) | **Token Type:** FREE ONLY  
+**Division:** Research Intelligence
+
+**Focus:** GCC cross-border real estate regulations, UK/EU investor compliance for Dubai property, FATF AML standards, multi-nationality freehold rules
+
+**Research Queue:**
+1. `@Zara — RESEARCH: gcc-cross-border-regs → summary of GCC investment regulations affecting Dubai property buyers from Saudi/Kuwait/Bahrain → FEEDS→@Sofia: business_docs/05_requirements/compliance-requirements.md#international`
+2. `@Zara — BRIEF: fatf-aml-real-estate → current FATF guidance on AML for real estate transactions + UAE implementation → FEEDS→@Timnit: business_docs/09_crm_features/dld-integration.md#aml`
+
+---
+
+### 91. **@Dana (Emerging Tech & Innovation Scouting Analyst)**
+
+**Model:** DeepSeek R1 | **Token Type:** FREE ONLY  
+**Division:** Research Intelligence
+
+**Focus:** Blockchain for title deeds, PropTech AI tools, smart building IoT integration, tokenized real estate, metaverse property
+
+**Research Queue:**
+1. `@Dana — RESEARCH: blockchain-title-deeds → current DLD blockchain experiments + readiness assessment for White Caves integration → FEEDS→@Neva: business_docs/09_crm_features/dld-integration.md#blockchain`
+2. `@Dana — BRIEF: proptech-ai-tools-2026 → survey of AI tools being adopted by top Dubai property brokers in 2026 → FEEDS→@Joelle: business_docs/03_ai_assistants/README.md#tool-landscape`
+
+---
+
+---
+
+## 🛠️ NEW SPECIALIST DEPUTIES (#92–100)
+
+> 9 new specialist deputies added to strengthen delivery teams. Each acts as deputy lead for their assigned team and owns specific high-value domain within it.
+
+### 92. **@Cyra (Frontend Performance & Web Animation Engineering Specialist)**
+
+**Team:** 1 — Frontend & UX (Deputy Lead)  
+**Named after:** Cyra (Persian: "like the sun" — illuminating performance)  
+**Model:** Gemini 2.0 Flash | **Token Type:** FREE ONLY  
+**Focus:** Core Web Vitals optimization, Framer Motion / CSS animation specs, Lighthouse CI integration, bundle size analysis  
+**Queue:** DRAFT frontend performance checklist, EXPAND animation guidelines, AUDIT bundle size rules
+
+---
+
+### 93. **@Petra (Real-time API & GraphQL Architecture Specialist)**
+
+**Team:** 2 — Backend & API (Deputy Lead)  
+**Named after:** Petra (Greek: "rock" — solid API foundations)  
+**Model:** DeepSeek V3 | **Token Type:** FREE ONLY  
+**Focus:** GraphQL schema design, WebSocket / SSE spec, REST → GraphQL migration path, API versioning  
+**Queue:** DRAFT real-time API patterns, EXPAND WebSocket spec, REVIEW API versioning rules
+
+---
+
+### 94. **@Kira (Real-time Data Streaming & Pipeline Specialist)**
+
+**Team:** 2 — Backend & API (Member) + Team 3 — Database & Data (cross-team)  
+**Named after:** Kira (Persian: "throne" — commanding data flows)  
+**Model:** DeepSeek V3 | **Token Type:** FREE ONLY  
+**Focus:** Redis streams, Change Data Capture from MongoDB, real-time analytics event pipeline, Kafka exploration  
+**Queue:** DRAFT CDC pipeline spec, EXPAND Redis stream patterns, REVIEW event schema
+
+---
+
+### 95. **@Vera (Penetration Testing & Red Team Security Specialist)**
+
+**Team:** 4 — Security & QA (Deputy Lead)  
+**Named after:** Vera Rubin (astronomer who proved hidden forces exist — finds hidden vulnerabilities)  
+**Model:** Groq Llama 3.3 70B | **Token Type:** FREE ONLY  
+**Focus:** API pen testing scripts, OWASP ZAP spec, SQL/NoSQL injection vectors in CRM, JWT attack patterns  
+**Queue:** DRAFT pen test checklist, EXPAND injection attack scenarios, REVIEW auth vulnerability matrix
+
+---
+
+### 96. **@Pola (Cloud Cost Optimization & FinOps Specialist)**
+
+**Team:** 5 — DevOps & Infrastructure (Deputy Lead)  
+**Named after:** Pola Negri (pioneering performer — optimizing for the spotlight while controlling costs)  
+**Model:** Groq Llama 3.1 70B | **Token Type:** FREE ONLY  
+**Focus:** Vercel function cold-start optimization, MongoDB Atlas tier planning, Redis memory cost, budget alert thresholds  
+**Queue:** DRAFT cloud cost model, EXPAND FinOps alert rules, REVIEW Vercel usage patterns
+
+---
+
+### 97. **@Tara (Tenant Journey & Experience Design Specialist)**
+
+**Team:** 6 — Leasing & Tenancy (Deputy Lead)  
+**Named after:** Tara (Sanskrit: "star" — guiding the tenant experience)  
+**Model:** Gemini 2.0 Flash | **Token Type:** FREE ONLY  
+**Focus:** End-to-end tenant journey mapping, tenant satisfaction KPIs, portal onboarding flow, post-move-in touchpoints  
+**Queue:** DRAFT tenant journey map, EXPAND onboarding flow spec, REVIEW satisfaction KPI definitions
+
+---
+
+### 98. **@Neva (Smart Contract & DLD Integration Engineering Specialist)**
+
+**Team:** 7 — Compliance & Legal (Deputy Lead)  
+**Named after:** Neva (Spanish: "snows" — clear, immutable like a blockchain record)  
+**Model:** Mistral Small (Mistral Le Chat — free) | **Token Type:** FREE ONLY  
+**Focus:** DLD blockchain title deed integration (where available), smart escrow contract spec, tokenized property research hookpoints  
+**Queue:** DRAFT DLD blockchain integration notes, EXPAND smart escrow spec, AUDIT blockchain readiness
+
+---
+
+### 99. **@Dora (Revenue Analytics, Forecasting & Financial Modeling Specialist)**
+
+**Team:** 8 — Finance & Analytics (Deputy Lead)  
+**Named after:** Dora Maar (visionary artist — seeing the numbers that others miss)  
+**Model:** DeepSeek V3 | **Token Type:** FREE ONLY  
+**Focus:** 3-year revenue forecast model, commission payout optimization, sensitivity analysis, AED/USD scenario planning  
+**Queue:** DRAFT 3-year revenue model, EXPAND commission waterfall spec, REVIEW payout sensitivity analysis
+
+---
+
+### 100. **@Mila (CRM Workflow Automation & Process Engineering Specialist)**
+
+**Team:** 9 — Sales & CRM (Deputy Lead)  
+**Named after:** Mila (Slavic: "gracious, dear" — making CRM workflows beloved by agents)  
+**Model:** DeepSeek V3 | **Token Type:** FREE ONLY  
+**Focus:** CRM automation trigger design, Zapier/Make.com workflow equivalent specs, dead-lead recovery automation, agent productivity playbooks  
+**Queue:** DRAFT CRM automation trigger library, EXPAND dead-lead recovery workflow, REVIEW agent productivity KPIs
+
+---
+
+> **100 total agents** across 14 organizational units. All planning, research, and documentation agents run in external free tools — zero Copilot premium tokens ever. The pool is divided into **6 parallel teams** for delivery, plus the Research Intelligence Division (Team F) running a separate 30-minute interleaved research cycle. **No agent ever idles** — if backlog is empty, @Margaret assigns a REVIEW task, @Zoe (COO) enforces WIP limits. Run `scripts/free-agents-loop.ps1` to see which agent is active right now.
+
+### 6-Team Parallel Planning Model (V3)
+
+| Team       | Focus Area                          | Members                                                                                                                            | Simultaneous Task Lane                                  |
+| ---------- | ----------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------- |
+| **Team A** | Leasing, Legal, Compliance          | @Victoria, @Sofia, @Timnit, @Hedy, @Amina, @Samira, @Hala, @Rania, @Noor, @Maya                                                   | Tenancy, DLD, compliance, legal docs                    |
+| **Team B** | Finance, Data, Analytics            | @Invoice, @Cassie, @Fei-Fei, @Anima, @Mary, @Amal, @Yasmin, @Lina, @Iman                                                          | Finance, market data, KPI, privacy                      |
+| **Team C** | Sales, Offers, Workflow             | @Maya, @Booking, @Jaime, @Dina, @Layla, @Maha                                                                                      | Offers, viewings, lead routing, CRM automation          |
+| **Team D** | Communications, UX, Design          | @Rachel, @Corinne, @Marissa, @Reem, @Sanaa, @Noura, @Farah                                                                         | WhatsApp, SEO, UX polish, design tokens                 |
+| **Team E** | AI, Integrations, Operations        | @Joelle, @Zainab, @Huda, @Salma, @Ghada, @Rehab, @Manal                                                                            | AI personas, integration specs, ops runbooks            |
+| **Team F** | Research Intelligence (30-min loop) | @Elena, @Iris, @Aisha, @Priya, @Sana, @Yara, @Nadia, @Leila, @Chloe, @Mona, @Sara, @Dalia, @Hana, @Rana, @Wafa, @Lara, @Rima, @Nour, @Zara, @Dana | Daily preflight briefs, per-task research packets |
+
+**Parallel execution rule:** each delivery team (A–E) may own one active task at a time (WIP limit: 3). Team F runs up to 6 research tasks in parallel.
+
+
+### ⏰ Hourly Rotation Schedule (V3 — Updated)
+
+> Delivery agents run 60-minute slots. Research agents (R:xx) run 30-minute interleaved slots.
+
+| Slot  | Agent         | Free Tool                                                | Model                   | Domain                                              |
+| ----- | ------------- | -------------------------------------------------------- | ----------------------- | --------------------------------------------------- |
+| :00   | **@Annie**    | [Google AI Studio](https://aistudio.google.com/)         | Gemini 2.0 Flash        | Tenant portal, document gen, email automation       |
+| :05   | **@Rachel**   | [Google AI Studio](https://aistudio.google.com/)         | Gemini 2.0 Flash        | SEO strategy, marketing, careers                    |
+| :10   | **@Marissa**  | [Google AI Studio](https://aistudio.google.com/)         | Gemini 2.0 Flash        | Luxury CRM, community mgmt, UX spec                 |
+| :15   | **@Timnit**   | [Google AI Studio](https://aistudio.google.com/)         | Gemini 2.0 Flash        | DLD integration, legal CRM, data privacy            |
+| :20   | **@Hedy**     | [Groq Console](https://console.groq.com/)                | Llama 3.1 70B           | Audit trail, activity feed, follow-up automation    |
+| :25   | **@Maya**     | [Groq Console](https://console.groq.com/)                | Llama 3.1 70B           | Off-plan projects, handover management              |
+| :30   | **@Booking**  | [Groq Console](https://console.groq.com/)                | Llama 3.1 70B           | Scheduling calendar, viewings                       |
+| :35   | **@Jaime**    | [Groq Console](https://console.groq.com/)                | Llama 3.1 70B           | Offers workflow, WhatsApp integration               |
+| :40   | **@Fei-Fei**  | [DeepSeek Chat](https://chat.deepseek.com/)              | DeepSeek V3             | Property valuation, market intelligence             |
+| :45   | **@Anima**    | [DeepSeek Chat](https://chat.deepseek.com/)              | DeepSeek V3             | Currency mgmt, secondary sales, pipelines           |
+| :50   | **@Mary**     | [DeepSeek Chat](https://chat.deepseek.com/)              | DeepSeek V3             | Sentinel property, investment, prospecting          |
+| :55   | **@Corinne**  | [DeepSeek Chat](https://chat.deepseek.com/)              | DeepSeek V3             | AI chat spec, maintenance, map search               |
+| Any   | **@Victoria** | [Google AI Studio](https://aistudio.google.com/)         | Gemini 2.0 Flash        | Tenancy/Ejari, landlord portal, leasing             |
+| Any   | **@Invoice**  | [Groq Console](https://console.groq.com/)                | Llama 3.1 70B           | Financial reporting, VAT, revenue model             |
+| Any   | **@Sofia**    | [Google AI Studio](https://aistudio.google.com/)         | Gemini 2.0 Flash        | Compliance, RERA/DLD regulations                    |
+| Any   | **@Cassie**   | [DeepSeek Chat](https://chat.deepseek.com/)              | DeepSeek V3             | Analytics dashboard, agent performance              |
+| Any   | **@Joelle**   | [Groq Console](https://console.groq.com/)                | Llama 3.1 70B           | AI personas, integration map, lead scoring          |
+| **R:00**  | **@Aisha**    | [Google AI Studio](https://aistudio.google.com/)         | Gemini 2.0 Flash        | Dubai market pulse brief                            |
+| **R:05**  | **@Priya**    | [Google AI Studio](https://aistudio.google.com/)         | Gemini 2.0 Flash        | Legal & regulatory intelligence brief               |
+| **R:10**  | **@Sana**     | [Groq Console](https://console.groq.com/)                | Llama 3.1 70B           | Financial markets research brief                    |
+| **R:15**  | **@Yara**     | [Google AI Studio](https://aistudio.google.com/)         | Gemini 2.0 Flash        | UX research packet                                  |
+| **R:20**  | **@Nadia**    | [DeepSeek Chat](https://chat.deepseek.com/)              | DeepSeek V3             | Competitive intelligence brief                      |
+| **R:25**  | **@Leila**    | [DeepSeek Chat](https://chat.deepseek.com/)              | DeepSeek R1             | AI/ML trends brief                                  |
+| **R:30**  | **@Chloe**    | [Groq Console](https://console.groq.com/)                | Llama 3.3 70B           | Threat intelligence brief                           |
+| **R:35**  | **@Mona**     | [DeepSeek Chat](https://chat.deepseek.com/)              | DeepSeek V3             | Data science methods brief                          |
+| **R:40**  | **@Sara**     | [Mistral Le Chat](https://chat.mistral.ai/)              | Mistral Small           | Integration options brief                           |
+| **R:45**  | **@Dalia**    | [DeepSeek Chat](https://chat.deepseek.com/)              | DeepSeek V3             | Performance & architecture research brief           |
+| **R:50**  | **@Hana**     | [Google AI Studio](https://aistudio.google.com/)         | Gemini 2.0 Flash        | SEO & growth research brief                         |
+| **R:55**  | **@Rana**     | [Google AI Studio](https://aistudio.google.com/)         | Gemini 2.0 Flash        | Mobile UX research brief                            |
+| **R+:00** | **@Wafa**     | [DeepSeek Chat](https://chat.deepseek.com/)              | DeepSeek V3             | DevOps & cloud infrastructure research brief        |
+| **R+:10** | **@Lara**     | [Google AI Studio](https://aistudio.google.com/)         | Gemini 2.0 Flash        | Accessibility & WCAG research brief                 |
+| **R+:20** | **@Rima**     | [Groq Console](https://console.groq.com/)                | Llama 3.1 70B           | BI & strategic planning brief                       |
+| **R+:30** | **@Nour**     | [Google AI Studio](https://aistudio.google.com/)         | Gemini 2.0 Flash        | Product discovery & user testing research packet    |
+| **R+:40** | **@Zara**     | [Mistral Le Chat](https://chat.mistral.ai/)              | Mistral Small           | International regulations & multi-market compliance |
+| **R+:50** | **@Dana**     | [DeepSeek Chat](https://chat.deepseek.com/)              | DeepSeek R1             | Emerging tech & innovation scouting brief           |
+| **R+:55** | **@Elena**    | [Google AI Studio](https://aistudio.google.com/)         | Gemini 1.5 Flash        | Daily research preflight synthesis for @Margaret    |
 
 ---
 
@@ -743,14 +1169,40 @@ This file defines the White Caves multi-expert operating model for all agent-ass
 
 ---
 
-## 🔗 CROSS-AGENT COLLABORATION MESH (17 Free Agents — Mandatory)
+## 🔗 CROSS-AGENT COLLABORATION MESH (100 Agents — Mandatory)
 
-> Every free-agent output must include both tags:
+> Every agent output must include both tags (CONSUMES and FEEDS). Research agents additionally require a FEEDS_ACK from their target delivery team.
 >
 > - `CONSUMES←@Agent: file/path.md#section`
 > - `FEEDS→@Agent: file/path.md#section`
+> - `FEEDS_ACK←@TargetAgent: accepted|revise + file#section`
 
-### Full Collaboration Chains
+### Research Division → Delivery Feeds (20 Research Analysts)
+
+| Research Agent | FEEDS→ Target | Purpose |
+| -------------- | ------------- | ------- |
+| @Elena | @Margaret, @Ada | Daily preflight synthesis |
+| @Iris | @Grace, @Ada | Tech trends → architecture decisions |
+| @Aisha | @Invoice, @Mary | Dubai market data → finance + inventory |
+| @Priya | @Sofia, @Victoria | Legal intel → compliance + leasing |
+| @Sana | @Invoice, @Cassie | Financial markets → analytics |
+| @Yara | @Una, @Annie | UX research → frontend + tenant portal |
+| @Nadia | @Margaret, @Cassie | Competitive intel → planning + KPIs |
+| @Leila | @Joelle, @Barbara | AI/ML → personas + data |
+| @Chloe | @Katherine, @Radia | Threats → QA + security |
+| @Mona | @Cassie, @Barbara | Data science → analytics + database |
+| @Sara | @Mira, @Zainab | Integrations → backend API + integration docs |
+| @Dalia | @Ruchi, @Gwynne | Performance → systems + DevOps |
+| @Hana | @Rachel, @Reem | SEO → marketing + metadata |
+| @Rana | @Tracy, @Marissa | Mobile UX → responsive + luxury UX |
+| @Wafa | @Gwynne, @Lisa | DevOps research → deployment + cloud |
+| @Lara | @Africa, @Sanaa | Accessibility standards → components + WCAG |
+| @Rima | @Margaret, @Ghada | BI → planning + executive reports |
+| @Nour | @Ada, @Margaret | Product discovery → architecture + strategy |
+| @Zara | @Sofia, @Timnit | Multi-market compliance → legal + DLD |
+| @Dana | @Ada, @Joelle | Emerging tech → architecture + AI |
+
+### Core Delivery Collaboration Chains
 
 | Agent     | Inputs From (CONSUMES) | Outputs To (FEEDS) | Primary Collaboration Purpose                         |
 | --------- | ---------------------- | ------------------ | ----------------------------------------------------- |
@@ -774,7 +1226,7 @@ This file defines the White Caves multi-expert operating model for all agent-ass
 
 ### Governance Handoff Chain
 
-`All 17 Free Agents → @Margaret (2-minute synthesis) → @Ada (60% readiness gate) → Senior Coders/Designers`
+`Research Division (20 analysts) → @Elena (daily synthesis) → @Margaret (2-minute sprint context) → @Ada (60% readiness gate) → Senior Coders/Designers`
 
 ### Collaboration Cadence
 
@@ -806,14 +1258,16 @@ This file defines the White Caves multi-expert operating model for all agent-ass
 
 > Contract validation: tasks are considered incomplete unless both handoff lines are present and verifiable.
 
-## TEAM OPERATIONAL RULES
+## TEAM OPERATIONAL RULES (V3 — 100 Agents)
 
 - **No Permissions Needed:** Agents make technical decisions based on their expertise.
 - **Autonomous Fixes:** If terminal shows an error, **@Katherine** and **@Gwynne** fix it immediately.
-- **Synergy:** Use `@workspace` to ensure all 47 roles share the same project context.
-- **Free Agent Policy (STRICT — 17 agents):** @Victoria, @Invoice, @Sofia, @Cassie, @Joelle, @Annie, @Rachel, @Marissa, @Timnit, @Hedy, @Maya, @Booking, @Jaime, @Fei-Fei, @Anima, @Mary, @Corinne use ONLY free models. Zero exceptions. See copilot-instructions.md Rule 4 + Rule 9 for full policy.
-- **No-Idle Rule:** Every free agent always has a task. If backlog is empty → @Margaret assigns a REVIEW task within 24 hours.
+- **Synergy:** Use `@workspace` to ensure all 100 roles share the same project context.
+- **Free Agent Policy (STRICT — all 97 non-premium agents):** All agents #31-100 (free planning and research pool) use ONLY free models. Zero exceptions. Approved providers: Google AI Studio (Gemini 2.0 Flash / 1.5 Flash), Groq Console (Llama 3.1 70B / 3.3 70B / Llama 4 Scout), DeepSeek Chat (V3 / R1), Mistral Le Chat (Mistral Small), HuggingFace / Together.ai (Qwen2.5 72B). See `plans/AGENT_SKILLS_UPGRADE_V3.md` for full model matrix.
+- **No-Idle Rule:** Every free agent always has a task. If backlog is empty → @Margaret assigns a REVIEW task within 24 hours. @Zoe (COO) enforces this rule.
+- **Research Preflight Mandatory:** Before any premium coding day, @Elena publishes a daily research preflight brief. No preflight = no premium coding.
 - **Coding Gate:** No senior coding agent begins a feature without passing the Context Enrichment Gate (copilot-instructions.md Rule 5). Free agents must complete their docs first.
+- **WIP Limits (Enforced by @Zoe):** 3 active tasks per delivery team | 6 active tasks for Research Division | 2 per Executive Council member.
 - **Loop Script:** Run `scripts/free-agents-loop.ps1` at any time to see which agent is active right now and get the exact copy-paste prompt.
 - **Background Mode (MVP):** Start free-agent planning workers in background with `npm run orchestrator:bg:start` and stop with `npm run orchestrator:bg:stop`.
 - **Execution Mode Default (Approval):** After each completed task, stop and ask for confirmation before advancing to the next task.
@@ -824,6 +1278,7 @@ This file defines the White Caves multi-expert operating model for all agent-ass
 - **Policy Source of Truth:** Gate thresholds + approval phrase are read from `scripts/orchestrator/policy.json` (no hardcoded legacy thresholds).
 - **Post-Premium QA Watchdog (Mandatory):** **@Katherine** owns runtime verification after each big premium wave commit via `node scripts/orchestrator/post-commit-premium-guard.js`.
 - **Big Premium Commit Trigger:** Runtime watchdog checks execute only when commit contains `[premium-wave]` and qualifies as a big diff (threshold/critical paths).
+- **SLA Escalation (Enforced by @Zoe):** P0 → immediate to @Ada + @Zoe | P1 → ≤30 min to @Margaret + team lead | P2 → ≤4 hours to team lead + @Rehab.
 
 ## 🚀 GOVERNANCE UPGRADE V2 — LARGE WAVE EXECUTION MODE
 
@@ -927,17 +1382,18 @@ Escalation payload must include impacted files, dependency owner, and next actio
 
 ### Callable vs named agents
 
-The 35 named personas in this file are the **ownership model**. The directly callable execution agents in this environment are the orchestration and delivery agents such as **Architect, Planner, Explore, Coder, Database, Designer, Security, SEO, DevOps, QA, and guardian**.
+The 100 named personas in this file are the **ownership model**. The directly callable execution agents in this environment are the orchestration and delivery agents such as **Architect, Planner, Explore, Coder, Database, Designer, Security, SEO, DevOps, QA, and guardian**.
 
-### Squad model
+### Squad model (V3)
 
-| Squad                           | Ownership labels                  | Primary callable agents               | Mission                                       |
-| ------------------------------- | --------------------------------- | ------------------------------------- | --------------------------------------------- |
-| Squad A — Planning/Coordination | @Ada, @Margaret, @Grace           | Architect, Planner, Explore, guardian | define scope, dependencies, truth maintenance |
-| Squad B — Frontend Delivery     | @Una, @Lea, @Tracy, @Africa       | Designer, SEO, Coder, QA              | homepage and public UX delivery               |
-| Squad C — Backend/Data Delivery | @Mira, @Barbara, @Ruchi, @Daniela | Coder, Database, Security             | APIs, data, auth, business logic              |
-| Squad D — QA/Security           | @Katherine, @Radia, @Ecem, @Joy   | QA, Security, guardian                | verification, risk review, release gates      |
-| Squad E — Release/Ops           | @Gwynne, @Lila, @Rachel, @Lisa    | DevOps, SEO, guardian                 | CI, deploy, runtime, discoverability          |
+| Squad                           | Ownership labels                          | Primary callable agents               | Mission                                            |
+| ------------------------------- | ----------------------------------------- | ------------------------------------- | -------------------------------------------------- |
+| Squad A — Planning/Coordination | @Ada, @Margaret, @Grace, @Elena, @Zoe     | Architect, Planner, Explore, guardian | define scope, dependencies, truth maintenance      |
+| Squad B — Frontend Delivery     | @Una, @Cyra, @Lea, @Tracy, @Africa        | Designer, SEO, Coder, QA              | homepage and public UX delivery                    |
+| Squad C — Backend/Data Delivery | @Mira, @Petra, @Barbara, @Ruchi, @Daniela | Coder, Database, Security             | APIs, data, auth, business logic                   |
+| Squad D — QA/Security           | @Katherine, @Vera, @Radia, @Ecem, @Joy    | QA, Security, guardian                | verification, risk review, release gates           |
+| Squad E — Release/Ops           | @Gwynne, @Pola, @Lila, @Rachel, @Lisa     | DevOps, SEO, guardian                 | CI, deploy, runtime, discoverability               |
+| Squad F — Research Intelligence | @Elena, @Iris, @Aisha–@Dana (#74–91)      | Explore, research                     | market research, preflight briefs, intelligence    |
 
 ### Handoff protocol
 
@@ -983,12 +1439,15 @@ A task is not complete until it has:
 - Prioritize production-safe decisions, automated validation, and clear delivery checkpoints.
 - Default to autonomous execution unless blocked by missing credentials, external approvals, or irreversible-risk operations.
 
-## 🔧 Subagent Upgrade Baseline (May 2026)
+## 🔧 Subagent Upgrade Baseline (V3 — May 2026)
 
-- **Canonical Policy:** `plans/CUSTOM_AGENTS_PLAN.md` is the source of truth for subagent governance.
+- **Canonical Policy:** `plans/CUSTOM_AGENTS_PLAN.md` + `plans/AGENT_SKILLS_UPGRADE_V3.md`
 - **Premium Coding Gate Phrase (Exact):** `@Ada — Context Ready (60% Readiness) — Coding Phase Approved`
+- **Research Preflight Phrase (Exact):** `@Elena — Research Preflight Ready — [DATE] — Approved for Premium Coding`
 - **Invocation Protocol (Exact):** `@[AgentName] — [ACTION]: [TARGET FILE or TOPIC]`
-- **Allowed Actions:** `EXPAND`, `DRAFT`, `REVIEW`, `AUDIT`, `SYNC`
+- **Allowed Actions:** `EXPAND`, `DRAFT`, `REVIEW`, `AUDIT`, `SYNC`, `RESEARCH`, `BRIEF`, `SYNTHESIZE`, `BENCHMARK`
+- **Total Agents:** 100 (Executive Council: 5 | Research Division: 20 | Delivery Teams: 75)
+- **Free Model Providers:** Google AI Studio, Groq Console, DeepSeek Chat, Mistral Le Chat, HuggingFace / Together.ai
 
 ## Branch & Deployment Protocol
 
