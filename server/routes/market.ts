@@ -16,6 +16,8 @@ const parsePositiveInt = (value: unknown, fallback: number, max: number): number
   return Math.min(max, parsed);
 };
 
+const VALID_COMPETITOR_PORTALS = ['bayut', 'propertyfinder'] as const;
+
 // ─── Dubai Area Price Benchmarks ─────────────────────────────────────────────
 interface AreaBenchmarkRow {
   area: string;
@@ -456,6 +458,12 @@ router.get(
 
     const { zone, propertyType } = req.query as { zone?: string; propertyType?: string };
 
+    const normalizedZone = zone?.trim().toLowerCase();
+    const validZones = new Set(areaBenchmarks.map(b => b.zone.toLowerCase()));
+    if (normalizedZone && !validZones.has(normalizedZone)) {
+      throw new AppError(`Invalid zone. Allowed values: ${Array.from(validZones).join(', ')}`, 400);
+    }
+
     // Fetch latest DB snapshots for each area to enrich hardcoded benchmarks
     const latestSnapshots = await prisma.marketSnapshot.findMany({
       where: propertyType ? { propertyType } : undefined,
@@ -466,8 +474,8 @@ router.get(
 
     const benchmarks = await getAreaBenchmarks();
     let result = benchmarks;
-    if (zone) {
-      result = result.filter(b => b.zone === zone);
+    if (normalizedZone) {
+      result = result.filter(b => b.zone.toLowerCase() === normalizedZone);
     }
 
     const enriched = result.map(b => {
@@ -640,6 +648,14 @@ router.get(
 
     if (portal) {
       const normalized = portal.toLowerCase();
+      if (
+        !VALID_COMPETITOR_PORTALS.includes(normalized as (typeof VALID_COMPETITOR_PORTALS)[number])
+      ) {
+        throw new AppError(
+          `Invalid portal. Allowed values: ${VALID_COMPETITOR_PORTALS.join(', ')}`,
+          400
+        );
+      }
       data = data.filter(row => row.portal === normalized);
     }
 
