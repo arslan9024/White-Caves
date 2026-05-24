@@ -11,6 +11,7 @@ import {
 import { useDocumentTitle } from '../hooks/useDocumentTitle';
 import PublicLayout from '../components/layout/PublicLayout';
 import PageHeroBanner from '../components/layout/PageHeroBanner';
+import PageMeta from '../components/seo/PageMeta';
 import { authFetch } from '../utils/authFetch';
 import './CareersPage.css';
 
@@ -156,6 +157,13 @@ const CareersPage: FC = () => {
   return (
     <PublicLayout>
       <div className="careers-page">
+        <PageMeta
+          title="Careers at White Caves | Dubai Real Estate Jobs"
+          description="Join White Caves Real Estate in Dubai. Explore open sales and off-plan consultant roles."
+          canonicalPath="/careers"
+          ogType="website"
+        />
+
         <PageHeroBanner
           badge="Join Our Team"
           title="Build Your Career with White Caves"

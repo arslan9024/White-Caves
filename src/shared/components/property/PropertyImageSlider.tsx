@@ -95,7 +95,13 @@ export default function PropertyImageSlider({
               className={`slide ${index === currentIndex ? 'active' : ''}`}
               style={{ transform: `translateX(${(index - currentIndex) * 100}%)` }}
             >
-              <img src={img} alt={`${title} - Image ${index + 1}`} loading="lazy" onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />
+              <img
+                src={img.includes('fm=') ? img : `${img}${img.includes('?') ? '&' : '?'}fm=webp`}
+                alt={`${title} - Image ${index + 1}`}
+                loading={index === currentIndex ? 'eager' : 'lazy'}
+                fetchPriority={index === currentIndex ? 'high' : 'low'}
+                onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
+              />
             </div>
           ))}
         </div>
@@ -157,7 +163,12 @@ export default function PropertyImageSlider({
               className={`thumbnail ${index === currentIndex ? 'active' : ''}`}
               onClick={() => goToSlide(index)}
             >
-              <img src={img} alt={`${title || 'Property'} thumbnail ${index + 1}`} loading="lazy" />
+              <img
+                src={img.includes('fm=') ? img : `${img}${img.includes('?') ? '&' : '?'}fm=webp`}
+                alt={`${title || 'Property'} thumbnail ${index + 1}`}
+                loading="lazy"
+                fetchPriority="low"
+              />
             </button>
           ))}
         </div>
@@ -178,10 +189,15 @@ export default function PropertyImageSlider({
           </button>
           
           <div className="fullscreen-content" onClick={(e: React.MouseEvent) => e.stopPropagation()}>
-            <img 
-              src={imageList[currentIndex]} 
+            <img
+              src={
+                imageList[currentIndex].includes('fm=')
+                  ? imageList[currentIndex]
+                  : `${imageList[currentIndex]}${imageList[currentIndex].includes('?') ? '&' : '?'}fm=webp`
+              }
               alt={`${title} - Image ${currentIndex + 1}`}
-              loading="lazy"
+              loading="eager"
+              fetchPriority="high"
               width={400}
               height={300}
             />
@@ -205,7 +221,12 @@ export default function PropertyImageSlider({
                 className={`fs-thumbnail ${index === currentIndex ? 'active' : ''}`}
                 onClick={(e: React.MouseEvent) => { e.stopPropagation(); goToSlide(index); }}
               >
-                <img src={img} alt={`${title || 'Property'} fullscreen thumbnail ${index + 1}`} loading="lazy" />
+                <img
+                  src={img.includes('fm=') ? img : `${img}${img.includes('?') ? '&' : '?'}fm=webp`}
+                  alt={`${title || 'Property'} fullscreen thumbnail ${index + 1}`}
+                  loading="lazy"
+                  fetchPriority="low"
+                />
               </button>
             ))}
           </div>

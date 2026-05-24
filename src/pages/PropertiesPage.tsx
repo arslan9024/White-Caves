@@ -1,9 +1,10 @@
-import React, { FC, lazy, Suspense, useEffect } from 'react';
+import React, { FC, lazy, Suspense } from 'react';
 import { useDocumentTitle } from '../hooks/useDocumentTitle';
 import { usePropertyBrowser } from '../hooks/usePropertyBrowser';
 import { useSearchParams } from 'react-router-dom';
 import PublicLayout from '../components/layout/PublicLayout';
 import PageHeroBanner from '../components/layout/PageHeroBanner';
+import PageMeta from '../components/seo/PageMeta';
 import PropertyFilterPanel from './properties/PropertyFilterPanel';
 import { PropertyDetailModal } from '../shared/components/property';
 import { Link } from 'react-router-dom';
@@ -50,42 +51,15 @@ const PropertiesPage: FC = () => {
 
   useDocumentTitle(dynamicTitle);
 
-  // Update meta description for search engine snippets
-  useEffect(() => {
-    const descParts: string[] = ['Browse Dubai luxury'];
-    if (seoBeds) descParts.push(`${seoBeds}-bedroom`);
-    if (seoType) descParts.push(seoType.toLowerCase());
-    descParts.push('properties');
-    if (seoMode === 'rent') descParts.push('for rent');
-    else descParts.push('for sale');
-    if (seoLocation) descParts.push(`in ${seoLocation}`);
-    descParts.push('with White Caves Real Estate. View verified listings, floor plans & pricing.');
-
-    let meta = document.querySelector<HTMLMetaElement>('meta[name="description"]');
-    if (!meta) {
-      meta = document.createElement('meta');
-      meta.name = 'description';
-      document.head.appendChild(meta);
-    }
-    meta.content = descParts.join(' ');
-
-    // Open Graph tags for social sharing
-    let ogTitle = document.querySelector<HTMLMetaElement>('meta[property="og:title"]');
-    if (!ogTitle) {
-      ogTitle = document.createElement('meta');
-      ogTitle.setAttribute('property', 'og:title');
-      document.head.appendChild(ogTitle);
-    }
-    ogTitle.content = `${dynamicTitle} | White Caves Real Estate`;
-
-    let ogDesc = document.querySelector<HTMLMetaElement>('meta[property="og:description"]');
-    if (!ogDesc) {
-      ogDesc = document.createElement('meta');
-      ogDesc.setAttribute('property', 'og:description');
-      document.head.appendChild(ogDesc);
-    }
-    ogDesc.content = meta.content;
-  }, [seoLocation, seoType, seoMode, seoBeds, dynamicTitle]);
+  const descParts: string[] = ['Browse Dubai luxury'];
+  if (seoBeds) descParts.push(`${seoBeds}-bedroom`);
+  if (seoType) descParts.push(seoType.toLowerCase());
+  descParts.push('properties');
+  if (seoMode === 'rent') descParts.push('for rent');
+  else descParts.push('for sale');
+  if (seoLocation) descParts.push(`in ${seoLocation}`);
+  descParts.push('with White Caves Real Estate. View verified listings, floor plans & pricing.');
+  const dynamicDescription = descParts.join(' ');
 
   const {
     loading,
@@ -102,6 +76,13 @@ const PropertiesPage: FC = () => {
   return (
     <PublicLayout>
       <div className="properties-page dubai-luxury-theme">
+        <PageMeta
+          title={`${dynamicTitle} | White Caves Real Estate`}
+          description={dynamicDescription}
+          canonicalPath="/properties"
+          ogType="website"
+        />
+
         {/* ─── Hero Banner ──────────────────────────────────── */}
         <PageHeroBanner
           badge="Luxury Collection"

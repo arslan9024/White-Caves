@@ -19,6 +19,7 @@ import { asyncHandler, AppError } from '../middleware/errorHandler.js';
 import { AuthRequest } from '../middleware/auth.js';
 import { prisma } from '../database.js';
 import logger from '../utils/logger.js';
+import { triggerLeadRescore } from '../services/ai/leadAutoRescore.js';
 import {
   getAvailableSlots,
   detectConflicts,
@@ -252,6 +253,7 @@ router.post(
       scheduledAt: scheduledDate.toISOString(),
       ...(conflict.message ? { warning: conflict.message } : {}),
     });
+    triggerLeadRescore(viewing.leadId, 'viewing_scheduled');
 
     res.status(201).json({
       success: true,
@@ -356,6 +358,7 @@ router.patch(
     }
 
     logger.info('Viewing updated', { userId, viewingId: id, status: updated.status });
+    triggerLeadRescore(updated.leadId, 'viewing_updated');
     res.json({ success: true, data: updated });
   })
 );

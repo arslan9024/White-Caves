@@ -1,6 +1,5 @@
 import React, { FC, lazy, Suspense, useEffect, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useSEO, getCanonicalUrl } from '../hooks/useSEO';
 import { setProperties, type Property } from '../store/propertySlice';
 import {
   fetchHomepageData,
@@ -13,9 +12,12 @@ import {
 } from '../store/slices/homepageSlice';
 import type { AppDispatch } from '../store/store';
 import { buildHomepageJsonLd } from './homepageSeo';
+import { Config } from '../config/constants';
 import ClickToChat from '../components/ClickToChat';
 import RoleSelectionModal from '../components/RoleSelectionModal';
 import PublicLayout from '../components/layout/PublicLayout';
+import PageMeta from '../components/seo/PageMeta';
+import StructuredData from '../components/seo/StructuredData';
 import { useRecentlyViewed } from '../components/RecentlyViewed';
 import { HOME_PROPERTIES } from '../data/homeProperties';
 import './HomePage.css';
@@ -110,28 +112,35 @@ const HomePage: FC = () => {
     [featuredProperties]
   );
 
-  useSEO({
-    title: 'White Caves Real Estate — Dubai Luxury Properties',
-    description:
-      'Explore premium villas, penthouses, and investment-ready properties in Dubai with White Caves Real Estate. RERA-licensed agency serving luxury buyers and investors.',
-    keywords: [
-      'Dubai real estate',
-      'luxury properties Dubai',
-      'White Caves Real Estate',
-      'Dubai villas',
-      'RERA licensed',
-    ],
-    canonicalUrl: getCanonicalUrl('/'),
-    ogType: 'website',
-    ogImage:
-      'https://images.unsplash.com/photo-1582268611958-ebfd161ef9cf?w=1200&h=630&fit=crop&q=80',
-    jsonLd: buildHomepageJsonLd({
-      marketStats,
-      featuredProperties,
-      topAgents,
-      locationTrends,
+  const homepageJsonLd = useMemo(
+    () =>
+      buildHomepageJsonLd({
+        marketStats,
+        featuredProperties,
+        topAgents,
+        locationTrends,
+      }),
+    [marketStats, featuredProperties, topAgents, locationTrends]
+  );
+  const localBusinessJsonLd = useMemo(
+    () => ({
+      '@context': 'https://schema.org',
+      '@type': 'LocalBusiness',
+      name: Config.COMPANY.NAME,
+      url: Config.DOMAIN,
+      telephone: Config.COMPANY.PHONE,
+      email: Config.COMPANY.EMAIL,
+      address: {
+        '@type': 'PostalAddress',
+        streetAddress: Config.COMPANY.ADDRESS,
+        addressLocality: 'Dubai',
+        addressCountry: 'AE',
+      },
+      areaServed: 'Dubai',
+      identifier: Config.COMPANY.RERA_LICENSE || undefined,
     }),
-  });
+    []
+  );
   const { addToRecent } = useRecentlyViewed();
 
   const handlePropertyClick = (propertyId: number): void => {
@@ -152,6 +161,23 @@ const HomePage: FC = () => {
   return (
     <PublicLayout>
       <div className="home-page">
+        <PageMeta
+          title="White Caves Real Estate — Dubai Luxury Properties"
+          description="Explore premium villas, penthouses, and investment-ready properties in Dubai with White Caves Real Estate. RERA-licensed agency serving luxury buyers and investors."
+          keywords={[
+            'Dubai real estate',
+            'luxury properties Dubai',
+            'White Caves Real Estate',
+            'Dubai villas',
+            'RERA licensed',
+          ]}
+          canonicalPath="/"
+          ogType="website"
+          ogImage="https://images.unsplash.com/photo-1582268611958-ebfd161ef9cf?w=1200&h=630&fit=crop&q=80&fm=webp"
+          jsonLd={homepageJsonLd}
+        />
+        <StructuredData id="wc-local-business-jsonld" data={localBusinessJsonLd} />
+
         {/* Phase 25: Hero is the LCP element — NOT wrapped in Suspense so it renders on first paint */}
         <Hero marketStats={marketStats} isLoading={isHomepageLoading} />
 
