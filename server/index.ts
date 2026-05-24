@@ -194,12 +194,16 @@ app.use(express.urlencoded({ limit: '1mb', extended: true }));
 // Cookie parsing — required for httpOnly refresh-token cookie on /api/auth/refresh
 app.use(cookieParser());
 
-// Sanitize inbound JSON payloads for mutation routes to reduce XSS storage risk.
-const NON_SANITIZED_PATHS = new Set(['/api/whatsapp/webhook', '/api/auth/refresh']);
+// Sanitize inbound JSON mutation payloads to reduce XSS storage risk.
+// Note: req.path inside app.use('/api', ...) is relative to the /api mount point,
+// so exempt paths must omit the /api prefix. The req.is('json') guard ensures
+// multipart/form-data upload routes and other non-JSON bodies are not touched.
+const NON_SANITIZED_PATHS = new Set(['/whatsapp/webhook', '/auth/refresh']);
 app.use('/api', (req: Request, _res: Response, next: NextFunction) => {
   if (
     ['POST', 'PUT', 'PATCH'].includes(req.method) &&
     !NON_SANITIZED_PATHS.has(req.path) &&
+    req.is('json') &&
     req.body &&
     typeof req.body === 'object'
   ) {
