@@ -86,6 +86,12 @@ export const SOURCE_LABELS: Record<string, string> = {
 
 const ITEMS_PER_PAGE = 10;
 
+// Null-prototype Map for badge-variant lookup — avoids prototype-pollution risk
+// from dynamic key access on plain objects (security/detect-object-injection).
+const STATUS_BADGE_VARIANTS = new Map<string, LeadBadgeVariant>(
+  Object.entries(STATUS_CONFIG).map(([k, v]) => [k, v.badgeVariant])
+);
+
 const EMPTY_FORM: LeadFormData = {
   name: '',
   company: '',
@@ -347,8 +353,7 @@ export function useLeadManagement() {
   }, []);
 
   const getStatusBadgeVariant = useCallback((status: string) => {
-    // eslint-disable-next-line security/detect-object-injection
-    return STATUS_CONFIG[status]?.badgeVariant || 'secondary';
+    return STATUS_BADGE_VARIANTS.get(status) ?? 'secondary';
   }, []);
 
   const formatCurrency = useCallback(
