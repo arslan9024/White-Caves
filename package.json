@@ -203,7 +203,7 @@
     "autopilot:pause": "node -e \"require('fs').mkdirSync('logs/orchestrator',{recursive:true});require('fs').writeFileSync('logs/orchestrator/PAUSE','');console.log('PAUSE file created — autopilot will stop after current session')\"",
     "autopilot:resume": "node -e \"try{require('fs').unlinkSync('logs/orchestrator/PAUSE');console.log('PAUSE file removed — autopilot will resume');}catch{console.log('No PAUSE file found');}\"",
     "subagents": "node -e \"const r=require('./scripts/orchestrator/subagents-registry.json');console.log('Total agents:',r.agents.length);r.agents.forEach(a=>console.log(' #'+a.id,a.name,'—',a.title,'|',a.unit,'|',a.model))\"",
-    "subagents:team": "node -e \"const r=require('./scripts/orchestrator/subagents-registry.json');const t=process.argv[2];const m=r.agents.filter(a=>a.unit&&a.unit.toLowerCase().includes(t?t.toLowerCase():''));console.log('Agents in unit matching:',t,'\\n');m.forEach(a=>console.log('#'+a.id,a.name,'-',a.title))\" --"
+    "subagents:team": "node -e \"const r=require('./scripts/orchestrator/subagents-registry.json');const t=process.argv[2];const m=r.agents.filter(a=>a.unit&&a.unit.toLowerCase().includes(t?t.toLowerCase():''));console.log('Agents in unit matching:',t,'\\n');m.forEach(a=>console.log('#'+a.id,a.name,'-',a.title))\" --",
     "plans:validate": "node scripts/validate-plans-governance.js"
   },
   "prisma": {
@@ -301,6 +301,7 @@
     "react-leaflet": "^4.2.1",
     "react-pdf": "^10.2.0",
     "react-redux": "^9.2.0",
+    "resend": "^4.8.0",
     "react-router-dom": "^7.10.1",
     "react-signature-canvas": "^1.1.0-alpha.2",
     "recharts": "^3.8.1",
