@@ -12,6 +12,7 @@ import { validateIdParam } from '../utils/validate';
 import { parsePagination } from '../config/pagination';
 import { sanitizeString } from '../utils/sanitize';
 import { requirePermission } from '../middleware/rbac';
+import { triggerLeadRescore } from '../services/ai/leadAutoRescore.js';
 
 const router = Router();
 
@@ -134,6 +135,7 @@ router.post(
         leadId: leadId || null,
       },
     });
+    triggerLeadRescore(activity.leadId, 'activity_created');
 
     res.status(201).json({
       success: true,
@@ -169,6 +171,7 @@ router.patch(
     if (metadata !== undefined) data.metadata = metadata;
 
     const updated = await prisma.activity.update({ where: { id }, data });
+    triggerLeadRescore(updated.leadId, 'activity_updated');
 
     res.status(200).json({
       success: true,
@@ -204,6 +207,7 @@ router.delete(
     }
 
     await prisma.activity.delete({ where: { id } });
+    triggerLeadRescore(existing.leadId, 'activity_deleted');
 
     res.status(200).json({ success: true, message: 'Activity deleted' });
   })

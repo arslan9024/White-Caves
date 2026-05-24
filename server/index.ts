@@ -79,6 +79,7 @@ import jobApplicationsRoutes from './routes/jobApplications.js';
 import sitemapRoutes from './routes/sitemap.js';
 import contractsRoutes from './routes/contracts.js';
 import appointmentsRoutes from './routes/appointments.js';
+import mortgageRoutes from './routes/mortgage.js';
 import { roleRequestRouter, adminRoleRequestRouter } from './routes/roleRequests.js';
 import { phase6Router } from './routes/phase6.routes.js';
 import landlordPortalRoutes from './routes/landlord.js';
@@ -261,10 +262,10 @@ app.get('/api/health', (req: Request, res: Response) => {
     environment: process.env.NODE_ENV,
     version: process.env.APP_VERSION || '1.0.0',
   });
-
-  // Dynamic sitemap.xml (SEO)
-  app.use('/', sitemapRoutes);
 });
+
+// Dynamic sitemap.xml (SEO)
+app.use('/', sitemapRoutes);
 
 // ============================================================================
 // API ROUTES
@@ -413,6 +414,9 @@ app.use('/api/maintenance', maintenanceRoutes);
 
 // Valuation API — Wave 12 (AVM + manual override + bank request)
 app.use('/api/valuations', authMiddleware, valuationRoutes);
+
+// Mortgage API — Wave 14 (calculation + FX conversion)
+app.use('/api/mortgage', mortgageRoutes);
 
 // Market Intelligence API — Wave 12 (price index, transactions, RERA index)
 app.use('/api/market', authMiddleware, marketRoutes);

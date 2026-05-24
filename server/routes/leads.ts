@@ -51,7 +51,7 @@ import {
   getAgentPerformance,
   autoRouteHotLead,
 } from '../services/ai/leadAutoRouter.js';
-import { calculateLeadScore } from '../services/leadScoringService.js';
+import { triggerLeadRescore } from '../services/ai/leadAutoRescore.js';
 
 const router = Router();
 
@@ -352,10 +352,8 @@ router.post(
       }
     }
 
-    // Calculate score automatically in the background (non-blocking)
-    Promise.resolve(calculateLeadScore?.(lead.id)).catch(err =>
-      console.error('Background scoring failed:', err)
-    );
+    // W14-001: Auto-rescore on lead creation
+    triggerLeadRescore(lead.id, 'lead_created');
 
     res.status(201).json({ success: true, data: lead });
   })
@@ -462,10 +460,8 @@ router.patch(
       console.error('Socket emit lead:updated failed:', err);
     }
 
-    // Calculate score automatically in the background (non-blocking)
-    Promise.resolve(calculateLeadScore?.(lead.id)).catch(err =>
-      console.error('Background scoring failed:', err)
-    );
+    // W14-001: Auto-rescore on lead updates and status lifecycle changes
+    triggerLeadRescore(lead.id, statusChanged ? 'lead_status_changed' : 'lead_updated');
 
     res.status(200).json({ success: true, data: lead });
   })
@@ -557,6 +553,7 @@ router.post(
     });
 
     await prisma.lead.update({ where: { id }, data: { lastContact: new Date() } });
+    triggerLeadRescore(id, 'lead_activity_logged');
 
     res.status(201).json({ success: true, data: activity });
   })
@@ -1055,6 +1052,7 @@ router.post(
         createdAt: true,
       },
     });
+    triggerLeadRescore(lead.id, 'homepage_search_lead_created');
 
     // Emit realtime update so CRM refreshes without polling
     try {
