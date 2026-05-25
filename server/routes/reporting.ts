@@ -619,4 +619,19 @@ router.get(
   })
 );
 
+router.get(
+  '/pl/excel',
+  requirePermission('view_all_reports'),
+  asyncHandler(async (req: Request, res: Response) => {
+    const allowedRoles = ['owner', 'manager', 'admin', 'finance'];
+    if (!allowedRoles.includes(req.user?.role || '')) {
+      throw new AppError('Access denied — P&L report requires finance or manager role', 403);
+    }
+    const file = await documentService.generateMonthlyPLReport();
+    res.setHeader('Content-Type', file.mimeType);
+    res.setHeader('Content-Disposition', `attachment; filename="${file.filename}"`);
+    res.status(200).send(file.buffer);
+  })
+);
+
 export default router;
