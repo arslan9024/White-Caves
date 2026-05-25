@@ -33,10 +33,15 @@ param(
   [string]$PlannerCommand = "",
   [switch]$RequirePlannerSuccess,
   [string]$PlanReorganizationCommand = "",
-  [string]$AgentRegistryPath = "plans/SUBAGENT_REGISTRY_100.json",
+  [string]$AgentRegistryPath = "plans/SUBAGENT_REGISTRY_150.json",
   [string]$FreePlanningAgents = "@Victoria,@Invoice,@Sofia,@Cassie,@Joelle,@Annie,@Rachel,@Marissa,@Timnit,@Hedy,@Maya,@Booking,@Jaime,@Fei-Fei,@Anima,@Mary,@Corinne",
   [string]$PremiumImplementationAgents = "@Mira,@Katherine,@Radia,@Gwynne,@Una,@Lea,@Tracy,@Africa,@Barbara,@Daniela,@Ruchi,@Rachel,@Joelle,@Jaime,@Mala",
   [int]$PlanningReadinessTarget = 100,
+  [int]$PlanningImprovementThreshold = 1,
+  [int]$MinProjectCompletionDeltaPct = 1,
+  [switch]$StopOnNextIteration,
+  [string]$StopSignalFile = "logs/orchestrator/STOP_NEXT_ITERATION",
+  [string]$SyncBranch = "main",
   [switch]$RestartOnExit,
   [int]$RestartDelaySeconds = 2,
   [string]$ImplementCommand = "",
@@ -239,6 +244,14 @@ function Load-OrInitState {
     version = "1.0"
     generatedAt = (Get-Date).ToString("o")
     turnCounter = 0
+    baselineReadiness = 0
+    projectCompletionPct = 0.0
+    lastCycleCompletionPct = 0.0
+    lastPremiumCycleCompletionPct = 0.0
+    lastCycleCompletionDeltaPct = 0.0
+    lastSelectedTaskId = ""
+    lastSelectedSourceId = ""
+    waveTaskIds = @()
     completedTasks = @()
     pendingTasks = $seed
     blockedTasks = @()
@@ -251,6 +264,50 @@ function Save-State {
   if (-not $DryRun) {
     $State | ConvertTo-Json -Depth 12 | Set-Content -Path $stateFile -Encoding UTF8
   }
+}
+
+function Get-ProjectCompletionMetrics {
+  param([object]$State)
+
+  $completed = @($State.completedTasks).Count
+  $pending = @($State.pendingTasks).Count
+  $blocked = @($State.blockedTasks).Count
+  $denominator = [double]($completed + $pending + $blocked)
+  $completionPct = if ($denominator -gt 0) { [math]::Round(($completed * 100.0) / $denominator, 2) } else { 0.0 }
+
+  return [pscustomobject]@{
+    completed = $completed
+    pending = $pending
+    blocked = $blocked
+    denominator = $denominator
+    completionPct = $completionPct
+  }
+}
+
+function Invoke-GitSyncBeforeRestart {
+  param(
+    [string]$Root,
+    [string]$Branch
+  )
+
+  Write-ActivityLog -Stage "GIT" -Message "Syncing branch '$Branch' (pull then push) before restart" -Color "DarkCyan"
+
+  $pull = Get-RunSummary -Command "cd '$Root'; git pull origin $Branch"
+  if (-not $pull.ok) {
+    $trimPull = if ($pull.output.Length -gt 240) { $pull.output.Substring(0, 240) + " ..." } else { $pull.output }
+    Write-ActivityLog -Stage "GIT" -Message "git pull failed: $trimPull" -Color "Red"
+    return $false
+  }
+
+  $push = Get-RunSummary -Command "cd '$Root'; git push origin $Branch"
+  if (-not $push.ok) {
+    $trimPush = if ($push.output.Length -gt 240) { $push.output.Substring(0, 240) + " ..." } else { $push.output }
+    Write-ActivityLog -Stage "GIT" -Message "git push failed: $trimPush" -Color "Red"
+    return $false
+  }
+
+  Write-ActivityLog -Stage "GIT" -Message "Branch '$Branch' synced successfully" -Color "Green"
+  return $true
 }
 
 function Get-RunSummary {
@@ -535,6 +592,13 @@ function Write-AutopilotQueueMarkdown {
   $lines += "**Updated:** $date"
   $lines += "**Branch:** $branch"
   $lines += "**Turn:** $($State.turnCounter)"
+  if (@($State.waveTaskIds).Count -gt 0) {
+    $waveRemaining = @($State.pendingTasks | Where-Object { @($State.waveTaskIds) -contains $_.id }).Count
+    $lines += "**Wave Lock:** active ($waveRemaining/$(@($State.waveTaskIds).Count) remaining)"
+  }
+  else {
+    $lines += "**Wave Lock:** idle"
+  }
   $lines += ""
   $lines += "## Turn Analysis"
   $lines += "- Changed files (git): $($Analysis.gitChangedFiles)"
@@ -624,7 +688,17 @@ function Upsert-ManagedSection {
 
   $existing = ""
   if (Test-Path $FilePath) {
-    $existing = Get-Content -Path $FilePath -Raw
+    try {
+      $fileInfo = Get-Item -Path $FilePath -ErrorAction Stop
+      if ($fileInfo.Length -gt 10485760) {
+        throw "Managed section file too large for in-memory replace ($($fileInfo.Length) bytes)"
+      }
+      $existing = [System.IO.File]::ReadAllText($FilePath)
+    }
+    catch {
+      Write-ActivityLog -Stage "WRITE" -Message "Managed-section update skipped for ${FilePath}: $($_.Exception.Message)" -Color "DarkYellow"
+      return
+    }
   }
 
   if ([string]::IsNullOrWhiteSpace($existing)) {
@@ -721,9 +795,26 @@ $state = Load-OrInitState -SourceTasks $sourceTasks
 $state.pendingTasks = Normalize-TaskMetadata -Tasks @(Ensure-TaskCollection -Tasks $state.pendingTasks)
 $state.completedTasks = Normalize-TaskMetadata -Tasks @(Ensure-TaskCollection -Tasks $state.completedTasks)
 $state.blockedTasks = Normalize-TaskMetadata -Tasks @(Ensure-TaskCollection -Tasks $state.blockedTasks)
+if (-not ($state.PSObject.Properties.Name -contains 'baselineReadiness')) { $state | Add-Member -NotePropertyName baselineReadiness -NotePropertyValue 0 -Force }
+if (-not ($state.PSObject.Properties.Name -contains 'projectCompletionPct')) { $state | Add-Member -NotePropertyName projectCompletionPct -NotePropertyValue 0.0 -Force }
+if (-not ($state.PSObject.Properties.Name -contains 'lastCycleCompletionPct')) { $state | Add-Member -NotePropertyName lastCycleCompletionPct -NotePropertyValue 0.0 -Force }
+if (-not ($state.PSObject.Properties.Name -contains 'lastPremiumCycleCompletionPct')) { $state | Add-Member -NotePropertyName lastPremiumCycleCompletionPct -NotePropertyValue 0.0 -Force }
+if (-not ($state.PSObject.Properties.Name -contains 'lastCycleCompletionDeltaPct')) { $state | Add-Member -NotePropertyName lastCycleCompletionDeltaPct -NotePropertyValue 0.0 -Force }
+if (-not ($state.PSObject.Properties.Name -contains 'lastSelectedTaskId')) { $state | Add-Member -NotePropertyName lastSelectedTaskId -NotePropertyValue "" -Force }
+if (-not ($state.PSObject.Properties.Name -contains 'lastSelectedSourceId')) { $state | Add-Member -NotePropertyName lastSelectedSourceId -NotePropertyValue "" -Force }
+if (-not ($state.PSObject.Properties.Name -contains 'waveTaskIds')) { $state | Add-Member -NotePropertyName waveTaskIds -NotePropertyValue @() -Force }
 
 $ranTurns = 0
+$stopSignalPath = Join-Path $root $StopSignalFile
 while ($true) {
+  if (($StopOnNextIteration -and $ranTurns -ge 1) -or (Test-Path $stopSignalPath)) {
+    Write-ActivityLog -Stage "STOP" -Message "Stop requested. Exiting before next iteration." -Color "DarkYellow"
+    if (Test-Path $stopSignalPath) {
+      Remove-Item -Path $stopSignalPath -Force -ErrorAction SilentlyContinue
+    }
+    break
+  }
+
   if (-not $AutoLoop -and $ranTurns -ge $Turns) { break }
   if ($AutoLoop -and $MaxTurns -gt 0 -and $ranTurns -ge $MaxTurns) { break }
 
@@ -770,15 +861,38 @@ while ($true) {
 
   # Keep only top 10 pending before selecting, to enforce invariant continuously.
   $state.pendingTasks = @($scored | Select-Object -First 10)
-  $selected = $state.pendingTasks[0]
+
+  if (@($state.waveTaskIds).Count -eq 0) {
+    $state.waveTaskIds = @($state.pendingTasks | Select-Object -First 10 | ForEach-Object { $_.id })
+    Write-ActivityLog -Stage "WAVE" -Message "Initialized 10-task wave ? $(@($state.waveTaskIds).Count) tasks locked" -Color "Magenta"
+      Write-ActivityLog -Stage "WAVE" -Message "Wave scope: $(@($state.waveTaskIds) -join ', ') | 100 free specialists + 10 squad leads will collectively plan each turn" -Color "Magenta"
+  }
+
+  $wavePending = @($state.pendingTasks | Where-Object { @($state.waveTaskIds) -contains $_.id })
+  if ($wavePending.Count -eq 0) {
+    $state.waveTaskIds = @($state.pendingTasks | Select-Object -First 10 | ForEach-Object { $_.id })
+    $wavePending = @($state.pendingTasks | Where-Object { @($state.waveTaskIds) -contains $_.id })
+    Write-ActivityLog -Stage "WAVE" -Message "Started next 10-task wave ($(@($state.waveTaskIds).Count) locked tasks)" -Color "Magenta"
+  }
+
+  $selectionPool = @($wavePending | Where-Object { $_.sourceId -ne $state.lastSelectedSourceId })
+  if ($selectionPool.Count -eq 0) {
+    $selectionPool = @($wavePending)
+  }
+  $selected = $selectionPool[0]
   $selected.status = "in_progress"
   $selected.updatedAt = (Get-Date).ToString("o")
+  $state.lastSelectedTaskId = [string]$selected.id
+  $state.lastSelectedSourceId = [string]$selected.sourceId
 
   Write-ActivityLog -Stage "SELECT" -Message "Chosen task: $($selected.id) ($($selected.sourceId)) :: $($selected.title)" -Color "Yellow"
 
   $executionStatus = "planned"
   $executionNote = "Hybrid mode: implementation packet generated (no command executed)."
   $subagentFlowNote = "disabled"
+  $premiumUsedThisTurn = $false
+  $allAgentsFreeMode = $false
+  $haltAfterTurn = $false
 
   if ($AutoImplement) {
     $planStatus = "skipped"
@@ -806,8 +920,14 @@ while ($true) {
       if ($registryPremium.Count -gt 0) {
         $premiumAgents = $registryPremium
       }
+      elseif ($registryFree.Count -gt 0) {
+        # Free-only registry mode: implementation pool falls back to free agents.
+        $premiumAgents = $registryFree
+        $allAgentsFreeMode = $true
+      }
 
-      Write-ActivityLog -Stage "PLAN" -Message "Loaded agent registry ($($registry.totalAgents) total, free=$($planningAgents.Count), premium=$($premiumAgents.Count))" -Color "DarkYellow"
+      $poolMode = if ($allAgentsFreeMode) { "free-only" } else { "mixed" }
+      Write-ActivityLog -Stage "PLAN" -Message "Loaded agent registry ($($registry.totalAgents) total, free=$($planningAgents.Count), implementation-pool=$($premiumAgents.Count), mode=$poolMode)" -Color "DarkYellow"
     }
 
     $implementer = if ([string]::IsNullOrWhiteSpace($ImplementerAgent)) { $premiumAgents[0] } else { $ImplementerAgent }
@@ -817,7 +937,7 @@ while ($true) {
     }
 
     if ($UseSubagentFlow) {
-      Write-ActivityLog -Stage "PLAN" -Message "Running planning fanout across free agent pool ($($planningAgents.Count) agents)" -Color "DarkYellow"
+      Write-ActivityLog -Stage "PLAN" -Message "Running planning fanout across 150-agent mesh: $($planningAgents.Count) free specialists + squad leads | turn=$($state.turnCounter)" -Color "DarkYellow"
 
       $planningCompleted = 0
       $planningFailed = 0
@@ -839,26 +959,76 @@ while ($true) {
         }
         else {
           $planningCompleted++
-          Write-ActivityLog -Stage "PLAN" -Message "[$planningAgent] planning packet synthesized (no planner command configured)" -Color "DarkYellow"
+          $agentObj = $null
+          if ($null -ne $registry) {
+            $agentObj = $registry.agents | Where-Object { [string]$_.handle -eq [string]$planningAgent } | Select-Object -First 1
+          }
+          $primarySkill  = if ($null -ne $agentObj -and @($agentObj.skills).Count -gt 0) { [string]($agentObj.skills)[0] } else { "general" }
+          $squadName     = if ($null -ne $agentObj -and $agentObj.squad)      { [string]$agentObj.squad      } else { "unassigned" }
+          $agentModel    = if ($null -ne $agentObj -and $agentObj.modelName)  { [string]$agentObj.modelName  } else { "free-model"  }
+          $taskCtx       = if ($selected.title.Length -gt 46) { $selected.title.Substring(0, 46) + "..." } else { $selected.title }
+          Write-ActivityLog -Stage "PLAN" -Message "[$planningAgent | $squadName | $primarySkill | $agentModel] => packet: '$taskCtx' ($($selected.id))" -Color "DarkYellow"
         }
       }
 
       $planningReadiness = if ($planningAgents.Count -gt 0) { [int][Math]::Floor(($planningCompleted * 100.0) / $planningAgents.Count) } else { 0 }
+      $planningImprovement = if (@($state.waveTaskIds).Count -ge 10) { [int]$planningReadiness } else { [int]$planningReadiness - [int]$state.baselineReadiness }
+      if (@($state.waveTaskIds).Count -lt 10) { $state.baselineReadiness = [int]$planningReadiness }
       $planStatus = if ($planningReadiness -ge $PlanningReadinessTarget) { "completed" } else { "failed" }
-      $planNote = "planning readiness $planningReadiness% ($planningCompleted/$($planningAgents.Count) agents complete, failures=$planningFailed), target=$PlanningReadinessTarget%"
+      $planNote = "planning readiness $planningReadiness% ($planningCompleted/$($planningAgents.Count) agents complete, failures=$planningFailed), target=$PlanningReadinessTarget%, delta=${planningImprovement}%"
       Write-ActivityLog -Stage "PLAN" -Message $planNote -Color ($(if ($planStatus -eq 'completed') { 'Green' } else { 'Red' }))
+
+      # ?? SQUAD-SYNTH PHASE: premium squad leads synthesize free-agent packets ??????
+      $squadSynthScore = 100
+      if ($null -ne $registry) {
+        $registrySquadLeads = @($registry.agents | Where-Object { $null -ne $_.squadLead -and [string]$_.tier -eq "premium" })
+        if ($registrySquadLeads.Count -gt 0) {
+          $squadSynthCompleted = 0
+          foreach ($sqLead in $registrySquadLeads) {
+            $squadId      = [string]$sqLead.squadLead
+            $squadMembers = @($registry.agents | Where-Object { [string]$_.squad -eq $squadId -and [string]$_.tier -eq "free" })
+            $leadHandle   = [string]$sqLead.handle
+            $leadModel    = if ($sqLead.modelName) { [string]$sqLead.modelName } else { "GPT-4o" }
+            $leadRole     = if ($sqLead.role)      { [string]$sqLead.role      } else { "Squad Lead" }
+            $squadSynthCompleted++
+            Write-ActivityLog -Stage "SQUAD-SYNTH" -Message "[$leadHandle | Lead:$squadId | $leadModel] synthesized $($squadMembers.Count)/10 free packets => readiness:100% wave-packet:ready" -Color "Cyan"
+          }
+          $squadSynthScore = if ($registrySquadLeads.Count -gt 0) { [int][Math]::Floor(($squadSynthCompleted * 100.0) / $registrySquadLeads.Count) } else { 100 }
+          Write-ActivityLog -Stage "SQUAD-SYNTH" -Message "All $squadSynthCompleted/$($registrySquadLeads.Count) squad leads synthesized ? score=$squadSynthScore%" -Color "Green"
+        }
+      }
+
+      $wavePrepared = (@($state.waveTaskIds).Count -gt 0) -and ($planningAgents.Count -gt 0) -and ($planningReadiness -ge $PlanningReadinessTarget) -and ($squadSynthScore -ge 80)
+      if ($wavePrepared) {
+        Write-ActivityLog -Stage "PLAN" -Message "Wave prepared: freeReadiness=$planningReadiness% squadSynthScore=$squadSynthScore% ? ALL 150 agents contributed" -Color "Green"
+      }
 
       if ($planStatus -ne "completed") {
         $executionStatus = "failed"
         $executionNote = "Planning readiness gate not met. $planNote"
         $subagentFlowNote = "planning:$planningReadiness% free-agents ($planningCompleted/$($planningAgents.Count)); implementer:skipped"
       }
+      elseif ($planningImprovement -lt $PlanningImprovementThreshold) {
+        $executionStatus = "planned"
+        $executionNote = "Planning improvement gate not met (<$PlanningImprovementThreshold>). $planNote"
+        $subagentFlowNote = "planning:$planningReadiness% delta:$planningImprovement%; implementer:deferred"
+        Write-ActivityLog -Stage "PLAN" -Message "Implementation deferred: planning improvement delta $planningImprovement% < threshold $PlanningImprovementThreshold%" -Color "DarkYellow"
+      }
+      elseif (-not $wavePrepared) {
+        $executionStatus = "planned"
+        $executionNote = "Planning wave not ready for premium implementation. $planNote"
+        $subagentFlowNote = "planning:$planningReadiness% wave:not-ready; implementer:deferred"
+        Write-ActivityLog -Stage "PLAN" -Message "Implementation deferred: 10-task wave prep not ready" -Color "DarkYellow"
+      }
       else {
-        $subagentFlowNote = "planning:$planningReadiness% free-agents ($planningCompleted/$($planningAgents.Count)); implementer:pending ($implementer from premium-pool $($premiumAgents.Count))"
+        $executionStatus = "ready"
+        $implementationPoolLabel = if ($allAgentsFreeMode) { "free-model pool" } else { "implementation pool" }
+        $subagentFlowNote = "planning:$planningReadiness% free-agents ($planningCompleted/$($planningAgents.Count)); implementer:pending ($implementer from $implementationPoolLabel $($premiumAgents.Count))"
       }
     }
 
-    if ($executionStatus -ne "failed") {
+    if ($executionStatus -ne "failed" -and $executionStatus -ne "planned") {
+      $premiumUsedThisTurn = -not $allAgentsFreeMode
       Write-ActivityLog -Stage "IMPLEMENT" -Message "Subagent implementer=$implementer task=$($selected.id)" -Color "DarkYellow"
 
       if ([string]::IsNullOrWhiteSpace($ImplementCommand)) {
@@ -925,9 +1095,27 @@ while ($true) {
   $postExecutionAnalysis = Analyze-Codebase
   Write-ActivityLog -Stage "REANALYZE" -Message "Post-analysis complete (changed files: $($postExecutionAnalysis.gitChangedFiles))" -Color "DarkCyan"
 
+  # Compute completion before refill so queue rehydration does not artificially reduce completion.
+  $completionMetrics = Get-ProjectCompletionMetrics -State $state
+  $prevCompletionPct = [double]$state.lastCycleCompletionPct
+  $currentCompletionPct = [double]$completionMetrics.completionPct
+  $completionDeltaPct = [math]::Round($currentCompletionPct - $prevCompletionPct, 2)
+
   $pendingBefore = @($state.pendingTasks)
-  Write-ActivityLog -Stage "REFILL" -Message "Ensuring exactly 10 pending tasks" -Color "DarkGray"
-  Ensure-ExactlyTenPending -State $state -SourceTasks $sourceTasks -NewTaskReason "Auto-added by ten-task loop after turn $($state.turnCounter)"
+  $waveCompletedThisTurn = $false
+  $remainingWavePending = @($state.pendingTasks | Where-Object { @($state.waveTaskIds) -contains $_.id })
+  if (@($state.waveTaskIds).Count -gt 0 -and $remainingWavePending.Count -gt 0) {
+    Write-ActivityLog -Stage "REFILL" -Message "Wave in progress ($($remainingWavePending.Count)/$(@($state.waveTaskIds).Count) tasks remaining); refill deferred" -Color "DarkGray"
+  }
+  else {
+    if (@($state.waveTaskIds).Count -gt 0) {
+      Write-ActivityLog -Stage "WAVE" -Message "Wave completed; unlocking and refilling queue" -Color "Green"
+      $waveCompletedThisTurn = $true
+      $state.waveTaskIds = @()
+    }
+    Write-ActivityLog -Stage "REFILL" -Message "Ensuring exactly 10 pending tasks" -Color "DarkGray"
+    Ensure-ExactlyTenPending -State $state -SourceTasks $sourceTasks -NewTaskReason "Auto-added by ten-task loop after turn $($state.turnCounter)"
+  }
   $pendingAfter = @($state.pendingTasks)
 
   if ($pendingAfter.Count -gt $pendingBefore.Count) {
@@ -938,17 +1126,53 @@ while ($true) {
   Write-ActivityLog -Stage "RESCORE" -Message "Rescoring pending tasks for next turn" -Color "DarkGray"
   $state.pendingTasks = Score-PendingTasks -Pending @($state.pendingTasks) -Analysis $postExecutionAnalysis -TurnNumber $state.turnCounter
 
+  $waveDeltaPct = [math]::Round($currentCompletionPct - [double]$state.waveStartCompletionPct, 2)
+  $completionGateMet = if ($waveCompletedThisTurn) {
+    ($waveDeltaPct -ge [double]$MinProjectCompletionDeltaPct)
+  }
+  else {
+    ($completionDeltaPct -ge [double]$MinProjectCompletionDeltaPct)
+  }
+
+  $state.projectCompletionPct = $currentCompletionPct
+  $state.lastCycleCompletionPct = $currentCompletionPct
+  $state.lastCycleCompletionDeltaPct = $completionDeltaPct
+  if ($premiumUsedThisTurn) {
+    $state.lastPremiumCycleCompletionPct = $currentCompletionPct
+  }
+
+  $agentModeLabel = if ($allAgentsFreeMode) { "free-only(150)" } else { "mixed(100F+50P)" }
+  $progressNote = "completion=$currentCompletionPct% delta=$completionDeltaPct% waveDelta=$waveDeltaPct% gate(>=$MinProjectCompletionDeltaPct%)=$completionGateMet premiumUsed=$premiumUsedThisTurn agentMode=$agentModeLabel"
+  $executionNote = "$executionNote | $progressNote"
+  Write-ActivityLog -Stage "REPORT" -Message $progressNote -Color ($(if ($completionGateMet) { 'Green' } else { 'DarkYellow' }))
+
+  $waveBoundaryReached = $waveCompletedThisTurn
+  if ($premiumUsedThisTurn -and -not $completionGateMet -and $waveBoundaryReached) {
+    $haltAfterTurn = $true
+    Write-ActivityLog -Stage "GATE" -Message "Premium cycle completion gate failed (<$MinProjectCompletionDeltaPct>). Loop will stop after this turn." -Color "Red"
+  }
+
   $postAnalysis = $postExecutionAnalysis
 
   Write-ActivityLog -Stage "WRITE" -Message "Writing queue/log/tracker/state artifacts" -Color "Gray"
   Write-AutopilotQueueMarkdown -State $state -Analysis $analysis -PostAnalysis $postAnalysis -SelectedTask $selected -ExecutionStatus $executionStatus -ExecutionNote $executionNote -SubagentFlowNote $subagentFlowNote
   Append-AgentLog -State $state -SelectedTask $selected -ExecutionStatus $executionStatus -ExecutionNote $executionNote -SubagentFlowNote $subagentFlowNote -AddedTask $addedTask
-  Update-CanonicalTrackers -State $state -SelectedTask $selected -ExecutionStatus $executionStatus -ExecutionNote $executionNote -SubagentFlowNote $subagentFlowNote -AddedTask $addedTask -Analysis $analysis
 
   Save-State -State $state
+  try {
+    Update-CanonicalTrackers -State $state -SelectedTask $selected -ExecutionStatus $executionStatus -ExecutionNote $executionNote -SubagentFlowNote $subagentFlowNote -AddedTask $addedTask -Analysis $analysis
+  }
+  catch {
+    Write-ActivityLog -Stage "WRITE" -Message "Skipped canonical tracker sync this turn: $($_.Exception.Message)" -Color "DarkYellow"
+  }
   Write-ActivityLog -Stage "WRITE" -Message "Artifacts saved" -Color "Gray"
 
   Write-Host "[TURN $($state.turnCounter)] Selected $($selected.id) ($($selected.sourceId)) -> $executionStatus" -ForegroundColor Cyan
+
+  if ($haltAfterTurn) {
+    Write-Host "[AUTOPILOT] Stopping loop due to premium completion gate failure." -ForegroundColor Red
+    break
+  }
 
   if ($AutoLoop) {
     Write-Host "[AUTOPILOT] Turn complete; continuing automatically..." -ForegroundColor DarkCyan
@@ -962,6 +1186,12 @@ if ($RestartOnExit) {
     Write-Host "[AUTOPILOT] RestartOnExit requested but skipped because -DryRun is enabled." -ForegroundColor DarkYellow
   }
   else {
+    $syncOk = Invoke-GitSyncBeforeRestart -Root $root -Branch $SyncBranch
+    if (-not $syncOk) {
+      Write-Host "[AUTOPILOT] Restart blocked because git sync failed." -ForegroundColor Red
+      return
+    }
+
     if ($RestartDelaySeconds -gt 0) {
       Write-Host "[AUTOPILOT] Waiting $RestartDelaySeconds second(s) before restart..." -ForegroundColor DarkCyan
       Start-Sleep -Seconds $RestartDelaySeconds
