@@ -63,6 +63,7 @@ if (firebaseConfig.apiKey) {
 }
 
 export const auth: Auth | null = authInstance;
+export const isFirebaseAuthConfigured = Boolean(authInstance);
 
 const googleProvider = new GoogleAuthProvider();
 const facebookProvider = new FacebookAuthProvider();

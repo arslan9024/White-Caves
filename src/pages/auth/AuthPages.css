@@ -230,6 +230,14 @@ body.dark-mode .auth-tabs {
   margin: 0 0 1rem 0;
 }
 
+.social-login-helper {
+  margin: 0 0 0.75rem;
+  text-align: center;
+  color: #f59e0b;
+  font-size: 0.8125rem;
+  line-height: 1.4;
+}
+
 .social-buttons-primary {
   display: flex;
   gap: 0.75rem;

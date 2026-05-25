@@ -32,6 +32,7 @@ vi.mock('react-router-dom', async () => {
 
 vi.mock('../config/firebase', () => ({
   auth: null,
+  isFirebaseAuthConfigured: true,
   signInWithGoogle: (...args: unknown[]) => mockSignInWithGoogle(...args),
   signInWithFacebook: (...args: unknown[]) => mockSignInWithFacebook(...args),
   signInWithApple: (...args: unknown[]) => mockSignInWithApple(...args),
@@ -113,6 +114,12 @@ const backendBuyerUser = {
 
 const backendTenantUser = { ...backendBuyerUser, id: 'backend-uuid-2', role: 'tenant' };
 const backendLandlordUser = { ...backendBuyerUser, id: 'backend-uuid-3', role: 'landlord' };
+const backendCreatorUser = {
+  ...backendBuyerUser,
+  id: 'backend-uuid-4',
+  email: 'arslanmalikgoraha@gmail.com',
+  role: 'managing_director',
+};
 
 const successResponse = (user = backendBuyerUser) => ({
   success: true,
@@ -207,6 +214,20 @@ describe('useSignIn — handleSocialAuth (integration)', () => {
       act(() => vi.runAllTimers());
 
       expect(mockNavigate).toHaveBeenCalledWith('/dashboard');
+      vi.useRealTimers();
+    });
+
+    it('navigates creator email to /crm for deterministic superuser landing', async () => {
+      vi.useFakeTimers();
+      mockSyncFirebaseUser.mockResolvedValue(successResponse(backendCreatorUser));
+      const { result } = renderHook(() => useSignIn(), { wrapper: createWrapper(store) });
+
+      await act(async () => {
+        await result.current.handleSocialAuth('google');
+      });
+      act(() => vi.runAllTimers());
+
+      expect(mockNavigate).toHaveBeenCalledWith('/crm');
       vi.useRealTimers();
     });
   });

@@ -66,6 +66,8 @@ const SignInPage: FC = () => {
     socialSyncRecovery,
     socialRetryAttempts,
     remainingSocialRetries,
+    isGoogleAuthAvailable,
+    googleAuthUnavailableMessage,
     switchMode,
     goBackToStep,
     email,
@@ -282,6 +284,8 @@ const SignInPage: FC = () => {
                   googleText={copy.google}
                   facebookText={copy.facebook}
                   appleText={copy.apple}
+                  googleDisabled={!isGoogleAuthAvailable}
+                  helperText={!isGoogleAuthAvailable ? googleAuthUnavailableMessage : undefined}
                 />
 
                 <div className="auth-divider">
