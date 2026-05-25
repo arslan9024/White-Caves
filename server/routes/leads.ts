@@ -11,6 +11,7 @@ import { asyncHandler, AppError } from '../middleware/errorHandler';
 import { prisma } from '../database.js';
 import { sanitizeString } from '../utils/sanitize';
 import { getSocketServer } from '../services/socketServer.js';
+import { notificationService } from '../services/NotificationService.js';
 
 // Unified lead status enum — single source of truth for all lead endpoints
 const VALID_LEAD_STATUSES = [
@@ -352,6 +353,16 @@ router.post(
       }
     }
 
+    if (lead.assignedToId) {
+      await notificationService.pushToUser({
+        userId: lead.assignedToId,
+        type: 'lead',
+        title: 'New lead assigned',
+        message: `${lead.name} was assigned to you`,
+        metadata: { leadId: lead.id, source: lead.source },
+      });
+    }
+
     // W14-001: Auto-rescore on lead creation
     triggerLeadRescore(lead.id, 'lead_created');
 
@@ -462,6 +473,16 @@ router.patch(
 
     // W14-001: Auto-rescore on lead updates and status lifecycle changes
     triggerLeadRescore(lead.id, statusChanged ? 'lead_status_changed' : 'lead_updated');
+
+    if (lead.assignedToId && statusChanged) {
+      await notificationService.pushToUser({
+        userId: lead.assignedToId,
+        type: 'lead',
+        title: 'Lead status updated',
+        message: `${lead.name} moved to ${lead.status}`,
+        metadata: { leadId: lead.id, oldStatus: existing.status, newStatus: lead.status },
+      });
+    }
 
     res.status(200).json({ success: true, data: lead });
   })
