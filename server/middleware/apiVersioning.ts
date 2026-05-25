@@ -11,7 +11,9 @@ export const createV1CompatibilityProxy =
     const rewrittenUrl = req.originalUrl.replace(/^\/api\/v1\b/, API_PREFIX);
     req.url = rewrittenUrl;
 
-    app.handle(req, res, (err: unknown) => {
+    // Express application exposes .handle() at runtime but it is not in @types/express
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (app as any).handle(req, res, (err: unknown) => {
       req.url = previousUrl;
       if (err) {
         next(err as Error);

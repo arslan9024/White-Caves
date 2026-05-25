@@ -4,9 +4,9 @@
  * Uses express-rate-limit with configurable windows per route type
  */
 
-import rateLimit, { ipKeyGenerator, type RateLimitRequestHandler } from 'express-rate-limit';
+import rateLimit, { type RateLimitRequestHandler } from 'express-rate-limit';
 import RedisStore from 'rate-limit-redis';
-import { createClient } from 'redis';
+import Redis from 'ioredis';
 
 interface FirebaseSyncBody {
   firebaseUid?: unknown;
@@ -18,19 +18,14 @@ let sharedRateLimitStore: RedisStore | undefined;
 const redisUrl = process.env.REDIS_URL;
 
 if (redisUrl) {
-  const redisClient = createClient({ url: redisUrl });
-  redisClient.on('error', error => {
+  const redisClient = new Redis(redisUrl);
+  redisClient.on('error', (error: unknown) => {
     console.warn('Redis rate-limit store error:', error instanceof Error ? error.message : error);
-  });
-  redisClient.connect().catch(error => {
-    console.warn(
-      'Failed to connect Redis rate-limit store; rate limiter will continue attempting Redis on each request (requests may fail if Redis remains unavailable):',
-      error instanceof Error ? error.message : error
-    );
   });
 
   sharedRateLimitStore = new RedisStore({
-    sendCommand: (...args: string[]) => redisClient.sendCommand(args),
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    sendCommand: (...args: string[]) => (redisClient as any).call(args[0], ...args.slice(1)),
   });
 }
 
@@ -90,7 +85,7 @@ export const firebaseSyncLimiter: RateLimitRequestHandler = rateLimit({
     statusCode: 429,
   },
   keyGenerator: req => {
-    const baseIp = ipKeyGenerator(req.ip || req.socket.remoteAddress || 'unknown-ip');
+    const baseIp = req.ip || req.socket?.remoteAddress || 'unknown-ip';
     const identity = resolveFirebaseIdentity(req.body);
     return `${baseIp}:${identity}`;
   },

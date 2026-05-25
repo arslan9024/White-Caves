@@ -122,7 +122,7 @@ function runAvm(input: AvmInput): AvmResult {
 router.get(
   '/yield-calculator',
   asyncHandler(async (req: AuthRequest, res: Response) => {
-    const { salePrice, annualRent, serviceCharge } = req.query;
+    const { salePrice, annualRent, serviceCharge } = req.query as Record<string, string | undefined>;
     if (!salePrice || !annualRent) {
       throw new AppError('salePrice and annualRent are required', 400);
     }
@@ -154,7 +154,7 @@ router.get(
     const userId = req.user?.id;
     if (!userId) throw new AppError('Authentication required', 401);
 
-    const { propertyId } = req.params;
+    const { propertyId } = req.params as Record<string, string>;
 
     const [latest, totalSnapshots] = await Promise.all([
       prisma.propertyValuation.findFirst({
@@ -175,7 +175,7 @@ router.get(
     const userId = req.user?.id;
     if (!userId) throw new AppError('Authentication required', 401);
 
-    const { propertyId } = req.params;
+    const { propertyId } = req.params as Record<string, string>;
     const page = parsePositiveInt(req.query.page, 1, 1000);
     const pageSize = parsePositiveInt(req.query.pageSize, 20, 50);
     const skip = (page - 1) * pageSize;
@@ -205,7 +205,7 @@ router.post(
     const userId = req.user?.id;
     if (!userId) throw new AppError('Authentication required', 401);
 
-    const { propertyId } = req.params;
+    const { propertyId } = req.params as Record<string, string>;
 
     // Fetch property details from DB for AVM inputs
     const property = await prisma.property.findUnique({
@@ -262,7 +262,7 @@ router.post(
       throw new AppError('Only managers and admins can override valuations', 403);
     }
 
-    const { propertyId } = req.params;
+    const { propertyId } = req.params as Record<string, string>;
     const { overrideValueAed, rentAnnualAed, reason } = req.body as {
       overrideValueAed: number;
       rentAnnualAed?: number;
@@ -308,7 +308,7 @@ router.post(
     const userId = req.user?.id;
     if (!userId) throw new AppError('Authentication required', 401);
 
-    const { propertyId } = req.params;
+    const { propertyId } = req.params as Record<string, string>;
     const { bankName, purpose } = req.body as { bankName?: string; purpose?: string };
 
     // Create a pending bank valuation record

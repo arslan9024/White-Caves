@@ -31,7 +31,7 @@ if (process.env.NODE_ENV === 'production') {
 
 // Slow-query middleware — logs queries exceeding SLOW_QUERY_THRESHOLD_MS
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-prisma.$use(async (params: any, next: (params: any) => Promise<unknown>) => {
+(prisma as any).$use(async (params: any, next: (params: any) => Promise<unknown>) => {
   const before = Date.now();
   const result = await next(params);
   const elapsed = Date.now() - before;

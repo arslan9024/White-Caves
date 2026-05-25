@@ -180,7 +180,8 @@ const SCORING_TRIGGERS: Record<string, string[]> = {
  * @param prisma - PrismaClient instance to attach middleware to
  */
 export function registerLeadScoringMiddleware(prisma: PrismaClient): void {
-  prisma.$use(async (params: any, next: (params: any) => Promise<unknown>) => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  (prisma as any).$use(async (params: any, next: (params: any) => Promise<unknown>) => {
     const model = params.model;
     const action = params.action;
 

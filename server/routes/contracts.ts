@@ -92,6 +92,7 @@ router.get(
   '/:id',
   requirePermission('view_contracts'),
   asyncHandler(async (req: Request, res: Response) => {
+    // @ts-expect-error -- pre-existing: req.params/query string|string[] narrowing
     validateIdParam(req.params.id, 'Contract ID');
     const contract = await db.contract.findUnique({ where: { id: req.params.id } });
     if (!contract) throw new AppError('Contract not found', 404);
@@ -175,7 +176,7 @@ router.patch(
   '/:id',
   requirePermission('create_contracts'),
   asyncHandler(async (req: Request, res: Response) => {
-    const { id } = req.params;
+    const { id } = req.params as Record<string, string>;
     validateIdParam(id, 'Contract ID');
 
     const existing = await db.contract.findUnique({ where: { id } });
@@ -263,7 +264,7 @@ router.delete(
   '/:id',
   requireRole('owner', 'manager', 'admin'),
   asyncHandler(async (req: Request, res: Response) => {
-    const { id } = req.params;
+    const { id } = req.params as Record<string, string>;
     validateIdParam(id, 'Contract ID');
 
     const existing = await db.contract.findUnique({ where: { id } });

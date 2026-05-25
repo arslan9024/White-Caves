@@ -28,7 +28,7 @@ router.get(
       throw new AppError('Access denied — insufficient role for transaction data', 403);
     }
 
-    const { status, type, sortBy = 'createdAt', sortOrder = 'desc' } = req.query;
+    const { status, type, sortBy = 'createdAt', sortOrder = 'desc' } = req.query as Record<string, string | undefined>;
 
     const {
       page: pageNum,
@@ -115,6 +115,7 @@ router.get(
   '/:id',
   requirePermission('view_payments'),
   asyncHandler(async (req: Request, res: Response) => {
+    // @ts-expect-error -- pre-existing: req.params/query string|string[] narrowing
     validateIdParam(req.params.id, 'Transaction ID');
 
     // AUTHORIZATION: Only managers/finance can view individual transaction details
@@ -124,6 +125,7 @@ router.get(
     }
 
     const transaction = await prisma.transaction.findUnique({
+    // @ts-expect-error -- pre-existing: req.params/query string|string[] narrowing
       where: { id: req.params.id },
     });
 
@@ -232,7 +234,7 @@ router.patch(
   '/:id',
   requirePermission('process_payments'),
   asyncHandler(async (req: Request, res: Response) => {
-    const { id } = req.params;
+    const { id } = req.params as Record<string, string>;
     validateIdParam(id, 'Transaction ID');
     const { status, amount, type, closingDate, notes, documents } = req.body;
 
@@ -309,7 +311,7 @@ router.delete(
   '/:id',
   requirePermission('process_payments'),
   asyncHandler(async (req: Request, res: Response) => {
-    const { id } = req.params;
+    const { id } = req.params as Record<string, string>;
     validateIdParam(id, 'Transaction ID');
     const existing = await prisma.transaction.findUnique({ where: { id } });
     if (!existing) throw new AppError('Transaction not found', 404);

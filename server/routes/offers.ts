@@ -137,7 +137,7 @@ router.patch(
     const userId = req.user?.id;
     if (!userId) throw new AppError('Authentication required', 401);
 
-    const { id } = req.params;
+    const { id } = req.params as Record<string, string>;
     const existing = await prisma.offer.findUnique({
       where: { id },
       include: { property: { select: { userId: true } } },
@@ -235,7 +235,7 @@ router.delete(
     const userId = req.user?.id;
     if (!userId) throw new AppError('Authentication required', 401);
 
-    const { id } = req.params;
+    const { id } = req.params as Record<string, string>;
     const existing = await prisma.offer.findUnique({ where: { id } });
     if (!existing) throw new AppError('Offer not found', 404);
     if (existing.buyerId !== userId) throw new AppError('Access denied', 403);
@@ -255,7 +255,7 @@ router.patch(
     const userId = req.user?.id;
     if (!userId) throw new AppError('Authentication required', 401);
 
-    const { id } = req.params;
+    const { id } = req.params as Record<string, string>;
     const existing = await prisma.offer.findUnique({
       where: { id },
       include: { property: { select: { userId: true, title: true, id: true } } },

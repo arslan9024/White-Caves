@@ -115,7 +115,7 @@ router.get(
   '/messages/:recipientId',
   requirePermission('view_dashboard'),
   asyncHandler(async (req: Request, res: Response) => {
-    const { recipientId } = req.params;
+    const { recipientId } = req.params as Record<string, string>;
 
     // Validate recipientId format
     if (!recipientId || !isValidObjectId(recipientId)) {
@@ -131,7 +131,7 @@ router.get(
       throw new AppError('You do not have access to this lead\'s messages', 403);
     }
 
-    const { page = '1', pageSize = '20' } = req.query;
+    const { page = '1', pageSize = '20' } = req.query as Record<string, string | undefined>;
     const pageNum = Math.max(1, parseInt(page as string) || 1);
     const limit = Math.min(50, Math.max(1, parseInt(pageSize as string) || 20));
 

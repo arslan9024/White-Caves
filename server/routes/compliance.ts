@@ -178,7 +178,7 @@ router.get(
       throw new AppError('Access denied — audit logs require owner or manager role', 403);
     }
 
-    const { page = '1', pageSize = '50', type, action } = req.query;
+    const { page = '1', pageSize = '50', type, action } = req.query as Record<string, string | undefined>;
     const pageNum = Math.max(1, parseInt(page as string) || 1);
     const limit = Math.min(100, Math.max(1, parseInt(pageSize as string) || 50));
 
@@ -425,7 +425,7 @@ router.patch(
       throw new AppError('Access denied — Ejari updates require manager role', 403);
     }
 
-    const { leaseId } = req.params;
+    const { leaseId } = req.params as Record<string, string>;
     const { ejariNumber, ejariStatus, ejariRegistrationDate, ejariExpiryDate } = req.body;
 
     if (ejariStatus && !['pending', 'registered', 'expired', 'cancelled'].includes(ejariStatus)) {
@@ -705,7 +705,7 @@ router.patch(
       throw new AppError('Access denied — permit updates require manager role', 403);
     }
 
-    const { propertyId } = req.params;
+    const { propertyId } = req.params as Record<string, string>;
     const { municipalityNumber, plotNumber, buildingPermitNumber } = req.body || {};
 
     if (
@@ -803,7 +803,7 @@ router.post(
       throw new AppError('Access denied — KYC upload requires agent role or above', 403);
     }
 
-    const { leadId } = req.params;
+    const { leadId } = req.params as Record<string, string>;
     const { documentType, documentUrl, fileName, mimeType, fileSize, notes } = req.body;
 
     if (!documentType || !documentUrl) {
@@ -857,7 +857,7 @@ router.get(
       throw new AppError('Access denied — KYC documents require agent role or above', 403);
     }
 
-    const { leadId } = req.params;
+    const { leadId } = req.params as Record<string, string>;
     const docs = await prisma.activity.findMany({
       where: {
         type: 'compliance',
@@ -951,7 +951,7 @@ router.patch(
       throw new AppError('Access denied — KYC review requires manager role', 403);
     }
 
-    const { documentId } = req.params;
+    const { documentId } = req.params as Record<string, string>;
     const { decision, comments } = req.body;
     if (!['approved', 'rejected'].includes(String(decision))) {
       throw new AppError('decision must be one of: approved, rejected', 400);
@@ -1181,7 +1181,7 @@ router.patch(
       throw new AppError('Access denied — AML alert resolution requires manager role', 403);
     }
 
-    const { alertId } = req.params;
+    const { alertId } = req.params as Record<string, string>;
     const { resolution, notes } = req.body;
 
     const alert = await prisma.activity.findUnique({ where: { id: alertId } });
@@ -1287,7 +1287,7 @@ router.patch(
       throw new AppError('Access denied — consent revoke requires manager role', 403);
     }
 
-    const { consentId } = req.params;
+    const { consentId } = req.params as Record<string, string>;
     const { reason } = req.body;
 
     const consent = await prisma.activity.findUnique({ where: { id: consentId } });
@@ -1402,7 +1402,7 @@ router.delete(
       throw new AppError('Access denied — consent delete requires admin role', 403);
     }
 
-    const { consentId } = req.params;
+    const { consentId } = req.params as Record<string, string>;
     const consent = await prisma.activity.findUnique({ where: { id: consentId } });
     if (!consent || consent.type !== 'compliance' || consent.action !== 'pdpl_consent_created') {
       throw new AppError('Consent record not found', 404);

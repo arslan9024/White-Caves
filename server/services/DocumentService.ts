@@ -231,7 +231,6 @@ export class DocumentService {
           type: true,
           amount: true,
           currency: true,
-          description: true,
           status: true,
           createdAt: true,
         },

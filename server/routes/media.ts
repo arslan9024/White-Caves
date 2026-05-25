@@ -65,7 +65,7 @@ router.delete(
     const userId = req.user?.id;
     if (!userId) throw new AppError('Authentication required', 401);
 
-    const { propertyId, fileName } = req.params;
+    const { propertyId, fileName } = req.params as Record<string, string>;
     if (!propertyId || !fileName) {
       throw new AppError('propertyId and fileName are required', 400);
     }

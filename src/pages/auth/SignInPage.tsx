@@ -577,7 +577,6 @@ const SignInPage: FC = () => {
                       required
                       autoComplete="one-time-code"
                       inputMode="numeric"
-                      // eslint-disable-next-line jsx-a11y/no-autofocus
                       autoFocus
                     />
                     <span className="input-hint">6-digit TOTP or 8-character backup code</span>

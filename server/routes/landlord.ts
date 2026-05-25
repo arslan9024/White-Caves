@@ -203,7 +203,7 @@ router.patch(
     const userId = req.user?.id;
     if (!userId) throw new AppError('Authentication required', 401);
 
-    const { id } = req.params;
+    const { id } = req.params as Record<string, string>;
     const { status, notes, scheduledDate, cost } = req.body;
 
     const request = await prisma.maintenance.findUnique({

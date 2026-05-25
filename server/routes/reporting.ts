@@ -99,7 +99,7 @@ router.get(
       throw new AppError('Access denied — activity feed requires manager or above role', 403);
     }
 
-    const { page = '1', pageSize = '20', type } = req.query;
+    const { page = '1', pageSize = '20', type } = req.query as Record<string, string | undefined>;
     const pageNum = Math.max(1, parseInt(page as string) || 1);
     const limit = Math.min(50, Math.max(1, parseInt(pageSize as string) || 20));
 
