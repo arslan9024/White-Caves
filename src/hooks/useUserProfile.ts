@@ -110,7 +110,13 @@ export function useUserProfile() {
           log.debug('Non-JSON error response:', e);
           return {};
         });
-        throw new Error((errorData as Record<string, string>).error || 'Failed to save profile');
+        const parsedErrorData = errorData as Record<string, string>;
+        throw new Error(
+          parsedErrorData.error ||
+            parsedErrorData.message ||
+            parsedErrorData.details ||
+            'Failed to save profile'
+        );
       }
       await response.json();
       // Update Redux user state with new data

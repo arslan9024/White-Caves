@@ -997,9 +997,10 @@ router.post(
       throw new AppError('Firebase token is required', 400);
     }
 
-    const runtimeNodeEnv = process.env.NODE_ENV || 'development';
+    const nodeEnv = process.env.NODE_ENV?.trim().toLowerCase();
+    const isDevLikeEnv = !nodeEnv || nodeEnv === 'development' || nodeEnv === 'test';
     const allowDevFallback =
-      runtimeNodeEnv === 'development' && process.env.ALLOW_FIREBASE_SYNC_DEV_FALLBACK !== 'false';
+      isDevLikeEnv && process.env.ALLOW_FIREBASE_SYNC_DEV_FALLBACK !== 'false';
 
     let decodedToken: Awaited<ReturnType<typeof verifyFirebaseIdToken>>;
     try {
