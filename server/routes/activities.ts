@@ -22,7 +22,7 @@ router.get(
   '/',
   requirePermission('view_leads'),
   asyncHandler(async (req: Request, res: Response) => {
-    const { type, action, userId, leadId, sortBy = 'createdAt', sortOrder = 'desc' } = req.query;
+    const { type, action, userId, leadId, search, sortBy = 'createdAt', sortOrder = 'desc' } = req.query;
 
     const { page: pageNum, limit, skip } = parsePagination({
       page: req.query.page as string,
@@ -34,6 +34,17 @@ router.get(
     if (action && action !== 'all') where.action = action as string;
     if (userId) where.userId = userId as string;
     if (leadId) where.leadId = leadId as string;
+    if (typeof search === 'string' && search.trim().length > 0) {
+      const query = sanitizeString(search).trim().slice(0, 120);
+      where.OR = [
+        { description: { contains: query, mode: 'insensitive' } },
+        { type: { contains: query, mode: 'insensitive' } },
+        { action: { contains: query, mode: 'insensitive' } },
+        { user: { is: { name: { contains: query, mode: 'insensitive' } } } },
+        { user: { is: { email: { contains: query, mode: 'insensitive' } } } },
+        { lead: { is: { name: { contains: query, mode: 'insensitive' } } } },
+      ];
+    }
 
     const validSorts = ['createdAt', 'type', 'action'];
     const field = validSorts.includes(sortBy as string) ? (sortBy as string) : 'createdAt';

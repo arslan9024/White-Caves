@@ -906,7 +906,7 @@ describe('Auth Routes — /api/auth', () => {
 
       const res = await request(createApp()).post('/api/auth/firebase-sync').send({
         firebaseUid: 'firebase-dev-456',
-        firebaseToken: 'dev-token-2',
+        firebaseToken: 'dev-token',
         email: 'unsetenv@whitecaves.ae',
         name: 'Unset Env User',
       });
