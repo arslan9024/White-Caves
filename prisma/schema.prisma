@@ -1208,10 +1208,16 @@ model HenryRecord {
   templateLabel    String                         // Human-readable template name
   fileName         String                         // Original file name
   recordPath       String                         // Relative path under uploads/henry/
+  departmentTag    String?                        // sales, leasing, finance, compliance, legal, operations
+  ownerUserId      String?  @db.ObjectId          // User primarily responsible for this record
+  ownerUserEmail   String?                        // Denormalized owner email for filtering/inspection
   unit             String?                        // Unit number / apartment
   community        String?                        // Community / building name
   tenantName       String?                        // For quick display without parsing JSON
   isDraft          Boolean  @default(false)
+  status           String   @default("draft")     // draft, pending_signature, signed, archived
+  signedAt         DateTime?                      // When all required signatures were completed
+  archivedAt       DateTime?                      // When moved to archived state
   copyNumber       Int      @default(1)
   documentSnapshot Json                           // Flat key-value snapshot of document fields at time of archive
                                                    // e.g. {landlordName, tenantName, annualRent, leaseStartDate, ...}
@@ -1222,6 +1228,11 @@ model HenryRecord {
   @@index([templateKey])
   @@index([community])
   @@index([tenantName])
+  @@index([departmentTag])
+  @@index([ownerUserId])
+  @@index([ownerUserEmail])
+  @@index([status])
+  @@index([signedAt])
   @@index([isDraft])
   @@index([createdBy])
   @@index([createdAt])

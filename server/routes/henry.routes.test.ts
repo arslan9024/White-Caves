@@ -31,6 +31,13 @@ const { mockPrisma } = vi.hoisted(() => {
       async ({ where }: { where: { id: string } }) =>
         records.find(r => r['id'] === where.id) ?? null
     ),
+    update: fn(async ({ where, data }: { where: { id: string }; data: Record<string, unknown> }) => {
+      const idx = records.findIndex(r => r['id'] === where.id);
+      if (idx < 0) return null;
+      const updated = { ...records[idx], ...data, updatedAt: new Date() };
+      records[idx] = updated;
+      return updated;
+    }),
     delete: fn(async ({ where }: { where: { id: string } }) => {
       const idx = records.findIndex(r => r['id'] === where.id);
       if (idx < 0) return null;
@@ -227,6 +234,13 @@ describe('Henry routes — records CRUD', () => {
       title: 'Tenancy Agreement - Villa 12',
       status: 'active',
     });
+    mockPrisma.henryRecord.update.mockResolvedValue({
+      id: 'hr-1',
+      isDraft: false,
+      status: 'signed',
+      signedAt: new Date(),
+      updatedAt: new Date(),
+    });
     mockPrisma.henryRecord.delete.mockResolvedValue({ id: 'hr-1' });
   });
 
@@ -253,6 +267,18 @@ describe('Henry routes — records CRUD', () => {
     expect(res.body.success).toBe(true);
   });
 
+  it('GET /records supports department and owner filters', async () => {
+    const app = await createApp();
+    mockPrisma.henryRecord.findMany.mockResolvedValue([]);
+    mockPrisma.henryRecord.count.mockResolvedValue(0);
+
+    const res = await request(app).get(
+      '/api/henry/records?departmentTag=legal&ownerUserEmail=owner%40whitecaves.ae&status=signed'
+    );
+    expect(res.status).toBe(200);
+    expect(res.body.success).toBe(true);
+  });
+
   it('POST /records creates a new record and returns 201', async () => {
     const app = await createApp();
     const res = await request(app).post('/api/henry/records').send({
@@ -260,10 +286,24 @@ describe('Henry routes — records CRUD', () => {
       fileName: 'agreement.pdf',
       templateLabel: 'Tenancy Contract',
       tenantName: 'John Smith',
+      departmentTag: 'legal',
+      ownerUserEmail: 'owner@whitecaves.ae',
+      status: 'pending_signature',
     });
     expect(res.status).toBe(201);
     expect(res.body.success).toBe(true);
     expect(res.body.data.id).toBe('hr-1');
+  });
+
+  it('POST /records returns 400 for invalid departmentTag', async () => {
+    const app = await createApp();
+    const res = await request(app).post('/api/henry/records').send({
+      templateKey: 'tenancy_contract',
+      fileName: 'agreement.pdf',
+      departmentTag: 'invalid',
+    });
+    expect(res.status).toBe(400);
+    expect(res.body.success).toBe(false);
   });
 
   it('POST /records returns 400 when templateKey or fileName is missing', async () => {
@@ -286,6 +326,33 @@ describe('Henry routes — records CRUD', () => {
 
     const res = await request(app).delete('/api/henry/records/nonexistent');
     expect(res.status).toBe(404);
+    expect(res.body.success).toBe(false);
+  });
+
+  it('POST /records/:id/sign marks a record signed with timestamp', async () => {
+    const app = await createApp();
+    mockPrisma.henryRecord.findUnique.mockResolvedValue({ id: 'hr-1', status: 'pending_signature' });
+    mockPrisma.henryRecord.update.mockResolvedValue({
+      id: 'hr-1',
+      status: 'signed',
+      isDraft: false,
+      signedAt: new Date('2026-05-25T00:00:00.000Z'),
+    });
+
+    const res = await request(app)
+      .post('/api/henry/records/hr-1/sign')
+      .send({ signedAt: '2026-05-25T00:00:00.000Z' });
+    expect(res.status).toBe(200);
+    expect(res.body.success).toBe(true);
+    expect(res.body.data.status).toBe('signed');
+  });
+
+  it('POST /records/:id/sign returns 400 for invalid signedAt', async () => {
+    const app = await createApp();
+    mockPrisma.henryRecord.findUnique.mockResolvedValue({ id: 'hr-1', status: 'pending_signature' });
+
+    const res = await request(app).post('/api/henry/records/hr-1/sign').send({ signedAt: 'not-a-date' });
+    expect(res.status).toBe(400);
     expect(res.body.success).toBe(false);
   });
 });
@@ -315,10 +382,13 @@ describe('Henry routes — file upload and download', () => {
     // The route expects the field name 'pdf' (as configured in multer upload.single('pdf'))
     const res = await request(app)
       .post('/api/henry/records/file')
+      .field('departmentTag', 'legal')
+      .field('ownerUserId', 'u-test')
       .attach('pdf', Buffer.from('%PDF-1.4 test'), 'test.pdf');
     expect(res.status).toBe(201);
     expect(res.body.success).toBe(true);
     expect(res.body.data.fileName).toBe('test.pdf');
+    expect(res.body.data.relativePath).toContain('/legal/u-test/');
   });
 
   it('GET /records/file returns 400 when path param is missing', async () => {

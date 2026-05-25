@@ -64,10 +64,16 @@ export interface HenryRecord {
   templateLabel: string;
   fileName: string;
   recordPath: string;
+  departmentTag?: string;
+  ownerUserId?: string;
+  ownerUserEmail?: string;
   unit?: string;
   community?: string;
   tenantName?: string;
   isDraft: boolean;
+  status?: 'draft' | 'pending_signature' | 'signed' | 'archived';
+  signedAt?: string;
+  archivedAt?: string;
   copyNumber: number;
   createdAt: string;
 }
@@ -226,6 +232,10 @@ const HenryDocumentHub: React.FC<HenryDocumentHubProps> = () => {
   const [isSaving, setIsSaving] = useState(false);
   const [isChecking, setIsChecking] = useState(false);
   const [isExtracting, setIsExtracting] = useState(false);
+  const [selectedDepartmentTag, setSelectedDepartmentTag] = useState<
+    'sales' | 'leasing' | 'finance' | 'compliance' | 'legal' | 'operations'
+  >('legal');
+  const [selectedOwnerEmail, setSelectedOwnerEmail] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
@@ -303,7 +313,10 @@ const HenryDocumentHub: React.FC<HenryDocumentHubProps> = () => {
           unit: (formData.unitNumber as string) ?? null,
           community: (formData.propertyAddress as string) ?? null,
           tenantName: (formData.tenantName as string) ?? null,
+          departmentTag: selectedDepartmentTag,
+          ownerUserEmail: selectedOwnerEmail || null,
           isDraft: true,
+          status: 'pending_signature',
           documentSnapshot: formData,
         }),
       });
@@ -357,6 +370,25 @@ const HenryDocumentHub: React.FC<HenryDocumentHubProps> = () => {
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Delete failed');
+    }
+  };
+
+  const handleMarkSigned = async (id: string) => {
+    setError(null);
+    try {
+      const res = await authFetch(`/api/henry/records/${id}/sign`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+      });
+      const json = (await res.json()) as { success: boolean; error?: string };
+      if (json.success) {
+        setSuccessMessage('Record marked as signed');
+        await loadRecords();
+      } else {
+        setError(json.error ?? 'Unable to mark record as signed');
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Unable to mark record as signed');
     }
   };
 
@@ -446,6 +478,10 @@ const HenryDocumentHub: React.FC<HenryDocumentHubProps> = () => {
             onCheckCompliance={handleCheckCompliance}
             onSaveRecord={handleSaveRecord}
             onExtractFields={handleExtractFields}
+            selectedDepartmentTag={selectedDepartmentTag}
+            onDepartmentTagChange={setSelectedDepartmentTag}
+            selectedOwnerEmail={selectedOwnerEmail}
+            onOwnerEmailChange={setSelectedOwnerEmail}
             isChecking={isChecking}
             isSaving={isSaving}
             isExtracting={isExtracting}
@@ -464,7 +500,13 @@ const HenryDocumentHub: React.FC<HenryDocumentHubProps> = () => {
 
         {/* Archive Panel */}
         {activePanel === 'archive' && (
-          <ArchivePanel records={records} isLoading={isLoading} onDelete={handleDeleteRecord} onRefresh={loadRecords} />
+          <ArchivePanel
+            records={records}
+            isLoading={isLoading}
+            onDelete={handleDeleteRecord}
+            onRefresh={loadRecords}
+            onMarkSigned={handleMarkSigned}
+          />
         )}
 
         {/* No template selected */}
@@ -491,6 +533,12 @@ interface DocumentEditorProps {
   onCheckCompliance: () => void;
   onSaveRecord: () => void;
   onExtractFields: (text: string) => void;
+  selectedDepartmentTag: 'sales' | 'leasing' | 'finance' | 'compliance' | 'legal' | 'operations';
+  onDepartmentTagChange: (
+    tag: 'sales' | 'leasing' | 'finance' | 'compliance' | 'legal' | 'operations'
+  ) => void;
+  selectedOwnerEmail: string;
+  onOwnerEmailChange: (value: string) => void;
   isChecking: boolean;
   isSaving: boolean;
   isExtracting: boolean;
@@ -498,6 +546,7 @@ interface DocumentEditorProps {
 
 const DocumentEditor: React.FC<DocumentEditorProps> = ({
   template, formData, onFieldChange, onCheckCompliance, onSaveRecord, onExtractFields,
+  selectedDepartmentTag, onDepartmentTagChange, selectedOwnerEmail, onOwnerEmailChange,
   isChecking, isSaving, isExtracting,
 }) => {
   const [pasteText, setPasteText] = useState('');
@@ -585,7 +634,65 @@ const DocumentEditor: React.FC<DocumentEditorProps> = ({
       </div>
 
       {/* Action Buttons */}
-      <div style={{ display: 'flex', gap: 12, marginTop: 24 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginTop: 24 }}>
+        <div>
+          <label style={{ display: 'block', color: '#aaa', fontSize: 12, marginBottom: 4 }}>
+            Department Tag
+          </label>
+          <select
+            value={selectedDepartmentTag}
+            onChange={e =>
+              onDepartmentTagChange(
+                e.target.value as
+                  | 'sales'
+                  | 'leasing'
+                  | 'finance'
+                  | 'compliance'
+                  | 'legal'
+                  | 'operations'
+              )
+            }
+            style={{
+              width: '100%',
+              background: '#1a1a1a',
+              border: '1px solid #333',
+              borderRadius: 4,
+              color: '#fff',
+              padding: '8px 10px',
+              fontSize: 13,
+            }}
+          >
+            <option value="sales">Sales</option>
+            <option value="leasing">Leasing</option>
+            <option value="finance">Finance</option>
+            <option value="compliance">Compliance</option>
+            <option value="legal">Legal</option>
+            <option value="operations">Operations</option>
+          </select>
+        </div>
+        <div>
+          <label style={{ display: 'block', color: '#aaa', fontSize: 12, marginBottom: 4 }}>
+            Owner User Email (optional)
+          </label>
+          <input
+            type="email"
+            value={selectedOwnerEmail}
+            onChange={e => onOwnerEmailChange(e.target.value)}
+            placeholder="owner@whitecaves.ae"
+            style={{
+              width: '100%',
+              background: '#1a1a1a',
+              border: '1px solid #333',
+              borderRadius: 4,
+              color: '#fff',
+              padding: '8px 10px',
+              fontSize: 13,
+              boxSizing: 'border-box',
+            }}
+          />
+        </div>
+      </div>
+      <div style={{ display: 'flex', gap: 12, marginTop: 16 }}>
         <button
           onClick={onCheckCompliance}
           disabled={isChecking}
@@ -682,9 +789,16 @@ interface ArchivePanelProps {
   isLoading: boolean;
   onDelete: (id: string) => void;
   onRefresh: () => void;
+  onMarkSigned: (id: string) => void;
 }
 
-const ArchivePanel: React.FC<ArchivePanelProps> = ({ records, isLoading, onDelete, onRefresh }) => (
+const ArchivePanel: React.FC<ArchivePanelProps> = ({
+  records,
+  isLoading,
+  onDelete,
+  onRefresh,
+  onMarkSigned,
+}) => (
   <div>
     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
       <h3 style={{ color: '#fff', margin: 0 }}>📁 Document Archive ({records.length})</h3>
@@ -705,7 +819,19 @@ const ArchivePanel: React.FC<ArchivePanelProps> = ({ records, isLoading, onDelet
         <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
           <thead>
             <tr style={{ borderBottom: '1px solid #333' }}>
-              {['Template', 'File Name', 'Unit', 'Community', 'Tenant', 'Status', 'Created', ''].map(h => (
+              {[
+                'Template',
+                'File Name',
+                'Department',
+                'Owner',
+                'Unit',
+                'Community',
+                'Tenant',
+                'Status',
+                'Signed At',
+                'Created',
+                '',
+              ].map(h => (
                 <th key={h} style={{ color: '#888', fontWeight: 600, padding: '8px 12px', textAlign: 'left' }}>{h}</th>
               ))}
             </tr>
@@ -715,16 +841,30 @@ const ArchivePanel: React.FC<ArchivePanelProps> = ({ records, isLoading, onDelet
               <tr key={r.id} style={{ borderBottom: '1px solid #1a1a1a' }}>
                 <td style={{ color: '#C9A84C', padding: '8px 12px' }}>{r.templateLabel}</td>
                 <td style={{ color: '#ccc', padding: '8px 12px', maxWidth: 180, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{r.fileName}</td>
+                <td style={{ color: '#aaa', padding: '8px 12px' }}>{r.departmentTag ?? '—'}</td>
+                <td style={{ color: '#aaa', padding: '8px 12px' }}>{r.ownerUserEmail ?? '—'}</td>
                 <td style={{ color: '#aaa', padding: '8px 12px' }}>{r.unit ?? '—'}</td>
                 <td style={{ color: '#aaa', padding: '8px 12px' }}>{r.community ?? '—'}</td>
                 <td style={{ color: '#aaa', padding: '8px 12px' }}>{r.tenantName ?? '—'}</td>
                 <td style={{ padding: '8px 12px' }}>
-                  <span style={{ background: r.isDraft ? '#2a2a1a' : '#1a2a1a', color: r.isDraft ? '#f59e0b' : '#22c55e', padding: '2px 8px', borderRadius: 12, fontSize: 11 }}>
-                    {r.isDraft ? 'Draft' : 'Final'}
+                  <span style={{ background: (r.status ?? (r.isDraft ? 'draft' : 'signed')) === 'signed' ? '#1a2a1a' : '#2a2a1a', color: (r.status ?? (r.isDraft ? 'draft' : 'signed')) === 'signed' ? '#22c55e' : '#f59e0b', padding: '2px 8px', borderRadius: 12, fontSize: 11 }}>
+                    {r.status ?? (r.isDraft ? 'draft' : 'signed')}
                   </span>
+                </td>
+                <td style={{ color: '#666', padding: '8px 12px', whiteSpace: 'nowrap' }}>
+                  {r.signedAt ? new Date(r.signedAt).toLocaleString() : '—'}
                 </td>
                 <td style={{ color: '#666', padding: '8px 12px', whiteSpace: 'nowrap' }}>{new Date(r.createdAt).toLocaleDateString()}</td>
                 <td style={{ padding: '8px 12px' }}>
+                  {r.status !== 'signed' && (
+                    <button
+                      onClick={() => onMarkSigned(r.id)}
+                      style={{ background: 'transparent', border: 'none', color: '#22c55e', cursor: 'pointer', fontSize: 14, padding: 2, marginRight: 8 }}
+                      title="Mark signed"
+                    >
+                      ✅
+                    </button>
+                  )}
                   <button
                     onClick={() => { if (window.confirm('Delete this record?')) onDelete(r.id); }}
                     style={{ background: 'transparent', border: 'none', color: '#E31E24', cursor: 'pointer', fontSize: 16, padding: 2 }}
