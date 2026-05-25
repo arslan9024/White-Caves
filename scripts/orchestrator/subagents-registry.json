@@ -1,4 +1,5 @@
 {
+  "_aegisNote": "V3 100-agent legacy compatibility registry. Canonical Aegis 150 registry is at plans/SUBAGENT_REGISTRY_150.json (see scripts/orchestrator/policy.json#registryPath).",
   "version": "3.0",
   "lastUpdated": "2026-05-24",
   "description": "Complete White Caves subagent registry — 100 agents, 14 organizational units. Each agent entry includes full job description, responsibilities, owned areas, capabilities, model, and invocation pattern.",

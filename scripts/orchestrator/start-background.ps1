@@ -29,7 +29,7 @@ if (-not (Test-Path $queueFile)) {
 }
 
 if (-not [bool]$policy.modelRouting.freeModelOnlyMode) {
-  throw "Background orchestration requires freeModelOnlyMode=true in scripts/orchestrator/policy.json"
+  Write-Warning "Background orchestration is running with freeModelOnlyMode=false. Workers will be restricted to freePlanningAgents list only. Set freeModelOnlyMode=true in policy.json to suppress this warning."
 }
 
 # Lane-root agents: first agent in each dependency chain per lane

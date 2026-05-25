@@ -1,5 +1,5 @@
 {
-  "version": "2026.05.22-aegis-150-agents-v1",
+  "version": "2026.05.25-aegis-150-v2",
   "readinessThresholdPct": 60,
   "readinessTargetPct": 90,
   "largeWaveMinReadinessPct": 90,
@@ -9,7 +9,7 @@
   "depthGateLabel": "depth evidence",
   "modelRouting": {
     "freeModelOnlyMode": false,
-    "planningAgents": "100-free-specialists-with-squad-synth",
+    "planningAgents": "150-agent-aegis-mesh-100-free-plus-50-premium",
     "premiumAllowedFor": [
       "squad-synthesis",
       "senior-coding",
