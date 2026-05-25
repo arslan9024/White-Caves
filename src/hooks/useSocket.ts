@@ -24,7 +24,6 @@ import { addNotification } from '../store/slices/notificationSlice';
 import { selectSessionToken } from '../store/selectors/sessionSelectors';
 import socketService, { SocketStatus } from '../services/socketService';
 import { createLogger } from '../utils/logger';
-import { safeStorage } from '../utils/safeStorage';
 
 const log = createLogger('useSocket');
 
@@ -40,7 +39,6 @@ export interface UseSocketReturn {
 export function useSocket(): UseSocketReturn {
   const dispatch = useDispatch<AppDispatch>();
   const token = useSelector((state: RootState) => selectSessionToken(state));
-  const effectiveToken = token ?? safeStorage.get('token');
   const [status, setStatus] = useState<SocketStatus>(socketService.getStatus());
 
   // Keep status in sync with the service
@@ -51,12 +49,12 @@ export function useSocket(): UseSocketReturn {
 
   // Connect / reconnect when the JWT token changes
   useEffect(() => {
-    if (!effectiveToken) {
+    if (!token) {
       socketService.disconnect();
       return;
     }
 
-    socketService.connect(effectiveToken);
+    socketService.connect(token);
 
     // ── Meta API channel (Nadia / Nina pipeline) ──────────────────────────
     const offMetaMsg = socketService.onMetaMessage(payload => {
@@ -143,7 +141,7 @@ export function useSocket(): UseSocketReturn {
       offConversation();
       offPresence();
     };
-  }, [effectiveToken, dispatch]);
+  }, [token, dispatch]);
 
   // Graceful disconnect on unmount (app-level — component unmounts on logout)
   useEffect(() => {
@@ -154,11 +152,11 @@ export function useSocket(): UseSocketReturn {
   }, []);
 
   const reconnect = useCallback(() => {
-    if (effectiveToken) {
+    if (token) {
       socketService.disconnect();
-      socketService.connect(effectiveToken);
+      socketService.connect(token);
     }
-  }, [effectiveToken]);
+  }, [token]);
 
   return {
     status,

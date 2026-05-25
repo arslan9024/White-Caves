@@ -51,6 +51,7 @@ vi.mock('../services/authService', () => ({
 vi.mock('../utils/safeStorage', () => ({
   safeStorage: {
     setJSON: vi.fn(),
+    getJSON: vi.fn(),
     get: vi.fn(),
     set: vi.fn(),
     remove: vi.fn(),
@@ -176,7 +177,7 @@ describe('useSignIn — handleSocialAuth (integration)', () => {
       expect(currentUser?.email).toBe(backendBuyerUser.email);
     });
 
-    it('navigates to /dashboard for a buyer role', async () => {
+    it('navigates to /crm for a buyer role', async () => {
       vi.useFakeTimers();
       const { result } = renderHook(() => useSignIn(), { wrapper: createWrapper(store) });
 
@@ -185,11 +186,11 @@ describe('useSignIn — handleSocialAuth (integration)', () => {
       });
       act(() => vi.runAllTimers());
 
-      expect(mockNavigate).toHaveBeenCalledWith('/dashboard');
+      expect(mockNavigate).toHaveBeenCalledWith('/crm', { replace: true });
       vi.useRealTimers();
     });
 
-    it('navigates to /dashboard for a tenant role', async () => {
+    it('navigates to /tenant-portal for a tenant role', async () => {
       vi.useFakeTimers();
       mockSyncFirebaseUser.mockResolvedValue(successResponse(backendTenantUser));
       const { result } = renderHook(() => useSignIn(), { wrapper: createWrapper(store) });
@@ -199,11 +200,11 @@ describe('useSignIn — handleSocialAuth (integration)', () => {
       });
       act(() => vi.runAllTimers());
 
-      expect(mockNavigate).toHaveBeenCalledWith('/dashboard');
+      expect(mockNavigate).toHaveBeenCalledWith('/tenant-portal', { replace: true });
       vi.useRealTimers();
     });
 
-    it('navigates to /dashboard for a landlord role', async () => {
+    it('navigates to /landlord-portal for a landlord role', async () => {
       vi.useFakeTimers();
       mockSyncFirebaseUser.mockResolvedValue(successResponse(backendLandlordUser));
       const { result } = renderHook(() => useSignIn(), { wrapper: createWrapper(store) });
@@ -213,7 +214,7 @@ describe('useSignIn — handleSocialAuth (integration)', () => {
       });
       act(() => vi.runAllTimers());
 
-      expect(mockNavigate).toHaveBeenCalledWith('/dashboard');
+      expect(mockNavigate).toHaveBeenCalledWith('/landlord-portal', { replace: true });
       vi.useRealTimers();
     });
 
@@ -227,7 +228,7 @@ describe('useSignIn — handleSocialAuth (integration)', () => {
       });
       act(() => vi.runAllTimers());
 
-      expect(mockNavigate).toHaveBeenCalledWith('/crm');
+      expect(mockNavigate).toHaveBeenCalledWith('/crm', { replace: true });
       vi.useRealTimers();
     });
   });
@@ -484,7 +485,7 @@ describe('useSignIn — handleSocialAuth (integration)', () => {
       act(() => vi.runAllTimers());
 
       expect(mockCompleteSocialRegistration).toHaveBeenCalledWith('client', 'tenant');
-      expect(mockNavigate).toHaveBeenCalledWith('/dashboard');
+      expect(mockNavigate).toHaveBeenCalledWith('/tenant-portal', { replace: true });
       vi.useRealTimers();
     });
 

@@ -9,7 +9,6 @@
 import { useState, useRef, useEffect, useCallback, type FormEvent } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
-import { setUser } from '../store/userSlice';
 import {
   signInWithGoogle,
   signInWithFacebook,
@@ -29,7 +28,11 @@ import {
   type LoginSuccessData,
 } from '../services/authService';
 import { safeStorage } from '../utils/safeStorage';
-import { isCreatorSuperUserEmail } from '../utils/superUserAccess';
+import {
+  finalizeAuthenticatedSession,
+  getReturnToFromLocationState,
+  navigateToPostLoginDestination,
+} from '../utils/authSession';
 
 // ─── Types ──────────────────────────────────────────────────────────
 
@@ -178,34 +181,82 @@ export function useSignIn() {
   );
 
   const handleSignInSuccess = useCallback(
-    (user: {
+    (
+      user: {
       id: string;
       email: string | null;
       name: string | null;
       role?: string;
       photoUrl?: string | null;
-    }): void => {
-      dispatch(
-        setUser({
-          id: user.id,
-          email: user.email || '',
-          name: user.name || undefined,
-          role: user.role,
-          photoURL: user.photoUrl || undefined,
-        })
-      );
+      status?: 'active' | 'pending' | 'suspended';
+      },
+      options?: { token?: string | null; provider?: string; rememberMe?: boolean; returnTo?: string | null }
+    ): void => {
+      const destination = finalizeAuthenticatedSession({
+      dispatch,
+      user: {
+        id: user.id,
+        email: user.email || '',
+        name: user.name || undefined,
+        role: user.role,
+        photoURL: user.photoUrl || undefined,
+        status: user.status,
+      },
+      token: options?.token,
+      provider: options?.provider,
+      rememberMe: options?.rememberMe,
+      returnTo:
+        options?.returnTo ??
+        getReturnToFromLocationState(location.state),
+      });
+
       setSuccess('Sign in successful!');
-      // Return the user to where they came from (e.g. a protected page they tried to visit
-      // before signing in), falling back to the main dashboard.
-      const from = (location.state as { from?: string } | null)?.from;
-      const destination = isCreatorSuperUserEmail(user.email)
-        ? '/crm'
-        : from && from !== '/signin' && from !== '/signup'
-          ? from
-          : '/dashboard';
-      navTimerRef.current = setTimeout(() => navigate(destination), TIMING.NAVIGATION_DELAY);
+      navTimerRef.current = setTimeout(
+      () => navigateToPostLoginDestination(navigate, destination),
+      TIMING.NAVIGATION_DELAY
+      );
     },
     [dispatch, navigate, location.state]
+  );
+
+  const finalizeSignUpSession = useCallback(
+    (
+      user: {
+      id: string;
+      email: string | null;
+      name: string | null;
+      role?: string;
+      photoUrl?: string | null;
+      status?: 'active' | 'pending' | 'suspended';
+      },
+      options?: { token?: string | null; provider?: string }
+    ): void => {
+      const destination = finalizeAuthenticatedSession({
+      dispatch,
+      user: {
+        id: user.id,
+        email: user.email || '',
+        name: user.name || undefined,
+        role: user.role,
+        photoURL: user.photoUrl || undefined,
+        status: user.status,
+      },
+      token: options?.token,
+      provider: options?.provider ?? 'registration',
+      });
+
+      if (user.status === 'pending') {
+      setSuccess('Registration submitted! Your account is pending approval.');
+      } else {
+      setSuccess('Account created successfully!');
+      }
+
+      navTimerRef.current = setTimeout(
+      () => navigateToPostLoginDestination(navigate, destination),
+      TIMING.NAVIGATION_DELAY
+      );
+    },
+    [dispatch, navigate]
   );
 
   const handleSignUpSuccess = useCallback(
@@ -273,27 +324,20 @@ export function useSignIn() {
       const backendUser = response.data.user;
       const resolvedRole =
         selectedCategory === 'staff' && !isSocialRegistration ? selectedRole : backendUser.role;
-      dispatch(
-        setUser({
+      saveUserData(selectedCategory, resolvedRole, status);
+      finalizeSignUpSession(
+        {
           id: backendUser.id,
           email: backendUser.email,
-          name: backendUser.name || undefined,
+          name: backendUser.name,
           role: resolvedRole,
           status,
-        })
+        },
+        {
+          token: response.data.token,
+          provider: pendingUser?.fromSocialProvider ?? 'email',
+        }
       );
-      saveUserData(selectedCategory, resolvedRole, status);
-
-      if (selectedCategory === 'staff') {
-        setSuccess('Registration submitted! Your account is pending approval.');
-        navTimerRef.current = setTimeout(
-          () => navigate('/pending-approval'),
-          TIMING.SIMULATED_API_DELAY
-        );
-      } else {
-        setSuccess('Account created successfully!');
-        navTimerRef.current = setTimeout(() => navigate('/dashboard'), TIMING.NAVIGATION_DELAY);
-      }
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : 'Registration failed';
       setError(message);
@@ -307,9 +351,9 @@ export function useSignIn() {
     password,
     fullName,
     dispatch,
-    navigate,
     saveUserData,
     pendingUser,
+    finalizeSignUpSession,
   ]);
 
   // ── Social auth ────────────────────────────────────────────────
@@ -355,7 +399,10 @@ export function useSignIn() {
           if (mode === 'signup') {
             handleSignUpSuccess(backendUser, { fromSocialProvider: provider });
           } else {
-            handleSignInSuccess(backendUser);
+            handleSignInSuccess(backendUser, {
+              token: backendResponse.data.token,
+              provider,
+            });
           }
         } catch (syncError: unknown) {
           await signOutFirebase().catch(() => {
@@ -466,7 +513,10 @@ export function useSignIn() {
           } else {
             const data = response.data as LoginSuccessData;
             if (!data?.user) throw new Error('Invalid response: missing user data');
-            handleSignInSuccess(data.user);
+            handleSignInSuccess(data.user, {
+              token: data.token,
+              provider: 'email',
+            });
           }
         }
       } catch (err: unknown) {
@@ -489,7 +539,10 @@ export function useSignIn() {
 
       try {
         const user = await backendVerifyTwoFactor(twoFactorEmail, twoFactorCode);
-        handleSignInSuccess(user);
+        handleSignInSuccess(user, {
+          token: safeStorage.get('token'),
+          provider: 'email-2fa',
+        });
       } catch (err: unknown) {
         setError(err instanceof Error ? err.message : 'Verification failed');
       } finally {
@@ -540,7 +593,10 @@ export function useSignIn() {
           if (mode === 'signup') {
             handleSignUpSuccess(backendUser);
           } else {
-            handleSignInSuccess(backendUser);
+            handleSignInSuccess(backendUser, {
+              token: backendResponse.data.token,
+              provider: 'phone',
+            });
           }
         } catch (syncError: unknown) {
           await signOutFirebase().catch(() => {

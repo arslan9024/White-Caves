@@ -63,6 +63,8 @@ vi.mock('../../features/auth/components/BiometricLogin', () => ({
 
 vi.mock('../../utils/safeStorage', () => ({
   safeStorage: {
+    get: vi.fn(),
+    set: vi.fn(),
     setJSON: vi.fn(),
     getJSON: vi.fn(),
     remove: vi.fn(),
@@ -501,7 +503,7 @@ describe('SignInPage', () => {
       });
 
       await waitFor(() => {
-        expect(mockNavigate).toHaveBeenCalledWith('/dashboard');
+        expect(mockNavigate).toHaveBeenCalledWith('/crm', { replace: true });
       });
     });
 

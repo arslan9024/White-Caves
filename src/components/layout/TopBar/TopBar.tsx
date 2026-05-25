@@ -26,6 +26,7 @@ import {
   Plus,
 } from 'lucide-react';
 import type { RootState } from '../../../store/store';
+import { selectSessionUser } from '../../../store/selectors/sessionSelectors';
 import {
   selectSelectedDepartment,
   selectSelectedService,
@@ -189,10 +190,8 @@ const TopBar: React.FC<TopBarProps> = React.memo(function TopBar({
   const navigate = useNavigate();
   const crumbs = useBreadcrumbs();
 
-  // User from Redux (auth slice is canonical, user slice kept as backward-compatible fallback)
-  const authUser = useSelector((state: RootState) => state.auth?.user);
-  const currentUser = useSelector((state: RootState) => state.user?.currentUser);
-  const user = authUser ?? currentUser;
+  // Session user selector bridges user/auth slices during migration.
+  const user = useSelector((state: RootState) => selectSessionUser(state));
   const userRole = (user?.role || 'user').toLowerCase();
   const isSuperUser = ['lion', 'owner', 'admin', 'managing_director'].includes(userRole);
 
