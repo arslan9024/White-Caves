@@ -197,6 +197,105 @@ export class DocumentService {
     };
   }
 
+  async generateMonthlyPLReport(): Promise<GeneratedFile> {
+    const now = new Date();
+    const year = now.getUTCFullYear();
+    const month = now.getUTCMonth() + 1;
+
+    // Current month bounds
+    const monthStart = new Date(Date.UTC(year, month - 1, 1));
+    const monthEnd = new Date(Date.UTC(year, month, 0, 23, 59, 59, 999));
+
+    const [rentIncome, commissionIncome, transactions] = await Promise.all([
+      prisma.invoice.aggregate({
+        where: {
+          status: { in: ['paid', 'settled'] },
+          notes: { contains: 'TYPE:rent' },
+          dueDate: { gte: monthStart, lte: monthEnd },
+        },
+        _sum: { totalAmount: true },
+        _count: { _all: true },
+      }),
+      prisma.commission.aggregate({
+        where: {
+          status: 'paid',
+          createdAt: { gte: monthStart, lte: monthEnd },
+        },
+        _sum: { amount: true },
+        _count: { _all: true },
+      }),
+      prisma.transaction.findMany({
+        where: { createdAt: { gte: monthStart, lte: monthEnd } },
+        select: {
+          id: true,
+          type: true,
+          amount: true,
+          currency: true,
+          description: true,
+          status: true,
+          createdAt: true,
+        },
+        orderBy: { createdAt: 'asc' },
+        take: 2000,
+      }),
+    ]);
+
+    const rentTotal = Number(rentIncome._sum.totalAmount ?? 0);
+    const commissionTotal = Number(commissionIncome._sum.amount ?? 0);
+    const grossIncome = rentTotal + commissionTotal;
+
+    const workbook = new ExcelJS.Workbook();
+
+    // ─── Summary sheet ───
+    const summarySheet = workbook.addWorksheet('P&L Summary');
+    summarySheet.columns = [
+      { header: 'Category', key: 'category', width: 30 },
+      { header: 'Amount (AED)', key: 'amount', width: 18 },
+      { header: 'Count', key: 'count', width: 12 },
+    ];
+
+    summarySheet.addRow({ category: 'Rent Income', amount: rentTotal, count: rentIncome._count._all });
+    summarySheet.addRow({ category: 'Commission Income', amount: commissionTotal, count: commissionIncome._count._all });
+    summarySheet.addRow({ category: 'Total Gross Income', amount: grossIncome, count: '' });
+
+    // Style the header row
+    const headerRow = summarySheet.getRow(1);
+    headerRow.font = { bold: true };
+    headerRow.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFC9A84C' } };
+
+    // ─── Transactions sheet ───
+    const txSheet = workbook.addWorksheet('Transactions');
+    txSheet.columns = [
+      { header: 'ID', key: 'id', width: 26 },
+      { header: 'Type', key: 'type', width: 16 },
+      { header: 'Amount', key: 'amount', width: 14 },
+      { header: 'Currency', key: 'currency', width: 10 },
+      { header: 'Description', key: 'description', width: 30 },
+      { header: 'Status', key: 'status', width: 14 },
+      { header: 'Date', key: 'createdAt', width: 16 },
+    ];
+
+    transactions.forEach(tx =>
+      txSheet.addRow({
+        ...tx,
+        createdAt: safeDate(tx.createdAt),
+      })
+    );
+
+    const txHeader = txSheet.getRow(1);
+    txHeader.font = { bold: true };
+    txHeader.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFC9A84C' } };
+
+    const arrayBuffer = await workbook.xlsx.writeBuffer();
+    const periodLabel = `${year}-${String(month).padStart(2, '0')}`;
+    logger.info('[DocumentService] generated monthly P&L report', { period: periodLabel, grossIncome });
+    return {
+      buffer: Buffer.from(arrayBuffer),
+      mimeType: XLSX_MIME,
+      filename: `pl-report-${periodLabel}.xlsx`,
+    };
+  }
+
   private async renderSimplePdf(title: string, lines: string[]): Promise<Buffer> {
     const pdf = await PDFDocument.create();
     const page = pdf.addPage([595, 842]);

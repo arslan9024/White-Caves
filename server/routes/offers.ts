@@ -17,6 +17,7 @@ import { AuthRequest } from '../middleware/auth.js';
 import { prisma } from '../database.js';
 import logger from '../utils/logger.js';
 import { triggerLeadRescore } from '../services/ai/leadAutoRescore.js';
+import { notificationService } from '../services/NotificationService.js';
 
 const router = Router();
 
@@ -115,6 +116,15 @@ router.post(
     });
 
     logger.info('Offer submitted', { userId, offerId: offer.id, propertyId, amount });
+    if (property.userId && property.userId !== userId) {
+      await notificationService.pushToUser({
+        userId: property.userId,
+        type: 'property',
+        title: 'New offer received',
+        message: `A new offer was submitted for ${property.title}`,
+        metadata: { offerId: offer.id, propertyId: property.id, amount },
+      });
+    }
     triggerLeadRescore(offer.leadId, 'offer_submitted');
     res.status(201).json({ success: true, data: offer });
   })
@@ -322,6 +332,13 @@ router.patch(
     }
 
     logger.info('Offer decision recorded', { userId, offerId: id, decision });
+    await notificationService.pushToUser({
+      userId: existing.buyerId,
+      type: 'property',
+      title: 'Offer decision update',
+      message: `Your offer for ${existing.property?.title || 'the property'} was ${decision}`,
+      metadata: { offerId: id, propertyId: existing.property?.id, decision },
+    });
     triggerLeadRescore(existing.leadId, `offer_decision_${decision}`);
     res.json({ success: true, data: updated, message: `Offer ${decision}` });
   })

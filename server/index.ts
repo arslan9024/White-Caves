@@ -98,6 +98,7 @@ import commissionsRoutes from './routes/commissions.js';
 import notificationsRoutes from './routes/notifications.js';
 import importHistoryRoutes from './routes/importHistory.routes.js';
 import smartImportRoutes from './routes/smartImport.routes.js';
+import mediaRoutes from './routes/media.js';
 import { requireRole, requirePermission } from './middleware/rbac.js';
 import { startFollowUpScheduler } from './services/automation/followUpScheduler.js';
 import { startRateRefresh } from './services/currencyService.js';
@@ -226,7 +227,7 @@ app.use('/api', (req: Request, _res: Response, next: NextFunction) => {
 
 // Content-Type validation for mutation endpoints
 // Exempt paths that accept non-JSON bodies (file uploads, webhooks, cookie-only endpoints).
-const NON_JSON_PATHS = new Set(['/api/whatsapp/webhook', '/api/auth/refresh']);
+const NON_JSON_PATHS = new Set(['/api/whatsapp/webhook', '/api/auth/refresh', '/api/media/upload']);
 app.use('/api', (req: Request, res: Response, next) => {
   if (
     ['POST', 'PUT', 'PATCH'].includes(req.method) &&
@@ -433,6 +434,9 @@ app.use('/api/favorites', favoritesRoutes);
 
 // Notifications API (any authenticated user can manage their own notifications)
 app.use('/api/notifications', notificationsRoutes);
+
+// Media API — Wave 13 upload/transform/delete pipeline
+app.use('/api/media', mediaRoutes);
 
 // Saved Searches API (any authenticated user can manage their own saved searches)
 app.use('/api/saved-searches', savedSearchesRoutes);

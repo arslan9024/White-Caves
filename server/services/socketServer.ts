@@ -128,9 +128,7 @@ export class SocketServer {
         (socket.handshake.headers?.authorization as string | undefined)?.replace('Bearer ', '');
 
       if (!token) {
-        // Unauthenticated clients can only join public rooms
-        socket.data.user = null;
-        return next();
+        return next(new Error('Authentication required'));
       }
 
       const payload = verifyJwt(token);
@@ -169,11 +167,7 @@ export class SocketServer {
           online: true,
           timestamp: new Date(),
         } satisfies AgentPresencePayload);
-      } else {
-        log.debug(`Socket connected: unauthenticated (${socket.id})`);
-      }
-
-      socket.on('disconnect', () => {
+        socket.on('disconnect', () => {
         if (user?.id) {
           this.io.to('crm').emit('agent:presence', {
             agentId: user.id,
@@ -184,6 +178,7 @@ export class SocketServer {
           log.debug(`Socket disconnected: ${user.email}`);
         }
       });
+      }
 
       // Client can ping to keep the connection alive from behind proxies
       socket.on('ping', () => {
