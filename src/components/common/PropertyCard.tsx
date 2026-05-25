@@ -1,4 +1,5 @@
 import React from 'react';
+import { motion, useReducedMotion } from 'framer-motion';
 import { useDispatch, useSelector } from 'react-redux';
 import {
   addToFavorites,
@@ -72,6 +73,9 @@ function PropertyCard({
   // Use favoriteIds for lightweight check; fall back to full favorites array
   const isFavorite =
     favoriteIds.length > 0 ? favoriteIds.includes(id) : favorites.some(f => f?.id === id);
+
+  // W17-003: respect user's prefers-reduced-motion setting
+  const prefersReducedMotion = useReducedMotion();
 
   const handleFavoriteClick = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -164,18 +168,31 @@ function PropertyCard({
     </>
   );
 
+  // W17-003: luxury hover micro-interaction — omitted when reduced motion is preferred
+  const hoverProps = prefersReducedMotion
+    ? {}
+    : ({ whileHover: { scale: 1.02, y: -4 }, transition: { duration: 0.2 } } as const);
+
   if (to) {
     return (
-      <PropertyCardContainer to={to} className={className}>
-        {content}
-      </PropertyCardContainer>
+      <motion.div {...hoverProps} style={{ display: 'contents' }}>
+        <PropertyCardContainer to={to} className={`glass-surface ${className}`}>
+          {content}
+        </PropertyCardContainer>
+      </motion.div>
     );
   }
 
   return (
-    <PropertyCardDiv $clickable={!!onClick} onClick={onClick} className={className}>
-      {content}
-    </PropertyCardDiv>
+    <motion.div {...hoverProps} style={{ display: 'contents' }}>
+      <PropertyCardDiv
+        $clickable={!!onClick}
+        onClick={onClick}
+        className={`glass-surface ${className}`}
+      >
+        {content}
+      </PropertyCardDiv>
+    </motion.div>
   );
 }
 
