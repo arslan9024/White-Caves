@@ -154,17 +154,6 @@ function DashboardEntryRoute() {
       });
       hasShownSigninNotice.current = true;
     }
-
-    function SignInRedirect() {
-      const location = useLocation();
-      return (
-        <Navigate
-          to="/signin"
-          replace
-          state={{ from: getCurrentPathWithQuery(location.pathname, location.search, location.hash) }}
-        />
-      );
-    }
   }, [isAuthLoading, user, info]);
 
   // Sync the effective role into the navigation slice so the dashboard always
@@ -211,6 +200,17 @@ function DashboardEntryRoute() {
         </Suspense>
       </RouteErrorBoundary>
     </AppLayout>
+  );
+}
+
+function SignInRedirect() {
+  const location = useLocation();
+  return (
+    <Navigate
+      to="/signin"
+      replace
+      state={{ from: getCurrentPathWithQuery(location.pathname, location.search, location.hash) }}
+    />
   );
 }
 

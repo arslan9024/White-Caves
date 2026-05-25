@@ -51,6 +51,7 @@ vi.mock('../services/authService', () => ({
 vi.mock('../utils/safeStorage', () => ({
   safeStorage: {
     setJSON: vi.fn(),
+    getJSON: vi.fn(),
     get: vi.fn(),
     set: vi.fn(),
     remove: vi.fn(),
@@ -484,7 +485,7 @@ describe('useSignIn — handleSocialAuth (integration)', () => {
       act(() => vi.runAllTimers());
 
       expect(mockCompleteSocialRegistration).toHaveBeenCalledWith('client', 'tenant');
-      expect(mockNavigate).toHaveBeenCalledWith('/crm', { replace: true });
+      expect(mockNavigate).toHaveBeenCalledWith('/tenant-portal', { replace: true });
       vi.useRealTimers();
     });
 

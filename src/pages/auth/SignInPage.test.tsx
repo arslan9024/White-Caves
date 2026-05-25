@@ -63,6 +63,8 @@ vi.mock('../../features/auth/components/BiometricLogin', () => ({
 
 vi.mock('../../utils/safeStorage', () => ({
   safeStorage: {
+    get: vi.fn(),
+    set: vi.fn(),
     setJSON: vi.fn(),
     getJSON: vi.fn(),
     remove: vi.fn(),
