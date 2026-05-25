@@ -390,6 +390,7 @@ router.delete(
     if (!existing) throw new AppError('Appointment not found', 404);
 
     await db.appointment.delete({ where: { id } });
+    triggerLeadRescore(existing.leadId, 'appointment_deleted');
 
     res.status(200).json({ success: true, message: `Appointment "${existing.title}" deleted` });
   })
