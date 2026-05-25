@@ -19,6 +19,12 @@ import { errorHandler, asyncHandler, AppError } from './middleware/errorHandler.
 import authMiddleware from './middleware/auth.js';
 import { requestIdMiddleware } from './middleware/requestId.js';
 import cspMiddleware from './middleware/csp.js';
+import {
+  API_PREFIX,
+  API_V1_PREFIX,
+  markLegacyApiDeprecated,
+  rewriteV1ToLegacyApi,
+} from './middleware/apiVersioning.js';
 import { CORS_ORIGINS, WHATSAPP_WEBHOOK_SECRET, IS_PRODUCTION } from './config/env.js';
 import { buildAllowedCorsOrigins, inferRequestOrigin, isCorsOriginAllowed } from './config/cors.js';
 import {
@@ -192,6 +198,13 @@ app.use(express.urlencoded({ limit: '1mb', extended: true }));
 
 // Cookie parsing — required for httpOnly refresh-token cookie on /api/auth/refresh
 app.use(cookieParser());
+
+// Wave 16: versioned API migration.
+// Requests to /api/v1/* are rewritten to /api/* to preserve existing handlers.
+app.use(API_V1_PREFIX, rewriteV1ToLegacyApi);
+
+// Legacy /api/* responses are kept as compatibility aliases and marked deprecated.
+app.use(API_PREFIX, markLegacyApiDeprecated);
 
 // Sanitize inbound JSON mutation payloads to reduce XSS storage risk.
 // Note: req.path inside app.use('/api', ...) is relative to the /api mount point,
@@ -1001,9 +1014,10 @@ if (IS_PRODUCTION) {
 // 404 handler
 app.use((req: Request, res: Response) => {
   res.status(404).json({
+    status: 'error',
     success: false,
-    error: 'Not Found',
     message: `Route ${req.path} not found`,
+    error: 'Not Found',
     statusCode: 404,
   });
 });
@@ -1082,7 +1096,8 @@ const startServer = async () => {
   httpServer.listen(PORT, () => {
     logger.info(`Server started on ${host}`);
     logger.info(`Environment: ${process.env.NODE_ENV || 'development'}`);
-    logger.info(`API Base: ${host}/api`);
+    logger.info(`API Base (v1): ${host}/api/v1`);
+    logger.info(`API Legacy Alias: ${host}/api`);
     logger.info(`Socket.io: ws://${host.replace(/^https?:\/\//, '')}`);
   });
 

@@ -10,6 +10,11 @@ import bcrypt from 'bcryptjs';
 import crypto from 'node:crypto';
 import { asyncHandler, AppError } from '../middleware/errorHandler';
 import authMiddleware from '../middleware/auth.js';
+import {
+  clearCsrfToken,
+  issueCsrfToken,
+  requireDoubleSubmitCsrf,
+} from '../middleware/csrf.js';
 import type { AuthRequest } from '../middleware/auth';
 import { JWT_SECRET, JWT_EXPIRES_SECONDS, BCRYPT_ROUNDS } from '../config/env';
 import { prisma } from '../database.js';
@@ -390,6 +395,7 @@ router.post(
       maxAge: 7 * 24 * 60 * 60 * 1000,
       path: '/api/auth',
     });
+    issueCsrfToken(res);
 
     // Log activity with enriched audit metadata (IP + UA) for forensics.
     const ip = getClientIp(req);
@@ -1100,6 +1106,7 @@ router.post(
       maxAge: 7 * 24 * 60 * 60 * 1000,
       path: '/api/auth',
     });
+    issueCsrfToken(res);
 
     const ip = getClientIp(req);
     const userAgent = String(req.headers['user-agent'] || 'unknown').slice(0, 256);
@@ -1138,6 +1145,7 @@ router.post(
 router.post(
   '/logout',
   authMiddleware,
+  requireDoubleSubmitCsrf,
   asyncHandler(async (req: Request, res: Response) => {
     const userId = req.user?.id;
     if (!userId) throw new AppError('Not authenticated', 401);
@@ -1164,6 +1172,7 @@ router.post(
       }
     }
     res.clearCookie('refresh_token', { path: '/api/auth' });
+    clearCsrfToken(res);
 
     res.status(200).json({ success: true, message: 'Logged out successfully' });
   })
@@ -2156,6 +2165,7 @@ router.post(
  */
 router.post(
   '/refresh',
+  requireDoubleSubmitCsrf,
   asyncHandler(async (req: Request, res: Response) => {
     const cookieValue = req.cookies?.refresh_token as string | undefined;
     if (!cookieValue || !cookieValue.includes(':')) {
@@ -2217,6 +2227,7 @@ router.post(
       maxAge: 7 * 24 * 60 * 60 * 1000,
       path: '/api/auth',
     });
+    issueCsrfToken(res);
 
     res.json({
       success: true,
