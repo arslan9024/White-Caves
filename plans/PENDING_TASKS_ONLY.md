@@ -1,7 +1,7 @@
 # Pending Tasks Only
 
 **Last Updated:** 2026-05-25
-**Current Focus:** Wave 17 complete; awaiting next implementation wave definition.
+**Current Focus:** Wave 18 workflow parity audit planning + prioritized gap queue generation.
 
 ## Canonical Sources
 
@@ -13,7 +13,7 @@
 
 ## Implementation Order
 
-`09 → 10 → 11 → 12 → 13 → 14 → 15 → 16 → 17`
+`09 → 10 → 11 → 12 → 13 → 14 → 15 → 16 → 17 → 18`
 
 Advance only when the prior wave is green, the readiness gate is satisfied, and `@Ada — Context Ready (60% Readiness) — Coding Phase Approved` has been issued for that wave.
 
@@ -31,6 +31,7 @@ Advance only when the prior wave is green, the readiness gate is satisfied, and 
 | S8 | 15 | Cache + PWA readiness | ✅ Green | @Redis + @PWA + @Ruchi + @Una | S7 green + readiness 60% + @Ada approval phrase |
 | S9 | 16 | Security hardening + API versioning | ✅ Green | @S5 + @Radia + @Mira | S8 green + readiness 60% + @Ada approval phrase |
 | S10 | 17 | Full UI/UX luxury upgrade (design tokens + glassmorphism + animations + mobile + PWA + WCAG 2.2) | ✅ Green | @Una + @Lea + @Tracy + @Africa + @Cyra + @Katherine | Wave 17 implementation + CI Lighthouse thresholds + accessibility/mobile/PWA checks complete |
+| S11 | 18 | Workflow parity audit + benchmark gap backlog | 📋 Planned | @Ada + @Margaret + @Mira + @Katherine | Wave 18 parity matrix finalized + canonical queue updates + `npm run plans:validate` |
 
 ## Completed Stream History
 
@@ -53,6 +54,7 @@ Advance only when the prior wave is green, the readiness gate is satisfied, and 
 | S5 | Wave 12 automation engine (cron + docs + email) | ✅ Complete |
 | S6 | Wave 13 real-time notifications + media + virtual tour | ✅ Complete |
 | S10 | Wave 17 full UI/UX luxury upgrade | ✅ Complete |
+| S11 | Wave 18 workflow parity audit + gap backlog generation | 📋 Planned |
 
 ## S2 — Wave 09: UX Hardening (Complete)
 
@@ -178,6 +180,34 @@ Key closures:
 | @Sanaa | DeepSeek V3 | `@Sanaa — AUDIT: wcag-2.2-gaps → all 8 new WCAG 2.2 AA criteria with acceptance test specs` |
 | @Rana | Google AI Studio | `@Rana — BRIEF: pwa-vs-native → MENA CRM agent mobile usage + PWA service worker scope` |
 | @Yara | Google AI Studio | `@Yara — RESEARCH: luxury-ux-benchmarks → luxury PropTech UX heuristics + tenant portal benchmarks` |
+
+## S11 — Wave 18: Workflow Parity Audit + Gap Backlog (Planned)
+
+**Sources:** `business_docs/04_workflows/*`, `business_docs/09_crm_features/*`, `business_docs/05_requirements/functional-requirements.md`, `src/config/crmModuleRegistry.tsx`, `server/index.ts`, `server/routes/*`  
+**Bundle:** [`WAVE_18_SDD.md`](./waves/WAVE_18_SDD.md) | [`WAVE_18_READINESS_PACKET.md`](./waves/WAVE_18_READINESS_PACKET.md) | [`WAVE_18_IMPLEMENTATION_BACKLOG.md`](./waves/WAVE_18_IMPLEMENTATION_BACKLOG.md) | [`WAVE_18_TEST_ROLLOUT.md`](./waves/WAVE_18_TEST_ROLLOUT.md) | [`WAVE_18_WORKFLOW_PARITY_MATRIX.md`](./waves/WAVE_18_WORKFLOW_PARITY_MATRIX.md)
+
+| Task | Scope | Priority | Owner | Validation |
+| --- | --- | --- | --- | --- |
+| 18-1 | Lock benchmark scope (platforms + region + parity model) | P0 | @Ada + @Margaret | Scope section finalized in W18 SDD |
+| 18-2 | Build normalized external taxonomy and map top-5 benchmark platforms | P1 | @Margaret | Matrix platform snapshot complete |
+| 18-3 | Populate White Caves doc/code/evidence workflow coverage rows | P0 | @Mira + @Katherine | 20+ rows scored in parity matrix |
+| 18-4 | Generate P0/P1/P2 implementation gap queue with requirement IDs | P0 | @Ada + @Mira + @Katherine | Gap summary published in W18 backlog |
+| 18-5 | Reconcile doc drift in CRM feature index | P1 | @Margaret | No stale missing-file refs remain |
+| 18-6 | Planning governance closeout | P0 | @Katherine | `npm run plans:validate` green |
+
+### Workflow Parity Dashboard (v1)
+
+- Included: 11
+- Partial: 14
+- Missing: 2
+- Unknown: 0
+
+### Weekly Re-Benchmark Loop
+
+1. Refresh benchmark workflow evidence (top-5 platform snapshot).
+2. Recalculate Included/Partial/Missing/Unknown counts.
+3. Push new deltas into upcoming implementation backlog.
+4. Run `npm run plans:validate` after queue/tracker updates.
 
 ---
 
