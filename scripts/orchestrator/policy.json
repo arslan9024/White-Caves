@@ -216,5 +216,28 @@
     "minimumFreeReadinessPct": 100,
     "minimumSquadSynthPct": 80,
     "visibilityMode": "full-agent-activity"
+  },
+  "workflow": {
+    "planning": {
+      "model": "aegis-150-dual-threshold",
+      "requiredEvidence": ["business-rules", "api-contract", "data-schema", "test-scenario"],
+      "validationOrder": ["focused-diagnostics", "scope-level-checks", "workspace-checks"],
+      "syncCadenceHours": 2
+    },
+    "development": {
+      "deliveryStyle": "vertical-slice",
+      "requiredChecks": ["typecheck", "lint", "build"],
+      "targetedTestsRequired": true,
+      "maxAutoFixRetries": 2
+    },
+    "git": {
+      "defaultRemote": "origin",
+      "integrationBranch": "develop",
+      "integrationFallbackBranches": ["development", "main"],
+      "releaseBranch": "main",
+      "featureBranchPrefix": "feature/",
+      "autoMergeReleaseBranch": false,
+      "requirePullRequestForRelease": true
+    }
   }
 }

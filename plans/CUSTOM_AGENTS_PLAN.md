@@ -40,6 +40,21 @@ This file defines how custom agents/subagents are dispatched **today** and how t
 
 ---
 
+## Aegis Workflow Upgrade (Planning + Development + Git)
+
+Effective with `scripts/orchestrator/policy.json` version `2026.05.25-aegis-150-v2`:
+
+1. **Planning workflow profile is explicit**: required readiness evidence is standardized as business rules, API contract, data schema, and test scenario.
+2. **Development workflow profile is explicit**: delivery stays vertical-slice with required checks (`typecheck`, `lint`, `build`) and targeted tests for touched scope.
+3. **Git workflow profile is explicit**:
+   - integration branch defaults to `develop` with fallback to `development`/`main`,
+   - release branch remains `main`,
+   - remote defaults to `origin`,
+   - release merges are PR-first by default (`autoMergeReleaseBranch=false`).
+4. **Session scripts consume policy-based git routing** instead of hard-coded branch names, improving consistency across planning loops and implementation sessions.
+
+---
+
 ## Subagent Routing Matrix (Aegis 150)
 
 | Work Type | Primary Agent(s) | Output Location | Promotion Rule |

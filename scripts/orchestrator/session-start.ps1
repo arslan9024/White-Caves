@@ -21,9 +21,23 @@ param(
 $ErrorActionPreference = "Continue"
 $root     = Resolve-Path $WorkspaceRoot
 $scripts  = Join-Path $root "scripts\orchestrator"
+$policyUtils = Join-Path $scripts "policy-utils.ps1"
 $w        = 72
 $stepNum  = 0
 $t0       = Get-Date
+
+if (Test-Path $policyUtils) {
+  . $policyUtils
+}
+
+$syncBase = "origin/main"
+if (Get-Command Get-OrchestratorPolicy -ErrorAction SilentlyContinue) {
+  try {
+    $policy = Get-OrchestratorPolicy -WorkspaceRoot $root
+    $gitPolicy = Get-OrchestratorGitPolicy -Policy $policy
+    $syncBase = ("{0}/{1}" -f $gitPolicy.defaultRemote, $gitPolicy.integrationBranch)
+  } catch {}
+}
 
 function Write-Step($title) {
   $script:stepNum++
@@ -165,7 +179,7 @@ if ($null -ne $prevSnap) {
 # ------------------------------------------------------------------
 Write-Host ""
 Write-Host ("=" * $w) -ForegroundColor Cyan
-Write-Host "  STEP 0 -- LOOP START SYNC (origin/main)" -ForegroundColor Yellow
+Write-Host ("  STEP 0 -- LOOP START SYNC ({0})" -f $syncBase) -ForegroundColor Yellow
 Write-Host ("=" * $w) -ForegroundColor Cyan
 $syncScript = Join-Path $scripts "loop-start-sync.ps1"
 if (Test-Path $syncScript) {

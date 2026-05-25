@@ -1,4 +1,4 @@
-# loop-start-sync.ps1 -- Sync working branch with origin/main at loop start
+# loop-start-sync.ps1 -- Sync working branch with integration branch at loop start
 # Creates stash snapshot metadata and supports optional wave feature branch creation.
 
 param(
@@ -11,6 +11,7 @@ $ErrorActionPreference = "Continue"
 $root = Resolve-Path $WorkspaceRoot
 $logsDir = Join-Path $root "logs\orchestrator"
 $snapshotFile = Join-Path $logsDir "loop-snapshots.json"
+$policyUtils = Join-Path $root "scripts\orchestrator\policy-utils.ps1"
 $w = 72
 
 if (-not (Test-Path $logsDir)) {
@@ -18,6 +19,29 @@ if (-not (Test-Path $logsDir)) {
 }
 
 Push-Location $root
+
+if (Test-Path $policyUtils) {
+  . $policyUtils
+}
+
+function Resolve-IntegrationBranch {
+  param(
+    [string]$Remote,
+    [string]$PreferredBranch,
+    [string[]]$FallbackBranches
+  )
+
+  $candidates = @($PreferredBranch) + @($FallbackBranches)
+  foreach ($candidate in $candidates) {
+    if ([string]::IsNullOrWhiteSpace($candidate)) { continue }
+    git ls-remote --exit-code --heads $Remote $candidate *> $null
+    if ($LASTEXITCODE -eq 0) {
+      return $candidate
+    }
+  }
+
+  return $PreferredBranch
+}
 
 function Write-Card([string]$title, [string]$color = "Cyan") {
   Write-Host ""
@@ -47,8 +71,25 @@ $snapshotTag = "aegis-loop-$timestamp"
 $currentBranch = (git rev-parse --abbrev-ref HEAD 2>$null).Trim()
 $beforeSha = (git rev-parse HEAD 2>$null).Trim()
 
-Write-Card "LOOP START SYNC -- FETCH/MAIN MERGE" "Magenta"
+$policy = $null
+$gitPolicy = $null
+if (Get-Command Get-OrchestratorPolicy -ErrorAction SilentlyContinue) {
+  try {
+    $policy = Get-OrchestratorPolicy -WorkspaceRoot $root
+    $gitPolicy = Get-OrchestratorGitPolicy -Policy $policy
+  } catch {}
+}
+
+$remoteName = if ($null -ne $gitPolicy) { [string]$gitPolicy.defaultRemote } else { "origin" }
+$preferredIntegrationBranch = if ($null -ne $gitPolicy) { [string]$gitPolicy.integrationBranch } else { "develop" }
+$fallbackIntegrationBranches = if ($null -ne $gitPolicy) { @($gitPolicy.integrationFallbackBranches) } else { @("development", "main") }
+$integrationBranch = Resolve-IntegrationBranch -Remote $remoteName -PreferredBranch $preferredIntegrationBranch -FallbackBranches $fallbackIntegrationBranches
+
+Write-Card ("LOOP START SYNC -- FETCH/{0} MERGE" -f $integrationBranch) "Magenta"
 Write-Host ("  Current branch: {0}" -f $currentBranch) -ForegroundColor White
+if ($integrationBranch -ne $preferredIntegrationBranch) {
+  Write-Host ("  Integration fallback selected: {0} (preferred: {1})" -f $integrationBranch, $preferredIntegrationBranch) -ForegroundColor Yellow
+}
 
 # Snapshot stash for rollback support
 $hasChanges = $false
@@ -73,10 +114,10 @@ Append-Snapshot @{
   hadUncommittedChanges = $hasChanges
 }
 
-Write-Host "  Fetching origin/main..." -ForegroundColor Cyan
-git fetch origin main 2>&1 | Out-Host
+Write-Host ("  Fetching {0}/{1}..." -f $remoteName, $integrationBranch) -ForegroundColor Cyan
+git fetch $remoteName $integrationBranch 2>&1 | Out-Host
 if ($LASTEXITCODE -ne 0) {
-  Write-Host "  [BLOCKED] Could not fetch origin/main" -ForegroundColor Red
+  Write-Host ("  [BLOCKED] Could not fetch {0}/{1}" -f $remoteName, $integrationBranch) -ForegroundColor Red
   Pop-Location
   exit 1
 }
@@ -90,14 +131,14 @@ if (-not [string]::IsNullOrWhiteSpace($targetWave)) {
   $createdFeatureBranch = $normalized
 
   Write-Host ("  Creating/updating wave branch: {0}" -f $createdFeatureBranch) -ForegroundColor Cyan
-  git checkout -B main origin/main 2>&1 | Out-Host
+  git checkout -B $integrationBranch "$remoteName/$integrationBranch" 2>&1 | Out-Host
   if ($LASTEXITCODE -ne 0) {
-    Write-Host "  [BLOCKED] Could not reset local main to origin/main" -ForegroundColor Red
+    Write-Host ("  [BLOCKED] Could not reset local {0} to {1}/{0}" -f $integrationBranch, $remoteName) -ForegroundColor Red
     Pop-Location
     exit 1
   }
 
-  git checkout -B $createdFeatureBranch main 2>&1 | Out-Host
+  git checkout -B $createdFeatureBranch $integrationBranch 2>&1 | Out-Host
   if ($LASTEXITCODE -ne 0) {
     Write-Host ("  [BLOCKED] Could not create branch {0}" -f $createdFeatureBranch) -ForegroundColor Red
     Pop-Location
@@ -109,8 +150,8 @@ if (-not [string]::IsNullOrWhiteSpace($targetWave)) {
     Pop-Location
     exit 1
   }
-  Write-Host "  Merging origin/main into current branch..." -ForegroundColor Cyan
-  git merge origin/main --no-edit 2>&1 | Out-Host
+  Write-Host ("  Merging {0}/{1} into current branch..." -f $remoteName, $integrationBranch) -ForegroundColor Cyan
+  git merge "$remoteName/$integrationBranch" --no-edit 2>&1 | Out-Host
   if ($LASTEXITCODE -ne 0) {
     $conflicts = @(git diff --name-only --diff-filter=U 2>$null)
     if ($conflicts.Count -gt 0) {
@@ -141,14 +182,14 @@ if ($hasChanges -and -not [string]::IsNullOrWhiteSpace($stashRef)) {
 }
 
 $currentAfter = (git rev-parse --abbrev-ref HEAD 2>$null).Trim()
-$ahead = (git rev-list --count HEAD..origin/main 2>$null).Trim()
-$behind = (git rev-list --count origin/main..HEAD 2>$null).Trim()
+$ahead = (git rev-list --count "HEAD..$remoteName/$integrationBranch" 2>$null).Trim()
+$behind = (git rev-list --count "$remoteName/$integrationBranch..HEAD" 2>$null).Trim()
 if ([string]::IsNullOrWhiteSpace($ahead)) { $ahead = "0" }
 if ([string]::IsNullOrWhiteSpace($behind)) { $behind = "0" }
 
 Write-Card "SYNC COMPLETE" "Green"
 Write-Host ("  Branch      : {0}" -f $currentAfter) -ForegroundColor White
-Write-Host ("  Main delta  : +{0} behind / +{1} ahead" -f $ahead, $behind) -ForegroundColor White
+Write-Host ("  {0} delta : +{1} behind / +{2} ahead" -f $integrationBranch, $ahead, $behind) -ForegroundColor White
 if (-not [string]::IsNullOrWhiteSpace($beforeSha)) {
   $changedFromMain = @(git diff --name-only $beforeSha..HEAD 2>$null)
   if ($changedFromMain.Count -gt 0) {
