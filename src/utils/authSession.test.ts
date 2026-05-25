@@ -13,13 +13,19 @@ import {
   sanitizeReturnToPath,
 } from './authSession';
 
-const mockGet = vi.fn<(key: string, fallback?: string) => string | null>();
-const mockSetJSON = vi.fn<(key: string, value: unknown) => void>();
-const mockRemove = vi.fn<(key: string) => boolean>();
+const { mockGet, mockGetJSON, mockSet, mockSetJSON, mockRemove } = vi.hoisted(() => ({
+  mockGet: vi.fn<(key: string, fallback?: string) => string | null>(),
+  mockGetJSON: vi.fn<(key: string) => unknown>(),
+  mockSet: vi.fn<(key: string, value: string) => void>(),
+  mockSetJSON: vi.fn<(key: string, value: unknown) => void>(),
+  mockRemove: vi.fn<(key: string) => boolean>(),
+}));
 
 vi.mock('./safeStorage', () => ({
   safeStorage: {
     get: (...args: [string, string?]) => mockGet(...args),
+    getJSON: (...args: [string]) => mockGetJSON(...args),
+    set: (...args: [string, string]) => mockSet(...args),
     setJSON: (...args: [string, unknown]) => mockSetJSON(...args),
     remove: (...args: [string]) => mockRemove(...args),
   },
