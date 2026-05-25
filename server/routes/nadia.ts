@@ -26,6 +26,12 @@ import {
 import whatsAppBotService from '../services/WhatsAppBotService.js';
 import { requirePermission, resolveBackendRole, roleHasPermission } from '../middleware/rbac';
 import type { AuthRequest } from '../middleware/auth';
+import {
+  templateRegistry,
+  type TemplateGovernanceRecord,
+  type TemplateQualityStatus,
+} from '../services/nadia/templateGovernance.js';
+import { optInRegistry } from '../services/nadia/optInRegistry.js';
 
 const router = Router();
 
@@ -1161,6 +1167,203 @@ router.get(
         lastReviewedAt: new Date().toISOString(),
       },
     });
+  })
+);
+
+// ============================================================================
+// W5-004 — TEMPLATE GOVERNANCE ENDPOINTS
+// ============================================================================
+
+/**
+ * GET /api/nadia/templates
+ * List all registered template governance records.
+ */
+router.get(
+  '/templates',
+  requirePermission('view_whatsapp_conversations'),
+  asyncHandler(async (_req: Request, res: Response) => {
+    res.status(200).json({
+      success: true,
+      data: templateRegistry.getAll(),
+    });
+  })
+);
+
+/**
+ * POST /api/nadia/templates
+ * Register or update a template governance record.
+ */
+router.post(
+  '/templates',
+  requirePermission('assign_whatsapp_conversations'),
+  asyncHandler(async (req: Request, res: Response) => {
+    const { name, category, qualityStatus, language, parameters } = req.body as {
+      name?: unknown;
+      category?: unknown;
+      qualityStatus?: unknown;
+      language?: unknown;
+      parameters?: unknown;
+    };
+
+    if (!name || typeof name !== 'string') {
+      throw new AppError('name is required', 400);
+    }
+    const VALID_CATEGORIES = ['UTILITY', 'MARKETING', 'AUTHENTICATION'] as const;
+    if (!category || !VALID_CATEGORIES.includes(category as (typeof VALID_CATEGORIES)[number])) {
+      throw new AppError(`category must be one of: ${VALID_CATEGORIES.join(', ')}`, 400);
+    }
+    const VALID_STATUSES = ['approved', 'pending', 'rejected', 'paused'] as const;
+    if (
+      !qualityStatus ||
+      !VALID_STATUSES.includes(qualityStatus as (typeof VALID_STATUSES)[number])
+    ) {
+      throw new AppError(`qualityStatus must be one of: ${VALID_STATUSES.join(', ')}`, 400);
+    }
+
+    const record: TemplateGovernanceRecord = {
+      name: name as string,
+      category: category as TemplateGovernanceRecord['category'],
+      qualityStatus: qualityStatus as TemplateQualityStatus,
+      language: typeof language === 'string' && language ? language : 'en',
+      parameters: Array.isArray(parameters) ? (parameters as string[]) : undefined,
+      lastChecked: new Date(),
+    };
+
+    templateRegistry.register(record);
+
+    res.status(201).json({ success: true, data: record });
+  })
+);
+
+/**
+ * GET /api/nadia/templates/:name/check
+ * Check whether a template is allowed to be sent.
+ */
+router.get(
+  '/templates/:name/check',
+  requirePermission('view_whatsapp_conversations'),
+  asyncHandler(async (req: Request, res: Response) => {
+    const { name } = req.params;
+    const result = templateRegistry.check(name);
+    res.status(200).json({ success: true, data: result });
+  })
+);
+
+/**
+ * PATCH /api/nadia/templates/:name/quality
+ * Update the quality status of a registered template.
+ */
+router.patch(
+  '/templates/:name/quality',
+  requirePermission('assign_whatsapp_conversations'),
+  asyncHandler(async (req: Request, res: Response) => {
+    const { name } = req.params;
+    const { qualityStatus, reason } = req.body as {
+      qualityStatus?: unknown;
+      reason?: unknown;
+    };
+
+    const VALID_STATUSES = ['approved', 'pending', 'rejected', 'paused'] as const;
+    if (
+      !qualityStatus ||
+      !VALID_STATUSES.includes(qualityStatus as (typeof VALID_STATUSES)[number])
+    ) {
+      throw new AppError(`qualityStatus must be one of: ${VALID_STATUSES.join(', ')}`, 400);
+    }
+
+    templateRegistry.updateQuality(
+      name,
+      qualityStatus as TemplateQualityStatus,
+      typeof reason === 'string' ? reason : undefined
+    );
+
+    const updated = templateRegistry.check(name);
+    res.status(200).json({ success: true, data: updated });
+  })
+);
+
+// ============================================================================
+// W5-005 — OPT-IN REGISTRY ENDPOINTS
+// ============================================================================
+
+/**
+ * GET /api/nadia/opt-in/:phone
+ * Check opt-in status for a specific phone number.
+ */
+router.get(
+  '/opt-in/:phone',
+  requirePermission('view_whatsapp_conversations'),
+  asyncHandler(async (req: Request, res: Response) => {
+    const { phone } = req.params;
+    const isActive = optInRegistry.isOptedIn(phone);
+    const record = optInRegistry.getRecord(phone);
+    res.status(200).json({
+      success: true,
+      data: { phone, isOptedIn: isActive, record: record ?? null },
+    });
+  })
+);
+
+/**
+ * GET /api/nadia/opt-in
+ * List all opt-in records and active count.
+ */
+router.get(
+  '/opt-in',
+  requirePermission('view_whatsapp_conversations'),
+  asyncHandler(async (_req: Request, res: Response) => {
+    res.status(200).json({
+      success: true,
+      data: {
+        records: optInRegistry.getAll(),
+        countActive: optInRegistry.countActive(),
+      },
+    });
+  })
+);
+
+/**
+ * POST /api/nadia/opt-in
+ * Record opt-in consent for a phone number.
+ */
+router.post(
+  '/opt-in',
+  requirePermission('reply_whatsapp_conversations'),
+  asyncHandler(async (req: Request, res: Response) => {
+    const { phone, source, consentText } = req.body as {
+      phone?: unknown;
+      source?: unknown;
+      consentText?: unknown;
+    };
+
+    if (!phone || typeof phone !== 'string') {
+      throw new AppError('phone is required', 400);
+    }
+    if (!source || typeof source !== 'string') {
+      throw new AppError('source is required', 400);
+    }
+
+    const record = optInRegistry.record(
+      phone,
+      source,
+      typeof consentText === 'string' ? consentText : undefined
+    );
+
+    res.status(201).json({ success: true, data: record });
+  })
+);
+
+/**
+ * DELETE /api/nadia/opt-in/:phone
+ * Revoke opt-in consent for a phone number.
+ */
+router.delete(
+  '/opt-in/:phone',
+  requirePermission('reply_whatsapp_conversations'),
+  asyncHandler(async (req: Request, res: Response) => {
+    const { phone } = req.params;
+    optInRegistry.revoke(phone);
+    res.status(200).json({ success: true, data: { phone, revoked: true } });
   })
 );
 
