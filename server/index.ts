@@ -121,9 +121,10 @@ const allowedCorsOrigins = buildAllowedCorsOrigins(CORS_ORIGINS, process.env.NOD
 app.set('trust proxy', 1);
 // In development, keep API on 3001 to avoid colliding with Vite (5000).
 // Use API_PORT when provided; in production/staging, respect PORT as platform-provided.
-const PORT =
+const resolvedPortValue =
   process.env.API_PORT ||
   (process.env.NODE_ENV === 'development' ? 3001 : process.env.PORT || 3001);
+const PORT = Number(resolvedPortValue);
 
 // ============================================================================
 // MIDDLEWARE SETUP
@@ -282,28 +283,31 @@ app.get('/api/health', (req: Request, res: Response) => {
 });
 
 // Database health check — Wave 15 (W15-002)
-app.get('/api/health/db', asyncHandler(async (_req: Request, res: Response) => {
-  const start = Date.now();
-  try {
-    await prisma.$runCommandRaw({ ping: 1 });
-    const latencyMs = Date.now() - start;
-    const cacheHealth = await cacheService.ping();
-    res.status(200).json({
-      status: 'healthy',
-      latencyMs,
-      cache: cacheHealth,
-      timestamp: new Date(),
-    });
-  } catch (err) {
-    const latencyMs = Date.now() - start;
-    res.status(503).json({
-      status: 'unhealthy',
-      latencyMs,
-      error: err instanceof Error ? err.message : 'Database unreachable',
-      timestamp: new Date(),
-    });
-  }
-}));
+app.get(
+  '/api/health/db',
+  asyncHandler(async (_req: Request, res: Response) => {
+    const start = Date.now();
+    try {
+      await prisma.$runCommandRaw({ ping: 1 });
+      const latencyMs = Date.now() - start;
+      const cacheHealth = await cacheService.ping();
+      res.status(200).json({
+        status: 'healthy',
+        latencyMs,
+        cache: cacheHealth,
+        timestamp: new Date(),
+      });
+    } catch (err) {
+      const latencyMs = Date.now() - start;
+      res.status(503).json({
+        status: 'unhealthy',
+        latencyMs,
+        error: err instanceof Error ? err.message : 'Database unreachable',
+        timestamp: new Date(),
+      });
+    }
+  })
+);
 
 // Dynamic sitemap.xml (SEO)
 app.use('/', sitemapRoutes);
@@ -1097,13 +1101,41 @@ const startServer = async () => {
   // Attach Socket.io to the http server (must happen before listen)
   createSocketServer(httpServer);
 
-  httpServer.listen(PORT, () => {
-    logger.info(`Server started on ${host}`);
-    logger.info(`Environment: ${process.env.NODE_ENV || 'development'}`);
-    logger.info(`API Base (v1): ${host}/api/v1`);
-    logger.info(`API Legacy Alias: ${host}/api`);
-    logger.info(`Socket.io: ws://${host.replace(/^https?:\/\//, '')}`);
+  const maxBindRetries = IS_PRODUCTION ? 0 : 20;
+  let bindAttempts = 0;
+
+  await new Promise<void>((resolve, reject) => {
+    const onListening = () => {
+      httpServer.off('error', onError);
+      resolve();
+    };
+
+    const onError = (error: NodeJS.ErrnoException) => {
+      if (error.code === 'EADDRINUSE' && bindAttempts < maxBindRetries) {
+        bindAttempts += 1;
+        logger.warn(
+          `Port ${PORT} is still busy (attempt ${bindAttempts}/${maxBindRetries}). Retrying bind...`
+        );
+        setTimeout(() => {
+          httpServer.listen(PORT);
+        }, 250);
+        return;
+      }
+
+      httpServer.off('listening', onListening);
+      reject(error);
+    };
+
+    httpServer.once('listening', onListening);
+    httpServer.on('error', onError);
+    httpServer.listen(PORT);
   });
+
+  logger.info(`Server started on ${host}`);
+  logger.info(`Environment: ${process.env.NODE_ENV || 'development'}`);
+  logger.info(`API Base (v1): ${host}/api/v1`);
+  logger.info(`API Legacy Alias: ${host}/api`);
+  logger.info(`Socket.io: ws://${host.replace(/^https?:\/\//, '')}`);
 
   return httpServer;
 };
@@ -1142,8 +1174,11 @@ const gracefulShutdown = async (signal: string) => {
       logger.info('HTTP server closed — no new connections');
     });
   }
-  // 2. Allow in-flight requests up to 10s to finish
-  await new Promise(resolve => setTimeout(resolve, 10_000));
+  // 2. Allow in-flight requests to finish.
+  // In production keep a longer drain window; in dev/test keep shutdown fast
+  // so nodemon restarts do not race and re-bind errors (EADDRINUSE) are avoided.
+  const shutdownDrainMs = IS_PRODUCTION ? 10_000 : 500;
+  await new Promise(resolve => setTimeout(resolve, shutdownDrainMs));
   // 3. Disconnect database
   await prisma.$disconnect();
   logger.info('Database disconnected — exiting');

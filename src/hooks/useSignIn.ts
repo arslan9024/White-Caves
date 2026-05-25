@@ -9,12 +9,14 @@
 import { useState, useRef, useEffect, useCallback, type FormEvent } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
+import { setUser } from '../store/userSlice';
 import {
   signInWithGoogle,
   signInWithFacebook,
   signInWithApple,
   signInWithPhone,
   createRecaptchaVerifier,
+  resetPassword,
   signOut as signOutFirebase,
   isFirebaseAuthConfigured,
 } from '../config/firebase';
@@ -28,11 +30,6 @@ import {
   type LoginSuccessData,
 } from '../services/authService';
 import { safeStorage } from '../utils/safeStorage';
-import {
-  finalizeAuthenticatedSession,
-  getReturnToFromLocationState,
-  navigateToPostLoginDestination,
-} from '../utils/authSession';
 
 // ─── Types ──────────────────────────────────────────────────────────
 
@@ -60,7 +57,76 @@ interface SocialSyncRecovery {
   reason: string;
 }
 
+type SupportedSocialProvider = 'google' | 'facebook' | 'apple';
+
+interface SocialAuthErrorLike {
+  code?: string;
+  message?: string;
+}
+
 const MAX_SOCIAL_RETRY_ATTEMPTS = 3;
+const SUPERUSER_EMAIL = 'arslanmalikgoraha@gmail.com';
+const AUTH_ROUTE_BLOCKLIST = new Set(['/signin', '/signup', '/select-role', '/pending-approval']);
+const CLIENT_ROLE_KEYS = new Set(['buyer', 'seller', 'landlord', 'property-owner', 'tenant']);
+const LANDLORD_ROLE_KEYS = new Set(['landlord', 'property-owner']);
+
+const normalizeRoleKey = (role: string | null | undefined): string =>
+  (role || '').toLowerCase().trim();
+
+const toTitleCase = (value: string): string =>
+  value.length > 0 ? `${value[0].toUpperCase()}${value.slice(1)}` : value;
+
+const resolveSafeReturnPath = (path: string | undefined): string | null => {
+  if (!path || !path.startsWith('/')) {
+    return null;
+  }
+
+  const normalizedPath = path.toLowerCase().trim();
+  if (AUTH_ROUTE_BLOCKLIST.has(normalizedPath) || normalizedPath.startsWith('/auth')) {
+    return null;
+  }
+
+  return path;
+};
+
+const resolveCategoryFromRole = (role: string | null | undefined): 'client' | 'staff' => {
+  const normalizedRole = normalizeRoleKey(role);
+  return CLIENT_ROLE_KEYS.has(normalizedRole) ? 'client' : 'staff';
+};
+
+const isSuperuserEmail = (value: string | null | undefined): boolean =>
+  (value || '').toLowerCase().trim() === SUPERUSER_EMAIL;
+
+const normalizeSocialAuthErrorMessage = (error: unknown, provider: string): string => {
+  const socialError = error as SocialAuthErrorLike;
+  const socialErrorCode = socialError?.code;
+
+  switch (socialErrorCode) {
+    case 'auth/popup-blocked':
+      return `Unable to open ${toTitleCase(provider)} sign-in popup. Please allow popups and try again.`;
+    case 'auth/popup-closed-by-user':
+      return `${toTitleCase(provider)} sign-in was cancelled before completion.`;
+    case 'auth/cancelled-popup-request':
+      return `Another sign-in request interrupted ${toTitleCase(provider)} authentication. Please retry.`;
+    case 'auth/network-request-failed':
+      return 'Network issue detected during social sign-in. Please check your connection and retry.';
+    default:
+      break;
+  }
+
+  if (error instanceof Error && error.message.trim()) {
+    return error.message.trim();
+  }
+
+  if (typeof socialError?.message === 'string' && socialError.message.trim()) {
+    return socialError.message.trim();
+  }
+
+  return `${toTitleCase(provider)} authentication failed. Please try again.`;
+};
+
+const isSupportedSocialProvider = (provider: string): provider is SupportedSocialProvider =>
+  provider === 'google' || provider === 'facebook' || provider === 'apple';
 
 export interface UserCategory {
   id: string;
@@ -126,6 +192,7 @@ export function useSignIn() {
   const [step, setStep] = useState<number>(1);
   const [activeTab, setActiveTab] = useState<'email' | 'phone'>('email');
   const [loading, setLoading] = useState(false);
+  const [forgotPasswordLoading, setForgotPasswordLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
 
@@ -180,83 +247,72 @@ export function useSignIn() {
     []
   );
 
-  const handleSignInSuccess = useCallback(
-    (
-      user: {
-      id: string;
-      email: string | null;
-      name: string | null;
-      role?: string;
-      photoUrl?: string | null;
-      status?: 'active' | 'pending' | 'suspended';
-      },
-      options?: { token?: string | null; provider?: string; rememberMe?: boolean; returnTo?: string | null }
-    ): void => {
-      const destination = finalizeAuthenticatedSession({
-      dispatch,
-      user: {
-        id: user.id,
-        email: user.email || '',
-        name: user.name || undefined,
-        role: user.role,
-        photoURL: user.photoUrl || undefined,
-        status: user.status,
-      },
-      token: options?.token,
-      provider: options?.provider,
-      rememberMe: options?.rememberMe,
-      returnTo:
-        options?.returnTo ??
-        getReturnToFromLocationState(location.state),
-      });
+  const resolvePostLoginRoute = useCallback(
+    (user: { role?: string; status?: string }): string => {
+      const resolvedStatus = user.status?.toLowerCase().trim() || 'active';
+      const normalizedRole = normalizeRoleKey(user.role);
 
-      setSuccess('Sign in successful!');
-      navTimerRef.current = setTimeout(
-      () => navigateToPostLoginDestination(navigate, destination),
-      TIMING.NAVIGATION_DELAY
-      );
-    },
-    [dispatch, navigate, location.state]
-  );
-
-  const finalizeSignUpSession = useCallback(
-    (
-      user: {
-      id: string;
-      email: string | null;
-      name: string | null;
-      role?: string;
-      photoUrl?: string | null;
-      status?: 'active' | 'pending' | 'suspended';
-      },
-      options?: { token?: string | null; provider?: string }
-    ): void => {
-      const destination = finalizeAuthenticatedSession({
-      dispatch,
-      user: {
-        id: user.id,
-        email: user.email || '',
-        name: user.name || undefined,
-        role: user.role,
-        photoURL: user.photoUrl || undefined,
-        status: user.status,
-      },
-      token: options?.token,
-      provider: options?.provider ?? 'registration',
-      });
-
-      if (user.status === 'pending') {
-      setSuccess('Registration submitted! Your account is pending approval.');
-      } else {
-      setSuccess('Account created successfully!');
+      if (resolvedStatus === 'pending') {
+        return '/pending-approval';
       }
 
-      navTimerRef.current = setTimeout(
-      () => navigateToPostLoginDestination(navigate, destination),
-      TIMING.NAVIGATION_DELAY
-      );
+      const stateValue = location.state as { from?: string } | null;
+      const returnPath = resolveSafeReturnPath(stateValue?.from);
+      if (returnPath) {
+        return returnPath;
+      }
+
+      if (!normalizedRole) {
+        return '/select-role';
+      }
+
+      if (normalizedRole === 'tenant') {
+        return '/tenant-portal';
+      }
+
+      if (LANDLORD_ROLE_KEYS.has(normalizedRole)) {
+        return '/landlord-portal';
+      }
+
+      return '/crm';
     },
-    [dispatch, navigate]
+    [location.state]
+  );
+
+  const handleSignInSuccess = useCallback(
+    (user: {
+      id: string;
+      email: string | null;
+      name: string | null;
+      role?: string;
+      status?: string;
+      photoUrl?: string | null;
+    }): void => {
+      const resolvedStatus = user.status?.toLowerCase().trim() || 'active';
+      const normalizedRole = isSuperuserEmail(user.email)
+        ? 'managing_director'
+        : normalizeRoleKey(user.role);
+      const fallbackRoute = resolvePostLoginRoute({ role: normalizedRole, status: resolvedStatus });
+
+      dispatch(
+        setUser({
+          id: user.id,
+          email: user.email || '',
+          name: user.name || undefined,
+          role: normalizedRole || user.role,
+          status: resolvedStatus === 'pending' ? 'pending' : 'active',
+          photoURL: user.photoUrl || undefined,
+        })
+      );
+
+      if (normalizedRole) {
+        saveUserData(resolveCategoryFromRole(normalizedRole), normalizedRole, resolvedStatus);
+      }
+
+      setSuccess('Sign in successful!');
+      navTimerRef.current = setTimeout(() => navigate(fallbackRoute), TIMING.NAVIGATION_DELAY);
+    },
+    [dispatch, navigate, resolvePostLoginRoute, saveUserData]
   );
 
   const handleSignUpSuccess = useCallback(
@@ -324,20 +380,29 @@ export function useSignIn() {
       const backendUser = response.data.user;
       const resolvedRole =
         selectedCategory === 'staff' && !isSocialRegistration ? selectedRole : backendUser.role;
-      saveUserData(selectedCategory, resolvedRole, status);
-      finalizeSignUpSession(
-        {
+      const normalizedRole = normalizeRoleKey(resolvedRole) || 'agent';
+      dispatch(
+        setUser({
           id: backendUser.id,
           email: backendUser.email,
-          name: backendUser.name,
-          role: resolvedRole,
+          name: backendUser.name || undefined,
+          role: normalizedRole,
           status,
-        },
-        {
-          token: response.data.token,
-          provider: pendingUser?.fromSocialProvider ?? 'email',
-        }
+        })
       );
+      saveUserData(selectedCategory, normalizedRole, status);
+
+      if (selectedCategory === 'staff') {
+        setSuccess('Registration submitted! Your account is pending approval.');
+        navTimerRef.current = setTimeout(
+          () => navigate('/pending-approval'),
+          TIMING.SIMULATED_API_DELAY
+        );
+      } else {
+        setSuccess('Account created successfully!');
+        const nextRoute = resolvePostLoginRoute({ role: normalizedRole, status });
+        navTimerRef.current = setTimeout(() => navigate(nextRoute), TIMING.NAVIGATION_DELAY);
+      }
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : 'Registration failed';
       setError(message);
@@ -351,9 +416,10 @@ export function useSignIn() {
     password,
     fullName,
     dispatch,
+    navigate,
     saveUserData,
     pendingUser,
-    finalizeSignUpSession,
+    resolvePostLoginRoute,
   ]);
 
   // ── Social auth ────────────────────────────────────────────────
@@ -371,6 +437,10 @@ export function useSignIn() {
         setSocialRetryAttempts(0);
       }
       try {
+        if (!isSupportedSocialProvider(provider)) {
+          throw new Error('Invalid provider');
+        }
+
         let result;
         switch (provider) {
           case 'google':
@@ -397,12 +467,21 @@ export function useSignIn() {
           setError('');
 
           if (mode === 'signup') {
-            handleSignUpSuccess(backendUser, { fromSocialProvider: provider });
+            if (isSuperuserEmail(backendUser.email)) {
+              handleSignInSuccess({
+                ...backendUser,
+                role: 'managing_director',
+                status: 'active',
+              });
+            } else {
+              handleSignUpSuccess(backendUser, { fromSocialProvider: provider });
+            }
           } else {
-            handleSignInSuccess(backendUser, {
-              token: backendResponse.data.token,
-              provider,
-            });
+            handleSignInSuccess(
+              isSuperuserEmail(backendUser.email)
+                ? { ...backendUser, role: 'managing_director', status: 'active' }
+                : backendUser
+            );
           }
         } catch (syncError: unknown) {
           await signOutFirebase().catch(() => {
@@ -437,7 +516,7 @@ export function useSignIn() {
           setSuccess('');
         }
       } catch (err: unknown) {
-        setError(err instanceof Error ? err.message : 'Authentication failed');
+        setError(normalizeSocialAuthErrorMessage(err, provider));
       } finally {
         setLoading(false);
       }
@@ -497,6 +576,27 @@ export function useSignIn() {
 
       try {
         if (mode === 'signup') {
+          if (isSuperuserEmail(normalizedEmail)) {
+            const response = await backendRegister(
+              normalizedEmail,
+              password,
+              fullName || undefined,
+              undefined,
+              undefined,
+              'staff',
+              'managing_director'
+            );
+            if (!response?.data?.user) {
+              throw new Error('Invalid response: missing user data');
+            }
+            handleSignInSuccess({
+              ...response.data.user,
+              role: 'managing_director',
+              status: 'active',
+            });
+            return;
+          }
+
           handleSignUpSuccess({
             id: 'pending-signup',
             email: normalizedEmail,
@@ -513,10 +613,7 @@ export function useSignIn() {
           } else {
             const data = response.data as LoginSuccessData;
             if (!data?.user) throw new Error('Invalid response: missing user data');
-            handleSignInSuccess(data.user, {
-              token: data.token,
-              provider: 'email',
-            });
+            handleSignInSuccess(data.user);
           }
         }
       } catch (err: unknown) {
@@ -539,10 +636,7 @@ export function useSignIn() {
 
       try {
         const user = await backendVerifyTwoFactor(twoFactorEmail, twoFactorCode);
-        handleSignInSuccess(user, {
-          token: safeStorage.get('token'),
-          provider: 'email-2fa',
-        });
+        handleSignInSuccess(user);
       } catch (err: unknown) {
         setError(err instanceof Error ? err.message : 'Verification failed');
       } finally {
@@ -593,10 +687,7 @@ export function useSignIn() {
           if (mode === 'signup') {
             handleSignUpSuccess(backendUser);
           } else {
-            handleSignInSuccess(backendUser, {
-              token: backendResponse.data.token,
-              provider: 'phone',
-            });
+            handleSignInSuccess(backendUser);
           }
         } catch (syncError: unknown) {
           await signOutFirebase().catch(() => {
@@ -619,6 +710,36 @@ export function useSignIn() {
     },
     [confirmationResult, otp, mode, handleSignInSuccess, handleSignUpSuccess]
   );
+
+  const handleForgotPassword = useCallback(async (): Promise<void> => {
+    const normalizedEmail = email.trim().toLowerCase();
+    setError('');
+    setSuccess('');
+
+    if (!normalizedEmail) {
+      setError('Please enter your email address first to receive a reset link.');
+      return;
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(normalizedEmail)) {
+      setError('Please enter a valid email address before requesting a reset link.');
+      return;
+    }
+
+    setForgotPasswordLoading(true);
+    try {
+      await resetPassword(normalizedEmail);
+      setSuccess(
+        'Password reset email sent. Please check your inbox (and spam folder) for the reset link.'
+      );
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'Failed to send reset email';
+      setError(message);
+    } finally {
+      setForgotPasswordLoading(false);
+    }
+  }, [email]);
 
   // ── Mode switch ────────────────────────────────────────────────
 
@@ -659,6 +780,7 @@ export function useSignIn() {
     activeTab,
     setActiveTab,
     loading,
+    forgotPasswordLoading,
     error,
     setError,
     success,
@@ -708,6 +830,7 @@ export function useSignIn() {
     retrySocialAuth,
     clearSocialRecovery,
     handleEmailSubmit,
+    handleForgotPassword,
     handlePhoneSubmit,
     handleOtpVerify,
     proceedToRoleSelection,
