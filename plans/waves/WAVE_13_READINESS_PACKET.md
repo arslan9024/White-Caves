@@ -2,9 +2,9 @@
 
 **Wave:** 13  
 **Focus:** Real-Time & Media  
-**Status:** 📋 Planned  
-**Date:** 2026-05-24  
-**Readiness Score:** 60% target (unlock after Wave 12 green)
+**Status:** ✅ Complete  
+**Date:** 2026-05-25  
+**Readiness Score:** 100% (completed)
 
 ---
 
@@ -12,10 +12,10 @@
 
 | Gate | Check | Status |
 | --- | --- | --- |
-| Wave 12 complete | automation wave green | ⬜ Pending |
-| Socket spec | @Socket output committed | ⬜ Pending |
-| Media spec | @Cloudinary output committed | ⬜ Pending |
-| Virtual tour spec | @Pannellum output committed | ⬜ Pending |
-| API contracts | all routes payload-defined | ⬜ Pending |
-| Test rollout | route + UI checks defined | ⬜ Pending |
-| Rollback | media + socket rollback documented | ⬜ Pending |
+| Wave 12 complete | automation wave green | ✅ Complete |
+| Socket spec | @Socket output committed | ✅ Complete |
+| Media spec | @Cloudinary output committed | ✅ Complete |
+| Virtual tour spec | @Pannellum output committed | ✅ Complete |
+| API contracts | all routes payload-defined | ✅ Complete |
+| Test rollout | route + UI checks defined | ✅ Complete |
+| Rollback | media + socket rollback documented | ✅ Complete |
