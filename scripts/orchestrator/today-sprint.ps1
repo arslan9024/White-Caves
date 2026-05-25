@@ -144,7 +144,12 @@ function Get-Gap {
 function Get-FileEta {
   param([object]$task, [string]$root)
   $pKey = $task.taskId
-  $pText = if (($prompts | Get-Member -MemberType NoteProperty | Select-Object -ExpandProperty Name) -contains $pKey) { $prompts.$pKey } else { $task.title }
+  if (($prompts | Get-Member -MemberType NoteProperty | Select-Object -ExpandProperty Name) -contains $pKey) {
+    $pv = $prompts.$pKey
+    $pText = if ($pv -is [string]) { [string]$pv } elseif ($null -ne $pv -and $pv.PSObject.Properties.Name -contains "prompt") { [string]$pv.prompt } else { [string]$pv }
+  } else {
+    $pText = $task.title
+  }
   $tf = Get-TargetFile -prompt $pText
   if ($tf -eq "") { return 0 }
   return [math]::Ceiling((Get-Gap -rel $tf -root $root) / $SECS_PER_SESSION)
@@ -244,7 +249,8 @@ foreach ($t in $ready) {
   $promptText = ""
   $pProps = $prompts | Get-Member -MemberType NoteProperty | Select-Object -ExpandProperty Name
   if ($pProps -contains $promptKey) {
-    $promptText = $prompts.$promptKey
+    $pv = $prompts.$promptKey
+    $promptText = if ($pv -is [string]) { [string]$pv } elseif ($null -ne $pv -and $pv.PSObject.Properties.Name -contains "prompt") { [string]$pv.prompt } else { [string]$pv }
   } else {
     $promptText = $t.title
   }

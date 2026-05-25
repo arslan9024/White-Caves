@@ -101,7 +101,12 @@ $tools = @{
 # -- helpers ------------------------------------------------------------------
 function Get-Prompt([string]$id) {
   $keys = @($prompts | Get-Member -MemberType NoteProperty | Select-Object -ExpandProperty Name)
-  if ($keys -contains $id) { return $prompts.$id }
+  if ($keys -contains $id) {
+    $val = $prompts.$id
+    if ($val -is [string]) { return $val }
+    if ($null -ne $val -and $val.PSObject.Properties.Name -contains "prompt") { return [string]$val.prompt }
+    return [string]$val
+  }
   $t = @($tasks | Where-Object { $_.taskId -eq $id })[0]
   if ($null -ne $t) { return $t.title } else { return "(no prompt for $id)" }
 }

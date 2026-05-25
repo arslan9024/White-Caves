@@ -113,7 +113,11 @@ function Get-FileSectionsCached([string]$rel) {
 
 function Get-Prompt([string]$id) {
   try { $val = $prompts.$id } catch { $val = $null }
-  if ($null -ne $val -and $val -ne "") { return [string]$val }
+  if ($null -ne $val -and $val -ne "") {
+    if ($val -is [string]) { return [string]$val }
+    if ($val.PSObject.Properties.Name -contains "prompt") { return [string]$val.prompt }
+    return [string]$val
+  }
   $t = @($tasks | Where-Object { $_.taskId -eq $id })[0]
   if ($null -ne $t) { return [string]$t.title }
   return ""
