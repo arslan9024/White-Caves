@@ -32,11 +32,27 @@ $scripts = Join-Path $root "scripts\orchestrator"
 $qFile   = Join-Path $root "logs\orchestrator\task-queue.json"
 $pFile   = Join-Path $root "scripts\orchestrator\prompts.json"
 $policyFile = Join-Path $root "scripts\orchestrator\policy.json"
+$policyUtils = Join-Path $scripts "policy-utils.ps1"
 $scanLogDir = Join-Path $root "logs\orchestrator"
 $loopSyncScript = Join-Path $scripts "loop-start-sync.ps1"
 $cycleSummaryScript = Join-Path $scripts "cycle-summary.ps1"
 $autoEscalateScript = Join-Path $scripts "blocker-auto-escalate.ps1"
 $blockerBriefScript = Join-Path $scripts "blocker-report.ps1"
+
+if (Test-Path $policyUtils) {
+  . $policyUtils
+}
+
+$trackingRemote = "origin"
+$trackingBranch = "main"
+if (Get-Command Get-OrchestratorPolicy -ErrorAction SilentlyContinue) {
+  try {
+    $policyForGit = Get-OrchestratorPolicy -WorkspaceRoot $root
+    $gitPolicy = Get-OrchestratorGitPolicy -Policy $policyForGit
+    $trackingRemote = [string]$gitPolicy.defaultRemote
+    $trackingBranch = [string]$gitPolicy.integrationBranch
+  } catch {}
+}
 
 # ------------------------------------------------------------------
 # EXECUTION MODE (policy + switches)
@@ -306,9 +322,9 @@ function Get-LastScanStatus {
 function Get-MainDelta {
   $branch = (git rev-parse --abbrev-ref HEAD 2>$null).Trim()
   if ($LASTEXITCODE -ne 0 -or [string]::IsNullOrWhiteSpace($branch)) { return "unknown" }
-  $behind = (git rev-list --count HEAD..origin/main 2>$null).Trim()
+  $behind = (git rev-list --count "HEAD..$trackingRemote/$trackingBranch" 2>$null).Trim()
   if ([string]::IsNullOrWhiteSpace($behind)) { $behind = "0" }
-  return ("{0} (+{1} behind main)" -f $branch, $behind)
+  return ("{0} (+{1} behind {2})" -f $branch, $behind, $trackingBranch)
 }
 
 function Test-MiniTypecheck {

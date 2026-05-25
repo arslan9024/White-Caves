@@ -14,16 +14,16 @@
 #   STEP 4  Git: show what changed this session (git diff --stat HEAD)
 #   STEP 5  Git: stage orchestrator + business_docs + plans changes
 #   STEP 6  Git: commit with auto-generated message
-#   STEP 7  Git: push to origin development
-#   STEP 8  Error-scan gate (must pass before merge/push to main)
-#   STEP 9  Git: merge development -> main and push origin main (optional)
+#   STEP 7  Git: push current branch to configured remote
+#   STEP 8  Error-scan gate (must pass before any push)
+#   STEP 9  Optional release merge per policy (usually PR-based)
 #   STEP 10 Print session summary card
 
 param(
   [string]$WorkspaceRoot = ".",
   [switch]$DryRun,              # preview only -- skip git stage/commit/push
   [switch]$SkipPush,            # commit but do NOT push
-  [switch]$SkipMainPush,        # skip development -> main merge/push
+  [switch]$SkipMainPush,        # skip integration -> release merge/push
   [string]$Message = "",        # override auto-generated commit message
   [switch]$SkipAutoComplete     # skip final fast-complete pass
 )
@@ -31,11 +31,31 @@ param(
 $ErrorActionPreference = "Continue"
 $root     = Resolve-Path $WorkspaceRoot
 $scripts  = Join-Path $root "scripts\orchestrator"
+$policyUtils = Join-Path $scripts "policy-utils.ps1"
 $w        = 72
 $stepNum  = 0
 $t0       = Get-Date
 $errors   = [System.Collections.Generic.List[string]]::new()
 $qPct     = 0
+$pushRemote = "origin"
+$integrationBranch = "develop"
+$releaseBranch = "main"
+$autoMergeReleaseBranch = $false
+
+if (Test-Path $policyUtils) {
+  . $policyUtils
+}
+
+if (Get-Command Get-OrchestratorPolicy -ErrorAction SilentlyContinue) {
+  try {
+    $policy = Get-OrchestratorPolicy -WorkspaceRoot $root
+    $gitPolicy = Get-OrchestratorGitPolicy -Policy $policy
+    $pushRemote = [string]$gitPolicy.defaultRemote
+    $integrationBranch = [string]$gitPolicy.integrationBranch
+    $releaseBranch = [string]$gitPolicy.releaseBranch
+    $autoMergeReleaseBranch = [bool]$gitPolicy.autoMergeReleaseBranch
+  } catch {}
+}
 
 function Write-Step($title) {
   $script:stepNum++
@@ -211,61 +231,66 @@ Pop-Location
 # ------------------------------------------------------------------
 # STEP 8: Git push
 # ------------------------------------------------------------------
+$activeBranchForPush = ""
 if (-not $SkipPush) {
-  Write-Step "GIT PUSH -- origin development"
+  Write-Step ("GIT PUSH -- {0}/<current-branch>" -f $pushRemote)
   Push-Location $root
-  $pushOut = git push origin development 2>&1
-  Write-Host $pushOut -ForegroundColor $(if ($LASTEXITCODE -ne 0) { "Red" } else { "Green" })
-  if ($LASTEXITCODE -ne 0) { $errors.Add("git push failed") }
+  $activeBranchForPush = (git rev-parse --abbrev-ref HEAD 2>&1).Trim()
+  if ([string]::IsNullOrWhiteSpace($activeBranchForPush)) {
+    $errors.Add("git push failed: unable to resolve current branch")
+  } else {
+    $pushOut = git push $pushRemote $activeBranchForPush 2>&1
+    Write-Host $pushOut -ForegroundColor $(if ($LASTEXITCODE -ne 0) { "Red" } else { "Green" })
+    if ($LASTEXITCODE -ne 0) { $errors.Add("git push failed") }
+  }
   Pop-Location
 } else {
   Write-Host ""
   Write-Host "  [SKIP] git push (SkipPush flag set)" -ForegroundColor DarkGray
-  Write-Host "  Run: git push origin development" -ForegroundColor DarkGray
+  Write-Host ("  Run: git push {0} <current-branch>" -f $pushRemote) -ForegroundColor DarkGray
 }
 
 # ------------------------------------------------------------------
-# STEP 9: Merge development -> main and push origin main
+# STEP 9: Optional integration -> release merge
 # ------------------------------------------------------------------
 if ($SkipMainPush) {
   Write-Host ""
-  Write-Host "  [SKIP] main push (SkipMainPush flag set)" -ForegroundColor DarkGray
+  Write-Host "  [SKIP] release merge (SkipMainPush flag set)" -ForegroundColor DarkGray
+} elseif (-not $autoMergeReleaseBranch) {
+  Write-Host ""
+  Write-Host ("  [SKIP] policy disables auto-merge from {0} to {1}; use PR workflow." -f $integrationBranch, $releaseBranch) -ForegroundColor DarkGray
 } elseif ($errors.Count -eq 0) {
-  Write-Step "MAIN PUSH -- merge development into main and push"
+  Write-Step ("RELEASE PUSH -- merge {0} into {1} and push" -f $integrationBranch, $releaseBranch)
+  $restoreBranch = ""
+  if ([string]::IsNullOrWhiteSpace($activeBranchForPush)) {
+    Push-Location $root
+    $restoreBranch = (git rev-parse --abbrev-ref HEAD 2>&1).Trim()
+    Pop-Location
+  } else {
+    $restoreBranch = $activeBranchForPush
+  }
   Push-Location $root
   try {
-    $activeBranch = (git rev-parse --abbrev-ref HEAD 2>&1).Trim()
-    if ($activeBranch -like "feature/wave-*") {
-      Write-Host ("  Wave branch detected: {0}" -f $activeBranch) -ForegroundColor Cyan
-      $ghExists = (Get-Command gh -ErrorAction SilentlyContinue)
-      if ($null -eq $ghExists) {
-        throw "gh CLI not found; cannot create PR from wave branch"
-      }
-      $prTitle = "Wave delivery: $activeBranch"
-      $prBody  = "Automated wave branch handoff from session-end.ps1"
-      gh pr create --base main --head $activeBranch --title $prTitle --body $prBody 2>&1 | Out-Host
-      if ($LASTEXITCODE -ne 0) { throw "failed to create PR for wave branch" }
-      Write-Host "  PR created to main for wave branch." -ForegroundColor Green
-    } else {
-      git checkout main 2>&1 | Out-Host
-      if ($LASTEXITCODE -ne 0) { throw "checkout main failed" }
+    git checkout $releaseBranch 2>&1 | Out-Host
+    if ($LASTEXITCODE -ne 0) { throw "checkout $releaseBranch failed" }
 
-      git merge development --no-edit 2>&1 | Out-Host
-      if ($LASTEXITCODE -ne 0) { throw "merge development->main failed" }
+    git merge $integrationBranch --no-edit 2>&1 | Out-Host
+    if ($LASTEXITCODE -ne 0) { throw "merge $integrationBranch->$releaseBranch failed" }
 
-      git push origin main 2>&1 | Out-Host
-      if ($LASTEXITCODE -ne 0) { throw "push main failed" }
-    }
+    git push $pushRemote $releaseBranch 2>&1 | Out-Host
+    if ($LASTEXITCODE -ne 0) { throw "push $releaseBranch failed" }
   } catch {
-    $errors.Add("main push failed: $_")
-    Write-Host "  [ERROR] main merge/push failed -- restoring development branch." -ForegroundColor Red
+    $errors.Add("release push failed: $_")
+    Write-Host ("  [ERROR] {0} merge/push failed." -f $releaseBranch) -ForegroundColor Red
   } finally {
-    git checkout development 2>&1 | Out-Host
+    if (-not [string]::IsNullOrWhiteSpace($restoreBranch)) {
+      git checkout $restoreBranch 2>&1 | Out-Host
+    }
     Pop-Location
   }
 } else {
   Write-Host ""
-  Write-Host "  [SKIP] main push due to prior errors." -ForegroundColor DarkGray
+  Write-Host "  [SKIP] release merge due to prior errors." -ForegroundColor DarkGray
 }
 
 # ------------------------------------------------------------------
