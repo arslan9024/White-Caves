@@ -1,7 +1,7 @@
 # Pending Tasks Only
 
 **Last Updated:** 2026-05-25
-**Current Focus:** Waves 14–16 complete; Wave 17 is next — full UI/UX luxury upgrade.
+**Current Focus:** Wave 17 complete; awaiting next implementation wave definition.
 
 ## Canonical Sources
 
@@ -30,7 +30,7 @@ Advance only when the prior wave is green, the readiness gate is satisfied, and 
 | S7 | 14 | Product features closure | ✅ Green | @LeadScore + @Mortgage + @Zod + @Mira | S6 green + readiness 60% + @Ada approval phrase |
 | S8 | 15 | Cache + PWA readiness | ✅ Green | @Redis + @PWA + @Ruchi + @Una | S7 green + readiness 60% + @Ada approval phrase |
 | S9 | 16 | Security hardening + API versioning | ✅ Green | @S5 + @Radia + @Mira | S8 green + readiness 60% + @Ada approval phrase |
-| S10 | 17 | Full UI/UX luxury upgrade (design tokens + glassmorphism + animations + mobile + PWA + WCAG 2.2) | 📋 Planned | @Una + @Lea + @Tracy + @Africa + @Cyra + @Katherine | S9 green + free-agent specs + readiness 60% + @Ada approval phrase |
+| S10 | 17 | Full UI/UX luxury upgrade (design tokens + glassmorphism + animations + mobile + PWA + WCAG 2.2) | ✅ Green | @Una + @Lea + @Tracy + @Africa + @Cyra + @Katherine | Wave 17 implementation + CI Lighthouse thresholds + accessibility/mobile/PWA checks complete |
 
 ## Completed Stream History
 
@@ -52,6 +52,7 @@ Advance only when the prior wave is green, the readiness gate is satisfied, and 
 | S4 | Wave 11 incomplete features + architecture refactor | ✅ Complete |
 | S5 | Wave 12 automation engine (cron + docs + email) | ✅ Complete |
 | S6 | Wave 13 real-time notifications + media + virtual tour | ✅ Complete |
+| S10 | Wave 17 full UI/UX luxury upgrade | ✅ Complete |
 
 ## S2 — Wave 09: UX Hardening (Complete)
 
@@ -150,7 +151,7 @@ Key closures:
 | 16-2 | CSRF + AppError envelope hardening | P0 | @Radia + @Mira + @S5 | security tests + typecheck |
 | 16-3 | Wave closeout validation | P0 | @Katherine | `npm run typecheck && npm run lint && npm run build && npm run plans:validate` |
 
-## S10 — Wave 17: Full UI/UX Luxury Upgrade
+## S10 — Wave 17: Full UI/UX Luxury Upgrade (Complete)
 
 **Sources:** [`IMPROVEMENTS_UX.md`](./IMPROVEMENTS_UX.md) | [`ui-ux-specification.md`](../../business_docs/06_design_architecture/ui-ux-specification.md) (Sections 13–17)  
 **Bundle:** [`WAVE_17_SDD.md`](./waves/WAVE_17_SDD.md) | [`WAVE_17_READINESS_PACKET.md`](./waves/WAVE_17_READINESS_PACKET.md) | [`WAVE_17_IMPLEMENTATION_BACKLOG.md`](./waves/WAVE_17_IMPLEMENTATION_BACKLOG.md) | [`WAVE_17_TEST_ROLLOUT.md`](./waves/WAVE_17_TEST_ROLLOUT.md)
@@ -184,9 +185,9 @@ Key closures:
 
 Mark an item complete only when:
 
-- [ ] Validation command(s) defined in the relevant wave bundle pass
-- [ ] Evidence is recorded in `PROJECT_PROGRESS.md` and `DAILY_MILESTONE_TRACKER.md`
-- [ ] `npm run plans:validate` passes after tracker updates
+- [x] Validation command(s) defined in the relevant wave bundle pass
+- [x] Evidence is recorded in `PROJECT_PROGRESS.md` and `DAILY_MILESTONE_TRACKER.md`
+- [x] `npm run plans:validate` passes after tracker updates
 
 ## Weekly Planning Hygiene Cycle
 

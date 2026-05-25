@@ -39,10 +39,10 @@
 | 3 | 11 | Incomplete features closure + architecture refactor | @Ada + @Mira + @Barbara | 📋 Planned | [`IMPROVEMENTS_INCOMPLETE_FEATURES.md`](./IMPROVEMENTS_INCOMPLETE_FEATURES.md), [`IMPROVEMENTS_ARCHITECTURE.md`](./IMPROVEMENTS_ARCHITECTURE.md) | Wave 10 green + readiness 60% + @Ada approval phrase | Scheduler/documents/email + architecture tasks closed; wave validation green |
 | 4 | 12 | Automation engine (cron + documents + email wiring) | @Cron + @Puppeteer + @Handlebars + @Mira | 📋 Planned | [`IMPROVEMENTS_INCOMPLETE_FEATURES.md`](./IMPROVEMENTS_INCOMPLETE_FEATURES.md) items 6–8 | Wave 11 green + readiness 60% + @Ada approval phrase | Automation bundle closed + tracker sync + governance validation green |
 | 5 | 13 | Real-time notifications + media + virtual tours | @Socket + @Cloudinary + @Pannellum + @Mira | ✅ Complete | [`IMPROVEMENTS_INCOMPLETE_FEATURES.md`](./IMPROVEMENTS_INCOMPLETE_FEATURES.md) items 10–12 | Wave 12 green + readiness 60% + @Ada approval phrase | Real-time/media bundle closed + validation green |
-| 6 | 14 | Product features closure | @LeadScore + @Mortgage + @Zod + @Mira | 📋 Planned | [`IMPROVEMENTS_PRODUCT.md`](./IMPROVEMENTS_PRODUCT.md) items 34–38 | Wave 13 green + readiness 60% + @Ada approval phrase | Product feature bundle closed + validation green |
-| 7 | 15 | Cache + PWA readiness | @Redis + @PWA + @Ruchi + @Una | 📋 Planned | [`IMPROVEMENTS_PERFORMANCE.md`](./IMPROVEMENTS_PERFORMANCE.md), [`IMPROVEMENTS_UX.md`](./IMPROVEMENTS_UX.md) | Wave 14 green + readiness 60% + @Ada approval phrase | Cache/PWA bundle closed + validation green |
-| 8 | 16 | Security hardening + API versioning | @S5 + @Radia + @Mira | 📋 Planned | [`IMPROVEMENTS_SECURITY.md`](./IMPROVEMENTS_SECURITY.md), [`IMPROVEMENTS_ARCHITECTURE.md`](./IMPROVEMENTS_ARCHITECTURE.md) | Wave 15 green + readiness 60% + @Ada approval phrase | `/api/v1`, CSRF, error-envelope hardening closed + validation green |
-| 9 | 17 | Full UI/UX luxury upgrade (design tokens + animations + mobile + PWA + WCAG 2.2) | @Una + @Lea + @Tracy + @Africa + @Cyra + @Katherine | 📋 Planned | [`IMPROVEMENTS_UX.md`](./IMPROVEMENTS_UX.md), [`ui-ux-specification.md`](../../business_docs/06_design_architecture/ui-ux-specification.md) | Wave 16 green + free-agent specs + readiness 60% + @Ada approval phrase | Glassmorphism + animations + mobile + PWA + WCAG 2.2 all closed; Lighthouse CI gate green |
+| 6 | 14 | Product features closure | @LeadScore + @Mortgage + @Zod + @Mira | ✅ Complete | [`IMPROVEMENTS_PRODUCT.md`](./IMPROVEMENTS_PRODUCT.md) items 34–38 | Wave 13 green + readiness 60% + @Ada approval phrase | Product feature bundle closed + validation green |
+| 7 | 15 | Cache + PWA readiness | @Redis + @PWA + @Ruchi + @Una | ✅ Complete | [`IMPROVEMENTS_PERFORMANCE.md`](./IMPROVEMENTS_PERFORMANCE.md), [`IMPROVEMENTS_UX.md`](./IMPROVEMENTS_UX.md) | Wave 14 green + readiness 60% + @Ada approval phrase | Cache/PWA bundle closed + validation green |
+| 8 | 16 | Security hardening + API versioning | @S5 + @Radia + @Mira | ✅ Complete | [`IMPROVEMENTS_SECURITY.md`](./IMPROVEMENTS_SECURITY.md), [`IMPROVEMENTS_ARCHITECTURE.md`](./IMPROVEMENTS_ARCHITECTURE.md) | Wave 15 green + readiness 60% + @Ada approval phrase | `/api/v1`, CSRF, error-envelope hardening closed + validation green |
+| 9 | 17 | Full UI/UX luxury upgrade (design tokens + animations + mobile + PWA + WCAG 2.2) | @Una + @Lea + @Tracy + @Africa + @Cyra + @Katherine | ✅ Complete | [`IMPROVEMENTS_UX.md`](./IMPROVEMENTS_UX.md), [`ui-ux-specification.md`](../../business_docs/06_design_architecture/ui-ux-specification.md) | Wave 16 green + free-agent specs + readiness 60% + @Ada approval phrase | Glassmorphism + animations + mobile + PWA + WCAG 2.2 all closed; Lighthouse CI gate green |
 
 ---
 
@@ -58,10 +58,10 @@ Use [`waves/README.md`](./waves/README.md) for the full bundle list.
 | 11 | 📋 Planned | [`Wave 11`](./waves/WAVE_11_SDD.md) |
 | 12 | 📋 Planned | [`Wave 12`](./waves/WAVE_12_SDD.md) |
 | 13 | ✅ Complete | [`Wave 13`](./waves/WAVE_13_SDD.md) |
-| 14 | 📋 Planned | [`Wave 14`](./waves/WAVE_14_SDD.md) |
-| 15 | 📋 Planned | [`Wave 15`](./waves/WAVE_15_SDD.md) |
-| 16 | 📋 Planned | [`Wave 16`](./waves/WAVE_16_SDD.md) |
-| 17 | 📋 Planned | [`Wave 17`](./waves/WAVE_17_SDD.md) |
+| 14 | ✅ Complete | [`Wave 14`](./waves/WAVE_14_SDD.md) |
+| 15 | ✅ Complete | [`Wave 15`](./waves/WAVE_15_SDD.md) |
+| 16 | ✅ Complete | [`Wave 16`](./waves/WAVE_16_SDD.md) |
+| 17 | ✅ Complete | [`Wave 17`](./waves/WAVE_17_SDD.md) |
 
 ---
 
