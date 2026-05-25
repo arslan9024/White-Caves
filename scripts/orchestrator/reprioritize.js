@@ -134,13 +134,20 @@ function ensureQueueHasTasks(queue) {
 }
 
 function taskTextFor(task, prompts) {
+  const promptEntry = prompts && task.id ? prompts[task.id] : null;
+  const promptText = typeof promptEntry === 'string'
+    ? promptEntry
+    : promptEntry && typeof promptEntry === 'object' && typeof promptEntry.prompt === 'string'
+      ? promptEntry.prompt
+      : '';
+
   return [
     task.id || '',
     task.agent || '',
     task.objective || task.description || '',
     (task.files || []).join(' '),
     (task.tags || []).join(' '),
-    prompts && prompts[task.id] ? prompts[task.id] : '',
+    promptText,
   ].join(' ').toLowerCase();
 }
 
@@ -216,7 +223,12 @@ function lookupAgent(agentName, registry) {
 // ─── Build dispatch packet for top task ───────────────────────────────────
 function buildDispatchPacket(task, prompts, registry) {
   const agentInfo  = lookupAgent(task.agent, registry);
-  const promptText = prompts && task.id ? (prompts[task.id] || '') : '';
+  const promptEntry = prompts && task.id ? (prompts[task.id] || '') : '';
+  const promptText = typeof promptEntry === 'string'
+    ? promptEntry
+    : promptEntry && typeof promptEntry === 'object' && typeof promptEntry.prompt === 'string'
+      ? promptEntry.prompt
+      : '';
 
   return {
     taskId:            task.id,
@@ -235,7 +247,7 @@ function buildDispatchPacket(task, prompts, registry) {
       'FEEDS_ACK received from downstream agent',
     ],
     validationCommand: task.validationCommand || 'node scripts/orchestrator/codebase-scan.js --brief',
-    invocationPattern: agentInfo ? agentInfo.invocationPattern : `@${task.agent} — ${task.objective}`,
+    invocationPattern: agentInfo ? agentInfo.invocationPattern : `${task.agent} — ${task.objective}`,
     responsibilities:  agentInfo ? (agentInfo.responsibilities || []).slice(0, 5) : [],
   };
 }
@@ -251,7 +263,7 @@ function main() {
   // Load inputs
   const scanReport = readJSON(SCAN_REPORT);
   let queue        = readJSON(QUEUE_FILE);
-  const prompts    = readJSON(PROMPTS_FILE);
+  let prompts      = readJSON(PROMPTS_FILE);
   const registry   = readJSON(REGISTRY_FILE);
 
   if (!scanReport) {
@@ -259,6 +271,7 @@ function main() {
     console.warn('     Falling back to baseline task ordering.\n');
   }
   queue = ensureQueueHasTasks(queue);
+  prompts = readJSON(PROMPTS_FILE);
   if (!queue || !queue.tasks || queue.tasks.length === 0) {
     console.warn('\n  ⚠  No task queue found or queue is empty after discovery.');
     console.warn('     Run: npm run orchestrator:queue:init to initialise.\n');
@@ -275,6 +288,7 @@ function main() {
   let eligible = tasks.filter(t => t.status !== 'done' && t.status !== 'complete' && t.status !== 'archived');
   if (eligible.length === 0) {
     queue = ensureQueueHasTasks(queue);
+    prompts = readJSON(PROMPTS_FILE);
     if (queue && queue.tasks) {
       const refreshedTasks = queue.tasks;
       eligible = refreshedTasks.filter(t => t.status !== 'done' && t.status !== 'complete' && t.status !== 'archived');
