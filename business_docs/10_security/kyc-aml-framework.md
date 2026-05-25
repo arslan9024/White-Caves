@@ -1,8 +1,9 @@
 # KYC & AML Service Framework — White Caves
 
-> **Version:** 1.0  
-> **Last Updated:** March 2026  
-> **Regulation:** UAE AML Law — Federal Decree Law No. 20 of 2018
+> **Version:** 2.0  
+> **Last Updated:** May 2026  
+> **Regulation:** UAE Federal Law No. 10 of 2025 (Anti-Money Laundering, Counter-Terrorism Financing & Combating Proliferation Financing), effective 14 December 2025 — supersedes Federal Decree Law No. 20 of 2018.  
+> **Executive Regulation:** Cabinet Resolution No. 134 of 2025
 
 ---
 
@@ -10,18 +11,34 @@
 
 White Caves is required under UAE law to conduct Know Your Customer (KYC) and Anti-Money Laundering (AML) checks on all parties to real estate transactions. This document defines the framework, third-party service options, verification workflows, and record-keeping requirements.
 
+Real estate brokerages are classified as **Designated Non-Financial Businesses and Professions (DNFBPs)** under UAE law and are subject to the full AML/CFT/CPF regime effective 14 December 2025.
+
+### 1.1 Key Changes Under Federal Law No. 10 of 2025
+
+The 2025 law introduces three major changes compared to the superseded Law No. 20 of 2018:
+
+1. **Proliferation Financing (PF) added** — White Caves must now assess and mitigate risks related to the financing of weapons of mass destruction (WMD proliferation), not just money laundering and terrorism financing.
+2. **Lower knowledge threshold** — Liability can now arise if a person "*reasonably should have been aware*" of illicit funds, removing the prior higher bar of actual knowledge.
+3. **Expanded predicate offences** — Direct and indirect tax evasion and proliferation financing are now explicitly listed predicate offences triggering AML obligations.
+
 ---
 
 ## 2. Legal Requirements
 
+> **Governing law:** UAE Federal Law No. 10 of 2025; Executive Regulation: Cabinet Resolution No. 134 of 2025 (effective 14 December 2025)
+
 | Requirement | Source | Threshold | Action |
 |-------------|--------|-----------|--------|
-| Customer Due Diligence (CDD) | AML Law Art. 12 | All transactions | Identity + address verification |
-| Enhanced Due Diligence (EDD) | AML Law Art. 13 | > AED 55,000 | Source of funds documentation |
-| PEP Screening | AML Law Art. 14 | All clients | Politically Exposed Person check |
-| Sanctions Screening | UN/OFAC/UAE lists | All clients | Real-time screening |
-| SAR Filing | AML Law Art. 16 | Suspicious activity | Report to UAE FIU via goAML |
-| Record Retention | AML Law Art. 20 | All records | 5 years minimum |
+| Customer Due Diligence (CDD) | Law 10/2025 Art. 12 | All transactions | Identity + address verification |
+| Enhanced Due Diligence (EDD) | Law 10/2025 Art. 13 | > AED 55,000 or high-risk client | Source of funds + UBO documentation |
+| UBO Identification | Law 10/2025 Art. 13 + Cab. Res. 134 | All corporate clients | Identify & verify ultimate beneficial owner(s) |
+| PEP Screening | Law 10/2025 Art. 14 | All clients | Politically Exposed Person check |
+| Proliferation Financing Screening | Law 10/2025 (new) | All clients | WMD proliferation risk screening |
+| Sanctions Screening | UN/OFAC/UAE/EU lists | All clients | Real-time screening; block on match |
+| SAR Filing | Law 10/2025 Art. 16 | Suspicious activity | Report to UAE FIU via goAML portal |
+| Record Retention | Law 10/2025 Art. 20 | All records | 5 years minimum (KYC); 5 years post-transaction |
+| Written Risk-Based Policy | Cab. Res. 134/2025 | All entities | Maintain documented AML/CFT/CPF policy |
+| Staff Training | Cab. Res. 134/2025 | All staff | Regular AML training; records of training kept |
 
 ---
 
@@ -289,7 +306,7 @@ Any one of the following triggers mandatory EDD — standard CDD is insufficient
 - **Threshold:** No minimum — any amount that raises suspicion
 - **Filing deadline:** Immediately upon suspicion (no delay permitted)
 - **Filed via:** CBUAE goAML portal
-- **Tipping off prohibition:** Federal Decree-Law No. 20 of 2018, Article 17 — informing the client is a criminal offence
+- **Tipping off prohibition:** Federal Law No. 10 of 2025, Art. 17 — informing the client is a criminal offence
 - **CRM enforcement:** STR records visible ONLY to Compliance Officer and Owner; excluded from all client-facing views
 
 ### 12.3 Automated Monitoring Patterns (System Alerts)
@@ -346,11 +363,11 @@ A Politically Exposed Person (PEP) is an individual who is or has been entrusted
 
 | Record Type | Retention Period | Legal Basis |
 |------------|-----------------|-------------|
-| KYC documents (ID, passport, visa) | 7 years from transaction end | Cabinet Decision No. 10/2019, Art. 22 |
+| KYC documents (ID, passport, visa) | 7 years from transaction end | Law 10/2025, Art. 20; Cab. Res. 134/2025 |
 | CDD/EDD reports and decisions | 7 years | Same |
 | STR submissions and FIU responses | 7 years | Same |
 | CTR submissions | 7 years | Same |
-| Screening results (PEP/Sanctions) | 7 years | Same |
+| Screening results (PEP/Sanctions/Proliferation) | 7 years | Same |
 | Transaction records | 7 years | Same |
 | AML risk score calculation logs | 7 years | Same |
 | Staff AML training records | 5 years | Internal policy |
@@ -370,13 +387,14 @@ A Politically Exposed Person (PEP) is an individual who is or has been entrusted
 
 ### 15.2 Training Content Requirements (CBUAE Standards)
 
-- UAE AML legal framework (Federal Decree-Law No. 20 of 2018; Cabinet Decision No. 10 of 2019)
+- UAE AML legal framework: **Federal Law No. 10 of 2025 + Cabinet Resolution No. 134 of 2025** (supersedes Federal Decree-Law No. 20 of 2018)
+- **Proliferation Financing (CPF)** — new obligation under Law 10/2025: WMD risk indicators, screening procedures
 - Real estate-specific red flags and typologies (FATF Guidance for Real Estate Sector 2022)
-- Customer due diligence procedures
+- Customer due diligence procedures including UBO identification
 - Internal STR/CTR reporting procedure
 - goAML portal usage for STR/CTR filing
-- Tipping-off prohibition
-- Consequences of non-compliance (criminal and civil liability)
+- Tipping-off prohibition (criminal offence)
+- Consequences of non-compliance (criminal and civil liability; lower knowledge threshold under 2025 law)
 
 ### 15.3 Training Records (CRM Tracking)
 
@@ -397,3 +415,52 @@ A Politically Exposed Person (PEP) is an individual who is or has been entrusted
 | Annual Compliance Statement | Year-end | 31 March each year | CBUAE | Internal record |
 | DNFBP Registration renewal | Annual | Before expiry | CBUAE portal | `company.dnfbpExpiryDate` |
 
+---
+
+## 17. Proliferation Financing (CPF) — New Obligation Under Law 10/2025
+
+> **Effective:** 14 December 2025 | **Legal Basis:** UAE Federal Law No. 10 of 2025, Arts. 1–5
+
+### 17.1 What Is Proliferation Financing?
+
+Proliferation financing (PF) means providing funds or financial services to individuals, entities, or states involved in the design, manufacture, acquisition, stockpiling, or transfer of weapons of mass destruction (WMD) — including nuclear, biological, chemical, and radiological weapons.
+
+Real estate is explicitly included as a sector at risk of being used to move funds linked to WMD proliferation (FATF Guidance, 2021).
+
+### 17.2 White Caves PF Obligations
+
+1. **Targeted Financial Sanctions (TFS) screening** — Screen all clients, UBOs, and counterparties against the UNSC Consolidated List for WMD-related designations (1267, 1718, 1737 Committees) in real time.
+2. **Risk assessment** — Annual written PF risk assessment (integrated into AML/CFT risk assessment document).
+3. **No business with designated entities** — Any positive TFS match results in immediate transaction block and STR filing; do not tip off client.
+
+### 17.3 PF Screening Implementation
+
+| Screening List | Source | Frequency | Automated Via |
+|----------------|--------|-----------|---------------|
+| UNSC 1267 List (Al-Qaeda / ISIS) | UN Security Council | Real-time | ComplyAdvantage |
+| UNSC 1718 List (DPRK/North Korea) | UN Security Council | Real-time | ComplyAdvantage |
+| UNSC 1737 List (Iran) | UN Security Council | Real-time | ComplyAdvantage |
+| UAE Domestic Designations | UAE Cabinet | Real-time | ComplyAdvantage + manual check |
+
+### 17.4 CRM Data Model Changes
+
+```typescript
+ClientAMLRecord {
+  // existing fields ...
+  proliferationScreeningDate: Date;          // date of last PF TFS screen
+  proliferationScreeningResult: 'CLEAR' | 'MATCH' | 'PENDING';
+  proliferationMatchDetails?: string;        // if match: list name + designation reason
+}
+```
+
+### 17.5 Acceptance Criteria (COMP-PF-001)
+
+- [ ] All new client records trigger PF TFS screening via ComplyAdvantage within 60 seconds of creation
+- [ ] PF TFS match sets transaction status to `BLOCKED` and creates a compliance alert
+- [ ] Alert visible only to Compliance Officer and Owner (tipping-off prevention)
+- [ ] STR auto-draft generated on PF match for Compliance Officer to review and submit
+- [ ] Annual PF risk assessment document linked in `company.pfRiskAssessmentUrl` field
+
+---
+
+**Version:** 2.0 | **Last Updated:** May 2026 | **Maintained By:** Compliance (Laila)
