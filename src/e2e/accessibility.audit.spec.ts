@@ -453,7 +453,7 @@ test.describe('WCAG 2.2 — New Success Criteria', () => {
     await injectAxe(page);
 
     const results = await page.evaluate(async () => {
-      // @ts-ignore
+      // @ts-expect-error - axe is injected at runtime
       return await window.axe.run(document, {
         runOnly: {
           type: 'tag',
@@ -480,7 +480,7 @@ test.describe('WCAG 2.2 — New Success Criteria', () => {
     await injectAxe(page);
 
     const results = await page.evaluate(async () => {
-      // @ts-ignore
+      // @ts-expect-error - axe is injected at runtime
       return await window.axe.run(document, {
         runOnly: { type: 'tag', values: ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa'] },
       });
@@ -500,7 +500,7 @@ test.describe('WCAG 2.2 — New Success Criteria', () => {
     await injectAxe(page);
 
     const results = await page.evaluate(async () => {
-      // @ts-ignore
+      // @ts-expect-error - axe is injected at runtime
       return await window.axe.run(document, {
         runOnly: { type: 'tag', values: ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa'] },
       });
