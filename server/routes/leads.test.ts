@@ -57,8 +57,11 @@ const { mockPrisma } = vi.hoisted(() => {
   };
 });
 
+const { triggerLeadRescore } = vi.hoisted(() => ({
+  triggerLeadRescore: vi.fn(),
+}));
+
 vi.mock('../database.js', () => ({ prisma: mockPrisma }));
-const triggerLeadRescore = vi.fn();
 vi.mock('../services/ai/leadAutoRescore.js', () => ({ triggerLeadRescore }));
 vi.mock('../middleware/errorHandler', () => ({
   AppError: class extends Error {

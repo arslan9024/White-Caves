@@ -41,6 +41,7 @@ const AuditLogPage: FC = () => {
   const [total, setTotal] = useState(0);
   const [type, setType] = useState('all');
   const [action, setAction] = useState('all');
+  const [searchInput, setSearchInput] = useState('');
   const [search, setSearch] = useState('');
 
   const fetchAuditLog = useCallback(async () => {
@@ -73,6 +74,23 @@ const AuditLogPage: FC = () => {
     void fetchAuditLog();
   }, [fetchAuditLog]);
 
+  const applySearch = useCallback(() => {
+    const nextSearch = searchInput.trim();
+
+    if (page !== 1) {
+      setPage(1);
+    }
+
+    if (nextSearch !== search) {
+      setSearch(nextSearch);
+      return;
+    }
+
+    if (page === 1) {
+      void fetchAuditLog();
+    }
+  }, [fetchAuditLog, page, search, searchInput]);
+
   const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
 
   return (
@@ -85,8 +103,14 @@ const AuditLogPage: FC = () => {
       <ActionBar>
         <SearchInput
           placeholder="Search description, user, lead..."
-          value={search}
-          onChange={e => setSearch(e.target.value)}
+          value={searchInput}
+          onChange={e => setSearchInput(e.target.value)}
+          onKeyDown={e => {
+            if (e.key === 'Enter') {
+              e.preventDefault();
+              applySearch();
+            }
+          }}
         />
         <FilterSelect
           value={type}
@@ -123,7 +147,7 @@ const AuditLogPage: FC = () => {
           <option value="visit">Visit</option>
           <option value="note_added">Note Added</option>
         </FilterSelect>
-        <PrimaryButton onClick={() => void fetchAuditLog()} disabled={loading}>
+        <PrimaryButton onClick={applySearch} disabled={loading}>
           {loading ? 'Refreshing...' : 'Refresh'}
         </PrimaryButton>
       </ActionBar>
