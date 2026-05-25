@@ -657,5 +657,47 @@
     "lastUsed": "2026-05-25",
     "successCount": 0,
     "history": []
+  },
+  "DU001": {
+    "v": 1,
+    "agent": "@S5",
+    "action": "EXPAND",
+    "target": "wave-16-security-hardening.md",
+    "prompt": "@S5 -- EXPAND: wave-16-security-hardening.md -> add CSRF coverage plan for all mutation routes, token issuance, validation points, and rollout verification",
+    "tags": [
+      "security",
+      "api"
+    ],
+    "lastUsed": "2026-05-25",
+    "successCount": 0,
+    "history": []
+  },
+  "DU002": {
+    "v": 1,
+    "agent": "@Victoria",
+    "action": "EXPAND",
+    "target": "tenancy-ejari.md",
+    "prompt": "@Victoria -- EXPAND: tenancy-ejari.md -> add bounced PDC escalation flow including cheque-return capture, landlord alerting, grace-period rules, legal escalation checkpoints, and acceptance criteria",
+    "tags": [
+      "leasing",
+      "compliance"
+    ],
+    "lastUsed": "2026-05-25",
+    "successCount": 0,
+    "history": []
+  },
+  "DU003": {
+    "v": 1,
+    "agent": "@Invoice",
+    "action": "EXPAND",
+    "target": "financial-reporting.md",
+    "prompt": "@Invoice -- EXPAND: financial-reporting.md -> add UAE FTA VAT filing workflow including taxable/exempt buckets, quarterly submission steps, reconciliation checkpoints, exception handling, and acceptance criteria",
+    "tags": [
+      "finance",
+      "compliance"
+    ],
+    "lastUsed": "2026-05-25",
+    "successCount": 0,
+    "history": []
   }
 }

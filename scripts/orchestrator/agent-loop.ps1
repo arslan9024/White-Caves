@@ -405,6 +405,7 @@ Write-BigDivider
 Write-Host ""
 
 $loopCount = 0
+$discoveryAttempts = 0
 
 :outerLoop while ($true) {
   $loopCount++
@@ -460,6 +461,16 @@ $loopCount = 0
       break
     }
     if ($effectiveNonInteractive) {
+      $discoverScript = Join-Path $scripts "discover-upgrade.js"
+      if ($discoveryAttempts -lt 3 -and (Test-Path $discoverScript)) {
+        $discoveryAttempts++
+        Write-Host ("  [DISCOVERY] Attempt {0}/3 -- scanning repo and seeding a self-directed upgrade..." -f $discoveryAttempts) -ForegroundColor Cyan
+        & node "$discoverScript" 2>&1 | Out-String | Write-Host
+        if ($LASTEXITCODE -eq 0 -and (Get-ReadyCount) -gt 0) {
+          Write-Host "  [DISCOVERY] New READY task discovered. Continuing loop." -ForegroundColor Green
+          continue outerLoop
+        }
+      }
       Write-Host "  No READY tasks found across rotation. Autopilot exiting cleanly." -ForegroundColor DarkGray
       break
     }
@@ -475,6 +486,7 @@ $loopCount = 0
   }
 
   $taskId  = $task.taskId
+  $discoveryAttempts = 0
   $prompt  = Get-Prompt -taskId $taskId
   $promptVersion = Get-PromptVersion -taskId $taskId
   $beforeCycleFiles = @(git diff --name-only HEAD 2>$null)

@@ -22,10 +22,13 @@
  *   node scripts/orchestrator/reprioritize.js --top 5  (show only top N)
  */
 
-'use strict';
+import fs from 'fs';
+import path from 'path';
+import { spawnSync } from 'child_process';
+import { fileURLToPath } from 'url';
 
-const fs   = require('fs');
-const path = require('path');
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 // ─── Config ────────────────────────────────────────────────────────────────
 const ROOT          = path.resolve(__dirname, '..', '..');
@@ -84,14 +87,67 @@ function readJSON(fp) {
   catch { return null; }
 }
 
+function runNode(scriptPath, args = []) {
+  const result = spawnSync('node', [scriptPath, ...args], {
+    cwd: ROOT,
+    stdio: ['ignore', 'pipe', 'pipe'],
+    encoding: 'utf8',
+  });
+
+  return {
+    ok: result.status === 0,
+    stdout: result.stdout || '',
+    stderr: result.stderr || '',
+  };
+}
+
+function ensureQueueHasTasks(queue) {
+  const hasEligibleTasks = queue && Array.isArray(queue.tasks) &&
+    queue.tasks.some(t => !['done', 'complete', 'archived'].includes(t.status));
+
+  if (hasEligibleTasks) {
+    return queue;
+  }
+
+  console.warn('\n  ⚠  No task queue found, queue is empty, or all tasks are already completed.');
+  console.warn('     Attempting automatic upgrade discovery before exiting.\n');
+
+  const discoveryResult = runNode(path.join(__dirname, 'discover-upgrade.js'));
+  if (!discoveryResult.ok) {
+    console.warn('  ⚠  Automatic upgrade discovery failed.');
+    if (discoveryResult.stderr.trim()) {
+      console.warn(`     ${discoveryResult.stderr.trim().split('\n')[0]}`);
+    }
+    return queue;
+  }
+
+  const refreshedQueue = readJSON(QUEUE_FILE);
+  const refreshedHasEligibleTasks = refreshedQueue && Array.isArray(refreshedQueue.tasks) &&
+    refreshedQueue.tasks.some(t => !['done', 'complete', 'archived'].includes(t.status));
+
+  if (refreshedHasEligibleTasks) {
+    console.log('  ✓ Automatic upgrade discovery seeded new queue tasks.\n');
+    return refreshedQueue;
+  }
+
+  return refreshedQueue;
+}
+
 function taskTextFor(task, prompts) {
+  const promptEntry = prompts && task.id ? prompts[task.id] : null;
+  const promptText = typeof promptEntry === 'string'
+    ? promptEntry
+    : promptEntry && typeof promptEntry === 'object' && typeof promptEntry.prompt === 'string'
+      ? promptEntry.prompt
+      : '';
+
   return [
     task.id || '',
     task.agent || '',
     task.objective || task.description || '',
     (task.files || []).join(' '),
     (task.tags || []).join(' '),
-    prompts && prompts[task.id] ? prompts[task.id] : '',
+    promptText,
   ].join(' ').toLowerCase();
 }
 
@@ -167,7 +223,12 @@ function lookupAgent(agentName, registry) {
 // ─── Build dispatch packet for top task ───────────────────────────────────
 function buildDispatchPacket(task, prompts, registry) {
   const agentInfo  = lookupAgent(task.agent, registry);
-  const promptText = prompts && task.id ? (prompts[task.id] || '') : '';
+  const promptEntry = prompts && task.id ? (prompts[task.id] || '') : '';
+  const promptText = typeof promptEntry === 'string'
+    ? promptEntry
+    : promptEntry && typeof promptEntry === 'object' && typeof promptEntry.prompt === 'string'
+      ? promptEntry.prompt
+      : '';
 
   return {
     taskId:            task.id,
@@ -186,7 +247,7 @@ function buildDispatchPacket(task, prompts, registry) {
       'FEEDS_ACK received from downstream agent',
     ],
     validationCommand: task.validationCommand || 'node scripts/orchestrator/codebase-scan.js --brief',
-    invocationPattern: agentInfo ? agentInfo.invocationPattern : `@${task.agent} — ${task.objective}`,
+    invocationPattern: agentInfo ? agentInfo.invocationPattern : `${task.agent} — ${task.objective}`,
     responsibilities:  agentInfo ? (agentInfo.responsibilities || []).slice(0, 5) : [],
   };
 }
@@ -201,16 +262,18 @@ function main() {
 
   // Load inputs
   const scanReport = readJSON(SCAN_REPORT);
-  const queue      = readJSON(QUEUE_FILE);
-  const prompts    = readJSON(PROMPTS_FILE);
+  let queue        = readJSON(QUEUE_FILE);
+  let prompts      = readJSON(PROMPTS_FILE);
   const registry   = readJSON(REGISTRY_FILE);
 
   if (!scanReport) {
     console.warn('\n  ⚠  No codebase scan report found. Run: npm run autopilot:scan first.');
     console.warn('     Falling back to baseline task ordering.\n');
   }
+  queue = ensureQueueHasTasks(queue);
+  prompts = readJSON(PROMPTS_FILE);
   if (!queue || !queue.tasks || queue.tasks.length === 0) {
-    console.warn('\n  ⚠  No task queue found or queue is empty.');
+    console.warn('\n  ⚠  No task queue found or queue is empty after discovery.');
     console.warn('     Run: npm run orchestrator:queue:init to initialise.\n');
     process.exit(0);
   }
@@ -222,7 +285,19 @@ function main() {
   const completedIds = new Set(tasks.filter(t => t.status === 'done' || t.status === 'complete').map(t => t.id));
 
   // Compute scores
-  const eligible = tasks.filter(t => t.status !== 'done' && t.status !== 'complete' && t.status !== 'archived');
+  let eligible = tasks.filter(t => t.status !== 'done' && t.status !== 'complete' && t.status !== 'archived');
+  if (eligible.length === 0) {
+    queue = ensureQueueHasTasks(queue);
+    prompts = readJSON(PROMPTS_FILE);
+    if (queue && queue.tasks) {
+      const refreshedTasks = queue.tasks;
+      eligible = refreshedTasks.filter(t => t.status !== 'done' && t.status !== 'complete' && t.status !== 'archived');
+      if (eligible.length > 0) {
+        tasks.length = 0;
+        tasks.push(...refreshedTasks);
+      }
+    }
+  }
   const scored   = eligible.map(task => ({
     ...task,
     computedScore: scoreTask(task, prompts, scanReport, completedIds),
