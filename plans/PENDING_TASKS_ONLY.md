@@ -1,7 +1,7 @@
 # Pending Tasks Only
 
-**Last Updated:** 2026-05-24
-**Current Focus:** Wave 10 is next in queue; Waves 11–16 remain sequenced and bundle-backed.
+**Last Updated:** 2026-05-25
+**Current Focus:** Wave 13 is next in queue; Waves 14–16 remain sequenced and bundle-backed.
 
 ## Canonical Sources
 
@@ -23,9 +23,9 @@ Advance only when the prior wave is green, the readiness gate is satisfied, and 
 | --- | --- | --- | --- | --- | --- |
 | S1 | 08 | TypeScript/errors stabilization | ✅ Green | @Mira + @Katherine | TypeScript baseline confirmed green |
 | S2 | 09 | UX hardening — loading states, error boundaries, mobile, RTL | ✅ Green | @Una + @Lea + @Tracy + @Inas | Build + lint + targeted tests + tracker sync complete |
-| S3 | 10 | Performance + SEO + security uplift | 🟢 Ready | @Ruchi + @Rachel + @Radia + @Katherine | S2 green + readiness 65% + @Ada approval phrase |
-| S4 | 11 | Incomplete features + architecture refactor | 📋 Planned | @Ada + @Mira + @Barbara | S3 green + readiness 60% + @Ada approval phrase |
-| S5 | 12 | Automation engine (cron + docs + email) | 📋 Planned | @Cron + @Puppeteer + @Handlebars + @Mira | S4 green + readiness 60% + @Ada approval phrase |
+| S3 | 10 | Performance + SEO + security uplift | ✅ Green | @Ruchi + @Rachel + @Radia + @Katherine | Lazy loading, SEO meta/structured-data, CSP, rate-limiting, vite chunks complete |
+| S4 | 11 | Incomplete features + architecture refactor | ✅ Green | @Ada + @Mira + @Barbara | SchedulerService, DocumentService, email triggers, export routes complete |
+| S5 | 12 | Automation engine (cron + docs + email) | ✅ Green | @Cron + @Puppeteer + @Handlebars + @Mira | Rent reminders, lease-expiry reminders, sitemap refresh, P&L report, export routes complete |
 | S6 | 13 | Real-time notifications + media + virtual tour | 📋 Planned | @Socket + @Cloudinary + @Pannellum + @Mira | S5 green + readiness 60% + @Ada approval phrase |
 | S7 | 14 | Product features closure | 📋 Planned | @LeadScore + @Mortgage + @Zod + @Mira | S6 green + readiness 60% + @Ada approval phrase |
 | S8 | 15 | Cache + PWA readiness | 📋 Planned | @Redis + @PWA + @Ruchi + @Una | S7 green + readiness 60% + @Ada approval phrase |
@@ -47,6 +47,9 @@ Advance only when the prior wave is green, the readiness gate is satisfied, and 
 | Repo | Archive/cleanup pass + canonical planning reset | ✅ Complete |
 | S1 | Wave 08 stabilization + governance baseline | ✅ Complete |
 | S2 | Wave 09 UX hardening + accessibility/mobile/RTL closeout | ✅ Complete |
+| S3 | Wave 10 performance + SEO + security uplift | ✅ Complete |
+| S4 | Wave 11 incomplete features + architecture refactor | ✅ Complete |
+| S5 | Wave 12 automation engine (cron + docs + email) | ✅ Complete |
 
 ## S2 — Wave 09: UX Hardening (Complete)
 
