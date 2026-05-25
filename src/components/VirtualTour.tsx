@@ -105,11 +105,11 @@ interface VirtualTourProps {
   propertyTitle?: string;
 }
 
-const VirtualTour = ({ 
-  images = [], 
+const VirtualTour = ({
+  images = [],
   initialIndex = 0,
   onClose,
-  propertyTitle = 'Property Tour'
+  propertyTitle = 'Property Tour',
 }: VirtualTourProps) => {
   const [currentIndex, setCurrentIndex] = useState(initialIndex);
   const [isFullscreen, setIsFullscreen] = useState(false);
@@ -128,11 +128,13 @@ const VirtualTour = ({
   const containerRef = useRef<HTMLDivElement>(null);
   const autoRotateRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
-  const currentImage: TourImage = Array.isArray(images) ? (images[currentIndex] || {} as TourImage) : ({} as TourImage);
+  const currentImage: TourImage = Array.isArray(images)
+    ? images[currentIndex] || ({} as TourImage)
+    : ({} as TourImage);
   const hotspots = currentImage.hotspots || [];
   const isJsDomEnvironment =
     typeof navigator !== 'undefined' && /jsdom/i.test(navigator.userAgent || '');
-  const canUsePannellum = false && useImmersiveViewer && !!currentImage.url && !isJsDomEnvironment;
+  const canUsePannellum = useImmersiveViewer && !!currentImage.url && !isJsDomEnvironment;
 
   useEffect(() => {
     if (isAutoRotate) {
@@ -171,10 +173,13 @@ const VirtualTour = ({
   const handleTouchMove = useCallback((e: React.TouchEvent) => {
     if (e.touches.length === 0) return;
     const touch = e.touches[0];
-    dispatchTour({ type: 'DRAG_MOVE', payload: { clientX: touch.clientX, clientY: touch.clientY } });
+    dispatchTour({
+      type: 'DRAG_MOVE',
+      payload: { clientX: touch.clientX, clientY: touch.clientY },
+    });
   }, []);
 
-  // Use native event listener with { passive: false } so preventDefault() works for wheel zoom  
+  // Use native event listener with { passive: false } so preventDefault() works for wheel zoom
   useEffect(() => {
     const el = containerRef.current;
     if (!el) return;
@@ -201,13 +206,16 @@ const VirtualTour = ({
     dispatchTour({ type: 'RESET_VIEW' });
   }, []);
 
-  const handleHotspotClick = useCallback((hotspot: TourHotspotData) => {
-    if (hotspot.targetRoom !== undefined) {
-      navigateToRoom(hotspot.targetRoom);
-    } else if (hotspot.action) {
-      hotspot.action();
-    }
-  }, [navigateToRoom]);
+  const handleHotspotClick = useCallback(
+    (hotspot: TourHotspotData) => {
+      if (hotspot.targetRoom !== undefined) {
+        navigateToRoom(hotspot.targetRoom);
+      } else if (hotspot.action) {
+        hotspot.action();
+      }
+    },
+    [navigateToRoom]
+  );
 
   useEffect(() => {
     const handleFullscreenChange = () => {
@@ -219,7 +227,7 @@ const VirtualTour = ({
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      switch(e.key) {
+      switch (e.key) {
         case 'Escape':
           if (isFullscreen) {
             document.exitFullscreen();
@@ -262,7 +270,7 @@ const VirtualTour = ({
   }
 
   return (
-    <div 
+    <div
       ref={containerRef}
       className={`virtual-tour-container ${isFullscreen ? 'fullscreen' : ''}`}
     >
@@ -272,14 +280,14 @@ const VirtualTour = ({
           <h3>{propertyTitle}</h3>
         </div>
         <div className="tour-controls-header">
-          <button 
+          <button
             className={`tour-btn ${isAutoRotate ? 'active' : ''}`}
             onClick={() => setIsAutoRotate(!isAutoRotate)}
             title="Auto Rotate (R)"
           >
             🔄
           </button>
-          <button 
+          <button
             className={`tour-btn ${showHotspots ? 'active' : ''}`}
             onClick={() => setShowHotspots(!showHotspots)}
             title="Toggle Hotspots"
@@ -293,11 +301,7 @@ const VirtualTour = ({
           >
             🧭
           </button>
-          <button 
-            className="tour-btn"
-            onClick={toggleFullscreen}
-            title="Fullscreen"
-          >
+          <button className="tour-btn" onClick={toggleFullscreen} title="Fullscreen">
             {isFullscreen ? '⬜' : '⛶'}
           </button>
           {onClose && (
@@ -308,7 +312,7 @@ const VirtualTour = ({
         </div>
       </div>
 
-      <div 
+      <div
         className="tour-viewport"
         onMouseDown={handleMouseDown}
         onMouseMove={handleMouseMove}
@@ -319,7 +323,7 @@ const VirtualTour = ({
         onTouchEnd={handleMouseUp}
         style={{ cursor: isDragging ? 'grabbing' : 'grab' }}
       >
-        <div 
+        <div
           className="tour-panorama"
           style={
             canUsePannellum
@@ -334,52 +338,49 @@ const VirtualTour = ({
           }
         >
           {canUsePannellum ? null : null}
-          {showHotspots && hotspots.map((hotspot, index) => {
-            const adjustedX = ((hotspot.x - (rotation.y % 360) * (100/360) + 150) % 100);
-            const adjustedY = hotspot.y + rotation.x * (50/90);
-            const isVisible = adjustedX >= 10 && adjustedX <= 90 && adjustedY >= 10 && adjustedY <= 90;
-            
-            if (!isVisible) return null;
-            
-            return (
-              <button
-                key={hotspot.label || `hotspot-${hotspot.x}-${hotspot.y}`}
-                className={`tour-hotspot ${hotspot.type || 'navigation'}`}
-                style={{
-                  left: `${adjustedX}%`,
-                  top: `${adjustedY}%`
-                }}
-                onClick={() => handleHotspotClick(hotspot)}
-                title={hotspot.label}
-              >
-                <span className="hotspot-icon">
-                  {hotspot.type === 'info' ? 'ℹ️' : '→'}
-                </span>
-                <span className="hotspot-label">{hotspot.label}</span>
-              </button>
-            );
-          })}
+          {showHotspots &&
+            hotspots.map((hotspot, index) => {
+              const adjustedX = (hotspot.x - (rotation.y % 360) * (100 / 360) + 150) % 100;
+              const adjustedY = hotspot.y + rotation.x * (50 / 90);
+              const isVisible =
+                adjustedX >= 10 && adjustedX <= 90 && adjustedY >= 10 && adjustedY <= 90;
+
+              if (!isVisible) return null;
+
+              return (
+                <button
+                  key={hotspot.label || `hotspot-${hotspot.x}-${hotspot.y}`}
+                  className={`tour-hotspot ${hotspot.type || 'navigation'}`}
+                  style={{
+                    left: `${adjustedX}%`,
+                    top: `${adjustedY}%`,
+                  }}
+                  onClick={() => handleHotspotClick(hotspot)}
+                  title={hotspot.label}
+                >
+                  <span className="hotspot-icon">{hotspot.type === 'info' ? 'ℹ️' : '→'}</span>
+                  <span className="hotspot-label">{hotspot.label}</span>
+                </button>
+              );
+            })}
         </div>
 
         <div className="tour-compass">
-          <div 
-            className="compass-needle"
-            style={{ transform: `rotate(${-rotation.y}deg)` }}
-          />
+          <div className="compass-needle" style={{ transform: `rotate(${-rotation.y}deg)` }} />
           <span className="compass-label">N</span>
         </div>
       </div>
 
       <div className="tour-footer">
         <div className="zoom-controls">
-          <button 
+          <button
             className="zoom-btn"
             onClick={() => dispatchTour({ type: 'ZOOM', payload: zoom - 0.2 })}
           >
             −
           </button>
           <div className="zoom-level">{Math.round(zoom * 100)}%</div>
-          <button 
+          <button
             className="zoom-btn"
             onClick={() => dispatchTour({ type: 'ZOOM', payload: zoom + 0.2 })}
           >
@@ -394,8 +395,8 @@ const VirtualTour = ({
               className={`room-thumb ${index === currentIndex ? 'active' : ''}`}
               onClick={() => navigateToRoom(index)}
             >
-              <img 
-                src={img.thumbnail || img.url || ''} 
+              <img
+                src={img.thumbnail || img.url || ''}
                 alt={img.name || `Room ${index + 1}`}
                 loading="lazy"
                 width={120}
@@ -407,9 +408,7 @@ const VirtualTour = ({
         </div>
 
         <div className="tour-info">
-          <span className="current-room">
-            {currentImage.name || `Room ${currentIndex + 1}`}
-          </span>
+          <span className="current-room">{currentImage.name || `Room ${currentIndex + 1}`}</span>
           <span className="room-count">
             {currentIndex + 1} / {images.length}
           </span>
