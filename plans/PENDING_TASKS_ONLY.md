@@ -1,7 +1,7 @@
 # Pending Tasks Only
 
 **Last Updated:** 2026-05-25
-**Current Focus:** Wave 14 is next in queue; Waves 15–16 remain sequenced and bundle-backed.
+**Current Focus:** Waves 14–16 complete; Wave 17 is next — full UI/UX luxury upgrade.
 
 ## Canonical Sources
 
@@ -27,9 +27,9 @@ Advance only when the prior wave is green, the readiness gate is satisfied, and 
 | S4 | 11 | Incomplete features + architecture refactor | ✅ Green | @Ada + @Mira + @Barbara | SchedulerService, DocumentService, email triggers, export routes complete |
 | S5 | 12 | Automation engine (cron + docs + email) | ✅ Green | @Cron + @Puppeteer + @Handlebars + @Mira | Rent reminders, lease-expiry reminders, sitemap refresh, P&L report, export routes complete |
 | S6 | 13 | Real-time notifications + media + virtual tour | ✅ Green | @Socket + @Cloudinary + @Pannellum + @Mira | Socket auth + notification service + media pipeline + virtual tour integration completed |
-| S7 | 14 | Product features closure | 📋 Planned | @LeadScore + @Mortgage + @Zod + @Mira | S6 green + readiness 60% + @Ada approval phrase |
-| S8 | 15 | Cache + PWA readiness | 📋 Planned | @Redis + @PWA + @Ruchi + @Una | S7 green + readiness 60% + @Ada approval phrase |
-| S9 | 16 | Security hardening + API versioning | 📋 Planned | @S5 + @Radia + @Mira | S8 green + readiness 60% + @Ada approval phrase |
+| S7 | 14 | Product features closure | ✅ Green | @LeadScore + @Mortgage + @Zod + @Mira | S6 green + readiness 60% + @Ada approval phrase |
+| S8 | 15 | Cache + PWA readiness | ✅ Green | @Redis + @PWA + @Ruchi + @Una | S7 green + readiness 60% + @Ada approval phrase |
+| S9 | 16 | Security hardening + API versioning | ✅ Green | @S5 + @Radia + @Mira | S8 green + readiness 60% + @Ada approval phrase |
 | S10 | 17 | Full UI/UX luxury upgrade (design tokens + glassmorphism + animations + mobile + PWA + WCAG 2.2) | 📋 Planned | @Una + @Lea + @Tracy + @Africa + @Cyra + @Katherine | S9 green + free-agent specs + readiness 60% + @Ada approval phrase |
 
 ## Completed Stream History

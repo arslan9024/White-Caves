@@ -12,14 +12,40 @@ const log = createLogger('Database');
 // Slow-query threshold: log any query taking longer than this
 const SLOW_QUERY_THRESHOLD_MS = 500;
 
+const POOL_MAX_SIZE = parseInt(process.env.DB_POOL_MAX ?? '10', 10);
+const POOL_MIN_SIZE = parseInt(process.env.DB_POOL_MIN ?? '2', 10);
+const CONNECT_TIMEOUT_MS = parseInt(process.env.DB_CONNECT_TIMEOUT_MS ?? '10000', 10);
+
 let prisma: PrismaClient;
 
+// Inject pool parameters into DATABASE_URL if not already set
+const buildDatabaseUrl = (): string | undefined => {
+  const url = process.env.DATABASE_URL;
+  if (!url) return undefined;
+  try {
+    const parsed = new URL(url);
+    if (!parsed.searchParams.has('maxPoolSize'))
+      parsed.searchParams.set('maxPoolSize', String(POOL_MAX_SIZE));
+    if (!parsed.searchParams.has('minPoolSize'))
+      parsed.searchParams.set('minPoolSize', String(POOL_MIN_SIZE));
+    if (!parsed.searchParams.has('connectTimeoutMS'))
+      parsed.searchParams.set('connectTimeoutMS', String(CONNECT_TIMEOUT_MS));
+    return parsed.toString();
+  } catch {
+    return url;
+  }
+};
+
 // Check if there's already a prisma instance in development
+const effectiveDbUrl = buildDatabaseUrl();
+const prismaOptions = effectiveDbUrl ? { datasources: { db: { url: effectiveDbUrl } } } : {};
+
 if (process.env.NODE_ENV === 'production') {
-  prisma = new PrismaClient();
+  prisma = new PrismaClient(prismaOptions);
 } else {
   if (!global.prisma) {
     global.prisma = new PrismaClient({
+      ...prismaOptions,
       log:
         process.env.NODE_ENV === 'development'
           ? ['query', 'info', 'warn', 'error']
