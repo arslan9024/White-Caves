@@ -136,6 +136,15 @@ const formatCurrency = (value: number): string =>
     maximumFractionDigits: 0,
   }).format(value);
 
+const ZONE_LABELS: Record<string, string> = {
+  executive: 'Executive',
+  sales_leads: 'Sales & Leads',
+  inventory_listings: 'Properties',
+  leasing_contracts: 'Leasing',
+  finance_compliance: 'Finance',
+  ai_command: 'AI Command',
+};
+
 const UnifiedDashboardPage: FC = () => {
   const navigate = useNavigate();
   const {
@@ -320,14 +329,17 @@ const UnifiedDashboardPage: FC = () => {
       target: tab.id,
     }));
     const modules = isSuperUser
-      ? moduleEntries.map(([key, module]) => ({
-          id: `module-${key}`,
-          icon: '🤖',
-          label: module.label,
-          meta: 'Launch CRM module',
-          type: 'module' as const,
-          target: key,
-        }))
+      ? moduleEntries.map(([key, module]) => {
+          const def = getCRMModule(key);
+          return {
+            id: `module-${key}`,
+            icon: def?.icon ?? '🤖',
+            label: module.label,
+            meta: def?.zone ? (ZONE_LABELS[def.zone] ?? def.zone.replace(/_/g, ' ')) : 'CRM module',
+            type: 'module' as const,
+            target: key,
+          };
+        })
       : [];
 
     return [...tabs, ...modules].filter(item => {
@@ -379,14 +391,19 @@ const UnifiedDashboardPage: FC = () => {
       ...(isSuperUser
         ? moduleEntries
             .filter(([, module]) => module.label.toLowerCase().includes(query))
-            .map(([key, module]) => ({
-              id: `module-search-${key}`,
-              icon: '🤖',
-              label: module.label,
-              meta: 'Launch CRM module',
-              type: 'module' as const,
-              target: key,
-            }))
+            .map(([key, module]) => {
+              const def = getCRMModule(key);
+              return {
+                id: `module-search-${key}`,
+                icon: def?.icon ?? '🤖',
+                label: module.label,
+                meta: def?.zone
+                  ? (ZONE_LABELS[def.zone] ?? def.zone.replace(/_/g, ' '))
+                  : 'CRM module',
+                type: 'module' as const,
+                target: key,
+              };
+            })
         : []),
     ];
 
@@ -602,12 +619,22 @@ const UnifiedDashboardPage: FC = () => {
     <AuthenticatedPageShell>
       <header className="dashboard-topbar">
         <div className="dashboard-topbar__brand">
-          <div className="dashboard-topbar__logo" aria-hidden="true">
+          <div
+            className={`dashboard-topbar__logo${isSuperUser ? ' dashboard-topbar__logo--lion' : ''}`}
+            aria-hidden="true"
+          >
             WC
           </div>
           <div>
             <p className="dashboard-topbar__eyebrow">White Caves CRM</p>
-            <strong>Internal command center</strong>
+            <strong>
+              Internal command center
+              {isSuperUser && (
+                <span className="dashboard-topbar__super-pill" aria-label="Super Admin">
+                  👑
+                </span>
+              )}
+            </strong>
           </div>
         </div>
 
@@ -688,12 +715,20 @@ const UnifiedDashboardPage: FC = () => {
           >
             + Quick action
           </button>
-          <div className="dashboard-user-chip" aria-label={`Signed in as ${user.email}`}>
+          <div
+            className={`dashboard-user-chip${isSuperUser ? ' dashboard-user-chip--lion' : ''}`}
+            aria-label={`Signed in as ${user.email}`}
+          >
             <div className="dashboard-user-chip__avatar" aria-hidden="true">
-              {greetingName.slice(0, 2).toUpperCase()}
+              {isSuperUser ? '👑' : greetingName.slice(0, 2).toUpperCase()}
             </div>
             <div className="dashboard-user-chip__copy">
-              <strong>{greetingName}</strong>
+              <strong>
+                {greetingName}
+                {isSuperUser && (
+                  <span className="dashboard-user-chip__role-badge">Lion</span>
+                )}
+              </strong>
               <small>{user.email}</small>
             </div>
           </div>
@@ -767,7 +802,7 @@ const UnifiedDashboardPage: FC = () => {
                         className={`dashboard-module-option ${selectedCRMModule === key ? 'active' : ''}`}
                         onClick={() => handleCRMModuleSelect(key)}
                       >
-                        <span aria-hidden="true">🤖</span>
+                        <span aria-hidden="true">{getCRMModule(key)?.icon ?? '🤖'}</span>
                         <span>{module.label}</span>
                       </button>
                     ))}
@@ -824,7 +859,7 @@ const UnifiedDashboardPage: FC = () => {
             />
           )}
 
-          {hasProfileCompletionGaps && (
+          {!isSuperUser && hasProfileCompletionGaps && (
             <section className="dashboard-profile-completion" aria-label="Profile setup status">
               <div className="dashboard-profile-completion__copy">
                 <p className="dashboard-profile-completion__eyebrow">Post-login setup</p>
