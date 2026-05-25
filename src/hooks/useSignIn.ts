@@ -24,6 +24,8 @@ import {
   registerWithEmail as backendRegister,
   syncFirebaseUser,
   completeSocialRegistration,
+  verifyTwoFactor as backendVerifyTwoFactor,
+  type LoginSuccessData,
 } from '../services/authService';
 import { safeStorage } from '../utils/safeStorage';
 
@@ -137,6 +139,10 @@ export function useSignIn() {
   const [showOtpInput, setShowOtpInput] = useState(false);
   const [confirmationResult, setConfirmationResult] = useState<ConfirmationResult | null>(null);
 
+  // ── 2FA verification ───────────────────────────────────────────
+  const [twoFactorEmail, setTwoFactorEmail] = useState('');
+  const [twoFactorCode, setTwoFactorCode] = useState('');
+
   // ── Post-auth pending user ─────────────────────────────────────
   const [pendingUser, setPendingUser] = useState<PendingUser | null>(null);
   const [socialSyncRecovery, setSocialSyncRecovery] = useState<SocialSyncRecovery | null>(null);
@@ -185,9 +191,14 @@ export function useSignIn() {
         })
       );
       setSuccess('Sign in successful!');
-      navTimerRef.current = setTimeout(() => navigate('/dashboard'), TIMING.NAVIGATION_DELAY);
+      // Return the user to where they came from (e.g. a protected page they tried to visit
+      // before signing in), falling back to the main dashboard.
+      const from = (location.state as { from?: string } | null)?.from;
+      const destination =
+        from && from !== '/signin' && from !== '/signup' ? from : '/dashboard';
+      navTimerRef.current = setTimeout(() => navigate(destination), TIMING.NAVIGATION_DELAY);
     },
-    [dispatch, navigate]
+    [dispatch, navigate, location.state]
   );
 
   const handleSignUpSuccess = useCallback(
@@ -435,8 +446,17 @@ export function useSignIn() {
           });
         } else {
           const response = await backendLogin(normalizedEmail, password);
-          if (!response?.data?.user) throw new Error('Invalid response: missing user data');
-          handleSignInSuccess(response.data.user);
+          if (response.requiresTwoFactor) {
+            // Advance to the 2FA code-entry step.
+            // The email is stored so handleTwoFactorSubmit can send it to the server.
+            setTwoFactorEmail(normalizedEmail);
+            setTwoFactorCode('');
+            setStep(4);
+          } else {
+            const data = response.data as LoginSuccessData;
+            if (!data?.user) throw new Error('Invalid response: missing user data');
+            handleSignInSuccess(data.user);
+          }
         }
       } catch (err: unknown) {
         const message = err instanceof Error ? err.message : 'Authentication failed';
@@ -446,6 +466,26 @@ export function useSignIn() {
       }
     },
     [mode, email, password, confirmPassword, fullName, handleSignInSuccess, handleSignUpSuccess]
+  );
+
+  // ── 2FA verification ──────────────────────────────────────────────
+
+  const handleTwoFactorSubmit = useCallback(
+    async (e: FormEvent<HTMLFormElement>): Promise<void> => {
+      e.preventDefault();
+      setLoading(true);
+      setError('');
+
+      try {
+        const user = await backendVerifyTwoFactor(twoFactorEmail, twoFactorCode);
+        handleSignInSuccess(user);
+      } catch (err: unknown) {
+        setError(err instanceof Error ? err.message : 'Verification failed');
+      } finally {
+        setLoading(false);
+      }
+    },
+    [twoFactorEmail, twoFactorCode, handleSignInSuccess]
   );
 
   // ── Phone auth ─────────────────────────────────────────────────
@@ -532,7 +572,11 @@ export function useSignIn() {
 
   const goBackToStep = useCallback((targetStep: number): void => {
     setStep(targetStep);
-    if (targetStep === 1) setSelectedCategory('');
+    if (targetStep === 1) {
+      setSelectedCategory('');
+      setTwoFactorEmail('');
+      setTwoFactorCode('');
+    }
     if (targetStep <= 2) setSelectedRole('');
   }, []);
 
@@ -580,6 +624,11 @@ export function useSignIn() {
     setOtp,
     showOtpInput,
     resetOtp,
+
+    // 2FA verification
+    twoFactorCode,
+    setTwoFactorCode,
+    handleTwoFactorSubmit,
 
     // Post-auth user
     pendingUser,

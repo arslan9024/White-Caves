@@ -90,7 +90,6 @@ const AuditLogPage: FC = () => {
       void fetchAuditLog();
     }
   }, [fetchAuditLog, page, search, searchInput]);
-
   const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
 
   return (

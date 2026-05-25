@@ -231,7 +231,26 @@
 - [x] Pending queue reconciled and status drift removed across active trackers
 - [x] Phase 26 Workstream E advisory explicitly deferred with owner/date (`@Margaret`, target `2026-05-23`)
 
-### Latest Planning / Implementation Sync (May 22, 2026)
+### MILESTONE-WAVE17-SCAFFOLD
+
+**Wave 17 — Full UI/UX Luxury Upgrade — Planning Bundle Scaffolded (May 25, 2026)**
+
+**Status:** 📋 PLANNED — Awaiting Wave 16 completion
+
+- [x] `plans/waves/WAVE_17_SDD.md` created (glassmorphism, Framer Motion, mobile, PWA, WCAG 2.2 scope)
+- [x] `plans/waves/WAVE_17_READINESS_PACKET.md` created (60% unlock gate + 6 free-agent spec checks)
+- [x] `plans/waves/WAVE_17_IMPLEMENTATION_BACKLOG.md` created (W17-001 → W17-009 ordered tasks)
+- [x] `plans/waves/WAVE_17_TEST_ROLLOUT.md` created (Lighthouse CI, Axe WCAG, PWA, Playwright mobile matrix)
+- [x] `business_docs/06_design_architecture/ui-ux-specification.md` expanded with Sections 13–17 (glassmorphism tokens, Framer Motion guidelines, enhanced mobile breakpoints, PWA spec, WCAG 2.2 criteria)
+- [x] `plans/waves/README.md` updated — Wave 17 row added
+- [x] `plans/MASTER_PLAN.md` updated — Wave 17 added as Sequence 9 (S10)
+- [x] `plans/PENDING_TASKS_ONLY.md` updated — S10 Wave 17 queue entry + free-agent invocation table
+- [x] `DAILY_MILESTONE_TRACKER.md` updated — May 25 entry recorded
+- [ ] Wave 14 → Wave 15 → Wave 16 must complete before Wave 17 coding begins
+- [ ] 6 free-agent planning specs committed (Phase A — run in parallel using free tools)
+- [ ] `@Ada — Context Ready (60% Readiness) — Coding Phase Approved` issued for Wave 17
+
+---
 
 **Focus:** Consolidate planning to canonical trackers, normalize cross-tracker status, and activate Stream S1 error-burn-down with verification gates
 
