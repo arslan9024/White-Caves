@@ -22,8 +22,8 @@ import cspMiddleware from './middleware/csp.js';
 import {
   API_PREFIX,
   API_V1_PREFIX,
+  createV1CompatibilityProxy,
   markLegacyApiDeprecated,
-  rewriteV1ToLegacyApi,
 } from './middleware/apiVersioning.js';
 import { CORS_ORIGINS, WHATSAPP_WEBHOOK_SECRET, IS_PRODUCTION } from './config/env.js';
 import { buildAllowedCorsOrigins, inferRequestOrigin, isCorsOriginAllowed } from './config/cors.js';
@@ -201,7 +201,7 @@ app.use(cookieParser());
 
 // Wave 16: versioned API migration.
 // Requests to /api/v1/* are rewritten to /api/* to preserve existing handlers.
-app.use(API_V1_PREFIX, rewriteV1ToLegacyApi);
+app.use(API_V1_PREFIX, createV1CompatibilityProxy(app));
 
 // Legacy /api/* responses are kept as compatibility aliases and marked deprecated.
 app.use(API_PREFIX, markLegacyApiDeprecated);

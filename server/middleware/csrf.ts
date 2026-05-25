@@ -1,5 +1,5 @@
 import crypto from 'node:crypto';
-import { NextFunction, Request, Response } from 'express';
+import type { NextFunction, Request, Response } from 'express';
 import { AppError } from './errorHandler.js';
 
 export const CSRF_COOKIE_NAME = 'csrf_token';
