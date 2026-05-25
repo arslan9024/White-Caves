@@ -657,5 +657,19 @@
     "lastUsed": "2026-05-25",
     "successCount": 0,
     "history": []
+  },
+  "DU001": {
+    "v": 1,
+    "agent": "@S5",
+    "action": "EXPAND",
+    "target": "wave-16-security-hardening.md",
+    "prompt": "@S5 -- EXPAND: wave-16-security-hardening.md -> add CSRF coverage plan for all mutation routes, token issuance, validation points, and rollout verification",
+    "tags": [
+      "security",
+      "api"
+    ],
+    "lastUsed": "2026-05-25",
+    "successCount": 0,
+    "history": []
   }
 }

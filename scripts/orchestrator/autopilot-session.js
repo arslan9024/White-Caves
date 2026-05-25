@@ -30,11 +30,13 @@
  *   --dry         Do not update session snapshot
  */
 
-'use strict';
+import fs from 'fs';
+import path from 'path';
+import { spawnSync } from 'child_process';
+import { fileURLToPath } from 'url';
 
-const fs     = require('fs');
-const path   = require('path');
-const { execSync, spawnSync } = require('child_process');
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 // ─── Config ────────────────────────────────────────────────────────────────
 const ROOT          = path.resolve(__dirname, '..', '..');
@@ -67,6 +69,14 @@ function runNode(scriptPath, args = []) {
     cwd: ROOT, stdio: ['ignore', 'pipe', 'pipe'], encoding: 'utf8',
   });
   return { ok: result.status === 0, stdout: result.stdout || '', stderr: result.stderr || '' };
+}
+
+function rerunReprioritize() {
+  return runNode(path.join(__dirname, 'reprioritize.js'));
+}
+
+function attemptAutomaticDiscovery() {
+  return runNode(path.join(__dirname, 'discover-upgrade.js'));
 }
 
 function loadPolicy() {
@@ -176,13 +186,13 @@ async function main() {
   // ── PHASE 2: Reprioritise ─────────────────────────────────────────────
   if (!JSON_OUT) console.log('\n  🔢  PHASE 2 — REPRIORITISE: Computing task order…\n');
 
-  const repriResult = runNode(path.join(__dirname, 'reprioritize.js'));
+  const repriResult = rerunReprioritize();
   if (!JSON_OUT) {
     if (repriResult.ok) console.log('  ✓ Task reprioritisation completed');
     else console.log('  ⚠ Reprioritisation encountered issues');
   }
 
-  const priorityOrder = readJSON(PRIORITY_FILE);
+  let priorityOrder = readJSON(PRIORITY_FILE);
 
   // ── PHASE 3: Hard Stop Check ──────────────────────────────────────────
   const hardStops = checkHardStops(scanReport);
@@ -195,10 +205,32 @@ async function main() {
   }
 
   // ── PHASE 4: Build Dispatch Packet ───────────────────────────────────
-  const dispatchPacket = priorityOrder ? priorityOrder.dispatchPacket : null;
+  let dispatchPacket = priorityOrder ? priorityOrder.dispatchPacket : null;
   const researchSummary = buildResearchSummary(scanReport);
 
   // ── Record session snapshot ───────────────────────────────────────────
+  if (!dispatchPacket) {
+    if (!JSON_OUT) {
+      console.log('\n  🧭  No eligible task found. Attempting automatic upgrade discovery…\n');
+    }
+
+    const discoveryResult = attemptAutomaticDiscovery();
+    if (!JSON_OUT) {
+      if (discoveryResult.ok) console.log('  ✓ Automatic upgrade discovery completed');
+      else console.log('  ⚠ Automatic upgrade discovery did not produce usable tasks');
+    }
+
+    if (discoveryResult.ok) {
+      const redispatchResult = rerunReprioritize();
+      if (!JSON_OUT) {
+        if (redispatchResult.ok) console.log('  ✓ Reprioritisation rerun after discovery');
+        else console.log('  ⚠ Reprioritisation rerun failed after discovery');
+      }
+      priorityOrder = readJSON(PRIORITY_FILE);
+      dispatchPacket = priorityOrder ? priorityOrder.dispatchPacket : null;
+    }
+  }
+
   const snapshot = buildSnapshot(SESSION_ID, dispatchPacket, scanReport, previousSnapshot);
   if (!DRY_RUN) {
     writeJSON(SNAPSHOT_FILE, snapshot);
