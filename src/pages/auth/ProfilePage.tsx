@@ -338,7 +338,9 @@ const ProfilePage: FC = () => {
 
   const normalizeDashboardRole = (role: string): string => {
     if (role === 'lion' || role === 'managing_director' || role === 'md') return 'owner';
-    return role;
+    if (role === 'landlord') return 'landlord';
+    if (role === 'tenant') return 'tenant';
+    return '';
   };
 
   // â”€â”€â”€ 2FA state â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
@@ -814,7 +816,11 @@ const ProfilePage: FC = () => {
             </button>
             {userRole && (
               <Link
-                to={`/${normalizeDashboardRole(userRole.role)}/dashboard`}
+                to={
+                  normalizeDashboardRole(userRole.role)
+                    ? `/${normalizeDashboardRole(userRole.role)}/dashboard`
+                    : '/dashboard'
+                }
                 style={{
                   ...styles.backBtn,
                   background: '#00000060',

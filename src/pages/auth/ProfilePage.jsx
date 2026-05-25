@@ -55,6 +55,15 @@ export default function ProfilePage() {
     return labels[role] || role;
   };
 
+  const resolveDashboardHref = (role) => {
+    if (role === 'lion' || role === 'owner' || role === 'managing_director' || role === 'md') {
+      return '/owner/dashboard';
+    }
+    if (role === 'landlord') return '/landlord/dashboard';
+    if (role === 'tenant') return '/tenant/dashboard';
+    return '/dashboard';
+  };
+
   if (!user) {
     return null;
   }
@@ -109,7 +118,7 @@ export default function ProfilePage() {
             <div className="nav-divider"></div>
             
             {userRole && (
-              <Link to={`/${userRole.role}/dashboard`} className="nav-item">
+              <Link to={resolveDashboardHref(userRole.role)} className="nav-item">
                 <span className="nav-icon">🏠</span>
                 Go to Dashboard
               </Link>
