@@ -234,14 +234,28 @@ if ($SkipMainPush) {
   Write-Step "MAIN PUSH -- merge development into main and push"
   Push-Location $root
   try {
-    git checkout main 2>&1 | Out-Host
-    if ($LASTEXITCODE -ne 0) { throw "checkout main failed" }
+    $activeBranch = (git rev-parse --abbrev-ref HEAD 2>&1).Trim()
+    if ($activeBranch -like "feature/wave-*") {
+      Write-Host ("  Wave branch detected: {0}" -f $activeBranch) -ForegroundColor Cyan
+      $ghExists = (Get-Command gh -ErrorAction SilentlyContinue)
+      if ($null -eq $ghExists) {
+        throw "gh CLI not found; cannot create PR from wave branch"
+      }
+      $prTitle = "Wave delivery: $activeBranch"
+      $prBody  = "Automated wave branch handoff from session-end.ps1"
+      gh pr create --base main --head $activeBranch --title $prTitle --body $prBody 2>&1 | Out-Host
+      if ($LASTEXITCODE -ne 0) { throw "failed to create PR for wave branch" }
+      Write-Host "  PR created to main for wave branch." -ForegroundColor Green
+    } else {
+      git checkout main 2>&1 | Out-Host
+      if ($LASTEXITCODE -ne 0) { throw "checkout main failed" }
 
-    git merge development --no-edit 2>&1 | Out-Host
-    if ($LASTEXITCODE -ne 0) { throw "merge development->main failed" }
+      git merge development --no-edit 2>&1 | Out-Host
+      if ($LASTEXITCODE -ne 0) { throw "merge development->main failed" }
 
-    git push origin main 2>&1 | Out-Host
-    if ($LASTEXITCODE -ne 0) { throw "push main failed" }
+      git push origin main 2>&1 | Out-Host
+      if ($LASTEXITCODE -ne 0) { throw "push main failed" }
+    }
   } catch {
     $errors.Add("main push failed: $_")
     Write-Host "  [ERROR] main merge/push failed -- restoring development branch." -ForegroundColor Red

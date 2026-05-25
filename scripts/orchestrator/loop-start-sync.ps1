@@ -3,7 +3,7 @@
 
 param(
   [string]$WorkspaceRoot = ".",
-  [string]$WaveBranch = "",
+  [switch]$WaveBranch,
   [string]$Wave = ""
 )
 
@@ -81,7 +81,7 @@ if ($LASTEXITCODE -ne 0) {
   exit 1
 }
 
-$targetWave = if (-not [string]::IsNullOrWhiteSpace($WaveBranch)) { $WaveBranch } else { $Wave }
+$targetWave = if ($WaveBranch) { $Wave } else { "" }
 $createdFeatureBranch = ""
 
 if (-not [string]::IsNullOrWhiteSpace($targetWave)) {
@@ -104,6 +104,11 @@ if (-not [string]::IsNullOrWhiteSpace($targetWave)) {
     exit 1
   }
 } else {
+  if ($WaveBranch -and [string]::IsNullOrWhiteSpace($Wave)) {
+    Write-Host "  [BLOCKED] -WaveBranch provided but -Wave value is missing (example: -Wave 12)." -ForegroundColor Red
+    Pop-Location
+    exit 1
+  }
   Write-Host "  Merging origin/main into current branch..." -ForegroundColor Cyan
   git merge origin/main --no-edit 2>&1 | Out-Host
   if ($LASTEXITCODE -ne 0) {
