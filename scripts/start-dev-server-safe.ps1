@@ -18,4 +18,4 @@ if ($listeners) {
   Write-Host ('[dev-server] Port {0} is already free' -f $Port)
 }
 
-nodemon
+npx --yes nodemon --watch server --watch prisma --ext ts,js,json --exec "npx --yes tsx" server/index.ts
