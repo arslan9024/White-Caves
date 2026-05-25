@@ -1,9 +1,8 @@
 ﻿# milestone-check.ps1 -- Fast-track readiness gate for White Caves Orchestrator.
 #
 # Evaluates 30 evidence checks across 6 groups (Business, API, Data, UX, QA, Compliance)
-# against a target feature's gate file.  Calculates readiness % and either prints:
-#   @Ada — Context Ready (100% Planning Readiness) — Coding Phase Approved
-# or lists every failing check with the owning free agent and fix hint.
+# against a target feature's gate file.  Calculates readiness % and either prints the
+# policy-defined approval phrase or lists every failing check with the owning free agent and fix hint.
 #
 # Usage:
 #   npm run orchestrator:milestone -- -Module tenancy-ejari
@@ -11,7 +10,7 @@
 #   npm run orchestrator:milestone:all                         -- all gate files
 #   npm run orchestrator:milestone:summary                     -- one-line per file
 #
-# Threshold: policy-driven (default 100% of total checks).
+# Threshold: policy-driven (default 60% of total checks per policy.json).
 # PowerShell 5.1-safe.  UTF-8 BOM.  ASCII-only symbols.
 
 param(
@@ -27,8 +26,8 @@ $w    = 72
 $root = Resolve-Path $WorkspaceRoot
 $policyFile = Join-Path $PSScriptRoot "policy.json"
 
-$approvalPhrase = "@Ada — Context Ready (100% Planning Readiness) — Coding Phase Approved"
-$THRESHOLD_PCT = 100
+$approvalPhrase = "@Ada — Context Ready (60% Readiness) — Coding Phase Approved"
+$THRESHOLD_PCT = 60
 if (Test-Path $policyFile) {
   try {
     $policy = Get-Content $policyFile -Raw | ConvertFrom-Json

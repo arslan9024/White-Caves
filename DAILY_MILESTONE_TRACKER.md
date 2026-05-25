@@ -1,9 +1,9 @@
 # White Caves Daily Milestone Tracker
 
-**Date:** May 24, 2026
+**Date:** May 25, 2026
 **Owner:** @Margaret
 **Status:** Active
-**Last Updated:** 2026-05-24
+**Last Updated:** 2026-05-25
 
 > Roadmap: [plans/MASTER_PLAN.md](plans/MASTER_PLAN.md) · Queue: [plans/PENDING_TASKS_ONLY.md](plans/PENDING_TASKS_ONLY.md)
 
@@ -67,6 +67,7 @@
 | May 22, 2026 | @Margaret + @Ada   | **Acceleration pass:** merge conflicts resolved (clean auto-merge from origin/main); TypeScript baseline confirmed 0 errors; Wave 08 S1 declared ✅ Complete; Wave 09 promoted to 🟢 Ready; Wave 09/10/11 full artifact bundles created (SDD + Readiness + Backlog + Test Rollout); MASTER_PLAN and PENDING_TASKS_ONLY upgraded to reflect accelerated execution path | Done        |
 | May 24, 2026 | @Margaret + @Copilot | Planning workspace cleanup: added `plans/waves/README.md`, split Waves 15 and 16 in canonical trackers, archived duplicate root Wave 12 market-intelligence docs, restored `npm run plans:validate`, and added Wave 11 test rollout coverage | Done        |
 | May 24, 2026 | @Una + @Lea + @Tracy + @Katherine + @Copilot | Wave 09 execution closeout: completed reusable EmptyState/ErrorBoundary delivery, finalized CRM skeleton/empty-state wiring (Lead/Favorites), added MobileCRMDrawer swipe-close UX, tightened accessibility audit severity assertions, and moved canonical wave trackers from Ready to ✅ Complete (build/lint/targeted tests green; full typecheck blocked by unrelated Prisma baseline) | Done        |
+| May 25, 2026 | @Margaret + @Copilot | Aegis 150 orchestrator upgrade: normalized approval phrase to 60% Readiness across all orchestrator scripts, replaced hardcoded Phase-27 tracker-sync checks with dynamic policy-loaded ones, downgraded freeModelOnlyMode block to warning (background free-agent workers are always free-only regardless of policy flag), updated reprioritize.js to prefer SUBAGENT_REGISTRY_150.json per policy, added Aegis 150 banner to AGENTS.md, fixed CUSTOM_AGENTS_PLAN.md governance drift, bumped policy version to 2026.05.25-aegis-150-v2 | Done        |
 
 ---
 

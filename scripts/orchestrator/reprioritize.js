@@ -34,7 +34,18 @@ const SCAN_REPORT   = path.join(LOGS_DIR, 'codebase-scan-report.json');
 const QUEUE_FILE    = path.join(LOGS_DIR, 'task-queue.json');
 const PROMPTS_FILE  = path.join(__dirname, 'prompts.json');
 const OUT_FILE      = path.join(LOGS_DIR, 'priority-order.json');
-const REGISTRY_FILE = path.join(__dirname, 'subagents-registry.json');
+
+// Prefer the policy-defined Aegis 150 registry; fall back to the V3 legacy registry.
+const REGISTRY_FILE = (() => {
+  try {
+    const pol = JSON.parse(fs.readFileSync(path.join(__dirname, 'policy.json'), 'utf8'));
+    if (pol && pol.registryPath) {
+      const candidate = path.join(ROOT, pol.registryPath);
+      if (fs.existsSync(candidate)) return candidate;
+    }
+  } catch { /* fall through */ }
+  return path.join(__dirname, 'subagents-registry.json');
+})();
 
 const DRY_RUN  = process.argv.includes('--dry');
 const TOP_N    = (() => { const i = process.argv.indexOf('--top'); return i !== -1 ? parseInt(process.argv[i + 1], 10) || 10 : null; })();

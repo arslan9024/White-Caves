@@ -20,8 +20,8 @@ if (-not (Test-Path $wavesDir)) {
 }
 
 # -- Load orchestrator policy -------------------------------------------------
-$readinessThreshold = 100
-$approvalPhrase = "@Ada — Context Ready (100% Planning Readiness) — Coding Phase Approved"
+$readinessThreshold = 60
+$approvalPhrase = "@Ada — Context Ready (60% Readiness) — Coding Phase Approved"
 if (Test-Path $policyFile) {
   try {
     $policy = Get-Content $policyFile -Raw | ConvertFrom-Json

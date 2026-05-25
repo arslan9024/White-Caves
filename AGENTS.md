@@ -73,6 +73,16 @@ This file defines the White Caves multi-expert operating model for all agent-ass
 
 ---
 
+## 🚀 AEGIS 150 — ORCHESTRATOR MODEL (Active as of 2026-05-25)
+
+**TRANSFORMATION:** V3 100-agent mesh → **Aegis 150-agent mesh** | **100 free planning specialists + 50 premium implementation agents** | **10 squads × 15 agents**  
+**APPROVAL GATE:** `@Ada — Context Ready (60% Readiness) — Coding Phase Approved` (dual-threshold: 60% unlock, 90% target)  
+**POLICY SOURCE:** `scripts/orchestrator/policy.json` | **REGISTRY:** `plans/SUBAGENT_REGISTRY_150.json`  
+**BACKGROUND MODE:** Free planning workers run via `npm run orchestrator:bg:start` (always free-model-only agents regardless of freeModelOnlyMode policy flag)  
+**STATUS:** Active → previously V3 (100 agents); V3 registry retained at `scripts/orchestrator/subagents-registry.json` for legacy compatibility
+
+---
+
 ## 🚀 AGENT SKILLS UPGRADE V3 — ACTIVE (May 24, 2026)
 
 **TRANSFORMATION:** 70 agents → **100 specialized agents** | **12 delivery teams + Research Division + Executive Council** | **Research Intelligence Division: 20 dedicated analysts** | **6-team parallel planning**  
