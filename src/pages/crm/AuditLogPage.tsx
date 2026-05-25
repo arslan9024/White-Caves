@@ -1,4 +1,4 @@
-import React, { FC, useCallback, useEffect, useMemo, useState } from 'react';
+import React, { FC, useCallback, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useDocumentTitle } from '../../hooks/useDocumentTitle';
 import { authFetch } from '../../utils/authFetch';
@@ -52,6 +52,8 @@ const AuditLogPage: FC = () => {
       query.set('pageSize', String(PAGE_SIZE));
       if (type !== 'all') query.set('type', type);
       if (action !== 'all') query.set('action', action);
+      const normalizedSearch = search.trim();
+      if (normalizedSearch) query.set('search', normalizedSearch);
 
       const response = await authFetch(`/api/activities?${query.toString()}`);
       const json = await response.json();
@@ -65,29 +67,11 @@ const AuditLogPage: FC = () => {
     } finally {
       setLoading(false);
     }
-  }, [action, page, type]);
+  }, [action, page, search, type]);
 
   useEffect(() => {
     void fetchAuditLog();
   }, [fetchAuditLog]);
-
-  const filteredItems = useMemo(() => {
-    const q = search.trim().toLowerCase();
-    if (!q) return items;
-    return items.filter(item =>
-      [
-        item.description,
-        item.type,
-        item.action,
-        item.user?.name || '',
-        item.user?.email || '',
-        item.lead?.name || '',
-      ]
-        .join(' ')
-        .toLowerCase()
-        .includes(q)
-    );
-  }, [items, search]);
 
   const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
 
@@ -160,14 +144,14 @@ const AuditLogPage: FC = () => {
               </tr>
             </thead>
             <tbody>
-              {!loading && filteredItems.length === 0 ? (
+              {!loading && items.length === 0 ? (
                 <tr>
                   <Td colSpan={6}>
                     <EmptyState>No audit records found for current filters.</EmptyState>
                   </Td>
                 </tr>
               ) : (
-                filteredItems.map(item => (
+                items.map(item => (
                   <Tr key={item.id}>
                     <Td>{new Date(item.createdAt).toLocaleString('en-AE')}</Td>
                     <Td>{item.type}</Td>
