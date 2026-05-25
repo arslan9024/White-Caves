@@ -1,0 +1,31 @@
+:root {
+  /* Wave 17 — glassmorphism tokens */
+  --glass-bg: rgba(255, 255, 255, 0.72);
+  --glass-border: rgba(255, 255, 255, 0.35);
+  --glass-blur: 16px;
+  --glass-shadow: 0 10px 30px rgba(15, 23, 42, 0.22);
+
+  /* Wave 17 — animation duration variables */
+  --motion-duration-fast: 120ms;
+  --motion-duration-base: 220ms;
+  --motion-duration-slow: 360ms;
+  --motion-duration-xslow: 480ms;
+
+  /* Wave 17 — dark-mode token map */
+  --dark-bg-primary: #0a0a0a;
+  --dark-bg-surface: #141414;
+  --dark-border: #2a2a2a;
+  --dark-text-primary: #f5f5f0;
+  --dark-text-secondary: #cfcfc7;
+  --dark-accent-gold: #c9a84c;
+}
+
+[data-theme='dark'] {
+  --bg-primary: var(--dark-bg-primary);
+  --bg-secondary: var(--dark-bg-surface);
+  --bg-card: var(--dark-bg-surface);
+  --border-color: var(--dark-border);
+  --text-primary: var(--dark-text-primary);
+  --text-secondary: var(--dark-text-secondary);
+  --accent-gold: var(--dark-accent-gold);
+}

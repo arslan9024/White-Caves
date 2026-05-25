@@ -2,9 +2,9 @@
 
 **Wave:** 17  
 **Focus:** Full UI/UX Luxury Upgrade  
-**Status:** 📋 Planned  
+**Status:** 🚧 In Progress  
 **Date:** 2026-05-25  
-**Readiness Score:** 0% — awaiting Wave 16 completion + free-agent planning packets
+**Readiness Score:** 25% — Wave 16 complete; Wave 17 token foundation started
 
 ---
 
@@ -12,7 +12,7 @@
 
 | Gate | Check | Status |
 | --- | --- | --- |
-| Wave 16 complete | Security hardening + API versioning green | ⬜ Pending |
+| Wave 16 complete | Security hardening + API versioning green | ✅ Complete |
 | `npm run plans:validate` passes | Governance baseline green | ⬜ Pending |
 | Free-agent planning locked | All 6 free agents (below) have committed output | ⬜ Pending |
 

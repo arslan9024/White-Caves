@@ -2,14 +2,14 @@
 
 **Wave:** 17  
 **Focus:** Full UI/UX Luxury Upgrade  
-**Status:** 📋 Planned  
+**Status:** 🚧 In Progress  
 **Date:** 2026-05-25
 
 ---
 
 | ID | Priority | Task | Owner | Validation | Status |
 | --- | --- | --- | --- | --- | --- |
-| W17-001 | P0 | Extend `src/styles/tokens.css` with glassmorphism tokens (`--glass-bg`, `--glass-border`, `--glass-blur`, `--glass-shadow`), animation duration vars, and full dark-mode token map | @Una + @Noura | `npm run build` + visual smoke check | Planned |
+| W17-001 | P0 | Extend `src/styles/tokens.css` with glassmorphism tokens (`--glass-bg`, `--glass-border`, `--glass-blur`, `--glass-shadow`), animation duration vars, and full dark-mode token map | @Una + @Noura | `npm run build` + visual smoke check | Done |
 | W17-002 | P0 | Add Framer Motion `AnimatePresence` page transition layer in `App.tsx`; implement card hover and modal entry animations with `useReducedMotion()` guard | @Una + @Cyra | `npm run build` + Playwright smoke | Planned |
 | W17-003 | P1 | Upgrade `PropertyCard.tsx` and search results grid with glassmorphism surface, progressive image loading, and luxury micro-interactions | @Lea + @Tracy | `npm run build` + component test | Planned |
 | W17-004 | P1 | Apply glassmorphism KPI tile and chart surface styling to CRM dashboard pages (OverviewTab, ZoeExecutiveCRM, MaryPropertyCRM panels) | @Una + @Lea | `npm run build` + visual regression check | Planned |
