@@ -858,6 +858,8 @@ const ArchivePanel: React.FC<ArchivePanelProps> = ({
                 <td style={{ padding: '8px 12px' }}>
                   {r.status !== 'signed' && (
                     <button
+                      type="button"
+                      aria-label="Mark signed"
                       onClick={() => onMarkSigned(r.id)}
                       style={{ background: 'transparent', border: 'none', color: '#22c55e', cursor: 'pointer', fontSize: 14, padding: 2, marginRight: 8 }}
                       title="Mark signed"
