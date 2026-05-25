@@ -19,11 +19,13 @@ Each wave should be executed only in roadmap order.
 | 15 | Cache + PWA readiness | ✅ Complete | [`SDD`](./WAVE_15_SDD.md) | [`Readiness`](./WAVE_15_READINESS_PACKET.md) | [`Backlog`](./WAVE_15_IMPLEMENTATION_BACKLOG.md) | [`Tests`](./WAVE_15_TEST_ROLLOUT.md) |
 | 16 | Security hardening + API versioning | ✅ Complete | [`SDD`](./WAVE_16_SDD.md) | [`Readiness`](./WAVE_16_READINESS_PACKET.md) | [`Backlog`](./WAVE_16_IMPLEMENTATION_BACKLOG.md) | [`Tests`](./WAVE_16_TEST_ROLLOUT.md) |
 | 17 | Full UI/UX luxury upgrade (tokens + animations + mobile + PWA + WCAG 2.2) | ✅ Complete | [`SDD`](./WAVE_17_SDD.md) | [`Readiness`](./WAVE_17_READINESS_PACKET.md) | [`Backlog`](./WAVE_17_IMPLEMENTATION_BACKLOG.md) | [`Tests`](./WAVE_17_TEST_ROLLOUT.md) |
+| 18 | World-class auth + profile-first onboarding + role-based dashboards | 📋 Planned | [`SDD`](./WAVE_18_SDD.md) | [`Readiness`](./WAVE_18_READINESS_PACKET.md) | [`Backlog`](./WAVE_18_IMPLEMENTATION_BACKLOG.md) | [`Tests`](./WAVE_18_TEST_ROLLOUT.md) |
 
 ## Notes
 
 - Wave 09 is complete and validated for handoff.
 - Wave 13 through Wave 17 are complete in canonical trackers.
+- Wave 18 is defined and queued as the next planned implementation bundle.
 - Wave 11 now includes an explicit test rollout so every active planned wave uses the same four-artifact pattern.
 - Superseded root-level Wave 12 market-intelligence docs were archived to `../archives/` to avoid naming collisions with the active Wave 12 automation bundle.
 - Wave 17 (Full UI/UX Luxury Upgrade) is implemented and validated; see the Wave 17 bundle docs for closeout details.

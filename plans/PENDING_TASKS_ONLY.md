@@ -1,7 +1,7 @@
 # Pending Tasks Only
 
 **Last Updated:** 2026-05-25
-**Current Focus:** Wave 17 complete; awaiting next implementation wave definition.
+**Current Focus:** Wave 17 complete; Wave 18 planned and queued for readiness.
 
 ## Canonical Sources
 
@@ -13,7 +13,7 @@
 
 ## Implementation Order
 
-`09 → 10 → 11 → 12 → 13 → 14 → 15 → 16 → 17`
+`09 → 10 → 11 → 12 → 13 → 14 → 15 → 16 → 17 → 18`
 
 Advance only when the prior wave is green, the readiness gate is satisfied, and `@Ada — Context Ready (60% Readiness) — Coding Phase Approved` has been issued for that wave.
 
@@ -31,6 +31,7 @@ Advance only when the prior wave is green, the readiness gate is satisfied, and 
 | S8 | 15 | Cache + PWA readiness | ✅ Green | @Redis + @PWA + @Ruchi + @Una | S7 green + readiness 60% + @Ada approval phrase |
 | S9 | 16 | Security hardening + API versioning | ✅ Green | @S5 + @Radia + @Mira | S8 green + readiness 60% + @Ada approval phrase |
 | S10 | 17 | Full UI/UX luxury upgrade (design tokens + glassmorphism + animations + mobile + PWA + WCAG 2.2) | ✅ Green | @Una + @Lea + @Tracy + @Africa + @Cyra + @Katherine | Wave 17 implementation + CI Lighthouse thresholds + accessibility/mobile/PWA checks complete |
+| S11 | 18 | World-class auth + profile-first onboarding + role-based dashboards | 📋 Planned | @Mira + @Una + @Lea + @Radia + @Daniela + @Katherine | Wave 17 green + readiness 60% + @Ada approval phrase |
 
 ## Completed Stream History
 
@@ -178,6 +179,44 @@ Key closures:
 | @Sanaa | DeepSeek V3 | `@Sanaa — AUDIT: wcag-2.2-gaps → all 8 new WCAG 2.2 AA criteria with acceptance test specs` |
 | @Rana | Google AI Studio | `@Rana — BRIEF: pwa-vs-native → MENA CRM agent mobile usage + PWA service worker scope` |
 | @Yara | Google AI Studio | `@Yara — RESEARCH: luxury-ux-benchmarks → luxury PropTech UX heuristics + tenant portal benchmarks` |
+
+## S11 — Wave 18: World-Class Auth + Profile-First Onboarding + Role-Based Dashboards
+
+**Sources:** auth/profile/dashboard enhancement plan + Wave 18 bundle docs  
+**Bundle:** [`WAVE_18_SDD.md`](./waves/WAVE_18_SDD.md) | [`WAVE_18_READINESS_PACKET.md`](./waves/WAVE_18_READINESS_PACKET.md) | [`WAVE_18_IMPLEMENTATION_BACKLOG.md`](./waves/WAVE_18_IMPLEMENTATION_BACKLOG.md) | [`WAVE_18_TEST_ROLLOUT.md`](./waves/WAVE_18_TEST_ROLLOUT.md)
+
+| Task | Scope | Priority | Owner | Validation |
+| --- | --- | --- | --- | --- |
+| 18-1 | Prisma schema additions (`nationality`, `emiratesId`, `passportNumber`, `emailVerified`, `profileCompletedAt`) + `WebAuthnCredential` + `TrustedDevice` models | P0 | @Barbara | `prisma generate && npm run typecheck` |
+| 18-2 | Backend profile completeness scoring (`profileCompletionPct`, `profileMissingFields`) in `/api/auth/profile` | P0 | @Mira | route tests + typecheck |
+| 18-3 | Account recovery endpoints (`forgot-password`, `reset-password`, `verify-email`) | P0 | @Mira + @Daniela | auth route tests |
+| 18-4 | Magic-link login request + verify endpoints | P1 | @Mira | route tests |
+| 18-5 | WebAuthn/passkey register + authenticate endpoints | P1 | @Mira + @Radia | integration tests |
+| 18-6 | Refresh-token rotation + session list/revoke endpoints | P0 | @Mira + @Daniela | auth session tests |
+| 18-7 | Trusted-device detection + new-device alert email wiring | P1 | @Mira | manual + unit checks |
+| 18-8 | Frontend post-login routing change (`authSession.ts`) to profile-first gate | P0 | @Mira + @Una | `useSignIn.test.ts` + auth/session regression suite |
+| 18-9 | Profile onboarding wizard overlay (multi-step, role-aware, progress + skip rules) | P0 | @Una + @Lea | component tests + Playwright smoke |
+| 18-10 | `DashboardRouter` + role-group dashboard shells | P0 | @Mira + @Una | route tests + role navigation tests |
+| 18-11 | Role-group welcome banner (first-login dismissable experience) | P1 | @Una + @Lea | component tests |
+| 18-12 | Auth UI luxury refresh (glassmorphism + Framer Motion transitions) | P1 | @Una + @Cyra | visual check + Playwright smoke |
+| 18-13 | Password strength meter (`zxcvbn`) on register + profile password change | P1 | @Una | component tests |
+| 18-14 | Magic-link/passwordless tab in `AuthMethodTabs` | P1 | @Mira + @Una | component tests |
+| 18-15 | Profile email-verification banner when `emailVerified === false` | P1 | @Una | component tests |
+| 18-16 | Active-sessions panel in Profile → Security tab | P1 | @Una + @Lea | component tests |
+| 18-17 | Passkey/WebAuthn enrollment control in Profile → Security tab | P1 | @Una + @Mira | WebAuthn integration test |
+| 18-18 | First-login welcome splash animation (Framer Motion, 2s) | P2 | @Una + @Cyra | visual check |
+| 18-19 | Quick-start checklist card in dashboard sidebar (first 7 days) | P2 | @Lea | component tests |
+| 18-20 | Wave closeout validation | P0 | @Katherine | `npm run typecheck && npm run lint && npm run build && npm run plans:validate` |
+
+**Free-Agent Pre-Work (parallel before coding):**
+
+| Agent | Free Tool | Invocation |
+| --- | --- | --- |
+| @Daniela | Google AI Studio | `@Daniela — DRAFT: wave-18-auth-security.md → WebAuthn credential model spec, session rotation contract, trusted device schema` |
+| @Basma | Google AI Studio | `@Basma — DRAFT: wave-18-auth-audit.md → auth event taxonomy + audit schema + breach-notification SLA` |
+| @Marissa | Google AI Studio | `@Marissa — DRAFT: wave-18-onboarding-ux.md → onboarding wizard UX spec (role-aware steps, progress, skip constraints)` |
+| @Joelle | Groq Llama 3.1 | `@Joelle — DRAFT: wave-18-dashboard-personalization.md → welcome banner copy + quick-start checklist mapping by role group` |
+| @Vera | Groq Llama 3.3 | `@Vera — AUDIT: wave-18-auth-threats.md → OWASP ASVS L2 threat review for current auth stack + top 5 gaps` |
 
 ---
 
