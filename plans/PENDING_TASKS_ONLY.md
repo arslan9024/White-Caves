@@ -13,7 +13,7 @@
 
 ## Implementation Order
 
-`09 → 10 → 11 → 12 → 13 → 14 → 15 → 16`
+`09 → 10 → 11 → 12 → 13 → 14 → 15 → 16 → 17`
 
 Advance only when the prior wave is green, the readiness gate is satisfied, and `@Ada — Context Ready (60% Readiness) — Coding Phase Approved` has been issued for that wave.
 
@@ -30,6 +30,7 @@ Advance only when the prior wave is green, the readiness gate is satisfied, and 
 | S7 | 14 | Product features closure | 📋 Planned | @LeadScore + @Mortgage + @Zod + @Mira | S6 green + readiness 60% + @Ada approval phrase |
 | S8 | 15 | Cache + PWA readiness | 📋 Planned | @Redis + @PWA + @Ruchi + @Una | S7 green + readiness 60% + @Ada approval phrase |
 | S9 | 16 | Security hardening + API versioning | 📋 Planned | @S5 + @Radia + @Mira | S8 green + readiness 60% + @Ada approval phrase |
+| S10 | 17 | Full UI/UX luxury upgrade (design tokens + glassmorphism + animations + mobile + PWA + WCAG 2.2) | 📋 Planned | @Una + @Lea + @Tracy + @Africa + @Cyra + @Katherine | S9 green + free-agent specs + readiness 60% + @Ada approval phrase |
 
 ## Completed Stream History
 
@@ -148,6 +149,36 @@ Key closures:
 | 16-1 | `/api/v1` compatibility layer + migration | P0 | @Mira + @S5 | route tests |
 | 16-2 | CSRF + AppError envelope hardening | P0 | @Radia + @Mira + @S5 | security tests + typecheck |
 | 16-3 | Wave closeout validation | P0 | @Katherine | `npm run typecheck && npm run lint && npm run build && npm run plans:validate` |
+
+## S10 — Wave 17: Full UI/UX Luxury Upgrade
+
+**Sources:** [`IMPROVEMENTS_UX.md`](./IMPROVEMENTS_UX.md) | [`ui-ux-specification.md`](../../business_docs/06_design_architecture/ui-ux-specification.md) (Sections 13–17)  
+**Bundle:** [`WAVE_17_SDD.md`](./waves/WAVE_17_SDD.md) | [`WAVE_17_READINESS_PACKET.md`](./waves/WAVE_17_READINESS_PACKET.md) | [`WAVE_17_IMPLEMENTATION_BACKLOG.md`](./waves/WAVE_17_IMPLEMENTATION_BACKLOG.md) | [`WAVE_17_TEST_ROLLOUT.md`](./waves/WAVE_17_TEST_ROLLOUT.md)
+
+| Task | Scope | Priority | Owner | Validation |
+| --- | --- | --- | --- | --- |
+| 17-1 | Global design token system — glassmorphism + extended palette | P0 | @Una + @Noura | `npm run build` |
+| 17-2 | Framer Motion animation layer (page transitions, hover, modals) | P0 | @Una + @Cyra | `npm run build` + Playwright smoke |
+| 17-3 | Enhanced property card + search results grid (luxury micro-interactions) | P1 | @Lea + @Tracy | `npm run build` + component tests |
+| 17-4 | Luxury CRM dashboard — glassmorphism KPI tiles + charts | P1 | @Una + @Lea | `npm run build` + visual check |
+| 17-5 | Full mobile responsive pass at 375px — all CRM pages | P1 | @Tracy | Playwright mobile suite green |
+| 17-6 | PWA — `vite-plugin-pwa`, manifest, service worker, offline caching | P1 | @Una + @Ruchi | Lighthouse PWA ≥ 90 |
+| 17-7 | WCAG 2.2 AA final pass + RTL parity | P1 | @Africa + @Sanaa | Axe 0 Critical + 0 Serious; Lighthouse a11y ≥ 95 |
+| 17-8 | Lighthouse CI gate added to GitHub Actions | P0 | @Katherine + @Cyra | CI green; thresholds enforced |
+| 17-9 | Wave closeout validation | P0 | @Katherine | `npm run typecheck && npm run lint && npm run build && npm run plans:validate` |
+
+**Free-Agent Planning (Phase A — run in parallel NOW using free tools):**
+
+| Agent | Free Tool | Invocation |
+| --- | --- | --- |
+| @Marissa | Google AI Studio | `@Marissa — EXPAND: ui-ux-specification.md → mobile breakpoints, dark-mode token map, form validation, empty state library, skeleton spec` |
+| @Noura | Google AI Studio | `@Noura — DRAFT: design-token-extensions → glassmorphism vars, animation duration tokens, extended palette` |
+| @Cyra | Google AI Studio | `@Cyra — DRAFT: framer-motion-animation-guidelines → page transitions, hover, modal entry, reduced-motion handling` |
+| @Sanaa | DeepSeek V3 | `@Sanaa — AUDIT: wcag-2.2-gaps → all 8 new WCAG 2.2 AA criteria with acceptance test specs` |
+| @Rana | Google AI Studio | `@Rana — BRIEF: pwa-vs-native → MENA CRM agent mobile usage + PWA service worker scope` |
+| @Yara | Google AI Studio | `@Yara — RESEARCH: luxury-ux-benchmarks → luxury PropTech UX heuristics + tenant portal benchmarks` |
+
+---
 
 ## Completion Criteria (Hard Rule)
 
