@@ -257,14 +257,14 @@ describe('useLeadManagement', () => {
   describe('statusCounts', () => {
     it('computes "all" count', () => {
       const { result } = renderHook(() => useLeadManagement());
-      expect(result.current.statusCounts.all).toBe(5);
+      expect(result.current.statusCounts.get('all')).toBe(5);
     });
 
     it('counts by status', () => {
       const { result } = renderHook(() => useLeadManagement());
-      expect(result.current.statusCounts.contacted).toBe(1);
-      expect(result.current.statusCounts.new).toBe(1);
-      expect(result.current.statusCounts.qualified).toBe(1);
+      expect(result.current.statusCounts.get('contacted')).toBe(1);
+      expect(result.current.statusCounts.get('new')).toBe(1);
+      expect(result.current.statusCounts.get('qualified')).toBe(1);
     });
   });
 
