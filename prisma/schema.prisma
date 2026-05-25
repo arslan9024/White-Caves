@@ -1241,7 +1241,7 @@ model HenryRecord {
 // ===== RECRUITMENT MODELS (Phase 1C Part 3) =====
 
 model Job {
-  id                  String   @id @default(uuid())
+  id                  String   @id @default(auto()) @map("_id") @db.ObjectId
   title               String
   description         String?
   department          String?
@@ -1265,7 +1265,7 @@ model Job {
 }
 
 model Candidate {
-  id                  String   @id @default(uuid())
+  id                  String   @id @default(auto()) @map("_id") @db.ObjectId
   email               String   @unique
   phone               String?
   first_name          String?
@@ -1299,7 +1299,7 @@ model Candidate {
 }
 
 model Application {
-  id                  String   @id @default(uuid())
+  id                  String   @id @default(auto()) @map("_id") @db.ObjectId
   candidate_id        String
   job_id              String
   status              String   @default("applied") // applied, screening, interview, offer, hired, rejected
@@ -1329,7 +1329,7 @@ model Application {
 }
 
 model CandidateScore {
-  id                  String   @id @default(uuid())
+  id                  String   @id @default(auto()) @map("_id") @db.ObjectId
   candidate_id        String
   job_id              String?
   overall_score       Float    @default(0) // 0-100
@@ -1348,7 +1348,7 @@ model CandidateScore {
 }
 
 model Interview {
-  id                  String   @id @default(uuid())
+  id                  String   @id @default(auto()) @map("_id") @db.ObjectId
   candidate_id        String
   job_id              String
   application_id      String?
@@ -1369,7 +1369,7 @@ model Interview {
 }
 
 model InterviewSchedule {
-  id                  String   @id @default(uuid())
+  id                  String   @id @default(auto()) @map("_id") @db.ObjectId
   candidate_id        String
   job_id              String
   application_id      String?
@@ -1401,7 +1401,7 @@ model InterviewSchedule {
 }
 
 model LeadScore {
-  id                  String   @id @default(uuid())
+  id                  String   @id @default(auto()) @map("_id") @db.ObjectId
   candidate_id        String
   job_id              String
   overall_score       Float    // 0-100 - Main lead quality score
@@ -1428,7 +1428,7 @@ model LeadScore {
 }
 
 model ConversationMetric {
-  id                  String   @id @default(uuid())
+  id                  String   @id @default(auto()) @map("_id") @db.ObjectId
   candidate_id        String
   job_id              String
   message_count       Int
@@ -1451,7 +1451,7 @@ model ConversationMetric {
 }
 
 model RecruitmentMetric {
-  id                  String   @id @default(uuid())
+  id                  String   @id @default(auto()) @map("_id") @db.ObjectId
   metric_date         DateTime @default(now())
   total_applications  Int      @default(0)
   applications_screened Int    @default(0)
