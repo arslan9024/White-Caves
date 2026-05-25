@@ -1,4 +1,3 @@
-import ExcelJS from 'exceljs';
 import { PDFDocument, StandardFonts, rgb } from 'pdf-lib';
 import { prisma } from '../database.js';
 import logger from '../utils/logger.js';
@@ -11,10 +10,27 @@ export interface GeneratedFile {
 
 const PDF_MIME = 'application/pdf';
 const XLSX_MIME = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
+const CSV_MIME = 'text/csv; charset=utf-8';
 
 function safeDate(value: Date | null | undefined): string {
   if (!value) return '—';
   return value.toISOString().slice(0, 10);
+}
+
+function csvEscape(value: unknown): string {
+  const text = value === null || value === undefined ? '' : String(value);
+  if (/[",\n\r]/.test(text)) {
+    return `"${text.replaceAll('"', '""')}"`;
+  }
+  return text;
+}
+
+function buildCsvBuffer(headers: string[], rows: Array<Array<unknown>>): Buffer {
+  const lines = [headers.map(csvEscape).join(',')];
+  for (const row of rows) {
+    lines.push(row.map(csvEscape).join(','));
+  }
+  return Buffer.from(`\ufeff${lines.join('\r\n')}`, 'utf8');
 }
 
 export class DocumentService {
@@ -120,6 +136,31 @@ export class DocumentService {
       take: 5000,
     });
 
+    const exceljsModule = await import('exceljs').catch(() => null);
+    if (!exceljsModule) {
+      const rows = leads.map(lead => [
+        lead.id,
+        lead.name,
+        lead.email,
+        lead.phone,
+        lead.status,
+        lead.source,
+        lead.budget,
+        lead.score,
+        safeDate(lead.createdAt),
+      ]);
+
+      return {
+        buffer: buildCsvBuffer(
+          ['ID', 'Name', 'Email', 'Phone', 'Status', 'Source', 'Budget', 'Score', 'Created At'],
+          rows
+        ),
+        mimeType: CSV_MIME,
+        filename: `leads-report-${new Date().toISOString().slice(0, 10)}.csv`,
+      };
+    }
+
+    const ExcelJS = exceljsModule.default;
     const workbook = new ExcelJS.Workbook();
     const sheet = workbook.addWorksheet('Leads');
     sheet.columns = [
@@ -167,6 +208,32 @@ export class DocumentService {
       take: 5000,
     });
 
+    const exceljsModule = await import('exceljs').catch(() => null);
+    if (!exceljsModule) {
+      const rows = properties.map(property => [
+        property.id,
+        property.title,
+        property.type,
+        property.status,
+        property.price,
+        property.location,
+        property.bedrooms,
+        property.bathrooms,
+        property.sqft,
+        safeDate(property.createdAt),
+      ]);
+
+      return {
+        buffer: buildCsvBuffer(
+          ['ID', 'Title', 'Type', 'Status', 'Price', 'Location', 'Bedrooms', 'Bathrooms', 'Sqft', 'Created At'],
+          rows
+        ),
+        mimeType: CSV_MIME,
+        filename: `properties-report-${new Date().toISOString().slice(0, 10)}.csv`,
+      };
+    }
+
+    const ExcelJS = exceljsModule.default;
     const workbook = new ExcelJS.Workbook();
     const sheet = workbook.addWorksheet('Properties');
     sheet.columns = [
@@ -243,6 +310,22 @@ export class DocumentService {
     const commissionTotal = Number(commissionIncome._sum.amount ?? 0);
     const grossIncome = rentTotal + commissionTotal;
 
+    const exceljsModule = await import('exceljs').catch(() => null);
+    if (!exceljsModule) {
+      const rows = [
+        ['Rent Income', rentTotal, rentIncome._count._all],
+        ['Commission Income', commissionTotal, commissionIncome._count._all],
+        ['Total Gross Income', grossIncome, ''],
+      ];
+
+      return {
+        buffer: buildCsvBuffer(['Category', 'Amount (AED)', 'Count'], rows),
+        mimeType: CSV_MIME,
+        filename: `pl-report-${year}-${String(month).padStart(2, '0')}.csv`,
+      };
+    }
+
+    const ExcelJS = exceljsModule.default;
     const workbook = new ExcelJS.Workbook();
 
     // ─── Summary sheet ───

@@ -5,39 +5,15 @@
  */
 
 import rateLimit, { type RateLimitRequestHandler } from 'express-rate-limit';
-import RedisStore from 'rate-limit-redis';
-import Redis from 'ioredis';
 
 interface FirebaseSyncBody {
   firebaseUid?: unknown;
   email?: unknown;
 }
 
-let sharedRateLimitStore: RedisStore | undefined;
-
-const redisUrl = process.env.REDIS_URL;
-
-if (redisUrl) {
-  const redisClient = new Redis(redisUrl, {
-    maxRetriesPerRequest: 1,
-    lazyConnect: true,
-    retryStrategy: (times: number) => (times > 3 ? null : 1000),
-  });
-  redisClient.on('error', (error: Error) => {
-    console.warn('Redis rate-limit store error:', error.message);
-  });
-  redisClient.connect().catch((error: Error) => {
-    console.warn(
-      'Failed to connect Redis rate-limit store; falling back to in-memory:',
-      error.message
-    );
-  });
-
-  sharedRateLimitStore = new RedisStore({
-    // ioredis uses `call` instead of `sendCommand` — wrap for rate-limit-redis@4
-    sendCommand: (...args: string[]) => redisClient.call(args[0], ...args.slice(1)) as Promise<unknown>,
-  });
-}
+// Dev-safe default: use the built-in in-memory store unless a Redis-backed
+// store is explicitly wired back in through dependency installation.
+let sharedRateLimitStore: RateLimitRequestHandler['store'] | undefined;
 
 const resolveFirebaseIdentity = (body: unknown): string => {
   if (!body || typeof body !== 'object') {

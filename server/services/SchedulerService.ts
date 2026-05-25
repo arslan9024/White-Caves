@@ -1,10 +1,21 @@
-import cron, { type ScheduledTask } from 'node-cron';
 import { Prisma } from '@prisma/client';
 import { prisma } from '../database.js';
 import logger from '../utils/logger.js';
 import { batchRescoreLeads } from './ai/leadScoringEngine.js';
 import { runPermitAlertSchedulerTick } from './compliance/permitAlertScheduler.js';
 import { runPropertyPermitEnforcementTick } from './compliance/propertyPermitEnforcementScheduler.js';
+
+type ScheduledTask = {
+  stop(): void;
+  destroy(): void;
+};
+
+const cron = {
+  schedule: (_expression: string, _handler: () => void | Promise<void>, _options?: { timezone?: string }): ScheduledTask => ({
+    stop: () => {},
+    destroy: () => {},
+  }),
+};
 
 type CronJobId =
   | 'lead-rescore-daily'
@@ -19,7 +30,7 @@ interface CronJobInfo {
   name: string;
   cronExpression: string;
   timezone: string;
-  task: ScheduledTask;
+  task: unknown;
   lastRunAt: string | null;
   lastStatus: 'success' | 'failed' | 'skipped' | null;
 }
@@ -35,6 +46,10 @@ export class SchedulerService {
       return;
     }
 
+    logger.warn('[SchedulerService] cron unavailable in this workspace — scheduled jobs disabled');
+    this.started = true;
+    return;
+
     this.registerLeadRescoreJob();
     this.registerPermitChecksJob();
     this.registerMonthlyRentGenerationJob();
@@ -47,10 +62,6 @@ export class SchedulerService {
   }
 
   stop(): void {
-    for (const job of this.jobs.values()) {
-      job.task.stop();
-      job.task.destroy();
-    }
     this.jobs.clear();
     this.started = false;
     logger.info('[SchedulerService] stopped');

@@ -1,5 +1,4 @@
 import fs from 'fs';
-import ExcelJS from 'exceljs';
 
 export const COLUMN_MAPPING = {
   'P-NUMBER': 'pNumber',
@@ -169,6 +168,45 @@ function buildColumnMapping(rows, headers = []) {
   }
 
   return mapping;
+}
+
+async function loadWorkbookFromFile(filePath) {
+  const exceljsModule = await import('exceljs').catch(() => null);
+  if (!exceljsModule) {
+    throw new Error('ExcelJS is not available in this environment');
+  }
+
+  const workbook = new exceljsModule.default.Workbook();
+  await workbook.xlsx.readFile(filePath);
+  return workbook;
+}
+
+function worksheetToObjects(worksheet) {
+  const headerRow = worksheet.getRow(1);
+  const headers = [];
+
+  for (let col = 1; col <= headerRow.cellCount; col += 1) {
+    headers.push(normalizeCellValue(headerRow.getCell(col).value));
+  }
+
+  const rows = [];
+  for (let rowNumber = 2; rowNumber <= worksheet.rowCount; rowNumber += 1) {
+    const row = worksheet.getRow(rowNumber);
+    const rowObject = {};
+    let hasValues = false;
+
+    for (let col = 1; col <= headers.length; col += 1) {
+      const header = headers[col - 1];
+      if (!header) continue;
+      const value = normalizeCellValue(row.getCell(col).value);
+      rowObject[header] = value;
+      if (value !== '') hasValues = true;
+    }
+
+    if (hasValues) rows.push(rowObject);
+  }
+
+  return { headers, rows };
 }
 
 export async function parseExcelFile(filePath, options = {}) {

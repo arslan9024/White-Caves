@@ -1,5 +1,15 @@
 import { useState, useEffect, useCallback } from 'react';
 
+async function clearServiceWorkerArtifacts() {
+  const registrations = await navigator.serviceWorker.getRegistrations();
+  await Promise.all(registrations.map(registration => registration.unregister()));
+
+  if ('caches' in window) {
+    const cacheKeys = await caches.keys();
+    await Promise.all(cacheKeys.map(key => caches.delete(key)));
+  }
+}
+
 export function usePWA() {
   const [isInstallable, setIsInstallable] = useState(false);
   const [isInstalled, setIsInstalled] = useState(false);
@@ -8,13 +18,15 @@ export function usePWA() {
 
   useEffect(() => {
     if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('/sw.js')
-        .then((registration) => {
-          
-        })
-        .catch((error) => {
-          
+      if (import.meta?.env?.DEV) {
+        clearServiceWorkerArtifacts().catch(() => {
+          // Ignore cleanup errors in dev; app should continue rendering.
         });
+      } else {
+        navigator.serviceWorker.register('/sw.js').catch(() => {
+          // Ignore registration errors; PWA is optional.
+        });
+      }
     }
 
     const handleBeforeInstall = (e) => {
