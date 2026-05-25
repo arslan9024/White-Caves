@@ -290,8 +290,18 @@ test.describe('Phase 33 — Leasing Continuity Hardening', () => {
       await expect(successMessage.first()).toBeVisible({ timeout: 10_000 });
     }
 
-    const events = await getCapturedEvents(page);
-    expect(events).toContain('homepage_viewing_request_submit');
+    await expect
+      .poll(
+        async () => {
+          const events = await getCapturedEvents(page);
+          return events.includes('homepage_viewing_request_submit');
+        },
+        {
+          timeout: 10_000,
+          message: 'Expected homepage_viewing_request_submit event after contact form submit',
+        }
+      )
+      .toBeTruthy();
   });
 
   test('leasing lifecycle API route surfaces respond (not 404)', async ({ page }) => {
