@@ -1,7 +1,7 @@
 # Pending Tasks Only
 
 **Last Updated:** 2026-05-25
-**Current Focus:** Wave 17 complete; Wave 18 planned and queued for readiness.
+**Current Focus:** Wave 18 workflow parity audit planning + prioritized gap queue generation.
 
 ## Canonical Sources
 
@@ -31,7 +31,7 @@ Advance only when the prior wave is green, the readiness gate is satisfied, and 
 | S8 | 15 | Cache + PWA readiness | ✅ Green | @Redis + @PWA + @Ruchi + @Una | S7 green + readiness 60% + @Ada approval phrase |
 | S9 | 16 | Security hardening + API versioning | ✅ Green | @S5 + @Radia + @Mira | S8 green + readiness 60% + @Ada approval phrase |
 | S10 | 17 | Full UI/UX luxury upgrade (design tokens + glassmorphism + animations + mobile + PWA + WCAG 2.2) | ✅ Green | @Una + @Lea + @Tracy + @Africa + @Cyra + @Katherine | Wave 17 implementation + CI Lighthouse thresholds + accessibility/mobile/PWA checks complete |
-| S11 | 18 | World-class auth + profile-first onboarding + role-based dashboards | 📋 Planned | @Mira + @Una + @Lea + @Radia + @Daniela + @Katherine | Wave 17 green + readiness 60% + @Ada approval phrase |
+| S11 | 18 | Workflow parity audit + benchmark gap backlog | 📋 Planned | @Ada + @Margaret + @Mira + @Katherine | Wave 18 parity matrix finalized + canonical queue updates + `npm run plans:validate` |
 
 ## Completed Stream History
 
@@ -54,6 +54,7 @@ Advance only when the prior wave is green, the readiness gate is satisfied, and 
 | S5 | Wave 12 automation engine (cron + docs + email) | ✅ Complete |
 | S6 | Wave 13 real-time notifications + media + virtual tour | ✅ Complete |
 | S10 | Wave 17 full UI/UX luxury upgrade | ✅ Complete |
+| S11 | Wave 18 workflow parity audit + gap backlog generation | 📋 Planned |
 
 ## S2 — Wave 09: UX Hardening (Complete)
 
@@ -180,43 +181,33 @@ Key closures:
 | @Rana | Google AI Studio | `@Rana — BRIEF: pwa-vs-native → MENA CRM agent mobile usage + PWA service worker scope` |
 | @Yara | Google AI Studio | `@Yara — RESEARCH: luxury-ux-benchmarks → luxury PropTech UX heuristics + tenant portal benchmarks` |
 
-## S11 — Wave 18: World-Class Auth + Profile-First Onboarding + Role-Based Dashboards
+## S11 — Wave 18: Workflow Parity Audit + Gap Backlog (Planned)
 
-**Sources:** auth/profile/dashboard enhancement plan + Wave 18 bundle docs  
-**Bundle:** [`WAVE_18_SDD.md`](./waves/WAVE_18_SDD.md) | [`WAVE_18_READINESS_PACKET.md`](./waves/WAVE_18_READINESS_PACKET.md) | [`WAVE_18_IMPLEMENTATION_BACKLOG.md`](./waves/WAVE_18_IMPLEMENTATION_BACKLOG.md) | [`WAVE_18_TEST_ROLLOUT.md`](./waves/WAVE_18_TEST_ROLLOUT.md)
+**Sources:** `business_docs/04_workflows/*`, `business_docs/09_crm_features/*`, `business_docs/05_requirements/functional-requirements.md`, `src/config/crmModuleRegistry.tsx`, `server/index.ts`, `server/routes/*`  
+**Bundle:** [`WAVE_18_SDD.md`](./waves/WAVE_18_SDD.md) | [`WAVE_18_READINESS_PACKET.md`](./waves/WAVE_18_READINESS_PACKET.md) | [`WAVE_18_IMPLEMENTATION_BACKLOG.md`](./waves/WAVE_18_IMPLEMENTATION_BACKLOG.md) | [`WAVE_18_TEST_ROLLOUT.md`](./waves/WAVE_18_TEST_ROLLOUT.md) | [`WAVE_18_WORKFLOW_PARITY_MATRIX.md`](./waves/WAVE_18_WORKFLOW_PARITY_MATRIX.md)
 
 | Task | Scope | Priority | Owner | Validation |
 | --- | --- | --- | --- | --- |
-| 18-1 | Prisma schema additions (`nationality`, `emiratesId`, `passportNumber`, `emailVerified`, `profileCompletedAt`) + `WebAuthnCredential` + `TrustedDevice` models | P0 | @Barbara | `prisma generate && npm run typecheck` |
-| 18-2 | Backend profile completeness scoring (`profileCompletionPct`, `profileMissingFields`) in `/api/auth/profile` | P0 | @Mira | route tests + typecheck |
-| 18-3 | Account recovery endpoints (`forgot-password`, `reset-password`, `verify-email`) | P0 | @Mira + @Daniela | auth route tests |
-| 18-4 | Magic-link login request + verify endpoints | P1 | @Mira | route tests |
-| 18-5 | WebAuthn/passkey register + authenticate endpoints | P1 | @Mira + @Radia | integration tests |
-| 18-6 | Refresh-token rotation + session list/revoke endpoints | P0 | @Mira + @Daniela | auth session tests |
-| 18-7 | Trusted-device detection + new-device alert email wiring | P1 | @Mira | manual + unit checks |
-| 18-8 | Frontend post-login routing change (`authSession.ts`) to profile-first gate | P0 | @Mira + @Una | `useSignIn.test.ts` + auth/session regression suite |
-| 18-9 | Profile onboarding wizard overlay (multi-step, role-aware, progress + skip rules) | P0 | @Una + @Lea | component tests + Playwright smoke |
-| 18-10 | `DashboardRouter` + role-group dashboard shells | P0 | @Mira + @Una | route tests + role navigation tests |
-| 18-11 | Role-group welcome banner (first-login dismissable experience) | P1 | @Una + @Lea | component tests |
-| 18-12 | Auth UI luxury refresh (glassmorphism + Framer Motion transitions) | P1 | @Una + @Cyra | visual check + Playwright smoke |
-| 18-13 | Password strength meter (`zxcvbn`) on register + profile password change | P1 | @Una | component tests |
-| 18-14 | Magic-link/passwordless tab in `AuthMethodTabs` | P1 | @Mira + @Una | component tests |
-| 18-15 | Profile email-verification banner when `emailVerified === false` | P1 | @Una | component tests |
-| 18-16 | Active-sessions panel in Profile → Security tab | P1 | @Una + @Lea | component tests |
-| 18-17 | Passkey/WebAuthn enrollment control in Profile → Security tab | P1 | @Una + @Mira | WebAuthn integration test |
-| 18-18 | First-login welcome splash animation (Framer Motion, 2s) | P2 | @Una + @Cyra | visual check |
-| 18-19 | Quick-start checklist card in dashboard sidebar (first 7 days) | P2 | @Lea | component tests |
-| 18-20 | Wave closeout validation | P0 | @Katherine | `npm run typecheck && npm run lint && npm run build && npm run plans:validate` |
+| 18-1 | Lock benchmark scope (platforms + region + parity model) | P0 | @Ada + @Margaret | Scope section finalized in W18 SDD |
+| 18-2 | Build normalized external taxonomy and map top-5 benchmark platforms | P1 | @Margaret | Matrix platform snapshot complete |
+| 18-3 | Populate White Caves doc/code/evidence workflow coverage rows | P0 | @Mira + @Katherine | 20+ rows scored in parity matrix |
+| 18-4 | Generate P0/P1/P2 implementation gap queue with requirement IDs | P0 | @Ada + @Mira + @Katherine | Gap summary published in W18 backlog |
+| 18-5 | Reconcile doc drift in CRM feature index | P1 | @Margaret | No stale missing-file refs remain |
+| 18-6 | Planning governance closeout | P0 | @Katherine | `npm run plans:validate` green |
 
-**Free-Agent Pre-Work (parallel before coding):**
+### Workflow Parity Dashboard (v1)
 
-| Agent | Free Tool | Invocation |
-| --- | --- | --- |
-| @Daniela | Google AI Studio | `@Daniela — DRAFT: wave-18-auth-security.md → WebAuthn credential model spec, session rotation contract, trusted device schema` |
-| @Basma | Google AI Studio | `@Basma — DRAFT: wave-18-auth-audit.md → auth event taxonomy + audit schema + breach-notification SLA` |
-| @Marissa | Google AI Studio | `@Marissa — DRAFT: wave-18-onboarding-ux.md → onboarding wizard UX spec (role-aware steps, progress, skip constraints)` |
-| @Joelle | Groq Llama 3.1 | `@Joelle — DRAFT: wave-18-dashboard-personalization.md → welcome banner copy + quick-start checklist mapping by role group` |
-| @Vera | Groq Llama 3.3 | `@Vera — AUDIT: wave-18-auth-threats.md → OWASP ASVS L2 threat review for current auth stack + top 5 gaps` |
+- Included: 11
+- Partial: 14
+- Missing: 2
+- Unknown: 0
+
+### Weekly Re-Benchmark Loop
+
+1. Refresh benchmark workflow evidence (top-5 platform snapshot).
+2. Recalculate Included/Partial/Missing/Unknown counts.
+3. Push new deltas into upcoming implementation backlog.
+4. Run `npm run plans:validate` after queue/tracker updates.
 
 ---
 

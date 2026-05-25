@@ -1,7 +1,7 @@
 # Wave 18 — Implementation Backlog
 
 **Wave:** 18  
-**Focus:** World-Class Auth + Profile-First Onboarding + Role-Based Dashboards  
+**Focus:** Workflow Parity Audit + Gap Backlog Generation  
 **Status:** 📋 Planned  
 **Date:** 2026-05-25
 
@@ -9,49 +9,52 @@
 
 | ID | Priority | Task | Owner | Validation | Status |
 | --- | --- | --- | --- | --- | --- |
-| W18-001 | P0 | Add Prisma user fields (`nationality`, `emiratesId`, `passportNumber`, `emailVerified`, `profileCompletedAt`) and new models (`WebAuthnCredential`, `TrustedDevice`) | @Barbara | `prisma generate && npm run typecheck` | 📋 Planned |
-| W18-002 | P0 | Implement role-aware profile completeness scoring on `GET /api/auth/profile` (`profileCompletionPct`, `profileMissingFields`, `profileComplete`) | @Mira | auth route tests + typecheck | 📋 Planned |
-| W18-003 | P0 | Add account recovery endpoints (`forgot-password`, `reset-password`, `verify-email`) | @Mira + @Daniela | auth route tests | 📋 Planned |
-| W18-004 | P1 | Add magic-link login (`/magic-link/request`, `/magic-link/verify`) with signed short-lived token handling | @Mira | auth route tests | 📋 Planned |
-| W18-005 | P1 | Add WebAuthn/passkey register + authenticate endpoints and persistence wiring | @Mira + @Radia | integration tests | 📋 Planned |
-| W18-006 | P0 | Implement refresh-token rotation + active session list/revoke endpoints | @Mira + @Daniela | auth/session regression tests | 📋 Planned |
-| W18-007 | P1 | Add trusted-device detection + new-device notification flow | @Mira | manual flow + unit checks | 📋 Planned |
-| W18-008 | P0 | Update frontend post-login destination logic to enforce profile-first onboarding gate in `authSession.ts` | @Mira + @Una | `npm run test:run -- src/hooks/useSignIn.test.ts src/pages/auth/SignInPage.test.tsx src/utils/authFetch.test.ts src/services/authService.test.ts src/features/auth/components/BiometricLogin/BiometricLoginButton.test.tsx` | 📋 Planned |
-| W18-009 | P0 | Add profile onboarding wizard overlay (steps, role-specific fields, progress, skip constraints) | @Una + @Lea | component tests + Playwright smoke | 📋 Planned |
-| W18-010 | P0 | Add `DashboardRouter` and role-group dashboard shell routes | @Mira + @Una | route tests + role navigation tests | 📋 Planned |
-| W18-011 | P1 | Add role-group welcome banners (first-login dismissable) | @Una + @Lea | component tests | 📋 Planned |
-| W18-012 | P1 | Upgrade auth page UX with Wave 17 token style + Framer Motion transitions | @Una + @Cyra | visual smoke + Playwright | 📋 Planned |
-| W18-013 | P1 | Add password strength meter (`zxcvbn`) in register + profile password change flow | @Una | component tests | 📋 Planned |
-| W18-014 | P1 | Add magic-link tab in auth method UI | @Mira + @Una | component tests | 📋 Planned |
-| W18-015 | P1 | Add profile email-verification banner when `emailVerified === false` | @Una | component tests | 📋 Planned |
-| W18-016 | P1 | Add active sessions panel to Profile → Security tab | @Una + @Lea | component tests | 📋 Planned |
-| W18-017 | P1 | Add passkey enrollment control to Profile → Security tab | @Una + @Mira | WebAuthn integration test | 📋 Planned |
-| W18-018 | P2 | Add first-login welcome splash animation and one-time dismissal persistence | @Una + @Cyra | visual smoke | 📋 Planned |
-| W18-019 | P2 | Add quick-start checklist card for first 7 days in dashboard | @Lea | component tests | 📋 Planned |
-| W18-020 | P0 | Final wave validation and tracker sync | @Katherine | `npm run typecheck && npm run lint && npm run build && npm run plans:validate` | 📋 Planned |
+| W18-001 | P0 | Lock benchmark scope (platform set, region, parity model) and capture explicit assumptions in SDD/readiness packet | @Ada + @Margaret | SDD + readiness packet updated | ✅ Done |
+| W18-002 | P1 | Build normalized external workflow taxonomy and map benchmark platforms to taxonomy categories | @Margaret + @Nadia | Taxonomy section complete in SDD + matrix headers stable | ✅ Done |
+| W18-003 | P0 | Build White Caves internal workflow inventory from canonical plans + business docs + implementation surfaces | @Mira + @Katherine | Matrix White Caves doc/code/evidence columns populated | ✅ Done |
+| W18-004 | P0 | Publish v1 workflow parity matrix (top 5 platforms, top 20+ workflows) with Included/Partial/Missing/Unknown scoring | @Margaret + @Sofia + @Victoria + @Invoice | `WAVE_18_WORKFLOW_PARITY_MATRIX.md` committed | ✅ Done |
+| W18-005 | P1 | Reconcile documentation drift in CRM feature index to remove stale references and prevent parity false positives | @Margaret | `business_docs/09_crm_features/README.md` references valid files only | ✅ Done |
+| W18-006 | P0 | Generate prioritized gap list (P0/P1/P2) with impacted modules, dependencies, and acceptance criteria | @Ada + @Mira + @Katherine | Gap register section exists in matrix with actionable tasks | ✅ Done |
+| W18-007 | P0 | Convert gaps into executable queue updates in canonical planning files (`MASTER_PLAN`, `PENDING_TASKS_ONLY`, `waves/README`) | @Margaret | All three canonical files include Wave 18 entries | ✅ Done |
+| W18-008 | P1 | Define validation/completion gates per gap class (API/UI/RBAC/compliance evidence requirements) | @Katherine + @Radia | Wave 18 test rollout includes explicit pass gates | ✅ Done |
+| W18-009 | P2 | Define weekly re-benchmark loop with parity dashboard metric tracking (Included/Partial/Missing/Unknown) | @Margaret + @Ghada | Loop + dashboard section added to canonical queue | ✅ Done |
+| W18-010 | P0 | Governance validation for planning changes | @Katherine | `npm run plans:validate` passes | ⏳ Pending |
 
 ---
 
-## Autopilot Trigger
+## Gap Output Summary (v1)
 
-When `@Ada — Context Ready (60% Readiness) — Coding Phase Approved` is issued for Wave 18, execute tasks W18-001 → W18-020 in order.
+### P0 — Compliance / Revenue Critical
+
+1. Lead import workflow completion (`REQ-LEAD-008`)  
+2. RERA permit expiry automation and compliance dashboard completion (`REQ-PROP-007`)  
+3. WhatsApp-to-lead one-click conversion (`REQ-WA-003`)  
+4. KYC verification gate before transaction close (`REQ-COMP-002`)  
+5. Rent collection and overdue workflow completion (`REQ-FIN-004`)  
+6. Ejari tracking completeness (`REQ-TENANT-003`)
+
+### P1 — Conversion / Retention Operations
+
+1. Follow-up reminders and overdue highlighting (`REQ-LEAD-010`)  
+2. WhatsApp bot confidence/escalation implementation completeness (`REQ-WA-004`)  
+3. Broadcast campaign operationalization (`REQ-WA-005`)  
+4. Sales forecasting completion (`REQ-PIPELINE-003`)  
+5. Agent performance reporting completion (`REQ-RPT-002`)  
+6. Property portal syndication to PF/Bayut (`REQ-PROP-008`)
+
+### P2 — UX / Reporting / Admin Optimization
+
+1. Financial report export completion (`REQ-FIN-003`)  
+2. Property performance reporting (`REQ-RPT-003`)  
+3. System settings completeness (`REQ-ADMIN-002`)  
+4. Backup & restore runbook automation (`REQ-ADMIN-003`)
+
+---
+
+## Autopilot Trigger (Future Implementation Wave)
 
 ```
 @Wave18 — AUTOPILOT: execute all tasks
 ```
 
-Autopilot hard stops: build failure, typecheck failure, security policy violation, explicit human PAUSE.
-
----
-
-## Dependency Chain
-
-```
-W18-001 → W18-002/W18-003/W18-005/W18-006 (backend contract foundation)
-W18-002 + W18-006 → W18-008 (post-login profile gate)
-W18-008 → W18-009 → W18-010 (onboarding + dashboard routing path)
-W18-010 → W18-011/W18-018/W18-019 (first-login UX layer)
-W18-003/W18-004/W18-005/W18-006/W18-007 → W18-014/W18-016/W18-017 (auth UI surfaces)
-All tasks → W18-020 closeout
-```
-
+Hard stops: build/typecheck failures, security policy violations, explicit human PAUSE.
