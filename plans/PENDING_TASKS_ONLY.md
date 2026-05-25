@@ -1,7 +1,7 @@
 # Pending Tasks Only
 
 **Last Updated:** 2026-05-25
-**Current Focus:** Wave 13 is next in queue; Waves 14–16 remain sequenced and bundle-backed.
+**Current Focus:** Wave 14 is next in queue; Waves 15–16 remain sequenced and bundle-backed.
 
 ## Canonical Sources
 
@@ -26,7 +26,7 @@ Advance only when the prior wave is green, the readiness gate is satisfied, and 
 | S3 | 10 | Performance + SEO + security uplift | ✅ Green | @Ruchi + @Rachel + @Radia + @Katherine | Lazy loading, SEO meta/structured-data, CSP, rate-limiting, vite chunks complete |
 | S4 | 11 | Incomplete features + architecture refactor | ✅ Green | @Ada + @Mira + @Barbara | SchedulerService, DocumentService, email triggers, export routes complete |
 | S5 | 12 | Automation engine (cron + docs + email) | ✅ Green | @Cron + @Puppeteer + @Handlebars + @Mira | Rent reminders, lease-expiry reminders, sitemap refresh, P&L report, export routes complete |
-| S6 | 13 | Real-time notifications + media + virtual tour | 📋 Planned | @Socket + @Cloudinary + @Pannellum + @Mira | S5 green + readiness 60% + @Ada approval phrase |
+| S6 | 13 | Real-time notifications + media + virtual tour | ✅ Green | @Socket + @Cloudinary + @Pannellum + @Mira | Socket auth + notification service + media pipeline + virtual tour integration completed |
 | S7 | 14 | Product features closure | 📋 Planned | @LeadScore + @Mortgage + @Zod + @Mira | S6 green + readiness 60% + @Ada approval phrase |
 | S8 | 15 | Cache + PWA readiness | 📋 Planned | @Redis + @PWA + @Ruchi + @Una | S7 green + readiness 60% + @Ada approval phrase |
 | S9 | 16 | Security hardening + API versioning | 📋 Planned | @S5 + @Radia + @Mira | S8 green + readiness 60% + @Ada approval phrase |
@@ -50,6 +50,7 @@ Advance only when the prior wave is green, the readiness gate is satisfied, and 
 | S3 | Wave 10 performance + SEO + security uplift | ✅ Complete |
 | S4 | Wave 11 incomplete features + architecture refactor | ✅ Complete |
 | S5 | Wave 12 automation engine (cron + docs + email) | ✅ Complete |
+| S6 | Wave 13 real-time notifications + media + virtual tour | ✅ Complete |
 
 ## S2 — Wave 09: UX Hardening (Complete)
 
@@ -102,7 +103,7 @@ Key closures:
 | 12-3 | Handlebars templates + trigger registry | P1 | @Mira + @Handlebars | focused route tests |
 | 12-4 | Wave closeout validation | P0 | @Katherine | `npm run typecheck && npm run lint && npm run build && npm run plans:validate` |
 
-## S6 — Wave 13: Real-Time & Media
+## S6 — Wave 13: Real-Time & Media (Complete)
 
 **Sources:** [`IMPROVEMENTS_INCOMPLETE_FEATURES.md`](./IMPROVEMENTS_INCOMPLETE_FEATURES.md) items 10–12  
 **Bundle:** [`WAVE_13_SDD.md`](./waves/WAVE_13_SDD.md) | [`WAVE_13_READINESS_PACKET.md`](./waves/WAVE_13_READINESS_PACKET.md) | [`WAVE_13_IMPLEMENTATION_BACKLOG.md`](./waves/WAVE_13_IMPLEMENTATION_BACKLOG.md) | [`WAVE_13_TEST_ROLLOUT.md`](./waves/WAVE_13_TEST_ROLLOUT.md)
