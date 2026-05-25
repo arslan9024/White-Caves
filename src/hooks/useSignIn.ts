@@ -17,6 +17,7 @@ import {
   signInWithPhone,
   createRecaptchaVerifier,
   signOut as signOutFirebase,
+  isFirebaseAuthConfigured,
 } from '../config/firebase';
 import { TIMING } from '../constants';
 import {
@@ -28,6 +29,7 @@ import {
   type LoginSuccessData,
 } from '../services/authService';
 import { safeStorage } from '../utils/safeStorage';
+import { isCreatorSuperUserEmail } from '../utils/superUserAccess';
 
 // ─── Types ──────────────────────────────────────────────────────────
 
@@ -150,6 +152,8 @@ export function useSignIn() {
 
   // Ref for navigation timers
   const navTimerRef = useRef<ReturnType<typeof setTimeout>>();
+  const googleAuthUnavailableMessage =
+    'Google sign-in is temporarily unavailable because Firebase authentication is not configured in this environment.';
 
   useEffect(() => {
     return () => {
@@ -194,8 +198,11 @@ export function useSignIn() {
       // Return the user to where they came from (e.g. a protected page they tried to visit
       // before signing in), falling back to the main dashboard.
       const from = (location.state as { from?: string } | null)?.from;
-      const destination =
-        from && from !== '/signin' && from !== '/signup' ? from : '/dashboard';
+      const destination = isCreatorSuperUserEmail(user.email)
+        ? '/crm'
+        : from && from !== '/signin' && from !== '/signup'
+          ? from
+          : '/dashboard';
       navTimerRef.current = setTimeout(() => navigate(destination), TIMING.NAVIGATION_DELAY);
     },
     [dispatch, navigate, location.state]
@@ -309,6 +316,10 @@ export function useSignIn() {
 
   const handleSocialAuth = useCallback(
     async (provider: string, options?: { isRetry?: boolean }): Promise<void> => {
+      if (provider === 'google' && !isFirebaseAuthConfigured) {
+        setError(googleAuthUnavailableMessage);
+        return;
+      }
       setLoading(true);
       setError('');
       if (!options?.isRetry) {
@@ -384,7 +395,7 @@ export function useSignIn() {
         setLoading(false);
       }
     },
-    [mode, handleSignInSuccess, handleSignUpSuccess]
+    [mode, handleSignInSuccess, handleSignUpSuccess, googleAuthUnavailableMessage]
   );
 
   const retrySocialAuth = useCallback(async (): Promise<void> => {
@@ -598,6 +609,8 @@ export function useSignIn() {
     socialSyncRecovery,
     socialRetryAttempts,
     remainingSocialRetries,
+    isGoogleAuthAvailable: isFirebaseAuthConfigured,
+    googleAuthUnavailableMessage,
     switchMode,
     goBackToStep,
 

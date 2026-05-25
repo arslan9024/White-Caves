@@ -23,8 +23,14 @@ const mockSignInWithGoogle = vi.fn();
 const mockSignInWithFacebook = vi.fn();
 const mockSignInWithApple = vi.fn();
 const mockSignOut = vi.fn();
+const { mockFirebaseAuthConfigured } = vi.hoisted(() => ({
+  mockFirebaseAuthConfigured: { value: true },
+}));
 
 vi.mock('../../config/firebase', () => ({
+  get isFirebaseAuthConfigured() {
+    return mockFirebaseAuthConfigured.value;
+  },
   signInWithGoogle: (...args: unknown[]) => mockSignInWithGoogle(...args),
   signInWithFacebook: (...args: unknown[]) => mockSignInWithFacebook(...args),
   signInWithApple: (...args: unknown[]) => mockSignInWithApple(...args),
@@ -97,6 +103,7 @@ const renderPage = () => {
 describe('SignInPage', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    mockFirebaseAuthConfigured.value = true;
     vi.useFakeTimers({ shouldAdvanceTime: true });
   });
 
@@ -132,6 +139,15 @@ describe('SignInPage', () => {
       expect(screen.getByText(/Google/)).toBeInTheDocument();
       expect(screen.getByText(/Facebook/)).toBeInTheDocument();
       expect(screen.getByText(/Apple/)).toBeInTheDocument();
+    });
+
+    it('should disable Google login with fallback message when Firebase auth is unavailable', () => {
+      mockFirebaseAuthConfigured.value = false;
+      renderPage();
+      expect(screen.getByRole('button', { name: /Google/i })).toBeDisabled();
+      expect(
+        screen.getByText(/Google sign-in is temporarily unavailable because Firebase authentication/)
+      ).toBeInTheDocument();
     });
 
     it('should render biometric login button', () => {

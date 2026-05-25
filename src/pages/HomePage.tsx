@@ -8,6 +8,7 @@ import {
   selectLocationTrends,
   selectFeaturedProperties,
   selectIsHomepageLoading,
+  selectHomepageError,
   type HomepageProperty,
 } from '../store/slices/homepageSlice';
 import type { AppDispatch } from '../store/store';
@@ -105,6 +106,7 @@ const HomePage: FC = () => {
   const locationTrends = useSelector(selectLocationTrends);
   const featuredProperties = useSelector(selectFeaturedProperties);
   const isHomepageLoading = useSelector(selectIsHomepageLoading);
+  const homepageError = useSelector(selectHomepageError);
 
   // Use live data when available; fall back to static dummy data before API resolves
   const displayedFeatured = useMemo(
@@ -121,6 +123,15 @@ const HomePage: FC = () => {
         locationTrends,
       }),
     [marketStats, featuredProperties, topAgents, locationTrends]
+  );
+  const trustHighlights = useMemo(
+    () => [
+      { label: 'Active Listings', value: marketStats.availableProperties.toLocaleString('en-US') },
+      { label: 'Average Price', value: `AED ${Math.round(marketStats.averagePrice).toLocaleString('en-US')}` },
+      { label: 'Top Agents', value: String(topAgents.length || 0) },
+      { label: 'Popular Areas', value: String(locationTrends.length || 0) },
+    ],
+    [marketStats.availableProperties, marketStats.averagePrice, topAgents.length, locationTrends.length]
   );
   const localBusinessJsonLd = useMemo(
     () => ({
@@ -180,6 +191,24 @@ const HomePage: FC = () => {
 
         {/* Phase 25: Hero is the LCP element — NOT wrapped in Suspense so it renders on first paint */}
         <Hero marketStats={marketStats} isLoading={isHomepageLoading} />
+        {homepageError && (
+          <section className="home-page__status" aria-live="polite">
+            <div className="home-page__status-card" role="status">
+              <strong>Live data temporarily limited.</strong>
+              Showing trusted fallback market data while connection recovers.
+            </div>
+          </section>
+        )}
+        <section className="home-page__trust-strip" aria-label="Market trust highlights">
+          <div className="home-page__trust-grid">
+            {trustHighlights.map(item => (
+              <article key={item.label} className="home-page__trust-card">
+                <span className="home-page__trust-label">{item.label}</span>
+                <span className="home-page__trust-value">{item.value}</span>
+              </article>
+            ))}
+          </div>
+        </section>
 
         {/* Above-fold companions lazy-loaded so they don't delay Hero render */}
         <Suspense fallback={<SectionLoader />}>
