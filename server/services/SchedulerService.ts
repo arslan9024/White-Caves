@@ -1,4 +1,5 @@
-import cron from 'node-cron';
+import cron, { type ScheduledTask } from 'node-cron';
+import { Prisma } from '@prisma/client';
 import { prisma } from '../database.js';
 import logger from '../utils/logger.js';
 import { batchRescoreLeads } from './ai/leadScoringEngine.js';
@@ -18,7 +19,7 @@ interface CronJobInfo {
   name: string;
   cronExpression: string;
   timezone: string;
-  task: cron.ScheduledTask;
+  task: ScheduledTask;
   lastRunAt: string | null;
   lastStatus: 'success' | 'failed' | 'skipped' | null;
 }
@@ -523,7 +524,7 @@ export class SchedulerService {
         type: 'system',
         action,
         description,
-        metadata,
+        metadata: metadata as unknown as Prisma.InputJsonValue,
       },
     });
   }

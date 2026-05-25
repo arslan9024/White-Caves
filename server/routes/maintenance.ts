@@ -115,7 +115,7 @@ router.get(
     const userRole = req.user?.role;
     if (!userId) throw new AppError('Authentication required', 401);
 
-    const { id } = req.params;
+    const { id } = req.params as Record<string, string>;
     const request = await prisma.maintenance.findUnique({
       where: { id },
       include: {
@@ -214,7 +214,7 @@ router.patch(
     const userRole = req.user?.role;
     if (!userId) throw new AppError('Authentication required', 401);
 
-    const { id } = req.params;
+    const { id } = req.params as Record<string, string>;
     const existing = await prisma.maintenance.findUnique({ where: { id } });
     if (!existing) throw new AppError('Maintenance request not found', 404);
 
@@ -300,7 +300,7 @@ router.delete(
     const userRole = req.user?.role;
     if (!userId) throw new AppError('Authentication required', 401);
 
-    const { id } = req.params;
+    const { id } = req.params as Record<string, string>;
     const existing = await prisma.maintenance.findUnique({ where: { id } });
     if (!existing) throw new AppError('Maintenance request not found', 404);
 

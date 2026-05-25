@@ -18,7 +18,7 @@ router.get(
   '/',
   requirePermission('view_commissions'),
   asyncHandler(async (req: Request, res: Response) => {
-    const { status, agentId, page = '1', pageSize = '50' } = req.query;
+    const { status, agentId, page = '1', pageSize = '50' } = req.query as Record<string, string | undefined>;
     const pageNum = Math.max(1, parseInt(page as string) || 1);
     const limit = Math.min(100, Math.max(1, parseInt(pageSize as string) || 50));
 

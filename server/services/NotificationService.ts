@@ -1,4 +1,5 @@
 import { prisma } from '../database.js';
+import { Prisma } from '@prisma/client';
 import { getSocketServer } from './socketServer.js';
 import logger from '../utils/logger.js';
 
@@ -31,7 +32,7 @@ class NotificationService {
           message: input.message,
           type: input.type ?? 'info',
           channel: input.channel ?? 'in_app',
-          metadata: input.metadata ?? null,
+          metadata: (input.metadata ?? null) as Prisma.InputJsonValue | null,
         },
       });
 

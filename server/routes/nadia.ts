@@ -128,7 +128,7 @@ router.get(
   '/conversations/:conversationId',
   requirePermission('view_whatsapp_conversations'),
   asyncHandler(async (req: Request, res: Response) => {
-    const { conversationId } = req.params;
+    const { conversationId } = req.params as Record<string, string>;
 
     const conversation = await prisma.nadiaConversation.findUnique({
       where: { id: conversationId },
@@ -166,7 +166,7 @@ router.get(
       limit = 20,
       offset = 0,
       agentPhone,
-    } = req.query;
+    } = req.query as Record<string, string | undefined>;
 
     // Build filter
     const filter: Record<string, unknown> = {};
@@ -224,7 +224,7 @@ router.patch(
   '/conversations/:conversationId',
   requirePermission('assign_whatsapp_conversations', 'close_whatsapp_conversations'),
   asyncHandler(async (req: Request, res: Response) => {
-    const { conversationId } = req.params;
+    const { conversationId } = req.params as Record<string, string>;
     const { status, agentPhone, closedReason } = req.body;
 
     const conversation = await prisma.nadiaConversation.findUnique({
@@ -315,7 +315,7 @@ router.patch(
   '/conversations/:conversationId/assign',
   requirePermission('assign_whatsapp_conversations'),
   asyncHandler(async (req: Request, res: Response) => {
-    const { conversationId } = req.params;
+    const { conversationId } = req.params as Record<string, string>;
     const { agentPhone } = req.body;
 
     if (!agentPhone || typeof agentPhone !== 'string') {
@@ -354,7 +354,7 @@ router.patch(
   '/conversations/:conversationId/close',
   requirePermission('close_whatsapp_conversations'),
   asyncHandler(async (req: Request, res: Response) => {
-    const { conversationId } = req.params;
+    const { conversationId } = req.params as Record<string, string>;
     const { reason } = req.body;
 
     const conversation = await prisma.nadiaConversation.findUnique({
@@ -389,7 +389,7 @@ router.delete(
   '/conversations/:conversationId',
   requirePermission('close_whatsapp_conversations'),
   asyncHandler(async (req: Request, res: Response) => {
-    const { conversationId } = req.params;
+    const { conversationId } = req.params as Record<string, string>;
     const { reason } = req.body;
 
     const conversation = await prisma.nadiaConversation.findUnique({
@@ -433,7 +433,7 @@ router.post(
   '/conversations/:conversationId/messages',
   requirePermission('reply_whatsapp_conversations'),
   asyncHandler(async (req: Request, res: Response) => {
-    const { conversationId } = req.params;
+    const { conversationId } = req.params as Record<string, string>;
     const { content, senderType = 'customer' } = req.body;
 
     if (!content) {
@@ -507,7 +507,7 @@ router.post(
   '/conversations/:conversationId/reply',
   requirePermission('reply_whatsapp_conversations'),
   asyncHandler(async (req: Request, res: Response) => {
-    const { conversationId } = req.params;
+    const { conversationId } = req.params as Record<string, string>;
     const { content } = req.body;
 
     if (!content || typeof content !== 'string' || !content.trim()) {
@@ -577,8 +577,8 @@ router.get(
   '/conversations/:conversationId/messages',
   requirePermission('view_whatsapp_conversations'),
   asyncHandler(async (req: Request, res: Response) => {
-    const { conversationId } = req.params;
-    const { limit = 50, offset = 0 } = req.query;
+    const { conversationId } = req.params as Record<string, string>;
+    const { limit = 50, offset = 0 } = req.query as Record<string, string | undefined>;
 
     const messages = await prisma.nadiaMessage.findMany({
       where: { conversationId },
@@ -615,7 +615,7 @@ router.get(
   '/queue',
   requirePermission('view_whatsapp_conversations'),
   asyncHandler(async (req: Request, res: Response) => {
-    const { limit = 10 } = req.query;
+    const { limit = 10 } = req.query as Record<string, string | undefined>;
 
     const queued = await getQueuedConversations(Math.min(parseInt(limit as string) || 10, 100));
 
@@ -662,7 +662,7 @@ router.patch(
   '/queue/:queueId/assign',
   requirePermission('assign_whatsapp_conversations'),
   asyncHandler(async (req: Request, res: Response) => {
-    const { queueId } = req.params;
+    const { queueId } = req.params as Record<string, string>;
     const { agentPhone } = req.body;
 
     if (!agentPhone) {

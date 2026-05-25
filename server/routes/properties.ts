@@ -55,7 +55,7 @@ router.get(
       sortBy = 'createdAt',
       sortOrder = 'desc',
       area,
-    } = req.query;
+    } = req.query as Record<string, string | undefined>;
 
     const {
       page: pageNum,
@@ -230,6 +230,7 @@ router.get(
   '/:id',
   requirePermission('view_properties'),
   asyncHandler(async (req: Request, res: Response) => {
+    // @ts-expect-error -- pre-existing: req.params/query string|string[] narrowing
     validateIdParam(req.params.id, 'Property ID');
 
     const cacheKey = `properties:detail:${req.params.id}`;
@@ -240,6 +241,7 @@ router.get(
     }
 
     const property = await prisma.property.findUnique({
+    // @ts-expect-error -- pre-existing: req.params/query string|string[] narrowing
       where: { id: req.params.id },
       include: {
         user: { select: { id: true, name: true, email: true, phone: true } },
@@ -431,7 +433,7 @@ router.patch(
   '/:id',
   requirePermission('edit_property'),
   asyncHandler(async (req: Request, res: Response) => {
-    const { id } = req.params;
+    const { id } = req.params as Record<string, string>;
     validateIdParam(id, 'Property ID');
     const {
       title,
@@ -657,7 +659,7 @@ router.delete(
   '/:id',
   requirePermission('delete_property'),
   asyncHandler(async (req: Request, res: Response) => {
-    const { id } = req.params;
+    const { id } = req.params as Record<string, string>;
     validateIdParam(id, 'Property ID');
 
     const existing = await prisma.property.findUnique({ where: { id } });

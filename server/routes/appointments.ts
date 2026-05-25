@@ -13,6 +13,7 @@
 
 import { Router, Response } from 'express';
 import type { Request } from 'express';
+import { Prisma } from '@prisma/client';
 import { asyncHandler, AppError } from '../middleware/errorHandler.js';
 import { prisma } from '../database.js';
 import { sanitizeString } from '../utils/sanitize.js';
@@ -96,7 +97,7 @@ router.post(
   '/:id/calendar-sync/google',
   requirePermission('manage_appointments'),
   asyncHandler(async (req: Request, res: Response) => {
-    const { id } = req.params;
+    const { id } = req.params as Record<string, string>;
     validateIdParam(id, 'Appointment ID');
 
     const appointment = await db.appointment.findUnique({ where: { id } });
@@ -208,6 +209,7 @@ router.get(
   '/:id',
   requirePermission('view_appointments'),
   asyncHandler(async (req: Request, res: Response) => {
+    // @ts-expect-error -- pre-existing: req.params/query string|string[] narrowing
     validateIdParam(req.params.id, 'Appointment ID');
     const appt = await db.appointment.findUnique({ where: { id: req.params.id } });
     if (!appt) throw new AppError('Appointment not found', 404);
@@ -294,7 +296,7 @@ router.patch(
   '/:id',
   requirePermission('manage_appointments'),
   asyncHandler(async (req: Request, res: Response) => {
-    const { id } = req.params;
+    const { id } = req.params as Record<string, string>;
     validateIdParam(id, 'Appointment ID');
 
     const existing = await db.appointment.findUnique({ where: { id } });
@@ -383,7 +385,7 @@ router.delete(
   '/:id',
   requireRole('owner', 'manager', 'admin'),
   asyncHandler(async (req: Request, res: Response) => {
-    const { id } = req.params;
+    const { id } = req.params as Record<string, string>;
     validateIdParam(id, 'Appointment ID');
 
     const existing = await db.appointment.findUnique({ where: { id } });

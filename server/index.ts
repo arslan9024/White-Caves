@@ -689,7 +689,7 @@ app.delete(
   authMiddleware,
   requirePermission('access_whatsapp_business'),
   asyncHandler(async (req: Request, res: Response) => {
-    const { id } = req.params;
+    const { id } = req.params as Record<string, string>;
     const message = await prisma.nadiaMessage.findUnique({ where: { id } });
     if (!message) throw new AppError('Message not found', 404);
     await prisma.nadiaMessage.delete({ where: { id } });

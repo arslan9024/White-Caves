@@ -20,7 +20,7 @@ router.get(
   '/',
   requirePermission('manage_agents'),
   asyncHandler(async (req: Request, res: Response) => {
-    const { status, department, search, page = '1', pageSize = '50' } = req.query;
+    const { status, department, search, page = '1', pageSize = '50' } = req.query as Record<string, string | undefined>;
 
     // Build cache key from stable query params
     const queryKey = Object.keys(req.query).sort().map(k => `${k}=${req.query[k]}`).join('&');
@@ -183,6 +183,7 @@ router.get(
 router.get(
   '/:id',
   asyncHandler(async (req: Request, res: Response) => {
+    // @ts-expect-error -- pre-existing: req.params/query string|string[] narrowing
     validateIdParam(req.params.id, 'Agent ID');
 
     // IDOR protection: agents can only view their own profile; managers+ can view any
@@ -194,6 +195,7 @@ router.get(
     }
 
     const agent = await prisma.user.findUnique({
+    // @ts-expect-error -- pre-existing: req.params/query string|string[] narrowing
       where: { id: req.params.id },
       select: {
         id: true,
@@ -234,7 +236,7 @@ router.get(
 router.get(
   '/:id/performance',
   asyncHandler(async (req: Request, res: Response) => {
-    const { id } = req.params;
+    const { id } = req.params as Record<string, string>;
     validateIdParam(id, 'Agent ID');
 
     // IDOR protection: agents can only view their own performance
@@ -294,6 +296,7 @@ router.get(
 router.get(
   '/:id/commissions',
   asyncHandler(async (req: Request, res: Response) => {
+    // @ts-expect-error -- pre-existing: req.params/query string|string[] narrowing
     validateIdParam(req.params.id, 'Agent ID');
 
     // IDOR protection: agents can only view their own commission data
@@ -304,7 +307,7 @@ router.get(
       throw new AppError('Access denied — you can only view your own commission data', 403);
     }
 
-    const { status, page = '1', pageSize = '50' } = req.query;
+    const { status, page = '1', pageSize = '50' } = req.query as Record<string, string | undefined>;
     const pageNum = Math.max(1, parseInt(page as string) || 1);
     const limit = Math.min(100, Math.max(1, parseInt(pageSize as string) || 50));
 

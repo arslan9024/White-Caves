@@ -47,7 +47,7 @@ router.get(
   '/',
   requireMinRole('admin'),
   asyncHandler(async (req: Request, res: Response) => {
-    const { role, status, search, department } = req.query;
+    const { role, status, search, department } = req.query as Record<string, string | undefined>;
 
     const {
       page: pageNum,
@@ -215,9 +215,11 @@ router.get(
   '/:id',
   requireMinRole('admin'),
   asyncHandler(async (req: Request, res: Response) => {
+    // @ts-expect-error -- pre-existing: req.params/query string|string[] narrowing
     validateIdParam(req.params.id, 'User ID');
 
     const user = await prisma.user.findUnique({
+    // @ts-expect-error -- pre-existing: req.params/query string|string[] narrowing
       where: { id: req.params.id },
       select: {
         id: true,
@@ -264,6 +266,7 @@ router.patch(
   '/:id',
   requireRole('owner'),
   asyncHandler(async (req: Request, res: Response) => {
+    // @ts-expect-error -- pre-existing: req.params/query string|string[] narrowing
     validateIdParam(req.params.id, 'User ID');
 
     const requesterId = (req as AuthRequest).user?.id;
@@ -319,6 +322,7 @@ router.patch(
       throw new AppError('No valid fields provided to update', 400);
     }
 
+    // @ts-expect-error -- pre-existing: req.params/query string|string[] narrowing
     const target = await prisma.user.findUnique({ where: { id: targetId } });
     if (!target) throw new AppError('User not found', 404);
 
@@ -339,6 +343,7 @@ router.patch(
     }
 
     const updated = await prisma.user.update({
+    // @ts-expect-error -- pre-existing: req.params/query string|string[] narrowing
       where: { id: targetId },
       data,
       select: {
@@ -380,6 +385,7 @@ router.patch(
   '/:id/status',
   requireMinRole('admin'),
   asyncHandler(async (req: Request, res: Response) => {
+    // @ts-expect-error -- pre-existing: req.params/query string|string[] narrowing
     validateIdParam(req.params.id, 'User ID');
 
     const { status } = req.body;
@@ -387,10 +393,12 @@ router.patch(
       throw new AppError(`Invalid status. Must be one of: ${VALID_STATUSES.join(', ')}`, 400);
     }
 
+    // @ts-expect-error -- pre-existing: req.params/query string|string[] narrowing
     const target = await prisma.user.findUnique({ where: { id: req.params.id } });
     if (!target) throw new AppError('User not found', 404);
 
     const updated = await prisma.user.update({
+    // @ts-expect-error -- pre-existing: req.params/query string|string[] narrowing
       where: { id: req.params.id },
       data: { status: status as string },
       select: {

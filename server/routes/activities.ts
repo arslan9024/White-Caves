@@ -22,7 +22,7 @@ router.get(
   '/',
   requirePermission('view_leads'),
   asyncHandler(async (req: Request, res: Response) => {
-    const { type, action, userId, leadId, search, sortBy = 'createdAt', sortOrder = 'desc' } = req.query;
+    const { type, action, userId, leadId, search, sortBy = 'createdAt', sortOrder = 'desc' } = req.query as Record<string, string | undefined>;
 
     const { page: pageNum, limit, skip } = parsePagination({
       page: req.query.page as string,
@@ -88,10 +88,10 @@ router.get(
   '/:id',
   requirePermission('view_leads'),
   asyncHandler(async (req: Request, res: Response) => {
-    validateIdParam(req.params.id, 'Activity ID');
+    validateIdParam(req.params.id as string, 'Activity ID');
 
     const activity = await prisma.activity.findUnique({
-      where: { id: req.params.id },
+      where: { id: req.params.id as string },
       include: {
         user: { select: { id: true, name: true, email: true } },
         lead: { select: { id: true, name: true } },
@@ -170,7 +170,7 @@ router.patch(
   '/:id',
   requirePermission('manage_leads'),
   asyncHandler(async (req: Request, res: Response) => {
-    const { id } = req.params;
+    const { id } = req.params as Record<string, string>;
     validateIdParam(id, 'Activity ID');
 
     const existing = await prisma.activity.findUnique({ where: { id } });
@@ -205,7 +205,7 @@ router.delete(
   '/:id',
   requirePermission('manage_leads'),
   asyncHandler(async (req: Request, res: Response) => {
-    const { id } = req.params;
+    const { id } = req.params as Record<string, string>;
     validateIdParam(id, 'Activity ID');
 
     const existing = await prisma.activity.findUnique({ where: { id } });

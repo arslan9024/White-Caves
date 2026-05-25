@@ -301,7 +301,7 @@ router.post('/records', requireMinRole('agent'), async (req: AuthRequest, res: R
 router.delete('/records/:id', requireMinRole('agent'), async (req: AuthRequest, res: Response) => {
   try {
     const henryRecordModel = getHenryRecordModel();
-    const { id } = req.params;
+    const { id } = req.params as Record<string, string>;
     const record = await henryRecordModel.findUnique({ where: { id } });
     if (!record) return res.status(404).json({ success: false, error: 'Record not found' });
 
@@ -378,7 +378,7 @@ router.post(
 router.post('/records/:id/sign', requireMinRole('agent'), async (req: AuthRequest, res: Response) => {
   try {
     const henryRecordModel = getHenryRecordModel();
-    const { id } = req.params;
+    const { id } = req.params as Record<string, string>;
     const record = await henryRecordModel.findUnique({ where: { id } });
     if (!record) return res.status(404).json({ success: false, error: 'Record not found' });
 

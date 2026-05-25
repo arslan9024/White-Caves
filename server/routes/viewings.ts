@@ -149,7 +149,7 @@ router.get(
 router.get(
   '/:id/ics',
   asyncHandler(async (req: AuthRequest, res: Response) => {
-    const { id } = req.params;
+    const { id } = req.params as Record<string, string>;
     const token = req.query.token as string;
 
     // Authenticate: either logged in user owns the viewing, or valid icsToken
@@ -270,7 +270,7 @@ router.patch(
     const userId = req.user?.id;
     if (!userId) throw new AppError('Authentication required', 401);
 
-    const { id } = req.params;
+    const { id } = req.params as Record<string, string>;
     const existing = await prisma.viewing.findUnique({
       where: { id },
       include: {
@@ -370,7 +370,7 @@ router.delete(
     const userId = req.user?.id;
     if (!userId) throw new AppError('Authentication required', 401);
 
-    const { id } = req.params;
+    const { id } = req.params as Record<string, string>;
     const existing = await prisma.viewing.findUnique({ where: { id } });
     if (!existing) throw new AppError('Viewing not found', 404);
     if (existing.userId !== userId) throw new AppError('Access denied', 403);

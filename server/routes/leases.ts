@@ -122,7 +122,7 @@ router.get(
     const userId = req.user?.id;
     if (!userId) throw new AppError('Authentication required', 401);
 
-    const { id } = req.params;
+    const { id } = req.params as Record<string, string>;
     const lease = await prisma.lease.findUnique({
       where: { id },
       include: {
@@ -219,7 +219,7 @@ router.patch(
     const userId = req.user?.id;
     if (!userId) throw new AppError('Authentication required', 401);
 
-    const { id } = req.params;
+    const { id } = req.params as Record<string, string>;
     const existing = await prisma.lease.findUnique({ where: { id } });
     if (!existing) throw new AppError('Lease not found', 404);
 
@@ -314,7 +314,7 @@ router.delete(
     const userId = req.user?.id;
     if (!userId) throw new AppError('Authentication required', 401);
 
-    const { id } = req.params;
+    const { id } = req.params as Record<string, string>;
     const existing = await prisma.lease.findUnique({ where: { id } });
     if (!existing) throw new AppError('Lease not found', 404);
 
@@ -343,7 +343,7 @@ router.post(
     const userId = req.user?.id;
     if (!userId) throw new AppError('Authentication required', 401);
 
-    const { id } = req.params;
+    const { id } = req.params as Record<string, string>;
     const existing = await prisma.lease.findUnique({ where: { id } });
     if (!existing) throw new AppError('Lease not found', 404);
 
@@ -377,7 +377,7 @@ router.get(
     const userId = req.user?.id;
     if (!userId) throw new AppError('Authentication required', 401);
 
-    const { id } = req.params;
+    const { id } = req.params as Record<string, string>;
     const lease = await prisma.lease.findUnique({
       where: { id },
       select: { tenantId: true, landlordId: true },
@@ -405,7 +405,7 @@ router.post(
     const userId = req.user?.id;
     if (!userId) throw new AppError('Authentication required', 401);
 
-    const { id } = req.params;
+    const { id } = req.params as Record<string, string>;
     const existing = await prisma.lease.findUnique({ where: { id } });
     if (!existing) throw new AppError('Lease not found', 404);
 
@@ -453,7 +453,7 @@ router.get(
     const userId = req.user?.id;
     if (!userId) throw new AppError('Authentication required', 401);
 
-    const { id } = req.params;
+    const { id } = req.params as Record<string, string>;
     const lease = await prisma.lease.findUnique({
       where: { id },
       include: {
@@ -554,7 +554,7 @@ router.get(
     const userId = req.user?.id;
     if (!userId) throw new AppError('Authentication required', 401);
 
-    const { id } = req.params;
+    const { id } = req.params as Record<string, string>;
     const lease = await prisma.lease.findUnique({
       where: { id },
       select: { tenantId: true, landlordId: true },
@@ -582,7 +582,7 @@ router.post(
     const userId = req.user?.id;
     if (!userId) throw new AppError('Authentication required', 401);
 
-    const { id } = req.params;
+    const { id } = req.params as Record<string, string>;
     const lease = await prisma.lease.findUnique({ where: { id } });
     if (!lease) throw new AppError('Lease not found', 404);
 
@@ -629,7 +629,7 @@ router.patch(
     const userId = req.user?.id;
     if (!userId) throw new AppError('Authentication required', 401);
 
-    const { id, pdcId } = req.params;
+    const { id, pdcId } = req.params as Record<string, string>;
     const lease = await prisma.lease.findUnique({
       where: { id },
       select: { landlordId: true, tenantId: true },

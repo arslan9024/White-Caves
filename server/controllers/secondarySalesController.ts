@@ -18,7 +18,7 @@ export const getSecondarySalesInventory = asyncHandler(async (req: Request, res:
 
 // 2. Transition Stage
 export const transitionSalesStage = asyncHandler(async (req: Request, res: Response) => {
-  const { id } = req.params;
+  const { id } = req.params as Record<string, string>;
   const { newStage } = req.body;
 
   const validStages = ['listed', 'form_a_b_signed', 'form_f_mou', 'noc_pending', 'dld_transfer'];
@@ -62,7 +62,7 @@ export const transitionSalesStage = asyncHandler(async (req: Request, res: Respo
 
 // 3. Upload NOC Document
 export const uploadNocDocument = asyncHandler(async (req: Request, res: Response) => {
-  const { id } = req.params;
+  const { id } = req.params as Record<string, string>;
 
   if (!req.file) {
     throw new AppError('No NOC file uploaded', 400);

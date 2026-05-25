@@ -32,7 +32,7 @@ const router = Router();
 // ── Start a sequence for a lead ─────────────────────────────────────────
 
 router.post('/:leadId/start', requirePermission('manage_leads'), asyncHandler(async (req: Request, res: Response) => {
-  const { leadId } = req.params;
+  const { leadId } = req.params as Record<string, string>;
   const { cadenceType } = req.body || {};
 
   logger.info(`Starting follow-up sequence for lead ${leadId}`, { cadenceType });
@@ -52,7 +52,7 @@ router.post('/:leadId/start', requirePermission('manage_leads'), asyncHandler(as
 // ── Get all sequences for a lead ────────────────────────────────────────
 
 router.get('/:leadId', requirePermission('view_leads'), asyncHandler(async (req: Request, res: Response) => {
-  const { leadId } = req.params;
+  const { leadId } = req.params as Record<string, string>;
   const sequences = await getLeadSequences(leadId);
 
   res.status(200).json({
@@ -99,7 +99,7 @@ router.get('/cadences', requirePermission('view_leads'), asyncHandler(async (_re
 // ── Get single sequence ─────────────────────────────────────────────────
 
 router.get('/sequence/:id', requirePermission('view_leads'), asyncHandler(async (req: Request, res: Response) => {
-  const { id } = req.params;
+  const { id } = req.params as Record<string, string>;
   const summary = await getSequenceSummary(id);
 
   if (!summary) {
@@ -115,7 +115,7 @@ router.get('/sequence/:id', requirePermission('view_leads'), asyncHandler(async 
 // ── Pause a sequence ────────────────────────────────────────────────────
 
 router.post('/sequence/:id/pause', requirePermission('manage_leads'), asyncHandler(async (req: Request, res: Response) => {
-  const { id } = req.params;
+  const { id } = req.params as Record<string, string>;
   await pauseSequence(id);
 
   res.status(200).json({
@@ -127,7 +127,7 @@ router.post('/sequence/:id/pause', requirePermission('manage_leads'), asyncHandl
 // ── Resume a sequence ───────────────────────────────────────────────────
 
 router.post('/sequence/:id/resume', requirePermission('manage_leads'), asyncHandler(async (req: Request, res: Response) => {
-  const { id } = req.params;
+  const { id } = req.params as Record<string, string>;
   await resumeSequence(id);
 
   res.status(200).json({
@@ -139,7 +139,7 @@ router.post('/sequence/:id/resume', requirePermission('manage_leads'), asyncHand
 // ── Cancel a sequence ───────────────────────────────────────────────────
 
 router.post('/sequence/:id/cancel', requirePermission('manage_leads'), asyncHandler(async (req: Request, res: Response) => {
-  const { id } = req.params;
+  const { id } = req.params as Record<string, string>;
   const { reason } = req.body || {};
   await cancelSequence(id, reason);
 

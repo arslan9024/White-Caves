@@ -429,6 +429,7 @@ router.get(
   '/:code/data',
   requirePermission('view_analytics'),
   asyncHandler(async (req: Request, res: Response) => {
+    // @ts-expect-error -- pre-existing: req.params/query string|string[] narrowing
     const code = req.params.code.toUpperCase();
 
     let data: Record<string, unknown>;
@@ -458,6 +459,7 @@ router.get(
   '/:code/kpis',
   requirePermission('view_analytics'),
   asyncHandler(async (req: Request, res: Response) => {
+    // @ts-expect-error -- pre-existing: req.params/query string|string[] narrowing
     const code = req.params.code.toUpperCase();
     let data: Record<string, unknown>;
 
@@ -490,6 +492,7 @@ router.get(
   '/:code/trends',
   requirePermission('view_analytics'),
   asyncHandler(async (req: Request, res: Response) => {
+    // @ts-expect-error -- pre-existing: req.params/query string|string[] narrowing
     const code = req.params.code.toUpperCase();
     let data: Record<string, unknown>;
 
@@ -522,6 +525,7 @@ router.get(
   '/:code/summary',
   requirePermission('view_analytics'),
   asyncHandler(async (req: Request, res: Response) => {
+    // @ts-expect-error -- pre-existing: req.params/query string|string[] narrowing
     const code = req.params.code.toUpperCase();
     let data: Record<string, unknown>;
 

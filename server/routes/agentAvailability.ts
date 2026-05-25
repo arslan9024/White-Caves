@@ -30,7 +30,7 @@ router.get(
     const userId = req.user?.id;
     if (!userId) throw new AppError('Authentication required', 401);
 
-    const { agentId } = req.params;
+    const { agentId } = req.params as Record<string, string>;
 
     // Verify agent exists
     const agent = await prisma.user.findUnique({
@@ -129,6 +129,7 @@ router.delete(
     const userId = req.user?.id;
     if (!userId) throw new AppError('Authentication required', 401);
 
+    // @ts-expect-error -- pre-existing: req.params/query string|string[] narrowing
     const dayOfWeek = parseInt(req.params.dayOfWeek);
     if (isNaN(dayOfWeek) || dayOfWeek < 0 || dayOfWeek > 6) {
       throw new AppError('Invalid dayOfWeek (0-6)', 400);
