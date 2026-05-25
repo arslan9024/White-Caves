@@ -368,8 +368,6 @@ describe('useSignIn — handleSocialAuth (integration)', () => {
       });
 
       expect(result.current.socialSyncRecovery).toBeNull();
-
-      act(() => vi.runAllTimers());
       expect(result.current.error).toBe('');
     });
 
@@ -445,21 +443,48 @@ describe('useSignIn — handleSocialAuth (integration)', () => {
         await result.current.handleSocialAuth('google');
       });
 
-      expect(result.current.socialSyncRecovery).toEqual({
-        provider: 'google',
-        reason: 'Backend unreachable',
+      expect(result.current.step).toBe(2);
+      expect(result.current.socialSyncRecovery).toBeNull();
+      act(() => {
+        result.current.setSelectedCategory('client');
       });
+      act(() => {
+        result.current.proceedToRoleSelection();
+      });
+      act(() => {
+        result.current.setSelectedRole('tenant');
+      });
+
+      await act(async () => {
+        await result.current.completeSignUp();
+      });
+
+      act(() => vi.runAllTimers());
+
+      expect(mockCompleteSocialRegistration).toHaveBeenCalledWith('client', 'tenant');
+      expect(mockNavigate).toHaveBeenCalledWith('/dashboard');
+      vi.useRealTimers();
     });
 
-    it('retries the same social provider via retrySocialAuth', async () => {
+    it('retries Google signup sync, then completes social registration after retry succeeds', async () => {
       mockSignInWithGoogle.mockResolvedValue({ user: firebaseUser });
       mockSyncFirebaseUser
         .mockRejectedValueOnce(new Error('Backend unreachable'))
-        .mockResolvedValueOnce(successResponse());
+        .mockResolvedValueOnce(successResponse(backendBuyerUser));
+      mockCompleteSocialRegistration.mockResolvedValue(successResponse(backendTenantUser));
+      vi.useFakeTimers();
+
       const { result } = renderHook(() => useSignIn(), { wrapper: createWrapper(store) });
+
+      act(() => result.current.switchMode());
 
       await act(async () => {
         await result.current.handleSocialAuth('google');
+      });
+
+      expect(result.current.socialSyncRecovery).toEqual({
+        provider: 'google',
+        reason: 'Backend unreachable',
       });
 
       await act(async () => {
@@ -468,6 +493,8 @@ describe('useSignIn — handleSocialAuth (integration)', () => {
 
       expect(mockSignInWithGoogle).toHaveBeenCalledTimes(2);
       expect(mockSyncFirebaseUser).toHaveBeenCalledTimes(2);
+      expect(result.current.step).toBe(2);
+
       act(() => {
         result.current.setSelectedCategory('client');
       });

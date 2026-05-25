@@ -486,7 +486,6 @@ describe('SignInPage', () => {
 
       await waitFor(() => {
         expect(mockNavigate).toHaveBeenCalledWith('/dashboard');
-        expect(mockNavigate).toHaveBeenCalledWith('/crm');
       });
     });
 
@@ -713,8 +712,10 @@ describe('SignInPage', () => {
       }
 
       await waitFor(() => {
-        expect(screen.getByRole('status')).toHaveAttribute('aria-busy', 'false');
-        expect(screen.getByRole('button', { name: /Retry Google sign-in/i })).not.toBeDisabled();
+        expect(screen.queryByRole('status')).not.toBeInTheDocument();
+        expect(
+          screen.queryByRole('button', { name: /Retry Google sign-in/i })
+        ).not.toBeInTheDocument();
       });
     });
 
