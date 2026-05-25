@@ -412,6 +412,7 @@ Clara (Lead CRM)
 | Customer Support | <4 hours | 95%+ | Nadia | ✅ |
 | Compliance | Monthly | 100% | Laila | ✅ |
 | Financial Close | <5 days | 100% | Theodora/Zoe | ✅ |
+| Henry Document Custody | <10 min intake | 100% traceable | Henry + Department Owner | 🆕 |
 
 ---
 
@@ -430,3 +431,44 @@ Clara (Lead CRM)
 ### Executive Escalation (C-Level Review)
 - **Zoe Alert Triggers**: Transaction >AED 5M, Compliance violation, Major customer complaint, Market crisis
 - **Board-Level Items**: Quarterly financials, Strategic partnership, Regulatory changes
+
+---
+
+## 🟣 WORKFLOW #8: HENRY DOCUMENT CUSTODY & INSPECTION READINESS
+**Duration**: 3-10 minutes per signed document intake  
+**Owner**: Henry (Record Keeper) + department owner (Sales/Leasing/Finance/Compliance/Legal/Ops)  
+**Success Metrics**: 100% signed docs timestamped + tagged (department + user) and retrievable for inspection
+
+#### Flow Process:
+```
+Document template selected (Henry)
+         ↓
+Draft generated + compliance pre-check
+         ↓
+Signatures completed (digital/manual upload)
+         ↓
+Henry signs-off record state:
+status: pending_signature → signed
+signedAt timestamp stored
+         ↓
+Department/user tagging enforced
+- departmentTag (sales/leasing/finance/compliance/legal/operations)
+- ownerUserId / ownerUserEmail
+         ↓
+Archive organization path:
+year/month/department/user/community
+         ↓
+Inspection retrieval
+- filter by department
+- filter by owner user
+- filter by signed date range/status
+         ↓
+Export package for compliance/audit review
+```
+
+**Key Performance Indicators**:
+- Signed timestamp completeness: 100%
+- Department tag completeness: 100%
+- Owner user tag completeness: 100%
+- Audit retrieval SLA: <2 minutes
+- Missing metadata rate: 0%

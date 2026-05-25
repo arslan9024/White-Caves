@@ -10,6 +10,7 @@
  *   GET  /api/henry/records/file              — serve a stored PDF (?path=...)
  *   POST /api/henry/records/file              — upload / archive a PDF
  *   DELETE /api/henry/records/:id             — delete a record entry
+ *   POST /api/henry/records/:id/sign          — mark a record as signed with timestamp
  *   POST /api/henry/compliance/check          — run RERA/DLD compliance check
  *   GET  /api/henry/compliance/summary        — available rule counts by template
  *   POST /api/henry/ocr/emirates-id           — OCR Emirates ID via Ollama
@@ -36,12 +37,37 @@ import { AuthRequest } from '../middleware/auth.js';
 const router = Router();
 
 const mockHenryRecords: Array<Record<string, any>> = [];
+const VALID_DEPARTMENTS = ['sales', 'leasing', 'finance', 'compliance', 'legal', 'operations'] as const;
+const VALID_HENRY_STATUSES = ['draft', 'pending_signature', 'signed', 'archived'] as const;
+type HenryRecordStatus = (typeof VALID_HENRY_STATUSES)[number];
 
 const normalizeId = () => Math.random().toString(36).slice(2, 10) + Date.now().toString(36);
 
 const createMockHenryRecordModel = () => ({
-  findMany: async ({ orderBy, skip = 0, take = 50, select }: any = {}) => {
+  findMany: async ({ where, orderBy, skip = 0, take = 50, select }: any = {}) => {
     let rows = [...mockHenryRecords];
+    if (where) {
+      rows = rows.filter(row => {
+        if (where.templateKey && row.templateKey !== where.templateKey) return false;
+        if (where.departmentTag && row.departmentTag !== where.departmentTag) return false;
+        if (where.ownerUserId && row.ownerUserId !== where.ownerUserId) return false;
+        if (where.ownerUserEmail && row.ownerUserEmail !== where.ownerUserEmail) return false;
+        if (where.status && row.status !== where.status) return false;
+        if (where.signedAt?.gte) {
+          const rowSignedAt = row.signedAt ? new Date(row.signedAt).getTime() : NaN;
+          if (Number.isNaN(rowSignedAt) || rowSignedAt < new Date(where.signedAt.gte).getTime()) {
+            return false;
+          }
+        }
+        if (where.signedAt?.lte) {
+          const rowSignedAt = row.signedAt ? new Date(row.signedAt).getTime() : NaN;
+          if (Number.isNaN(rowSignedAt) || rowSignedAt > new Date(where.signedAt.lte).getTime()) {
+            return false;
+          }
+        }
+        return true;
+      });
+    }
     if (orderBy?.createdAt) {
       rows.sort((a, b) => {
         const av = new Date(a.createdAt).getTime();
@@ -71,6 +97,13 @@ const createMockHenryRecordModel = () => ({
     return created;
   },
   findUnique: async ({ where }: any) => mockHenryRecords.find(r => r.id === where.id) ?? null,
+  update: async ({ where, data }: any) => {
+    const idx = mockHenryRecords.findIndex(r => r.id === where.id);
+    if (idx < 0) return null;
+    const updated = { ...mockHenryRecords[idx], ...data, updatedAt: new Date() };
+    mockHenryRecords[idx] = updated;
+    return updated;
+  },
   delete: async ({ where }: any) => {
     const idx = mockHenryRecords.findIndex(r => r.id === where.id);
     if (idx < 0) return null;
@@ -128,9 +161,30 @@ router.get('/records', requireMinRole('agent'), async (req: Request, res: Respon
     const page = parseInt(String(req.query.page ?? '1'), 10);
     const pageSize = Math.min(parseInt(String(req.query.pageSize ?? '50'), 10), 100);
     const skip = (page - 1) * pageSize;
+    const where: Record<string, unknown> = {};
+    const templateKey = req.query.templateKey ? String(req.query.templateKey) : undefined;
+    const departmentTag = req.query.departmentTag ? String(req.query.departmentTag) : undefined;
+    const ownerUserId = req.query.ownerUserId ? String(req.query.ownerUserId) : undefined;
+    const ownerUserEmail = req.query.ownerUserEmail ? String(req.query.ownerUserEmail) : undefined;
+    const status = req.query.status ? String(req.query.status) : undefined;
+    const signedFrom = req.query.signedFrom ? String(req.query.signedFrom) : undefined;
+    const signedTo = req.query.signedTo ? String(req.query.signedTo) : undefined;
+
+    if (templateKey) where.templateKey = templateKey;
+    if (departmentTag) where.departmentTag = departmentTag;
+    if (ownerUserId) where.ownerUserId = ownerUserId;
+    if (ownerUserEmail) where.ownerUserEmail = ownerUserEmail;
+    if (status) where.status = status;
+    if (signedFrom || signedTo) {
+      where.signedAt = {
+        ...(signedFrom ? { gte: new Date(signedFrom) } : {}),
+        ...(signedTo ? { lte: new Date(signedTo) } : {}),
+      };
+    }
 
     const [records, total] = await Promise.all([
       henryRecordModel.findMany({
+        where,
         orderBy: { createdAt: 'desc' },
         skip,
         take: pageSize,
@@ -140,10 +194,16 @@ router.get('/records', requireMinRole('agent'), async (req: Request, res: Respon
           templateLabel: true,
           fileName: true,
           recordPath: true,
+          departmentTag: true,
+          ownerUserId: true,
+          ownerUserEmail: true,
           unit: true,
           community: true,
           tenantName: true,
           isDraft: true,
+          status: true,
+          signedAt: true,
+          archivedAt: true,
           copyNumber: true,
           createdAt: true,
           createdBy: true,
@@ -173,6 +233,12 @@ router.post('/records', requireMinRole('agent'), async (req: AuthRequest, res: R
       unit,
       community,
       tenantName,
+      departmentTag,
+      ownerUserId,
+      ownerUserEmail,
+      status,
+      signedAt,
+      archivedAt,
       isDraft,
       copyNumber,
       documentSnapshot,
@@ -183,6 +249,22 @@ router.post('/records', requireMinRole('agent'), async (req: AuthRequest, res: R
         .status(400)
         .json({ success: false, error: 'templateKey and fileName are required' });
     }
+    if (departmentTag && !VALID_DEPARTMENTS.includes(departmentTag)) {
+      return res.status(400).json({
+        success: false,
+        error: `departmentTag must be one of: ${VALID_DEPARTMENTS.join(', ')}`,
+      });
+    }
+    if (status && !VALID_HENRY_STATUSES.includes(status)) {
+      return res.status(400).json({
+        success: false,
+        error: `status must be one of: ${VALID_HENRY_STATUSES.join(', ')}`,
+      });
+    }
+
+    const computedStatus: HenryRecordStatus =
+      status ??
+      (isDraft ? 'draft' : signedAt ? 'signed' : 'pending_signature');
 
     const record = await henryRecordModel.create({
       data: {
@@ -190,10 +272,16 @@ router.post('/records', requireMinRole('agent'), async (req: AuthRequest, res: R
         templateLabel: templateLabel ?? templateKey,
         fileName,
         recordPath: recordPath ?? '',
+        departmentTag: departmentTag ?? null,
+        ownerUserId: ownerUserId ?? req.user?.id ?? null,
+        ownerUserEmail: ownerUserEmail ?? req.user?.email ?? null,
         unit: unit ?? null,
         community: community ?? null,
         tenantName: tenantName ?? null,
         isDraft: isDraft ?? false,
+        status: computedStatus,
+        signedAt: signedAt ? new Date(signedAt) : null,
+        archivedAt: archivedAt ? new Date(archivedAt) : null,
         copyNumber: copyNumber ?? 1,
         documentSnapshot: documentSnapshot ?? {},
         createdBy: req.user?.id ?? 'system',
@@ -251,8 +339,13 @@ router.post(
       const year = now.getFullYear().toString();
       const month = (now.getMonth() + 1).toString().padStart(2, '0');
       const community = (req.body.community ?? 'general').replace(/[^\w-]/g, '_');
+      const departmentTag = String(req.body.departmentTag ?? 'general').replace(/[^\w-]/g, '_');
+      const ownerUserId = String(req.body.ownerUserId ?? req.user?.id ?? 'unassigned').replace(
+        /[^\w-]/g,
+        '_'
+      );
 
-      const subDir = path.join(year, month, community);
+      const subDir = path.join(year, month, departmentTag, ownerUserId, community);
       const destDir = path.resolve(HENRY_UPLOADS_PATH, subDir);
       fs.mkdirSync(destDir, { recursive: true });
 
@@ -279,6 +372,39 @@ router.post(
     }
   }
 );
+
+// ─── POST /api/henry/records/:id/sign ─────────────────────────────────────
+
+router.post('/records/:id/sign', requireMinRole('agent'), async (req: AuthRequest, res: Response) => {
+  try {
+    const henryRecordModel = getHenryRecordModel();
+    const { id } = req.params;
+    const record = await henryRecordModel.findUnique({ where: { id } });
+    if (!record) return res.status(404).json({ success: false, error: 'Record not found' });
+
+    const signedAt = req.body.signedAt ? new Date(String(req.body.signedAt)) : new Date();
+    if (Number.isNaN(signedAt.getTime())) {
+      return res.status(400).json({ success: false, error: 'signedAt must be a valid date' });
+    }
+
+    const updated = await henryRecordModel.update({
+      where: { id },
+      data: {
+        isDraft: false,
+        status: 'signed',
+        signedAt,
+        ownerUserId: req.body.ownerUserId ?? record.ownerUserId ?? req.user?.id ?? null,
+        ownerUserEmail: req.body.ownerUserEmail ?? record.ownerUserEmail ?? req.user?.email ?? null,
+      },
+    });
+
+    res.json({ success: true, data: updated });
+  } catch (err) {
+    res
+      .status(500)
+      .json({ success: false, error: err instanceof Error ? err.message : 'Unknown error' });
+  }
+});
 
 // ─── GET /api/henry/records/file ──────────────────────────────────────────
 
