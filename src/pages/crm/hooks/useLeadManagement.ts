@@ -347,8 +347,10 @@ export function useLeadManagement() {
   }, []);
 
   const getStatusBadgeVariant = useCallback((status: string) => {
-    // eslint-disable-next-line security/detect-object-injection
-    return STATUS_CONFIG[status]?.badgeVariant || 'secondary';
+    const cfg = Object.prototype.hasOwnProperty.call(STATUS_CONFIG, status)
+      ? STATUS_CONFIG[status as keyof typeof STATUS_CONFIG]
+      : undefined;
+    return cfg?.badgeVariant ?? 'secondary';
   }, []);
 
   const formatCurrency = useCallback(
