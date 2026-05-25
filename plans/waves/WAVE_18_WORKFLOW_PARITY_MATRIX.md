@@ -40,7 +40,7 @@
 | 2 | Lead scoring/qualification | `business_docs/09_crm_features/lead-tracking.md` | `LeadScoringModule` in `src/config/crmModuleRegistry.tsx` | `REQ-LEAD-005` implemented | Included | - |
 | 3 | Lead import (CSV/XLSX) | `functional-requirements.md` (`REQ-LEAD-008`) | no complete lead import workflow evidence in active queue | Planned requirement only | Partial | P0 |
 | 4 | Lead follow-up reminders | `functional-requirements.md` (`REQ-LEAD-010`) + `follow-up-automation.md` | `/api/follow-ups` routes present | Planned in requirements, partial route surface | Partial | P1 |
-| 5 | Listing CRUD lifecycle | `property-management.md` + workflow docs | `server/routes/properties.ts` + `/api/properties` | `REQ-PROP-001/002/004` implemented | Included | - |
+| 5 | Listing CRUD lifecycle | `business_docs/09_crm_features/property-management.md` + workflow docs | `server/routes/properties.ts` + `/api/properties` | `REQ-PROP-001/002/004` implemented | Included | - |
 | 6 | RERA permit lifecycle automation | `business-rules.md` BR-004 | partial compliance modules/routes | `REQ-PROP-007` planned | Partial | P0 |
 | 7 | Portal syndication (PF/Bayut) | `functional-requirements.md` (`REQ-PROP-008`) | no confirmed production syndication route contract | Planned requirement | Missing | P1 |
 | 8 | Viewing scheduling and status | `viewings.md` + workflows | `server/routes/viewings.ts` + `/api/viewings` | Viewing routes in index | Included | - |
