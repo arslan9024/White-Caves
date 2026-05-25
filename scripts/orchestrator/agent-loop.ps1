@@ -32,6 +32,11 @@ $scripts = Join-Path $root "scripts\orchestrator"
 $qFile   = Join-Path $root "logs\orchestrator\task-queue.json"
 $pFile   = Join-Path $root "scripts\orchestrator\prompts.json"
 $policyFile = Join-Path $root "scripts\orchestrator\policy.json"
+$scanLogDir = Join-Path $root "logs\orchestrator"
+$loopSyncScript = Join-Path $scripts "loop-start-sync.ps1"
+$cycleSummaryScript = Join-Path $scripts "cycle-summary.ps1"
+$autoEscalateScript = Join-Path $scripts "blocker-auto-escalate.ps1"
+$blockerBriefScript = Join-Path $scripts "blocker-report.ps1"
 
 # ------------------------------------------------------------------
 # EXECUTION MODE (policy + switches)
@@ -242,13 +247,101 @@ function Get-ReadyCount {
   return $ready
 }
 
-function Get-Prompt {
+function Get-BlockedCount {
+  if (-not (Test-Path $qFile)) { return 0 }
+  $q = Get-Content $qFile -Raw | ConvertFrom-Json
+  $all = @($q.tasks)
+  $blocked = 0
+  foreach ($t in ($all | Where-Object { $_.status -eq "queued" })) {
+    $isBlocked = $false
+    foreach ($dep in @($t.dependsOn)) {
+      $depTask = $all | Where-Object { $_.taskId -eq $dep } | Select-Object -First 1
+      if ($null -eq $depTask -or $depTask.status -ne "done") { $isBlocked = $true; break }
+    }
+    if ($isBlocked) { $blocked++ }
+  }
+  return $blocked
+}
+
+function Get-PromptRecord {
   param([string]$taskId)
-  if (-not (Test-Path $pFile)) { return "(prompts.json not found)" }
+  if (-not (Test-Path $pFile)) { return $null }
   $p = Get-Content $pFile -Raw | ConvertFrom-Json
   $val = $p.PSObject.Properties | Where-Object { $_.Name -eq $taskId } | Select-Object -ExpandProperty Value
-  if ($null -eq $val) { return "(no prompt for $taskId -- add to prompts.json)" }
+  if ($null -eq $val) { return $null }
   return $val
+}
+
+function Get-Prompt {
+  param([string]$taskId)
+  $val = Get-PromptRecord -taskId $taskId
+  if ($null -eq $val) { return "(no prompt for $taskId -- add to prompts.json)" }
+  if ($val -is [string]) { return $val }
+  if ($val.PSObject.Properties.Name -contains "prompt") { return [string]$val.prompt }
+  return [string]$val
+}
+
+function Get-PromptVersion {
+  param([string]$taskId)
+  $val = Get-PromptRecord -taskId $taskId
+  if ($null -eq $val) { return 1 }
+  if ($val -is [string]) { return 1 }
+  if ($val.PSObject.Properties.Name -contains "v") { return [int]$val.v }
+  return 1
+}
+
+function Get-LastScanStatus {
+  if (-not (Test-Path $scanLogDir)) { return "UNKNOWN" }
+  $latest = Get-ChildItem -Path $scanLogDir -Filter "error-scan-*.json" -ErrorAction SilentlyContinue | Sort-Object LastWriteTime -Descending | Select-Object -First 1
+  if ($null -eq $latest) { return "UNKNOWN" }
+  try {
+    $scan = Get-Content $latest.FullName -Raw | ConvertFrom-Json
+    if ($scan.passed) { return "PASS" }
+    return "FAIL"
+  } catch {
+    return "UNKNOWN"
+  }
+}
+
+function Get-MainDelta {
+  $branch = (git rev-parse --abbrev-ref HEAD 2>$null).Trim()
+  if ($LASTEXITCODE -ne 0 -or [string]::IsNullOrWhiteSpace($branch)) { return "unknown" }
+  $behind = (git rev-list --count HEAD..origin/main 2>$null).Trim()
+  if ([string]::IsNullOrWhiteSpace($behind)) { $behind = "0" }
+  return ("{0} (+{1} behind main)" -f $branch, $behind)
+}
+
+function Test-MiniTypecheck {
+  param([string[]]$changedFiles)
+  $codeFiles = @($changedFiles | Where-Object { $_ -match '\.(ts|tsx)$' })
+  if ($codeFiles.Count -eq 0) { return $true }
+
+  Write-Host ""
+  Write-Host "  [MINI-SCAN] Running typecheck for changed TS files..." -ForegroundColor Cyan
+  $out = npm run typecheck 2>&1 | Out-String
+  if ($LASTEXITCODE -eq 0) {
+    Write-Host "  [MINI-SCAN] PASS" -ForegroundColor Green
+    return $true
+  }
+
+  $hit = $false
+  foreach ($f in $codeFiles) {
+    $norm = $f.Replace("/", "\")
+    if ($out -match [regex]::Escape($norm) -or $out -match [regex]::Escape($f)) {
+      $hit = $true
+      break
+    }
+  }
+
+  if ($hit) {
+    Write-Host "  [MINI-SCAN] Type errors found in changed files. Fix before marking done." -ForegroundColor Red
+    Write-Host $out -ForegroundColor DarkGray
+    Write-Host "  Suggested fix: npm run typecheck" -ForegroundColor Yellow
+    return $false
+  }
+
+  Write-Host "  [MINI-SCAN] Typecheck failed, but not directly tied to changed files." -ForegroundColor Yellow
+  return $true
 }
 
 function Write-Divider { param([string]$color="DarkGray"); Write-Host ("-" * $w) -ForegroundColor $color }
@@ -316,6 +409,23 @@ $loopCount = 0
 :outerLoop while ($true) {
   $loopCount++
 
+  if ($Autopilot -and (Test-Path $loopSyncScript)) {
+    Write-Host ""
+    Write-Host ("  [AUTOPILOT] Syncing from main before cycle {0}..." -f $loopCount) -ForegroundColor Cyan
+    & powershell -ExecutionPolicy Bypass -File "$loopSyncScript" -WorkspaceRoot $root
+    if ($LASTEXITCODE -ne 0) {
+      Write-Host "  [BLOCKED] loop-start-sync failed in autopilot mode." -ForegroundColor Red
+      break outerLoop
+    }
+  }
+
+  $doneNow = Get-QueueDoneCount
+  $readyNow = Get-ReadyCount
+  $blockedNow = Get-BlockedCount
+  $branchDelta = Get-MainDelta
+  $lastScan = Get-LastScanStatus
+  Write-Host ("[CYCLE {0}] Queue: {1}/51 done | {2} READY | {3} BLOCKED | Branch: {4} | Last scan: {5}" -f $loopCount, $doneNow, $readyNow, $blockedNow, $branchDelta, $lastScan) -ForegroundColor DarkGray
+
   # 1. DETERMINE ACTIVE AGENT
   if ($Agent -ne "") {
     $activeAgent = $Agent
@@ -366,6 +476,8 @@ $loopCount = 0
 
   $taskId  = $task.taskId
   $prompt  = Get-Prompt -taskId $taskId
+  $promptVersion = Get-PromptVersion -taskId $taskId
+  $beforeCycleFiles = @(git diff --name-only HEAD 2>$null)
   $url     = if ($toolUrl.ContainsKey($activeAgent))  { $toolUrl[$activeAgent]  } else { "https://aistudio.google.com/" }
   $toolStr = if ($toolName.ContainsKey($activeAgent)) { $toolName[$activeAgent] } else { "Free AI Tool" }
   $nextSlotMin = Get-MinutesUntilNextSlot
@@ -438,6 +550,23 @@ $loopCount = 0
     }
   }
 
+  # 7.5 MINI TYPECHECK on files changed during this cycle
+  $afterCycleFiles = @(git diff --name-only HEAD 2>$null)
+  $changedThisCycle = @($afterCycleFiles | Where-Object { $beforeCycleFiles -notcontains $_ })
+  $miniScanOk = Test-MiniTypecheck -changedFiles $changedThisCycle
+  if (-not $miniScanOk) {
+    if ($effectiveNonInteractive) {
+      Write-Host "  [AUTO] Blocking cycle due to mini typecheck failure." -ForegroundColor Red
+      break outerLoop
+    }
+    Write-Host "  Resolve type errors in changed files, then press Enter to continue or type 'skip'." -ForegroundColor Yellow
+    $miniConfirm = Read-Host "  > "
+    if ($miniConfirm.Trim().ToLower() -eq "skip") {
+      Write-Host "  [SKIP] Task not marked done due to mini typecheck failure." -ForegroundColor Yellow
+      continue
+    }
+  }
+
   # 8. MARK TASK DONE
   Write-Host ""
   Write-Host ("  Marking {0} done for {1} ..." -f $taskId, $activeAgent) -ForegroundColor Cyan
@@ -494,6 +623,26 @@ $loopCount = 0
   }
   Write-Divider -color Green
   Write-Host ""
+
+  # 9.5 Cycle logging + blocker auto-escalation
+  if (Test-Path $cycleSummaryScript) {
+    & powershell -ExecutionPolicy Bypass -File "$cycleSummaryScript" `
+      -WorkspaceRoot $root `
+      -Record `
+      -Cycle $loopCount `
+      -Agent $activeAgent `
+      -TaskId $taskId `
+      -ErrorScanPassed ($miniScanOk) `
+      -SyncedFromMain ($Autopilot) `
+      -PushedToMain $false `
+      -PromptVersion $promptVersion 2>&1 | Out-String | Write-Host
+  }
+  if ($effectiveNonInteractive -and (Test-Path $autoEscalateScript)) {
+    & powershell -ExecutionPolicy Bypass -File "$autoEscalateScript" -WorkspaceRoot $root 2>&1 | Out-String | Write-Host
+  }
+  if ($effectiveNonInteractive -and (Test-Path $blockerBriefScript)) {
+    & powershell -ExecutionPolicy Bypass -File "$blockerBriefScript" -WorkspaceRoot $root -Brief 2>&1 | Out-String | Write-Host
+  }
 
   # 10. LOOP CONTROL
   if ($Once) { break outerLoop }

@@ -18,14 +18,24 @@ let sharedRateLimitStore: RedisStore | undefined;
 const redisUrl = process.env.REDIS_URL;
 
 if (redisUrl) {
-  const redisClient = new Redis(redisUrl);
-  redisClient.on('error', (error: unknown) => {
-    console.warn('Redis rate-limit store error:', error instanceof Error ? error.message : error);
+  const redisClient = new Redis(redisUrl, {
+    maxRetriesPerRequest: 1,
+    lazyConnect: true,
+    retryStrategy: (times: number) => (times > 3 ? null : 1000),
+  });
+  redisClient.on('error', (error: Error) => {
+    console.warn('Redis rate-limit store error:', error.message);
+  });
+  redisClient.connect().catch((error: Error) => {
+    console.warn(
+      'Failed to connect Redis rate-limit store; falling back to in-memory:',
+      error.message
+    );
   });
 
   sharedRateLimitStore = new RedisStore({
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    sendCommand: (...args: string[]) => (redisClient as any).call(args[0], ...args.slice(1)),
+    // ioredis uses `call` instead of `sendCommand` — wrap for rate-limit-redis@4
+    sendCommand: (...args: string[]) => redisClient.call(args[0], ...args.slice(1)) as Promise<unknown>,
   });
 }
 
@@ -85,9 +95,9 @@ export const firebaseSyncLimiter: RateLimitRequestHandler = rateLimit({
     statusCode: 429,
   },
   keyGenerator: req => {
-    const baseIp = req.ip || req.socket?.remoteAddress || 'unknown-ip';
+    const ip = req.ip ?? req.socket?.remoteAddress ?? 'unknown-ip';
     const identity = resolveFirebaseIdentity(req.body);
-    return `${baseIp}:${identity}`;
+    return `${ip}:${identity}`;
   },
   standardHeaders: true,
   legacyHeaders: false,

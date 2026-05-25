@@ -19,6 +19,7 @@ param(
 
 $completeScript  = Join-Path $PSScriptRoot "complete-task.ps1"
 $nextTaskScript  = Join-Path $PSScriptRoot "next-task.ps1"
+$promptManagerScript = Join-Path $PSScriptRoot "prompt-manager.ps1"
 
 # -- Step 1: Complete the current task ------------------------------------
 Write-Host ""
@@ -54,6 +55,36 @@ try {
     Write-Host ""
     Write-Host "  [FEEDS_ACK REQUIRED] Downstream agent must acknowledge before queue advances." -ForegroundColor Yellow
     Write-Host "  Run: npm run orchestrator:queue:ack -- -TaskId $TaskId -AckBy `"$ackAgent`"" -ForegroundColor Gray
+  }
+
+  if ($newStatus -eq "done" -and (Test-Path $promptManagerScript)) {
+    & powershell -ExecutionPolicy Bypass -File "$promptManagerScript" `
+      -WorkspaceRoot $WorkspaceRoot `
+      -MarkSuccess `
+      -TaskId $TaskId 2>&1 | Out-String | Write-Host
+
+    $evidenceLc = [string]$EvidenceNote
+    $evidenceLc = $evidenceLc.ToLower()
+    $saveText = ""
+    if ($evidenceLc -like "*refined prompt:*") {
+      $parts = $EvidenceNote.Split(":", 2)
+      if ($parts.Count -eq 2) { $saveText = $parts[1].Trim() }
+    } elseif ($evidenceLc -like "*updated prompt:*") {
+      $parts = $EvidenceNote.Split(":", 2)
+      if ($parts.Count -eq 2) { $saveText = $parts[1].Trim() }
+    }
+
+    if (-not [string]::IsNullOrWhiteSpace($saveText)) {
+      Write-Host ""
+      Write-Host "  [PROMPT SAVE] Auto-saving refined prompt text..." -ForegroundColor Cyan
+      & powershell -ExecutionPolicy Bypass -File "$promptManagerScript" `
+        -WorkspaceRoot $WorkspaceRoot `
+        -Save `
+        -TaskId $TaskId `
+        -Text $saveText 2>&1 | Out-String | Write-Host
+    } elseif ($evidenceLc -like "*refined prompt*" -or $evidenceLc -like "*updated prompt*") {
+      Write-Host "  [PROMPT SAVE] Mention detected but no '...prompt: <text>' payload found." -ForegroundColor Yellow
+    }
   }
 }
 catch {

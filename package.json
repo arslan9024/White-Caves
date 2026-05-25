@@ -205,11 +205,22 @@
     "autopilot:unlimited:dry": "powershell -ExecutionPolicy Bypass -File scripts/orchestrator/autopilot-unlimited.ps1 -DryRun",
     "autopilot:unlimited:nobuild": "powershell -ExecutionPolicy Bypass -File scripts/orchestrator/autopilot-unlimited.ps1 -SkipBuild",
     "autopilot:unlimited:3": "powershell -ExecutionPolicy Bypass -File scripts/orchestrator/autopilot-unlimited.ps1 -MaxSessions 3",
-    "autopilot:pause": "node -e \"require('fs').mkdirSync('logs/orchestrator',{recursive:true});require('fs').writeFileSync('logs/orchestrator/PAUSE','');console.log('PAUSE file created — autopilot will stop after current session')\"",
-    "autopilot:resume": "node -e \"try{require('fs').unlinkSync('logs/orchestrator/PAUSE');console.log('PAUSE file removed — autopilot will resume');}catch{console.log('No PAUSE file found');}\"",
-    "subagents": "node -e \"const r=require('./scripts/orchestrator/subagents-registry.json');console.log('Total agents:',r.agents.length);r.agents.forEach(a=>console.log(' #'+a.id,a.name,'—',a.title,'|',a.unit,'|',a.model))\"",
+    "autopilot:pause": "node -e \"require('fs').mkdirSync('logs/orchestrator',{recursive:true});require('fs').writeFileSync('logs/orchestrator/PAUSE','');console.log('PAUSE file created \u2014 autopilot will stop after current session')\"",
+    "autopilot:resume": "node -e \"try{require('fs').unlinkSync('logs/orchestrator/PAUSE');console.log('PAUSE file removed \u2014 autopilot will resume');}catch{console.log('No PAUSE file found');}\"",
+    "subagents": "node -e \"const r=require('./scripts/orchestrator/subagents-registry.json');console.log('Total agents:',r.agents.length);r.agents.forEach(a=>console.log(' #'+a.id,a.name,'\u2014',a.title,'|',a.unit,'|',a.model))\"",
     "subagents:team": "node -e \"const r=require('./scripts/orchestrator/subagents-registry.json');const t=process.argv[2];const m=r.agents.filter(a=>a.unit&&a.unit.toLowerCase().includes(t?t.toLowerCase():''));console.log('Agents in unit matching:',t,'\\n');m.forEach(a=>console.log('#'+a.id,a.name,'-',a.title))\" --",
-    "plans:validate": "node scripts/validate-plans-governance.js"
+    "plans:validate": "node scripts/validate-plans-governance.js",
+    "orchestrator:loop:sync-main": "powershell -ExecutionPolicy Bypass -File scripts/orchestrator/loop-start-sync.ps1",
+    "orchestrator:loop:rollback": "powershell -ExecutionPolicy Bypass -File scripts/orchestrator/loop-rollback.ps1",
+    "orchestrator:loop:create-wave-branch": "powershell -ExecutionPolicy Bypass -File scripts/orchestrator/loop-start-sync.ps1 -WaveBranch",
+    "orchestrator:error:scan": "powershell -ExecutionPolicy Bypass -File scripts/orchestrator/error-scan.ps1",
+    "orchestrator:error:scan:autofix": "powershell -ExecutionPolicy Bypass -File scripts/orchestrator/error-scan.ps1 -AutoFix",
+    "orchestrator:prompts:search": "powershell -ExecutionPolicy Bypass -File scripts/orchestrator/prompt-manager.ps1 -Search",
+    "orchestrator:prompts:export": "powershell -ExecutionPolicy Bypass -File scripts/orchestrator/prompt-manager.ps1 -Export",
+    "orchestrator:prompts:stats": "powershell -ExecutionPolicy Bypass -File scripts/orchestrator/prompt-manager.ps1 -Stats",
+    "orchestrator:prompts:generate": "powershell -ExecutionPolicy Bypass -File scripts/orchestrator/generate-prompt.ps1",
+    "orchestrator:cycle:log": "powershell -ExecutionPolicy Bypass -File scripts/orchestrator/cycle-summary.ps1",
+    "orchestrator:blockers:escalate": "powershell -ExecutionPolicy Bypass -File scripts/orchestrator/blocker-auto-escalate.ps1"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"

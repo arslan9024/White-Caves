@@ -1,53 +1,661 @@
 {
-  "T001": "@Sofia -- EXPAND: compliance-requirements.md -> add Oqood off-plan registration requirements, escrow account compliance rules, regulatory penalty table (RERA/DLD fines), pricing and discount approval rules, refund and cancellation rules",
-  "T001b": "@Sofia -- DRAFT: risk-register.md -> regulatory penalty table (RERA/DLD/AML fines by violation type); include fine amount AED, triggering condition, responsible party, mitigation control",
-  "T001c": "@Sofia -- AUDIT: compliance-requirements.md -> check for missing RERA 2024 updates; add UAE PDPL section covering data subject rights, consent management, data retention schedule, breach notification procedure",
-  "T002": "@Timnit -- DRAFT: dld-integration.md -> spec DLD API integration: Oqood off-plan registration (required fields: developer ID, project ID, buyer Emirates ID, unit number, sale price AED, SPA date, payment plan type), title deed transfer workflow (4 pct transfer fee + AED 580 admin + trustee fees), DLD REST API endpoints, error handling for DLD system downtime with exponential backoff",
-  "T002b": "@Timnit -- DRAFT: legal-management.md -> contract template library (standard tenancy, luxury tenancy, short-term holiday, commercial lease, MOU for sale, SPA for off-plan); addendum generation workflow; legal notice workflows (Form 7 rent increase, Form 12 eviction, Form 6 non-renewal); e-signature integration; RERA dispute filing RDC workflow",
-  "T002c": "@Timnit -- EXPAND: compliance-requirements.md -> add UAE PDPL section: data subject rights (access request 30-day SLA, deletion, portability), consent management spec (opt-in checkbox, consent timestamp, withdrawal), data retention schedule (property 3yr, financial 5yr, AML 7yr), breach notification 72hr UAE TDRA procedure, cross-border transfer rules",
-  "T003": "@Victoria -- EXPAND: tenancy-ejari.md -> add PDC post-dated cheque tracking, bounced cheque workflow, eviction process, early termination clauses, legal notice generation (Form 12)",
-  "T003b": "@Victoria -- EXPAND: tenancy-ejari.md -> add RERA rental index increase rules (90-day notice, max pct per index, Form 7 procedure), security deposit tracking (5pct unfurnished / 10pct furnished), Ejari registration workflow (DLD portal, required docs, renewal), utility transfer DEWA/SEWA on handover",
-  "T003c": "@Victoria -- DRAFT: landlord-portal.md -> KYC onboarding flow (Emirates ID upload, title deed verification, power of attorney if applicable), NOC letter generation workflow, 3-month grace period rules, landlord statement of account (rent collected, commission deducted, net payout), direct debit setup instructions",
-  "T004": "@Annie -- DRAFT: tenant-portal.md -> spec all 6 tabs: TenantLeaseTab (lease details, start/end, monthly rent, status badge), TenantPaymentHistoryTab (payment records table, overdue detection, PDC status), TenantMaintenanceTab (submit request form, status tracking, contractor updates), TenantDocumentsTab (Ejari cert download, tenancy agreement PDF, NOC request button), TenantProfileTab (personal details, Emirates ID, passport expiry alert), TenantPortalHome (KPI tiles: active lease countdown, next payment due amount, open maintenance count). Include: API endpoint for each tab, authFetch pattern, error states, empty states.",
-  "T004b": "@Annie -- DRAFT: document-generation.md -> spec PDF generation for: Ejari certificate (RERA-required fields), tenancy agreement (parties, unit, term, rent, PDC schedule, signatures), NOC letter (landlord to tenant for visa/bank), maintenance work order, payment receipt. Include: template engine choice (Puppeteer vs PDFKit), template variables per document type, storage path, download endpoint, e-signature integration hook.",
-  "T004c": "@Annie -- DRAFT: email-automation.md -> spec automated email triggers via Resend API: lease expiry reminder (90/60/30 days), rent due reminder (3 days before), maintenance status update (on status change), welcome email on first login, PDC bounce alert to landlord within 1 hour. Include: Resend template IDs, dynamic variables, retry logic (3 attempts 10min intervals), unsubscribe handling, delivery tracking in CRM activity log.",
-  "T005": "@Marissa -- DRAFT: luxury-segment.md -> spec KairosLuxuryCRM module: luxury threshold (AED 5M+ sale or AED 30K+/month rent, areas: Palm Jumeirah, DIFC, Emirates Hills, Jumeirah Bay), VIP client profile (concierge tier, private viewing with NDA, dedicated agent), white-glove workflow (chauffeur flag, exclusive access log, post-viewing gift), luxury listing requirements (30 photos min, Matterport 3D mandatory, drone footage), HNWI compliance (source of funds declaration, PEP screening, enhanced due diligence per CBUAE AML)",
-  "T005b": "@Marissa -- DRAFT: community-management.md -> spec JunoCommunity module: announcement board (post/pin/archive, target by building or floor, push notification), facility booking (pool/gym/meeting room: calendar grid, approval workflow, cancellation policy), maintenance escalation path, service charge tracking (quarterly invoice, arrears escalation), community event calendar (RSVP, capacity limit), community manager KPI dashboard",
-  "T005c": "@Marissa -- EXPAND: ui-ux-specification.md -> add: mobile breakpoints spec (375px/768px/1024px/1440px with layout changes), dark mode token map (background #0A0A0A, surface #141414, border #2A2A2A, text-primary #F5F5F0, gold-accent #C9A84C as CSS custom properties), form validation patterns (inline error red #EF4444, success green border, loading spinner), empty state library (no leads, no properties, no maintenance -- each with icon + message + CTA), skeleton loader patterns (property card, KPI tile, data table row)",
-  "T006": "@Rachel -- EXPAND: seo-strategy.md -> add: Dubai property keyword clusters (buy villa Dubai, rent apartment Downtown, off-plan projects Dubai Marina, 2BR apartment JVC), local SEO setup (Google Business Profile, RERA agent profile optimization), Core Web Vitals targets (LCP < 2.5s, FID < 100ms, CLS < 0.1), structured data schemas (RealEstateListing, LocalBusiness, FAQPage JSON-LD), Arabic/English multilingual SEO (hreflang tags, Arabic keyword research, RTL meta tags)",
-  "T006b": "@Rachel -- EXPAND: marketing-campaigns.md -> add: WhatsApp broadcast campaign builder (audience segmentation by area/budget/lead stage, Meta template approval checklist, 1000 msg/day free tier), campaign performance dashboard (delivery rate, open rate, reply rate, conversion to viewing rate), A/B test spec for property listing headline vs description, Meta Pixel + Google Ads conversion tracking setup, lead source attribution model (first-touch vs last-touch vs linear, UTM parameter standards)",
-  "T006c": "@Rachel -- DRAFT: careers.md -> careers portal spec: job listing CRUD (title, department, Dubai location, type, RERA license required flag), candidate application form (CV upload PDF, LinkedIn URL, RERA BRN if applicable), application tracking board (Applied to HR Screening to Interview to Offer to Hired/Rejected), automated acknowledgement email, interview scheduling via /api/viewings pattern, RERA-licensed agent background check checklist",
-  "T007": "@Joelle -- EXPAND: 03_ai_assistants/README.md -> add failure and fallback behavior section (API timeout, rate limit handling, graceful degradation, human handoff triggers), document AI personas 15-24 (Intelligence cluster: Cipher, Atlas, Oracle, Flux, Nova)",
-  "T007b": "@Joelle -- DRAFT: 03_ai_assistants/README.md -> personas 25-35 (AI Engine cluster: Quill, Lumen, Crest, Prism, Echo + others); add failure/fallback behavior; add KPI definitions per persona",
-  "T007c": "@Joelle -- EXPAND: lead-tracking.md -> AI lead scoring section: scoring model inputs (lead source, response time, budget match, area preference match, engagement score), scoring output (0-100 score, tier: hot/warm/cold), re-scoring triggers (new interaction, stage change, time decay), integration map update for AI assistants calling lead scoring API",
-  "T008": "@Fei-Fei -- DRAFT: property-valuation.md -> spec valuation engine in CipherMarketCRM: AVM inputs (location GeoPoint, BUA sqft, bedrooms, bathrooms, floor number, view type, building age, last transaction price from DLD), AVM output (estimated market value AED, confidence score pct, comparable transactions min 3, value range +/- 10pct), manual valuation override (RERA-certified valuer input, override reason, manager approval), rental yield calculator (gross and net formulas), valuation history per property, bank valuation request workflow, monthly bulk valuation refresh cron",
-  "T008b": "@Fei-Fei -- DRAFT: market-intelligence.md -> spec CipherMarketCRM analytics: Dubai area price index table (price per sqft by top 30 neighborhoods, DLD quarterly data), transaction volume dashboard (DLD monthly sales by property type, area, price band), supply/demand metrics (days on market, absorption rate, new listings vs sold ratio), competitor pricing monitor, RERA rental index integration, automated monthly market report PDF, price drop alert workflow",
-  "T008c": "@Fei-Fei -- DRAFT: market-analytics.md -> spec analytics dashboard: KPI tiles (avg sale price vs last month pct, total transaction volume, avg days on market, price per sqft by area), chart library (Recharts: line chart price trend 12 months, bar chart by property type, scatter plot price vs sqft), Dubai area heatmap (Leaflet.js choropleth: color intensity = price per sqft), data refresh schedule, export options (CSV, Excel, PDF), scheduled email digest to MD every Monday 8am",
-  "T009": "@Anima -- DRAFT: secondary-sales.md -> spec /api/secondary-sales and SecondarySalesAgent: transaction workflow (seller instruction to DLD transfer to commission disbursement), dual-agency disclosure (RERA Form A/B/I), DLD transfer fee breakdown (4pct split buyer/seller, trustee fees AED 4000-10000, admin AED 580), secondary market KPIs (avg days listing to sold, price vs asking pct, avg commission AED)",
-  "T009b": "@Anima -- DRAFT: currency-management.md -> spec /api/currency: supported currencies (AED base, USD, GBP, EUR, INR, PKR, SAR, QAR), live rate source (ExchangeRate-API free tier, fallback Open Exchange Rates), cache strategy (in-memory Map 4hr TTL, stale-while-revalidate), property listing display (AED primary, 2 secondary selectable), historical rate table for backdated commission calculations",
-  "T009c": "@Anima -- EXPAND: analytics-dashboard.md -> add data pipeline architecture: event collection layer (user action tracking to analytics_events collection), nightly aggregation cron (daily_stats snapshots), real-time counters (Redis INCR for active metrics), bulk data export pipeline (async job max 50K rows, email link on completion), data quality rules (lead and property deduplication)",
-  "T010": "@Mary -- DRAFT: sentinel-property.md -> spec SentinelPropertyCRM: property lifecycle state machine (Draft to Listed to Under Offer to Sold/Leased to Withdrawn, with allowed transitions and required fields per state), RERA mandatory fields before listing (permit number, title deed, floor plan), property quality score algorithm (photos 10pts, description 15pts, floor plan 20pts, virtual tour 25pts, 360 video 30pts, max 100pts), duplicate detection, bulk CSV import spec",
-  "T010b": "@Mary -- DRAFT: investment-management.md -> spec MavenInvestmentCRM: investor profile (riskAppetite, investmentHorizon, preferredAreas, budget range, citizenship for freehold eligibility), portfolio dashboard (current market value, total invested, unrealized gain/loss, gross/net yield), investment analysis tools (ROI calculator, mortgage vs cash comparison, area yield comparison), investor quarterly report PDF, deal flow pipeline (Opportunity to DLD Transfer to Portfolio)",
-  "T010c": "@Mary -- DRAFT: prospecting-outbound.md -> spec HunterProspectingCRM: prospect database (name, phone, area owned, source, assignedAgent, lastContactDate, status), prospecting campaign workflow (target list to agent territory to call script display to outcome logging), call tracking (click-to-call, call duration, outcome tag), prospecting KPIs (calls per agent per day, connect rate pct, interest rate pct, pipeline AED), do-not-contact registry with DNC flag",
-  "T011": "@Invoice -- EXPAND: financial-reporting.md -> add UAE VAT reporting (FTA 5pct, exempt transactions, quarterly filing), cash flow forecast (rolling 12-month), budget-vs-actual variance, invoice format spec with TRN, payout schedule rules",
-  "T011b": "@Invoice -- AUDIT: financial-reporting.md -> verify 11 sections present; add rolling 12-month cash flow forecast section; add DU scoring and DRI contribution to each section",
-  "T011c": "@Invoice -- DRAFT: revenue-model.md -> 3-year pro-forma (conservative/base/optimistic scenarios), commission revenue model (2pct sale, 5-8pct rental, split company/agent), VAT impact analysis, break-even analysis with unit economics per transaction type",
-  "T012": "@Booking -- DRAFT: viewings.md -> spec /api/viewings: viewing schema (propertyId, leadId, agentId, scheduledAt, durationMinutes 60, status, type in-person/virtual, zoomLink, notes, feedbackRating 1-5), scheduling flow, conflict detection, ICS file generation, bulk open-house slots, viewing conversion metric",
-  "T012b": "@Booking -- DRAFT: scheduling-calendar.md -> spec agent calendar: availability config (working hours Mon-Fri 9am-6pm, Sat 10am-4pm, custom blocked dates, UAE public holidays 2026), appointment types, calendar views (day/week/month/agenda), multi-agent overlay (manager sees all agents color-coded), Google Calendar OAuth2 2-way sync, Outlook Microsoft Graph sync, mobile push notification FCM",
-  "T012c": "@Booking -- EXPAND: viewings.md -> add: virtual viewing spec (Zoom/Teams auto-generated link, recording consent, virtual tour URL from Matterport), viewing preparation checklist (keys retrieved, agent briefing notes, accessibility requirements), property access log (key sign-out time, access code, security clearance), post-viewing automated workflow (30 min after: send property brochure via WhatsApp, create follow-up call task 48h, update lead stage to Viewed)",
-  "T013": "@Maya -- DRAFT: off-plan-projects.md -> spec AtlasProjectsCRM: project schema (developer, name, location GeoPoint, launch date, estimated completion, totalUnits, availableUnits, paymentPlanOptions), unit inventory (unitNumber, floor, type, BUA, view, listPrice, status: available/reserved/sold/transferred), buyer reservation workflow (EOI to Oqood DLD registration within 60 days), project milestone tracker, ROI projection calculator (gross yield pct, net yield pct, payback years)",
-  "T013b": "@Maya -- DRAFT: handover-management.md -> spec VestaHandoverCRM: snagging checklist template (categories: walls/ceilings, flooring, doors/windows, plumbing, electrical, HVAC, kitchen, bathroom -- each with pass/fail/punch status and photo attachment), snagging report PDF, handover appointment workflow, punch list tracking (defect to fixed to re-inspection to signed off), keys and access issuance log (keys, mailbox, parking remote, access card with serial numbers), DEWA connection tracker, handover completion certificate PDF",
-  "T013c": "@Maya -- EXPAND: off-plan-projects.md -> add payment plan engine: SPA payment schedule table (milestone pct, payment date, amount AED, status, PDC cheque details), escrow compliance (Law No. 8 of 2007: 100pct collected funds in RERA-approved escrow, release triggers), cancellation refund table per RERA Article 11 (completed less than 5pct: 30pct penalty; 5-60pct: 40pct; over 60pct: 50pct; post-handover: no refund), developer credit rating display (RERA ranking A/B/C with last audit date)",
-  "T014": "@Hedy -- DRAFT: audit-trail.md -> spec HenryAuditCRM: audit log schema (userId, action, entityType: lead/property/lease/user/commission, entityId, oldValue JSON, newValue JSON, ipAddress, userAgent, timestamp -- all fields immutable), tracked actions (CREATE, UPDATE, DELETE, STATUS_CHANGE, LOGIN, LOGOUT, EXPORT, PERMISSION_CHANGE), write-once enforcement (append-only MongoDB collection), audit search UI (filter by user/entity/action/date range, paginated 50/page), compliance export CSV + PDF for RERA inspector, retention 7 years per UAE Commercial Transactions Law, real-time WebSocket stream for admin",
-  "T014b": "@Hedy -- DRAFT: activity-feed.md -> spec /api/activities: activity event types and display text templates (lead_created, lease_signed, payment_received, maintenance_opened), activity card component spec (avatar, action sentence, entity deep-link, relative timestamp, absolute on hover), personal feed vs company feed (all activities -- manager/admin only), pagination (infinite scroll, 20 items per load), feed search + filter by activity type, daily activity digest email spec",
-  "T014c": "@Hedy -- DRAFT: follow-up-automation.md -> spec /api/follow-ups: sequence builder (trigger types: lead_stage_changed, X_days_since_last_contact, lease_expiry_approaching, viewing_completed, offer_rejected; action types: send_whatsapp_template, send_email, create_task, add_crm_note), sequence templates (new_lead_7day_nurture, lease_renewal_90day), execution engine (Node.js cron every 15 minutes), opt-out on any manual agent activity, effectiveness report (open rate, reply rate, conversion rate per sequence)",
-  "T015": "@Cassie -- EXPAND: agent-performance.md -> add RERA license expiry tracking and lead-assignment blocking workflow, coaching plan and PIP (Performance Improvement Plan) structure, mobile analytics view specification",
-  "T015b": "@Cassie -- EXPAND: analytics-dashboard.md -> add mobile analytics view spec + data export CSV/Excel API endpoint spec; ensure all KPIs have formulas, target values, and observability metrics",
-  "T015c": "@Cassie -- REVIEW: agent-performance.md -> check all KPIs have formulas and target values; verify 14 sections present with DU scores; add missing observability metrics and testability definitions",
-  "T016": "@Jaime -- DRAFT: offers.md -> spec /api/offers: offer schema (propertyId, buyerId or tenantId, agentId, offerPrice AED, offerType: purchase/lease, validUntil, status: pending/countered/accepted/rejected/expired, conditions, counterOfferHistory), offer workflow (buyer submits to seller/landlord to counter rounds to acceptance to MOU/LOI PDF), offer comparison table (multiple offers side-by-side), automated expiry cron, offer acceptance triggers, offer analytics",
-  "T016b": "@Jaime -- DRAFT: whatsapp-integration.md -> spec Meta WhatsApp Business API: WABA setup checklist (Meta Business Manager verified, display name White Caves Real Estate LLC), message template categories (UTILITY rent payment due, MARKETING new listing, AUTHENTICATION login code), webhook handler spec (/api/webhooks/meta: verify_token, message_received, read_receipt, delivery_failed retry), 24-hour conversation window management, opt-in database table (phoneNumber, optedInAt, optedOutAt, optInSource)",
-  "T016c": "@Jaime -- EXPAND: whatsapp-integration.md -> add: NinaChatbot conversation flows (property enquiry: area to budget to bedrooms to matching properties to book viewing; maintenance: describe issue to photo request to priority classification to ticket confirmation; payment reminder: amount + due date + payment methods + receipt upload link), human handoff triggers (confidence < 70pct, user sends human/agent/help, no resolution after 3 bot turns), broadcast campaign rate limits, WhatsApp Business widget embed spec for tenant/landlord portal",
-  "T017": "@Corinne -- DRAFT: maintenance.md -> spec /api/maintenance: schema (propertyId, tenantId, landlordId, agentId, category: plumbing/electrical/HVAC/structural/appliance/pest/other, priority: emergency/high/medium/low, description, photos max 5, status lifecycle, assignedContractorId, scheduledAt, resolvedAt, resolutionNotes, tenantRating 1-5, invoiceAmount AED, invoiceApproved boolean), tenant submission channels (portal form or WhatsApp bot, auto-priority: water leak = emergency), contractor assignment, SLA breach alerting (emergency 4h, high 24h, medium 72h, low 7 days), landlord cost approval for repairs over AED 500",
-  "T017b": "@Corinne -- DRAFT: ai-chat.md -> spec /api/ai-chat: request schema (POST: assistantId, messages: ChatMessage array, context with leadId/propertyId/tenantId, userId), context injection spec, streaming response (SSE endpoint GET /api/ai-chat/stream/:sessionId via EventSource), conversation persistence (last 20 messages per sessionId, 30-day TTL MongoDB), token budget per assistant role (standard 1000 tokens, executive 2000 tokens, daily cap per assistantId), API provider abstraction layer (swap OpenAI vs Anthropic vs Groq via PROVIDER env var), fallback chain",
-  "T017c": "@Corinne -- EXPAND: system-architecture.md -> add interactive map search section: frontend map component (Leaflet.js v1.9 + leaflet.markercluster, property pin with price label, cluster bubble with count, property card popup), geospatial backend query (MongoDB 2dsphere index on property.location, near query for radius search, geoWithin for polygon), Dubai area boundary GeoJSON (30 neighborhood polygons in public/geojson/dubai-areas.geojson), map tile provider decision (OSM dev, Mapbox prod), performance guard (max 500 visible pins, cluster above 50 in viewport), saved map search spec"
+  "T001": {
+    "v": 1,
+    "agent": "@Sofia",
+    "action": "EXPAND",
+    "target": "compliance-requirements.md",
+    "prompt": "@Sofia -- EXPAND: compliance-requirements.md -> add Oqood off-plan registration requirements, escrow account compliance rules, regulatory penalty table (RERA/DLD fines), pricing and discount approval rules, refund and cancellation rules",
+    "tags": [
+      "compliance"
+    ],
+    "lastUsed": "2026-05-25",
+    "successCount": 0,
+    "history": []
+  },
+  "T001b": {
+    "v": 1,
+    "agent": "@Sofia",
+    "action": "DRAFT",
+    "target": "risk-register.md",
+    "prompt": "@Sofia -- DRAFT: risk-register.md -> regulatory penalty table (RERA/DLD/AML fines by violation type); include fine amount AED, triggering condition, responsible party, mitigation control",
+    "tags": [
+      "compliance"
+    ],
+    "lastUsed": "2026-05-25",
+    "successCount": 0,
+    "history": []
+  },
+  "T001c": {
+    "v": 1,
+    "agent": "@Sofia",
+    "action": "AUDIT",
+    "target": "compliance-requirements.md",
+    "prompt": "@Sofia -- AUDIT: compliance-requirements.md -> check for missing RERA 2024 updates; add UAE PDPL section covering data subject rights, consent management, data retention schedule, breach notification procedure",
+    "tags": [
+      "compliance"
+    ],
+    "lastUsed": "2026-05-25",
+    "successCount": 0,
+    "history": []
+  },
+  "T002": {
+    "v": 1,
+    "agent": "@Timnit",
+    "action": "DRAFT",
+    "target": "dld-integration.md",
+    "prompt": "@Timnit -- DRAFT: dld-integration.md -> spec DLD API integration: Oqood off-plan registration (required fields: developer ID, project ID, buyer Emirates ID, unit number, sale price AED, SPA date, payment plan type), title deed transfer workflow (4 pct transfer fee + AED 580 admin + trustee fees), DLD REST API endpoints, error handling for DLD system downtime with exponential backoff",
+    "tags": [
+      "compliance",
+      "workflow"
+    ],
+    "lastUsed": "2026-05-25",
+    "successCount": 0,
+    "history": []
+  },
+  "T002b": {
+    "v": 1,
+    "agent": "@Timnit",
+    "action": "DRAFT",
+    "target": "legal-management.md",
+    "prompt": "@Timnit -- DRAFT: legal-management.md -> contract template library (standard tenancy, luxury tenancy, short-term holiday, commercial lease, MOU for sale, SPA for off-plan); addendum generation workflow; legal notice workflows (Form 7 rent increase, Form 12 eviction, Form 6 non-renewal); e-signature integration; RERA dispute filing RDC workflow",
+    "tags": [
+      "compliance",
+      "workflow"
+    ],
+    "lastUsed": "2026-05-25",
+    "successCount": 0,
+    "history": []
+  },
+  "T002c": {
+    "v": 1,
+    "agent": "@Timnit",
+    "action": "EXPAND",
+    "target": "compliance-requirements.md",
+    "prompt": "@Timnit -- EXPAND: compliance-requirements.md -> add UAE PDPL section: data subject rights (access request 30-day SLA, deletion, portability), consent management spec (opt-in checkbox, consent timestamp, withdrawal), data retention schedule (property 3yr, financial 5yr, AML 7yr), breach notification 72hr UAE TDRA procedure, cross-border transfer rules",
+    "tags": [
+      "compliance",
+      "finance"
+    ],
+    "lastUsed": "2026-05-25",
+    "successCount": 0,
+    "history": []
+  },
+  "T003": {
+    "v": 1,
+    "agent": "@Victoria",
+    "action": "EXPAND",
+    "target": "tenancy-ejari.md",
+    "prompt": "@Victoria -- EXPAND: tenancy-ejari.md -> add PDC post-dated cheque tracking, bounced cheque workflow, eviction process, early termination clauses, legal notice generation (Form 12)",
+    "tags": [
+      "workflow"
+    ],
+    "lastUsed": "2026-05-25",
+    "successCount": 0,
+    "history": []
+  },
+  "T003b": {
+    "v": 1,
+    "agent": "@Victoria",
+    "action": "EXPAND",
+    "target": "tenancy-ejari.md",
+    "prompt": "@Victoria -- EXPAND: tenancy-ejari.md -> add RERA rental index increase rules (90-day notice, max pct per index, Form 7 procedure), security deposit tracking (5pct unfurnished / 10pct furnished), Ejari registration workflow (DLD portal, required docs, renewal), utility transfer DEWA/SEWA on handover",
+    "tags": [
+      "compliance",
+      "workflow"
+    ],
+    "lastUsed": "2026-05-25",
+    "successCount": 0,
+    "history": []
+  },
+  "T003c": {
+    "v": 1,
+    "agent": "@Victoria",
+    "action": "DRAFT",
+    "target": "landlord-portal.md",
+    "prompt": "@Victoria -- DRAFT: landlord-portal.md -> KYC onboarding flow (Emirates ID upload, title deed verification, power of attorney if applicable), NOC letter generation workflow, 3-month grace period rules, landlord statement of account (rent collected, commission deducted, net payout), direct debit setup instructions",
+    "tags": [
+      "workflow"
+    ],
+    "lastUsed": "2026-05-25",
+    "successCount": 0,
+    "history": []
+  },
+  "T004": {
+    "v": 1,
+    "agent": "@Annie",
+    "action": "DRAFT",
+    "target": "tenant-portal.md",
+    "prompt": "@Annie -- DRAFT: tenant-portal.md -> spec all 6 tabs: TenantLeaseTab (lease details, start/end, monthly rent, status badge), TenantPaymentHistoryTab (payment records table, overdue detection, PDC status), TenantMaintenanceTab (submit request form, status tracking, contractor updates), TenantDocumentsTab (Ejari cert download, tenancy agreement PDF, NOC request button), TenantProfileTab (personal details, Emirates ID, passport expiry alert), TenantPortalHome (KPI tiles: active lease countdown, next payment due amount, open maintenance count). Include: API endpoint for each tab, authFetch pattern, error states, empty states.",
+    "tags": [
+      "analytics"
+    ],
+    "lastUsed": "2026-05-25",
+    "successCount": 0,
+    "history": []
+  },
+  "T004b": {
+    "v": 1,
+    "agent": "@Annie",
+    "action": "DRAFT",
+    "target": "document-generation.md",
+    "prompt": "@Annie -- DRAFT: document-generation.md -> spec PDF generation for: Ejari certificate (RERA-required fields), tenancy agreement (parties, unit, term, rent, PDC schedule, signatures), NOC letter (landlord to tenant for visa/bank), maintenance work order, payment receipt. Include: template engine choice (Puppeteer vs PDFKit), template variables per document type, storage path, download endpoint, e-signature integration hook.",
+    "tags": [
+      "compliance"
+    ],
+    "lastUsed": "2026-05-25",
+    "successCount": 0,
+    "history": []
+  },
+  "T004c": {
+    "v": 1,
+    "agent": "@Annie",
+    "action": "DRAFT",
+    "target": "email-automation.md",
+    "prompt": "@Annie -- DRAFT: email-automation.md -> spec automated email triggers via Resend API: lease expiry reminder (90/60/30 days), rent due reminder (3 days before), maintenance status update (on status change), welcome email on first login, PDC bounce alert to landlord within 1 hour. Include: Resend template IDs, dynamic variables, retry logic (3 attempts 10min intervals), unsubscribe handling, delivery tracking in CRM activity log.",
+    "tags": [
+      "workflow"
+    ],
+    "lastUsed": "2026-05-25",
+    "successCount": 0,
+    "history": []
+  },
+  "T005": {
+    "v": 1,
+    "agent": "@Marissa",
+    "action": "DRAFT",
+    "target": "luxury-segment.md",
+    "prompt": "@Marissa -- DRAFT: luxury-segment.md -> spec KairosLuxuryCRM module: luxury threshold (AED 5M+ sale or AED 30K+/month rent, areas: Palm Jumeirah, DIFC, Emirates Hills, Jumeirah Bay), VIP client profile (concierge tier, private viewing with NDA, dedicated agent), white-glove workflow (chauffeur flag, exclusive access log, post-viewing gift), luxury listing requirements (30 photos min, Matterport 3D mandatory, drone footage), HNWI compliance (source of funds declaration, PEP screening, enhanced due diligence per CBUAE AML)",
+    "tags": [
+      "compliance",
+      "finance",
+      "workflow"
+    ],
+    "lastUsed": "2026-05-25",
+    "successCount": 0,
+    "history": []
+  },
+  "T005b": {
+    "v": 1,
+    "agent": "@Marissa",
+    "action": "DRAFT",
+    "target": "community-management.md",
+    "prompt": "@Marissa -- DRAFT: community-management.md -> spec JunoCommunity module: announcement board (post/pin/archive, target by building or floor, push notification), facility booking (pool/gym/meeting room: calendar grid, approval workflow, cancellation policy), maintenance escalation path, service charge tracking (quarterly invoice, arrears escalation), community event calendar (RSVP, capacity limit), community manager KPI dashboard",
+    "tags": [
+      "analytics",
+      "workflow"
+    ],
+    "lastUsed": "2026-05-25",
+    "successCount": 0,
+    "history": []
+  },
+  "T005c": {
+    "v": 1,
+    "agent": "@Marissa",
+    "action": "EXPAND",
+    "target": "ui-ux-specification.md",
+    "prompt": "@Marissa -- EXPAND: ui-ux-specification.md -> add: mobile breakpoints spec (375px/768px/1024px/1440px with layout changes), dark mode token map (background #0A0A0A, surface #141414, border #2A2A2A, text-primary #F5F5F0, gold-accent #C9A84C as CSS custom properties), form validation patterns (inline error red #EF4444, success green border, loading spinner), empty state library (no leads, no properties, no maintenance -- each with icon + message + CTA), skeleton loader patterns (property card, KPI tile, data table row)",
+    "tags": [
+      "analytics"
+    ],
+    "lastUsed": "2026-05-25",
+    "successCount": 0,
+    "history": []
+  },
+  "T006": {
+    "v": 1,
+    "agent": "@Rachel",
+    "action": "EXPAND",
+    "target": "seo-strategy.md",
+    "prompt": "@Rachel -- EXPAND: seo-strategy.md -> add: Dubai property keyword clusters (buy villa Dubai, rent apartment Downtown, off-plan projects Dubai Marina, 2BR apartment JVC), local SEO setup (Google Business Profile, RERA agent profile optimization), Core Web Vitals targets (LCP < 2.5s, FID < 100ms, CLS < 0.1), structured data schemas (RealEstateListing, LocalBusiness, FAQPage JSON-LD), Arabic/English multilingual SEO (hreflang tags, Arabic keyword research, RTL meta tags)",
+    "tags": [
+      "compliance"
+    ],
+    "lastUsed": "2026-05-25",
+    "successCount": 0,
+    "history": []
+  },
+  "T006b": {
+    "v": 1,
+    "agent": "@Rachel",
+    "action": "EXPAND",
+    "target": "marketing-campaigns.md",
+    "prompt": "@Rachel -- EXPAND: marketing-campaigns.md -> add: WhatsApp broadcast campaign builder (audience segmentation by area/budget/lead stage, Meta template approval checklist, 1000 msg/day free tier), campaign performance dashboard (delivery rate, open rate, reply rate, conversion to viewing rate), A/B test spec for property listing headline vs description, Meta Pixel + Google Ads conversion tracking setup, lead source attribution model (first-touch vs last-touch vs linear, UTM parameter standards)",
+    "tags": [],
+    "lastUsed": "2026-05-25",
+    "successCount": 0,
+    "history": []
+  },
+  "T006c": {
+    "v": 1,
+    "agent": "@Rachel",
+    "action": "DRAFT",
+    "target": "careers.md",
+    "prompt": "@Rachel -- DRAFT: careers.md -> careers portal spec: job listing CRUD (title, department, Dubai location, type, RERA license required flag), candidate application form (CV upload PDF, LinkedIn URL, RERA BRN if applicable), application tracking board (Applied to HR Screening to Interview to Offer to Hired/Rejected), automated acknowledgement email, interview scheduling via /api/viewings pattern, RERA-licensed agent background check checklist",
+    "tags": [
+      "compliance"
+    ],
+    "lastUsed": "2026-05-25",
+    "successCount": 0,
+    "history": []
+  },
+  "T007": {
+    "v": 1,
+    "agent": "@Joelle",
+    "action": "EXPAND",
+    "target": "03_ai_assistants/README.md",
+    "prompt": "@Joelle -- EXPAND: 03_ai_assistants/README.md -> add failure and fallback behavior section (API timeout, rate limit handling, graceful degradation, human handoff triggers), document AI personas 15-24 (Intelligence cluster: Cipher, Atlas, Oracle, Flux, Nova)",
+    "tags": [],
+    "lastUsed": "2026-05-25",
+    "successCount": 0,
+    "history": []
+  },
+  "T007b": {
+    "v": 1,
+    "agent": "@Joelle",
+    "action": "DRAFT",
+    "target": "03_ai_assistants/README.md",
+    "prompt": "@Joelle -- DRAFT: 03_ai_assistants/README.md -> personas 25-35 (AI Engine cluster: Quill, Lumen, Crest, Prism, Echo + others); add failure/fallback behavior; add KPI definitions per persona",
+    "tags": [
+      "analytics"
+    ],
+    "lastUsed": "2026-05-25",
+    "successCount": 0,
+    "history": []
+  },
+  "T007c": {
+    "v": 1,
+    "agent": "@Joelle",
+    "action": "EXPAND",
+    "target": "lead-tracking.md",
+    "prompt": "@Joelle -- EXPAND: lead-tracking.md -> AI lead scoring section: scoring model inputs (lead source, response time, budget match, area preference match, engagement score), scoring output (0-100 score, tier: hot/warm/cold), re-scoring triggers (new interaction, stage change, time decay), integration map update for AI assistants calling lead scoring API",
+    "tags": [],
+    "lastUsed": "2026-05-25",
+    "successCount": 0,
+    "history": []
+  },
+  "T008": {
+    "v": 1,
+    "agent": "@Fei-Fei",
+    "action": "DRAFT",
+    "target": "property-valuation.md",
+    "prompt": "@Fei-Fei -- DRAFT: property-valuation.md -> spec valuation engine in CipherMarketCRM: AVM inputs (location GeoPoint, BUA sqft, bedrooms, bathrooms, floor number, view type, building age, last transaction price from DLD), AVM output (estimated market value AED, confidence score pct, comparable transactions min 3, value range +/- 10pct), manual valuation override (RERA-certified valuer input, override reason, manager approval), rental yield calculator (gross and net formulas), valuation history per property, bank valuation request workflow, monthly bulk valuation refresh cron",
+    "tags": [
+      "compliance",
+      "workflow"
+    ],
+    "lastUsed": "2026-05-25",
+    "successCount": 0,
+    "history": []
+  },
+  "T008b": {
+    "v": 1,
+    "agent": "@Fei-Fei",
+    "action": "DRAFT",
+    "target": "market-intelligence.md",
+    "prompt": "@Fei-Fei -- DRAFT: market-intelligence.md -> spec CipherMarketCRM analytics: Dubai area price index table (price per sqft by top 30 neighborhoods, DLD quarterly data), transaction volume dashboard (DLD monthly sales by property type, area, price band), supply/demand metrics (days on market, absorption rate, new listings vs sold ratio), competitor pricing monitor, RERA rental index integration, automated monthly market report PDF, price drop alert workflow",
+    "tags": [
+      "compliance",
+      "analytics",
+      "workflow"
+    ],
+    "lastUsed": "2026-05-25",
+    "successCount": 0,
+    "history": []
+  },
+  "T008c": {
+    "v": 1,
+    "agent": "@Fei-Fei",
+    "action": "DRAFT",
+    "target": "market-analytics.md",
+    "prompt": "@Fei-Fei -- DRAFT: market-analytics.md -> spec analytics dashboard: KPI tiles (avg sale price vs last month pct, total transaction volume, avg days on market, price per sqft by area), chart library (Recharts: line chart price trend 12 months, bar chart by property type, scatter plot price vs sqft), Dubai area heatmap (Leaflet.js choropleth: color intensity = price per sqft), data refresh schedule, export options (CSV, Excel, PDF), scheduled email digest to MD every Monday 8am",
+    "tags": [
+      "analytics"
+    ],
+    "lastUsed": "2026-05-25",
+    "successCount": 0,
+    "history": []
+  },
+  "T009": {
+    "v": 1,
+    "agent": "@Anima",
+    "action": "DRAFT",
+    "target": "secondary-sales.md",
+    "prompt": "@Anima -- DRAFT: secondary-sales.md -> spec /api/secondary-sales and SecondarySalesAgent: transaction workflow (seller instruction to DLD transfer to commission disbursement), dual-agency disclosure (RERA Form A/B/I), DLD transfer fee breakdown (4pct split buyer/seller, trustee fees AED 4000-10000, admin AED 580), secondary market KPIs (avg days listing to sold, price vs asking pct, avg commission AED)",
+    "tags": [
+      "compliance",
+      "analytics",
+      "workflow"
+    ],
+    "lastUsed": "2026-05-25",
+    "successCount": 0,
+    "history": []
+  },
+  "T009b": {
+    "v": 1,
+    "agent": "@Anima",
+    "action": "DRAFT",
+    "target": "currency-management.md",
+    "prompt": "@Anima -- DRAFT: currency-management.md -> spec /api/currency: supported currencies (AED base, USD, GBP, EUR, INR, PKR, SAR, QAR), live rate source (ExchangeRate-API free tier, fallback Open Exchange Rates), cache strategy (in-memory Map 4hr TTL, stale-while-revalidate), property listing display (AED primary, 2 secondary selectable), historical rate table for backdated commission calculations",
+    "tags": [],
+    "lastUsed": "2026-05-25",
+    "successCount": 0,
+    "history": []
+  },
+  "T009c": {
+    "v": 1,
+    "agent": "@Anima",
+    "action": "EXPAND",
+    "target": "analytics-dashboard.md",
+    "prompt": "@Anima -- EXPAND: analytics-dashboard.md -> add data pipeline architecture: event collection layer (user action tracking to analytics_events collection), nightly aggregation cron (daily_stats snapshots), real-time counters (Redis INCR for active metrics), bulk data export pipeline (async job max 50K rows, email link on completion), data quality rules (lead and property deduplication)",
+    "tags": [
+      "analytics"
+    ],
+    "lastUsed": "2026-05-25",
+    "successCount": 0,
+    "history": []
+  },
+  "T010": {
+    "v": 1,
+    "agent": "@Mary",
+    "action": "DRAFT",
+    "target": "sentinel-property.md",
+    "prompt": "@Mary -- DRAFT: sentinel-property.md -> spec SentinelPropertyCRM: property lifecycle state machine (Draft to Listed to Under Offer to Sold/Leased to Withdrawn, with allowed transitions and required fields per state), RERA mandatory fields before listing (permit number, title deed, floor plan), property quality score algorithm (photos 10pts, description 15pts, floor plan 20pts, virtual tour 25pts, 360 video 30pts, max 100pts), duplicate detection, bulk CSV import spec",
+    "tags": [
+      "compliance"
+    ],
+    "lastUsed": "2026-05-25",
+    "successCount": 0,
+    "history": []
+  },
+  "T010b": {
+    "v": 1,
+    "agent": "@Mary",
+    "action": "DRAFT",
+    "target": "investment-management.md",
+    "prompt": "@Mary -- DRAFT: investment-management.md -> spec MavenInvestmentCRM: investor profile (riskAppetite, investmentHorizon, preferredAreas, budget range, citizenship for freehold eligibility), portfolio dashboard (current market value, total invested, unrealized gain/loss, gross/net yield), investment analysis tools (ROI calculator, mortgage vs cash comparison, area yield comparison), investor quarterly report PDF, deal flow pipeline (Opportunity to DLD Transfer to Portfolio)",
+    "tags": [
+      "compliance"
+    ],
+    "lastUsed": "2026-05-25",
+    "successCount": 0,
+    "history": []
+  },
+  "T010c": {
+    "v": 1,
+    "agent": "@Mary",
+    "action": "DRAFT",
+    "target": "prospecting-outbound.md",
+    "prompt": "@Mary -- DRAFT: prospecting-outbound.md -> spec HunterProspectingCRM: prospect database (name, phone, area owned, source, assignedAgent, lastContactDate, status), prospecting campaign workflow (target list to agent territory to call script display to outcome logging), call tracking (click-to-call, call duration, outcome tag), prospecting KPIs (calls per agent per day, connect rate pct, interest rate pct, pipeline AED), do-not-contact registry with DNC flag",
+    "tags": [
+      "analytics",
+      "workflow"
+    ],
+    "lastUsed": "2026-05-25",
+    "successCount": 0,
+    "history": []
+  },
+  "T011": {
+    "v": 1,
+    "agent": "@Invoice",
+    "action": "EXPAND",
+    "target": "financial-reporting.md",
+    "prompt": "@Invoice -- EXPAND: financial-reporting.md -> add UAE VAT reporting (FTA 5pct, exempt transactions, quarterly filing), cash flow forecast (rolling 12-month), budget-vs-actual variance, invoice format spec with TRN, payout schedule rules",
+    "tags": [
+      "finance"
+    ],
+    "lastUsed": "2026-05-25",
+    "successCount": 0,
+    "history": []
+  },
+  "T011b": {
+    "v": 1,
+    "agent": "@Invoice",
+    "action": "AUDIT",
+    "target": "financial-reporting.md",
+    "prompt": "@Invoice -- AUDIT: financial-reporting.md -> verify 11 sections present; add rolling 12-month cash flow forecast section; add DU scoring and DRI contribution to each section",
+    "tags": [
+      "finance"
+    ],
+    "lastUsed": "2026-05-25",
+    "successCount": 0,
+    "history": []
+  },
+  "T011c": {
+    "v": 1,
+    "agent": "@Invoice",
+    "action": "DRAFT",
+    "target": "revenue-model.md",
+    "prompt": "@Invoice -- DRAFT: revenue-model.md -> 3-year pro-forma (conservative/base/optimistic scenarios), commission revenue model (2pct sale, 5-8pct rental, split company/agent), VAT impact analysis, break-even analysis with unit economics per transaction type",
+    "tags": [
+      "finance"
+    ],
+    "lastUsed": "2026-05-25",
+    "successCount": 0,
+    "history": []
+  },
+  "T012": {
+    "v": 1,
+    "agent": "@Booking",
+    "action": "DRAFT",
+    "target": "viewings.md",
+    "prompt": "@Booking -- DRAFT: viewings.md -> spec /api/viewings: viewing schema (propertyId, leadId, agentId, scheduledAt, durationMinutes 60, status, type in-person/virtual, zoomLink, notes, feedbackRating 1-5), scheduling flow, conflict detection, ICS file generation, bulk open-house slots, viewing conversion metric",
+    "tags": [],
+    "lastUsed": "2026-05-25",
+    "successCount": 0,
+    "history": []
+  },
+  "T012b": {
+    "v": 1,
+    "agent": "@Booking",
+    "action": "DRAFT",
+    "target": "scheduling-calendar.md",
+    "prompt": "@Booking -- DRAFT: scheduling-calendar.md -> spec agent calendar: availability config (working hours Mon-Fri 9am-6pm, Sat 10am-4pm, custom blocked dates, UAE public holidays 2026), appointment types, calendar views (day/week/month/agenda), multi-agent overlay (manager sees all agents color-coded), Google Calendar OAuth2 2-way sync, Outlook Microsoft Graph sync, mobile push notification FCM",
+    "tags": [],
+    "lastUsed": "2026-05-25",
+    "successCount": 0,
+    "history": []
+  },
+  "T012c": {
+    "v": 1,
+    "agent": "@Booking",
+    "action": "EXPAND",
+    "target": "viewings.md",
+    "prompt": "@Booking -- EXPAND: viewings.md -> add: virtual viewing spec (Zoom/Teams auto-generated link, recording consent, virtual tour URL from Matterport), viewing preparation checklist (keys retrieved, agent briefing notes, accessibility requirements), property access log (key sign-out time, access code, security clearance), post-viewing automated workflow (30 min after: send property brochure via WhatsApp, create follow-up call task 48h, update lead stage to Viewed)",
+    "tags": [
+      "workflow"
+    ],
+    "lastUsed": "2026-05-25",
+    "successCount": 0,
+    "history": []
+  },
+  "T013": {
+    "v": 1,
+    "agent": "@Maya",
+    "action": "DRAFT",
+    "target": "off-plan-projects.md",
+    "prompt": "@Maya -- DRAFT: off-plan-projects.md -> spec AtlasProjectsCRM: project schema (developer, name, location GeoPoint, launch date, estimated completion, totalUnits, availableUnits, paymentPlanOptions), unit inventory (unitNumber, floor, type, BUA, view, listPrice, status: available/reserved/sold/transferred), buyer reservation workflow (EOI to Oqood DLD registration within 60 days), project milestone tracker, ROI projection calculator (gross yield pct, net yield pct, payback years)",
+    "tags": [
+      "compliance",
+      "finance",
+      "workflow"
+    ],
+    "lastUsed": "2026-05-25",
+    "successCount": 0,
+    "history": []
+  },
+  "T013b": {
+    "v": 1,
+    "agent": "@Maya",
+    "action": "DRAFT",
+    "target": "handover-management.md",
+    "prompt": "@Maya -- DRAFT: handover-management.md -> spec VestaHandoverCRM: snagging checklist template (categories: walls/ceilings, flooring, doors/windows, plumbing, electrical, HVAC, kitchen, bathroom -- each with pass/fail/punch status and photo attachment), snagging report PDF, handover appointment workflow, punch list tracking (defect to fixed to re-inspection to signed off), keys and access issuance log (keys, mailbox, parking remote, access card with serial numbers), DEWA connection tracker, handover completion certificate PDF",
+    "tags": [
+      "workflow"
+    ],
+    "lastUsed": "2026-05-25",
+    "successCount": 0,
+    "history": []
+  },
+  "T013c": {
+    "v": 1,
+    "agent": "@Maya",
+    "action": "EXPAND",
+    "target": "off-plan-projects.md",
+    "prompt": "@Maya -- EXPAND: off-plan-projects.md -> add payment plan engine: SPA payment schedule table (milestone pct, payment date, amount AED, status, PDC cheque details), escrow compliance (Law No. 8 of 2007: 100pct collected funds in RERA-approved escrow, release triggers), cancellation refund table per RERA Article 11 (completed less than 5pct: 30pct penalty; 5-60pct: 40pct; over 60pct: 50pct; post-handover: no refund), developer credit rating display (RERA ranking A/B/C with last audit date)",
+    "tags": [
+      "compliance"
+    ],
+    "lastUsed": "2026-05-25",
+    "successCount": 0,
+    "history": []
+  },
+  "T014": {
+    "v": 1,
+    "agent": "@Hedy",
+    "action": "DRAFT",
+    "target": "audit-trail.md",
+    "prompt": "@Hedy -- DRAFT: audit-trail.md -> spec HenryAuditCRM: audit log schema (userId, action, entityType: lead/property/lease/user/commission, entityId, oldValue JSON, newValue JSON, ipAddress, userAgent, timestamp -- all fields immutable), tracked actions (CREATE, UPDATE, DELETE, STATUS_CHANGE, LOGIN, LOGOUT, EXPORT, PERMISSION_CHANGE), write-once enforcement (append-only MongoDB collection), audit search UI (filter by user/entity/action/date range, paginated 50/page), compliance export CSV + PDF for RERA inspector, retention 7 years per UAE Commercial Transactions Law, real-time WebSocket stream for admin",
+    "tags": [
+      "compliance"
+    ],
+    "lastUsed": "2026-05-25",
+    "successCount": 0,
+    "history": []
+  },
+  "T014b": {
+    "v": 1,
+    "agent": "@Hedy",
+    "action": "DRAFT",
+    "target": "activity-feed.md",
+    "prompt": "@Hedy -- DRAFT: activity-feed.md -> spec /api/activities: activity event types and display text templates (lead_created, lease_signed, payment_received, maintenance_opened), activity card component spec (avatar, action sentence, entity deep-link, relative timestamp, absolute on hover), personal feed vs company feed (all activities -- manager/admin only), pagination (infinite scroll, 20 items per load), feed search + filter by activity type, daily activity digest email spec",
+    "tags": [
+      "finance"
+    ],
+    "lastUsed": "2026-05-25",
+    "successCount": 0,
+    "history": []
+  },
+  "T014c": {
+    "v": 1,
+    "agent": "@Hedy",
+    "action": "DRAFT",
+    "target": "follow-up-automation.md",
+    "prompt": "@Hedy -- DRAFT: follow-up-automation.md -> spec /api/follow-ups: sequence builder (trigger types: lead_stage_changed, X_days_since_last_contact, lease_expiry_approaching, viewing_completed, offer_rejected; action types: send_whatsapp_template, send_email, create_task, add_crm_note), sequence templates (new_lead_7day_nurture, lease_renewal_90day), execution engine (Node.js cron every 15 minutes), opt-out on any manual agent activity, effectiveness report (open rate, reply rate, conversion rate per sequence)",
+    "tags": [
+      "workflow"
+    ],
+    "lastUsed": "2026-05-25",
+    "successCount": 0,
+    "history": []
+  },
+  "T015": {
+    "v": 1,
+    "agent": "@Cassie",
+    "action": "EXPAND",
+    "target": "agent-performance.md",
+    "prompt": "@Cassie -- EXPAND: agent-performance.md -> add RERA license expiry tracking and lead-assignment blocking workflow, coaching plan and PIP (Performance Improvement Plan) structure, mobile analytics view specification",
+    "tags": [
+      "compliance",
+      "analytics",
+      "workflow"
+    ],
+    "lastUsed": "2026-05-25",
+    "successCount": 0,
+    "history": []
+  },
+  "T015b": {
+    "v": 1,
+    "agent": "@Cassie",
+    "action": "EXPAND",
+    "target": "analytics-dashboard.md",
+    "prompt": "@Cassie -- EXPAND: analytics-dashboard.md -> add mobile analytics view spec + data export CSV/Excel API endpoint spec; ensure all KPIs have formulas, target values, and observability metrics",
+    "tags": [
+      "analytics"
+    ],
+    "lastUsed": "2026-05-25",
+    "successCount": 0,
+    "history": []
+  },
+  "T015c": {
+    "v": 1,
+    "agent": "@Cassie",
+    "action": "REVIEW",
+    "target": "agent-performance.md",
+    "prompt": "@Cassie -- REVIEW: agent-performance.md -> check all KPIs have formulas and target values; verify 14 sections present with DU scores; add missing observability metrics and testability definitions",
+    "tags": [
+      "analytics"
+    ],
+    "lastUsed": "2026-05-25",
+    "successCount": 0,
+    "history": []
+  },
+  "T016": {
+    "v": 1,
+    "agent": "@Jaime",
+    "action": "DRAFT",
+    "target": "offers.md",
+    "prompt": "@Jaime -- DRAFT: offers.md -> spec /api/offers: offer schema (propertyId, buyerId or tenantId, agentId, offerPrice AED, offerType: purchase/lease, validUntil, status: pending/countered/accepted/rejected/expired, conditions, counterOfferHistory), offer workflow (buyer submits to seller/landlord to counter rounds to acceptance to MOU/LOI PDF), offer comparison table (multiple offers side-by-side), automated expiry cron, offer acceptance triggers, offer analytics",
+    "tags": [
+      "analytics",
+      "workflow"
+    ],
+    "lastUsed": "2026-05-25",
+    "successCount": 0,
+    "history": []
+  },
+  "T016b": {
+    "v": 1,
+    "agent": "@Jaime",
+    "action": "DRAFT",
+    "target": "whatsapp-integration.md",
+    "prompt": "@Jaime -- DRAFT: whatsapp-integration.md -> spec Meta WhatsApp Business API: WABA setup checklist (Meta Business Manager verified, display name White Caves Real Estate LLC), message template categories (UTILITY rent payment due, MARKETING new listing, AUTHENTICATION login code), webhook handler spec (/api/webhooks/meta: verify_token, message_received, read_receipt, delivery_failed retry), 24-hour conversation window management, opt-in database table (phoneNumber, optedInAt, optedOutAt, optInSource)",
+    "tags": [],
+    "lastUsed": "2026-05-25",
+    "successCount": 0,
+    "history": []
+  },
+  "T016c": {
+    "v": 1,
+    "agent": "@Jaime",
+    "action": "EXPAND",
+    "target": "whatsapp-integration.md",
+    "prompt": "@Jaime -- EXPAND: whatsapp-integration.md -> add: NinaChatbot conversation flows (property enquiry: area to budget to bedrooms to matching properties to book viewing; maintenance: describe issue to photo request to priority classification to ticket confirmation; payment reminder: amount + due date + payment methods + receipt upload link), human handoff triggers (confidence < 70pct, user sends human/agent/help, no resolution after 3 bot turns), broadcast campaign rate limits, WhatsApp Business widget embed spec for tenant/landlord portal",
+    "tags": [],
+    "lastUsed": "2026-05-25",
+    "successCount": 0,
+    "history": []
+  },
+  "T017": {
+    "v": 1,
+    "agent": "@Corinne",
+    "action": "DRAFT",
+    "target": "maintenance.md",
+    "prompt": "@Corinne -- DRAFT: maintenance.md -> spec /api/maintenance: schema (propertyId, tenantId, landlordId, agentId, category: plumbing/electrical/HVAC/structural/appliance/pest/other, priority: emergency/high/medium/low, description, photos max 5, status lifecycle, assignedContractorId, scheduledAt, resolvedAt, resolutionNotes, tenantRating 1-5, invoiceAmount AED, invoiceApproved boolean), tenant submission channels (portal form or WhatsApp bot, auto-priority: water leak = emergency), contractor assignment, SLA breach alerting (emergency 4h, high 24h, medium 72h, low 7 days), landlord cost approval for repairs over AED 500",
+    "tags": [],
+    "lastUsed": "2026-05-25",
+    "successCount": 0,
+    "history": []
+  },
+  "T017b": {
+    "v": 1,
+    "agent": "@Corinne",
+    "action": "DRAFT",
+    "target": "ai-chat.md",
+    "prompt": "@Corinne -- DRAFT: ai-chat.md -> spec /api/ai-chat: request schema (POST: assistantId, messages: ChatMessage array, context with leadId/propertyId/tenantId, userId), context injection spec, streaming response (SSE endpoint GET /api/ai-chat/stream/:sessionId via EventSource), conversation persistence (last 20 messages per sessionId, 30-day TTL MongoDB), token budget per assistant role (standard 1000 tokens, executive 2000 tokens, daily cap per assistantId), API provider abstraction layer (swap OpenAI vs Anthropic vs Groq via PROVIDER env var), fallback chain",
+    "tags": [],
+    "lastUsed": "2026-05-25",
+    "successCount": 0,
+    "history": []
+  },
+  "T017c": {
+    "v": 1,
+    "agent": "@Corinne",
+    "action": "EXPAND",
+    "target": "system-architecture.md",
+    "prompt": "@Corinne -- EXPAND: system-architecture.md -> add interactive map search section: frontend map component (Leaflet.js v1.9 + leaflet.markercluster, property pin with price label, cluster bubble with count, property card popup), geospatial backend query (MongoDB 2dsphere index on property.location, near query for radius search, geoWithin for polygon), Dubai area boundary GeoJSON (30 neighborhood polygons in public/geojson/dubai-areas.geojson), map tile provider decision (OSM dev, Mapbox prod), performance guard (max 500 visible pins, cluster above 50 in viewport), saved map search spec",
+    "tags": [],
+    "lastUsed": "2026-05-25",
+    "successCount": 0,
+    "history": []
+  }
 }

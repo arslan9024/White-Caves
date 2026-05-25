@@ -443,3 +443,73 @@ test.describe('Accessibility Test Summary', () => {
     expect(report.status).toBe('PASSED');
   });
 });
+
+// ─── W17-007: WCAG 2.2 — New Success Criteria Tests ─────────────────────────
+test.describe('WCAG 2.2 — New Success Criteria', () => {
+  test('homepage — no critical or serious axe violations', async ({ page }) => {
+    await page.goto('/');
+    await page.waitForLoadState('domcontentloaded');
+    await page.waitForTimeout(500);
+    await injectAxe(page);
+
+    const results = await page.evaluate(async () => {
+      // @ts-expect-error - axe is injected at runtime
+      return await window.axe.run(document, {
+        runOnly: {
+          type: 'tag',
+          values: ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'best-practice'],
+        },
+      });
+    });
+
+    const criticalViolations = (
+      results as { violations: Array<{ impact: string; id: string; description: string }> }
+    ).violations.filter(v => v.impact === 'critical' || v.impact === 'serious');
+
+    if (criticalViolations.length > 0) {
+      console.error('[WCAG 2.2] Critical/serious violations:', JSON.stringify(criticalViolations.map(v => ({ id: v.id, description: v.description })), null, 2));
+    }
+
+    expect(criticalViolations).toHaveLength(0);
+  });
+
+  test('sign-in page — no critical axe violations', async ({ page }) => {
+    await page.goto('/signin');
+    await page.waitForLoadState('domcontentloaded');
+    await page.waitForTimeout(500);
+    await injectAxe(page);
+
+    const results = await page.evaluate(async () => {
+      // @ts-expect-error - axe is injected at runtime
+      return await window.axe.run(document, {
+        runOnly: { type: 'tag', values: ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa'] },
+      });
+    });
+
+    const criticalViolations = (
+      results as { violations: Array<{ impact: string }> }
+    ).violations.filter(v => v.impact === 'critical');
+
+    expect(criticalViolations).toHaveLength(0);
+  });
+
+  test('properties page — no critical axe violations', async ({ page }) => {
+    await page.goto('/properties');
+    await page.waitForLoadState('domcontentloaded');
+    await page.waitForTimeout(500);
+    await injectAxe(page);
+
+    const results = await page.evaluate(async () => {
+      // @ts-expect-error - axe is injected at runtime
+      return await window.axe.run(document, {
+        runOnly: { type: 'tag', values: ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa'] },
+      });
+    });
+
+    const criticalViolations = (
+      results as { violations: Array<{ impact: string }> }
+    ).violations.filter(v => v.impact === 'critical');
+
+    expect(criticalViolations).toHaveLength(0);
+  });
+});

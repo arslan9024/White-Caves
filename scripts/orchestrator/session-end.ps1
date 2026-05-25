@@ -1,11 +1,11 @@
 # session-end.ps1 -- One-command session closer for White Caves Orchestrator
 # Counterpart to session-start.ps1.
-# Chains: fast-complete -> gate-check -> progress-report -> git stage -> commit -> push
+# Chains: fast-complete -> gate-check -> progress-report -> error-scan -> git stage -> commit -> push
 #
 # Usage:
 #   npm run orchestrator:session:end               -- full close (commit + push)
 #   npm run orchestrator:session:end:dry           -- preview only, no git changes
-#   powershell -File session-end.ps1 [-DryRun] [-SkipPush] [-Message "custom"]
+#   powershell -File session-end.ps1 [-DryRun] [-SkipPush] [-SkipMainPush] [-Message "custom"]
 #
 # What it does:
 #   STEP 1  Run fast-complete one final time (catch any last auto-completions)
@@ -15,12 +15,15 @@
 #   STEP 5  Git: stage orchestrator + business_docs + plans changes
 #   STEP 6  Git: commit with auto-generated message
 #   STEP 7  Git: push to origin development
-#   STEP 8  Print session summary card
+#   STEP 8  Error-scan gate (must pass before merge/push to main)
+#   STEP 9  Git: merge development -> main and push origin main (optional)
+#   STEP 10 Print session summary card
 
 param(
   [string]$WorkspaceRoot = ".",
   [switch]$DryRun,              # preview only -- skip git stage/commit/push
   [switch]$SkipPush,            # commit but do NOT push
+  [switch]$SkipMainPush,        # skip development -> main merge/push
   [string]$Message = "",        # override auto-generated commit message
   [switch]$SkipAutoComplete     # skip final fast-complete pass
 )
@@ -32,6 +35,7 @@ $w        = 72
 $stepNum  = 0
 $t0       = Get-Date
 $errors   = [System.Collections.Generic.List[string]]::new()
+$qPct     = 0
 
 function Write-Step($title) {
   $script:stepNum++
@@ -110,7 +114,25 @@ Write-Step "PROGRESS REPORT -- append end-of-day tracker row"
 Invoke-Script (Join-Path $scripts "progress-report.ps1") @("-WorkspaceRoot", $root)
 
 # ------------------------------------------------------------------
-# STEP 4: Show what changed this session
+# STEP 4: Error-scan gate (mandatory before push)
+# ------------------------------------------------------------------
+Write-Step "ERROR SCAN -- typecheck/lint/build/tests/security"
+$scanScript = Join-Path $scripts "error-scan.ps1"
+if (Test-Path $scanScript) {
+  Push-Location $root
+  & powershell -ExecutionPolicy Bypass -File "$scanScript" -WorkspaceRoot $root
+  $scanExit = $LASTEXITCODE
+  Pop-Location
+  if ($scanExit -ne 0) {
+    $errors.Add("error-scan gate failed")
+  }
+} else {
+  Write-Host "  [SKIP] error-scan.ps1 not found" -ForegroundColor DarkYellow
+  $errors.Add("error-scan.ps1 missing")
+}
+
+# ------------------------------------------------------------------
+# STEP 5: Show what changed this session
 # ------------------------------------------------------------------
 Write-Step "GIT DIFF -- changes this session"
 Push-Location $root
@@ -141,6 +163,13 @@ if ($DryRun) {
   exit 0
 }
 
+if ($errors -contains "error-scan gate failed" -or $errors -contains "error-scan.ps1 missing") {
+  Write-Host ""
+  Write-Host "  [BLOCKED] Push blocked by error-scan gate." -ForegroundColor Red
+  Write-Host "  Fix scan failures and re-run session-end." -ForegroundColor Red
+  exit 1
+}
+
 if ($changedCount -eq 0) {
   Write-Host ""
   Write-Host "  Nothing to commit. Session close complete (no git needed)." -ForegroundColor Green
@@ -148,7 +177,7 @@ if ($changedCount -eq 0) {
 }
 
 # ------------------------------------------------------------------
-# STEP 5: Stage orchestrator + business_docs + plans + tracker
+# STEP 6: Stage orchestrator + business_docs + plans + tracker
 # ------------------------------------------------------------------
 Write-Step "GIT STAGE -- orchestrator + docs + tracker"
 Push-Location $root
@@ -164,7 +193,7 @@ if ($staged.Count -gt 20) { Write-Host "    ... and $($staged.Count - 20) more" 
 Pop-Location
 
 # ------------------------------------------------------------------
-# STEP 6: Git commit
+# STEP 7: Git commit
 # ------------------------------------------------------------------
 Write-Step "GIT COMMIT"
 
@@ -180,7 +209,7 @@ $commitHash = (git rev-parse --short HEAD 2>&1).Trim()
 Pop-Location
 
 # ------------------------------------------------------------------
-# STEP 7: Git push
+# STEP 8: Git push
 # ------------------------------------------------------------------
 if (-not $SkipPush) {
   Write-Step "GIT PUSH -- origin development"
@@ -196,7 +225,51 @@ if (-not $SkipPush) {
 }
 
 # ------------------------------------------------------------------
-# STEP 8: Session summary card
+# STEP 9: Merge development -> main and push origin main
+# ------------------------------------------------------------------
+if ($SkipMainPush) {
+  Write-Host ""
+  Write-Host "  [SKIP] main push (SkipMainPush flag set)" -ForegroundColor DarkGray
+} elseif ($errors.Count -eq 0) {
+  Write-Step "MAIN PUSH -- merge development into main and push"
+  Push-Location $root
+  try {
+    $activeBranch = (git rev-parse --abbrev-ref HEAD 2>&1).Trim()
+    if ($activeBranch -like "feature/wave-*") {
+      Write-Host ("  Wave branch detected: {0}" -f $activeBranch) -ForegroundColor Cyan
+      $ghExists = (Get-Command gh -ErrorAction SilentlyContinue)
+      if ($null -eq $ghExists) {
+        throw "gh CLI not found; cannot create PR from wave branch"
+      }
+      $prTitle = "Wave delivery: $activeBranch"
+      $prBody  = "Automated wave branch handoff from session-end.ps1"
+      gh pr create --base main --head $activeBranch --title $prTitle --body $prBody 2>&1 | Out-Host
+      if ($LASTEXITCODE -ne 0) { throw "failed to create PR for wave branch" }
+      Write-Host "  PR created to main for wave branch." -ForegroundColor Green
+    } else {
+      git checkout main 2>&1 | Out-Host
+      if ($LASTEXITCODE -ne 0) { throw "checkout main failed" }
+
+      git merge development --no-edit 2>&1 | Out-Host
+      if ($LASTEXITCODE -ne 0) { throw "merge development->main failed" }
+
+      git push origin main 2>&1 | Out-Host
+      if ($LASTEXITCODE -ne 0) { throw "push main failed" }
+    }
+  } catch {
+    $errors.Add("main push failed: $_")
+    Write-Host "  [ERROR] main merge/push failed -- restoring development branch." -ForegroundColor Red
+  } finally {
+    git checkout development 2>&1 | Out-Host
+    Pop-Location
+  }
+} else {
+  Write-Host ""
+  Write-Host "  [SKIP] main push due to prior errors." -ForegroundColor DarkGray
+}
+
+# ------------------------------------------------------------------
+# STEP 10: Session summary card
 # ------------------------------------------------------------------
 $elapsed = [math]::Round(((Get-Date) - $t0).TotalSeconds)
 
@@ -216,3 +289,7 @@ if ($errors.Count -gt 0) {
 }
 Write-Host ("=" * $w) -ForegroundColor Magenta
 Write-Host ""
+
+if ($errors.Count -gt 0) {
+  exit 1
+}
