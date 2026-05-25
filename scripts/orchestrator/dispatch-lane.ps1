@@ -60,10 +60,7 @@ function Select-Candidate {
   $eligible = $tasks | Where-Object {
     ($_.status -eq "queued" -or $_.status -eq "retrying") -and
     ($lane -eq "any" -or $_.lane -eq $lane) -and
-    (
-      (-not [bool]$policy.modelRouting.freeModelOnlyMode) -or
-      (Test-IsFreePlanningAgent -Policy $policy -AgentName $_.agent)
-    )
+    (Test-IsFreePlanningAgent -Policy $policy -AgentName $_.agent)
   } | Sort-Object createdAt | Where-Object {
     $deps = @($_.dependsOn)
     if ($deps.Count -eq 0) { return $true }
@@ -106,9 +103,9 @@ try {
   }
 
   $candidate.status      = "running"
-  $candidate.startedAt   = (Get-Date).ToString("o")
-  $candidate.attempts    = [int]$candidate.attempts + 1
-  # Add claimedBy as new property (JSON objects don't have it by default)
+  $candidate | Add-Member -NotePropertyName "startedAt" -NotePropertyValue ((Get-Date).ToString("o")) -Force
+  $candidate | Add-Member -NotePropertyName "attempts" -NotePropertyValue ([int]$candidate.attempts + 1) -Force
+  # Add claimedBy as new property (JSON objects don't always have it by default)
   $candidate | Add-Member -NotePropertyName "claimedBy" -NotePropertyValue $WorkerLabel -Force
 
   Save-Queue -Queue $queue -Path $queueFile

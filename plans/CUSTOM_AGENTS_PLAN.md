@@ -1,7 +1,7 @@
 # White Caves — Custom Agents & Subagents Plan
 
-> **Updated:** 2026-05-24  
-> **Status:** Active governance guide — V3 (supersedes V2 from 2026-05-22)
+> **Updated:** 2026-05-25  
+> **Status:** Active governance guide — Aegis 150 (supersedes V3/V2 governance baselines)
 
 ---
 
