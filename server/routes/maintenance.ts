@@ -16,6 +16,7 @@ import { asyncHandler, AppError } from '../middleware/errorHandler.js';
 import { AuthRequest } from '../middleware/auth.js';
 import { prisma } from '../database.js';
 import logger from '../utils/logger.js';
+import { notificationService } from '../services/NotificationService.js';
 
 const router = Router();
 
@@ -192,6 +193,15 @@ router.post(
       propertyId,
       priority: request.priority,
     });
+    if (property.userId && property.userId !== userId) {
+      await notificationService.pushToUser({
+        userId: property.userId,
+        type: 'property',
+        title: 'New maintenance request',
+        message: `${request.title} was reported for ${property.title}`,
+        metadata: { maintenanceId: request.id, propertyId },
+      });
+    }
     res.status(201).json({ success: true, data: request });
   })
 );
@@ -269,6 +279,15 @@ router.patch(
     const updated = await prisma.maintenance.update({ where: { id }, data: updateData });
 
     logger.info('Maintenance request updated', { userId, requestId: id, status: updated.status });
+    if (existing.requesterId && status !== undefined) {
+      await notificationService.pushToUser({
+        userId: existing.requesterId,
+        type: 'property',
+        title: 'Maintenance status updated',
+        message: `${updated.title} is now ${updated.status}`,
+        metadata: { maintenanceId: updated.id, status: updated.status },
+      });
+    }
     res.json({ success: true, data: updated });
   })
 );

@@ -1,4 +1,13 @@
-import { useState, useRef, useEffect, useCallback, useReducer } from 'react';
+import {
+  lazy,
+  Suspense,
+  useState,
+  useRef,
+  useEffect,
+  useCallback,
+  useReducer,
+  type ComponentType,
+} from 'react';
 
 // Consolidated interaction state to avoid excessive re-renders during drag
 interface TourInteractionState {
@@ -78,6 +87,11 @@ import {
   ViewsCount
 } from './VirtualTour.styles';
 
+const LazyPannellumViewer = lazy(async () => {
+  const module = await import('pannellum-react');
+  return { default: module.Pannellum as ComponentType<Record<string, unknown>> };
+});
+
 interface TourImage {
   url?: string;
   title?: string;
@@ -115,6 +129,7 @@ const VirtualTour = ({
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [isAutoRotate, setIsAutoRotate] = useState(false);
   const [showHotspots, setShowHotspots] = useState(true);
+  const [useImmersiveViewer, setUseImmersiveViewer] = useState(true);
 
   const [interaction, dispatchTour] = useReducer(tourReducer, {
     rotation: { x: 0, y: 0 },
@@ -129,6 +144,9 @@ const VirtualTour = ({
 
   const currentImage: TourImage = Array.isArray(images) ? (images[currentIndex] || {} as TourImage) : ({} as TourImage);
   const hotspots = currentImage.hotspots || [];
+  const isJsDomEnvironment =
+    typeof navigator !== 'undefined' && /jsdom/i.test(navigator.userAgent || '');
+  const canUsePannellum = useImmersiveViewer && !!currentImage.url && !isJsDomEnvironment;
 
   useEffect(() => {
     if (isAutoRotate) {
@@ -282,6 +300,13 @@ const VirtualTour = ({
           >
             📍
           </button>
+          <button
+            className={`tour-btn ${useImmersiveViewer ? 'active' : ''}`}
+            onClick={() => setUseImmersiveViewer(v => !v)}
+            title="Toggle Immersive Viewer"
+          >
+            🧭
+          </button>
           <button 
             className="tour-btn"
             onClick={toggleFullscreen}
@@ -310,12 +335,34 @@ const VirtualTour = ({
       >
         <div 
           className="tour-panorama"
-          style={{
-            backgroundImage: `url(${currentImage.url || ''})`,
-            backgroundPosition: `${50 + (rotation.y % 360) * (100/360)}% ${50 - rotation.x * (50/90)}%`,
-            backgroundSize: `${300 * zoom}% ${200 * zoom}%`
-          }}
+          style={
+            canUsePannellum
+              ? undefined
+              : {
+                  backgroundImage: `url(${currentImage.url || ''})`,
+                  backgroundPosition: `${50 + (rotation.y % 360) * (100 / 360)}% ${
+                    50 - rotation.x * (50 / 90)
+                  }%`,
+                  backgroundSize: `${300 * zoom}% ${200 * zoom}%`,
+                }
+          }
         >
+          {canUsePannellum ? (
+            <Suspense fallback={<div style={{ width: '100%', height: '100%' }} />}>
+              <LazyPannellumViewer
+                width="100%"
+                height="100%"
+                image={currentImage.url}
+                autoLoad
+                showControls={false}
+                showZoomCtrl={false}
+                showFullscreenCtrl={false}
+                pitch={rotation.x}
+                yaw={rotation.y}
+                hfov={Math.max(40, Math.min(120, 120 - zoom * 20))}
+              />
+            </Suspense>
+          ) : null}
           {showHotspots && hotspots.map((hotspot, index) => {
             const adjustedX = ((hotspot.x - (rotation.y % 360) * (100/360) + 150) % 100);
             const adjustedY = hotspot.y + rotation.x * (50/90);
