@@ -45,6 +45,7 @@ function Append-Snapshot([hashtable]$entry) {
 $timestamp = Get-Date -Format "yyyyMMdd-HHmmss"
 $snapshotTag = "aegis-loop-$timestamp"
 $currentBranch = (git rev-parse --abbrev-ref HEAD 2>$null).Trim()
+$beforeSha = (git rev-parse HEAD 2>$null).Trim()
 
 Write-Card "LOOP START SYNC -- FETCH/MAIN MERGE" "Magenta"
 Write-Host ("  Current branch: {0}" -f $currentBranch) -ForegroundColor White
@@ -143,6 +144,20 @@ if ([string]::IsNullOrWhiteSpace($behind)) { $behind = "0" }
 Write-Card "SYNC COMPLETE" "Green"
 Write-Host ("  Branch      : {0}" -f $currentAfter) -ForegroundColor White
 Write-Host ("  Main delta  : +{0} behind / +{1} ahead" -f $ahead, $behind) -ForegroundColor White
+if (-not [string]::IsNullOrWhiteSpace($beforeSha)) {
+  $changedFromMain = @(git diff --name-only $beforeSha..HEAD 2>$null)
+  if ($changedFromMain.Count -gt 0) {
+    Write-Host "  Changed from main sync:" -ForegroundColor White
+    foreach ($f in ($changedFromMain | Select-Object -First 20)) {
+      Write-Host ("    - {0}" -f $f) -ForegroundColor DarkGray
+    }
+    if ($changedFromMain.Count -gt 20) {
+      Write-Host ("    ... and {0} more" -f ($changedFromMain.Count - 20)) -ForegroundColor DarkGray
+    }
+  } else {
+    Write-Host "  Changed from main sync: none" -ForegroundColor DarkGray
+  }
+}
 if (-not [string]::IsNullOrWhiteSpace($createdFeatureBranch)) {
   Write-Host ("  Wave branch : {0}" -f $createdFeatureBranch) -ForegroundColor Green
 }

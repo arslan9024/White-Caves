@@ -88,6 +88,7 @@ if ($null -eq $nextTask) {
 $taskId  = $nextTask.taskId
 $propVal = $prompts.PSObject.Properties | Where-Object { $_.Name -eq $taskId } | Select-Object -ExpandProperty Value
 if ($null -eq $propVal) { $propVal = "(no prompt for $taskId -- add to prompts.json)" }
+$promptText = if ($propVal -is [string]) { [string]$propVal } elseif ($null -ne $propVal -and $propVal.PSObject.Properties.Name -contains "prompt") { [string]$propVal.prompt } else { [string]$propVal }
 $tool = if ($toolMap.ContainsKey($AgentName)) { $toolMap[$AgentName] } else { "See AGENTS.md" }
 
 Write-Host ""
@@ -103,7 +104,7 @@ Write-Host ""
 Write-Host "  +--- PASTE THIS PROMPT ---+" -ForegroundColor Yellow
 Write-Host ""
 
-$words = $propVal -split " "
+$words = $promptText -split " "
 $line  = "  | "
 foreach ($word in $words) {
   if (($line + $word).Length -gt 88) {

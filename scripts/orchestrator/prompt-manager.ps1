@@ -199,6 +199,9 @@ if ($History) {
 }
 
 if ($Export) {
+  if ([string]::IsNullOrWhiteSpace($Agent) -and $TaskId -match '^agent=(.+)$') {
+    $Agent = $Matches[1]
+  }
   if ([string]::IsNullOrWhiteSpace($Agent)) {
     Write-Host "[ERROR] -Export requires -Agent" -ForegroundColor Red
     exit 1
