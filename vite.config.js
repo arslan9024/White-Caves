@@ -23,32 +23,23 @@ export default defineConfig({
         // Runtime cache strategies for high-traffic routes
         runtimeCaching: [
           {
-            // Cache API property listing (stale-while-revalidate, 60s networkTimeout)
-            urlPattern: /^https?:\/\/[^/]+\/api\/properties(\?.*)?$/,
-            handler: 'StaleWhileRevalidate',
+            // Wave 17 policy: all API calls use network-first with short fallback cache
+            urlPattern: /^https?:\/\/[^/]+\/api\/.*$/,
+            handler: 'NetworkFirst',
             options: {
-              cacheName: 'api-properties',
-              expiration: { maxEntries: 50, maxAgeSeconds: 300 },
+              cacheName: 'api-network-first',
+              networkTimeoutSeconds: 3,
+              expiration: { maxEntries: 120, maxAgeSeconds: 300 },
               cacheableResponse: { statuses: [0, 200] },
             },
           },
           {
-            // Cache property detail pages (cache first, 5min)
-            urlPattern: /^https?:\/\/[^/]+\/api\/properties\/[^/?]+$/,
+            // Cache static built assets
+            urlPattern: /\/assets\/.*\.(?:js|css|woff2?|png|svg|webp)$/i,
             handler: 'CacheFirst',
             options: {
-              cacheName: 'api-property-detail',
-              expiration: { maxEntries: 100, maxAgeSeconds: 300 },
-              cacheableResponse: { statuses: [0, 200] },
-            },
-          },
-          {
-            // Cache homepage data (cache first, 1h)
-            urlPattern: /^https?:\/\/[^/]+\/api\/homepage\/data/,
-            handler: 'CacheFirst',
-            options: {
-              cacheName: 'api-homepage',
-              expiration: { maxEntries: 5, maxAgeSeconds: 3600 },
+              cacheName: 'static-assets',
+              expiration: { maxEntries: 200, maxAgeSeconds: 604800 },
               cacheableResponse: { statuses: [0, 200] },
             },
           },

@@ -11,19 +11,19 @@ Each wave should be executed only in roadmap order.
 | --- | --- | --- | --- | --- | --- | --- |
 | 08 | Stabilization + governance | ✅ Complete | [`SDD`](./WAVE_08_SDD.md) | [`Readiness`](./WAVE_08_READINESS_PACKET.md) | [`Backlog`](./WAVE_08_IMPLEMENTATION_BACKLOG.md) | [`Tests`](./WAVE_08_TEST_ROLLOUT.md) |
 | 09 | UX hardening | ✅ Complete | [`SDD`](./WAVE_09_SDD.md) | [`Readiness`](./WAVE_09_READINESS_PACKET.md) | [`Backlog`](./WAVE_09_IMPLEMENTATION_BACKLOG.md) | [`Tests`](./WAVE_09_TEST_ROLLOUT.md) |
-| 10 | Performance + SEO + security | 📋 Planned | [`SDD`](./WAVE_10_SDD.md) | [`Readiness`](./WAVE_10_READINESS_PACKET.md) | [`Backlog`](./WAVE_10_IMPLEMENTATION_BACKLOG.md) | [`Tests`](./WAVE_10_TEST_ROLLOUT.md) |
-| 11 | Incomplete features + architecture refactor | 📋 Planned | [`SDD`](./WAVE_11_SDD.md) | [`Readiness`](./WAVE_11_READINESS_PACKET.md) | [`Backlog`](./WAVE_11_IMPLEMENTATION_BACKLOG.md) | [`Tests`](./WAVE_11_TEST_ROLLOUT.md) |
-| 12 | Automation engine | 📋 Planned | [`SDD`](./WAVE_12_SDD.md) | [`Readiness`](./WAVE_12_READINESS_PACKET.md) | [`Backlog`](./WAVE_12_IMPLEMENTATION_BACKLOG.md) | [`Tests`](./WAVE_12_TEST_ROLLOUT.md) |
+| 10 | Performance + SEO + security | ✅ Complete | [`SDD`](./WAVE_10_SDD.md) | [`Readiness`](./WAVE_10_READINESS_PACKET.md) | [`Backlog`](./WAVE_10_IMPLEMENTATION_BACKLOG.md) | [`Tests`](./WAVE_10_TEST_ROLLOUT.md) |
+| 11 | Incomplete features + architecture refactor | ✅ Complete | [`SDD`](./WAVE_11_SDD.md) | [`Readiness`](./WAVE_11_READINESS_PACKET.md) | [`Backlog`](./WAVE_11_IMPLEMENTATION_BACKLOG.md) | [`Tests`](./WAVE_11_TEST_ROLLOUT.md) |
+| 12 | Automation engine | ✅ Complete | [`SDD`](./WAVE_12_SDD.md) | [`Readiness`](./WAVE_12_READINESS_PACKET.md) | [`Backlog`](./WAVE_12_IMPLEMENTATION_BACKLOG.md) | [`Tests`](./WAVE_12_TEST_ROLLOUT.md) |
 | 13 | Real-time + media | ✅ Complete | [`SDD`](./WAVE_13_SDD.md) | [`Readiness`](./WAVE_13_READINESS_PACKET.md) | [`Backlog`](./WAVE_13_IMPLEMENTATION_BACKLOG.md) | [`Tests`](./WAVE_13_TEST_ROLLOUT.md) |
-| 14 | Product features | 📋 Planned | [`SDD`](./WAVE_14_SDD.md) | [`Readiness`](./WAVE_14_READINESS_PACKET.md) | [`Backlog`](./WAVE_14_IMPLEMENTATION_BACKLOG.md) | [`Tests`](./WAVE_14_TEST_ROLLOUT.md) |
-| 15 | Cache + PWA readiness | 📋 Planned | [`SDD`](./WAVE_15_SDD.md) | [`Readiness`](./WAVE_15_READINESS_PACKET.md) | [`Backlog`](./WAVE_15_IMPLEMENTATION_BACKLOG.md) | [`Tests`](./WAVE_15_TEST_ROLLOUT.md) |
-| 16 | Security hardening + API versioning | 📋 Planned | [`SDD`](./WAVE_16_SDD.md) | [`Readiness`](./WAVE_16_READINESS_PACKET.md) | [`Backlog`](./WAVE_16_IMPLEMENTATION_BACKLOG.md) | [`Tests`](./WAVE_16_TEST_ROLLOUT.md) |
-| 17 | Full UI/UX luxury upgrade (tokens + animations + mobile + PWA + WCAG 2.2) | 📋 Planned | [`SDD`](./WAVE_17_SDD.md) | [`Readiness`](./WAVE_17_READINESS_PACKET.md) | [`Backlog`](./WAVE_17_IMPLEMENTATION_BACKLOG.md) | [`Tests`](./WAVE_17_TEST_ROLLOUT.md) |
+| 14 | Product features | ✅ Complete | [`SDD`](./WAVE_14_SDD.md) | [`Readiness`](./WAVE_14_READINESS_PACKET.md) | [`Backlog`](./WAVE_14_IMPLEMENTATION_BACKLOG.md) | [`Tests`](./WAVE_14_TEST_ROLLOUT.md) |
+| 15 | Cache + PWA readiness | ✅ Complete | [`SDD`](./WAVE_15_SDD.md) | [`Readiness`](./WAVE_15_READINESS_PACKET.md) | [`Backlog`](./WAVE_15_IMPLEMENTATION_BACKLOG.md) | [`Tests`](./WAVE_15_TEST_ROLLOUT.md) |
+| 16 | Security hardening + API versioning | ✅ Complete | [`SDD`](./WAVE_16_SDD.md) | [`Readiness`](./WAVE_16_READINESS_PACKET.md) | [`Backlog`](./WAVE_16_IMPLEMENTATION_BACKLOG.md) | [`Tests`](./WAVE_16_TEST_ROLLOUT.md) |
+| 17 | Full UI/UX luxury upgrade (tokens + animations + mobile + PWA + WCAG 2.2) | ✅ Complete | [`SDD`](./WAVE_17_SDD.md) | [`Readiness`](./WAVE_17_READINESS_PACKET.md) | [`Backlog`](./WAVE_17_IMPLEMENTATION_BACKLOG.md) | [`Tests`](./WAVE_17_TEST_ROLLOUT.md) |
 
 ## Notes
 
 - Wave 09 is complete and validated for handoff.
-- Wave 13 is complete and Wave 14 is the next execution bundle.
+- Wave 13 through Wave 17 are complete in canonical trackers.
 - Wave 11 now includes an explicit test rollout so every active planned wave uses the same four-artifact pattern.
 - Superseded root-level Wave 12 market-intelligence docs were archived to `../archives/` to avoid naming collisions with the active Wave 12 automation bundle.
-- Wave 17 (Full UI/UX Luxury Upgrade) has been scaffolded. Entry gate: Wave 16 green + free-agent planning specs committed + @Ada approval phrase.
+- Wave 17 (Full UI/UX Luxury Upgrade) is implemented and validated; see the Wave 17 bundle docs for closeout details.

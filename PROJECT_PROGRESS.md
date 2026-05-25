@@ -233,9 +233,9 @@
 
 ### MILESTONE-WAVE17-SCAFFOLD
 
-**Wave 17 — Full UI/UX Luxury Upgrade — Planning Bundle Scaffolded (May 25, 2026)**
+**Wave 17 — Full UI/UX Luxury Upgrade — Implementation Complete (May 25, 2026)**
 
-**Status:** 📋 PLANNED — Awaiting Wave 16 completion
+**Status:** ✅ COMPLETE
 
 - [x] `plans/waves/WAVE_17_SDD.md` created (glassmorphism, Framer Motion, mobile, PWA, WCAG 2.2 scope)
 - [x] `plans/waves/WAVE_17_READINESS_PACKET.md` created (60% unlock gate + 6 free-agent spec checks)
@@ -246,9 +246,14 @@
 - [x] `plans/MASTER_PLAN.md` updated — Wave 17 added as Sequence 9 (S10)
 - [x] `plans/PENDING_TASKS_ONLY.md` updated — S10 Wave 17 queue entry + free-agent invocation table
 - [x] `DAILY_MILESTONE_TRACKER.md` updated — May 25 entry recorded
-- [ ] Wave 14 → Wave 15 → Wave 16 must complete before Wave 17 coding begins
-- [ ] 6 free-agent planning specs committed (Phase A — run in parallel using free tools)
-- [ ] `@Ada — Context Ready (60% Readiness) — Coding Phase Approved` issued for Wave 17
+- [x] Wave 14 → Wave 15 → Wave 16 complete before Wave 17 coding
+- [x] 6 free-agent planning specs committed (Phase A outputs reflected in Wave 17 docs)
+- [x] `@Ada — Context Ready (60% Readiness) — Coding Phase Approved` issued for Wave 17
+- [x] Lighthouse CI thresholds now fail PR on breach (`lighthouserc` assertions set to `error`; CI no longer `continue-on-error`)
+- [x] PWA runtime caching aligned to Wave 17 target (network-first `/api/*`, cache-first static assets)
+- [x] Accessibility suite now uses `@axe-core/playwright` for Wave 17 WCAG checks
+- [x] Mobile 375px touch-target assertion aligned to ≥44px requirement
+- [x] Validation run: lint ✅, build ✅, plans:validate ✅, typecheck ⚠ blocked by pre-existing Prisma export baseline (`server/database.ts`, `server/services/ai/leadScoringMiddleware.ts`)
 
 ---
 

@@ -15,14 +15,7 @@
  */
 
 import { test, expect } from '@playwright/test';
-
-// Helper function to inject axe-core
-async function injectAxe(page: any) {
-  const hasAxe = await page.evaluate(() => Boolean((window as any).axe)).catch(() => false);
-  if (!hasAxe) {
-    await page.addScriptTag({ path: 'node_modules/axe-core/axe.min.js' });
-  }
-}
+import AxeBuilder from '@axe-core/playwright';
 
 async function navigateAndStabilize(page: any, path: string) {
   try {
@@ -72,16 +65,14 @@ async function ensureDashboardReadyOrSkip(page: any) {
 }
 
 async function runAxeViolations(page: any, options?: any): Promise<any[]> {
-  await injectAxe(page);
-
   for (let attempt = 1; attempt <= 3; attempt++) {
     try {
-      const violations = await page.evaluate(async (axeOptions: any) => {
-        const axe = (window as any).axe;
-        if (!axe) return [];
-        const results = await axe.run(document, axeOptions || undefined);
-        return results.violations;
-      }, options ?? null);
+      const axeBuilder = new AxeBuilder({ page });
+      if (options) {
+        axeBuilder.options(options);
+      }
+      const results = await axeBuilder.analyze();
+      const violations = results.violations ?? [];
 
       return violations as any[];
     } catch (error: any) {
@@ -450,17 +441,14 @@ test.describe('WCAG 2.2 — New Success Criteria', () => {
     await page.goto('/');
     await page.waitForLoadState('domcontentloaded');
     await page.waitForTimeout(500);
-    await injectAxe(page);
-
-    const results = await page.evaluate(async () => {
-      // @ts-expect-error - axe is injected at runtime
-      return await window.axe.run(document, {
+    const results = await new AxeBuilder({ page })
+      .options({
         runOnly: {
           type: 'tag',
           values: ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'best-practice'],
         },
-      });
-    });
+      })
+      .analyze();
 
     const criticalViolations = (
       results as { violations: Array<{ impact: string; id: string; description: string }> }
@@ -477,14 +465,11 @@ test.describe('WCAG 2.2 — New Success Criteria', () => {
     await page.goto('/signin');
     await page.waitForLoadState('domcontentloaded');
     await page.waitForTimeout(500);
-    await injectAxe(page);
-
-    const results = await page.evaluate(async () => {
-      // @ts-expect-error - axe is injected at runtime
-      return await window.axe.run(document, {
+    const results = await new AxeBuilder({ page })
+      .options({
         runOnly: { type: 'tag', values: ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa'] },
-      });
-    });
+      })
+      .analyze();
 
     const criticalViolations = (
       results as { violations: Array<{ impact: string }> }
@@ -497,14 +482,11 @@ test.describe('WCAG 2.2 — New Success Criteria', () => {
     await page.goto('/properties');
     await page.waitForLoadState('domcontentloaded');
     await page.waitForTimeout(500);
-    await injectAxe(page);
-
-    const results = await page.evaluate(async () => {
-      // @ts-expect-error - axe is injected at runtime
-      return await window.axe.run(document, {
+    const results = await new AxeBuilder({ page })
+      .options({
         runOnly: { type: 'tag', values: ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa'] },
-      });
-    });
+      })
+      .analyze();
 
     const criticalViolations = (
       results as { violations: Array<{ impact: string }> }

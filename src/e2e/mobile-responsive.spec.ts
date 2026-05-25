@@ -63,8 +63,8 @@ test.describe('Mobile 375px viewport — responsive layout', () => {
         if (isVisible) {
           const box = await el.boundingBox();
           if (box) {
-            // Allow 36px minimum for dense nav bars; strict 44px for standalone CTAs
-            expect(box.height).toBeGreaterThanOrEqual(28);
+            // Wave 17 requirement: WCAG 2.5.8 minimum target size 44x44
+            expect(box.height).toBeGreaterThanOrEqual(44);
           }
         }
       }
