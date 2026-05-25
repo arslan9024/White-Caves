@@ -11,12 +11,14 @@ import { useNavigate } from 'react-router-dom';
 import type { RootState } from '../store/store';
 import { selectSessionUser } from '../store/selectors/sessionSelectors';
 import { setUser } from '../store/userSlice';
+import { logout as logoutAuthState } from '../store/authSlice';
 import { auth } from '../config/firebase';
 import { createLogger } from '../utils/logger';
 import { safeStorage } from '../utils/safeStorage';
 import { authFetch } from '../utils/authFetch';
 import { useToast } from '../components/Toast';
 import { signOut } from 'firebase/auth';
+import { logout as logoutBackendSession } from '../services/authService';
 
 const log = createLogger('useUserProfile');
 
@@ -80,9 +82,11 @@ export function useUserProfile() {
       if (auth) {
         await signOut(auth);
       }
+      await logoutBackendSession();
       safeStorage.remove('token');
       safeStorage.remove('userRole');
       dispatch(setUser(null));
+      dispatch(logoutAuthState(undefined));
       navigate('/');
     } catch (error) {
       log.error('Logout error:', error);

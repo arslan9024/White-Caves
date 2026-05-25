@@ -9,6 +9,7 @@ import { apiClient } from '../utils/apiClient';
 import { safeStorage } from '../utils/safeStorage';
 import { auth as firebaseAuth } from '../config/firebase';
 import { HttpError } from '../utils/HttpError';
+import { authFetch } from '../utils/authFetch';
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -75,6 +76,18 @@ function persistToken(token: string): void {
 function clearToken(): void {
   safeStorage.remove(TOKEN_KEY);
   apiClient.setAuthToken(null);
+}
+
+function getCookieValue(name: string): string | null {
+  if (typeof document === 'undefined') return null;
+  const cookies = document.cookie ? document.cookie.split(';') : [];
+  for (const cookie of cookies) {
+    const [key, ...valueParts] = cookie.trim().split('=');
+    if (key === name) {
+      return decodeURIComponent(valueParts.join('='));
+    }
+  }
+  return null;
 }
 
 function resolveFirebaseSyncErrorMessage(error: unknown): string {
@@ -283,7 +296,7 @@ export async function changePassword(
   currentPassword: string,
   newPassword: string
 ): Promise<{ success: boolean }> {
-  return (await apiClient.post('/auth/change-password', {
+  return (await apiClient.put('/auth/password', {
     currentPassword,
     newPassword,
   })) as { success: boolean };
@@ -316,7 +329,17 @@ export async function completeSocialRegistration(
 /**
  * Logout — clears JWT and user state.
  */
-export function logout(): void {
+export async function logout(): Promise<void> {
+  const csrfToken = getCookieValue('csrf_token');
+  try {
+    await authFetch('/api/auth/logout', {
+      method: 'POST',
+      headers: csrfToken ? { 'x-csrf-token': csrfToken } : undefined,
+      body: JSON.stringify({}),
+    });
+  } catch {
+    // Best effort only — local client cleanup still proceeds.
+  }
   clearToken();
   safeStorage.remove('userRole');
 }

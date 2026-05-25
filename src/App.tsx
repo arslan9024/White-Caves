@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef, lazy, Suspense, type ReactNode } fr
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { SpeedInsights } from '@vercel/speed-insights/react';
-import { setUser, setLoading } from './store/userSlice';
+import { setLoading } from './store/userSlice';
 import { setTheme, setActiveRole } from './store/navigationSlice';
 import { LanguageProvider } from './context/LanguageContext';
 import { ThemeProvider } from './styles/ThemeProvider';
@@ -15,6 +15,10 @@ import type { RootState, AppDispatch } from './store/store';
 import { selectSessionUser } from './store/selectors/sessionSelectors';
 import { safeStorage } from './utils/safeStorage';
 import { authFetch } from './utils/authFetch';
+import {
+  finalizeAuthenticatedSession,
+  getCurrentPathWithQuery,
+} from './utils/authSession';
 import {
   CANONICAL_SUPERUSER_ROLE,
   isCreatorSuperUserEmail,
@@ -63,6 +67,7 @@ function resolveEffectiveRole(
 // ─── Protected Route ────────────────────────────────────────────────────
 
 function ProtectedRoute({ children, allowedRoles }: ProtectedRouteProps) {
+  const location = useLocation();
   const user = useSelector((state: RootState) => selectSessionUser(state));
   const isAuthLoading = useSelector((state: RootState) => state.user.isLoading);
   const [userData, setUserData] = useState<UserRoleData | null>(null);
@@ -97,7 +102,13 @@ function ProtectedRoute({ children, allowedRoles }: ProtectedRouteProps) {
   }
 
   if (!user) {
-    return <Navigate to="/" replace />;
+    return (
+      <Navigate
+        to="/signin"
+        replace
+        state={{ from: getCurrentPathWithQuery(location.pathname, location.search, location.hash) }}
+      />
+    );
   }
 
   if (!userData) {
@@ -126,6 +137,7 @@ function ProtectedRoute({ children, allowedRoles }: ProtectedRouteProps) {
 
 function DashboardEntryRoute() {
   const dispatch = useDispatch<AppDispatch>();
+  const location = useLocation();
   const user = useSelector((state: RootState) => selectSessionUser(state));
   const isAuthLoading = useSelector((state: RootState) => state.user.isLoading);
   const currentActiveRole = useSelector((state: RootState) => state.navigation?.activeRole);
@@ -141,6 +153,17 @@ function DashboardEntryRoute() {
         duration: 4500,
       });
       hasShownSigninNotice.current = true;
+    }
+
+    function SignInRedirect() {
+      const location = useLocation();
+      return (
+        <Navigate
+          to="/signin"
+          replace
+          state={{ from: getCurrentPathWithQuery(location.pathname, location.search, location.hash) }}
+        />
+      );
     }
   }, [isAuthLoading, user, info]);
 
@@ -163,7 +186,13 @@ function DashboardEntryRoute() {
 
   // Unauthenticated access: redirect home
   if (!user) {
-    return <Navigate to="/signin" replace />;
+    return (
+      <Navigate
+        to="/signin"
+        replace
+        state={{ from: getCurrentPathWithQuery(location.pathname, location.search, location.hash) }}
+      />
+    );
   }
 
   if (effectiveRole === 'landlord' || effectiveRole === 'property-owner') {
@@ -340,7 +369,12 @@ function App(): React.JSX.Element {
           if (controller.signal.aborted) return;
           if (response.ok) {
             const result = await response.json();
-            dispatch(setUser(result.data));
+            finalizeAuthenticatedSession({
+              dispatch,
+              user: result.data,
+              token,
+              provider: 'bootstrap',
+            });
           } else {
             safeStorage.remove('token');
             dispatch(setLoading(false));
@@ -597,7 +631,7 @@ function App(): React.JSX.Element {
                         </Suspense>
                       </RouteErrorBoundary>
                     ) : (
-                      <Navigate to="/signin" replace />
+                      <SignInRedirect />
                     )
                   }
                 />
@@ -611,7 +645,7 @@ function App(): React.JSX.Element {
                         </Suspense>
                       </RouteErrorBoundary>
                     ) : (
-                      <Navigate to="/signin" replace />
+                      <SignInRedirect />
                     )
                   }
                 />
@@ -625,7 +659,7 @@ function App(): React.JSX.Element {
                         </Suspense>
                       </RouteErrorBoundary>
                     ) : (
-                      <Navigate to="/signin" replace />
+                      <SignInRedirect />
                     )
                   }
                 />

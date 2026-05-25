@@ -36,7 +36,11 @@ vi.mock('../../../../utils/logger', () => ({
 // Mock safeStorage
 vi.mock('../../../../utils/safeStorage', () => ({
   safeStorage: {
+    get: vi.fn().mockReturnValue('jwt-token-123'),
+    set: vi.fn(),
     getJSON: vi.fn().mockReturnValue(null),
+    setJSON: vi.fn(),
+    remove: vi.fn(),
   },
 }));
 
@@ -56,7 +60,6 @@ vi.mock('../../../../services/webAuthnService', () => ({
 }));
 
 import BiometricLoginButton from './BiometricLoginButton';
-import { safeStorage } from '../../../../utils/safeStorage';
 
 describe('BiometricLoginButton', () => {
   beforeEach(() => {
@@ -157,26 +160,30 @@ describe('BiometricLoginButton', () => {
       });
     });
 
-    it('navigates to /select-role when no existing role', async () => {
+    it('navigates to /select-role when user has no assigned role', async () => {
       render(<BiometricLoginButton />);
       await waitFor(() => {
         expect(screen.getByLabelText('Sign in with Face ID or Touch ID')).toBeInTheDocument();
       });
       fireEvent.click(screen.getByLabelText('Sign in with Face ID or Touch ID'));
       await waitFor(() => {
-        expect(mockNavigate).toHaveBeenCalledWith('/select-role');
+        expect(mockNavigate).toHaveBeenCalledWith('/select-role', { replace: true });
       });
     });
 
-    it('navigates to role dashboard when existing role found', async () => {
-      (safeStorage.getJSON as ReturnType<typeof vi.fn>).mockReturnValue({ role: 'admin' });
+    it('navigates to /crm when biometric user has admin role', async () => {
+      mockAuthenticateWithBiometric.mockResolvedValue({
+        success: true,
+        user: { id: 'u1', email: 'admin@test.com', name: 'Admin User', role: 'admin' },
+        token: 'jwt-token-123',
+      });
       render(<BiometricLoginButton />);
       await waitFor(() => {
         expect(screen.getByLabelText('Sign in with Face ID or Touch ID')).toBeInTheDocument();
       });
       fireEvent.click(screen.getByLabelText('Sign in with Face ID or Touch ID'));
       await waitFor(() => {
-        expect(mockNavigate).toHaveBeenCalledWith('/admin/dashboard');
+        expect(mockNavigate).toHaveBeenCalledWith('/crm', { replace: true });
       });
     });
   });
