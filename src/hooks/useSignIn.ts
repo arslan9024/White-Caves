@@ -304,7 +304,6 @@ export function useSignIn() {
         setSocialSyncRecovery(null);
         setSocialRetryAttempts(0);
       }
-      setSocialSyncRecovery(null);
       try {
         let result;
         switch (provider) {
@@ -327,6 +326,7 @@ export function useSignIn() {
             throw new Error('Invalid backend response: missing user data');
           }
           const backendUser = backendResponse.data.user;
+          setSocialSyncRecovery(null);
           setSocialRetryAttempts(0);
 
           if (mode === 'signup') {
