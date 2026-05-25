@@ -81,6 +81,8 @@ This file defines the White Caves multi-expert operating model for all agent-ass
 **BACKGROUND MODE:** Free planning workers run via `npm run orchestrator:bg:start` (always free-model-only agents regardless of freeModelOnlyMode policy flag)  
 **STATUS:** Active → previously V3 (100 agents); V3 registry retained at `scripts/orchestrator/subagents-registry.json` for legacy compatibility
 
+The V3 sections below are retained as legacy roster/planning detail and do not override the active Aegis 150 policy above.
+
 ---
 
 ## 🚀 AGENT SKILLS UPGRADE V3 — ACTIVE (May 24, 2026)
