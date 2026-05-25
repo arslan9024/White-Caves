@@ -1,5 +1,12 @@
 # White Caves Market Research & Competitive Analysis
 
+## Key Documents
+
+- [Competitor Analysis — Dubai Real Estate Platforms](./competitor-analysis.md)
+- [Competitor Analysis — Dubai Real Estate Platforms (Legacy Variant)](./competitor_analysis.md)
+- [Technology Upgrade Specifications](./technology_upgrades.md)
+- [Competitive Feature Decision Package (2026-05-25)](./competitive-feature-decision-package-2026.md)
+
 ## EXECUTIVE SUMMARY
 
 Dubai's real estate market is experiencing post-pandemic recovery with robust demand, technology adoption accelerating, and new entrants disrupting traditional brokerage models. White Caves is positioned as a technology-forward broker with unique AI/WhatsApp-first advantages in a market dominated by 2,000+ traditional brokers.
