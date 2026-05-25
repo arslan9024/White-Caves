@@ -88,6 +88,8 @@
     "free-agents:nobrowser": "powershell -ExecutionPolicy Bypass -File scripts/free-agents-loop.ps1 -NoBrowser",
     "seo:generate": "node scripts/generate-seo-assets.js",
     "seo:generate:staging": "node scripts/generate-seo-assets.js --domain=https://staging.whitecaves.com",
+    "quality:seo": "npm run seo:generate",
+    "test:assistant-contract": "npm run test:run -- src/services/__tests__/assistantsService.test.ts",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
     "lint:fix": "eslint . --ext .js,.jsx,.ts,.tsx --fix",
     "typecheck": "node --max-old-space-size=4096 ./node_modules/typescript/bin/tsc --noEmit -p tsconfig.json && node --max-old-space-size=4096 ./node_modules/typescript/bin/tsc --noEmit -p tsconfig.server.json",
