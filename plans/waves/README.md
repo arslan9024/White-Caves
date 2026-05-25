@@ -18,6 +18,7 @@ Each wave should be executed only in roadmap order.
 | 14 | Product features | 📋 Planned | [`SDD`](./WAVE_14_SDD.md) | [`Readiness`](./WAVE_14_READINESS_PACKET.md) | [`Backlog`](./WAVE_14_IMPLEMENTATION_BACKLOG.md) | [`Tests`](./WAVE_14_TEST_ROLLOUT.md) |
 | 15 | Cache + PWA readiness | 📋 Planned | [`SDD`](./WAVE_15_SDD.md) | [`Readiness`](./WAVE_15_READINESS_PACKET.md) | [`Backlog`](./WAVE_15_IMPLEMENTATION_BACKLOG.md) | [`Tests`](./WAVE_15_TEST_ROLLOUT.md) |
 | 16 | Security hardening + API versioning | 📋 Planned | [`SDD`](./WAVE_16_SDD.md) | [`Readiness`](./WAVE_16_READINESS_PACKET.md) | [`Backlog`](./WAVE_16_IMPLEMENTATION_BACKLOG.md) | [`Tests`](./WAVE_16_TEST_ROLLOUT.md) |
+| 17 | Full UI/UX luxury upgrade (tokens + animations + mobile + PWA + WCAG 2.2) | 📋 Planned | [`SDD`](./WAVE_17_SDD.md) | [`Readiness`](./WAVE_17_READINESS_PACKET.md) | [`Backlog`](./WAVE_17_IMPLEMENTATION_BACKLOG.md) | [`Tests`](./WAVE_17_TEST_ROLLOUT.md) |
 
 ## Notes
 
@@ -25,3 +26,4 @@ Each wave should be executed only in roadmap order.
 - Wave 13 is complete and Wave 14 is the next execution bundle.
 - Wave 11 now includes an explicit test rollout so every active planned wave uses the same four-artifact pattern.
 - Superseded root-level Wave 12 market-intelligence docs were archived to `../archives/` to avoid naming collisions with the active Wave 12 automation bundle.
+- Wave 17 (Full UI/UX Luxury Upgrade) has been scaffolded. Entry gate: Wave 16 green + free-agent planning specs committed + @Ada approval phrase.
