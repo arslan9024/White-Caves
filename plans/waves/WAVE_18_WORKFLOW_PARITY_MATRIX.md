@@ -1,7 +1,7 @@
 # Wave 18 — Workflow Parity Matrix (v1)
 
-**Date:** 2026-05-25  
-**Scope:** Top 5 benchmark platforms + White Caves internal coverage audit  
+**Date:** 2026-05-26  
+**Scope:** Top 8 benchmark platforms + White Caves internal coverage audit  
 **Parity Model:** UAE-adapted parity (outcome-equivalent, compliance-first)
 
 ## Legend
@@ -13,22 +13,22 @@
 
 ---
 
-## External Platform Snapshot (v1)
+## External Platform Snapshot (v2)
 
-| Workflow Category | Property Finder | Bayut | Dubizzle | Betterhomes | Allsopp & Allsopp |
-| --- | --- | --- | --- | --- | --- |
-| Lead capture | Included | Included | Included | Included | Included |
-| Listing lifecycle | Included | Included | Included | Included | Included |
-| Viewings | Partial | Included | Included | Included | Included |
-| Offers/negotiation | Partial | Partial | Partial | Included | Included |
-| Contracts/docs | Missing | Missing | Missing | Partial | Partial |
-| Payments/collections | Missing | Missing | Missing | Partial | Partial |
-| Leasing/tenant ops | Partial | Partial | Partial | Included | Included |
-| Compliance workflows | Partial | Partial | Partial | Unknown | Unknown |
-| Reporting/analytics | Included | Included | Included | Partial | Partial |
-| WhatsApp/comms automation | Partial | Partial | Partial | Unknown | Unknown |
+| Workflow Category | Property Finder | Bayut/dubizzle | Houza | Zillow | Rightmove | Compass | Salesforce | HubSpot |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| Lead capture | Included | Included | Included | Included | Included | Included | Included | Included |
+| Listing lifecycle | Included | Included | Included | Included | Included | Included | Partial | Partial |
+| Viewings | Partial | Included | Partial | Included | Partial | Included | Partial | Partial |
+| Offers/negotiation | Partial | Partial | Partial | Partial | Partial | Included | Partial | Partial |
+| Contracts/docs | Missing | Missing | Missing | Missing | Missing | Partial | Included | Partial |
+| Payments/collections | Missing | Missing | Missing | Missing | Missing | Partial | Partial | Partial |
+| Leasing/tenant ops | Partial | Partial | Partial | Missing | Missing | Included | Partial | Partial |
+| Compliance workflows | Partial | Partial | Partial | Unknown | Unknown | Partial | Included | Partial |
+| Reporting/analytics | Included | Included | Partial | Included | Included | Included | Included | Included |
+| WhatsApp/comms automation | Partial | Partial | Partial | Missing | Missing | Partial | Partial | Included |
 
-> Note: Portal products (PF/Bayut/Dubizzle) are primarily lead/listing channels and typically defer contracts/payments/core tenancy execution to agency CRMs.
+> Note: Portal products (Property Finder, Bayut/dubizzle, Houza, Zillow, Rightmove) are primarily discovery channels, while Compass/Salesforce/HubSpot represent brokerage and CRM workflow depth.
 
 ---
 

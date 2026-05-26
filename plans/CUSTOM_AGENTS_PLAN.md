@@ -86,7 +86,7 @@ Effective with `scripts/orchestrator/policy.json` version `2026.05.26-aegis-vnex
 
 ## Aegis Workflow Upgrade (Planning + Development + Git)
 
-Effective with `scripts/orchestrator/policy.json` version `2026.05.25-aegis-150-v2`:
+Effective with `scripts/orchestrator/policy.json` version `2026.05.26-aegis-170-v3`:
 
 1. **Planning workflow profile is explicit**: required readiness evidence is standardized as business rules, API contract, data schema, and test scenario.
 2. **Development workflow profile is explicit**: delivery stays vertical-slice with required checks (`typecheck`, `lint`, `build`) and targeted tests for touched scope.
@@ -99,7 +99,7 @@ Effective with `scripts/orchestrator/policy.json` version `2026.05.25-aegis-150-
 
 ---
 
-## Subagent Routing Matrix (Aegis 150)
+## Subagent Routing Matrix (Aegis 170 V3)
 
 | Work Type | Primary Agent(s) | Output Location | Promotion Rule |
 | --------- | ---------------- | --------------- | -------------- |

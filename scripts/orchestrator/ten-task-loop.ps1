@@ -33,7 +33,7 @@ param(
   [string]$PlannerCommand = "",
   [switch]$RequirePlannerSuccess,
   [string]$PlanReorganizationCommand = "",
-  [string]$AgentRegistryPath = "plans/SUBAGENT_REGISTRY_150.json",
+  [string]$AgentRegistryPath = "plans/SUBAGENT_REGISTRY_170.json",
   [string]$FreePlanningAgents = "@Victoria,@Invoice,@Sofia,@Cassie,@Joelle,@Annie,@Rachel,@Marissa,@Timnit,@Hedy,@Maya,@Booking,@Jaime,@Fei-Fei,@Anima,@Mary,@Corinne",
   [string]$PremiumImplementationAgents = "@Mira,@Katherine,@Radia,@Gwynne,@Una,@Lea,@Tracy,@Africa,@Barbara,@Daniela,@Ruchi,@Rachel,@Joelle,@Jaime,@Mala",
   [int]$PlanningReadinessTarget = 100,
@@ -937,7 +937,7 @@ while ($true) {
     }
 
     if ($UseSubagentFlow) {
-      Write-ActivityLog -Stage "PLAN" -Message "Running planning fanout across 150-agent mesh: $($planningAgents.Count) free specialists + squad leads | turn=$($state.turnCounter)" -Color "DarkYellow"
+      Write-ActivityLog -Stage "PLAN" -Message "Running planning fanout across Aegis mesh: $($planningAgents.Count) free specialists + squad leads | turn=$($state.turnCounter)" -Color "DarkYellow"
 
       $planningCompleted = 0
       $planningFailed = 0

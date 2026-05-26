@@ -6,13 +6,37 @@ param(
   [int]$Cycle = 0,
   [string]$Agent = "",
   [string]$TaskId = "",
-  [bool]$ErrorScanPassed = $true,
-  [bool]$SyncedFromMain = $false,
-  [bool]$PushedToMain = $false,
+  [object]$ErrorScanPassed = $true,
+  [object]$SyncedFromMain = $false,
+  [object]$PushedToMain = $false,
   [int]$PromptVersion = 1,
   [int]$Last = 10,
   [switch]$Json
 )
+
+function Convert-ToBool {
+  param(
+    [object]$Value,
+    [bool]$Default = $false
+  )
+
+  if ($null -eq $Value) { return $Default }
+  if ($Value -is [bool]) { return $Value }
+  if ($Value -is [int]) { return ($Value -ne 0) }
+
+  $s = [string]$Value
+  if ([string]::IsNullOrWhiteSpace($s)) { return $Default }
+
+  switch -Regex ($s.Trim().ToLowerInvariant()) {
+    '^(1|true|yes|y|on)$' { return $true }
+    '^(0|false|no|n|off)$' { return $false }
+    default { return $Default }
+  }
+}
+
+$ErrorScanPassed = Convert-ToBool -Value $ErrorScanPassed -Default $true
+$SyncedFromMain = Convert-ToBool -Value $SyncedFromMain -Default $false
+$PushedToMain = Convert-ToBool -Value $PushedToMain -Default $false
 
 $root = Resolve-Path $WorkspaceRoot
 $logPath = Join-Path $root "logs\orchestrator\cycle-log.json"

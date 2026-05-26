@@ -2,6 +2,7 @@
 
 **Last Updated:** 2026-05-26
 **Current Focus:** Wave 18 parity governance closeout + Wave 19 planning and execution readiness.
+**Current Focus:** Wave 18 workflow parity audit planning + prioritized gap queue generation.
 
 ## Canonical Sources
 
@@ -186,7 +187,7 @@ Key closures:
 ## S11 — Wave 18: Workflow Parity Audit + Gap Backlog (Planned)
 
 **Sources:** `business_docs/04_workflows/*`, `business_docs/09_crm_features/*`, `business_docs/05_requirements/functional-requirements.md`, `src/config/crmModuleRegistry.tsx`, `server/index.ts`, `server/routes/*`  
-**Bundle:** [`WAVE_18_SDD.md`](./waves/WAVE_18_SDD.md) | [`WAVE_18_READINESS_PACKET.md`](./waves/WAVE_18_READINESS_PACKET.md) | [`WAVE_18_IMPLEMENTATION_BACKLOG.md`](./waves/WAVE_18_IMPLEMENTATION_BACKLOG.md) | [`WAVE_18_TEST_ROLLOUT.md`](./waves/WAVE_18_TEST_ROLLOUT.md) | [`WAVE_18_WORKFLOW_PARITY_MATRIX.md`](./waves/WAVE_18_WORKFLOW_PARITY_MATRIX.md)
+**Bundle:** [`WAVE_18_SDD.md`](./waves/WAVE_18_SDD.md) | [`WAVE_18_READINESS_PACKET.md`](./waves/WAVE_18_READINESS_PACKET.md) | [`WAVE_18_IMPLEMENTATION_BACKLOG.md`](./waves/WAVE_18_IMPLEMENTATION_BACKLOG.md) | [`WAVE_18_1_IMPLEMENTATION_BACKLOG.md`](./waves/WAVE_18_1_IMPLEMENTATION_BACKLOG.md) | [`WAVE_18_TEST_ROLLOUT.md`](./waves/WAVE_18_TEST_ROLLOUT.md) | [`WAVE_18_WORKFLOW_PARITY_MATRIX.md`](./waves/WAVE_18_WORKFLOW_PARITY_MATRIX.md)
 
 | Task | Scope | Priority | Owner | Validation |
 | --- | --- | --- | --- | --- |
@@ -196,6 +197,13 @@ Key closures:
 | 18-4 | Generate P0/P1/P2 implementation gap queue with requirement IDs | P0 | @Ada + @Mira + @Katherine | Gap summary published in W18 backlog |
 | 18-5 | Reconcile doc drift in CRM feature index | P1 | @Margaret | No stale missing-file refs remain |
 | 18-6 | Planning governance closeout | P0 | @Katherine | `npm run plans:validate` green |
+
+### Wave 18.1 — Competitor Parity Execution Queue (new)
+
+- Locked benchmark scope now uses 8 platforms: Property Finder, Bayut/dubizzle, Houza, Zillow, Rightmove, Compass, Salesforce, HubSpot.
+- Opportunity inventory fixed at 132 improvements across 12 pillars.
+- Top-20 P0 tasks are now execution-ready with owner, success metric, and validation gates.
+- 90-day KPI targets are defined and tied to weekly re-benchmark cadence.
 
 ### Workflow Parity Dashboard (v1)
 

@@ -28,6 +28,7 @@ Each wave should be executed only in roadmap order.
 - Wave 13 through Wave 17 are complete in canonical trackers.
 - Wave 18 introduces a planning-first parity benchmark matrix (`WAVE_18_WORKFLOW_PARITY_MATRIX.md`) and queue generation for follow-on implementation waves.
 - Wave 19 converts parity outputs into execution scope for Identity & Access v2, deterministic `/crm` routing, and MD dashboard IA split.
+- Wave 18.1 execution queue is now tracked in [`WAVE_18_1_IMPLEMENTATION_BACKLOG.md`](./WAVE_18_1_IMPLEMENTATION_BACKLOG.md) with the locked 8-platform benchmark and top-20 P0 tasks.
 - Wave 11 now includes an explicit test rollout so every active planned wave uses the same four-artifact pattern.
 - Superseded root-level Wave 12 market-intelligence docs were archived to `../archives/` to avoid naming collisions with the active Wave 12 automation bundle.
 - Wave 17 (Full UI/UX Luxury Upgrade) is implemented and validated; see the Wave 17 bundle docs for closeout details.

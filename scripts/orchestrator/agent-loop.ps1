@@ -9,6 +9,7 @@
 #   npm run orchestrator:agent-loop -- -Agent @Timnit  -- force specific agent
 #   npm run orchestrator:agent-loop -- -Once            -- one slot, then exit
 #   npm run orchestrator:agent-loop -- -NoBrowser       -- skip browser launch
+#   npm run orchestrator:agent-loop -- -OpenBrowser     -- explicitly open browser
 #   npm run orchestrator:agent-loop -- -ShowSchedule    -- print schedule, exit
 #   npm run orchestrator:agent-loop -- -NonInteractive   -- auto-confirm and continue
 #   npm run orchestrator:agent-loop -- -Autopilot        -- continuous mode (no asks)
@@ -21,6 +22,7 @@ param(
   [switch]$Once,
   [switch]$NoBrowser,
   [switch]$ForceBrowserOpen,
+  [switch]$OpenBrowser,
   [switch]$ShowSchedule,
   [switch]$NonInteractive,
   [switch]$Autopilot,
@@ -540,7 +542,7 @@ $discoveryAttempts = 0
   Write-Host ""
 
   # 5. OPEN BROWSER
-  if (-not $NoBrowser) {
+  if (-not $effectiveNoBrowser) {
     try {
       if (Get-Command Invoke-AegisBrowserLaunch -ErrorAction SilentlyContinue) {
         $launchResult = Invoke-AegisBrowserLaunch -Url $url -WorkspaceRoot $root -Force:$ForceBrowserOpen
@@ -557,7 +559,7 @@ $discoveryAttempts = 0
       Write-Host ("  [WARN] Could not open browser. Navigate manually to: {0}" -f $url) -ForegroundColor Yellow
     }
   } else {
-    Write-Host ("  [NO-BROWSER] Navigate to: {0}" -f $url) -ForegroundColor DarkGray
+    Write-Host ("  [NO-BROWSER] Browser auto-open disabled by default. Navigate manually to: {0}" -f $url) -ForegroundColor DarkGray
   }
   Write-Host ""
 
@@ -678,9 +680,9 @@ $discoveryAttempts = 0
       -Cycle $loopCount `
       -Agent $activeAgent `
       -TaskId $taskId `
-      -ErrorScanPassed ($miniScanOk) `
-      -SyncedFromMain ($Autopilot) `
-      -PushedToMain $false `
+      -ErrorScanPassed:$miniScanOk `
+      -SyncedFromMain:$Autopilot `
+      -PushedToMain:$false `
       -PromptVersion $promptVersion 2>&1 | Out-String | Write-Host
   }
   if ($effectiveNonInteractive -and (Test-Path $autoEscalateScript)) {
@@ -723,3 +725,6 @@ Write-Host ("  LOOP COMPLETE -- {0} round(s) run" -f $loopCount) -ForegroundColo
 Write-Host "  Run: npm run orchestrator:session:compact  -- to see full queue state" -ForegroundColor DarkGray
 Write-BigDivider
 Write-Host ""
+
+
+

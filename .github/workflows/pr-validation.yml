@@ -298,7 +298,7 @@ jobs:
         run: |
           node scripts/orchestrator/detect-big-premium-commit.js > premium-detect.json
           cat premium-detect.json
-          node -e "const fs=require('fs');const d=JSON.parse(fs.readFileSync('premium-detect.json','utf8'));fs.appendFileSync(process.env.GITHUB_OUTPUT, `shouldRun=${d.shouldRun}\n`);"
+          node -e "const fs=require('fs');const d=JSON.parse(fs.readFileSync('premium-detect.json','utf8'));fs.appendFileSync(process.env.GITHUB_OUTPUT, 'shouldRun=' + d.shouldRun + '\\n');"
 
       - name: Run premium runtime guard checks
         if: steps.detect.outputs.shouldRun == 'true'
