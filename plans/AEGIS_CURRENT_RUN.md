@@ -1,47 +1,49 @@
-# AEGIS Current Run — Turn 2 Blueprint
+# AEGIS Current Run — Turn 3 Blueprint
 
 ## System Connection Status
 
 - Mode: **AUTOPILOT (Turn-based)**
 - Timestamp: **2026-05-27**
 - Branch: `copilot/confirm-ai-assistants-upgrade`
-- Scope: Orchestrator quality hardening and build-warning elimination
+- Scope: TypeScript strict triage + image attribute compatibility + import path normalization
 
 ## Task ID
 
-- `AEGIS-T2-ORCH-HEALTH-002`
+- `AEGIS-T3-TSCHECK-HARDENING-003`
 
 ## Gap Detector (Step 1 Findings)
 
-1. `ten-task-loop.ps1` contains unapproved verb helper `Append-FileWithRetry` in active branch.
-2. `package.json` includes duplicate `orchestrator:open-tool` key, creating noisy build diagnostics.
-3. Run blueprint file missing on branch, reducing traceability of autonomous turns.
+1. `npm run typecheck` reports TS2322 in property image components due unsupported `fetchPriority` prop typing.
+2. TS1149 case-sensitivity error from mixed import path casing (`crmDataService` vs `CRMDataService`).
+3. Build is green, but strict type gate is red; production readiness requires strict gate cleanup.
 
 ## Engineering Blueprint (Step 2)
 
 ### Files to modify
 
-- `scripts/orchestrator/ten-task-loop.ps1`
-- `package.json`
+- `src/components/common/PropertyCard.tsx`
+- `src/shared/components/property/PropertyImageSlider.tsx`
+- `src/components/crm/ZoeExecutiveCRM.jsx`
 - `plans/MASTER_PLAN.md`
 - `plans/AEGIS_CURRENT_RUN.md`
 
 ### Exact implementation
 
-1. Rename helper to approved verb: `Add-FileContentWithRetry` and update call sites.
-2. Remove duplicate script key while preserving no-browser and browser variants.
-3. Append Turn 2 execution log entry to master plan.
+1. Remove unsupported `fetchPriority` attributes from TSX image elements while preserving loading behavior.
+2. Normalize CRM service import casing to match canonical filename.
+3. Re-run strict checks and append Turn 3 execution log to master plan.
 
 ### Acceptance Criteria
 
-- [ ] No unapproved verb warning in `ten-task-loop.ps1`.
-- [ ] `npm run build` completes without duplicate-key warning.
-- [ ] Turn 2 record added in `MASTER_PLAN.md`.
+- [ ] `npm run typecheck` passes with zero errors.
+- [ ] `npm run build` remains green after TypeScript fixes.
+- [ ] Turn 3 record added in `MASTER_PLAN.md`.
 
 ### Validation Steps
 
-1. `npm run build`
-2. `git status --short`
+1. `npm run typecheck`
+2. `npm run build`
+3. `git status --short`
 
 ### Blocker Status
 

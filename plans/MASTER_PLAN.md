@@ -17,6 +17,12 @@
 
 ### AEGIS Turn Log (Autopilot)
 
+- **Turn 3 (2026-05-27)** — `AEGIS-T3-TSCHECK-HARDENING-003`
+  - Scope: TypeScript strict-gate recovery for property image surfaces and CRM import casing.
+  - Files: `src/components/common/PropertyCard.tsx`, `src/shared/components/property/PropertyImageSlider.tsx`, `src/components/crm/ZoeExecutiveCRM.jsx`, `plans/AEGIS_CURRENT_RUN.md`, `plans/MASTER_PLAN.md`.
+  - Result: Removed incompatible image props causing TS2322 and normalized service import casing causing TS1149.
+  - Validation target: `npm run typecheck` and `npm run build`.
+
 - **Turn 2 (2026-05-27)** — `AEGIS-T2-ORCH-HEALTH-002`
   - Scope: Branch-level orchestrator health normalization + build diagnostic cleanup.
   - Files: `scripts/orchestrator/ten-task-loop.ps1`, `package.json`, `plans/AEGIS_CURRENT_RUN.md`, `plans/MASTER_PLAN.md`.
