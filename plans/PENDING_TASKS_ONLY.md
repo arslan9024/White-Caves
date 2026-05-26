@@ -187,7 +187,7 @@ Key closures:
 ## S11 — Wave 18: Workflow Parity Audit + Gap Backlog (Planned)
 
 **Sources:** `business_docs/04_workflows/*`, `business_docs/09_crm_features/*`, `business_docs/05_requirements/functional-requirements.md`, `src/config/crmModuleRegistry.tsx`, `server/index.ts`, `server/routes/*`  
-**Bundle:** [`WAVE_18_SDD.md`](./waves/WAVE_18_SDD.md) | [`WAVE_18_READINESS_PACKET.md`](./waves/WAVE_18_READINESS_PACKET.md) | [`WAVE_18_IMPLEMENTATION_BACKLOG.md`](./waves/WAVE_18_IMPLEMENTATION_BACKLOG.md) | [`WAVE_18_1_IMPLEMENTATION_BACKLOG.md`](./waves/WAVE_18_1_IMPLEMENTATION_BACKLOG.md) | [`WAVE_18_TEST_ROLLOUT.md`](./waves/WAVE_18_TEST_ROLLOUT.md) | [`WAVE_18_WORKFLOW_PARITY_MATRIX.md`](./waves/WAVE_18_WORKFLOW_PARITY_MATRIX.md)
+**Bundle:** [`WAVE_18_SDD.md`](./waves/WAVE_18_SDD.md) | [`WAVE_18_READINESS_PACKET.md`](./waves/WAVE_18_READINESS_PACKET.md) | [`WAVE_18_IMPLEMENTATION_BACKLOG.md`](./waves/WAVE_18_IMPLEMENTATION_BACKLOG.md) | [`WAVE_18_1_IMPLEMENTATION_BACKLOG.md`](./waves/WAVE_18_1_IMPLEMENTATION_BACKLOG.md) | [`WAVE_18_TEST_ROLLOUT.md`](./waves/WAVE_18_TEST_ROLLOUT.md) | [`WAVE_18_WORKFLOW_PARITY_MATRIX.md`](./waves/WAVE_18_WORKFLOW_PARITY_MATRIX.md) | [`WAVE_18_SERVER_GAP_REPORT.md`](./waves/WAVE_18_SERVER_GAP_REPORT.md) | [`WAVE_18_SERVER_REMEDIATION_BACKLOG.md`](./waves/WAVE_18_SERVER_REMEDIATION_BACKLOG.md) | [`WAVE_18_BACKEND_ARCHITECTURE_MAP.md`](./waves/WAVE_18_BACKEND_ARCHITECTURE_MAP.md) | [`WAVE_18_COMPETITOR_PARITY_WEEKLY_DELTA.md`](./waves/WAVE_18_COMPETITOR_PARITY_WEEKLY_DELTA.md) | [`WAVE_18_KPI_DASHBOARD_BASELINE.md`](./waves/WAVE_18_KPI_DASHBOARD_BASELINE.md)
 
 | Task | Scope | Priority | Owner | Validation |
 | --- | --- | --- | --- | --- |

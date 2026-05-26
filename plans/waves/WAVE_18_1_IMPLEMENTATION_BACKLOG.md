@@ -8,6 +8,16 @@
 
 ---
 
+## Linked Wave 18 Governance Artifacts
+
+- [`WAVE_18_SERVER_GAP_REPORT.md`](./WAVE_18_SERVER_GAP_REPORT.md)
+- [`WAVE_18_SERVER_REMEDIATION_BACKLOG.md`](./WAVE_18_SERVER_REMEDIATION_BACKLOG.md)
+- [`WAVE_18_BACKEND_ARCHITECTURE_MAP.md`](./WAVE_18_BACKEND_ARCHITECTURE_MAP.md)
+- [`WAVE_18_COMPETITOR_PARITY_WEEKLY_DELTA.md`](./WAVE_18_COMPETITOR_PARITY_WEEKLY_DELTA.md)
+- [`WAVE_18_KPI_DASHBOARD_BASELINE.md`](./WAVE_18_KPI_DASHBOARD_BASELINE.md)
+
+---
+
 ## Benchmark Scope (Locked)
 
 1. Property Finder (UAE)
@@ -105,4 +115,3 @@ Weighted score per task:
 - [ ] Approve top-20 P0 queue and owner assignments
 - [ ] Stand up KPI baseline dashboard
 - [ ] Start weekly re-benchmark + queue hygiene loop
-
