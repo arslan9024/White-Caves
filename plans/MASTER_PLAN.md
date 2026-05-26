@@ -15,17 +15,19 @@
 - Canonical planning stack: `MASTER_PLAN.md` + `PENDING_TASKS_ONLY.md` + `waves/README.md`
 - Superseded Wave 12 market-intelligence documents were archived to avoid naming collisions with the active automation Wave 12 bundle
 
-- **Turn 2 (2026-05-27)** � AEGIS-T2-ORCH-HEALTH-002
+### AEGIS Turn Log (Autopilot)
+
+- **Turn 3 (2026-05-27)** — `AEGIS-T3-TSCHECK-HARDENING-003`
+  - Scope: TypeScript strict-gate recovery for property image surfaces and CRM import casing.
+  - Files: `src/components/common/PropertyCard.tsx`, `src/shared/components/property/PropertyImageSlider.tsx`, `src/components/crm/ZoeExecutiveCRM.jsx`, `plans/AEGIS_CURRENT_RUN.md`, `plans/MASTER_PLAN.md`.
+  - Result: Removed incompatible image props causing TS2322 and normalized service import casing causing TS1149.
+  - Validation target: `npm run typecheck` and `npm run build`.
+
+- **Turn 2 (2026-05-27)** — `AEGIS-T2-ORCH-HEALTH-002`
   - Scope: Branch-level orchestrator health normalization + build diagnostic cleanup.
-  - Files: scripts/orchestrator/ten-task-loop.ps1, package.json, plans/AEGIS_CURRENT_RUN.md, plans/MASTER_PLAN.md.
-  - Result: Removed PowerShell unapproved verb warning source and eliminated duplicate package.json script-key warning.
-  - Validation target:
-    pm run build (passed).
-- **Turn 1 (2026-05-27)** — `AEGIS-T1-ORCH-HEALTH-001`
-  - Scope: Orchestrator stability hygiene + planning trace reliability.
-  - Files: `scripts/orchestrator/ten-task-loop.ps1`, `plans/AEGIS_CURRENT_RUN.md`, `plans/MASTER_PLAN.md`.
-  - Result: Replaced unapproved PowerShell helper verb with approved verb naming to improve health/lint compliance in orchestrator diagnostics.
-  - Validation target: `npm run build` (must pass).
+  - Files: `scripts/orchestrator/ten-task-loop.ps1`, `package.json`, `plans/AEGIS_CURRENT_RUN.md`, `plans/MASTER_PLAN.md`.
+  - Result: Removed PowerShell unapproved verb warning source and eliminated duplicate `package.json` script-key warning.
+  - Validation target: `npm run build` (must pass cleanly).
 
 ---
 

@@ -105,10 +105,11 @@ function PropertyCard({
       <PropertyCardImage>
         {image ? (
           <img
-            src={image.includes('fm=') ? image : `${image}${image.includes('?') ? '&' : '?'}fm=webp`}
+            src={
+              image.includes('fm=') ? image : `${image}${image.includes('?') ? '&' : '?'}fm=webp`
+            }
             alt={title}
             loading="lazy"
-            fetchPriority="low"
             width={400}
             height={260}
           />
