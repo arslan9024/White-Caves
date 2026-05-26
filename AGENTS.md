@@ -73,6 +73,25 @@ This file defines the White Caves multi-expert operating model for all agent-ass
 
 ---
 
+## 🚀 AEGIS vNEXT — ORCHESTRATOR UPGRADE (Active as of 2026-05-26)
+
+**UPGRADE:** Aegis 150 → **Aegis vNext** with 7 advanced workflow capabilities  
+**NEW CAPABILITIES:**
+- **Workflow Graph Mode** — MAF-style sequential/parallel/handoff/group-review execution (`npm run aegis:graph:*`)
+- **Durable Checkpoints** — LangGraph-inspired save/resume/time-travel per task-phase transition (`npm run aegis:checkpoint:*`)
+- **Stronger Verification Gates** — Security scan + diff-risk score + flaky-test detection (`npm run aegis:gates`)
+- **Structured Rollback Policy** — Auto-created per-task rollback plans, auto-trigger on max retries (`npm run aegis:rollback:*`)
+- **OpenTelemetry Traces** — Span/event emission to JSONL trace logs per agent turn (`npm run aegis:trace:*`)
+- **Budget Guard** — Per-session hard caps on tokens, runtime, retries (`npm run aegis:budget:*`)
+- **Benchmark Eval Loop** — Weekly metrics: taskSuccessRate, passRate, reworkRate, cycleTime, rollbackRate (`npm run aegis:bench:*`)
+- **Confidence-Based Routing** — Low-risk/high-confidence → autopilot; high-risk/low-confidence → human-approval (`npm run aegis:route:*`)
+
+**POLICY SOURCE:** `scripts/orchestrator/policy.json` v`2026.05.26-aegis-vnext-v1`  
+**STATUS:** Active — replaces Aegis 150 (150-agent mesh unchanged; governance scripts upgraded)
+
+---
+
+## 🚀 AEGIS 150 — ORCHESTRATOR MODEL (Active as of 2026-05-25)
 ## 🚀 AEGIS 170 V3 — ORCHESTRATOR MODEL (Active as of 2026-05-26)
 
 **TRANSFORMATION:** Aegis 150-agent mesh → **Aegis 170-agent mesh (V3)** | **120 free planning specialists + 50 premium implementation agents** | **10 squads × 17 agents**  

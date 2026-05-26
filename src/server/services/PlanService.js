@@ -7,6 +7,43 @@ import logger from '../lib/logger.js';
 
 const SAFE_PLAN_FILENAME_REGEX = /^[a-zA-Z0-9._-]+\.md$/;
 const SAFE_PLAN_ID_REGEX = /^[a-zA-Z0-9_-]{1,128}$/;
+const IMPLEMENTED_STATUSES = new Set(['complete', 'completed', 'done', 'implemented', 'green']);
+
+function normalizeStatus(value) {
+  return String(value || '').trim().toLowerCase();
+}
+
+function hasImplementedMarker(metadata, content) {
+  const status = normalizeStatus(metadata?.status);
+  if (IMPLEMENTED_STATUSES.has(status)) {
+    return true;
+  }
+
+  if (typeof content === 'string' && content.length > 0) {
+    if (/\b(✅\s*complete|fully implemented|implementation complete)\b/i.test(content)) {
+      return true;
+    }
+    if (/^\s*status\s*:\s*(✅\s*)?(complete|completed|done|implemented|green)\b/im.test(content)) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
+function hasArchivedMarker(metadata) {
+  if (metadata?.archived === true) {
+    return true;
+  }
+
+  const status = normalizeStatus(metadata?.status);
+  if (status.includes('archived')) {
+    return true;
+  }
+
+  const tags = Array.isArray(metadata?.tags) ? metadata.tags : [];
+  return tags.some(tag => String(tag || '').trim().toLowerCase() === 'archived');
+}
 
 /**
  * PlanService - Handles CRUD operations for markdown plan files
@@ -251,6 +288,11 @@ class PlanService {
   async deletePlan(identifier) {
     try {
       const plan = await this.readPlan(identifier);
+      if (!hasArchivedMarker(plan.metadata) || !hasImplementedMarker(plan.metadata, plan.content)) {
+        throw new Error(
+          'Deletion blocked: only archived plans marked as fully implemented may be deleted'
+        );
+      }
 
       // Delete file
       await fs.remove(plan.filepath);
