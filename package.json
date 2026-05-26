@@ -70,6 +70,8 @@
     "orchestrator:morning": "powershell -ExecutionPolicy Bypass -File scripts/orchestrator/morning-kickoff.ps1",
     "orchestrator:session-report": "powershell -ExecutionPolicy Bypass -File scripts/orchestrator/session-report.ps1 -Print",
     "orchestrator:open-tool": "powershell -ExecutionPolicy Bypass -File scripts/orchestrator/open-tool.ps1",
+    "orchestrator:plans:clean": "powershell -ExecutionPolicy Bypass -File scripts/orchestrator/clean-plans.ps1",
+    "orchestrator:plans:clean:apply": "powershell -ExecutionPolicy Bypass -File scripts/orchestrator/clean-plans.ps1 -Apply",
     "orchestrator:margaret-sync": "powershell -ExecutionPolicy Bypass -File scripts/orchestrator/margaret-sync.ps1",
     "orchestrator:gate-check": "powershell -ExecutionPolicy Bypass -File scripts/orchestrator/gate-check.ps1",
     "orchestrator:gate-check:failed": "powershell -ExecutionPolicy Bypass -File scripts/orchestrator/gate-check.ps1 -FailedOnly",

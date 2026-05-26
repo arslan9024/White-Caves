@@ -18,6 +18,7 @@ param(
   [string]$TaskId        = "",   # completed task to dispatch from (optional)
   [string]$WorkspaceRoot = ".",
   [switch]$OpenBrowser,          # open free tool URL in default browser
+  [switch]$ForceBrowserOpen,
   [switch]$ShowAll               # show all currently READY tasks (no TaskId needed)
 )
 
@@ -25,10 +26,12 @@ $ErrorActionPreference = "Continue"
 $root        = Resolve-Path $WorkspaceRoot
 $queueFile   = Join-Path $root "logs\orchestrator\task-queue.json"
 $promptsFile = Join-Path $root "scripts\orchestrator\prompts.json"
+$browserLaunchScript = Join-Path $root "scripts\orchestrator\browser-launch.ps1"
 $w           = 72
 
 if (-not (Test-Path $queueFile))   { Write-Host "[ERROR] queue not found"   -ForegroundColor Red; exit 1 }
 if (-not (Test-Path $promptsFile)) { Write-Host "[ERROR] prompts not found" -ForegroundColor Red; exit 1 }
+if (Test-Path $browserLaunchScript) { . $browserLaunchScript }
 
 $q       = Get-Content $queueFile   -Raw | ConvertFrom-Json
 $prompts = Get-Content $promptsFile -Raw | ConvertFrom-Json
@@ -217,7 +220,14 @@ function Write-DispatchCard([object]$task, [int]$idx, [int]$total, [string]$trig
   Write-Host ("  npm run orchestrator:complete-advance -- -TaskId {0} -AgentName `"{1}`"" -f $id, $agent) -ForegroundColor Yellow
   if ($OpenBrowser) {
     Write-Host ("  [BROWSER] Opening {0} ..." -f $tool) -ForegroundColor Cyan
-    Start-Process $tool
+    if (Get-Command Invoke-AegisBrowserLaunch -ErrorAction SilentlyContinue) {
+      $launchResult = Invoke-AegisBrowserLaunch -Url $tool -WorkspaceRoot $root -Force:$ForceBrowserOpen
+      if (-not $launchResult.launched) {
+        Write-Host "  [SKIP] Browser launch skipped (recently opened). Use -ForceBrowserOpen to reopen." -ForegroundColor Yellow
+      }
+    } else {
+      Start-Process $tool
+    }
   } else {
     Write-Host ("  [TIP] Add -OpenBrowser flag to auto-open tool in browser") -ForegroundColor DarkGray
   }
