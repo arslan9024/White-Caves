@@ -3,7 +3,7 @@
 **Wave:** 18  
 **Focus:** Workflow Parity Audit + Gap Backlog Generation  
 **Status:** 📋 Planned  
-**Date:** 2026-05-25
+**Date:** 2026-05-26
 
 ---
 
@@ -19,6 +19,11 @@
 | W18-008 | P1 | Define validation/completion gates per gap class (API/UI/RBAC/compliance evidence requirements) | @Katherine + @Radia | Wave 18 test rollout includes explicit pass gates | ✅ Done |
 | W18-009 | P2 | Define weekly re-benchmark loop with parity dashboard metric tracking (Included/Partial/Missing/Unknown) | @Margaret + @Ghada | Loop + dashboard section added to canonical queue | ✅ Done |
 | W18-010 | P0 | Governance validation for planning changes | @Katherine | `npm run plans:validate` passes | ⏳ Pending |
+| W18-011 | P0 | Upgrade benchmark scope from 5-platform local set to locked 8-platform parity set (UAE + global CRM leaders) | @Ada + @Margaret | W18 SDD and matrix include all 8 platforms | ✅ Done |
+| W18-012 | P0 | Publish Wave 18.1 execution backlog with top-20 P0 tasks and explicit success metrics | @Ada + @Mira + @Katherine | `WAVE_18_1_IMPLEMENTATION_BACKLOG.md` committed | ✅ Done |
+| W18-013 | P1 | Publish 132-item opportunity inventory by pillar and weighted prioritization model | @Margaret + @Invoice | Inventory totals and weighting documented in W18 bundle | ✅ Done |
+| W18-014 | P1 | Add phased roadmap (A–F) with deliverables and durations for parity execution | @Ada + @Margaret | W18 SDD contains phase roadmap and outputs | ✅ Done |
+| W18-015 | P0 | Define 90-day KPI target deck and weekly loop requirements for parity burn-down | @Invoice + @Katherine | KPI targets documented + weekly loop linked in test/readiness docs | ✅ Done |
 
 ---
 
@@ -58,3 +63,17 @@
 ```
 
 Hard stops: build/typecheck failures, security policy violations, explicit human PAUSE.
+
+---
+
+## Wave 18.1 Execution Artifact
+
+- [`WAVE_18_1_IMPLEMENTATION_BACKLOG.md`](./WAVE_18_1_IMPLEMENTATION_BACKLOG.md)
+
+This file is now the execution-ready queue for competitor parity implementation and includes:
+
+- locked 8-platform benchmark scope
+- 132-item opportunity inventory
+- weighted prioritization model
+- top-20 P0 task list with owners, metrics, and validation gates
+- 90-day KPI targets
