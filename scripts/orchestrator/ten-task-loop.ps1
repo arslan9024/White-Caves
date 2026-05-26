@@ -144,7 +144,7 @@ function Write-FileAtomicWithRetry {
   throw "Failed to write file '$Path' after $MaxAttempts attempts: $($lastError.Exception.Message)"
 }
 
-function Append-FileWithRetry {
+function Add-FileContentWithRetry {
   param(
     [string]$Path,
     [string]$AppendContent,
@@ -908,7 +908,7 @@ function Add-AgentLog {
   }
 
   if (-not $DryRun) {
-    Append-FileWithRetry -Path $agentLogsFile -AppendContent ($entry -join "`r`n")
+    Add-FileContentWithRetry -Path $agentLogsFile -AppendContent ($entry -join "`r`n")
   }
 }
 
