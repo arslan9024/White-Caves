@@ -2,7 +2,7 @@
 
 **Purpose:** Canonical roadmap for execution decisions.  
 **Owners:** @Ada + @Margaret  
-**Last Updated:** 2026-05-25  
+**Last Updated:** 2026-05-26  
 **Update cadence:** Weekly roadmap refresh (daily execution goes to `PROJECT_PROGRESS.md` and `DAILY_MILESTONE_TRACKER.md`)
 
 ---
@@ -11,7 +11,7 @@
 
 - N+1 through N+9 implementation stream: **✅ Completed**
 - Wave 08 stabilization/governance pass: **✅ Completed**
-- Active implementation focus: **Wave 18 (workflow parity audit) → next execution waves from parity gaps**
+- Active implementation focus: **Wave 18 (workflow parity audit closeout) → Wave 19 (Identity & Access v2 + MD workspace split)**
 - Canonical planning stack: `MASTER_PLAN.md` + `PENDING_TASKS_ONLY.md` + `waves/README.md`
 - Superseded Wave 12 market-intelligence documents were archived to avoid naming collisions with the active automation Wave 12 bundle
 
@@ -44,6 +44,7 @@
 | 8 | 16 | Security hardening + API versioning | @S5 + @Radia + @Mira | ✅ Complete | [`IMPROVEMENTS_SECURITY.md`](./IMPROVEMENTS_SECURITY.md), [`IMPROVEMENTS_ARCHITECTURE.md`](./IMPROVEMENTS_ARCHITECTURE.md) | Wave 15 green + readiness 60% + @Ada approval phrase | `/api/v1`, CSRF, error-envelope hardening closed + validation green |
 | 9 | 17 | Full UI/UX luxury upgrade (design tokens + animations + mobile + PWA + WCAG 2.2) | @Una + @Lea + @Tracy + @Africa + @Cyra + @Katherine | ✅ Complete | [`IMPROVEMENTS_UX.md`](./IMPROVEMENTS_UX.md), [`ui-ux-specification.md`](../../business_docs/06_design_architecture/ui-ux-specification.md) | Wave 16 green + free-agent specs + readiness 60% + @Ada approval phrase | Glassmorphism + animations + mobile + PWA + WCAG 2.2 all closed; Lighthouse CI gate green |
 | 10 | 18 | Cross-platform workflow parity audit + prioritized gap backlog | @Ada + @Margaret + @Mira + @Katherine | 📋 Planned | [`WAVE_18_WORKFLOW_PARITY_MATRIX.md`](./waves/WAVE_18_WORKFLOW_PARITY_MATRIX.md), [`functional-requirements.md`](../business_docs/05_requirements/functional-requirements.md), [`business_docs/04_workflows/README.md`](../business_docs/04_workflows/README.md) | Wave 17 green + readiness 60% + @Ada approval phrase | Parity matrix finalized, P0/P1/P2 gap queue generated, canonical plans updated, `npm run plans:validate` green |
+| 11 | 19 | Identity & Access v2 + dashboard routing + MD workspace IA split + executive UX discoverability | @Ada + @Mira + @Una + @Katherine + @Radia | 📋 Planned | [`WAVE_19_SDD.md`](./waves/WAVE_19_SDD.md), [`WAVE_19_IMPLEMENTATION_BACKLOG.md`](./waves/WAVE_19_IMPLEMENTATION_BACKLOG.md), [`WAVE_19_TEST_ROLLOUT.md`](./waves/WAVE_19_TEST_ROLLOUT.md) | Wave 18 governance closeout + readiness 60% + @Ada approval phrase | Auth/profile/routing gates green, MD split IA complete, UX state/discoverability evidence complete, `npm run plans:validate` green |
 
 ---
 
@@ -64,6 +65,7 @@ Use [`waves/README.md`](./waves/README.md) for the full bundle list.
 | 16 | ✅ Complete | [`Wave 16`](./waves/WAVE_16_SDD.md) |
 | 17 | ✅ Complete | [`Wave 17`](./waves/WAVE_17_SDD.md) |
 | 18 | 📋 Planned | [`Wave 18`](./waves/WAVE_18_SDD.md) |
+| 19 | 📋 Planned | [`Wave 19`](./waves/WAVE_19_SDD.md) |
 
 ---
 

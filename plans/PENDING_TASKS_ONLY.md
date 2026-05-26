@@ -1,7 +1,7 @@
 # Pending Tasks Only
 
-**Last Updated:** 2026-05-25
-**Current Focus:** Wave 18 workflow parity audit planning + prioritized gap queue generation.
+**Last Updated:** 2026-05-26
+**Current Focus:** Wave 18 parity governance closeout + Wave 19 planning and execution readiness.
 
 ## Canonical Sources
 
@@ -13,7 +13,7 @@
 
 ## Implementation Order
 
-`09 → 10 → 11 → 12 → 13 → 14 → 15 → 16 → 17 → 18`
+`09 → 10 → 11 → 12 → 13 → 14 → 15 → 16 → 17 → 18 → 19`
 
 Advance only when the prior wave is green, the readiness gate is satisfied, and `@Ada — Context Ready (60% Readiness) — Coding Phase Approved` has been issued for that wave.
 
@@ -32,6 +32,7 @@ Advance only when the prior wave is green, the readiness gate is satisfied, and 
 | S9 | 16 | Security hardening + API versioning | ✅ Green | @S5 + @Radia + @Mira | S8 green + readiness 60% + @Ada approval phrase |
 | S10 | 17 | Full UI/UX luxury upgrade (design tokens + glassmorphism + animations + mobile + PWA + WCAG 2.2) | ✅ Green | @Una + @Lea + @Tracy + @Africa + @Cyra + @Katherine | Wave 17 implementation + CI Lighthouse thresholds + accessibility/mobile/PWA checks complete |
 | S11 | 18 | Workflow parity audit + benchmark gap backlog | 📋 Planned | @Ada + @Margaret + @Mira + @Katherine | Wave 18 parity matrix finalized + canonical queue updates + `npm run plans:validate` |
+| S12 | 19 | Identity & Access v2 + `/crm` routing + MD workspace split + executive UX discoverability | 📋 Planned | @Ada + @Mira + @Una + @Katherine + @Radia | Wave 18 closeout + Wave 19 readiness packet + `npm run plans:validate` |
 
 ## Completed Stream History
 
@@ -55,6 +56,7 @@ Advance only when the prior wave is green, the readiness gate is satisfied, and 
 | S6 | Wave 13 real-time notifications + media + virtual tour | ✅ Complete |
 | S10 | Wave 17 full UI/UX luxury upgrade | ✅ Complete |
 | S11 | Wave 18 workflow parity audit + gap backlog generation | 📋 Planned |
+| S12 | Wave 19 identity/access + routing + MD IA split + UX discoverability | 📋 Planned |
 
 ## S2 — Wave 09: UX Hardening (Complete)
 
@@ -208,6 +210,22 @@ Key closures:
 2. Recalculate Included/Partial/Missing/Unknown counts.
 3. Push new deltas into upcoming implementation backlog.
 4. Run `npm run plans:validate` after queue/tracker updates.
+
+## S12 — Wave 19: Identity & Access v2 + MD Workspace Split (Planned)
+
+**Sources:** `src/pages/auth/*`, `src/pages/ProfilePage.tsx`, `src/App.tsx`, `src/hooks/useUnifiedDashboard.ts`, `src/config/crmModuleRegistry.tsx`, `src/components/crm/*`, `server/routes/auth.ts`  
+**Bundle:** [`WAVE_19_SDD.md`](./waves/WAVE_19_SDD.md) | [`WAVE_19_READINESS_PACKET.md`](./waves/WAVE_19_READINESS_PACKET.md) | [`WAVE_19_IMPLEMENTATION_BACKLOG.md`](./waves/WAVE_19_IMPLEMENTATION_BACKLOG.md) | [`WAVE_19_TEST_ROLLOUT.md`](./waves/WAVE_19_TEST_ROLLOUT.md)
+
+| Task | Scope | Priority | Owner | Validation |
+| --- | --- | --- | --- | --- |
+| 19-1 | Identity & Access v2 contract (login/signup/forgot/biometric/profile gate) | P0 | @Ada + @Mira | Auth architecture contract linked to REQ-IAMV2-* |
+| 19-2 | Forgot-password flow completion (request/verify/reset/success/lockout) | P0 | @Mira + @Radia | Focused auth tests + lockout/rate-limit checks |
+| 19-3 | Post-auth gate: first-time → profile completion; returning complete users → `/crm` | P0 | @Mira + @Katherine | Routing integration tests pass |
+| 19-4 | Role-specific profile completeness criteria (client/agent/leadership) | P1 | @Mira | Profile validation + UI behavior tests |
+| 19-5 | Auth fallback routing: pending approval, missing role, unauthorized mapping | P0 | @Mira + @Radia | Negative-path routing tests pass |
+| 19-6 | MD IA split into Company/Business and AI Command Center with module ownership matrix | P0 | @Una + @Mira | Workspace navigation + ownership mapping verification |
+| 19-7 | Executive UX state coverage + mobile/tablet + WCAG 2.2 + RTL parity | P0 | @Una + @Katherine | Accessibility/responsive/RTL state-system validation |
+| 19-8 | Wave closeout governance | P0 | @Katherine | `npm run plans:validate` + tracker sync evidence |
 
 ---
 
