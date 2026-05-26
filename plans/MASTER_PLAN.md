@@ -15,8 +15,12 @@
 - Canonical planning stack: `MASTER_PLAN.md` + `PENDING_TASKS_ONLY.md` + `waves/README.md`
 - Superseded Wave 12 market-intelligence documents were archived to avoid naming collisions with the active automation Wave 12 bundle
 
-### AEGIS Turn Log (Autopilot)
-
+- **Turn 2 (2026-05-27)** � AEGIS-T2-ORCH-HEALTH-002
+  - Scope: Branch-level orchestrator health normalization + build diagnostic cleanup.
+  - Files: scripts/orchestrator/ten-task-loop.ps1, package.json, plans/AEGIS_CURRENT_RUN.md, plans/MASTER_PLAN.md.
+  - Result: Removed PowerShell unapproved verb warning source and eliminated duplicate package.json script-key warning.
+  - Validation target:
+    pm run build (passed).
 - **Turn 1 (2026-05-27)** — `AEGIS-T1-ORCH-HEALTH-001`
   - Scope: Orchestrator stability hygiene + planning trace reliability.
   - Files: `scripts/orchestrator/ten-task-loop.ps1`, `plans/AEGIS_CURRENT_RUN.md`, `plans/MASTER_PLAN.md`.
