@@ -1202,3 +1202,4 @@ if ($RestartOnExit) {
     Start-Process -FilePath "powershell" -ArgumentList $restartArgumentString | Out-Null
   }
 }
+

@@ -69,7 +69,6 @@
     "orchestrator:output-log": "powershell -ExecutionPolicy Bypass -File scripts/orchestrator/output-log.ps1",
     "orchestrator:morning": "powershell -ExecutionPolicy Bypass -File scripts/orchestrator/morning-kickoff.ps1",
     "orchestrator:session-report": "powershell -ExecutionPolicy Bypass -File scripts/orchestrator/session-report.ps1 -Print",
-    "orchestrator:open-tool": "powershell -ExecutionPolicy Bypass -File scripts/orchestrator/open-tool.ps1",
     "orchestrator:plans:clean": "powershell -ExecutionPolicy Bypass -File scripts/orchestrator/clean-plans.ps1",
     "orchestrator:plans:clean:apply": "powershell -ExecutionPolicy Bypass -File scripts/orchestrator/clean-plans.ps1 -Apply",
     "orchestrator:open-tool": "powershell -ExecutionPolicy Bypass -File scripts/orchestrator/open-tool.ps1 -NoBrowser",
