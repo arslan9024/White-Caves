@@ -1,7 +1,7 @@
 # White Caves — Custom Agents & Subagents Plan
 
-> **Updated:** 2026-05-25  
-> **Status:** Active governance guide — Aegis 150 (supersedes V3/V2 governance baselines)
+> **Updated:** 2026-05-26  
+> **Status:** Active governance guide — Aegis vNext (supersedes Aegis 150 / V3 / V2 governance baselines)
 
 ---
 
@@ -20,6 +20,50 @@ This file defines how custom agents/subagents are dispatched **today** and how t
 - Agent roster + current free-agent queue: [`../AGENTS.md`](../AGENTS.md)
 - Runtime policy authority: [`../.github/copilot-instructions.md`](../.github/copilot-instructions.md)
 - **V3 upgrade details:** [`./AGENT_SKILLS_UPGRADE_V3.md`](./AGENT_SKILLS_UPGRADE_V3.md)
+
+---
+
+## Aegis vNext — Orchestrator Upgrade (2026-05-26)
+
+Effective with `scripts/orchestrator/policy.json` version `2026.05.26-aegis-vnext-v1`:
+
+### Phase A — Workflow Graph Mode + Durable Checkpoints
+
+1. **Workflow graph mode** (`scripts/orchestrator/workflow-graph.js`) — MAF/LangGraph-inspired execution graph with explicit steps:
+   - `sequential`: `plan → code → verify → merge-ready`
+   - `parallel`: fan-out code step into `frontend | backend | tests` lanes
+   - `handoff`: automated agent handoff signals at step boundaries (@Ada→@Mira, @Mira→@Katherine, etc.)
+   - `group-review`: triggered when diff-risk score ≥ 70; requires 2 of [@Ada, @Katherine, @Radia] approvals
+   - Commands: `npm run aegis:graph:status|start|advance|handoff|group-review`
+
+2. **Durable checkpoints** (`scripts/orchestrator/checkpoint.js`) — saves checkpoint (git stash + metadata) at each task-phase transition; supports resume from label and time-travel to checkpoint N.
+   - Commands: `npm run aegis:checkpoint:save|list|resume|travel|status`
+
+### Phase B — Stronger Verification Gates + Structured Rollback
+
+3. **Verification gates** (`scripts/orchestrator/verification-gates.js`) — extends hard-stops with:
+   - Security scan: scans src/ and server/ for hardcoded secrets, eval(), SQL injection, XSS patterns
+   - Diff-risk score: 0–100 risk score based on lines changed + high-risk path hits
+   - Flaky-test detection: counts repeated failures from test-run-history log
+   - Second-pass group-review trigger for risk score ≥ 70
+   - Commands: `npm run aegis:gates|aegis:gates:security|aegis:gates:diff-risk|aegis:gates:flaky`
+
+4. **Structured rollback policy** (`scripts/orchestrator/rollback-policy.js`) — auto-creates per-task rollback plan (files touched, revert command, fallback owner @Grace); auto-triggers rollback after max retries (default 2); supports manual trigger with `--reason`.
+   - Commands: `npm run aegis:rollback:create|trigger|status|retry`
+
+### Phase C — Observability, Benchmarks, Confidence Routing
+
+5. **OpenTelemetry-style traces** (`scripts/orchestrator/trace-emitter.js`) — emits JSONL span/event records per agent turn, handoff, and hard-stop to `logs/orchestrator/traces/trace-<date>.jsonl`. Supports instant spans, open/close spans, and standalone events.
+   - Commands: `npm run aegis:trace:span|event|tail|status`
+
+6. **Budget guard** (`scripts/orchestrator/budget-guard.js`) — tracks estimated tokens, runtime seconds, and retries per session with hard caps from policy `observability.budgetLimits`. Terminates session on cap breach when `hardCap=true`.
+   - Commands: `npm run aegis:budget:check|record|reset|status`
+
+7. **Benchmark eval loop** (`scripts/orchestrator/benchmark.js`) — records task outcome (pass/fail/rework/rollback) and cycle time, computes weekly metrics, compares against stored baseline, and flags regressions > 10%.
+   - Commands: `npm run aegis:bench:record|run|baseline|report|status`
+
+8. **Confidence-based approval routing** (`scripts/orchestrator/confidence-router.js`) — scores risk (0–100) and confidence (0.0–1.0) from task metadata, scan report, and verification gates; routes to `autopilot` (low-risk/high-confidence) or `human-approval` (high-risk or low-confidence).
+   - Commands: `npm run aegis:route:evaluate|batch|status`
 
 ---
 

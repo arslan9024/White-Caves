@@ -21,6 +21,7 @@ param(
   [string]$WorkspaceRoot = ".",
   [switch]$Once,
   [switch]$NoBrowser,
+  [switch]$ForceBrowserOpen,
   [switch]$OpenBrowser,
   [switch]$ShowSchedule,
   [switch]$NonInteractive,
@@ -40,9 +41,13 @@ $loopSyncScript = Join-Path $scripts "loop-start-sync.ps1"
 $cycleSummaryScript = Join-Path $scripts "cycle-summary.ps1"
 $autoEscalateScript = Join-Path $scripts "blocker-auto-escalate.ps1"
 $blockerBriefScript = Join-Path $scripts "blocker-report.ps1"
+$browserLaunchScript = Join-Path $scripts "browser-launch.ps1"
 
 if (Test-Path $policyUtils) {
   . $policyUtils
+}
+if (Test-Path $browserLaunchScript) {
+  . $browserLaunchScript
 }
 
 $trackingRemote = "origin"
@@ -87,6 +92,10 @@ if ($Autopilot) {
   $effectiveNonInteractive = $true
 } else {
   $effectiveNonInteractive = ($policyDefaultMode -eq "autopilot")
+}
+
+if ($effectiveNonInteractive -and -not $ForceBrowserOpen) {
+  $NoBrowser = $true
 }
 
 # ------------------------------------------------------------------
@@ -535,8 +544,17 @@ $discoveryAttempts = 0
   # 5. OPEN BROWSER
   if (-not $effectiveNoBrowser) {
     try {
-      Start-Process $url
-      Write-Host ("  [OPENED] {0}" -f $url) -ForegroundColor Green
+      if (Get-Command Invoke-AegisBrowserLaunch -ErrorAction SilentlyContinue) {
+        $launchResult = Invoke-AegisBrowserLaunch -Url $url -WorkspaceRoot $root -Force:$ForceBrowserOpen
+        if ($launchResult.launched) {
+          Write-Host ("  [OPENED] {0}" -f $url) -ForegroundColor Green
+        } else {
+          Write-Host ("  [SKIP] Browser launch skipped for {0} (already opened recently)." -f $url) -ForegroundColor Yellow
+        }
+      } else {
+        Start-Process $url
+        Write-Host ("  [OPENED] {0}" -f $url) -ForegroundColor Green
+      }
     } catch {
       Write-Host ("  [WARN] Could not open browser. Navigate manually to: {0}" -f $url) -ForegroundColor Yellow
     }
