@@ -1,0 +1,3376 @@
+{
+  "version": "3.0",
+  "generatedAt": "2026-05-26T20:02:30.410950+00:00",
+  "description": "White Caves Aegis 170-Agent Registry: 120 junior/specialist free-model agents + 50 senior/decision-maker premium agents across 10 squads",
+  "totalAgents": 170,
+  "freeAgents": [
+    "@Victoria",
+    "@Amina",
+    "@Samira",
+    "@Hala",
+    "@Rania",
+    "@Noor",
+    "@Hedy",
+    "@Sofia",
+    "@Timnit",
+    "@Zainab",
+    "@Invoice",
+    "@Amal",
+    "@Yasmin",
+    "@Lina",
+    "@Iman",
+    "@Anima",
+    "@Cassie",
+    "@Fei-Fei",
+    "@Ghada",
+    "@Mary",
+    "@Booking",
+    "@Maya",
+    "@Corinne",
+    "@Dina",
+    "@Layla",
+    "@Piper",
+    "@Wren",
+    "@Vera",
+    "@Manal",
+    "@Rehab",
+    "@Marissa",
+    "@Noura",
+    "@Sanaa",
+    "@Farah",
+    "@Basma",
+    "@Crest",
+    "@Lyra",
+    "@Orla",
+    "@Tala",
+    "@Violet",
+    "@Explore",
+    "@Atlas",
+    "@Cipher",
+    "@Nova",
+    "@Lumen",
+    "@Aster",
+    "@Selene",
+    "@Iris",
+    "@Rhea",
+    "@Flux",
+    "@Helia",
+    "@Orion",
+    "@Oracle",
+    "@Xena",
+    "@Yara",
+    "@Zara",
+    "@Quill",
+    "@Juno",
+    "@Vesta",
+    "@Kairos",
+    "@Reem",
+    "@Maha",
+    "@Nadia",
+    "@Mina",
+    "@Nora",
+    "@Sera",
+    "@Talya",
+    "@Uma",
+    "@Val",
+    "@Joy",
+    "@Huda",
+    "@Salma",
+    "@Priya",
+    "@Elena",
+    "@Carmen",
+    "@Bianca",
+    "@Mala",
+    "@Dena",
+    "@Rachel",
+    "@Annie",
+    "@Lara",
+    "@Tana",
+    "@Rima",
+    "@Safa",
+    "@Dela",
+    "@Mona",
+    "@Zina",
+    "@Banu",
+    "@Roda",
+    "@Syla",
+    "@Tera",
+    "@Vana",
+    "@Wana",
+    "@Xara",
+    "@Yona",
+    "@Zena",
+    "@Aira",
+    "@Bira",
+    "@Nara",
+    "@Kala",
+    "@Adara",
+    "@Bryn",
+    "@Celia",
+    "@Darya",
+    "@Eira",
+    "@Faris",
+    "@Galen",
+    "@Hani",
+    "@Ilya",
+    "@Jamal",
+    "@Kenza",
+    "@Liora",
+    "@Maaz",
+    "@Nadim",
+    "@Oriana",
+    "@Parisa",
+    "@Qamar",
+    "@Rahil",
+    "@Soraya",
+    "@Tariq"
+  ],
+  "premiumAgents": [
+    "@Ada",
+    "@Margaret",
+    "@Grace",
+    "@Mira",
+    "@Barbara",
+    "@Daniela",
+    "@Una",
+    "@guardian",
+    "@Ruchi",
+    "@Joelle",
+    "@Jaime",
+    "@Radia",
+    "@Ecem",
+    "@Katherine",
+    "@Lila",
+    "@Lisa",
+    "@Gwynne",
+    "@Lea",
+    "@Tracy",
+    "@Africa",
+    "@Petra",
+    "@Zoya",
+    "@Hana",
+    "@Kira",
+    "@Neva",
+    "@Clio",
+    "@Arya",
+    "@Willa",
+    "@Sana",
+    "@Dara",
+    "@Lysa",
+    "@Mera",
+    "@Fora",
+    "@Bria",
+    "@Elsa",
+    "@Nyla",
+    "@Reva",
+    "@Anya",
+    "@Pera",
+    "@Tova",
+    "@Finn",
+    "@Reid",
+    "@Skye",
+    "@Quinn",
+    "@Blake",
+    "@Drew",
+    "@Sage",
+    "@Avery",
+    "@River",
+    "@Rowan"
+  ],
+  "squads": [
+    {
+      "id": "leasing-legal",
+      "label": "Leasing & Legal",
+      "size": 12
+    },
+    {
+      "id": "finance-analytics",
+      "label": "Finance & Analytics",
+      "size": 12
+    },
+    {
+      "id": "sales-workflow",
+      "label": "Sales & Workflow",
+      "size": 12
+    },
+    {
+      "id": "ux-design",
+      "label": "UX & Design",
+      "size": 12
+    },
+    {
+      "id": "data-intelligence",
+      "label": "Data & Intelligence",
+      "size": 12
+    },
+    {
+      "id": "infra-ops",
+      "label": "Infrastructure & Ops",
+      "size": 12
+    },
+    {
+      "id": "content-seo",
+      "label": "Content & SEO",
+      "size": 12
+    },
+    {
+      "id": "security-compliance",
+      "label": "Security & Compliance",
+      "size": 12
+    },
+    {
+      "id": "qa-testing",
+      "label": "QA & Testing",
+      "size": 12
+    },
+    {
+      "id": "ai-innovation",
+      "label": "AI & Innovation",
+      "size": 12
+    }
+  ],
+  "freeModels": {
+    "providers": [
+      "google-ai-studio",
+      "groq",
+      "deepseek"
+    ],
+    "allowedModels": [
+      "Gemini 2.0 Flash",
+      "Llama 3.1 70B",
+      "DeepSeek V3"
+    ],
+    "policy": "junior-specialist-planning"
+  },
+  "premiumModels": {
+    "providers": [
+      "openai",
+      "anthropic"
+    ],
+    "allowedModels": [
+      "GPT-4o",
+      "claude-3.5-sonnet"
+    ],
+    "policy": "senior-synthesis-and-implementation"
+  },
+  "waveCoordination": {
+    "enabled": true,
+    "fanoutMode": "all-120-free-then-squad-synth",
+    "freeAgentFanout": "120 junior specialists contribute planning packets",
+    "squadSynthesis": "10 squad leads (premium) synthesize per-squad readiness",
+    "waveReadinessFormula": "(freeReadiness >= 100%) AND (squadSynthScore >= 85%)",
+    "packetRequired": [
+      "Task ID",
+      "Objective",
+      "Inputs",
+      "Outputs",
+      "Acceptance Criteria",
+      "Handoff"
+    ],
+    "handoffProtocol": [
+      "CONSUMES",
+      "FEEDS",
+      "FEEDS_ACK"
+    ],
+    "minimumReadinessPct": 100,
+    "squadSynthMinPct": 85,
+    "improvementThresholdPct": 1
+  },
+  "agents": [
+    {
+      "handle": "@Victoria",
+      "tier": "free",
+      "squad": "leasing-legal",
+      "role": "Contracts Specialist",
+      "skills": [
+        "tenancy-clauses",
+        "leasing-rules",
+        "legal-workflows",
+        "wave-planning",
+        "dependency-handoff",
+        "readiness-scoring"
+      ],
+      "modelProvider": "google-ai-studio",
+      "modelName": "Gemini 2.0 Flash",
+      "modelTier": "free",
+      "planningMode": "wave-collaboration",
+      "handoffRequired": true
+    },
+    {
+      "handle": "@Amina",
+      "tier": "free",
+      "squad": "leasing-legal",
+      "role": "Leasing Intake Specialist",
+      "skills": [
+        "kyc-intake",
+        "onboarding",
+        "tenancy-intake",
+        "wave-planning",
+        "dependency-handoff",
+        "readiness-scoring"
+      ],
+      "modelProvider": "groq",
+      "modelName": "Llama 3.1 70B",
+      "modelTier": "free",
+      "planningMode": "wave-collaboration",
+      "handoffRequired": true
+    },
+    {
+      "handle": "@Samira",
+      "tier": "free",
+      "squad": "leasing-legal",
+      "role": "Document Ops Specialist",
+      "skills": [
+        "document-validation",
+        "filing",
+        "attachments",
+        "wave-planning",
+        "dependency-handoff",
+        "readiness-scoring"
+      ],
+      "modelProvider": "deepseek",
+      "modelName": "DeepSeek V3",
+      "modelTier": "free",
+      "planningMode": "wave-collaboration",
+      "handoffRequired": true
+    },
+    {
+      "handle": "@Hala",
+      "tier": "free",
+      "squad": "leasing-legal",
+      "role": "Bilingual Contracts",
+      "skills": [
+        "arabic-english-contracts",
+        "clause-parity",
+        "wave-planning",
+        "dependency-handoff",
+        "readiness-scoring"
+      ],
+      "modelProvider": "google-ai-studio",
+      "modelName": "Gemini 2.0 Flash",
+      "modelTier": "free",
+      "planningMode": "wave-collaboration",
+      "handoffRequired": true
+    },
+    {
+      "handle": "@Rania",
+      "tier": "free",
+      "squad": "leasing-legal",
+      "role": "Tenant Support Specialist",
+      "skills": [
+        "support-triage",
+        "sla",
+        "escalation",
+        "wave-planning",
+        "dependency-handoff",
+        "readiness-scoring"
+      ],
+      "modelProvider": "groq",
+      "modelName": "Llama 3.1 70B",
+      "modelTier": "free",
+      "planningMode": "wave-collaboration",
+      "handoffRequired": true
+    },
+    {
+      "handle": "@Noor",
+      "tier": "free",
+      "squad": "leasing-legal",
+      "role": "Requirements Synthesist",
+      "skills": [
+        "acceptance-criteria",
+        "scope-clarity",
+        "wave-planning",
+        "dependency-handoff",
+        "readiness-scoring"
+      ],
+      "modelProvider": "deepseek",
+      "modelName": "DeepSeek V3",
+      "modelTier": "free",
+      "planningMode": "wave-collaboration",
+      "handoffRequired": true
+    },
+    {
+      "handle": "@Hedy",
+      "tier": "free",
+      "squad": "leasing-legal",
+      "role": "Audit Logic Specialist",
+      "skills": [
+        "audit-trail",
+        "activity-feed",
+        "automation-logic",
+        "wave-planning",
+        "dependency-handoff",
+        "readiness-scoring"
+      ],
+      "modelProvider": "google-ai-studio",
+      "modelName": "Gemini 2.0 Flash",
+      "modelTier": "free",
+      "planningMode": "wave-collaboration",
+      "handoffRequired": true
+    },
+    {
+      "handle": "@Sofia",
+      "tier": "free",
+      "squad": "leasing-legal",
+      "role": "Compliance Specialist",
+      "skills": [
+        "rera-dld-compliance",
+        "regulatory-audit",
+        "wave-planning",
+        "dependency-handoff",
+        "readiness-scoring"
+      ],
+      "modelProvider": "groq",
+      "modelName": "Llama 3.1 70B",
+      "modelTier": "free",
+      "planningMode": "wave-collaboration",
+      "handoffRequired": true
+    },
+    {
+      "handle": "@Timnit",
+      "tier": "free",
+      "squad": "leasing-legal",
+      "role": "Policy Lead (Free)",
+      "skills": [
+        "privacy-compliance",
+        "pdpl",
+        "governance",
+        "wave-planning",
+        "dependency-handoff",
+        "readiness-scoring"
+      ],
+      "modelProvider": "deepseek",
+      "modelName": "DeepSeek V3",
+      "modelTier": "free",
+      "planningMode": "wave-collaboration",
+      "handoffRequired": true
+    },
+    {
+      "handle": "@Zainab",
+      "tier": "free",
+      "squad": "leasing-legal",
+      "role": "Integration Docs Specialist",
+      "skills": [
+        "webhooks",
+        "api-handoffs",
+        "integration-maps",
+        "wave-planning",
+        "dependency-handoff",
+        "readiness-scoring"
+      ],
+      "modelProvider": "google-ai-studio",
+      "modelName": "Gemini 2.0 Flash",
+      "modelTier": "free",
+      "planningMode": "wave-collaboration",
+      "handoffRequired": true
+    },
+    {
+      "handle": "@Invoice",
+      "tier": "free",
+      "squad": "finance-analytics",
+      "role": "Finance Specialist",
+      "skills": [
+        "vat",
+        "cash-flow",
+        "financial-reporting",
+        "wave-planning",
+        "dependency-handoff",
+        "readiness-scoring"
+      ],
+      "modelProvider": "groq",
+      "modelName": "Llama 3.1 70B",
+      "modelTier": "free",
+      "planningMode": "wave-collaboration",
+      "handoffRequired": true
+    },
+    {
+      "handle": "@Amal",
+      "tier": "free",
+      "squad": "finance-analytics",
+      "role": "Reconciliation Specialist",
+      "skills": [
+        "payment-matching",
+        "variance-analysis",
+        "wave-planning",
+        "dependency-handoff",
+        "readiness-scoring"
+      ],
+      "modelProvider": "deepseek",
+      "modelName": "DeepSeek V3",
+      "modelTier": "free",
+      "planningMode": "wave-collaboration",
+      "handoffRequired": true
+    },
+    {
+      "handle": "@Yasmin",
+      "tier": "free",
+      "squad": "finance-analytics",
+      "role": "Market Comps Specialist",
+      "skills": [
+        "comparables",
+        "benchmarking",
+        "pricing-intelligence",
+        "wave-planning",
+        "dependency-handoff",
+        "readiness-scoring"
+      ],
+      "modelProvider": "google-ai-studio",
+      "modelName": "Gemini 2.0 Flash",
+      "modelTier": "free",
+      "planningMode": "wave-collaboration",
+      "handoffRequired": true
+    },
+    {
+      "handle": "@Lina",
+      "tier": "free",
+      "squad": "finance-analytics",
+      "role": "Analytics Polish Specialist",
+      "skills": [
+        "dashboard-clarity",
+        "metrics-labeling",
+        "wave-planning",
+        "dependency-handoff",
+        "readiness-scoring"
+      ],
+      "modelProvider": "groq",
+      "modelName": "Llama 3.1 70B",
+      "modelTier": "free",
+      "planningMode": "wave-collaboration",
+      "handoffRequired": true
+    },
+    {
+      "handle": "@Iman",
+      "tier": "free",
+      "squad": "finance-analytics",
+      "role": "Data Governance Specialist",
+      "skills": [
+        "retention",
+        "archival",
+        "data-policy",
+        "wave-planning",
+        "dependency-handoff",
+        "readiness-scoring"
+      ],
+      "modelProvider": "deepseek",
+      "modelName": "DeepSeek V3",
+      "modelTier": "free",
+      "planningMode": "wave-collaboration",
+      "handoffRequired": true
+    },
+    {
+      "handle": "@Anima",
+      "tier": "free",
+      "squad": "finance-analytics",
+      "role": "Data Engineer",
+      "skills": [
+        "etl",
+        "data-pipelines",
+        "aggregation",
+        "wave-planning",
+        "dependency-handoff",
+        "readiness-scoring"
+      ],
+      "modelProvider": "google-ai-studio",
+      "modelName": "Gemini 2.0 Flash",
+      "modelTier": "free",
+      "planningMode": "wave-collaboration",
+      "handoffRequired": true
+    },
+    {
+      "handle": "@Cassie",
+      "tier": "free",
+      "squad": "finance-analytics",
+      "role": "Decision Scientist",
+      "skills": [
+        "kpi-modeling",
+        "analytics",
+        "lead-scoring",
+        "wave-planning",
+        "dependency-handoff",
+        "readiness-scoring"
+      ],
+      "modelProvider": "groq",
+      "modelName": "Llama 3.1 70B",
+      "modelTier": "free",
+      "planningMode": "wave-collaboration",
+      "handoffRequired": true
+    },
+    {
+      "handle": "@Fei-Fei",
+      "tier": "free",
+      "squad": "finance-analytics",
+      "role": "Vision Specialist",
+      "skills": [
+        "image-pipelines",
+        "media-tagging",
+        "wave-planning",
+        "dependency-handoff",
+        "readiness-scoring"
+      ],
+      "modelProvider": "deepseek",
+      "modelName": "DeepSeek V3",
+      "modelTier": "free",
+      "planningMode": "wave-collaboration",
+      "handoffRequired": true
+    },
+    {
+      "handle": "@Ghada",
+      "tier": "free",
+      "squad": "finance-analytics",
+      "role": "Executive Reporting",
+      "skills": [
+        "leadership-summaries",
+        "kpi-snapshots",
+        "wave-planning",
+        "dependency-handoff",
+        "readiness-scoring"
+      ],
+      "modelProvider": "google-ai-studio",
+      "modelName": "Gemini 2.0 Flash",
+      "modelTier": "free",
+      "planningMode": "wave-collaboration",
+      "handoffRequired": true
+    },
+    {
+      "handle": "@Mary",
+      "tier": "free",
+      "squad": "finance-analytics",
+      "role": "Inventory Specialist",
+      "skills": [
+        "property-lifecycle",
+        "inventory-quality",
+        "wave-planning",
+        "dependency-handoff",
+        "readiness-scoring"
+      ],
+      "modelProvider": "groq",
+      "modelName": "Llama 3.1 70B",
+      "modelTier": "free",
+      "planningMode": "wave-collaboration",
+      "handoffRequired": true
+    },
+    {
+      "handle": "@Booking",
+      "tier": "free",
+      "squad": "sales-workflow",
+      "role": "Scheduling Specialist",
+      "skills": [
+        "calendar",
+        "viewings",
+        "availability-management",
+        "wave-planning",
+        "dependency-handoff",
+        "readiness-scoring"
+      ],
+      "modelProvider": "deepseek",
+      "modelName": "DeepSeek V3",
+      "modelTier": "free",
+      "planningMode": "wave-collaboration",
+      "handoffRequired": true
+    },
+    {
+      "handle": "@Maya",
+      "tier": "free",
+      "squad": "sales-workflow",
+      "role": "Off-Plan Specialist",
+      "skills": [
+        "offplan-workflows",
+        "handover",
+        "milestones",
+        "wave-planning",
+        "dependency-handoff",
+        "readiness-scoring"
+      ],
+      "modelProvider": "google-ai-studio",
+      "modelName": "Gemini 2.0 Flash",
+      "modelTier": "free",
+      "planningMode": "wave-collaboration",
+      "handoffRequired": true
+    },
+    {
+      "handle": "@Corinne",
+      "tier": "free",
+      "squad": "sales-workflow",
+      "role": "Scale Lead (Free)",
+      "skills": [
+        "maps-scaling",
+        "geo-performance",
+        "wave-planning",
+        "dependency-handoff",
+        "readiness-scoring"
+      ],
+      "modelProvider": "groq",
+      "modelName": "Llama 3.1 70B",
+      "modelTier": "free",
+      "planningMode": "wave-collaboration",
+      "handoffRequired": true
+    },
+    {
+      "handle": "@Dina",
+      "tier": "free",
+      "squad": "sales-workflow",
+      "role": "Workflow Automation",
+      "skills": [
+        "state-machines",
+        "trigger-rules",
+        "handoff-automation",
+        "wave-planning",
+        "dependency-handoff",
+        "readiness-scoring"
+      ],
+      "modelProvider": "deepseek",
+      "modelName": "DeepSeek V3",
+      "modelTier": "free",
+      "planningMode": "wave-collaboration",
+      "handoffRequired": true
+    },
+    {
+      "handle": "@Layla",
+      "tier": "free",
+      "squad": "sales-workflow",
+      "role": "Lead Routing Specialist",
+      "skills": [
+        "assignment-logic",
+        "queue-balancing",
+        "wave-planning",
+        "dependency-handoff",
+        "readiness-scoring"
+      ],
+      "modelProvider": "google-ai-studio",
+      "modelName": "Gemini 2.0 Flash",
+      "modelTier": "free",
+      "planningMode": "wave-collaboration",
+      "handoffRequired": true
+    },
+    {
+      "handle": "@Piper",
+      "tier": "free",
+      "squad": "sales-workflow",
+      "role": "Pipeline Reliability",
+      "skills": [
+        "job-retries",
+        "queue-resilience",
+        "wave-planning",
+        "dependency-handoff",
+        "readiness-scoring"
+      ],
+      "modelProvider": "groq",
+      "modelName": "Llama 3.1 70B",
+      "modelTier": "free",
+      "planningMode": "wave-collaboration",
+      "handoffRequired": true
+    },
+    {
+      "handle": "@Wren",
+      "tier": "free",
+      "squad": "sales-workflow",
+      "role": "Workflow Mapper",
+      "skills": [
+        "process-mapping",
+        "dependency-chains",
+        "wave-planning",
+        "dependency-handoff",
+        "readiness-scoring"
+      ],
+      "modelProvider": "deepseek",
+      "modelName": "DeepSeek V3",
+      "modelTier": "free",
+      "planningMode": "wave-collaboration",
+      "handoffRequired": true
+    },
+    {
+      "handle": "@Vera",
+      "tier": "free",
+      "squad": "sales-workflow",
+      "role": "Verification Specialist",
+      "skills": [
+        "checklist-validation",
+        "evidence-capture",
+        "wave-planning",
+        "dependency-handoff",
+        "readiness-scoring"
+      ],
+      "modelProvider": "google-ai-studio",
+      "modelName": "Gemini 2.0 Flash",
+      "modelTier": "free",
+      "planningMode": "wave-collaboration",
+      "handoffRequired": true
+    },
+    {
+      "handle": "@Manal",
+      "tier": "free",
+      "squad": "sales-workflow",
+      "role": "Ops Playbook Specialist",
+      "skills": [
+        "runbooks",
+        "incident-checklists",
+        "wave-planning",
+        "dependency-handoff",
+        "readiness-scoring"
+      ],
+      "modelProvider": "groq",
+      "modelName": "Llama 3.1 70B",
+      "modelTier": "free",
+      "planningMode": "wave-collaboration",
+      "handoffRequired": true
+    },
+    {
+      "handle": "@Rehab",
+      "tier": "free",
+      "squad": "sales-workflow",
+      "role": "Queue Management Specialist",
+      "skills": [
+        "backlog-priority",
+        "queue-health",
+        "wave-planning",
+        "dependency-handoff",
+        "readiness-scoring"
+      ],
+      "modelProvider": "deepseek",
+      "modelName": "DeepSeek V3",
+      "modelTier": "free",
+      "planningMode": "wave-collaboration",
+      "handoffRequired": true
+    },
+    {
+      "handle": "@Marissa",
+      "tier": "free",
+      "squad": "ux-design",
+      "role": "UX Researcher",
+      "skills": [
+        "user-journey",
+        "usability",
+        "luxury-ux",
+        "wave-planning",
+        "dependency-handoff",
+        "readiness-scoring"
+      ],
+      "modelProvider": "google-ai-studio",
+      "modelName": "Gemini 2.0 Flash",
+      "modelTier": "free",
+      "planningMode": "wave-collaboration",
+      "handoffRequired": true
+    },
+    {
+      "handle": "@Noura",
+      "tier": "free",
+      "squad": "ux-design",
+      "role": "Design Tokens Specialist",
+      "skills": [
+        "token-system",
+        "theme-consistency",
+        "wave-planning",
+        "dependency-handoff",
+        "readiness-scoring"
+      ],
+      "modelProvider": "groq",
+      "modelName": "Llama 3.1 70B",
+      "modelTier": "free",
+      "planningMode": "wave-collaboration",
+      "handoffRequired": true
+    },
+    {
+      "handle": "@Sanaa",
+      "tier": "free",
+      "squad": "ux-design",
+      "role": "Accessibility Specialist",
+      "skills": [
+        "contrast-audit",
+        "focus-flow",
+        "a11y-qa",
+        "wave-planning",
+        "dependency-handoff",
+        "readiness-scoring"
+      ],
+      "modelProvider": "deepseek",
+      "modelName": "DeepSeek V3",
+      "modelTier": "free",
+      "planningMode": "wave-collaboration",
+      "handoffRequired": true
+    },
+    {
+      "handle": "@Farah",
+      "tier": "free",
+      "squad": "ux-design",
+      "role": "Media Optimization",
+      "skills": [
+        "asset-optimization",
+        "lazy-loading",
+        "wave-planning",
+        "dependency-handoff",
+        "readiness-scoring"
+      ],
+      "modelProvider": "google-ai-studio",
+      "modelName": "Gemini 2.0 Flash",
+      "modelTier": "free",
+      "planningMode": "wave-collaboration",
+      "handoffRequired": true
+    },
+    {
+      "handle": "@Basma",
+      "tier": "free",
+      "squad": "ux-design",
+      "role": "Security Privacy Specialist",
+      "skills": [
+        "consent-safeguards",
+        "privacy-copy",
+        "wave-planning",
+        "dependency-handoff",
+        "readiness-scoring"
+      ],
+      "modelProvider": "groq",
+      "modelName": "Llama 3.1 70B",
+      "modelTier": "free",
+      "planningMode": "wave-collaboration",
+      "handoffRequired": true
+    },
+    {
+      "handle": "@Crest",
+      "tier": "free",
+      "squad": "ux-design",
+      "role": "Brand Consistency",
+      "skills": [
+        "tone-governance",
+        "brand-copy",
+        "style-enforcement",
+        "wave-planning",
+        "dependency-handoff",
+        "readiness-scoring"
+      ],
+      "modelProvider": "deepseek",
+      "modelName": "DeepSeek V3",
+      "modelTier": "free",
+      "planningMode": "wave-collaboration",
+      "handoffRequired": true
+    },
+    {
+      "handle": "@Lyra",
+      "tier": "free",
+      "squad": "ux-design",
+      "role": "Localization Specialist",
+      "skills": [
+        "rtl-localization",
+        "arabic-content",
+        "locale-qa",
+        "wave-planning",
+        "dependency-handoff",
+        "readiness-scoring"
+      ],
+      "modelProvider": "google-ai-studio",
+      "modelName": "Gemini 2.0 Flash",
+      "modelTier": "free",
+      "planningMode": "wave-collaboration",
+      "handoffRequired": true
+    },
+    {
+      "handle": "@Orla",
+      "tier": "free",
+      "squad": "ux-design",
+      "role": "Consent Experience",
+      "skills": [
+        "consent-ux",
+        "privacy-notices",
+        "opt-flow-design",
+        "wave-planning",
+        "dependency-handoff",
+        "readiness-scoring"
+      ],
+      "modelProvider": "groq",
+      "modelName": "Llama 3.1 70B",
+      "modelTier": "free",
+      "planningMode": "wave-collaboration",
+      "handoffRequired": true
+    },
+    {
+      "handle": "@Tala",
+      "tier": "free",
+      "squad": "ux-design",
+      "role": "Tenant Journey Specialist",
+      "skills": [
+        "tenant-lifecycle",
+        "portal-flows",
+        "wave-planning",
+        "dependency-handoff",
+        "readiness-scoring"
+      ],
+      "modelProvider": "deepseek",
+      "modelName": "DeepSeek V3",
+      "modelTier": "free",
+      "planningMode": "wave-collaboration",
+      "handoffRequired": true
+    },
+    {
+      "handle": "@Violet",
+      "tier": "free",
+      "squad": "ux-design",
+      "role": "UI Variation Specialist",
+      "skills": [
+        "component-variants",
+        "design-qa",
+        "wave-planning",
+        "dependency-handoff",
+        "readiness-scoring"
+      ],
+      "modelProvider": "google-ai-studio",
+      "modelName": "Gemini 2.0 Flash",
+      "modelTier": "free",
+      "planningMode": "wave-collaboration",
+      "handoffRequired": true
+    },
+    {
+      "handle": "@Explore",
+      "tier": "free",
+      "squad": "data-intelligence",
+      "role": "Codebase Explorer",
+      "skills": [
+        "semantic-search",
+        "code-mapping",
+        "wave-planning",
+        "dependency-handoff",
+        "readiness-scoring"
+      ],
+      "modelProvider": "groq",
+      "modelName": "Llama 3.1 70B",
+      "modelTier": "free",
+      "planningMode": "wave-collaboration",
+      "handoffRequired": true
+    },
+    {
+      "handle": "@Atlas",
+      "tier": "free",
+      "squad": "data-intelligence",
+      "role": "Knowledge Graph Specialist",
+      "skills": [
+        "entity-linking",
+        "cross-doc-mapping",
+        "wave-planning",
+        "dependency-handoff",
+        "readiness-scoring"
+      ],
+      "modelProvider": "deepseek",
+      "modelName": "DeepSeek V3",
+      "modelTier": "free",
+      "planningMode": "wave-collaboration",
+      "handoffRequired": true
+    },
+    {
+      "handle": "@Cipher",
+      "tier": "free",
+      "squad": "data-intelligence",
+      "role": "Market Intelligence Analyst",
+      "skills": [
+        "market-signals",
+        "trend-detection",
+        "wave-planning",
+        "dependency-handoff",
+        "readiness-scoring"
+      ],
+      "modelProvider": "google-ai-studio",
+      "modelName": "Gemini 2.0 Flash",
+      "modelTier": "free",
+      "planningMode": "wave-collaboration",
+      "handoffRequired": true
+    },
+    {
+      "handle": "@Nova",
+      "tier": "free",
+      "squad": "data-intelligence",
+      "role": "AI Persona Specialist",
+      "skills": [
+        "assistant-personas",
+        "fallback-rules",
+        "wave-planning",
+        "dependency-handoff",
+        "readiness-scoring"
+      ],
+      "modelProvider": "groq",
+      "modelName": "Llama 3.1 70B",
+      "modelTier": "free",
+      "planningMode": "wave-collaboration",
+      "handoffRequired": true
+    },
+    {
+      "handle": "@Lumen",
+      "tier": "free",
+      "squad": "data-intelligence",
+      "role": "Prompt Quality Specialist",
+      "skills": [
+        "prompt-templates",
+        "context-packets",
+        "wave-planning",
+        "dependency-handoff",
+        "readiness-scoring"
+      ],
+      "modelProvider": "deepseek",
+      "modelName": "DeepSeek V3",
+      "modelTier": "free",
+      "planningMode": "wave-collaboration",
+      "handoffRequired": true
+    },
+    {
+      "handle": "@Aster",
+      "tier": "free",
+      "squad": "data-intelligence",
+      "role": "Data Cleanup Specialist",
+      "skills": [
+        "deduplication",
+        "data-quality",
+        "wave-planning",
+        "dependency-handoff",
+        "readiness-scoring"
+      ],
+      "modelProvider": "google-ai-studio",
+      "modelName": "Gemini 2.0 Flash",
+      "modelTier": "free",
+      "planningMode": "wave-collaboration",
+      "handoffRequired": true
+    },
+    {
+      "handle": "@Selene",
+      "tier": "free",
+      "squad": "data-intelligence",
+      "role": "Narrative Insights",
+      "skills": [
+        "insight-storytelling",
+        "executive-briefing",
+        "wave-planning",
+        "dependency-handoff",
+        "readiness-scoring"
+      ],
+      "modelProvider": "groq",
+      "modelName": "Llama 3.1 70B",
+      "modelTier": "free",
+      "planningMode": "wave-collaboration",
+      "handoffRequired": true
+    },
+    {
+      "handle": "@Iris",
+      "tier": "free",
+      "squad": "data-intelligence",
+      "role": "Dashboard Narration",
+      "skills": [
+        "kpi-annotation",
+        "metric-context",
+        "wave-planning",
+        "dependency-handoff",
+        "readiness-scoring"
+      ],
+      "modelProvider": "deepseek",
+      "modelName": "DeepSeek V3",
+      "modelTier": "free",
+      "planningMode": "wave-collaboration",
+      "handoffRequired": true
+    },
+    {
+      "handle": "@Rhea",
+      "tier": "free",
+      "squad": "data-intelligence",
+      "role": "Release Notes Specialist",
+      "skills": [
+        "release-summaries",
+        "change-logs",
+        "wave-planning",
+        "dependency-handoff",
+        "readiness-scoring"
+      ],
+      "modelProvider": "google-ai-studio",
+      "modelName": "Gemini 2.0 Flash",
+      "modelTier": "free",
+      "planningMode": "wave-collaboration",
+      "handoffRequired": true
+    },
+    {
+      "handle": "@Flux",
+      "tier": "free",
+      "squad": "data-intelligence",
+      "role": "Experiment Analyst",
+      "skills": [
+        "ab-testing",
+        "experiment-design",
+        "wave-planning",
+        "dependency-handoff",
+        "readiness-scoring"
+      ],
+      "modelProvider": "groq",
+      "modelName": "Llama 3.1 70B",
+      "modelTier": "free",
+      "planningMode": "wave-collaboration",
+      "handoffRequired": true
+    },
+    {
+      "handle": "@Helia",
+      "tier": "free",
+      "squad": "infra-ops",
+      "role": "Infrastructure Analyst",
+      "skills": [
+        "cloud-sizing",
+        "cost-profiling",
+        "wave-planning",
+        "dependency-handoff",
+        "readiness-scoring"
+      ],
+      "modelProvider": "deepseek",
+      "modelName": "DeepSeek V3",
+      "modelTier": "free",
+      "planningMode": "wave-collaboration",
+      "handoffRequired": true
+    },
+    {
+      "handle": "@Orion",
+      "tier": "free",
+      "squad": "infra-ops",
+      "role": "Deployment Analyst",
+      "skills": [
+        "pipeline-analysis",
+        "release-checks",
+        "wave-planning",
+        "dependency-handoff",
+        "readiness-scoring"
+      ],
+      "modelProvider": "google-ai-studio",
+      "modelName": "Gemini 2.0 Flash",
+      "modelTier": "free",
+      "planningMode": "wave-collaboration",
+      "handoffRequired": true
+    },
+    {
+      "handle": "@Oracle",
+      "tier": "free",
+      "squad": "infra-ops",
+      "role": "Forecast Specialist",
+      "skills": [
+        "demand-forecasting",
+        "scenario-planning",
+        "wave-planning",
+        "dependency-handoff",
+        "readiness-scoring"
+      ],
+      "modelProvider": "groq",
+      "modelName": "Llama 3.1 70B",
+      "modelTier": "free",
+      "planningMode": "wave-collaboration",
+      "handoffRequired": true
+    },
+    {
+      "handle": "@Xena",
+      "tier": "free",
+      "squad": "infra-ops",
+      "role": "Exception Handling",
+      "skills": [
+        "edge-paths",
+        "failure-modes",
+        "fallback-design",
+        "wave-planning",
+        "dependency-handoff",
+        "readiness-scoring"
+      ],
+      "modelProvider": "deepseek",
+      "modelName": "DeepSeek V3",
+      "modelTier": "free",
+      "planningMode": "wave-collaboration",
+      "handoffRequired": true
+    },
+    {
+      "handle": "@Yara",
+      "tier": "free",
+      "squad": "infra-ops",
+      "role": "Incident Analyst",
+      "skills": [
+        "post-mortems",
+        "sla-tracking",
+        "wave-planning",
+        "dependency-handoff",
+        "readiness-scoring"
+      ],
+      "modelProvider": "google-ai-studio",
+      "modelName": "Gemini 2.0 Flash",
+      "modelTier": "free",
+      "planningMode": "wave-collaboration",
+      "handoffRequired": true
+    },
+    {
+      "handle": "@Zara",
+      "tier": "free",
+      "squad": "infra-ops",
+      "role": "Capacity Analyst",
+      "skills": [
+        "scaling-metrics",
+        "throughput-analysis",
+        "wave-planning",
+        "dependency-handoff",
+        "readiness-scoring"
+      ],
+      "modelProvider": "groq",
+      "modelName": "Llama 3.1 70B",
+      "modelTier": "free",
+      "planningMode": "wave-collaboration",
+      "handoffRequired": true
+    },
+    {
+      "handle": "@Quill",
+      "tier": "free",
+      "squad": "infra-ops",
+      "role": "Content Systems Specialist",
+      "skills": [
+        "content-ops",
+        "template-design",
+        "wave-planning",
+        "dependency-handoff",
+        "readiness-scoring"
+      ],
+      "modelProvider": "deepseek",
+      "modelName": "DeepSeek V3",
+      "modelTier": "free",
+      "planningMode": "wave-collaboration",
+      "handoffRequired": true
+    },
+    {
+      "handle": "@Juno",
+      "tier": "free",
+      "squad": "infra-ops",
+      "role": "Community Ops Specialist",
+      "skills": [
+        "community-workflows",
+        "facility-bookings",
+        "wave-planning",
+        "dependency-handoff",
+        "readiness-scoring"
+      ],
+      "modelProvider": "google-ai-studio",
+      "modelName": "Gemini 2.0 Flash",
+      "modelTier": "free",
+      "planningMode": "wave-collaboration",
+      "handoffRequired": true
+    },
+    {
+      "handle": "@Vesta",
+      "tier": "free",
+      "squad": "infra-ops",
+      "role": "Handover QA Specialist",
+      "skills": [
+        "handover-checklists",
+        "snagging",
+        "wave-planning",
+        "dependency-handoff",
+        "readiness-scoring"
+      ],
+      "modelProvider": "groq",
+      "modelName": "Llama 3.1 70B",
+      "modelTier": "free",
+      "planningMode": "wave-collaboration",
+      "handoffRequired": true
+    },
+    {
+      "handle": "@Kairos",
+      "tier": "free",
+      "squad": "infra-ops",
+      "role": "Luxury Segment Specialist",
+      "skills": [
+        "hnwi-workflows",
+        "vip-experience",
+        "wave-planning",
+        "dependency-handoff",
+        "readiness-scoring"
+      ],
+      "modelProvider": "deepseek",
+      "modelName": "DeepSeek V3",
+      "modelTier": "free",
+      "planningMode": "wave-collaboration",
+      "handoffRequired": true
+    },
+    {
+      "handle": "@Reem",
+      "tier": "free",
+      "squad": "content-seo",
+      "role": "SEO Metadata Specialist",
+      "skills": [
+        "meta-tags",
+        "hreflang",
+        "snippet-optimization",
+        "wave-planning",
+        "dependency-handoff",
+        "readiness-scoring"
+      ],
+      "modelProvider": "google-ai-studio",
+      "modelName": "Gemini 2.0 Flash",
+      "modelTier": "free",
+      "planningMode": "wave-collaboration",
+      "handoffRequired": true
+    },
+    {
+      "handle": "@Maha",
+      "tier": "free",
+      "squad": "content-seo",
+      "role": "Resident Comms Specialist",
+      "skills": [
+        "announcements",
+        "resident-updates",
+        "wave-planning",
+        "dependency-handoff",
+        "readiness-scoring"
+      ],
+      "modelProvider": "groq",
+      "modelName": "Llama 3.1 70B",
+      "modelTier": "free",
+      "planningMode": "wave-collaboration",
+      "handoffRequired": true
+    },
+    {
+      "handle": "@Nadia",
+      "tier": "free",
+      "squad": "content-seo",
+      "role": "WhatsApp CRM Specialist",
+      "skills": [
+        "waba-templates",
+        "chatbot-flows",
+        "wave-planning",
+        "dependency-handoff",
+        "readiness-scoring"
+      ],
+      "modelProvider": "deepseek",
+      "modelName": "DeepSeek V3",
+      "modelTier": "free",
+      "planningMode": "wave-collaboration",
+      "handoffRequired": true
+    },
+    {
+      "handle": "@Mina",
+      "tier": "free",
+      "squad": "content-seo",
+      "role": "Content Operations Analyst",
+      "skills": [
+        "content-flow",
+        "editorial-schedule",
+        "wave-planning",
+        "dependency-handoff",
+        "readiness-scoring"
+      ],
+      "modelProvider": "google-ai-studio",
+      "modelName": "Gemini 2.0 Flash",
+      "modelTier": "free",
+      "planningMode": "wave-collaboration",
+      "handoffRequired": true
+    },
+    {
+      "handle": "@Nora",
+      "tier": "free",
+      "squad": "content-seo",
+      "role": "Copywriting Specialist",
+      "skills": [
+        "marketing-copy",
+        "listing-descriptions",
+        "wave-planning",
+        "dependency-handoff",
+        "readiness-scoring"
+      ],
+      "modelProvider": "groq",
+      "modelName": "Llama 3.1 70B",
+      "modelTier": "free",
+      "planningMode": "wave-collaboration",
+      "handoffRequired": true
+    },
+    {
+      "handle": "@Sera",
+      "tier": "free",
+      "squad": "content-seo",
+      "role": "Campaign Analyst",
+      "skills": [
+        "campaign-performance",
+        "conversion-tracking",
+        "wave-planning",
+        "dependency-handoff",
+        "readiness-scoring"
+      ],
+      "modelProvider": "deepseek",
+      "modelName": "DeepSeek V3",
+      "modelTier": "free",
+      "planningMode": "wave-collaboration",
+      "handoffRequired": true
+    },
+    {
+      "handle": "@Talya",
+      "tier": "free",
+      "squad": "content-seo",
+      "role": "Social Media Specialist",
+      "skills": [
+        "social-copy",
+        "engagement-metrics",
+        "wave-planning",
+        "dependency-handoff",
+        "readiness-scoring"
+      ],
+      "modelProvider": "google-ai-studio",
+      "modelName": "Gemini 2.0 Flash",
+      "modelTier": "free",
+      "planningMode": "wave-collaboration",
+      "handoffRequired": true
+    },
+    {
+      "handle": "@Uma",
+      "tier": "free",
+      "squad": "content-seo",
+      "role": "Brand Voice Specialist",
+      "skills": [
+        "brand-language",
+        "messaging-guidelines",
+        "wave-planning",
+        "dependency-handoff",
+        "readiness-scoring"
+      ],
+      "modelProvider": "groq",
+      "modelName": "Llama 3.1 70B",
+      "modelTier": "free",
+      "planningMode": "wave-collaboration",
+      "handoffRequired": true
+    },
+    {
+      "handle": "@Val",
+      "tier": "free",
+      "squad": "content-seo",
+      "role": "Content Distribution",
+      "skills": [
+        "content-syndication",
+        "channel-strategy",
+        "wave-planning",
+        "dependency-handoff",
+        "readiness-scoring"
+      ],
+      "modelProvider": "deepseek",
+      "modelName": "DeepSeek V3",
+      "modelTier": "free",
+      "planningMode": "wave-collaboration",
+      "handoffRequired": true
+    },
+    {
+      "handle": "@Joy",
+      "tier": "free",
+      "squad": "content-seo",
+      "role": "Ethics & Content Auditor",
+      "skills": [
+        "bias-audit",
+        "fairness",
+        "content-ethics",
+        "wave-planning",
+        "dependency-handoff",
+        "readiness-scoring"
+      ],
+      "modelProvider": "google-ai-studio",
+      "modelName": "Gemini 2.0 Flash",
+      "modelTier": "free",
+      "planningMode": "wave-collaboration",
+      "handoffRequired": true
+    },
+    {
+      "handle": "@Huda",
+      "tier": "free",
+      "squad": "security-compliance",
+      "role": "Geo Data Specialist",
+      "skills": [
+        "boundaries",
+        "map-data-qa",
+        "geospatial-labeling",
+        "wave-planning",
+        "dependency-handoff",
+        "readiness-scoring"
+      ],
+      "modelProvider": "groq",
+      "modelName": "Llama 3.1 70B",
+      "modelTier": "free",
+      "planningMode": "wave-collaboration",
+      "handoffRequired": true
+    },
+    {
+      "handle": "@Salma",
+      "tier": "free",
+      "squad": "security-compliance",
+      "role": "Testing Criteria Specialist",
+      "skills": [
+        "test-matrices",
+        "acceptance-gates",
+        "edge-cases",
+        "wave-planning",
+        "dependency-handoff",
+        "readiness-scoring"
+      ],
+      "modelProvider": "deepseek",
+      "modelName": "DeepSeek V3",
+      "modelTier": "free",
+      "planningMode": "wave-collaboration",
+      "handoffRequired": true
+    },
+    {
+      "handle": "@Priya",
+      "tier": "free",
+      "squad": "security-compliance",
+      "role": "Compliance Documentation",
+      "skills": [
+        "policy-docs",
+        "evidence-packages",
+        "wave-planning",
+        "dependency-handoff",
+        "readiness-scoring"
+      ],
+      "modelProvider": "google-ai-studio",
+      "modelName": "Gemini 2.0 Flash",
+      "modelTier": "free",
+      "planningMode": "wave-collaboration",
+      "handoffRequired": true
+    },
+    {
+      "handle": "@Elena",
+      "tier": "free",
+      "squad": "security-compliance",
+      "role": "Data Privacy Analyst",
+      "skills": [
+        "gdpr-review",
+        "pdpl-audit",
+        "consent-tracking",
+        "wave-planning",
+        "dependency-handoff",
+        "readiness-scoring"
+      ],
+      "modelProvider": "groq",
+      "modelName": "Llama 3.1 70B",
+      "modelTier": "free",
+      "planningMode": "wave-collaboration",
+      "handoffRequired": true
+    },
+    {
+      "handle": "@Carmen",
+      "tier": "free",
+      "squad": "security-compliance",
+      "role": "Risk Assessment Analyst",
+      "skills": [
+        "risk-identification",
+        "mitigation-planning",
+        "wave-planning",
+        "dependency-handoff",
+        "readiness-scoring"
+      ],
+      "modelProvider": "deepseek",
+      "modelName": "DeepSeek V3",
+      "modelTier": "free",
+      "planningMode": "wave-collaboration",
+      "handoffRequired": true
+    },
+    {
+      "handle": "@Bianca",
+      "tier": "free",
+      "squad": "security-compliance",
+      "role": "Security Documentation",
+      "skills": [
+        "security-policies",
+        "threat-logs",
+        "wave-planning",
+        "dependency-handoff",
+        "readiness-scoring"
+      ],
+      "modelProvider": "google-ai-studio",
+      "modelName": "Gemini 2.0 Flash",
+      "modelTier": "free",
+      "planningMode": "wave-collaboration",
+      "handoffRequired": true
+    },
+    {
+      "handle": "@Mala",
+      "tier": "free",
+      "squad": "security-compliance",
+      "role": "Technical Quality Lead",
+      "skills": [
+        "refactoring",
+        "code-health",
+        "type-safety",
+        "wave-planning",
+        "dependency-handoff",
+        "readiness-scoring"
+      ],
+      "modelProvider": "groq",
+      "modelName": "Llama 3.1 70B",
+      "modelTier": "free",
+      "planningMode": "wave-collaboration",
+      "handoffRequired": true
+    },
+    {
+      "handle": "@Dena",
+      "tier": "free",
+      "squad": "security-compliance",
+      "role": "Strategy Alignment Analyst",
+      "skills": [
+        "market-alignment",
+        "roi-analysis",
+        "wave-planning",
+        "dependency-handoff",
+        "readiness-scoring"
+      ],
+      "modelProvider": "deepseek",
+      "modelName": "DeepSeek V3",
+      "modelTier": "free",
+      "planningMode": "wave-collaboration",
+      "handoffRequired": true
+    },
+    {
+      "handle": "@Rachel",
+      "tier": "free",
+      "squad": "security-compliance",
+      "role": "SEO Strategy Analyst",
+      "skills": [
+        "seo-strategy",
+        "structured-data",
+        "wave-planning",
+        "dependency-handoff",
+        "readiness-scoring"
+      ],
+      "modelProvider": "google-ai-studio",
+      "modelName": "Gemini 2.0 Flash",
+      "modelTier": "free",
+      "planningMode": "wave-collaboration",
+      "handoffRequired": true
+    },
+    {
+      "handle": "@Annie",
+      "tier": "free",
+      "squad": "security-compliance",
+      "role": "Compute Efficiency Analyst",
+      "skills": [
+        "compute-optimization",
+        "cost-control",
+        "wave-planning",
+        "dependency-handoff",
+        "readiness-scoring"
+      ],
+      "modelProvider": "groq",
+      "modelName": "Llama 3.1 70B",
+      "modelTier": "free",
+      "planningMode": "wave-collaboration",
+      "handoffRequired": true
+    },
+    {
+      "handle": "@Lara",
+      "tier": "free",
+      "squad": "qa-testing",
+      "role": "Lease QA Analyst",
+      "skills": [
+        "lease-acceptance",
+        "contract-qa",
+        "wave-planning",
+        "dependency-handoff",
+        "readiness-scoring"
+      ],
+      "modelProvider": "deepseek",
+      "modelName": "DeepSeek V3",
+      "modelTier": "free",
+      "planningMode": "wave-collaboration",
+      "handoffRequired": true
+    },
+    {
+      "handle": "@Tana",
+      "tier": "free",
+      "squad": "qa-testing",
+      "role": "Transaction QA Analyst",
+      "skills": [
+        "transaction-validation",
+        "transfer-checks",
+        "wave-planning",
+        "dependency-handoff",
+        "readiness-scoring"
+      ],
+      "modelProvider": "google-ai-studio",
+      "modelName": "Gemini 2.0 Flash",
+      "modelTier": "free",
+      "planningMode": "wave-collaboration",
+      "handoffRequired": true
+    },
+    {
+      "handle": "@Rima",
+      "tier": "free",
+      "squad": "qa-testing",
+      "role": "Reporting QA Analyst",
+      "skills": [
+        "report-accuracy",
+        "data-integrity",
+        "wave-planning",
+        "dependency-handoff",
+        "readiness-scoring"
+      ],
+      "modelProvider": "groq",
+      "modelName": "Llama 3.1 70B",
+      "modelTier": "free",
+      "planningMode": "wave-collaboration",
+      "handoffRequired": true
+    },
+    {
+      "handle": "@Safa",
+      "tier": "free",
+      "squad": "qa-testing",
+      "role": "Support Flow Analyst",
+      "skills": [
+        "support-qa",
+        "sla-testing",
+        "wave-planning",
+        "dependency-handoff",
+        "readiness-scoring"
+      ],
+      "modelProvider": "deepseek",
+      "modelName": "DeepSeek V3",
+      "modelTier": "free",
+      "planningMode": "wave-collaboration",
+      "handoffRequired": true
+    },
+    {
+      "handle": "@Dela",
+      "tier": "free",
+      "squad": "qa-testing",
+      "role": "Data Entry QA Specialist",
+      "skills": [
+        "input-validation",
+        "form-qa",
+        "wave-planning",
+        "dependency-handoff",
+        "readiness-scoring"
+      ],
+      "modelProvider": "google-ai-studio",
+      "modelName": "Gemini 2.0 Flash",
+      "modelTier": "free",
+      "planningMode": "wave-collaboration",
+      "handoffRequired": true
+    },
+    {
+      "handle": "@Mona",
+      "tier": "free",
+      "squad": "qa-testing",
+      "role": "Market Data QA Analyst",
+      "skills": [
+        "market-data-accuracy",
+        "comp-verification",
+        "wave-planning",
+        "dependency-handoff",
+        "readiness-scoring"
+      ],
+      "modelProvider": "groq",
+      "modelName": "Llama 3.1 70B",
+      "modelTier": "free",
+      "planningMode": "wave-collaboration",
+      "handoffRequired": true
+    },
+    {
+      "handle": "@Zina",
+      "tier": "free",
+      "squad": "qa-testing",
+      "role": "Zone Compliance Analyst",
+      "skills": [
+        "geo-compliance",
+        "zone-checks",
+        "wave-planning",
+        "dependency-handoff",
+        "readiness-scoring"
+      ],
+      "modelProvider": "deepseek",
+      "modelName": "DeepSeek V3",
+      "modelTier": "free",
+      "planningMode": "wave-collaboration",
+      "handoffRequired": true
+    },
+    {
+      "handle": "@Banu",
+      "tier": "free",
+      "squad": "qa-testing",
+      "role": "Backlog QA Analyst",
+      "skills": [
+        "backlog-accuracy",
+        "ticket-qa",
+        "wave-planning",
+        "dependency-handoff",
+        "readiness-scoring"
+      ],
+      "modelProvider": "google-ai-studio",
+      "modelName": "Gemini 2.0 Flash",
+      "modelTier": "free",
+      "planningMode": "wave-collaboration",
+      "handoffRequired": true
+    },
+    {
+      "handle": "@Roda",
+      "tier": "free",
+      "squad": "qa-testing",
+      "role": "Route Optimization Analyst",
+      "skills": [
+        "routing-efficiency",
+        "path-testing",
+        "wave-planning",
+        "dependency-handoff",
+        "readiness-scoring"
+      ],
+      "modelProvider": "groq",
+      "modelName": "Llama 3.1 70B",
+      "modelTier": "free",
+      "planningMode": "wave-collaboration",
+      "handoffRequired": true
+    },
+    {
+      "handle": "@Syla",
+      "tier": "free",
+      "squad": "qa-testing",
+      "role": "Systems Logging Analyst",
+      "skills": [
+        "log-accuracy",
+        "audit-log-qa",
+        "wave-planning",
+        "dependency-handoff",
+        "readiness-scoring"
+      ],
+      "modelProvider": "deepseek",
+      "modelName": "DeepSeek V3",
+      "modelTier": "free",
+      "planningMode": "wave-collaboration",
+      "handoffRequired": true
+    },
+    {
+      "handle": "@Tera",
+      "tier": "free",
+      "squad": "ai-innovation",
+      "role": "AI Testing Analyst",
+      "skills": [
+        "ai-test-design",
+        "model-qa",
+        "wave-planning",
+        "dependency-handoff",
+        "readiness-scoring"
+      ],
+      "modelProvider": "google-ai-studio",
+      "modelName": "Gemini 2.0 Flash",
+      "modelTier": "free",
+      "planningMode": "wave-collaboration",
+      "handoffRequired": true
+    },
+    {
+      "handle": "@Vana",
+      "tier": "free",
+      "squad": "ai-innovation",
+      "role": "Validation Framework Analyst",
+      "skills": [
+        "validation-design",
+        "criteria-testing",
+        "wave-planning",
+        "dependency-handoff",
+        "readiness-scoring"
+      ],
+      "modelProvider": "groq",
+      "modelName": "Llama 3.1 70B",
+      "modelTier": "free",
+      "planningMode": "wave-collaboration",
+      "handoffRequired": true
+    },
+    {
+      "handle": "@Wana",
+      "tier": "free",
+      "squad": "ai-innovation",
+      "role": "Workflow Intelligence Analyst",
+      "skills": [
+        "smart-workflows",
+        "ai-automation",
+        "wave-planning",
+        "dependency-handoff",
+        "readiness-scoring"
+      ],
+      "modelProvider": "deepseek",
+      "modelName": "DeepSeek V3",
+      "modelTier": "free",
+      "planningMode": "wave-collaboration",
+      "handoffRequired": true
+    },
+    {
+      "handle": "@Xara",
+      "tier": "free",
+      "squad": "ai-innovation",
+      "role": "Cross-Functional Analyst",
+      "skills": [
+        "cross-module-integration",
+        "api-compatibility",
+        "wave-planning",
+        "dependency-handoff",
+        "readiness-scoring"
+      ],
+      "modelProvider": "google-ai-studio",
+      "modelName": "Gemini 2.0 Flash",
+      "modelTier": "free",
+      "planningMode": "wave-collaboration",
+      "handoffRequired": true
+    },
+    {
+      "handle": "@Yona",
+      "tier": "free",
+      "squad": "ai-innovation",
+      "role": "Yield Optimization Analyst",
+      "skills": [
+        "yield-modeling",
+        "roi-analysis",
+        "wave-planning",
+        "dependency-handoff",
+        "readiness-scoring"
+      ],
+      "modelProvider": "groq",
+      "modelName": "Llama 3.1 70B",
+      "modelTier": "free",
+      "planningMode": "wave-collaboration",
+      "handoffRequired": true
+    },
+    {
+      "handle": "@Zena",
+      "tier": "free",
+      "squad": "ai-innovation",
+      "role": "Zero-Defect Analyst",
+      "skills": [
+        "defect-prevention",
+        "quality-gates",
+        "wave-planning",
+        "dependency-handoff",
+        "readiness-scoring"
+      ],
+      "modelProvider": "deepseek",
+      "modelName": "DeepSeek V3",
+      "modelTier": "free",
+      "planningMode": "wave-collaboration",
+      "handoffRequired": true
+    },
+    {
+      "handle": "@Aira",
+      "tier": "free",
+      "squad": "ai-innovation",
+      "role": "AI Response Analyst",
+      "skills": [
+        "response-quality",
+        "llm-evaluation",
+        "wave-planning",
+        "dependency-handoff",
+        "readiness-scoring"
+      ],
+      "modelProvider": "google-ai-studio",
+      "modelName": "Gemini 2.0 Flash",
+      "modelTier": "free",
+      "planningMode": "wave-collaboration",
+      "handoffRequired": true
+    },
+    {
+      "handle": "@Bira",
+      "tier": "free",
+      "squad": "ai-innovation",
+      "role": "Business Intelligence Analyst",
+      "skills": [
+        "bi-reporting",
+        "insight-generation",
+        "wave-planning",
+        "dependency-handoff",
+        "readiness-scoring"
+      ],
+      "modelProvider": "groq",
+      "modelName": "Llama 3.1 70B",
+      "modelTier": "free",
+      "planningMode": "wave-collaboration",
+      "handoffRequired": true
+    },
+    {
+      "handle": "@Nara",
+      "tier": "free",
+      "squad": "ai-innovation",
+      "role": "Narration AI Specialist",
+      "skills": [
+        "ai-narrative",
+        "report-generation",
+        "wave-planning",
+        "dependency-handoff",
+        "readiness-scoring"
+      ],
+      "modelProvider": "deepseek",
+      "modelName": "DeepSeek V3",
+      "modelTier": "free",
+      "planningMode": "wave-collaboration",
+      "handoffRequired": true
+    },
+    {
+      "handle": "@Kala",
+      "tier": "free",
+      "squad": "ai-innovation",
+      "role": "Knowledge Architecture Analyst",
+      "skills": [
+        "knowledge-graphs",
+        "entity-modeling",
+        "wave-planning",
+        "dependency-handoff",
+        "readiness-scoring"
+      ],
+      "modelProvider": "google-ai-studio",
+      "modelName": "Gemini 2.0 Flash",
+      "modelTier": "free",
+      "planningMode": "wave-collaboration",
+      "handoffRequired": true
+    },
+    {
+      "handle": "@Ada",
+      "tier": "premium",
+      "role": "Chief Architect",
+      "skills": [
+        "architecture",
+        "integration",
+        "technical-governance",
+        "wave-synthesis",
+        "team-leadership",
+        "implementation-decision"
+      ],
+      "modelProvider": "openai",
+      "modelName": "gpt-4o",
+      "modelTier": "premium",
+      "planningMode": "synthesis-and-decision",
+      "handoffRequired": true
+    },
+    {
+      "handle": "@Margaret",
+      "tier": "premium",
+      "role": "Strategic Planner",
+      "skills": [
+        "roadmapping",
+        "milestones",
+        "dependency-planning",
+        "wave-synthesis",
+        "team-leadership",
+        "implementation-decision"
+      ],
+      "modelProvider": "openai",
+      "modelName": "gpt-4o",
+      "modelTier": "premium",
+      "planningMode": "synthesis-and-decision",
+      "handoffRequired": true
+    },
+    {
+      "handle": "@Grace",
+      "tier": "premium",
+      "role": "Lead Engineer",
+      "skills": [
+        "engineering-standards",
+        "review-quality",
+        "best-practices",
+        "wave-synthesis",
+        "team-leadership",
+        "implementation-decision"
+      ],
+      "modelProvider": "openai",
+      "modelName": "gpt-4o",
+      "modelTier": "premium",
+      "planningMode": "synthesis-and-decision",
+      "handoffRequired": true
+    },
+    {
+      "handle": "@Mira",
+      "tier": "premium",
+      "role": "Full-Stack Lead / CTO",
+      "skills": [
+        "typescript",
+        "react",
+        "express",
+        "wave-synthesis",
+        "team-leadership",
+        "implementation-decision"
+      ],
+      "modelProvider": "anthropic",
+      "modelName": "claude-3.5-sonnet",
+      "modelTier": "premium",
+      "planningMode": "synthesis-and-decision",
+      "handoffRequired": true
+    },
+    {
+      "handle": "@Barbara",
+      "tier": "premium",
+      "role": "Database Architect",
+      "skills": [
+        "schema-design",
+        "indexing",
+        "query-optimization",
+        "wave-synthesis",
+        "team-leadership",
+        "implementation-decision"
+      ],
+      "modelProvider": "anthropic",
+      "modelName": "claude-3.5-sonnet",
+      "modelTier": "premium",
+      "planningMode": "synthesis-and-decision",
+      "handoffRequired": true
+    },
+    {
+      "handle": "@Daniela",
+      "tier": "premium",
+      "role": "Auth Specialist",
+      "skills": [
+        "authentication",
+        "rbac",
+        "session-security",
+        "wave-synthesis",
+        "team-leadership",
+        "implementation-decision"
+      ],
+      "modelProvider": "anthropic",
+      "modelName": "claude-3.5-sonnet",
+      "modelTier": "premium",
+      "planningMode": "synthesis-and-decision",
+      "handoffRequired": true
+    },
+    {
+      "handle": "@Una",
+      "tier": "premium",
+      "role": "Design Lead",
+      "skills": [
+        "visual-design",
+        "animation",
+        "brand-system",
+        "wave-synthesis",
+        "team-leadership",
+        "implementation-decision"
+      ],
+      "modelProvider": "openai",
+      "modelName": "gpt-4o",
+      "modelTier": "premium",
+      "planningMode": "synthesis-and-decision",
+      "handoffRequired": true
+    },
+    {
+      "handle": "@guardian",
+      "tier": "premium",
+      "role": "Quality Gatekeeper",
+      "skills": [
+        "policy-enforcement",
+        "merge-readiness",
+        "release-gates",
+        "wave-synthesis",
+        "team-leadership",
+        "implementation-decision"
+      ],
+      "modelProvider": "openai",
+      "modelName": "gpt-4o",
+      "modelTier": "premium",
+      "planningMode": "synthesis-and-decision",
+      "handoffRequired": true
+    },
+    {
+      "handle": "@Ruchi",
+      "tier": "premium",
+      "role": "Systems Engineering Lead",
+      "skills": [
+        "scalability",
+        "performance",
+        "backend-infra",
+        "wave-synthesis",
+        "team-leadership",
+        "implementation-decision"
+      ],
+      "modelProvider": "openai",
+      "modelName": "gpt-4o",
+      "modelTier": "premium",
+      "planningMode": "synthesis-and-decision",
+      "handoffRequired": true
+    },
+    {
+      "handle": "@Joelle",
+      "tier": "premium",
+      "role": "ML Lead",
+      "skills": [
+        "recommendations",
+        "scoring-models",
+        "nlp",
+        "wave-synthesis",
+        "team-leadership",
+        "implementation-decision"
+      ],
+      "modelProvider": "openai",
+      "modelName": "gpt-4o",
+      "modelTier": "premium",
+      "planningMode": "synthesis-and-decision",
+      "handoffRequired": true
+    },
+    {
+      "handle": "@Jaime",
+      "tier": "premium",
+      "role": "Productivity Lead",
+      "skills": [
+        "workflow-automation",
+        "crm-productivity",
+        "wave-synthesis",
+        "team-leadership",
+        "implementation-decision"
+      ],
+      "modelProvider": "openai",
+      "modelName": "gpt-4o",
+      "modelTier": "premium",
+      "planningMode": "synthesis-and-decision",
+      "handoffRequired": true
+    },
+    {
+      "handle": "@Radia",
+      "tier": "premium",
+      "role": "Security Analyst Lead",
+      "skills": [
+        "api-security",
+        "hardening",
+        "owasp-controls",
+        "wave-synthesis",
+        "team-leadership",
+        "implementation-decision"
+      ],
+      "modelProvider": "anthropic",
+      "modelName": "claude-3.5-sonnet",
+      "modelTier": "premium",
+      "planningMode": "synthesis-and-decision",
+      "handoffRequired": true
+    },
+    {
+      "handle": "@Ecem",
+      "tier": "premium",
+      "role": "Security Lead",
+      "skills": [
+        "threat-modeling",
+        "vuln-management",
+        "wave-synthesis",
+        "team-leadership",
+        "implementation-decision"
+      ],
+      "modelProvider": "openai",
+      "modelName": "gpt-4o",
+      "modelTier": "premium",
+      "planningMode": "synthesis-and-decision",
+      "handoffRequired": true
+    },
+    {
+      "handle": "@Katherine",
+      "tier": "premium",
+      "role": "QA Lead",
+      "skills": [
+        "testing",
+        "regression",
+        "verification",
+        "wave-synthesis",
+        "team-leadership",
+        "implementation-decision"
+      ],
+      "modelProvider": "openai",
+      "modelName": "gpt-4o",
+      "modelTier": "premium",
+      "planningMode": "synthesis-and-decision",
+      "handoffRequired": true
+    },
+    {
+      "handle": "@Lila",
+      "tier": "premium",
+      "role": "Ops Director",
+      "skills": [
+        "sre",
+        "monitoring",
+        "reliability",
+        "wave-synthesis",
+        "team-leadership",
+        "implementation-decision"
+      ],
+      "modelProvider": "openai",
+      "modelName": "gpt-4o",
+      "modelTier": "premium",
+      "planningMode": "synthesis-and-decision",
+      "handoffRequired": true
+    },
+    {
+      "handle": "@Lisa",
+      "tier": "premium",
+      "role": "Cloud Lead",
+      "skills": [
+        "cloud-hosting",
+        "cdn",
+        "deployment-topology",
+        "wave-synthesis",
+        "team-leadership",
+        "implementation-decision"
+      ],
+      "modelProvider": "openai",
+      "modelName": "gpt-4o",
+      "modelTier": "premium",
+      "planningMode": "synthesis-and-decision",
+      "handoffRequired": true
+    },
+    {
+      "handle": "@Gwynne",
+      "tier": "premium",
+      "role": "DevOps Lead",
+      "skills": [
+        "ci-cd",
+        "release-pipelines",
+        "deploy-automation",
+        "wave-synthesis",
+        "team-leadership",
+        "implementation-decision"
+      ],
+      "modelProvider": "openai",
+      "modelName": "gpt-4o",
+      "modelTier": "premium",
+      "planningMode": "synthesis-and-decision",
+      "handoffRequired": true
+    },
+    {
+      "handle": "@Lea",
+      "tier": "premium",
+      "role": "UI Engineering Lead",
+      "skills": [
+        "component-library",
+        "web-standards",
+        "ui-architecture",
+        "wave-synthesis",
+        "team-leadership",
+        "implementation-decision"
+      ],
+      "modelProvider": "openai",
+      "modelName": "gpt-4o",
+      "modelTier": "premium",
+      "planningMode": "synthesis-and-decision",
+      "handoffRequired": true
+    },
+    {
+      "handle": "@Tracy",
+      "tier": "premium",
+      "role": "Responsive Design Lead",
+      "skills": [
+        "mobile-first",
+        "breakpoints",
+        "cross-device-layouts",
+        "wave-synthesis",
+        "team-leadership",
+        "implementation-decision"
+      ],
+      "modelProvider": "openai",
+      "modelName": "gpt-4o",
+      "modelTier": "premium",
+      "planningMode": "synthesis-and-decision",
+      "handoffRequired": true
+    },
+    {
+      "handle": "@Africa",
+      "tier": "premium",
+      "role": "Accessibility Lead",
+      "skills": [
+        "wcag-aa",
+        "aria",
+        "keyboard-navigation",
+        "wave-synthesis",
+        "team-leadership",
+        "implementation-decision"
+      ],
+      "modelProvider": "openai",
+      "modelName": "gpt-4o",
+      "modelTier": "premium",
+      "planningMode": "synthesis-and-decision",
+      "handoffRequired": true
+    },
+    {
+      "handle": "@Petra",
+      "tier": "premium",
+      "role": "Squad Lead: Leasing & Legal",
+      "skills": [
+        "team-leadership",
+        "legal-synthesis",
+        "risk-review",
+        "wave-synthesis",
+        "team-leadership",
+        "implementation-decision"
+      ],
+      "modelProvider": "openai",
+      "modelName": "gpt-4o",
+      "modelTier": "premium",
+      "planningMode": "synthesis-and-decision",
+      "handoffRequired": true,
+      "squadLead": "leasing-legal"
+    },
+    {
+      "handle": "@Zoya",
+      "tier": "premium",
+      "role": "Squad Lead: Finance & Analytics",
+      "skills": [
+        "financial-synthesis",
+        "kpi-leadership",
+        "revenue-review",
+        "wave-synthesis",
+        "team-leadership",
+        "implementation-decision"
+      ],
+      "modelProvider": "openai",
+      "modelName": "gpt-4o",
+      "modelTier": "premium",
+      "planningMode": "synthesis-and-decision",
+      "handoffRequired": true,
+      "squadLead": "finance-analytics"
+    },
+    {
+      "handle": "@Hana",
+      "tier": "premium",
+      "role": "Squad Lead: Sales & Workflow",
+      "skills": [
+        "sales-strategy",
+        "workflow-governance",
+        "pipeline-review",
+        "wave-synthesis",
+        "team-leadership",
+        "implementation-decision"
+      ],
+      "modelProvider": "openai",
+      "modelName": "gpt-4o",
+      "modelTier": "premium",
+      "planningMode": "synthesis-and-decision",
+      "handoffRequired": true,
+      "squadLead": "sales-workflow"
+    },
+    {
+      "handle": "@Kira",
+      "tier": "premium",
+      "role": "Squad Lead: UX & Design",
+      "skills": [
+        "design-synthesis",
+        "brand-governance",
+        "ux-strategy",
+        "wave-synthesis",
+        "team-leadership",
+        "implementation-decision"
+      ],
+      "modelProvider": "openai",
+      "modelName": "gpt-4o",
+      "modelTier": "premium",
+      "planningMode": "synthesis-and-decision",
+      "handoffRequired": true,
+      "squadLead": "ux-design"
+    },
+    {
+      "handle": "@Neva",
+      "tier": "premium",
+      "role": "Squad Lead: Data & Intelligence",
+      "skills": [
+        "data-strategy",
+        "insight-leadership",
+        "ml-governance",
+        "wave-synthesis",
+        "team-leadership",
+        "implementation-decision"
+      ],
+      "modelProvider": "openai",
+      "modelName": "gpt-4o",
+      "modelTier": "premium",
+      "planningMode": "synthesis-and-decision",
+      "handoffRequired": true,
+      "squadLead": "data-intelligence"
+    },
+    {
+      "handle": "@Clio",
+      "tier": "premium",
+      "role": "Squad Lead: Infra & Ops",
+      "skills": [
+        "infra-strategy",
+        "ops-governance",
+        "sre-leadership",
+        "wave-synthesis",
+        "team-leadership",
+        "implementation-decision"
+      ],
+      "modelProvider": "openai",
+      "modelName": "gpt-4o",
+      "modelTier": "premium",
+      "planningMode": "synthesis-and-decision",
+      "handoffRequired": true,
+      "squadLead": "infra-ops"
+    },
+    {
+      "handle": "@Arya",
+      "tier": "premium",
+      "role": "Squad Lead: Content & SEO",
+      "skills": [
+        "content-strategy",
+        "seo-leadership",
+        "comms-governance",
+        "wave-synthesis",
+        "team-leadership",
+        "implementation-decision"
+      ],
+      "modelProvider": "openai",
+      "modelName": "gpt-4o",
+      "modelTier": "premium",
+      "planningMode": "synthesis-and-decision",
+      "handoffRequired": true,
+      "squadLead": "content-seo"
+    },
+    {
+      "handle": "@Willa",
+      "tier": "premium",
+      "role": "Squad Lead: Security & Compliance",
+      "skills": [
+        "security-synthesis",
+        "compliance-leadership",
+        "risk-authority",
+        "wave-synthesis",
+        "team-leadership",
+        "implementation-decision"
+      ],
+      "modelProvider": "openai",
+      "modelName": "gpt-4o",
+      "modelTier": "premium",
+      "planningMode": "synthesis-and-decision",
+      "handoffRequired": true,
+      "squadLead": "security-compliance"
+    },
+    {
+      "handle": "@Sana",
+      "tier": "premium",
+      "role": "Squad Lead: QA & Testing",
+      "skills": [
+        "qa-governance",
+        "test-strategy",
+        "acceptance-authority",
+        "wave-synthesis",
+        "team-leadership",
+        "implementation-decision"
+      ],
+      "modelProvider": "openai",
+      "modelName": "gpt-4o",
+      "modelTier": "premium",
+      "planningMode": "synthesis-and-decision",
+      "handoffRequired": true,
+      "squadLead": "qa-testing"
+    },
+    {
+      "handle": "@Dara",
+      "tier": "premium",
+      "role": "Squad Lead: AI & Innovation",
+      "skills": [
+        "ai-strategy",
+        "innovation-governance",
+        "ml-architecture",
+        "wave-synthesis",
+        "team-leadership",
+        "implementation-decision"
+      ],
+      "modelProvider": "openai",
+      "modelName": "gpt-4o",
+      "modelTier": "premium",
+      "planningMode": "synthesis-and-decision",
+      "handoffRequired": true,
+      "squadLead": "ai-innovation"
+    },
+    {
+      "handle": "@Lysa",
+      "tier": "premium",
+      "role": "Director: Product",
+      "skills": [
+        "product-roadmap",
+        "feature-prioritization",
+        "okr-alignment",
+        "wave-synthesis",
+        "team-leadership",
+        "implementation-decision"
+      ],
+      "modelProvider": "openai",
+      "modelName": "gpt-4o",
+      "modelTier": "premium",
+      "planningMode": "synthesis-and-decision",
+      "handoffRequired": true
+    },
+    {
+      "handle": "@Mera",
+      "tier": "premium",
+      "role": "Director: Engineering",
+      "skills": [
+        "engineering-capacity",
+        "tech-debt",
+        "quality-gates",
+        "wave-synthesis",
+        "team-leadership",
+        "implementation-decision"
+      ],
+      "modelProvider": "openai",
+      "modelName": "gpt-4o",
+      "modelTier": "premium",
+      "planningMode": "synthesis-and-decision",
+      "handoffRequired": true
+    },
+    {
+      "handle": "@Fora",
+      "tier": "premium",
+      "role": "Director: Design",
+      "skills": [
+        "design-system",
+        "brand-consistency",
+        "user-experience",
+        "wave-synthesis",
+        "team-leadership",
+        "implementation-decision"
+      ],
+      "modelProvider": "openai",
+      "modelName": "gpt-4o",
+      "modelTier": "premium",
+      "planningMode": "synthesis-and-decision",
+      "handoffRequired": true
+    },
+    {
+      "handle": "@Bria",
+      "tier": "premium",
+      "role": "Director: Data",
+      "skills": [
+        "data-governance",
+        "reporting-standards",
+        "privacy-authority",
+        "wave-synthesis",
+        "team-leadership",
+        "implementation-decision"
+      ],
+      "modelProvider": "openai",
+      "modelName": "gpt-4o",
+      "modelTier": "premium",
+      "planningMode": "synthesis-and-decision",
+      "handoffRequired": true
+    },
+    {
+      "handle": "@Elsa",
+      "tier": "premium",
+      "role": "Director: Operations",
+      "skills": [
+        "operational-excellence",
+        "process-standards",
+        "sla-authority",
+        "wave-synthesis",
+        "team-leadership",
+        "implementation-decision"
+      ],
+      "modelProvider": "openai",
+      "modelName": "gpt-4o",
+      "modelTier": "premium",
+      "planningMode": "synthesis-and-decision",
+      "handoffRequired": true
+    },
+    {
+      "handle": "@Nyla",
+      "tier": "premium",
+      "role": "Director: Security",
+      "skills": [
+        "security-strategy",
+        "compliance-authority",
+        "risk-management",
+        "wave-synthesis",
+        "team-leadership",
+        "implementation-decision"
+      ],
+      "modelProvider": "openai",
+      "modelName": "gpt-4o",
+      "modelTier": "premium",
+      "planningMode": "synthesis-and-decision",
+      "handoffRequired": true
+    },
+    {
+      "handle": "@Reva",
+      "tier": "premium",
+      "role": "Principal Architect",
+      "skills": [
+        "system-design",
+        "cross-team-architecture",
+        "tech-standards",
+        "wave-synthesis",
+        "team-leadership",
+        "implementation-decision"
+      ],
+      "modelProvider": "anthropic",
+      "modelName": "claude-3.5-sonnet",
+      "modelTier": "premium",
+      "planningMode": "synthesis-and-decision",
+      "handoffRequired": true
+    },
+    {
+      "handle": "@Anya",
+      "tier": "premium",
+      "role": "Principal: Infrastructure",
+      "skills": [
+        "infra-standards",
+        "cloud-architecture",
+        "reliability-authority",
+        "wave-synthesis",
+        "team-leadership",
+        "implementation-decision"
+      ],
+      "modelProvider": "openai",
+      "modelName": "gpt-4o",
+      "modelTier": "premium",
+      "planningMode": "synthesis-and-decision",
+      "handoffRequired": true
+    },
+    {
+      "handle": "@Pera",
+      "tier": "premium",
+      "role": "Principal: Quality",
+      "skills": [
+        "quality-standards",
+        "test-architecture",
+        "release-authority",
+        "wave-synthesis",
+        "team-leadership",
+        "implementation-decision"
+      ],
+      "modelProvider": "openai",
+      "modelName": "gpt-4o",
+      "modelTier": "premium",
+      "planningMode": "synthesis-and-decision",
+      "handoffRequired": true
+    },
+    {
+      "handle": "@Tova",
+      "tier": "premium",
+      "role": "Principal: AI/ML",
+      "skills": [
+        "ml-standards",
+        "ai-governance",
+        "model-authority",
+        "wave-synthesis",
+        "team-leadership",
+        "implementation-decision"
+      ],
+      "modelProvider": "anthropic",
+      "modelName": "claude-3.5-sonnet",
+      "modelTier": "premium",
+      "planningMode": "synthesis-and-decision",
+      "handoffRequired": true
+    },
+    {
+      "handle": "@Finn",
+      "tier": "premium",
+      "role": "Tech Lead: Backend",
+      "skills": [
+        "api-design",
+        "backend-patterns",
+        "code-review",
+        "wave-synthesis",
+        "team-leadership",
+        "implementation-decision"
+      ],
+      "modelProvider": "openai",
+      "modelName": "gpt-4o",
+      "modelTier": "premium",
+      "planningMode": "synthesis-and-decision",
+      "handoffRequired": true
+    },
+    {
+      "handle": "@Reid",
+      "tier": "premium",
+      "role": "Tech Lead: Frontend",
+      "skills": [
+        "react-patterns",
+        "component-architecture",
+        "frontend-perf",
+        "wave-synthesis",
+        "team-leadership",
+        "implementation-decision"
+      ],
+      "modelProvider": "openai",
+      "modelName": "gpt-4o",
+      "modelTier": "premium",
+      "planningMode": "synthesis-and-decision",
+      "handoffRequired": true
+    },
+    {
+      "handle": "@Skye",
+      "tier": "premium",
+      "role": "Tech Lead: Mobile",
+      "skills": [
+        "mobile-patterns",
+        "pwa",
+        "responsive-architecture",
+        "wave-synthesis",
+        "team-leadership",
+        "implementation-decision"
+      ],
+      "modelProvider": "openai",
+      "modelName": "gpt-4o",
+      "modelTier": "premium",
+      "planningMode": "synthesis-and-decision",
+      "handoffRequired": true
+    },
+    {
+      "handle": "@Quinn",
+      "tier": "premium",
+      "role": "Tech Lead: DevOps",
+      "skills": [
+        "pipeline-design",
+        "deployment-patterns",
+        "infra-code",
+        "wave-synthesis",
+        "team-leadership",
+        "implementation-decision"
+      ],
+      "modelProvider": "openai",
+      "modelName": "gpt-4o",
+      "modelTier": "premium",
+      "planningMode": "synthesis-and-decision",
+      "handoffRequired": true
+    },
+    {
+      "handle": "@Blake",
+      "tier": "premium",
+      "role": "Tech Lead: Data",
+      "skills": [
+        "data-architecture",
+        "query-patterns",
+        "analytics-engineering",
+        "wave-synthesis",
+        "team-leadership",
+        "implementation-decision"
+      ],
+      "modelProvider": "openai",
+      "modelName": "gpt-4o",
+      "modelTier": "premium",
+      "planningMode": "synthesis-and-decision",
+      "handoffRequired": true
+    },
+    {
+      "handle": "@Drew",
+      "tier": "premium",
+      "role": "Tech Lead: Security",
+      "skills": [
+        "security-patterns",
+        "hardening-review",
+        "pen-test-authority",
+        "wave-synthesis",
+        "team-leadership",
+        "implementation-decision"
+      ],
+      "modelProvider": "openai",
+      "modelName": "gpt-4o",
+      "modelTier": "premium",
+      "planningMode": "synthesis-and-decision",
+      "handoffRequired": true
+    },
+    {
+      "handle": "@Sage",
+      "tier": "premium",
+      "role": "Tech Lead: Testing",
+      "skills": [
+        "test-architecture",
+        "automation-design",
+        "coverage-strategy",
+        "wave-synthesis",
+        "team-leadership",
+        "implementation-decision"
+      ],
+      "modelProvider": "openai",
+      "modelName": "gpt-4o",
+      "modelTier": "premium",
+      "planningMode": "synthesis-and-decision",
+      "handoffRequired": true
+    },
+    {
+      "handle": "@Avery",
+      "tier": "premium",
+      "role": "Tech Lead: AI Integration",
+      "skills": [
+        "ai-integration",
+        "prompt-engineering",
+        "llm-patterns",
+        "wave-synthesis",
+        "team-leadership",
+        "implementation-decision"
+      ],
+      "modelProvider": "openai",
+      "modelName": "gpt-4o",
+      "modelTier": "premium",
+      "planningMode": "synthesis-and-decision",
+      "handoffRequired": true
+    },
+    {
+      "handle": "@River",
+      "tier": "premium",
+      "role": "Tech Lead: Platform",
+      "skills": [
+        "platform-patterns",
+        "cross-service-design",
+        "api-gateway",
+        "wave-synthesis",
+        "team-leadership",
+        "implementation-decision"
+      ],
+      "modelProvider": "openai",
+      "modelName": "gpt-4o",
+      "modelTier": "premium",
+      "planningMode": "synthesis-and-decision",
+      "handoffRequired": true
+    },
+    {
+      "handle": "@Rowan",
+      "tier": "premium",
+      "role": "Tech Lead: Search & Maps",
+      "skills": [
+        "search-architecture",
+        "geo-indexing",
+        "map-performance",
+        "wave-synthesis",
+        "team-leadership",
+        "implementation-decision"
+      ],
+      "modelProvider": "openai",
+      "modelName": "gpt-4o",
+      "modelTier": "premium",
+      "planningMode": "synthesis-and-decision",
+      "handoffRequired": true
+    },
+    {
+      "handle": "@Adara",
+      "tier": "free",
+      "squad": "leasing-legal",
+      "role": "Leasing Risk Specialist",
+      "skills": [
+        "leasing-risk",
+        "policy-interpretation",
+        "readiness-scoring",
+        "wave-planning",
+        "dependency-handoff"
+      ],
+      "modelProvider": "google-ai-studio",
+      "modelName": "Gemini 2.0 Flash",
+      "modelTier": "free",
+      "planningMode": "wave-collaboration",
+      "handoffRequired": true
+    },
+    {
+      "handle": "@Bryn",
+      "tier": "free",
+      "squad": "finance-analytics",
+      "role": "Contract QA Specialist",
+      "skills": [
+        "contract-quality",
+        "document-validation",
+        "readiness-scoring",
+        "wave-planning",
+        "dependency-handoff"
+      ],
+      "modelProvider": "groq",
+      "modelName": "Llama 3.1 70B",
+      "modelTier": "free",
+      "planningMode": "wave-collaboration",
+      "handoffRequired": true
+    },
+    {
+      "handle": "@Celia",
+      "tier": "free",
+      "squad": "sales-workflow",
+      "role": "Finance Forecast Specialist",
+      "skills": [
+        "forecasting",
+        "finance-kpis",
+        "readiness-scoring",
+        "wave-planning",
+        "dependency-handoff"
+      ],
+      "modelProvider": "deepseek",
+      "modelName": "DeepSeek V3",
+      "modelTier": "free",
+      "planningMode": "wave-collaboration",
+      "handoffRequired": true
+    },
+    {
+      "handle": "@Darya",
+      "tier": "free",
+      "squad": "ux-design",
+      "role": "Billing Controls Specialist",
+      "skills": [
+        "billing-controls",
+        "reconciliation",
+        "readiness-scoring",
+        "wave-planning",
+        "dependency-handoff"
+      ],
+      "modelProvider": "google-ai-studio",
+      "modelName": "Gemini 2.0 Flash",
+      "modelTier": "free",
+      "planningMode": "wave-collaboration",
+      "handoffRequired": true
+    },
+    {
+      "handle": "@Eira",
+      "tier": "free",
+      "squad": "data-intelligence",
+      "role": "Sales Pipeline Optimizer",
+      "skills": [
+        "crm-pipeline",
+        "deal-velocity",
+        "readiness-scoring",
+        "wave-planning",
+        "dependency-handoff"
+      ],
+      "modelProvider": "groq",
+      "modelName": "Llama 3.1 70B",
+      "modelTier": "free",
+      "planningMode": "wave-collaboration",
+      "handoffRequired": true
+    },
+    {
+      "handle": "@Faris",
+      "tier": "free",
+      "squad": "infra-ops",
+      "role": "Lead Routing Specialist",
+      "skills": [
+        "lead-routing",
+        "handoff-protocols",
+        "readiness-scoring",
+        "wave-planning",
+        "dependency-handoff"
+      ],
+      "modelProvider": "deepseek",
+      "modelName": "DeepSeek V3",
+      "modelTier": "free",
+      "planningMode": "wave-collaboration",
+      "handoffRequired": true
+    },
+    {
+      "handle": "@Galen",
+      "tier": "free",
+      "squad": "content-seo",
+      "role": "UX Motion QA Specialist",
+      "skills": [
+        "ui-motion",
+        "interaction-qc",
+        "readiness-scoring",
+        "wave-planning",
+        "dependency-handoff"
+      ],
+      "modelProvider": "google-ai-studio",
+      "modelName": "Gemini 2.0 Flash",
+      "modelTier": "free",
+      "planningMode": "wave-collaboration",
+      "handoffRequired": true
+    },
+    {
+      "handle": "@Hani",
+      "tier": "free",
+      "squad": "security-compliance",
+      "role": "Accessibility Visual Specialist",
+      "skills": [
+        "accessibility-review",
+        "visual-consistency",
+        "readiness-scoring",
+        "wave-planning",
+        "dependency-handoff"
+      ],
+      "modelProvider": "groq",
+      "modelName": "Llama 3.1 70B",
+      "modelTier": "free",
+      "planningMode": "wave-collaboration",
+      "handoffRequired": true
+    },
+    {
+      "handle": "@Ilya",
+      "tier": "free",
+      "squad": "qa-testing",
+      "role": "Data Quality Specialist",
+      "skills": [
+        "data-quality",
+        "schema-checks",
+        "readiness-scoring",
+        "wave-planning",
+        "dependency-handoff"
+      ],
+      "modelProvider": "deepseek",
+      "modelName": "DeepSeek V3",
+      "modelTier": "free",
+      "planningMode": "wave-collaboration",
+      "handoffRequired": true
+    },
+    {
+      "handle": "@Jamal",
+      "tier": "free",
+      "squad": "ai-innovation",
+      "role": "Insights Validation Specialist",
+      "skills": [
+        "analytics-validation",
+        "kpi-integrity",
+        "readiness-scoring",
+        "wave-planning",
+        "dependency-handoff"
+      ],
+      "modelProvider": "google-ai-studio",
+      "modelName": "Gemini 2.0 Flash",
+      "modelTier": "free",
+      "planningMode": "wave-collaboration",
+      "handoffRequired": true
+    },
+    {
+      "handle": "@Kenza",
+      "tier": "free",
+      "squad": "leasing-legal",
+      "role": "Infra Cost Guard Specialist",
+      "skills": [
+        "infra-costing",
+        "capacity-planning",
+        "readiness-scoring",
+        "wave-planning",
+        "dependency-handoff"
+      ],
+      "modelProvider": "groq",
+      "modelName": "Llama 3.1 70B",
+      "modelTier": "free",
+      "planningMode": "wave-collaboration",
+      "handoffRequired": true
+    },
+    {
+      "handle": "@Liora",
+      "tier": "free",
+      "squad": "finance-analytics",
+      "role": "Release Reliability Specialist",
+      "skills": [
+        "release-reliability",
+        "incident-prevention",
+        "readiness-scoring",
+        "wave-planning",
+        "dependency-handoff"
+      ],
+      "modelProvider": "deepseek",
+      "modelName": "DeepSeek V3",
+      "modelTier": "free",
+      "planningMode": "wave-collaboration",
+      "handoffRequired": true
+    },
+    {
+      "handle": "@Maaz",
+      "tier": "free",
+      "squad": "sales-workflow",
+      "role": "SEO Content Quality Specialist",
+      "skills": [
+        "seo-content",
+        "metadata-quality",
+        "readiness-scoring",
+        "wave-planning",
+        "dependency-handoff"
+      ],
+      "modelProvider": "google-ai-studio",
+      "modelName": "Gemini 2.0 Flash",
+      "modelTier": "free",
+      "planningMode": "wave-collaboration",
+      "handoffRequired": true
+    },
+    {
+      "handle": "@Nadim",
+      "tier": "free",
+      "squad": "ux-design",
+      "role": "Campaign Tracking Specialist",
+      "skills": [
+        "campaign-attribution",
+        "tracking-integrity",
+        "readiness-scoring",
+        "wave-planning",
+        "dependency-handoff"
+      ],
+      "modelProvider": "groq",
+      "modelName": "Llama 3.1 70B",
+      "modelTier": "free",
+      "planningMode": "wave-collaboration",
+      "handoffRequired": true
+    },
+    {
+      "handle": "@Oriana",
+      "tier": "free",
+      "squad": "data-intelligence",
+      "role": "Security Threat Triage Specialist",
+      "skills": [
+        "threat-triage",
+        "security-controls",
+        "readiness-scoring",
+        "wave-planning",
+        "dependency-handoff"
+      ],
+      "modelProvider": "deepseek",
+      "modelName": "DeepSeek V3",
+      "modelTier": "free",
+      "planningMode": "wave-collaboration",
+      "handoffRequired": true
+    },
+    {
+      "handle": "@Parisa",
+      "tier": "free",
+      "squad": "infra-ops",
+      "role": "Compliance Audit Specialist",
+      "skills": [
+        "compliance-audits",
+        "evidence-tracking",
+        "readiness-scoring",
+        "wave-planning",
+        "dependency-handoff"
+      ],
+      "modelProvider": "google-ai-studio",
+      "modelName": "Gemini 2.0 Flash",
+      "modelTier": "free",
+      "planningMode": "wave-collaboration",
+      "handoffRequired": true
+    },
+    {
+      "handle": "@Qamar",
+      "tier": "free",
+      "squad": "content-seo",
+      "role": "QA Automation Specialist",
+      "skills": [
+        "test-automation",
+        "coverage-gaps",
+        "readiness-scoring",
+        "wave-planning",
+        "dependency-handoff"
+      ],
+      "modelProvider": "groq",
+      "modelName": "Llama 3.1 70B",
+      "modelTier": "free",
+      "planningMode": "wave-collaboration",
+      "handoffRequired": true
+    },
+    {
+      "handle": "@Rahil",
+      "tier": "free",
+      "squad": "security-compliance",
+      "role": "Regression Pack Specialist",
+      "skills": [
+        "regression-testing",
+        "defect-clustering",
+        "readiness-scoring",
+        "wave-planning",
+        "dependency-handoff"
+      ],
+      "modelProvider": "deepseek",
+      "modelName": "DeepSeek V3",
+      "modelTier": "free",
+      "planningMode": "wave-collaboration",
+      "handoffRequired": true
+    },
+    {
+      "handle": "@Soraya",
+      "tier": "free",
+      "squad": "qa-testing",
+      "role": "AI Prompt Reliability Specialist",
+      "skills": [
+        "prompt-reliability",
+        "agent-safety",
+        "readiness-scoring",
+        "wave-planning",
+        "dependency-handoff"
+      ],
+      "modelProvider": "google-ai-studio",
+      "modelName": "Gemini 2.0 Flash",
+      "modelTier": "free",
+      "planningMode": "wave-collaboration",
+      "handoffRequired": true
+    },
+    {
+      "handle": "@Tariq",
+      "tier": "free",
+      "squad": "ai-innovation",
+      "role": "Integration Guard Specialist",
+      "skills": [
+        "integration-guardrails",
+        "dependency-handoff",
+        "readiness-scoring",
+        "wave-planning",
+        "dependency-handoff"
+      ],
+      "modelProvider": "groq",
+      "modelName": "Llama 3.1 70B",
+      "modelTier": "free",
+      "planningMode": "wave-collaboration",
+      "handoffRequired": true
+    }
+  ]
+}

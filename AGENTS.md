@@ -73,15 +73,15 @@ This file defines the White Caves multi-expert operating model for all agent-ass
 
 ---
 
-## 🚀 AEGIS 150 — ORCHESTRATOR MODEL (Active as of 2026-05-25)
+## 🚀 AEGIS 170 V3 — ORCHESTRATOR MODEL (Active as of 2026-05-26)
 
-**TRANSFORMATION:** V3 100-agent mesh → **Aegis 150-agent mesh** | **100 free planning specialists + 50 premium implementation agents** | **10 squads × 15 agents**  
+**TRANSFORMATION:** Aegis 150-agent mesh → **Aegis 170-agent mesh (V3)** | **120 free planning specialists + 50 premium implementation agents** | **10 squads × 17 agents**  
 **APPROVAL GATE:** `@Ada — Context Ready (60% Readiness) — Coding Phase Approved` (dual-threshold: 60% unlock, 90% target)  
-**POLICY SOURCE:** `scripts/orchestrator/policy.json` | **REGISTRY:** `plans/SUBAGENT_REGISTRY_150.json`  
+**POLICY SOURCE:** `scripts/orchestrator/policy.json` | **REGISTRY:** `plans/SUBAGENT_REGISTRY_170.json`  
 **BACKGROUND MODE:** Free planning workers run via `npm run orchestrator:bg:start` (always free-model-only agents regardless of freeModelOnlyMode policy flag)  
-**STATUS:** Active → previously V3 (100 agents); V3 registry retained at `scripts/orchestrator/subagents-registry.json` for legacy compatibility
+**STATUS:** Active → previously Aegis 150; V3 (100-agent) and Aegis 150 registries retained for legacy compatibility
 
-The V3 sections below are retained as legacy roster/planning detail and do not override the active Aegis 150 policy above.
+The legacy sections below are retained as historical roster/planning detail and do not override the active Aegis 170 v3 policy above.
 
 ---
 
