@@ -3,7 +3,7 @@
 **Wave:** 18  
 **Focus:** Workflow Parity Audit + Planning Governance  
 **Status:** 📋 Planned  
-**Date:** 2026-05-25
+**Date:** 2026-05-26
 
 ---
 
@@ -16,6 +16,7 @@
 | Matrix evidence quality | Manual audit | `WAVE_18_WORKFLOW_PARITY_MATRIX.md` | Each row has White Caves doc/code/evidence signals |
 | Status scoring consistency | Manual audit | Matrix legend and row statuses | Status values only: Included/Partial/Missing/Unknown |
 | Gap actionability | Manual audit | Matrix gap register + W18 backlog | Every P0/P1/P2 gap maps to requirement IDs |
+| Wave 18.1 execution readiness | Manual audit | `WAVE_18_1_IMPLEMENTATION_BACKLOG.md` | 132-item inventory present + top-20 P0 tasks include owner/metric/validation gate |
 | Drift correction | Manual audit | `business_docs/09_crm_features/README.md` | No references to missing files |
 
 ---

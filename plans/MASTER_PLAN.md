@@ -2,7 +2,7 @@
 
 **Purpose:** Canonical roadmap for execution decisions.  
 **Owners:** @Ada + @Margaret  
-**Last Updated:** 2026-05-25  
+**Last Updated:** 2026-05-26  
 **Update cadence:** Weekly roadmap refresh (daily execution goes to `PROJECT_PROGRESS.md` and `DAILY_MILESTONE_TRACKER.md`)
 
 ---
@@ -43,7 +43,7 @@
 | 7 | 15 | Cache + PWA readiness | @Redis + @PWA + @Ruchi + @Una | ✅ Complete | [`IMPROVEMENTS_PERFORMANCE.md`](./IMPROVEMENTS_PERFORMANCE.md), [`IMPROVEMENTS_UX.md`](./IMPROVEMENTS_UX.md) | Wave 14 green + readiness 60% + @Ada approval phrase | Cache/PWA bundle closed + validation green |
 | 8 | 16 | Security hardening + API versioning | @S5 + @Radia + @Mira | ✅ Complete | [`IMPROVEMENTS_SECURITY.md`](./IMPROVEMENTS_SECURITY.md), [`IMPROVEMENTS_ARCHITECTURE.md`](./IMPROVEMENTS_ARCHITECTURE.md) | Wave 15 green + readiness 60% + @Ada approval phrase | `/api/v1`, CSRF, error-envelope hardening closed + validation green |
 | 9 | 17 | Full UI/UX luxury upgrade (design tokens + animations + mobile + PWA + WCAG 2.2) | @Una + @Lea + @Tracy + @Africa + @Cyra + @Katherine | ✅ Complete | [`IMPROVEMENTS_UX.md`](./IMPROVEMENTS_UX.md), [`ui-ux-specification.md`](../../business_docs/06_design_architecture/ui-ux-specification.md) | Wave 16 green + free-agent specs + readiness 60% + @Ada approval phrase | Glassmorphism + animations + mobile + PWA + WCAG 2.2 all closed; Lighthouse CI gate green |
-| 10 | 18 | Cross-platform workflow parity audit + prioritized gap backlog | @Ada + @Margaret + @Mira + @Katherine | 📋 Planned | [`WAVE_18_WORKFLOW_PARITY_MATRIX.md`](./waves/WAVE_18_WORKFLOW_PARITY_MATRIX.md), [`functional-requirements.md`](../business_docs/05_requirements/functional-requirements.md), [`business_docs/04_workflows/README.md`](../business_docs/04_workflows/README.md) | Wave 17 green + readiness 60% + @Ada approval phrase | Parity matrix finalized, P0/P1/P2 gap queue generated, canonical plans updated, `npm run plans:validate` green |
+| 10 | 18 | Cross-platform workflow parity audit + prioritized gap backlog | @Ada + @Margaret + @Mira + @Katherine | 📋 Planned | [`WAVE_18_WORKFLOW_PARITY_MATRIX.md`](./waves/WAVE_18_WORKFLOW_PARITY_MATRIX.md), [`WAVE_18_1_IMPLEMENTATION_BACKLOG.md`](./waves/WAVE_18_1_IMPLEMENTATION_BACKLOG.md), [`functional-requirements.md`](../business_docs/05_requirements/functional-requirements.md), [`business_docs/04_workflows/README.md`](../business_docs/04_workflows/README.md) | Wave 17 green + readiness 60% + @Ada approval phrase | Parity matrix finalized, top-20 P0 queue locked, canonical plans updated, `npm run plans:validate` green |
 
 ---
 

@@ -3,7 +3,7 @@
 **Wave:** 18  
 **Focus:** Real-Estate Platform Workflow Parity Audit + Gap Backlog Generation  
 **Status:** 📋 Planned  
-**Date:** 2026-05-25  
+**Date:** 2026-05-26  
 **Owners:** @Ada + @Margaret + @Mira + @Sofia + @Victoria + @Invoice + @Katherine
 
 ---
@@ -14,20 +14,23 @@ Create a benchmarked, evidence-backed workflow parity model comparing White Cave
 
 ---
 
-## Locked Scope (Wave 18 Defaults)
+## Locked Scope (Wave 18.1 Defaults)
 
-### Platform Set (v1)
+### Platform Set (v2)
 
-1. Property Finder (Dubai/UAE listing ecosystem)
-2. Bayut (Dubai/UAE listing ecosystem)
-3. Dubizzle Property (Dubai/UAE listing ecosystem)
-4. Betterhomes (brokerage operations benchmark)
-5. Allsopp & Allsopp (brokerage operations benchmark)
+1. Property Finder (UAE)
+2. Bayut / dubizzle (UAE)
+3. Houza (UAE challenger UX)
+4. Zillow (US product benchmark)
+5. Rightmove (UK listing benchmark)
+6. Compass (luxury brokerage workflow benchmark)
+7. Salesforce (enterprise CRM workflow benchmark)
+8. HubSpot (automation + pipeline UX benchmark)
 
 ### Region
 
 - Primary: Dubai/UAE workflows
-- Secondary: global CRM patterns only when needed to fill non-portal operational workflows
+- Secondary: global parity for CRM automation, funnel management, and enterprise workflow depth
 
 ### Parity Model
 
@@ -104,15 +107,99 @@ This matrix is the canonical scoring surface with:
 - **P1**: conversion/retention operations (viewings, offers, reminders, comms, renewals)
 - **P2**: UX/reporting/admin optimization enhancements
 
+### Weighted Prioritization Formula
+
+- Revenue impact: 35%
+- Customer impact: 25%
+- Strategic moat: 20%
+- Delivery effort: 10%
+- Risk/compliance urgency: 10%
+
+---
+
+## Opportunity Inventory Scope
+
+Wave 18.1 converts parity findings into a structured **132-item** opportunity register across 12 pillars:
+
+1. Search & Discovery (14)
+2. Listing Quality & Trust (10)
+3. Lead Capture & Conversion (12)
+4. CRM Workflow Productivity (18)
+5. WhatsApp/Omnichannel & AI Ops (12)
+6. Tenant/Landlord Lifecycle (12)
+7. Analytics & Revenue Intelligence (9)
+8. Mobile CRM & Field Ops (8)
+9. Performance/Core Web Vitals/PWA (8)
+10. Integrations & Data Platform (11)
+11. Security/Compliance/Audit (8)
+12. SEO/Growth/Marketplace Flywheel (10)
+
+---
+
+## Execution Roadmap (Phases A–F)
+
+### Phase A — Benchmark & Scoring Baseline (2 weeks)
+
+1. Lock parity rubric
+2. Capture competitor evidence per workflow
+3. Score White Caves Included/Partial/Missing/Unknown
+4. Rank gaps by business impact
+5. Freeze P0/P1/P2 queue with owners and validation gates
+
+Deliverable: Wave 18 parity matrix v2 + prioritized gap queue.
+
+### Phase B — Revenue-Critical Parity First (6–8 weeks)
+
+- Discovery + matching quality
+- Conversion funnel clarity (lead→viewing→offer)
+- CRM productivity cockpit + bulk workflows
+
+Deliverable: uplift in response speed, booking rate, and offer rate.
+
+### Phase C — Trust, Quality, Compliance Leadership (4–6 weeks)
+
+- Listing verification + freshness + completeness scoring
+- Agent credibility surfaces
+- Compliance and document confidence indicators
+
+Deliverable: increased trust and reduced operational risk.
+
+### Phase D — Tenant/Landlord Experience Superiority (4–6 weeks)
+
+- Full lifecycle portal parity (payments, renewals, maintenance, documents)
+- Proactive lifecycle communication
+- Landlord portfolio hotspot analytics
+
+Deliverable: retention and lifecycle engagement moat.
+
+### Phase E — AI + Omnichannel Differentiation (4–6 weeks)
+
+- Intent/context-aware WhatsApp orchestration
+- Lead score explainability
+- Best-next-action recommendations
+- Channel cadence optimization with guardrails
+
+Deliverable: productivity and conversion advantage.
+
+### Phase F — Growth Engine (ongoing)
+
+- Programmatic SEO by area/project/intent
+- Structured-data and indexation hygiene
+- UGC/social proof + referral lifecycle loops
+- A/B testing discipline for key funnels
+
+Deliverable: compounding organic growth and lower acquisition cost.
+
 ---
 
 ## Wave 18 Deliverables
 
-1. v1 parity matrix (top 5 platforms, top 20+ workflows)
+1. v2 parity matrix (8 platforms, top 25+ workflows)
 2. drift reconciliation in CRM feature index docs
 3. prioritized gap list with implementation-ready entries
 4. canonical queue updates in `MASTER_PLAN.md`, `PENDING_TASKS_ONLY.md`, `waves/README.md`
 5. validation gate definition and weekly re-benchmark operating loop
+6. execution-ready Wave 18.1 backlog (`WAVE_18_1_IMPLEMENTATION_BACKLOG.md`) with top-20 P0 tasks
 
 ---
 
@@ -122,6 +209,7 @@ Wave 18 is complete when:
 
 1. parity matrix exists and is linked in canonical plans
 2. every gap has priority and owner mapping
-3. queue updates are reflected in canonical planning files
-4. validation gates are testable and explicit
-5. `npm run plans:validate` passes
+3. top-20 P0 tasks are acceptance-criteria ready
+4. queue updates are reflected in canonical planning files
+5. validation gates are testable and explicit
+6. `npm run plans:validate` passes
