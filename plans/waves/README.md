@@ -27,6 +27,12 @@ Each wave should be executed only in roadmap order.
 - Wave 09 is complete and validated for handoff.
 - Wave 13 through Wave 17 are complete in canonical trackers.
 - Wave 18 introduces a planning-first parity benchmark matrix (`WAVE_18_WORKFLOW_PARITY_MATRIX.md`) and queue generation for follow-on implementation waves.
+- Wave 18 governance artifacts now include:
+  - [`WAVE_18_SERVER_GAP_REPORT.md`](./WAVE_18_SERVER_GAP_REPORT.md)
+  - [`WAVE_18_SERVER_REMEDIATION_BACKLOG.md`](./WAVE_18_SERVER_REMEDIATION_BACKLOG.md)
+  - [`WAVE_18_BACKEND_ARCHITECTURE_MAP.md`](./WAVE_18_BACKEND_ARCHITECTURE_MAP.md)
+  - [`WAVE_18_COMPETITOR_PARITY_WEEKLY_DELTA.md`](./WAVE_18_COMPETITOR_PARITY_WEEKLY_DELTA.md)
+  - [`WAVE_18_KPI_DASHBOARD_BASELINE.md`](./WAVE_18_KPI_DASHBOARD_BASELINE.md)
 - Wave 19 converts parity outputs into execution scope for Identity & Access v2, deterministic `/crm` routing, and MD dashboard IA split.
 - Wave 18.1 execution queue is now tracked in [`WAVE_18_1_IMPLEMENTATION_BACKLOG.md`](./WAVE_18_1_IMPLEMENTATION_BACKLOG.md) with the locked 8-platform benchmark and top-20 P0 tasks.
 - Wave 11 now includes an explicit test rollout so every active planned wave uses the same four-artifact pattern.

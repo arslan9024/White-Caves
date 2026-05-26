@@ -80,6 +80,11 @@ W18 taxonomy standardizes all benchmarks into the same process model:
 ## Core Artifact in Wave 18
 
 - [`WAVE_18_WORKFLOW_PARITY_MATRIX.md`](./WAVE_18_WORKFLOW_PARITY_MATRIX.md)
+- [`WAVE_18_SERVER_GAP_REPORT.md`](./WAVE_18_SERVER_GAP_REPORT.md)
+- [`WAVE_18_SERVER_REMEDIATION_BACKLOG.md`](./WAVE_18_SERVER_REMEDIATION_BACKLOG.md)
+- [`WAVE_18_BACKEND_ARCHITECTURE_MAP.md`](./WAVE_18_BACKEND_ARCHITECTURE_MAP.md)
+- [`WAVE_18_COMPETITOR_PARITY_WEEKLY_DELTA.md`](./WAVE_18_COMPETITOR_PARITY_WEEKLY_DELTA.md)
+- [`WAVE_18_KPI_DASHBOARD_BASELINE.md`](./WAVE_18_KPI_DASHBOARD_BASELINE.md)
 
 This matrix is the canonical scoring surface with:
 
@@ -195,11 +200,14 @@ Deliverable: compounding organic growth and lower acquisition cost.
 ## Wave 18 Deliverables
 
 1. v2 parity matrix (8 platforms, top 25+ workflows)
-2. drift reconciliation in CRM feature index docs
-3. prioritized gap list with implementation-ready entries
-4. canonical queue updates in `MASTER_PLAN.md`, `PENDING_TASKS_ONLY.md`, `waves/README.md`
-5. validation gate definition and weekly re-benchmark operating loop
-6. execution-ready Wave 18.1 backlog (`WAVE_18_1_IMPLEMENTATION_BACKLOG.md`) with top-20 P0 tasks
+2. server gap report + endpoint readiness matrix + risk heatmap (`WAVE_18_SERVER_GAP_REPORT.md`)
+3. prioritized P0/P1/P2 server remediation backlog (`WAVE_18_SERVER_REMEDIATION_BACKLOG.md`)
+4. backend modularization architecture map (`WAVE_18_BACKEND_ARCHITECTURE_MAP.md`)
+5. drift reconciliation in CRM feature index docs
+6. canonical queue updates in `MASTER_PLAN.md`, `PENDING_TASKS_ONLY.md`, `waves/README.md`
+7. validation gate definition and weekly re-benchmark operating loop (`WAVE_18_COMPETITOR_PARITY_WEEKLY_DELTA.md`)
+8. KPI baseline + trend tracking model (`WAVE_18_KPI_DASHBOARD_BASELINE.md`)
+9. execution-ready Wave 18.1 backlog (`WAVE_18_1_IMPLEMENTATION_BACKLOG.md`) with top-20 P0 tasks
 
 ---
 
