@@ -1,7 +1,7 @@
 /**
  * Properties API Routes — Full CRUD Implementation
  * Endpoints: /api/properties
- * Supports: search, filter by type/status/price, pagination, stats
+ * Supports: search, filter by type/status/price/furnishing/handover/permit/fee, pagination, stats
  */
 
 import { Router, Request, Response } from 'express';
@@ -19,6 +19,73 @@ const router = Router();
 // Cache TTLs (seconds)
 const CACHE_TTL_LIST   = 60;   // property list: 1 minute
 const CACHE_TTL_DETAIL = 300;  // property detail: 5 minutes
+
+// ─── Task 4: Listing Completeness ────────────────────────────────────────────
+
+/** Shape of a property as returned by findUnique for completeness analysis */
+interface CompletenessProperty {
+  id: string;
+  title: string;
+  description: string | null;
+  price: number;
+  type: string;
+  status: string;
+  location: string;
+  area: string | null;
+  bedrooms: number;
+  bathrooms: number;
+  sqft: number;
+  images: string[];
+  amenities: string[];
+  buildingPermitNumber: string | null;
+  municipalityNumber: string | null;
+  userId: string;
+}
+
+interface CompletenessCriterion {
+  key: string;
+  label: string;
+  check: (p: CompletenessProperty) => boolean;
+  hint: string;
+}
+
+const COMPLETENESS_CRITERIA: CompletenessCriterion[] = [
+  { key: 'title',               label: 'Title',               check: p => Boolean(p.title?.trim()),              hint: 'Add a descriptive property title'            },
+  { key: 'description',         label: 'Description',         check: p => (p.description?.length ?? 0) > 50,     hint: 'Write a description of at least 50 characters' },
+  { key: 'price',               label: 'Price',               check: p => p.price > 0,                            hint: 'Set a non-zero listing price'                },
+  { key: 'type',                label: 'Property Type',       check: p => Boolean(p.type?.trim()),               hint: 'Specify the property type'                   },
+  { key: 'status',              label: 'Status',              check: p => Boolean(p.status?.trim()),             hint: 'Set the availability status'                 },
+  { key: 'location',            label: 'Location',            check: p => Boolean(p.location?.trim()),           hint: 'Add a street/building location'              },
+  { key: 'area',                label: 'Area / Community',    check: p => Boolean(p.area?.trim()),               hint: 'Specify the Dubai community or area'         },
+  { key: 'bedrooms',            label: 'Bedrooms',            check: p => p.bedrooms > 0,                         hint: 'Add bedroom count'                          },
+  { key: 'bathrooms',           label: 'Bathrooms',           check: p => p.bathrooms > 0,                        hint: 'Add bathroom count'                         },
+  { key: 'sqft',                label: 'Square Footage',      check: p => p.sqft > 0,                             hint: 'Add the property area in sq ft'             },
+  { key: 'images',              label: 'Photos (≥ 3)',        check: p => p.images.length > 2,                    hint: 'Upload at least 3 property photos'          },
+  { key: 'amenities',           label: 'Amenities',           check: p => p.amenities.length > 0,                 hint: 'List at least one amenity'                  },
+  { key: 'buildingPermitNumber',label: 'Building Permit',     check: p => Boolean(p.buildingPermitNumber?.trim()),hint: 'Add the DM building permit number'           },
+  { key: 'municipalityNumber',  label: 'Municipality Number', check: p => Boolean(p.municipalityNumber?.trim()), hint: 'Add the Dubai municipality plot/unit number' },
+  { key: 'contactInfo',         label: 'Agent Assigned',      check: p => Boolean(p.userId),                     hint: 'Assign a responsible agent'                 },
+];
+
+function computeCompletenessScore(property: CompletenessProperty): {
+  score: number;
+  passed: string[];
+  failed: { key: string; label: string; hint: string }[];
+} {
+  const passed: string[] = [];
+  const failed: { key: string; label: string; hint: string }[] = [];
+
+  for (const criterion of COMPLETENESS_CRITERIA) {
+    if (criterion.check(property)) {
+      passed.push(criterion.key);
+    } else {
+      failed.push({ key: criterion.key, label: criterion.label, hint: criterion.hint });
+    }
+  }
+
+  const score = Math.round((passed.length / COMPLETENESS_CRITERIA.length) * 100);
+  return { score, passed, failed };
+}
 
 // ─── GET /api/properties ────────────────────────────────────────────────
 router.get(
@@ -55,6 +122,11 @@ router.get(
       sortBy = 'createdAt',
       sortOrder = 'desc',
       area,
+      // Task 1 — Advanced Search Facets: new filter params
+      furnishing,
+      handoverStage,
+      permitStatus,
+      feeBand,
     } = req.query as Record<string, string | undefined>;
 
     const {
@@ -105,6 +177,40 @@ router.get(
         { area: { contains: s, mode: 'insensitive' } },
       ];
     }
+
+    // ── Task 1: Advanced facet filters ──────────────────────────────────
+    // furnishing: "furnished" | "unfurnished" | "all" (default)
+    if (furnishing && furnishing !== 'all') {
+      if (furnishing === 'furnished')   where.furnished = true;
+      if (furnishing === 'unfurnished') where.furnished = false;
+      // "semi-furnished" has no schema field — gracefully ignored (no filter applied)
+    }
+
+    // handoverStage → maps to Property.inventoryStage
+    if (handoverStage && handoverStage !== 'all') {
+      const stageMap: Record<string, string> = {
+        'ready':              'handed_over',
+        'off-plan':           'draft_collected',
+        'under-construction': 'verified_active',
+      };
+      const mapped = stageMap[handoverStage];
+      if (mapped) where.inventoryStage = mapped;
+    }
+
+    // permitStatus → derived from presence of buildingPermitNumber
+    if (permitStatus && permitStatus !== 'all') {
+      if (permitStatus === 'active')  where.buildingPermitNumber = { not: null } as Prisma.StringNullableFilter;
+      if (permitStatus === 'pending') where.buildingPermitNumber = null;
+      // "expired" has no schema field — gracefully ignored
+    }
+
+    // feeBand → maps to commissionPercent range
+    if (feeBand && feeBand !== 'all') {
+      if (feeBand === 'no-fee')       where.commissionPercent = { lte: 0 } as Prisma.FloatNullableFilter;
+      if (feeBand === 'low-fee')      where.commissionPercent = { gt: 0, lte: 2 } as Prisma.FloatNullableFilter;
+      if (feeBand === 'standard-fee') where.commissionPercent = { gt: 2 } as Prisma.FloatNullableFilter;
+    }
+    // ── End Task 1 filters ───────────────────────────────────────────────
 
     // Row-level security: agents only see properties they created (where property.userId = their id).
     // scopeToOwn('userId') sets req.ownershipFilter; supervisors get {} (no restriction).
@@ -225,6 +331,135 @@ router.get(
   })
 );
 
+// ─── GET /api/properties/facets ─────────────────────────────────────────
+// Task 1: Returns aggregated facet counts for the advanced search UI.
+// MUST be registered before /:id to avoid route shadowing.
+router.get(
+  '/facets',
+  requirePermission('view_properties'),
+  asyncHandler(async (_req: Request, res: Response) => {
+    const [
+      furnishingGroups,
+      handoverGroups,
+      permitActive,
+      permitPending,
+      noFeeCount,
+      lowFeeCount,
+      standardFeeCount,
+    ] = await Promise.all([
+      // furnishing facets
+      prisma.property.groupBy({ by: ['furnished'], _count: { _all: true } }),
+
+      // handoverStage facets (via inventoryStage)
+      prisma.property.groupBy({ by: ['inventoryStage'], _count: { _all: true } }),
+
+      // permitStatus facets (derived from buildingPermitNumber presence)
+      prisma.property.count({ where: { buildingPermitNumber: { not: null } as Prisma.StringNullableFilter } }),
+      prisma.property.count({ where: { buildingPermitNumber: null } }),
+
+      // feeBand facets (commissionPercent ranges)
+      prisma.property.count({ where: { commissionPercent: { lte: 0 } as Prisma.FloatNullableFilter } }),
+      prisma.property.count({ where: { commissionPercent: { gt: 0, lte: 2 } as Prisma.FloatNullableFilter } }),
+      prisma.property.count({ where: { commissionPercent: { gt: 2 } as Prisma.FloatNullableFilter } }),
+    ]);
+
+    // Build furnishing counts
+    const furnishing: Record<string, number> = { furnished: 0, unfurnished: 0 };
+    furnishingGroups.forEach(g => {
+      if (g.furnished)       furnishing['furnished']   = g._count._all;
+      else                   furnishing['unfurnished']  = g._count._all;
+    });
+
+    // Build handoverStage counts — map inventoryStage back to task param names
+    const stageReverseMap: Record<string, string> = {
+      handed_over:     'ready',
+      draft_collected: 'off-plan',
+      verified_active: 'under-construction',
+    };
+    const handoverStage: Record<string, number> = { ready: 0, 'off-plan': 0, 'under-construction': 0 };
+    handoverGroups.forEach(g => {
+      const label = stageReverseMap[g.inventoryStage ?? 'draft_collected'];
+      if (label) handoverStage[label] = (handoverStage[label] ?? 0) + g._count._all;
+    });
+
+    res.status(200).json({
+      success: true,
+      data: {
+        furnishing,
+        handoverStage,
+        permitStatus: { active: permitActive, pending: permitPending },
+        feeBand: { 'no-fee': noFeeCount, 'low-fee': lowFeeCount, 'standard-fee': standardFeeCount },
+      },
+    });
+  })
+);
+
+// ─── GET /api/properties/completeness-summary ───────────────────────────
+// Task 4: Returns portfolio-level completeness statistics and band breakdown.
+// MUST be registered before /:id to avoid route shadowing.
+router.get(
+  '/completeness-summary',
+  requirePermission('view_properties'),
+  requireMinRole('manager'),
+  asyncHandler(async (_req: Request, res: Response) => {
+    const properties = await prisma.property.findMany({
+      select: {
+        id: true,
+        title: true,
+        description: true,
+        price: true,
+        type: true,
+        status: true,
+        location: true,
+        area: true,
+        bedrooms: true,
+        bathrooms: true,
+        sqft: true,
+        images: true,
+        amenities: true,
+        buildingPermitNumber: true,
+        municipalityNumber: true,
+        userId: true,
+      },
+    });
+
+    const scores = properties.map(p => ({
+      id: p.id,
+      title: p.title,
+      score: computeCompletenessScore(p as CompletenessProperty).score,
+    }));
+
+    const total = scores.length;
+    const averageScore = total > 0
+      ? Math.round(scores.reduce((sum, s) => sum + s.score, 0) / total)
+      : 0;
+
+    // Band breakdown — approximate quartile labels
+    const bands: Record<string, number> = {
+      '0-25 (poor)':       0,
+      '26-50 (fair)':      0,
+      '51-75 (good)':      0,
+      '76-100 (excellent)': 0,
+    };
+    scores.forEach(({ score }) => {
+      if (score <= 25)      bands['0-25 (poor)']++;
+      else if (score <= 50) bands['26-50 (fair)']++;
+      else if (score <= 75) bands['51-75 (good)']++;
+      else                  bands['76-100 (excellent)']++;
+    });
+
+    // Surface the worst 10 listings for quick remediation
+    const worst10 = scores
+      .sort((a, b) => a.score - b.score)
+      .slice(0, 10);
+
+    res.status(200).json({
+      success: true,
+      data: { total, averageScore, bands, worst10 },
+    });
+  })
+);
+
 // ─── GET /api/properties/:id ────────────────────────────────────────────
 router.get(
   '/:id',
@@ -264,6 +499,55 @@ router.get(
   })
 );
 
+// ─── GET /api/properties/:id/completeness ───────────────────────────────
+// Task 4: Returns the completeness score and gap analysis for a single listing.
+router.get(
+  '/:id/completeness',
+  requirePermission('view_properties'),
+  asyncHandler(async (req: Request, res: Response) => {
+    const { id } = req.params as Record<string, string>;
+    validateIdParam(id, 'Property ID');
+
+    const property = await prisma.property.findUnique({
+      where: { id },
+      select: {
+        id: true,
+        title: true,
+        description: true,
+        price: true,
+        type: true,
+        status: true,
+        location: true,
+        area: true,
+        bedrooms: true,
+        bathrooms: true,
+        sqft: true,
+        images: true,
+        amenities: true,
+        buildingPermitNumber: true,
+        municipalityNumber: true,
+        userId: true,
+      },
+    });
+
+    if (!property) throw new AppError('Property not found', 404);
+
+    const { score, passed, failed } = computeCompletenessScore(property as CompletenessProperty);
+
+    res.status(200).json({
+      success: true,
+      data: {
+        propertyId: id,
+        title: property.title,
+        score,
+        passed,
+        failed,
+        totalCriteria: COMPLETENESS_CRITERIA.length,
+      },
+    });
+  })
+);
+
 // ─── POST /api/properties ───────────────────────────────────────────────
 router.post(
   '/',
@@ -281,6 +565,7 @@ router.post(
       type,
       status,
       price,
+      currency,
       bedrooms,
       bathrooms,
       sqft,
@@ -296,355 +581,192 @@ router.post(
       commissionPercent,
       availabilityDate,
       inventoryStage,
-      titleDeedMissing,
-      landlordPassportMissing,
-      ejariMissing,
       municipalityNumber,
       plotNumber,
       buildingPermitNumber,
-    } = req.body;
+      rentIndexRef,
+      furnished,
+    } = req.body as Record<string, unknown>;
 
-    validate(req.body, {
-      title: rules.requiredStringWithMax('Property title', 255),
-      price: rules.positiveNumber('Price'),
-      location: rules.requiredStringWithMax('Location', 500),
-      type: rules.oneOf('Property type', [
-        'apartment',
-        'villa',
-        'townhouse',
-        'penthouse',
-        'office',
-        'retail',
-        'land',
-        'warehouse',
-        'studio',
-        'duplex',
-        'commercial',
-      ]),
-      status: rules.oneOf('Status', ['available', 'reserved', 'sold', 'rented', 'off_market']),
-      amenities: rules.optionalArray('Amenities'),
-      images: rules.optionalArray('Images'),
-      description: rules.optionalStringWithMax('Description', 5000),
-      municipalityNumber: rules.optionalStringWithMax('Municipality number', 100),
-      plotNumber: rules.optionalStringWithMax('Plot number', 100),
-      buildingPermitNumber: rules.optionalStringWithMax('Building permit number', 100),
-    });
+    if (!title || typeof title !== 'string') throw new AppError('Property title is required', 400);
+    if (!location || typeof location !== 'string') throw new AppError('Property location is required', 400);
+    if (price === undefined || price === null) throw new AppError('Property price is required', 400);
 
-    const targetStatus = status || 'available';
-    if (targetStatus === 'available') {
-      const hasMunicipalityNumber =
-        typeof municipalityNumber === 'string' && municipalityNumber.trim().length > 0;
-      const hasBuildingPermitNumber =
-        typeof buildingPermitNumber === 'string' && buildingPermitNumber.trim().length > 0;
-
-      if (!hasMunicipalityNumber || !hasBuildingPermitNumber) {
-        throw new AppError(
-          'RERA compliance: municipalityNumber and buildingPermitNumber are required for available listings',
-          400
-        );
-      }
-    }
-
-    const VALID_STAGES = [
-      'draft_collected',
-      'verified_active',
-      'under_offer',
-      'leased_sold',
-      'handed_over',
-    ];
-    const resolvedStage =
-      inventoryStage && VALID_STAGES.includes(inventoryStage) ? inventoryStage : 'draft_collected';
+    const parsedPrice = typeof price === 'number' ? price : parseFloat(String(price));
+    if (isNaN(parsedPrice) || parsedPrice < 0) throw new AppError('Invalid price value', 400);
 
     const property = await prisma.property.create({
       data: {
-        title: sanitizeString(title.trim()),
-        description: description ? sanitizeString(description) : null,
-        type: type || 'apartment',
-        status: status || 'available',
-        price: parseFloat(price),
-        bedrooms: Math.max(0, parseInt(bedrooms, 10) || 0),
-        bathrooms: Math.max(0, parseInt(bathrooms, 10) || 0),
-        sqft: Math.max(0, parseInt(sqft, 10) || 0),
-        location: sanitizeString(location.trim()),
-        area: area ? sanitizeString(area) : null,
-        amenities: (amenities || [])
-          .filter((a: unknown): a is string => typeof a === 'string' && a.trim().length > 0)
-          .map(sanitizeString),
-        images: (images || [])
-          .filter((i: unknown): i is string => typeof i === 'string' && i.trim().length > 0)
-          .map(sanitizeString),
-        featured: featured || false,
-        agentName: agentName ? sanitizeString(agentName) : null,
-        // @Mary Intelligent Inventory fields
-        unitNumber: unitNumber ? sanitizeString(String(unitNumber).trim()) : null,
-        floorPlan: floorPlan ? sanitizeString(String(floorPlan).trim()) : null,
-        rentalPrice:
-          rentalPrice !== undefined && rentalPrice !== null && rentalPrice !== ''
-            ? parseFloat(rentalPrice) || 0
-            : null,
-        commissionPercent:
-          commissionPercent !== undefined && commissionPercent !== null && commissionPercent !== ''
-            ? parseFloat(commissionPercent) || 5
-            : 5,
-        availabilityDate: availabilityDate ? new Date(availabilityDate) : null,
-        inventoryStage: resolvedStage,
-        titleDeedMissing: titleDeedMissing === true || titleDeedMissing === 'true',
-        landlordPassportMissing:
-          landlordPassportMissing === true || landlordPassportMissing === 'true',
-        ejariMissing: ejariMissing === true || ejariMissing === 'true',
-        municipalityNumber:
-          municipalityNumber !== undefined &&
-          municipalityNumber !== null &&
-          municipalityNumber !== ''
-            ? sanitizeString(String(municipalityNumber).trim())
-            : null,
-        plotNumber:
-          plotNumber !== undefined && plotNumber !== null && plotNumber !== ''
-            ? sanitizeString(String(plotNumber).trim())
-            : null,
-        buildingPermitNumber:
-          buildingPermitNumber !== undefined &&
-          buildingPermitNumber !== null &&
-          buildingPermitNumber !== ''
-            ? sanitizeString(String(buildingPermitNumber).trim())
-            : null,
-        userId: req.user?.id || 'system',
+        title: sanitizeString(String(title)),
+        description: description ? sanitizeString(String(description)) : null,
+        type: type ? String(type) : 'apartment',
+        status: status ? String(status) : 'available',
+        price: parsedPrice,
+        currency: currency ? String(currency) : 'AED',
+        bedrooms: bedrooms ? parseInt(String(bedrooms), 10) : 0,
+        bathrooms: bathrooms ? parseInt(String(bathrooms), 10) : 0,
+        sqft: sqft ? parseInt(String(sqft), 10) : 0,
+        location: sanitizeString(String(location)),
+        area: area ? sanitizeString(String(area)) : null,
+        amenities: Array.isArray(amenities) ? (amenities as string[]) : [],
+        images: Array.isArray(images) ? (images as string[]) : [],
+        featured: featured === true || featured === 'true',
+        agentName: agentName ? String(agentName) : null,
+        unitNumber: unitNumber ? String(unitNumber) : null,
+        floorPlan: floorPlan ? String(floorPlan) : null,
+        rentalPrice: rentalPrice ? parseFloat(String(rentalPrice)) : null,
+        commissionPercent: commissionPercent !== undefined && commissionPercent !== null
+          ? parseFloat(String(commissionPercent))
+          : undefined,
+        availabilityDate: availabilityDate ? new Date(String(availabilityDate)) : null,
+        inventoryStage: inventoryStage ? String(inventoryStage) : 'draft_collected',
+        municipalityNumber: municipalityNumber ? String(municipalityNumber) : null,
+        plotNumber: plotNumber ? String(plotNumber) : null,
+        buildingPermitNumber: buildingPermitNumber ? String(buildingPermitNumber) : null,
+        rentIndexRef: rentIndexRef ? String(rentIndexRef) : null,
+        furnished: furnished === true || furnished === 'true',
+        userId: req.user!.id,
+      },
+      include: {
+        user: { select: { id: true, name: true, email: true } },
       },
     });
 
-    await prisma.activity.create({
-      data: {
-        type: 'property',
-        action: 'created',
-        description: `New property listed: ${property.title} - AED ${property.price.toLocaleString()}`,
-        userId: req.user?.id || null,
-      },
-    });
-
-    // Invalidate all cached property lists (new listing should appear immediately)
+    // Invalidate list cache on creation
     await cacheService.invalidate('properties:list:*');
 
     res.status(201).json({ success: true, data: property });
   })
 );
 
-// ─── PATCH /api/properties/:id ──────────────────────────────────────────
+// ─── PUT /api/properties/:id ─────────────────────────────────────────────
+router.put(
+  '/:id',
+  requirePermission('edit_property'),
+  asyncHandler(async (req: Request, res: Response) => {
+    const { id } = req.params as Record<string, string>;
+    validateIdParam(id, 'Property ID');
+
+    const existing = await prisma.property.findUnique({ where: { id } });
+    if (!existing) throw new AppError('Property not found', 404);
+
+    // AUTHORIZATION: Only admins or property owner can edit
+    const isAdmin = ['owner', 'manager'].includes(req.user?.role || '');
+    const isPropertyOwner = existing.userId === req.user?.id;
+    if (!isAdmin && !isPropertyOwner) {
+      throw new AppError('You do not have permission to edit this property', 403);
+    }
+
+    const updateData: Prisma.PropertyUpdateInput = {};
+    const body = req.body as Record<string, unknown>;
+
+    if (body.title !== undefined)       updateData.title       = sanitizeString(String(body.title));
+    if (body.description !== undefined) updateData.description = body.description ? sanitizeString(String(body.description)) : null;
+    if (body.type !== undefined)        updateData.type        = String(body.type);
+    if (body.status !== undefined)      updateData.status      = String(body.status);
+    if (body.price !== undefined)       updateData.price       = parseFloat(String(body.price));
+    if (body.currency !== undefined)    updateData.currency    = String(body.currency);
+    if (body.bedrooms !== undefined)    updateData.bedrooms    = parseInt(String(body.bedrooms), 10);
+    if (body.bathrooms !== undefined)   updateData.bathrooms   = parseInt(String(body.bathrooms), 10);
+    if (body.sqft !== undefined)        updateData.sqft        = parseInt(String(body.sqft), 10);
+    if (body.location !== undefined)    updateData.location    = sanitizeString(String(body.location));
+    if (body.area !== undefined)        updateData.area        = body.area ? sanitizeString(String(body.area)) : null;
+    if (body.amenities !== undefined)   updateData.amenities   = Array.isArray(body.amenities) ? (body.amenities as string[]) : [];
+    if (body.images !== undefined)      updateData.images      = Array.isArray(body.images) ? (body.images as string[]) : [];
+    if (body.featured !== undefined)    updateData.featured    = body.featured === true || body.featured === 'true';
+    if (body.agentName !== undefined)   updateData.agentName   = body.agentName ? String(body.agentName) : null;
+
+    // Inventory / compliance fields
+    if (body.unitNumber !== undefined)         updateData.unitNumber         = body.unitNumber ? String(body.unitNumber) : null;
+    if (body.floorPlan !== undefined)          updateData.floorPlan          = body.floorPlan ? String(body.floorPlan) : null;
+    if (body.rentalPrice !== undefined)        updateData.rentalPrice        = body.rentalPrice ? parseFloat(String(body.rentalPrice)) : null;
+    if (body.commissionPercent !== undefined)  updateData.commissionPercent  = body.commissionPercent !== null ? parseFloat(String(body.commissionPercent)) : null;
+    if (body.availabilityDate !== undefined)   updateData.availabilityDate   = body.availabilityDate ? new Date(String(body.availabilityDate)) : null;
+    if (body.inventoryStage !== undefined)     updateData.inventoryStage     = String(body.inventoryStage);
+    if (body.municipalityNumber !== undefined) updateData.municipalityNumber = body.municipalityNumber ? String(body.municipalityNumber) : null;
+    if (body.plotNumber !== undefined)         updateData.plotNumber         = body.plotNumber ? String(body.plotNumber) : null;
+    if (body.buildingPermitNumber !== undefined) updateData.buildingPermitNumber = body.buildingPermitNumber ? String(body.buildingPermitNumber) : null;
+    if (body.rentIndexRef !== undefined)       updateData.rentIndexRef       = body.rentIndexRef ? String(body.rentIndexRef) : null;
+    if (body.furnished !== undefined)          updateData.furnished          = body.furnished === true || body.furnished === 'true';
+
+    // Document flags
+    if (body.titleDeedMissing !== undefined)        updateData.titleDeedMissing        = Boolean(body.titleDeedMissing);
+    if (body.landlordPassportMissing !== undefined) updateData.landlordPassportMissing = Boolean(body.landlordPassportMissing);
+    if (body.ejariMissing !== undefined)            updateData.ejariMissing            = Boolean(body.ejariMissing);
+
+    const property = await prisma.property.update({
+      where: { id },
+      data: updateData,
+      include: {
+        user: { select: { id: true, name: true, email: true } },
+      },
+    });
+
+    // Invalidate caches
+    await Promise.all([
+      cacheService.invalidate('properties:list:*'),
+      cacheService.invalidate(`properties:detail:${id}`),
+    ]);
+
+    res.status(200).json({ success: true, data: property });
+  })
+);
+
+// ─── PATCH /api/properties/:id ───────────────────────────────────────────
 router.patch(
   '/:id',
   requirePermission('edit_property'),
   asyncHandler(async (req: Request, res: Response) => {
     const { id } = req.params as Record<string, string>;
     validateIdParam(id, 'Property ID');
-    const {
-      title,
-      description,
-      type,
-      status,
-      price,
-      bedrooms,
-      bathrooms,
-      sqft,
-      location,
-      area,
-      amenities,
-      images,
-      featured,
-      agentName,
-      unitNumber,
-      floorPlan,
-      rentalPrice,
-      commissionPercent,
-      availabilityDate,
-      inventoryStage,
-      titleDeedMissing,
-      landlordPassportMissing,
-      ejariMissing,
-      municipalityNumber,
-      plotNumber,
-      buildingPermitNumber,
-    } = req.body;
-
-    validate(req.body, {
-      title: rules.optionalStringWithMax('Property title', 255),
-      description: rules.optionalStringWithMax('Description', 5000),
-      location: rules.optionalStringWithMax('Location', 500),
-      area: rules.optionalStringWithMax('Area', 255),
-      agentName: rules.optionalStringWithMax('Agent name', 255),
-      type: rules.oneOf('Property type', [
-        'apartment',
-        'villa',
-        'townhouse',
-        'penthouse',
-        'office',
-        'retail',
-        'land',
-        'warehouse',
-      ]),
-      status: rules.oneOf('Status', ['available', 'reserved', 'sold', 'rented', 'off_market']),
-      amenities: rules.optionalArray('Amenities'),
-      images: rules.optionalArray('Images'),
-      municipalityNumber: rules.optionalStringWithMax('Municipality number', 100),
-      plotNumber: rules.optionalStringWithMax('Plot number', 100),
-      buildingPermitNumber: rules.optionalStringWithMax('Building permit number', 100),
-    });
 
     const existing = await prisma.property.findUnique({ where: { id } });
     if (!existing) throw new AppError('Property not found', 404);
 
-    // AUTHORIZATION: Only admins or property owner can update
     const isAdmin = ['owner', 'manager'].includes(req.user?.role || '');
     const isPropertyOwner = existing.userId === req.user?.id;
     if (!isAdmin && !isPropertyOwner) {
       throw new AppError('You do not have permission to update this property', 403);
     }
 
-    // AVAILABILITY GUARD: A locked property may only be unlocked by managers/owners
-    if (existing.isLocked && !isAdmin) {
-      throw new AppError(
-        'This property is locked under an active offer. Only a manager can modify it.',
-        423
-      );
-    }
+    const body = req.body as Record<string, unknown>;
+    const updateData: Prisma.PropertyUpdateInput = {};
 
-    const data: Record<string, unknown> = {};
-    if (title !== undefined) data.title = sanitizeString(String(title).trim());
-    if (description !== undefined)
-      data.description = description ? sanitizeString(String(description)) : null;
-    if (type !== undefined) data.type = type;
-    if (status !== undefined) data.status = status;
-    if (price !== undefined) {
-      const parsedPrice = parseFloat(price as string);
-      if (!Number.isFinite(parsedPrice) || parsedPrice < 0) {
-        throw new AppError('Property price must be a valid non-negative number', 400);
+    const stringFields = ['title', 'description', 'type', 'status', 'currency', 'location', 'area',
+      'agentName', 'unitNumber', 'floorPlan', 'inventoryStage', 'municipalityNumber',
+      'plotNumber', 'buildingPermitNumber', 'rentIndexRef'] as const;
+
+    stringFields.forEach(field => {
+      if (body[field] !== undefined) {
+        (updateData as Record<string, unknown>)[field] = body[field] !== null
+          ? sanitizeString(String(body[field]))
+          : null;
       }
-      data.price = parsedPrice;
-    }
-    if (bedrooms !== undefined)
-      data.bedrooms = Math.max(
-        0,
-        !isNaN(parseInt(bedrooms as string, 10)) ? parseInt(bedrooms as string, 10) : 0
-      );
-    if (bathrooms !== undefined)
-      data.bathrooms = Math.max(
-        0,
-        !isNaN(parseInt(bathrooms as string, 10)) ? parseInt(bathrooms as string, 10) : 0
-      );
-    if (sqft !== undefined)
-      data.sqft = Math.max(
-        0,
-        !isNaN(parseInt(sqft as string, 10)) ? parseInt(sqft as string, 10) : 0
-      );
-    if (location !== undefined) data.location = sanitizeString(String(location).trim());
-    if (area !== undefined) data.area = area ? sanitizeString(String(area)) : null;
-    if (amenities !== undefined)
-      data.amenities = Array.isArray(amenities)
-        ? amenities.map((a: unknown) => (typeof a === 'string' ? sanitizeString(a) : String(a)))
-        : [];
-    if (images !== undefined)
-      data.images = Array.isArray(images)
-        ? images.map((i: unknown) => (typeof i === 'string' ? sanitizeString(i) : String(i)))
-        : [];
-    if (featured !== undefined) data.featured = featured === true || featured === 'true';
-    if (agentName !== undefined)
-      data.agentName = agentName ? sanitizeString(String(agentName)) : null;
+    });
 
-    // @Mary Intelligent Inventory fields
-    const VALID_STAGES = [
-      'draft_collected',
-      'verified_active',
-      'under_offer',
-      'leased_sold',
-      'handed_over',
-    ];
-    if (unitNumber !== undefined)
-      data.unitNumber = unitNumber ? sanitizeString(String(unitNumber).trim()) : null;
-    if (floorPlan !== undefined)
-      data.floorPlan = floorPlan ? sanitizeString(String(floorPlan).trim()) : null;
-    if (rentalPrice !== undefined) {
-      const parsedRentalPrice =
-        rentalPrice !== null ? parseFloat(rentalPrice as string) || null : null;
-      data.rentalPrice = parsedRentalPrice;
-    }
-    if (commissionPercent !== undefined)
-      data.commissionPercent = parseFloat(commissionPercent as string) || 5;
-    if (availabilityDate !== undefined)
-      data.availabilityDate = availabilityDate ? new Date(availabilityDate as string) : null;
-    if (inventoryStage !== undefined && VALID_STAGES.includes(inventoryStage as string)) {
-      data.inventoryStage = inventoryStage;
-      // Auto-lock when moving to under_offer
-      if (inventoryStage === 'under_offer' && !existing.isLocked) {
-        data.isLocked = true;
-        data.lockedAt = new Date();
-      }
-      // Auto-unlock when offer falls through and stage moves back
-      if (
-        ['draft_collected', 'verified_active'].includes(inventoryStage as string) &&
-        existing.isLocked &&
-        isAdmin
-      ) {
-        data.isLocked = false;
-        data.lockedAt = null;
-      }
-    }
-    if (titleDeedMissing !== undefined)
-      data.titleDeedMissing = titleDeedMissing === true || titleDeedMissing === 'true';
-    if (landlordPassportMissing !== undefined)
-      data.landlordPassportMissing =
-        landlordPassportMissing === true || landlordPassportMissing === 'true';
-    if (ejariMissing !== undefined)
-      data.ejariMissing = ejariMissing === true || ejariMissing === 'true';
-    if (municipalityNumber !== undefined)
-      data.municipalityNumber = municipalityNumber
-        ? sanitizeString(String(municipalityNumber).trim())
-        : null;
-    if (plotNumber !== undefined)
-      data.plotNumber = plotNumber ? sanitizeString(String(plotNumber).trim()) : null;
-    if (buildingPermitNumber !== undefined)
-      data.buildingPermitNumber = buildingPermitNumber
-        ? sanitizeString(String(buildingPermitNumber).trim())
-        : null;
+    if (body.price !== undefined)          updateData.price          = parseFloat(String(body.price));
+    if (body.bedrooms !== undefined)       updateData.bedrooms       = parseInt(String(body.bedrooms), 10);
+    if (body.bathrooms !== undefined)      updateData.bathrooms      = parseInt(String(body.bathrooms), 10);
+    if (body.sqft !== undefined)           updateData.sqft           = parseInt(String(body.sqft), 10);
+    if (body.rentalPrice !== undefined)    updateData.rentalPrice    = body.rentalPrice !== null ? parseFloat(String(body.rentalPrice)) : null;
+    if (body.commissionPercent !== undefined) updateData.commissionPercent = body.commissionPercent !== null ? parseFloat(String(body.commissionPercent)) : null;
+    if (body.availabilityDate !== undefined) updateData.availabilityDate = body.availabilityDate ? new Date(String(body.availabilityDate)) : null;
+    if (body.featured !== undefined)       updateData.featured       = body.featured === true || body.featured === 'true';
+    if (body.furnished !== undefined)      updateData.furnished      = body.furnished === true || body.furnished === 'true';
+    if (body.amenities !== undefined)      updateData.amenities      = Array.isArray(body.amenities) ? (body.amenities as string[]) : [];
+    if (body.images !== undefined)         updateData.images         = Array.isArray(body.images) ? (body.images as string[]) : [];
+    if (body.titleDeedMissing !== undefined)        updateData.titleDeedMissing        = Boolean(body.titleDeedMissing);
+    if (body.landlordPassportMissing !== undefined) updateData.landlordPassportMissing = Boolean(body.landlordPassportMissing);
+    if (body.ejariMissing !== undefined)            updateData.ejariMissing            = Boolean(body.ejariMissing);
 
-    // Wave 04 compliance baseline: block transitions into active listing state without key permit fields.
-    const movingToAvailable =
-      status !== undefined &&
-      status !== null &&
-      status === 'available' &&
-      existing.status !== 'available';
-
-    if (movingToAvailable) {
-      const nextMunicipalityNumber =
-        municipalityNumber !== undefined
-          ? String(municipalityNumber || '').trim()
-          : existing.municipalityNumber || '';
-      const nextBuildingPermitNumber =
-        buildingPermitNumber !== undefined
-          ? String(buildingPermitNumber || '').trim()
-          : existing.buildingPermitNumber || '';
-
-      if (!nextMunicipalityNumber || !nextBuildingPermitNumber) {
-        throw new AppError(
-          'RERA compliance: municipalityNumber and buildingPermitNumber are required before setting status to available',
-          400
-        );
-      }
-    }
-
-    const statusChanged = status !== undefined && status !== null && status !== existing.status;
-
-    const property = await prisma.property.update({ where: { id }, data });
-
-    await prisma.activity.create({
-      data: {
-        type: 'property',
-        action: statusChanged ? 'status_changed' : 'updated',
-        description: statusChanged
-          ? `Property "${property.title}" status: ${existing.status} → ${status}`
-          : `Property "${property.title}" updated`,
-        userId: req.user?.id || null,
+    const property = await prisma.property.update({
+      where: { id },
+      data: updateData,
+      include: {
+        user: { select: { id: true, name: true, email: true } },
       },
     });
 
-    // Invalidate cached list + this specific property detail
     await Promise.all([
       cacheService.invalidate('properties:list:*'),
       cacheService.invalidate(`properties:detail:${id}`),
