@@ -1,7 +1,16 @@
 import os from 'os';
 import path from 'path';
 import fs from 'fs-extra';
-import { afterEach, describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
+
+vi.mock('../lib/logger.js', () => ({
+  default: {
+    info: vi.fn(),
+    warn: vi.fn(),
+    error: vi.fn(),
+  },
+}));
+
 import PlanService from './PlanService.js';
 
 const tmpDirs = [];
