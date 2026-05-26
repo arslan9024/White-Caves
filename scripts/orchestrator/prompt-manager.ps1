@@ -227,7 +227,10 @@ if ($Stats) {
       agent = $entry.agent
     }
   }
-  $top = $rows | Sort-Object successCount -Descending, version -Descending | Select-Object -First 15
+  $top = $rows | Sort-Object -Property @(
+    @{ Expression = 'successCount'; Descending = $true },
+    @{ Expression = 'version'; Descending = $true }
+  ) | Select-Object -First 15
   foreach ($r in $top) {
     Write-Host ("{0} | v{1} | success={2} | lastUsed={3} | {4}" -f $r.taskId, $r.version, $r.successCount, $r.lastUsed, $r.agent) -ForegroundColor White
   }

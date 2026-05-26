@@ -11,7 +11,11 @@ type ScheduledTask = {
 };
 
 const cron = {
-  schedule: (_expression: string, _handler: () => void | Promise<void>, _options?: { timezone?: string }): ScheduledTask => ({
+  schedule: (
+    _expression: string,
+    _handler: () => void | Promise<void>,
+    _options?: { timezone?: string }
+  ): ScheduledTask => ({
     stop: () => {},
     destroy: () => {},
   }),
@@ -49,16 +53,6 @@ export class SchedulerService {
     logger.warn('[SchedulerService] cron unavailable in this workspace — scheduled jobs disabled');
     this.started = true;
     return;
-
-    this.registerLeadRescoreJob();
-    this.registerPermitChecksJob();
-    this.registerMonthlyRentGenerationJob();
-    this.registerRentRemindersJob();
-    this.registerLeaseExpiryRemindersJob();
-    this.registerSitemapRefreshJob();
-
-    this.started = true;
-    logger.info('[SchedulerService] started', { jobs: Array.from(this.jobs.keys()) });
   }
 
   stop(): void {
@@ -166,7 +160,11 @@ export class SchedulerService {
     });
   }
 
-  private async runJob(jobId: CronJobId, jobName: string, handler: () => Promise<Record<string, unknown>>) {
+  private async runJob(
+    jobId: CronJobId,
+    jobName: string,
+    handler: () => Promise<Record<string, unknown>>
+  ) {
     const runStartedAt = new Date();
     const job = this.jobs.get(jobId);
 
@@ -437,7 +435,9 @@ export class SchedulerService {
         html: template.html,
         text: template.text,
         tags: [{ name: 'type', value: 'rent_reminder' }],
-      }).catch(err => logger.warn('[SchedulerService] rent reminder send failed', { err, invoiceId: invoice.id }));
+      }).catch(err =>
+        logger.warn('[SchedulerService] rent reminder send failed', { err, invoiceId: invoice.id })
+      );
 
       sent += 1;
     }
@@ -508,7 +508,12 @@ export class SchedulerService {
           html: template.html,
           text: template.text,
           tags: [{ name: 'type', value: `lease_expiry_${days}d` }],
-        }).catch(err => logger.warn('[SchedulerService] lease expiry reminder send failed', { err, leaseId: lease.id }));
+        }).catch(err =>
+          logger.warn('[SchedulerService] lease expiry reminder send failed', {
+            err,
+            leaseId: lease.id,
+          })
+        );
 
         sent += 1;
       }
@@ -523,13 +528,21 @@ export class SchedulerService {
     return summary;
   }
 
-  private buildInvoiceNumber(leaseNumber: string | null, dueDate: Date): string {    const ym = `${dueDate.getUTCFullYear()}${String(dueDate.getUTCMonth() + 1).padStart(2, '0')}`;
-    const leaseRef = (leaseNumber || 'LEASE').replace(/[^a-zA-Z0-9]/g, '').slice(0, 8).toUpperCase();
+  private buildInvoiceNumber(leaseNumber: string | null, dueDate: Date): string {
+    const ym = `${dueDate.getUTCFullYear()}${String(dueDate.getUTCMonth() + 1).padStart(2, '0')}`;
+    const leaseRef = (leaseNumber || 'LEASE')
+      .replace(/[^a-zA-Z0-9]/g, '')
+      .slice(0, 8)
+      .toUpperCase();
     const random = Math.random().toString(36).slice(2, 6).toUpperCase();
     return `INV-RENT-${leaseRef}-${ym}-${random}`;
   }
 
-  private async logCronEvent(action: string, description: string, metadata: Record<string, unknown>) {
+  private async logCronEvent(
+    action: string,
+    description: string,
+    metadata: Record<string, unknown>
+  ) {
     await prisma.activity.create({
       data: {
         type: 'system',
@@ -542,4 +555,3 @@ export class SchedulerService {
 }
 
 export const schedulerService = new SchedulerService();
-

