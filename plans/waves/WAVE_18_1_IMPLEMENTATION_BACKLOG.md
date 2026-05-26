@@ -2,7 +2,7 @@
 
 **Wave:** 18.1  
 **Focus:** Convert Wave 18 parity findings into execution-ready improvements  
-**Status:** 📋 Planned  
+**Status:** 🟢 Ready  
 **Date:** 2026-05-26  
 **Owners:** @Ada + @Margaret + @Mira + @Katherine + domain leads
 
@@ -99,10 +99,10 @@ Weighted score per task:
 
 ## This-Week Execution Checklist
 
-- [ ] Finalize parity rubric and lock benchmark evidence set
-- [ ] Build matrix v2 with workflow-level evidence links
-- [ ] Expand gap register to 132-item inventory (P0/P1/P2)
-- [ ] Approve top-20 P0 queue and owner assignments
-- [ ] Stand up KPI baseline dashboard
-- [ ] Start weekly re-benchmark + queue hygiene loop
+- [x] Finalize parity rubric and lock benchmark evidence set
+- [x] Build matrix v2 with workflow-level evidence links
+- [x] Expand gap register to 132-item inventory (P0/P1/P2)
+- [x] Approve top-20 P0 queue and owner assignments
+- [x] Stand up KPI baseline dashboard
+- [x] Start weekly re-benchmark + queue hygiene loop
 
