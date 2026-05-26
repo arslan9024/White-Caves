@@ -181,52 +181,272 @@
     {
       "id": "leasing-legal",
       "label": "Leasing & Legal",
-      "size": 12
+      "size": 12,
+      "skills": [
+        "tenancy-contracts",
+        "ejari-registration",
+        "rera-dld-compliance",
+        "kyc-onboarding",
+        "bilingual-ar-en-docs",
+        "audit-trail-design",
+        "pdpl-privacy-governance",
+        "webhook-integration-docs",
+        "leasing-risk-assessment",
+        "document-filing-and-retrieval"
+      ],
+      "capabilities": [
+        "Draft and validate tenancy agreements (Arabic + English)",
+        "Manage Ejari registration workflows",
+        "Ensure RERA/DLD regulatory compliance",
+        "KYC onboarding and tenant intake",
+        "Design audit trail and activity feeds",
+        "Govern PDPL/UAE privacy obligations",
+        "Produce leasing risk assessments",
+        "Map API and webhook integration handoffs"
+      ]
     },
     {
       "id": "finance-analytics",
       "label": "Finance & Analytics",
-      "size": 12
+      "size": 12,
+      "skills": [
+        "vat-accounting",
+        "cash-flow-modeling",
+        "kpi-dashboard-design",
+        "payment-reconciliation",
+        "market-comparables",
+        "executive-reporting",
+        "data-governance-policy",
+        "etl-pipeline-design",
+        "property-inventory-management",
+        "image-and-media-pipeline"
+      ],
+      "capabilities": [
+        "Generate VAT-compliant financial reports",
+        "Build and maintain KPI dashboards",
+        "Reconcile payments and variance analysis",
+        "Produce market benchmarking comparables",
+        "Design ETL and data aggregation pipelines",
+        "Deliver executive KPI snapshots",
+        "Govern data retention and archival policy",
+        "Track property inventory lifecycle"
+      ]
     },
     {
       "id": "sales-workflow",
       "label": "Sales & Workflow",
-      "size": 12
+      "size": 12,
+      "skills": [
+        "viewing-appointment-scheduling",
+        "off-plan-handover-milestones",
+        "lead-routing-and-assignment",
+        "workflow-automation-rules",
+        "pipeline-resilience-and-retries",
+        "process-mapping",
+        "backlog-queue-management",
+        "ops-runbook-design",
+        "state-machine-modeling",
+        "seo-content-quality"
+      ],
+      "capabilities": [
+        "Manage viewing and appointment calendars",
+        "Automate CRM sales workflows and state machines",
+        "Route and assign leads with queue balancing",
+        "Track off-plan handover milestones",
+        "Design pipeline resilience and retry logic",
+        "Produce operations playbooks and runbooks",
+        "Prioritise and maintain backlog health",
+        "Forecast sales pipeline performance"
+      ]
     },
     {
       "id": "ux-design",
       "label": "UX & Design",
-      "size": 12
+      "size": 12,
+      "skills": [
+        "luxury-ux-research",
+        "design-token-system",
+        "wcag-accessibility-audit",
+        "media-asset-optimization",
+        "brand-consistency-governance",
+        "rtl-arabic-localization",
+        "consent-ux-flows",
+        "component-variant-design",
+        "tenant-portal-ux",
+        "campaign-attribution-tracking"
+      ],
+      "capabilities": [
+        "Map and optimise buyer and tenant journeys",
+        "Maintain the design token and theme system",
+        "Audit and enforce WCAG 2.2 AA accessibility",
+        "Optimise media assets with lazy-loading",
+        "Govern brand consistency across all surfaces",
+        "Deliver Arabic RTL localisation and locale QA",
+        "Design privacy consent and opt-in flows",
+        "Produce component variants and design QA"
+      ]
     },
     {
       "id": "data-intelligence",
       "label": "Data & Intelligence",
-      "size": 12
+      "size": 12,
+      "skills": [
+        "semantic-codebase-search",
+        "knowledge-graph-construction",
+        "market-trend-intelligence",
+        "ai-assistant-persona-design",
+        "prompt-template-engineering",
+        "data-deduplication-and-quality",
+        "ab-experiment-design",
+        "insight-narrative-storytelling",
+        "kpi-annotation",
+        "release-notes-and-changelogs"
+      ],
+      "capabilities": [
+        "Map codebase dependencies and cross-doc links",
+        "Detect and surface market signals and trends",
+        "Design AI assistant personas and fallback rules",
+        "Engineer prompt templates and context packets",
+        "Deduplicate and quality-gate data assets",
+        "Design and analyse A/B experiments",
+        "Deliver narrative insight reports and executive briefings",
+        "Produce release notes and change logs"
+      ]
     },
     {
       "id": "infra-ops",
       "label": "Infrastructure & Ops",
-      "size": 12
+      "size": 12,
+      "skills": [
+        "cloud-sizing-and-cost-profiling",
+        "deployment-pipeline-analysis",
+        "incident-post-mortem-management",
+        "capacity-and-throughput-planning",
+        "exception-and-fallback-design",
+        "community-and-facility-ops",
+        "handover-snagging-qa",
+        "luxury-hnwi-vip-workflows",
+        "demand-forecasting",
+        "compliance-audit-tracking"
+      ],
+      "capabilities": [
+        "Size and cost-profile cloud infrastructure",
+        "Analyse and verify release pipelines",
+        "Conduct incident post-mortems and SLA tracking",
+        "Plan capacity and throughput at scale",
+        "Design exception handling and fallback paths",
+        "Manage community facility bookings and ops",
+        "Execute handover snagging and QA checklists",
+        "Support luxury/HNWI VIP experience workflows"
+      ]
     },
     {
       "id": "content-seo",
       "label": "Content & SEO",
-      "size": 12
+      "size": 12,
+      "skills": [
+        "seo-metadata-and-hreflang",
+        "whatsapp-business-api-templates",
+        "property-listing-copywriting",
+        "campaign-performance-tracking",
+        "social-media-copy",
+        "brand-voice-guidelines",
+        "content-syndication-strategy",
+        "editorial-schedule-management",
+        "ux-motion-and-interaction-qc",
+        "content-ethics-and-bias-audit"
+      ],
+      "capabilities": [
+        "Optimise meta tags, structured data and hreflang",
+        "Design WhatsApp Business chatbot flows and templates",
+        "Write luxury property listing descriptions",
+        "Track and report campaign conversion performance",
+        "Produce social media copy and engagement content",
+        "Define and enforce brand voice guidelines",
+        "Manage editorial schedule and content distribution",
+        "Audit content for bias, ethics, and fairness"
+      ]
     },
     {
       "id": "security-compliance",
       "label": "Security & Compliance",
-      "size": 12
+      "size": 12,
+      "skills": [
+        "geospatial-boundary-qa",
+        "test-matrix-and-acceptance-gates",
+        "compliance-evidence-packages",
+        "gdpr-pdpl-privacy-audits",
+        "risk-identification-and-mitigation",
+        "security-policy-documentation",
+        "code-health-and-type-safety",
+        "roi-and-market-alignment-analysis",
+        "seo-structured-data-strategy",
+        "compute-cost-optimisation"
+      ],
+      "capabilities": [
+        "Validate geo-boundary and map data accuracy",
+        "Design acceptance test gates and edge cases",
+        "Produce compliance evidence packages",
+        "Conduct GDPR/UAE PDPL privacy audits",
+        "Identify risks and produce mitigation plans",
+        "Document security policies and threat logs",
+        "Enforce code health, refactoring, and type safety",
+        "Analyse market ROI and strategic alignment"
+      ]
     },
     {
       "id": "qa-testing",
       "label": "QA & Testing",
-      "size": 12
+      "size": 12,
+      "skills": [
+        "lease-contract-acceptance-testing",
+        "financial-transaction-validation",
+        "report-data-integrity-checks",
+        "support-flow-sla-testing",
+        "form-input-and-data-entry-qa",
+        "market-data-accuracy-verification",
+        "geo-zone-compliance-checks",
+        "backlog-ticket-accuracy-qa",
+        "audit-log-accuracy-checks",
+        "ai-prompt-reliability-testing"
+      ],
+      "capabilities": [
+        "Validate lease contracts against acceptance criteria",
+        "Verify financial transaction flows end-to-end",
+        "Test reporting accuracy and data integrity",
+        "QA support flows and SLA adherence",
+        "Validate form inputs and data entry paths",
+        "Verify market data and comparable accuracy",
+        "Check geo-zone rules and boundary compliance",
+        "Audit system logs and activity trails for accuracy"
+      ]
     },
     {
       "id": "ai-innovation",
       "label": "AI & Innovation",
-      "size": 12
+      "size": 12,
+      "skills": [
+        "ai-model-test-design",
+        "validation-framework-architecture",
+        "intelligent-workflow-automation",
+        "cross-module-api-integration",
+        "yield-and-roi-optimization-modeling",
+        "llm-response-evaluation",
+        "business-intelligence-reporting",
+        "knowledge-graph-and-entity-modeling",
+        "zero-defect-quality-gate-design",
+        "agent-safety-and-guardrails"
+      ],
+      "capabilities": [
+        "Design test suites for AI model outputs",
+        "Architect validation and acceptance frameworks",
+        "Automate intelligent workflows with AI triggers",
+        "Evaluate LLM response quality and reliability",
+        "Generate BI reports and insight summaries",
+        "Build and maintain knowledge graphs",
+        "Model yield and ROI optimization scenarios",
+        "Enforce zero-defect quality gates and agent guardrails"
+      ]
     }
   ],
   "freeModels": {
