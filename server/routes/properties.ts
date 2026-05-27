@@ -1,5 +1,5 @@
-/**
- * Properties API Routes — Full CRUD Implementation
+﻿/**
+ * Properties API Routes â€” Full CRUD Implementation
  * Endpoints: /api/properties
  * Supports: search, filter by type/status/price, pagination, stats
  */
@@ -17,10 +17,10 @@ import { cacheService } from '../services/CacheService.js';
 const router = Router();
 
 // Cache TTLs (seconds)
-const CACHE_TTL_LIST   = 60;   // property list: 1 minute
-const CACHE_TTL_DETAIL = 300;  // property detail: 5 minutes
+const CACHE_TTL_LIST = 60; // property list: 1 minute
+const CACHE_TTL_DETAIL = 300; // property detail: 5 minutes
 
-// ─── GET /api/properties ────────────────────────────────────────────────
+// â”€â”€â”€ GET /api/properties â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 router.get(
   '/',
   requirePermission('view_properties'),
@@ -147,7 +147,7 @@ router.get(
   })
 );
 
-// ─── GET /api/properties/stats ──────────────────────────────────────────
+// â”€â”€â”€ GET /api/properties/stats â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 router.get(
   '/stats',
   requirePermission('view_properties'),
@@ -193,7 +193,7 @@ router.get(
   })
 );
 
-// ─── GET /api/properties/inventory-stats ───────────────────────────────
+// â”€â”€â”€ GET /api/properties/inventory-stats â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Returns per-stage counts and document-alert totals for the Inventory Dashboard.
 router.get(
   '/inventory-stats',
@@ -225,12 +225,11 @@ router.get(
   })
 );
 
-// ─── GET /api/properties/:id ────────────────────────────────────────────
+// â”€â”€â”€ GET /api/properties/:id â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 router.get(
   '/:id',
   requirePermission('view_properties'),
   asyncHandler(async (req: Request, res: Response) => {
-    // @ts-expect-error -- pre-existing: req.params/query string|string[] narrowing
     validateIdParam(req.params.id, 'Property ID');
 
     const cacheKey = `properties:detail:${req.params.id}`;
@@ -241,7 +240,6 @@ router.get(
     }
 
     const property = await prisma.property.findUnique({
-    // @ts-expect-error -- pre-existing: req.params/query string|string[] narrowing
       where: { id: req.params.id },
       include: {
         user: { select: { id: true, name: true, email: true, phone: true } },
@@ -264,7 +262,7 @@ router.get(
   })
 );
 
-// ─── POST /api/properties ───────────────────────────────────────────────
+// â”€â”€â”€ POST /api/properties â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 router.post(
   '/',
   requirePermission('create_property'),
@@ -272,7 +270,7 @@ router.post(
     // AUTHORIZATION: Only owner, manager, or agents can create properties
     const allowedRoles = ['owner', 'manager', 'agent'];
     if (!allowedRoles.includes(req.user?.role || '')) {
-      throw new AppError('Access denied — insufficient permissions to create properties', 403);
+      throw new AppError('Access denied â€” insufficient permissions to create properties', 403);
     }
 
     const {
@@ -428,7 +426,7 @@ router.post(
   })
 );
 
-// ─── PATCH /api/properties/:id ──────────────────────────────────────────
+// â”€â”€â”€ PATCH /api/properties/:id â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 router.patch(
   '/:id',
   requirePermission('edit_property'),
@@ -638,7 +636,7 @@ router.patch(
         type: 'property',
         action: statusChanged ? 'status_changed' : 'updated',
         description: statusChanged
-          ? `Property "${property.title}" status: ${existing.status} → ${status}`
+          ? `Property "${property.title}" status: ${existing.status} â†’ ${status}`
           : `Property "${property.title}" updated`,
         userId: req.user?.id || null,
       },
@@ -654,7 +652,7 @@ router.patch(
   })
 );
 
-// ─── DELETE /api/properties/:id ─────────────────────────────────────────
+// â”€â”€â”€ DELETE /api/properties/:id â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 router.delete(
   '/:id',
   requirePermission('delete_property'),

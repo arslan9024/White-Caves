@@ -1,16 +1,16 @@
-/**
- * Departments API Routes — Phase 30
+﻿/**
+ * Departments API Routes â€” Phase 30
  *
  * Aggregates real-time KPI data from existing tables and serves it
  * to the EnhancedSalesDepartmentView, EnhancedFinanceDepartmentView,
  * and EnhancedHRDepartmentView frontend components.
  *
  * Endpoints:
- *   GET /api/departments                    — list all supported departments
- *   GET /api/departments/:code/data         — aggregated KPI data for a department
- *   GET /api/departments/:code/kpis         — KPI array for a department
- *   GET /api/departments/:code/trends       — monthly trend data for a department
- *   GET /api/departments/:code/summary      — summary stats for a department
+ *   GET /api/departments                    â€” list all supported departments
+ *   GET /api/departments/:code/data         â€” aggregated KPI data for a department
+ *   GET /api/departments/:code/kpis         â€” KPI array for a department
+ *   GET /api/departments/:code/trends       â€” monthly trend data for a department
+ *   GET /api/departments/:code/summary      â€” summary stats for a department
  */
 
 import { Router, Request, Response } from 'express';
@@ -20,19 +20,19 @@ import { prisma } from '../database.js';
 
 const router = Router();
 
-// ─── Supported departments ───────────────────────────────────────────────────
+// â”€â”€â”€ Supported departments â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 const DEPARTMENTS = [
-  { code: 'SALES', name: 'Sales & Leasing', icon: '📈' },
-  { code: 'FINANCE', name: 'Finance', icon: '💰' },
-  { code: 'HR', name: 'Human Resources', icon: '👥' },
+  { code: 'SALES', name: 'Sales & Leasing', icon: 'ðŸ“ˆ' },
+  { code: 'FINANCE', name: 'Finance', icon: 'ðŸ’°' },
+  { code: 'HR', name: 'Human Resources', icon: 'ðŸ‘¥' },
 ];
 
-// ─── Colour palette for charts ───────────────────────────────────────────────
+// â”€â”€â”€ Colour palette for charts â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 const COLORS = ['#3498db', '#2ecc71', '#e74c3c', '#f39c12', '#9b59b6', '#1abc9c'];
 
-// ─── Helper: last N months as { label, startOf, endOf } ─────────────────────
+// â”€â”€â”€ Helper: last N months as { label, startOf, endOf } â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 function lastNMonths(n: number) {
   const months: { label: string; start: Date; end: Date }[] = [];
@@ -47,7 +47,7 @@ function lastNMonths(n: number) {
   return months;
 }
 
-// ─── Sales department aggregation ────────────────────────────────────────────
+// â”€â”€â”€ Sales department aggregation â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 async function getSalesData() {
   const months = lastNMonths(6);
@@ -171,7 +171,7 @@ async function getSalesData() {
   };
 }
 
-// ─── Finance department aggregation ──────────────────────────────────────────
+// â”€â”€â”€ Finance department aggregation â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 async function getFinanceData() {
   const months = lastNMonths(6);
@@ -281,7 +281,7 @@ async function getFinanceData() {
   };
 }
 
-// ─── HR department aggregation ────────────────────────────────────────────────
+// â”€â”€â”€ HR department aggregation â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 async function getHRData() {
   const months = lastNMonths(6);
@@ -329,7 +329,7 @@ async function getHRData() {
     color: COLORS[i % COLORS.length],
   }));
 
-  // Attendance trend — use a proxy: active leads per month as engagement metric
+  // Attendance trend â€” use a proxy: active leads per month as engagement metric
   const attendanceTrend = await Promise.all(
     months.map(async ({ label, start, end }) => {
       const count = await prisma.activity.count({
@@ -339,7 +339,7 @@ async function getHRData() {
     })
   );
 
-  // Quarterly hires — approximate from createdAt quarters
+  // Quarterly hires â€” approximate from createdAt quarters
   const now = new Date();
   const hiresLastQuarter = await Promise.all(
     [3, 2, 1].map(async (quarterAgo, idx) => {
@@ -353,7 +353,7 @@ async function getHRData() {
     })
   );
 
-  // Open positions — job applications with status 'received' or 'reviewed'
+  // Open positions â€” job applications with status 'received' or 'reviewed'
   const openPositions = await prisma.jobApplication.count({
     where: { status: { in: ['received', 'reviewed', 'shortlisted', 'interview'] } },
   });
@@ -363,7 +363,7 @@ async function getHRData() {
     name: 'Human Resources',
     totalEmployees,
     activePositions: openPositions,
-    attendanceRate: 94.5, // Placeholder — no attendance system yet; will be replaced when timesheet module is built
+    attendanceRate: 94.5, // Placeholder â€” no attendance system yet; will be replaced when timesheet module is built
     turnoverRate: parseFloat(((recentHires / Math.max(1, totalEmployees)) * 100).toFixed(1)),
     employeesByDepartment,
     attendanceTrend,
@@ -410,7 +410,7 @@ async function getHRData() {
   };
 }
 
-// ─── Route: GET /api/departments ─────────────────────────────────────────────
+// â”€â”€â”€ Route: GET /api/departments â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 router.get(
   '/',
@@ -423,13 +423,12 @@ router.get(
   })
 );
 
-// ─── Route: GET /api/departments/:code/data ──────────────────────────────────
+// â”€â”€â”€ Route: GET /api/departments/:code/data â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 router.get(
   '/:code/data',
   requirePermission('view_analytics'),
   asyncHandler(async (req: Request, res: Response) => {
-    // @ts-expect-error -- pre-existing: req.params/query string|string[] narrowing
     const code = req.params.code.toUpperCase();
 
     let data: Record<string, unknown>;
@@ -453,13 +452,12 @@ router.get(
   })
 );
 
-// ─── Route: GET /api/departments/:code/kpis ──────────────────────────────────
+// â”€â”€â”€ Route: GET /api/departments/:code/kpis â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 router.get(
   '/:code/kpis',
   requirePermission('view_analytics'),
   asyncHandler(async (req: Request, res: Response) => {
-    // @ts-expect-error -- pre-existing: req.params/query string|string[] narrowing
     const code = req.params.code.toUpperCase();
     let data: Record<string, unknown>;
 
@@ -486,13 +484,12 @@ router.get(
   })
 );
 
-// ─── Route: GET /api/departments/:code/trends ────────────────────────────────
+// â”€â”€â”€ Route: GET /api/departments/:code/trends â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 router.get(
   '/:code/trends',
   requirePermission('view_analytics'),
   asyncHandler(async (req: Request, res: Response) => {
-    // @ts-expect-error -- pre-existing: req.params/query string|string[] narrowing
     const code = req.params.code.toUpperCase();
     let data: Record<string, unknown>;
 
@@ -519,13 +516,12 @@ router.get(
   })
 );
 
-// ─── Route: GET /api/departments/:code/summary ───────────────────────────────
+// â”€â”€â”€ Route: GET /api/departments/:code/summary â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 router.get(
   '/:code/summary',
   requirePermission('view_analytics'),
   asyncHandler(async (req: Request, res: Response) => {
-    // @ts-expect-error -- pre-existing: req.params/query string|string[] narrowing
     const code = req.params.code.toUpperCase();
     let data: Record<string, unknown>;
 

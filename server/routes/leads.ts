@@ -237,10 +237,8 @@ router.get(
   '/:id',
   requirePermission('view_leads'),
   asyncHandler(async (req: Request, res: Response) => {
-    // @ts-expect-error -- pre-existing: req.params/query string|string[] narrowing
     validateIdParam(req.params.id, 'Lead ID');
     const lead = await prisma.lead.findUnique({
-    // @ts-expect-error -- pre-existing: req.params/query string|string[] narrowing
       where: { id: req.params.id },
       include: {
         assignedTo: { select: { id: true, name: true, email: true, phone: true } },
@@ -587,7 +585,6 @@ router.get(
   '/:id/activities',
   requirePermission('view_leads'),
   asyncHandler(async (req: Request, res: Response) => {
-    // @ts-expect-error -- pre-existing: req.params/query string|string[] narrowing
     validateIdParam(req.params.id, 'Lead ID');
     const { page = '1', pageSize = '20' } = req.query as Record<string, string | undefined>;
     const pageNum = Math.max(1, parseInt(page as string) || 1);
@@ -595,14 +592,12 @@ router.get(
 
     const [activities, total] = await Promise.all([
       prisma.activity.findMany({
-    // @ts-expect-error -- pre-existing: req.params/query string|string[] narrowing
         where: { leadId: req.params.id },
         orderBy: { createdAt: 'desc' },
         skip: (pageNum - 1) * limit,
         take: limit,
         include: { user: { select: { id: true, name: true } } },
       }),
-    // @ts-expect-error -- pre-existing: req.params/query string|string[] narrowing
       prisma.activity.count({ where: { leadId: req.params.id } }),
     ]);
 
@@ -674,7 +669,13 @@ router.get(
   '/scored',
   requirePermission('view_leads'),
   asyncHandler(async (req: Request, res: Response) => {
-    const { tier, minScore, maxScore, page = '1', pageSize = '50' } = req.query as Record<string, string | undefined>;
+    const {
+      tier,
+      minScore,
+      maxScore,
+      page = '1',
+      pageSize = '50',
+    } = req.query as Record<string, string | undefined>;
     const pageNum = Math.max(1, parseInt(page as string) || 1);
     const limit = Math.min(100, Math.max(1, parseInt(pageSize as string) || 50));
 
@@ -821,10 +822,7 @@ router.post(
   '/:id/auto-route',
   requirePermission('manage_leads'),
   asyncHandler(async (req: Request, res: Response) => {
-    // @ts-expect-error -- pre-existing: req.params/query string|string[] narrowing
     validateIdParam(req.params.id, 'Lead ID');
-
-    // @ts-expect-error -- pre-existing: req.params/query string|string[] narrowing
     const decision = await autoRouteHotLead(req.params.id);
 
     if (!decision) {
@@ -849,10 +847,7 @@ router.get(
   '/:id/score',
   requirePermission('view_leads'),
   asyncHandler(async (req: Request, res: Response) => {
-    // @ts-expect-error -- pre-existing: req.params/query string|string[] narrowing
     validateIdParam(req.params.id, 'Lead ID');
-
-    // @ts-expect-error -- pre-existing: req.params/query string|string[] narrowing
     const result = await scoreLead(req.params.id);
 
     res.status(200).json({
@@ -883,7 +878,6 @@ router.post(
   '/:id/score/override',
   requirePermission('manage_leads'),
   asyncHandler(async (req: Request, res: Response) => {
-    // @ts-expect-error -- pre-existing: req.params/query string|string[] narrowing
     validateIdParam(req.params.id, 'Lead ID');
     const { score, reason } = req.body;
 
@@ -895,7 +889,6 @@ router.post(
     }
 
     const result = await overrideScore(
-    // @ts-expect-error -- pre-existing: req.params/query string|string[] narrowing
       req.params.id,
       score,
       sanitizeString(reason.trim().slice(0, 500)),
@@ -941,11 +934,8 @@ router.get(
   '/:id/score/history',
   requirePermission('view_leads'),
   asyncHandler(async (req: Request, res: Response) => {
-    // @ts-expect-error -- pre-existing: req.params/query string|string[] narrowing
     validateIdParam(req.params.id, 'Lead ID');
     const { limit = '50', days = '90' } = req.query as Record<string, string | undefined>;
-
-    // @ts-expect-error -- pre-existing: req.params/query string|string[] narrowing
     const history = await getScoreHistory(req.params.id, {
       limit: Math.min(200, parseInt(limit as string) || 50),
       days: Math.min(365, parseInt(days as string) || 90),
@@ -968,12 +958,9 @@ router.post(
   '/:id/score/whatsapp',
   requirePermission('manage_leads'),
   asyncHandler(async (req: Request, res: Response) => {
-    // @ts-expect-error -- pre-existing: req.params/query string|string[] narrowing
     validateIdParam(req.params.id, 'Lead ID');
     const { intentScore, sentimentScore, engagementScore, responseTimeScore, conversationScore } =
       req.body;
-
-    // @ts-expect-error -- pre-existing: req.params/query string|string[] narrowing
     const result = await applyWhatsAppSignal(req.params.id, {
       intentScore: typeof intentScore === 'number' ? intentScore : undefined,
       sentimentScore: typeof sentimentScore === 'number' ? sentimentScore : undefined,

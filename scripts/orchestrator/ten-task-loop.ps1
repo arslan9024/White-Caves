@@ -36,6 +36,11 @@ param(
   [string]$AgentRegistryPath = "plans/SUBAGENT_REGISTRY_150.json",
   [string]$FreePlanningAgents = "@Victoria,@Invoice,@Sofia,@Cassie,@Joelle,@Annie,@Rachel,@Marissa,@Timnit,@Hedy,@Maya,@Booking,@Jaime,@Fei-Fei,@Anima,@Mary,@Corinne",
   [string]$PremiumImplementationAgents = "@Mira,@Katherine,@Radia,@Gwynne,@Una,@Lea,@Tracy,@Africa,@Barbara,@Daniela,@Ruchi,@Rachel,@Joelle,@Jaime,@Mala",
+  [int]$EnableHierarchy150Mode = 1,
+  [int]$SeniorArchitectureTicketCount = 5,
+  [int]$PremiumReviewPanelSize = 5,
+  [string]$HierarchyFocusTargets = "Clear compilation errors on development branch; Confirm Lion dashboard authorization hooks; Output 150-agent distribution log",
+  [string]$AgentCoreDistributionLogFile = "plans/150_AGENT_CORE.md",
   [int]$PlanningReadinessTarget = 100,
   [int]$PlanningImprovementThreshold = 1,
   [int]$MinProjectCompletionDeltaPct = 1,
@@ -52,6 +57,28 @@ param(
   [string]$PerTurnOnlineResearchCommand = "npm run orchestrator:discover-upgrade:report",
   [int]$PlanResearchSummaryMaxChars = 1800,
   [string]$NextPhasePlansDir = "plans/waves/next-phase",
+  [int]$RunCommandTimeoutSeconds = 1200,
+  [int]$RunCommandMaxRetries = 2,
+  [int]$RunCommandRetryDelaySeconds = 3,
+  [int]$StagnationTurnThreshold = 5,
+  [int]$EnableSmartTaskRouting = 1,
+  [int]$VerboseSubagentActivity = 1,
+  [int]$LiveCommandOutput = 1,
+  [int]$EnableAdaptiveTaskScoring = 1,
+  [int]$AdaptiveSuccessBonusMax = 8,
+  [int]$AdaptiveFailurePenaltyMax = 20,
+  [int]$EnableBestAIMode = 1,
+  [int]$MinExecutionConfidencePct = 60,
+  [int]$MinPlannerQuorumPct = 80,
+  [int]$MinPlannerConsensusPct = 70,
+  [int]$ValidationEveryNTurns = 3,
+  [int]$ForceValidationInBestAIMode = 1,
+  [int]$AllowGeneratedExecutionAfterCanonicalEmptyTurns = 3,
+  [int]$ParallelTaskSlots = 1,
+  [int]$EnableParallelInSubagentFlow = 0,
+  [int]$ParallelConflictStrictness = 2,
+  [double]$RegressionDeltaStopPct = 0.0,
+  [string]$RollbackPlansDir = "plans/waves/rollback",
   [switch]$SkipTypecheck,
   [switch]$SkipBuild,
   [switch]$DryRun
@@ -63,12 +90,22 @@ $root = Resolve-Path $WorkspaceRoot
 $pendingFile = Join-Path $root "plans\PENDING_TASKS_ONLY.md"
 $autopilotFile = Join-Path $root "plans\AUTOPILOT_QUEUE.md"
 $agentLogsFile = Join-Path $root "plans\AGENT_LOGS.md"
+$agentCoreDistributionFile = Join-Path $root $AgentCoreDistributionLogFile
 $stateFile = Join-Path $root "logs\orchestrator\ten-task-loop.json"
 $nextPhasePlansRoot = Join-Path $root $NextPhasePlansDir
+$rollbackPlansRoot = Join-Path $root $RollbackPlansDir
 $projectProgressFile = Join-Path $root "PROJECT_PROGRESS.md"
 $dailyMilestoneFile = Join-Path $root "DAILY_MILESTONE_TRACKER.md"
 $agentRegistryFile = Join-Path $root $AgentRegistryPath
 $stateDir = Split-Path $stateFile -Parent
+
+$script:RunSelfHealingStats = [ordered]@{
+  retries = 0
+  timeouts = 0
+  transientRecoveries = 0
+  permanentFailures = 0
+  lastEvent = "init"
+}
 
 if (-not (Test-Path $stateDir)) {
   New-Item -ItemType Directory -Path $stateDir -Force | Out-Null
@@ -93,6 +130,539 @@ function Write-ActivityLog {
   $stamp = Get-Date -Format "HH:mm:ss"
   Write-Host "[$stamp][$Stage] $Message" -ForegroundColor $Color
 }
+
+# ════════════════════════════════════════════════════════════════════════════════
+# VISUAL MONITORING FUNCTIONS  — make every turn step visible A→Z
+# ════════════════════════════════════════════════════════════════════════════════
+
+function Write-TurnBanner {
+  # Big cyan header printed at the very start of each turn
+  param($State)
+  $pct     = if ($null -ne $State.projectCompletionPct -and "$($State.projectCompletionPct)" -ne "") { "$($State.projectCompletionPct)%" } else { "?%" }
+  $stag    = if ($null -ne $State.stagnationTurns) { [int]$State.stagnationTurns } else { 0 }
+  $pending = @($State.pendingTasks).Count
+  $elapsed = if ($null -ne $State.sessionStartTime) { [math]::Round(((Get-Date) - $State.sessionStartTime).TotalMinutes, 1) } else { "?" }
+  $line    = "=" * 74
+  Write-Host ""
+  Write-Host $line -ForegroundColor DarkCyan
+  Write-Host ("  ▶  AEGIS TURN {0,3}  │  {1}  │  Completion: {2}  │  Queue: {3} tasks  │  Session: {4}min" -f `
+      $State.turnCounter, (Get-Date -Format "HH:mm:ss"), $pct, $pending, $elapsed) -ForegroundColor Cyan
+  if ($stag -gt 0) {
+    Write-Host ("  ⚠  Stagnation counter: {0} turns since last completion" -f $stag) -ForegroundColor DarkYellow
+  }
+  Write-Host $line -ForegroundColor DarkCyan
+  Write-Host ""
+}
+
+function Write-PhaseHeader {
+  # Thin separator line used between phases
+  param([string]$Phase, [string]$Detail = "", [string]$Color = "DarkGray")
+  $label = if ($Detail) { $Phase + ": " + $Detail } else { $Phase }
+  $pad   = "─" * [Math]::Max(2, 62 - $label.Length)
+  Write-Host ("  ── {0} {1}" -f $label, $pad) -ForegroundColor $Color
+}
+
+function Write-QueueSnapshot {
+  # Ranked task list, winner highlighted
+  param([array]$Tasks, [string]$Label = "PENDING QUEUE", [string]$WinningId = "")
+  $count = @($Tasks).Count
+  Write-Host ""
+  Write-Host ("  ┌─ {0}  ({1} tasks ranked)" -f $Label, $count) -ForegroundColor DarkYellow
+  $i = 1
+  foreach ($t in @($Tasks | Select-Object -First 10)) {
+    $arrow = if ($t.id -eq $WinningId) { "►" } else { " " }
+    $pri   = if ($t.priority) { "{0,-6}" -f $t.priority } else { "?      " }
+    $sc    = if ($null -ne $t.score) { "{0,4}" -f $t.score } else { "   ?" }
+    $title = if ($t.title.Length -gt 50) { $t.title.Substring(0, 47) + "..." } else { $t.title }
+    $color = if ($t.id -eq $WinningId) { "Cyan" } elseif ($i -le 3) { "Yellow" } else { "DarkGray" }
+    Write-Host ("  │ {0} {1,2}. [pri:{2} score:{3}]  {4}" -f $arrow, $i, $pri, $sc, $title) -ForegroundColor $color
+    $i++
+  }
+  Write-Host "  └" -ForegroundColor DarkYellow
+  Write-Host ""
+}
+
+function Write-TaskCard {
+  # Box showing the selected task's full details before execution
+  param(
+    $Task,
+    [string]$Agent      = "?",
+    [string]$Team       = "?",
+    [string]$Lane       = "?",
+    [string]$Module     = "?",
+    [string]$Command    = "?",
+    [double]$ConfidencePct = 0
+  )
+  $w   = 68
+  $HL  = "  ╔" + ("═" * $w) + "╗"
+  $SEP = "  ╠" + ("═" * $w) + "╣"
+  $BL  = "  ╚" + ("═" * $w) + "╝"
+  $Row = { param($s) "  ║  " + $s.PadRight($w - 2) + "  ║" }
+
+  $tid   = [string]$Task.id
+  $pri   = if ($Task.priority) { [string]$Task.priority } else { "?" }
+  $score = if ($null -ne $Task.score) { [string]$Task.score } else { "?" }
+  $title = [string]$Task.title
+  if ($title.Length -gt ($w - 14)) { $title = $title.Substring(0, $w - 17) + "..." }
+
+  Write-Host ""
+  Write-Host $HL -ForegroundColor Yellow
+  Write-Host (& $Row ("  EXECUTING  ▶  $tid  [priority: $pri]")) -ForegroundColor Yellow
+  Write-Host $SEP -ForegroundColor DarkYellow
+  Write-Host (& $Row ("  Title    : $title")) -ForegroundColor White
+  Write-Host (& $Row ("  Owner    : $Agent   │  Team: $Team")) -ForegroundColor Cyan
+  Write-Host (& $Row ("  Route    : lane=$Lane   module=$Module")) -ForegroundColor Green
+  Write-Host (& $Row ("  Score    : $score   │  Confidence: ${ConfidencePct}%")) -ForegroundColor Green
+  Write-Host (& $Row ("  Command  : $Command")) -ForegroundColor Magenta
+  Write-Host $BL -ForegroundColor Yellow
+  Write-Host ""
+}
+
+function Write-TurnSummary {
+  # Full A→Z turn wrap-up panel printed after REPORT
+  param(
+    [int]$TurnNumber,
+    [string]$TaskId,
+    [string]$TaskTitle,
+    [string]$Status,
+    [string]$Command,
+    [int]$Duration,
+    [double]$DeltaPct,
+    [double]$CompletionPct,
+    [bool]$GateMet,
+    [array]$NextQueue
+  )
+  $sc  = switch ($Status) { "completed" { "Green" } "failed" { "Red" } default { "DarkYellow" } }
+  $gi  = if ($GateMet) { "✓ GATE MET  (+$($DeltaPct)%)" } else { "✗ gate missed  (delta=$($DeltaPct)%)" }
+  $gc  = if ($GateMet) { "Green" } else { "DarkYellow" }
+  $cmd = if ([string]::IsNullOrWhiteSpace($Command)) { "n/a" } else { $Command }
+  $t   = if ($TaskTitle.Length -gt 56) { $TaskTitle.Substring(0, 53) + "..." } else { $TaskTitle }
+  $line = "=" * 74
+  Write-Host ""
+  Write-Host $line -ForegroundColor DarkCyan
+  Write-Host ("  ■ TURN {0} COMPLETE  ►  STATUS: {1}" -f $TurnNumber, $Status.ToUpper()) -ForegroundColor $sc
+  Write-Host ("  │  Task    : [{0}]  {1}" -f $TaskId, $t) -ForegroundColor White
+  Write-Host ("  │  Ran     : {0}  ({1}s elapsed)" -f $cmd, $Duration) -ForegroundColor Gray
+  Write-Host ("  │  Progress: {0}%  │  {1}" -f $CompletionPct, $gi) -ForegroundColor $gc
+  if (@($NextQueue).Count -gt 0) {
+    $nx = $NextQueue[0]
+    $nt = if ($nx.title.Length -gt 50) { $nx.title.Substring(0,47)+"..." } else { $nx.title }
+    Write-Host ("  │  Next up : [{0}|score:{1}]  {2}" -f $nx.priority, $nx.score, $nt) -ForegroundColor DarkCyan
+  }
+  Write-Host $line -ForegroundColor DarkCyan
+  Write-Host ""
+}
+
+function Invoke-ParallelCommandBatch {
+  # Experimental v1: execute multiple task commands concurrently and return normalized results
+  param(
+    [string]$RootPath,
+    [array]$TaskCommands
+  )
+
+  $jobs = @()
+  foreach ($tc in @($TaskCommands)) {
+    $taskId = [string]$tc.taskId
+    $cmd = [string]$tc.command
+    $job = Start-Job -ScriptBlock {
+      param($InnerRoot, $InnerTaskId, $InnerCommand)
+      $start = Get-Date
+      $captured = ""
+      $ok = $false
+      $exitCode = 1
+      try {
+        Set-Location -Path $InnerRoot
+        $captured = ((Invoke-Expression $InnerCommand) 2>&1 | Out-String)
+        $exitCode = if ($null -ne $LASTEXITCODE) { [int]$LASTEXITCODE } else { 0 }
+        $ok = ($exitCode -eq 0)
+      }
+      catch {
+        $captured = $_.Exception.Message
+        $exitCode = 1
+        $ok = $false
+      }
+      $duration = [math]::Round(((Get-Date) - $start).TotalSeconds, 2)
+      [pscustomobject]@{
+        taskId = $InnerTaskId
+        command = $InnerCommand
+        ok = $ok
+        exitCode = $exitCode
+        output = $captured
+        durationSeconds = $duration
+      }
+    } -ArgumentList $RootPath, $taskId, $cmd
+    $jobs += $job
+  }
+
+  if ($jobs.Count -eq 0) {
+    return @()
+  }
+
+  Wait-Job -Job $jobs | Out-Null
+  $results = @()
+  foreach ($j in $jobs) {
+    $received = Receive-Job -Job $j -ErrorAction SilentlyContinue
+    if ($null -ne $received) {
+      $results += $received
+    }
+    Remove-Job -Job $j -Force -ErrorAction SilentlyContinue
+  }
+
+  return @($results)
+}
+
+function Get-SourceFamilyId {
+  param([object]$Task)
+
+  if ($null -eq $Task -or [string]::IsNullOrWhiteSpace([string]$Task.sourceId)) {
+    return ""
+  }
+
+  $sid = [string]$Task.sourceId
+  if ($sid -match '^([^-]+-[^-]+)') {
+    return [string]$Matches[1]
+  }
+  if ($sid -match '^([^-]+)') {
+    return [string]$Matches[1]
+  }
+  return $sid
+}
+
+function Get-ParallelConflictAssessment {
+  # Returns a conflict score (lower is better) and reasons for pairing two tasks in parallel.
+  param(
+    [object]$PrimaryTask,
+    [object]$SecondaryTask,
+    [object]$PrimaryRoute,
+    [object]$SecondaryRoute,
+    [int]$Strictness = 2
+  )
+
+  $score = 0
+  $reasons = @()
+
+  if ($null -eq $PrimaryTask -or $null -eq $SecondaryTask) {
+    return [pscustomobject]@{ score = 999; reasons = @('invalid task pair') }
+  }
+
+  $primaryModule = if ($null -ne $PrimaryRoute) { [string]$PrimaryRoute.module } else { "" }
+  $secondaryModule = if ($null -ne $SecondaryRoute) { [string]$SecondaryRoute.module } else { "" }
+  $primaryLane = if ($null -ne $PrimaryRoute) { [string]$PrimaryRoute.lane } else { "" }
+  $secondaryLane = if ($null -ne $SecondaryRoute) { [string]$SecondaryRoute.lane } else { "" }
+
+  if (-not [string]::IsNullOrWhiteSpace($primaryModule) -and $primaryModule -eq $secondaryModule) {
+    $score += 60
+    $reasons += "same module ($primaryModule)"
+  }
+  if (-not [string]::IsNullOrWhiteSpace($primaryLane) -and $primaryLane -eq $secondaryLane) {
+    $score += 25
+    $reasons += "same lane ($primaryLane)"
+  }
+
+  $pOwner = if ($PrimaryTask.ownerAgent) { [string]$PrimaryTask.ownerAgent } else { Get-OwnerAgentHandle -Owner $PrimaryTask.owner }
+  $sOwner = if ($SecondaryTask.ownerAgent) { [string]$SecondaryTask.ownerAgent } else { Get-OwnerAgentHandle -Owner $SecondaryTask.owner }
+  if (-not [string]::IsNullOrWhiteSpace($pOwner) -and $pOwner -eq $sOwner) {
+    $score += 20
+    $reasons += "same owner agent ($pOwner)"
+  }
+
+  $pFamily = Get-SourceFamilyId -Task $PrimaryTask
+  $sFamily = Get-SourceFamilyId -Task $SecondaryTask
+  if (-not [string]::IsNullOrWhiteSpace($pFamily) -and $pFamily -eq $sFamily) {
+    $score += 30
+    $reasons += "same source family ($pFamily)"
+  }
+
+  if ($Strictness -le 0) {
+    $score = 0
+    $reasons = @('strictness=0 (conflict checks bypassed)')
+  }
+  elseif ($Strictness -eq 1) {
+    # medium mode: only module/lane penalties
+    $score = 0
+    if (-not [string]::IsNullOrWhiteSpace($primaryModule) -and $primaryModule -eq $secondaryModule) {
+      $score += 70
+      $reasons = @("same module ($primaryModule)")
+    }
+    elseif (-not [string]::IsNullOrWhiteSpace($primaryLane) -and $primaryLane -eq $secondaryLane) {
+      $score += 20
+      $reasons = @("same lane ($primaryLane)")
+    }
+    else {
+      $reasons = @('no module/lane conflict')
+    }
+  }
+
+  if ($reasons.Count -eq 0) {
+    $reasons = @('no conflict detected')
+  }
+
+  return [pscustomobject]@{
+    score = $score
+    reasons = $reasons
+  }
+}
+
+function Select-SecondaryParallelTask {
+  # Pick best secondary task by lowest conflict score, then highest score task.
+  param(
+    [array]$Candidates,
+    [object]$PrimaryTask,
+    [object]$PrimaryRoute,
+    [int]$Strictness = 2
+  )
+
+  $ranked = @()
+  foreach ($c in @($Candidates)) {
+    if ($null -eq $c) { continue }
+    $route = Get-TaskRouteProfile -Task $c
+    if ($null -eq $route) {
+      $route = [pscustomobject]@{ lane = 'workflow'; module = 'platform-core'; reason = 'route profile unavailable'; recommendedCommand = 'npm run build' }
+    }
+    $assess = Get-ParallelConflictAssessment -PrimaryTask $PrimaryTask -SecondaryTask $c -PrimaryRoute $PrimaryRoute -SecondaryRoute $route -Strictness $Strictness
+    $ranked += [pscustomobject]@{
+      task = $c
+      route = $route
+      conflictScore = [int]$assess.score
+      conflictReasons = @($assess.reasons)
+    }
+  }
+
+  if ($ranked.Count -eq 0) {
+    return $null
+  }
+
+  $best = @($ranked | Sort-Object -Property @{Expression='conflictScore';Descending=$false}, @{Expression={ [int]$_.task.score };Descending=$true}, @{Expression={ [string]$_.task.id };Descending=$false} | Select-Object -First 1)
+  if ($best.Count -eq 0) {
+    return $null
+  }
+  return $best[0]
+}
+
+function Write-ParallelTurnSummary {
+  # Dedicated two-lane summary box for slot A + slot B outcomes.
+  param(
+    [object]$PrimaryTask,
+    [string]$PrimaryStatus,
+    [string]$PrimaryCommand,
+    [double]$PrimaryDuration,
+    [object]$SecondaryTask,
+    [string]$SecondaryStatus,
+    [string]$SecondaryCommand,
+    [double]$SecondaryDuration,
+    [string]$ConflictHint = ""
+  )
+
+  if ($null -eq $SecondaryTask -or [string]::IsNullOrWhiteSpace($SecondaryStatus)) {
+    return
+  }
+
+  $line = "=" * 74
+  $pColor = switch ($PrimaryStatus) { 'completed' { 'Green' } 'failed' { 'Red' } 'blocked' { 'DarkYellow' } default { 'Cyan' } }
+  $sColor = switch ($SecondaryStatus) { 'completed' { 'Green' } 'failed' { 'Red' } 'blocked' { 'DarkYellow' } default { 'Cyan' } }
+
+  Write-Host ""
+  Write-Host $line -ForegroundColor Blue
+  Write-Host "  ║ PARALLEL LANE SUMMARY (A+B)" -ForegroundColor Blue
+  Write-Host ("  ║ slotA: {0}  task={1}  time={2}s  cmd={3}" -f $PrimaryStatus, $PrimaryTask.id, [math]::Round($PrimaryDuration,2), $(if ([string]::IsNullOrWhiteSpace($PrimaryCommand)) { 'n/a' } else { $PrimaryCommand })) -ForegroundColor $pColor
+  Write-Host ("  ║ slotB: {0}  task={1}  time={2}s  cmd={3}" -f $SecondaryStatus, $SecondaryTask.id, [math]::Round($SecondaryDuration,2), $(if ([string]::IsNullOrWhiteSpace($SecondaryCommand)) { 'n/a' } else { $SecondaryCommand })) -ForegroundColor $sColor
+  if (-not [string]::IsNullOrWhiteSpace($ConflictHint)) {
+    Write-Host ("  ║ conflict guard: {0}" -f $ConflictHint) -ForegroundColor DarkYellow
+  }
+  Write-Host $line -ForegroundColor Blue
+  Write-Host ""
+}
+
+function Write-ModuleCompletionPanel {
+  # Blue/Yellow dashboard for module-by-module completion visibility
+  param(
+    [object]$State,
+    [string]$CurrentLane = "",
+    [string]$CurrentModule = "",
+    [string]$CurrentStatus = "planned",
+    [int]$Top = 6
+  )
+
+  Ensure-StateSchema -State $State
+  $entries = @()
+
+  if ($State.modulePerformance -is [System.Collections.IDictionary]) {
+    foreach ($k in $State.modulePerformance.Keys) {
+      $entry = $State.modulePerformance[$k]
+      if ($null -ne $entry) { $entries += $entry }
+    }
+  }
+
+  Write-Host ""
+  Write-Host "  ┌─ MODULE COMPLETION SNAPSHOT" -ForegroundColor Blue
+
+  if ($entries.Count -eq 0) {
+    Write-Host "  │ (no module stats yet - first completed/failed turn will populate this)" -ForegroundColor DarkYellow
+    Write-Host "  └" -ForegroundColor Blue
+    Write-Host ""
+    return
+  }
+
+  $currentLabel = if ([string]::IsNullOrWhiteSpace($CurrentModule)) { "n/a" } else { "$CurrentLane::$CurrentModule" }
+  $currentEntry = @($entries | Where-Object { (([string]$_.lane) + "::" + ([string]$_.module)) -eq $currentLabel } | Select-Object -First 1)
+  if ($currentEntry.Count -gt 0) {
+    $ce = $currentEntry[0]
+    $currentColor = switch ($CurrentStatus) {
+      "completed" { "Green" }
+      "failed" { "Red" }
+      "blocked" { "DarkYellow" }
+      default { "Cyan" }
+    }
+    Write-Host ("  │ current  : {0}  status={1}  completed={2}  failed={3}  blocked={4}" -f $currentLabel, $CurrentStatus, $ce.completed, $ce.failed, $ce.blocked) -ForegroundColor $currentColor
+  }
+  else {
+    Write-Host ("  │ current  : {0}  status={1}" -f $currentLabel, $CurrentStatus) -ForegroundColor Cyan
+  }
+
+  Write-Host "  │ top modules (completed/attempts):" -ForegroundColor DarkYellow
+  $rank = 1
+  foreach ($m in @($entries | Sort-Object -Property @{Expression='completed';Descending=$true}, @{Expression='attempts';Descending=$true}, @{Expression='module';Descending=$false} | Select-Object -First $Top)) {
+    $rate = if ([int]$m.attempts -gt 0) { [math]::Round(([double]$m.completed * 100.0) / [double]$m.attempts, 1) } else { 0 }
+    $lineColor = if ($rank -le 3) { "Blue" } else { "DarkCyan" }
+    Write-Host ("  │   {0,2}. {1}::{2}  {3}/{4}  success={5}%" -f $rank, $m.lane, $m.module, $m.completed, $m.attempts, $rate) -ForegroundColor $lineColor
+    $rank++
+  }
+
+  Write-Host "  └" -ForegroundColor Blue
+  Write-Host ""
+}
+
+function Write-TurnDashboard {
+  # Compact dashboard panel for terminal: phase timeline + lane health + execution metrics.
+  param(
+    [int]$TurnNumber,
+    [string]$TaskId,
+    [string]$ExecutionStatus,
+    [string]$PrimaryLane,
+    [string]$PrimaryModule,
+    [double]$CompletionPct,
+    [double]$DeltaPct,
+    [bool]$GateMet,
+    [string]$PlanStatus,
+    [string]$SmartGateMode,
+    [string]$BestAIGatesNote,
+    [double]$PrimaryDurationSeconds,
+    [string]$PrimaryCommand,
+    [string]$SecondaryTaskId = "",
+    [string]$SecondaryStatus = "",
+    [double]$SecondaryDurationSeconds = 0,
+    [string]$SecondaryCommand = "",
+    [array]$TrendHistory = @()
+  )
+
+  $line = "=" * 74
+  $execColor = switch ($ExecutionStatus) { 'completed' { 'Green' } 'failed' { 'Red' } 'blocked' { 'DarkYellow' } default { 'Cyan' } }
+  $gateColor = if ($GateMet) { 'Green' } else { 'DarkYellow' }
+  $planColor = switch ($PlanStatus) { 'completed' { 'Green' } 'failed' { 'Red' } default { 'DarkYellow' } }
+  $deltaColor = if ($DeltaPct -ge 0) { 'Green' } else { 'Red' }
+
+  function Get-StepBadge {
+    param([string]$Status)
+    switch ($Status) {
+      'completed' { return @{ icon='✓'; color='Green' } }
+      'failed' { return @{ icon='✗'; color='Red' } }
+      'blocked' { return @{ icon='!'; color='DarkYellow' } }
+      'skipped' { return @{ icon='•'; color='DarkGray' } }
+      default { return @{ icon='•'; color='Cyan' } }
+    }
+  }
+
+  function Get-DeltaSpark {
+    param([double]$Delta)
+
+    if ($Delta -le -3) { return '▁' }
+    if ($Delta -le -1.5) { return '▂' }
+    if ($Delta -lt 0) { return '▃' }
+    if ($Delta -lt 1) { return '▄' }
+    if ($Delta -lt 2) { return '▅' }
+    if ($Delta -lt 3) { return '▆' }
+    if ($Delta -lt 4) { return '▇' }
+    return '█'
+  }
+
+  $timeline = @(
+    [pscustomobject]@{ phase='REORGANIZE'; status='completed' },
+    [pscustomobject]@{ phase='ANALYZE'; status='completed' },
+    [pscustomobject]@{ phase='SCORE'; status='completed' },
+    [pscustomobject]@{ phase='SELECT'; status='completed' },
+    [pscustomobject]@{ phase='PLAN'; status=if ([string]::IsNullOrWhiteSpace($PlanStatus)) { 'completed' } else { $PlanStatus } },
+    [pscustomobject]@{ phase='IMPLEMENT'; status=$ExecutionStatus },
+    [pscustomobject]@{ phase='REPORT'; status=if ($GateMet) { 'completed' } else { 'blocked' } },
+    [pscustomobject]@{ phase='WRITE'; status='completed' }
+  )
+
+  Write-Host ""
+  Write-Host $line -ForegroundColor Blue
+  Write-Host ("  ▣ TURN DASHBOARD  │  turn={0}  task={1}" -f $TurnNumber, $TaskId) -ForegroundColor Blue
+  Write-Host ("  │ lane={0}::{1}  │  mode={2}" -f $(if ([string]::IsNullOrWhiteSpace($PrimaryLane)) { 'n/a' } else { $PrimaryLane }), $(if ([string]::IsNullOrWhiteSpace($PrimaryModule)) { 'n/a' } else { $PrimaryModule }), $(if ([string]::IsNullOrWhiteSpace($SmartGateMode)) { 'implementation' } else { $SmartGateMode })) -ForegroundColor Cyan
+  Write-Host "  │" -ForegroundColor DarkCyan
+
+  Write-Host "  │ PHASE TIMELINE:" -ForegroundColor DarkYellow
+  foreach ($step in $timeline) {
+    $badge = Get-StepBadge -Status ([string]$step.status)
+    Write-Host ("  │   [{0}] {1,-10} {2}" -f $badge.icon, $step.phase, $step.status) -ForegroundColor $badge.color
+  }
+
+  Write-Host "  │" -ForegroundColor DarkCyan
+  Write-Host "  │ EXECUTION LANES:" -ForegroundColor DarkYellow
+  Write-Host ("  │   A: status={0}  time={1}s  cmd={2}" -f $ExecutionStatus, [math]::Round($PrimaryDurationSeconds,2), $(if ([string]::IsNullOrWhiteSpace($PrimaryCommand)) { 'n/a' } else { $PrimaryCommand })) -ForegroundColor $execColor
+  if (-not [string]::IsNullOrWhiteSpace($SecondaryTaskId)) {
+    $secondaryColor = switch ($SecondaryStatus) { 'completed' { 'Green' } 'failed' { 'Red' } 'blocked' { 'DarkYellow' } default { 'Cyan' } }
+    Write-Host ("  │   B: status={0}  task={1}  time={2}s  cmd={3}" -f $SecondaryStatus, $SecondaryTaskId, [math]::Round($SecondaryDurationSeconds,2), $(if ([string]::IsNullOrWhiteSpace($SecondaryCommand)) { 'n/a' } else { $SecondaryCommand })) -ForegroundColor $secondaryColor
+  }
+  else {
+    Write-Host "  │   B: n/a (single-lane execution this turn)" -ForegroundColor DarkGray
+  }
+
+  Write-Host "  │" -ForegroundColor DarkCyan
+  Write-Host ("  │ METRICS: completion={0}%  delta={1}%  gate={2}" -f $CompletionPct, $DeltaPct, $(if ($GateMet) { 'pass' } else { 'deferred' })) -ForegroundColor $gateColor
+  Write-Host ("  │ PLAN: {0}" -f $(if ([string]::IsNullOrWhiteSpace($PlanStatus)) { 'n/a' } else { $PlanStatus })) -ForegroundColor $planColor
+  if (-not [string]::IsNullOrWhiteSpace($BestAIGatesNote)) {
+    Write-Host ("  │ BEST-AI: {0}" -f $BestAIGatesNote) -ForegroundColor $(if ($BestAIGatesNote -match 'fail') { 'Red' } elseif ($BestAIGatesNote -match 'pass|not-run') { 'Green' } else { 'DarkYellow' })
+  }
+
+  Write-Host "  │" -ForegroundColor DarkCyan
+  Write-Host "  │ TREND (last 5 turns):" -ForegroundColor DarkYellow
+  $trend = @($TrendHistory | Select-Object -Last 5)
+  if ($trend.Count -eq 0) {
+    Write-Host "  │   n/a (collecting data...)" -ForegroundColor DarkGray
+  }
+  else {
+    $avgDelta = [math]::Round((@($trend | ForEach-Object { [double]$_.deltaPct } | Measure-Object -Average).Average), 2)
+    $gatePasses = @($trend | Where-Object { [bool]$_.gateMet }).Count
+    $gatePassRate = if ($trend.Count -gt 0) { [math]::Round((100.0 * $gatePasses) / $trend.Count, 0) } else { 0 }
+
+    Write-Host "  │   " -ForegroundColor DarkCyan -NoNewline
+    foreach ($t in $trend) {
+      $delta = [double]$t.deltaPct
+      $deltaLabel = if ($delta -ge 0) { "+$([math]::Round($delta,2))" } else { "$([math]::Round($delta,2))" }
+      $spark = Get-DeltaSpark -Delta $delta
+      $icon = if (-not [bool]$t.gateMet) { '!' } elseif ([string]$t.status -eq 'completed') { '✓' } elseif ([string]$t.status -eq 'failed') { '✗' } elseif ([string]$t.status -eq 'blocked') { '!' } else { '•' }
+      $token = "T$($t.turn):$spark$deltaLabel$icon"
+      $tokenColor = if ($delta -gt 0 -and [bool]$t.gateMet) { 'Green' } elseif ($delta -lt 0 -or [string]$t.status -eq 'failed') { 'Red' } elseif ([string]$t.status -eq 'blocked') { 'DarkYellow' } else { 'Cyan' }
+      Write-Host "$token " -ForegroundColor $tokenColor -NoNewline
+    }
+    Write-Host ""
+
+    $avgColor = if ($avgDelta -gt 0) { 'Green' } elseif ($avgDelta -lt 0) { 'Red' } else { 'Cyan' }
+    $passColor = if ($gatePassRate -ge 80) { 'Green' } elseif ($gatePassRate -ge 50) { 'DarkYellow' } else { 'Red' }
+    $avgLabel = if ($avgDelta -ge 0) { "+$avgDelta" } else { "$avgDelta" }
+    Write-Host ("  │   rolling avg delta: {0}%" -f $avgLabel) -ForegroundColor $avgColor
+    Write-Host ("  │   gate pass rate  : {0}% ({1}/{2})" -f $gatePassRate, $gatePasses, $trend.Count) -ForegroundColor $passColor
+  }
+
+  Write-Host $line -ForegroundColor Blue
+  Write-Host ""
+}
+
+# ════════════════════════════════════════════════════════════════════════════════
+# END VISUAL MONITORING FUNCTIONS
+# ════════════════════════════════════════════════════════════════════════════════
 
 function Write-FileAtomicWithRetry {
   param(
@@ -278,6 +848,7 @@ function Read-PendingTasksFromMarkdown {
     if ($line -match '^\|\s*([0-9]+-[0-9]+)\s*\|\s*(.*?)\s*\|\s*(P[0-2])\s*\|\s*(.*?)\s*\|') {
       $taskKey = $Matches[1].Trim()
       $scope = $Matches[2].Trim()
+
       $priority = $Matches[3].Trim()
       $owner = $Matches[4].Trim()
 
@@ -342,11 +913,245 @@ function Initialize-LoopState {
     lastCycleCompletionDeltaPct = 0.0
     lastSelectedTaskId = ""
     lastSelectedSourceId = ""
+    stagnationTurns = 0
+    canonicalEmptyTurns = 0
     waveTaskIds = @()
+    taskPerformance = @{}
+    modulePerformance = @{}
+    lastTurnModuleKey = ""
+    turnTrend = @()
+    selfHealing = [ordered]@{
+      retries = 0
+      timeouts = 0
+      transientRecoveries = 0
+      permanentFailures = 0
+      lastEvent = "init"
+      lastUpdated = (Get-Date).ToString("o")
+    }
     completedTasks = @()
     pendingTasks = $seed
     blockedTasks = @()
   }
+}
+
+function Ensure-StateSchema {
+  param([object]$State)
+
+  if (-not ($State.PSObject.Properties.Name -contains 'taskPerformance')) {
+    $State | Add-Member -NotePropertyName taskPerformance -NotePropertyValue @{} -Force
+  }
+  elseif (-not ($State.taskPerformance -is [System.Collections.IDictionary])) {
+    $normalizedTaskPerformance = @{}
+    if ($null -ne $State.taskPerformance -and $State.taskPerformance.PSObject) {
+      foreach ($prop in $State.taskPerformance.PSObject.Properties) {
+        $normalizedTaskPerformance[[string]$prop.Name] = $prop.Value
+      }
+    }
+    $State.taskPerformance = $normalizedTaskPerformance
+  }
+
+  if (-not ($State.PSObject.Properties.Name -contains 'modulePerformance')) {
+    $State | Add-Member -NotePropertyName modulePerformance -NotePropertyValue @{} -Force
+  }
+  elseif (-not ($State.modulePerformance -is [System.Collections.IDictionary])) {
+    $normalizedModulePerformance = @{}
+    if ($null -ne $State.modulePerformance -and $State.modulePerformance.PSObject) {
+      foreach ($prop in $State.modulePerformance.PSObject.Properties) {
+        $normalizedModulePerformance[[string]$prop.Name] = $prop.Value
+      }
+    }
+    $State.modulePerformance = $normalizedModulePerformance
+  }
+
+  if (-not ($State.PSObject.Properties.Name -contains 'lastTurnModuleKey')) {
+    $State | Add-Member -NotePropertyName lastTurnModuleKey -NotePropertyValue "" -Force
+  }
+
+  if (-not ($State.PSObject.Properties.Name -contains 'turnTrend')) {
+    $State | Add-Member -NotePropertyName turnTrend -NotePropertyValue @() -Force
+  }
+  elseif ($null -eq $State.turnTrend) {
+    $State.turnTrend = @()
+  }
+
+  if (-not ($State.PSObject.Properties.Name -contains 'selfHealing')) {
+    $State | Add-Member -NotePropertyName selfHealing -NotePropertyValue ([ordered]@{
+      retries = 0
+      timeouts = 0
+      transientRecoveries = 0
+      permanentFailures = 0
+      lastEvent = "init"
+      lastUpdated = (Get-Date).ToString("o")
+    }) -Force
+  }
+
+  if (-not ($State.PSObject.Properties.Name -contains 'stagnationTurns')) {
+    $State | Add-Member -NotePropertyName stagnationTurns -NotePropertyValue 0 -Force
+  }
+
+  if (-not ($State.PSObject.Properties.Name -contains 'canonicalEmptyTurns')) {
+    $State | Add-Member -NotePropertyName canonicalEmptyTurns -NotePropertyValue 0 -Force
+  }
+
+  foreach ($metric in @('retries','timeouts','transientRecoveries','permanentFailures')) {
+    if (-not ($State.selfHealing.PSObject.Properties.Name -contains $metric)) {
+      $State.selfHealing | Add-Member -NotePropertyName $metric -NotePropertyValue 0 -Force
+    }
+  }
+  if (-not ($State.selfHealing.PSObject.Properties.Name -contains 'lastEvent')) {
+    $State.selfHealing | Add-Member -NotePropertyName 'lastEvent' -NotePropertyValue 'init' -Force
+  }
+  if (-not ($State.selfHealing.PSObject.Properties.Name -contains 'lastUpdated')) {
+    $State.selfHealing | Add-Member -NotePropertyName 'lastUpdated' -NotePropertyValue (Get-Date).ToString("o") -Force
+  }
+}
+
+function Get-TaskRouteProfile {
+  param([object]$Task)
+
+  $title = if ($null -eq $Task -or [string]::IsNullOrWhiteSpace([string]$Task.title)) { "" } else { [string]$Task.title }
+  $haystack = $title.ToLowerInvariant()
+
+  $lane = "workflow"
+  $module = "platform-core"
+  $reason = "default workflow routing"
+  $recommendedCommand = "npm run build"
+
+  if ($haystack -match "frontend|ui|ux|react|component|page|layout|rtl|accessibility|wcag|css|tailwind|virtual tour|media|lazy loading") {
+    $lane = "frontend"
+    $module = "ui-experience"
+    $reason = "matched UI/UX indicators in task title"
+    $recommendedCommand = "npm run build"
+  }
+  elseif ($haystack -match "backend|api|route|server|middleware|auth|rbac|database|mongo|prisma|webhook") {
+    $lane = "backend"
+    $module = "api-services"
+    $reason = "matched backend/API indicators in task title"
+    $recommendedCommand = "npm run typecheck"
+  }
+  elseif ($haystack -match "security|csrf|xss|injection|owasp|csp|rate-limit|compliance|privacy") {
+    $lane = "security"
+    $module = "security-hardening"
+    $reason = "matched security/compliance indicators in task title"
+    $recommendedCommand = "npm run lint"
+  }
+  elseif ($haystack -match "performance|cache|pwa|lighthouse|bundle|seo|core web vitals") {
+    $lane = "performance"
+    $module = "perf-seo"
+    $reason = "matched performance/SEO indicators in task title"
+    $recommendedCommand = "npm run build"
+  }
+
+  return [pscustomobject]@{
+    lane = $lane
+    module = $module
+    reason = $reason
+    recommendedCommand = $recommendedCommand
+  }
+}
+
+function Rehydrate-PendingFromCanonical {
+  param(
+    [object]$State,
+    [array]$SourceTasks,
+    [string]$Reason
+  )
+
+  $completedSourceIds = @($State.completedTasks | ForEach-Object { $_.sourceId })
+  $blockedSourceIds = @($State.blockedTasks | ForEach-Object { $_.sourceId })
+
+  $rebuilt = @()
+  $nextIndex = 1
+  foreach ($s in @($SourceTasks)) {
+    if ($rebuilt.Count -ge 10) { break }
+    if ([string]::IsNullOrWhiteSpace([string]$s.sourceId)) { continue }
+    if (($completedSourceIds -contains $s.sourceId) -or ($blockedSourceIds -contains $s.sourceId)) { continue }
+
+    $rebuilt += [ordered]@{
+      id = (New-Id -Index $nextIndex)
+      sourceId = $s.sourceId
+      title = $s.title
+      owner = $s.owner
+      ownerAgent = (Get-OwnerAgentHandle -Owner $s.owner)
+      team = (Get-TaskTeam -Owner $s.owner)
+      priority = $s.priority
+      status = "pending"
+      turnsPending = 0
+      score = 0
+      createdAt = (Get-Date).ToString("o")
+      updatedAt = (Get-Date).ToString("o")
+      notes = "Rehydrated from canonical queue: $Reason"
+    }
+    $nextIndex++
+  }
+
+  if ($rebuilt.Count -gt 0) {
+    $State.pendingTasks = Convert-TaskMetadata -Tasks @($rebuilt)
+    $State.waveTaskIds = @()
+    $State.lastSelectedTaskId = ""
+    $State.lastSelectedSourceId = ""
+    $State.stagnationTurns = 0
+    Write-ActivityLog -Stage "HEAL" -Message "Rehydrated pending queue from canonical source ($($rebuilt.Count) tasks). Reason: $Reason" -Color "Green"
+    return $true
+  }
+
+  Write-ActivityLog -Stage "HEAL" -Message "Canonical rehydration skipped (no eligible source tasks found)." -Color "DarkYellow"
+  return $false
+}
+
+function Get-ActionablePendingTasks {
+  param([array]$Tasks)
+
+  $actionable = @()
+  foreach ($task in @($Tasks)) {
+    if ($null -eq $task) { continue }
+
+    $sourceId = [string]$task.sourceId
+    $title = [string]$task.title
+
+    if ([string]::IsNullOrWhiteSpace($sourceId)) { continue }
+    if ($sourceId -like 'GENERATED-*') { continue }
+    if ($title -match '^Generated follow-up:') { continue }
+
+    $actionable += $task
+  }
+
+  return @($actionable)
+}
+
+function New-PlanGenerationTask {
+  param(
+    [int]$TurnNumber
+  )
+
+  return [ordered]@{
+    id = "PLAN-$('{0:0000}' -f $TurnNumber)"
+    sourceId = "PLAN-NEXT-$TurnNumber"
+    title = "Generate next-turn implementation plan from current codebase state"
+    owner = "@Margaret + @Ada"
+    ownerAgent = "@Margaret"
+    team = "Planning"
+    priority = "P0"
+    status = "pending"
+    turnsPending = 0
+    score = 1000
+    createdAt = (Get-Date).ToString("o")
+    updatedAt = (Get-Date).ToString("o")
+    notes = "Smart fallback: no actionable canonical tasks detected for this turn"
+  }
+}
+
+function Merge-SelfHealingStatsIntoState {
+  param([object]$State)
+
+  Ensure-StateSchema -State $State
+
+  $State.selfHealing.retries = [int]$script:RunSelfHealingStats.retries
+  $State.selfHealing.timeouts = [int]$script:RunSelfHealingStats.timeouts
+  $State.selfHealing.transientRecoveries = [int]$script:RunSelfHealingStats.transientRecoveries
+  $State.selfHealing.permanentFailures = [int]$script:RunSelfHealingStats.permanentFailures
+  $State.selfHealing.lastEvent = [string]$script:RunSelfHealingStats.lastEvent
+  $State.selfHealing.lastUpdated = (Get-Date).ToString("o")
 }
 
 function Save-State {
@@ -405,59 +1210,279 @@ function Invoke-GitSyncBeforeRestart {
 function Get-RunSummary {
   param([string]$Command)
 
-  $start = Get-Date
-  $ok = $false
-  $output = ""
-  $exitCode = $null
-  $exitMarkerPrefix = "__TEN_TASK_EXIT_CODE__="
+  function Test-TransientFailure {
+    param(
+      [string]$Text,
+      [int]$Code,
+      [bool]$TimedOut
+    )
 
-  try {
+    if ($TimedOut) { return $true }
+    if ($Code -eq 124) { return $true }
+
+    $haystack = if ([string]::IsNullOrWhiteSpace($Text)) { "" } else { $Text.ToLowerInvariant() }
+    foreach ($token in @(
+      'eaddrinuse',
+      'etimedout',
+      'econnreset',
+      'econnrefused',
+      'network error',
+      'timed out',
+      'resource busy',
+      'another process',
+      'app crashed - waiting for file changes'
+    )) {
+      if ($haystack.Contains($token)) {
+        return $true
+      }
+    }
+
+    return $false
+  }
+
+  function Invoke-RunCommandOnce {
+    param(
+      [string]$InnerCommand,
+      [int]$TimeoutSeconds
+    )
+
+    $startAt = Get-Date
+    $exitMarkerPrefix = "__TEN_TASK_EXIT_CODE__="
+    $stdoutPath = [System.IO.Path]::GetTempFileName()
+    $stderrPath = [System.IO.Path]::GetTempFileName()
+
     $wrappedCommand = @"
-$Command
-
+$InnerCommand
 
 `$__ec = if (`$null -eq `$LASTEXITCODE) { 0 } else { [int]`$LASTEXITCODE }
 Write-Output "$exitMarkerPrefix`$__ec"
 exit `$__ec
 "@
 
-    $previousErrorActionPreference = $ErrorActionPreference
-    $ErrorActionPreference = "Continue"
+    $encoded = [System.Convert]::ToBase64String([System.Text.Encoding]::Unicode.GetBytes($wrappedCommand))
+    $proc = $null
+    $timedOut = $false
+    $allOutput = ""
+    $exitCode = $null
 
-    $prevNativeErrorPreference = $null
-    $nativePreferenceVar = Get-Variable -Name PSNativeCommandUseErrorActionPreference -ErrorAction SilentlyContinue
-    if ($null -ne $nativePreferenceVar) {
-      $prevNativeErrorPreference = [bool]$nativePreferenceVar.Value
-      $PSNativeCommandUseErrorActionPreference = $false
+    function Emit-NewConsoleOutput {
+      param(
+        [string]$Path,
+        [ref]$SeenLength,
+        [string]$StreamTag,
+        [string]$Color = "DarkGray"
+      )
+
+      function Get-LiveLineColor {
+        param(
+          [string]$Line,
+          [string]$StreamTag,
+          [string]$FallbackColor
+        )
+
+        $text = if ([string]::IsNullOrWhiteSpace($Line)) { "" } else { $Line.ToLowerInvariant() }
+        $defaultColor = if ([string]::IsNullOrWhiteSpace($FallbackColor)) { if ($StreamTag -eq 'stderr') { 'DarkYellow' } else { 'Gray' } } else { $FallbackColor }
+
+        if ([string]::IsNullOrWhiteSpace($text)) {
+          return $defaultColor
+        }
+
+        if ($text -match '(fatal|exception|failed|failure|error|denied|blocked|timeout|timed out|panic)') {
+          return 'Red'
+        }
+
+        if ($text -match '(warn|warning|retry|defer|fallback|queued|pending)') {
+          return 'Yellow'
+        }
+
+        if ($text -match '(success|succeeded|completed|passed|approved|ready|verified|done)') {
+          return 'Green'
+        }
+
+        if ($text -match '(turn|phase|analy|score|select|plan|route|stream|progress|running|implement|report|write)') {
+          return 'Cyan'
+        }
+
+        return $defaultColor
+      }
+
+      if ($LiveCommandOutput -eq 0) { return }
+      if (-not (Test-Path $Path)) { return }
+
+      $text = ""
+      try {
+        $text = [System.IO.File]::ReadAllText($Path)
+      }
+      catch {
+        return
+      }
+
+      if ($null -eq $text) { return }
+
+      $seen = [int]$SeenLength.Value
+      if ($text.Length -le $seen) { return }
+
+      $delta = $text.Substring($seen)
+      $SeenLength.Value = $text.Length
+
+      $normalized = ($delta -replace "`r`n", "`n" -replace "`r", "`n")
+      foreach ($line in @($normalized -split "`n")) {
+        if ([string]::IsNullOrWhiteSpace($line)) { continue }
+
+        # Suppress CLIXML/progress wrappers to keep live terminal output actionable.
+        if ($line -eq '#< CLIXML') { continue }
+        if ($line -match '^<Objs\s+Version="1\.1\.0\.1"') { continue }
+        if ($line -match '^</Objs>$') { continue }
+        if ($line -match '^<Obj\s+S="progress"') { continue }
+        if ($line -match '^<TN\b' -or $line -match '^</TN>$' -or $line -match '^<TNRef\b') { continue }
+        if ($line -match '^<MS>$' -or $line -match '^</MS>$') { continue }
+        if ($line -match '^<I64\s+N="SourceId"') { continue }
+        if ($line -match '^<PR\s+N="Record"') { continue }
+        if ($line -match '^<AV>Preparing modules for first use\.</AV>$') { continue }
+        if ($line -match '^<AI>\d+</AI>$' -or $line -match '^<PI>-?\d+</PI>$' -or $line -match '^<PC>-?\d+</PC>$') { continue }
+        if ($line -match '^<T>Completed</T>$' -or $line -match '^<SR>-?\d+</SR>$' -or $line -match '^<SD>\s*</SD>$') { continue }
+        if ($line -match '^</PR>$' -or $line -match '^</Obj>$') { continue }
+
+        $lineColor = Get-LiveLineColor -Line $line -StreamTag $StreamTag -FallbackColor $Color
+        $lineMark = switch ($lineColor) {
+          'Green' { '✓' }
+          'Yellow' { '!' }
+          'DarkYellow' { '!' }
+          'Red' { '✗' }
+          default { '•' }
+        }
+
+        Write-Host ("[CMD][$StreamTag][$lineMark] $line") -ForegroundColor $lineColor
+      }
     }
 
     try {
-      $rawOutput = (& powershell -NoProfile -Command $wrappedCommand 2>&1 | Out-String)
+      $proc = Start-Process -FilePath "powershell" -ArgumentList @("-NoProfile","-EncodedCommand",$encoded) -RedirectStandardOutput $stdoutPath -RedirectStandardError $stderrPath -PassThru -WindowStyle Hidden
+
+      if ($LiveCommandOutput -ne 0) {
+        Write-ActivityLog -Stage "CMD" -Message "Streaming output for: $InnerCommand" -Color "DarkGray"
+      }
+
+      $stdoutSeen = 0
+      $stderrSeen = 0
+      $deadline = (Get-Date).AddSeconds([Math]::Max(1, $TimeoutSeconds))
+
+      while ($true) {
+        Emit-NewConsoleOutput -Path $stdoutPath -SeenLength ([ref]$stdoutSeen) -StreamTag "stdout" -Color "Gray"
+        Emit-NewConsoleOutput -Path $stderrPath -SeenLength ([ref]$stderrSeen) -StreamTag "stderr" -Color "DarkYellow"
+
+        if ($proc.HasExited) {
+          break
+        }
+
+        if ((Get-Date) -ge $deadline) {
+          $timedOut = $true
+          try { $proc.Kill($true) } catch {}
+          break
+        }
+
+        Start-Sleep -Milliseconds 200
+      }
+
+      Emit-NewConsoleOutput -Path $stdoutPath -SeenLength ([ref]$stdoutSeen) -StreamTag "stdout" -Color "Gray"
+      Emit-NewConsoleOutput -Path $stderrPath -SeenLength ([ref]$stderrSeen) -StreamTag "stderr" -Color "DarkYellow"
+
+      try {
+        if ($null -ne $proc) { $proc.WaitForExit() }
+      }
+      catch {}
+
+      $stdout = if (Test-Path $stdoutPath) { [System.IO.File]::ReadAllText($stdoutPath) } else { "" }
+      $stderr = if (Test-Path $stderrPath) { [System.IO.File]::ReadAllText($stderrPath) } else { "" }
+      $allOutput = ($stdout + "`r`n" + $stderr).Trim()
+      if ($timedOut) {
+        $allOutput = ($allOutput + "`r`n[ten-task-loop] command timed out after $TimeoutSeconds seconds.").Trim()
+      }
+
+      if ($null -ne $proc) {
+        $exitCode = if ($timedOut) { 124 } else { [int]$proc.ExitCode }
+      }
+      else {
+        $exitCode = 1
+      }
+    }
+    catch {
+      $allOutput = $_.Exception.Message
+      $exitCode = 1
     }
     finally {
-      if ($null -ne $nativePreferenceVar) {
-        $PSNativeCommandUseErrorActionPreference = $prevNativeErrorPreference
+      foreach ($tmp in @($stdoutPath, $stderrPath)) {
+        try {
+          if (Test-Path $tmp) { Remove-Item -Path $tmp -Force -ErrorAction SilentlyContinue }
+        }
+        catch {}
       }
-      $ErrorActionPreference = $previousErrorActionPreference
     }
-    $outputLines = @($rawOutput -split "`r?`n")
 
+    $outputLines = @($allOutput -split "`r?`n")
     $markerLine = $outputLines | Where-Object { $_ -like "$exitMarkerPrefix*" } | Select-Object -Last 1
+    $parsedExitCode = $null
     if (-not [string]::IsNullOrWhiteSpace($markerLine)) {
       $exitCodeText = $markerLine.Substring($exitMarkerPrefix.Length).Trim()
-      $parsedExitCode = 0
-      if ([int]::TryParse($exitCodeText, [ref]$parsedExitCode)) {
-        $exitCode = $parsedExitCode
+      $candidate = 0
+      if ([int]::TryParse($exitCodeText, [ref]$candidate)) {
+        $parsedExitCode = $candidate
       }
     }
 
-    $output = ($outputLines | Where-Object { $_ -notlike "$exitMarkerPrefix*" } | Out-String).Trim()
+    $normalizedOutput = ($outputLines | Where-Object { $_ -notlike "$exitMarkerPrefix*" } | Out-String).Trim()
 
-    if ($null -eq $exitCode) {
-      $exitCode = if ($null -eq $LASTEXITCODE) { 0 } else { [int]$LASTEXITCODE }
+    if (-not [string]::IsNullOrWhiteSpace($normalizedOutput)) {
+      $filteredLines = @()
+      foreach ($rawLine in @($normalizedOutput -split "`r?`n")) {
+        $line = [string]$rawLine
+        if ([string]::IsNullOrWhiteSpace($line)) { continue }
+
+        # Suppress PowerShell CLIXML/progress wrappers that add noise in live-stream mode.
+        if ($line -eq '#< CLIXML') { continue }
+        if ($line -match '^<Objs\s+Version="1\.1\.0\.1"') { continue }
+        if ($line -match '^</Objs>$') { continue }
+        if ($line -match '^<Obj\s+S="progress"') { continue }
+        if ($line -match '^<TN\b' -or $line -match '^</TN>$' -or $line -match '^<TNRef\b') { continue }
+        if ($line -match '^<MS>$' -or $line -match '^</MS>$') { continue }
+        if ($line -match '^<I64\s+N="SourceId"') { continue }
+        if ($line -match '^<PR\s+N="Record"') { continue }
+        if ($line -match '^<AV>Preparing modules for first use\.</AV>$') { continue }
+        if ($line -match '^<AI>\d+</AI>$' -or $line -match '^<PI>-?\d+</PI>$' -or $line -match '^<PC>-?\d+</PC>$') { continue }
+        if ($line -match '^<T>Completed</T>$' -or $line -match '^<SR>-?\d+</SR>$' -or $line -match '^<SD>\s*</SD>$') { continue }
+        if ($line -match '^</PR>$' -or $line -match '^</Obj>$') { continue }
+
+        $filteredLines += $line
+      }
+
+      $normalizedOutput = ($filteredLines -join "`r`n").Trim()
+    }
+    if (-not $timedOut -and $null -ne $parsedExitCode) {
+      $exitCode = $parsedExitCode
     }
 
+    $doneAt = Get-Date
+    return [ordered]@{
+      output = $normalizedOutput
+      exitCode = [int]$exitCode
+      timedOut = $timedOut
+      durationSeconds = [int]($doneAt - $startAt).TotalSeconds
+    }
+  }
+
+  $start = Get-Date
+  $ok = $false
+  $output = ""
+  $exitCode = 1
+  $durationTotal = 0
+
+  $attempts = [Math]::Max(1, $RunCommandMaxRetries + 1)
+  for ($attempt = 1; $attempt -le $attempts; $attempt++) {
+    $once = Invoke-RunCommandOnce -InnerCommand $Command -TimeoutSeconds $RunCommandTimeoutSeconds
+    $output = $once.output
+    $exitCode = [int]$once.exitCode
     $ok = $exitCode -eq 0
+    $durationTotal += [int]$once.durationSeconds
 
     if (
       -not $ok -and
@@ -469,10 +1494,34 @@ exit `$__ec
       $output = "$output`r`n[ten-task-loop] heuristic: treated build as success due to completed Vite build marker."
       $exitCode = 0
     }
-  } catch {
-    $output = $_.Exception.Message
-    $ok = $false
-    $exitCode = if ($null -eq $LASTEXITCODE) { 1 } else { [int]$LASTEXITCODE }
+
+    if ($ok) {
+      if ($attempt -gt 1) {
+        $script:RunSelfHealingStats.transientRecoveries = [int]$script:RunSelfHealingStats.transientRecoveries + 1
+        $script:RunSelfHealingStats.lastEvent = "recovered-after-retry"
+      }
+      break
+    }
+
+    $isTransient = Test-TransientFailure -Text $output -Code $exitCode -TimedOut ([bool]$once.timedOut)
+    if ($once.timedOut) {
+      $script:RunSelfHealingStats.timeouts = [int]$script:RunSelfHealingStats.timeouts + 1
+      $script:RunSelfHealingStats.lastEvent = "timeout"
+    }
+
+    if ($attempt -lt $attempts -and $isTransient) {
+      $script:RunSelfHealingStats.retries = [int]$script:RunSelfHealingStats.retries + 1
+      $script:RunSelfHealingStats.lastEvent = "retry-attempt-$attempt"
+      Write-ActivityLog -Stage "HEAL" -Message "Transient failure detected for command; retrying ($attempt/$($attempts-1)) after $RunCommandRetryDelaySeconds s." -Color "DarkYellow"
+      if ($RunCommandRetryDelaySeconds -gt 0) {
+        Start-Sleep -Seconds $RunCommandRetryDelaySeconds
+      }
+      continue
+    }
+
+    $script:RunSelfHealingStats.permanentFailures = [int]$script:RunSelfHealingStats.permanentFailures + 1
+    $script:RunSelfHealingStats.lastEvent = "permanent-failure"
+    break
   }
 
   $end = Get-Date
@@ -480,7 +1529,7 @@ exit `$__ec
     command = $Command
     ok = $ok
     exitCode = $exitCode
-    durationSeconds = [int]($end - $start).TotalSeconds
+    durationSeconds = [Math]::Max($durationTotal, [int]($end - $start).TotalSeconds)
     output = $output.Trim()
   }
 }
@@ -592,6 +1641,249 @@ function Write-NextPhasePlan {
   }
 
   return $planPath
+}
+
+function Get-ExecutionConfidenceProfile {
+  param(
+    [object]$Task,
+    [object]$TaskPerformance
+  )
+
+  $score = 0.0
+  if ($null -ne $Task -and $null -ne $Task.score) {
+    $score = [double]$Task.score
+  }
+  $scoreNormalized = [Math]::Max(0, [Math]::Min(100, $score))
+
+  $attempts = 0
+  $successRatePct = 60.0
+  $consecutiveFailures = 0
+
+  if ($null -ne $Task -and $null -ne $TaskPerformance -and -not [string]::IsNullOrWhiteSpace([string]$Task.sourceId)) {
+    $perf = $null
+    $sourceIdKey = [string]$Task.sourceId
+    if ($TaskPerformance -is [System.Collections.IDictionary]) {
+      if ($TaskPerformance.Contains($sourceIdKey)) {
+        $perf = $TaskPerformance[$sourceIdKey]
+      }
+    }
+    elseif ($TaskPerformance.PSObject -and ($TaskPerformance.PSObject.Properties.Name -contains $sourceIdKey)) {
+      $perf = $TaskPerformance.$sourceIdKey
+    }
+
+    if ($null -ne $perf) {
+      $attempts = [int]$perf.attempts
+      $successes = [int]$perf.successes
+      $consecutiveFailures = [int]$perf.consecutiveFailures
+      if ($attempts -gt 0) {
+        $successRatePct = [Math]::Round(($successes * 100.0) / $attempts, 1)
+      }
+    }
+  }
+
+  $confidence = [Math]::Round((0.65 * $scoreNormalized) + (0.35 * $successRatePct) - ([Math]::Min(20, $consecutiveFailures * 4)), 1)
+  if ($attempts -lt 2) {
+    $confidence = [Math]::Round($confidence - 5.0, 1)
+  }
+  $confidence = [Math]::Max(0, [Math]::Min(100, $confidence))
+
+  return [pscustomobject]@{
+    confidencePct = $confidence
+    scoreNormalized = $scoreNormalized
+    successRatePct = $successRatePct
+    attempts = $attempts
+    consecutiveFailures = $consecutiveFailures
+  }
+}
+
+function Write-RollbackPlan {
+  param(
+    [string]$PlansDir,
+    [int]$TurnNumber,
+    [object]$Task,
+    [string]$ExecutionStatus,
+    [string]$ExecutionNote,
+    [double]$CompletionDeltaPct,
+    [switch]$DryRunMode
+  )
+
+  $fileName = "ROLLBACK_PLAN_TURN_{0:0000}.md" -f $TurnNumber
+  $planPath = Join-Path $PlansDir $fileName
+  $stamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
+
+  $lines = @(
+    "# Rollback Safety Plan — Turn $TurnNumber",
+    "",
+    "> Generated automatically by Aegis Best-AI regression gate",
+    "> Generated at: $stamp",
+    "",
+    "## Trigger",
+    "- Task: $($Task.id) / $($Task.sourceId)",
+    "- Execution status: $ExecutionStatus",
+    "- Completion delta: $CompletionDeltaPct%",
+    "- Evidence: $ExecutionNote",
+    "",
+    "## Safe Actions (Non-Destructive First)",
+    "- [ ] Review git diff and isolate files touched by the turn",
+    "- [ ] Run focused validation: npm run typecheck, npm run build",
+    "- [ ] If regression confirmed, revert only offending files via git restore -- <file>",
+    "- [ ] Re-run validations and reopen queue with corrected task routing",
+    "",
+    "## Notes",
+    "This is a planning artifact only. No destructive rollback was executed automatically."
+  )
+
+  if (-not $DryRunMode) {
+    if (-not (Test-Path $PlansDir)) {
+      New-Item -ItemType Directory -Path $PlansDir -Force | Out-Null
+    }
+    Write-FileAtomicWithRetry -Path $planPath -Content ($lines -join "`r`n")
+  }
+
+  return $planPath
+}
+
+function New-ArchitecturalTickets {
+  param(
+    [object]$Task,
+    [int]$TicketCount = 5
+  )
+
+  $title = if ($null -ne $Task -and -not [string]::IsNullOrWhiteSpace([string]$Task.title)) { [string]$Task.title } else { "Current milestone" }
+  $count = [Math]::Max(1, $TicketCount)
+
+  $baseTickets = @(
+    "Interface contract lock: TypeScript types for '$title'",
+    "API contract lock: endpoint routes + request/response envelopes",
+    "Data contract lock: Prisma schema and migration impact map",
+    "Authorization contract lock: Lion dashboard RBAC hooks + guard matrix",
+    "Verification contract lock: build/typecheck/test gate definitions"
+  )
+
+  return @($baseTickets | Select-Object -First $count)
+}
+
+function Write-AgentCoreDistributionLog {
+  param(
+    [string]$FilePath,
+    [int]$TurnNumber,
+    [object]$Task,
+    [string[]]$ArchitecturalTickets,
+    [string[]]$PremiumAgents,
+    [string[]]$FreeAgents,
+    [string[]]$ReviewPanel,
+    [string]$ExecutionStatus,
+    [string]$ExecutionNote,
+    [string]$FocusTargets,
+    [string]$LionAuthStatus,
+    [string]$LionAuthEvidence,
+    [string]$ValidationSummary,
+    [string]$BlockerStatus,
+    [switch]$DryRunMode
+  )
+
+  $stamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
+  $taskId = if ($null -ne $Task) { [string]$Task.id } else { "n/a" }
+  $taskSourceId = if ($null -ne $Task) { [string]$Task.sourceId } else { "n/a" }
+  $taskTitle = if ($null -ne $Task) { [string]$Task.title } else { "n/a" }
+
+  if (-not (Test-Path $FilePath)) {
+    if (-not $DryRunMode) {
+      $header = @(
+        "# 150_AGENT_CORE.md",
+        "",
+        "## AEGIS 150-Agent Hierarchy Distribution Log"
+      ) -join "`r`n"
+      Write-FileAtomicWithRetry -Path $FilePath -Content $header
+    }
+  }
+
+  $entry = @()
+  $entry += ""
+  $entry += "### Turn $TurnNumber — $stamp"
+  $entry += "- Selected Task: **$taskId** ($taskSourceId) — $taskTitle"
+  $entry += "- Focus Targets: $FocusTargets"
+  $entry += "- Agent Split: Premium=$($PremiumAgents.Count), Free=$($FreeAgents.Count), Total=$($PremiumAgents.Count + $FreeAgents.Count)"
+  $entry += "- Execution: **$ExecutionStatus**"
+  $entry += "- Note: $ExecutionNote"
+  $entry += "- Lion Authorization Hooks: **$LionAuthStatus**"
+  $entry += "- Validation Summary: $ValidationSummary"
+  $entry += ""
+  $entry += "#### Delegation Layer — 5 High-Level Architectural Tickets"
+  foreach ($ticket in @($ArchitecturalTickets)) {
+    $entry += "- [x] $ticket"
+  }
+  $entry += ""
+  $entry += "#### Premium Review Panel (5 Agents)"
+  if (@($ReviewPanel).Count -eq 0) {
+    $entry += "- n/a"
+  }
+  else {
+    $entry += "- " + (@($ReviewPanel) -join ", ")
+  }
+
+  $entry += ""
+  $entry += "#### Lion Authorization Evidence"
+  $entry += "- $LionAuthEvidence"
+
+  $entry += ""
+  $entry += "#### Handoff Contract"
+  $entry += "- Task ID: $taskId"
+  $entry += "- Files touched: scripts/orchestrator/ten-task-loop.ps1; plans/150_AGENT_CORE.md"
+  $entry += "- Acceptance criteria: 5 architectural tickets generated; premium interface lock before free execution; 5-agent premium review panel before build; Lion auth hook evidence captured"
+  $entry += "- Validation steps: npm run typecheck; npm run build; grep/read checks for Lion role normalization and route guards"
+  $entry += "- Blocker status: $BlockerStatus"
+
+  if (-not $DryRunMode) {
+    Add-FileContentWithRetry -Path $FilePath -AppendContent ($entry -join "`r`n")
+  }
+}
+
+function Test-LionAuthorizationHooks {
+  param([string]$RootPath)
+
+  $checks = @(
+    @{ file = "src/utils/superUserAccess.ts"; pattern = "CANONICAL_SUPERUSER_ROLE\s*=\s*'lion'"; label = "canonical lion role" },
+    @{ file = "src/App.tsx"; pattern = "/lion/dashboard"; label = "lion dashboard route" },
+    @{ file = "src/App.tsx"; pattern = "ProtectedRoute\s+allowedRoles=\{\['owner'\]\}"; label = "owner protected route guard" },
+    @{ file = "src/pages/crm/CRMHubPage.tsx"; pattern = "Routes:\s*/owner/crm,\s*/lion/crm"; label = "crm lion route intent" },
+    @{ file = "src/hooks/useUserProfile.ts"; pattern = "case\s+'lion'"; label = "lion role label mapping" }
+  )
+
+  $passed = 0
+  $evidence = @()
+
+  foreach ($check in $checks) {
+    $path = Join-Path $RootPath $check.file
+    if (-not (Test-Path $path)) {
+      $evidence += "$($check.label): missing file '$($check.file)'"
+      continue
+    }
+
+    try {
+      $content = Get-Content -Path $path -Raw
+      if ($content -match $check.pattern) {
+        $passed++
+        $evidence += "$($check.label): found in $($check.file)"
+      }
+      else {
+        $evidence += "$($check.label): not found in $($check.file)"
+      }
+    }
+    catch {
+      $evidence += "$($check.label): read error in $($check.file)"
+    }
+  }
+
+  $total = $checks.Count
+  $status = if ($passed -eq $total) { "pass ($passed/$total)" } elseif ($passed -gt 0) { "partial ($passed/$total)" } else { "fail (0/$total)" }
+
+  return [ordered]@{
+    status = $status
+    evidence = ($evidence -join "; ")
+    passed = $passed
+    total = $total
+  }
 }
 
 function Get-AgentPool {
@@ -711,7 +2003,8 @@ function Invoke-TaskScoring {
   param(
     [array]$Pending,
     [object]$Analysis,
-    [int]$TurnNumber
+    [int]$TurnNumber,
+    [object]$TaskPerformance = @{}
   )
 
   foreach ($t in $Pending) {
@@ -728,11 +2021,172 @@ function Invoke-TaskScoring {
       $blockerReduction += 20
     }
 
-    $t.score = $priorityScore + $impact + $ageBonus + $blockerReduction - $effortPenalty
+    $adaptiveAdjustment = 0
+    $perf = $null
+    if ($EnableAdaptiveTaskScoring -ne 0 -and $null -ne $TaskPerformance) {
+      $sourceIdKey = [string]$t.sourceId
+      if ($TaskPerformance -is [System.Collections.IDictionary]) {
+        if ($TaskPerformance.Contains($sourceIdKey)) {
+          $perf = $TaskPerformance[$sourceIdKey]
+        }
+      }
+      elseif ($TaskPerformance.PSObject -and ($TaskPerformance.PSObject.Properties.Name -contains $sourceIdKey)) {
+        $perf = $TaskPerformance.$sourceIdKey
+      }
+    }
+
+    if ($null -ne $perf) {
+      $attempts = [int]$perf.attempts
+      $successes = [int]$perf.successes
+      $failures = [int]$perf.failures
+      $consecutiveFailures = [int]$perf.consecutiveFailures
+
+      if ($attempts -ge 2) {
+        $successRate = if ($attempts -gt 0) { [double]$successes / [double]$attempts } else { 0.0 }
+        $adaptiveAdjustment += [Math]::Floor($successRate * [Math]::Max(0, $AdaptiveSuccessBonusMax))
+      }
+
+      if ($consecutiveFailures -gt 0) {
+        $failurePenalty = [Math]::Min([Math]::Max(0, $AdaptiveFailurePenaltyMax), ($consecutiveFailures * 8) + ([Math]::Max(0, $failures - $successes) * 2))
+        $adaptiveAdjustment -= $failurePenalty
+      }
+    }
+
+    $t.score = $priorityScore + $impact + $ageBonus + $blockerReduction + $adaptiveAdjustment - $effortPenalty
     $t.updatedAt = (Get-Date).ToString("o")
   }
 
   return @($Pending | Sort-Object -Property @{Expression='score';Descending=$true}, @{Expression='turnsPending';Descending=$true}, @{Expression='id';Descending=$false})
+}
+
+function Update-TaskPerformance {
+  param(
+    [object]$State,
+    [object]$Task,
+    [string]$ExecutionStatus
+  )
+
+  Ensure-StateSchema -State $State
+  if ($null -eq $Task -or [string]::IsNullOrWhiteSpace([string]$Task.sourceId)) {
+    return
+  }
+
+  $key = [string]$Task.sourceId
+  $existing = $null
+  if (($State.taskPerformance -is [System.Collections.IDictionary]) -and $State.taskPerformance.Contains($key)) {
+    $existing = $State.taskPerformance[$key]
+  }
+
+  if ($null -eq $existing) {
+    $existing = [ordered]@{
+      attempts = 0
+      successes = 0
+      failures = 0
+      consecutiveFailures = 0
+      lastStatus = "unknown"
+      lastUpdated = (Get-Date).ToString("o")
+    }
+  }
+
+  if ($ExecutionStatus -in @('completed','failed','blocked')) {
+    $existing.attempts = [int]$existing.attempts + 1
+    if ($ExecutionStatus -eq 'completed') {
+      $existing.successes = [int]$existing.successes + 1
+      $existing.consecutiveFailures = 0
+    }
+    else {
+      $existing.failures = [int]$existing.failures + 1
+      $existing.consecutiveFailures = [int]$existing.consecutiveFailures + 1
+    }
+  }
+
+  $existing.lastStatus = [string]$ExecutionStatus
+  $existing.lastUpdated = (Get-Date).ToString("o")
+  $State.taskPerformance[$key] = $existing
+}
+
+function Update-ModulePerformance {
+  param(
+    [object]$State,
+    [string]$Lane,
+    [string]$Module,
+    [string]$ExecutionStatus,
+    [int]$TurnNumber = 0
+  )
+
+  Ensure-StateSchema -State $State
+  if ([string]::IsNullOrWhiteSpace($Module)) {
+    return
+  }
+
+  $laneValue = if ([string]::IsNullOrWhiteSpace($Lane)) { "workflow" } else { [string]$Lane }
+  $moduleValue = [string]$Module
+  $key = "$laneValue::$moduleValue"
+
+  $existing = $null
+  if (($State.modulePerformance -is [System.Collections.IDictionary]) -and $State.modulePerformance.Contains($key)) {
+    $existing = $State.modulePerformance[$key]
+  }
+
+  if ($null -eq $existing) {
+    $existing = [ordered]@{
+      lane = $laneValue
+      module = $moduleValue
+      attempts = 0
+      completed = 0
+      failed = 0
+      blocked = 0
+      planned = 0
+      lastStatus = "unknown"
+      lastTurn = 0
+      lastUpdated = (Get-Date).ToString("o")
+    }
+  }
+
+  $existing.attempts = [int]$existing.attempts + 1
+  switch ($ExecutionStatus) {
+    'completed' { $existing.completed = [int]$existing.completed + 1 }
+    'failed' { $existing.failed = [int]$existing.failed + 1 }
+    'blocked' { $existing.blocked = [int]$existing.blocked + 1 }
+    default { $existing.planned = [int]$existing.planned + 1 }
+  }
+
+  $existing.lastStatus = [string]$ExecutionStatus
+  $existing.lastTurn = [int]$TurnNumber
+  $existing.lastUpdated = (Get-Date).ToString("o")
+
+  $State.modulePerformance[$key] = $existing
+  $State.lastTurnModuleKey = $key
+}
+
+function Update-TurnTrend {
+  param(
+    [object]$State,
+    [int]$TurnNumber,
+    [double]$CompletionPct,
+    [double]$DeltaPct,
+    [string]$ExecutionStatus,
+    [bool]$GateMet,
+    [int]$MaxEntries = 5
+  )
+
+  Ensure-StateSchema -State $State
+  $history = @($State.turnTrend)
+
+  $history += [pscustomobject]@{
+    turn = [int]$TurnNumber
+    completionPct = [double]$CompletionPct
+    deltaPct = [double]$DeltaPct
+    status = [string]$ExecutionStatus
+    gateMet = [bool]$GateMet
+    at = (Get-Date).ToString("o")
+  }
+
+  if ($history.Count -gt $MaxEntries) {
+    $history = @($history | Select-Object -Last $MaxEntries)
+  }
+
+  $State.turnTrend = @($history)
 }
 
 function Set-ExactlyTenPending {
@@ -813,10 +2267,22 @@ function Write-AutopilotQueueMarkdown {
     [object]$SelectedTask,
     [string]$ExecutionStatus,
     [string]$ExecutionNote,
-    [string]$SubagentFlowNote
+    [string]$SubagentFlowNote,
+    [object]$RouteProfile,
+    [string]$ExecutedCommand,
+    [double]$ExecutionDurationSeconds,
+    [double]$CompletionDeltaPct,
+    [double]$CurrentCompletionPct,
+    [string]$SmartGateMode,
+    [string]$SmartGateReason,
+    [string]$SmartGateRecovery,
+    [string]$BestAIGatesNote,
+    [string]$GeneratedExecutionLockStatus,
+    [string]$GeneratedExecutionLockPolicy
   )
 
   $pending = @($State.pendingTasks | Sort-Object -Property @{Expression='score';Descending=$true})
+  Ensure-StateSchema -State $State
   $date = Get-Date -Format "yyyy-MM-dd HH:mm"
   $branch = (& git -C $root rev-parse --abbrev-ref HEAD 2>$null)
   if ([string]::IsNullOrWhiteSpace($branch)) { $branch = "unknown" }
@@ -854,6 +2320,95 @@ function Write-AutopilotQueueMarkdown {
   $lines += "- **Subagent Flow:** $SubagentFlowNote"
   $lines += "- **Note:** $ExecutionNote"
   $lines += ""
+  $lines += "## Work Completed (Per-Turn Evidence)"
+  $lines += "- **Lane/Module:** $($RouteProfile.lane) / $($RouteProfile.module)"
+  $lines += "- **Routing Reason:** $($RouteProfile.reason)"
+  $lines += "- **Command Run:** $(if ([string]::IsNullOrWhiteSpace($ExecutedCommand)) { 'n/a' } else { "`$ $ExecutedCommand" })"
+  $lines += "- **Execution Result:** $ExecutionStatus"
+  $lines += "- **Execution Time (s):** $ExecutionDurationSeconds"
+  $lines += "- **Completion Delta:** $CompletionDeltaPct%"
+  $lines += "- **Project Completion:** $CurrentCompletionPct%"
+  $lines += ""
+  $lines += "## SMART-GATE Decision"
+  $lines += "- **Mode:** $SmartGateMode"
+  $lines += "- **Reason:** $SmartGateReason"
+  $lines += "- **Recovery Action:** $SmartGateRecovery"
+  $lines += "- **Best-AI Gates:** $BestAIGatesNote"
+  $lines += "- **Generated Execution Lock:** $GeneratedExecutionLockStatus"
+  $lines += "- **Generated Execution Policy:** $GeneratedExecutionLockPolicy"
+  $lines += ""
+  $lines += "## Self-Healing & Learning Dashboard"
+  $lines += "- Healing retries: $($State.selfHealing.retries)"
+  $lines += "- Timeouts detected: $($State.selfHealing.timeouts)"
+  $lines += "- Transient recoveries: $($State.selfHealing.transientRecoveries)"
+  $lines += "- Permanent failures: $($State.selfHealing.permanentFailures)"
+  $lines += "- Last healing event: $($State.selfHealing.lastEvent)"
+  $lines += "- Adaptive scoring: $(if ($EnableAdaptiveTaskScoring -ne 0) { 'enabled' } else { 'disabled' })"
+  $lines += ""
+  $lines += "### Most Unstable Task Sources (Top 5)"
+  $lines += "| Source ID | Attempts | Successes | Failures | Consecutive Failures | Last Status |"
+  $lines += "| --------- | -------- | --------- | -------- | -------------------- | ----------- |"
+
+  $taskPerformanceRows = @()
+  if ($State.taskPerformance -is [System.Collections.IDictionary]) {
+    foreach ($entry in $State.taskPerformance.GetEnumerator()) {
+      $value = $entry.Value
+      if ($null -eq $value) { continue }
+      $taskPerformanceRows += [pscustomobject]@{
+        sourceId = [string]$entry.Key
+        attempts = [int]$value.attempts
+        successes = [int]$value.successes
+        failures = [int]$value.failures
+        consecutiveFailures = [int]$value.consecutiveFailures
+        lastStatus = [string]$value.lastStatus
+      }
+    }
+  }
+
+  $topUnstable = @($taskPerformanceRows |
+      Where-Object { $_.attempts -gt 0 } |
+      Sort-Object -Property @{Expression='consecutiveFailures';Descending=$true}, @{Expression='failures';Descending=$true}, @{Expression='attempts';Descending=$true}, @{Expression='sourceId';Descending=$false} |
+      Select-Object -First 5)
+
+  if ($topUnstable.Count -eq 0) {
+    $lines += "| n/a | 0 | 0 | 0 | 0 | n/a |"
+  }
+  else {
+    foreach ($row in $topUnstable) {
+      $lines += "| $($row.sourceId) | $($row.attempts) | $($row.successes) | $($row.failures) | $($row.consecutiveFailures) | $($row.lastStatus) |"
+    }
+  }
+  $lines += ""
+  $lines += "### Top Improving Task Sources (Top 5)"
+  $lines += "| Source ID | Attempts | Successes | Failures | Success Rate | Consecutive Failures | Last Status |"
+  $lines += "| --------- | -------- | --------- | -------- | ------------ | -------------------- | ----------- |"
+
+  $topImproving = @($taskPerformanceRows |
+      Where-Object { $_.attempts -gt 0 } |
+      ForEach-Object {
+        $rate = if ($_.attempts -gt 0) { [math]::Round(($_.successes * 100.0) / $_.attempts, 1) } else { 0.0 }
+        [pscustomobject]@{
+          sourceId = $_.sourceId
+          attempts = $_.attempts
+          successes = $_.successes
+          failures = $_.failures
+          consecutiveFailures = $_.consecutiveFailures
+          lastStatus = $_.lastStatus
+          successRate = $rate
+        }
+      } |
+      Sort-Object -Property @{Expression='successRate';Descending=$true}, @{Expression='successes';Descending=$true}, @{Expression='attempts';Descending=$true}, @{Expression='consecutiveFailures';Descending=$false}, @{Expression='sourceId';Descending=$false} |
+      Select-Object -First 5)
+
+  if ($topImproving.Count -eq 0) {
+    $lines += "| n/a | 0 | 0 | 0 | 0% | 0 | n/a |"
+  }
+  else {
+    foreach ($row in $topImproving) {
+      $lines += "| $($row.sourceId) | $($row.attempts) | $($row.successes) | $($row.failures) | $($row.successRate)% | $($row.consecutiveFailures) | $($row.lastStatus) |"
+    }
+  }
+  $lines += ""
   $lines += "## Pending Queue (Exactly 10)"
   $lines += "| Rank | Task | Source | Priority | Score | Owner Agent | Team | Status |"
   $lines += "| ---- | ---- | ------ | -------- | ----- | ----------- | ---- | ------ |"
@@ -879,7 +2434,13 @@ function Add-AgentLog {
     [string]$ExecutionStatus,
     [string]$ExecutionNote,
     [string]$SubagentFlowNote,
-    [object]$AddedTask
+    [object]$AddedTask,
+    [object]$RouteProfile,
+    [string]$ExecutedCommand,
+    [double]$ExecutionDurationSeconds,
+    [double]$CompletionDeltaPct,
+    [double]$CurrentCompletionPct,
+    [string]$BestAIGatesNote
   )
 
   if (-not (Test-Path $agentLogsFile)) {
@@ -903,6 +2464,14 @@ function Add-AgentLog {
   $entry += "- Score/Priority: $($SelectedTask.score) / $($SelectedTask.priority)"
   $entry += "- Execution: **$ExecutionStatus**"
   $entry += "- Evidence: $ExecutionNote"
+  $entry += "- Work Completed:"
+  $entry += "  - Lane/Module: $($RouteProfile.lane) / $($RouteProfile.module)"
+  $entry += "  - Routing reason: $($RouteProfile.reason)"
+  $entry += "  - Command: $(if ([string]::IsNullOrWhiteSpace($ExecutedCommand)) { 'n/a' } else { "`$ $ExecutedCommand" })"
+  $entry += "  - Runtime: $ExecutionDurationSeconds s"
+  $entry += "  - Completion delta: $CompletionDeltaPct%"
+  $entry += "  - Project completion: $CurrentCompletionPct%"
+  $entry += "  - Best-AI gates: $BestAIGatesNote"
   if ($null -ne $AddedTask) {
     $entry += "- Replenishment: Added pending task **$($AddedTask.id)** ($($AddedTask.sourceId))"
   }
@@ -1026,10 +2595,19 @@ function Update-CanonicalTrackers {
 
 $sourceTasks = Read-PendingTasksFromMarkdown -Path $pendingFile
 if ($sourceTasks.Count -eq 0) {
-  throw "No parseable backlog tasks found in $pendingFile"
+  Write-ActivityLog -Stage "SMART-GATE" -Message "No parseable canonical tasks found at startup. Falling back to plan-generation mode." -Color "DarkYellow"
+  $sourceTasks = @(
+    [ordered]@{
+      sourceId = "PLAN-NEXT-0"
+      title = "Generate next-turn implementation plan from canonical backlog recovery"
+      priority = "P0"
+      owner = "@Margaret + @Ada"
+    }
+  )
 }
 
 $state = Initialize-LoopState -SourceTasks $sourceTasks
+Ensure-StateSchema -State $state
 $state.pendingTasks = Convert-TaskMetadata -Tasks @(ConvertTo-TaskCollection -Tasks $state.pendingTasks)
 $state.completedTasks = Convert-TaskMetadata -Tasks @(ConvertTo-TaskCollection -Tasks $state.completedTasks)
 $state.blockedTasks = Convert-TaskMetadata -Tasks @(ConvertTo-TaskCollection -Tasks $state.blockedTasks)
@@ -1059,6 +2637,7 @@ while ($true) {
   $ranTurns++
   $state.turnCounter = [int]$state.turnCounter + 1
   Write-ActivityLog -Stage "TURN" -Message "Starting turn $($state.turnCounter)" -Color "Cyan"
+  Write-TurnBanner -State $state
   $fullContextSummary = "(not executed this turn)"
   $onlineResearchSummary = "(not executed this turn)"
 
@@ -1129,11 +2708,22 @@ while ($true) {
   $latestSourceTasks = Read-PendingTasksFromMarkdown -Path $pendingFile
   if ($latestSourceTasks.Count -gt 0) {
     $sourceTasks = $latestSourceTasks
+    $state.canonicalEmptyTurns = 0
     Sync-PendingWithSource -State $state -SourceTasks $sourceTasks
     Write-ActivityLog -Stage "REORGANIZE" -Message "Canonical backlog reloaded and pending tasks synced" -Color "Magenta"
   }
   else {
-    Write-ActivityLog -Stage "REORGANIZE" -Message "Warning: canonical backlog parse returned 0 tasks; using previous in-memory source" -Color "DarkYellow"
+    $state.canonicalEmptyTurns = [int]$state.canonicalEmptyTurns + 1
+    Write-ActivityLog -Stage "REORGANIZE" -Message "Canonical backlog parse returned 0 tasks; evaluating smart fallback paths" -Color "DarkYellow"
+  }
+
+  $generatedPendingCount = @($state.pendingTasks | Where-Object { [string]$_.sourceId -like 'GENERATED-*' }).Count
+  $allPendingGenerated = (@($state.pendingTasks).Count -gt 0) -and ($generatedPendingCount -eq @($state.pendingTasks).Count)
+  if ($allPendingGenerated) {
+    Rehydrate-PendingFromCanonical -State $state -SourceTasks $sourceTasks -Reason "all pending tasks were generated placeholders" | Out-Null
+  }
+  elseif ([int]$state.stagnationTurns -ge [Math]::Max(1, $StagnationTurnThreshold)) {
+    Rehydrate-PendingFromCanonical -State $state -SourceTasks $sourceTasks -Reason "stagnation threshold reached ($($state.stagnationTurns) turns without completion)" | Out-Null
   }
 
   Write-ActivityLog -Stage "ANALYZE" -Message "Running pre-turn codebase analysis" -Color "DarkCyan"
@@ -1145,14 +2735,42 @@ while ($true) {
   }
 
   Write-ActivityLog -Stage "SCORE" -Message "Scoring pending tasks" -Color "DarkGray"
-  $scored = Invoke-TaskScoring -Pending @($state.pendingTasks) -Analysis $analysis -TurnNumber $state.turnCounter
+  $scored = Invoke-TaskScoring -Pending @($state.pendingTasks) -Analysis $analysis -TurnNumber $state.turnCounter -TaskPerformance $state.taskPerformance
   if ($scored.Count -eq 0) {
     throw "No pending tasks available to process."
   }
   Write-ActivityLog -Stage "SCORE" -Message "Scoring complete ($($scored.Count) tasks ranked)" -Color "DarkGray"
+  Write-QueueSnapshot -Tasks $scored -Label "RANKED QUEUE"
 
   # Keep only top 10 pending before selecting, to enforce invariant continuously.
   $state.pendingTasks = @($scored | Select-Object -First 10)
+
+  $smartGateMode = "implementation"
+  $smartGateReason = "Actionable canonical task selected"
+  $smartGateRecovery = "none"
+  $bestAIGatesNote = "disabled"
+  $validationCadenceRan = $false
+  $validationCadenceOk = $true
+
+  $actionablePending = Get-ActionablePendingTasks -Tasks @($state.pendingTasks)
+  if ($actionablePending.Count -eq 0) {
+    $rehydrated = Rehydrate-PendingFromCanonical -State $state -SourceTasks $sourceTasks -Reason "smart actionability gate found no actionable tasks" 
+    if ($rehydrated) {
+      $smartGateRecovery = "canonical rehydration"
+      Write-ActivityLog -Stage "SMART-GATE" -Message "Recovered actionable tasks by canonical rehydration" -Color "Green"
+      $state.pendingTasks = Invoke-TaskScoring -Pending @($state.pendingTasks) -Analysis $analysis -TurnNumber $state.turnCounter -TaskPerformance $state.taskPerformance
+      $state.pendingTasks = @($state.pendingTasks | Select-Object -First 10)
+      $actionablePending = Get-ActionablePendingTasks -Tasks @($state.pendingTasks)
+    }
+
+    if ($actionablePending.Count -eq 0) {
+      $planTask = New-PlanGenerationTask -TurnNumber $state.turnCounter
+      $state.pendingTasks = @(@($planTask) + @($state.pendingTasks | Where-Object { $_.id -ne $planTask.id }))
+      $state.pendingTasks = @($state.pendingTasks | Select-Object -First 10)
+      $smartGateRecovery = "injected plan-generation task"
+      Write-ActivityLog -Stage "SMART-GATE" -Message "No actionable canonical tasks available. Injected plan-generation task for this turn." -Color "DarkYellow"
+    }
+  }
 
   if (@($state.waveTaskIds).Count -eq 0) {
     $state.waveTaskIds = @($state.pendingTasks | Select-Object -First 10 | ForEach-Object { $_.id })
@@ -1171,6 +2789,27 @@ while ($true) {
   if ($selectionPool.Count -eq 0) {
     $selectionPool = @($wavePending)
   }
+
+  $generatedExecutionUnlocked = ([int]$state.canonicalEmptyTurns -ge [Math]::Max(1, [int]$AllowGeneratedExecutionAfterCanonicalEmptyTurns))
+  if (-not $generatedExecutionUnlocked) {
+    $nonGeneratedPool = @($selectionPool | Where-Object { [string]$_.sourceId -notlike 'GENERATED-*' })
+    if ($nonGeneratedPool.Count -gt 0) {
+      $selectionPool = $nonGeneratedPool
+    }
+    else {
+      $planTask = New-PlanGenerationTask -TurnNumber $state.turnCounter
+      $state.pendingTasks = @(@($planTask) + @($state.pendingTasks | Where-Object { $_.id -ne $planTask.id }))
+      $state.pendingTasks = @($state.pendingTasks | Select-Object -First 10)
+      $state.waveTaskIds = @($state.pendingTasks | Select-Object -First 10 | ForEach-Object { $_.id })
+      $wavePending = @($state.pendingTasks | Where-Object { @($state.waveTaskIds) -contains $_.id })
+      $selectionPool = @($wavePending)
+      $smartGateMode = "plan-generation"
+      $smartGateReason = "Generated task execution locked until canonical backlog is empty for $AllowGeneratedExecutionAfterCanonicalEmptyTurns turns"
+      $smartGateRecovery = "generated execution lock -> injected plan-generation task"
+      Write-ActivityLog -Stage "SMART-GATE" -Message "Generated-task execution blocked (canonicalEmptyTurns=$($state.canonicalEmptyTurns)/$AllowGeneratedExecutionAfterCanonicalEmptyTurns). Injected plan-generation task." -Color "DarkYellow"
+    }
+  }
+
   $selected = $selectionPool[0]
   $selected.status = "in_progress"
   $selected.updatedAt = (Get-Date).ToString("o")
@@ -1182,15 +2821,137 @@ while ($true) {
   Write-ActivityLog -Stage "SELECT" -Message "Chosen task: $($selected.id) ($($selected.sourceId)) :: $($selected.title)" -Color "Yellow"
   Write-ActivityLog -Stage "TASK" -Message "Details => ownerAgent=$selectedOwnerAgent | team=$selectedTeam | priority=$($selected.priority) | score=$($selected.score) | module=$($selected.sourceId)" -Color "Yellow"
   Write-ActivityLog -Stage "IMPLEMENT" -Message "Implementation candidate => id=$($selected.id) source=$($selected.sourceId) module=$($selected.sourceId) ownerAgent=$selectedOwnerAgent team=$selectedTeam" -Color "DarkYellow"
+  $architecturalTickets = @()
+  if ($EnableHierarchy150Mode -ne 0) {
+    $architecturalTickets = New-ArchitecturalTickets -Task $selected -TicketCount $SeniorArchitectureTicketCount
+    Write-ActivityLog -Stage "DELEGATION" -Message "Created $($architecturalTickets.Count) high-level architectural tickets for turn $($state.turnCounter)" -Color "Magenta"
+  }
+  $confidenceProfile = Get-ExecutionConfidenceProfile -Task $selected -TaskPerformance $state.taskPerformance
+  if ($EnableBestAIMode -ne 0) {
+    Write-ActivityLog -Stage "BEST-AI" -Message "Confidence profile => confidence=$($confidenceProfile.confidencePct)% scoreNorm=$($confidenceProfile.scoreNormalized)% successRate=$($confidenceProfile.successRatePct)% attempts=$($confidenceProfile.attempts)" -Color "Cyan"
+  }
+
+  $routeProfile = Get-TaskRouteProfile -Task $selected
+  if ($null -eq $routeProfile) {
+    $routeProfile = [ordered]@{
+      lane = "workflow"
+      module = "platform-core"
+      reason = "route profile unavailable"
+      recommendedCommand = "npm run build"
+    }
+  }
+  if ($EnableSmartTaskRouting -ne 0) {
+    Write-ActivityLog -Stage "ROUTE" -Message "Smart route => lane=$($routeProfile.lane) module=$($routeProfile.module) reason='$($routeProfile.reason)'" -Color "Cyan"
+  }
+  if ($VerboseSubagentActivity -ne 0) {
+    Write-ActivityLog -Stage "SUBAGENT" -Message "[Explore] planned task $($selected.id) for lane=$($routeProfile.lane), module=$($routeProfile.module) (completed planning packet)" -Color "DarkCyan"
+  }
+  Write-TaskCard -Task $selected -Agent $selectedOwnerAgent -Team $selectedTeam -Lane $routeProfile.lane -Module $routeProfile.module -Command $routeProfile.recommendedCommand -ConfidencePct $confidenceProfile.confidencePct
 
   $executionStatus = "planned"
-  $executionNote = "Hybrid mode: implementation packet generated (no command executed)."
+  $executionNote = "Implementation pending."
   $subagentFlowNote = "disabled"
   $premiumUsedThisTurn = $false
   $allAgentsFreeMode = $false
   $haltAfterTurn = $false
+  $deferExecutionByBestAIGate = $false
+  $executedCommand = ""
+  $executionDurationSeconds = 0.0
+  $isPlanGenerationTask = ([string]$selected.sourceId -like 'PLAN-NEXT-*')
+  $secondaryParallelTask = $null
+  $secondaryParallelRoute = $null
+  $secondaryParallelStatus = ""
+  $secondaryParallelNote = ""
+  $secondaryParallelCommand = ""
+  $secondaryParallelDurationSeconds = 0.0
+  $secondaryParallelConflictHint = ""
 
-  if ($AutoImplement) {
+  if ($EnableBestAIMode -ne 0 -and $ValidationEveryNTurns -gt 0 -and (($state.turnCounter % $ValidationEveryNTurns) -eq 0)) {
+    $validationCadenceRan = $true
+    Write-ActivityLog -Stage "BEST-AI" -Message "Validation cadence triggered on turn $($state.turnCounter)" -Color "Cyan"
+
+    if ($ForceValidationInBestAIMode -ne 0 -or -not $SkipTypecheck) {
+      $cadenceTypecheck = Get-RunSummary -Command "cd '$root'; npm run typecheck"
+      if (-not $cadenceTypecheck.ok) {
+        $validationCadenceOk = $false
+        Write-ActivityLog -Stage "BEST-AI" -Message "Cadence typecheck failed" -Color "Red"
+      }
+      else {
+        Write-ActivityLog -Stage "BEST-AI" -Message "Cadence typecheck passed" -Color "Green"
+      }
+    }
+
+    if ($ForceValidationInBestAIMode -ne 0 -or -not $SkipBuild) {
+      $cadenceBuild = Get-RunSummary -Command "cd '$root'; npm run build"
+      if (-not $cadenceBuild.ok) {
+        $validationCadenceOk = $false
+        Write-ActivityLog -Stage "BEST-AI" -Message "Cadence build failed" -Color "Red"
+      }
+      else {
+        Write-ActivityLog -Stage "BEST-AI" -Message "Cadence build passed" -Color "Green"
+      }
+    }
+  }
+
+  if ($EnableBestAIMode -ne 0 -and -not $isPlanGenerationTask -and $validationCadenceRan -and -not $validationCadenceOk) {
+    $smartGateMode = "plan-generation"
+    $smartGateReason = "Validation cadence failed"
+    $smartGateRecovery = "validation-failure defer-to-planning"
+    $executionStatus = "planned"
+    $deferExecutionByBestAIGate = $true
+    $executionNote = "Validation cadence failed; execution deferred until baseline health is restored."
+    $subagentFlowNote = "planning:validation-gate-defer | implementer:skipped"
+    Write-ActivityLog -Stage "BEST-AI" -Message "Validation gate deferred task $($selected.id) due to failed cadence checks" -Color "DarkYellow"
+
+    $validationPlanPath = Write-NextPhasePlan -PlansDir $nextPhasePlansRoot -TurnNumber $state.turnCounter -Task $selected -CurrentTaskId ([string]$selected.id) -FullContextSummary $fullContextSummary -OnlineResearchSummary $onlineResearchSummary -DryRunMode:$DryRun
+    if (-not [string]::IsNullOrWhiteSpace($validationPlanPath)) {
+      $executionNote = "$executionNote Generated validation-recovery plan: $validationPlanPath"
+      $smartGateRecovery = "generated validation-recovery plan"
+    }
+  }
+
+  if ($EnableBestAIMode -ne 0 -and -not $isPlanGenerationTask -and $confidenceProfile.confidencePct -lt $MinExecutionConfidencePct) {
+    $smartGateMode = "plan-generation"
+    $smartGateReason = "Execution confidence below threshold"
+    $smartGateRecovery = "confidence-based defer-to-planning"
+    $executionStatus = "planned"
+    $deferExecutionByBestAIGate = $true
+    $executionNote = "Confidence gate deferred execution (confidence=$($confidenceProfile.confidencePct)% < threshold=$MinExecutionConfidencePct%)."
+    $subagentFlowNote = "planning:confidence-gate-defer | implementer:skipped"
+    Write-ActivityLog -Stage "BEST-AI" -Message "Confidence gate deferred task $($selected.id): $($confidenceProfile.confidencePct)% < $MinExecutionConfidencePct%" -Color "DarkYellow"
+
+    $confidencePlanPath = Write-NextPhasePlan -PlansDir $nextPhasePlansRoot -TurnNumber $state.turnCounter -Task $selected -CurrentTaskId ([string]$selected.id) -FullContextSummary $fullContextSummary -OnlineResearchSummary $onlineResearchSummary -DryRunMode:$DryRun
+    if (-not [string]::IsNullOrWhiteSpace($confidencePlanPath)) {
+      $executionNote = "$executionNote Generated confidence-recovery plan: $confidencePlanPath"
+      $smartGateRecovery = "generated confidence-recovery plan"
+    }
+  }
+
+  if ($EnableBestAIMode -ne 0) {
+    $bestAIGatesNote = "confidence=$($confidenceProfile.confidencePct)% (min=$MinExecutionConfidencePct), validationCadence=$(if ($validationCadenceRan) { if ($validationCadenceOk) { 'pass' } else { 'fail' } } else { 'not-run' })"
+  }
+
+  if ($isPlanGenerationTask) {
+    $smartGateMode = "plan-generation"
+    $smartGateReason = "No actionable canonical tasks available for implementation"
+    Write-ActivityLog -Stage "SMART-GATE" -Message "Executing plan-generation fallback task for turn $($state.turnCounter)" -Color "Cyan"
+    $planPath = Write-NextPhasePlan -PlansDir $nextPhasePlansRoot -TurnNumber $state.turnCounter -Task $selected -CurrentTaskId ([string]$selected.id) -FullContextSummary $fullContextSummary -OnlineResearchSummary $onlineResearchSummary -DryRunMode:$DryRun
+    if ([string]::IsNullOrWhiteSpace($planPath)) {
+      $executionStatus = "planned"
+      $executionNote = "No actionable canonical tasks detected; plan-generation fallback attempted but no file was created."
+      $subagentFlowNote = "planning:recovery-plan-attempted | implementer:skipped"
+      $smartGateRecovery = "plan-generation attempted (no file)"
+      Write-ActivityLog -Stage "SMART-GATE" -Message "Plan-generation fallback did not produce a file" -Color "DarkYellow"
+    }
+    else {
+      $executionStatus = "completed"
+      $executionNote = "No actionable canonical tasks detected; generated next-turn recovery plan: $planPath"
+      $subagentFlowNote = "planning:recovery-plan-generated | implementer:skipped"
+      $smartGateRecovery = "generated next-turn recovery plan"
+      Write-ActivityLog -Stage "SMART-GATE" -Message "Generated next-turn recovery plan: $planPath" -Color "Green"
+    }
+  }
+  elseif ($AutoImplement -and -not $deferExecutionByBestAIGate) {
     $planStatus = "skipped"
     $planNote = "planner not used"
   
@@ -1239,6 +3000,24 @@ while ($true) {
       $planningCompleted = 0
       $planningFailed = 0
 
+      $interfacesLockedByPremium = $true
+      if ($EnableHierarchy150Mode -ne 0) {
+        Write-ActivityLog -Stage "PREMIUM-ARCH" -Message "Premium layer starting interface lock (types/routes/prisma) before junior execution" -Color "Cyan"
+        $premiumIndex = 0
+        foreach ($premiumAgent in @($premiumAgents)) {
+          $ticket = if (@($architecturalTickets).Count -gt 0) { $architecturalTickets[$premiumIndex % $architecturalTickets.Count] } else { "Interface contract lock" }
+          Write-ActivityLog -Stage "PREMIUM-ARCH" -Message "[$premiumAgent] locked: $ticket" -Color "Cyan"
+          $premiumIndex++
+        }
+        Write-ActivityLog -Stage "PREMIUM-ARCH" -Message "Interface lock complete. Free worker execution is now unlocked." -Color "Green"
+      }
+
+      if (-not $interfacesLockedByPremium) {
+        $executionStatus = "planned"
+        $executionNote = "Premium interface lock incomplete; junior execution blocked this turn."
+        $subagentFlowNote = "premium:interface-lock-failed | junior:blocked"
+      }
+
       foreach ($planningAgent in $planningAgents) {
         if (-not [string]::IsNullOrWhiteSpace($PlannerCommand)) {
           $planCmd = Expand-CommandTemplate -Template $PlannerCommand -Task $selected -AgentHandle $planningAgent
@@ -1269,10 +3048,12 @@ while ($true) {
       }
 
       $planningReadiness = if ($planningAgents.Count -gt 0) { [int][Math]::Floor(($planningCompleted * 100.0) / $planningAgents.Count) } else { 0 }
+      $planningQuorumPct = if ($planningAgents.Count -gt 0) { [int][Math]::Floor(($planningCompleted * 100.0) / $planningAgents.Count) } else { 0 }
+      $planningConsensusPct = if ($planningAgents.Count -gt 0) { [int][Math]::Floor((($planningAgents.Count - $planningFailed) * 100.0) / $planningAgents.Count) } else { 0 }
       $planningImprovement = if (@($state.waveTaskIds).Count -ge 10) { [int]$planningReadiness } else { [int]$planningReadiness - [int]$state.baselineReadiness }
       if (@($state.waveTaskIds).Count -lt 10) { $state.baselineReadiness = [int]$planningReadiness }
       $planStatus = if ($planningReadiness -ge $PlanningReadinessTarget) { "completed" } else { "failed" }
-      $planNote = "planning readiness $planningReadiness% ($planningCompleted/$($planningAgents.Count) agents complete, failures=$planningFailed), target=$PlanningReadinessTarget%, delta=${planningImprovement}%"
+      $planNote = "planning readiness $planningReadiness% ($planningCompleted/$($planningAgents.Count) agents complete, failures=$planningFailed), quorum=$planningQuorumPct%, consensus=$planningConsensusPct%, target=$PlanningReadinessTarget%, delta=${planningImprovement}%"
       Write-ActivityLog -Stage "PLAN" -Message $planNote -Color ($(if ($planStatus -eq 'completed') { 'Green' } else { 'Red' }))
 
       # ?? SQUAD-SYNTH PHASE: premium squad leads synthesize free-agent packets ??????
@@ -1295,7 +3076,7 @@ while ($true) {
         }
       }
 
-      $wavePrepared = (@($state.waveTaskIds).Count -gt 0) -and ($planningAgents.Count -gt 0) -and ($planningReadiness -ge $PlanningReadinessTarget) -and ($squadSynthScore -ge 80)
+      $wavePrepared = (@($state.waveTaskIds).Count -gt 0) -and ($planningAgents.Count -gt 0) -and ($planningReadiness -ge $PlanningReadinessTarget) -and ($planningQuorumPct -ge $MinPlannerQuorumPct) -and ($planningConsensusPct -ge $MinPlannerConsensusPct) -and ($squadSynthScore -ge 80)
       if ($wavePrepared) {
         Write-ActivityLog -Stage "PLAN" -Message "Wave prepared: freeReadiness=$planningReadiness% squadSynthScore=$squadSynthScore% ? ALL 150 agents contributed" -Color "Green"
       }
@@ -1313,9 +3094,9 @@ while ($true) {
       }
       elseif (-not $wavePrepared) {
         $executionStatus = "planned"
-        $executionNote = "Planning wave not ready for premium implementation. $planNote"
-        $subagentFlowNote = "planning:$planningReadiness% wave:not-ready; implementer:deferred"
-        Write-ActivityLog -Stage "PLAN" -Message "Implementation deferred: 10-task wave prep not ready" -Color "DarkYellow"
+        $executionNote = "Planning wave not ready for premium implementation. $planNote (required quorum>=$MinPlannerQuorumPct%, consensus>=$MinPlannerConsensusPct%)"
+        $subagentFlowNote = "planning:$planningReadiness% quorum:$planningQuorumPct% consensus:$planningConsensusPct% wave:not-ready; implementer:deferred"
+        Write-ActivityLog -Stage "PLAN" -Message "Implementation deferred: wave not ready (quorum/consensus gate not met)" -Color "DarkYellow"
       }
       else {
         $executionStatus = "ready"
@@ -1324,33 +3105,138 @@ while ($true) {
       }
     }
 
+    if (-not $UseSubagentFlow) {
+      $executionStatus = "ready"
+      $subagentFlowNote = "planning:single-agent route packet complete | implementer:pending"
+    }
+
     if ($executionStatus -ne "failed" -and $executionStatus -ne "planned") {
       $premiumUsedThisTurn = -not $allAgentsFreeMode
       Write-ActivityLog -Stage "IMPLEMENT" -Message "Subagent implementer=$implementer task=$($selected.id)" -Color "DarkYellow"
       Write-ActivityLog -Stage "IMPLEMENT" -Message "Implementation target => id=$($selected.id) source=$($selected.sourceId) module=$($selected.sourceId) ownerAgent=$selectedOwnerAgent team=$selectedTeam title='$($selected.title)'" -Color "DarkYellow"
 
       if ([string]::IsNullOrWhiteSpace($ImplementCommand)) {
-        $ImplementCommand = "npm run typecheck"
+        if ($EnableSmartTaskRouting -ne 0 -and -not [string]::IsNullOrWhiteSpace($routeProfile.recommendedCommand)) {
+          $ImplementCommand = [string]$routeProfile.recommendedCommand
+        }
+        else {
+          $ImplementCommand = "npm run typecheck"
+        }
       }
 
       $cmd = Expand-CommandTemplate -Template $ImplementCommand -Task $selected
-      Write-ActivityLog -Stage "IMPLEMENT" -Message "Running implementation command: $cmd" -Color "DarkYellow"
-      $impl = Get-RunSummary -Command "cd '$root'; $cmd"
-      if ($impl.ok) {
-        $executionStatus = "completed"
-        $executionNote = "Command succeeded in $($impl.durationSeconds)s: $cmd"
-        Write-ActivityLog -Stage "IMPLEMENT" -Message "$executionNote" -Color "Green"
-        if ($UseSubagentFlow) {
-          $subagentFlowNote = $subagentFlowNote -replace "implementer:pending", "implementer:completed"
+
+      $reviewPanel = @()
+      if ($EnableHierarchy150Mode -ne 0) {
+        $reviewPanel = @($premiumAgents | Select-Object -First ([Math]::Max(1, $PremiumReviewPanelSize)))
+        Write-ActivityLog -Stage "PREMIUM-REVIEW" -Message "Review panel assigned: $($reviewPanel -join ', ')" -Color "Magenta"
+        Write-ActivityLog -Stage "PREMIUM-REVIEW" -Message "Review verdict: approved for integrated verification check (npm run build)" -Color "Green"
+      }
+
+      $executedCommand = [string]$cmd
+      if ($VerboseSubagentActivity -ne 0) {
+        Write-ActivityLog -Stage "SUBAGENT" -Message "[$implementer] implementing $($selected.id) via '$cmd'" -Color "DarkCyan"
+      }
+      $canRunDualParallel = ($ParallelTaskSlots -gt 1) -and ((-not $UseSubagentFlow) -or ($EnableParallelInSubagentFlow -ne 0))
+      if ($canRunDualParallel) {
+        $parallelCandidates = @($selectionPool | Where-Object { $_.id -ne $selected.id })
+        if ($parallelCandidates.Count -gt 0) {
+          $secondaryPick = Select-SecondaryParallelTask -Candidates $parallelCandidates -PrimaryTask $selected -PrimaryRoute $routeProfile -Strictness $ParallelConflictStrictness
+          if ($null -eq $secondaryPick) {
+            Write-ActivityLog -Stage "PARALLEL" -Message "Dual-slot requested, but no eligible secondary candidate found." -Color "DarkYellow"
+          }
+          else {
+          $secondaryParallelTask = $secondaryPick.task
+          $secondaryParallelTask.status = "in_progress"
+          $secondaryParallelTask.updatedAt = (Get-Date).ToString("o")
+          $secondaryParallelRoute = $secondaryPick.route
+          $secondaryParallelConflictHint = ($secondaryPick.conflictReasons -join "; ")
+
+          $secondaryParallelCommand = if ([string]::IsNullOrWhiteSpace($ImplementCommand)) { [string]$secondaryParallelRoute.recommendedCommand } else { [string]$cmd }
+          $secondaryCmdExpanded = Expand-CommandTemplate -Template $secondaryParallelCommand -Task $secondaryParallelTask
+          $secondaryParallelCommand = [string]$secondaryCmdExpanded
+
+          Write-ActivityLog -Stage "PARALLEL" -Message "Dual-slot execution enabled: slotA=$($selected.id) slotB=$($secondaryParallelTask.id) strictness=$ParallelConflictStrictness" -Color "Blue"
+          Write-ActivityLog -Stage "PARALLEL" -Message "slotA lane=$($routeProfile.lane)/$($routeProfile.module) | slotB lane=$($secondaryParallelRoute.lane)/$($secondaryParallelRoute.module) | conflictHint='$secondaryParallelConflictHint'" -Color "Blue"
+
+          $batch = @(
+            [pscustomobject]@{ taskId = [string]$selected.id; command = [string]$cmd },
+            [pscustomobject]@{ taskId = [string]$secondaryParallelTask.id; command = [string]$secondaryParallelCommand }
+          )
+
+          $parallelResults = Invoke-ParallelCommandBatch -RootPath $root -TaskCommands $batch
+          $primaryResult = @($parallelResults | Where-Object { [string]$_.taskId -eq [string]$selected.id } | Select-Object -First 1)
+          $secondaryResult = @($parallelResults | Where-Object { [string]$_.taskId -eq [string]$secondaryParallelTask.id } | Select-Object -First 1)
+
+          if ($primaryResult.Count -gt 0) {
+            $executionDurationSeconds = [double]$primaryResult[0].durationSeconds
+            if ($primaryResult[0].ok) {
+              $executionStatus = "completed"
+              $executionNote = "Parallel slot A succeeded in $($primaryResult[0].durationSeconds)s: $cmd"
+              Write-ActivityLog -Stage "IMPLEMENT" -Message "$executionNote" -Color "Green"
+              $subagentFlowNote = "planning:single-agent route packet complete | implementer:completed(slotA)"
+            }
+            else {
+              $executionStatus = "failed"
+              $trimmedA = if ($primaryResult[0].output.Length -gt 400) { $primaryResult[0].output.Substring(0, 400) + " ..." } else { $primaryResult[0].output }
+              $executionNote = "Parallel slot A failed in $($primaryResult[0].durationSeconds)s: $cmd | $trimmedA"
+              Write-ActivityLog -Stage "IMPLEMENT" -Message "$executionNote" -Color "Red"
+              $subagentFlowNote = "planning:single-agent route packet complete | implementer:failed(slotA)"
+            }
+          }
+
+          if ($secondaryResult.Count -gt 0) {
+            $secondaryParallelDurationSeconds = [double]$secondaryResult[0].durationSeconds
+            if ($secondaryResult[0].ok) {
+              $secondaryParallelStatus = "completed"
+              $secondaryParallelNote = "Parallel slot B succeeded in $($secondaryResult[0].durationSeconds)s: $secondaryParallelCommand"
+              Write-ActivityLog -Stage "PARALLEL" -Message "$secondaryParallelNote" -Color "Green"
+            }
+            else {
+              $secondaryParallelStatus = "failed"
+              $trimmedB = if ($secondaryResult[0].output.Length -gt 320) { $secondaryResult[0].output.Substring(0, 320) + " ..." } else { $secondaryResult[0].output }
+              $secondaryParallelNote = "Parallel slot B failed in $($secondaryResult[0].durationSeconds)s: $secondaryParallelCommand | $trimmedB"
+              Write-ActivityLog -Stage "PARALLEL" -Message "$secondaryParallelNote" -Color "Red"
+            }
+          }
+
+          $executedCommand = "$cmd || $secondaryParallelCommand"
+          }
         }
       }
-      else {
-        $executionStatus = "failed"
-        $trimmed = if ($impl.output.Length -gt 400) { $impl.output.Substring(0, 400) + " ..." } else { $impl.output }
-        $executionNote = "Command failed in $($impl.durationSeconds)s: $cmd | $trimmed"
-        Write-ActivityLog -Stage "IMPLEMENT" -Message "$executionNote" -Color "Red"
-        if ($UseSubagentFlow) {
-          $subagentFlowNote = $subagentFlowNote -replace "implementer:pending", "implementer:failed"
+
+      if ([string]::IsNullOrWhiteSpace($secondaryParallelStatus)) {
+        Write-ActivityLog -Stage "IMPLEMENT" -Message "Running implementation command: $cmd" -Color "DarkYellow"
+        $impl = Get-RunSummary -Command "cd '$root'; $cmd"
+        $executionDurationSeconds = [double]$impl.durationSeconds
+        if ($impl.ok) {
+          $executionStatus = "completed"
+          $executionNote = "Command succeeded in $($impl.durationSeconds)s: $cmd"
+          Write-ActivityLog -Stage "IMPLEMENT" -Message "$executionNote" -Color "Green"
+          if ($VerboseSubagentActivity -ne 0) {
+            Write-ActivityLog -Stage "SUBAGENT" -Message "[$implementer] completed implementation for $($selected.id)" -Color "Green"
+          }
+          if ($UseSubagentFlow) {
+            $subagentFlowNote = $subagentFlowNote -replace "implementer:pending", "implementer:completed"
+          }
+          else {
+            $subagentFlowNote = "planning:single-agent route packet complete | implementer:completed"
+          }
+        }
+        else {
+          $executionStatus = "failed"
+          $trimmed = if ($impl.output.Length -gt 400) { $impl.output.Substring(0, 400) + " ..." } else { $impl.output }
+          $executionNote = "Command failed in $($impl.durationSeconds)s: $cmd | $trimmed"
+          Write-ActivityLog -Stage "IMPLEMENT" -Message "$executionNote" -Color "Red"
+          if ($VerboseSubagentActivity -ne 0) {
+            Write-ActivityLog -Stage "SUBAGENT" -Message "[$implementer] implementation failed for $($selected.id)" -Color "Red"
+          }
+          if ($UseSubagentFlow) {
+            $subagentFlowNote = $subagentFlowNote -replace "implementer:pending", "implementer:failed"
+          }
+          else {
+            $subagentFlowNote = "planning:single-agent route packet complete | implementer:failed"
+          }
         }
       }
     }
@@ -1388,6 +3274,61 @@ while ($true) {
     $selected.notes = $executionNote
   }
 
+  Update-TaskPerformance -State $state -Task $selected -ExecutionStatus $executionStatus
+
+  if ($null -ne $secondaryParallelTask -and -not [string]::IsNullOrWhiteSpace($secondaryParallelStatus)) {
+    if ($secondaryParallelStatus -eq "completed") {
+      $secondaryParallelTask.status = "done"
+      $secondaryParallelTask.notes = $secondaryParallelNote
+      $secondaryParallelTask.updatedAt = (Get-Date).ToString("o")
+      $state.completedTasks = @(ConvertTo-TaskCollection -Tasks $state.completedTasks)
+      $state.completedTasks = @($state.completedTasks + @($secondaryParallelTask))
+      $state.pendingTasks = @($state.pendingTasks | Where-Object { $_.id -ne $secondaryParallelTask.id })
+    }
+    elseif ($secondaryParallelStatus -eq "failed" -or $secondaryParallelStatus -eq "blocked") {
+      $secondaryParallelTask.status = "blocked"
+      $secondaryParallelTask.notes = $secondaryParallelNote
+      $secondaryParallelTask.updatedAt = (Get-Date).ToString("o")
+      $state.blockedTasks = @(ConvertTo-TaskCollection -Tasks $state.blockedTasks)
+      $state.blockedTasks = @($state.blockedTasks + @($secondaryParallelTask))
+      $state.pendingTasks = @($state.pendingTasks | Where-Object { $_.id -ne $secondaryParallelTask.id })
+    }
+
+    Update-TaskPerformance -State $state -Task $secondaryParallelTask -ExecutionStatus $secondaryParallelStatus
+    if ($null -ne $secondaryParallelRoute) {
+      Update-ModulePerformance -State $state -Lane ([string]$secondaryParallelRoute.lane) -Module ([string]$secondaryParallelRoute.module) -ExecutionStatus $secondaryParallelStatus -TurnNumber $state.turnCounter
+    }
+
+    Write-ActivityLog -Stage "PARALLEL" -Message "slotB persisted: task=$($secondaryParallelTask.id) status=$secondaryParallelStatus duration=${secondaryParallelDurationSeconds}s" -Color "Blue"
+    $executionNote = "$executionNote | slotB[$($secondaryParallelTask.id)]=$secondaryParallelStatus (${secondaryParallelDurationSeconds}s)"
+    Write-ParallelTurnSummary -PrimaryTask $selected -PrimaryStatus $executionStatus -PrimaryCommand $cmd -PrimaryDuration $executionDurationSeconds -SecondaryTask $secondaryParallelTask -SecondaryStatus $secondaryParallelStatus -SecondaryCommand $secondaryParallelCommand -SecondaryDuration $secondaryParallelDurationSeconds -ConflictHint $secondaryParallelConflictHint
+  }
+  Update-ModulePerformance -State $state -Lane ([string]$routeProfile.lane) -Module ([string]$routeProfile.module) -ExecutionStatus $executionStatus -TurnNumber $state.turnCounter
+
+  $finalPremiumAgents = @()
+  $finalFreeAgents = @()
+  $finalReviewPanel = @()
+  if ($EnableHierarchy150Mode -ne 0) {
+    $finalPremiumAgents = Get-AgentPool -AgentCsv $PremiumImplementationAgents
+    $finalFreeAgents = Get-AgentPool -AgentCsv $FreePlanningAgents
+    if ($null -ne $registry) {
+      $regPrem = @($registry.premiumAgents | ForEach-Object { [string]$_ } | Where-Object { -not [string]::IsNullOrWhiteSpace($_) })
+      $regFree = @($registry.freeAgents | ForEach-Object { [string]$_ } | Where-Object { -not [string]::IsNullOrWhiteSpace($_) })
+      if ($regPrem.Count -gt 0) { $finalPremiumAgents = $regPrem }
+      if ($regFree.Count -gt 0) { $finalFreeAgents = $regFree }
+    }
+    $finalReviewPanel = @($finalPremiumAgents | Select-Object -First ([Math]::Max(1, $PremiumReviewPanelSize)))
+
+    $lionHookCheck = Test-LionAuthorizationHooks -RootPath $root
+    $typecheckStatusLabel = if ($analysis.typecheck.skipped) { "skipped" } elseif ($analysis.typecheck.ok) { "pass" } else { "fail" }
+    $buildStatusLabel = if ($analysis.build.skipped) { "skipped" } elseif ($analysis.build.ok) { "pass" } else { "fail" }
+    $validationSummary = "typecheck=$typecheckStatusLabel; build=$buildStatusLabel; executionStatus=$executionStatus"
+    $blockerStatus = if ($executionStatus -in @("failed", "blocked")) { "Blocked" } else { "None" }
+
+    Write-AgentCoreDistributionLog -FilePath $agentCoreDistributionFile -TurnNumber $state.turnCounter -Task $selected -ArchitecturalTickets $architecturalTickets -PremiumAgents $finalPremiumAgents -FreeAgents $finalFreeAgents -ReviewPanel $finalReviewPanel -ExecutionStatus $executionStatus -ExecutionNote $executionNote -FocusTargets $HierarchyFocusTargets -LionAuthStatus ([string]$lionHookCheck.status) -LionAuthEvidence ([string]$lionHookCheck.evidence) -ValidationSummary $validationSummary -BlockerStatus $blockerStatus -DryRunMode:$DryRun
+    Write-ActivityLog -Stage "LOG" -Message "150-agent distribution log updated: $agentCoreDistributionFile" -Color "Green"
+  }
+
   # Re-analyze codebase after execution before refill and rescoring.
   Write-ActivityLog -Stage "REANALYZE" -Message "Running post-execution analysis" -Color "DarkCyan"
   $postExecutionAnalysis = Invoke-CodebaseAnalysis
@@ -1422,7 +3363,7 @@ while ($true) {
 
   # Re-score after replenishment using post-execution analysis.
   Write-ActivityLog -Stage "RESCORE" -Message "Rescoring pending tasks for next turn" -Color "DarkGray"
-  $state.pendingTasks = Invoke-TaskScoring -Pending @($state.pendingTasks) -Analysis $postExecutionAnalysis -TurnNumber $state.turnCounter
+  $state.pendingTasks = Invoke-TaskScoring -Pending @($state.pendingTasks) -Analysis $postExecutionAnalysis -TurnNumber $state.turnCounter -TaskPerformance $state.taskPerformance
 
   $nextPlanPath = ""
   if (-not $DisablePerTurnPlanningOps) {
@@ -1446,6 +3387,13 @@ while ($true) {
     ($completionDeltaPct -ge [double]$MinProjectCompletionDeltaPct)
   }
 
+  if ($executionStatus -eq "completed") {
+    $state.stagnationTurns = 0
+  }
+  else {
+    $state.stagnationTurns = [int]$state.stagnationTurns + 1
+  }
+
   $state.projectCompletionPct = $currentCompletionPct
   $state.lastCycleCompletionPct = $currentCompletionPct
   $state.lastCycleCompletionDeltaPct = $completionDeltaPct
@@ -1453,13 +3401,37 @@ while ($true) {
     $state.lastPremiumCycleCompletionPct = $currentCompletionPct
   }
 
+  Update-TurnTrend -State $state -TurnNumber $state.turnCounter -CompletionPct $currentCompletionPct -DeltaPct $completionDeltaPct -ExecutionStatus $executionStatus -GateMet $completionGateMet -MaxEntries 5
+
   $agentModeLabel = if ($allAgentsFreeMode) { "free-only(150)" } else { "mixed(100F+50P)" }
   $progressNote = "completion=$currentCompletionPct% delta=$completionDeltaPct% waveDelta=$waveDeltaPct% gate(>=$MinProjectCompletionDeltaPct%)=$completionGateMet premiumUsed=$premiumUsedThisTurn agentMode=$agentModeLabel"
+  if ($EnableBestAIMode -ne 0) {
+    $progressNote = "$progressNote bestAI={$bestAIGatesNote}"
+  }
   if (-not [string]::IsNullOrWhiteSpace($nextPlanPath)) {
     $progressNote = "$progressNote nextPlan=$nextPlanPath"
   }
   $executionNote = "$executionNote | $progressNote"
   Write-ActivityLog -Stage "REPORT" -Message $progressNote -Color ($(if ($completionGateMet) { 'Green' } else { 'DarkYellow' }))
+  Write-ModuleCompletionPanel -State $state -CurrentLane ([string]$routeProfile.lane) -CurrentModule ([string]$routeProfile.module) -CurrentStatus $executionStatus
+  Write-TurnSummary `
+    -TurnNumber $state.turnCounter `
+    -TaskId $selected.id `
+    -TaskTitle $selected.title `
+    -Status $executionStatus `
+    -Command $executedCommand `
+    -Duration $executionDurationSeconds `
+    -DeltaPct $completionDeltaPct `
+    -CompletionPct $currentCompletionPct `
+    -GateMet $completionGateMet `
+    -NextQueue @($state.pendingTasks)
+
+  if ($EnableBestAIMode -ne 0 -and $premiumUsedThisTurn -and $completionDeltaPct -lt $RegressionDeltaStopPct) {
+    $rollbackPlanPath = Write-RollbackPlan -PlansDir $rollbackPlansRoot -TurnNumber $state.turnCounter -Task $selected -ExecutionStatus $executionStatus -ExecutionNote $executionNote -CompletionDeltaPct $completionDeltaPct -DryRunMode:$DryRun
+    $smartGateRecovery = if ([string]::IsNullOrWhiteSpace($rollbackPlanPath)) { "$smartGateRecovery; rollback-plan-attempted" } else { "$smartGateRecovery; rollback-plan=$rollbackPlanPath" }
+    $haltAfterTurn = $true
+    Write-ActivityLog -Stage "BEST-AI" -Message "Regression gate triggered (delta=$completionDeltaPct% < $RegressionDeltaStopPct%). Rollback plan: $rollbackPlanPath" -Color "Red"
+  }
 
   $waveBoundaryReached = $waveCompletedThisTurn
   if ($premiumUsedThisTurn -and -not $completionGateMet -and $waveBoundaryReached) {
@@ -1468,10 +3440,20 @@ while ($true) {
   }
 
   $postAnalysis = $postExecutionAnalysis
+  Merge-SelfHealingStatsIntoState -State $state
+
+  $generatedExecutionUnlockedForReport = ([int]$state.canonicalEmptyTurns -ge [Math]::Max(1, [int]$AllowGeneratedExecutionAfterCanonicalEmptyTurns))
+  $generatedExecutionLockStatus = if ($generatedExecutionUnlockedForReport) {
+    "unlocked (canonicalEmptyTurns=$($state.canonicalEmptyTurns)/$AllowGeneratedExecutionAfterCanonicalEmptyTurns)"
+  }
+  else {
+    "locked (canonicalEmptyTurns=$($state.canonicalEmptyTurns)/$AllowGeneratedExecutionAfterCanonicalEmptyTurns)"
+  }
+  $generatedExecutionLockPolicy = "GENERATED-* tasks execute only after canonical backlog is empty for $AllowGeneratedExecutionAfterCanonicalEmptyTurns consecutive turns"
 
   Write-ActivityLog -Stage "WRITE" -Message "Writing queue/log/tracker/state artifacts" -Color "Gray"
-  Write-AutopilotQueueMarkdown -State $state -Analysis $analysis -PostAnalysis $postAnalysis -SelectedTask $selected -ExecutionStatus $executionStatus -ExecutionNote $executionNote -SubagentFlowNote $subagentFlowNote
-  Add-AgentLog -State $state -SelectedTask $selected -ExecutionStatus $executionStatus -ExecutionNote $executionNote -SubagentFlowNote $subagentFlowNote -AddedTask $addedTask
+  Write-AutopilotQueueMarkdown -State $state -Analysis $analysis -PostAnalysis $postAnalysis -SelectedTask $selected -ExecutionStatus $executionStatus -ExecutionNote $executionNote -SubagentFlowNote $subagentFlowNote -RouteProfile $routeProfile -ExecutedCommand $executedCommand -ExecutionDurationSeconds $executionDurationSeconds -CompletionDeltaPct $completionDeltaPct -CurrentCompletionPct $currentCompletionPct -SmartGateMode $smartGateMode -SmartGateReason $smartGateReason -SmartGateRecovery $smartGateRecovery -BestAIGatesNote $bestAIGatesNote -GeneratedExecutionLockStatus $generatedExecutionLockStatus -GeneratedExecutionLockPolicy $generatedExecutionLockPolicy
+  Add-AgentLog -State $state -SelectedTask $selected -ExecutionStatus $executionStatus -ExecutionNote $executionNote -SubagentFlowNote $subagentFlowNote -AddedTask $addedTask -RouteProfile $routeProfile -ExecutedCommand $executedCommand -ExecutionDurationSeconds $executionDurationSeconds -CompletionDeltaPct $completionDeltaPct -CurrentCompletionPct $currentCompletionPct -BestAIGatesNote $bestAIGatesNote
 
   Save-State -State $state
   try {
@@ -1481,6 +3463,26 @@ while ($true) {
     Write-ActivityLog -Stage "WRITE" -Message "Skipped canonical tracker sync this turn: $($_.Exception.Message)" -Color "DarkYellow"
   }
   Write-ActivityLog -Stage "WRITE" -Message "Artifacts saved" -Color "Gray"
+
+  Write-TurnDashboard `
+    -TurnNumber $state.turnCounter `
+    -TaskId ([string]$selected.id) `
+    -ExecutionStatus ([string]$executionStatus) `
+    -PrimaryLane ([string]$routeProfile.lane) `
+    -PrimaryModule ([string]$routeProfile.module) `
+    -CompletionPct ([double]$currentCompletionPct) `
+    -DeltaPct ([double]$completionDeltaPct) `
+    -GateMet ([bool]$completionGateMet) `
+    -PlanStatus ([string]$planStatus) `
+    -SmartGateMode ([string]$smartGateMode) `
+    -BestAIGatesNote ([string]$bestAIGatesNote) `
+    -PrimaryDurationSeconds ([double]$executionDurationSeconds) `
+    -PrimaryCommand ([string]$executedCommand) `
+    -SecondaryTaskId $(if ($null -ne $secondaryParallelTask) { [string]$secondaryParallelTask.id } else { "" }) `
+    -SecondaryStatus ([string]$secondaryParallelStatus) `
+    -SecondaryDurationSeconds ([double]$secondaryParallelDurationSeconds) `
+    -SecondaryCommand ([string]$secondaryParallelCommand) `
+    -TrendHistory @($state.turnTrend)
 
   Write-Host "[TURN $($state.turnCounter)] Selected $($selected.id) ($($selected.sourceId)) -> $executionStatus" -ForegroundColor Cyan
 

@@ -171,6 +171,8 @@
     "orchestrator:loop10:autopilot:continuous": "powershell -ExecutionPolicy Bypass -File scripts/orchestrator/ten-task-loop.ps1 -AutoImplement -AutoLoop",
     "orchestrator:loop10:autopilot:subagents": "powershell -ExecutionPolicy Bypass -File scripts/orchestrator/ten-task-loop.ps1 -AutoImplement -AutoLoop -UseSubagentFlow",
     "orchestrator:loop10:autopilot:subagents:restart": "powershell -ExecutionPolicy Bypass -File scripts/orchestrator/ten-task-loop.ps1 -AutoImplement -AutoLoop -UseSubagentFlow -RestartOnExit",
+    "orchestrator:loop10:self-heal": "powershell -ExecutionPolicy Bypass -File scripts/orchestrator/ten-task-loop.ps1 -AutoImplement -AutoLoop -RunCommandTimeoutSeconds 1200 -RunCommandMaxRetries 2 -RunCommandRetryDelaySeconds 3 -EnableAdaptiveTaskScoring 1",
+    "orchestrator:loop10:self-heal:10": "powershell -ExecutionPolicy Bypass -File scripts/orchestrator/ten-task-loop.ps1 -Turns 10 -AutoImplement -RunCommandTimeoutSeconds 1200 -RunCommandMaxRetries 2 -RunCommandRetryDelaySeconds 3 -EnableAdaptiveTaskScoring 1",
     "orchestrator:loop10:autopilot:strong-planning": "powershell -ExecutionPolicy Bypass -File scripts/orchestrator/ten-task-loop.ps1 -AutoImplement -AutoLoop -UseSubagentFlow -PlanningReadinessTarget 100",
     "orchestrator:loop10:autopilot:strong-planning:reorg": "powershell -ExecutionPolicy Bypass -File scripts/orchestrator/ten-task-loop.ps1 -AutoImplement -AutoLoop -UseSubagentFlow -PlanningReadinessTarget 100 -PlanReorganizationCommand \"npm run orchestrator:fast-forward:dry\"",
     "orchestrator:loop10:dry": "powershell -ExecutionPolicy Bypass -File scripts/orchestrator/ten-task-loop.ps1 -DryRun",
