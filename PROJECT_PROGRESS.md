@@ -2,7 +2,7 @@
 
 > **Agency:** White Caves Global Agency
 > **Orchestrator:** @Ada (Chief Architect)
-> **Last Updated:** 2026-05-27
+> **Last Updated:** 2026-05-28
 > **Policy Mode:** Dual-threshold readiness (60% unlock, 90% target) + policy-driven gating (Governance V2 active)
 > **Daily Report:** `PROJECT_PROGRESS_REPORT.md`
 
@@ -12,7 +12,30 @@
 
 - Canonical roadmap: **[plans/MASTER_PLAN.md](plans/MASTER_PLAN.md)**
 - Active queue: **[plans/PENDING_TASKS_ONLY.md](plans/PENDING_TASKS_ONLY.md)**
-- Last Updated (ISO): 2026-05-27
+- Last Updated (ISO): 2026-05-28
+
+## 🚀 Wave 18.1 Session 2 Delivery Evidence
+
+- **W18.1-P0-001** Intent-aware search ranking (buy/rent/invest journey profiles): propertySlice scoring logic + ranking hooks wired ✅
+- **W18.1-P0-002** Advanced search facets (furnishing, handover stage, permit status, fee band): PropertyFilterPanel + API filter params wired ✅
+- **W18.1-P0-003** Map/list synchronization + viewport persistence: InteractiveMap Redux sync + Playwright map-flow tests ✅
+- **W18.1-P0-009** Mobile-first CRM command bar (top 8 field actions): MobileCRMCommandBar component + Playwright mobile suite ✅
+- **W18.1-P0-011** Listing completeness scoring + remediation checklist: completenessScorer service + widget UI ✅
+- **W18.1-P0-012** Verification/freshness badges with traceable evidence fields: VerificationBadge + FreshnessBadge components ✅
+- **W18.1-P0-013** KYC gate before high-risk transaction transitions: `prisma.$transaction` guard + kyc-gate tests ✅
+- **W18.1-P0-017** WhatsApp conversation→lead conversion + ownership routing: nadia convert-to-lead endpoint + ConversationsTab wired ✅
+- **W18.1-P0-019** Funnel economics dashboard (lead→viewing→offer→close): reporting.ts analytics endpoint + FunnelEconomicsDashboard UI ✅
+- **W18.1-P0-020** Baseline KPI tracker (90-day target monitoring): KPIBaselineTracker component + tracker endpoint ✅
+- Validation evidence (2026-05-27): `npm run typecheck` ✅ 0 errors, `npm run build` ✅ green, all Session 2 component/route/service tests ✅, `npm run plans:validate` ✅
+
+## 🚀 Wave 18.1 Session 3 Kickoff
+
+- **Status:** 🟡 In Progress — 2026-05-28
+- **Remaining P0s:** W18.1-P0-010 (offline PWA drafts) + W18.1-P0-018 (cadence rules engine)
+- **Top P1s in scope:** P1-001 (lead import), P1-002 (audit log UI), P1-003 (agent performance report), P1-004 (Nina escalation), P1-005 (e-sign), P1-006 (portal syndication), P1-007 (follow-up automation depth), P1-008 (Ejari + rent collection)
+- **Session 3 entry gate confirmed:** @Ada architecture approval issued 2026-05-28
+- **P0 exhaustion target:** 20/20 complete by Session 3 exit
+- See full plan: [`plans/waves/WAVE_18_1_IMPLEMENTATION_BACKLOG.md`](plans/waves/WAVE_18_1_IMPLEMENTATION_BACKLOG.md) Session 3 section
 
 ## 🚀 Wave 18.1 Session 1 Delivery
 

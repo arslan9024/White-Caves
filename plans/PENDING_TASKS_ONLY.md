@@ -1,7 +1,7 @@
 # Pending Tasks Only
 
-**Last Updated:** 2026-05-26
-**Current Focus:** Wave 18 complete ✅ — Wave 18.1 (competitor parity execution) 🟢 Ready.
+**Last Updated:** 2026-05-28
+**Current Focus:** Wave 18.1 Session 2 complete ✅ — Wave 18.1 Session 3 (P0 closure + top P1s) 🟡 In Progress.
 
 ## Canonical Sources
 
@@ -33,6 +33,7 @@ Advance only when the prior wave is green, the readiness gate is satisfied, and 
 | S10 | 17 | Full UI/UX luxury upgrade (design tokens + glassmorphism + animations + mobile + PWA + WCAG 2.2) | ✅ Green | @Una + @Lea + @Tracy + @Africa + @Cyra + @Katherine | Wave 17 implementation + CI Lighthouse thresholds + accessibility/mobile/PWA checks complete |
 | S11 | 18 | Workflow parity audit + benchmark gap backlog | ✅ Green | @Ada + @Margaret + @Mira + @Katherine | Wave 18 parity matrix finalized + canonical queue updates + `npm run plans:validate` |
 | S12 | 18.1 | Competitor parity execution — Session 1 ✅ complete, Session 2 ✅ complete | ✅ Complete | @Ada + @Mira + @Una + @Tracy + @Katherine + @Sofia | Session 1 + Session 2 tests green + build green + `npm run plans:validate` |
+| S13 | 18.1-S3 | Competitor parity execution — Session 3: 2 deferred P0s + top 8 P1s | 🟡 In Progress | @Ada + @Mira + @Joelle + @Katherine + @Victoria + @Una | Session 3 tests green + build green + `npm run plans:validate` |
 
 ## Completed Stream History
 
@@ -58,6 +59,7 @@ Advance only when the prior wave is green, the readiness gate is satisfied, and 
 | S11 | Wave 18 workflow parity audit + gap backlog generation | ✅ Complete |
 | S11-S1 | Wave 18.1 Session 1: Lead workflow automation + tenant/landlord portals | ✅ Complete |
 | S11-S2 | Wave 18.1 Session 2: Search ranking, facets, map sync, listing trust, WA→lead, funnel, KPI, KYC gate, mobile CRM | ✅ Complete |
+| S11-S3 | Wave 18.1 Session 3: Offline PWA drafts, cadence engine, lead import, audit log UI, agent report, Nina escalation, e-sign, syndication, follow-up automation, Ejari/rent collection | 🟡 In Progress |
 
 ## S2 — Wave 09: UX Hardening (Complete)
 
@@ -238,6 +240,26 @@ Key closures:
 | W18.1-P0-017 | WhatsApp conversation→lead conversion | P0 | @Mira + @Una | nadia route tests + ConversationsTab tests |
 | W18.1-P0-019 | Funnel economics dashboard (API wire-up) | P0 | @Mira + @Katherine | FunnelEconomicsDashboard tests |
 | W18.1-P0-020 | KPI baseline tracker (API wire-up) | P0 | @Mira + @Katherine | KPIBaselineTracker tests |
+
+---
+
+## S13 — Wave 18.1 Session 3: Competitor Parity Execution (P0 Closure + P1 Depth)
+
+**Source:** [`WAVE_18_1_IMPLEMENTATION_BACKLOG.md`](./waves/WAVE_18_1_IMPLEMENTATION_BACKLOG.md) Session 3 Plan
+**Entry Gate:** Session 2 evidence confirmed + @Ada architecture plan approved 2026-05-28
+
+| Task | Scope | Priority | Owner | Validation |
+| --- | --- | --- | --- | --- |
+| W18.1-P0-010 | Offline-safe draft capture (IndexedDB + sync + service worker) | P0 | @Mira + @Ruchi | PWA cache tests + sync-conflict tests + Lighthouse PWA ≥ 90 |
+| W18.1-P0-018 | Channel orchestration cadence rules engine (WA/email/call) | P0 | @Joelle + @Margaret + @Mira | Cadence engine tests + admin UI tests + scheduler tests |
+| W18.1-P1-001 | Lead import CSV/XLSX bulk upload + dedup | P1 | @Mira + @Katherine | Import route tests + dedup tests + UI tests |
+| W18.1-P1-002 | Immutable audit log UI + XLSX export | P1 | @Una + @Mira | AuditLogUI tests + export route tests + RBAC tests |
+| W18.1-P1-003 | Agent performance report + XLSX/PDF export | P1 | @Mira + @Katherine | Report API tests + export tests + dashboard tests |
+| W18.1-P1-004 | WhatsApp bot escalation hardening (Nina confidence gate + handoff) | P1 | @Joelle + @Mira | Nina confidence-gate tests + escalation routing tests |
+| W18.1-P1-005 | Contract e-sign flow completion (signing link + webhook status) | P1 | @Mira + @Sofia | Contract signing tests + webhook tests + badge tests |
+| W18.1-P1-006 | Portal syndication baseline (PF/Bayut stub + feature flag) | P1 | @Mira + @Lea | Syndication route tests + feature-flag isolation tests |
+| W18.1-P1-007 | CRM follow-up automation depth (escalation tiers + template triggers) | P1 | @Mira + @Margaret | Follow-up automation tests + escalation tier tests |
+| W18.1-P1-008 | Ejari + rent collection workflow completion | P1 | @Victoria + @Mira | Ejari tracking tests + overdue-collection tests + portal tests |
 
 ---
 

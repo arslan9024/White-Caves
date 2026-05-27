@@ -2,7 +2,7 @@
 
 **Purpose:** Canonical roadmap for execution decisions.  
 **Owners:** @Ada + @Margaret  
-**Last Updated:** 2026-05-26  
+**Last Updated:** 2026-05-28  
 **Update cadence:** Weekly roadmap refresh (daily execution goes to `PROJECT_PROGRESS.md` and `DAILY_MILESTONE_TRACKER.md`)
 
 ---
@@ -11,7 +11,7 @@
 
 - N+1 through N+9 implementation stream: **✅ Completed**
 - Wave 08 stabilization/governance pass: **✅ Completed**
-- Active implementation focus: **Wave 18 ✅ Complete → Wave 18.1 competitor parity execution — Session 1 ✅ → Session 2 🟡 In Progress**
+- Active implementation focus: **Wave 18 ✅ Complete → Wave 18.1 competitor parity execution — Session 1 ✅ → Session 2 ✅ → Session 3 🟡 In Progress**
 - Canonical planning stack: `MASTER_PLAN.md` + `PENDING_TASKS_ONLY.md` + `waves/README.md`
 - Superseded Wave 12 market-intelligence documents were archived to avoid naming collisions with the active automation Wave 12 bundle
 

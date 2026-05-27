@@ -183,3 +183,70 @@ Weighted score per task:
 | Listing completeness | +30% | ~62% (hardcoded) | Real score via P0-011 endpoint |
 | Mobile CRM sessions | +35% | ~31% (hardcoded) | Partially measurable with P0-009 |
 | Offer submission rate | +20% | Not measured | Measurable via P0-019 funnel data |
+
+---
+
+## Session 3 Plan
+
+**Session:** 3
+**Status:** 🟡 In Progress
+**Date Planned:** 2026-05-28
+**Entry Gate:** Session 2 evidence confirmed ✅ — PROJECT_PROGRESS.md updated ✅
+
+### Entry Gate Confirmation
+
+- [x] W18.1-P0-001/002/003/009/011/012/013/017/019/020 — Session 2 delivery confirmed in PROJECT_PROGRESS.md (2026-05-27)
+- [x] W18.1-P0-004/005/006/007/008/015/016 — Session 1 delivery confirmed in PROJECT_PROGRESS.md
+- [x] W18.1-P0-014 — Substantially complete (Wave 4 compliance routes + schedulers)
+- [x] 18/20 P0s complete before Session 3; both remaining P0s scheduled in this session
+- [x] `npm run build` green from Session 2 deliverables
+- [x] Architecture plan approved by @Ada — 2026-05-28
+
+### Session 3 Target Tasks (10 Total)
+
+| Batch | ID | Task | Owner(s) | Priority | Validation Gate |
+|-------|-----|------|----------|----------|-----------------|
+| A | W18.1-P0-010 | Offline-safe draft capture for notes/viewing feedback (IndexedDB + sync-conflict resolution + service worker update) | @Mira + @Ruchi | P0 | PWA cache tests + sync-conflict tests + Lighthouse PWA ≥ 90 + `npm run build` |
+| A | W18.1-P0-018 | Channel orchestration cadence rules engine (WA/email/call cadence — data model + scheduler + admin UI) | @Joelle + @Margaret + @Mira | P0 | Cadence engine unit tests + admin UI component tests + scheduler integration tests + `npm run build` |
+| B | W18.1-P1-001 | Lead import: CSV/XLSX bulk upload with dedup, field-mapping UI, and per-row error reporting | @Mira + @Katherine | P1 | Import route tests + dedup logic tests + UI field-mapping component tests + `npm run build` |
+| B | W18.1-P1-002 | Immutable audit log UI: filterable, paginated activity log surface with XLSX export for compliance/manager roles | @Una + @Mira | P1 | AuditLogUI component tests + export route tests + RBAC access tests + `npm run build` |
+| B | W18.1-P1-003 | Agent performance report: filterable dashboard by agent/date/stage + XLSX/PDF export | @Mira + @Katherine | P1 | Report API tests + export endpoint tests + dashboard component tests + `npm run build` |
+| B | W18.1-P1-004 | WhatsApp bot escalation hardening: Nina confidence-gate threshold + structured context handoff to assigned agent | @Joelle + @Mira | P1 | Nina confidence-gate unit tests + escalation routing tests + context-payload contract tests + `npm run build` |
+| B | W18.1-P1-005 | Contract e-sign flow completion: signing-link delivery via email + webhook status callback + contract signing status UI | @Mira + @Sofia | P1 | Contract signing route tests + webhook callback tests + SigningStatusBadge component tests + `npm run build` |
+| B | W18.1-P1-006 | Portal syndication baseline: Property Finder/Bayut push-API stub with `SYNDICATION_ENABLED` feature flag + sync-queue endpoint | @Mira + @Lea | P1 | Syndication route tests + queue endpoint tests + feature-flag isolation tests + `npm run build` |
+| B | W18.1-P1-007 | CRM follow-up automation depth: multi-tier reminder escalation + template trigger builder (stage-based + time-based conditions) | @Mira + @Margaret | P1 | Follow-up automation tests + cadence escalation tier tests + template trigger tests + `npm run build` |
+| B | W18.1-P1-008 | Ejari + rent collection completion: Ejari registration tracking UI + overdue rent collection queue with notification | @Victoria + @Mira | P1 | Ejari tracking route tests + overdue-collection queue tests + portal UI tests + `npm run build` |
+
+### Session 3 Architectural Risks
+
+1. **RISK-S3-001 (HIGH) — IndexedDB schema versioning (P0-010):** `draftNotes` and `viewingFeedback` stores must use versioned upgrade path. Conflict resolution: "server-wins with local-delta merge". @Ruchi delivers spike document Day 1.
+2. **RISK-S3-002 (HIGH) — CadenceRule Prisma migration (P0-018):** New `CadenceRule` model required. No data model exists. @Margaret approves model before @Barbara runs migration. Additive-only — no breaking changes to Lead or Activity models.
+3. **RISK-S3-003 (MEDIUM) — Lead import dedup (P1-001):** Phone + email composite uniqueness check must align with Lead model. Batch cap: 500 rows per session.
+4. **RISK-S3-004 (MEDIUM) — Portal syndication API keys absent (P1-006):** `SYNDICATION_ENABLED=false` default required. Circuit-breaker pattern. No live API calls until keys provisioned.
+5. **RISK-S3-005 (MEDIUM) — Agent report query cost (P1-003):** Composite indexes on `Lead.assigneeId + createdAt` and `Viewing.agentId + createdAt` needed. @Barbara adds indexes in Prisma migration.
+6. **RISK-S3-006 (LOW) — Ejari field schema gap (P1-008):** `ejariNumber` and `ejariExpiry` absent from `Lease` model. Additive migration. @Victoria confirms field names before @Barbara runs migration.
+
+### Session 3 Exit Criteria
+
+- [ ] All 10 Session 3 tasks have passing tests per their respective validation gates
+- [ ] `npm run typecheck` — 0 errors (client + server)
+- [ ] `npm run build` — green
+- [ ] `npm run plans:validate` — 0 errors
+- [ ] `PROJECT_PROGRESS.md` updated with Session 3 delivery evidence
+- [ ] `DAILY_MILESTONE_TRACKER.md` updated
+- [ ] All Session 3 tasks marked ✅ in this backlog
+- [ ] **P0 exhaustion milestone achieved: 20/20 P0s complete**
+- [ ] Wave 18.1 promoted to ✅ Complete
+
+### 90-Day KPI Progress Check (Session 3 targets)
+
+| KPI | Target | S1+S2 State | S3 Expected |
+|-----|--------|-------------|-------------|
+| First response time | -40% | Measurable via leads timestamps | Enforced by cadence engine (P0-018) |
+| Follow-up adherence | +15% | Not enforced | Measurable via cadence engine (P0-018) |
+| Offline data loss incidents | 0% | Not protected | Protected by IndexedDB drafts (P0-010) |
+| Viewing conversion | +25% | Measurable via viewings/leads ratio | Field agent notes captured offline (P0-010) |
+| Lead import efficiency | New baseline | Manual only | Bulk import route via P1-001 |
+| Audit compliance coverage | +Coverage | Routes exist, UI partial | Full audit log UI via P1-002 |
+| Agent performance visibility | New baseline | Not measured | Report dashboard via P1-003 |
+| WA bot escalation quality | +Quality | Basic routing only | Confidence-gated with context handoff P1-004 |
