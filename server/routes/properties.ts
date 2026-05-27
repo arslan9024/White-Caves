@@ -127,6 +127,8 @@ router.get(
       handoverStage,
       permitStatus,
       feeBand,
+      // W18.1-P0-001 — Intent-aware ranking
+      intent,
     } = req.query as Record<string, string | undefined>;
 
     const {
@@ -241,7 +243,31 @@ router.get(
 
     const payload = {
       success: true,
-      data: properties,
+      data: (() => {
+        // W18.1-P0-001: Intent scoring (additive — never removes properties)
+        const VALID_INTENTS = new Set(['buy', 'rent', 'invest']);
+        return properties.map(p => {
+          let intentScore = 0;
+          if (intent !== undefined && VALID_INTENTS.has(intent)) {
+            if (intent === 'buy') {
+              if (p.status === 'available') {
+                intentScore = 2;
+              } else if (['villa', 'penthouse', 'apartment'].includes(p.type.toLowerCase())) {
+                intentScore = 1;
+              }
+            } else if (intent === 'rent') {
+              intentScore = (p.rentalPrice != null && p.rentalPrice > 0) ? 2 : 0;
+            } else if (intent === 'invest') {
+              if (p.featured) {
+                intentScore = 2;
+              } else if ((p.commissionPercent ?? 0) > 0) {
+                intentScore = 1;
+              }
+            }
+          }
+          return { ...p, intentScore };
+        });
+      })(),
       pagination: { page: pageNum, pageSize: limit, total, totalPages: Math.ceil(total / limit) },
     };
 

@@ -1,6 +1,7 @@
 /**
  * InteractiveMap — Unit Tests
  * Tests: rendering, mobile toggle, loading state, map visibility
+ * W18.1-P0-003: viewport persistence, Redux dispatch, new props
  */
 
 import { describe, it, expect, vi, beforeEach, beforeAll, afterAll } from 'vitest';
@@ -9,7 +10,17 @@ import React from 'react';
 import { Provider } from 'react-redux';
 import { configureStore } from '@reduxjs/toolkit';
 import propertyReducer from '../../store/propertySlice';
+import propertySearchReducer, { setActivePropertyId } from '../../redux/slices/propertySlice';
 import type { MapProperty } from './DubaiMap';
+
+// ── Mock store module (useAppDispatch) ────────────────────────────
+
+const mockDispatch = vi.fn();
+vi.mock('../../store/store', () => ({
+  useAppDispatch: () => mockDispatch,
+  useAppSelector: vi.fn(),
+  default: {},
+}));
 
 // ── Mock DubaiMap (lazy-loaded) ──────────────────────────────────
 
@@ -53,7 +64,7 @@ const MOCK_PROPERTIES: MapProperty[] = [
 
 const createStore = () =>
   configureStore({
-    reducer: { properties: propertyReducer },
+    reducer: { properties: propertyReducer, propertySearch: propertySearchReducer },
   });
 
 const renderInteractiveMap = (props: Partial<React.ComponentProps<typeof InteractiveMap>> = {}) => {
@@ -137,6 +148,72 @@ describe('InteractiveMap', () => {
       renderInteractiveMap({ mapVisible: true, onPropertyClick: onClick });
       fireEvent.click(screen.getByTestId('mock-dubai-map'));
       expect(onClick).toHaveBeenCalledWith(MOCK_PROPERTIES[0]);
+    });
+  });
+
+  // W18.1-P0-003 — Viewport persistence + Redux dispatch
+  describe('W18.1 — URL param handling', () => {
+    it('renders without crashing when URL has lat/lng/zoom params', () => {
+      window.history.replaceState(null, '', '?lat=25.2048&lng=55.2708&zoom=12');
+      expect(() => renderInteractiveMap()).not.toThrow();
+      window.history.replaceState(null, '', '?');
+    });
+
+    it('renders without crashing when URL has non-numeric lat/lng', () => {
+      window.history.replaceState(null, '', '?lat=notanumber&zoom=bad');
+      expect(() => renderInteractiveMap()).not.toThrow();
+      window.history.replaceState(null, '', '?');
+    });
+  });
+
+  describe('W18.1 — Map toggle button', () => {
+    it('renders map toggle button with aria-label', () => {
+      renderInteractiveMap();
+      expect(screen.getByRole('button', { name: /show map/i })).toHaveAttribute('aria-label');
+    });
+  });
+
+  describe('W18.1 — onPropertyClick callback', () => {
+    it('onPropertyClick callback is called when map is clicked', () => {
+      const onPropertyClick = vi.fn();
+      renderInteractiveMap({ mapVisible: true, onPropertyClick });
+      fireEvent.click(screen.getByTestId('mock-dubai-map'));
+      expect(onPropertyClick).toHaveBeenCalledOnce();
+      expect(onPropertyClick).toHaveBeenCalledWith(MOCK_PROPERTIES[0]);
+    });
+  });
+
+  describe('W18.1 — activePropertyId prop', () => {
+    it('activePropertyId prop is accepted without error', () => {
+      expect(() =>
+        renderInteractiveMap({ activePropertyId: 'prop-xyz', mapVisible: true }),
+      ).not.toThrow();
+    });
+
+    it('activePropertyId null is accepted without error', () => {
+      expect(() => renderInteractiveMap({ activePropertyId: null })).not.toThrow();
+    });
+  });
+
+  describe('W18.1 — onViewportChange prop', () => {
+    it('onViewportChange prop is accepted without error', () => {
+      const onViewportChange = vi.fn();
+      expect(() => renderInteractiveMap({ onViewportChange })).not.toThrow();
+    });
+  });
+
+  describe('W18.1 — Redux dispatch', () => {
+    it('dispatches setActivePropertyId to Redux when property clicked', () => {
+      mockDispatch.mockClear();
+      renderInteractiveMap({ mapVisible: true });
+      fireEvent.click(screen.getByTestId('mock-dubai-map'));
+      expect(mockDispatch).toHaveBeenCalledWith(setActivePropertyId('p1'));
+    });
+
+    it('does not dispatch before any click', () => {
+      mockDispatch.mockClear();
+      renderInteractiveMap();
+      expect(mockDispatch).not.toHaveBeenCalled();
     });
   });
 });
