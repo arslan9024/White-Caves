@@ -1,14 +1,14 @@
-/**
+﻿/**
  * Appointments API Routes
- * ─────────────────────────────────────────────────────────────────────────
+ * â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
  * Full CRUD for appointment scheduling (viewings, meetings, calls, signings).
  *
- * GET    /api/appointments           — List appointments (filtered, paginated)
- * GET    /api/appointments/upcoming  — Next 30 days only
- * GET    /api/appointments/:id       — Single appointment
- * POST   /api/appointments           — Create appointment
- * PATCH  /api/appointments/:id       — Update / reschedule / cancel
- * DELETE /api/appointments/:id       — Delete (admin only)
+ * GET    /api/appointments           â€” List appointments (filtered, paginated)
+ * GET    /api/appointments/upcoming  â€” Next 30 days only
+ * GET    /api/appointments/:id       â€” Single appointment
+ * POST   /api/appointments           â€” Create appointment
+ * PATCH  /api/appointments/:id       â€” Update / reschedule / cancel
+ * DELETE /api/appointments/:id       â€” Delete (admin only)
  */
 
 import { Router, Response } from 'express';
@@ -44,14 +44,17 @@ const getStoredGoogleCalendarTokens = async (): Promise<GoogleCalendarTokenSet |
   return setting.value as unknown as GoogleCalendarTokenSet;
 };
 
-const appendGoogleEventMetaToNotes = (currentNotes: string | null, eventId?: string | null): string => {
+const appendGoogleEventMetaToNotes = (
+  currentNotes: string | null,
+  eventId?: string | null
+): string => {
   if (!eventId) return currentNotes ?? '';
   const marker = `[GoogleEvent:${eventId}]`;
   if (!currentNotes) return marker;
   return currentNotes.includes(marker) ? currentNotes : `${currentNotes}\n${marker}`;
 };
 
-// ─── GET /api/appointments/calendar/google/auth-url ───────────────────────
+// â”€â”€â”€ GET /api/appointments/calendar/google/auth-url â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 router.get(
   '/calendar/google/auth-url',
   requirePermission('manage_appointments'),
@@ -61,7 +64,7 @@ router.get(
   })
 );
 
-// ─── GET /api/appointments/calendar/google/callback ───────────────────────
+// â”€â”€â”€ GET /api/appointments/calendar/google/callback â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 router.get(
   '/calendar/google/callback',
   requirePermission('manage_appointments'),
@@ -92,7 +95,7 @@ router.get(
   })
 );
 
-// ─── POST /api/appointments/:id/calendar-sync/google ──────────────────────
+// â”€â”€â”€ POST /api/appointments/:id/calendar-sync/google â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 router.post(
   '/:id/calendar-sync/google',
   requirePermission('manage_appointments'),
@@ -136,7 +139,7 @@ router.post(
   })
 );
 
-// ─── GET /api/appointments ───────────────────────────────────────────────
+// â”€â”€â”€ GET /api/appointments â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 router.get(
   '/',
   requirePermission('view_appointments'),
@@ -181,7 +184,7 @@ router.get(
   })
 );
 
-// ─── GET /api/appointments/upcoming ─────────────────────────────────────
+// â”€â”€â”€ GET /api/appointments/upcoming â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 router.get(
   '/upcoming',
   requirePermission('view_appointments'),
@@ -204,12 +207,11 @@ router.get(
   })
 );
 
-// ─── GET /api/appointments/:id ───────────────────────────────────────────
+// â”€â”€â”€ GET /api/appointments/:id â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 router.get(
   '/:id',
   requirePermission('view_appointments'),
   asyncHandler(async (req: Request, res: Response) => {
-    // @ts-expect-error -- pre-existing: req.params/query string|string[] narrowing
     validateIdParam(req.params.id, 'Appointment ID');
     const appt = await db.appointment.findUnique({ where: { id: req.params.id } });
     if (!appt) throw new AppError('Appointment not found', 404);
@@ -217,7 +219,7 @@ router.get(
   })
 );
 
-// ─── POST /api/appointments ──────────────────────────────────────────────
+// â”€â”€â”€ POST /api/appointments â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 router.post(
   '/',
   requirePermission('manage_appointments'),
@@ -291,7 +293,7 @@ router.post(
   })
 );
 
-// ─── PATCH /api/appointments/:id ─────────────────────────────────────────
+// â”€â”€â”€ PATCH /api/appointments/:id â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 router.patch(
   '/:id',
   requirePermission('manage_appointments'),
@@ -368,19 +370,22 @@ router.patch(
           description:
             scheduledAt !== undefined
               ? `Appointment "${updated.title}" rescheduled to ${new Date(scheduledAt).toLocaleDateString('en-AE')}`
-              : `Appointment "${updated.title}" status: ${existing.status} → ${status}`,
+              : `Appointment "${updated.title}" status: ${existing.status} â†’ ${status}`,
           userId: req.user?.id || null,
           leadId: updated.leadId || null,
         },
       });
     }
-    triggerLeadRescore(updated.leadId, statusChanged ? 'appointment_status_changed' : 'appointment_updated');
+    triggerLeadRescore(
+      updated.leadId,
+      statusChanged ? 'appointment_status_changed' : 'appointment_updated'
+    );
 
     res.status(200).json({ success: true, data: updated });
   })
 );
 
-// ─── DELETE /api/appointments/:id ────────────────────────────────────────
+// â”€â”€â”€ DELETE /api/appointments/:id â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 router.delete(
   '/:id',
   requireRole('owner', 'manager', 'admin'),

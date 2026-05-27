@@ -1,5 +1,6 @@
 {
-  "version": "2026.05.26-aegis-170-v3",
+  "version": "2026.05.27-aegis-vnext-v2",
+  "schemaVersion": "2.0.0",
   "readinessThresholdPct": 60,
   "readinessTargetPct": 90,
   "largeWaveMinReadinessPct": 90,
@@ -225,15 +226,41 @@
       "hardStopOnly": false
     }
   },
-  "autonomousDefault": false,
-  "hardStops": {
-    "stopOnTestFailure": true,
-    "stopOnLintFailure": true,
-    "stopOnBuildFailure": true,
-    "stopOnPolicyMismatch": true,
-    "stopOnPlansValidationFailure": true,
-    "stopOnSecurityCheckFailure": true
+  "compatibility": {
+    "legacyPolicyVersions": [
+      "2026.05.26-aegis-170-v3",
+      "2026.05.25-aegis-150-v2"
+    ],
+    "acceptLegacyLabels": true
   },
+  "rollout": {
+    "environment": "development",
+    "policyModeByEnv": {
+      "development": "shadow",
+      "staging": "canary",
+      "production": "stable"
+    },
+    "canaryPercentByEnv": {
+      "development": 100,
+      "staging": 20,
+      "production": 5
+    },
+    "shadowPolicyEvaluation": true,
+    "autoRollbackOnRegression": true,
+    "regressionThresholdPct": 10
+  },
+  "features": {
+    "killSwitchAll": false,
+    "graph": true,
+    "checkpoints": true,
+    "gates": true,
+    "rollback": true,
+    "tracing": true,
+    "budget": true,
+    "routing": true,
+    "benchmark": true
+  },
+  "autonomousDefault": false,
   "registryPath": "plans/SUBAGENT_REGISTRY_170.json",
   "agentMesh": {
     "totalAgents": 170,
@@ -296,5 +323,116 @@
       "autoMergeReleaseBranch": false,
       "requirePullRequestForRelease": true
     }
+  },
+  "workflowGraph": {
+    "enabled": true,
+    "steps": ["plan", "code", "verify", "merge-ready"],
+    "stepPatterns": {
+      "sequential": ["plan", "code", "verify", "merge-ready"],
+      "parallel": {
+        "code": ["frontend", "backend", "tests"]
+      },
+      "handoff": {
+        "plan→code": "@Ada→@Mira",
+        "code→verify": "@Mira→@Katherine",
+        "verify→merge-ready": "@Katherine→@Gwynne"
+      },
+      "group-review": {
+        "trigger": "high-risk",
+        "minRiskScore": 70,
+        "reviewers": ["@Ada", "@Katherine", "@Radia"],
+        "requiredApprovals": 2
+      }
+    },
+    "stateDir": "logs/orchestrator/workflow-state"
+  },
+  "checkpoints": {
+    "enabled": true,
+    "saveOnStepTransition": true,
+    "maxCheckpoints": 20,
+    "checkpointDir": "logs/orchestrator/checkpoints",
+    "autoCheckpointOnHardStop": true
+  },
+  "hardStops": {
+    "stopOnTestFailure": true,
+    "stopOnLintFailure": true,
+    "stopOnBuildFailure": true,
+    "stopOnPolicyMismatch": true,
+    "stopOnSecurityScanFailure": true,
+    "stopOnHighDiffRisk": true,
+    "diffRiskScoreThreshold": 80,
+    "flakyTestDetection": {
+      "enabled": true,
+      "failOnFlaky": false,
+      "warnThreshold": 2
+    }
+  },
+  "verification": {
+    "diffRiskWeights": {
+      "linesChangedScale": 500,
+      "highRiskPathWeight": 10
+    },
+    "tiers": {
+      "security": { "blockSeverities": ["critical"] },
+      "auth": { "blockSeverities": ["critical", "high"] },
+      "database": { "blockSeverities": ["critical", "high"] },
+      "payment": { "blockSeverities": ["critical", "high"] },
+      "general": { "blockSeverities": ["critical"] }
+    },
+    "exceptions": []
+  },
+  "rollback": {
+    "enabled": true,
+    "maxRetriesBeforeRollback": 2,
+    "autoRollbackOnMaxRetries": true,
+    "fallbackOwner": "@Grace",
+    "rollbackPlanDir": "logs/orchestrator/rollback-plans",
+    "requireRollbackPlanBeforeExecution": true
+  },
+  "observability": {
+    "tracing": {
+      "enabled": true,
+      "traceDir": "logs/orchestrator/traces",
+      "format": "jsonl",
+      "emitOnAgentTurn": true,
+      "emitOnHandoff": true,
+      "emitOnHardStop": true,
+      "retainDays": 30
+    },
+    "budgetLimits": {
+      "enabled": true,
+      "maxEstimatedTokensPerSession": 500000,
+      "maxRuntimeSeconds": 3600,
+      "maxRetriesPerSession": 10,
+      "hardCap": true,
+      "budgetDir": "logs/orchestrator/budget"
+    }
+  },
+  "benchmark": {
+    "enabled": true,
+    "cadence": "weekly",
+    "metricsDir": "logs/orchestrator/benchmarks",
+    "baselineFile": "logs/orchestrator/benchmarks/baseline.json",
+    "metrics": [
+      "taskSuccessRate",
+      "passRate",
+      "reworkRate",
+      "cycleTimeSec",
+      "rollbackRate"
+    ],
+    "regressionAlertThreshold": 0.1
+  },
+  "confidenceRouting": {
+    "enabled": true,
+    "autoApproveMinConfidence": 0.8,
+    "requireHumanApprovalMaxConfidence": 0.5,
+    "riskScoreLowMax": 30,
+    "riskScoreHighMin": 70,
+    "highRiskDomains": ["security", "auth", "payment", "database-migration"],
+    "routingStateDir": "logs/orchestrator/confidence",
+    "fallbackDecision": "human-approval",
+    "fallbackChain": ["human-approval", "approval", "escalate"],
+    "requireReviewMetadataOnUncertain": true,
+    "canaryPercentOverride": null
   }
 }

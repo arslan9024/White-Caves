@@ -87,6 +87,32 @@ function computeCompletenessScore(property: CompletenessProperty): {
   return { score, passed, failed };
 }
 
+function assertAvailabilityCompliance(params: {
+  currentStatus: string | null | undefined;
+  nextStatus: string | null | undefined;
+  nextMunicipalityNumber: string | null | undefined;
+  nextBuildingPermitNumber: string | null | undefined;
+}) {
+  const {
+    currentStatus,
+    nextStatus,
+    nextMunicipalityNumber,
+    nextBuildingPermitNumber,
+  } = params;
+
+  const movingToAvailable = nextStatus === 'available' && currentStatus !== 'available';
+  if (!movingToAvailable) {
+    return;
+  }
+
+  if (!nextMunicipalityNumber?.trim() || !nextBuildingPermitNumber?.trim()) {
+    throw new AppError(
+      'RERA compliance: municipalityNumber and buildingPermitNumber are required before setting status to available',
+      400
+    );
+  }
+}
+
 // ─── GET /api/properties ────────────────────────────────────────────────
 router.get(
   '/',
@@ -666,6 +692,15 @@ router.post(
       },
     });
 
+    await prisma.activity.create({
+      data: {
+        type: 'property',
+        action: 'created',
+        description: `Property created: ${property.title}`,
+        userId: req.user?.id || null,
+      },
+    });
+
     // Invalidate list cache on creation
     await cacheService.invalidate('properties:list:*');
 
@@ -728,11 +763,42 @@ router.put(
     if (body.landlordPassportMissing !== undefined) updateData.landlordPassportMissing = Boolean(body.landlordPassportMissing);
     if (body.ejariMissing !== undefined)            updateData.ejariMissing            = Boolean(body.ejariMissing);
 
+    const nextStatus =
+      body.status !== undefined ? String(body.status) : existing.status;
+    const nextMunicipalityNumber =
+      body.municipalityNumber !== undefined
+        ? (body.municipalityNumber ? String(body.municipalityNumber) : '')
+        : existing.municipalityNumber;
+    const nextBuildingPermitNumber =
+      body.buildingPermitNumber !== undefined
+        ? (body.buildingPermitNumber ? String(body.buildingPermitNumber) : '')
+        : existing.buildingPermitNumber;
+
+    assertAvailabilityCompliance({
+      currentStatus: existing.status,
+      nextStatus,
+      nextMunicipalityNumber,
+      nextBuildingPermitNumber,
+    });
+
     const property = await prisma.property.update({
       where: { id },
       data: updateData,
       include: {
         user: { select: { id: true, name: true, email: true } },
+      },
+    });
+
+    const statusChanged = nextStatus !== existing.status;
+
+    await prisma.activity.create({
+      data: {
+        type: 'property',
+        action: statusChanged ? 'status_changed' : 'updated',
+        description: statusChanged
+          ? `Property "${property.title}" status: ${existing.status} → ${nextStatus}`
+          : `Property "${property.title}" updated`,
+        userId: req.user?.id || null,
       },
     });
 
@@ -797,11 +863,42 @@ router.patch(
     if (body.verificationNotes !== undefined)  updateData.verificationNotes  = body.verificationNotes ? sanitizeString(String(body.verificationNotes)) : null;
     if (body.lastRefreshedAt !== undefined)    updateData.lastRefreshedAt    = body.lastRefreshedAt ? new Date(String(body.lastRefreshedAt)) : null;
 
+    const nextStatus =
+      body.status !== undefined ? String(body.status) : existing.status;
+    const nextMunicipalityNumber =
+      body.municipalityNumber !== undefined
+        ? (body.municipalityNumber ? String(body.municipalityNumber) : '')
+        : existing.municipalityNumber;
+    const nextBuildingPermitNumber =
+      body.buildingPermitNumber !== undefined
+        ? (body.buildingPermitNumber ? String(body.buildingPermitNumber) : '')
+        : existing.buildingPermitNumber;
+
+    assertAvailabilityCompliance({
+      currentStatus: existing.status,
+      nextStatus,
+      nextMunicipalityNumber,
+      nextBuildingPermitNumber,
+    });
+
     const property = await prisma.property.update({
       where: { id },
       data: updateData,
       include: {
         user: { select: { id: true, name: true, email: true } },
+      },
+    });
+
+    const statusChanged = nextStatus !== existing.status;
+
+    await prisma.activity.create({
+      data: {
+        type: 'property',
+        action: statusChanged ? 'status_changed' : 'updated',
+        description: statusChanged
+          ? `Property "${property.title}" status: ${existing.status} → ${nextStatus}`
+          : `Property "${property.title}" updated`,
+        userId: req.user?.id || null,
       },
     });
 

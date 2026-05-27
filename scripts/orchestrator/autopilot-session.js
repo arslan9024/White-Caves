@@ -34,6 +34,7 @@ import fs from 'fs';
 import path from 'path';
 import { spawnSync } from 'child_process';
 import { fileURLToPath } from 'url';
+import { createTraceContext, loadPolicy, runPolicyDiffGate } from './policy-loader.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -44,7 +45,6 @@ const LOGS_DIR      = path.join(ROOT, 'logs', 'orchestrator');
 const SCAN_REPORT   = path.join(LOGS_DIR, 'codebase-scan-report.json');
 const PRIORITY_FILE = path.join(LOGS_DIR, 'priority-order.json');
 const SNAPSHOT_FILE = path.join(LOGS_DIR, 'session-snapshot.json');
-const POLICY_FILE   = path.join(__dirname, 'policy.json');
 
 const SKIP_SCAN  = process.argv.includes('--skip-scan');
 const JSON_OUT   = process.argv.includes('--json');
@@ -79,14 +79,16 @@ function attemptAutomaticDiscovery() {
   return runNode(path.join(__dirname, 'discover-upgrade.js'));
 }
 
-function loadPolicy() {
-  const p = readJSON(POLICY_FILE);
-  return p || { minReadinessPercent: 60, approvalPhrase: '@Ada — Context Ready (60% Readiness) — Coding Phase Approved' };
-}
-
 // ─── Stop condition checks ─────────────────────────────────────────────────
-function checkHardStops(scanReport) {
+function checkHardStops(scanReport, policy, policyDiffGate) {
   const stops = [];
+  if (policyDiffGate && !policyDiffGate.passed) {
+    stops.push({
+      code: 'POLICY_DIFF',
+      message: `Critical policy diff detected. Add ACK file at ${policyDiffGate.ackPath} or revert critical policy changes.`,
+      priority: 'P0',
+    });
+  }
   if (!scanReport) return stops;
 
   if (!scanReport.summary.buildOk) {
@@ -99,6 +101,10 @@ function checkHardStops(scanReport) {
     stops.push({ code: 'SECURITY', message: `${scanReport.securityFlags.length} potential security issue(s) detected`, priority: 'P0' });
   }
 
+  if (policy?.hardStops?.stopOnPolicyMismatch && policyDiffGate && policyDiffGate.requiresAck && !policyDiffGate.hasAck) {
+    stops.push({ code: 'POLICY_ACK_REQUIRED', message: 'Policy diff ack file is required for critical policy changes', priority: 'P0' });
+  }
+
   return stops;
 }
 
@@ -107,7 +113,7 @@ function loadLastSnapshot() {
   return readJSON(SNAPSHOT_FILE) || { date: null, sessionId: null, completedTaskIds: [], passCount: 0, failCount: 0, doneCount: 0 };
 }
 
-function buildSnapshot(sessionId, dispatchPacket, scanReport, previousSnapshot) {
+function buildSnapshot(sessionId, dispatchPacket, scanReport, previousSnapshot, hardStops) {
   return {
     date:             SESSION_START,
     sessionId,
@@ -115,7 +121,7 @@ function buildSnapshot(sessionId, dispatchPacket, scanReport, previousSnapshot) 
     loopIteration:    (previousSnapshot.loopIteration || 0) + 1,
     scanReportDate:   scanReport ? scanReport.scanDate : null,
     currentTask:      dispatchPacket ? { id: dispatchPacket.taskId, agent: dispatchPacket.agent } : null,
-    hardStops:        scanReport ? checkHardStops(scanReport) : [],
+    hardStops:        scanReport ? hardStops : [],
     // These are updated by session-end.ps1
     completedTaskIds: previousSnapshot.completedTaskIds || [],
     passCount:        previousSnapshot.passCount  || 0,
@@ -126,7 +132,7 @@ function buildSnapshot(sessionId, dispatchPacket, scanReport, previousSnapshot) 
 }
 
 // ─── Research Phase Summary ────────────────────────────────────────────────
-function buildResearchSummary(scanReport) {
+function buildResearchSummary(scanReport, hardStops) {
   if (!scanReport) return { available: false };
 
   const { summary, priorityList, openWaves } = scanReport;
@@ -145,7 +151,7 @@ function buildResearchSummary(scanReport) {
     readyWaves:       (openWaves || []).filter(w => w.status && w.status.includes('🟢')).map(w => `Wave ${w.wave}: ${w.objective}`),
     incompleteDocs:   summary.incompleteDocs,
     topCodeIssues:    topIssues,
-    hardStops:        checkHardStops(scanReport),
+    hardStops,
   };
 }
 
@@ -154,7 +160,17 @@ async function main() {
   const sep   = '═'.repeat(72);
   const sep2  = '─'.repeat(72);
   const policy = loadPolicy();
+  const trace = createTraceContext(policy, { component: 'autopilot-session' });
+  process.env.AEGIS_TRACE_ID = trace.traceId;
+  process.env.AEGIS_SESSION_ID = trace.sessionId;
+  const policyDiffGate = runPolicyDiffGate(policy);
   const previousSnapshot = loadLastSnapshot();
+
+  if (policy.hardStops?.stopOnPolicyMismatch && !policyDiffGate.passed) {
+    console.error('Policy diff gate failed before session start.');
+    console.error(`Acknowledge critical policy diffs by creating: ${policyDiffGate.ackPath}`);
+    process.exit(2);
+  }
 
   if (!JSON_OUT) {
     console.log(`\n${sep}`);
@@ -162,6 +178,7 @@ async function main() {
     console.log(`  Session  : ${SESSION_ID}`);
     console.log(`  Loop     : #${(previousSnapshot.loopIteration || 0) + 1}`);
     console.log(`  Started  : ${SESSION_START}`);
+    console.log(`  Trace ID : ${trace.traceId}`);
     if (previousSnapshot.sessionId) {
       console.log(`  Previous : ${previousSnapshot.sessionId}`);
     }
@@ -195,7 +212,7 @@ async function main() {
   let priorityOrder = readJSON(PRIORITY_FILE);
 
   // ── PHASE 3: Hard Stop Check ──────────────────────────────────────────
-  const hardStops = checkHardStops(scanReport);
+  const hardStops = checkHardStops(scanReport, policy, policyDiffGate);
   if (hardStops.length > 0) {
     if (!JSON_OUT) {
       console.log(`\n  🚨  HARD STOP CONDITIONS DETECTED:\n`);
@@ -206,7 +223,7 @@ async function main() {
 
   // ── PHASE 4: Build Dispatch Packet ───────────────────────────────────
   let dispatchPacket = priorityOrder ? priorityOrder.dispatchPacket : null;
-  const researchSummary = buildResearchSummary(scanReport);
+  const researchSummary = buildResearchSummary(scanReport, hardStops);
 
   // ── Record session snapshot ───────────────────────────────────────────
   if (!dispatchPacket) {
@@ -231,7 +248,7 @@ async function main() {
     }
   }
 
-  const snapshot = buildSnapshot(SESSION_ID, dispatchPacket, scanReport, previousSnapshot);
+  const snapshot = buildSnapshot(SESSION_ID, dispatchPacket, scanReport, previousSnapshot, hardStops);
   if (!DRY_RUN) {
     writeJSON(SNAPSHOT_FILE, snapshot);
   }
@@ -241,9 +258,14 @@ async function main() {
     sessionId:       SESSION_ID,
     sessionStart:    SESSION_START,
     loopIteration:   snapshot.loopIteration,
+    trace,
     policy: {
-      minReadiness:  policy.minReadinessPercent,
+      minReadiness:  policy.readinessThresholdPct ?? policy.minReadinessPercent ?? 60,
       approvalPhrase: policy.approvalPhrase,
+      version: policy.version,
+      schemaVersion: policy.schemaVersion,
+      rolloutEnvironment: policy.rollout?.environment,
+      policyDiffGate,
     },
     research:        researchSummary,
     hardStops,

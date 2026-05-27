@@ -4,7 +4,11 @@
  * Uses express-rate-limit with configurable windows per route type
  */
 
-import rateLimit, { ipKeyGenerator, type RateLimitRequestHandler } from 'express-rate-limit';
+import rateLimit, {
+  ipKeyGenerator,
+  type RateLimitRequestHandler,
+  type Store,
+} from 'express-rate-limit';
 
 interface FirebaseSyncBody {
   firebaseUid?: unknown;
@@ -13,7 +17,7 @@ interface FirebaseSyncBody {
 
 // Dev-safe default: use the built-in in-memory store unless a Redis-backed
 // store is explicitly wired back in through dependency installation.
-let sharedRateLimitStore: RateLimitRequestHandler['store'] | undefined;
+let sharedRateLimitStore: Store | undefined;
 
 const resolveFirebaseIdentity = (body: unknown): string => {
   if (!body || typeof body !== 'object') {
