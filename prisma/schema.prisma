@@ -316,7 +316,12 @@ model NadiaConversation {
   routedAt    DateTime?
   closedAt    DateTime?
   closedReason String?  // why conversation closed
-  
+
+  // P0-017: CRM lead linkage (unique: one lead per conversation)
+  leadId           String?   @db.ObjectId @unique
+  convertedAt      DateTime? // when convert-to-lead was triggered
+  convertedByPhone String?   // agent phone who triggered conversion
+
   // Metadata
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt

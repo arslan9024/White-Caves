@@ -1164,4 +1164,75 @@ router.get(
   })
 );
 
+// ─── POST /api/nadia/conversations/:conversationId/convert-to-lead ──────────
+// P0-017: One-click WhatsApp conversation → CRM lead conversion
+// Idempotent: returns existing lead if already converted.
+router.post(
+  '/conversations/:conversationId/convert-to-lead',
+  requirePermission('manage_leads'),
+  asyncHandler(async (req: Request, res: Response) => {
+    const { conversationId } = req.params as { conversationId: string };
+
+    // 1. Fetch conversation
+    const conversation = await prisma.nadiaConversation.findUnique({
+      where: { id: conversationId },
+      include: { queue: true, messages: { orderBy: { timestamp: 'asc' }, take: 1 } },
+    });
+    if (!conversation) throw new AppError('Conversation not found', 404);
+
+    // 2. Idempotency: already converted
+    if (conversation.leadId) {
+      const existingLead = await prisma.lead.findUnique({ where: { id: conversation.leadId } });
+      return res.status(200).json({ success: true, data: existingLead, alreadyConverted: true });
+    }
+
+    // 3. Resolve ownership
+    let assignedToId: string | null = null;
+    if (conversation.agentPhone) {
+      const agent = await prisma.user.findFirst({ where: { phone: conversation.agentPhone } });
+      if (agent) assignedToId = agent.id;
+    }
+    if (!assignedToId && req.user?.id) assignedToId = req.user.id;
+
+    // 4. Create lead
+    const lead = await prisma.lead.create({
+      data: {
+        name: `WA: ${conversation.customerPhone}`,
+        phone: conversation.customerPhone,
+        source: 'whatsapp',
+        status: 'new',
+        score: conversation.leadScore,
+        tags: ['whatsapp_conversion'],
+        notes: `Converted from WhatsApp conversation ${conversationId}. Intent: ${conversation.intent ?? 'unknown'}`,
+        assignedToId,
+        createdById: req.user?.id ?? null,
+      },
+    });
+
+    // 5. Link lead back to conversation
+    await prisma.nadiaConversation.update({
+      where: { id: conversationId },
+      data: {
+        leadId: lead.id,
+        convertedAt: new Date(),
+        convertedByPhone: conversation.agentPhone ?? null,
+      },
+    });
+
+    // 6. Activity log
+    await prisma.activity.create({
+      data: {
+        type: 'lead',
+        action: 'created',
+        description: `Lead created from WhatsApp conversation (${conversation.customerPhone})`,
+        userId: req.user?.id ?? null,
+        leadId: lead.id,
+        metadata: { conversationId, source: 'whatsapp_conversion' },
+      },
+    });
+
+    res.status(201).json({ success: true, data: lead, alreadyConverted: false });
+  })
+);
+
 export default router;

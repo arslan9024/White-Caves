@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 
 interface KPI {
@@ -11,7 +11,7 @@ interface KPI {
   higherIsBetter: boolean;
 }
 
-const KPIS: KPI[] = [
+const STATIC_KPIS: KPI[] = [
   { name: 'First Response Time',      target: '<2h',       targetNum: 2,   current: 4.2, unit: 'h',    trend: '↓', higherIsBetter: false },
   { name: 'Viewing Conversion Rate',  target: '35%',       targetNum: 35,  current: 18,  unit: '%',    trend: '↑', higherIsBetter: true  },
   { name: 'Offer-to-Viewing Ratio',   target: '25%',       targetNum: 25,  current: 11,  unit: '%',    trend: '↑', higherIsBetter: true  },
@@ -46,6 +46,31 @@ const stagger = { hidden: {}, visible: { transition: { staggerChildren: 0.06 } }
 const item    = { hidden: { opacity: 0, y: 12 }, visible: { opacity: 1, y: 0, transition: { duration: 0.3 } } };
 
 export default function KPIBaselineTracker() {
+  const [kpis, setKpis] = useState<KPI[]>(STATIC_KPIS);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    let active = true;
+    fetch('/api/dashboard/analytics/kpi-baseline')
+      .then(r => r.ok ? r.json() : Promise.reject(r.status))
+      .then((json: { success: boolean; data: { kpis: Array<{ name: string; current: number; target: number; unit: string; trend: string; higherIsBetter: boolean }> } }) => {
+        if (!active || !json?.success) return;
+        const mapped: KPI[] = json.data.kpis.map(k => ({
+          name: k.name,
+          current: k.current,
+          targetNum: k.target,
+          target: `${k.target}${k.unit}`,
+          unit: k.unit,
+          trend: (k.trend as '↑' | '↓' | '→') ?? '→',
+          higherIsBetter: k.higherIsBetter,
+        }));
+        setKpis(mapped);
+      })
+      .catch(() => { /* keep static fallback */ })
+      .finally(() => { if (active) setLoading(false); });
+    return () => { active = false; };
+  }, []);
+
   return (
     <div className="bg-[#0A0A0A] min-h-screen p-6">
       <div className="mb-6">
@@ -53,50 +78,58 @@ export default function KPIBaselineTracker() {
         <p className="text-white/50 text-sm mt-1">Wave 18.1 — 90-day baseline vs. targets</p>
       </div>
 
-      <motion.div
-        className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4"
-        variants={stagger} initial="hidden" animate="visible"
-        aria-label="KPI baseline cards"
-      >
-        {KPIS.map(kpi => {
-          const pct   = getProgress(kpi);
-          const color = barColor(pct);
-          return (
-            <motion.div key={kpi.name} variants={item}
-              className="backdrop-blur-sm bg-white/5 border border-white/10 rounded-2xl p-4 flex flex-col gap-3">
-              <div className="flex items-start justify-between">
-                <p className="text-white/70 text-sm font-medium leading-tight">{kpi.name}</p>
-                <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${trendClass(kpi)}`}>
-                  {kpi.trend}
-                </span>
-              </div>
-
-              <div>
-                <p className="text-white text-xl font-bold">{kpi.current}{kpi.unit}</p>
-                <p className="text-white/30 text-xs mt-0.5">Target: {kpi.target}</p>
-              </div>
-
-              <div>
-                <div className="flex justify-between text-xs text-white/30 mb-1">
-                  <span>{Math.round(pct)}%</span>
-                  <span>100%</span>
+      {loading ? (
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4" aria-label="KPI baseline cards">
+          {Array.from({ length: 8 }).map((_, i) => (
+            <div key={i} className="backdrop-blur-sm bg-white/5 border border-white/10 rounded-2xl p-4 h-28 animate-pulse" />
+          ))}
+        </div>
+      ) : (
+        <motion.div
+          className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4"
+          variants={stagger} initial="hidden" animate="visible"
+          aria-label="KPI baseline cards"
+        >
+          {kpis.map(kpi => {
+            const pct   = getProgress(kpi);
+            const color = barColor(pct);
+            return (
+              <motion.div key={kpi.name} variants={item}
+                className="backdrop-blur-sm bg-white/5 border border-white/10 rounded-2xl p-4 flex flex-col gap-3">
+                <div className="flex items-start justify-between">
+                  <p className="text-white/70 text-sm font-medium leading-tight">{kpi.name}</p>
+                  <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${trendClass(kpi)}`}>
+                    {kpi.trend}
+                  </span>
                 </div>
-                <div className="w-full bg-white/10 rounded-full h-2">
-                  <div
-                    className="h-2 rounded-full transition-all duration-700"
-                    style={{ width: `${pct}%`, backgroundColor: color }}
-                    role="progressbar"
-                    aria-valuenow={pct}
-                    aria-valuemin={0}
-                    aria-valuemax={100}
-                    aria-label={`${kpi.name} progress: ${Math.round(pct)}%`}
-                  />
+
+                <div>
+                  <p className="text-white text-xl font-bold">{kpi.current}{kpi.unit}</p>
+                  <p className="text-white/30 text-xs mt-0.5">Target: {kpi.target}</p>
                 </div>
-              </div>
-            </motion.div>
-          );
-        })}
-      </motion.div>
+
+                <div>
+                  <div className="flex justify-between text-xs text-white/30 mb-1">
+                    <span>{Math.round(pct)}%</span>
+                    <span>100%</span>
+                  </div>
+                  <div className="w-full bg-white/10 rounded-full h-2">
+                    <div
+                      className="h-2 rounded-full transition-all duration-700"
+                      style={{ width: `${pct}%`, backgroundColor: color }}
+                      role="progressbar"
+                      aria-valuenow={pct}
+                      aria-valuemin={0}
+                      aria-valuemax={100}
+                      aria-label={`${kpi.name} progress: ${Math.round(pct)}%`}
+                    />
+                  </div>
+                </div>
+              </motion.div>
+            );
+          })}
+        </motion.div>
+      )}
     </div>
   );
 }
