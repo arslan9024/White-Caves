@@ -113,7 +113,7 @@ function flattenObject(obj, prefix = '') {
     if (value && typeof value === 'object' && !Array.isArray(value)) {
       Object.assign(out, flattenObject(value, full));
     } else {
-      out[full] = value;
+      out[full] = Array.isArray(value) ? JSON.stringify(value) : value;
     }
   }
   return out;
