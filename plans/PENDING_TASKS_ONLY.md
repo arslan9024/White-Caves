@@ -32,6 +32,7 @@ Advance only when the prior wave is green, the readiness gate is satisfied, and 
 | S9 | 16 | Security hardening + API versioning | ✅ Green | @S5 + @Radia + @Mira | S8 green + readiness 60% + @Ada approval phrase |
 | S10 | 17 | Full UI/UX luxury upgrade (design tokens + glassmorphism + animations + mobile + PWA + WCAG 2.2) | ✅ Green | @Una + @Lea + @Tracy + @Africa + @Cyra + @Katherine | Wave 17 implementation + CI Lighthouse thresholds + accessibility/mobile/PWA checks complete |
 | S11 | 18 | Workflow parity audit + benchmark gap backlog | ✅ Green | @Ada + @Margaret + @Mira + @Katherine | Wave 18 parity matrix finalized + canonical queue updates + `npm run plans:validate` |
+| S12 | 18.1 | Competitor parity execution — Session 1 ✅ complete, Session 2 🟡 in progress | 🟡 In Progress | @Ada + @Mira + @Una + @Tracy + @Katherine + @Sofia | Session 1 tests green + Session 2 plan approved by @Ada 2026-05-27 |
 
 ## Completed Stream History
 
@@ -55,6 +56,7 @@ Advance only when the prior wave is green, the readiness gate is satisfied, and 
 | S6 | Wave 13 real-time notifications + media + virtual tour | ✅ Complete |
 | S10 | Wave 17 full UI/UX luxury upgrade | ✅ Complete |
 | S11 | Wave 18 workflow parity audit + gap backlog generation | ✅ Complete |
+| S11-S1 | Wave 18.1 Session 1: Lead workflow automation + tenant/landlord portals | ✅ Complete |
 
 ## S2 — Wave 09: UX Hardening (Complete)
 
@@ -215,6 +217,26 @@ Key closures:
 2. Recalculate Included/Partial/Missing/Unknown counts.
 3. Push new deltas into upcoming implementation backlog.
 4. Run `npm run plans:validate` after queue/tracker updates.
+
+---
+
+## S12 — Wave 18.1 Session 2: Competitor Parity Execution
+
+**Source:** [`WAVE_18_1_IMPLEMENTATION_BACKLOG.md`](./waves/WAVE_18_1_IMPLEMENTATION_BACKLOG.md) Session 2 Plan
+**Entry Gate:** Session 1 evidence confirmed + @Ada architecture plan approved 2026-05-27
+
+| Task | Scope | Priority | Owner | Validation |
+| --- | --- | --- | --- | --- |
+| W18.1-P0-001 | Intent-aware ranking for buy/rent/invest | P0 | @Mira + @Una | propertySlice tests + build |
+| W18.1-P0-002 | Advanced search facets (furnishing, handover, permit, fee) | P0 | @Mira + @Una + @Tracy | FilterPanel tests + API tests + build |
+| W18.1-P0-003 | Map/list synchronization + viewport persistence | P0 | @Tracy + @Mira | InteractiveMap tests + Playwright |
+| W18.1-P0-009 | Mobile CRM command bar (top 8 field actions) | P0 | @Tracy + @Una | MobileCRMCommandBar tests + Playwright mobile |
+| W18.1-P0-011 | Listing completeness scoring + remediation checklist | P0 | @Mira + @Una | completenessScorer tests + widget tests |
+| W18.1-P0-012 | Verification/freshness badges | P0 | @Una + @Mira | badge component tests + build |
+| W18.1-P0-013 | KYC gate before high-risk transactions | P0 | @Mira + @Sofia + @Katherine | kyc-gate tests + typecheck |
+| W18.1-P0-017 | WhatsApp conversation→lead conversion | P0 | @Mira + @Una | nadia route tests + ConversationsTab tests |
+| W18.1-P0-019 | Funnel economics dashboard (API wire-up) | P0 | @Mira + @Katherine | FunnelEconomicsDashboard tests |
+| W18.1-P0-020 | KPI baseline tracker (API wire-up) | P0 | @Mira + @Katherine | KPIBaselineTracker tests |
 
 ---
 
