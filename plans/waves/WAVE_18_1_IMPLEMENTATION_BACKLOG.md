@@ -117,8 +117,9 @@ Weighted score per task:
 ## Session 2 Plan
 
 **Session:** 2
-**Status:** 🟡 In Progress
+**Status:** ✅ Complete
 **Date Planned:** 2026-05-27
+**Date Completed:** 2026-05-27
 **Entry Gate:** Session 1 evidence confirmed ✅ — PROJECT_PROGRESS.md updated ✅
 
 ### Entry Gate Confirmation
@@ -138,16 +139,16 @@ Weighted score per task:
 
 | Batch | ID | Task | Owner(s) | Priority | Validation Gate |
 |-------|-----|------|----------|----------|-----------------|
-| A | W18.1-P0-001 | Intent-aware ranking (buy/rent/invest) | @Mira + @Una | P0 | propertySlice tests + build |
-| A | W18.1-P0-002 | Advanced search facets (furnishing, handover, permit, fee) | @Mira + @Una + @Tracy | P0 | PropertyFilterPanel tests + API filter tests + build |
-| A | W18.1-P0-003 | Map/list sync + viewport persistence | @Tracy + @Mira | P0 | InteractiveMap tests + Playwright map suite + build |
-| B | W18.1-P0-011 | Listing completeness scoring + remediation checklist | @Mira + @Una | P0 | completenessScorer tests + widget tests + build |
-| B | W18.1-P0-012 | Verification/freshness badges with evidence fields | @Una + @Mira | P0 | VerificationBadge tests + FreshnessBadge tests + build |
-| C | W18.1-P0-017 | One-click WhatsApp conversation→lead conversion + ownership routing | @Mira + @Una | P0 | nadia convert-to-lead tests + ConversationsTab tests + build |
-| C | W18.1-P0-019 | Funnel economics dashboard (API wire-up) | @Mira + @Katherine | P0 | FunnelEconomicsDashboard tests + reporting.ts tests + build |
-| C | W18.1-P0-020 | Baseline KPI tracker (API wire-up) | @Mira + @Katherine | P0 | KPIBaselineTracker tests + build |
-| D | W18.1-P0-013 | KYC gate before high-risk transaction transitions | @Mira + @Sofia + @Katherine | P0 | kyc-gate tests + transactions.test.ts + typecheck + build |
-| D | W18.1-P0-009 | Mobile-first CRM command bar (top 8 field actions) | @Tracy + @Una | P0 | MobileCRMCommandBar tests + Playwright mobile suite + build |
+| A | W18.1-P0-001 | ✅ Intent-aware ranking (buy/rent/invest) | @Mira + @Una | P0 | propertySlice tests + build |
+| A | W18.1-P0-002 | ✅ Advanced search facets (furnishing, handover, permit, fee) | @Mira + @Una + @Tracy | P0 | PropertyFilterPanel tests + API filter tests + build |
+| A | W18.1-P0-003 | ✅ Map/list sync + viewport persistence | @Tracy + @Mira | P0 | InteractiveMap tests + Playwright map suite + build |
+| B | W18.1-P0-011 | ✅ Listing completeness scoring + remediation checklist | @Mira + @Una | P0 | completenessScorer tests + widget tests + build |
+| B | W18.1-P0-012 | ✅ Verification/freshness badges with evidence fields | @Una + @Mira | P0 | VerificationBadge tests + FreshnessBadge tests + build |
+| C | W18.1-P0-017 | ✅ One-click WhatsApp conversation→lead conversion + ownership routing | @Mira + @Una | P0 | nadia convert-to-lead tests + ConversationsTab tests + build |
+| C | W18.1-P0-019 | ✅ Funnel economics dashboard (API wire-up) | @Mira + @Katherine | P0 | FunnelEconomicsDashboard tests + reporting.ts tests + build |
+| C | W18.1-P0-020 | ✅ Baseline KPI tracker (API wire-up) | @Mira + @Katherine | P0 | KPIBaselineTracker tests + build |
+| D | W18.1-P0-013 | ✅ KYC gate before high-risk transaction transitions | @Mira + @Sofia + @Katherine | P0 | kyc-gate tests + transactions.test.ts + typecheck + build |
+| D | W18.1-P0-009 | ✅ Mobile-first CRM command bar (top 8 field actions) | @Tracy + @Una | P0 | MobileCRMCommandBar tests + Playwright mobile suite + build |
 
 ### Tasks Deferred to Session 3
 
