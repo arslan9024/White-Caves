@@ -17,17 +17,13 @@ import { readFileSync, writeFileSync, mkdirSync, existsSync, appendFileSync, rea
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
 import { randomUUID } from 'crypto';
+import { createTraceContext, isFeatureEnabled, loadPolicy } from './policy-loader.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 const ROOT = join(__dirname, '..', '..');
-const POLICY_PATH = join(__dirname, 'policy.json');
-
-function readPolicy() {
-  return JSON.parse(readFileSync(POLICY_PATH, 'utf8'));
-}
-
+let globalPolicy = null;
 function getTraceDir(policy) {
   const dir = join(ROOT, policy.observability?.tracing?.traceDir ?? 'logs/orchestrator/traces');
   mkdirSync(dir, { recursive: true });
@@ -61,9 +57,12 @@ function appendRecord(traceFile, record) {
 }
 
 function makeSpanRecord(spanId, name, startTime, endTime, status, attrs) {
+  const trace = createTraceContext(globalPolicy, { component: 'trace-emitter' });
   return {
     type: 'span',
-    traceId: process.env.AEGIS_TRACE_ID ?? 'aegis-session',
+    traceId: process.env.AEGIS_TRACE_ID ?? trace.traceId,
+    policyVersion: trace.policyVersion,
+    policySchemaVersion: trace.policySchemaVersion,
     spanId,
     name,
     startTime,
@@ -76,9 +75,12 @@ function makeSpanRecord(spanId, name, startTime, endTime, status, attrs) {
 }
 
 function makeEventRecord(type, data) {
+  const trace = createTraceContext(globalPolicy, { component: 'trace-emitter' });
   return {
     type: 'event',
-    traceId: process.env.AEGIS_TRACE_ID ?? 'aegis-session',
+    traceId: process.env.AEGIS_TRACE_ID ?? trace.traceId,
+    policyVersion: trace.policyVersion,
+    policySchemaVersion: trace.policySchemaVersion,
     eventType: type,
     timestamp: new Date().toISOString(),
     data: data ?? {},
@@ -200,9 +202,10 @@ function printStatus(policy) {
 // ── CLI ───────────────────────────────────────────────────────────────────────
 
 const args = process.argv.slice(2);
-const policy = readPolicy();
+const policy = loadPolicy();
+globalPolicy = policy;
 
-if (!policy.observability?.tracing?.enabled) {
+if (!policy.observability?.tracing?.enabled || !isFeatureEnabled(policy, 'tracing')) {
   console.warn('Tracing is disabled in policy.json (observability.tracing.enabled=false)');
   process.exit(0);
 }

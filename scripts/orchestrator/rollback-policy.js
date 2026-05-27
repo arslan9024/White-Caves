@@ -16,17 +16,12 @@ import { readFileSync, writeFileSync, mkdirSync, existsSync } from 'fs';
 import { execSync } from 'child_process';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
+import { createTraceContext, isFeatureEnabled, loadPolicy } from './policy-loader.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 const ROOT = join(__dirname, '..', '..');
-const POLICY_PATH = join(__dirname, 'policy.json');
-
-function readPolicy() {
-  return JSON.parse(readFileSync(POLICY_PATH, 'utf8'));
-}
-
 function getRollbackDir(policy) {
   const dir = join(ROOT, policy.rollback?.rollbackPlanDir ?? 'logs/orchestrator/rollback-plans');
   mkdirSync(dir, { recursive: true });
@@ -81,6 +76,7 @@ function createRollbackPlan(taskId, policy) {
   const fallbackOwner = policy.rollback?.fallbackOwner ?? '@Grace';
 
   const plan = {
+    trace: createTraceContext(policy, { component: 'rollback-policy', taskId }),
     taskId,
     createdAt: new Date().toISOString(),
     gitHeadSha: headSha,
@@ -238,9 +234,9 @@ function printStatus(taskId, policy) {
 // ── CLI ───────────────────────────────────────────────────────────────────────
 
 const args = process.argv.slice(2);
-const policy = readPolicy();
+const policy = loadPolicy();
 
-if (!policy.rollback?.enabled) {
+if (!policy.rollback?.enabled || !isFeatureEnabled(policy, 'rollback')) {
   console.warn('Rollback policy is disabled in policy.json (rollback.enabled=false)');
   process.exit(0);
 }

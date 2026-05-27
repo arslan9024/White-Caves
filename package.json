@@ -266,7 +266,10 @@
     "aegis:bench:status": "node scripts/orchestrator/benchmark.js --status",
     "aegis:route:evaluate": "node scripts/orchestrator/confidence-router.js --evaluate",
     "aegis:route:batch": "node scripts/orchestrator/confidence-router.js --batch",
-    "aegis:route:status": "node scripts/orchestrator/confidence-router.js --status"
+    "aegis:route:status": "node scripts/orchestrator/confidence-router.js --status",
+    "aegis:policy:gate": "node scripts/orchestrator/policy-gate.js",
+    "aegis:health": "node scripts/orchestrator/aegis-health.js",
+    "aegis:health:json": "node scripts/orchestrator/aegis-health.js --json"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"

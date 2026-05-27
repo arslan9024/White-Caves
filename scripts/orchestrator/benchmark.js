@@ -17,17 +17,12 @@
 import { readFileSync, writeFileSync, mkdirSync, existsSync } from 'fs';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
+import { isFeatureEnabled, loadPolicy } from './policy-loader.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 const ROOT = join(__dirname, '..', '..');
-const POLICY_PATH = join(__dirname, 'policy.json');
-
-function readPolicy() {
-  return JSON.parse(readFileSync(POLICY_PATH, 'utf8'));
-}
-
 function getBenchDir(policy) {
   const dir = join(ROOT, policy.benchmark?.metricsDir ?? 'logs/orchestrator/benchmarks');
   mkdirSync(dir, { recursive: true });
@@ -232,9 +227,9 @@ function printStatus(policy) {
 // ── CLI ───────────────────────────────────────────────────────────────────────
 
 const args = process.argv.slice(2);
-const policy = readPolicy();
+const policy = loadPolicy();
 
-if (!policy.benchmark?.enabled) {
+if (!policy.benchmark?.enabled || !isFeatureEnabled(policy, 'benchmark')) {
   console.warn('Benchmark suite is disabled in policy.json (benchmark.enabled=false)');
   process.exit(0);
 }

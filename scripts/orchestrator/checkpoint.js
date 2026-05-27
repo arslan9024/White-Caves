@@ -16,17 +16,12 @@ import { readFileSync, writeFileSync, mkdirSync, existsSync, readdirSync } from 
 import { execSync } from 'child_process';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
+import { createTraceContext, isFeatureEnabled, loadPolicy } from './policy-loader.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 const ROOT = join(__dirname, '..', '..');
-const POLICY_PATH = join(__dirname, 'policy.json');
-
-function readPolicy() {
-  return JSON.parse(readFileSync(POLICY_PATH, 'utf8'));
-}
-
 function getCheckpointDir(policy) {
   const dir = join(ROOT, policy.checkpoints?.checkpointDir ?? 'logs/orchestrator/checkpoints');
   mkdirSync(dir, { recursive: true });
@@ -122,6 +117,11 @@ function saveCheckpoint(label, metaArg, policy) {
     gitHeadSha: headSha,
     gitBranch: branch,
     stashRef,
+    compatibility: {
+      policyVersion: policy.version,
+      policySchemaVersion: policy.schemaVersion,
+      workflowStepsSignature: JSON.stringify(policy.workflowGraph?.steps ?? []),
+    },
     meta: { ...extra, session: sessionMeta },
   };
 
@@ -160,7 +160,37 @@ function listCheckpoints(policy) {
   });
 }
 
-function resumeCheckpoint(label, policy) {
+function getWorkflowState(policy) {
+  const stateFile = join(ROOT, policy.workflowGraph?.stateDir ?? 'logs/orchestrator/workflow-state', 'current-state.json');
+  if (!existsSync(stateFile)) return null;
+  try {
+    return JSON.parse(readFileSync(stateFile, 'utf8'));
+  } catch {
+    return null;
+  }
+}
+
+function validateCheckpointCompatibility(cp, policy, allowIncompatible) {
+  const saved = cp.compatibility ?? {};
+  const currentStepsSig = JSON.stringify(policy.workflowGraph?.steps ?? []);
+  const mismatch = saved.workflowStepsSignature && saved.workflowStepsSignature !== currentStepsSig;
+  if (mismatch && !allowIncompatible) {
+    console.error('Checkpoint/workflow incompatibility detected.');
+    console.error(`Saved steps: ${saved.workflowStepsSignature}`);
+    console.error(`Current steps: ${currentStepsSig}`);
+    console.error('Use --allow-incompatible to force restore or --force-clean-restart for safe recovery.');
+    process.exit(2);
+  }
+}
+
+function forceCleanRestart() {
+  console.warn('Executing force clean restart...');
+  execSync(`git -C "${ROOT}" reset --hard HEAD 2>&1`, { stdio: 'inherit' });
+  execSync(`git -C "${ROOT}" clean -fd 2>&1`, { stdio: 'inherit' });
+  console.log('Clean restart complete.');
+}
+
+function resumeCheckpoint(label, policy, options) {
   const dir = getCheckpointDir(policy);
   const indexFile = getIndexFile(dir);
   const index = readIndex(indexFile);
@@ -171,11 +201,22 @@ function resumeCheckpoint(label, policy) {
     process.exit(1);
   }
 
-  const cp = JSON.parse(readFileSync(entry.file, 'utf8'));
+  let cp = null;
+  try {
+    cp = JSON.parse(readFileSync(entry.file, 'utf8'));
+  } catch {
+    console.error(`Checkpoint file is corrupted: ${entry.file}`);
+    if (options.forceCleanRestart) {
+      forceCleanRestart();
+      return;
+    }
+    process.exit(2);
+  }
+  validateCheckpointCompatibility(cp, policy, options.allowIncompatible);
   _applyCheckpoint(cp);
 }
 
-function timeTravelToCheckpoint(n, policy) {
+function timeTravelToCheckpoint(n, policy, options) {
   const dir = getCheckpointDir(policy);
   const indexFile = getIndexFile(dir);
   const index = readIndex(indexFile);
@@ -186,7 +227,18 @@ function timeTravelToCheckpoint(n, policy) {
     process.exit(1);
   }
 
-  const cp = JSON.parse(readFileSync(entry.file, 'utf8'));
+  let cp = null;
+  try {
+    cp = JSON.parse(readFileSync(entry.file, 'utf8'));
+  } catch {
+    console.error(`Checkpoint file is corrupted: ${entry.file}`);
+    if (options.forceCleanRestart) {
+      forceCleanRestart();
+      return;
+    }
+    process.exit(2);
+  }
+  validateCheckpointCompatibility(cp, policy, options.allowIncompatible);
   _applyCheckpoint(cp);
 }
 
@@ -226,10 +278,19 @@ function printStatus(policy) {
 // ── CLI ───────────────────────────────────────────────────────────────────────
 
 const args = process.argv.slice(2);
-const policy = readPolicy();
+const policy = loadPolicy();
+const trace = createTraceContext(policy, { component: 'checkpoint' });
+process.env.AEGIS_TRACE_ID = trace.traceId;
+const allowIncompatible = args.includes('--allow-incompatible');
+const forceCleanRestartFlag = args.includes('--force-clean-restart');
 
-if (!policy.checkpoints?.enabled) {
+if (!policy.checkpoints?.enabled || !isFeatureEnabled(policy, 'checkpoints')) {
   console.warn('Checkpoints are disabled in policy.json (checkpoints.enabled=false)');
+  process.exit(0);
+}
+
+if (forceCleanRestartFlag && !args.includes('--resume') && !args.includes('--travel')) {
+  forceCleanRestart();
   process.exit(0);
 }
 
@@ -241,12 +302,14 @@ if (args.includes('--save')) {
   listCheckpoints(policy);
 } else if (args.includes('--resume')) {
   const label = args[args.indexOf('--resume') + 1];
-  resumeCheckpoint(label, policy);
+  resumeCheckpoint(label, policy, { allowIncompatible, forceCleanRestart: forceCleanRestartFlag });
 } else if (args.includes('--travel')) {
   const n = args[args.indexOf('--travel') + 1];
-  timeTravelToCheckpoint(n, policy);
+  timeTravelToCheckpoint(n, policy, { allowIncompatible, forceCleanRestart: forceCleanRestartFlag });
 } else if (args.includes('--status') || args.length === 0) {
   printStatus(policy);
 } else {
-  console.log('Usage: node checkpoint.js [--save <label> [--meta <json>] | --list | --resume <label> | --travel <n> | --status]');
+  const workflowState = getWorkflowState(policy);
+  console.log(`Workflow step: ${workflowState?.currentStep ?? 'n/a'}`);
+  console.log('Usage: node checkpoint.js [--save <label> [--meta <json>] | --list | --resume <label> [--allow-incompatible|--force-clean-restart] | --travel <n> [--allow-incompatible|--force-clean-restart] | --status | --force-clean-restart]');
 }

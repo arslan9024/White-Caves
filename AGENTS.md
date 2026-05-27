@@ -73,9 +73,9 @@ This file defines the White Caves multi-expert operating model for all agent-ass
 
 ---
 
-## 🚀 AEGIS vNEXT — ORCHESTRATOR UPGRADE (Active as of 2026-05-26)
+## 🚀 AEGIS vNEXT — ORCHESTRATOR UPGRADE (Active as of 2026-05-27)
 
-**UPGRADE:** Aegis 150 → **Aegis vNext** with 7 advanced workflow capabilities  
+**UPGRADE:** Aegis 150/170 → **Aegis vNext v2** with schema-versioned policy, rollout modes, and safety gates  
 **NEW CAPABILITIES:**
 - **Workflow Graph Mode** — MAF-style sequential/parallel/handoff/group-review execution (`npm run aegis:graph:*`)
 - **Durable Checkpoints** — LangGraph-inspired save/resume/time-travel per task-phase transition (`npm run aegis:checkpoint:*`)
@@ -86,8 +86,9 @@ This file defines the White Caves multi-expert operating model for all agent-ass
 - **Benchmark Eval Loop** — Weekly metrics: taskSuccessRate, passRate, reworkRate, cycleTime, rollbackRate (`npm run aegis:bench:*`)
 - **Confidence-Based Routing** — Low-risk/high-confidence → autopilot; high-risk/low-confidence → human-approval (`npm run aegis:route:*`)
 
-**POLICY SOURCE:** `scripts/orchestrator/policy.json` v`2026.05.26-aegis-vnext-v1`  
-**STATUS:** Active — replaces Aegis 150 (150-agent mesh unchanged; governance scripts upgraded)
+**POLICY SOURCE:** `scripts/orchestrator/policy.json` v`2026.05.27-aegis-vnext-v2` (schema `2.0.0`)  
+**STATUS:** Active baseline — legacy Aegis 170/150 labels are compatibility aliases only  
+**RUNBOOK:** [`plans/AEGIS_UPGRADE_RUNBOOK.md`](./plans/AEGIS_UPGRADE_RUNBOOK.md)
 
 ---
 

@@ -14,17 +14,12 @@
 import { readFileSync, writeFileSync, mkdirSync, existsSync } from 'fs';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
+import { createTraceContext, isFeatureEnabled, loadPolicy } from './policy-loader.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 const ROOT = join(__dirname, '..', '..');
-const POLICY_PATH = join(__dirname, 'policy.json');
-
-function readPolicy() {
-  return JSON.parse(readFileSync(POLICY_PATH, 'utf8'));
-}
-
 function getBudgetDir(policy) {
   const dir = join(ROOT, policy.observability?.budgetLimits?.budgetDir ?? 'logs/orchestrator/budget');
   mkdirSync(dir, { recursive: true });
@@ -38,6 +33,7 @@ function getBudgetFile(budgetDir) {
 function readBudget(budgetFile) {
   if (!existsSync(budgetFile)) {
     return {
+      trace: null,
       sessionStartedAt: new Date().toISOString(),
       estimatedTokensUsed: 0,
       retriesUsed: 0,
@@ -108,7 +104,6 @@ function checkBudget(policy) {
 }
 
 function recordUsage(tokens, retries, policy) {
-  const limits = policy.observability?.budgetLimits ?? {};
   const budgetDir = getBudgetDir(policy);
   const budgetFile = getBudgetFile(budgetDir);
   const budget = readBudget(budgetFile);
@@ -125,6 +120,7 @@ function resetBudget(policy) {
   const budgetDir = getBudgetDir(policy);
   const budgetFile = getBudgetFile(budgetDir);
   const budget = {
+    trace: createTraceContext(policy, { component: 'budget-guard' }),
     sessionStartedAt: new Date().toISOString(),
     estimatedTokensUsed: 0,
     retriesUsed: 0,
@@ -160,7 +156,12 @@ function printStatus(policy) {
 // ── CLI ───────────────────────────────────────────────────────────────────────
 
 const args = process.argv.slice(2);
-const policy = readPolicy();
+const policy = loadPolicy();
+
+if (!isFeatureEnabled(policy, 'budget')) {
+  console.warn('Budget guard is disabled by policy feature toggle.');
+  process.exit(0);
+}
 
 if (args.includes('--check')) {
   checkBudget(policy);
