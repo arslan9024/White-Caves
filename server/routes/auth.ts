@@ -2075,9 +2075,7 @@ router.delete(
       throw new AppError('userId and credentialId are required', 400);
     }
 
-    // @ts-expect-error -- pre-existing: req.params/query string|string[] narrowing
     const sanitizedUserId = sanitizeString(decodeURIComponent(rawUserId)).slice(0, 128);
-    // @ts-expect-error -- pre-existing: req.params/query string|string[] narrowing
     const sanitizedCredId = sanitizeString(decodeURIComponent(rawCredId)).slice(0, 512);
 
     await (
