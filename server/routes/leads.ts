@@ -53,6 +53,11 @@ import {
   autoRouteHotLead,
 } from '../services/ai/leadAutoRouter.js';
 import { triggerLeadRescore } from '../services/ai/leadAutoRescore.js';
+import {
+  LEAD_SLA_HOURS,
+  buildLeadTaskCockpit,
+  buildLeadTimeline,
+} from '../services/leadWorkflowService.js';
 
 const router = Router();
 
@@ -236,8 +241,8 @@ router.get(
 // Task 3: Returns all leads that have breached the 4-hour first-response SLA.
 // Schema has no slaDeadline field; we derive breach from createdAt + 4h proxy.
 // MUST be registered before /:id to avoid route shadowing.
-const SLA_HOURS = 4;
-const SLA_MS    = SLA_HOURS * 60 * 60 * 1000;
+const SLA_HOURS = LEAD_SLA_HOURS;
+const SLA_MS = SLA_HOURS * 60 * 60 * 1000;
 
 router.get(
   '/sla-breaches',
@@ -303,6 +308,44 @@ router.get(
   })
 );
 
+// ─── GET /api/leads/task-cockpit ──────────────────────────────────────────
+router.get(
+  '/task-cockpit',
+  requirePermission('view_leads'),
+  scopeToOwn('assignedToId'),
+  asyncHandler(async (req: Request, res: Response) => {
+    const ownerFilter = req.ownershipFilter ?? {};
+    const leads = await prisma.lead.findMany({
+      where: {
+        status: { in: ['new', 'contacted', 'qualified', 'viewing'] },
+        ...(ownerFilter as Prisma.LeadWhereInput),
+      },
+      select: {
+        id: true,
+        name: true,
+        phone: true,
+        email: true,
+        status: true,
+        source: true,
+        score: true,
+        createdAt: true,
+        lastContact: true,
+        assignedToId: true,
+        createdById: true,
+        assignedTo: { select: { id: true, name: true, email: true } },
+        property: { select: { id: true, title: true, location: true } },
+      },
+      take: 100,
+      orderBy: [{ createdAt: 'desc' }],
+    });
+
+    res.status(200).json({
+      success: true,
+      data: buildLeadTaskCockpit(leads),
+    });
+  })
+);
+
 // ─── GET /api/leads/:id ─────────────────────────────────────────────────
 router.get(
   '/:id',
@@ -335,6 +378,60 @@ router.get(
     if (!lead) throw new AppError('Lead not found', 404);
 
     res.status(200).json({ success: true, data: lead });
+  })
+);
+
+// ─── GET /api/leads/:id/timeline ──────────────────────────────────────────
+router.get(
+  '/:id/timeline',
+  requirePermission('view_leads'),
+  asyncHandler(async (req: Request, res: Response) => {
+    const { id } = req.params as Record<string, string>;
+    validateIdParam(id, 'Lead ID');
+
+    const lead = await prisma.lead.findUnique({
+      where: { id },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        phone: true,
+        status: true,
+        source: true,
+        score: true,
+        createdAt: true,
+        lastContact: true,
+        assignedToId: true,
+        createdById: true,
+        assignedTo: { select: { id: true, name: true, email: true } },
+        property: { select: { id: true, title: true, location: true } },
+      },
+    });
+
+    if (!lead) throw new AppError('Lead not found', 404);
+
+    const [activities, viewings] = await Promise.all([
+      prisma.activity.findMany({
+        where: { leadId: id },
+        orderBy: { createdAt: 'desc' },
+        include: { user: { select: { id: true, name: true } } },
+        take: 100,
+      }),
+      prisma.viewing.findMany({
+        where: { leadId: id },
+        orderBy: { scheduledAt: 'desc' },
+        include: {
+          property: { select: { title: true, location: true } },
+          agent: { select: { id: true, name: true } },
+        },
+        take: 50,
+      }),
+    ]);
+
+    res.status(200).json({
+      success: true,
+      data: buildLeadTimeline({ lead, activities, viewings }),
+    });
   })
 );
 
@@ -1208,7 +1305,7 @@ router.post(
       throw new AppError('Bulk action is limited to 100 leads per request', 400);
     }
 
-    const VALID_BULK_ACTIONS = ['assign', 'change-status', 'archive'] as const;
+    const VALID_BULK_ACTIONS = ['assign', 'change-status', 'archive', 'set-reminder'] as const;
     type BulkAction = typeof VALID_BULK_ACTIONS[number];
 
     if (!VALID_BULK_ACTIONS.includes(action as BulkAction)) {
@@ -1247,6 +1344,12 @@ router.post(
       }
       updateData['assignedToId'] = assigneeId;
       activityDescription = `Bulk assigned to agent ${assigneeId}`;
+    } else if (typedAction === 'set-reminder') {
+      const reminderAt = payloadObj['reminderAt'];
+      if (!reminderAt || typeof reminderAt !== 'string' || Number.isNaN(new Date(reminderAt).getTime())) {
+        throw new AppError('payload.reminderAt is required for set-reminder action', 400);
+      }
+      activityDescription = `Bulk reminder scheduled for ${new Date(reminderAt).toISOString()}`;
     } else if (typedAction === 'archive') {
       updateData['status'] = 'archived';
       activityDescription = 'Bulk archived';
@@ -1256,16 +1359,18 @@ router.post(
     const validIds = (ids as string[]).filter(id => typeof id === 'string' && id.length > 0);
 
     await prisma.$transaction(async tx => {
-      await (tx.lead as any).updateMany({
-        where: { id: { in: validIds } },
-        data: updateData as any,
-      });
+      if (Object.keys(updateData).length > 0) {
+        await (tx.lead as any).updateMany({
+          where: { id: { in: validIds } },
+          data: updateData as any,
+        });
+      }
 
       for (const leadId of validIds) {
         await tx.activity.create({
           data: {
             type: 'lead',
-            action: 'bulk_action',
+            action: typedAction === 'set-reminder' ? 'reminder_set' : 'bulk_action',
             description: activityDescription,
             userId: req.user?.id ?? null,
             leadId,
@@ -1274,6 +1379,16 @@ router.post(
         });
       }
     });
+
+    if (typedAction === 'assign' && typeof payloadObj['assigneeId'] === 'string') {
+      await notificationService.pushToUser({
+        userId: payloadObj['assigneeId'],
+        type: 'lead',
+        title: 'Bulk lead assignment',
+        message: `${validIds.length} lead(s) were assigned to you.`,
+        metadata: { leadIds: validIds, bulkAction: typedAction },
+      });
+    }
 
     res.status(200).json({
       success: true,

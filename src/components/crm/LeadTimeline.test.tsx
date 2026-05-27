@@ -18,9 +18,11 @@ vi.stubGlobal('fetch', mockFetch);
 import LeadTimeline from './LeadTimeline';
 
 const MOCK_ACTIVITIES = [
-  { id: 'a1', type: 'call',     description: 'Called lead, left voicemail', createdAt: new Date().toISOString(), userName: 'Agent A' },
-  { id: 'a2', type: 'whatsapp', description: 'Sent property brochure',      createdAt: new Date().toISOString(), userName: 'Agent B' },
-  { id: 'a3', type: 'viewing',  description: 'Viewing scheduled at 3pm',    createdAt: new Date().toISOString(), userName: 'Agent A' },
+  { id: 'a0', type: 'inquiry',  title: 'Inquiry captured', description: 'Web form inquiry captured and routed into CRM.', createdAt: new Date().toISOString(), userName: 'White Caves' },
+  { id: 'a1', type: 'call',     title: 'Call logged', description: 'Called lead, left voicemail', createdAt: new Date().toISOString(), userName: 'Agent A' },
+  { id: 'a2', type: 'whatsapp', title: 'WhatsApp touchpoint', description: 'Sent property brochure', createdAt: new Date().toISOString(), userName: 'Agent B' },
+  { id: 'a3', type: 'task',     title: 'Task update', description: 'Reminder scheduled for tomorrow', createdAt: new Date().toISOString(), userName: 'Agent A' },
+  { id: 'a4', type: 'viewing',  title: 'Viewing milestone', description: 'Viewing scheduled at 3pm', createdAt: new Date().toISOString(), userName: 'Agent A' },
 ];
 
 function renderWithRouter(ui: React.ReactElement, route = '/') {
@@ -30,7 +32,7 @@ function renderWithRouter(ui: React.ReactElement, route = '/') {
 describe('LeadTimeline', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    mockFetch.mockResolvedValue({ ok: true, json: () => Promise.resolve({ activities: MOCK_ACTIVITIES }) });
+    mockFetch.mockResolvedValue({ ok: true, json: () => Promise.resolve({ data: MOCK_ACTIVITIES }) });
   });
 
   it('renders without crashing', () => {
@@ -38,11 +40,13 @@ describe('LeadTimeline', () => {
     expect(screen.getByText('Lead Timeline')).toBeDefined();
   });
 
-  it('renders all 5 filter pills', () => {
+  it('renders all inquiry/task filter pills', () => {
     renderWithRouter(<LeadTimeline leadId="lead-123" />);
     expect(screen.getByText('All')).toBeDefined();
+    expect(screen.getByText('Inquiry')).toBeDefined();
     expect(screen.getByText('Call')).toBeDefined();
     expect(screen.getByText('WhatsApp')).toBeDefined();
+    expect(screen.getByText('Task')).toBeDefined();
     expect(screen.getByText('Viewing')).toBeDefined();
     expect(screen.getByText('Offer')).toBeDefined();
   });
@@ -68,8 +72,7 @@ describe('LeadTimeline', () => {
 
   it('resolves leadId from URL search param', async () => {
     renderWithRouter(<LeadTimeline />, '/?leadId=lead-456');
-    await waitFor(() => expect(mockFetch).toHaveBeenCalledWith(expect.stringContaining('lead-456')));
+    await waitFor(() => expect(mockFetch).toHaveBeenCalledWith(expect.stringContaining('/api/leads/lead-456/timeline')));
   });
 });
-
 

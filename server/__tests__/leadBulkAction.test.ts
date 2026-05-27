@@ -140,6 +140,14 @@ describe('POST /api/leads/bulk-action — input validation', () => {
     expect(res.status).toBe(400);
     expect(res.body.error).toMatch(/payload\.assigneeId/i);
   });
+
+  it('returns 400 for set-reminder when payload.reminderAt is missing', async () => {
+    const res = await request(createApp('manager'))
+      .post('/api/leads/bulk-action')
+      .send({ ids: VALID_IDS, action: 'set-reminder', payload: {} });
+    expect(res.status).toBe(400);
+    expect(res.body.error).toMatch(/payload\.reminderAt/i);
+  });
 });
 
 describe('POST /api/leads/bulk-action — RBAC', () => {
@@ -228,6 +236,30 @@ describe('POST /api/leads/bulk-action — success paths', () => {
       .send({ ids: VALID_IDS, action: 'archive' });
     expect(createCallCount).toBe(VALID_IDS.length);
   });
-});
 
+  it('creates reminder activities without updateMany when scheduling reminders', async () => {
+    let capturedTx: any;
+    mockPrisma.$transaction.mockImplementation(async (cb: any) => {
+      capturedTx = {
+        lead: { updateMany: vi.fn().mockResolvedValue({ count: 3 }) },
+        activity: { create: vi.fn().mockResolvedValue({ id: 'act-reminder' }) },
+      };
+      return cb(capturedTx);
+    });
+
+    const res = await request(createApp())
+      .post('/api/leads/bulk-action')
+      .send({ ids: VALID_IDS, action: 'set-reminder', payload: { reminderAt: '2026-06-15T10:00:00.000Z' } });
+
+    expect(res.status).toBe(200);
+    expect(capturedTx.lead.updateMany).not.toHaveBeenCalled();
+    expect(capturedTx.activity.create).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: expect.objectContaining({
+          action: 'reminder_set',
+        }),
+      }),
+    );
+  });
+});
 

@@ -4,7 +4,7 @@ import { useSearchParams } from 'react-router-dom';
 
 export interface LeadTimelineProps { leadId?: string }
 
-type ActivityType = 'call' | 'whatsapp' | 'viewing' | 'offer' | 'note';
+type ActivityType = 'inquiry' | 'call' | 'whatsapp' | 'task' | 'viewing' | 'offer' | 'note';
 type FilterType   = 'all' | ActivityType;
 
 interface Activity {
@@ -17,15 +17,19 @@ interface Activity {
 
 const FILTERS: { key: FilterType; label: string }[] = [
   { key: 'all',      label: 'All'       },
+  { key: 'inquiry',  label: 'Inquiry'   },
   { key: 'call',     label: 'Call'      },
   { key: 'whatsapp', label: 'WhatsApp'  },
+  { key: 'task',     label: 'Task'      },
   { key: 'viewing',  label: 'Viewing'   },
   { key: 'offer',    label: 'Offer'     },
 ];
 
 const TYPE_META: Record<ActivityType, { icon: string; bg: string; text: string }> = {
+  inquiry:   { icon: '✨', bg: 'bg-fuchsia-500/20', text: 'text-fuchsia-300' },
   call:      { icon: '📞', bg: 'bg-green-500/20',   text: 'text-green-400'   },
   whatsapp:  { icon: '💬', bg: 'bg-emerald-500/20', text: 'text-emerald-400' },
+  task:      { icon: '⏱️', bg: 'bg-orange-500/20',  text: 'text-orange-300'  },
   viewing:   { icon: '🏠', bg: 'bg-blue-500/20',    text: 'text-blue-400'    },
   offer:     { icon: '📋', bg: 'bg-yellow-500/20',  text: 'text-yellow-400'  },
   note:      { icon: '📝', bg: 'bg-slate-500/20',   text: 'text-slate-400'   },
@@ -55,11 +59,12 @@ export default function LeadTimeline({ leadId: propLeadId }: LeadTimelineProps) 
     if (!resolvedId) return;
     setLoading(true);
     try {
-      let res = await fetch(`/api/leads/${resolvedId}/activities`);
+      let res = await fetch(`/api/leads/${resolvedId}/timeline`);
+      if (!res.ok) res = await fetch(`/api/leads/${resolvedId}/activities`);
       if (!res.ok) res = await fetch(`/api/activities?leadId=${resolvedId}`);
       if (!res.ok) throw new Error();
-      const json = (await res.json()) as { activities?: Activity[] } | Activity[];
-      const list: Activity[] = Array.isArray(json) ? json : (json.activities ?? []);
+      const json = (await res.json()) as { data?: Activity[]; activities?: Activity[] } | Activity[];
+      const list: Activity[] = Array.isArray(json) ? json : (json.data ?? json.activities ?? []);
       if (mounted.current) { setActivities(list); setLoading(false); }
     } catch { if (mounted.current) setLoading(false); }
   }, [resolvedId]);
@@ -189,5 +194,4 @@ export default function LeadTimeline({ leadId: propLeadId }: LeadTimelineProps) 
     </div>
   );
 }
-
 

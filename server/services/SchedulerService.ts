@@ -4,6 +4,7 @@ import logger from '../utils/logger.js';
 import { batchRescoreLeads } from './ai/leadScoringEngine.js';
 import { runPermitAlertSchedulerTick } from './compliance/permitAlertScheduler.js';
 import { runPropertyPermitEnforcementTick } from './compliance/propertyPermitEnforcementScheduler.js';
+import { runLeadSlaEscalationTick } from './leadWorkflowService.js';
 
 type ScheduledTask = {
   stop(): void;
@@ -22,6 +23,7 @@ const cron = {
 };
 
 type CronJobId =
+  | 'lead-sla-escalation'
   | 'lead-rescore-daily'
   | 'permit-checks-daily'
   | 'rent-generation-monthly'
@@ -50,7 +52,14 @@ export class SchedulerService {
       return;
     }
 
-    logger.warn('[SchedulerService] cron unavailable in this workspace — scheduled jobs disabled');
+    this.registerLeadSlaEscalationJob();
+    this.registerLeadRescoreJob();
+    this.registerPermitChecksJob();
+    this.registerMonthlyRentGenerationJob();
+    this.registerRentRemindersJob();
+    this.registerLeaseExpiryRemindersJob();
+    this.registerSitemapRefreshJob();
+    logger.warn('[SchedulerService] cron unavailable in this workspace — scheduled jobs registered with no-op scheduler');
     this.started = true;
     return;
   }
@@ -63,6 +72,32 @@ export class SchedulerService {
 
   getStatus(): Array<Omit<CronJobInfo, 'task'>> {
     return Array.from(this.jobs.values()).map(({ task, ...status }) => status);
+  }
+
+  private registerLeadSlaEscalationJob(): void {
+    const id: CronJobId = 'lead-sla-escalation';
+    const cronExpression = '0 * * * *';
+    const timezone = 'Asia/Dubai';
+
+    const task = cron.schedule(
+      cronExpression,
+      async () => {
+        await this.runJob(id, 'lead SLA escalation', async () => {
+          return runLeadSlaEscalationTick();
+        });
+      },
+      { timezone }
+    );
+
+    this.jobs.set(id, {
+      id,
+      name: 'Lead SLA Escalation',
+      cronExpression,
+      timezone,
+      task,
+      lastRunAt: null,
+      lastStatus: null,
+    });
   }
 
   private registerLeadRescoreJob(): void {

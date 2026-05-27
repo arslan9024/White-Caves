@@ -5,8 +5,13 @@ interface Lead {
   id: string;
   name: string;
   phone: string;
-  status: 'new' | 'contacted';
+  status: 'new' | 'contacted' | 'qualified' | 'viewing';
   createdAt: string;
+  slaRisk?: 'breached' | 'at_risk' | 'healthy';
+  priorityRank?: number;
+  nextAction?: string;
+  score?: number;
+  propertyTitle?: string | null;
 }
 
 type Column = 'overdue' | 'today' | 'upcoming';
@@ -46,18 +51,43 @@ export default function AgentTaskCockpit() {
   const [cols, setCols]     = useState<LeadColumns>({ overdue: [], today: [], upcoming: [] });
   const [phase, setPhase]   = useState<'idle' | 'loading' | 'ok' | 'err'>('idle');
   const [errMsg, setErrMsg] = useState('');
+  const [summary, setSummary] = useState({ total: 0, breached: 0, today: 0 });
 
   const load = useCallback(async () => {
     setPhase('loading');
     try {
-      const res = await fetch('/api/leads?status=new,contacted');
+      const res = await fetch('/api/leads/task-cockpit');
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      const json = (await res.json()) as { leads?: Lead[] } | Lead[];
-      const leads: Lead[] = Array.isArray(json) ? json : (json.leads ?? []);
-      const now = new Date();
-      const b: LeadColumns = { overdue: [], today: [], upcoming: [] };
-      for (const l of leads) b[categorize(l, now)].push(l);
-      setCols(b); setPhase('ok');
+      const json = await res.json() as {
+        data?: {
+          columns?: LeadColumns;
+          summary?: { total?: number; breached?: number; today?: number };
+          leads?: Lead[];
+        };
+        leads?: Lead[];
+      } | Lead[];
+      if (Array.isArray(json)) {
+        const now = new Date();
+        const fallback: LeadColumns = { overdue: [], today: [], upcoming: [] };
+        for (const lead of json) fallback[categorize(lead, now)].push(lead);
+        setCols(fallback);
+        setSummary({ total: json.length, breached: fallback.overdue.length, today: fallback.today.length });
+      } else if (json.data?.columns) {
+        setCols(json.data.columns);
+        setSummary({
+          total: json.data.summary?.total ?? 0,
+          breached: json.data.summary?.breached ?? json.data.columns.overdue.length,
+          today: json.data.summary?.today ?? json.data.columns.today.length,
+        });
+      } else {
+        const leads: Lead[] = json.leads ?? [];
+        const now = new Date();
+        const fallback: LeadColumns = { overdue: [], today: [], upcoming: [] };
+        for (const lead of leads) fallback[categorize(lead, now)].push(lead);
+        setCols(fallback);
+        setSummary({ total: leads.length, breached: fallback.overdue.length, today: fallback.today.length });
+      }
+      setPhase('ok');
     } catch (e) { setErrMsg(e instanceof Error ? e.message : 'Error'); setPhase('err'); }
   }, []);
 
@@ -105,6 +135,18 @@ export default function AgentTaskCockpit() {
       <div className="mb-6">
         <h1 className="text-2xl font-bold text-white">Agent Task Cockpit</h1>
         <p className="text-white/50 text-sm mt-1">SLA-prioritised lead actions</p>
+        <div className="mt-4 grid grid-cols-1 gap-3 md:grid-cols-3">
+          {[
+            { label: 'Live Queue', value: summary.total, accent: 'text-white' },
+            { label: 'SLA Breaches', value: summary.breached, accent: 'text-red-400' },
+            { label: 'Today Queue', value: summary.today, accent: 'text-amber-400' },
+          ].map(card => (
+            <div key={card.label} className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3">
+              <p className="text-xs uppercase tracking-[0.2em] text-white/40">{card.label}</p>
+              <p className={`mt-2 text-2xl font-semibold ${card.accent}`}>{card.value}</p>
+            </div>
+          ))}
+        </div>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {(['overdue','today','upcoming'] as Column[]).map(col => {
@@ -122,13 +164,23 @@ export default function AgentTaskCockpit() {
                 {leads.map(lead => (
                   <motion.div key={lead.id} variants={card} className={`backdrop-blur-sm bg-white/5 border ${cfg.border} rounded-2xl p-4`}>
                     <div className="flex items-start justify-between mb-1">
-                      <p className="text-white font-medium text-sm">{lead.name}</p>
-                      <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${lead.status === 'new' ? 'bg-blue-500/20 text-blue-300' : 'bg-green-500/20 text-green-300'}`}>
-                        {lead.status === 'new' ? 'New' : 'Contacted'}
+                      <div>
+                        <p className="text-white font-medium text-sm">{lead.name}</p>
+                        <p className="mt-1 text-[11px] uppercase tracking-[0.2em] text-white/35">
+                          Priority #{lead.priorityRank ?? '—'}
+                        </p>
+                      </div>
+                      <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${lead.slaRisk === 'breached' ? 'bg-red-500/20 text-red-300' : lead.status === 'new' ? 'bg-blue-500/20 text-blue-300' : 'bg-green-500/20 text-green-300'}`}>
+                        {lead.slaRisk === 'breached' ? 'SLA Risk' : lead.status === 'new' ? 'New' : lead.status === 'contacted' ? 'Contacted' : lead.status}
                       </span>
                     </div>
                     <p className="text-white/50 text-xs mb-1">{lead.phone}</p>
+                    {lead.propertyTitle && <p className="text-white/40 text-xs mb-1">{lead.propertyTitle}</p>}
                     <p className="text-white/30 text-xs mb-3">{new Date(lead.createdAt).toLocaleString('en-AE',{month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'})}</p>
+                    <div className="mb-3 flex items-center justify-between rounded-xl border border-white/10 bg-black/20 px-3 py-2 text-[11px]">
+                      <span className="text-white/50">Next action</span>
+                      <span className="font-medium text-yellow-300">{lead.nextAction ?? 'Follow up'}</span>
+                    </div>
                     <div className="grid grid-cols-2 gap-2">
                       {[
                         { key:'call',       label:'📞 Call',        cls:'bg-green-500/10 text-green-400 border-green-500/20'   },
@@ -153,5 +205,4 @@ export default function AgentTaskCockpit() {
     </div>
   );
 }
-
 

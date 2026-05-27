@@ -19,15 +19,32 @@ vi.stubGlobal('fetch', mockFetch);
 import AgentTaskCockpit from './AgentTaskCockpit';
 
 const MOCK_LEADS = [
-  { id: '1', name: 'Ahmad Al Mansouri', phone: '+971501234567', status: 'new',       createdAt: new Date(Date.now() - 5 * 3600_000).toISOString() },
-  { id: '2', name: 'Sara Khalid',        phone: '+971509876543', status: 'contacted', createdAt: new Date().toISOString() },
-  { id: '3', name: 'Rashed Ibrahim',     phone: '+971551234567', status: 'new',       createdAt: new Date(Date.now() + 48 * 3600_000).toISOString() },
+  { id: '1', name: 'Ahmad Al Mansouri', phone: '+971501234567', status: 'new',       createdAt: new Date(Date.now() - 5 * 3600_000).toISOString(), slaRisk: 'breached', priorityRank: 1, nextAction: 'Respond immediately' },
+  { id: '2', name: 'Sara Khalid',        phone: '+971509876543', status: 'contacted', createdAt: new Date().toISOString(), slaRisk: 'healthy', priorityRank: 2, nextAction: 'Advance follow-up' },
+  { id: '3', name: 'Rashed Ibrahim',     phone: '+971551234567', status: 'new',       createdAt: new Date(Date.now() + 48 * 3600_000).toISOString(), slaRisk: 'healthy', priorityRank: 3, nextAction: 'Advance follow-up' },
 ];
 
 describe('AgentTaskCockpit', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    mockFetch.mockResolvedValue({ ok: true, json: () => Promise.resolve({ leads: MOCK_LEADS }) });
+    mockFetch.mockResolvedValue({
+      ok: true,
+      json: () =>
+        Promise.resolve({
+          data: {
+            columns: {
+              overdue: [MOCK_LEADS[0]],
+              today: [MOCK_LEADS[1]],
+              upcoming: [MOCK_LEADS[2]],
+            },
+            summary: {
+              total: 3,
+              breached: 1,
+              today: 1,
+            },
+          },
+        }),
+    });
   });
 
   it('renders without crashing', () => {
@@ -55,11 +72,16 @@ describe('AgentTaskCockpit', () => {
     await waitFor(() => expect(screen.getByText('Ahmad Al Mansouri')).toBeDefined());
   });
 
+  it('renders priority and next action details', async () => {
+    render(<AgentTaskCockpit />);
+    await waitFor(() => expect(screen.getByText(/Priority #1/i)).toBeDefined());
+    expect(screen.getByText('Respond immediately')).toBeDefined();
+  });
+
   it('shows error state on fetch failure', async () => {
     mockFetch.mockRejectedValue(new Error('Network error'));
     render(<AgentTaskCockpit />);
     await waitFor(() => expect(screen.getByText(/Failed to load tasks/i)).toBeDefined());
   });
 });
-
 
