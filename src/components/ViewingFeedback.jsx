@@ -44,7 +44,9 @@ const ViewingFeedback = ({ viewing, onSubmit, onClose }) => {
 
   useEffect(() => {
     if (!draftLoaded) return;
-    void setDraft(draftKey, { outcome, rating, feedback });
+    void setDraft(draftKey, { outcome, rating, feedback }).catch(() => {
+      // Silent fallback: user can still continue without draft autosave.
+    });
   }, [draftKey, draftLoaded, feedback, outcome, rating]);
 
   const handleSubmit = async e => {

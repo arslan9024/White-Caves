@@ -74,46 +74,44 @@ const TenantPortalHome: FC<TenantPortalHomeProps> = ({ onNavigate }) => {
     ])
       .then(([leasesRes, maintenanceRes]) => {
         const leases: LeaseData[] = Array.isArray(leasesRes.data) ? leasesRes.data : [];
-      const maintenanceItems: MaintenanceItem[] = Array.isArray(maintenanceRes.data)
-        ? maintenanceRes.data
-        : [];
-      const activeLease = leases.find(l => l.status === 'active') ?? null;
-      const openCount =
-        maintenanceRes?.pagination?.total ??
-        maintenanceItems.length;
-      const totalCount = maintenanceItems.length || openCount;
+        const maintenanceItems: MaintenanceItem[] = Array.isArray(maintenanceRes.data)
+          ? maintenanceRes.data
+          : [];
+        const activeLease = leases.find(l => l.status === 'active') ?? null;
+        const openCount = maintenanceRes?.pagination?.total ?? maintenanceItems.length;
+        const totalCount = maintenanceRes?.pagination?.total ?? maintenanceItems.length;
 
-      let daysRemaining: number | null = null;
-      if (activeLease?.endDate) {
-        const diff = new Date(activeLease.endDate).getTime() - Date.now();
-        daysRemaining = Math.max(0, Math.ceil(diff / (1000 * 60 * 60 * 24)));
-      }
+        let daysRemaining: number | null = null;
+        if (activeLease?.endDate) {
+          const diff = new Date(activeLease.endDate).getTime() - Date.now();
+          daysRemaining = Math.max(0, Math.ceil(diff / (1000 * 60 * 60 * 24)));
+        }
 
-      const renewalStatus =
-        daysRemaining === null
-          ? 'No active lease'
-          : daysRemaining <= 30
-            ? 'Renewal urgent'
-            : daysRemaining <= 90
-              ? 'Renewal window open'
-              : 'Lease on track';
+        const renewalStatus =
+          daysRemaining === null
+            ? 'No active lease'
+            : daysRemaining <= 30
+              ? 'Renewal urgent'
+              : daysRemaining <= 90
+                ? 'Renewal window open'
+                : 'Lease on track';
 
-      const maintenanceSlaOpen = maintenanceItems.filter(item =>
-        ['open', 'scheduled', 'in_progress'].includes(item.status ?? 'open')
-      ).length;
+        const maintenanceSlaOpen = maintenanceItems.filter(item =>
+          ['open', 'scheduled', 'in_progress'].includes(item.status ?? 'open')
+        ).length;
 
-      setDashboard({
-        hasActiveLease: !!activeLease,
-        monthlyRent: activeLease?.monthlyRent ?? null,
-        currency: 'AED',
-        daysRemainingOnLease: daysRemaining,
-        nextPaymentDue: activeLease?.nextPaymentDue ?? null,
-        renewalStatus,
-        openMaintenanceRequests: openCount,
-        totalMaintenanceRequests: totalCount,
-        maintenanceSlaOpen,
-      });
-    })
+        setDashboard({
+          hasActiveLease: !!activeLease,
+          monthlyRent: activeLease?.monthlyRent ?? null,
+          currency: 'AED',
+          daysRemainingOnLease: daysRemaining,
+          nextPaymentDue: activeLease?.nextPaymentDue ?? null,
+          renewalStatus,
+          openMaintenanceRequests: openCount,
+          totalMaintenanceRequests: totalCount,
+          maintenanceSlaOpen,
+        });
+      })
       .catch(() => setError('Unable to load dashboard data. Please refresh.'))
       .finally(() => setLoading(false));
   }, []);

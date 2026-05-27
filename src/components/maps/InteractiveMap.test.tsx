@@ -25,13 +25,30 @@ vi.mock('../../store/store', () => ({
 // ── Mock DubaiMap (lazy-loaded) ──────────────────────────────────
 
 vi.mock('./DubaiMap', () => ({
-  default: ({ properties, activePropertyId, onPropertyClick }: Record<string, unknown>) => (
+  default: ({
+    properties,
+    activePropertyId,
+    onPropertyClick,
+    onViewportChange,
+    defaultCenter,
+    defaultZoom,
+  }: Record<string, unknown>) => (
     <div
       data-testid="mock-dubai-map"
       data-count={(properties as MapProperty[]).length}
       data-active={activePropertyId as string}
+      data-center={JSON.stringify(defaultCenter ?? null)}
+      data-zoom={String(defaultZoom ?? '')}
       onClick={() => {
         const props = properties as MapProperty[];
+        if (onViewportChange) {
+          (onViewportChange as (bounds: Record<string, number>) => void)({
+            north: 25.3,
+            south: 25.1,
+            east: 55.4,
+            west: 55.2,
+          });
+        }
         if (props.length > 0 && onPropertyClick) {
           (onPropertyClick as (p: MapProperty) => void)(props[0]);
         }
@@ -153,9 +170,12 @@ describe('InteractiveMap', () => {
 
   // W18.1-P0-003 — Viewport persistence + Redux dispatch
   describe('W18.1 — URL param handling', () => {
-    it('renders without crashing when URL has lat/lng/zoom params', () => {
+    it('passes parsed lat/lng/zoom params to DubaiMap', () => {
       window.history.replaceState(null, '', '?lat=25.2048&lng=55.2708&zoom=12');
-      expect(() => renderInteractiveMap()).not.toThrow();
+      renderInteractiveMap({ mapVisible: true });
+      const map = screen.getByTestId('mock-dubai-map');
+      expect(map.dataset.center).toBe('[25.2048,55.2708]');
+      expect(map.dataset.zoom).toBe('12');
       window.history.replaceState(null, '', '?');
     });
 
@@ -196,9 +216,19 @@ describe('InteractiveMap', () => {
   });
 
   describe('W18.1 — onViewportChange prop', () => {
-    it('onViewportChange prop is accepted without error', () => {
+    it('persists viewport changes and calls the callback', () => {
       const onViewportChange = vi.fn();
-      expect(() => renderInteractiveMap({ onViewportChange })).not.toThrow();
+      renderInteractiveMap({ mapVisible: true, onViewportChange });
+      fireEvent.click(screen.getByTestId('mock-dubai-map'));
+      expect(onViewportChange).toHaveBeenCalledWith({
+        north: 25.3,
+        south: 25.1,
+        east: 55.4,
+        west: 55.2,
+      });
+      expect(window.location.search).toContain('lat=25.200000');
+      expect(window.location.search).toContain('lng=55.300000');
+      expect(window.location.search).toContain('zoom=12');
     });
   });
 

@@ -151,4 +151,44 @@ describe('LandlordPortalHome', () => {
     expect(screen.getByTestId('landlord-metric-hotspot-value')).toHaveTextContent('Dubai Marina');
     expect(screen.getByTestId('landlord-metric-risk-value')).toHaveTextContent('1');
   });
+
+  it('aggregates hotspot data across paginated maintenance results', async () => {
+    mockAuthFetch.mockImplementation((input: RequestInfo | URL) => {
+      const url = String(input);
+      if (url.includes('/api/leases')) {
+        return Promise.resolve({
+          json: async () => ({ data: [] }),
+        } as Response);
+      }
+      if (url.includes('/api/properties')) {
+        return Promise.resolve({
+          json: async () => ({ data: [{ id: 'prop-1' }, { id: 'prop-2' }] }),
+        } as Response);
+      }
+      if (url.includes('/api/maintenance?page=2')) {
+        return Promise.resolve({
+          json: async () => ({
+            data: [
+              { id: 'maint-2', property: { id: 'prop-2', location: 'Downtown Dubai' } },
+              { id: 'maint-3', property: { id: 'prop-2', location: 'Downtown Dubai' } },
+            ],
+          }),
+        } as Response);
+      }
+      return Promise.resolve({
+        json: async () => ({
+          data: [{ id: 'maint-1', property: { id: 'prop-1', location: 'Dubai Marina' } }],
+          pagination: { total: 3, totalPages: 2 },
+        }),
+      } as Response);
+    });
+
+    renderWithStore(<LandlordPortalHome />);
+    await waitFor(() => {
+      expect(mockAuthFetch).toHaveBeenCalledTimes(4);
+    });
+
+    expect(screen.getByTestId('landlord-metric-hotspot-value')).toHaveTextContent('Downtown Dubai');
+    expect(screen.getByTestId('landlord-metric-maintenance-value')).toHaveTextContent('3');
+  });
 });

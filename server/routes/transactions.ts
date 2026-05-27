@@ -13,7 +13,7 @@ import { validate, rules, validateIdParam } from '../utils/validate';
 import { parsePagination } from '../config/pagination';
 import { sanitizeString } from '../utils/sanitize';
 import { requirePermission } from '../middleware/rbac';
-import { requireKycForRiskyTransaction, RISKY_AMOUNT_AED } from '../middleware/kycGate';
+import { RISKY_AMOUNT_AED } from '../middleware/kycGate';
 
 const router = Router();
 const RISKY_TRANSACTION_AMOUNT_AED = 500000;
@@ -253,7 +253,7 @@ router.patch(
       if (!existing) throw new AppError('Transaction not found', 404);
 
       // AUTHORIZATION: Only admins/managers/finance/agents can update transactions
-      const allowedRoles = ['owner', 'manager', 'finance', 'agent'];
+      const allowedRoles = ['owner', 'manager', 'admin', 'finance', 'agent'];
       if (!allowedRoles.includes(req.user?.role || '')) {
         throw new AppError('You do not have permission to update this transaction', 403);
       }

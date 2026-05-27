@@ -87,4 +87,36 @@ describe('GET /analytics/kpi-baseline', () => {
     const res = await request(app).get('/analytics/kpi-baseline');
     expect(res.status).toBe(403);
   });
+
+  it('keeps lead/activity pairing when some leads have no response activity', async () => {
+    const now = new Date('2026-05-27T12:00:00.000Z');
+    vi.useFakeTimers();
+    mockPrisma.lead.findMany.mockResolvedValue([
+      { id: 'lead-1', createdAt: new Date('2026-05-27T08:00:00.000Z') },
+      { id: 'lead-2', createdAt: new Date('2026-05-27T09:00:00.000Z') },
+    ]);
+    mockPrisma.activity.findFirst
+      .mockResolvedValueOnce(null)
+      .mockResolvedValueOnce({ createdAt: new Date('2026-05-27T11:00:00.000Z'), leadId: 'lead-2' });
+    vi.setSystemTime(now);
+
+    const app = await createApp('manager');
+    const res = await request(app).get('/analytics/kpi-baseline');
+    const firstResponseKpi = res.body.data.kpis.find((kpi: { name: string }) => kpi.name === 'First Response Time');
+
+    expect(firstResponseKpi.current).toBe(2);
+    vi.useRealTimers();
+  });
+
+  it('limits listing completeness sampling to a bounded property set', async () => {
+    const app = await createApp('manager');
+    await request(app).get('/analytics/kpi-baseline');
+
+    expect(mockPrisma.property.findMany).toHaveBeenCalledWith(
+      expect.objectContaining({
+        take: 200,
+        orderBy: { createdAt: 'desc' },
+      }),
+    );
+  });
 });

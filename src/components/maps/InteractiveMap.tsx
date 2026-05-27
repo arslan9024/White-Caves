@@ -11,7 +11,7 @@
  *  - onViewportChange optional callback
  */
 
-import React, { FC, useState, useCallback, useEffect, lazy, Suspense } from 'react';
+import React, { FC, useState, useCallback, useMemo, lazy, Suspense } from 'react';
 import { Map, X } from 'lucide-react';
 import type { MapProperty } from './DubaiMap';
 import { setActivePropertyId } from '../../redux/slices/propertySlice';
@@ -86,11 +86,7 @@ const InteractiveMap: FC<InteractiveMapProps> = ({
   const dispatch = useAppDispatch();
   const [internalMapVisible, setInternalMapVisible] = useState(false);
   const mapVisible = externalMapVisible ?? internalMapVisible;
-
-  // W18.1: parse URL params on mount for future defaultCenter/defaultZoom
-  useEffect(() => {
-    parseUrlMapParams();
-  }, []);
+  const initialViewport = useMemo(() => parseUrlMapParams(), []);
 
   const toggleMap = useCallback(() => {
     setInternalMapVisible(prev => !prev);
@@ -142,6 +138,13 @@ const InteractiveMap: FC<InteractiveMapProps> = ({
             properties={properties}
             activePropertyId={activePropertyId}
             onPropertyClick={handlePropertyClick}
+            onViewportChange={handleViewportChange}
+            defaultCenter={
+              initialViewport.lat !== null && initialViewport.lng !== null
+                ? [initialViewport.lat, initialViewport.lng]
+                : undefined
+            }
+            defaultZoom={initialViewport.zoom ?? undefined}
             showCommunities={true}
             height="100%"
             className="interactive-map-instance"
@@ -153,4 +156,3 @@ const InteractiveMap: FC<InteractiveMapProps> = ({
 };
 
 export default React.memo(InteractiveMap);
-

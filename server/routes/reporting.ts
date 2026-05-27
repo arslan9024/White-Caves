@@ -667,8 +667,12 @@ router.get(
         ),
       );
       const responseTimes = firstActivities
-        .filter(Boolean)
-        .map((a, i) => (a!.createdAt.getTime() - recentLeads[i].createdAt.getTime()) / 3600000);
+        .map((activity, index) =>
+          activity
+            ? (activity.createdAt.getTime() - recentLeads[index].createdAt.getTime()) / 3600000
+            : null
+        )
+        .filter((hours): hours is number => hours !== null);
       if (responseTimes.length > 0) {
         firstResponseHrs = Math.round(
           (responseTimes.reduce((s, v) => s + v, 0) / responseTimes.length) * 10,
@@ -699,6 +703,8 @@ router.get(
         location: true, area: true, bedrooms: true, bathrooms: true, sqft: true,
         images: true, buildingPermitNumber: true,
       },
+      take: 200,
+      orderBy: { createdAt: 'desc' },
     });
     const avgCompleteness = properties.length > 0
       ? Math.round(

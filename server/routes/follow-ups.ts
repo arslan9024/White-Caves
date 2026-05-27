@@ -14,7 +14,7 @@
 
 import { Router, Request, Response } from 'express';
 import { requirePermission } from '../middleware/rbac.js';
-import { asyncHandler } from '../middleware/errorHandler.js';
+import { AppError, asyncHandler } from '../middleware/errorHandler.js';
 import { prisma } from '../database.js';
 import {
   startSequence,
@@ -53,12 +53,12 @@ function normalizeStringArray(value: unknown): string[] {
 function normalizeRulePayload(body: CadenceRulePayload) {
   const name = typeof body.name === 'string' ? body.name.trim() : '';
   if (!name) {
-    throw new Error('name is required');
+    throw new AppError('name is required', 400);
   }
 
   const channelSequence = Array.isArray(body.channelSequence) ? body.channelSequence : [];
   if (channelSequence.length === 0) {
-    throw new Error('channelSequence is required and must be a non-empty array');
+    throw new AppError('channelSequence is required and must be a non-empty array', 400);
   }
 
   return {

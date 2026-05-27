@@ -7,18 +7,27 @@ import express from 'express';
 
 const VALID_ID = '507f1f77bcf86cd799439011';
 
-const mockPrisma = vi.hoisted(() => ({
-  transaction: {
-    findUnique: vi.fn(),
-    update: vi.fn(),
-  },
-  lead: {
-    findUnique: vi.fn(),
-  },
-  activity: {
-    create: vi.fn().mockResolvedValue({ id: 'act-1' }),
-  },
-}));
+const mockPrisma = vi.hoisted(() => {
+  const prisma = {
+    transaction: {
+      findUnique: vi.fn(),
+      update: vi.fn(),
+    },
+    lead: {
+      findUnique: vi.fn(),
+    },
+    activity: {
+      create: vi.fn().mockResolvedValue({ id: 'act-1' }),
+    },
+    $transaction: vi.fn(),
+  };
+
+  prisma.$transaction.mockImplementation(async (callback: (tx: typeof prisma) => unknown) =>
+    callback(prisma)
+  );
+
+  return prisma;
+});
 
 vi.mock('../database.js', () => ({ prisma: mockPrisma }));
 vi.mock('../middleware/errorHandler', () => ({
@@ -42,8 +51,12 @@ vi.mock('../middleware/rbac', () => ({
 }));
 vi.mock('../utils/sanitize', () => ({ sanitizeString: (v: string) => v }));
 vi.mock('../utils/validate', () => ({
-  validate: () => (_: unknown, __: unknown, next: express.NextFunction) => next(),
-  rules: { id: [], string: () => [], number: () => [] },
+  validate: () => undefined,
+  rules: {
+    oneOf: () => [],
+    optionalPositiveNumber: () => [],
+    optionalArray: () => [],
+  },
   validateIdParam: () => undefined,
 }));
 vi.mock('../config/pagination', () => ({ parsePagination: () => ({ page: 1, limit: 50, skip: 0 }) }));
@@ -109,6 +122,18 @@ describe('PATCH /api/transactions/:id — KYC gate (P0-013)', () => {
       id: VALID_ID, type: 'sale', amount: 800_000, status: 'in_progress',
     });
     const app = await createApp('manager');
+    const res = await request(app).patch(`/${VALID_ID}`).send({ status: 'in_progress' });
+    expect(res.status).toBe(200);
+  });
+
+  it('allows admin role to update transactions', async () => {
+    mockPrisma.transaction.findUnique.mockResolvedValue({
+      id: VALID_ID, type: 'lease', amount: 50_000, status: 'draft', leadId: VALID_ID,
+    });
+    mockPrisma.transaction.update.mockResolvedValue({
+      id: VALID_ID, type: 'lease', amount: 50_000, status: 'in_progress',
+    });
+    const app = await createApp('admin');
     const res = await request(app).patch(`/${VALID_ID}`).send({ status: 'in_progress' });
     expect(res.status).toBe(200);
   });

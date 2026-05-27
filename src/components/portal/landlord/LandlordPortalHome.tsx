@@ -60,17 +60,47 @@ const LandlordPortalHome: FC<LandlordPortalHomeProps> = ({ onNavigate }) => {
     if (!currentUser) return;
     let cancelled = false;
 
+    const fetchMaintenanceItems = async () => {
+      const firstPage = await authFetch('/api/maintenance?pageSize=50').then(r => r.json());
+      const firstItems: MaintenanceItem[] = Array.isArray(firstPage.data) ? firstPage.data : [];
+      const total = firstPage.pagination?.total ?? firstItems.length;
+      const totalPages =
+        firstPage.pagination?.totalPages ??
+        Math.max(1, Math.ceil(total / 50));
+
+      if (totalPages <= 1) {
+        return { items: firstItems, total };
+      }
+
+      const remainingPages = await Promise.all(
+        Array.from({ length: totalPages - 1 }, (_, index) =>
+          authFetch(`/api/maintenance?page=${index + 2}&pageSize=50`)
+            .then(r => r.json())
+            .catch(() => ({ data: [] }))
+        )
+      );
+
+      const remainingItems = remainingPages.flatMap((page: { data?: MaintenanceItem[] }) =>
+        Array.isArray(page.data) ? page.data : []
+      );
+
+      return {
+        items: [...firstItems, ...remainingItems],
+        total,
+      };
+    };
+
     Promise.all([
       authFetch('/api/leases?role=landlord&pageSize=100').then(r => r.json()),
       authFetch('/api/properties?pageSize=100').then(r => r.json()),
-      authFetch('/api/maintenance?pageSize=1').then(r => r.json()),
+      fetchMaintenanceItems(),
     ])
       .then(([leasesRes, propsRes, maintRes]) => {
         if (cancelled) return;
         setLeases(leasesRes.data ?? []);
         setProperties(propsRes.data ?? []);
-        setMaintenanceItems(maintRes.data ?? []);
-        setOpenMaintenance(maintRes.pagination?.total ?? maintRes.data?.length ?? 0);
+        setMaintenanceItems(maintRes.items ?? []);
+        setOpenMaintenance(maintRes.total ?? maintRes.items?.length ?? 0);
         setLoading(false);
       })
       .catch(() => {
