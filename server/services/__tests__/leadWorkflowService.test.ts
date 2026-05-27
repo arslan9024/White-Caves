@@ -1,5 +1,13 @@
 import { describe, expect, it, vi } from 'vitest';
 
+vi.mock('../../database.js', () => ({
+  prisma: {},
+}));
+
+vi.mock('../NotificationService.js', () => ({
+  notificationService: { pushToUser: vi.fn() },
+}));
+
 import {
   LEAD_SLA_HOURS,
   buildLeadTaskCockpit,

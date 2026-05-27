@@ -2,7 +2,7 @@
 
 > **Agency:** White Caves Global Agency
 > **Orchestrator:** @Ada (Chief Architect)
-> **Last Updated:** 2026-05-25
+> **Last Updated:** 2026-05-27
 > **Policy Mode:** Dual-threshold readiness (60% unlock, 90% target) + policy-driven gating (Governance V2 active)
 > **Daily Report:** `PROJECT_PROGRESS_REPORT.md`
 
@@ -12,7 +12,13 @@
 
 - Canonical roadmap: **[plans/MASTER_PLAN.md](plans/MASTER_PLAN.md)**
 - Active queue: **[plans/PENDING_TASKS_ONLY.md](plans/PENDING_TASKS_ONLY.md)**
-- Last Updated (ISO): 2026-05-25
+- Last Updated (ISO): 2026-05-27
+
+## 🚀 Wave 18.1 Session 1 Delivery
+
+- Implemented lead workflow automation for **W18.1-P0-004/005/006/007/008**: viewing requests now auto-create/link inquiry leads, CRM exposes unified lead timelines, bulk reminder actions, and agent task cockpit SLA priority feeds.
+- Expanded tenant/landlord portal home dashboards for **W18.1-P0-015/016** with renewal visibility, maintenance SLA counts, issue hotspot surfacing, and occupancy risk snapshots.
+- Validation evidence: `npm run test:run -- server/__tests__/leadSla.test.ts server/__tests__/leadBulkAction.test.ts server/routes/viewings.test.ts server/services/__tests__/leadWorkflowService.test.ts`, `npm run test:run -- src/components/crm/AgentTaskCockpit.test.tsx src/components/crm/LeadTimeline.test.tsx src/components/portal/tenant/TenantPortalHome.test.tsx src/components/portal/landlord/LandlordPortalHome.test.tsx`, `npx eslint ...changed files`, `npm run build`.
 
 > Premium usage is allowed **only** for senior coders/designers **after** @Ada declares:
 > `@Ada — Context Ready (60% Readiness) — Coding Phase Approved`

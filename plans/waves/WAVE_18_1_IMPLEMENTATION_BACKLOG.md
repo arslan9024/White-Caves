@@ -64,19 +64,19 @@ Weighted score per task:
 | W18.1-P0-001 | Search & Discovery | Add intent-aware ranking profile for buy/rent/invest journeys | @Mira + @Lea | +15% qualified click-through to property detail | Search relevance regression tests + `npm run build` |
 | W18.1-P0-002 | Search & Discovery | Add advanced search facets (furnishing, handover stage, permit status, fee band) | @Mira + @Lea | +20% filter usage without conversion drop | API filter tests + UI integration tests |
 | W18.1-P0-003 | Search & Discovery | Improve map/list synchronization and viewport persistence | @Tracy + @Mira | -30% map abandonment rate | Playwright map-flow tests |
-| W18.1-P0-004 | Lead Capture & Conversion | Build one-click inquiry→viewing path from listing cards and detail page | @Mira + @Una | +25% viewing booking conversion | Route tests + UX flow tests |
-| W18.1-P0-005 | Lead Capture & Conversion | Enforce lead SLA timers with escalating nudges to assignee/manager | @Mira + @Katherine | -40% median first-response time | Scheduler tests + dashboard evidence |
-| W18.1-P0-006 | Lead Capture & Conversion | Create unified lead timeline across web forms, WhatsApp, calls, tasks | @Mira + @Jaime | +20% lead-to-offer progression | Timeline API tests + CRM UI checks |
-| W18.1-P0-007 | CRM Workflow Productivity | Ship one-screen agent task cockpit (today queue, SLA risk, priority) | @Una + @Mira | +35% daily task completion | Component tests + role-access checks |
-| W18.1-P0-008 | CRM Workflow Productivity | Add bulk lead actions (assign, stage, reminder, archive) with audit trail | @Mira + @Katherine | -25% repetitive CRM actions per lead | Bulk-action tests + audit evidence |
+| W18.1-P0-004 | Lead Capture & Conversion | ✅ Build one-click inquiry→viewing path from listing cards and detail page | @Mira + @Una | +25% viewing booking conversion | Route tests + UX flow tests |
+| W18.1-P0-005 | Lead Capture & Conversion | ✅ Enforce lead SLA timers with escalating nudges to assignee/manager | @Mira + @Katherine | -40% median first-response time | Scheduler tests + dashboard evidence |
+| W18.1-P0-006 | Lead Capture & Conversion | ✅ Create unified lead timeline across web forms, WhatsApp, calls, tasks | @Mira + @Jaime | +20% lead-to-offer progression | Timeline API tests + CRM UI checks |
+| W18.1-P0-007 | CRM Workflow Productivity | ✅ Ship one-screen agent task cockpit (today queue, SLA risk, priority) | @Una + @Mira | +35% daily task completion | Component tests + role-access checks |
+| W18.1-P0-008 | CRM Workflow Productivity | ✅ Add bulk lead actions (assign, stage, reminder, archive) with audit trail | @Mira + @Katherine | -25% repetitive CRM actions per lead | Bulk-action tests + audit evidence |
 | W18.1-P0-009 | Mobile CRM & Field Ops | Deliver mobile-first CRM command bar for top 8 field actions | @Tracy + @Una | +35% mobile CRM completion rate | Playwright mobile suite |
 | W18.1-P0-010 | Mobile CRM & Field Ops | Add offline-safe draft capture for notes/viewing feedback | @Mira + @Ruchi | 0% data loss incidents in spotty network | PWA cache tests + sync tests |
 | W18.1-P0-011 | Listing Quality & Trust | Add listing completeness scoring and remediation checklist | @Mira + @Lea | +30% listing completeness score | Listing score tests + UI checks |
 | W18.1-P0-012 | Listing Quality & Trust | Add verification/freshness badges with traceable evidence fields | @Sofia + @Mira | +20% trust interactions on listing pages | Compliance route tests + frontend checks |
 | W18.1-P0-013 | Security/Compliance/Audit | Enforce KYC gate before high-risk transaction transitions | @Sofia + @Mira | 100% gated risky transactions | Compliance tests + RBAC tests |
 | W18.1-P0-014 | Security/Compliance/Audit | Add permit/BRN/Ejari expiry risk queue with escalation | @Sofia + @Katherine | 0 missed critical expiry alerts | Scheduler + notification tests |
-| W18.1-P0-015 | Tenant/Landlord Lifecycle | Expand tenant portal lifecycle (payments, renewals, maintenance SLA) | @Victoria + @Mira | +30% tenant portal MAU | Portal integration tests |
-| W18.1-P0-016 | Tenant/Landlord Lifecycle | Expand landlord portfolio health dashboard with issue hotspots | @Victoria + @Mira | +30% landlord portal MAU | Dashboard tests + data contract checks |
+| W18.1-P0-015 | Tenant/Landlord Lifecycle | ✅ Expand tenant portal lifecycle (payments, renewals, maintenance SLA) | @Victoria + @Mira | +30% tenant portal MAU | Portal integration tests |
+| W18.1-P0-016 | Tenant/Landlord Lifecycle | ✅ Expand landlord portfolio health dashboard with issue hotspots | @Victoria + @Mira | +30% landlord portal MAU | Dashboard tests + data contract checks |
 | W18.1-P0-017 | WhatsApp/Omnichannel & AI Ops | One-click WhatsApp conversation→lead conversion + ownership routing | @Joelle + @Mira | +20% WA lead creation conversion | WhatsApp route tests |
 | W18.1-P0-018 | WhatsApp/Omnichannel & AI Ops | Implement channel orchestration cadence rules (WA/email/call) | @Joelle + @Katherine | +15% follow-up adherence rate | Automation tests + SLA evidence |
 | W18.1-P0-019 | Analytics & Revenue Intelligence | Ship funnel economics dashboard (lead→viewing→offer→close) | @Invoice + @Mira | +20% offer submission rate | Reporting tests + KPI dashboard checks |
@@ -106,3 +106,8 @@ Weighted score per task:
 - [x] Stand up KPI baseline dashboard
 - [x] Start weekly re-benchmark + queue hygiene loop
 
+## Session 1 Delivery Evidence
+
+- Lead workflow backend now exposes task cockpit and unified timeline data, supports reminder-based bulk actions, and auto-creates/viewing-links lead inquiries from authenticated viewing requests.
+- SchedulerService now registers hourly lead SLA escalation automation and records assignee/manager escalation audit events.
+- CRM and portal surfaces now show SLA risk, priority rank, renewal visibility, maintenance SLA counts, issue hotspots, and occupancy risk signals.

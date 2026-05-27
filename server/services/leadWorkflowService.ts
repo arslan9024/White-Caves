@@ -175,7 +175,6 @@ export function buildLeadTaskCockpit(leads: LeadTaskLead[], now = new Date()) {
     upcoming: [],
   };
   sorted.forEach(lead => {
-  sorted.forEach(lead => {
     columns[columnByLeadId.get(lead.id) ?? 'upcoming'].push(lead);
   });
 
