@@ -16,20 +16,16 @@
 import { readFileSync, writeFileSync, mkdirSync, existsSync } from 'fs';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
+import { createTraceContext, getCanaryPercent, isFeatureEnabled, loadPolicy } from './policy-loader.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 const ROOT = join(__dirname, '..', '..');
-const POLICY_PATH = join(__dirname, 'policy.json');
 const TASK_QUEUE_PATH = join(ROOT, 'scripts', 'orchestrator', 'task-queue.json');
 const PRIORITY_ORDER_PATH = join(ROOT, 'logs', 'orchestrator', 'priority-order.json');
 const SCAN_REPORT_PATH = join(ROOT, 'logs', 'orchestrator', 'codebase-scan-report.json');
 const GATES_REPORT_PATH = join(ROOT, 'logs', 'orchestrator', 'verification-gates-report.json');
-
-function readPolicy() {
-  return JSON.parse(readFileSync(POLICY_PATH, 'utf8'));
-}
 
 function getRoutingDir(policy) {
   const dir = join(ROOT, policy.confidenceRouting?.routingStateDir ?? 'logs/orchestrator/confidence');
@@ -131,6 +127,9 @@ function getRoutingDecision(riskScore, confidenceScore, policy) {
   const riskHighMin = cfg.riskScoreHighMin ?? 70;
   const riskLowMax = cfg.riskScoreLowMax ?? 30;
 
+  if (!Number.isFinite(riskScore) || !Number.isFinite(confidenceScore)) {
+    return { decision: cfg.fallbackDecision ?? 'human-approval', reason: 'Insufficient scoring data, using fallback chain' };
+  }
   if (riskScore >= riskHighMin || confidenceScore <= requireHumanMaxConf) {
     return { decision: 'human-approval', reason: `High risk (${riskScore}) or low confidence (${confidenceScore.toFixed(2)})` };
   }
@@ -162,14 +161,41 @@ function evaluateTask(taskId, policy) {
 
   const { riskScore, confidenceScore, factors } = scoreTask(task, policy, scanReport, gatesReport);
   const routing = getRoutingDecision(riskScore, confidenceScore, policy);
+  const mode = policy.rollout?.policyModeByEnv?.[policy.rollout?.environment ?? 'development'] ?? 'stable';
+  const canaryPercent = getCanaryPercent(policy);
+  const hashVal = Array.from(String(taskId)).reduce((acc, ch) => (acc + ch.charCodeAt(0)) % 100, 0);
+  const inCanary = hashVal < canaryPercent;
+  const legacyDecision = (riskScore >= (policy.confidenceRouting?.riskScoreHighMin ?? 70) || confidenceScore <= (policy.confidenceRouting?.requireHumanApprovalMaxConfidence ?? 0.5))
+    ? 'human-approval'
+    : 'autopilot';
+
+  let enforcedDecision = routing.decision;
+  let decisionReason = routing.reason;
+  if (mode === 'canary' && !inCanary) {
+    enforcedDecision = 'human-approval';
+    decisionReason = `Outside canary cohort (${canaryPercent}%), forcing human approval`;
+  } else if (mode === 'shadow') {
+    enforcedDecision = legacyDecision;
+    decisionReason = `Shadow mode: new=${routing.decision}, enforced legacy=${legacyDecision}`;
+  }
 
   const result = {
     taskId,
+    trace: createTraceContext(policy, { component: 'confidence-router', taskId }),
     evaluatedAt: new Date().toISOString(),
+    rolloutMode: mode,
+    canary: { percent: canaryPercent, inCanary },
     riskScore,
     confidenceScore: Math.round(confidenceScore * 100) / 100,
-    decision: routing.decision,
-    decisionReason: routing.reason,
+    decision: enforcedDecision,
+    shadowDecision: mode === 'shadow' ? routing.decision : null,
+    decisionReason,
+    requiredReviewMetadata: enforcedDecision === 'human-approval' && policy.confidenceRouting?.requireReviewMetadataOnUncertain
+      ? {
+          reviewerGroup: ['@Ada', '@Katherine'],
+          reasonCode: 'UNCERTAIN_OR_HIGH_RISK',
+        }
+      : null,
     scoringFactors: factors,
   };
 
@@ -227,9 +253,9 @@ function printStatus(policy) {
 // ── CLI ───────────────────────────────────────────────────────────────────────
 
 const args = process.argv.slice(2);
-const policy = readPolicy();
+const policy = loadPolicy();
 
-if (!policy.confidenceRouting?.enabled) {
+if (!policy.confidenceRouting?.enabled || !isFeatureEnabled(policy, 'routing')) {
   console.warn('Confidence routing is disabled in policy.json (confidenceRouting.enabled=false)');
   process.exit(0);
 }

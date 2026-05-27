@@ -1,7 +1,7 @@
 # White Caves — Custom Agents & Subagents Plan
 
-> **Updated:** 2026-05-26  
-> **Status:** Active governance guide — Aegis vNext (supersedes Aegis 150 / V3 / V2 governance baselines)
+> **Updated:** 2026-05-27  
+> **Status:** Active governance guide — Aegis vNext v2 (schema-versioned policy baseline; legacy Aegis 170/150 labels retained for compatibility only)
 
 ---
 
@@ -19,6 +19,7 @@ This file defines how custom agents/subagents are dispatched **today** and how t
 - Daily execution log: [`../DAILY_MILESTONE_TRACKER.md`](../DAILY_MILESTONE_TRACKER.md)
 - Agent roster + current free-agent queue: [`../AGENTS.md`](../AGENTS.md)
 - Runtime policy authority: [`../.github/copilot-instructions.md`](../.github/copilot-instructions.md)
+- Upgrade operation runbook: [`./AEGIS_UPGRADE_RUNBOOK.md`](./AEGIS_UPGRADE_RUNBOOK.md)
 - **V3 upgrade details:** [`./AGENT_SKILLS_UPGRADE_V3.md`](./AGENT_SKILLS_UPGRADE_V3.md)
 
 ---

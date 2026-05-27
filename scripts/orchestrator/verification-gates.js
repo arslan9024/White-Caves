@@ -16,18 +16,14 @@ import { readFileSync, writeFileSync, mkdirSync, existsSync } from 'fs';
 import { execSync } from 'child_process';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
+import { createTraceContext, isFeatureEnabled, loadPolicy } from './policy-loader.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 const ROOT = join(__dirname, '..', '..');
-const POLICY_PATH = join(__dirname, 'policy.json');
 const LOGS_DIR = join(ROOT, 'logs', 'orchestrator');
 const REPORT_FILE = join(LOGS_DIR, 'verification-gates-report.json');
-
-function readPolicy() {
-  return JSON.parse(readFileSync(POLICY_PATH, 'utf8'));
-}
 
 function ensureLogs() {
   mkdirSync(LOGS_DIR, { recursive: true });
@@ -47,7 +43,28 @@ const SECURITY_PATTERNS = [
 
 const SCAN_DIRS = ['src', 'server'];
 
-function runSecurityScan() {
+function classifyDomain(file, label) {
+  const text = `${file} ${label}`.toLowerCase();
+  if (text.includes('auth')) return 'auth';
+  if (text.includes('payment') || text.includes('stripe')) return 'payment';
+  if (text.includes('prisma') || text.includes('database') || text.includes('mongo')) return 'database';
+  if (text.includes('xss') || text.includes('secret') || text.includes('token') || text.includes('security')) return 'security';
+  return 'general';
+}
+
+function getExceptionForFinding(finding, policy) {
+  const now = Date.now();
+  return (policy.verification?.exceptions ?? []).find((ex) => {
+    if (!ex || !ex.expiresAt) return false;
+    if (Date.parse(ex.expiresAt) < now) return false;
+    if (ex.domain && ex.domain !== finding.domain) return false;
+    if (ex.label && ex.label !== finding.label) return false;
+    if (ex.fileContains && !finding.file.includes(ex.fileContains)) return false;
+    return true;
+  }) ?? null;
+}
+
+function runSecurityScan(policy) {
   const findings = [];
 
   for (const dir of SCAN_DIRS) {
@@ -81,6 +98,7 @@ function runSecurityScan() {
               line: i + 1,
               label: rule.label,
               severity: rule.severity,
+              domain: classifyDomain(file, rule.label),
               excerpt: line.trim().slice(0, 120),
             });
           }
@@ -89,15 +107,27 @@ function runSecurityScan() {
     }
   }
 
-  const critical = findings.filter((f) => f.severity === 'critical');
-  const high = findings.filter((f) => f.severity === 'high');
+  const enriched = findings.map((finding) => {
+    const exception = getExceptionForFinding(finding, policy);
+    const domainTier = policy.verification?.tiers?.[finding.domain] ?? policy.verification?.tiers?.general ?? { blockSeverities: ['critical'] };
+    const isBlockedByTier = (domainTier.blockSeverities ?? ['critical']).includes(finding.severity);
+    return {
+      ...finding,
+      enforcementTier: isBlockedByTier ? 'block' : 'warn',
+      waived: Boolean(exception),
+      waiver: exception ? { reason: exception.reason ?? 'temporary waiver', expiresAt: exception.expiresAt } : null,
+    };
+  });
+  const blocked = enriched.filter((f) => f.enforcementTier === 'block' && !f.waived);
+  const critical = enriched.filter((f) => f.severity === 'critical');
+  const high = enriched.filter((f) => f.severity === 'high');
 
   return {
     gate: 'security',
-    passed: critical.length === 0,
-    hardFail: critical.length > 0,
-    summary: `${findings.length} findings (${critical.length} critical, ${high.length} high)`,
-    findings,
+    passed: blocked.length === 0,
+    hardFail: blocked.length > 0 && (policy.hardStops?.stopOnSecurityScanFailure ?? true),
+    summary: `${enriched.length} findings (${critical.length} critical, ${high.length} high, ${blocked.length} blocking, ${enriched.filter(f => f.waived).length} waived)`,
+    findings: enriched,
   };
 }
 
@@ -132,12 +162,16 @@ function runDiffRiskScore(policy) {
   const linesDel = diffOutput.match(/(\d+) deletions?/)?.[1] ?? '0';
   const totalLines = parseInt(linesChanged, 10) + parseInt(linesDel, 10);
 
-  let riskScore = Math.min(100, Math.round((totalLines / 500) * 50));
+  const diffWeights = policy.verification?.diffRiskWeights ?? {};
+  const scale = diffWeights.linesChangedScale ?? 500;
+  const highRiskWeight = diffWeights.highRiskPathWeight ?? 10;
+
+  let riskScore = Math.min(100, Math.round((totalLines / scale) * 50));
 
   const highRiskHits = changedFiles.filter((f) =>
     HIGH_RISK_PATHS.some((p) => f.includes(p)),
   );
-  riskScore += highRiskHits.length * 10;
+  riskScore += highRiskHits.length * highRiskWeight;
   riskScore = Math.min(100, riskScore);
 
   const requiresGroupReview = riskScore >= (policy.workflowGraph?.stepPatterns?.['group-review']?.minRiskScore ?? 70);
@@ -204,7 +238,9 @@ function runAllGates(policy) {
   ensureLogs();
 
   const results = {
+    trace: createTraceContext(policy, { component: 'verification-gates' }),
     version: policy.version,
+    schemaVersion: policy.schemaVersion,
     runAt: new Date().toISOString(),
     gates: [],
     overallPassed: true,
@@ -212,7 +248,7 @@ function runAllGates(policy) {
   };
 
   const gates = [
-    runSecurityScan(),
+    runSecurityScan(policy),
     runDiffRiskScore(policy),
     runFlakyTestDetection(policy),
   ];
@@ -251,11 +287,16 @@ function runAllGates(policy) {
 // ── CLI ───────────────────────────────────────────────────────────────────────
 
 const args = process.argv.slice(2);
-const policy = readPolicy();
+const policy = loadPolicy();
+
+if (!isFeatureEnabled(policy, 'gates')) {
+  console.warn('Verification gates are disabled by policy feature toggle.');
+  process.exit(0);
+}
 
 if (args.includes('--security')) {
   ensureLogs();
-  const r = runSecurityScan();
+  const r = runSecurityScan(policy);
   console.log(JSON.stringify(r, null, 2));
   if (r.hardFail) process.exit(1);
 } else if (args.includes('--diff-risk')) {

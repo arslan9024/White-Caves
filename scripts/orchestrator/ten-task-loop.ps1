@@ -10,7 +10,7 @@
 #
 # Usage:
 #   npm run orchestrator:loop10:turn
-#   npm run orchestrator:loop10:turn -- -AutoImplement -ImplementCommand "npm run typecheck"
+#   npm run orchestrator:loop10:turn -- -ImplementCommand "npm run typecheck"
 #   npm run orchestrator:loop10:autopilot -- -Turns 5 -AutoImplement -ImplementCommand "npm run typecheck"
 #   npm run orchestrator:loop10:autopilot:continuous
 #   npm run orchestrator:loop10:autopilot:continuous -- -MaxTurns 5
@@ -25,6 +25,8 @@ param(
   [string]$WorkspaceRoot = ".",
   [int]$Turns = 1,
   [switch]$AutoImplement,
+  [bool]$RequireImplementationEveryTurn = $true,
+  [bool]$RequireCompletionEveryTurn = $true,
   [switch]$AutoLoop,
   [int]$MaxTurns = 0,
   [switch]$UseSubagentFlow,
@@ -68,6 +70,10 @@ if (-not (Test-Path $stateDir)) {
 
 if (-not (Test-Path $pendingFile)) {
   throw "Missing canonical pending queue file: $pendingFile"
+}
+
+if ($RequireImplementationEveryTurn -and -not $AutoImplement) {
+  $AutoImplement = $true
 }
 
 function New-Id {
@@ -893,6 +899,7 @@ while ($true) {
   $premiumUsedThisTurn = $false
   $allAgentsFreeMode = $false
   $haltAfterTurn = $false
+  $haltReason = ""
 
   if ($AutoImplement) {
     $planStatus = "skipped"
@@ -1090,6 +1097,13 @@ while ($true) {
     $selected.notes = $executionNote
   }
 
+  if ($RequireCompletionEveryTurn -and $executionStatus -ne "completed") {
+    $haltAfterTurn = $true
+    $haltReason = "Turn completion gate failed: status=$executionStatus (completed required each turn)."
+    $executionNote = "$executionNote | $haltReason"
+    Write-ActivityLog -Stage "GATE" -Message $haltReason -Color "Red"
+  }
+
   # Re-analyze codebase after execution before refill and rescoring.
   Write-ActivityLog -Stage "REANALYZE" -Message "Running post-execution analysis" -Color "DarkCyan"
   $postExecutionAnalysis = Analyze-Codebase
@@ -1149,7 +1163,10 @@ while ($true) {
   $waveBoundaryReached = $waveCompletedThisTurn
   if ($premiumUsedThisTurn -and -not $completionGateMet -and $waveBoundaryReached) {
     $haltAfterTurn = $true
-    Write-ActivityLog -Stage "GATE" -Message "Premium cycle completion gate failed (<$MinProjectCompletionDeltaPct>). Loop will stop after this turn." -Color "Red"
+    if ([string]::IsNullOrWhiteSpace($haltReason)) {
+      $haltReason = "Premium cycle completion gate failed (<$MinProjectCompletionDeltaPct>)."
+    }
+    Write-ActivityLog -Stage "GATE" -Message "$haltReason Loop will stop after this turn." -Color "Red"
   }
 
   $postAnalysis = $postExecutionAnalysis
@@ -1170,7 +1187,7 @@ while ($true) {
   Write-Host "[TURN $($state.turnCounter)] Selected $($selected.id) ($($selected.sourceId)) -> $executionStatus" -ForegroundColor Cyan
 
   if ($haltAfterTurn) {
-    Write-Host "[AUTOPILOT] Stopping loop due to premium completion gate failure." -ForegroundColor Red
+    Write-Host ("[AUTOPILOT] Stopping loop due to gate failure: {0}" -f $(if ([string]::IsNullOrWhiteSpace($haltReason)) { "unknown" } else { $haltReason })) -ForegroundColor Red
     break
   }
 
@@ -1202,4 +1219,3 @@ if ($RestartOnExit) {
     Start-Process -FilePath "powershell" -ArgumentList $restartArgumentString | Out-Null
   }
 }
-

@@ -153,6 +153,8 @@
     "orchestrator:health:ci": "powershell -ExecutionPolicy Bypass -File scripts/orchestrator/queue-health.ps1 -CI",
     "orchestrator:health:strict": "powershell -ExecutionPolicy Bypass -File scripts/orchestrator/queue-health.ps1 -Strict",
     "orchestrator:health:brief": "powershell -ExecutionPolicy Bypass -File scripts/orchestrator/queue-health.ps1 -Brief",
+    "orchestrator:learning": "node scripts/orchestrator/aegis-learning-report.js",
+    "orchestrator:learning:json": "node scripts/orchestrator/aegis-learning-report.js --json",
     "orchestrator:blockers": "powershell -ExecutionPolicy Bypass -File scripts/orchestrator/blocker-report.ps1",
     "orchestrator:blockers:brief": "powershell -ExecutionPolicy Bypass -File scripts/orchestrator/blocker-report.ps1 -Brief",
     "orchestrator:blockers:next": "powershell -ExecutionPolicy Bypass -File scripts/orchestrator/blocker-report.ps1 -Next",
@@ -165,7 +167,7 @@
     "orchestrator:agent-loop:approval": "powershell -ExecutionPolicy Bypass -File scripts/orchestrator/agent-loop.ps1 -Approval -NoBrowser",
     "orchestrator:agent-loop:approval:browser": "powershell -ExecutionPolicy Bypass -File scripts/orchestrator/agent-loop.ps1 -Approval -OpenBrowser",
     "orchestrator:agent-loop:autopilot": "powershell -ExecutionPolicy Bypass -File scripts/orchestrator/agent-loop.ps1 -Autopilot -NoBrowser",
-    "orchestrator:loop10:turn": "powershell -ExecutionPolicy Bypass -File scripts/orchestrator/ten-task-loop.ps1",
+    "orchestrator:loop10:turn": "powershell -ExecutionPolicy Bypass -File scripts/orchestrator/ten-task-loop.ps1 -AutoImplement",
     "orchestrator:loop10:autopilot": "powershell -ExecutionPolicy Bypass -File scripts/orchestrator/ten-task-loop.ps1 -AutoImplement",
     "orchestrator:loop10:autopilot:10": "powershell -ExecutionPolicy Bypass -File scripts/orchestrator/ten-task-loop.ps1 -Turns 10 -AutoImplement",
     "orchestrator:loop10:autopilot:continuous": "powershell -ExecutionPolicy Bypass -File scripts/orchestrator/ten-task-loop.ps1 -AutoImplement -AutoLoop",
@@ -266,7 +268,10 @@
     "aegis:bench:status": "node scripts/orchestrator/benchmark.js --status",
     "aegis:route:evaluate": "node scripts/orchestrator/confidence-router.js --evaluate",
     "aegis:route:batch": "node scripts/orchestrator/confidence-router.js --batch",
-    "aegis:route:status": "node scripts/orchestrator/confidence-router.js --status"
+    "aegis:route:status": "node scripts/orchestrator/confidence-router.js --status",
+    "aegis:policy:gate": "node scripts/orchestrator/policy-gate.js",
+    "aegis:health": "node scripts/orchestrator/aegis-health.js",
+    "aegis:health:json": "node scripts/orchestrator/aegis-health.js --json"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"

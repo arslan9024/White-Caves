@@ -14,17 +14,12 @@
 import { readFileSync, writeFileSync, mkdirSync, existsSync } from 'fs';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
+import { createTraceContext, isFeatureEnabled, loadPolicy } from './policy-loader.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 const ROOT = join(__dirname, '..', '..');
-const POLICY_PATH = join(__dirname, 'policy.json');
-
-function readPolicy() {
-  return JSON.parse(readFileSync(POLICY_PATH, 'utf8'));
-}
-
 function getStateDir(policy) {
   const dir = join(ROOT, policy.workflowGraph?.stateDir ?? 'logs/orchestrator/workflow-state');
   mkdirSync(dir, { recursive: true });
@@ -204,10 +199,12 @@ function parallelFanOut(step, state, stateFile, graph) {
 // ── CLI ───────────────────────────────────────────────────────────────────────
 
 const args = process.argv.slice(2);
-const policy = readPolicy();
+const policy = loadPolicy();
 const graph = policy.workflowGraph;
+const trace = createTraceContext(policy, { component: 'workflow-graph' });
+process.env.AEGIS_TRACE_ID = trace.traceId;
 
-if (!graph?.enabled) {
+if (!graph?.enabled || !isFeatureEnabled(policy, 'graph')) {
   console.warn('Workflow graph mode is disabled in policy.json (workflowGraph.enabled=false)');
   process.exit(0);
 }

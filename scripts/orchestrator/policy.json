@@ -1,11 +1,12 @@
 {
-  "version": "2026.05.26-aegis-vnext-v1",
+  "version": "2026.05.27-aegis-vnext-v2",
+  "schemaVersion": "2.0.0",
   "readinessThresholdPct": 60,
   "readinessTargetPct": 90,
   "largeWaveMinReadinessPct": 90,
   "microWaveMinReadinessPct": 60,
   "readinessChecksTotal": 30,
-  "approvalPhrase": "@Ada \u2014 Context Ready (99% Readiness) \u2014 Coding Phase Approved",
+  "approvalPhrase": "@Ada \u2014 Context Ready (60% Readiness) \u2014 Coding Phase Approved",
   "depthGateLabel": "depth evidence",
   "modelRouting": {
     "freeModelOnlyMode": true,
@@ -225,15 +226,41 @@
       "hardStopOnly": false
     }
   },
-  "autonomousDefault": false,
-  "hardStops": {
-    "stopOnTestFailure": true,
-    "stopOnLintFailure": true,
-    "stopOnBuildFailure": true,
-    "stopOnPolicyMismatch": true,
-    "stopOnPlansValidationFailure": true,
-    "stopOnSecurityCheckFailure": true
+  "compatibility": {
+    "legacyPolicyVersions": [
+      "2026.05.26-aegis-170-v3",
+      "2026.05.25-aegis-150-v2"
+    ],
+    "acceptLegacyLabels": true
   },
+  "rollout": {
+    "environment": "development",
+    "policyModeByEnv": {
+      "development": "shadow",
+      "staging": "canary",
+      "production": "stable"
+    },
+    "canaryPercentByEnv": {
+      "development": 100,
+      "staging": 20,
+      "production": 5
+    },
+    "shadowPolicyEvaluation": true,
+    "autoRollbackOnRegression": true,
+    "regressionThresholdPct": 10
+  },
+  "features": {
+    "killSwitchAll": false,
+    "graph": true,
+    "checkpoints": true,
+    "gates": true,
+    "rollback": true,
+    "tracing": true,
+    "budget": true,
+    "routing": true,
+    "benchmark": true
+  },
+  "autonomousDefault": false,
   "registryPath": "plans/SUBAGENT_REGISTRY_170.json",
   "agentMesh": {
     "totalAgents": 170,
@@ -340,6 +367,20 @@
       "warnThreshold": 2
     }
   },
+  "verification": {
+    "diffRiskWeights": {
+      "linesChangedScale": 500,
+      "highRiskPathWeight": 10
+    },
+    "tiers": {
+      "security": { "blockSeverities": ["critical"] },
+      "auth": { "blockSeverities": ["critical", "high"] },
+      "database": { "blockSeverities": ["critical", "high"] },
+      "payment": { "blockSeverities": ["critical", "high"] },
+      "general": { "blockSeverities": ["critical"] }
+    },
+    "exceptions": []
+  },
   "rollback": {
     "enabled": true,
     "maxRetriesBeforeRollback": 2,
@@ -388,6 +429,10 @@
     "riskScoreLowMax": 30,
     "riskScoreHighMin": 70,
     "highRiskDomains": ["security", "auth", "payment", "database-migration"],
-    "routingStateDir": "logs/orchestrator/confidence"
+    "routingStateDir": "logs/orchestrator/confidence",
+    "fallbackDecision": "human-approval",
+    "fallbackChain": ["human-approval", "approval", "escalate"],
+    "requireReviewMetadataOnUncertain": true,
+    "canaryPercentOverride": null
   }
 }
