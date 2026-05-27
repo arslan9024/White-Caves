@@ -167,7 +167,7 @@
     "orchestrator:agent-loop:approval": "powershell -ExecutionPolicy Bypass -File scripts/orchestrator/agent-loop.ps1 -Approval -NoBrowser",
     "orchestrator:agent-loop:approval:browser": "powershell -ExecutionPolicy Bypass -File scripts/orchestrator/agent-loop.ps1 -Approval -OpenBrowser",
     "orchestrator:agent-loop:autopilot": "powershell -ExecutionPolicy Bypass -File scripts/orchestrator/agent-loop.ps1 -Autopilot -NoBrowser",
-    "orchestrator:loop10:turn": "powershell -ExecutionPolicy Bypass -File scripts/orchestrator/ten-task-loop.ps1",
+    "orchestrator:loop10:turn": "powershell -ExecutionPolicy Bypass -File scripts/orchestrator/ten-task-loop.ps1 -AutoImplement",
     "orchestrator:loop10:autopilot": "powershell -ExecutionPolicy Bypass -File scripts/orchestrator/ten-task-loop.ps1 -AutoImplement",
     "orchestrator:loop10:autopilot:10": "powershell -ExecutionPolicy Bypass -File scripts/orchestrator/ten-task-loop.ps1 -Turns 10 -AutoImplement",
     "orchestrator:loop10:autopilot:continuous": "powershell -ExecutionPolicy Bypass -File scripts/orchestrator/ten-task-loop.ps1 -AutoImplement -AutoLoop",
