@@ -6,6 +6,7 @@
 
 import { Router, Request, Response } from 'express';
 import { Prisma } from '@prisma/client';
+import ExcelJS from 'exceljs';
 import { asyncHandler, AppError } from '../middleware/errorHandler';
 import { prisma } from '../database.js';
 import { validateIdParam } from '../utils/validate';
@@ -132,6 +133,65 @@ router.get(
     res.setHeader('Content-Type', 'text/csv; charset=utf-8');
     res.setHeader('Content-Disposition', 'attachment; filename="audit-log.csv"');
     res.status(200).send(csvLines.join('\n'));
+  }),
+);
+
+// ─── GET /api/activities/export/xlsx ─────────────────────────────────────
+router.get(
+  '/export/xlsx',
+  requirePermission('view_leads'),
+  asyncHandler(async (req: Request, res: Response) => {
+    const { type, action, userId, leadId, search } = req.query as Record<string, string | undefined>;
+    const where = buildActivityWhere({ type, action, userId, leadId, search });
+
+    const rows = await prisma.activity.findMany({
+      where,
+      orderBy: { createdAt: 'desc' },
+      take: 5000,
+      include: {
+        user: { select: { name: true, email: true } },
+        lead: { select: { name: true } },
+      },
+    });
+
+    const workbook = new ExcelJS.Workbook();
+    const sheet = workbook.addWorksheet('Audit Log');
+
+    sheet.columns = [
+      { header: 'ID', key: 'id', width: 28 },
+      { header: 'Created At', key: 'createdAt', width: 26 },
+      { header: 'Type', key: 'type', width: 14 },
+      { header: 'Action', key: 'action', width: 18 },
+      { header: 'Description', key: 'description', width: 60 },
+      { header: 'User', key: 'user', width: 24 },
+      { header: 'Email', key: 'email', width: 32 },
+      { header: 'Lead', key: 'lead', width: 24 },
+    ];
+
+    for (const row of rows) {
+      sheet.addRow({
+        id: row.id,
+        createdAt: row.createdAt.toISOString(),
+        type: row.type,
+        action: row.action,
+        description: row.description,
+        user: row.user?.name || 'System',
+        email: row.user?.email || '',
+        lead: row.lead?.name || '',
+      });
+    }
+
+    sheet.getRow(1).font = { bold: true };
+    sheet.views = [{ state: 'frozen', ySplit: 1 }];
+    sheet.autoFilter = {
+      from: 'A1',
+      to: 'H1',
+    };
+
+    const buffer = await workbook.xlsx.writeBuffer();
+    res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+    res.setHeader('Content-Disposition', 'attachment; filename="audit-log.xlsx"');
+    res.status(200).send(Buffer.from(buffer));
   }),
 );
 

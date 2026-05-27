@@ -50,7 +50,7 @@ const SignContractPage: FC = () => {
 
   const fetchContractData = useCallback(async (signal?: AbortSignal): Promise<void> => {
     try {
-      const response = await authFetch(`/api/signature/${token}`, { signal });
+      const response = await authFetch(`/api/contracts/signature/${token}`, { signal });
       if (!response.ok) {
         throw new Error(`Failed to load contract (HTTP ${response.status})`);
       }
@@ -104,7 +104,7 @@ const SignContractPage: FC = () => {
     
     try {
       
-      const response = await authFetch(`/api/signature/${token}/sign`, {
+      const response = await authFetch(`/api/contracts/signature/${token}/sign`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ signature, signerName: signerName.trim() })

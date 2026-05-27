@@ -40,11 +40,12 @@
 ### Session 3 Incremental Delivery (current branch)
 
 - **W18.1-P0-010 (baseline)**: IndexedDB-backed offline draft persistence added for viewing feedback capture (`src/utils/indexedDraftStore.ts`, `src/components/ViewingFeedback.jsx`) ✅
-- **W18.1-P0-018 (backend baseline)**: Dynamic cadence-rule CRUD APIs added (`GET/POST/PATCH/DELETE /api/follow-ups/rules`) to operationalize `CadenceRule` model ✅
-- **W18.1-P1-002 (baseline)**: Audit log CSV export endpoint (`GET /api/activities/export/csv`) and UI action wired in `AuditLogPage` ✅
-- **W18.1-P1-005 (baseline)**: E-sign callback handler added (`POST /api/signatures/webhook/callback`) for provider status reconciliation ✅
+- **W18.1-P0-018 (backend progression)**: Fixed follow-up cadence-route registration bug (rules routes now mounted globally, not nested under `/cadences`) and enabled dynamic CadenceRule runtime selection in `startSequence` based on lead tier/source/dealType ✅
+- **W18.1-P1-002 (progression)**: Added audit log XLSX export parity (`GET /api/activities/export/xlsx`) and wired `Export XLSX` action in `AuditLogPage` alongside CSV ✅
+- **W18.1-P1-004 (backend progression)**: Added structured Nadia escalation handoff context logging (`nadia_escalation_queued` / `nadia_escalation_requeued` activity metadata) during queueing ✅
+- **W18.1-P1-005 (progression)**: Added tokenized e-sign contract routes (`GET /api/contracts/signature/:token`, `POST /api/contracts/signature/:token/sign`) and aligned `SignContractPage` API wiring + tests ✅
 - **W18.1-P1-006 (baseline)**: Syndication queue API delivered with `SYNDICATION_ENABLED` gate (`/api/syndication/status`, `/api/syndication/sync-queue`) ✅
-- Validation evidence: `npm run build` ✅, `npm run plans:validate` ✅, targeted CRM tests ✅ (`AuditLogPage`, `AgentTaskCockpit`, `LeadTimeline`)
+- Validation evidence: `npm run test:run -- src/pages/crm/AuditLogPage.test.tsx src/pages/SignContractPage.test.tsx` ✅, `npm run lint` ✅ (warnings only; baseline unchanged), `npm run build` ✅, `npm run plans:validate` ✅
 
 ## 🚀 Wave 18.1 Session 1 Delivery
 
