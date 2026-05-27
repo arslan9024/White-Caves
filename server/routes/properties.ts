@@ -612,6 +612,10 @@ router.post(
       buildingPermitNumber,
       rentIndexRef,
       furnished,
+      verifiedAt,
+      verifiedBy,
+      verificationNotes,
+      lastRefreshedAt,
     } = req.body as Record<string, unknown>;
 
     if (!title || typeof title !== 'string') throw new AppError('Property title is required', 400);
@@ -651,6 +655,10 @@ router.post(
         buildingPermitNumber: buildingPermitNumber ? String(buildingPermitNumber) : null,
         rentIndexRef: rentIndexRef ? String(rentIndexRef) : null,
         furnished: furnished === true || furnished === 'true',
+        verifiedAt: verifiedAt ? new Date(String(verifiedAt)) : null,
+        verifiedBy: verifiedBy ? String(verifiedBy) : null,
+        verificationNotes: verificationNotes ? sanitizeString(String(verificationNotes)) : null,
+        lastRefreshedAt: lastRefreshedAt ? new Date(String(lastRefreshedAt)) : null,
         userId: req.user!.id,
       },
       include: {
@@ -784,6 +792,10 @@ router.patch(
     if (body.titleDeedMissing !== undefined)        updateData.titleDeedMissing        = Boolean(body.titleDeedMissing);
     if (body.landlordPassportMissing !== undefined) updateData.landlordPassportMissing = Boolean(body.landlordPassportMissing);
     if (body.ejariMissing !== undefined)            updateData.ejariMissing            = Boolean(body.ejariMissing);
+    if (body.verifiedAt !== undefined)         updateData.verifiedAt         = body.verifiedAt ? new Date(String(body.verifiedAt)) : null;
+    if (body.verifiedBy !== undefined)         updateData.verifiedBy         = body.verifiedBy ? String(body.verifiedBy) : null;
+    if (body.verificationNotes !== undefined)  updateData.verificationNotes  = body.verificationNotes ? sanitizeString(String(body.verificationNotes)) : null;
+    if (body.lastRefreshedAt !== undefined)    updateData.lastRefreshedAt    = body.lastRefreshedAt ? new Date(String(body.lastRefreshedAt)) : null;
 
     const property = await prisma.property.update({
       where: { id },

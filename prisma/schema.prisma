@@ -107,6 +107,12 @@ model Property {
   rentIndexRef        String? // RERA Rent Index reference (for rent increase calculations)
   furnished           Boolean @default(false) // affects max deposit calculation
 
+  // Verification evidence fields (P0-012)
+  verifiedAt        DateTime?  // when listing was verified
+  verifiedBy        String?    @db.ObjectId  // userId who verified
+  verificationNotes String?    // evidence notes
+  lastRefreshedAt   DateTime?  // when agent last confirmed details are current
+
   // Relations
   userId      String   @db.ObjectId
   user        User     @relation(fields: [userId], references: [id])
