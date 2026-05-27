@@ -254,7 +254,6 @@ app.use('/api/auth/2fa/enable', strictLimiter);
 app.use('/api/auth/2fa/disable', strictLimiter);
 app.use('/api/auth/refresh', authLimiter);
 app.use('/api/auth/firebase-sync', firebaseSyncLimiter);
-app.use('/api/auth/refresh', authLimiter);
 app.use('/api/auth/webauthn/register', authLimiter);
 app.use('/api/auth/webauthn/authenticate', authLimiter);
 app.use('/api/contact', contactLimiter); // Public unauthenticated — stricter: 10/hour/IP
@@ -519,9 +518,6 @@ app.use('/api/crm/export', strictLimiter); // Strict rate limit on data export
 app.use('/api/crm', crmRoutes);
 
 // AI Assistants API (Phase 0.8 — plan management)
-app.use('/api/assistants', assistantsRoutes);
-
-// External module gateway (Linda + Henry separate repos)
 app.use('/api/integrations', integrationsRoutes);
 app.use('/api/orchestration', orchestrationRoutes);
 

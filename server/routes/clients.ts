@@ -163,12 +163,10 @@ router.post(
 
     // Validate enums
     if (category && !VALID_CATEGORIES.includes(category)) {
-      return res
-        .status(400)
-        .json({
-          success: false,
-          error: `Invalid category. Must be: ${VALID_CATEGORIES.join(', ')}`,
-        });
+      return res.status(400).json({
+        success: false,
+        error: `Invalid category. Must be: ${VALID_CATEGORIES.join(', ')}`,
+      });
     }
     if (status && !VALID_STATUSES.includes(status)) {
       return res
@@ -231,12 +229,10 @@ router.patch(
 
     // Validate enums if provided
     if (category && !VALID_CATEGORIES.includes(category)) {
-      return res
-        .status(400)
-        .json({
-          success: false,
-          error: `Invalid category. Must be: ${VALID_CATEGORIES.join(', ')}`,
-        });
+      return res.status(400).json({
+        success: false,
+        error: `Invalid category. Must be: ${VALID_CATEGORIES.join(', ')}`,
+      });
     }
     if (status && !VALID_STATUSES.includes(status)) {
       return res
