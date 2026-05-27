@@ -37,6 +37,15 @@
 - **P0 exhaustion target:** 20/20 complete by Session 3 exit
 - See full plan: [`plans/waves/WAVE_18_1_IMPLEMENTATION_BACKLOG.md`](plans/waves/WAVE_18_1_IMPLEMENTATION_BACKLOG.md) Session 3 section
 
+### Session 3 Incremental Delivery (current branch)
+
+- **W18.1-P0-010 (baseline)**: IndexedDB-backed offline draft persistence added for viewing feedback capture (`src/utils/indexedDraftStore.ts`, `src/components/ViewingFeedback.jsx`) ✅
+- **W18.1-P0-018 (backend baseline)**: Dynamic cadence-rule CRUD APIs added (`GET/POST/PATCH/DELETE /api/follow-ups/rules`) to operationalize `CadenceRule` model ✅
+- **W18.1-P1-002 (baseline)**: Audit log CSV export endpoint (`GET /api/activities/export/csv`) and UI action wired in `AuditLogPage` ✅
+- **W18.1-P1-005 (baseline)**: E-sign callback handler added (`POST /api/signatures/webhook/callback`) for provider status reconciliation ✅
+- **W18.1-P1-006 (baseline)**: Syndication queue API delivered with `SYNDICATION_ENABLED` gate (`/api/syndication/status`, `/api/syndication/sync-queue`) ✅
+- Validation evidence: `npm run build` ✅, `npm run plans:validate` ✅, targeted CRM tests ✅ (`AuditLogPage`, `AgentTaskCockpit`, `LeadTimeline`)
+
 ## 🚀 Wave 18.1 Session 1 Delivery
 
 - Implemented lead workflow automation for **W18.1-P0-004/005/006/007/008**: viewing requests now auto-create/link inquiry leads, CRM exposes unified lead timelines, bulk reminder actions, and agent task cockpit SLA priority feeds.

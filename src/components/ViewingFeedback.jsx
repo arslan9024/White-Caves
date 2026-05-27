@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Star, ThumbsUp, ThumbsDown, HelpCircle } from 'lucide-react';
 import { authFetch } from '../utils/authFetch';
+import { clearDraft, getDraft, setDraft } from '../utils/indexedDraftStore';
 import './ViewingFeedback.css';
 
 const ViewingFeedback = ({ viewing, onSubmit, onClose }) => {
@@ -9,6 +10,42 @@ const ViewingFeedback = ({ viewing, onSubmit, onClose }) => {
   const [feedback, setFeedback] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [draftLoaded, setDraftLoaded] = useState(false);
+
+  const draftKey = useMemo(
+    () => `viewing-feedback:${viewing?._id || viewing?.id || 'unknown'}`,
+    [viewing?._id, viewing?.id]
+  );
+
+  useEffect(() => {
+    let active = true;
+
+    const loadDraft = async () => {
+      try {
+        const draft = await getDraft(draftKey);
+        if (!active || !draft || typeof draft !== 'object') return;
+
+        if (typeof draft.outcome === 'string') setOutcome(draft.outcome);
+        if (typeof draft.feedback === 'string') setFeedback(draft.feedback);
+        if (typeof draft.rating === 'number') setRating(draft.rating);
+      } catch {
+        // Silent fallback: user can still continue without draft restore.
+      } finally {
+        if (active) setDraftLoaded(true);
+      }
+    };
+
+    void loadDraft();
+
+    return () => {
+      active = false;
+    };
+  }, [draftKey]);
+
+  useEffect(() => {
+    if (!draftLoaded) return;
+    void setDraft(draftKey, { outcome, rating, feedback });
+  }, [draftKey, draftLoaded, feedback, outcome, rating]);
 
   const handleSubmit = async e => {
     e.preventDefault();
@@ -26,6 +63,7 @@ const ViewingFeedback = ({ viewing, onSubmit, onClose }) => {
       });
 
       if (response.ok) {
+        await clearDraft(draftKey);
         setSubmitted(true);
         onSubmit?.();
         setTimeout(() => onClose?.(), 2000);

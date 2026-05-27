@@ -16,6 +16,27 @@ import { triggerLeadRescore } from '../services/ai/leadAutoRescore.js';
 
 const router = Router();
 
+function buildActivityWhere(params: Record<string, string | undefined>): Prisma.ActivityWhereInput {
+  const { type, action, userId, leadId, search } = params;
+  const where: Prisma.ActivityWhereInput = {};
+  if (type && type !== 'all') where.type = type as string;
+  if (action && action !== 'all') where.action = action as string;
+  if (userId) where.userId = userId as string;
+  if (leadId) where.leadId = leadId as string;
+  if (typeof search === 'string' && search.trim().length > 0) {
+    const query = sanitizeString(search).trim().slice(0, 120);
+    where.OR = [
+      { description: { contains: query, mode: 'insensitive' } },
+      { type: { contains: query, mode: 'insensitive' } },
+      { action: { contains: query, mode: 'insensitive' } },
+      { user: { is: { name: { contains: query, mode: 'insensitive' } } } },
+      { user: { is: { email: { contains: query, mode: 'insensitive' } } } },
+      { lead: { is: { name: { contains: query, mode: 'insensitive' } } } },
+    ];
+  }
+  return where;
+}
+
 // ─── GET /api/activities ────────────────────────────────────────────────
 // Filterable by type, action, userId, leadId
 router.get(
@@ -29,22 +50,7 @@ router.get(
       limit: req.query.pageSize as string,
     });
 
-    const where: Prisma.ActivityWhereInput = {};
-    if (type && type !== 'all') where.type = type as string;
-    if (action && action !== 'all') where.action = action as string;
-    if (userId) where.userId = userId as string;
-    if (leadId) where.leadId = leadId as string;
-    if (typeof search === 'string' && search.trim().length > 0) {
-      const query = sanitizeString(search).trim().slice(0, 120);
-      where.OR = [
-        { description: { contains: query, mode: 'insensitive' } },
-        { type: { contains: query, mode: 'insensitive' } },
-        { action: { contains: query, mode: 'insensitive' } },
-        { user: { is: { name: { contains: query, mode: 'insensitive' } } } },
-        { user: { is: { email: { contains: query, mode: 'insensitive' } } } },
-        { lead: { is: { name: { contains: query, mode: 'insensitive' } } } },
-      ];
-    }
+    const where = buildActivityWhere({ type, action, userId, leadId, search });
 
     const validSorts = ['createdAt', 'type', 'action'];
     const field = validSorts.includes(sortBy as string) ? (sortBy as string) : 'createdAt';
@@ -81,6 +87,52 @@ router.get(
       pagination: { page: pageNum, pageSize: limit, total, totalPages: Math.ceil(total / limit) },
     });
   })
+);
+
+// ─── GET /api/activities/export/csv ──────────────────────────────────────
+router.get(
+  '/export/csv',
+  requirePermission('view_leads'),
+  asyncHandler(async (req: Request, res: Response) => {
+    const { type, action, userId, leadId, search } = req.query as Record<string, string | undefined>;
+    const where = buildActivityWhere({ type, action, userId, leadId, search });
+
+    const rows = await prisma.activity.findMany({
+      where,
+      orderBy: { createdAt: 'desc' },
+      take: 5000,
+      include: {
+        user: { select: { name: true, email: true } },
+        lead: { select: { name: true } },
+      },
+    });
+
+    const escape = (value: unknown): string => {
+      const text = String(value ?? '');
+      if (!text.includes(',') && !text.includes('"') && !text.includes('\n')) return text;
+      return `"${text.replace(/"/g, '""')}"`;
+    };
+
+    const csvLines = [
+      ['id', 'createdAt', 'type', 'action', 'description', 'user', 'email', 'lead'].join(','),
+      ...rows.map((row) =>
+        [
+          escape(row.id),
+          escape(row.createdAt.toISOString()),
+          escape(row.type),
+          escape(row.action),
+          escape(row.description),
+          escape(row.user?.name || 'System'),
+          escape(row.user?.email || ''),
+          escape(row.lead?.name || ''),
+        ].join(','),
+      ),
+    ];
+
+    res.setHeader('Content-Type', 'text/csv; charset=utf-8');
+    res.setHeader('Content-Disposition', 'attachment; filename="audit-log.csv"');
+    res.status(200).send(csvLines.join('\n'));
+  }),
 );
 
 // ─── GET /api/activities/:id ────────────────────────────────────────────

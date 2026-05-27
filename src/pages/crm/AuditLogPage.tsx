@@ -92,6 +92,33 @@ const AuditLogPage: FC = () => {
   }, [fetchAuditLog, page, search, searchInput]);
   const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
 
+  const handleExportCsv = useCallback(async () => {
+    try {
+      const query = new URLSearchParams();
+      if (type !== 'all') query.set('type', type);
+      if (action !== 'all') query.set('action', action);
+      if (search.trim()) query.set('search', search.trim());
+
+      const response = await authFetch(`/api/activities/export/csv?${query.toString()}`);
+      if (!response.ok) {
+        const json = await response.json().catch(() => ({}));
+        throw new Error(json.error || json.message || 'Failed to export CSV');
+      }
+
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = 'audit-log.csv';
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(url);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to export CSV');
+    }
+  }, [action, search, type]);
+
   return (
     <PageContainer>
       <PageHeader>
@@ -149,6 +176,9 @@ const AuditLogPage: FC = () => {
         <PrimaryButton onClick={applySearch} disabled={loading}>
           {loading ? 'Refreshing...' : 'Refresh'}
         </PrimaryButton>
+        <SecondaryButton onClick={() => void handleExportCsv()} disabled={loading}>
+          Export CSV
+        </SecondaryButton>
       </ActionBar>
 
       {error && <EmptyState style={{ color: '#b91c1c' }}>{error}</EmptyState>}
