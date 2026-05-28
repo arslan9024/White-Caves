@@ -51,6 +51,66 @@ router.post('/request', async (req, res) => {
 });
 
 /**
+ * POST /api/signatures/webhook/callback
+ * Handle external e-sign provider status callbacks
+ */
+router.post('/webhook/callback', async (req, res) => {
+  try {
+    const { signatureId, status, signedAt, rejectionReason, providerEventId } = req.body || {};
+
+    if (!signatureId || !status) {
+      return res.status(400).json({
+        success: false,
+        error: 'signatureId and status are required'
+      });
+    }
+
+    const normalizedStatus = String(status).toLowerCase();
+    const allowedStatuses = ['pending', 'sent', 'opened', 'signed', 'rejected', 'expired'];
+    if (!allowedStatuses.includes(normalizedStatus)) {
+      return res.status(400).json({
+        success: false,
+        error: `Invalid status. Allowed: ${allowedStatuses.join(', ')}`
+      });
+    }
+
+    const update = {
+      status: normalizedStatus,
+      signedAt: normalizedStatus === 'signed' ? (signedAt ? new Date(signedAt) : new Date()) : null,
+      rejectedAt: normalizedStatus === 'rejected' ? new Date() : null,
+      rejectionReason: normalizedStatus === 'rejected' ? rejectionReason || 'rejected_by_provider' : undefined,
+      metadata: {
+        providerEventId: providerEventId || null,
+        callbackReceivedAt: new Date().toISOString(),
+      },
+    };
+
+    const signature = await ContractSignature.findByIdAndUpdate(signatureId, update, { new: true });
+    if (!signature) {
+      return res.status(404).json({
+        success: false,
+        error: 'Signature not found'
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      data: {
+        signatureId: signature._id,
+        status: signature.status,
+        signedAt: signature.signedAt,
+      }
+    });
+  } catch (error) {
+    console.error('Error processing signature webhook callback:', error);
+    return res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
+
+/**
  * GET /api/signatures/:contractId/:token
  * Verify signature token and get signing page data
  */

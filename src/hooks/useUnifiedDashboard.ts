@@ -25,6 +25,7 @@ import {
   openFlyout,
   closeFlyout,
   selectAssistant,
+  clearDepartmentSelection,
   selectFlyoutOpen,
   selectFlyoutDepartment,
   selectSelectedAssistant as selectSelectedAssistantSelector,
@@ -390,14 +391,25 @@ export function useUnifiedDashboard() {
 
   // ─── CRM Module Handlers ──────────────────────────────────
   const handleCRMModuleSelect = useCallback((moduleId: string): void => {
+    dispatch(clearDepartmentSelection());
     setSelectedCRMModule(prev => (prev === moduleId ? prev : moduleId));
     setActiveTab(prev => (prev === '' ? prev : ''));
-  }, []);
+  }, [dispatch]);
 
   const handleBackFromCRM = useCallback((): void => {
+    dispatch(clearDepartmentSelection());
     setSelectedCRMModule(prev => (prev === null ? prev : null));
     setActiveTab(prev => (prev === 'overview' ? prev : 'overview'));
-  }, []);
+  }, [dispatch]);
+
+  const handleWorkspaceSelect = useCallback(
+    (tabId: string): void => {
+      dispatch(clearDepartmentSelection());
+      setSelectedCRMModule(prev => (prev === null ? prev : null));
+      setActiveTab(prev => (prev === tabId ? prev : tabId));
+    },
+    [dispatch]
+  );
 
   // ─── Return ───────────────────────────────────────────────
   return {
@@ -438,5 +450,6 @@ export function useUnifiedDashboard() {
     handleRetryAll,
     handleCRMModuleSelect,
     handleBackFromCRM,
+    handleWorkspaceSelect,
   } as const;
 }

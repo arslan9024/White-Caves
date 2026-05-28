@@ -1,8 +1,7 @@
 # Pending Tasks Only
 
-**Last Updated:** 2026-05-26
-**Current Focus:** Wave 18 parity governance closeout + Wave 19 planning and execution readiness.
-**Current Focus:** Wave 18 workflow parity audit planning + prioritized gap queue generation.
+**Last Updated:** 2026-05-28
+**Current Focus:** Wave 18.1 Session 2 complete ✅ — Wave 18.1 Session 3 (P0 closure + top P1s) 🟡 In Progress.
 
 ## Canonical Sources
 
@@ -14,7 +13,7 @@
 
 ## Implementation Order
 
-`09 → 10 → 11 → 12 → 13 → 14 → 15 → 16 → 17 → 18 → 19`
+`09 → 10 → 11 → 12 → 13 → 14 → 15 → 16 → 17 → 18`
 
 Advance only when the prior wave is green, the readiness gate is satisfied, and `@Ada — Context Ready (60% Readiness) — Coding Phase Approved` has been issued for that wave.
 
@@ -32,8 +31,9 @@ Advance only when the prior wave is green, the readiness gate is satisfied, and 
 | S8 | 15 | Cache + PWA readiness | ✅ Green | @Redis + @PWA + @Ruchi + @Una | S7 green + readiness 60% + @Ada approval phrase |
 | S9 | 16 | Security hardening + API versioning | ✅ Green | @S5 + @Radia + @Mira | S8 green + readiness 60% + @Ada approval phrase |
 | S10 | 17 | Full UI/UX luxury upgrade (design tokens + glassmorphism + animations + mobile + PWA + WCAG 2.2) | ✅ Green | @Una + @Lea + @Tracy + @Africa + @Cyra + @Katherine | Wave 17 implementation + CI Lighthouse thresholds + accessibility/mobile/PWA checks complete |
-| S11 | 18 | Workflow parity audit + benchmark gap backlog | 📋 Planned | @Ada + @Margaret + @Mira + @Katherine | Wave 18 parity matrix finalized + canonical queue updates + `npm run plans:validate` |
-| S12 | 19 | Identity & Access v2 + `/crm` routing + MD workspace split + executive UX discoverability | 📋 Planned | @Ada + @Mira + @Una + @Katherine + @Radia | Wave 18 closeout + Wave 19 readiness packet + `npm run plans:validate` |
+| S11 | 18 | Workflow parity audit + benchmark gap backlog | ✅ Green | @Ada + @Margaret + @Mira + @Katherine | Wave 18 parity matrix finalized + canonical queue updates + `npm run plans:validate` |
+| S12 | 18.1 | Competitor parity execution — Session 1 ✅ complete, Session 2 ✅ complete | ✅ Complete | @Ada + @Mira + @Una + @Tracy + @Katherine + @Sofia | Session 1 + Session 2 tests green + build green + `npm run plans:validate` |
+| S13 | 18.1-S3 | Competitor parity execution — Session 3: 2 deferred P0s + top 8 P1s | 🟡 In Progress | @Ada + @Mira + @Joelle + @Katherine + @Victoria + @Una | Session 3 tests green + build green + `npm run plans:validate` |
 
 ## Completed Stream History
 
@@ -56,8 +56,10 @@ Advance only when the prior wave is green, the readiness gate is satisfied, and 
 | S5 | Wave 12 automation engine (cron + docs + email) | ✅ Complete |
 | S6 | Wave 13 real-time notifications + media + virtual tour | ✅ Complete |
 | S10 | Wave 17 full UI/UX luxury upgrade | ✅ Complete |
-| S11 | Wave 18 workflow parity audit + gap backlog generation | 📋 Planned |
-| S12 | Wave 19 identity/access + routing + MD IA split + UX discoverability | 📋 Planned |
+| S11 | Wave 18 workflow parity audit + gap backlog generation | ✅ Complete |
+| S11-S1 | Wave 18.1 Session 1: Lead workflow automation + tenant/landlord portals | ✅ Complete |
+| S11-S2 | Wave 18.1 Session 2: Search ranking, facets, map sync, listing trust, WA→lead, funnel, KPI, KYC gate, mobile CRM | ✅ Complete |
+| S11-S3 | Wave 18.1 Session 3: Offline PWA drafts, cadence engine, lead import, audit log UI, agent report, Nina escalation, e-sign, syndication, follow-up automation, Ejari/rent collection | 🟡 In Progress |
 
 ## S2 — Wave 09: UX Hardening (Complete)
 
@@ -187,7 +189,7 @@ Key closures:
 ## S11 — Wave 18: Workflow Parity Audit + Gap Backlog (Planned)
 
 **Sources:** `business_docs/04_workflows/*`, `business_docs/09_crm_features/*`, `business_docs/05_requirements/functional-requirements.md`, `src/config/crmModuleRegistry.tsx`, `server/index.ts`, `server/routes/*`  
-**Bundle:** [`WAVE_18_SDD.md`](./waves/WAVE_18_SDD.md) | [`WAVE_18_READINESS_PACKET.md`](./waves/WAVE_18_READINESS_PACKET.md) | [`WAVE_18_IMPLEMENTATION_BACKLOG.md`](./waves/WAVE_18_IMPLEMENTATION_BACKLOG.md) | [`WAVE_18_1_IMPLEMENTATION_BACKLOG.md`](./waves/WAVE_18_1_IMPLEMENTATION_BACKLOG.md) | [`WAVE_18_TEST_ROLLOUT.md`](./waves/WAVE_18_TEST_ROLLOUT.md) | [`WAVE_18_WORKFLOW_PARITY_MATRIX.md`](./waves/WAVE_18_WORKFLOW_PARITY_MATRIX.md) | [`WAVE_18_SERVER_GAP_REPORT.md`](./waves/WAVE_18_SERVER_GAP_REPORT.md) | [`WAVE_18_SERVER_REMEDIATION_BACKLOG.md`](./waves/WAVE_18_SERVER_REMEDIATION_BACKLOG.md) | [`WAVE_18_BACKEND_ARCHITECTURE_MAP.md`](./waves/WAVE_18_BACKEND_ARCHITECTURE_MAP.md) | [`WAVE_18_COMPETITOR_PARITY_WEEKLY_DELTA.md`](./waves/WAVE_18_COMPETITOR_PARITY_WEEKLY_DELTA.md) | [`WAVE_18_KPI_DASHBOARD_BASELINE.md`](./waves/WAVE_18_KPI_DASHBOARD_BASELINE.md)
+**Bundle:** [`WAVE_18_SDD.md`](./waves/WAVE_18_SDD.md) | [`WAVE_18_READINESS_PACKET.md`](./waves/WAVE_18_READINESS_PACKET.md) | [`WAVE_18_IMPLEMENTATION_BACKLOG.md`](./waves/WAVE_18_IMPLEMENTATION_BACKLOG.md) | [`WAVE_18_1_IMPLEMENTATION_BACKLOG.md`](./waves/WAVE_18_1_IMPLEMENTATION_BACKLOG.md) | [`WAVE_18_TEST_ROLLOUT.md`](./waves/WAVE_18_TEST_ROLLOUT.md) | [`WAVE_18_WORKFLOW_PARITY_MATRIX.md`](./waves/WAVE_18_WORKFLOW_PARITY_MATRIX.md)
 
 | Task | Scope | Priority | Owner | Validation |
 | --- | --- | --- | --- | --- |
@@ -219,21 +221,45 @@ Key closures:
 3. Push new deltas into upcoming implementation backlog.
 4. Run `npm run plans:validate` after queue/tracker updates.
 
-## S12 — Wave 19: Identity & Access v2 + MD Workspace Split (Planned)
+---
 
-**Sources:** `src/pages/auth/*`, `src/pages/ProfilePage.tsx`, `src/App.tsx`, `src/hooks/useUnifiedDashboard.ts`, `src/config/crmModuleRegistry.tsx`, `src/components/crm/*`, `server/routes/auth.ts`  
-**Bundle:** [`WAVE_19_SDD.md`](./waves/WAVE_19_SDD.md) | [`WAVE_19_READINESS_PACKET.md`](./waves/WAVE_19_READINESS_PACKET.md) | [`WAVE_19_IMPLEMENTATION_BACKLOG.md`](./waves/WAVE_19_IMPLEMENTATION_BACKLOG.md) | [`WAVE_19_TEST_ROLLOUT.md`](./waves/WAVE_19_TEST_ROLLOUT.md)
+## S12 — Wave 18.1 Session 2: Competitor Parity Execution
+
+**Source:** [`WAVE_18_1_IMPLEMENTATION_BACKLOG.md`](./waves/WAVE_18_1_IMPLEMENTATION_BACKLOG.md) Session 2 Plan
+**Entry Gate:** Session 1 evidence confirmed + @Ada architecture plan approved 2026-05-27
 
 | Task | Scope | Priority | Owner | Validation |
 | --- | --- | --- | --- | --- |
-| 19-1 | Identity & Access v2 contract (login/signup/forgot/biometric/profile gate) | P0 | @Ada + @Mira | Auth architecture contract linked to REQ-IAMV2-* |
-| 19-2 | Forgot-password flow completion (request/verify/reset/success/lockout) | P0 | @Mira + @Radia | Focused auth tests + lockout/rate-limit checks |
-| 19-3 | Post-auth gate: first-time → profile completion; returning complete users → `/crm` | P0 | @Mira + @Katherine | Routing integration tests pass |
-| 19-4 | Role-specific profile completeness criteria (client/agent/leadership) | P1 | @Mira | Profile validation + UI behavior tests |
-| 19-5 | Auth fallback routing: pending approval, missing role, unauthorized mapping | P0 | @Mira + @Radia | Negative-path routing tests pass |
-| 19-6 | MD IA split into Company/Business and AI Command Center with module ownership matrix | P0 | @Una + @Mira | Workspace navigation + ownership mapping verification |
-| 19-7 | Executive UX state coverage + mobile/tablet + WCAG 2.2 + RTL parity | P0 | @Una + @Katherine | Accessibility/responsive/RTL state-system validation |
-| 19-8 | Wave closeout governance | P0 | @Katherine | `npm run plans:validate` + tracker sync evidence |
+| W18.1-P0-001 | Intent-aware ranking for buy/rent/invest | P0 | @Mira + @Una | propertySlice tests + build |
+| W18.1-P0-002 | Advanced search facets (furnishing, handover, permit, fee) | P0 | @Mira + @Una + @Tracy | FilterPanel tests + API tests + build |
+| W18.1-P0-003 | Map/list synchronization + viewport persistence | P0 | @Tracy + @Mira | InteractiveMap tests + Playwright |
+| W18.1-P0-009 | Mobile CRM command bar (top 8 field actions) | P0 | @Tracy + @Una | MobileCRMCommandBar tests + Playwright mobile |
+| W18.1-P0-011 | Listing completeness scoring + remediation checklist | P0 | @Mira + @Una | completenessScorer tests + widget tests |
+| W18.1-P0-012 | Verification/freshness badges | P0 | @Una + @Mira | badge component tests + build |
+| W18.1-P0-013 | KYC gate before high-risk transactions | P0 | @Mira + @Sofia + @Katherine | kyc-gate tests + typecheck |
+| W18.1-P0-017 | WhatsApp conversation→lead conversion | P0 | @Mira + @Una | nadia route tests + ConversationsTab tests |
+| W18.1-P0-019 | Funnel economics dashboard (API wire-up) | P0 | @Mira + @Katherine | FunnelEconomicsDashboard tests |
+| W18.1-P0-020 | KPI baseline tracker (API wire-up) | P0 | @Mira + @Katherine | KPIBaselineTracker tests |
+
+---
+
+## S13 — Wave 18.1 Session 3: Competitor Parity Execution (P0 Closure + P1 Depth)
+
+**Source:** [`WAVE_18_1_IMPLEMENTATION_BACKLOG.md`](./waves/WAVE_18_1_IMPLEMENTATION_BACKLOG.md) Session 3 Plan
+**Entry Gate:** Session 2 evidence confirmed + @Ada architecture plan approved 2026-05-28
+
+| Task | Scope | Priority | Owner | Validation |
+| --- | --- | --- | --- | --- |
+| W18.1-P0-010 | Offline-safe draft capture (IndexedDB + sync + service worker) | P0 | @Mira + @Ruchi | PWA cache tests + sync-conflict tests + Lighthouse PWA ≥ 90 |
+| W18.1-P0-018 | Channel orchestration cadence rules engine (WA/email/call) | P0 | @Joelle + @Margaret + @Mira | Cadence engine tests + admin UI tests + scheduler tests |
+| W18.1-P1-001 | Lead import CSV/XLSX bulk upload + dedup | P1 | @Mira + @Katherine | Import route tests + dedup tests + UI tests |
+| W18.1-P1-002 | Immutable audit log UI + XLSX export | P1 | @Una + @Mira | AuditLogUI tests + export route tests + RBAC tests |
+| W18.1-P1-003 | Agent performance report + XLSX/PDF export | P1 | @Mira + @Katherine | Report API tests + export tests + dashboard tests |
+| W18.1-P1-004 | WhatsApp bot escalation hardening (Nina confidence gate + handoff) | P1 | @Joelle + @Mira | Nina confidence-gate tests + escalation routing tests |
+| W18.1-P1-005 | Contract e-sign flow completion (signing link + webhook status) | P1 | @Mira + @Sofia | Contract signing tests + webhook tests + badge tests |
+| W18.1-P1-006 | Portal syndication baseline (PF/Bayut stub + feature flag) | P1 | @Mira + @Lea | Syndication route tests + feature-flag isolation tests |
+| W18.1-P1-007 | CRM follow-up automation depth (escalation tiers + template triggers) | P1 | @Mira + @Margaret | Follow-up automation tests + escalation tier tests |
+| W18.1-P1-008 | Ejari + rent collection workflow completion | P1 | @Victoria + @Mira | Ejari tracking tests + overdue-collection tests + portal tests |
 
 ---
 

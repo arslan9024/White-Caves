@@ -33,6 +33,14 @@ interface ApiLease {
   monthlyRent: number;
   status: string;
   nextPaymentDue?: string | null;
+  property?: { id: string; location?: string | null; title?: string | null };
+}
+
+interface MaintenanceItem {
+  id: string;
+  priority?: string;
+  status?: string;
+  property?: { id?: string | null; location?: string | null; title?: string | null } | null;
 }
 
 interface LandlordPortalHomeProps {
@@ -45,22 +53,54 @@ const LandlordPortalHome: FC<LandlordPortalHomeProps> = ({ onNavigate }) => {
   const [leases, setLeases] = useState<ApiLease[]>([]);
   const [properties, setProperties] = useState<{ id: string }[]>([]);
   const [openMaintenance, setOpenMaintenance] = useState<number | null>(null);
+  const [maintenanceItems, setMaintenanceItems] = useState<MaintenanceItem[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (!currentUser) return;
     let cancelled = false;
 
+    const fetchMaintenanceItems = async () => {
+      const firstPage = await authFetch('/api/maintenance?pageSize=50').then(r => r.json());
+      const firstItems: MaintenanceItem[] = Array.isArray(firstPage.data) ? firstPage.data : [];
+      const total = firstPage.pagination?.total ?? firstItems.length;
+      const totalPages =
+        firstPage.pagination?.totalPages ??
+        Math.max(1, Math.ceil(total / 50));
+
+      if (totalPages <= 1) {
+        return { items: firstItems, total };
+      }
+
+      const remainingPages = await Promise.all(
+        Array.from({ length: totalPages - 1 }, (_, index) =>
+          authFetch(`/api/maintenance?page=${index + 2}&pageSize=50`)
+            .then(r => r.json())
+            .catch(() => ({ data: [] }))
+        )
+      );
+
+      const remainingItems = remainingPages.flatMap((page: { data?: MaintenanceItem[] }) =>
+        Array.isArray(page.data) ? page.data : []
+      );
+
+      return {
+        items: [...firstItems, ...remainingItems],
+        total,
+      };
+    };
+
     Promise.all([
       authFetch('/api/leases?role=landlord&pageSize=100').then(r => r.json()),
       authFetch('/api/properties?pageSize=100').then(r => r.json()),
-      authFetch('/api/maintenance?pageSize=1').then(r => r.json()),
+      fetchMaintenanceItems(),
     ])
       .then(([leasesRes, propsRes, maintRes]) => {
         if (cancelled) return;
         setLeases(leasesRes.data ?? []);
         setProperties(propsRes.data ?? []);
-        setOpenMaintenance(maintRes.pagination?.total ?? maintRes.data?.length ?? 0);
+        setMaintenanceItems(maintRes.items ?? []);
+        setOpenMaintenance(maintRes.total ?? maintRes.items?.length ?? 0);
         setLoading(false);
       })
       .catch(() => {
@@ -84,12 +124,25 @@ const LandlordPortalHome: FC<LandlordPortalHomeProps> = ({ onNavigate }) => {
       })
       .reduce((sum, l) => sum + l.monthlyRent, 0);
 
+    const hotspotByLocation = maintenanceItems.reduce<Record<string, number>>((acc, item) => {
+      const location = item.property?.location || 'Unmapped';
+      acc[location] = (acc[location] ?? 0) + 1;
+      return acc;
+    }, {});
+
+    const topHotspot =
+      Object.entries(hotspotByLocation).sort((a, b) => b[1] - a[1])[0]?.[0] ?? 'All clear';
+
+    const occupancyRisk = leases.filter(l => l.status === 'expiring' || (!!l.nextPaymentDue && new Date(l.nextPaymentDue) < new Date())).length;
+
     return {
       propertiesCount: properties.length,
       activeTenants,
       overdueRent,
+      topHotspot,
+      occupancyRisk,
     };
-  }, [leases, properties]);
+  }, [leases, maintenanceItems, properties]);
 
   if (!currentUser) {
     return (
@@ -143,6 +196,24 @@ const LandlordPortalHome: FC<LandlordPortalHomeProps> = ({ onNavigate }) => {
             {loading ? '…' : (openMaintenance ?? 0)}
           </p>
           <span className="metric-label">Pending issues</span>
+        </div>
+
+        <div className="summary-card" data-testid="landlord-metric-hotspot">
+          <span className="metric-icon">🔥</span>
+          <h4>Issue Hotspot</h4>
+          <p className="metric-value" data-testid="landlord-metric-hotspot-value">
+            {loading ? '…' : metrics.topHotspot}
+          </p>
+          <span className="metric-label">Most active property cluster</span>
+        </div>
+
+        <div className="summary-card" data-testid="landlord-metric-risk">
+          <span className="metric-icon">⚠️</span>
+          <h4>Occupancy Risk</h4>
+          <p className="metric-value" data-testid="landlord-metric-risk-value">
+            {loading ? '…' : metrics.occupancyRisk}
+          </p>
+          <span className="metric-label">Expiring or overdue leases</span>
         </div>
       </div>
 

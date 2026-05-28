@@ -21,11 +21,17 @@ import AuthenticatedPageShell from '../components/layout/authenticated/Authentic
 import SubNavBar from '../components/common/SubNavBar';
 import { DashboardSubTabRenderer } from '../components/dashboard/DashboardRenderer';
 import SuperuserControlCenter from '../components/dashboard/SuperuserControlCenter';
+import CRMContextPanel from '../components/crm/CRMContextPanel';
 import { useUnifiedDashboard } from '../hooks/useUnifiedDashboard';
 import type { DashboardData, CRMModuleProps } from '../hooks/useUnifiedDashboard';
 import { AI_ASSISTANTS_REGISTRY } from '../store/slices/aiAssistant/registry';
 import { selectSelectedAssistant } from '../store/slices/sidebarSlice';
 import { SUPERUSER_CRM_MODULE_ORDER, getCRMModule } from '../config/crmModuleRegistry';
+import {
+  ZONE_LABELS,
+  groupModulesForMD,
+  groupWorkspacesForMD,
+} from '../config/crmNavigationSchema';
 import type { RootState } from '../store/store';
 import type { RoleTab } from '../config/ROLE_TAB_MAPPING';
 import './UnifiedDashboardPage.css';
@@ -136,15 +142,6 @@ const formatCurrency = (value: number): string =>
     maximumFractionDigits: 0,
   }).format(value);
 
-const ZONE_LABELS: Record<string, string> = {
-  executive: 'Executive',
-  sales_leads: 'Sales & Leads',
-  inventory_listings: 'Properties',
-  leasing_contracts: 'Leasing',
-  finance_compliance: 'Finance',
-  ai_command: 'AI Command',
-};
-
 const UnifiedDashboardPage: FC = () => {
   const navigate = useNavigate();
   const {
@@ -167,6 +164,7 @@ const UnifiedDashboardPage: FC = () => {
     handleRetryAll,
     handleCRMModuleSelect,
     handleBackFromCRM,
+    handleWorkspaceSelect,
   } = useUnifiedDashboard();
 
   const selectedAssistant = useSelector((state: RootState) => selectSelectedAssistant(state));
@@ -175,7 +173,10 @@ const UnifiedDashboardPage: FC = () => {
   const [commandQuery, setCommandQuery] = useState('');
   const [globalSearchQuery, setGlobalSearchQuery] = useState('');
   const [isGlobalSearchOpen, setIsGlobalSearchOpen] = useState(false);
-  const [modulesExpanded, setModulesExpanded] = useState(true);
+  const [aiModulesExpanded, setAiModulesExpanded] = useState(true);
+  const [advancedExpanded, setAdvancedExpanded] = useState(false);
+  const [departmentsExpanded, setDepartmentsExpanded] = useState(true);
+  const [selectedContext, setSelectedContext] = useState<SearchItem | null>(null);
   const [isMobileDrawerOpen, setIsMobileDrawerOpen] = useState(false);
   const globalSearchRef = useRef<HTMLDivElement | null>(null);
   const tabButtonRefs = useRef<Array<HTMLButtonElement | null>>([]);
@@ -316,6 +317,19 @@ const UnifiedDashboardPage: FC = () => {
 
   const hasProfileCompletionGaps = profileCompletionPercent < 100;
   const superuserModuleCount = moduleEntries.length;
+  const groupedWorkspaces = useMemo(() => groupWorkspacesForMD(availableTabs), [availableTabs]);
+  const groupedModules = useMemo(() => groupModulesForMD(moduleEntries), []);
+  const departmentZones = useMemo(
+    () =>
+      Object.entries(groupedModules.byZone)
+        .filter(([, items]) => items.length > 0)
+        .sort((a, b) => (ZONE_LABELS[a[0]] ?? a[0]).localeCompare(ZONE_LABELS[b[0]] ?? b[0])),
+    [groupedModules.byZone]
+  );
+  const orderedWorkspaceTabs = useMemo(
+    () => [...groupedWorkspaces.pinned, ...groupedWorkspaces.core],
+    [groupedWorkspaces]
+  );
   const availableTabIds = useMemo(() => new Set(availableTabs.map(tab => tab.id)), [availableTabs]);
 
   const commandItems = useMemo<SearchItem[]>(() => {
@@ -423,11 +437,11 @@ const UnifiedDashboardPage: FC = () => {
   ]);
 
   const executeSearchItem = (item: SearchItem) => {
+    setSelectedContext(item);
     if (item.type === 'module') {
       handleCRMModuleSelect(item.target);
     } else {
-      handleBackFromCRM();
-      setActiveTab(item.target);
+      handleWorkspaceSelect(item.target);
     }
 
     setCommandQuery('');
@@ -438,8 +452,7 @@ const UnifiedDashboardPage: FC = () => {
 
   const openWorkspaceTab = (tabId: string, fallbackModule?: string) => {
     if (availableTabIds.has(tabId)) {
-      handleBackFromCRM();
-      setActiveTab(tabId);
+      handleWorkspaceSelect(tabId);
       return;
     }
 
@@ -449,7 +462,7 @@ const UnifiedDashboardPage: FC = () => {
     }
 
     handleBackFromCRM();
-    setActiveTab('overview');
+    handleWorkspaceSelect('overview');
   };
 
   const renderTabContent = (): ReactNode => {
@@ -578,7 +591,7 @@ const UnifiedDashboardPage: FC = () => {
   };
 
   const handleTabKeyDown = (event: KeyboardEvent<HTMLButtonElement>, index: number) => {
-    const lastIndex = availableTabs.length - 1;
+    const lastIndex = orderedWorkspaceTabs.length - 1;
 
     switch (event.key) {
       case 'ArrowDown':
@@ -751,9 +764,9 @@ const UnifiedDashboardPage: FC = () => {
         {!selectedDepartment && (
           <aside className="dashboard-side-rail" aria-label="Dashboard tabs">
             <div className="dashboard-side-rail__section">
-              <span className="dashboard-side-rail__label">Workspaces</span>
+              <span className="dashboard-side-rail__label">Pinned</span>
               <div className="dashboard-tab-rail" role="tablist" aria-orientation="vertical">
-                {availableTabs.map((tab: RoleTab, index: number) => (
+                {groupedWorkspaces.pinned.map((tab: RoleTab, index: number) => (
                   <button
                     key={tab.id}
                     ref={element => {
@@ -765,10 +778,58 @@ const UnifiedDashboardPage: FC = () => {
                     aria-selected={activeTab === tab.id && !selectedCRMModule}
                     aria-controls="dashboard-main"
                     onClick={() => {
-                      handleBackFromCRM();
-                      setActiveTab(tab.id);
+                      setSelectedContext({
+                        id: `tab-${tab.id}`,
+                        icon: tab.icon,
+                        label: tab.label,
+                        meta: 'Pinned workspace',
+                        type: 'tab',
+                        target: tab.id,
+                      });
+                      handleWorkspaceSelect(tab.id);
                     }}
                     onKeyDown={event => handleTabKeyDown(event, index)}
+                  >
+                    <span className="dashboard-rail-tab__icon" aria-hidden="true">
+                      {tab.icon}
+                    </span>
+                    <span className="dashboard-rail-tab__label">{tab.label}</span>
+                    {tab.badge !== undefined && tab.badge > 0 && (
+                      <span className="dashboard-rail-tab__badge">{tab.badge}</span>
+                    )}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div className="dashboard-side-rail__section">
+              <span className="dashboard-side-rail__label">Core Workspaces</span>
+              <div className="dashboard-tab-rail" role="tablist" aria-orientation="vertical">
+                {groupedWorkspaces.core.map((tab: RoleTab, index: number) => (
+                  <button
+                    key={tab.id}
+                    ref={element => {
+                      tabButtonRefs.current[groupedWorkspaces.pinned.length + index] = element;
+                    }}
+                    className={`dashboard-rail-tab ${activeTab === tab.id && !selectedCRMModule ? 'active' : ''}`}
+                    type="button"
+                    role="tab"
+                    aria-selected={activeTab === tab.id && !selectedCRMModule}
+                    aria-controls="dashboard-main"
+                    onClick={() => {
+                      setSelectedContext({
+                        id: `tab-${tab.id}`,
+                        icon: tab.icon,
+                        label: tab.label,
+                        meta: 'Core workspace',
+                        type: 'tab',
+                        target: tab.id,
+                      });
+                      handleWorkspaceSelect(tab.id);
+                    }}
+                    onKeyDown={event =>
+                      handleTabKeyDown(event, groupedWorkspaces.pinned.length + index)
+                    }
                   >
                     <span className="dashboard-rail-tab__icon" aria-hidden="true">
                       {tab.icon}
@@ -787,22 +848,113 @@ const UnifiedDashboardPage: FC = () => {
                 <button
                   type="button"
                   className="dashboard-modules-toggle"
-                  onClick={() => setModulesExpanded(current => !current)}
-                  aria-expanded={modulesExpanded}
+                  onClick={() => setAiModulesExpanded(current => !current)}
+                  aria-expanded={aiModulesExpanded}
                 >
-                  <span>AI CRM Modules</span>
-                  <span aria-hidden="true">{modulesExpanded ? '−' : '+'}</span>
+                  <span>AI Modules</span>
+                  <span aria-hidden="true">{aiModulesExpanded ? '−' : '+'}</span>
                 </button>
-                {modulesExpanded && (
+                {aiModulesExpanded && (
                   <div className="dashboard-module-list">
-                    {moduleEntries.map(([key, module]) => (
+                    {groupedModules.ai.map(module => (
                       <button
-                        key={key}
+                        key={module.id}
                         type="button"
-                        className={`dashboard-module-option ${selectedCRMModule === key ? 'active' : ''}`}
-                        onClick={() => handleCRMModuleSelect(key)}
+                        className={`dashboard-module-option ${selectedCRMModule === module.id ? 'active' : ''}`}
+                        onClick={() => {
+                          setSelectedContext({
+                            id: `module-${module.id}`,
+                            icon: module.icon,
+                            label: module.label,
+                            meta: ZONE_LABELS[module.zone] ?? module.zone,
+                            type: 'module',
+                            target: module.id,
+                          });
+                          handleCRMModuleSelect(module.id);
+                        }}
                       >
-                        <span aria-hidden="true">{getCRMModule(key)?.icon ?? '🤖'}</span>
+                        <span aria-hidden="true">{module.icon}</span>
+                        <span>{module.label}</span>
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+
+            {isSuperUser && (
+              <div className="dashboard-side-rail__section dashboard-side-rail__section--modules">
+                <button
+                  type="button"
+                  className="dashboard-modules-toggle"
+                  onClick={() => setDepartmentsExpanded(current => !current)}
+                  aria-expanded={departmentsExpanded}
+                >
+                  <span>Departments</span>
+                  <span aria-hidden="true">{departmentsExpanded ? '−' : '+'}</span>
+                </button>
+                {departmentsExpanded && (
+                  <div className="dashboard-module-list">
+                    {departmentZones.map(([zone, items]) => (
+                      <button
+                        key={zone}
+                        type="button"
+                        className="dashboard-module-option"
+                        onClick={() => {
+                          const primaryModule = items[0];
+                          if (!primaryModule) return;
+                          setSelectedContext({
+                            id: `zone-${zone}`,
+                            icon: primaryModule.icon,
+                            label: ZONE_LABELS[zone] ?? zone,
+                            meta: `${items.length} modules`,
+                            type: 'module',
+                            target: primaryModule.id,
+                          });
+                          handleCRMModuleSelect(primaryModule.id);
+                        }}
+                      >
+                        <span aria-hidden="true">{items[0]?.icon ?? '🧭'}</span>
+                        <span>{ZONE_LABELS[zone] ?? zone}</span>
+                        <span className="dashboard-rail-tab__badge">{items.length}</span>
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+
+            {isSuperUser && (
+              <div className="dashboard-side-rail__section dashboard-side-rail__section--modules">
+                <button
+                  type="button"
+                  className="dashboard-modules-toggle"
+                  onClick={() => setAdvancedExpanded(current => !current)}
+                  aria-expanded={advancedExpanded}
+                >
+                  <span>Advanced</span>
+                  <span aria-hidden="true">{advancedExpanded ? '−' : '+'}</span>
+                </button>
+                {advancedExpanded && (
+                  <div className="dashboard-module-list">
+                    {groupedModules.advanced.map(module => (
+                      <button
+                        key={module.id}
+                        type="button"
+                        className={`dashboard-module-option ${selectedCRMModule === module.id ? 'active' : ''}`}
+                        onClick={() => {
+                          setSelectedContext({
+                            id: `module-${module.id}`,
+                            icon: module.icon,
+                            label: module.label,
+                            meta: 'Advanced module',
+                            type: 'module',
+                            target: module.id,
+                          });
+                          handleCRMModuleSelect(module.id);
+                        }}
+                      >
+                        <span aria-hidden="true">{module.icon}</span>
                         <span>{module.label}</span>
                       </button>
                     ))}
@@ -849,7 +1001,7 @@ const UnifiedDashboardPage: FC = () => {
               profileCompletionPercent={profileCompletionPercent}
               onRefreshData={handleRetryAll}
               onOpenCommandPalette={() => {
-                setModulesExpanded(true);
+                setAiModulesExpanded(true);
                 setIsCommandPaletteOpen(true);
               }}
               onOpenAdminWorkspace={() => openWorkspaceTab('admin', 'unified')}
@@ -963,6 +1115,26 @@ const UnifiedDashboardPage: FC = () => {
             </>
           )}
         </main>
+
+        {!selectedDepartment && (
+          <CRMContextPanel
+            isSuperUser={isSuperUser}
+            activeWorkspaceLabel={selectedCRMModuleConfig?.label ?? currentTab?.label ?? 'Overview'}
+            activeWorkspaceMeta={selectedCRMModuleConfig ? 'AI CRM module context' : 'Workspace context'}
+            selectedContext={
+              selectedContext
+                ? {
+                    label: selectedContext.label,
+                    meta: selectedContext.meta,
+                    type: selectedContext.type,
+                  }
+                : null
+            }
+            recentActivities={Array.isArray(dashboardData?.recentActivities) ? dashboardData.recentActivities : []}
+            onOpenCommandPalette={() => setIsCommandPaletteOpen(true)}
+            onOpenQuickAction={() => setIsCommandPaletteOpen(true)}
+          />
+        )}
       </div>
 
       <MobileCRMDrawer
@@ -974,8 +1146,7 @@ const UnifiedDashboardPage: FC = () => {
         moduleEntries={moduleEntries}
         onClose={() => setIsMobileDrawerOpen(false)}
         onSelectTab={tabId => {
-          handleBackFromCRM();
-          setActiveTab(tabId);
+          handleWorkspaceSelect(tabId);
         }}
         onSelectModule={moduleId => handleCRMModuleSelect(moduleId)}
       />

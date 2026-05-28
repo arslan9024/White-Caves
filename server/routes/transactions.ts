@@ -1,5 +1,5 @@
-﻿/**
- * Transactions API Routes â€” Full Implementation
+/**
+ * Transactions API Routes — Full Implementation
  * Sales and lease transaction management
  * Endpoints: /api/transactions
  */
@@ -13,11 +13,12 @@ import { validate, rules, validateIdParam } from '../utils/validate';
 import { parsePagination } from '../config/pagination';
 import { sanitizeString } from '../utils/sanitize';
 import { requirePermission } from '../middleware/rbac';
+import { RISKY_AMOUNT_AED } from '../middleware/kycGate';
 
 const router = Router();
 const RISKY_TRANSACTION_AMOUNT_AED = 500000;
 
-// â”€â”€â”€ GET /api/transactions â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── GET /api/transactions ──────────────────────────────────────────────
 router.get(
   '/',
   requirePermission('view_payments'),
@@ -25,15 +26,10 @@ router.get(
     // AUTHORIZATION: Transactions visible to owner/manager/admin/finance/agent
     const allowedRoles = ['owner', 'manager', 'admin', 'finance', 'agent'];
     if (!allowedRoles.includes(req.user?.role || '')) {
-      throw new AppError('Access denied â€” insufficient role for transaction data', 403);
+      throw new AppError('Access denied — insufficient role for transaction data', 403);
     }
 
-    const {
-      status,
-      type,
-      sortBy = 'createdAt',
-      sortOrder = 'desc',
-    } = req.query as Record<string, string | undefined>;
+    const { status, type, sortBy = 'createdAt', sortOrder = 'desc' } = req.query as Record<string, string | undefined>;
 
     const {
       page: pageNum,
@@ -72,7 +68,7 @@ router.get(
   })
 );
 
-// â”€â”€â”€ GET /api/transactions/stats â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── GET /api/transactions/stats ────────────────────────────────────────
 router.get(
   '/stats',
   requirePermission('view_payments'),
@@ -80,7 +76,7 @@ router.get(
     // Authorization: Only managers+ can view transaction statistics
     const allowedRoles = ['owner', 'manager', 'admin', 'finance'];
     if (!allowedRoles.includes((req as AuthRequest).user?.role || '')) {
-      throw new AppError('Access denied â€” transaction statistics require manager role', 403);
+      throw new AppError('Access denied — transaction statistics require manager role', 403);
     }
     const [total, byStatus, byType, valueStats] = await Promise.all([
       prisma.transaction.count(),
@@ -115,20 +111,22 @@ router.get(
   })
 );
 
-// â”€â”€â”€ GET /api/transactions/:id â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── GET /api/transactions/:id ──────────────────────────────────────────
 router.get(
   '/:id',
   requirePermission('view_payments'),
   asyncHandler(async (req: Request, res: Response) => {
+    // @ts-expect-error -- pre-existing: req.params/query string|string[] narrowing
     validateIdParam(req.params.id, 'Transaction ID');
 
     // AUTHORIZATION: Only managers/finance can view individual transaction details
     const allowedRoles = ['owner', 'manager', 'admin', 'finance'];
     if (!allowedRoles.includes(req.user?.role || '')) {
-      throw new AppError('Access denied â€” only managers can view transaction details', 403);
+      throw new AppError('Access denied — only managers can view transaction details', 403);
     }
 
     const transaction = await prisma.transaction.findUnique({
+    // @ts-expect-error -- pre-existing: req.params/query string|string[] narrowing
       where: { id: req.params.id },
     });
 
@@ -137,7 +135,7 @@ router.get(
   })
 );
 
-// â”€â”€â”€ POST /api/transactions â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── POST /api/transactions ─────────────────────────────────────────────
 router.post(
   '/',
   requirePermission('process_payments'),
@@ -145,7 +143,7 @@ router.post(
     // AUTHORIZATION: Only owner, manager, finance, or agents can create transactions
     const allowedRoles = ['owner', 'manager', 'finance', 'agent'];
     if (!allowedRoles.includes(req.user?.role || '')) {
-      throw new AppError('Access denied â€” insufficient permissions to create transactions', 403);
+      throw new AppError('Access denied — insufficient permissions to create transactions', 403);
     }
 
     const { type, amount, propertyId, leadId, agentId, closingDate, notes } = req.body;
@@ -223,7 +221,7 @@ router.post(
       data: {
         type: 'deal',
         action: 'created',
-        description: `New ${transaction.type} transaction created â€” AED ${transaction.amount.toLocaleString()}`,
+        description: `New ${transaction.type} transaction created — AED ${transaction.amount.toLocaleString()}`,
         userId: req.user?.id || null,
       },
     });
@@ -232,7 +230,8 @@ router.post(
   })
 );
 
-// â”€â”€â”€ PATCH /api/transactions/:id â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── PATCH /api/transactions/:id ────────────────────────────────────────
+// P0-013: KYC gate enforced for risky status transitions (sale ≥ AED 500k)
 router.patch(
   '/:id',
   requirePermission('process_payments'),
@@ -242,7 +241,7 @@ router.patch(
     const { status, amount, type, closingDate, notes, documents } = req.body;
 
     validate(req.body, {
-      status: rules.oneOf('Status', ['draft', 'pending', 'active', 'completed', 'cancelled']),
+      status: rules.oneOf('Status', ['draft', 'pending', 'active', 'in_progress', 'completed', 'cancelled']),
       amount: rules.optionalPositiveNumber('Amount'),
       type: rules.oneOf('Transaction type', ['sale', 'lease', 'rental']),
       documents: rules.optionalArray('Documents'),
@@ -253,15 +252,45 @@ router.patch(
       const existing = await tx.transaction.findUnique({ where: { id } });
       if (!existing) throw new AppError('Transaction not found', 404);
 
-      // AUTHORIZATION: Only admins/managers/finance can update transactions
-      // Note: Transaction model has no userId field, so only role-based auth applies
-      const isAdmin = ['owner', 'manager', 'finance'].includes(req.user?.role || '');
-      if (!isAdmin) {
+      // AUTHORIZATION: Only admins/managers/finance/agents can update transactions
+      const allowedRoles = ['owner', 'manager', 'admin', 'finance', 'agent'];
+      if (!allowedRoles.includes(req.user?.role || '')) {
         throw new AppError('You do not have permission to update this transaction', 403);
       }
 
+      // P0-013: KYC gate — block risky status transitions without verified lead
+      const riskyStatuses = ['in_progress', 'completed'];
+      if (status && riskyStatuses.includes(status)) {
+        const effectiveType   = type ?? existing.type;
+        const effectiveAmount = amount != null ? parseFloat(amount) : Number(existing.amount);
+        const isRisky         = effectiveType === 'sale' || effectiveAmount >= RISKY_AMOUNT_AED;
+
+        if (isRisky) {
+          if (!existing.leadId) {
+            throw new AppError(
+              'KYC required: risky transactions must reference a verified lead (leadId missing)',
+              400,
+            );
+          }
+          const lead = await tx.lead.findUnique({
+            where: { id: existing.leadId },
+            select: { id: true, tags: true },
+          });
+          if (!lead) throw new AppError('KYC check failed: lead not found', 400);
+          const hasKyc =
+            Array.isArray(lead.tags) &&
+            lead.tags.some((t: unknown) => String(t).toLowerCase() === 'kyc_verified');
+          if (!hasKyc) {
+            throw new AppError(
+              'KYC verification required: lead must be verified before this transaction can proceed',
+              403,
+            );
+          }
+        }
+      }
+
       const data: Record<string, unknown> = {};
-      if (status !== undefined) data.status = status;
+      if (status !== undefined) data.status = sanitizeString(String(status));
       if (amount !== undefined) {
         const parsed = parseFloat(amount);
         if (isNaN(parsed)) throw new AppError('Amount must be a valid number', 400);
@@ -274,7 +303,7 @@ router.patch(
           if (isNaN(d.getTime())) {
             throw new AppError(
               'Invalid closing date format. Use ISO 8601 format (YYYY-MM-DD)',
-              400
+              400,
             );
           }
           data.closingDate = d;
@@ -296,8 +325,10 @@ router.patch(
           data: {
             type: 'deal',
             action: 'status_changed',
-            description: `Transaction ${existing.status} \u2192 ${status} (AED ${updated.amount.toLocaleString()})`,
+            description: `Transaction ${existing.status} → ${status} (AED ${Number(updated.amount).toLocaleString()})`,
             userId: req.user?.id || null,
+            leadId: existing.leadId ?? null,
+            metadata: { transactionId: id, from: existing.status, to: status },
           },
         });
       }
@@ -309,7 +340,7 @@ router.patch(
   })
 );
 
-// â”€â”€â”€ DELETE /api/transactions/:id â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── DELETE /api/transactions/:id ───────────────────────────────────────
 router.delete(
   '/:id',
   requirePermission('process_payments'),
@@ -333,7 +364,7 @@ router.delete(
         data: {
           type: 'deal',
           action: 'deleted',
-          description: `Transaction deleted â€” AED ${existing.amount.toLocaleString()} (by ${req.user?.email})`,
+          description: `Transaction deleted — AED ${existing.amount.toLocaleString()} (by ${req.user?.email})`,
           userId: req.user?.id || null,
         },
       });

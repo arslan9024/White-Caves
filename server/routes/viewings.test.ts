@@ -28,6 +28,16 @@ const { mockPrisma } = vi.hoisted(() => {
       property: {
         findUnique: fn().mockResolvedValue({ id: 'prop-1', title: 'Marina Apt' }),
       },
+      lead: {
+        findFirst: fn().mockResolvedValue(null),
+        create: fn().mockResolvedValue({ id: 'lead-1' }),
+      },
+      activity: {
+        create: fn().mockResolvedValue({ id: 'activity-1' }),
+      },
+      user: {
+        findUnique: fn().mockResolvedValue(null),
+      },
     },
   };
 });
@@ -77,6 +87,9 @@ describe('Viewings Routes — /api/viewings', () => {
     mockPrisma.viewing.update.mockReset().mockResolvedValue({ id: 'v-1', status: 'confirmed' });
     mockPrisma.viewing.delete.mockReset().mockResolvedValue({});
     mockPrisma.property.findUnique.mockReset().mockResolvedValue({ id: 'prop-1', title: 'Marina Apt' });
+    mockPrisma.lead.findFirst.mockReset().mockResolvedValue(null);
+    mockPrisma.lead.create.mockReset().mockResolvedValue({ id: 'lead-1' });
+    mockPrisma.activity.create.mockReset().mockResolvedValue({ id: 'activity-1' });
     app = createApp();
   });
 
@@ -128,6 +141,31 @@ describe('Viewings Routes — /api/viewings', () => {
       expect(res.status).toBe(201);
       expect(res.body.success).toBe(true);
       expect(mockPrisma.viewing.create).toHaveBeenCalled();
+    });
+
+    it('creates or links a lead when viewing request has no leadId', async () => {
+      const res = await request(app)
+        .post('/api/viewings')
+        .send({ propertyId: 'prop-1', scheduledAt: '2026-06-15T10:00:00Z' });
+
+      expect(res.status).toBe(201);
+      expect(mockPrisma.lead.findFirst).toHaveBeenCalled();
+      expect(mockPrisma.lead.create).toHaveBeenCalled();
+      expect(mockPrisma.viewing.create).toHaveBeenCalledWith(
+        expect.objectContaining({
+          data: expect.objectContaining({
+            leadId: 'lead-1',
+          }),
+        }),
+      );
+      expect(mockPrisma.activity.create).toHaveBeenCalledWith(
+        expect.objectContaining({
+          data: expect.objectContaining({
+            action: 'viewing_requested',
+            leadId: 'lead-1',
+          }),
+        }),
+      );
     });
 
     it('rejects missing propertyId', async () => {

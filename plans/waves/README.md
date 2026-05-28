@@ -19,21 +19,13 @@ Each wave should be executed only in roadmap order.
 | 15 | Cache + PWA readiness | ✅ Complete | [`SDD`](./WAVE_15_SDD.md) | [`Readiness`](./WAVE_15_READINESS_PACKET.md) | [`Backlog`](./WAVE_15_IMPLEMENTATION_BACKLOG.md) | [`Tests`](./WAVE_15_TEST_ROLLOUT.md) |
 | 16 | Security hardening + API versioning | ✅ Complete | [`SDD`](./WAVE_16_SDD.md) | [`Readiness`](./WAVE_16_READINESS_PACKET.md) | [`Backlog`](./WAVE_16_IMPLEMENTATION_BACKLOG.md) | [`Tests`](./WAVE_16_TEST_ROLLOUT.md) |
 | 17 | Full UI/UX luxury upgrade (tokens + animations + mobile + PWA + WCAG 2.2) | ✅ Complete | [`SDD`](./WAVE_17_SDD.md) | [`Readiness`](./WAVE_17_READINESS_PACKET.md) | [`Backlog`](./WAVE_17_IMPLEMENTATION_BACKLOG.md) | [`Tests`](./WAVE_17_TEST_ROLLOUT.md) |
-| 18 | Workflow parity audit + benchmark gap backlog | 📋 Planned | [`SDD`](./WAVE_18_SDD.md) | [`Readiness`](./WAVE_18_READINESS_PACKET.md) | [`Backlog`](./WAVE_18_IMPLEMENTATION_BACKLOG.md) | [`Tests`](./WAVE_18_TEST_ROLLOUT.md) |
-| 19 | Identity & Access v2 + dashboard routing + MD workspace split + executive UX discoverability | 📋 Planned | [`SDD`](./WAVE_19_SDD.md) | [`Readiness`](./WAVE_19_READINESS_PACKET.md) | [`Backlog`](./WAVE_19_IMPLEMENTATION_BACKLOG.md) | [`Tests`](./WAVE_19_TEST_ROLLOUT.md) |
+| 18 | Workflow parity audit + benchmark gap backlog | ✅ Complete | [`SDD`](./WAVE_18_SDD.md) | [`Readiness`](./WAVE_18_READINESS_PACKET.md) | [`Backlog`](./WAVE_18_IMPLEMENTATION_BACKLOG.md) | [`Tests`](./WAVE_18_TEST_ROLLOUT.md) |
 
 ## Notes
 
 - Wave 09 is complete and validated for handoff.
 - Wave 13 through Wave 17 are complete in canonical trackers.
 - Wave 18 introduces a planning-first parity benchmark matrix (`WAVE_18_WORKFLOW_PARITY_MATRIX.md`) and queue generation for follow-on implementation waves.
-- Wave 18 governance artifacts now include:
-  - [`WAVE_18_SERVER_GAP_REPORT.md`](./WAVE_18_SERVER_GAP_REPORT.md)
-  - [`WAVE_18_SERVER_REMEDIATION_BACKLOG.md`](./WAVE_18_SERVER_REMEDIATION_BACKLOG.md)
-  - [`WAVE_18_BACKEND_ARCHITECTURE_MAP.md`](./WAVE_18_BACKEND_ARCHITECTURE_MAP.md)
-  - [`WAVE_18_COMPETITOR_PARITY_WEEKLY_DELTA.md`](./WAVE_18_COMPETITOR_PARITY_WEEKLY_DELTA.md)
-  - [`WAVE_18_KPI_DASHBOARD_BASELINE.md`](./WAVE_18_KPI_DASHBOARD_BASELINE.md)
-- Wave 19 converts parity outputs into execution scope for Identity & Access v2, deterministic `/crm` routing, and MD dashboard IA split.
 - Wave 18.1 execution queue is now tracked in [`WAVE_18_1_IMPLEMENTATION_BACKLOG.md`](./WAVE_18_1_IMPLEMENTATION_BACKLOG.md) with the locked 8-platform benchmark and top-20 P0 tasks.
 - Wave 11 now includes an explicit test rollout so every active planned wave uses the same four-artifact pattern.
 - Superseded root-level Wave 12 market-intelligence docs were archived to `../archives/` to avoid naming collisions with the active Wave 12 automation bundle.
