@@ -121,9 +121,54 @@ const isLocalDevOrigin = (origin: string): boolean => {
 app.set('trust proxy', 1);
 // In development, keep API on 3001 to avoid colliding with Vite (5000).
 // Use API_PORT when provided; in production/staging, respect PORT as platform-provided.
-const PORT =
+const PREFERRED_PORT =
   process.env.API_PORT ||
   (process.env.NODE_ENV === 'development' ? 3001 : process.env.PORT || 3001);
+
+const parsePort = (value: string | number): number => {
+  const parsed = Number(value);
+  return Number.isFinite(parsed) && parsed > 0 ? parsed : 3001;
+};
+
+const listenWithPortFallback = async (
+  server: ReturnType<typeof createServer>,
+  preferredPort: number,
+  options: { enableFallback: boolean; maxAttempts?: number }
+): Promise<number> => {
+  const maxAttempts = Math.max(1, options.maxAttempts ?? 12);
+  let attempts = 0;
+
+  return new Promise<number>((resolve, reject) => {
+    const tryListen = (port: number): void => {
+      const onListening = (): void => {
+        server.off('error', onError);
+        server.off('listening', onListening);
+        resolve(port);
+      };
+
+      const onError = (error: NodeJS.ErrnoException): void => {
+        server.off('error', onError);
+        server.off('listening', onListening);
+
+        if (error.code === 'EADDRINUSE' && options.enableFallback && attempts < maxAttempts) {
+          attempts += 1;
+          const nextPort = port + 1;
+          logger.warn(`Port ${port} is already in use — retrying on ${nextPort}`);
+          tryListen(nextPort);
+          return;
+        }
+
+        reject(error);
+      };
+
+      server.once('listening', onListening);
+      server.once('error', onError);
+      server.listen(port);
+    };
+
+    tryListen(preferredPort);
+  });
+};
 
 // ============================================================================
 // MIDDLEWARE SETUP
@@ -1083,7 +1128,8 @@ const startServer = async () => {
   }
 
   // Start listening regardless of DB status
-  const host = process.env.API_URL || `http://localhost:${PORT}`;
+  const preferredPort = parsePort(PREFERRED_PORT);
+  const allowPortFallback = process.env.NODE_ENV === 'development';
 
   // Wrap Express in a raw http.Server so Socket.io can share the same port
   const httpServer = createServer(app);
@@ -1091,12 +1137,20 @@ const startServer = async () => {
   // Socket server bootstrap intentionally disabled in this runtime profile.
   // Re-enable once socket.io package/runtime is guaranteed in all environments.
 
-  httpServer.listen(PORT, () => {
-    logger.info(`Server started on ${host}`);
-    logger.info(`Environment: ${process.env.NODE_ENV || 'development'}`);
-    logger.info(`API Base: ${host}/api`);
-    logger.info(`Socket.io: ws://${host.replace(/^https?:\/\//, '')}`);
+  const activePort = await listenWithPortFallback(httpServer, preferredPort, {
+    enableFallback: allowPortFallback,
+    maxAttempts: 20,
   });
+  const host = process.env.API_URL || `http://localhost:${activePort}`;
+
+  logger.info(`Server started on ${host}`);
+  logger.info(`Environment: ${process.env.NODE_ENV || 'development'}`);
+  logger.info(`API Base: ${host}/api`);
+  logger.info(`Socket.io: ws://${host.replace(/^https?:\/\//, '')}`);
+
+  if (activePort !== preferredPort) {
+    logger.warn(`API port fallback active: preferred ${preferredPort}, listening on ${activePort}`);
+  }
 
   return httpServer;
 };
