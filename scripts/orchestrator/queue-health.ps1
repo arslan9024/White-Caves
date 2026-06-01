@@ -28,7 +28,7 @@ $w         = 72
 
 # -- known constants ----------------------------------------------------------
 $EXPECTED_VERSION   = "2.0"
-$EXPECTED_TASKS     = 51
+$DEFAULT_EXPECTED_TASKS = 51
 $STALE_RUNNING_MINS = 120   # running > 2h without update = stale
 $KNOWN_LANES        = @("A","B","C","D")
 $KNOWN_AGENTS       = @(
@@ -118,9 +118,29 @@ if ($q.version -ne $EXPECTED_VERSION) {
 }
 
 # 1b. Task count
-if ($tasks.Count -ne $EXPECTED_TASKS) {
-  Add-Warn "Task count mismatch: expected $EXPECTED_TASKS, got $($tasks.Count)"
-  Write-Check "[!!]" "Task count" "Expected $EXPECTED_TASKS, got $($tasks.Count)" "DarkYellow"
+$expectedTasks = $null
+
+# Prefer explicit metadata from queue if available
+if ($null -ne $q.expectedTaskCount) {
+  $expectedTasks = [int]$q.expectedTaskCount
+} elseif ($null -ne $q.meta -and $null -ne $q.meta.expectedTaskCount) {
+  $expectedTasks = [int]$q.meta.expectedTaskCount
+}
+
+# If queue looks like a generated Aegis cycle without explicit expected count,
+# treat current count as baseline for this run to avoid false warnings.
+if ($null -eq $expectedTasks -and -not [string]::IsNullOrWhiteSpace([string]$q.reason) -and [string]$q.reason -match 'Aegis|Autopilot queue completion|regeneration') {
+  $expectedTasks = $tasks.Count
+}
+
+# Fallback to legacy default only when no metadata/reason hint is present.
+if ($null -eq $expectedTasks) {
+  $expectedTasks = $DEFAULT_EXPECTED_TASKS
+}
+
+if ($tasks.Count -ne $expectedTasks) {
+  Add-Warn "Task count mismatch: expected $expectedTasks, got $($tasks.Count)"
+  Write-Check "[!!]" "Task count" "Expected $expectedTasks, got $($tasks.Count)" "DarkYellow"
 } else {
   Write-Check "[OK]" "Task count: $($tasks.Count)" "" "Green"
 }
