@@ -28,6 +28,35 @@ function Write-Result {
   }
 }
 
+function Invoke-LocalToolVersion {
+  param(
+    [string]$ToolName
+  )
+
+  $candidates = @(
+    ".\\node_modules\\.bin\\$ToolName.cmd",
+    ".\\node_modules\\.bin\\$ToolName"
+  )
+
+  foreach ($candidate in $candidates) {
+    if (Test-Path $candidate) {
+      $output = (& $candidate --version 2>&1 | Out-String).Trim()
+      return @{
+        Ok = ($LASTEXITCODE -eq 0)
+        Output = $output
+        Source = "local-bin"
+      }
+    }
+  }
+
+  $fallbackOutput = (& cmd /c "npm exec -- $ToolName --version" 2>&1 | Out-String).Trim()
+  return @{
+    Ok = ($LASTEXITCODE -eq 0)
+    Output = $fallbackOutput
+    Source = "npm-exec"
+  }
+}
+
 # 1) Node version gate for current toolchain
 $nodeVerRaw = (& node -v 2>$null)
 if ([string]::IsNullOrWhiteSpace($nodeVerRaw)) {
@@ -49,21 +78,24 @@ if ([string]::IsNullOrWhiteSpace($nodeVerRaw)) {
 }
 
 # 2) Dev toolchain binaries
-$tools = @(
-  @{ Name = "concurrently"; Cmd = "npx concurrently --version" },
-  @{ Name = "nodemon";      Cmd = "npx nodemon --version" },
-  @{ Name = "tsx";          Cmd = "npx tsx --version" }
-)
+$tools = @("concurrently", "nodemon", "tsx")
 
-foreach ($t in $tools) {
-  $name = [string]$t.Name
-  $cmd = [string]$t.Cmd
-  $output = (& cmd /c $cmd 2>&1 | Out-String).Trim()
-  if ($LASTEXITCODE -eq 0) {
-    $line = ($output -split "`r?`n" | Select-Object -First 1)
+foreach ($name in $tools) {
+  $probe = Invoke-LocalToolVersion -ToolName $name
+  if ($probe.Ok) {
+    $line = ($probe.Output -split "`r?`n" | Select-Object -First 1)
     Write-Result -Label "$name available" -Ok $true -Detail $line
   } else {
-    Write-Result -Label "$name available" -Ok $false -Detail "not available via npx"
+    $detail = if ($probe.Source -eq "local-bin") {
+      "local node_modules binary failed"
+    } else {
+      "not available (npm exec fallback failed)"
+    }
+    if (-not [string]::IsNullOrWhiteSpace($probe.Output)) {
+      $firstLine = ($probe.Output -split "`r?`n" | Select-Object -First 1)
+      $detail = "${detail}: $firstLine"
+    }
+    Write-Result -Label "$name available" -Ok $false -Detail $detail
     $hasError = $true
   }
 }
