@@ -12,6 +12,7 @@
 #   npm run orchestrator:agent-loop -- -ShowSchedule    -- print schedule, exit
 #   npm run orchestrator:agent-loop -- -NonInteractive   -- auto-confirm and continue
 #   npm run orchestrator:agent-loop -- -Autopilot        -- continuous mode (no asks, no browser auto-open)
+#   (Autopilot also supports Aegis auto-regeneration when queue is fully complete)
 #   npm run orchestrator:agent-loop -- -Approval         -- ask before each advance
 #   npm run orchestrator:agent-loop -- -Agent @Sofia -Once -NoBrowser
 
@@ -32,12 +33,15 @@ $scripts = Join-Path $root "scripts\orchestrator"
 $qFile   = Join-Path $root "logs\orchestrator\task-queue.json"
 $pFile   = Join-Path $root "scripts\orchestrator\prompts.json"
 $policyFile = Join-Path $root "scripts\orchestrator\policy.json"
+$aegisScript = Join-Path $scripts "aegis-regenerate.ps1"
 
 # ------------------------------------------------------------------
 # EXECUTION MODE (policy + switches)
 # Default: approval mode (ask between tasks)
 # ------------------------------------------------------------------
 $policyDefaultMode = "approval"
+$aegisAutoRegenerate = $true
+$aegisMaxRegenerationsPerRun = 1
 if (Test-Path $policyFile) {
   try {
     $policy = Get-Content $policyFile -Raw | ConvertFrom-Json
@@ -49,6 +53,18 @@ if (Test-Path $policyFile) {
       $policyDefaultMode = ([string]$policy.executionMode.default).ToLower()
     } elseif ($null -ne $policy.autonomousDefault -and [bool]$policy.autonomousDefault) {
       $policyDefaultMode = "autopilot"
+    }
+
+    if ($null -ne $policy.aegis) {
+      if ($null -ne $policy.aegis.autoRegenerateWhenQueueComplete) {
+        $aegisAutoRegenerate = [bool]$policy.aegis.autoRegenerateWhenQueueComplete
+      }
+      if ($null -ne $policy.aegis.maxRegenerationsPerRun) {
+        $parsedMax = 1
+        if ([int]::TryParse([string]$policy.aegis.maxRegenerationsPerRun, [ref]$parsedMax) -and $parsedMax -ge 1) {
+          $aegisMaxRegenerationsPerRun = $parsedMax
+        }
+      }
     }
   } catch {
     $policyDefaultMode = "approval"
@@ -210,6 +226,7 @@ function Get-AgentNextReadyTask {
     if ($t.status -notin @("queued","retrying")) { continue }
     $blocked = $false
     foreach ($dep in @($t.dependsOn)) {
+      if ([string]::IsNullOrWhiteSpace([string]$dep)) { continue }
       $depTask = $all | Where-Object { $_.taskId -eq $dep } | Select-Object -First 1
       if ($null -eq $depTask -or $depTask.status -ne "done") { $blocked = $true; break }
     }
@@ -222,6 +239,12 @@ function Get-QueueDoneCount {
   if (-not (Test-Path $qFile)) { return 0 }
   $q = Get-Content $qFile -Raw | ConvertFrom-Json
   return @($q.tasks | Where-Object { $_.status -eq "done" }).Count
+}
+
+function Get-QueueTotalCount {
+  if (-not (Test-Path $qFile)) { return 0 }
+  $q = Get-Content $qFile -Raw | ConvertFrom-Json
+  return @($q.tasks).Count
 }
 
 function Get-TaskById {
@@ -240,6 +263,7 @@ function Get-ReadyCount {
   foreach ($t in ($all | Where-Object { $_.status -eq "queued" })) {
     $blocked = $false
     foreach ($dep in @($t.dependsOn)) {
+      if ([string]::IsNullOrWhiteSpace([string]$dep)) { continue }
       $depTask = $all | Where-Object { $_.taskId -eq $dep } | Select-Object -First 1
       if ($null -eq $depTask -or $depTask.status -ne "done") { $blocked = $true; break }
     }
@@ -318,6 +342,7 @@ Write-BigDivider
 Write-Host ""
 
 $loopCount = 0
+$aegisRegenerations = 0
 
 :outerLoop while ($true) {
   $loopCount++
@@ -356,6 +381,24 @@ $loopCount = 0
       break
     }
     if ($effectiveNonInteractive) {
+      $queueTotal = Get-QueueTotalCount
+      $queueDone = Get-QueueDoneCount
+      $isQueueComplete = ($queueTotal -eq 0) -or ($queueTotal -gt 0 -and $queueDone -ge $queueTotal)
+
+      if (
+        $isQueueComplete -and
+        $aegisAutoRegenerate -and
+        $aegisRegenerations -lt $aegisMaxRegenerationsPerRun -and
+        (Test-Path $aegisScript)
+      ) {
+        Write-Host "  [AEGIS] Queue complete -- generating fresh research/planning tasks..." -ForegroundColor Cyan
+        & powershell -ExecutionPolicy Bypass -File "$aegisScript" -WorkspaceRoot $root -Reason "Autopilot queue completion" 2>&1 | Out-String | Write-Host
+        $aegisRegenerations++
+        Write-Host "  [AEGIS] New cycle generated. Continuing autopilot..." -ForegroundColor Green
+        Write-Host ""
+        continue
+      }
+
       Write-Host "  No READY tasks found across rotation. Autopilot exiting cleanly." -ForegroundColor DarkGray
       break
     }
@@ -383,9 +426,11 @@ $loopCount = 0
   Write-Host ("  Task    : {0}  -- {1}" -f $taskId, $task.title) -ForegroundColor White
   Write-Host ("  Tool    : {0}" -f $toolStr) -ForegroundColor Green
   Write-Host ("  URL     : {0}" -f $url) -ForegroundColor DarkGray
-  $donePct = [math]::Round((Get-QueueDoneCount) / 51 * 100, 0)
+  $queueTotal = Get-QueueTotalCount
+  $queueDoneNow = Get-QueueDoneCount
+  $donePct = if ($queueTotal -gt 0) { [math]::Round($queueDoneNow / $queueTotal * 100, 0) } else { 0 }
   $readyN  = Get-ReadyCount
-  Write-Host ("  Queue   : {0}/51 done ({1}%)  |  {2} READY now" -f (Get-QueueDoneCount), $donePct, $readyN) -ForegroundColor DarkGray
+  Write-Host ("  Queue   : {0}/{1} done ({2}%)  |  {3} READY now" -f $queueDoneNow, $queueTotal, $donePct, $readyN) -ForegroundColor DarkGray
   if ($Agent -eq "") {
     Write-Host ("  Next slot in ~{0} min -> {1}" -f $nextSlotMin, $nextSlotAg) -ForegroundColor DarkGray
   }
@@ -487,7 +532,8 @@ $loopCount = 0
   Write-Divider -color Green
   Write-Host "  RESULT" -ForegroundColor Green
   if ($newDone -gt 0) {
-    Write-Host ("  [OK] +{0} task(s) done  (queue: {1}/51)" -f $newDone, $afterDone) -ForegroundColor Green
+    $afterTotal = Get-QueueTotalCount
+    Write-Host ("  [OK] +{0} task(s) done  (queue: {1}/{2})" -f $newDone, $afterDone, $afterTotal) -ForegroundColor Green
   } else {
     Write-Host "  [!!] Task may need FEEDS_ACK or file did not reach gate target." -ForegroundColor Yellow
     Write-Host "  Run: npm run orchestrator:health  to check queue state" -ForegroundColor DarkGray

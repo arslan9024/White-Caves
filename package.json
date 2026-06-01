@@ -48,6 +48,7 @@
     "orchestrator:bg:start": "powershell -ExecutionPolicy Bypass -File scripts/orchestrator/start-background.ps1",
     "orchestrator:bg:stop": "powershell -ExecutionPolicy Bypass -File scripts/orchestrator/stop-background.ps1",
     "orchestrator:queue:init": "powershell -ExecutionPolicy Bypass -File scripts/orchestrator/init-queue.ps1",
+    "orchestrator:aegis:regenerate": "powershell -ExecutionPolicy Bypass -File scripts/orchestrator/aegis-regenerate.ps1",
     "orchestrator:queue:status": "powershell -ExecutionPolicy Bypass -File scripts/orchestrator/status.ps1",
     "orchestrator:queue:ack": "powershell -ExecutionPolicy Bypass -File scripts/orchestrator/ack-task.ps1",
     "orchestrator:watchdog": "powershell -ExecutionPolicy Bypass -File scripts/orchestrator/watchdog.ps1",

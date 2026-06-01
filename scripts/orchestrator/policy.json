@@ -47,6 +47,10 @@
       "hardStopOnly": false
     }
   },
+  "aegis": {
+    "autoRegenerateWhenQueueComplete": true,
+    "maxRegenerationsPerRun": 1
+  },
   "autonomousDefault": false,
   "hardStops": {
     "stopOnTestFailure": true,
