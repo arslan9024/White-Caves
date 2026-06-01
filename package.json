@@ -150,7 +150,7 @@
     "orchestrator:cascade:brief": "powershell -ExecutionPolicy Bypass -File scripts/orchestrator/cascade-preview.ps1 -Brief",
     "orchestrator:agent-loop": "powershell -ExecutionPolicy Bypass -File scripts/orchestrator/agent-loop.ps1",
     "orchestrator:agent-loop:approval": "powershell -ExecutionPolicy Bypass -File scripts/orchestrator/agent-loop.ps1 -Approval",
-    "orchestrator:agent-loop:autopilot": "powershell -ExecutionPolicy Bypass -File scripts/orchestrator/agent-loop.ps1 -Autopilot",
+    "orchestrator:agent-loop:autopilot": "powershell -ExecutionPolicy Bypass -File scripts/orchestrator/agent-loop.ps1 -Autopilot -NoBrowser",
     "orchestrator:agent-loop:schedule": "powershell -ExecutionPolicy Bypass -File scripts/orchestrator/agent-loop.ps1 -ShowSchedule",
     "orchestrator:agent-loop:once": "powershell -ExecutionPolicy Bypass -File scripts/orchestrator/agent-loop.ps1 -Once",
     "orchestrator:agent-loop:nobrowser": "powershell -ExecutionPolicy Bypass -File scripts/orchestrator/agent-loop.ps1 -NoBrowser",

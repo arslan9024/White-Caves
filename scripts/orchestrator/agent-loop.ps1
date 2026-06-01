@@ -11,7 +11,7 @@
 #   npm run orchestrator:agent-loop -- -NoBrowser       -- skip browser launch
 #   npm run orchestrator:agent-loop -- -ShowSchedule    -- print schedule, exit
 #   npm run orchestrator:agent-loop -- -NonInteractive   -- auto-confirm and continue
-#   npm run orchestrator:agent-loop -- -Autopilot        -- continuous mode (no asks)
+#   npm run orchestrator:agent-loop -- -Autopilot        -- continuous mode (no asks, no browser auto-open)
 #   npm run orchestrator:agent-loop -- -Approval         -- ask before each advance
 #   npm run orchestrator:agent-loop -- -Agent @Sofia -Once -NoBrowser
 
@@ -64,6 +64,12 @@ if ($Autopilot) {
   $effectiveNonInteractive = $true
 } else {
   $effectiveNonInteractive = ($policyDefaultMode -eq "autopilot")
+}
+
+# Safety default: in autopilot/non-interactive runs, do not auto-open browser tabs
+# unless the user explicitly chooses browser mode via another command path.
+if ($effectiveNonInteractive -and -not $PSBoundParameters.ContainsKey('NoBrowser')) {
+  $NoBrowser = $true
 }
 
 # ------------------------------------------------------------------
