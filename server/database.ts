@@ -9,6 +9,14 @@ import { registerLeadScoringMiddleware } from './services/ai/leadScoringMiddlewa
 
 const log = createLogger('Database');
 
+type PrismaLikeError = { code?: string };
+
+const getPrismaErrorCode = (error: unknown): string | null => {
+  if (!error || typeof error !== 'object') return null;
+  const candidate = error as PrismaLikeError;
+  return typeof candidate.code === 'string' ? candidate.code : null;
+};
+
 let prisma: PrismaClient;
 
 // Check if there's already a prisma instance in development
@@ -40,10 +48,15 @@ declare global {
 export const connectDatabase = async (): Promise<void> => {
   try {
     await prisma.$connect();
-    log.info('Prisma connected to MongoDB');
+    log.info('Prisma connected to database');
     log.info('Database health check passed');
   } catch (error) {
-    log.error('Database connection failed', error);
+    const errorCode = getPrismaErrorCode(error);
+    if (errorCode === 'P1001') {
+      log.warn('Database server unreachable (P1001)');
+    } else {
+      log.error('Database connection failed', error);
+    }
     throw error;
   }
 };

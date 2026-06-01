@@ -1123,7 +1123,7 @@ const startServer = async () => {
     }
   } catch (error: unknown) {
     const message = error instanceof Error ? error.message : String(error);
-    logger.warn(`MongoDB connection failed: ${message}`);
+    logger.warn(`Database connection failed: ${message}`);
     logger.warn('Server will start without database — API calls will return errors');
   }
 

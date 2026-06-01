@@ -250,7 +250,6 @@ const InventoryPropertySchema = new mongoose.Schema({
 InventoryPropertySchema.index({ pNumber: 1, area: 1 }, { unique: true, sparse: true });
 InventoryPropertySchema.index({ area: 1, status: 1 });
 InventoryPropertySchema.index({ project: 1 });
-InventoryPropertySchema.index({ 'owners': 1 });
 InventoryPropertySchema.index({ municipalityNo: 1 }, { sparse: true });
 
 // NEW: Indexes for sourcing functionality
