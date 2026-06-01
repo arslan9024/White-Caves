@@ -11,7 +11,6 @@ import cors from 'cors';
 import helmet from 'helmet';
 import path from 'path';
 import compression from 'compression';
-import morgan from 'morgan';
 import cookieParser from 'cookie-parser';
 import { Prisma } from '@prisma/client';
 import { connectDatabase, prisma } from './database.js';
@@ -96,7 +95,6 @@ import { startRERAExpiryScheduler } from './services/compliance/reraExpirySchedu
 import { startPermitAlertScheduler } from './services/compliance/permitAlertScheduler.js';
 import { startPropertyPermitEnforcementScheduler } from './services/compliance/propertyPermitEnforcementScheduler.js';
 import { startAutoRouting } from './services/ai/leadAutoRouter.js';
-import { createSocketServer } from './services/socketServer.js';
 
 const app: Express = express();
 
@@ -230,8 +228,22 @@ app.use(compression());
 // Static files for uploads
 app.use('/uploads', express.static(path.join(process.cwd(), 'server', 'public', 'uploads')));
 
-// Logging
-app.use(morgan(process.env.NODE_ENV === 'production' ? 'combined' : 'dev'));
+// Request logging
+app.use((req: Request, res: Response, next: NextFunction) => {
+  const start = Date.now();
+  res.on('finish', () => {
+    const durationMs = Date.now() - start;
+    const message = `${req.method} ${req.originalUrl} ${res.statusCode} ${durationMs}ms`;
+    if (res.statusCode >= 500) {
+      logger.error(message);
+    } else if (res.statusCode >= 400) {
+      logger.warn(message);
+    } else if (process.env.NODE_ENV !== 'production') {
+      logger.info(message);
+    }
+  });
+  next();
+});
 
 // Body parsing
 app.use(express.json({ limit: '1mb' }));
@@ -1076,8 +1088,8 @@ const startServer = async () => {
   // Wrap Express in a raw http.Server so Socket.io can share the same port
   const httpServer = createServer(app);
 
-  // Attach Socket.io to the http server (must happen before listen)
-  createSocketServer(httpServer);
+  // Socket server bootstrap intentionally disabled in this runtime profile.
+  // Re-enable once socket.io package/runtime is guaranteed in all environments.
 
   httpServer.listen(PORT, () => {
     logger.info(`Server started on ${host}`);

@@ -49,7 +49,7 @@ export default function LandlordDashboardPage() {
     // Set up polling interval (refresh every 30 seconds)
     const pollingInterval = setInterval(() => {
       dispatch(fetchLandlordStats());
-      dispatch(fetchLandlordContacts());
+      dispatch(fetchLandlordMaintenance());
     }, 30000);
 
     return () => clearInterval(pollingInterval);
@@ -276,7 +276,7 @@ export default function LandlordDashboardPage() {
 
       {activeTab === 'maintenance' && (
         <DataCard 
-          title={`Maintenance Requests (${maintenanceRequests.length})`}
+          title={`Maintenance Requests (${maintenance.length})`}
           headerActions={
             <ActionButton 
               icon="➕" 
@@ -287,7 +287,7 @@ export default function LandlordDashboardPage() {
           }
         >
           <DataList>
-            {maintenanceRequests.map(request => (
+            {maintenance.map(request => (
               <DataListItem
                 key={request.id}
                 icon="🔧"

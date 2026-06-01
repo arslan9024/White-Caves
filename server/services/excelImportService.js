@@ -1,5 +1,5 @@
 import fs from 'fs';
-import * as XLSX from '../../modules/linda/node_modules/xlsx/xlsx.mjs';
+import * as XLSX from 'xlsx';
 
 export const COLUMN_MAPPING = {
   'P-NUMBER': 'pNumber',

@@ -4,7 +4,7 @@
  * Uses express-rate-limit with configurable windows per route type
  */
 
-import rateLimit, { ipKeyGenerator, type RateLimitRequestHandler } from 'express-rate-limit';
+import rateLimit, { type RateLimitRequestHandler } from 'express-rate-limit';
 
 interface FirebaseSyncBody {
   firebaseUid?: unknown;
@@ -33,6 +33,9 @@ const resolveFirebaseIdentity = (body: unknown): string => {
 
   return email ? `email:${email}` : 'anonymous';
 };
+
+const normalizeIpKey = (ip: string | undefined): string =>
+  (ip || '').trim() || 'unknown-ip';
 
 // ============================================================================
 // AUTH RATE LIMITER — Strict limits for login/register/password
@@ -65,7 +68,7 @@ export const firebaseSyncLimiter: RateLimitRequestHandler = rateLimit({
     statusCode: 429,
   },
   keyGenerator: req => {
-    const baseIp = ipKeyGenerator(req.ip || req.socket.remoteAddress || 'unknown-ip');
+    const baseIp = normalizeIpKey(req.ip || req.socket.remoteAddress || undefined);
     const identity = resolveFirebaseIdentity(req.body);
     return `${baseIp}:${identity}`;
   },
