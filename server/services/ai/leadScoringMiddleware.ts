@@ -190,7 +190,12 @@ export function registerLeadScoringMiddleware(prisma: PrismaClient): void {
   };
 
   if (typeof middlewareApi.$use !== 'function') {
-    logger.warn('[LeadScoringMiddleware] Prisma middleware API ($use) not available; skipping registration');
+    const message = '[LeadScoringMiddleware] Prisma middleware API ($use) not available; skipping registration';
+    if (process.env.NODE_ENV === 'development') {
+      logger.info(message);
+    } else {
+      logger.warn(message);
+    }
     return;
   }
 

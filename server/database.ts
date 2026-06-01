@@ -9,12 +9,14 @@ import { registerLeadScoringMiddleware } from './services/ai/leadScoringMiddlewa
 
 const log = createLogger('Database');
 
-type PrismaLikeError = { code?: string };
+type PrismaLikeError = { code?: string; errorCode?: string };
 
 const getPrismaErrorCode = (error: unknown): string | null => {
   if (!error || typeof error !== 'object') return null;
   const candidate = error as PrismaLikeError;
-  return typeof candidate.code === 'string' ? candidate.code : null;
+  if (typeof candidate.code === 'string') return candidate.code;
+  if (typeof candidate.errorCode === 'string') return candidate.errorCode;
+  return null;
 };
 
 let prisma: PrismaClient;

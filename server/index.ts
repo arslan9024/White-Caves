@@ -137,12 +137,20 @@ const listenWithPortFallback = async (
 ): Promise<number> => {
   const maxAttempts = Math.max(1, options.maxAttempts ?? 12);
   let attempts = 0;
+  let suppressedRetryLogs = 0;
 
   return new Promise<number>((resolve, reject) => {
     const tryListen = (port: number): void => {
       const onListening = (): void => {
         server.off('error', onError);
         server.off('listening', onListening);
+
+        if (suppressedRetryLogs > 0) {
+          logger.warn(
+            `Suppressed ${suppressedRetryLogs} additional port retry log(s) during fallback before binding to ${port}`
+          );
+        }
+
         resolve(port);
       };
 
@@ -153,7 +161,12 @@ const listenWithPortFallback = async (
         if (error.code === 'EADDRINUSE' && options.enableFallback && attempts < maxAttempts) {
           attempts += 1;
           const nextPort = port + 1;
-          logger.warn(`Port ${port} is already in use — retrying on ${nextPort}`);
+          const shouldLogRetry = attempts <= 3 || attempts % 5 === 0 || attempts === maxAttempts;
+          if (shouldLogRetry) {
+            logger.warn(`Port ${port} is already in use — retrying on ${nextPort}`);
+          } else {
+            suppressedRetryLogs += 1;
+          }
           tryListen(nextPort);
           return;
         }
@@ -1123,7 +1136,11 @@ const startServer = async () => {
     }
   } catch (error: unknown) {
     const message = error instanceof Error ? error.message : String(error);
-    logger.warn(`Database connection failed: ${message}`);
+    const firstLine = message
+      .split('\n')
+      .map(line => line.trim())
+      .find(Boolean);
+    logger.warn(`Database connection failed: ${firstLine ?? message}`);
     logger.warn('Server will start without database — API calls will return errors');
   }
 
