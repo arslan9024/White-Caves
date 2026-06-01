@@ -42,6 +42,10 @@ $aegisScript = Join-Path $scripts "aegis-regenerate.ps1"
 $policyDefaultMode = "approval"
 $aegisAutoRegenerate = $true
 $aegisMaxRegenerationsPerRun = 1
+$aegisSmartSelection = $true
+$aegisDevSmokeEnabled = $true
+$aegisDevSmokeEveryNTasks = 5
+$devSmokeScript = Join-Path $scripts "dev-smoke.ps1"
 if (Test-Path $policyFile) {
   try {
     $policy = Get-Content $policyFile -Raw | ConvertFrom-Json
@@ -63,6 +67,18 @@ if (Test-Path $policyFile) {
         $parsedMax = 1
         if ([int]::TryParse([string]$policy.aegis.maxRegenerationsPerRun, [ref]$parsedMax) -and $parsedMax -ge 1) {
           $aegisMaxRegenerationsPerRun = $parsedMax
+        }
+      }
+      if ($null -ne $policy.aegis.smartSelectionEnabled) {
+        $aegisSmartSelection = [bool]$policy.aegis.smartSelectionEnabled
+      }
+      if ($null -ne $policy.aegis.devSmokeEnabled) {
+        $aegisDevSmokeEnabled = [bool]$policy.aegis.devSmokeEnabled
+      }
+      if ($null -ne $policy.aegis.devSmokeEveryNTasks) {
+        $parsedEvery = 0
+        if ([int]::TryParse([string]$policy.aegis.devSmokeEveryNTasks, [ref]$parsedEvery) -and $parsedEvery -ge 1) {
+          $aegisDevSmokeEveryNTasks = $parsedEvery
         }
       }
     }
@@ -208,6 +224,68 @@ function Get-NextReadyInRotation {
   return $null
 }
 
+function Get-SmartNextReadyTask {
+  if (-not (Test-Path $qFile)) { return $null }
+
+  $q = Get-Content $qFile -Raw | ConvertFrom-Json
+  $allTasks = @($q.tasks)
+
+  $readyTasks = @()
+  foreach ($t in ($allTasks | Where-Object { $_.status -in @("queued","retrying") })) {
+    $blocked = $false
+    foreach ($dep in @($t.dependsOn)) {
+      if ([string]::IsNullOrWhiteSpace([string]$dep)) { continue }
+      $depTask = $allTasks | Where-Object { $_.taskId -eq $dep } | Select-Object -First 1
+      if ($null -eq $depTask -or $depTask.status -ne "done") { $blocked = $true; break }
+    }
+    if (-not $blocked) { $readyTasks += $t }
+  }
+
+  if ($readyTasks.Count -eq 0) { return $null }
+
+  $laneScores = @{}
+  foreach ($lane in @("A","B","C","D")) {
+    $laneTasks = @($allTasks | Where-Object { $_.lane -eq $lane })
+    if ($laneTasks.Count -eq 0) { continue }
+
+    $pending = @($laneTasks | Where-Object { $_.status -in @("queued","running","waiting_ack","retrying","failed","escalated") }).Count
+    $waitingAck = @($laneTasks | Where-Object { $_.status -eq "waiting_ack" }).Count
+    $blocked = @($laneTasks | Where-Object { $_.status -in @("failed","escalated") }).Count
+    $retrying = @($laneTasks | Where-Object { $_.status -eq "retrying" }).Count
+    $done = @($laneTasks | Where-Object { $_.status -eq "done" }).Count
+    $completionPct = if ($laneTasks.Count -gt 0) { 100 * ($done / $laneTasks.Count) } else { 0 }
+    $strength = [math]::Max(0, [math]::Min(100, ($completionPct - ($waitingAck * 6) - ($retrying * 8) - ($blocked * 18))))
+    $attentionScore = [int]($pending * 10 + $blocked * 25 + $waitingAck * 8 + $retrying * 10 + (100 - $strength))
+
+    $laneScores[$lane] = $attentionScore
+  }
+
+  $readyByLane = @($readyTasks | Group-Object lane)
+  $bestLane = $null
+  $bestScore = -1
+  foreach ($g in $readyByLane) {
+    $lane = [string]$g.Name
+    $score = if ($laneScores.ContainsKey($lane)) { [int]$laneScores[$lane] } else { 0 }
+    if ($score -gt $bestScore) {
+      $bestScore = $score
+      $bestLane = $lane
+    }
+  }
+
+  if ([string]::IsNullOrWhiteSpace($bestLane)) {
+    $fallbackTask = @($readyTasks | Sort-Object taskId | Select-Object -First 1)
+    if ($fallbackTask.Count -gt 0) {
+      return @{ Agent = [string]$fallbackTask[0].agent; Task = $fallbackTask[0] }
+    }
+    return $null
+  }
+
+  $selected = @($readyTasks | Where-Object { $_.lane -eq $bestLane } | Sort-Object taskId | Select-Object -First 1)
+  if ($selected.Count -eq 0) { return $null }
+
+  return @{ Agent = [string]$selected[0].agent; Task = $selected[0] }
+}
+
 function Get-AgentNextReadyTask {
   param(
     [string]$agentName,
@@ -274,11 +352,29 @@ function Get-ReadyCount {
 
 function Get-Prompt {
   param([string]$taskId)
-  if (-not (Test-Path $pFile)) { return "(prompts.json not found)" }
-  $p = Get-Content $pFile -Raw | ConvertFrom-Json
-  $val = $p.PSObject.Properties | Where-Object { $_.Name -eq $taskId } | Select-Object -ExpandProperty Value
-  if ($null -eq $val) { return "(no prompt for $taskId -- add to prompts.json)" }
-  return $val
+  $val = $null
+  if (Test-Path $pFile) {
+    try {
+      $p = Get-Content $pFile -Raw | ConvertFrom-Json
+      $val = $p.PSObject.Properties | Where-Object { $_.Name -eq $taskId } | Select-Object -ExpandProperty Value
+    } catch {
+      $val = $null
+    }
+  }
+
+  if (-not [string]::IsNullOrWhiteSpace([string]$val)) {
+    return $val
+  }
+
+  # Fallback for Aegis-generated tasks when prompts.json is out of sync.
+  if ($taskId -like "AGC*") {
+    $task = Get-TaskById -taskId $taskId
+    if ($null -ne $task) {
+      return ("{0} -- RESEARCH+PLAN: {1}. Include top issues/opportunities, root causes, API/data/UI impact, acceptance criteria, tests, risks (P0/P1/P2), and FEEDS/FEEDS_ACK handoffs." -f $task.agent, $task.title)
+    }
+  }
+
+  return "(no prompt for $taskId -- add to prompts.json)"
 }
 
 function Write-Divider { param([string]$color="DarkGray"); Write-Host ("-" * $w) -ForegroundColor $color }
@@ -343,6 +439,7 @@ Write-Host ""
 
 $loopCount = 0
 $aegisRegenerations = 0
+$aegisCompletedInRun = 0
 
 :outerLoop while ($true) {
   $loopCount++
@@ -353,14 +450,18 @@ $aegisRegenerations = 0
     $slotLabel   = "manual"
     $task = Get-AgentNextReadyTask -agentName $activeAgent
   } elseif ($effectiveNonInteractive) {
-    $preferred = Get-CurrentSlotAgent
-    $nextReady = Get-NextReadyInRotation -preferredAgent $preferred
+    if ($aegisSmartSelection) {
+      $nextReady = Get-SmartNextReadyTask
+    } else {
+      $preferred = Get-CurrentSlotAgent
+      $nextReady = Get-NextReadyInRotation -preferredAgent $preferred
+    }
     if ($null -ne $nextReady) {
       $activeAgent = [string]$nextReady.Agent
       $task        = $nextReady.Task
       $slotLabel   = "auto"
     } else {
-      $activeAgent = $preferred
+      $activeAgent = Get-CurrentSlotAgent
       $task        = $null
       $slotLabel   = "auto"
     }
@@ -534,6 +635,20 @@ $aegisRegenerations = 0
   if ($newDone -gt 0) {
     $afterTotal = Get-QueueTotalCount
     Write-Host ("  [OK] +{0} task(s) done  (queue: {1}/{2})" -f $newDone, $afterDone, $afterTotal) -ForegroundColor Green
+    if ($effectiveNonInteractive) {
+      $aegisCompletedInRun += $newDone
+      if (
+        $aegisDevSmokeEnabled -and
+        $aegisDevSmokeEveryNTasks -ge 1 -and
+        ($aegisCompletedInRun % $aegisDevSmokeEveryNTasks -eq 0)
+      ) {
+        if (Test-Path $devSmokeScript) {
+          Write-Host "" 
+          Write-Host ("  [AEGIS CHECK] Running periodic dev smoke (every {0} completed tasks)..." -f $aegisDevSmokeEveryNTasks) -ForegroundColor Cyan
+          & powershell -ExecutionPolicy Bypass -File "$devSmokeScript" -WorkspaceRoot $root 2>&1 | Out-String | Write-Host
+        }
+      }
+    }
   } else {
     Write-Host "  [!!] Task may need FEEDS_ACK or file did not reach gate target." -ForegroundColor Yellow
     Write-Host "  Run: npm run orchestrator:health  to check queue state" -ForegroundColor DarkGray

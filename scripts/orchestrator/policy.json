@@ -49,7 +49,10 @@
   },
   "aegis": {
     "autoRegenerateWhenQueueComplete": true,
-    "maxRegenerationsPerRun": 1
+    "maxRegenerationsPerRun": 1,
+    "smartSelectionEnabled": true,
+    "devSmokeEnabled": true,
+    "devSmokeEveryNTasks": 5
   },
   "autonomousDefault": false,
   "hardStops": {
