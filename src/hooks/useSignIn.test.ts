@@ -184,7 +184,7 @@ describe('useSignIn — handleSocialAuth (integration)', () => {
       expect(currentUser?.email).toBe(backendBuyerUser.email);
     });
 
-    it('navigates to /crm for a buyer role', async () => {
+    it('navigates to /profile for a buyer role (profile-first journey)', async () => {
       vi.useFakeTimers();
       const { result } = renderHook(() => useSignIn(), { wrapper: createWrapper(store) });
 
@@ -193,7 +193,7 @@ describe('useSignIn — handleSocialAuth (integration)', () => {
       });
       act(() => vi.runAllTimers());
 
-      expect(mockNavigate).toHaveBeenCalledWith('/crm');
+      expect(mockNavigate).toHaveBeenCalledWith('/profile');
       vi.useRealTimers();
     });
 
@@ -255,11 +255,11 @@ describe('useSignIn — handleSocialAuth (integration)', () => {
       } | null;
       expect(currentUser?.email).toBe('arslanmalikgoraha@gmail.com');
       expect(currentUser?.role).toBe('managing_director');
-      expect(mockNavigate).toHaveBeenCalledWith('/crm');
+      expect(mockNavigate).toHaveBeenCalledWith('/profile');
       vi.useRealTimers();
     });
 
-    it('navigates creator email to /crm for deterministic superuser landing', async () => {
+    it('navigates creator email to /profile for profile-first post-login journey', async () => {
       vi.useFakeTimers();
       mockSyncFirebaseUser.mockResolvedValue(successResponse(backendSuperuser));
       const { result } = renderHook(() => useSignIn(), { wrapper: createWrapper(store) });
@@ -269,7 +269,7 @@ describe('useSignIn — handleSocialAuth (integration)', () => {
       });
       act(() => vi.runAllTimers());
 
-      expect(mockNavigate).toHaveBeenCalledWith('/crm');
+      expect(mockNavigate).toHaveBeenCalledWith('/profile');
       vi.useRealTimers();
     });
   });
@@ -335,7 +335,7 @@ describe('useSignIn — handleSocialAuth (integration)', () => {
 
       expect(result.current.step).toBe(1);
       expect(result.current.pendingUser).toBeNull();
-      expect(mockNavigate).toHaveBeenCalledWith('/crm');
+      expect(mockNavigate).toHaveBeenCalledWith('/profile');
       vi.useRealTimers();
     });
   });

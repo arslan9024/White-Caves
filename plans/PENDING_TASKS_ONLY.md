@@ -1,7 +1,7 @@
 # Pending Tasks Only
 
-**Last Updated:** 2026-05-28
-**Current Focus:** Wave 18.1 Session 2 complete ✅ — Wave 18.1 Session 3 (P0 closure + top P1s) 🟡 In Progress.
+**Last Updated:** 2026-06-04
+**Current Focus:** Wave 18.2 profile-first post-login journey + Dashboard CTA alignment ✅ Complete → Wave 18.1 Session 3 (P0 closure + top P1s) 🟡 In Progress.
 
 ## Canonical Sources
 
@@ -34,6 +34,7 @@ Advance only when the prior wave is green, the readiness gate is satisfied, and 
 | S11 | 18 | Workflow parity audit + benchmark gap backlog | ✅ Green | @Ada + @Margaret + @Mira + @Katherine | Wave 18 parity matrix finalized + canonical queue updates + `npm run plans:validate` |
 | S12 | 18.1 | Competitor parity execution — Session 1 ✅ complete, Session 2 ✅ complete | ✅ Complete | @Ada + @Mira + @Una + @Tracy + @Katherine + @Sofia | Session 1 + Session 2 tests green + build green + `npm run plans:validate` |
 | S13 | 18.1-S3 | Competitor parity execution — Session 3: 2 deferred P0s + top 8 P1s | 🟡 In Progress | @Ada + @Mira + @Joelle + @Katherine + @Victoria + @Una | Session 3 tests green + build green + `npm run plans:validate` |
+| S14 | 18.2 | Profile-first post-login journey + Dashboard CTA alignment | ✅ Complete | @Ada + @Mira | `useSignIn` tests green + build green |
 
 ## Completed Stream History
 
@@ -260,6 +261,19 @@ Key closures:
 | W18.1-P1-006 | Portal syndication baseline (PF/Bayut stub + feature flag) | P1 | @Mira + @Lea | Syndication route tests + feature-flag isolation tests |
 | W18.1-P1-007 | CRM follow-up automation depth (escalation tiers + template triggers) | P1 | @Mira + @Margaret | Follow-up automation tests + escalation tier tests |
 | W18.1-P1-008 | Ejari + rent collection workflow completion | P1 | @Victoria + @Mira | Ejari tracking tests + overdue-collection tests + portal tests |
+
+---
+
+## S14 — Wave 18.2: Profile-First Post-Login Journey ✅ Complete
+
+**Source:** Post-login UX plan (2026-06-04)
+**Entry Gate:** Wave 18.1 S3 in progress; approved as parallel auth/UX hardening
+
+| Task | Scope | Priority | Owner | Validation |
+| --- | --- | --- | --- | --- |
+| W18.2-01 | `resolvePostLoginRoute` → `/profile` for CRM-eligible users | P0 | @Mira | `useSignIn` routing tests |
+| W18.2-02 | ProfilePage Dashboard CTA → canonical `/crm` link | P0 | @Mira | Build + visual check |
+| W18.2-03 | Update routing tests (4 assertions) to match profile-first expectation | P0 | @Katherine | `npm run test:run -- src/hooks/useSignIn.test.ts` |
 
 ---
 

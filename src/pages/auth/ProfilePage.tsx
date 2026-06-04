@@ -816,11 +816,7 @@ const ProfilePage: FC = () => {
             </button>
             {userRole && (
               <Link
-                to={
-                  normalizeDashboardRole(userRole.role)
-                    ? `/${normalizeDashboardRole(userRole.role)}/dashboard`
-                    : '/dashboard'
-                }
+                to="/crm"
                 style={{
                   ...styles.backBtn,
                   background: '#00000060',
