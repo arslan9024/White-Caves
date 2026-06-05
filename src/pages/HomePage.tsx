@@ -10,12 +10,10 @@ import {
   selectLocationTrends,
   selectFeaturedProperties,
   selectIsHomepageLoading,
-  selectHomepageError,
   type HomepageProperty,
 } from '../store/slices/homepageSlice';
 import type { AppDispatch } from '../store/store';
 import { buildHomepageJsonLd } from './homepageSeo';
-import { Config } from '../config/constants';
 import ClickToChat from '../components/ClickToChat';
 import RoleSelectionModal from '../components/RoleSelectionModal';
 import PublicLayout from '../components/layout/PublicLayout';
@@ -115,11 +113,11 @@ const HomePage: FC = () => {
     () =>
       buildHomepageJsonLd({
         marketStats,
-        featuredProperties,
+        featuredProperties: displayedFeatured,
         topAgents,
         locationTrends,
       }),
-    [marketStats, featuredProperties, topAgents, locationTrends]
+    [marketStats, displayedFeatured, topAgents, locationTrends]
   );
   const trustHighlights = useMemo(
     () => [
@@ -128,19 +126,20 @@ const HomePage: FC = () => {
       { label: 'Top Agents', value: String(topAgents.length || 0) },
       { label: 'Popular Areas', value: String(locationTrends.length || 0) },
     ],
-    canonicalUrl: getCanonicalUrl('/'),
-    ogType: 'website',
-    ogImage:
-      'https://images.unsplash.com/photo-1582268611958-ebfd161ef9cf?w=1200&h=630&fit=crop&q=80',
-    jsonLd: buildHomepageJsonLd({
-      marketStats,
-      featuredProperties: displayedFeatured,
-      topAgents,
-      locationTrends,
-    }),
-    []
+    [marketStats.availableProperties, marketStats.averagePrice, topAgents.length, locationTrends.length]
   );
   const { addToRecent } = useRecentlyViewed();
+
+  const pageTitle = 'White Caves Real Estate — Dubai Luxury Properties';
+  const pageDescription =
+    'Explore premium villas, penthouses, and investment-ready properties in Dubai with White Caves Real Estate. RERA-licensed agency serving luxury buyers and investors.';
+  const pageKeywords = [
+    'Dubai real estate',
+    'luxury properties Dubai',
+    'White Caves Real Estate',
+    'Dubai villas',
+    'RERA licensed',
+  ];
 
   const handlePropertyClick = (propertyId: number): void => {
     addToRecent(String(propertyId));
@@ -164,6 +163,16 @@ const HomePage: FC = () => {
 
   return (
     <PublicLayout>
+      <PageMeta
+        title={pageTitle}
+        description={pageDescription}
+        keywords={pageKeywords}
+        canonicalPath="/"
+        ogType="website"
+        ogImage="https://images.unsplash.com/photo-1582268611958-ebfd161ef9cf?w=1200&h=630&fit=crop&q=80"
+        jsonLd={homepageJsonLd}
+      />
+      <StructuredData id="home-jsonld" data={homepageJsonLd} />
       <div className="home-page">
         {homepageError && !isHomepageLoading ? (
           <div role="status" aria-live="polite" className="homepage-live-data-alert">
