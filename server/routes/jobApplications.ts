@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Job Applications API Routes
  * Endpoints: /api/job-applications

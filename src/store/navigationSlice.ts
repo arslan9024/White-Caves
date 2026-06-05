@@ -17,14 +17,14 @@ const initialState = {
   activeRole: safeStorage.getJSON<{ role: string }>('userRole')?.role ?? null,
   theme: safeStorage.get('theme', 'light') ?? 'light',
   language: safeStorage.get('language', 'en') ?? 'en',
-  notifications: [],
+  notifications: [] as unknown[],
   unreadNotifications: 0,
   currentModule: null,
   currentSubModule: null,
   sidebarCollapsed: false,
   sidebarWidth: getInitialSidebarWidth(),
   activeNavItem: 'overview',
-  implementationUpdates: [],
+  implementationUpdates: [] as unknown[],
 };
 
 const navigationSlice = createSlice({

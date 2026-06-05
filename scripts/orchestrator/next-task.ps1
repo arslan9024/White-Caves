@@ -53,6 +53,34 @@ function Test-DepsDone {
   return $true
 }
 
+function Get-NormalizedDeps {
+  param($deps)
+
+  $normalized = New-Object 'System.Collections.Generic.List[string]'
+
+  if ($null -eq $deps) { return ,$normalized.ToArray() }
+
+  foreach ($item in @($deps)) {
+    if ($null -eq $item) { continue }
+    if ($item -is [string]) {
+      if ([string]::IsNullOrWhiteSpace($item)) { continue }
+      [void]$normalized.Add($item)
+      continue
+    }
+
+    if ($null -ne $item.PSObject -and $item.PSObject.Properties.Count -eq 0) {
+      continue
+    }
+
+    $text = [string]$item
+    if (-not [string]::IsNullOrWhiteSpace($text)) {
+      [void]$normalized.Add($text)
+    }
+  }
+
+  return ,$normalized.ToArray()
+}
+
 $agentTasks = $tasks | Where-Object { $_.agent -eq $AgentName }
 if ($agentTasks.Count -eq 0) {
   Write-Host "[ERROR] No tasks for agent: $AgentName" -ForegroundColor Red
@@ -62,7 +90,7 @@ if ($agentTasks.Count -eq 0) {
 $nextTask = $agentTasks |
   Where-Object { $_.status -eq "queued" -or $_.status -eq "retrying" } |
   Sort-Object createdAt |
-  Where-Object { Test-DepsDone -deps @($_.dependsOn) -allTasks $tasks } |
+  Where-Object { Test-DepsDone -deps (Get-NormalizedDeps $_.dependsOn) -allTasks $tasks } |
   Select-Object -First 1
 
 if ($null -eq $nextTask) {

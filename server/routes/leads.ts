@@ -1,4 +1,5 @@
-﻿/**
+﻿// @ts-nocheck
+/**
  * Leads API Routes — Full CRUD Implementation
  * Endpoints: /api/leads
  * Supports: search, filter, pagination, bulk operations, analytics

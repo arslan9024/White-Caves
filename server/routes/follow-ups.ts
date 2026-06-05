@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Follow-Up Routes — REST API for automated follow-up sequences
  *

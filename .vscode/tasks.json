@@ -1,0 +1,469 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "start-dev-server",
+			"type": "shell",
+			"command": "cmd.exe",
+			"args": [
+				"/c",
+				"npm.cmd run dev"
+			],
+			"isBackground": true
+		},
+		{
+			"label": "start-dev-server-nodepath",
+			"type": "shell",
+			"command": "cmd.exe",
+			"args": [
+				"/c",
+				"\"C:\\Users\\Murad Ali\\AppData\\Local\\Microsoft\\WinGet\\Packages\\OpenJS.NodeJS.LTS_Microsoft.Winget.Source_8wekyb3d8bbwe\\node-v24.16.0-win-x64\\npm.cmd\" run dev"
+			],
+			"isBackground": true
+		},
+		{
+			"label": "find-npm-location",
+			"type": "shell",
+			"command": "where.exe",
+			"args": [
+				"npm"
+			]
+		},
+		{
+			"label": "find-node-location",
+			"type": "shell",
+			"command": "where.exe",
+			"args": [
+				"node"
+			]
+		},
+		{
+			"label": "probe-winget-node-paths",
+			"type": "shell",
+			"command": "powershell",
+			"args": [
+				"-NoProfile",
+				"-Command",
+				"$candidates=@('C:\\Users\\Murad Ali\\AppData\\Local\\Microsoft\\WinGet\\Links\\npm.cmd','C:\\Users\\Murad Ali\\AppData\\Local\\Microsoft\\WinGet\\Links\\node.exe','C:\\Program Files\\nodejs\\npm.cmd','C:\\Program Files\\nodejs\\node.exe'); $candidates | ForEach-Object { \"$_ => \" + (Test-Path $_) }"
+			]
+		},
+		{
+			"label": "probe-winget-node-paths-cmd",
+			"type": "shell",
+			"command": "cmd.exe",
+			"args": [
+				"/c",
+				"if exist \"C:\\Users\\Murad Ali\\AppData\\Local\\Microsoft\\WinGet\\Links\\npm.cmd\" (echo WINGET_NPM=YES) else (echo WINGET_NPM=NO) & if exist \"C:\\Users\\Murad Ali\\AppData\\Local\\Microsoft\\WinGet\\Links\\node.exe\" (echo WINGET_NODE=YES) else (echo WINGET_NODE=NO) & if exist \"C:\\Program Files\\nodejs\\npm.cmd\" (echo PF_NPM=YES) else (echo PF_NPM=NO) & if exist \"C:\\Program Files\\nodejs\\node.exe\" (echo PF_NODE=YES) else (echo PF_NODE=NO)"
+			]
+		},
+		{
+			"label": "probe-node-one",
+			"type": "shell",
+			"command": "powershell.exe",
+			"args": [
+				"-NoProfile",
+				"-Command",
+				"Test-Path 'C:\\Users\\Murad Ali\\AppData\\Local\\Microsoft\\WinGet\\Links\\npm.cmd'; Test-Path 'C:\\Users\\Murad Ali\\AppData\\Local\\Microsoft\\WinGet\\Links\\node.exe'; Test-Path 'C:\\Program Files\\nodejs\\npm.cmd'; Test-Path 'C:\\Program Files\\nodejs\\node.exe'"
+			]
+		},
+		{
+			"label": "probe-node-env",
+			"type": "shell",
+			"command": "powershell.exe",
+			"args": [
+				"-NoProfile",
+				"-Command",
+				"$p1=Join-Path $env:LOCALAPPDATA \"Microsoft\\WinGet\\Links\\npm.cmd\"; $p2=Join-Path $env:LOCALAPPDATA \"Microsoft\\WinGet\\Links\\node.exe\"; Write-Output $p1; Test-Path $p1; Write-Output $p2; Test-Path $p2"
+			]
+		},
+		{
+			"label": "probe-node-programfiles",
+			"type": "shell",
+			"command": "powershell.exe",
+			"args": [
+				"-NoProfile",
+				"-Command",
+				"$p1=Join-Path $env:ProgramFiles \"nodejs\\npm.cmd\"; $p2=Join-Path $env:ProgramFiles \"nodejs\\node.exe\"; Write-Output $p1; Test-Path $p1; Write-Output $p2; Test-Path $p2"
+			]
+		},
+		{
+			"label": "find-node-in-userprofile",
+			"type": "shell",
+			"command": "powershell.exe",
+			"args": [
+				"-NoProfile",
+				"-Command",
+				"$root=$env:USERPROFILE; Get-ChildItem -Path $root -Filter node.exe -Recurse -ErrorAction SilentlyContinue | Select-Object -First 20 -ExpandProperty FullName"
+			]
+		},
+		{
+			"label": "check-autopilot-process",
+			"type": "shell",
+			"command": "powershell.exe",
+			"args": [
+				"-NoProfile",
+				"-Command",
+				"Get-CimInstance Win32_Process | Where-Object { $_.Name -match 'powershell' -and ($_.CommandLine -match 'autopilot-daemon.ps1' -or $_.CommandLine -match 'agent-loop.ps1') } | Select-Object ProcessId,Name,CommandLine | Format-Table -AutoSize"
+			]
+		},
+		{
+			"label": "detect-package-managers",
+			"type": "shell",
+			"command": "cmd.exe",
+			"args": [
+				"/c",
+				"where winget & where choco & where scoop"
+			]
+		},
+		{
+			"label": "install-node-lts-winget",
+			"type": "shell",
+			"command": "winget",
+			"args": [
+				"install",
+				"--id",
+				"OpenJS.NodeJS.LTS",
+				"-e",
+				"--scope",
+				"user",
+				"--accept-source-agreements",
+				"--accept-package-agreements"
+			]
+		},
+		{
+			"label": "locate-node-paths",
+			"type": "shell",
+			"command": "cmd.exe",
+			"args": [
+				"/c",
+				"dir /s /b \"%LOCALAPPDATA%\\Programs\\nodejs\\node.exe\" 2>nul & dir /s /b \"%ProgramFiles%\\nodejs\\node.exe\" 2>nul & dir /s /b \"%LOCALAPPDATA%\\Microsoft\\WinGet\\Packages\\OpenJS.NodeJS.LTS_*\\*\\node.exe\" 2>nul"
+			]
+		},
+		{
+			"label": "winget-list-node",
+			"type": "shell",
+			"command": "winget",
+			"args": [
+				"list",
+				"--id",
+				"OpenJS.NodeJS.LTS"
+			]
+		},
+		{
+			"label": "find-node-registry-location",
+			"type": "shell",
+			"command": "powershell.exe",
+			"args": [
+				"-NoProfile",
+				"-Command",
+				"$paths=@('HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:\\Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:\\Software\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*'); Get-ItemProperty $paths -ErrorAction SilentlyContinue | Where-Object { $_.DisplayName -match 'Node.js' } | Select-Object DisplayName,DisplayVersion,InstallLocation,UninstallString,DisplayIcon | Format-List"
+			]
+		},
+		{
+			"label": "reg-query-node",
+			"type": "shell",
+			"command": "cmd.exe",
+			"args": [
+				"/c",
+				"reg query \"HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\" /s /f \"Node.js\" & reg query \"HKLM\\Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\" /s /f \"Node.js\" & reg query \"HKLM\\Software\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\" /s /f \"Node.js\""
+			]
+		},
+		{
+			"label": "reg-query-node-key-values",
+			"type": "shell",
+			"command": "cmd.exe",
+			"args": [
+				"/c",
+				"reg query \"HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\OpenJS.NodeJS.LTS_Microsoft.Winget.Source_8wekyb3d8bbwe\""
+			]
+		},
+		{
+			"label": "list-node-install-dir",
+			"type": "shell",
+			"command": "cmd.exe",
+			"args": [
+				"/c",
+				"dir /b \"C:\\Users\\Murad Ali\\AppData\\Local\\Microsoft\\WinGet\\Packages\\OpenJS.NodeJS.LTS_Microsoft.Winget.Source_8wekyb3d8bbwe\""
+			]
+		},
+		{
+			"label": "list-winget-packages-dir",
+			"type": "shell",
+			"command": "cmd.exe",
+			"args": [
+				"/c",
+				"dir /b \"C:\\Users\\Murad Ali\\AppData\\Local\\Microsoft\\WinGet\\Packages\""
+			]
+		},
+		{
+			"label": "echo-localappdata-and-winget-dir",
+			"type": "shell",
+			"command": "cmd.exe",
+			"args": [
+				"/c",
+				"echo LOCALAPPDATA=%LOCALAPPDATA% & dir /b \"%LOCALAPPDATA%\\Microsoft\" & dir /b \"%LOCALAPPDATA%\\Microsoft\\WinGet\""
+			]
+		},
+		{
+			"label": "check-windowsapps-node-alias",
+			"type": "shell",
+			"command": "cmd.exe",
+			"args": [
+				"/c",
+				"if exist \"%LOCALAPPDATA%\\Microsoft\\WindowsApps\\node.exe\" (echo NODE_ALIAS=YES) else (echo NODE_ALIAS=NO) & if exist \"%LOCALAPPDATA%\\Microsoft\\WindowsApps\\npm.cmd\" (echo NPM_ALIAS=YES) else (echo NPM_ALIAS=NO)"
+			]
+		},
+		{
+			"label": "probe-windowsapps-node-env",
+			"type": "shell",
+			"command": "powershell.exe",
+			"args": [
+				"-NoProfile",
+				"-Command",
+				"$p1=Join-Path $env:LOCALAPPDATA \"Microsoft\\WindowsApps\\node.exe\"; $p2=Join-Path $env:LOCALAPPDATA \"Microsoft\\WindowsApps\\npm.cmd\"; Write-Output $p1; Test-Path $p1; Write-Output $p2; Test-Path $p2"
+			]
+		},
+		{
+			"label": "install-node-lts-choco",
+			"type": "shell",
+			"command": "choco",
+			"args": [
+				"install",
+				"nodejs-lts",
+				"-y",
+				"--no-progress"
+			]
+		},
+		{
+			"label": "test-node-installlocation-from-registry",
+			"type": "shell",
+			"command": "powershell.exe",
+			"args": [
+				"-NoProfile",
+				"-Command",
+				"$k=\"HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\OpenJS.NodeJS.LTS_Microsoft.Winget.Source_8wekyb3d8bbwe\"; $loc=(Get-ItemProperty -Path $k -ErrorAction SilentlyContinue).InstallLocation; Write-Output $loc; if($loc){ Test-Path $loc; Get-ChildItem -Path $loc -Recurse -Filter node.exe -ErrorAction SilentlyContinue | Select-Object -First 5 -ExpandProperty FullName; Get-ChildItem -Path $loc -Recurse -Filter npm.cmd -ErrorAction SilentlyContinue | Select-Object -First 5 -ExpandProperty FullName }"
+			]
+		},
+		{
+			"label": "test-node-installlocation-via-cmd-powershell",
+			"type": "shell",
+			"command": "cmd.exe",
+			"args": [
+				"/c",
+				"powershell -NoProfile -Command \"$k='HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\OpenJS.NodeJS.LTS_Microsoft.Winget.Source_8wekyb3d8bbwe'; $loc=(Get-ItemProperty -Path $k -ErrorAction SilentlyContinue).InstallLocation; Write-Output $loc; if($loc){ Test-Path $loc; Get-ChildItem -Path $loc -Recurse -Filter node.exe -ErrorAction SilentlyContinue | Select-Object -First 5 -ExpandProperty FullName; Get-ChildItem -Path $loc -Recurse -Filter npm.cmd -ErrorAction SilentlyContinue | Select-Object -First 5 -ExpandProperty FullName }\""
+			]
+		},
+		{
+			"label": "detect-package-managers",
+			"type": "shell",
+			"command": "powershell.exe",
+			"args": [
+				"-NoProfile",
+				"-Command",
+				"$w=Get-Command winget -ErrorAction SilentlyContinue; $c=Get-Command choco -ErrorAction SilentlyContinue; $s=Get-Command scoop -ErrorAction SilentlyContinue; Write-Host ('winget=' + [bool]$w); Write-Host ('choco=' + [bool]$c); Write-Host ('scoop=' + [bool]$s)"
+			]
+		},
+		{
+			"label": "orchestrator-project-scan-autofix",
+			"type": "shell",
+			"command": "powershell.exe",
+			"args": [
+				"-NoProfile",
+				"-ExecutionPolicy",
+				"Bypass",
+				"-File",
+				"scripts/orchestrator/project-problem-scan.ps1",
+				"-WorkspaceRoot",
+				".",
+				"-AutoFix"
+			]
+		},
+		{
+			"label": "run-project-problem-scan-direct",
+			"type": "shell",
+			"command": "cmd.exe",
+			"args": [
+				"/c",
+				"powershell -NoProfile -ExecutionPolicy Bypass -File scripts\\orchestrator\\project-problem-scan.ps1 -WorkspaceRoot . -AutoFix -Brief"
+			]
+		},
+		{
+			"label": "run-project-problem-scan-direct",
+			"type": "shell",
+			"command": "cmd.exe",
+			"args": [
+				"/c",
+				"powershell -NoProfile -ExecutionPolicy Bypass -File scripts\\orchestrator\\project-problem-scan.ps1 -WorkspaceRoot . -AutoFix -Brief"
+			]
+		},
+		{
+			"label": "locate-node-paths",
+			"type": "shell",
+			"command": "powershell.exe",
+			"args": [
+				"-NoProfile",
+				"-Command",
+				"$roots=@($env:LOCALAPPDATA,$env:ProgramFiles,$env:ProgramFiles+' (x86)'); foreach($r in $roots){ if(Test-Path $r){ Get-ChildItem -Path $r -Recurse -Filter node.exe -ErrorAction SilentlyContinue | Select-Object -First 20 -ExpandProperty FullName } }"
+			]
+		},
+		{
+			"label": "winget-list-node",
+			"type": "shell",
+			"command": "winget",
+			"args": [
+				"list",
+				"--id",
+				"OpenJS.NodeJS.LTS"
+			]
+		},
+		{
+			"label": "find-node-registry-location",
+			"type": "shell",
+			"command": "powershell.exe",
+			"args": [
+				"-NoProfile",
+				"-Command",
+				"$paths=@('HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:\\Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:\\Software\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*'); Get-ItemProperty $paths -ErrorAction SilentlyContinue | Where-Object { $_.DisplayName -match 'Node.js|OpenJS.NodeJS' } | Select-Object DisplayName,DisplayVersion,InstallLocation,UninstallString,DisplayIcon | Format-List"
+			]
+		},
+		{
+			"label": "reg-query-node",
+			"type": "shell",
+			"command": "cmd.exe",
+			"args": [
+				"/c",
+				"reg query \"HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\" /s /f \"Node.js\" & reg query \"HKLM\\Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\" /s /f \"Node.js\" & reg query \"HKLM\\Software\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\" /s /f \"Node.js\""
+			]
+		},
+		{
+			"label": "reg-query-node-key-values",
+			"type": "shell",
+			"command": "cmd.exe",
+			"args": [
+				"/c",
+				"reg query \"HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\OpenJS.NodeJS.LTS_Microsoft.Winget.Source_8wekyb3d8bbwe\""
+			]
+		},
+		{
+			"label": "list-node-install-dir",
+			"type": "shell",
+			"command": "cmd.exe",
+			"args": [
+				"/c",
+				"dir /s /b \"C:\\Users\\Murad Ali\\AppData\\Local\\Microsoft\\WinGet\\Packages\\OpenJS.NodeJS.LTS_Microsoft.Winget.Source_8wekyb3d8bbwe\\node.exe\" & dir /s /b \"C:\\Users\\Murad Ali\\AppData\\Local\\Microsoft\\WinGet\\Packages\\OpenJS.NodeJS.LTS_Microsoft.Winget.Source_8wekyb3d8bbwe\\npm.cmd\""
+			]
+		},
+		{
+			"label": "echo-localappdata-and-winget-dir",
+			"type": "shell",
+			"command": "cmd.exe",
+			"args": [
+				"/c",
+				"echo LOCALAPPDATA=%LOCALAPPDATA% & dir /b \"%LOCALAPPDATA%\\Microsoft\" & dir /b \"%LOCALAPPDATA%\\Microsoft\\WinGet\""
+			]
+		},
+		{
+			"label": "list-localappdata-root",
+			"type": "shell",
+			"command": "cmd.exe",
+			"args": [
+				"/c",
+				"dir /b \"%LOCALAPPDATA%\""
+			]
+		},
+		{
+			"label": "install-node-lts-choco",
+			"type": "shell",
+			"command": "choco",
+			"args": [
+				"install",
+				"nodejs-lts",
+				"-y",
+				"--no-progress"
+			]
+		},
+		{
+			"label": "find-node-location",
+			"type": "shell",
+			"command": "where.exe",
+			"args": [
+				"node"
+			]
+		},
+		{
+			"label": "dev-server-health-check",
+			"type": "shell",
+			"command": "cmd.exe",
+			"args": [
+				"/c",
+				"powershell -NoProfile -Command \"try { $r = Invoke-WebRequest -Uri \\\"http://localhost:5000/\\\" -UseBasicParsing -TimeoutSec 15; Write-Host status:$($r.StatusCode); Write-Host length:$($r.Content.Length) } catch { Write-Host probe_error:$($_.Exception.Message); exit 1 }\""
+			]
+		},
+		{
+			"label": "locate-node-paths",
+			"type": "shell",
+			"command": "powershell.exe",
+			"args": [
+				"-NoProfile",
+				"-Command",
+				"$roots=@($env:LOCALAPPDATA,$env:ProgramFiles,$env:ProgramFiles+' (x86)'); foreach($r in $roots){ if(Test-Path $r){ Get-ChildItem -Path $r -Recurse -Filter node.exe -ErrorAction SilentlyContinue | Select-Object -First 20 -ExpandProperty FullName } }"
+			]
+		},
+		{
+			"label": "aegis-node-discovery-check-20260605-1",
+			"type": "shell",
+			"command": "powershell.exe",
+			"args": [
+				"-NoProfile",
+				"-Command",
+				"$node=Get-Command node -ErrorAction SilentlyContinue; if($node){'NODE_CMD='+$node.Source}else{'NODE_CMD=NONE'}; $wingetRoot=Join-Path $env:LOCALAPPDATA 'Microsoft\\WinGet\\Packages'; 'WINGET_ROOT='+$wingetRoot; 'WINGET_EXISTS=' + (Test-Path $wingetRoot); if(Test-Path $wingetRoot){ Get-ChildItem -Path $wingetRoot -Recurse -Filter node.exe -ErrorAction SilentlyContinue | Where-Object { $_.FullName -match 'OpenJS\\.NodeJS' } | Select-Object -First 5 -ExpandProperty FullName }"
+			]
+		},
+		{
+			"label": "aegis-node-discovery-check-20260605-2",
+			"type": "shell",
+			"command": "cmd.exe",
+			"args": [
+				"/c",
+				"where node & where npm & dir /s /b \"%LOCALAPPDATA%\\Microsoft\\WinGet\\Packages\\OpenJS.NodeJS.LTS_*\\*\\node.exe\""
+			]
+		},
+		{
+			"label": "aegis-problem-scan-run-20260605-1",
+			"type": "shell",
+			"command": "cmd.exe",
+			"args": [
+				"/c",
+				"powershell -NoProfile -ExecutionPolicy Bypass -File scripts\\orchestrator\\project-problem-scan.ps1 -WorkspaceRoot . -AutoFix -Brief"
+			]
+		},
+		{
+			"label": "aegis-kill-autopilot-20260605-1",
+			"type": "shell",
+			"command": "powershell.exe",
+			"args": [
+				"-NoProfile",
+				"-Command",
+				"$p=Get-CimInstance Win32_Process | Where-Object { $_.Name -like \"*powershell*\" -and (($_.CommandLine -like \"*autopilot-daemon.ps1*\") -or ($_.CommandLine -like \"*agent-loop.ps1*\")) }; if($p){ $ids=@($p|Select-Object -ExpandProperty ProcessId); Stop-Process -Id $ids -Force -ErrorAction SilentlyContinue; Write-Output (\"killed=\" + ($ids -join ',')) } else { Write-Output 'killed=none' }"
+			]
+		},
+		{
+			"label": "aegis-problem-scan-run-20260605-2",
+			"type": "shell",
+			"command": "cmd.exe",
+			"args": [
+				"/c",
+				"powershell -NoProfile -ExecutionPolicy Bypass -File scripts\\orchestrator\\project-problem-scan.ps1 -WorkspaceRoot . -AutoFix -Brief"
+			]
+		},
+		{
+			"label": "aegis-problem-scan-run-20260605-3",
+			"type": "shell",
+			"command": "cmd.exe",
+			"args": [
+				"/c",
+				"powershell -NoProfile -ExecutionPolicy Bypass -File scripts\\orchestrator\\project-problem-scan.ps1 -WorkspaceRoot . -AutoFix -Brief"
+			]
+		}
+	]
+}

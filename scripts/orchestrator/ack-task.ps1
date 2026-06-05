@@ -21,7 +21,12 @@ function Get-Queue {
 
 function Save-Queue {
   param($Queue, [string]$Path)
-  $Queue | ConvertTo-Json -Depth 12 | Set-Content -Path $Path -Encoding UTF8
+  $dir = Split-Path -Parent $Path
+  if (-not (Test-Path $dir)) { New-Item -ItemType Directory -Path $dir -Force | Out-Null }
+  $tmp = Join-Path $dir ("{0}.tmp.{1}" -f ([System.IO.Path]::GetFileName($Path)), [guid]::NewGuid().ToString("N"))
+  $json = $Queue | ConvertTo-Json -Depth 12
+  [System.IO.File]::WriteAllText($tmp, $json, (New-Object System.Text.UTF8Encoding($false)))
+  Move-Item -Path $tmp -Destination $Path -Force
 }
 
 try {

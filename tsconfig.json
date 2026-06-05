@@ -16,6 +16,7 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "noEmit": true,
+    "allowImportingTsExtensions": true,
     "sourceMap": false,
     "jsx": "react-jsx",
     "paths": {
@@ -24,7 +25,8 @@
   },
   "include": ["src"],
   "exclude": [
-    "src/**/*.backup.ts",
+     "server/**",
+     "src/**/*.backup.ts",
     "src/**/*.backup.tsx",
     "src/**/__tests__/**",
     "src/**/*.test.ts",

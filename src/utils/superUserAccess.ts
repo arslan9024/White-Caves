@@ -1,7 +1,15 @@
 export const CREATOR_SUPERUSER_EMAIL = 'arslanmalikgoraha@gmail.com';
 export const CANONICAL_SUPERUSER_ROLE = 'lion';
 
-const SUPERUSER_ROLE_ALIASES = new Set(['lion', 'owner', 'super_admin', 'managing_director', 'md']);
+const SUPERUSER_ROLE_ALIASES = new Set([
+  'lion',
+  'owner',
+  'super_admin',
+  'super_user',
+  'superuser',
+  'managing_director',
+  'md',
+]);
 
 export function normalizeRoleToken(role?: string | null): string | null {
   if (!role) return null;

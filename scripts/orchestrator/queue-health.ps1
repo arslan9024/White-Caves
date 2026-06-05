@@ -34,16 +34,17 @@ $KNOWN_LANES        = @("A","B","C","D")
 $KNOWN_AGENTS       = @(
   "@Sofia","@Victoria","@Annie","@Marissa","@Rachel","@Timnit",
   "@Invoice","@Joelle","@Hedy","@Maya","@Booking","@Jaime",
-  "@Fei-Fei","@Anima","@Mary","@Cassie","@Corinne"
+  "@Fei-Fei","@Anima","@Mary","@Cassie","@Corinne",
+  "@Mira","@Mala","@Katherine","@Gwynne"
 )
 $VALID_STATUSES     = @("queued","running","evidence_pending","waiting_ack","done","retrying","failed","escalated")
 
 # Lane -> expected agent assignments (for lane mismatch detection)
 $LANE_AGENTS = @{
-  "A" = @("@Sofia","@Timnit","@Victoria","@Annie","@Marissa","@Rachel","@Joelle")
-  "B" = @("@Fei-Fei","@Anima","@Mary","@Invoice")
-  "C" = @("@Booking","@Maya","@Hedy","@Cassie")
-  "D" = @("@Jaime","@Corinne")
+  "A" = @("@Sofia","@Timnit","@Victoria","@Annie","@Marissa","@Rachel","@Joelle","@Mira")
+  "B" = @("@Fei-Fei","@Anima","@Mary","@Invoice","@Mala")
+  "C" = @("@Booking","@Maya","@Hedy","@Cassie","@Katherine")
+  "D" = @("@Jaime","@Corinne","@Gwynne")
 }
 
 # -- result tracking ----------------------------------------------------------

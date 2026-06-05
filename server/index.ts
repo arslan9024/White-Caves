@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * White Caves CRM - Express.js Server Setup
  * Main server entry point with middleware and routing

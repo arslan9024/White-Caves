@@ -16,6 +16,7 @@
   padding: 1.25rem;
   z-index: 1400;
   background: rgba(2, 6, 23, 0.72);
+  -webkit-backdrop-filter: blur(6px);
   backdrop-filter: blur(6px);
 }
 
@@ -107,6 +108,7 @@ body.dark-mode .auth-page {
 body.dark-mode .auth-card {
   background: rgba(15, 15, 35, 0.9);
   border: 1px solid rgba(255, 255, 255, 0.1);
+  -webkit-backdrop-filter: blur(20px);
   backdrop-filter: blur(20px);
   box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
 }
@@ -780,7 +782,31 @@ body.dark-mode .btn-secondary:hover {
   flex: 1;
 }
 
+.profile-nav-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  flex: 1;
+}
+
 .profile-nav .nav-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  border: none;
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: 0.9375rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-decoration: none;
+  text-align: start;
+  width: 100%;
+}
+
+.profile-nav-actions .nav-item {
   display: flex;
   align-items: center;
   gap: 0.75rem;
@@ -802,7 +828,17 @@ body.dark-mode .btn-secondary:hover {
   color: var(--text-primary);
 }
 
+.profile-nav-actions .nav-item:hover {
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text-primary);
+}
+
 .profile-nav .nav-item.active {
+  background: var(--primary-color);
+  color: white;
+}
+
+.profile-nav-actions .nav-item.active {
   background: var(--primary-color);
   color: white;
 }
@@ -818,7 +854,17 @@ body.dark-mode .btn-secondary:hover {
   color: rgba(255, 255, 255, 0.5);
 }
 
+.profile-nav-actions .nav-item.logout {
+  margin-top: auto;
+  color: rgba(255, 255, 255, 0.5);
+}
+
 .profile-nav .nav-item.logout:hover {
+  background: rgba(239, 68, 68, 0.15);
+  color: #ef4444;
+}
+
+.profile-nav-actions .nav-item.logout:hover {
   background: rgba(239, 68, 68, 0.15);
   color: #ef4444;
 }
@@ -994,6 +1040,26 @@ body.dark-mode .btn-secondary:hover {
   margin-top: 2rem;
   padding-top: 2rem;
   border-top: 1px solid var(--border-color);
+}
+
+.profile-executive-status {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.profile-status-pill {
+  display: inline-flex;
+  align-items: center;
+  min-height: 28px;
+  padding: 0 0.625rem;
+  border-radius: 999px;
+  border: 1px solid rgba(201, 168, 76, 0.45);
+  background: rgba(201, 168, 76, 0.14);
+  color: #c9a84c;
+  font-size: 0.75rem;
+  font-weight: 600;
 }
 
 .settings-section h3 {
@@ -1220,7 +1286,7 @@ body.dark-mode .btn-secondary:hover {
   }
 
   .auth-content {
-    min-height: auto;
+    min-height: 0;
   }
 
   .category-options {

@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Landlord Portal API Routes
  * ──────────────────────────

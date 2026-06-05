@@ -109,7 +109,7 @@ export default function ProfilePage() {
             <div className="nav-divider"></div>
             
             {userRole && (
-              <Link to={`/${userRole.role}/dashboard`} className="nav-item">
+              <Link to="/crm" className="nav-item">
                 <span className="nav-icon">🏠</span>
                 Go to Dashboard
               </Link>

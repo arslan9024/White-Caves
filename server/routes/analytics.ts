@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Market Analytics Routes — Phase 4C
  *

@@ -135,6 +135,34 @@ function Test-AllDepsDone([array]$deps) {
   return $true
 }
 
+function Get-NormalizedDeps {
+  param($deps)
+
+  $normalized = New-Object 'System.Collections.Generic.List[string]'
+
+  if ($null -eq $deps) { return ,$normalized.ToArray() }
+
+  foreach ($item in @($deps)) {
+    if ($null -eq $item) { continue }
+    if ($item -is [string]) {
+      if ([string]::IsNullOrWhiteSpace($item)) { continue }
+      [void]$normalized.Add($item)
+      continue
+    }
+
+    if ($null -ne $item.PSObject -and $item.PSObject.Properties.Count -eq 0) {
+      continue
+    }
+
+    $text = [string]$item
+    if (-not [string]::IsNullOrWhiteSpace($text)) {
+      [void]$normalized.Add($text)
+    }
+  }
+
+  return ,$normalized.ToArray()
+}
+
 # For a blocked task, find the nearest upstream task that is NOT done
 function Get-DirectBlocker([string]$taskId) {
   $t = @($tasks | Where-Object { $_.taskId -eq $taskId })[0]
@@ -157,7 +185,7 @@ function Get-RootBlocker([string]$taskId) {
     $blocker = Get-DirectBlocker $cur
     if ($null -eq $blocker) { return $cur }
     if ($blocker.status -eq "done") { return $cur }
-    if (Test-AllDepsDone @($blocker.dependsOn)) {
+    if (Test-AllDepsDone (Get-NormalizedDeps $blocker.dependsOn)) {
       return $blocker.taskId  # this one is ready to execute
     }
     $cur = $blocker.taskId
@@ -191,8 +219,8 @@ if ($Lane  -ne "") { $allQueued = @($allQueued | Where-Object { $_.lane  -eq $La
 if ($Agent -ne "") { $allQueued = @($allQueued | Where-Object { $_.agent -eq $Agent }) }
 
 # Separate READY vs BLOCKED
-$readyTasks   = @($allQueued | Where-Object { Test-AllDepsDone @($_.dependsOn) })
-$blockedTasks = @($allQueued | Where-Object { -not (Test-AllDepsDone @($_.dependsOn)) })
+$readyTasks   = @($allQueued | Where-Object { Test-AllDepsDone (Get-NormalizedDeps $_.dependsOn) })
+$blockedTasks = @($allQueued | Where-Object { -not (Test-AllDepsDone (Get-NormalizedDeps $_.dependsOn)) })
 
 # For each blocked task, compute depth metrics
 $blockerData = [System.Collections.Generic.List[hashtable]]::new()

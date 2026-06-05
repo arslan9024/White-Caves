@@ -83,7 +83,7 @@ vi.mock('./components/RouteErrorBoundary', () => ({
 }));
 
 // Mock lazy-loaded page components with simple stubs
-vi.mock('./pages/HomePage', () => ({
+vi.mock('./pages/HomePage.tsx', () => ({
   default: () => <div data-testid="home-page">Home Page</div>,
 }));
 
@@ -272,6 +272,7 @@ vi.mock('./store/userSlice', () => ({
 
 vi.mock('./store/navigationSlice', () => ({
   setTheme: vi.fn((theme: string) => ({ type: 'navigation/setTheme', payload: theme })),
+  setActiveRole: vi.fn((role: string) => ({ type: 'navigation/setActiveRole', payload: role })),
 }));
 
 // Now import the component
@@ -295,6 +296,20 @@ describe('App', () => {
     mockSafeStorage.getJSON.mockReturnValue(null);
     mockAuthFetch.mockResolvedValue({ ok: false });
     window.history.pushState({}, '', '/');
+
+    Object.defineProperty(window, 'matchMedia', {
+      writable: true,
+      value: vi.fn().mockImplementation((query: string) => ({
+        matches: false,
+        media: query,
+        onchange: null,
+        addListener: vi.fn(),
+        removeListener: vi.fn(),
+        addEventListener: vi.fn(),
+        removeEventListener: vi.fn(),
+        dispatchEvent: vi.fn(),
+      })),
+    });
   });
 
   // ── Core Rendering ──
@@ -428,23 +443,23 @@ describe('App', () => {
     });
   });
 
-  it('redirects /signin to /crm when logged in', async () => {
+  it('redirects /signin to /profile when logged in', async () => {
     mockReduxState.currentUser = { id: '1', role: 'buyer', email: 'test@test.com' };
     await act(async () => {
       renderAtRoute('/signin');
     });
     await waitFor(() => {
-      expect(screen.getByTestId('dashboard-page')).toBeInTheDocument();
+      expect(screen.getByTestId('profile-page')).toBeInTheDocument();
     });
   });
 
-  it('redirects /signup to /crm when logged in', async () => {
+  it('redirects /signup to /profile when logged in', async () => {
     mockReduxState.currentUser = { id: '1', role: 'buyer', email: 'test@test.com' };
     await act(async () => {
       renderAtRoute('/signup');
     });
     await waitFor(() => {
-      expect(screen.getByTestId('dashboard-page')).toBeInTheDocument();
+      expect(screen.getByTestId('profile-page')).toBeInTheDocument();
     });
   });
 

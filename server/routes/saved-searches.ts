@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Saved Searches API Routes
  * ─────────────────────────

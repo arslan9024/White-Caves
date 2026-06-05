@@ -33,7 +33,7 @@ const RoleApprovalQueue = () => {
       dispatch(setPendingRequests(data.requests || []));
     } catch (error) {
       
-      setFetchError(error.message || 'Failed to load role requests');
+      setFetchError((error as Error).message || 'Failed to load role requests');
     } finally {
       setInitialLoading(false);
     }
@@ -63,7 +63,7 @@ const RoleApprovalQueue = () => {
       }));
     } catch (error) {
       
-      alert(error.message || 'Failed to approve request');
+      alert((error as Error).message || 'Failed to approve request');
     } finally {
       setLoading(false);
     }
@@ -95,7 +95,7 @@ const RoleApprovalQueue = () => {
       setRejectionReason('');
     } catch (error) {
       
-      alert(error.message || 'Failed to reject request');
+      alert((error as Error).message || 'Failed to reject request');
     } finally {
       setLoading(false);
     }

@@ -33,6 +33,12 @@ function Invoke-LocalToolVersion {
     [string]$ToolName
   )
 
+  function Format-CommandOutput {
+    param([object[]]$Lines)
+    if ($null -eq $Lines) { return "" }
+    return (($Lines | ForEach-Object { [string]$_ }) -join [Environment]::NewLine).Trim()
+  }
+
   $candidates = @(
     ".\\node_modules\\.bin\\$ToolName.cmd",
     ".\\node_modules\\.bin\\$ToolName"
@@ -40,7 +46,8 @@ function Invoke-LocalToolVersion {
 
   foreach ($candidate in $candidates) {
     if (Test-Path $candidate) {
-      $output = (& $candidate --version 2>&1 | Out-String).Trim()
+      $rawOutput = & $candidate --version 2>&1
+      $output = Format-CommandOutput -Lines $rawOutput
       return @{
         Ok = ($LASTEXITCODE -eq 0)
         Output = $output
@@ -49,7 +56,8 @@ function Invoke-LocalToolVersion {
     }
   }
 
-  $fallbackOutput = (& cmd /c "npm exec -- $ToolName --version" 2>&1 | Out-String).Trim()
+  $fallbackRawOutput = & cmd /c "npm exec -- $ToolName --version" 2>&1
+  $fallbackOutput = Format-CommandOutput -Lines $fallbackRawOutput
   return @{
     Ok = ($LASTEXITCODE -eq 0)
     Output = $fallbackOutput

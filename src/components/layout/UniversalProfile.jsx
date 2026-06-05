@@ -164,7 +164,7 @@ export default function UniversalProfile({ variant = 'default', showSignIn = tru
 
           {activeRole && (
             <Link 
-              to={`/${activeRole}/dashboard`} 
+              to="/crm"
               className="profile-dropdown-item"
               onClick={() => setMenuOpen(false)}
             >

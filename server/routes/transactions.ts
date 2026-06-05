@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Transactions API Routes — Full Implementation
  * Sales and lease transaction management

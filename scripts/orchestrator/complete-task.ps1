@@ -25,7 +25,12 @@ function Get-Queue {
 
 function Save-Queue {
   param($Queue, [string]$Path)
-  $Queue | ConvertTo-Json -Depth 12 | Set-Content -Path $Path -Encoding UTF8
+  $dir = Split-Path -Parent $Path
+  if (-not (Test-Path $dir)) { New-Item -ItemType Directory -Path $dir -Force | Out-Null }
+  $tmp = Join-Path $dir ("{0}.tmp.{1}" -f ([System.IO.Path]::GetFileName($Path)), [guid]::NewGuid().ToString("N"))
+  $json = $Queue | ConvertTo-Json -Depth 12
+  [System.IO.File]::WriteAllText($tmp, $json, (New-Object System.Text.UTF8Encoding($false)))
+  Move-Item -Path $tmp -Destination $Path -Force
 }
 
 try {
@@ -55,6 +60,20 @@ try {
   # If queued (manual mode), stamp start time now
   if ($task.status -eq "queued") {
     $task.startedAt = (Get-Date).ToString("o")
+  }
+
+  $isBlindAutoAdvance = (
+    -not $MarkEvidencePending -and
+    [string]::IsNullOrWhiteSpace($ProducedRef) -and
+    -not [string]::IsNullOrWhiteSpace($EvidenceNote) -and
+    (
+      $EvidenceNote -match "Auto-advanced via agent-loop non-interactive mode" -or
+      $EvidenceNote -match "Completed via fast-forward\.ps1 non-interactive mode"
+    )
+  )
+  if ($isBlindAutoAdvance) {
+    Write-Output (@{ ok = $false; reason = "evidence_required_noninteractive"; taskId = $TaskId; hint = "Provide -ProducedRef or use -MarkEvidencePending before completion in non-interactive mode." } | ConvertTo-Json -Depth 6)
+    exit 1
   }
 
   $existingFeedsAck = $null

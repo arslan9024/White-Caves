@@ -84,6 +84,7 @@ import {
   SearchResultSubLabel,
   SearchResultBadge,
   SearchEmptyState,
+  SidebarLiveRegion,
   SidebarSection,
   SidebarDivider,
   DeptGroupHeader,
@@ -104,6 +105,9 @@ import {
   AICommandCenterWrapper,
   AICommandHeader,
   AssistantStatusDot,
+  AICommandBadge,
+  AssistantMiniAvatar,
+  SidebarChevron,
 } from './styles';
 
 const log = createLogger('UnifiedSidebar');
@@ -354,7 +358,7 @@ const UnifiedSidebar: React.FC<UnifiedSidebarProps> = ({ onItemClick, isSuperUse
       // Default internal navigation path (used when parent does not intercept clicks)
       switch (itemId) {
         case 'home':
-          navigate('/dashboard');
+          navigate('/crm');
           break;
         case 'analytics':
           navigate('/owner/system-health');
@@ -742,12 +746,9 @@ const UnifiedSidebar: React.FC<UnifiedSidebarProps> = ({ onItemClick, isSuperUse
                             onClick={() => handleAssistantClick(a.id)}
                             aria-label={`${a.name} AI assistant`}
                           >
-                            <AIAssistantAvatar
-                              $color={a.color}
-                              style={{ width: 24, height: 24, borderRadius: 6, fontSize: 10 }}
-                            >
+                            <AssistantMiniAvatar $color={a.color}>
                               {a.avatar || a.name[0]}
-                            </AIAssistantAvatar>
+                            </AssistantMiniAvatar>
                             <SearchResultText>
                               <SearchResultLabel>{a.name}</SearchResultLabel>
                               <SearchResultSubLabel>{a.title}</SearchResultSubLabel>
@@ -762,26 +763,11 @@ const UnifiedSidebar: React.FC<UnifiedSidebarProps> = ({ onItemClick, isSuperUse
               )}
             </SearchResultsContainer>
             {/* Screen-reader live region: announces search result count */}
-            <div
-              role="status"
-              aria-live="polite"
-              aria-atomic="true"
-              style={{
-                position: 'absolute',
-                width: '1px',
-                height: '1px',
-                padding: 0,
-                margin: '-1px',
-                overflow: 'hidden',
-                clip: 'rect(0,0,0,0)',
-                whiteSpace: 'nowrap',
-                border: 0,
-              }}
-            >
+            <SidebarLiveRegion role="status" aria-live="polite" aria-atomic="true">
               {searchResults.length === 0
                 ? `No results for "${globalSearch}"`
                 : `${searchResults.length} result${searchResults.length !== 1 ? 's' : ''} found`}
-            </div>
+            </SidebarLiveRegion>
           </>
         ) : (
           <>
@@ -817,12 +803,9 @@ const UnifiedSidebar: React.FC<UnifiedSidebarProps> = ({ onItemClick, isSuperUse
                 aria-expanded={companyExpanded}
               >
                 <span>Departments</span>
-                <ChevronDown
-                  style={{
-                    transform: companyExpanded ? 'rotate(0)' : 'rotate(-90deg)',
-                    transition: 'transform 0.2s',
-                  }}
-                />
+                <SidebarChevron $expanded={companyExpanded}>
+                  <ChevronDown />
+                </SidebarChevron>
               </DeptGroupHeader>
               {companyExpanded && (
                 <SidebarTree
@@ -848,9 +831,9 @@ const UnifiedSidebar: React.FC<UnifiedSidebarProps> = ({ onItemClick, isSuperUse
         <AICommandHeader>
           <span>🤖 AI Command Center</span>
           {selectedDept && (
-            <SearchResultBadge style={{ background: '#C9A84C20', color: '#C9A84C' }}>
+            <AICommandBadge>
               {REGISTRY_DEPARTMENTS[selectedDept as DepartmentId]?.label ?? selectedDept}
-            </SearchResultBadge>
+            </AICommandBadge>
           )}
         </AICommandHeader>
 
@@ -866,9 +849,9 @@ const UnifiedSidebar: React.FC<UnifiedSidebarProps> = ({ onItemClick, isSuperUse
 
         <SidebarNav aria-label="AI assistants">
           {deptFilteredAssistants.length === 0 ? (
-            <div style={{ padding: '8px 14px', fontSize: 11, color: '#6B7280' }}>
+            <SearchEmptyState>
               No assistants found
-            </div>
+            </SearchEmptyState>
           ) : (
             deptFilteredAssistants.map(assistant => (
               <AIAssistantItem

@@ -45,7 +45,12 @@ function Get-Queue {
 
 function Save-Queue {
   param($Queue, [string]$Path)
-  $Queue | ConvertTo-Json -Depth 12 | Set-Content -Path $Path -Encoding UTF8
+  $dir = Split-Path -Parent $Path
+  if (-not (Test-Path $dir)) { New-Item -ItemType Directory -Path $dir -Force | Out-Null }
+  $tmp = Join-Path $dir ("{0}.tmp.{1}" -f ([System.IO.Path]::GetFileName($Path)), [guid]::NewGuid().ToString("N"))
+  $json = $Queue | ConvertTo-Json -Depth 12
+  [System.IO.File]::WriteAllText($tmp, $json, (New-Object System.Text.UTF8Encoding($false)))
+  Move-Item -Path $tmp -Destination $Path -Force
 }
 
 function Test-DependencyDone {
@@ -54,18 +59,49 @@ function Test-DependencyDone {
   return ($null -ne $dep -and $dep.status -eq "done")
 }
 
+function Get-NormalizedDeps {
+  param($deps)
+
+  $normalized = New-Object 'System.Collections.Generic.List[string]'
+
+  if ($null -eq $deps) { return ,$normalized.ToArray() }
+
+  foreach ($item in @($deps)) {
+    if ($null -eq $item) { continue }
+    if ($item -is [string]) {
+      if ([string]::IsNullOrWhiteSpace($item)) { continue }
+      [void]$normalized.Add($item)
+      continue
+    }
+
+    if ($null -ne $item.PSObject -and $item.PSObject.Properties.Count -eq 0) {
+      continue
+    }
+
+    $text = [string]$item
+    if (-not [string]::IsNullOrWhiteSpace($text)) {
+      [void]$normalized.Add($text)
+    }
+  }
+
+  return ,$normalized.ToArray()
+}
+
 function Select-Candidate {
   param($tasks, [string]$lane, [string]$preferAgent, $policy)
 
   $eligible = $tasks | Where-Object {
+    $isImplementationTask = ([string]$_.phase -eq "implementation") -or ([string]$_.team -eq "premium-implementation")
+
     ($_.status -eq "queued" -or $_.status -eq "retrying") -and
     ($lane -eq "any" -or $_.lane -eq $lane) -and
     (
       (-not [bool]$policy.modelRouting.freeModelOnlyMode) -or
+      $isImplementationTask -or
       (Test-IsFreePlanningAgent -Policy $policy -AgentName $_.agent)
     )
   } | Sort-Object createdAt | Where-Object {
-    $deps = @($_.dependsOn)
+    $deps = Get-NormalizedDeps $_.dependsOn
     if ($deps.Count -eq 0) { return $true }
     foreach ($depId in $deps) {
       if (-not (Test-DependencyDone -depId $depId -allTasks $tasks)) {

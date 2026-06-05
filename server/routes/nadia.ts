@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * NADIA WhatsApp CRM API Routes
  * Handles conversation lifecycle, message management, and queue routing

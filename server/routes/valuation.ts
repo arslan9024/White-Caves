@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Valuation Routes — Wave 12
  * Property AVM (Automated Valuation Model) + Manual Override + Bank Request

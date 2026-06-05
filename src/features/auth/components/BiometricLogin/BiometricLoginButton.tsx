@@ -69,7 +69,7 @@ const BiometricLoginButton = ({ onSuccess, onError, disabled }: BiometricLoginBu
 
         const existingRole = safeStorage.getJSON<{ role: string }>('userRole');
         if (existingRole) {
-          navigate(`/${existingRole.role}/dashboard`);
+          navigate('/profile');
         } else {
           navigate('/select-role');
         }
@@ -78,7 +78,7 @@ const BiometricLoginButton = ({ onSuccess, onError, disabled }: BiometricLoginBu
       }
     } catch (error) {
       
-      dispatch(loginFailure(error.message));
+      dispatch(loginFailure((error as Error).message));
       onError?.(error);
     } finally {
       setLoading(false);

@@ -183,8 +183,8 @@ export function registerLeadScoringMiddleware(prisma: PrismaClient): void {
   const middlewareApi = prisma as PrismaClient & {
     $use?: (
       middleware: (
-        params: Prisma.MiddlewareParams,
-        next: (params: Prisma.MiddlewareParams) => Promise<unknown>
+          params: { model?: string; action: string; args: unknown; dataPath: string[]; runInTransaction: boolean },
+          next: (params: { model?: string; action: string; args: unknown; dataPath: string[]; runInTransaction: boolean }) => Promise<unknown>
       ) => Promise<unknown>
     ) => void;
   };
@@ -199,7 +199,8 @@ export function registerLeadScoringMiddleware(prisma: PrismaClient): void {
     return;
   }
 
-  middlewareApi.$use(async (params: Prisma.MiddlewareParams, next: (params: Prisma.MiddlewareParams) => Promise<unknown>) => {
+  type MiddlewareParams = { model?: string; action: string; args: unknown; dataPath: string[]; runInTransaction: boolean };
+  middlewareApi.$use(async (params: MiddlewareParams, next: (params: MiddlewareParams) => Promise<unknown>) => {
     const model = params.model;
     const action = params.action;
 

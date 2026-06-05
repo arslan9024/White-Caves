@@ -84,7 +84,7 @@ const UAEPassSuccessPage: FC = () => {
 
         // Wait a moment to show success message, then redirect
         navTimerRef.current = setTimeout(() => {
-          navigate('/dashboard');
+          navigate('/profile');
         }, 3000);
       } else {
         const errorData = await response.json().catch(e => {
@@ -123,7 +123,7 @@ const UAEPassSuccessPage: FC = () => {
           <div className="error-box">
             <h2>❌ Authentication Failed</h2>
             <p>{error}</p>
-            <button onClick={() => navigate('/auth/login')} className="btn-retry">
+            <button onClick={() => navigate('/signin')} className="btn-retry">
               Try Again
             </button>
           </div>
@@ -165,14 +165,14 @@ const UAEPassSuccessPage: FC = () => {
               </div>
 
               <p className="redirect-message">
-                You will be redirected to your dashboard in a few seconds...
+                You will be redirected to your profile in a few seconds...
               </p>
 
               <button
-                onClick={() => navigate('/dashboard')}
+                onClick={() => navigate('/profile')}
                 className="btn-continue"
               >
-                Continue to Dashboard
+                Continue to Profile
               </button>
             </div>
           )}

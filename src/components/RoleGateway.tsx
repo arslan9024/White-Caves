@@ -92,7 +92,7 @@ export default function RoleGateway({ user, onRoleSelect }: RoleGatewayProps) {
       };
       safeStorage.setJSON('userRole', ownerRole);
       dispatch(setActiveRole(privilegedRole));
-      navigate('/dashboard');
+      navigate('/profile');
     }
   }, [user, navigate, dispatch]);
 
@@ -116,7 +116,7 @@ export default function RoleGateway({ user, onRoleSelect }: RoleGatewayProps) {
       onRoleSelect(selectedRole);
     }
 
-    navigate('/dashboard');
+    navigate('/profile');
   };
 
   return (
@@ -144,7 +144,7 @@ export default function RoleGateway({ user, onRoleSelect }: RoleGatewayProps) {
               <S.RoleTitle>{role.label}</S.RoleTitle>
               <S.RoleDescription>{role.description}</S.RoleDescription>
               {selectedRole === role.id && (
-                <span style={{ fontSize: '1.5rem', marginTop: '1rem' }}>✔</span>
+                <S.RoleSelectedMark>✔</S.RoleSelectedMark>
               )}
             </S.RoleCard>
           ))}
@@ -152,9 +152,9 @@ export default function RoleGateway({ user, onRoleSelect }: RoleGatewayProps) {
 
         {selectedRole && (
           <S.ActionButtons>
-            <p style={{ gridColumn: '1 / -1', textAlign: 'center', marginBottom: '1rem' }}>
+            <S.RoleSelectionSummary>
               You selected: <strong>{ROLES.find(r => r.id === selectedRole)?.label}</strong>
-            </p>
+            </S.RoleSelectionSummary>
             <S.Button $variant="primary" onClick={handleConfirm}>
               Confirm Selection & Continue
             </S.Button>
@@ -196,7 +196,7 @@ export function RoleGuard({ allowedRoles, children }: RoleGuardProps) {
     }
 
     if (!allowedRoles.includes(userRole.role)) {
-      navigate(`/${userRole.role}/dashboard`);
+      navigate('/profile');
     }
   }, [userRole, allowedRoles, navigate]);
 

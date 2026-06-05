@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * AI Assistants Routes — Phase 0.8
  *

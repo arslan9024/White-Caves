@@ -168,7 +168,7 @@ describe('BiometricLoginButton', () => {
       });
     });
 
-    it('navigates to role dashboard when existing role found', async () => {
+    it('navigates to profile when existing role found', async () => {
       (safeStorage.getJSON as ReturnType<typeof vi.fn>).mockReturnValue({ role: 'admin' });
       render(<BiometricLoginButton />);
       await waitFor(() => {
@@ -176,7 +176,7 @@ describe('BiometricLoginButton', () => {
       });
       fireEvent.click(screen.getByLabelText('Sign in with Face ID or Touch ID'));
       await waitFor(() => {
-        expect(mockNavigate).toHaveBeenCalledWith('/admin/dashboard');
+        expect(mockNavigate).toHaveBeenCalledWith('/profile');
       });
     });
   });

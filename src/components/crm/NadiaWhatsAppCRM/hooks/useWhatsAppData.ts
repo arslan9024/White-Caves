@@ -66,6 +66,7 @@ function mapNadiaConversation(c: NadiaConversationApiItem): Conversation {
 export const useWhatsAppData = () => {
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
   const [selectedConversation, setSelectedConversation] = useState<Conversation | null>(null);
   const [messageInput, setMessageInput] = useState<string>('');
   const [searchQuery, setSearchQuery] = useState<string>('');
@@ -76,28 +77,52 @@ export const useWhatsAppData = () => {
   const [showAgentAssign, setShowAgentAssign] = useState<boolean>(false);
   const [assignedAgent, setAssignedAgent] = useState<string | null>(null);
   const aiTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const isMountedRef = useRef<boolean>(true);
 
   // Cleanup timer on unmount
   useEffect(() => {
+    isMountedRef.current = true;
     return () => {
+      isMountedRef.current = false;
       if (aiTimerRef.current) clearTimeout(aiTimerRef.current);
     };
   }, []);
 
-  // Fetch conversations from live API on mount
-  useEffect(() => {
-    authFetch('/api/nadia/conversations?limit=50')
-      .then((r: Response) => r.json() as Promise<NadiaConversationsApiResponse>)
-      .then(res => {
-        if (res.data) {
-          setConversations(res.data.map(mapNadiaConversation));
-        }
+  const loadConversations = useCallback(async () => {
+    setLoading(true);
+
+    try {
+      const response = await authFetch('/api/nadia/conversations?limit=50');
+      if (!response.ok) {
+        throw new Error(`Failed to fetch Nadia conversations (${response.status})`);
+      }
+
+      const res = (await response.json()) as NadiaConversationsApiResponse;
+      const nextConversations = res.data ? res.data.map(mapNadiaConversation) : [];
+
+      if (!isMountedRef.current) {
+        return;
+      }
+
+      setConversations(nextConversations);
+      setError(null);
+    } catch (loadError: unknown) {
+      if (!isMountedRef.current) {
+        return;
+      }
+
+      setError(loadError instanceof Error ? loadError.message : 'Failed to load Nadia conversations');
+    } finally {
+      if (isMountedRef.current) {
         setLoading(false);
-      })
-      .catch(() => {
-        setLoading(false);
-      });
+      }
+    }
   }, []);
+
+  // Fetch conversations from live API on mount and on manual refresh
+  useEffect(() => {
+    void loadConversations();
+  }, [loadConversations]);
 
   const handleAgentAssign = useCallback((agentId: string) => {
     setAssignedAgent(agentId);
@@ -161,6 +186,10 @@ export const useWhatsAppData = () => {
     setShowQuickReplies(false);
   }, []);
 
+  const refreshConversations = useCallback(() => {
+    void loadConversations();
+  }, [loadConversations]);
+
   const filteredConversations = useMemo(
     () =>
       conversations.filter(conv => {
@@ -215,5 +244,7 @@ export const useWhatsAppData = () => {
     quickReplies: QUICK_REPLIES,
     features: NADIA_WHATSAPP_FEATURES,
     loading,
+    error,
+    refreshConversations,
   };
 };

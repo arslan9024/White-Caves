@@ -67,7 +67,12 @@ const NadiaWhatsAppCRM = () => {
           >
             {data.nadiaActive ? 'Pause Nadia' : 'Activate Nadia'}
           </button>
-          <button className="nadia-action-btn" aria-label="Refresh conversations">
+          <button
+            className="nadia-action-btn"
+            aria-label="Refresh conversations"
+            onClick={() => data.refreshConversations()}
+            disabled={data.loading}
+          >
             <RefreshCw size={18} />
           </button>
           <button className="nadia-action-btn" aria-label="Download chat export">
@@ -75,6 +80,18 @@ const NadiaWhatsAppCRM = () => {
           </button>
         </div>
       </div>
+
+      {data.loading ? (
+        <div className="nadia-status-banner" role="status" aria-live="polite">
+          Loading conversations…
+        </div>
+      ) : null}
+
+      {data.error ? (
+        <div className="nadia-status-banner nadia-status-banner--error" role="alert">
+          {data.error}
+        </div>
+      ) : null}
 
       {/* Tab Navigation */}
       <div className="tab-navigation">

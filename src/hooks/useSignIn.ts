@@ -26,6 +26,7 @@ import {
   completeSocialRegistration,
 } from '../services/authService';
 import { safeStorage } from '../utils/safeStorage';
+import { getPostLoginRoute } from '../utils/routing';
 
 // ─── Types ──────────────────────────────────────────────────────────
 
@@ -185,7 +186,10 @@ export function useSignIn() {
         })
       );
       setSuccess('Sign in successful!');
-      navTimerRef.current = setTimeout(() => navigate('/dashboard'), TIMING.NAVIGATION_DELAY);
+      navTimerRef.current = setTimeout(
+        () => navigate(getPostLoginRoute(user.role, user.email)),
+        TIMING.NAVIGATION_DELAY
+      );
     },
     [dispatch, navigate]
   );
@@ -274,7 +278,10 @@ export function useSignIn() {
         );
       } else {
         setSuccess('Account created successfully!');
-        navTimerRef.current = setTimeout(() => navigate('/dashboard'), TIMING.NAVIGATION_DELAY);
+        navTimerRef.current = setTimeout(
+          () => navigate(getPostLoginRoute(resolvedRole, backendUser.email)),
+          TIMING.NAVIGATION_DELAY
+        );
       }
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : 'Registration failed';

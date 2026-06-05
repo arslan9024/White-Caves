@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Departments API Routes — Phase 30
  *

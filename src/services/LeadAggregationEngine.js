@@ -253,7 +253,7 @@ export class LeadAggregationEngine {
             duplicateMap.set(key, merged);
           }
 
-          : ${key}`);
+          
           break;
         }
       }
@@ -411,9 +411,9 @@ export class LeadAggregationEngine {
     }
 
     this.autoAggregationInterval = setInterval(() => {
-      this.aggregateLeads().catch(err =>
+      this.aggregateLeads().catch(err => {
         
-      );
+      });
     }, interval);
 
     // Initial aggregation

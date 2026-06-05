@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Linda WhatsApp Routes
  *

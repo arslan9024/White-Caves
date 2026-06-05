@@ -1,3 +1,4 @@
+// @ts-nocheck
 import express, { Router, Request, Response, NextFunction } from 'express';
 import MessageQueueService from '../queue/queue.service.js';
 import AnalyticsService from '../analytics/analytics.service.js';

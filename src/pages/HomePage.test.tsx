@@ -5,7 +5,7 @@
  */
 
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { render, screen, waitFor } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import React from 'react';
 import { Provider } from 'react-redux';
 import { configureStore } from '@reduxjs/toolkit';
@@ -24,6 +24,7 @@ const MOCK_MARKET_STATS = {
 const MOCK_TOP_AGENTS: unknown[] = [];
 const MOCK_LOCATION_TRENDS: unknown[] = [];
 const MOCK_FEATURED_PROPERTIES: unknown[] = [];
+let MOCK_HOMEPAGE_ERROR: string | null = null;
 
 vi.mock('../components/Footer', () => ({
   default: () => <div data-testid="footer">Footer</div>,
@@ -42,12 +43,14 @@ vi.mock('../components/RecentlyViewed', () => ({
 }));
 
 vi.mock('../store/slices/homepageSlice', () => ({
+  clearError: vi.fn(() => ({ type: 'homepage/clearError/mock' })),
   fetchHomepageData: vi.fn(() => ({ type: 'homepage/fetch/mock' })),
   selectMarketStats: () => MOCK_MARKET_STATS,
   selectTopAgents: () => MOCK_TOP_AGENTS,
   selectLocationTrends: () => MOCK_LOCATION_TRENDS,
   selectFeaturedProperties: () => MOCK_FEATURED_PROPERTIES,
   selectIsHomepageLoading: () => false,
+  selectHomepageError: () => MOCK_HOMEPAGE_ERROR,
   default: (
     state = {
       featuredProperties: [],
@@ -134,16 +137,41 @@ vi.mock('../components/OnboardingGateway', () => ({
 
 vi.mock('../data/homeProperties', () => ({
   HOME_PROPERTIES: [
-    { id: 1, title: 'Villa in Palm', price: 5000000 },
-    { id: 2, title: 'Apartment in Marina', price: 2000000 },
+    {
+      id: 1,
+      title: 'Villa in Palm',
+      description: 'Premium family villa',
+      type: 'Villa',
+      location: 'Palm Jumeirah',
+      price: 5000000,
+      beds: 5,
+      baths: 6,
+      sqft: 4500,
+      amenities: ['Pool', 'Parking'],
+    },
+    {
+      id: 2,
+      title: 'Apartment in Marina',
+      description: 'Marina waterfront apartment',
+      type: 'Apartment',
+      location: 'Dubai Marina',
+      price: 2000000,
+      beds: 2,
+      baths: 2,
+      sqft: 1400,
+      amenities: ['Gym', 'Balcony'],
+    },
   ],
 }));
 
-import HomePage from './HomePage';
+import HomePage from './HomePage.tsx';
 import propertyReducer from '../store/propertySlice';
 import userReducer from '../store/userSlice';
 import navigationReducer from '../store/navigationSlice';
 import homepageReducer from '../store/slices/homepageSlice';
+import sidebarReducer from '../store/slices/sidebarSlice';
+import nadiaReducer from '../store/slices/nadiaSlice';
+import { clearError, fetchHomepageData } from '../store/slices/homepageSlice';
 
 // ── Helpers ──────────────────────────────────────────────────────
 
@@ -154,6 +182,8 @@ const createMockStore = () => {
       user: userReducer,
       navigation: navigationReducer,
       homepage: homepageReducer,
+      sidebar: sidebarReducer,
+      nadia: nadiaReducer,
     },
     preloadedState: {
       user: {
@@ -186,6 +216,7 @@ afterEach(() => {
 describe('HomePage', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    MOCK_HOMEPAGE_ERROR = null;
   });
 
   // ── Rendering ────────────────────────────────────────────────
@@ -364,6 +395,34 @@ describe('HomePage', () => {
         expect(jsonLd?.textContent).toContain('RealEstateAgent');
         expect(jsonLd?.textContent).toContain('"numberOfItems":500');
       });
+    });
+
+    it('should render live-data error alert and retry button when homepage fetch fails', async () => {
+      MOCK_HOMEPAGE_ERROR = 'HTTP 503';
+
+      renderPage();
+
+      await waitFor(() => {
+        expect(
+          screen.getByText(/Live market data is temporarily unavailable\. Showing trusted fallback data\./i)
+        ).toBeInTheDocument();
+        expect(screen.getByRole('button', { name: /Retry live data/i })).toBeInTheDocument();
+      });
+    });
+
+    it('should dispatch clearError and fetchHomepageData when retry is clicked', async () => {
+      MOCK_HOMEPAGE_ERROR = 'Network error';
+
+      renderPage();
+
+      const retryButton = await screen.findByRole('button', { name: /Retry live data/i });
+      fireEvent.click(retryButton);
+
+      const mockedClearError = vi.mocked(clearError);
+      const mockedFetchHomepageData = vi.mocked(fetchHomepageData);
+
+      expect(mockedClearError).toHaveBeenCalledTimes(1);
+      expect(mockedFetchHomepageData).toHaveBeenCalledTimes(2);
     });
   });
 

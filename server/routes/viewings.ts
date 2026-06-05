@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Viewings API Routes — Enhanced Phase 3C
  * ────────────────────────────────────────

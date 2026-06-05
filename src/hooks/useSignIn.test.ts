@@ -169,7 +169,7 @@ describe('useSignIn — handleSocialAuth (integration)', () => {
       expect(currentUser?.email).toBe(backendBuyerUser.email);
     });
 
-    it('navigates to /dashboard for a buyer role', async () => {
+    it('navigates to /profile for a buyer role', async () => {
       vi.useFakeTimers();
       const { result } = renderHook(() => useSignIn(), { wrapper: createWrapper(store) });
 
@@ -178,11 +178,11 @@ describe('useSignIn — handleSocialAuth (integration)', () => {
       });
       act(() => vi.runAllTimers());
 
-      expect(mockNavigate).toHaveBeenCalledWith('/dashboard');
+      expect(mockNavigate).toHaveBeenCalledWith('/profile');
       vi.useRealTimers();
     });
 
-    it('navigates to /dashboard for a tenant role', async () => {
+    it('navigates to /profile for a tenant role', async () => {
       vi.useFakeTimers();
       mockSyncFirebaseUser.mockResolvedValue(successResponse(backendTenantUser));
       const { result } = renderHook(() => useSignIn(), { wrapper: createWrapper(store) });
@@ -192,11 +192,11 @@ describe('useSignIn — handleSocialAuth (integration)', () => {
       });
       act(() => vi.runAllTimers());
 
-      expect(mockNavigate).toHaveBeenCalledWith('/dashboard');
+      expect(mockNavigate).toHaveBeenCalledWith('/profile');
       vi.useRealTimers();
     });
 
-    it('navigates to /dashboard for a landlord role', async () => {
+    it('navigates to /profile for a landlord role', async () => {
       vi.useFakeTimers();
       mockSyncFirebaseUser.mockResolvedValue(successResponse(backendLandlordUser));
       const { result } = renderHook(() => useSignIn(), { wrapper: createWrapper(store) });
@@ -206,7 +206,7 @@ describe('useSignIn — handleSocialAuth (integration)', () => {
       });
       act(() => vi.runAllTimers());
 
-      expect(mockNavigate).toHaveBeenCalledWith('/dashboard');
+      expect(mockNavigate).toHaveBeenCalledWith('/profile');
       vi.useRealTimers();
     });
   });
@@ -463,7 +463,7 @@ describe('useSignIn — handleSocialAuth (integration)', () => {
       act(() => vi.runAllTimers());
 
       expect(mockCompleteSocialRegistration).toHaveBeenCalledWith('client', 'tenant');
-      expect(mockNavigate).toHaveBeenCalledWith('/dashboard');
+      expect(mockNavigate).toHaveBeenCalledWith('/profile');
       vi.useRealTimers();
     });
 

@@ -3,7 +3,9 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useSEO, getCanonicalUrl } from '../hooks/useSEO';
 import { setProperties, type Property } from '../store/propertySlice';
 import {
+  clearError,
   fetchHomepageData,
+  selectHomepageError,
   selectMarketStats,
   selectTopAgents,
   selectLocationTrends,
@@ -53,25 +55,8 @@ const OnboardingGateway = lazy(() => import('../components/OnboardingGateway'));
 
 /** Minimal placeholder while lazy chunks load */
 const SectionLoader: FC = () => (
-  <div
-    style={{
-      minHeight: 200,
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      opacity: 0.5,
-    }}
-  >
-    <div
-      style={{
-        width: 32,
-        height: 32,
-        border: '3px solid #e5e7eb',
-        borderTop: '3px solid #6366f1',
-        borderRadius: '50%',
-        animation: 'spin 0.8s linear infinite',
-      }}
-    />
+  <div className="home-page-section-loader" aria-hidden="true">
+    <div className="home-page-section-loader__spinner" />
   </div>
 );
 
@@ -96,6 +81,18 @@ const FALLBACK_FEATURED: HomepageProperty[] = HOME_PROPERTIES.slice(0, 6).map(p 
   featured: true,
 }));
 
+const HOME_PROPERTIES_FOR_STORE: Property[] = HOME_PROPERTIES.map(p => ({
+  id: p.id,
+  title: p.title,
+  location: p.location,
+  type: p.type,
+  price: p.price,
+  beds: p.beds,
+  baths: p.baths,
+  sqft: p.sqft,
+  amenities: p.amenities,
+}));
+
 const HomePage: FC = () => {
   const dispatch = useDispatch<AppDispatch>();
   const marketStats = useSelector(selectMarketStats);
@@ -103,6 +100,7 @@ const HomePage: FC = () => {
   const locationTrends = useSelector(selectLocationTrends);
   const featuredProperties = useSelector(selectFeaturedProperties);
   const isHomepageLoading = useSelector(selectIsHomepageLoading);
+  const homepageError = useSelector(selectHomepageError);
 
   // Use live data when available; fall back to static dummy data before API resolves
   const displayedFeatured = useMemo(
@@ -127,7 +125,7 @@ const HomePage: FC = () => {
       'https://images.unsplash.com/photo-1582268611958-ebfd161ef9cf?w=1200&h=630&fit=crop&q=80',
     jsonLd: buildHomepageJsonLd({
       marketStats,
-      featuredProperties,
+      featuredProperties: displayedFeatured,
       topAgents,
       locationTrends,
     }),
@@ -144,14 +142,30 @@ const HomePage: FC = () => {
 
   useEffect(() => {
     // Seed Redux property store with static fallback for /properties page
-    dispatch(setProperties(HOME_PROPERTIES as unknown as Property[]));
+    dispatch(setProperties(HOME_PROPERTIES_FOR_STORE));
     // Fetch live homepage data in the background (@Mira's aggregate endpoint)
     dispatch(fetchHomepageData());
   }, [dispatch]);
 
+  const handleHomepageRetry = (): void => {
+    dispatch(clearError());
+    dispatch(fetchHomepageData());
+  };
+
   return (
     <PublicLayout>
       <div className="home-page">
+        {homepageError && !isHomepageLoading ? (
+          <div role="status" aria-live="polite" className="homepage-live-data-alert">
+            <span>
+              Live market data is temporarily unavailable. Showing trusted fallback data. ({homepageError})
+            </span>
+            <button type="button" onClick={handleHomepageRetry} className="homepage-live-data-alert__retry">
+              Retry live data
+            </button>
+          </div>
+        ) : null}
+
         {/* Phase 25: Hero is the LCP element — NOT wrapped in Suspense so it renders on first paint */}
         <Hero marketStats={marketStats} isLoading={isHomepageLoading} />
 
@@ -174,48 +188,16 @@ const HomePage: FC = () => {
           {/* ── Tools & Insights ───────────────────────────────────────────────── */}
           <div
             id="tools-insights"
-            style={{
-              background: 'linear-gradient(180deg, #f8f9fa 0%, #ffffff 100%)',
-            }}
+            className="home-page-tools-insights"
           >
-            <div
-              style={{
-                maxWidth: 1200,
-                margin: '0 auto',
-                padding: '3.5rem 1.5rem 1rem',
-                textAlign: 'center',
-              }}
-            >
-              <p
-                style={{
-                  color: '#E31E24',
-                  fontWeight: 600,
-                  fontSize: '0.875rem',
-                  letterSpacing: '0.12em',
-                  textTransform: 'uppercase',
-                  marginBottom: '0.5rem',
-                }}
-              >
+            <div className="home-page-tools-insights__inner">
+              <p className="home-page-tools-insights__eyebrow">
                 Expert Resources
               </p>
-              <h2
-                style={{
-                  color: '#1a1a2e',
-                  fontSize: 'clamp(1.6rem, 3vw, 2.25rem)',
-                  fontWeight: 700,
-                  marginBottom: '0.75rem',
-                }}
-              >
+              <h2 className="home-page-tools-insights__title">
                 Tools &amp; Insights
               </h2>
-              <p
-                style={{
-                  color: '#6b7280',
-                  maxWidth: 560,
-                  margin: '0 auto 0.5rem',
-                  lineHeight: 1.65,
-                }}
-              >
+              <p className="home-page-tools-insights__description">
                 Use our interactive calculators, market data, and research tools to make confident
                 property decisions in Dubai.
               </p>
@@ -227,10 +209,10 @@ const HomePage: FC = () => {
             <OffPlanTracker
               marketStats={marketStats}
               locationTrends={locationTrends}
-              featuredProperties={featuredProperties}
+              featuredProperties={displayedFeatured}
             />
             <NeighborhoodAnalyzer />
-            <VirtualTourGallery featuredProperties={featuredProperties} />
+            <VirtualTourGallery featuredProperties={displayedFeatured} />
           </div>
           {/* ── /Tools & Insights ─────────────────────────────────────────────── */}
 
@@ -239,7 +221,7 @@ const HomePage: FC = () => {
           <Testimonials />
           <BlogSection
             marketStats={marketStats}
-            featuredProperties={featuredProperties}
+            featuredProperties={displayedFeatured}
             locationTrends={locationTrends}
           />
           <NewsletterSubscription />

@@ -33,7 +33,7 @@
     "freeModelProviders": ["google-ai-studio", "groq", "deepseek"]
   },
   "executionMode": {
-    "default": "approval",
+    "default": "autopilot",
     "autopilot": {
       "continuous": true,
       "useSubagents": true,
@@ -49,10 +49,58 @@
   },
   "aegis": {
     "autoRegenerateWhenQueueComplete": true,
-    "maxRegenerationsPerRun": 1,
+    "maxRegenerationsPerRun": 100000,
     "smartSelectionEnabled": true,
+    "phaseBalanceEnabled": true,
+    "targetImplementationSharePct": 60,
+    "preflightEnabled": true,
+    "autoUnblockSweepEnabled": true,
+    "queueHealthEveryNTasks": 3,
+    "problemScannerEnabled": true,
+    "problemScannerAutoFixEnabled": true,
+    "problemScannerEveryNTasks": 3,
+    "problemScannerIdleEveryNLoops": 6,
+    "priorityOverride": {
+      "enabled": true,
+      "tasks": [
+        {
+          "agent": "@Mira",
+          "lane": "A",
+          "phase": "implementation",
+          "team": "premium-implementation",
+          "priority": "critical",
+          "priorityScore": 1000,
+          "title": "Homepage fix errors and possible upgrades",
+          "prompt": "@Mira -- PRIORITY IMPLEMENT+VERIFY: Homepage fix errors and possible upgrades. Execute this before any non-priority queue tasks. Deliver production-safe fixes for homepage errors, apply meaningful UI/performance/resilience upgrades, and include strict validation evidence (typecheck/lint/build/tests) plus rollback notes."
+        },
+        {
+          "agent": "@Mala",
+          "lane": "B",
+          "phase": "implementation",
+          "team": "premium-implementation",
+          "priority": "critical",
+          "priorityScore": 999,
+          "title": "MD login and post-login best UI/UX",
+          "prompt": "@Mala -- PRIORITY IMPLEMENT+VERIFY: MD login and post-login best UI/UX. Execute this before any non-priority queue tasks. Improve MD authentication/login flow reliability and design a premium post-login experience with best-practice UX, accessibility, and responsiveness; include validation evidence and rollback notes."
+        },
+        {
+          "agent": "@Mira",
+          "lane": "A",
+          "phase": "implementation",
+          "team": "premium-implementation",
+          "priority": "critical",
+          "priorityScore": 998,
+          "title": "Managing Director super-user operations cockpit",
+          "prompt": "@Mira -- PRIORITY IMPLEMENT+VERIFY: Managing Director super-user operations cockpit. Execute this before non-priority tasks. Upgrade post-login super-user UI/UX so the Managing Director can see and operate full company operations in one place (cross-module visibility, key KPIs, alerts, approvals, queue health, quick actions, accessibility, responsive layout). Include production-safe implementation slices, strict validation evidence (typecheck/lint/build/tests), and rollback notes."
+        }
+      ]
+    },
     "devSmokeEnabled": true,
-    "devSmokeEveryNTasks": 5
+    "devSmokeEveryNTasks": 3,
+    "autopilotRequireProducedRef": false,
+    "autopilotAutoResolveEvidencePending": true,
+    "deadlockRecoveryEnabled": true,
+    "idleSleepSeconds": 5
   },
   "autonomousDefault": false,
   "hardStops": {

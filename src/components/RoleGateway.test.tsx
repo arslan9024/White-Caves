@@ -192,12 +192,12 @@ describe('RoleGateway', () => {
       });
     });
 
-    it('navigates to /dashboard', () => {
+    it('navigates to /profile', () => {
       render(<RoleGateway user={defaultUser} />);
       fireEvent.click(screen.getByText('Buyer'));
       fireEvent.click(screen.getByText('Confirm Selection & Continue'));
 
-      expect(mockNavigate).toHaveBeenCalledWith('/dashboard');
+      expect(mockNavigate).toHaveBeenCalledWith('/profile');
     });
 
     it('calls onRoleSelect callback if provided', () => {
@@ -234,13 +234,13 @@ describe('RoleGateway', () => {
         type: 'navigation/setActiveRole',
         payload: 'lion',
       });
-      expect(mockNavigate).toHaveBeenCalledWith('/dashboard');
+      expect(mockNavigate).toHaveBeenCalledWith('/profile');
     });
 
     it('redirects admin to canonical dashboard', () => {
       render(<RoleGateway user={{ email: 'admin@test.com', role: 'admin' }} />);
 
-      expect(mockNavigate).toHaveBeenCalledWith('/dashboard');
+      expect(mockNavigate).toHaveBeenCalledWith('/profile');
       expect(mockDispatch).toHaveBeenCalledWith({
         type: 'navigation/setActiveRole',
         payload: 'admin',
@@ -250,7 +250,7 @@ describe('RoleGateway', () => {
     it('does not auto-redirect non-creator managing_director', () => {
       render(<RoleGateway user={{ email: 'md@test.com', role: 'managing_director' }} />);
 
-      expect(mockNavigate).not.toHaveBeenCalledWith('/dashboard');
+      expect(mockNavigate).not.toHaveBeenCalledWith('/profile');
       expect(mockDispatch).not.toHaveBeenCalledWith({
         type: 'navigation/setActiveRole',
         payload: 'managing_director',
@@ -285,7 +285,7 @@ describe('RoleGuard', () => {
     expect(mockNavigate).toHaveBeenCalledWith('/select-role');
   });
 
-  it('redirects to role dashboard when role not allowed', () => {
+  it('redirects to profile when role not allowed', () => {
     mockSafeStorage.getJSON.mockReturnValue({
       role: 'admin',
       selectedAt: '2024-01-01',
@@ -297,6 +297,6 @@ describe('RoleGuard', () => {
       </RoleGuard>
     );
     expect(screen.queryByText('Secret')).not.toBeInTheDocument();
-    expect(mockNavigate).toHaveBeenCalledWith('/admin/dashboard');
+    expect(mockNavigate).toHaveBeenCalledWith('/profile');
   });
 });

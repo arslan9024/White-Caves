@@ -192,7 +192,7 @@ const InteractiveMap = ({ onPropertySelect }: InteractiveMapProps) => {
             {(propertiesByLocation.get(selectedLocation) ?? []).map(property => (
               <PropertyCard key={property.id} onClick={() => handlePropertyClick(property)}>
                 <PropertyImage
-                  src={(property.images as string[])?.[0] || 'https://via.placeholder.com/300x200'}
+                  src={(property.images as string[])?.[0] || '/company-logo.jpg'}
                   alt={property.title}
                   width={300}
                   height={200}
@@ -222,7 +222,7 @@ const InteractiveMap = ({ onPropertySelect }: InteractiveMapProps) => {
             {filteredProperties.slice(0, 6).map(property => (
               <PropertyCard key={property.id} onClick={() => handlePropertyClick(property)}>
                 <PropertyImage
-                  src={(property.images as string[])?.[0] || 'https://via.placeholder.com/300x200'}
+                  src={(property.images as string[])?.[0] || '/company-logo.jpg'}
                   alt={property.title}
                   width={300}
                   height={200}

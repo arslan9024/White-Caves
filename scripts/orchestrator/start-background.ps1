@@ -5,7 +5,9 @@ param(
   [int]$PollSeconds        = 30,
   [int]$WatchdogIntervalMin = 5,  # watchdog + escalation cycle frequency
   [int]$StaleMinutes       = 10,
-  [int]$AckStaleMinutes    = 20
+  [int]$AckStaleMinutes    = 20,
+  [switch]$StartAutopilotDaemon = $true,
+  [int]$AutopilotRestartDelaySeconds = 5
 )
 
 $root     = Resolve-Path (Join-Path $PSScriptRoot "..\..")
@@ -110,14 +112,37 @@ $processes += [PSCustomObject]@{
   StartedAt        = (Get-Date).ToString("o")
 }
 
+# 4. Spawn autopilot supervisor daemon (self-restarting continuous loop)
+if ($StartAutopilotDaemon) {
+  $autopilotDaemonScript = Join-Path $PSScriptRoot "autopilot-daemon.ps1"
+  $apProc = Start-Process -FilePath "powershell" -ArgumentList @(
+    "-NoProfile", "-ExecutionPolicy", "Bypass",
+    "-File", "`"$autopilotDaemonScript`"",
+    "-WorkspaceRoot", "`"$root`"",
+    "-RestartDelaySeconds", "$AutopilotRestartDelaySeconds",
+    "-NoBrowser"
+  ) -WindowStyle Hidden -PassThru
+
+  $processes += [PSCustomObject]@{
+    Type                = "autopilot-daemon"
+    RestartDelaySeconds = $AutopilotRestartDelaySeconds
+    Pid                 = $apProc.Id
+    StartedAt           = (Get-Date).ToString("o")
+  }
+}
+
 $processes | ConvertTo-Json -Depth 4 | Set-Content -Path $pidFile -Encoding UTF8
 
 $laneCount   = 4
 $legacyCount = $WorkerCount
+$daemonCount = if ($StartAutopilotDaemon) { 1 } else { 0 }
 $totalCount  = $processes.Count
 
-Write-Host "Orchestration pool started: $laneCount lane-workers + $legacyCount legacy-workers + 1 watchdog-scheduler = $totalCount processes." -ForegroundColor Green
+Write-Host "Orchestration pool started: $laneCount lane-workers + $legacyCount legacy-workers + 1 watchdog-scheduler + $daemonCount autopilot-daemon = $totalCount processes." -ForegroundColor Green
 Write-Host "Policy     : freeModelOnlyMode=$($policy.modelRouting.freeModelOnlyMode) | free agents=$(@($policy.modelRouting.freePlanningAgents).Count)" -ForegroundColor Cyan
 Write-Host "State file : $pidFile"
 Write-Host "Watchdog   : every ${WatchdogIntervalMin}m (stale=${StaleMinutes}m, ack-stale=${AckStaleMinutes}m)"
+if ($StartAutopilotDaemon) {
+  Write-Host "Autopilot  : supervised (restart delay ${AutopilotRestartDelaySeconds}s)" -ForegroundColor Cyan
+}
 Write-Host "Stop all   : npm run orchestrator:bg:stop"

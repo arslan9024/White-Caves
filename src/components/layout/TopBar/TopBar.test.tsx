@@ -54,6 +54,9 @@ vi.mock('./styles', () => ({
   ActionsSection: ({ children, ...props }: Record<string, unknown>) => (
     <div data-testid="actions-section" {...props}>{children as React.ReactNode}</div>
   ),
+  ActionAnchor: React.forwardRef<HTMLDivElement, Record<string, unknown>>(({ children, ...props }, ref) => (
+    <div data-testid="action-anchor" ref={ref} {...props}>{children as React.ReactNode}</div>
+  )),
   SearchTrigger: ({ children, ...props }: Record<string, unknown>) => (
     <button data-testid="search-trigger" {...props}>{children as React.ReactNode}</button>
   ),
@@ -249,10 +252,10 @@ describe('TopBar', () => {
   // ── Logo Navigation ─────────────────────────────────────────────────
 
   describe('logo navigation', () => {
-    it('navigates to /dashboard when logo is clicked', () => {
+    it('navigates to /crm when logo is clicked', () => {
       renderTopBar();
       fireEvent.click(screen.getByTestId('logo-section'));
-      expect(mockNavigate).toHaveBeenCalledWith('/dashboard');
+      expect(mockNavigate).toHaveBeenCalledWith('/crm');
     });
 
     it('has accessible label on logo section', () => {
@@ -555,6 +558,15 @@ describe('TopBar', () => {
       expect(items.some(item => item.textContent?.includes('Admin Dashboard'))).toBe(true);
     });
 
+    it('shows Operations Cockpit link for lion (super user) role', () => {
+      renderTopBar({
+        auth: { user: { id: 'u1', email: 'lion@wc.com', name: 'Super Admin', role: 'lion' } },
+      });
+      fireEvent.click(screen.getByTestId('user-button'));
+      const items = screen.getAllByTestId('dropdown-item');
+      expect(items.some(item => item.textContent?.includes('Operations Cockpit'))).toBe(true);
+    });
+
     it('hides Admin Dashboard link for non-lion roles', () => {
       renderTopBar({
         auth: { user: { id: 'u1', email: 'agent@wc.com', name: 'Agent', role: 'sales-agent' } },
@@ -562,9 +574,10 @@ describe('TopBar', () => {
       fireEvent.click(screen.getByTestId('user-button'));
       const items = screen.getAllByTestId('dropdown-item');
       expect(items.some(item => item.textContent?.includes('Admin Dashboard'))).toBe(false);
+      expect(items.some(item => item.textContent?.includes('Operations Cockpit'))).toBe(false);
     });
 
-    it('navigates to /lion/admin-dashboard on Admin Dashboard click', () => {
+    it('navigates to admin cockpit mode on Admin Dashboard click', () => {
       renderTopBar({
         auth: { user: { id: 'u1', email: 'lion@wc.com', name: 'Lion', role: 'lion' } },
       });
@@ -572,7 +585,18 @@ describe('TopBar', () => {
       const items = screen.getAllByTestId('dropdown-item');
       const adminItem = items.find(item => item.textContent?.includes('Admin Dashboard'));
       fireEvent.click(adminItem!);
-      expect(mockNavigate).toHaveBeenCalledWith('/lion/admin-dashboard');
+      expect(mockNavigate).toHaveBeenCalledWith('/crm?tab=admin&cockpit=md');
+    });
+
+    it('navigates to cockpit mode on Operations Cockpit click', () => {
+      renderTopBar({
+        auth: { user: { id: 'u1', email: 'lion@wc.com', name: 'Lion', role: 'lion' } },
+      });
+      fireEvent.click(screen.getByTestId('user-button'));
+      const items = screen.getAllByTestId('dropdown-item');
+      const cockpitItem = items.find(item => item.textContent?.includes('Operations Cockpit'));
+      fireEvent.click(cockpitItem!);
+      expect(mockNavigate).toHaveBeenCalledWith('/crm?tab=overview&cockpit=md');
     });
   });
 

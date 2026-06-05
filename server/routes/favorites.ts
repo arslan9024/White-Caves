@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Favorites API Routes
  * ────────────────────

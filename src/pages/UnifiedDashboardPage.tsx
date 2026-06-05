@@ -11,7 +11,7 @@ import React, {
   useState,
 } from 'react';
 import { useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import SuspenseLoader from '../components/common/SuspenseLoader';
 import RouteErrorBoundary from '../components/RouteErrorBoundary';
@@ -20,12 +20,18 @@ import AuthenticatedPageShell from '../components/layout/authenticated/Authentic
 import SubNavBar from '../components/common/SubNavBar';
 import { DashboardSubTabRenderer } from '../components/dashboard/DashboardRenderer';
 import SuperuserControlCenter from '../components/dashboard/SuperuserControlCenter';
+import DashboardTopBar from '../components/dashboard/DashboardTopBar';
+import DashboardSideRail from '../components/dashboard/DashboardSideRail';
+import DashboardPageHeader from '../components/dashboard/DashboardPageHeader';
+import DashboardKpiStrip, { type KpiCardData } from '../components/dashboard/DashboardKpiStrip';
+import DashboardProfileCompletion from '../components/dashboard/DashboardProfileCompletion';
+import DashboardCommandPalette from '../components/dashboard/DashboardCommandPalette';
+import DashboardModuleToolbar from '../components/dashboard/DashboardModuleToolbar';
 import { useUnifiedDashboard } from '../hooks/useUnifiedDashboard';
 import type { DashboardData, CRMModuleProps } from '../hooks/useUnifiedDashboard';
 import { AI_ASSISTANTS_REGISTRY } from '../store/slices/aiAssistant/registry';
 import { selectSelectedAssistant } from '../store/slices/sidebarSlice';
 import type { RootState } from '../store/store';
-import type { RoleTab } from '../config/ROLE_TAB_MAPPING';
 import './UnifiedDashboardPage.css';
 
 import OverviewTab from '../components/owner/tabs/OverviewTab';
@@ -49,7 +55,7 @@ import type {
 import AdminDashboard from '../components/admin/AdminDashboard';
 
 const AIAssistantHub = lazy(() => import('../components/crm/AIAssistantHub'));
-const AICommandCenter = lazy(() => import('../components/crm/AICommandCenter'));
+const AICommandCenter = lazy(() => import('../components/crm/AICommandCenter.tsx'));
 const NadiaWhatsAppCRM = lazy(() => import('../components/crm/NadiaWhatsAppCRM'));
 const MaryInventoryCRM = lazy(() => import('../components/crm/MaryInventoryCRM_NEW'));
 const ClaraLeadsCRM = lazy(() => import('../components/crm/ClaraLeadsCRM_NEW'));
@@ -97,6 +103,27 @@ const TabLoadingFallback: FC = () => (
   <div className="tab-loading-fallback">
     <SuspenseLoader />
   </div>
+);
+
+const DashboardSearchItem: FC<{ item: SearchItem; onSelect: (item: SearchItem) => void }> = ({
+  item,
+  onSelect,
+}) => (
+  <button
+    className="dashboard-search-result"
+    onMouseDown={event => {
+      event.preventDefault();
+      onSelect(item);
+    }}
+  >
+    <span className="dashboard-search-result__icon" aria-hidden="true">
+      {item.icon}
+    </span>
+    <span className="dashboard-search-result__copy">
+      <strong>{item.label}</strong>
+      <small>{item.meta}</small>
+    </span>
+  </button>
 );
 
 const CRM_MODULES: Record<string, CRMModule> = {
@@ -168,6 +195,7 @@ const formatCurrency = (value: number): string =>
 
 const UnifiedDashboardPage: FC = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const {
     currentRole,
     currentModule,
@@ -199,6 +227,7 @@ const UnifiedDashboardPage: FC = () => {
   const [modulesExpanded, setModulesExpanded] = useState(true);
   const globalSearchRef = useRef<HTMLDivElement | null>(null);
   const tabButtonRefs = useRef<Array<HTMLButtonElement | null>>([]);
+  const lastFocusedElementRef = useRef<HTMLElement | null>(null);
 
   useEffect(() => {
     if (!selectedAssistant) return;
@@ -235,7 +264,27 @@ const UnifiedDashboardPage: FC = () => {
     return () => document.removeEventListener('mousedown', handleOutsideClick);
   }, []);
 
+  useEffect(() => {
+    if (isCommandPaletteOpen) {
+      const activeElement = document.activeElement;
+      if (activeElement instanceof HTMLElement) {
+        lastFocusedElementRef.current = activeElement;
+      }
+      return;
+    }
+
+    const lastFocusedElement = lastFocusedElementRef.current;
+    if (lastFocusedElement && document.contains(lastFocusedElement)) {
+      lastFocusedElement.focus();
+    }
+
+    if (commandQuery.length > 0) {
+      setCommandQuery('');
+    }
+  }, [commandQuery, isCommandPaletteOpen]);
+
   const selectedCRMModuleConfig = selectedCRMModule ? CRM_MODULES[selectedCRMModule] : null;
+  const isExecutiveCockpitMode = searchParams.get('cockpit') === 'md';
   const currentTab = availableTabs.find(tab => tab.id === activeTab);
 
   const overview = (dashboardData?.overview ?? {}) as GenericEntity;
@@ -256,7 +305,7 @@ const UnifiedDashboardPage: FC = () => {
   }).format(new Date());
   const greetingLine = `${getTimeGreeting(new Date())}, ${greetingName} · ${todayLabel} · ${hotLeadsCount} active leads need follow-up`;
 
-  const kpiCards = useMemo(
+  const kpiCards = useMemo<KpiCardData[]>(
     () => [
       {
         id: 'properties',
@@ -616,97 +665,37 @@ const UnifiedDashboardPage: FC = () => {
 
   return (
     <AuthenticatedPageShell>
-      <header className="dashboard-topbar">
-        <div className="dashboard-topbar__brand">
-          <div className="dashboard-topbar__logo" aria-hidden="true">
-            WC
-          </div>
-          <div>
-            <p className="dashboard-topbar__eyebrow">White Caves CRM</p>
-            <strong>Internal command center</strong>
-          </div>
-        </div>
-
-        <div className="dashboard-topbar__search" ref={globalSearchRef}>
-          <span className="dashboard-topbar__search-icon" aria-hidden="true">
-            🔎
-          </span>
-          <input
-            type="search"
-            value={globalSearchQuery}
-            onChange={event => {
-              setGlobalSearchQuery(event.target.value);
-              setIsGlobalSearchOpen(true);
-            }}
-            onFocus={() => setIsGlobalSearchOpen(true)}
-            onKeyDown={event => {
-              if (event.key === 'Enter' && globalSearchResults[0]) {
-                event.preventDefault();
-                executeSearchItem(globalSearchResults[0]);
-              }
-            }}
-            placeholder="Search leads, properties, agents, tabs, or modules"
-            aria-label="Search dashboard records"
-          />
-
-          {isGlobalSearchOpen && globalSearchResults.length > 0 && (
-            <div className="dashboard-search-results" role="listbox" aria-label="Search results">
-              {globalSearchResults.map(item => (
-                <button
-                  key={item.id}
-                  className="dashboard-search-result"
-                  onMouseDown={event => {
-                    event.preventDefault();
-                    executeSearchItem(item);
-                  }}
-                >
-                  <span className="dashboard-search-result__icon" aria-hidden="true">
-                    {item.icon}
-                  </span>
-                  <span className="dashboard-search-result__copy">
-                    <strong>{item.label}</strong>
-                    <small>{item.meta}</small>
-                  </span>
-                </button>
-              ))}
+      <DashboardTopBar
+        globalSearchRef={globalSearchRef}
+        globalSearchQuery={globalSearchQuery}
+        isGlobalSearchOpen={isGlobalSearchOpen && globalSearchQuery.trim().length > 0}
+        globalSearchResults={
+          globalSearchResults.length > 0 ? (
+            globalSearchResults.map(item => (
+              <DashboardSearchItem key={item.id} item={item} onSelect={executeSearchItem} />
+            ))
+          ) : (
+            <div className="dashboard-search-results__empty" role="status" aria-live="polite">
+              No matches found. Try another lead, property, tab, or module keyword.
             </div>
-          )}
-        </div>
-
-        <div className="dashboard-topbar__actions">
-          <button
-            type="button"
-            className="dashboard-icon-button"
-            aria-label={`${hotLeadsCount} notifications`}
-          >
-            🔔
-            {hotLeadsCount > 0 && <span className="dashboard-icon-badge">{hotLeadsCount}</span>}
-          </button>
-          <button
-            type="button"
-            className="dashboard-command-button"
-            onClick={() => setIsCommandPaletteOpen(true)}
-          >
-            ⌘K <span>Command palette</span>
-          </button>
-          <button
-            type="button"
-            className="dashboard-quick-action"
-            onClick={() => setIsCommandPaletteOpen(true)}
-          >
-            + Quick action
-          </button>
-          <div className="dashboard-user-chip" aria-label={`Signed in as ${user.email}`}>
-            <div className="dashboard-user-chip__avatar" aria-hidden="true">
-              {greetingName.slice(0, 2).toUpperCase()}
-            </div>
-            <div className="dashboard-user-chip__copy">
-              <strong>{greetingName}</strong>
-              <small>{user.email}</small>
-            </div>
-          </div>
-        </div>
-      </header>
+          )
+        }
+        hotLeadsCount={hotLeadsCount}
+        greetingName={greetingName}
+        userEmail={user.email}
+        onOpenCommandPalette={() => setIsCommandPaletteOpen(true)}
+        onQuickAction={() => setIsCommandPaletteOpen(true)}
+        onSearchChange={value => {
+          setGlobalSearchQuery(value);
+          setIsGlobalSearchOpen(true);
+        }}
+        onSearchFocus={() => setIsGlobalSearchOpen(true)}
+        onSearchEnter={() => {
+          if (globalSearchResults[0]) {
+            executeSearchItem(globalSearchResults[0]);
+          }
+        }}
+      />
 
       {error && (
         <div className="unified-dashboard-error-banner" role="alert" aria-live="assertive">
@@ -722,97 +711,82 @@ const UnifiedDashboardPage: FC = () => {
 
       <div className="dashboard-workspace-shell">
         {!selectedDepartment && (
-          <aside className="dashboard-side-rail" aria-label="Dashboard tabs">
-            <div className="dashboard-side-rail__section">
-              <span className="dashboard-side-rail__label">Workspaces</span>
-              <div className="dashboard-tab-rail" role="tablist" aria-orientation="vertical">
-                {availableTabs.map((tab: RoleTab, index: number) => (
-                  <button
-                    key={tab.id}
-                    ref={element => {
-                      tabButtonRefs.current[index] = element;
-                    }}
-                    className={`dashboard-rail-tab ${activeTab === tab.id && !selectedCRMModule ? 'active' : ''}`}
-                    type="button"
-                    role="tab"
-                    aria-selected={activeTab === tab.id && !selectedCRMModule}
-                    aria-controls="dashboard-main"
-                    onClick={() => {
-                      handleBackFromCRM();
-                      setActiveTab(tab.id);
-                    }}
-                    onKeyDown={event => handleTabKeyDown(event, index)}
-                  >
-                    <span className="dashboard-rail-tab__icon" aria-hidden="true">
-                      {tab.icon}
-                    </span>
-                    <span className="dashboard-rail-tab__label">{tab.label}</span>
-                    {tab.badge !== undefined && tab.badge > 0 && (
-                      <span className="dashboard-rail-tab__badge">{tab.badge}</span>
-                    )}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {isSuperUser && (
-              <div className="dashboard-side-rail__section dashboard-side-rail__section--modules">
-                <button
-                  type="button"
-                  className="dashboard-modules-toggle"
-                  onClick={() => setModulesExpanded(current => !current)}
-                  aria-expanded={modulesExpanded}
-                >
-                  <span>AI CRM Modules</span>
-                  <span aria-hidden="true">{modulesExpanded ? '−' : '+'}</span>
-                </button>
-                {modulesExpanded && (
-                  <div className="dashboard-module-list">
-                    {moduleEntries.map(([key, module]) => (
-                      <button
-                        key={key}
-                        type="button"
-                        className={`dashboard-module-option ${selectedCRMModule === key ? 'active' : ''}`}
-                        onClick={() => handleCRMModuleSelect(key)}
-                      >
-                        <span aria-hidden="true">🤖</span>
-                        <span>{module.label}</span>
-                      </button>
-                    ))}
-                  </div>
-                )}
-              </div>
-            )}
-          </aside>
+          <DashboardSideRail
+            availableTabs={availableTabs}
+            activeTab={activeTab}
+            selectedCRMModule={selectedCRMModule}
+            isSuperUser={isSuperUser}
+            modulesExpanded={modulesExpanded}
+            moduleEntries={moduleEntries}
+            tabButtonRefs={tabButtonRefs}
+            onSelectTab={tabId => {
+              handleBackFromCRM();
+              setActiveTab(tabId);
+            }}
+            onTabKeyDown={handleTabKeyDown}
+            onToggleModules={() => setModulesExpanded(current => !current)}
+            onSelectModule={handleCRMModuleSelect}
+          />
         )}
 
         <main id="dashboard-main" className="dashboard-main-panel">
-          <section className="dashboard-page-header">
-            <div className="dashboard-page-header__copy">
-              <span className="dashboard-page-header__eyebrow">
-                {currentModule ?? currentRole} /{' '}
-                {currentTab?.label ?? selectedCRMModuleConfig?.label ?? 'Overview'}
-              </span>
-              <h1>{roleInfo.label} Dashboard</h1>
-              <p className="dashboard-page-header__subtitle">{roleInfo.description}</p>
-              <p className="dashboard-page-header__greeting">{greetingLine}</p>
-            </div>
-            <div className="dashboard-page-header__meta">
-              <div className="dashboard-breadcrumbs" aria-label="Breadcrumb">
-                <span>CRM</span>
-                <span aria-hidden="true">/</span>
-                <span>{roleInfo.label}</span>
-                <span aria-hidden="true">/</span>
-                <span>{selectedCRMModuleConfig?.label ?? currentTab?.label ?? 'Overview'}</span>
+          <DashboardPageHeader
+            currentModule={currentModule ?? null}
+            currentRole={currentRole}
+            currentTabLabel={currentTab?.label}
+            selectedCRMModuleLabel={selectedCRMModuleConfig?.label}
+            roleLabel={roleInfo.label}
+            roleDescription={roleInfo.description}
+            greetingLine={greetingLine}
+            userEmail={user.email}
+          />
+
+          {isExecutiveCockpitMode && isSuperUser && !selectedDepartment && (
+            <section className="dashboard-executive-cockpit-banner" aria-label="Managing Director cockpit mode">
+              <div>
+                <p className="dashboard-executive-cockpit-banner__eyebrow">Managing Director · Full Company View</p>
+                <h2>Executive cockpit engaged</h2>
+                <p>
+                  Priority control over portfolio, pipeline, team, finance, compliance, and AI modules.
+                  All company operations visible in one place.
+                </p>
               </div>
-              <div className="dashboard-page-header__status">
-                <span className="dashboard-status-pill">Live workspace</span>
-                <span className="dashboard-status-pill dashboard-status-pill--muted">
-                  {user.email}
-                </span>
+              <div className="dashboard-executive-cockpit-banner__actions">
+                <button
+                  type="button"
+                  className="dashboard-superuser-btn dashboard-superuser-btn--primary"
+                  onClick={() => setIsCommandPaletteOpen(true)}
+                >
+                  Command palette
+                </button>
+                <button type="button" className="dashboard-superuser-btn" onClick={() => openWorkspaceTab('overview', 'unified')}>
+                  Overview
+                </button>
+                <button type="button" className="dashboard-superuser-btn" onClick={() => openWorkspaceTab('analytics', 'analytics')}>
+                  Analytics
+                </button>
+                <button type="button" className="dashboard-superuser-btn" onClick={() => handleCRMModuleSelect('theodora')}>
+                  Finance
+                </button>
+                <button type="button" className="dashboard-superuser-btn" onClick={() => handleCRMModuleSelect('laila')}>
+                  Compliance
+                </button>
+                <button type="button" className="dashboard-superuser-btn" onClick={() => openWorkspaceTab('ai-hub', 'unified')}>
+                  AI modules
+                </button>
+                <button type="button" className="dashboard-superuser-btn" onClick={() => openWorkspaceTab('users', 'unified')}>
+                  Users
+                </button>
+                <button
+                  type="button"
+                  className="dashboard-superuser-btn"
+                  onClick={() => navigate('/profile')}
+                >
+                  Profile
+                </button>
               </div>
-            </div>
-          </section>
+            </section>
+          )}
 
           {isSuperUser && !selectedDepartment && (
             <SuperuserControlCenter
@@ -820,6 +794,10 @@ const UnifiedDashboardPage: FC = () => {
               superuserModuleCount={superuserModuleCount}
               monthlyRevenueLabel={formatCurrency(monthlyRevenue)}
               profileCompletionPercent={profileCompletionPercent}
+              propertiesCount={propertiesCount}
+              agentsCount={agentsCount}
+              leadsCount={leadsCount}
+              contractsCount={contractsCount}
               onRefreshData={handleRetryAll}
               onOpenCommandPalette={() => {
                 setModulesExpanded(true);
@@ -829,59 +807,26 @@ const UnifiedDashboardPage: FC = () => {
               onOpenAnalyticsWorkspace={() => openWorkspaceTab('analytics', 'analytics')}
               onOpenUsersWorkspace={() => openWorkspaceTab('users', 'unified')}
               onLaunchUnifiedCRM={() => handleCRMModuleSelect('unified')}
+              onOpenPropertiesWorkspace={() => openWorkspaceTab('properties', 'unified')}
+              onOpenLeadsWorkspace={() => openWorkspaceTab('leads', 'leads')}
+              onOpenAgentsWorkspace={() => openWorkspaceTab('agents', 'unified')}
+              onOpenContractsWorkspace={() => openWorkspaceTab('contracts', 'unified')}
+              onOpenFinanceWorkspace={() => handleCRMModuleSelect('theodora')}
+              onOpenComplianceWorkspace={() => handleCRMModuleSelect('laila')}
+              onLaunchAIModules={() => openWorkspaceTab('ai-hub', 'unified')}
             />
           )}
 
           {hasProfileCompletionGaps && (
-            <section className="dashboard-profile-completion" aria-label="Profile setup status">
-              <div className="dashboard-profile-completion__copy">
-                <p className="dashboard-profile-completion__eyebrow">Post-login setup</p>
-                <h2>Complete your profile</h2>
-                <p>
-                  Your profile is {profileCompletionPercent}% complete. Finishing setup improves
-                  lead assignment accuracy and team coordination.
-                </p>
-              </div>
-              <div className="dashboard-profile-completion__actions">
-                <ul>
-                  {profileCompletionItems.map(item => (
-                    <li key={item.id}>
-                      <span aria-hidden="true">{item.complete ? '✅' : '⬜'}</span>
-                      <span>{item.label}</span>
-                    </li>
-                  ))}
-                </ul>
-                <button
-                  type="button"
-                  className="dashboard-profile-completion__cta"
-                  onClick={() => navigate('/profile')}
-                >
-                  Finish profile setup
-                </button>
-              </div>
-            </section>
+            <DashboardProfileCompletion
+              percent={profileCompletionPercent}
+              items={profileCompletionItems}
+              onFinishSetup={() => navigate('/profile')}
+            />
           )}
 
           {!selectedDepartment && !selectedCRMModule && (
-            <section className="dashboard-kpi-strip" aria-label="Dashboard highlights">
-              {kpiCards.map(card => (
-                <article key={card.id} className="dashboard-kpi-card">
-                  <div className="dashboard-kpi-card__icon" aria-hidden="true">
-                    {card.icon}
-                  </div>
-                  <div className="dashboard-kpi-card__body">
-                    <p>{card.label}</p>
-                    <strong>{card.value}</strong>
-                    <span>{card.subtext}</span>
-                  </div>
-                  <div
-                    className={`dashboard-kpi-card__trend ${card.positive ? 'positive' : 'negative'}`}
-                  >
-                    {card.trend}
-                  </div>
-                </article>
-              ))}
-            </section>
+            <DashboardKpiStrip cards={kpiCards} />
           )}
 
           {selectedDepartment ? (
@@ -898,14 +843,10 @@ const UnifiedDashboardPage: FC = () => {
 
               <div className="dashboard-content-frame">
                 {selectedCRMModuleConfig && isSuperUser && (
-                  <div className="dashboard-module-toolbar">
-                    <button className="crm-back-button" onClick={handleBackFromCRM}>
-                      ← Back to dashboard
-                    </button>
-                    <span className="dashboard-module-toolbar__label">
-                      {selectedCRMModuleConfig.label}
-                    </span>
-                  </div>
+                  <DashboardModuleToolbar
+                    label={selectedCRMModuleConfig.label}
+                    onBack={handleBackFromCRM}
+                  />
                 )}
 
                 <AnimatePresence mode="wait" initial={false}>
@@ -938,68 +879,20 @@ const UnifiedDashboardPage: FC = () => {
         </main>
       </div>
 
-      <AnimatePresence>
-        {isCommandPaletteOpen && (
-          <motion.div
-            className="dashboard-command-palette-backdrop"
-            initial={prefersReducedMotion ? false : { opacity: 0 }}
-            animate={prefersReducedMotion ? {} : { opacity: 1 }}
-            exit={prefersReducedMotion ? {} : { opacity: 0 }}
-            onClick={() => setIsCommandPaletteOpen(false)}
-          >
-            <motion.div
-              className="dashboard-command-palette"
-              initial={prefersReducedMotion ? false : { opacity: 0, y: 16 }}
-              animate={prefersReducedMotion ? {} : { opacity: 1, y: 0 }}
-              exit={prefersReducedMotion ? {} : { opacity: 0, y: 12 }}
-              transition={{ duration: prefersReducedMotion ? 0 : 0.18, ease: 'easeOut' }}
-              onClick={event => event.stopPropagation()}
-            >
-              <div className="dashboard-command-palette__header">
-                <strong>Command palette</strong>
-                <button type="button" onClick={() => setIsCommandPaletteOpen(false)}>
-                  Esc
-                </button>
-              </div>
-              <input
-                autoFocus
-                type="search"
-                value={commandQuery}
-                onChange={event => setCommandQuery(event.target.value)}
-                onKeyDown={event => {
-                  if (event.key === 'Enter' && commandItems[0]) {
-                    event.preventDefault();
-                    executeSearchItem(commandItems[0]);
-                  }
-                }}
-                placeholder="Search tabs or AI CRM modules"
-                aria-label="Search command palette"
-              />
-              <div className="dashboard-command-palette__results">
-                {commandItems.map(item => (
-                  <button
-                    key={item.id}
-                    type="button"
-                    className="dashboard-command-palette__item"
-                    onClick={() => executeSearchItem(item)}
-                  >
-                    <span aria-hidden="true">{item.icon}</span>
-                    <span className="dashboard-command-palette__copy">
-                      <strong>{item.label}</strong>
-                      <small>{item.meta}</small>
-                    </span>
-                  </button>
-                ))}
-                {commandItems.length === 0 && (
-                  <div className="dashboard-command-palette__empty">
-                    No matching tabs or modules.
-                  </div>
-                )}
-              </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      <DashboardCommandPalette
+        isOpen={isCommandPaletteOpen}
+        query={commandQuery}
+        items={commandItems}
+        prefersReducedMotion={Boolean(prefersReducedMotion)}
+        onClose={() => setIsCommandPaletteOpen(false)}
+        onQueryChange={setCommandQuery}
+        onEnter={activeIndex => {
+          if (commandItems[activeIndex]) {
+            executeSearchItem(commandItems[activeIndex]);
+          }
+        }}
+        onSelect={(item) => executeSearchItem(item as unknown as SearchItem)}
+      />
     </AuthenticatedPageShell>
   );
 };

@@ -24,3 +24,5 @@ export { default as LoadingSpinner } from './LoadingSpinner';
 export { default as Badge } from './Badge';
 export { default as Chart } from './Chart';
 export { default as Pagination } from './Pagination';
+export { default as Alert } from './Alert';
+export { default as ProgressBar } from './ProgressBar';

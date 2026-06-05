@@ -94,6 +94,12 @@
   color: var(--text-secondary, #6b7280);
 }
 
+.biometric-setup-details {
+  font-size: 14px;
+  color: var(--text-secondary, #6b7280);
+  margin-bottom: 12px;
+}
+
 .biometric-setup-actions {
   display: flex;
   gap: 12px;
@@ -127,6 +133,10 @@
 
 .biometric-setup-btn.secondary:hover {
   background: var(--bg-secondary, #e5e7eb);
+}
+
+.biometric-setup-btn--stacked {
+  margin-top: 12px;
 }
 
 .biometric-credential-list {

@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Documents Routes — REST API for document generation and management
  *

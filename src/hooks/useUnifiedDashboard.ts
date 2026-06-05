@@ -59,6 +59,7 @@ import { isCreatorSuperUserEmail } from '../utils/superUserAccess';
 
 /** A generic CRM entity (property, lead, tenant, agent, etc.) keyed by string fields */
 type CRMEntity = Record<string, unknown>;
+type AbortableDispatch = { abort?: () => void };
 
 export interface DashboardData {
   properties: CRMEntity[];
@@ -92,6 +93,23 @@ export interface CRMModuleProps {
 
 /** Stable empty array constant for placeholder data fields */
 const EMPTY_CRM_ARRAY: CRMEntity[] = [];
+
+const normalizeDashboardError = (rawError: string | null): string | null => {
+  if (!rawError) return null;
+
+  const normalized = rawError.toLowerCase();
+  const isDatabaseUnavailable =
+    normalized.includes('p1001') ||
+    normalized.includes("can't reach database server") ||
+    normalized.includes('database server') ||
+    normalized.includes('econnrefused');
+
+  if (isDatabaseUnavailable) {
+    return 'CRM is currently in limited mode while the database connection recovers. You can continue browsing and retry shortly.';
+  }
+
+  return rawError;
+};
 
 // ─── Hook ─────────────────────────────────────────────────────
 
@@ -131,7 +149,10 @@ export function useUnifiedDashboard() {
 
   // Composite loading / error
   const isLoading = leadsLoading || propertiesLoading || agentsLoading;
-  const error: string | null = leadsError || propertiesError || agentsError || null;
+  const error = useMemo(
+    () => normalizeDashboardError(leadsError || propertiesError || agentsError || null),
+    [leadsError, propertiesError, agentsError]
+  );
 
   // ─── Dashboard Data (memoized) ────────────────────────────
   const dashboardData = useMemo<DashboardData>(
@@ -200,12 +221,34 @@ export function useUnifiedDashboard() {
     [dispatch]
   );
 
+  const dispatchDashboardFetches = useCallback(
+    ({ force = false }: { force?: boolean } = {}): AbortableDispatch[] => {
+      const requests: AbortableDispatch[] = [];
+
+      if (force || (!allLeads.length && !leadsLoading)) {
+        requests.push(dispatch(fetchLeadsFromAPI({})) as unknown as AbortableDispatch);
+      }
+
+      if (force || (!allProperties.length && !propertiesLoading)) {
+        requests.push(dispatch(fetchPropertiesFromAPI({})) as unknown as AbortableDispatch);
+      }
+
+      if (force || (!allAgents.length && !agentsLoading)) {
+        requests.push(dispatch(fetchAgentsFromAPI()) as unknown as AbortableDispatch);
+      }
+
+      if (force || !overview) {
+        requests.push(dispatch(fetchDashboardOverview()) as unknown as AbortableDispatch);
+      }
+
+      return requests;
+    },
+    [dispatch, allLeads.length, leadsLoading, allProperties.length, propertiesLoading, allAgents.length, agentsLoading, overview]
+  );
+
   const handleRetryAll = useCallback(() => {
-    dispatch(fetchLeadsFromAPI({}));
-    dispatch(fetchPropertiesFromAPI({}));
-    dispatch(fetchAgentsFromAPI());
-    dispatch(fetchDashboardOverview());
-  }, [dispatch]);
+    dispatchDashboardFetches({ force: true });
+  }, [dispatchDashboardFetches]);
 
   // ─── Tab / Role Info ──────────────────────────────────────
   const availableTabs = getTabsForRole(currentRole);
@@ -312,6 +355,17 @@ export function useUnifiedDashboard() {
     setSearchParams(nextParams);
   }, [activeTab, searchParams, setSearchParams]);
 
+  // Cockpit mode is executive-only: remove it from URL for non-superusers.
+  useEffect(() => {
+    if (isSuperUser || !searchParams.has('cockpit')) {
+      return;
+    }
+
+    const nextParams = new URLSearchParams(searchParams);
+    nextParams.delete('cockpit');
+    setSearchParams(nextParams);
+  }, [isSuperUser, searchParams, setSearchParams]);
+
   // Deep-link handling: /dashboard?tab=<assistantId>
   // If tab matches an AI assistant key, route to AI Command Center context while
   // preserving the assistant id in URL and selecting the assistant in dashboard state.
@@ -342,18 +396,13 @@ export function useUnifiedDashboard() {
 
   // Fetch CRM data on mount (skip if already loaded)
   useEffect(() => {
-    const promises: Array<{ abort?: () => void }> = [];
-    if (!allLeads.length && !leadsLoading) promises.push(dispatch(fetchLeadsFromAPI({})));
-    if (!allProperties.length && !propertiesLoading)
-      promises.push(dispatch(fetchPropertiesFromAPI({})));
-    if (!allAgents.length && !agentsLoading) promises.push(dispatch(fetchAgentsFromAPI()));
-    if (!overview) promises.push(dispatch(fetchDashboardOverview()));
+    const requests = dispatchDashboardFetches();
 
     return () => {
-      promises.forEach(p => p.abort?.());
+      requests.forEach(request => request.abort?.());
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps -- run once on mount
-  }, [dispatch]);
+  }, [dispatchDashboardFetches]);
 
   // Re-fetch overview when role changes
   const prevRoleRef = useRef(currentRole);

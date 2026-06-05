@@ -15,6 +15,7 @@ import {
   DubaiBaseMap,
   InteractiveMapOverlay,
   MapSVG,
+  MarkerGroup,
   MapInfoWindow,
   InfoHeader,
   InfoTitle,
@@ -109,7 +110,7 @@ const DubaiMap: FC<DubaiMapProps> = ({ properties = [], onPropertySelect }) => {
       <MapWrapper>
         <MapBackground>
           <DubaiBaseMap 
-            src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e5/Dubai_location.svg/1200px-Dubai_location.svg.png"
+            src="/company-logo.jpg"
             alt="Dubai Map"
             style={{ opacity: 0.15 }}
           />
@@ -123,12 +124,8 @@ const DubaiMap: FC<DubaiMapProps> = ({ properties = [], onPropertySelect }) => {
                   const areaProperties = getPropertiesForArea(area.id);
                   
                   return (
-                    <g 
+                    <MarkerGroup
                       key={area.id}
-                      style={{
-                        cursor: 'pointer',
-                        transition: 'transform 0.2s ease',
-                      }}
                       onClick={() => handleMarkerClick(area)}
                     >
                       <circle
@@ -166,7 +163,7 @@ const DubaiMap: FC<DubaiMapProps> = ({ properties = [], onPropertySelect }) => {
                       >
                         {area.name}
                       </text>
-                    </g>
+                    </MarkerGroup>
                   );
                 })}
               </g>

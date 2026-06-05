@@ -276,6 +276,10 @@ export const ProjectPrice = styled.div`
   margin-bottom: 1rem;
 `;
 
+export const ProjectFeatures = styled.div`
+  margin: 12px 0;
+`;
+
 export const FeaturesChip = styled.span`
   display: inline-block;
   padding: 0.3rem 0.75rem;

@@ -93,6 +93,34 @@ function Test-AllDepsDone([array]$deps) {
   return $true
 }
 
+function Get-NormalizedDeps {
+  param($deps)
+
+  $normalized = New-Object 'System.Collections.Generic.List[string]'
+
+  if ($null -eq $deps) { return ,$normalized.ToArray() }
+
+  foreach ($item in @($deps)) {
+    if ($null -eq $item) { continue }
+    if ($item -is [string]) {
+      if ([string]::IsNullOrWhiteSpace($item)) { continue }
+      [void]$normalized.Add($item)
+      continue
+    }
+
+    if ($null -ne $item.PSObject -and $item.PSObject.Properties.Count -eq 0) {
+      continue
+    }
+
+    $text = [string]$item
+    if (-not [string]::IsNullOrWhiteSpace($text)) {
+      [void]$normalized.Add($text)
+    }
+  }
+
+  return ,$normalized.ToArray()
+}
+
 # Returns tasks that become READY after $completedId moves to done
 function Get-Unlocked([string]$completedId) {
   $donePlusThis = @(@($tasks | Where-Object { $_.status -eq "done" } | ForEach-Object { $_.taskId }) + @($completedId))
@@ -230,7 +258,7 @@ Write-Host ""
 if ($ShowAll -or ($TaskId -eq "" -and -not $ShowAll)) {
   $readyTasks = @($tasks | Where-Object {
     ($_.status -eq "queued" -or $_.status -eq "retrying") -and
-    (Test-AllDepsDone @($_.dependsOn))
+    (Test-AllDepsDone (Get-NormalizedDeps $_.dependsOn))
   })
   if ($TaskId -eq "" -and -not $ShowAll) {
     # Auto-detect: find most recently done task
@@ -285,7 +313,7 @@ $unlocked = Get-Unlocked -completedId $TaskId
 $sameReady = @($tasks | Where-Object {
   ($_.status -eq "queued" -or $_.status -eq "retrying") -and
   $_.lane -eq $sourceTask.lane -and
-  (Test-AllDepsDone @($_.dependsOn))
+  (Test-AllDepsDone (Get-NormalizedDeps $_.dependsOn))
 })
 
 if ($unlocked.Count -eq 0 -and $sameReady.Count -eq 0) {
@@ -294,7 +322,7 @@ if ($unlocked.Count -eq 0 -and $sameReady.Count -eq 0) {
   Write-Host ""
   Write-Host ("  Currently READY in all lanes:") -ForegroundColor White
   $allReady = @($tasks | Where-Object {
-    ($_.status -eq "queued") -and (Test-AllDepsDone @($_.dependsOn))
+    ($_.status -eq "queued") -and (Test-AllDepsDone (Get-NormalizedDeps $_.dependsOn))
   })
   foreach ($rt in $allReady) {
     Write-Host ("    {0,-7} {1}" -f $rt.taskId, $rt.agent) -ForegroundColor DarkGray

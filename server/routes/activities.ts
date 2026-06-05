@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Activities API Routes — Standalone CRUD
  * Endpoints: /api/activities

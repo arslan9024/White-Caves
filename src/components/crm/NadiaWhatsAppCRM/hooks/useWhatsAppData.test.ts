@@ -9,6 +9,24 @@
 import { describe, it, expect, vi, beforeAll, beforeEach, afterAll } from 'vitest';
 import { renderHook, act, waitFor } from '@testing-library/react';
 
+const mockAuthFetch = vi.fn();
+
+function buildResponse({
+  ok = true,
+  status = 200,
+  data,
+}: {
+  ok?: boolean;
+  status?: number;
+  data?: unknown;
+}) {
+  return {
+    ok,
+    status,
+    json: () => Promise.resolve({ data }),
+  };
+}
+
 // ── Mock external data ───────────────────────────────────────────
 const MOCK_CONVERSATIONS = [
   {
@@ -61,58 +79,7 @@ const MOCK_FEATURES = [
 // Mock authFetch — return NadiaConversationApiItem-shaped data that maps to expected Conversation objects.
 // customerPhone is used as both name and phone by mapNadiaConversation, so include searchable text in it.
 vi.mock('../../../../utils/authFetch', () => ({
-  authFetch: vi.fn().mockImplementation(() =>
-    Promise.resolve({
-      json: () =>
-        Promise.resolve({
-          data: [
-            {
-              id: 'conv-1',
-              customerPhone: 'Ahmed Khan',
-              status: 'open',
-              intent: 'buyer',
-              leadScore: 75,
-              updatedAt: new Date().toISOString(),
-              messages: [
-                {
-                  id: '1',
-                  direction: 'inbound',
-                  body: 'Hello',
-                  status: 'read',
-                  timestamp: new Date().toISOString(),
-                },
-              ],
-            },
-            {
-              id: 'conv-2',
-              customerPhone: 'Sara Ali +971509876543',
-              status: 'open',
-              intent: 'seller',
-              leadScore: 50,
-              updatedAt: new Date().toISOString(),
-              messages: [
-                {
-                  id: '2',
-                  direction: 'outbound',
-                  body: 'Hi Sara',
-                  status: 'delivered',
-                  timestamp: new Date().toISOString(),
-                },
-              ],
-            },
-            {
-              id: 'conv-3',
-              customerPhone: 'John Smith',
-              status: 'open',
-              intent: null,
-              leadScore: 20,
-              updatedAt: new Date().toISOString(),
-              messages: [],
-            },
-          ],
-        }),
-    })
-  ),
+  authFetch: (...args: unknown[]) => mockAuthFetch(...args),
 }));
 
 vi.mock('../data/conversations', () => ({
@@ -176,6 +143,55 @@ describe('useWhatsAppData', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
+    mockAuthFetch.mockResolvedValue(
+      buildResponse({
+        data: [
+          {
+            id: 'conv-1',
+            customerPhone: 'Ahmed Khan',
+            status: 'open',
+            intent: 'buyer',
+            leadScore: 75,
+            updatedAt: new Date().toISOString(),
+            messages: [
+              {
+                id: '1',
+                direction: 'inbound',
+                body: 'Hello',
+                status: 'read',
+                timestamp: new Date().toISOString(),
+              },
+            ],
+          },
+          {
+            id: 'conv-2',
+            customerPhone: 'Sara Ali +971509876543',
+            status: 'open',
+            intent: 'seller',
+            leadScore: 50,
+            updatedAt: new Date().toISOString(),
+            messages: [
+              {
+                id: '2',
+                direction: 'outbound',
+                body: 'Hi Sara',
+                status: 'delivered',
+                timestamp: new Date().toISOString(),
+              },
+            ],
+          },
+          {
+            id: 'conv-3',
+            customerPhone: 'John Smith',
+            status: 'open',
+            intent: null,
+            leadScore: 20,
+            updatedAt: new Date().toISOString(),
+            messages: [],
+          },
+        ],
+      })
+    );
   });
 
   afterAll(() => {
@@ -512,6 +528,50 @@ describe('useWhatsAppData', () => {
       unmount();
       expect(clearTimeoutSpy).toHaveBeenCalled();
       clearTimeoutSpy.mockRestore();
+    });
+  });
+
+  describe('error handling', () => {
+    it('exposes a normalized error when the API returns a non-ok response', async () => {
+      mockAuthFetch.mockResolvedValueOnce(buildResponse({ ok: false, status: 503, data: [] }));
+
+      const { result } = renderHook(() => useWhatsAppData());
+
+      await waitFor(() => expect(result.current.loading).toBe(false));
+      expect(result.current.error).toBe('Failed to fetch Nadia conversations (503)');
+      expect(result.current.conversations).toHaveLength(0);
+    });
+
+    it('reloads conversations when refreshConversations is called', async () => {
+      const reloadedData = [
+        {
+          id: 'conv-4',
+          customerPhone: 'Reloaded Lead',
+          status: 'open',
+          intent: 'buyer',
+          leadScore: 88,
+          updatedAt: new Date().toISOString(),
+          messages: [],
+        },
+      ];
+
+      mockAuthFetch
+        .mockResolvedValueOnce(buildResponse({ data: [] }))
+        .mockResolvedValueOnce(buildResponse({ data: reloadedData }));
+
+      const { result } = renderHook(() => useWhatsAppData());
+
+      await waitFor(() => expect(result.current.loading).toBe(false));
+      expect(result.current.conversations).toHaveLength(0);
+
+      act(() => {
+        result.current.refreshConversations();
+      });
+
+      await waitFor(() => expect(result.current.conversations).toHaveLength(1));
+      expect(mockAuthFetch).toHaveBeenCalledTimes(2);
+      expect(result.current.error).toBeNull();
+      expect(result.current.conversations[0].contact.name).toBe('Reloaded Lead');
     });
   });
 });

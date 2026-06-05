@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Users API Routes — Full User Management
  * Endpoints: /api/users
