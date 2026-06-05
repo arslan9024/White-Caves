@@ -54,7 +54,7 @@ router.post('/queue/tasks', requireAuth, (req: Request, res: Response) => {
  * Get task status
  */
 router.get('/queue/tasks/:taskId', requireAuth, (req: Request, res: Response) => {
-  const { taskId } = req.params;
+  const { taskId } = req.params as Record<string, string>;
   const task = queueService.getTaskStatus(taskId);
 
   if (!task) {
@@ -86,7 +86,7 @@ router.get('/queue/dlq', requireAuth, (req: Request, res: Response) => {
  * Retry task from DLQ
  */
 router.post('/queue/dlq/:taskId/retry', requireAuth, async (req: Request, res: Response) => {
-  const { taskId } = req.params;
+  const { taskId } = req.params as Record<string, string>;
   const success = await queueService.retryFromDLQ(taskId);
 
   if (!success) {
@@ -125,7 +125,7 @@ router.get('/analytics/dashboard', requireAuth, (req: Request, res: Response) =>
  * Get user analytics
  */
 router.get('/analytics/users/:userId', requireAuth, (req: Request, res: Response) => {
-  const { userId } = req.params;
+  const { userId } = req.params as Record<string, string>;
   const analytics = analyticsService.getUserAnalytics(userId);
 
   if (!analytics) {
@@ -139,7 +139,7 @@ router.get('/analytics/users/:userId', requireAuth, (req: Request, res: Response
  * Get user behavior patterns
  */
 router.get('/analytics/users/:userId/patterns', requireAuth, (req: Request, res: Response) => {
-  const { userId } = req.params;
+  const { userId } = req.params as Record<string, string>;
   const patterns = analyticsService.getUserBehaviorPatterns(userId);
 
   res.json(patterns);
@@ -149,7 +149,7 @@ router.get('/analytics/users/:userId/patterns', requireAuth, (req: Request, res:
  * Get analytics by time range
  */
 router.get('/analytics/range', requireAuth, (req: Request, res: Response) => {
-  const { startDate, endDate } = req.query;
+  const { startDate, endDate } = req.query as Record<string, string | undefined>;
 
   if (!startDate || !endDate) {
     return res.status(400).json({ error: 'Start and end dates are required' });
@@ -217,7 +217,7 @@ router.put('/notifications/preferences', requireAuth, (req: Request, res: Respon
  * Get notification log
  */
 router.get('/notifications/log', requireAuth, (req: Request, res: Response) => {
-  const { limit = 50 } = req.query;
+  const { limit = 50 } = req.query as Record<string, string | undefined>;
   const logs = notificationService.getNotificationLog((req as any).userId, Number(limit));
 
   res.json({ notifications: logs, count: logs.length });
@@ -251,7 +251,7 @@ router.post('/encryption/keys/generate', requireAuth, (req: Request, res: Respon
  * Get user public key
  */
 router.get('/encryption/keys/public/:userId', (req: Request, res: Response) => {
-  const { userId } = req.params;
+  const { userId } = req.params as Record<string, string>;
   const publicKey = encryptionService.getUserPublicKey(userId);
 
   if (!publicKey) {
@@ -329,7 +329,7 @@ router.post('/presence/update', requireAuth, (req: Request, res: Response) => {
  * Get user presence
  */
 router.get('/presence/:userId', (req: Request, res: Response) => {
-  const { userId } = req.params;
+  const { userId } = req.params as Record<string, string>;
   const presence = presenceService.getPresence(userId);
 
   if (!presence) {
@@ -351,7 +351,7 @@ router.get('/presence', (req: Request, res: Response) => {
  * Get users in conversation
  */
 router.get('/presence/conversations/:conversationId', (req: Request, res: Response) => {
-  const { conversationId } = req.params;
+  const { conversationId } = req.params as Record<string, string>;
   const users = presenceService.getUsersInConversation(conversationId);
 
   res.json({ users, count: users.length });
@@ -369,7 +369,7 @@ router.get('/sync/state', requireAuth, (req: Request, res: Response) => {
  * Get changes since sync
  */
 router.get('/sync/changes', requireAuth, (req: Request, res: Response) => {
-  const { lastSyncTime } = req.query;
+  const { lastSyncTime } = req.query as Record<string, string | undefined>;
 
   if (!lastSyncTime) {
     return res.status(400).json({ error: 'Last sync time is required' });
@@ -387,8 +387,8 @@ router.get('/sync/changes', requireAuth, (req: Request, res: Response) => {
  * Get presence history
  */
 router.get('/presence/:userId/history', requireAuth, (req: Request, res: Response) => {
-  const { userId } = req.params;
-  const { hoursBack = 24 } = req.query;
+  const { userId } = req.params as Record<string, string>;
+  const { hoursBack = 24 } = req.query as Record<string, string | undefined>;
 
   const history = presenceService.getPresenceHistory(userId, Number(hoursBack));
 
@@ -399,7 +399,7 @@ router.get('/presence/:userId/history', requireAuth, (req: Request, res: Respons
  * Get presence analytics
  */
 router.get('/presence/analytics/summary', requireAuth, (req: Request, res: Response) => {
-  const { hoursBack = 24 } = req.query;
+  const { hoursBack = 24 } = req.query as Record<string, string | undefined>;
 
   const analytics = presenceService.getPresenceAnalytics(Number(hoursBack));
 

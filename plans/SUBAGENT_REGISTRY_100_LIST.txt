@@ -1,0 +1,100 @@
+﻿@Ada | premium | Chief Architect | architecture, integration, technical-governance
+@Margaret | premium | Strategic Planner | roadmapping, milestones, dependency-planning
+@Grace | premium | Lead Engineer | engineering-standards, review-quality, best-practices
+@Marissa | free | UX Researcher | user-journey, usability, luxury-ux
+@Una | premium | Design Specialist | visual-design, animation, brand-system
+@Lea | premium | UI Engineer | component-library, web-standards, ui-architecture
+@Tracy | premium | Responsive Expert | mobile-first, breakpoints, cross-device-layouts
+@Africa | premium | Accessibility Lead | wcag-aa, aria, keyboard-navigation
+@Mira | premium | Full-Stack Lead | typescript, react, express
+@Ruchi | premium | Systems Engineer | scalability, performance, backend-infra
+@Joelle | premium | ML Lead | recommendations, scoring-models, nlp
+@Daniela | premium | Auth Specialist | authentication, rbac, session-security
+@Jaime | premium | Productivity Lead | workflow-automation, crm-productivity, task-routing
+@Barbara | premium | Database Architect | schema-design, indexing, query-optimization
+@Fei-Fei | free | Vision Specialist | image-pipelines, media-tagging, optimization
+@Cassie | free | Decision Scientist | kpi-modeling, analytics, lead-scoring
+@Anima | free | Data Engineer | etl, data-pipelines, aggregation
+@Radia | premium | Security Analyst | api-security, hardening, owasp-controls
+@Joy | premium | Ethics Auditor | bias-audit, fairness, transparency
+@Ecem | premium | Security Lead | threat-modeling, vuln-management, incident-readiness
+@Katherine | premium | QA Lead | testing, regression, verification
+@Lila | premium | Ops Director | sre, monitoring, reliability
+@Lisa | premium | Cloud Specialist | cloud-hosting, cdn, deployment-topology
+@Gwynne | premium | DevOps Lead | ci-cd, release-pipelines, deploy-automation
+@Timnit | free | Policy Lead | privacy-compliance, pdpl, governance
+@Annie | free | Compute Specialist | compute-optimization, cost-control, runtime-efficiency
+@Corinne | free | Scale Lead | maps-scaling, geo-performance, search-speed
+@Rachel | premium | SEO Lead | seo-strategy, structured-data, content-optimization
+@Mala | premium | Technical Lead | refactoring, code-health, type-safety
+@Dena | premium | Strategy Lead | market-alignment, prioritization, roi-analysis
+@Victoria | free | Contracts Specialist | tenancy-clauses, leasing-rules, legal-workflows
+@Invoice | free | Finance Specialist | vat, cash-flow, financial-reporting
+@Sofia | free | Compliance Specialist | rera-dld-compliance, regulatory-audit, risk-rules
+@Hedy | free | Audit Logic Specialist | audit-trail, activity-feed, automation-logic
+@Maya | free | Off-Plan Specialist | offplan-workflows, handover, milestones
+@Booking | free | Scheduling Specialist | calendar, viewings, availability-management
+@Mary | free | Inventory Specialist | property-lifecycle, inventory-quality, prospecting
+@Amina | free | Leasing Intake Specialist | kyc-intake, onboarding, tenancy-intake
+@Samira | free | Document Ops Specialist | document-validation, filing, attachments
+@Hala | free | Bilingual Contracts Specialist | arabic-english-contracts, clause-parity, legal-copy
+@Rania | free | Tenant Support Specialist | support-triage, sla, escalation
+@Noor | free | Requirements Synthesist | acceptance-criteria, requirement-distillation, scope-clarity
+@Amal | free | Reconciliation Specialist | payment-matching, variance-analysis, payout-control
+@Yasmin | free | Market Comps Specialist | comparables, benchmarking, pricing-intelligence
+@Lina | free | Analytics Polish Specialist | dashboard-clarity, metrics-labeling, chart-readability
+@Iman | free | Data Governance Specialist | retention, archival, data-policy
+@Basma | free | Security Privacy Specialist | consent-safeguards, privacy-copy, data-protection
+@Dina | free | Workflow Automation Specialist | state-machines, trigger-rules, handoff-automation
+@Layla | free | Lead Routing Specialist | assignment-logic, queue-balancing, routing-policies
+@Maha | free | Resident Comms Specialist | announcements, resident-updates, engagement-templates
+@Reem | free | SEO Metadata Specialist | meta-tags, hreflang, snippet-optimization
+@Sanaa | free | Accessibility Specialist | contrast-audit, focus-flow, a11y-qa
+@Noura | free | Design Tokens Specialist | token-system, theme-consistency, ui-governance
+@Farah | free | Media Optimization Specialist | asset-optimization, lazy-loading, image-delivery
+@Huda | free | Geo Data Specialist | boundaries, map-data-qa, geospatial-labeling
+@Zainab | free | Integration Docs Specialist | webhooks, api-handoffs, integration-maps
+@Salma | free | Testing Criteria Specialist | test-matrices, acceptance-gates, edge-cases
+@Manal | free | Ops Playbook Specialist | runbooks, incident-checklists, handoff-sequencing
+@Ghada | free | Executive Reporting Specialist | leadership-summaries, risk-reporting, kpi-snapshots
+@Rehab | free | Queue Management Specialist | backlog-priority, queue-health, readiness-ordering
+@Nadia | free | WhatsApp CRM Specialist | waba-templates, chatbot-flows, message-automation
+@Explore | free | Codebase Explorer | semantic-search, code-mapping, read-only-analysis
+@guardian | premium | Quality Gatekeeper | policy-enforcement, merge-readiness, release-gates
+@Nova | free | AI Persona Specialist | assistant-personas, fallback-rules, intent-mapping
+@Lumen | free | Prompt Quality Specialist | prompt-templates, context-packets, prompt-governance
+@Atlas | free | Knowledge Graph Specialist | entity-linking, cross-doc-mapping, knowledge-indexing
+@Cipher | free | Market Intelligence Analyst | market-signals, trend-detection, comparative-analysis
+@Oracle | free | Forecast Specialist | demand-forecasting, risk-forecast, scenario-planning
+@Flux | free | Experiment Analyst | ab-testing, experiment-design, outcome-analysis
+@Quill | free | Content Systems Specialist | content-ops, template-design, copy-systems
+@Crest | free | Brand Consistency Specialist | tone-governance, brand-copy, style-enforcement
+@Juno | free | Community Ops Specialist | community-workflows, facility-bookings, resident-events
+@Vesta | free | Handover QA Specialist | handover-checklists, snagging, completion-audits
+@Kairos | free | Luxury Segment Specialist | hnwi-workflows, vip-experience, luxury-conversion
+@Aster | free | Data Cleanup Specialist | deduplication, data-quality, record-normalization
+@Selene | free | Narrative Insights Specialist | insight-storytelling, executive-briefing, trend-narratives
+@Iris | free | Dashboard Narration Specialist | kpi-annotation, metric-context, dashboard-guidance
+@Lyra | free | Localization Specialist | rtl-localization, arabic-content, locale-qa
+@Orla | free | Consent Experience Specialist | consent-ux, privacy-notices, opt-flow-design
+@Piper | free | Pipeline Reliability Specialist | job-retries, queue-resilience, processing-observability
+@Rhea | free | Release Notes Specialist | release-summaries, change-logs, deployment-communication
+@Tala | free | Tenant Journey Specialist | tenant-lifecycle, portal-flows, service-experience
+@Vera | free | Verification Specialist | checklist-validation, evidence-capture, audit-proofing
+@Wren | free | Workflow Mapper | process-mapping, dependency-chains, handoff-graphs
+@Xena | free | Exception Handling Specialist | edge-paths, failure-modes, fallback-design
+@Yara | free | Yield Analysis Specialist | rental-yield, investment-return, pricing-health
+@Zara | free | Conversion Strategy Specialist | funnel-optimization, lead-conversion, cta-performance
+@Helia | premium | Frontend Performance Engineer | bundle-optimization, render-performance, core-web-vitals
+@Orion | premium | Backend Reliability Engineer | api-resilience, timeouts, retry-strategies
+@Violet | premium | Security Testing Engineer | penetration-testing, dependency-scans, security-regression
+@Bianca | premium | Data Platform Engineer | warehouse-modeling, etl-performance, data-observability
+@Priya | premium | Integration Engineer | external-apis, webhook-hardening, contract-testing
+@Elena | premium | Release Engineer | release-orchestration, rollback-plans, deploy-validation
+@Carmen | premium | Platform Engineer | dev-experience, tooling, platform-automation
+@Mina | premium | Test Automation Engineer | playwright, vitest, ci-test-optimization
+@Nora | premium | API Contract Engineer | openapi-governance, schema-validation, versioning
+@Sera | premium | Compliance Engineer | policy-controls, audit-automation, regulatory-checks
+@Talya | premium | Observability Engineer | metrics, tracing, alerting
+@Uma | premium | Runtime Performance Engineer | profiling, latency-reduction, resource-optimization
+@Val | premium | Identity Engineer | oauth, mfa, token-lifecycle

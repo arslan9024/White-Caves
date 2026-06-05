@@ -1,10 +1,9 @@
 import React, { FC, useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { useDispatch, useSelector } from 'react-redux';
-import type { RootState } from '../../store/store';
-import { setUser } from '../../store/userSlice';
+import { useDispatch } from 'react-redux';
 import { createLogger } from '../../utils/logger';
 import { authFetch } from '../../utils/authFetch';
+import { finalizeAuthenticatedSession, navigateToPostLoginDestination } from '../../utils/authSession';
 import './AuthPages.css';
 
 const log = createLogger('UAEPassSuccess');
@@ -24,7 +23,6 @@ const UAEPassSuccessPage: FC = () => {
   const [userData, setUserData] = useState<UserData | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string>('');
-  const user = useSelector((state: RootState) => state.user.currentUser);
   const navTimerRef = useRef<ReturnType<typeof setTimeout>>();
   const isMountedRef = useRef(true);
 
@@ -73,14 +71,20 @@ const UAEPassSuccessPage: FC = () => {
         }
         if (!isMountedRef.current) return;
         setUserData(data.user);
-        
-        // Update redux store with user data using proper action creator
-        dispatch(setUser({
-          id: data.user.uaeId || data.user.email || '',
-          email: data.user.email || '',
-          name: data.user.name,
-          phone: data.user.phone,
-        }));
+
+        const destination = finalizeAuthenticatedSession({
+          dispatch,
+          user: {
+            id: data.user.uaeId || data.user.id || data.user.email || '',
+            email: data.user.email || '',
+            name: data.user.name,
+            phone: data.user.phone,
+            role: data.user.role,
+            status: data.user.status,
+          },
+          token: data?.token || data?.data?.token || null,
+          provider: 'uae-pass',
+        });
 
         // Wait a moment to show success message, then redirect
         navTimerRef.current = setTimeout(() => {

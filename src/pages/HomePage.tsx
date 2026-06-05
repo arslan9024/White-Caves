@@ -1,6 +1,5 @@
 import React, { FC, lazy, Suspense, useEffect, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useSEO, getCanonicalUrl } from '../hooks/useSEO';
 import { setProperties, type Property } from '../store/propertySlice';
 import {
   clearError,
@@ -11,13 +10,17 @@ import {
   selectLocationTrends,
   selectFeaturedProperties,
   selectIsHomepageLoading,
+  selectHomepageError,
   type HomepageProperty,
 } from '../store/slices/homepageSlice';
 import type { AppDispatch } from '../store/store';
 import { buildHomepageJsonLd } from './homepageSeo';
+import { Config } from '../config/constants';
 import ClickToChat from '../components/ClickToChat';
 import RoleSelectionModal from '../components/RoleSelectionModal';
 import PublicLayout from '../components/layout/PublicLayout';
+import PageMeta from '../components/seo/PageMeta';
+import StructuredData from '../components/seo/StructuredData';
 import { useRecentlyViewed } from '../components/RecentlyViewed';
 import { HOME_PROPERTIES } from '../data/homeProperties';
 import './HomePage.css';
@@ -108,16 +111,22 @@ const HomePage: FC = () => {
     [featuredProperties]
   );
 
-  useSEO({
-    title: 'White Caves Real Estate — Dubai Luxury Properties',
-    description:
-      'Explore premium villas, penthouses, and investment-ready properties in Dubai with White Caves Real Estate. RERA-licensed agency serving luxury buyers and investors.',
-    keywords: [
-      'Dubai real estate',
-      'luxury properties Dubai',
-      'White Caves Real Estate',
-      'Dubai villas',
-      'RERA licensed',
+  const homepageJsonLd = useMemo(
+    () =>
+      buildHomepageJsonLd({
+        marketStats,
+        featuredProperties,
+        topAgents,
+        locationTrends,
+      }),
+    [marketStats, featuredProperties, topAgents, locationTrends]
+  );
+  const trustHighlights = useMemo(
+    () => [
+      { label: 'Active Listings', value: marketStats.availableProperties.toLocaleString('en-US') },
+      { label: 'Average Price', value: `AED ${Math.round(marketStats.averagePrice).toLocaleString('en-US')}` },
+      { label: 'Top Agents', value: String(topAgents.length || 0) },
+      { label: 'Popular Areas', value: String(locationTrends.length || 0) },
     ],
     canonicalUrl: getCanonicalUrl('/'),
     ogType: 'website',
@@ -129,7 +138,8 @@ const HomePage: FC = () => {
       topAgents,
       locationTrends,
     }),
-  });
+    []
+  );
   const { addToRecent } = useRecentlyViewed();
 
   const handlePropertyClick = (propertyId: number): void => {
@@ -168,6 +178,24 @@ const HomePage: FC = () => {
 
         {/* Phase 25: Hero is the LCP element — NOT wrapped in Suspense so it renders on first paint */}
         <Hero marketStats={marketStats} isLoading={isHomepageLoading} />
+        {homepageError && (
+          <section className="home-page__status" aria-live="polite">
+            <div className="home-page__status-card" role="status">
+              <strong>Live data temporarily limited.</strong>
+              Showing trusted fallback market data while connection recovers.
+            </div>
+          </section>
+        )}
+        <section className="home-page__trust-strip" aria-label="Market trust highlights">
+          <div className="home-page__trust-grid">
+            {trustHighlights.map(item => (
+              <article key={item.label} className="home-page__trust-card">
+                <span className="home-page__trust-label">{item.label}</span>
+                <span className="home-page__trust-value">{item.value}</span>
+              </article>
+            ))}
+          </div>
+        </section>
 
         {/* Above-fold companions lazy-loaded so they don't delay Hero render */}
         <Suspense fallback={<SectionLoader />}>

@@ -1,63 +1,11 @@
-import React, { lazy, Suspense, useMemo } from 'react';
+import React, { Suspense, useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import { selectCurrentAssistant } from '../../store/slices/aiAssistantDashboardSlice';
 import { selectActiveFeatureTab } from '../../store/slices/dashboardViewSlice';
 import { getFeatureById } from '../../config/assistantFeatures';
+import { getCRMModule } from '../../config/crmModuleRegistry';
 import GenericFeatureView from './ui/GenericFeatureView';
 import './FeatureRenderer.css';
-
-const ZoeExecutiveCRM = lazy(() => import('./ZoeExecutiveCRM'));
-const MaryInventoryCRM = lazy(() => import('./MaryInventoryCRM'));
-const ClaraLeadsCRM = lazy(() => import('./ClaraLeadsCRM'));
-const LindaWhatsAppCRM = lazy(() => import('./LindaWhatsAppCRM'));
-const NinaWhatsAppBotCRM = lazy(() => import('./NinaWhatsAppBotCRM'));
-const SophiaSalesCRM = lazy(() => import('./SophiaSalesCRM'));
-const NancyHRCRM = lazy(() => import('./NancyHRCRM'));
-const DaisyLeasingCRM = lazy(() => import('./DaisyLeasingCRM'));
-const TheodoraFinanceCRM = lazy(() => import('./TheodoraFinanceCRM'));
-const OliviaMarketingCRM = lazy(() => import('./OliviaMarketingCRM'));
-const LailaComplianceCRM = lazy(() => import('./LailaComplianceCRM'));
-const AuroraCTODashboard = lazy(() => import('./AuroraCTODashboard'));
-const HazelFrontendCRM = lazy(() => import('./HazelFrontendCRM'));
-const WillowBackendCRM = lazy(() => import('./WillowBackendCRM'));
-const EvangelineLegalCRM = lazy(() => import('./EvangelineLegalCRM'));
-const SentinelPropertyCRM = lazy(() => import('./SentinelPropertyCRM'));
-const HunterProspectingCRM = lazy(() => import('./HunterProspectingCRM'));
-const HenryAuditCRM = lazy(() => import('./HenryAuditCRM'));
-const CipherMarketCRM = lazy(() => import('./CipherMarketCRM'));
-const AtlasProjectsCRM = lazy(() => import('./AtlasProjectsCRM'));
-const VestaHandoverCRM = lazy(() => import('./VestaHandoverCRM'));
-const JunoCommunity = lazy(() => import('./JunoCommunity'));
-const KairosLuxuryCRM = lazy(() => import('./KairosLuxuryCRM'));
-const MavenInvestmentCRM = lazy(() => import('./MavenInvestmentCRM'));
-
-const ASSISTANT_CRM_MAP = {
-  zoe: ZoeExecutiveCRM,
-  mary: MaryInventoryCRM,
-  clara: ClaraLeadsCRM,
-  linda: LindaWhatsAppCRM,
-  nina: NinaWhatsAppBotCRM,
-  sophia: SophiaSalesCRM,
-  nancy: NancyHRCRM,
-  daisy: DaisyLeasingCRM,
-  theodora: TheodoraFinanceCRM,
-  olivia: OliviaMarketingCRM,
-  laila: LailaComplianceCRM,
-  aurora: AuroraCTODashboard,
-  hazel: HazelFrontendCRM,
-  willow: WillowBackendCRM,
-  evangeline: EvangelineLegalCRM,
-  sentinel: SentinelPropertyCRM,
-  hunter: HunterProspectingCRM,
-  henry: HenryAuditCRM,
-  cipher: CipherMarketCRM,
-  atlas: AtlasProjectsCRM,
-  vesta: VestaHandoverCRM,
-  juno: JunoCommunity,
-  kairos: KairosLuxuryCRM,
-  maven: MavenInvestmentCRM
-};
-
 const LoadingFallback = () => (
   <div className="feature-loading">
     <div className="loading-spinner" />
@@ -68,10 +16,10 @@ const LoadingFallback = () => (
 const FeatureRenderer = ({ assistantId: propAssistantId, featureId: propFeatureId }) => {
   const currentAssistant = useSelector(selectCurrentAssistant);
   const activeFeatureTab = useSelector(selectActiveFeatureTab);
-  
+
   const assistantId = propAssistantId || currentAssistant?.id;
   const featureId = propFeatureId || activeFeatureTab || 'dashboard';
-  
+
   const feature = useMemo(() => {
     if (!assistantId) return null;
     return getFeatureById(assistantId, featureId);
@@ -89,9 +37,10 @@ const FeatureRenderer = ({ assistantId: propAssistantId, featureId: propFeatureI
       );
     }
 
-    const CRMComponent = ASSISTANT_CRM_MAP[assistantId];
-    
-    if (CRMComponent) {
+    const moduleDef = getCRMModule(assistantId);
+
+    if (moduleDef?.Component) {
+      const CRMComponent = moduleDef.Component;
       return (
         <Suspense fallback={<LoadingFallback />}>
           <CRMComponent activeFeature={featureId} />

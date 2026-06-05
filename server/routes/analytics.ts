@@ -42,7 +42,7 @@ router.get('/overview', requirePermission('view_analytics'), asyncHandler(async 
 // ── Price Per Sqft Trends ───────────────────────────────────────────────
 
 router.get('/trends', requirePermission('view_analytics'), asyncHandler(async (req: Request, res: Response) => {
-  const { area, type, days } = req.query;
+  const { area, type, days } = req.query as Record<string, string | undefined>;
 
   const trends = await getPriceTrends({
     area: area as string | undefined,
@@ -64,7 +64,7 @@ router.get('/trends', requirePermission('view_analytics'), asyncHandler(async (r
 // ── Rental Yields ───────────────────────────────────────────────────────
 
 router.get('/yields', requirePermission('view_analytics'), asyncHandler(async (req: Request, res: Response) => {
-  const { area, type } = req.query;
+  const { area, type } = req.query as Record<string, string | undefined>;
 
   const yields = await getRentalYields({
     area: area as string | undefined,
@@ -84,8 +84,8 @@ router.get('/yields', requirePermission('view_analytics'), asyncHandler(async (r
 // ── Comparable Properties ───────────────────────────────────────────────
 
 router.get('/comparables/:propertyId', requirePermission('view_leads'), asyncHandler(async (req: Request, res: Response) => {
-  const { propertyId } = req.params;
-  const { limit, priceRange, sizeRange } = req.query;
+  const { propertyId } = req.params as Record<string, string>;
+  const { limit, priceRange, sizeRange } = req.query as Record<string, string | undefined>;
 
   const comparables = await getComparables(propertyId, {
     limit: limit ? parseInt(limit as string, 10) : undefined,
@@ -106,7 +106,7 @@ router.get('/comparables/:propertyId', requirePermission('view_leads'), asyncHan
 // ── Demand Heatmap ──────────────────────────────────────────────────────
 
 router.get('/demand', requirePermission('view_analytics'), asyncHandler(async (req: Request, res: Response) => {
-  const { days } = req.query;
+  const { days } = req.query as Record<string, string | undefined>;
 
   const heatmap = await getDemandHeatmap({
     days: days ? parseInt(days as string, 10) : undefined,
@@ -124,7 +124,7 @@ router.get('/demand', requirePermission('view_analytics'), asyncHandler(async (r
 // ── Offer Spread ────────────────────────────────────────────────────────
 
 router.get('/offer-spread', requirePermission('view_analytics'), asyncHandler(async (req: Request, res: Response) => {
-  const { area, days } = req.query;
+  const { area, days } = req.query as Record<string, string | undefined>;
 
   const spreads = await getOfferSpread({
     area: area as string | undefined,

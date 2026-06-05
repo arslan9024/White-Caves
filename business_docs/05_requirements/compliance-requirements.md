@@ -132,7 +132,7 @@
 
 ### COMP-AML-001: Customer Due Diligence (CDD)
 
-**Regulation:** UAE Federal Decree Law No. 20 of 2018 (AML Law)  
+**Regulation:** UAE Federal Law No. 10 of 2025 (AML/CFT/CPF Law) — effective 14 December 2025; supersedes Federal Decree Law No. 20 of 2018  
 **Requirement:** CDD required for all real estate transactions. Includes identity verification, address verification, source of funds.  
 **Platform Impact:**
 
@@ -162,16 +162,16 @@
 - Compliance officer can raise SAR from any transaction record
 - SAR form captures: suspicion basis, transaction details, parties involved
 - SAR submissions logged in compliance audit trail
-- SAR records retained for 5 years
+- SAR records retained for 7 years (Law No. 10/2025, Art. 20)
 
 **Status:** Planned | **Priority:** High
 
 ### COMP-AML-004: Record Retention
 
-**Requirement:** All transaction records, KYC documents, and AML documentation must be retained for minimum 5 years.  
+**Requirement:** All transaction records, KYC documents, and AML documentation must be retained for **7 years** (updated under Law No. 10 of 2025; previous 5-year references in this document are superseded).  
 **Platform Impact:**
 
-- System prevents deletion of records within 5-year retention period
+- System prevents deletion of records within 7-year retention period
 - Retention expiry date calculated per record and stored
 - Automated retention report exportable for external audit
 - Archive storage strategy separates recent (hot) from old (cold) data
@@ -189,6 +189,20 @@
 - Screening result stored with timestamp on client record
 
 **Status:** Planned | **Priority:** High
+
+### COMP-AML-006: Proliferation Financing (CPF) Screening — New (Law 10/2025)
+
+**Regulation:** UAE Federal Law No. 10 of 2025 — effective 14 December 2025  
+**Requirement:** All clients and UBOs must be screened against UNSC Targeted Financial Sanctions (TFS) lists for proliferation-financing designations (WMD-related). This is a new obligation introduced by the 2025 law; non-compliance is a criminal offence.  
+**Platform Impact:**
+
+- TFS screening covers: UNSC 1267 (Al-Qaeda/ISIS), UNSC 1718 (DPRK), UNSC 1737 (Iran), UAE domestic designations
+- ComplyAdvantage API expands existing PEP/Sanctions call to include CPF lists
+- Any CPF TFS match: transaction immediately blocked, STR auto-draft generated
+- `client.proliferationScreeningResult` field added to client data model
+- Annual CPF risk assessment document maintained by Compliance Officer
+
+**Status:** Planned | **Priority:** Critical
 
 ---
 

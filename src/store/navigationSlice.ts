@@ -2,12 +2,37 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { safeStorage } from '../utils/safeStorage';
 import { logout } from './authSlice';
 
+interface NavigationNotification {
+  id?: string;
+  [key: string]: unknown;
+}
+
+interface NavigationState {
+  isOnline: boolean;
+  currentTime: string;
+  profileMenuOpen: boolean;
+  roleMenuOpen: boolean;
+  whatsappMenuOpen: boolean;
+  mobileMenuOpen: boolean;
+  activeRole: string | null;
+  theme: string;
+  language: string;
+  notifications: NavigationNotification[];
+  unreadNotifications: number;
+  currentModule: string | null;
+  currentSubModule: string | null;
+  sidebarCollapsed: boolean;
+  sidebarWidth: number;
+  activeNavItem: string;
+  implementationUpdates: NavigationNotification[];
+}
+
 const getInitialSidebarWidth = () => {
   const stored = localStorage.getItem('sidebarWidth');
   return stored ? parseInt(stored, 10) : 40;
 };
 
-const initialState = {
+const initialState: NavigationState = {
   isOnline: navigator.onLine,
   currentTime: new Date().toISOString(),
   profileMenuOpen: false,

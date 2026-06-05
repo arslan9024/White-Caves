@@ -6,12 +6,20 @@ import {
   FacebookAuthProvider, 
   OAuthProvider,
   EmailAuthProvider,
+  browserLocalPersistence,
+  browserSessionPersistence,
+  onAuthStateChanged,
+  sendEmailVerification,
+  sendPasswordResetEmail,
+  setPersistence,
   signInWithPopup,
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
   signOut as firebaseSignOut,
   RecaptchaVerifier,
   signInWithPhoneNumber,
+  updateEmail,
+  updatePassword,
   updateProfile,
   reauthenticateWithCredential,
   type Auth,
@@ -42,21 +50,21 @@ const firebaseConfig: FirebaseConfig = {
 };
 
 let app: FirebaseApp | null = null;
-// @ts-expect-error - auth is reassigned in init block and exported at bottom
-// eslint-disable-next-line prefer-const
-let auth: Auth | null = null;
+let authInstance: Auth | null = null;
 
 if (firebaseConfig.apiKey) {
   try {
     app = initializeApp(firebaseConfig);
-    auth = getAuth(app);
-    
+    authInstance = getAuth(app);
   } catch (error) {
-    
+    log.error('Failed to initialize Firebase app', error);
   }
 } else {
-  
+  log.warn('Firebase API key is missing; auth features are disabled.');
 }
+
+export const auth: Auth | null = authInstance;
+export const isFirebaseAuthConfigured = Boolean(authInstance);
 
 const googleProvider = new GoogleAuthProvider();
 const facebookProvider = new FacebookAuthProvider();
@@ -112,22 +120,22 @@ export const updateUserProfile = async (user: User, updates: { displayName?: str
   return await updateProfile(user, updates);
 };
 
-export const updateUserEmail = async (user, newEmail) => {
+export const updateUserEmail = async (user: User, newEmail: string) => {
   if (!auth) throw new Error('Firebase not initialized');
   return await updateEmail(user, newEmail);
 };
 
-export const updateUserPassword = async (user, newPassword) => {
+export const updateUserPassword = async (user: User, newPassword: string) => {
   if (!auth) throw new Error('Firebase not initialized');
   return await updatePassword(user, newPassword);
 };
 
-export const resetPassword = async (email) => {
+export const resetPassword = async (email: string) => {
   if (!auth) throw new Error('Firebase not initialized');
   return await sendPasswordResetEmail(auth, email);
 };
 
-export const verifyEmail = async (user) => {
+export const verifyEmail = async (user: User) => {
   if (!auth) throw new Error('Firebase not initialized');
   return await sendEmailVerification(user);
 };
@@ -138,7 +146,7 @@ export const setAuthPersistence = async (rememberMe = true) => {
   return await setPersistence(auth, persistence);
 };
 
-export const onAuthChange = (callback) => {
+export const onAuthChange = (callback: (user: User | null) => void) => {
   if (!auth) {
     
     return () => {};
@@ -146,7 +154,7 @@ export const onAuthChange = (callback) => {
   return onAuthStateChanged(auth, callback);
 };
 
-export const saveBiometricSession = (user, token) => {
+export const saveBiometricSession = (user: User, token: string) => {
   const sessionData = {
     user: {
       uid: user.uid,
@@ -165,5 +173,5 @@ export const clearBiometricSession = (): void => {
   safeStorage.remove('biometric_session');
 };
 
-export { auth, EmailAuthProvider, reauthenticateWithCredential };
+export { EmailAuthProvider, reauthenticateWithCredential };
 export default app;

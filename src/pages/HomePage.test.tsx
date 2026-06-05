@@ -134,6 +134,9 @@ vi.mock('../components/NewsletterSubscription', () => ({
 vi.mock('../components/OnboardingGateway', () => ({
   default: () => <div data-testid="onboarding">Onboarding</div>,
 }));
+vi.mock('../components/RoleSelectionModal', () => ({
+  default: () => <div data-testid="role-selection-modal">RoleSelectionModal</div>,
+}));
 
 vi.mock('../data/homeProperties', () => ({
   HOME_PROPERTIES: [
@@ -241,6 +244,22 @@ describe('HomePage', () => {
       renderPage();
       await waitFor(() => {
         expect(screen.getByTestId('click-to-chat')).toBeInTheDocument();
+      });
+    });
+
+    it('should render trust highlight cards', async () => {
+      renderPage();
+      await waitFor(() => {
+        expect(screen.getByText('Active Listings')).toBeInTheDocument();
+        expect(screen.getByText('Average Price')).toBeInTheDocument();
+      });
+    });
+
+    it('should show fallback status card when homepage data returns an error', async () => {
+      MOCK_HOMEPAGE_ERROR = 'Network error';
+      renderPage();
+      await waitFor(() => {
+        expect(screen.getByText(/Live data temporarily limited/i)).toBeInTheDocument();
       });
     });
   });

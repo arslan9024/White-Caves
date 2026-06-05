@@ -107,6 +107,12 @@ model Property {
   rentIndexRef        String? // RERA Rent Index reference (for rent increase calculations)
   furnished           Boolean @default(false) // affects max deposit calculation
 
+  // Verification evidence fields (P0-012)
+  verifiedAt        DateTime?  // when listing was verified
+  verifiedBy        String?    @db.ObjectId  // userId who verified
+  verificationNotes String?    // evidence notes
+  lastRefreshedAt   DateTime?  // when agent last confirmed details are current
+
   // Relations
   userId      String   @db.ObjectId
   user        User     @relation(fields: [userId], references: [id])
@@ -310,7 +316,12 @@ model NadiaConversation {
   routedAt    DateTime?
   closedAt    DateTime?
   closedReason String?  // why conversation closed
-  
+
+  // P0-017: CRM lead linkage (unique: one lead per conversation)
+  leadId           String?   @db.ObjectId @unique
+  convertedAt      DateTime? // when convert-to-lead was triggered
+  convertedByPhone String?   // agent phone who triggered conversion
+
   // Metadata
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
@@ -1208,10 +1219,16 @@ model HenryRecord {
   templateLabel    String                         // Human-readable template name
   fileName         String                         // Original file name
   recordPath       String                         // Relative path under uploads/henry/
+  departmentTag    String?                        // sales, leasing, finance, compliance, legal, operations
+  ownerUserId      String?  @db.ObjectId          // User primarily responsible for this record
+  ownerUserEmail   String?                        // Denormalized owner email for filtering/inspection
   unit             String?                        // Unit number / apartment
   community        String?                        // Community / building name
   tenantName       String?                        // For quick display without parsing JSON
   isDraft          Boolean  @default(false)
+  status           String   @default("draft")     // draft, pending_signature, signed, archived
+  signedAt         DateTime?                      // When all required signatures were completed
+  archivedAt       DateTime?                      // When moved to archived state
   copyNumber       Int      @default(1)
   documentSnapshot Json                           // Flat key-value snapshot of document fields at time of archive
                                                    // e.g. {landlordName, tenantName, annualRent, leaseStartDate, ...}
@@ -1222,6 +1239,11 @@ model HenryRecord {
   @@index([templateKey])
   @@index([community])
   @@index([tenantName])
+  @@index([departmentTag])
+  @@index([ownerUserId])
+  @@index([ownerUserEmail])
+  @@index([status])
+  @@index([signedAt])
   @@index([isDraft])
   @@index([createdBy])
   @@index([createdAt])
@@ -1513,3 +1535,35 @@ model RecruitmentMetric {
     @@index([snapshotDate])
     @@index([area])
   }
+
+// ─── CADENCE RULE ────────────────────────────────────────────────────────────
+
+model CadenceRule {
+  id              String    @id @default(auto()) @map("_id") @db.ObjectId
+  name            String
+  description     String?
+  isActive        Boolean   @default(true)
+  priority        Int       @default(0)
+
+  // Matching conditions (empty = match all)
+  leadTiers       String[]  // e.g. ["hot","warm"]
+  leadSources     String[]  // e.g. ["whatsapp","website"]
+  dealTypes       String[]  // e.g. ["sale","lease"]
+
+  // Channel sequence — JSON array of CadenceRuleStep
+  channelSequence Json
+
+  // Guard rails (times in HH:mm, GST = UTC+4)
+  quietHoursStart String?
+  quietHoursEnd   String?
+  dailyCapPerLead Int       @default(3)
+  cooldownHours   Int       @default(24)
+
+  createdById     String?   @db.ObjectId
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  @@index([isActive])
+  @@index([isActive, priority])
+  @@index([createdAt])
+}

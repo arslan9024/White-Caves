@@ -4,22 +4,14 @@
  * Routes: /owner/crm, /lion/crm
  */
 
-import React, { FC, memo, useState, useEffect, lazy, Suspense, useCallback } from 'react';
+import React, { FC, memo, useState, useEffect, Suspense, useCallback } from 'react';
 import ErrorBoundary from '../../components/ErrorBoundary';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import styled from 'styled-components';
 import { Badge } from '../../components/ui';
 import SuspenseLoader from '../../components/common/SuspenseLoader';
 import { useCRMHubData } from '../../hooks/crm/useCRMHubData';
-
-// Lazy-load CRM modules
-const ClaraLeadsCRM = lazy(() => import('../../components/crm/ClaraLeadsCRM_NEW'));
-const MaryInventoryCRM = lazy(() => import('../../components/crm/MaryInventoryCRM_NEW'));
-const SophiaSalesCRM = lazy(() => import('../../components/crm/SophiaSalesCRM_NEW'));
-const ZoeExecutiveCRM = lazy(() => import('../../components/crm/ZoeExecutiveCRM_NEW'));
-const TheodoraFinanceCRM = lazy(() => import('../../components/crm/TheodoraFinanceCRM_NEW'));
-const DaisyLeasingCRM = lazy(() => import('../../components/crm/DaisyLeasingCRM_NEW'));
-const NadiaWhatsAppCRM = lazy(() => import('../../components/crm/NadiaWhatsAppCRM'));
+import { CRM_HUB_MODULE_ORDER, resolveCRMModules } from '../../config/crmModuleRegistry';
 
 // ─── Types ──────────────────────────────────────────────────────────────
 
@@ -28,7 +20,7 @@ interface CRMModuleDef {
   label: string;
   icon: string;
   description: string;
-  Component: FC<Record<string, unknown>>;
+  Component: React.ComponentType<Record<string, unknown>>;
   color: string;
 }
 
@@ -253,12 +245,14 @@ interface CRMQuickActionsProps {
   leadManagementLabel: string;
   propertyPortfolioLabel: string;
   agentPerformanceLabel: string;
+  auditLogLabel: string;
   whatsappLabel: string;
   financeLabel: string;
   executiveLabel: string;
   onOpenLeads: () => void;
   onOpenProperties: () => void;
   onOpenAgents: () => void;
+  onOpenAuditLog: () => void;
   onOpenNadia: () => void;
   onOpenTheodora: () => void;
   onOpenZoe: () => void;
@@ -268,12 +262,14 @@ const CRMQuickActions = memo(function CRMQuickActions({
   leadManagementLabel,
   propertyPortfolioLabel,
   agentPerformanceLabel,
+  auditLogLabel,
   whatsappLabel,
   financeLabel,
   executiveLabel,
   onOpenLeads,
   onOpenProperties,
   onOpenAgents,
+  onOpenAuditLog,
   onOpenNadia,
   onOpenTheodora,
   onOpenZoe,
@@ -288,6 +284,9 @@ const CRMQuickActions = memo(function CRMQuickActions({
       </QuickAction>
       <QuickAction $color="#F59E0B" onClick={onOpenAgents}>
         👥 {agentPerformanceLabel}
+      </QuickAction>
+      <QuickAction $color="#0EA5E9" onClick={onOpenAuditLog}>
+        🧾 {auditLogLabel}
       </QuickAction>
       <QuickAction $color="#25D366" onClick={onOpenNadia}>
         💬 {whatsappLabel}
@@ -307,6 +306,7 @@ const CRM_HUB_COPY = {
     leadManagementLabel: 'Lead Management',
     propertyPortfolioLabel: 'Property Portfolio',
     agentPerformanceLabel: 'Agent Performance',
+    auditLogLabel: 'Audit Log',
     whatsappLabel: 'WhatsApp CRM',
     financeLabel: 'Finance & Commissions',
     executiveLabel: 'Executive View',
@@ -315,6 +315,7 @@ const CRM_HUB_COPY = {
     leadManagementLabel: 'إدارة العملاء المحتملين',
     propertyPortfolioLabel: 'محفظة العقارات',
     agentPerformanceLabel: 'أداء الوكلاء',
+    auditLogLabel: 'سجل التدقيق',
     whatsappLabel: 'واتساب CRM',
     financeLabel: 'المالية والعمولات',
     executiveLabel: 'الرؤية التنفيذية',
@@ -329,64 +330,14 @@ const getCRMHubLocale = (): keyof typeof CRM_HUB_COPY => {
 
 // ─── Module Definitions ─────────────────────────────────────────────────
 
-const CRM_MODULES: CRMModuleDef[] = [
-  {
-    id: 'clara',
-    label: 'Lead Management',
-    icon: '🎯',
-    description: 'Track prospects, score leads, manage pipeline',
-    Component: ClaraLeadsCRM,
-    color: '#3B82F6',
-  },
-  {
-    id: 'mary',
-    label: 'Property Inventory',
-    icon: '🏠',
-    description: 'Property listings, availability, owner tracking',
-    Component: MaryInventoryCRM,
-    color: '#10B981',
-  },
-  {
-    id: 'sophia',
-    label: 'Sales Pipeline',
-    icon: '💰',
-    description: 'Deals, pipeline stages, agent performance',
-    Component: SophiaSalesCRM,
-    color: '#F59E0B',
-  },
-  {
-    id: 'theodora',
-    label: 'Finance & Commissions',
-    icon: '📊',
-    description: 'Revenue tracking, commissions, payments',
-    Component: TheodoraFinanceCRM,
-    color: '#8B5CF6',
-  },
-  {
-    id: 'daisy',
-    label: 'Leasing Management',
-    icon: '📋',
-    description: 'Tenants, lease agreements, renewals',
-    Component: DaisyLeasingCRM,
-    color: '#EC4899',
-  },
-  {
-    id: 'nadia',
-    label: 'WhatsApp CRM',
-    icon: '💬',
-    description: 'WhatsApp conversations, templates, campaigns',
-    Component: NadiaWhatsAppCRM,
-    color: '#25D366',
-  },
-  {
-    id: 'zoe',
-    label: 'Executive Dashboard',
-    icon: '👑',
-    description: 'KPIs, compliance, strategic overview',
-    Component: ZoeExecutiveCRM,
-    color: '#E31E24',
-  },
-];
+const CRM_MODULES: CRMModuleDef[] = resolveCRMModules(CRM_HUB_MODULE_ORDER).map(module => ({
+  id: module.id,
+  label: module.label,
+  icon: module.icon,
+  description: module.description,
+  color: module.color,
+  Component: module.Component as React.ComponentType<Record<string, unknown>>,
+}));
 
 const formatTimeAgo = (timestamp: string) => {
   if (!timestamp) return 'Recently';
@@ -440,6 +391,7 @@ const CRMHubPage: FC = () => {
   const handleOpenLeads = useCallback(() => navigate('/owner/crm/leads'), [navigate]);
   const handleOpenProperties = useCallback(() => navigate('/owner/crm/properties'), [navigate]);
   const handleOpenAgents = useCallback(() => navigate('/owner/crm/agents'), [navigate]);
+  const handleOpenAuditLog = useCallback(() => navigate('/owner/crm/audit-log'), [navigate]);
   const handleOpenNadia = useCallback(() => handleModuleSelect('nadia'), []);
   const handleOpenTheodora = useCallback(() => handleModuleSelect('theodora'), []);
   const handleOpenZoe = useCallback(() => handleModuleSelect('zoe'), []);
@@ -499,12 +451,14 @@ const CRMHubPage: FC = () => {
         leadManagementLabel={copy.leadManagementLabel}
         propertyPortfolioLabel={copy.propertyPortfolioLabel}
         agentPerformanceLabel={copy.agentPerformanceLabel}
+        auditLogLabel={copy.auditLogLabel}
         whatsappLabel={copy.whatsappLabel}
         financeLabel={copy.financeLabel}
         executiveLabel={copy.executiveLabel}
         onOpenLeads={handleOpenLeads}
         onOpenProperties={handleOpenProperties}
         onOpenAgents={handleOpenAgents}
+        onOpenAuditLog={handleOpenAuditLog}
         onOpenNadia={handleOpenNadia}
         onOpenTheodora={handleOpenTheodora}
         onOpenZoe={handleOpenZoe}

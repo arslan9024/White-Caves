@@ -11,6 +11,16 @@ param(
 $ErrorActionPreference = "Stop"
 $root = Resolve-Path $WorkspaceRoot
 
+# Load policy-defined approval phrase (fallback to known default)
+$_policyFile = Join-Path $root "scripts\orchestrator\policy.json"
+$approvalPhrase = "@Ada — Context Ready (60% Readiness) — Coding Phase Approved"
+if (Test-Path $_policyFile) {
+  try {
+    $_pol = Get-Content $_policyFile -Raw | ConvertFrom-Json
+    if ($_pol.approvalPhrase) { $approvalPhrase = [string]$_pol.approvalPhrase }
+  } catch { <# keep default #> }
+}
+
 function Invoke-PhaseStep([string]$name, [string]$command) {
   Write-Host ""
   Write-Host "============================================================" -ForegroundColor Cyan
@@ -84,7 +94,7 @@ try {
 
   if (-not $PrintOnly) {
     Write-Host ""
-    Write-Host '@Ada - Context Ready (100% Planning Readiness) - Coding Phase Approved' -ForegroundColor Magenta
+    Write-Host $approvalPhrase -ForegroundColor Magenta
     Write-Host "Phase 99 signoff pipeline completed." -ForegroundColor Magenta
   }
 

@@ -59,3 +59,52 @@ function Test-IsFreePlanningAgent {
   $allowed = @($Policy.modelRouting.freePlanningAgents)
   return $allowed -contains $AgentName
 }
+
+function Get-OrchestratorGitPolicy {
+  param(
+    [Parameter(Mandatory = $true)]
+    [object]$Policy
+  )
+
+  $workflow = $Policy.workflow
+  $git = if ($null -ne $workflow) { $workflow.git } else { $null }
+
+  $defaultRemote = if ($null -ne $git.defaultRemote -and -not [string]::IsNullOrWhiteSpace([string]$git.defaultRemote)) {
+    [string]$git.defaultRemote
+  } else {
+    "origin"
+  }
+
+  $integrationBranch = if ($null -ne $git.integrationBranch -and -not [string]::IsNullOrWhiteSpace([string]$git.integrationBranch)) {
+    [string]$git.integrationBranch
+  } else {
+    "develop"
+  }
+
+  $fallbackBranches = @()
+  if ($null -ne $git.integrationFallbackBranches) {
+    $fallbackBranches = @($git.integrationFallbackBranches | Where-Object { -not [string]::IsNullOrWhiteSpace([string]$_) })
+  }
+  if ($fallbackBranches.Count -eq 0) {
+    $fallbackBranches = @("development", "main")
+  }
+
+  $releaseBranch = if ($null -ne $git.releaseBranch -and -not [string]::IsNullOrWhiteSpace([string]$git.releaseBranch)) {
+    [string]$git.releaseBranch
+  } else {
+    "main"
+  }
+
+  $autoMergeReleaseBranch = $false
+  if ($null -ne $git.autoMergeReleaseBranch) {
+    $autoMergeReleaseBranch = [bool]$git.autoMergeReleaseBranch
+  }
+
+  return [pscustomobject]@{
+    defaultRemote = $defaultRemote
+    integrationBranch = $integrationBranch
+    integrationFallbackBranches = $fallbackBranches
+    releaseBranch = $releaseBranch
+    autoMergeReleaseBranch = $autoMergeReleaseBranch
+  }
+}

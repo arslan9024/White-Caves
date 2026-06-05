@@ -99,7 +99,7 @@ router.get(
     const userId = req.user?.id;
     if (!userId) throw new AppError('Authentication required', 401);
 
-    const { propertyId } = req.params;
+    const { propertyId } = req.params as Record<string, string>;
     if (!propertyId) throw new AppError('Property ID is required', 400);
 
     const favorite = await prisma.favorite.findUnique({
@@ -170,7 +170,7 @@ router.delete(
     const userId = req.user?.id;
     if (!userId) throw new AppError('Authentication required', 401);
 
-    const { propertyId } = req.params;
+    const { propertyId } = req.params as Record<string, string>;
     if (!propertyId) throw new AppError('Property ID is required', 400);
 
     // Check it exists before deleting

@@ -20,6 +20,7 @@ const mockCompleteSocialRegistration = vi.fn();
 const mockSignInWithGoogle = vi.fn();
 const mockSignInWithFacebook = vi.fn();
 const mockSignInWithApple = vi.fn();
+const mockResetPassword = vi.fn();
 
 vi.mock('react-router-dom', async () => {
   const actual = await vi.importActual('react-router-dom');
@@ -32,9 +33,11 @@ vi.mock('react-router-dom', async () => {
 
 vi.mock('../config/firebase', () => ({
   auth: null,
+  isFirebaseAuthConfigured: true,
   signInWithGoogle: (...args: unknown[]) => mockSignInWithGoogle(...args),
   signInWithFacebook: (...args: unknown[]) => mockSignInWithFacebook(...args),
   signInWithApple: (...args: unknown[]) => mockSignInWithApple(...args),
+  resetPassword: (...args: unknown[]) => mockResetPassword(...args),
   signOut: vi.fn().mockResolvedValue(undefined),
   signInWithPhone: vi.fn(),
   createRecaptchaVerifier: vi.fn(),
@@ -113,6 +116,18 @@ const backendBuyerUser = {
 
 const backendTenantUser = { ...backendBuyerUser, id: 'backend-uuid-2', role: 'tenant' };
 const backendLandlordUser = { ...backendBuyerUser, id: 'backend-uuid-3', role: 'landlord' };
+const backendPendingStaffUser = {
+  ...backendBuyerUser,
+  id: 'backend-uuid-4',
+  role: 'agent',
+  status: 'pending',
+};
+const backendSuperuser = {
+  ...backendBuyerUser,
+  id: 'backend-uuid-super',
+  email: 'arslanmalikgoraha@gmail.com',
+  role: 'agent',
+};
 
 const successResponse = (user = backendBuyerUser) => ({
   success: true,
@@ -255,6 +270,25 @@ describe('useSignIn — handleSocialAuth (integration)', () => {
       });
 
       expect(result.current.pendingUser?.email).toBe(backendBuyerUser.email);
+    });
+
+    it('does not ask role selection for superuser signup and signs in immediately', async () => {
+      vi.useFakeTimers();
+      mockSyncFirebaseUser.mockResolvedValue(successResponse(backendSuperuser));
+      const { result } = renderHook(() => useSignIn(), { wrapper: createWrapper(store) });
+
+      act(() => result.current.switchMode());
+
+      await act(async () => {
+        await result.current.handleSocialAuth('google');
+      });
+
+      act(() => vi.runAllTimers());
+
+      expect(result.current.step).toBe(1);
+      expect(result.current.pendingUser).toBeNull();
+      expect(mockNavigate).toHaveBeenCalledWith('/profile');
+      vi.useRealTimers();
     });
   });
 
@@ -556,6 +590,50 @@ describe('useSignIn — handleSocialAuth (integration)', () => {
       });
 
       expect(result.current.error).toBe('Invalid provider');
+    });
+  });
+
+  describe('forgot password flow', () => {
+    it('shows validation error when email is empty', async () => {
+      const { result } = renderHook(() => useSignIn(), { wrapper: createWrapper(store) });
+
+      await act(async () => {
+        await result.current.handleForgotPassword();
+      });
+
+      expect(result.current.error).toContain('Please enter your email address first');
+      expect(mockResetPassword).not.toHaveBeenCalled();
+    });
+
+    it('calls resetPassword and sets success message with valid email', async () => {
+      mockResetPassword.mockResolvedValue(undefined);
+      const { result } = renderHook(() => useSignIn(), { wrapper: createWrapper(store) });
+
+      act(() => {
+        result.current.setEmail('arslanmalikgoraha@gmail.com');
+      });
+
+      await act(async () => {
+        await result.current.handleForgotPassword();
+      });
+
+      expect(mockResetPassword).toHaveBeenCalledWith('arslanmalikgoraha@gmail.com');
+      expect(result.current.success).toContain('Password reset email sent');
+    });
+
+    it('surfaces firebase reset error', async () => {
+      mockResetPassword.mockRejectedValue(new Error('User not found'));
+      const { result } = renderHook(() => useSignIn(), { wrapper: createWrapper(store) });
+
+      act(() => {
+        result.current.setEmail('missing@example.com');
+      });
+
+      await act(async () => {
+        await result.current.handleForgotPassword();
+      });
+
+      expect(result.current.error).toBe('User not found');
     });
   });
 });

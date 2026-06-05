@@ -7,9 +7,9 @@ import { safeStorage } from '../utils/safeStorage';
 import type { AppDispatch } from '../store/store';
 import {
   CANONICAL_SUPERUSER_ROLE,
-  isCreatorSuperUserEmail,
   normalizeRoleForUserContext,
 } from '../utils/superUserAccess';
+import { getPrivilegedRoleFromUser } from '../utils/authSession';
 
 interface RoleOption {
   id: string;
@@ -75,20 +75,19 @@ export default function RoleGateway({ user, onRoleSelect }: RoleGatewayProps) {
   const dispatch = useDispatch<AppDispatch>();
 
   useEffect(() => {
-    const isCreatorAccount = isCreatorSuperUserEmail(user?.email);
     const normalizedUserRole = normalizeRoleForUserContext(user?.role, user?.email);
-    const shouldAutoRoute = isCreatorAccount || normalizedUserRole === 'admin';
+    const privilegedRole = getPrivilegedRoleFromUser({
+      email: user?.email,
+      role: user?.role,
+    });
 
-    if (shouldAutoRoute) {
-      const privilegedRole = isCreatorAccount
-        ? CANONICAL_SUPERUSER_ROLE
-        : (normalizedUserRole ?? 'admin');
+    if (privilegedRole) {
       const ownerRole = {
         role: privilegedRole,
         selectedAt: new Date().toISOString(),
         locked: true,
-        isOwner: isCreatorAccount,
-        isSuperUser: isCreatorAccount,
+        isOwner: privilegedRole === CANONICAL_SUPERUSER_ROLE,
+        isSuperUser: privilegedRole === CANONICAL_SUPERUSER_ROLE,
       };
       safeStorage.setJSON('userRole', ownerRole);
       dispatch(setActiveRole(privilegedRole));

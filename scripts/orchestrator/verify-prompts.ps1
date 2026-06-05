@@ -114,7 +114,8 @@ Write-Host ""
 
 foreach ($prop in $promptsJson.PSObject.Properties) {
   $id     = $prop.Name
-  $prompt = $prop.Value
+  $rawVal = $prop.Value
+  $prompt = if ($rawVal -is [string]) { [string]$rawVal } elseif ($null -ne $rawVal -and $rawVal.PSObject.Properties.Name -contains "prompt") { [string]$rawVal.prompt } else { [string]$rawVal }
   $total++
 
   $rowIssues   = @()

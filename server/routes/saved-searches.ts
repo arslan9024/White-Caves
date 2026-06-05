@@ -89,7 +89,7 @@ router.patch(
     const userId = req.user?.id;
     if (!userId) throw new AppError('Authentication required', 401);
 
-    const { id } = req.params;
+    const { id } = req.params as Record<string, string>;
     const existing = await prisma.savedSearch.findUnique({ where: { id } });
     if (!existing) throw new AppError('Saved search not found', 404);
     if (existing.userId !== userId) throw new AppError('Access denied', 403);
@@ -133,7 +133,7 @@ router.delete(
     const userId = req.user?.id;
     if (!userId) throw new AppError('Authentication required', 401);
 
-    const { id } = req.params;
+    const { id } = req.params as Record<string, string>;
     const existing = await prisma.savedSearch.findUnique({ where: { id } });
     if (!existing) throw new AppError('Saved search not found', 404);
     if (existing.userId !== userId) throw new AppError('Access denied', 403);
@@ -156,7 +156,7 @@ router.post(
     const userId = req.user?.id;
     if (!userId) throw new AppError('Authentication required', 401);
 
-    const { id } = req.params;
+    const { id } = req.params as Record<string, string>;
     const search = await prisma.savedSearch.findUnique({ where: { id } });
     if (!search) throw new AppError('Saved search not found', 404);
     if (search.userId !== userId) throw new AppError('Access denied', 403);

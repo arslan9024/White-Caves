@@ -223,7 +223,8 @@ Write-Host ""
 $prompt0  = ($q0.tasks | ForEach-Object {}) # placeholder
 $prompts  = Get-Content $pFile -Raw | ConvertFrom-Json
 $pr0      = $prompts.PSObject.Properties | Where-Object { $_.Name -eq $TaskId } | Select-Object -ExpandProperty Value
-$tf0      = Get-TargetFile ($pr0 -replace $null,"")
+$pr0Text  = if ($pr0 -is [string]) { [string]$pr0 } elseif ($null -ne $pr0 -and $pr0.PSObject.Properties.Name -contains "prompt") { [string]$pr0.prompt } else { [string]$pr0 }
+$tf0      = Get-TargetFile ($pr0Text -replace $null,"")
 $secCount = if ($tf0 -ne "") { Get-SecCount $tf0 } else { 0 }
 $tgtCount = if ($tf0 -ne "" -and $gateTargets.ContainsKey($tf0)) { $gateTargets[$tf0] } else { $FALLBACK }
 $passes0  = if ($tf0 -ne "") { Test-Pass $tf0 } else { $false }

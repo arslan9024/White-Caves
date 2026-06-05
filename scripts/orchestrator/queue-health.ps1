@@ -84,12 +84,26 @@ Write-Host ""
 # ============================================================================
 Write-Host "  [GROUP 0] Queue file integrity" -ForegroundColor White
 if (-not (Test-Path $queueFile)) {
-  Add-Error "Queue file missing: $queueFile"
-  Write-Check "[XX]" "Queue file" "Path: $queueFile" "Red"
-  Write-Host ""
-  Write-Host "  Cannot continue without queue file." -ForegroundColor Red
-  Write-Host ("=" * $w) -ForegroundColor Red
-  exit 1
+  if ($CI) {
+    $initScript = Join-Path $root "scripts\orchestrator\init-queue.ps1"
+    if (Test-Path $initScript) {
+      Write-Check "[!!]" "Queue file missing" "CI mode: attempting auto-initialize via init-queue.ps1" "DarkYellow"
+      try {
+        & powershell -ExecutionPolicy Bypass -File $initScript | Out-Null
+      } catch {
+        Add-Error "Queue auto-init failed in CI mode: $_"
+      }
+    }
+  }
+
+  if (-not (Test-Path $queueFile)) {
+    Add-Error "Queue file missing: $queueFile"
+    Write-Check "[XX]" "Queue file" "Path: $queueFile" "Red"
+    Write-Host ""
+    Write-Host "  Cannot continue without queue file." -ForegroundColor Red
+    Write-Host ("=" * $w) -ForegroundColor Red
+    exit 1
+  }
 }
 
 $q = $null

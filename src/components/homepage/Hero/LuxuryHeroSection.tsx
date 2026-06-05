@@ -241,7 +241,7 @@ export const LuxuryHeroSection: React.FC<LuxuryHeroSectionProps> = ({
 
         {/* LCP-optimized image (invisible, browser prioritises it) — Phase 25: url must match preload href + CSS bg url */}
         <img
-          src="https://images.unsplash.com/photo-1582268611958-ebfd161ef9cf?ixlib=rb-4.0.3&auto=format&fit=crop&w=1440&q=75"
+          src="https://images.unsplash.com/photo-1582268611958-ebfd161ef9cf?ixlib=rb-4.0.3&auto=format&fit=crop&fm=webp&w=1440&q=75"
           alt=""
           aria-hidden="true"
           className="luxury-hero__lcp-image"

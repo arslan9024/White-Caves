@@ -15,7 +15,7 @@ import { requirePermission } from '../middleware/rbac';
 
 const router = Router();
 
-// ─── GET /api/finance/summary ───────────────────────────────────────────
+// â”€â”€â”€ GET /api/finance/summary â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 router.get(
   '/summary',
   requirePermission('view_payments'),
@@ -29,11 +29,26 @@ router.get(
       portfolioValue,
     ] = await Promise.all([
       prisma.commission.aggregate({ _sum: { amount: true }, _count: { _all: true } }),
-      prisma.commission.aggregate({ where: { status: 'paid' }, _sum: { amount: true }, _count: { _all: true } }),
-      prisma.commission.aggregate({ where: { status: 'pending' }, _sum: { amount: true }, _count: { _all: true } }),
-      prisma.commission.aggregate({ where: { status: 'approved' }, _sum: { amount: true }, _count: { _all: true } }),
+      prisma.commission.aggregate({
+        where: { status: 'paid' },
+        _sum: { amount: true },
+        _count: { _all: true },
+      }),
+      prisma.commission.aggregate({
+        where: { status: 'pending' },
+        _sum: { amount: true },
+        _count: { _all: true },
+      }),
+      prisma.commission.aggregate({
+        where: { status: 'approved' },
+        _sum: { amount: true },
+        _count: { _all: true },
+      }),
       prisma.commission.groupBy({ by: ['type'], _sum: { amount: true }, _count: { _all: true } }),
-      prisma.property.aggregate({ where: { status: { in: ['sold', 'rented'] } }, _sum: { price: true } }),
+      prisma.property.aggregate({
+        where: { status: { in: ['sold', 'rented'] } },
+        _sum: { price: true },
+      }),
     ]);
 
     const totalRevenue = portfolioValue._sum.price || 0;
@@ -49,10 +64,16 @@ router.get(
         commissions: {
           total: { count: totalCommissions._count._all, value: totalCommissionValue },
           paid: { count: paidCommissions._count._all, value: paidCommissions._sum.amount || 0 },
-          pending: { count: pendingCommissions._count._all, value: pendingCommissions._sum.amount || 0 },
-          approved: { count: approvedCommissions._count._all, value: approvedCommissions._sum.amount || 0 },
+          pending: {
+            count: pendingCommissions._count._all,
+            value: pendingCommissions._sum.amount || 0,
+          },
+          approved: {
+            count: approvedCommissions._count._all,
+            value: approvedCommissions._sum.amount || 0,
+          },
         },
-        byType: commissionsByType.map((c) => ({
+        byType: commissionsByType.map(c => ({
           type: c.type,
           count: c._count._all,
           value: c._sum.amount || 0,
@@ -62,16 +83,20 @@ router.get(
   })
 );
 
-// ─── GET /api/finance/commissions ───────────────────────────────────────
+// â”€â”€â”€ GET /api/finance/commissions â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 router.get(
   '/commissions',
   requirePermission('view_payments'),
   asyncHandler(async (req: Request, res: Response) => {
     const {
-      page = '1', pageSize = '20',
-      status, type, agentId,
-      sortBy = 'createdAt', sortOrder = 'desc',
-    } = req.query;
+      page = '1',
+      pageSize = '20',
+      status,
+      type,
+      agentId,
+      sortBy = 'createdAt',
+      sortOrder = 'desc',
+    } = req.query as Record<string, string | undefined>;
 
     const pageNum = Math.max(1, parseInt(page as string) || 1);
     const limit = Math.min(100, Math.max(1, parseInt(pageSize as string) || 20));
@@ -83,7 +108,9 @@ router.get(
 
     const validSorts = ['createdAt', 'amount', 'status'];
     const field = validSorts.includes(sortBy as string) ? (sortBy as string) : 'createdAt';
-    const orderBy: Record<string, 'asc' | 'desc'> = { [field]: sortOrder === 'asc' ? 'asc' : 'desc' };
+    const orderBy: Record<string, 'asc' | 'desc'> = {
+      [field]: sortOrder === 'asc' ? 'asc' : 'desc',
+    };
 
     const [commissions, total] = await Promise.all([
       prisma.commission.findMany({
@@ -108,7 +135,7 @@ router.get(
   })
 );
 
-// ─── GET /api/finance/commissions/:id ───────────────────────────────────
+// â”€â”€â”€ GET /api/finance/commissions/:id â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 router.get(
   '/commissions/:id',
   requirePermission('view_payments'),
@@ -129,7 +156,7 @@ router.get(
   })
 );
 
-// ─── POST /api/finance/commissions ──────────────────────────────────────
+// â”€â”€â”€ POST /api/finance/commissions â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 router.post(
   '/commissions',
   requirePermission('process_payments'),
@@ -138,23 +165,30 @@ router.post(
 
     if (!agentId) throw new AppError('Agent ID is required', 400);
 
-    // Validate and parse amount — catch NaN
+    // Validate and parse amount â€” catch NaN
     const MAX_COMMISSION = 100_000_000; // 100M AED
     const parsedAmount = typeof amount === 'string' ? parseFloat(amount) : Number(amount);
     if (!Number.isFinite(parsedAmount) || parsedAmount <= 0 || parsedAmount > MAX_COMMISSION) {
-      throw new AppError(`Commission amount must be between 1 and ${MAX_COMMISSION.toLocaleString('en-US')} AED`, 400);
+      throw new AppError(
+        `Commission amount must be between 1 and ${MAX_COMMISSION.toLocaleString('en-US')} AED`,
+        400
+      );
     }
 
     // Validate commission type enum
     const VALID_COMMISSION_TYPES = ['sale', 'rental', 'referral'];
     if (type && !VALID_COMMISSION_TYPES.includes(type)) {
-      throw new AppError(`Commission type must be one of: ${VALID_COMMISSION_TYPES.join(', ')}`, 400);
+      throw new AppError(
+        `Commission type must be one of: ${VALID_COMMISSION_TYPES.join(', ')}`,
+        400
+      );
     }
 
     // Validate percentage range if provided
     let validatedPercentage: number | null = null;
     if (percentage !== undefined && percentage !== null) {
-      const parsedPct = typeof percentage === 'string' ? parseFloat(percentage) : Number(percentage);
+      const parsedPct =
+        typeof percentage === 'string' ? parseFloat(percentage) : Number(percentage);
       if (!Number.isFinite(parsedPct) || parsedPct < 0 || parsedPct > 100) {
         throw new AppError('Commission percentage must be between 0 and 100', 400);
       }
@@ -204,12 +238,12 @@ router.post(
   })
 );
 
-// ─── PATCH /api/finance/commissions/:id ─────────────────────────────────
+// â”€â”€â”€ PATCH /api/finance/commissions/:id â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 router.patch(
   '/commissions/:id',
   requirePermission('process_payments'),
   asyncHandler(async (req: Request, res: Response) => {
-    const { id } = req.params;
+    const { id } = req.params as Record<string, string>;
     validateIdParam(id, 'Commission ID');
     const { status, amount, notes } = req.body;
 
@@ -226,7 +260,10 @@ router.patch(
     // Agents can only edit notes; cannot change status/amount
     if (!isAdmin && isAgentOwner) {
       if (status !== undefined || amount !== undefined) {
-        throw new AppError('Agents can only add notes to their commissions. Status and amount changes require manager approval.', 403);
+        throw new AppError(
+          'Agents can only add notes to their commissions. Status and amount changes require manager approval.',
+          403
+        );
       }
     }
     // Non-admin, non-owner cannot access at all
@@ -249,7 +286,8 @@ router.patch(
     if (amount !== undefined) {
       if (!isAdmin) throw new AppError('Only admins can modify commission amounts', 403);
       const parsed = parseFloat(amount);
-      if (isNaN(parsed) || parsed < 0) throw new AppError('Amount must be a valid non-negative number', 400);
+      if (isNaN(parsed) || parsed < 0)
+        throw new AppError('Amount must be a valid non-negative number', 400);
       data.amount = parsed;
     }
     if (notes !== undefined) data.notes = notes ? sanitizeString(String(notes)) : null;
@@ -263,7 +301,7 @@ router.patch(
         data: {
           type: 'commission',
           action: 'status_changed',
-          description: `Commission for ${existing.agent.name || existing.agent.email}: ${existing.status} → ${status} (by ${req.user?.email})`,
+          description: `Commission for ${existing.agent.name || existing.agent.email}: ${existing.status} â†’ ${status} (by ${req.user?.email})`,
           userId: req.user?.id || null,
         },
       });
@@ -273,7 +311,7 @@ router.patch(
   })
 );
 
-// ─── POST /api/finance/payments ─────────────────────────────────────────
+// â”€â”€â”€ POST /api/finance/payments â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Bulk-pay approved commissions
 router.post(
   '/payments',
@@ -316,16 +354,19 @@ router.post(
 // INVOICE ENDPOINTS
 // ============================================================================
 
-// ─── GET /api/finance/invoices ──────────────────────────────────────────
+// â”€â”€â”€ GET /api/finance/invoices â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 router.get(
   '/invoices',
   requirePermission('view_payments'),
   asyncHandler(async (req: Request, res: Response) => {
     const {
-      page = '1', pageSize = '20',
-      status, client,
-      sortBy = 'createdAt', sortOrder = 'desc',
-    } = req.query;
+      page = '1',
+      pageSize = '20',
+      status,
+      client,
+      sortBy = 'createdAt',
+      sortOrder = 'desc',
+    } = req.query as Record<string, string | undefined>;
 
     const pageNum = Math.max(1, parseInt(page as string) || 1);
     const limit = Math.min(100, Math.max(1, parseInt(pageSize as string) || 20));
@@ -336,7 +377,9 @@ router.get(
 
     const validSorts = ['createdAt', 'amount', 'totalAmount', 'dueDate', 'status'];
     const field = validSorts.includes(sortBy as string) ? (sortBy as string) : 'createdAt';
-    const orderBy: Record<string, 'asc' | 'desc'> = { [field]: sortOrder === 'asc' ? 'asc' : 'desc' };
+    const orderBy: Record<string, 'asc' | 'desc'> = {
+      [field]: sortOrder === 'asc' ? 'asc' : 'desc',
+    };
 
     const [invoices, total] = await Promise.all([
       prisma.invoice.findMany({ where, orderBy, skip: (pageNum - 1) * limit, take: limit }),
@@ -351,7 +394,7 @@ router.get(
   })
 );
 
-// ─── GET /api/finance/invoices/:id ──────────────────────────────────────
+// â”€â”€â”€ GET /api/finance/invoices/:id â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 router.get(
   '/invoices/:id',
   requirePermission('view_payments'),
@@ -363,7 +406,7 @@ router.get(
   })
 );
 
-// ─── POST /api/finance/invoices ─────────────────────────────────────────
+// â”€â”€â”€ POST /api/finance/invoices â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 router.post(
   '/invoices',
   requirePermission('process_payments'),
@@ -408,7 +451,7 @@ router.post(
   })
 );
 
-// ─── PATCH /api/finance/invoices/:id ────────────────────────────────────
+// â”€â”€â”€ PATCH /api/finance/invoices/:id â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 router.patch(
   '/invoices/:id',
   requirePermission('process_payments'),
@@ -422,13 +465,15 @@ router.patch(
 
     if (status !== undefined) {
       const validStatuses = ['draft', 'pending', 'paid', 'overdue', 'cancelled', 'refunded'];
-      if (!validStatuses.includes(status)) throw new AppError(`Invalid status. Allowed: ${validStatuses.join(', ')}`, 400);
+      if (!validStatuses.includes(status))
+        throw new AppError(`Invalid status. Allowed: ${validStatuses.join(', ')}`, 400);
       data.status = status;
       if (status === 'paid') data.paidAt = new Date();
     }
     if (amount !== undefined) {
       const parsed = Number(amount);
-      if (!Number.isFinite(parsed) || parsed < 0) throw new AppError('Amount must be a valid non-negative number', 400);
+      if (!Number.isFinite(parsed) || parsed < 0)
+        throw new AppError('Amount must be a valid non-negative number', 400);
       data.amount = parsed;
       const vat = vatAmount !== undefined ? Number(vatAmount) : existing.vatAmount;
       data.vatAmount = vat;
@@ -438,13 +483,12 @@ router.patch(
     if (client !== undefined) data.client = sanitizeString(client);
     if (property !== undefined) data.property = property ? sanitizeString(property) : null;
     if (dueDate !== undefined) data.dueDate = new Date(dueDate);
-
     const invoice = await prisma.invoice.update({ where: { id: req.params.id }, data });
     res.status(200).json({ success: true, data: invoice });
   })
 );
 
-// ─── DELETE /api/finance/invoices/:id ───────────────────────────────────
+// â”€â”€â”€ DELETE /api/finance/invoices/:id â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 router.delete(
   '/invoices/:id',
   requirePermission('process_payments'),
@@ -453,7 +497,6 @@ router.delete(
     const existing = await prisma.invoice.findUnique({ where: { id: req.params.id } });
     if (!existing) throw new AppError('Invoice not found', 404);
     if (existing.status === 'paid') throw new AppError('Cannot delete a paid invoice', 400);
-
     await prisma.invoice.delete({ where: { id: req.params.id } });
     res.status(200).json({ success: true, message: 'Invoice deleted' });
   })
@@ -463,16 +506,19 @@ router.delete(
 // EXPENSE ENDPOINTS
 // ============================================================================
 
-// ─── GET /api/finance/expenses ──────────────────────────────────────────
+// â”€â”€â”€ GET /api/finance/expenses â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 router.get(
   '/expenses',
   requirePermission('view_payments'),
   asyncHandler(async (req: Request, res: Response) => {
     const {
-      page = '1', pageSize = '20',
-      status, category,
-      sortBy = 'createdAt', sortOrder = 'desc',
-    } = req.query;
+      page = '1',
+      pageSize = '20',
+      status,
+      category,
+      sortBy = 'createdAt',
+      sortOrder = 'desc',
+    } = req.query as Record<string, string | undefined>;
 
     const pageNum = Math.max(1, parseInt(page as string) || 1);
     const limit = Math.min(100, Math.max(1, parseInt(pageSize as string) || 20));
@@ -483,7 +529,9 @@ router.get(
 
     const validSorts = ['createdAt', 'amount', 'date', 'status', 'category'];
     const field = validSorts.includes(sortBy as string) ? (sortBy as string) : 'createdAt';
-    const orderBy: Record<string, 'asc' | 'desc'> = { [field]: sortOrder === 'asc' ? 'asc' : 'desc' };
+    const orderBy: Record<string, 'asc' | 'desc'> = {
+      [field]: sortOrder === 'asc' ? 'asc' : 'desc',
+    };
 
     const [expenses, total] = await Promise.all([
       prisma.expense.findMany({ where, orderBy, skip: (pageNum - 1) * limit, take: limit }),
@@ -498,7 +546,7 @@ router.get(
   })
 );
 
-// ─── GET /api/finance/expenses/:id ──────────────────────────────────────
+// â”€â”€â”€ GET /api/finance/expenses/:id â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 router.get(
   '/expenses/:id',
   requirePermission('view_payments'),
@@ -510,7 +558,7 @@ router.get(
   })
 );
 
-// ─── POST /api/finance/expenses ─────────────────────────────────────────
+// â”€â”€â”€ POST /api/finance/expenses â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 router.post(
   '/expenses',
   requirePermission('process_payments'),
@@ -524,7 +572,16 @@ router.post(
       throw new AppError('Amount must be a positive number', 400);
     }
 
-    const VALID_CATEGORIES = ['Marketing', 'Maintenance', 'Utilities', 'Salaries', 'Office', 'Legal', 'Insurance', 'Other'];
+    const VALID_CATEGORIES = [
+      'Marketing',
+      'Maintenance',
+      'Utilities',
+      'Salaries',
+      'Office',
+      'Legal',
+      'Insurance',
+      'Other',
+    ];
     if (!VALID_CATEGORIES.includes(category)) {
       throw new AppError(`Category must be one of: ${VALID_CATEGORIES.join(', ')}`, 400);
     }
@@ -546,7 +603,7 @@ router.post(
   })
 );
 
-// ─── PATCH /api/finance/expenses/:id ────────────────────────────────────
+// â”€â”€â”€ PATCH /api/finance/expenses/:id â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 router.patch(
   '/expenses/:id',
   requirePermission('process_payments'),
@@ -560,7 +617,8 @@ router.patch(
 
     if (status !== undefined) {
       const validStatuses = ['pending', 'approved', 'rejected', 'processed', 'reimbursed'];
-      if (!validStatuses.includes(status)) throw new AppError(`Invalid status. Allowed: ${validStatuses.join(', ')}`, 400);
+      if (!validStatuses.includes(status))
+        throw new AppError(`Invalid status. Allowed: ${validStatuses.join(', ')}`, 400);
       data.status = status;
       if (status === 'approved') {
         data.approvedById = req.user?.id || null;
@@ -569,20 +627,20 @@ router.patch(
     }
     if (amount !== undefined) {
       const parsed = Number(amount);
-      if (!Number.isFinite(parsed) || parsed < 0) throw new AppError('Amount must be non-negative', 400);
+      if (!Number.isFinite(parsed) || parsed < 0)
+        throw new AppError('Amount must be non-negative', 400);
       data.amount = parsed;
     }
     if (category !== undefined) data.category = sanitizeString(category);
     if (description !== undefined) data.description = sanitizeString(description);
     if (notes !== undefined) data.notes = notes ? sanitizeString(String(notes)) : null;
     if (receiptUrl !== undefined) data.receiptUrl = receiptUrl || null;
-
     const expense = await prisma.expense.update({ where: { id: req.params.id }, data });
     res.status(200).json({ success: true, data: expense });
   })
 );
 
-// ─── DELETE /api/finance/expenses/:id ───────────────────────────────────
+// â”€â”€â”€ DELETE /api/finance/expenses/:id â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 router.delete(
   '/expenses/:id',
   requirePermission('process_payments'),
@@ -590,8 +648,8 @@ router.delete(
     validateIdParam(req.params.id, 'Expense ID');
     const existing = await prisma.expense.findUnique({ where: { id: req.params.id } });
     if (!existing) throw new AppError('Expense not found', 404);
-    if (existing.status === 'processed') throw new AppError('Cannot delete a processed expense', 400);
-
+    if (existing.status === 'processed')
+      throw new AppError('Cannot delete a processed expense', 400);
     await prisma.expense.delete({ where: { id: req.params.id } });
     res.status(200).json({ success: true, message: 'Expense deleted' });
   })

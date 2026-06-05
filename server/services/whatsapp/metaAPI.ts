@@ -287,7 +287,7 @@ export class MetaAPIClient {
   ): Promise<MediaUploadResponse> {
     try {
       const formData = new FormData();
-      const blob = new Blob([fileBuffer], { type: mimeType });
+      const blob = new Blob([fileBuffer as unknown as BlobPart], { type: mimeType });
       formData.append('file', blob, filename);
       formData.append('type', mimeType);
 

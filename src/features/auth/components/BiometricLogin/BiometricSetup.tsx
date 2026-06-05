@@ -68,6 +68,7 @@ const BiometricSetup = () => {
         setMessage({ type: 'success', text: 'Biometric login enabled successfully!' });
       }
     } catch (error) {
+      const setupError = error as { message?: string };
       
       setMessage({ type: 'error', text: (error as Error).message || 'Failed to enable biometric login' });
     } finally {

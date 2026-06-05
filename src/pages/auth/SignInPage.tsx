@@ -66,6 +66,8 @@ const SignInPage: FC = () => {
     socialSyncRecovery,
     socialRetryAttempts,
     remainingSocialRetries,
+    isGoogleAuthAvailable,
+    googleAuthUnavailableMessage,
     switchMode,
     goBackToStep,
     email,
@@ -88,6 +90,9 @@ const SignInPage: FC = () => {
     setOtp,
     showOtpInput,
     resetOtp,
+    twoFactorCode,
+    setTwoFactorCode,
+    handleTwoFactorSubmit,
     handleSignInSuccess,
     handleSocialAuth,
     retrySocialAuth,
@@ -279,6 +284,8 @@ const SignInPage: FC = () => {
                   googleText={copy.google}
                   facebookText={copy.facebook}
                   appleText={copy.apple}
+                  googleDisabled={!isGoogleAuthAvailable}
+                  helperText={!isGoogleAuthAvailable ? googleAuthUnavailableMessage : undefined}
                 />
 
                 <div className="auth-divider">
@@ -544,6 +551,51 @@ const SignInPage: FC = () => {
 
                 <button className="btn btn-link" onClick={() => goBackToStep(2)}>
                   Go Back
+                </button>
+              </>
+            )}
+
+            {step === 4 && (
+              <>
+                <h1>Two-Factor Authentication</h1>
+                <p className="auth-subtitle">
+                  Enter the 6-digit code from your authenticator app (or an 8-character backup
+                  code)
+                </p>
+
+                {error && <div className="auth-error">{error}</div>}
+                {success && <div className="auth-success">{success}</div>}
+
+                <form onSubmit={handleTwoFactorSubmit} className="auth-form">
+                  <div className="form-group">
+                    <label htmlFor="totp-code">Authentication Code</label>
+                    <input
+                      id="totp-code"
+                      type="text"
+                      value={twoFactorCode}
+                      onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                        setTwoFactorCode(e.target.value)
+                      }
+                      placeholder="000000"
+                      maxLength={8}
+                      required
+                      autoComplete="one-time-code"
+                      inputMode="numeric"
+                      autoFocus
+                    />
+                    <span className="input-hint">6-digit TOTP or 8-character backup code</span>
+                  </div>
+                  <button
+                    type="submit"
+                    className="btn btn-primary btn-full"
+                    disabled={loading || twoFactorCode.trim().length === 0}
+                  >
+                    {loading ? 'Verifying...' : 'Verify'}
+                  </button>
+                </form>
+
+                <button className="btn btn-link" onClick={() => goBackToStep(1)}>
+                  Back to Sign In
                 </button>
               </>
             )}

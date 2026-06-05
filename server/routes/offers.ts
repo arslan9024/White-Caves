@@ -17,6 +17,8 @@ import { asyncHandler, AppError } from '../middleware/errorHandler.js';
 import { AuthRequest } from '../middleware/auth.js';
 import { prisma } from '../database.js';
 import logger from '../utils/logger.js';
+import { triggerLeadRescore } from '../services/ai/leadAutoRescore.js';
+import { notificationService } from '../services/NotificationService.js';
 
 const router = Router();
 
@@ -115,6 +117,16 @@ router.post(
     });
 
     logger.info('Offer submitted', { userId, offerId: offer.id, propertyId, amount });
+    if (property.userId && property.userId !== userId) {
+      await notificationService.pushToUser({
+        userId: property.userId,
+        type: 'property',
+        title: 'New offer received',
+        message: `A new offer was submitted for ${property.title}`,
+        metadata: { offerId: offer.id, propertyId: property.id, amount },
+      });
+    }
+    triggerLeadRescore(offer.leadId, 'offer_submitted');
     res.status(201).json({ success: true, data: offer });
   })
 );
@@ -126,7 +138,7 @@ router.patch(
     const userId = req.user?.id;
     if (!userId) throw new AppError('Authentication required', 401);
 
-    const { id } = req.params;
+    const { id } = req.params as Record<string, string>;
     const existing = await prisma.offer.findUnique({
       where: { id },
       include: { property: { select: { userId: true } } },
@@ -212,6 +224,7 @@ router.patch(
     }
 
     logger.info('Offer updated', { userId, offerId: id, status: updated.status });
+    triggerLeadRescore(updated.leadId, 'offer_updated');
     res.json({ success: true, data: updated });
   })
 );
@@ -223,7 +236,7 @@ router.delete(
     const userId = req.user?.id;
     if (!userId) throw new AppError('Authentication required', 401);
 
-    const { id } = req.params;
+    const { id } = req.params as Record<string, string>;
     const existing = await prisma.offer.findUnique({ where: { id } });
     if (!existing) throw new AppError('Offer not found', 404);
     if (existing.buyerId !== userId) throw new AppError('Access denied', 403);
@@ -243,7 +256,7 @@ router.patch(
     const userId = req.user?.id;
     if (!userId) throw new AppError('Authentication required', 401);
 
-    const { id } = req.params;
+    const { id } = req.params as Record<string, string>;
     const existing = await prisma.offer.findUnique({
       where: { id },
       include: { property: { select: { userId: true, title: true, id: true } } },
@@ -320,6 +333,14 @@ router.patch(
     }
 
     logger.info('Offer decision recorded', { userId, offerId: id, decision });
+    await notificationService.pushToUser({
+      userId: existing.buyerId,
+      type: 'property',
+      title: 'Offer decision update',
+      message: `Your offer for ${existing.property?.title || 'the property'} was ${decision}`,
+      metadata: { offerId: id, propertyId: existing.property?.id, decision },
+    });
+    triggerLeadRescore(existing.leadId, `offer_decision_${decision}`);
     res.json({ success: true, data: updated, message: `Offer ${decision}` });
   })
 );

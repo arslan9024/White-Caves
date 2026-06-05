@@ -29,6 +29,7 @@ interface SuperMetric {
   label: string;
   value: string;
   tone: 'neutral' | 'positive' | 'warn';
+  icon: string;
 }
 
 interface OperationsDomain {
@@ -92,24 +93,28 @@ const SuperuserControlCenter: FC<SuperuserControlCenterProps> = ({
         label: 'Hot leads',
         value: String(hotLeadsCount),
         tone: hotLeadsCount > 10 ? 'warn' : 'positive',
+        icon: '🔥',
       },
       {
         id: 'ai-modules',
         label: 'AI modules',
         value: String(superuserModuleCount),
         tone: superuserModuleCount >= 10 ? 'positive' : 'neutral',
+        icon: '🤖',
       },
       {
         id: 'revenue',
         label: 'Monthly revenue',
         value: monthlyRevenueLabel,
         tone: 'neutral',
+        icon: '💰',
       },
       {
         id: 'health-score',
         label: 'Operational health',
         value: `${healthScore}/100`,
         tone: healthScore >= 75 ? 'positive' : healthScore >= 50 ? 'neutral' : 'warn',
+        icon: '📊',
       },
     ],
     [healthScore, hotLeadsCount, monthlyRevenueLabel, superuserModuleCount]
@@ -212,21 +217,32 @@ const SuperuserControlCenter: FC<SuperuserControlCenterProps> = ({
 
   return (
     <section className="dashboard-superuser-strip" aria-label="Superuser controls">
-      <div className="dashboard-superuser-strip__copy">
-        <p className="dashboard-superuser-strip__eyebrow">Superuser command strip</p>
-        <h2>Executive control center is live</h2>
+      <div className="dashboard-superuser-strip__header">
+        <div className="dashboard-superuser-strip__eyebrow-row">
+          <span className="dashboard-superuser-live-dot" aria-hidden="true" />
+          <p className="dashboard-superuser-strip__eyebrow">Platform live</p>
+          <span className="dashboard-superuser-role-badge">👑 Lion</span>
+        </div>
+        <h2>Executive command center</h2>
         <p>
-          Coordinate critical workflows, route actions instantly, and keep platform performance in a
-          healthy state.
+          Full-platform access. Coordinate workflows, route actions, and monitor platform health in
+          real time.
         </p>
       </div>
 
       <div className="dashboard-superuser-grid" aria-label="Superuser quick metrics">
         {metrics.map(metric => (
           <article key={metric.id} className="dashboard-superuser-metric-card">
-            <p>{metric.label}</p>
-            <strong>{metric.value}</strong>
-            <span className={`dashboard-superuser-metric-chip ${metric.tone}`}>{metric.tone}</span>
+            <span className="dashboard-superuser-metric-icon" aria-hidden="true">
+              {metric.icon}
+            </span>
+            <div className="dashboard-superuser-metric-body">
+              <p>{metric.label}</p>
+              <strong>{metric.value}</strong>
+            </div>
+            <span className={`dashboard-superuser-metric-chip ${metric.tone}`}>
+              {TONE_LABELS[metric.tone]}
+            </span>
           </article>
         ))}
       </div>

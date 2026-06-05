@@ -1,14 +1,14 @@
 // @ts-nocheck
 /**
  * Contracts API Routes
- * ─────────────────────────────────────────────────────────────────────────
+ * â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
  * Full CRUD for White Caves contract records (sale, rental, MOU, Form F, etc.)
  *
- * GET    /api/contracts           — List contracts (filtered, paginated)
- * GET    /api/contracts/:id       — Get single contract
- * POST   /api/contracts           — Create contract
- * PATCH  /api/contracts/:id       — Update contract
- * DELETE /api/contracts/:id       — Delete contract (admin only)
+ * GET    /api/contracts           â€” List contracts (filtered, paginated)
+ * GET    /api/contracts/:id       â€” Get single contract
+ * POST   /api/contracts           â€” Create contract
+ * PATCH  /api/contracts/:id       â€” Update contract
+ * DELETE /api/contracts/:id       â€” Delete contract (admin only)
  */
 
 import { Router, Response } from 'express';
@@ -41,7 +41,7 @@ function generateContractNumber(): string {
   return `WC-C-${year}-${random}`;
 }
 
-// ─── GET /api/contracts ──────────────────────────────────────────────────
+// â”€â”€â”€ GET /api/contracts â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 router.get(
   '/',
   requirePermission('view_contracts'),
@@ -88,7 +88,7 @@ router.get(
   })
 );
 
-// ─── GET /api/contracts/:id ──────────────────────────────────────────────
+// â”€â”€â”€ GET /api/contracts/:id â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 router.get(
   '/:id',
   requirePermission('view_contracts'),
@@ -100,7 +100,7 @@ router.get(
   })
 );
 
-// ─── POST /api/contracts ─────────────────────────────────────────────────
+// â”€â”€â”€ POST /api/contracts â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 router.post(
   '/',
   requirePermission('create_contracts'),
@@ -171,12 +171,12 @@ router.post(
   })
 );
 
-// ─── PATCH /api/contracts/:id ────────────────────────────────────────────
+// â”€â”€â”€ PATCH /api/contracts/:id â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 router.patch(
   '/:id',
   requirePermission('create_contracts'),
   asyncHandler(async (req: Request, res: Response) => {
-    const { id } = req.params;
+    const { id } = req.params as Record<string, string>;
     validateIdParam(id, 'Contract ID');
 
     const existing = await db.contract.findUnique({ where: { id } });
@@ -248,7 +248,7 @@ router.patch(
         type: 'contract',
         action: statusChanged ? 'status_changed' : 'updated',
         description: statusChanged
-          ? `Contract "${updated.title}" status: ${existing.status} → ${status}`
+          ? `Contract "${updated.title}" status: ${existing.status} â†’ ${status}`
           : `Contract "${updated.title}" updated`,
         userId: req.user?.id || null,
         metadata: statusChanged ? { oldStatus: existing.status, newStatus: status } : undefined,
@@ -259,12 +259,12 @@ router.patch(
   })
 );
 
-// ─── DELETE /api/contracts/:id ───────────────────────────────────────────
+// â”€â”€â”€ DELETE /api/contracts/:id â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 router.delete(
   '/:id',
   requireRole('owner', 'manager', 'admin'),
   asyncHandler(async (req: Request, res: Response) => {
-    const { id } = req.params;
+    const { id } = req.params as Record<string, string>;
     validateIdParam(id, 'Contract ID');
 
     const existing = await db.contract.findUnique({ where: { id } });

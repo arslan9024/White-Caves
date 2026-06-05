@@ -8,7 +8,8 @@
 
 import React, { FC } from 'react';
 import styled from 'styled-components';
-import { Pagination } from '../../components/ui';
+import { EmptyState, Pagination } from '../../components/ui';
+import { SkeletonCard } from '../../components/ui/Skeleton';
 import { useDocumentTitle } from '../../hooks/useDocumentTitle';
 import {
   PageContainer,
@@ -19,9 +20,7 @@ import {
   SearchInput,
   DangerButton,
   SecondaryButton,
-  EmptyState,
   PaginationWrapper,
-  LoadingBanner,
   ErrorBanner,
 } from './styles/CrmPageStyles';
 import { useFavorites } from './hooks/useFavorites';
@@ -33,6 +32,13 @@ const Grid = styled.div`
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
   gap: 1.25rem;
+`;
+
+const LoadingSkeletonCard = styled.div`
+  border: 1px solid #e8e8e8;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #ffffff;
 `;
 
 const PropertyCard = styled.div`
@@ -146,7 +152,6 @@ const FavoritesPage: FC = () => {
       </PageHeader>
 
       {/* Loading & Error States */}
-      {loading && <LoadingBanner>⏳ Loading favorites...</LoadingBanner>}
       {error && (
         <ErrorBanner>
           <span>⚠️ {error}</span>
@@ -168,7 +173,15 @@ const FavoritesPage: FC = () => {
       </ActionBar>
 
       {/* Property Grid */}
-      {paginatedFavorites.length > 0 ? (
+      {loading ? (
+        <Grid aria-label="Loading favorites">
+          {Array.from({ length: 6 }, (_, index) => (
+            <LoadingSkeletonCard key={`fav-skeleton-${index}`}>
+              <SkeletonCard imageHeight={180} />
+            </LoadingSkeletonCard>
+          ))}
+        </Grid>
+      ) : paginatedFavorites.length > 0 ? (
         <Grid>
           {paginatedFavorites.map((fav: FavoriteProperty) => (
             <PropertyCard key={fav.id}>
@@ -206,11 +219,15 @@ const FavoritesPage: FC = () => {
           ))}
         </Grid>
       ) : (
-        <EmptyState>
-          {search
-            ? 'No favorites match your search'
-            : 'No favorites yet — browse properties and add some!'}
-        </EmptyState>
+        <EmptyState
+          icon={search ? '🔎' : '❤️'}
+          title={search ? 'No favorites match your search' : 'No favorites yet'}
+          description={
+            search
+              ? 'Try a different search term.'
+              : 'Browse listings and add properties to favorites.'
+          }
+        />
       )}
 
       {/* Pagination */}

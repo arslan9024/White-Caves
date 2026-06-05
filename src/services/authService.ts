@@ -9,6 +9,7 @@ import { apiClient } from '../utils/apiClient';
 import { safeStorage } from '../utils/safeStorage';
 import { auth as firebaseAuth } from '../config/firebase';
 import { HttpError } from '../utils/HttpError';
+import { authFetch } from '../utils/authFetch';
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -21,13 +22,31 @@ export interface AuthUser {
   photoUrl?: string | null;
 }
 
+/** Shape of `data` when login succeeds normally */
+export interface LoginSuccessData {
+  token: string;
+  user: AuthUser;
+}
+
+/** Shape of `data` when the account has 2FA enabled — a challenge token is issued instead */
+export interface TwoFactorChallengeData {
+  twoFactorToken: string;
+}
+
 export interface LoginResponse {
   success: boolean;
-  data: {
-    token: string;
-    user: AuthUser;
-  };
+  data: LoginSuccessData | TwoFactorChallengeData;
   requiresTwoFactor?: boolean;
+}
+
+/**
+ * Dedicated response type for Firebase-sync and social-auth endpoints.
+ * These flows never trigger a 2FA challenge, so the data always contains
+ * a full session token and user object.
+ */
+export interface FirebaseSyncResponse {
+  success: boolean;
+  data: LoginSuccessData;
 }
 
 export interface RegisterResponse {
@@ -57,6 +76,18 @@ function persistToken(token: string): void {
 function clearToken(): void {
   safeStorage.remove(TOKEN_KEY);
   apiClient.setAuthToken(null);
+}
+
+function getCookieValue(name: string): string | null {
+  if (typeof document === 'undefined') return null;
+  const cookies = document.cookie ? document.cookie.split(';') : [];
+  for (const cookie of cookies) {
+    const [key, ...valueParts] = cookie.trim().split('=');
+    if (key === name) {
+      return decodeURIComponent(valueParts.join('='));
+    }
+  }
+  return null;
 }
 
 function resolveFirebaseSyncErrorMessage(error: unknown): string {
@@ -134,14 +165,37 @@ export function restoreAuthToken(): string | null {
 export async function loginWithEmail(email: string, password: string): Promise<LoginResponse> {
   const response = (await apiClient.post('/auth/login', { email, password })) as LoginResponse;
 
-  if (response.success) {
-    if (!response.data?.token) {
+  // When 2FA is required the backend returns a challenge token, not a session token.
+  // Do not try to persist a JWT in that case — the caller must complete 2FA first.
+  if (response.success && !response.requiresTwoFactor) {
+    const successData = response.data as LoginSuccessData;
+    if (!successData?.token) {
       throw new Error('Login succeeded but no authentication token was returned');
     }
-    persistToken(response.data.token);
+    persistToken(successData.token);
   }
 
   return response;
+}
+
+/**
+ * Complete a 2FA-gated login by verifying the TOTP code (or backup recovery code).
+ * Persists the returned JWT and fetches the current user profile.
+ */
+export async function verifyTwoFactor(email: string, code: string): Promise<AuthUser> {
+  const response = (await apiClient.post('/auth/verify-2fa', { email, code })) as {
+    success: boolean;
+    data: { token: string; verified: boolean };
+  };
+
+  if (!response.success || !response.data?.token) {
+    throw new Error('Two-factor verification failed');
+  }
+
+  persistToken(response.data.token);
+
+  const profile = await fetchProfile();
+  return profile.data;
 }
 
 /**
@@ -188,7 +242,7 @@ export async function syncFirebaseUser(firebaseUser: {
   displayName: string | null;
   photoURL: string | null;
   getIdToken?: () => Promise<string>;
-}): Promise<LoginResponse> {
+}): Promise<FirebaseSyncResponse> {
   let firebaseToken: string | null = null;
 
   if (typeof firebaseUser.getIdToken === 'function') {
@@ -205,7 +259,7 @@ export async function syncFirebaseUser(firebaseUser: {
     );
   }
 
-  let response: LoginResponse;
+  let response: FirebaseSyncResponse;
   try {
     response = (await apiClient.post('/auth/firebase-sync', {
       firebaseUid: firebaseUser.uid,
@@ -213,7 +267,7 @@ export async function syncFirebaseUser(firebaseUser: {
       name: firebaseUser.displayName,
       photoUrl: firebaseUser.photoURL,
       firebaseToken,
-    })) as LoginResponse;
+    })) as FirebaseSyncResponse;
   } catch (error: unknown) {
     throw new Error(resolveFirebaseSyncErrorMessage(error));
   }
@@ -242,7 +296,7 @@ export async function changePassword(
   currentPassword: string,
   newPassword: string
 ): Promise<{ success: boolean }> {
-  return (await apiClient.post('/auth/change-password', {
+  return (await apiClient.put('/auth/password', {
     currentPassword,
     newPassword,
   })) as { success: boolean };
@@ -275,7 +329,17 @@ export async function completeSocialRegistration(
 /**
  * Logout — clears JWT and user state.
  */
-export function logout(): void {
+export async function logout(): Promise<void> {
+  const csrfToken = getCookieValue('csrf_token');
+  try {
+    await authFetch('/api/auth/logout', {
+      method: 'POST',
+      headers: csrfToken ? { 'x-csrf-token': csrfToken } : undefined,
+      body: JSON.stringify({}),
+    });
+  } catch {
+    // Best effort only — local client cleanup still proceeds.
+  }
   clearToken();
   safeStorage.remove('userRole');
 }

@@ -63,10 +63,17 @@ const mockProperties = [
 
 let mockFilteredProperties = [...mockProperties];
 
-vi.mock('react-redux', () => ({
-  useSelector: (fn: (s: unknown) => unknown) =>
-    fn({ properties: { filteredProperties: mockFilteredProperties } }),
-}));
+vi.mock('react-redux', () => {
+  const mockDispatch = vi.fn();
+  return {
+    useSelector: (fn: (s: unknown) => unknown) =>
+      fn({
+        properties: { filteredProperties: mockFilteredProperties },
+        propertySearch: { viewportBounds: null, activePropertyId: null },
+      }),
+    useDispatch: () => mockDispatch,
+  };
+});
 
 vi.mock('../utils', () => ({
   formatPrice: (price: number) => `AED ${(price / 1000000).toFixed(1)}M`,

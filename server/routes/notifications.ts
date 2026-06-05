@@ -34,7 +34,7 @@ router.get(
     const userId = (req as AuthRequest).user?.id;
     if (!userId) throw new AppError('Authentication required', 401);
 
-    const { read } = req.query;
+    const { read } = req.query as Record<string, string | undefined>;
 
     const {
       page: pageNum,
@@ -111,7 +111,7 @@ router.patch(
 router.patch(
   '/:id/read',
   asyncHandler(async (req: Request, res: Response) => {
-    const { id } = req.params;
+    const { id } = req.params as Record<string, string>;
     validateIdParam(id, 'Notification ID');
     const userId = (req as AuthRequest).user?.id;
     if (!userId) throw new AppError('Authentication required', 401);
@@ -135,7 +135,7 @@ router.patch(
 router.delete(
   '/:id',
   asyncHandler(async (req: Request, res: Response) => {
-    const { id } = req.params;
+    const { id } = req.params as Record<string, string>;
     validateIdParam(id, 'Notification ID');
     const userId = (req as AuthRequest).user?.id;
     if (!userId) throw new AppError('Authentication required', 401);

@@ -100,6 +100,7 @@ const MobileLoginForm: React.FC<MobileLoginFormProps> = ({ onSuccess, onError })
       setConfirmationResult(result);
       setStep('otp');
     } catch (error) {
+      const authError = error as { message?: string };
       
       setError((error as Error).message || 'Failed to send OTP');
       dispatch(loginFailure((error as Error).message));
@@ -146,6 +147,7 @@ const MobileLoginForm: React.FC<MobileLoginFormProps> = ({ onSuccess, onError })
       
       onSuccess?.(userData);
     } catch (error) {
+      const authError = error as { message?: string };
       
       setError('Invalid OTP. Please try again.');
       dispatch(loginFailure((error as Error).message || 'OTP verification failed'));

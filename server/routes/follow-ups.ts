@@ -15,7 +15,8 @@
 
 import { Router, Request, Response } from 'express';
 import { requirePermission } from '../middleware/rbac.js';
-import { asyncHandler } from '../middleware/errorHandler.js';
+import { AppError, asyncHandler } from '../middleware/errorHandler.js';
+import { prisma } from '../database.js';
 import {
   startSequence,
   pauseSequence,
@@ -30,10 +31,67 @@ import { logger } from '../utils/logger.js';
 
 const router = Router();
 
+type CadenceRulePayload = {
+  name?: unknown;
+  description?: unknown;
+  isActive?: unknown;
+  priority?: unknown;
+  leadTiers?: unknown;
+  leadSources?: unknown;
+  dealTypes?: unknown;
+  channelSequence?: unknown;
+  quietHoursStart?: unknown;
+  quietHoursEnd?: unknown;
+  dailyCapPerLead?: unknown;
+  cooldownHours?: unknown;
+};
+
+function normalizeStringArray(value: unknown): string[] {
+  if (!Array.isArray(value)) return [];
+  return value.filter((v): v is string => typeof v === 'string').map((v) => v.trim()).filter(Boolean);
+}
+
+function normalizeRulePayload(body: CadenceRulePayload) {
+  const name = typeof body.name === 'string' ? body.name.trim() : '';
+  if (!name) {
+    throw new AppError('name is required', 400);
+  }
+
+  const channelSequence = Array.isArray(body.channelSequence) ? body.channelSequence : [];
+  if (channelSequence.length === 0) {
+    throw new AppError('channelSequence is required and must be a non-empty array', 400);
+  }
+
+  return {
+    name,
+    description: typeof body.description === 'string' ? body.description.trim() || null : null,
+    isActive: typeof body.isActive === 'boolean' ? body.isActive : true,
+    priority:
+      typeof body.priority === 'number' && Number.isFinite(body.priority)
+        ? Math.max(0, Math.trunc(body.priority))
+        : 0,
+    leadTiers: normalizeStringArray(body.leadTiers),
+    leadSources: normalizeStringArray(body.leadSources),
+    dealTypes: normalizeStringArray(body.dealTypes),
+    channelSequence,
+    quietHoursStart:
+      typeof body.quietHoursStart === 'string' ? body.quietHoursStart.trim() || null : null,
+    quietHoursEnd: typeof body.quietHoursEnd === 'string' ? body.quietHoursEnd.trim() || null : null,
+    dailyCapPerLead:
+      typeof body.dailyCapPerLead === 'number' && Number.isFinite(body.dailyCapPerLead)
+        ? Math.max(1, Math.trunc(body.dailyCapPerLead))
+        : 3,
+    cooldownHours:
+      typeof body.cooldownHours === 'number' && Number.isFinite(body.cooldownHours)
+        ? Math.max(0, Math.trunc(body.cooldownHours))
+        : 24,
+  };
+}
+
 // ── Start a sequence for a lead ─────────────────────────────────────────
 
 router.post('/:leadId/start', requirePermission('manage_leads'), asyncHandler(async (req: Request, res: Response) => {
-  const { leadId } = req.params;
+  const { leadId } = req.params as Record<string, string>;
   const { cadenceType } = req.body || {};
 
   logger.info(`Starting follow-up sequence for lead ${leadId}`, { cadenceType });
@@ -47,19 +105,6 @@ router.post('/:leadId/start', requirePermission('manage_leads'), asyncHandler(as
     success: true,
     data: result,
     message: `Follow-up sequence started: ${result.cadenceType} cadence, ${result.totalSteps} steps`,
-  });
-}));
-
-// ── Get all sequences for a lead ────────────────────────────────────────
-
-router.get('/:leadId', requirePermission('view_leads'), asyncHandler(async (req: Request, res: Response) => {
-  const { leadId } = req.params;
-  const sequences = await getLeadSequences(leadId);
-
-  res.status(200).json({
-    success: true,
-    data: sequences,
-    count: sequences.length,
   });
 }));
 
@@ -97,10 +142,81 @@ router.get('/cadences', requirePermission('view_leads'), asyncHandler(async (_re
   });
 }));
 
+// ── Cadence rules (dynamic) ──────────────────────────────────────────────
+
+router.get('/rules', requirePermission('view_leads'), asyncHandler(async (_req: Request, res: Response) => {
+  const rules = await prisma.cadenceRule.findMany({
+    orderBy: [{ isActive: 'desc' }, { priority: 'desc' }, { createdAt: 'desc' }],
+  });
+
+  res.status(200).json({
+    success: true,
+    data: rules,
+    count: rules.length,
+  });
+}));
+
+router.post('/rules', requirePermission('manage_leads'), asyncHandler(async (req: Request, res: Response) => {
+  const payload = normalizeRulePayload(req.body as CadenceRulePayload);
+  const rule = await prisma.cadenceRule.create({
+    data: {
+      ...payload,
+      createdById: req.user?.id || null,
+    },
+  });
+
+  res.status(201).json({
+    success: true,
+    data: rule,
+    message: 'Cadence rule created',
+  });
+}));
+
+router.patch('/rules/:id', requirePermission('manage_leads'), asyncHandler(async (req: Request, res: Response) => {
+  const { id } = req.params as Record<string, string>;
+  const payload = normalizeRulePayload(req.body as CadenceRulePayload);
+  const rule = await prisma.cadenceRule.update({
+    where: { id },
+    data: payload,
+  });
+
+  res.status(200).json({
+    success: true,
+    data: rule,
+    message: 'Cadence rule updated',
+  });
+}));
+
+router.delete('/rules/:id', requirePermission('manage_leads'), asyncHandler(async (req: Request, res: Response) => {
+  const { id } = req.params as Record<string, string>;
+  await prisma.cadenceRule.update({
+    where: { id },
+    data: { isActive: false },
+  });
+
+  res.status(200).json({
+    success: true,
+    message: 'Cadence rule deactivated',
+  });
+}));
+
+// ── Get all sequences for a lead ────────────────────────────────────────
+
+router.get('/:leadId', requirePermission('view_leads'), asyncHandler(async (req: Request, res: Response) => {
+  const { leadId } = req.params as Record<string, string>;
+  const sequences = await getLeadSequences(leadId);
+
+  res.status(200).json({
+    success: true,
+    data: sequences,
+    count: sequences.length,
+  });
+}));
+
 // ── Get single sequence ─────────────────────────────────────────────────
 
 router.get('/sequence/:id', requirePermission('view_leads'), asyncHandler(async (req: Request, res: Response) => {
-  const { id } = req.params;
+  const { id } = req.params as Record<string, string>;
   const summary = await getSequenceSummary(id);
 
   if (!summary) {
@@ -116,7 +232,7 @@ router.get('/sequence/:id', requirePermission('view_leads'), asyncHandler(async 
 // ── Pause a sequence ────────────────────────────────────────────────────
 
 router.post('/sequence/:id/pause', requirePermission('manage_leads'), asyncHandler(async (req: Request, res: Response) => {
-  const { id } = req.params;
+  const { id } = req.params as Record<string, string>;
   await pauseSequence(id);
 
   res.status(200).json({
@@ -128,7 +244,7 @@ router.post('/sequence/:id/pause', requirePermission('manage_leads'), asyncHandl
 // ── Resume a sequence ───────────────────────────────────────────────────
 
 router.post('/sequence/:id/resume', requirePermission('manage_leads'), asyncHandler(async (req: Request, res: Response) => {
-  const { id } = req.params;
+  const { id } = req.params as Record<string, string>;
   await resumeSequence(id);
 
   res.status(200).json({
@@ -140,7 +256,7 @@ router.post('/sequence/:id/resume', requirePermission('manage_leads'), asyncHand
 // ── Cancel a sequence ───────────────────────────────────────────────────
 
 router.post('/sequence/:id/cancel', requirePermission('manage_leads'), asyncHandler(async (req: Request, res: Response) => {
-  const { id } = req.params;
+  const { id } = req.params as Record<string, string>;
   const { reason } = req.body || {};
   await cancelSequence(id, reason);
 

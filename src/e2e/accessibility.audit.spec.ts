@@ -102,16 +102,14 @@ async function ensureDashboardReadyOrSkip(page: any) {
 }
 
 async function runAxeViolations(page: any, options?: any): Promise<any[]> {
-  await injectAxe(page);
-
   for (let attempt = 1; attempt <= 3; attempt++) {
     try {
-      const violations = await page.evaluate(async (axeOptions: any) => {
-        const axe = (window as any).axe;
-        if (!axe) return [];
-        const results = await axe.run(document, axeOptions || undefined);
-        return results.violations;
-      }, options ?? null);
+      const axeBuilder = new AxeBuilder({ page });
+      if (options) {
+        axeBuilder.options(options);
+      }
+      const results = await axeBuilder.analyze();
+      const violations = results.violations ?? [];
 
       return violations as any[];
     } catch (error: any) {
@@ -128,6 +126,10 @@ async function runAxeViolations(page: any, options?: any): Promise<any[]> {
   }
 
   return [];
+}
+
+function criticalOrSeriousViolations(violations: any[]): any[] {
+  return violations.filter(v => v?.impact === 'critical' || v?.impact === 'serious');
 }
 
 // Set test timeout
@@ -157,8 +159,7 @@ test.describe('WCAG 2.1 Level AA Compliance', () => {
 
       const violations = await runAxeViolations(page);
 
-      // Keep strict direction while reducing false negatives from transient non-dashboard loads
-      expect(violations.length).toBeLessThanOrEqual(10);
+      expect(criticalOrSeriousViolations(violations)).toHaveLength(0);
     });
   });
 });
@@ -295,7 +296,7 @@ test.describe('Color Contrast (WCAG AA)', () => {
       runOnly: { type: 'rule', values: ['color-contrast'] },
     });
 
-    expect(contrastViolations.length).toBeLessThanOrEqual(10);
+    expect(criticalOrSeriousViolations(contrastViolations)).toHaveLength(0);
   });
 });
 
@@ -355,7 +356,7 @@ test.describe('Page Load Accessibility', () => {
     ensureExpectedPathOrSkip(page, '/crm');
 
     const violations = await runAxeViolations(page);
-    expect(violations.length).toBeLessThanOrEqual(10);
+    expect(criticalOrSeriousViolations(violations)).toHaveLength(0);
   });
 
   test('All Dashboard Pages - Load with minimal violations', async ({ page }) => {
@@ -404,7 +405,7 @@ test.describe('Responsive Accessibility', () => {
     ensureExpectedPathOrSkip(page, '/crm');
 
     const violations = await runAxeViolations(page);
-    expect(violations.length).toBeLessThanOrEqual(10);
+    expect(criticalOrSeriousViolations(violations)).toHaveLength(0);
   });
 
   test('Owner Dashboard - Tablet accessibility', async ({ page }) => {
@@ -415,7 +416,7 @@ test.describe('Responsive Accessibility', () => {
     ensureExpectedPathOrSkip(page, '/crm');
 
     const violations = await runAxeViolations(page);
-    expect(violations.length).toBeLessThanOrEqual(10);
+    expect(criticalOrSeriousViolations(violations)).toHaveLength(0);
   });
 });
 
@@ -468,5 +469,66 @@ test.describe('Accessibility Test Summary', () => {
     console.log('===================================\n');
 
     expect(report.status).toBe('PASSED');
+  });
+});
+
+// ─── W17-007: WCAG 2.2 — New Success Criteria Tests ─────────────────────────
+test.describe('WCAG 2.2 — New Success Criteria', () => {
+  test('homepage — no critical or serious axe violations', async ({ page }) => {
+    await page.goto('/');
+    await page.waitForLoadState('domcontentloaded');
+    await page.waitForTimeout(500);
+    const results = await new AxeBuilder({ page })
+      .options({
+        runOnly: {
+          type: 'tag',
+          values: ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'best-practice'],
+        },
+      })
+      .analyze();
+
+    const criticalViolations = (
+      results as { violations: Array<{ impact: string; id: string; description: string }> }
+    ).violations.filter(v => v.impact === 'critical' || v.impact === 'serious');
+
+    if (criticalViolations.length > 0) {
+      console.error('[WCAG 2.2] Critical/serious violations:', JSON.stringify(criticalViolations.map(v => ({ id: v.id, description: v.description })), null, 2));
+    }
+
+    expect(criticalViolations).toHaveLength(0);
+  });
+
+  test('sign-in page — no critical axe violations', async ({ page }) => {
+    await page.goto('/signin');
+    await page.waitForLoadState('domcontentloaded');
+    await page.waitForTimeout(500);
+    const results = await new AxeBuilder({ page })
+      .options({
+        runOnly: { type: 'tag', values: ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa'] },
+      })
+      .analyze();
+
+    const criticalViolations = (
+      results as { violations: Array<{ impact: string }> }
+    ).violations.filter(v => v.impact === 'critical');
+
+    expect(criticalViolations).toHaveLength(0);
+  });
+
+  test('properties page — no critical axe violations', async ({ page }) => {
+    await page.goto('/properties');
+    await page.waitForLoadState('domcontentloaded');
+    await page.waitForTimeout(500);
+    const results = await new AxeBuilder({ page })
+      .options({
+        runOnly: { type: 'tag', values: ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa'] },
+      })
+      .analyze();
+
+    const criticalViolations = (
+      results as { violations: Array<{ impact: string }> }
+    ).violations.filter(v => v.impact === 'critical');
+
+    expect(criticalViolations).toHaveLength(0);
   });
 });

@@ -11,6 +11,10 @@ interface FirebaseSyncBody {
   email?: unknown;
 }
 
+// Dev-safe default: use the built-in in-memory store unless a Redis-backed
+// store is explicitly wired back in through dependency installation.
+let sharedRateLimitStore: Store | undefined;
+
 const resolveFirebaseIdentity = (body: unknown): string => {
   if (!body || typeof body !== 'object') {
     return 'anonymous';
@@ -43,6 +47,7 @@ const normalizeIpKey = (ip: string | undefined): string =>
 
 /** Login: 5 attempts per 15 minutes per IP */
 export const authLimiter = rateLimit({
+  ...(sharedRateLimitStore ? { store: sharedRateLimitStore } : {}),
   windowMs: 15 * 60 * 1000, // 15 minutes
   max: 5,
   message: {
@@ -58,6 +63,7 @@ export const authLimiter = rateLimit({
 
 /** Firebase sync: allow more attempts for social auth handshake retries (shared IP safe) */
 export const firebaseSyncLimiter: RateLimitRequestHandler = rateLimit({
+  ...(sharedRateLimitStore ? { store: sharedRateLimitStore } : {}),
   windowMs: 15 * 60 * 1000, // 15 minutes
   max: 120,
   message: {
@@ -70,7 +76,7 @@ export const firebaseSyncLimiter: RateLimitRequestHandler = rateLimit({
   keyGenerator: req => {
     const baseIp = normalizeIpKey(req.ip || req.socket.remoteAddress || undefined);
     const identity = resolveFirebaseIdentity(req.body);
-    return `${baseIp}:${identity}`;
+    return `${ip}:${identity}`;
   },
   standardHeaders: true,
   legacyHeaders: false,
@@ -80,6 +86,7 @@ export const firebaseSyncLimiter: RateLimitRequestHandler = rateLimit({
 
 /** Registration: 3 attempts per hour per IP */
 export const registerLimiter = rateLimit({
+  ...(sharedRateLimitStore ? { store: sharedRateLimitStore } : {}),
   windowMs: 60 * 60 * 1000, // 1 hour
   max: 3,
   message: {
@@ -94,6 +101,7 @@ export const registerLimiter = rateLimit({
 
 /** Password change: 5 attempts per hour */
 export const passwordLimiter = rateLimit({
+  ...(sharedRateLimitStore ? { store: sharedRateLimitStore } : {}),
   windowMs: 60 * 60 * 1000,
   max: 5,
   message: {
@@ -112,6 +120,7 @@ export const passwordLimiter = rateLimit({
 
 /** General API: 100 requests per minute per IP */
 export const apiLimiter = rateLimit({
+  ...(sharedRateLimitStore ? { store: sharedRateLimitStore } : {}),
   windowMs: 60 * 1000, // 1 minute
   max: 100,
   message: {
@@ -134,6 +143,7 @@ export const apiLimiter = rateLimit({
 
 /** Strict: 10 requests per 15 minutes */
 export const strictLimiter = rateLimit({
+  ...(sharedRateLimitStore ? { store: sharedRateLimitStore } : {}),
   windowMs: 15 * 60 * 1000,
   max: 10,
   message: {
@@ -156,6 +166,7 @@ export const strictLimiter = rateLimit({
  * unauthenticated requests and is a spam/flood vector.
  */
 export const contactLimiter = rateLimit({
+  ...(sharedRateLimitStore ? { store: sharedRateLimitStore } : {}),
   windowMs: 60 * 60 * 1000, // 1 hour
   max: 10,
   message: {

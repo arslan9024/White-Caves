@@ -21,9 +21,23 @@ param(
 $ErrorActionPreference = "Continue"
 $root     = Resolve-Path $WorkspaceRoot
 $scripts  = Join-Path $root "scripts\orchestrator"
+$policyUtils = Join-Path $scripts "policy-utils.ps1"
 $w        = 72
 $stepNum  = 0
 $t0       = Get-Date
+
+if (Test-Path $policyUtils) {
+  . $policyUtils
+}
+
+$syncBase = "origin/main"
+if (Get-Command Get-OrchestratorPolicy -ErrorAction SilentlyContinue) {
+  try {
+    $policy = Get-OrchestratorPolicy -WorkspaceRoot $root
+    $gitPolicy = Get-OrchestratorGitPolicy -Policy $policy
+    $syncBase = ("{0}/{1}" -f $gitPolicy.defaultRemote, $gitPolicy.integrationBranch)
+  } catch {}
+}
 
 function Write-Step($title) {
   $script:stepNum++
@@ -169,11 +183,34 @@ if ($null -ne $prevSnap) {
 }
 
 # ------------------------------------------------------------------
-# STEP 0: Queue health pre-check -- catch corruption BEFORE work begins
+# STEP 0: Loop-start sync -- stash/fetch/merge/pop from main
 # ------------------------------------------------------------------
 Write-Host ""
 Write-Host ("=" * $w) -ForegroundColor Cyan
-Write-Host "  STEP 0 -- QUEUE HEALTH PRE-CHECK" -ForegroundColor Yellow
+Write-Host ("  STEP 0 -- LOOP START SYNC ({0})" -f $syncBase) -ForegroundColor Yellow
+Write-Host ("=" * $w) -ForegroundColor Cyan
+$syncScript = Join-Path $scripts "loop-start-sync.ps1"
+if (Test-Path $syncScript) {
+  & powershell -ExecutionPolicy Bypass -File "$syncScript" -WorkspaceRoot $root
+  $syncExit = $LASTEXITCODE
+  if ($syncExit -ne 0) {
+    Write-Host ""
+    Write-Host ("  [!!] LOOP START SYNC BLOCKED (exit {0}) -- session ABORTED" -f $syncExit) -ForegroundColor Red
+    Write-Host "  Resolve merge/stash conflicts and retry." -ForegroundColor Red
+    Write-Host ("=" * $w) -ForegroundColor Red
+    exit 1
+  }
+  Write-Host "  Loop-start sync PASS -- proceeding to pre-checks." -ForegroundColor Green
+} else {
+  Write-Host "  [SKIP] loop-start-sync.ps1 not found -- skipping sync step." -ForegroundColor DarkYellow
+}
+
+# ------------------------------------------------------------------
+# STEP 0.2: Queue health pre-check -- catch corruption BEFORE work begins
+# ------------------------------------------------------------------
+Write-Host ""
+Write-Host ("=" * $w) -ForegroundColor Cyan
+Write-Host "  STEP 0.2 -- QUEUE HEALTH PRE-CHECK" -ForegroundColor Yellow
 Write-Host ("=" * $w) -ForegroundColor Cyan
 $healthScript = Join-Path $scripts "queue-health.ps1"
 if (Test-Path $healthScript) {

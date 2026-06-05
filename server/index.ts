@@ -18,7 +18,15 @@ import { connectDatabase, prisma } from './database.js';
 import { errorHandler, asyncHandler, AppError } from './middleware/errorHandler.js';
 import authMiddleware from './middleware/auth.js';
 import { requestIdMiddleware } from './middleware/requestId.js';
+import cspMiddleware from './middleware/csp.js';
+import {
+  API_PREFIX,
+  API_V1_PREFIX,
+  createV1CompatibilityProxy,
+  markLegacyApiDeprecated,
+} from './middleware/apiVersioning.js';
 import { CORS_ORIGINS, WHATSAPP_WEBHOOK_SECRET, IS_PRODUCTION } from './config/env.js';
+import { buildAllowedCorsOrigins, inferRequestOrigin, isCorsOriginAllowed } from './config/cors.js';
 import {
   apiLimiter,
   authLimiter,
@@ -28,12 +36,14 @@ import {
   strictLimiter,
   contactLimiter,
 } from './middleware/rateLimiter.js';
+import { sanitizeDeep } from './utils/sanitize.js';
 import logger from './utils/logger.js';
 
 // Route imports (ESM-compatible)
 import authRoutes from './routes/auth.js';
 import leadsRoutes from './routes/leads.js';
 import propertiesRoutes from './routes/properties.js';
+import syndicationRoutes from './routes/syndication.js';
 import agentsRoutes from './routes/agents.js';
 import transactionsRoutes from './routes/transactions.js';
 import financeRoutes from './routes/finance.js';
@@ -73,8 +83,10 @@ import homepageRoutes from './routes/homepage.js';
 import contactRoutes from './routes/contact.js';
 import aiChatRoutes from './routes/aiChat.js';
 import jobApplicationsRoutes from './routes/jobApplications.js';
+import sitemapRoutes from './routes/sitemap.js';
 import contractsRoutes from './routes/contracts.js';
 import appointmentsRoutes from './routes/appointments.js';
+import mortgageRoutes from './routes/mortgage.js';
 import { roleRequestRouter, adminRoleRequestRouter } from './routes/roleRequests.js';
 import { phase6Router } from './routes/phase6.routes.js';
 import landlordPortalRoutes from './routes/landlord.js';
@@ -87,31 +99,16 @@ import commissionsRoutes from './routes/commissions.js';
 import notificationsRoutes from './routes/notifications.js';
 import importHistoryRoutes from './routes/importHistory.routes.js';
 import smartImportRoutes from './routes/smartImport.routes.js';
+import mediaRoutes from './routes/media.js';
 import { requireRole, requirePermission } from './middleware/rbac.js';
-import { startLeadScoringScheduler } from './services/ai/leadScoringScheduler.js';
 import { startFollowUpScheduler } from './services/automation/followUpScheduler.js';
 import { startRateRefresh } from './services/currencyService.js';
 import { startViewingReminderScheduler } from './services/schedulingService.js';
 import { startRERAExpiryScheduler } from './services/compliance/reraExpiryScheduler.js';
-import { startPermitAlertScheduler } from './services/compliance/permitAlertScheduler.js';
-import { startPropertyPermitEnforcementScheduler } from './services/compliance/propertyPermitEnforcementScheduler.js';
 import { startAutoRouting } from './services/ai/leadAutoRouter.js';
 
 const app: Express = express();
-
-const normalizeOrigin = (value: string): string => value.replace(/\/$/, '').toLowerCase();
-const configuredCorsOrigins = new Set(CORS_ORIGINS.map(origin => normalizeOrigin(origin)));
-const isLocalDevOrigin = (origin: string): boolean => {
-  try {
-    const parsed = new URL(origin);
-    return (
-      (parsed.hostname === 'localhost' || parsed.hostname === '127.0.0.1') &&
-      (parsed.protocol === 'http:' || parsed.protocol === 'https:')
-    );
-  } catch {
-    return false;
-  }
-};
+const allowedCorsOrigins = buildAllowedCorsOrigins(CORS_ORIGINS, process.env.NODE_ENV);
 
 // Trust the first proxy in front of the server (e.g. Vercel edge, nginx, AWS ALB).
 // This makes req.ip and all express-rate-limit lookups use the real client IP
@@ -125,6 +122,7 @@ app.set('trust proxy', 1);
 const PREFERRED_PORT =
   process.env.API_PORT ||
   (process.env.NODE_ENV === 'development' ? 3001 : process.env.PORT || 3001);
+const PORT = Number(resolvedPortValue);
 
 const parsePort = (value: string | number): number => {
   const parsed = Number(value);
@@ -194,45 +192,13 @@ app.use(requestIdMiddleware);
 // Security middleware
 app.use(
   helmet({
-    contentSecurityPolicy: {
-      directives: {
-        defaultSrc: ["'self'"],
-        scriptSrc: [
-          "'self'",
-          "'unsafe-inline'", // Required by React hydration and Firebase/Stripe SDKs
-          'https://*.firebaseapp.com',
-          'https://*.googleapis.com',
-        ],
-        styleSrc: ["'self'", "'unsafe-inline'", 'https://fonts.googleapis.com'],
-        fontSrc: ["'self'", 'https://fonts.gstatic.com'],
-        imgSrc: [
-          "'self'",
-          'data:',
-          'blob:',
-          'https://*.unsplash.com',
-          'https://*.googleapis.com',
-          'https://*.gstatic.com',
-        ],
-        connectSrc: [
-          "'self'",
-          'https://*.firebaseio.com',
-          'https://*.googleapis.com',
-          'https://*.firebase.com',
-          'wss://*.firebaseio.com',
-          'https://api.stripe.com',
-        ],
-        frameSrc: ['https://*.firebaseapp.com', 'https://js.stripe.com'],
-        objectSrc: ["'none'"],
-        baseUri: ["'self'"],
-        // Force browser to upgrade all HTTP sub-resource requests to HTTPS in production
-        ...(IS_PRODUCTION ? { upgradeInsecureRequests: [] } : {}),
-      },
-    },
+    contentSecurityPolicy: false,
     // Explicit referrer policy: send origin only on same-origin requests; omit on cross-origin
     referrerPolicy: { policy: 'strict-origin-when-cross-origin' },
     crossOriginEmbedderPolicy: false, // Required for Firebase/Stripe iframes
   })
 );
+app.use(cspMiddleware);
 
 // Permissions-Policy: restrict access to browser features.
 // Helmet v8 does not bundle permissionsPolicy, so we set it as a custom header.
@@ -256,28 +222,22 @@ app.use((_req: Request, res: Response, next: NextFunction) => {
   next();
 });
 app.use(
-  cors({
-    origin: (origin, callback) => {
-      // Allow requests with no origin (server-to-server, curl, mobile apps)
-      if (!origin) {
-        callback(null, true);
-        return;
-      }
+  cors((req, callback) => {
+    const requestOrigin = inferRequestOrigin(req);
+    const origin = req.header('Origin');
+    const isAllowed = isCorsOriginAllowed(
+      origin,
+      allowedCorsOrigins,
+      requestOrigin,
+      process.env.NODE_ENV
+    );
 
-      const normalizedOrigin = normalizeOrigin(origin);
-      if (configuredCorsOrigins.has(normalizedOrigin)) {
-        callback(null, true);
-        return;
-      }
+    if (isAllowed) {
+      callback(null, { origin: true, credentials: true });
+      return;
+    }
 
-      // In local development, allow localhost/127.0.0.1 origins on dynamic Vite ports.
-      if (!IS_PRODUCTION && isLocalDevOrigin(origin)) {
-        callback(null, true);
-      } else {
-        callback(new Error('Not allowed by CORS'));
-      }
-    },
-    credentials: true,
+    callback(new Error('Not allowed by CORS'));
   })
 );
 
@@ -311,9 +271,34 @@ app.use(express.urlencoded({ limit: '1mb', extended: true }));
 // Cookie parsing — required for httpOnly refresh-token cookie on /api/auth/refresh
 app.use(cookieParser());
 
+// Wave 16: versioned API migration.
+// Requests to /api/v1/* are rewritten to /api/* to preserve existing handlers.
+app.use(API_V1_PREFIX, createV1CompatibilityProxy(app));
+
+// Legacy /api/* responses are kept as compatibility aliases and marked deprecated.
+app.use(API_PREFIX, markLegacyApiDeprecated);
+
+// Sanitize inbound JSON mutation payloads to reduce XSS storage risk.
+// Note: req.path inside app.use('/api', ...) is relative to the /api mount point,
+// so exempt paths must omit the /api prefix. The req.is('json') guard ensures
+// multipart/form-data upload routes and other non-JSON bodies are not touched.
+const NON_SANITIZED_PATHS = new Set(['/whatsapp/webhook', '/auth/refresh']);
+app.use('/api', (req: Request, _res: Response, next: NextFunction) => {
+  if (
+    ['POST', 'PUT', 'PATCH'].includes(req.method) &&
+    !NON_SANITIZED_PATHS.has(req.path) &&
+    req.is('json') &&
+    req.body &&
+    typeof req.body === 'object'
+  ) {
+    req.body = sanitizeDeep(req.body) as Request['body'];
+  }
+  next();
+});
+
 // Content-Type validation for mutation endpoints
 // Exempt paths that accept non-JSON bodies (file uploads, webhooks, cookie-only endpoints).
-const NON_JSON_PATHS = new Set(['/api/whatsapp/webhook', '/api/auth/refresh']);
+const NON_JSON_PATHS = new Set(['/api/whatsapp/webhook', '/api/auth/refresh', '/api/media/upload']);
 app.use('/api', (req: Request, res: Response, next) => {
   if (
     ['POST', 'PUT', 'PATCH'].includes(req.method) &&
@@ -339,7 +324,6 @@ app.use('/api/auth/2fa/enable', strictLimiter);
 app.use('/api/auth/2fa/disable', strictLimiter);
 app.use('/api/auth/refresh', authLimiter);
 app.use('/api/auth/firebase-sync', firebaseSyncLimiter);
-app.use('/api/auth/refresh', authLimiter);
 app.use('/api/auth/webauthn/register', authLimiter);
 app.use('/api/auth/webauthn/authenticate', authLimiter);
 app.use('/api/contact', contactLimiter); // Public unauthenticated — stricter: 10/hour/IP
@@ -366,6 +350,36 @@ app.get('/api/health', (req: Request, res: Response) => {
     version: process.env.APP_VERSION || '1.0.0',
   });
 });
+
+// Database health check — Wave 15 (W15-002)
+app.get(
+  '/api/health/db',
+  asyncHandler(async (_req: Request, res: Response) => {
+    const start = Date.now();
+    try {
+      await prisma.$runCommandRaw({ ping: 1 });
+      const latencyMs = Date.now() - start;
+      const cacheHealth = await cacheService.ping();
+      res.status(200).json({
+        status: 'healthy',
+        latencyMs,
+        cache: cacheHealth,
+        timestamp: new Date(),
+      });
+    } catch (err) {
+      const latencyMs = Date.now() - start;
+      res.status(503).json({
+        status: 'unhealthy',
+        latencyMs,
+        error: err instanceof Error ? err.message : 'Database unreachable',
+        timestamp: new Date(),
+      });
+    }
+  })
+);
+
+// Dynamic sitemap.xml (SEO)
+app.use('/', sitemapRoutes);
 
 // ============================================================================
 // API ROUTES
@@ -423,6 +437,9 @@ app.use('/api/leads', leadsRoutes);
 
 // Properties API (Mary - Inventory Manager)
 app.use('/api/properties', propertiesRoutes);
+
+// Portal syndication API (Property Finder / Bayut queueing)
+app.use('/api/syndication', syndicationRoutes);
 
 // Agents API
 app.use('/api/agents', agentsRoutes);
@@ -494,6 +511,9 @@ app.use('/api/favorites', favoritesRoutes);
 // Notifications API (any authenticated user can manage their own notifications)
 app.use('/api/notifications', notificationsRoutes);
 
+// Media API — Wave 13 upload/transform/delete pipeline
+app.use('/api/media', mediaRoutes);
+
 // Saved Searches API (any authenticated user can manage their own saved searches)
 app.use('/api/saved-searches', savedSearchesRoutes);
 
@@ -514,6 +534,9 @@ app.use('/api/maintenance', maintenanceRoutes);
 
 // Valuation API — Wave 12 (AVM + manual override + bank request)
 app.use('/api/valuations', authMiddleware, valuationRoutes);
+
+// Mortgage API — Wave 14 (calculation + FX conversion)
+app.use('/api/mortgage', mortgageRoutes);
 
 // Market Intelligence API — Wave 12 (price index, transactions, RERA index)
 app.use('/api/market', authMiddleware, marketRoutes);
@@ -558,6 +581,7 @@ app.post(
 
 // Reporting API (Zoe - Executive Dashboard)
 app.use('/api/dashboard', reportingRoutes);
+app.use('/api/reports', reportingRoutes);
 
 // Compliance API (Laila - Compliance Officer)
 app.use('/api/compliance', complianceRoutes);
@@ -567,9 +591,6 @@ app.use('/api/crm/export', strictLimiter); // Strict rate limit on data export
 app.use('/api/crm', crmRoutes);
 
 // AI Assistants API (Phase 0.8 — plan management)
-app.use('/api/assistants', assistantsRoutes);
-
-// External module gateway (Linda + Henry separate repos)
 app.use('/api/integrations', integrationsRoutes);
 app.use('/api/orchestration', orchestrationRoutes);
 
@@ -741,7 +762,7 @@ app.delete(
   authMiddleware,
   requirePermission('access_whatsapp_business'),
   asyncHandler(async (req: Request, res: Response) => {
-    const { id } = req.params;
+    const { id } = req.params as Record<string, string>;
     const message = await prisma.nadiaMessage.findUnique({ where: { id } });
     if (!message) throw new AppError('Message not found', 404);
     await prisma.nadiaMessage.delete({ where: { id } });
@@ -1070,9 +1091,10 @@ if (IS_PRODUCTION) {
 // 404 handler
 app.use((req: Request, res: Response) => {
   res.status(404).json({
+    status: 'error',
     success: false,
-    error: 'Not Found',
     message: `Route ${req.path} not found`,
+    error: 'Not Found',
     statusCode: 404,
   });
 });
@@ -1092,14 +1114,12 @@ const startServer = async () => {
     logger.info('MongoDB connected successfully');
 
     // Start background services
-    startLeadScoringScheduler();
     startFollowUpScheduler();
     startRateRefresh(); // Phase 2E: refresh exchange rates every 6h
     startViewingReminderScheduler(); // Phase 3C: viewing reminders every 15 min
     startRERAExpiryScheduler(); // Phase 3D: RERA BRN expiry checks daily
-    startPermitAlertScheduler(); // Wave 04: permit/BRN alert snapshots daily
-    startPropertyPermitEnforcementScheduler(); // Wave 04: auto-unpublish non-compliant available listings daily
     startAutoRouting(); // Phase 4A: auto-route hot leads to best agents
+    schedulerService.start(); // Wave 12: cron automation engine
 
     // Boot AssistantOrchestrator — register all 5 assistant handler chains
     import('./services/orchestrator/AssistantOrchestrator.js')
@@ -1170,6 +1190,12 @@ const startServer = async () => {
     logger.warn(`API port fallback active: preferred ${preferredPort}, listening on ${activePort}`);
   }
 
+  logger.info(`Server started on ${host}`);
+  logger.info(`Environment: ${process.env.NODE_ENV || 'development'}`);
+  logger.info(`API Base (v1): ${host}/api/v1`);
+  logger.info(`API Legacy Alias: ${host}/api`);
+  logger.info(`Socket.io: ws://${host.replace(/^https?:\/\//, '')}`);
+
   return httpServer;
 };
 
@@ -1207,8 +1233,11 @@ const gracefulShutdown = async (signal: string) => {
       logger.info('HTTP server closed — no new connections');
     });
   }
-  // 2. Allow in-flight requests up to 10s to finish
-  await new Promise(resolve => setTimeout(resolve, 10_000));
+  // 2. Allow in-flight requests to finish.
+  // In production keep a longer drain window; in dev/test keep shutdown fast
+  // so nodemon restarts do not race and re-bind errors (EADDRINUSE) are avoided.
+  const shutdownDrainMs = IS_PRODUCTION ? 10_000 : 500;
+  await new Promise(resolve => setTimeout(resolve, shutdownDrainMs));
   // 3. Disconnect database
   await prisma.$disconnect();
   logger.info('Database disconnected — exiting');

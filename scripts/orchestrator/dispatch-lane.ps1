@@ -142,9 +142,9 @@ try {
   }
 
   $candidate.status      = "running"
-  $candidate.startedAt   = (Get-Date).ToString("o")
-  $candidate.attempts    = [int]$candidate.attempts + 1
-  # Add claimedBy as new property (JSON objects don't have it by default)
+  $candidate | Add-Member -NotePropertyName "startedAt" -NotePropertyValue ((Get-Date).ToString("o")) -Force
+  $candidate | Add-Member -NotePropertyName "attempts" -NotePropertyValue ([int]$candidate.attempts + 1) -Force
+  # Add claimedBy as new property (JSON objects don't always have it by default)
   $candidate | Add-Member -NotePropertyName "claimedBy" -NotePropertyValue $WorkerLabel -Force
 
   Save-Queue -Queue $queue -Path $queueFile

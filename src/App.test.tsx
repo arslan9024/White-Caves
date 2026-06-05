@@ -256,8 +256,14 @@ vi.mock('react-redux', () => ({
         currentUser: mockReduxState.currentUser,
         isLoading: mockReduxState.isLoading,
       },
+      auth: {
+        user: null,
+        token: null,
+        session: { isLoggedIn: false },
+      },
       navigation: {
         theme: 'light',
+        activeRole: null,
       },
     };
     return selector(state);
@@ -583,14 +589,14 @@ describe('App', () => {
 
   // ── Protected Route ──
 
-  it('redirects unauthenticated user from /dashboard to /', async () => {
+  it('redirects unauthenticated user from /dashboard to /signin', async () => {
     mockReduxState.isLoading = false;
     mockReduxState.currentUser = null;
     await act(async () => {
       renderAtRoute('/dashboard');
     });
     await waitFor(() => {
-      expect(screen.getByTestId('home-page')).toBeInTheDocument();
+      expect(screen.getByTestId('signin-page')).toBeInTheDocument();
     });
   });
 

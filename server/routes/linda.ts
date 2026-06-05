@@ -259,7 +259,7 @@ router.post(
   async (req: Request, res: Response) => {
     try {
       const { phoneNumber, message } = req.body;
-      const { conversationId } = req.params;
+      const { conversationId } = req.params as Record<string, string>;
 
       if (!phoneNumber || !message) {
         return res
@@ -445,7 +445,7 @@ router.post(
   requireRole('owner', 'admin'),
   async (req: Request, res: Response) => {
     try {
-      const { id } = req.params;
+      const { id } = req.params as Record<string, string>;
       const updated = await dispatchLindaCampaign(id);
       res.json({ success: true, data: updated });
     } catch (err) {
@@ -546,7 +546,7 @@ router.get(
   requirePermission('view_whatsapp_conversations'),
   async (req: Request, res: Response) => {
     try {
-      const { phoneNumber } = req.params;
+      const { phoneNumber } = req.params as Record<string, string>;
       const limit = req.query.limit ? parseInt(req.query.limit as string) : 50;
 
       const { messageBridge } = await getOrInitLindaRuntime();
@@ -568,7 +568,7 @@ router.get(
   requirePermission('view_whatsapp_conversations'),
   async (req: Request, res: Response) => {
     try {
-      const { phoneNumber } = req.params;
+      const { phoneNumber } = req.params as Record<string, string>;
       const cleanPhone = String(phoneNumber || '').replace(/\D/g, '');
 
       if (cleanPhone.length < 8) {

@@ -9,6 +9,7 @@
 #   npm run orchestrator:agent-loop -- -Agent @Timnit  -- force specific agent
 #   npm run orchestrator:agent-loop -- -Once            -- one slot, then exit
 #   npm run orchestrator:agent-loop -- -NoBrowser       -- skip browser launch
+#   npm run orchestrator:agent-loop -- -OpenBrowser     -- explicitly open browser
 #   npm run orchestrator:agent-loop -- -ShowSchedule    -- print schedule, exit
 #   npm run orchestrator:agent-loop -- -NonInteractive   -- auto-confirm and continue
 #   npm run orchestrator:agent-loop -- -Autopilot        -- continuous mode (no asks, no browser auto-open)
@@ -21,6 +22,8 @@ param(
   [string]$WorkspaceRoot = ".",
   [switch]$Once,
   [switch]$NoBrowser,
+  [switch]$ForceBrowserOpen,
+  [switch]$OpenBrowser,
   [switch]$ShowSchedule,
   [switch]$NonInteractive,
   [switch]$Autopilot,
@@ -338,6 +341,23 @@ function Get-NextReadyInRotation {
   for ($i = 0; $i -lt $startIdx; $i++) { $ordered += $slotAgents[$i] }
   foreach ($aa in $anyAgents) {
     if ($ordered -notcontains $aa) { $ordered += $aa }
+  }
+  $dynamicReadyAgents = @()
+  foreach ($t in ($allTasks | Sort-Object taskId)) {
+    if ($t.status -notin @("queued","retrying")) { continue }
+    $isBlocked = $false
+    foreach ($dep in @($t.dependsOn)) {
+      $depTask = $allTasks | Where-Object { $_.taskId -eq $dep } | Select-Object -First 1
+      if ($null -eq $depTask -or $depTask.status -ne "done") { $isBlocked = $true; break }
+    }
+    if ($isBlocked) { continue }
+    $agentName = [string]$t.agent
+    if (-not [string]::IsNullOrWhiteSpace($agentName) -and $dynamicReadyAgents -notcontains $agentName) {
+      $dynamicReadyAgents += $agentName
+    }
+  }
+  foreach ($ra in $dynamicReadyAgents) {
+    if ($ordered -notcontains $ra) { $ordered += $ra }
   }
 
   foreach ($ag in $ordered) {
@@ -773,6 +793,78 @@ function Get-Prompt {
   return "(no prompt for $taskId -- add to prompts.json)"
 }
 
+function Get-Prompt {
+  param([string]$taskId)
+  $val = Get-PromptRecord -taskId $taskId
+  if ($null -eq $val) { return "(no prompt for $taskId -- add to prompts.json)" }
+  if ($val -is [string]) { return $val }
+  if ($val.PSObject.Properties.Name -contains "prompt") { return [string]$val.prompt }
+  return [string]$val
+}
+
+function Get-PromptVersion {
+  param([string]$taskId)
+  $val = Get-PromptRecord -taskId $taskId
+  if ($null -eq $val) { return 1 }
+  if ($val -is [string]) { return 1 }
+  if ($val.PSObject.Properties.Name -contains "v") { return [int]$val.v }
+  return 1
+}
+
+function Get-LastScanStatus {
+  if (-not (Test-Path $scanLogDir)) { return "UNKNOWN" }
+  $latest = Get-ChildItem -Path $scanLogDir -Filter "error-scan-*.json" -ErrorAction SilentlyContinue | Sort-Object LastWriteTime -Descending | Select-Object -First 1
+  if ($null -eq $latest) { return "UNKNOWN" }
+  try {
+    $scan = Get-Content $latest.FullName -Raw | ConvertFrom-Json
+    if ($scan.passed) { return "PASS" }
+    return "FAIL"
+  } catch {
+    return "UNKNOWN"
+  }
+}
+
+function Get-MainDelta {
+  $branch = (git rev-parse --abbrev-ref HEAD 2>$null).Trim()
+  if ($LASTEXITCODE -ne 0 -or [string]::IsNullOrWhiteSpace($branch)) { return "unknown" }
+  $behind = (git rev-list --count "HEAD..$trackingRemote/$trackingBranch" 2>$null).Trim()
+  if ([string]::IsNullOrWhiteSpace($behind)) { $behind = "0" }
+  return ("{0} (+{1} behind {2})" -f $branch, $behind, $trackingBranch)
+}
+
+function Test-MiniTypecheck {
+  param([string[]]$changedFiles)
+  $codeFiles = @($changedFiles | Where-Object { $_ -match '\.(ts|tsx)$' })
+  if ($codeFiles.Count -eq 0) { return $true }
+
+  Write-Host ""
+  Write-Host "  [MINI-SCAN] Running typecheck for changed TS files..." -ForegroundColor Cyan
+  $out = npm run typecheck 2>&1 | Out-String
+  if ($LASTEXITCODE -eq 0) {
+    Write-Host "  [MINI-SCAN] PASS" -ForegroundColor Green
+    return $true
+  }
+
+  $hit = $false
+  foreach ($f in $codeFiles) {
+    $norm = $f.Replace("/", "\")
+    if ($out -match [regex]::Escape($norm) -or $out -match [regex]::Escape($f)) {
+      $hit = $true
+      break
+    }
+  }
+
+  if ($hit) {
+    Write-Host "  [MINI-SCAN] Type errors found in changed files. Fix before marking done." -ForegroundColor Red
+    Write-Host $out -ForegroundColor DarkGray
+    Write-Host "  Suggested fix: npm run typecheck" -ForegroundColor Yellow
+    return $false
+  }
+
+  Write-Host "  [MINI-SCAN] Typecheck failed, but not directly tied to changed files." -ForegroundColor Yellow
+  return $true
+}
+
 function Write-Divider { param([string]$color="DarkGray"); Write-Host ("-" * $w) -ForegroundColor $color }
 function Write-BigDivider { param([string]$color="Magenta"); Write-Host ("=" * $w) -ForegroundColor $color }
 
@@ -854,6 +946,23 @@ if (Test-Path $phaseStateFile) {
 
 :outerLoop while ($true) {
   $loopCount++
+
+  if ($Autopilot -and (Test-Path $loopSyncScript)) {
+    Write-Host ""
+    Write-Host ("  [AUTOPILOT] Syncing from main before cycle {0}..." -f $loopCount) -ForegroundColor Cyan
+    & $powerShellExe -ExecutionPolicy Bypass -File "$loopSyncScript" -WorkspaceRoot $root
+    if ($LASTEXITCODE -ne 0) {
+      Write-Host "  [BLOCKED] loop-start-sync failed in autopilot mode." -ForegroundColor Red
+      break outerLoop
+    }
+  }
+
+  $doneNow = Get-QueueDoneCount
+  $readyNow = Get-ReadyCount
+  $blockedNow = Get-BlockedCount
+  $branchDelta = Get-MainDelta
+  $lastScan = Get-LastScanStatus
+  Write-Host ("[CYCLE {0}] Queue: {1}/51 done | {2} READY | {3} BLOCKED | Branch: {4} | Last scan: {5}" -f $loopCount, $doneNow, $readyNow, $blockedNow, $branchDelta, $lastScan) -ForegroundColor DarkGray
 
   # 1. DETERMINE ACTIVE AGENT
   if ($Agent -ne "") {
@@ -1068,6 +1177,8 @@ if (Test-Path $phaseStateFile) {
   $taskPriority = [string]$task.priority
   if ([string]::IsNullOrWhiteSpace($taskPriority)) { $taskPriority = "normal" }
   $prompt  = Get-Prompt -taskId $taskId
+  $promptVersion = Get-PromptVersion -taskId $taskId
+  $beforeCycleFiles = @(git diff --name-only HEAD 2>$null)
   $url     = if ($toolUrl.ContainsKey($activeAgent))  { $toolUrl[$activeAgent]  } else { "https://aistudio.google.com/" }
   $toolStr = if ($toolName.ContainsKey($activeAgent)) { $toolName[$activeAgent] } else { "Free AI Tool" }
   $nextSlotMin = Get-MinutesUntilNextSlot
@@ -1097,15 +1208,24 @@ if (Test-Path $phaseStateFile) {
   Write-Host ""
 
   # 5. OPEN BROWSER
-  if (-not $NoBrowser) {
+  if (-not $effectiveNoBrowser) {
     try {
-      Start-Process $url
-      Write-Host ("  [OPENED] {0}" -f $url) -ForegroundColor Green
+      if (Get-Command Invoke-AegisBrowserLaunch -ErrorAction SilentlyContinue) {
+        $launchResult = Invoke-AegisBrowserLaunch -Url $url -WorkspaceRoot $root -Force:$ForceBrowserOpen
+        if ($launchResult.launched) {
+          Write-Host ("  [OPENED] {0}" -f $url) -ForegroundColor Green
+        } else {
+          Write-Host ("  [SKIP] Browser launch skipped for {0} (already opened recently)." -f $url) -ForegroundColor Yellow
+        }
+      } else {
+        Start-Process $url
+        Write-Host ("  [OPENED] {0}" -f $url) -ForegroundColor Green
+      }
     } catch {
       Write-Host ("  [WARN] Could not open browser. Navigate manually to: {0}" -f $url) -ForegroundColor Yellow
     }
   } else {
-    Write-Host ("  [NO-BROWSER] Navigate to: {0}" -f $url) -ForegroundColor DarkGray
+    Write-Host ("  [NO-BROWSER] Browser auto-open disabled by default. Navigate manually to: {0}" -f $url) -ForegroundColor DarkGray
   }
   Write-Host ""
 
@@ -1141,6 +1261,23 @@ if (Test-Path $phaseStateFile) {
       "Auto-advanced via agent-loop non-interactive mode -- $taskId"
     } else {
       "Expanded via agent-loop paste session -- $taskId"
+    }
+  }
+
+  # 7.5 MINI TYPECHECK on files changed during this cycle
+  $afterCycleFiles = @(git diff --name-only HEAD 2>$null)
+  $changedThisCycle = @($afterCycleFiles | Where-Object { $beforeCycleFiles -notcontains $_ })
+  $miniScanOk = Test-MiniTypecheck -changedFiles $changedThisCycle
+  if (-not $miniScanOk) {
+    if ($effectiveNonInteractive) {
+      Write-Host "  [AUTO] Blocking cycle due to mini typecheck failure." -ForegroundColor Red
+      break outerLoop
+    }
+    Write-Host "  Resolve type errors in changed files, then press Enter to continue or type 'skip'." -ForegroundColor Yellow
+    $miniConfirm = Read-Host "  > "
+    if ($miniConfirm.Trim().ToLower() -eq "skip") {
+      Write-Host "  [SKIP] Task not marked done due to mini typecheck failure." -ForegroundColor Yellow
+      continue
     }
   }
 
@@ -1192,7 +1329,7 @@ if (Test-Path $phaseStateFile) {
         $ackScript = Join-Path $scripts "ack-task.ps1"
         if (Test-Path $ackScript) {
           Write-Host ("  [AUTO-ACK] Autopilot acknowledging {0} by {1}" -f $taskId, $ackBy) -ForegroundColor Cyan
-          & powershell -ExecutionPolicy Bypass -File "$ackScript" `
+          & $powerShellExe -ExecutionPolicy Bypass -File "$ackScript" `
             -TaskId $taskId `
             -AckBy $ackBy 2>&1 | Out-String | Write-Host
         }
@@ -1275,6 +1412,26 @@ if (Test-Path $phaseStateFile) {
   Write-Divider -color Green
   Write-Host ""
 
+  # 9.5 Cycle logging + blocker auto-escalation
+  if (Test-Path $cycleSummaryScript) {
+    & $powerShellExe -ExecutionPolicy Bypass -File "$cycleSummaryScript" `
+      -WorkspaceRoot $root `
+      -Record `
+      -Cycle $loopCount `
+      -Agent $activeAgent `
+      -TaskId $taskId `
+      -ErrorScanPassed:$miniScanOk `
+      -SyncedFromMain:$Autopilot `
+      -PushedToMain:$false `
+      -PromptVersion $promptVersion 2>&1 | Out-String | Write-Host
+  }
+  if ($effectiveNonInteractive -and (Test-Path $autoEscalateScript)) {
+    & $powerShellExe -ExecutionPolicy Bypass -File "$autoEscalateScript" -WorkspaceRoot $root 2>&1 | Out-String | Write-Host
+  }
+  if ($effectiveNonInteractive -and (Test-Path $blockerBriefScript)) {
+    & $powerShellExe -ExecutionPolicy Bypass -File "$blockerBriefScript" -WorkspaceRoot $root -Brief 2>&1 | Out-String | Write-Host
+  }
+
   # 10. LOOP CONTROL
   if ($Once) { break outerLoop }
 
@@ -1308,3 +1465,4 @@ Write-Host ("  LOOP COMPLETE -- {0} round(s) run" -f $loopCount) -ForegroundColo
 Write-Host "  Run: npm run orchestrator:session:compact  -- to see full queue state" -ForegroundColor DarkGray
 Write-BigDivider
 Write-Host ""
+

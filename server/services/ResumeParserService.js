@@ -101,7 +101,7 @@ export class ResumeParserService {
         // Convert buffer to string for basic text extraction
         let text = fileBuffer.toString('latin1');
         // Remove PDF header/footer noise
-        text = text.replace(/\x00/g, '').replace(/[^\x20-\x7E\n]/g, ' ');
+        text = text.split('\0').join('').replace(/[^\x20-\x7E\n]/g, ' ');
         
         return {
           success: true,

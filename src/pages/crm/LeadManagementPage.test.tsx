@@ -74,7 +74,7 @@ vi.mock('./hooks/useLeadManagement', () => ({
   useLeadManagement: () => ({
     filteredLeads: MOCK_LEADS,
     paginatedLeads: MOCK_LEADS,
-    statusCounts: { all: 2, hot: 1, warm: 1 },
+    statusCounts: new Map([['all', 2], ['hot', 1], ['warm', 1]]),
     loading: false,
     error: null,
     search: '',
@@ -153,6 +153,13 @@ vi.mock('../../components/ui', () => ({
     <div data-testid="pagination">
       <span>Page {currentPage}</span>
       <button onClick={() => onPageChange(currentPage + 1)}>Next</button>
+    </div>
+  ),
+  EmptyState: ({ icon, title, description }: { icon?: string; title: string; description?: string }) => (
+    <div data-testid="empty-state">
+      {icon && <span>{icon}</span>}
+      <p>{title}</p>
+      {description && <p>{description}</p>}
     </div>
   ),
 }));

@@ -16,6 +16,7 @@ import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import SuspenseLoader from '../components/common/SuspenseLoader';
 import RouteErrorBoundary from '../components/RouteErrorBoundary';
 import DepartmentContentPanel from '../components/layout/DepartmentContentPanel/DepartmentContentPanel';
+import MobileCRMDrawer from '../components/layout/MobileCRMDrawer';
 import AuthenticatedPageShell from '../components/layout/authenticated/AuthenticatedPageShell';
 import SubNavBar from '../components/common/SubNavBar';
 import { DashboardSubTabRenderer } from '../components/dashboard/DashboardRenderer';
@@ -31,6 +32,12 @@ import { useUnifiedDashboard } from '../hooks/useUnifiedDashboard';
 import type { DashboardData, CRMModuleProps } from '../hooks/useUnifiedDashboard';
 import { AI_ASSISTANTS_REGISTRY } from '../store/slices/aiAssistant/registry';
 import { selectSelectedAssistant } from '../store/slices/sidebarSlice';
+import { SUPERUSER_CRM_MODULE_ORDER, getCRMModule } from '../config/crmModuleRegistry';
+import {
+  ZONE_LABELS,
+  groupModulesForMD,
+  groupWorkspacesForMD,
+} from '../config/crmNavigationSchema';
 import type { RootState } from '../store/store';
 import './UnifiedDashboardPage.css';
 
@@ -92,8 +99,6 @@ interface SearchItem {
   type: 'tab' | 'module' | 'record';
   target: string;
 }
-
-const UnifiedCRMAdapter: FC<CRMModuleProps> = () => <UnifiedCRM />;
 
 function tabData<T>(data: DashboardData | null | undefined): T {
   return (data ?? {}) as unknown as T;
@@ -216,6 +221,7 @@ const UnifiedDashboardPage: FC = () => {
     handleRetryAll,
     handleCRMModuleSelect,
     handleBackFromCRM,
+    handleWorkspaceSelect,
   } = useUnifiedDashboard();
 
   const selectedAssistant = useSelector((state: RootState) => selectSelectedAssistant(state));
@@ -224,7 +230,11 @@ const UnifiedDashboardPage: FC = () => {
   const [commandQuery, setCommandQuery] = useState('');
   const [globalSearchQuery, setGlobalSearchQuery] = useState('');
   const [isGlobalSearchOpen, setIsGlobalSearchOpen] = useState(false);
-  const [modulesExpanded, setModulesExpanded] = useState(true);
+  const [aiModulesExpanded, setAiModulesExpanded] = useState(true);
+  const [advancedExpanded, setAdvancedExpanded] = useState(false);
+  const [departmentsExpanded, setDepartmentsExpanded] = useState(true);
+  const [selectedContext, setSelectedContext] = useState<SearchItem | null>(null);
+  const [isMobileDrawerOpen, setIsMobileDrawerOpen] = useState(false);
   const globalSearchRef = useRef<HTMLDivElement | null>(null);
   const tabButtonRefs = useRef<Array<HTMLButtonElement | null>>([]);
   const lastFocusedElementRef = useRef<HTMLElement | null>(null);
@@ -372,6 +382,19 @@ const UnifiedDashboardPage: FC = () => {
 
   const hasProfileCompletionGaps = profileCompletionPercent < 100;
   const superuserModuleCount = moduleEntries.length;
+  const groupedWorkspaces = useMemo(() => groupWorkspacesForMD(availableTabs), [availableTabs]);
+  const groupedModules = useMemo(() => groupModulesForMD(moduleEntries), []);
+  const departmentZones = useMemo(
+    () =>
+      Object.entries(groupedModules.byZone)
+        .filter(([, items]) => items.length > 0)
+        .sort((a, b) => (ZONE_LABELS[a[0]] ?? a[0]).localeCompare(ZONE_LABELS[b[0]] ?? b[0])),
+    [groupedModules.byZone]
+  );
+  const orderedWorkspaceTabs = useMemo(
+    () => [...groupedWorkspaces.pinned, ...groupedWorkspaces.core],
+    [groupedWorkspaces]
+  );
   const availableTabIds = useMemo(() => new Set(availableTabs.map(tab => tab.id)), [availableTabs]);
 
   const commandItems = useMemo<SearchItem[]>(() => {
@@ -385,14 +408,17 @@ const UnifiedDashboardPage: FC = () => {
       target: tab.id,
     }));
     const modules = isSuperUser
-      ? moduleEntries.map(([key, module]) => ({
-          id: `module-${key}`,
-          icon: '🤖',
-          label: module.label,
-          meta: 'Launch CRM module',
-          type: 'module' as const,
-          target: key,
-        }))
+      ? moduleEntries.map(([key, module]) => {
+          const def = getCRMModule(key);
+          return {
+            id: `module-${key}`,
+            icon: def?.icon ?? '🤖',
+            label: module.label,
+            meta: def?.zone ? (ZONE_LABELS[def.zone] ?? def.zone.replace(/_/g, ' ')) : 'CRM module',
+            type: 'module' as const,
+            target: key,
+          };
+        })
       : [];
 
     return [...tabs, ...modules].filter(item => {
@@ -444,14 +470,19 @@ const UnifiedDashboardPage: FC = () => {
       ...(isSuperUser
         ? moduleEntries
             .filter(([, module]) => module.label.toLowerCase().includes(query))
-            .map(([key, module]) => ({
-              id: `module-search-${key}`,
-              icon: '🤖',
-              label: module.label,
-              meta: 'Launch CRM module',
-              type: 'module' as const,
-              target: key,
-            }))
+            .map(([key, module]) => {
+              const def = getCRMModule(key);
+              return {
+                id: `module-search-${key}`,
+                icon: def?.icon ?? '🤖',
+                label: module.label,
+                meta: def?.zone
+                  ? (ZONE_LABELS[def.zone] ?? def.zone.replace(/_/g, ' '))
+                  : 'CRM module',
+                type: 'module' as const,
+                target: key,
+              };
+            })
         : []),
     ];
 
@@ -471,11 +502,11 @@ const UnifiedDashboardPage: FC = () => {
   ]);
 
   const executeSearchItem = (item: SearchItem) => {
+    setSelectedContext(item);
     if (item.type === 'module') {
       handleCRMModuleSelect(item.target);
     } else {
-      handleBackFromCRM();
-      setActiveTab(item.target);
+      handleWorkspaceSelect(item.target);
     }
 
     setCommandQuery('');
@@ -486,8 +517,7 @@ const UnifiedDashboardPage: FC = () => {
 
   const openWorkspaceTab = (tabId: string, fallbackModule?: string) => {
     if (availableTabIds.has(tabId)) {
-      handleBackFromCRM();
-      setActiveTab(tabId);
+      handleWorkspaceSelect(tabId);
       return;
     }
 
@@ -497,7 +527,7 @@ const UnifiedDashboardPage: FC = () => {
     }
 
     handleBackFromCRM();
-    setActiveTab('overview');
+    handleWorkspaceSelect('overview');
   };
 
   const renderTabContent = (): ReactNode => {
@@ -626,7 +656,7 @@ const UnifiedDashboardPage: FC = () => {
   };
 
   const handleTabKeyDown = (event: KeyboardEvent<HTMLButtonElement>, index: number) => {
-    const lastIndex = availableTabs.length - 1;
+    const lastIndex = orderedWorkspaceTabs.length - 1;
 
     switch (event.key) {
       case 'ArrowDown':
@@ -800,7 +830,7 @@ const UnifiedDashboardPage: FC = () => {
               contractsCount={contractsCount}
               onRefreshData={handleRetryAll}
               onOpenCommandPalette={() => {
-                setModulesExpanded(true);
+                setAiModulesExpanded(true);
                 setIsCommandPaletteOpen(true);
               }}
               onOpenAdminWorkspace={() => openWorkspaceTab('admin', 'unified')}
@@ -877,6 +907,26 @@ const UnifiedDashboardPage: FC = () => {
             </>
           )}
         </main>
+
+        {!selectedDepartment && (
+          <CRMContextPanel
+            isSuperUser={isSuperUser}
+            activeWorkspaceLabel={selectedCRMModuleConfig?.label ?? currentTab?.label ?? 'Overview'}
+            activeWorkspaceMeta={selectedCRMModuleConfig ? 'AI CRM module context' : 'Workspace context'}
+            selectedContext={
+              selectedContext
+                ? {
+                    label: selectedContext.label,
+                    meta: selectedContext.meta,
+                    type: selectedContext.type,
+                  }
+                : null
+            }
+            recentActivities={Array.isArray(dashboardData?.recentActivities) ? dashboardData.recentActivities : []}
+            onOpenCommandPalette={() => setIsCommandPaletteOpen(true)}
+            onOpenQuickAction={() => setIsCommandPaletteOpen(true)}
+          />
+        )}
       </div>
 
       <DashboardCommandPalette

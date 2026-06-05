@@ -8,9 +8,9 @@
  */
 
 // Existing components
-export { default as Button } from './Button/Button';
-export { default as Input } from './Input/Input';
-export { default as Card } from './Card/Card';
+export { default as Button } from '../design-system/Button/Button';
+export { default as Input } from '../design-system/Input/Input';
+export { default as Card } from '../design-system/Card/Card';
 
 // New enhanced components
 export { default as KPICard } from './KPICard';

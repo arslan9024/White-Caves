@@ -343,7 +343,7 @@ router.get(
   '/:id/plan',
   authMiddleware,
   asyncHandler(async (req: Request, res: Response) => {
-    const { id } = req.params;
+    const { id } = req.params as Record<string, string>;
     assertSafeId(id);
 
     if (!ASSISTANT_REGISTRY[id]) {
@@ -419,7 +419,7 @@ router.put(
   asyncHandler(async (req: AuthRequest, res: Response) => {
     assertSuperUser(req);
 
-    const { id } = req.params;
+    const { id } = req.params as Record<string, string>;
     assertSafeId(id);
 
     if (!ASSISTANT_REGISTRY[id]) {
@@ -451,7 +451,7 @@ router.delete(
   asyncHandler(async (req: AuthRequest, res: Response) => {
     assertSuperUser(req);
 
-    const { id } = req.params;
+    const { id } = req.params as Record<string, string>;
     assertSafeId(id);
 
     if (!ASSISTANT_REGISTRY[id]) {

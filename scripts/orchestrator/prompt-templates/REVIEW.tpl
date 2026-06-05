@@ -1,0 +1,1 @@
+{agent} -- REVIEW: {file} -> review "{section}" for gaps, inconsistencies, and missing constraints. Return concrete fixes and testable acceptance criteria. Target sections: {target_sections}. Acceptance criteria: {acceptance_criteria}

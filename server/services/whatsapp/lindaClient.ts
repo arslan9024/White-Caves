@@ -103,6 +103,7 @@ export class LindaClient extends EventEmitter {
 
       const sessionDir = path.resolve(this.config.sessionPath);
 
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       this.client = new Client({
         authStrategy: new LocalAuth({
           clientId: 'linda',
@@ -123,7 +124,7 @@ export class LindaClient extends EventEmitter {
         },
         restartOnAuthFail: true,
         takeoverOnConflict: true,
-      });
+      } as any);
 
       this.setupEventListeners();
       await this.client.initialize();

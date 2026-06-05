@@ -1,11 +1,11 @@
 # session-end.ps1 -- One-command session closer for White Caves Orchestrator
 # Counterpart to session-start.ps1.
-# Chains: fast-complete -> gate-check -> progress-report -> git stage -> commit -> push
+# Chains: fast-complete -> gate-check -> progress-report -> error-scan -> git stage -> commit -> push
 #
 # Usage:
 #   npm run orchestrator:session:end               -- full close (commit + push)
 #   npm run orchestrator:session:end:dry           -- preview only, no git changes
-#   powershell -File session-end.ps1 [-DryRun] [-SkipPush] [-Message "custom"]
+#   powershell -File session-end.ps1 [-DryRun] [-SkipPush] [-SkipMainPush] [-Message "custom"]
 #
 # What it does:
 #   STEP 1  Run fast-complete one final time (catch any last auto-completions)
@@ -14,13 +14,16 @@
 #   STEP 4  Git: show what changed this session (git diff --stat HEAD)
 #   STEP 5  Git: stage orchestrator + business_docs + plans changes
 #   STEP 6  Git: commit with auto-generated message
-#   STEP 7  Git: push to origin development
-#   STEP 8  Print session summary card
+#   STEP 7  Git: push current branch to configured remote
+#   STEP 8  Error-scan gate (must pass before any push)
+#   STEP 9  Optional release merge per policy (usually PR-based)
+#   STEP 10 Print session summary card
 
 param(
   [string]$WorkspaceRoot = ".",
   [switch]$DryRun,              # preview only -- skip git stage/commit/push
   [switch]$SkipPush,            # commit but do NOT push
+  [switch]$SkipMainPush,        # skip integration -> release merge/push
   [string]$Message = "",        # override auto-generated commit message
   [switch]$SkipAutoComplete     # skip final fast-complete pass
 )
@@ -28,10 +31,31 @@ param(
 $ErrorActionPreference = "Continue"
 $root     = Resolve-Path $WorkspaceRoot
 $scripts  = Join-Path $root "scripts\orchestrator"
+$policyUtils = Join-Path $scripts "policy-utils.ps1"
 $w        = 72
 $stepNum  = 0
 $t0       = Get-Date
 $errors   = [System.Collections.Generic.List[string]]::new()
+$qPct     = 0
+$pushRemote = "origin"
+$integrationBranch = "develop"
+$releaseBranch = "main"
+$autoMergeReleaseBranch = $false
+
+if (Test-Path $policyUtils) {
+  . $policyUtils
+}
+
+if (Get-Command Get-OrchestratorPolicy -ErrorAction SilentlyContinue) {
+  try {
+    $policy = Get-OrchestratorPolicy -WorkspaceRoot $root
+    $gitPolicy = Get-OrchestratorGitPolicy -Policy $policy
+    $pushRemote = [string]$gitPolicy.defaultRemote
+    $integrationBranch = [string]$gitPolicy.integrationBranch
+    $releaseBranch = [string]$gitPolicy.releaseBranch
+    $autoMergeReleaseBranch = [bool]$gitPolicy.autoMergeReleaseBranch
+  } catch {}
+}
 
 function Write-Step($title) {
   $script:stepNum++
@@ -110,7 +134,25 @@ Write-Step "PROGRESS REPORT -- append end-of-day tracker row"
 Invoke-Script (Join-Path $scripts "progress-report.ps1") @("-WorkspaceRoot", $root)
 
 # ------------------------------------------------------------------
-# STEP 4: Show what changed this session
+# STEP 4: Error-scan gate (mandatory before push)
+# ------------------------------------------------------------------
+Write-Step "ERROR SCAN -- typecheck/lint/build/tests/security"
+$scanScript = Join-Path $scripts "error-scan.ps1"
+if (Test-Path $scanScript) {
+  Push-Location $root
+  & powershell -ExecutionPolicy Bypass -File "$scanScript" -WorkspaceRoot $root
+  $scanExit = $LASTEXITCODE
+  Pop-Location
+  if ($scanExit -ne 0) {
+    $errors.Add("error-scan gate failed")
+  }
+} else {
+  Write-Host "  [SKIP] error-scan.ps1 not found" -ForegroundColor DarkYellow
+  $errors.Add("error-scan.ps1 missing")
+}
+
+# ------------------------------------------------------------------
+# STEP 5: Show what changed this session
 # ------------------------------------------------------------------
 Write-Step "GIT DIFF -- changes this session"
 Push-Location $root
@@ -141,6 +183,13 @@ if ($DryRun) {
   exit 0
 }
 
+if ($errors -contains "error-scan gate failed" -or $errors -contains "error-scan.ps1 missing") {
+  Write-Host ""
+  Write-Host "  [BLOCKED] Push blocked by error-scan gate." -ForegroundColor Red
+  Write-Host "  Fix scan failures and re-run session-end." -ForegroundColor Red
+  exit 1
+}
+
 if ($changedCount -eq 0) {
   Write-Host ""
   Write-Host "  Nothing to commit. Session close complete (no git needed)." -ForegroundColor Green
@@ -148,7 +197,7 @@ if ($changedCount -eq 0) {
 }
 
 # ------------------------------------------------------------------
-# STEP 5: Stage orchestrator + business_docs + plans + tracker
+# STEP 6: Stage orchestrator + business_docs + plans + tracker
 # ------------------------------------------------------------------
 Write-Step "GIT STAGE -- orchestrator + docs + tracker"
 Push-Location $root
@@ -164,7 +213,7 @@ if ($staged.Count -gt 20) { Write-Host "    ... and $($staged.Count - 20) more" 
 Pop-Location
 
 # ------------------------------------------------------------------
-# STEP 6: Git commit
+# STEP 7: Git commit
 # ------------------------------------------------------------------
 Write-Step "GIT COMMIT"
 
@@ -180,23 +229,72 @@ $commitHash = (git rev-parse --short HEAD 2>&1).Trim()
 Pop-Location
 
 # ------------------------------------------------------------------
-# STEP 7: Git push
+# STEP 8: Git push
 # ------------------------------------------------------------------
+$activeBranchForPush = ""
 if (-not $SkipPush) {
-  Write-Step "GIT PUSH -- origin development"
+  Write-Step ("GIT PUSH -- {0}/<current-branch>" -f $pushRemote)
   Push-Location $root
-  $pushOut = git push origin development 2>&1
-  Write-Host $pushOut -ForegroundColor $(if ($LASTEXITCODE -ne 0) { "Red" } else { "Green" })
-  if ($LASTEXITCODE -ne 0) { $errors.Add("git push failed") }
+  $activeBranchForPush = (git rev-parse --abbrev-ref HEAD 2>&1).Trim()
+  if ([string]::IsNullOrWhiteSpace($activeBranchForPush)) {
+    $errors.Add("git push failed: unable to resolve current branch")
+  } else {
+    $pushOut = git push $pushRemote $activeBranchForPush 2>&1
+    Write-Host $pushOut -ForegroundColor $(if ($LASTEXITCODE -ne 0) { "Red" } else { "Green" })
+    if ($LASTEXITCODE -ne 0) { $errors.Add("git push failed") }
+  }
   Pop-Location
 } else {
   Write-Host ""
   Write-Host "  [SKIP] git push (SkipPush flag set)" -ForegroundColor DarkGray
-  Write-Host "  Run: git push origin development" -ForegroundColor DarkGray
+  Write-Host ("  Run: git push {0} <current-branch>" -f $pushRemote) -ForegroundColor DarkGray
 }
 
 # ------------------------------------------------------------------
-# STEP 8: Session summary card
+# STEP 9: Optional integration -> release merge
+# ------------------------------------------------------------------
+if ($SkipMainPush) {
+  Write-Host ""
+  Write-Host "  [SKIP] release merge (SkipMainPush flag set)" -ForegroundColor DarkGray
+} elseif (-not $autoMergeReleaseBranch) {
+  Write-Host ""
+  Write-Host ("  [SKIP] policy disables auto-merge from {0} to {1}; use PR workflow." -f $integrationBranch, $releaseBranch) -ForegroundColor DarkGray
+} elseif ($errors.Count -eq 0) {
+  Write-Step ("RELEASE PUSH -- merge {0} into {1} and push" -f $integrationBranch, $releaseBranch)
+  $restoreBranch = ""
+  if ([string]::IsNullOrWhiteSpace($activeBranchForPush)) {
+    Push-Location $root
+    $restoreBranch = (git rev-parse --abbrev-ref HEAD 2>&1).Trim()
+    Pop-Location
+  } else {
+    $restoreBranch = $activeBranchForPush
+  }
+  Push-Location $root
+  try {
+    git checkout $releaseBranch 2>&1 | Out-Host
+    if ($LASTEXITCODE -ne 0) { throw "checkout $releaseBranch failed" }
+
+    git merge $integrationBranch --no-edit 2>&1 | Out-Host
+    if ($LASTEXITCODE -ne 0) { throw "merge $integrationBranch->$releaseBranch failed" }
+
+    git push $pushRemote $releaseBranch 2>&1 | Out-Host
+    if ($LASTEXITCODE -ne 0) { throw "push $releaseBranch failed" }
+  } catch {
+    $errors.Add("release push failed: $_")
+    Write-Host ("  [ERROR] {0} merge/push failed." -f $releaseBranch) -ForegroundColor Red
+  } finally {
+    if (-not [string]::IsNullOrWhiteSpace($restoreBranch)) {
+      git checkout $restoreBranch 2>&1 | Out-Host
+    }
+    Pop-Location
+  }
+} else {
+  Write-Host ""
+  Write-Host "  [SKIP] release merge due to prior errors." -ForegroundColor DarkGray
+}
+
+# ------------------------------------------------------------------
+# STEP 10: Session summary card
 # ------------------------------------------------------------------
 $elapsed = [math]::Round(((Get-Date) - $t0).TotalSeconds)
 
@@ -216,3 +314,7 @@ if ($errors.Count -gt 0) {
 }
 Write-Host ("=" * $w) -ForegroundColor Magenta
 Write-Host ""
+
+if ($errors.Count -gt 0) {
+  exit 1
+}

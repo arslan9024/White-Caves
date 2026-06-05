@@ -884,19 +884,65 @@ describe('Auth Routes — /api/auth', () => {
       expect(res.body.data.token).toBe('mock-jwt-token');
       expect(res.body.data.user.email).toBe('devuser@whitecaves.ae');
     });
+
+    it('uses development fallback when NODE_ENV is unset', async () => {
+      delete process.env.NODE_ENV;
+      process.env.ALLOW_FIREBASE_SYNC_DEV_FALLBACK = 'true';
+
+      const adminInitError = new Error('Firebase Admin SDK has not been initialized');
+      adminInitError.name = 'FirebaseAdminInitError';
+      mockVerifyFirebaseIdToken.mockRejectedValueOnce(adminInitError);
+
+      mockPrisma.user.findUnique.mockResolvedValueOnce(null);
+      mockPrisma.user.create.mockResolvedValueOnce({
+        id: 'user-dev-2',
+        email: 'unsetenv@whitecaves.ae',
+        name: 'Unset Env User',
+        role: 'agent',
+        department: null,
+        photoUrl: null,
+        status: 'active',
+      });
+
+      const res = await request(createApp()).post('/api/auth/firebase-sync').send({
+        firebaseUid: 'firebase-dev-456',
+        firebaseToken: 'dev-token',
+        email: 'unsetenv@whitecaves.ae',
+        name: 'Unset Env User',
+      });
+
+      expect(res.status).toBe(200);
+      expect(res.body.success).toBe(true);
+      expect(res.body.data.token).toBe('mock-jwt-token');
+      expect(res.body.data.user.email).toBe('unsetenv@whitecaves.ae');
+    });
   });
 
   // ── POST /logout ─────────────────────────────────────────────────
   describe('POST /api/auth/logout', () => {
-    it('returns 200 on successful logout', async () => {
+    const csrfToken = 'csrf-token-logout';
+
+    it('returns 403 when CSRF token is missing', async () => {
       const res = await request(createApp('owner')).post('/api/auth/logout');
+      expect(res.status).toBe(403);
+      expect(res.body.error).toMatch(/csrf token is required/i);
+    });
+
+    it('returns 200 on successful logout', async () => {
+      const res = await request(createApp('owner'))
+        .post('/api/auth/logout')
+        .set('Cookie', `csrf_token=${csrfToken}`)
+        .set('X-CSRF-Token', csrfToken);
       expect(res.status).toBe(200);
       expect(res.body.success).toBe(true);
       expect(res.body.message).toMatch(/logged out/i);
     });
 
     it('logs activity on logout', async () => {
-      await request(createApp('owner')).post('/api/auth/logout');
+      await request(createApp('owner'))
+        .post('/api/auth/logout')
+        .set('Cookie', `csrf_token=${csrfToken}`)
+        .set('X-CSRF-Token', csrfToken);
       expect(mockPrisma.activity.create).toHaveBeenCalledWith(
         expect.objectContaining({
           data: expect.objectContaining({ action: 'logout' }),
@@ -1297,6 +1343,7 @@ describe('Auth Routes — /api/auth', () => {
 
   // ── POST /refresh ─────────────────────────────────────────────────
   describe('POST /api/auth/refresh', () => {
+    const csrfToken = 'csrf-token-refresh';
     // vi.clearAllMocks() (outer beforeEach) clears .mock.calls but NOT the
     // onceImplementations queue. Stale once-values from earlier failing tests
     // can bleed into these tests. Reset findUnique fully before every refresh
@@ -1308,8 +1355,17 @@ describe('Auth Routes — /api/auth', () => {
       mockBcrypt.compare.mockReset();
       mockBcrypt.compare.mockResolvedValue(true);
     });
-    it('returns 401 when no cookie is provided', async () => {
+    it('returns 403 when CSRF token is missing', async () => {
       const res = await request(createApp()).post('/api/auth/refresh');
+      expect(res.status).toBe(403);
+      expect(res.body.error).toMatch(/csrf token is required/i);
+    });
+
+    it('returns 401 when refresh token cookie is missing', async () => {
+      const res = await request(createApp())
+        .post('/api/auth/refresh')
+        .set('Cookie', `csrf_token=${csrfToken}`)
+        .set('X-CSRF-Token', csrfToken);
       expect(res.status).toBe(401);
       expect(res.body.error).toMatch(/no refresh token provided/i);
     });
@@ -1317,7 +1373,8 @@ describe('Auth Routes — /api/auth', () => {
     it('returns 401 when cookie value has no colon separator', async () => {
       const res = await request(createApp())
         .post('/api/auth/refresh')
-        .set('Cookie', 'refresh_token=MALFORMEDTOKEN');
+        .set('Cookie', [`csrf_token=${csrfToken}`, 'refresh_token=MALFORMEDTOKEN'])
+        .set('X-CSRF-Token', csrfToken);
       expect(res.status).toBe(401);
       expect(res.body.error).toMatch(/no refresh token provided/i);
     });
@@ -1326,7 +1383,8 @@ describe('Auth Routes — /api/auth', () => {
       mockPrisma.user.findUnique.mockResolvedValueOnce(null);
       const res = await request(createApp())
         .post('/api/auth/refresh')
-        .set('Cookie', 'refresh_token=ghost-user-id:somerawtoken');
+        .set('Cookie', [`csrf_token=${csrfToken}`, 'refresh_token=ghost-user-id:somerawtoken'])
+        .set('X-CSRF-Token', csrfToken);
       expect(res.status).toBe(401);
       expect(res.body.error).toMatch(/invalid or expired/i);
     });
@@ -1344,7 +1402,8 @@ describe('Auth Routes — /api/auth', () => {
 
       const res = await request(createApp())
         .post('/api/auth/refresh')
-        .set('Cookie', 'refresh_token=user-1:stale-or-stolen-token');
+        .set('Cookie', [`csrf_token=${csrfToken}`, 'refresh_token=user-1:stale-or-stolen-token'])
+        .set('X-CSRF-Token', csrfToken);
 
       expect(res.status).toBe(401);
       expect(res.body.error).toMatch(/reuse detected/i);
@@ -1367,7 +1426,8 @@ describe('Auth Routes — /api/auth', () => {
       });
       const res = await request(createApp())
         .post('/api/auth/refresh')
-        .set('Cookie', 'refresh_token=user-1:sometoken');
+        .set('Cookie', [`csrf_token=${csrfToken}`, 'refresh_token=user-1:sometoken'])
+        .set('X-CSRF-Token', csrfToken);
       expect(res.status).toBe(401);
       expect(res.body.error).toMatch(/invalid or expired/i);
       expect(mockBcrypt.compare).not.toHaveBeenCalled();
@@ -1388,7 +1448,8 @@ describe('Auth Routes — /api/auth', () => {
 
       const res = await request(createApp())
         .post('/api/auth/refresh')
-        .set('Cookie', 'refresh_token=user-1:validrawtoken');
+        .set('Cookie', [`csrf_token=${csrfToken}`, 'refresh_token=user-1:validrawtoken'])
+        .set('X-CSRF-Token', csrfToken);
 
       expect(res.status).toBe(200);
       expect(res.body.success).toBe(true);

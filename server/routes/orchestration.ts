@@ -999,7 +999,7 @@ router.patch(
   '/tasks/:id/state',
   requireRole('owner', 'admin', 'manager'),
   asyncHandler(async (req: Request, res: Response) => {
-    const { id } = req.params;
+    const { id } = req.params as Record<string, string>;
     const { state, blockedReason } = req.body as { state?: TaskState; blockedReason?: string };
 
     if (!state) {

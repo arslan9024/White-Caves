@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useRef, lazy, Suspense, type ReactNode } from 'react';
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { SpeedInsights } from '@vercel/speed-insights/react';
-import { setUser, setLoading } from './store/userSlice';
+import { setLoading } from './store/userSlice';
 import { setTheme, setActiveRole } from './store/navigationSlice';
 import { LanguageProvider } from './context/LanguageContext';
 import { ThemeProvider } from './styles/ThemeProvider';
@@ -15,6 +15,10 @@ import type { RootState, AppDispatch } from './store/store';
 import { selectSessionUser } from './store/selectors/sessionSelectors';
 import { safeStorage } from './utils/safeStorage';
 import { authFetch } from './utils/authFetch';
+import {
+  finalizeAuthenticatedSession,
+  getCurrentPathWithQuery,
+} from './utils/authSession';
 import {
   CANONICAL_SUPERUSER_ROLE,
   isCreatorSuperUserEmail,
@@ -95,6 +99,7 @@ const LEGACY_OWNER_REDIRECT_ROUTES: Array<{ path: string; to: string }> = [
 // ─── Protected Route ────────────────────────────────────────────────────
 
 function ProtectedRoute({ children, allowedRoles }: ProtectedRouteProps) {
+  const location = useLocation();
   const user = useSelector((state: RootState) => selectSessionUser(state));
   const isAuthLoading = useSelector((state: RootState) => state.user.isLoading);
   const [userData, setUserData] = useState<UserRoleData | null>(null);
@@ -129,7 +134,13 @@ function ProtectedRoute({ children, allowedRoles }: ProtectedRouteProps) {
   }
 
   if (!user) {
-    return <Navigate to="/" replace />;
+    return (
+      <Navigate
+        to="/signin"
+        replace
+        state={{ from: getCurrentPathWithQuery(location.pathname, location.search, location.hash) }}
+      />
+    );
   }
 
   if (!userData) {
@@ -158,6 +169,7 @@ function ProtectedRoute({ children, allowedRoles }: ProtectedRouteProps) {
 
 function DashboardEntryRoute() {
   const dispatch = useDispatch<AppDispatch>();
+  const location = useLocation();
   const user = useSelector((state: RootState) => selectSessionUser(state));
   const isAuthLoading = useSelector((state: RootState) => state.user.isLoading);
   const currentActiveRole = useSelector((state: RootState) => state.navigation?.activeRole);
@@ -195,7 +207,13 @@ function DashboardEntryRoute() {
 
   // Unauthenticated access: redirect home
   if (!user) {
-    return <Navigate to="/signin" replace />;
+    return (
+      <Navigate
+        to="/signin"
+        replace
+        state={{ from: getCurrentPathWithQuery(location.pathname, location.search, location.hash) }}
+      />
+    );
   }
 
   if (effectiveRole === 'landlord' || effectiveRole === 'property-owner') {
@@ -214,6 +232,17 @@ function DashboardEntryRoute() {
         </Suspense>
       </RouteErrorBoundary>
     </AppLayout>
+  );
+}
+
+function SignInRedirect() {
+  const location = useLocation();
+  return (
+    <Navigate
+      to="/signin"
+      replace
+      state={{ from: getCurrentPathWithQuery(location.pathname, location.search, location.hash) }}
+    />
   );
 }
 
@@ -302,10 +331,48 @@ const WebVitalsTracker = lazy(() => import('./components/analytics/WebVitalsTrac
 import { StatusProvider, useStatus } from './components/common/StatusNotification';
 import { createLogger } from './utils/logger';
 import { useSocket } from './hooks/useSocket';
+// W17-002: Framer Motion — AnimatePresence page transitions
+import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 
 const log = createLogger('App');
 
-// ─── App Component ──────────────────────────────────────────────────────
+// ─── W17-002: Page transition helpers ───────────────────────────────────────
+
+interface PageTransitionProps {
+  children: ReactNode;
+}
+
+/** Fades pages in/out; passes children through when reduced motion is preferred. */
+function PageTransition({ children }: PageTransitionProps): React.JSX.Element {
+  const prefersReducedMotion = useReducedMotion();
+  if (prefersReducedMotion) {
+    return <>{children}</>;
+  }
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.2 }}
+      style={{ width: '100%' }}
+    >
+      {children}
+    </motion.div>
+  );
+}
+
+/**
+ * Rendered inside <BrowserRouter> so useLocation() is in Router context.
+ * Uses pathname as AnimatePresence key so every route change triggers a fade.
+ */
+function LocationKeyWrapper({ children }: PageTransitionProps): React.JSX.Element {
+  const location = useLocation();
+  return (
+    <AnimatePresence mode="wait">
+      <PageTransition key={location.pathname}>{children}</PageTransition>
+    </AnimatePresence>
+  );
+}
 
 function App(): React.JSX.Element {
   const dispatch = useDispatch<AppDispatch>();
@@ -327,7 +394,12 @@ function App(): React.JSX.Element {
           if (controller.signal.aborted) return;
           if (response.ok) {
             const result = await response.json();
-            dispatch(setUser(result.data));
+            finalizeAuthenticatedSession({
+              dispatch,
+              user: result.data,
+              token,
+              provider: 'bootstrap',
+            });
           } else {
             safeStorage.remove('token');
             dispatch(setLoading(false));
@@ -629,6 +701,7 @@ function App(): React.JSX.Element {
               </Suspense>
             )}
             <main id="main-content" role="main">
+              <LocationKeyWrapper>
               <Routes>
                 {publicRoutes.map(route => (
                   <Route
@@ -757,6 +830,7 @@ function App(): React.JSX.Element {
                   element={renderPublicPage(<NotFoundPage />, 'Not Found')}
                 />
               </Routes>
+              </LocationKeyWrapper>
             </main>
           </BrowserRouter>
         </LanguageProvider>

@@ -20,6 +20,7 @@ import { asyncHandler, AppError } from '../middleware/errorHandler.js';
 import { AuthRequest } from '../middleware/auth.js';
 import { prisma } from '../database.js';
 import logger from '../utils/logger.js';
+import { triggerLeadRescore } from '../services/ai/leadAutoRescore.js';
 import {
   getAvailableSlots,
   detectConflicts,
@@ -149,7 +150,7 @@ router.get(
 router.get(
   '/:id/ics',
   asyncHandler(async (req: AuthRequest, res: Response) => {
-    const { id } = req.params;
+    const { id } = req.params as Record<string, string>;
     const token = req.query.token as string;
 
     // Authenticate: either logged in user owns the viewing, or valid icsToken
@@ -216,6 +217,44 @@ router.post(
     // Generate ICS token for calendar download
     const icsToken = generateIcsToken();
 
+    let resolvedLeadId = typeof leadId === 'string' && leadId.length > 0 ? leadId : null;
+
+    if (!resolvedLeadId) {
+      const existingLead = req.user?.email
+        ? await prisma.lead.findFirst({
+            where: {
+              email: req.user.email,
+              propertyId,
+              status: { not: 'lost' },
+            },
+            select: { id: true },
+          })
+        : null;
+
+      if (existingLead) {
+        resolvedLeadId = existingLead.id;
+      } else {
+        const inquiryLead = await prisma.lead.create({
+          data: {
+            name: req.user?.name || req.user?.email || 'Viewing inquiry',
+            email: req.user?.email || null,
+            phone: req.user?.phone || null,
+            source: 'website',
+            status: 'viewing',
+            propertyId,
+            createdById: userId,
+            assignedToId: agentId || null,
+            lastContact: new Date(),
+            notes: `Auto-created from viewing request for property ${property.title}`,
+            score: 20,
+            tags: ['viewing_request', 'website'],
+          } as never,
+          select: { id: true },
+        });
+        resolvedLeadId = inquiryLead.id;
+      }
+    }
+
     const viewing = await prisma.viewing.create({
       data: {
         userId,
@@ -223,7 +262,7 @@ router.post(
         scheduledAt: scheduledDate,
         type: type || 'in_person',
         notes: notes || null,
-        leadId: leadId || null,
+        leadId: resolvedLeadId,
         duration: viewingDuration,
         agentId: agentId || null,
         location: location || property.location || null,
@@ -239,6 +278,23 @@ router.post(
       },
     });
 
+    if (resolvedLeadId) {
+      await prisma.activity.create({
+        data: {
+          type: 'lead',
+          action: 'viewing_requested',
+          description: `Viewing requested for ${property.title}`,
+          userId,
+          leadId: resolvedLeadId,
+          metadata: {
+            viewingId: viewing.id,
+            propertyId,
+            scheduledAt: scheduledDate.toISOString(),
+          },
+        },
+      });
+    }
+
     // Fire-and-forget notification (don't block response)
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     sendViewingNotification(viewing as any, 'created').catch(err =>
@@ -253,6 +309,7 @@ router.post(
       scheduledAt: scheduledDate.toISOString(),
       ...(conflict.message ? { warning: conflict.message } : {}),
     });
+    triggerLeadRescore(viewing.leadId ?? resolvedLeadId, 'viewing_scheduled');
 
     res.status(201).json({
       success: true,
@@ -269,7 +326,7 @@ router.patch(
     const userId = req.user?.id;
     if (!userId) throw new AppError('Authentication required', 401);
 
-    const { id } = req.params;
+    const { id } = req.params as Record<string, string>;
     const existing = await prisma.viewing.findUnique({
       where: { id },
       include: {
@@ -357,6 +414,7 @@ router.patch(
     }
 
     logger.info('Viewing updated', { userId, viewingId: id, status: updated.status });
+    triggerLeadRescore(updated.leadId, 'viewing_updated');
     res.json({ success: true, data: updated });
   })
 );
@@ -368,7 +426,7 @@ router.delete(
     const userId = req.user?.id;
     if (!userId) throw new AppError('Authentication required', 401);
 
-    const { id } = req.params;
+    const { id } = req.params as Record<string, string>;
     const existing = await prisma.viewing.findUnique({ where: { id } });
     if (!existing) throw new AppError('Viewing not found', 404);
     if (existing.userId !== userId) throw new AppError('Access denied', 403);

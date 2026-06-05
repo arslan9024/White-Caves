@@ -64,7 +64,12 @@ const SkeletonBlock = styled.div<{
   $animated: boolean;
 }>`
   display: block;
-  background: linear-gradient(90deg, #f5f5f5 25%, #ececec 50%, #f5f5f5 75%);
+  background: linear-gradient(
+    90deg,
+    rgba(184, 148, 31, 0.12) 15%,
+    rgba(184, 148, 31, 0.28) 50%,
+    rgba(184, 148, 31, 0.12) 85%
+  );
   background-size: 200% 100%;
   width: ${({ $w }) => $w};
   height: ${({ $h }) => $h};

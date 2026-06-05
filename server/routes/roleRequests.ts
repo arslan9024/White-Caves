@@ -138,7 +138,7 @@ adminRoleRequestRouter.post(
   '/:id/approve',
   requirePermission('manage_users'),
   asyncHandler(async (req: Request, res: Response) => {
-    const { id } = req.params;
+    const { id } = req.params as Record<string, string>;
     validateIdParam(id, 'Role request ID');
 
     const roleReq = await db.roleRequest.findUnique({ where: { id } });
@@ -187,7 +187,7 @@ adminRoleRequestRouter.post(
   '/:id/reject',
   requirePermission('manage_users'),
   asyncHandler(async (req: Request, res: Response) => {
-    const { id } = req.params;
+    const { id } = req.params as Record<string, string>;
     validateIdParam(id, 'Role request ID');
 
     const roleReq = await db.roleRequest.findUnique({ where: { id } });

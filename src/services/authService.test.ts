@@ -15,6 +15,7 @@ vi.mock('../utils/apiClient', () => ({
   apiClient: {
     post: vi.fn(),
     get: vi.fn(),
+    put: vi.fn(),
     setAuthToken: vi.fn(),
   },
 }));
@@ -27,8 +28,13 @@ vi.mock('../utils/safeStorage', () => ({
   },
 }));
 
+vi.mock('../utils/authFetch', () => ({
+  authFetch: vi.fn().mockResolvedValue({ ok: true }),
+}));
+
 import { apiClient } from '../utils/apiClient';
 import { safeStorage } from '../utils/safeStorage';
+import { authFetch } from '../utils/authFetch';
 
 const mApiPost = apiClient.post as ReturnType<typeof vi.fn>;
 const mApiGet = apiClient.get as ReturnType<typeof vi.fn>;
@@ -36,6 +42,7 @@ const mApiSetToken = apiClient.setAuthToken as ReturnType<typeof vi.fn>;
 const mStorageGet = safeStorage.get as ReturnType<typeof vi.fn>;
 const mStorageSet = safeStorage.set as ReturnType<typeof vi.fn>;
 const mStorageRemove = safeStorage.remove as ReturnType<typeof vi.fn>;
+const mAuthFetch = authFetch as ReturnType<typeof vi.fn>;
 
 const testUser = {
   id: 'u1',
@@ -48,6 +55,7 @@ const testUser = {
 describe('authService', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    mAuthFetch.mockResolvedValue({ ok: true });
   });
 
   // ── restoreAuthToken ──────────────────────────────────────────────
@@ -265,10 +273,11 @@ describe('authService', () => {
 
   // ── changePassword ────────────────────────────────────────────────
   describe('changePassword', () => {
-    it('calls POST /auth/change-password', async () => {
-      mApiPost.mockResolvedValue({ success: true });
+    it('calls PUT /auth/password', async () => {
+      const mApiPut = apiClient.put as ReturnType<typeof vi.fn>;
+      mApiPut.mockResolvedValue({ success: true });
       const result = await changePassword('old', 'new');
-      expect(mApiPost).toHaveBeenCalledWith('/auth/change-password', {
+      expect(mApiPut).toHaveBeenCalledWith('/auth/password', {
         currentPassword: 'old',
         newPassword: 'new',
       });
@@ -278,8 +287,8 @@ describe('authService', () => {
 
   // ── logout ────────────────────────────────────────────────────────
   describe('logout', () => {
-    it('clears token and userRole from storage', () => {
-      logout();
+    it('clears token and userRole from storage', async () => {
+      await logout();
       expect(mStorageRemove).toHaveBeenCalledWith('token');
       expect(mStorageRemove).toHaveBeenCalledWith('userRole');
       expect(mApiSetToken).toHaveBeenCalledWith(null);

@@ -2,7 +2,7 @@
 
 > **Agency:** White Caves Global Agency
 > **Orchestrator:** @Ada (Chief Architect)
-> **Last Updated:** 2026-05-22
+> **Last Updated:** 2026-05-28
 > **Policy Mode:** Dual-threshold readiness (60% unlock, 90% target) + policy-driven gating (Governance V2 active)
 > **Daily Report:** `PROJECT_PROGRESS_REPORT.md`
 
@@ -12,7 +12,46 @@
 
 - Canonical roadmap: **[plans/MASTER_PLAN.md](plans/MASTER_PLAN.md)**
 - Active queue: **[plans/PENDING_TASKS_ONLY.md](plans/PENDING_TASKS_ONLY.md)**
-- Last Updated (ISO): 2026-05-22
+- Last Updated (ISO): 2026-05-28
+
+## 🚀 Wave 18.1 Session 2 Delivery Evidence
+
+- **W18.1-P0-001** Intent-aware search ranking (buy/rent/invest journey profiles): propertySlice scoring logic + ranking hooks wired ✅
+- **W18.1-P0-002** Advanced search facets (furnishing, handover stage, permit status, fee band): PropertyFilterPanel + API filter params wired ✅
+- **W18.1-P0-003** Map/list synchronization + viewport persistence: InteractiveMap Redux sync + Playwright map-flow tests ✅
+- **W18.1-P0-009** Mobile-first CRM command bar (top 8 field actions): MobileCRMCommandBar component + Playwright mobile suite ✅
+- **W18.1-P0-011** Listing completeness scoring + remediation checklist: completenessScorer service + widget UI ✅
+- **W18.1-P0-012** Verification/freshness badges with traceable evidence fields: VerificationBadge + FreshnessBadge components ✅
+- **W18.1-P0-013** KYC gate before high-risk transaction transitions: `prisma.$transaction` guard + kyc-gate tests ✅
+- **W18.1-P0-017** WhatsApp conversation→lead conversion + ownership routing: nadia convert-to-lead endpoint + ConversationsTab wired ✅
+- **W18.1-P0-019** Funnel economics dashboard (lead→viewing→offer→close): reporting.ts analytics endpoint + FunnelEconomicsDashboard UI ✅
+- **W18.1-P0-020** Baseline KPI tracker (90-day target monitoring): KPIBaselineTracker component + tracker endpoint ✅
+- Validation evidence (2026-05-27): `npm run typecheck` ✅ 0 errors, `npm run build` ✅ green, all Session 2 component/route/service tests ✅, `npm run plans:validate` ✅
+
+## 🚀 Wave 18.1 Session 3 Kickoff
+
+- **Status:** 🟡 In Progress — 2026-05-28
+- **Remaining P0s:** W18.1-P0-010 (offline PWA drafts) + W18.1-P0-018 (cadence rules engine)
+- **Top P1s in scope:** P1-001 (lead import), P1-002 (audit log UI), P1-003 (agent performance report), P1-004 (Nina escalation), P1-005 (e-sign), P1-006 (portal syndication), P1-007 (follow-up automation depth), P1-008 (Ejari + rent collection)
+- **Session 3 entry gate confirmed:** @Ada architecture approval issued 2026-05-28
+- **P0 exhaustion target:** 20/20 complete by Session 3 exit
+- See full plan: [`plans/waves/WAVE_18_1_IMPLEMENTATION_BACKLOG.md`](plans/waves/WAVE_18_1_IMPLEMENTATION_BACKLOG.md) Session 3 section
+
+### Session 3 Incremental Delivery (current branch)
+
+- **W18.1-P0-010 (baseline)**: IndexedDB-backed offline draft persistence added for viewing feedback capture (`src/utils/indexedDraftStore.ts`, `src/components/ViewingFeedback.jsx`) ✅
+- **W18.1-P0-018 (backend progression)**: Fixed follow-up cadence-route registration bug (rules routes now mounted globally, not nested under `/cadences`) and enabled dynamic CadenceRule runtime selection in `startSequence` based on lead tier/source/dealType ✅
+- **W18.1-P1-002 (progression)**: Added audit log XLSX export parity (`GET /api/activities/export/xlsx`) and wired `Export XLSX` action in `AuditLogPage` alongside CSV ✅
+- **W18.1-P1-004 (backend progression)**: Added structured Nadia escalation handoff context logging (`nadia_escalation_queued` / `nadia_escalation_requeued` activity metadata) during queueing ✅
+- **W18.1-P1-005 (progression)**: Added tokenized e-sign contract routes (`GET /api/contracts/signature/:token`, `POST /api/contracts/signature/:token/sign`) and aligned `SignContractPage` API wiring + tests ✅
+- **W18.1-P1-006 (baseline)**: Syndication queue API delivered with `SYNDICATION_ENABLED` gate (`/api/syndication/status`, `/api/syndication/sync-queue`) ✅
+- Validation evidence: `npm run test:run -- src/pages/crm/AuditLogPage.test.tsx src/pages/SignContractPage.test.tsx` ✅, `npm run lint` ✅ (warnings only; baseline unchanged), `npm run build` ✅, `npm run plans:validate` ✅
+
+## 🚀 Wave 18.1 Session 1 Delivery
+
+- Implemented lead workflow automation for **W18.1-P0-004/005/006/007/008**: viewing requests now auto-create/link inquiry leads, CRM exposes unified lead timelines, bulk reminder actions, and agent task cockpit SLA priority feeds.
+- Expanded tenant/landlord portal home dashboards for **W18.1-P0-015/016** with renewal visibility, maintenance SLA counts, issue hotspot surfacing, and occupancy risk snapshots.
+- Validation evidence: `npm run test:run -- server/__tests__/leadSla.test.ts server/__tests__/leadBulkAction.test.ts server/routes/viewings.test.ts server/services/__tests__/leadWorkflowService.test.ts`, `npm run test:run -- src/components/crm/AgentTaskCockpit.test.tsx src/components/crm/LeadTimeline.test.tsx src/components/portal/tenant/TenantPortalHome.test.tsx src/components/portal/landlord/LandlordPortalHome.test.tsx`, `npx eslint ...changed files`, `npm run build`.
 
 > Premium usage is allowed **only** for senior coders/designers **after** @Ada declares:
 > `@Ada — Context Ready (60% Readiness) — Coding Phase Approved`
@@ -75,12 +114,17 @@
 | May 16, 2026 | @Mira + @Timnit + @Katherine        | Wave 04 W4-005 hardening: added dedicated AML adapter unit suite (`server/services/compliance/__tests__/amlAdapter.test.ts`) covering low/high-risk scoring, flag generation, and 100-score cap; focused verification green (41/41 targeted tests ✅) with lint/build pass ✅                                                                                                         | 1             |
 | May 16, 2026 | @Mira + @Sofia + @Katherine         | Wave 04 W4-006 hardening: consent governance audit trail expanded with explicit revoke/delete compliance events (`pdpl_consent_revoked`, `pdpl_consent_deleted`) and verified assertions in route tests; focused verification green (41/41 targeted tests ✅) with lint/build pass ✅                                                                                                 | 1             |
 | May 20, 2026 | @Mira + @Katherine                  | Post-closure stability verification: `npm run quality:quick` revalidated on latest runtime/deploy baseline (lint ✅, build ✅, ops tests 11/11 ✅) with no new regressions                                                                                                                                                                                                            | 0             |
+| May 24, 2026 | @Margaret + @Copilot                | Planning workspace cleanup: added canonical wave index, split Wave 15/16 queueing, archived duplicate root Wave 12 market-intelligence docs, restored `npm run plans:validate`, and added Wave 11 test rollout coverage                                                                                                                                                               | 0             |
+| May 25, 2026 | @Mira + @Una + @Katherine + @Copilot | **Wave 13 completed:** real-time notification + media + virtual tour wave moved to complete across canonical queue, master roadmap, wave index, and Wave 13 bundle docs; governance sync validated with `npm run plans:validate`                                                                                                                                                        | 0             |
 | May 20, 2026 | @Mira + @Katherine                  | Notification transport wave: added webhook-backed optional push dispatch in `server/notifications/notification.service.ts` with local fallback and focused regression tests                                                                                                                                                                                                           | 0             |
+| May 24, 2026 | @Una + @Lea + @Tracy + @Katherine + @Copilot | **Wave 09 completed:** finalized reusable `EmptyState` + `ErrorBoundary`, wired CRM lead/favorites loading+empty states with skeleton UX, added mobile drawer swipe-close behavior, tightened accessibility audit assertions to fail critical/serious violations, and synced wave trackers/status boards to completed state (build/lint/targeted tests validated; full typecheck blocked by unrelated Prisma client baseline) | 0             |
 | May 20, 2026 | @Mira + @Katherine                  | Contracts signing wave: `POST /api/contracts/:id/request-signature` now sends a branded signing-link email via tracked email service; focused route regression test added                                                                                                                                                                                                             | 0             |
 | May 20, 2026 | @Mira + @Katherine                  | Signature service wave: `SignatureService` now sends branded signing-request and reminder emails via tracked email service; focused service regression test added                                                                                                                                                                                                                     | 0             |
 | May 20, 2026 | @Mira + @Katherine                  | Import history dashboard wave: mounted `importHistory` runtime routes, aligned `/api/inventory/import/history` path contract used by frontend, and exposed real `GET /api/admin/dashboard` collection stats with focused route regression tests                                                                                                                                       | 0             |
 | May 20, 2026 | @Mira + @Katherine                  | Import history resilience wave: standardized `/api/inventory/import/session/:sessionId/errors` and JSON report payload to source `importErrors` with legacy fallback, backed by focused route tests (4/4 ✅)                                                                                                                                                                          | 0             |
 | May 22, 2026 | @Margaret + @Ada + @Copilot         | **Acceleration wave:** resolved PR merge conflicts (clean auto-merge); TypeScript 0 errors confirmed (client + server); Wave 08 S1 declared ✅ Complete; Wave 09 promoted 🟢 Ready; Wave 09/10/11 full bundles created (SDD + Readiness + Backlog + Test Rollout x4 artifacts each); MASTER_PLAN + PENDING_TASKS_ONLY upgraded to reflect full execution path through Wave 11 closure | 0             |
+| May 26, 2026 | @Ada + @Margaret + @Katherine + @Copilot | **Wave 18 completed:** all 15 backlog items (W18-001 to W18-015) closed; governance validation (`npm run plans:validate` ✅); Wave 18 marked ✅ Complete in MASTER_PLAN, PENDING_TASKS_ONLY, waves/README; Wave 18.1 promoted 🟢 Ready; 8-platform parity matrix + top-20 P0 queue + 132-item opportunity inventory + 90-day KPI targets all locked | 0             |
+| May 27, 2026 | @Ada + @Mira + @Tracy + @Katherine + @Sofia + @Copilot | **Wave 18.1 Session 2 delivered:** all 10 P0 competitor parity tasks ✅ — P0-001 intent ranking ✅, P0-002 advanced facets ✅, P0-003 map/viewport Redux sync ✅, P0-009 mobile CRM command bar ✅, P0-011 listing completeness ✅, P0-012 verification badges ✅, P0-013 KYC gate live (merged duplicate PATCH + `prisma.$transaction`) ✅, P0-017 WA→lead conversion backend + frontend wired ✅, P0-019 funnel analytics endpoint ✅, P0-020 KPI baseline tracker ✅; typecheck clean; build green; all tests pass; `npm run plans:validate` ✅ | 0             |
 
 ---
 
@@ -228,7 +272,31 @@
 - [x] Pending queue reconciled and status drift removed across active trackers
 - [x] Phase 26 Workstream E advisory explicitly deferred with owner/date (`@Margaret`, target `2026-05-23`)
 
-### Latest Planning / Implementation Sync (May 22, 2026)
+### MILESTONE-WAVE17-SCAFFOLD
+
+**Wave 17 — Full UI/UX Luxury Upgrade — Implementation Complete (May 25, 2026)**
+
+**Status:** ✅ COMPLETE
+
+- [x] `plans/waves/WAVE_17_SDD.md` created (glassmorphism, Framer Motion, mobile, PWA, WCAG 2.2 scope)
+- [x] `plans/waves/WAVE_17_READINESS_PACKET.md` created (60% unlock gate + 6 free-agent spec checks)
+- [x] `plans/waves/WAVE_17_IMPLEMENTATION_BACKLOG.md` created (W17-001 → W17-009 ordered tasks)
+- [x] `plans/waves/WAVE_17_TEST_ROLLOUT.md` created (Lighthouse CI, Axe WCAG, PWA, Playwright mobile matrix)
+- [x] `business_docs/06_design_architecture/ui-ux-specification.md` expanded with Sections 13–17 (glassmorphism tokens, Framer Motion guidelines, enhanced mobile breakpoints, PWA spec, WCAG 2.2 criteria)
+- [x] `plans/waves/README.md` updated — Wave 17 row added
+- [x] `plans/MASTER_PLAN.md` updated — Wave 17 added as Sequence 9 (S10)
+- [x] `plans/PENDING_TASKS_ONLY.md` updated — S10 Wave 17 queue entry + free-agent invocation table
+- [x] `DAILY_MILESTONE_TRACKER.md` updated — May 25 entry recorded
+- [x] Wave 14 → Wave 15 → Wave 16 complete before Wave 17 coding
+- [x] 6 free-agent planning specs committed (Phase A outputs reflected in Wave 17 docs)
+- [x] `@Ada — Context Ready (60% Readiness) — Coding Phase Approved` issued for Wave 17
+- [x] Lighthouse CI thresholds now fail PR on breach (`lighthouserc` assertions set to `error`; CI no longer `continue-on-error`)
+- [x] PWA runtime caching aligned to Wave 17 target (network-first `/api/*`, cache-first static assets)
+- [x] Accessibility suite now uses `@axe-core/playwright` for Wave 17 WCAG checks
+- [x] Mobile 375px touch-target assertion aligned to ≥44px requirement
+- [x] Validation run: lint ✅, build ✅, plans:validate ✅, typecheck ⚠ blocked by pre-existing Prisma export baseline (`server/database.ts`, `server/services/ai/leadScoringMiddleware.ts`)
+
+---
 
 **Focus:** Consolidate planning to canonical trackers, normalize cross-tracker status, and activate Stream S1 error-burn-down with verification gates
 
@@ -267,6 +335,7 @@
 
 | Date        | Milestone            | Result                                                        |
 | ----------- | -------------------- | ------------------------------------------------------------- |
+| May 24, 2026 | Planning cleanup     | Canonical plan navigation, validation, and wave structure upgraded |
 | May 5, 2026 | Phase 33 Step 2      | Homepage leasing conversion events + hero CTA leasing-first   |
 | May 5, 2026 | Phase 31             | LandlordIncomeTab + LandlordOfferReviewTab live API completed |
 | May 5, 2026 | Phase 32             | LandlordPayments date-range + mobile responsive CSS completed |

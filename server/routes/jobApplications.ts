@@ -81,7 +81,7 @@ router.get(
   authMiddleware,
   requireRole('owner', 'admin', 'manager', 'managing_director'),
   asyncHandler(async (req: AuthRequest, res: Response) => {
-    const { status, position, page = '1', pageSize = '20' } = req.query;
+    const { status, position, page = '1', pageSize = '20' } = req.query as Record<string, string | undefined>;
 
     const pageNum = Math.max(1, parseInt(page as string) || 1);
     const limit = Math.min(100, Math.max(1, parseInt(pageSize as string) || 20));
@@ -118,7 +118,7 @@ router.patch(
   authMiddleware,
   requireRole('owner', 'admin', 'manager', 'managing_director'),
   asyncHandler(async (req: AuthRequest, res: Response) => {
-    const { id } = req.params;
+    const { id } = req.params as Record<string, string>;
     const { status, notes } = req.body || {};
 
     if (status && !VALID_STATUSES.includes(status as (typeof VALID_STATUSES)[number])) {
