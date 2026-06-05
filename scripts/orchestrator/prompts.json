@@ -926,20 +926,6 @@
   },
   "DU020": {
     "v": 1,
-    "agent": "@Zod",
-    "action": "EXPAND",
-    "target": "wave-14-validation-architecture.md",
-    "prompt": "@Zod -- EXPAND: wave-14-validation-architecture.md -> add validation error envelope coverage with field-level issues, localization hooks, and tracing metadata",
-    "tags": [
-      "compliance",
-      "api"
-    ],
-    "lastUsed": "2026-06-05",
-    "successCount": 0,
-    "history": []
-  },
-  "DU021": {
-    "v": 1,
     "agent": "@Victoria",
     "action": "EXPAND",
     "target": "tenancy-ejari.md",
@@ -952,7 +938,7 @@
     "successCount": 0,
     "history": []
   },
-  "DU022": {
+  "DU021": {
     "v": 1,
     "agent": "@Invoice",
     "action": "EXPAND",
@@ -966,7 +952,7 @@
     "successCount": 0,
     "history": []
   },
-  "DU023": {
+  "DU022": {
     "v": 1,
     "agent": "@Rachel",
     "action": "EXPAND",
@@ -980,7 +966,7 @@
     "successCount": 0,
     "history": []
   },
-  "DU024": {
+  "DU023": {
     "v": 1,
     "agent": "@Fei-Fei",
     "action": "DRAFT",
@@ -994,7 +980,7 @@
     "successCount": 0,
     "history": []
   },
-  "DU025": {
+  "DU024": {
     "v": 1,
     "agent": "@Redis",
     "action": "EXPAND",
@@ -1008,7 +994,7 @@
     "successCount": 0,
     "history": []
   },
-  "DU026": {
+  "DU025": {
     "v": 1,
     "agent": "@Marissa",
     "action": "EXPAND",
@@ -1022,7 +1008,7 @@
     "successCount": 0,
     "history": []
   },
-  "DU027": {
+  "DU026": {
     "v": 1,
     "agent": "@Rania",
     "action": "DRAFT",
@@ -1036,7 +1022,7 @@
     "successCount": 0,
     "history": []
   },
-  "DU028": {
+  "DU027": {
     "v": 1,
     "agent": "@Cloudinary",
     "action": "EXPAND",
@@ -1050,7 +1036,7 @@
     "successCount": 0,
     "history": []
   },
-  "DU029": {
+  "DU028": {
     "v": 1,
     "agent": "@Mortgage",
     "action": "EXPAND",
@@ -1064,7 +1050,7 @@
     "successCount": 0,
     "history": []
   },
-  "DU030": {
+  "DU029": {
     "v": 1,
     "agent": "@Socket",
     "action": "EXPAND",
@@ -1078,7 +1064,7 @@
     "successCount": 0,
     "history": []
   },
-  "DU031": {
+  "DU030": {
     "v": 1,
     "agent": "@LeadScore",
     "action": "EXPAND",
@@ -1092,7 +1078,7 @@
     "successCount": 0,
     "history": []
   },
-  "DU032": {
+  "DU031": {
     "v": 1,
     "agent": "@Wafa",
     "action": "DRAFT",
@@ -1106,7 +1092,7 @@
     "successCount": 0,
     "history": []
   },
-  "DU033": {
+  "DU032": {
     "v": 1,
     "agent": "@Annie",
     "action": "EXPAND",
@@ -1115,6 +1101,20 @@
     "tags": [
       "communications",
       "analytics"
+    ],
+    "lastUsed": "2026-06-05",
+    "successCount": 0,
+    "history": []
+  },
+  "DU033": {
+    "v": 1,
+    "agent": "@Zod",
+    "action": "EXPAND",
+    "target": "wave-14-validation-architecture.md",
+    "prompt": "@Zod -- EXPAND: wave-14-validation-architecture.md -> add validation error envelope coverage with field-level issues, localization hooks, and tracing metadata",
+    "tags": [
+      "compliance",
+      "api"
     ],
     "lastUsed": "2026-06-05",
     "successCount": 0,
