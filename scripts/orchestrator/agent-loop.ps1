@@ -215,6 +215,23 @@ function Get-NextReadyInRotation {
   foreach ($aa in $anyAgents) {
     if ($ordered -notcontains $aa) { $ordered += $aa }
   }
+  $dynamicReadyAgents = @()
+  foreach ($t in ($allTasks | Sort-Object taskId)) {
+    if ($t.status -notin @("queued","retrying")) { continue }
+    $isBlocked = $false
+    foreach ($dep in @($t.dependsOn)) {
+      $depTask = $allTasks | Where-Object { $_.taskId -eq $dep } | Select-Object -First 1
+      if ($null -eq $depTask -or $depTask.status -ne "done") { $isBlocked = $true; break }
+    }
+    if ($isBlocked) { continue }
+    $agentName = [string]$t.agent
+    if (-not [string]::IsNullOrWhiteSpace($agentName) -and $dynamicReadyAgents -notcontains $agentName) {
+      $dynamicReadyAgents += $agentName
+    }
+  }
+  foreach ($ra in $dynamicReadyAgents) {
+    if ($ordered -notcontains $ra) { $ordered += $ra }
+  }
 
   foreach ($ag in $ordered) {
     $candidate = Get-AgentNextReadyTask -agentName $ag -allTasks $allTasks
@@ -733,5 +750,4 @@ Write-Host ("  LOOP COMPLETE -- {0} round(s) run" -f $loopCount) -ForegroundColo
 Write-Host "  Run: npm run orchestrator:session:compact  -- to see full queue state" -ForegroundColor DarkGray
 Write-BigDivider
 Write-Host ""
-
 
