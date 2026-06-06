@@ -100,6 +100,15 @@
 			"label": "check-autopilot-process",
 			"type": "shell",
 			"command": "powershell.exe",
+			"options": {
+				"shell": {
+					"executable": "cmd.exe",
+					"args": [
+						"/d",
+						"/c"
+					]
+				}
+			},
 			"args": [
 				"-NoProfile",
 				"-Command",
