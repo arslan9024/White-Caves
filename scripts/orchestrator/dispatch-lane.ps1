@@ -18,6 +18,7 @@ param(
 $stateDir  = Join-Path $WorkspaceRoot "logs\orchestrator"
 $queueFile = Join-Path $stateDir "task-queue.json"
 $mutex     = New-Object System.Threading.Mutex($false, "Global\WhiteCaves_Orchestrator_Queue")
+$realityGateLog = Join-Path $stateDir "reality-gate.log"
 $policyUtilsPath = Join-Path $PSScriptRoot "policy-utils.ps1"
 
 if (-not (Test-Path $policyUtilsPath)) {
@@ -51,6 +52,99 @@ function Save-Queue {
   $json = $Queue | ConvertTo-Json -Depth 12
   [System.IO.File]::WriteAllText($tmp, $json, (New-Object System.Text.UTF8Encoding($false)))
   Move-Item -Path $tmp -Destination $Path -Force
+}
+
+function Write-RealityLog {
+  param([string]$Message)
+  $ts = (Get-Date).ToString("yyyy-MM-dd HH:mm:ss")
+  Add-Content -Path $realityGateLog -Value "[$ts][dispatch-lane] $Message" -Encoding UTF8
+}
+
+function Get-RealityGateConfig {
+  param($policy)
+
+  $defaults = @{
+    enabled = $true
+    minSelectionScore = 60
+    projectKeywords = @("homepage", "login", "auth", "api", "ux", "ui", "performance", "security", "dashboard", "crm", "property", "lead", "tenant", "automation", "validation", "test", "build", "lint", "typecheck")
+    qualityMarkers = @("implement", "verify", "validation", "rollback", "best-practice", "security", "test", "build", "lint", "typecheck")
+  }
+
+  if ($null -eq $policy -or $null -eq $policy.aegis -or $null -eq $policy.aegis.realityExecutionGate) {
+    return $defaults
+  }
+
+  $g = $policy.aegis.realityExecutionGate
+  return @{
+    enabled = if ($null -ne $g.enabled) { [bool]$g.enabled } else { $defaults.enabled }
+    minSelectionScore = if ($null -ne $g.minSelectionScore) { [int]$g.minSelectionScore } else { $defaults.minSelectionScore }
+    projectKeywords = if ($null -ne $g.projectKeywords -and @($g.projectKeywords).Count -gt 0) { @($g.projectKeywords) } else { $defaults.projectKeywords }
+    qualityMarkers = if ($null -ne $g.qualityMarkers -and @($g.qualityMarkers).Count -gt 0) { @($g.qualityMarkers) } else { $defaults.qualityMarkers }
+  }
+}
+
+function Get-TaskSelectionScore {
+  param($task, $realityGate)
+
+  $score = 0
+  $priorityScore = 0
+  if ($null -ne $task.priorityScore) {
+    $priorityScore = [int]$task.priorityScore
+  }
+  $score += [Math]::Min($priorityScore, 1000)
+
+  $priorityText = [string]$task.priority
+  switch ($priorityText.ToLowerInvariant()) {
+    "critical" { $score += 300 }
+    "high" { $score += 180 }
+    "normal" { $score += 80 }
+    default { $score += 30 }
+  }
+
+  $phase = [string]$task.phase
+  $team = [string]$task.team
+  if ($phase -eq "implementation" -or $team -eq "premium-implementation") {
+    $score += 120
+  }
+  else {
+    $score += 40
+  }
+
+  $attempts = if ($null -ne $task.attempts) { [int]$task.attempts } else { 0 }
+  $score -= ($attempts * 10)
+
+  $combined = (
+    [string]$task.title + " " +
+    [string]$task.prompt + " " +
+    [string]$task.description
+  ).ToLowerInvariant()
+
+  $projectHits = 0
+  foreach ($kw in @($realityGate.projectKeywords)) {
+    $token = [string]$kw
+    if ([string]::IsNullOrWhiteSpace($token)) { continue }
+    if ($combined.Contains($token.ToLowerInvariant())) {
+      $projectHits++
+    }
+  }
+
+  $qualityHits = 0
+  foreach ($kw in @($realityGate.qualityMarkers)) {
+    $token = [string]$kw
+    if ([string]::IsNullOrWhiteSpace($token)) { continue }
+    if ($combined.Contains($token.ToLowerInvariant())) {
+      $qualityHits++
+    }
+  }
+
+  $score += ($projectHits * 15)
+  $score += ($qualityHits * 20)
+
+  return @{
+    score = $score
+    projectHits = $projectHits
+    qualityHits = $qualityHits
+  }
 }
 
 function Test-DependencyDone {
@@ -90,6 +184,8 @@ function Get-NormalizedDeps {
 function Select-Candidate {
   param($tasks, [string]$lane, [string]$preferAgent, $policy)
 
+  $realityGate = Get-RealityGateConfig -policy $policy
+
   $eligible = $tasks | Where-Object {
     $isImplementationTask = ([string]$_.phase -eq "implementation") -or ([string]$_.team -eq "premium-implementation")
 
@@ -113,13 +209,37 @@ function Select-Candidate {
 
   if (-not $eligible) { return $null }
 
-  # Prefer tasks for the specific agent if requested
-  if ($preferAgent -ne "") {
-    $preferred = $eligible | Where-Object { $_.agent -eq $preferAgent } | Select-Object -First 1
-    if ($preferred) { return $preferred }
+  $scored = @()
+  foreach ($t in @($eligible)) {
+    $quality = Get-TaskSelectionScore -task $t -realityGate $realityGate
+    $scored += [pscustomobject]@{
+      task = $t
+      score = [int]$quality.score
+      projectHits = [int]$quality.projectHits
+      qualityHits = [int]$quality.qualityHits
+    }
   }
 
-  return $eligible | Select-Object -First 1
+  if ($realityGate.enabled) {
+    $highQuality = @($scored | Where-Object { $_.score -ge $realityGate.minSelectionScore })
+    if ($highQuality.Count -gt 0) {
+      $scored = $highQuality
+    }
+  }
+
+  $ordered = @($scored | Sort-Object @{ Expression = "score"; Descending = $true }, @{ Expression = { $_.task.createdAt }; Descending = $false })
+
+  if ($ordered.Count -eq 0) { return $null }
+
+  Write-RealityLog ("lane={0} eligible={1} selectedScore={2} selectedTask={3} projectHits={4} qualityHits={5} minScore={6} gateEnabled={7}" -f $lane, @($eligible).Count, $ordered[0].score, $ordered[0].task.taskId, $ordered[0].projectHits, $ordered[0].qualityHits, $realityGate.minSelectionScore, $realityGate.enabled)
+
+  # Prefer tasks for the specific agent if requested
+  if ($preferAgent -ne "") {
+    $preferred = $ordered | Where-Object { $_.task.agent -eq $preferAgent } | Select-Object -First 1
+    if ($preferred) { return $preferred.task }
+  }
+
+  return $ordered[0].task
 }
 
 $claimedTask = $null

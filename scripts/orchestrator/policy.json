@@ -291,6 +291,38 @@
     "devSmokeEveryNTasks": 3,
     "autopilotRequireProducedRef": false,
     "autopilotAutoResolveEvidencePending": true,
+    "realityExecutionGate": {
+      "enabled": true,
+      "minSelectionScore": 120,
+      "projectKeywords": [
+        "homepage",
+        "login",
+        "auth",
+        "api",
+        "ux",
+        "ui",
+        "performance",
+        "security",
+        "dashboard",
+        "crm",
+        "property",
+        "lead",
+        "tenant",
+        "automation"
+      ],
+      "qualityMarkers": [
+        "implement",
+        "verify",
+        "validation",
+        "rollback",
+        "best-practice",
+        "security",
+        "test",
+        "build",
+        "lint",
+        "typecheck"
+      ]
+    },
     "deadlockRecoveryEnabled": true,
     "idleSleepSeconds": 5
   },
