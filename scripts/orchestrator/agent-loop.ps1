@@ -45,6 +45,36 @@ $verifyPromptsScript = Join-Path $scripts "verify-prompts.ps1"
 $blockerReportScript = Join-Path $scripts "blocker-report.ps1"
 $projectProblemScanScript = Join-Path $scripts "project-problem-scan.ps1"
 $phaseStateFile = Join-Path $root "logs\orchestrator\aegis-phase-state.json"
+$scanLogDir = Join-Path $root "logs\orchestrator\scans"
+$loopSyncScript = Join-Path $scripts "loop-start-sync.ps1"
+$cycleSummaryScript = Join-Path $scripts "cycle-summary.ps1"
+$autoEscalateScript = Join-Path $scripts "auto-escalate.ps1"
+$blockerBriefScript = Join-Path $scripts "blocker-brief.ps1"
+$powerShellExe = "powershell"
+try {
+  $resolvedPs = Get-Command powershell -ErrorAction Stop
+  if ($null -ne $resolvedPs -and -not [string]::IsNullOrWhiteSpace([string]$resolvedPs.Source)) {
+    $powerShellExe = [string]$resolvedPs.Source
+  }
+} catch {
+  $powerShellExe = "powershell"
+}
+
+$trackingRemote = "origin"
+$trackingBranch = "main"
+try {
+  $upstreamRef = (git rev-parse --abbrev-ref --symbolic-full-name "@{u}" 2>$null).Trim()
+  if (-not [string]::IsNullOrWhiteSpace($upstreamRef) -and $upstreamRef.Contains("/")) {
+    $parts = $upstreamRef.Split("/", 2)
+    if ($parts.Count -eq 2) {
+      if (-not [string]::IsNullOrWhiteSpace($parts[0])) { $trackingRemote = $parts[0] }
+      if (-not [string]::IsNullOrWhiteSpace($parts[1])) { $trackingBranch = $parts[1] }
+    }
+  }
+} catch {
+  $trackingRemote = "origin"
+  $trackingBranch = "main"
+}
 
 # ------------------------------------------------------------------
 # EXECUTION MODE (policy + switches)
@@ -191,6 +221,11 @@ if ($Autopilot) {
 # unless the user explicitly chooses browser mode via another command path.
 if ($effectiveNonInteractive -and -not $PSBoundParameters.ContainsKey('NoBrowser')) {
   $NoBrowser = $true
+}
+
+$effectiveNoBrowser = [bool]$NoBrowser
+if ($OpenBrowser -or $ForceBrowserOpen) {
+  $effectiveNoBrowser = $false
 }
 
 # ------------------------------------------------------------------
@@ -605,6 +640,27 @@ function Get-ReadyCount {
   return $ready
 }
 
+function Get-BlockedCount {
+  if (-not (Test-Path $qFile)) { return 0 }
+  $q = Get-Content $qFile -Raw | ConvertFrom-Json
+  $all = @($q.tasks)
+
+  $blocked = 0
+  foreach ($t in ($all | Where-Object { $_.status -in @("queued", "retrying") })) {
+    $isBlocked = $false
+    foreach ($dep in (Get-NormalizedDeps $t.dependsOn)) {
+      $depTask = $all | Where-Object { $_.taskId -eq $dep } | Select-Object -First 1
+      if ($null -eq $depTask -or $depTask.status -ne "done") {
+        $isBlocked = $true
+        break
+      }
+    }
+    if ($isBlocked) { $blocked++ }
+  }
+
+  return $blocked
+}
+
 function Get-NextEvidencePendingTask {
   if (-not (Test-Path $qFile)) { return $null }
   $q = Get-Content $qFile -Raw | ConvertFrom-Json
@@ -756,20 +812,26 @@ function Invoke-AegisProblemScanner {
   return $result
 }
 
+function Get-PromptRecord {
+  param([string]$taskId)
+
+  if (-not (Test-Path $pFile)) { return $null }
+  try {
+    $p = Get-Content $pFile -Raw | ConvertFrom-Json
+    return ($p.PSObject.Properties | Where-Object { $_.Name -eq $taskId } | Select-Object -ExpandProperty Value)
+  } catch {
+    return $null
+  }
+}
+
 function Get-Prompt {
   param([string]$taskId)
-  $val = $null
-  if (Test-Path $pFile) {
-    try {
-      $p = Get-Content $pFile -Raw | ConvertFrom-Json
-      $val = $p.PSObject.Properties | Where-Object { $_.Name -eq $taskId } | Select-Object -ExpandProperty Value
-    } catch {
-      $val = $null
-    }
-  }
 
-  if (-not [string]::IsNullOrWhiteSpace([string]$val)) {
-    return $val
+  $val = Get-PromptRecord -taskId $taskId
+  if ($null -ne $val) {
+    if ($val -is [string] -and -not [string]::IsNullOrWhiteSpace($val)) { return $val }
+    if ($val.PSObject.Properties.Name -contains "prompt") { return [string]$val.prompt }
+    return [string]$val
   }
 
   # Fallback for Aegis-generated tasks when prompts.json is out of sync.
@@ -791,15 +853,6 @@ function Get-Prompt {
   }
 
   return "(no prompt for $taskId -- add to prompts.json)"
-}
-
-function Get-Prompt {
-  param([string]$taskId)
-  $val = Get-PromptRecord -taskId $taskId
-  if ($null -eq $val) { return "(no prompt for $taskId -- add to prompts.json)" }
-  if ($val -is [string]) { return $val }
-  if ($val.PSObject.Properties.Name -contains "prompt") { return [string]$val.prompt }
-  return [string]$val
 }
 
 function Get-PromptVersion {
@@ -825,9 +878,15 @@ function Get-LastScanStatus {
 }
 
 function Get-MainDelta {
-  $branch = (git rev-parse --abbrev-ref HEAD 2>$null).Trim()
+  $branchRaw = git rev-parse --abbrev-ref HEAD 2>$null
+  $branch = [string]$branchRaw
+  if ($null -eq $branch) { $branch = "" }
+  $branch = $branch.Trim()
   if ($LASTEXITCODE -ne 0 -or [string]::IsNullOrWhiteSpace($branch)) { return "unknown" }
-  $behind = (git rev-list --count "HEAD..$trackingRemote/$trackingBranch" 2>$null).Trim()
+  $behindRaw = git rev-list --count "HEAD..$trackingRemote/$trackingBranch" 2>$null
+  $behind = [string]$behindRaw
+  if ($null -eq $behind) { $behind = "" }
+  $behind = $behind.Trim()
   if ([string]::IsNullOrWhiteSpace($behind)) { $behind = "0" }
   return ("{0} (+{1} behind {2})" -f $branch, $behind, $trackingBranch)
 }
