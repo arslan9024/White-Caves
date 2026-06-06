@@ -23,7 +23,8 @@ $attempt = 0
 
 while ((Get-Date) -lt $deadline) {
   $attempt++
-  git add -- $trackerFile 2>$null
+  $trackerEscaped = $trackerFile.Replace('"', '""')
+  cmd /c "git add -- \"$trackerEscaped\" >nul 2>nul"
   if ($LASTEXITCODE -eq 0) {
     $staged = $true
     Write-Host ("TRACKER_STAGE=ok attempt=" + $attempt)
