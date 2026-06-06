@@ -538,6 +538,35 @@
 				"-Command",
 				"$f='DAILY_MILESTONE_TRACKER.md'; if(!(Test-Path $f)){ Write-Host 'TRACKER=missing'; exit 1 }; try { $tmp='logs/orchestrator/_tracker-lock-probe.tmp'; Copy-Item -Path $f -Destination $tmp -Force; Remove-Item -Path $tmp -Force -ErrorAction SilentlyContinue; Write-Host 'TRACKER_LOCK=free' } catch { Write-Host ('TRACKER_LOCK=locked :: ' + $_.Exception.Message) }"
 			]
+		},
+		{
+			"label": "tracker-commit-when-free",
+			"type": "shell",
+			"command": "powershell.exe",
+			"options": {
+				"shell": {
+					"executable": "cmd.exe",
+					"args": [
+						"/d",
+						"/c"
+					]
+				}
+			},
+			"args": [
+				"-NoProfile",
+				"-ExecutionPolicy",
+				"Bypass",
+				"-File",
+				"scripts/orchestrator/tracker-commit-when-free.ps1",
+				"-WorkspaceRoot",
+				".",
+				"-TimeoutSeconds",
+				"90",
+				"-PollIntervalSeconds",
+				"1",
+				"-Branch",
+				"recruitment-analytics-onboarding"
+			]
 		}
 	]
 }
