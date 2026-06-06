@@ -493,6 +493,30 @@
 				"cd /d c:\\Users\\Murad Ali\\White-Caves & npm.cmd run quality:quick > quality-quick-latest.log 2>&1"
 			],
 			"isBackground": false
+		},
+		{
+			"label": "orchestrator-queue-health-snapshot",
+			"type": "shell",
+			"command": "powershell.exe",
+			"options": {
+				"shell": {
+					"executable": "cmd.exe",
+					"args": [
+						"/d",
+						"/c"
+					]
+				}
+			},
+			"args": [
+				"-NoProfile",
+				"-ExecutionPolicy",
+				"Bypass",
+				"-File",
+				"scripts/orchestrator/queue-health.ps1",
+				"-WorkspaceRoot",
+				".",
+				"-Brief"
+			]
 		}
 	]
 }
