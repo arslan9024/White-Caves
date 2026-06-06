@@ -342,6 +342,27 @@ describe('Properties Routes — /api/properties', () => {
     });
   });
 
+  // ── PUT /:id ─────────────────────────────────────────────────────
+  describe('PUT /api/properties/:id', () => {
+    it('returns 400 when moving to available without permit fields', async () => {
+      mockPrisma.property.findUnique.mockResolvedValueOnce({
+        id: VALID_ID,
+        title: 'Draft Listing',
+        status: 'draft',
+        municipalityNumber: null,
+        buildingPermitNumber: null,
+        userId: 'user-1',
+      });
+
+      const res = await request(createApp('owner'))
+        .put(`/api/properties/${VALID_ID}`)
+        .send({ status: 'available' });
+
+      expect(res.status).toBe(400);
+      expect(mockPrisma.property.update).not.toHaveBeenCalled();
+    });
+  });
+
   // ── PATCH /:id ───────────────────────────────────────────────────
   describe('PATCH /api/properties/:id', () => {
     it('returns 200 on successful update by admin', async () => {
@@ -421,6 +442,24 @@ describe('Properties Routes — /api/properties', () => {
           data: expect.objectContaining({ action: 'status_changed' }),
         })
       );
+    });
+
+    it('returns 400 when moving to available without permit fields', async () => {
+      mockPrisma.property.findUnique.mockResolvedValueOnce({
+        id: VALID_ID,
+        title: 'Draft Listing',
+        status: 'draft',
+        municipalityNumber: null,
+        buildingPermitNumber: null,
+        userId: 'user-1',
+      });
+
+      const res = await request(createApp('owner'))
+        .patch(`/api/properties/${VALID_ID}`)
+        .send({ status: 'available' });
+
+      expect(res.status).toBe(400);
+      expect(mockPrisma.property.update).not.toHaveBeenCalled();
     });
   });
 

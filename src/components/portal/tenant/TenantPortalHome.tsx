@@ -27,8 +27,11 @@ interface DashboardData {
   monthlyRent: number | null;
   currency: string;
   daysRemainingOnLease: number | null;
+  nextPaymentDue: string | null;
+  renewalStatus: string;
   openMaintenanceRequests: number;
   totalMaintenanceRequests: number;
+  maintenanceSlaOpen: number;
 }
 
 interface QuickLink {
@@ -49,6 +52,13 @@ interface TenantPortalHomeProps {
   onNavigate?: (tabKey: string) => void;
 }
 
+interface MaintenanceItem {
+  id: string;
+  status?: string;
+  priority?: string;
+  scheduledDate?: string;
+}
+
 const TenantPortalHome: FC<TenantPortalHomeProps> = ({ onNavigate }) => {
   const currentUser = useSelector((state: RootState) => state.user.currentUser);
   const [dashboard, setDashboard] = useState<DashboardData | null>(null);
@@ -64,11 +74,12 @@ const TenantPortalHome: FC<TenantPortalHomeProps> = ({ onNavigate }) => {
     ])
       .then(([leasesRes, maintenanceRes]) => {
         const leases: LeaseData[] = Array.isArray(leasesRes.data) ? leasesRes.data : [];
+        const maintenanceItems: MaintenanceItem[] = Array.isArray(maintenanceRes.data)
+          ? maintenanceRes.data
+          : [];
         const activeLease = leases.find(l => l.status === 'active') ?? null;
-        const openCount =
-          maintenanceRes?.pagination?.total ??
-          (Array.isArray(maintenanceRes.data) ? maintenanceRes.data.length : 0);
-        const totalCount = openCount;
+        const openCount = maintenanceRes?.pagination?.total ?? maintenanceItems.length;
+        const totalCount = maintenanceRes?.pagination?.total ?? maintenanceItems.length;
 
         let daysRemaining: number | null = null;
         if (activeLease?.endDate) {
@@ -76,13 +87,29 @@ const TenantPortalHome: FC<TenantPortalHomeProps> = ({ onNavigate }) => {
           daysRemaining = Math.max(0, Math.ceil(diff / (1000 * 60 * 60 * 24)));
         }
 
+        const renewalStatus =
+          daysRemaining === null
+            ? 'No active lease'
+            : daysRemaining <= 30
+              ? 'Renewal urgent'
+              : daysRemaining <= 90
+                ? 'Renewal window open'
+                : 'Lease on track';
+
+        const maintenanceSlaOpen = maintenanceItems.filter(item =>
+          ['open', 'scheduled', 'in_progress'].includes(item.status ?? 'open')
+        ).length;
+
         setDashboard({
           hasActiveLease: !!activeLease,
           monthlyRent: activeLease?.monthlyRent ?? null,
           currency: 'AED',
           daysRemainingOnLease: daysRemaining,
+          nextPaymentDue: activeLease?.nextPaymentDue ?? null,
+          renewalStatus,
           openMaintenanceRequests: openCount,
           totalMaintenanceRequests: totalCount,
+          maintenanceSlaOpen,
         });
       })
       .catch(() => setError('Unable to load dashboard data. Please refresh.'))
@@ -99,6 +126,12 @@ const TenantPortalHome: FC<TenantPortalHomeProps> = ({ onNavigate }) => {
 
   const daysRemaining = dashboard?.daysRemainingOnLease ?? null;
   const openCount = dashboard?.openMaintenanceRequests ?? 0;
+  const nextPaymentDue = dashboard?.nextPaymentDue
+    ? new Date(dashboard.nextPaymentDue).toLocaleDateString('en-AE', {
+        month: 'short',
+        day: 'numeric',
+      })
+    : '—';
 
   return (
     <div className="tab-content-section tenant-portal-home" data-testid="tenant-portal-home">
@@ -163,6 +196,24 @@ const TenantPortalHome: FC<TenantPortalHomeProps> = ({ onNavigate }) => {
               {openCount}
             </p>
             <span className="metric-label">Maintenance issues</span>
+          </div>
+
+          <div className="summary-card" data-testid="tenant-metric-renewal">
+            <span className="metric-icon">🗓️</span>
+            <h4>Renewal Status</h4>
+            <p className="metric-value" data-testid="tenant-metric-renewal-value">
+              {dashboard?.renewalStatus ?? '—'}
+            </p>
+            <span className="metric-label">Next payment {nextPaymentDue}</span>
+          </div>
+
+          <div className="summary-card" data-testid="tenant-metric-sla">
+            <span className="metric-icon">🛠️</span>
+            <h4>Maintenance SLA</h4>
+            <p className="metric-value" data-testid="tenant-metric-sla-value">
+              {dashboard?.maintenanceSlaOpen ?? 0}
+            </p>
+            <span className="metric-label">Active service workflows</span>
           </div>
         </div>
       )}

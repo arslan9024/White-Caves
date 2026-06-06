@@ -11,14 +11,13 @@ const router = express.Router();
  */
 router.post('/request', async (req, res) => {
   try {
-    const { contractId, signerEmail, signerRole, signerName, signerPhone } =
-      req.body;
+    const { contractId, signerEmail, signerRole, signerName, signerPhone } = req.body;
 
     // Validate input
     if (!contractId || !signerEmail || !signerRole) {
       return res.status(400).json({
         success: false,
-        error: 'Missing required fields'
+        error: 'Missing required fields',
       });
     }
 
@@ -28,24 +27,82 @@ router.post('/request', async (req, res) => {
       signerEmail,
       signerRole,
       signerName,
-      signerPhone
+      signerPhone,
     });
 
     // Send signing notification
-    await SignatureService.sendSigningNotification(
-      request.signatureId,
-      request.signingLink
-    );
+    await SignatureService.sendSigningNotification(request.signatureId, request.signingLink);
 
     res.json({
       success: true,
-      data: request
+      data: request,
     });
   } catch (error) {
     console.error('Error creating signature request:', error);
     res.status(500).json({
       success: false,
-      error: error.message
+      error: error.message,
+    });
+  }
+});
+
+/**
+ * POST /api/signatures/webhook/callback
+ * Handle external e-sign provider status callbacks
+ */
+router.post('/webhook/callback', async (req, res) => {
+  try {
+    const { signatureId, status, signedAt, rejectionReason, providerEventId } = req.body || {};
+
+    if (!signatureId || !status) {
+      return res.status(400).json({
+        success: false,
+        error: 'signatureId and status are required',
+      });
+    }
+
+    const normalizedStatus = String(status).toLowerCase();
+    const allowedStatuses = ['pending', 'sent', 'opened', 'signed', 'rejected', 'expired'];
+    if (!allowedStatuses.includes(normalizedStatus)) {
+      return res.status(400).json({
+        success: false,
+        error: `Invalid status. Allowed: ${allowedStatuses.join(', ')}`,
+      });
+    }
+
+    const update = {
+      status: normalizedStatus,
+      signedAt: normalizedStatus === 'signed' ? (signedAt ? new Date(signedAt) : new Date()) : null,
+      rejectedAt: normalizedStatus === 'rejected' ? new Date() : null,
+      rejectionReason:
+        normalizedStatus === 'rejected' ? rejectionReason || 'rejected_by_provider' : undefined,
+      metadata: {
+        providerEventId: providerEventId || null,
+        callbackReceivedAt: new Date().toISOString(),
+      },
+    };
+
+    const signature = await ContractSignature.findByIdAndUpdate(signatureId, update, { new: true });
+    if (!signature) {
+      return res.status(404).json({
+        success: false,
+        error: 'Signature not found',
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      data: {
+        signatureId: signature._id,
+        status: signature.status,
+        signedAt: signature.signedAt,
+      },
+    });
+  } catch (error) {
+    console.error('Error processing signature webhook callback:', error);
+    return res.status(500).json({
+      success: false,
+      error: error.message,
     });
   }
 });
@@ -59,22 +116,17 @@ router.get('/:contractId/:token', async (req, res) => {
     const { contractId, token } = req.params;
 
     // Verify token
-    const tokenData = await SignatureService.verifySignatureToken(
-      contractId,
-      token
-    );
+    const tokenData = await SignatureService.verifySignatureToken(contractId, token);
 
     // Get contract data
     const contract = await Contract.findById(contractId)
-      .select(
-        'contractNumber status contractType propertyId tenantDetails landlordDetails'
-      )
+      .select('contractNumber status contractType propertyId tenantDetails landlordDetails')
       .lean();
 
     if (!contract) {
       return res.status(404).json({
         success: false,
-        error: 'Contract not found'
+        error: 'Contract not found',
       });
     }
 
@@ -82,14 +134,14 @@ router.get('/:contractId/:token', async (req, res) => {
       success: true,
       data: {
         tokenData,
-        contract
-      }
+        contract,
+      },
     });
   } catch (error) {
     console.error('Error verifying signature token:', error);
     res.status(400).json({
       success: false,
-      error: error.message
+      error: error.message,
     });
   }
 });
@@ -107,16 +159,15 @@ router.post('/:signatureId/sign', async (req, res) => {
     if (!imageData) {
       return res.status(400).json({
         success: false,
-        error: 'Missing signature image data'
+        error: 'Missing signature image data',
       });
     }
 
     // Add device info from request
     const enrichedDeviceInfo = {
       ...deviceInfo,
-      ipAddress:
-        req.ip || req.connection.remoteAddress || req.headers['x-forwarded-for'],
-      userAgent: req.headers['user-agent']
+      ipAddress: req.ip || req.connection.remoteAddress || req.headers['x-forwarded-for'],
+      userAgent: req.headers['user-agent'],
     };
 
     // Save signature
@@ -125,7 +176,7 @@ router.post('/:signatureId/sign', async (req, res) => {
       mimeType,
       method,
       deviceInfo: enrichedDeviceInfo,
-      coordinates
+      coordinates,
     });
 
     res.json({
@@ -133,14 +184,14 @@ router.post('/:signatureId/sign', async (req, res) => {
       data: {
         signatureId: signature._id,
         status: signature.status,
-        signedAt: signature.signedAt
-      }
+        signedAt: signature.signedAt,
+      },
     });
   } catch (error) {
     console.error('Error saving signature:', error);
     res.status(400).json({
       success: false,
-      error: error.message
+      error: error.message,
     });
   }
 });
@@ -157,13 +208,13 @@ router.get('/:contractId/status', async (req, res) => {
 
     res.json({
       success: true,
-      data: status
+      data: status,
     });
   } catch (error) {
     console.error('Error getting signature status:', error);
     res.status(500).json({
       success: false,
-      error: error.message
+      error: error.message,
     });
   }
 });
@@ -180,13 +231,13 @@ router.get('/:contractId/stats', async (req, res) => {
 
     res.json({
       success: true,
-      data: stats
+      data: stats,
     });
   } catch (error) {
     console.error('Error getting signature stats:', error);
     res.status(500).json({
       success: false,
-      error: error.message
+      error: error.message,
     });
   }
 });
@@ -203,13 +254,13 @@ router.get('/:contractId/audit', async (req, res) => {
 
     res.json({
       success: true,
-      data: auditTrail
+      data: auditTrail,
     });
   } catch (error) {
     console.error('Error getting audit trail:', error);
     res.status(500).json({
       success: false,
-      error: error.message
+      error: error.message,
     });
   }
 });
@@ -225,20 +276,17 @@ router.post('/:signatureId/resend', async (req, res) => {
     const request = await SignatureService.resendSigningRequest(signatureId);
 
     // Send notification
-    await SignatureService.sendSigningNotification(
-      request.signatureId,
-      request.signingLink
-    );
+    await SignatureService.sendSigningNotification(request.signatureId, request.signingLink);
 
     res.json({
       success: true,
-      data: request
+      data: request,
     });
   } catch (error) {
     console.error('Error resending signature request:', error);
     res.status(500).json({
       success: false,
-      error: error.message
+      error: error.message,
     });
   }
 });
@@ -255,13 +303,13 @@ router.post('/:signatureId/cancel', async (req, res) => {
 
     res.json({
       success: true,
-      data: signature
+      data: signature,
     });
   } catch (error) {
     console.error('Error cancelling signature request:', error);
     res.status(500).json({
       success: false,
-      error: error.message
+      error: error.message,
     });
   }
 });
@@ -278,36 +326,30 @@ router.post('/batch/request', async (req, res) => {
     if (!contractId || !signers || !Array.isArray(signers)) {
       return res.status(400).json({
         success: false,
-        error: 'Missing or invalid contractId/signers'
+        error: 'Missing or invalid contractId/signers',
       });
     }
 
     // Create batch requests
-    const requests = await SignatureService.createBatchSignatureRequests(
-      contractId,
-      signers
-    );
+    const requests = await SignatureService.createBatchSignatureRequests(contractId, signers);
 
     // Send notifications
     for (const request of requests) {
-      await SignatureService.sendSigningNotification(
-        request.signatureId,
-        request.signingLink
-      );
+      await SignatureService.sendSigningNotification(request.signatureId, request.signingLink);
     }
 
     res.json({
       success: true,
       data: {
         count: requests.length,
-        requests
-      }
+        requests,
+      },
     });
   } catch (error) {
     console.error('Error creating batch signature requests:', error);
     res.status(500).json({
       success: false,
-      error: error.message
+      error: error.message,
     });
   }
 });
@@ -324,13 +366,13 @@ router.get('/user/:userEmail/pending', async (req, res) => {
 
     res.json({
       success: true,
-      data: signatures
+      data: signatures,
     });
   } catch (error) {
     console.error('Error getting pending signatures:', error);
     res.status(500).json({
       success: false,
-      error: error.message
+      error: error.message,
     });
   }
 });
@@ -347,7 +389,7 @@ router.post('/bulk/status', async (req, res) => {
     if (!contractIds || !Array.isArray(contractIds)) {
       return res.status(400).json({
         success: false,
-        error: 'Missing or invalid contractIds'
+        error: 'Missing or invalid contractIds',
       });
     }
 
@@ -356,13 +398,13 @@ router.post('/bulk/status', async (req, res) => {
 
     res.json({
       success: true,
-      data: statusMap
+      data: statusMap,
     });
   } catch (error) {
     console.error('Error getting bulk signature status:', error);
     res.status(500).json({
       success: false,
-      error: error.message
+      error: error.message,
     });
   }
 });

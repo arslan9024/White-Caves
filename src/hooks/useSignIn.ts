@@ -274,7 +274,9 @@ export function useSignIn() {
         return '/landlord-portal';
       }
 
-      return '/crm';
+      // Profile-first post-login journey: CRM-eligible users always visit /profile
+      // before the dashboard so they can review/complete their account setup.
+      return '/profile';
     },
     [location.state]
   );

@@ -10,7 +10,15 @@
  */
 
 import React, { FC, useMemo, useCallback, useRef, useEffect } from 'react';
-import { MapContainer, TileLayer, Marker, Popup, Circle, useMap } from 'react-leaflet';
+import {
+  MapContainer,
+  TileLayer,
+  Marker,
+  Popup,
+  Circle,
+  useMap,
+  useMapEvents,
+} from 'react-leaflet';
 import L from 'leaflet';
 import { useDispatch } from 'react-redux';
 import { setFilters } from '../../store/propertySlice';
@@ -61,6 +69,12 @@ interface DubaiMapProps {
   activePropertyId?: string | null;
   /** Called when user clicks a property marker */
   onPropertyClick?: (property: MapProperty) => void;
+  /** Called when map viewport changes */
+  onViewportChange?: (bounds: { north: number; south: number; east: number; west: number }) => void;
+  /** Default map center */
+  defaultCenter?: [number, number];
+  /** Default map zoom */
+  defaultZoom?: number;
   /** Show community boundary overlays */
   showCommunities?: boolean;
   /** Height of map container */
@@ -110,12 +124,33 @@ const FitBounds: FC<{ markers: [number, number][] }> = ({ markers }) => {
   return null;
 };
 
+const ViewportReporter: FC<{
+  onViewportChange: (bounds: { north: number; south: number; east: number; west: number }) => void;
+}> = ({ onViewportChange }) => {
+  useMapEvents({
+    moveend: map => {
+      const bounds = map.target.getBounds();
+      onViewportChange({
+        north: bounds.getNorth(),
+        south: bounds.getSouth(),
+        east: bounds.getEast(),
+        west: bounds.getWest(),
+      });
+    },
+  });
+
+  return null;
+};
+
 /* ─── Main Component ────────────────────────────────────────────── */
 
 const DubaiMap: FC<DubaiMapProps> = ({
   properties,
   activePropertyId,
   onPropertyClick,
+  onViewportChange,
+  defaultCenter = DUBAI_CENTER,
+  defaultZoom = DEFAULT_ZOOM,
   showCommunities = true,
   height = '600px',
   className = '',
@@ -169,8 +204,8 @@ const DubaiMap: FC<DubaiMapProps> = ({
   return (
     <div className={`dubai-map-container ${className}`} style={{ height }} data-testid="dubai-map">
       <MapContainer
-        center={DUBAI_CENTER}
-        zoom={DEFAULT_ZOOM}
+        center={defaultCenter}
+        zoom={defaultZoom}
         className="dubai-map-leaflet"
         style={{ height: '100%', width: '100%' }}
         ref={mapRef}
@@ -185,6 +220,7 @@ const DubaiMap: FC<DubaiMapProps> = ({
 
         {/* Fit map to property markers */}
         <FitBounds markers={markerPositions} />
+        {onViewportChange ? <ViewportReporter onViewportChange={onViewportChange} /> : null}
 
         {/* Community boundary circles */}
         {showCommunities &&

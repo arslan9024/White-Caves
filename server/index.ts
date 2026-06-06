@@ -43,6 +43,7 @@ import logger from './utils/logger.js';
 import authRoutes from './routes/auth.js';
 import leadsRoutes from './routes/leads.js';
 import propertiesRoutes from './routes/properties.js';
+import syndicationRoutes from './routes/syndication.js';
 import agentsRoutes from './routes/agents.js';
 import transactionsRoutes from './routes/transactions.js';
 import financeRoutes from './routes/finance.js';
@@ -367,6 +368,9 @@ app.use('/api/leads', leadsRoutes);
 
 // Properties API (Mary - Inventory Manager)
 app.use('/api/properties', propertiesRoutes);
+
+// Portal syndication API (Property Finder / Bayut queueing)
+app.use('/api/syndication', syndicationRoutes);
 
 // Agents API
 app.use('/api/agents', agentsRoutes);

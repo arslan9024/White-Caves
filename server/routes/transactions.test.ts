@@ -332,6 +332,69 @@ describe('Transactions Routes — /api/transactions', () => {
         .send({ status: 'active' });
       expect(res.status).toBe(403);
     });
+
+    it('returns 200 for non-risky status transition (no KYC check)', async () => {
+      mockPrisma.transaction.findUnique.mockResolvedValue({
+        id: VALID_MONGO_ID,
+        type: 'lease',
+        amount: 50_000,
+        status: 'draft',
+        leadId: VALID_MONGO_ID,
+        notes: null,
+        closingDate: null,
+      });
+      mockPrisma.transaction.update.mockResolvedValue({
+        id: VALID_MONGO_ID,
+        status: 'in_progress',
+        type: 'lease',
+        amount: 50_000,
+      });
+      const res = await request(createApp('manager'))
+        .patch(`/api/transactions/${VALID_MONGO_ID}`)
+        .send({ status: 'in_progress' });
+      // lease < 500k → non-risky → no KYC check → 200
+      expect(res.status).toBe(200);
+    });
+
+    it('returns 200 for sale→in_progress with kyc_verified lead', async () => {
+      mockPrisma.transaction.findUnique.mockResolvedValue({
+        id: VALID_MONGO_ID,
+        type: 'sale',
+        amount: 800_000,
+        status: 'draft',
+        leadId: VALID_MONGO_ID,
+        notes: null,
+        closingDate: null,
+      });
+      mockPrisma.lead.findUnique.mockResolvedValue({ id: VALID_MONGO_ID, tags: ['kyc_verified'] });
+      mockPrisma.transaction.update.mockResolvedValue({
+        id: VALID_MONGO_ID,
+        status: 'in_progress',
+        type: 'sale',
+        amount: 800_000,
+      });
+      const res = await request(createApp('manager'))
+        .patch(`/api/transactions/${VALID_MONGO_ID}`)
+        .send({ status: 'in_progress' });
+      expect(res.status).toBe(200);
+    });
+
+    it('returns 403 for sale→in_progress when lead lacks kyc_verified', async () => {
+      mockPrisma.transaction.findUnique.mockResolvedValue({
+        id: VALID_MONGO_ID,
+        type: 'sale',
+        amount: 800_000,
+        status: 'draft',
+        leadId: VALID_MONGO_ID,
+        notes: null,
+        closingDate: null,
+      });
+      mockPrisma.lead.findUnique.mockResolvedValue({ id: VALID_MONGO_ID, tags: ['active'] });
+      const res = await request(createApp('manager'))
+        .patch(`/api/transactions/${VALID_MONGO_ID}`)
+        .send({ status: 'in_progress' });
+      expect(res.status).toBe(403);
+    });
   });
 
   // ─── DELETE /:id ───────────────────────────────────────────────

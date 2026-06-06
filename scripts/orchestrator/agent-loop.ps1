@@ -51,6 +51,14 @@ if (Test-Path $browserLaunchScript) {
   . $browserLaunchScript
 }
 
+function Get-PowerShellExecutable {
+  if (Get-Command powershell -ErrorAction SilentlyContinue) { return "powershell" }
+  if (Get-Command pwsh -ErrorAction SilentlyContinue) { return "pwsh" }
+  throw "Neither 'powershell' nor 'pwsh' is available in PATH."
+}
+
+$powerShellExe = Get-PowerShellExecutable
+
 $trackingRemote = "origin"
 $trackingBranch = "main"
 if (Get-Command Get-OrchestratorPolicy -ErrorAction SilentlyContinue) {
@@ -207,6 +215,23 @@ function Get-NextReadyInRotation {
   for ($i = 0; $i -lt $startIdx; $i++) { $ordered += $slotAgents[$i] }
   foreach ($aa in $anyAgents) {
     if ($ordered -notcontains $aa) { $ordered += $aa }
+  }
+  $dynamicReadyAgents = @()
+  foreach ($t in ($allTasks | Sort-Object taskId)) {
+    if ($t.status -notin @("queued","retrying")) { continue }
+    $isBlocked = $false
+    foreach ($dep in @($t.dependsOn)) {
+      $depTask = $allTasks | Where-Object { $_.taskId -eq $dep } | Select-Object -First 1
+      if ($null -eq $depTask -or $depTask.status -ne "done") { $isBlocked = $true; break }
+    }
+    if ($isBlocked) { continue }
+    $agentName = [string]$t.agent
+    if (-not [string]::IsNullOrWhiteSpace($agentName) -and $dynamicReadyAgents -notcontains $agentName) {
+      $dynamicReadyAgents += $agentName
+    }
+  }
+  foreach ($ra in $dynamicReadyAgents) {
+    if ($ordered -notcontains $ra) { $ordered += $ra }
   }
 
   foreach ($ag in $ordered) {
@@ -471,7 +496,7 @@ $discoveryAttempts = 0
   if ($Autopilot -and (Test-Path $loopSyncScript)) {
     Write-Host ""
     Write-Host ("  [AUTOPILOT] Syncing from main before cycle {0}..." -f $loopCount) -ForegroundColor Cyan
-    & powershell -ExecutionPolicy Bypass -File "$loopSyncScript" -WorkspaceRoot $root
+    & $powerShellExe -ExecutionPolicy Bypass -File "$loopSyncScript" -WorkspaceRoot $root
     if ($LASTEXITCODE -ne 0) {
       Write-Host "  [BLOCKED] loop-start-sync failed in autopilot mode." -ForegroundColor Red
       break outerLoop
@@ -673,7 +698,7 @@ $discoveryAttempts = 0
   $beforeReady = Get-ReadyCount
   $caScript    = Join-Path $scripts "complete-and-advance.ps1"
   if (Test-Path $caScript) {
-    & powershell -ExecutionPolicy Bypass -File "$caScript" `
+    & $powerShellExe -ExecutionPolicy Bypass -File "$caScript" `
       -TaskId $taskId `
       -AgentName $activeAgent `
       -EvidenceNote $evNote `
@@ -690,7 +715,7 @@ $discoveryAttempts = 0
         $ackScript = Join-Path $scripts "ack-task.ps1"
         if (Test-Path $ackScript) {
           Write-Host ("  [AUTO-ACK] Autopilot acknowledging {0} by {1}" -f $taskId, $ackBy) -ForegroundColor Cyan
-          & powershell -ExecutionPolicy Bypass -File "$ackScript" `
+          & $powerShellExe -ExecutionPolicy Bypass -File "$ackScript" `
             -TaskId $taskId `
             -AckBy $ackBy 2>&1 | Out-String | Write-Host
         }
@@ -725,7 +750,7 @@ $discoveryAttempts = 0
 
   # 9.5 Cycle logging + blocker auto-escalation
   if (Test-Path $cycleSummaryScript) {
-    & powershell -ExecutionPolicy Bypass -File "$cycleSummaryScript" `
+    & $powerShellExe -ExecutionPolicy Bypass -File "$cycleSummaryScript" `
       -WorkspaceRoot $root `
       -Record `
       -Cycle $loopCount `
@@ -737,10 +762,10 @@ $discoveryAttempts = 0
       -PromptVersion $promptVersion 2>&1 | Out-String | Write-Host
   }
   if ($effectiveNonInteractive -and (Test-Path $autoEscalateScript)) {
-    & powershell -ExecutionPolicy Bypass -File "$autoEscalateScript" -WorkspaceRoot $root 2>&1 | Out-String | Write-Host
+    & $powerShellExe -ExecutionPolicy Bypass -File "$autoEscalateScript" -WorkspaceRoot $root 2>&1 | Out-String | Write-Host
   }
   if ($effectiveNonInteractive -and (Test-Path $blockerBriefScript)) {
-    & powershell -ExecutionPolicy Bypass -File "$blockerBriefScript" -WorkspaceRoot $root -Brief 2>&1 | Out-String | Write-Host
+    & $powerShellExe -ExecutionPolicy Bypass -File "$blockerBriefScript" -WorkspaceRoot $root -Brief 2>&1 | Out-String | Write-Host
   }
 
   # 10. LOOP CONTROL
@@ -776,6 +801,4 @@ Write-Host ("  LOOP COMPLETE -- {0} round(s) run" -f $loopCount) -ForegroundColo
 Write-Host "  Run: npm run orchestrator:session:compact  -- to see full queue state" -ForegroundColor DarkGray
 Write-BigDivider
 Write-Host ""
-
-
 

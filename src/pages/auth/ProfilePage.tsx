@@ -337,7 +337,8 @@ const ProfilePage: FC = () => {
   const isFounder = isCreatorRole(userRole?.role ?? '');
 
   const normalizeDashboardRole = (role: string): string => {
-    if (role === 'owner' || role === 'lion' || role === 'managing_director' || role === 'md') return 'owner';
+    if (role === 'owner' || role === 'lion' || role === 'managing_director' || role === 'md')
+      return 'owner';
     if (role === 'landlord') return 'landlord';
     if (role === 'tenant') return 'tenant';
     return '';
@@ -816,11 +817,7 @@ const ProfilePage: FC = () => {
             </button>
             {userRole && (
               <Link
-                to={
-                  normalizeDashboardRole(userRole.role)
-                    ? `/${normalizeDashboardRole(userRole.role)}/dashboard`
-                    : '/dashboard'
-                }
+                to="/crm"
                 style={{
                   ...styles.backBtn,
                   background: '#00000060',

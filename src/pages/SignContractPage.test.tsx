@@ -39,20 +39,26 @@ vi.mock('../utils/authFetch', () => ({
 // Mock react-signature-canvas
 vi.mock('react-signature-canvas', () => {
   let isEmpty = true;
-  const MockSignatureCanvas = React.forwardRef((props: Record<string, unknown>, ref: React.Ref<unknown>) => {
-    React.useImperativeHandle(ref, () => ({
-      clear: () => { isEmpty = true; },
-      isEmpty: () => isEmpty,
-      toDataURL: () => 'data:image/png;base64,mockSignature',
-    }));
-    return (
-      <canvas
-        data-testid="signature-canvas"
-        {...(props.canvasProps as Record<string, unknown>)}
-        onMouseDown={() => { isEmpty = false; }}
-      />
-    );
-  });
+  const MockSignatureCanvas = React.forwardRef(
+    (props: Record<string, unknown>, ref: React.Ref<unknown>) => {
+      React.useImperativeHandle(ref, () => ({
+        clear: () => {
+          isEmpty = true;
+        },
+        isEmpty: () => isEmpty,
+        toDataURL: () => 'data:image/png;base64,mockSignature',
+      }));
+      return (
+        <canvas
+          data-testid="signature-canvas"
+          {...(props.canvasProps as Record<string, unknown>)}
+          onMouseDown={() => {
+            isEmpty = false;
+          }}
+        />
+      );
+    }
+  );
   MockSignatureCanvas.displayName = 'MockSignatureCanvas';
   return { default: MockSignatureCanvas };
 });
@@ -67,7 +73,7 @@ const renderWithToken = (token = 'validtoken123') => {
       <Routes>
         <Route path="/sign/:token" element={<SignContractPage />} />
       </Routes>
-    </MemoryRouter>,
+    </MemoryRouter>
   );
 };
 
@@ -124,14 +130,18 @@ describe('SignContractPage', () => {
     it('should show error for invalid token with special characters', async () => {
       renderWithToken('invalid!@#$token');
       await waitFor(() => {
-        expect(screen.getByText('Invalid contract link. Please check the URL and try again.')).toBeInTheDocument();
+        expect(
+          screen.getByText('Invalid contract link. Please check the URL and try again.')
+        ).toBeInTheDocument();
       });
     });
 
     it('should show error for token shorter than 8 chars', async () => {
       renderWithToken('abc');
       await waitFor(() => {
-        expect(screen.getByText('Invalid contract link. Please check the URL and try again.')).toBeInTheDocument();
+        expect(
+          screen.getByText('Invalid contract link. Please check the URL and try again.')
+        ).toBeInTheDocument();
       });
     });
 
@@ -223,7 +233,9 @@ describe('SignContractPage', () => {
       });
       // Name is pre-filled, but canvas is empty
       fireEvent.click(screen.getByText('Sign Contract'));
-      expect(mockToast.warning).toHaveBeenCalledWith('Please provide your signature before submitting.');
+      expect(mockToast.warning).toHaveBeenCalledWith(
+        'Please provide your signature before submitting.'
+      );
     });
 
     it('should submit signature successfully', async () => {
@@ -256,11 +268,11 @@ describe('SignContractPage', () => {
 
       await waitFor(() => {
         expect(mockAuthFetch).toHaveBeenCalledWith(
-          '/api/signature/validtoken123/sign',
+          '/api/contracts/signature/validtoken123/sign',
           expect.objectContaining({
             method: 'POST',
             body: expect.stringContaining('Ahmed Al-Rashid'),
-          }),
+          })
         );
       });
     });

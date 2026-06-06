@@ -99,7 +99,7 @@ describe('TenantPortalHome', () => {
     expect(screen.getByTestId('tenant-welcome-banner')).toHaveTextContent('Fatima Al-Mansoori');
   });
 
-  it('renders all three metric cards', async () => {
+  it('renders expanded lifecycle metric cards', async () => {
     vi.mocked(authFetch).mockResolvedValue({
       json: async () => ({ data: [], pagination: { total: 0 } }),
     } as Response);
@@ -110,6 +110,8 @@ describe('TenantPortalHome', () => {
     expect(screen.getByTestId('tenant-metric-next-payment')).toBeInTheDocument();
     expect(screen.getByTestId('tenant-metric-lease')).toBeInTheDocument();
     expect(screen.getByTestId('tenant-metric-maintenance')).toBeInTheDocument();
+    expect(screen.getByTestId('tenant-metric-renewal')).toBeInTheDocument();
+    expect(screen.getByTestId('tenant-metric-sla')).toBeInTheDocument();
   });
 
   it('shows next payment amount', async () => {
@@ -150,6 +152,35 @@ describe('TenantPortalHome', () => {
     expect(screen.getByTestId('tenant-quick-link-payments')).toBeInTheDocument();
     expect(screen.getByTestId('tenant-quick-link-maintenance')).toBeInTheDocument();
     expect(screen.getByTestId('tenant-quick-link-documents')).toBeInTheDocument();
+  });
+
+  it('shows renewal status based on remaining days', async () => {
+    vi.mocked(authFetch).mockImplementation((input: RequestInfo | URL) => {
+      const url = String(input);
+      if (url.includes('/api/leases')) {
+        return Promise.resolve({
+          json: async () => ({
+            data: [
+              {
+                id: 'lease-3',
+                startDate: '2026-01-01T00:00:00.000Z',
+                endDate: new Date(Date.now() + 20 * 24 * 3600_000).toISOString(),
+                monthlyRent: 9000,
+                status: 'active',
+                nextPaymentDue: '2026-06-20T00:00:00.000Z',
+              },
+            ],
+          }),
+        } as Response);
+      }
+      return Promise.resolve({
+        json: async () => ({ data: [{ id: 'm-1', status: 'open' }], pagination: { total: 1 } }),
+      } as Response);
+    });
+
+    renderWithStore(<TenantPortalHome />);
+    await screen.findByTestId('tenant-metric-renewal-value');
+    expect(screen.getByTestId('tenant-metric-renewal-value')).toHaveTextContent(/Renewal urgent/i);
   });
 
   it('calls onNavigate when a quick link is clicked', () => {

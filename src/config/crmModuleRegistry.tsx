@@ -16,6 +16,8 @@ export interface CRMModuleDefinition {
   color: string;
   zone: CRMZone;
   Component: LazyExoticComponent<ComponentType<any>>;
+  roles?: string[];
+  section?: string;
 }
 
 const UnifiedCRM = lazy(() => import('../components/crm/UnifiedCRM'));
@@ -50,6 +52,12 @@ const DLDIntegrationModule = lazy(() => import('../components/crm/DLDIntegration
 const LeadScoringModule = lazy(() => import('../components/crm/LeadScoringModule'));
 const PropertyValuationModule = lazy(() => import('../components/crm/PropertyValuationModule'));
 const MarketAnalyticsModule = lazy(() => import('../components/crm/MarketAnalyticsModule'));
+
+// Wave 18.1 P0 Batch 2
+const AgentTaskCockpit = lazy(() => import('../components/crm/AgentTaskCockpit'));
+const FunnelEconomicsDashboard = lazy(() => import('../components/crm/FunnelEconomicsDashboard'));
+const KPIBaselineTracker = lazy(() => import('../components/crm/KPIBaselineTracker'));
+const LeadTimeline = lazy(() => import('../components/crm/LeadTimeline'));
 
 export const CRM_MODULE_REGISTRY: Record<string, CRMModuleDefinition> = {
   unified: {
@@ -340,6 +348,50 @@ export const CRM_MODULE_REGISTRY: Record<string, CRMModuleDefinition> = {
     zone: 'executive',
     Component: MarketAnalyticsModule,
   },
+  'agent-task-cockpit': {
+    id: 'agent-task-cockpit',
+    label: 'Agent Task Cockpit',
+    icon: '🗂️',
+    description: 'SLA-prioritised task management for sales agents',
+    color: '#C9A84C',
+    zone: 'sales_leads',
+    roles: ['agent', 'manager', 'admin'],
+    section: 'Wave 18.1',
+    Component: AgentTaskCockpit,
+  },
+  'funnel-economics': {
+    id: 'funnel-economics',
+    label: 'Funnel Economics',
+    icon: '📊',
+    description: 'Conversion funnel analytics and pipeline KPIs',
+    color: '#C9A84C',
+    zone: 'sales_leads',
+    roles: ['manager', 'admin', 'ceo', 'coo'],
+    section: 'Wave 18.1',
+    Component: FunnelEconomicsDashboard,
+  },
+  'kpi-tracker': {
+    id: 'kpi-tracker',
+    label: 'KPI Baseline Tracker',
+    icon: '🎯',
+    description: 'Wave 18.1 90-day KPI baseline vs target cards',
+    color: '#C9A84C',
+    zone: 'executive',
+    roles: ['admin', 'ceo', 'coo', 'manager'],
+    section: 'Wave 18.1',
+    Component: KPIBaselineTracker,
+  },
+  'lead-timeline': {
+    id: 'lead-timeline',
+    label: 'Lead Timeline',
+    icon: '🕐',
+    description: 'Per-lead activity timeline with note capture',
+    color: '#C9A84C',
+    zone: 'sales_leads',
+    roles: ['agent', 'manager', 'admin'],
+    section: 'Wave 18.1',
+    Component: LeadTimeline,
+  },
 };
 
 export const SUPERUSER_CRM_MODULE_ORDER: string[] = [
@@ -363,6 +415,10 @@ export const SUPERUSER_CRM_MODULE_ORDER: string[] = [
   'leads',
   'valuation',
   'analytics',
+  'agent-task-cockpit',
+  'funnel-economics',
+  'kpi-tracker',
+  'lead-timeline',
 ];
 
 export const CRM_HUB_MODULE_ORDER: string[] = [
@@ -392,6 +448,4 @@ export const getCRMModule = (id: string | undefined | null): CRMModuleDefinition
 };
 
 export const resolveCRMModules = (ids: string[]): CRMModuleDefinition[] =>
-  ids
-    .map(id => getCRMModule(id))
-    .filter((module): module is CRMModuleDefinition => Boolean(module));
+  ids.map(id => getCRMModule(id)).filter((m): m is CRMModuleDefinition => Boolean(m));

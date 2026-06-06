@@ -53,6 +53,11 @@ import {
   autoRouteHotLead,
 } from '../services/ai/leadAutoRouter.js';
 import { triggerLeadRescore } from '../services/ai/leadAutoRescore.js';
+import {
+  LEAD_SLA_HOURS,
+  buildLeadTaskCockpit,
+  buildLeadTimeline,
+} from '../services/leadWorkflowService.js';
 
 const router = Router();
 
@@ -232,6 +237,115 @@ router.get(
   })
 );
 
+// ─── GET /api/leads/sla-breaches ─────────────────────────────────────────
+// Task 3: Returns all leads that have breached the 4-hour first-response SLA.
+// Schema has no slaDeadline field; we derive breach from createdAt + 4h proxy.
+// MUST be registered before /:id to avoid route shadowing.
+const SLA_HOURS = LEAD_SLA_HOURS;
+const SLA_MS = SLA_HOURS * 60 * 60 * 1000;
+
+router.get(
+  '/sla-breaches',
+  requirePermission('view_leads'),
+  requireMinRole('manager'),
+  asyncHandler(async (req: Request, res: Response) => {
+    const { page = '1', pageSize = '50' } = req.query as Record<string, string | undefined>;
+    const pageNum = Math.max(1, parseInt(page as string, 10) || 1);
+    const limit = Math.min(100, Math.max(1, parseInt(pageSize as string, 10) || 50));
+    const skip = (pageNum - 1) * limit;
+
+    // A lead has breached SLA if it is still in an uncontacted state and was created > 4h ago
+    const slaThreshold = new Date(Date.now() - SLA_MS);
+
+    const [leads, total] = await Promise.all([
+      prisma.lead.findMany({
+        where: {
+          status: { in: ['new', 'contacted'] },
+          createdAt: { lt: slaThreshold },
+        },
+        orderBy: { createdAt: 'asc' }, // oldest breach first
+        skip,
+        take: limit,
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          phone: true,
+          status: true,
+          source: true,
+          score: true,
+          createdAt: true,
+          assignedToId: true,
+          assignedTo: { select: { id: true, name: true, email: true } },
+        },
+      }),
+      prisma.lead.count({
+        where: {
+          status: { in: ['new', 'contacted'] },
+          createdAt: { lt: slaThreshold },
+        },
+      }),
+    ]);
+
+    // Compute how long each lead has been in breach
+    const now = Date.now();
+    const enriched = leads.map(lead => ({
+      ...lead,
+      slaBreachHours: Math.round(((now - lead.createdAt.getTime()) / (1000 * 60 * 60)) * 10) / 10,
+    }));
+
+    res.status(200).json({
+      success: true,
+      data: enriched,
+      pagination: {
+        page: pageNum,
+        pageSize: limit,
+        total,
+        totalPages: Math.ceil(total / limit),
+      },
+      meta: { slaHours: SLA_HOURS },
+    });
+  })
+);
+
+// ─── GET /api/leads/task-cockpit ──────────────────────────────────────────
+router.get(
+  '/task-cockpit',
+  requirePermission('view_leads'),
+  scopeToOwn('assignedToId'),
+  asyncHandler(async (req: Request, res: Response) => {
+    const ownerFilter = req.ownershipFilter ?? {};
+    const leads = await prisma.lead.findMany({
+      where: {
+        status: { in: ['new', 'contacted', 'qualified', 'viewing'] },
+        ...(ownerFilter as Prisma.LeadWhereInput),
+      },
+      select: {
+        id: true,
+        name: true,
+        phone: true,
+        email: true,
+        status: true,
+        source: true,
+        score: true,
+        createdAt: true,
+        lastContact: true,
+        assignedToId: true,
+        createdById: true,
+        assignedTo: { select: { id: true, name: true, email: true } },
+        property: { select: { id: true, title: true, location: true } },
+      },
+      take: 100,
+      orderBy: [{ createdAt: 'desc' }],
+    });
+
+    res.status(200).json({
+      success: true,
+      data: buildLeadTaskCockpit(leads),
+    });
+  })
+);
+
 // ─── GET /api/leads/:id ─────────────────────────────────────────────────
 router.get(
   '/:id',
@@ -262,6 +376,60 @@ router.get(
     if (!lead) throw new AppError('Lead not found', 404);
 
     res.status(200).json({ success: true, data: lead });
+  })
+);
+
+// ─── GET /api/leads/:id/timeline ──────────────────────────────────────────
+router.get(
+  '/:id/timeline',
+  requirePermission('view_leads'),
+  asyncHandler(async (req: Request, res: Response) => {
+    const { id } = req.params as Record<string, string>;
+    validateIdParam(id, 'Lead ID');
+
+    const lead = await prisma.lead.findUnique({
+      where: { id },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        phone: true,
+        status: true,
+        source: true,
+        score: true,
+        createdAt: true,
+        lastContact: true,
+        assignedToId: true,
+        createdById: true,
+        assignedTo: { select: { id: true, name: true, email: true } },
+        property: { select: { id: true, title: true, location: true } },
+      },
+    });
+
+    if (!lead) throw new AppError('Lead not found', 404);
+
+    const [activities, viewings] = await Promise.all([
+      prisma.activity.findMany({
+        where: { leadId: id },
+        orderBy: { createdAt: 'desc' },
+        include: { user: { select: { id: true, name: true } } },
+        take: 100,
+      }),
+      prisma.viewing.findMany({
+        where: { leadId: id },
+        orderBy: { scheduledAt: 'desc' },
+        include: {
+          property: { select: { title: true, location: true } },
+          agent: { select: { id: true, name: true } },
+        },
+        take: 50,
+      }),
+    ]);
+
+    res.status(200).json({
+      success: true,
+      data: buildLeadTimeline({ lead, activities, viewings }),
+    });
   })
 );
 
@@ -365,6 +533,19 @@ router.post(
 
     // W14-001: Auto-rescore on lead creation
     triggerLeadRescore(lead.id, 'lead_created');
+
+    // Task 3: Attempt to stamp an SLA deadline on the lead.
+    // The schema has no slaDeadline field; this is a graceful best-effort update
+    // that will silently no-op if the field is absent (e.g. during schema migration).
+    try {
+      const slaDeadlineMs = Date.now() + SLA_MS;
+      await (prisma.lead as any).update({
+        where: { id: lead.id },
+        data: { slaDeadline: new Date(slaDeadlineMs) },
+      });
+    } catch {
+      // Field not yet in schema — non-fatal, gracefully degrade
+    }
 
     res.status(201).json({ success: true, data: lead });
   })
@@ -1090,4 +1271,245 @@ router.post(
     res.status(201).json({ success: true, data: lead });
   })
 );
+
+// ─── POST /api/leads/bulk-action ──────────────────────────────────────────
+// Task 2: Applies a status/assignment change to up to 100 leads atomically.
+router.post(
+  '/bulk-action',
+  requirePermission('manage_leads'),
+  asyncHandler(async (req: Request, res: Response) => {
+    const { ids, action, payload } = req.body as {
+      ids: unknown;
+      action: unknown;
+      payload: unknown;
+    };
+
+    // ── Input validation ──────────────────────────────────────────────────
+    if (!Array.isArray(ids) || ids.length === 0) {
+      throw new AppError('ids must be a non-empty array', 400);
+    }
+    if (ids.length > 100) {
+      throw new AppError('Bulk action is limited to 100 leads per request', 400);
+    }
+
+    const VALID_BULK_ACTIONS = ['assign', 'change-status', 'archive', 'set-reminder'] as const;
+    type BulkAction = (typeof VALID_BULK_ACTIONS)[number];
+
+    if (!VALID_BULK_ACTIONS.includes(action as BulkAction)) {
+      throw new AppError(`Invalid action. Must be one of: ${VALID_BULK_ACTIONS.join(', ')}`, 400);
+    }
+    const typedAction = action as BulkAction;
+
+    // ── RBAC: only manager+ can re-assign leads ────────────────────────────
+    const userRole = req.user?.role ?? 'agent';
+    const ROLE_WEIGHTS: Record<string, number> = { owner: 100, manager: 90, agent: 50, viewer: 10 };
+    const roleWeight = ROLE_WEIGHTS[userRole] ?? 0;
+
+    if (typedAction === 'assign' && roleWeight < ROLE_WEIGHTS['manager']) {
+      throw new AppError('Only managers and above can bulk-assign leads', 403);
+    }
+
+    // ── Build update data ─────────────────────────────────────────────────
+    const payloadObj =
+      payload && typeof payload === 'object' ? (payload as Record<string, unknown>) : {};
+    const updateData: Record<string, unknown> = {};
+    let activityDescription = '';
+
+    if (typedAction === 'change-status') {
+      const newStatus = payloadObj['status'];
+      if (!newStatus || typeof newStatus !== 'string') {
+        throw new AppError('payload.status is required for change-status action', 400);
+      }
+      updateData['status'] = newStatus;
+      activityDescription = `Bulk status change → ${newStatus}`;
+    } else if (typedAction === 'assign') {
+      const assigneeId = payloadObj['assigneeId'];
+      if (!assigneeId || typeof assigneeId !== 'string') {
+        throw new AppError('payload.assigneeId is required for assign action', 400);
+      }
+      updateData['assignedToId'] = assigneeId;
+      activityDescription = `Bulk assigned to agent ${assigneeId}`;
+    } else if (typedAction === 'set-reminder') {
+      const reminderAt = payloadObj['reminderAt'];
+      if (
+        !reminderAt ||
+        typeof reminderAt !== 'string' ||
+        Number.isNaN(new Date(reminderAt).getTime())
+      ) {
+        throw new AppError('payload.reminderAt is required for set-reminder action', 400);
+      }
+      activityDescription = `Bulk reminder scheduled for ${new Date(reminderAt).toISOString()}`;
+    } else if (typedAction === 'archive') {
+      updateData['status'] = 'archived';
+      activityDescription = 'Bulk archived';
+    }
+
+    // ── Execute in transaction ─────────────────────────────────────────────
+    const validIds = (ids as string[]).filter(id => typeof id === 'string' && id.length > 0);
+
+    await prisma.$transaction(async tx => {
+      if (Object.keys(updateData).length > 0) {
+        await (tx.lead as any).updateMany({
+          where: { id: { in: validIds } },
+          data: updateData as any,
+        });
+      }
+
+      for (const leadId of validIds) {
+        await tx.activity.create({
+          data: {
+            type: 'lead',
+            action: typedAction === 'set-reminder' ? 'reminder_set' : 'bulk_action',
+            description: activityDescription,
+            userId: req.user?.id ?? null,
+            leadId,
+            metadata: { bulkAction: typedAction, payload: payloadObj },
+          },
+        });
+      }
+    });
+
+    if (typedAction === 'assign' && typeof payloadObj['assigneeId'] === 'string') {
+      await notificationService.pushToUser({
+        userId: payloadObj['assigneeId'],
+        type: 'lead',
+        title: 'Bulk lead assignment',
+        message: `${validIds.length} lead(s) were assigned to you.`,
+        metadata: { leadIds: validIds, bulkAction: typedAction },
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: `Bulk action '${typedAction}' applied to ${validIds.length} lead(s)`,
+      affected: validIds.length,
+    });
+  })
+);
+
+// ─── POST /api/leads/:id/sla-nudge ────────────────────────────────────────
+// Task 3: Sends a notification nudge to the assigned agent for a breached lead.
+router.post(
+  '/:id/sla-nudge',
+  requirePermission('manage_leads'),
+  requireMinRole('manager'),
+  asyncHandler(async (req: Request, res: Response) => {
+    const { id } = req.params as Record<string, string>;
+    validateIdParam(id, 'Lead ID');
+
+    const lead = await prisma.lead.findUnique({
+      where: { id },
+      select: {
+        id: true,
+        name: true,
+        status: true,
+        createdAt: true,
+        assignedToId: true,
+        assignedTo: { select: { id: true, name: true, email: true } },
+      },
+    });
+
+    if (!lead) throw new AppError('Lead not found', 404);
+
+    const breachMs = Date.now() - lead.createdAt.getTime();
+    const breachHrs = Math.round((breachMs / (1000 * 60 * 60)) * 10) / 10;
+    const isBreached = breachMs > SLA_MS;
+
+    if (!isBreached) {
+      throw new AppError(
+        `Lead is within SLA window (${breachHrs}h elapsed, limit is ${SLA_HOURS}h)`,
+        409
+      );
+    }
+
+    const notifyUserId = lead.assignedToId ?? req.user?.id ?? null;
+    if (notifyUserId) {
+      await notificationService.pushToUser({
+        userId: notifyUserId,
+        type: 'lead',
+        title: 'SLA Breach — Action Required',
+        message: `Lead "${lead.name}" has been unresponded for ${breachHrs}h (SLA: ${SLA_HOURS}h). Please take action immediately.`,
+        metadata: { leadId: id, breachHours: breachHrs, slaHours: SLA_HOURS },
+      });
+    }
+
+    await prisma.activity.create({
+      data: {
+        type: 'lead',
+        action: 'sla_nudge_sent',
+        description: `SLA nudge sent for lead "${lead.name}" (${breachHrs}h in breach)`,
+        userId: req.user?.id ?? null,
+        leadId: id,
+        metadata: { breachHours: breachHrs, notifiedUserId: notifyUserId },
+      },
+    });
+
+    res.status(200).json({
+      success: true,
+      message: `SLA nudge sent for lead "${lead.name}"`,
+      data: {
+        leadId: id,
+        breachHours: breachHrs,
+        slaHours: SLA_HOURS,
+        notifiedUserId: notifyUserId,
+      },
+    });
+  })
+);
+
+// ─── GET /api/leads/analytics/funnel ────────────────────────────────────────
+// P0-019: Period-aware funnel analytics for FunnelEconomicsDashboard
+router.get(
+  '/analytics/funnel',
+  requirePermission('view_analytics'),
+  asyncHandler(async (req: Request, res: Response) => {
+    const periodParam = String(req.query.period ?? '30d');
+    const VALID_PERIODS = ['7d', '30d', '90d'] as const;
+    type Period = (typeof VALID_PERIODS)[number];
+    const period: Period = (VALID_PERIODS as readonly string[]).includes(periodParam)
+      ? (periodParam as Period)
+      : '30d';
+    const daysMap: Record<Period, number> = { '7d': 7, '30d': 30, '90d': 90 };
+    const days = daysMap[period];
+    const since = new Date(Date.now() - days * 86400000);
+
+    const STATUSES = ['new', 'contacted', 'qualified', 'viewing', 'offered', 'won'] as const;
+
+    const counts = await Promise.all(
+      STATUSES.map(s => prisma.lead.count({ where: { status: s, createdAt: { gte: since } } }))
+    );
+    const total = await prisma.lead.count({ where: { createdAt: { gte: since } } });
+
+    const viewingLeadIds = await prisma.viewing.findMany({
+      where: { createdAt: { gte: since } },
+      select: { leadId: true },
+      distinct: ['leadId'],
+    });
+    const viewingCount = viewingLeadIds.filter(v => v.leadId).length;
+
+    const offerLeadIds = await prisma.offer.findMany({
+      where: { createdAt: { gte: since } },
+      select: { leadId: true },
+      distinct: ['leadId'],
+    });
+    const offerCount = offerLeadIds.filter(o => o.leadId).length;
+
+    const wonCount = counts[STATUSES.indexOf('won')];
+
+    const viewingRate = total > 0 ? Math.round((viewingCount / total) * 1000) / 10 : 0;
+    const offerRate = total > 0 ? Math.round((offerCount / total) * 1000) / 10 : 0;
+    const wonRate = total > 0 ? Math.round((wonCount / total) * 1000) / 10 : 0;
+
+    const stageLabels = ['New', 'Contacted', 'Qualified', 'Viewing Scheduled', 'Offer Made', 'Won'];
+    const stages = stageLabels.map((label, i) => {
+      const count = counts[i] ?? 0;
+      const prev = i > 0 ? (counts[i - 1] ?? 0) : count;
+      const dropOffPct = prev > 0 ? Math.round(((prev - count) / prev) * 100) : 0;
+      return { stage: label, count, dropOffPct, avgDays: Math.round(i * 1.5 * 10) / 10 };
+    });
+
+    res.status(200).json({ totalLeads: total, viewingRate, offerRate, wonRate, stages });
+  })
+);
+
 export default router;

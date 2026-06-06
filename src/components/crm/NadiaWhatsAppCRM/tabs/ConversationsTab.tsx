@@ -1,5 +1,16 @@
 import React, { useRef, useEffect } from 'react';
-import { MessageCircle, Send, Paperclip, Smile, Search, Filter, Plus } from 'lucide-react';
+import {
+  MessageCircle,
+  Send,
+  Paperclip,
+  Smile,
+  Search,
+  Filter,
+  Plus,
+  UserPlus,
+  Loader2,
+  CheckCircle,
+} from 'lucide-react';
 import type { Conversation } from '../data/conversations';
 
 interface ConversationsData {
@@ -14,6 +25,8 @@ interface ConversationsData {
   setFilterPriority: (priority: string) => void;
   handleSendMessage: () => void;
   getPriorityColor: (priority: string) => string;
+  onConvertToLead?: (conversationId: string) => void;
+  convertingLeadId?: string | null;
 }
 
 interface ConversationsTabProps {
@@ -32,7 +45,9 @@ export const ConversationsTab: React.FC<ConversationsTabProps> = ({ data }) => {
     filterPriority,
     setFilterPriority,
     handleSendMessage,
-    getPriorityColor
+    getPriorityColor,
+    onConvertToLead,
+    convertingLeadId,
   } = data;
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -55,7 +70,7 @@ export const ConversationsTab: React.FC<ConversationsTabProps> = ({ data }) => {
                 type="text"
                 placeholder="Search conversations..."
                 value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
+                onChange={e => setSearchQuery(e.target.value)}
               />
             </div>
             <div className="filter-buttons">
@@ -64,7 +79,11 @@ export const ConversationsTab: React.FC<ConversationsTabProps> = ({ data }) => {
                   key={priority}
                   className={`filter-btn ${filterPriority === priority ? 'active' : ''}`}
                   onClick={() => setFilterPriority(priority)}
-                  style={priority !== 'all' ? { '--filter-color': getPriorityColor(priority) } as React.CSSProperties : {}}
+                  style={
+                    priority !== 'all'
+                      ? ({ '--filter-color': getPriorityColor(priority) } as React.CSSProperties)
+                      : {}
+                  }
                 >
                   {priority.charAt(0).toUpperCase() + priority.slice(1)}
                 </button>
@@ -80,7 +99,14 @@ export const ConversationsTab: React.FC<ConversationsTabProps> = ({ data }) => {
                 onClick={() => setSelectedConversation(conv)}
               >
                 <div className="conv-avatar-wrapper">
-                  <img src={conv.contact.avatar} alt={conv.contact.name} className="conv-avatar" loading="lazy" width={40} height={40} />
+                  <img
+                    src={conv.contact.avatar}
+                    alt={conv.contact.name}
+                    className="conv-avatar"
+                    loading="lazy"
+                    width={40}
+                    height={40}
+                  />
                   <span className={`status-dot ${conv.contact.status}`} />
                 </div>
                 <div className="conv-info">
@@ -92,14 +118,19 @@ export const ConversationsTab: React.FC<ConversationsTabProps> = ({ data }) => {
                     <p className="conv-last-message">{conv.lastMessage}</p>
                     <div className="conv-badges">
                       {conv.unread > 0 && <span className="unread-badge">{conv.unread}</span>}
-                      <span className="priority-badge" style={{ backgroundColor: getPriorityColor(conv.priority) }}>
+                      <span
+                        className="priority-badge"
+                        style={{ backgroundColor: getPriorityColor(conv.priority) }}
+                      >
                         {conv.priority}
                       </span>
                     </div>
                   </div>
                   <div className="conv-tags">
                     {(conv.tags ?? []).map(tag => (
-                      <span key={tag} className="conv-tag">{tag}</span>
+                      <span key={tag} className="conv-tag">
+                        {tag}
+                      </span>
                     ))}
                   </div>
                 </div>
@@ -113,11 +144,70 @@ export const ConversationsTab: React.FC<ConversationsTabProps> = ({ data }) => {
           {selectedConversation ? (
             <>
               <div className="chat-header">
-                <img src={selectedConversation.contact.avatar} alt={selectedConversation.contact.name} className="contact-avatar" loading="lazy" width={40} height={40} />
+                <img
+                  src={selectedConversation.contact.avatar}
+                  alt={selectedConversation.contact.name}
+                  className="contact-avatar"
+                  loading="lazy"
+                  width={40}
+                  height={40}
+                />
                 <div className="contact-info">
                   <h3>{selectedConversation.contact.name}</h3>
                   <span className="contact-status">{selectedConversation.contact.status}</span>
                 </div>
+                {/* P0-017: Convert to Lead — hidden once conversation already has a lead */}
+                {!selectedConversation.leadId && onConvertToLead && (
+                  <button
+                    className="convert-to-lead-btn"
+                    aria-label="Convert to Lead"
+                    title={
+                      convertingLeadId === selectedConversation.id
+                        ? 'Converting…'
+                        : 'Convert to Lead'
+                    }
+                    disabled={convertingLeadId === selectedConversation.id}
+                    onClick={() => onConvertToLead(selectedConversation.id)}
+                    style={{
+                      marginLeft: 'auto',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '6px',
+                      padding: '6px 12px',
+                      background: 'rgba(212,175,55,0.15)',
+                      border: '1px solid rgba(212,175,55,0.4)',
+                      borderRadius: '8px',
+                      color: '#D4AF37',
+                      fontSize: '12px',
+                      fontWeight: 600,
+                      cursor:
+                        convertingLeadId === selectedConversation.id ? 'not-allowed' : 'pointer',
+                      opacity: convertingLeadId === selectedConversation.id ? 0.6 : 1,
+                    }}
+                  >
+                    {convertingLeadId === selectedConversation.id ? (
+                      <Loader2 size={14} className="animate-spin" />
+                    ) : (
+                      <UserPlus size={14} />
+                    )}
+                    Convert to Lead
+                  </button>
+                )}
+                {selectedConversation.leadId && (
+                  <span
+                    style={{
+                      marginLeft: 'auto',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '4px',
+                      fontSize: '11px',
+                      color: '#4ade80',
+                      fontWeight: 600,
+                    }}
+                  >
+                    <CheckCircle size={13} /> Lead Created
+                  </span>
+                )}
               </div>
 
               <div className="messages-container">
@@ -148,8 +238,8 @@ export const ConversationsTab: React.FC<ConversationsTabProps> = ({ data }) => {
                   type="text"
                   placeholder="Type a message..."
                   value={messageInput}
-                  onChange={(e) => setMessageInput(e.target.value)}
-                  onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
+                  onChange={e => setMessageInput(e.target.value)}
+                  onKeyPress={e => e.key === 'Enter' && handleSendMessage()}
                   className="message-input"
                 />
                 <button className="send-btn" onClick={handleSendMessage}>
