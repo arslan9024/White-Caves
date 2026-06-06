@@ -9778,17 +9778,6 @@
     "successCount": 1,
     "history": []
   },
-  "DU043": {
-    "v": 1,
-    "agent": "@Salma",
-    "action": "DRAFT",
-    "target": "IMPROVEMENTS_UX.md",
-    "prompt": "@Salma -- DRAFT: IMPROVEMENTS_UX.md -\u003e add a Playwright E2E suite plan for tenant portal login, documents, payments, and maintenance flows",
-    "tags": ["quality", "testing"],
-    "lastUsed": "2026-06-06",
-    "successCount": 0,
-    "history": []
-  },
   "DU062": {
     "v": 1,
     "agent": "@S5",
@@ -11677,6 +11666,17 @@
     "target": "wave-16-security-hardening.md",
     "prompt": "@S5 -- EXPAND: wave-16-security-hardening.md -\u003e add JWT refresh rotation hardening including token family invalidation, replay detection, and device-bound session audit",
     "tags": ["security", "auth"],
+    "lastUsed": "2026-06-06",
+    "successCount": 1,
+    "history": []
+  },
+  "DU043": {
+    "v": 1,
+    "agent": "@Salma",
+    "action": "DRAFT",
+    "target": "IMPROVEMENTS_UX.md",
+    "prompt": "@Salma -- DRAFT: IMPROVEMENTS_UX.md -\u003e add a Playwright E2E suite plan for tenant portal login, documents, payments, and maintenance flows",
+    "tags": ["quality", "testing"],
     "lastUsed": "2026-06-06",
     "successCount": 1,
     "history": []
