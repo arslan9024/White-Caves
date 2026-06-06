@@ -147,6 +147,42 @@ function resolveFirebaseSyncErrorMessage(error: unknown): string {
   return 'Unable to complete authentication sync';
 }
 
+function isTransientFirebaseSyncError(error: unknown): boolean {
+  if (error instanceof HttpError) {
+    if (error.status === 429 || error.status === 503 || error.status === 504) {
+      return true;
+    }
+
+    const data = error.data;
+    if (typeof data === 'object' && data !== null) {
+      const payload = data as Record<string, unknown>;
+      const payloadMessage =
+        (typeof payload.message === 'string' && payload.message) ||
+        (typeof payload.error === 'string' && payload.error) ||
+        '';
+
+      if (/temporarily|timeout|rate[- ]?limit|too many|try again/i.test(payloadMessage)) {
+        return true;
+      }
+    }
+
+    if (/temporarily|timeout|rate[- ]?limit|too many|try again/i.test(error.message || '')) {
+      return true;
+    }
+  }
+
+  if (error instanceof Error) {
+    return /network|timeout|fetch failed|econnreset|temporarily/i.test(error.message || '');
+  }
+
+  return false;
+}
+
+const wait = (ms: number): Promise<void> =>
+  new Promise(resolve => {
+    setTimeout(resolve, ms);
+  });
+
 /** Restore token from storage on app init */
 export function restoreAuthToken(): string | null {
   const token = safeStorage.get(TOKEN_KEY);
@@ -259,17 +295,32 @@ export async function syncFirebaseUser(firebaseUser: {
     );
   }
 
-  let response: FirebaseSyncResponse;
-  try {
-    response = (await apiClient.post('/auth/firebase-sync', {
-      firebaseUid: firebaseUser.uid,
-      email: firebaseUser.email,
-      name: firebaseUser.displayName,
-      photoUrl: firebaseUser.photoURL,
-      firebaseToken,
-    })) as FirebaseSyncResponse;
-  } catch (error: unknown) {
-    throw new Error(resolveFirebaseSyncErrorMessage(error));
+  let response: FirebaseSyncResponse | null = null;
+  const maxAttempts = 2;
+
+  for (let attempt = 1; attempt <= maxAttempts; attempt += 1) {
+    try {
+      response = (await apiClient.post('/auth/firebase-sync', {
+        firebaseUid: firebaseUser.uid,
+        email: firebaseUser.email,
+        name: firebaseUser.displayName,
+        photoUrl: firebaseUser.photoURL,
+        firebaseToken,
+      })) as FirebaseSyncResponse;
+      break;
+    } catch (error: unknown) {
+      const canRetry = attempt < maxAttempts && isTransientFirebaseSyncError(error);
+      if (canRetry) {
+        await wait(300 * attempt);
+        continue;
+      }
+
+      throw new Error(resolveFirebaseSyncErrorMessage(error));
+    }
+  }
+
+  if (!response) {
+    throw new Error('Unable to complete authentication sync');
   }
 
   if (response.success) {

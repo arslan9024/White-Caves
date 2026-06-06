@@ -8,6 +8,7 @@ import { createLogger } from './utils/logger.js';
 import { registerLeadScoringMiddleware } from './services/ai/leadScoringMiddleware.js';
 
 const log = createLogger('Database');
+const SLOW_QUERY_THRESHOLD_MS = Number(process.env.SLOW_QUERY_THRESHOLD_MS ?? 200);
 
 type PrismaLikeError = { code?: string; errorCode?: string };
 

@@ -23,13 +23,17 @@ const mockSignInWithGoogle = vi.fn();
 const mockSignInWithFacebook = vi.fn();
 const mockSignInWithApple = vi.fn();
 const mockSignOut = vi.fn();
-const { mockFirebaseAuthConfigured } = vi.hoisted(() => ({
+const { mockFirebaseAuthConfigured, mockFirebaseAuthUnavailableReason } = vi.hoisted(() => ({
   mockFirebaseAuthConfigured: { value: true },
+  mockFirebaseAuthUnavailableReason: { value: '' },
 }));
 
 vi.mock('../../config/firebase', () => ({
   get isFirebaseAuthConfigured() {
     return mockFirebaseAuthConfigured.value;
+  },
+  get firebaseAuthUnavailableReason() {
+    return mockFirebaseAuthUnavailableReason.value;
   },
   signInWithGoogle: (...args: unknown[]) => mockSignInWithGoogle(...args),
   signInWithFacebook: (...args: unknown[]) => mockSignInWithFacebook(...args),
@@ -106,6 +110,7 @@ describe('SignInPage', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     mockFirebaseAuthConfigured.value = true;
+    mockFirebaseAuthUnavailableReason.value = '';
     vi.useFakeTimers({ shouldAdvanceTime: true });
   });
 
@@ -149,6 +154,18 @@ describe('SignInPage', () => {
       expect(screen.getByRole('button', { name: /Google/i })).toBeDisabled();
       expect(
         screen.getByText(/Google sign-in is temporarily unavailable because Firebase authentication/)
+      ).toBeInTheDocument();
+    });
+
+    it('should include missing Firebase env diagnostics in fallback helper text', () => {
+      mockFirebaseAuthConfigured.value = false;
+      mockFirebaseAuthUnavailableReason.value =
+        'Missing environment variables: VITE_FIREBASE_API_KEY, VITE_FIREBASE_AUTH_DOMAIN';
+
+      renderPage();
+
+      expect(
+        screen.getByText(/Missing environment variables: VITE_FIREBASE_API_KEY, VITE_FIREBASE_AUTH_DOMAIN/i)
       ).toBeInTheDocument();
     });
 
@@ -503,7 +520,7 @@ describe('SignInPage', () => {
       });
 
       await waitFor(() => {
-        expect(mockNavigate).toHaveBeenCalledWith('/crm', { replace: true });
+        expect(mockNavigate).toHaveBeenCalledWith('/profile');
       });
     });
 
@@ -679,7 +696,7 @@ describe('SignInPage', () => {
       });
     });
 
-    it('should mark recovery panel as busy while retry is in progress', async () => {
+    it('should keep recovery panel visible while retry is in progress', async () => {
       mockSignInWithGoogle
         .mockResolvedValueOnce({
           user: {
@@ -702,7 +719,29 @@ describe('SignInPage', () => {
       fireEvent.click(retryButton);
 
       await waitFor(() => {
-        expect(screen.getByRole('status')).toHaveAttribute('aria-busy', 'true');
+        expect(screen.getByText(/sign-in needs one more step/i)).toBeInTheDocument();
+        expect(screen.getByRole('button', { name: /Retrying.../i })).toBeDisabled();
+      });
+    });
+
+    it('should render Gmail troubleshooting panel and allow fallback to email tab', async () => {
+      mockSignInWithGoogle.mockRejectedValue(new Error('auth/popup-blocked'));
+      renderPage();
+
+      fireEvent.click(screen.getByRole('button', { name: /Google/i }));
+
+      await waitFor(() => {
+        expect(screen.getByText(/Trouble signing in with Gmail\?/i)).toBeInTheDocument();
+        expect(screen.getByRole('button', { name: /Continue with Email/i })).toBeInTheDocument();
+      });
+
+      fireEvent.click(screen.getByText('Phone'));
+      expect(screen.getByPlaceholderText('+971 50 123 4567')).toBeInTheDocument();
+
+      fireEvent.click(screen.getByRole('button', { name: /Continue with Email/i }));
+
+      await waitFor(() => {
+        expect(screen.getByPlaceholderText('Enter your email')).toBeInTheDocument();
       });
     });
 

@@ -121,6 +121,40 @@ body.dark-mode .auth-card {
   text-align: center;
 }
 
+.auth-intro {
+  margin-bottom: 1rem;
+}
+
+.auth-eyebrow {
+  margin: 0 0 0.5rem;
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #c9a84c;
+}
+
+.auth-highlights {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.45rem;
+  margin-top: 0.85rem;
+}
+
+.auth-highlight-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.3rem 0.6rem;
+  border-radius: 999px;
+  border: 1px solid rgba(201, 168, 76, 0.35);
+  background: rgba(201, 168, 76, 0.12);
+  color: #c9a84c;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
 .auth-subtitle {
   font-size: 0.9375rem;
   color: var(--text-secondary);
@@ -241,18 +275,69 @@ body.dark-mode .auth-tabs {
 }
 
 .social-buttons-primary {
-  display: flex;
-  gap: 0.75rem;
-  justify-content: center;
+  display: block;
 }
 
 .social-buttons-primary .social-btn {
-  flex: 1;
-  max-width: 120px;
-  flex-direction: column;
+  width: 100%;
+  max-width: 100%;
+  justify-content: center;
   gap: 0.5rem;
-  padding: 1rem 0.75rem;
-  font-size: 0.8125rem;
+  padding: 0.95rem 1rem;
+  font-size: 0.9rem;
+}
+
+.social-buttons-secondary {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.75rem;
+  margin-top: 0.75rem;
+}
+
+.social-btn--gmail {
+  border-width: 1.5px;
+  border-color: rgba(66, 133, 244, 0.45);
+  background: linear-gradient(180deg, rgba(66, 133, 244, 0.12), rgba(66, 133, 244, 0.05));
+}
+
+.social-btn--gmail:hover:not(:disabled) {
+  border-color: #4285f4;
+  background: linear-gradient(180deg, rgba(66, 133, 244, 0.2), rgba(66, 133, 244, 0.1));
+}
+
+.auth-google-help {
+  margin-top: 0.85rem;
+  margin-bottom: 0.35rem;
+  padding: 0.85rem 1rem;
+  border-radius: 10px;
+  border: 1px solid rgba(66, 133, 244, 0.35);
+  background: rgba(66, 133, 244, 0.1);
+}
+
+.auth-google-help__title {
+  margin: 0;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.auth-google-help__list {
+  margin: 0.55rem 0 0;
+  padding-inline-start: 1.1rem;
+  color: var(--text-secondary);
+  font-size: 0.8rem;
+  line-height: 1.45;
+}
+
+.auth-google-help__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem 0.6rem;
+  margin-top: 0.65rem;
+}
+
+.auth-google-help__actions .btn {
+  min-height: 2rem;
 }
 
 .auth-divider {
@@ -447,6 +532,12 @@ body.dark-mode .btn-secondary:hover {
   padding: 0.5rem;
 }
 
+.auth-forgot-link {
+  align-self: center;
+  margin-top: -0.2rem;
+  font-size: 0.85rem;
+}
+
 .btn-link:hover {
   text-decoration: underline;
 }
@@ -488,8 +579,18 @@ body.dark-mode .btn-secondary:hover {
 }
 
 .category-card.selected {
-  background: rgba(var(--accent-color), 0.1);
-  border-color: var(--accent-color, var(--primary-color));
+  background: rgba(227, 30, 36, 0.12);
+  border-color: var(--primary-color);
+}
+
+.category-card--client.selected {
+  background: rgba(16, 185, 129, 0.12);
+  border-color: #10b981;
+}
+
+.category-card--staff.selected {
+  background: rgba(59, 130, 246, 0.12);
+  border-color: #3b82f6;
 }
 
 .category-icon {
@@ -556,6 +657,10 @@ body.dark-mode .btn-secondary:hover {
   grid-template-columns: repeat(2, 1fr);
   gap: 1rem;
   margin-bottom: 1.5rem;
+}
+
+.auth-form-group-spaced {
+  margin-bottom: 1rem;
 }
 
 .role-card {
@@ -1196,6 +1301,14 @@ body.dark-mode .btn-secondary:hover {
   .social-btn {
     padding: 0.75rem 1rem;
     font-size: 0.875rem;
+  }
+
+  .social-buttons-secondary {
+    grid-template-columns: 1fr;
+  }
+
+  .auth-google-help {
+    padding: 0.75rem 0.8rem;
   }
 
   .info-cards {

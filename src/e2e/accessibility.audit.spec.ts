@@ -15,6 +15,7 @@
  */
 
 import { test, expect } from '@playwright/test';
+import AxeBuilder from '@axe-core/playwright';
 
 function toCanonicalDashboardPath(path: string): string {
   if (path.startsWith('/landlord/dashboard')) {

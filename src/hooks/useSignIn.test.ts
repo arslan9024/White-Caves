@@ -34,6 +34,7 @@ vi.mock('react-router-dom', async () => {
 vi.mock('../config/firebase', () => ({
   auth: null,
   isFirebaseAuthConfigured: true,
+  firebaseAuthUnavailableReason: '',
   signInWithGoogle: (...args: unknown[]) => mockSignInWithGoogle(...args),
   signInWithFacebook: (...args: unknown[]) => mockSignInWithFacebook(...args),
   signInWithApple: (...args: unknown[]) => mockSignInWithApple(...args),
@@ -326,6 +327,41 @@ describe('useSignIn — handleSocialAuth (integration)', () => {
       });
 
       expect(result.current.loading).toBe(false);
+    });
+
+    it('surfaces a clear message when Google domain is not authorized', async () => {
+      mockSignInWithGoogle.mockRejectedValue({ code: 'auth/unauthorized-domain' });
+      const { result } = renderHook(() => useSignIn(), { wrapper: createWrapper(store) });
+
+      await act(async () => {
+        await result.current.handleSocialAuth('google');
+      });
+
+      expect(result.current.error).toContain('blocked for this domain');
+    });
+
+    it('surfaces a clear message when Google provider is disabled', async () => {
+      mockSignInWithGoogle.mockRejectedValue({ code: 'auth/operation-not-allowed' });
+      const { result } = renderHook(() => useSignIn(), { wrapper: createWrapper(store) });
+
+      await act(async () => {
+        await result.current.handleSocialAuth('google');
+      });
+
+      expect(result.current.error).toContain('not enabled for this environment');
+    });
+
+    it('surfaces guidance when account exists with another credential', async () => {
+      mockSignInWithGoogle.mockRejectedValue({
+        code: 'auth/account-exists-with-different-credential',
+      });
+      const { result } = renderHook(() => useSignIn(), { wrapper: createWrapper(store) });
+
+      await act(async () => {
+        await result.current.handleSocialAuth('google');
+      });
+
+      expect(result.current.error).toContain('already registered with a different sign-in method');
     });
   });
 

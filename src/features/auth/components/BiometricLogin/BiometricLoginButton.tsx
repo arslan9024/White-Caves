@@ -55,19 +55,11 @@ const BiometricLoginButton = ({ onSuccess, onError, disabled }: BiometricLoginBu
         });
 
         onSuccess?.(userData);
-
-        const existingRole = safeStorage.getJSON<{ role: string }>('userRole');
-        if (existingRole) {
-          navigate('/profile');
-        } else {
-          navigate('/select-role');
-        }
+        navigateToPostLoginDestination(navigate, destination);
       } else {
         throw new Error('Authentication succeeded but no session data returned.');
       }
     } catch (error) {
-      const authError = error as { message?: string };
-      
       dispatch(loginFailure((error as Error).message));
       onError?.(error);
     } finally {

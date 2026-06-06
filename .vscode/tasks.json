@@ -15,7 +15,10 @@
 			"label": "start-dev-server-nodepath",
 			"type": "shell",
 			"command": "C:\\Users\\Murad Ali\\AppData\\Local\\Microsoft\\WinGet\\Packages\\OpenJS.NodeJS.LTS_Microsoft.Winget.Source_8wekyb3d8bbwe\\node-v24.16.0-win-x64\\npm.cmd",
-			"args": ["run", "dev"],
+			"args": [
+				"run",
+				"dev"
+			],
 			"isBackground": true
 		},
 		{
@@ -461,6 +464,26 @@
 				"/c",
 				"powershell -NoProfile -ExecutionPolicy Bypass -File scripts\\orchestrator\\project-problem-scan.ps1 -WorkspaceRoot . -AutoFix -Brief"
 			]
+		},
+		{
+			"label": "quality-quick-check",
+			"type": "shell",
+			"command": "npm.cmd",
+			"args": [
+				"run",
+				"quality:quick"
+			],
+			"isBackground": false
+		},
+		{
+			"label": "quality-quick-log-task",
+			"type": "shell",
+			"command": "cmd.exe",
+			"args": [
+				"/c",
+				"cd /d c:\\Users\\Murad Ali\\White-Caves & npm.cmd run quality:quick > quality-quick-latest.log 2>&1"
+			],
+			"isBackground": false
 		}
 	]
 }

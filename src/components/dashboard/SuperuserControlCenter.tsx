@@ -42,6 +42,12 @@ interface OperationsDomain {
   onAction: () => void;
 }
 
+const TONE_LABELS: Record<SuperMetric['tone'], string> = {
+  neutral: 'Stable',
+  positive: 'Healthy',
+  warn: 'Attention',
+};
+
 const toHealthScore = (
   hotLeadsCount: number,
   moduleCount: number,

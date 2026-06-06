@@ -19,6 +19,7 @@ import {
   resetPassword,
   signOut as signOutFirebase,
   isFirebaseAuthConfigured,
+  firebaseAuthUnavailableReason,
 } from '../config/firebase';
 import { TIMING } from '../constants';
 import {
@@ -111,6 +112,12 @@ const normalizeSocialAuthErrorMessage = (error: unknown, provider: string): stri
       return `Another sign-in request interrupted ${toTitleCase(provider)} authentication. Please retry.`;
     case 'auth/network-request-failed':
       return 'Network issue detected during social sign-in. Please check your connection and retry.';
+    case 'auth/unauthorized-domain':
+      return `${toTitleCase(provider)} sign-in is blocked for this domain. Please contact support to authorize this domain in Firebase.`;
+    case 'auth/operation-not-allowed':
+      return `${toTitleCase(provider)} sign-in is not enabled for this environment yet. Please use email sign-in or contact support.`;
+    case 'auth/account-exists-with-different-credential':
+      return 'This email is already registered with a different sign-in method. Try email sign-in to continue.';
     default:
       break;
   }
@@ -224,7 +231,8 @@ export function useSignIn() {
   // Ref for navigation timers
   const navTimerRef = useRef<ReturnType<typeof setTimeout>>();
   const googleAuthUnavailableMessage =
-    'Google sign-in is temporarily unavailable because Firebase authentication is not configured in this environment.';
+    'Google sign-in is temporarily unavailable because Firebase authentication is not configured in this environment.' +
+    (firebaseAuthUnavailableReason ? ` ${firebaseAuthUnavailableReason}` : '');
 
   useEffect(() => {
     return () => {

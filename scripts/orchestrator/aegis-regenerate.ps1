@@ -14,6 +14,19 @@ $policyFile = Join-Path $root "scripts\orchestrator\policy.json"
 $stateFile = Join-Path $logsDir "aegis-state.json"
 $archiveDir = Join-Path $logsDir "archive"
 
+$defaultPhaseRoadmap = @(
+  "Wave 09 - UX Foundation",
+  "Wave 10 - Performance & SEO",
+  "Wave 11 - Architecture Stabilization",
+  "Wave 12 - Automation Engine",
+  "Wave 13 - Media & Real-time",
+  "Wave 14 - Product Intelligence",
+  "Wave 15 - Cache & PWA",
+  "Wave 16 - Security Hardening"
+)
+$phaseRoadmap = @($defaultPhaseRoadmap)
+$restartFromNextPhaseWhenQueueComplete = $true
+
 New-Item -ItemType Directory -Force -Path $logsDir | Out-Null
 New-Item -ItemType Directory -Force -Path $archiveDir | Out-Null
 
@@ -76,6 +89,21 @@ $cycleTag = "C{0:D2}" -f $cycle
 $now = (Get-Date).ToString("o")
 $stamp = Get-Date -Format "yyyyMMdd-HHmmss"
 
+$lastPhaseIndex = -1
+if (Test-Path $stateFile) {
+  try {
+    $state = Get-Content $stateFile -Raw | ConvertFrom-Json
+    if ($null -ne $state.lastPhaseIndex) {
+      $parsedPhaseIndex = -1
+      if ([int]::TryParse([string]$state.lastPhaseIndex, [ref]$parsedPhaseIndex)) {
+        $lastPhaseIndex = $parsedPhaseIndex
+      }
+    }
+  } catch {
+    $lastPhaseIndex = -1
+  }
+}
+
 if (Test-Path $queueFile) {
   Copy-Item $queueFile (Join-Path $archiveDir ("task-queue.pre-aegis-{0}.json" -f $stamp)) -Force
 }
@@ -119,6 +147,8 @@ function New-Task {
       cycle = $cycleTag
       generatedBy = "aegis-regenerate.ps1"
       reason = $Reason
+      phaseLabel = $phaseLabel
+      phaseIndex = $phaseIndex
       phase = $Phase
       team = $Team
       priority = $Priority
@@ -158,6 +188,19 @@ $priorityOverrideTasks = @()
 if (Test-Path $policyFile) {
   try {
     $policy = Get-Content $policyFile -Raw | ConvertFrom-Json
+    if ($null -ne $policy.aegis) {
+      if ($null -ne $policy.aegis.restartFromNextPhaseWhenQueueComplete) {
+        $restartFromNextPhaseWhenQueueComplete = [bool]$policy.aegis.restartFromNextPhaseWhenQueueComplete
+      }
+
+      if ($null -ne $policy.aegis.nextPhaseRoadmap) {
+        $policyPhases = @($policy.aegis.nextPhaseRoadmap | Where-Object { -not [string]::IsNullOrWhiteSpace([string]$_) })
+        if ($policyPhases.Count -gt 0) {
+          $phaseRoadmap = @($policyPhases)
+        }
+      }
+    }
+
     if ($null -ne $policy.aegis -and $null -ne $policy.aegis.priorityOverride) {
       $priorityOverrideEnabled = [bool]$policy.aegis.priorityOverride.enabled
       if ($priorityOverrideEnabled -and $null -ne $policy.aegis.priorityOverride.tasks) {
@@ -169,6 +212,17 @@ if (Test-Path $policyFile) {
     $priorityOverrideTasks = @()
   }
 }
+
+$phaseIndex = 0
+if ($phaseRoadmap.Count -gt 0) {
+  if ($restartFromNextPhaseWhenQueueComplete) {
+    $phaseIndex = ($lastPhaseIndex + 1) % $phaseRoadmap.Count
+  } elseif ($lastPhaseIndex -ge 0) {
+    $phaseIndex = $lastPhaseIndex % $phaseRoadmap.Count
+  }
+}
+
+$phaseLabel = if ($phaseRoadmap.Count -gt 0) { [string]$phaseRoadmap[$phaseIndex] } else { "Unspecified Phase" }
 
 function Add-LaneTasks {
   param(
@@ -188,14 +242,14 @@ function Add-LaneTasks {
     $nextAgent = if ($i -lt ($Agents.Count - 1)) { $Agents[$i + 1] } else { $null }
     $deps = if ([string]::IsNullOrWhiteSpace($prevId)) { @() } else { @($prevId) }
     $needsAck = -not [string]::IsNullOrWhiteSpace($nextAgent)
-    $title = "Aegis {0} - {1}" -f $cycleTag, $titleByAgent[$agent]
+    $title = "Aegis {0} [{1}] - {2}" -f $cycleTag, $phaseLabel, $titleByAgent[$agent]
 
     [void]$TaskSink.Add((New-Task -Id $taskId -Agent $agent -Lane $Lane -Title $title -Deps $deps -NeedsAck $needsAck -AckBy $nextAgent -Phase $Phase -Team $Team))
 
     if ($Phase -eq "implementation") {
-      $PromptSink[$taskId] = "{0} -- IMPLEMENT+VERIFY ({1}): execute the implementation backlog for this module in production-safe slices. Include code-level changes, validation gates (typecheck/lint/build/tests), risk controls, rollback notes, and handoff artifacts for QA/security. Output must be merge-ready and traceable to acceptance criteria." -f $agent, $cycleTag
+      $PromptSink[$taskId] = "{0} -- IMPLEMENT+VERIFY ({1} | {2}): execute the implementation backlog for this module in production-safe slices. Include code-level changes, validation gates (typecheck/lint/build/tests), risk controls, rollback notes, and handoff artifacts for QA/security. Output must be merge-ready and traceable to acceptance criteria." -f $agent, $cycleTag, $phaseLabel
     } else {
-      $PromptSink[$taskId] = "{0} -- RESEARCH+PLAN ({1}): analyze current project status for your domain and produce a prioritized backlog for fixes, implementation improvements, upgrades, and completion steps. Include: top 5 issues/opportunities, root-cause notes, API/data/UI impact, acceptance criteria, test strategy, risk level (P0/P1/P2), and FEEDS/FEEDS_ACK handoff targets. Output should be implementation-ready for the next coding wave." -f $agent, $cycleTag
+      $PromptSink[$taskId] = "{0} -- RESEARCH+PLAN ({1} | {2}): analyze current project status for your domain and produce a prioritized backlog for fixes, implementation improvements, upgrades, and completion steps. Include: top 5 issues/opportunities, root-cause notes, API/data/UI impact, acceptance criteria, test strategy, risk level (P0/P1/P2), and FEEDS/FEEDS_ACK handoff targets. Output should be implementation-ready for the next coding wave." -f $agent, $cycleTag, $phaseLabel
     }
 
     $prevId = $taskId
@@ -243,15 +297,15 @@ function Add-PriorityOverrides {
 
     $overrideIndex++
     $taskId = "AG{0}O{1}" -f $cycleTag, ("{0:D2}" -f $overrideIndex)
-    $taskTitle = "Aegis {0} - PRIORITY OVERRIDE - {1}" -f $cycleTag, $title
+    $taskTitle = "Aegis {0} [{1}] - PRIORITY OVERRIDE - {2}" -f $cycleTag, $phaseLabel, $title
 
     [void]$TaskSink.Add((New-Task -Id $taskId -Agent $agent -Lane $lane -Title $taskTitle -Deps @() -NeedsAck $false -AckBy $null -Phase $phase -Team $team -Priority $priority -PriorityScore $priorityScore))
 
     if ([string]::IsNullOrWhiteSpace($prompt)) {
       $prompt = if ($phase -eq "implementation") {
-        "{0} -- IMPLEMENT+VERIFY ({1}): execute this top-priority override task before standard queue items. Deliver production-safe code changes, strict validation (typecheck/lint/build/tests), rollback notes, and evidence artifacts." -f $agent, $cycleTag
+        "{0} -- IMPLEMENT+VERIFY ({1} | {2}): execute this top-priority override task before standard queue items. Deliver production-safe code changes, strict validation (typecheck/lint/build/tests), rollback notes, and evidence artifacts." -f $agent, $cycleTag, $phaseLabel
       } else {
-        "{0} -- RESEARCH+PLAN ({1}): execute this top-priority override task before standard queue items. Deliver actionable backlog, acceptance criteria, risk notes, and implementation-ready handoff." -f $agent, $cycleTag
+        "{0} -- RESEARCH+PLAN ({1} | {2}): execute this top-priority override task before standard queue items. Deliver actionable backlog, acceptance criteria, risk notes, and implementation-ready handoff." -f $agent, $cycleTag, $phaseLabel
       }
     }
 
@@ -295,11 +349,11 @@ foreach ($laneKey in $implByLane.Keys) {
   $implIdx++
   $implTaskId = "AG{0}P{1}" -f $cycleTag, ("{0:D2}" -f $implIdx)
   $implAgent = [string]$implByLane[$laneKey]
-  $implTitle = "Aegis {0} - {1}" -f $cycleTag, $implModuleTitle[$laneKey]
+  $implTitle = "Aegis {0} [{1}] - {2}" -f $cycleTag, $phaseLabel, $implModuleTitle[$laneKey]
 
   [void]$tasks.Add((New-Task -Id $implTaskId -Agent $implAgent -Lane $laneKey -Title $implTitle -Deps @() -NeedsAck $false -AckBy $null -Phase "implementation" -Team "premium-implementation"))
 
-  $newPrompts[$implTaskId] = "{0} -- IMPLEMENT+VERIFY ({1}): execute module implementation tasks in parallel with planning tracks. Deliver code changes, strict validation (typecheck/lint/build/tests), rollback notes, and deployment-ready handoff. Include evidence links and explicit completion criteria." -f $implAgent, $cycleTag
+  $newPrompts[$implTaskId] = "{0} -- IMPLEMENT+VERIFY ({1} | {2}): execute module implementation tasks in parallel with planning tracks. Deliver code changes, strict validation (typecheck/lint/build/tests), rollback notes, and deployment-ready handoff. Include evidence links and explicit completion criteria." -f $implAgent, $cycleTag, $phaseLabel
 }
 
 $payload = @{
@@ -307,6 +361,10 @@ $payload = @{
   generatedAt = $now
   generatedBy = "Aegis"
   cycle = $cycleTag
+  phase = @{
+    index = $phaseIndex
+    label = $phaseLabel
+  }
   reason = $Reason
   tasks = @($tasks)
 }
@@ -344,12 +402,15 @@ $ordered | ConvertTo-Json -Depth 8 | Set-Content -Path $promptsFile -Encoding UT
 $statePayload = @{
   lastCycle = $cycle
   lastCycleTag = $cycleTag
+  lastPhaseIndex = $phaseIndex
+  lastPhaseName = $phaseLabel
   generatedAt = $now
   reason = $Reason
 }
 $statePayload | ConvertTo-Json -Depth 6 | Set-Content -Path $stateFile -Encoding UTF8
 
 Write-Host "[AEGIS] Generated new dual-track cycle (planning + implementation): $cycleTag" -ForegroundColor Green
+Write-Host "        Phase      : $phaseLabel" -ForegroundColor DarkGray
 Write-Host "        Queue file : $queueFile" -ForegroundColor DarkGray
 Write-Host "        Tasks      : $($tasks.Count)" -ForegroundColor DarkGray
 Write-Host "        Prompts add: $($newPrompts.Count)" -ForegroundColor DarkGray

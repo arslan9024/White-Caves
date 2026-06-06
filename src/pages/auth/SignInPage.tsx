@@ -15,7 +15,7 @@ const AUTH_COPY = {
     signInSubtitle: 'Sign in to access your personalized dashboard',
     signUpSubtitle: 'Join White Caves to explore luxury properties in Dubai',
     socialLabel: 'Quick sign in with',
-    google: 'Google',
+    google: 'Continue with Google (Gmail)',
     facebook: 'Facebook',
     apple: 'Apple',
     email: 'Email',
@@ -29,7 +29,7 @@ const AUTH_COPY = {
     signInSubtitle: 'سجّل الدخول للوصول إلى لوحة التحكم الخاصة بك',
     signUpSubtitle: 'انضم إلى وايت كيفز لاستكشاف العقارات الفاخرة في دبي',
     socialLabel: 'تسجيل الدخول السريع عبر',
-    google: 'جوجل',
+    google: 'المتابعة باستخدام جوجل (Gmail)',
     facebook: 'فيسبوك',
     apple: 'آبل',
     email: 'البريد الإلكتروني',
@@ -51,6 +51,7 @@ const SignInPage: FC = () => {
   const location = useLocation();
   const modalRef = useRef<HTMLDivElement | null>(null);
   const closeButtonRef = useRef<HTMLButtonElement | null>(null);
+  const emailInputRef = useRef<HTMLInputElement | null>(null);
   const locale = getAuthLocale();
   const copy = AUTH_COPY[locale];
 
@@ -60,6 +61,7 @@ const SignInPage: FC = () => {
     activeTab,
     setActiveTab,
     loading,
+    forgotPasswordLoading,
     error,
     setError,
     success,
@@ -98,6 +100,7 @@ const SignInPage: FC = () => {
     retrySocialAuth,
     clearSocialRecovery,
     handleEmailSubmit,
+    handleForgotPassword,
     handlePhoneSubmit,
     handleOtpVerify,
     proceedToRoleSelection,
@@ -106,6 +109,18 @@ const SignInPage: FC = () => {
   } = useSignIn();
 
   const retryLimitReached = socialRetryAttempts >= 3;
+  const isSigningUp = mode === 'signup';
+  const hasGoogleErrorSignal = /google|gmail|popup|firebase|third-party cookies|blocked/i.test(
+    error.toLowerCase()
+  );
+  const shouldShowGoogleHelp =
+    mode === 'signin' &&
+    step === 1 &&
+    (!isGoogleAuthAvailable || socialSyncRecovery?.provider === 'google' || hasGoogleErrorSignal);
+  const authHighlights = isSigningUp
+    ? ['Fast account setup', 'Google / Gmail sign-in', 'Mobile OTP backup']
+    : ['Secure CRM access', 'Gmail-friendly login', 'Phone verification ready'];
+
   const closeAuthModal = useCallback((): void => {
     const stateValue = location.state as { from?: string } | null;
     const returnTo = stateValue?.from;
@@ -201,10 +216,24 @@ const SignInPage: FC = () => {
           <div className="auth-card">
             {step === 1 && (
               <>
-                <h1>{mode === 'signup' ? copy.signUpTitle : copy.signInTitle}</h1>
-                <p className="auth-subtitle">
-                  {mode === 'signup' ? copy.signUpSubtitle : copy.signInSubtitle}
-                </p>
+                <div className="auth-intro">
+                  <p className="auth-eyebrow">
+                    {isSigningUp
+                      ? 'Create your secure White Caves account'
+                      : 'Sign in faster with Gmail'}
+                  </p>
+                  <h1>{mode === 'signup' ? copy.signUpTitle : copy.signInTitle}</h1>
+                  <p className="auth-subtitle">
+                    {mode === 'signup' ? copy.signUpSubtitle : copy.signInSubtitle}
+                  </p>
+                  <div className="auth-highlights" aria-label="Authentication benefits">
+                    {authHighlights.map(highlight => (
+                      <span key={highlight} className="auth-highlight-pill">
+                        {highlight}
+                      </span>
+                    ))}
+                  </div>
+                </div>
 
                 {error && <div className="auth-error">{error}</div>}
                 {socialSyncRecovery && (
@@ -212,7 +241,6 @@ const SignInPage: FC = () => {
                     className="auth-recovery"
                     role="status"
                     aria-live="polite"
-                    aria-busy={loading}
                   >
                     <p className="auth-recovery__title">
                       {socialSyncRecovery.provider[0].toUpperCase() +
@@ -285,8 +313,47 @@ const SignInPage: FC = () => {
                   facebookText={copy.facebook}
                   appleText={copy.apple}
                   googleDisabled={!isGoogleAuthAvailable}
-                  helperText={!isGoogleAuthAvailable ? googleAuthUnavailableMessage : undefined}
+                  helperText={
+                    !isGoogleAuthAvailable
+                      ? googleAuthUnavailableMessage
+                      : 'Use the Gmail account linked to your White Caves profile for the fastest login.'
+                  }
                 />
+
+                {shouldShowGoogleHelp && (
+                  <div className="auth-google-help" role="region" aria-label="Google sign-in help">
+                    <p className="auth-google-help__title">Trouble signing in with Gmail?</p>
+                    <ul className="auth-google-help__list">
+                      <li>Allow popups and third-party cookies for this site.</li>
+                      <li>Pick the same Gmail account linked to your White Caves profile.</li>
+                      <li>If Google still fails, continue with Email + password below.</li>
+                    </ul>
+                    <div className="auth-google-help__actions">
+                      <button
+                        type="button"
+                        className="btn btn-secondary"
+                        onClick={() => {
+                          void handleSocialAuth('google');
+                        }}
+                        disabled={loading || !isGoogleAuthAvailable}
+                      >
+                        Try Gmail again
+                      </button>
+                      <button
+                        type="button"
+                        className="btn btn-link"
+                        onClick={() => {
+                          setActiveTab('email');
+                          window.setTimeout(() => {
+                            emailInputRef.current?.focus();
+                          }, 0);
+                        }}
+                      >
+                        Continue with Email
+                      </button>
+                    </div>
+                  </div>
+                )}
 
                 <div className="auth-divider">
                   <span>or continue with</span>
@@ -320,29 +387,57 @@ const SignInPage: FC = () => {
                       )}
                       <div className="form-group">
                         <label htmlFor="signin-email">Email Address</label>
-                        <input
-                          id="signin-email"
-                          type="email"
-                          value={email}
-                          onChange={(e: ChangeEvent<HTMLInputElement>) => setEmail(e.target.value)}
-                          placeholder="Enter your email"
-                          required
-                          autoComplete="email"
-                        />
+                        {mode === 'signup' ? (
+                          <input
+                            ref={emailInputRef}
+                            id="signin-email"
+                            type="email"
+                            value={email}
+                            onChange={(e: ChangeEvent<HTMLInputElement>) => setEmail(e.target.value)}
+                            placeholder="Enter your email"
+                            required
+                            autoComplete="email"
+                          />
+                        ) : (
+                          <input
+                            ref={emailInputRef}
+                            id="signin-email"
+                            type="email"
+                            value={email}
+                            onChange={(e: ChangeEvent<HTMLInputElement>) => setEmail(e.target.value)}
+                            placeholder="Enter your email"
+                            required
+                            autoComplete="username"
+                          />
+                        )}
                       </div>
                       <div className="form-group">
                         <label htmlFor="signin-password">Password</label>
-                        <input
-                          id="signin-password"
-                          type="password"
-                          value={password}
-                          onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                            setPassword(e.target.value)
-                          }
-                          placeholder="Enter your password"
-                          required
-                          autoComplete={mode === 'signup' ? 'new-password' : 'current-password'}
-                        />
+                        {mode === 'signup' ? (
+                          <input
+                            id="signin-password"
+                            type="password"
+                            value={password}
+                            onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                              setPassword(e.target.value)
+                            }
+                            placeholder="Enter your password"
+                            required
+                            autoComplete="new-password"
+                          />
+                        ) : (
+                          <input
+                            id="signin-password"
+                            type="password"
+                            value={password}
+                            onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                              setPassword(e.target.value)
+                            }
+                            placeholder="Enter your password"
+                            required
+                            autoComplete="current-password"
+                          />
+                        )}
                       </div>
                       {mode === 'signup' && (
                         <div className="form-group">
@@ -363,6 +458,18 @@ const SignInPage: FC = () => {
                       <button type="submit" className="btn btn-primary btn-full" disabled={loading}>
                         {loading ? 'Please wait...' : mode === 'signup' ? 'Continue' : 'Sign In'}
                       </button>
+                      {mode === 'signin' && (
+                        <button
+                          type="button"
+                          className="btn btn-link auth-forgot-link"
+                          onClick={() => {
+                            void handleForgotPassword();
+                          }}
+                          disabled={forgotPasswordLoading || loading}
+                        >
+                          {forgotPasswordLoading ? 'Sending reset link...' : 'Forgot password?'}
+                        </button>
+                      )}
                     </form>
                   )}
 
@@ -465,9 +572,9 @@ const SignInPage: FC = () => {
                   {USER_CATEGORIES.map(cat => (
                     <button
                       key={cat.id}
-                      className={`category-card ${selectedCategory === cat.id ? 'selected' : ''}`}
+                      className={`category-card category-card--${cat.id} ${selectedCategory === cat.id ? 'selected' : ''}`}
                       onClick={() => setSelectedCategory(cat.id)}
-                      style={{ '--accent-color': cat.color } as React.CSSProperties}
+                      type="button"
                     >
                       <span className="category-icon">{cat.icon}</span>
                       <div className="category-info">
@@ -529,7 +636,7 @@ const SignInPage: FC = () => {
                 </div>
 
                 {selectedCategory === 'staff' && (
-                  <div className="form-group" style={{ marginBottom: '1rem' }}>
+                  <div className="form-group auth-form-group-spaced">
                     <label htmlFor="employee-id">Employee ID (Optional)</label>
                     <input
                       id="employee-id"

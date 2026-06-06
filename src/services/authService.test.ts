@@ -259,6 +259,30 @@ describe('authService', () => {
 
       await expect(syncFirebaseUser(fbUser)).rejects.toThrow(/temporarily rate-limited/i);
     });
+
+    it('retries once on transient 503 error and succeeds on second attempt', async () => {
+      mApiPost
+        .mockRejectedValueOnce(new HttpError('', 503, 'Service Unavailable', null))
+        .mockResolvedValueOnce({
+          success: true,
+          data: { token: 'tok-retry', user: testUser },
+        });
+
+      const result = await syncFirebaseUser(fbUser);
+
+      expect(mApiPost).toHaveBeenCalledTimes(2);
+      expect(result.success).toBe(true);
+      expect(mStorageSet).toHaveBeenCalledWith('token', 'tok-retry');
+    });
+
+    it('stops after retry when transient errors persist', async () => {
+      mApiPost
+        .mockRejectedValueOnce(new HttpError('', 503, 'Service Unavailable', null))
+        .mockRejectedValueOnce(new HttpError('', 503, 'Service Unavailable', null));
+
+      await expect(syncFirebaseUser(fbUser)).rejects.toThrow(/temporarily unavailable/i);
+      expect(mApiPost).toHaveBeenCalledTimes(2);
+    });
   });
 
   // ── fetchProfile ──────────────────────────────────────────────────

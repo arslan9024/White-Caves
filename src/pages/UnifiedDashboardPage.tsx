@@ -28,6 +28,7 @@ import DashboardKpiStrip, { type KpiCardData } from '../components/dashboard/Das
 import DashboardProfileCompletion from '../components/dashboard/DashboardProfileCompletion';
 import DashboardCommandPalette from '../components/dashboard/DashboardCommandPalette';
 import DashboardModuleToolbar from '../components/dashboard/DashboardModuleToolbar';
+import CRMContextPanel from '../components/crm/CRMContextPanel';
 import { useUnifiedDashboard } from '../hooks/useUnifiedDashboard';
 import type { DashboardData, CRMModuleProps } from '../hooks/useUnifiedDashboard';
 import { AI_ASSISTANTS_REGISTRY } from '../store/slices/aiAssistant/registry';
@@ -198,6 +199,8 @@ const formatCurrency = (value: number): string =>
     maximumFractionDigits: 0,
   }).format(value);
 
+const UnifiedCRMAdapter: FC<CRMModuleProps> = () => <UnifiedCRM />;
+
 const UnifiedDashboardPage: FC = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
@@ -230,7 +233,7 @@ const UnifiedDashboardPage: FC = () => {
   const [commandQuery, setCommandQuery] = useState('');
   const [globalSearchQuery, setGlobalSearchQuery] = useState('');
   const [isGlobalSearchOpen, setIsGlobalSearchOpen] = useState(false);
-  const [aiModulesExpanded, setAiModulesExpanded] = useState(true);
+  const [modulesExpanded, setModulesExpanded] = useState(true);
   const [advancedExpanded, setAdvancedExpanded] = useState(false);
   const [departmentsExpanded, setDepartmentsExpanded] = useState(true);
   const [selectedContext, setSelectedContext] = useState<SearchItem | null>(null);
@@ -830,7 +833,7 @@ const UnifiedDashboardPage: FC = () => {
               contractsCount={contractsCount}
               onRefreshData={handleRetryAll}
               onOpenCommandPalette={() => {
-                setAiModulesExpanded(true);
+                setModulesExpanded(true);
                 setIsCommandPaletteOpen(true);
               }}
               onOpenAdminWorkspace={() => openWorkspaceTab('admin', 'unified')}

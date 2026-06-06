@@ -229,6 +229,17 @@
   "aegis": {
     "autoRegenerateWhenQueueComplete": true,
     "maxRegenerationsPerRun": 100000,
+    "restartFromNextPhaseWhenQueueComplete": true,
+    "nextPhaseRoadmap": [
+      "Wave 09 - UX Foundation",
+      "Wave 10 - Performance & SEO",
+      "Wave 11 - Architecture Stabilization",
+      "Wave 12 - Automation Engine",
+      "Wave 13 - Media & Real-time",
+      "Wave 14 - Product Intelligence",
+      "Wave 15 - Cache & PWA",
+      "Wave 16 - Security Hardening"
+    ],
     "smartSelectionEnabled": true,
     "phaseBalanceEnabled": true,
     "targetImplementationSharePct": 60,
