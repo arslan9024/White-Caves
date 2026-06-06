@@ -30,7 +30,19 @@ function Save-Queue {
   $tmp = Join-Path $dir ("{0}.tmp.{1}" -f ([System.IO.Path]::GetFileName($Path)), [guid]::NewGuid().ToString("N"))
   $json = $Queue | ConvertTo-Json -Depth 12
   [System.IO.File]::WriteAllText($tmp, $json, (New-Object System.Text.UTF8Encoding($false)))
-  Move-Item -Path $tmp -Destination $Path -Force
+  $tmpFull = [System.IO.Path]::GetFullPath($tmp)
+  $pathFull = [System.IO.Path]::GetFullPath($Path)
+
+  try {
+    [System.IO.File]::Copy($tmpFull, $pathFull, $true)
+    Remove-Item -Path $tmpFull -Force -ErrorAction SilentlyContinue
+  }
+  catch {
+    if (Test-Path $tmpFull) {
+      Remove-Item -Path $tmpFull -Force -ErrorAction SilentlyContinue
+    }
+    throw
+  }
 }
 
 try {

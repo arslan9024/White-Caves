@@ -104,7 +104,7 @@ function Get-NextEvidencePendingTask {
     return $null
   }
 
-  foreach ($t in ($all | Where-Object { $_.status -eq "evidence_pending" } | Sort-Object taskId)) {
+  foreach ($t in ($all | Where-Object { $_.status -eq "evidence_pending" -or $_.status -eq "waiting_ack" } | Sort-Object taskId)) {
     $deps = Get-NormalizedDeps $t.dependsOn
     $blocked = $false
     foreach ($dep in $deps) {
@@ -128,7 +128,7 @@ function Invoke-AutoResolveEvidenceIfNeeded {
   $candidate = Get-NextEvidencePendingTask
   if ($null -eq $candidate) { return $false }
 
-  Write-Log ("Auto-resolving evidence_pending task {0} ({1})" -f $candidate.taskId, $candidate.agent)
+  Write-Log ("Auto-resolving review-state task {0} ({1}) status={2}" -f $candidate.taskId, $candidate.agent, $candidate.status)
 
   $ackByDirect = [string]$candidate.feedsAckBy
   if (-not [string]::IsNullOrWhiteSpace($ackByDirect) -and (Test-Path $ackTaskScript)) {
