@@ -123,12 +123,30 @@ function Get-NextEvidencePendingTask {
 function Invoke-AutoResolveEvidenceIfNeeded {
   $policy = Get-AegisPolicy
   if (-not [bool]$policy.autopilotAutoResolveEvidencePending) { return $false }
-  if (-not (Test-Path $completeScript)) { return $false }
+  if (-not (Test-Path $completeScript) -and -not (Test-Path $ackTaskScript)) { return $false }
 
   $candidate = Get-NextEvidencePendingTask
   if ($null -eq $candidate) { return $false }
 
   Write-Log ("Auto-resolving evidence_pending task {0} ({1})" -f $candidate.taskId, $candidate.agent)
+
+  $ackByDirect = [string]$candidate.feedsAckBy
+  if (-not [string]::IsNullOrWhiteSpace($ackByDirect) -and (Test-Path $ackTaskScript)) {
+    $ackDirectOut = & powershell -ExecutionPolicy Bypass -File $ackTaskScript `
+      -TaskId $candidate.taskId `
+      -AckBy $ackByDirect `
+      -WorkspaceRoot $WorkspaceRoot 2>&1
+
+    $ackDirectText = ($ackDirectOut | Out-String).Trim()
+    if (-not [string]::IsNullOrWhiteSpace($ackDirectText)) {
+      Write-Log ("Direct auto-ack output :: " + ($ackDirectText -replace "`r|`n", " "))
+    }
+
+    if ($LASTEXITCODE -eq 0) {
+      Write-Log ("Direct auto-ack completed for task {0}" -f $candidate.taskId)
+      return $true
+    }
+  }
 
   $evidenceNote = "Auto-resolved by $workerLabel during no-ready sweep."
   $producedRef  = "logs/orchestrator/worker-lane-$Lane.log"
@@ -145,6 +163,32 @@ function Invoke-AutoResolveEvidenceIfNeeded {
   }
 
   if ($LASTEXITCODE -ne 0) {
+    # Race-safe fallback: if task shifted to waiting_ack, attempt ACK now.
+    if (Test-Path $queueFile) {
+      try {
+        $qNow = Get-Content -Path $queueFile -Raw | ConvertFrom-Json
+        $taskNow = @($qNow.tasks) | Where-Object { $_.taskId -eq $candidate.taskId } | Select-Object -First 1
+        if ($null -ne $taskNow -and [string]$taskNow.status -eq "waiting_ack" -and -not [string]::IsNullOrWhiteSpace([string]$taskNow.feedsAckBy) -and (Test-Path $ackTaskScript)) {
+          $ackByNow = [string]$taskNow.feedsAckBy
+          $ackNowOut = & powershell -ExecutionPolicy Bypass -File $ackTaskScript `
+            -TaskId $candidate.taskId `
+            -AckBy $ackByNow `
+            -WorkspaceRoot $WorkspaceRoot 2>&1
+          $ackNowText = ($ackNowOut | Out-String).Trim()
+          if (-not [string]::IsNullOrWhiteSpace($ackNowText)) {
+            Write-Log ("Race fallback auto-ack output :: " + ($ackNowText -replace "`r|`n", " "))
+          }
+          if ($LASTEXITCODE -eq 0) {
+            Write-Log ("Race fallback auto-ack completed for task {0}" -f $candidate.taskId)
+            return $true
+          }
+        }
+      }
+      catch {
+        Write-Log ("Auto-resolve race fallback check failed for {0}: {1}" -f $candidate.taskId, $_.Exception.Message)
+      }
+    }
+
     Write-Log ("Auto-resolve failed for {0} (exit=$LASTEXITCODE)" -f $candidate.taskId)
     return $false
   }
