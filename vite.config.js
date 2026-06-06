@@ -130,6 +130,9 @@ export default defineConfig(async ({ command }) => {
     port: 5000,
     strictPort: false,
     allowedHosts: true,
+    watch: {
+      ignored: ['**/logs/**', '**/.git/**'],
+    },
     proxy: {
       '/api': {
         target: 'http://localhost:3001',
