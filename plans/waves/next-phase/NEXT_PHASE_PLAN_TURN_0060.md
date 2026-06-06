@@ -1,13 +1,13 @@
-# Next Phase Implementation Plan — Turn 61
+# Next Phase Implementation Plan — Turn 60
 
 > Generated automatically by Aegis autopilot per-turn planning upgrade
-> Generated at: 2026-05-28 03:25:03
-> Previous turn selected task: PLAN-0061
+> Generated at: 2026-05-28 03:20:30
+> Previous turn selected task: PLAN-0060
 
 ## Candidate for Next Turn
 
-- **Task ID:** PLAN-0061
-- **Source ID:** PLAN-NEXT-61
+- **Task ID:** PLAN-0060
+- **Source ID:** PLAN-NEXT-60
 - **Title:** Generate next-turn implementation plan from current codebase state
 - **Priority:** P0
 - **Owner:** @Margaret + @Ada

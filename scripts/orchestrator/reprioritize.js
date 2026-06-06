@@ -31,12 +31,13 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 // ─── Config ────────────────────────────────────────────────────────────────
-const ROOT          = path.resolve(__dirname, '..', '..');
-const LOGS_DIR      = path.join(ROOT, 'logs', 'orchestrator');
-const SCAN_REPORT   = path.join(LOGS_DIR, 'codebase-scan-report.json');
-const QUEUE_FILE    = path.join(LOGS_DIR, 'task-queue.json');
-const PROMPTS_FILE  = path.join(__dirname, 'prompts.json');
-const OUT_FILE      = path.join(LOGS_DIR, 'priority-order.json');
+const ROOT = path.resolve(__dirname, '..', '..');
+const LOGS_DIR = path.join(ROOT, 'logs', 'orchestrator');
+const SCAN_REPORT = path.join(LOGS_DIR, 'codebase-scan-report.json');
+const QUEUE_FILE = path.join(LOGS_DIR, 'task-queue.json');
+const PROMPTS_FILE = path.join(__dirname, 'prompts.json');
+const OUT_FILE = path.join(LOGS_DIR, 'priority-order.json');
+const PRIORITY_PINS_FILE = path.join(__dirname, 'priority-pins.json');
 
 // Prefer the policy-defined Aegis 150 registry; fall back to the V3 legacy registry.
 const REGISTRY_FILE = (() => {
@@ -46,45 +47,149 @@ const REGISTRY_FILE = (() => {
       const candidate = path.join(ROOT, pol.registryPath);
       if (fs.existsSync(candidate)) return candidate;
     }
-  } catch { /* fall through */ }
+  } catch {
+    /* fall through */
+  }
   return path.join(__dirname, 'subagents-registry.json');
 })();
 
-const DRY_RUN  = process.argv.includes('--dry');
-const TOP_N    = (() => { const i = process.argv.indexOf('--top'); return i !== -1 ? parseInt(process.argv[i + 1], 10) || 10 : null; })();
+const DRY_RUN = process.argv.includes('--dry');
+const TOP_N = (() => {
+  const i = process.argv.indexOf('--top');
+  return i !== -1 ? parseInt(process.argv[i + 1], 10) || 10 : null;
+})();
+const EXCLUDE_TASK_ID = (() => {
+  const i = process.argv.indexOf('--exclude-task-id');
+  return i !== -1 ? String(process.argv[i + 1] || '').trim() : '';
+})();
+const PREFERRED_TASK_ID = (() => {
+  const i = process.argv.indexOf('--preferred-task-id');
+  return i !== -1 ? String(process.argv[i + 1] || '').trim() : '';
+})();
 
 // ─── Boost / Penalty Constants ─────────────────────────────────────────────
 const BOOST = {
-  WAVE_READY:        50,
-  CODEBASE_P0:       40,
-  CODEBASE_P1:       25,
-  DOC_INCOMPLETE:    15,
-  SECURITY_DOMAIN:   35,
-  HAS_CONSUMES_MET:  10,
+  WAVE_READY: 50,
+  CODEBASE_P0: 40,
+  CODEBASE_P1: 25,
+  DOC_INCOMPLETE: 15,
+  SECURITY_DOMAIN: 35,
+  HAS_CONSUMES_MET: 10,
+  PREFERRED_TASK: 1000,
 };
 const PENALTY = {
   DEPENDENCY_UNMET: -30,
-  BLOCKED:          -100,
+  BLOCKED: -100,
 };
+
+const DEFAULT_CRITICAL_PINS = [
+  {
+    id: 'CRIT-HOMEPAGE',
+    title: 'Homepage experience and quality',
+    enabled: true,
+    boost: 900,
+    keywords: [
+      'homepage',
+      'landing page',
+      'hero section',
+      'public homepage',
+      'home page',
+      'main website',
+    ],
+  },
+  {
+    id: 'CRIT-MD-LOGIN-UX',
+    title: 'MD login success + full company UI/UX',
+    enabled: true,
+    boost: 950,
+    keywords: [
+      'md login',
+      'md dashboard',
+      'admin login',
+      'manager login',
+      'executive login',
+      'dashboard login',
+      'successful login',
+      'auth flow',
+      'full ui/ux',
+      'full ui',
+      'company dashboard',
+      'executive dashboard',
+      'best design',
+      'ux polish',
+      'design system',
+    ],
+  },
+];
 
 // Domain keywords → codebase scan categories
 const DOMAIN_MAP = {
-  security:    ['security', 'auth', 'csrf', 'cors', 'jwt', 'rbac', 'injection'],
-  typescript:  ['typescript', 'typecheck', 'tsc', 'strict', 'type'],
-  build:       ['build', 'vite', 'webpack', 'bundle'],
-  testing:     ['test', 'vitest', 'playwright', 'spec', 'e2e'],
-  leasing:     ['tenancy', 'ejari', 'lease', 'landlord', 'pdc', 'rent'],
-  finance:     ['financial', 'vat', 'invoice', 'payment', 'revenue', 'commission'],
-  compliance:  ['compliance', 'rera', 'dld', 'pdpl', 'aml', 'oqood'],
-  analytics:   ['analytics', 'dashboard', 'kpi', 'report', 'performance'],
-  ai:          ['ai', 'persona', 'chatbot', 'llm', 'recommendation', 'scoring'],
-  api:         ['route', 'endpoint', 'api', 'controller', 'service', 'handler'],
+  security: ['security', 'auth', 'csrf', 'cors', 'jwt', 'rbac', 'injection'],
+  typescript: ['typescript', 'typecheck', 'tsc', 'strict', 'type'],
+  build: ['build', 'vite', 'webpack', 'bundle'],
+  testing: ['test', 'vitest', 'playwright', 'spec', 'e2e'],
+  leasing: ['tenancy', 'ejari', 'lease', 'landlord', 'pdc', 'rent'],
+  finance: ['financial', 'vat', 'invoice', 'payment', 'revenue', 'commission'],
+  compliance: ['compliance', 'rera', 'dld', 'pdpl', 'aml', 'oqood'],
+  analytics: ['analytics', 'dashboard', 'kpi', 'report', 'performance'],
+  ai: ['ai', 'persona', 'chatbot', 'llm', 'recommendation', 'scoring'],
+  api: ['route', 'endpoint', 'api', 'controller', 'service', 'handler'],
 };
 
 // ─── Helpers ───────────────────────────────────────────────────────────────
 function readJSON(fp) {
-  try { return JSON.parse(fs.readFileSync(fp, 'utf8')); }
-  catch { return null; }
+  try {
+    const raw = fs.readFileSync(fp, 'utf8').replace(/^\uFEFF/, '');
+    return JSON.parse(raw);
+  } catch {
+    return null;
+  }
+}
+
+function loadCriticalPins() {
+  const fromFile = readJSON(PRIORITY_PINS_FILE);
+  if (fromFile && Array.isArray(fromFile.pins)) {
+    return fromFile.pins
+      .filter(pin => pin && pin.enabled !== false)
+      .map(pin => ({
+        id: String(pin.id || '').trim() || 'PIN',
+        title: String(pin.title || '').trim() || 'Critical pin',
+        boost: Number(pin.boost || 0) > 0 ? Number(pin.boost) : 500,
+        keywords: Array.isArray(pin.keywords)
+          ? pin.keywords
+              .map(kw =>
+                String(kw || '')
+                  .toLowerCase()
+                  .trim()
+              )
+              .filter(Boolean)
+          : [],
+      }))
+      .filter(pin => pin.keywords.length > 0);
+  }
+
+  return DEFAULT_CRITICAL_PINS.map(pin => ({
+    ...pin,
+    keywords: pin.keywords.map(kw => String(kw).toLowerCase()),
+  }));
+}
+
+function applyCriticalPinBoost(text, pins) {
+  const hits = [];
+  let boost = 0;
+
+  for (const pin of pins) {
+    if (!pin || !Array.isArray(pin.keywords) || pin.keywords.length === 0) {
+      continue;
+    }
+
+    if (pin.keywords.some(kw => text.includes(kw))) {
+      boost += Number(pin.boost || 0);
+      hits.push({ id: pin.id, title: pin.title, boost: pin.boost });
+    }
+  }
+
+  return { boost, hits };
 }
 
 function runNode(scriptPath, args = []) {
@@ -102,7 +207,9 @@ function runNode(scriptPath, args = []) {
 }
 
 function ensureQueueHasTasks(queue) {
-  const hasEligibleTasks = queue && Array.isArray(queue.tasks) &&
+  const hasEligibleTasks =
+    queue &&
+    Array.isArray(queue.tasks) &&
     queue.tasks.some(t => !['done', 'complete', 'archived'].includes(t.status));
 
   if (hasEligibleTasks) {
@@ -112,7 +219,13 @@ function ensureQueueHasTasks(queue) {
   console.warn('\n  ⚠  No task queue found, queue is empty, or all tasks are already completed.');
   console.warn('     Attempting automatic upgrade discovery before exiting.\n');
 
-  const discoveryResult = runNode(path.join(__dirname, 'discover-upgrade.js'));
+  const discoveryResult = runNode(path.join(__dirname, 'discover-upgrade.js'), [
+    '--min-inject',
+    '10',
+    '--max-inject',
+    '12',
+    '--require-min-inject',
+  ]);
   if (!discoveryResult.ok) {
     console.warn('  ⚠  Automatic upgrade discovery failed.');
     if (discoveryResult.stderr.trim()) {
@@ -122,7 +235,9 @@ function ensureQueueHasTasks(queue) {
   }
 
   const refreshedQueue = readJSON(QUEUE_FILE);
-  const refreshedHasEligibleTasks = refreshedQueue && Array.isArray(refreshedQueue.tasks) &&
+  const refreshedHasEligibleTasks =
+    refreshedQueue &&
+    Array.isArray(refreshedQueue.tasks) &&
     refreshedQueue.tasks.some(t => !['done', 'complete', 'archived'].includes(t.status));
 
   if (refreshedHasEligibleTasks) {
@@ -135,11 +250,12 @@ function ensureQueueHasTasks(queue) {
 
 function taskTextFor(task, prompts) {
   const promptEntry = prompts && task.id ? prompts[task.id] : null;
-  const promptText = typeof promptEntry === 'string'
-    ? promptEntry
-    : promptEntry && typeof promptEntry === 'object' && typeof promptEntry.prompt === 'string'
-      ? promptEntry.prompt
-      : '';
+  const promptText =
+    typeof promptEntry === 'string'
+      ? promptEntry
+      : promptEntry && typeof promptEntry === 'object' && typeof promptEntry.prompt === 'string'
+        ? promptEntry.prompt
+        : '';
 
   return [
     task.id || '',
@@ -148,7 +264,9 @@ function taskTextFor(task, prompts) {
     (task.files || []).join(' '),
     (task.tags || []).join(' '),
     promptText,
-  ].join(' ').toLowerCase();
+  ]
+    .join(' ')
+    .toLowerCase();
 }
 
 function matchDomain(text, domains) {
@@ -158,16 +276,26 @@ function matchDomain(text, domains) {
   return null;
 }
 
-function scoreTask(task, prompts, scanReport, completedTaskIds) {
+function scoreTask(task, prompts, scanReport, completedTaskIds, criticalPins) {
   let score = task.baseScore || task.priority_score || 50;
   const text = taskTextFor(task, prompts);
+  const pinBoost = applyCriticalPinBoost(text, criticalPins);
+  score += pinBoost.boost;
+
+  if (PREFERRED_TASK_ID && String(task.id || task.taskId || '') === PREFERRED_TASK_ID) {
+    score += BOOST.PREFERRED_TASK;
+  }
 
   // ── Wave unlock boost ──────────────────────────────────────────────────
   if (scanReport && scanReport.openWaves) {
     for (const wave of scanReport.openWaves) {
       if (wave.status && wave.status.includes('🟢')) {
         const waveNum = String(wave.wave);
-        if (text.includes(`wave ${waveNum}`) || text.includes(`wave-${waveNum}`) || text.includes(`wave_0${waveNum}`)) {
+        if (
+          text.includes(`wave ${waveNum}`) ||
+          text.includes(`wave-${waveNum}`) ||
+          text.includes(`wave_0${waveNum}`)
+        ) {
           score += BOOST.WAVE_READY;
         }
       }
@@ -210,7 +338,10 @@ function scoreTask(task, prompts, scanReport, completedTaskIds) {
   // ── Blocked penalty ────────────────────────────────────────────────────
   if (task.status === 'blocked') score += PENALTY.BLOCKED;
 
-  return Math.max(0, score);
+  return {
+    score: Math.max(0, score),
+    pinHits: pinBoost.hits,
+  };
 }
 
 // ─── Agent lookup from registry ───────────────────────────────────────────
@@ -222,33 +353,37 @@ function lookupAgent(agentName, registry) {
 
 // ─── Build dispatch packet for top task ───────────────────────────────────
 function buildDispatchPacket(task, prompts, registry) {
-  const agentInfo  = lookupAgent(task.agent, registry);
-  const promptEntry = prompts && task.id ? (prompts[task.id] || '') : '';
-  const promptText = typeof promptEntry === 'string'
-    ? promptEntry
-    : promptEntry && typeof promptEntry === 'object' && typeof promptEntry.prompt === 'string'
-      ? promptEntry.prompt
-      : '';
+  const agentInfo = lookupAgent(task.agent, registry);
+  const promptEntry = prompts && task.id ? prompts[task.id] || '' : '';
+  const promptText =
+    typeof promptEntry === 'string'
+      ? promptEntry
+      : promptEntry && typeof promptEntry === 'object' && typeof promptEntry.prompt === 'string'
+        ? promptEntry.prompt
+        : '';
 
   return {
-    taskId:            task.id,
-    agent:             task.agent || 'unassigned',
-    agentTitle:        agentInfo ? agentInfo.title : 'Unknown',
-    agentUnit:         agentInfo ? agentInfo.unit  : 'Unknown',
-    agentModel:        agentInfo ? agentInfo.model : 'Unknown',
-    agentToolUrl:      agentInfo ? agentInfo.toolUrl : null,
-    objective:         task.objective || task.description || promptText.slice(0, 200),
-    fullPrompt:        promptText || task.objective || '',
-    inputArtifacts:    task.consumesFrom || [],
-    outputArtifact:    task.producedRef  || task.outputFile || '',
+    taskId: task.id,
+    agent: task.agent || 'unassigned',
+    agentTitle: agentInfo ? agentInfo.title : 'Unknown',
+    agentUnit: agentInfo ? agentInfo.unit : 'Unknown',
+    agentModel: agentInfo ? agentInfo.model : 'Unknown',
+    agentToolUrl: agentInfo ? agentInfo.toolUrl : null,
+    objective: task.objective || task.description || promptText.slice(0, 200),
+    fullPrompt: promptText || task.objective || '',
+    inputArtifacts: task.consumesFrom || [],
+    outputArtifact: task.producedRef || task.outputFile || '',
     acceptanceCriteria: task.acceptanceCriteria || [
       'Output file created or updated with at least 3 new sections',
       'CONSUMES + FEEDS tags present in output',
       'FEEDS_ACK received from downstream agent',
     ],
-    validationCommand: task.validationCommand || 'node scripts/orchestrator/codebase-scan.js --brief',
-    invocationPattern: agentInfo ? agentInfo.invocationPattern : `${task.agent} — ${task.objective}`,
-    responsibilities:  agentInfo ? (agentInfo.responsibilities || []).slice(0, 5) : [],
+    validationCommand:
+      task.validationCommand || 'node scripts/orchestrator/codebase-scan.js --brief',
+    invocationPattern: agentInfo
+      ? agentInfo.invocationPattern
+      : `${task.agent} — ${task.objective}`,
+    responsibilities: agentInfo ? (agentInfo.responsibilities || []).slice(0, 5) : [],
   };
 }
 
@@ -262,9 +397,10 @@ function main() {
 
   // Load inputs
   const scanReport = readJSON(SCAN_REPORT);
-  let queue        = readJSON(QUEUE_FILE);
-  let prompts      = readJSON(PROMPTS_FILE);
-  const registry   = readJSON(REGISTRY_FILE);
+  let queue = readJSON(QUEUE_FILE);
+  let prompts = readJSON(PROMPTS_FILE);
+  const registry = readJSON(REGISTRY_FILE);
+  const criticalPins = loadCriticalPins();
 
   if (!scanReport) {
     console.warn('\n  ⚠  No codebase scan report found. Run: npm run autopilot:scan first.');
@@ -282,29 +418,61 @@ function main() {
   console.log(`\n  Tasks in queue: ${tasks.length}`);
 
   // Build set of already-completed task IDs for dependency checks
-  const completedIds = new Set(tasks.filter(t => t.status === 'done' || t.status === 'complete').map(t => t.id));
+  const completedIds = new Set(
+    tasks.filter(t => t.status === 'done' || t.status === 'complete').map(t => t.id)
+  );
 
   // Compute scores
-  let eligible = tasks.filter(t => t.status !== 'done' && t.status !== 'complete' && t.status !== 'archived');
+  let eligible = tasks.filter(
+    t => t.status !== 'done' && t.status !== 'complete' && t.status !== 'archived'
+  );
+  if (EXCLUDE_TASK_ID) {
+    const filtered = eligible.filter(t => String(t.id || '') !== EXCLUDE_TASK_ID);
+    if (filtered.length > 0) {
+      eligible = filtered;
+      console.log(`\n  ↳ Excluding previous task for this turn: ${EXCLUDE_TASK_ID}`);
+    } else {
+      console.warn(
+        `\n  ⚠  Exclusion id ${EXCLUDE_TASK_ID} removed every eligible task; continuing without exclusion.`
+      );
+    }
+  }
   if (eligible.length === 0) {
     queue = ensureQueueHasTasks(queue);
     prompts = readJSON(PROMPTS_FILE);
     if (queue && queue.tasks) {
       const refreshedTasks = queue.tasks;
-      eligible = refreshedTasks.filter(t => t.status !== 'done' && t.status !== 'complete' && t.status !== 'archived');
+      eligible = refreshedTasks.filter(
+        t => t.status !== 'done' && t.status !== 'complete' && t.status !== 'archived'
+      );
       if (eligible.length > 0) {
         tasks.length = 0;
         tasks.push(...refreshedTasks);
       }
     }
   }
-  const scored   = eligible.map(task => ({
-    ...task,
-    computedScore: scoreTask(task, prompts, scanReport, completedIds),
-  }));
+  const scored = eligible.map(task => {
+    const scoredTask = scoreTask(task, prompts, scanReport, completedIds, criticalPins);
+    return {
+      ...task,
+      computedScore: scoredTask.score,
+      criticalPinHits: scoredTask.pinHits,
+    };
+  });
 
   // Sort descending by score
   scored.sort((a, b) => b.computedScore - a.computedScore);
+
+  if (PREFERRED_TASK_ID) {
+    const preferredIndex = scored.findIndex(
+      task => String(task.id || task.taskId || '') === PREFERRED_TASK_ID
+    );
+    if (preferredIndex > 0) {
+      const [preferredTask] = scored.splice(preferredIndex, 1);
+      scored.unshift(preferredTask);
+      console.log(`\n  ↳ Preferred task promoted for this turn: ${PREFERRED_TASK_ID}`);
+    }
+  }
 
   const displayList = TOP_N ? scored.slice(0, TOP_N) : scored;
 
@@ -312,33 +480,40 @@ function main() {
   console.log('\n  REPRIORITISED TASK ORDER:\n');
   displayList.forEach((task, i) => {
     const status = task.status || 'queued';
-    const emoji  = status === 'running' ? '▶' : status === 'blocked' ? '🚫' : '◆';
-    console.log(`  ${String(i + 1).padStart(3)}. ${emoji} [Score: ${task.computedScore}] ${task.id} — ${task.agent || 'unassigned'}`);
+    const emoji = status === 'running' ? '▶' : status === 'blocked' ? '🚫' : '◆';
+    console.log(
+      `  ${String(i + 1).padStart(3)}. ${emoji} [Score: ${task.computedScore}] ${task.id} — ${task.agent || 'unassigned'}`
+    );
     console.log(`       ${(task.objective || task.description || '').slice(0, 100)}`);
   });
 
   // Build priority-order.json
-  const topTask       = scored[0] || null;
+  const topTask = scored[0] || null;
   const dispatchPacket = topTask ? buildDispatchPacket(topTask, prompts, registry) : null;
 
   const output = {
-    generatedAt:     new Date().toISOString(),
-    scanReportDate:  scanReport ? scanReport.scanDate : null,
-    totalEligible:   eligible.length,
-    totalCompleted:  completedIds.size,
-    orderedTasks:    scored.map(t => ({
-      id:            t.id,
-      agent:         t.agent,
-      status:        t.status || 'queued',
+    generatedAt: new Date().toISOString(),
+    scanReportDate: scanReport ? scanReport.scanDate : null,
+    totalEligible: eligible.length,
+    totalCompleted: completedIds.size,
+    criticalPins,
+    orderedTasks: scored.map(t => ({
+      id: t.id,
+      agent: t.agent,
+      status: t.status || 'queued',
       computedScore: t.computedScore,
-      objective:     (t.objective || t.description || '').slice(0, 120),
+      criticalPinHits: t.criticalPinHits || [],
+      objective: (t.objective || t.description || '').slice(0, 120),
     })),
-    nextTask:        topTask ? {
-      id:            topTask.id,
-      agent:         topTask.agent,
-      computedScore: topTask.computedScore,
-      status:        topTask.status,
-    } : null,
+    nextTask: topTask
+      ? {
+          id: topTask.id,
+          agent: topTask.agent,
+          computedScore: topTask.computedScore,
+          status: topTask.status,
+          criticalPinHits: topTask.criticalPinHits || [],
+        }
+      : null,
     dispatchPacket,
     codeScanSummary: scanReport ? scanReport.summary : null,
   };

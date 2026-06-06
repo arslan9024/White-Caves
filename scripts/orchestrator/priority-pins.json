@@ -1,0 +1,39 @@
+{
+  "pins": [
+    {
+      "id": "CRIT-HOMEPAGE",
+      "title": "Homepage first-class experience",
+      "enabled": true,
+      "boost": 1400,
+      "keywords": [
+        "homepage",
+        "home page",
+        "landing page",
+        "hero section",
+        "public homepage",
+        "main website"
+      ]
+    },
+    {
+      "id": "CRIT-MD-LOGIN-UX",
+      "title": "MD login success and full company UI/UX",
+      "enabled": true,
+      "boost": 1600,
+      "keywords": [
+        "md login",
+        "md dashboard",
+        "admin login",
+        "manager login",
+        "executive login",
+        "successful login",
+        "auth flow",
+        "full ui/ux",
+        "full ui",
+        "best design",
+        "company dashboard",
+        "ux polish",
+        "design polish"
+      ]
+    }
+  ]
+}

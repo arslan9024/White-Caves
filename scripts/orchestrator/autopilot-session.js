@@ -40,23 +40,26 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 // ─── Config ────────────────────────────────────────────────────────────────
-const ROOT          = path.resolve(__dirname, '..', '..');
-const LOGS_DIR      = path.join(ROOT, 'logs', 'orchestrator');
-const SCAN_REPORT   = path.join(LOGS_DIR, 'codebase-scan-report.json');
+const ROOT = path.resolve(__dirname, '..', '..');
+const LOGS_DIR = path.join(ROOT, 'logs', 'orchestrator');
+const SCAN_REPORT = path.join(LOGS_DIR, 'codebase-scan-report.json');
 const PRIORITY_FILE = path.join(LOGS_DIR, 'priority-order.json');
 const SNAPSHOT_FILE = path.join(LOGS_DIR, 'session-snapshot.json');
 
-const SKIP_SCAN  = process.argv.includes('--skip-scan');
-const JSON_OUT   = process.argv.includes('--json');
-const DRY_RUN    = process.argv.includes('--dry');
+const SKIP_SCAN = process.argv.includes('--skip-scan');
+const JSON_OUT = process.argv.includes('--json');
+const DRY_RUN = process.argv.includes('--dry');
 
 const SESSION_ID = `session-${Date.now()}`;
 const SESSION_START = new Date().toISOString();
 
 // ─── Helpers ───────────────────────────────────────────────────────────────
 function readJSON(fp) {
-  try { return JSON.parse(fs.readFileSync(fp, 'utf8')); }
-  catch { return null; }
+  try {
+    return JSON.parse(fs.readFileSync(fp, 'utf8'));
+  } catch {
+    return null;
+  }
 }
 
 function writeJSON(fp, data) {
@@ -66,7 +69,9 @@ function writeJSON(fp, data) {
 
 function runNode(scriptPath, args = []) {
   const result = spawnSync('node', [scriptPath, ...args], {
-    cwd: ROOT, stdio: ['ignore', 'pipe', 'pipe'], encoding: 'utf8',
+    cwd: ROOT,
+    stdio: ['ignore', 'pipe', 'pipe'],
+    encoding: 'utf8',
   });
   return { ok: result.status === 0, stdout: result.stdout || '', stderr: result.stderr || '' };
 }
@@ -76,7 +81,13 @@ function rerunReprioritize() {
 }
 
 function attemptAutomaticDiscovery() {
-  return runNode(path.join(__dirname, 'discover-upgrade.js'));
+  return runNode(path.join(__dirname, 'discover-upgrade.js'), [
+    '--min-inject',
+    '10',
+    '--max-inject',
+    '12',
+    '--require-min-inject',
+  ]);
 }
 
 // ─── Stop condition checks ─────────────────────────────────────────────────
@@ -92,17 +103,38 @@ function checkHardStops(scanReport, policy, policyDiffGate) {
   if (!scanReport) return stops;
 
   if (!scanReport.summary.buildOk) {
-    stops.push({ code: 'BUILD_FAIL', message: 'Build is failing — must fix before any other work', priority: 'P0' });
+    stops.push({
+      code: 'BUILD_FAIL',
+      message: 'Build is failing — must fix before any other work',
+      priority: 'P0',
+    });
   }
   if (scanReport.summary.tsErrors > 0) {
-    stops.push({ code: 'TS_ERRORS', message: `TypeScript has ${scanReport.summary.tsErrors} error(s)`, priority: 'P0' });
+    stops.push({
+      code: 'TS_ERRORS',
+      message: `TypeScript has ${scanReport.summary.tsErrors} error(s)`,
+      priority: 'P0',
+    });
   }
   if (scanReport.securityFlags && scanReport.securityFlags.length > 0) {
-    stops.push({ code: 'SECURITY', message: `${scanReport.securityFlags.length} potential security issue(s) detected`, priority: 'P0' });
+    stops.push({
+      code: 'SECURITY',
+      message: `${scanReport.securityFlags.length} potential security issue(s) detected`,
+      priority: 'P0',
+    });
   }
 
-  if (policy?.hardStops?.stopOnPolicyMismatch && policyDiffGate && policyDiffGate.requiresAck && !policyDiffGate.hasAck) {
-    stops.push({ code: 'POLICY_ACK_REQUIRED', message: 'Policy diff ack file is required for critical policy changes', priority: 'P0' });
+  if (
+    policy?.hardStops?.stopOnPolicyMismatch &&
+    policyDiffGate &&
+    policyDiffGate.requiresAck &&
+    !policyDiffGate.hasAck
+  ) {
+    stops.push({
+      code: 'POLICY_ACK_REQUIRED',
+      message: 'Policy diff ack file is required for critical policy changes',
+      priority: 'P0',
+    });
   }
 
   return stops;
@@ -110,24 +142,33 @@ function checkHardStops(scanReport, policy, policyDiffGate) {
 
 // ─── Session snapshot ──────────────────────────────────────────────────────
 function loadLastSnapshot() {
-  return readJSON(SNAPSHOT_FILE) || { date: null, sessionId: null, completedTaskIds: [], passCount: 0, failCount: 0, doneCount: 0 };
+  return (
+    readJSON(SNAPSHOT_FILE) || {
+      date: null,
+      sessionId: null,
+      completedTaskIds: [],
+      passCount: 0,
+      failCount: 0,
+      doneCount: 0,
+    }
+  );
 }
 
 function buildSnapshot(sessionId, dispatchPacket, scanReport, previousSnapshot, hardStops) {
   return {
-    date:             SESSION_START,
+    date: SESSION_START,
     sessionId,
     previousSessionId: previousSnapshot.sessionId,
-    loopIteration:    (previousSnapshot.loopIteration || 0) + 1,
-    scanReportDate:   scanReport ? scanReport.scanDate : null,
-    currentTask:      dispatchPacket ? { id: dispatchPacket.taskId, agent: dispatchPacket.agent } : null,
-    hardStops:        scanReport ? hardStops : [],
+    loopIteration: (previousSnapshot.loopIteration || 0) + 1,
+    scanReportDate: scanReport ? scanReport.scanDate : null,
+    currentTask: dispatchPacket ? { id: dispatchPacket.taskId, agent: dispatchPacket.agent } : null,
+    hardStops: scanReport ? hardStops : [],
     // These are updated by session-end.ps1
     completedTaskIds: previousSnapshot.completedTaskIds || [],
-    passCount:        previousSnapshot.passCount  || 0,
-    failCount:        previousSnapshot.failCount  || 0,
-    doneCount:        previousSnapshot.doneCount  || 0,
-    status:           'in_progress',
+    passCount: previousSnapshot.passCount || 0,
+    failCount: previousSnapshot.failCount || 0,
+    doneCount: previousSnapshot.doneCount || 0,
+    status: 'in_progress',
   };
 }
 
@@ -139,26 +180,28 @@ function buildResearchSummary(scanReport, hardStops) {
   const topIssues = (priorityList || []).slice(0, 5).map(item => ({
     priority: item.priority,
     category: item.category,
-    title:    item.title,
-    agents:   item.recommendedAgents,
+    title: item.title,
+    agents: item.recommendedAgents,
   }));
 
   return {
-    available:        true,
-    scanDate:         scanReport.scanDate,
-    buildHealth:      summary.buildOk ? '✓ GREEN' : '✗ FAILING',
-    tsErrors:         summary.tsErrors,
-    readyWaves:       (openWaves || []).filter(w => w.status && w.status.includes('🟢')).map(w => `Wave ${w.wave}: ${w.objective}`),
-    incompleteDocs:   summary.incompleteDocs,
-    topCodeIssues:    topIssues,
+    available: true,
+    scanDate: scanReport.scanDate,
+    buildHealth: summary.buildOk ? '✓ GREEN' : '✗ FAILING',
+    tsErrors: summary.tsErrors,
+    readyWaves: (openWaves || [])
+      .filter(w => w.status && w.status.includes('🟢'))
+      .map(w => `Wave ${w.wave}: ${w.objective}`),
+    incompleteDocs: summary.incompleteDocs,
+    topCodeIssues: topIssues,
     hardStops,
   };
 }
 
 // ─── Main ──────────────────────────────────────────────────────────────────
 async function main() {
-  const sep   = '═'.repeat(72);
-  const sep2  = '─'.repeat(72);
+  const sep = '═'.repeat(72);
+  const sep2 = '─'.repeat(72);
   const policy = loadPolicy();
   const trace = createTraceContext(policy, { component: 'autopilot-session' });
   process.env.AEGIS_TRACE_ID = trace.traceId;
@@ -248,28 +291,34 @@ async function main() {
     }
   }
 
-  const snapshot = buildSnapshot(SESSION_ID, dispatchPacket, scanReport, previousSnapshot, hardStops);
+  const snapshot = buildSnapshot(
+    SESSION_ID,
+    dispatchPacket,
+    scanReport,
+    previousSnapshot,
+    hardStops
+  );
   if (!DRY_RUN) {
     writeJSON(SNAPSHOT_FILE, snapshot);
   }
 
   // ── Build full session brief ──────────────────────────────────────────
   const sessionBrief = {
-    sessionId:       SESSION_ID,
-    sessionStart:    SESSION_START,
-    loopIteration:   snapshot.loopIteration,
+    sessionId: SESSION_ID,
+    sessionStart: SESSION_START,
+    loopIteration: snapshot.loopIteration,
     trace,
     policy: {
-      minReadiness:  policy.readinessThresholdPct ?? policy.minReadinessPercent ?? 60,
+      minReadiness: policy.readinessThresholdPct ?? policy.minReadinessPercent ?? 60,
       approvalPhrase: policy.approvalPhrase,
       version: policy.version,
       schemaVersion: policy.schemaVersion,
       rolloutEnvironment: policy.rollout?.environment,
       policyDiffGate,
     },
-    research:        researchSummary,
+    research: researchSummary,
     hardStops,
-    nextTask:        priorityOrder ? priorityOrder.nextTask : null,
+    nextTask: priorityOrder ? priorityOrder.nextTask : null,
     dispatchPacket,
     automationInstructions: {
       step1: 'Review the dispatchPacket below — this is your task for this session',
@@ -301,7 +350,9 @@ async function main() {
   console.log(sep2);
   console.log(`  Build health   : ${researchSummary.buildHealth || 'N/A'}`);
   console.log(`  TS errors      : ${researchSummary.tsErrors ?? 'N/A'}`);
-  console.log(`  Ready waves    : ${(researchSummary.readyWaves || []).length > 0 ? researchSummary.readyWaves.join(', ') : 'none'}`);
+  console.log(
+    `  Ready waves    : ${(researchSummary.readyWaves || []).length > 0 ? researchSummary.readyWaves.join(', ') : 'none'}`
+  );
   console.log(`  Incomplete docs: ${researchSummary.incompleteDocs ?? 'N/A'}`);
   if (researchSummary.topCodeIssues && researchSummary.topCodeIssues.length > 0) {
     console.log('\n  Top Code Issues:');
@@ -317,7 +368,7 @@ async function main() {
   }
 
   console.log(`\n${sep2}`);
-  console.log('  🎯  THIS SESSION\'S TASK (DISPATCH PACKET)');
+  console.log("  🎯  THIS SESSION'S TASK (DISPATCH PACKET)");
   console.log(sep2);
 
   if (!dispatchPacket) {

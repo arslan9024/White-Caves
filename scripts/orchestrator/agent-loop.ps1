@@ -18,6 +18,7 @@
 
 param(
   [string]$Agent         = "",
+  [string]$TaskId        = "",
   [string]$WorkspaceRoot = ".",
   [switch]$Once,
   [switch]$NoBrowser,
@@ -258,6 +259,36 @@ function Get-TaskById {
   return ($all | Where-Object { $_.taskId -eq $taskId } | Select-Object -First 1)
 }
 
+function Test-TaskReady {
+  param(
+    [object]$Task,
+    [array]$AllTasks = $null
+  )
+
+  if ($null -eq $Task) { return $false }
+
+  $status = [string]$Task.status
+  if ($status -notin @("queued", "retrying")) {
+    return $false
+  }
+
+  $all = $AllTasks
+  if ($null -eq $all) {
+    if (-not (Test-Path $qFile)) { return $false }
+    $q = Get-Content $qFile -Raw | ConvertFrom-Json
+    $all = @($q.tasks)
+  }
+
+  foreach ($dep in @($Task.dependsOn)) {
+    $depTask = $all | Where-Object { $_.taskId -eq $dep } | Select-Object -First 1
+    if ($null -eq $depTask -or $depTask.status -ne "done") {
+      return $false
+    }
+  }
+
+  return $true
+}
+
 function Get-ReadyCount {
   if (-not (Test-Path $qFile)) { return 0 }
   $q = Get-Content $qFile -Raw | ConvertFrom-Json
@@ -455,7 +486,27 @@ $discoveryAttempts = 0
   Write-Host ("[CYCLE {0}] Queue: {1}/51 done | {2} READY | {3} BLOCKED | Branch: {4} | Last scan: {5}" -f $loopCount, $doneNow, $readyNow, $blockedNow, $branchDelta, $lastScan) -ForegroundColor DarkGray
 
   # 1. DETERMINE ACTIVE AGENT
-  if ($Agent -ne "") {
+  if (-not [string]::IsNullOrWhiteSpace($TaskId)) {
+    $forcedTask = Get-TaskById -taskId $TaskId
+    if ($null -eq $forcedTask) {
+      Write-Host ("  [BLOCKED] Forced task not found: {0}" -f $TaskId) -ForegroundColor Red
+      exit 1
+    }
+
+    if (-not [string]::IsNullOrWhiteSpace($Agent) -and [string]$forcedTask.agent -ne [string]$Agent) {
+      Write-Host ("  [BLOCKED] Forced task {0} belongs to {1}, not {2}." -f $TaskId, [string]$forcedTask.agent, [string]$Agent) -ForegroundColor Red
+      exit 1
+    }
+
+    $activeAgent = [string]$forcedTask.agent
+    $task = $forcedTask
+    $slotLabel = "forced"
+
+    if (-not (Test-TaskReady -Task $task)) {
+      Write-Host ("  [BLOCKED] Forced task {0} is not READY." -f $TaskId) -ForegroundColor Red
+      exit 1
+    }
+  } elseif ($Agent -ne "") {
     $activeAgent = $Agent
     $slotLabel   = "manual"
     $task = Get-AgentNextReadyTask -agentName $activeAgent
@@ -492,7 +543,7 @@ $discoveryAttempts = 0
       if ($discoveryAttempts -lt 3 -and (Test-Path $discoverScript)) {
         $discoveryAttempts++
         Write-Host ("  [DISCOVERY] Attempt {0}/3 -- scanning repo and seeding a self-directed upgrade..." -f $discoveryAttempts) -ForegroundColor Cyan
-        & node "$discoverScript" 2>&1 | Out-String | Write-Host
+        & node "$discoverScript" --min-inject 10 --max-inject 12 --require-min-inject 2>&1 | Out-String | Write-Host
         if ($LASTEXITCODE -eq 0 -and (Get-ReadyCount) -gt 0) {
           Write-Host "  [DISCOVERY] New READY task discovered. Continuing loop." -ForegroundColor Green
           continue outerLoop

@@ -15,8 +15,90 @@ $pidFile   = Join-Path $stateDir "worker-processes.json"
 $queueFile = Join-Path $stateDir "task-queue.json"
 $policyUtilsPath = Join-Path $PSScriptRoot "policy-utils.ps1"
 
+function GetProjectGitHubToken() {
+  $envFiles = @(
+    (Join-Path $root ".env.local"),
+    (Join-Path $root ".env")
+  )
+
+  foreach ($envFile in $envFiles) {
+    if (-not (Test-Path $envFile)) {
+      continue
+    }
+
+    try {
+      $match = Get-Content $envFile | Where-Object { $_ -match '^\s*GITHUB_TOKEN\s*=' } | Select-Object -First 1
+      if ($null -eq $match) {
+        continue
+      }
+
+      $value = ($match -replace '^\s*GITHUB_TOKEN\s*=\s*', '').Trim()
+      if ($value) {
+        return $value.Trim('"').Trim("'")
+      }
+    }
+    catch {
+      continue
+    }
+  }
+
+  return ""
+}
+
+function EnsureGitHubLoginBeforeAegis() {
+  $token = ([string]$env:GITHUB_TOKEN).Trim()
+  if (-not $token) {
+    $token = ([string](GetProjectGitHubToken)).Trim()
+  }
+  if ($token -and $token -notmatch 'newtokenhere|your-token|changeme|example|placeholder') {
+    Write-Host "GitHub PAT detected in project env; background Aegis may start without gh auth." -ForegroundColor Green
+    return $true
+  }
+
+  $ghCommand = Get-Command gh -ErrorAction SilentlyContinue
+
+  if ($null -eq $ghCommand) {
+    Write-Host "GitHub CLI (gh) is not installed or not on PATH." -ForegroundColor Yellow
+    Write-Host "Install GitHub CLI, run `gh auth login`, then start Aegis again." -ForegroundColor Yellow
+    return $false
+  }
+
+  & gh auth status 2>&1 | Out-Host
+  if ($LASTEXITCODE -eq 0) {
+    Write-Host "GitHub CLI auth is ready." -ForegroundColor Green
+    return $true
+  }
+
+  Write-Host "GitHub login is required before background Aegis workers start." -ForegroundColor Yellow
+  $choice = Read-Host "Log in now with GitHub CLI? (y/N)"
+
+  if ($choice -match '^(y|yes)$') {
+    & gh auth login
+    if ($LASTEXITCODE -ne 0) {
+      Write-Host "GitHub login did not complete successfully." -ForegroundColor Red
+      return $false
+    }
+
+    & gh auth status 2>&1 | Out-Host
+    if ($LASTEXITCODE -eq 0) {
+      Write-Host "GitHub CLI auth is ready." -ForegroundColor Green
+      return $true
+    }
+
+    Write-Host "GitHub CLI login check still failed after login attempt." -ForegroundColor Red
+    return $false
+  }
+
+  Write-Host "Aegis background start cancelled until GitHub login is completed." -ForegroundColor Yellow
+  return $false
+}
+
 if (-not (Test-Path $policyUtilsPath)) {
   throw "Missing required policy utility script: $policyUtilsPath"
+}
+
+if (-not (EnsureGitHubLoginBeforeAegis)) {
+  exit 1
 }
 
 . $policyUtilsPath

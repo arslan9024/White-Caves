@@ -77,6 +77,8 @@ param(
   [int]$ParallelTaskSlots = 1,
   [int]$EnableParallelInSubagentFlow = 0,
   [int]$ParallelConflictStrictness = 2,
+  [int]$ContextTokenBudget = 120000,
+  [int]$ContextWarnThresholdPct = 80,
   [double]$RegressionDeltaStopPct = 0.0,
   [string]$RollbackPlansDir = "plans/waves/rollback",
   [switch]$SkipTypecheck,
@@ -552,7 +554,15 @@ function Write-TurnDashboard {
     [string]$SecondaryStatus = "",
     [double]$SecondaryDurationSeconds = 0,
     [string]$SecondaryCommand = "",
-    [array]$TrendHistory = @()
+    [array]$TrendHistory = @(),
+    [string]$PlannedFeature = "",
+    [string]$ImplementedFeature = "",
+    [string]$PlanningModule = "",
+    [double]$PlanningReadinessPct = 0,
+    [int]$PlanningPackets = 0,
+    [double]$EfficiencyScore = 0,
+    [object]$Telemetry = $null,
+    [int]$ContextWarnThresholdPct = 80
   )
 
   $line = "=" * 74
@@ -624,6 +634,28 @@ function Write-TurnDashboard {
   Write-Host ("  │ PLAN: {0}" -f $(if ([string]::IsNullOrWhiteSpace($PlanStatus)) { 'n/a' } else { $PlanStatus })) -ForegroundColor $planColor
   if (-not [string]::IsNullOrWhiteSpace($BestAIGatesNote)) {
     Write-Host ("  │ BEST-AI: {0}" -f $BestAIGatesNote) -ForegroundColor $(if ($BestAIGatesNote -match 'fail') { 'Red' } elseif ($BestAIGatesNote -match 'pass|not-run') { 'Green' } else { 'DarkYellow' })
+  }
+
+  Write-Host "  │" -ForegroundColor DarkCyan
+  Write-Host "  │ PROJECT ANALYTICS:" -ForegroundColor DarkYellow
+  $effColor = if ($EfficiencyScore -ge 80) { 'Green' } elseif ($EfficiencyScore -ge 60) { 'DarkYellow' } else { 'Red' }
+  Write-Host ("  │   efficiency score : {0}%" -f $EfficiencyScore) -ForegroundColor $effColor
+  Write-Host ("  │   planning packets : {0}  readiness={1}%" -f $PlanningPackets, [math]::Round($PlanningReadinessPct,1)) -ForegroundColor Cyan
+  Write-Host ("  │   planned module   : {0}" -f $(if ([string]::IsNullOrWhiteSpace($PlanningModule)) { 'n/a' } else { $PlanningModule })) -ForegroundColor Cyan
+  Write-Host ("  │   planned feature  : {0}" -f $(if ([string]::IsNullOrWhiteSpace($PlannedFeature)) { 'n/a' } else { $PlannedFeature })) -ForegroundColor Cyan
+  Write-Host ("  │   implemented      : {0}" -f $(if ([string]::IsNullOrWhiteSpace($ImplementedFeature)) { 'n/a' } else { $ImplementedFeature })) -ForegroundColor $(if ([string]::IsNullOrWhiteSpace($ImplementedFeature)) { 'DarkGray' } else { 'Green' })
+
+  if ($null -ne $Telemetry) {
+    $ctxPct = 0
+    $ctxUsed = 0
+    $ctxBudget = 0
+    if ($Telemetry.PSObject.Properties.Name -contains 'contextUtilizationPct') { $ctxPct = [double]$Telemetry.contextUtilizationPct }
+    if ($Telemetry.PSObject.Properties.Name -contains 'contextTokensUsed') { $ctxUsed = [int]$Telemetry.contextTokensUsed }
+    if ($Telemetry.PSObject.Properties.Name -contains 'contextBudget') { $ctxBudget = [int]$Telemetry.contextBudget }
+    $ctxColor = if ($ctxPct -ge $ContextWarnThresholdPct) { 'Red' } elseif ($ctxPct -ge ($ContextWarnThresholdPct - 20)) { 'DarkYellow' } else { 'Green' }
+
+    Write-Host ("  │   counters         : planned={0} implemented={1} failed={2} blocked={3}" -f $Telemetry.plannedTasks, $Telemetry.implementedTasks, $Telemetry.failedTasks, $Telemetry.blockedTasks) -ForegroundColor DarkCyan
+    Write-Host ("  │   context counter  : {0}/{1} tokens ({2}%)" -f $ctxUsed, $ctxBudget, [math]::Round($ctxPct,1)) -ForegroundColor $ctxColor
   }
 
   Write-Host "  │" -ForegroundColor DarkCyan
@@ -920,6 +952,25 @@ function Initialize-LoopState {
     modulePerformance = @{}
     lastTurnModuleKey = ""
     turnTrend = @()
+    plannedFeatureHistory = @()
+    implementedFeatureHistory = @()
+    telemetry = [ordered]@{
+      plannedTasks = 0
+      implementedTasks = 0
+      failedTasks = 0
+      blockedTasks = 0
+      planningPacketsCompleted = 0
+      planningPacketsFailed = 0
+      planningReadinessLast = 0
+      contextTokensUsed = 0
+      contextTokensTurn = 0
+      contextTurns = 0
+      contextBudget = [int]$ContextTokenBudget
+      contextUtilizationPct = 0
+      lastEfficiencyScore = 0
+      analyzerRuns = 0
+      lastAnalyzedAt = ""
+    }
     selfHealing = [ordered]@{
       retries = 0
       timeouts = 0
@@ -972,6 +1023,47 @@ function Ensure-StateSchema {
   }
   elseif ($null -eq $State.turnTrend) {
     $State.turnTrend = @()
+  }
+
+  if (-not ($State.PSObject.Properties.Name -contains 'plannedFeatureHistory')) {
+    $State | Add-Member -NotePropertyName plannedFeatureHistory -NotePropertyValue @() -Force
+  }
+  elseif ($null -eq $State.plannedFeatureHistory) {
+    $State.plannedFeatureHistory = @()
+  }
+
+  if (-not ($State.PSObject.Properties.Name -contains 'implementedFeatureHistory')) {
+    $State | Add-Member -NotePropertyName implementedFeatureHistory -NotePropertyValue @() -Force
+  }
+  elseif ($null -eq $State.implementedFeatureHistory) {
+    $State.implementedFeatureHistory = @()
+  }
+
+  if (-not ($State.PSObject.Properties.Name -contains 'telemetry')) {
+    $State | Add-Member -NotePropertyName telemetry -NotePropertyValue ([ordered]@{
+      plannedTasks = 0
+      implementedTasks = 0
+      failedTasks = 0
+      blockedTasks = 0
+      planningPacketsCompleted = 0
+      planningPacketsFailed = 0
+      planningReadinessLast = 0
+      contextTokensUsed = 0
+      contextTokensTurn = 0
+      contextTurns = 0
+      contextBudget = [int]$ContextTokenBudget
+      contextUtilizationPct = 0
+      lastEfficiencyScore = 0
+      analyzerRuns = 0
+      lastAnalyzedAt = ""
+    }) -Force
+  }
+
+  foreach ($metric in @('plannedTasks','implementedTasks','failedTasks','blockedTasks','planningPacketsCompleted','planningPacketsFailed','planningReadinessLast','contextTokensUsed','contextTokensTurn','contextTurns','contextBudget','contextUtilizationPct','lastEfficiencyScore','analyzerRuns','lastAnalyzedAt')) {
+    if (-not ($State.telemetry.PSObject.Properties.Name -contains $metric)) {
+      $defaultValue = if ($metric -eq 'lastAnalyzedAt') { '' } elseif ($metric -eq 'contextBudget') { [int]$ContextTokenBudget } else { 0 }
+      $State.telemetry | Add-Member -NotePropertyName $metric -NotePropertyValue $defaultValue -Force
+    }
   }
 
   if (-not ($State.PSObject.Properties.Name -contains 'selfHealing')) {
@@ -2189,6 +2281,138 @@ function Update-TurnTrend {
   $State.turnTrend = @($history)
 }
 
+function Estimate-TokenCount {
+  param([string]$Text)
+
+  if ([string]::IsNullOrWhiteSpace($Text)) {
+    return 0
+  }
+
+  $chars = ([string]$Text).Length
+  return [int][Math]::Ceiling($chars / 4.0)
+}
+
+function Update-FeatureHistory {
+  param(
+    [object]$State,
+    [int]$TurnNumber,
+    [string]$TaskId,
+    [string]$TaskTitle,
+    [string]$Lane,
+    [string]$Module,
+    [string]$ExecutionStatus
+  )
+
+  Ensure-StateSchema -State $State
+
+  $plannedEntry = [pscustomobject]@{
+    turn = [int]$TurnNumber
+    taskId = [string]$TaskId
+    title = [string]$TaskTitle
+    lane = [string]$Lane
+    module = [string]$Module
+    at = (Get-Date).ToString("o")
+  }
+
+  $State.plannedFeatureHistory = @(@($State.plannedFeatureHistory) + @($plannedEntry) | Select-Object -Last 25)
+
+  if ($ExecutionStatus -eq 'completed') {
+    $implementedEntry = [pscustomobject]@{
+      turn = [int]$TurnNumber
+      taskId = [string]$TaskId
+      title = [string]$TaskTitle
+      lane = [string]$Lane
+      module = [string]$Module
+      at = (Get-Date).ToString("o")
+    }
+
+    $State.implementedFeatureHistory = @(@($State.implementedFeatureHistory) + @($implementedEntry) | Select-Object -Last 25)
+  }
+}
+
+function Update-SystemTelemetry {
+  param(
+    [object]$State,
+    [string]$ExecutionStatus,
+    [int]$PlanningPacketsCompleted,
+    [int]$PlanningPacketsFailed,
+    [double]$PlanningReadinessPct,
+    [int]$ContextTokensThisTurn,
+    [int]$ContextBudget,
+    [double]$EfficiencyScore
+  )
+
+  Ensure-StateSchema -State $State
+
+  $State.telemetry.plannedTasks = [int]$State.telemetry.plannedTasks + 1
+  switch ($ExecutionStatus) {
+    'completed' { $State.telemetry.implementedTasks = [int]$State.telemetry.implementedTasks + 1 }
+    'failed' { $State.telemetry.failedTasks = [int]$State.telemetry.failedTasks + 1 }
+    'blocked' { $State.telemetry.blockedTasks = [int]$State.telemetry.blockedTasks + 1 }
+  }
+
+  $State.telemetry.planningPacketsCompleted = [int]$State.telemetry.planningPacketsCompleted + [Math]::Max(0, [int]$PlanningPacketsCompleted)
+  $State.telemetry.planningPacketsFailed = [int]$State.telemetry.planningPacketsFailed + [Math]::Max(0, [int]$PlanningPacketsFailed)
+  $State.telemetry.planningReadinessLast = [math]::Round([double]$PlanningReadinessPct, 1)
+  $State.telemetry.contextTokensTurn = [Math]::Max(0, [int]$ContextTokensThisTurn)
+  $State.telemetry.contextTokensUsed = [int]$State.telemetry.contextTokensUsed + [Math]::Max(0, [int]$ContextTokensThisTurn)
+  $State.telemetry.contextTurns = [int]$State.telemetry.contextTurns + 1
+  $State.telemetry.contextBudget = [Math]::Max(1, [int]$ContextBudget)
+  $State.telemetry.contextUtilizationPct = [math]::Round((100.0 * [double]$State.telemetry.contextTokensUsed) / [double]$State.telemetry.contextBudget, 2)
+  $State.telemetry.lastEfficiencyScore = [math]::Round([double]$EfficiencyScore, 1)
+  $State.telemetry.analyzerRuns = [int]$State.telemetry.analyzerRuns + 1
+  $State.telemetry.lastAnalyzedAt = (Get-Date).ToString("o")
+}
+
+function Write-SystemAnalyzerSnapshot {
+  param(
+    [object]$State,
+    [string]$Path,
+    [int]$TurnNumber,
+    [object]$SelectedTask,
+    [string]$ExecutionStatus,
+    [double]$CompletionPct,
+    [double]$DeltaPct,
+    [bool]$GateMet,
+    [string]$Lane,
+    [string]$Module,
+    [double]$EfficiencyScore
+  )
+
+  Ensure-StateSchema -State $State
+
+  $plannedRecent = @($State.plannedFeatureHistory | Select-Object -Last 8)
+  $implementedRecent = @($State.implementedFeatureHistory | Select-Object -Last 8)
+
+  $snapshot = [ordered]@{
+    generatedAt = (Get-Date).ToString("o")
+    turn = [int]$TurnNumber
+    status = [string]$ExecutionStatus
+    gateMet = [bool]$GateMet
+    completionPct = [double]$CompletionPct
+    deltaPct = [double]$DeltaPct
+    lane = [string]$Lane
+    module = [string]$Module
+    task = [ordered]@{
+      id = if ($null -ne $SelectedTask) { [string]$SelectedTask.id } else { "" }
+      sourceId = if ($null -ne $SelectedTask) { [string]$SelectedTask.sourceId } else { "" }
+      title = if ($null -ne $SelectedTask) { [string]$SelectedTask.title } else { "" }
+    }
+    efficiencyScore = [math]::Round([double]$EfficiencyScore, 1)
+    telemetry = $State.telemetry
+    projectAnalytics = [ordered]@{
+      plannedFeaturesRecent = $plannedRecent
+      implementedFeaturesRecent = $implementedRecent
+      plannedFeaturesCount = @($State.plannedFeatureHistory).Count
+      implementedFeaturesCount = @($State.implementedFeatureHistory).Count
+    }
+    trend = @($State.turnTrend | Select-Object -Last 5)
+  }
+
+  $json = $snapshot | ConvertTo-Json -Depth 10
+  Write-FileAtomicWithRetry -Path $Path -Content $json
+}
+
 function Set-ExactlyTenPending {
   param(
     [object]$State,
@@ -2851,6 +3075,16 @@ while ($true) {
   $executionStatus = "planned"
   $executionNote = "Implementation pending."
   $subagentFlowNote = "disabled"
+  $planStatus = "skipped"
+  $planNote = "planner not used"
+  $planningCompleted = 0
+  $planningFailed = 0
+  $planningReadiness = 0
+  $planningPacketsThisTurn = 0
+  $plannedFeatureLabel = [string]$selected.title
+  $implementedFeatureLabel = ""
+  $efficiencyScore = 0.0
+  $contextTokensThisTurn = 0
   $premiumUsedThisTurn = $false
   $allAgentsFreeMode = $false
   $haltAfterTurn = $false
@@ -3048,6 +3282,7 @@ while ($true) {
       }
 
       $planningReadiness = if ($planningAgents.Count -gt 0) { [int][Math]::Floor(($planningCompleted * 100.0) / $planningAgents.Count) } else { 0 }
+      $planningPacketsThisTurn = [Math]::Max(0, [int]$planningCompleted + [int]$planningFailed)
       $planningQuorumPct = if ($planningAgents.Count -gt 0) { [int][Math]::Floor(($planningCompleted * 100.0) / $planningAgents.Count) } else { 0 }
       $planningConsensusPct = if ($planningAgents.Count -gt 0) { [int][Math]::Floor((($planningAgents.Count - $planningFailed) * 100.0) / $planningAgents.Count) } else { 0 }
       $planningImprovement = if (@($state.waveTaskIds).Count -ge 10) { [int]$planningReadiness } else { [int]$planningReadiness - [int]$state.baselineReadiness }
@@ -3107,6 +3342,12 @@ while ($true) {
 
     if (-not $UseSubagentFlow) {
       $executionStatus = "ready"
+      $planningCompleted = 1
+      $planningFailed = 0
+      $planningReadiness = 100
+      $planningPacketsThisTurn = 1
+      $planStatus = "completed"
+      $planNote = "single-agent planning packet complete"
       $subagentFlowNote = "planning:single-agent route packet complete | implementer:pending"
     }
 
@@ -3413,6 +3654,42 @@ while ($true) {
   }
   $executionNote = "$executionNote | $progressNote"
   Write-ActivityLog -Stage "REPORT" -Message $progressNote -Color ($(if ($completionGateMet) { 'Green' } else { 'DarkYellow' }))
+
+  if ($executionStatus -eq "completed") {
+    $implementedFeatureLabel = [string]$selected.title
+  }
+
+  if ($planningPacketsThisTurn -le 0) {
+    $planningPacketsThisTurn = [Math]::Max(1, [int]$planningCompleted + [int]$planningFailed)
+  }
+
+  $contextTokensThisTurn = `
+    (Estimate-TokenCount -Text ([string]$selected.title)) +
+    (Estimate-TokenCount -Text ([string]$executionNote)) +
+    (Estimate-TokenCount -Text ([string]$progressNote)) +
+    (Estimate-TokenCount -Text ([string]$fullContextSummary)) +
+    (Estimate-TokenCount -Text ([string]$onlineResearchSummary)) +
+    ([int]$planningPacketsThisTurn * 24)
+
+  $planningEfficiency = if ($planningPacketsThisTurn -gt 0) { [double]$planningCompleted / [double]$planningPacketsThisTurn } else { 1.0 }
+  $executionEfficiency = switch ($executionStatus) {
+    'completed' { 1.0 }
+    'failed' { 0.0 }
+    'blocked' { 0.25 }
+    'planned' { 0.6 }
+    default { 0.75 }
+  }
+  $gateEfficiency = if ($completionGateMet) { 1.0 } else { 0.4 }
+  $deltaEfficiency = if ($completionDeltaPct -ge 0) { 1.0 } else { [Math]::Max(0.0, 1.0 + ([double]$completionDeltaPct / 20.0)) }
+  $efficiencyScore = [math]::Round((100.0 * ((0.35 * $planningEfficiency) + (0.35 * $executionEfficiency) + (0.2 * $gateEfficiency) + (0.1 * $deltaEfficiency))), 1)
+
+  Update-FeatureHistory -State $state -TurnNumber $state.turnCounter -TaskId ([string]$selected.id) -TaskTitle ([string]$selected.title) -Lane ([string]$routeProfile.lane) -Module ([string]$routeProfile.module) -ExecutionStatus ([string]$executionStatus)
+  Update-SystemTelemetry -State $state -ExecutionStatus ([string]$executionStatus) -PlanningPacketsCompleted ([int]$planningCompleted) -PlanningPacketsFailed ([int]$planningFailed) -PlanningReadinessPct ([double]$planningReadiness) -ContextTokensThisTurn ([int]$contextTokensThisTurn) -ContextBudget ([int]$ContextTokenBudget) -EfficiencyScore ([double]$efficiencyScore)
+
+  $systemAnalyzerFile = Join-Path $root "logs/orchestrator/system-analyzer.json"
+  Write-SystemAnalyzerSnapshot -State $state -Path $systemAnalyzerFile -TurnNumber $state.turnCounter -SelectedTask $selected -ExecutionStatus ([string]$executionStatus) -CompletionPct ([double]$currentCompletionPct) -DeltaPct ([double]$completionDeltaPct) -GateMet ([bool]$completionGateMet) -Lane ([string]$routeProfile.lane) -Module ([string]$routeProfile.module) -EfficiencyScore ([double]$efficiencyScore)
+  Write-ActivityLog -Stage "ANALYZER" -Message "System analyzer updated: efficiency=$efficiencyScore% context=$($state.telemetry.contextTokensUsed)/$ContextTokenBudget tokens planned=$($state.telemetry.plannedTasks) implemented=$($state.telemetry.implementedTasks)" -Color "DarkCyan"
+
   Write-ModuleCompletionPanel -State $state -CurrentLane ([string]$routeProfile.lane) -CurrentModule ([string]$routeProfile.module) -CurrentStatus $executionStatus
   Write-TurnSummary `
     -TurnNumber $state.turnCounter `
@@ -3482,7 +3759,15 @@ while ($true) {
     -SecondaryStatus ([string]$secondaryParallelStatus) `
     -SecondaryDurationSeconds ([double]$secondaryParallelDurationSeconds) `
     -SecondaryCommand ([string]$secondaryParallelCommand) `
-    -TrendHistory @($state.turnTrend)
+    -TrendHistory @($state.turnTrend) `
+    -PlannedFeature ([string]$plannedFeatureLabel) `
+    -ImplementedFeature ([string]$implementedFeatureLabel) `
+    -PlanningModule ([string]$routeProfile.module) `
+    -PlanningReadinessPct ([double]$planningReadiness) `
+    -PlanningPackets ([int]$planningPacketsThisTurn) `
+    -EfficiencyScore ([double]$efficiencyScore) `
+    -Telemetry $state.telemetry `
+    -ContextWarnThresholdPct ([int]$ContextWarnThresholdPct)
 
   Write-Host "[TURN $($state.turnCounter)] Selected $($selected.id) ($($selected.sourceId)) -> $executionStatus" -ForegroundColor Cyan
 
