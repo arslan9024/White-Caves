@@ -678,6 +678,86 @@ function Get-NextEvidencePendingTask {
   return $null
 }
 
+function Build-AegisFallbackPrompt {
+  param($Task)
+
+  if ($null -eq $Task) { return "" }
+
+  $agentName = [string]$Task.agent
+  $title = [string]$Task.title
+  $phase = [string]$Task.phase
+
+  if ([string]::IsNullOrWhiteSpace($phase)) {
+    $team = [string]$Task.team
+    $phase = if ($team -match "implementation|premium") { "implementation" } else { "planning" }
+  }
+
+  $priority = [string]$Task.priority
+  $isPriorityOverride = ($title -match "PRIORITY OVERRIDE") -or ($priority.ToLower() -eq "critical")
+
+  if ($phase.ToLower() -eq "implementation") {
+    if ($isPriorityOverride) {
+      return ("{0} -- PRIORITY IMPLEMENT+VERIFY: {1}. Execute this before non-priority tasks. Deliver production-safe implementation slices, strict validation evidence (typecheck/lint/build/tests), and rollback notes." -f $agentName, $title)
+    }
+    return ("{0} -- IMPLEMENT+VERIFY: {1}. Deliver code-level execution, focused validation (typecheck/lint/build/tests), risk controls, rollback notes, and handoff artifacts." -f $agentName, $title)
+  }
+
+  return ("{0} -- RESEARCH+PLAN: {1}. Analyze current project status for your domain and produce an implementation-ready backlog with priorities, root causes, acceptance criteria, tests, risks (P0/P1/P2), and FEEDS/FEEDS_ACK handoffs." -f $agentName, $title)
+}
+
+function Invoke-AegisPromptAutoHeal {
+  param()
+
+  if (-not (Test-Path $qFile)) { return @{ Added = 0; Failed = 0 } }
+  if (-not (Test-Path $pFile)) { return @{ Added = 0; Failed = 0 } }
+
+  $result = @{ Added = 0; Failed = 0 }
+
+  try {
+    $q = Get-Content $qFile -Raw | ConvertFrom-Json
+    $tasks = @($q.tasks)
+
+    $p = Get-Content $pFile -Raw | ConvertFrom-Json
+    $promptMap = @{}
+    foreach ($prop in $p.PSObject.Properties) {
+      $promptMap[$prop.Name] = $prop.Value
+    }
+
+    $missing = @()
+    foreach ($t in $tasks) {
+      $tid = [string]$t.taskId
+      if ([string]::IsNullOrWhiteSpace($tid)) { continue }
+      if (-not $promptMap.ContainsKey($tid)) {
+        $missing += $t
+      }
+    }
+
+    if ($missing.Count -eq 0) { return $result }
+
+    foreach ($t in $missing) {
+      $promptText = Build-AegisFallbackPrompt -Task $t
+      if ([string]::IsNullOrWhiteSpace($promptText)) {
+        $result.Failed++
+        continue
+      }
+      $promptMap[[string]$t.taskId] = $promptText
+      $result.Added++
+    }
+
+    $ordered = [ordered]@{}
+    foreach ($k in ($promptMap.Keys | Sort-Object)) {
+      $ordered[$k] = $promptMap[$k]
+    }
+
+    $json = $ordered | ConvertTo-Json -Depth 12
+    [System.IO.File]::WriteAllText($pFile, $json, (New-Object System.Text.UTF8Encoding($false)))
+  } catch {
+    $result.Failed++
+  }
+
+  return $result
+}
+
 function Invoke-AegisPreflight {
   param()
 
@@ -685,6 +765,14 @@ function Invoke-AegisPreflight {
   if (-not $aegisPreflightEnabled) { return }
 
   Write-Host "  [AEGIS PREFLIGHT] Running quick integrity checks..." -ForegroundColor Cyan
+
+  $heal = Invoke-AegisPromptAutoHeal
+  if ($heal.Added -gt 0) {
+    Write-Host ("  [AEGIS PREFLIGHT] Auto-healed {0} missing prompt(s) from active queue." -f $heal.Added) -ForegroundColor Green
+  }
+  if ($heal.Failed -gt 0) {
+    Write-Host ("  [AEGIS PREFLIGHT] Prompt auto-heal had {0} issue(s); continuing with validation." -f $heal.Failed) -ForegroundColor DarkYellow
+  }
 
   if (Test-Path $verifyPromptsScript) {
     & powershell -ExecutionPolicy Bypass -File "$verifyPromptsScript" 2>&1 | Out-String | Write-Host
