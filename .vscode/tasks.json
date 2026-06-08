@@ -567,6 +567,469 @@
 				"-Branch",
 				"recruitment-analytics-onboarding"
 			]
+		},
+		{
+			"label": "homepage-tests-after-routing-refactor",
+			"type": "shell",
+			"command": "npm.cmd",
+			"args": [
+				"run",
+				"test:run",
+				"--",
+				"src/pages/HomePage.test.tsx"
+			],
+			"isBackground": false
+		},
+		{
+			"label": "homepage-typecheck-after-route-style-fixes",
+			"type": "shell",
+			"command": "npm.cmd",
+			"args": [
+				"run",
+				"typecheck"
+			],
+			"isBackground": false
+		},
+		{
+			"label": "typecheck-after-homepage-and-unified-fixes",
+			"type": "shell",
+			"command": "npm.cmd",
+			"args": [
+				"run",
+				"typecheck"
+			],
+			"isBackground": false
+		},
+		{
+			"label": "typecheck-after-unified-adapter-fix",
+			"type": "shell",
+			"command": "npm.cmd",
+			"args": [
+				"run",
+				"typecheck"
+			],
+			"isBackground": false
+		},
+		{
+			"label": "homepage-tests-after-blog-route-targets",
+			"type": "shell",
+			"command": "npm.cmd",
+			"args": [
+				"run",
+				"test:run",
+				"--",
+				"src/pages/HomePage.test.tsx"
+			],
+			"isBackground": false
+		},
+		{
+			"label": "typecheck-after-unified-adapter-fix",
+			"type": "shell",
+			"command": "npm.cmd",
+			"args": [
+				"run",
+				"typecheck"
+			],
+			"isBackground": false
+		},
+		{
+			"label": "homepage-component-routing-tests",
+			"type": "shell",
+			"command": "npm.cmd",
+			"args": [
+				"run",
+				"test:run",
+				"--",
+				"src/components/BlogSection.test.tsx",
+				"src/components/homepage/Features/Features.test.tsx"
+			],
+			"isBackground": false
+		},
+		{
+			"label": "homepage-component-routing-tests-rerun",
+			"type": "shell",
+			"command": "npm.cmd",
+			"args": [
+				"run",
+				"test:run",
+				"--",
+				"src/components/BlogSection.test.tsx",
+				"src/components/homepage/Features/Features.test.tsx"
+			],
+			"isBackground": false
+		},
+		{
+			"label": "homepage-component-routing-tests-rerun-2",
+			"type": "shell",
+			"command": "npm.cmd",
+			"args": [
+				"run",
+				"test:run",
+				"--",
+				"src/components/BlogSection.test.tsx",
+				"src/components/homepage/Features/Features.test.tsx",
+				"src/pages/HomePage.test.tsx"
+			],
+			"isBackground": false
+		},
+		{
+			"label": "homepage-component-routing-tests-rerun-2",
+			"type": "shell",
+			"command": "npm.cmd",
+			"args": [
+				"run",
+				"test:run",
+				"--",
+				"src/components/BlogSection.test.tsx",
+				"src/components/homepage/Features/Features.test.tsx",
+				"src/pages/HomePage.test.tsx"
+			],
+			"isBackground": false
+		},
+		{
+			"label": "homepage-component-routing-tests-rerun-2",
+			"type": "shell",
+			"command": "npm.cmd",
+			"args": [
+				"run",
+				"test:run",
+				"--",
+				"src/components/DubaiMap.test.tsx",
+				"src/components/BlogSection.test.tsx",
+				"src/components/homepage/Features/Features.test.tsx",
+				"src/pages/HomePage.test.tsx"
+			],
+			"isBackground": false
+		},
+		{
+			"label": "homepage-component-routing-tests-with-dubaimap",
+			"type": "shell",
+			"command": "npm.cmd",
+			"args": [
+				"run",
+				"test:run",
+				"--",
+				"src/components/DubaiMap.test.tsx"
+			],
+			"isBackground": false
+		},
+		{
+			"label": "typecheck-after-homepage-routing-test-hardening",
+			"type": "shell",
+			"command": "npm.cmd",
+			"args": [
+				"run",
+				"typecheck"
+			],
+			"isBackground": false
+		},
+		{
+			"label": "homepage-component-routing-tests-rerun-2",
+			"type": "shell",
+			"command": "npm.cmd",
+			"args": [
+				"run",
+				"test:run",
+				"--",
+				"src/components/homepage/FeaturedProperties/FeaturedPropertiesSection.test.tsx",
+				"src/components/DubaiMap.test.tsx",
+				"src/components/BlogSection.test.tsx",
+				"src/components/homepage/Features/Features.test.tsx",
+				"src/components/homepage/Locations/Locations.test.tsx",
+				"src/pages/HomePage.test.tsx"
+			],
+			"isBackground": false
+		},
+		{
+			"label": "homepage-routing-matrix-tests-full",
+			"type": "shell",
+			"command": "npm.cmd",
+			"args": [
+				"run",
+				"test:run",
+				"--",
+				"src/components/homepage/FeaturedProperties/FeaturedPropertiesSection.test.tsx",
+				"src/components/DubaiMap.test.tsx",
+				"src/components/BlogSection.test.tsx",
+				"src/components/homepage/Features/Features.test.tsx",
+				"src/components/homepage/Locations/Locations.test.tsx",
+				"src/pages/HomePage.test.tsx"
+			],
+			"isBackground": false
+		},
+		{
+			"label": "typecheck-after-homepage-routing-test-hardening",
+			"type": "shell",
+			"command": "npm.cmd",
+			"args": [
+				"run",
+				"typecheck"
+			],
+			"isBackground": false
+		},
+		{
+			"label": "install-eslint-core-package",
+			"type": "shell",
+			"command": "npm.cmd",
+			"args": [
+				"install",
+				"-D",
+				"eslint@^9.39.1"
+			],
+			"isBackground": false
+		},
+		{
+			"label": "lint-targeted-homepage-routing-wave",
+			"type": "shell",
+			"command": "npm.cmd",
+			"args": [
+				"exec",
+				"eslint",
+				"server/middleware/rateLimiter.ts",
+				"server/services/automation/followUpEngine.ts",
+				"src/components/BlogSection.tsx",
+				"src/components/DubaiMap.tsx",
+				"src/components/homepage/Features/Features.tsx",
+				"src/pages/HomePage.tsx",
+				"src/pages/UnifiedDashboardPage.tsx",
+				"src/components/BlogSection.test.tsx",
+				"src/components/DubaiMap.test.tsx",
+				"src/components/homepage/Features/Features.test.tsx",
+				"src/components/homepage/FeaturedProperties/FeaturedPropertiesSection.test.tsx",
+				"src/pages/HomePage.test.tsx"
+			],
+			"isBackground": false
+		},
+		{
+			"label": "build-after-homepage-routing-wave",
+			"type": "shell",
+			"command": "npm.cmd",
+			"args": [
+				"run",
+				"build"
+			],
+			"isBackground": false
+		},
+		{
+			"label": "full-lint-post-eslint-install",
+			"type": "shell",
+			"command": "npm.cmd",
+			"args": [
+				"run",
+				"lint"
+			],
+			"isBackground": false
+		},
+		{
+			"label": "git-status-after-quality-sweep",
+			"type": "shell",
+			"command": "git",
+			"args": [
+				"status",
+				"--short"
+			],
+			"isBackground": false
+		},
+		{
+			"label": "post-commit-status-check",
+			"type": "shell",
+			"command": "git",
+			"args": [
+				"status",
+				"--short"
+			],
+			"isBackground": false
+		},
+		{
+			"label": "prettier-and-commit-retry",
+			"type": "shell",
+			"command": "npm.cmd",
+			"args": [
+				"ls",
+				"prettier",
+				"--depth=0"
+			],
+			"isBackground": false
+		},
+		{
+			"label": "install-prettier-core-package",
+			"type": "shell",
+			"command": "npm.cmd",
+			"args": [
+				"install",
+				"-D",
+				"prettier@^3.6.2"
+			],
+			"isBackground": false
+		},
+		{
+			"label": "commit-homepage-routing-wave",
+			"type": "shell",
+			"command": "git",
+			"args": [
+				"commit",
+				"-m",
+				"fix(homepage): harden routing flows and add regression coverage"
+			],
+			"isBackground": false
+		},
+		{
+			"label": "post-commit-verify-and-push-readiness",
+			"type": "shell",
+			"command": "git",
+			"args": [
+				"status",
+				"--short"
+			],
+			"isBackground": false
+		},
+		{
+			"label": "remaining-package-diff",
+			"type": "shell",
+			"command": "git",
+			"args": [
+				"diff",
+				"--",
+				"package.json",
+				"package-lock.json"
+			],
+			"isBackground": false
+		},
+		{
+			"label": "commit-prettier-dependency",
+			"type": "shell",
+			"command": "git",
+			"args": [
+				"add",
+				"package.json",
+				"package-lock.json"
+			],
+			"isBackground": false
+		},
+		{
+			"label": "commit-prettier-dependency-message",
+			"type": "shell",
+			"command": "git",
+			"args": [
+				"commit",
+				"-m",
+				"chore(tooling): add prettier for lint-staged hooks"
+			],
+			"isBackground": false
+		},
+		{
+			"label": "final-git-handoff-status",
+			"type": "shell",
+			"command": "git",
+			"args": [
+				"status",
+				"--short"
+			],
+			"isBackground": false
+		},
+		{
+			"label": "final-git-handoff-log",
+			"type": "shell",
+			"command": "git",
+			"args": [
+				"log",
+				"-2",
+				"--oneline"
+			],
+			"isBackground": false
+		},
+		{
+			"label": "rescan-git-status",
+			"type": "shell",
+			"command": "git",
+			"args": [
+				"status",
+				"--short"
+			],
+			"isBackground": false
+		},
+		{
+			"label": "rescan-git-log",
+			"type": "shell",
+			"command": "git",
+			"args": [
+				"log",
+				"-5",
+				"--oneline",
+				"--decorate"
+			],
+			"isBackground": false
+		},
+		{
+			"label": "verify-branch-sync",
+			"type": "shell",
+			"command": "git",
+			"args": [
+				"status",
+				"-sb"
+			],
+			"isBackground": false
+		},
+		{
+			"label": "final-commits-content-check",
+			"type": "shell",
+			"command": "git",
+			"args": [
+				"show",
+				"--name-status",
+				"--oneline",
+				"-2"
+			],
+			"isBackground": false
+		},
+		{
+			"label": "remote-head-check",
+			"type": "shell",
+			"command": "git",
+			"args": [
+				"log",
+				"origin/recruitment-analytics-onboarding",
+				"-2",
+				"--oneline"
+			],
+			"isBackground": false
+		},
+		{
+			"label": "final-local-dirty-check",
+			"type": "shell",
+			"command": "git",
+			"args": [
+				"status",
+				"--short"
+			],
+			"isBackground": false
+		},
+		{
+			"label": "remaining-diff-stat",
+			"type": "shell",
+			"command": "git",
+			"args": [
+				"diff",
+				"--stat",
+				"--",
+				".vscode/tasks.json",
+				"DAILY_MILESTONE_TRACKER.md",
+				"scripts/orchestrator/prompts.json"
+			],
+			"isBackground": false
+		},
+		{
+			"label": "remaining-diff-preview",
+			"type": "shell",
+			"command": "git",
+			"args": [
+				"diff",
+				"--",
+				".vscode/tasks.json",
+				"DAILY_MILESTONE_TRACKER.md",
+				"scripts/orchestrator/prompts.json"
+			],
+			"isBackground": false
 		}
 	]
 }
