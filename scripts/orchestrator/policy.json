@@ -194,24 +194,10 @@
       "@River",
       "@Rowan"
     ],
-    "freeModelProviders": [
-      "google-ai-studio",
-      "groq",
-      "deepseek"
-    ],
-    "premiumModelProviders": [
-      "openai",
-      "anthropic"
-    ],
-    "freeModels": [
-      "Gemini 2.0 Flash",
-      "Llama 3.1 70B",
-      "DeepSeek V3"
-    ],
-    "premiumModels": [
-      "GPT-4o",
-      "claude-3.5-sonnet"
-    ]
+    "freeModelProviders": ["google-ai-studio", "groq", "deepseek"],
+    "premiumModelProviders": ["openai", "anthropic"],
+    "freeModels": ["Gemini 2.0 Flash", "Llama 3.1 70B", "DeepSeek V3"],
+    "premiumModels": ["GPT-4o", "claude-3.5-sonnet"]
   },
   "executionMode": {
     "default": "autopilot",
@@ -252,6 +238,12 @@
     "problemScannerAutoFixEnabled": true,
     "problemScannerEveryNTasks": 3,
     "problemScannerIdleEveryNLoops": 6,
+    "developmentSweepEnabled": true,
+    "developmentSweepAutoFixEnabled": true,
+    "developmentSweepEveryNTasks": 5,
+    "developmentSweepIdleEveryNLoops": 10,
+    "developmentSweepIncludeE2E": false,
+    "developmentSweepIncludeAudit": false,
     "priorityOverride": {
       "enabled": true,
       "tasks": [
@@ -367,12 +359,7 @@
     },
     "development": {
       "deliveryStyle": "vertical-slice",
-      "requiredChecks": [
-        "typecheck",
-        "lint",
-        "build",
-        "plans:validate"
-      ],
+      "requiredChecks": ["typecheck", "lint", "build", "plans:validate"],
       "targetedTestsRequired": true,
       "maxAutoFixRetries": 3,
       "securityScanRequired": true
@@ -380,10 +367,7 @@
     "git": {
       "defaultRemote": "origin",
       "integrationBranch": "develop",
-      "integrationFallbackBranches": [
-        "development",
-        "main"
-      ],
+      "integrationFallbackBranches": ["development", "main"],
       "releaseBranch": "main",
       "featureBranchPrefix": "feature/",
       "autoMergeReleaseBranch": false,
@@ -479,13 +463,7 @@
     "cadence": "weekly",
     "metricsDir": "logs/orchestrator/benchmarks",
     "baselineFile": "logs/orchestrator/benchmarks/baseline.json",
-    "metrics": [
-      "taskSuccessRate",
-      "passRate",
-      "reworkRate",
-      "cycleTimeSec",
-      "rollbackRate"
-    ],
+    "metrics": ["taskSuccessRate", "passRate", "reworkRate", "cycleTimeSec", "rollbackRate"],
     "regressionAlertThreshold": 0.1
   },
   "confidenceRouting": {

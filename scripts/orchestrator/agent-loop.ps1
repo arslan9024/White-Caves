@@ -44,6 +44,7 @@ $queueHealthScript = Join-Path $scripts "queue-health.ps1"
 $verifyPromptsScript = Join-Path $scripts "verify-prompts.ps1"
 $blockerReportScript = Join-Path $scripts "blocker-report.ps1"
 $projectProblemScanScript = Join-Path $scripts "project-problem-scan.ps1"
+$developmentPracticeSweepScript = Join-Path $scripts "development-practice-sweep.ps1"
 $phaseStateFile = Join-Path $root "logs\orchestrator\aegis-phase-state.json"
 $scanLogDir = Join-Path $root "logs\orchestrator\scans"
 $loopSyncScript = Join-Path $scripts "loop-start-sync.ps1"
@@ -100,6 +101,12 @@ $aegisProblemScannerEnabled = $true
 $aegisProblemScannerAutoFixEnabled = $true
 $aegisProblemScannerEveryNTasks = 3
 $aegisProblemScannerIdleEveryNLoops = 6
+$aegisDevelopmentSweepEnabled = $true
+$aegisDevelopmentSweepAutoFixEnabled = $true
+$aegisDevelopmentSweepEveryNTasks = 5
+$aegisDevelopmentSweepIdleEveryNLoops = 10
+$aegisDevelopmentSweepIncludeE2E = $false
+$aegisDevelopmentSweepIncludeAudit = $false
 $devSmokeScript = Join-Path $scripts "dev-smoke.ps1"
 if (Test-Path $policyFile) {
   try {
@@ -195,6 +202,30 @@ if (Test-Path $policyFile) {
         if ([int]::TryParse([string]$policy.aegis.problemScannerIdleEveryNLoops, [ref]$parsedProblemIdle) -and $parsedProblemIdle -ge 1 -and $parsedProblemIdle -le 300) {
           $aegisProblemScannerIdleEveryNLoops = $parsedProblemIdle
         }
+      }
+      if ($null -ne $policy.aegis.developmentSweepEnabled) {
+        $aegisDevelopmentSweepEnabled = [bool]$policy.aegis.developmentSweepEnabled
+      }
+      if ($null -ne $policy.aegis.developmentSweepAutoFixEnabled) {
+        $aegisDevelopmentSweepAutoFixEnabled = [bool]$policy.aegis.developmentSweepAutoFixEnabled
+      }
+      if ($null -ne $policy.aegis.developmentSweepEveryNTasks) {
+        $parsedSweepEvery = 0
+        if ([int]::TryParse([string]$policy.aegis.developmentSweepEveryNTasks, [ref]$parsedSweepEvery) -and $parsedSweepEvery -ge 1 -and $parsedSweepEvery -le 100) {
+          $aegisDevelopmentSweepEveryNTasks = $parsedSweepEvery
+        }
+      }
+      if ($null -ne $policy.aegis.developmentSweepIdleEveryNLoops) {
+        $parsedSweepIdleEvery = 0
+        if ([int]::TryParse([string]$policy.aegis.developmentSweepIdleEveryNLoops, [ref]$parsedSweepIdleEvery) -and $parsedSweepIdleEvery -ge 1 -and $parsedSweepIdleEvery -le 300) {
+          $aegisDevelopmentSweepIdleEveryNLoops = $parsedSweepIdleEvery
+        }
+      }
+      if ($null -ne $policy.aegis.developmentSweepIncludeE2E) {
+        $aegisDevelopmentSweepIncludeE2E = [bool]$policy.aegis.developmentSweepIncludeE2E
+      }
+      if ($null -ne $policy.aegis.developmentSweepIncludeAudit) {
+        $aegisDevelopmentSweepIncludeAudit = [bool]$policy.aegis.developmentSweepIncludeAudit
       }
     }
   } catch {
@@ -697,12 +728,57 @@ function Build-AegisFallbackPrompt {
 
   if ($phase.ToLower() -eq "implementation") {
     if ($isPriorityOverride) {
-      return ("{0} -- PRIORITY IMPLEMENT+VERIFY: {1}. Execute this before non-priority tasks. Deliver production-safe implementation slices, strict validation evidence (typecheck/lint/build/tests), and rollback notes." -f $agentName, $title)
+      return ("{0} -- PRIORITY IMPLEMENT+VERIFY: {1}. Execute this before non-priority tasks. Deliver production-safe frontend/backend/API/data implementation, UI/UX + accessibility improvements, performance + security hardening, strict validation evidence (typecheck/lint/build/tests), and rollback notes." -f $agentName, $title)
     }
-    return ("{0} -- IMPLEMENT+VERIFY: {1}. Deliver code-level execution, focused validation (typecheck/lint/build/tests), risk controls, rollback notes, and handoff artifacts." -f $agentName, $title)
+    return ("{0} -- IMPLEMENT+VERIFY: {1}. Deliver code-level frontend/backend/API/data execution, UI/UX + accessibility improvements, performance + security hardening, focused validation (typecheck/lint/build/tests), risk controls, rollback notes, and handoff artifacts." -f $agentName, $title)
   }
 
-  return ("{0} -- RESEARCH+PLAN: {1}. Analyze current project status for your domain and produce an implementation-ready backlog with priorities, root causes, acceptance criteria, tests, risks (P0/P1/P2), and FEEDS/FEEDS_ACK handoffs." -f $agentName, $title)
+  return ("{0} -- RESEARCH+PLAN: {1}. Analyze current project status for frontend/backend/API/data, UI/UX, accessibility, performance, security, testing, and ops readiness; produce an implementation-ready backlog with priorities, root causes, acceptance criteria, tests, risks (P0/P1/P2), and FEEDS/FEEDS_ACK handoffs." -f $agentName, $title)
+}
+
+function Invoke-AegisDevelopmentPracticeSweep {
+  param(
+    [string]$Reason = "periodic"
+  )
+
+  $result = @{ Ran = $false; Ok = $true }
+  if (-not $aegisDevelopmentSweepEnabled) { return $result }
+  if (-not (Test-Path $developmentPracticeSweepScript)) { return $result }
+
+  $result.Ran = $true
+  Write-Host ""
+  Write-Host ("  [AEGIS SWEEP] Running full development practice sweep ({0})..." -f $Reason) -ForegroundColor Cyan
+
+  $args = @(
+    "-ExecutionPolicy", "Bypass",
+    "-File", "$developmentPracticeSweepScript",
+    "-WorkspaceRoot", "$root",
+    "-Brief"
+  )
+  if ($aegisDevelopmentSweepAutoFixEnabled) {
+    $args += "-AutoFix"
+  }
+  if ($aegisDevelopmentSweepIncludeE2E) {
+    $args += "-IncludeE2E"
+  }
+  if ($aegisDevelopmentSweepIncludeAudit) {
+    $args += "-IncludeAudit"
+  }
+
+  $sweepOut = & powershell @args 2>&1
+  $sweepText = ($sweepOut | Out-String).Trim()
+  if (-not [string]::IsNullOrWhiteSpace($sweepText)) {
+    Write-Host $sweepText
+  }
+
+  $result.Ok = ($LASTEXITCODE -eq 0)
+  if ($result.Ok) {
+    Write-Host "  [AEGIS SWEEP] Development practice sweep passed." -ForegroundColor Green
+  } else {
+    Write-Host "  [AEGIS SWEEP] Sweep detected issues; autopilot will continue and re-check in cadence." -ForegroundColor DarkYellow
+  }
+
+  return $result
 }
 
 function Invoke-AegisPromptAutoHeal {
@@ -785,6 +861,8 @@ function Invoke-AegisPreflight {
   if (Test-Path $blockerReportScript) {
     & powershell -ExecutionPolicy Bypass -File "$blockerReportScript" -Brief -Top 5 2>&1 | Out-String | Write-Host
   }
+
+  [void](Invoke-AegisDevelopmentPracticeSweep -Reason "preflight")
 
   Write-Host "  [AEGIS PREFLIGHT] Completed." -ForegroundColor Green
   Write-Host ""
@@ -1321,6 +1399,13 @@ if (Test-Path $phaseStateFile) {
         ) {
           [void](Invoke-AegisProblemScanner -Reason "idle-no-ready")
         }
+        if (
+          $aegisDevelopmentSweepEnabled -and
+          $aegisDevelopmentSweepIdleEveryNLoops -ge 1 -and
+          ($aegisNoReadyLoopCounter % $aegisDevelopmentSweepIdleEveryNLoops -eq 0)
+        ) {
+          [void](Invoke-AegisDevelopmentPracticeSweep -Reason "idle-no-ready")
+        }
         Write-Host ("  [AEGIS] No READY tasks currently. Continuous autopilot sleeping {0}s and retrying..." -f $aegisIdleSleepSeconds) -ForegroundColor DarkGray
         Start-Sleep -Seconds $aegisIdleSleepSeconds
         Write-Host ""
@@ -1593,6 +1678,13 @@ if (Test-Path $phaseStateFile) {
           ($aegisCompletedInRun % $aegisProblemScannerEveryNTasks -eq 0)
         ) {
           [void](Invoke-AegisProblemScanner -Reason "after-completion")
+        }
+        if (
+          $aegisDevelopmentSweepEnabled -and
+          $aegisDevelopmentSweepEveryNTasks -ge 1 -and
+          ($aegisCompletedInRun % $aegisDevelopmentSweepEveryNTasks -eq 0)
+        ) {
+          [void](Invoke-AegisDevelopmentPracticeSweep -Reason "after-completion")
         }
 
       if (
