@@ -414,6 +414,11 @@ function Invoke-AegisRegenIfNeeded {
 Write-Log "Lane worker started. Lane=$Lane PollSeconds=$PollSeconds PreferAgent='$PreferAgent'"
 
 while ($true) {
+  $preResolved = Invoke-AutoResolveEvidenceIfNeeded
+  if ($preResolved) {
+    Write-Log "Pre-claim evidence sweep resolved one task."
+  }
+
   # --- Claim next ready task for this lane ---
   $rawResult = & $dispatchScript `
     -Lane $Lane `
@@ -464,6 +469,11 @@ while ($true) {
 
   $completeStr = ($completeResult | Out-String).Trim()
   Write-Log "Complete result for ${taskId}: $completeStr"
+
+  $postResolved = Invoke-AutoResolveEvidenceIfNeeded
+  if ($postResolved) {
+    Write-Log "Post-claim evidence sweep resolved one task."
+  }
 
   Start-Sleep -Seconds $PollSeconds
 }
