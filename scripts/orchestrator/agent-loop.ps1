@@ -924,6 +924,41 @@ function Test-MiniTypecheck {
   return $true
 }
 
+function Get-MeaningfulChangedFiles {
+  param([string[]]$BeforeFiles)
+
+  $afterFiles = @(git diff --name-only HEAD 2>$null)
+  $newFiles = @($afterFiles | Where-Object { $BeforeFiles -notcontains $_ })
+
+  # Ignore orchestrator churn/log artifacts when deciding whether development work happened.
+  $ignoredPrefixes = @(
+    "logs/orchestrator/",
+    "artifacts/",
+    "dist/"
+  )
+  $ignoredExact = @(
+    "scripts/orchestrator/prompts.json",
+    "logs/orchestrator/task-queue.json",
+    "logs/orchestrator/aegis-state.json",
+    "logs/orchestrator/aegis-phase-state.json"
+  )
+
+  $meaningful = @()
+  foreach ($f in $newFiles) {
+    if ($ignoredExact -contains $f) { continue }
+
+    $skip = $false
+    foreach ($prefix in $ignoredPrefixes) {
+      if ($f.StartsWith($prefix)) { $skip = $true; break }
+    }
+    if ($skip) { continue }
+
+    $meaningful += $f
+  }
+
+  return @($meaningful)
+}
+
 function Write-Divider { param([string]$color="DarkGray"); Write-Host ("-" * $w) -ForegroundColor $color }
 function Write-BigDivider { param([string]$color="Magenta"); Write-Host ("=" * $w) -ForegroundColor $color }
 
@@ -1326,6 +1361,38 @@ if (Test-Path $phaseStateFile) {
   # 7.5 MINI TYPECHECK on files changed during this cycle
   $afterCycleFiles = @(git diff --name-only HEAD 2>$null)
   $changedThisCycle = @($afterCycleFiles | Where-Object { $beforeCycleFiles -notcontains $_ })
+
+  if ($effectiveNonInteractive) {
+    $meaningfulChanges = Get-MeaningfulChangedFiles -BeforeFiles $beforeCycleFiles
+
+    if ($meaningfulChanges.Count -eq 0 -and $taskPhase -eq "implementation" -and $aegisProblemScannerEnabled) {
+      Write-Host "  [AEGIS] No meaningful implementation changes detected yet; attempting auto-fix scan before completion..." -ForegroundColor DarkYellow
+      [void](Invoke-AegisProblemScanner -Reason ("implementation-precomplete-{0}" -f $taskId))
+      $meaningfulChanges = Get-MeaningfulChangedFiles -BeforeFiles $beforeCycleFiles
+    }
+
+    if ($meaningfulChanges.Count -eq 0) {
+      Write-Host "  [AEGIS BLOCK] Prevented blind completion (no meaningful project changes detected for this task)." -ForegroundColor Red
+      Write-Host "  Task moved to evidence_pending; provide real code/docs changes, then complete explicitly." -ForegroundColor DarkYellow
+
+      $completeTaskScriptPath = Join-Path $scripts "complete-task.ps1"
+      if (Test-Path $completeTaskScriptPath) {
+        & powershell -ExecutionPolicy Bypass -File "$completeTaskScriptPath" `
+          -TaskId $taskId `
+          -WorkspaceRoot $root `
+          -EvidenceNote "Autopilot blocked blind implementation completion: no meaningful project diff detected." `
+          -ProducedRef "logs/orchestrator/evidence-pending/$taskId.md" `
+          -MarkEvidencePending `
+          -AllowQueued 2>&1 | Out-String | Write-Host
+      }
+
+      if ($effectiveNonInteractive) {
+        Write-Host "  [AEGIS] Exiting autopilot loop to avoid non-productive completion cycles." -ForegroundColor DarkYellow
+        break outerLoop
+      }
+    }
+  }
+
   $miniScanOk = Test-MiniTypecheck -changedFiles $changedThisCycle
   if (-not $miniScanOk) {
     if ($effectiveNonInteractive) {
