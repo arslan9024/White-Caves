@@ -132,6 +132,8 @@ const DashboardSearchItem: FC<{ item: SearchItem; onSelect: (item: SearchItem) =
   </button>
 );
 
+const UnifiedCRMAdapter: FC<CRMModuleProps> = () => <UnifiedCRM />;
+
 const CRM_MODULES: Record<string, CRMModule> = {
   unified: { Component: UnifiedCRMAdapter, label: 'Unified CRM Dashboard' },
   nadia: { Component: NadiaWhatsAppCRM, label: 'WhatsApp CRM' },
@@ -198,8 +200,6 @@ const formatCurrency = (value: number): string =>
     currency: 'AED',
     maximumFractionDigits: 0,
   }).format(value);
-
-const UnifiedCRMAdapter: FC<CRMModuleProps> = () => <UnifiedCRM />;
 
 const UnifiedDashboardPage: FC = () => {
   const navigate = useNavigate();
@@ -775,13 +775,18 @@ const UnifiedDashboardPage: FC = () => {
           />
 
           {isExecutiveCockpitMode && isSuperUser && !selectedDepartment && (
-            <section className="dashboard-executive-cockpit-banner" aria-label="Managing Director cockpit mode">
+            <section
+              className="dashboard-executive-cockpit-banner"
+              aria-label="Managing Director cockpit mode"
+            >
               <div>
-                <p className="dashboard-executive-cockpit-banner__eyebrow">Managing Director · Full Company View</p>
+                <p className="dashboard-executive-cockpit-banner__eyebrow">
+                  Managing Director · Full Company View
+                </p>
                 <h2>Executive cockpit engaged</h2>
                 <p>
-                  Priority control over portfolio, pipeline, team, finance, compliance, and AI modules.
-                  All company operations visible in one place.
+                  Priority control over portfolio, pipeline, team, finance, compliance, and AI
+                  modules. All company operations visible in one place.
                 </p>
               </div>
               <div className="dashboard-executive-cockpit-banner__actions">
@@ -792,22 +797,46 @@ const UnifiedDashboardPage: FC = () => {
                 >
                   Command palette
                 </button>
-                <button type="button" className="dashboard-superuser-btn" onClick={() => openWorkspaceTab('overview', 'unified')}>
+                <button
+                  type="button"
+                  className="dashboard-superuser-btn"
+                  onClick={() => openWorkspaceTab('overview', 'unified')}
+                >
                   Overview
                 </button>
-                <button type="button" className="dashboard-superuser-btn" onClick={() => openWorkspaceTab('analytics', 'analytics')}>
+                <button
+                  type="button"
+                  className="dashboard-superuser-btn"
+                  onClick={() => openWorkspaceTab('analytics', 'analytics')}
+                >
                   Analytics
                 </button>
-                <button type="button" className="dashboard-superuser-btn" onClick={() => handleCRMModuleSelect('theodora')}>
+                <button
+                  type="button"
+                  className="dashboard-superuser-btn"
+                  onClick={() => handleCRMModuleSelect('theodora')}
+                >
                   Finance
                 </button>
-                <button type="button" className="dashboard-superuser-btn" onClick={() => handleCRMModuleSelect('laila')}>
+                <button
+                  type="button"
+                  className="dashboard-superuser-btn"
+                  onClick={() => handleCRMModuleSelect('laila')}
+                >
                   Compliance
                 </button>
-                <button type="button" className="dashboard-superuser-btn" onClick={() => openWorkspaceTab('ai-hub', 'unified')}>
+                <button
+                  type="button"
+                  className="dashboard-superuser-btn"
+                  onClick={() => openWorkspaceTab('ai-hub', 'unified')}
+                >
                   AI modules
                 </button>
-                <button type="button" className="dashboard-superuser-btn" onClick={() => openWorkspaceTab('users', 'unified')}>
+                <button
+                  type="button"
+                  className="dashboard-superuser-btn"
+                  onClick={() => openWorkspaceTab('users', 'unified')}
+                >
                   Users
                 </button>
                 <button
@@ -858,9 +887,7 @@ const UnifiedDashboardPage: FC = () => {
             />
           )}
 
-          {!selectedDepartment && !selectedCRMModule && (
-            <DashboardKpiStrip cards={kpiCards} />
-          )}
+          {!selectedDepartment && !selectedCRMModule && <DashboardKpiStrip cards={kpiCards} />}
 
           {selectedDepartment ? (
             <div className="dashboard-surface-panel">
@@ -915,7 +942,9 @@ const UnifiedDashboardPage: FC = () => {
           <CRMContextPanel
             isSuperUser={isSuperUser}
             activeWorkspaceLabel={selectedCRMModuleConfig?.label ?? currentTab?.label ?? 'Overview'}
-            activeWorkspaceMeta={selectedCRMModuleConfig ? 'AI CRM module context' : 'Workspace context'}
+            activeWorkspaceMeta={
+              selectedCRMModuleConfig ? 'AI CRM module context' : 'Workspace context'
+            }
             selectedContext={
               selectedContext
                 ? {
@@ -925,7 +954,9 @@ const UnifiedDashboardPage: FC = () => {
                   }
                 : null
             }
-            recentActivities={Array.isArray(dashboardData?.recentActivities) ? dashboardData.recentActivities : []}
+            recentActivities={
+              Array.isArray(dashboardData?.recentActivities) ? dashboardData.recentActivities : []
+            }
             onOpenCommandPalette={() => setIsCommandPaletteOpen(true)}
             onOpenQuickAction={() => setIsCommandPaletteOpen(true)}
           />
@@ -944,7 +975,7 @@ const UnifiedDashboardPage: FC = () => {
             executeSearchItem(commandItems[activeIndex]);
           }
         }}
-        onSelect={(item) => executeSearchItem(item as unknown as SearchItem)}
+        onSelect={item => executeSearchItem(item as unknown as SearchItem)}
       />
     </AuthenticatedPageShell>
   );

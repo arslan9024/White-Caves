@@ -255,11 +255,16 @@ describe('HomePage', () => {
       });
     });
 
-    it('should show fallback status card when homepage data returns an error', async () => {
+    it('should show a single fallback alert when homepage data returns an error', async () => {
       MOCK_HOMEPAGE_ERROR = 'Network error';
       renderPage();
       await waitFor(() => {
-        expect(screen.getByText(/Live data temporarily limited/i)).toBeInTheDocument();
+        expect(
+          screen.getByText(
+            /Live market data is temporarily unavailable\. Showing trusted fallback data\./i
+          )
+        ).toBeInTheDocument();
+        expect(screen.getAllByRole('status')).toHaveLength(1);
       });
     });
   });
@@ -351,13 +356,6 @@ describe('HomePage', () => {
       });
     });
 
-    it('should render InteractiveMap', async () => {
-      renderPage();
-      await waitFor(() => {
-        expect(screen.getByTestId('interactive-map')).toBeInTheDocument();
-      });
-    });
-
     it('should render OffPlanTracker', async () => {
       renderPage();
       await waitFor(() => {
@@ -423,7 +421,9 @@ describe('HomePage', () => {
 
       await waitFor(() => {
         expect(
-          screen.getByText(/Live market data is temporarily unavailable\. Showing trusted fallback data\./i)
+          screen.getByText(
+            /Live market data is temporarily unavailable\. Showing trusted fallback data\./i
+          )
         ).toBeInTheDocument();
         expect(screen.getByRole('button', { name: /Retry live data/i })).toBeInTheDocument();
       });

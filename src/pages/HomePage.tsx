@@ -1,5 +1,6 @@
 import React, { FC, lazy, Suspense, useEffect, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 import { setProperties, type Property } from '../store/propertySlice';
 import {
   clearError,
@@ -43,7 +44,6 @@ const Team = lazy(() => import('../components/homepage/Team'));
 const Testimonials = lazy(() => import('../components/homepage/Testimonials'));
 const ContactCTA = lazy(() => import('../components/homepage/Contact'));
 const NewsletterSubscription = lazy(() => import('../components/NewsletterSubscription'));
-const InteractiveMap = lazy(() => import('../components/InteractiveMap'));
 const PropertyComparison = lazy(() => import('../components/PropertyComparison'));
 const OffPlanTracker = lazy(() => import('../components/OffPlanTracker'));
 const NeighborhoodAnalyzer = lazy(() => import('../components/NeighborhoodAnalyzer'));
@@ -102,6 +102,7 @@ const HomePage: FC = () => {
   const featuredProperties = useSelector(selectFeaturedProperties);
   const isHomepageLoading = useSelector(selectIsHomepageLoading);
   const homepageError = useSelector(selectHomepageError);
+  const navigate = useNavigate();
 
   // Use live data when available; fall back to static dummy data before API resolves
   const displayedFeatured = useMemo(
@@ -122,11 +123,19 @@ const HomePage: FC = () => {
   const trustHighlights = useMemo(
     () => [
       { label: 'Active Listings', value: marketStats.availableProperties.toLocaleString('en-US') },
-      { label: 'Average Price', value: `AED ${Math.round(marketStats.averagePrice).toLocaleString('en-US')}` },
+      {
+        label: 'Average Price',
+        value: `AED ${Math.round(marketStats.averagePrice).toLocaleString('en-US')}`,
+      },
       { label: 'Top Agents', value: String(topAgents.length || 0) },
       { label: 'Popular Areas', value: String(locationTrends.length || 0) },
     ],
-    [marketStats.availableProperties, marketStats.averagePrice, topAgents.length, locationTrends.length]
+    [
+      marketStats.availableProperties,
+      marketStats.averagePrice,
+      topAgents.length,
+      locationTrends.length,
+    ]
   );
   const { addToRecent } = useRecentlyViewed();
 
@@ -143,10 +152,7 @@ const HomePage: FC = () => {
 
   const handlePropertyClick = (propertyId: number): void => {
     addToRecent(String(propertyId));
-    const element = document.getElementById(`property-${propertyId}`);
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    }
+    navigate(`/property/${propertyId}`);
   };
 
   useEffect(() => {
@@ -155,6 +161,38 @@ const HomePage: FC = () => {
     // Fetch live homepage data in the background (@Mira's aggregate endpoint)
     dispatch(fetchHomepageData());
   }, [dispatch]);
+
+  useEffect(() => {
+    const refreshIntervalMs = 120_000;
+    const refreshTimer = window.setInterval(() => {
+      dispatch(fetchHomepageData());
+    }, refreshIntervalMs);
+
+    const handleVisibilityChange = (): void => {
+      if (document.visibilityState === 'visible') {
+        dispatch(fetchHomepageData());
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
+    return () => {
+      window.clearInterval(refreshTimer);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
+  }, [dispatch]);
+
+  useEffect(() => {
+    if (!homepageError || isHomepageLoading) return;
+
+    const retryTimer = window.setTimeout(() => {
+      dispatch(fetchHomepageData());
+    }, 45_000);
+
+    return () => {
+      window.clearTimeout(retryTimer);
+    };
+  }, [dispatch, homepageError, isHomepageLoading]);
 
   const handleHomepageRetry = (): void => {
     dispatch(clearError());
@@ -176,10 +214,12 @@ const HomePage: FC = () => {
       <div className="home-page">
         {homepageError && !isHomepageLoading ? (
           <div role="status" aria-live="polite" className="homepage-live-data-alert">
-            <span>
-              Live market data is temporarily unavailable. Showing trusted fallback data. ({homepageError})
-            </span>
-            <button type="button" onClick={handleHomepageRetry} className="homepage-live-data-alert__retry">
+            <span>Live market data is temporarily unavailable. Showing trusted fallback data.</span>
+            <button
+              type="button"
+              onClick={handleHomepageRetry}
+              className="homepage-live-data-alert__retry"
+            >
               Retry live data
             </button>
           </div>
@@ -187,14 +227,6 @@ const HomePage: FC = () => {
 
         {/* Phase 25: Hero is the LCP element — NOT wrapped in Suspense so it renders on first paint */}
         <Hero marketStats={marketStats} isLoading={isHomepageLoading} />
-        {homepageError && (
-          <section className="home-page__status" aria-live="polite">
-            <div className="home-page__status-card" role="status">
-              <strong>Live data temporarily limited.</strong>
-              Showing trusted fallback market data while connection recovers.
-            </div>
-          </section>
-        )}
         <section className="home-page__trust-strip" aria-label="Market trust highlights">
           <div className="home-page__trust-grid">
             {trustHighlights.map(item => (
@@ -223,24 +255,15 @@ const HomePage: FC = () => {
           />
 
           {/* ── Tools & Insights ───────────────────────────────────────────────── */}
-          <div
-            id="tools-insights"
-            className="home-page-tools-insights"
-          >
+          <div id="tools-insights" className="home-page-tools-insights">
             <div className="home-page-tools-insights__inner">
-              <p className="home-page-tools-insights__eyebrow">
-                Expert Resources
-              </p>
-              <h2 className="home-page-tools-insights__title">
-                Tools &amp; Insights
-              </h2>
+              <p className="home-page-tools-insights__eyebrow">Expert Resources</p>
+              <h2 className="home-page-tools-insights__title">Tools &amp; Insights</h2>
               <p className="home-page-tools-insights__description">
                 Use our interactive calculators, market data, and research tools to make confident
                 property decisions in Dubai.
               </p>
             </div>
-
-            <InteractiveMap />
             <PropertyComparison />
             <RentVsBuyCalculator />
             <OffPlanTracker
