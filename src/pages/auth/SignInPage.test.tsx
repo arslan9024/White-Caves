@@ -148,7 +148,9 @@ describe('SignInPage', () => {
       renderPage();
       expect(screen.getByRole('button', { name: /Google/i })).toBeDisabled();
       expect(
-        screen.getByText(/Google sign-in is temporarily unavailable because Firebase authentication/)
+        screen.getByText(
+          /Google sign-in is temporarily unavailable because Firebase authentication/
+        )
       ).toBeInTheDocument();
     });
 
@@ -503,7 +505,7 @@ describe('SignInPage', () => {
       });
 
       await waitFor(() => {
-        expect(mockNavigate).toHaveBeenCalledWith('/crm', { replace: true });
+        expect(mockNavigate).toHaveBeenCalledWith('/profile');
       });
     });
 

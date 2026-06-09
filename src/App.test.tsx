@@ -282,7 +282,7 @@ vi.mock('./store/navigationSlice', () => ({
 }));
 
 // Now import the component
-import App from './App';
+import App from './App.tsx';
 
 // ─── Helper to render with specific route ───────────────────────────────
 // BrowserRouter is inside App, so we need to set window.location before render

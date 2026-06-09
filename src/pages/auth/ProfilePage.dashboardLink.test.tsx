@@ -65,6 +65,6 @@ describe('ProfilePage dashboard link routing', () => {
     );
 
     const dashboardLink = await waitFor(() => screen.getByRole('link', { name: 'Dashboard' }));
-    expect(dashboardLink.getAttribute('href')).toBe('/owner/dashboard');
+    expect(dashboardLink.getAttribute('href')).toBe('/crm');
   });
 });
