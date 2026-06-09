@@ -61,6 +61,7 @@
     "orchestrator:development:sweep": "powershell -ExecutionPolicy Bypass -File scripts/orchestrator/development-practice-sweep.ps1",
     "orchestrator:development:sweep:autofix": "powershell -ExecutionPolicy Bypass -File scripts/orchestrator/development-practice-sweep.ps1 -AutoFix",
     "orchestrator:development:sweep:e2e": "powershell -ExecutionPolicy Bypass -File scripts/orchestrator/development-practice-sweep.ps1 -AutoFix -IncludeE2E",
+    "orchestrator:development:sweep:targeted": "powershell -ExecutionPolicy Bypass -File scripts/orchestrator/development-practice-sweep.ps1 -AutoFix -TargetedChecks",
     "orchestrator:queue:init": "powershell -ExecutionPolicy Bypass -File scripts/orchestrator/init-queue.ps1",
     "orchestrator:aegis:regenerate": "powershell -ExecutionPolicy Bypass -File scripts/orchestrator/aegis-regenerate.ps1",
     "orchestrator:aegis:one-prompt": "node scripts/orchestrator/aegis-one-prompt.js",

@@ -244,6 +244,8 @@
     "developmentSweepIdleEveryNLoops": 10,
     "developmentSweepIncludeE2E": false,
     "developmentSweepIncludeAudit": false,
+    "developmentSweepTargetedChecksEnabled": true,
+    "developmentSweepTargetedMaxChecks": 4,
     "priorityOverride": {
       "enabled": true,
       "tasks": [

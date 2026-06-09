@@ -107,6 +107,8 @@ $aegisDevelopmentSweepEveryNTasks = 5
 $aegisDevelopmentSweepIdleEveryNLoops = 10
 $aegisDevelopmentSweepIncludeE2E = $false
 $aegisDevelopmentSweepIncludeAudit = $false
+$aegisDevelopmentSweepTargetedChecksEnabled = $true
+$aegisDevelopmentSweepTargetedMaxChecks = 4
 $devSmokeScript = Join-Path $scripts "dev-smoke.ps1"
 if (Test-Path $policyFile) {
   try {
@@ -226,6 +228,15 @@ if (Test-Path $policyFile) {
       }
       if ($null -ne $policy.aegis.developmentSweepIncludeAudit) {
         $aegisDevelopmentSweepIncludeAudit = [bool]$policy.aegis.developmentSweepIncludeAudit
+      }
+      if ($null -ne $policy.aegis.developmentSweepTargetedChecksEnabled) {
+        $aegisDevelopmentSweepTargetedChecksEnabled = [bool]$policy.aegis.developmentSweepTargetedChecksEnabled
+      }
+      if ($null -ne $policy.aegis.developmentSweepTargetedMaxChecks) {
+        $parsedTargetedMax = 0
+        if ([int]::TryParse([string]$policy.aegis.developmentSweepTargetedMaxChecks, [ref]$parsedTargetedMax) -and $parsedTargetedMax -ge 1 -and $parsedTargetedMax -le 20) {
+          $aegisDevelopmentSweepTargetedMaxChecks = $parsedTargetedMax
+        }
       }
     }
   } catch {
@@ -738,7 +749,11 @@ function Build-AegisFallbackPrompt {
 
 function Invoke-AegisDevelopmentPracticeSweep {
   param(
-    [string]$Reason = "periodic"
+    [string]$Reason = "periodic",
+    [string]$TaskId = "",
+    [string]$TaskTitle = "",
+    [string]$TaskPhase = "",
+    [string]$TaskLane = ""
   )
 
   $result = @{ Ran = $false; Ok = $true }
@@ -763,6 +778,27 @@ function Invoke-AegisDevelopmentPracticeSweep {
   }
   if ($aegisDevelopmentSweepIncludeAudit) {
     $args += "-IncludeAudit"
+  }
+  if ($aegisDevelopmentSweepTargetedChecksEnabled) {
+    $args += "-TargetedChecks"
+    $args += "-TargetedMaxChecks"
+    $args += [string]$aegisDevelopmentSweepTargetedMaxChecks
+  }
+  if (-not [string]::IsNullOrWhiteSpace($TaskId)) {
+    $args += "-TaskId"
+    $args += $TaskId
+  }
+  if (-not [string]::IsNullOrWhiteSpace($TaskTitle)) {
+    $args += "-TaskTitle"
+    $args += $TaskTitle
+  }
+  if (-not [string]::IsNullOrWhiteSpace($TaskPhase)) {
+    $args += "-TaskPhase"
+    $args += $TaskPhase
+  }
+  if (-not [string]::IsNullOrWhiteSpace($TaskLane)) {
+    $args += "-TaskLane"
+    $args += $TaskLane
   }
 
   $sweepOut = & powershell @args 2>&1
@@ -1684,7 +1720,7 @@ if (Test-Path $phaseStateFile) {
           $aegisDevelopmentSweepEveryNTasks -ge 1 -and
           ($aegisCompletedInRun % $aegisDevelopmentSweepEveryNTasks -eq 0)
         ) {
-          [void](Invoke-AegisDevelopmentPracticeSweep -Reason "after-completion")
+          [void](Invoke-AegisDevelopmentPracticeSweep -Reason "after-completion" -TaskId $taskId -TaskTitle ([string]$task.title) -TaskPhase $taskPhase -TaskLane ([string]$task.lane))
         }
 
       if (

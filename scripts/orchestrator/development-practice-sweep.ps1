@@ -3,6 +3,12 @@ param(
   [switch]$AutoFix,
   [switch]$IncludeE2E,
   [switch]$IncludeAudit,
+  [switch]$TargetedChecks,
+  [int]$TargetedMaxChecks = 4,
+  [string]$TaskId = "",
+  [string]$TaskTitle = "",
+  [string]$TaskPhase = "",
+  [string]$TaskLane = "",
   [switch]$Brief
 )
 
@@ -56,12 +62,67 @@ function Invoke-NpmScript {
   }
 }
 
+function Get-TargetedChecks {
+  param(
+    [string]$TaskTitle,
+    [string]$TaskPhase,
+    [string]$TaskLane,
+    [int]$MaxChecks
+  )
+
+  $context = (("{0} {1} {2}" -f $TaskTitle, $TaskPhase, $TaskLane).ToLower())
+  if ([string]::IsNullOrWhiteSpace($context)) { return @() }
+
+  $selected = New-Object System.Collections.Generic.List[object]
+
+  function Add-Check {
+    param([string]$Name, [string]$Purpose)
+
+    foreach ($existing in $selected) {
+      if ([string]$existing.Name -eq $Name) { return }
+    }
+    $selected.Add(@{ Name = $Name; Purpose = $Purpose; Required = $false }) | Out-Null
+  }
+
+  if ($context -match "ux|ui|frontend|homepage|dashboard|layout|design|accessibility|responsive") {
+    Add-Check -Name "test:e2e:smoke" -Purpose "Targeted frontend UX smoke"
+    Add-Check -Name "test:e2e:accessibility" -Purpose "Targeted accessibility regression"
+    Add-Check -Name "test:run" -Purpose "Targeted frontend/component regression"
+  }
+
+  if ($context -match "backend|api|auth|login|rbac|server|middleware|database|prisma|security") {
+    Add-Check -Name "verify:runtime:dry" -Purpose "Targeted backend/runtime route verification"
+    Add-Check -Name "test:assistant-contract" -Purpose "Targeted service/contract verification"
+    Add-Check -Name "test:run" -Purpose "Targeted backend regression"
+  }
+
+  if ($context -match "performance|seo|cache|pwa|core web vitals|lighthouse") {
+    Add-Check -Name "test:e2e:performance" -Purpose "Targeted performance regression"
+    Add-Check -Name "build" -Purpose "Targeted production build verification"
+  }
+
+  if ($context -match "ai|assistant|chat|automation|whatsapp") {
+    Add-Check -Name "test:assistant-contract" -Purpose "Targeted assistant/chat contract validation"
+    Add-Check -Name "test:run" -Purpose "Targeted AI workflow regression"
+  }
+
+  $cap = if ($MaxChecks -lt 1) { 1 } else { $MaxChecks }
+  return @($selected | Select-Object -First $cap)
+}
+
 $result = [ordered]@{
   generatedAt = (Get-Date).ToString("o")
   workspaceRoot = [string]$root
   autoFixEnabled = [bool]$AutoFix
   includeE2E = [bool]$IncludeE2E
   includeAudit = [bool]$IncludeAudit
+  targetedChecks = [bool]$TargetedChecks
+  taskContext = @{
+    taskId = [string]$TaskId
+    title = [string]$TaskTitle
+    phase = [string]$TaskPhase
+    lane = [string]$TaskLane
+  }
   status = "ok"
   blockers = @()
   warnings = @()
@@ -133,17 +194,35 @@ if ($IncludeAudit) {
   $checks += @{ Name = "audit"; Purpose = "Dependency security audit"; Required = $false }
 }
 
+if ($TargetedChecks) {
+  $targeted = Get-TargetedChecks -TaskTitle $TaskTitle -TaskPhase $TaskPhase -TaskLane $TaskLane -MaxChecks $TargetedMaxChecks
+  if ($targeted.Count -gt 0) {
+    $result.targetedSelection = @($targeted | ForEach-Object { $_.Name })
+    foreach ($tc in $targeted) {
+      $checks += @{ Name = [string]$tc.Name; Purpose = [string]$tc.Purpose; Required = $false }
+    }
+  } else {
+    $result.targetedSelection = @()
+  }
+}
+
+$executed = @{}
+
 foreach ($check in $checks) {
   $scriptName = [string]$check.Name
+  if ($executed.ContainsKey($scriptName)) { continue }
+
   if (-not (Test-NpmScript -Package $pkg -ScriptName $scriptName)) {
     if ([bool]$check.Required) {
       $result.warnings += "Missing npm script: $scriptName (required by sweep profile)"
     }
+    $executed[$scriptName] = $true
     continue
   }
 
   $run = Invoke-NpmScript -ScriptName $scriptName -Purpose ([string]$check.Purpose)
   $result.actions += $run
+  $executed[$scriptName] = $true
 
   if (-not $run.ok -and [bool]$check.Required) {
     $result.blockers += ("Required sweep check failed: {0}" -f $scriptName)
