@@ -299,6 +299,8 @@
     "aegis:github:bootstrap": "node scripts/orchestrator/aegis-github-bootstrap.js",
     "aegis:github:bootstrap:strict": "node scripts/orchestrator/aegis-github-bootstrap.js --strict",
     "aegis:github:bootstrap:daily": "node scripts/orchestrator/aegis-github-bootstrap.js --run-daily",
+    "aegis:report:exec": "node scripts/orchestrator/aegis-generate-exec-summary.js",
+    "aegis:report:exec:date": "node scripts/orchestrator/aegis-generate-exec-summary.js --date",
     "aegis:auth:setup": "node scripts/orchestrator/aegis-auth-setup.js",
     "aegis:auth:fix": "node scripts/orchestrator/aegis-auth-setup.js --fix",
     "aegis:roadmap:sync": "node scripts/orchestrator/github-issue-roadmap.js --owner arslan9024 --repo White-Caves --state open --batch-size 3 --bootstrap-from-discovery --bootstrap-target-count 50 --bootstrap-per-run 5 --apply",
