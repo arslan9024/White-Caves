@@ -219,6 +219,16 @@ router.post(
     let resolvedLeadId = typeof leadId === 'string' && leadId.length > 0 ? leadId : null;
 
     if (!resolvedLeadId) {
+      const currentUser = req.user as
+        | {
+            id: string;
+            email?: string | null;
+            role: string;
+            name?: string | null;
+            phone?: string | null;
+          }
+        | undefined;
+
       const existingLead = req.user?.email
         ? await prisma.lead.findFirst({
             where: {
@@ -235,9 +245,9 @@ router.post(
       } else {
         const inquiryLead = await prisma.lead.create({
           data: {
-            name: req.user?.name || req.user?.email || 'Viewing inquiry',
-            email: req.user?.email || null,
-            phone: req.user?.phone || null,
+            name: currentUser?.name || currentUser?.email || 'Viewing inquiry',
+            email: currentUser?.email || null,
+            phone: currentUser?.phone || null,
             source: 'website',
             status: 'viewing',
             propertyId,

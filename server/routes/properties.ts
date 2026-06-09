@@ -584,10 +584,10 @@ router.get(
   '/:id',
   requirePermission('view_properties'),
   asyncHandler(async (req: Request, res: Response) => {
-    // @ts-expect-error -- pre-existing: req.params/query string|string[] narrowing
-    validateIdParam(req.params.id, 'Property ID');
+    const { id } = req.params as Record<string, string>;
+    validateIdParam(id, 'Property ID');
 
-    const cacheKey = `properties:detail:${req.params.id}`;
+    const cacheKey = `properties:detail:${id}`;
     const cached = await cacheService.get(cacheKey);
     if (cached !== null) {
       res.setHeader('X-Cache', 'HIT');
@@ -595,8 +595,7 @@ router.get(
     }
 
     const property = await prisma.property.findUnique({
-      // @ts-expect-error -- pre-existing: req.params/query string|string[] narrowing
-      where: { id: req.params.id },
+      where: { id },
       include: {
         user: { select: { id: true, name: true, email: true, phone: true } },
         leads: {

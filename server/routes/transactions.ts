@@ -121,8 +121,8 @@ router.get(
   '/:id',
   requirePermission('view_payments'),
   asyncHandler(async (req: Request, res: Response) => {
-    // @ts-expect-error -- pre-existing: req.params/query string|string[] narrowing
-    validateIdParam(req.params.id, 'Transaction ID');
+    const { id } = req.params as Record<string, string>;
+    validateIdParam(id, 'Transaction ID');
 
     // AUTHORIZATION: Only managers/finance can view individual transaction details
     const allowedRoles = ['owner', 'manager', 'admin', 'finance'];
@@ -131,8 +131,7 @@ router.get(
     }
 
     const transaction = await prisma.transaction.findUnique({
-      // @ts-expect-error -- pre-existing: req.params/query string|string[] narrowing
-      where: { id: req.params.id },
+      where: { id },
     });
 
     if (!transaction) throw new AppError('Transaction not found', 404);

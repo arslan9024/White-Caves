@@ -426,9 +426,19 @@ router.get(
       }),
     ]);
 
+    const normalizedActivities = activities.map(activity => ({
+      ...activity,
+      metadata:
+        activity.metadata &&
+        typeof activity.metadata === 'object' &&
+        !Array.isArray(activity.metadata)
+          ? (activity.metadata as Record<string, unknown>)
+          : null,
+    }));
+
     res.status(200).json({
       success: true,
-      data: buildLeadTimeline({ lead, activities, viewings }),
+      data: buildLeadTimeline({ lead, activities: normalizedActivities, viewings }),
     });
   })
 );
@@ -1356,6 +1366,11 @@ router.post(
       }
 
       for (const leadId of validIds) {
+        const activityMetadata: Prisma.InputJsonValue = {
+          bulkAction: typedAction,
+          payload: payloadObj as unknown as Prisma.InputJsonValue,
+        };
+
         await tx.activity.create({
           data: {
             type: 'lead',
@@ -1363,7 +1378,7 @@ router.post(
             description: activityDescription,
             userId: req.user?.id ?? null,
             leadId,
-            metadata: { bulkAction: typedAction, payload: payloadObj },
+            metadata: activityMetadata,
           },
         });
       }
