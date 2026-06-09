@@ -246,6 +246,30 @@
     "developmentSweepIncludeAudit": false,
     "developmentSweepTargetedChecksEnabled": true,
     "developmentSweepTargetedMaxChecks": 4,
+    "developmentSweepRiskTierEnabled": true,
+    "developmentSweepRiskTierBlockOnMissingRequired": false,
+    "developmentSweepRiskProfiles": {
+      "security": {
+        "requiredChecks": ["test:run", "verify:runtime:dry", "audit"],
+        "optionalChecks": ["test:e2e:accessibility"]
+      },
+      "auth": {
+        "requiredChecks": ["test:run", "verify:runtime:dry", "test:assistant-contract"],
+        "optionalChecks": ["test:e2e:smoke"]
+      },
+      "database": {
+        "requiredChecks": ["test:run", "verify:runtime:dry", "build"],
+        "optionalChecks": []
+      },
+      "payment": {
+        "requiredChecks": ["test:run", "verify:runtime:dry", "build"],
+        "optionalChecks": ["audit"]
+      },
+      "general": {
+        "requiredChecks": ["test:run"],
+        "optionalChecks": []
+      }
+    },
     "priorityOverride": {
       "enabled": true,
       "tasks": [
