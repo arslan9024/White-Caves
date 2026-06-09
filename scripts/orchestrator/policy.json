@@ -307,6 +307,10 @@
     },
     "devSmokeEnabled": true,
     "devSmokeEveryNTasks": 3,
+    "devRuntimeCheckEnabled": true,
+    "devRuntimeCheckIntervalHours": 2,
+    "devRuntimeCheckMaxRunMinutes": 2,
+    "devRuntimeCheckRunProblemScan": true,
     "autopilotRequireProducedRef": false,
     "autopilotAutoResolveEvidencePending": true,
     "realityExecutionGate": {

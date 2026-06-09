@@ -45,7 +45,9 @@ $verifyPromptsScript = Join-Path $scripts "verify-prompts.ps1"
 $blockerReportScript = Join-Path $scripts "blocker-report.ps1"
 $projectProblemScanScript = Join-Path $scripts "project-problem-scan.ps1"
 $developmentPracticeSweepScript = Join-Path $scripts "development-practice-sweep.ps1"
+$devRuntimeCheckScript = Join-Path $scripts "dev-runtime-check.ps1"
 $phaseStateFile = Join-Path $root "logs\orchestrator\aegis-phase-state.json"
+$devRuntimeCheckStateFile = Join-Path $root "logs\orchestrator\aegis-dev-runtime-check-state.json"
 $scanLogDir = Join-Path $root "logs\orchestrator\scans"
 $loopSyncScript = Join-Path $scripts "loop-start-sync.ps1"
 $cycleSummaryScript = Join-Path $scripts "cycle-summary.ps1"
@@ -109,6 +111,10 @@ $aegisDevelopmentSweepIncludeE2E = $false
 $aegisDevelopmentSweepIncludeAudit = $false
 $aegisDevelopmentSweepTargetedChecksEnabled = $true
 $aegisDevelopmentSweepTargetedMaxChecks = 4
+$aegisTimedDevCheckEnabled = $true
+$aegisTimedDevCheckIntervalHours = 2
+$aegisTimedDevCheckMaxRunMinutes = 2
+$aegisTimedDevCheckRunProblemScan = $true
 $devSmokeScript = Join-Path $scripts "dev-smoke.ps1"
 if (Test-Path $policyFile) {
   try {
@@ -237,6 +243,24 @@ if (Test-Path $policyFile) {
         if ([int]::TryParse([string]$policy.aegis.developmentSweepTargetedMaxChecks, [ref]$parsedTargetedMax) -and $parsedTargetedMax -ge 1 -and $parsedTargetedMax -le 20) {
           $aegisDevelopmentSweepTargetedMaxChecks = $parsedTargetedMax
         }
+      }
+      if ($null -ne $policy.aegis.devRuntimeCheckEnabled) {
+        $aegisTimedDevCheckEnabled = [bool]$policy.aegis.devRuntimeCheckEnabled
+      }
+      if ($null -ne $policy.aegis.devRuntimeCheckIntervalHours) {
+        $parsedTimedDevHours = 0
+        if ([int]::TryParse([string]$policy.aegis.devRuntimeCheckIntervalHours, [ref]$parsedTimedDevHours) -and $parsedTimedDevHours -ge 1 -and $parsedTimedDevHours -le 24) {
+          $aegisTimedDevCheckIntervalHours = $parsedTimedDevHours
+        }
+      }
+      if ($null -ne $policy.aegis.devRuntimeCheckMaxRunMinutes) {
+        $parsedTimedDevMinutes = 0
+        if ([int]::TryParse([string]$policy.aegis.devRuntimeCheckMaxRunMinutes, [ref]$parsedTimedDevMinutes) -and $parsedTimedDevMinutes -ge 1 -and $parsedTimedDevMinutes -le 15) {
+          $aegisTimedDevCheckMaxRunMinutes = $parsedTimedDevMinutes
+        }
+      }
+      if ($null -ne $policy.aegis.devRuntimeCheckRunProblemScan) {
+        $aegisTimedDevCheckRunProblemScan = [bool]$policy.aegis.devRuntimeCheckRunProblemScan
       }
     }
   } catch {
@@ -1014,6 +1038,95 @@ function Invoke-AegisProblemScanner {
   return $result
 }
 
+function Get-AegisTimedDevCheckLastRunAt {
+  if (-not (Test-Path $devRuntimeCheckStateFile)) { return $null }
+
+  try {
+    $state = Get-Content $devRuntimeCheckStateFile -Raw | ConvertFrom-Json
+    if ($null -eq $state) { return $null }
+    $value = [string]$state.lastRunAt
+    if ([string]::IsNullOrWhiteSpace($value)) { return $null }
+    return [DateTime]::Parse($value)
+  } catch {
+    return $null
+  }
+}
+
+function Set-AegisTimedDevCheckLastRunAt {
+  param(
+    [DateTime]$Timestamp,
+    [string]$Status = "ok",
+    [string]$Reason = ""
+  )
+
+  try {
+    $payload = @{
+      lastRunAt = $Timestamp.ToString("o")
+      status = $Status
+      reason = $Reason
+    }
+    $json = $payload | ConvertTo-Json -Depth 5
+    [System.IO.File]::WriteAllText($devRuntimeCheckStateFile, $json, (New-Object System.Text.UTF8Encoding($false)))
+  } catch {
+    Write-Host "  [AEGIS DEV-CHECK] Failed to persist timed check state; continuing." -ForegroundColor DarkYellow
+  }
+}
+
+function Invoke-AegisTimedDevRuntimeCheckIfDue {
+  param(
+    [string]$Reason = "periodic"
+  )
+
+  $result = @{ Ran = $false; Ok = $true; Due = $false }
+
+  if (-not $effectiveNonInteractive) { return $result }
+  if (-not $aegisTimedDevCheckEnabled) { return $result }
+  if (-not (Test-Path $devRuntimeCheckScript)) { return $result }
+
+  $now = Get-Date
+  $lastRun = Get-AegisTimedDevCheckLastRunAt
+  $isDue = ($null -eq $lastRun)
+  if (-not $isDue) {
+    $elapsedHours = ($now - $lastRun).TotalHours
+    $isDue = ($elapsedHours -ge [double]$aegisTimedDevCheckIntervalHours)
+  }
+
+  $result.Due = $isDue
+  if (-not $isDue) { return $result }
+
+  $result.Ran = $true
+  Write-Host ""
+  Write-Host ("  [AEGIS DEV-CHECK] Running timed npm run dev startup check (every {0}h) ..." -f $aegisTimedDevCheckIntervalHours) -ForegroundColor Cyan
+
+  $args = @(
+    "-ExecutionPolicy", "Bypass",
+    "-File", "$devRuntimeCheckScript",
+    "-WorkspaceRoot", "$root",
+    "-MaxRunMinutes", [string]$aegisTimedDevCheckMaxRunMinutes,
+    "-Brief"
+  )
+  if ($aegisTimedDevCheckRunProblemScan) {
+    $args += "-RunProblemScan"
+  }
+
+  $out = & powershell @args 2>&1
+  $text = ($out | Out-String).Trim()
+  if (-not [string]::IsNullOrWhiteSpace($text)) {
+    Write-Host $text
+  }
+
+  $result.Ok = ($LASTEXITCODE -eq 0)
+  if ($result.Ok) {
+    Write-Host "  [AEGIS DEV-CHECK] Timed dev check passed." -ForegroundColor Green
+    Set-AegisTimedDevCheckLastRunAt -Timestamp $now -Status "ok" -Reason $Reason
+  } else {
+    Write-Host "  [AEGIS DEV-CHECK] Timed dev check found issues; continuing with recovery cadence." -ForegroundColor DarkYellow
+    Set-AegisTimedDevCheckLastRunAt -Timestamp $now -Status "issues_found" -Reason $Reason
+  }
+
+  return $result
+}
+
 function Get-PromptRecord {
   param([string]$taskId)
 
@@ -1252,6 +1365,8 @@ if (Test-Path $phaseStateFile) {
       break outerLoop
     }
   }
+
+  [void](Invoke-AegisTimedDevRuntimeCheckIfDue -Reason ("cycle-{0}" -f $loopCount))
 
   $doneNow = Get-QueueDoneCount
   $readyNow = Get-ReadyCount
