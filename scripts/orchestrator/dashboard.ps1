@@ -17,6 +17,9 @@ $stateDir    = Join-Path $WorkspaceRoot "logs\orchestrator"
 $queueFile   = Join-Path $stateDir "task-queue.json"
 $pidFile     = Join-Path $stateDir "worker-processes.json"
 $wdLog       = Join-Path $stateDir "watchdog-scheduler.log"
+$policyFile  = Join-Path $WorkspaceRoot "scripts\orchestrator\policy.json"
+$devRuntimeStateFile = Join-Path $stateDir "aegis-dev-runtime-check-state.json"
+$devRuntimeSummaryLog = Join-Path $stateDir "dev-runtime-check.log"
 $script:LastGoodQueue = $null
 
 function Read-FileShared {
@@ -246,6 +249,80 @@ function Convert-ToDateSafe {
   }
 }
 
+function Read-JsonShared {
+  param([string]$Path)
+
+  if (-not (Test-Path $Path)) { return $null }
+  $raw = Read-FileShared -Path $Path
+  if ([string]::IsNullOrWhiteSpace($raw)) { return $null }
+  try {
+    return ($raw | ConvertFrom-Json)
+  } catch {
+    return $null
+  }
+}
+
+function Get-TimedDevCheckIntervalHours {
+  $defaultHours = 2
+  if (-not (Test-Path $policyFile)) { return $defaultHours }
+  $policy = Read-JsonShared -Path $policyFile
+  if ($null -eq $policy -or $null -eq $policy.aegis) { return $defaultHours }
+
+  $value = $policy.aegis.devRuntimeCheckIntervalHours
+  if ($null -eq $value) { return $defaultHours }
+
+  $parsed = 0
+  if ([int]::TryParse([string]$value, [ref]$parsed) -and $parsed -ge 1 -and $parsed -le 24) {
+    return $parsed
+  }
+
+  return $defaultHours
+}
+
+function Get-TimedDevCheckState {
+  $state = Read-JsonShared -Path $devRuntimeStateFile
+  if ($null -ne $state) { return $state }
+
+  if (-not (Test-Path $devRuntimeSummaryLog)) { return $null }
+  try {
+    $lines = @(Get-Content $devRuntimeSummaryLog -ErrorAction SilentlyContinue)
+    if ($lines.Count -eq 0) { return $null }
+    for ($i = $lines.Count - 1; $i -ge 0; $i--) {
+      $line = [string]$lines[$i]
+      if ([string]::IsNullOrWhiteSpace($line)) { continue }
+      if ($line -notmatch '^[\[]\d{4}-\d{2}-\d{2}') { continue }
+
+      $tail = @($lines[$i..($lines.Count - 1)])
+      $joined = ($tail -join [Environment]::NewLine)
+      $jsonStart = $joined.IndexOf('{')
+      $jsonEnd = $joined.LastIndexOf('}')
+      if ($jsonStart -lt 0 -or $jsonEnd -lt $jsonStart) { continue }
+
+      $jsonText = $joined.Substring($jsonStart, ($jsonEnd - $jsonStart + 1))
+      try {
+        $parsed = $jsonText | ConvertFrom-Json
+        if ($null -ne $parsed) { return $parsed }
+      } catch {
+        continue
+      }
+    }
+  } catch {
+    return $null
+  }
+
+  return $null
+}
+
+function Get-TimedDevCheckNextDue {
+  param([object]$State)
+
+  if ($null -eq $State) { return $null }
+  $lastRun = Convert-ToDateSafe -Value $State.lastRunAt
+  if ($null -eq $lastRun) { return $null }
+  $hours = [double](Get-TimedDevCheckIntervalHours)
+  return $lastRun.AddHours($hours)
+}
+
 function Get-Phase {
   param([object]$Task)
 
@@ -342,6 +419,32 @@ function Show-Dashboard {
     $deadCount = $total - $aliveCount
     $healthColor = if ($deadCount -eq 0) { "Green" } else { "Yellow" }
     Write-Host ("  Alive: $aliveCount / $total" + $(if ($deadCount -gt 0) { "  ($deadCount dead -- run: npm run orchestrator:bg:restart)" } else { "" })) -ForegroundColor $healthColor
+  }
+
+  # ── 1.5 Timed dev runtime checks ──────────────────────────────────────────
+  Write-Header "TIMED DEV RUNTIME CHECK"
+  $devState = Get-TimedDevCheckState
+  if ($null -eq $devState) {
+    Write-Host "  [NOT RUN] No timed dev runtime check state found yet." -ForegroundColor DarkYellow
+    Write-Host "  Run now: npm run orchestrator:dev:runtime-check" -ForegroundColor DarkGray
+    Write-Host "  Scheduler: every 2 hours inside autopilot" -ForegroundColor DarkGray
+  } else {
+    $lastRun = Convert-ToDateSafe -Value $devState.lastRunAt
+    $nextDue = Get-TimedDevCheckNextDue -State $devState
+    $status = [string]$devState.status
+    $statusColor = if ($status -eq "ok") { "Green" } elseif ($status -eq "ok_with_warnings") { "Yellow" } else { "Red" }
+    $intervalHours = Get-TimedDevCheckIntervalHours
+    Write-Host ("  Last run  : {0}" -f $(if ($null -ne $lastRun) { $lastRun.ToString("yyyy-MM-dd HH:mm:ss") } else { "unknown" })) -ForegroundColor Cyan
+    Write-Host ("  Next due  : {0}" -f $(if ($null -ne $nextDue) { $nextDue.ToString("yyyy-MM-dd HH:mm:ss") } else { "unknown" })) -ForegroundColor Cyan
+    Write-Host ("  Interval  : every {0} hour(s)" -f $intervalHours) -ForegroundColor DarkGray
+    Write-Host ("  Status    : {0}" -f $status) -ForegroundColor $statusColor
+    if ($null -ne $devState.blockers -and @($devState.blockers).Count -gt 0) {
+      Write-Host ("  Blockers  : {0}" -f (@($devState.blockers) -join "; ")) -ForegroundColor Red
+    }
+    if ($null -ne $devState.warnings -and @($devState.warnings).Count -gt 0) {
+      Write-Host ("  Warnings  : {0}" -f (@($devState.warnings) -join "; ")) -ForegroundColor Yellow
+    }
+    Write-Host "  Action    : npm run orchestrator:dev:runtime-check" -ForegroundColor DarkGray
   }
 
   # ── 2. Queue summary ──────────────────────────────────────────────────────

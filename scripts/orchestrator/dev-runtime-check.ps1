@@ -16,6 +16,7 @@ $timestamp = (Get-Date).ToString("yyyyMMdd-HHmmss")
 $stdoutLog = Join-Path $stateDir ("dev-runtime-check-{0}.out.log" -f $timestamp)
 $stderrLog = Join-Path $stateDir ("dev-runtime-check-{0}.err.log" -f $timestamp)
 $summaryLog = Join-Path $stateDir "dev-runtime-check.log"
+$stateFile = Join-Path $stateDir "aegis-dev-runtime-check-state.json"
 $problemScanScript = Join-Path $root "scripts\orchestrator\project-problem-scan.ps1"
 
 $maxMinutes = if ($MaxRunMinutes -lt 1) { 1 } elseif ($MaxRunMinutes -gt 15) { 15 } else { $MaxRunMinutes }
@@ -125,6 +126,29 @@ if ($result.blockers.Count -gt 0) {
   $result.status = "issues_found"
 } elseif ($result.warnings.Count -gt 0) {
   $result.status = "ok_with_warnings"
+}
+
+try {
+  $statePayload = [ordered]@{
+    lastRunAt = (Get-Date).ToString("o")
+    status = $result.status
+    maxRunMinutes = $maxMinutes
+    runProblemScan = [bool]$RunProblemScan
+    blockerCount = @($result.blockers).Count
+    warningCount = @($result.warnings).Count
+    summaryLog = $summaryLog
+    stdoutLog = $stdoutLog
+    stderrLog = $stderrLog
+    lastAction = if (@($result.actions).Count -gt 0) { @($result.actions)[-1] } else { $null }
+  }
+  $stateJson = $statePayload | ConvertTo-Json -Depth 12
+  New-Item -ItemType File -Path $stateFile -Force | Out-Null
+  Set-Content -Path $stateFile -Value $stateJson -Encoding UTF8
+} catch {
+  $result.warnings += "failed to persist dev runtime state"
+  if ($result.status -eq "ok") {
+    $result.status = "ok_with_warnings"
+  }
 }
 
 $payload = ($result | ConvertTo-Json -Depth 12)
