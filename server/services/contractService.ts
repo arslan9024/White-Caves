@@ -9,10 +9,11 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const uploadsDir = path.join(__dirname, '../public/uploads');
+const db = prisma as any;
 
 export const generateDraftContract = async (propertyId: string, userId?: string) => {
   try {
-    const property = await prisma.property.findUnique({
+    const property = await db.property.findUnique({
       where: { id: propertyId },
     });
 
@@ -63,7 +64,7 @@ export const generateDraftContract = async (propertyId: string, userId?: string)
 
       stream.on('finish', async () => {
         // Record the contract in DB (using Activity for now, but usually a Contract model)
-        await prisma.activity.create({
+        await db.activity.create({
           data: {
             type: 'system',
             action: 'created',
@@ -74,7 +75,7 @@ export const generateDraftContract = async (propertyId: string, userId?: string)
         });
 
         // Also update the property to store the contract URL
-        await prisma.property.update({
+        await db.property.update({
           where: { id: property.id },
           data: {
             documents: {

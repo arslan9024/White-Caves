@@ -98,7 +98,7 @@ export function useClientManagement() {
 
   // Fetch on mount
   useEffect(() => {
-    dispatch(fetchClientsFromAPI(undefined));
+    dispatch(fetchClientsFromAPI({}));
   }, [dispatch]);
 
   // ─── Local state ────────────────────────────────────────────────
@@ -361,7 +361,7 @@ export function useClientManagement() {
   }, []);
 
   const retryFetch = useCallback(() => {
-    dispatch(fetchClientsFromAPI(undefined));
+    dispatch(fetchClientsFromAPI({}));
   }, [dispatch]);
 
   const goBack = useCallback(() => {

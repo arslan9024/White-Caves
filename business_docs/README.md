@@ -2,7 +2,7 @@
 
 > **Single Source of Truth** for all business documentation, domain knowledge, and strategic planning.
 >
-> Last updated: April 10, 2026 | **120+ documents across 15 sections**
+> Last updated: June 10, 2026 | **120+ documents across 15 sections**
 
 ---
 
@@ -18,6 +18,7 @@ These business docs now operate under the project-wide development system:
 - **92% Readiness Gate:** implementation is blocked until readiness score is >=92% with matrix evidence and approvals.
 - **Premium restriction:** premium Copilot requests are reserved for senior coders/designers only after gate approval.
 - **Free-agent lock:** junior/free planning agents use only Gemini 2.0 Flash, Llama 3.1 70B (Groq), DeepSeek V3.
+- **Plan sync:** keep the business docs aligned with `plans/ORCHESTRATION_UPGRADE_V4.md` and the canonical planning stack.
 
 ### Collaboration Handoff Format (Mandatory)
 
@@ -33,7 +34,7 @@ This ensures all subagents work as one pipeline rather than isolated documents.
 
 ## 📋 Folder Structure
 
-```
+```text
 business_docs/
 ├── 01_company_structure/     # Org chart, departments, roles, stakeholder register
 ├── 02_services/              # Core service offerings catalog (9 services)
@@ -44,6 +45,8 @@ business_docs/
 ├── 07_business_model/        # Revenue model + projections + Business Model Canvas
 ├── 08_market_research/       # Dubai market analysis, portals, regulatory framework
 ├── 09_crm_features/          # Feature specs (CRM, AI CRUD, UI components)
+├── 09_user_roles_permissions/ # User roles, permissions, RBAC policies
+├── 10_design_system/         # Design tokens, component library, brand guidelines
 ├── 10_security/              # Security policy, KYC/AML, PDPL compliance
 ├── 11_seo/                   # SEO strategy, keywords, content calendar
 ├── 12_srs/                   # Software Requirements Specification + Design Document
@@ -442,7 +445,7 @@ When adding new business documentation:
 
 ## 📊 Integration with Other Documentation
 
-```
+```text
 business_docs/          ← Business requirements & domain knowledge
 ├─ Links to ─→ /plans/   ← Technical implementation
                 ├─ MASTER_PLAN_UPDATED_FEB_2026.md

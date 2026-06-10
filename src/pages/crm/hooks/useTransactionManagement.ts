@@ -97,7 +97,7 @@ export function useTransactionManagement() {
 
   // Fetch on mount
   useEffect(() => {
-    dispatch(fetchTransactionsFromAPI(undefined));
+    dispatch(fetchTransactionsFromAPI({}));
   }, [dispatch]);
 
   // ─── Local state ────────────────────────────────────────────────
@@ -189,14 +189,14 @@ export function useTransactionManagement() {
 
     const transactionData = {
       type: formData.type,
-      status: formData.status,
       amount: Number(formData.amount),
-      property_title: formData.property_title.trim(),
-      client_name: formData.client_name.trim(),
-      agent_name: formData.agent_name.trim(),
-      closing_date: formData.closing_date || undefined,
-      notes: formData.notes.trim(),
-      created_at: new Date().toISOString(),
+      propertyId: formData.property_title.trim() || undefined,
+      leadId: formData.client_name.trim() || undefined,
+      agentId: formData.agent_name.trim() || undefined,
+      closingDate: formData.closing_date || undefined,
+      notes: [formData.notes.trim(), formData.status ? `status: ${formData.status}` : '']
+        .filter(Boolean)
+        .join(' | '),
     };
 
     dispatch(createTransactionAPI(transactionData))
@@ -255,12 +255,15 @@ export function useTransactionManagement() {
           type: formData.type,
           status: formData.status,
           amount: Number(formData.amount) || 0,
-          property_title: formData.property_title.trim(),
-          client_name: formData.client_name.trim(),
-          agent_name: formData.agent_name.trim(),
-          closing_date: formData.closing_date || undefined,
-          notes: formData.notes.trim(),
-          updated_at: new Date().toISOString(),
+          closingDate: formData.closing_date || undefined,
+          notes: [
+            formData.notes.trim(),
+            formData.property_title.trim() ? `property: ${formData.property_title.trim()}` : '',
+            formData.client_name.trim() ? `client: ${formData.client_name.trim()}` : '',
+            formData.agent_name.trim() ? `agent: ${formData.agent_name.trim()}` : '',
+          ]
+            .filter(Boolean)
+            .join(' | '),
         })
       )
         .then(result => {
@@ -354,7 +357,7 @@ export function useTransactionManagement() {
   }, []);
 
   const retryFetch = useCallback(() => {
-    dispatch(fetchTransactionsFromAPI(undefined));
+    dispatch(fetchTransactionsFromAPI({}));
   }, [dispatch]);
 
   const goBack = useCallback(() => {

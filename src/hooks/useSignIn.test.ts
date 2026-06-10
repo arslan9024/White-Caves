@@ -20,6 +20,7 @@ const mockCompleteSocialRegistration = vi.fn();
 const mockSignInWithGoogle = vi.fn();
 const mockSignInWithFacebook = vi.fn();
 const mockSignInWithApple = vi.fn();
+const mockResetPassword = vi.fn();
 
 vi.mock('react-router-dom', async () => {
   const actual = await vi.importActual('react-router-dom');
@@ -32,9 +33,13 @@ vi.mock('react-router-dom', async () => {
 
 vi.mock('../config/firebase', () => ({
   auth: null,
+  isFirebaseAuthConfigured: true,
+  firebaseAuthUnavailableReason: '',
   signInWithGoogle: (...args: unknown[]) => mockSignInWithGoogle(...args),
   signInWithFacebook: (...args: unknown[]) => mockSignInWithFacebook(...args),
   signInWithApple: (...args: unknown[]) => mockSignInWithApple(...args),
+  resetPassword: (...args: unknown[]) => mockResetPassword(...args),
+  signOut: vi.fn().mockResolvedValue(undefined),
   signInWithPhone: vi.fn(),
   createRecaptchaVerifier: vi.fn(),
 }));
@@ -112,6 +117,18 @@ const backendBuyerUser = {
 
 const backendTenantUser = { ...backendBuyerUser, id: 'backend-uuid-2', role: 'tenant' };
 const backendLandlordUser = { ...backendBuyerUser, id: 'backend-uuid-3', role: 'landlord' };
+const backendPendingStaffUser = {
+  ...backendBuyerUser,
+  id: 'backend-uuid-4',
+  role: 'agent',
+  status: 'pending',
+};
+const backendSuperuser = {
+  ...backendBuyerUser,
+  id: 'backend-uuid-super',
+  email: 'arslanmalikgoraha@gmail.com',
+  role: 'agent',
+};
 
 const successResponse = (user = backendBuyerUser) => ({
   success: true,
@@ -168,7 +185,7 @@ describe('useSignIn — handleSocialAuth (integration)', () => {
       expect(currentUser?.email).toBe(backendBuyerUser.email);
     });
 
-    it('navigates to /dashboard for a buyer role', async () => {
+    it('navigates to /profile for a buyer role', async () => {
       vi.useFakeTimers();
       const { result } = renderHook(() => useSignIn(), { wrapper: createWrapper(store) });
 
@@ -177,11 +194,11 @@ describe('useSignIn — handleSocialAuth (integration)', () => {
       });
       act(() => vi.runAllTimers());
 
-      expect(mockNavigate).toHaveBeenCalledWith('/dashboard');
+      expect(mockNavigate).toHaveBeenCalledWith('/profile');
       vi.useRealTimers();
     });
 
-    it('navigates to /dashboard for a tenant role', async () => {
+    it('navigates to /profile for a tenant role', async () => {
       vi.useFakeTimers();
       mockSyncFirebaseUser.mockResolvedValue(successResponse(backendTenantUser));
       const { result } = renderHook(() => useSignIn(), { wrapper: createWrapper(store) });
@@ -191,11 +208,11 @@ describe('useSignIn — handleSocialAuth (integration)', () => {
       });
       act(() => vi.runAllTimers());
 
-      expect(mockNavigate).toHaveBeenCalledWith('/dashboard');
+      expect(mockNavigate).toHaveBeenCalledWith('/profile');
       vi.useRealTimers();
     });
 
-    it('navigates to /dashboard for a landlord role', async () => {
+    it('navigates to /profile for a landlord role', async () => {
       vi.useFakeTimers();
       mockSyncFirebaseUser.mockResolvedValue(successResponse(backendLandlordUser));
       const { result } = renderHook(() => useSignIn(), { wrapper: createWrapper(store) });
@@ -205,7 +222,7 @@ describe('useSignIn — handleSocialAuth (integration)', () => {
       });
       act(() => vi.runAllTimers());
 
-      expect(mockNavigate).toHaveBeenCalledWith('/dashboard');
+      expect(mockNavigate).toHaveBeenCalledWith('/profile');
       vi.useRealTimers();
     });
   });
@@ -255,6 +272,25 @@ describe('useSignIn — handleSocialAuth (integration)', () => {
 
       expect(result.current.pendingUser?.email).toBe(backendBuyerUser.email);
     });
+
+    it('does not ask role selection for superuser signup and signs in immediately', async () => {
+      vi.useFakeTimers();
+      mockSyncFirebaseUser.mockResolvedValue(successResponse(backendSuperuser));
+      const { result } = renderHook(() => useSignIn(), { wrapper: createWrapper(store) });
+
+      act(() => result.current.switchMode());
+
+      await act(async () => {
+        await result.current.handleSocialAuth('google');
+      });
+
+      act(() => vi.runAllTimers());
+
+      expect(result.current.step).toBe(1);
+      expect(result.current.pendingUser).toBeNull();
+      expect(mockNavigate).toHaveBeenCalledWith('/profile');
+      vi.useRealTimers();
+    });
   });
 
   // ── Firebase popup error ───────────────────────────────────────────────────
@@ -292,25 +328,173 @@ describe('useSignIn — handleSocialAuth (integration)', () => {
 
       expect(result.current.loading).toBe(false);
     });
-  });
 
-  // ── Backend sync error (signin mode) ──────────────────────────────────────
-
-  describe('backend sync error in signin mode', () => {
-    it('falls back to Firebase user and still logs in', async () => {
-      mockSignInWithGoogle.mockResolvedValue({ user: firebaseUser });
-      mockSyncFirebaseUser.mockRejectedValue(new Error('Backend unreachable'));
-      vi.useFakeTimers();
+    it('surfaces a clear message when Google domain is not authorized', async () => {
+      mockSignInWithGoogle.mockRejectedValue({ code: 'auth/unauthorized-domain' });
       const { result } = renderHook(() => useSignIn(), { wrapper: createWrapper(store) });
 
       await act(async () => {
         await result.current.handleSocialAuth('google');
       });
 
-      act(() => vi.runAllTimers());
+      expect(result.current.error).toContain('blocked for this domain');
+    });
+
+    it('surfaces a clear message when Google provider is disabled', async () => {
+      mockSignInWithGoogle.mockRejectedValue({ code: 'auth/operation-not-allowed' });
+      const { result } = renderHook(() => useSignIn(), { wrapper: createWrapper(store) });
+
+      await act(async () => {
+        await result.current.handleSocialAuth('google');
+      });
+
+      expect(result.current.error).toContain('not enabled for this environment');
+    });
+
+    it('surfaces guidance when account exists with another credential', async () => {
+      mockSignInWithGoogle.mockRejectedValue({
+        code: 'auth/account-exists-with-different-credential',
+      });
+      const { result } = renderHook(() => useSignIn(), { wrapper: createWrapper(store) });
+
+      await act(async () => {
+        await result.current.handleSocialAuth('google');
+      });
+
+      expect(result.current.error).toContain('already registered with a different sign-in method');
+    });
+  });
+
+  // ── Backend sync error (signin mode) ──────────────────────────────────────
+
+  describe('backend sync error in signin mode', () => {
+    it('shows backend sync error and does not navigate', async () => {
+      mockSignInWithGoogle.mockResolvedValue({ user: firebaseUser });
+      mockSyncFirebaseUser.mockRejectedValue(new Error('Backend unreachable'));
+      const { result } = renderHook(() => useSignIn(), { wrapper: createWrapper(store) });
+
+      await act(async () => {
+        await result.current.handleSocialAuth('google');
+      });
+
+      expect(result.current.error).toContain('backend session setup failed');
+      expect(result.current.error).toContain('Backend unreachable');
+      expect(mockNavigate).not.toHaveBeenCalled();
+
+      const currentUser = store.getState().user.currentUser;
+      expect(currentUser).toBeNull();
+    });
+
+    it('stores recovery metadata so UI can offer a retry CTA', async () => {
+      mockSignInWithGoogle.mockResolvedValue({ user: firebaseUser });
+      mockSyncFirebaseUser.mockRejectedValue(new Error('Backend unreachable'));
+      const { result } = renderHook(() => useSignIn(), { wrapper: createWrapper(store) });
+      await act(async () => {
+        await result.current.handleSocialAuth('google');
+      });
+
+      expect(result.current.socialSyncRecovery).toEqual({
+        provider: 'google',
+        reason: 'Backend unreachable',
+      });
+    });
+
+    it('retries the same social provider via retrySocialAuth', async () => {
+      mockSignInWithGoogle.mockResolvedValue({ user: firebaseUser });
+      mockSyncFirebaseUser
+        .mockRejectedValueOnce(new Error('Backend unreachable'))
+        .mockResolvedValueOnce(successResponse());
+      const { result } = renderHook(() => useSignIn(), { wrapper: createWrapper(store) });
+
+      await act(async () => {
+        await result.current.handleSocialAuth('google');
+      });
+
+      await act(async () => {
+        await result.current.retrySocialAuth();
+      });
+
+      expect(mockSignInWithGoogle).toHaveBeenCalledTimes(2);
+      expect(mockSyncFirebaseUser).toHaveBeenCalledTimes(2);
+    });
+
+    it('clearSocialRecovery clears recovery metadata and sync error', async () => {
+      mockSignInWithGoogle.mockResolvedValue({ user: firebaseUser });
+      mockSyncFirebaseUser.mockRejectedValue(new Error('Backend unreachable'));
+      const { result } = renderHook(() => useSignIn(), { wrapper: createWrapper(store) });
+
+      await act(async () => {
+        await result.current.handleSocialAuth('google');
+      });
+
+      expect(result.current.socialSyncRecovery).toEqual({
+        provider: 'google',
+        reason: 'Backend unreachable',
+      });
+      expect(result.current.error).toContain('backend session setup failed');
+
+      act(() => {
+        result.current.clearSocialRecovery();
+      });
+
+      expect(result.current.socialSyncRecovery).toBeNull();
       expect(result.current.error).toBe('');
-      expect(mockNavigate).toHaveBeenCalledWith('/dashboard');
-      vi.useRealTimers();
+    });
+
+    it('enforces a retry limit and stops additional sync calls after max retries', async () => {
+      mockSignInWithGoogle.mockResolvedValue({ user: firebaseUser });
+      mockSyncFirebaseUser.mockRejectedValue(new Error('Backend unreachable'));
+      const { result } = renderHook(() => useSignIn(), { wrapper: createWrapper(store) });
+
+      await act(async () => {
+        await result.current.handleSocialAuth('google');
+      });
+
+      await act(async () => {
+        await result.current.retrySocialAuth();
+      });
+      await act(async () => {
+        await result.current.retrySocialAuth();
+      });
+      await act(async () => {
+        await result.current.retrySocialAuth();
+      });
+
+      expect(mockSyncFirebaseUser).toHaveBeenCalledTimes(4);
+
+      await act(async () => {
+        await result.current.retrySocialAuth();
+      });
+
+      expect(mockSyncFirebaseUser).toHaveBeenCalledTimes(4);
+      expect(result.current.error).toContain('Retry limit reached');
+    });
+
+    it('updates remainingSocialRetries after each failed retry attempt', async () => {
+      mockSignInWithGoogle.mockResolvedValue({ user: firebaseUser });
+      mockSyncFirebaseUser.mockRejectedValue(new Error('Backend unreachable'));
+      const { result } = renderHook(() => useSignIn(), { wrapper: createWrapper(store) });
+
+      await act(async () => {
+        await result.current.handleSocialAuth('google');
+      });
+
+      expect(result.current.remainingSocialRetries).toBe(3);
+
+      await act(async () => {
+        await result.current.retrySocialAuth();
+      });
+      expect(result.current.remainingSocialRetries).toBe(2);
+
+      await act(async () => {
+        await result.current.retrySocialAuth();
+      });
+      expect(result.current.remainingSocialRetries).toBe(1);
+
+      await act(async () => {
+        await result.current.retrySocialAuth();
+      });
+      expect(result.current.remainingSocialRetries).toBe(0);
     });
   });
 
@@ -329,6 +513,9 @@ describe('useSignIn — handleSocialAuth (integration)', () => {
         await result.current.handleSocialAuth('google');
       });
 
+      expect(result.current.step).toBe(2);
+      expect(result.current.pendingUser?.fromSocialProvider).toBe('google');
+
       act(() => {
         result.current.setSelectedCategory('client');
       });
@@ -346,15 +533,39 @@ describe('useSignIn — handleSocialAuth (integration)', () => {
       act(() => vi.runAllTimers());
 
       expect(mockCompleteSocialRegistration).toHaveBeenCalledWith('client', 'tenant');
-      expect(mockNavigate).toHaveBeenCalledWith('/dashboard');
+      expect(mockNavigate).toHaveBeenCalledWith('/profile');
       vi.useRealTimers();
+    });
+
+    it('retries the same social provider via retrySocialAuth after initial sync failure', async () => {
+      mockSignInWithGoogle.mockResolvedValue({ user: firebaseUser });
+      mockSyncFirebaseUser
+        .mockRejectedValueOnce(new Error('Backend unreachable'))
+        .mockResolvedValueOnce(successResponse());
+      const { result } = renderHook(() => useSignIn(), { wrapper: createWrapper(store) });
+
+      act(() => result.current.switchMode());
+
+      await act(async () => {
+        await result.current.handleSocialAuth('google');
+      });
+
+      await act(async () => {
+        await result.current.retrySocialAuth();
+      });
+
+      expect(mockSignInWithGoogle).toHaveBeenCalledTimes(2);
+      expect(mockSyncFirebaseUser).toHaveBeenCalledTimes(2);
+      expect(result.current.socialSyncRecovery).toBeNull();
+      expect(result.current.step).toBe(2);
+      expect(result.current.pendingUser?.fromSocialProvider).toBe('google');
     });
   });
 
   // ── Backend sync error (signup mode — fallback) ────────────────────────────
 
   describe('backend sync error in signup mode', () => {
-    it('falls back to Firebase user data and advances to step 2', async () => {
+    it('does not advance signup and surfaces sync error', async () => {
       mockSignInWithGoogle.mockResolvedValue({ user: firebaseUser });
       mockSyncFirebaseUser.mockRejectedValue(new Error('Backend unreachable'));
       const { result } = renderHook(() => useSignIn(), { wrapper: createWrapper(store) });
@@ -365,9 +576,10 @@ describe('useSignIn — handleSocialAuth (integration)', () => {
         await result.current.handleSocialAuth('google');
       });
 
-      // Falls back to Firebase user, still advances to step 2
-      expect(result.current.step).toBe(2);
-      expect(result.current.pendingUser?.id).toBe(firebaseUser.uid);
+      expect(result.current.step).toBe(1);
+      expect(result.current.pendingUser).toBeNull();
+      expect(result.current.error).toContain('backend session setup failed');
+      expect(mockNavigate).not.toHaveBeenCalled();
     });
   });
 
@@ -414,6 +626,50 @@ describe('useSignIn — handleSocialAuth (integration)', () => {
       });
 
       expect(result.current.error).toBe('Invalid provider');
+    });
+  });
+
+  describe('forgot password flow', () => {
+    it('shows validation error when email is empty', async () => {
+      const { result } = renderHook(() => useSignIn(), { wrapper: createWrapper(store) });
+
+      await act(async () => {
+        await result.current.handleForgotPassword();
+      });
+
+      expect(result.current.error).toContain('Please enter your email address first');
+      expect(mockResetPassword).not.toHaveBeenCalled();
+    });
+
+    it('calls resetPassword and sets success message with valid email', async () => {
+      mockResetPassword.mockResolvedValue(undefined);
+      const { result } = renderHook(() => useSignIn(), { wrapper: createWrapper(store) });
+
+      act(() => {
+        result.current.setEmail('arslanmalikgoraha@gmail.com');
+      });
+
+      await act(async () => {
+        await result.current.handleForgotPassword();
+      });
+
+      expect(mockResetPassword).toHaveBeenCalledWith('arslanmalikgoraha@gmail.com');
+      expect(result.current.success).toContain('Password reset email sent');
+    });
+
+    it('surfaces firebase reset error', async () => {
+      mockResetPassword.mockRejectedValue(new Error('User not found'));
+      const { result } = renderHook(() => useSignIn(), { wrapper: createWrapper(store) });
+
+      act(() => {
+        result.current.setEmail('missing@example.com');
+      });
+
+      await act(async () => {
+        await result.current.handleForgotPassword();
+      });
+
+      expect(result.current.error).toBe('User not found');
     });
   });
 });

@@ -27,8 +27,64 @@ $w           = 72
 if (-not (Test-Path $queueFile))   { Write-Host "[ERROR] queue not found"   -ForegroundColor Red; exit 1 }
 if (-not (Test-Path $promptsFile)) { Write-Host "[ERROR] prompts not found" -ForegroundColor Red; exit 1 }
 
-$q       = Get-Content $queueFile   -Raw | ConvertFrom-Json
-$prompts = Get-Content $promptsFile -Raw | ConvertFrom-Json
+function Read-JsonFileSafe {
+  param(
+    [string]$Path,
+    [long]$MaxBytes = 8MB,
+    [switch]$TryTmpRecovery
+  )
+
+  if (-not (Test-Path $Path)) { return $null }
+
+  $info = Get-Item -Path $Path -ErrorAction SilentlyContinue
+  if ($null -eq $info) { return $null }
+
+  function Try-Parse {
+    param([string]$Candidate)
+    try {
+      $raw = Get-Content -Path $Candidate -Raw -ErrorAction Stop
+      if ([string]::IsNullOrWhiteSpace($raw)) { return $null }
+      return ($raw | ConvertFrom-Json -ErrorAction Stop)
+    }
+    catch {
+      return $null
+    }
+  }
+
+  if ($info.Length -gt $MaxBytes) {
+    if (-not $TryTmpRecovery) { return $null }
+
+    $dir = Split-Path -Parent $Path
+    $name = [System.IO.Path]::GetFileName($Path)
+    $candidates = @(Get-ChildItem -Path $dir -Filter ("{0}.tmp.*" -f $name) -File -ErrorAction SilentlyContinue |
+      Sort-Object LastWriteTime -Descending)
+
+    foreach ($candidate in $candidates) {
+      if ($candidate.Length -gt $MaxBytes) { continue }
+      $parsedCandidate = Try-Parse -Candidate $candidate.FullName
+      if ($null -eq $parsedCandidate) { continue }
+      try { Copy-Item -Path $candidate.FullName -Destination $Path -Force } catch {}
+      return $parsedCandidate
+    }
+
+    return $null
+  }
+
+  return (Try-Parse -Candidate $Path)
+}
+
+$q = Read-JsonFileSafe -Path $queueFile -MaxBytes 8MB -TryTmpRecovery
+if ($null -eq $q) {
+  Write-Host "[ERROR] queue unreadable (possibly oversized/corrupt)" -ForegroundColor Red
+  exit 1
+}
+
+$prompts = Read-JsonFileSafe -Path $promptsFile -MaxBytes 16MB
+if ($null -eq $prompts) {
+  Write-Host "[ERROR] prompts unreadable" -ForegroundColor Red
+  exit 1
+}
+
 $tasks   = @($q.tasks)
 
 # -- gate targets (sections needed to PASS each file) ------------------------
@@ -101,9 +157,14 @@ $tools = @{
 # -- helpers ------------------------------------------------------------------
 function Get-Prompt([string]$id) {
   $keys = @($prompts | Get-Member -MemberType NoteProperty | Select-Object -ExpandProperty Name)
-  if ($keys -contains $id) { return $prompts.$id }
+  if ($keys -contains $id) {
+    $val = $prompts.$id
+    if ($val -is [string]) { return $val }
+    if ($null -ne $val -and $val.PSObject.Properties.Name -contains "prompt") { return [string]$val.prompt }
+    return [string]$val
+  }
   $t = @($tasks | Where-Object { $_.taskId -eq $id })[0]
-  return if ($null -ne $t) { $t.title } else { "(no prompt for $id)" }
+  if ($null -ne $t) { return $t.title } else { return "(no prompt for $id)" }
 }
 
 function Get-TargetFile([string]$prompt) {
@@ -135,6 +196,34 @@ function Test-AllDepsDone([array]$deps) {
   return $true
 }
 
+function Get-NormalizedDeps {
+  param($deps)
+
+  $normalized = New-Object 'System.Collections.Generic.List[string]'
+
+  if ($null -eq $deps) { return ,$normalized.ToArray() }
+
+  foreach ($item in @($deps)) {
+    if ($null -eq $item) { continue }
+    if ($item -is [string]) {
+      if ([string]::IsNullOrWhiteSpace($item)) { continue }
+      [void]$normalized.Add($item)
+      continue
+    }
+
+    if ($null -ne $item.PSObject -and $item.PSObject.Properties.Count -eq 0) {
+      continue
+    }
+
+    $text = [string]$item
+    if (-not [string]::IsNullOrWhiteSpace($text)) {
+      [void]$normalized.Add($text)
+    }
+  }
+
+  return ,$normalized.ToArray()
+}
+
 # For a blocked task, find the nearest upstream task that is NOT done
 function Get-DirectBlocker([string]$taskId) {
   $t = @($tasks | Where-Object { $_.taskId -eq $taskId })[0]
@@ -157,7 +246,7 @@ function Get-RootBlocker([string]$taskId) {
     $blocker = Get-DirectBlocker $cur
     if ($null -eq $blocker) { return $cur }
     if ($blocker.status -eq "done") { return $cur }
-    if (Test-AllDepsDone @($blocker.dependsOn)) {
+    if (Test-AllDepsDone (Get-NormalizedDeps $blocker.dependsOn)) {
       return $blocker.taskId  # this one is ready to execute
     }
     $cur = $blocker.taskId
@@ -191,8 +280,8 @@ if ($Lane  -ne "") { $allQueued = @($allQueued | Where-Object { $_.lane  -eq $La
 if ($Agent -ne "") { $allQueued = @($allQueued | Where-Object { $_.agent -eq $Agent }) }
 
 # Separate READY vs BLOCKED
-$readyTasks   = @($allQueued | Where-Object { Test-AllDepsDone @($_.dependsOn) })
-$blockedTasks = @($allQueued | Where-Object { -not (Test-AllDepsDone @($_.dependsOn)) })
+$readyTasks   = @($allQueued | Where-Object { Test-AllDepsDone (Get-NormalizedDeps $_.dependsOn) })
+$blockedTasks = @($allQueued | Where-Object { -not (Test-AllDepsDone (Get-NormalizedDeps $_.dependsOn)) })
 
 # For each blocked task, compute depth metrics
 $blockerData = [System.Collections.Generic.List[hashtable]]::new()

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { createLogger } from '../../utils/logger';
 import { authFetch } from '../../utils/authFetch';
 import type { CRMModuleProps } from './types';
+import './PropertyValuationModule.css';
 
 const log = createLogger('PropertyValuation');
 
@@ -28,14 +29,22 @@ export default function PropertyValuationModule({ role, user, data }: CRMModuleP
   });
   const [valuation, setValuation] = useState<{ low: number; mid: number; high: number; confidence: number; isEstimate?: boolean } | null>(null);
   const [comparables, setComparables] = useState<Array<{ property: string; price: number; area: number; pricePerSqft: number }>>([]);
+  const [isEstimating, setIsEstimating] = useState(false);
+  const [estimateError, setEstimateError] = useState<string | null>(null);
+  const [fallbackNotice, setFallbackNotice] = useState<string | null>(null);
 
   const estimatePrice = async () => {
+    setIsEstimating(true);
+    setEstimateError(null);
+    setFallbackNotice(null);
+
     try {
       const response = await authFetch('/api/valuation/estimate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData),
       });
+
       if (response.ok) {
         const data = await response.json();
         setValuation(data.estimate);
@@ -43,6 +52,7 @@ export default function PropertyValuationModule({ role, user, data }: CRMModuleP
       } else {
         // Fallback estimation — real valuation API not yet configured
         log.warn('Valuation API unavailable — using local estimate. Results are approximate.');
+        setFallbackNotice('Live valuation API is unavailable. Showing estimated values based on local fallback logic.');
         const basePrice = 2000 * formData.area;
         const locationMultiplier = formData.location.includes('Marina') ? 1.3 : 1.0;
         const estimatedPrice = basePrice * locationMultiplier;
@@ -61,6 +71,9 @@ export default function PropertyValuationModule({ role, user, data }: CRMModuleP
       }
     } catch (error) {
       log.error('Valuation error:', error);
+      setEstimateError('Unable to estimate property value right now. Please try again.');
+    } finally {
+      setIsEstimating(false);
     }
   };
 
@@ -68,9 +81,26 @@ export default function PropertyValuationModule({ role, user, data }: CRMModuleP
     <div className="module-section">
       <h3>Property Valuation Calculator</h3>
       <div className="valuation-form">
+        {estimateError && (
+          <div role="alert" className="module-error-alert">
+            {estimateError}
+          </div>
+        )}
+
+        {fallbackNotice && (
+          <div role="status" aria-live="polite" className="module-fallback-alert">
+            {fallbackNotice}
+          </div>
+        )}
+
         <div className="form-group">
           <label>Location</label>
-          <select value={formData.location} onChange={(e) => setFormData({ ...formData, location: e.target.value })}>
+          <select
+            value={formData.location}
+            title="Select property location"
+            aria-label="Select property location"
+            onChange={(e) => setFormData({ ...formData, location: e.target.value })}
+          >
             <option value="">Select Location</option>
             <option value="Marina">Marina</option>
             <option value="Downtown">Downtown Dubai</option>
@@ -80,7 +110,12 @@ export default function PropertyValuationModule({ role, user, data }: CRMModuleP
         </div>
         <div className="form-group">
           <label>Property Type</label>
-          <select value={formData.propertyType} onChange={(e) => setFormData({ ...formData, propertyType: e.target.value })}>
+          <select
+            value={formData.propertyType}
+            title="Select property type"
+            aria-label="Select property type"
+            onChange={(e) => setFormData({ ...formData, propertyType: e.target.value })}
+          >
             <option value="apartment">Apartment</option>
             <option value="villa">Villa</option>
             <option value="townhouse">Townhouse</option>
@@ -91,6 +126,8 @@ export default function PropertyValuationModule({ role, user, data }: CRMModuleP
           <label>Area (sqft)</label>
           <input
             type="number"
+            placeholder="Enter area in square feet"
+            title="Enter area in square feet"
             value={formData.area}
             onChange={(e) => setFormData({ ...formData, area: Number(e.target.value) })}
           />
@@ -99,6 +136,8 @@ export default function PropertyValuationModule({ role, user, data }: CRMModuleP
           <label>Bedrooms</label>
           <input
             type="number"
+            placeholder="Enter number of bedrooms"
+            title="Enter number of bedrooms"
             value={formData.bedrooms}
             onChange={(e) => setFormData({ ...formData, bedrooms: Number(e.target.value) })}
           />
@@ -107,6 +146,8 @@ export default function PropertyValuationModule({ role, user, data }: CRMModuleP
           <label>Bathrooms</label>
           <input
             type="number"
+            placeholder="Enter number of bathrooms"
+            title="Enter number of bathrooms"
             value={formData.bathrooms}
             onChange={(e) => setFormData({ ...formData, bathrooms: Number(e.target.value) })}
           />
@@ -115,11 +156,15 @@ export default function PropertyValuationModule({ role, user, data }: CRMModuleP
           <label>Property Age (years)</label>
           <input
             type="number"
+            placeholder="Enter property age in years"
+            title="Enter property age in years"
             value={formData.age}
             onChange={(e) => setFormData({ ...formData, age: Number(e.target.value) })}
           />
         </div>
-        <button onClick={estimatePrice} className="submit-btn">Estimate Value</button>
+        <button onClick={estimatePrice} className="submit-btn" disabled={isEstimating}>
+          {isEstimating ? 'Estimating…' : 'Estimate Value'}
+        </button>
       </div>
 
       {valuation && (
@@ -128,31 +173,31 @@ export default function PropertyValuationModule({ role, user, data }: CRMModuleP
           <div className="price-range">
             <div className="price-card">
               <p>Low Estimate</p>
-              <p style={{ fontSize: '24px', fontWeight: 'bold', color: '#ef4444' }}>
+              <p className="valuation-price valuation-price--low">
                 AED {(Number(valuation.low) || 0).toLocaleString()}
               </p>
             </div>
             <div className="price-card">
               <p>Mid Estimate</p>
-              <p style={{ fontSize: '24px', fontWeight: 'bold', color: '#0066cc' }}>
+              <p className="valuation-price valuation-price--mid">
                 AED {(Number(valuation.mid) || 0).toLocaleString()}
               </p>
             </div>
             <div className="price-card">
               <p>High Estimate</p>
-              <p style={{ fontSize: '24px', fontWeight: 'bold', color: '#22c55e' }}>
+              <p className="valuation-price valuation-price--high">
                 AED {(Number(valuation.high) || 0).toLocaleString()}
               </p>
             </div>
           </div>
-          <p style={{ marginTop: '10px', color: '#666' }}>
+          <p className="valuation-confidence">
             Confidence Level: {valuation.confidence}%
           </p>
         </div>
       )}
 
       {comparables.length > 0 && (
-        <div className="comparables" style={{ marginTop: '20px' }}>
+        <div className="comparables valuation-comparables">
           <h3>Comparable Properties</h3>
           <table>
             <thead>
@@ -184,11 +229,11 @@ export default function PropertyValuationModule({ role, user, data }: CRMModuleP
       <h3>Market Analysis</h3>
       <div className="market-chart-placeholder">
         <p>Price Trend (Last 12 Months)</p>
-        <svg height="200" style={{ width: '100%', border: '1px solid #ddd' }}>
+        <svg height="200" className="valuation-chart">
           <polyline points="0,150 30,140 60,130 90,120 120,110 150,100 180,95 210,100 240,110 270,120 300,140 330,160"
             fill="none" stroke="#0066cc" strokeWidth="2" />
         </svg>
-        <p style={{ marginTop: '10px', color: '#666' }}>
+        <p className="valuation-chart-note">
           Market showing upward trend. Average growth: 3-5% per year
         </p>
       </div>

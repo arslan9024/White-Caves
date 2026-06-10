@@ -8,44 +8,95 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, screen, fireEvent, act, within } from '@testing-library/react';
 import React from 'react';
 
+const mockNavigate = vi.fn();
+
+vi.mock('react-router-dom', async () => {
+  const actual = await vi.importActual<typeof import('react-router-dom')>('react-router-dom');
+  return {
+    ...actual,
+    useNavigate: () => mockNavigate,
+  };
+});
+
 // ── Mocks ────────────────────────────────────────────────────────
 
 vi.mock('./DubaiMap.styles', () => ({
-  DubaiMapContainer: ({ children }: React.PropsWithChildren) => <div data-testid="dubai-map">{children}</div>,
+  DubaiMapContainer: ({ children }: React.PropsWithChildren) => (
+    <div data-testid="dubai-map">{children}</div>
+  ),
   MapHeader: ({ children }: React.PropsWithChildren) => <div>{children}</div>,
   MapTitle: ({ children }: React.PropsWithChildren) => <h2>{children}</h2>,
   MapSubtitle: ({ children }: React.PropsWithChildren) => <p>{children}</p>,
-  MapFilters: ({ children }: React.PropsWithChildren) => <div data-testid="map-filters">{children}</div>,
-  FilterButton: ({ children, onClick, ...props }: React.PropsWithChildren<{ onClick?: () => void; [key: string]: unknown }>) => (
-    <button onClick={onClick} data-active={props.$isActive} data-variant={props.$variant}>{children}</button>
+  MapFilters: ({ children }: React.PropsWithChildren) => (
+    <div data-testid="map-filters">{children}</div>
+  ),
+  FilterButton: ({
+    children,
+    onClick,
+    ...props
+  }: React.PropsWithChildren<{ onClick?: () => void; [key: string]: unknown }>) => (
+    <button onClick={onClick} data-active={props.$isActive} data-variant={props.$variant}>
+      {children}
+    </button>
   ),
   MapWrapper: ({ children }: React.PropsWithChildren) => <div>{children}</div>,
   MapBackground: ({ children }: React.PropsWithChildren) => <div>{children}</div>,
   DubaiBaseMap: (props: Record<string, unknown>) => <img data-testid="base-map" {...props} />,
   InteractiveMapOverlay: ({ children }: React.PropsWithChildren) => <div>{children}</div>,
-  MapSVG: ({ children, ...props }: React.PropsWithChildren<Record<string, unknown>>) => <svg data-testid="map-svg" {...props}>{children}</svg>,
-  MapInfoWindow: ({ children }: React.PropsWithChildren) => <div data-testid="info-window">{children}</div>,
+  MapSVG: ({ children, ...props }: React.PropsWithChildren<Record<string, unknown>>) => (
+    <svg data-testid="map-svg" {...props}>
+      {children}
+    </svg>
+  ),
+  MarkerGroup: ({ children, onClick }: React.PropsWithChildren<{ onClick?: () => void }>) => (
+    <button data-testid="marker-group" onClick={onClick}>
+      {children}
+    </button>
+  ),
+  MapInfoWindow: ({ children }: React.PropsWithChildren) => (
+    <div data-testid="info-window">{children}</div>
+  ),
   InfoHeader: ({ children }: React.PropsWithChildren) => <div>{children}</div>,
-  InfoTitle: ({ children }: React.PropsWithChildren) => <h3 data-testid="info-title">{children}</h3>,
-  AreaType: ({ children }: React.PropsWithChildren) => <span data-testid="area-type">{children}</span>,
-  InfoProperties: ({ children }: React.PropsWithChildren) => <div data-testid="info-properties">{children}</div>,
+  InfoTitle: ({ children }: React.PropsWithChildren) => (
+    <h3 data-testid="info-title">{children}</h3>
+  ),
+  AreaType: ({ children }: React.PropsWithChildren) => (
+    <span data-testid="area-type">{children}</span>
+  ),
+  InfoProperties: ({ children }: React.PropsWithChildren) => (
+    <div data-testid="info-properties">{children}</div>
+  ),
   PropertyPreview: ({ children, onClick }: React.PropsWithChildren<{ onClick?: () => void }>) => (
-    <div data-testid="property-preview" onClick={onClick}>{children}</div>
+    <div data-testid="property-preview" onClick={onClick}>
+      {children}
+    </div>
   ),
   PropertyImage: (props: Record<string, unknown>) => <img {...props} />,
   PreviewInfo: ({ children }: React.PropsWithChildren) => <div>{children}</div>,
-  PreviewTitle: ({ children }: React.PropsWithChildren) => <span data-testid="preview-title">{children}</span>,
-  PreviewPrice: ({ children }: React.PropsWithChildren) => <span data-testid="preview-price">{children}</span>,
+  PreviewTitle: ({ children }: React.PropsWithChildren) => (
+    <span data-testid="preview-title">{children}</span>
+  ),
+  PreviewPrice: ({ children }: React.PropsWithChildren) => (
+    <span data-testid="preview-price">{children}</span>
+  ),
   PreviewDetails: ({ children }: React.PropsWithChildren) => <span>{children}</span>,
-  NoProperties: ({ children }: React.PropsWithChildren) => <p data-testid="no-properties">{children}</p>,
-  ViewAllButton: ({ children }: React.PropsWithChildren) => <button>{children}</button>,
+  NoProperties: ({ children }: React.PropsWithChildren) => (
+    <p data-testid="no-properties">{children}</p>
+  ),
+  ViewAllButton: ({ children, onClick }: React.PropsWithChildren<{ onClick?: () => void }>) => (
+    <button onClick={onClick}>{children}</button>
+  ),
   CloseButton: ({ children, onClick }: React.PropsWithChildren<{ onClick?: () => void }>) => (
-    <button data-testid="close-btn" onClick={onClick}>{children}</button>
+    <button data-testid="close-btn" onClick={onClick}>
+      {children}
+    </button>
   ),
   MapLegend: ({ children }: React.PropsWithChildren) => <div data-testid="legend">{children}</div>,
   LegendTitle: ({ children }: React.PropsWithChildren) => <h4>{children}</h4>,
   LegendItems: ({ children }: React.PropsWithChildren) => <div>{children}</div>,
-  LegendItem: ({ children }: React.PropsWithChildren) => <div data-testid="legend-item">{children}</div>,
+  LegendItem: ({ children }: React.PropsWithChildren) => (
+    <div data-testid="legend-item">{children}</div>
+  ),
   LegendDot: (props: Record<string, unknown>) => <span data-testid="legend-dot" />,
 }));
 
@@ -54,11 +105,11 @@ import DubaiMap from './DubaiMap';
 describe('DubaiMap', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    vi.useFakeTimers();
+    mockNavigate.mockClear();
   });
 
   afterEach(() => {
-    vi.useRealTimers();
+    vi.clearAllMocks();
   });
 
   // ────── Basic Rendering ──────
@@ -70,7 +121,9 @@ describe('DubaiMap', () => {
 
   it('renders the subtitle', () => {
     render(<DubaiMap />);
-    expect(screen.getByText('Interactive map with all our listed properties across Dubai')).toBeInTheDocument();
+    expect(
+      screen.getByText('Interactive map with all our listed properties across Dubai')
+    ).toBeInTheDocument();
   });
 
   // ────── Filter Buttons ──────
@@ -117,9 +170,8 @@ describe('DubaiMap', () => {
 
   it('renders SVG map with area markers', () => {
     render(<DubaiMap />);
-    // Advance timer to trigger mapLoaded
-    act(() => { vi.advanceTimersByTime(500); });
     expect(screen.getByTestId('map-svg')).toBeInTheDocument();
+    expect(screen.getAllByTestId('marker-group').length).toBeGreaterThan(0);
   });
 
   // ────── Info Window ──────
@@ -158,8 +210,24 @@ describe('DubaiMap', () => {
   // ────── Custom Properties ──────
 
   it('accepts custom properties', () => {
-    const customProps: Array<{ id: number; title: string; area: string; price: number; beds: number; type: 'luxury' | 'residential' | 'commercial'; image: string }> = [
-      { id: 1, title: 'Custom Villa', area: 'palm', price: 10000000, beds: 3, type: 'luxury', image: 'custom.jpg' },
+    const customProps: Array<{
+      id: number;
+      title: string;
+      area: string;
+      price: number;
+      beds: number;
+      type: 'luxury' | 'residential' | 'commercial';
+      image: string;
+    }> = [
+      {
+        id: 1,
+        title: 'Custom Villa',
+        area: 'palm',
+        price: 10000000,
+        beds: 3,
+        type: 'luxury',
+        image: 'custom.jpg',
+      },
     ];
     render(<DubaiMap properties={customProps} />);
     expect(screen.getByTestId('map-svg')).toBeInTheDocument();
@@ -200,5 +268,35 @@ describe('DubaiMap', () => {
     // Without clicking marker, it shouldn't appear
     render(<DubaiMap />);
     expect(screen.queryByText('View All Properties')).not.toBeInTheDocument();
+  });
+
+  it('opens info window and routes View All to filtered properties page', () => {
+    render(<DubaiMap />);
+
+    fireEvent.click(screen.getAllByTestId('marker-group')[0]);
+    expect(screen.getByTestId('info-window')).toBeInTheDocument();
+
+    fireEvent.click(screen.getByText('View All Properties'));
+    expect(mockNavigate).toHaveBeenCalledWith('/properties?location=Palm%20Jumeirah');
+  });
+
+  it('routes property preview to property details when no onPropertySelect callback is provided', () => {
+    render(<DubaiMap />);
+
+    fireEvent.click(screen.getAllByTestId('marker-group')[0]);
+    fireEvent.click(screen.getAllByTestId('property-preview')[0]);
+
+    expect(mockNavigate).toHaveBeenCalledWith('/property/1');
+  });
+
+  it('uses onPropertySelect callback when provided instead of direct navigation', () => {
+    const onPropertySelect = vi.fn();
+    render(<DubaiMap onPropertySelect={onPropertySelect} />);
+
+    fireEvent.click(screen.getAllByTestId('marker-group')[0]);
+    fireEvent.click(screen.getAllByTestId('property-preview')[0]);
+
+    expect(onPropertySelect).toHaveBeenCalledTimes(1);
+    expect(mockNavigate).not.toHaveBeenCalledWith('/property/1');
   });
 });

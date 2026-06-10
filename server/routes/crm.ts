@@ -100,7 +100,7 @@ router.get(
       throw new AppError('Access denied — global search requires manager or above role', 403);
     }
 
-    const { q } = req.query;
+    const { q } = req.query as Record<string, string | undefined>;
     if (!q || (q as string).trim().length < 2) {
       return res.status(200).json({ success: true, data: { leads: [], properties: [], agents: [] } });
     }

@@ -51,10 +51,10 @@ const BiometricSetup = () => {
     setMessage(null);
 
     try {
-      const userId = user.id || user.email;
-      const userEmail = user.email || '';
-      const userName = user.displayName || user.name || user.email || 'User';
-      
+      const userId = user.uid || user.id || user.email;
+      const userEmail = user.email;
+      const userName = user.displayName || user.name || user.email;
+
       const result = await registerBiometric(userId, userEmail, userName);
 
       if (result.success) {
@@ -67,9 +67,10 @@ const BiometricSetup = () => {
         setCredentials(getBiometricCredentials() as BiometricCredential[]);
         setMessage({ type: 'success', text: 'Biometric login enabled successfully!' });
       }
-    } catch (error: unknown) {
-      log.error('Biometric setup error:', error);
-      setMessage({ type: 'error', text: error instanceof Error ? error.message : 'Failed to enable biometric login' });
+    } catch (error) {
+      const setupError = error as { message?: string };
+      
+      setMessage({ type: 'error', text: (error as Error).message || 'Failed to enable biometric login' });
     } finally {
       setLoading(false);
     }
@@ -134,7 +135,7 @@ const BiometricSetup = () => {
         </div>
       ) : (
         <div className="biometric-credential-list">
-          <p style={{ fontSize: '14px', color: 'var(--text-secondary)', marginBottom: '12px' }}>
+          <p className="biometric-setup-details">
             Registered devices:
           </p>
           {credentials.map(cred => (
@@ -159,10 +160,9 @@ const BiometricSetup = () => {
             </div>
           ))}
           <button 
-            className="biometric-setup-btn secondary"
+            className="biometric-setup-btn secondary biometric-setup-btn--stacked"
             onClick={handleSetup}
             disabled={loading}
-            style={{ marginTop: '12px' }}
           >
             {loading ? 'Adding...' : 'Add Another Device'}
           </button>

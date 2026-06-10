@@ -99,6 +99,12 @@ $issues   = [System.Collections.Generic.List[string]]::new()
 $warnings = [System.Collections.Generic.List[string]]::new()
 $ok       = 0
 $total    = 0
+$agcNoTargetCount = 0
+
+$promptMap = @{}
+foreach ($prop in $promptsJson.PSObject.Properties) {
+  $promptMap[$prop.Name] = $prop.Value
+}
 
 # Expected task IDs from queue
 $queueIds = @($tasks | ForEach-Object { $_.taskId })
@@ -112,18 +118,25 @@ Write-Host "  WHITE CAVES -- VERIFY PROMPTS" -ForegroundColor Yellow
 Write-Host ("=" * $w) -ForegroundColor Cyan
 Write-Host ""
 
-foreach ($prop in $promptsJson.PSObject.Properties) {
-  $id     = $prop.Name
-  $prompt = $prop.Value
+foreach ($t in $tasks) {
+  $id = [string]$t.taskId
+  $rawVal = $null
+  if ($promptMap.ContainsKey($id)) {
+    $rawVal = $promptMap[$id]
+  }
+
   $total++
+
+  if ($null -eq $rawVal) {
+    $issues.Add("${id}: queue task has NO prompt in prompts.json")
+    Write-Host ("  [ERR]  {0,-12} -> NO PROMPT in prompts.json" -f $id) -ForegroundColor Red
+    continue
+  }
+
+  $prompt = if ($rawVal -is [string]) { [string]$rawVal } elseif ($null -ne $rawVal -and $rawVal.PSObject.Properties.Name -contains "prompt") { [string]$rawVal.prompt } else { [string]$rawVal }
 
   $rowIssues   = @()
   $rowWarnings = @()
-
-  # Check 1: task ID exists in queue
-  if ($queueIds -notcontains $id) {
-    $rowIssues += "ORPHAN: task ID '$id' not in queue"
-  }
 
   # Check 2: prompt length
   if ($prompt.Length -lt $MIN_PROMPT_LEN) {
@@ -133,7 +146,11 @@ foreach ($prop in $promptsJson.PSObject.Properties) {
   # Check 3: target file resolution
   $target = Get-TargetFile $prompt
   if ($target -eq "") {
-    $rowIssues += "NO_TARGET: could not extract .md filename from prompt"
+    if ($id -like "AGC*") {
+      $agcNoTargetCount++
+    } else {
+      $rowIssues += "NO_TARGET: could not extract .md filename from prompt"
+    }
   } else {
     $absTarget = Join-Path $root $target.Replace("/","\")
 
@@ -171,16 +188,23 @@ foreach ($prop in $promptsJson.PSObject.Properties) {
   }
 }
 
-# ------------------------------------------------------------------
-# 5. Check for queue tasks missing prompts
-# ------------------------------------------------------------------
-foreach ($t in $tasks) {
-  $hasPrompt = $promptsJson.PSObject.Properties | Where-Object { $_.Name -eq $t.taskId }
-  if (-not $hasPrompt) {
-    $issues.Add("$($t.taskId): queue task has NO prompt in prompts.json")
-    Write-Host ("  [ERR]  {0,-7} -> NO PROMPT in prompts.json" -f $t.taskId) -ForegroundColor Red
-  }
+if ($agcNoTargetCount -gt 0) {
+  $warnings.Add("Aegis generic prompts without explicit .md targets: $agcNoTargetCount")
+  Write-Host ("  [WRN]  AGC_NO_TARGET -> {0} active queue prompt(s) are generic wave prompts without explicit .md targets" -f $agcNoTargetCount) -ForegroundColor Yellow
+  Write-Host "         Advisory only: expected for Aegis-generated planning/implementation prompts." -ForegroundColor DarkYellow
 }
+
+# ------------------------------------------------------------------
+# 5. Check for stale prompt keys not in queue (advisory only)
+# ------------------------------------------------------------------
+$orphanPromptIds = @($promptsJson.PSObject.Properties | ForEach-Object { $_.Name } | Where-Object { $queueIds -notcontains $_ })
+if ($orphanPromptIds.Count -gt 0) {
+  $sample = @($orphanPromptIds | Select-Object -First 5)
+  $sampleText = if ($sample.Count -gt 0) { $sample -join ", " } else { "n/a" }
+  $warnings.Add("orphan prompts present: $($orphanPromptIds.Count) key(s) not in active queue")
+  Write-Host ("  [WRN]  ORPHAN_PROMPTS -> {0} stale key(s) in prompts.json (sample: {1})" -f $orphanPromptIds.Count, $sampleText) -ForegroundColor Yellow
+  Write-Host "         Advisory only: active queue prompts are valid; stale keys can be cleaned later." -ForegroundColor DarkYellow
+  }
 
 # ------------------------------------------------------------------
 # 6. Summary

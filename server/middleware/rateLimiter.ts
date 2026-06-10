@@ -4,7 +4,41 @@
  * Uses express-rate-limit with configurable windows per route type
  */
 
-import rateLimit from 'express-rate-limit';
+import rateLimit, { type RateLimitRequestHandler, type Store } from 'express-rate-limit';
+
+interface FirebaseSyncBody {
+  firebaseUid?: unknown;
+  email?: unknown;
+}
+
+// Dev-safe default: use the built-in in-memory store unless a Redis-backed
+// store is explicitly wired back in through dependency installation.
+let sharedRateLimitStore: Store | undefined;
+
+const resolveFirebaseIdentity = (body: unknown): string => {
+  if (!body || typeof body !== 'object') {
+    return 'anonymous';
+  }
+
+  const payload = body as FirebaseSyncBody;
+  const firebaseUid =
+    typeof payload.firebaseUid === 'string' && payload.firebaseUid.trim().length > 0
+      ? payload.firebaseUid.trim()
+      : '';
+
+  if (firebaseUid) {
+    return `uid:${firebaseUid}`;
+  }
+
+  const email =
+    typeof payload.email === 'string' && payload.email.trim().length > 0
+      ? payload.email.trim().toLowerCase()
+      : '';
+
+  return email ? `email:${email}` : 'anonymous';
+};
+
+const normalizeIpKey = (ip: string | undefined): string => (ip || '').trim() || 'unknown-ip';
 
 // ============================================================================
 // AUTH RATE LIMITER — Strict limits for login/register/password
@@ -12,6 +46,7 @@ import rateLimit from 'express-rate-limit';
 
 /** Login: 5 attempts per 15 minutes per IP */
 export const authLimiter = rateLimit({
+  ...(sharedRateLimitStore ? { store: sharedRateLimitStore } : {}),
   windowMs: 15 * 60 * 1000, // 15 minutes
   max: 5,
   message: {
@@ -25,8 +60,32 @@ export const authLimiter = rateLimit({
   skipSuccessfulRequests: false,
 });
 
+/** Firebase sync: allow more attempts for social auth handshake retries (shared IP safe) */
+export const firebaseSyncLimiter: RateLimitRequestHandler = rateLimit({
+  ...(sharedRateLimitStore ? { store: sharedRateLimitStore } : {}),
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 120,
+  message: {
+    success: false,
+    error: 'Too many Firebase sync attempts',
+    message:
+      'Too many Firebase session sync attempts from this IP. Please wait a few minutes and try again.',
+    statusCode: 429,
+  },
+  keyGenerator: req => {
+    const baseIp = normalizeIpKey(req.ip || req.socket.remoteAddress || undefined);
+    const identity = resolveFirebaseIdentity(req.body);
+    return `${baseIp}:${identity}`;
+  },
+  standardHeaders: true,
+  legacyHeaders: false,
+  // Successful auth sync should not consume quota.
+  skipSuccessfulRequests: true,
+});
+
 /** Registration: 3 attempts per hour per IP */
 export const registerLimiter = rateLimit({
+  ...(sharedRateLimitStore ? { store: sharedRateLimitStore } : {}),
   windowMs: 60 * 60 * 1000, // 1 hour
   max: 3,
   message: {
@@ -41,6 +100,7 @@ export const registerLimiter = rateLimit({
 
 /** Password change: 5 attempts per hour */
 export const passwordLimiter = rateLimit({
+  ...(sharedRateLimitStore ? { store: sharedRateLimitStore } : {}),
   windowMs: 60 * 60 * 1000,
   max: 5,
   message: {
@@ -59,6 +119,7 @@ export const passwordLimiter = rateLimit({
 
 /** General API: 100 requests per minute per IP */
 export const apiLimiter = rateLimit({
+  ...(sharedRateLimitStore ? { store: sharedRateLimitStore } : {}),
   windowMs: 60 * 1000, // 1 minute
   max: 100,
   message: {
@@ -81,6 +142,7 @@ export const apiLimiter = rateLimit({
 
 /** Strict: 10 requests per 15 minutes */
 export const strictLimiter = rateLimit({
+  ...(sharedRateLimitStore ? { store: sharedRateLimitStore } : {}),
   windowMs: 15 * 60 * 1000,
   max: 10,
   message: {
@@ -103,6 +165,7 @@ export const strictLimiter = rateLimit({
  * unauthenticated requests and is a spam/flood vector.
  */
 export const contactLimiter = rateLimit({
+  ...(sharedRateLimitStore ? { store: sharedRateLimitStore } : {}),
   windowMs: 60 * 60 * 1000, // 1 hour
   max: 10,
   message: {
@@ -117,6 +180,7 @@ export const contactLimiter = rateLimit({
 
 export default {
   authLimiter,
+  firebaseSyncLimiter,
   registerLimiter,
   passwordLimiter,
   apiLimiter,

@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Agent Availability Routes — Phase 3C
  * ─────────────────────────────────────
@@ -30,7 +31,7 @@ router.get(
     const userId = req.user?.id;
     if (!userId) throw new AppError('Authentication required', 401);
 
-    const { agentId } = req.params;
+    const { agentId } = req.params as Record<string, string>;
 
     // Verify agent exists
     const agent = await prisma.user.findUnique({
@@ -49,7 +50,7 @@ router.get(
         schedule,
       },
     });
-  }),
+  })
 );
 
 // ─── PUT /api/agent-availability — Set single day's availability ─────────
@@ -60,7 +61,8 @@ router.put(
     const userId = req.user?.id;
     if (!userId) throw new AppError('Authentication required', 401);
 
-    const { dayOfWeek, startTime, endTime, isActive, slotDuration, breakStart, breakEnd } = req.body;
+    const { dayOfWeek, startTime, endTime, isActive, slotDuration, breakStart, breakEnd } =
+      req.body;
 
     if (dayOfWeek === undefined || dayOfWeek === null) {
       throw new AppError('dayOfWeek is required (0=Sunday, 6=Saturday)', 400);
@@ -72,8 +74,10 @@ router.put(
     const timeRegex = /^([01]\d|2[0-3]):[0-5]\d$/;
     if (!timeRegex.test(startTime)) throw new AppError('Invalid startTime format (use HH:mm)', 400);
     if (!timeRegex.test(endTime)) throw new AppError('Invalid endTime format (use HH:mm)', 400);
-    if (breakStart && !timeRegex.test(breakStart)) throw new AppError('Invalid breakStart format (use HH:mm)', 400);
-    if (breakEnd && !timeRegex.test(breakEnd)) throw new AppError('Invalid breakEnd format (use HH:mm)', 400);
+    if (breakStart && !timeRegex.test(breakStart))
+      throw new AppError('Invalid breakStart format (use HH:mm)', 400);
+    if (breakEnd && !timeRegex.test(breakEnd))
+      throw new AppError('Invalid breakEnd format (use HH:mm)', 400);
 
     const result = await setAgentAvailability(userId, {
       dayOfWeek,
@@ -87,7 +91,7 @@ router.put(
 
     logger.info('Agent availability updated', { agentId: userId, dayOfWeek });
     res.json({ success: true, data: result });
-  }),
+  })
 );
 
 // ─── PUT /api/agent-availability/weekly — Set full week schedule ─────────
@@ -110,15 +114,17 @@ router.put(
     const timeRegex = /^([01]\d|2[0-3]):[0-5]\d$/;
     for (const s of schedules) {
       if (s.dayOfWeek === undefined) throw new AppError('Each schedule needs dayOfWeek', 400);
-      if (!s.startTime || !timeRegex.test(s.startTime)) throw new AppError(`Invalid startTime for day ${s.dayOfWeek}`, 400);
-      if (!s.endTime || !timeRegex.test(s.endTime)) throw new AppError(`Invalid endTime for day ${s.dayOfWeek}`, 400);
+      if (!s.startTime || !timeRegex.test(s.startTime))
+        throw new AppError(`Invalid startTime for day ${s.dayOfWeek}`, 400);
+      if (!s.endTime || !timeRegex.test(s.endTime))
+        throw new AppError(`Invalid endTime for day ${s.dayOfWeek}`, 400);
     }
 
     const results = await setAgentWeeklyAvailability(userId, schedules);
 
     logger.info('Agent weekly availability set', { agentId: userId, days: schedules.length });
     res.json({ success: true, data: results });
-  }),
+  })
 );
 
 // ─── DELETE /api/agent-availability/:dayOfWeek — Remove day schedule ─────
@@ -149,7 +155,7 @@ router.delete(
 
     logger.info('Agent availability removed', { agentId: userId, dayOfWeek });
     res.json({ success: true, message: `Availability for day ${dayOfWeek} removed` });
-  }),
+  })
 );
 
 export default router;

@@ -86,6 +86,12 @@ export const SOURCE_LABELS: Record<string, string> = {
 
 const ITEMS_PER_PAGE = 10;
 
+// Null-prototype Map for badge-variant lookup — avoids prototype-pollution risk
+// from dynamic key access on plain objects (security/detect-object-injection).
+const STATUS_BADGE_VARIANTS = new Map<string, LeadBadgeVariant>(
+  Object.entries(STATUS_CONFIG).map(([k, v]) => [k, v.badgeVariant])
+);
+
 const EMPTY_FORM: LeadFormData = {
   name: '',
   company: '',
@@ -121,14 +127,6 @@ export function useLeadManagement() {
   const [sourceFilter, setSourceFilter] = useState('all');
   const [currentPage, setCurrentPage] = useState(1);
 
-  // Reset pagination when filters change.
-  // Intentionally calling setState synchronously inside the effect here because
-  // resetting the page is a direct response to a filter change, not a cascading render issue.
-  useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    setCurrentPage(1);
-  }, [search, statusFilter, sourceFilter]);
-
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
@@ -159,11 +157,10 @@ export function useLeadManagement() {
   );
 
   const statusCounts = useMemo(() => {
-    const counts: Record<string, number> = { all: allLeads.length };
+    const counts = new Map<string, number>([['all', allLeads.length]]);
     allLeads.forEach((lead: Lead) => {
       const status = lead.status || 'unknown';
-      // eslint-disable-next-line security/detect-object-injection
-      counts[status] = (counts[status] || 0) + 1;
+      counts.set(status, (counts.get(status) ?? 0) + 1);
     });
     return counts;
   }, [allLeads]);
@@ -356,8 +353,7 @@ export function useLeadManagement() {
   }, []);
 
   const getStatusBadgeVariant = useCallback((status: string) => {
-    // eslint-disable-next-line security/detect-object-injection
-    return STATUS_CONFIG[status]?.badgeVariant || 'secondary';
+    return STATUS_BADGE_VARIANTS.get(status) ?? 'secondary';
   }, []);
 
   const formatCurrency = useCallback(

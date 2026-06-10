@@ -19,6 +19,7 @@ param(
 
 $completeScript  = Join-Path $PSScriptRoot "complete-task.ps1"
 $nextTaskScript  = Join-Path $PSScriptRoot "next-task.ps1"
+$promptManagerScript = Join-Path $PSScriptRoot "prompt-manager.ps1"
 
 # -- Step 1: Complete the current task ------------------------------------
 Write-Host ""
@@ -54,6 +55,70 @@ try {
     Write-Host ""
     Write-Host "  [FEEDS_ACK REQUIRED] Downstream agent must acknowledge before queue advances." -ForegroundColor Yellow
     Write-Host "  Run: npm run orchestrator:queue:ack -- -TaskId $TaskId -AckBy `"$ackAgent`"" -ForegroundColor Gray
+  }
+
+  if ($newStatus -eq "done" -and (Test-Path $promptManagerScript)) {
+    $markSuccessOk = $false
+    for ($attempt = 1; $attempt -le 3; $attempt++) {
+      $pmOut = & powershell -ExecutionPolicy Bypass -File "$promptManagerScript" `
+        -WorkspaceRoot $WorkspaceRoot `
+        -MarkSuccess `
+        -TaskId $TaskId 2>&1 | Out-String
+
+      if ($LASTEXITCODE -eq 0) {
+        $markSuccessOk = $true
+        $pmOut | Write-Host
+        break
+      }
+
+      if ($attempt -lt 3) {
+        Write-Host ("  [WARN] prompt-manager MarkSuccess contention (attempt {0}/3). Retrying..." -f $attempt) -ForegroundColor DarkYellow
+        Start-Sleep -Milliseconds (200 * $attempt)
+      } else {
+        Write-Host "  [WARN] prompt-manager MarkSuccess failed after retries; task completion remains valid." -ForegroundColor DarkYellow
+        $pmOut | Write-Host
+      }
+    }
+
+    $evidenceLc = [string]$EvidenceNote
+    $evidenceLc = $evidenceLc.ToLower()
+    $saveText = ""
+    if ($evidenceLc -like "*refined prompt:*") {
+      $parts = $EvidenceNote.Split(":", 2)
+      if ($parts.Count -eq 2) { $saveText = $parts[1].Trim() }
+    } elseif ($evidenceLc -like "*updated prompt:*") {
+      $parts = $EvidenceNote.Split(":", 2)
+      if ($parts.Count -eq 2) { $saveText = $parts[1].Trim() }
+    }
+
+    if (-not [string]::IsNullOrWhiteSpace($saveText)) {
+      Write-Host ""
+      Write-Host "  [PROMPT SAVE] Auto-saving refined prompt text..." -ForegroundColor Cyan
+      $saveOk = $false
+      for ($attempt = 1; $attempt -le 3; $attempt++) {
+        $saveOut = & powershell -ExecutionPolicy Bypass -File "$promptManagerScript" `
+          -WorkspaceRoot $WorkspaceRoot `
+          -Save `
+          -TaskId $TaskId `
+          -Text $saveText 2>&1 | Out-String
+
+        if ($LASTEXITCODE -eq 0) {
+          $saveOk = $true
+          $saveOut | Write-Host
+          break
+        }
+
+        if ($attempt -lt 3) {
+          Write-Host ("  [WARN] prompt-manager Save contention (attempt {0}/3). Retrying..." -f $attempt) -ForegroundColor DarkYellow
+          Start-Sleep -Milliseconds (200 * $attempt)
+        } else {
+          Write-Host "  [WARN] prompt-manager Save failed after retries; continuing without blocking task flow." -ForegroundColor DarkYellow
+          $saveOut | Write-Host
+        }
+      }
+    } elseif ($evidenceLc -like "*refined prompt*" -or $evidenceLc -like "*updated prompt*") {
+      Write-Host "  [PROMPT SAVE] Mention detected but no '...prompt: <text>' payload found." -ForegroundColor Yellow
+    }
   }
 }
 catch {

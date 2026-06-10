@@ -17,8 +17,7 @@ import type { RootState } from '../../../store/store';
 import { assistantsService } from '../../../services/assistantsService';
 import type { AssistantMeta } from '../../../services/assistantsService';
 
-const isSuperUser = (role?: string): boolean =>
-  role === 'owner' || role === 'admin';
+const isSuperUser = (role?: string): boolean => role === 'owner' || role === 'admin';
 
 const AssistantPlanEditor: React.FC = () => {
   const userRole = useSelector((state: RootState) => state.auth?.user?.role as string | undefined);
@@ -26,6 +25,7 @@ const AssistantPlanEditor: React.FC = () => {
   const [assistants, setAssistants] = useState<AssistantMeta[]>([]);
   const [selectedId, setSelectedId] = useState<string>('');
   const [plan, setPlan] = useState<string>('');
+  const [planExists, setPlanExists] = useState<boolean>(false);
   const [status, setStatus] = useState<'idle' | 'loading' | 'saving' | 'deleting'>('idle');
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
@@ -40,11 +40,14 @@ const AssistantPlanEditor: React.FC = () => {
   // Load plan when selection changes
   const loadPlan = useCallback(async (id: string) => {
     if (!id) return;
+    setPlan('');
+    setPlanExists(false);
     setStatus('loading');
     setMessage(null);
     try {
       const res = await assistantsService.getPlan(id);
       setPlan(res.plan ?? '');
+      setPlanExists(res.exists);
     } catch {
       setMessage({ type: 'error', text: 'Failed to load plan.' });
     } finally {
@@ -62,11 +65,13 @@ const AssistantPlanEditor: React.FC = () => {
     setMessage(null);
     try {
       await assistantsService.updatePlan(selectedId, plan);
+      setPlanExists(true);
       setMessage({ type: 'success', text: 'Plan saved successfully.' });
     } catch {
       // Try create if update fails (plan might not exist yet)
       try {
         await assistantsService.createPlan(selectedId, plan);
+        setPlanExists(true);
         setMessage({ type: 'success', text: 'Plan created successfully.' });
       } catch {
         setMessage({ type: 'error', text: 'Failed to save plan.' });
@@ -84,6 +89,7 @@ const AssistantPlanEditor: React.FC = () => {
     try {
       await assistantsService.deletePlan(selectedId);
       setPlan('');
+      setPlanExists(false);
       setMessage({ type: 'success', text: 'Plan deleted.' });
     } catch {
       setMessage({ type: 'error', text: 'Failed to delete plan.' });
@@ -123,14 +129,20 @@ const AssistantPlanEditor: React.FC = () => {
       <div style={{ marginBottom: '16px' }}>
         <label
           htmlFor="plan-editor-assistant"
-          style={{ display: 'block', fontSize: '13px', fontWeight: 500, marginBottom: '4px', color: '#374151' }}
+          style={{
+            display: 'block',
+            fontSize: '13px',
+            fontWeight: 500,
+            marginBottom: '4px',
+            color: '#374151',
+          }}
         >
           Select Assistant
         </label>
         <select
           id="plan-editor-assistant"
           value={selectedId}
-          onChange={(e) => setSelectedId(e.target.value)}
+          onChange={e => setSelectedId(e.target.value)}
           disabled={busy}
           style={{
             width: '100%',
@@ -143,7 +155,7 @@ const AssistantPlanEditor: React.FC = () => {
           }}
         >
           <option value="">— choose an assistant —</option>
-          {assistants.map((a) => (
+          {assistants.map(a => (
             <option key={a.id} value={a.id}>
               {a.avatar} {a.name} — {a.title}
             </option>
@@ -156,14 +168,20 @@ const AssistantPlanEditor: React.FC = () => {
         <>
           <label
             htmlFor="plan-editor-content"
-            style={{ display: 'block', fontSize: '13px', fontWeight: 500, marginBottom: '4px', color: '#374151' }}
+            style={{
+              display: 'block',
+              fontSize: '13px',
+              fontWeight: 500,
+              marginBottom: '4px',
+              color: '#374151',
+            }}
           >
             Plan (Markdown)
           </label>
           <textarea
             id="plan-editor-content"
             value={status === 'loading' ? 'Loading…' : plan}
-            onChange={(e) => setPlan(e.target.value)}
+            onChange={e => setPlan(e.target.value)}
             disabled={busy}
             rows={24}
             style={{
@@ -200,7 +218,7 @@ const AssistantPlanEditor: React.FC = () => {
 
             <button
               onClick={handleDelete}
-              disabled={busy || !plan}
+              disabled={busy || !planExists}
               style={{
                 padding: '8px 20px',
                 background: 'transparent',
@@ -208,8 +226,8 @@ const AssistantPlanEditor: React.FC = () => {
                 border: '1px solid #DC2626',
                 borderRadius: '6px',
                 fontSize: '14px',
-                cursor: busy || !plan ? 'not-allowed' : 'pointer',
-                opacity: busy || !plan ? 0.5 : 1,
+                cursor: busy || !planExists ? 'not-allowed' : 'pointer',
+                opacity: busy || !planExists ? 0.5 : 1,
               }}
             >
               {status === 'deleting' ? 'Deleting…' : 'Delete Plan'}

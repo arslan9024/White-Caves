@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { setUser, type AppUser } from '../../../../store/userSlice';
-import { loginStart, loginFailure, loginSuccess } from '../../../../store/authSlice';
+import type { AppUser } from '../../../../store/userSlice';
+import { loginStart, loginFailure } from '../../../../store/authSlice';
 import { createLogger } from '../../../../utils/logger';
-import { safeStorage } from '../../../../utils/safeStorage';
+import { finalizeAuthenticatedSession, navigateToPostLoginDestination } from '../../../../utils/authSession';
 
 const log = createLogger('BiometricLogin');
 import {
@@ -47,39 +47,20 @@ const BiometricLoginButton = ({ onSuccess, onError, disabled }: BiometricLoginBu
 
       if (result.success && result.user && result.token) {
         const userData = result.user as AppUser;
-
-        dispatch(
-          setUser({
-            id: userData.id,
-            email: userData.email || '',
-            name: userData.name || '',
-            photoURL: (userData as unknown as { photoUrl?: string }).photoUrl || undefined,
-          } as AppUser)
-        );
-
-        dispatch(
-          loginSuccess({
-            user: userData,
-            token: result.token,
-            provider: 'biometric',
-          })
-        );
+        const destination = finalizeAuthenticatedSession({
+          dispatch,
+          user: userData,
+          token: result.token,
+          provider: 'biometric',
+        });
 
         onSuccess?.(userData);
-
-        const existingRole = safeStorage.getJSON<{ role: string }>('userRole');
-        if (existingRole) {
-          navigate(`/${existingRole.role}/dashboard`);
-        } else {
-          navigate('/select-role');
-        }
+        navigateToPostLoginDestination(navigate, destination);
       } else {
         throw new Error('Authentication succeeded but no session data returned.');
       }
-    } catch (error: unknown) {
-      log.error('Biometric login error:', error);
-      const msg = error instanceof Error ? error.message : 'Biometric login failed';
-      dispatch(loginFailure(msg));
+    } catch (error) {
+      dispatch(loginFailure((error as Error).message));
       onError?.(error);
     } finally {
       setLoading(false);

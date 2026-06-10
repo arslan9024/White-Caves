@@ -1,0 +1,1 @@
+{agent} -- AUDIT: {file} -> audit "{section}" for compliance, dependencies, and execution risks. Include blockers and exact remediation actions. Target sections: {target_sections}. Acceptance criteria: {acceptance_criteria}

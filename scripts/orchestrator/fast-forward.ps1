@@ -26,6 +26,7 @@ $root     = Resolve-Path $WorkspaceRoot
 $scripts  = Join-Path $root "scripts\orchestrator"
 $qFile    = Join-Path $root "logs\orchestrator\task-queue.json"
 $pFile    = Join-Path $root "scripts\orchestrator\prompts.json"
+$completeTaskScript = Join-Path $scripts "complete-task.ps1"
 $mutex    = New-Object System.Threading.Mutex($false, "Global\WhiteCaves_Orchestrator_Queue")
 $FALLBACK = 5
 
@@ -116,6 +117,33 @@ function Get-TargetFile ([string]$pr) {
   return ""
 }
 
+function Get-NormalizedDeps {
+  param($deps)
+
+  $normalized = New-Object 'System.Collections.Generic.List[string]'
+  if ($null -eq $deps) { return ,$normalized.ToArray() }
+
+  foreach ($item in @($deps)) {
+    if ($null -eq $item) { continue }
+    if ($item -is [string]) {
+      if ([string]::IsNullOrWhiteSpace($item)) { continue }
+      [void]$normalized.Add($item)
+      continue
+    }
+
+    if ($null -ne $item.PSObject -and $item.PSObject.Properties.Count -eq 0) {
+      continue
+    }
+
+    $text = [string]$item
+    if (-not [string]::IsNullOrWhiteSpace($text)) {
+      [void]$normalized.Add($text)
+    }
+  }
+
+  return ,$normalized.ToArray()
+}
+
 function Test-DepsDone ([array]$deps, $all, $vDone) {
   if ($null -eq $deps -or $deps.Count -eq 0) { return $true }
   $vd = if ($null -ne $vDone -and $vDone -is [hashtable]) { $vDone } else { @{} }
@@ -135,7 +163,7 @@ function Get-DoneCount {
 function Get-ReadyCount ($all) {
   $c = 0
   foreach ($t in ($all | Where-Object { $_.status -eq "queued" })) {
-    if (Test-DepsDone -deps @($t.dependsOn) -all $all -vDone @{}) { $c++ }
+    if (Test-DepsDone -deps (Get-NormalizedDeps $t.dependsOn) -all $all -vDone @{}) { $c++ }
   }
   return $c
 }
@@ -164,9 +192,9 @@ if ($root0Task.status -eq "done") {
   Write-Host ("[WARN] Task {0} is already done. Run fast-complete to pick up cascades." -f $TaskId) -ForegroundColor Yellow
   Write-Host "  npm run orchestrator:fast-complete" -ForegroundColor DarkGray; exit 0
 }
-if (-not (Test-DepsDone -deps @($root0Task.dependsOn) -all $all0 -vDone @{})) {
+if (-not (Test-DepsDone -deps (Get-NormalizedDeps $root0Task.dependsOn) -all $all0 -vDone @{})) {
   Write-Host ("[ERROR] Task {0} is BLOCKED -- deps not all done:" -f $TaskId) -ForegroundColor Red
-  foreach ($d in @($root0Task.dependsOn)) {
+  foreach ($d in (Get-NormalizedDeps $root0Task.dependsOn)) {
     $depTask = $all0 | Where-Object { $_.taskId -eq $d } | Select-Object -First 1
     $dStatus = if ($null -ne $depTask) { $depTask.status } else { "not_found" }
     Write-Host ("  dep {0}: {1}" -f $d, $dStatus) -ForegroundColor DarkGray
@@ -177,6 +205,7 @@ if (-not (Test-DepsDone -deps @($root0Task.dependsOn) -all $all0 -vDone @{})) {
 
 $beforeDone  = Get-DoneCount
 $beforeReady = Get-ReadyCount $all0
+$queueTotal  = @($all0).Count
 
 # ------------------------------------------------------------------
 # HEADER
@@ -194,7 +223,8 @@ Write-Host ""
 $prompt0  = ($q0.tasks | ForEach-Object {}) # placeholder
 $prompts  = Get-Content $pFile -Raw | ConvertFrom-Json
 $pr0      = $prompts.PSObject.Properties | Where-Object { $_.Name -eq $TaskId } | Select-Object -ExpandProperty Value
-$tf0      = Get-TargetFile ($pr0 -replace $null,"")
+$pr0Text  = if ($pr0 -is [string]) { [string]$pr0 } elseif ($null -ne $pr0 -and $pr0.PSObject.Properties.Name -contains "prompt") { [string]$pr0.prompt } else { [string]$pr0 }
+$tf0      = Get-TargetFile ($pr0Text -replace $null,"")
 $secCount = if ($tf0 -ne "") { Get-SecCount $tf0 } else { 0 }
 $tgtCount = if ($tf0 -ne "" -and $gateTargets.ContainsKey($tf0)) { $gateTargets[$tf0] } else { $FALLBACK }
 $passes0  = if ($tf0 -ne "") { Test-Pass $tf0 } else { $false }
@@ -208,7 +238,7 @@ if ($tf0 -ne "") {
   Write-Host ("  Gate      : {0}/{1} sections  {2}" -f $secCount, $tgtCount, $passStr) -ForegroundColor $passCol
 }
 Write-Host ""
-Write-Host ("  Queue BEFORE : {0}/51 done  |  {1} READY" -f $beforeDone, $beforeReady) -ForegroundColor DarkGray
+Write-Host ("  Queue BEFORE : {0}/{1} done  |  {2} READY" -f $beforeDone, $queueTotal, $beforeReady) -ForegroundColor DarkGray
 Write-Host ""
 
 # ------------------------------------------------------------------
@@ -250,11 +280,6 @@ if (-not $Force -and -not $NonInteractive) {
 # ------------------------------------------------------------------
 Write-Host ("  [1/3] Marking {0} done ..." -f $TaskId) -ForegroundColor Cyan
 $t0 = Get-Date
-$q1 = Read-Q
-$rootTask1 = @($q1.tasks) | Where-Object { $_.taskId -eq $TaskId } | Select-Object -First 1
-if ($null -eq $rootTask1) {
-  Write-Host "[ERROR] Could not re-read task from queue." -ForegroundColor Red; exit 1
-}
 $now = (Get-Date).ToString("o")
 $ev  = if ([string]::IsNullOrWhiteSpace($EvidenceNote)) {
   if ($NonInteractive) {
@@ -265,12 +290,33 @@ $ev  = if ([string]::IsNullOrWhiteSpace($EvidenceNote)) {
 } else {
   $EvidenceNote
 }
-$rootTask1 | Add-Member NoteProperty "status"       "done" -Force
-$rootTask1 | Add-Member NoteProperty "startedAt"    $now   -Force
-$rootTask1 | Add-Member NoteProperty "completedAt"  $now   -Force
-$rootTask1 | Add-Member NoteProperty "evidenceNote" $ev    -Force
-Save-Q $q1
-Write-Host ("    [OK] {0} -> done" -f $TaskId) -ForegroundColor Green
+
+if (-not (Test-Path $completeTaskScript)) {
+  Write-Host "[ERROR] complete-task.ps1 not found. Cannot safely complete task." -ForegroundColor Red
+  exit 1
+}
+
+if ($NonInteractive -and [string]::IsNullOrWhiteSpace($EvidenceNote)) {
+  $pendingProducedRef = "logs/orchestrator/evidence-pending/$TaskId.md"
+  $completeOut = & powershell -ExecutionPolicy Bypass -File "$completeTaskScript" `
+    -TaskId $TaskId `
+    -WorkspaceRoot $root `
+    -EvidenceNote $ev `
+    -ProducedRef $pendingProducedRef `
+    -MarkEvidencePending `
+    -AllowQueued 2>&1 | Out-String
+  Write-Host $completeOut
+  Write-Host ("    [INFO] {0} set to evidence_pending (non-interactive mode requires evidence)." -f $TaskId) -ForegroundColor DarkYellow
+}
+else {
+  $completeOut = & powershell -ExecutionPolicy Bypass -File "$completeTaskScript" `
+    -TaskId $TaskId `
+    -WorkspaceRoot $root `
+    -EvidenceNote $ev `
+    -AllowQueued 2>&1 | Out-String
+  Write-Host $completeOut
+  Write-Host ("    [OK] {0} completion submitted" -f $TaskId) -ForegroundColor Green
+}
 
 # ------------------------------------------------------------------
 # STEP 2: Run fast-complete cascade (picks up all now-auto-passable tasks)
@@ -306,10 +352,10 @@ $elapsed    = [math]::Round(((Get-Date) - $t0).TotalSeconds, 1)
 
 Write-Host ""
 Write-BigDiv -col Green
-Write-Host "  FAST-FORWARD COMPLETE  ({0} s)" -f $elapsed -ForegroundColor Green
+Write-Host ("  FAST-FORWARD COMPLETE  ({0} s)" -f $elapsed) -ForegroundColor Green
 
-$donePct = [math]::Round($afterDone / 51 * 100, 0)
-Write-Host ("  Queue AFTER  : {0}/51 done ({1}%)  |  {2} READY" -f $afterDone, $donePct, $afterReady) -ForegroundColor Green
+$donePct = if ($queueTotal -gt 0) { [math]::Round($afterDone / $queueTotal * 100, 0) } else { 0 }
+Write-Host ("  Queue AFTER  : {0}/{1} done ({2}%)  |  {3} READY" -f $afterDone, $queueTotal, $donePct, $afterReady) -ForegroundColor Green
 
 if ($newDone -gt 0) {
   Write-Host ("  Done delta   : +{0} task(s)  ({1} -> {2})" -f $newDone, $beforeDone, $afterDone) -ForegroundColor Cyan
@@ -323,8 +369,8 @@ if ($newReady -gt 0) {
   $newlyReady = @($all2 | Where-Object { $_.status -eq "queued" } | Where-Object {
     $t2 = $_
     $was = @($q0.tasks | Where-Object { $_.taskId -eq $t2.taskId }) | Select-Object -First 1
-    $wasReady = (Test-DepsDone -deps @($was.dependsOn) -all $all0 -vDone @{})
-    $nowReady = (Test-DepsDone -deps @($t2.dependsOn)  -all $all2 -vDone @{})
+    $wasReady = (Test-DepsDone -deps (Get-NormalizedDeps $was.dependsOn) -all $all0 -vDone @{})
+    $nowReady = (Test-DepsDone -deps (Get-NormalizedDeps $t2.dependsOn)  -all $all2 -vDone @{})
     return (-not $wasReady -and $nowReady)
   })
   foreach ($nr in $newlyReady) {

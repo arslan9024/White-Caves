@@ -186,6 +186,10 @@ export const ActionsSection = styled.div`
   flex-shrink: 0;
 `;
 
+export const ActionAnchor = styled.div`
+  position: relative;
+`;
+
 /* ── Search trigger ────────────────────────────────────────── */
 
 export const SearchTrigger = styled.button`

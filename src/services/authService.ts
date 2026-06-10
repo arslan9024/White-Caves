@@ -7,6 +7,9 @@
 
 import { apiClient } from '../utils/apiClient';
 import { safeStorage } from '../utils/safeStorage';
+import { auth as firebaseAuth } from '../config/firebase';
+import { HttpError } from '../utils/HttpError';
+import { authFetch } from '../utils/authFetch';
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -19,13 +22,31 @@ export interface AuthUser {
   photoUrl?: string | null;
 }
 
+/** Shape of `data` when login succeeds normally */
+export interface LoginSuccessData {
+  token: string;
+  user: AuthUser;
+}
+
+/** Shape of `data` when the account has 2FA enabled — a challenge token is issued instead */
+export interface TwoFactorChallengeData {
+  twoFactorToken: string;
+}
+
 export interface LoginResponse {
   success: boolean;
-  data: {
-    token: string;
-    user: AuthUser;
-  };
+  data: LoginSuccessData | TwoFactorChallengeData;
   requiresTwoFactor?: boolean;
+}
+
+/**
+ * Dedicated response type for Firebase-sync and social-auth endpoints.
+ * These flows never trigger a 2FA challenge, so the data always contains
+ * a full session token and user object.
+ */
+export interface FirebaseSyncResponse {
+  success: boolean;
+  data: LoginSuccessData;
 }
 
 export interface RegisterResponse {
@@ -57,6 +78,111 @@ function clearToken(): void {
   apiClient.setAuthToken(null);
 }
 
+function getCookieValue(name: string): string | null {
+  if (typeof document === 'undefined') return null;
+  const cookies = document.cookie ? document.cookie.split(';') : [];
+  for (const cookie of cookies) {
+    const [key, ...valueParts] = cookie.trim().split('=');
+    if (key === name) {
+      return decodeURIComponent(valueParts.join('='));
+    }
+  }
+  return null;
+}
+
+function resolveFirebaseSyncErrorMessage(error: unknown): string {
+  if (error instanceof HttpError) {
+    const data = error.data;
+
+    if (typeof data === 'object' && data !== null) {
+      const asRecord = data as Record<string, unknown>;
+      const payloadMessage =
+        (typeof asRecord.message === 'string' && asRecord.message.trim()) ||
+        (typeof asRecord.error === 'string' && asRecord.error.trim()) ||
+        (typeof asRecord.details === 'string' && asRecord.details.trim()) ||
+        '';
+
+      if (payloadMessage) {
+        if (/too many login attempts from this ip/i.test(payloadMessage)) {
+          return 'Backend session activation is temporarily rate-limited. Please retry Google sign-in in a few seconds.';
+        }
+        if (/too many firebase session sync attempts/i.test(payloadMessage)) {
+          return 'Backend session activation is temporarily rate-limited. Please retry Google sign-in in a few seconds.';
+        }
+        return payloadMessage;
+      }
+    }
+
+    if (error.message?.trim()) {
+      return error.message.trim();
+    }
+
+    if (error.status === 401) {
+      return 'Firebase token verification failed. Please sign in with Google again.';
+    }
+
+    if (error.status === 503) {
+      return 'Authentication service is temporarily unavailable on the server. Please try again shortly.';
+    }
+
+    if (error.status === 429) {
+      return 'Backend session activation is temporarily rate-limited. Please retry Google sign-in in a few seconds.';
+    }
+  }
+
+  if (error instanceof Error && error.message.trim()) {
+    return error.message.trim();
+  }
+
+  if (
+    typeof error === 'object' &&
+    error !== null &&
+    'message' in error &&
+    typeof (error as { message?: unknown }).message === 'string' &&
+    (error as { message: string }).message.trim()
+  ) {
+    return (error as { message: string }).message.trim();
+  }
+
+  return 'Unable to complete authentication sync';
+}
+
+function isTransientFirebaseSyncError(error: unknown): boolean {
+  if (error instanceof HttpError) {
+    if (error.status === 429 || error.status === 503 || error.status === 504) {
+      return true;
+    }
+
+    const data = error.data;
+    if (typeof data === 'object' && data !== null) {
+      const payload = data as Record<string, unknown>;
+      const payloadMessage =
+        (typeof payload.message === 'string' && payload.message) ||
+        (typeof payload.error === 'string' && payload.error) ||
+        '';
+
+      if (/temporarily|timeout|rate[- ]?limit|too many|try again/i.test(payloadMessage)) {
+        return true;
+      }
+    }
+
+    if (/temporarily|timeout|rate[- ]?limit|too many|try again/i.test(error.message || '')) {
+      return true;
+    }
+  }
+
+  if (error instanceof Error) {
+    return /network|timeout|fetch failed|econnreset|temporarily/i.test(error.message || '');
+  }
+
+  return false;
+}
+
+const wait = (ms: number): Promise<void> =>
+  new Promise(resolve => {
+    setTimeout(resolve, ms);
+  });
+
 /** Restore token from storage on app init */
 export function restoreAuthToken(): string | null {
   const token = safeStorage.get(TOKEN_KEY);
@@ -75,14 +201,37 @@ export function restoreAuthToken(): string | null {
 export async function loginWithEmail(email: string, password: string): Promise<LoginResponse> {
   const response = (await apiClient.post('/auth/login', { email, password })) as LoginResponse;
 
-  if (response.success) {
-    if (!response.data?.token) {
+  // When 2FA is required the backend returns a challenge token, not a session token.
+  // Do not try to persist a JWT in that case — the caller must complete 2FA first.
+  if (response.success && !response.requiresTwoFactor) {
+    const successData = response.data as LoginSuccessData;
+    if (!successData?.token) {
       throw new Error('Login succeeded but no authentication token was returned');
     }
-    persistToken(response.data.token);
+    persistToken(successData.token);
   }
 
   return response;
+}
+
+/**
+ * Complete a 2FA-gated login by verifying the TOTP code (or backup recovery code).
+ * Persists the returned JWT and fetches the current user profile.
+ */
+export async function verifyTwoFactor(email: string, code: string): Promise<AuthUser> {
+  const response = (await apiClient.post('/auth/verify-2fa', { email, code })) as {
+    success: boolean;
+    data: { token: string; verified: boolean };
+  };
+
+  if (!response.success || !response.data?.token) {
+    throw new Error('Two-factor verification failed');
+  }
+
+  persistToken(response.data.token);
+
+  const profile = await fetchProfile();
+  return profile.data;
 }
 
 /**
@@ -129,17 +278,50 @@ export async function syncFirebaseUser(firebaseUser: {
   displayName: string | null;
   photoURL: string | null;
   getIdToken?: () => Promise<string>;
-}): Promise<LoginResponse> {
-  const firebaseToken =
-    typeof firebaseUser.getIdToken === 'function' ? await firebaseUser.getIdToken() : null;
+}): Promise<FirebaseSyncResponse> {
+  let firebaseToken: string | null = null;
 
-  const response = (await apiClient.post('/auth/firebase-sync', {
-    firebaseUid: firebaseUser.uid,
-    email: firebaseUser.email,
-    name: firebaseUser.displayName,
-    photoUrl: firebaseUser.photoURL,
-    firebaseToken,
-  })) as LoginResponse;
+  if (typeof firebaseUser.getIdToken === 'function') {
+    firebaseToken = await firebaseUser.getIdToken();
+  }
+
+  if (!firebaseToken && firebaseAuth?.currentUser?.uid === firebaseUser.uid) {
+    firebaseToken = await firebaseAuth.currentUser.getIdToken();
+  }
+
+  if (!firebaseToken) {
+    throw new Error(
+      'Firebase authentication token is missing. Please retry Google sign-in to establish a secure backend session.'
+    );
+  }
+
+  let response: FirebaseSyncResponse | null = null;
+  const maxAttempts = 2;
+
+  for (let attempt = 1; attempt <= maxAttempts; attempt += 1) {
+    try {
+      response = (await apiClient.post('/auth/firebase-sync', {
+        firebaseUid: firebaseUser.uid,
+        email: firebaseUser.email,
+        name: firebaseUser.displayName,
+        photoUrl: firebaseUser.photoURL,
+        firebaseToken,
+      })) as FirebaseSyncResponse;
+      break;
+    } catch (error: unknown) {
+      const canRetry = attempt < maxAttempts && isTransientFirebaseSyncError(error);
+      if (canRetry) {
+        await wait(300 * attempt);
+        continue;
+      }
+
+      throw new Error(resolveFirebaseSyncErrorMessage(error));
+    }
+  }
+
+  if (!response) {
+    throw new Error('Unable to complete authentication sync');
+  }
 
   if (response.success) {
     if (!response.data?.token) {
@@ -165,7 +347,7 @@ export async function changePassword(
   currentPassword: string,
   newPassword: string
 ): Promise<{ success: boolean }> {
-  return (await apiClient.post('/auth/change-password', {
+  return (await apiClient.put('/auth/password', {
     currentPassword,
     newPassword,
   })) as { success: boolean };
@@ -198,7 +380,17 @@ export async function completeSocialRegistration(
 /**
  * Logout — clears JWT and user state.
  */
-export function logout(): void {
+export async function logout(): Promise<void> {
+  const csrfToken = getCookieValue('csrf_token');
+  try {
+    await authFetch('/api/auth/logout', {
+      method: 'POST',
+      headers: csrfToken ? { 'x-csrf-token': csrfToken } : undefined,
+      body: JSON.stringify({}),
+    });
+  } catch {
+    // Best effort only — local client cleanup still proceeds.
+  }
   clearToken();
   safeStorage.remove('userRole');
 }

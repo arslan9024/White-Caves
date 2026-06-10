@@ -290,6 +290,51 @@ export const SearchResultBadge = styled.span`
   flex-shrink: 0;
 `;
 
+export const SidebarLiveRegion = styled.div`
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+`;
+
+export const AICommandBadge = styled(SearchResultBadge)`
+  background: #c9a84c20;
+  color: #c9a84c;
+`;
+
+export const AssistantMiniAvatar = styled.div<{ $color?: string }>`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 6px;
+  background: ${props => `${props.$color || colors.primary}22`};
+  color: ${props => props.$color || colors.primary};
+  font-size: 10px;
+  font-weight: 700;
+  flex-shrink: 0;
+  border: 1px solid ${props => `${props.$color || colors.primary}30`};
+`;
+
+export const SidebarChevron = styled.div<{ $expanded?: boolean }>`
+  width: 10px;
+  height: 10px;
+  margin-left: auto;
+  transform: ${props => (props.$expanded ? 'rotate(0)' : 'rotate(-90deg)')};
+  transition: transform 0.2s;
+
+  svg {
+    width: 10px;
+    height: 10px;
+  }
+`;
+
 export const SearchEmptyState = styled.div`
   display: flex;
   flex-direction: column;

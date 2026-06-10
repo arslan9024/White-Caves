@@ -8,12 +8,14 @@ import {
   changePassword,
   logout,
 } from './authService';
+import { HttpError } from '../utils/HttpError';
 
 // ── Mocks ───────────────────────────────────────────────────────────────
 vi.mock('../utils/apiClient', () => ({
   apiClient: {
     post: vi.fn(),
     get: vi.fn(),
+    put: vi.fn(),
     setAuthToken: vi.fn(),
   },
 }));
@@ -26,8 +28,13 @@ vi.mock('../utils/safeStorage', () => ({
   },
 }));
 
+vi.mock('../utils/authFetch', () => ({
+  authFetch: vi.fn().mockResolvedValue({ ok: true }),
+}));
+
 import { apiClient } from '../utils/apiClient';
 import { safeStorage } from '../utils/safeStorage';
+import { authFetch } from '../utils/authFetch';
 
 const mApiPost = apiClient.post as ReturnType<typeof vi.fn>;
 const mApiGet = apiClient.get as ReturnType<typeof vi.fn>;
@@ -35,6 +42,7 @@ const mApiSetToken = apiClient.setAuthToken as ReturnType<typeof vi.fn>;
 const mStorageGet = safeStorage.get as ReturnType<typeof vi.fn>;
 const mStorageSet = safeStorage.set as ReturnType<typeof vi.fn>;
 const mStorageRemove = safeStorage.remove as ReturnType<typeof vi.fn>;
+const mAuthFetch = authFetch as ReturnType<typeof vi.fn>;
 
 const testUser = {
   id: 'u1',
@@ -47,6 +55,7 @@ const testUser = {
 describe('authService', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    mAuthFetch.mockResolvedValue({ ok: true });
   });
 
   // ── restoreAuthToken ──────────────────────────────────────────────
@@ -187,7 +196,12 @@ describe('authService', () => {
       email: 'fb@x.com',
       displayName: 'FB User',
       photoURL: 'http://pic.com/a.jpg',
+      getIdToken: vi.fn().mockResolvedValue('firebase-id-token-1'),
     };
+
+    beforeEach(() => {
+      fbUser.getIdToken.mockResolvedValue('firebase-id-token-1');
+    });
 
     it('maps firebase fields to API fields', async () => {
       mApiPost.mockResolvedValue({
@@ -200,7 +214,7 @@ describe('authService', () => {
         email: 'fb@x.com',
         name: 'FB User',
         photoUrl: 'http://pic.com/a.jpg',
-        firebaseToken: null,
+        firebaseToken: 'firebase-id-token-1',
       });
     });
 
@@ -217,6 +231,58 @@ describe('authService', () => {
       mApiPost.mockResolvedValue({ success: true, data: {} });
       await expect(syncFirebaseUser(fbUser)).rejects.toThrow(/no authentication token/i);
     });
+
+    it('surfaces backend sync payload error when provided', async () => {
+      mApiPost.mockRejectedValue(
+        new HttpError('', 503, 'Service Unavailable', {
+          error: 'Firebase Admin is not configured on the server.',
+        })
+      );
+
+      await expect(syncFirebaseUser(fbUser)).rejects.toThrow(
+        /Firebase Admin is not configured on the server/i
+      );
+    });
+
+    it('normalizes legacy login-lock payload message for firebase sync', async () => {
+      mApiPost.mockRejectedValue(
+        new HttpError('', 429, 'Too Many Requests', {
+          message: 'Too many login attempts from this IP. Please try again after 15 minutes.',
+        })
+      );
+
+      await expect(syncFirebaseUser(fbUser)).rejects.toThrow(/temporarily rate-limited/i);
+    });
+
+    it('normalizes generic 429 firebase sync throttling errors', async () => {
+      mApiPost.mockRejectedValue(new HttpError('', 429, 'Too Many Requests', null));
+
+      await expect(syncFirebaseUser(fbUser)).rejects.toThrow(/temporarily rate-limited/i);
+    });
+
+    it('retries once on transient 503 error and succeeds on second attempt', async () => {
+      mApiPost
+        .mockRejectedValueOnce(new HttpError('', 503, 'Service Unavailable', null))
+        .mockResolvedValueOnce({
+          success: true,
+          data: { token: 'tok-retry', user: testUser },
+        });
+
+      const result = await syncFirebaseUser(fbUser);
+
+      expect(mApiPost).toHaveBeenCalledTimes(2);
+      expect(result.success).toBe(true);
+      expect(mStorageSet).toHaveBeenCalledWith('token', 'tok-retry');
+    });
+
+    it('stops after retry when transient errors persist', async () => {
+      mApiPost
+        .mockRejectedValueOnce(new HttpError('', 503, 'Service Unavailable', null))
+        .mockRejectedValueOnce(new HttpError('', 503, 'Service Unavailable', null));
+
+      await expect(syncFirebaseUser(fbUser)).rejects.toThrow(/temporarily unavailable/i);
+      expect(mApiPost).toHaveBeenCalledTimes(2);
+    });
   });
 
   // ── fetchProfile ──────────────────────────────────────────────────
@@ -231,10 +297,11 @@ describe('authService', () => {
 
   // ── changePassword ────────────────────────────────────────────────
   describe('changePassword', () => {
-    it('calls POST /auth/change-password', async () => {
-      mApiPost.mockResolvedValue({ success: true });
+    it('calls PUT /auth/password', async () => {
+      const mApiPut = apiClient.put as ReturnType<typeof vi.fn>;
+      mApiPut.mockResolvedValue({ success: true });
       const result = await changePassword('old', 'new');
-      expect(mApiPost).toHaveBeenCalledWith('/auth/change-password', {
+      expect(mApiPut).toHaveBeenCalledWith('/auth/password', {
         currentPassword: 'old',
         newPassword: 'new',
       });
@@ -244,8 +311,8 @@ describe('authService', () => {
 
   // ── logout ────────────────────────────────────────────────────────
   describe('logout', () => {
-    it('clears token and userRole from storage', () => {
-      logout();
+    it('clears token and userRole from storage', async () => {
+      await logout();
       expect(mStorageRemove).toHaveBeenCalledWith('token');
       expect(mStorageRemove).toHaveBeenCalledWith('userRole');
       expect(mApiSetToken).toHaveBeenCalledWith(null);

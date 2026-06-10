@@ -1,4 +1,5 @@
 import React from 'react';
+import { motion, useReducedMotion } from 'framer-motion';
 import { useDispatch, useSelector } from 'react-redux';
 import {
   addToFavorites,
@@ -73,6 +74,9 @@ function PropertyCard({
   const isFavorite =
     favoriteIds.length > 0 ? favoriteIds.includes(id) : favorites.some(f => f?.id === id);
 
+  // W17-003: respect user's prefers-reduced-motion setting
+  const prefersReducedMotion = useReducedMotion();
+
   const handleFavoriteClick = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
@@ -100,7 +104,15 @@ function PropertyCard({
     <>
       <PropertyCardImage>
         {image ? (
-          <img src={image} alt={title} loading="lazy" width={400} height={260} />
+          <img
+            src={
+              image.includes('fm=') ? image : `${image}${image.includes('?') ? '&' : '?'}fm=webp`
+            }
+            alt={title}
+            loading="lazy"
+            width={400}
+            height={260}
+          />
         ) : (
           <PropertyPlaceholder>🏠</PropertyPlaceholder>
         )}
@@ -157,18 +169,31 @@ function PropertyCard({
     </>
   );
 
+  // W17-003: luxury hover micro-interaction — omitted when reduced motion is preferred
+  const hoverProps = prefersReducedMotion
+    ? {}
+    : ({ whileHover: { scale: 1.02, y: -4 }, transition: { duration: 0.2 } } as const);
+
   if (to) {
     return (
-      <PropertyCardContainer to={to} className={className}>
-        {content}
-      </PropertyCardContainer>
+      <motion.div {...hoverProps} style={{ display: 'contents' }}>
+        <PropertyCardContainer to={to} className={`glass-surface ${className}`}>
+          {content}
+        </PropertyCardContainer>
+      </motion.div>
     );
   }
 
   return (
-    <PropertyCardDiv $clickable={!!onClick} onClick={onClick} className={className}>
-      {content}
-    </PropertyCardDiv>
+    <motion.div {...hoverProps} style={{ display: 'contents' }}>
+      <PropertyCardDiv
+        $clickable={!!onClick}
+        onClick={onClick}
+        className={`glass-surface ${className}`}
+      >
+        {content}
+      </PropertyCardDiv>
+    </motion.div>
   );
 }
 

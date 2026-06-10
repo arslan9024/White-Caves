@@ -1,0 +1,44 @@
+.module-fallback-alert {
+  margin-top: 0.75rem;
+  padding: 0.75rem 1rem;
+  border-radius: 0.75rem;
+  background: #eff6ff;
+  color: #1d4ed8;
+  border: 1px solid #bfdbfe;
+}
+
+.valuation-price {
+  font-size: 24px;
+  font-weight: 700;
+}
+
+.valuation-price--low {
+  color: #ef4444;
+}
+
+.valuation-price--mid {
+  color: #0066cc;
+}
+
+.valuation-price--high {
+  color: #22c55e;
+}
+
+.valuation-confidence {
+  margin-top: 10px;
+  color: #666;
+}
+
+.valuation-comparables {
+  margin-top: 20px;
+}
+
+.valuation-chart {
+  width: 100%;
+  border: 1px solid #ddd;
+}
+
+.valuation-chart-note {
+  margin-top: 10px;
+  color: #666;
+}

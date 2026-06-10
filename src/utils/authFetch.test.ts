@@ -237,7 +237,9 @@ describe('authFetch', () => {
   describe('401 Unauthorized handling', () => {
     it('clears token and userRole from storage on 401', async () => {
       mockGet.mockReturnValue('old-token');
-      mockFetch.mockResolvedValueOnce(mockResponse(401, 'Unauthorized'));
+      mockFetch
+        .mockResolvedValueOnce(mockResponse(401, 'Unauthorized'))
+        .mockResolvedValueOnce(mockResponse(401, 'Unauthorized'));
 
       await expect(authFetch('/api/test')).rejects.toThrow();
 
@@ -245,33 +247,39 @@ describe('authFetch', () => {
       expect(mockRemove).toHaveBeenCalledWith('userRole');
     });
 
-    it('redirects to / on 401 when not already on /', async () => {
+    it('redirects to /signin on 401 when not already on /signin', async () => {
       mockGet.mockReturnValue('old-token');
-      mockFetch.mockResolvedValueOnce(mockResponse(401, 'Unauthorized'));
+      mockFetch
+        .mockResolvedValueOnce(mockResponse(401, 'Unauthorized'))
+        .mockResolvedValueOnce(mockResponse(401, 'Unauthorized'));
 
       await expect(authFetch('/api/test')).rejects.toThrow();
 
-      expect(window.location.href).toBe('/');
+      expect(window.location.href).toBe('/signin');
     });
 
-    it('does NOT redirect when already on / (avoids reload loop)', async () => {
+    it('does NOT redirect when already on /signin (avoids reload loop)', async () => {
       Object.defineProperty(window, 'location', {
         writable: true,
-        value: { pathname: '/', href: '/' },
+        value: { pathname: '/signin', href: '/signin' },
       });
 
       mockGet.mockReturnValue('old-token');
-      mockFetch.mockResolvedValueOnce(mockResponse(401, 'Unauthorized'));
+      mockFetch
+        .mockResolvedValueOnce(mockResponse(401, 'Unauthorized'))
+        .mockResolvedValueOnce(mockResponse(401, 'Unauthorized'));
 
       await expect(authFetch('/api/test')).rejects.toThrow();
 
-      // Should still be '/' — no redirect triggered
-      expect(window.location.href).toBe('/');
+      // Should still be '/signin' — no redirect triggered
+      expect(window.location.href).toBe('/signin');
     });
 
     it('throws HttpError with status 401', async () => {
       mockGet.mockReturnValue(null);
-      mockFetch.mockResolvedValueOnce(mockResponse(401, 'Unauthorized'));
+      mockFetch
+        .mockResolvedValueOnce(mockResponse(401, 'Unauthorized'))
+        .mockResolvedValueOnce(mockResponse(401, 'Unauthorized'));
 
       try {
         await authFetch('/api/test');

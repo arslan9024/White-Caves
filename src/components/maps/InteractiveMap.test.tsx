@@ -1,6 +1,7 @@
 /**
  * InteractiveMap — Unit Tests
  * Tests: rendering, mobile toggle, loading state, map visibility
+ * W18.1-P0-003: viewport persistence, Redux dispatch, new props
  */
 
 import { describe, it, expect, vi, beforeEach, beforeAll, afterAll } from 'vitest';
@@ -9,18 +10,45 @@ import React from 'react';
 import { Provider } from 'react-redux';
 import { configureStore } from '@reduxjs/toolkit';
 import propertyReducer from '../../store/propertySlice';
+import propertySearchReducer, { setActivePropertyId } from '../../redux/slices/propertySlice';
 import type { MapProperty } from './DubaiMap';
+
+// ── Mock store module (useAppDispatch) ────────────────────────────
+
+const mockDispatch = vi.fn();
+vi.mock('../../store/store', () => ({
+  useAppDispatch: () => mockDispatch,
+  useAppSelector: vi.fn(),
+  default: {},
+}));
 
 // ── Mock DubaiMap (lazy-loaded) ──────────────────────────────────
 
 vi.mock('./DubaiMap', () => ({
-  default: ({ properties, activePropertyId, onPropertyClick }: Record<string, unknown>) => (
+  default: ({
+    properties,
+    activePropertyId,
+    onPropertyClick,
+    onViewportChange,
+    defaultCenter,
+    defaultZoom,
+  }: Record<string, unknown>) => (
     <div
       data-testid="mock-dubai-map"
       data-count={(properties as MapProperty[]).length}
       data-active={activePropertyId as string}
+      data-center={JSON.stringify(defaultCenter ?? null)}
+      data-zoom={String(defaultZoom ?? '')}
       onClick={() => {
         const props = properties as MapProperty[];
+        if (onViewportChange) {
+          (onViewportChange as (bounds: Record<string, number>) => void)({
+            north: 25.3,
+            south: 25.1,
+            east: 55.4,
+            west: 55.2,
+          });
+        }
         if (props.length > 0 && onPropertyClick) {
           (onPropertyClick as (p: MapProperty) => void)(props[0]);
         }
@@ -53,7 +81,7 @@ const MOCK_PROPERTIES: MapProperty[] = [
 
 const createStore = () =>
   configureStore({
-    reducer: { properties: propertyReducer },
+    reducer: { properties: propertyReducer, propertySearch: propertySearchReducer },
   });
 
 const renderInteractiveMap = (props: Partial<React.ComponentProps<typeof InteractiveMap>> = {}) => {
@@ -137,6 +165,85 @@ describe('InteractiveMap', () => {
       renderInteractiveMap({ mapVisible: true, onPropertyClick: onClick });
       fireEvent.click(screen.getByTestId('mock-dubai-map'));
       expect(onClick).toHaveBeenCalledWith(MOCK_PROPERTIES[0]);
+    });
+  });
+
+  // W18.1-P0-003 — Viewport persistence + Redux dispatch
+  describe('W18.1 — URL param handling', () => {
+    it('passes parsed lat/lng/zoom params to DubaiMap', () => {
+      window.history.replaceState(null, '', '?lat=25.2048&lng=55.2708&zoom=12');
+      renderInteractiveMap({ mapVisible: true });
+      const map = screen.getByTestId('mock-dubai-map');
+      expect(map.dataset.center).toBe('[25.2048,55.2708]');
+      expect(map.dataset.zoom).toBe('12');
+      window.history.replaceState(null, '', '?');
+    });
+
+    it('renders without crashing when URL has non-numeric lat/lng', () => {
+      window.history.replaceState(null, '', '?lat=notanumber&zoom=bad');
+      expect(() => renderInteractiveMap()).not.toThrow();
+      window.history.replaceState(null, '', '?');
+    });
+  });
+
+  describe('W18.1 — Map toggle button', () => {
+    it('renders map toggle button with aria-label', () => {
+      renderInteractiveMap();
+      expect(screen.getByRole('button', { name: /show map/i })).toHaveAttribute('aria-label');
+    });
+  });
+
+  describe('W18.1 — onPropertyClick callback', () => {
+    it('onPropertyClick callback is called when map is clicked', () => {
+      const onPropertyClick = vi.fn();
+      renderInteractiveMap({ mapVisible: true, onPropertyClick });
+      fireEvent.click(screen.getByTestId('mock-dubai-map'));
+      expect(onPropertyClick).toHaveBeenCalledOnce();
+      expect(onPropertyClick).toHaveBeenCalledWith(MOCK_PROPERTIES[0]);
+    });
+  });
+
+  describe('W18.1 — activePropertyId prop', () => {
+    it('activePropertyId prop is accepted without error', () => {
+      expect(() =>
+        renderInteractiveMap({ activePropertyId: 'prop-xyz', mapVisible: true }),
+      ).not.toThrow();
+    });
+
+    it('activePropertyId null is accepted without error', () => {
+      expect(() => renderInteractiveMap({ activePropertyId: null })).not.toThrow();
+    });
+  });
+
+  describe('W18.1 — onViewportChange prop', () => {
+    it('persists viewport changes and calls the callback', () => {
+      const onViewportChange = vi.fn();
+      renderInteractiveMap({ mapVisible: true, onViewportChange });
+      fireEvent.click(screen.getByTestId('mock-dubai-map'));
+      expect(onViewportChange).toHaveBeenCalledWith({
+        north: 25.3,
+        south: 25.1,
+        east: 55.4,
+        west: 55.2,
+      });
+      expect(window.location.search).toContain('lat=25.200000');
+      expect(window.location.search).toContain('lng=55.300000');
+      expect(window.location.search).toContain('zoom=12');
+    });
+  });
+
+  describe('W18.1 — Redux dispatch', () => {
+    it('dispatches setActivePropertyId to Redux when property clicked', () => {
+      mockDispatch.mockClear();
+      renderInteractiveMap({ mapVisible: true });
+      fireEvent.click(screen.getByTestId('mock-dubai-map'));
+      expect(mockDispatch).toHaveBeenCalledWith(setActivePropertyId('p1'));
+    });
+
+    it('does not dispatch before any click', () => {
+      mockDispatch.mockClear();
+      renderInteractiveMap();
+      expect(mockDispatch).not.toHaveBeenCalled();
     });
   });
 });

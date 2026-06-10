@@ -1,24 +1,15 @@
-import React, { Suspense, lazy, useEffect } from 'react';
+import React, { Suspense, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import AppShell from '../../components/layout/AppShell';
 import DashboardWorkspace from '../../components/layout/DashboardWorkspace';
 import { selectActiveAssistant } from '../../store/slices/dashboardViewSlice';
 import { setUserInfo, setActiveRole } from '../../store/slices/accessControlSlice';
+import { getCRMModule } from '../../config/crmModuleRegistry';
 import './ModernDashboardPage.css';
-
-const ClaraLeadsCRM = lazy(() => import('../../components/crm/ClaraLeadsCRM_NEW'));
-const MaryInventoryCRM = lazy(() => import('../../components/crm/MaryInventoryCRM_NEW'));
-const LindaWhatsAppCRM = lazy(() => import('../../components/crm/LindaWhatsAppCRM'));
-const NancyHRCRM = lazy(() => import('../../components/crm/NancyHRCRM_NEW'));
-const TheodoraFinanceCRM = lazy(() => import('../../components/crm/TheodoraFinanceCRM_NEW'));
-const OliviaMarketingCRM = lazy(() => import('../../components/crm/OliviaMarketingCRM_NEW'));
-const ZoeExecutiveCRM = lazy(() => import('../../components/crm/ZoeExecutiveCRM_NEW'));
-const AuroraCTODashboard = lazy(() => import('../../components/crm/AuroraCTODashboard_NEW'));
-
 const OWNER_EMAIL = 'arslanmalikgoraha@gmail.com';
 
-const isOwnerAuthorized = (user) => {
+const isOwnerAuthorized = user => {
   if (!user) return false;
   if (user.email === OWNER_EMAIL) return true;
   const storedRole = localStorage.getItem('userRole');
@@ -41,18 +32,8 @@ const LoadingFallback = () => (
 );
 
 const AssistantRenderer = ({ assistantId }) => {
-  const ASSISTANT_COMPONENTS = {
-    clara: ClaraLeadsCRM,
-    mary: MaryInventoryCRM,
-    linda: LindaWhatsAppCRM,
-    nancy: NancyHRCRM,
-    theodora: TheodoraFinanceCRM,
-    olivia: OliviaMarketingCRM,
-    zoe: ZoeExecutiveCRM,
-    aurora: AuroraCTODashboard
-  };
-
-  const Component = ASSISTANT_COMPONENTS[assistantId];
+  const moduleDef = getCRMModule(assistantId);
+  const Component = moduleDef?.Component;
 
   if (!Component) {
     return (
@@ -83,13 +64,15 @@ export default function ModernDashboardPage() {
       return;
     }
 
-    dispatch(setUserInfo({
-      userId: user?.uid || user?.id || 'owner',
-      userName: user?.displayName || 'Company Owner',
-      userEmail: user?.email || '',
-      userAvatar: user?.photoURL,
-      role: 'owner'
-    }));
+    dispatch(
+      setUserInfo({
+        userId: user?.uid || user?.id || 'owner',
+        userName: user?.displayName || 'Company Owner',
+        userEmail: user?.email || '',
+        userAvatar: user?.photoURL,
+        role: 'owner',
+      })
+    );
     dispatch(setActiveRole('owner'));
   }, [user, navigate, dispatch]);
 

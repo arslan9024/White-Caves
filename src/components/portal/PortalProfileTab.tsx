@@ -12,7 +12,7 @@
  * @component
  */
 
-import React, { FC, useCallback, useState } from 'react';
+import React, { FC, useCallback, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import type { RootState } from '../../store/store';
 import { setUser } from '../../store/userSlice';
@@ -29,9 +29,13 @@ const PortalProfileTab: FC = () => {
   const currentUser = useSelector((state: RootState) => state.user.currentUser);
 
   // Profile form state
-  const [name, setName] = useState(currentUser?.name ?? '');
-  const [phone, setPhone] = useState(currentUser?.phone ?? '');
-  const [photoUrl, setPhotoUrl] = useState<string>(currentUser?.photoURL ?? '');
+  const initialName = currentUser?.name ?? '';
+  const initialPhone = currentUser?.phone ?? '';
+  const initialPhotoUrl = currentUser?.photoURL ?? '';
+
+  const [name, setName] = useState(initialName);
+  const [phone, setPhone] = useState(initialPhone);
+  const [photoUrl, setPhotoUrl] = useState<string>(initialPhotoUrl);
   const [isSavingProfile, setIsSavingProfile] = useState(false);
   const [profileSuccess, setProfileSuccess] = useState<string | null>(null);
   const [profileError, setProfileError] = useState<string | null>(null);
@@ -43,6 +47,25 @@ const PortalProfileTab: FC = () => {
   const [isChangingPassword, setIsChangingPassword] = useState(false);
   const [passwordSuccess, setPasswordSuccess] = useState<string | null>(null);
   const [passwordError, setPasswordError] = useState<string | null>(null);
+
+  const profileCompletionChecklist = useMemo(
+    () => [
+      { id: 'name', label: 'Full name', done: Boolean(name.trim()) },
+      { id: 'phone', label: 'Phone number', done: Boolean(phone.trim()) },
+      { id: 'photo', label: 'Profile photo URL', done: Boolean(photoUrl.trim()) },
+    ],
+    [name, phone, photoUrl]
+  );
+
+  const profileCompletionPercent = useMemo(() => {
+    const doneCount = profileCompletionChecklist.filter(item => item.done).length;
+    return Math.round((doneCount / profileCompletionChecklist.length) * 100);
+  }, [profileCompletionChecklist]);
+
+  const hasProfileChanges =
+    name.trim() !== initialName.trim() ||
+    phone.trim() !== initialPhone.trim() ||
+    photoUrl.trim() !== initialPhotoUrl.trim();
 
   const handleSaveProfile = useCallback(async () => {
     const trimmedName = name.trim();
@@ -56,30 +79,64 @@ const PortalProfileTab: FC = () => {
     setIsSavingProfile(true);
 
     try {
-      // PATCH profile via API (best-effort — portal also updates Redux)
-      await authFetch('/api/users/profile', {
+      const response = await authFetch('/api/auth/profile', {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name: trimmedName, phone: phone.trim(), photoURL: photoUrl.trim() }),
-      });
-    } catch (err) {
-      log.error('Profile API error (non-blocking):', err);
-    }
-
-    // Update Redux state immediately so navbar reflects new name
-    if (currentUser) {
-      dispatch(
-        setUser({
-          ...currentUser,
+        body: JSON.stringify({
           name: trimmedName,
-          phone: phone.trim() || currentUser.phone,
-          photoURL: photoUrl.trim() || currentUser.photoURL,
-        })
-      );
-    }
+          phone: phone.trim() || null,
+          photoUrl: photoUrl.trim() || null,
+        }),
+      });
 
-    setProfileSuccess('Profile updated successfully.');
-    setIsSavingProfile(false);
+      if (!response.ok) {
+        const errorData = await response.json().catch(error => {
+          log.debug('Non-JSON profile save error response:', error);
+          return {};
+        });
+        throw new Error(
+          (errorData as { error?: string; message?: string }).error ||
+            (errorData as { error?: string; message?: string }).message ||
+            'Failed to update profile.'
+        );
+      }
+
+      const payload = (await response.json().catch(() => null)) as {
+        data?: {
+          id: string;
+          email: string;
+          name?: string | null;
+          role?: string;
+          phone?: string | null;
+          photoUrl?: string | null;
+        };
+      } | null;
+
+      const updatedUser = payload?.data;
+
+      // Update Redux state from canonical backend response (fallback to local values)
+      if (currentUser) {
+        dispatch(
+          setUser({
+            ...currentUser,
+            id: updatedUser?.id || currentUser.id,
+            email: updatedUser?.email || currentUser.email,
+            role: updatedUser?.role || currentUser.role,
+            name: updatedUser?.name ?? trimmedName,
+            phone: updatedUser?.phone ?? (phone.trim() || undefined),
+            photoURL: updatedUser?.photoUrl ?? (photoUrl.trim() || undefined),
+          })
+        );
+      }
+
+      setProfileSuccess('Profile updated successfully.');
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Failed to update profile.';
+      setProfileError(message);
+      log.error('Profile API error:', err);
+    } finally {
+      setIsSavingProfile(false);
+    }
   }, [name, phone, photoUrl, currentUser, dispatch]);
 
   const handleChangePassword = useCallback(async () => {
@@ -148,6 +205,21 @@ const PortalProfileTab: FC = () => {
       {/* ── Personal Info ── */}
       <div className="profile-section" data-testid="profile-section-info">
         <h4>Personal Information</h4>
+
+        <div className="profile-completion" data-testid="profile-completion-card">
+          <div>
+            <p className="profile-completion__label">Profile completion</p>
+            <strong>{profileCompletionPercent}% complete</strong>
+          </div>
+          <ul>
+            {profileCompletionChecklist.map(item => (
+              <li key={item.id}>
+                <span aria-hidden="true">{item.done ? '✅' : '⬜'}</span>
+                <span>{item.label}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
 
         <div className="profile-field">
           <label htmlFor="profile-email">Email address</label>
@@ -228,11 +300,11 @@ const PortalProfileTab: FC = () => {
           type="button"
           className="profile-save-btn"
           onClick={() => void handleSaveProfile()}
-          disabled={isSavingProfile}
-          aria-disabled={isSavingProfile}
+          disabled={isSavingProfile || !hasProfileChanges}
+          aria-disabled={isSavingProfile || !hasProfileChanges}
           data-testid="profile-save-btn"
         >
-          {isSavingProfile ? 'Saving…' : 'Save Changes'}
+          {isSavingProfile ? 'Saving…' : hasProfileChanges ? 'Save Changes' : 'No Changes Yet'}
         </button>
       </div>
 

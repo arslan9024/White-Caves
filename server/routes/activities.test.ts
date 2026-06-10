@@ -20,7 +20,7 @@ const { mockPrisma } = vi.hoisted(() => {
     metadata: null,
     createdAt: new Date('2026-01-15T10:00:00Z'),
     userId: 'user-1',
-    leadId: null,
+    leadId: 'lead-1',
     user: { id: 'user-1', name: 'Agent Smith', email: 'agent@whitecaves.ae' },
     lead: null,
     ...overrides,
@@ -41,7 +41,12 @@ const { mockPrisma } = vi.hoisted(() => {
   };
 });
 
+const { triggerLeadRescore } = vi.hoisted(() => ({
+  triggerLeadRescore: vi.fn(),
+}));
+
 vi.mock('../database.js', () => ({ prisma: mockPrisma }));
+vi.mock('../services/ai/leadAutoRescore.js', () => ({ triggerLeadRescore }));
 vi.mock('../middleware/errorHandler', () => ({
   AppError: class extends Error {
     statusCode: number;
@@ -98,7 +103,10 @@ const VALID_ID = 'aabbccddee11223344556677';
 // ═════════════════════════════════════════════════════════════════════
 
 describe('Activities Routes — /api/activities', () => {
-  beforeEach(() => vi.clearAllMocks());
+  beforeEach(() => {
+    vi.clearAllMocks();
+    triggerLeadRescore.mockClear();
+  });
 
   // ── GET / ────────────────────────────────────────────────────────
   describe('GET /api/activities', () => {
@@ -151,6 +159,17 @@ describe('Activities Routes — /api/activities', () => {
 
       const findManyCall = mockPrisma.activity.findMany.mock.calls[0][0];
       expect(findManyCall.where.leadId).toBe('lead-123');
+    });
+
+    it('passes search filter to prisma across fields', async () => {
+      mockPrisma.activity.findMany.mockResolvedValueOnce([]);
+      mockPrisma.activity.count.mockResolvedValueOnce(0);
+
+      await request(createApp()).get('/api/activities?search=smith');
+
+      const findManyCall = mockPrisma.activity.findMany.mock.calls[0][0];
+      expect(Array.isArray(findManyCall.where.OR)).toBe(true);
+      expect(findManyCall.where.OR).toHaveLength(6);
     });
 
     it('defaults sortBy to createdAt, sortOrder to desc', async () => {
@@ -265,6 +284,14 @@ describe('Activities Routes — /api/activities', () => {
       const createCall = mockPrisma.activity.create.mock.calls[0][0];
       expect(createCall.data.leadId).toBe('lead-99');
     });
+
+    it('triggers lead auto-rescore when leadId is present', async () => {
+      await request(createApp())
+        .post('/api/activities')
+        .send({ type: 'lead', action: 'created', description: 'test', leadId: 'lead-99' });
+
+      expect(triggerLeadRescore).toHaveBeenCalledWith('lead-99', 'activity_created');
+    });
   });
 
   // ── PATCH /:id ───────────────────────────────────────────────────
@@ -303,6 +330,11 @@ describe('Activities Routes — /api/activities', () => {
       const updateCall = mockPrisma.activity.update.mock.calls[0][0];
       expect(updateCall.data.metadata).toEqual(meta);
     });
+
+    it('triggers lead auto-rescore on patch', async () => {
+      await request(createApp()).patch(`/api/activities/${VALID_ID}`).send({ description: 'Updated' });
+      expect(triggerLeadRescore).toHaveBeenCalledWith(expect.anything(), 'activity_updated');
+    });
   });
 
   // ── DELETE /:id ──────────────────────────────────────────────────
@@ -334,6 +366,11 @@ describe('Activities Routes — /api/activities', () => {
       const res = await request(createApp('owner')).delete('/api/activities/bad-id');
 
       expect(res.status).toBe(400);
+    });
+
+    it('triggers lead auto-rescore on delete', async () => {
+      await request(createApp('owner')).delete(`/api/activities/${VALID_ID}`);
+      expect(triggerLeadRescore).toHaveBeenCalledWith(expect.anything(), 'activity_deleted');
     });
   });
 });

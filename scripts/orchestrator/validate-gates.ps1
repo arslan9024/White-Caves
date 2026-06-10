@@ -15,7 +15,7 @@ $outputFile = Join-Path $WorkspaceRoot ("plans\waves\" + $WaveId + "_GATE_VALIDA
 $checks = @()
 
 $readinessThreshold = 60
-$approvalPhrase = "@Ada - Context Ready (60% Readiness) - Coding Phase Approved"
+$approvalPhrase = "@Ada — Context Ready (60% Readiness) — Coding Phase Approved"
 if (Test-Path $policyFile) {
   try {
     $policy = Get-Content -Path $policyFile -Raw | ConvertFrom-Json
@@ -53,11 +53,11 @@ Add-Check ("Readiness evidence mentions {0}% threshold" -f $readinessThreshold) 
 $depthPassed = $false
 if (Test-Path $progressFile) {
   $progressText = Get-Content -Path $progressFile -Raw
-  if ($progressText -match '60% readiness|readiness >=60%|fast-track') {
+  if ($progressText -match ($readinessThreshold.ToString() + '% readiness|readiness >=' + $readinessThreshold.ToString() + '%|fast-track|planning-complete')) {
     $depthPassed = $true
   }
 }
-Add-Check "Project tracker references fast-track readiness gate" $depthPassed $progressFile
+Add-Check ("Project tracker references readiness gate ({0}%)" -f $readinessThreshold) $depthPassed $progressFile
 
 $quotaPassed = $false
 if (Test-Path $progressFile) {

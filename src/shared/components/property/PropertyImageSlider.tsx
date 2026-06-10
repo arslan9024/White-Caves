@@ -13,15 +13,15 @@ export interface PropertyImageSliderProps {
   aspectRatio?: string;
 }
 
-export default function PropertyImageSlider({ 
-  images = [], 
+export default function PropertyImageSlider({
+  images = [],
   title = '',
   onFavorite,
   onShare,
   isFavorite = false,
   showControls = true,
   showThumbnails = false,
-  aspectRatio = '16/10'
+  aspectRatio = '16/10',
 }: PropertyImageSliderProps): React.ReactElement {
   const [currentIndex, setCurrentIndex] = useState<number>(0);
   const [isFullscreen, setIsFullscreen] = useState<boolean>(false);
@@ -33,15 +33,21 @@ export default function PropertyImageSlider({
 
   const imageList = images.length > 0 ? images : defaultImages;
 
-  const goToNext = useCallback((e?: React.MouseEvent): void => {
-    e?.stopPropagation();
-    setCurrentIndex((prev) => (prev + 1) % imageList.length);
-  }, [imageList.length]);
+  const goToNext = useCallback(
+    (e?: React.MouseEvent): void => {
+      e?.stopPropagation();
+      setCurrentIndex(prev => (prev + 1) % imageList.length);
+    },
+    [imageList.length]
+  );
 
-  const goToPrev = useCallback((e?: React.MouseEvent): void => {
-    e?.stopPropagation();
-    setCurrentIndex((prev) => (prev - 1 + imageList.length) % imageList.length);
-  }, [imageList.length]);
+  const goToPrev = useCallback(
+    (e?: React.MouseEvent): void => {
+      e?.stopPropagation();
+      setCurrentIndex(prev => (prev - 1 + imageList.length) % imageList.length);
+    },
+    [imageList.length]
+  );
 
   const goToSlide = (index: number): void => {
     setCurrentIndex(index);
@@ -58,7 +64,7 @@ export default function PropertyImageSlider({
 
   useEffect(() => {
     if (!isFullscreen) return;
-    
+
     const handleKeyDown = (e: KeyboardEvent): void => {
       if (e.key === 'Escape') {
         e.preventDefault();
@@ -74,7 +80,7 @@ export default function PropertyImageSlider({
 
     document.addEventListener('keydown', handleKeyDown, true);
     document.body.style.overflow = 'hidden';
-    
+
     if (fullscreenRef.current) {
       fullscreenRef.current.focus();
     }
@@ -90,12 +96,19 @@ export default function PropertyImageSlider({
       <div className="property-image-slider" style={{ aspectRatio }}>
         <div className="slider-track">
           {imageList.map((img, index) => (
-            <div 
+            <div
               key={img ?? `slide-${index}`}
               className={`slide ${index === currentIndex ? 'active' : ''}`}
               style={{ transform: `translateX(${(index - currentIndex) * 100}%)` }}
             >
-              <img src={img} alt={`${title} - Image ${index + 1}`} loading="lazy" onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />
+              <img
+                src={img.includes('fm=') ? img : `${img}${img.includes('?') ? '&' : '?'}fm=webp`}
+                alt={`${title} - Image ${index + 1}`}
+                loading={index === currentIndex ? 'eager' : 'lazy'}
+                onError={e => {
+                  (e.target as HTMLImageElement).style.display = 'none';
+                }}
+              />
             </div>
           ))}
         </div>
@@ -114,7 +127,10 @@ export default function PropertyImageSlider({
                 <button
                   key={imageList[index] ?? `dot-${index}`}
                   className={`dot ${index === currentIndex ? 'active' : ''}`}
-                  onClick={(e: React.MouseEvent) => { e.stopPropagation(); goToSlide(index); }}
+                  onClick={(e: React.MouseEvent) => {
+                    e.stopPropagation();
+                    goToSlide(index);
+                  }}
                   aria-label={`Go to slide ${index + 1}`}
                 />
               ))}
@@ -128,16 +144,26 @@ export default function PropertyImageSlider({
               <Expand size={18} />
             </button>
             {onFavorite && (
-              <button 
-                className={`control-btn ${isFavorite ? 'active' : ''}`} 
-                onClick={(e: React.MouseEvent) => { e.stopPropagation(); onFavorite(); }}
+              <button
+                className={`control-btn ${isFavorite ? 'active' : ''}`}
+                onClick={(e: React.MouseEvent) => {
+                  e.stopPropagation();
+                  onFavorite();
+                }}
                 aria-label={isFavorite ? 'Remove from favorites' : 'Add to favorites'}
               >
                 <Heart size={18} fill={isFavorite ? '#ef4444' : 'none'} />
               </button>
             )}
             {onShare && (
-              <button className="control-btn" onClick={(e: React.MouseEvent) => { e.stopPropagation(); onShare(); }} aria-label="Share">
+              <button
+                className="control-btn"
+                onClick={(e: React.MouseEvent) => {
+                  e.stopPropagation();
+                  onShare();
+                }}
+                aria-label="Share"
+              >
                 <Share2 size={18} />
               </button>
             )}
@@ -157,15 +183,19 @@ export default function PropertyImageSlider({
               className={`thumbnail ${index === currentIndex ? 'active' : ''}`}
               onClick={() => goToSlide(index)}
             >
-              <img src={img} alt={`${title || 'Property'} thumbnail ${index + 1}`} loading="lazy" />
+              <img
+                src={img.includes('fm=') ? img : `${img}${img.includes('?') ? '&' : '?'}fm=webp`}
+                alt={`${title || 'Property'} thumbnail ${index + 1}`}
+                loading="lazy"
+              />
             </button>
           ))}
         </div>
       )}
 
       {isFullscreen && (
-        <div 
-          className="fullscreen-gallery" 
+        <div
+          className="fullscreen-gallery"
           onClick={closeFullscreen}
           ref={fullscreenRef}
           tabIndex={-1}
@@ -176,16 +206,23 @@ export default function PropertyImageSlider({
           <button className="close-fullscreen" onClick={closeFullscreen}>
             <X size={24} />
           </button>
-          
-          <div className="fullscreen-content" onClick={(e: React.MouseEvent) => e.stopPropagation()}>
-            <img 
-              src={imageList[currentIndex]} 
+
+          <div
+            className="fullscreen-content"
+            onClick={(e: React.MouseEvent) => e.stopPropagation()}
+          >
+            <img
+              src={
+                imageList[currentIndex].includes('fm=')
+                  ? imageList[currentIndex]
+                  : `${imageList[currentIndex]}${imageList[currentIndex].includes('?') ? '&' : '?'}fm=webp`
+              }
               alt={`${title} - Image ${currentIndex + 1}`}
-              loading="lazy"
+              loading="eager"
               width={400}
               height={300}
             />
-            
+
             {imageList.length > 1 && (
               <>
                 <button className="fs-nav-btn prev" onClick={goToPrev}>
@@ -203,9 +240,16 @@ export default function PropertyImageSlider({
               <button
                 key={img ?? `fs-thumb-${index}`}
                 className={`fs-thumbnail ${index === currentIndex ? 'active' : ''}`}
-                onClick={(e: React.MouseEvent) => { e.stopPropagation(); goToSlide(index); }}
+                onClick={(e: React.MouseEvent) => {
+                  e.stopPropagation();
+                  goToSlide(index);
+                }}
               >
-                <img src={img} alt={`${title || 'Property'} fullscreen thumbnail ${index + 1}`} loading="lazy" />
+                <img
+                  src={img.includes('fm=') ? img : `${img}${img.includes('?') ? '&' : '?'}fm=webp`}
+                  alt={`${title || 'Property'} fullscreen thumbnail ${index + 1}`}
+                  loading="lazy"
+                />
               </button>
             ))}
           </div>

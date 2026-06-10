@@ -1,10 +1,111 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import path from 'path';
+ 
+export default defineConfig(async ({ command }) => {
+  const plugins = [react()];
 
-export default defineConfig({
-  plugins: [react()],
-  base: '/',
+  if (command === 'build') {
+    try {
+      const { VitePWA } = await import('vite-plugin-pwa');
+      plugins.push(
+        VitePWA({
+          // Don't auto-inject registration script — registerServiceWorker.ts handles it
+          injectRegister: null,
+          // Auto-update: the new SW takes over without a prompt on next navigation
+          registerType: 'autoUpdate',
+          // Let the plugin generate the SW using Workbox (generateSW strategy)
+          strategies: 'generateSW',
+          workbox: {
+            // Precache all static assets produced by the Vite build
+            globPatterns: ['**/*.{js,css,html,ico,png,svg,woff,woff2}'],
+            // Navigation fallback: serve offline.html when network is unreachable
+            navigateFallback: '/offline.html',
+            // Don't apply the navigation fallback for API and asset requests
+            navigateFallbackDenylist: [/^\/api\//, /^\/favicon/, /^\/manifest/],
+            // Runtime cache strategies for high-traffic routes
+            runtimeCaching: [
+              {
+                // Wave 17 policy: all API calls use network-first with short fallback cache
+                urlPattern: /^https?:\/\/[^/]+\/api\/.*$/,
+                handler: 'NetworkFirst',
+                options: {
+                  cacheName: 'api-network-first',
+                  networkTimeoutSeconds: 3,
+                  expiration: { maxEntries: 120, maxAgeSeconds: 300 },
+                  cacheableResponse: { statuses: [0, 200] },
+                },
+              },
+              {
+                // Cache static built assets
+                urlPattern: /\/assets\/.*\.(?:js|css|woff2?|png|svg|webp)$/i,
+                handler: 'CacheFirst',
+                options: {
+                  cacheName: 'static-assets',
+                  expiration: { maxEntries: 200, maxAgeSeconds: 604800 },
+                  cacheableResponse: { statuses: [0, 200] },
+                },
+              },
+              {
+                // Cache images (cache first, 7 days)
+                urlPattern: /\.(?:png|jpg|jpeg|svg|gif|webp)$/,
+                handler: 'CacheFirst',
+                options: {
+                  cacheName: 'images',
+                  expiration: { maxEntries: 200, maxAgeSeconds: 604800 },
+                  cacheableResponse: { statuses: [0, 200] },
+                },
+              },
+            ],
+            // Ignore dev service workers and vendor source maps
+            ignoreURLParametersMatching: [/^utm_/, /^fbclid$/],
+          },
+          manifest: {
+            name: 'White Caves Real Estate',
+            short_name: 'White Caves',
+            description: "Dubai's premier luxury real estate platform",
+            start_url: '/',
+            scope: '/',
+            display: 'standalone',
+            background_color: '#0a0a0f',
+            theme_color: '#C9A84C',
+            orientation: 'portrait-primary',
+            categories: ['real estate', 'property', 'lifestyle'],
+            icons: [
+              {
+                src: '/favicon.svg',
+                sizes: 'any',
+                type: 'image/svg+xml',
+                purpose: 'any maskable',
+              },
+              {
+                src: '/generated-icon.png',
+                sizes: '512x512',
+                type: 'image/png',
+                purpose: 'any maskable',
+              },
+              {
+                src: '/generated-icon.png',
+                sizes: '192x192',
+                type: 'image/png',
+                purpose: 'any maskable',
+              },
+            ],
+          },
+          // Better URL handling for app-like navigation
+          devOptions: {
+            enabled: false,
+          },
+        })
+      );
+    } catch (error) {
+      console.warn('vite-plugin-pwa not available; continuing without PWA plugin in dev/build');
+    }
+  }
+
+  return {
+    plugins,
+    base: '/',
   test: {
     globals: true,
     environment: 'jsdom',
@@ -29,6 +130,9 @@ export default defineConfig({
     port: 5000,
     strictPort: false,
     allowedHosts: true,
+    watch: {
+      ignored: ['**/logs/**', '**/.git/**'],
+    },
     proxy: {
       '/api': {
         target: 'http://localhost:3001',
@@ -37,6 +141,7 @@ export default defineConfig({
     },
   },
   resolve: {
+    extensions: ['.mjs', '.ts', '.tsx', '.js', '.jsx', '.json'],
     alias: {
       '@': path.resolve(__dirname, 'src'),
       '@assets': path.resolve(__dirname, 'attached_assets'),
@@ -182,4 +287,5 @@ export default defineConfig({
   optimizeDeps: {
     include: ['react', 'react-dom', 'react-router-dom'],
   },
+  };
 });

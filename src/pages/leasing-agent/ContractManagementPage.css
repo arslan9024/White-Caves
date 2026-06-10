@@ -1,0 +1,10 @@
+.contract-management-page {
+  display: grid;
+  gap: 1rem;
+}
+
+.contract-management-page__actions {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}

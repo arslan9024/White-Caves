@@ -152,7 +152,7 @@ describe('PendingApprovalPage', () => {
   it('redirects to dashboard when status is not pending', () => {
     mockSafeStorage.getJSON.mockReturnValue({ role: 'agent', status: 'approved' });
     renderPage();
-    expect(mockNavigate).toHaveBeenCalledWith('/agent/dashboard');
+    expect(mockNavigate).toHaveBeenCalledWith('/profile');
   });
 
   it('calls signOut and navigates home on logout click', async () => {

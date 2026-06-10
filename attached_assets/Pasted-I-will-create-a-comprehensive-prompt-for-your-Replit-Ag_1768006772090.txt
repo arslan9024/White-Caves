@@ -1,0 +1,112 @@
+I will create a comprehensive prompt for your Replit Agent to systematically document your entire web application's structure, tech stack, and development lifecycle.
+
+### **Prompt: Complete Application Documentation Generator**
+
+**Core Instruction:** You are a technical documentation architect and systems analyst. Your task is to create a **complete, professional documentation suite** for the White Caves Real Estate platform. This must be a single, well-organized knowledge base covering everything from business context to technical implementation and development workflows. Generate this as a comprehensive, structured Markdown document.
+
+**Context:** The application is a sophisticated AI-powered real estate platform for Dubai with 14+ AI assistants, built on MERN stack (MongoDB, Express.js, React, Node.js) with extensive integrations.
+
+---
+
+**Phase 1: Discovery & Information Gathering**
+First, systematically collect all information about the project:
+
+1.  **Project Overview & Business Context:**
+    *   Extract the project's purpose, target users (roles: Buyer, Seller, Agent, Admin, Company Owner), and core value proposition from the README and code comments.
+    *   Document the key business problems solved (e.g., "Automates lead assignment," "Manages Ejari contracts").
+    *   List all 14+ AI assistants (from `AI_ASSISTANTS_REGISTRY` in `AuroraCTODashboard.jsx`) with their names, departments, and one-sentence purpose.
+
+2.  **Tech Stack Inventory:**
+    *   From `package.json` files (root and `/server`), list all major dependencies with versions for:
+        *   **Frontend:** React, Vite, state management (Redux), UI libraries, routing.
+        *   **Backend:** Express.js, Mongoose, authentication libraries (JWT, Firebase).
+        *   **Database:** MongoDB drivers, ORM/ODM.
+        *   **DevOps & Tools:** Testing frameworks, linting, build tools.
+    *   Document key integrations: WhatsApp Business API, Stripe, Google Services (Calendar, Drive, Maps), Vercel.
+
+3.  **Application Structure Analysis:**
+    *   Run a tree command or analyze the folder structure. Document the purpose of key directories:
+        *   `/src/components/` - Reusable UI components
+        *   `/src/dashboards/` or `/src/assistants/` - AI Assistant dashboards
+        *   `/server/models/` - MongoDB schemas
+        *   `/server/services/` - Business logic (AgentAssignmentEngine, ChatbotService)
+        *   `/server/routes/` - API endpoints
+        *   `/server/middleware/` - Custom middleware
+
+4.  **Data Flow & Architecture:**
+    *   Examine the core services (`ChatbotService.js`, `AgentAssignmentEngine.js`). Document their main methods, inputs, outputs, and how they interact.
+    *   Trace a sample user journey (e.g., "Lead submits inquiry via WhatsApp") through the system. Identify which components, services, and APIs are involved.
+
+---
+
+**Phase 2: Documentation Synthesis & Creation**
+Using the gathered data, create the following document sections in a single, structured Markdown file.
+
+**Part A: Foundational Documents (Strategic & Planning)**
+1.  **Business Requirements Document (BRD):**
+    *   **1.1 Project Vision:** Statement of the platform's ultimate goal.
+    *   **1.2 Stakeholders & User Roles:** Table of all user types (Buyer, Agent, Admin, etc.) with their key objectives.
+    *   **1.3 Core Features & Modules:** High-level list (Property Management, AI CRM, Tenancy Workflow, Analytics).
+
+2.  **Software Requirements Specification (SRS):**
+    *   **2.1 Functional Requirements:** For each core feature, list 3-5 specific system capabilities (e.g., "The system shall automatically assign incoming WhatsApp leads to the best-matched agent based on a scoring algorithm.").
+    *   **2.2 Non-Functional Requirements:** Performance (page load < 2s), Security (JWT auth, data encryption), Scalability, Compatibility (RTL for Arabic).
+
+**Part B: Technical Design & Implementation**
+3.  **System Design Document (SDD):**
+    *   **3.1 Technology Stack:** Table with Category (Frontend, Backend, Database), Technology, Version, and Purpose.
+    *   **3.2 Application Architecture:** High-level diagram description. *[Use Mermaid.js syntax]*:
+        ```
+        graph TD
+            A[React Frontend] --> B[Express.js API Gateway];
+            B --> C[Service Layer];
+            C --> D[(MongoDB Database)];
+            C --> E[External APIs];
+        ```
+    *   **3.3 Data Model:** Summarize key Mongoose Schemas (`User`, `Property`, `Lead`, `Owner`) and their relationships.
+    *   **3.4 API Documentation:** List major endpoint categories (`/api/properties`, `/api/leads`, `/api/whatsapp`) with example methods and purposes.
+
+4.  **Component & Service Catalog:**
+    *   **4.1 AI Assistant Registry:** Table of all assistants (Name, Department, Key Features, Connected Services).
+    *   **4.2 Core Service Specifications:** Brief specs for `ChatbotService` (intents, training data flow), `AgentAssignmentEngine` (scoring weights, algorithm), `DashboardService`.
+
+**Part C: Development & Quality Assurance**
+5.  **Development Workflow:**
+    *   **5.1 Setup & Installation:** Steps to set up the dev environment (clone, `npm install`, env variables).
+    *   **5.2 Coding Standards:** Based on `.eslintrc` and code patterns, document conventions (e.g., React hooks rules, file naming).
+    *   **5.3 Build & Deployment:** Commands for local build (`npm run build`), testing, and deployment to Vercel/Replit.
+
+6.  **Testing Documentation:**
+    *   **6.1 Test Strategy:** Overview of testing levels (Unit, Integration, E2E).
+    *   **6.2 Test Plan:** Outline for testing critical user flows (e.g., "Lead Creation to Agent Assignment Flow").
+    *   **6.3 Running Tests:** Command to execute the test suite.
+
+**Part D: Usage & Maintenance**
+7.  **User Guides & Manuals:**
+    *   **7.1 Administrator Guide:** How to manage users, roles, and view system dashboards.
+    *   **7.2 Agent Guide:** How to use the CRM, manage leads, and view assigned tasks.
+
+8.  **Maintenance & Operations:**
+    *   **8.1 Database Seeding:** How to run the seeding script (`npm run seed`) to populate test data.
+    *   **8.2 Monitoring:** Key health check endpoints and log locations.
+    *   **8.3 Troubleshooting:** Common issues and solutions (e.g., "WhatsApp webhook failing").
+
+---
+
+**Phase 3: Deliverable & Formatting**
+1.  **Create the Master Document:** Synthesize all parts (A, B, C, D) into a single, well-formatted Markdown file named `PROJECT_KNOWLEDGE_BASE.md`.
+2.  **Use Professional Formatting:** Employ clear headers (`#`, `##`), tables for comparisons, code blocks for snippets, and Mermaid.js diagrams for visual flows.
+3.  **Generate a Table of Contents:** At the top of the document, create a linked TOC for easy navigation.
+4.  **Include an Executive Summary:** At the very beginning, add a one-page summary describing the project's purpose, key technologies, and architecture for quick stakeholder understanding.
+
+**Final Request:** Please proceed step-by-step. First, gather the information from Phase 1 and present it in a raw, organized format. Then, use that data to synthesize the complete `PROJECT_KNOWLEDGE_BASE.md` document as described in Phase 2 & 3. The final output should be a comprehensive, self-contained guide that any new developer or stakeholder could use to understand the entire system.
+
+---
+
+### **How to Use This Prompt:**
+
+1.  **Copy and Paste:** Use this entire prompt in a **new Replit Agent chat session**.
+2.  **Let It Work:** The Agent will follow the phased approach, first analyzing your codebase and then generating the documentation.
+3.  **Review and Refine:** The resulting `PROJECT_KNOWLEDGE_BASE.md` will be a living document. You can ask the Agent to update specific sections as your project evolves (e.g., "Update the SDD with our new PostgreSQL configuration").
+
+This creates a permanent, centralized reference that will save immense time for onboarding, development, and future planning.

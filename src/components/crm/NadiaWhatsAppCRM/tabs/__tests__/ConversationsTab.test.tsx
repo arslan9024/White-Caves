@@ -16,6 +16,9 @@ vi.mock('lucide-react', () => ({
   Search: (props: any) => <svg data-testid="icon-search" {...props} />,
   Filter: (props: any) => <svg data-testid="icon-filter" {...props} />,
   Plus: (props: any) => <svg data-testid="icon-plus" {...props} />,
+  UserPlus: (props: any) => <svg data-testid="icon-user-plus" {...props} />,
+  Loader2: (props: any) => <svg data-testid="icon-loader2" {...props} />,
+  CheckCircle: (props: any) => <svg data-testid="icon-check-circle" {...props} />,
 }));
 
 import { ConversationsTab } from '../ConversationsTab';
@@ -281,5 +284,34 @@ describe('ConversationsTab', () => {
 
       expect(screen.getByText('Select a conversation to start messaging')).toBeInTheDocument();
     });
+  });
+});
+
+// ─── P0-017: Convert to Lead ────────────────────────────────────────────────
+describe('ConversationsTab – Convert to Lead (P0-017)', () => {
+  it('renders Convert to Lead button when selectedConversation has no leadId', () => {
+    const onConvertToLead = vi.fn();
+    const conv = mockConversation({ id: 'conv-x' });
+    const data = createMockData({ selectedConversation: conv, onConvertToLead });
+    render(<ConversationsTab data={data} />);
+    expect(screen.getByRole('button', { name: /convert to lead/i })).toBeInTheDocument();
+  });
+
+  it('hides button and shows "Lead Created" when conversation.leadId is set', () => {
+    const onConvertToLead = vi.fn();
+    const conv = mockConversation({ id: 'conv-x', leadId: 'lead-abc' });
+    const data = createMockData({ selectedConversation: conv, onConvertToLead });
+    render(<ConversationsTab data={data} />);
+    expect(screen.queryByRole('button', { name: /convert to lead/i })).not.toBeInTheDocument();
+    expect(screen.getByText(/lead created/i)).toBeInTheDocument();
+  });
+
+  it('calls onConvertToLead with conversation id on button click', () => {
+    const onConvertToLead = vi.fn();
+    const conv = mockConversation({ id: 'conv-click' });
+    const data = createMockData({ selectedConversation: conv, onConvertToLead });
+    render(<ConversationsTab data={data} />);
+    fireEvent.click(screen.getByRole('button', { name: /convert to lead/i }));
+    expect(onConvertToLead).toHaveBeenCalledWith('conv-click');
   });
 });

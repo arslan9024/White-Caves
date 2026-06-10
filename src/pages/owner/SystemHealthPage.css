@@ -38,7 +38,7 @@
 }
 
 .btn-refresh {
-  background: linear-gradient(135deg, #e31e24, #b71c1c);
+  background: linear-gradient(135deg, #B03737, #B8860B);
   border: none;
   color: #0a0a0f;
   padding: 12px 24px;
@@ -74,8 +74,8 @@
 .spinner {
   width: 40px;
   height: 40px;
-  border: 3px solid rgba(227, 30, 36, 0.2);
-  border-top-color: #e31e24;
+  border: 3px solid rgba(212, 175, 55, 0.2);
+  border-top-color: #B03737;
   border-radius: 50%;
   margin: 0 auto 20px;
   animation: spin 1s linear infinite;
@@ -337,14 +337,14 @@ body.light-mode .env-name {
   width: 100px;
   height: 100px;
   border-radius: 50%;
-  background: linear-gradient(135deg, rgba(227, 30, 36, 0.2), rgba(227, 30, 36, 0.05));
-  border: 3px solid #e31e24;
+  background: linear-gradient(135deg, rgba(212, 175, 55, 0.2), rgba(212, 175, 55, 0.05));
+  border: 3px solid #B03737;
 }
 
 .score-value {
   font-size: 1.75rem;
   font-weight: 700;
-  color: #e31e24;
+  color: #B03737;
 }
 
 .score-label {
@@ -372,7 +372,7 @@ body.light-mode .env-name {
 .score-stat .stat-value {
   font-size: 1.5rem;
   font-weight: 700;
-  color: #e31e24;
+  color: #B03737;
 }
 
 .score-stat .stat-value.critical {
@@ -493,7 +493,7 @@ body.light-mode .env-name {
 }
 
 .auto-refresh-toggle input {
-  accent-color: #e31e24;
+  accent-color: #B03737;
 }
 
 .web-traffic-section {

@@ -1,7 +1,13 @@
-import { useState, useMemo } from 'react';
-import { useSelector } from 'react-redux';
+import { useState, useMemo, useEffect } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 import type { RootState } from '../store/store';
 import type { Property } from '../store/propertySlice';
+import {
+  setViewportBounds,
+  setActivePropertyId,
+  selectViewportBounds,
+  selectActivePropertyId,
+} from '../redux/slices/propertySlice';
 import {
   InteractiveMapContainer,
   MapHeader,
@@ -60,8 +66,32 @@ interface InteractiveMapProps {
 }
 
 const InteractiveMap = ({ onPropertySelect }: InteractiveMapProps) => {
+  const dispatch = useDispatch();
   const { filteredProperties } = useSelector((state: RootState) => state.properties);
+  const savedViewport = useSelector(selectViewportBounds);
+  const activePropertyId = useSelector(selectActivePropertyId);
   const [selectedLocation, setSelectedLocation] = useState<string | null>(null);
+
+  // Restore viewport on mount: if Redux has a saved viewport, find the nearest Dubai area
+  useEffect(() => {
+    if (!savedViewport || selectedLocation) return;
+    const centerLat = (savedViewport.north + savedViewport.south) / 2;
+    const centerLng = (savedViewport.east + savedViewport.west) / 2;
+    let nearest: string | null = null;
+    let minDist = Infinity;
+    dubaiCoordinates.forEach((coords, name) => {
+      const dist = Math.abs(coords.lat - centerLat) + Math.abs(coords.lng - centerLng);
+      if (dist < minDist) {
+        minDist = dist;
+        nearest = name;
+      }
+    });
+    // Only restore if reasonably close (within 1° of a known area)
+    if (nearest && minDist < 1) {
+      setSelectedLocation(nearest);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const propertiesByLocation = useMemo(() => {
     const grouped = new Map<string, Property[]>();
@@ -76,10 +106,23 @@ const InteractiveMap = ({ onPropertySelect }: InteractiveMapProps) => {
   const locations = Array.from(propertiesByLocation.keys());
 
   const handleLocationClick = (location: string) => {
-    setSelectedLocation(location === selectedLocation ? null : location);
+    const next = location === selectedLocation ? null : location;
+    setSelectedLocation(next);
+    if (next) {
+      const coords = dubaiCoordinates.get(next);
+      if (coords) {
+        dispatch(setViewportBounds({
+          north: coords.lat + 0.1,
+          south: coords.lat - 0.1,
+          east:  coords.lng + 0.1,
+          west:  coords.lng - 0.1,
+        }));
+      }
+    }
   };
 
   const handlePropertyClick = (property: Property) => {
+    dispatch(setActivePropertyId(String(property.id)));
     if (onPropertySelect) {
       onPropertySelect(property);
     }
@@ -190,9 +233,13 @@ const InteractiveMap = ({ onPropertySelect }: InteractiveMapProps) => {
           </ResultsHeader>
           <PropertiesGrid>
             {(propertiesByLocation.get(selectedLocation) ?? []).map(property => (
-              <PropertyCard key={property.id} onClick={() => handlePropertyClick(property)}>
+              <PropertyCard
+                key={property.id}
+                onClick={() => handlePropertyClick(property)}
+                style={String(property.id) === activePropertyId ? { border: '2px solid #C9A84C' } : undefined}
+              >
                 <PropertyImage
-                  src={(property.images as string[])?.[0] || 'https://via.placeholder.com/300x200'}
+                  src={(property.images as string[])?.[0] || '/company-logo.jpg'}
                   alt={property.title}
                   width={300}
                   height={200}
@@ -220,9 +267,13 @@ const InteractiveMap = ({ onPropertySelect }: InteractiveMapProps) => {
           <ResultsTitle>Featured Properties</ResultsTitle>
           <PropertiesGrid>
             {filteredProperties.slice(0, 6).map(property => (
-              <PropertyCard key={property.id} onClick={() => handlePropertyClick(property)}>
+              <PropertyCard
+                key={property.id}
+                onClick={() => handlePropertyClick(property)}
+                style={String(property.id) === activePropertyId ? { border: '2px solid #C9A84C' } : undefined}
+              >
                 <PropertyImage
-                  src={(property.images as string[])?.[0] || 'https://via.placeholder.com/300x200'}
+                  src={(property.images as string[])?.[0] || '/company-logo.jpg'}
                   alt={property.title}
                   width={300}
                   height={200}

@@ -31,17 +31,17 @@ while ($true) {
 
     Write-WorkerLog "$AgentName claimed $($claim.taskId): $($claim.title)"
 
-    # Placeholder execution block (external free-model actions still human/API integrated in next phase)
+    # Evidence capture block: workers record activity and move task to evidence_pending for guarded review.
     Start-Sleep -Seconds ([Math]::Min(5, [Math]::Max(1, [int]($PollSeconds / 2))))
 
-    $evidenceNote = "Auto-processed by worker; pending external prompt/result synchronization if applicable."
+    $evidenceNote = "Worker captured execution evidence; review required before completion."
     $producedRef = "logs/orchestrator/worker-" + ($AgentName -replace '[^a-zA-Z0-9_-]', '') + ".log"
 
-    $completeJson = & $completeScript -TaskId $claim.taskId -WorkspaceRoot $WorkspaceRoot -EvidenceNote $evidenceNote -ProducedRef $producedRef
+    $completeJson = & $completeScript -TaskId $claim.taskId -WorkspaceRoot $WorkspaceRoot -EvidenceNote $evidenceNote -ProducedRef $producedRef -MarkEvidencePending
     $complete = $completeJson | ConvertFrom-Json
 
     if ($complete.ok) {
-      Write-WorkerLog "$AgentName completed $($complete.taskId) => status: $($complete.status)"
+      Write-WorkerLog "$AgentName moved $($complete.taskId) => status: $($complete.newStatus)"
     }
     else {
       Write-WorkerLog "$AgentName completion error for $($claim.taskId): $($complete.reason)"

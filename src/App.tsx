@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useRef, lazy, Suspense, type ReactNode } from 'react';
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { SpeedInsights } from '@vercel/speed-insights/react';
-import { setUser, setLoading } from './store/userSlice';
-import { setTheme } from './store/navigationSlice';
+import { setLoading } from './store/userSlice';
+import { setTheme, setActiveRole } from './store/navigationSlice';
 import { LanguageProvider } from './context/LanguageContext';
 import { ThemeProvider } from './styles/ThemeProvider';
 import AppLayout from './components/layout/AppLayout';
@@ -12,8 +12,18 @@ import SuspenseLoader from './components/common/SuspenseLoader';
 import RouteErrorBoundary from './components/RouteErrorBoundary';
 const SignInPage = lazy(() => import('./pages/auth/SignInPage'));
 import type { RootState, AppDispatch } from './store/store';
+import { selectSessionUser } from './store/selectors/sessionSelectors';
 import { safeStorage } from './utils/safeStorage';
 import { authFetch } from './utils/authFetch';
+import {
+  finalizeAuthenticatedSession,
+  getCurrentPathWithQuery,
+} from './utils/authSession';
+import {
+  CANONICAL_SUPERUSER_ROLE,
+  isCreatorSuperUserEmail,
+  normalizeRoleForUserContext,
+} from './utils/superUserAccess';
 
 // Lazy-load components not needed for initial render (performance optimization)
 const UniversalComponents = lazy(() => import('./components/layout/UniversalComponents'));
@@ -22,7 +32,7 @@ const RoleGateway = lazy(() => import('./components/RoleGateway'));
 // All pages lazy-loaded for optimal bundle splitting
 const ProfilePage = lazy(() => import('./pages/auth/ProfilePage'));
 const PendingApprovalPage = lazy(() => import('./pages/auth/PendingApprovalPage'));
-const HomePage = lazy(() => import('./pages/HomePage'));
+const HomePage = lazy(() => import('./pages/HomePage.tsx'));
 
 // ─── Types ──────────────────────────────────────────────────────────────
 
@@ -38,43 +48,59 @@ interface ProtectedRouteProps {
   allowedRoles?: string[];
 }
 
-/** Creator email — always receives super_admin elevation regardless of server-stored role. */
-const CREATOR_EMAIL = 'arslanmalikgoraha@gmail.com';
-
 function resolveEffectiveRole(
   user: { role?: string; email?: string } | null,
   storedRoleData: UserRoleData | null
 ): string | null {
-  // Creator always gets super_admin regardless of server role
-  if (user?.email === CREATOR_EMAIL) return 'super_admin';
+  if (isCreatorSuperUserEmail(user?.email)) return CANONICAL_SUPERUSER_ROLE;
 
-  const normalizeRole = (role?: string): string | null => {
-    if (!role) return null;
-    if (role === 'lion' || role === 'managing_director') return 'owner';
-    return role;
-  };
-
-  const serverRole = normalizeRole(user?.role);
-  const storedRole = normalizeRole(storedRoleData?.role);
+  const serverRole = normalizeRoleForUserContext(user?.role, user?.email);
+  const storedRole = normalizeRoleForUserContext(storedRoleData?.role, user?.email);
 
   if (storedRoleData && typeof storedRoleData.role === 'string') {
-    const isPrivileged =
-      serverRole === 'owner' ||
-      serverRole === 'admin' ||
-      serverRole === 'super_user' ||
-      serverRole === 'super_admin';
-
-    // Deterministic executive path: privileged server roles should not be overridden by local sub-role state.
-    return isPrivileged ? serverRole : (serverRole ?? storedRole);
+    return serverRole ?? storedRole;
   }
 
-  return serverRole ?? null;
+  return serverRole;
 }
+
+function getRoleLandingPath(role: string | null | undefined, email?: string): string {
+  const normalizedRole = normalizeRoleForUserContext(role, email);
+
+  if (normalizedRole === 'landlord' || normalizedRole === 'property-owner') {
+    return '/landlord-portal';
+  }
+
+  if (normalizedRole === 'tenant') {
+    return '/tenant-portal';
+  }
+
+  return '/crm';
+}
+
+const LEGACY_DASHBOARD_REDIRECT_ROUTES: Array<{ path: string; to: string }> = [
+  { path: '/lion/dashboard', to: '/crm?tab=overview&cockpit=md' },
+  { path: '/owner/dashboard', to: '/crm?tab=overview&cockpit=md' },
+  { path: '/md/dashboard', to: '/crm?tab=overview&cockpit=md' },
+  { path: '/buyer/dashboard', to: '/crm' },
+  { path: '/seller/dashboard', to: '/crm' },
+  { path: '/leasing-agent/dashboard', to: '/crm' },
+  { path: '/secondary-sales-agent/dashboard', to: '/crm' },
+  { path: '/landlord/dashboard', to: '/landlord-portal' },
+  { path: '/tenant/dashboard', to: '/tenant-portal' },
+];
+
+const LEGACY_OWNER_REDIRECT_ROUTES: Array<{ path: string; to: string }> = [
+  { path: '/owner/business-model', to: '/crm?tab=overview&cockpit=md' },
+  { path: '/owner/client-services', to: '/crm?tab=overview&cockpit=md' },
+  { path: '/modern-dashboard', to: '/crm?tab=overview&cockpit=md' },
+];
 
 // ─── Protected Route ────────────────────────────────────────────────────
 
 function ProtectedRoute({ children, allowedRoles }: ProtectedRouteProps) {
-  const user = useSelector((state: RootState) => state.user.currentUser);
+  const location = useLocation();
+  const user = useSelector((state: RootState) => selectSessionUser(state));
   const isAuthLoading = useSelector((state: RootState) => state.user.isLoading);
   const [userData, setUserData] = useState<UserRoleData | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -108,7 +134,13 @@ function ProtectedRoute({ children, allowedRoles }: ProtectedRouteProps) {
   }
 
   if (!user) {
-    return <Navigate to="/" replace />;
+    return (
+      <Navigate
+        to="/signin"
+        replace
+        state={{ from: getCurrentPathWithQuery(location.pathname, location.search, location.hash) }}
+      />
+    );
   }
 
   if (!userData) {
@@ -119,16 +151,28 @@ function ProtectedRoute({ children, allowedRoles }: ProtectedRouteProps) {
     return <Navigate to="/pending-approval" replace />;
   }
 
-  if (allowedRoles && !allowedRoles.includes(userData.role)) {
-    return <Navigate to={`/${userData.role}/dashboard`} replace />;
+  if (allowedRoles) {
+    const normalizedUserRole = normalizeRoleForUserContext(userData.role, user?.email);
+    const normalizedAllowedRoles = new Set(
+      allowedRoles
+        .map(role => normalizeRoleForUserContext(role, user?.email))
+        .filter((role): role is string => Boolean(role))
+    );
+
+    if (!normalizedUserRole || !normalizedAllowedRoles.has(normalizedUserRole)) {
+      return <Navigate to={getRoleLandingPath(userData.role, user?.email)} replace />;
+    }
   }
 
   return <>{children}</>;
 }
 
 function DashboardEntryRoute() {
-  const user = useSelector((state: RootState) => state.user.currentUser);
+  const dispatch = useDispatch<AppDispatch>();
+  const location = useLocation();
+  const user = useSelector((state: RootState) => selectSessionUser(state));
   const isAuthLoading = useSelector((state: RootState) => state.user.isLoading);
+  const currentActiveRole = useSelector((state: RootState) => state.navigation?.activeRole);
   const { info } = useStatus();
   const hasShownSigninNotice = useRef(false);
   const storedRoleData = safeStorage.getJSON<UserRoleData>('userRole');
@@ -144,13 +188,32 @@ function DashboardEntryRoute() {
     }
   }, [isAuthLoading, user, info]);
 
+  // Sync the effective role into the navigation slice so the dashboard always
+  // renders with the correct tab set (especially on first login with no localStorage).
+  useEffect(() => {
+    if (effectiveRole && effectiveRole !== currentActiveRole) {
+      dispatch(setActiveRole(effectiveRole));
+      safeStorage.setJSON('userRole', {
+        role: effectiveRole,
+        selectedAt: new Date().toISOString(),
+        locked: true,
+      });
+    }
+  }, [effectiveRole, currentActiveRole, dispatch]);
+
   if (isAuthLoading) {
     return <SuspenseLoader />;
   }
 
   // Unauthenticated access: redirect home
   if (!user) {
-    return <Navigate to="/signin" replace />;
+    return (
+      <Navigate
+        to="/signin"
+        replace
+        state={{ from: getCurrentPathWithQuery(location.pathname, location.search, location.hash) }}
+      />
+    );
   }
 
   if (effectiveRole === 'landlord' || effectiveRole === 'property-owner') {
@@ -169,6 +232,17 @@ function DashboardEntryRoute() {
         </Suspense>
       </RouteErrorBoundary>
     </AppLayout>
+  );
+}
+
+function SignInRedirect() {
+  const location = useLocation();
+  return (
+    <Navigate
+      to="/signin"
+      replace
+      state={{ from: getCurrentPathWithQuery(location.pathname, location.search, location.hash) }}
+    />
   );
 }
 
@@ -213,12 +287,6 @@ const WhatsAppChatbotPage = lazy(() => import('./pages/owner/WhatsAppChatbotPage
 const WhatsAppAnalyticsPage = lazy(() => import('./pages/owner/WhatsAppAnalyticsPage'));
 const WhatsAppSettingsPage = lazy(() => import('./pages/owner/WhatsAppSettingsPage'));
 
-// CRM Management Pages
-const CRMHubPage = lazy(() => import('./pages/crm/CRMHubPage'));
-const LeadManagementPage = lazy(() => import('./pages/crm/LeadManagementPage'));
-const PropertyManagementPage = lazy(() => import('./pages/crm/PropertyManagementPage'));
-const AgentPerformancePage = lazy(() => import('./pages/crm/AgentPerformancePage'));
-
 // Public Pages
 const PropertiesPage = lazy(() => import('./pages/PropertiesPage'));
 const PropertyDetailPage = lazy(() => import('./pages/PropertyDetailPage'));
@@ -244,6 +312,8 @@ const PWAInstallPrompt = lazy(() =>
 const UAEPassSuccessPage = lazy(() => import('./pages/auth/UAEPassSuccessPage'));
 const SignContractPage = lazy(() => import('./pages/SignContractPage'));
 const DesignSystemTest = lazy(() => import('./pages/DesignSystemTest'));
+const ValuationPage = lazy(() => import('./pages/ValuationPage'));
+const MarketIntelligencePage = lazy(() => import('./pages/MarketIntelligencePage'));
 
 // Analytics & utilities - lazy-loaded to reduce initial bundle
 const BiometricPrompt = lazy(() =>
@@ -261,14 +331,52 @@ const WebVitalsTracker = lazy(() => import('./components/analytics/WebVitalsTrac
 import { StatusProvider, useStatus } from './components/common/StatusNotification';
 import { createLogger } from './utils/logger';
 import { useSocket } from './hooks/useSocket';
+// W17-002: Framer Motion — AnimatePresence page transitions
+import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 
 const log = createLogger('App');
 
-// ─── App Component ──────────────────────────────────────────────────────
+// ─── W17-002: Page transition helpers ───────────────────────────────────────
+
+interface PageTransitionProps {
+  children: ReactNode;
+}
+
+/** Fades pages in/out; passes children through when reduced motion is preferred. */
+function PageTransition({ children }: PageTransitionProps): React.JSX.Element {
+  const prefersReducedMotion = useReducedMotion();
+  if (prefersReducedMotion) {
+    return <>{children}</>;
+  }
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.2 }}
+      style={{ width: '100%' }}
+    >
+      {children}
+    </motion.div>
+  );
+}
+
+/**
+ * Rendered inside <BrowserRouter> so useLocation() is in Router context.
+ * Uses pathname as AnimatePresence key so every route change triggers a fade.
+ */
+function LocationKeyWrapper({ children }: PageTransitionProps): React.JSX.Element {
+  const location = useLocation();
+  return (
+    <AnimatePresence mode="wait">
+      <PageTransition key={location.pathname}>{children}</PageTransition>
+    </AnimatePresence>
+  );
+}
 
 function App(): React.JSX.Element {
   const dispatch = useDispatch<AppDispatch>();
-  const user = useSelector((state: RootState) => state.user.currentUser);
+  const user = useSelector((state: RootState) => selectSessionUser(state));
 
   // Initialise real-time Socket.io connection — connects when auth token is
   // present, disconnects on logout, and pushes server events into Redux.
@@ -286,7 +394,12 @@ function App(): React.JSX.Element {
           if (controller.signal.aborted) return;
           if (response.ok) {
             const result = await response.json();
-            dispatch(setUser(result.data));
+            finalizeAuthenticatedSession({
+              dispatch,
+              user: result.data,
+              token,
+              provider: 'bootstrap',
+            });
           } else {
             safeStorage.remove('token');
             dispatch(setLoading(false));
@@ -325,6 +438,243 @@ function App(): React.JSX.Element {
     });
   };
 
+  const renderProtectedAppPage = (
+    page: ReactNode,
+    section: string,
+    allowedRoles?: string[]
+  ): ReactNode => (
+    <ProtectedRoute allowedRoles={allowedRoles}>
+      <AppLayout>
+        <RouteErrorBoundary section={section}>
+          <Suspense fallback={<SuspenseLoader />}>{page}</Suspense>
+        </RouteErrorBoundary>
+      </AppLayout>
+    </ProtectedRoute>
+  );
+
+  const renderPublicPage = (page: ReactNode, section: string): ReactNode => (
+    <RouteErrorBoundary section={section}>
+      <Suspense fallback={<SuspenseLoader />}>{page}</Suspense>
+    </RouteErrorBoundary>
+  );
+
+  const renderSignedInPage = (page: ReactNode, section: string): ReactNode =>
+    user ? renderPublicPage(page, section) : <Navigate to="/signin" replace />;
+
+  const renderGuestOnlyPage = (page: ReactNode, section: string): ReactNode =>
+    user ? <Navigate to="/profile" replace /> : renderPublicPage(page, section);
+
+  const renderProtectedPortalPage = (
+    page: ReactNode,
+    section: string,
+    portalType: 'landlord' | 'tenant',
+    allowedRoles: string[]
+  ): ReactNode => (
+    <ProtectedRoute allowedRoles={allowedRoles}>
+      <PortalLayout portalType={portalType}>
+        <RouteErrorBoundary section={section}>
+          <Suspense fallback={<SuspenseLoader />}>{page}</Suspense>
+        </RouteErrorBoundary>
+      </PortalLayout>
+    </ProtectedRoute>
+  );
+
+  const renderProtectedRedirect = (to: string, allowedRoles?: string[]): ReactNode => (
+    <ProtectedRoute allowedRoles={allowedRoles}>
+      <Navigate to={to} replace />
+    </ProtectedRoute>
+  );
+
+  const portalRoutes: Array<{
+    path: string;
+    section: string;
+    portalType: 'landlord' | 'tenant';
+    page: ReactNode;
+    allowedRoles: string[];
+  }> = [
+    {
+      path: '/landlord-portal',
+      section: 'Landlord Portal',
+      portalType: 'landlord',
+      page: <LandlordPortalPage />,
+      allowedRoles: ['landlord'],
+    },
+    {
+      path: '/tenant-portal',
+      section: 'Tenant Portal',
+      portalType: 'tenant',
+      page: <TenantPortalPage />,
+      allowedRoles: ['tenant'],
+    },
+  ];
+
+  const ownerWhatsAppRoutes: Array<{ path: string; section: string; page: ReactNode }> = [
+    { path: '/owner/whatsapp', section: 'WhatsApp', page: <WhatsAppDashboardPage /> },
+    {
+      path: '/owner/whatsapp/chatbot',
+      section: 'WhatsApp Chatbot',
+      page: <WhatsAppChatbotPage />,
+    },
+    {
+      path: '/owner/whatsapp/analytics',
+      section: 'WhatsApp Analytics',
+      page: <WhatsAppAnalyticsPage />,
+    },
+    {
+      path: '/owner/whatsapp/settings',
+      section: 'WhatsApp Settings',
+      page: <WhatsAppSettingsPage />,
+    },
+  ];
+
+  const roleSpecificAppRoutes: Array<{
+    path: string;
+    section: string;
+    page: ReactNode;
+    allowedRoles: string[];
+  }> = [
+    {
+      path: '/buyer/mortgage-calculator',
+      section: 'Mortgage Calculator',
+      page: <MortgageCalculatorPage />,
+      allowedRoles: ['buyer'],
+    },
+    {
+      path: '/buyer/dld-fees',
+      section: 'DLD Fees',
+      page: <DLDFeesPage />,
+      allowedRoles: ['buyer'],
+    },
+    {
+      path: '/buyer/title-deed-registration',
+      section: 'Title Deed Registration',
+      page: <TitleDeedRegistrationPage />,
+      allowedRoles: ['buyer'],
+    },
+    {
+      path: '/buyer/favorites',
+      section: 'Favorite Listings',
+      page: <FavoriteListingsPage />,
+      allowedRoles: ['buyer'],
+    },
+    {
+      path: '/buyer/saved-searches',
+      section: 'Saved Searches',
+      page: <SavedSearchesPage />,
+      allowedRoles: ['buyer'],
+    },
+    {
+      path: '/seller/pricing-tools',
+      section: 'Pricing Tools',
+      page: <PricingToolsPage />,
+      allowedRoles: ['seller'],
+    },
+    {
+      path: '/landlord/rental-management',
+      section: 'Rental Management',
+      page: <RentalManagementPage />,
+      allowedRoles: ['landlord'],
+    },
+    {
+      path: '/leasing-agent/tenant-screening',
+      section: 'Tenant Screening',
+      page: <TenantScreeningPage />,
+      allowedRoles: ['leasing-agent'],
+    },
+    {
+      path: '/leasing-agent/contracts',
+      section: 'Contracts',
+      page: <ContractManagementPage />,
+      allowedRoles: ['leasing-agent'],
+    },
+    {
+      path: '/leasing-acquisition',
+      section: 'Leasing Acquisition',
+      page: <LeasingAcquisition />,
+      allowedRoles: ['leasing-agent', 'owner', 'admin'],
+    },
+    {
+      path: '/secondary-sales-agent/sales-pipeline',
+      section: 'Sales Pipeline',
+      page: <SalesPipelinePage />,
+      allowedRoles: ['secondary-sales-agent'],
+    },
+  ];
+
+  const ownerCrmRedirectRoutes: Array<{ path: string; to: string }> = [
+    { path: '/owner/crm', to: '/crm?tab=overview&cockpit=md' },
+    { path: '/owner/crm/leads', to: '/crm?tab=leads&cockpit=md' },
+    { path: '/owner/crm/properties', to: '/crm?tab=properties&cockpit=md' },
+    { path: '/owner/crm/agents', to: '/crm?tab=agents&cockpit=md' },
+  ];
+
+  const ownerUtilityRoutes: Array<{
+    path: string;
+    section: string;
+    page: ReactNode;
+    allowedRoles: string[];
+  }> = [
+    {
+      path: '/owner/system-health',
+      section: 'System Health',
+      page: <SystemHealthPage />,
+      allowedRoles: ['owner'],
+    },
+    {
+      path: '/owner/login-security',
+      section: 'Login Security',
+      page: <LoginSecurityPage />,
+      allowedRoles: ['owner', 'admin'],
+    },
+  ];
+
+  const publicRoutes: Array<{ path: string; section: string; page: ReactNode }> = [
+    { path: '/', section: 'Home', page: <HomePage /> },
+    { path: '/properties', section: 'Properties', page: <PropertiesPage /> },
+    { path: '/property/:id', section: 'PropertyDetail', page: <PropertyDetailPage /> },
+    { path: '/about', section: 'About', page: <AboutPage /> },
+    { path: '/services', section: 'Services', page: <ServicesPage /> },
+    { path: '/careers', section: 'Careers', page: <CareersPage /> },
+    { path: '/contact', section: 'Contact', page: <ContactPage /> },
+    {
+      path: '/privacy-policy',
+      section: 'Privacy Policy',
+      page: <PrivacyPolicyPage />,
+    },
+    { path: '/terms', section: 'Terms', page: <TermsPage /> },
+    { path: '/tools', section: 'Tools', page: <ToolsPage /> },
+    {
+      path: '/ai-intelligence',
+      section: 'AI Intelligence',
+      page: <AIIntelligencePage />,
+    },
+    {
+      path: '/off-plan',
+      section: 'Off-Plan Portal',
+      page: <OffPlanPortalPage />,
+    },
+    {
+      path: '/valuation',
+      section: 'Property Valuation',
+      page: <ValuationPage />,
+    },
+    {
+      path: '/market',
+      section: 'Market Intelligence',
+      page: <MarketIntelligencePage />,
+    },
+    {
+      path: '/auth/uaepass-success',
+      section: 'UAE Pass',
+      page: <UAEPassSuccessPage />,
+    },
+    {
+      path: '/sign/:token',
+      section: 'Contract Signing',
+      page: <SignContractPage />,
+    },
+  ];
+
   return (
     <ThemeProvider>
       <StatusProvider>
@@ -351,208 +701,39 @@ function App(): React.JSX.Element {
               </Suspense>
             )}
             <main id="main-content" role="main">
+              <LocationKeyWrapper>
               <Routes>
-                <Route
-                  path="/"
-                  element={
-                    <RouteErrorBoundary section="Home">
-                      <Suspense fallback={<SuspenseLoader />}>
-                        <HomePage />
-                      </Suspense>
-                    </RouteErrorBoundary>
-                  }
-                />
-                <Route
-                  path="/properties"
-                  element={
-                    <RouteErrorBoundary section="Properties">
-                      <Suspense fallback={<SuspenseLoader />}>
-                        <PropertiesPage />
-                      </Suspense>
-                    </RouteErrorBoundary>
-                  }
-                />
-                <Route
-                  path="/property/:id"
-                  element={
-                    <RouteErrorBoundary section="PropertyDetail">
-                      <Suspense fallback={<SuspenseLoader />}>
-                        <PropertyDetailPage />
-                      </Suspense>
-                    </RouteErrorBoundary>
-                  }
-                />
-                <Route
-                  path="/about"
-                  element={
-                    <RouteErrorBoundary section="About">
-                      <Suspense fallback={<SuspenseLoader />}>
-                        <AboutPage />
-                      </Suspense>
-                    </RouteErrorBoundary>
-                  }
-                />
-                <Route
-                  path="/services"
-                  element={
-                    <RouteErrorBoundary section="Services">
-                      <Suspense fallback={<SuspenseLoader />}>
-                        <ServicesPage />
-                      </Suspense>
-                    </RouteErrorBoundary>
-                  }
-                />
-                <Route
-                  path="/careers"
-                  element={
-                    <RouteErrorBoundary section="Careers">
-                      <Suspense fallback={<SuspenseLoader />}>
-                        <CareersPage />
-                      </Suspense>
-                    </RouteErrorBoundary>
-                  }
-                />
-                <Route
-                  path="/contact"
-                  element={
-                    <RouteErrorBoundary section="Contact">
-                      <Suspense fallback={<SuspenseLoader />}>
-                        <ContactPage />
-                      </Suspense>
-                    </RouteErrorBoundary>
-                  }
-                />
+                {publicRoutes.map(route => (
+                  <Route
+                    key={`public-${route.path}`}
+                    path={route.path}
+                    element={renderPublicPage(route.page, route.section)}
+                  />
+                ))}
                 <Route
                   path="/signin"
-                  element={
-                    user ? (
-                      <Navigate to="/dashboard" replace />
-                    ) : (
-                      <RouteErrorBoundary section="Sign In">
-                        <Suspense fallback={<SuspenseLoader />}>
-                          <SignInPage />
-                        </Suspense>
-                      </RouteErrorBoundary>
-                    )
-                  }
+                  element={renderGuestOnlyPage(<SignInPage />, 'Sign In')}
                 />
                 <Route path="/login" element={<Navigate to="/signin" replace />} />
                 <Route
                   path="/signup"
-                  element={
-                    user ? (
-                      <Navigate to="/dashboard" replace />
-                    ) : (
-                      <RouteErrorBoundary section="Sign Up">
-                        <Suspense fallback={<SuspenseLoader />}>
-                          <SignInPage />
-                        </Suspense>
-                      </RouteErrorBoundary>
-                    )
-                  }
-                />
-                <Route
-                  path="/privacy-policy"
-                  element={
-                    <RouteErrorBoundary section="Privacy Policy">
-                      <Suspense fallback={<SuspenseLoader />}>
-                        <PrivacyPolicyPage />
-                      </Suspense>
-                    </RouteErrorBoundary>
-                  }
-                />
-                <Route
-                  path="/terms"
-                  element={
-                    <RouteErrorBoundary section="Terms">
-                      <Suspense fallback={<SuspenseLoader />}>
-                        <TermsPage />
-                      </Suspense>
-                    </RouteErrorBoundary>
-                  }
-                />
-                <Route
-                  path="/tools"
-                  element={
-                    <RouteErrorBoundary section="Tools">
-                      <Suspense fallback={<SuspenseLoader />}>
-                        <ToolsPage />
-                      </Suspense>
-                    </RouteErrorBoundary>
-                  }
-                />
-                <Route
-                  path="/ai-intelligence"
-                  element={
-                    <RouteErrorBoundary section="AI Intelligence">
-                      <Suspense fallback={<SuspenseLoader />}>
-                        <AIIntelligencePage />
-                      </Suspense>
-                    </RouteErrorBoundary>
-                  }
-                />
-                <Route
-                  path="/off-plan"
-                  element={
-                    <RouteErrorBoundary section="Off-Plan Portal">
-                      <Suspense fallback={<SuspenseLoader />}>
-                        <OffPlanPortalPage />
-                      </Suspense>
-                    </RouteErrorBoundary>
-                  }
+                  element={renderGuestOnlyPage(<SignInPage />, 'Sign Up')}
                 />
                 <Route path="/auth/signin" element={<Navigate to="/signin" replace />} />
                 <Route
-                  path="/auth/uaepass-success"
-                  element={
-                    <RouteErrorBoundary section="UAE Pass">
-                      <Suspense fallback={<SuspenseLoader />}>
-                        <UAEPassSuccessPage />
-                      </Suspense>
-                    </RouteErrorBoundary>
-                  }
-                />
-                <Route
                   path="/profile"
-                  element={
-                    user ? (
-                      <RouteErrorBoundary section="Profile">
-                        <Suspense fallback={<SuspenseLoader />}>
-                          <ProfilePage />
-                        </Suspense>
-                      </RouteErrorBoundary>
-                    ) : (
-                      <Navigate to="/signin" replace />
-                    )
-                  }
+                  element={renderSignedInPage(<ProfilePage />, 'Profile')}
                 />
                 <Route
                   path="/select-role"
-                  element={
-                    user ? (
-                      <RouteErrorBoundary section="Role Selection">
-                        <Suspense fallback={<SuspenseLoader />}>
-                          <RoleGateway user={user} onRoleSelect={handleRoleSelect} />
-                        </Suspense>
-                      </RouteErrorBoundary>
-                    ) : (
-                      <Navigate to="/signin" replace />
-                    )
-                  }
+                  element={renderSignedInPage(
+                    <RoleGateway user={user ?? {}} onRoleSelect={handleRoleSelect} />,
+                    'Role Selection'
+                  )}
                 />
                 <Route
                   path="/pending-approval"
-                  element={
-                    user ? (
-                      <RouteErrorBoundary section="Pending Approval">
-                        <Suspense fallback={<SuspenseLoader />}>
-                          <PendingApprovalPage />
-                        </Suspense>
-                      </RouteErrorBoundary>
-                    ) : (
-                      <Navigate to="/signin" replace />
-                    )
-                  }
+                  element={renderSignedInPage(<PendingApprovalPage />, 'Pending Approval')}
                 />
 
                 {/* ==================== UNIFIED DASHBOARD ==================== */}
@@ -567,422 +748,89 @@ function App(): React.JSX.Element {
                 <Route path="/dashboard" element={<Navigate to="/crm" replace />} />
 
                 {/* ==================== ROLE-SPECIFIC SUB-PAGES ==================== */}
-                <Route
-                  path="/buyer/mortgage-calculator"
-                  element={
-                    <ProtectedRoute allowedRoles={['buyer']}>
-                      <AppLayout>
-                        <RouteErrorBoundary section="Mortgage Calculator">
-                          <Suspense fallback={<SuspenseLoader />}>
-                            <MortgageCalculatorPage />
-                          </Suspense>
-                        </RouteErrorBoundary>
-                      </AppLayout>
-                    </ProtectedRoute>
-                  }
-                />
-                <Route
-                  path="/buyer/dld-fees"
-                  element={
-                    <ProtectedRoute allowedRoles={['buyer']}>
-                      <AppLayout>
-                        <RouteErrorBoundary section="DLD Fees">
-                          <Suspense fallback={<SuspenseLoader />}>
-                            <DLDFeesPage />
-                          </Suspense>
-                        </RouteErrorBoundary>
-                      </AppLayout>
-                    </ProtectedRoute>
-                  }
-                />
-                <Route
-                  path="/buyer/title-deed-registration"
-                  element={
-                    <ProtectedRoute allowedRoles={['buyer']}>
-                      <AppLayout>
-                        <RouteErrorBoundary section="Title Deed Registration">
-                          <Suspense fallback={<SuspenseLoader />}>
-                            <TitleDeedRegistrationPage />
-                          </Suspense>
-                        </RouteErrorBoundary>
-                      </AppLayout>
-                    </ProtectedRoute>
-                  }
-                />
-                <Route
-                  path="/buyer/favorites"
-                  element={
-                    <ProtectedRoute allowedRoles={['buyer']}>
-                      <AppLayout>
-                        <RouteErrorBoundary section="Favorite Listings">
-                          <Suspense fallback={<SuspenseLoader />}>
-                            <FavoriteListingsPage />
-                          </Suspense>
-                        </RouteErrorBoundary>
-                      </AppLayout>
-                    </ProtectedRoute>
-                  }
-                />
-                <Route
-                  path="/buyer/saved-searches"
-                  element={
-                    <ProtectedRoute allowedRoles={['buyer']}>
-                      <AppLayout>
-                        <RouteErrorBoundary section="Saved Searches">
-                          <Suspense fallback={<SuspenseLoader />}>
-                            <SavedSearchesPage />
-                          </Suspense>
-                        </RouteErrorBoundary>
-                      </AppLayout>
-                    </ProtectedRoute>
-                  }
-                />
-                <Route
-                  path="/seller/pricing-tools"
-                  element={
-                    <ProtectedRoute allowedRoles={['seller']}>
-                      <AppLayout>
-                        <RouteErrorBoundary section="Pricing Tools">
-                          <Suspense fallback={<SuspenseLoader />}>
-                            <PricingToolsPage />
-                          </Suspense>
-                        </RouteErrorBoundary>
-                      </AppLayout>
-                    </ProtectedRoute>
-                  }
-                />
-                <Route
-                  path="/landlord/rental-management"
-                  element={
-                    <ProtectedRoute allowedRoles={['landlord']}>
-                      <AppLayout>
-                        <RouteErrorBoundary section="Rental Management">
-                          <Suspense fallback={<SuspenseLoader />}>
-                            <RentalManagementPage />
-                          </Suspense>
-                        </RouteErrorBoundary>
-                      </AppLayout>
-                    </ProtectedRoute>
-                  }
-                />
+                {roleSpecificAppRoutes.map(route => (
+                  <Route
+                    key={`role-specific-${route.path}`}
+                    path={route.path}
+                    element={renderProtectedAppPage(route.page, route.section, route.allowedRoles)}
+                  />
+                ))}
 
-                {/* ==================== LANDLORD PORTAL (Phase 2) ==================== */}
-                <Route
-                  path="/landlord-portal"
-                  element={
-                    <ProtectedRoute allowedRoles={['landlord']}>
-                      <PortalLayout portalType="landlord">
-                        <RouteErrorBoundary section="Landlord Portal">
-                          <Suspense fallback={<SuspenseLoader />}>
-                            <LandlordPortalPage />
-                          </Suspense>
-                        </RouteErrorBoundary>
-                      </PortalLayout>
-                    </ProtectedRoute>
-                  }
-                />
-
-                {/* ==================== TENANT PORTAL (Phase 2) ==================== */}
-                <Route
-                  path="/tenant-portal"
-                  element={
-                    <ProtectedRoute allowedRoles={['tenant']}>
-                      <PortalLayout portalType="tenant">
-                        <RouteErrorBoundary section="Tenant Portal">
-                          <Suspense fallback={<SuspenseLoader />}>
-                            <TenantPortalPage />
-                          </Suspense>
-                        </RouteErrorBoundary>
-                      </PortalLayout>
-                    </ProtectedRoute>
-                  }
-                />
-
-                <Route
-                  path="/leasing-agent/tenant-screening"
-                  element={
-                    <ProtectedRoute allowedRoles={['leasing-agent']}>
-                      <AppLayout>
-                        <RouteErrorBoundary section="Tenant Screening">
-                          <Suspense fallback={<SuspenseLoader />}>
-                            <TenantScreeningPage />
-                          </Suspense>
-                        </RouteErrorBoundary>
-                      </AppLayout>
-                    </ProtectedRoute>
-                  }
-                />
-                <Route
-                  path="/leasing-agent/contracts"
-                  element={
-                    <ProtectedRoute allowedRoles={['leasing-agent']}>
-                      <AppLayout>
-                        <RouteErrorBoundary section="Contracts">
-                          <Suspense fallback={<SuspenseLoader />}>
-                            <ContractManagementPage />
-                          </Suspense>
-                        </RouteErrorBoundary>
-                      </AppLayout>
-                    </ProtectedRoute>
-                  }
-                />
-                <Route
-                  path="/leasing-acquisition"
-                  element={
-                    <ProtectedRoute allowedRoles={['leasing-agent', 'owner', 'admin']}>
-                      <AppLayout>
-                        <RouteErrorBoundary section="Leasing Acquisition">
-                          <Suspense fallback={<SuspenseLoader />}>
-                            <LeasingAcquisition />
-                          </Suspense>
-                        </RouteErrorBoundary>
-                      </AppLayout>
-                    </ProtectedRoute>
-                  }
-                />
-                <Route
-                  path="/secondary-sales-agent/sales-pipeline"
-                  element={
-                    <ProtectedRoute allowedRoles={['secondary-sales-agent']}>
-                      <AppLayout>
-                        <RouteErrorBoundary section="Sales Pipeline">
-                          <Suspense fallback={<SuspenseLoader />}>
-                            <SalesPipelinePage />
-                          </Suspense>
-                        </RouteErrorBoundary>
-                      </AppLayout>
-                    </ProtectedRoute>
-                  }
-                />
+                {/* ==================== PORTAL ROUTES (Phase 2) ==================== */}
+                {portalRoutes.map(route => (
+                  <Route
+                    key={`portal-${route.path}`}
+                    path={route.path}
+                    element={renderProtectedPortalPage(
+                      route.page,
+                      route.section,
+                      route.portalType,
+                      route.allowedRoles
+                    )}
+                  />
+                ))}
 
                 {/* ==================== ALL DASHBOARD ROUTES → UNIFIED ==================== */}
-                {/* Role-specific dashboard paths redirect to unified /dashboard */}
-                <Route path="/lion/dashboard" element={<Navigate to="/dashboard" replace />} />
-                <Route path="/owner/dashboard" element={<Navigate to="/dashboard" replace />} />
-                <Route path="/md/dashboard" element={<Navigate to="/dashboard" replace />} />
-                <Route path="/buyer/dashboard" element={<Navigate to="/dashboard" replace />} />
-                <Route path="/seller/dashboard" element={<Navigate to="/dashboard" replace />} />
-                {/* Landlord/Tenant redirect to their portals */}
-                <Route
-                  path="/landlord/dashboard"
-                  element={<Navigate to="/landlord-portal" replace />}
-                />
-                <Route
-                  path="/tenant/dashboard"
-                  element={<Navigate to="/tenant-portal" replace />}
-                />
-                <Route
-                  path="/leasing-agent/dashboard"
-                  element={<Navigate to="/dashboard" replace />}
-                />
-                <Route
-                  path="/secondary-sales-agent/dashboard"
-                  element={<Navigate to="/dashboard" replace />}
-                />
+                {/* Role-specific dashboard paths redirect to canonical targets */}
+                {LEGACY_DASHBOARD_REDIRECT_ROUTES.map(route => (
+                  <Route
+                    key={`legacy-dashboard-${route.path}`}
+                    path={route.path}
+                    element={<Navigate to={route.to} replace />}
+                  />
+                ))}
 
                 {/* ==================== LEGACY OWNER ROUTES → Redirect to Dashboard ==================== */}
-                <Route
-                  path="/owner/business-model"
-                  element={<Navigate to="/dashboard" replace />}
-                />
-                <Route
-                  path="/owner/client-services"
-                  element={<Navigate to="/dashboard" replace />}
-                />
-                <Route path="/modern-dashboard" element={<Navigate to="/dashboard" replace />} />
-                <Route
-                  path="/owner/system-health"
-                  element={
-                    <ProtectedRoute allowedRoles={['owner']}>
-                      <AppLayout>
-                        <RouteErrorBoundary section="System Health">
-                          <Suspense fallback={<SuspenseLoader />}>
-                            <SystemHealthPage />
-                          </Suspense>
-                        </RouteErrorBoundary>
-                      </AppLayout>
-                    </ProtectedRoute>
-                  }
-                />
-                <Route
-                  path="/owner/login-security"
-                  element={
-                    <ProtectedRoute allowedRoles={['owner', 'admin']}>
-                      <AppLayout>
-                        <RouteErrorBoundary section="Login Security">
-                          <Suspense fallback={<SuspenseLoader />}>
-                            <LoginSecurityPage />
-                          </Suspense>
-                        </RouteErrorBoundary>
-                      </AppLayout>
-                    </ProtectedRoute>
-                  }
-                />
-                <Route
-                  path="/owner/whatsapp"
-                  element={
-                    <ProtectedRoute allowedRoles={['owner']}>
-                      <AppLayout>
-                        <RouteErrorBoundary section="WhatsApp">
-                          <Suspense fallback={<SuspenseLoader />}>
-                            <WhatsAppDashboardPage />
-                          </Suspense>
-                        </RouteErrorBoundary>
-                      </AppLayout>
-                    </ProtectedRoute>
-                  }
-                />
-                <Route
-                  path="/owner/whatsapp/chatbot"
-                  element={
-                    <ProtectedRoute allowedRoles={['owner']}>
-                      <AppLayout>
-                        <RouteErrorBoundary section="WhatsApp Chatbot">
-                          <Suspense fallback={<SuspenseLoader />}>
-                            <WhatsAppChatbotPage />
-                          </Suspense>
-                        </RouteErrorBoundary>
-                      </AppLayout>
-                    </ProtectedRoute>
-                  }
-                />
-                <Route
-                  path="/owner/whatsapp/analytics"
-                  element={
-                    <ProtectedRoute allowedRoles={['owner']}>
-                      <AppLayout>
-                        <RouteErrorBoundary section="WhatsApp Analytics">
-                          <Suspense fallback={<SuspenseLoader />}>
-                            <WhatsAppAnalyticsPage />
-                          </Suspense>
-                        </RouteErrorBoundary>
-                      </AppLayout>
-                    </ProtectedRoute>
-                  }
-                />
-                <Route
-                  path="/owner/whatsapp/settings"
-                  element={
-                    <ProtectedRoute allowedRoles={['owner']}>
-                      <AppLayout>
-                        <RouteErrorBoundary section="WhatsApp Settings">
-                          <Suspense fallback={<SuspenseLoader />}>
-                            <WhatsAppSettingsPage />
-                          </Suspense>
-                        </RouteErrorBoundary>
-                      </AppLayout>
-                    </ProtectedRoute>
-                  }
-                />
+                {LEGACY_OWNER_REDIRECT_ROUTES.map(route => (
+                  <Route
+                    key={`legacy-owner-${route.path}`}
+                    path={route.path}
+                    element={<Navigate to={route.to} replace />}
+                  />
+                ))}
+                {ownerUtilityRoutes.map(route => (
+                  <Route
+                    key={`owner-utility-${route.path}`}
+                    path={route.path}
+                    element={renderProtectedAppPage(route.page, route.section, route.allowedRoles)}
+                  />
+                ))}
+                {ownerWhatsAppRoutes.map(route => (
+                  <Route
+                    key={`owner-whatsapp-${route.path}`}
+                    path={route.path}
+                    element={renderProtectedAppPage(route.page, route.section, ['owner'])}
+                  />
+                ))}
 
                 {/* ==================== CRM MANAGEMENT ROUTES ==================== */}
-                <Route
-                  path="/owner/crm"
-                  element={
-                    <ProtectedRoute allowedRoles={['owner']}>
-                      <AppLayout>
-                        <RouteErrorBoundary section="CRM Hub">
-                          <Suspense fallback={<SuspenseLoader />}>
-                            <CRMHubPage />
-                          </Suspense>
-                        </RouteErrorBoundary>
-                      </AppLayout>
-                    </ProtectedRoute>
-                  }
-                />
-                <Route
-                  path="/owner/crm/leads"
-                  element={
-                    <ProtectedRoute allowedRoles={['owner']}>
-                      <AppLayout>
-                        <RouteErrorBoundary section="Lead Management">
-                          <Suspense fallback={<SuspenseLoader />}>
-                            <LeadManagementPage />
-                          </Suspense>
-                        </RouteErrorBoundary>
-                      </AppLayout>
-                    </ProtectedRoute>
-                  }
-                />
-                <Route
-                  path="/owner/crm/properties"
-                  element={
-                    <ProtectedRoute allowedRoles={['owner']}>
-                      <AppLayout>
-                        <RouteErrorBoundary section="Property Management">
-                          <Suspense fallback={<SuspenseLoader />}>
-                            <PropertyManagementPage />
-                          </Suspense>
-                        </RouteErrorBoundary>
-                      </AppLayout>
-                    </ProtectedRoute>
-                  }
-                />
-                <Route
-                  path="/owner/crm/agents"
-                  element={
-                    <ProtectedRoute allowedRoles={['owner']}>
-                      <AppLayout>
-                        <RouteErrorBoundary section="Agent Performance">
-                          <Suspense fallback={<SuspenseLoader />}>
-                            <AgentPerformancePage />
-                          </Suspense>
-                        </RouteErrorBoundary>
-                      </AppLayout>
-                    </ProtectedRoute>
-                  }
-                />
+                {ownerCrmRedirectRoutes.map(route => (
+                  <Route
+                    key={`owner-crm-${route.path}`}
+                    path={route.path}
+                    element={renderProtectedRedirect(route.to, ['owner'])}
+                  />
+                ))}
 
                 {/* Nadia AI CRM — WhatsApp Business API Dashboard */}
                 <Route
                   path="/nadia"
-                  element={
-                    <ProtectedRoute>
-                      <AppLayout>
-                        <RouteErrorBoundary section="Nadia AI">
-                          <Suspense fallback={<SuspenseLoader />}>
-                            <NadiaPage />
-                          </Suspense>
-                        </RouteErrorBoundary>
-                      </AppLayout>
-                    </ProtectedRoute>
-                  }
+                  element={renderProtectedAppPage(<NadiaPage />, 'Nadia AI')}
                 />
 
                 {/* ==================== OTHER ROUTES ==================== */}
-                <Route
-                  path="/sign/:token"
-                  element={
-                    <RouteErrorBoundary section="Contract Signing">
-                      <Suspense fallback={<SuspenseLoader />}>
-                        <SignContractPage />
-                      </Suspense>
-                    </RouteErrorBoundary>
-                  }
-                />
                 {import.meta.env.DEV && (
                   <Route
                     path="/design-system"
-                    element={
-                      <RouteErrorBoundary section="Design System">
-                        <Suspense fallback={<SuspenseLoader />}>
-                          <DesignSystemTest />
-                        </Suspense>
-                      </RouteErrorBoundary>
-                    }
+                    element={renderPublicPage(<DesignSystemTest />, 'Design System')}
                   />
                 )}
                 <Route
                   path="*"
-                  element={
-                    <RouteErrorBoundary section="Not Found">
-                      <Suspense fallback={<SuspenseLoader />}>
-                        <NotFoundPage />
-                      </Suspense>
-                    </RouteErrorBoundary>
-                  }
+                  element={renderPublicPage(<NotFoundPage />, 'Not Found')}
                 />
               </Routes>
+              </LocationKeyWrapper>
             </main>
           </BrowserRouter>
         </LanguageProvider>

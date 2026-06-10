@@ -11,17 +11,69 @@ $stateDir = Join-Path $WorkspaceRoot "logs\orchestrator"
 $queueFile = Join-Path $stateDir "task-queue.json"
 $mutex = New-Object System.Threading.Mutex($false, "Global\WhiteCaves_Orchestrator_Queue")
 
+function Read-JsonFileSafe {
+  param(
+    [Parameter(Mandatory = $true)]
+    [string]$Path,
+    [long]$MaxBytes = 8MB,
+    [switch]$TryTmpRecovery
+  )
+
+  if (-not (Test-Path $Path)) { return $null }
+  $info = Get-Item -Path $Path -ErrorAction SilentlyContinue
+  if ($null -eq $info) { return $null }
+
+  function Try-ParseCandidate {
+    param([string]$CandidatePath)
+    try {
+      $raw = Get-Content -Path $CandidatePath -Raw -ErrorAction Stop
+      if ([string]::IsNullOrWhiteSpace($raw)) { return $null }
+      return ($raw | ConvertFrom-Json -ErrorAction Stop)
+    } catch { return $null }
+  }
+
+  if ($info.Length -gt $MaxBytes) {
+    if (-not $TryTmpRecovery) { return $null }
+    $dir = Split-Path -Parent $Path
+    $base = [System.IO.Path]::GetFileName($Path)
+    foreach ($tmp in @(Get-ChildItem -Path $dir -Filter ("{0}.tmp.*" -f $base) -File -ErrorAction SilentlyContinue | Sort-Object LastWriteTime -Descending)) {
+      if ($tmp.Length -gt $MaxBytes) { continue }
+      $parsed = Try-ParseCandidate -CandidatePath $tmp.FullName
+      if ($null -eq $parsed) { continue }
+      try { Copy-Item -Path $tmp.FullName -Destination $Path -Force } catch {}
+      return $parsed
+    }
+    return $null
+  }
+
+  return (Try-ParseCandidate -CandidatePath $Path)
+}
+
 function Get-Queue {
   param([string]$Path)
-  if (-not (Test-Path $Path)) { return $null }
-  $raw = Get-Content -Path $Path -Raw
-  if ([string]::IsNullOrWhiteSpace($raw)) { return $null }
-  return $raw | ConvertFrom-Json
+  return (Read-JsonFileSafe -Path $Path -MaxBytes 8MB -TryTmpRecovery)
 }
 
 function Save-Queue {
   param($Queue, [string]$Path)
-  $Queue | ConvertTo-Json -Depth 12 | Set-Content -Path $Path -Encoding UTF8
+  $dir = Split-Path -Parent $Path
+  if (-not (Test-Path $dir)) { New-Item -ItemType Directory -Path $dir -Force | Out-Null }
+  $tmp = Join-Path $dir ("{0}.tmp.{1}" -f ([System.IO.Path]::GetFileName($Path)), [guid]::NewGuid().ToString("N"))
+  $json = $Queue | ConvertTo-Json -Depth 12
+  [System.IO.File]::WriteAllText($tmp, $json, (New-Object System.Text.UTF8Encoding($false)))
+  $tmpFull = [System.IO.Path]::GetFullPath($tmp)
+  $pathFull = [System.IO.Path]::GetFullPath($Path)
+
+  try {
+    [System.IO.File]::Copy($tmpFull, $pathFull, $true)
+    Remove-Item -Path $tmpFull -Force -ErrorAction SilentlyContinue
+  }
+  catch {
+    if (Test-Path $tmpFull) {
+      Remove-Item -Path $tmpFull -Force -ErrorAction SilentlyContinue
+    }
+    throw
+  }
 }
 
 try {
@@ -39,8 +91,8 @@ try {
     exit 1
   }
 
-  if ($task.status -ne "waiting_ack") {
-    Write-Output (@{ ok = $false; reason = "task_not_waiting_ack"; taskId = $TaskId; status = $task.status } | ConvertTo-Json -Depth 6)
+  if ($task.status -ne "waiting_ack" -and $task.status -ne "evidence_pending") {
+    Write-Output (@{ ok = $false; reason = "task_not_ackable"; taskId = $TaskId; status = $task.status } | ConvertTo-Json -Depth 6)
     exit 1
   }
 

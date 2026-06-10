@@ -1,6 +1,6 @@
 # Planning Documents — Definition of Done
 
-**Last Updated:** 2026-05-11
+**Last Updated:** 2026-06-10
 
 A planning document is complete only when all checks are satisfied.
 
@@ -22,6 +22,13 @@ A planning document is complete only when all checks are satisfied.
 - [ ] Dependencies and risks are listed
 - [ ] Owners are named
 - [ ] Validation gates are listed
+
+## Autopilot Compatibility
+
+- [ ] The document reflects the current canonical queue and roadmap
+- [ ] The downstream consumer is named with FEEDS/FEEDS_ACK linkage
+- [ ] The doc enables an execution agent to continue without extra clarification
+- [ ] Dashboard / progress-intelligence implications are called out when relevant
 
 ## Consistency
 

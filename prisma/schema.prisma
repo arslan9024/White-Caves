@@ -51,6 +51,8 @@ model User {
   leasesAsLandlord Lease[]   @relation("LeaseLandlord")
   maintenanceRequests Maintenance[] @relation("MaintenanceRequester")
   pdcCheques    PDCSchedule[] @relation("PDCTenant")
+  valuationsCreated  PropertyValuation[] @relation("ValuationCreator")
+  valuationsOverridden PropertyValuation[] @relation("ValuationOverrider")
 
   @@index([role])
   @@index([status])
@@ -105,6 +107,12 @@ model Property {
   rentIndexRef        String? // RERA Rent Index reference (for rent increase calculations)
   furnished           Boolean @default(false) // affects max deposit calculation
 
+  // Verification evidence fields (P0-012)
+  verifiedAt        DateTime?  // when listing was verified
+  verifiedBy        String?    @db.ObjectId  // userId who verified
+  verificationNotes String?    // evidence notes
+  lastRefreshedAt   DateTime?  // when agent last confirmed details are current
+
   // Relations
   userId      String   @db.ObjectId
   user        User     @relation(fields: [userId], references: [id])
@@ -117,6 +125,7 @@ model Property {
   offers       Offer[]
   leases       Lease[]
   maintenanceRequests Maintenance[]
+  valuations   PropertyValuation[] @relation("PropertyValuations")
 
   @@index([status])
   @@index([type])
@@ -307,7 +316,12 @@ model NadiaConversation {
   routedAt    DateTime?
   closedAt    DateTime?
   closedReason String?  // why conversation closed
-  
+
+  // P0-017: CRM lead linkage (unique: one lead per conversation)
+  leadId           String?   @db.ObjectId @unique
+  convertedAt      DateTime? // when convert-to-lead was triggered
+  convertedByPhone String?   // agent phone who triggered conversion
+
   // Metadata
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
@@ -1205,10 +1219,16 @@ model HenryRecord {
   templateLabel    String                         // Human-readable template name
   fileName         String                         // Original file name
   recordPath       String                         // Relative path under uploads/henry/
+  departmentTag    String?                        // sales, leasing, finance, compliance, legal, operations
+  ownerUserId      String?  @db.ObjectId          // User primarily responsible for this record
+  ownerUserEmail   String?                        // Denormalized owner email for filtering/inspection
   unit             String?                        // Unit number / apartment
   community        String?                        // Community / building name
   tenantName       String?                        // For quick display without parsing JSON
   isDraft          Boolean  @default(false)
+  status           String   @default("draft")     // draft, pending_signature, signed, archived
+  signedAt         DateTime?                      // When all required signatures were completed
+  archivedAt       DateTime?                      // When moved to archived state
   copyNumber       Int      @default(1)
   documentSnapshot Json                           // Flat key-value snapshot of document fields at time of archive
                                                    // e.g. {landlordName, tenantName, annualRent, leaseStartDate, ...}
@@ -1219,7 +1239,331 @@ model HenryRecord {
   @@index([templateKey])
   @@index([community])
   @@index([tenantName])
+  @@index([departmentTag])
+  @@index([ownerUserId])
+  @@index([ownerUserEmail])
+  @@index([status])
+  @@index([signedAt])
   @@index([isDraft])
   @@index([createdBy])
+  @@index([createdAt])
+}
+
+// ===== RECRUITMENT MODELS (Phase 1C Part 3) =====
+
+model Job {
+  id                  String   @id @default(uuid()) @map("_id")
+  title               String
+  description         String?
+  department          String?
+  location            String?
+  salary_min          Float?
+  salary_max          Float?
+  required_skills     String[]
+  experience_years    Int?
+  status              String   @default("open") // open, closed, on_hold
+  source              String?  // linkedin, internal, job_board
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  // Relations
+  applications        Application[]
+  interviews          Interview[]
+  candidateScores     CandidateScore[]
+  leadScores          LeadScore[]
+  conversationMetrics ConversationMetric[]
+  interviewSchedules  InterviewSchedule[]
+}
+
+model Candidate {
+  id                  String   @id @default(uuid()) @map("_id")
+  email               String   @unique
+  phone               String?
+  first_name          String?
+  last_name           String?
+  location            String?
+  linkedin_url        String?
+  resume_url          String?
+  resume_text         String?
+  source              String?  // linkedin, indeed, manual_upload, etc.
+  status              String   @default("new") // new, under_review, rejected, selected, hired
+  notes               String?
+  
+  // Phase 1C Part 3 Fields
+  conversation_score  Float    @default(0) // 0-100
+  lead_temperature    String   @default("WARM") // HOT, WARM, COLD
+  engagement_score    Float    @default(0) // 0-100
+  last_analyzed_at    DateTime?
+  whatsapp_phone      String?  // For WhatsApp tracking
+  opt_in_messaging    Boolean  @default(false)
+  
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  // Relations
+  applications        Application[]
+  scores              CandidateScore[]
+  interviews          Interview[]
+  leadScores          LeadScore[]
+  conversationMetrics ConversationMetric[]
+  interviewSchedules  InterviewSchedule[]
+}
+
+model Application {
+  id                  String   @id @default(uuid()) @map("_id")
+  candidate_id        String
+  job_id              String
+  status              String   @default("applied") // applied, screening, interview, offer, hired, rejected
+  applied_at          DateTime @default(now())
+  notes               String?
+  
+  // WhatsApp Integration
+  whatsapp_sent       Boolean  @default(false)
+  whatsapp_msg_id     String?
+  whatsapp_sent_at    DateTime?
+  
+  // Phase 1C Part 3 Fields
+  conversation_score  Float?   // 0-100
+  intent_type         String?  // detected primary intent
+  engagement_metrics  Json?    // store metrics object
+  lead_temperature    String?  // HOT, WARM, COLD
+  score_updated_at    DateTime?
+  
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  // Relations
+  candidate           Candidate @relation(fields: [candidate_id], references: [id], onDelete: Cascade)
+  job                 Job       @relation(fields: [job_id], references: [id], onDelete: Cascade)
+  interviews          Interview[]
+  interviewSchedules  InterviewSchedule[]
+}
+
+model CandidateScore {
+  id                  String   @id @default(uuid()) @map("_id")
+  candidate_id        String
+  job_id              String?
+  overall_score       Float    @default(0) // 0-100
+  skills_score        Float    @default(0)
+  experience_score    Float    @default(0)
+  cultural_fit        Float    @default(0)
+  education_score     Float    @default(0)
+  location_match      Float    @default(0)
+  scoring_method      String   @default("rule_based") // rule_based, ml_model
+  feedback            String?
+  scored_at           DateTime @default(now())
+
+  // Relations
+  candidate           Candidate @relation(fields: [candidate_id], references: [id], onDelete: Cascade)
+  job                 Job?      @relation(fields: [job_id], references: [id], onDelete: SetNull)
+}
+
+model Interview {
+  id                  String   @id @default(uuid()) @map("_id")
+  candidate_id        String
+  job_id              String
+  application_id      String?
+  interview_type      String   // phone_screening, technical, hr, final
+  scheduled_at        DateTime?
+  completed_at        DateTime?
+  interviewer         String?
+  rating              Float?   // 0-10
+  feedback            String?
+  status              String   @default("scheduled") // scheduled, completed, cancelled, no_show
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  // Relations
+  candidate           Candidate @relation(fields: [candidate_id], references: [id], onDelete: Cascade)
+  job                 Job       @relation(fields: [job_id], references: [id], onDelete: Cascade)
+  application         Application? @relation(fields: [application_id], references: [id], onDelete: SetNull)
+}
+
+model InterviewSchedule {
+  id                  String   @id @default(uuid()) @map("_id")
+  candidate_id        String
+  job_id              String
+  application_id      String?
+  interview_date      DateTime?
+  interview_time      String?  // "14:00"
+  duration_minutes    Int      @default(30)
+  timezone            String   @default("Asia/Dubai")
+  interview_type      String   // phone_screening, technical, hr, final
+  interviewer_ids     String[] // Array of interviewer IDs
+  
+  // Session Status
+  session_status      String   @default("pending_scheduling") // pending_scheduling, scheduled, completed, declined
+  available_slots     Json?    // Array of slot options
+  selected_slot       Json?    // Selected slot object
+  decline_reason      String?
+  
+  // WhatsApp Integration
+  whatsapp_sent       Boolean  @default(false)
+  whatsapp_msg_id     String?
+  reminder_sent_at    DateTime?
+  
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  // Relations
+  candidate           Candidate @relation(fields: [candidate_id], references: [id], onDelete: Cascade)
+  job                 Job       @relation(fields: [job_id], references: [id], onDelete: Cascade)
+  application         Application? @relation(fields: [application_id], references: [id], onDelete: SetNull)
+}
+
+model LeadScore {
+  id                  String   @id @default(uuid()) @map("_id")
+  candidate_id        String
+  job_id              String
+  overall_score       Float    // 0-100 - Main lead quality score
+  score_breakdown     Json     // {resumeScore, conversationScore, intentScore, engagementVelocity, sentimentScore}
+  lead_temperature    String   // HOT, WARM, COLD
+  qualification_level String   // Excellent, Good, Fair, Weak, Poor
+  recommendations     Json     // Array of recommendation objects
+  
+  // Trend Tracking
+  score_history       Json?    // Array of historical scores for trend analysis
+  engagement_velocity Float?   // Rate of change in engagement (positive/negative/stable)
+  qualified_for_roles String[] // Roles this lead is qualified for
+  
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  // Relations
+  candidate           Candidate @relation(fields: [candidate_id], references: [id], onDelete: Cascade)
+  job                 Job       @relation(fields: [job_id], references: [id], onDelete: Cascade)
+
+  @@index([lead_temperature])
+  @@index([overall_score])
+  @@index([job_id])
+}
+
+model ConversationMetric {
+  id                  String   @id @default(uuid()) @map("_id")
+  candidate_id        String
+  job_id              String
+  message_count       Int
+  avg_response_time   Float    // in minutes
+  avg_message_length  Int      // in characters
+  engagement_score    Float    // 0-100
+  sentiment_avg       Float    // -1 to 1
+  conversation_duration Json   // {days, hours, minutes, totalMinutes}
+  activity_trend      String   // Increasing, Decreasing, Stable
+  
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  // Relations
+  candidate           Candidate @relation(fields: [candidate_id], references: [id], onDelete: Cascade)
+  job                 Job       @relation(fields: [job_id], references: [id], onDelete: Cascade)
+
+  @@index([candidate_id])
+  @@index([job_id])
+}
+
+model RecruitmentMetric {
+  id                  String   @id @default(uuid()) @map("_id")
+  metric_date         DateTime @default(now())
+  total_applications  Int      @default(0)
+  applications_screened Int    @default(0)
+  applications_rejected Int    @default(0)
+  interviews_scheduled Int    @default(0)
+  interviews_completed Int    @default(0)
+  offers_made         Int      @default(0)
+  hires               Int      @default(0)
+  avg_time_to_hire    Float?   // in days
+  avg_cost_per_hire   Float?
+  automation_percentage Float? // 0-100
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+}
+
+  // ─── Wave 12: Property Valuation ─────────────────────────────────────────────
+  model PropertyValuation {
+    id                String    @id @default(auto()) @map("_id") @db.ObjectId
+    propertyId        String    @db.ObjectId
+    estimatedValueAed Float
+    rentAnnualAed     Float
+    grossYieldPct     Float
+    netYieldPct       Float
+    confidence        String    // high | medium | low
+    method            String    // avm | manual_override | bank
+    comparables       Json      @default("[]")
+    ageDiscount       Float     @default(0)
+    amenityPremium    Float     @default(0)
+    priceRangeLow     Float?
+    priceRangeHigh    Float?
+    overrideReason    String?
+    overriddenById    String?   @db.ObjectId
+    bankRequestStatus String?   // pending | submitted | received
+    bankResponseAed   Float?
+    bankRequestedAt   DateTime?
+    bankRespondedAt   DateTime?
+    createdById       String    @db.ObjectId
+    createdAt         DateTime  @default(now())
+    updatedAt         DateTime  @updatedAt
+
+    property     Property @relation("PropertyValuations", fields: [propertyId], references: [id], onDelete: Cascade)
+    createdBy    User     @relation("ValuationCreator", fields: [createdById], references: [id])
+    overriddenBy User?    @relation("ValuationOverrider", fields: [overriddenById], references: [id])
+
+    @@index([propertyId])
+    @@index([createdAt])
+    @@index([method])
+  }
+
+  // ─── Wave 12: Market Snapshot ─────────────────────────────────────────────────
+  model MarketSnapshot {
+    id               String   @id @default(auto()) @map("_id") @db.ObjectId
+    snapshotDate     DateTime @default(now())
+    area             String
+    propertyType     String   // apartment | villa | townhouse | penthouse | all
+    avgPricePerSqft  Float
+    avgSalePrice     Float
+    avgAnnualRent    Float
+    grossYield       Float
+    transactionVol   Int      @default(0)
+    daysOnMarket     Float    @default(0)
+    absorptionRate   Float    @default(0)
+    newListings      Int      @default(0)
+    activeListings   Int      @default(0)
+    source           String   @default("dld")
+    notes            String?
+    createdAt        DateTime @default(now())
+
+    @@index([area, snapshotDate])
+    @@index([snapshotDate])
+    @@index([area])
+  }
+
+// ─── CADENCE RULE ────────────────────────────────────────────────────────────
+
+model CadenceRule {
+  id              String    @id @default(auto()) @map("_id") @db.ObjectId
+  name            String
+  description     String?
+  isActive        Boolean   @default(true)
+  priority        Int       @default(0)
+
+  // Matching conditions (empty = match all)
+  leadTiers       String[]  // e.g. ["hot","warm"]
+  leadSources     String[]  // e.g. ["whatsapp","website"]
+  dealTypes       String[]  // e.g. ["sale","lease"]
+
+  // Channel sequence — JSON array of CadenceRuleStep
+  channelSequence Json
+
+  // Guard rails (times in HH:mm, GST = UTC+4)
+  quietHoursStart String?
+  quietHoursEnd   String?
+  dailyCapPerLead Int       @default(3)
+  cooldownHours   Int       @default(24)
+
+  createdById     String?   @db.ObjectId
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  @@index([isActive])
+  @@index([isActive, priority])
   @@index([createdAt])
 }

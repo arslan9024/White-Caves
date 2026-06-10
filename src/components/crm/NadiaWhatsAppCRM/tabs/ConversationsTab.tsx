@@ -1,5 +1,5 @@
 import React, { useRef, useEffect } from 'react';
-import { MessageCircle, Send, Paperclip, Smile, Search, Filter, Plus } from 'lucide-react';
+import { MessageCircle, Send, Paperclip, Smile, Search, Filter, Plus, UserPlus, Loader2, CheckCircle } from 'lucide-react';
 import type { Conversation } from '../data/conversations';
 
 interface ConversationsData {
@@ -14,6 +14,8 @@ interface ConversationsData {
   setFilterPriority: (priority: string) => void;
   handleSendMessage: () => void;
   getPriorityColor: (priority: string) => string;
+  onConvertToLead?: (conversationId: string) => void;
+  convertingLeadId?: string | null;
 }
 
 interface ConversationsTabProps {
@@ -32,7 +34,9 @@ export const ConversationsTab: React.FC<ConversationsTabProps> = ({ data }) => {
     filterPriority,
     setFilterPriority,
     handleSendMessage,
-    getPriorityColor
+    getPriorityColor,
+    onConvertToLead,
+    convertingLeadId,
   } = data;
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -118,6 +122,51 @@ export const ConversationsTab: React.FC<ConversationsTabProps> = ({ data }) => {
                   <h3>{selectedConversation.contact.name}</h3>
                   <span className="contact-status">{selectedConversation.contact.status}</span>
                 </div>
+                {/* P0-017: Convert to Lead — hidden once conversation already has a lead */}
+                {!selectedConversation.leadId && onConvertToLead && (
+                  <button
+                    className="convert-to-lead-btn"
+                    aria-label="Convert to Lead"
+                    title={convertingLeadId === selectedConversation.id ? 'Converting…' : 'Convert to Lead'}
+                    disabled={convertingLeadId === selectedConversation.id}
+                    onClick={() => onConvertToLead(selectedConversation.id)}
+                    style={{
+                      marginLeft: 'auto',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '6px',
+                      padding: '6px 12px',
+                      background: 'rgba(212,175,55,0.15)',
+                      border: '1px solid rgba(212,175,55,0.4)',
+                      borderRadius: '8px',
+                      color: '#D4AF37',
+                      fontSize: '12px',
+                      fontWeight: 600,
+                      cursor: convertingLeadId === selectedConversation.id ? 'not-allowed' : 'pointer',
+                      opacity: convertingLeadId === selectedConversation.id ? 0.6 : 1,
+                    }}
+                  >
+                    {convertingLeadId === selectedConversation.id
+                      ? <Loader2 size={14} className="animate-spin" />
+                      : <UserPlus size={14} />}
+                    Convert to Lead
+                  </button>
+                )}
+                {selectedConversation.leadId && (
+                  <span
+                    style={{
+                      marginLeft: 'auto',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '4px',
+                      fontSize: '11px',
+                      color: '#4ade80',
+                      fontWeight: 600,
+                    }}
+                  >
+                    <CheckCircle size={13} /> Lead Created
+                  </span>
+                )}
               </div>
 
               <div className="messages-container">

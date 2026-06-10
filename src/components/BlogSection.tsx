@@ -1,4 +1,5 @@
 import React, { FC, useMemo, useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import type { HomepageProperty, LocationTrend, MarketStats } from '../store/slices/homepageSlice';
 import {
   BlogSectionContainer,
@@ -37,6 +38,7 @@ interface BlogPost {
   date: string;
   readTime: string;
   featured: boolean;
+  link: string;
 }
 
 interface BlogSectionProps {
@@ -58,6 +60,7 @@ const STATIC_BLOG_POSTS: BlogPost[] = [
     date: 'April 10, 2026',
     readTime: '8 min read',
     featured: true,
+    link: '/market',
   },
   {
     id: 2,
@@ -71,6 +74,7 @@ const STATIC_BLOG_POSTS: BlogPost[] = [
     date: 'April 5, 2026',
     readTime: '12 min read',
     featured: true,
+    link: '/properties?location=Palm%20Jumeirah',
   },
   {
     id: 3,
@@ -84,6 +88,7 @@ const STATIC_BLOG_POSTS: BlogPost[] = [
     date: 'March 28, 2026',
     readTime: '6 min read',
     featured: false,
+    link: '/market',
   },
   {
     id: 4,
@@ -97,6 +102,7 @@ const STATIC_BLOG_POSTS: BlogPost[] = [
     date: 'March 20, 2026',
     readTime: '10 min read',
     featured: false,
+    link: '/properties',
   },
   {
     id: 5,
@@ -110,6 +116,7 @@ const STATIC_BLOG_POSTS: BlogPost[] = [
     date: 'March 15, 2026',
     readTime: '7 min read',
     featured: false,
+    link: '/services',
   },
   {
     id: 6,
@@ -123,6 +130,7 @@ const STATIC_BLOG_POSTS: BlogPost[] = [
     date: 'March 10, 2026',
     readTime: '9 min read',
     featured: false,
+    link: '/market',
   },
 ];
 
@@ -148,6 +156,7 @@ function buildDynamicPosts(
       date: 'Live market update',
       readTime: '4 min read',
       featured: true,
+      link: '/market',
     });
   }
 
@@ -164,6 +173,7 @@ function buildDynamicPosts(
       date: 'Live inventory insight',
       readTime: '5 min read',
       featured: true,
+      link: `/property/${leadProperty.id}`,
     });
   }
 
@@ -180,6 +190,7 @@ function buildDynamicPosts(
       date: 'Live portfolio snapshot',
       readTime: '3 min read',
       featured: false,
+      link: '/market',
     });
   }
 
@@ -191,6 +202,7 @@ const BlogSection: FC<BlogSectionProps> = ({
   featuredProperties = [],
   locationTrends = [],
 }) => {
+  const navigate = useNavigate();
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [visiblePosts, setVisiblePosts] = useState(6);
 
@@ -242,7 +254,9 @@ const BlogSection: FC<BlogSectionProps> = ({
                 </PostMeta>
                 <h3>{post.title}</h3>
                 <p>{post.excerpt}</p>
-                <ReadMoreBtn>Read Article →</ReadMoreBtn>
+                <ReadMoreBtn type="button" onClick={() => navigate(post.link)}>
+                  Read Article →
+                </ReadMoreBtn>
               </FeaturedContent>
             </FeaturedPost>
           ))}
@@ -275,7 +289,9 @@ const BlogSection: FC<BlogSectionProps> = ({
                 <p>{post.excerpt}</p>
                 <CardFooter>
                   <PostAuthor>By {post.author}</PostAuthor>
-                  <ReadMoreLink href="#">Read More →</ReadMoreLink>
+                  <ReadMoreLink as={Link} to={post.link}>
+                    Read More →
+                  </ReadMoreLink>
                 </CardFooter>
               </BlogCardContent>
             </BlogCard>

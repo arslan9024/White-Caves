@@ -58,7 +58,7 @@ export function useReportingDashboard() {
     start: '',
     end: '',
   });
-  const [exportFormat, setExportFormat] = useState<'csv' | 'json'>('csv');
+  const [exportFormat, setExportFormat] = useState<'csv' | 'json' | 'excel'>('csv');
 
   // ─── Fetch data on mount ───────────────────────────────────────
 
@@ -82,12 +82,17 @@ export function useReportingDashboard() {
         setSummary(summaryResult.value as DashboardSummary);
       }
 
-      const allRejected = [kpiResult, reportResult, summaryResult].every(r => r.status === 'rejected');
+      const allRejected = [kpiResult, reportResult, summaryResult].every(
+        r => r.status === 'rejected'
+      );
       if (allRejected) {
         setError('Failed to load reporting data. Please try again.');
       }
     } catch (err: unknown) {
-      log.error('Failed to fetch reporting data:', err instanceof Error ? err.message : String(err));
+      log.error(
+        'Failed to fetch reporting data:',
+        err instanceof Error ? err.message : String(err)
+      );
       setError('An unexpected error occurred while loading reports.');
     } finally {
       setLoading(false);
@@ -122,11 +127,14 @@ export function useReportingDashboard() {
     }));
   }, [report.propertyByStatus]);
 
-  const commissionSummary = useMemo(() => ({
-    total: report.commissionSummary?.total || 0,
-    pending: report.commissionSummary?.pending || 0,
-    paid: report.commissionSummary?.paid || 0,
-  }), [report.commissionSummary]);
+  const commissionSummary = useMemo(
+    () => ({
+      total: report.commissionSummary?.total || 0,
+      pending: report.commissionSummary?.pending || 0,
+      paid: report.commissionSummary?.paid || 0,
+    }),
+    [report.commissionSummary]
+  );
 
   // ─── Actions ────────────────────────────────────────────────────
 
@@ -138,7 +146,15 @@ export function useReportingDashboard() {
 
       const data = await crmService.exportCrmData(params);
 
-      if (exportFormat === 'json') {
+      if (exportFormat === 'excel') {
+        const blob = await crmService.exportDashboardExcel('leads');
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `crm-report-${new Date().toISOString().split('T')[0]}.xlsx`;
+        a.click();
+        URL.revokeObjectURL(url);
+      } else if (exportFormat === 'json') {
         const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
@@ -150,12 +166,23 @@ export function useReportingDashboard() {
         const rows = Array.isArray(data) ? data : [data];
         if (rows.length === 0) return;
         const headers = Object.keys(rows[0] as Record<string, unknown>);
+        const escapeCSV = (val: unknown): string => {
+          const str = String(val ?? '');
+          if (str.includes(',') || str.includes('"') || str.includes('\n') || str.includes('\r')) {
+            return `"${str.replace(/"/g, '""')}"`;
+          }
+          return str;
+        };
         const csvContent = [
           headers.join(','),
-          ...rows.map(row => headers.map(h => {
-            const val = (row as Record<string, unknown>)[h];
-            return typeof val === 'string' && val.includes(',') ? `"${val}"` : String(val ?? '');
-          }).join(',')),
+          ...rows.map(row =>
+            headers
+              .map(h => {
+                const val = (row as Record<string, unknown>)[h];
+                return escapeCSV(val);
+              })
+              .join(',')
+          ),
         ].join('\n');
         const blob = new Blob([csvContent], { type: 'text/csv' });
         const url = URL.createObjectURL(blob);
@@ -171,7 +198,10 @@ export function useReportingDashboard() {
     }
   }, [exportFormat, dateRange]);
 
-  const formatCurrency = useCallback((amount: number | undefined) => formatCurrencyUtil(amount), []);
+  const formatCurrency = useCallback(
+    (amount: number | undefined) => formatCurrencyUtil(amount),
+    []
+  );
 
   const retryFetch = useCallback(() => {
     fetchAllData();
@@ -183,14 +213,23 @@ export function useReportingDashboard() {
 
   return {
     // Data
-    kpis, report, summary,
-    leadSourceBreakdown, propertyStatusBreakdown, commissionSummary,
-    loading, error,
+    kpis,
+    report,
+    summary,
+    leadSourceBreakdown,
+    propertyStatusBreakdown,
+    commissionSummary,
+    loading,
+    error,
     // State
-    dateRange, setDateRange,
-    exportFormat, setExportFormat,
+    dateRange,
+    setDateRange,
+    exportFormat,
+    setExportFormat,
     // Actions
-    handleExport, retryFetch, goBack,
+    handleExport,
+    retryFetch,
+    goBack,
     // Formatters
     formatCurrency,
   };

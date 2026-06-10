@@ -57,7 +57,12 @@ const { mockPrisma } = vi.hoisted(() => {
   };
 });
 
+const { triggerLeadRescore } = vi.hoisted(() => ({
+  triggerLeadRescore: vi.fn(),
+}));
+
 vi.mock('../database.js', () => ({ prisma: mockPrisma }));
+vi.mock('../services/ai/leadAutoRescore.js', () => ({ triggerLeadRescore }));
 vi.mock('../middleware/errorHandler', () => ({
   AppError: class extends Error {
     statusCode: number;
@@ -126,6 +131,7 @@ const VALID_ID = 'aabbccddee11223344556677';
 describe('Leads Routes — /api/leads', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    triggerLeadRescore.mockClear();
   });
 
   // ── GET / ────────────────────────────────────────────────────────
@@ -349,6 +355,20 @@ describe('Leads Routes — /api/leads', () => {
         })
       );
     });
+
+    it('triggers auto-rescore on lead creation', async () => {
+      mockPrisma.lead.create.mockResolvedValueOnce({
+        id: 'lead-rescore-1',
+        name: 'Rescore Lead',
+        status: 'new',
+        source: 'direct',
+        assignedTo: null,
+      });
+      await request(createApp('agent'))
+        .post('/api/leads')
+        .send({ name: 'Rescore Lead', status: 'new', source: 'direct' });
+      expect(triggerLeadRescore).toHaveBeenCalledWith('lead-rescore-1', 'lead_created');
+    });
   });
 
   // ── POST /from-search ───────────────────────────────────────────
@@ -484,6 +504,25 @@ describe('Leads Routes — /api/leads', () => {
         })
       );
     });
+
+    it('triggers auto-rescore with lifecycle context on status change', async () => {
+      mockPrisma.lead.findUnique.mockResolvedValueOnce({
+        id: VALID_ID,
+        name: 'Lifecycle Lead',
+        status: 'new',
+        createdById: 'user-1',
+      });
+      mockPrisma.lead.update.mockResolvedValueOnce({
+        id: VALID_ID,
+        name: 'Lifecycle Lead',
+        status: 'qualified',
+        assignedTo: null,
+      });
+      await request(createApp('owner'))
+        .patch(`/api/leads/${VALID_ID}`)
+        .send({ status: 'qualified' });
+      expect(triggerLeadRescore).toHaveBeenCalledWith(VALID_ID, 'lead_status_changed');
+    });
   });
 
   // ── DELETE /:id ──────────────────────────────────────────────────
@@ -580,6 +619,20 @@ describe('Leads Routes — /api/leads', () => {
         .post(`/api/leads/${VALID_ID}/activities`)
         .send({ type: 'lead', action: 'email', description: 'Sent details' });
       expect(res.status).toBe(201);
+    });
+
+    it('triggers auto-rescore when lead activity is logged', async () => {
+      mockPrisma.lead.findUnique.mockResolvedValueOnce({
+        id: VALID_ID,
+        name: 'Scoring Lead',
+        assignedToId: 'user-1',
+        createdById: 'other',
+      });
+      mockPrisma.lead.update = vi.fn().mockResolvedValueOnce({});
+      await request(createApp('agent', 'user-1'))
+        .post(`/api/leads/${VALID_ID}/activities`)
+        .send({ type: 'lead', action: 'call', description: 'Called lead' });
+      expect(triggerLeadRescore).toHaveBeenCalledWith(VALID_ID, 'lead_activity_logged');
     });
   });
 });

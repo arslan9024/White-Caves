@@ -124,6 +124,7 @@ do {
 
   foreach($t in $ready){
     $pr=$prompts.($t.taskId); if(-not $pr){continue}
+    if($pr -isnot [string] -and $null -ne $pr -and ($pr.PSObject.Properties.Name -contains "prompt")) { $pr = [string]$pr.prompt }
     $file=Get-TargetFile $pr; if($file-eq""){continue}
     $passes=Test-Pass $file $WorkspaceRoot
     $count=Get-SecCount $file $WorkspaceRoot

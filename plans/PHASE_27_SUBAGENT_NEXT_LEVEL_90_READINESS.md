@@ -1,9 +1,16 @@
 # PHASE 27 — Subagent Next-Level Upgrade (90% Readiness)
 
 **Date:** 2026-05-18  
+**Status:** ⬜ Planned micro-wave execution stream  
+**Last Updated:** 2026-05-22  
 **Owner:** @Ada + @Margaret + guardian  
 **Execution Mode:** Fast-track with strict policy routing  
 **Objective:** Raise operational readiness from the current coding unlock floor (60%) to a managed target of **90%** before major premium waves.
+
+**Canonical Status Sources:**
+
+- [`MASTER_PLAN.md`](./MASTER_PLAN.md)
+- [`PENDING_TASKS_ONLY.md`](./PENDING_TASKS_ONLY.md)
 
 ---
 
@@ -64,7 +71,7 @@ Score on 6 domains (5 checks each = 30 checks total):
 ### Thresholds
 
 - **<60%**: blocked
-- **60–89%**: controlled micro-wave only
+- **60–89%**: controlled macro-wave only
 - **>=90%**: full premium wave allowed
 
 ### Required evidence per domain
@@ -97,7 +104,7 @@ Task completion requires all three tags present and verifiable.
 4. `npm run orchestrator:blockers:brief`
 5. Execute planning with free models
 6. Sync trackers (`AGENTS.md`, `PROJECT_PROGRESS.md`, `DAILY_MILESTONE_TRACKER.md`, `plans/PENDING_TASKS_ONLY.md`)
-7. If readiness >=60% and quota available, run premium micro-wave
+7. If readiness >=60% and quota available, run premium macro/huge-wave bundle
 
 ---
 

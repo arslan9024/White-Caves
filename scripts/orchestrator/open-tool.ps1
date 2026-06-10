@@ -4,7 +4,8 @@ param(
   [Parameter(Mandatory = $true)]
   [string]$AgentName,
   [string]$WorkspaceRoot = ".",
-  [switch]$NoBrowser  # print URL only, do not open browser
+  [switch]$NoBrowser,  # print URL only, do not open browser
+  [switch]$ForceBrowserOpen
 )
 
 $toolUrls = @{
@@ -55,6 +56,11 @@ if (-not $toolUrls.ContainsKey($AgentName)) {
 
 $url  = $toolUrls[$AgentName]
 $tool = $toolNames[$AgentName]
+$root = Resolve-Path $WorkspaceRoot
+$browserLaunchScript = Join-Path $PSScriptRoot "browser-launch.ps1"
+if (Test-Path $browserLaunchScript) {
+  . $browserLaunchScript
+}
 
 # Show next-task first
 $nextTaskScript = Join-Path $PSScriptRoot "next-task.ps1"
@@ -68,8 +74,17 @@ Write-Host ""
 
 if (-not $NoBrowser) {
   try {
-    Start-Process $url
-    Write-Host "  [OPENED] Browser launched. Paste the prompt above into the tool." -ForegroundColor Cyan
+    if (Get-Command Invoke-AegisBrowserLaunch -ErrorAction SilentlyContinue) {
+      $launchResult = Invoke-AegisBrowserLaunch -Url $url -WorkspaceRoot $root -Force:$ForceBrowserOpen
+      if ($launchResult.launched) {
+        Write-Host "  [OPENED] Browser launched. Paste the prompt above into the tool." -ForegroundColor Cyan
+      } else {
+        Write-Host "  [SKIP] Browser launch skipped (recently opened). Use -ForceBrowserOpen to reopen." -ForegroundColor Yellow
+      }
+    } else {
+      Start-Process $url
+      Write-Host "  [OPENED] Browser launched. Paste the prompt above into the tool." -ForegroundColor Cyan
+    }
   } catch {
     Write-Host "  [WARN] Could not open browser automatically. Navigate to: $url" -ForegroundColor Yellow
   }

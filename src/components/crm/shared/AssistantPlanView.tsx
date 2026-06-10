@@ -9,9 +9,7 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import type { AppDispatch } from '../../../store/store';
-import {
-  fetchAssistantPlan,
-} from '../../../store/slices/aiAssistantDashboardSlice';
+import { fetchAssistantPlan } from '../../../store/slices/aiAssistantDashboardSlice';
 import {
   selectAssistantPlan,
   selectAssistantPlanLoading,
@@ -24,10 +22,7 @@ interface AssistantPlanViewProps {
   assistantName: string;
 }
 
-const AssistantPlanView: React.FC<AssistantPlanViewProps> = ({
-  assistantId,
-  assistantName,
-}) => {
+const AssistantPlanView: React.FC<AssistantPlanViewProps> = ({ assistantId, assistantName }) => {
   const dispatch = useDispatch<AppDispatch>();
 
   const plan = useSelector((state: RootState) => selectAssistantPlan(assistantId)(state));
@@ -35,13 +30,13 @@ const AssistantPlanView: React.FC<AssistantPlanViewProps> = ({
   const error = useSelector((state: RootState) => selectAssistantPlanError(assistantId)(state));
 
   useEffect(() => {
-    // Only fetch if not already loaded (null means never fetched)
-    if (plan === null && !loading && !error) {
+    // Only fetch if not already loaded (undefined means never fetched; null means fetched but no plan)
+    if (plan === undefined && !loading && !error) {
       dispatch(fetchAssistantPlan(assistantId));
     }
   }, [assistantId, dispatch, error, loading, plan]);
 
-  if (loading) {
+  if (loading || plan === undefined) {
     return (
       <div style={{ padding: '24px', textAlign: 'center', color: '#9CA3AF' }}>
         <div style={{ fontSize: '14px' }}>Loading {assistantName}&apos;s plan…</div>
@@ -84,7 +79,7 @@ const AssistantPlanView: React.FC<AssistantPlanViewProps> = ({
     );
   }
 
-  if (!plan) {
+  if (plan === null) {
     return (
       <div
         style={{

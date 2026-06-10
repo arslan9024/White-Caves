@@ -158,9 +158,9 @@
 
 ---
 
-## Sprint Scheduling -- Recommended Micro-Waves
+## Sprint Scheduling -- Recommended Macro/Huge-Waves
 
-> Rule 22: Default premium batch = 1-2 modules per day. Planned across 7 short days below.
+> Rule 22: Default premium batch = 3-6 modules per day when dependency-safe, with internal validation checkpoints.
 
 | Day   | Agents                     | Modules   | Story Points | Gate                   |
 | ----- | -------------------------- | --------- | ------------ | ---------------------- |

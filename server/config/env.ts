@@ -61,7 +61,17 @@ export const DATABASE_URL = _resolvedDatabaseUrl;
 if (!process.env.CORS_ORIGIN && IS_PRODUCTION) {
   throw new Error('CRITICAL: CORS_ORIGIN environment variable must be set in production');
 }
-export const CORS_ORIGINS = (process.env.CORS_ORIGIN || 'http://localhost:5000')
+export const CORS_ORIGINS = (
+  process.env.CORS_ORIGIN ||
+  [
+    'http://localhost:5000',
+    'http://localhost:5001',
+    'http://localhost:5173',
+    'http://127.0.0.1:5000',
+    'http://127.0.0.1:5001',
+    'http://127.0.0.1:5173',
+  ].join(',')
+)
   .split(',')
   .map(s => s.trim());
 
@@ -92,3 +102,8 @@ export const LINDA_CORE_MODE = process.env.LINDA_CORE_MODE || 'legacy';
 export const HENRY_UPLOADS_PATH = process.env.HENRY_UPLOADS_PATH || './uploads/henry';
 export const GROQ_API_KEY = process.env.GROQ_API_KEY || '';
 export const OLLAMA_HOST = process.env.OLLAMA_HOST || 'http://localhost:11434';
+
+// ─── Redis (Wave 15 — Response Cache) ────────────────────────────────────
+// Optional: set REDIS_URL to enable response caching. If absent, the server
+// falls through to MongoDB for every request (safe but slower at scale).
+export const REDIS_URL = process.env.REDIS_URL || '';

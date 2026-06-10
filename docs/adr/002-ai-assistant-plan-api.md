@@ -26,15 +26,16 @@ to developers. Phase 0.8 requires:
 - Plans stored as `.md` files in `business_docs/03_ai_assistants/` (existing source of truth).
 - **GET /api/assistants** — public, returns metadata registry (no file I/O).
 - **GET /api/assistants/:id/plan** — requires auth, reads `{id}.md` from disk.
-- **POST/PUT /api/assistants/:id** — requires auth + super-user role (`owner`|`admin`).
+- **POST /api/assistants** — requires auth + super-user role (`owner`|`admin`); `id` supplied in request body.
+- **PUT /api/assistants/:id** — requires auth + super-user role.
 - **DELETE /api/assistants/:id** — requires auth + super-user role.
 
 ### Security
 
 - **Path traversal prevention:** `:id` validated against `/^[a-z0-9-]{1,64}$/` allowlist.
 - **Directory confinement:** resolved path must start with `PLANS_DIR`.
-- **XSS sanitisation:** `sanitizeMarkdown()` strips `<script>` tags, `on*=` event handlers,
-  and `javascript:` URLs before writing to disk.
+- **XSS prevention:** `assertNoHtml()` rejects any request whose plan content contains HTML tags
+  (returns 400). This is stricter than sanitization — any HTML is an error, not silently stripped.
 - **Auth:** all write endpoints use existing `authMiddleware` + `assertSuperUser()`.
 
 ### Frontend
@@ -49,12 +50,12 @@ to developers. Phase 0.8 requires:
 
 ## Alternatives Considered
 
-| Option | Reason rejected |
-|--------|----------------|
-| Store plans in PostgreSQL/Prisma | Adds DB migration overhead; markdown files are simpler and already exist |
-| Store plans in MongoDB | Not using MongoDB in this project (Prisma/PostgreSQL) |
-| Serve files via static middleware | No auth control; no write capability |
-| Use a CMS | Over-engineered for 24 assistant plans |
+| Option                            | Reason rejected                                                          |
+| --------------------------------- | ------------------------------------------------------------------------ |
+| Store plans in PostgreSQL/Prisma  | Adds DB migration overhead; markdown files are simpler and already exist |
+| Store plans in MongoDB            | Not using MongoDB in this project (Prisma/PostgreSQL)                    |
+| Serve files via static middleware | No auth control; no write capability                                     |
+| Use a CMS                         | Over-engineered for 24 assistant plans                                   |
 
 ---
 
@@ -63,5 +64,5 @@ to developers. Phase 0.8 requires:
 - Plans remain in version control (git) alongside code — good for traceability.
 - Write operations go through the API (not direct file edits in production).
 - If plan files grow large, consider moving to DB; current max is ~50KB per file.
-- `sanitizeMarkdown()` is a lightweight allowlist; if rich markdown rendering is added
-  later, integrate `DOMPurify` on the client side.
+- `assertNoHtml()` is a strict content guard; if rich markdown with embedded HTML is required
+  later, consider switching to `DOMPurify` on the client side and a proper allowlist on the server.

@@ -1,96 +1,79 @@
-const dataCache = new Map();
+const dataCache = {};
 
-export const loadAssistantData = async assistantId => {
-  if (dataCache.has(assistantId)) {
-    return dataCache.get(assistantId);
+export const loadAssistantData = async (assistantId) => {
+  if (dataCache[assistantId]) {
+    return dataCache[assistantId];
   }
-
+  
   try {
     const data = await import(`../data/assistants/${assistantId}.json`);
-    const loaded = data.default || data;
-    dataCache.set(assistantId, loaded);
-    return loaded;
-  } catch {
+    dataCache[assistantId] = data.default || data;
+    return dataCache[assistantId];
+  } catch (error) {
+    
     return null;
   }
 };
 
 export const loadAllAssistantsData = async () => {
   const assistantIds = [
-    'linda',
-    'nina',
-    'mary',
-    'clara',
-    'sophia',
-    'daisy',
-    'theodora',
-    'olivia',
-    'zoe',
-    'aurora',
-    'laila',
-    'nancy',
-    'hazel',
-    'willow',
-    'henry',
-    'cipher',
-    'atlas',
-    'hunter',
-    'kairos',
-    'maven',
-    'sentinel',
-    'vesta',
-    'juno',
-    'evangeline',
+    'linda', 'nina', 'mary', 'clara', 'sophia', 'daisy', 'theodora', 'olivia',
+    'zoe', 'aurora', 'laila', 'nancy', 'hazel', 'willow', 'henry', 'cipher',
+    'atlas', 'hunter', 'kairos', 'maven', 'sentinel', 'vesta', 'juno', 'evangeline'
   ];
-
-  const entries = await Promise.all(
-    assistantIds.map(async id => [id, await loadAssistantData(id)])
+  
+  const results = {};
+  await Promise.all(
+    assistantIds.map(async (id) => {
+      results[id] = await loadAssistantData(id);
+    })
   );
-
-  return Object.fromEntries(entries);
+  
+  return results;
 };
 
 export const loadPropertiesData = async () => {
-  if (dataCache.has('properties')) {
-    return dataCache.get('properties');
+  if (dataCache.properties) {
+    return dataCache.properties;
   }
-
+  
   try {
     const data = await import('../data/damacHills2/properties.json');
-    const loaded = data.default || data;
-    dataCache.set('properties', loaded);
-    return loaded;
-  } catch {
+    dataCache.properties = data.default || data;
+    return dataCache.properties;
+  } catch (error) {
+    
     return { properties: [] };
   }
 };
 
 export const loadWorkflowsData = async () => {
-  if (dataCache.has('workflows')) {
-    return dataCache.get('workflows');
+  if (dataCache.workflows) {
+    return dataCache.workflows;
   }
-
+  
   try {
     const [services, events, property] = await Promise.all([
       import('../data/workflows/services.json'),
       import('../data/workflows/events.json'),
-      import('../data/workflows/property.json'),
+      import('../data/workflows/property.json')
     ]);
-
-    const loaded = {
+    
+    dataCache.workflows = {
       services: services.default || services,
       events: events.default || events,
-      property: property.default || property,
+      property: property.default || property
     };
-    dataCache.set('workflows', loaded);
-    return loaded;
-  } catch {
+    
+    return dataCache.workflows;
+  } catch (error) {
+    
     return { services: [], events: [], property: [] };
   }
 };
 
 export const clearCache = () => {
-  dataCache.clear();
+  Object.keys(dataCache).forEach(key => delete dataCache[key]);
 };
 
 export default {
@@ -98,5 +81,5 @@ export default {
   loadAllAssistantsData,
   loadPropertiesData,
   loadWorkflowsData,
-  clearCache,
+  clearCache
 };

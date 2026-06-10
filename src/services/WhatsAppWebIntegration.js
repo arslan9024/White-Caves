@@ -14,14 +14,10 @@ class WhatsAppWebIntegrationService {
       onMessage: null,
       onDisconnected: null,
       onQR: null,
-      onAuthFailure: null,
+      onAuthFailure: null
     };
     this.retryAttempts = 0;
     this.maxRetries = 3;
-  }
-
-  getEventHandlerKeys() {
-    return Object.keys(this.eventHandlers);
   }
 
   async initializeConnection() {
@@ -35,25 +31,25 @@ class WhatsAppWebIntegrationService {
         puppeteer: {
           headless: true,
           args: ['--no-sandbox', '--disable-setuid-sandbox'],
-          timeout: 30000,
+          timeout: 30000
         },
-        authStrategy: new LocalAuth(),
+        authStrategy: new LocalAuth()
       });
 
       this.client.on('qr', qr => {
         console.log('WhatsApp QR Code generated');
         this.currentQRCode = qr;
         this.qrCodeExpiryTime = Date.now() + 45000; // 45 seconds
-
+        
         // Generate terminal display for debugging
         qrcode.generate(qr, { small: true });
-
+        
         // Emit QR code to listeners (React components)
         if (this.eventHandlers.onQR) {
           this.eventHandlers.onQR({
             qrCode: qr,
             timestamp: new Date(),
-            expiresAt: new Date(this.qrCodeExpiryTime),
+            expiresAt: new Date(this.qrCodeExpiryTime)
           });
         }
       });
@@ -94,7 +90,12 @@ class WhatsAppWebIntegrationService {
         throw new Error('WhatsApp client is not ready');
       }
 
-      const { daysBack = 30, minMessages = 1, excludeGroups = true, limit = 100 } = options;
+      const {
+        daysBack = 30,
+        minMessages = 1,
+        excludeGroups = true,
+        limit = 100
+      } = options;
 
       const chats = await this.client.getChats();
       const cutoffDate = new Date();
@@ -119,20 +120,16 @@ class WhatsAppWebIntegrationService {
         name: chat.name,
         isGroup: chat.isGroup,
         unreadCount: chat.getUnreadCount(),
-        lastMessage: chat.lastMessage
-          ? {
-              text: chat.lastMessage.body,
-              timestamp: chat.lastMessage.timestamp,
-              from: chat.lastMessage.from,
-            }
-          : null,
-        contact: chat.contact
-          ? {
-              name: chat.contact.name,
-              pushname: chat.contact.pushname,
-              number: chat.contact.number,
-            }
-          : null,
+        lastMessage: chat.lastMessage ? {
+          text: chat.lastMessage.body,
+          timestamp: chat.lastMessage.timestamp,
+          from: chat.lastMessage.from
+        } : null,
+        contact: chat.contact ? {
+          name: chat.contact.name,
+          pushname: chat.contact.pushname,
+          number: chat.contact.number
+        } : null
       }));
     } catch (error) {
       console.error('Failed to get conversations:', error);
@@ -165,20 +162,18 @@ class WhatsAppWebIntegrationService {
           from: msg.from,
           isFromMe: msg.fromMe,
           hasMedia: msg.hasMedia,
-          mediaType: msg.type,
+          mediaType: msg.type
         })),
-        contact: chat.contact
-          ? {
-              name: chat.contact.name,
-              number: chat.contact.number,
-              pushname: chat.contact.pushname,
-            }
-          : null,
+        contact: chat.contact ? {
+          name: chat.contact.name,
+          number: chat.contact.number,
+          pushname: chat.contact.pushname
+        } : null
       };
 
       this.conversationCache.set(chatId, {
         data: conversationData,
-        timestamp: Date.now(),
+        timestamp: Date.now()
       });
 
       return conversationData;
@@ -190,11 +185,14 @@ class WhatsAppWebIntegrationService {
 
   async searchConversations(keywords, options = {}) {
     try {
-      const { limit = 20, excludeGroups = true } = options;
+      const {
+        limit = 20,
+        excludeGroups = true
+      } = options;
 
       const conversations = await this.getConversations({
         limit: 200,
-        excludeGroups,
+        excludeGroups
       });
 
       const regex = new RegExp(keywords, 'gi');
@@ -218,7 +216,7 @@ class WhatsAppWebIntegrationService {
           results.push({
             ...conversation,
             relevanceScore: (matchCount / chatData.messages.length) * 100,
-            matchedMessages: matches.length,
+            matchedMessages: matches.length
           });
         }
       }
@@ -240,12 +238,12 @@ class WhatsAppWebIntegrationService {
       const chatId = `${formattedNumber}@c.us`;
 
       const sentMessage = await this.client.sendMessage(chatId, messageText);
-
+      
       return {
         success: true,
         messageId: sentMessage.id._serialized,
         timestamp: sentMessage.timestamp,
-        to: formattedNumber,
+        to: formattedNumber
       };
     } catch (error) {
       console.error('Failed to send message:', error);
@@ -272,7 +270,7 @@ class WhatsAppWebIntegrationService {
       isReady: this.isReady,
       isConnected: this.client ? !this.client._disconnected : false,
       clientId: this.client?.info?.wid?._serialized || null,
-      cacheSize: this.conversationCache.size,
+      cacheSize: this.conversationCache.size
     };
   }
 
@@ -290,7 +288,7 @@ class WhatsAppWebIntegrationService {
   }
 
   on(event, handler) {
-    if (Object.prototype.hasOwnProperty.call(this.eventHandlers, event)) {
+    if (this.eventHandlers.hasOwnProperty(event)) {
       this.eventHandlers[event] = handler;
     } else {
       throw new Error(`Unknown event: ${event}`);
@@ -315,7 +313,7 @@ class WhatsAppWebIntegrationService {
     return {
       qrCode: this.currentQRCode,
       expiresAt: new Date(this.qrCodeExpiryTime),
-      expiresIn: Math.round((this.qrCodeExpiryTime - Date.now()) / 1000), // seconds
+      expiresIn: Math.round((this.qrCodeExpiryTime - Date.now()) / 1000) // seconds
     };
   }
 
@@ -327,7 +325,7 @@ class WhatsAppWebIntegrationService {
       isAuthenticated: this.isReady,
       isConnecting: this.client && !this.isReady,
       hasQRCode: this.currentQRCode !== null,
-      qrExpiryTime: this.qrCodeExpiryTime,
+      qrExpiryTime: this.qrCodeExpiryTime
     };
   }
 
@@ -355,6 +353,14 @@ class WhatsAppWebIntegrationService {
 
   clearCache() {
     this.conversationCache.clear();
+  }
+
+  on(event, handler) {
+    if (this.eventHandlers.hasOwnProperty(event)) {
+      this.eventHandlers[event] = handler;
+    } else {
+      throw new Error(`Unknown event: ${event}`);
+    }
   }
 }
 

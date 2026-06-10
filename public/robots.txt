@@ -1,4 +1,11 @@
 User-agent: *
 Allow: /
 
+# Private / non-indexable surfaces
+Disallow: /api/
+Disallow: /crm/
+Disallow: /portal/
+Disallow: /tenant-portal/
+Disallow: /landlord-portal/
+
 Sitemap: https://whitecaves.com/sitemap.xml
