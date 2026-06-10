@@ -17,6 +17,43 @@ if (-not (Test-Path $promptFile)) {
 }
 $prompts = [System.IO.File]::ReadAllText($promptFile, [System.Text.Encoding]::UTF8) | ConvertFrom-Json
 
+function Read-JsonFileSafe {
+  param(
+    [Parameter(Mandatory = $true)]
+    [string]$Path,
+    [long]$MaxBytes = 8MB,
+    [switch]$TryTmpRecovery
+  )
+
+  if (-not (Test-Path $Path)) { return $null }
+  $info = Get-Item -Path $Path -ErrorAction SilentlyContinue
+  if ($null -eq $info) { return $null }
+
+  function Try-ParseCandidate {
+    param([string]$CandidatePath)
+    try {
+      $raw = Get-Content -Path $CandidatePath -Raw -ErrorAction Stop
+      if ([string]::IsNullOrWhiteSpace($raw)) { return $null }
+      return ($raw | ConvertFrom-Json -ErrorAction Stop)
+    } catch { return $null }
+  }
+
+  if ($info.Length -gt $MaxBytes) {
+    if (-not $TryTmpRecovery) { return $null }
+    $dir = Split-Path -Parent $Path
+    $base = [System.IO.Path]::GetFileName($Path)
+    foreach ($tmp in @(Get-ChildItem -Path $dir -Filter ("{0}.tmp.*" -f $base) -File -ErrorAction SilentlyContinue | Sort-Object LastWriteTime -Descending)) {
+      if ($tmp.Length -gt $MaxBytes) { continue }
+      $parsed = Try-ParseCandidate -CandidatePath $tmp.FullName
+      if ($null -eq $parsed) { continue }
+      try { Copy-Item -Path $tmp.FullName -Destination $Path -Force } catch {}
+      return $parsed
+    }
+    return $null
+  }
+  return (Try-ParseCandidate -CandidatePath $Path)
+}
+
 $toolMap = @{
   "@Sofia"    = "Google AI Studio (Gemini 2.0 Flash)  https://aistudio.google.com/"
   "@Timnit"   = "Google AI Studio (Gemini 2.0 Flash)  https://aistudio.google.com/"
@@ -41,7 +78,7 @@ if (-not (Test-Path $queueFile)) {
   Write-Host "[ERROR] Queue not found. Run: npm run orchestrator:queue:init" -ForegroundColor Red
   exit 1
 }
-$queue = Get-Content $queueFile -Raw | ConvertFrom-Json
+$queue = Read-JsonFileSafe -Path $queueFile -MaxBytes 8MB -TryTmpRecovery
 $tasks = @($queue.tasks)
 
 function Test-DepsDone {

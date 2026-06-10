@@ -33,7 +33,45 @@ if (-not (Test-Path $queueFile))   { Write-Host "[ERROR] queue not found"   -For
 if (-not (Test-Path $promptsFile)) { Write-Host "[ERROR] prompts not found" -ForegroundColor Red; exit 1 }
 if (Test-Path $browserLaunchScript) { . $browserLaunchScript }
 
-$q       = Get-Content $queueFile   -Raw | ConvertFrom-Json
+$q = $null
+function Read-JsonFileSafe {
+  param(
+    [Parameter(Mandatory = $true)]
+    [string]$Path,
+    [long]$MaxBytes = 8MB,
+    [switch]$TryTmpRecovery
+  )
+
+  if (-not (Test-Path $Path)) { return $null }
+  $info = Get-Item -Path $Path -ErrorAction SilentlyContinue
+  if ($null -eq $info) { return $null }
+
+  function Try-ParseCandidate {
+    param([string]$CandidatePath)
+    try {
+      $raw = Get-Content -Path $CandidatePath -Raw -ErrorAction Stop
+      if ([string]::IsNullOrWhiteSpace($raw)) { return $null }
+      return ($raw | ConvertFrom-Json -ErrorAction Stop)
+    } catch { return $null }
+  }
+
+  if ($info.Length -gt $MaxBytes) {
+    if (-not $TryTmpRecovery) { return $null }
+    $dir = Split-Path -Parent $Path
+    $base = [System.IO.Path]::GetFileName($Path)
+    foreach ($tmp in @(Get-ChildItem -Path $dir -Filter ("{0}.tmp.*" -f $base) -File -ErrorAction SilentlyContinue | Sort-Object LastWriteTime -Descending)) {
+      if ($tmp.Length -gt $MaxBytes) { continue }
+      $parsed = Try-ParseCandidate -CandidatePath $tmp.FullName
+      if ($null -eq $parsed) { continue }
+      try { Copy-Item -Path $tmp.FullName -Destination $Path -Force } catch {}
+      return $parsed
+    }
+    return $null
+  }
+  return (Try-ParseCandidate -CandidatePath $Path)
+}
+
+$q       = Read-JsonFileSafe -Path $queueFile -MaxBytes 8MB -TryTmpRecovery
 $prompts = Get-Content $promptsFile -Raw | ConvertFrom-Json
 $tasks   = @($q.tasks)
 

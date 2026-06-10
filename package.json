@@ -57,6 +57,8 @@
     "orchestrator:autopilot:daemon:fast": "powershell -ExecutionPolicy Bypass -File scripts/orchestrator/autopilot-daemon.ps1 -NoBrowser -RestartDelaySeconds 2",
     "orchestrator:dev:smoke": "powershell -ExecutionPolicy Bypass -File scripts/orchestrator/dev-smoke.ps1",
     "orchestrator:dev:runtime-check": "powershell -ExecutionPolicy Bypass -File scripts/orchestrator/dev-runtime-check.ps1 -RunProblemScan",
+    "orchestrator:progress:intel": "powershell -ExecutionPolicy Bypass -File scripts/orchestrator/progress-intelligence.ps1",
+    "orchestrator:progress:intel:brief": "powershell -ExecutionPolicy Bypass -File scripts/orchestrator/progress-intelligence.ps1 -Brief",
     "orchestrator:project:scan": "powershell -ExecutionPolicy Bypass -File scripts/orchestrator/project-problem-scan.ps1",
     "orchestrator:project:scan:autofix": "powershell -ExecutionPolicy Bypass -File scripts/orchestrator/project-problem-scan.ps1 -AutoFix",
     "orchestrator:development:sweep": "powershell -ExecutionPolicy Bypass -File scripts/orchestrator/development-practice-sweep.ps1",

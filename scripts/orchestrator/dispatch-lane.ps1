@@ -39,9 +39,51 @@ catch {
 function Get-Queue {
   param([string]$Path)
   if (-not (Test-Path $Path)) { return $null }
-  $raw = Get-Content -Path $Path -Raw
-  if ([string]::IsNullOrWhiteSpace($raw)) { return $null }
-  return $raw | ConvertFrom-Json
+
+  $maxSafeQueueBytes = 8MB
+  $fileInfo = Get-Item -Path $Path -ErrorAction SilentlyContinue
+  if ($null -eq $fileInfo) { return $null }
+
+  function Try-ParseJsonFile {
+    param([string]$CandidatePath)
+    try {
+      $candidateRaw = Get-Content -Path $CandidatePath -Raw -ErrorAction Stop
+      if ([string]::IsNullOrWhiteSpace($candidateRaw)) { return $null }
+      return ($candidateRaw | ConvertFrom-Json -ErrorAction Stop)
+    }
+    catch {
+      return $null
+    }
+  }
+
+  if ($fileInfo.Length -gt $maxSafeQueueBytes) {
+    Write-RealityLog ("queue_oversized path={0} sizeBytes={1} -> attempting tmp recovery" -f $Path, $fileInfo.Length)
+    $dir = Split-Path -Parent $Path
+    $base = [System.IO.Path]::GetFileName($Path)
+    $tmpCandidates = @(Get-ChildItem -Path $dir -Filter ("{0}.tmp.*" -f $base) -File -ErrorAction SilentlyContinue |
+      Sort-Object LastWriteTime -Descending)
+
+    foreach ($tmp in $tmpCandidates) {
+      if ($tmp.Length -gt $maxSafeQueueBytes) { continue }
+      $parsedTmp = Try-ParseJsonFile -CandidatePath $tmp.FullName
+      if ($null -eq $parsedTmp) { continue }
+
+      try {
+        Copy-Item -Path $tmp.FullName -Destination $Path -Force
+        Write-RealityLog ("queue_recovered_from_tmp source={0} sizeBytes={1}" -f $tmp.FullName, $tmp.Length)
+      }
+      catch {
+        Write-RealityLog ("queue_tmp_copy_failed source={0} err={1}" -f $tmp.FullName, $_.Exception.Message)
+      }
+
+      return $parsedTmp
+    }
+
+    Write-RealityLog "queue_recovery_failed_no_valid_tmp"
+    return $null
+  }
+
+  return (Try-ParseJsonFile -CandidatePath $Path)
 }
 
 function Save-Queue {

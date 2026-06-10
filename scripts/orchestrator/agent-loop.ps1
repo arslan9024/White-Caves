@@ -46,6 +46,7 @@ $blockerReportScript = Join-Path $scripts "blocker-report.ps1"
 $projectProblemScanScript = Join-Path $scripts "project-problem-scan.ps1"
 $developmentPracticeSweepScript = Join-Path $scripts "development-practice-sweep.ps1"
 $devRuntimeCheckScript = Join-Path $scripts "dev-runtime-check.ps1"
+$progressIntelligenceScript = Join-Path $scripts "progress-intelligence.ps1"
 $phaseStateFile = Join-Path $root "logs\orchestrator\aegis-phase-state.json"
 $devRuntimeCheckStateFile = Join-Path $root "logs\orchestrator\aegis-dev-runtime-check-state.json"
 $scanLogDir = Join-Path $root "logs\orchestrator\scans"
@@ -115,6 +116,8 @@ $aegisTimedDevCheckEnabled = $true
 $aegisTimedDevCheckIntervalHours = 2
 $aegisTimedDevCheckMaxRunMinutes = 2
 $aegisTimedDevCheckRunProblemScan = $true
+$aegisProgressIntelligenceEnabled = $true
+$aegisProgressIntelligenceEveryNTasks = 1
 $devSmokeScript = Join-Path $scripts "dev-smoke.ps1"
 if (Test-Path $policyFile) {
   try {
@@ -129,6 +132,54 @@ if (Test-Path $policyFile) {
       $policyDefaultMode = "autopilot"
     }
 
+
+  function Read-JsonFileSafe {
+    param(
+      [Parameter(Mandatory = $true)]
+      [string]$Path,
+      [long]$MaxBytes = 8MB,
+      [switch]$TryTmpRecovery
+    )
+
+    if (-not (Test-Path $Path)) { return $null }
+
+    $info = Get-Item -Path $Path -ErrorAction SilentlyContinue
+    if ($null -eq $info) { return $null }
+
+    function Try-ParseCandidate {
+      param([string]$CandidatePath)
+
+      try {
+        $raw = Get-Content -Path $CandidatePath -Raw -ErrorAction Stop
+        if ([string]::IsNullOrWhiteSpace($raw)) { return $null }
+        return ($raw | ConvertFrom-Json -ErrorAction Stop)
+      }
+      catch {
+        return $null
+      }
+    }
+
+    if ($info.Length -gt $MaxBytes) {
+      if (-not $TryTmpRecovery) { return $null }
+
+      $dir = Split-Path -Parent $Path
+      $base = [System.IO.Path]::GetFileName($Path)
+      $tmpCandidates = @(Get-ChildItem -Path $dir -Filter ("{0}.tmp.*" -f $base) -File -ErrorAction SilentlyContinue |
+        Sort-Object LastWriteTime -Descending)
+
+      foreach ($tmp in $tmpCandidates) {
+        if ($tmp.Length -gt $MaxBytes) { continue }
+        $parsed = Try-ParseCandidate -CandidatePath $tmp.FullName
+        if ($null -eq $parsed) { continue }
+        try { Copy-Item -Path $tmp.FullName -Destination $Path -Force } catch {}
+        return $parsed
+      }
+
+      return $null
+    }
+
+    return (Try-ParseCandidate -CandidatePath $Path)
+  }
     if ($null -ne $policy.executionMode -and $null -ne $policy.executionMode.autopilot) {
       if ($null -ne $policy.executionMode.autopilot.continuous) {
         $aegisAutopilotContinuous = [bool]$policy.executionMode.autopilot.continuous
@@ -261,6 +312,15 @@ if (Test-Path $policyFile) {
       }
       if ($null -ne $policy.aegis.devRuntimeCheckRunProblemScan) {
         $aegisTimedDevCheckRunProblemScan = [bool]$policy.aegis.devRuntimeCheckRunProblemScan
+      }
+      if ($null -ne $policy.aegis.progressIntelligenceEnabled) {
+        $aegisProgressIntelligenceEnabled = [bool]$policy.aegis.progressIntelligenceEnabled
+      }
+      if ($null -ne $policy.aegis.progressIntelligenceEveryNTasks) {
+        $parsedProgressEvery = 0
+        if ([int]::TryParse([string]$policy.aegis.progressIntelligenceEveryNTasks, [ref]$parsedProgressEvery) -and $parsedProgressEvery -ge 1 -and $parsedProgressEvery -le 50) {
+          $aegisProgressIntelligenceEveryNTasks = $parsedProgressEvery
+        }
       }
     }
   } catch {
@@ -431,7 +491,7 @@ function Get-NextReadyInRotation {
   if ($slotAgents.Count -eq 0) { return $null }
   if (-not (Test-Path $qFile)) { return $null }
 
-  $q = Get-Content $qFile -Raw | ConvertFrom-Json
+  $q = Read-JsonFileSafe -Path $qFile -MaxBytes 8MB -TryTmpRecovery
   $allTasks = @($q.tasks)
 
   $startIdx = [Array]::IndexOf($slotAgents, $preferredAgent)
@@ -480,7 +540,7 @@ function Get-SmartNextReadyTask {
 
   if (-not (Test-Path $qFile)) { return $null }
 
-  $q = Get-Content $qFile -Raw | ConvertFrom-Json
+  $q = Read-JsonFileSafe -Path $qFile -MaxBytes 8MB -TryTmpRecovery
   $allTasks = @($q.tasks)
 
   $readyTasks = @()
@@ -518,9 +578,17 @@ function Get-SmartNextReadyTask {
       if ([int]::TryParse([string]$Task.priorityScore, [ref]$parsed)) { return $parsed }
     }
 
+    if ($null -ne $Task.priority_score) {
+      $parsedLegacy = 0
+      if ([int]::TryParse([string]$Task.priority_score, [ref]$parsedLegacy)) { return $parsedLegacy }
+    }
+
     $priority = [string]$Task.priority
     if ([string]::IsNullOrWhiteSpace($priority)) { return 50 }
     switch ($priority.ToLower()) {
+      "p0" { return 120 }
+      "p1" { return 90 }
+      "p2" { return 60 }
       "critical" { return 100 }
       "high" { return 80 }
       "medium" { return 60 }
@@ -629,7 +697,7 @@ function Get-SmartNextReadyTask {
   }
 
   if ([string]::IsNullOrWhiteSpace($bestLane)) {
-    $fallbackTask = @($candidateReady | Sort-Object taskId | Select-Object -First 1)
+    $fallbackTask = @($candidateReady | Sort-Object @{ Expression = { -1 * (& $GetPriorityWeight $_) } }, taskId | Select-Object -First 1)
     if ($fallbackTask.Count -gt 0) {
       $fallbackPhase = (& $GetPhase $fallbackTask[0])
       return @{ Agent = [string]$fallbackTask[0].agent; Task = $fallbackTask[0]; Phase = $fallbackPhase }
@@ -637,7 +705,7 @@ function Get-SmartNextReadyTask {
     return $null
   }
 
-  $selected = @($candidateReady | Where-Object { $_.lane -eq $bestLane } | Sort-Object taskId | Select-Object -First 1)
+  $selected = @($candidateReady | Where-Object { $_.lane -eq $bestLane } | Sort-Object @{ Expression = { -1 * (& $GetPriorityWeight $_) } }, taskId | Select-Object -First 1)
   if ($selected.Count -eq 0) { return $null }
 
   $selectedPhase = (& $GetPhase $selected[0])
@@ -653,12 +721,22 @@ function Get-AgentNextReadyTask {
   $all = $allTasks
   if ($null -eq $all) {
     if (-not (Test-Path $qFile)) { return $null }
-    $q = Get-Content $qFile -Raw | ConvertFrom-Json
+    $q = Read-JsonFileSafe -Path $qFile -MaxBytes 8MB -TryTmpRecovery
     $all = @($q.tasks)
   }
 
   $agentTasks = @($all | Where-Object { $_.agent -eq $agentName })
-  foreach ($t in ($agentTasks | Sort-Object taskId)) {
+  foreach ($t in ($agentTasks | Sort-Object @{ Expression = {
+      if ($null -ne $_.priorityScore) {
+        $p = 0
+        if ([int]::TryParse([string]$_.priorityScore, [ref]$p)) { return -1 * $p }
+      }
+      if ($null -ne $_.priority_score) {
+        $lp = 0
+        if ([int]::TryParse([string]$_.priority_score, [ref]$lp)) { return -1 * $lp }
+      }
+      return 0
+    } }, taskId)) {
     if ($t.status -notin @("queued","retrying")) { continue }
     $blocked = $false
     foreach ($dep in (Get-NormalizedDeps $t.dependsOn)) {
@@ -1127,6 +1205,34 @@ function Invoke-AegisTimedDevRuntimeCheckIfDue {
   return $result
 }
 
+function Invoke-AegisProgressIntelligence {
+  param(
+    [string]$Reason = "periodic"
+  )
+
+  $result = @{ Ran = $false; Ok = $true }
+
+  if (-not $aegisProgressIntelligenceEnabled) { return $result }
+  if (-not (Test-Path $progressIntelligenceScript)) { return $result }
+
+  $result.Ran = $true
+  Write-Host ""
+  Write-Host ("  [AEGIS PROGRESS] Refreshing intelligence snapshot ({0})..." -f $Reason) -ForegroundColor Cyan
+
+  $out = & powershell -ExecutionPolicy Bypass -File "$progressIntelligenceScript" -WorkspaceRoot "$root" -Brief 2>&1
+  $text = ($out | Out-String).Trim()
+  if (-not [string]::IsNullOrWhiteSpace($text)) {
+    Write-Host $text
+  }
+
+  $result.Ok = ($LASTEXITCODE -eq 0)
+  if (-not $result.Ok) {
+    Write-Host "  [AEGIS PROGRESS] Intelligence refresh failed; autopilot will continue." -ForegroundColor DarkYellow
+  }
+
+  return $result
+}
+
 function Get-PromptRecord {
   param([string]$taskId)
 
@@ -1341,6 +1447,7 @@ $aegisLastSelectedPhase = ""
 $aegisNoReadyLoopCounter = 0
 
 Invoke-AegisPreflight
+[void](Invoke-AegisProgressIntelligence -Reason "preflight")
 
 if (Test-Path $phaseStateFile) {
   try {
@@ -1507,7 +1614,7 @@ if (Test-Path $phaseStateFile) {
       $evidencePendingNow = @()
       if (Test-Path $qFile) {
         try {
-          $qSnapshot = Get-Content $qFile -Raw | ConvertFrom-Json
+          $qSnapshot = Read-JsonFileSafe -Path $qFile -MaxBytes 8MB -TryTmpRecovery
           $allSnapshotTasks = @($qSnapshot.tasks)
           $runningNow = @($allSnapshotTasks | Where-Object { $_.status -eq "running" })
           $waitingAckNow = @($allSnapshotTasks | Where-Object { $_.status -eq "waiting_ack" })
@@ -1854,6 +1961,14 @@ if (Test-Path $phaseStateFile) {
             & powershell -ExecutionPolicy Bypass -File "$devSmokeScript" -WorkspaceRoot $root 2>&1 | Out-String | Write-Host
           }
         }
+      }
+
+      if (
+        $aegisProgressIntelligenceEnabled -and
+        $aegisProgressIntelligenceEveryNTasks -ge 1 -and
+        ($aegisCompletedInRun % $aegisProgressIntelligenceEveryNTasks -eq 0)
+      ) {
+        [void](Invoke-AegisProgressIntelligence -Reason "after-completion")
       }
     }
   } else {

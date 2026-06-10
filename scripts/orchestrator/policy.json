@@ -311,6 +311,12 @@
     "devRuntimeCheckIntervalHours": 2,
     "devRuntimeCheckMaxRunMinutes": 2,
     "devRuntimeCheckRunProblemScan": true,
+    "progressIntelligenceEnabled": true,
+    "progressIntelligenceEveryNTasks": 1,
+    "minLoopImprovementPct": 2,
+    "targetProjectBoostPct": 30,
+    "progressDriftConsecutiveThreshold": 2,
+    "blockerAgingWarnHours": 4,
     "autopilotRequireProducedRef": false,
     "autopilotAutoResolveEvidencePending": true,
     "realityExecutionGate": {

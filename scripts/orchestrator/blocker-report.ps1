@@ -27,8 +27,64 @@ $w           = 72
 if (-not (Test-Path $queueFile))   { Write-Host "[ERROR] queue not found"   -ForegroundColor Red; exit 1 }
 if (-not (Test-Path $promptsFile)) { Write-Host "[ERROR] prompts not found" -ForegroundColor Red; exit 1 }
 
-$q       = Get-Content $queueFile   -Raw | ConvertFrom-Json
-$prompts = Get-Content $promptsFile -Raw | ConvertFrom-Json
+function Read-JsonFileSafe {
+  param(
+    [string]$Path,
+    [long]$MaxBytes = 8MB,
+    [switch]$TryTmpRecovery
+  )
+
+  if (-not (Test-Path $Path)) { return $null }
+
+  $info = Get-Item -Path $Path -ErrorAction SilentlyContinue
+  if ($null -eq $info) { return $null }
+
+  function Try-Parse {
+    param([string]$Candidate)
+    try {
+      $raw = Get-Content -Path $Candidate -Raw -ErrorAction Stop
+      if ([string]::IsNullOrWhiteSpace($raw)) { return $null }
+      return ($raw | ConvertFrom-Json -ErrorAction Stop)
+    }
+    catch {
+      return $null
+    }
+  }
+
+  if ($info.Length -gt $MaxBytes) {
+    if (-not $TryTmpRecovery) { return $null }
+
+    $dir = Split-Path -Parent $Path
+    $name = [System.IO.Path]::GetFileName($Path)
+    $candidates = @(Get-ChildItem -Path $dir -Filter ("{0}.tmp.*" -f $name) -File -ErrorAction SilentlyContinue |
+      Sort-Object LastWriteTime -Descending)
+
+    foreach ($candidate in $candidates) {
+      if ($candidate.Length -gt $MaxBytes) { continue }
+      $parsedCandidate = Try-Parse -Candidate $candidate.FullName
+      if ($null -eq $parsedCandidate) { continue }
+      try { Copy-Item -Path $candidate.FullName -Destination $Path -Force } catch {}
+      return $parsedCandidate
+    }
+
+    return $null
+  }
+
+  return (Try-Parse -Candidate $Path)
+}
+
+$q = Read-JsonFileSafe -Path $queueFile -MaxBytes 8MB -TryTmpRecovery
+if ($null -eq $q) {
+  Write-Host "[ERROR] queue unreadable (possibly oversized/corrupt)" -ForegroundColor Red
+  exit 1
+}
+
+$prompts = Read-JsonFileSafe -Path $promptsFile -MaxBytes 16MB
+if ($null -eq $prompts) {
+  Write-Host "[ERROR] prompts unreadable" -ForegroundColor Red
+  exit 1
+}
+
 $tasks   = @($q.tasks)
 
 # -- gate targets (sections needed to PASS each file) ------------------------

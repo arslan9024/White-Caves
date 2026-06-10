@@ -13,6 +13,7 @@ $promptsFile = Join-Path $root "scripts\orchestrator\prompts.json"
 $policyFile = Join-Path $root "scripts\orchestrator\policy.json"
 $stateFile = Join-Path $logsDir "aegis-state.json"
 $archiveDir = Join-Path $logsDir "archive"
+$discoverUpgradeScript = Join-Path $root "scripts\orchestrator\discover-upgrade.js"
 
 $defaultPhaseRoadmap = @(
   "Wave 09 - UX Foundation",
@@ -418,3 +419,13 @@ if ($priorityOverrideEnabled) {
   Write-Host "        Priority overrides added: $priorityAdded" -ForegroundColor DarkGray
 }
 Write-Host "        Reason     : $Reason" -ForegroundColor DarkGray
+
+if (Test-Path $discoverUpgradeScript) {
+  Write-Host "[AEGIS] Seeding discovered high-impact upgrades into the fresh cycle..." -ForegroundColor Cyan
+  & node "$discoverUpgradeScript" --max-inject 8
+  if ($LASTEXITCODE -eq 0) {
+    Write-Host "[AEGIS] Discovery seeding complete. Queue now includes auto-discovered priority work where available." -ForegroundColor Green
+  } else {
+    Write-Host "[AEGIS][WARN] Discovery seeding failed; continuing with the generated cycle template." -ForegroundColor DarkYellow
+  }
+}

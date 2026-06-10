@@ -15,11 +15,51 @@ if (-not (Test-Path $queueFile)) {
   exit 0
 }
 
-$tasks = @((Get-Content $queueFile -Raw | ConvertFrom-Json).tasks)
+$tasks = @()
+function Read-JsonFileSafe {
+  param(
+    [Parameter(Mandatory = $true)]
+    [string]$Path,
+    [long]$MaxBytes = 8MB,
+    [switch]$TryTmpRecovery
+  )
+
+  if (-not (Test-Path $Path)) { return $null }
+  $info = Get-Item -Path $Path -ErrorAction SilentlyContinue
+  if ($null -eq $info) { return $null }
+
+  function Try-ParseCandidate {
+    param([string]$CandidatePath)
+    try {
+      $raw = Get-Content -Path $CandidatePath -Raw -ErrorAction Stop
+      if ([string]::IsNullOrWhiteSpace($raw)) { return $null }
+      return ($raw | ConvertFrom-Json -ErrorAction Stop)
+    } catch { return $null }
+  }
+
+  if ($info.Length -gt $MaxBytes) {
+    if (-not $TryTmpRecovery) { return $null }
+    $dir = Split-Path -Parent $Path
+    $base = [System.IO.Path]::GetFileName($Path)
+    foreach ($tmp in @(Get-ChildItem -Path $dir -Filter ("{0}.tmp.*" -f $base) -File -ErrorAction SilentlyContinue | Sort-Object LastWriteTime -Descending)) {
+      if ($tmp.Length -gt $MaxBytes) { continue }
+      $parsed = Try-ParseCandidate -CandidatePath $tmp.FullName
+      if ($null -eq $parsed) { continue }
+      try { Copy-Item -Path $tmp.FullName -Destination $Path -Force } catch {}
+      return $parsed
+    }
+    return $null
+  }
+
+  return (Try-ParseCandidate -CandidatePath $Path)
+}
+
+$queue = Read-JsonFileSafe -Path $queueFile -MaxBytes 8MB -TryTmpRecovery
+if ($null -ne $queue) { $tasks = @($queue.tasks) }
 $cycleData = @()
 if (Test-Path $cycleFile) {
   try {
-    $cd = Get-Content $cycleFile -Raw | ConvertFrom-Json
+    $cd = Read-JsonFileSafe -Path $cycleFile -MaxBytes 8MB
     if ($cd -is [System.Collections.IEnumerable]) { $cycleData = @($cd) }
     elseif ($null -ne $cd) { $cycleData = @($cd) }
   } catch { $cycleData = @() }
@@ -28,7 +68,7 @@ if (Test-Path $cycleFile) {
 $escalations = @()
 if (Test-Path $escalationFile) {
   try {
-    $ed = Get-Content $escalationFile -Raw | ConvertFrom-Json
+    $ed = Read-JsonFileSafe -Path $escalationFile -MaxBytes 8MB
     if ($ed -is [System.Collections.IEnumerable]) { $escalations = @($ed) }
     elseif ($null -ne $ed) { $escalations = @($ed) }
   } catch { $escalations = @() }

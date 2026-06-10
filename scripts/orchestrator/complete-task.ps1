@@ -15,12 +15,47 @@ $stateDir = Join-Path $WorkspaceRoot "logs\orchestrator"
 $queueFile = Join-Path $stateDir "task-queue.json"
 $mutex = New-Object System.Threading.Mutex($false, "Global\WhiteCaves_Orchestrator_Queue")
 
+function Read-JsonFileSafe {
+  param(
+    [Parameter(Mandatory = $true)]
+    [string]$Path,
+    [long]$MaxBytes = 8MB,
+    [switch]$TryTmpRecovery
+  )
+
+  if (-not (Test-Path $Path)) { return $null }
+  $info = Get-Item -Path $Path -ErrorAction SilentlyContinue
+  if ($null -eq $info) { return $null }
+
+  function Try-ParseCandidate {
+    param([string]$CandidatePath)
+    try {
+      $raw = Get-Content -Path $CandidatePath -Raw -ErrorAction Stop
+      if ([string]::IsNullOrWhiteSpace($raw)) { return $null }
+      return ($raw | ConvertFrom-Json -ErrorAction Stop)
+    } catch { return $null }
+  }
+
+  if ($info.Length -gt $MaxBytes) {
+    if (-not $TryTmpRecovery) { return $null }
+    $dir = Split-Path -Parent $Path
+    $base = [System.IO.Path]::GetFileName($Path)
+    foreach ($tmp in @(Get-ChildItem -Path $dir -Filter ("{0}.tmp.*" -f $base) -File -ErrorAction SilentlyContinue | Sort-Object LastWriteTime -Descending)) {
+      if ($tmp.Length -gt $MaxBytes) { continue }
+      $parsed = Try-ParseCandidate -CandidatePath $tmp.FullName
+      if ($null -eq $parsed) { continue }
+      try { Copy-Item -Path $tmp.FullName -Destination $Path -Force } catch {}
+      return $parsed
+    }
+    return $null
+  }
+
+  return (Try-ParseCandidate -CandidatePath $Path)
+}
+
 function Get-Queue {
   param([string]$Path)
-  if (-not (Test-Path $Path)) { return $null }
-  $raw = Get-Content -Path $Path -Raw
-  if ([string]::IsNullOrWhiteSpace($raw)) { return $null }
-  return $raw | ConvertFrom-Json
+  return (Read-JsonFileSafe -Path $Path -MaxBytes 8MB -TryTmpRecovery)
 }
 
 function Save-Queue {

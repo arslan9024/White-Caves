@@ -27,7 +27,10 @@ const args = process.argv.slice(2);
 const DRY_RUN = args.includes('--dry');
 const JSON_OUT = args.includes('--json');
 const maxInjectIndex = args.indexOf('--max-inject');
-const MAX_INJECT = maxInjectIndex !== -1 ? Math.max(1, Number.parseInt(args[maxInjectIndex + 1] || '3', 10) || 3) : 3;
+const MAX_INJECT =
+  maxInjectIndex !== -1
+    ? Math.max(1, Number.parseInt(args[maxInjectIndex + 1] || '3', 10) || 3)
+    : 3;
 
 function readJSON(filePath, fallback = null) {
   try {
@@ -79,7 +82,12 @@ function walkDir(dirPath, collector) {
 
   for (const entry of fs.readdirSync(dirPath, { withFileTypes: true })) {
     const fullPath = path.join(dirPath, entry.name);
-    if (entry.isDirectory() && !entry.name.startsWith('.') && entry.name !== 'node_modules' && entry.name !== 'dist') {
+    if (
+      entry.isDirectory() &&
+      !entry.name.startsWith('.') &&
+      entry.name !== 'node_modules' &&
+      entry.name !== 'dist'
+    ) {
       walkDir(fullPath, collector);
     } else if (entry.isFile()) {
       collector(fullPath);
@@ -173,16 +181,17 @@ function normalizePrompts(prompts) {
 }
 
 function existingTaskFeatureIds(queue) {
-  return new Set((queue.tasks || [])
-    .map(task => task.featureId)
-    .filter(Boolean));
+  return new Set((queue.tasks || []).map(task => task.featureId).filter(Boolean));
 }
 
 function scoreFromPriority(priority) {
   switch ((priority || '').toUpperCase()) {
-    case 'P0': return 100;
-    case 'P1': return 70;
-    default: return 40;
+    case 'P0':
+      return 100;
+    case 'P1':
+      return 70;
+    default:
+      return 40;
   }
 }
 
@@ -194,11 +203,15 @@ function featureKeywords(feature) {
     ...(feature.tags || []),
   ];
 
-  return [...new Set(base
-    .join(' ')
-    .toLowerCase()
-    .split(/[^a-z0-9]+/)
-    .filter(token => token.length >= 4))];
+  return [
+    ...new Set(
+      base
+        .join(' ')
+        .toLowerCase()
+        .split(/[^a-z0-9]+/)
+        .filter(token => token.length >= 4)
+    ),
+  ];
 }
 
 function countPlanMentions(feature, planCorpus) {
@@ -208,11 +221,18 @@ function countPlanMentions(feature, planCorpus) {
 
 function countScanMentions(feature, scanReport) {
   const haystack = [
-    ...(scanReport.priorityList || []).map(item => `${item.category || ''} ${item.title || ''}`.toLowerCase()),
-    ...(scanReport.openWaves || []).map(wave => `${wave.objective || ''} ${wave.status || ''}`.toLowerCase()),
+    ...(scanReport.priorityList || []).map(item =>
+      `${item.category || ''} ${item.title || ''}`.toLowerCase()
+    ),
+    ...(scanReport.openWaves || []).map(wave =>
+      `${wave.objective || ''} ${wave.status || ''}`.toLowerCase()
+    ),
   ].join('\n');
 
-  return featureKeywords(feature).reduce((count, keyword) => count + (haystack.includes(keyword) ? 1 : 0), 0);
+  return featureKeywords(feature).reduce(
+    (count, keyword) => count + (haystack.includes(keyword) ? 1 : 0),
+    0
+  );
 }
 
 function countSignatureMatches(feature, codebaseIndex) {
@@ -230,7 +250,9 @@ function countSignatureMatches(feature, codebaseIndex) {
     } else if (type === 'content') {
       matched = codebaseIndex.files.some(file => file.content.includes(value));
     } else if (type === 'pathOrContent') {
-      matched = codebaseIndex.pathCorpus.includes(value) || codebaseIndex.files.some(file => file.content.includes(value));
+      matched =
+        codebaseIndex.pathCorpus.includes(value) ||
+        codebaseIndex.files.some(file => file.content.includes(value));
     }
 
     if (matched) matches += 1;
@@ -264,23 +286,61 @@ function toTaskId(number) {
   return `DU${String(number).padStart(3, '0')}`;
 }
 
+function mapAgentToLane(agent) {
+  const laneMap = {
+    '@Sofia': 'A',
+    '@Timnit': 'A',
+    '@Victoria': 'A',
+    '@Annie': 'A',
+    '@Marissa': 'A',
+    '@Rachel': 'A',
+    '@Joelle': 'A',
+    '@Fei-Fei': 'B',
+    '@Anima': 'B',
+    '@Mary': 'B',
+    '@Invoice': 'B',
+    '@Booking': 'C',
+    '@Maya': 'C',
+    '@Hedy': 'C',
+    '@Cassie': 'C',
+    '@Jaime': 'D',
+    '@Corinne': 'D',
+  };
+
+  return laneMap[agent] || 'A';
+}
+
+function normalizePriority(priority) {
+  switch (String(priority || '').toUpperCase()) {
+    case 'P0':
+      return { label: 'P0', queuePriority: 'critical', scoreFloor: 120 };
+    case 'P1':
+      return { label: 'P1', queuePriority: 'high', scoreFloor: 90 };
+    default:
+      return { label: 'P2', queuePriority: 'medium', scoreFloor: 60 };
+  }
+}
+
 function createTask(taskId, feature, score, planMentions, scanMentions, signatureSummary) {
   const now = new Date().toISOString();
   const objective = `${feature.name} — auto-discovered upgrade opportunity`;
-  const acceptanceCriteria = feature.acceptanceCriteria && feature.acceptanceCriteria.length > 0
-    ? feature.acceptanceCriteria
-    : [
-        `Document a concrete plan for ${feature.name}`,
-        'Reference the repo gap and research basis explicitly',
-        'Define measurable acceptance criteria and validation steps',
-      ];
+  const normalizedPriority = normalizePriority(feature.priority);
+  const finalScore = Math.max(score, normalizedPriority.scoreFloor);
+  const acceptanceCriteria =
+    feature.acceptanceCriteria && feature.acceptanceCriteria.length > 0
+      ? feature.acceptanceCriteria
+      : [
+          `Document a concrete plan for ${feature.name}`,
+          'Reference the repo gap and research basis explicitly',
+          'Define measurable acceptance criteria and validation steps',
+        ];
 
   return {
     taskId,
     id: taskId,
     featureId: feature.featureId,
     agent: feature.suggestedAgent,
-    lane: 'AUTO',
+    lane: mapAgentToLane(feature.suggestedAgent),
     title: feature.name,
     objective,
     description: objective,
@@ -294,9 +354,13 @@ function createTask(taskId, feature, score, planMentions, scanMentions, signatur
     startedAt: null,
     finishedAt: null,
     evidence: {},
-    baseScore: score,
-    priority_score: score,
-    priority: feature.priority,
+    phase: 'planning',
+    team: 'free-planning',
+    baseScore: finalScore,
+    priority_score: finalScore,
+    priorityScore: finalScore,
+    priority: normalizedPriority.queuePriority,
+    priorityLabel: normalizedPriority.label,
     tags: feature.tags || [feature.category.toLowerCase()],
     files: [feature.targetFile],
     producedRef: feature.targetFile,
@@ -306,6 +370,7 @@ function createTask(taskId, feature, score, planMentions, scanMentions, signatur
       researchBasis: feature.researchBasis,
       planMentions,
       scanMentions,
+      rawPriority: feature.priority,
       signatureMatches: signatureSummary.matched,
       signatureTotal: signatureSummary.total,
     },
@@ -342,10 +407,7 @@ function ensureDiscoveredUpgradesLog() {
 
 function appendDiscoveryLog(selected) {
   ensureDiscoveredUpgradesLog();
-  const lines = [
-    `## ${new Date().toISOString()} — Queue-empty discovery run`,
-    '',
-  ];
+  const lines = [`## ${new Date().toISOString()} — Queue-empty discovery run`, ''];
 
   for (const item of selected) {
     lines.push(`### ${item.task.taskId} — ${item.feature.name}`);
@@ -354,7 +416,9 @@ function appendDiscoveryLog(selected) {
     lines.push(`- Target file: ${item.feature.targetFile}`);
     lines.push(`- Research basis: ${item.feature.researchBasis}`);
     lines.push(`- Score: ${item.score}`);
-    lines.push(`- Gap evidence: ${item.signatureSummary.matched}/${item.signatureSummary.total} signatures matched`);
+    lines.push(
+      `- Gap evidence: ${item.signatureSummary.matched}/${item.signatureSummary.total} signatures matched`
+    );
     lines.push(`- Plan evidence: ${item.planMentions} keyword hits in planning docs`);
     lines.push(`- Scan evidence: ${item.scanMentions} keyword hits in codebase scan signals`);
     lines.push(`- Prompt: ${item.prompt.prompt}`);
@@ -408,10 +472,11 @@ function main() {
 
     const planMentions = countPlanMentions(feature, planIndex.corpus);
     const scanMentions = countScanMentions(feature, scanReport);
-    const score = scoreFromPriority(feature.priority)
-      + (planMentions > 0 ? 30 : 0)
-      + (scanMentions > 0 ? 25 : 0)
-      - (signatureSummary.matched > 0 ? 20 : 0);
+    const score =
+      scoreFromPriority(feature.priority) +
+      (planMentions > 0 ? 30 : 0) +
+      (scanMentions > 0 ? 25 : 0) -
+      (signatureSummary.matched > 0 ? 20 : 0);
 
     candidates.push({
       feature,
@@ -444,7 +509,14 @@ function main() {
   let discoveryNumber = nextDiscoveryNumber(queue);
   for (const candidate of selected) {
     const taskId = toTaskId(discoveryNumber++);
-    const task = createTask(taskId, candidate.feature, candidate.score, candidate.planMentions, candidate.scanMentions, candidate.signatureSummary);
+    const task = createTask(
+      taskId,
+      candidate.feature,
+      candidate.score,
+      candidate.planMentions,
+      candidate.scanMentions,
+      candidate.signatureSummary
+    );
     const prompt = createPromptEntry(taskId, candidate.feature);
     report.selectedFeatures.push({
       featureId: candidate.feature.featureId,
@@ -471,7 +543,11 @@ function main() {
     queue.generatedAt = new Date().toISOString();
     queue.version = queue.version || '3.0-discovery';
     queue.tasks = [...queue.tasks, ...selected.map(item => item.task)];
-    prompts && Object.assign(prompts, Object.fromEntries(selected.map(item => [item.task.taskId, item.prompt])));
+    prompts &&
+      Object.assign(
+        prompts,
+        Object.fromEntries(selected.map(item => [item.task.taskId, item.prompt]))
+      );
     writeJSON(QUEUE_FILE, queue);
     writeJSON(PROMPTS_FILE, prompts);
     appendDiscoveryLog(selected);
@@ -480,7 +556,9 @@ function main() {
   writeJSON(REPORT_FILE, report);
 
   if (!JSON_OUT) {
-    console.log(`discover-upgrade: analyzed ${report.featuresAnalyzed} features, detected ${report.gapsDetected} gaps, generated ${report.tasksGenerated.length} task(s).`);
+    console.log(
+      `discover-upgrade: analyzed ${report.featuresAnalyzed} features, detected ${report.gapsDetected} gaps, generated ${report.tasksGenerated.length} task(s).`
+    );
     if (report.skipReason) {
       console.log(report.skipReason);
     }

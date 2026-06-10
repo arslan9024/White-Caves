@@ -36,12 +36,13 @@ $KNOWN_AGENTS       = @(
   "@Invoice","@Joelle","@Hedy","@Maya","@Booking","@Jaime",
   "@Fei-Fei","@Anima","@Mary","@Cassie","@Corinne",
   "@Mira","@Mala","@Katherine","@Gwynne"
+  ,"@S5"
 )
 $VALID_STATUSES     = @("queued","running","evidence_pending","waiting_ack","done","retrying","failed","escalated")
 
 # Lane -> expected agent assignments (for lane mismatch detection)
 $LANE_AGENTS = @{
-  "A" = @("@Sofia","@Timnit","@Victoria","@Annie","@Marissa","@Rachel","@Joelle","@Mira")
+  "A" = @("@Sofia","@Timnit","@Victoria","@Annie","@Marissa","@Rachel","@Joelle","@Mira","@S5")
   "B" = @("@Fei-Fei","@Anima","@Mary","@Invoice","@Mala")
   "C" = @("@Booking","@Maya","@Hedy","@Cassie","@Katherine")
   "D" = @("@Jaime","@Corinne","@Gwynne")
@@ -68,6 +69,48 @@ function Write-Check([string]$icon, [string]$label, [string]$detail, [string]$co
       }
     }
   }
+}
+
+function Read-JsonFileSafe {
+  param(
+    [Parameter(Mandatory = $true)]
+    [string]$Path,
+    [long]$MaxBytes = 8MB,
+    [switch]$TryTmpRecovery
+  )
+
+  if (-not (Test-Path $Path)) { return $null }
+
+  $info = Get-Item -Path $Path -ErrorAction SilentlyContinue
+  if ($null -eq $info) { return $null }
+
+  function Try-ParseCandidate {
+    param([string]$CandidatePath)
+    try {
+      $raw = Get-Content -Path $CandidatePath -Raw -ErrorAction Stop
+      if ([string]::IsNullOrWhiteSpace($raw)) { return $null }
+      return ($raw | ConvertFrom-Json -ErrorAction Stop)
+    }
+    catch {
+      return $null
+    }
+  }
+
+  if ($info.Length -gt $MaxBytes) {
+    if (-not $TryTmpRecovery) { return $null }
+    $dir = Split-Path -Parent $Path
+    $base = [System.IO.Path]::GetFileName($Path)
+    foreach ($tmp in @(Get-ChildItem -Path $dir -Filter ("{0}.tmp.*" -f $base) -File -ErrorAction SilentlyContinue | Sort-Object LastWriteTime -Descending)) {
+      if ($tmp.Length -gt $MaxBytes) { continue }
+      $parsed = Try-ParseCandidate -CandidatePath $tmp.FullName
+      if ($null -eq $parsed) { continue }
+      try { Copy-Item -Path $tmp.FullName -Destination $Path -Force } catch {}
+      return $parsed
+    }
+    return $null
+  }
+
+  return (Try-ParseCandidate -CandidatePath $Path)
 }
 
 # -- BANNER -------------------------------------------------------------------
@@ -106,10 +149,8 @@ if (-not (Test-Path $queueFile)) {
   }
 }
 
-$q = $null
-try {
-  $q = Get-Content $queueFile -Raw | ConvertFrom-Json
-} catch {
+$q = Read-JsonFileSafe -Path $queueFile -MaxBytes 8MB -TryTmpRecovery
+if ($null -eq $q) {
   Add-Error "Queue file is not valid JSON: $_"
   Write-Check "[XX]" "Queue JSON parse" "$_" "Red"
   exit 1

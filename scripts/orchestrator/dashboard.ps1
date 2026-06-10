@@ -20,7 +20,12 @@ $wdLog       = Join-Path $stateDir "watchdog-scheduler.log"
 $policyFile  = Join-Path $WorkspaceRoot "scripts\orchestrator\policy.json"
 $devRuntimeStateFile = Join-Path $stateDir "aegis-dev-runtime-check-state.json"
 $devRuntimeSummaryLog = Join-Path $stateDir "dev-runtime-check.log"
+$progressIntelligenceFile = Join-Path $stateDir "progress-intelligence.json"
+$progressTrendJson = Join-Path $stateDir "progress-intelligence-trend.json"
+$progressTrendCsv = Join-Path $stateDir "progress-intelligence-trend.csv"
 $script:LastGoodQueue = $null
+$script:QueueLargeFallback = $false
+$script:QueueFallbackStats = $null
 
 function Read-FileShared {
   param(
@@ -56,8 +61,59 @@ function Read-FileShared {
 }
 
 function Read-Queue {
+  $script:QueueLargeFallback = $false
+  $script:QueueFallbackStats = $null
+
   if (-not (Test-Path $queueFile)) {
     return $script:LastGoodQueue
+  }
+
+  try {
+    $item = Get-Item -Path $queueFile -ErrorAction Stop
+    if ($item.Length -gt 2MB) {
+      $script:QueueLargeFallback = $true
+
+      $statusCounts = @{}
+      $laneCounts = @{}
+      $cycle = "N/A"
+      $generatedAt = $null
+
+      foreach ($line in [System.IO.File]::ReadLines($queueFile)) {
+        if ($cycle -eq "N/A" -and $line -match '"cycle"\s*:\s*"([^"]+)"') {
+          $cycle = $Matches[1]
+        }
+        if ($null -eq $generatedAt -and $line -match '"generatedAt"\s*:\s*"([^"]+)"') {
+          $generatedAt = $Matches[1]
+        }
+
+        foreach ($m in [System.Text.RegularExpressions.Regex]::Matches($line, '"status"\s*:\s*"([^"]+)"')) {
+          $s = [string]$m.Groups[1].Value
+          if (-not $statusCounts.ContainsKey($s)) { $statusCounts[$s] = 0 }
+          $statusCounts[$s] = [int]$statusCounts[$s] + 1
+        }
+
+        foreach ($m in [System.Text.RegularExpressions.Regex]::Matches($line, '"lane"\s*:\s*"([^"]+)"')) {
+          $l = [string]$m.Groups[1].Value
+          if (-not $laneCounts.ContainsKey($l)) { $laneCounts[$l] = 0 }
+          $laneCounts[$l] = [int]$laneCounts[$l] + 1
+        }
+      }
+
+      $script:QueueFallbackStats = [PSCustomObject]@{
+        cycle = $cycle
+        generatedAt = $generatedAt
+        statusCounts = $statusCounts
+        laneCounts = $laneCounts
+      }
+
+      return [PSCustomObject]@{
+        cycle = $cycle
+        generatedAt = $generatedAt
+        tasks = @()
+      }
+    }
+  } catch {
+    # Fall back to normal read path below.
   }
 
   for ($attempt = 1; $attempt -le 4; $attempt++) {
@@ -323,6 +379,142 @@ function Get-TimedDevCheckNextDue {
   return $lastRun.AddHours($hours)
 }
 
+function Get-ProgressIntelligenceState {
+  return (Read-JsonShared -Path $progressIntelligenceFile)
+}
+
+function Get-TaskMovementCounts {
+  param(
+    [array]$DoneTasks,
+    [datetime]$SinceDate
+  )
+
+  $developed = 0
+  $fixed = 0
+  $upgraded = 0
+
+  foreach ($t in @($DoneTasks)) {
+    $finished = Convert-ToDateSafe -Value $t.finishedAt
+    if ($null -eq $finished -or $finished -lt $SinceDate) { continue }
+
+    $title = ([string]$t.title).ToLower()
+    $isFixed = ($title -match "fix|bug|error|resolve|patch|regression")
+    $isUpgraded = ($title -match "upgrade|improve|enhance|optimiz|harden|refactor")
+    $isDeveloped = ($title -match "implement|build|create|feature|add|develop")
+
+    if ($isFixed) { $fixed++ }
+    if ($isUpgraded) { $upgraded++ }
+    if ($isDeveloped -or (-not $isFixed -and -not $isUpgraded)) { $developed++ }
+  }
+
+  return [PSCustomObject]@{
+    developed = $developed
+    fixed = $fixed
+    upgraded = $upgraded
+  }
+}
+
+function Get-CyclePassRate30d {
+  $cycleFile = Join-Path $stateDir "cycle-log.json"
+  $rows = Read-JsonShared -Path $cycleFile
+  if ($null -eq $rows) { return 0 }
+
+  $all = if ($rows -is [array]) { @($rows) } else { @($rows) }
+  $since = (Get-Date).AddDays(-30)
+  $window = @()
+  foreach ($r in $all) {
+    $d = Convert-ToDateSafe -Value $r.date
+    if ($null -ne $d -and $d -ge $since) {
+      $window += $r
+    }
+  }
+
+  if ($window.Count -eq 0) { return 0 }
+  $pass = @($window | Where-Object { [bool]$_.errorScanPassed }).Count
+  return [math]::Round((100.0 * $pass / $window.Count), 1)
+}
+
+function Get-TaskAgeHours {
+  param([object]$Task)
+
+  $timestamps = @(
+    (Convert-ToDateSafe -Value $Task.startedAt),
+    (Convert-ToDateSafe -Value $Task.updatedAt),
+    (Convert-ToDateSafe -Value $Task.createdAt)
+  ) | Where-Object { $null -ne $_ }
+
+  if (@($timestamps).Count -eq 0) { return $null }
+  $anchor = @($timestamps | Sort-Object | Select-Object -First 1)[0]
+  return [math]::Round(((Get-Date) - $anchor).TotalHours, 1)
+}
+
+function Get-BlockerAgingSummary {
+  param([array]$Tasks)
+
+  $candidates = @($Tasks | Where-Object { $_.status -in @("waiting_ack", "evidence_pending", "failed", "escalated") })
+  $rows = @()
+  foreach ($t in $candidates) {
+    $ageH = Get-TaskAgeHours -Task $t
+    if ($null -eq $ageH) { continue }
+    $rows += [PSCustomObject]@{
+      taskId = [string]$t.taskId
+      lane = [string]$t.lane
+      status = [string]$t.status
+      ageHours = $ageH
+    }
+  }
+
+  if ($rows.Count -eq 0) {
+    return [PSCustomObject]@{
+      oldestHours = 0
+      avgHours = 0
+      over4h = 0
+      top = @()
+    }
+  }
+
+  $oldest = @($rows | Sort-Object ageHours -Descending | Select-Object -First 1)[0]
+  $avg = [math]::Round((($rows | Measure-Object -Property ageHours -Average).Average), 1)
+  $over4 = @($rows | Where-Object { $_.ageHours -ge 4 }).Count
+  $topRows = @($rows | Sort-Object ageHours -Descending | Select-Object -First 3)
+
+  return [PSCustomObject]@{
+    oldestHours = $oldest.ageHours
+    avgHours = $avg
+    over4h = $over4
+    top = $topRows
+  }
+}
+
+function Get-TrendSparkline {
+  param([array]$TrendRows)
+
+  if ($null -eq $TrendRows -or @($TrendRows).Count -eq 0) { return "n/a" }
+
+  $points = @($TrendRows | Where-Object { $null -ne $_.completionPct } | Sort-Object generatedAt | Select-Object -Last 12)
+  if ($points.Count -eq 0) { return "n/a" }
+
+  $values = @($points | ForEach-Object { [double]$_.completionPct })
+  $min = ($values | Measure-Object -Minimum).Minimum
+  $max = ($values | Measure-Object -Maximum).Maximum
+  $levels = @(".",":","-","=","+","*","#","@")
+
+  if ($min -eq $max) {
+    return (($levels[0] * $points.Count) -join "")
+  }
+
+  $spark = New-Object System.Text.StringBuilder
+  foreach ($v in $values) {
+    $ratio = ($v - $min) / ($max - $min)
+    $idx = [int][math]::Floor($ratio * ($levels.Count - 1))
+    if ($idx -lt 0) { $idx = 0 }
+    if ($idx -gt ($levels.Count - 1)) { $idx = $levels.Count - 1 }
+    [void]$spark.Append($levels[$idx])
+  }
+
+  return $spark.ToString()
+}
+
 function Get-Phase {
   param([object]$Task)
 
@@ -452,6 +644,71 @@ function Show-Dashboard {
   $queue = Read-Queue
   if ($null -eq $queue) {
     Write-Host "  [NO QUEUE] Run: npm run orchestrator:queue:init" -ForegroundColor Red
+    return
+  }
+
+  if ($script:QueueLargeFallback) {
+    $pendingStatuses = @("queued","running","evidence_pending","waiting_ack","retrying","failed","escalated")
+    $statusCounts = if ($null -ne $script:QueueFallbackStats) { $script:QueueFallbackStats.statusCounts } else { @{} }
+    $laneCounts = if ($null -ne $script:QueueFallbackStats) { $script:QueueFallbackStats.laneCounts } else { @{} }
+
+    $total = 0
+    $done = 0
+    $running = 0
+    $pending = 0
+    foreach ($k in $statusCounts.Keys) {
+      $count = [int]$statusCounts[$k]
+      $total += $count
+      if ($k -eq "done") { $done += $count }
+      if ($k -eq "running") { $running += $count }
+      if ($pendingStatuses -contains $k) { $pending += $count }
+    }
+
+    Write-Host "  [LARGE-FILE MODE] Queue is oversized; rendering compact dashboard safely." -ForegroundColor Yellow
+    foreach ($s in ($statusCounts.Keys | Sort-Object)) {
+      $color = Get-StatusColor -Status $s
+      Write-Host ("  " + $s.PadRight(14) + " : " + [int]$statusCounts[$s]) -ForegroundColor $color
+    }
+
+    Write-Host ""
+    Write-Host "  By Lane (count by lane marker):" -ForegroundColor DarkCyan
+    foreach ($l in ($laneCounts.Keys | Sort-Object)) {
+      Write-Host ("    Lane {0} : {1}" -f $l, [int]$laneCounts[$l]) -ForegroundColor DarkCyan
+    }
+
+    $completionPct = if ($total -gt 0) { [math]::Round((100.0 * $done / $total), 1) } else { 0 }
+    $queueCycle = if ($null -ne $script:QueueFallbackStats -and -not [string]::IsNullOrWhiteSpace([string]$script:QueueFallbackStats.cycle)) { [string]$script:QueueFallbackStats.cycle } else { "N/A" }
+    $queueGeneratedAt = Convert-ToDateSafe -Value $(if ($null -ne $script:QueueFallbackStats) { $script:QueueFallbackStats.generatedAt } else { $null })
+    $queueGeneratedText = if ($null -ne $queueGeneratedAt) { $queueGeneratedAt.ToString("yyyy-MM-dd HH:mm") } else { "unknown" }
+
+    Write-Header "PROJECT DEVELOPMENT INSIGHTS" "Blue"
+    Write-Host ("  Cycle              : {0} (generated {1})" -f $queueCycle, $queueGeneratedText) -ForegroundColor Blue
+    Write-Host ("  Progress           : {0}/{1} done ({2}%)" -f $done, $total, $completionPct) -ForegroundColor Blue
+    Write-Host ("  Workload snapshot  : pending={0}, running={1}" -f $pending, $running) -ForegroundColor Blue
+    Write-Host "  Detail mode        : compact (per-agent/task tables disabled to avoid OOM)" -ForegroundColor DarkYellow
+
+    Write-Header "OVERALL PROGRESS"
+    $barWidth = 40
+    $filled = [math]::Round($barWidth * $completionPct / 100)
+    $empty = $barWidth - $filled
+    $bar = "[" + ("#" * $filled) + ("." * $empty) + "]"
+    $pctColor = if ($completionPct -ge 80) { "Green" } elseif ($completionPct -ge 40) { "Yellow" } else { "Cyan" }
+    Write-Host ("  $bar  $completionPct% ($done / $total tasks done)") -ForegroundColor $pctColor
+
+    Write-Host ""
+    Write-Host "============================================================" -ForegroundColor DarkGray
+    if ($Watch) {
+      if ($RenderOnChangeOnly) {
+        Write-Host ("  [WATCH mode] Streaming on change (poll ${PollSeconds}s, heartbeat ${RefreshSeconds}s)  --  Ctrl+C to stop") -ForegroundColor DarkGray
+      } else {
+        Write-Host "  [WATCH mode] Refreshing every ${RefreshSeconds}s  --  Ctrl+C to stop" -ForegroundColor DarkGray
+      }
+    }
+    else {
+      Write-Host "  Tip: use -Watch flag for live refresh." -ForegroundColor DarkGray
+    }
+    Write-Host "============================================================" -ForegroundColor DarkGray
+    Write-Host ""
     return
   }
 
@@ -675,6 +932,7 @@ function Show-Dashboard {
 
   $topFocusLane = if ($topAttention.Count -gt 0) { $topAttention[0] } else { $null }
   $highPriorityPendingCount = $priorityTasksPending.Count
+  $blockerAging = Get-BlockerAgingSummary -Tasks $tasks
 
   Write-Header "PROJECT DEVELOPMENT INSIGHTS" "Blue"
   Write-Host ("  Cycle              : {0} (generated {1})" -f $queueCycle, $queueGeneratedText) -ForegroundColor Blue
@@ -687,6 +945,112 @@ function Show-Dashboard {
   Write-Host ("  Operational risk   : {0}" -f $riskState) -ForegroundColor $(if ($riskState -eq "critical") { "Red" } elseif ($riskState -eq "elevated") { "Yellow" } else { "Blue" })
   if ($null -ne $topFocusLane) {
     Write-Host ("  Focus recommendation: Lane {0} ({1}) -- attention score {2}" -f $topFocusLane.Lane, $topFocusLane.Module, $topFocusLane.AttentionScore) -ForegroundColor Magenta
+  }
+
+  # ── 2.6 Progress intelligence & forecast ─────────────────────────────────
+  Write-Header "ORCHESTRATION PROGRESS INTELLIGENCE" "DarkCyan"
+  $intel = Get-ProgressIntelligenceState
+  if ($null -eq $intel) {
+    $dailyFallback = Get-TaskMovementCounts -DoneTasks $completedTasks -SinceDate $nowDt.AddHours(-24)
+    $monthlyFallback = Get-TaskMovementCounts -DoneTasks $completedTasks -SinceDate $nowDt.AddDays(-30)
+    $fallbackBoost = 30
+    $fallbackTarget = [math]::Min(100, ($completionPct + $fallbackBoost))
+    $fallbackRemainingPct = [math]::Max(0, ($fallbackTarget - $completionPct))
+    $fallbackTasksNeeded = if ($tasks.Count -gt 0) { [int][math]::Ceiling(($fallbackRemainingPct / 100.0) * $tasks.Count) } else { 0 }
+    $fallbackVelocityPerDay = if ($completedLast24h -gt 0) { $completedLast24h } elseif ($completedLast24h -eq 0 -and $completedLastHour -gt 0) { [math]::Round($completedLastHour * 24.0, 2) } else { 0 }
+    $fallbackEta = "unknown"
+    if ($fallbackTasksNeeded -eq 0) {
+      $fallbackEta = "already reached"
+    } elseif ($fallbackVelocityPerDay -gt 0) {
+      $fallbackEta = ("~{0}h" -f [math]::Round((24.0 * $fallbackTasksNeeded / $fallbackVelocityPerDay), 1))
+    }
+
+    $fallbackPassRate = Get-CyclePassRate30d
+    Write-Host "  [FALLBACK MODE] Using live queue analytics (state file not generated yet)." -ForegroundColor Yellow
+    Write-Host ("  Forecast (+{0}%)  : target={1}% | ETA={2} | confidence=low" -f $fallbackBoost, [math]::Round($fallbackTarget, 1), $fallbackEta) -ForegroundColor DarkCyan
+    Write-Host ("  Velocity          : {0} tasks/day (24h={1})" -f $fallbackVelocityPerDay, $completedLast24h) -ForegroundColor DarkCyan
+    Write-Host ("  Daily movement    : developed={0}, fixed={1}, upgraded={2}" -f $dailyFallback.developed, $dailyFallback.fixed, $dailyFallback.upgraded) -ForegroundColor Blue
+    Write-Host ("  Monthly movement  : developed={0}, fixed={1}, upgraded={2}" -f $monthlyFallback.developed, $monthlyFallback.fixed, $monthlyFallback.upgraded) -ForegroundColor Blue
+    Write-Host ("  Quality trend     : scan pass rate(30d)={0}%" -f $fallbackPassRate) -ForegroundColor $(if ($fallbackPassRate -ge 85) { "Green" } elseif ($fallbackPassRate -ge 70) { "Yellow" } else { "Red" })
+    Write-Host "  Action            : npm run orchestrator:progress:intel" -ForegroundColor DarkGray
+  } else {
+    $boostPct = if ($null -ne $intel.targetBoostPct) { [int]$intel.targetBoostPct } else { 30 }
+    $targetPct = if ($null -ne $intel.forecast -and $null -ne $intel.forecast.targetCompletionPct) { [double]$intel.forecast.targetCompletionPct } else { 0 }
+    $etaHours = if ($null -ne $intel.forecast) { $intel.forecast.etaHours } else { $null }
+    $etaText = if ($null -eq $etaHours) { "unknown" } elseif ([double]$etaHours -eq 0) { "already reached" } else { ("~{0}h" -f [math]::Round([double]$etaHours, 1)) }
+    $confidence = if ($null -ne $intel.forecast -and -not [string]::IsNullOrWhiteSpace([string]$intel.forecast.confidence)) { [string]$intel.forecast.confidence } else { "unknown" }
+    $velocityPerDay = if ($null -ne $intel.velocity -and $null -ne $intel.velocity.tasksPerDay) { [double]$intel.velocity.tasksPerDay } else { 0 }
+    $qualityRate = if ($null -ne $intel.quality -and $null -ne $intel.quality.scanPassRate30dPct) { [double]$intel.quality.scanPassRate30dPct } else { 0 }
+    $bands = if ($null -ne $intel.forecast) { $intel.forecast.confidenceBandsHours } else { $null }
+    $lanesIntel = if ($null -ne $intel.lanes) { @($intel.lanes) } else { @() }
+    $recommendation = if ($null -ne $intel.recommendation) { $intel.recommendation } else { $null }
+    $rerouteHint = if ($null -ne $intel.rerouteHint) { [string]$intel.rerouteHint } else { "" }
+    $blockersIntel = if ($null -ne $intel.blockers) { $intel.blockers } else { $null }
+
+    $dailyDev = if ($null -ne $intel.categories -and $null -ne $intel.categories.daily) { [int]$intel.categories.daily.developed } else { 0 }
+    $dailyFix = if ($null -ne $intel.categories -and $null -ne $intel.categories.daily) { [int]$intel.categories.daily.fixed } else { 0 }
+    $dailyUpg = if ($null -ne $intel.categories -and $null -ne $intel.categories.daily) { [int]$intel.categories.daily.upgraded } else { 0 }
+
+    $monthlyDev = if ($null -ne $intel.categories -and $null -ne $intel.categories.monthly) { [int]$intel.categories.monthly.developed } else { 0 }
+    $monthlyFix = if ($null -ne $intel.categories -and $null -ne $intel.categories.monthly) { [int]$intel.categories.monthly.fixed } else { 0 }
+    $monthlyUpg = if ($null -ne $intel.categories -and $null -ne $intel.categories.monthly) { [int]$intel.categories.monthly.upgraded } else { 0 }
+
+    Write-Host ("  Forecast (+{0}%)  : target={1}% | ETA={2} | confidence={3}" -f $boostPct, $targetPct, $etaText, $confidence) -ForegroundColor DarkCyan
+    Write-Host ("  Velocity          : {0} tasks/day (24h={1}, 7d={2}, 30d={3})" -f $velocityPerDay, $intel.velocity.completedLast24h, $intel.velocity.completedLast7d, $intel.velocity.completedLast30d) -ForegroundColor DarkCyan
+    Write-Host ("  Daily movement    : developed={0}, fixed={1}, upgraded={2}" -f $dailyDev, $dailyFix, $dailyUpg) -ForegroundColor Blue
+    Write-Host ("  Monthly movement  : developed={0}, fixed={1}, upgraded={2}" -f $monthlyDev, $monthlyFix, $monthlyUpg) -ForegroundColor Blue
+    Write-Host ("  Quality trend     : scan pass rate(30d)={0}%" -f $qualityRate) -ForegroundColor $(if ($qualityRate -ge 85) { "Green" } elseif ($qualityRate -ge 70) { "Yellow" } else { "Red" })
+    if ($null -ne $bands) {
+      Write-Host ("  ETA bands (h)     : optimistic={0}, expected={1}, conservative={2}" -f $bands.optimistic, $bands.expected, $bands.conservative) -ForegroundColor DarkCyan
+    }
+    if ($lanesIntel.Count -gt 0) {
+      Write-Host "  Lane ETA (+target):" -ForegroundColor DarkCyan
+      foreach ($laneRow in ($lanesIntel | Sort-Object lane)) {
+        $laneEtaText = if ($null -eq $laneRow.etaHours) { "unknown" } elseif ([double]$laneRow.etaHours -eq 0) { "reached" } else { ("~{0}h" -f [math]::Round([double]$laneRow.etaHours, 1)) }
+        Write-Host ("    Lane {0}: completion={1}% | target={2}% | eta={3} | confidence={4}" -f $laneRow.lane, $laneRow.completionPct, $laneRow.targetCompletionPct, $laneEtaText, $laneRow.confidence) -ForegroundColor Blue
+      }
+    }
+
+    $drift = if ($null -ne $intel.drift) { $intel.drift } else { $null }
+    if ($null -ne $drift) {
+      $driftColor = if ([bool]$drift.alert) { "Red" } elseif ([string]$drift.state -eq "improving") { "Green" } else { "Yellow" }
+      Write-Host ("  Forecast drift    : state={0} | alert={1} | streak={2} | etaDeltaVsPrev={3}h" -f $drift.state, $drift.alert, $drift.worseningStreak, $drift.etaDeltaVsPrevHours) -ForegroundColor $driftColor
+    }
+    if ($null -ne $recommendation) {
+      $recColor = if ([string]$recommendation.action -eq "stabilize") { "Red" } elseif ([string]$recommendation.action -eq "prioritize_blockers") { "Yellow" } else { "DarkCyan" }
+      Write-Host ("  Recommendation   : action={0} | reason={1} | focusLane={2}" -f $recommendation.action, $recommendation.reason, $recommendation.focusLane) -ForegroundColor $recColor
+    }
+    if (-not [string]::IsNullOrWhiteSpace($rerouteHint)) {
+      Write-Host ("  Reroute hint     : {0}" -f $rerouteHint) -ForegroundColor DarkCyan
+    }
+    if ($null -ne $blockersIntel) {
+      Write-Host ("  Blocker aging     : oldest={0}h | avg={1}h | stale={2} | warning>{3}h" -f $blockerAging.oldestHours, $blockerAging.avgHours, $blockersIntel.staleCount, $blockersIntel.warningHours) -ForegroundColor $(if ([int]$blockersIntel.staleCount -gt 0) { "Yellow" } else { "DarkCyan" })
+      if (@($blockersIntel.stale).Count -gt 0) {
+        foreach ($b in @($blockersIntel.stale) | Select-Object -First 3) {
+          Write-Host ("    stale blocker    : {0} (lane {1}, {2}) age={3}h" -f $b.taskId, $b.lane, $b.status, $b.ageHours) -ForegroundColor DarkYellow
+        }
+      }
+    } else {
+      Write-Host ("  Blocker aging     : oldest={0}h | avg={1}h | over4h={2}" -f $blockerAging.oldestHours, $blockerAging.avgHours, $blockerAging.over4h) -ForegroundColor $(if ($blockerAging.over4h -gt 0) { "Yellow" } else { "DarkCyan" })
+      if ($blockerAging.top.Count -gt 0) {
+        foreach ($b in $blockerAging.top) {
+          Write-Host ("    stale blocker    : {0} (lane {1}, {2}) age={3}h" -f $b.taskId, $b.lane, $b.status, $b.ageHours) -ForegroundColor DarkYellow
+        }
+      }
+    }
+    if (Test-Path $progressTrendJson) {
+      Write-Host ("  Trend export      : JSON -> {0}" -f $progressTrendJson) -ForegroundColor DarkGray
+      $trendRows = Read-JsonShared -Path $progressTrendJson
+      $sparkline = Get-TrendSparkline -TrendRows $trendRows
+      Write-Host ("  Monthly sparkline : {0}" -f $sparkline) -ForegroundColor DarkCyan
+      if ($null -ne $trendRows -and @($trendRows).Count -gt 0) {
+        $latestTrend = @($trendRows | Sort-Object generatedAt | Select-Object -Last 1)[0]
+        Write-Host ("  Latest trend      : {0}% complete | ETA {1}h | velocity {2} tasks/day" -f $latestTrend.completionPct, $latestTrend.etaHours, $latestTrend.velocityPerDay) -ForegroundColor DarkGray
+      }
+    }
+    if (Test-Path $progressTrendCsv) {
+      Write-Host ("  Trend export      : CSV  -> {0}" -f $progressTrendCsv) -ForegroundColor DarkGray
+    }
   }
 
   # ── 3. Per-agent status table ──────────────────────────────────────────────
