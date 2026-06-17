@@ -11,6 +11,7 @@ interface SuperuserControlCenterProps {
   onOpenAnalyticsWorkspace: () => void;
   onOpenUsersWorkspace: () => void;
   onLaunchUnifiedCRM: () => void;
+  onOpenGoals: () => void;
 }
 
 interface SuperMetric {
@@ -54,6 +55,7 @@ const SuperuserControlCenter: FC<SuperuserControlCenterProps> = ({
   onOpenAnalyticsWorkspace,
   onOpenUsersWorkspace,
   onLaunchUnifiedCRM,
+  onOpenGoals,
 }) => {
   const healthScore = useMemo(
     () => toHealthScore(hotLeadsCount, superuserModuleCount, profileCompletionPercent),
@@ -162,6 +164,14 @@ const SuperuserControlCenter: FC<SuperuserControlCenterProps> = ({
             onClick={onOpenUsersWorkspace}
           >
             👥 Users
+          </button>
+          <button
+            type="button"
+            className="dashboard-superuser-btn dashboard-superuser-btn--secondary"
+            onClick={onOpenGoals}
+            title="View personal goals — Argentina immigration roadmap"
+          >
+            🎯 My Goals
           </button>
         </div>
         <button

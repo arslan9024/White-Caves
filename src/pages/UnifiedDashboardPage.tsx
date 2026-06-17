@@ -743,6 +743,7 @@ const UnifiedDashboardPage: FC = () => {
               onOpenAnalyticsWorkspace={() => openWorkspaceTab('analytics', 'analytics')}
               onOpenUsersWorkspace={() => openWorkspaceTab('users', 'unified')}
               onLaunchUnifiedCRM={() => handleCRMModuleSelect('unified')}
+              onOpenGoals={() => navigate('/owner/goals/argentina')}
             />
           )}
 

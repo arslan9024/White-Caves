@@ -247,6 +247,9 @@ const LeasingAcquisition = lazy(() => import('./pages/LeasingAcquisition'));
 const UnifiedDashboardPage = lazy(() => import('./pages/UnifiedDashboardPage'));
 const NadiaPage = lazy(() => import('./pages/NadiaPage'));
 
+// Goals Pages
+const ArgentinaGoalPage = lazy(() => import('./pages/goals/ArgentinaGoalPage'));
+
 // Owner/MD Sub-Pages (BusinessModelPage, ClientServicesPage removed — redirected to /modern-dashboard)
 const SystemHealthPage = lazy(() => import('./pages/owner/SystemHealthPage'));
 const LoginSecurityPage = lazy(() => import('./pages/owner/LoginSecurityPage'));
@@ -1049,6 +1052,22 @@ function App(): React.JSX.Element {
                         <RouteErrorBoundary section="Audit Log">
                           <Suspense fallback={<SuspenseLoader />}>
                             <AuditLogPage />
+                          </Suspense>
+                        </RouteErrorBoundary>
+                      </AppLayout>
+                    </ProtectedRoute>
+                  }
+                />
+
+                {/* Personal Goals */}
+                <Route
+                  path="/owner/goals/argentina"
+                  element={
+                    <ProtectedRoute allowedRoles={['owner']}>
+                      <AppLayout>
+                        <RouteErrorBoundary section="Argentina Goal">
+                          <Suspense fallback={<SuspenseLoader />}>
+                            <ArgentinaGoalPage />
                           </Suspense>
                         </RouteErrorBoundary>
                       </AppLayout>
