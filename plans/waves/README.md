@@ -1,6 +1,6 @@
 # Wave Bundle Index
 
-**Last Updated:** 2026-05-26
+**Last Updated:** 2026-06-17
 
 Use this index after reviewing [`../MASTER_PLAN.md`](../MASTER_PLAN.md) and [`../PENDING_TASKS_ONLY.md`](../PENDING_TASKS_ONLY.md).
 Each wave should be executed only in roadmap order.
@@ -27,6 +27,7 @@ Each wave should be executed only in roadmap order.
 - Wave 13 through Wave 17 are complete in canonical trackers.
 - Wave 18 introduces a planning-first parity benchmark matrix (`WAVE_18_WORKFLOW_PARITY_MATRIX.md`) and queue generation for follow-on implementation waves.
 - Wave 18.1 execution queue is now tracked in [`WAVE_18_1_IMPLEMENTATION_BACKLOG.md`](./WAVE_18_1_IMPLEMENTATION_BACKLOG.md) with the locked 8-platform benchmark and top-20 P0 tasks.
+- Wave 18.1 Session 3 remains the active pending roster; use the Session 3 section in [`WAVE_18_1_IMPLEMENTATION_BACKLOG.md`](./WAVE_18_1_IMPLEMENTATION_BACKLOG.md) for the open 2×P0 + 8×P1 task list and partial baseline notes.
 - Wave 11 now includes an explicit test rollout so every active planned wave uses the same four-artifact pattern.
 - Superseded root-level Wave 12 market-intelligence docs were archived to `../archives/` to avoid naming collisions with the active Wave 12 automation bundle.
 - Wave 17 (Full UI/UX Luxury Upgrade) is implemented and validated; see the Wave 17 bundle docs for closeout details.
