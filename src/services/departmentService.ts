@@ -47,6 +47,8 @@ export interface DepartmentSummary {
 export interface DepartmentData {
   code: string;
   name: string;
+  departmentCode: string; // Alias for code (backward compatibility)
+  departmentName: string; // Alias for name (backward compatibility)
   description?: string;
   kpis: KPI[];
   summary: DepartmentSummary;

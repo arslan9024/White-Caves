@@ -278,7 +278,7 @@ const EXECUTIVE_OPERATIONS_ROLES = new Set([
   'super_user',
   'admin',
 ]);
-const EXECUTIVE_COMPANY_DASHBOARD_PATH = '/crm?tab=overview&cockpit=md';
+const EXECUTIVE_COMPANY_DASHBOARD_PATH = '/crm';
 
 type ProfileTab = (typeof PROFILE_TABS)[number]['id'];
 
@@ -325,7 +325,7 @@ const ProfilePage: FC = () => {
   const isFounder = isCreatorRole(userRole?.role ?? '');
   const effectiveRole = (userRole?.role ?? user?.role ?? '').toLowerCase();
   const isExecutiveOperator = EXECUTIVE_OPERATIONS_ROLES.has(effectiveRole);
-  const defaultDashboardPath = isExecutiveOperator ? EXECUTIVE_COMPANY_DASHBOARD_PATH : '/crm';
+  const defaultDashboardPath = '/crm';
   const dashboardButtonLabel = isExecutiveOperator ? 'Company Dashboard' : 'Dashboard';
 
   // Profile completion
@@ -411,7 +411,7 @@ const ProfilePage: FC = () => {
   }, [dismissOnboarding, navigate]);
   const goToKpis = useCallback(() => {
     dismissOnboarding();
-    navigate('/crm?tab=analytics&cockpit=md');
+    navigate('/crm?tab=analytics');
   }, [dismissOnboarding, navigate]);
 
   // ── 2FA handlers ──────────────────────────────────────────────────────────

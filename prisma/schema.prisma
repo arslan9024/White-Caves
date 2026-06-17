@@ -53,12 +53,37 @@ model User {
   pdcCheques    PDCSchedule[] @relation("PDCTenant")
   valuationsCreated  PropertyValuation[] @relation("ValuationCreator")
   valuationsOverridden PropertyValuation[] @relation("ValuationOverrider")
+  departmentAccess DepartmentAccess[]
 
   @@index([role])
   @@index([status])
   @@index([department])
   @@index([createdAt])
   @@index([firebaseUid])
+}
+
+// ─── DEPARTMENT ACCESS & AUTHORIZATION ──────────────────────────────────
+
+model DepartmentAccess {
+  id              String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId          String   @db.ObjectId
+  departmentCode  String   // e.g. "sales", "operations", "finance"
+  role            String   @default("VIEWER") // VIEWER, CONTRIBUTOR, ANALYST, MANAGER
+  permissions     String[] // READ, WRITE, DELETE, APPROVE, ADMIN
+  isActive        Boolean  @default(true)
+  grantedBy       String?  @db.ObjectId // Admin user who granted access
+  grantedAt       DateTime @default(now())
+  expiresAt       DateTime? // Optional: auto-revoke after date
+  revokedAt       DateTime? // When access was revoked
+  reason          String? // Reason for granting/revoking access
+  
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, departmentCode])
+  @@index([departmentCode])
+  @@index([role])
+  @@index([isActive])
+  @@index([userId])
 }
 
 // ─── PROPERTY ───────────────────────────────────────────────────────────

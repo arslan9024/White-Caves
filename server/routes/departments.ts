@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * Departments API Routes — Phase 30
  *
@@ -7,16 +6,17 @@
  * and EnhancedHRDepartmentView frontend components.
  *
  * Endpoints:
- *   GET /api/departments                    â€” list all supported departments
- *   GET /api/departments/:code/data         â€” aggregated KPI data for a department
- *   GET /api/departments/:code/kpis         â€” KPI array for a department
- *   GET /api/departments/:code/trends       â€” monthly trend data for a department
- *   GET /api/departments/:code/summary      â€” summary stats for a department
+ *   GET /api/departments                    — list all supported departments
+ *   GET /api/departments/:code/data         — aggregated KPI data for a department
+ *   GET /api/departments/:code/kpis         — KPI array for a department
+ *   GET /api/departments/:code/trends       — monthly trend data for a department
+ *   GET /api/departments/:code/summary      — summary stats for a department
  */
 
 import { Router, Request, Response } from 'express';
 import { asyncHandler } from '../middleware/errorHandler.js';
 import { requirePermission } from '../middleware/rbac.js';
+import { requireDepartmentAccess, requireDepartmentPermission } from '../middleware/departmentAuth.js';
 import { prisma } from '../database.js';
 
 const router = Router();
@@ -429,6 +429,8 @@ router.get(
 router.get(
   '/:code/data',
   requirePermission('view_analytics'),
+  requireDepartmentAccess,
+  requireDepartmentPermission('READ'),
   asyncHandler(async (req: Request, res: Response) => {
     const code = req.params.code.toUpperCase();
 

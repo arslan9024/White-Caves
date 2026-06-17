@@ -415,6 +415,28 @@ export const selectDepartmentError = (state: {
     };
   };
 }) => state.departments.error;
+
+// Specific error selectors for fine-grained error handling
+export const selectDepartmentsFetchError = (state: {
+  departments: { error: { departments: string | null } };
+}) => state.departments.error.departments;
+
+export const selectDepartmentDataError = (state: {
+  departments: { error: { data: string | null } };
+}) => state.departments.error.data;
+
+export const selectDepartmentKPIsError = (state: {
+  departments: { error: { kpis: string | null } };
+}) => state.departments.error.kpis;
+
+export const selectDepartmentTrendsError = (state: {
+  departments: { error: { trends: string | null } };
+}) => state.departments.error.trends;
+
+export const selectDepartmentSummaryError = (state: {
+  departments: { error: { summary: string | null } };
+}) => state.departments.error.summary;
+
 export const selectSelectedDepartment = (state: {
   departments: { selectedDepartment: string | null };
 }) => state.departments.selectedDepartment;

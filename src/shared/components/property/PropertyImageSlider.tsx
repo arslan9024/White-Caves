@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { ChevronLeft, ChevronRight, Expand, Heart, Share2, X } from 'lucide-react';
+import { generatePictureSources } from '../../../utils/imageOptimization';
 import './PropertyImageSlider.css';
 
 export interface PropertyImageSliderProps {
@@ -95,22 +96,34 @@ export default function PropertyImageSlider({
     <>
       <div className="property-image-slider" style={{ aspectRatio }}>
         <div className="slider-track">
-          {imageList.map((img, index) => (
-            <div
-              key={img ?? `slide-${index}`}
-              className={`slide ${index === currentIndex ? 'active' : ''}`}
-              style={{ transform: `translateX(${(index - currentIndex) * 100}%)` }}
-            >
-              <img
-                src={img.includes('fm=') ? img : `${img}${img.includes('?') ? '&' : '?'}fm=webp`}
-                alt={`${title} - Image ${index + 1}`}
-                loading={index === currentIndex ? 'eager' : 'lazy'}
-                onError={e => {
-                  (e.target as HTMLImageElement).style.display = 'none';
-                }}
-              />
-            </div>
-          ))}
+          {imageList.map((img, index) => {
+            const sources = generatePictureSources({
+              baseUrl: img,
+              width: 1200,
+              quality: 75,
+            });
+            return (
+              <div
+                key={img ?? `slide-${index}`}
+                className={`slide ${index === currentIndex ? 'active' : ''}`}
+                style={{ transform: `translateX(${(index - currentIndex) * 100}%)` }}
+              >
+                <picture>
+                  <source srcSet={sources.avifSrc} type="image/avif" />
+                  <source srcSet={sources.webpSrc} type="image/webp" />
+                  <img
+                    src={sources.fallbackSrc}
+                    alt={`${title} - Image ${index + 1}`}
+                    loading={index === currentIndex ? 'eager' : 'lazy'}
+                    decoding="async"
+                    onError={e => {
+                      (e.target as HTMLImageElement).style.display = 'none';
+                    }}
+                  />
+                </picture>
+              </div>
+            );
+          })}
         </div>
 
         {imageList.length > 1 && (
@@ -177,19 +190,31 @@ export default function PropertyImageSlider({
 
       {showThumbnails && imageList.length > 1 && (
         <div className="thumbnail-strip">
-          {imageList.map((img, index) => (
-            <button
-              key={img ?? `thumb-${index}`}
-              className={`thumbnail ${index === currentIndex ? 'active' : ''}`}
-              onClick={() => goToSlide(index)}
-            >
-              <img
-                src={img.includes('fm=') ? img : `${img}${img.includes('?') ? '&' : '?'}fm=webp`}
-                alt={`${title || 'Property'} thumbnail ${index + 1}`}
-                loading="lazy"
-              />
-            </button>
-          ))}
+          {imageList.map((img, index) => {
+            const sources = generatePictureSources({
+              baseUrl: img,
+              width: 200,
+              quality: 75,
+            });
+            return (
+              <button
+                key={img ?? `thumb-${index}`}
+                className={`thumbnail ${index === currentIndex ? 'active' : ''}`}
+                onClick={() => goToSlide(index)}
+              >
+                <picture>
+                  <source srcSet={sources.avifSrc} type="image/avif" />
+                  <source srcSet={sources.webpSrc} type="image/webp" />
+                  <img
+                    src={sources.fallbackSrc}
+                    alt={`${title || 'Property'} thumbnail ${index + 1}`}
+                    loading="lazy"
+                    decoding="async"
+                  />
+                </picture>
+              </button>
+            );
+          })}
         </div>
       )}
 

@@ -70,11 +70,20 @@ const DashboardSideRail: FC<DashboardSideRailProps> = ({
 
   return (
     <aside className="dashboard-side-rail" aria-label="Dashboard navigation">
+
+      {/* ── Brand Header ── */}
+      <div className="dashboard-side-rail__brand">
+        <span className="dashboard-side-rail__brand-logo" aria-hidden="true">WC</span>
+        <span className="dashboard-side-rail__brand-name">White Caves</span>
+      </div>
+
+      <div className="dashboard-side-rail__divider" role="separator" />
+
       {/* ── Workspaces ── */}
       <div className="dashboard-side-rail__section">
         <span className="dashboard-side-rail__label">Workspaces</span>
         <nav className="dashboard-tab-rail" aria-label="Workspace navigation">
-          {availableTabs.map((tab, index) => (
+          {availableTabs.filter(tab => tab.id !== 'ai-hub' && tab.id !== 'ai-command').map((tab, index) => (
             <button
               key={tab.id}
               ref={element => {
@@ -101,13 +110,14 @@ const DashboardSideRail: FC<DashboardSideRailProps> = ({
       {/* ── CRM Modules (zone-grouped hierarchy) ── */}
       {isSuperUser && (
         <div className="dashboard-side-rail__section dashboard-side-rail__section--modules">
+          <div className="dashboard-side-rail__divider" role="separator" />
           <button
             type="button"
             className="dashboard-modules-toggle"
             onClick={onToggleModules}
             aria-controls="dashboard-module-zones"
           >
-            <span>CRM Modules</span>
+            <span>AI Modules</span>
             <span className="dashboard-modules-toggle__count" aria-hidden="true">
               {moduleEntries.length}
             </span>

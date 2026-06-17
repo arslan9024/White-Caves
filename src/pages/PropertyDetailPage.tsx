@@ -14,6 +14,7 @@ import { usePublicFavorites } from '../hooks/usePublicFavorites';
 import PublicLayout from '../components/layout/PublicLayout';
 import PageMeta from '../components/seo/PageMeta';
 import StructuredData from '../components/seo/StructuredData';
+import { buildPropertyDetailPageSchemas } from '../utils/jsonLdSchemas';
 import { PropertyImageSlider } from '../shared/components/property';
 import Skeleton from '../components/ui/Skeleton/Skeleton';
 import {
@@ -113,31 +114,43 @@ const PropertyDetailPage: FC = () => {
   const propertyJsonLd = useMemo(() => {
     if (!property) return null;
 
-    return {
-      '@context': 'https://schema.org',
-      '@type': 'RealEstateListing',
-      name: property.title,
-      description: `${property.type} in ${property.location}`,
-      url: `${window.location.origin}/property/${property.id}`,
-      image: property.images?.[0] || property.image,
-      numberOfRooms: property.beds,
-      floorSize: {
-        '@type': 'QuantitativeValue',
-        value: property.sqft,
-        unitCode: 'FTK',
+    // Build comprehensive schemas for property detail page
+    // Includes: Organization + Breadcrumb + Property listing
+    const schemas = buildPropertyDetailPageSchemas(
+      {
+        name: property.title,
+        description: `${property.type} in ${property.location}`,
+        address: {
+          streetAddress: property.location,
+          addressLocality: property.location,
+          addressRegion: 'Dubai',
+          postalCode: '',
+          addressCountry: 'AE',
+        },
+        price: {
+          amount: property.price,
+          currency: 'AED',
+        },
+        bedrooms: property.beds,
+        bathrooms: property.baths,
+        floorSize: {
+          value: property.sqft,
+          unitCode: 'SQF',
+        },
+        image: property.images || property.image,
+        url: `${window.location.origin}/property/${property.id}`,
+        pricingType: 'SalePrice',
+        availability: 'InStock',
       },
-      address: {
-        '@type': 'PostalAddress',
-        addressLocality: property.location,
-        addressCountry: 'AE',
-      },
-      offers: {
-        '@type': 'Offer',
-        price: property.price,
-        priceCurrency: 'AED',
-        availability: 'https://schema.org/InStock',
-      },
-    };
+      undefined, // agentInfo - can be added later
+      [
+        { name: 'Home', url: '/' },
+        { name: property.location, url: `/properties?area=${encodeURIComponent(property.location)}` },
+        { name: property.title, url: `${window.location.origin}/property/${property.id}` },
+      ]
+    );
+
+    return schemas;
   }, [property]);
 
   const favoriteItem = property

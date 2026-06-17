@@ -15,6 +15,7 @@ import {
 } from '../store/slices/homepageSlice';
 import type { AppDispatch } from '../store/store';
 import { buildHomepageJsonLd } from './homepageSeo';
+import { buildOrganizationSchema } from '../utils/jsonLdSchemas';
 import ClickToChat from '../components/ClickToChat';
 import RoleSelectionModal from '../components/RoleSelectionModal';
 import PublicLayout from '../components/layout/PublicLayout';
@@ -210,7 +211,10 @@ const HomePage: FC = () => {
         ogImage="https://images.unsplash.com/photo-1582268611958-ebfd161ef9cf?w=1200&h=630&fit=crop&q=80"
         jsonLd={homepageJsonLd}
       />
-      <StructuredData id="home-jsonld" data={homepageJsonLd} />
+      <StructuredData 
+        id="home-jsonld" 
+        data={[homepageJsonLd, buildOrganizationSchema()].filter(Boolean)} 
+      />
       <div className="home-page">
         {homepageError && !isHomepageLoading ? (
           <div role="status" aria-live="polite" className="homepage-live-data-alert">

@@ -961,6 +961,7 @@ router.get(
         photoUrl: true,
         status: true,
         createdAt: true,
+        passwordHash: true,
         _count: {
           select: {
             leadsAssigned: true,
@@ -973,7 +974,16 @@ router.get(
 
     if (!user) throw new AppError('User not found', 404);
 
-    res.status(200).json({ success: true, data: user });
+    const { passwordHash, ...safeUser } = user;
+
+    res.status(200).json({
+      success: true,
+      data: {
+        ...safeUser,
+        hasPassword: Boolean(passwordHash),
+        twoFactorEnabled: Boolean((user as Record<string, unknown>).twoFactorEnabled ?? (user as Record<string, unknown>).totpEnabled),
+      },
+    });
   })
 );
 

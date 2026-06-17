@@ -2,12 +2,46 @@
 
 .unified-dashboard {
   min-height: 100%;
-  background:
-    radial-gradient(circle at top left, rgba(227, 30, 36, 0.08), transparent 28%),
-    linear-gradient(180deg, #ffffff 0%, var(--dashboard-bg) 22%, #eef2f7 100%);
+  background: var(--dashboard-bg);
   color: var(--dashboard-text);
   padding: 20px;
 }
+
+/* ── Sidebar brand header ── */
+.dashboard-side-rail__brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 4px 4px 8px;
+}
+
+.dashboard-side-rail__brand-logo {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, var(--dashboard-brand), var(--dashboard-brand-strong));
+  color: var(--dashboard-text-inverse);
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  flex-shrink: 0;
+}
+
+.dashboard-side-rail__brand-name {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--dashboard-text);
+  letter-spacing: 0.02em;
+}
+
+.dashboard-side-rail__divider {
+  height: 1px;
+  background: var(--dashboard-border);
+  margin: 4px 0;
+}
+
 
 .dashboard-skip-link {
   position: absolute;
@@ -44,8 +78,8 @@
   min-height: var(--dashboard-topbar-height);
   margin-bottom: 20px;
   padding: 14px 18px;
-  background: rgba(255, 255, 255, 0.88);
-  border: 1px solid rgba(255, 255, 255, 0.75);
+  background: rgba(20, 20, 20, 0.95);
+  border: 1px solid var(--dashboard-border);
   border-radius: var(--dashboard-radius-md);
   box-shadow: var(--shadow-card);
   -webkit-backdrop-filter: blur(18px);
@@ -137,7 +171,7 @@
   min-height: 42px;
   border: 1px solid var(--dashboard-border);
   border-radius: 999px;
-  background: var(--dashboard-surface);
+  background: var(--dashboard-surface-alt);
   color: var(--dashboard-text);
   cursor: pointer;
   transition:
@@ -223,8 +257,8 @@
   width: 36px;
   height: 36px;
   border-radius: 50%;
-  background: rgba(227, 30, 36, 0.12);
-  color: var(--dashboard-brand-strong);
+  background: var(--dashboard-brand-soft);
+  color: var(--dashboard-brand);
   font-weight: 700;
 }
 
@@ -255,7 +289,7 @@
   display: grid;
   gap: 6px;
   padding: 10px;
-  background: rgba(255, 255, 255, 0.96);
+  background: rgba(20, 20, 20, 0.97);
   border: 1px solid var(--dashboard-border);
   border-radius: 18px;
   box-shadow: var(--shadow-modal);
@@ -284,7 +318,7 @@
   width: 32px;
   height: 32px;
   border-radius: 10px;
-  background: rgba(227, 30, 36, 0.08);
+  background: var(--dashboard-brand-dim);
 }
 
 .dashboard-search-result__copy {
@@ -310,10 +344,10 @@
   gap: 0.75rem;
   margin-bottom: 18px;
   padding: 14px 18px;
-  background: #fff5f5;
-  border: 1px solid #fecaca;
+  background: var(--dashboard-error-bg);
+  border: 1px solid rgba(248, 113, 113, 0.25);
   border-radius: var(--dashboard-radius-md);
-  color: #991b1b;
+  color: var(--dashboard-error);
   box-shadow: var(--shadow-card);
 }
 
@@ -335,24 +369,25 @@
 
 .dashboard-workspace-shell {
   display: grid;
-  grid-template-columns: minmax(0, 240px) minmax(0, 1fr) minmax(0, 320px);
-  gap: 18px;
+  grid-template-columns: var(--sidebar-expanded) minmax(0, 1fr) minmax(0, 300px);
+  gap: 20px;
   align-items: start;
 }
 
 .dashboard-side-rail {
   position: sticky;
   top: calc(var(--dashboard-topbar-height) + 24px);
+  max-height: calc(100vh - var(--dashboard-topbar-height) - 48px);
+  overflow-y: auto;
+  overflow-x: hidden;
   display: flex;
   flex-direction: column;
-  gap: 16px;
-  padding: 18px 14px;
-  background: rgba(255, 255, 255, 0.88);
-  border: 1px solid rgba(255, 255, 255, 0.75);
+  gap: 4px;
+  padding: 16px 12px;
+  background: var(--dashboard-surface);
+  border: 1px solid var(--dashboard-border);
   border-radius: var(--dashboard-radius-lg);
   box-shadow: var(--shadow-card);
-  -webkit-backdrop-filter: blur(18px);
-  backdrop-filter: blur(18px);
 }
 
 .dashboard-side-rail__section {
@@ -402,9 +437,9 @@
 
 .dashboard-rail-tab.active,
 .dashboard-module-option.active {
-  background: linear-gradient(135deg, rgba(227, 30, 36, 0.12), rgba(183, 28, 28, 0.04));
-  color: var(--dashboard-brand-strong);
-  border-color: rgba(227, 30, 36, 0.18);
+  background: var(--dashboard-brand-soft);
+  color: var(--dashboard-brand);
+  border-color: var(--dashboard-border-strong);
 }
 
 .dashboard-rail-tab:focus-visible,
@@ -426,7 +461,7 @@
   width: 28px;
   height: 28px;
   border-radius: 10px;
-  background: rgba(227, 30, 36, 0.08);
+  background: var(--dashboard-brand-dim);
 }
 
 .dashboard-rail-tab__label {
@@ -438,8 +473,8 @@
   height: 20px;
   padding: 0 6px;
   border-radius: 999px;
-  background: rgba(227, 30, 36, 0.12);
-  color: var(--dashboard-brand-strong);
+  background: var(--dashboard-brand-soft);
+  color: var(--dashboard-brand);
   font-size: 0.72rem;
   font-weight: 700;
   line-height: 20px;
@@ -464,8 +499,8 @@
   display: grid;
   gap: 10px;
   padding: 14px;
-  background: rgba(255, 255, 255, 0.92);
-  border: 1px solid rgba(255, 255, 255, 0.72);
+  background: var(--dashboard-surface);
+  border: 1px solid var(--dashboard-border);
   border-radius: 16px;
   box-shadow: var(--shadow-card);
 }
@@ -501,8 +536,8 @@
   min-height: 24px;
   padding: 0 10px;
   border-radius: 999px;
-  background: rgba(227, 30, 36, 0.08);
-  color: var(--dashboard-brand-strong);
+  background: var(--dashboard-brand-soft);
+  color: var(--dashboard-brand);
   font-size: 0.72rem;
   font-weight: 700;
 }
@@ -571,12 +606,10 @@
   align-items: start;
   margin-bottom: 18px;
   padding: 24px 28px;
-  background: rgba(255, 255, 255, 0.82);
-  border: 1px solid rgba(255, 255, 255, 0.78);
+  background: var(--dashboard-surface);
+  border: 1px solid var(--dashboard-border);
   border-radius: var(--dashboard-radius-lg);
   box-shadow: var(--shadow-card);
-  -webkit-backdrop-filter: blur(18px);
-  backdrop-filter: blur(18px);
 }
 
 .dashboard-page-header__eyebrow {
@@ -634,8 +667,8 @@
   min-height: 32px;
   padding: 0 12px;
   border-radius: 999px;
-  background: rgba(227, 30, 36, 0.08);
-  color: var(--dashboard-brand-strong);
+  background: var(--dashboard-brand-soft);
+  color: var(--dashboard-brand);
   font-size: 0.8rem;
   font-weight: 700;
 }
