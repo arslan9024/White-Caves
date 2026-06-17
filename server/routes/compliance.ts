@@ -1557,4 +1557,223 @@ router.get(
   })
 );
 
+// ─── DLD / EJARI MOCK ENDPOINTS ──────────────────────────────────────────────
+// These endpoints are active when USE_MOCK_DLD=true (env flag, default: true).
+// When USE_MOCK_DLD=false, they return 501 Not Implemented (live DLD API not yet wired).
+// During Wave 19 and Wave 20 development, the mock path is the default.
+
+import { dldMockService } from '../services/mock/dldMockService.js';
+import { ejariMockService } from '../services/mock/ejariMockService.js';
+
+const useMockDLD = process.env.USE_MOCK_DLD !== 'false'; // default: mock enabled
+
+/**
+ * POST /api/compliance/dld/register-oqood
+ * Register an off-plan unit via Oqood.
+ * Mock path active when USE_MOCK_DLD=true (default).
+ */
+router.post(
+  '/dld/register-oqood',
+  requireMinRole('agent'),
+  asyncHandler(async (req: AuthRequest, res: Response) => {
+    if (!['owner', 'manager', 'admin'].includes(req.user?.role || '')) {
+      throw new AppError('Access denied — DLD registration requires manager role', 403);
+    }
+
+    if (!useMockDLD) {
+      throw new AppError('Live DLD API is not yet configured. Set USE_MOCK_DLD=true.', 501);
+    }
+
+    const {
+      developerId,
+      projectId,
+      buyerEmiratesId,
+      unitNumber,
+      salePriceAED,
+      spaDate,
+      paymentPlanType,
+    } = req.body;
+
+    if (!developerId || !projectId || !buyerEmiratesId || !unitNumber || !salePriceAED) {
+      throw new AppError(
+        'developerId, projectId, buyerEmiratesId, unitNumber, and salePriceAED are required',
+        400
+      );
+    }
+
+    const result = dldMockService.registerOqood({
+      developerId,
+      projectId,
+      buyerEmiratesId,
+      unitNumber,
+      salePriceAED: Number(salePriceAED),
+      spaDate: spaDate ?? new Date().toISOString(),
+      paymentPlanType: paymentPlanType ?? 'full_payment',
+    });
+
+    logger.info('DLD Oqood registration (mock)', {
+      oqoodNumber: result.oqoodNumber,
+      unitNumber,
+      salePriceAED,
+    });
+
+    res.setHeader('X-Mock-DLD', 'true');
+    res.status(201).json({ success: true, data: result });
+  })
+);
+
+/**
+ * POST /api/compliance/ejari/activate
+ * Activate an Ejari lease contract.
+ * Mock path active when USE_MOCK_DLD=true (default).
+ */
+router.post(
+  '/ejari/activate',
+  requireMinRole('agent'),
+  asyncHandler(async (req: AuthRequest, res: Response) => {
+    if (!['owner', 'manager', 'admin'].includes(req.user?.role || '')) {
+      throw new AppError('Access denied — Ejari activation requires manager role', 403);
+    }
+
+    if (!useMockDLD) {
+      throw new AppError('Live Ejari API is not yet configured. Set USE_MOCK_DLD=true.', 501);
+    }
+
+    const {
+      leaseId,
+      landlordEmiratesId,
+      tenantEmiratesId,
+      propertyAddress,
+      annualRentAED,
+      leaseStartDate,
+      leaseEndDate,
+      paymentFrequency,
+      numberOfCheques,
+    } = req.body;
+
+    if (!leaseId || !landlordEmiratesId || !tenantEmiratesId || !propertyAddress || !annualRentAED) {
+      throw new AppError(
+        'leaseId, landlordEmiratesId, tenantEmiratesId, propertyAddress, and annualRentAED are required',
+        400
+      );
+    }
+
+    const result = ejariMockService.activateContract({
+      leaseId,
+      landlordEmiratesId,
+      tenantEmiratesId,
+      propertyAddress,
+      annualRentAED: Number(annualRentAED),
+      leaseStartDate: leaseStartDate ?? new Date().toISOString(),
+      leaseEndDate:
+        leaseEndDate ?? new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString(),
+      paymentFrequency: paymentFrequency ?? 'annual',
+      numberOfCheques: numberOfCheques ?? 1,
+    });
+
+    // Persist the Ejari number back to the lease record
+    await updateEjariStatus(leaseId, {
+      ejariNumber: result.ejariContractNumber,
+      ejariStatus: 'registered',
+      ejariRegistrationDate: new Date(),
+    });
+
+    logger.info('Ejari contract activated (mock)', {
+      ejariContractNumber: result.ejariContractNumber,
+      leaseId,
+      activationReference: result.activationReference,
+    });
+
+    res.setHeader('X-Mock-DLD', 'true');
+    res.status(201).json({ success: true, data: result });
+  })
+);
+
+/**
+ * POST /api/compliance/ejari/renew
+ * Renew an Ejari lease contract with RERA rental index check.
+ * Mock path active when USE_MOCK_DLD=true (default).
+ */
+router.post(
+  '/ejari/renew',
+  requireMinRole('agent'),
+  asyncHandler(async (req: AuthRequest, res: Response) => {
+    if (!['owner', 'manager', 'admin'].includes(req.user?.role || '')) {
+      throw new AppError('Access denied — Ejari renewal requires manager role', 403);
+    }
+
+    if (!useMockDLD) {
+      throw new AppError('Live Ejari API is not yet configured. Set USE_MOCK_DLD=true.', 501);
+    }
+
+    const {
+      leaseId,
+      existingContractNumber,
+      newAnnualRentAED,
+      existingAnnualRentAED,
+      newLeaseStartDate,
+      newLeaseEndDate,
+      propertyAddress,
+    } = req.body;
+
+    if (!leaseId || !existingContractNumber || !newAnnualRentAED || !existingAnnualRentAED) {
+      throw new AppError(
+        'leaseId, existingContractNumber, newAnnualRentAED, and existingAnnualRentAED are required',
+        400
+      );
+    }
+
+    const result = ejariMockService.renewContract({
+      leaseId,
+      existingContractNumber,
+      newAnnualRentAED: Number(newAnnualRentAED),
+      existingAnnualRentAED: Number(existingAnnualRentAED),
+      newLeaseStartDate: newLeaseStartDate ?? new Date().toISOString(),
+      newLeaseEndDate:
+        newLeaseEndDate ?? new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString(),
+      propertyAddress: propertyAddress ?? '',
+    });
+
+    logger.info('Ejari contract renewal (mock)', {
+      status: result.status,
+      leaseId,
+      rentIncreasePercentage: result.rentIncreasePercentage,
+      reraPermittedIncreasePercentage: result.reraPermittedIncreasePercentage,
+    });
+
+    if (result.status === 'rejected') {
+      res.setHeader('X-Mock-DLD', 'true');
+      return res.status(422).json({
+        success: false,
+        error: `Rent increase of ${result.rentIncreasePercentage}% exceeds RERA permitted maximum of ${result.reraPermittedIncreasePercentage}% for this area.`,
+        data: result,
+      });
+    }
+
+    res.setHeader('X-Mock-DLD', 'true');
+    res.status(200).json({ success: true, data: result });
+  })
+);
+
+/**
+ * GET /api/compliance/dld/health
+ * Returns DLD/Ejari mock status for observability.
+ */
+router.get(
+  '/dld/health',
+  asyncHandler(async (_req: Request, res: Response) => {
+    if (!useMockDLD) {
+      return res.json({ success: true, data: { status: 'live', useMock: false } });
+    }
+    res.setHeader('X-Mock-DLD', 'true');
+    res.json({
+      success: true,
+      data: {
+        dld: dldMockService.getHealthStatus(),
+        ejari: ejariMockService.getHealthStatus(),
+      },
+    });
+  })
+);
+
 export default router;

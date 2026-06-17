@@ -157,6 +157,17 @@ function getLinkedPlanFilesFromPending(pattern) {
   'plans/waves/README.md',
   'PROJECT_PROGRESS.md',
   'DAILY_MILESTONE_TRACKER.md',
+  // AEGIS infrastructure files (Vector 6.6)
+  'plans/AEGIS_RUN_LOG.md',
+  'plans/AUTOPILOT_QUEUE.md',
+  'plans/AEGIS_WORKFORCE.md',
+  // Architecture Decision Records (Vector 5.1)
+  'docs/adr/README.md',
+  'docs/adr/ADR-001-auth-dual-provider.md',
+  'docs/adr/ADR-002-mongodb-prisma.md',
+  'docs/adr/ADR-003-crm-module-registry.md',
+  'docs/adr/ADR-004-wave-gate-model.md',
+  'docs/adr/ADR-005-superuser-lion-pattern.md',
 ].forEach(assertExists);
 
 assertNoPastedArtifacts();

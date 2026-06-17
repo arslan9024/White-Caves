@@ -366,7 +366,13 @@ while ($true) {
       git add logs/orchestrator/ 2>&1 | Out-Null
       git add business_docs/ plans/ 2>&1 | Out-Null
       $msg = "autopilot: session #$sessionNum complete [$(Get-Date -Format 'yyyy-MM-dd HH:mm')]"
-      git commit -m $msg 2>&1 | Out-Null
+      # ── Loop-guard: only commit when there is something staged
+      $cachedStatAu = (git diff --cached --stat 2>$null).Trim()
+      if ([string]::IsNullOrWhiteSpace($cachedStatAu)) {
+        Write-Host "  [AEGIS-SKIP] nothing staged in fallback commit path — skipping." -ForegroundColor DarkYellow
+      } else {
+        git commit -m $msg 2>&1 | Out-Null
+      }
     }
     Write-Host "  ✓ Progress committed" -ForegroundColor Green
   }

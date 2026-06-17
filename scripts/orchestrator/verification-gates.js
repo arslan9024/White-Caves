@@ -284,6 +284,91 @@ function runAllGates(policy) {
   return results;
 }
 
+// ── Known-Error Auto-Fix Table ────────────────────────────────────────────────
+/**
+ * KNOWN_ERRORS maps TypeScript (and related toolchain) error codes to
+ * machine-executable remediation steps. When verification-gates detects
+ * one of these error patterns in build/typecheck output, it attempts the
+ * mapped fix before escalating to human review.
+ *
+ * Format:
+ *   code      — TS error code or regex pattern to match in output lines
+ *   label     — Human-readable description of the error
+ *   autoFix   — Shell command to attempt, or 'manual' if no safe auto-fix exists
+ *   retryAfter— If true, re-run typecheck after the fix to confirm resolution
+ */
+export const KNOWN_ERRORS = [
+  {
+    code: 'TS2305',
+    pattern: /TS2305.*Module .* has no exported member/,
+    label: 'Missing Prisma client export (PrismaClient / Prisma)',
+    autoFix: 'npx prisma generate',
+    retryAfter: true,
+  },
+  {
+    code: 'TS2322-fetchPriority',
+    pattern: /TS2322.*fetchPriority/,
+    label: 'Unsupported fetchPriority prop on <img> element',
+    // Remove the fetchPriority attribute — must be done by the calling agent
+    autoFix: 'manual:remove-fetchPriority-attribute',
+    retryAfter: true,
+  },
+  {
+    code: 'TS1149',
+    pattern: /TS1149|File name .* differs? from already included/i,
+    label: 'Import path casing mismatch (e.g., crmDataService vs CRMDataService)',
+    autoFix: 'manual:normalize-import-casing',
+    retryAfter: true,
+  },
+  {
+    code: 'TS2307',
+    pattern: /TS2307.*Cannot find module/,
+    label: 'Missing module — likely an uninstalled dependency',
+    autoFix: 'npm install --ignore-scripts',
+    retryAfter: true,
+  },
+  {
+    code: 'TS2339',
+    pattern: /TS2339.*Property .* does not exist on type/,
+    label: 'Property access on undefined type — review Prisma schema or interface definition',
+    autoFix: 'manual:add-missing-property-to-type',
+    retryAfter: false,
+  },
+];
+
+/**
+ * Attempts automated remediation for a TypeScript / build error line.
+ * Returns the fix action taken or null if no match.
+ *
+ * @param {string} errorLine - A single line from typecheck or build output.
+ * @param {object} opts - { dryRun?: boolean } — set dryRun=true to log without executing.
+ * @returns {{ matched: boolean, code: string, action: string, executed: boolean } | null}
+ */
+export function tryAutoFix(errorLine, { dryRun = false } = {}) {
+  for (const entry of KNOWN_ERRORS) {
+    if (!entry.pattern.test(errorLine)) continue;
+
+    const action = entry.autoFix;
+    if (action.startsWith('manual:')) {
+      console.warn(`  [KNOWN_ERROR] ${entry.label} — manual fix required: ${action}`);
+      return { matched: true, code: entry.code, action, executed: false };
+    }
+
+    if (!dryRun) {
+      try {
+        console.log(`  [KNOWN_ERROR] Attempting auto-fix for ${entry.code}: ${action}`);
+        execSync(action, { stdio: 'inherit', cwd: ROOT });
+        return { matched: true, code: entry.code, action, executed: true };
+      } catch (err) {
+        console.error(`  [KNOWN_ERROR] Auto-fix failed for ${entry.code}: ${err.message}`);
+        return { matched: true, code: entry.code, action, executed: false };
+      }
+    }
+    return { matched: true, code: entry.code, action, executed: false };
+  }
+  return null;
+}
+
 // ── CLI ───────────────────────────────────────────────────────────────────────
 
 const args = process.argv.slice(2);

@@ -231,6 +231,26 @@ export function isFeatureEnabled(policy, feature) {
   return policy.features?.[feature] !== false;
 }
 
+/**
+ * Returns the context budget in KB for the given agent tier.
+ * Falls back to policy-defined defaults when no tier-specific override is set.
+ *
+ * @param {object} policy - Loaded policy object (from loadPolicy()).
+ * @param {'free'|'premium'} agentTier - The tier of the requesting agent.
+ * @returns {{ limitKB: number, enabled: boolean }} Budget limit and enabled flag.
+ */
+export function getContextBudget(policy, agentTier) {
+  const budgetEnabled = policy.contextBudget?.enabled ?? true;
+  const tierBudgets = policy.contextBudget?.agentTierBudgetKB ?? {};
+  const tier = (agentTier ?? 'free').toLowerCase();
+
+  // Canonical defaults: free=32 KB, premium=128 KB
+  const defaults = { free: 32, premium: 128 };
+  const limitKB = typeof tierBudgets[tier] === 'number' ? tierBudgets[tier] : (defaults[tier] ?? 32);
+
+  return { limitKB, enabled: budgetEnabled };
+}
+
 export function createTraceContext(policy, extra = {}) {
   const traceId = process.env.AEGIS_TRACE_ID || randomUUID();
   return {

@@ -618,7 +618,12 @@
     "hardStopAfterTurns": 28,
     "warnAfterApproxTokens": 120000,
     "hardStopAfterApproxTokens": 220000,
-    "preferStructuredSummaries": true
+    "preferStructuredSummaries": true,
+    "agentTierBudgetKB": {
+      "free": 32,
+      "premium": 128,
+      "description": "Per-turn file-read budget in KB per agent tier. Agent-loop scripts must check this before opening files."
+    }
   },
   "sessionManagement": {
     "oneObjectivePerSession": true,
