@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Documents Routes â€” REST API for document generation and management
  *
  * Endpoints:
@@ -30,12 +30,14 @@ import { logger } from '../utils/logger.js';
 
 const router = Router();
 
+type RouteRequest = Request<Record<string, string>>;
+
 // â”€â”€ Generate a document â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 router.post(
   '/generate',
   requirePermission('view_leads'),
-  asyncHandler(async (req: Request, res: Response) => {
+  asyncHandler(async (req: RouteRequest, res: Response) => {
     const { type, variables, transactionId, leadId, propertyId, commissionId } = req.body;
 
     if (!type) {
@@ -70,7 +72,7 @@ router.post(
 router.get(
   '/',
   requirePermission('view_leads'),
-  asyncHandler(async (req: Request, res: Response) => {
+  asyncHandler(async (req: RouteRequest, res: Response) => {
     const { type, status, transactionId, leadId, propertyId, page, pageSize } = req.query as Record<
       string,
       string | undefined
@@ -103,7 +105,7 @@ router.get(
 router.get(
   '/types',
   requirePermission('view_leads'),
-  asyncHandler(async (_req: Request, res: Response) => {
+  asyncHandler(async (_req: RouteRequest, res: Response) => {
     const types = getAvailableDocumentTypes();
 
     res.status(200).json({
@@ -118,7 +120,7 @@ router.get(
 router.get(
   '/auto-fill/entities',
   requirePermission('view_leads'),
-  asyncHandler(async (_req: Request, res: Response) => {
+  asyncHandler(async (_req: RouteRequest, res: Response) => {
     const entities = getAutoFillableEntities();
 
     res.status(200).json({
@@ -133,7 +135,7 @@ router.get(
 router.post(
   '/auto-fill/preview',
   requirePermission('view_leads'),
-  asyncHandler(async (req: Request, res: Response) => {
+  asyncHandler(async (req: RouteRequest, res: Response) => {
     const {
       type,
       leadId,
@@ -168,7 +170,7 @@ router.post(
 router.post(
   '/generate-auto',
   requirePermission('view_leads'),
-  asyncHandler(async (req: Request, res: Response) => {
+  asyncHandler(async (req: RouteRequest, res: Response) => {
     const {
       type,
       leadId,
@@ -221,7 +223,7 @@ router.post(
 router.get(
   '/contract/:id/pdf',
   requirePermission('view_leads'),
-  asyncHandler(async (req: Request, res: Response) => {
+  asyncHandler(async (req: RouteRequest, res: Response) => {
     const file = await documentService.generateContractPdf(req.params.id);
     res.setHeader('Content-Type', file.mimeType);
     res.setHeader('Content-Disposition', `attachment; filename="${file.filename}"`);
@@ -234,7 +236,7 @@ router.get(
 router.get(
   '/commission/:agentId/pdf',
   requirePermission('view_all_reports'),
-  asyncHandler(async (req: Request, res: Response) => {
+  asyncHandler(async (req: RouteRequest, res: Response) => {
     const file = await documentService.generateCommissionPdf(req.params.agentId);
     res.setHeader('Content-Type', file.mimeType);
     res.setHeader('Content-Disposition', `attachment; filename="${file.filename}"`);
@@ -247,7 +249,7 @@ router.get(
 router.get(
   '/:id',
   requirePermission('view_leads'),
-  asyncHandler(async (req: Request, res: Response) => {
+  asyncHandler(async (req: RouteRequest, res: Response) => {
     const { id } = req.params as Record<string, string>;
     const document = await getDocument(id);
 
@@ -267,7 +269,7 @@ router.get(
 router.get(
   '/:id/html',
   requirePermission('view_leads'),
-  asyncHandler(async (req: Request, res: Response) => {
+  asyncHandler(async (req: RouteRequest, res: Response) => {
     const { id } = req.params as Record<string, string>;
     const document = await getDocument(id);
 
@@ -285,7 +287,7 @@ router.get(
 router.patch(
   '/:id/status',
   requirePermission('manage_leads'),
-  asyncHandler(async (req: Request, res: Response) => {
+  asyncHandler(async (req: RouteRequest, res: Response) => {
     const { id } = req.params as Record<string, string>;
     const { status } = req.body;
 

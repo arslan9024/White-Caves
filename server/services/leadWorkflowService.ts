@@ -26,7 +26,7 @@ type LeadActivity = {
   description: string;
   createdAt: Date;
   user?: { id?: string | null; name?: string | null } | null;
-  metadata?: Record<string, unknown> | null;
+  metadata?: unknown;
 };
 
 type LeadViewing = {

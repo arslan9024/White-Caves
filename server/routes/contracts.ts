@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Contracts API Routes
  * â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
  * Full CRUD for White Caves contract records (sale, rental, MOU, Form F, etc.)
@@ -20,6 +20,8 @@ import { parsePagination } from '../config/pagination.js';
 import { requirePermission, requireRole } from '../middleware/rbac.js';
 
 const router = Router();
+
+type RouteRequest = Request<Record<string, string>>;
 const db = prisma as any;
 
 const VALID_CONTRACT_TYPES = ['sale', 'rental', 'mou', 'form_f', 'listing', 'management'] as const;
@@ -44,7 +46,7 @@ function generateContractNumber(): string {
 router.get(
   '/',
   requirePermission('view_contracts'),
-  asyncHandler(async (req: Request, res: Response) => {
+  asyncHandler(async (req: RouteRequest, res: Response) => {
     const { page, limit, skip } = parsePagination(req.query);
     const { status, type, propertyId, leadId, search } = req.query as Record<string, string>;
 
@@ -91,7 +93,7 @@ router.get(
 router.get(
   '/:id',
   requirePermission('view_contracts'),
-  asyncHandler(async (req: Request, res: Response) => {
+  asyncHandler(async (req: RouteRequest, res: Response) => {
     validateIdParam(req.params.id, 'Contract ID');
     const contract = await db.contract.findUnique({ where: { id: req.params.id } });
     if (!contract) throw new AppError('Contract not found', 404);
@@ -103,7 +105,7 @@ router.get(
 router.post(
   '/',
   requirePermission('create_contracts'),
-  asyncHandler(async (req: Request, res: Response) => {
+  asyncHandler(async (req: RouteRequest, res: Response) => {
     const {
       title,
       type,
@@ -174,7 +176,7 @@ router.post(
 router.patch(
   '/:id',
   requirePermission('create_contracts'),
-  asyncHandler(async (req: Request, res: Response) => {
+  asyncHandler(async (req: RouteRequest, res: Response) => {
     const { id } = req.params as Record<string, string>;
     validateIdParam(id, 'Contract ID');
 
@@ -262,7 +264,7 @@ router.patch(
 router.delete(
   '/:id',
   requireRole('owner', 'manager', 'admin'),
-  asyncHandler(async (req: Request, res: Response) => {
+  asyncHandler(async (req: RouteRequest, res: Response) => {
     const { id } = req.params as Record<string, string>;
     validateIdParam(id, 'Contract ID');
 

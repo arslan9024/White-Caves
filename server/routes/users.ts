@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Users API Routes â€” Full User Management
  * Endpoints: /api/users
  *
@@ -30,6 +30,8 @@ import {
 
 const router = Router();
 
+type RouteRequest = Request<Record<string, string>>;
+
 // All role strings accepted by the PATCH endpoint.
 // Includes both canonical backend roles and frontend UI aliases.
 const ALL_VALID_ROLES = Object.keys(ROLE_ALIAS_MAP);
@@ -46,7 +48,7 @@ type UserStatus = (typeof VALID_STATUSES)[number];
 router.get(
   '/',
   requireMinRole('admin'),
-  asyncHandler(async (req: Request, res: Response) => {
+  asyncHandler(async (req: RouteRequest, res: Response) => {
     const { role, status, search, department } = req.query as Record<string, string | undefined>;
 
     const {
@@ -128,7 +130,7 @@ router.get(
  */
 router.get(
   '/me',
-  asyncHandler(async (req: Request, res: Response) => {
+  asyncHandler(async (req: RouteRequest, res: Response) => {
     const userId = (req as AuthRequest).user?.id;
     if (!userId) throw new AppError('Not authenticated', 401);
 
@@ -164,7 +166,7 @@ router.get(
 router.get(
   '/pending',
   requireMinRole('admin'),
-  asyncHandler(async (req: Request, res: Response) => {
+  asyncHandler(async (req: RouteRequest, res: Response) => {
     const {
       page: pageNum,
       limit,
@@ -214,7 +216,7 @@ router.get(
 router.get(
   '/:id',
   requireMinRole('admin'),
-  asyncHandler(async (req: Request, res: Response) => {
+  asyncHandler(async (req: RouteRequest, res: Response) => {
     validateIdParam(req.params.id, 'User ID');
 
     const user = await prisma.user.findUnique({
@@ -263,7 +265,7 @@ router.get(
 router.patch(
   '/:id',
   requireRole('owner'),
-  asyncHandler(async (req: Request, res: Response) => {
+  asyncHandler(async (req: RouteRequest, res: Response) => {
     validateIdParam(req.params.id, 'User ID');
 
     const requesterId = (req as AuthRequest).user?.id;
@@ -378,7 +380,7 @@ router.patch(
 router.patch(
   '/:id/status',
   requireMinRole('admin'),
-  asyncHandler(async (req: Request, res: Response) => {
+  asyncHandler(async (req: RouteRequest, res: Response) => {
     validateIdParam(req.params.id, 'User ID');
 
     const { status } = req.body;

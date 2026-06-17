@@ -19,6 +19,8 @@ import logger from '../utils/logger.js';
 import { verifyFirebaseIdToken, FirebaseAdminInitError } from '../config/firebaseAdmin.js';
 
 const router = Router();
+
+type RouteRequest = Request<Record<string, string>>;
 const db = prisma as any;
 const SUPERUSER_EMAIL = 'arslanmalikgoraha@gmail.com';
 
@@ -291,7 +293,7 @@ const checkAccountLockout = async (
  */
 router.post(
   '/login',
-  asyncHandler(async (req: Request, res: Response) => {
+  asyncHandler(async (req: RouteRequest, res: Response) => {
     const { email, password } = req.body;
 
     if (!email || !password) {
@@ -447,7 +449,7 @@ router.post(
  */
 router.post(
   '/register',
-  asyncHandler(async (req: Request, res: Response) => {
+  asyncHandler(async (req: RouteRequest, res: Response) => {
     const { email, password, name, phone, department, category, role } = req.body;
 
     if (!email || !password) {
@@ -597,7 +599,7 @@ router.post(
  */
 router.post(
   '/verify-2fa',
-  asyncHandler(async (req: Request, res: Response) => {
+  asyncHandler(async (req: RouteRequest, res: Response) => {
     const db = prisma as any;
     const { email, code } = req.body;
 
@@ -914,7 +916,7 @@ router.get(
 router.get(
   '/profile',
   authMiddleware,
-  asyncHandler(async (req: Request, res: Response) => {
+  asyncHandler(async (req: RouteRequest, res: Response) => {
     const userId = req.user?.id;
     if (!userId) throw new AppError('Not authenticated', 401);
 
@@ -953,7 +955,7 @@ router.get(
 router.patch(
   '/profile',
   authMiddleware,
-  asyncHandler(async (req: Request, res: Response) => {
+  asyncHandler(async (req: RouteRequest, res: Response) => {
     const userId = req.user?.id;
     if (!userId) throw new AppError('Not authenticated', 401);
 
@@ -1004,7 +1006,7 @@ router.patch(
  */
 router.post(
   '/firebase-sync',
-  asyncHandler(async (req: Request, res: Response) => {
+  asyncHandler(async (req: RouteRequest, res: Response) => {
     const { firebaseUid, email, name, photoUrl, firebaseToken } = req.body;
 
     if (!firebaseUid) {
@@ -1166,7 +1168,7 @@ router.post(
   '/logout',
   authMiddleware,
   requireDoubleSubmitCsrf,
-  asyncHandler(async (req: Request, res: Response) => {
+  asyncHandler(async (req: RouteRequest, res: Response) => {
     const userId = req.user?.id;
     if (!userId) throw new AppError('Not authenticated', 401);
 
@@ -1205,7 +1207,7 @@ router.post(
 router.put(
   '/password',
   authMiddleware,
-  asyncHandler(async (req: Request, res: Response) => {
+  asyncHandler(async (req: RouteRequest, res: Response) => {
     const userId = req.user?.id;
     if (!userId) throw new AppError('Not authenticated', 401);
 
@@ -1797,7 +1799,7 @@ const generateChallenge = (): string => {
  */
 router.post(
   '/webauthn/register/options',
-  asyncHandler(async (req: Request, res: Response) => {
+  asyncHandler(async (req: RouteRequest, res: Response) => {
     const { userId, userName, displayName } = req.body;
 
     if (!userId || !userName) {
@@ -1856,7 +1858,7 @@ router.post(
  */
 router.post(
   '/webauthn/register/verify',
-  asyncHandler(async (req: Request, res: Response) => {
+  asyncHandler(async (req: RouteRequest, res: Response) => {
     const { userId, credential } = req.body;
 
     if (!userId || !credential?.id || !credential?.rawId) {
@@ -1910,7 +1912,7 @@ router.post(
  */
 router.post(
   '/webauthn/authenticate/options',
-  asyncHandler(async (req: Request, res: Response) => {
+  asyncHandler(async (req: RouteRequest, res: Response) => {
     const { userId } = req.body;
 
     const challenge = generateChallenge();
@@ -1943,7 +1945,7 @@ router.post(
  */
 router.post(
   '/webauthn/authenticate/verify',
-  asyncHandler(async (req: Request, res: Response) => {
+  asyncHandler(async (req: RouteRequest, res: Response) => {
     const { credential, userId } = req.body;
 
     if (!credential?.id) {
@@ -2067,7 +2069,7 @@ router.post(
  */
 router.delete(
   '/webauthn/credentials/:userId/:credentialId',
-  asyncHandler(async (req: Request, res: Response) => {
+  asyncHandler(async (req: RouteRequest, res: Response) => {
     const rawUserId = req.params.userId;
     const rawCredId = req.params.credentialId;
 
@@ -2102,7 +2104,7 @@ router.delete(
 router.post(
   '/complete-social-registration',
   authMiddleware,
-  asyncHandler(async (req: Request, res: Response) => {
+  asyncHandler(async (req: RouteRequest, res: Response) => {
     const userId = req.user?.id;
     if (!userId) throw new AppError('Not authenticated', 401);
 
@@ -2201,7 +2203,7 @@ router.post(
 router.post(
   '/refresh',
   requireDoubleSubmitCsrf,
-  asyncHandler(async (req: Request, res: Response) => {
+  asyncHandler(async (req: RouteRequest, res: Response) => {
     const cookieValue = req.cookies?.refresh_token as string | undefined;
     if (!cookieValue || !cookieValue.includes(':')) {
       throw new AppError('No refresh token provided', 401);

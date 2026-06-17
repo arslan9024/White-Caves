@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Tenants API Routes â€” Full Implementation
  * Tenant management and leasing
  * Endpoints: /api/tenants
@@ -14,11 +14,13 @@ import { requirePermission, requireRole } from '../middleware/rbac';
 
 const router = Router();
 
+type RouteRequest = Request<Record<string, string>>;
+
 // â”€â”€â”€ GET /api/tenants â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 router.get(
   '/',
   requirePermission('view_contracts'),
-  asyncHandler(async (req: Request, res: Response) => {
+  asyncHandler(async (req: RouteRequest, res: Response) => {
     // AUTHORIZATION: Tenant PII restricted to managers/admins
     const allowedRoles = ['owner', 'manager', 'admin'];
     if (!allowedRoles.includes(req.user?.role || '')) {
@@ -68,7 +70,7 @@ router.get(
 router.get(
   '/stats',
   requirePermission('view_contracts'),
-  asyncHandler(async (req: Request, res: Response) => {
+  asyncHandler(async (req: RouteRequest, res: Response) => {
     // Authorization: Only managers+ can view tenant statistics
     const allowedRoles = ['owner', 'manager', 'admin'];
     if (!allowedRoles.includes((req as AuthRequest).user?.role || '')) {
@@ -101,7 +103,7 @@ router.get(
 router.get(
   '/:id',
   requirePermission('view_contracts'),
-  asyncHandler(async (req: Request, res: Response) => {
+  asyncHandler(async (req: RouteRequest, res: Response) => {
     validateIdParam(req.params.id, 'Tenant ID');
 
     // AUTHORIZATION: Tenant details restricted to managers/admins
@@ -119,7 +121,7 @@ router.get(
 router.post(
   '/',
   requirePermission('create_contracts'),
-  asyncHandler(async (req: Request, res: Response) => {
+  asyncHandler(async (req: RouteRequest, res: Response) => {
     // AUTHORIZATION: Only admins or property managers can create tenant records
     const isAdmin = ['owner', 'manager'].includes(req.user?.role || '');
     if (!isAdmin) {
@@ -206,7 +208,7 @@ router.post(
 router.patch(
   '/:id',
   requirePermission('create_contracts'),
-  asyncHandler(async (req: Request, res: Response) => {
+  asyncHandler(async (req: RouteRequest, res: Response) => {
     const { id } = req.params as Record<string, string>;
     validateIdParam(id, 'Tenant ID');
     const {
@@ -308,7 +310,7 @@ router.patch(
 router.delete(
   '/:id',
   requireRole('owner', 'manager', 'admin'),
-  asyncHandler(async (req: Request, res: Response) => {
+  asyncHandler(async (req: RouteRequest, res: Response) => {
     const { id } = req.params as Record<string, string>;
     validateIdParam(id, 'Tenant ID');
     const existing = await prisma.tenant.findUnique({ where: { id } });
@@ -342,7 +344,7 @@ router.delete(
 router.get(
   '/:id/leases',
   requirePermission('view_contracts'),
-  asyncHandler(async (req: Request, res: Response) => {
+  asyncHandler(async (req: RouteRequest, res: Response) => {
     validateIdParam(req.params.id, 'Tenant ID');
     const tenant = await prisma.tenant.findUnique({ where: { id: req.params.id } });
     if (!tenant) throw new AppError('Tenant not found', 404);

@@ -13,6 +13,8 @@ export interface AuthRequest extends Request {
     id: string;
     email: string;
     role: string;
+    name?: string;
+    phone?: string;
   };
 }
 

@@ -15,12 +15,17 @@ export interface CustomError extends Error {
   errors?: Array<{ field?: string; message: string }>;
 }
 
-type AsyncRouteHandler = (req: Request, res: Response, next?: NextFunction) => Promise<unknown>;
+type AsyncRouteHandler<Req extends Request = Request> = (
+  req: Req,
+  res: Response,
+  next?: NextFunction
+) => Promise<unknown>;
 
 // Async handler wrapper to catch errors
 export const asyncHandler =
-  (fn: AsyncRouteHandler) => (req: Request, res: Response, next: NextFunction) => {
-    Promise.resolve(fn(req, res, next)).catch(next);
+  <Req extends Request = Request>(fn: AsyncRouteHandler<Req>) =>
+  (req: Request, res: Response, next: NextFunction) => {
+    Promise.resolve(fn(req as Req, res, next)).catch(next);
   };
 
 // Common error class

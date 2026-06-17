@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Leads API Routes — Full CRUD Implementation
  * Endpoints: /api/leads
  * Supports: search, filter, pagination, bulk operations, analytics
@@ -61,12 +61,14 @@ import {
 
 const router = Router();
 
+type RouteRequest = Request<Record<string, string>>;
+
 // ─── GET /api/leads ─────────────────────────────────────────────────────
 router.get(
   '/',
   requirePermission('view_leads'),
   scopeToOwn('assignedToId'),
-  asyncHandler(async (req: Request, res: Response) => {
+  asyncHandler(async (req: RouteRequest, res: Response) => {
     const {
       status,
       source,
@@ -184,7 +186,7 @@ router.get(
   '/stats',
   requirePermission('view_leads'),
   requireMinRole('manager'),
-  asyncHandler(async (_req: Request, res: Response) => {
+  asyncHandler(async (_req: RouteRequest, res: Response) => {
     const [total, byStatus, bySource, avgScore] = await Promise.all([
       prisma.lead.count(),
       prisma.lead.groupBy({ by: ['status'], _count: { _all: true } }),
@@ -220,7 +222,7 @@ router.get(
   '/analytics/conversion',
   requirePermission('view_leads'),
   requireMinRole('manager'),
-  asyncHandler(async (_req: Request, res: Response) => {
+  asyncHandler(async (_req: RouteRequest, res: Response) => {
     const [total, won, lost] = await Promise.all([
       prisma.lead.count(),
       prisma.lead.count({ where: { status: 'won' } }),
@@ -248,7 +250,7 @@ router.get(
   '/sla-breaches',
   requirePermission('view_leads'),
   requireMinRole('manager'),
-  asyncHandler(async (req: Request, res: Response) => {
+  asyncHandler(async (req: RouteRequest, res: Response) => {
     const { page = '1', pageSize = '50' } = req.query as Record<string, string | undefined>;
     const pageNum = Math.max(1, parseInt(page as string, 10) || 1);
     const limit   = Math.min(100, Math.max(1, parseInt(pageSize as string, 10) || 50));
@@ -313,7 +315,7 @@ router.get(
   '/task-cockpit',
   requirePermission('view_leads'),
   scopeToOwn('assignedToId'),
-  asyncHandler(async (req: Request, res: Response) => {
+  asyncHandler(async (req: RouteRequest, res: Response) => {
     const ownerFilter = req.ownershipFilter ?? {};
     const leads = await prisma.lead.findMany({
       where: {
@@ -350,7 +352,7 @@ router.get(
 router.get(
   '/:id',
   requirePermission('view_leads'),
-  asyncHandler(async (req: Request, res: Response) => {
+  asyncHandler(async (req: RouteRequest, res: Response) => {
     validateIdParam(req.params.id, 'Lead ID');
     const lead = await prisma.lead.findUnique({
       where: { id: req.params.id },
@@ -383,7 +385,7 @@ router.get(
 router.get(
   '/:id/timeline',
   requirePermission('view_leads'),
-  asyncHandler(async (req: Request, res: Response) => {
+  asyncHandler(async (req: RouteRequest, res: Response) => {
     const { id } = req.params as Record<string, string>;
     validateIdParam(id, 'Lead ID');
 
@@ -437,7 +439,7 @@ router.get(
 router.post(
   '/',
   requirePermission('manage_leads'),
-  asyncHandler(async (req: Request, res: Response) => {
+  asyncHandler(async (req: RouteRequest, res: Response) => {
     const {
       name,
       email,
@@ -555,7 +557,7 @@ router.post(
 router.patch(
   '/:id',
   requirePermission('manage_leads'),
-  asyncHandler(async (req: Request, res: Response) => {
+  asyncHandler(async (req: RouteRequest, res: Response) => {
     const { id } = req.params as Record<string, string>;
     validateIdParam(id, 'Lead ID');
     const {
@@ -673,7 +675,7 @@ router.patch(
 router.delete(
   '/:id',
   requireRole('owner', 'manager', 'admin'),
-  asyncHandler(async (req: Request, res: Response) => {
+  asyncHandler(async (req: RouteRequest, res: Response) => {
     const { id } = req.params as Record<string, string>;
     validateIdParam(id, 'Lead ID');
 
@@ -711,7 +713,7 @@ router.delete(
 router.post(
   '/:id/activities',
   requirePermission('manage_leads'),
-  asyncHandler(async (req: Request, res: Response) => {
+  asyncHandler(async (req: RouteRequest, res: Response) => {
     const { id } = req.params as Record<string, string>;
     validateIdParam(id, 'Lead ID');
     const { type, action, description } = req.body;
@@ -765,7 +767,7 @@ router.post(
 router.get(
   '/:id/activities',
   requirePermission('view_leads'),
-  asyncHandler(async (req: Request, res: Response) => {
+  asyncHandler(async (req: RouteRequest, res: Response) => {
     validateIdParam(req.params.id, 'Lead ID');
     const { page = '1', pageSize = '20' } = req.query as Record<string, string | undefined>;
     const pageNum = Math.max(1, parseInt(page as string) || 1);
@@ -794,7 +796,7 @@ router.get(
 router.post(
   '/bulk-import',
   requirePermission('manage_leads'),
-  asyncHandler(async (req: Request, res: Response) => {
+  asyncHandler(async (req: RouteRequest, res: Response) => {
     const { leads } = req.body;
     if (!Array.isArray(leads) || leads.length === 0)
       throw new AppError('Provide an array of leads', 400);
@@ -849,7 +851,7 @@ router.post(
 router.get(
   '/scored',
   requirePermission('view_leads'),
-  asyncHandler(async (req: Request, res: Response) => {
+  asyncHandler(async (req: RouteRequest, res: Response) => {
     const {
       tier,
       minScore,
@@ -948,7 +950,7 @@ router.get(
 router.get(
   '/routing-rules',
   requirePermission('view_leads'),
-  asyncHandler(async (_req: Request, res: Response) => {
+  asyncHandler(async (_req: RouteRequest, res: Response) => {
     const rules = await getRoutingRules();
     const agents = await getAgentPerformance();
 
@@ -972,7 +974,7 @@ router.get(
 router.get(
   '/trending',
   requirePermission('view_leads'),
-  asyncHandler(async (req: Request, res: Response) => {
+  asyncHandler(async (req: RouteRequest, res: Response) => {
     const { days = '7', minChange = '10' } = req.query as Record<string, string | undefined>;
 
     const trends = await getScoreTrending({
@@ -1002,7 +1004,7 @@ router.get(
 router.post(
   '/:id/auto-route',
   requirePermission('manage_leads'),
-  asyncHandler(async (req: Request, res: Response) => {
+  asyncHandler(async (req: RouteRequest, res: Response) => {
     validateIdParam(req.params.id, 'Lead ID');
     const decision = await autoRouteHotLead(req.params.id);
 
@@ -1027,7 +1029,7 @@ router.post(
 router.get(
   '/:id/score',
   requirePermission('view_leads'),
-  asyncHandler(async (req: Request, res: Response) => {
+  asyncHandler(async (req: RouteRequest, res: Response) => {
     validateIdParam(req.params.id, 'Lead ID');
     const result = await scoreLead(req.params.id);
 
@@ -1058,7 +1060,7 @@ router.get(
 router.post(
   '/:id/score/override',
   requirePermission('manage_leads'),
-  asyncHandler(async (req: Request, res: Response) => {
+  asyncHandler(async (req: RouteRequest, res: Response) => {
     validateIdParam(req.params.id, 'Lead ID');
     const { score, reason } = req.body;
 
@@ -1094,7 +1096,7 @@ router.post(
 router.post(
   '/batch-rescore',
   requirePermission('manage_leads'),
-  asyncHandler(async (req: Request, res: Response) => {
+  asyncHandler(async (req: RouteRequest, res: Response) => {
     const allowedRoles = ['owner', 'manager', 'admin'];
     if (!allowedRoles.includes(req.user?.role || '')) {
       throw new AppError('Only managers can trigger batch re-scoring', 403);
@@ -1114,7 +1116,7 @@ router.post(
 router.get(
   '/:id/score/history',
   requirePermission('view_leads'),
-  asyncHandler(async (req: Request, res: Response) => {
+  asyncHandler(async (req: RouteRequest, res: Response) => {
     validateIdParam(req.params.id, 'Lead ID');
     const { limit = '50', days = '90' } = req.query as Record<string, string | undefined>;
     const history = await getScoreHistory(req.params.id, {
@@ -1138,7 +1140,7 @@ router.get(
 router.post(
   '/:id/score/whatsapp',
   requirePermission('manage_leads'),
-  asyncHandler(async (req: Request, res: Response) => {
+  asyncHandler(async (req: RouteRequest, res: Response) => {
     validateIdParam(req.params.id, 'Lead ID');
     const { intentScore, sentimentScore, engagementScore, responseTimeScore, conversationScore } =
       req.body;
@@ -1168,7 +1170,7 @@ router.post(
 router.get(
   '/agent-performance',
   requirePermission('view_analytics'),
-  asyncHandler(async (_req: Request, res: Response) => {
+  asyncHandler(async (_req: RouteRequest, res: Response) => {
     const agents = await getAgentPerformance();
     res.status(200).json({ success: true, data: agents });
   })
@@ -1184,7 +1186,7 @@ router.get(
 // TASK-008: All string inputs sanitized with sanitizeString()
 router.post(
   '/from-search',
-  asyncHandler(async (req: Request, res: Response) => {
+  asyncHandler(async (req: RouteRequest, res: Response) => {
     const { mode, location, propertyType, beds, minPrice, maxPrice, sessionId, searchedAt } =
       req.body as {
         mode?: string;
@@ -1277,7 +1279,7 @@ router.post(
 router.post(
   '/bulk-action',
   requirePermission('manage_leads'),
-  asyncHandler(async (req: Request, res: Response) => {
+  asyncHandler(async (req: RouteRequest, res: Response) => {
     const { ids, action, payload } = req.body as {
       ids: unknown;
       action: unknown;
@@ -1344,6 +1346,10 @@ router.post(
 
     // ── Execute in transaction ─────────────────────────────────────────────
     const validIds = (ids as string[]).filter(id => typeof id === 'string' && id.length > 0);
+    const activityMetadata: Prisma.InputJsonObject = {
+      bulkAction: typedAction,
+      payload: payloadObj as Prisma.InputJsonObject,
+    };
 
     await prisma.$transaction(async tx => {
       if (Object.keys(updateData).length > 0) {
@@ -1361,7 +1367,7 @@ router.post(
             description: activityDescription,
             userId: req.user?.id ?? null,
             leadId,
-            metadata: { bulkAction: typedAction, payload: payloadObj },
+            metadata: activityMetadata,
           },
         });
       }
@@ -1391,7 +1397,7 @@ router.post(
   '/:id/sla-nudge',
   requirePermission('manage_leads'),
   requireMinRole('manager'),
-  asyncHandler(async (req: Request, res: Response) => {
+  asyncHandler(async (req: RouteRequest, res: Response) => {
     const { id } = req.params as Record<string, string>;
     validateIdParam(id, 'Lead ID');
 
@@ -1460,7 +1466,7 @@ router.post(
 router.get(
   '/analytics/funnel',
   requirePermission('view_analytics'),
-  asyncHandler(async (req: Request, res: Response) => {
+  asyncHandler(async (req: RouteRequest, res: Response) => {
     const periodParam = String(req.query.period ?? '30d');
     const VALID_PERIODS = ['7d', '30d', '90d'] as const;
     type Period = typeof VALID_PERIODS[number];
