@@ -21,6 +21,9 @@ Each wave should be executed only in roadmap order.
 | 17 | Full UI/UX luxury upgrade (tokens + animations + mobile + PWA + WCAG 2.2) | ✅ Complete | [`SDD`](./WAVE_17_SDD.md) | [`Readiness`](./WAVE_17_READINESS_PACKET.md) | [`Backlog`](./WAVE_17_IMPLEMENTATION_BACKLOG.md) | [`Tests`](./WAVE_17_TEST_ROLLOUT.md) |
 | 18 | Workflow parity audit + benchmark gap backlog | ✅ Complete | [`SDD`](./WAVE_18_SDD.md) | [`Readiness`](./WAVE_18_READINESS_PACKET.md) | [`Backlog`](./WAVE_18_IMPLEMENTATION_BACKLOG.md) | [`Tests`](./WAVE_18_TEST_ROLLOUT.md) |
 | 19 | Identity & Access v2 + `/crm` routing + MD workspace split | 📋 Planned | [`SDD`](./WAVE_19_SDD.md) | [`Readiness`](./WAVE_19_READINESS_PACKET.md) | [`Backlog`](./WAVE_19_IMPLEMENTATION_BACKLOG.md) | [`Tests`](./WAVE_19_TEST_ROLLOUT.md) |
+| 20 | Full Leasing & Tenancy — Ejari, PDC, Tenant Portal, Landlord Portal | 📋 Planned | [`SDD`](./WAVE_20_SDD.md) | [`Readiness`](./WAVE_20_READINESS_PACKET.md) | [`Backlog`](./WAVE_20_IMPLEMENTATION_BACKLOG.md) | — |
+| 21 | Finance, UAE VAT, Commission Engine & Compliance Reporting | 📋 Planned | [`SDD`](./WAVE_21_SDD.md) | [`Readiness`](./WAVE_21_READINESS_PACKET.md) | [`Backlog`](./WAVE_21_IMPLEMENTATION_BACKLOG.md) | — |
+| 22 | Market Intelligence, Off-Plan Projects, Valuation & Advanced Analytics | 📋 Planned | [`SDD`](./WAVE_22_SDD.md) | [`Readiness`](./WAVE_22_READINESS_PACKET.md) | [`Backlog`](./WAVE_22_IMPLEMENTATION_BACKLOG.md) | — |
 
 ## Notes
 
@@ -32,3 +35,4 @@ Each wave should be executed only in roadmap order.
 - Wave 11 now includes an explicit test rollout so every active planned wave uses the same four-artifact pattern.
 - Superseded root-level Wave 12 market-intelligence docs were archived to `../archives/` to avoid naming collisions with the active Wave 12 automation bundle.
 - Wave 17 (Full UI/UX Luxury Upgrade) is implemented and validated; see the Wave 17 bundle docs for closeout details.
+- **Waves 20–22 added June 2026:** Full leasing & tenancy lifecycle (Wave 20), UAE VAT + commission engine (Wave 21), and market intelligence + off-plan + advanced analytics (Wave 22). Each has SDD, readiness packet, and full implementation backlog. Entry gates follow standard approval phrase sequence.

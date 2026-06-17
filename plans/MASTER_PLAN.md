@@ -62,6 +62,9 @@
 | 9 | 17 | Full UI/UX luxury upgrade (design tokens + animations + mobile + PWA + WCAG 2.2) | @Una + @Lea + @Tracy + @Africa + @Cyra + @Katherine | ✅ Complete | [`IMPROVEMENTS_UX.md`](./IMPROVEMENTS_UX.md), [`ui-ux-specification.md`](../../business_docs/06_design_architecture/ui-ux-specification.md) | Wave 16 green + free-agent specs + readiness 60% + @Ada approval phrase | Glassmorphism + animations + mobile + PWA + WCAG 2.2 all closed; Lighthouse CI gate green |
 | 10 | 18 | Cross-platform workflow parity audit + prioritized gap backlog | @Ada + @Margaret + @Mira + @Katherine | ✅ Complete | [`WAVE_18_WORKFLOW_PARITY_MATRIX.md`](./waves/WAVE_18_WORKFLOW_PARITY_MATRIX.md), [`WAVE_18_1_IMPLEMENTATION_BACKLOG.md`](./waves/WAVE_18_1_IMPLEMENTATION_BACKLOG.md), [`functional-requirements.md`](../business_docs/05_requirements/functional-requirements.md), [`business_docs/04_workflows/README.md`](../business_docs/04_workflows/README.md) | Wave 17 green + readiness 60% + @Ada approval phrase | Parity matrix finalized, top-20 P0 queue locked, canonical plans updated, `npm run plans:validate` green |
 | 11 | 19 | Identity & Access v2 + `/crm` routing + MD workspace split | @Ada + @Mira + @Una + @Katherine + @Radia | 📋 Planned | [`WAVE_19_SDD.md`](./waves/WAVE_19_SDD.md), [`WAVE_19_IMPLEMENTATION_BACKLOG.md`](./waves/WAVE_19_IMPLEMENTATION_BACKLOG.md), [`functional-requirements.md`](../business_docs/05_requirements/functional-requirements.md) | Wave 18.1 Session 3 closeout + readiness 60% + @Ada approval phrase | Auth/profile/routing/IA validation gates green; trackers + plans stay synchronized |
+| 12 | 20 | Full Leasing & Tenancy — Ejari, PDC, Tenant Portal, Landlord Portal | @Victoria + @Mira + @Una + @Barbara + @Katherine | 📋 Planned | [`WAVE_20_SDD.md`](./waves/WAVE_20_SDD.md), [`WAVE_20_IMPLEMENTATION_BACKLOG.md`](./waves/WAVE_20_IMPLEMENTATION_BACKLOG.md), [`tenancy-ejari.md`](../business_docs/09_crm_features/tenancy-ejari.md), [`tenant-portal.md`](../business_docs/09_crm_features/tenant-portal.md) | Wave 19 green + readiness 60% + @Ada approval phrase | Lease lifecycle, PDC bounce flow, tenant/landlord portals, RBAC all verified; validation green |
+| 13 | 21 | Finance, UAE VAT, Commission Engine & Compliance Reporting | @Invoice + @Mira + @Barbara + @Sofia + @Katherine | 📋 Planned | [`WAVE_21_SDD.md`](./waves/WAVE_21_SDD.md), [`WAVE_21_IMPLEMENTATION_BACKLOG.md`](./waves/WAVE_21_IMPLEMENTATION_BACKLOG.md), [`financial-reporting.md`](../business_docs/09_crm_features/financial-reporting.md), [`revenue-model.md`](../business_docs/07_business_model/revenue-model.md) | Wave 20 green + readiness 60% + @Ada approval phrase | VAT engine, commission approval, immutable ledger, P&L, and VAT return all verified; validation green |
+| 14 | 22 | Market Intelligence, Off-Plan Projects, Valuation & Advanced Analytics | @Cassie + @Fei-Fei + @Maya + @Mira + @Una + @Barbara | 📋 Planned | [`WAVE_22_SDD.md`](./waves/WAVE_22_SDD.md), [`WAVE_22_IMPLEMENTATION_BACKLOG.md`](./waves/WAVE_22_IMPLEMENTATION_BACKLOG.md), [`analytics-dashboard.md`](../business_docs/09_crm_features/analytics-dashboard.md), [`off-plan-projects.md`](../business_docs/09_crm_features/off-plan-projects.md) | Wave 21 green + readiness 60% + @Ada approval phrase | AVM, off-plan lifecycle, Oqood tracking, analytics snapshots, RERA license guard all verified; validation green |
 
 ---
 
@@ -83,6 +86,9 @@ Use [`waves/README.md`](./waves/README.md) for the full bundle list.
 | 17 | ✅ Complete | [`Wave 17`](./waves/WAVE_17_SDD.md) |
 | 18 | ✅ Complete | [`Wave 18`](./waves/WAVE_18_SDD.md) |
 | 19 | 📋 Planned | [`Wave 19`](./waves/WAVE_19_SDD.md) |
+| 20 | 📋 Planned | [`Wave 20`](./waves/WAVE_20_SDD.md) |
+| 21 | 📋 Planned | [`Wave 21`](./waves/WAVE_21_SDD.md) |
+| 22 | 📋 Planned | [`Wave 22`](./waves/WAVE_22_SDD.md) |
 
 ---
 

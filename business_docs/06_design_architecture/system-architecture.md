@@ -388,4 +388,194 @@ Before marking a migration wave complete:
 
 ---
 
-**Version:** 1.0 | **Last Updated:** March 2026 | **Maintained By:** Technical Team
+## 9. Interactive Map Search Architecture
+
+### 9.1 Overview
+
+The map-based property search is a core discovery feature. It displays geo-located property pins, neighborhood clusters, and area price heatmaps with real-time filter synchronization.
+
+### 9.2 Frontend Map Component
+
+| Layer | Technology | Purpose |
+|---|---|---|
+| Base map | Leaflet.js v1.9 (OSM dev) / Mapbox GL JS (prod) | Tile rendering |
+| Clustering | `leaflet.markercluster` | Group >50 pins in viewport |
+| Heatmap | Leaflet choropleth layer (Recharts fallback) | Price per sqft by area |
+| GeoJSON | `public/geojson/dubai-areas.geojson` | 30 Dubai neighborhood polygons |
+
+**Pin rendering rules:**
+- Each pin shows price label (e.g., "AED 1.2M") and bedroom count
+- Cluster bubble shows count; click expands
+- Max 500 visible pins per viewport (beyond threshold → clusters only)
+- Property card popup on pin click: photo thumbnail, price, beds/baths, deep-link
+
+**Sidebar sync:**
+- Sidebar property list reflects only pins in current viewport bounding box
+- List virtualized (react-window) for performance
+- Scroll-to-pin on list item hover
+
+### 9.3 Geospatial Backend
+
+```typescript
+// MongoDB 2dsphere index
+db.properties.createIndex({ location: "2dsphere" })
+
+// Property location schema
+location: {
+  type: "Point",
+  coordinates: [longitude, latitude]  // GeoJSON standard: lng first
+}
+
+// Radius search (km)
+db.properties.find({
+  location: {
+    $near: {
+      $geometry: { type: "Point", coordinates: [lng, lat] },
+      $maxDistance: radiusMeters
+    }
+  }
+})
+
+// Polygon neighborhood search
+db.properties.find({
+  location: {
+    $geoWithin: {
+      $geometry: neighborhoodPolygon  // GeoJSON Polygon
+    }
+  }
+})
+```
+
+### 9.4 Viewport Performance Guard
+
+1. Every map move triggers `GET /api/v1/properties/map?bbox=lng1,lat1,lng2,lat2&filters=...`
+2. Backend limits response to 500 pins within bbox
+3. Debounce: 300ms after map move stops before API call fires
+4. Response cached for identical bbox queries (Redis, 60s TTL)
+
+### 9.5 Saved Map Search
+
+- User saves current viewport bbox + active filters as named search
+- `POST /api/v1/saved-searches` stores bbox, filters, name, alertEnabled
+- Background cron (every 4 hours) checks new listings matching saved search bbox
+- Push notification + email on match
+
+### 9.6 Dubai Area GeoJSON
+
+- Source: OpenStreetMap Overpass API export
+- File: `public/geojson/dubai-areas.geojson`
+- Neighborhoods covered: Downtown Dubai, Dubai Marina, JBR, JVC, JLT, DIFC, Business Bay, Palm Jumeirah, Jumeirah, Mirdif, Deira, Bur Dubai, Dubai Hills Estate, Arabian Ranches, Emirates Hills, Al Barsha, Jumeirah Village Circle, Silicon Oasis, International City, Sports City, Motor City, Damac Hills, Reem, Mudon, Akoya, Dubai Creek Harbour, MBR City, Expo City, Al Furjan, Discovery Gardens
+- Update frequency: Annually; admin panel upload for additions
+
+---
+
+## 10. Cache & Redis Architecture
+
+### 10.1 Caching Strategy
+
+| Data Type | Cache Layer | TTL | Invalidation |
+|---|---|---|---|
+| Property listings (search) | Redis | 5 min | On property update |
+| Map bbox results | Redis | 60 sec | On property update in bbox |
+| Analytics snapshots | Redis | 15 min | Nightly cron refresh |
+| Live counters (leads/viewings) | Redis (INCR) | Persistent | Atomic INCR/DECR on events |
+| Currency exchange rates | Redis | 4 hours | Stale-while-revalidate |
+| RERA rental index | Redis | 24 hours | Admin manual refresh |
+| User session tokens | Redis | 7 days | On logout / password change |
+
+### 10.2 Redis Key Namespace
+
+```
+wc:search:bbox:{bbox_hash}         → bbox property results
+wc:property:{propertyId}           → full property detail
+wc:analytics:live:leads            → today's lead count (INCR)
+wc:analytics:live:viewings         → active viewings count (INCR)
+wc:analytics:live:maintenance      → open maintenance tickets (INCR)
+wc:currency:rate:{from}:{to}       → exchange rate
+wc:rera:rental-index:{year}        → RERA rental index table
+wc:session:{userId}                → JWT refresh token
+wc:rate-limit:{ip}:{endpoint}      → rate-limit sliding window
+```
+
+### 10.3 Cache Invalidation Patterns
+
+1. **Property update** → delete `wc:property:{id}`, delete all `wc:search:bbox:*` (pattern flush on update)
+2. **Deal close** → INCR `wc:analytics:live:deals`; nightly cron writes to persistent analytics_snapshots
+3. **Session logout** → delete `wc:session:{userId}` immediately
+4. **Redis restart** → rehydrate live counters from MongoDB aggregation on startup (async, 200ms budget)
+
+### 10.4 Redis Cluster Sizing (Atlas / Railway)
+
+| Environment | Tier | Memory | Use Case |
+|---|---|---|---|
+| Development | Local Redis (Docker) | 256MB | Dev only |
+| Staging | Redis Cloud Free (30MB) | 30MB | Smoke tests |
+| Production | Redis Cloud Essentials | 1GB → 5GB | Full prod load |
+
+### 10.5 Circuit Breaker Pattern
+
+- All Redis calls wrapped in try/catch
+- On Redis failure → fallback to MongoDB query (log warning, no user-facing error)
+- Redis health included in `/api/v1/health` endpoint response
+
+---
+
+## 11. PWA & Offline Architecture
+
+### 11.1 Service Worker Strategy
+
+| Route Category | Cache Strategy | Offline Behavior |
+|---|---|---|
+| Static assets (JS/CSS/fonts) | Cache-first (Workbox) | Served from cache always |
+| API: property listings | Network-first (15s timeout) | Serve stale cache if offline |
+| API: lead/viewing data | Stale-while-revalidate | Show stale; sync when online |
+| API: auth tokens | Network-only | Redirect to login if offline |
+| API: write operations (POST/PATCH) | Network-only + background sync | Queue for sync when online |
+
+### 11.2 Background Sync (Offline Write Queue)
+
+```typescript
+// IndexedDB offline queue schema
+interface OfflineAction {
+  id: string
+  endpoint: string
+  method: 'POST' | 'PATCH' | 'DELETE'
+  body: Record<string, unknown>
+  timestamp: number
+  retries: number
+}
+```
+
+- Draft leads, notes, and viewing feedback captured in IndexedDB when offline
+- Background sync fires on reconnect (SW `sync` event)
+- Conflict resolution: server-timestamp-wins for concurrent edits
+- Stale data banner shown when serving from cache
+
+### 11.3 Install + Update Lifecycle
+
+1. First visit: SW registered; critical assets precached
+2. App update available: toast notification ("Update available — tap to reload")
+3. User taps → `skipWaiting()` → page reloads with new SW
+4. Offline install prompt: deferred until user engages (not on first visit)
+
+### 11.4 Web App Manifest (`manifest.json`)
+
+```json
+{
+  "name": "White Caves CRM",
+  "short_name": "WhiteCaves",
+  "theme_color": "#0A0A0A",
+  "background_color": "#0A0A0A",
+  "display": "standalone",
+  "start_url": "/crm",
+  "icons": [
+    { "src": "/icons/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "/icons/icon-512.png", "sizes": "512x512", "type": "image/png" }
+  ]
+}
+```
+
+---
+
+**Version:** 1.1 | **Last Updated:** June 2026 | **Maintained By:** Technical Team  
+**Change Log:** v1.0 — Initial architecture (March 2026); v1.1 — Map search, Redis cache, PWA architecture added (June 2026)
