@@ -1,11 +1,13 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { ReactReduxContext } from 'react-redux';
+import { ReactReduxContext, useSelector } from 'react-redux';
 import { selectSearchLeadCount } from '../../../store/slices/searchLeadsSlice';
 import type { OverviewTabProps } from './types';
 import { colors } from '../../../styles/theme/colors';
 import './TabStyles.css';
 import type { RootState } from '../../../store/store';
 import { SkeletonKPI } from '../../ui/Skeleton';
+import { isCreatorSuperUserEmail } from '../../../utils/superUserAccess';
+import { AI_ASSISTANTS_REGISTRY } from '../../../store/slices/aiAssistant/registry';
 
 const PRIMARY_COLOR: string = colors.primary;
 
@@ -76,10 +78,13 @@ const AnimatedMetric: React.FC<AnimatedMetricProps> = ({
 };
 
 const OverviewTab: React.FC<OverviewTabProps> = ({ data, loading, onQuickAction }) => {
+  const [snapshotsExpanded, setSnapshotsExpanded] = useState(true);
   const reduxContext = React.useContext(ReactReduxContext);
+  const currentUser = useSelector((state: RootState) => state.user.currentUser);
   const homepageSearchLeads = reduxContext?.store
     ? selectSearchLeadCount(reduxContext.store.getState() as RootState)
     : 0;
+  const isManagingDirector = isCreatorSuperUserEmail(currentUser?.email);
 
   if (loading) {
     return (
@@ -180,9 +185,58 @@ const OverviewTab: React.FC<OverviewTabProps> = ({ data, loading, onQuickAction 
   ];
 
   const recentActivities = data?.recentActivities || [];
+  const moduleZones = [
+    {
+      title: '🔴 Executive Command',
+      modules: ['ZoeExecutiveCRM', 'UnifiedCRM'],
+    },
+    {
+      title: '📱 Sales & Leads',
+      modules: ['ClaraLeadsCRM', 'SophiaSalesCRM', 'HunterProspectingCRM'],
+    },
+    {
+      title: '🏠 Inventory',
+      modules: ['MaryInventoryCRM', 'SentinelPropertyCRM'],
+    },
+    {
+      title: '📋 Leasing',
+      modules: ['DaisyLeasingCRM', 'EvangelineLegalCRM', 'VestaHandoverCRM'],
+    },
+    {
+      title: '💰 Finance',
+      modules: ['TheodoraFinanceCRM', 'MavenInvestmentCRM', 'CipherMarketCRM'],
+    },
+    {
+      title: '💬 Communications',
+      modules: ['NadiaWhatsAppCRM', 'LindaWhatsAppCRM', 'OliviaMarketingCRM'],
+    },
+    {
+      title: '🤖 AI Command',
+      modules: ['AICommandCenter', 'AgentTaskCockpit', 'ZoeConsole'],
+    },
+    {
+      title: '⚙️ Operations',
+      modules: ['NancyHRCRM', 'HenryAuditCRM', 'RERAComplianceModule', 'DLDIntegrationModule'],
+    },
+  ];
+  const assistantPreview = Object.values(AI_ASSISTANTS_REGISTRY).slice(0, 12);
 
   return (
     <div className="overview-tab">
+      {isManagingDirector && (
+        <section className="overview-hero" style={{ marginBottom: 16 }}>
+          <div>
+            <span className="tab-section-kicker">Managing Director cockpit</span>
+            <h2>Company Pulse</h2>
+            <p>Monitor every core operation, live activity, AI assistant status, and team outputs.</p>
+          </div>
+          <div className="overview-hero__meta">
+            <span>Hierarchy enabled</span>
+            <strong>All departments organized</strong>
+          </div>
+        </section>
+      )}
+
       <section className="overview-hero">
         <div>
           <span className="tab-section-kicker">Executive snapshot</span>
@@ -251,6 +305,81 @@ const OverviewTab: React.FC<OverviewTabProps> = ({ data, loading, onQuickAction 
               <span className="tab-section-kicker">Revenue</span>
               <h3>Revenue Trend (2024)</h3>
             </div>
+
+            {isManagingDirector && (
+              <>
+                <section className="quick-actions-section">
+                  <div className="tab-section-heading">
+                    <div>
+                      <span className="tab-section-kicker">Department zones</span>
+                      <h3>Organized command modules</h3>
+                    </div>
+                    <p>Structured by hierarchy for executive control and quick switching.</p>
+                  </div>
+                  <div className="quick-actions-grid">
+                    {moduleZones.map(zone => (
+                      <article key={zone.title} className="quick-action-btn" style={{ cursor: 'default' }}>
+                        <span className="action-label" style={{ marginBottom: 6, fontWeight: 700 }}>
+                          {zone.title}
+                        </span>
+                        <span style={{ fontSize: 12, color: '#94a3b8' }}>{zone.modules.join(' • ')}</span>
+                      </article>
+                    ))}
+                  </div>
+                </section>
+
+                <section className="quick-actions-section">
+                  <div className="tab-section-heading">
+                    <div>
+                      <span className="tab-section-kicker">AI Assistants</span>
+                      <h3>Live assistant strip</h3>
+                    </div>
+                    <p>Status visibility for all assistant teams.</p>
+                  </div>
+                  <div className="quick-actions-grid">
+                    {assistantPreview.map(assistant => (
+                      <article key={assistant.id} className="quick-action-btn" style={{ cursor: 'default' }}>
+                        <span className="action-icon">{assistant.avatar}</span>
+                        <span className="action-label">{assistant.name}</span>
+                        <span style={{ fontSize: 11, color: '#94a3b8' }}>{assistant.department}</span>
+                      </article>
+                    ))}
+                  </div>
+                </section>
+
+                <section className="quick-actions-section">
+                  <div className="tab-section-heading">
+                    <div>
+                      <span className="tab-section-kicker">Performance snapshots</span>
+                      <h3>Compact executive metrics</h3>
+                    </div>
+                    <button
+                      type="button"
+                      className="quick-action-btn"
+                      onClick={() => setSnapshotsExpanded(current => !current)}
+                    >
+                      {snapshotsExpanded ? 'Hide snapshots' : 'Show snapshots'}
+                    </button>
+                  </div>
+                  {snapshotsExpanded && (
+                    <div className="quick-actions-grid">
+                      <article className="quick-action-btn" style={{ cursor: 'default' }}>
+                        <span className="action-label">FunnelEconomicsDashboard</span>
+                        <span style={{ fontSize: 12, color: '#94a3b8' }}>Conversion and revenue funnel</span>
+                      </article>
+                      <article className="quick-action-btn" style={{ cursor: 'default' }}>
+                        <span className="action-label">KPIBaselineTracker</span>
+                        <span style={{ fontSize: 12, color: '#94a3b8' }}>Target vs actual progression</span>
+                      </article>
+                      <article className="quick-action-btn" style={{ cursor: 'default' }}>
+                        <span className="action-label">LeadTimeline</span>
+                        <span style={{ fontSize: 12, color: '#94a3b8' }}>Lead journey timing and actions</span>
+                      </article>
+                    </div>
+                  )}
+                </section>
+              </>
+            )}
             <p>Month-over-month performance in AED millions.</p>
           </div>
           <div className="simple-chart">

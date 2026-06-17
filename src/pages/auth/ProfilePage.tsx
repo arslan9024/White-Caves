@@ -5,6 +5,7 @@ import { useUserProfile } from '../../hooks/useUserProfile';
 import { BiometricSetup } from '../../features/auth/components/BiometricLogin';
 import { authFetch } from '../../utils/authFetch';
 import { isCreatorRole } from '../../config/ROLE_TAB_MAPPING';
+import '../../styles/dashboard-tokens.css';
 
 // â”€â”€â”€ Luxury Styles â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
@@ -468,6 +469,24 @@ const ProfilePage: FC = () => {
     ((user as Record<string, unknown>).photoUrl as string | undefined);
   const initials = (user.name || user.email || 'U')[0].toUpperCase();
   const roleLabel = userRole ? getRoleLabel(userRole.role) : 'No role';
+  const profileChecklist = [
+    { key: 'name', label: 'Display name', complete: Boolean((profileName || user.name || '').trim()) },
+    { key: 'phone', label: 'Phone number', complete: Boolean((profilePhone || user.phone || '').trim()) },
+    { key: 'role', label: 'Role title', complete: Boolean((userRole?.role || user.role || '').trim()) },
+    { key: 'avatar', label: 'Profile avatar', complete: Boolean(avatarSrc) },
+  ];
+  const profileCompletedCount = profileChecklist.filter(item => item.complete).length;
+  const profileCompletionPercent = Math.round((profileCompletedCount / profileChecklist.length) * 100);
+  const isProfileComplete = profileCompletionPercent === 100;
+  const dashboardPath =
+    normalizeDashboardRole(userRole?.role || user.role || '') === 'owner'
+      ? '/crm'
+      : normalizeDashboardRole(userRole?.role || user.role || '') === 'landlord'
+        ? '/landlord-portal'
+        : normalizeDashboardRole(userRole?.role || user.role || '') === 'tenant'
+          ? '/tenant-portal'
+          : '/crm';
+  const dashboardLabel = isFounder ? 'Enter Dashboard' : 'Go to dashboard';
 
   // â”€â”€â”€ Tab content renderer â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
@@ -877,6 +896,92 @@ const ProfilePage: FC = () => {
               <span style={styles.statLabel}>{stat.label}</span>
             </div>
           ))}
+        </div>
+
+        <div
+          style={{
+            margin: '18px 40px 0',
+            padding: '14px',
+            border: '1px solid #2A2A2A',
+            borderRadius: 12,
+            background: '#121212',
+          }}
+        >
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12 }}>
+            <div>
+              <strong style={{ fontSize: 14 }}>Profile completion</strong>
+              <p style={{ fontSize: 12, color: '#9CA3AF', margin: '4px 0 0' }}>
+                Complete your account to unlock smooth dashboard access.
+              </p>
+            </div>
+            <span style={{ fontSize: 13, color: '#C9A84C', fontWeight: 700 }}>
+              {profileCompletionPercent}%
+            </span>
+          </div>
+          <div
+            style={{
+              marginTop: 10,
+              width: '100%',
+              height: 8,
+              borderRadius: 999,
+              background: '#1F2937',
+              overflow: 'hidden',
+            }}
+            role="progressbar"
+            aria-valuemin={0}
+            aria-valuemax={100}
+            aria-valuenow={profileCompletionPercent}
+            aria-label="Profile completion status"
+          >
+            <div
+              style={{
+                width: `${profileCompletionPercent}%`,
+                height: '100%',
+                background: 'linear-gradient(90deg, #C9A84C, #D6BC6E)',
+                transition: 'width 0.2s ease',
+              }}
+            />
+          </div>
+          {!isProfileComplete && (
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginTop: 10 }}>
+              {profileChecklist
+                .filter(item => !item.complete)
+                .map(item => (
+                  <span
+                    key={item.key}
+                    style={{
+                      padding: '4px 10px',
+                      borderRadius: 999,
+                      background: '#7F1D1D33',
+                      border: '1px solid #EF444444',
+                      color: '#FCA5A5',
+                      fontSize: 11,
+                    }}
+                  >
+                    Missing {item.label}
+                  </span>
+                ))}
+            </div>
+          )}
+          <div style={{ marginTop: 12, display: 'flex', justifyContent: 'flex-end' }}>
+            <button
+              type="button"
+              style={{
+                ...styles.btnPrimary,
+                opacity: isProfileComplete ? 1 : 0.55,
+                cursor: isProfileComplete ? 'pointer' : 'not-allowed',
+              }}
+              onClick={() => {
+                if (!isProfileComplete) {
+                  setActiveTab('settings');
+                  return;
+                }
+                navigate(dashboardPath);
+              }}
+            >
+              {dashboardLabel}
+            </button>
+          </div>
         </div>
       </div>
 

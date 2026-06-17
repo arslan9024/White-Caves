@@ -36,7 +36,15 @@ interface ProfilePageUser {
   photoURL?: string;
   photoUrl?: string;
   role?: string;
+  displayName?: string;
+  profileComplete?: boolean;
 }
+
+const isProfileComplete = (user: {
+  name?: string;
+  displayName?: string;
+  phone?: string;
+}): boolean => Boolean((user.name || user.displayName || '').trim() && (user.phone || '').trim());
 
 export function useUserProfile() {
   const navigate = useNavigate();
@@ -125,13 +133,17 @@ export function useUserProfile() {
       await response.json();
       // Update Redux user state with new data
       if (user?.id && user?.email) {
+        const nextName = profileName.trim();
+        const nextPhone = profilePhone.trim() || undefined;
         dispatch(
           setUser({
             ...user,
             id: user.id,
             email: user.email,
-            name: profileName.trim(),
-            phone: profilePhone.trim() || undefined,
+            name: nextName,
+            displayName: nextName,
+            phone: nextPhone,
+            profileComplete: isProfileComplete({ name: nextName, phone: nextPhone }),
           })
         );
       }

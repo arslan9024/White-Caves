@@ -1,36 +1,8 @@
 :root {
-  --dashboard-bg: #f8f9fa;
-  --dashboard-surface: #ffffff;
-  --dashboard-surface-muted: #fdfdfd;
-  --dashboard-surface-alt: #f5f7fb;
-  --dashboard-border: #e5e7eb;
-  --dashboard-border-strong: #d7dce4;
-  --dashboard-text: #1f2937;
-  --dashboard-text-muted: #6b7280;
-  --dashboard-text-soft: #94a3b8;
-  --dashboard-brand: #e31e24;
-  --dashboard-brand-strong: #b71c1c;
-  --dashboard-brand-soft: rgba(227, 30, 36, 0.1);
-  --dashboard-focus: rgba(183, 28, 28, 0.18);
-  --dashboard-success: #15803d;
-  --dashboard-warning: #b45309;
-  --dashboard-info: #1d4ed8;
-
-  --shadow-card: 0 8px 24px rgba(15, 23, 42, 0.06);
-  --shadow-hover: 0 18px 40px rgba(15, 23, 42, 0.12);
-  --shadow-modal: 0 28px 60px rgba(15, 23, 42, 0.24);
-
-  --sidebar-width: 64px;
-  --sidebar-expanded: 240px;
-
-  --kpi-bg: linear-gradient(180deg, #ffffff 0%, #fcfcfd 100%);
-  --kpi-accent: var(--dashboard-brand);
-  --kpi-change-positive: #15803d;
-  --kpi-change-negative: #b91c1c;
-
-  --dashboard-radius-sm: 10px;
-  --dashboard-radius-md: 16px;
-  --dashboard-radius-lg: 24px;
-  --dashboard-topbar-height: 64px;
-  --dashboard-content-max: 1680px;
+  --bg-base: #0a0a0a;
+  --bg-surface: #141414;
+  --border-subtle: #2a2a2a;
+  --text-primary: #f5f5f0;
+  --gold: #c9a84c;
+  --text-muted: #9ca3af;
 }

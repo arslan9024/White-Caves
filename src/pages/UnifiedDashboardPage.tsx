@@ -1,26 +1,34 @@
 import React, {
   FC,
-  KeyboardEvent,
   ReactNode,
   ComponentType,
   lazy,
   Suspense,
   useEffect,
   useMemo,
-  useRef,
   useState,
 } from 'react';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
+import { useReducedMotion } from 'framer-motion';
 import SuspenseLoader from '../components/common/SuspenseLoader';
 import RouteErrorBoundary from '../components/RouteErrorBoundary';
 import DepartmentContentPanel from '../components/layout/DepartmentContentPanel/DepartmentContentPanel';
 import MobileCRMDrawer from '../components/layout/MobileCRMDrawer';
 import AuthenticatedPageShell from '../components/layout/authenticated/AuthenticatedPageShell';
+import DashboardShell from '../components/layout/DashboardShell/DashboardShell';
+import DashboardTopBar from '../components/layout/DashboardTopBar/DashboardTopBar';
+import DashboardSidebar from '../components/layout/DashboardSidebar/DashboardSidebar';
 import SubNavBar from '../components/common/SubNavBar';
 import { DashboardSubTabRenderer } from '../components/dashboard/DashboardRenderer';
 import SuperuserControlCenter from '../components/dashboard/SuperuserControlCenter';
+import DashboardKPIStrip from '../components/dashboard/DashboardKPIStrip';
+import DashboardGreetingBanner from '../components/dashboard/DashboardGreetingBanner';
+import DashboardCommandPalette from '../components/dashboard/DashboardCommandPalette';
+import DashboardWorkspaceTabs from '../components/dashboard/DashboardWorkspaceTabs';
+import DashboardActivityFeed from '../components/dashboard/DashboardActivityFeed';
+import DashboardModuleGrid from '../components/dashboard/DashboardModuleGrid';
+import AIAssistantGrid from '../components/dashboard/AIAssistantGrid';
 import CRMContextPanel from '../components/crm/CRMContextPanel';
 import { useUnifiedDashboard } from '../hooks/useUnifiedDashboard';
 import type { DashboardData, CRMModuleProps } from '../hooks/useUnifiedDashboard';
@@ -33,8 +41,8 @@ import {
   groupWorkspacesForMD,
 } from '../config/crmNavigationSchema';
 import type { RootState } from '../store/store';
-import type { RoleTab } from '../config/ROLE_TAB_MAPPING';
 import './UnifiedDashboardPage.css';
+import '../styles/dashboard-tokens.css';
 
 import OverviewTab from '../components/owner/tabs/OverviewTab';
 import PropertiesTab from '../components/owner/tabs/PropertiesTab';
@@ -178,8 +186,6 @@ const UnifiedDashboardPage: FC = () => {
   const [departmentsExpanded, setDepartmentsExpanded] = useState(true);
   const [selectedContext, setSelectedContext] = useState<SearchItem | null>(null);
   const [isMobileDrawerOpen, setIsMobileDrawerOpen] = useState(false);
-  const globalSearchRef = useRef<HTMLDivElement | null>(null);
-  const tabButtonRefs = useRef<Array<HTMLButtonElement | null>>([]);
 
   useEffect(() => {
     if (!selectedAssistant) return;
@@ -189,7 +195,7 @@ const UnifiedDashboardPage: FC = () => {
   }, [selectedAssistant, handleCRMModuleSelect]);
 
   useEffect(() => {
-    const onKeyDown = (event: KeyboardEvent | globalThis.KeyboardEvent) => {
+    const onKeyDown = (event: globalThis.KeyboardEvent) => {
       if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === 'k') {
         event.preventDefault();
         setIsCommandPaletteOpen(true);
@@ -203,17 +209,6 @@ const UnifiedDashboardPage: FC = () => {
 
     window.addEventListener('keydown', onKeyDown);
     return () => window.removeEventListener('keydown', onKeyDown);
-  }, []);
-
-  useEffect(() => {
-    const handleOutsideClick = (event: MouseEvent) => {
-      if (!globalSearchRef.current?.contains(event.target as Node)) {
-        setIsGlobalSearchOpen(false);
-      }
-    };
-
-    document.addEventListener('mousedown', handleOutsideClick);
-    return () => document.removeEventListener('mousedown', handleOutsideClick);
   }, []);
 
   useEffect(() => {
@@ -326,10 +321,6 @@ const UnifiedDashboardPage: FC = () => {
         .sort((a, b) => (ZONE_LABELS[a[0]] ?? a[0]).localeCompare(ZONE_LABELS[b[0]] ?? b[0])),
     [groupedModules.byZone]
   );
-  const orderedWorkspaceTabs = useMemo(
-    () => [...groupedWorkspaces.pinned, ...groupedWorkspaces.core],
-    [groupedWorkspaces]
-  );
   const availableTabIds = useMemo(() => new Set(availableTabs.map(tab => tab.id)), [availableTabs]);
 
   const commandItems = useMemo<SearchItem[]>(() => {
@@ -435,6 +426,15 @@ const UnifiedDashboardPage: FC = () => {
     globalSearchQuery,
     isSuperUser,
   ]);
+
+  const commandItemsById = useMemo(
+    () => new Map(commandItems.map(item => [item.id, item])),
+    [commandItems]
+  );
+  const globalSearchItemsById = useMemo(
+    () => new Map(globalSearchResults.map(item => [item.id, item])),
+    [globalSearchResults]
+  );
 
   const executeSearchItem = (item: SearchItem) => {
     setSelectedContext(item);
@@ -590,33 +590,6 @@ const UnifiedDashboardPage: FC = () => {
     }
   };
 
-  const handleTabKeyDown = (event: KeyboardEvent<HTMLButtonElement>, index: number) => {
-    const lastIndex = orderedWorkspaceTabs.length - 1;
-
-    switch (event.key) {
-      case 'ArrowDown':
-      case 'ArrowRight':
-        event.preventDefault();
-        tabButtonRefs.current[index === lastIndex ? 0 : index + 1]?.focus();
-        break;
-      case 'ArrowUp':
-      case 'ArrowLeft':
-        event.preventDefault();
-        tabButtonRefs.current[index === 0 ? lastIndex : index - 1]?.focus();
-        break;
-      case 'Home':
-        event.preventDefault();
-        tabButtonRefs.current[0]?.focus();
-        break;
-      case 'End':
-        event.preventDefault();
-        tabButtonRefs.current[lastIndex]?.focus();
-        break;
-      default:
-        break;
-    }
-  };
-
   if (!user) {
     return (
       <div className="unified-dashboard unified-dashboard-error">
@@ -630,124 +603,6 @@ const UnifiedDashboardPage: FC = () => {
 
   return (
     <AuthenticatedPageShell>
-      <header className="dashboard-topbar">
-        <div className="dashboard-topbar__brand">
-          <div
-            className={`dashboard-topbar__logo${isSuperUser ? ' dashboard-topbar__logo--lion' : ''}`}
-            aria-hidden="true"
-          >
-            WC
-          </div>
-          <div>
-            <p className="dashboard-topbar__eyebrow">White Caves CRM</p>
-            <strong>
-              Internal command center
-              {isSuperUser && (
-                <span className="dashboard-topbar__super-pill" aria-label="Super Admin">
-                  👑
-                </span>
-              )}
-            </strong>
-          </div>
-        </div>
-
-        <div className="dashboard-topbar__search" ref={globalSearchRef}>
-          <span className="dashboard-topbar__search-icon" aria-hidden="true">
-            🔎
-          </span>
-          <input
-            type="search"
-            value={globalSearchQuery}
-            onChange={event => {
-              setGlobalSearchQuery(event.target.value);
-              setIsGlobalSearchOpen(true);
-            }}
-            onFocus={() => setIsGlobalSearchOpen(true)}
-            onKeyDown={event => {
-              if (event.key === 'Enter' && globalSearchResults[0]) {
-                event.preventDefault();
-                executeSearchItem(globalSearchResults[0]);
-              }
-            }}
-            placeholder="Search leads, properties, agents, tabs, or modules"
-            aria-label="Search dashboard records"
-          />
-
-          {isGlobalSearchOpen && globalSearchResults.length > 0 && (
-            <div className="dashboard-search-results" role="listbox" aria-label="Search results">
-              {globalSearchResults.map(item => (
-                <button
-                  key={item.id}
-                  className="dashboard-search-result"
-                  onMouseDown={event => {
-                    event.preventDefault();
-                    executeSearchItem(item);
-                  }}
-                >
-                  <span className="dashboard-search-result__icon" aria-hidden="true">
-                    {item.icon}
-                  </span>
-                  <span className="dashboard-search-result__copy">
-                    <strong>{item.label}</strong>
-                    <small>{item.meta}</small>
-                  </span>
-                </button>
-              ))}
-            </div>
-          )}
-        </div>
-
-        <div className="dashboard-topbar__actions">
-          <button
-            type="button"
-            className="dashboard-mobile-menu-button"
-            aria-label="Open CRM navigation menu"
-            onClick={() => setIsMobileDrawerOpen(true)}
-          >
-            ☰
-          </button>
-          <button
-            type="button"
-            className="dashboard-icon-button"
-            aria-label={`${hotLeadsCount} notifications`}
-          >
-            🔔
-            {hotLeadsCount > 0 && <span className="dashboard-icon-badge">{hotLeadsCount}</span>}
-          </button>
-          <button
-            type="button"
-            className="dashboard-command-button"
-            onClick={() => setIsCommandPaletteOpen(true)}
-          >
-            ⌘K <span>Command palette</span>
-          </button>
-          <button
-            type="button"
-            className="dashboard-quick-action"
-            onClick={() => setIsCommandPaletteOpen(true)}
-          >
-            + Quick action
-          </button>
-          <div
-            className={`dashboard-user-chip${isSuperUser ? ' dashboard-user-chip--lion' : ''}`}
-            aria-label={`Signed in as ${user.email}`}
-          >
-            <div className="dashboard-user-chip__avatar" aria-hidden="true">
-              {isSuperUser ? '👑' : greetingName.slice(0, 2).toUpperCase()}
-            </div>
-            <div className="dashboard-user-chip__copy">
-              <strong>
-                {greetingName}
-                {isSuperUser && (
-                  <span className="dashboard-user-chip__role-badge">Lion</span>
-                )}
-              </strong>
-              <small>{user.email}</small>
-            </div>
-          </div>
-        </div>
-      </header>
-
       {error && (
         <div className="unified-dashboard-error-banner" role="alert" aria-live="assertive">
           <span className="error-icon" aria-hidden="true">
@@ -760,238 +615,118 @@ const UnifiedDashboardPage: FC = () => {
         </div>
       )}
 
-      <div className="dashboard-workspace-shell">
-        {!selectedDepartment && (
-          <aside className="dashboard-side-rail" aria-label="Dashboard tabs">
-            <div className="dashboard-side-rail__section">
-              <span className="dashboard-side-rail__label">Pinned</span>
-              <div className="dashboard-tab-rail" role="tablist" aria-orientation="vertical">
-                {groupedWorkspaces.pinned.map((tab: RoleTab, index: number) => (
-                  <button
-                    key={tab.id}
-                    ref={element => {
-                      tabButtonRefs.current[index] = element;
-                    }}
-                    className={`dashboard-rail-tab ${activeTab === tab.id && !selectedCRMModule ? 'active' : ''}`}
-                    type="button"
-                    role="tab"
-                    aria-selected={activeTab === tab.id && !selectedCRMModule}
-                    aria-controls="dashboard-main"
-                    onClick={() => {
-                      setSelectedContext({
-                        id: `tab-${tab.id}`,
-                        icon: tab.icon,
-                        label: tab.label,
-                        meta: 'Pinned workspace',
-                        type: 'tab',
-                        target: tab.id,
-                      });
-                      handleWorkspaceSelect(tab.id);
-                    }}
-                    onKeyDown={event => handleTabKeyDown(event, index)}
-                  >
-                    <span className="dashboard-rail-tab__icon" aria-hidden="true">
-                      {tab.icon}
-                    </span>
-                    <span className="dashboard-rail-tab__label">{tab.label}</span>
-                    {tab.badge !== undefined && tab.badge > 0 && (
-                      <span className="dashboard-rail-tab__badge">{tab.badge}</span>
-                    )}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            <div className="dashboard-side-rail__section">
-              <span className="dashboard-side-rail__label">Core Workspaces</span>
-              <div className="dashboard-tab-rail" role="tablist" aria-orientation="vertical">
-                {groupedWorkspaces.core.map((tab: RoleTab, index: number) => (
-                  <button
-                    key={tab.id}
-                    ref={element => {
-                      tabButtonRefs.current[groupedWorkspaces.pinned.length + index] = element;
-                    }}
-                    className={`dashboard-rail-tab ${activeTab === tab.id && !selectedCRMModule ? 'active' : ''}`}
-                    type="button"
-                    role="tab"
-                    aria-selected={activeTab === tab.id && !selectedCRMModule}
-                    aria-controls="dashboard-main"
-                    onClick={() => {
-                      setSelectedContext({
-                        id: `tab-${tab.id}`,
-                        icon: tab.icon,
-                        label: tab.label,
-                        meta: 'Core workspace',
-                        type: 'tab',
-                        target: tab.id,
-                      });
-                      handleWorkspaceSelect(tab.id);
-                    }}
-                    onKeyDown={event =>
-                      handleTabKeyDown(event, groupedWorkspaces.pinned.length + index)
+      <DashboardShell
+        topbar={
+          <DashboardTopBar
+            isSuperUser={isSuperUser}
+            greetingName={greetingName}
+            email={user.email}
+            hotLeadsCount={hotLeadsCount}
+            searchQuery={globalSearchQuery}
+            searchResults={globalSearchResults}
+            isSearchOpen={isGlobalSearchOpen}
+            onSearchChange={query => {
+              setGlobalSearchQuery(query);
+              setIsGlobalSearchOpen(true);
+            }}
+            onSearchFocus={() => setIsGlobalSearchOpen(true)}
+            onSearchEnter={() => {
+              if (globalSearchResults[0]) {
+                executeSearchItem(globalSearchResults[0]);
+              }
+            }}
+            onSearchResultSelect={resultId => {
+              const item = globalSearchItemsById.get(resultId);
+              if (item) executeSearchItem(item);
+            }}
+            onSearchBlurOutside={() => setIsGlobalSearchOpen(false)}
+            onOpenMobileMenu={() => setIsMobileDrawerOpen(true)}
+            onOpenCommandPalette={() => setIsCommandPaletteOpen(true)}
+          />
+        }
+        sidebar={
+          <DashboardSidebar
+            isSuperUser={isSuperUser}
+            activeTab={activeTab}
+            selectedCRMModule={selectedCRMModule}
+            pinnedTabs={groupedWorkspaces.pinned}
+            coreTabs={groupedWorkspaces.core}
+            aiModules={groupedModules.ai}
+            advancedModules={groupedModules.advanced}
+            zoneGroups={departmentZones.map(([zone, items]) => ({ zone, items }))}
+            zoneLabels={ZONE_LABELS}
+            aiModulesExpanded={aiModulesExpanded}
+            departmentsExpanded={departmentsExpanded}
+            advancedExpanded={advancedExpanded}
+            onToggleAiModules={() => setAiModulesExpanded(current => !current)}
+            onToggleDepartments={() => setDepartmentsExpanded(current => !current)}
+            onToggleAdvanced={() => setAdvancedExpanded(current => !current)}
+            onSelectTab={tabId => {
+              const tab = availableTabs.find(item => item.id === tabId);
+              setSelectedContext({
+                id: `tab-${tabId}`,
+                icon: tab?.icon ?? '🧭',
+                label: tab?.label ?? tabId,
+                meta: 'Workspace',
+                type: 'tab',
+                target: tabId,
+              });
+              handleWorkspaceSelect(tabId);
+            }}
+            onSelectModule={moduleId => {
+              const module = getCRMModule(moduleId);
+              setSelectedContext({
+                id: `module-${moduleId}`,
+                icon: module?.icon ?? '🤖',
+                label: module?.label ?? moduleId,
+                meta: module?.zone ? (ZONE_LABELS[module.zone] ?? module.zone) : 'CRM module',
+                type: 'module',
+                target: moduleId,
+              });
+              handleCRMModuleSelect(moduleId);
+            }}
+          />
+        }
+        rightPanel={
+          !selectedDepartment ? (
+            <CRMContextPanel
+              isSuperUser={isSuperUser}
+              activeWorkspaceLabel={selectedCRMModuleConfig?.label ?? currentTab?.label ?? 'Overview'}
+              activeWorkspaceMeta={
+                selectedCRMModuleConfig ? 'AI CRM module context' : 'Workspace context'
+              }
+              selectedContext={
+                selectedContext
+                  ? {
+                      label: selectedContext.label,
+                      meta: selectedContext.meta,
+                      type: selectedContext.type,
                     }
-                  >
-                    <span className="dashboard-rail-tab__icon" aria-hidden="true">
-                      {tab.icon}
-                    </span>
-                    <span className="dashboard-rail-tab__label">{tab.label}</span>
-                    {tab.badge !== undefined && tab.badge > 0 && (
-                      <span className="dashboard-rail-tab__badge">{tab.badge}</span>
-                    )}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {isSuperUser && (
-              <div className="dashboard-side-rail__section dashboard-side-rail__section--modules">
-                <button
-                  type="button"
-                  className="dashboard-modules-toggle"
-                  onClick={() => setAiModulesExpanded(current => !current)}
-                  aria-expanded={aiModulesExpanded}
-                >
-                  <span>AI Modules</span>
-                  <span aria-hidden="true">{aiModulesExpanded ? '−' : '+'}</span>
-                </button>
-                {aiModulesExpanded && (
-                  <div className="dashboard-module-list">
-                    {groupedModules.ai.map(module => (
-                      <button
-                        key={module.id}
-                        type="button"
-                        className={`dashboard-module-option ${selectedCRMModule === module.id ? 'active' : ''}`}
-                        onClick={() => {
-                          setSelectedContext({
-                            id: `module-${module.id}`,
-                            icon: module.icon,
-                            label: module.label,
-                            meta: ZONE_LABELS[module.zone] ?? module.zone,
-                            type: 'module',
-                            target: module.id,
-                          });
-                          handleCRMModuleSelect(module.id);
-                        }}
-                      >
-                        <span aria-hidden="true">{module.icon}</span>
-                        <span>{module.label}</span>
-                      </button>
-                    ))}
-                  </div>
-                )}
-              </div>
-            )}
-
-            {isSuperUser && (
-              <div className="dashboard-side-rail__section dashboard-side-rail__section--modules">
-                <button
-                  type="button"
-                  className="dashboard-modules-toggle"
-                  onClick={() => setDepartmentsExpanded(current => !current)}
-                  aria-expanded={departmentsExpanded}
-                >
-                  <span>Departments</span>
-                  <span aria-hidden="true">{departmentsExpanded ? '−' : '+'}</span>
-                </button>
-                {departmentsExpanded && (
-                  <div className="dashboard-module-list">
-                    {departmentZones.map(([zone, items]) => (
-                      <button
-                        key={zone}
-                        type="button"
-                        className="dashboard-module-option"
-                        onClick={() => {
-                          const primaryModule = items[0];
-                          if (!primaryModule) return;
-                          setSelectedContext({
-                            id: `zone-${zone}`,
-                            icon: primaryModule.icon,
-                            label: ZONE_LABELS[zone] ?? zone,
-                            meta: `${items.length} modules`,
-                            type: 'module',
-                            target: primaryModule.id,
-                          });
-                          handleCRMModuleSelect(primaryModule.id);
-                        }}
-                      >
-                        <span aria-hidden="true">{items[0]?.icon ?? '🧭'}</span>
-                        <span>{ZONE_LABELS[zone] ?? zone}</span>
-                        <span className="dashboard-rail-tab__badge">{items.length}</span>
-                      </button>
-                    ))}
-                  </div>
-                )}
-              </div>
-            )}
-
-            {isSuperUser && (
-              <div className="dashboard-side-rail__section dashboard-side-rail__section--modules">
-                <button
-                  type="button"
-                  className="dashboard-modules-toggle"
-                  onClick={() => setAdvancedExpanded(current => !current)}
-                  aria-expanded={advancedExpanded}
-                >
-                  <span>Advanced</span>
-                  <span aria-hidden="true">{advancedExpanded ? '−' : '+'}</span>
-                </button>
-                {advancedExpanded && (
-                  <div className="dashboard-module-list">
-                    {groupedModules.advanced.map(module => (
-                      <button
-                        key={module.id}
-                        type="button"
-                        className={`dashboard-module-option ${selectedCRMModule === module.id ? 'active' : ''}`}
-                        onClick={() => {
-                          setSelectedContext({
-                            id: `module-${module.id}`,
-                            icon: module.icon,
-                            label: module.label,
-                            meta: 'Advanced module',
-                            type: 'module',
-                            target: module.id,
-                          });
-                          handleCRMModuleSelect(module.id);
-                        }}
-                      >
-                        <span aria-hidden="true">{module.icon}</span>
-                        <span>{module.label}</span>
-                      </button>
-                    ))}
-                  </div>
-                )}
-              </div>
-            )}
-          </aside>
-        )}
-
+                  : null
+              }
+              recentActivities={
+                Array.isArray(dashboardData?.recentActivities) ? dashboardData.recentActivities : []
+              }
+              onOpenCommandPalette={() => setIsCommandPaletteOpen(true)}
+              onOpenQuickAction={() => setIsCommandPaletteOpen(true)}
+            />
+          ) : undefined
+        }
+      >
         <main id="dashboard-main" className="dashboard-main-panel">
-          <section className="dashboard-page-header">
-            <div className="dashboard-page-header__copy">
-              <span className="dashboard-page-header__eyebrow">
-                {currentModule ?? currentRole} /{' '}
-                {currentTab?.label ?? selectedCRMModuleConfig?.label ?? 'Overview'}
-              </span>
-              <h1>{roleInfo.label} Dashboard</h1>
-              <p className="dashboard-page-header__subtitle">{roleInfo.description}</p>
-              <p className="dashboard-page-header__greeting">{greetingLine}</p>
-            </div>
-            <div className="dashboard-page-header__meta">
-              <div className="dashboard-breadcrumbs" aria-label="Breadcrumb">
-                <span>CRM</span>
-                <span aria-hidden="true">/</span>
-                <span>{roleInfo.label}</span>
-                <span aria-hidden="true">/</span>
-                <span>{selectedCRMModuleConfig?.label ?? currentTab?.label ?? 'Overview'}</span>
-              </div>
-              <div className="dashboard-page-header__status">
-                <span className="dashboard-status-pill">Live workspace</span>
-                <span className="dashboard-status-pill dashboard-status-pill--muted">
-                  {user.email}
-                </span>
-              </div>
-            </div>
-          </section>
+          <DashboardGreetingBanner
+            currentModule={currentModule}
+            currentRole={currentRole}
+            workspaceLabel={selectedCRMModuleConfig?.label ?? currentTab?.label ?? 'Overview'}
+            roleLabel={roleInfo.label}
+            roleDescription={roleInfo.description}
+            greetingLine={greetingLine}
+            userEmail={user.email}
+            profileCompletionPercent={profileCompletionPercent}
+            profileCompletionItems={profileCompletionItems}
+            showProfileCompletion={!isSuperUser && hasProfileCompletionGaps}
+            onOpenProfile={() => navigate('/profile')}
+          />
 
           {isSuperUser && !selectedDepartment && (
             <SuperuserControlCenter
@@ -1011,56 +746,28 @@ const UnifiedDashboardPage: FC = () => {
             />
           )}
 
-          {!isSuperUser && hasProfileCompletionGaps && (
-            <section className="dashboard-profile-completion" aria-label="Profile setup status">
-              <div className="dashboard-profile-completion__copy">
-                <p className="dashboard-profile-completion__eyebrow">Post-login setup</p>
-                <h2>Complete your profile</h2>
-                <p>
-                  Your profile is {profileCompletionPercent}% complete. Finishing setup improves
-                  lead assignment accuracy and team coordination.
-                </p>
-              </div>
-              <div className="dashboard-profile-completion__actions">
-                <ul>
-                  {profileCompletionItems.map(item => (
-                    <li key={item.id}>
-                      <span aria-hidden="true">{item.complete ? '✅' : '⬜'}</span>
-                      <span>{item.label}</span>
-                    </li>
-                  ))}
-                </ul>
-                <button
-                  type="button"
-                  className="dashboard-profile-completion__cta"
-                  onClick={() => navigate('/profile')}
-                >
-                  Finish profile setup
-                </button>
-              </div>
-            </section>
-          )}
-
           {!selectedDepartment && !selectedCRMModule && (
-            <section className="dashboard-kpi-strip" aria-label="Dashboard highlights">
-              {kpiCards.map(card => (
-                <article key={card.id} className="dashboard-kpi-card">
-                  <div className="dashboard-kpi-card__icon" aria-hidden="true">
-                    {card.icon}
-                  </div>
-                  <div className="dashboard-kpi-card__body">
-                    <p>{card.label}</p>
-                    <strong>{card.value}</strong>
-                    <span>{card.subtext}</span>
-                  </div>
-                  <div
-                    className={`dashboard-kpi-card__trend ${card.positive ? 'positive' : 'negative'}`}
-                  >
-                    {card.trend}
-                  </div>
-                </article>
-              ))}
-            </section>
+            <>
+              <DashboardKPIStrip cards={kpiCards} />
+              {isSuperUser && (
+                <>
+                  <DashboardModuleGrid
+                    modulesByZone={departmentZones}
+                    zoneLabels={ZONE_LABELS}
+                    onOpenModule={handleCRMModuleSelect}
+                  />
+                  <AIAssistantGrid onOpenAssistant={assistantId => handleCRMModuleSelect(assistantId)} />
+                  <DashboardActivityFeed
+                    seedItems={
+                      Array.isArray(dashboardData?.recentActivities)
+                        ? (dashboardData.recentActivities as Record<string, unknown>[])
+                        : []
+                    }
+                    onViewAll={() => handleCRMModuleSelect('henryAudit')}
+                  />
+                </>
+              )}
+            </>
           )}
 
           {selectedDepartment ? (
@@ -1068,74 +775,21 @@ const UnifiedDashboardPage: FC = () => {
               <DepartmentContentPanel />
             </div>
           ) : (
-            <>
-              {roleSubNavItems.length > 0 && (
-                <div className="dashboard-subnav-panel">
-                  <SubNavBar moduleId={currentModule ?? currentRole} />
-                </div>
-              )}
-
-              <div className="dashboard-content-frame">
-                {selectedCRMModuleConfig && isSuperUser && (
-                  <div className="dashboard-module-toolbar">
-                    <button className="crm-back-button" onClick={handleBackFromCRM}>
-                      ← Back to dashboard
-                    </button>
-                    <span className="dashboard-module-toolbar__label">
-                      {selectedCRMModuleConfig.label}
-                    </span>
-                  </div>
-                )}
-
-                <AnimatePresence mode="wait" initial={false}>
-                  <motion.section
-                    key={activeContentKey}
-                    className="unified-dashboard-content"
-                    initial={
-                      prefersReducedMotion
-                        ? false
-                        : {
-                            opacity: 0,
-                            x: selectedCRMModule ? 24 : 0,
-                            y: selectedCRMModule ? 0 : 12,
-                          }
-                    }
-                    animate={prefersReducedMotion ? {} : { opacity: 1, x: 0, y: 0 }}
-                    exit={prefersReducedMotion ? {} : { opacity: 0, y: -8 }}
-                    transition={{ duration: prefersReducedMotion ? 0 : 0.22, ease: 'easeOut' }}
-                  >
-                    {isLoading ? (
-                      <TabLoadingFallback />
-                    ) : (
-                      <Suspense fallback={<TabLoadingFallback />}>{renderTabContent()}</Suspense>
-                    )}
-                  </motion.section>
-                </AnimatePresence>
-              </div>
-            </>
+            <DashboardWorkspaceTabs
+              roleSubNavItemsCount={roleSubNavItems.length}
+              subNav={<SubNavBar moduleId={currentModule ?? currentRole} />}
+              selectedCRMModuleLabel={selectedCRMModuleConfig?.label}
+              showModuleToolbar={Boolean(selectedCRMModuleConfig && isSuperUser)}
+              contentKey={activeContentKey}
+              isLoading={isLoading}
+              content={<Suspense fallback={<TabLoadingFallback />}>{renderTabContent()}</Suspense>}
+              loadingFallback={<TabLoadingFallback />}
+              prefersReducedMotion={Boolean(prefersReducedMotion)}
+              onBackFromCRM={handleBackFromCRM}
+            />
           )}
         </main>
-
-        {!selectedDepartment && (
-          <CRMContextPanel
-            isSuperUser={isSuperUser}
-            activeWorkspaceLabel={selectedCRMModuleConfig?.label ?? currentTab?.label ?? 'Overview'}
-            activeWorkspaceMeta={selectedCRMModuleConfig ? 'AI CRM module context' : 'Workspace context'}
-            selectedContext={
-              selectedContext
-                ? {
-                    label: selectedContext.label,
-                    meta: selectedContext.meta,
-                    type: selectedContext.type,
-                  }
-                : null
-            }
-            recentActivities={Array.isArray(dashboardData?.recentActivities) ? dashboardData.recentActivities : []}
-            onOpenCommandPalette={() => setIsCommandPaletteOpen(true)}
-            onOpenQuickAction={() => setIsCommandPaletteOpen(true)}
-          />
-        )}
-      </div>
+      </DashboardShell>
 
       <MobileCRMDrawer
         isOpen={isMobileDrawerOpen}
@@ -1151,68 +805,23 @@ const UnifiedDashboardPage: FC = () => {
         onSelectModule={moduleId => handleCRMModuleSelect(moduleId)}
       />
 
-      <AnimatePresence>
-        {isCommandPaletteOpen && (
-          <motion.div
-            className="dashboard-command-palette-backdrop"
-            initial={prefersReducedMotion ? false : { opacity: 0 }}
-            animate={prefersReducedMotion ? {} : { opacity: 1 }}
-            exit={prefersReducedMotion ? {} : { opacity: 0 }}
-            onClick={() => setIsCommandPaletteOpen(false)}
-          >
-            <motion.div
-              className="dashboard-command-palette"
-              initial={prefersReducedMotion ? false : { opacity: 0, y: 16 }}
-              animate={prefersReducedMotion ? {} : { opacity: 1, y: 0 }}
-              exit={prefersReducedMotion ? {} : { opacity: 0, y: 12 }}
-              transition={{ duration: prefersReducedMotion ? 0 : 0.18, ease: 'easeOut' }}
-              onClick={event => event.stopPropagation()}
-            >
-              <div className="dashboard-command-palette__header">
-                <strong>Command palette</strong>
-                <button type="button" onClick={() => setIsCommandPaletteOpen(false)}>
-                  Esc
-                </button>
-              </div>
-              <input
-                autoFocus
-                type="search"
-                value={commandQuery}
-                onChange={event => setCommandQuery(event.target.value)}
-                onKeyDown={event => {
-                  if (event.key === 'Enter' && commandItems[0]) {
-                    event.preventDefault();
-                    executeSearchItem(commandItems[0]);
-                  }
-                }}
-                placeholder="Search tabs or AI CRM modules"
-                aria-label="Search command palette"
-              />
-              <div className="dashboard-command-palette__results">
-                {commandItems.map(item => (
-                  <button
-                    key={item.id}
-                    type="button"
-                    className="dashboard-command-palette__item"
-                    onClick={() => executeSearchItem(item)}
-                  >
-                    <span aria-hidden="true">{item.icon}</span>
-                    <span className="dashboard-command-palette__copy">
-                      <strong>{item.label}</strong>
-                      <small>{item.meta}</small>
-                    </span>
-                  </button>
-                ))}
-                {commandItems.length === 0 && (
-                  <div className="dashboard-command-palette__empty">
-                    No matching tabs or modules.
-                  </div>
-                )}
-              </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      <DashboardCommandPalette
+        isOpen={isCommandPaletteOpen}
+        prefersReducedMotion={Boolean(prefersReducedMotion)}
+        query={commandQuery}
+        items={commandItems}
+        onClose={() => setIsCommandPaletteOpen(false)}
+        onQueryChange={setCommandQuery}
+        onRunTopResult={() => {
+          if (commandItems[0]) {
+            executeSearchItem(commandItems[0]);
+          }
+        }}
+        onSelectItem={itemId => {
+          const item = commandItemsById.get(itemId);
+          if (item) executeSearchItem(item);
+        }}
+      />
     </AuthenticatedPageShell>
   );
 };

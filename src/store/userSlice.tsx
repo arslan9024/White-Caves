@@ -12,6 +12,7 @@ export interface AppUser {
   role?: string;
   photoURL?: string;
   phone?: string;
+  profileComplete?: boolean;
   createdAt?: string;
   lastLogin?: string;
   status?: 'active' | 'pending' | 'suspended';
