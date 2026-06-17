@@ -17,6 +17,23 @@
 
 ---
 
+## Active Pending Queue — Wave 18.1 Session 3
+
+| ID | Pending task | Current state |
+| --- | --- | --- |
+| W18.1-P0-010 | Offline-safe draft capture for notes/viewing feedback | IndexedDB persistence baseline delivered; sync-conflict handling, service-worker completion, and validation still pending |
+| W18.1-P0-018 | Channel orchestration cadence rules engine | Cadence-rule CRUD baseline delivered; admin UI, scheduler completion, and validation still pending |
+| W18.1-P1-001 | Lead import CSV/XLSX bulk upload + dedup | Pending |
+| W18.1-P1-002 | Immutable audit log UI + XLSX export | CSV/XLSX export baseline delivered; full UI/RBAC completion still pending |
+| W18.1-P1-003 | Agent performance report + XLSX/PDF export | Pending |
+| W18.1-P1-004 | WhatsApp bot escalation hardening | Structured escalation handoff logging delivered; confidence-gate completion still pending |
+| W18.1-P1-005 | Contract e-sign flow completion | Webhook/signing route baseline delivered; email delivery + status UI completion still pending |
+| W18.1-P1-006 | Portal syndication baseline | Feature-flagged queue/status API baseline delivered; provider stub completion still pending |
+| W18.1-P1-007 | CRM follow-up automation depth | Pending |
+| W18.1-P1-008 | Ejari + rent collection workflow completion | Pending |
+
+---
+
 ## Implementation Operating Model
 
 | Step | Purpose | Canonical artifact |

@@ -30,6 +30,7 @@ import {
   type LoginSuccessData,
 } from '../services/authService';
 import { safeStorage } from '../utils/safeStorage';
+import { isCreatorSuperUserEmail } from '../utils/superUserAccess';
 
 // ─── Types ──────────────────────────────────────────────────────────
 
@@ -65,7 +66,6 @@ interface SocialAuthErrorLike {
 }
 
 const MAX_SOCIAL_RETRY_ATTEMPTS = 3;
-const SUPERUSER_EMAIL = 'arslanmalikgoraha@gmail.com';
 const AUTH_ROUTE_BLOCKLIST = new Set(['/signin', '/signup', '/select-role', '/pending-approval']);
 const CLIENT_ROLE_KEYS = new Set(['buyer', 'seller', 'landlord', 'property-owner', 'tenant']);
 const LANDLORD_ROLE_KEYS = new Set(['landlord', 'property-owner']);
@@ -94,8 +94,11 @@ const resolveCategoryFromRole = (role: string | null | undefined): 'client' | 's
   return CLIENT_ROLE_KEYS.has(normalizedRole) ? 'client' : 'staff';
 };
 
-const isSuperuserEmail = (value: string | null | undefined): boolean =>
-  (value || '').toLowerCase().trim() === SUPERUSER_EMAIL;
+const isProfileComplete = (user: {
+  name?: string | null;
+  displayName?: string | null;
+  phone?: string | null;
+}): boolean => Boolean((user.name || user.displayName || '').trim() && (user.phone || '').trim());
 
 const normalizeSocialAuthErrorMessage = (error: unknown, provider: string): string => {
   const socialError = error as SocialAuthErrorLike;
@@ -223,7 +226,7 @@ export function useSignIn() {
   // Ref for navigation timers
   const navTimerRef = useRef<ReturnType<typeof setTimeout>>();
   const googleAuthUnavailableMessage =
-    'Google sign-in is temporarily unavailable because Firebase authentication is not configured in this environment.';
+    'Google sign-in is temporarily unavailable because Firebase authentication is not configured. Please complete Firebase web auth setup and try again.';
 
   useEffect(() => {
     return () => {
@@ -248,7 +251,7 @@ export function useSignIn() {
   );
 
   const resolvePostLoginRoute = useCallback(
-    (user: { role?: string; status?: string }): string => {
+    (user: { role?: string; status?: string; profileComplete?: boolean }): string => {
       const resolvedStatus = user.status?.toLowerCase().trim() || 'active';
       const normalizedRole = normalizeRoleKey(user.role);
 
@@ -274,8 +277,16 @@ export function useSignIn() {
         return '/landlord-portal';
       }
 
-      // Profile-first post-login journey: CRM-eligible users always visit /profile
-      // before the dashboard so they can review/complete their account setup.
+      if (normalizedRole === 'managing_director' || normalizedRole === 'lion' || normalizedRole === 'owner') {
+        return '/crm';
+      }
+
+      if (user.profileComplete) {
+        return '/crm';
+      }
+
+      // Profile-first post-login journey: CRM-eligible users visit /profile
+      // when their account setup is still incomplete.
       return '/profile';
     },
     [location.state]
@@ -286,24 +297,40 @@ export function useSignIn() {
       id: string;
       email: string | null;
       name: string | null;
+      displayName?: string | null;
       role?: string;
       status?: string;
+      phone?: string | null;
       photoUrl?: string | null;
+      photoURL?: string | null;
     }): void => {
       const resolvedStatus = user.status?.toLowerCase().trim() || 'active';
-      const normalizedRole = isSuperuserEmail(user.email)
+      const normalizedRole = isCreatorSuperUserEmail(user.email)
         ? 'managing_director'
         : normalizeRoleKey(user.role);
-      const fallbackRoute = resolvePostLoginRoute({ role: normalizedRole, status: resolvedStatus });
+      const profileComplete = isProfileComplete({
+        name: user.name,
+        displayName: user.displayName,
+        phone: user.phone,
+      });
+      const fallbackRoute = resolvePostLoginRoute({
+        role: normalizedRole,
+        status: resolvedStatus,
+        profileComplete,
+      });
+      const resolvedPhoto = user.photoUrl || user.photoURL || undefined;
 
       dispatch(
         setUser({
           id: user.id,
           email: user.email || '',
-          name: user.name || undefined,
+          name: user.name || user.displayName || undefined,
+          displayName: user.displayName || user.name || undefined,
           role: normalizedRole || user.role,
           status: resolvedStatus === 'pending' ? 'pending' : 'active',
-          photoURL: user.photoUrl || undefined,
+          phone: user.phone || undefined,
+          photoURL: resolvedPhoto,
+          profileComplete,
         })
       );
 
@@ -432,6 +459,25 @@ export function useSignIn() {
         setError(googleAuthUnavailableMessage);
         return;
       }
+      if (
+        provider === 'google' &&
+        !options?.isRetry &&
+        typeof window !== 'undefined' &&
+        import.meta.env.MODE !== 'test'
+      ) {
+        const popupProbe = window.open('', '_blank', 'noopener,noreferrer,width=1,height=1');
+        if (!popupProbe) {
+          setSocialSyncRecovery({
+            provider: 'google',
+            reason: 'Popup blocked by browser settings',
+          });
+          setError(
+            'Google sign-in popup was blocked by your browser. Allow popups for this site and press Try again.'
+          );
+          return;
+        }
+        popupProbe.close();
+      }
       setLoading(true);
       setError('');
       if (!options?.isRetry) {
@@ -469,20 +515,38 @@ export function useSignIn() {
           setError('');
 
           if (mode === 'signup') {
-            if (isSuperuserEmail(backendUser.email)) {
+            if (isCreatorSuperUserEmail(backendUser.email)) {
               handleSignInSuccess({
                 ...backendUser,
                 role: 'managing_director',
                 status: 'active',
+                photoURL: backendUser.photoUrl || result.user.photoURL,
+                displayName: backendUser.name || result.user.displayName,
               });
             } else {
-              handleSignUpSuccess(backendUser, { fromSocialProvider: provider });
+              handleSignUpSuccess(
+                {
+                  ...backendUser,
+                  photoUrl: backendUser.photoUrl || result.user.photoURL,
+                },
+                { fromSocialProvider: provider }
+              );
             }
           } else {
             handleSignInSuccess(
-              isSuperuserEmail(backendUser.email)
-                ? { ...backendUser, role: 'managing_director', status: 'active' }
-                : backendUser
+              isCreatorSuperUserEmail(backendUser.email)
+                ? {
+                    ...backendUser,
+                    role: 'managing_director',
+                    status: 'active',
+                    photoURL: backendUser.photoUrl || result.user.photoURL,
+                    displayName: backendUser.name || result.user.displayName,
+                  }
+                : {
+                    ...backendUser,
+                    photoURL: backendUser.photoUrl || result.user.photoURL,
+                    displayName: backendUser.name || result.user.displayName,
+                  }
             );
           }
         } catch (syncError: unknown) {
@@ -578,7 +642,7 @@ export function useSignIn() {
 
       try {
         if (mode === 'signup') {
-          if (isSuperuserEmail(normalizedEmail)) {
+          if (isCreatorSuperUserEmail(normalizedEmail)) {
             const response = await backendRegister(
               normalizedEmail,
               password,

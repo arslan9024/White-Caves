@@ -255,11 +255,11 @@ describe('useSignIn — handleSocialAuth (integration)', () => {
       } | null;
       expect(currentUser?.email).toBe('arslanmalikgoraha@gmail.com');
       expect(currentUser?.role).toBe('managing_director');
-      expect(mockNavigate).toHaveBeenCalledWith('/profile');
+      expect(mockNavigate).toHaveBeenCalledWith('/crm');
       vi.useRealTimers();
     });
 
-    it('navigates creator email to /profile for profile-first post-login journey', async () => {
+    it('navigates creator email to /crm command center', async () => {
       vi.useFakeTimers();
       mockSyncFirebaseUser.mockResolvedValue(successResponse(backendSuperuser));
       const { result } = renderHook(() => useSignIn(), { wrapper: createWrapper(store) });
@@ -269,7 +269,7 @@ describe('useSignIn — handleSocialAuth (integration)', () => {
       });
       act(() => vi.runAllTimers());
 
-      expect(mockNavigate).toHaveBeenCalledWith('/profile');
+      expect(mockNavigate).toHaveBeenCalledWith('/crm');
       vi.useRealTimers();
     });
   });
@@ -335,7 +335,7 @@ describe('useSignIn — handleSocialAuth (integration)', () => {
 
       expect(result.current.step).toBe(1);
       expect(result.current.pendingUser).toBeNull();
-      expect(mockNavigate).toHaveBeenCalledWith('/profile');
+      expect(mockNavigate).toHaveBeenCalledWith('/crm');
       vi.useRealTimers();
     });
   });

@@ -263,6 +263,19 @@ Key closures:
 | W18.1-P1-007 | CRM follow-up automation depth (escalation tiers + template triggers) | P1 | @Mira + @Margaret | Follow-up automation tests + escalation tier tests |
 | W18.1-P1-008 | Ejari + rent collection workflow completion | P1 | @Victoria + @Mira | Ejari tracking tests + overdue-collection tests + portal tests |
 
+### Current Open-State Notes
+
+- [ ] **W18.1-P0-010** — IndexedDB draft persistence is in place; sync-conflict handling, service-worker completion, and final PWA validation remain open.
+- [ ] **W18.1-P0-018** — Cadence-rule CRUD baseline is in place; admin UI, scheduler completion, and final cadence validation remain open.
+- [ ] **W18.1-P1-001** — Lead import CSV/XLSX upload, field mapping, dedup, and row-error reporting remain open.
+- [ ] **W18.1-P1-002** — Audit log CSV/XLSX export baseline exists; filterable/paginated UI completion and RBAC validation remain open.
+- [ ] **W18.1-P1-003** — Agent performance dashboard and XLSX/PDF export remain open.
+- [ ] **W18.1-P1-004** — Structured Nadia escalation logging exists; confidence thresholding and agent handoff completion remain open.
+- [ ] **W18.1-P1-005** — Tokenized sign routes/webhook baseline exists; email delivery and contract signing status UI remain open.
+- [ ] **W18.1-P1-006** — Feature-flagged syndication queue/status API exists; Property Finder/Bayut provider stub completion remains open.
+- [ ] **W18.1-P1-007** — Multi-tier follow-up escalation and template trigger builder remain open.
+- [ ] **W18.1-P1-008** — Ejari tracking UI and overdue rent collection queue remain open.
+
 ---
 
 ## S14 — Wave 18.2: Profile-First Post-Login Journey ✅ Complete
