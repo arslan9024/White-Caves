@@ -223,9 +223,16 @@ if ($Message -eq "") {
 }
 
 Push-Location $root
-$commitOut = git commit --no-verify -m $Message 2>&1
-Write-Host $commitOut -ForegroundColor $(if ($commitOut -match "nothing to commit") { "DarkGray" } else { "Green" })
-$commitHash = (git rev-parse --short HEAD 2>&1).Trim()
+# ── Loop-guard: skip commit when nothing is staged to prevent empty-commit loops
+$cachedStat = (git diff --cached --stat 2>$null).Trim()
+if ([string]::IsNullOrWhiteSpace($cachedStat)) {
+  Write-Host "  [AEGIS-SKIP] no changes staged — skipping commit to prevent empty-commit loop." -ForegroundColor DarkYellow
+  $commitHash = (git rev-parse --short HEAD 2>&1).Trim()
+} else {
+  $commitOut = git commit --no-verify -m $Message 2>&1
+  Write-Host $commitOut -ForegroundColor $(if ($commitOut -match "nothing to commit") { "DarkGray" } else { "Green" })
+  $commitHash = (git rev-parse --short HEAD 2>&1).Trim()
+}
 Pop-Location
 
 # ------------------------------------------------------------------

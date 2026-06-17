@@ -98,6 +98,99 @@ Use [`waves/README.md`](./waves/README.md) for the full bundle list.
 
 ---
 
+## Wave 19–25 Dependency Graph
+
+> Mermaid diagram showing inter-wave data dependencies.
+> A → B means Wave B cannot start until Wave A is green.
+
+```mermaid
+graph TD
+    W18_1["Wave 18.1 — Competitor Parity (🟡 In Progress)"]
+    W19["Wave 19 — Auth Hardening + MD Dashboard (📋 Gated)"]
+    W20["Wave 20 — Full Leasing & Tenancy"]
+    W21["Wave 21 — Finance, VAT & Commission Engine"]
+    W22["Wave 22 — Market Intelligence & Off-Plan"]
+    W23["Wave 23 — Mobile CRM & PWA"]
+    W24["Wave 24 — WhatsApp & Communications Engine"]
+    W25["Wave 25 — AI Assistants & Recommendations"]
+
+    W18_1 -->|"Session 3 green + @Ada 60% gate"| W19
+    W19 -->|"JWT/RBAC hardened + MD Dashboard verified"| W20
+    W19 -->|"Auth contracts stable"| W21
+    W20 -->|"Ejari/PDC lifecycle shipped"| W21
+    W21 -->|"VAT + commission engine green"| W22
+    W20 -->|"Tenant portal API stable"| W22
+    W22 -->|"AVM + off-plan data model green"| W23
+    W21 -->|"Financial data model stable"| W23
+    W23 -->|"Mobile nav + push infra green"| W24
+    W20 -->|"Contact/lead data model stable"| W24
+    W24 -->|"WhatsApp message pipeline green"| W25
+    W22 -->|"Market data + lead scoring ready"| W25
+```
+
+### Key dependency notes
+
+| Dependency | Blocking risk | Mitigation |
+| --- | --- | --- |
+| W19 DLD/Ejari mock | Live DLD Sandbox may not be available | `USE_MOCK_DLD=true` mock services in `server/services/mock/` |
+| W21 Stripe payments | Live Stripe keys may not be configured in all envs | `STRIPE_ENABLED=false` mock PaymentIntent fallback in `server/index.ts` |
+| W22 DLD transaction data | DLD API rate limits in sandbox | Mock transaction history via `dldMockService.getTransaction()` |
+| W25 OpenAI / Groq keys | AI provider availability | Provider abstraction layer with fallback chain (ADR-002 pattern) |
+
+---
+
+## Multi-Currency Architecture Decision
+
+**Base currency:** AED (UAE Dirham) — all financial storage, calculations, and Prisma models use AED.
+
+**Supported display currencies:** USD, GBP, EUR, INR, PKR, SAR, QAR
+
+**FX rate source:** ExchangeRate-API (free tier, 1,500 requests/month) with Open Exchange Rates as fallback.
+
+**Cache strategy:**
+- In-memory `Map<string, { rate: number; cachedAt: number }>` with 4-hour TTL
+- On cache miss: fetch live rate → store → return
+- On stale cache (age > 4h) and API unavailable: serve last-known rate with `X-FX-Stale: true` header
+- Redis optional for multi-instance deployments (config flag `USE_REDIS_FX_CACHE`)
+
+**Historical rates:** Daily closing rates stored in MongoDB `currency_rates` collection for backdated commission calculations. Schema: `{ date: Date, base: 'AED', rates: Record<string, number> }`.
+
+**Frontend wire:** `currencySlice.tsx` holds the selected display currency and the current rate object. KPI tiles and financial reports use `formatCurrencyAmount(aedValue, targetCurrency, rates)` utility from `src/utils/currency.ts`.
+
+---
+
+## RERA 2025/2026 Compliance Update
+
+> Cross-reference: [`business_docs/05_requirements/compliance-requirements.md`](../business_docs/05_requirements/compliance-requirements.md)
+
+### Key 2025/2026 RERA/DLD regulatory changes affecting White Caves
+
+| Area | Update | Impact on codebase | Wave |
+| --- | --- | --- | --- |
+| **Ejari digital mandate** | All tenancy contracts must be registered via Ejari digital platform (no paper filings accepted from Q1 2026) | `server/services/mock/ejariMockService.ts` must mirror the new digital submission fields | W20 |
+| **RERA rental index** | Annual rental index now published quarterly (was annually); permitted increase % varies by area | `ejariMockService.renewContract()` uses area-based index rates; W20 must wire to live DLD/Ejari API for real rates | W20 |
+| **Oqood off-plan** | Registration deadline tightened to 30 days from SPA signing (was 60 days) | Update `dldMockService.registerOqood()` `expiryDate` to 30-day window when switching to live API | W20/W22 |
+| **AML thresholds** | CBUAE updated AML cash transaction reporting threshold to AED 55,000 (was AED 40,000) | `server/services/compliance/amlAdapter.js` threshold must be updated | W21 |
+| **DLD Smart Judgment** | DLD Smart Judgment system now accepts electronic dispute filings | `legal-management.md` RERA dispute section to be updated; backend workflow in W21 | W21 |
+| **VAT on residential rent** | UAE FTA reconfirmed zero-rated status for long-term residential leases; short-term holiday lets remain standard-rated 5% | VAT calculation in `calculateVATSummary()` already handles this; confirm in W21 testing | W21 |
+| **Broker BRN renewal** | RERA now enforces 6-month BRN renewal reminder (was annual) | `reraExpiryScheduler.js` expiry window must add a 6-month pre-warning alert | W19 (BRN sub-task) |
+
+### Prisma Lease model gap analysis (vs business_docs/09_crm_features/tenancy-ejari.md)
+
+Fields present in `tenancy-ejari.md` spec but **not yet in `prisma/schema.prisma` Lease model**:
+
+| Field | Type | Wave |
+| --- | --- | --- |
+| `pdcCheques` | Array of `{ bankName, chequeNumber, amount, dueDate, status }` | W20 |
+| `ejariActivationReference` | String (format: `EJR-YYYY-NNNNNNN`) | W20 |
+| `reraRentalIndexRate` | Float (%) | W20 |
+| `earlyTerminationClauseActive` | Boolean | W20 |
+| `noticePeriodDays` | Int (default 90) | W20 |
+
+These are queued as Wave 20 pre-conditions. `ejariMockService.activateContract()` already returns `activationReference` in the correct format so front-end work can proceed before W20 ships the schema migration.
+
+---
+
 ## Governance Hard Gate
 
 1. Every planning update must run `npm run plans:validate`.

@@ -84,3 +84,25 @@
 | 4    | AUTO-054 | GENERATED-54 | P1       | 96    | @Mira       | Platform | pending |
 | 5    | AUTO-055 | GENERATED-55 | P1       | 96    | @Mira       | Platform | pending |
 | 6    | AUTO-056 | GENERATED-56 | P1       | 96    | @Mira       | Platform | pending |
+
+---
+
+## AEGIS Six-Vector Task Queue (T04 onward)
+
+> Added 2026-06-17 by AEGIS T04 run. These rows extend the existing queue with
+> the six-vector tasks from the current implementation session.
+
+| TurnID | Vector | TaskID | Description | Status | Blocking? | Estimated Δ% | Unblocked By |
+|---|---|---|---|---|---|---|---|
+| T04 | 5 | V5.1-ADR | Create `docs/adr/` + 5 ADR files | Done | No | V5:+5% | — |
+| T04 | 5 | V5.4-run-log | Create `plans/AEGIS_RUN_LOG.md` | Done | No | V5:+1% | — |
+| T04 | 6 | V6.1-autopilot-queue | Extend `plans/AUTOPILOT_QUEUE.md` | Done | No | V6:+1% | — |
+| T04 | 6 | V6.2-workforce | Create `plans/AEGIS_WORKFORCE.md` | Pending | No | V6:+1% | — |
+| T04 | 1 | V1.2-stripe-flag | Upgrade Stripe stub with STRIPE_ENABLED flag + mock PaymentIntent | Pending | No | V1:+2% | — |
+| T04 | 1 | V1.3-dld-mock | Create `server/services/mock/dldMockService.ts` + `ejariMockService.ts` | Pending | No | V1:+2% | — |
+| T04 | 5 | V5.2-master-plan | Expand `plans/MASTER_PLAN.md` (dep graph + Multi-Currency + RERA 2025/26) | Pending | No | V5:+2% | — |
+| T04 | 6 | V6.6-gov-validator | Register new files in `scripts/validate-plans-governance.js` | Pending | No | V6:+1% | — |
+| T05 | 2 | V2.1–V2.4 | Auth hardening (token refresh, authReady, lion fast-path, forgot-password) | Blocked | Yes | V2:+10% | Wave 19 gate |
+| T05 | 3 | V3.1–V3.6 | MD Dashboard (workspace split, KPI bar, charts, right panel) | Blocked | Yes | V3:+13% | Wave 19 gate |
+| T06 | 4 | V4.1–V4.5 | Dedup audit, Linda+Henry merge, Tailwind audit, Prisma normalize, dead-imports | Pending | No | V4:+6% | — |
+| T07 | 1 | V1.1, V1.4, V1.5 | Stub gap matrix, Wave 19 deps, CRM mock data | Pending | No | V1:+4% | — |
