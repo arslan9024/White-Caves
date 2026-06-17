@@ -36,13 +36,19 @@ const getPrismaErrorCode = (error: unknown): string | null => {
 const isDatabaseUnavailableError = (error: unknown): boolean => {
   const errorCode = getPrismaErrorCode(error);
   if (errorCode === 'P1001') return true;
+  if (errorCode === 'P6001') return true;
   if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P1001') return true;
+  if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P6001') return true;
   if (error instanceof Prisma.PrismaClientInitializationError) {
-    return /can't reach database server|cannot reach database server/i.test(error.message);
+    return /can't reach database server|cannot reach database server|error validating datasource|url must start with the protocol `prisma:\/\/`|url must start with the protocol `prisma\+postgres:\/\/`/i.test(
+      error.message
+    );
   }
   if (error && typeof error === 'object' && 'message' in error) {
     const message = String((error as PrismaLikeError).message || '');
-    return /can't reach database server|cannot reach database server/i.test(message);
+    return /can't reach database server|cannot reach database server|error validating datasource|url must start with the protocol `prisma:\/\/`|url must start with the protocol `prisma\+postgres:\/\/`/i.test(
+      message
+    );
   }
   return false;
 };
@@ -1159,11 +1165,7 @@ router.post(
         };
       }
     } catch (error: unknown) {
-      if (
-        process.env.NODE_ENV === 'development' &&
-        allowDevFallback &&
-        isDatabaseUnavailableError(error)
-      ) {
+      if (allowDevFallback && isDatabaseUnavailableError(error)) {
         degradedMode = true;
         logger.warn('Firebase sync falling back to degraded mode due DB unavailability', {
           email: verifiedEmail,

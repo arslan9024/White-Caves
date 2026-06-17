@@ -40,12 +40,28 @@ export const BCRYPT_ROUNDS = 12;
 // ─── Database ────────────────────────────────────────────────────────────
 const _databaseUrl = process.env.DATABASE_URL;
 const _legacyMongoUri = process.env.MONGODB_URI;
+const _isMongoConnectionString = (value: string | undefined): boolean =>
+  typeof value === 'string' && /^mongodb(\+srv)?:\/\//i.test(value.trim());
+
+const _databaseUrlLooksMongo = _isMongoConnectionString(_databaseUrl);
+const _legacyMongoUriLooksMongo = _isMongoConnectionString(_legacyMongoUri);
 const _usingLegacyMongoAlias = !_databaseUrl && Boolean(_legacyMongoUri);
-const _resolvedDatabaseUrl = _databaseUrl || _legacyMongoUri || '';
+const _usingLegacyBecauseCanonicalInvalid =
+  Boolean(_databaseUrl) && !_databaseUrlLooksMongo && _legacyMongoUriLooksMongo;
+
+const _resolvedDatabaseUrl = _usingLegacyBecauseCanonicalInvalid
+  ? (_legacyMongoUri as string)
+  : _databaseUrl || _legacyMongoUri || '';
 
 if (_usingLegacyMongoAlias && !isTestRuntime) {
   console.warn(
     '⚠️  MONGODB_URI is deprecated. Please migrate to DATABASE_URL (canonical) as soon as possible.'
+  );
+}
+
+if (_usingLegacyBecauseCanonicalInvalid && !isTestRuntime) {
+  console.warn(
+    `⚠️  DATABASE_URL does not look like a MongoDB URL for this runtime (${_databaseUrl}). Falling back to MONGODB_URI.`
   );
 }
 
@@ -55,6 +71,12 @@ if (!_resolvedDatabaseUrl && IS_PRODUCTION) {
 if (!_resolvedDatabaseUrl) {
   console.warn('⚠️  DATABASE_URL not set — Prisma will fail to connect. Set it in .env');
 }
+
+// Keep Prisma runtime resolution deterministic even when shell-level DATABASE_URL is stale.
+if (_resolvedDatabaseUrl) {
+  process.env.DATABASE_URL = _resolvedDatabaseUrl;
+}
+
 export const DATABASE_URL = _resolvedDatabaseUrl;
 
 // ─── CORS ────────────────────────────────────────────────────────────────

@@ -122,7 +122,6 @@ app.set('trust proxy', 1);
 const PREFERRED_PORT =
   process.env.API_PORT ||
   (process.env.NODE_ENV === 'development' ? 3001 : process.env.PORT || 3001);
-const PORT = Number(resolvedPortValue);
 
 const parsePort = (value: string | number): number => {
   const parsed = Number(value);

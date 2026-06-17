@@ -277,29 +277,36 @@ export async function syncFirebaseUser(firebaseUser: {
   email: string | null;
   displayName: string | null;
   photoURL: string | null;
-  getIdToken?: () => Promise<string>;
+  getIdToken?: (forceRefresh?: boolean) => Promise<string>;
 }): Promise<FirebaseSyncResponse> {
-  let firebaseToken: string | null = null;
-
-  if (typeof firebaseUser.getIdToken === 'function') {
-    firebaseToken = await firebaseUser.getIdToken();
-  }
-
-  if (!firebaseToken && firebaseAuth?.currentUser?.uid === firebaseUser.uid) {
-    firebaseToken = await firebaseAuth.currentUser.getIdToken();
-  }
-
-  if (!firebaseToken) {
-    throw new Error(
-      'Firebase authentication token is missing. Please retry Google sign-in to establish a secure backend session.'
-    );
-  }
-
   let response: FirebaseSyncResponse | null = null;
-  const maxAttempts = 2;
+  const maxAttempts = 3;
+
+  const resolveFirebaseToken = async (forceRefresh: boolean): Promise<string> => {
+    let resolvedToken: string | null = null;
+
+    if (typeof firebaseUser.getIdToken === 'function') {
+      resolvedToken = await firebaseUser.getIdToken(forceRefresh);
+    }
+
+    if (!resolvedToken && firebaseAuth?.currentUser?.uid === firebaseUser.uid) {
+      resolvedToken = await firebaseAuth.currentUser.getIdToken(forceRefresh);
+    }
+
+    if (!resolvedToken) {
+      throw new Error(
+        'Firebase authentication token is missing. Please retry Google sign-in to establish a secure backend session.'
+      );
+    }
+
+    return resolvedToken;
+  };
 
   for (let attempt = 1; attempt <= maxAttempts; attempt += 1) {
+    const forceRefresh = attempt > 1;
+
     try {
+      const firebaseToken = await resolveFirebaseToken(forceRefresh);
       response = (await apiClient.post('/auth/firebase-sync', {
         firebaseUid: firebaseUser.uid,
         email: firebaseUser.email,
@@ -311,7 +318,7 @@ export async function syncFirebaseUser(firebaseUser: {
     } catch (error: unknown) {
       const canRetry = attempt < maxAttempts && isTransientFirebaseSyncError(error);
       if (canRetry) {
-        await wait(300 * attempt);
+        await wait(400 * attempt);
         continue;
       }
 
@@ -323,12 +330,15 @@ export async function syncFirebaseUser(firebaseUser: {
     throw new Error('Unable to complete authentication sync');
   }
 
-  if (response.success) {
-    if (!response.data?.token) {
-      throw new Error('Firebase sync succeeded but no authentication token was returned');
-    }
-    persistToken(response.data.token);
+  if (!response.success) {
+    throw new Error('Backend session setup was rejected. Please try Google sign-in again.');
   }
+
+  if (!response.data?.token) {
+    throw new Error('Firebase sync succeeded but no authentication token was returned');
+  }
+
+  persistToken(response.data.token);
 
   return response;
 }

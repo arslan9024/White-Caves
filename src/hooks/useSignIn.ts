@@ -15,6 +15,7 @@ import {
   signInWithFacebook,
   signInWithApple,
   signInWithPhone,
+  auth as firebaseAuth,
   createRecaptchaVerifier,
   resetPassword,
   signOut as signOutFirebase,
@@ -135,6 +136,11 @@ const normalizeSocialAuthErrorMessage = (error: unknown, provider: string): stri
 
 const isSupportedSocialProvider = (provider: string): provider is SupportedSocialProvider =>
   provider === 'google' || provider === 'facebook' || provider === 'apple';
+
+const shouldClearFirebaseSessionAfterSyncFailure = (message: string): boolean =>
+  /uid mismatch|email mismatch|token verification failed|invalid firebase token|verified firebase email is required|authentication token is missing|firebase token is required/i.test(
+    message.toLowerCase()
+  );
 
 export interface UserCategory {
   id: string;
@@ -500,9 +506,6 @@ export function useSignIn() {
             );
           }
         } catch (syncError: unknown) {
-          await signOutFirebase().catch(() => {
-            // noop: firebase session cleanup is best effort here
-          });
           const syncMessage = (() => {
             if (syncError instanceof Error && syncError.message.trim()) {
               return syncError.message.trim();
@@ -520,6 +523,13 @@ export function useSignIn() {
             }
             return 'Unable to complete authentication sync';
           })();
+
+          if (shouldClearFirebaseSessionAfterSyncFailure(syncMessage)) {
+            await signOutFirebase().catch(() => {
+              // noop: firebase session cleanup is best effort here
+            });
+          }
+
           if (provider === 'google' || provider === 'facebook' || provider === 'apple') {
             setSocialSyncRecovery({ provider, reason: syncMessage });
             if (options?.isRetry) {
@@ -550,8 +560,73 @@ export function useSignIn() {
       return;
     }
 
+    if (socialSyncRecovery.provider === 'google' && firebaseAuth?.currentUser) {
+      setLoading(true);
+      setError('');
+
+      try {
+        const backendResponse = await syncFirebaseUser(firebaseAuth.currentUser);
+        if (!backendResponse?.data?.user) {
+          throw new Error('Invalid backend response: missing user data');
+        }
+
+        const backendUser = backendResponse.data.user;
+        setSocialSyncRecovery(null);
+        setSocialRetryAttempts(0);
+        setError('');
+
+        if (mode === 'signup') {
+          if (isSuperuserEmail(backendUser.email)) {
+            handleSignInSuccess({
+              ...backendUser,
+              role: 'managing_director',
+              status: 'active',
+            });
+          } else {
+            handleSignUpSuccess(backendUser, { fromSocialProvider: 'google' });
+          }
+        } else {
+          handleSignInSuccess(
+            isSuperuserEmail(backendUser.email)
+              ? { ...backendUser, role: 'managing_director', status: 'active' }
+              : backendUser
+          );
+        }
+        return;
+      } catch (syncError: unknown) {
+        const syncMessage =
+          syncError instanceof Error && syncError.message.trim()
+            ? syncError.message.trim()
+            : 'Unable to complete authentication sync';
+
+        setSocialRetryAttempts(prev => prev + 1);
+        setSocialSyncRecovery({ provider: 'google', reason: syncMessage });
+
+        if (shouldClearFirebaseSessionAfterSyncFailure(syncMessage)) {
+          await signOutFirebase().catch(() => {
+            // noop
+          });
+        }
+
+        setError(
+          `Google authentication is active, but backend session setup still failed: ${syncMessage}. Please retry or use email login temporarily.`
+        );
+      } finally {
+        setLoading(false);
+      }
+
+      return;
+    }
+
     await handleSocialAuth(socialSyncRecovery.provider, { isRetry: true });
-  }, [handleSocialAuth, socialSyncRecovery, socialRetryAttempts]);
+  }, [
+    handleSignInSuccess,
+    handleSignUpSuccess,
+    handleSocialAuth,
+    mode,
+    socialSyncRecovery,
+    socialRetryAttempts,
+  ]);
 
   const clearSocialRecovery = useCallback((): void => {
     setSocialSyncRecovery(null);

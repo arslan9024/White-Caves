@@ -16,5 +16,5 @@
     "sourceMap": false
   },
   "include": ["server/**/*.ts", "server/**/*.d.ts"],
-  "exclude": ["server/routes/**", "server/**/*.test.ts", "server/**/*.spec.ts"]
+  "exclude": ["server/**/*.test.ts", "server/**/*.spec.ts"]
 }
