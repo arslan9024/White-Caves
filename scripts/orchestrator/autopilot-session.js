@@ -35,6 +35,7 @@ import path from 'path';
 import { spawnSync } from 'child_process';
 import { fileURLToPath } from 'url';
 import { createTraceContext, loadPolicy, runPolicyDiffGate } from './policy-loader.js';
+import { artifactPaths, refreshGovernanceArtifacts, writeJson } from './governance-utils.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -45,6 +46,7 @@ const LOGS_DIR      = path.join(ROOT, 'logs', 'orchestrator');
 const SCAN_REPORT   = path.join(LOGS_DIR, 'codebase-scan-report.json');
 const PRIORITY_FILE = path.join(LOGS_DIR, 'priority-order.json');
 const SNAPSHOT_FILE = path.join(LOGS_DIR, 'session-snapshot.json');
+const GOVERNANCE_PATHS = artifactPaths();
 
 const SKIP_SCAN  = process.argv.includes('--skip-scan');
 const JSON_OUT   = process.argv.includes('--json');
@@ -249,8 +251,25 @@ async function main() {
   }
 
   const snapshot = buildSnapshot(SESSION_ID, dispatchPacket, scanReport, previousSnapshot, hardStops);
+  let governanceArtifacts = null;
+  if (dispatchPacket) {
+    governanceArtifacts = refreshGovernanceArtifacts({
+      policy,
+      sessionId: SESSION_ID,
+      dispatchPacket,
+      previousSnapshot,
+      hardStops,
+    });
+  }
   if (!DRY_RUN) {
     writeJSON(SNAPSHOT_FILE, snapshot);
+    if (governanceArtifacts) {
+      writeJson(GOVERNANCE_PATHS.routingDecision, governanceArtifacts.routingDecision);
+      writeJson(GOVERNANCE_PATHS.contextManifest, governanceArtifacts.manifest);
+      writeJson(path.join(LOGS_DIR, 'session-plan-packet.json'), governanceArtifacts.planPacket);
+      writeJson(GOVERNANCE_PATHS.handoffSummary, governanceArtifacts.handoffSummary);
+      writeJson(GOVERNANCE_PATHS.bootstrapPacket, governanceArtifacts.bootstrapPacket);
+    }
   }
 
   // ── Build full session brief ──────────────────────────────────────────
@@ -271,6 +290,10 @@ async function main() {
     hardStops,
     nextTask:        priorityOrder ? priorityOrder.nextTask : null,
     dispatchPacket,
+    routingDecision: governanceArtifacts ? governanceArtifacts.routingDecision : null,
+    planPacket: governanceArtifacts ? governanceArtifacts.planPacket : null,
+    contextManifest: governanceArtifacts ? governanceArtifacts.manifest : null,
+    handoffSummary: governanceArtifacts ? governanceArtifacts.handoffSummary : null,
     automationInstructions: {
       step1: 'Review the dispatchPacket below — this is your task for this session',
       step2: 'Read the inputArtifacts listed and understand current state',
@@ -308,6 +331,13 @@ async function main() {
     researchSummary.topCodeIssues.forEach((issue, i) => {
       console.log(`    ${i + 1}. [${issue.priority}] ${issue.title}`);
     });
+  }
+
+  if (governanceArtifacts?.routingDecision) {
+    console.log(`  Routing tier  : ${governanceArtifacts.routingDecision.modelTier}`);
+    console.log(`  Task class    : ${governanceArtifacts.routingDecision.taskClass}`);
+    console.log(`  Context size  : ${governanceArtifacts.routingDecision.contextSize}`);
+    console.log(`  New chat hint : ${governanceArtifacts.manifest.newChatRecommendation.needed ? governanceArtifacts.manifest.newChatRecommendation.reasons.join(', ') : 'not needed'}`);
   }
 
   if (hardStops.length > 0) {

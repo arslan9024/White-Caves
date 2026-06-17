@@ -1,7 +1,7 @@
 # Pending Tasks Only
 
 **Last Updated:** 2026-06-17
-**Current Focus:** Wave 18.2 profile-first post-login journey + Dashboard CTA alignment ✅ Complete → Wave 18.1 Session 3 (P0 closure + top P1s) 🟡 In Progress.
+**Current Focus:** Wave 18.2 profile-first post-login journey + Dashboard CTA alignment ✅ Complete → Wave 18.1 Session 3 (P0 closure + top P1s) 🟡 In Progress → Wave 19 remains planned, visible, and not yet implementation-approved.
 
 ## Canonical Sources
 
@@ -13,7 +13,7 @@
 
 ## Implementation Order
 
-`09 → 10 → 11 → 12 → 13 → 14 → 15 → 16 → 17 → 18`
+`09 → 10 → 11 → 12 → 13 → 14 → 15 → 16 → 17 → 18 → 19`
 
 Advance only when the prior wave is green, the readiness gate is satisfied, and `@Ada — Context Ready (60% Readiness) — Coding Phase Approved` has been issued for that wave.
 
@@ -35,6 +35,7 @@ Advance only when the prior wave is green, the readiness gate is satisfied, and 
 | S12 | 18.1 | Competitor parity execution — Session 1 ✅ complete, Session 2 ✅ complete | ✅ Complete | @Ada + @Mira + @Una + @Tracy + @Katherine + @Sofia | Session 1 + Session 2 tests green + build green + `npm run plans:validate` |
 | S13 | 18.1-S3 | Competitor parity execution — Session 3: 2 deferred P0s + top 8 P1s | 🟡 In Progress | @Ada + @Mira + @Joelle + @Katherine + @Victoria + @Una | Session 3 tests green + build green + `npm run plans:validate` |
 | S14 | 18.2 | Profile-first post-login journey + Dashboard CTA alignment | ✅ Complete | @Ada + @Mira | `useSignIn` tests green + build green |
+| S15 | 19 | Identity & Access v2 + `/crm` routing + MD workspace split | 📋 Planned | @Ada + @Mira + @Una + @Katherine + @Radia | Wave 18.1 Session 3 closeout + Wave 19 readiness packet + @Ada approval phrase |
 
 ## Completed Stream History
 

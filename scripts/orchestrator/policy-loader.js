@@ -51,6 +51,69 @@ function normalizePolicy(rawPolicy) {
   policy.rollout.autoRollbackOnRegression = policy.rollout.autoRollbackOnRegression ?? true;
   policy.rollout.regressionThresholdPct = policy.rollout.regressionThresholdPct ?? 10;
 
+  policy.artifactSchemasDir = policy.artifactSchemasDir ?? 'scripts/orchestrator/schemas';
+  policy.changeLog = policy.changeLog ?? [];
+
+  policy.controlPlane = policy.controlPlane ?? {};
+  policy.controlPlane.authoritativeFiles = policy.controlPlane.authoritativeFiles ?? [
+    '.github/copilot-instructions.md',
+    'AGENTS.md',
+    '.github/instructions/agentic-workflow.instructions.md',
+    'scripts/orchestrator/policy.json',
+  ];
+  policy.controlPlane.ownership = policy.controlPlane.ownership ?? {};
+  policy.controlPlane.changeControl = policy.controlPlane.changeControl ?? {};
+  policy.controlPlane.changeControl.validationCommands = policy.controlPlane.changeControl.validationCommands ?? [
+    'npm run plans:validate',
+    'npm run aegis:health',
+    'npm run aegis:context:validate',
+  ];
+  policy.controlPlane.changeControl.forbidSilentDrift = policy.controlPlane.changeControl.forbidSilentDrift ?? true;
+
+  policy.planFirst = policy.planFirst ?? {};
+  policy.planFirst.enabled = policy.planFirst.enabled ?? true;
+  policy.planFirst.defaultMode = policy.planFirst.defaultMode ?? 'plan-before-agent';
+  policy.planFirst.trivialExemptions = policy.planFirst.trivialExemptions ?? ['formatting-only', 'comment-only', 'small-doc-fix'];
+  policy.planFirst.requiredPlanPacketFields = policy.planFirst.requiredPlanPacketFields ?? [
+    'goal',
+    'filesInScope',
+    'validationPath',
+    'recommendedModelTier',
+    'contextSizeExpectation',
+  ];
+  policy.planFirst.enforceBeforePremiumExecution = policy.planFirst.enforceBeforePremiumExecution ?? true;
+
+  policy.contextBudget = policy.contextBudget ?? {};
+  policy.contextBudget.enabled = policy.contextBudget.enabled ?? true;
+  policy.contextBudget.defaultMaxFiles = policy.contextBudget.defaultMaxFiles ?? 12;
+  policy.contextBudget.defaultMaxInstructionFiles = policy.contextBudget.defaultMaxInstructionFiles ?? 4;
+  policy.contextBudget.defaultMaxWaveBundles = policy.contextBudget.defaultMaxWaveBundles ?? 1;
+  policy.contextBudget.defaultMaxBusinessDocSections = policy.contextBudget.defaultMaxBusinessDocSections ?? 6;
+  policy.contextBudget.warnAfterTurns = policy.contextBudget.warnAfterTurns ?? 16;
+  policy.contextBudget.hardStopAfterTurns = policy.contextBudget.hardStopAfterTurns ?? 28;
+  policy.contextBudget.warnAfterApproxTokens = policy.contextBudget.warnAfterApproxTokens ?? 120000;
+  policy.contextBudget.hardStopAfterApproxTokens = policy.contextBudget.hardStopAfterApproxTokens ?? 220000;
+  policy.contextBudget.preferStructuredSummaries = policy.contextBudget.preferStructuredSummaries ?? true;
+
+  policy.sessionManagement = policy.sessionManagement ?? {};
+  policy.sessionManagement.oneObjectivePerSession = policy.sessionManagement.oneObjectivePerSession ?? true;
+  policy.sessionManagement.oneWaveOrBugFamilyPerSession = policy.sessionManagement.oneWaveOrBugFamilyPerSession ?? true;
+  policy.sessionManagement.mandatoryEndOfSessionSummary = policy.sessionManagement.mandatoryEndOfSessionSummary ?? true;
+  policy.sessionManagement.requireCarryForwardList = policy.sessionManagement.requireCarryForwardList ?? true;
+  policy.sessionManagement.newChatTriggers = policy.sessionManagement.newChatTriggers ?? [
+    'objective-changed',
+    'file-scope-widened',
+    'turn-threshold-exceeded',
+    'handoff-no-longer-compact',
+  ];
+
+  policy.historyManagement = policy.historyManagement ?? {};
+  policy.historyManagement.enabled = policy.historyManagement.enabled ?? true;
+  policy.historyManagement.layers = policy.historyManagement.layers ?? ['raw-logs', 'session-snapshot', 'handoff-summary'];
+  policy.historyManagement.reuseLayer = policy.historyManagement.reuseLayer ?? 'handoff-summary';
+  policy.historyManagement.markStaleAsNonCanonical = policy.historyManagement.markStaleAsNonCanonical ?? true;
+  policy.historyManagement.bootstrapFromMinimalPacket = policy.historyManagement.bootstrapFromMinimalPacket ?? true;
+
   policy.features = policy.features ?? {};
   policy.features.killSwitchAll = policy.features.killSwitchAll ?? false;
   policy.features.graph = policy.features.graph ?? Boolean(policy.workflowGraph?.enabled ?? true);
@@ -61,6 +124,29 @@ function normalizePolicy(rawPolicy) {
   policy.features.budget = policy.features.budget ?? Boolean(policy.observability?.budgetLimits?.enabled ?? true);
   policy.features.routing = policy.features.routing ?? Boolean(policy.confidenceRouting?.enabled ?? true);
   policy.features.benchmark = policy.features.benchmark ?? Boolean(policy.benchmark?.enabled ?? true);
+
+  policy.modelRouting = policy.modelRouting ?? {};
+  policy.modelRouting.policyMode = policy.modelRouting.policyMode ?? 'free-first-premium-by-exception';
+  policy.modelRouting.premiumUsage = policy.modelRouting.premiumUsage ?? {};
+  policy.modelRouting.premiumUsage.assumeExternalCredits = policy.modelRouting.premiumUsage.assumeExternalCredits ?? false;
+  policy.modelRouting.premiumUsage.defaultCapMode = policy.modelRouting.premiumUsage.defaultCapMode ?? 'soft-warning';
+  policy.modelRouting.premiumUsage.maxPremiumTurnsPerTask = policy.modelRouting.premiumUsage.maxPremiumTurnsPerTask ?? 4;
+  policy.modelRouting.premiumUsage.maxPremiumTurnsPerSession = policy.modelRouting.premiumUsage.maxPremiumTurnsPerSession ?? 12;
+  policy.modelRouting.premiumUsage.maxPremiumTurnsPerDay = policy.modelRouting.premiumUsage.maxPremiumTurnsPerDay ?? 40;
+  policy.modelRouting.taskClassRouting = policy.modelRouting.taskClassRouting ?? {};
+  const defaultTaskClassRouting = {
+    exploration: { modelTier: 'free', modelRecommendation: 'Gemini 2.0 Flash', fallbackModel: 'Llama 3.1 70B', maxPremiumTurnsPerTask: 0 },
+    planning: { modelTier: 'free', modelRecommendation: 'Gemini 2.0 Flash', fallbackModel: 'DeepSeek V3', maxPremiumTurnsPerTask: 0 },
+    documentation: { modelTier: 'free', modelRecommendation: 'Llama 3.1 70B', fallbackModel: 'Gemini 2.0 Flash', maxPremiumTurnsPerTask: 0 },
+    triage: { modelTier: 'free', modelRecommendation: 'DeepSeek V3', fallbackModel: 'Gemini 2.0 Flash', maxPremiumTurnsPerTask: 0 },
+    research: { modelTier: 'free', modelRecommendation: 'DeepSeek V3', fallbackModel: 'Gemini 2.0 Flash', maxPremiumTurnsPerTask: 0 },
+    'architecture-arbitration': { modelTier: 'premium', modelRecommendation: 'GPT-4o', fallbackModel: 'claude-3.5-sonnet', maxPremiumTurnsPerTask: 2 },
+    'high-risk-implementation': { modelTier: 'premium', modelRecommendation: 'GPT-4o', fallbackModel: 'claude-3.5-sonnet', maxPremiumTurnsPerTask: 4 },
+    'ambiguous-debugging': { modelTier: 'premium', modelRecommendation: 'GPT-4o', fallbackModel: 'claude-3.5-sonnet', maxPremiumTurnsPerTask: 3 },
+    'security-sensitive': { modelTier: 'premium', modelRecommendation: 'GPT-4o', fallbackModel: 'claude-3.5-sonnet', maxPremiumTurnsPerTask: 4 },
+    'final-synthesis': { modelTier: 'premium', modelRecommendation: 'GPT-4o', fallbackModel: 'Gemini 2.0 Flash', maxPremiumTurnsPerTask: 2 },
+  };
+  policy.modelRouting.taskClassRouting = { ...defaultTaskClassRouting, ...policy.modelRouting.taskClassRouting };
 
   policy.verification = policy.verification ?? {};
   policy.verification.diffRiskWeights = policy.verification.diffRiskWeights ?? {
@@ -103,6 +189,11 @@ export function validatePolicy(policy) {
   if (!policy.workflowGraph?.steps || policy.workflowGraph.steps.length < 2) issues.push('workflowGraph.steps must include at least 2 steps');
   if (!policy.executionMode?.default) issues.push('executionMode.default is required');
   if (!policy.rollout?.environment) issues.push('rollout.environment is required');
+  if (!policy.controlPlane?.authoritativeFiles?.length) issues.push('controlPlane.authoritativeFiles is required');
+  if (!policy.planFirst?.requiredPlanPacketFields?.length) issues.push('planFirst.requiredPlanPacketFields is required');
+  if (!policy.contextBudget?.defaultMaxFiles) issues.push('contextBudget.defaultMaxFiles is required');
+  if (!policy.historyManagement?.layers?.length) issues.push('historyManagement.layers is required');
+  if (!policy.modelRouting?.taskClassRouting?.planning) issues.push('modelRouting.taskClassRouting.planning is required');
   return issues;
 }
 
@@ -177,6 +268,9 @@ export function runPolicyDiffGate(policy) {
     'executionMode.default',
     'hardStops.diffRiskScoreThreshold',
     'modelRouting.planningAgents',
+    'modelRouting.taskClassRouting',
+    'planFirst',
+    'contextBudget',
   ];
   const criticalDiffs = changed.filter(d => criticalPrefixes.some(prefix => d.key.startsWith(prefix)));
   const requiresAck = criticalDiffs.length > 0;

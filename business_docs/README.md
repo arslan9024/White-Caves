@@ -2,7 +2,7 @@
 
 > **Single Source of Truth** for all business documentation, domain knowledge, and strategic planning.
 >
-> Last updated: April 10, 2026 | **120+ documents across 15 sections**
+> Last updated: June 17, 2026 | **120+ documents across 15 sections**
 
 ---
 
@@ -37,7 +37,7 @@ This ensures all subagents work as one pipeline rather than isolated documents.
 business_docs/
 ├── 01_company_structure/     # Org chart, departments, roles, stakeholder register
 ├── 02_services/              # Core service offerings catalog (9 services)
-├── 03_ai_assistants/         # 24-persona AI assistant registry + integration map
+├── 03_ai_assistants/         # 40-persona AI assistant registry + integration map
 ├── 04_workflows/             # 9 critical business workflows + flowcharts
 ├── 05_requirements/          # 80+ requirements + business rules + risk register
 ├── 06_design_architecture/   # Architecture, API, database, UI/UX, data dictionary
@@ -78,7 +78,7 @@ business_docs/
 - **Company**: White Caves Real Estate LLC, Dubai, UAE
 - **Portfolio**: 9,378+ properties (DAMAC Hills 2 primary)
 - **Team**: 24+ employees across 10 departments
-- **AI Assistants**: 24 personas (5 critical, 9 core, 10 support)
+- **AI Assistants**: 40 documented personas across executive, core business, support, intelligence, and platform roles
 - **Revenue Target**: AED 39–100M annual (5 revenue streams)
 - **Market**: AED 180B Dubai real estate (TAM: AED 660M SaaS)
 - **Tech Stack**: React 18, TypeScript, Express, MongoDB/Prisma, Firebase

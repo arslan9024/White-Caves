@@ -20,6 +20,7 @@ Each wave should be executed only in roadmap order.
 | 16 | Security hardening + API versioning | ✅ Complete | [`SDD`](./WAVE_16_SDD.md) | [`Readiness`](./WAVE_16_READINESS_PACKET.md) | [`Backlog`](./WAVE_16_IMPLEMENTATION_BACKLOG.md) | [`Tests`](./WAVE_16_TEST_ROLLOUT.md) |
 | 17 | Full UI/UX luxury upgrade (tokens + animations + mobile + PWA + WCAG 2.2) | ✅ Complete | [`SDD`](./WAVE_17_SDD.md) | [`Readiness`](./WAVE_17_READINESS_PACKET.md) | [`Backlog`](./WAVE_17_IMPLEMENTATION_BACKLOG.md) | [`Tests`](./WAVE_17_TEST_ROLLOUT.md) |
 | 18 | Workflow parity audit + benchmark gap backlog | ✅ Complete | [`SDD`](./WAVE_18_SDD.md) | [`Readiness`](./WAVE_18_READINESS_PACKET.md) | [`Backlog`](./WAVE_18_IMPLEMENTATION_BACKLOG.md) | [`Tests`](./WAVE_18_TEST_ROLLOUT.md) |
+| 19 | Identity & Access v2 + `/crm` routing + MD workspace split | 📋 Planned | [`SDD`](./WAVE_19_SDD.md) | [`Readiness`](./WAVE_19_READINESS_PACKET.md) | [`Backlog`](./WAVE_19_IMPLEMENTATION_BACKLOG.md) | [`Tests`](./WAVE_19_TEST_ROLLOUT.md) |
 
 ## Notes
 
@@ -27,7 +28,7 @@ Each wave should be executed only in roadmap order.
 - Wave 13 through Wave 17 are complete in canonical trackers.
 - Wave 18 introduces a planning-first parity benchmark matrix (`WAVE_18_WORKFLOW_PARITY_MATRIX.md`) and queue generation for follow-on implementation waves.
 - Wave 18.1 execution queue is now tracked in [`WAVE_18_1_IMPLEMENTATION_BACKLOG.md`](./WAVE_18_1_IMPLEMENTATION_BACKLOG.md) with the locked 8-platform benchmark and top-20 P0 tasks.
-- Wave 18.1 Session 3 remains the active pending roster; use the Session 3 section in [`WAVE_18_1_IMPLEMENTATION_BACKLOG.md`](./WAVE_18_1_IMPLEMENTATION_BACKLOG.md) for the open 2×P0 + 8×P1 task list and partial baseline notes.
+- Wave 19 is now visible in the canonical wave index as the next planned bundle, but implementation remains gated by the approval phrase and active-wave completion.
 - Wave 11 now includes an explicit test rollout so every active planned wave uses the same four-artifact pattern.
 - Superseded root-level Wave 12 market-intelligence docs were archived to `../archives/` to avoid naming collisions with the active Wave 12 automation bundle.
 - Wave 17 (Full UI/UX Luxury Upgrade) is implemented and validated; see the Wave 17 bundle docs for closeout details.
