@@ -288,7 +288,7 @@ class WhatsAppWebIntegrationService {
   }
 
   on(event, handler) {
-    if (this.eventHandlers.hasOwnProperty(event)) {
+    if (Object.prototype.hasOwnProperty.call(this.eventHandlers, event)) {
       this.eventHandlers[event] = handler;
     } else {
       throw new Error(`Unknown event: ${event}`);
@@ -353,14 +353,6 @@ class WhatsAppWebIntegrationService {
 
   clearCache() {
     this.conversationCache.clear();
-  }
-
-  on(event, handler) {
-    if (this.eventHandlers.hasOwnProperty(event)) {
-      this.eventHandlers[event] = handler;
-    } else {
-      throw new Error(`Unknown event: ${event}`);
-    }
   }
 }
 

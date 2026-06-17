@@ -92,6 +92,17 @@ vi.mock('react-router-dom', async () => {
 
 import Hero from '../Hero';
 
+// ─── IntersectionObserver mock ────────────────────────────────
+const MockIntersectionObserver = vi.fn(() => ({
+  observe: vi.fn(),
+  unobserve: vi.fn(),
+  disconnect: vi.fn(),
+  takeRecords: vi.fn(() => []),
+  root: null,
+  rootMargin: '0px',
+  thresholds: [0],
+}));
+
 const createMockStore = (currentUser: any = null) =>
   configureStore({
     reducer: {
@@ -112,6 +123,7 @@ describe('Hero', () => {
   beforeEach(() => {
     vi.useFakeTimers();
     vi.clearAllMocks();
+    vi.stubGlobal('IntersectionObserver', MockIntersectionObserver);
   });
 
   afterEach(() => {

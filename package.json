@@ -108,6 +108,7 @@
     "db:generate": "npx prisma generate",
     "db:push": "npx prisma db push",
     "prepare": "npx --yes husky",
+    "postinstall": "prisma generate",
     "orchestrator:scaffold-docs": "powershell -ExecutionPolicy Bypass -File scripts/orchestrator/scaffold-docs.ps1",
     "orchestrator:today-sprint": "powershell -ExecutionPolicy Bypass -File scripts/orchestrator/today-sprint.ps1",
     "orchestrator:today-sprint:compact": "powershell -ExecutionPolicy Bypass -File scripts/orchestrator/today-sprint.ps1 -NoPrompt",
