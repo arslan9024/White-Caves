@@ -299,6 +299,89 @@ Mark an item complete only when:
 - [x] Evidence is recorded in `PROJECT_PROGRESS.md` and `DAILY_MILESTONE_TRACKER.md`
 - [x] `npm run plans:validate` passes after tracker updates
 
+---
+
+## S15 — Wave 20: Full Leasing & Tenancy 📋 Planned
+
+**Source:** [`plans/waves/WAVE_20_SDD.md`](./waves/WAVE_20_SDD.md)  
+**Entry Gate:** Wave 19 closeout + readiness 60% + `@Ada — Context Ready (60% Readiness) — Coding Phase Approved`  
+**Readiness:** 65% (business rules + API contract complete; e-sign integration pending)
+
+| Task | Priority | Owner | Validation |
+|---|---|---|---|
+| W20-001 — Tenant application + KYC document upload + expiry-alert engine | P0 | @Mira + @Barbara | Unit: KYC rules; E2E: application submit |
+| W20-002 — Bilingual tenancy agreement PDF generator | P0 | @Mira | Integration: PDF output with all variable slots |
+| W20-003 — DocuSign/Adobe Sign e-signature webhook wiring | P0 | @Mira | Integration: webhook fires on mock signature |
+| W20-004 — Ejari registration status tracking | P0 | @Mira + @Una | Unit: status transitions; UI: badge rendering |
+| W20-005 — PDC schedule auto-generator | P0 | @Barbara + @Mira | Unit: schedule math all frequency variants |
+| W20-006 — Bounced cheque workflow → Form 12 legal notice | P0 | @Mira + @Katherine | Integration: bounce → notification → PDF |
+| W20-007 — PDC replacement flow | P1 | @Mira | Unit: replacement links to original |
+| W20-008 — Lease renewal workflow (90/60/30-day cron + Form 7) | P0 | @Mira + @Barbara | Integration: cron intervals; Unit: Form 7 content |
+| W20-009 — Early termination + RERA penalty calculator | P1 | @Mira | Unit: RERA Article 11 all cases |
+| W20-010 — Tenant Portal six-tab UI (all states) | P0 | @Una + @Lea | E2E: all tabs + states |
+| W20-011 — Landlord Portal (portfolio + PDC calendar + quarterly PDF) | P0 | @Una + @Mira | E2E: portfolio view; Unit: quarterly PDF |
+| W20-012 — Maintenance cost approval > AED 500 via WhatsApp | P1 | @Mira | Integration: approval flow |
+| W20-013 — RBAC enforcement for all tenancy roles | P0 | @Katherine + @Radia | Integration: boundary tests all roles |
+| W20-015 — Wave 20 closeout + `npm run plans:validate` | P0 | @Katherine | Validation green; trackers updated |
+
+---
+
+## S16 — Wave 21: Finance, UAE VAT & Commission Engine 📋 Planned
+
+**Source:** [`plans/waves/WAVE_21_SDD.md`](./waves/WAVE_21_SDD.md)  
+**Entry Gate:** Wave 20 closeout + readiness 60% + `@Ada — Context Ready (60% Readiness) — Coding Phase Approved`  
+**Readiness:** 68% (UAE VAT rules + commission matrix complete; FTA format needs final confirmation)
+
+| Task | Priority | Owner | Validation |
+|---|---|---|---|
+| W21-001 — UAE VAT engine (5% taxable / 0% exempt) | P0 | @Mira + @Barbara | Unit: VAT calc all transaction types |
+| W21-002 — Quarterly VAT return (FTA-formatted PDF + Excel) | P1 | @Mira | Integration: VAT return verified against FTA format |
+| W21-003 — Tax Invoice generator (TRN, auto-numbering, Pro Forma, Credit Note) | P0 | @Mira | Unit: auto-number uniqueness; FTA fields present |
+| W21-004 — Commission auto-calculation + split sum validation | P0 | @Barbara + @Mira | Unit: rate matrix + split sum = 100% |
+| W21-005 — Commission approval workflow (agent → manager → finance) | P0 | @Mira + @Katherine | Integration: full chain; RBAC: self-approve blocked |
+| W21-006 — Commission clawback (30-day rule) | P1 | @Mira | Unit: clawback triggers at days 0, 29, 30, 31 |
+| W21-007 — Rolling 12-month cash-flow forecast | P0 | @Barbara + @Mira | Integration: forecast updates on transaction; UI: chart |
+| W21-008 — Monthly P&L + close-month lock | P0 | @Mira + @Barbara | Integration: close locks period; Unit: P&L math |
+| W21-009 — AR aging report (30/60/90/120+ buckets) | P1 | @Mira | Integration: buckets correct; Export: Excel columns |
+| W21-010 — Budget vs Actual variance report | P1 | @Barbara | Unit: variance calc; UI: colour-coded |
+| W21-011 — Immutable ledger (append-only, close-lock enforced) | P0 | @Katherine + @Mira | Integration: edit of locked entry returns 403 |
+| W21-012 — Multi-currency display (ExchangeRate-API, 4h cache) | P1 | @Mira | Unit: cache TTL + fallback |
+| W21-013 — Commission statement PDF per agent per period | P1 | @Mira | Integration: PDF totals correct |
+| W21-014 — Executive P&L dashboard (Owner/MD role-gated) | P1 | @Una + @Mira | E2E: Owner sees P&L; non-owner blocked |
+| W21-015 — Wave 21 closeout + `npm run plans:validate` | P0 | @Katherine | Validation green; trackers updated |
+
+---
+
+## S17 — Wave 22: Market Intelligence, Off-Plan & Analytics 📋 Planned
+
+**Source:** [`plans/waves/WAVE_22_SDD.md`](./waves/WAVE_22_SDD.md)  
+**Entry Gate:** Wave 21 closeout + readiness 60% + `@Ada — Context Ready (60% Readiness) — Coding Phase Approved`  
+**Readiness:** 62% (analytics spec + off-plan rules complete; AVM data source needs confirmation)
+
+| Task | Priority | Owner | Validation |
+|---|---|---|---|
+| W22-001 — Property AVM (value + confidence + ≥3 comparables) | P0 | @Mira + @Barbara | Unit: AVM with known comparable set |
+| W22-002 — Manual valuation override + manager approval | P1 | @Mira | Integration: non-manager rejected 403 |
+| W22-003 — Rental yield calculator (gross + net + payback years) | P1 | @Barbara | Unit: known inputs → expected outputs |
+| W22-004 — Monthly AVM refresh cron | P1 | @Mira | Integration: cron updates all active properties |
+| W22-005 — Dubai area price index + RERA rental index by area | P0 | @Barbara + @Cassie | Integration: 30 neighborhoods present |
+| W22-006 — Price drop alert (>5% MoM) | P1 | @Mira | Integration: 6% drop fires; 4% does not |
+| W22-007 — Weekly market report PDF + Monday 08:00 email | P1 | @Mira | Integration: PDF has 3 chart sections; email received |
+| W22-008 — Off-plan project CRUD + unit state machine | P0 | @Mira + @Barbara | Unit: all state transitions; E2E: full lifecycle |
+| W22-009 — Oqood 60-day window tracking + breach escalation | P0 | @Mira + @Katherine | Unit: alert at day 45/59; breach creates manager task |
+| W22-010 — Payment milestone schedule + escrow compliance flag | P1 | @Mira | Unit: 3 payment plan templates; escrow flag triggers |
+| W22-011 — RERA Article 11 cancellation refund calculator | P1 | @Barbara | Unit: all 4 penalty tier boundaries |
+| W22-012 — ROI projection calculator | P1 | @Una + @Mira | Unit: known inputs produce expected ROI |
+| W22-013 — Nightly analytics aggregation cron → snapshots | P0 | @Mira + @Barbara | Integration: snapshot grows by 1/day |
+| W22-014 — Redis real-time counters (leads/viewings/maintenance) | P0 | @Mira | Integration: counters survive Redis restart |
+| W22-015 — Bulk data export async job (50K rows + email link) | P1 | @Mira | Integration: 10K test export; email with URL |
+| W22-016 — RERA license expiry guard + 90/30-day alerts | P0 | @Katherine + @Mira | Integration: expired agent cannot receive leads |
+| W22-017 — Agent PIP workflow | P1 | @Una + @Mira | E2E: PIP create → view → milestone complete |
+| W22-018 — Analytics dashboard UI (KPI tiles + charts + heatmap) | P1 | @Una + @Cassie | E2E: all widgets render for Owner role |
+| W22-019 — Wave 22 closeout + `npm run plans:validate` | P0 | @Katherine | Validation green; trackers updated |
+
+---
+
 ## Weekly Planning Hygiene Cycle
 
 - Weekly: prune stale queue items, re-rank blockers by impact, and archive/supersede duplicates.
