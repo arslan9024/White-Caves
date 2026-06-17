@@ -134,7 +134,8 @@ router.delete(
     const userId = req.user?.id;
     if (!userId) throw new AppError('Authentication required', 401);
 
-    const dayOfWeek = parseInt(req.params.dayOfWeek);
+    const { dayOfWeek: dayOfWeekParam } = req.params as Record<string, string>;
+    const dayOfWeek = parseInt(dayOfWeekParam, 10);
     if (isNaN(dayOfWeek) || dayOfWeek < 0 || dayOfWeek > 6) {
       throw new AppError('Invalid dayOfWeek (0-6)', 400);
     }

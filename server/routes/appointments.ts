@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Appointments API Routes
  * â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
  * Full CRUD for appointment scheduling (viewings, meetings, calls, signings).
@@ -29,6 +29,8 @@ import {
 import { triggerLeadRescore } from '../services/ai/leadAutoRescore.js';
 
 const router = Router();
+
+type RouteRequest = Request<Record<string, string>>;
 const db = prisma as any;
 
 const VALID_TYPES = ['viewing', 'meeting', 'call', 'inspection', 'signing'] as const;
@@ -58,7 +60,7 @@ const appendGoogleEventMetaToNotes = (
 router.get(
   '/calendar/google/auth-url',
   requirePermission('manage_appointments'),
-  asyncHandler(async (_req: Request, res: Response) => {
+  asyncHandler(async (_req: RouteRequest, res: Response) => {
     const authUrl = getGoogleCalendarAuthUrl();
     res.status(200).json({ success: true, data: { authUrl } });
   })
@@ -68,7 +70,7 @@ router.get(
 router.get(
   '/calendar/google/callback',
   requirePermission('manage_appointments'),
-  asyncHandler(async (req: Request, res: Response) => {
+  asyncHandler(async (req: RouteRequest, res: Response) => {
     const code = req.query.code as string | undefined;
     if (!code) throw new AppError('Missing OAuth code', 400);
 
@@ -99,7 +101,7 @@ router.get(
 router.post(
   '/:id/calendar-sync/google',
   requirePermission('manage_appointments'),
-  asyncHandler(async (req: Request, res: Response) => {
+  asyncHandler(async (req: RouteRequest, res: Response) => {
     const { id } = req.params as Record<string, string>;
     validateIdParam(id, 'Appointment ID');
 
@@ -143,7 +145,7 @@ router.post(
 router.get(
   '/',
   requirePermission('view_appointments'),
-  asyncHandler(async (req: Request, res: Response) => {
+  asyncHandler(async (req: RouteRequest, res: Response) => {
     const { page, limit, skip } = parsePagination(req.query);
     const { status, type, agentId, propertyId, leadId, from, to } = req.query as Record<
       string,
@@ -188,7 +190,7 @@ router.get(
 router.get(
   '/upcoming',
   requirePermission('view_appointments'),
-  asyncHandler(async (req: Request, res: Response) => {
+  asyncHandler(async (req: RouteRequest, res: Response) => {
     const { limit: limitParam } = req.query as Record<string, string>;
     const limit = Math.min(parseInt(limitParam || '20', 10), 100);
     const now = new Date();
@@ -211,7 +213,7 @@ router.get(
 router.get(
   '/:id',
   requirePermission('view_appointments'),
-  asyncHandler(async (req: Request, res: Response) => {
+  asyncHandler(async (req: RouteRequest, res: Response) => {
     validateIdParam(req.params.id, 'Appointment ID');
     const appt = await db.appointment.findUnique({ where: { id: req.params.id } });
     if (!appt) throw new AppError('Appointment not found', 404);
@@ -223,7 +225,7 @@ router.get(
 router.post(
   '/',
   requirePermission('manage_appointments'),
-  asyncHandler(async (req: Request, res: Response) => {
+  asyncHandler(async (req: RouteRequest, res: Response) => {
     const {
       title,
       type,
@@ -297,7 +299,7 @@ router.post(
 router.patch(
   '/:id',
   requirePermission('manage_appointments'),
-  asyncHandler(async (req: Request, res: Response) => {
+  asyncHandler(async (req: RouteRequest, res: Response) => {
     const { id } = req.params as Record<string, string>;
     validateIdParam(id, 'Appointment ID');
 
@@ -389,7 +391,7 @@ router.patch(
 router.delete(
   '/:id',
   requireRole('owner', 'manager', 'admin'),
-  asyncHandler(async (req: Request, res: Response) => {
+  asyncHandler(async (req: RouteRequest, res: Response) => {
     const { id } = req.params as Record<string, string>;
     validateIdParam(id, 'Appointment ID');
 

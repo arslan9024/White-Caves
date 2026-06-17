@@ -13,13 +13,15 @@ import { cacheService } from '../services/CacheService.js';
 
 const router = Router();
 
+type RouteRequest = Request<Record<string, string>>;
+
 const CACHE_TTL_AGENTS = 300; // 5 minutes
 
 // ─── GET /api/agents ────────────────────────────────────────────────────
 router.get(
   '/',
   requirePermission('manage_agents'),
-  asyncHandler(async (req: Request, res: Response) => {
+  asyncHandler(async (req: RouteRequest, res: Response) => {
     const {
       status,
       department,
@@ -159,7 +161,7 @@ router.get(
 router.get(
   '/stats',
   requirePermission('manage_agents'),
-  asyncHandler(async (req: Request, res: Response) => {
+  asyncHandler(async (req: RouteRequest, res: Response) => {
     // AUTHORIZATION: Only managers+ can view aggregated agent statistics
     const allowedRoles = ['owner', 'manager', 'admin'];
     if (!allowedRoles.includes(req.user?.role || '')) {
@@ -191,7 +193,7 @@ router.get(
 // ─── GET /api/agents/:id ────────────────────────────────────────────────
 router.get(
   '/:id',
-  asyncHandler(async (req: Request, res: Response) => {
+  asyncHandler(async (req: RouteRequest, res: Response) => {
     validateIdParam(req.params.id, 'Agent ID');
 
     // IDOR protection: agents can only view their own profile; managers+ can view any
@@ -242,7 +244,7 @@ router.get(
 // AUTHORIZATION: Only the agent themselves, or a manager/owner, can view performance
 router.get(
   '/:id/performance',
-  asyncHandler(async (req: Request, res: Response) => {
+  asyncHandler(async (req: RouteRequest, res: Response) => {
     const { id } = req.params as Record<string, string>;
     validateIdParam(id, 'Agent ID');
 
@@ -302,7 +304,7 @@ router.get(
 // AUTHORIZATION: Only the agent themselves, or a manager/owner, can view commissions
 router.get(
   '/:id/commissions',
-  asyncHandler(async (req: Request, res: Response) => {
+  asyncHandler(async (req: RouteRequest, res: Response) => {
     validateIdParam(req.params.id, 'Agent ID');
 
     // IDOR protection: agents can only view their own commission data

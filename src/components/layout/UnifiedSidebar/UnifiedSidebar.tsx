@@ -30,6 +30,8 @@ import {
   Search,
   X,
   SearchX,
+  Target,
+  Flag,
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import {
@@ -104,6 +106,7 @@ import {
   AICommandCenterWrapper,
   AICommandHeader,
   AssistantStatusDot,
+  SidebarSectionLabel,
 } from './styles';
 
 const log = createLogger('UnifiedSidebar');
@@ -201,6 +204,7 @@ const UnifiedSidebar: React.FC<UnifiedSidebarProps> = ({ onItemClick, isSuperUse
     readExpandedDepts()
   );
   const [companyExpanded, setCompanyExpanded] = useState(true);
+  const [goalsExpanded, setGoalsExpanded] = useState(true);
   // AI-section–only search (used when globalSearch is empty)
   const [aiOnlySearch, setAiOnlySearch] = useState('');
 
@@ -365,6 +369,9 @@ const UnifiedSidebar: React.FC<UnifiedSidebarProps> = ({ onItemClick, isSuperUse
         case 'settings':
           navigate('/owner/whatsapp/settings');
           break;
+        case 'goals-argentina':
+          navigate('/owner/goals/argentina');
+          break;
         default:
           break;
       }
@@ -440,6 +447,7 @@ const UnifiedSidebar: React.FC<UnifiedSidebarProps> = ({ onItemClick, isSuperUse
     });
 
     if (isSuperUser) items.push({ id: 'footer-admin', label: 'Admin', depth: 0 });
+    if (isSuperUser) items.push({ id: 'goals-argentina', label: '🇦🇷 Argentina', depth: 1 });
     items.push({ id: 'footer-settings', label: 'Settings', depth: 0 });
     return items;
   }, [deptTree, expandedDepts, filteredAssistants, isSuperUser]);
@@ -457,6 +465,8 @@ const UnifiedSidebar: React.FC<UnifiedSidebarProps> = ({ onItemClick, isSuperUse
         handleAssistantClick(item.id.replace('assistant-', ''));
       } else if (item.id === 'footer-admin') {
         handleQuickNavClick('admin');
+      } else if (item.id === 'goals-argentina') {
+        handleQuickNavClick('goals-argentina');
       } else if (item.id === 'footer-settings') {
         handleQuickNavClick('settings');
       }
@@ -584,6 +594,15 @@ const UnifiedSidebar: React.FC<UnifiedSidebarProps> = ({ onItemClick, isSuperUse
             aria-label="Admin"
           >
             <Shield />
+          </CollapsedNavItem>
+        )}
+        {isSuperUser && (
+          <CollapsedNavItem
+            onClick={() => handleQuickNavClick('goals-argentina')}
+            title="🇦🇷 Argentina Goal"
+            aria-label="Argentina immigration goal"
+          >
+            <Target />
           </CollapsedNavItem>
         )}
         <CollapsedNavItem
@@ -836,6 +855,42 @@ const UnifiedSidebar: React.FC<UnifiedSidebarProps> = ({ onItemClick, isSuperUse
                   onItemKeyDown={handleNavigationKeyDown}
                   getFocusProps={getItemFocusProps}
                 />
+              )}
+            </SidebarSection>
+          </>
+        )}
+
+        {/* ─── Goals section (superuser-only) ──────────────────── */}
+        {isSuperUser && !isSearching && (
+          <>
+            <SidebarDivider />
+            <SidebarSection>
+              <DeptGroupHeader
+                onClick={() => setGoalsExpanded(v => !v)}
+                aria-label="Toggle goals"
+                aria-expanded={goalsExpanded}
+              >
+                <span>🎯 Goals</span>
+                <ChevronDown
+                  style={{
+                    transform: goalsExpanded ? 'rotate(0)' : 'rotate(-90deg)',
+                    transition: 'transform 0.2s',
+                  }}
+                />
+              </DeptGroupHeader>
+              {goalsExpanded && (
+                <SidebarNav aria-label="Personal goals">
+                  <SidebarNavItem
+                    id="goals-argentina-btn"
+                    icon={Flag}
+                    label="🇦🇷 Argentina"
+                    onClick={() => handleQuickNavClick('goals-argentina')}
+                    onKeyDown={handleNavigationKeyDown}
+                    focusProps={getItemFocusProps('goals-argentina')}
+                    ariaCurrent={false}
+                    title="Argentina Immigration Roadmap"
+                  />
+                </SidebarNav>
               )}
             </SidebarSection>
           </>

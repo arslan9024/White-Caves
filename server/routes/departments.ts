@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Departments API Routes â€” Phase 30
  *
  * Aggregates real-time KPI data from existing tables and serves it
@@ -19,6 +19,8 @@ import { requirePermission } from '../middleware/rbac.js';
 import { prisma } from '../database.js';
 
 const router = Router();
+
+type RouteRequest = Request<Record<string, string>>;
 
 // â”€â”€â”€ Supported departments â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
@@ -415,7 +417,7 @@ async function getHRData() {
 router.get(
   '/',
   requirePermission('view_analytics'),
-  asyncHandler(async (_req: Request, res: Response) => {
+  asyncHandler(async (_req: RouteRequest, res: Response) => {
     res.status(200).json({
       success: true,
       departments: DEPARTMENTS,
@@ -428,7 +430,7 @@ router.get(
 router.get(
   '/:code/data',
   requirePermission('view_analytics'),
-  asyncHandler(async (req: Request, res: Response) => {
+  asyncHandler(async (req: RouteRequest, res: Response) => {
     const code = req.params.code.toUpperCase();
 
     let data: Record<string, unknown>;
@@ -457,7 +459,7 @@ router.get(
 router.get(
   '/:code/kpis',
   requirePermission('view_analytics'),
-  asyncHandler(async (req: Request, res: Response) => {
+  asyncHandler(async (req: RouteRequest, res: Response) => {
     const code = req.params.code.toUpperCase();
     let data: Record<string, unknown>;
 
@@ -489,7 +491,7 @@ router.get(
 router.get(
   '/:code/trends',
   requirePermission('view_analytics'),
-  asyncHandler(async (req: Request, res: Response) => {
+  asyncHandler(async (req: RouteRequest, res: Response) => {
     const code = req.params.code.toUpperCase();
     let data: Record<string, unknown>;
 
@@ -521,7 +523,7 @@ router.get(
 router.get(
   '/:code/summary',
   requirePermission('view_analytics'),
-  asyncHandler(async (req: Request, res: Response) => {
+  asyncHandler(async (req: RouteRequest, res: Response) => {
     const code = req.params.code.toUpperCase();
     let data: Record<string, unknown>;
 

@@ -5,7 +5,6 @@
  */
 
 import rateLimit, {
-  ipKeyGenerator,
   type RateLimitRequestHandler,
   type Store,
 } from 'express-rate-limit';
@@ -75,7 +74,10 @@ export const firebaseSyncLimiter: RateLimitRequestHandler = rateLimit({
     statusCode: 429,
   },
   keyGenerator: req => {
-    const ip = ipKeyGenerator(req.ip ?? req.socket?.remoteAddress ?? 'unknown-ip');
+    const ip =
+      typeof req.ip === 'string' && req.ip.trim().length > 0
+        ? req.ip.trim()
+        : req.socket?.remoteAddress ?? 'unknown-ip';
     const identity = resolveFirebaseIdentity(req.body);
     return `${ip}:${identity}`;
   },

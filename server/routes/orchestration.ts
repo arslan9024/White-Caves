@@ -1,4 +1,4 @@
-﻿import { Router, Request, Response } from 'express';
+import { Router, Request, Response } from 'express';
 import {
   existsSync,
   mkdirSync,
@@ -12,6 +12,8 @@ import { asyncHandler, AppError } from '../middleware/errorHandler.js';
 import { requireRole } from '../middleware/rbac.js';
 
 const router = Router();
+
+type RouteRequest = Request<Record<string, string>>;
 
 type ModelTier = 'free' | 'standard' | 'premium';
 type TaskState = 'queued' | 'running' | 'done' | 'failed' | 'blocked';
@@ -589,7 +591,7 @@ function getTaskState(profile: AssistantExecutionProfile, requestedTier: ModelTi
 
 router.get(
   '/status',
-  asyncHandler(async (_req: Request, res: Response) => {
+  asyncHandler(async (_req: RouteRequest, res: Response) => {
     const dailyCap = calculateDailyPremiumCap();
 
     res.json({
@@ -613,7 +615,7 @@ router.get(
 
 router.get(
   '/metrics',
-  asyncHandler(async (_req: Request, res: Response) => {
+  asyncHandler(async (_req: RouteRequest, res: Response) => {
     const dailyCap = calculateDailyPremiumCap();
     res.json({
       success: true,
@@ -633,7 +635,7 @@ router.get(
 
 router.get(
   '/snapshots',
-  asyncHandler(async (_req: Request, res: Response) => {
+  asyncHandler(async (_req: RouteRequest, res: Response) => {
     res.json({
       success: true,
       data: listSnapshotSummaries().slice(0, 20),
@@ -643,7 +645,7 @@ router.get(
 
 router.get(
   '/snapshots/history',
-  asyncHandler(async (req: Request, res: Response) => {
+  asyncHandler(async (req: RouteRequest, res: Response) => {
     const q = typeof req.query.q === 'string' ? req.query.q.trim().toLowerCase() : '';
     const labelQuery = typeof req.query.label === 'string' ? req.query.label.trim() : '';
     const order = req.query.order === 'asc' ? 'asc' : 'desc';
@@ -706,7 +708,7 @@ router.get(
 
 router.get(
   '/snapshots/:fileName/compare',
-  asyncHandler(async (req: Request, res: Response) => {
+  asyncHandler(async (req: RouteRequest, res: Response) => {
     const sourceSnapshot = readSnapshotDetail(req.params.fileName);
     const targetFileName =
       typeof req.query.target === 'string' && req.query.target.trim().length > 0
@@ -781,7 +783,7 @@ router.get(
 
 router.get(
   '/snapshots/:fileName/recommend-restore',
-  asyncHandler(async (req: Request, res: Response) => {
+  asyncHandler(async (req: RouteRequest, res: Response) => {
     const sourceSnapshot = readSnapshotDetail(req.params.fileName);
     const targetFileName =
       typeof req.query.target === 'string' && req.query.target.trim().length > 0
@@ -829,7 +831,7 @@ router.get(
 
 router.get(
   '/snapshots/:fileName/preview',
-  asyncHandler(async (req: Request, res: Response) => {
+  asyncHandler(async (req: RouteRequest, res: Response) => {
     const snapshot = readSnapshotDetail(req.params.fileName);
     const currentMetrics = computeMetrics(orchestrationTasks);
     const snapshotMetrics = snapshot.metrics;
@@ -871,7 +873,7 @@ router.get(
 
 router.get(
   '/snapshots/:fileName',
-  asyncHandler(async (req: Request, res: Response) => {
+  asyncHandler(async (req: RouteRequest, res: Response) => {
     const snapshot = readSnapshotDetail(req.params.fileName);
     res.json({ success: true, data: snapshot });
   })
@@ -880,7 +882,7 @@ router.get(
 router.post(
   '/snapshots/export',
   requireRole('owner', 'admin', 'manager'),
-  asyncHandler(async (req: Request, res: Response) => {
+  asyncHandler(async (req: RouteRequest, res: Response) => {
     const { label } = req.body as { label?: string };
     const snapshot = exportSnapshot(label);
     res.status(201).json({ success: true, data: snapshot });
@@ -890,7 +892,7 @@ router.post(
 router.post(
   '/snapshots/restore',
   requireRole('owner', 'admin', 'manager'),
-  asyncHandler(async (req: Request, res: Response) => {
+  asyncHandler(async (req: RouteRequest, res: Response) => {
     const { fileName } = req.body as { fileName?: string };
     const snapshot = restoreSnapshot(fileName);
     res.json({
@@ -906,7 +908,7 @@ router.post(
 router.delete(
   '/snapshots/:fileName',
   requireRole('owner', 'admin', 'manager'),
-  asyncHandler(async (req: Request, res: Response) => {
+  asyncHandler(async (req: RouteRequest, res: Response) => {
     const deletedSnapshot = deleteSnapshot(req.params.fileName);
     res.json({
       success: true,
@@ -920,7 +922,7 @@ router.delete(
 
 router.get(
   '/tasks',
-  asyncHandler(async (req: Request, res: Response) => {
+  asyncHandler(async (req: RouteRequest, res: Response) => {
     const assistantId = typeof req.query.assistantId === 'string' ? req.query.assistantId : null;
 
     const filtered = assistantId
@@ -933,7 +935,7 @@ router.get(
 
 router.get(
   '/contracts/assistant-endpoints',
-  asyncHandler(async (_req: Request, res: Response) => {
+  asyncHandler(async (_req: RouteRequest, res: Response) => {
     res.json({
       success: true,
       data: {
@@ -947,7 +949,7 @@ router.get(
 router.post(
   '/tasks',
   requireRole('owner', 'admin', 'manager'),
-  asyncHandler(async (req: Request, res: Response) => {
+  asyncHandler(async (req: RouteRequest, res: Response) => {
     const { assistantId, taskType, title, requestedTier } = req.body as {
       assistantId?: string;
       taskType?: TaskType;
@@ -997,7 +999,7 @@ router.post(
 router.patch(
   '/tasks/:id/state',
   requireRole('owner', 'admin', 'manager'),
-  asyncHandler(async (req: Request, res: Response) => {
+  asyncHandler(async (req: RouteRequest, res: Response) => {
     const { id } = req.params as Record<string, string>;
     const { state, blockedReason } = req.body as { state?: TaskState; blockedReason?: string };
 
@@ -1036,7 +1038,7 @@ router.patch(
 router.put(
   '/quota',
   requireRole('owner'),
-  asyncHandler(async (req: Request, res: Response) => {
+  asyncHandler(async (req: RouteRequest, res: Response) => {
     const {
       weeklyPremiumRemaining: weeklyInput,
       businessDaysRemaining: daysInput,

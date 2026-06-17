@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Clients API Routes â€” Full CRUD + Property Linking + Communication Logs
  * Endpoints: /api/clients
  * Phase 1C: Client/Owner Management
@@ -26,6 +26,8 @@ const VALID_COMM_TYPES = ['call', 'email', 'whatsapp', 'meeting', 'note', 'sms']
 
 const router = Router();
 
+type RouteRequest = Request<Record<string, string>>;
+
 // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 // CLIENT CRUD
 // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
@@ -34,7 +36,7 @@ const router = Router();
 router.get(
   '/',
   requirePermission('view_leads'),
-  asyncHandler(async (req: Request, res: Response) => {
+  asyncHandler(async (req: RouteRequest, res: Response) => {
     const {
       status,
       category,
@@ -116,7 +118,7 @@ router.get(
 router.get(
   '/:id',
   requirePermission('view_leads'),
-  asyncHandler(async (req: Request, res: Response) => {
+  asyncHandler(async (req: RouteRequest, res: Response) => {
     const client = await prisma.client.findUnique({
       where: { id: req.params.id },
       include: {
@@ -141,7 +143,7 @@ router.get(
 router.post(
   '/',
   requirePermission('manage_leads'),
-  asyncHandler(async (req: Request, res: Response) => {
+  asyncHandler(async (req: RouteRequest, res: Response) => {
     const {
       name,
       email,
@@ -204,7 +206,7 @@ router.post(
 router.patch(
   '/:id',
   requirePermission('manage_leads'),
-  asyncHandler(async (req: Request, res: Response) => {
+  asyncHandler(async (req: RouteRequest, res: Response) => {
     const existing = await prisma.client.findUnique({ where: { id: req.params.id } });
     if (!existing) {
       return res.status(404).json({ success: false, error: 'Client not found' });
@@ -275,7 +277,7 @@ router.patch(
 router.delete(
   '/:id',
   requirePermission('manage_leads'),
-  asyncHandler(async (req: Request, res: Response) => {
+  asyncHandler(async (req: RouteRequest, res: Response) => {
     const existing = await prisma.client.findUnique({ where: { id: req.params.id } });
     if (!existing) {
       return res.status(404).json({ success: false, error: 'Client not found' });
@@ -311,7 +313,7 @@ router.delete(
 router.get(
   '/:id/properties',
   requirePermission('view_leads'),
-  asyncHandler(async (req: Request, res: Response) => {
+  asyncHandler(async (req: RouteRequest, res: Response) => {
     const client = await prisma.client.findUnique({ where: { id: req.params.id } });
     if (!client) {
       return res.status(404).json({ success: false, error: 'Client not found' });
@@ -330,7 +332,7 @@ router.get(
 router.post(
   '/:id/properties',
   requirePermission('manage_leads'),
-  asyncHandler(async (req: Request, res: Response) => {
+  asyncHandler(async (req: RouteRequest, res: Response) => {
     const { propertyId, relationship, notes } = req.body;
 
     if (!propertyId) {
@@ -384,7 +386,7 @@ router.post(
 router.patch(
   '/:id/properties/:propertyId',
   requirePermission('manage_leads'),
-  asyncHandler(async (req: Request, res: Response) => {
+  asyncHandler(async (req: RouteRequest, res: Response) => {
     const link = await prisma.clientProperty.findUnique({
       where: {
         clientId_propertyId: { clientId: req.params.id, propertyId: req.params.propertyId },
@@ -418,7 +420,7 @@ router.patch(
 router.delete(
   '/:id/properties/:propertyId',
   requirePermission('manage_leads'),
-  asyncHandler(async (req: Request, res: Response) => {
+  asyncHandler(async (req: RouteRequest, res: Response) => {
     const link = await prisma.clientProperty.findUnique({
       where: {
         clientId_propertyId: { clientId: req.params.id, propertyId: req.params.propertyId },
@@ -445,7 +447,7 @@ router.delete(
 router.get(
   '/:id/communications',
   requirePermission('view_leads'),
-  asyncHandler(async (req: Request, res: Response) => {
+  asyncHandler(async (req: RouteRequest, res: Response) => {
     const client = await prisma.client.findUnique({ where: { id: req.params.id } });
     if (!client) {
       return res.status(404).json({ success: false, error: 'Client not found' });
@@ -492,7 +494,7 @@ router.get(
 router.post(
   '/:id/communications',
   requirePermission('manage_leads'),
-  asyncHandler(async (req: Request, res: Response) => {
+  asyncHandler(async (req: RouteRequest, res: Response) => {
     const { type, direction, subject, body, duration, outcome } = req.body;
 
     // Validate client exists
@@ -545,7 +547,7 @@ router.post(
 router.post(
   '/convert-lead/:leadId',
   requirePermission('manage_leads'),
-  asyncHandler(async (req: Request, res: Response) => {
+  asyncHandler(async (req: RouteRequest, res: Response) => {
     const lead = await prisma.lead.findUnique({ where: { id: req.params.leadId } });
     if (!lead) {
       return res.status(404).json({ success: false, error: 'Lead not found' });
